@@ -11,7 +11,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using System.Runtime.InteropServices;
+using System.Windows.Shell;
+//using System.Runtime.InteropServices;
 
 namespace OpenUtau.comm
 {
@@ -22,19 +23,23 @@ namespace OpenUtau.comm
     {
         private Rect _restoreLocation;
         private bool _maximized;
-        private Thickness _maxizedCanvasMargin;
-        private Thickness _normalCanvasMargin;
+        WindowChrome _chrome;
 
         public BorderlessWindow()
         {
             InitializeComponent();
+            _chrome = new WindowChrome();
+            WindowChrome.SetWindowChrome(this, _chrome);
+            _chrome.GlassFrameThickness = new Thickness(1);
+            _chrome.CornerRadius = new CornerRadius(0);
+            _chrome.CaptionHeight = 0;
             _maximized = false;
-            _maxizedCanvasMargin = new Thickness(0, 0, 0, 0);
-            _normalCanvasMargin = canvasBorder.Margin;
         }
 
         private void MaximizeWindow()
         {
+            this.ResizeMode = System.Windows.ResizeMode.NoResize;
+            _maximized = true;
             // Resize window
             _restoreLocation = new Rect { Width = Width, Height = Height, X = Left, Y = Top };
             System.Windows.Forms.Screen currentScreen;
@@ -43,21 +48,17 @@ namespace OpenUtau.comm
             Left = currentScreen.WorkingArea.X;
             Width = currentScreen.WorkingArea.Width;
             Height = currentScreen.WorkingArea.Height;
-            // Remove shadow
-            canvasBorder.Margin = _maxizedCanvasMargin;
-            canvasBorderDropShadow.Opacity = 0;
         }
 
         private void Restore()
         {
+            this.ResizeMode = System.Windows.ResizeMode.CanResize;
+            _maximized = false;
             // Resize window
             Top = _restoreLocation.Y;
             Left = _restoreLocation.X;
             Width = _restoreLocation.Width;
             Height = _restoreLocation.Height;
-            // Recover shadow
-            canvasBorder.Margin = _normalCanvasMargin;
-            canvasBorderDropShadow.Opacity = 0.75;
         }
 
         private void minButton_Click(object sender, RoutedEventArgs e)
@@ -68,11 +69,9 @@ namespace OpenUtau.comm
         private void maxButton_Click(object sender, RoutedEventArgs e)
         {
             if (_maximized) {
-                _maximized = false;
                 Restore();
             }
             else {
-                _maximized = true;
                 MaximizeWindow();
             }
                 
@@ -83,7 +82,7 @@ namespace OpenUtau.comm
             Close();
         }
 
-        private void titleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void dragMove_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ClickCount == 2)
             {
@@ -106,12 +105,12 @@ namespace OpenUtau.comm
 
         private void Window_Activated(object sender, EventArgs e)
         {
-            canvasBorderDropShadow.BlurRadius = 30;
+            this.canvasBorder.BorderBrush = Brushes.White;
         }
 
         private void Window_Deactivated(object sender, EventArgs e)
         {
-            canvasBorderDropShadow.BlurRadius = 20;
+            if (!_maximized) this.canvasBorder.BorderBrush = Brushes.Gray;
         }
     }
 }
