@@ -55,7 +55,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="comm\BorderlessWindow.xaml">
+    <Page Include="UI\MidiWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -63,9 +63,22 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="comm\BorderlessWindow.xaml.cs">
-      <DependentUpon>BorderlessWindow.xaml</DependentUpon>
+    <Compile Include="UI\Models\NotesCanvas.cs" />
+    <Compile Include="UI\MidiWindow.xaml.cs">
+      <DependentUpon>MidiWindow.xaml</DependentUpon>
     </Compile>
+    <Page Include="UI\Colors\LightTheme.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Controls\Buttons.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Controls\ScrollBar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">

@@ -1,0 +1,62 @@
+﻿<Window x:Class="OpenUtau.UI.MidiWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="BorderlessWindow" AllowsTransparency="False" MinHeight="600" MinWidth="800" Height="760" Width="950" ResizeMode="CanResizeWithGrip"
+        WindowStyle="None" SourceInitialized="win_SourceInitialized"
+        Activated="Window_Activated" Deactivated="Window_Deactivated" SnapsToDevicePixels="True">
+    <Grid>
+
+        <Border x:Name="titleBar" Height="24" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,0,0,0"
+                BorderThickness="0" Background="White" MouseLeftButtonDown="dragMove_MouseDown">
+            <Label x:Name="titleLabel" Content="Midi Editor" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,0,0,0"
+                   HorizontalContentAlignment="Center"/>
+        </Border>
+        <Button x:Name="minButton" Style="{StaticResource MinimizeButton}" Content="0" Margin="0,0,48,0" Click="minButton_Click"/>
+        <Button x:Name="maxButton" Style="{StaticResource MaximizeButton}" Content="1" Margin="0,0,24,0" Click="maxButton_Click"/>
+        <Button x:Name="closeButton" Style="{StaticResource CloseButton}" Content="r" Margin="0,0,0,0" Click="closeButton_Click"/>
+        <Grid x:Name="mainGrid" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,24,0,0" RenderTransformOrigin="0.493,0.412">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" MinHeight="200"/>
+                <RowDefinition Height="10"/>
+                <RowDefinition Height="150" MinHeight="100"/>
+            </Grid.RowDefinitions>
+
+            <Button x:Name="mainButton" Grid.Row="0" Style="{StaticResource MidiWindowMainButton}" HorizontalAlignment="Left" VerticalAlignment="Top" Height="21" Width="21" Margin="14,7,0,0"/>
+            <Canvas x:Name="keysCanvas" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="48" Margin="0,41,0,0" Background="White" ClipToBounds="True"
+                    Height="{Binding Path=viewPortHeight, Mode=OneWay}"/>
+            <Canvas x:Name="timelineCanvas" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="20" Margin="48,20,20,0" Background="{StaticResource TimelineBrushNormal}" ClipToBounds="True"/>
+            <Canvas x:Name="notesCanvas" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="48,40,20,0" Background="White" ClipToBounds="True"
+                    MouseLeftButtonDown="notesCanvas_MouseLeftButtonDown" MouseRightButtonDown="notesCanvas_MouseRightButtonDown"
+                    MouseLeftButtonUp="notesCanvas_MouseLeftButtonUp" MouseMove="notesCanvas_MouseMove" SizeChanged="notesCanvas_SizeChanged"/>
+            <ScrollBar x:Name="horizontalScroll" Grid.Row="0" Style="{StaticResource OUScrollBar}" HorizontalAlignment="Stretch" VerticalAlignment="Top"
+                       Height="20" Margin="48,0,20,0" Orientation="Horizontal" Minimum="0" Maximum="1" Value="0" ViewportSize="0.2" />
+            <ScrollBar x:Name="notesVerticalScroll" Grid.Row="0" Style="{StaticResource OUScrollBar}" HorizontalAlignment="Right" VerticalAlignment="Stretch"
+                       Width="20" Margin="0,40,0,0" Orientation="Vertical" Minimum="0" Maximum="1" Value="0.5" ViewportSize="0.2"
+                       Scroll="notesVerticalScroll_Scroll" MouseWheel="notesVerticalScroll_MouseWheel"/>
+            <Rectangle x:Name="navigateDrag" HorizontalAlignment="Right" VerticalAlignment="Top" Width="20" Height="20" Margin="0,0,0,0" Fill="Wheat"
+                       MouseLeftButtonDown="navigateDrag_MouseLeftButtonDown"/>
+            <Rectangle x:Name="zoomDrag" HorizontalAlignment="Right" VerticalAlignment="Top" Width="20" Height="20" Margin="0,20,0,0" Fill="Wheat"
+                       MouseLeftButtonDown="zoomDrag_MouseLeftButtonDown"/>
+            <Border x:Name="notesCanvasShadow" Grid.Row="0" Background="{x:Null}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="48,20,20,0" BorderThickness="0" ClipToBounds="True">
+                <Border Background="{x:Null}" BorderBrush="Black" BorderThickness="1" Margin="-1">
+                    <Border.Effect>
+                        <DropShadowEffect Color="Black" ShadowDepth="0" BlurRadius="5" Opacity="0.75"/>
+                    </Border.Effect>
+                </Border>
+            </Border>
+            <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="10" Margin="0,0,0,0" Background="White" Focusable="False"/>
+            <Canvas x:Name="CCCanvas" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="48" Margin="0,0,0,1" Background="White" ClipToBounds="True"/>
+            <Canvas x:Name="expCanvas" Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="48,0,20,1" Background="White" ClipToBounds="True"/>
+            <ScrollBar x:Name="expVerticalScroll" Grid.Row="2" Style="{StaticResource OUScrollBar}" HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="20" Margin="0,0,0,20" Orientation="Vertical"/>
+            <Border x:Name="expCanvasShadow" Grid.Row="2" Background="{x:Null}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="48,0,20,1" BorderThickness="0" ClipToBounds="True">
+                <Border Background="{x:Null}" BorderBrush="Black" BorderThickness="1" Margin="-1">
+                    <Border.Effect>
+                        <DropShadowEffect Color="Black" ShadowDepth="0" BlurRadius="5" Opacity="0.75"/>
+                    </Border.Effect>
+                </Border>
+            </Border>
+        </Grid>
+        <Border x:Name="canvasBorder" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0" BorderBrush="Gray" BorderThickness="0"/>
+    </Grid>
+</Window>
