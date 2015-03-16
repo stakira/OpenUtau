@@ -33,8 +33,6 @@ namespace OpenUtau.UI
         Nullable<Point> _dragStart = null;
         Rectangle _dragShape = null;
 
-        Nullable<Point> _navDragStart = null;
-
         // Canvas states
         NotesCanvasModel _nCM;
 
@@ -59,6 +57,7 @@ namespace OpenUtau.UI
             _keyNames = new List<TextBlock>();
             _keys = new List<Rectangle>();
             _keyTracks = new List<Rectangle>();
+
             for (int i = 0; i < NotesCanvasModel.numNotesHeight; i++)
             {
                 _keys.Add(new Rectangle() { Fill = NotesCanvasModel.getNoteBackgroundBrush(i), Width = 48, Height = _nCM.noteHeight });
@@ -68,9 +67,40 @@ namespace OpenUtau.UI
                 _keyTracks.Add(new Rectangle() { Fill = NotesCanvasModel.getNoteTrackBrush(i), Width = notesCanvas.ActualWidth, Height = _nCM.noteHeight, IsHitTestVisible = false});
                 notesCanvas.Children.Add(_keyTracks[i]);
             }
-                
+
+            updateZoomControl();
+            updateCanvas();
         }
-        
+
+        private void updateCanvas()
+        {
+            notesVerticalScroll.ViewportSize = _nCM.getViewportSize(notesCanvas.ActualHeight);
+            notesVerticalScroll.SmallChange = notesVerticalScroll.ViewportSize / 10;
+            notesVerticalScroll.LargeChange = notesVerticalScroll.ViewportSize;
+
+            //horizontalScroll.ViewportSize = _nCM.getViewportSize(notesCanvas.ActualHeight);
+            horizontalScroll.SmallChange = horizontalScroll.ViewportSize / 10;
+            horizontalScroll.LargeChange = horizontalScroll.ViewportSize;
+
+            // TODO : Improve performance (Maybe?)
+            for (int i = 0; i < _keyNames.Count; i++)
+            {
+                double notePosInView = _nCM.noteToCanvas(i, notesVerticalScroll.Value, notesCanvas.ActualHeight);
+                Canvas.SetLeft(_keyNames[i], 0);
+                Canvas.SetTop(_keyNames[i], notePosInView + (_nCM.noteHeight - 16) / 2);
+                if (_nCM.noteHeight > 12) _keyNames[i].Visibility = System.Windows.Visibility.Visible;
+                else _keyNames[i].Visibility = System.Windows.Visibility.Hidden;
+
+                _keys[i].Height = _nCM.noteHeight;
+                Canvas.SetLeft(_keys[i], 0);
+                Canvas.SetTop(_keys[i], notePosInView);
+
+                _keyTracks[i].Width = notesCanvas.ActualWidth;
+                _keyTracks[i].Height = _nCM.noteHeight;
+                Canvas.SetTop(_keyTracks[i], notePosInView);
+            }
+        }
+
         #region Avoid hiding task bar upon maximalisation
 
         private static System.IntPtr WindowProc(
@@ -327,19 +357,22 @@ namespace OpenUtau.UI
 
         #endregion
 
+        # region Notes Vertical Scrollbar Event Handlers
+
         private void notesVerticalScroll_Scroll(object sender, System.Windows.Controls.Primitives.ScrollEventArgs e)
         {
-            double current_note_size = 24;
-            double current_note_window_height = this.notesCanvas.ActualHeight;
-            double current_position = (1.0 - notesVerticalScroll.Value) * (12.0 * 11.0 * current_note_size - current_note_window_height);
-            UpdateCanvas();
+            updateCanvas();
         }
 
         private void notesVerticalScroll_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             this.notesVerticalScroll.Value = this.notesVerticalScroll.Value - 0.0002 * e.Delta;
-            UpdateCanvas();
+            updateCanvas();
         }
+
+        # endregion
+
+        # region Note Canvas Event Handlers
 
         private void notesCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -376,7 +409,6 @@ namespace OpenUtau.UI
         {
             _dragStart = null;
             _dragShape = null;
-            _navDragStart = null;
         }
 
         private void notesCanvas_MouseMove(object sender, MouseEventArgs e)
@@ -393,36 +425,221 @@ namespace OpenUtau.UI
         {
             _nCM.viewPortHeight = notesCanvas.ActualHeight;
             _nCM.viewPortWidth = notesCanvas.ActualWidth;
-            UpdateCanvas();
+            updateCanvas();
         }
 
-        private void UpdateCanvas()
+        # endregion
+
+        #region Navigate Drag Event Handlers
+
+        bool _navDrag = false;
+        double _navDragLastX;
+        double _navDragLastY;
+
+        [DllImport("User32.dll")]
+        private static extern bool SetCursorPos(int X, int Y);
+
+        private void setCursorPos(Point point)
         {
-            for (int i = 0; i < _keyNames.Count; i++)
-            {
-                double notePosInView = _nCM.getNotePosInView(i, _nCM.verticalValToPos(notesVerticalScroll.Value));
-                Canvas.SetLeft(_keyNames[i], 0);
-                Canvas.SetTop(_keyNames[i], notePosInView + 3);
-
-                _keys[i].Height = _nCM.noteHeight;
-                Canvas.SetLeft(_keys[i], 0);
-                Canvas.SetTop(_keys[i], notePosInView);
-
-                _keyTracks[i].Width = notesCanvas.ActualWidth;
-                _keyTracks[i].Height = _nCM.noteHeight;
-                Canvas.SetTop(_keyTracks[i], notePosInView);
-            }
+            SetCursorPos((int)(PointToScreen(point).X), (int)(PointToScreen(point).Y));
         }
 
         private void navigateDrag_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            _navDragStart = e.GetPosition(this);
-            titleLabel.Content = e.GetPosition(this).ToString();
+            FrameworkElement el = (FrameworkElement)sender;
+            el.CaptureMouse();
+
+            _navDrag = true;
+            _navDragLastX = e.GetPosition(el).X;
+            _navDragLastY = e.GetPosition(el).Y;
+
+            Mouse.OverrideCursor = Cursors.None;
         }
 
-        private void zoomDrag_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void navigateDrag_MouseMove(object sender, MouseEventArgs e)
         {
-            titleLabel.Content = e.GetPosition(this).ToString();
+            if (_navDrag)
+            {
+                const double navigateSpeed = 0.001;
+
+                bool cursorMoved = false;
+                FrameworkElement el = (FrameworkElement)sender;
+
+                this.notesVerticalScroll.Value += navigateSpeed * (e.GetPosition(el).Y - _navDragLastY);
+                // this.horizontalScroll.Value += navigateSpeed * (e.GetPosition(el).X - _navDragLastX);
+
+                updateCanvas();
+
+                _navDragLastX = e.GetPosition(el).X;
+                _navDragLastY = e.GetPosition(el).Y;
+
+                // Restrict mouse position
+                if (e.GetPosition(el).X < 0)
+                {
+                    cursorMoved = true;
+                    _navDragLastX += el.ActualWidth;
+                }
+                else if (e.GetPosition(el).X > el.ActualWidth)
+                {
+                    cursorMoved = true;
+                    _navDragLastX -= el.ActualWidth;
+                }
+
+                if (e.GetPosition(el).Y < 0)
+                {
+                    cursorMoved = true;
+                    _navDragLastY += el.ActualHeight;
+                }
+                else if (e.GetPosition(el).Y > el.ActualHeight)
+                {
+                    cursorMoved = true;
+                    _navDragLastY -= el.ActualHeight;
+                }
+
+                if (cursorMoved)
+                {
+                    setCursorPos(el.TransformToAncestor(this).Transform(new Point(_navDragLastX, _navDragLastY)));
+                }
+            }
+        }
+
+        private void navigateDrag_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (_navDrag)
+            {
+                ((FrameworkElement)sender).ReleaseMouseCapture();
+                Mouse.OverrideCursor = Cursors.Arrow;
+                _navDrag = false;
+            }
+        }
+
+        #endregion
+
+        #region Vertical Zoom Control Event Handlers
+
+        bool _zoomDrag = false;
+        double _zoomDragLastX;
+        double _zoomDragLastY;
+
+        private void updateZoomControl()
+        {
+            double offset = 7 * Math.Log(NotesCanvasModel.noteMaxHeight / _nCM.noteHeight, 2)
+                / Math.Log(NotesCanvasModel.noteMaxHeight / NotesCanvasModel.noteMinHeight, 2);
+            double size = offset < 4 ? 4 : 8 - offset;
+
+            ((Path)this.zoomControlStack.Children[0]).Data = Geometry.Parse(
+                " M " + (8 - size) + " " + (offset + size) +
+                " L 8 " + (offset).ToString() +
+                " L " + (8 + size) + " " + (offset + size) +
+                " M " + (8 - size) + " " + (16 - size - offset) +
+                " L 8 " + (16 - offset) +
+                " L " + (8 + size) + " " + (16 - size - offset));
+        }
+
+        private void zoomControl_Zoom(double delta)
+        {
+            double newNoteHeight = _nCM.noteHeight * (1.0 + delta);
+
+            if (newNoteHeight < NotesCanvasModel.noteMinHeight)
+                newNoteHeight = NotesCanvasModel.noteMinHeight;
+            else if (newNoteHeight > NotesCanvasModel.noteMaxHeight)
+                newNoteHeight = NotesCanvasModel.noteMaxHeight;
+
+            // Keep the center of viewport
+
+            _nCM.noteHeight = newNoteHeight;
+
+            updateZoomControl();
+            updateCanvas();
+        }
+
+        private void zoomControl_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            const double zoomSpeed = 0.001;
+            zoomControl_Zoom(zoomSpeed * e.Delta);
+        }
+
+        private void zoomControl_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            FrameworkElement el = (FrameworkElement)sender;
+            el.CaptureMouse();
+
+            _zoomDrag = true;
+            _zoomDragLastX = e.GetPosition(el).X;
+            _zoomDragLastY = e.GetPosition(el).Y;
+
+            Mouse.OverrideCursor = Cursors.None;
+        }
+
+        private void zoomControl_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (_zoomDrag)
+            {
+                ((FrameworkElement)sender).ReleaseMouseCapture();
+                Mouse.OverrideCursor = Cursors.Arrow;
+                _zoomDrag = false;
+            }
+        }
+
+        private void zoomControl_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (_zoomDrag)
+            {
+                const double zoomSpeed = 0.002;
+
+                bool cursorMoved = false;
+                FrameworkElement el = (FrameworkElement)sender;
+
+                zoomControl_Zoom(zoomSpeed * (_zoomDragLastY - e.GetPosition(el).Y));
+
+                _navDragLastX = e.GetPosition(el).X;
+                _navDragLastY = e.GetPosition(el).Y;
+
+                // Restrict mouse position
+                if (e.GetPosition(el).X < 0)
+                {
+                    cursorMoved = true;
+                    _zoomDragLastX += el.ActualWidth;
+                }
+                else if (e.GetPosition(el).X > el.ActualWidth)
+                {
+                    cursorMoved = true;
+                    _zoomDragLastX -= el.ActualWidth;
+                }
+
+                if (e.GetPosition(el).Y < 0)
+                {
+                    cursorMoved = true;
+                    _zoomDragLastY += el.ActualHeight;
+                }
+                else if (e.GetPosition(el).Y > el.ActualHeight)
+                {
+                    cursorMoved = true;
+                    _zoomDragLastY -= el.ActualHeight;
+                }
+
+                if (cursorMoved)
+                {
+                    setCursorPos(el.TransformToAncestor(this).Transform(new Point(_zoomDragLastX, _zoomDragLastY)));
+                }
+            }
+        }
+
+        private void zoomControlStack_MouseEnter(object sender, MouseEventArgs e)
+        {
+            ((Path)zoomControlStack.Children[0]).Stroke = (SolidColorBrush)System.Windows.Application.Current.FindResource("ScrollBarBrushActive");
+        }
+
+        private void zoomControlStack_MouseLeave(object sender, MouseEventArgs e)
+        {
+            ((Path)zoomControlStack.Children[0]).Stroke = (SolidColorBrush)System.Windows.Application.Current.FindResource("ScrollBarBrushNormal");
+        }
+
+        #endregion
+
+        private void keysCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            titleLabel.Content = _nCM.getNoteString(_nCM.canvasToNote(e.GetPosition(keysCanvas).Y, notesVerticalScroll.Value, keysCanvas.ActualHeight));
         }
     }
 }

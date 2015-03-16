@@ -101,4 +101,16 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <ControlTemplate x:Key="NavigateDrag" TargetType="Control">
+        <StackPanel Background="{TemplateBinding Background}">
+            <Path Name="Path" Stretch="None" Margin="2,2,2,2" Fill="{StaticResource WindowButtonBrushNormal}" Data="M 0 8 L 3 11 L 3 5 Z M 8 0 L 5 3 L 11 3 Z M 16 8 L 13 11 L 13 5 Z M 8 16 L 5 13 L 11 13 Z" />
+        </StackPanel>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="true">
+                <Setter TargetName="Path" Property="Fill" Value="{StaticResource ScrollBarBrushActive}"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
 </ResourceDictionary>

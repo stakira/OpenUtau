@@ -12,10 +12,10 @@ namespace OpenUtau.UI.Models
     {
         public const double noteMaxWidth = 100;
         public const double noteMinWidth = 10;
-        public const double noteMaxHeight = 100;
-        public const double noteMinHeight = 10;
+        public const double noteMaxHeight = 128;
+        public const double noteMinHeight = 8;
 
-        public const double numNotesHeight = 12 * 11;
+        public const int numNotesHeight = 12 * 11;
 
         public double noteWidth { get; set; } // Actually a quater beat
         public double noteHeight { get; set; }
@@ -38,34 +38,27 @@ namespace OpenUtau.UI.Models
             noteStrings = new String[12] { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
         }
 
-        public double verticalValToPos(double val)
+        public double getViewportSize(double viewHeight, double noteHeight=0)
         {
-            return val * (numNotesHeight * noteHeight - viewPortHeight);
+            if (noteHeight == 0)
+                return viewHeight / (numNotesHeight * this.noteHeight - viewHeight);
+            else
+                return viewHeight / (numNotesHeight * noteHeight - viewHeight);
         }
 
-        public double verticalPosToVal(double pos)
+        public double getViewOffset(double scrollValue, double viewHeight)
         {
-            return pos / (numNotesHeight * noteHeight - viewPortHeight);
+            return scrollValue * (numNotesHeight * noteHeight - viewHeight);
         }
 
-        public double horizontalValToPos(double val)
+        public double noteToCanvas(int noteNo, double scrollValue, double viewHeight)
         {
-            return val * (numNotesWidth * noteWidth - viewPortWidth);
+            return (numNotesHeight - noteNo - 1) * noteHeight - getViewOffset(scrollValue, viewHeight);
         }
 
-        public double horizontalPosToVal(double pos)
+        public int canvasToNote(double y, double scrollValue, double viewHeight)
         {
-            return pos / (numNotesWidth * noteWidth - viewPortWidth);
-        }
-
-        public int getFirstNoteInView(double pos)
-        {
-            return (int)Math.Floor(pos / noteHeight);
-        }
-
-        public double getNotePosInView(int noteNo, double pos)
-        {
-            return (numNotesHeight - noteNo - 1) * noteHeight - pos;
+            return numNotesHeight - 1 - (int)((y + getViewOffset(scrollValue, viewHeight)) / noteHeight);
         }
 
         public String getNoteString(int noteNo)

@@ -24,7 +24,7 @@
 
             <Button x:Name="mainButton" Grid.Row="0" Style="{StaticResource MidiWindowMainButton}" HorizontalAlignment="Left" VerticalAlignment="Top" Height="21" Width="21" Margin="14,7,0,0"/>
             <Canvas x:Name="keysCanvas" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="48" Margin="0,41,0,0" Background="White" ClipToBounds="True"
-                    Height="{Binding Path=viewPortHeight, Mode=OneWay}"/>
+                    Height="{Binding Path=viewPortHeight, Mode=OneWay}" MouseLeftButtonDown="keysCanvas_MouseLeftButtonDown"/>
             <Canvas x:Name="timelineCanvas" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="20" Margin="48,20,20,0" Background="{StaticResource TimelineBrushNormal}" ClipToBounds="True"/>
             <Canvas x:Name="notesCanvas" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="48,40,20,0" Background="White" ClipToBounds="True"
                     MouseLeftButtonDown="notesCanvas_MouseLeftButtonDown" MouseRightButtonDown="notesCanvas_MouseRightButtonDown"
@@ -32,12 +32,16 @@
             <ScrollBar x:Name="horizontalScroll" Grid.Row="0" Style="{StaticResource OUScrollBar}" HorizontalAlignment="Stretch" VerticalAlignment="Top"
                        Height="20" Margin="48,0,20,0" Orientation="Horizontal" Minimum="0" Maximum="1" Value="0" ViewportSize="0.2" />
             <ScrollBar x:Name="notesVerticalScroll" Grid.Row="0" Style="{StaticResource OUScrollBar}" HorizontalAlignment="Right" VerticalAlignment="Stretch"
-                       Width="20" Margin="0,40,0,0" Orientation="Vertical" Minimum="0" Maximum="1" Value="0.5" ViewportSize="0.2"
+                       Width="20" Margin="0,40,0,0" Orientation="Vertical" Minimum="0" Maximum="1" Value="0.5"
                        Scroll="notesVerticalScroll_Scroll" MouseWheel="notesVerticalScroll_MouseWheel"/>
-            <Rectangle x:Name="navigateDrag" HorizontalAlignment="Right" VerticalAlignment="Top" Width="20" Height="20" Margin="0,0,0,0" Fill="Wheat"
-                       MouseLeftButtonDown="navigateDrag_MouseLeftButtonDown"/>
-            <Rectangle x:Name="zoomDrag" HorizontalAlignment="Right" VerticalAlignment="Top" Width="20" Height="20" Margin="0,20,0,0" Fill="Wheat"
-                       MouseLeftButtonDown="zoomDrag_MouseLeftButtonDown"/>
+            <Control x:Name="navigateDrag" Template="{StaticResource NavigateDrag}" HorizontalAlignment="Right" VerticalAlignment="Top" Width="20" Height="20" Margin="0,0,0,0" Background="White"
+                       MouseLeftButtonDown="navigateDrag_MouseLeftButtonDown" MouseLeftButtonUp="navigateDrag_MouseLeftButtonUp" MouseMove="navigateDrag_MouseMove"/>
+            <StackPanel x:Name="zoomControlStack" HorizontalAlignment="Right" VerticalAlignment="Top" Width="20" Height="20" Margin="0,20,0,0" Background="White"
+                       MouseWheel="zoomControl_MouseWheel" MouseLeftButtonDown="zoomControl_MouseLeftButtonDown" MouseLeftButtonUp="zoomControl_MouseLeftButtonUp" MouseMove="zoomControl_MouseMove" MouseEnter="zoomControlStack_MouseEnter" MouseLeave="zoomControlStack_MouseLeave">
+                <Path Name="zoomControlPath" Margin="2" Stroke="{StaticResource ScrollBarBrushNormal}" StrokeThickness="1.75" StrokeStartLineCap="Flat" 
+                      StrokeEndLineCap="Flat" StrokeLineJoin="Miter" StrokeMiterLimit="0" Data="">
+                </Path>
+            </StackPanel>
             <Border x:Name="notesCanvasShadow" Grid.Row="0" Background="{x:Null}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="48,20,20,0" BorderThickness="0" ClipToBounds="True">
                 <Border Background="{x:Null}" BorderBrush="Black" BorderThickness="1" Margin="-1">
                     <Border.Effect>
