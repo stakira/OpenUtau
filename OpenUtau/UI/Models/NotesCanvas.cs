@@ -10,8 +10,8 @@ namespace OpenUtau.UI.Models
 {
     class NotesCanvasModel : INotifyPropertyChanged
     {
-        public const double noteMaxWidth = 100;
-        public const double noteMinWidth = 10;
+        public const double noteMaxWidth = 256;
+        public const double noteMinWidth = 8;
         public const double noteMaxHeight = 128;
         public const double noteMinHeight = 8;
 
@@ -25,20 +25,26 @@ namespace OpenUtau.UI.Models
         public double viewPortWidth { get; set; }
         public double viewPortHeight { get; set; }
 
-        public double numNotesWidth { get; set; }
+        public const int numNotesWidthMin = 128; // 32 beats minimal
+        public int numNotesWidthScroll;
+        public int numNotesWidth;
 
         public string[] noteStrings;
 
         public NotesCanvasModel()
         {
-            noteWidth = 32;
             noteHeight = 22;
             verticalPosition = 0.5;
+
+            noteWidth = 32;
+            numNotesWidth = numNotesWidthMin;
+            numNotesWidthScroll = numNotesWidthMin;
             horizontalPosition = 0;
+
             noteStrings = new String[12] { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
         }
 
-        public double getViewportSize(double viewHeight, double noteHeight=0)
+        public double getViewportSizeY(double viewHeight, double noteHeight=0)
         {
             if (noteHeight == 0)
                 return viewHeight / (numNotesHeight * this.noteHeight - viewHeight);
@@ -46,19 +52,19 @@ namespace OpenUtau.UI.Models
                 return viewHeight / (numNotesHeight * noteHeight - viewHeight);
         }
 
-        public double getViewOffset(double scrollValue, double viewHeight)
+        public double getViewOffsetY(double scrollValue, double viewHeight)
         {
             return scrollValue * (numNotesHeight * noteHeight - viewHeight);
         }
 
-        public double noteToCanvas(int noteNo, double scrollValue, double viewHeight)
+        public double keyToCanvas(int noteNo, double scrollValue, double viewHeight)
         {
-            return (numNotesHeight - noteNo - 1) * noteHeight - getViewOffset(scrollValue, viewHeight);
+            return (numNotesHeight - noteNo - 1) * noteHeight - getViewOffsetY(scrollValue, viewHeight);
         }
 
-        public int canvasToNote(double y, double scrollValue, double viewHeight)
+        public int canvasToKey(double y, double scrollValue, double viewHeight)
         {
-            return numNotesHeight - 1 - (int)((y + getViewOffset(scrollValue, viewHeight)) / noteHeight);
+            return numNotesHeight - 1 - (int)((y + getViewOffsetY(scrollValue, viewHeight)) / noteHeight);
         }
 
         public String getNoteString(int noteNo)

@@ -40,6 +40,11 @@ namespace OpenUtau.UI
         List<Rectangle> _keys;
         List<Rectangle> _keyTracks;
 
+        bool _snapPosition = true;
+        bool _snapLength = true;
+
+        List<Line> _tickLines;
+
         public MidiWindow()
         {
             InitializeComponent();
@@ -57,6 +62,7 @@ namespace OpenUtau.UI
             _keyNames = new List<TextBlock>();
             _keys = new List<Rectangle>();
             _keyTracks = new List<Rectangle>();
+            _tickLines = new List<Line>();
 
             for (int i = 0; i < NotesCanvasModel.numNotesHeight; i++)
             {
@@ -68,13 +74,19 @@ namespace OpenUtau.UI
                 notesCanvas.Children.Add(_keyTracks[i]);
             }
 
+            for (int i = 0; i < 64; i++)
+            {
+                _tickLines.Add(new Line() { Stroke = Brushes.Gray, StrokeThickness = 0.75, X1 = 0, Y1 = 0, X2 = 0, Y2 = 400, SnapsToDevicePixels = true });
+                notesCanvas.Children.Add(_tickLines[i]);
+            }
+
             updateZoomControl();
             updateCanvas();
         }
 
         private void updateCanvas()
         {
-            notesVerticalScroll.ViewportSize = _nCM.getViewportSize(notesCanvas.ActualHeight);
+            notesVerticalScroll.ViewportSize = _nCM.getViewportSizeY(notesCanvas.ActualHeight);
             notesVerticalScroll.SmallChange = notesVerticalScroll.ViewportSize / 10;
             notesVerticalScroll.LargeChange = notesVerticalScroll.ViewportSize;
 
@@ -85,7 +97,7 @@ namespace OpenUtau.UI
             // TODO : Improve performance (Maybe?)
             for (int i = 0; i < _keyNames.Count; i++)
             {
-                double notePosInView = _nCM.noteToCanvas(i, notesVerticalScroll.Value, notesCanvas.ActualHeight);
+                double notePosInView = _nCM.keyToCanvas(i, notesVerticalScroll.Value, notesCanvas.ActualHeight);
                 Canvas.SetLeft(_keyNames[i], 0);
                 Canvas.SetTop(_keyNames[i], notePosInView + (_nCM.noteHeight - 16) / 2);
                 if (_nCM.noteHeight > 12) _keyNames[i].Visibility = System.Windows.Visibility.Visible;
@@ -98,6 +110,13 @@ namespace OpenUtau.UI
                 _keyTracks[i].Width = notesCanvas.ActualWidth;
                 _keyTracks[i].Height = _nCM.noteHeight;
                 Canvas.SetTop(_keyTracks[i], notePosInView);
+            }
+
+            for (int i = 0; i < 64; i++)
+            {
+                _tickLines[i].Y2 = notesCanvas.ActualHeight;
+                Canvas.SetTop(_tickLines[i], 0);
+                Canvas.SetLeft(_tickLines[i], (i + 1) * _nCM.noteWidth);
             }
         }
 
@@ -294,7 +313,7 @@ namespace OpenUtau.UI
 
         #endregion
 
-        #region Window button event handlers
+        #region Window Buttons
 
         private void minButton_Click(object sender, RoutedEventArgs e)
         {
@@ -357,7 +376,7 @@ namespace OpenUtau.UI
 
         #endregion
 
-        # region Notes Vertical Scrollbar Event Handlers
+        # region Notes Vertical Scrollbar
 
         private void notesVerticalScroll_Scroll(object sender, System.Windows.Controls.Primitives.ScrollEventArgs e)
         {
@@ -372,7 +391,21 @@ namespace OpenUtau.UI
 
         # endregion
 
-        # region Note Canvas Event Handlers
+        # region Horizontal Scrollbar
+
+        private void horizontalScroll_Scroll(object sender, System.Windows.Controls.Primitives.ScrollEventArgs e)
+        {
+
+        }
+
+        private void horizontalScroll_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+
+        }
+
+        # endregion
+
+        # region Note Canvas
 
         private void notesCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -430,7 +463,7 @@ namespace OpenUtau.UI
 
         # endregion
 
-        #region Navigate Drag Event Handlers
+        #region Navigate Drag
 
         bool _navDrag = false;
         double _navDragLastX;
@@ -515,7 +548,7 @@ namespace OpenUtau.UI
 
         #endregion
 
-        #region Vertical Zoom Control Event Handlers
+        #region Vertical Zoom Control
 
         bool _zoomDrag = false;
         double _zoomDragLastX;
@@ -637,9 +670,18 @@ namespace OpenUtau.UI
 
         #endregion
 
+        # region Horizontal Zoom Control
+
+        private void timelineCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+
+        }
+
+        # endregion
+
         private void keysCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            titleLabel.Content = _nCM.getNoteString(_nCM.canvasToNote(e.GetPosition(keysCanvas).Y, notesVerticalScroll.Value, keysCanvas.ActualHeight));
+            titleLabel.Content = _nCM.getNoteString(_nCM.canvasToKey(e.GetPosition(keysCanvas).Y, notesVerticalScroll.Value, keysCanvas.ActualHeight));
         }
     }
 }

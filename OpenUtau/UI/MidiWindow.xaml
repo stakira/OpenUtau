@@ -25,12 +25,12 @@
             <Button x:Name="mainButton" Grid.Row="0" Style="{StaticResource MidiWindowMainButton}" HorizontalAlignment="Left" VerticalAlignment="Top" Height="21" Width="21" Margin="14,7,0,0"/>
             <Canvas x:Name="keysCanvas" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="48" Margin="0,41,0,0" Background="White" ClipToBounds="True"
                     Height="{Binding Path=viewPortHeight, Mode=OneWay}" MouseLeftButtonDown="keysCanvas_MouseLeftButtonDown"/>
-            <Canvas x:Name="timelineCanvas" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="20" Margin="48,20,20,0" Background="{StaticResource TimelineBrushNormal}" ClipToBounds="True"/>
+            <Canvas x:Name="timelineCanvas" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="20" Margin="48,20,20,0" Background="{StaticResource TimelineBrushNormal}" ClipToBounds="True" MouseWheel="timelineCanvas_MouseWheel"/>
             <Canvas x:Name="notesCanvas" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="48,40,20,0" Background="White" ClipToBounds="True"
                     MouseLeftButtonDown="notesCanvas_MouseLeftButtonDown" MouseRightButtonDown="notesCanvas_MouseRightButtonDown"
                     MouseLeftButtonUp="notesCanvas_MouseLeftButtonUp" MouseMove="notesCanvas_MouseMove" SizeChanged="notesCanvas_SizeChanged"/>
             <ScrollBar x:Name="horizontalScroll" Grid.Row="0" Style="{StaticResource OUScrollBar}" HorizontalAlignment="Stretch" VerticalAlignment="Top"
-                       Height="20" Margin="48,0,20,0" Orientation="Horizontal" Minimum="0" Maximum="1" Value="0" ViewportSize="0.2" />
+                       Height="20" Margin="48,0,20,0" Orientation="Horizontal" Minimum="0" Maximum="1" Value="0" ViewportSize="0.2" Scroll="horizontalScroll_Scroll" MouseWheel="horizontalScroll_MouseWheel" />
             <ScrollBar x:Name="notesVerticalScroll" Grid.Row="0" Style="{StaticResource OUScrollBar}" HorizontalAlignment="Right" VerticalAlignment="Stretch"
                        Width="20" Margin="0,40,0,0" Orientation="Vertical" Minimum="0" Maximum="1" Value="0.5"
                        Scroll="notesVerticalScroll_Scroll" MouseWheel="notesVerticalScroll_MouseWheel"/>
