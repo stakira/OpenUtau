@@ -30,9 +30,6 @@ namespace OpenUtau.UI
         Thickness _activeBorderThickness;
         Thickness _inactiveBorderThickness;
 
-        Nullable<Point> _dragStart = null;
-        Rectangle _dragShape = null;
-
         // Canvas states
         NotesCanvasModel _nCM;
 
@@ -40,10 +37,15 @@ namespace OpenUtau.UI
         List<Rectangle> _keys;
         List<Rectangle> _keyTracks;
 
+        // TODO : support unsnapped move / add / resize
         bool _snapPosition = true;
         bool _snapLength = true;
 
-        List<Line> _tickLines;
+        double _lastNoteLength = 1;
+
+        List<Line> _qnoteLines;
+        List<Line> _beatLines;
+        List<TextBlock> _barNumbers;
 
         public MidiWindow()
         {
@@ -62,39 +64,42 @@ namespace OpenUtau.UI
             _keyNames = new List<TextBlock>();
             _keys = new List<Rectangle>();
             _keyTracks = new List<Rectangle>();
-            _tickLines = new List<Line>();
+            _qnoteLines = new List<Line>();
+            _beatLines = new List<Line>();
+            _barNumbers = new List<TextBlock>();
 
             for (int i = 0; i < NotesCanvasModel.numNotesHeight; i++)
             {
-                _keys.Add(new Rectangle() { Fill = NotesCanvasModel.getNoteBackgroundBrush(i), Width = 48, Height = _nCM.noteHeight });
+                _keys.Add(new Rectangle() { Width = 48, Height = _nCM.noteHeight });
+                _keys[i].Style = NotesCanvasModel.getKeyStyle(i);
                 keysCanvas.Children.Add(_keys[i]);
-                _keyNames.Add(new TextBlock() { Text = _nCM.getNoteString(i), Foreground = NotesCanvasModel.getNoteBrush(i), Width = 42, TextAlignment = TextAlignment.Right, IsHitTestVisible = false});
+                _keyNames.Add(new TextBlock() { Text = _nCM.getNoteString(i), Foreground = NotesCanvasModel.getNoteBrush(i), Width = 42, TextAlignment = TextAlignment.Right, IsHitTestVisible = false });
                 keysCanvas.Children.Add(_keyNames[i]);
-                _keyTracks.Add(new Rectangle() { Fill = NotesCanvasModel.getNoteTrackBrush(i), Width = notesCanvas.ActualWidth, Height = _nCM.noteHeight, IsHitTestVisible = false});
+                _keyTracks.Add(new Rectangle() { Fill = NotesCanvasModel.getNoteTrackBrush(i), Width = notesCanvas.ActualWidth, Height = _nCM.noteHeight, IsHitTestVisible = false });
                 notesCanvas.Children.Add(_keyTracks[i]);
             }
 
-            for (int i = 0; i < 64; i++)
-            {
-                _tickLines.Add(new Line() { Stroke = Brushes.Gray, StrokeThickness = 0.75, X1 = 0, Y1 = 0, X2 = 0, Y2 = 400, SnapsToDevicePixels = true });
-                notesCanvas.Children.Add(_tickLines[i]);
-            }
-
-            updateZoomControl();
             updateCanvas();
         }
 
         private void updateCanvas()
         {
+            // TODO : Improve performance
+            // Update canvas
+            if (notesCanvas.ActualHeight > NotesCanvasModel.numNotesHeight * _nCM.noteHeight)
+                _nCM.noteHeight = notesCanvas.ActualHeight / NotesCanvasModel.numNotesHeight;
+
+            if (notesCanvas.ActualWidth > _nCM.numNotesWidthScroll * _nCM.noteWidth)
+                _nCM.noteWidth = notesCanvas.ActualWidth / _nCM.numNotesWidthScroll;
+
             notesVerticalScroll.ViewportSize = _nCM.getViewportSizeY(notesCanvas.ActualHeight);
             notesVerticalScroll.SmallChange = notesVerticalScroll.ViewportSize / 10;
             notesVerticalScroll.LargeChange = notesVerticalScroll.ViewportSize;
 
-            //horizontalScroll.ViewportSize = _nCM.getViewportSize(notesCanvas.ActualHeight);
+            horizontalScroll.ViewportSize = _nCM.getViewportSizeX(notesCanvas.ActualWidth);
             horizontalScroll.SmallChange = horizontalScroll.ViewportSize / 10;
             horizontalScroll.LargeChange = horizontalScroll.ViewportSize;
 
-            // TODO : Improve performance (Maybe?)
             for (int i = 0; i < _keyNames.Count; i++)
             {
                 double notePosInView = _nCM.keyToCanvas(i, notesVerticalScroll.Value, notesCanvas.ActualHeight);
@@ -112,12 +117,10 @@ namespace OpenUtau.UI
                 Canvas.SetTop(_keyTracks[i], notePosInView);
             }
 
-            for (int i = 0; i < 64; i++)
-            {
-                _tickLines[i].Y2 = notesCanvas.ActualHeight;
-                Canvas.SetTop(_tickLines[i], 0);
-                Canvas.SetLeft(_tickLines[i], (i + 1) * _nCM.noteWidth);
-            }
+            // Update components
+            updateNoteLines();
+            updateNotes();
+            updateZoomControl();
         }
 
         #region Avoid hiding task bar upon maximalisation
@@ -172,7 +175,7 @@ namespace OpenUtau.UI
             System.IntPtr handle = (new WinInterop.WindowInteropHelper(this)).Handle;
             WinInterop.HwndSource.FromHwnd(handle).AddHook(new WinInterop.HwndSourceHook(WindowProc));
         }
-        
+
         [StructLayout(LayoutKind.Sequential)]
         public struct POINT
         {
@@ -208,7 +211,7 @@ namespace OpenUtau.UI
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
         public class MONITORINFO
         {
-            public int cbSize = Marshal.SizeOf(typeof(MONITORINFO));       
+            public int cbSize = Marshal.SizeOf(typeof(MONITORINFO));
             public RECT rcMonitor = new RECT();
             public RECT rcWork = new RECT();
             public int dwFlags = 0;
@@ -327,11 +330,12 @@ namespace OpenUtau.UI
                 WindowState = System.Windows.WindowState.Normal;
                 this.maxButton.Content = "1";
             }
-            else {
+            else
+            {
                 WindowState = System.Windows.WindowState.Maximized;
                 this.maxButton.Content = "2";
             }
-                
+
         }
 
         private void closeButton_Click(object sender, RoutedEventArgs e)
@@ -376,36 +380,22 @@ namespace OpenUtau.UI
 
         #endregion
 
-        # region Notes Vertical Scrollbar
-
-        private void notesVerticalScroll_Scroll(object sender, System.Windows.Controls.Primitives.ScrollEventArgs e)
-        {
-            updateCanvas();
-        }
-
-        private void notesVerticalScroll_MouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            this.notesVerticalScroll.Value = this.notesVerticalScroll.Value - 0.0002 * e.Delta;
-            updateCanvas();
-        }
-
-        # endregion
-
-        # region Horizontal Scrollbar
-
-        private void horizontalScroll_Scroll(object sender, System.Windows.Controls.Primitives.ScrollEventArgs e)
-        {
-
-        }
-
-        private void horizontalScroll_MouseWheel(object sender, MouseWheelEventArgs e)
-        {
-
-        }
-
-        # endregion
-
         # region Note Canvas
+
+        Note _dragNote = null;
+        Nullable<Point> _dragPosOfNote = null;
+        Note _resizeNote = null;
+
+        private void updateNotes()
+        {
+            foreach (Note note in _nCM.notes)
+            {
+                note.shape.Height = _nCM.noteHeight - 2;
+                note.shape.Width = note.length * _nCM.noteWidth - 3;
+                Canvas.SetLeft(note.shape, _nCM.beatToCanvas(note.beat, horizontalScroll.Value, notesCanvas.ActualWidth) + 1);
+                Canvas.SetTop(note.shape, _nCM.keyToCanvas(note.keyNo, notesVerticalScroll.Value, notesCanvas.ActualHeight) + 1);
+            }
+        }
 
         private void notesCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -414,16 +404,37 @@ namespace OpenUtau.UI
 
             if (result.VisualHit.GetType() == typeof(Rectangle) && ((UIElement)result.VisualHit).IsHitTestVisible)
             {
-                _dragShape = (Rectangle)result.VisualHit;
-                _dragStart = e.GetPosition(_dragShape);
+                Note hitNote = _nCM.shapeToNote((Rectangle)result.VisualHit);
+                if (e.GetPosition((UIElement)result.VisualHit).X < hitNote.shape.Width - NotesCanvasModel.resizeMargin) // Move note
+                {
+                    _dragNote = hitNote;
+                    Point mousePos = e.GetPosition((UIElement)result.VisualHit);
+                    _dragPosOfNote = new Point(_nCM.snapToBeat(mousePos.X, horizontalScroll.Value, notesCanvas.ActualWidth),
+                        _nCM.snapToKey(mousePos.Y, notesVerticalScroll.Value, notesCanvas.ActualHeight));
+                    _lastNoteLength = _dragNote.length;
+                    
+                }
+                else // Resize note
+                {
+                    _resizeNote = hitNote;
+                    ((Canvas)sender).CaptureMouse();
+                    Mouse.OverrideCursor = Cursors.SizeWE;
+                }
             }
-            else
+            else // Add note
             {
-                var Rendershape = new Rectangle() { Fill = Brushes.Blue, Height = 45, Width = 45, RadiusX = 12, RadiusY = 12 };
-                Canvas.SetLeft(Rendershape, e.GetPosition((Canvas)sender).X);
-                Canvas.SetTop(Rendershape, e.GetPosition((Canvas)sender).Y);
-
-                notesCanvas.Children.Add(Rendershape);
+                var shape = new Rectangle { Fill = Brushes.Gray, RadiusX = 4, RadiusY = 4, Opacity = 0.75 };
+                Note newNote = new Note
+                {
+                    keyNo = _nCM.canvasToKey(e.GetPosition((Canvas)sender).Y, notesVerticalScroll.Value, notesCanvas.ActualHeight),
+                    beat = _nCM.canvasToBeat(e.GetPosition((Canvas)sender).X, horizontalScroll.Value, notesCanvas.ActualWidth),
+                    shape = shape,
+                    length = _lastNoteLength
+                };
+                _nCM.notes.Add(newNote);
+                notesCanvas.Children.Add(shape);
+                updateCanvas();
+                // TODO : Enable Drag
             }
         }
 
@@ -432,33 +443,98 @@ namespace OpenUtau.UI
             Point pt = e.GetPosition((Canvas)sender);
             HitTestResult result = VisualTreeHelper.HitTest(notesCanvas, pt);
 
-            if (result != null && ((UIElement)result.VisualHit).IsHitTestVisible)
+            if (result.VisualHit.GetType() == typeof(Rectangle) && ((UIElement)result.VisualHit).IsHitTestVisible)
             {
-                notesCanvas.Children.Remove(result.VisualHit as Shape);
+                Note note = _nCM.shapeToNote((Rectangle)result.VisualHit);
+                notesCanvas.Children.Remove(note.shape);
+                _nCM.notes.Remove(note);
             }
+
+            _nCM.debugPrintNotes();
         }
 
         private void notesCanvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            _dragStart = null;
-            _dragShape = null;
+            _dragNote = null;
+            _dragPosOfNote = null;
+            _resizeNote = null;
+            ((Canvas)sender).ReleaseMouseCapture();
+            Mouse.OverrideCursor = Cursors.Arrow;
         }
 
         private void notesCanvas_MouseMove(object sender, MouseEventArgs e)
         {
-            if (_dragStart != null && e.LeftButton == MouseButtonState.Pressed && VisualTreeHelper.HitTest(notesCanvas, e.GetPosition((Canvas)sender)) != null)
+            if (_dragNote != null && e.LeftButton == MouseButtonState.Pressed) // Drag Note
             {
-                var p2 = e.GetPosition(notesCanvas);
-                Canvas.SetLeft(_dragShape, p2.X - _dragStart.Value.X);
-                Canvas.SetTop(_dragShape, p2.Y - _dragStart.Value.Y);
+                var mousePos = e.GetPosition(notesCanvas);
+                _dragNote.keyNo = _nCM.canvasToKey(mousePos.Y, notesVerticalScroll.Value, notesCanvas.ActualHeight);
+                _dragNote.beat = _nCM.canvasToBeat(mousePos.X - _dragPosOfNote.Value.X, horizontalScroll.Value, notesCanvas.ActualWidth);
+                _dragNote.beat = Math.Max(0, _dragNote.beat);
+                Canvas.SetLeft(_dragNote.shape, _nCM.beatToCanvas(_dragNote.beat, horizontalScroll.Value, notesCanvas.ActualWidth) + 1);
+                Canvas.SetTop(_dragNote.shape, _nCM.keyToCanvas(_dragNote.keyNo, notesVerticalScroll.Value, notesCanvas.ActualHeight) + 1);
+                // TODO : Drag scroll
+            }
+            else if (_resizeNote != null) // Resize Note
+            {
+                var mousePos = e.GetPosition(notesCanvas);
+                int beat = _nCM.canvasToBeat(mousePos.X, horizontalScroll.Value, notesCanvas.ActualWidth) + 1;
+                double newLength = 1;
+                if (beat > _resizeNote.beat)
+                {
+                    newLength = beat - _resizeNote.beat;
+                }
+                _resizeNote.length = newLength;
+                _resizeNote.shape.Width = _resizeNote.length * _nCM.noteWidth - 3;
+                _lastNoteLength = newLength;
+            }
+            else if (e.RightButton == MouseButtonState.Pressed) // Remove Notes
+            {
+                Point pt = e.GetPosition((Canvas)sender);
+                HitTestResult result = VisualTreeHelper.HitTest(notesCanvas, pt);
+
+                if (result.VisualHit.GetType() == typeof(Rectangle) && ((UIElement)result.VisualHit).IsHitTestVisible)
+                {
+                    Note note = _nCM.shapeToNote((Rectangle)result.VisualHit);
+                    notesCanvas.Children.Remove(note.shape);
+                    _nCM.notes.Remove(note);
+                    _nCM.notes.Sort(delegate (Note lhs, Note rhs)
+                    {
+                        if (lhs.beat < rhs.beat) return -1;
+                        else if (lhs.beat > rhs.beat) return 1;
+                        else if (lhs.keyNo < rhs.keyNo) return -1;
+                        else if (lhs.keyNo > rhs.keyNo) return 1;
+                        else return 0;
+                    });
+                }
+            }
+            else if(e.LeftButton == MouseButtonState.Released && e.RightButton == MouseButtonState.Released)
+            {
+                Point pt = e.GetPosition((Canvas)sender);
+                HitTestResult result = VisualTreeHelper.HitTest(notesCanvas, pt);
+
+                if (result.VisualHit.GetType() == typeof(Rectangle) && ((UIElement)result.VisualHit).IsHitTestVisible) // Change Cursor
+                {
+                    Note hitNote = _nCM.shapeToNote((Rectangle)result.VisualHit);
+                    if (e.GetPosition((UIElement)result.VisualHit).X > hitNote.shape.Width - NotesCanvasModel.resizeMargin)
+                    {
+                        Mouse.OverrideCursor = Cursors.SizeWE;
+                    }
+                    else
+                    {
+                        Mouse.OverrideCursor = Cursors.Arrow;
+                    }
+                }
+                else
+                {
+                    Mouse.OverrideCursor = Cursors.Arrow;
+                }
             }
         }
 
         private void notesCanvas_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            _nCM.viewPortHeight = notesCanvas.ActualHeight;
-            _nCM.viewPortWidth = notesCanvas.ActualWidth;
-            updateCanvas();
+            zoomControl_Zoom(0);
+            horizontalZoom(0);
         }
 
         # endregion
@@ -499,7 +575,7 @@ namespace OpenUtau.UI
                 FrameworkElement el = (FrameworkElement)sender;
 
                 this.notesVerticalScroll.Value += navigateSpeed * (e.GetPosition(el).Y - _navDragLastY);
-                // this.horizontalScroll.Value += navigateSpeed * (e.GetPosition(el).X - _navDragLastX);
+                this.horizontalScroll.Value += navigateSpeed * (e.GetPosition(el).X - _navDragLastX);
 
                 updateCanvas();
 
@@ -578,11 +654,8 @@ namespace OpenUtau.UI
             else if (newNoteHeight > NotesCanvasModel.noteMaxHeight)
                 newNoteHeight = NotesCanvasModel.noteMaxHeight;
 
-            // Keep the center of viewport
-
             _nCM.noteHeight = newNoteHeight;
 
-            updateZoomControl();
             updateCanvas();
         }
 
@@ -672,16 +745,183 @@ namespace OpenUtau.UI
 
         # region Horizontal Zoom Control
 
+        private void expandLinePool(int numQnoteLines, int numBeatLines)
+        {
+            while (_qnoteLines.Count < numQnoteLines + 1)
+            {
+                _qnoteLines.Add(new Line() { Stroke = NotesCanvasModel.getTickLineBrush(), StrokeThickness = .75, X1 = 0, Y1 = 0, X2 = 0, Y2 = 400, SnapsToDevicePixels = true });
+                notesCanvas.Children.Add(_qnoteLines.Last());
+                Canvas.SetTop(_qnoteLines.Last(), 0);
+            }
+            while (_beatLines.Count < numBeatLines + 1)
+            {
+                _beatLines.Add(new Line() { Stroke = NotesCanvasModel.getTickLineBrush(), StrokeThickness = .75, X1 = 0, Y1 = 0, X2 = 0, Y2 = 400, SnapsToDevicePixels = true });
+                timelineCanvas.Children.Add(_beatLines.Last());
+                Canvas.SetTop(_beatLines.Last(), 0);
+            }
+            while (_barNumbers.Count < numBeatLines + 3)
+            {
+                _barNumbers.Add(new TextBlock { FontSize = 12, Foreground = NotesCanvasModel.getBarNumberBrush(), IsHitTestVisible = false, SnapsToDevicePixels = true });
+                timelineCanvas.Children.Add(_barNumbers.Last());
+                Canvas.SetTop(_barNumbers.Last(), 3);
+            }
+        }
+
+        private void updateNoteLines()
+        {
+            // TODO : Adaptive divide
+            int numQnoteLines = (int)(notesCanvas.ActualWidth / _nCM.noteWidth);
+            int numBeatLines = (int)(notesCanvas.ActualWidth / _nCM.noteWidth / _nCM.beat);
+            int numBarLines = (int)(notesCanvas.ActualWidth / _nCM.noteWidth / _nCM.beat / _nCM.bar);
+
+            double viewOffsetX = _nCM.getViewOffsetX(horizontalScroll.Value, notesCanvas.ActualWidth);
+            int firstQnote = (int)(viewOffsetX / _nCM.noteWidth) + 1;
+            double firstQnoteX = firstQnote * _nCM.noteWidth - viewOffsetX;
+            int firstBeat = (int)(viewOffsetX / _nCM.noteWidth / _nCM.beat) + 1;
+            double firstBeatX = firstBeat * _nCM.noteWidth * _nCM.beat - viewOffsetX;
+            int firstBar = (int)(viewOffsetX / _nCM.noteWidth / _nCM.beat / _nCM.bar) + 1;
+            double firstBarX = firstBar * _nCM.noteWidth * _nCM.beat * _nCM.bar - viewOffsetX;
+
+            if (_nCM.noteWidth < NotesCanvasModel.noteMinWidthDisplay) // Showing only beat and bar lines
+            {
+                expandLinePool(numBeatLines, numBeatLines);
+
+                // Update quarter-note lines
+                for (int i = 0; i <= numBeatLines; i++)
+                {
+                    _qnoteLines[i].Y2 = notesCanvas.ActualHeight;
+                    Canvas.SetLeft(_qnoteLines[i], (int)(firstBeatX + i * _nCM.noteWidth * _nCM.beat));
+                    _qnoteLines[i].Visibility = System.Windows.Visibility.Visible;
+                }
+                for (int i = numBeatLines + 1; i < _qnoteLines.Count; i++)
+                {
+                    _qnoteLines[i].Visibility = System.Windows.Visibility.Hidden;
+                }
+
+                // Update beat lines
+                for (int i = 0; i <= numBarLines; i++)
+                {
+                    _beatLines[i].Y2 = notesCanvas.ActualHeight;
+                    Canvas.SetLeft(_beatLines[i], (int)(firstBarX + i * _nCM.noteWidth * _nCM.beat * _nCM.bar));
+                    _beatLines[i].Visibility = System.Windows.Visibility.Visible;
+                }
+                for (int i = numBarLines + 1; i < _beatLines.Count; i++)
+                {
+                    _beatLines[i].Visibility = System.Windows.Visibility.Hidden;
+                }
+            }
+            else // Showing all lines
+            {
+                expandLinePool(numQnoteLines, numBeatLines);
+
+                // Update quarter-note lines
+                for (int i = 0; i <= numQnoteLines; i++)
+                {
+                    _qnoteLines[i].Y2 = notesCanvas.ActualHeight;
+                    Canvas.SetLeft(_qnoteLines[i], (int)(firstQnoteX + i * _nCM.noteWidth));
+                    _qnoteLines[i].Visibility = System.Windows.Visibility.Visible;
+                }
+                for (int i = numQnoteLines + 1; i < _qnoteLines.Count; i++)
+                {
+                    _qnoteLines[i].Visibility = System.Windows.Visibility.Hidden;
+                }
+
+                // Update beat lines
+                for (int i = 0; i <= numBeatLines; i++)
+                {
+                    _beatLines[i].Y2 = notesCanvas.ActualHeight;
+                    Canvas.SetLeft(_beatLines[i], (int)(firstBeatX + i * _nCM.noteWidth * _nCM.beat));
+                    _beatLines[i].Visibility = System.Windows.Visibility.Visible;
+                }
+                for (int i = numBeatLines + 1; i < _beatLines.Count; i++)
+                {
+                    _beatLines[i].Visibility = System.Windows.Visibility.Hidden;
+                }
+            }
+
+            // Update Bar Numbers
+            for (int i = 0; i <= numBarLines + 1; i++)
+            {
+                Canvas.SetLeft(_barNumbers[i], (int)(firstBarX + (i - 1) * _nCM.noteWidth * _nCM.beat * _nCM.bar + 3));
+                _barNumbers[i].Text = (firstBar + i).ToString();
+                _barNumbers[i].Visibility = System.Windows.Visibility.Visible;
+            }
+            for (int i = numBarLines + 2; i < _beatLines.Count; i++)
+            {
+                _barNumbers[i].Visibility = System.Windows.Visibility.Hidden;
+            }
+
+        }
+
+        private void horizontalZoom(double delta)
+        {
+            // TODO : Use mouse position as zoom center
+            double newNoteWidth = _nCM.noteWidth * (1.0 + delta);
+
+            if (newNoteWidth < NotesCanvasModel.noteMinWidth)
+                newNoteWidth = NotesCanvasModel.noteMinWidth;
+            else if (newNoteWidth > NotesCanvasModel.noteMaxWidth)
+                newNoteWidth = NotesCanvasModel.noteMaxWidth;
+
+            _nCM.noteWidth = newNoteWidth;
+
+            updateCanvas();
+        }
+
         private void timelineCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-
+            const double zoomSpeed = 0.001;
+            horizontalZoom(e.Delta * zoomSpeed);
         }
 
         # endregion
 
+        # region Notes Vertical Scrollbar
+
+        private void notesVerticalScroll_Scroll(object sender, System.Windows.Controls.Primitives.ScrollEventArgs e)
+        {
+            updateCanvas();
+        }
+
+        private void notesVerticalScroll_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            this.notesVerticalScroll.Value = this.notesVerticalScroll.Value - 0.01 * notesVerticalScroll.SmallChange * e.Delta;
+            updateCanvas();
+        }
+
+        # endregion
+
+        # region Horizontal Scrollbar
+
+        private void horizontalScroll_Scroll(object sender, System.Windows.Controls.Primitives.ScrollEventArgs e)
+        {
+            updateCanvas();
+        }
+
+        private void horizontalScroll_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            this.horizontalScroll.Value = this.horizontalScroll.Value - 0.01 * horizontalScroll.SmallChange * e.Delta;
+            updateCanvas();
+        }
+
+        # endregion
+
+        #region Keys Action
+
+        // TODO : keys mouse over, clicke, release, click and move
+
         private void keysCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            titleLabel.Content = _nCM.getNoteString(_nCM.canvasToKey(e.GetPosition(keysCanvas).Y, notesVerticalScroll.Value, keysCanvas.ActualHeight));
         }
+
+        private void keysCanvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+        }
+
+        private void keysCanvas_MouseMove(object sender, MouseEventArgs e)
+        {
+        }
+
+        # endregion
     }
 }

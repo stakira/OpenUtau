@@ -63,6 +63,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="UI\Models\Note.cs" />
     <Compile Include="UI\Models\NotesCanvas.cs" />
     <Compile Include="UI\MidiWindow.xaml.cs">
       <DependentUpon>MidiWindow.xaml</DependentUpon>
