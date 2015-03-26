@@ -55,6 +55,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="UI\Models\ThemeManager.cs" />
     <Page Include="UI\MidiWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -64,7 +65,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="UI\Models\Note.cs" />
-    <Compile Include="UI\Models\NotesCanvas.cs" />
+    <Compile Include="UI\Models\NotesCanvasModel.cs" />
     <Compile Include="UI\MidiWindow.xaml.cs">
       <DependentUpon>MidiWindow.xaml</DependentUpon>
     </Compile>

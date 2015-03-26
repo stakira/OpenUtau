@@ -33,9 +33,6 @@ namespace OpenUtau.UI
         // Canvas states
         NotesCanvasModel _nCM;
 
-        List<TextBlock> _keyNames;
-        List<Rectangle> _keys;
-        List<Rectangle> _keyTracks;
 
         // TODO : support unsnapped move / add / resize
         bool _snapPosition = true;
@@ -43,9 +40,6 @@ namespace OpenUtau.UI
 
         double _lastNoteLength = 1;
 
-        List<Line> _qnoteLines;
-        List<Line> _beatLines;
-        List<TextBlock> _barNumbers;
 
         public MidiWindow()
         {
@@ -59,25 +53,15 @@ namespace OpenUtau.UI
             _inactiveBorderThickness = new Thickness(1);
 
             _nCM = new NotesCanvasModel();
-            notesCanvas.DataContext = _nCM;
+            _nCM.hScroll = this.horizontalScroll;
+            _nCM.notesVScroll = this.notesVerticalScroll;
+            _nCM.expVScroll = this.expVerticalScroll;
+            _nCM.notesCanvas = this.notesCanvas;
+            _nCM.expCanvas = this.expCanvas;
+            _nCM.keysCanvas = this.keysCanvas;
+            _nCM.timelineCanvas = this.timelineCanvas;
 
-            _keyNames = new List<TextBlock>();
-            _keys = new List<Rectangle>();
-            _keyTracks = new List<Rectangle>();
-            _qnoteLines = new List<Line>();
-            _beatLines = new List<Line>();
-            _barNumbers = new List<TextBlock>();
-
-            for (int i = 0; i < NotesCanvasModel.numNotesHeight; i++)
-            {
-                _keys.Add(new Rectangle() { Width = 48, Height = _nCM.noteHeight });
-                _keys[i].Style = NotesCanvasModel.getKeyStyle(i);
-                keysCanvas.Children.Add(_keys[i]);
-                _keyNames.Add(new TextBlock() { Text = _nCM.getNoteString(i), Foreground = NotesCanvasModel.getNoteBrush(i), Width = 42, TextAlignment = TextAlignment.Right, IsHitTestVisible = false });
-                keysCanvas.Children.Add(_keyNames[i]);
-                _keyTracks.Add(new Rectangle() { Fill = NotesCanvasModel.getNoteTrackBrush(i), Width = notesCanvas.ActualWidth, Height = _nCM.noteHeight, IsHitTestVisible = false });
-                notesCanvas.Children.Add(_keyTracks[i]);
-            }
+            _nCM.initGraphics();
 
             updateCanvas();
         }
@@ -100,25 +84,9 @@ namespace OpenUtau.UI
             horizontalScroll.SmallChange = horizontalScroll.ViewportSize / 10;
             horizontalScroll.LargeChange = horizontalScroll.ViewportSize;
 
-            for (int i = 0; i < _keyNames.Count; i++)
-            {
-                double notePosInView = _nCM.keyToCanvas(i, notesVerticalScroll.Value, notesCanvas.ActualHeight);
-                Canvas.SetLeft(_keyNames[i], 0);
-                Canvas.SetTop(_keyNames[i], notePosInView + (_nCM.noteHeight - 16) / 2);
-                if (_nCM.noteHeight > 12) _keyNames[i].Visibility = System.Windows.Visibility.Visible;
-                else _keyNames[i].Visibility = System.Windows.Visibility.Hidden;
-
-                _keys[i].Height = _nCM.noteHeight;
-                Canvas.SetLeft(_keys[i], 0);
-                Canvas.SetTop(_keys[i], notePosInView);
-
-                _keyTracks[i].Width = notesCanvas.ActualWidth;
-                _keyTracks[i].Height = _nCM.noteHeight;
-                Canvas.SetTop(_keyTracks[i], notePosInView);
-            }
+            _nCM.updateGraphics();
 
             // Update components
-            updateNoteLines();
             updateNotes();
             updateZoomControl();
         }
@@ -744,114 +712,6 @@ namespace OpenUtau.UI
         #endregion
 
         # region Horizontal Zoom Control
-
-        private void expandLinePool(int numQnoteLines, int numBeatLines)
-        {
-            while (_qnoteLines.Count < numQnoteLines + 1)
-            {
-                _qnoteLines.Add(new Line() { Stroke = NotesCanvasModel.getTickLineBrush(), StrokeThickness = .75, X1 = 0, Y1 = 0, X2 = 0, Y2 = 400, SnapsToDevicePixels = true });
-                notesCanvas.Children.Add(_qnoteLines.Last());
-                Canvas.SetTop(_qnoteLines.Last(), 0);
-            }
-            while (_beatLines.Count < numBeatLines + 1)
-            {
-                _beatLines.Add(new Line() { Stroke = NotesCanvasModel.getTickLineBrush(), StrokeThickness = .75, X1 = 0, Y1 = 0, X2 = 0, Y2 = 400, SnapsToDevicePixels = true });
-                timelineCanvas.Children.Add(_beatLines.Last());
-                Canvas.SetTop(_beatLines.Last(), 0);
-            }
-            while (_barNumbers.Count < numBeatLines + 3)
-            {
-                _barNumbers.Add(new TextBlock { FontSize = 12, Foreground = NotesCanvasModel.getBarNumberBrush(), IsHitTestVisible = false, SnapsToDevicePixels = true });
-                timelineCanvas.Children.Add(_barNumbers.Last());
-                Canvas.SetTop(_barNumbers.Last(), 3);
-            }
-        }
-
-        private void updateNoteLines()
-        {
-            // TODO : Adaptive divide
-            int numQnoteLines = (int)(notesCanvas.ActualWidth / _nCM.noteWidth);
-            int numBeatLines = (int)(notesCanvas.ActualWidth / _nCM.noteWidth / _nCM.beat);
-            int numBarLines = (int)(notesCanvas.ActualWidth / _nCM.noteWidth / _nCM.beat / _nCM.bar);
-
-            double viewOffsetX = _nCM.getViewOffsetX(horizontalScroll.Value, notesCanvas.ActualWidth);
-            int firstQnote = (int)(viewOffsetX / _nCM.noteWidth) + 1;
-            double firstQnoteX = firstQnote * _nCM.noteWidth - viewOffsetX;
-            int firstBeat = (int)(viewOffsetX / _nCM.noteWidth / _nCM.beat) + 1;
-            double firstBeatX = firstBeat * _nCM.noteWidth * _nCM.beat - viewOffsetX;
-            int firstBar = (int)(viewOffsetX / _nCM.noteWidth / _nCM.beat / _nCM.bar) + 1;
-            double firstBarX = firstBar * _nCM.noteWidth * _nCM.beat * _nCM.bar - viewOffsetX;
-
-            if (_nCM.noteWidth < NotesCanvasModel.noteMinWidthDisplay) // Showing only beat and bar lines
-            {
-                expandLinePool(numBeatLines, numBeatLines);
-
-                // Update quarter-note lines
-                for (int i = 0; i <= numBeatLines; i++)
-                {
-                    _qnoteLines[i].Y2 = notesCanvas.ActualHeight;
-                    Canvas.SetLeft(_qnoteLines[i], (int)(firstBeatX + i * _nCM.noteWidth * _nCM.beat));
-                    _qnoteLines[i].Visibility = System.Windows.Visibility.Visible;
-                }
-                for (int i = numBeatLines + 1; i < _qnoteLines.Count; i++)
-                {
-                    _qnoteLines[i].Visibility = System.Windows.Visibility.Hidden;
-                }
-
-                // Update beat lines
-                for (int i = 0; i <= numBarLines; i++)
-                {
-                    _beatLines[i].Y2 = notesCanvas.ActualHeight;
-                    Canvas.SetLeft(_beatLines[i], (int)(firstBarX + i * _nCM.noteWidth * _nCM.beat * _nCM.bar));
-                    _beatLines[i].Visibility = System.Windows.Visibility.Visible;
-                }
-                for (int i = numBarLines + 1; i < _beatLines.Count; i++)
-                {
-                    _beatLines[i].Visibility = System.Windows.Visibility.Hidden;
-                }
-            }
-            else // Showing all lines
-            {
-                expandLinePool(numQnoteLines, numBeatLines);
-
-                // Update quarter-note lines
-                for (int i = 0; i <= numQnoteLines; i++)
-                {
-                    _qnoteLines[i].Y2 = notesCanvas.ActualHeight;
-                    Canvas.SetLeft(_qnoteLines[i], (int)(firstQnoteX + i * _nCM.noteWidth));
-                    _qnoteLines[i].Visibility = System.Windows.Visibility.Visible;
-                }
-                for (int i = numQnoteLines + 1; i < _qnoteLines.Count; i++)
-                {
-                    _qnoteLines[i].Visibility = System.Windows.Visibility.Hidden;
-                }
-
-                // Update beat lines
-                for (int i = 0; i <= numBeatLines; i++)
-                {
-                    _beatLines[i].Y2 = notesCanvas.ActualHeight;
-                    Canvas.SetLeft(_beatLines[i], (int)(firstBeatX + i * _nCM.noteWidth * _nCM.beat));
-                    _beatLines[i].Visibility = System.Windows.Visibility.Visible;
-                }
-                for (int i = numBeatLines + 1; i < _beatLines.Count; i++)
-                {
-                    _beatLines[i].Visibility = System.Windows.Visibility.Hidden;
-                }
-            }
-
-            // Update Bar Numbers
-            for (int i = 0; i <= numBarLines + 1; i++)
-            {
-                Canvas.SetLeft(_barNumbers[i], (int)(firstBarX + (i - 1) * _nCM.noteWidth * _nCM.beat * _nCM.bar + 3));
-                _barNumbers[i].Text = (firstBar + i).ToString();
-                _barNumbers[i].Visibility = System.Windows.Visibility.Visible;
-            }
-            for (int i = numBarLines + 2; i < _beatLines.Count; i++)
-            {
-                _barNumbers[i].Visibility = System.Windows.Visibility.Hidden;
-            }
-
-        }
 
         private void horizontalZoom(double delta)
         {
