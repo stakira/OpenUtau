@@ -38,9 +38,10 @@
                        Scroll="notesVerticalScroll_Scroll" MouseWheel="notesVerticalScroll_MouseWheel"/>
             <Control x:Name="navigateDrag" Template="{StaticResource NavigateDrag}" HorizontalAlignment="Right" VerticalAlignment="Top" Width="20" Height="20" Margin="0,0,0,0" Background="White"
                        MouseLeftButtonDown="navigateDrag_MouseLeftButtonDown" MouseLeftButtonUp="navigateDrag_MouseLeftButtonUp" MouseMove="navigateDrag_MouseMove"/>
-            <StackPanel x:Name="zoomControlStack" HorizontalAlignment="Right" VerticalAlignment="Top" Width="20" Height="20" Margin="0,20,0,0" Background="White"
-                       MouseWheel="zoomControl_MouseWheel" MouseLeftButtonDown="zoomControl_MouseLeftButtonDown" MouseLeftButtonUp="zoomControl_MouseLeftButtonUp" MouseMove="zoomControl_MouseMove" MouseEnter="zoomControlStack_MouseEnter" MouseLeave="zoomControlStack_MouseLeave">
-                <Path Name="zoomControlPath" Margin="2" Stroke="{StaticResource ScrollBarBrushNormal}" StrokeThickness="1.75" StrokeStartLineCap="Flat" 
+            <StackPanel x:Name="vZoomControlStack" HorizontalAlignment="Right" VerticalAlignment="Top" Width="20" Height="20" Margin="0,20,0,0" Background="White"
+                        MouseWheel="vZoomControl_MouseWheel" MouseLeftButtonDown="vZoomControl_MouseLeftButtonDown" MouseLeftButtonUp="vZoomControl_MouseLeftButtonUp"
+                        MouseMove="vZoomControl_MouseMove" MouseEnter="vZoomControlStack_MouseEnter" MouseLeave="vZoomControlStack_MouseLeave">
+                <Path Name="vZoomControlPath" Margin="2" Stroke="{StaticResource ScrollBarBrushNormal}" StrokeThickness="1.75" StrokeStartLineCap="Flat" 
                       StrokeEndLineCap="Flat" StrokeLineJoin="Miter" StrokeMiterLimit="0" Data="">
                 </Path>
             </StackPanel>
@@ -54,7 +55,8 @@
             <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="10" Margin="0,0,0,0" Background="White" Focusable="False"/>
             <Canvas x:Name="CCCanvas" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="48" Margin="0,0,0,1" Background="White" ClipToBounds="True"/>
             <Canvas x:Name="expCanvas" Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="48,0,20,1" Background="White" ClipToBounds="True"/>
-            <ScrollBar x:Name="expVerticalScroll" Grid.Row="2" Style="{StaticResource OUScrollBar}" HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="20" Margin="0,0,0,20" Orientation="Vertical"/>
+            <ScrollBar x:Name="expVerticalScroll" Grid.Row="2" Style="{StaticResource OUScrollBar}" HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="20"
+                       Margin="0,0,0,20" Orientation="Vertical" ViewportSize="10000"/>
             <Border x:Name="expCanvasShadow" Grid.Row="2" Background="{x:Null}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="48,0,20,1" BorderThickness="0" ClipToBounds="True">
                 <Border Background="{x:Null}" BorderBrush="Black" BorderThickness="1" Margin="-1">
                     <Border.Effect>

@@ -12,7 +12,7 @@ namespace OpenUtau.UI.Models
 {
     class NotesCanvasModel
     {
-        public enum ZoomLevel { Bar, Beat, QuaterNote, SixteenthNote };
+        public enum ZoomLevel { Bar, Beat, QuaterNote, EighthNote, SixteenthNote };
 
         public const double noteMaxWidth = 256;
         public const double noteMinWidth = 4;
@@ -34,8 +34,13 @@ namespace OpenUtau.UI.Models
         public int numNotesWidthScroll;
         public int numNotesWidth;
 
-        public int bar = 4; // beats per bar
-        public int beat = 4; // quarter-notes per beat
+        public int bar = 4; // bar = number of beats
+        public int beat = 4; // beat = number of quarter-notes
+        public int bpm = 128000; // Beat per minute * 1000
+        public int ppq = 960; // Pulse per quarter note
+
+        public bool snapOffset = true;
+        public bool snapLength = true;
 
         public string[] noteStrings = new String[12] { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
 
@@ -56,9 +61,8 @@ namespace OpenUtau.UI.Models
 
         //notesCanvas elements
         List<Rectangle> keyTracks;
-        List<Line> _qnoteLines;
-        List<Line> _beatLines;
-        List<TextBlock> _barNumbers;
+        List<Line> verticalLines;
+        List<TextBlock> barNumbers;
 
         public NotesCanvasModel()
         {
@@ -83,6 +87,7 @@ namespace OpenUtau.UI.Models
         {
             updateKeyCanvas();
             updateNotesCanvasBackground();
+            updateNotes();
         }
 
         // Create key shapes and text
@@ -102,7 +107,7 @@ namespace OpenUtau.UI.Models
 
                 keyNames.Add(new TextBlock()
                 {
-                    Text = this.getNoteString(i),
+                    Text = this.getKeyString(i),
                     Foreground = ThemeManager.getNoteBrush(i),
                     Width = 42,
                     TextAlignment = System.Windows.TextAlignment.Right,
@@ -115,8 +120,8 @@ namespace OpenUtau.UI.Models
         // Update keys size and position
         public void updateKeyCanvas()
         {
-            int max = canvasToKey(0, 0, 0);
-            int min = canvasToKey(notesCanvas.ActualHeight, 0, 0);
+            int max = snapNoteKey(0);
+            int min = snapNoteKey(notesCanvas.ActualHeight);
             for (int i = 0; i < numNotesHeight; i++)
             {
                 if (i < min || i > max)
@@ -126,7 +131,7 @@ namespace OpenUtau.UI.Models
                 }
                 else
                 {
-                    double notePosInView = keyToCanvas(i, notesVScroll.Value, notesCanvas.ActualHeight);
+                    double notePosInView = keyToCanvas(i);
                     Canvas.SetLeft(keyNames[i], 0);
                     Canvas.SetTop(keyNames[i], notePosInView + (noteHeight - 16) / 2);
                     if (noteHeight > 12) keyNames[i].Visibility = System.Windows.Visibility.Visible;
@@ -156,38 +161,15 @@ namespace OpenUtau.UI.Models
                 notesCanvas.Children.Add(keyTracks[i]);
             }
 
-            _qnoteLines = new List<Line>();
-            _beatLines = new List<Line>();
-            _barNumbers = new List<TextBlock>();
-        }
-
-        private void expandLines(int numNotesLines, int numBarLines)
-        {
-            while (_qnoteLines.Count < numNotesLines + 1)
-            {
-                _qnoteLines.Add(new Line() { Stroke = ThemeManager.getTickLineBrush(), StrokeThickness = .75, X1 = 0, Y1 = 0, X2 = 0, Y2 = 400, SnapsToDevicePixels = true });
-                notesCanvas.Children.Add(_qnoteLines.Last());
-                Canvas.SetTop(_qnoteLines.Last(), 0);
-            }
-            while (_beatLines.Count < numBarLines + 1)
-            {
-                _beatLines.Add(new Line() { Stroke = ThemeManager.getTickLineBrush(), StrokeThickness = .75, X1 = 0, Y1 = 0, X2 = 0, Y2 = 400, SnapsToDevicePixels = true });
-                timelineCanvas.Children.Add(_beatLines.Last());
-                Canvas.SetTop(_beatLines.Last(), 0);
-            }
-            while (_barNumbers.Count < numBarLines + 3)
-            {
-                _barNumbers.Add(new TextBlock { FontSize = 12, Foreground = ThemeManager.getBarNumberBrush(), IsHitTestVisible = false, SnapsToDevicePixels = true });
-                timelineCanvas.Children.Add(_barNumbers.Last());
-                Canvas.SetTop(_barNumbers.Last(), 3);
-            }
+            verticalLines = new List<Line>();
+            barNumbers = new List<TextBlock>();
         }
 
         // Update notesCanvas background
         public void updateNotesCanvasBackground()
         {
-            int max = canvasToKey(0);
-            int min = canvasToKey(notesCanvas.ActualHeight);
+            int max = snapNoteKey(0);
+            int min = snapNoteKey(notesCanvas.ActualHeight);
             for (int i = 0; i < numNotesHeight; i++)
             {
                 if (i < min || i > max)
@@ -196,7 +178,7 @@ namespace OpenUtau.UI.Models
                 }
                 else
                 {
-                    double notePosInView = keyToCanvas(i, notesVScroll.Value, notesCanvas.ActualHeight);
+                    double notePosInView = keyToCanvas(i);
                     keyTracks[i].Width = notesCanvas.ActualWidth;
                     keyTracks[i].Height = noteHeight;
                     Canvas.SetTop(keyTracks[i], notePosInView);
@@ -205,17 +187,17 @@ namespace OpenUtau.UI.Models
             }
 
             // Update vertical lines
-            double displayLineWidth = noteWidth * getZoomRatio();
+            double displayLineWidth = noteWidth * getHZoomRatio();
             int firstLine = (int)(getViewOffsetX() / displayLineWidth ) + 1;
             double firstLineX = firstLine * displayLineWidth - getViewOffsetX();
 
             for (int i = 0; i < notesCanvas.ActualWidth / displayLineWidth; i++)
             {
                 double lineX = firstLineX + displayLineWidth * i;
-                if (_qnoteLines.Count <= i)
+                if (verticalLines.Count <= i)
                 {
                     // Add line
-                    _qnoteLines.Add(new Line()
+                    verticalLines.Add(new Line()
                     {
                         Stroke = ThemeManager.getTickLineBrush(),
                         StrokeThickness = .75,
@@ -225,17 +207,17 @@ namespace OpenUtau.UI.Models
                         Y2 = 400,
                         SnapsToDevicePixels = true
                     });
-                    notesCanvas.Children.Add(_qnoteLines.Last());
-                    Canvas.SetTop(_qnoteLines.Last(), 0);
+                    notesCanvas.Children.Add(verticalLines.Last());
+                    Canvas.SetTop(verticalLines.Last(), 0);
                 }
-                _qnoteLines[i].Y2 = notesCanvas.ActualHeight;
-                Canvas.SetLeft(_qnoteLines[i], (int)lineX);
-                _qnoteLines[i].Visibility = System.Windows.Visibility.Visible;
+                verticalLines[i].Y2 = notesCanvas.ActualHeight;
+                Canvas.SetLeft(verticalLines[i], (int)lineX);
+                verticalLines[i].Visibility = System.Windows.Visibility.Visible;
             }
 
-            for (int i = (int)(notesCanvas.ActualWidth / displayLineWidth) + 1; i < _qnoteLines.Count; i++)
+            for (int i = (int)(notesCanvas.ActualWidth / displayLineWidth) + 1; i < verticalLines.Count; i++)
             {
-                _qnoteLines[i].Visibility = System.Windows.Visibility.Hidden;
+                verticalLines[i].Visibility = System.Windows.Visibility.Hidden;
             }
 
             // Update bar number
@@ -246,33 +228,90 @@ namespace OpenUtau.UI.Models
             for (int i = 0; i < notesCanvas.ActualWidth / displayBarWidth + 1; i++)
             {
                 double barX = firstBarX + displayBarWidth * i;
-                if (_barNumbers.Count <= i)
+                if (barNumbers.Count <= i)
                 {
                     // Add number
-                    _barNumbers.Add(new TextBlock
+                    barNumbers.Add(new TextBlock
                     {
                         FontSize = 12,
                         Foreground = ThemeManager.getBarNumberBrush(),
                         IsHitTestVisible = false,
                         SnapsToDevicePixels = true
                     });
-                    timelineCanvas.Children.Add(_barNumbers.Last());
-                    Canvas.SetTop(_barNumbers.Last(), 3);
+                    timelineCanvas.Children.Add(barNumbers.Last());
+                    Canvas.SetTop(barNumbers.Last(), 3);
                 }
-                Canvas.SetLeft(_barNumbers[i], (int)barX + barNumberOffsetX);
-                _barNumbers[i].Text = (firstBar + i).ToString();
-                _barNumbers[i].Visibility = System.Windows.Visibility.Visible;
+                Canvas.SetLeft(barNumbers[i], (int)barX + barNumberOffsetX);
+                barNumbers[i].Text = (firstBar + i).ToString();
+                barNumbers[i].Visibility = System.Windows.Visibility.Visible;
             }
 
-            for (int i = (int)(notesCanvas.ActualWidth / displayBarWidth) + 2; i < _barNumbers.Count; i++)
+            for (int i = (int)(notesCanvas.ActualWidth / displayBarWidth) + 2; i < barNumbers.Count; i++)
             {
-                _barNumbers[i].Visibility = System.Windows.Visibility.Hidden;
+                barNumbers[i].Visibility = System.Windows.Visibility.Hidden;
             }
         }
-
-        public double getZoomRatio()
+        
+        // TODO : Improve performance
+        public void updateScroll()
         {
-            switch (getZoomLevel())
+            if (notesCanvas.ActualHeight > numNotesHeight * noteHeight)
+                noteHeight = notesCanvas.ActualHeight / numNotesHeight;
+
+            if (notesCanvas.ActualWidth > numNotesWidthScroll * noteWidth)
+                noteWidth = notesCanvas.ActualWidth / numNotesWidthScroll;
+
+            notesVScroll.ViewportSize = getViewSizeY();
+            notesVScroll.SmallChange = notesVScroll.ViewportSize / 10;
+            notesVScroll.LargeChange = notesVScroll.ViewportSize;
+
+            hScroll.ViewportSize = getViewSizeX();
+            hScroll.SmallChange = hScroll.ViewportSize / 10;
+            hScroll.LargeChange = hScroll.ViewportSize;
+        }
+
+        // TODO : Use mouse position as zoom center
+        public void hZoom(double delta)
+        {
+            noteWidth = Math.Min(noteMaxWidth, Math.Max(noteMinWidth, noteWidth * (1.0 + delta)));
+        }
+
+        // TODO : Use mouse position as zoom center
+        public void vZoom(double delta)
+        {
+            noteHeight = Math.Min(noteMaxHeight, Math.Max(noteMinHeight, noteHeight * (1.0 + delta)));
+        }
+
+        public double snapNoteOffset(double x)
+        {
+            return getOffsetSnapUnit() * (int)((x + getViewOffsetX()) / noteWidth / getOffsetSnapUnit());
+        }
+
+        public double snapNoteLength(double x)
+        {
+            return getLengthSnapUnit() * (int)((x + getViewOffsetX()) / noteWidth / getLengthSnapUnit());
+        }
+
+        public int snapNoteKey(double y)
+        {
+            return numNotesHeight - 1 - (int)((y + getViewOffsetY()) / noteHeight);
+        }
+
+        public double getOffsetSnapUnit() // Unit : quarter note
+        {
+            if (snapOffset) return getHZoomRatio();
+            else return 1.0 / ppq;
+        }
+
+        public double getLengthSnapUnit() // Unit : quarter note
+        {
+            if (snapLength) return getHZoomRatio();
+            else return 1.0 / ppq;
+        }
+
+        public double getHZoomRatio()
+        {
+            switch (getHZoomLevel())
             {
                 case ZoomLevel.Bar:
                     return beat * bar;
@@ -280,21 +319,25 @@ namespace OpenUtau.UI.Models
                     return beat;
                 case ZoomLevel.QuaterNote:
                     return 1;
+                case ZoomLevel.EighthNote:
+                    return 0.5;
                 default:
-                    return 0.25; // FIXME
+                    return 0.25;
             }
         }
 
-        public ZoomLevel getZoomLevel()
+        public ZoomLevel getHZoomLevel()
         {
             if (noteWidth < noteMinWidthDisplay / 4) return ZoomLevel.Bar;
             else if (noteWidth < noteMinWidthDisplay) return ZoomLevel.Beat;
             else if (noteWidth < noteMinWidthDisplay * 4) return ZoomLevel.QuaterNote;
+            else if (noteWidth < noteMinWidthDisplay * 8) return ZoomLevel.EighthNote;
             else return ZoomLevel.SixteenthNote;
         }
 
         public Note shapeToNote(System.Windows.Shapes.Rectangle shape)
         {
+            // TODO : Improve performance
             foreach (Note note in notes)
             {
                 if (note.shape == shape) return note;
@@ -307,70 +350,89 @@ namespace OpenUtau.UI.Models
             System.Diagnostics.Debug.WriteLine(notes.Count.ToString() + " Notes in Total");
             foreach (Note _note in notes)
             {
-                System.Diagnostics.Debug.WriteLine("Note : " + _note.beat.ToString() + " " + _note.keyNo.ToString());
+                System.Diagnostics.Debug.WriteLine("Note : " + _note.offset.ToString() + " " + _note.keyNo.ToString());
             }
         }
             
-        public double getViewportSizeY(double viewHeight, double noteHeight = 0)
+        public double getViewSizeY()
         {
-            double _noteHeight = noteHeight == 0 ? this.noteHeight : noteHeight;
-            if (numNotesHeight * _noteHeight - viewHeight == 0) return 10000;
-            return viewHeight / (numNotesHeight * _noteHeight - viewHeight);
+            if (numNotesHeight * noteHeight - notesCanvas.ActualHeight == 0) return 10000;
+            return notesCanvas.ActualHeight / (numNotesHeight * noteHeight - notesCanvas.ActualHeight);
         }
 
-        public double getViewportSizeX(double viewWidth, double noteWidth = 0)
+        public double getViewSizeX()
         {
-            double _noteWidth = noteWidth == 0 ? this.noteWidth : noteWidth;
-            if (numNotesWidthScroll * _noteWidth - viewWidth == 0) return 10000;
-            return viewWidth / (numNotesWidthScroll * _noteWidth - viewWidth);
+            if (numNotesWidthScroll * noteWidth - notesCanvas.ActualWidth == 0) return 10000;
+            return notesCanvas.ActualWidth / (numNotesWidthScroll * noteWidth - notesCanvas.ActualWidth);
         }
 
-        public double getViewOffsetY(double scrollValue=0, double viewHeight=0)
+        public double getViewOffsetY()
         {
             return notesVScroll.Value * (numNotesHeight * noteHeight - notesCanvas.ActualHeight);
         }
 
-        public double getViewOffsetX(double scrollValue=0, double viewWidth=0)
+        public double getViewOffsetX()
         {
             return hScroll.Value * (numNotesWidthScroll * noteWidth - notesCanvas.ActualWidth);
         }
 
-        public double keyToCanvas(int noteNo, double scrollValue, double viewHeight)
+        public double keyToCanvas(int noteNo)
         {
-            return (numNotesHeight - noteNo - 1) * noteHeight - getViewOffsetY(scrollValue, viewHeight);
+            return (numNotesHeight - noteNo - 1) * noteHeight - getViewOffsetY();
         }
 
-        public int canvasToKey(double y, double scrollValue=0, double viewHeight=0)
+        public double offsetToCanvas(double offset)
         {
-            return numNotesHeight - 1 - (int)((y + getViewOffsetY(notesVScroll.Value, notesCanvas.ActualHeight)) / noteHeight);
+            return offset * noteWidth - getViewOffsetX();
         }
 
-        public double snapToKey(double y, double scrollValue, double viewHeight)
+        public String getKeyString(int keyNo)
         {
-            int noteNo = canvasToKey(y, scrollValue, viewHeight);
-            return keyToCanvas(noteNo, scrollValue, viewHeight);
+            int octave = keyNo / 12 - 2;
+            return noteStrings[keyNo % 12] + octave;
         }
 
-        public double beatToCanvas(double beatNo, double scrollValue, double viewWidth)
+        // Note methods
+        public void updateNote(Note note)
         {
-            return beatNo * noteWidth - getViewOffsetX(scrollValue, viewWidth);
+            note.shape.Height = noteHeight - 2;
+            note.shape.Width = Math.Max(2, note.length * noteWidth - 3);
+            Canvas.SetLeft(note.shape, (int)offsetToCanvas(note.offset) + 1);
+            Canvas.SetTop(note.shape, (int)keyToCanvas(note.keyNo) + 1);
         }
 
-        public int canvasToBeat(double x, double scrollValue, double viewWidth)
+        public void updateNotes()
         {
-            return (int)((x + getViewOffsetX(scrollValue, viewWidth)) / noteWidth);
+            foreach (Note note in notes) updateNote(note);
         }
 
-        public double snapToBeat(double x, double scrollValue, double viewWidth)
+        public void AddNote(Note note)
         {
-            int beatNo = canvasToBeat(x, scrollValue, viewWidth);
-            return beatToCanvas(beatNo, scrollValue, viewWidth);
+            if (notes.Contains(note))
+                throw new Exception("Note already exist, cannot be added again");
+            notes.Add(note);
+            notesCanvas.Children.Add(note.shape);
+            updateNote(note);
         }
 
-        public String getNoteString(int noteNo)
+        public void RemoveNote(Note note)
         {
-            int octave = noteNo / 12 - 2;
-            return noteStrings[noteNo % 12] + octave;
+            if (!notes.Contains(note))
+                throw new Exception("Note does not exist, cannot be removed");
+            notesCanvas.Children.Remove(note.shape);
+            notes.Remove(note);
+        }
+
+        public void SortNotes()
+        {
+            notes.Sort(delegate(Note lhs, Note rhs)
+            {
+                if (lhs.offset < rhs.offset) return -1;
+                else if (lhs.offset > rhs.offset) return 1;
+                else if (lhs.keyNo < rhs.keyNo) return -1;
+                else if (lhs.keyNo > rhs.keyNo) return 1;
+                else return 0;
+            });
         }
     }
 }
