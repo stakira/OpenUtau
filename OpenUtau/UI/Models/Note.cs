@@ -15,5 +15,16 @@ namespace OpenUtau.UI.Models
         public double length = 1;
         public string lyric = "a";
         public System.Windows.Shapes.Rectangle shape;
+
+        public Note()
+        {
+            shape = new System.Windows.Shapes.Rectangle
+            {
+                Fill = System.Windows.Media.Brushes.Gray,
+                RadiusX = 2,
+                RadiusY = 2,
+                Opacity = 0.75
+            };
+        }
     }
 }

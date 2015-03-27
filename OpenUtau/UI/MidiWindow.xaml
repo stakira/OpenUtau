@@ -23,7 +23,7 @@
             </Grid.RowDefinitions>
 
             <Button x:Name="mainButton" Grid.Row="0" Style="{StaticResource MidiWindowMainButton}" HorizontalAlignment="Left" VerticalAlignment="Top" Height="21" Width="21" Margin="14,7,0,0"/>
-            <Canvas x:Name="keysCanvas" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="48" Margin="0,41,0,0" Background="Transparent" ClipToBounds="True"
+            <Canvas x:Name="keysCanvas" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="48" Margin="0,40,0,0" Background="Transparent" ClipToBounds="True"
                     Height="{Binding Path=viewPortHeight, Mode=OneWay}" MouseLeftButtonDown="keysCanvas_MouseLeftButtonDown" MouseLeftButtonUp="keysCanvas_MouseLeftButtonUp" MouseMove="keysCanvas_MouseMove"/>
             <Canvas x:Name="timelineCanvas" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="20" Margin="48,20,20,0" Background="{StaticResource TimelineBrushNormal}" ClipToBounds="True" MouseWheel="timelineCanvas_MouseWheel"/>
             <Canvas x:Name="notesCanvas" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="48,40,20,0" Background="White"

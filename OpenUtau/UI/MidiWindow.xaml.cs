@@ -350,13 +350,6 @@ namespace OpenUtau.UI
                 {
                     keyNo = ncModel.snapNoteKey(e.GetPosition((Canvas)sender).Y),
                     offset = ncModel.snapNoteOffset(e.GetPosition((Canvas)sender).X),
-                    shape = new Rectangle
-                    {
-                        Fill = Brushes.Gray,
-                        RadiusX = 2,
-                        RadiusY = 2,
-                        Opacity = 0.75
-                    },
                     length = _lastNoteLength
                 };
                 ncModel.AddNote(newNote);
@@ -446,10 +439,11 @@ namespace OpenUtau.UI
             }
         }
 
+        // TODO : resize show same portion of view
         private void notesCanvas_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            ncModel.vZoom(0);
-            ncModel.hZoom(0);
+            ncModel.vZoom(0, notesCanvas.ActualHeight / 2);
+            ncModel.hZoom(0, notesCanvas.ActualWidth / 2);
             ncModel.updateScroll();
             ncModel.updateGraphics();
             updateVZoomControl();
@@ -566,7 +560,7 @@ namespace OpenUtau.UI
         private void vZoomControl_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             const double zoomSpeed = 0.001;
-            ncModel.vZoom(zoomSpeed * e.Delta);
+            ncModel.vZoom(zoomSpeed * e.Delta, notesCanvas.ActualHeight / 2);
             ncModel.updateScroll();
             ncModel.updateGraphics();
             updateVZoomControl();
@@ -603,7 +597,7 @@ namespace OpenUtau.UI
                 bool cursorMoved = false;
                 FrameworkElement el = (FrameworkElement)sender;
 
-                ncModel.vZoom(zoomSpeed * (vZoomDragLastY - e.GetPosition(el).Y));
+                ncModel.vZoom(zoomSpeed * (vZoomDragLastY - e.GetPosition(el).Y), notesCanvas.ActualHeight / 2);
                 ncModel.updateScroll();
                 ncModel.updateGraphics();
                 updateVZoomControl();
@@ -657,8 +651,8 @@ namespace OpenUtau.UI
         
         private void timelineCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-            const double zoomSpeed = 0.001;
-            ncModel.hZoom(e.Delta * zoomSpeed);
+            const double zoomSpeed = 0.002;
+            ncModel.hZoom(e.Delta * zoomSpeed, e.GetPosition((UIElement)sender).X);
             ncModel.updateScroll();
             ncModel.updateGraphics();
         }

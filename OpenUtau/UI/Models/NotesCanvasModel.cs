@@ -62,6 +62,7 @@ namespace OpenUtau.UI.Models
         //notesCanvas elements
         List<Rectangle> keyTracks;
         List<Line> verticalLines;
+        List<Line> barLines;
         List<TextBlock> barNumbers;
 
         public NotesCanvasModel()
@@ -163,6 +164,7 @@ namespace OpenUtau.UI.Models
 
             verticalLines = new List<Line>();
             barNumbers = new List<TextBlock>();
+            barLines = new List<Line>();
         }
 
         // Update notesCanvas background
@@ -199,19 +201,18 @@ namespace OpenUtau.UI.Models
                     // Add line
                     verticalLines.Add(new Line()
                     {
-                        Stroke = ThemeManager.getTickLineBrush(),
-                        StrokeThickness = .75,
+                        StrokeThickness = 1,
                         X1 = 0,
                         Y1 = 0,
                         X2 = 0,
-                        Y2 = 400,
-                        SnapsToDevicePixels = true
                     });
                     notesCanvas.Children.Add(verticalLines.Last());
                     Canvas.SetTop(verticalLines.Last(), 0);
                 }
+                verticalLines[i].Stroke = (firstLine + i) % (4 / getHZoomRatio()) == 0 ?
+                    Brushes.Black : ThemeManager.getTickLineBrush();
                 verticalLines[i].Y2 = notesCanvas.ActualHeight;
-                Canvas.SetLeft(verticalLines[i], (int)lineX);
+                Canvas.SetLeft(verticalLines[i], Math.Round(lineX) + 0.5);
                 verticalLines[i].Visibility = System.Windows.Visibility.Visible;
             }
 
@@ -220,7 +221,7 @@ namespace OpenUtau.UI.Models
                 verticalLines[i].Visibility = System.Windows.Visibility.Hidden;
             }
 
-            // Update bar number
+            // Update bar number and line
             double displayBarWidth = noteWidth * beat * bar;
             int firstBar = (int)(getViewOffsetX() / displayBarWidth);
             double firstBarX = firstBar * displayBarWidth - getViewOffsetX();
@@ -240,15 +241,29 @@ namespace OpenUtau.UI.Models
                     });
                     timelineCanvas.Children.Add(barNumbers.Last());
                     Canvas.SetTop(barNumbers.Last(), 3);
+                    // Add line
+                    barLines.Add(new Line
+                    {
+                        Stroke = Brushes.Black,
+                        StrokeThickness = 1,
+                        X1 = 0,
+                        Y1 = 0,
+                        X2 = 0,
+                        Y2 = timelineCanvas.ActualHeight
+                    });
+                    timelineCanvas.Children.Add(barLines.Last());
                 }
-                Canvas.SetLeft(barNumbers[i], (int)barX + barNumberOffsetX);
+                Canvas.SetLeft(barNumbers[i], Math.Round(barX) + barNumberOffsetX);
                 barNumbers[i].Text = (firstBar + i).ToString();
                 barNumbers[i].Visibility = System.Windows.Visibility.Visible;
+                Canvas.SetLeft(barLines[i], Math.Round(barX) + 0.5);
+                barLines[i].Visibility = System.Windows.Visibility.Visible;
             }
 
             for (int i = (int)(notesCanvas.ActualWidth / displayBarWidth) + 2; i < barNumbers.Count; i++)
             {
                 barNumbers[i].Visibility = System.Windows.Visibility.Hidden;
+                barLines[i].Visibility = System.Windows.Visibility.Hidden;
             }
         }
         
@@ -270,21 +285,23 @@ namespace OpenUtau.UI.Models
             hScroll.LargeChange = hScroll.ViewportSize;
         }
 
-        // TODO : Use mouse position as zoom center
-        public void hZoom(double delta)
+        public void hZoom(double delta, double centerX)
         {
+            double offsetScrollCenter = canvasToOffset(centerX);
             noteWidth = Math.Min(noteMaxWidth, Math.Max(noteMinWidth, noteWidth * (1.0 + delta)));
+            setViewOffsetX(offsetScrollCenter * noteWidth - centerX);
         }
 
-        // TODO : Use mouse position as zoom center
-        public void vZoom(double delta)
+        public void vZoom(double delta, double centerY)
         {
+            double keyScrollCenter = (centerY + getViewOffsetY()) / noteHeight;
             noteHeight = Math.Min(noteMaxHeight, Math.Max(noteMinHeight, noteHeight * (1.0 + delta)));
+            setViewOffsetY(keyScrollCenter * noteHeight - centerY);
         }
 
         public double snapNoteOffset(double x)
         {
-            return getOffsetSnapUnit() * (int)((x + getViewOffsetX()) / noteWidth / getOffsetSnapUnit());
+            return getOffsetSnapUnit() * (int)(canvasToOffset(x) / getOffsetSnapUnit());
         }
 
         public double snapNoteLength(double x)
@@ -371,14 +388,29 @@ namespace OpenUtau.UI.Models
             return notesVScroll.Value * (numNotesHeight * noteHeight - notesCanvas.ActualHeight);
         }
 
+        public void setViewOffsetY(double y)
+        {
+            notesVScroll.Value = y / (numNotesHeight * noteHeight - notesCanvas.ActualHeight);
+        }
+
         public double getViewOffsetX()
         {
             return hScroll.Value * (numNotesWidthScroll * noteWidth - notesCanvas.ActualWidth);
         }
 
+        public void setViewOffsetX(double x)
+        {
+            hScroll.Value = x / (numNotesWidthScroll * noteWidth - notesCanvas.ActualWidth);
+        }
+
         public double keyToCanvas(int noteNo)
         {
             return (numNotesHeight - noteNo - 1) * noteHeight - getViewOffsetY();
+        }
+
+        public double canvasToOffset(double x)
+        {
+            return (x + getViewOffsetX()) / noteWidth;
         }
 
         public double offsetToCanvas(double offset)
@@ -396,9 +428,9 @@ namespace OpenUtau.UI.Models
         public void updateNote(Note note)
         {
             note.shape.Height = noteHeight - 2;
-            note.shape.Width = Math.Max(2, note.length * noteWidth - 3);
-            Canvas.SetLeft(note.shape, (int)offsetToCanvas(note.offset) + 1);
-            Canvas.SetTop(note.shape, (int)keyToCanvas(note.keyNo) + 1);
+            note.shape.Width = Math.Max(2, Math.Round(note.length * noteWidth) - 3);
+            Canvas.SetLeft(note.shape, Math.Round(offsetToCanvas(note.offset)) + 2);
+            Canvas.SetTop(note.shape, Math.Round(keyToCanvas(note.keyNo)) + 1);
         }
 
         public void updateNotes()
