@@ -24,7 +24,11 @@
     <Color x:Key="WhiteKeyTrackColorNormal">#FFFFFF</Color>
 
     <Color x:Key="TimelineColorNormal">#FFFFFF</Color>
-    
+
+    <Color x:Key="TickLineColorLight">#e7e7e7</Color>
+    <Color x:Key="TickLineColorDark">#afa3b5</Color>
+    <Color x:Key="BarNumberColor">#afa3b5</Color>
+
     <SolidColorBrush x:Key="ScrollBarBrushNormal" Color="{StaticResource ScrollBarColorNormal}"/>
     <SolidColorBrush x:Key="ScrollBarBrushActive" Color="{StaticResource ScrollBarColorActive}"/>
     <SolidColorBrush x:Key="BackgroundBrushNormal" Color="{StaticResource BackgroundColorNormal}"/>

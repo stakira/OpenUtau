@@ -18,6 +18,7 @@ using System.Runtime.InteropServices;
 
 using OpenUtau.UI.Models;
 using OpenUtau.UI.Controls;
+using OpenUtau.Core;
 
 namespace OpenUtau.UI
 {
@@ -58,6 +59,8 @@ namespace OpenUtau.UI
 
             ncModel.initGraphics();
             ncModel.updateGraphics();
+
+            CompositionTarget.Rendering += Window_PerFrameCallback;
         }
 
         #region Avoid hiding task bar upon maximalisation
@@ -321,8 +324,12 @@ namespace OpenUtau.UI
 
         Note noteInDrag = null;
         double noteOffsetOfDrag;
+        Note leftMostNoteOfDrag, rightMostNoteOfDrag, maxNoteOfDrag, minNoteOfDrag;
+
         Note noteInResize = null;
-        Nullable<Point> selectionStart = null;
+        Note shortedNoteInResize;
+
+        Nullable<Point> selectionStart = null; // Unit in offset/keyNo
         Rectangle selectionBox;
 
         private NoteControl getNoteVisualHit(HitTestResult result)
@@ -340,18 +347,21 @@ namespace OpenUtau.UI
 
             if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
             {
-                selectionStart = e.GetPosition((UIElement)sender);
-                ((Canvas)sender).CaptureMouse();
+                selectionStart = new Point(ncModel.canvasToOffset(mousePos.X), ncModel.snapNoteKey(mousePos.Y));
+                if (Keyboard.IsKeyUp(Key.LeftShift) && Keyboard.IsKeyUp(Key.RightShift))
+                    ncModel.trackPart.DeselectAll();
                 if (selectionBox == null)
                 {
                     selectionBox = new Rectangle()
                     {
-                        Stroke = Brushes.Gray,
-                        StrokeThickness = 1,
+                        Stroke = Brushes.Black,
+                        StrokeThickness = 2,
                         Fill = ThemeManager.getBarNumberBrush(),
                         Width = 0,
                         Height = 0,
-                        Opacity = 0.5
+                        Opacity = 0.5,
+                        RadiusX = 8,
+                        RadiusY = 8
                     };
                     notesCanvas.Children.Add(selectionBox);
                     Canvas.SetZIndex(selectionBox, 1000);
@@ -360,26 +370,45 @@ namespace OpenUtau.UI
                 {
                     selectionBox.Width = 0;
                     selectionBox.Height = 0;
-                    selectionBox.Visibility = System.Windows.Visibility.Visible;
+                    Canvas.SetZIndex(selectionBox, 1000);
                 }
+                Mouse.OverrideCursor = Cursors.Cross;
             }
             else
             {
                 if (hitNoteControl != null)
                 {
                     Note hitNote = ncModel.getNoteFromControl(hitNoteControl);
-                    if (e.GetPosition(hitNoteControl).X < hitNoteControl.ActualWidth - NotesCanvasModel.resizeMargin) // Move note
+                    if (e.GetPosition(hitNoteControl).X < hitNoteControl.ActualWidth - NotesCanvasModel.resizeMargin)
                     {
+                        // Move note
                         noteInDrag = hitNote;
                         noteOffsetOfDrag = ncModel.snapNoteOffset(e.GetPosition((Canvas)sender).X) - noteInDrag.offset;
                         lastNoteLength = noteInDrag.length;
-                        ((Canvas)sender).CaptureMouse();
+                        leftMostNoteOfDrag = rightMostNoteOfDrag = maxNoteOfDrag = minNoteOfDrag = noteInDrag;
+                        if (ncModel.trackPart.selectedNotes.Count != 0)
+                            foreach (Note note in ncModel.trackPart.selectedNotes)
+                            {
+                                if (note.offset < leftMostNoteOfDrag.offset)
+                                    leftMostNoteOfDrag = note;
+                                if (note.offset > rightMostNoteOfDrag.offset)
+                                    rightMostNoteOfDrag = note;
+                                if (note.keyNo > maxNoteOfDrag.keyNo)
+                                    maxNoteOfDrag = note;
+                                if (note.keyNo < minNoteOfDrag.keyNo)
+                                    minNoteOfDrag = note;
+                            }
                     }
-                    else // Resize note
+                    else
                     {
+                        // Resize note
                         noteInResize = hitNote;
-                        ((Canvas)sender).CaptureMouse();
                         Mouse.OverrideCursor = Cursors.SizeWE;
+                        shortedNoteInResize = noteInResize;
+                        if (ncModel.trackPart.selectedNotes.Count != 0)
+                            foreach (Note note in ncModel.trackPart.selectedNotes)
+                                if (note.length < shortedNoteInResize.length)
+                                    shortedNoteInResize = note;
                     }
                 }
                 else // Add note
@@ -390,28 +419,15 @@ namespace OpenUtau.UI
                         offset = ncModel.snapNoteOffset(e.GetPosition((Canvas)sender).X),
                         length = lastNoteLength
                     };
-                    ncModel.AddNote(newNote);
+                    ncModel.trackPart.AddNote(newNote);
                     // Enable drag
                     noteInDrag = newNote;
                     noteOffsetOfDrag = ncModel.snapNoteOffset(e.GetPosition((Canvas)sender).X) - noteInDrag.offset;
-                    ((Canvas)sender).CaptureMouse();
+                    leftMostNoteOfDrag = rightMostNoteOfDrag = maxNoteOfDrag = minNoteOfDrag = noteInDrag;
+                    ncModel.trackPart.DeselectAll();
                 }
             }
-        }
-
-        private void notesCanvas_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            Point mousePos = e.GetPosition((Canvas)sender);
-            NoteControl hitNoteControl = getNoteVisualHit(VisualTreeHelper.HitTest(notesCanvas, mousePos));
-
-            if (hitNoteControl != null)
-            {
-                Note note = ncModel.getNoteFromControl(hitNoteControl);
-                notesCanvas.Children.Remove(note.noteControl);
-                ncModel.notes.Remove(note);
-            }
-
-            ncModel.debugPrintNotes();
+            ((UIElement)sender).CaptureMouse();
         }
 
         private void notesCanvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -419,7 +435,11 @@ namespace OpenUtau.UI
             noteInDrag = null;
             noteInResize = null;
             selectionStart = null;
-            if (selectionBox != null) selectionBox.Visibility = System.Windows.Visibility.Hidden;
+            if (selectionBox != null)
+            {
+                Canvas.SetZIndex(selectionBox, -100);
+            }
+            ncModel.trackPart.FinishSelectTemp();
             ((Canvas)sender).ReleaseMouseCapture();
             Mouse.OverrideCursor = Cursors.Arrow;
         }
@@ -427,48 +447,93 @@ namespace OpenUtau.UI
         private void notesCanvas_MouseMove(object sender, MouseEventArgs e)
         {
             Point mousePos = e.GetPosition((Canvas)sender);
+            notesCanvas_MouseMove_Helper(mousePos);
+        }
 
-            if (selectionStart != null)
+        private void notesCanvas_MouseMove_Helper(Point mousePos)
+        {
+
+            if (selectionStart != null) // Selection
             {
-                selectionBox.Width = Math.Abs(mousePos.X - selectionStart.Value.X);
-                selectionBox.Height = Math.Abs(mousePos.Y - selectionStart.Value.Y);
-                Canvas.SetLeft(selectionBox, Math.Min(mousePos.X, selectionStart.Value.X));
-                Canvas.SetTop(selectionBox, Math.Min(mousePos.Y, selectionStart.Value.Y));
+                double top = ncModel.keyToCanvas(Math.Max(ncModel.snapNoteKey(mousePos.Y), (int)selectionStart.Value.Y));
+                double bottom = ncModel.keyToCanvas(Math.Min(ncModel.snapNoteKey(mousePos.Y), (int)selectionStart.Value.Y) - 1);
+                selectionBox.Width = Math.Abs(mousePos.X - ncModel.offsetToCanvas(selectionStart.Value.X));
+                selectionBox.Height = bottom - top;
+                Canvas.SetLeft(selectionBox, Math.Min(mousePos.X, ncModel.offsetToCanvas(selectionStart.Value.X)));
+                Canvas.SetTop(selectionBox, top);
+                ncModel.trackPart.SelectTempInBox(
+                    ncModel.canvasToOffset(mousePos.X),
+                    selectionStart.Value.X,
+                    ncModel.snapNoteKey(mousePos.Y),
+                    selectionStart.Value.Y);
             }
             else if (noteInDrag != null) // Drag Note
             {
-                noteInDrag.keyNo = ncModel.snapNoteKey(mousePos.Y);;
-                noteInDrag.offset = Math.Max(0, ncModel.snapNoteOffset(mousePos.X) - noteOffsetOfDrag);
-                noteInDrag.updateGraphics(ncModel);
+                double movedOffset = ncModel.snapNoteOffset(mousePos.X) - noteOffsetOfDrag - noteInDrag.offset;
+                if (leftMostNoteOfDrag.offset + movedOffset < 0) movedOffset = -leftMostNoteOfDrag.offset;
+                int movedKeyNo = ncModel.snapNoteKey(mousePos.Y) - noteInDrag.keyNo;
+                if (maxNoteOfDrag.keyNo + movedKeyNo > NotesCanvasModel.numNotesHeight - 1)
+                    movedKeyNo = NotesCanvasModel.numNotesHeight - 1 - maxNoteOfDrag.keyNo;
+                if (minNoteOfDrag.keyNo + movedKeyNo < 0)
+                    movedKeyNo = -minNoteOfDrag.keyNo;
+                if (ncModel.trackPart.selectedNotes.Count == 0)
+                {
+                    noteInDrag.keyNo += movedKeyNo;
+                    noteInDrag.offset += movedOffset;
+                    noteInDrag.updateGraphics(ncModel);
+                }
+                else
+                {
+                    foreach (Note note in ncModel.trackPart.selectedNotes)
+                    {
+                        note.keyNo += movedKeyNo;
+                        note.offset += movedOffset;
+                        note.updateGraphics(ncModel);
+                    }
+                }
+
                 Mouse.OverrideCursor = Cursors.SizeAll;
-                // TODO : Drag scroll
             }
             else if (noteInResize != null) // Resize Note
             {
                 double newLength = ncModel.snapLength ?
                     ncModel.getLengthSnapUnit() + Math.Max(0, ncModel.snapNoteLength(mousePos.X - ncModel.offsetToCanvas(noteInResize.offset) - ncModel.getViewOffsetX())) :
                     Math.Max(Note.minLength, ncModel.snapNoteLength(mousePos.X) - noteInResize.offset);
-                noteInResize.length = newLength;
-                noteInResize.updateGraphics(ncModel);
-                lastNoteLength = newLength;
+                double deltaLength = newLength - noteInResize.length;
+                if (shortedNoteInResize.length + deltaLength < ncModel.getOffsetSnapUnit()) deltaLength = ncModel.getOffsetSnapUnit() - shortedNoteInResize.length;
+                if (ncModel.trackPart.selectedNotes.Count == 0)
+                {
+                    noteInResize.length += deltaLength;
+                    noteInResize.updateGraphics(ncModel);
+                }
+                else
+                {
+                    foreach (Note note in ncModel.trackPart.selectedNotes)
+                    {
+                        note.length += deltaLength;
+                        note.updateGraphics(ncModel);
+                    }
+                }
+
+                lastNoteLength = noteInResize.length;
             }
-            else if (e.RightButton == MouseButtonState.Pressed) // Remove Note
+            else if (Mouse.RightButton == MouseButtonState.Pressed) // Remove Note
             {
                 NoteControl hitNoteControl = getNoteVisualHit(VisualTreeHelper.HitTest(notesCanvas, mousePos));
 
                 if (hitNoteControl != null)
                 {
                     Note note = ncModel.getNoteFromControl(hitNoteControl);
-                    ncModel.RemoveNote(note);
+                    ncModel.trackPart.RemoveNote(note);
                 }
             }
-            else if(e.LeftButton == MouseButtonState.Released && e.RightButton == MouseButtonState.Released)
+            else if (Mouse.LeftButton == MouseButtonState.Released && Mouse.RightButton == MouseButtonState.Released)
             {
                 NoteControl hitNoteControl = getNoteVisualHit(VisualTreeHelper.HitTest(notesCanvas, mousePos));
 
                 if (hitNoteControl != null) // Change Cursor
                 {
-                    if (e.GetPosition(hitNoteControl).X < hitNoteControl.ActualWidth - NotesCanvasModel.resizeMargin)
+                    if (Mouse.GetPosition(hitNoteControl).X < hitNoteControl.ActualWidth - NotesCanvasModel.resizeMargin)
                     {
                         Mouse.OverrideCursor = Cursors.Arrow;
                     }
@@ -484,6 +549,50 @@ namespace OpenUtau.UI
             }
         }
 
+        private void notesCanvas_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Point mousePos = e.GetPosition((Canvas)sender);
+            NoteControl hitNoteControl = getNoteVisualHit(VisualTreeHelper.HitTest(notesCanvas, mousePos));
+
+            if (hitNoteControl != null)
+            {
+                Note note = ncModel.getNoteFromControl(hitNoteControl);
+                notesCanvas.Children.Remove(note.noteControl);
+                ncModel.trackPart.RemoveNote(note);
+            }
+            else
+            {
+                ncModel.trackPart.DeselectAll();
+            }
+            ((UIElement)sender).CaptureMouse();
+            Mouse.OverrideCursor = Cursors.No;
+
+            // Debug code start
+            // ncModel.trackPart.PrintNotes();
+            // Fill notes for debug
+            if (Mouse.LeftButton == MouseButtonState.Pressed && Mouse.RightButton == MouseButtonState.Pressed)
+            {
+                for (int i = 60; i < 80; i++)
+                {
+                    for (int j = 0; j < 20; j++)
+                    {
+                        ncModel.trackPart.AddNote(new Note()
+                        {
+                            keyNo = i,
+                            offset = j
+                        });
+                    }
+                }
+            }
+            // Debug code end
+        }
+
+        private void notesCanvas_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            Mouse.OverrideCursor = Cursors.Arrow;
+            ((UIElement)sender).ReleaseMouseCapture();
+        }
+
         // TODO : resize show same portion of view
         private void notesCanvas_SizeChanged(object sender, SizeChangedEventArgs e)
         {
@@ -496,8 +605,14 @@ namespace OpenUtau.UI
 
         private void notesCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-            this.horizontalScroll.Value = this.horizontalScroll.Value - 0.01 * horizontalScroll.SmallChange * e.Delta;
-            ncModel.updateGraphics();
+            if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
+            {
+                timelineCanvas_MouseWheel(sender, e);
+            }
+            else
+            {
+                notesVerticalScroll_MouseWheel(sender, e);
+            }
         }
 
         # endregion
@@ -702,7 +817,7 @@ namespace OpenUtau.UI
         
         private void timelineCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-            const double zoomSpeed = 0.002;
+            const double zoomSpeed = 0.0012;
             ncModel.hZoom(e.Delta * zoomSpeed, e.GetPosition((UIElement)sender).X);
             ncModel.updateScroll();
             ncModel.updateGraphics();
@@ -785,5 +900,57 @@ namespace OpenUtau.UI
 
         # endregion
 
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.A && (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)))
+            {
+                ncModel.trackPart.SelectAll();
+            }
+        }
+
+        private TimeSpan lastFrame = TimeSpan.Zero;
+
+        private void Window_PerFrameCallback(object sender, EventArgs e)
+        {
+            TimeSpan nextFrame = ((RenderingEventArgs)e).RenderingTime;
+            if (lastFrame == nextFrame) return; // Skip redundant call
+            double deltaTime = (nextFrame - lastFrame).TotalMilliseconds;
+
+            if (Mouse.Captured == this.notesCanvas && Mouse.LeftButton == MouseButtonState.Pressed)
+            {
+                const double scrollSpeed = 2.5;
+                Point mousePos = Mouse.GetPosition(notesCanvas);
+                bool needUdpate = false;
+                if (mousePos.X < 0)
+                {
+                    this.horizontalScroll.Value = this.horizontalScroll.Value - 0.01 * horizontalScroll.SmallChange * scrollSpeed * deltaTime;
+                    needUdpate = true;
+                }
+                else if (mousePos.X > notesCanvas.ActualWidth)
+                {
+                    this.horizontalScroll.Value = this.horizontalScroll.Value + 0.01 * horizontalScroll.SmallChange * scrollSpeed * deltaTime;
+                    needUdpate = true;
+                }
+
+                if (mousePos.Y < 0)
+                {
+                    this.notesVerticalScroll.Value = this.notesVerticalScroll.Value - 0.01 * notesVerticalScroll.SmallChange * scrollSpeed * deltaTime;
+                    needUdpate = true;
+                }
+                else if (mousePos.Y > notesCanvas.ActualHeight)
+                {
+                    this.notesVerticalScroll.Value = this.notesVerticalScroll.Value + 0.01 * notesVerticalScroll.SmallChange * scrollSpeed * deltaTime;
+                    needUdpate = true;
+                }
+
+                if (needUdpate)
+                {
+                    ncModel.updateGraphics();
+                    notesCanvas_MouseMove_Helper(mousePos);
+                }
+            }
+
+            lastFrame = nextFrame;
+        }
     }
 }

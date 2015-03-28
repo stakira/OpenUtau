@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media;
 
 namespace OpenUtau.UI.Models
@@ -12,6 +13,17 @@ namespace OpenUtau.UI.Models
         static public string[] noteStrings = new String[12] { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
 
         static int[] blackKeys = { 1, 3, 6, 8, 10 };
+
+        public static SolidColorBrush TickLineBrushLight = new SolidColorBrush();
+        public static SolidColorBrush TickLineBrushDark = new SolidColorBrush();
+        public static SolidColorBrush BarNumberBrush = new SolidColorBrush();
+        
+        public static bool LoadTheme(){
+            TickLineBrushLight.Color = (Color)Application.Current.FindResource("TickLineColorLight");
+            TickLineBrushDark.Color = (Color)Application.Current.FindResource("TickLineColorDark");
+            BarNumberBrush.Color = (Color)Application.Current.FindResource("BarNumberColor");
+            return true;
+        }
 
         static public System.Windows.Media.Brush getNoteBackgroundBrush(int noteNo)
         {

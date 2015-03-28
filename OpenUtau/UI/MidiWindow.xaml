@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="BorderlessWindow" AllowsTransparency="False" MinHeight="600" MinWidth="800" Height="760" Width="950" ResizeMode="CanResizeWithGrip"
         WindowStyle="None" SourceInitialized="win_SourceInitialized"
-        Activated="Window_Activated" Deactivated="Window_Deactivated" SnapsToDevicePixels="True">
+        Activated="Window_Activated" Deactivated="Window_Deactivated" SnapsToDevicePixels="True" KeyDown="Window_KeyDown">
     <Grid>
 
         <Border x:Name="titleBar" Height="24" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,0,0,0"
@@ -34,7 +34,7 @@
                     ClipToBounds="True" SnapsToDevicePixels="True"
                     MouseLeftButtonDown="notesCanvas_MouseLeftButtonDown" MouseRightButtonDown="notesCanvas_MouseRightButtonDown"
                     MouseLeftButtonUp="notesCanvas_MouseLeftButtonUp" MouseMove="notesCanvas_MouseMove" SizeChanged="notesCanvas_SizeChanged"
-                    MouseWheel="notesCanvas_MouseWheel"/>
+                    MouseWheel="notesCanvas_MouseWheel" MouseRightButtonUp="notesCanvas_MouseRightButtonUp"/>
             <ScrollBar x:Name="horizontalScroll" Grid.Row="0" Style="{StaticResource OUScrollBar}" HorizontalAlignment="Stretch" VerticalAlignment="Top"
                        Height="20" Margin="48,0,20,0" Orientation="Horizontal" Minimum="0" Maximum="1" Value="0" 
                        Scroll="horizontalScroll_Scroll" MouseWheel="horizontalScroll_MouseWheel" />

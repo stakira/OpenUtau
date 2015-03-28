@@ -13,6 +13,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using OpenUtau.Core;
+
 namespace OpenUtau.UI.Controls
 {
     /// <summary>
@@ -20,6 +22,8 @@ namespace OpenUtau.UI.Controls
     /// </summary>
     public partial class NoteControl : UserControl
     {
+        public Note note;
+        
         public NoteControl()
         {
             InitializeComponent();
@@ -31,14 +35,16 @@ namespace OpenUtau.UI.Controls
             else lyricText.Visibility = System.Windows.Visibility.Visible;
         }
 
-        public void select()
+        public void SetSelected()
         {
             bodyRectangle.Fill = Brushes.Red;
         }
 
-        public void deselct()
+        public void SetUnselected()
         {
             bodyRectangle.Fill = Brushes.Gray;
         }
+
+
     }
 }

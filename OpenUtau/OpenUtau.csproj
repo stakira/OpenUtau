@@ -55,6 +55,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Core\TrackPart.cs" />
     <Compile Include="UI\Controls\NoteControl.xaml.cs">
       <DependentUpon>NoteControl.xaml</DependentUpon>
     </Compile>
@@ -71,7 +72,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="UI\Models\Note.cs" />
+    <Compile Include="Core\Note.cs" />
     <Compile Include="UI\Models\NotesCanvasModel.cs" />
     <Compile Include="UI\MidiWindow.xaml.cs">
       <DependentUpon>MidiWindow.xaml</DependentUpon>
