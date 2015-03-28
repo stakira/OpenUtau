@@ -17,6 +17,7 @@ using WinInterop = System.Windows.Interop;
 using System.Runtime.InteropServices;
 
 using OpenUtau.UI.Models;
+using OpenUtau.UI.Controls;
 
 namespace OpenUtau.UI
 {
@@ -33,7 +34,7 @@ namespace OpenUtau.UI
         // Canvas states
         NotesCanvasModel ncModel;
 
-        double _lastNoteLength = 1;
+        double lastNoteLength = 1;
 
         public MidiWindow()
         {
@@ -321,54 +322,92 @@ namespace OpenUtau.UI
         Note noteInDrag = null;
         double noteOffsetOfDrag;
         Note noteInResize = null;
+        Nullable<Point> selectionStart = null;
+        Rectangle selectionBox;
+
+        private NoteControl getNoteVisualHit(HitTestResult result)
+        {
+            var element = result.VisualHit;
+            while (element != null && !(element is NoteControl))
+                element = VisualTreeHelper.GetParent(element);
+            return (NoteControl)element;
+        }
 
         private void notesCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            Point pt = e.GetPosition((Canvas)sender);
-            HitTestResult result = VisualTreeHelper.HitTest(notesCanvas, pt);
+            Point mousePos = e.GetPosition((Canvas)sender);
+            NoteControl hitNoteControl = getNoteVisualHit(VisualTreeHelper.HitTest(notesCanvas, mousePos));
 
-            if (result.VisualHit.GetType() == typeof(Rectangle) && ((UIElement)result.VisualHit).IsHitTestVisible)
+            if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
             {
-                Note hitNote = ncModel.shapeToNote((Rectangle)result.VisualHit);
-                if (e.GetPosition((UIElement)result.VisualHit).X < hitNote.shape.Width - NotesCanvasModel.resizeMargin) // Move note
+                selectionStart = e.GetPosition((UIElement)sender);
+                ((Canvas)sender).CaptureMouse();
+                if (selectionBox == null)
                 {
-                    noteInDrag = hitNote;
-                    noteOffsetOfDrag = ncModel.snapNoteOffset(e.GetPosition((Canvas)sender).X) - noteInDrag.offset;
-                    _lastNoteLength = noteInDrag.length;
-                    ((Canvas)sender).CaptureMouse();
-                }
-                else // Resize note
+                    selectionBox = new Rectangle()
+                    {
+                        Stroke = Brushes.Gray,
+                        StrokeThickness = 1,
+                        Fill = ThemeManager.getBarNumberBrush(),
+                        Width = 0,
+                        Height = 0,
+                        Opacity = 0.5
+                    };
+                    notesCanvas.Children.Add(selectionBox);
+                    Canvas.SetZIndex(selectionBox, 1000);
+                } 
+                else
                 {
-                    noteInResize = hitNote;
-                    ((Canvas)sender).CaptureMouse();
-                    Mouse.OverrideCursor = Cursors.SizeWE;
+                    selectionBox.Width = 0;
+                    selectionBox.Height = 0;
+                    selectionBox.Visibility = System.Windows.Visibility.Visible;
                 }
             }
-            else // Add note
+            else
             {
-                Note newNote = new Note
+                if (hitNoteControl != null)
                 {
-                    keyNo = ncModel.snapNoteKey(e.GetPosition((Canvas)sender).Y),
-                    offset = ncModel.snapNoteOffset(e.GetPosition((Canvas)sender).X),
-                    length = _lastNoteLength
-                };
-                ncModel.AddNote(newNote);
-                // Enable drag
-                noteInDrag = newNote;
-                noteOffsetOfDrag = ncModel.snapNoteOffset(e.GetPosition((Canvas)sender).X) - noteInDrag.offset;
-                ((Canvas)sender).CaptureMouse();
+                    Note hitNote = ncModel.getNoteFromControl(hitNoteControl);
+                    if (e.GetPosition(hitNoteControl).X < hitNoteControl.ActualWidth - NotesCanvasModel.resizeMargin) // Move note
+                    {
+                        noteInDrag = hitNote;
+                        noteOffsetOfDrag = ncModel.snapNoteOffset(e.GetPosition((Canvas)sender).X) - noteInDrag.offset;
+                        lastNoteLength = noteInDrag.length;
+                        ((Canvas)sender).CaptureMouse();
+                    }
+                    else // Resize note
+                    {
+                        noteInResize = hitNote;
+                        ((Canvas)sender).CaptureMouse();
+                        Mouse.OverrideCursor = Cursors.SizeWE;
+                    }
+                }
+                else // Add note
+                {
+                    Note newNote = new Note
+                    {
+                        keyNo = ncModel.snapNoteKey(e.GetPosition((Canvas)sender).Y),
+                        offset = ncModel.snapNoteOffset(e.GetPosition((Canvas)sender).X),
+                        length = lastNoteLength
+                    };
+                    ncModel.AddNote(newNote);
+                    // Enable drag
+                    noteInDrag = newNote;
+                    noteOffsetOfDrag = ncModel.snapNoteOffset(e.GetPosition((Canvas)sender).X) - noteInDrag.offset;
+                    ((Canvas)sender).CaptureMouse();
+                }
             }
         }
 
         private void notesCanvas_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-            Point pt = e.GetPosition((Canvas)sender);
-            HitTestResult result = VisualTreeHelper.HitTest(notesCanvas, pt);
+            Point mousePos = e.GetPosition((Canvas)sender);
+            NoteControl hitNoteControl = getNoteVisualHit(VisualTreeHelper.HitTest(notesCanvas, mousePos));
 
-            if (result.VisualHit.GetType() == typeof(Rectangle) && ((UIElement)result.VisualHit).IsHitTestVisible)
+            if (hitNoteControl != null)
             {
-                Note note = ncModel.shapeToNote((Rectangle)result.VisualHit);
-                notesCanvas.Children.Remove(note.shape);
+                Note note = ncModel.getNoteFromControl(hitNoteControl);
+                notesCanvas.Children.Remove(note.noteControl);
                 ncModel.notes.Remove(note);
             }
 
@@ -379,57 +418,63 @@ namespace OpenUtau.UI
         {
             noteInDrag = null;
             noteInResize = null;
+            selectionStart = null;
+            if (selectionBox != null) selectionBox.Visibility = System.Windows.Visibility.Hidden;
             ((Canvas)sender).ReleaseMouseCapture();
             Mouse.OverrideCursor = Cursors.Arrow;
         }
 
         private void notesCanvas_MouseMove(object sender, MouseEventArgs e)
         {
-            if (noteInDrag != null) // Drag Note
+            Point mousePos = e.GetPosition((Canvas)sender);
+
+            if (selectionStart != null)
             {
-                var mousePos = e.GetPosition(notesCanvas);
+                selectionBox.Width = Math.Abs(mousePos.X - selectionStart.Value.X);
+                selectionBox.Height = Math.Abs(mousePos.Y - selectionStart.Value.Y);
+                Canvas.SetLeft(selectionBox, Math.Min(mousePos.X, selectionStart.Value.X));
+                Canvas.SetTop(selectionBox, Math.Min(mousePos.Y, selectionStart.Value.Y));
+            }
+            else if (noteInDrag != null) // Drag Note
+            {
                 noteInDrag.keyNo = ncModel.snapNoteKey(mousePos.Y);;
                 noteInDrag.offset = Math.Max(0, ncModel.snapNoteOffset(mousePos.X) - noteOffsetOfDrag);
-                ncModel.updateNote(noteInDrag);
+                noteInDrag.updateGraphics(ncModel);
                 Mouse.OverrideCursor = Cursors.SizeAll;
                 // TODO : Drag scroll
             }
             else if (noteInResize != null) // Resize Note
             {
-                var mousePos = e.GetPosition(notesCanvas);
                 double newLength = ncModel.snapLength ?
                     ncModel.getLengthSnapUnit() + Math.Max(0, ncModel.snapNoteLength(mousePos.X - ncModel.offsetToCanvas(noteInResize.offset) - ncModel.getViewOffsetX())) :
                     Math.Max(Note.minLength, ncModel.snapNoteLength(mousePos.X) - noteInResize.offset);
                 noteInResize.length = newLength;
-                ncModel.updateNote(noteInResize);
-                _lastNoteLength = newLength;
+                noteInResize.updateGraphics(ncModel);
+                lastNoteLength = newLength;
             }
             else if (e.RightButton == MouseButtonState.Pressed) // Remove Note
             {
-                Point pt = e.GetPosition((Canvas)sender);
-                HitTestResult result = VisualTreeHelper.HitTest(notesCanvas, pt);
+                NoteControl hitNoteControl = getNoteVisualHit(VisualTreeHelper.HitTest(notesCanvas, mousePos));
 
-                if (result.VisualHit.GetType() == typeof(Rectangle) && ((UIElement)result.VisualHit).IsHitTestVisible)
+                if (hitNoteControl != null)
                 {
-                    Note note = ncModel.shapeToNote((Rectangle)result.VisualHit);
+                    Note note = ncModel.getNoteFromControl(hitNoteControl);
                     ncModel.RemoveNote(note);
                 }
             }
             else if(e.LeftButton == MouseButtonState.Released && e.RightButton == MouseButtonState.Released)
             {
-                Point pt = e.GetPosition((Canvas)sender);
-                HitTestResult result = VisualTreeHelper.HitTest(notesCanvas, pt);
+                NoteControl hitNoteControl = getNoteVisualHit(VisualTreeHelper.HitTest(notesCanvas, mousePos));
 
-                if (result.VisualHit.GetType() == typeof(Rectangle) && ((UIElement)result.VisualHit).IsHitTestVisible) // Change Cursor
+                if (hitNoteControl != null) // Change Cursor
                 {
-                    Note hitNote = ncModel.shapeToNote((Rectangle)result.VisualHit);
-                    if (e.GetPosition((UIElement)result.VisualHit).X > hitNote.shape.Width - NotesCanvasModel.resizeMargin)
+                    if (e.GetPosition(hitNoteControl).X < hitNoteControl.ActualWidth - NotesCanvasModel.resizeMargin)
                     {
-                        Mouse.OverrideCursor = Cursors.SizeWE;
+                        Mouse.OverrideCursor = Cursors.Arrow;
                     }
                     else
                     {
-                        Mouse.OverrideCursor = Cursors.Arrow;
+                        Mouse.OverrideCursor = Cursors.SizeWE;
                     }
                 }
                 else
@@ -447,6 +492,12 @@ namespace OpenUtau.UI
             ncModel.updateScroll();
             ncModel.updateGraphics();
             updateVZoomControl();
+        }
+
+        private void notesCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            this.horizontalScroll.Value = this.horizontalScroll.Value - 0.01 * horizontalScroll.SmallChange * e.Delta;
+            ncModel.updateGraphics();
         }
 
         # endregion
@@ -647,7 +698,7 @@ namespace OpenUtau.UI
 
         #endregion
 
-        # region Horizontal Zoom Control
+        # region Timeline Canvas
         
         private void timelineCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
         {
@@ -655,6 +706,27 @@ namespace OpenUtau.UI
             ncModel.hZoom(e.Delta * zoomSpeed, e.GetPosition((UIElement)sender).X);
             ncModel.updateScroll();
             ncModel.updateGraphics();
+        }
+
+        private void timelineCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            ncModel.playPosMarkerOffset = ncModel.snapNoteOffset(e.GetPosition((UIElement)sender).X);
+            ncModel.updatePlayPosMarker();
+            ((Canvas)sender).CaptureMouse();
+        }
+
+        private void timelineCanvas_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                ncModel.playPosMarkerOffset = ncModel.snapNoteOffset(e.GetPosition((UIElement)sender).X);
+                ncModel.updatePlayPosMarker();
+            }
+        }
+
+        private void timelineCanvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            ((Canvas)sender).ReleaseMouseCapture();
         }
 
         # endregion
@@ -691,7 +763,7 @@ namespace OpenUtau.UI
 
         #region Keys Action
 
-        // TODO : keys mouse over, clicke, release, click and move
+        // TODO : keys mouse over, click, release, click and move
 
         private void keysCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -705,6 +777,13 @@ namespace OpenUtau.UI
         {
         }
 
+        private void keysCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            this.notesVerticalScroll.Value = this.notesVerticalScroll.Value - 0.01 * notesVerticalScroll.SmallChange * e.Delta;
+            ncModel.updateGraphics();
+        }
+
         # endregion
+
     }
 }

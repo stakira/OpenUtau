@@ -39,6 +39,11 @@ namespace OpenUtau.UI.Models
         public int bpm = 128000; // Beat per minute * 1000
         public int ppq = 960; // Pulse per quarter note
 
+        public double playPosMarkerOffset = 0;
+
+        Path playPosMarker;
+        Rectangle playPosMarkerHighlight;
+
         public bool snapOffset = true;
         public bool snapLength = true;
 
@@ -82,6 +87,7 @@ namespace OpenUtau.UI.Models
         {
             initKeyCanvas();
             initNotesCanvasBackground();
+            initPlayPosMarker();
         }
 
         public void updateGraphics()
@@ -89,6 +95,7 @@ namespace OpenUtau.UI.Models
             updateKeyCanvas();
             updateNotesCanvasBackground();
             updateNotes();
+            updatePlayPosMarker();
         }
 
         // Create key shapes and text
@@ -135,8 +142,8 @@ namespace OpenUtau.UI.Models
                     double notePosInView = keyToCanvas(i);
                     Canvas.SetLeft(keyNames[i], 0);
                     Canvas.SetTop(keyNames[i], notePosInView + (noteHeight - 16) / 2);
-                    if (noteHeight > 12) keyNames[i].Visibility = System.Windows.Visibility.Visible;
-                    else keyNames[i].Visibility = System.Windows.Visibility.Hidden;
+                    if (noteHeight < 12) keyNames[i].Visibility = System.Windows.Visibility.Hidden;
+                    else keyNames[i].Visibility = System.Windows.Visibility.Visible;
 
                     keyShapes[i].Height = noteHeight;
                     Canvas.SetLeft(keyShapes[i], 0);
@@ -267,7 +274,6 @@ namespace OpenUtau.UI.Models
             }
         }
         
-        // TODO : Improve performance
         public void updateScroll()
         {
             if (notesCanvas.ActualHeight > numNotesHeight * noteHeight)
@@ -283,6 +289,34 @@ namespace OpenUtau.UI.Models
             hScroll.ViewportSize = getViewSizeX();
             hScroll.SmallChange = hScroll.ViewportSize / 10;
             hScroll.LargeChange = hScroll.ViewportSize;
+        }
+
+        public void initPlayPosMarker()
+        {
+            playPosMarker = new Path()
+            {
+                Fill = ThemeManager.getTickLineBrush(),
+                Data = Geometry.Parse("M 0 0 L 13 0 L 13 3 L 6.5 9 L 0 3 Z")
+            };
+            timelineCanvas.Children.Add(playPosMarker);
+            Canvas.SetZIndex(playPosMarker, 1000);
+
+            playPosMarkerHighlight = new Rectangle()
+            {
+                Fill = ThemeManager.getTickLineBrush(),
+                Opacity = 0.25,
+                Width = 32
+            };
+            notesCanvas.Children.Add(playPosMarkerHighlight);
+            Canvas.SetZIndex(playPosMarkerHighlight, 1000);
+        }
+
+        public void updatePlayPosMarker()
+        {
+            playPosMarkerOffset = Math.Max(0, playPosMarkerOffset);
+            Canvas.SetLeft(playPosMarker, Math.Round(offsetToCanvas(playPosMarkerOffset)) - 6);
+            playPosMarkerHighlight.Height = notesCanvas.ActualHeight;
+            Canvas.SetLeft(playPosMarkerHighlight, Math.Round(offsetToCanvas(playPosMarkerOffset)));
         }
 
         public void hZoom(double delta, double centerX)
@@ -352,12 +386,12 @@ namespace OpenUtau.UI.Models
             else return ZoomLevel.SixteenthNote;
         }
 
-        public Note shapeToNote(System.Windows.Shapes.Rectangle shape)
+        public Note getNoteFromControl(OpenUtau.UI.Controls.NoteControl control)
         {
             // TODO : Improve performance
             foreach (Note note in notes)
             {
-                if (note.shape == shape) return note;
+                if (note.noteControl == control) return note;
             }
             return null;
         }
@@ -425,17 +459,9 @@ namespace OpenUtau.UI.Models
         }
 
         // Note methods
-        public void updateNote(Note note)
-        {
-            note.shape.Height = noteHeight - 2;
-            note.shape.Width = Math.Max(2, Math.Round(note.length * noteWidth) - 3);
-            Canvas.SetLeft(note.shape, Math.Round(offsetToCanvas(note.offset)) + 2);
-            Canvas.SetTop(note.shape, Math.Round(keyToCanvas(note.keyNo)) + 1);
-        }
-
         public void updateNotes()
         {
-            foreach (Note note in notes) updateNote(note);
+            foreach (Note note in notes) note.updateGraphics(this);
         }
 
         public void AddNote(Note note)
@@ -443,15 +469,15 @@ namespace OpenUtau.UI.Models
             if (notes.Contains(note))
                 throw new Exception("Note already exist, cannot be added again");
             notes.Add(note);
-            notesCanvas.Children.Add(note.shape);
-            updateNote(note);
+            notesCanvas.Children.Add(note.noteControl);
+            note.updateGraphics(this);
         }
 
         public void RemoveNote(Note note)
         {
             if (!notes.Contains(note))
                 throw new Exception("Note does not exist, cannot be removed");
-            notesCanvas.Children.Remove(note.shape);
+            notesCanvas.Children.Remove(note.noteControl);
             notes.Remove(note);
         }
 

@@ -55,7 +55,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="UI\Controls\NoteControl.xaml.cs">
+      <DependentUpon>NoteControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Models\ThemeManager.cs" />
+    <Page Include="UI\Controls\NoteControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\MidiWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
