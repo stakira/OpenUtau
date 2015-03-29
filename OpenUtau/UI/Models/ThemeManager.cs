@@ -14,14 +14,50 @@ namespace OpenUtau.UI.Models
 
         static int[] blackKeys = { 1, 3, 6, 8, 10 };
 
+        // Window UI
+
+        // Midi editor background
         public static SolidColorBrush TickLineBrushLight = new SolidColorBrush();
         public static SolidColorBrush TickLineBrushDark = new SolidColorBrush();
         public static SolidColorBrush BarNumberBrush = new SolidColorBrush();
+
+        // Midi editor markers
+        public static SolidColorBrush PlayPosMarkerHighlightBrush = new SolidColorBrush();
+        
+        // Midi note
+        public static SolidColorBrush[] NoteFillBrushes = new SolidColorBrush[]
+        {
+            new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush()
+        };
+
+        public static SolidColorBrush[] NoteStrokeBrushes = new SolidColorBrush[]
+        {
+            new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush()
+        };
+
+        public static SolidColorBrush[] NoteFillActiveBrushes = new SolidColorBrush[]
+        {
+            new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush()
+        };
+
+        public static SolidColorBrush[] NoteStrokeActiveBrushes = new SolidColorBrush[]
+        {
+            new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush()
+        };
+
         
         public static bool LoadTheme(){
             TickLineBrushLight.Color = (Color)Application.Current.FindResource("TickLineColorLight");
             TickLineBrushDark.Color = (Color)Application.Current.FindResource("TickLineColorDark");
             BarNumberBrush.Color = (Color)Application.Current.FindResource("BarNumberColor");
+            
+            PlayPosMarkerHighlightBrush.Color = (Color)Application.Current.FindResource("PlayPosMarkerHighlightColor");
+
+            NoteFillBrushes[0].Color = (Color)Application.Current.FindResource("NoteFillColorACh0");
+            NoteStrokeBrushes[0].Color = (Color)Application.Current.FindResource("NoteStrokeColorCh0");
+            NoteFillActiveBrushes[0].Color = (Color)Application.Current.FindResource("NoteFillActiveColorACh0");
+            NoteStrokeActiveBrushes[0].Color = (Color)Application.Current.FindResource("NoteStrokeActiveColorCh0");
+
             return true;
         }
 

@@ -16,13 +16,49 @@ namespace OpenUtau.Core
         public string lyric = "a";
         public OpenUtau.UI.Controls.NoteControl noteControl;
 
-        public bool selected = false;
-        private bool selected_last = false;
+        private int _channel = 0;
+        private bool _selected = false;
+
+        public int Channel
+        {
+            set
+            {
+                _channel = value;
+                noteControl.Channel = _channel;
+            }
+            get
+            {
+                return _channel;
+            }
+        }
+
+        public bool Selected
+        {
+            set
+            {
+                if (value && !_selected)
+                {
+                    noteControl.SetSelected();
+                }
+                else if (!value && _selected)
+                {
+                    noteControl.SetUnselected();
+                }
+
+                _selected = value;
+            }
+
+            get
+            {
+                return _selected;
+            }
+        }
 
         public Note()
         {
             noteControl = new OpenUtau.UI.Controls.NoteControl();
             noteControl.note = this;
+            noteControl.Channel = Channel;
         }
 
         public void updateGraphics(OpenUtau.UI.Models.NotesCanvasModel ncModel)
@@ -31,13 +67,13 @@ namespace OpenUtau.Core
             noteControl.Width = Math.Max(2, Math.Round(length * ncModel.noteWidth) - 3);
             System.Windows.Controls.Canvas.SetLeft(noteControl, Math.Round(ncModel.offsetToCanvas(offset)) + 2);
             System.Windows.Controls.Canvas.SetTop(noteControl, Math.Round(ncModel.keyToCanvas(keyNo)) + 1);
-            if (selected && !selected_last)
-                noteControl.SetSelected();
-            else if (!selected && selected_last)
-                noteControl.SetUnselected();
-            selected_last = selected;
         }
 
         public double getEndOffset() { return offset + length; }
+
+        public string ToUstx() { return ""; }
+        public string ToUst() { return ""; }
+        public string ToVsqx() { return ""; }
+        public string ToVsq() { return ""; }
     }
 }

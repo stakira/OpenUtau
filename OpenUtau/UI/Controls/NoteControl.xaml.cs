@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 using OpenUtau.Core;
+using OpenUtau.UI.Models;
 
 namespace OpenUtau.UI.Controls
 {
@@ -23,28 +24,45 @@ namespace OpenUtau.UI.Controls
     public partial class NoteControl : UserControl
     {
         public Note note;
+
+        int _channel = 0;
+
+        public int Channel
+        {
+            set
+            {
+                _channel = value;
+            }
+            get
+            {
+                return _channel;
+            }
+        }
         
         public NoteControl()
         {
             InitializeComponent();
+            SetUnselected();
         }
 
         private void UserControl_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            if (ActualHeight < 10) lyricText.Visibility = System.Windows.Visibility.Hidden;
+            if (ActualHeight < 10 ||
+                ActualWidth < lyricText.ActualWidth + 5)
+                lyricText.Visibility = System.Windows.Visibility.Hidden;
             else lyricText.Visibility = System.Windows.Visibility.Visible;
-        }
-
-        public void SetSelected()
-        {
-            bodyRectangle.Fill = Brushes.Red;
         }
 
         public void SetUnselected()
         {
-            bodyRectangle.Fill = Brushes.Gray;
+            bodyRectangle.Fill = ThemeManager.NoteFillBrushes[_channel];
+            bodyRectangle.Stroke = ThemeManager.NoteStrokeBrushes[_channel];
         }
 
-
+        public void SetSelected()
+        {
+            bodyRectangle.Fill = ThemeManager.NoteFillActiveBrushes[_channel];
+            bodyRectangle.Stroke = ThemeManager.NoteStrokeActiveBrushes[_channel];
+        }
     }
 }

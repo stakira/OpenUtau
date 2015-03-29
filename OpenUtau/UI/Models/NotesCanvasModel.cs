@@ -36,10 +36,6 @@ namespace OpenUtau.UI.Models
         public int numNotesWidthScroll;
         public int numNotesWidth;
 
-        public int bar = 4; // bar = number of beats
-        public int beat = 4; // beat = number of quarter-notes
-        public int bpm = 128000; // Beat per minute * 1000
-        public int ppq = 960; // Pulse per quarter note
 
         public double playPosMarkerOffset = 0;
 
@@ -227,7 +223,7 @@ namespace OpenUtau.UI.Models
                     Canvas.SetTop(verticalLines.Last(), 0);
                     Canvas.SetZIndex(verticalLines.Last(), -10);
                 }
-                verticalLines[i].Stroke = (firstLine + i) % (4 / getHZoomRatio()) == 0 ?
+                verticalLines[i].Stroke = (firstLine + i) % (trackPart.beat / getHZoomRatio()) == 0 ?
                     ThemeManager.TickLineBrushDark : ThemeManager.TickLineBrushLight;
                 verticalLines[i].Y2 = notesCanvas.ActualHeight;
                 Canvas.SetLeft(verticalLines[i], Math.Round(lineX) + 0.5);
@@ -240,7 +236,7 @@ namespace OpenUtau.UI.Models
             }
 
             // Update bar number and line
-            double displayBarWidth = noteWidth * beat * bar;
+            double displayBarWidth = noteWidth * trackPart.beat * trackPart.bar;
             int firstBar = (int)(getViewOffsetX() / displayBarWidth);
             double firstBarX = firstBar * displayBarWidth - getViewOffsetX();
 
@@ -371,13 +367,13 @@ namespace OpenUtau.UI.Models
         public double getOffsetSnapUnit() // Unit : quarter note
         {
             if (snapOffset) return getHZoomRatio();
-            else return 1.0 / ppq;
+            else return 1.0 / trackPart.ppq;
         }
 
         public double getLengthSnapUnit() // Unit : quarter note
         {
             if (snapLength) return getHZoomRatio();
-            else return 1.0 / ppq;
+            else return 1.0 / trackPart.ppq;
         }
 
         public double getHZoomRatio()
@@ -385,9 +381,9 @@ namespace OpenUtau.UI.Models
             switch (getHZoomLevel())
             {
                 case ZoomLevel.Bar:
-                    return beat * bar;
+                    return trackPart.beat * trackPart.bar;
                 case ZoomLevel.Beat:
-                    return beat;
+                    return trackPart.beat;
                 case ZoomLevel.HalfNote:
                     return 2;
                 case ZoomLevel.QuaterNote:

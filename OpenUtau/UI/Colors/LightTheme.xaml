@@ -1,6 +1,8 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+    
+    
     <Color x:Key="ScrollBarColorNormal">#ADA1B3</Color>
     <Color x:Key="ScrollBarColorActive">#948A99</Color>
     <Color x:Key="BackgroundColorNormal">#FFFFFF</Color>
@@ -28,6 +30,23 @@
     <Color x:Key="TickLineColorLight">#e7e7e7</Color>
     <Color x:Key="TickLineColorDark">#afa3b5</Color>
     <Color x:Key="BarNumberColor">#afa3b5</Color>
+
+    <!--Channel 0-->
+    <Color x:Key="NoteFillColorACh0">#6eb6ee</Color>
+    <Color x:Key="NoteFillColorBCh0">#4ea6ea</Color>
+    <Color x:Key="NoteStrokeColorCh0">#5e9ccc</Color>
+
+    <Color x:Key="NoteFillActiveColorACh0">#ff7aa9</Color>
+    <Color x:Key="NoteFillActiveColorBCh0">#ff679d</Color>
+    <Color x:Key="NoteStrokeActiveColorCh0">#d0648a</Color>
+
+    <!--Channel 1-->
+    <Color x:Key="NoteFillColorCh0">#4ea6ea</Color>
+    <Color x:Key="NoteFillColorCh1">#ff7669</Color>
+    <Color x:Key="NoteFillColorCh2">#4f61ea</Color>
+    <Color x:Key="NoteFillColorCh3">#ff6a9f</Color>
+
+    <Color x:Key="PlayPosMarkerHighlightColor">#ebdaf3</Color>
 
     <SolidColorBrush x:Key="ScrollBarBrushNormal" Color="{StaticResource ScrollBarColorNormal}"/>
     <SolidColorBrush x:Key="ScrollBarBrushActive" Color="{StaticResource ScrollBarColorActive}"/>

@@ -334,6 +334,7 @@ namespace OpenUtau.UI
 
         private NoteControl getNoteVisualHit(HitTestResult result)
         {
+            if (result == null) return null;
             var element = result.VisualHit;
             while (element != null && !(element is NoteControl))
                 element = VisualTreeHelper.GetParent(element);
@@ -568,7 +569,7 @@ namespace OpenUtau.UI
             Mouse.OverrideCursor = Cursors.No;
 
             // Debug code start
-            // ncModel.trackPart.PrintNotes();
+            ncModel.trackPart.PrintNotes();
             // Fill notes for debug
             if (Mouse.LeftButton == MouseButtonState.Pressed && Mouse.RightButton == MouseButtonState.Pressed)
             {
@@ -832,9 +833,15 @@ namespace OpenUtau.UI
 
         private void timelineCanvas_MouseMove(object sender, MouseEventArgs e)
         {
-            if (e.LeftButton == MouseButtonState.Pressed)
+            Point mousePos = e.GetPosition((UIElement)sender);
+            timelineCanvas_MouseMove_Helper(mousePos);
+        }
+
+        private void timelineCanvas_MouseMove_Helper(Point mousePos)
+        {
+            if (Mouse.LeftButton == MouseButtonState.Pressed && Mouse.Captured == timelineCanvas)
             {
-                ncModel.playPosMarkerOffset = ncModel.snapNoteOffset(e.GetPosition((UIElement)sender).X);
+                ncModel.playPosMarkerOffset = ncModel.snapNoteOffset(mousePos.X);
                 ncModel.updatePlayPosMarker();
             }
         }
@@ -904,7 +911,13 @@ namespace OpenUtau.UI
         {
             if (e.Key == Key.A && (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)))
             {
+                // Select all notes
                 ncModel.trackPart.SelectAll();
+            }
+            else if (e.Key == Key.Delete)
+            {
+                // Delete notes
+                ncModel.trackPart.RemoveSelectedNote();
             }
         }
 
@@ -916,7 +929,8 @@ namespace OpenUtau.UI
             if (lastFrame == nextFrame) return; // Skip redundant call
             double deltaTime = (nextFrame - lastFrame).TotalMilliseconds;
 
-            if (Mouse.Captured == this.notesCanvas && Mouse.LeftButton == MouseButtonState.Pressed)
+            if (Mouse.Captured == this.notesCanvas || Mouse.Captured == this.timelineCanvas
+                && Mouse.LeftButton == MouseButtonState.Pressed)
             {
                 const double scrollSpeed = 2.5;
                 Point mousePos = Mouse.GetPosition(notesCanvas);
@@ -932,12 +946,12 @@ namespace OpenUtau.UI
                     needUdpate = true;
                 }
 
-                if (mousePos.Y < 0)
+                if (mousePos.Y < 0 && Mouse.Captured == this.notesCanvas)
                 {
                     this.notesVerticalScroll.Value = this.notesVerticalScroll.Value - 0.01 * notesVerticalScroll.SmallChange * scrollSpeed * deltaTime;
                     needUdpate = true;
                 }
-                else if (mousePos.Y > notesCanvas.ActualHeight)
+                else if (mousePos.Y > notesCanvas.ActualHeight && Mouse.Captured == this.notesCanvas)
                 {
                     this.notesVerticalScroll.Value = this.notesVerticalScroll.Value + 0.01 * notesVerticalScroll.SmallChange * scrollSpeed * deltaTime;
                     needUdpate = true;
@@ -947,10 +961,21 @@ namespace OpenUtau.UI
                 {
                     ncModel.updateGraphics();
                     notesCanvas_MouseMove_Helper(mousePos);
+                    if (Mouse.Captured == this.timelineCanvas) timelineCanvas_MouseMove_Helper(mousePos);
                 }
             }
 
             lastFrame = nextFrame;
+        }
+
+        private void GridSplitter_MouseEnter(object sender, MouseEventArgs e)
+        {
+            Mouse.OverrideCursor = Cursors.SizeNS;
+        }
+
+        private void GridSplitter_MouseLeave(object sender, MouseEventArgs e)
+        {
+            Mouse.OverrideCursor = Cursors.Arrow;
         }
     }
 }

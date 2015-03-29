@@ -7,7 +7,7 @@
              d:DesignHeight="20" d:DesignWidth="128" Background="Transparent" IsHitTestVisible="True" SizeChanged="UserControl_SizeChanged">
     <Canvas Name="bodyCanvas" Margin="0">
         <Rectangle Name="bodyRectangle" Height="{Binding ElementName=bodyCanvas, Path=ActualHeight}" Width="{Binding ElementName=bodyCanvas, Path=ActualWidth}" 
-                   Canvas.Top="0" Canvas.Left="0" RadiusX="2" RadiusY="2" Fill="Gray" Opacity="0.75" Stroke="DimGray" StrokeThickness="1"/>
+                   Canvas.Top="0" Canvas.Left="0" RadiusX="2" RadiusY="2" Fill="Gray" Opacity="1" Stroke="DimGray" StrokeThickness="1"/>
         <Border Height="{Binding ElementName=bodyCanvas, Path=ActualHeight}" Canvas.Top="0" Canvas.Left="0" >
             <TextBlock Name="lyricText" Text="a" Foreground="White" VerticalAlignment="Center" Margin="5,-3,0,0"/>
         </Border>

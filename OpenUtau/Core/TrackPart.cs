@@ -8,9 +8,15 @@ namespace OpenUtau.Core
 {
     public class TrackPart
     {
+        public int bar = 4; // bar = number of beats
+        public int beat = 4; // beat = number of quarter-notes
+        public int bpm = 128000; // Beat per minute * 1000
+        public int ppq = 96; // Pulse per quarter note
+
         public List<Note> noteList = new List<Note>();
         public HashSet<Note> selectedNotes = new HashSet<Note>();
         public HashSet<Note> tempSelectedNotes = new HashSet<Note>();
+
         OpenUtau.UI.Models.NotesCanvasModel ncModel;
 
         public TrackPart(OpenUtau.UI.Models.NotesCanvasModel ncModel)
@@ -32,6 +38,16 @@ namespace OpenUtau.Core
 
         static NoteComparer noteComparer;
 
+        public void UpdateGraphics()
+        {
+            foreach (Note note in noteList)
+            {
+                note.updateGraphics(ncModel);
+            }
+        }
+
+        # region Basic Note operations
+
         public void AddNote(Note note)
         {
             noteList.Add(note);
@@ -48,6 +64,18 @@ namespace OpenUtau.Core
             ncModel.notesCanvas.Children.Remove(note.noteControl);
             note.noteControl.note = null; // Break reference loop
             return success;
+        }
+
+        public void RemoveSelectedNote()
+        {
+            foreach (Note note in selectedNotes)
+            {
+                if (!noteList.Remove(note))
+                    throw new Exception("Note does not exist, cannot be removed");
+                ncModel.notesCanvas.Children.Remove(note.noteControl);
+                note.noteControl.note = null; // Break reference loop
+            }
+            DeselectAll();
         }
 
         public void SortNote()
@@ -69,21 +97,14 @@ namespace OpenUtau.Core
             }
         }
 
-        public void UpdateGraphics()
-        {
-            foreach (Note note in noteList)
-            {
-                note.updateGraphics(ncModel);
-            }
-        }
+        # endregion
 
         # region Selection related functions
 
         public void SelectNote(Note note)
         {
             selectedNotes.Add(note);
-            note.selected = true;
-            note.updateGraphics(ncModel);
+            note.Selected = true;
         }
 
         public void SelectTempNote(Note note)
@@ -91,8 +112,7 @@ namespace OpenUtau.Core
             if (!selectedNotes.Contains(note))
             {
                 tempSelectedNotes.Add(note);
-                note.selected = true;
-                note.updateGraphics(ncModel);
+                note.Selected = true;
             }
         }
 
@@ -100,8 +120,7 @@ namespace OpenUtau.Core
         {
             foreach (Note note in tempSelectedNotes)
             {
-                note.selected = false;
-                note.updateGraphics(ncModel);
+                note.Selected = false;
             }
             tempSelectedNotes.Clear();
         }
@@ -120,8 +139,7 @@ namespace OpenUtau.Core
             if (selectedNotes.Contains(note))
             {
                 selectedNotes.Remove(note);
-                note.selected = false;
-                note.updateGraphics(ncModel);
+                note.Selected = false;
             }
         }
 
@@ -131,8 +149,7 @@ namespace OpenUtau.Core
             foreach (Note note in noteList)
             {
                 selectedNotes.Add(note);
-                note.selected = true;
-                note.updateGraphics(ncModel);
+                note.Selected = true;
             }
         }
         
@@ -141,8 +158,7 @@ namespace OpenUtau.Core
             selectedNotes.Clear();
             foreach (Note note in noteList)
             {
-                note.selected = false;
-                note.updateGraphics(ncModel);
+                note.Selected = false;
             }
         }
 
