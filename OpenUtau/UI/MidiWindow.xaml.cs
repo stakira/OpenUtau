@@ -61,6 +61,8 @@ namespace OpenUtau.UI
             ncModel.updateGraphics();
 
             CompositionTarget.Rendering += Window_PerFrameCallback;
+
+            //OpenUtau.Core.VSQx.Parse(@"I:\Vsqx\Poem.vsqx", ncModel.trackPart);
         }
 
         #region Avoid hiding task bar upon maximalisation
@@ -343,6 +345,7 @@ namespace OpenUtau.UI
 
         private void notesCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            FocusManager.SetFocusedElement(this, null);
             Point mousePos = e.GetPosition((Canvas)sender);
             NoteControl hitNoteControl = getNoteVisualHit(VisualTreeHelper.HitTest(notesCanvas, mousePos));
 
@@ -383,6 +386,8 @@ namespace OpenUtau.UI
                     if (e.GetPosition(hitNoteControl).X < hitNoteControl.ActualWidth - NotesCanvasModel.resizeMargin)
                     {
                         // Move note
+                        if (!ncModel.trackPart.selectedNotes.Contains(hitNote))
+                            ncModel.trackPart.DeselectAll();
                         noteInDrag = hitNote;
                         noteOffsetOfDrag = ncModel.snapNoteOffset(e.GetPosition((Canvas)sender).X) - noteInDrag.offset;
                         lastNoteLength = noteInDrag.length;
@@ -403,6 +408,8 @@ namespace OpenUtau.UI
                     else
                     {
                         // Resize note
+                        if (!ncModel.trackPart.selectedNotes.Contains(hitNote))
+                            ncModel.trackPart.DeselectAll();
                         noteInResize = hitNote;
                         Mouse.OverrideCursor = Cursors.SizeWE;
                         shortedNoteInResize = noteInResize;
@@ -493,6 +500,7 @@ namespace OpenUtau.UI
                     }
                 }
 
+                ncModel.trackPart.noteList.Sort();
                 Mouse.OverrideCursor = Cursors.SizeAll;
             }
             else if (noteInResize != null) // Resize Note
@@ -552,6 +560,7 @@ namespace OpenUtau.UI
 
         private void notesCanvas_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
+            FocusManager.SetFocusedElement(this, null);
             Point mousePos = e.GetPosition((Canvas)sender);
             NoteControl hitNoteControl = getNoteVisualHit(VisualTreeHelper.HitTest(notesCanvas, mousePos));
 
@@ -569,6 +578,7 @@ namespace OpenUtau.UI
             Mouse.OverrideCursor = Cursors.No;
 
             // Debug code start
+            /*
             ncModel.trackPart.PrintNotes();
             // Fill notes for debug
             if (Mouse.LeftButton == MouseButtonState.Pressed && Mouse.RightButton == MouseButtonState.Pressed)
@@ -584,7 +594,7 @@ namespace OpenUtau.UI
                         });
                     }
                 }
-            }
+            }*/
             // Debug code end
         }
 
@@ -964,6 +974,8 @@ namespace OpenUtau.UI
                     if (Mouse.Captured == this.timelineCanvas) timelineCanvas_MouseMove_Helper(mousePos);
                 }
             }
+
+            ncModel.trackPart.CheckOverlap();
 
             lastFrame = nextFrame;
         }

@@ -23,42 +23,57 @@ namespace OpenUtau.UI.Models
 
         // Midi editor markers
         public static SolidColorBrush PlayPosMarkerHighlightBrush = new SolidColorBrush();
-        
-        // Midi note
-        public static SolidColorBrush[] NoteFillBrushes = new SolidColorBrush[]
-        {
-            new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush()
-        };
 
-        public static SolidColorBrush[] NoteStrokeBrushes = new SolidColorBrush[]
-        {
-            new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush()
-        };
+        // Midi notes
+        public static SolidColorBrush NoteFillSelectedBrush = new SolidColorBrush();
+        public static SolidColorBrush NoteFillSelectedErrorBrushes = new SolidColorBrush();
+        public static SolidColorBrush NoteStrokeSelectedBrush = new SolidColorBrush();
+        public static SolidColorBrush NoteStrokeErrorBrush = new SolidColorBrush();
 
-        public static SolidColorBrush[] NoteFillActiveBrushes = new SolidColorBrush[]
-        {
-            new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush()
-        };
-
-        public static SolidColorBrush[] NoteStrokeActiveBrushes = new SolidColorBrush[]
-        {
-            new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush(), new SolidColorBrush()
-        };
-
+        public static List<SolidColorBrush> NoteFillBrushes = new List<SolidColorBrush>();
+        public static List<SolidColorBrush> NoteStrokeBrushes = new List<SolidColorBrush>();
+        public static List<SolidColorBrush> NoteFillErrorBrushes = new List<SolidColorBrush>();
         
         public static bool LoadTheme(){
+
+            const int NumberOfChannel = 1;
+
             TickLineBrushLight.Color = (Color)Application.Current.FindResource("TickLineColorLight");
             TickLineBrushDark.Color = (Color)Application.Current.FindResource("TickLineColorDark");
             BarNumberBrush.Color = (Color)Application.Current.FindResource("BarNumberColor");
             
             PlayPosMarkerHighlightBrush.Color = (Color)Application.Current.FindResource("PlayPosMarkerHighlightColor");
 
-            NoteFillBrushes[0].Color = (Color)Application.Current.FindResource("NoteFillColorACh0");
-            NoteStrokeBrushes[0].Color = (Color)Application.Current.FindResource("NoteStrokeColorCh0");
-            NoteFillActiveBrushes[0].Color = (Color)Application.Current.FindResource("NoteFillActiveColorACh0");
-            NoteStrokeActiveBrushes[0].Color = (Color)Application.Current.FindResource("NoteStrokeActiveColorCh0");
+            // Midi notes
+            NoteFillSelectedBrush.Color = (Color)Application.Current.FindResource("NoteFillSelectedColorB");
+            NoteFillSelectedErrorBrushes.Color = GetColorVariationAlpha(NoteFillSelectedBrush.Color, 127);
+
+            NoteStrokeSelectedBrush.Color = (Color)Application.Current.FindResource("NoteStrokeSelectedColor");
+            NoteStrokeErrorBrush.Color = (Color)Application.Current.FindResource("NoteStrokeErrorColor");
+
+            for (int i = 0; i < NumberOfChannel; i++)
+            {
+                NoteFillBrushes.Add(new SolidColorBrush());
+                NoteStrokeBrushes.Add(new SolidColorBrush());
+                NoteFillErrorBrushes.Add(new SolidColorBrush());
+                
+                NoteFillBrushes[0].Color = (Color)Application.Current.FindResource("NoteFillColorBCh" + i);
+                NoteFillErrorBrushes[0].Color = GetColorVariationAlpha(NoteFillBrushes[0].Color, 127);
+                NoteStrokeBrushes[0].Color = (Color)Application.Current.FindResource("NoteStrokeColorCh" + i);
+            }
 
             return true;
+        }
+
+        public static Color GetColorVariationAlpha(Color color, byte alpha)
+        {
+            return new Color()
+            {
+                R = color.R,
+                G = color.G,
+                B = color.B,
+                A = alpha
+            };
         }
 
         static public System.Windows.Media.Brush getNoteBackgroundBrush(int noteNo)

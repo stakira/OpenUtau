@@ -24,26 +24,33 @@ namespace OpenUtau.Core
             this.ncModel = ncModel;
         }
 
-        public class NoteComparer : IComparer<Note>
-        {
-            public int Compare(Note lhs, Note rhs)
-            {
-                if (lhs.offset < rhs.offset) return -1;
-                else if (lhs.offset > rhs.offset) return 1;
-                else if (lhs.keyNo < rhs.keyNo) return -1;
-                else if (lhs.keyNo > rhs.keyNo) return 1;
-                else return 0;
-            }
-        }
-
-        static NoteComparer noteComparer;
-
         public void UpdateGraphics()
         {
             foreach (Note note in noteList)
             {
                 note.updateGraphics(ncModel);
             }
+        }
+
+        public bool CheckOverlap()
+        {
+            bool pass = true;
+            for (int i = 0; i < noteList.Count; i++)
+                noteList[i].Error = false;
+            for (int i = 0; i < noteList.Count; i++)
+            {
+                if (noteList.Count < 2 || i == noteList.Count - 1)
+                    continue;
+                else if (noteList[i].Channel != noteList[i + 1].Channel)
+                    continue;
+                else if (noteList[i].getEndOffset() > noteList[i + 1].offset)
+                {
+                    noteList[i].Error = true;
+                    noteList[i + 1].Error = true;
+                    pass = false;
+                }
+            }
+            return pass;
         }
 
         # region Basic Note operations
@@ -53,6 +60,7 @@ namespace OpenUtau.Core
             noteList.Add(note);
             ncModel.notesCanvas.Children.Add(note.noteControl);
             note.updateGraphics(ncModel);
+            noteList.Sort();
         }
 
         public bool RemoveNote(Note note)
@@ -63,6 +71,7 @@ namespace OpenUtau.Core
             DeselectNote(note);
             ncModel.notesCanvas.Children.Remove(note.noteControl);
             note.noteControl.note = null; // Break reference loop
+            noteList.Sort();
             return success;
         }
 
@@ -76,12 +85,7 @@ namespace OpenUtau.Core
                 note.noteControl.note = null; // Break reference loop
             }
             DeselectAll();
-        }
-
-        public void SortNote()
-        {
-            if (noteComparer == null) noteComparer = new NoteComparer();
-            noteList.Sort(noteComparer);
+            noteList.Sort();
         }
 
         public void PrintNotes()

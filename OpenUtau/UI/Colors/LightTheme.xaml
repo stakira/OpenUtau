@@ -31,14 +31,16 @@
     <Color x:Key="TickLineColorDark">#afa3b5</Color>
     <Color x:Key="BarNumberColor">#afa3b5</Color>
 
+    <!--Midi notes-->
+    <Color x:Key="NoteFillSelectedColorA">#ff7aa9</Color>
+    <Color x:Key="NoteFillSelectedColorB">#ff679d</Color>
+    <Color x:Key="NoteStrokeSelectedColor">#d0648a</Color>
+    <Color x:Key="NoteStrokeErrorColor">Red</Color>
+
     <!--Channel 0-->
     <Color x:Key="NoteFillColorACh0">#6eb6ee</Color>
     <Color x:Key="NoteFillColorBCh0">#4ea6ea</Color>
     <Color x:Key="NoteStrokeColorCh0">#5e9ccc</Color>
-
-    <Color x:Key="NoteFillActiveColorACh0">#ff7aa9</Color>
-    <Color x:Key="NoteFillActiveColorBCh0">#ff679d</Color>
-    <Color x:Key="NoteStrokeActiveColorCh0">#d0648a</Color>
 
     <!--Channel 1-->
     <Color x:Key="NoteFillColorCh0">#4ea6ea</Color>

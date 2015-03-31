@@ -14,9 +14,9 @@ namespace OpenUtau.UI.Models
 {
     public class NotesCanvasModel
     {
-        public enum ZoomLevel { Bar, Beat, QuaterNote, HalfNote, EighthNote, SixteenthNote };
+        public enum ZoomLevel { Bar, Beat, QuaterNote, HalfNote, EighthNote, SixteenthNote, ThritySecondNote, SixtyfourthNote };
 
-        public const double noteMaxWidth = 128;
+        public const double noteMaxWidth = 256;
         public const double noteMinWidth = 4;
         public const double noteMinWidthDisplay = 8;
         public const double noteMaxHeight = 128;
@@ -32,9 +32,9 @@ namespace OpenUtau.UI.Models
         public double verticalPosition { get; set; }
         public double horizontalPosition { get; set; }
 
-        public const int numNotesWidthMin = 128; // 32 beats minimal
-        public int numNotesWidthScroll;
-        public int numNotesWidth;
+        public const double numNotesWidthMin = 128; // 32 beats minimal
+        public double numNotesWidthScroll;
+        public double numNotesWidth;
 
 
         public double playPosMarkerOffset = 0;
@@ -285,6 +285,9 @@ namespace OpenUtau.UI.Models
 
         public void updateScroll()
         {
+            numNotesWidth = Math.Ceiling(trackPart.noteList[trackPart.noteList.Count - 1].getEndOffset() / 4) * 4 + 4;
+            numNotesWidthScroll = numNotesWidth;
+
             if (notesCanvas.ActualHeight > numNotesHeight * noteHeight)
                 noteHeight = notesCanvas.ActualHeight / numNotesHeight;
 
@@ -390,8 +393,12 @@ namespace OpenUtau.UI.Models
                     return 1;
                 case ZoomLevel.EighthNote:
                     return 0.5;
-                default:
+                case ZoomLevel.SixteenthNote:
                     return 0.25;
+                case ZoomLevel.ThritySecondNote:
+                    return 0.125;
+                default:
+                    return 0.0625;
             }
         }
 
@@ -401,7 +408,9 @@ namespace OpenUtau.UI.Models
             else if (noteWidth < noteMinWidthDisplay * 2) return ZoomLevel.HalfNote;
             else if (noteWidth < noteMinWidthDisplay * 6) return ZoomLevel.QuaterNote;
             else if (noteWidth < noteMinWidthDisplay * 8) return ZoomLevel.EighthNote;
-            else return ZoomLevel.SixteenthNote;
+            else if (noteWidth < noteMinWidthDisplay * 16) return ZoomLevel.SixteenthNote;
+            else if (noteWidth < noteMinWidthDisplay * 32) return ZoomLevel.ThritySecondNote;
+            else return ZoomLevel.SixtyfourthNote;
         }
 
         public Note getNoteFromControl(OpenUtau.UI.Controls.NoteControl control)
@@ -411,13 +420,13 @@ namespace OpenUtau.UI.Models
 
         public double getViewSizeY()
         {
-            if (numNotesHeight * noteHeight - notesCanvas.ActualHeight == 0) return 10000;
+            if (numNotesHeight * noteHeight - notesCanvas.ActualHeight <= 0) return 10000;
             return notesCanvas.ActualHeight / (numNotesHeight * noteHeight - notesCanvas.ActualHeight);
         }
 
         public double getViewSizeX()
         {
-            if (numNotesWidthScroll * noteWidth - notesCanvas.ActualWidth == 0) return 10000;
+            if (numNotesWidthScroll * noteWidth - notesCanvas.ActualWidth <= 0) return 10000;
             return notesCanvas.ActualWidth / (numNotesWidthScroll * noteWidth - notesCanvas.ActualWidth);
         }
 
