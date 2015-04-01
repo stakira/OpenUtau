@@ -12,5 +12,7 @@ namespace OpenUtau.UI
         public const int PosMarkerHightlighZIndex = 100;
         public const int NoteZIndex = 200;
         public const int NoteWithLyricBoxZIndex = 1000;
+
+        public static System.Windows.Media.DoubleCollection DashLineArray = new System.Windows.Media.DoubleCollection() { 2, 2 };
     }
 }

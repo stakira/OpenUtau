@@ -225,6 +225,8 @@ namespace OpenUtau.UI.Models
                 }
                 verticalLines[i].Stroke = (firstLine + i) % (trackPart.beat / getHZoomRatio()) == 0 ?
                     ThemeManager.TickLineBrushDark : ThemeManager.TickLineBrushLight;
+                verticalLines[i].StrokeDashArray = (firstLine + i) % (1 / getHZoomRatio()) > 0 ?
+                    UIConstants.DashLineArray : null;
                 verticalLines[i].Y2 = notesCanvas.ActualHeight;
                 Canvas.SetLeft(verticalLines[i], Math.Round(lineX) + 0.5);
                 verticalLines[i].Visibility = System.Windows.Visibility.Visible;
@@ -285,7 +287,12 @@ namespace OpenUtau.UI.Models
 
         public void updateScroll()
         {
-            numNotesWidth = Math.Ceiling(trackPart.noteList[trackPart.noteList.Count - 1].getEndOffset() / 4) * 4 + 4;
+            numNotesWidth = numNotesWidthMin;
+            if (trackPart.noteList.Count > 0)
+            {
+                double maxOffset = trackPart.noteList[trackPart.noteList.Count - 1].getEndOffset();
+                numNotesWidth = Math.Max(numNotesWidthMin, Math.Ceiling(maxOffset / 4) * 4 + 4);
+            }
             numNotesWidthScroll = numNotesWidth;
 
             if (notesCanvas.ActualHeight > numNotesHeight * noteHeight)
@@ -406,7 +413,7 @@ namespace OpenUtau.UI.Models
         {
             if (noteWidth < noteMinWidthDisplay) return ZoomLevel.Beat;
             else if (noteWidth < noteMinWidthDisplay * 2) return ZoomLevel.HalfNote;
-            else if (noteWidth < noteMinWidthDisplay * 6) return ZoomLevel.QuaterNote;
+            else if (noteWidth < noteMinWidthDisplay * 4) return ZoomLevel.QuaterNote;
             else if (noteWidth < noteMinWidthDisplay * 8) return ZoomLevel.EighthNote;
             else if (noteWidth < noteMinWidthDisplay * 16) return ZoomLevel.SixteenthNote;
             else if (noteWidth < noteMinWidthDisplay * 32) return ZoomLevel.ThritySecondNote;
@@ -474,6 +481,14 @@ namespace OpenUtau.UI.Models
         public void updateNotes()
         {
             trackPart.UpdateGraphics();
+        }
+
+        public bool noteInView(Note note)
+        {
+            return !(offsetToCanvas(note.offset) > notesCanvas.ActualWidth ||
+                offsetToCanvas(note.getEndOffset()) < 0 ||
+                keyToCanvas(note.keyNo - 1) < 0 ||
+                keyToCanvas(note.keyNo) > notesCanvas.ActualHeight);
         }
     }
 }

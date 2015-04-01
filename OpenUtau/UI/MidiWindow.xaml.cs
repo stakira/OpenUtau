@@ -61,8 +61,16 @@ namespace OpenUtau.UI
             ncModel.updateGraphics();
 
             CompositionTarget.Rendering += Window_PerFrameCallback;
+        }
 
-            //OpenUtau.Core.VSQx.Parse(@"I:\Vsqx\Poem.vsqx", ncModel.trackPart);
+        public void OpenVSQx(string file)
+        {
+            while (ncModel.trackPart.noteList.Count > 0)
+            {
+                ncModel.trackPart.RemoveNote(ncModel.trackPart.noteList[ncModel.trackPart.noteList.Count - 1]);
+            }
+            OpenUtau.Core.VSQx.Parse(file, ncModel.trackPart);
+            ncModel.updateScroll();
         }
 
         #region Avoid hiding task bar upon maximalisation
@@ -282,7 +290,7 @@ namespace OpenUtau.UI
 
         private void closeButton_Click(object sender, RoutedEventArgs e)
         {
-            Close();
+            Hide();
         }
 
         private void dragMove_MouseDown(object sender, MouseButtonEventArgs e)
@@ -405,7 +413,7 @@ namespace OpenUtau.UI
                                     minNoteOfDrag = note;
                             }
                     }
-                    else
+                    else if (!hitNoteControl.IsLyricBoxActive())
                     {
                         // Resize note
                         if (!ncModel.trackPart.selectedNotes.Contains(hitNote))
@@ -548,7 +556,8 @@ namespace OpenUtau.UI
                     }
                     else
                     {
-                        Mouse.OverrideCursor = Cursors.SizeWE;
+                        if (!hitNoteControl.IsLyricBoxActive())
+                            Mouse.OverrideCursor = Cursors.SizeWE;
                     }
                 }
                 else
@@ -619,6 +628,14 @@ namespace OpenUtau.UI
             if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
             {
                 timelineCanvas_MouseWheel(sender, e);
+            }
+            else if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
+            {
+                horizontalScroll_MouseWheel(sender, e);
+            }
+            else if (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))
+            {
+
             }
             else
             {

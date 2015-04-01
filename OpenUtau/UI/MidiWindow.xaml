@@ -4,12 +4,11 @@
         Title="BorderlessWindow" AllowsTransparency="False" MinHeight="600" MinWidth="800" Height="760" Width="950" ResizeMode="CanResizeWithGrip"
         WindowStyle="None" SnapsToDevicePixels="True" SourceInitialized="win_SourceInitialized"
         Activated="Window_Activated" Deactivated="Window_Deactivated" KeyDown="Window_KeyDown">
-    <Grid Margin="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-
+    <Grid>
         <Border x:Name="titleBar" Height="24" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,0,0,0"
                 BorderThickness="0" Background="White" MouseLeftButtonDown="dragMove_MouseDown" SnapsToDevicePixels="True">
-            <Label x:Name="titleLabel" Content="Midi Editor" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,0,0,0"
-                   HorizontalContentAlignment="Center"/>
+            <TextBlock x:Name="titleLabel" Text="Midi Editor" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,6,0,0"
+                       TextAlignment="Center"/>
         </Border>
         <Button x:Name="minButton" Style="{StaticResource MinimizeButton}" Content="0" Margin="0,0,48,0" Click="minButton_Click"/>
         <Button x:Name="maxButton" Style="{StaticResource MaximizeButton}" Content="1" Margin="0,0,24,0" Click="maxButton_Click"/>

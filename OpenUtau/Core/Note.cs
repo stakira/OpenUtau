@@ -77,10 +77,19 @@ namespace OpenUtau.Core
 
         public void updateGraphics(OpenUtau.UI.Models.NotesCanvasModel ncModel)
         {
-            noteControl.Height = ncModel.noteHeight - 2;
-            noteControl.Width = Math.Max(2, Math.Round(length * ncModel.noteWidth) - 1);
-            System.Windows.Controls.Canvas.SetLeft(noteControl, Math.Round(ncModel.offsetToCanvas(offset)) + 1);
-            System.Windows.Controls.Canvas.SetTop(noteControl, Math.Round(ncModel.keyToCanvas(keyNo)) + 1);
+            if (ncModel.noteInView(this)) {
+                noteControl.Height = ncModel.noteHeight - 2;
+                noteControl.Width = Math.Max(2, Math.Round(length * ncModel.noteWidth) - 1);
+                System.Windows.Controls.Canvas.SetLeft(noteControl, Math.Round(ncModel.offsetToCanvas(offset)) + 1);
+                System.Windows.Controls.Canvas.SetTop(noteControl, Math.Round(ncModel.keyToCanvas(keyNo)) + 1);
+                this.noteControl.Visibility = System.Windows.Visibility.Visible;
+            }
+            else
+            {
+                System.Windows.Controls.Canvas.SetLeft(noteControl, Math.Round(ncModel.offsetToCanvas(offset)) + 1);
+                System.Windows.Controls.Canvas.SetTop(noteControl, Math.Round(ncModel.keyToCanvas(keyNo)) + 1);
+                this.noteControl.Visibility = System.Windows.Visibility.Hidden;
+            }
         }
 
         public double getEndOffset() { return offset + length; }

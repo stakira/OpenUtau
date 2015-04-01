@@ -2,8 +2,32 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="BorderlessWindow" AllowsTransparency="False" MinHeight="600" MinWidth="800" Height="760" Width="950" ResizeMode="CanResizeWithGrip"
-        WindowStyle="None" SnapsToDevicePixels="True">
-    <Grid>     
-        
+        WindowStyle="None" SnapsToDevicePixels="True" SourceInitialized="win_SourceInitialized"
+        Activated="Window_Activated" Deactivated="Window_Deactivated">
+    <Grid>
+        <Border x:Name="titleBar" Height="24" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,0,0,0"
+                BorderThickness="0" Background="White" MouseLeftButtonDown="dragMove_MouseDown" SnapsToDevicePixels="True">
+            <TextBlock x:Name="titleLabel" Text="OpenUTAU" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,6,0,0"
+                       TextAlignment="Center"/>
+        </Border>
+        <Menu IsMainMenu="True" VerticalAlignment="Top" HorizontalAlignment="Left" Background="White" Margin="4,4,0,0">
+            <MenuItem Header="_File">
+                <MenuItem Header="_New..." Background="White"/>
+                <MenuItem Header="_Open..." Background="White" Click="MenuOpen_Click"/>
+                <MenuItem Header="_Save" Background="White"/>
+                <MenuItem Header="Save As..." Background="White"/>
+                <MenuItem Header="_Exit" Background="White" Click="MenuExit_Click"/>
+            </MenuItem>
+            <MenuItem Header="_Edit"/>
+            <MenuItem Header="_View"/>
+            <MenuItem Header="_Window"/>
+            <MenuItem Header="_Help"/>
+        </Menu>
+        <Button x:Name="minButton" Style="{StaticResource MinimizeButton}" Content="0" Margin="0,0,48,0" Click="minButton_Click"/>
+        <Button x:Name="maxButton" Style="{StaticResource MaximizeButton}" Content="1" Margin="0,0,24,0" Click="maxButton_Click"/>
+        <Button x:Name="closeButton" Style="{StaticResource CloseButton}" Content="r" Margin="0,0,0,0" Click="closeButton_Click"/>
+        <Grid x:Name="mainGrid" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,24,0,0">
+        </Grid>
+        <Border x:Name="canvasBorder" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0" BorderBrush="Gray" BorderThickness="0"/>
     </Grid>
 </Window>

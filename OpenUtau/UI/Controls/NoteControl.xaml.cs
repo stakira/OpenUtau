@@ -30,6 +30,7 @@ namespace OpenUtau.UI.Controls
         bool _selected = false;
         string _lyric = "a";
 
+        Rectangle lyricBoxBorder;
         TextBox lyricBox;
 
         public int Channel
@@ -64,6 +65,9 @@ namespace OpenUtau.UI.Controls
 
         private void UserControl_SizeChanged(object sender, SizeChangedEventArgs e)
         {
+            bodyRectangle.Width = this.ActualWidth;
+            bodyRectangle.Height = this.ActualHeight;
+
             if (ActualHeight < 10)
             {
                 lyricText.Visibility = System.Windows.Visibility.Hidden;
@@ -72,15 +76,18 @@ namespace OpenUtau.UI.Controls
             else if (ActualWidth < lyricText.ActualWidth + 5)
             {
                 lyricText.Visibility = System.Windows.Visibility.Hidden;
+                Canvas.SetTop(AbbreLyricText, (this.ActualHeight - AbbreLyricText.ActualHeight) / 2);
                 AbbreLyricText.Visibility = System.Windows.Visibility.Visible;
             }
             else
             {
+                Canvas.SetTop(lyricText, (this.ActualHeight - lyricText.ActualHeight) / 2);
                 lyricText.Visibility = System.Windows.Visibility.Visible;
                 AbbreLyricText.Visibility = System.Windows.Visibility.Hidden;
             }
 
-            if (lyricBox != null) lyricBox.Height = this.ActualHeight;
+            if (lyricBox != null) lyricBox.Height = this.ActualHeight - 2;
+            if (lyricBoxBorder != null) lyricBoxBorder.Height = this.ActualHeight;
         }
 
         private void UpdateColors()
@@ -117,11 +124,28 @@ namespace OpenUtau.UI.Controls
 
         private void UserControl_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            System.Diagnostics.Debug.Print("Edit lyric " + _lyric);
-            lyricBox = new TextBox() { Width = 64, Height = bodyCanvas.ActualHeight, SelectedText = _lyric, VerticalContentAlignment = System.Windows.VerticalAlignment.Center };
+            lyricBoxBorder = new Rectangle()
+            {
+                Width = 66,
+                Height = bodyCanvas.ActualHeight,
+                Stroke = bodyRectangle.Fill,
+                StrokeThickness = 1
+            };
+            bodyCanvas.Children.Add(lyricBoxBorder);
+            Canvas.SetLeft(lyricBoxBorder, 1);
+            lyricBox = new TextBox()
+            {
+                Width = 64,
+                Height = bodyCanvas.ActualHeight - 2,
+                SelectedText = _lyric,
+                VerticalContentAlignment = System.Windows.VerticalAlignment.Center,
+                BorderThickness = new Thickness(0)
+            };
             lyricBox.Loaded += lyricBox_Loaded;
             lyricBox.LostFocus += lyricBox_LostFocus;
             bodyCanvas.Children.Add(lyricBox);
+            Canvas.SetLeft(lyricBox, 2);
+            Canvas.SetTop(lyricBox, 1);
             Canvas.SetZIndex(this, UIConstants.NoteWithLyricBoxZIndex);
         }
 
@@ -133,9 +157,18 @@ namespace OpenUtau.UI.Controls
         void lyricBox_LostFocus(object sender, RoutedEventArgs e)
         {
             if (((TextBox)sender).Text.Trim() != "") Lyric = ((TextBox)sender).Text.Trim();
-            bodyCanvas.Children.Remove((TextBox)sender);
+            bodyCanvas.Children.Remove((TextBox)lyricBox);
+            lyricBox.Loaded -= lyricBox_Loaded;
+            lyricBox.LostFocus -= lyricBox_LostFocus;
             lyricBox = null;
+            bodyCanvas.Children.Remove((Rectangle)lyricBoxBorder);
+            lyricBoxBorder = null;
             Canvas.SetZIndex(this, UIConstants.NoteZIndex);
+        }
+
+        public bool IsLyricBoxActive()
+        {
+            return lyricBox != null;
         }
     }
 }

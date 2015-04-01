@@ -4,15 +4,11 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-             d:DesignHeight="20" d:DesignWidth="128" Background="Transparent" IsHitTestVisible="True" SizeChanged="UserControl_SizeChanged" MouseDoubleClick="UserControl_MouseDoubleClick">
+             d:DesignHeight="20" d:DesignWidth="128" Background="Transparent" IsHitTestVisible="True"
+             SizeChanged="UserControl_SizeChanged" MouseDoubleClick="UserControl_MouseDoubleClick">
     <Canvas Name="bodyCanvas" Margin="0">
-        <Rectangle Name="bodyRectangle" Height="{Binding ElementName=bodyCanvas, Path=ActualHeight}" Width="{Binding ElementName=bodyCanvas, Path=ActualWidth}" 
-                   Canvas.Top="0" Canvas.Left="0" RadiusX="2" RadiusY="2" Fill="Black" Stroke="Red"/>
-        <Border Height="{Binding ElementName=bodyCanvas, Path=ActualHeight}" Canvas.Top="0" Canvas.Left="0">
-            <TextBlock Name="lyricText" Text="a" Foreground="White" VerticalAlignment="Center" Margin="5,0,0,0"/>
-        </Border>
-        <Border Height="{Binding ElementName=bodyCanvas, Path=ActualHeight}" Canvas.Top="0" Canvas.Left="0">
-            <TextBlock Name="AbbreLyricText" Text="a" Foreground="White" VerticalAlignment="Center" Margin="5,0,0,0" Visibility="Hidden"/>
-        </Border>
+        <Rectangle Name="bodyRectangle" RadiusX="2" RadiusY="2" Fill="Black" Stroke="Red"/>
+        <TextBlock Name="lyricText" Text="a" Foreground="White" VerticalAlignment="Center" Margin="5,0,0,0"/>
+        <TextBlock Name="AbbreLyricText" Text="a" Foreground="White" VerticalAlignment="Center" Margin="5,0,0,0" Visibility="Hidden"/>
     </Canvas>
 </UserControl>
