@@ -148,7 +148,7 @@
                     </RepeatButton>
                 </Track.DecreaseRepeatButton>
                 <Track.Thumb>
-                    <Thumb Style="{StaticResource VerticalScrollBarThumbStyle}">
+                    <Thumb Name="Thumb" Style="{StaticResource VerticalScrollBarThumbStyle}">
                     </Thumb>
                 </Track.Thumb>
                 <Track.IncreaseRepeatButton>
@@ -161,6 +161,11 @@
             <RepeatButton Grid.Row="2" Height="20" Style="{StaticResource LineButtonDownStyle}" Command="ScrollBar.LineDownCommand"/>
 
         </Grid>
+        <ControlTemplate.Triggers>
+            <DataTrigger Binding="{Binding Path=ViewportSize, RelativeSource={RelativeSource Self}}" Value="10000">
+                <Setter TargetName="Thumb" Property="Visibility" Value="Hidden"/>
+            </DataTrigger>
+        </ControlTemplate.Triggers>
     </ControlTemplate>
     
     <ControlTemplate x:Key="HorizontalScrollBar" TargetType="{x:Type ScrollBar}">
@@ -184,7 +189,7 @@
                     </RepeatButton>
                 </Track.DecreaseRepeatButton>
                 <Track.Thumb>
-                    <Thumb Style="{StaticResource HorizontalScrollBarThumbStyle}">
+                    <Thumb Name="Thumb" Style="{StaticResource HorizontalScrollBarThumbStyle}">
                     </Thumb>
                 </Track.Thumb>
                 <Track.IncreaseRepeatButton>
@@ -197,10 +202,16 @@
             <RepeatButton Grid.Column="2" Width="20" Style="{StaticResource LineButtonRightStyle}" Command="ScrollBar.LineRightCommand"/>
 
         </Grid>
+        <ControlTemplate.Triggers>
+            <DataTrigger Binding="{Binding Path=ViewportSize, RelativeSource={RelativeSource Self}}" Value="10000">
+                <Setter TargetName="Thumb" Property="Visibility" Value="Hidden"/>
+            </DataTrigger>
+        </ControlTemplate.Triggers>
     </ControlTemplate>
-    
-    <Style x:Key="OUScrollBar" TargetType="{x:Type ScrollBar}">
+
+    <Style x:Key="{x:Type ScrollBar}" TargetType="ScrollBar">
         <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Setter Property="OverridesDefaultStyle" Value="True"/>
         <Style.Triggers>
             <Trigger Property="Orientation" Value="Vertical">
                 <Setter Property="Width" Value="18"/>

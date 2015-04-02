@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Shapes;
 
 using OpenUtau.Core;
+using OpenUtau.Core.USTx;
 
 namespace OpenUtau.UI.Models
 {
@@ -18,7 +19,7 @@ namespace OpenUtau.UI.Models
 
         public const double noteMaxWidth = 256;
         public const double noteMinWidth = 4;
-        public const double noteMinWidthDisplay = 8;
+        public const double noteMinWidthDisplay = 6;
         public const double noteMaxHeight = 128;
         public const double noteMinHeight = 8;
 
@@ -47,8 +48,8 @@ namespace OpenUtau.UI.Models
 
         public string[] noteStrings = new String[12] { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
 
-        public TrackPart trackPart;
-        public TrackPart shadowTrackPart;
+        public UPart trackPart;
+        public UPart shadowTrackPart;
 
         // Handle to UI elements
         public System.Windows.Controls.Primitives.ScrollBar hScroll;
@@ -79,11 +80,10 @@ namespace OpenUtau.UI.Models
             numNotesWidthScroll = numNotesWidthMin;
             horizontalPosition = 0;
 
-            trackPart = new TrackPart(this);
+            trackPart = new UPart(null);
+            trackPart.ncModel = this;
             shadowTrackPart = null;
             // TODO : Load existing trackPart and shadowTrackPart
-
-            ThemeManager.LoadTheme();
         }
 
         public void initGraphics()
@@ -288,9 +288,9 @@ namespace OpenUtau.UI.Models
         public void updateScroll()
         {
             numNotesWidth = numNotesWidthMin;
-            if (trackPart.noteList.Count > 0)
+            if (trackPart.Notes.Count > 0)
             {
-                double maxOffset = trackPart.noteList[trackPart.noteList.Count - 1].getEndOffset();
+                double maxOffset = trackPart.Notes[trackPart.Notes.Count - 1].getEndOffset();
                 numNotesWidth = Math.Max(numNotesWidthMin, Math.Ceiling(maxOffset / 4) * 4 + 4);
             }
             numNotesWidthScroll = numNotesWidth;
@@ -420,7 +420,7 @@ namespace OpenUtau.UI.Models
             else return ZoomLevel.SixtyfourthNote;
         }
 
-        public Note getNoteFromControl(OpenUtau.UI.Controls.NoteControl control)
+        public UNote getNoteFromControl(OpenUtau.UI.Controls.NoteControl control)
         {
             return control.note;
         }
@@ -483,7 +483,7 @@ namespace OpenUtau.UI.Models
             trackPart.UpdateGraphics();
         }
 
-        public bool noteInView(Note note)
+        public bool noteInView(UNote note)
         {
             return !(offsetToCanvas(note.offset) > notesCanvas.ActualWidth ||
                 offsetToCanvas(note.getEndOffset()) < 0 ||

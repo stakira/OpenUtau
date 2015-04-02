@@ -1,7 +1,7 @@
 ﻿<Window x:Class="OpenUtau.UI.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="BorderlessWindow" AllowsTransparency="False" MinHeight="600" MinWidth="800" Height="760" Width="950" ResizeMode="CanResizeWithGrip"
+        Title="BorderlessWindow" AllowsTransparency="False" MinHeight="400" MinWidth="800" Height="760" Width="950" ResizeMode="CanResizeWithGrip"
         WindowStyle="None" SnapsToDevicePixels="True" SourceInitialized="win_SourceInitialized"
         Activated="Window_Activated" Deactivated="Window_Deactivated">
     <Grid>
@@ -10,23 +10,97 @@
             <TextBlock x:Name="titleLabel" Text="OpenUTAU" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,6,0,0"
                        TextAlignment="Center"/>
         </Border>
-        <Menu IsMainMenu="True" VerticalAlignment="Top" HorizontalAlignment="Left" Background="White" Margin="4,4,0,0">
+        <Menu IsMainMenu="True" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="4,4,0,0" Background="White" Grid.IsSharedSizeScope="True">
             <MenuItem Header="_File">
-                <MenuItem Header="_New..." Background="White"/>
-                <MenuItem Header="_Open..." Background="White" Click="MenuOpen_Click"/>
-                <MenuItem Header="_Save" Background="White"/>
-                <MenuItem Header="Save As..." Background="White"/>
-                <MenuItem Header="_Exit" Background="White" Click="MenuExit_Click"/>
+                <MenuItem Header="_New..." InputGestureText="Ctrl+N"/>
+                <MenuItem Header="_Open..." InputGestureText="Ctrl+O" Click="MenuOpen_Click"/>
+                <MenuItem Header="_Save" InputGestureText="Ctrl+S"/>
+                <MenuItem Header="Save _As..."/>
+                <MenuItem Header="Recent _Files">
+                    <MenuItem Header="1.vsqx"/>
+                    <MenuItem Header="2.vsqx"/>
+                </MenuItem>
+                <MenuItem Header="_Exit" InputGestureText="Alt+F4" Click="MenuExit_Click"/>
             </MenuItem>
-            <MenuItem Header="_Edit"/>
-            <MenuItem Header="_View"/>
-            <MenuItem Header="_Window"/>
-            <MenuItem Header="_Help"/>
+            <MenuItem Header="_Edit">
+                <MenuItem Header="_Undo" InputGestureText="Ctrl+Z"/>
+                <MenuItem Header="_Redo" InputGestureText="Ctrl+Y"/>
+                <MenuItem Header="Cu_t" InputGestureText="Ctrl+X"/>
+                <MenuItem Header="_Copy" InputGestureText="Ctrl+C"/>
+                <MenuItem Header="_Paste" InputGestureText="Ctrl+V"/>
+                <MenuItem Header="_Delete" InputGestureText="Del"/>
+                <MenuItem Header="Select _All" InputGestureText="Ctrl+A"/>
+            </MenuItem>
+            <MenuItem Header="_Window">
+                <MenuItem Header="Reset Layout"/>
+            </MenuItem>
+            <MenuItem Header="_Tools">
+                <MenuItem Header="Add Plugin..."/>
+            </MenuItem>
+            <MenuItem Header="_Help">
+                <MenuItem Header="About OpenUTAU"/>
+            </MenuItem>
         </Menu>
         <Button x:Name="minButton" Style="{StaticResource MinimizeButton}" Content="0" Margin="0,0,48,0" Click="minButton_Click"/>
         <Button x:Name="maxButton" Style="{StaticResource MaximizeButton}" Content="1" Margin="0,0,24,0" Click="maxButton_Click"/>
         <Button x:Name="closeButton" Style="{StaticResource CloseButton}" Content="r" Margin="0,0,0,0" Click="closeButton_Click"/>
-        <Grid x:Name="mainGrid" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,24,0,0">
+        <Grid x:Name="MainGrid" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,24,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="160" MinWidth="0" MaxWidth="480"/>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition Width="*" MinWidth="200"/>
+            </Grid.ColumnDefinitions>
+            <Grid x:Name="BrowserGrid" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="20,20,0,20">
+            </Grid>
+            <GridSplitter x:Name="HorizontalSplitter" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="10"
+                          Margin="0,0,0,0" Background="White" Focusable="False" />
+            <Grid x:Name="WorkspaceGrid" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" MinHeight="200"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="250" MinHeight="200" MaxHeight="300"/>
+                </Grid.RowDefinitions>
+            
+                <Canvas x:Name="timelineCanvas" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="20" Margin="0,20,20,0"
+                        Background="{StaticResource TimelineBrushNormal}" ClipToBounds="True"
+                        MouseWheel="timelineCanvas_MouseWheel" MouseLeftButtonDown="timelineCanvas_MouseLeftButtonDown" MouseMove="timelineCanvas_MouseMove" MouseLeftButtonUp="timelineCanvas_MouseLeftButtonUp" />
+                <Canvas x:Name="trackCanvas" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,40,20,0" Background="White"
+                        ClipToBounds="True" SnapsToDevicePixels="True" MouseLeftButtonDown="trackCanvas_MouseLeftButtonDown"/>
+                <ScrollBar x:Name="horizontalScroll" Grid.Row="0" Style="{StaticResource OUScrollBar}" HorizontalAlignment="Stretch" VerticalAlignment="Top"
+                           Height="20" Margin="0,0,20,0" Orientation="Horizontal" Minimum="0" Maximum="1" Value="0" 
+                           Scroll="horizontalScroll_Scroll" MouseWheel="horizontalScroll_MouseWheel" />
+                <ScrollBar x:Name="verticalScroll" Grid.Row="0" Style="{StaticResource OUScrollBar}" HorizontalAlignment="Right" VerticalAlignment="Stretch"
+                           Width="20" Margin="0,40,0,0" Orientation="Vertical" Minimum="0" Maximum="1" Value="0.5"
+                           Scroll="verticalScroll_Scroll" MouseWheel="verticalScroll_MouseWheel"/>
+                <Control x:Name="navigateDrag" Template="{StaticResource NavigateDrag}" HorizontalAlignment="Right" VerticalAlignment="Top" Width="20" Height="20" Margin="0,0,0,0" Background="White"
+                           MouseLeftButtonDown="navigateDrag_MouseLeftButtonDown" MouseLeftButtonUp="navigateDrag_MouseLeftButtonUp" MouseMove="navigateDrag_MouseMove" Focusable="False"/>
+                <StackPanel x:Name="vZoomControlStack" HorizontalAlignment="Right" VerticalAlignment="Top" Width="20" Height="20" Margin="0,20,0,0" Background="White"
+                            MouseWheel="vZoomControl_MouseWheel" MouseLeftButtonDown="vZoomControl_MouseLeftButtonDown" MouseLeftButtonUp="vZoomControl_MouseLeftButtonUp"
+                            MouseMove="vZoomControl_MouseMove" MouseEnter="vZoomControlStack_MouseEnter" MouseLeave="vZoomControlStack_MouseLeave">
+                    <Path Name="vZoomControlPath" Margin="2" Stroke="{StaticResource ScrollBarBrushNormal}" StrokeThickness="1.75" StrokeStartLineCap="Flat"
+                          StrokeEndLineCap="Flat" StrokeLineJoin="Miter" StrokeMiterLimit="0" Data="">
+                    </Path>
+                </StackPanel>
+                <Border x:Name="notesCanvasShadow" Grid.Row="0" Background="{x:Null}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,20,20,0" BorderThickness="0" ClipToBounds="True">
+                    <Border Background="{x:Null}" BorderBrush="Black" BorderThickness="1" Margin="-1">
+                        <Border.Effect>
+                            <DropShadowEffect Color="Black" ShadowDepth="0" BlurRadius="5" Opacity="0.75"/>
+                        </Border.Effect>
+                    </Border>
+                </Border>
+                <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="10" Margin="0,0,0,0" Background="White" Focusable="False"
+                              MouseEnter="GridSplitter_MouseEnter" MouseLeave="GridSplitter_MouseLeave"/>
+                <Canvas x:Name="expCanvas" Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,20,20" Background="White" ClipToBounds="True"/>
+                <ScrollBar x:Name="MixerScroll" Grid.Row="2" Style="{StaticResource OUScrollBar}" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
+                           Height="20" Margin="0,0,20,0" Orientation="Horizontal" Minimum="0" Maximum="1" Value="0" ViewportSize="10000"/>
+                <Border x:Name="expCanvasShadow" Grid.Row="2" Background="{x:Null}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,20,20" BorderThickness="0" ClipToBounds="True">
+                    <Border Background="{x:Null}" BorderBrush="Black" BorderThickness="1" Margin="-1">
+                        <Border.Effect>
+                            <DropShadowEffect Color="Black" ShadowDepth="0" BlurRadius="5" Opacity="0.75"/>
+                        </Border.Effect>
+                    </Border>
+                </Border>
+            </Grid>
         </Grid>
         <Border x:Name="canvasBorder" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0" BorderBrush="Gray" BorderThickness="0"/>
     </Grid>

@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 using OpenUtau.Core;
+using OpenUtau.Core.USTx;
 using OpenUtau.UI.Models;
 
 namespace OpenUtau.UI.Controls
@@ -23,7 +24,7 @@ namespace OpenUtau.UI.Controls
     /// </summary>
     public partial class NoteControl : UserControl
     {
-        public Note note;
+        public UNote note;
 
         int _channel = 0;
         bool _error = false;

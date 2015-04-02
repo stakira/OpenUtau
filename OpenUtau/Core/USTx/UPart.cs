@@ -4,29 +4,35 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OpenUtau.Core
+namespace OpenUtau.Core.USTx
 {
-    public class TrackPart
+    public class UPart
     {
+        public string Name = "New Part";
+        public string Comment = "";
+
+        public List<UNote> Notes = new List<UNote>();
+
+        public UTrack Parent;
+
         public int bar = 4; // bar = number of beats
         public int beat = 4; // beat = number of quarter-notes
         public int bpm = 128000; // Beat per minute * 1000
         public int ppq = 96; // Pulse per quarter note
 
-        public List<Note> noteList = new List<Note>();
-        public HashSet<Note> selectedNotes = new HashSet<Note>();
-        public HashSet<Note> tempSelectedNotes = new HashSet<Note>();
+        public HashSet<UNote> selectedNotes = new HashSet<UNote>();
+        public HashSet<UNote> tempSelectedNotes = new HashSet<UNote>();
 
-        OpenUtau.UI.Models.NotesCanvasModel ncModel;
+        public OpenUtau.UI.Models.NotesCanvasModel ncModel;
 
-        public TrackPart(OpenUtau.UI.Models.NotesCanvasModel ncModel)
+        public UPart(UTrack parent)
         {
-            this.ncModel = ncModel;
+            Parent = parent;
         }
 
         public void UpdateGraphics()
         {
-            foreach (Note note in noteList)
+            foreach (UNote note in Notes)
             {
                 note.updateGraphics(ncModel);
             }
@@ -35,18 +41,18 @@ namespace OpenUtau.Core
         public bool CheckOverlap()
         {
             bool pass = true;
-            for (int i = 0; i < noteList.Count; i++)
-                noteList[i].Error = false;
-            for (int i = 0; i < noteList.Count; i++)
+            for (int i = 0; i < Notes.Count; i++)
+                Notes[i].Error = false;
+            for (int i = 0; i < Notes.Count; i++)
             {
-                if (noteList.Count < 2 || i == noteList.Count - 1)
+                if (Notes.Count < 2 || i == Notes.Count - 1)
                     continue;
-                else if (noteList[i].Channel != noteList[i + 1].Channel)
+                else if (Notes[i].Channel != Notes[i + 1].Channel)
                     continue;
-                else if (noteList[i].getEndOffset() > noteList[i + 1].offset)
+                else if (Notes[i].getEndOffset() > Notes[i + 1].offset)
                 {
-                    noteList[i].Error = true;
-                    noteList[i + 1].Error = true;
+                    Notes[i].Error = true;
+                    Notes[i + 1].Error = true;
                     pass = false;
                 }
             }
@@ -55,47 +61,47 @@ namespace OpenUtau.Core
 
         # region Basic Note operations
 
-        public void AddNote(Note note)
+        public void AddNote(UNote note)
         {
-            noteList.Add(note);
+            Notes.Add(note);
             ncModel.notesCanvas.Children.Add(note.noteControl);
             note.updateGraphics(ncModel);
-            noteList.Sort();
+            Notes.Sort();
         }
 
-        public bool RemoveNote(Note note)
+        public bool RemoveNote(UNote note)
         {
-            bool success = noteList.Remove(note);
+            bool success = Notes.Remove(note);
             if (!success)
                 throw new Exception("Note does not exist, cannot be removed");
             DeselectNote(note);
             ncModel.notesCanvas.Children.Remove(note.noteControl);
             note.noteControl.note = null; // Break reference loop
-            noteList.Sort();
+            Notes.Sort();
             return success;
         }
 
         public void RemoveSelectedNote()
         {
-            foreach (Note note in selectedNotes)
+            foreach (UNote note in selectedNotes)
             {
-                if (!noteList.Remove(note))
+                if (!Notes.Remove(note))
                     throw new Exception("Note does not exist, cannot be removed");
                 ncModel.notesCanvas.Children.Remove(note.noteControl);
                 note.noteControl.note = null; // Break reference loop
             }
             DeselectAll();
-            noteList.Sort();
+            Notes.Sort();
         }
 
         public void PrintNotes()
         {
-            System.Diagnostics.Debug.WriteLine(noteList.Count.ToString() + " Notes in Total");
-            foreach (Note note in noteList)
+            System.Diagnostics.Debug.WriteLine(Notes.Count.ToString() + " Notes in Total");
+            foreach (UNote note in Notes)
             {
                 System.Diagnostics.Debug.WriteLine("Note : " + note.offset.ToString() + " " + note.keyNo.ToString());
             }
-            foreach (Note note in selectedNotes)
+            foreach (UNote note in selectedNotes)
             {
                 System.Diagnostics.Debug.WriteLine("Selected Note : " + note.offset.ToString() + " " + note.keyNo.ToString());
             }
@@ -105,13 +111,13 @@ namespace OpenUtau.Core
 
         # region Selection related functions
 
-        public void SelectNote(Note note)
+        public void SelectNote(UNote note)
         {
             selectedNotes.Add(note);
             note.Selected = true;
         }
 
-        public void SelectTempNote(Note note)
+        public void SelectTempNote(UNote note)
         {
             if (!selectedNotes.Contains(note))
             {
@@ -122,7 +128,7 @@ namespace OpenUtau.Core
 
         public void DeselectTempAll()
         {
-            foreach (Note note in tempSelectedNotes)
+            foreach (UNote note in tempSelectedNotes)
             {
                 note.Selected = false;
             }
@@ -131,14 +137,14 @@ namespace OpenUtau.Core
 
         public void FinishSelectTemp()
         {
-            foreach (Note note in tempSelectedNotes)
+            foreach (UNote note in tempSelectedNotes)
             {
                 selectedNotes.Add(note);
             }
             tempSelectedNotes.Clear();
         }
 
-        public void DeselectNote(Note note)
+        public void DeselectNote(UNote note)
         {
             if (selectedNotes.Contains(note))
             {
@@ -150,7 +156,7 @@ namespace OpenUtau.Core
         public void SelectAll()
         {
             selectedNotes.Clear();
-            foreach (Note note in noteList)
+            foreach (UNote note in Notes)
             {
                 selectedNotes.Add(note);
                 note.Selected = true;
@@ -160,7 +166,7 @@ namespace OpenUtau.Core
         public void DeselectAll()
         {
             selectedNotes.Clear();
-            foreach (Note note in noteList)
+            foreach (UNote note in Notes)
             {
                 note.Selected = false;
             }
@@ -183,7 +189,7 @@ namespace OpenUtau.Core
             }
 
             DeselectTempAll();
-            foreach (Note note in noteList)
+            foreach (UNote note in Notes)
             {
                 if (note.offset < X2 && note.getEndOffset() > X1 &&
                     note.keyNo <= Y2 && note.keyNo >= Y1) SelectTempNote(note);

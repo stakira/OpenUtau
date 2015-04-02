@@ -6,8 +6,9 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="UI\Colors\LightTheme.xaml"/>
-                <ResourceDictionary Source="UI\Controls\Buttons.xaml"/>
-                <ResourceDictionary Source="UI\Controls\ScrollBar.xaml"/>
+                <ResourceDictionary Source="UI\Styles\Button.xaml"/>
+                <ResourceDictionary Source="UI\Styles\ScrollBar.xaml"/>
+                <ResourceDictionary Source="UI\Styles\Menu.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

@@ -19,6 +19,7 @@ using System.Runtime.InteropServices;
 using OpenUtau.UI.Models;
 using OpenUtau.UI.Controls;
 using OpenUtau.Core;
+using OpenUtau.Core.USTx;
 
 namespace OpenUtau.UI
 {
@@ -63,14 +64,24 @@ namespace OpenUtau.UI
             CompositionTarget.Rendering += Window_PerFrameCallback;
         }
 
-        public void OpenVSQx(string file)
+        public void LoadPart(UPart part)
         {
-            while (ncModel.trackPart.noteList.Count > 0)
+            while (ncModel.trackPart.Notes.Count > 0)
             {
-                ncModel.trackPart.RemoveNote(ncModel.trackPart.noteList[ncModel.trackPart.noteList.Count - 1]);
+                ncModel.trackPart.RemoveNote(ncModel.trackPart.Notes[ncModel.trackPart.Notes.Count - 1]);
             }
-            OpenUtau.Core.VSQx.Parse(file, ncModel.trackPart);
-            ncModel.updateScroll();
+
+            if (part != null)
+            {
+                ncModel.trackPart = part;
+                ncModel.trackPart.ncModel = ncModel;
+                foreach (UNote note in part.Notes)
+                {
+                    ncModel.notesCanvas.Children.Add(note.noteControl);
+                }
+                ncModel.updateScroll();
+                ncModel.updateGraphics();
+            }
         }
 
         #region Avoid hiding task bar upon maximalisation
@@ -332,12 +343,12 @@ namespace OpenUtau.UI
 
         # region Note Canvas
 
-        Note noteInDrag = null;
+        UNote noteInDrag = null;
         double noteOffsetOfDrag;
-        Note leftMostNoteOfDrag, rightMostNoteOfDrag, maxNoteOfDrag, minNoteOfDrag;
+        UNote leftMostNoteOfDrag, rightMostNoteOfDrag, maxNoteOfDrag, minNoteOfDrag;
 
-        Note noteInResize = null;
-        Note shortedNoteInResize;
+        UNote noteInResize = null;
+        UNote shortedNoteInResize;
 
         Nullable<Point> selectionStart = null; // Unit in offset/keyNo
         Rectangle selectionBox;
@@ -390,7 +401,7 @@ namespace OpenUtau.UI
             {
                 if (hitNoteControl != null)
                 {
-                    Note hitNote = ncModel.getNoteFromControl(hitNoteControl);
+                    UNote hitNote = ncModel.getNoteFromControl(hitNoteControl);
                     if (e.GetPosition(hitNoteControl).X < hitNoteControl.ActualWidth - NotesCanvasModel.resizeMargin)
                     {
                         // Move note
@@ -401,7 +412,7 @@ namespace OpenUtau.UI
                         lastNoteLength = noteInDrag.length;
                         leftMostNoteOfDrag = rightMostNoteOfDrag = maxNoteOfDrag = minNoteOfDrag = noteInDrag;
                         if (ncModel.trackPart.selectedNotes.Count != 0)
-                            foreach (Note note in ncModel.trackPart.selectedNotes)
+                            foreach (UNote note in ncModel.trackPart.selectedNotes)
                             {
                                 if (note.offset < leftMostNoteOfDrag.offset)
                                     leftMostNoteOfDrag = note;
@@ -422,14 +433,14 @@ namespace OpenUtau.UI
                         Mouse.OverrideCursor = Cursors.SizeWE;
                         shortedNoteInResize = noteInResize;
                         if (ncModel.trackPart.selectedNotes.Count != 0)
-                            foreach (Note note in ncModel.trackPart.selectedNotes)
+                            foreach (UNote note in ncModel.trackPart.selectedNotes)
                                 if (note.length < shortedNoteInResize.length)
                                     shortedNoteInResize = note;
                     }
                 }
                 else // Add note
                 {
-                    Note newNote = new Note
+                    UNote newNote = new UNote(ncModel.trackPart)
                     {
                         keyNo = ncModel.snapNoteKey(e.GetPosition((Canvas)sender).Y),
                         offset = ncModel.snapNoteOffset(e.GetPosition((Canvas)sender).X),
@@ -500,7 +511,7 @@ namespace OpenUtau.UI
                 }
                 else
                 {
-                    foreach (Note note in ncModel.trackPart.selectedNotes)
+                    foreach (UNote note in ncModel.trackPart.selectedNotes)
                     {
                         note.keyNo += movedKeyNo;
                         note.offset += movedOffset;
@@ -508,14 +519,14 @@ namespace OpenUtau.UI
                     }
                 }
 
-                ncModel.trackPart.noteList.Sort();
+                ncModel.trackPart.Notes.Sort();
                 Mouse.OverrideCursor = Cursors.SizeAll;
             }
             else if (noteInResize != null) // Resize Note
             {
                 double newLength = ncModel.snapLength ?
                     ncModel.getLengthSnapUnit() + Math.Max(0, ncModel.snapNoteLength(mousePos.X - ncModel.offsetToCanvas(noteInResize.offset) - ncModel.getViewOffsetX())) :
-                    Math.Max(Note.minLength, ncModel.snapNoteLength(mousePos.X) - noteInResize.offset);
+                    Math.Max(UNote.minLength, ncModel.snapNoteLength(mousePos.X) - noteInResize.offset);
                 double deltaLength = newLength - noteInResize.length;
                 if (shortedNoteInResize.length + deltaLength < ncModel.getOffsetSnapUnit()) deltaLength = ncModel.getOffsetSnapUnit() - shortedNoteInResize.length;
                 if (ncModel.trackPart.selectedNotes.Count == 0)
@@ -525,7 +536,7 @@ namespace OpenUtau.UI
                 }
                 else
                 {
-                    foreach (Note note in ncModel.trackPart.selectedNotes)
+                    foreach (UNote note in ncModel.trackPart.selectedNotes)
                     {
                         note.length += deltaLength;
                         note.updateGraphics(ncModel);
@@ -540,7 +551,7 @@ namespace OpenUtau.UI
 
                 if (hitNoteControl != null)
                 {
-                    Note note = ncModel.getNoteFromControl(hitNoteControl);
+                    UNote note = ncModel.getNoteFromControl(hitNoteControl);
                     ncModel.trackPart.RemoveNote(note);
                 }
             }
@@ -575,7 +586,7 @@ namespace OpenUtau.UI
 
             if (hitNoteControl != null)
             {
-                Note note = ncModel.getNoteFromControl(hitNoteControl);
+                UNote note = ncModel.getNoteFromControl(hitNoteControl);
                 notesCanvas.Children.Remove(note.noteControl);
                 ncModel.trackPart.RemoveNote(note);
             }
@@ -997,6 +1008,8 @@ namespace OpenUtau.UI
             lastFrame = nextFrame;
         }
 
+        # region Splitter
+
         private void GridSplitter_MouseEnter(object sender, MouseEventArgs e)
         {
             Mouse.OverrideCursor = Cursors.SizeNS;
@@ -1006,5 +1019,8 @@ namespace OpenUtau.UI
         {
             Mouse.OverrideCursor = Cursors.Arrow;
         }
+
+        # endregion
+
     }
 }

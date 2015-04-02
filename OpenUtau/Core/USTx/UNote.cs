@@ -4,12 +4,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OpenUtau.Core
+namespace OpenUtau.Core.USTx
 {
-    public class Note : IComparable
+    public class UNote : IComparable
     {
         public const double minLength = 4.0 / 64;  // Actual minimal possible note length is 1/64 note
 
+        public int PosTick;
+        public int DurTick;
+        public int NoteNum;
+        public int Velocity;
+        // public string Lyric;
+        public string Phoneme;
+
+        public UPart Parent;
+
+        // TODO : remove old attributes
         public int keyNo;
         public double offset;
         public double length = 1;
@@ -44,8 +54,10 @@ namespace OpenUtau.Core
             get { return _lyric; }
         }
 
-        public Note()
+        public UNote(UPart parent)
         {
+            Parent = parent;
+
             noteControl = new OpenUtau.UI.Controls.NoteControl();
             noteControl.note = this;
             noteControl.Channel = Channel;
@@ -55,7 +67,7 @@ namespace OpenUtau.Core
         {
             if (obj == null) return 1;
 
-            Note other = obj as Note;
+            UNote other = obj as UNote;
             if (other == null)
                 throw new ArgumentException("CompareTo object is not a Note");
 

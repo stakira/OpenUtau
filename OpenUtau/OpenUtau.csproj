@@ -55,17 +55,34 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Core\TrackPart.cs" />
-    <Compile Include="Core\VSQx.cs" />
+    <Compile Include="Core\USTx\UPart.cs" />
+    <Compile Include="Core\USTx\UProject.cs" />
+    <Compile Include="Core\USTx\UTrack.cs" />
+    <Compile Include="Core\Formats\VSQx.cs" />
+    <Compile Include="UI\Controls\NavigateDrag.xaml.cs">
+      <DependentUpon>NavigateDrag.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Controls\NoteControl.xaml.cs">
       <DependentUpon>NoteControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Controls\UScrollViewer.xaml.cs">
+      <DependentUpon>UScrollViewer.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Models\ThemeManager.cs" />
+    <Compile Include="UI\Models\PartThumbnail.cs" />
     <Compile Include="UI\UIConstants.cs" />
+    <Page Include="UI\Controls\NavigateDrag.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\Controls\NoteControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Controls\UScrollViewer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -81,7 +98,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Core\Note.cs" />
+    <Compile Include="Core\USTx\UNote.cs" />
     <Compile Include="UI\Models\NotesCanvasModel.cs" />
     <Compile Include="UI\MidiWindow.xaml.cs">
       <DependentUpon>MidiWindow.xaml</DependentUpon>
@@ -90,11 +107,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Controls\Buttons.xaml">
+    <Page Include="UI\Styles\Button.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Controls\ScrollBar.xaml">
+    <Page Include="UI\Styles\Menu.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Styles\ScrollBar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
