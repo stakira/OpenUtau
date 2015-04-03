@@ -13,6 +13,12 @@ namespace OpenUtau.UI
         public const int NoteZIndex = 200;
         public const int NoteWithLyricBoxZIndex = 1000;
 
+        public const double NoteMaxWidth = 256;
+        public const double NoteMinWidth = 4;
+        public const double NoteMinWidthDisplay = 6;
+        public const double NoteMaxHeight = 128;
+        public const double NoteMinHeight = 8;
+
         public static System.Windows.Media.DoubleCollection DashLineArray = new System.Windows.Media.DoubleCollection() { 2, 2 };
     }
 }

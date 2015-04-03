@@ -9,6 +9,7 @@
                 <ResourceDictionary Source="UI\Styles\Button.xaml"/>
                 <ResourceDictionary Source="UI\Styles\ScrollBar.xaml"/>
                 <ResourceDictionary Source="UI\Styles\Menu.xaml"/>
+                <ResourceDictionary Source="UI\Styles\BorderlessWindow.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

@@ -79,9 +79,9 @@ namespace OpenUtau.Core.USTx
                 return 1;
             else if (other.offset > this.offset)
                 return -1;
-            else if (other.keyNo < this.keyNo)
+            else if (other.GetHashCode() < this.GetHashCode())
                 return 1;
-            else if (other.keyNo > this.keyNo)
+            else if (other.GetHashCode() > this.GetHashCode())
                 return -1;
             else
                 return 0;

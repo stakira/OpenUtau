@@ -16,29 +16,6 @@
         </Setter>
     </Style>
 
-    <!--<Style x:Key="{x:Type MenuItem}" TargetType="MenuItem">
-        <Setter Property="OverridesDefaultStyle" Value="True"/>
-        <Setter Property="SnapsToDevicePixels" Value="True"/>
-        <Style.Triggers>
-            <Trigger Property="Role" Value="TopLevelHeader">
-                <Setter Property="Template"
-              Value="{StaticResource {x:Static MenuItem.TopLevelHeaderTemplateKey}}"/>
-                <Setter Property="Grid.IsSharedSizeScope" Value="true"/>
-            </Trigger>
-            <Trigger Property="Role" Value="TopLevelItem">
-                <Setter Property="Template"
-              Value="{StaticResource {x:Static MenuItem.TopLevelItemTemplateKey}}"/>
-            </Trigger>
-            <Trigger Property="Role" Value="SubmenuHeader">
-                <Setter Property="Template"
-              Value="{StaticResource {x:Static MenuItem.SubmenuHeaderTemplateKey}}"/>
-            </Trigger>
-            <Trigger Property="Role" Value="SubmenuItem">
-                <Setter Property="Template" Value="{StaticResource {x:Static MenuItem.SubmenuItemTemplateKey}}"/>
-            </Trigger>
-        </Style.Triggers>
-    </Style>-->
-
     <!-- TopLevelHeader -->
     <ControlTemplate x:Key="{x:Static MenuItem.TopLevelHeaderTemplateKey}" TargetType="MenuItem">
         <Border x:Name="Border" SnapsToDevicePixels="True" Background="White">
@@ -47,7 +24,7 @@
                 <Popup x:Name="SubMenuPopup" Placement="Bottom" Focusable="false"
                        IsOpen="{Binding Path=IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}"
                        PopupAnimation="{DynamicResource {x:Static SystemParameters.MenuPopupAnimationKey}}">
-                    <Border SnapsToDevicePixels="True" BorderThickness="1" BorderBrush="Gray" Background="White">
+                    <Border SnapsToDevicePixels="True" BorderThickness="1" BorderBrush="{StaticResource ScrollBarBrushNormal}" Background="White">
                         <StackPanel IsItemsHost="True" Margin="2" KeyboardNavigation.DirectionalNavigation="Cycle"/>
                     </Border>
                 </Popup>
@@ -63,7 +40,7 @@
         </ControlTemplate.Triggers>
     </ControlTemplate>
 
-    <!-- TopLevelHeader -->
+    <!-- TopLevelItem -->
     <ControlTemplate x:Key="{x:Static MenuItem.TopLevelItemTemplateKey}" TargetType="MenuItem">
         <Border x:Name="Border" SnapsToDevicePixels="True" Background="White">
             <Grid x:Name="Grid">
@@ -99,27 +76,10 @@
                 <Popup x:Name="SubMenuPopup" Placement="Right" Focusable="false" VerticalOffset="-3"
                        IsOpen="{Binding Path=IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}"
                        PopupAnimation="{DynamicResource {x:Static SystemParameters.MenuPopupAnimationKey}}">
-                    <Border SnapsToDevicePixels="True" BorderThickness="1" BorderBrush="Gray" Background="White">
+                    <Border SnapsToDevicePixels="True" BorderThickness="1" BorderBrush="{StaticResource ScrollBarBrushNormal}" Background="White">
                         <StackPanel IsItemsHost="True" Margin="2" KeyboardNavigation.DirectionalNavigation="Cycle"/>
                     </Border>
                 </Popup>
-                <!--<Popup x:Name="SubMenuPopup" Placement="Right" Focusable="false"
-                   IsOpen="{Binding Path=IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}" 
-                   PopupAnimation="{DynamicResource {x:Static SystemParameters.MenuPopupAnimationKey}}"
-                   AllowsTransparency="True">
-                    <Grid Margin="0,0,5,5">
-                        <Border x:Name="SubMenuBorder" BorderBrush="Gray" BorderThickness="1" Background="White" SnapsToDevicePixels="True">
-                            <Grid x:Name="SubMenu" Grid.IsSharedSizeScope="True" Margin="2">
-                                <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle"/>
-                            </Grid>
-                            <Border.Effect>
-                                <DropShadowEffect ShadowDepth="2" Color="Black" Opacity="0.25"/>
-                            </Border.Effect>
-                        </Border>
-                        <Border Margin="1,0,0,0" x:Name="TransitionBorder" Width="0" Height="2" VerticalAlignment="Top" HorizontalAlignment="Left" 
-                                                Background="White" SnapsToDevicePixels="False" BorderThickness="1" BorderBrush="Red"/>
-                    </Grid>
-                </Popup>-->
             </Grid>
         </Border>
         <ControlTemplate.Triggers>

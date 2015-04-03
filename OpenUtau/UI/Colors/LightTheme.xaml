@@ -30,7 +30,13 @@
     <Color x:Key="TickLineColorLight">#D0D0D0</Color>
     <Color x:Key="TickLineColorDark">#afa3b5</Color>
     <Color x:Key="BarNumberColor">#afa3b5</Color>
-
+    
+    <!--Midi notes-->
+    <Color x:Key="UIBackgroundColorNormal">#FFFFFF</Color>
+    <Color x:Key="UIBackgroundColorActive">#F0F0F0</Color>
+    <Color x:Key="UINeutralColorNormal">#ADA1B3</Color>
+    <Color x:Key="UINeutralColorActive">#948A99</Color>
+    
     <!--Midi notes-->
     <Color x:Key="NoteFillSelectedColorA">#ff7aa9</Color>
     <Color x:Key="NoteFillSelectedColorB">#ff679d</Color>

@@ -79,6 +79,7 @@ namespace OpenUtau.UI.Controls
                 lyricText.Visibility = System.Windows.Visibility.Hidden;
                 Canvas.SetTop(AbbreLyricText, (this.ActualHeight - AbbreLyricText.ActualHeight) / 2);
                 AbbreLyricText.Visibility = System.Windows.Visibility.Visible;
+                AbbreLyricText.Width = Math.Max(0, ActualWidth - 5);
             }
             else
             {
@@ -145,7 +146,7 @@ namespace OpenUtau.UI.Controls
             lyricBox.Loaded += lyricBox_Loaded;
             lyricBox.LostFocus += lyricBox_LostFocus;
             bodyCanvas.Children.Add(lyricBox);
-            Canvas.SetLeft(lyricBox, 2);
+            Canvas.SetLeft(lyricBox, 1);
             Canvas.SetTop(lyricBox, 1);
             Canvas.SetZIndex(this, UIConstants.NoteWithLyricBoxZIndex);
         }

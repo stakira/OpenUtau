@@ -34,10 +34,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Expression.Interactions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Blend.Interctivity.WPF.v4.0.1.0.3\lib\net40\Microsoft.Expression.Interactions.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Blend.Interctivity.WPF.v4.0.1.0.3\lib\net40\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -59,6 +65,8 @@
     <Compile Include="Core\USTx\UProject.cs" />
     <Compile Include="Core\USTx\UTrack.cs" />
     <Compile Include="Core\Formats\VSQx.cs" />
+    <Compile Include="UI\Behaviors\BroderlessWindowBehavior.cs" />
+    <Compile Include="UI\Controls\BorderlessWindow.cs" />
     <Compile Include="UI\Controls\NavigateDrag.xaml.cs">
       <DependentUpon>NavigateDrag.xaml</DependentUpon>
     </Compile>
@@ -67,6 +75,10 @@
     </Compile>
     <Compile Include="UI\Controls\UScrollViewer.xaml.cs">
       <DependentUpon>UScrollViewer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Controls\ViewScaler.xaml.cs">
+      <DependentUpon>ViewScaler.xaml</DependentUpon>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="UI\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -83,6 +95,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\Controls\UScrollViewer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Controls\ViewScaler.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -104,6 +120,10 @@
       <DependentUpon>MidiWindow.xaml</DependentUpon>
     </Compile>
     <Page Include="UI\Colors\LightTheme.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Styles\BorderlessWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -138,6 +158,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

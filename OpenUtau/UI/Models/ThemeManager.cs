@@ -15,6 +15,10 @@ namespace OpenUtau.UI.Models
         static int[] blackKeys = { 1, 3, 6, 8, 10 };
 
         // Window UI
+        public static SolidColorBrush UIBackgroundBrushNormal = new SolidColorBrush();
+        public static SolidColorBrush UIBackgroundBrushActive = new SolidColorBrush();
+        public static SolidColorBrush UINeutralBrushNormal = new SolidColorBrush();
+        public static SolidColorBrush UINeutralBrushActive = new SolidColorBrush();
 
         // Midi editor background
         public static SolidColorBrush TickLineBrushLight = new SolidColorBrush();
@@ -37,6 +41,11 @@ namespace OpenUtau.UI.Models
         public static bool LoadTheme(){
 
             const int NumberOfChannel = 1;
+            
+            UIBackgroundBrushNormal.Color = (Color)Application.Current.FindResource("UIBackgroundColorNormal");
+            UIBackgroundBrushActive.Color = (Color)Application.Current.FindResource("UIBackgroundColorActive");
+            UINeutralBrushNormal.Color = (Color)Application.Current.FindResource("UINeutralColorNormal");
+            UINeutralBrushActive.Color = (Color)Application.Current.FindResource("UINeutralColorActive");
 
             TickLineBrushLight.Color = (Color)Application.Current.FindResource("TickLineColorLight");
             TickLineBrushDark.Color = (Color)Application.Current.FindResource("TickLineColorDark");
