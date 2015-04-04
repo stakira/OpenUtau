@@ -69,7 +69,8 @@ namespace OpenUtau.Core.Formats
             string notenumPath = string.Format("{0}{1}", nsPrefix, nsPrefix == "v3:" ? "noteNum" : "n");
             string velocityPath = string.Format("{0}{1}", nsPrefix, nsPrefix == "v3:" ? "velocity" : "v");
             string lyricPath = string.Format("{0}{1}", nsPrefix, nsPrefix == "v3:" ? "lyric" : "y");
-            string PhonemePath = string.Format("{0}{1}", nsPrefix, nsPrefix == "v3:" ? "phnms" : "p");
+            string phonemePath = string.Format("{0}{1}", nsPrefix, nsPrefix == "v3:" ? "phnms" : "p");
+            string playtimePath = string.Format("{0}playTime", nsPrefix);
 
             uproject.BPM = Convert.ToDouble(root.SelectSingleNode(bpmPath, nsmanager).InnerText) / 100;
             uproject.BeatPerBar = Convert.ToInt32(root.SelectSingleNode(beatperbarPath, nsmanager).InnerText);
@@ -95,6 +96,8 @@ namespace OpenUtau.Core.Formats
 
                     upart.Name = part.SelectSingleNode(partnamePath, nsmanager).InnerText;
                     upart.Comment = part.SelectSingleNode(partcommentPath, nsmanager).InnerText;
+                    upart.PosTick = Convert.ToInt32(part.SelectSingleNode(postickPath, nsmanager).InnerText);
+                    upart.DurTick = Convert.ToInt32(part.SelectSingleNode(playtimePath, nsmanager).InnerText);
 
                     foreach (XmlNode note in part.SelectNodes(notePath, nsmanager))
                     {
@@ -106,7 +109,7 @@ namespace OpenUtau.Core.Formats
                         unote.NoteNum = Convert.ToInt32(note.SelectSingleNode(notenumPath, nsmanager).InnerText);
                         unote.Velocity = Convert.ToInt32(note.SelectSingleNode(velocityPath, nsmanager).InnerText);
                         unote.Lyric = note.SelectSingleNode(lyricPath, nsmanager).InnerText;
-                        unote.Phoneme = note.SelectSingleNode(PhonemePath, nsmanager).InnerText;
+                        unote.Phoneme = note.SelectSingleNode(phonemePath, nsmanager).InnerText;
 
                         // Old
                         unote.offset = ((double)unote.PosTick) / 240;

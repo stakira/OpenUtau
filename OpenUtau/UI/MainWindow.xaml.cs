@@ -29,34 +29,45 @@ namespace OpenUtau.UI
     /// </summary>
     public partial class MainWindow : BorderlessWindow
     {
-        // Window states
-        WindowChrome _chrome;
-        Thickness _activeBorderThickness;
-        Thickness _inactiveBorderThickness;
-
         MidiWindow _midiWindow;
 
         UProject uproject;
+        TracksViewModel trackVM;
 
-        PartThumbnail thumb;
+        TrackBackground trackBackground;
+        TickBackground tickBackground;
 
         public MainWindow()
         {
             InitializeComponent();
-            _chrome = new WindowChrome();
-            WindowChrome.SetWindowChrome(this, _chrome);
-            _chrome.GlassFrameThickness = new Thickness(1);
-            _chrome.CornerRadius = new CornerRadius(0);
-            _chrome.CaptionHeight = 0;
-            //_activeBorderThickness = this.canvasBorder.BorderThickness;
-            _inactiveBorderThickness = new Thickness(1);
 
             ThemeManager.LoadTheme();
 
-            thumb = new PartThumbnail();
-            trackCanvas.Children.Add(thumb);
+            trackVM = new TracksViewModel(trackCanvas);
 
             this.CloseButtonClicked += delegate(object sender, EventArgs e) { Exit(); };
+
+            trackBackground = new TrackBackground();
+            this.trackBackgroundGrid.Children.Add(trackBackground);
+
+            tickBackground = new TickBackground();
+            this.trackBackgroundGrid.Children.Add(tickBackground);
+            tickBackground.SnapsToDevicePixels = true;
+
+            viewScaler.Max = UIConstants.TrackMaxHeight;
+            viewScaler.Min = UIConstants.TrackMinHeight;
+            viewScaler.Value = UIConstants.TrackDefaultHeight;
+            viewScaler.ViewScaled += viewScaler_ViewScaled;
+
+            verticalScroll.Minimum = 0;
+            verticalScroll.Maximum = UIConstants.MaxTrackCount * UIConstants.TrackDefaultHeight;
+            verticalScroll.Value = 0;
+            //verticalScroll.ViewportSize = 
+        }
+
+        void viewScaler_ViewScaled(object sender, EventArgs e)
+        {
+            trackBackground.TrackHeight = ((ViewScaledEventArgs)e).Value;
         }
 
         # region Splitter
@@ -64,6 +75,9 @@ namespace OpenUtau.UI
         private void GridSplitter_MouseEnter(object sender, MouseEventArgs e)
         {
             //Mouse.OverrideCursor = Cursors.SizeNS;
+            System.Diagnostics.Debug.WriteLine(this.tickBackground.LayoutTransform.Value.ToString());
+            System.Diagnostics.Debug.WriteLine(this.tickBackground.ActualHeight);
+            System.Diagnostics.Debug.WriteLine(this.tickBackground.ActualWidth);
         }
 
         private void GridSplitter_MouseLeave(object sender, MouseEventArgs e)
@@ -182,6 +196,7 @@ namespace OpenUtau.UI
         private void verticalScroll_Scroll(object sender, System.Windows.Controls.Primitives.ScrollEventArgs e)
         {
             //ncModel.updateGraphics();
+            trackBackground.VerticalOffset = verticalScroll.Value * 10;
         }
 
         private void verticalScroll_MouseWheel(object sender, MouseWheelEventArgs e)
@@ -203,7 +218,7 @@ namespace OpenUtau.UI
             scale += scale * zoomSpeed * e.Delta;
             move += 0.1 * e.Delta;
             //titleLabel.Text = move.ToString();
-            thumb.ScaleX = scale;
+            //thumb.ScaleX = scale;
         }
 
         private void timelineCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -246,9 +261,7 @@ namespace OpenUtau.UI
                     if (_midiWindow == null) _midiWindow = new MidiWindow();
                     _midiWindow.Show();
                     _midiWindow.LoadPart(uproject.Tracks[0].Parts[0]);
-                    thumb.Brush = ThemeManager.NoteFillBrushes[0];
-                    thumb.UPart = uproject.Tracks[0].Parts[0];
-                    thumb.Redraw();
+                    trackVM.LoadProject(uproject);
                 }
             }
         }

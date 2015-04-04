@@ -14,14 +14,13 @@ namespace OpenUtau.UI.Models
 {
     class PartThumbnail : System.Windows.Controls.Image
     {
-        
         GeometryGroup thumbnailGeometry;
         Pen pen;
         TransformGroup trans;
         TranslateTransform tTrans;
         ScaleTransform sTrans;
 
-        public UPart UPart { set; get; }
+        public UPart Part { set; get; }
         
         public Brush Brush
         {
@@ -56,8 +55,8 @@ namespace OpenUtau.UI.Models
         public PartThumbnail()
         {
             thumbnailGeometry = new GeometryGroup();
-            pen = new Pen() { Thickness = 1 };
-            this.Source = new DrawingImage(new GeometryDrawing(Brush, pen, thumbnailGeometry));
+            pen = new Pen() { Thickness = 3 };
+            this.Source = new DrawingImage(new GeometryDrawing(Brushes.Transparent, pen, thumbnailGeometry));
 
             sTrans = new ScaleTransform();
             tTrans = new TranslateTransform();
@@ -65,17 +64,26 @@ namespace OpenUtau.UI.Models
             trans.Children.Add(sTrans);
             trans.Children.Add(tTrans);
             this.RenderTransform = trans;
+            RenderOptions.SetEdgeMode((DependencyObject)this, EdgeMode.Aliased);
         }
 
         public void Redraw()
         {
-            if (UPart == null)
+            if (Part == null)
                 throw new Exception("UPart cannot be null");
             thumbnailGeometry.Children.Clear();
-            foreach (UNote unote in UPart.Notes){
+            // Topleft
+            thumbnailGeometry.Children.Add(
+                new LineGeometry(new Point(0, UIConstants.HiddenNoteNum), new Point(0, UIConstants.HiddenNoteNum)));
+            // Bottomright
+            thumbnailGeometry.Children.Add(
+                new LineGeometry(
+                    new Point(Part.DurTick, UIConstants.MaxNoteNum - UIConstants.HiddenNoteNum),
+                    new Point(Part.DurTick, UIConstants.MaxNoteNum - UIConstants.HiddenNoteNum)));
+            foreach (UNote unote in Part.Notes){
                 thumbnailGeometry.Children.Add(
-                    new LineGeometry(new Point(unote.PosTick, unote.NoteNum),
-                        new Point(unote.PosTick + unote.DurTick, unote.NoteNum)));
+                    new LineGeometry(new Point(unote.PosTick, UIConstants.MaxNoteNum - unote.NoteNum),
+                        new Point(unote.PosTick + unote.DurTick, UIConstants.MaxNoteNum - unote.NoteNum)));
             }
         }
 

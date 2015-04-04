@@ -166,7 +166,7 @@ namespace OpenUtau.UI.Models
             {
                 keyTracks.Add(new Rectangle()
                 {
-                    Fill = ThemeManager.getNoteTrackBrush(i),
+                    Fill = Brushes.Transparent,//ThemeManager.getNoteTrackBrush(i),
                     Width = notesCanvas.ActualWidth,
                     Height = noteHeight,
                     IsHitTestVisible = false

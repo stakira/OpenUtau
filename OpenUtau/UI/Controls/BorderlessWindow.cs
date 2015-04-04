@@ -77,12 +77,12 @@ namespace OpenUtau.UI.Controls
             if (WindowState == System.Windows.WindowState.Maximized)
             {
                 WindowState = System.Windows.WindowState.Normal;
-                ((Button)sender).Content = "1";
+                //((Button)sender).Content = "1";
             }
             else
             {
                 WindowState = System.Windows.WindowState.Maximized;
-                ((Button)sender).Content = "2";
+                //((Button)sender).Content = "2";
             }
         }
 
@@ -126,6 +126,7 @@ namespace OpenUtau.UI.Controls
                 double x = PointToScreen(new Point(0, 0)).X + mouseX * (1.0 - width / maximizedWidth);
 
                 WindowState = WindowState.Normal;
+                //((Button)GetTemplateChild(PART_MaxButton)).Content = "1";
                 Left = x;
                 Top = 0;
                 DragMove();

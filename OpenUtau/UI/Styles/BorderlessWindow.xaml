@@ -22,6 +22,9 @@
             <Trigger Property="IsActive" Value="False">
                 <Setter TargetName="PART_WindowBorder" Property="BorderThickness" Value="1"/>
             </Trigger>
+            <Trigger Property="WindowState" Value="Maximized">
+                <Setter TargetName="PART_MaxButton" Property="Content" Value="2"/>
+            </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
 
@@ -29,8 +32,8 @@
         <Setter Property="SnapsToDevicePixels" Value="True"/>
         <Setter Property="Template" Value="{StaticResource BorderlessWindowTemplateKey}"/>
         <Setter Property="AllowsTransparency" Value="False"/>
-        <Setter Property="Width" Value="950"/>
-        <Setter Property="Height" Value="760"/>
+        <Setter Property="Width" Value="1024"/>
+        <Setter Property="Height" Value="768"/>
         <Setter Property="MinWidth" Value="800"/>
         <Setter Property="MinHeight" Value="600"/>
         <Setter Property="ResizeMode" Value="CanResizeWithGrip"/>

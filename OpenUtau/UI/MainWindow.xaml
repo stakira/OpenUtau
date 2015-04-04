@@ -45,14 +45,12 @@
     </local:BorderlessWindow.MenuContent>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="160" MinWidth="0" MaxWidth="480"/>
+            <ColumnDefinition Width="0" MinWidth="0" MaxWidth="480"/>
             <ColumnDefinition Width="10"/>
             <ColumnDefinition Width="*" MinWidth="200"/>
         </Grid.ColumnDefinitions>
         <Grid x:Name="BrowserGrid" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="20,20,0,20">
         </Grid>
-        <GridSplitter x:Name="HorizontalSplitter" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="10"
-                          Margin="0,0,0,0" Background="White" Focusable="False" />
         <Grid x:Name="WorkspaceGrid" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" MinHeight="200"/>
@@ -63,16 +61,17 @@
             <Canvas x:Name="timelineCanvas" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="20" Margin="0,20,20,0"
                         Background="{StaticResource TimelineBrushNormal}" ClipToBounds="True"
                         MouseWheel="timelineCanvas_MouseWheel" MouseLeftButtonDown="timelineCanvas_MouseLeftButtonDown" MouseMove="timelineCanvas_MouseMove" MouseLeftButtonUp="timelineCanvas_MouseLeftButtonUp" />
-            <Canvas x:Name="trackCanvas" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,40,20,0" Background="White"
-                        ClipToBounds="True" SnapsToDevicePixels="True" MouseLeftButtonDown="trackCanvas_MouseLeftButtonDown"/>
+            <Grid x:Name="trackBackgroundGrid" Margin="0,40,20,0" ClipToBounds="True"/>
+            <Canvas x:Name="trackCanvas" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent" Margin="0,40,20,0"
+                    ClipToBounds="True" SnapsToDevicePixels="True" MouseLeftButtonDown="trackCanvas_MouseLeftButtonDown"/>
             <ScrollBar x:Name="horizontalScroll" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Top"
-                           Height="20" Margin="0,0,20,0" Orientation="Horizontal" Minimum="0" Maximum="1" Value="0" ViewportSize="1" 
+                           Height="20" Margin="0,0,20,0" Orientation="Horizontal"
                            Scroll="horizontalScroll_Scroll" MouseWheel="horizontalScroll_MouseWheel" />
             <ScrollBar x:Name="verticalScroll" Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Stretch"
-                           Width="20" Margin="0,40,0,0" Orientation="Vertical" Minimum="0" Maximum="1" Value="0.5" ViewportSize="1" 
+                           Width="20" Margin="0,40,0,0" Orientation="Vertical"
                            Scroll="verticalScroll_Scroll" MouseWheel="verticalScroll_MouseWheel"/>
             <local:NavigateDrag x:Name="navigateDrag" HorizontalAlignment="Right" VerticalAlignment="Top" Width="20" Height="20" Margin="0,0,0,0"/>
-            <local:ViewScaler x:Name="vZoomControlStack" HorizontalAlignment="Right" VerticalAlignment="Top" Width="20" Height="20" Margin="0,20,0,0"/>
+            <local:ViewScaler x:Name="viewScaler" HorizontalAlignment="Right" VerticalAlignment="Top" Width="20" Height="20" Margin="0,20,0,0"/>
             <Border x:Name="notesCanvasShadow" Grid.Row="0" Background="{x:Null}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,20,20,0" BorderThickness="0" ClipToBounds="True">
                 <Border Background="{x:Null}" BorderBrush="Black" BorderThickness="1" Margin="-1">
                     <Border.Effect>
@@ -93,5 +92,7 @@
                 </Border>
             </Border>
         </Grid>
+        <GridSplitter x:Name="BrowserSplitter" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="10"
+                          Margin="0,0,0,0" Background="White" Focusable="False" />
     </Grid>
 </local:BorderlessWindow>

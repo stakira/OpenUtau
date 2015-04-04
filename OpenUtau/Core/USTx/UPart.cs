@@ -15,6 +15,9 @@ namespace OpenUtau.Core.USTx
 
         public UTrack Parent;
 
+        public int PosTick;
+        public int DurTick;
+
         public int bar = 4; // bar = number of beats
         public int beat = 4; // beat = number of quarter-notes
         public int bpm = 128000; // Beat per minute * 1000

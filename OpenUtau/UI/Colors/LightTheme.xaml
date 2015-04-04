@@ -30,7 +30,11 @@
     <Color x:Key="TickLineColorLight">#D0D0D0</Color>
     <Color x:Key="TickLineColorDark">#afa3b5</Color>
     <Color x:Key="BarNumberColor">#afa3b5</Color>
-    
+
+    <!--Track Background-->
+    <Color x:Key="TrackBackgroundColor">#FFFFFF</Color>
+    <Color x:Key="TrackBackgroundColorAlt">#F0F0F0</Color>
+
     <!--Midi notes-->
     <Color x:Key="UIBackgroundColorNormal">#FFFFFF</Color>
     <Color x:Key="UIBackgroundColorActive">#F0F0F0</Color>

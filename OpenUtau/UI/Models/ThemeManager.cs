@@ -21,6 +21,10 @@ namespace OpenUtau.UI.Models
         public static SolidColorBrush UINeutralBrushActive = new SolidColorBrush();
 
         // Midi editor background
+
+        public static SolidColorBrush TrackBackgroundBrush = new SolidColorBrush();
+        public static SolidColorBrush TrackBackgroundBrushAlt = new SolidColorBrush();
+
         public static SolidColorBrush TickLineBrushLight = new SolidColorBrush();
         public static SolidColorBrush TickLineBrushDark = new SolidColorBrush();
         public static SolidColorBrush BarNumberBrush = new SolidColorBrush();
@@ -46,6 +50,9 @@ namespace OpenUtau.UI.Models
             UIBackgroundBrushActive.Color = (Color)Application.Current.FindResource("UIBackgroundColorActive");
             UINeutralBrushNormal.Color = (Color)Application.Current.FindResource("UINeutralColorNormal");
             UINeutralBrushActive.Color = (Color)Application.Current.FindResource("UINeutralColorActive");
+
+            TrackBackgroundBrush.Color = (Color)Application.Current.FindResource("TrackBackgroundColor");
+            TrackBackgroundBrushAlt.Color = (Color)Application.Current.FindResource("TrackBackgroundColorAlt");
 
             TickLineBrushLight.Color = (Color)Application.Current.FindResource("TickLineColorLight");
             TickLineBrushDark.Color = (Color)Application.Current.FindResource("TickLineColorDark");
