@@ -20,14 +20,15 @@
             </Grid.RowDefinitions>
 
             <Button x:Name="mainButton" Grid.Row="0" Style="{StaticResource MidiWindowMainButton}" HorizontalAlignment="Left" VerticalAlignment="Top" Height="21" Width="21" Margin="14,7,0,0"/>
+            <Grid x:Name="keyboardBackgroundGrid" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="48" Margin="0,40,0,0" ClipToBounds="True"/>
             <Canvas x:Name="keysCanvas" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="48" Margin="0,40,0,0" Background="Transparent" ClipToBounds="True"
-                    Height="{Binding Path=viewPortHeight, Mode=OneWay}"
                     MouseLeftButtonDown="keysCanvas_MouseLeftButtonDown" MouseLeftButtonUp="keysCanvas_MouseLeftButtonUp"
                     MouseMove="keysCanvas_MouseMove" MouseWheel="keysCanvas_MouseWheel"/>
+            <Grid x:Name="timelineBackgroundGrid" Grid.Row="0" VerticalAlignment="Top" Height="20" Margin="48,20,20,0" ClipToBounds="True"/>
             <Canvas x:Name="timelineCanvas" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="20" Margin="48,20,20,0"
-                    Background="{StaticResource TimelineBrushNormal}" ClipToBounds="True"
+                    Background="Transparent" ClipToBounds="True"
                     MouseWheel="timelineCanvas_MouseWheel" MouseLeftButtonDown="timelineCanvas_MouseLeftButtonDown" MouseMove="timelineCanvas_MouseMove" MouseLeftButtonUp="timelineCanvas_MouseLeftButtonUp" />
-            <Grid x:Name="notesBackgroundGrid" ClipToBounds="True" Margin="48,40,20,0"/>
+            <Grid x:Name="notesBackgroundGrid" Grid.Row="0" ClipToBounds="True" Margin="48,40,20,0"/>
             <Canvas x:Name="notesCanvas" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="48,40,20,0" Background="Transparent"
                     ClipToBounds="True" SnapsToDevicePixels="True"
                     MouseLeftButtonDown="notesCanvas_MouseLeftButtonDown" MouseRightButtonDown="notesCanvas_MouseRightButtonDown"

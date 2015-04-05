@@ -21,6 +21,12 @@ namespace OpenUtau.UI.Models
         public static SolidColorBrush UINeutralBrushActive = new SolidColorBrush();
 
         // Midi editor background
+        public static LinearGradientBrush WhiteKeyBrushNormal = new LinearGradientBrush() { StartPoint = new Point(0, 0.5), EndPoint = new Point(1, 0.5) };
+        public static SolidColorBrush WhiteKeyNameBrushNormal = new SolidColorBrush();
+        public static LinearGradientBrush BlackKeyBrushNormal = new LinearGradientBrush() { StartPoint = new Point(0, 0.5), EndPoint = new Point(1, 0.5) };
+        public static SolidColorBrush BlackKeyNameBrushNormal = new SolidColorBrush();
+        public static LinearGradientBrush CenterKeyBrushNormal = new LinearGradientBrush() { StartPoint = new Point(0, 0.5), EndPoint = new Point(1, 0.5) };
+        public static SolidColorBrush CenterKeyNameBrushNormal = new SolidColorBrush();
 
         public static SolidColorBrush TrackBackgroundBrush = new SolidColorBrush();
         public static SolidColorBrush TrackBackgroundBrushAlt = new SolidColorBrush();
@@ -41,31 +47,43 @@ namespace OpenUtau.UI.Models
         public static List<SolidColorBrush> NoteFillBrushes = new List<SolidColorBrush>();
         public static List<SolidColorBrush> NoteStrokeBrushes = new List<SolidColorBrush>();
         public static List<SolidColorBrush> NoteFillErrorBrushes = new List<SolidColorBrush>();
-        
+
         public static bool LoadTheme(){
 
             const int NumberOfChannel = 1;
-            
-            UIBackgroundBrushNormal.Color = (Color)Application.Current.FindResource("UIBackgroundColorNormal");
-            UIBackgroundBrushActive.Color = (Color)Application.Current.FindResource("UIBackgroundColorActive");
-            UINeutralBrushNormal.Color = (Color)Application.Current.FindResource("UINeutralColorNormal");
-            UINeutralBrushActive.Color = (Color)Application.Current.FindResource("UINeutralColorActive");
 
-            TrackBackgroundBrush.Color = (Color)Application.Current.FindResource("TrackBackgroundColor");
-            TrackBackgroundBrushAlt.Color = (Color)Application.Current.FindResource("TrackBackgroundColorAlt");
+            WhiteKeyBrushNormal.GradientStops.Add(new GradientStop(GetColor("WhiteKeyColorNormalLeft"), 0));
+            WhiteKeyBrushNormal.GradientStops.Add(new GradientStop(GetColor("WhiteKeyColorNormalRight"), 1));
+            WhiteKeyNameBrushNormal.Color = GetColor("WhiteKeyNameColorNormal");
 
-            TickLineBrushLight.Color = (Color)Application.Current.FindResource("TickLineColorLight");
-            TickLineBrushDark.Color = (Color)Application.Current.FindResource("TickLineColorDark");
-            BarNumberBrush.Color = (Color)Application.Current.FindResource("BarNumberColor");
+            BlackKeyBrushNormal.GradientStops.Add(new GradientStop(GetColor("BlackKeyColorNormalLeft"), 0));
+            BlackKeyBrushNormal.GradientStops.Add(new GradientStop(GetColor("BlackKeyColorNormalRight"), 1));
+            BlackKeyNameBrushNormal.Color = GetColor("BlackKeyNameColorNormal");
+
+            CenterKeyBrushNormal.GradientStops.Add(new GradientStop(GetColor("CenterKeyColorNormalLeft"), 0));
+            CenterKeyBrushNormal.GradientStops.Add(new GradientStop(GetColor("CenterKeyColorNormalLeft"), 1));
+            CenterKeyNameBrushNormal.Color = GetColor("CenterKeyNameColorNormal");
             
-            PlayPosMarkerHighlightBrush.Color = (Color)Application.Current.FindResource("PlayPosMarkerHighlightColor");
+            UIBackgroundBrushNormal.Color = GetColor("UIBackgroundColorNormal");
+            UIBackgroundBrushActive.Color = GetColor("UIBackgroundColorActive");
+            UINeutralBrushNormal.Color = GetColor("UINeutralColorNormal");
+            UINeutralBrushActive.Color = GetColor("UINeutralColorActive");
+
+            TrackBackgroundBrush.Color = GetColor("TrackBackgroundColor");
+            TrackBackgroundBrushAlt.Color = GetColor("TrackBackgroundColorAlt");
+
+            TickLineBrushLight.Color = GetColor("TickLineColorLight");
+            TickLineBrushDark.Color = GetColor("TickLineColorDark");
+            BarNumberBrush.Color = GetColor("BarNumberColor");
+            
+            PlayPosMarkerHighlightBrush.Color = GetColor("PlayPosMarkerHighlightColor");
 
             // Midi notes
-            NoteFillSelectedBrush.Color = (Color)Application.Current.FindResource("NoteFillSelectedColorB");
+            NoteFillSelectedBrush.Color = GetColor("NoteFillSelectedColorB");
             NoteFillSelectedErrorBrushes.Color = GetColorVariationAlpha(NoteFillSelectedBrush.Color, 127);
 
-            NoteStrokeSelectedBrush.Color = (Color)Application.Current.FindResource("NoteStrokeSelectedColor");
-            NoteStrokeErrorBrush.Color = (Color)Application.Current.FindResource("NoteStrokeErrorColor");
+            NoteStrokeSelectedBrush.Color = GetColor("NoteStrokeSelectedColor");
+            NoteStrokeErrorBrush.Color = GetColor("NoteStrokeErrorColor");
 
             for (int i = 0; i < NumberOfChannel; i++)
             {
@@ -73,12 +91,17 @@ namespace OpenUtau.UI.Models
                 NoteStrokeBrushes.Add(new SolidColorBrush());
                 NoteFillErrorBrushes.Add(new SolidColorBrush());
                 
-                NoteFillBrushes[0].Color = (Color)Application.Current.FindResource("NoteFillColorBCh" + i);
-                NoteFillErrorBrushes[0].Color = GetColorVariationAlpha(NoteFillBrushes[0].Color, 127);
-                NoteStrokeBrushes[0].Color = (Color)Application.Current.FindResource("NoteStrokeColorCh" + i);
+                NoteFillBrushes[i].Color = GetColor("NoteFillColorBCh" + i);
+                NoteFillErrorBrushes[i].Color = GetColorVariationAlpha(NoteFillBrushes[i].Color, 127);
+                NoteStrokeBrushes[i].Color = GetColor("NoteStrokeColorCh" + i);
             }
 
             return true;
+        }
+        
+        public static Color GetColor(string name)
+        {
+            return (Color)Application.Current.FindResource(name);
         }
 
         public static Color GetColorVariationAlpha(Color color, byte alpha)

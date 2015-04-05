@@ -58,10 +58,11 @@
                 <RowDefinition Height="250" MinHeight="200" MaxHeight="300"/>
             </Grid.RowDefinitions>
 
+            <Grid x:Name="timelineBackgroundGrid" Grid.Row="0" VerticalAlignment="Top" Height="20" Margin="0,20,20,0" ClipToBounds="True"/>
             <Canvas x:Name="timelineCanvas" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="20" Margin="0,20,20,0"
-                        Background="{StaticResource TimelineBrushNormal}" ClipToBounds="True"
+                        ClipToBounds="True" Background="Transparent"
                         MouseWheel="timelineCanvas_MouseWheel" MouseLeftButtonDown="timelineCanvas_MouseLeftButtonDown" MouseMove="timelineCanvas_MouseMove" MouseLeftButtonUp="timelineCanvas_MouseLeftButtonUp" />
-            <Grid x:Name="trackBackgroundGrid" Margin="0,40,20,0" ClipToBounds="True"/>
+            <Grid x:Name="trackBackgroundGrid" Grid.Row="0" Margin="0,40,20,0" ClipToBounds="True"/>
             <Canvas x:Name="trackCanvas" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent" Margin="0,40,20,0"
                     ClipToBounds="True" SnapsToDevicePixels="True" MouseLeftButtonDown="trackCanvas_MouseLeftButtonDown"/>
             <ScrollBar x:Name="horizontalScroll" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Top"

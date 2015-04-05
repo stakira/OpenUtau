@@ -36,6 +36,7 @@ namespace OpenUtau.UI
 
         TrackBackground trackBackground;
         TickBackground tickBackground;
+        TimelineBackground timelineBackground;
 
         public MainWindow()
         {
@@ -53,6 +54,11 @@ namespace OpenUtau.UI
             tickBackground = new TickBackground();
             this.trackBackgroundGrid.Children.Add(tickBackground);
             tickBackground.SnapsToDevicePixels = true;
+            tickBackground.MinTickWidth = UIConstants.TrackTickMinWidth;
+
+            timelineBackground = new TimelineBackground();
+            this.timelineBackgroundGrid.Children.Add(timelineBackground);
+            timelineBackground.SnapsToDevicePixels = true;
 
             viewScaler.Max = UIConstants.TrackMaxHeight;
             viewScaler.Min = UIConstants.TrackMinHeight;
@@ -63,6 +69,10 @@ namespace OpenUtau.UI
             verticalScroll.Maximum = UIConstants.MaxTrackCount * UIConstants.TrackDefaultHeight;
             verticalScroll.Value = 0;
             //verticalScroll.ViewportSize = 
+
+            horizontalScroll.Minimum = 0;
+            horizontalScroll.Maximum = UIConstants.MaxNoteCount * UIConstants.TrackWNoteDefaultWidth;
+            horizontalScroll.Value = 0;
         }
 
         void viewScaler_ViewScaled(object sender, EventArgs e)
@@ -181,6 +191,8 @@ namespace OpenUtau.UI
         private void horizontalScroll_Scroll(object sender, System.Windows.Controls.Primitives.ScrollEventArgs e)
         {
             //ncModel.updateGraphics();
+            timelineBackground.HorizonOffset = horizontalScroll.Value;
+            tickBackground.HorizonOffset = horizontalScroll.Value;
         }
 
         private void horizontalScroll_MouseWheel(object sender, MouseWheelEventArgs e)
@@ -217,6 +229,8 @@ namespace OpenUtau.UI
             const double zoomSpeed = 0.0012;
             scale += scale * zoomSpeed * e.Delta;
             move += 0.1 * e.Delta;
+            tickBackground.WholeNoteWidth *= 1 + e.Delta * zoomSpeed;
+            timelineBackground.WholeNoteWidth *= 1 + e.Delta * zoomSpeed;
             //titleLabel.Text = move.ToString();
             //thumb.ScaleX = scale;
         }

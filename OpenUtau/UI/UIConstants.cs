@@ -18,7 +18,7 @@ namespace OpenUtau.UI
 
         public const double NoteMaxWidth = 256;
         public const double NoteMinWidth = 4;
-        public const double NoteMinDisplayWidth = 6;
+        public const double NoteMinDisplayWidth = 16;
         public const double NoteMaxHeight = 128;
         public const double NoteMinHeight = 8;
         public const double NoteDefaultHeight = 22;
@@ -26,8 +26,9 @@ namespace OpenUtau.UI
         public const double MidiWNoteMaxWidth = 1024;
         public const double MidiWNoteMinWidth = 16;
         public const double MidiWNoteDefaultWidth = 128;
+        public const double MidiTickMinWidth = 16;
 
-        public static System.Windows.Media.DoubleCollection DashLineArray = new System.Windows.Media.DoubleCollection() { 2, 2 };
+        public static System.Windows.Media.DoubleCollection DashLineArray = new System.Windows.Media.DoubleCollection() { 2, 4 };
 
         public const double TrackMaxHeight = 256;
         public const double TrackMinHeight = 16;
@@ -36,8 +37,10 @@ namespace OpenUtau.UI
         public const double TrackWNoteMaxWidth = 1024;
         public const double TrackWNoteMinWidth = 16;
         public const double TrackWNoteDefaultWidth = 128;
+        public const double TrackTickMinWidth = 16;
 
         public const int MaxTrackCount = 8;
+        public const int MaxNoteCount = 8; // fixme
 
         public const double TickMinDisplayWidth = 6;
 
