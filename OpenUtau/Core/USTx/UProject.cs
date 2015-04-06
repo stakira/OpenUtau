@@ -12,7 +12,8 @@ namespace OpenUtau.Core.USTx
         public int BeatPerBar = 4;
         public int BeatUnit = 4;
         public int PreBar = 1;
-        public int Resolution = 480;
+        public int Resolution = 960;
+        public int DurTick = 960 * 32;
 
         public string FilePath;
         public string Name = "New Project";

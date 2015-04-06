@@ -19,8 +19,6 @@ namespace OpenUtau.UI.Behaviors
     public class BorderlessWindowBehavior : Behavior<Window>
     {
         private WindowChrome windowChrome;
-        private Thickness activeBorderThickness;
-        private Thickness inactiveBorderThickness;
 
         protected override void OnAttached()
         {
@@ -29,8 +27,6 @@ namespace OpenUtau.UI.Behaviors
             windowChrome.GlassFrameThickness = new Thickness(1);
             windowChrome.CornerRadius = new CornerRadius(0);
             windowChrome.CaptionHeight = 0;
-            //_activeBorderThickness = this.canvasBorder.BorderThickness;
-            inactiveBorderThickness = new Thickness(1);
 
             AddHwndSourceHook();
 

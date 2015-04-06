@@ -119,6 +119,19 @@ namespace OpenUtau.Core.Formats
                     }
                 }
             }
+
+            int projectLength = 0;
+
+            foreach (UTrack utrack in uproject.Tracks)
+            {
+                foreach (UPart upart in utrack.Parts)
+                {
+                    projectLength = Math.Max(projectLength, upart.PosTick + upart.DurTick);
+                }
+            }
+
+            uproject.DurTick = projectLength;
+
             return uproject;
         }
     }

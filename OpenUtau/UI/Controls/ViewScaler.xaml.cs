@@ -38,33 +38,28 @@ namespace OpenUtau.UI.Controls
         double dragLastX;
         double dragLastY;
 
-        double _value = 0.5;
-        double _min = 1;
-        double _max = 10;
+        public double Min { set { SetValue(MinProperty, value); } get { return (double)GetValue(MinProperty); } }
+        public double Max { set { SetValue(MaxProperty, value); } get { return (double)GetValue(MaxProperty); } }
+        public double Value { set { SetValue(ValueProperty, value); } get { return (double)GetValue(ValueProperty); } }
+        public Geometry PathData { set { SetValue(PathDataProperty, value); } get { return (Geometry)GetValue(PathDataProperty); } }
 
-        public double Min { set { _min = value; _value = Math.Max(Min, _value); } get { return _min; } }
-        public double Max { set { _max = value; _value = Math.Min(Max, _value); } get { return _max; } }
-        public double Value {
-            set { _value = Math.Max(Min, Math.Min(Max, value)); }
-            get { return _value; }
-        }
-        public Geometry PathData
-        {
-            set { SetValue(PathDataProperty, value); }
-            get { return (Geometry)GetValue(PathDataProperty); }
-        }
-
+        public static readonly DependencyProperty MinProperty = DependencyProperty.Register("Min", typeof(double), typeof(ViewScaler), new PropertyMetadata(0.0, UpdatePathCallBack));
+        public static readonly DependencyProperty MaxProperty = DependencyProperty.Register("Max", typeof(double), typeof(ViewScaler), new PropertyMetadata(0.0, UpdatePathCallBack));
+        public static readonly DependencyProperty ValueProperty = DependencyProperty.Register("Value", typeof(double), typeof(ViewScaler), new PropertyMetadata(0.0, UpdatePathCallBack, CoerceValueCallBack));
         public static readonly DependencyProperty PathDataProperty = DependencyProperty.Register("PathData", typeof(Geometry), typeof(ViewScaler), new PropertyMetadata(new LineGeometry()));
+
+        public static void UpdatePathCallBack(DependencyObject source, DependencyPropertyChangedEventArgs e) { ((ViewScaler)source).UpdatePath(); }
+        public static object CoerceValueCallBack(DependencyObject source, object value) { ViewScaler vs = source as ViewScaler; return Math.Max(vs.Min, Math.Min(vs.Max, (double)value)); }
 
         public ViewScaler()
         {
             InitializeComponent();
             this.Foreground = ThemeManager.UINeutralBrushNormal;
             this.Background = Brushes.Transparent;
-            Redraw();
+            UpdatePath();
         }
 
-        private void Redraw()
+        private void UpdatePath()
         {
             double offset = 7 * Math.Log(Max / Value, 2) / Math.Log(Max / Min, 2);
             double size = offset < 4 ? 4 : 8 - offset;
@@ -82,8 +77,7 @@ namespace OpenUtau.UI.Controls
         {
             const double zoomSpeed = 0.001;
 
-            Value += zoomSpeed * e.Delta * (Max - Min);
-            Redraw();
+            Value *= 1 + zoomSpeed * e.Delta;
             EventHandler handler = ViewScaled;
             if (handler != null) handler(this, new ViewScaledEventArgs(Value));
         }
@@ -117,8 +111,7 @@ namespace OpenUtau.UI.Controls
                 bool cursorWarpped = false;
                 Control el = (Control)sender;
 
-                Value += zoomSpeed * (dragLastY - e.GetPosition(el).Y) * (Max - Min);
-                Redraw();
+                Value *= 1 + zoomSpeed * (dragLastY - e.GetPosition(el).Y);
                 EventHandler handler = ViewScaled;
                 if (handler != null) handler(this, new ViewScaledEventArgs(Value));
 

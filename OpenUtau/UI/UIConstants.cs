@@ -39,8 +39,8 @@ namespace OpenUtau.UI
         public const double TrackWNoteDefaultWidth = 128;
         public const double TrackTickMinWidth = 16;
 
-        public const int MaxTrackCount = 8;
-        public const int MaxNoteCount = 8; // fixme
+        public const int DefaultTrackCount = 8;
+        public const int DefaultQuarterCount = 32;
 
         public const double TickMinDisplayWidth = 6;
 

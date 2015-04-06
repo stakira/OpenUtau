@@ -61,6 +61,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Core\MusicMath.cs" />
     <Compile Include="Core\USTx\UPart.cs" />
     <Compile Include="Core\USTx\UProject.cs" />
     <Compile Include="Core\USTx\UTrack.cs" />

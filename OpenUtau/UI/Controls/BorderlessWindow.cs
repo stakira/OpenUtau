@@ -77,12 +77,10 @@ namespace OpenUtau.UI.Controls
             if (WindowState == System.Windows.WindowState.Maximized)
             {
                 WindowState = System.Windows.WindowState.Normal;
-                //((Button)sender).Content = "1";
             }
             else
             {
                 WindowState = System.Windows.WindowState.Maximized;
-                //((Button)sender).Content = "2";
             }
         }
 
@@ -108,6 +106,8 @@ namespace OpenUtau.UI.Controls
             else if (WindowState != System.Windows.WindowState.Maximized)
             {
                 DragMove();
+                // The 'correct' way to make a borderless window movable
+                // http://stackoverflow.com/questions/3274097/way-to-make-a-windowless-wpf-window-draggable-without-getting-invalidoperationex/3275712#3275712
             }
             else
             {
@@ -126,11 +126,42 @@ namespace OpenUtau.UI.Controls
                 double x = PointToScreen(new Point(0, 0)).X + mouseX * (1.0 - width / maximizedWidth);
 
                 WindowState = WindowState.Normal;
-                //((Button)GetTemplateChild(PART_MaxButton)).Content = "1";
                 Left = x;
                 Top = 0;
                 DragMove();
             }
+        }
+    }
+
+    public static class CompositionTargetEx
+    {
+        private static TimeSpan _last = TimeSpan.Zero;
+
+        private static event EventHandler<RenderingEventArgs> _FrameUpdating;
+
+        public static event EventHandler<RenderingEventArgs> FrameUpdating
+        {
+            add
+            {
+                if (_FrameUpdating == null)
+                    CompositionTarget.Rendering += CompositionTarget_Rendering;
+                _FrameUpdating += value;
+            }
+            remove
+            {
+                _FrameUpdating -= value;
+                if (_FrameUpdating == null)
+                    CompositionTarget.Rendering -= CompositionTarget_Rendering;
+            }
+        }
+
+        static void CompositionTarget_Rendering(object sender, EventArgs e)
+        {
+            RenderingEventArgs args = (RenderingEventArgs)e;
+            if (args.RenderingTime - _last < TimeSpan.FromMilliseconds(40))
+                return;
+            _last = args.RenderingTime;
+            _FrameUpdating(sender, args);
         }
     }
 }

@@ -32,11 +32,10 @@ namespace OpenUtau.UI
         MidiWindow _midiWindow;
 
         UProject uproject;
-        TracksViewModel trackVM;
 
-        TrackBackground trackBackground;
-        TickBackground tickBackground;
-        TimelineBackground timelineBackground;
+        //TrackBackground trackBackground;
+        //TickBackground tickBackground;
+        //TimelineBackground timelineBackground;
 
         public MainWindow()
         {
@@ -44,40 +43,43 @@ namespace OpenUtau.UI
 
             ThemeManager.LoadTheme();
 
-            trackVM = new TracksViewModel(trackCanvas);
+            //trackVM = new TracksViewModel(trackCanvas);
 
             this.CloseButtonClicked += delegate(object sender, EventArgs e) { Exit(); };
 
-            trackBackground = new TrackBackground();
-            this.trackBackgroundGrid.Children.Add(trackBackground);
+            //trackBackground = new TrackBackground();
+            //this.trackBackgroundGrid.Children.Add(trackBackground);
 
-            tickBackground = new TickBackground();
-            this.trackBackgroundGrid.Children.Add(tickBackground);
-            tickBackground.SnapsToDevicePixels = true;
-            tickBackground.MinTickWidth = UIConstants.TrackTickMinWidth;
+            //tickBackground = new TickBackground();
+            //this.trackBackgroundGrid.Children.Add(tickBackground);
+            //tickBackground.SnapsToDevicePixels = true;
+            //tickBackground.MinTickWidth = UIConstants.TrackTickMinWidth;
 
-            timelineBackground = new TimelineBackground();
-            this.timelineBackgroundGrid.Children.Add(timelineBackground);
-            timelineBackground.SnapsToDevicePixels = true;
+            //timelineBackground = new TimelineBackground();
+            //this.timelineBackgroundGrid.Children.Add(timelineBackground);
+            //timelineBackground.SnapsToDevicePixels = true;
 
             viewScaler.Max = UIConstants.TrackMaxHeight;
             viewScaler.Min = UIConstants.TrackMinHeight;
             viewScaler.Value = UIConstants.TrackDefaultHeight;
-            viewScaler.ViewScaled += viewScaler_ViewScaled;
 
-            verticalScroll.Minimum = 0;
-            verticalScroll.Maximum = UIConstants.MaxTrackCount * UIConstants.TrackDefaultHeight;
-            verticalScroll.Value = 0;
-            //verticalScroll.ViewportSize = 
+            //verticalScroll.Minimum = 0;
+            //verticalScroll.Maximum = UIConstants.MaxTrackCount * UIConstants.TrackDefaultHeight;
+            //verticalScroll.Value = 0;
+            ////verticalScroll.ViewportSize = 
 
-            horizontalScroll.Minimum = 0;
-            horizontalScroll.Maximum = UIConstants.MaxNoteCount * UIConstants.TrackWNoteDefaultWidth;
-            horizontalScroll.Value = 0;
+            //horizontalScroll.Minimum = 0;
+            //horizontalScroll.Maximum = UIConstants.MaxNoteCount * UIConstants.TrackWNoteDefaultWidth;
+            //horizontalScroll.Value = 0;
+
+            CompositionTargetEx.FrameUpdating += RenderLoop;
         }
 
-        void viewScaler_ViewScaled(object sender, EventArgs e)
+        void RenderLoop(object sender, EventArgs e)
         {
-            trackBackground.TrackHeight = ((ViewScaledEventArgs)e).Value;
+            tickBackground.RenderIfUpdated();
+            timelineBackground.RenderIfUpdated();
+            trackBackground.RenderIfUpdated();
         }
 
         # region Splitter
@@ -85,9 +87,6 @@ namespace OpenUtau.UI
         private void GridSplitter_MouseEnter(object sender, MouseEventArgs e)
         {
             //Mouse.OverrideCursor = Cursors.SizeNS;
-            System.Diagnostics.Debug.WriteLine(this.tickBackground.LayoutTransform.Value.ToString());
-            System.Diagnostics.Debug.WriteLine(this.tickBackground.ActualHeight);
-            System.Diagnostics.Debug.WriteLine(this.tickBackground.ActualWidth);
         }
 
         private void GridSplitter_MouseLeave(object sender, MouseEventArgs e)
@@ -96,10 +95,6 @@ namespace OpenUtau.UI
         }
 
         # endregion
-
-        #region Vertical Zoom Control
-
-        #endregion
 
         #region Navigate Drag
 
@@ -190,15 +185,13 @@ namespace OpenUtau.UI
 
         private void horizontalScroll_Scroll(object sender, System.Windows.Controls.Primitives.ScrollEventArgs e)
         {
-            //ncModel.updateGraphics();
-            timelineBackground.HorizonOffset = horizontalScroll.Value;
-            tickBackground.HorizonOffset = horizontalScroll.Value;
+            //timelineBackground.HorizonOffset = horizontalScroll.Value;
+            //tickBackground.HorizonOffset = horizontalScroll.Value;
         }
 
         private void horizontalScroll_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-            this.horizontalScroll.Value = this.horizontalScroll.Value - 0.01 * horizontalScroll.SmallChange * e.Delta;
-            //ncModel.updateGraphics();
+            horizontalScroll.Value = horizontalScroll.Value - 0.01 * horizontalScroll.SmallChange * e.Delta;
         }
 
         # endregion
@@ -207,32 +200,21 @@ namespace OpenUtau.UI
 
         private void verticalScroll_Scroll(object sender, System.Windows.Controls.Primitives.ScrollEventArgs e)
         {
-            //ncModel.updateGraphics();
-            trackBackground.VerticalOffset = verticalScroll.Value * 10;
         }
 
         private void verticalScroll_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             this.verticalScroll.Value = this.verticalScroll.Value - 0.01 * verticalScroll.SmallChange * e.Delta;
-            //ncModel.updateGraphics();
         }
 
         # endregion
 
         # region Timeline Canvas
 
-        double scale = 1;
-        double move = 0;
-
         private void timelineCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             const double zoomSpeed = 0.0012;
-            scale += scale * zoomSpeed * e.Delta;
-            move += 0.1 * e.Delta;
-            tickBackground.WholeNoteWidth *= 1 + e.Delta * zoomSpeed;
-            timelineBackground.WholeNoteWidth *= 1 + e.Delta * zoomSpeed;
-            //titleLabel.Text = move.ToString();
-            //thumb.ScaleX = scale;
+            ((TracksViewModel)this.Resources["tracksVM"]).QuarterWidth *= 1 + e.Delta * zoomSpeed;
         }
 
         private void timelineCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -275,7 +257,7 @@ namespace OpenUtau.UI
                     if (_midiWindow == null) _midiWindow = new MidiWindow();
                     _midiWindow.Show();
                     _midiWindow.LoadPart(uproject.Tracks[0].Parts[0]);
-                    trackVM.LoadProject(uproject);
+                    //trackVM.LoadProject(uproject);
                 }
             }
         }
@@ -297,7 +279,6 @@ namespace OpenUtau.UI
         {
             Point mousePos = e.GetPosition((UIElement)sender);
             var hit = VisualTreeHelper.HitTest(trackCanvas, mousePos).VisualHit;
-            //titleLabel.Text = hit.ToString();
         }
     }
 }

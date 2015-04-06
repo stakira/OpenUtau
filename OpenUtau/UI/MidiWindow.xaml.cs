@@ -55,30 +55,30 @@ namespace OpenUtau.UI
 
             //CompositionTarget.Rendering += Window_PerFrameCallback;
 
-            keyTrackBackground = new KeyTrackBackground();
-            this.notesBackgroundGrid.Children.Add(keyTrackBackground);
+            //keyTrackBackground = new KeyTrackBackground();
+            //this.notesBackgroundGrid.Children.Add(keyTrackBackground);
 
-            tickBackground = new TickBackground();
-            this.notesBackgroundGrid.Children.Add(tickBackground);
-            tickBackground.SnapsToDevicePixels = true;
-            tickBackground.MinTickWidth = UIConstants.MidiTickMinWidth;
+            //tickBackground = new TickBackground();
+            //this.notesBackgroundGrid.Children.Add(tickBackground);
+            //tickBackground.SnapsToDevicePixels = true;
+            //tickBackground.MinTickWidth = UIConstants.MidiTickMinWidth;
 
-            timelineBackground = new TimelineBackground();
-            this.timelineBackgroundGrid.Children.Add(timelineBackground);
-            timelineBackground.SnapsToDevicePixels = true;
+            //timelineBackground = new TimelineBackground();
+            //this.timelineBackgroundGrid.Children.Add(timelineBackground);
+            //timelineBackground.SnapsToDevicePixels = true;
 
-            keyboardBackground = new KeyboardBackground();
-            this.keyboardBackgroundGrid.Children.Add(keyboardBackground);
-            keyboardBackground.SnapsToDevicePixels = true;
+            //keyboardBackground = new KeyboardBackground();
+            //this.keyboardBackgroundGrid.Children.Add(keyboardBackground);
+            //keyboardBackground.SnapsToDevicePixels = true;
 
-            notesVerticalScroll.Minimum = 0;
-            notesVerticalScroll.Maximum = UIConstants.MaxNoteNum * UIConstants.NoteDefaultHeight;
-            notesVerticalScroll.Value = UIConstants.NoteDefaultHeight * UIConstants.MaxNoteNum / 2;
+            //notesVerticalScroll.Minimum = 0;
+            //notesVerticalScroll.Maximum = UIConstants.MaxNoteNum * UIConstants.NoteDefaultHeight;
+            //notesVerticalScroll.Value = UIConstants.NoteDefaultHeight * UIConstants.MaxNoteNum / 2;
 
-            horizontalScroll.Minimum = 0;
-            horizontalScroll.Maximum = UIConstants.MaxNoteCount * UIConstants.MidiWNoteDefaultWidth;
-            horizontalScroll.Value = 0;
-            //navigateDrag.NavDrag += navigateDrag_NavDrag;
+            //horizontalScroll.Minimum = 0;
+            //horizontalScroll.Maximum = UIConstants.MaxNoteCount * UIConstants.MidiWNoteDefaultWidth;
+            //horizontalScroll.Value = 0;
+            ////navigateDrag.NavDrag += navigateDrag_NavDrag;
 
             this.CloseButtonClicked += (o, e) => { Hide(); };
         }
@@ -455,8 +455,8 @@ namespace OpenUtau.UI
 
         private void notesVerticalScroll_Scroll(object sender, System.Windows.Controls.Primitives.ScrollEventArgs e)
         {
-            keyTrackBackground.VerticalOffset = notesVerticalScroll.Value;
-            keyboardBackground.VerticalOffset = notesVerticalScroll.Value;
+            //keyTrackBackground.VerticalOffset = notesVerticalScroll.Value;
+            //keyboardBackground.VerticalOffset = notesVerticalScroll.Value;
         }
 
         private void notesVerticalScroll_MouseWheel(object sender, MouseWheelEventArgs e)

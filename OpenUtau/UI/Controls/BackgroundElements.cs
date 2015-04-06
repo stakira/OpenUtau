@@ -7,33 +7,57 @@ using System.Windows;
 using System.Windows.Media;
 
 using OpenUtau.UI.Models;
+using OpenUtau.Core;
 using OpenUtau.Core.USTx;
 
 namespace OpenUtau.UI.Controls
 {
-    class TrackBackground : FrameworkElement
+    class UVisualElement : FrameworkElement
     {
-        double _trackHeight = UIConstants.TrackDefaultHeight;
-        double _verticalOffset = 0;
+        protected Size _size;
+        protected bool _updated = false;
 
-        public double TrackHeight { set { _trackHeight = value; this.InvalidateVisual(); } get { return _trackHeight; } }
-        public double VerticalOffset { set { _verticalOffset = value; this.InvalidateVisual(); } get { return _verticalOffset; } }
+        public UVisualElement()
+        {
+            this.SizeChanged += (o, e) => { _size = e.NewSize; MarkUpdate(); };
+        }
 
-        Size _size;
+        public void MarkUpdate() { _updated = true; }
+
+        public void RenderIfUpdated() { if (_updated) this.InvalidateVisual(); _updated = false; }
+
+        public static void MarkUpdateCallback(DependencyObject source, DependencyPropertyChangedEventArgs e) { ((UVisualElement)source).MarkUpdate(); }
+    }
+
+    class TrackBackground : UVisualElement
+    {
+        public double TrackHeight
+        {
+            set { SetValue(TrackHeightProperty, value); }
+            get { return (double)GetValue(TrackHeightProperty); }
+        }
+
+        public double OffsetY
+        {
+            set { SetValue(OffsetYProperty, value); }
+            get { return (double)GetValue(OffsetYProperty); }
+        }
+
+        public static readonly DependencyProperty TrackHeightProperty = DependencyProperty.Register("TrackHeight", typeof(double), typeof(TrackBackground), new PropertyMetadata(0.0, MarkUpdateCallback));
+        public static readonly DependencyProperty OffsetYProperty = DependencyProperty.Register("OffsetY", typeof(double), typeof(TrackBackground), new PropertyMetadata(0.0, MarkUpdateCallback));
 
         public TrackBackground()
         {
             this.VerticalAlignment = VerticalAlignment.Stretch;
             this.HorizontalAlignment = HorizontalAlignment.Stretch;
             this.VisualEdgeMode = EdgeMode.Aliased;
-            this.SizeChanged += (o, e) => { _size = e.NewSize; this.InvalidateVisual(); };
         }
 
         protected override void OnRender(DrawingContext drawingContext)
         {
-            int firstTrack = (int)(VerticalOffset / TrackHeight);
+            int firstTrack = (int)(OffsetY / TrackHeight);
             bool alt = firstTrack % 2 == 1;
-            double top = TrackHeight * firstTrack - VerticalOffset;
+            double top = TrackHeight * firstTrack - OffsetY;
 
             while (top < _size.Height)
             {
@@ -44,41 +68,24 @@ namespace OpenUtau.UI.Controls
                 top += TrackHeight;
                 alt = !alt;
             }
-
         }
     }
 
-    class KeyTrackBackground : FrameworkElement
+    class KeyTrackBackground : TrackBackground
     {
-        double _keyTrackHeight = UIConstants.NoteDefaultHeight;
-        double _verticalOffset = 0;
-
-        public double KeyTrackHeight { set { _keyTrackHeight = value; this.InvalidateVisual(); } get { return _keyTrackHeight; } }
-        public double VerticalOffset { set { _verticalOffset = value; this.InvalidateVisual(); } get { return _verticalOffset; } }
-
-        protected Size _size;
-
-        public KeyTrackBackground()
-        {
-            this.VerticalAlignment = VerticalAlignment.Stretch;
-            this.HorizontalAlignment = HorizontalAlignment.Stretch;
-            this.VisualEdgeMode = EdgeMode.Aliased;
-            this.SizeChanged += (o, e) => { _size = e.NewSize; this.InvalidateVisual(); };
-        }
-
         protected override void OnRender(DrawingContext drawingContext)
         {
-            int firstTrack = (int)(VerticalOffset / KeyTrackHeight);
+            int firstTrack = (int)(OffsetY / TrackHeight);
             int alt = firstTrack % 12;
-            double top = KeyTrackHeight * firstTrack - VerticalOffset;
+            double top = TrackHeight * firstTrack - OffsetY;
 
             while (top < _size.Height)
             {
                 drawingContext.DrawRectangle(
                     MusicMath.IsBlackKey(alt) ? ThemeManager.TrackBackgroundBrushAlt : ThemeManager.TrackBackgroundBrush,
                     null,
-                    new Rect(0, (int)top, _size.Width, KeyTrackHeight));
-                top += KeyTrackHeight;
+                    new Rect(0, (int)top, _size.Width, TrackHeight));
+                top += TrackHeight;
                 alt = (alt + 1) % 12;
             }
         }
@@ -88,9 +95,9 @@ namespace OpenUtau.UI.Controls
     {
         protected override void OnRender(DrawingContext drawingContext)
         {
-            int firstTrack = (int)(VerticalOffset / KeyTrackHeight);
+            int firstTrack = (int)(OffsetY / TrackHeight);
             int alt = firstTrack;
-            double top = KeyTrackHeight * firstTrack - VerticalOffset;
+            double top = TrackHeight * firstTrack - OffsetY;
 
             while (top < _size.Height)
             {
@@ -98,9 +105,9 @@ namespace OpenUtau.UI.Controls
                     MusicMath.IsBlackKey(alt) ? ThemeManager.BlackKeyBrushNormal : 
                     MusicMath.IsCenterKey(alt) ? ThemeManager.CenterKeyBrushNormal : ThemeManager.WhiteKeyBrushNormal,
                     null,
-                    new Rect(0, (int)top, _size.Width, KeyTrackHeight));
+                    new Rect(0, (int)top, _size.Width, TrackHeight));
 
-                if (KeyTrackHeight >= 12)
+                if (TrackHeight >= 12)
                 {
                     FormattedText text = new FormattedText(
                         MusicMath.GetKeyString(UIConstants.MaxNoteNum - alt - 1),
@@ -111,99 +118,77 @@ namespace OpenUtau.UI.Controls
                         MusicMath.IsBlackKey(alt) ? ThemeManager.BlackKeyNameBrushNormal :
                         MusicMath.IsCenterKey(alt) ? ThemeManager.CenterKeyNameBrushNormal : ThemeManager.WhiteKeyNameBrushNormal
                     );
-                    drawingContext.DrawText(text, new Point(42 - text.Width, (int)(top + (KeyTrackHeight - text.Height) / 2)));
+                    drawingContext.DrawText(text, new Point(42 - text.Width, (int)(top + (TrackHeight - text.Height) / 2)));
                 }
-                top += KeyTrackHeight;
+                top += TrackHeight;
                 alt ++;
             }
         }
     }
 
-    public enum ZoomLevel : int { Bar, Beat, HalfNote, QuaterNote, EighthNote, SixteenthNote, ThritySecondNote, SixtyfourthNote };
-
-    public static class MusicMath
+    class TickBackground : UVisualElement
     {
-        public static string[] noteStrings = new String[12] { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
-
-        public static string GetKeyString(int keyNo) { return keyNo < 0 ? "" : noteStrings[keyNo % 12] + (keyNo / 12 - 2).ToString(); }
-
-        public static double TickToNote(int tick, int resolution) { return tick / resolution; }
-
-        public static int [] BlackNoteNums = { 1, 3, 6, 8, 10 };
-        public static bool IsBlackKey(int noteNum) { return BlackNoteNums.Contains(noteNum % 12); }
-
-        public static bool IsCenterKey(int noteNum) { return noteNum % 12 == 0; }
-        
-        public static double[] zoomRatios = { 1.0, 1.0/2, 1.0/4, 1.0/8, 1.0/16, 1.0/32, 1.0/64, 1.0/128, 1.0/256 };
-
-        public static double getZoomRatio(double wholeNoteWidth, int beatPerBar, int beatUnit, double minWidth)
+        public double QuarterWidth
         {
-            int i;
-
-            switch (beatUnit)
-            {
-                case 2: i = 1; break;
-                case 4: i = 2; break;
-                case 8: i = 3; break;
-                case 16: i = 4; break;
-                default: throw new Exception("Invalid beat unit.");
-            }
-
-            if (beatPerBar % 4 == 0) i--; // level below bar is half bar, or 2 beatunit
-            // else // otherwise level below bar is beat unit
-
-            if (wholeNoteWidth * beatPerBar <= minWidth * beatUnit)
-            {
-                return beatPerBar / beatUnit; 
-            }
-            else
-            {
-                while (i + 1 < zoomRatios.Length && wholeNoteWidth * zoomRatios[i + 1] > UIConstants.NoteMinDisplayWidth) i++;
-                return zoomRatios[i];
-            }
+            set { SetValue(QuarterWidthProperty, value); }
+            get { return (double)GetValue(QuarterWidthProperty); }
         }
-    }
 
-    class TickBackground : FrameworkElement
-    {
-        double _wholeNoteWidth = UIConstants.MidiWNoteDefaultWidth;
-        double _minTickWidth = UIConstants.MidiTickMinWidth;
-        double _horizontalOffset = 0;
-        double _barOffset = 0;
-        int _beatPerBar = 3;
-        int _beatUnit = 4;
-        protected Size _size;
+        public double MinTickWidth
+        {
+            set { SetValue(MinTickWidthProperty, value); }
+            get { return (double)GetValue(MinTickWidthProperty); }
+        }
 
-        public double WholeNoteWidth { set { _wholeNoteWidth = value; this.InvalidateVisual(); } get { return _wholeNoteWidth; } }
-        public double MinTickWidth { set { _minTickWidth = value; this.InvalidateVisual(); } get { return _minTickWidth; } }
-        public double HorizonOffset { set { _horizontalOffset = value; this.InvalidateVisual(); } get { return _horizontalOffset; } }
-        public double BarOffset { set { _barOffset = value; this.InvalidateVisual(); } get { return _barOffset; } }
-        public int BeatPerBar { set { _beatPerBar = value; this.InvalidateVisual(); } get { return _beatPerBar; } }
-        public int BeatUnit { set { _beatUnit = value; this.InvalidateVisual(); } get { return _beatUnit; } }
+        public double OffsetX
+        {
+            set { SetValue(OffsetXProperty, value); }
+            get { return (double)GetValue(OffsetXProperty); }
+        }
+
+        public double QuarterOffset
+        {
+            set { SetValue(QuarterOffsetProperty, value); }
+            get { return (double)GetValue(QuarterOffsetProperty); }
+        }
+
+        public int BeatPerBar 
+        {
+            set { SetValue(BeatPerBarProperty, value); }
+            get { return (int)GetValue(BeatPerBarProperty); }
+        }
+
+        public int BeatUnit
+        {
+            set { SetValue(BeatUnitProperty, value); }
+            get { return (int)GetValue(BeatUnitProperty); }
+        }
+
+        public static readonly DependencyProperty QuarterWidthProperty = DependencyProperty.Register("QuarterWidth", typeof(double), typeof(TickBackground), new PropertyMetadata(0.0, MarkUpdateCallback));
+        public static readonly DependencyProperty MinTickWidthProperty = DependencyProperty.Register("MinTickWidth", typeof(double), typeof(TickBackground), new PropertyMetadata(0.0, MarkUpdateCallback));
+        public static readonly DependencyProperty OffsetXProperty = DependencyProperty.Register("OffsetX", typeof(double), typeof(TickBackground), new PropertyMetadata(0.0, MarkUpdateCallback));
+        public static readonly DependencyProperty QuarterOffsetProperty = DependencyProperty.Register("QuarterOffset", typeof(double), typeof(TickBackground), new PropertyMetadata(0.0, MarkUpdateCallback));
+        public static readonly DependencyProperty BeatPerBarProperty = DependencyProperty.Register("BeatPerBar", typeof(int), typeof(TickBackground), new PropertyMetadata(0, MarkUpdateCallback));
+        public static readonly DependencyProperty BeatUnitProperty = DependencyProperty.Register("BeatUnit", typeof(int), typeof(TickBackground), new PropertyMetadata(0, MarkUpdateCallback));
 
         protected Pen darkPen, lightPen, dashedPen;
 
-        System.Diagnostics.Stopwatch sw;
         public TickBackground()
         {
             this.VerticalAlignment = VerticalAlignment.Stretch;
             this.HorizontalAlignment = HorizontalAlignment.Stretch;
             this.VisualEdgeMode = EdgeMode.Aliased;
-            this.SizeChanged += (o, e) => { _size = e.NewSize; this.InvalidateVisual(); };
             darkPen = new Pen(ThemeManager.TickLineBrushDark, 1);
             lightPen = new Pen(ThemeManager.TickLineBrushLight, 1);
             dashedPen = new Pen(ThemeManager.TickLineBrushLight, 1) { DashStyle = new DashStyle(UIConstants.DashLineArray, 0) };
-            sw = new System.Diagnostics.Stopwatch();
-            sw.Start();
         }
 
         protected override void OnRender(DrawingContext drawingContext)
         {
-
-            double zoomRatio = MusicMath.getZoomRatio(WholeNoteWidth, BeatPerBar, BeatUnit, MinTickWidth);
-            double interval = zoomRatio * WholeNoteWidth;
-            int tick = (int)(HorizonOffset / interval) + 1;
-            double left = tick * interval - HorizonOffset;
+            double zoomRatio = MusicMath.getZoomRatio(QuarterWidth, BeatPerBar, BeatUnit, MinTickWidth);
+            double interval = zoomRatio * QuarterWidth;
+            int tick = (int)(OffsetX / interval) + 1;
+            double left = tick * interval - OffsetX;
 
             while (left < _size.Width)
             {
@@ -227,8 +212,6 @@ namespace OpenUtau.UI.Controls
                 left += interval;
                 tick++;
             }
-
-            System.Diagnostics.Debug.WriteLine("tick " + sw.Elapsed.TotalMilliseconds.ToString());
         }
     }
 
@@ -236,19 +219,18 @@ namespace OpenUtau.UI.Controls
     {
         protected override void OnRender(DrawingContext drawingContext)
         {
-            double zoomRatio = MusicMath.getZoomRatio(WholeNoteWidth, BeatPerBar, BeatUnit, MinTickWidth);
-            double interval = zoomRatio * WholeNoteWidth;
-            int tick = (int)(HorizonOffset / interval);
-            double left = tick * interval - HorizonOffset;
+            double zoomRatio = MusicMath.getZoomRatio(QuarterWidth, BeatPerBar, BeatUnit, MinTickWidth);
+            double interval = zoomRatio * QuarterWidth;
+            int tick = (int)(OffsetX / interval);
+            double left = tick * interval - OffsetX;
+            bool first_tick = true;
 
             while (left < _size.Width)
             {
                 double snappedLeft = Math.Round(left) + 0.5;
-                System.Diagnostics.Debug.WriteLine("tick = " + tick.ToString());
                 if ((tick * zoomRatio * BeatUnit) % BeatPerBar == 0)
                 {
-                    System.Diagnostics.Debug.WriteLine("tick draw = {0} zoomRatio {1} BeatUnit {2}, BeatPerBar {3}", tick, zoomRatio, BeatUnit, BeatPerBar);
-                    if (left != 0) drawingContext.DrawLine(darkPen, new Point(snappedLeft, -0.5), new Point(snappedLeft, ActualHeight + 0.5));
+                    if (!first_tick) drawingContext.DrawLine(darkPen, new Point(snappedLeft, -0.5), new Point(snappedLeft, ActualHeight + 0.5));
                     drawingContext.DrawText(
                         new FormattedText(
                             ((tick * zoomRatio * BeatUnit) / BeatPerBar).ToString(),
@@ -261,6 +243,7 @@ namespace OpenUtau.UI.Controls
                 }
                 left += interval;
                 tick++;
+                first_tick = false;
             }
         }
     }
