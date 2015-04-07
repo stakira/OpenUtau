@@ -54,12 +54,13 @@ namespace OpenUtau.Core.Formats
             string bpmPath = string.Format("{0}masterTrack/{0}tempo/{0}{1}", nsPrefix, nsPrefix == "v3:" ? "bpm" : "v");
             string beatperbarPath = string.Format("{0}masterTrack/{0}timeSig/{0}{1}", nsPrefix, nsPrefix == "v3:" ? "nume" : "nu");
             string beatunitPath = string.Format("{0}masterTrack/{0}timeSig/{0}{1}", nsPrefix, nsPrefix == "v3:" ? "denomi" : "de");
-            string prebarPath = string.Format("{0}masterTrack/{0}preMeasure", nsPrefix);
+            string premeasurePath = string.Format("{0}masterTrack/{0}preMeasure", nsPrefix);
             string resolutionPath = string.Format("{0}masterTrack/{0}resolution", nsPrefix);
             string projectnamePath = string.Format("{0}masterTrack/{0}seqName", nsPrefix);
             string projectcommentPath = string.Format("{0}masterTrack/{0}comment", nsPrefix);
             string tracknamePath = string.Format("{0}{1}", nsPrefix, nsPrefix == "v3:" ? "trackName" : "name");
             string trackcommentPath = string.Format("{0}comment", nsPrefix);
+            string tracknoPath = string.Format("{0}{1}", nsPrefix, nsPrefix == "v3:" ? "vsTrackNo" : "tNo");
             string partPath = string.Format("{0}{1}", nsPrefix, nsPrefix == "v3:" ? "musicalPart" : "vsPart");
             string partnamePath = string.Format("{0}{1}", nsPrefix, nsPrefix == "v3:" ? "partName" : "name");
             string partcommentPath = string.Format("{0}comment", nsPrefix);
@@ -75,33 +76,37 @@ namespace OpenUtau.Core.Formats
             uproject.BPM = Convert.ToDouble(root.SelectSingleNode(bpmPath, nsmanager).InnerText) / 100;
             uproject.BeatPerBar = Convert.ToInt32(root.SelectSingleNode(beatperbarPath, nsmanager).InnerText);
             uproject.BeatUnit = Convert.ToInt32(root.SelectSingleNode(beatunitPath, nsmanager).InnerText);
-            uproject.PreBar = Convert.ToInt32(root.SelectSingleNode(prebarPath, nsmanager).InnerText);
             uproject.Resolution = Convert.ToInt32(root.SelectSingleNode(resolutionPath, nsmanager).InnerText);
             uproject.FilePath = file;
             uproject.Name = root.SelectSingleNode(projectnamePath, nsmanager).InnerText;
             uproject.Comment = root.SelectSingleNode(projectcommentPath, nsmanager).InnerText;
 
+            int preMeasure = Convert.ToInt32(root.SelectSingleNode(premeasurePath, nsmanager).InnerText);
+            int partPosTickShift = -preMeasure * uproject.Resolution * uproject.BeatPerBar * 4 / uproject.BeatUnit;
+
             foreach (XmlNode track in root.SelectNodes(nsPrefix + "vsTrack", nsmanager)) // track
             {
-                UTrack utrack = new UTrack(uproject);
+                UTrack utrack = new UTrack();
                 uproject.Tracks.Add(utrack);
 
                 utrack.Name = track.SelectSingleNode(tracknamePath, nsmanager).InnerText;
                 utrack.Comment = track.SelectSingleNode(trackcommentPath, nsmanager).InnerText;
+                utrack.TrackNo = Convert.ToInt32(track.SelectSingleNode(tracknoPath, nsmanager).InnerText);
 
                 foreach (XmlNode part in track.SelectNodes(partPath, nsmanager)) // musical part
                 {
-                    UPart upart = new UPart(utrack);
-                    utrack.Parts.Add(upart);
+                    UPart upart = new UPart();
+                    uproject.Parts.Add(upart);
 
                     upart.Name = part.SelectSingleNode(partnamePath, nsmanager).InnerText;
                     upart.Comment = part.SelectSingleNode(partcommentPath, nsmanager).InnerText;
-                    upart.PosTick = Convert.ToInt32(part.SelectSingleNode(postickPath, nsmanager).InnerText);
+                    upart.PosTick = Convert.ToInt32(part.SelectSingleNode(postickPath, nsmanager).InnerText) + partPosTickShift;
                     upart.DurTick = Convert.ToInt32(part.SelectSingleNode(playtimePath, nsmanager).InnerText);
+                    upart.TrackNo = utrack.TrackNo;
 
                     foreach (XmlNode note in part.SelectNodes(notePath, nsmanager))
                     {
-                        UNote unote = new UNote(upart);
+                        UNote unote = new UNote();
                         upart.Notes.Add(unote);
 
                         unote.PosTick = Convert.ToInt32(note.SelectSingleNode(postickPath, nsmanager).InnerText);
@@ -122,12 +127,9 @@ namespace OpenUtau.Core.Formats
 
             int projectLength = 0;
 
-            foreach (UTrack utrack in uproject.Tracks)
+            foreach (UPart upart in uproject.Parts)
             {
-                foreach (UPart upart in utrack.Parts)
-                {
-                    projectLength = Math.Max(projectLength, upart.PosTick + upart.DurTick);
-                }
+                projectLength = Math.Max(projectLength, upart.PosTick + upart.DurTick);
             }
 
             uproject.DurTick = projectLength;

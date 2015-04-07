@@ -7,7 +7,7 @@
         xmlns:ic="clr-namespace:Microsoft.Expression.Interactivity.Core;assembly=Microsoft.Expression.Interactions"
         xmlns:il="clr-namespace:Microsoft.Expression.Interactivity.Layout;assembly=Microsoft.Expression.Interactions"
         xmlns:ib="clr-namespace:OpenUtau.UI.Behaviors"
-        Style="{StaticResource UBorderlessWindow}">
+        Style="{StaticResource UBorderlessWindow}" Title="OpenUTAU">
     <i:Interaction.Behaviors>
         <ib:BorderlessWindowBehavior/>
     </i:Interaction.Behaviors>
@@ -79,15 +79,33 @@
                                       BeatUnit="{Binding BeatUnit, Source={StaticResource tracksVM}}"/>
             </Grid>
             <Canvas x:Name="trackCanvas" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent" Margin="0,40,20,0"
-                    ClipToBounds="True" SnapsToDevicePixels="True" MouseLeftButtonDown="trackCanvas_MouseLeftButtonDown"/>
+                    ClipToBounds="True" SnapsToDevicePixels="True"
+                    local:SizeObserver.Observe="True"
+                    local:SizeObserver.ObservedHeight="{Binding ViewHeight, Source={StaticResource tracksVM}, Mode=OneWayToSource}"
+                    local:SizeObserver.ObservedWidth="{Binding ViewWidth, Source={StaticResource tracksVM}, Mode=OneWayToSource}"
+                    MouseLeftButtonDown="trackCanvas_MouseLeftButtonDown" MouseLeftButtonUp="trackCanvas_MouseLeftButtonUp"
+                    MouseRightButtonDown="trackCanvas_MouseRightButtonDown" MouseRightButtonUp="trackCanvas_MouseRightButtonUp"
+                    MouseMove="trackCanvas_MouseMove"/>
             <ScrollBar x:Name="horizontalScroll" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="20" Margin="0,0,20,0" Orientation="Horizontal" Minimum="0"
                        Maximum="{Binding TotalWidth, Mode=OneWay, Source={StaticResource tracksVM}}"
                        Value="{Binding OffsetX, Mode=TwoWay, Source={StaticResource tracksVM}, UpdateSourceTrigger=PropertyChanged}"
-                       Scroll="horizontalScroll_Scroll" MouseWheel="horizontalScroll_MouseWheel" />
+                       ViewportSize="{Binding ViewportSizeX, Source={StaticResource tracksVM}}"
+                       LargeChange="{Binding ViewportSizeX, Source={StaticResource tracksVM}}"
+                       SmallChange="{Binding SmallChangeX, Source={StaticResource tracksVM}}">
+                <i:Interaction.Behaviors>
+                    <ib:ScrollbarBehavior/>
+                </i:Interaction.Behaviors>
+            </ScrollBar>
             <ScrollBar x:Name="verticalScroll" Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="20" Margin="0,40,0,0" Orientation="Vertical" Minimum="0"
                        Maximum="{Binding TotalHeight, Mode=OneWay, Source={StaticResource tracksVM}}"
                        Value="{Binding OffsetY, Mode=TwoWay, Source={StaticResource tracksVM}, UpdateSourceTrigger=PropertyChanged}"
-                       Scroll="verticalScroll_Scroll" MouseWheel="verticalScroll_MouseWheel"/>
+                       ViewportSize="{Binding ViewportSizeY, Source={StaticResource tracksVM}}"
+                       LargeChange="{Binding ViewportSizeY, Source={StaticResource tracksVM}}"
+                       SmallChange="{Binding SmallChangeY, Source={StaticResource tracksVM}}">
+                <i:Interaction.Behaviors>
+                    <ib:ScrollbarBehavior/>
+                </i:Interaction.Behaviors>
+            </ScrollBar>
             <local:NavigateDrag x:Name="navigateDrag" HorizontalAlignment="Right" VerticalAlignment="Top" Width="20" Height="20" Margin="0,0,0,0"/>
             <local:ViewScaler x:Name="viewScaler" HorizontalAlignment="Right" VerticalAlignment="Top" Width="20" Height="20" Margin="0,20,0,0"
                               Value="{Binding TrackHeight, Source={StaticResource tracksVM}, Mode=TwoWay}"/>
@@ -98,8 +116,7 @@
                     </Border.Effect>
                 </Border>
             </Border>
-            <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="10" Margin="0,0,0,0" Background="White" Focusable="False"
-                              MouseEnter="GridSplitter_MouseEnter" MouseLeave="GridSplitter_MouseLeave"/>
+            <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="10" Margin="0,0,0,0" Background="White" Focusable="False"/>
             <Canvas x:Name="expCanvas" Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,20,20" Background="White" ClipToBounds="True"/>
             <ScrollBar x:Name="MixerScroll" Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
                            Height="20" Margin="0,0,20,0" Orientation="Horizontal" Minimum="0" Maximum="1" Value="0" ViewportSize="10000"/>

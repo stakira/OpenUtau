@@ -67,6 +67,7 @@
     <Compile Include="Core\USTx\UTrack.cs" />
     <Compile Include="Core\Formats\VSQx.cs" />
     <Compile Include="UI\Behaviors\BroderlessWindowBehavior.cs" />
+    <Compile Include="UI\Behaviors\ScrollbarBehavior.cs" />
     <Compile Include="UI\Controls\BackgroundElements.cs" />
     <Compile Include="UI\Controls\BorderlessWindow.cs" />
     <Compile Include="UI\Controls\NavigateDrag.xaml.cs">
@@ -85,6 +86,8 @@
     <Compile Include="UI\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Controls\SizeObserver.cs" />
+    <Compile Include="UI\Models\MidiViewModel.cs" />
     <Compile Include="UI\Models\ThemeManager.cs" />
     <Compile Include="UI\Models\PartThumbnail.cs" />
     <Compile Include="UI\Models\TracksViewModel.cs" />

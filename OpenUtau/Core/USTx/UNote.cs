@@ -17,8 +17,6 @@ namespace OpenUtau.Core.USTx
         // public string Lyric;
         public string Phoneme;
 
-        public UPart Parent;
-
         // TODO : remove old attributes
         public int keyNo;
         public double offset;
@@ -54,10 +52,8 @@ namespace OpenUtau.Core.USTx
             get { return _lyric; }
         }
 
-        public UNote(UPart parent)
+        public UNote()
         {
-            Parent = parent;
-
             noteControl = new OpenUtau.UI.Controls.NoteControl();
             noteControl.note = this;
             noteControl.Channel = Channel;

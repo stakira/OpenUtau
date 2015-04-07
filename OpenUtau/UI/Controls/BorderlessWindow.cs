@@ -158,7 +158,7 @@ namespace OpenUtau.UI.Controls
         static void CompositionTarget_Rendering(object sender, EventArgs e)
         {
             RenderingEventArgs args = (RenderingEventArgs)e;
-            if (args.RenderingTime - _last < TimeSpan.FromMilliseconds(40))
+            if (args.RenderingTime - _last < TimeSpan.FromMilliseconds(25))
                 return;
             _last = args.RenderingTime;
             _FrameUpdating(sender, args);

@@ -9,7 +9,7 @@
     <ControlTemplate x:Key="BorderlessWindowTemplateKey" TargetType="{x:Type local:BorderlessWindow}">
         <Grid x:Name="PART_WindowBody" Background="{TemplateBinding Background}">
             <Border x:Name="PART_TitleBar" Height="24" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,0,0,0" SnapsToDevicePixels="True" BorderThickness="0" Background="{TemplateBinding Background}">
-                <TextBlock x:Name="PART_Titlelabel" Text="OpenUTAU" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,6,0,0" TextAlignment="Center"/>
+                <TextBlock x:Name="PART_Titlelabel" Text="{TemplateBinding Title}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,6,0,0" TextAlignment="Center"/>
             </Border>
             <ContentPresenter x:Name="PART_MenuContent" Content="{TemplateBinding MenuContent}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="4,4,0,0"/>
             <Button x:Name="PART_MinButton" Style="{StaticResource MinimizeButton}" Content="0" Margin="0,0,48,0"/>

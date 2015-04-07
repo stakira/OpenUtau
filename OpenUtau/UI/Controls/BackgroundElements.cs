@@ -164,12 +164,19 @@ namespace OpenUtau.UI.Controls
             get { return (int)GetValue(BeatUnitProperty); }
         }
 
+        public int TickMode
+        {
+            set { SetValue(TickModeProperty, value); }
+            get { return (int)GetValue(TickModeProperty); }
+        }
+
         public static readonly DependencyProperty QuarterWidthProperty = DependencyProperty.Register("QuarterWidth", typeof(double), typeof(TickBackground), new PropertyMetadata(0.0, MarkUpdateCallback));
         public static readonly DependencyProperty MinTickWidthProperty = DependencyProperty.Register("MinTickWidth", typeof(double), typeof(TickBackground), new PropertyMetadata(0.0, MarkUpdateCallback));
         public static readonly DependencyProperty OffsetXProperty = DependencyProperty.Register("OffsetX", typeof(double), typeof(TickBackground), new PropertyMetadata(0.0, MarkUpdateCallback));
         public static readonly DependencyProperty QuarterOffsetProperty = DependencyProperty.Register("QuarterOffset", typeof(double), typeof(TickBackground), new PropertyMetadata(0.0, MarkUpdateCallback));
         public static readonly DependencyProperty BeatPerBarProperty = DependencyProperty.Register("BeatPerBar", typeof(int), typeof(TickBackground), new PropertyMetadata(0, MarkUpdateCallback));
         public static readonly DependencyProperty BeatUnitProperty = DependencyProperty.Register("BeatUnit", typeof(int), typeof(TickBackground), new PropertyMetadata(0, MarkUpdateCallback));
+        public static readonly DependencyProperty TickModeProperty = DependencyProperty.Register("TickMode", typeof(int), typeof(TickBackground), new PropertyMetadata(0, MarkUpdateCallback));
 
         protected Pen darkPen, lightPen, dashedPen;
 
@@ -193,17 +200,23 @@ namespace OpenUtau.UI.Controls
             while (left < _size.Width)
             {
                 double snappedLeft = Math.Round(left) + 0.5;
-                if ((tick * zoomRatio * BeatUnit) % BeatPerBar == 0)
+                if ((tick * zoomRatio * BeatUnit) % (BeatPerBar * 4) == 0)
                 {
                     drawingContext.DrawLine(darkPen, new Point(snappedLeft, -0.5), new Point(snappedLeft, ActualHeight + 0.5));
+                }
+                else if ((tick * zoomRatio * BeatUnit) % 4 == 0)
+                {
+                    if (TickMode == 1)
+                        drawingContext.DrawLine(darkPen, new Point(snappedLeft, -0.5), new Point(snappedLeft, ActualHeight + 0.5));
+                    else
+                        drawingContext.DrawLine(lightPen, new Point(snappedLeft, -0.5), new Point(snappedLeft, ActualHeight + 0.5));
                 }
                 else if ((tick * zoomRatio * BeatUnit) % 1 == 0)
                 {
-                    drawingContext.DrawLine(darkPen, new Point(snappedLeft, -0.5), new Point(snappedLeft, ActualHeight + 0.5));
-                }
-                else if ((tick * zoomRatio * BeatUnit) % 0.25 == 0)
-                {
-                    drawingContext.DrawLine(lightPen, new Point(snappedLeft, -0.5), new Point(snappedLeft, ActualHeight + 0.5));
+                    if (TickMode == 1)
+                        drawingContext.DrawLine(lightPen, new Point(snappedLeft, -0.5), new Point(snappedLeft, ActualHeight + 0.5));
+                    else
+                        drawingContext.DrawLine(dashedPen, new Point(snappedLeft, -0.5), new Point(snappedLeft, ActualHeight + 0.5));
                 }
                 else
                 {
@@ -228,12 +241,12 @@ namespace OpenUtau.UI.Controls
             while (left < _size.Width)
             {
                 double snappedLeft = Math.Round(left) + 0.5;
-                if ((tick * zoomRatio * BeatUnit) % BeatPerBar == 0)
+                if ((tick * zoomRatio * BeatUnit) % (BeatPerBar * 4) == 0)
                 {
                     if (!first_tick) drawingContext.DrawLine(darkPen, new Point(snappedLeft, -0.5), new Point(snappedLeft, ActualHeight + 0.5));
                     drawingContext.DrawText(
                         new FormattedText(
-                            ((tick * zoomRatio * BeatUnit) / BeatPerBar).ToString(),
+                            ((tick * zoomRatio * BeatUnit) / BeatPerBar / 4 + 1).ToString(),
                             System.Threading.Thread.CurrentThread.CurrentUICulture,
                             FlowDirection.LeftToRight, SystemFonts.CaptionFontFamily.GetTypefaces().First(),
                             12,

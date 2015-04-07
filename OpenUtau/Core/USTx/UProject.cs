@@ -11,7 +11,6 @@ namespace OpenUtau.Core.USTx
         public double BPM = 120;
         public int BeatPerBar = 4;
         public int BeatUnit = 4;
-        public int PreBar = 1;
         public int Resolution = 960;
         public int DurTick = 960 * 32;
 
@@ -22,6 +21,7 @@ namespace OpenUtau.Core.USTx
         public string CacheDir = "UCache";
 
         public List<UTrack> Tracks = new List<UTrack>();
+        public List<UPart> Parts = new List<UPart>();
 
         public UProject()
         {

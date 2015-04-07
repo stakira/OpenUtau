@@ -11,13 +11,10 @@ namespace OpenUtau.Core.USTx
         public string Name = "New Track";
         public string Comment = "";
 
-        public List<UPart> Parts = new List<UPart>();
+        public int TrackNo;
 
-        public UProject Parent;
-
-        public UTrack(UProject parent)
+        public UTrack()
         {
-            Parent = parent;
         }
     }
 }

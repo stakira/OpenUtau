@@ -52,11 +52,21 @@ namespace OpenUtau.UI.Models
             get { return tTrans.Y; }
         }
 
+        public int TrackNo { get { return Part.TrackNo; } }
+        public int PosTick { get { return Part.PosTick; } }
+        public double DisplayWidth { get { return Part.DurTick * ScaleX; } }
+        public int VisualDurTick;
+
+        bool _selected = false;
+        bool _error = false;
+        public bool Selected { set { _selected = value; Redraw(); } get { return _selected; } }
+        public bool Error { set { _error = value; Redraw(); } get { return _error; } }
+
         public PartThumbnail()
         {
             thumbnailGeometry = new GeometryGroup();
             pen = new Pen() { Thickness = 3 };
-            this.Source = new DrawingImage(new GeometryDrawing(Brushes.Transparent, pen, thumbnailGeometry));
+            this.Source = new DrawingImage(new GeometryDrawing(null, pen, thumbnailGeometry));
 
             sTrans = new ScaleTransform();
             tTrans = new TranslateTransform();
@@ -85,6 +95,7 @@ namespace OpenUtau.UI.Models
                     new LineGeometry(new Point(unote.PosTick, UIConstants.MaxNoteNum - unote.NoteNum),
                         new Point(unote.PosTick + unote.DurTick, UIConstants.MaxNoteNum - unote.NoteNum)));
             }
+            VisualDurTick = Part.DurTick;
         }
 
         public void FitHeight(double height)
