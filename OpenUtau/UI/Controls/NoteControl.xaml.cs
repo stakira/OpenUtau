@@ -24,7 +24,7 @@ namespace OpenUtau.UI.Controls
     /// </summary>
     public partial class NoteControl : UserControl
     {
-        public UNote note;
+        public UNote Note;
 
         int _channel = 0;
         bool _error = false;

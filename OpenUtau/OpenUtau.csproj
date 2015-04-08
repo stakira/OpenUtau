@@ -89,7 +89,7 @@
     <Compile Include="UI\Controls\SizeObserver.cs" />
     <Compile Include="UI\Models\MidiViewModel.cs" />
     <Compile Include="UI\Models\ThemeManager.cs" />
-    <Compile Include="UI\Models\PartThumbnail.cs" />
+    <Compile Include="UI\Controls\PartThumbnail.cs" />
     <Compile Include="UI\Models\TracksViewModel.cs" />
     <Compile Include="UI\UIConstants.cs" />
     <Page Include="UI\Controls\NavigateDrag.xaml">
@@ -121,7 +121,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Core\USTx\UNote.cs" />
-    <Compile Include="UI\Models\NotesCanvasModel.cs" />
     <Compile Include="UI\MidiWindow.xaml.cs">
       <DependentUpon>MidiWindow.xaml</DependentUpon>
     </Compile>

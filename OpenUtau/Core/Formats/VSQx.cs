@@ -116,11 +116,7 @@ namespace OpenUtau.Core.Formats
                         unote.Lyric = note.SelectSingleNode(lyricPath, nsmanager).InnerText;
                         unote.Phoneme = note.SelectSingleNode(phonemePath, nsmanager).InnerText;
 
-                        // Old
-                        unote.offset = ((double)unote.PosTick) / 240;
-                        unote.length = ((double)unote.DurTick) / 240;
-                        unote.keyNo = unote.NoteNum;
-                        unote.Channel = 0;
+                        unote.Channel = 0; // FIXME
                     }
                 }
             }

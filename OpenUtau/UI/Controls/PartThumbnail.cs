@@ -7,10 +7,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 
 using OpenUtau.Core.USTx;
 
-namespace OpenUtau.UI.Models
+namespace OpenUtau.UI.Controls
 {
     class PartThumbnail : System.Windows.Controls.Image
     {
@@ -21,6 +22,7 @@ namespace OpenUtau.UI.Models
         ScaleTransform sTrans;
 
         public UPart Part { set; get; }
+        public Rectangle Box;
         
         public Brush Brush
         {

@@ -108,16 +108,22 @@ namespace OpenUtau.UI.Models
             MarkUpdate();
         }
 
-        List<Tuple<PartThumbnail, Rectangle>> Thumbnails = new List<Tuple<PartThumbnail,Rectangle>>();
+        List<PartThumbnail> SelectedThumbnails = new List<PartThumbnail>();
+        List<PartThumbnail> Thumbnails = new List<PartThumbnail>();
 
         public TracksViewModel() { }
 
-        public void CloseProject()
+        public void DeselectAll()
         {
-            foreach (Tuple<PartThumbnail,Rectangle> thumbnail in Thumbnails)
+            SelectedThumbnails.Clear();
+        }
+
+        public void UnloadProject()
+        {
+            foreach (PartThumbnail thumbnail in Thumbnails)
             {
-                TrackCanvas.Children.Remove(thumbnail.Item1);
-                TrackCanvas.Children.Remove(thumbnail.Item2);
+                TrackCanvas.Children.Remove(thumbnail);
+                TrackCanvas.Children.Remove(thumbnail.Box);
             }
             Thumbnails.Clear();
             Project = null;
@@ -125,21 +131,22 @@ namespace OpenUtau.UI.Models
 
         public void LoadProject(UProject project)
         {
-            CloseProject();
+            UnloadProject();
             Project = project;
 
             foreach (UPart part in project.Parts)
             {
-                PartThumbnail partThumb = new PartThumbnail() { Brush = ThemeManager.NoteFillBrushes[0], Part = part};
+                PartThumbnail partThumb = new PartThumbnail() { Brush = Brushes.White, Part = part};
                 partThumb.Redraw();
                 TrackCanvas.Children.Add(partThumb);
                 Canvas.SetZIndex(partThumb, UIConstants.PartThumbnailZIndex);
 
-                Rectangle thumbBox = new Rectangle() { RadiusX = 2, RadiusY = 2, Fill = ThemeManager.NoteFillErrorBrushes[0], Stroke = ThemeManager.NoteFillBrushes[0], StrokeThickness = 1 };
+                Rectangle thumbBox = new Rectangle() { RadiusX = 4, RadiusY = 4, Fill = ThemeManager.NoteFillBrushes[0], Stroke = ThemeManager.NoteFillErrorBrushes[0], StrokeThickness = 0 };
                 TrackCanvas.Children.Add(thumbBox);
                 Canvas.SetZIndex(thumbBox, UIConstants.PartRectangleZIndex);
 
-                Thumbnails.Add(new Tuple<PartThumbnail, Rectangle>(partThumb, thumbBox));
+                partThumb.Box = thumbBox;
+                Thumbnails.Add(partThumb);
             }
             MarkUpdate();
         }
@@ -148,26 +155,30 @@ namespace OpenUtau.UI.Models
         {
             if (_updated)
             {
-                foreach (Tuple<PartThumbnail, Rectangle> thumb in Thumbnails)
+                foreach (PartThumbnail thumb in Thumbnails)
                 {
-                    if (thumb.Item1.VisualDurTick != thumb.Item1.Part.DurTick) thumb.Item1.Redraw();
-                    thumb.Item1.X = -OffsetX + thumb.Item1.PosTick * QuarterWidth / Project.Resolution;
-                    thumb.Item1.Y = -OffsetY + thumb.Item1.TrackNo * TrackHeight + 1;
-                    thumb.Item1.FitHeight(TrackHeight - 2);
-                    thumb.Item1.ScaleX = QuarterWidth / Project.Resolution;
+                    if (thumb.VisualDurTick != thumb.Part.DurTick) thumb.Redraw();
+                    thumb.X = -OffsetX + thumb.PosTick * QuarterWidth / Project.Resolution;
+                    thumb.Y = -OffsetY + thumb.TrackNo * TrackHeight + 1;
+                    thumb.FitHeight(TrackHeight - 2);
+                    thumb.ScaleX = QuarterWidth / Project.Resolution;
 
-                    thumb.Item2.Height = TrackHeight - 2;
-                    thumb.Item2.Width = thumb.Item1.DisplayWidth - 1;
-                    Canvas.SetTop(thumb.Item2, thumb.Item1.Y);
-                    Canvas.SetLeft(thumb.Item2, thumb.Item1.X + 1);
+                    thumb.Box.Height = TrackHeight - 2;
+                    thumb.Box.Width = thumb.DisplayWidth - 1;
+                    Canvas.SetTop(thumb.Box, thumb.Y);
+                    Canvas.SetLeft(thumb.Box, thumb.X + 1);
                 }
             }
             _updated = false;
         }
 
+        # region Calculation
+
         public double GetSnapUnit() { return OpenUtau.Core.MusicMath.getZoomRatio(QuarterWidth, BeatPerBar, BeatUnit, MinTickWidth); }
         public int CanvasToTrack(double Y) { return (int)((Y + OffsetY) / TrackHeight); }
+        public double TrackToCanvas(int noteNum) { return TrackHeight * noteNum - OffsetY; }
         public double CanvasToQuarter(double X) { return (X + OffsetX) / QuarterWidth; }
+        public double QuarterToCanvas(double X) { return X * QuarterWidth - OffsetX; }
         public double CanvasToSnappedQuarter(double X)
         {
             double quater = CanvasToQuarter(X);
@@ -187,5 +198,7 @@ namespace OpenUtau.UI.Models
             return Math.Round(quater / snapUnit) * snapUnit;
         }
         public int CanvasToSnappedTick(double X) { return (int)(CanvasToSnappedQuarter(X) * Project.Resolution); }
+
+        # endregion
     }
 }

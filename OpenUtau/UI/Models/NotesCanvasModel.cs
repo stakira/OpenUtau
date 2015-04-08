@@ -80,8 +80,8 @@ namespace OpenUtau.UI.Models
             numNotesWidthScroll = numNotesWidthMin;
             horizontalPosition = 0;
 
-            trackPart = new UPart(null);
-            trackPart.ncModel = this;
+            trackPart = new UPart();
+            //trackPart.ncModel = this;
             shadowTrackPart = null;
             // TODO : Load existing trackPart and shadowTrackPart
         }
@@ -183,106 +183,110 @@ namespace OpenUtau.UI.Models
         // Update notesCanvas background
         public void updateNotesCanvasBackground()
         {
-            int max = snapNoteKey(0);
-            int min = snapNoteKey(notesCanvas.ActualHeight);
-            for (int i = 0; i < numNotesHeight; i++)
-            {
-                if (i < min || i > max)
-                {
-                    keyTracks[i].Visibility = System.Windows.Visibility.Hidden;
-                }
-                else
-                {
-                    double notePosInView = keyToCanvas(i);
-                    keyTracks[i].Width = notesCanvas.ActualWidth;
-                    keyTracks[i].Height = noteHeight;
-                    Canvas.SetTop(keyTracks[i], notePosInView);
-                    keyTracks[i].Visibility = System.Windows.Visibility.Visible;
-                }
-            }
+        //    int max = snapNoteKey(0);
+        //    int min = snapNoteKey(notesCanvas.ActualHeight);
+        //    for (int i = 0; i < numNotesHeight; i++)
+        //    {
+        //        if (i < min || i > max)
+        //        {
+        //            keyTracks[i].Visibility = System.Windows.Visibility.Hidden;
+        //        }
+        //        else
+        //        {
+        //            double notePosInView = keyToCanvas(i);
+        //            keyTracks[i].Width = notesCanvas.ActualWidth;
+        //            keyTracks[i].Height = noteHeight;
+        //            Canvas.SetTop(keyTracks[i], notePosInView);
+        //            keyTracks[i].Visibility = System.Windows.Visibility.Visible;
+        //        }
+        //    }
 
-            // Update vertical lines
-            double displayLineWidth = noteWidth * getHZoomRatio();
-            int firstLine = (int)(getViewOffsetX() / displayLineWidth ) + 1;
-            double firstLineX = firstLine * displayLineWidth - getViewOffsetX();
+        //    // Update vertical lines
+        //    double displayLineWidth = noteWidth * getHZoomRatio();
+        //    int firstLine = (int)(getViewOffsetX() / displayLineWidth ) + 1;
+        //    double firstLineX = firstLine * displayLineWidth - getViewOffsetX();
 
-            for (int i = 0; i < Math.Ceiling(notesCanvas.ActualWidth / displayLineWidth); i++)
-            {
-                double lineX = firstLineX + displayLineWidth * i;
-                if (verticalLines.Count <= i)
-                {
-                    // Add line
-                    verticalLines.Add(new Line()
-                    {
-                        StrokeThickness = 1,
-                        X1 = 0,
-                        Y1 = 0,
-                        X2 = 0
-                    });
-                    notesCanvas.Children.Add(verticalLines.Last());
-                    Canvas.SetTop(verticalLines.Last(), 0);
-                    Canvas.SetZIndex(verticalLines.Last(), -10);
-                }
-                verticalLines[i].Stroke = (firstLine + i) % (trackPart.beat / getHZoomRatio()) == 0 ?
-                    ThemeManager.TickLineBrushDark : ThemeManager.TickLineBrushLight;
-                verticalLines[i].StrokeDashArray = (firstLine + i) % (1 / getHZoomRatio()) > 0 ?
-                    UIConstants.DashLineArray : null;
-                verticalLines[i].Y2 = notesCanvas.ActualHeight;
-                Canvas.SetLeft(verticalLines[i], Math.Round(lineX) + 0.5);
-                verticalLines[i].Visibility = System.Windows.Visibility.Visible;
-            }
+        //    for (int i = 0; i < Math.Ceiling(notesCanvas.ActualWidth / displayLineWidth); i++)
+        //    {
+        //        double lineX = firstLineX + displayLineWidth * i;
+        //        if (verticalLines.Count <= i)
+        //        {
+        //            // Add line
+        //            verticalLines.Add(new Line()
+        //            {
+        //                StrokeThickness = 1,
+        //                X1 = 0,
+        //                Y1 = 0,
+        //                X2 = 0
+        //            });
+        //            notesCanvas.Children.Add(verticalLines.Last());
+        //            Canvas.SetTop(verticalLines.Last(), 0);
+        //            Canvas.SetZIndex(verticalLines.Last(), -10);
+        //        }
+        //        verticalLines[i].Stroke = (firstLine + i) % (trackPart.beat / getHZoomRatio()) == 0 ?
+        //            ThemeManager.TickLineBrushDark : ThemeManager.TickLineBrushLight;
+        //        verticalLines[i].StrokeDashArray = (firstLine + i) % (1 / getHZoomRatio()) > 0 ?
+        //            UIConstants.DashLineArray : null;
+        //        verticalLines[i].Y2 = notesCanvas.ActualHeight;
+        //        Canvas.SetLeft(verticalLines[i], Math.Round(lineX) + 0.5);
+        //        verticalLines[i].Visibility = System.Windows.Visibility.Visible;
+        //    }
 
-            for (int i = (int)Math.Ceiling(notesCanvas.ActualWidth / displayLineWidth); i < verticalLines.Count; i++)
-            {
-                verticalLines[i].Visibility = System.Windows.Visibility.Hidden;
-            }
+        //    for (int i = (int)Math.Ceiling(notesCanvas.ActualWidth / displayLineWidth); i < verticalLines.Count; i++)
+        //    {
+        //        verticalLines[i].Visibility = System.Windows.Visibility.Hidden;
+        //    }
 
-            // Update bar number and line
-            double displayBarWidth = noteWidth * trackPart.beat * trackPart.bar;
-            int firstBar = (int)(getViewOffsetX() / displayBarWidth);
-            double firstBarX = firstBar * displayBarWidth - getViewOffsetX();
+        //    // Update bar number and line
+        //    double displayBarWidth = noteWidth * trackPart.beat * trackPart.bar;
+        //    int firstBar = (int)(getViewOffsetX() / displayBarWidth);
+        //    double firstBarX = firstBar * displayBarWidth - getViewOffsetX();
 
-            for (int i = 0; i < notesCanvas.ActualWidth / displayBarWidth + 1; i++)
-            {
-                double barX = firstBarX + displayBarWidth * i;
-                if (barNumbers.Count <= i)
-                {
-                    // Add number
-                    barNumbers.Add(new TextBlock
-                    {
-                        FontSize = 12,
-                        Foreground = ThemeManager.BarNumberBrush,
-                        IsHitTestVisible = false,
-                        SnapsToDevicePixels = true
-                    });
-                    timelineCanvas.Children.Add(barNumbers.Last());
-                    Canvas.SetTop(barNumbers.Last(), 3);
-                    Canvas.SetZIndex(barNumbers.Last(), -10);
-                    // Add line
-                    barLines.Add(new Line
-                    {
-                        Stroke = ThemeManager.TickLineBrushDark,
-                        StrokeThickness = 1,
-                        X1 = 0,
-                        Y1 = 0,
-                        X2 = 0,
-                        Y2 = timelineCanvas.ActualHeight
-                    });
-                    timelineCanvas.Children.Add(barLines.Last());
-                    Canvas.SetZIndex(barLines.Last(), -10);
-                }
-                Canvas.SetLeft(barNumbers[i], Math.Round(barX) + barNumberOffsetX);
-                barNumbers[i].Text = (firstBar + i).ToString();
-                barNumbers[i].Visibility = System.Windows.Visibility.Visible;
-                Canvas.SetLeft(barLines[i], Math.Round(barX) + 0.5);
-                barLines[i].Visibility = System.Windows.Visibility.Visible;
-            }
+        //    for (int i = 0; i < notesCanvas.ActualWidth / displayBarWidth + 1; i++)
+        //    {
+        //        double barX = firstBarX + displayBarWidth * i;
+        //        if (barNumbers.Count <= i)
+        //        {
+        //            // Add number
+        //            barNumbers.Add(new TextBlock
+        //            {
+        //                FontSize = 12,
+        //                Foreground = ThemeManager.BarNumberBrush,
+        //                IsHitTestVisible = false,
+        //                SnapsToDevicePixels = true
+        //            });
+        //            timelineCanvas.Children.Add(barNumbers.Last());
+        //            Canvas.SetTop(barNumbers.Last(), 3);
+        //            Canvas.SetZIndex(barNumbers.Last(), -10);
+        //            // Add line
+        //            barLines.Add(new Line
+        //            {
+        //                Stroke = ThemeManager.TickLineBrushDark,
+        //                StrokeThickness = 1,
+        //                X1 = 0,
+        //                Y1 = 0,
+        //                X2 = 0,
+        //                Y2 = timelineCanvas.ActualHeight
+        //            });
+        //            timelineCanvas.Children.Add(barLines.Last());
+        //            Canvas.SetZIndex(barLines.Last(), -10);
+        //        }
+        //        Canvas.SetLeft(barNumbers[i], Math.Round(barX) + barNumberOffsetX);
+        //        barNumbers[i].Text = (firstBar + i).ToString();
+        //        barNumbers[i].Visibility = System.Windows.Visibility.Visible;
+        //        Canvas.SetLeft(barLines[i], Math.Round(barX) + 0.5);
+        //        barLines[i].Visibility = System.Windows.Visibility.Visible;
+        //    }
 
-            for (int i = (int)(notesCanvas.ActualWidth / displayBarWidth) + 2; i < barNumbers.Count; i++)
-            {
-                barNumbers[i].Visibility = System.Windows.Visibility.Hidden;
-                barLines[i].Visibility = System.Windows.Visibility.Hidden;
-            }
+        //    for (int i = (int)(notesCanvas.ActualWidth / displayBarWidth) + 2; i < barNumbers.Count; i++)
+        //    {
+        //        barNumbers[i].Visibility = System.Windows.Visibility.Hidden;
+        //        barLines[i].Visibility = System.Windows.Visibility.Hidden;
+        //    }
+        }
+        public double getHZoomRatio()
+        {
+            return 0;
         }
 
         public void updateScroll()
@@ -377,52 +381,20 @@ namespace OpenUtau.UI.Models
         public double getOffsetSnapUnit() // Unit : quarter note
         {
             if (snapOffset) return getHZoomRatio();
-            else return 1.0 / trackPart.ppq;
+            //else return 1.0 / trackPart.ppq;
+            else return 1.0;
         }
 
         public double getLengthSnapUnit() // Unit : quarter note
         {
             if (snapLength) return getHZoomRatio();
-            else return 1.0 / trackPart.ppq;
-        }
-
-        public double getHZoomRatio()
-        {
-            switch (getHZoomLevel())
-            {
-                case ZoomLevel.Bar:
-                    return trackPart.beat * trackPart.bar;
-                case ZoomLevel.Beat:
-                    return trackPart.beat;
-                case ZoomLevel.HalfNote:
-                    return 2;
-                case ZoomLevel.QuaterNote:
-                    return 1;
-                case ZoomLevel.EighthNote:
-                    return 0.5;
-                case ZoomLevel.SixteenthNote:
-                    return 0.25;
-                case ZoomLevel.ThritySecondNote:
-                    return 0.125;
-                default:
-                    return 0.0625;
-            }
-        }
-
-        public ZoomLevel getHZoomLevel()
-        {
-            if (noteWidth < noteMinWidthDisplay) return ZoomLevel.Beat;
-            else if (noteWidth < noteMinWidthDisplay * 2) return ZoomLevel.HalfNote;
-            else if (noteWidth < noteMinWidthDisplay * 4) return ZoomLevel.QuaterNote;
-            else if (noteWidth < noteMinWidthDisplay * 8) return ZoomLevel.EighthNote;
-            else if (noteWidth < noteMinWidthDisplay * 16) return ZoomLevel.SixteenthNote;
-            else if (noteWidth < noteMinWidthDisplay * 32) return ZoomLevel.ThritySecondNote;
-            else return ZoomLevel.SixtyfourthNote;
+            //else return 1.0 / trackPart.ppq;
+            else return 1.0;
         }
 
         public UNote getNoteFromControl(OpenUtau.UI.Controls.NoteControl control)
         {
-            return control.note;
+            return control.Note;
         }
 
         public double getViewSizeY()
@@ -480,7 +452,7 @@ namespace OpenUtau.UI.Models
 
         public void updateNotes()
         {
-            trackPart.UpdateGraphics();
+            //trackPart.UpdateGraphics();
         }
 
         public bool noteInView(UNote note)

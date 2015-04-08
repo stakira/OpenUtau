@@ -194,8 +194,8 @@ namespace OpenUtau.UI.Controls
         {
             double zoomRatio = MusicMath.getZoomRatio(QuarterWidth, BeatPerBar, BeatUnit, MinTickWidth);
             double interval = zoomRatio * QuarterWidth;
-            int tick = (int)(OffsetX / interval) + 1;
-            double left = tick * interval - OffsetX;
+            int tick = (int)((OffsetX + QuarterOffset * QuarterWidth) / interval) + 1;
+            double left = tick * interval - OffsetX - QuarterOffset * QuarterWidth;
 
             while (left < _size.Width)
             {
@@ -234,8 +234,8 @@ namespace OpenUtau.UI.Controls
         {
             double zoomRatio = MusicMath.getZoomRatio(QuarterWidth, BeatPerBar, BeatUnit, MinTickWidth);
             double interval = zoomRatio * QuarterWidth;
-            int tick = (int)(OffsetX / interval);
-            double left = tick * interval - OffsetX;
+            int tick = (int)((OffsetX + QuarterOffset * QuarterWidth) / interval);
+            double left = tick * interval - OffsetX - QuarterOffset * QuarterWidth;
             bool first_tick = true;
 
             while (left < _size.Width)

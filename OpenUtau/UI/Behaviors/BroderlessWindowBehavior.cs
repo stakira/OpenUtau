@@ -14,7 +14,8 @@ using System.Runtime.InteropServices;
 namespace OpenUtau.UI.Behaviors
 {
     /// <summary>
-    /// With this class we can make custom window styles.
+    /// BorderlessWindowBehavior
+    /// Hide default window chrome. Fix maximizing problem. Disable window context menu.
     /// </summary>
     public class BorderlessWindowBehavior : Behavior<Window>
     {
@@ -29,6 +30,7 @@ namespace OpenUtau.UI.Behaviors
             windowChrome.CaptionHeight = 0;
 
             AddHwndSourceHook();
+            DisableWindowMenu();
 
             base.OnAttached();
         }
@@ -224,6 +226,25 @@ namespace OpenUtau.UI.Behaviors
         internal static extern IntPtr MonitorFromWindow(IntPtr handle, int flags);
 
         #endregion
+
+        # region Disable window menu
+
+        private const int GWL_STYLE = -16; //WPF's Message code for Title Bar's Style 
+        private const int WS_SYSMENU = 0x80000; //WPF's Message code for System Menu
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+        [DllImport("user32.dll")]
+        private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
+
+        // Handling the Messages in Window's Loaded event
+
+        private void DisableWindowMenu()
+        {
+            var hwnd = new WinInterop.WindowInteropHelper((Window)AssociatedObject).Handle;
+            SetWindowLong(hwnd, GWL_STYLE, GetWindowLong(hwnd, GWL_STYLE) & ~WS_SYSMENU);
+        }
+
+        # endregion
 
     }
 }

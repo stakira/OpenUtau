@@ -28,92 +28,64 @@ namespace OpenUtau.UI
     /// </summary>
     public partial class MidiWindow : BorderlessWindow
     {
-        // Canvas states
-        //NotesCanvasModel ncModel;
-        KeyTrackBackground keyTrackBackground;
-        TickBackground tickBackground;
-        TimelineBackground timelineBackground;
-        KeyboardBackground keyboardBackground;
-
-        double lastNoteLength = 1;
+        MidiViewModel midiVM;
 
         public MidiWindow()
         {
             InitializeComponent();
 
-            //ncModel = new NotesCanvasModel();
-            //ncModel.hScroll = this.horizontalScroll;
-            //ncModel.notesVScroll = this.notesVerticalScroll;
-            //ncModel.expVScroll = this.expVerticalScroll;
-            //ncModel.notesCanvas = this.notesCanvas;
-            //ncModel.expCanvas = this.expCanvas;
-            //ncModel.keysCanvas = this.keysCanvas;
-            //ncModel.timelineCanvas = this.timelineCanvas;
-
-            //ncModel.initGraphics();
-            //ncModel.updateGraphics();
-
-            //CompositionTarget.Rendering += Window_PerFrameCallback;
-
-            //keyTrackBackground = new KeyTrackBackground();
-            //this.notesBackgroundGrid.Children.Add(keyTrackBackground);
-
-            //tickBackground = new TickBackground();
-            //this.notesBackgroundGrid.Children.Add(tickBackground);
-            //tickBackground.SnapsToDevicePixels = true;
-            //tickBackground.MinTickWidth = UIConstants.MidiTickMinWidth;
-
-            //timelineBackground = new TimelineBackground();
-            //this.timelineBackgroundGrid.Children.Add(timelineBackground);
-            //timelineBackground.SnapsToDevicePixels = true;
-
-            //keyboardBackground = new KeyboardBackground();
-            //this.keyboardBackgroundGrid.Children.Add(keyboardBackground);
-            //keyboardBackground.SnapsToDevicePixels = true;
-
-            //notesVerticalScroll.Minimum = 0;
-            //notesVerticalScroll.Maximum = UIConstants.MaxNoteNum * UIConstants.NoteDefaultHeight;
-            //notesVerticalScroll.Value = UIConstants.NoteDefaultHeight * UIConstants.MaxNoteNum / 2;
-
-            //horizontalScroll.Minimum = 0;
-            //horizontalScroll.Maximum = UIConstants.MaxNoteCount * UIConstants.MidiWNoteDefaultWidth;
-            //horizontalScroll.Value = 0;
-            ////navigateDrag.NavDrag += navigateDrag_NavDrag;
-
             this.CloseButtonClicked += (o, e) => { Hide(); };
+            CompositionTargetEx.FrameUpdating += RenderLoop;
+
+            viewScaler.Max = UIConstants.NoteMaxHeight;
+            viewScaler.Min = UIConstants.NoteMinHeight;
+            viewScaler.Value = UIConstants.NoteDefaultHeight;
+            viewScaler.ViewScaled += viewScaler_ViewScaled;
+
+            midiVM = (MidiViewModel)this.Resources["midiVM"];
+            midiVM.MidiCanvas = this.notesCanvas;
         }
 
-        public void LoadPart(UPart part)
+        void viewScaler_ViewScaled(object sender, EventArgs e)
         {
-            //while (ncModel.trackPart.Notes.Count > 0)
-            //{
-            //    ncModel.trackPart.RemoveNote(ncModel.trackPart.Notes[ncModel.trackPart.Notes.Count - 1]);
-            //}
+            double zoomCenter = (midiVM.OffsetY + midiVM.ViewHeight / 2) / midiVM.TrackHeight;
+            midiVM.TrackHeight = ((ViewScaledEventArgs)e).Value;
+            midiVM.OffsetY = midiVM.TrackHeight * zoomCenter - midiVM.ViewHeight / 2;
+            midiVM.MarkUpdate();
+        }
 
-            //if (part != null)
-            //{
-            //    ncModel.trackPart = part;
-            //    ncModel.trackPart.ncModel = ncModel;
-            //    foreach (UNote note in part.Notes)
-            //    {
-            //        ncModel.notesCanvas.Children.Add(note.noteControl);
-            //    }
-            //    ncModel.updateScroll();
-            //    ncModel.updateGraphics();
-            //}
+        void RenderLoop(object sender, EventArgs e)
+        {
+            keyboardBackground.RenderIfUpdated();
+            tickBackground.RenderIfUpdated();
+            timelineBackground.RenderIfUpdated();
+            keyTrackBackground.RenderIfUpdated();
+            expTickBackground.RenderIfUpdated();
+            midiVM.RedrawIfUpdated();
+        }
+
+        public void LoadPart(UPart part, UProject project)
+        {
+            midiVM.LoadPart(part, project);
+            Title = midiVM.Title;
         }
 
         # region Note Canvas
 
-        UNote noteInDrag = null;
-        double noteOffsetOfDrag;
-        UNote leftMostNoteOfDrag, rightMostNoteOfDrag, maxNoteOfDrag, minNoteOfDrag;
-
-        UNote noteInResize = null;
-        UNote shortedNoteInResize;
-
-        Nullable<Point> selectionStart = null; // Unit in offset/keyNo
         Rectangle selectionBox;
+        Nullable<Point> selectionStart;
+        int _lastNoteLength = 480;
+
+        bool _moveNote = false;
+        bool _resizeNote = false;
+        NoteControl _hitNoteControl;
+        int _noteMoveRelativeTick;
+        int _noteMoveStartTick;
+        UNote _noteMoveNoteLeft;
+        UNote _noteMoveNoteRight;
+        UNote _noteMoveNoteMin;
+        UNote _noteMoveNoteMax;
+        UNote _noteResizeShortest;
 
         private NoteControl getNoteVisualHit(HitTestResult result)
         {
@@ -126,111 +98,126 @@ namespace OpenUtau.UI
 
         private void notesCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            //FocusManager.SetFocusedElement(this, null);
-            //Point mousePos = e.GetPosition((Canvas)sender);
-            //NoteControl hitNoteControl = getNoteVisualHit(VisualTreeHelper.HitTest(notesCanvas, mousePos));
+            FocusManager.SetFocusedElement(this, null);
+            Point mousePos = e.GetPosition((Canvas)sender);
 
-            //if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
-            //{
-            //    selectionStart = new Point(ncModel.canvasToOffset(mousePos.X), ncModel.snapNoteKey(mousePos.Y));
-            //    if (Keyboard.IsKeyUp(Key.LeftShift) && Keyboard.IsKeyUp(Key.RightShift))
-            //        ncModel.trackPart.DeselectAll();
-            //    if (selectionBox == null)
-            //    {
-            //        selectionBox = new Rectangle()
-            //        {
-            //            Stroke = Brushes.Black,
-            //            StrokeThickness = 2,
-            //            Fill = ThemeManager.getBarNumberBrush(),
-            //            Width = 0,
-            //            Height = 0,
-            //            Opacity = 0.5,
-            //            RadiusX = 8,
-            //            RadiusY = 8
-            //        };
-            //        notesCanvas.Children.Add(selectionBox);
-            //        Canvas.SetZIndex(selectionBox, 1000);
-            //    } 
-            //    else
-            //    {
-            //        selectionBox.Width = 0;
-            //        selectionBox.Height = 0;
-            //        Canvas.SetZIndex(selectionBox, 1000);
-            //    }
-            //    Mouse.OverrideCursor = Cursors.Cross;
-            //}
-            //else
-            //{
-            //    if (hitNoteControl != null)
-            //    {
-            //        UNote hitNote = ncModel.getNoteFromControl(hitNoteControl);
-            //        if (e.GetPosition(hitNoteControl).X < hitNoteControl.ActualWidth - NotesCanvasModel.resizeMargin)
-            //        {
-            //            // Move note
-            //            if (!ncModel.trackPart.selectedNotes.Contains(hitNote))
-            //                ncModel.trackPart.DeselectAll();
-            //            noteInDrag = hitNote;
-            //            noteOffsetOfDrag = ncModel.snapNoteOffset(e.GetPosition((Canvas)sender).X) - noteInDrag.offset;
-            //            lastNoteLength = noteInDrag.length;
-            //            leftMostNoteOfDrag = rightMostNoteOfDrag = maxNoteOfDrag = minNoteOfDrag = noteInDrag;
-            //            if (ncModel.trackPart.selectedNotes.Count != 0)
-            //                foreach (UNote note in ncModel.trackPart.selectedNotes)
-            //                {
-            //                    if (note.offset < leftMostNoteOfDrag.offset)
-            //                        leftMostNoteOfDrag = note;
-            //                    if (note.offset > rightMostNoteOfDrag.offset)
-            //                        rightMostNoteOfDrag = note;
-            //                    if (note.keyNo > maxNoteOfDrag.keyNo)
-            //                        maxNoteOfDrag = note;
-            //                    if (note.keyNo < minNoteOfDrag.keyNo)
-            //                        minNoteOfDrag = note;
-            //                }
-            //        }
-            //        else if (!hitNoteControl.IsLyricBoxActive())
-            //        {
-            //            // Resize note
-            //            if (!ncModel.trackPart.selectedNotes.Contains(hitNote))
-            //                ncModel.trackPart.DeselectAll();
-            //            noteInResize = hitNote;
-            //            Mouse.OverrideCursor = Cursors.SizeWE;
-            //            shortedNoteInResize = noteInResize;
-            //            if (ncModel.trackPart.selectedNotes.Count != 0)
-            //                foreach (UNote note in ncModel.trackPart.selectedNotes)
-            //                    if (note.length < shortedNoteInResize.length)
-            //                        shortedNoteInResize = note;
-            //        }
-            //    }
-            //    else // Add note
-            //    {
-            //        UNote newNote = new UNote(ncModel.trackPart)
-            //        {
-            //            keyNo = ncModel.snapNoteKey(e.GetPosition((Canvas)sender).Y),
-            //            offset = ncModel.snapNoteOffset(e.GetPosition((Canvas)sender).X),
-            //            length = lastNoteLength
-            //        };
-            //        ncModel.trackPart.AddNote(newNote);
-            //        // Enable drag
-            //        noteInDrag = newNote;
-            //        noteOffsetOfDrag = ncModel.snapNoteOffset(e.GetPosition((Canvas)sender).X) - noteInDrag.offset;
-            //        leftMostNoteOfDrag = rightMostNoteOfDrag = maxNoteOfDrag = minNoteOfDrag = noteInDrag;
-            //        ncModel.trackPart.DeselectAll();
-            //    }
-            //}
-            //((UIElement)sender).CaptureMouse();
+            var hit = VisualTreeHelper.HitTest(notesCanvas, mousePos).VisualHit;
+            System.Diagnostics.Debug.WriteLine("Mouse hit " + hit.ToString());
+
+            NoteControl hitNoteControl = getNoteVisualHit(VisualTreeHelper.HitTest(notesCanvas, mousePos));
+            if (hitNoteControl != null) System.Diagnostics.Debug.WriteLine("Mouse hit" + hitNoteControl.ToString());
+
+            if (Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                selectionStart = new Point(midiVM.CanvasToQuarter(mousePos.X), midiVM.CanvasToNoteNum(mousePos.Y));
+                if (Keyboard.IsKeyUp(Key.LeftShift) && Keyboard.IsKeyUp(Key.RightShift))
+                {
+                    midiVM.DeselectAll();
+                }
+                if (selectionBox == null)
+                {
+                    selectionBox = new Rectangle()
+                    {
+                        Stroke = Brushes.Black,
+                        StrokeThickness = 2,
+                        Fill = ThemeManager.getBarNumberBrush(),
+                        Width = 0,
+                        Height = 0,
+                        Opacity = 0.5,
+                        RadiusX = 8,
+                        RadiusY = 8,
+                        IsHitTestVisible = false
+                    };
+                    notesCanvas.Children.Add(selectionBox);
+                    Canvas.SetZIndex(selectionBox, 1000);
+                    selectionBox.Visibility = System.Windows.Visibility.Visible;
+                }
+                else
+                {
+                    selectionBox.Width = 0;
+                    selectionBox.Height = 0;
+                    Canvas.SetZIndex(selectionBox, 1000);
+                    selectionBox.Visibility = System.Windows.Visibility.Visible;
+                }
+                Mouse.OverrideCursor = Cursors.Cross;
+            }
+            else
+            {
+                if (hitNoteControl != null)
+                {
+                    _hitNoteControl = hitNoteControl;
+                    UNote hitNote = hitNoteControl.Note;
+                    if (!midiVM.SelectedNotes.Contains(hitNote)) midiVM.DeselectAll();
+
+                    if (e.GetPosition(hitNoteControl).X < hitNoteControl.ActualWidth - UIConstants.ResizeMargin)
+                    {
+                        // Move note
+                        _moveNote = true;
+                        _noteMoveRelativeTick = midiVM.CanvasToSnappedTick(mousePos.X) - hitNote.PosTick;
+                        _noteMoveStartTick = hitNote.PosTick;
+                        _lastNoteLength = hitNote.DurTick;
+                        if (midiVM.SelectedNotes.Count != 0)
+                        {
+                            _noteMoveNoteMax = _noteMoveNoteMin = hitNote;
+                            _noteMoveNoteLeft = _noteMoveNoteRight = hitNote;
+                            foreach (UNote note in midiVM.SelectedNotes)
+                            {
+                                if (note.PosTick < _noteMoveNoteLeft.PosTick) _noteMoveNoteLeft = note;
+                                if (note.EndTick > _noteMoveNoteRight.EndTick) _noteMoveNoteRight = note;
+                                if (note.NoteNum < _noteMoveNoteMin.NoteNum) _noteMoveNoteMin = note;
+                                if (note.NoteNum > _noteMoveNoteMax.NoteNum) _noteMoveNoteMax = note;
+                            }
+                        }
+                    }
+                    else if (!hitNoteControl.IsLyricBoxActive())
+                    {
+                        // Resize note
+                        _resizeNote = true;
+                        Mouse.OverrideCursor = Cursors.SizeWE;
+                        if (midiVM.SelectedNotes.Count != 0)
+                        {
+                            _noteResizeShortest = hitNote;
+                            foreach (UNote note in midiVM.SelectedNotes)
+                                if (note.DurTick < _noteResizeShortest.DurTick) _noteResizeShortest = note;
+                        }
+                    }
+                }
+                else // Add note
+                {
+                    UNote newNote = new UNote()
+                    {
+                        NoteNum = midiVM.CanvasToNoteNum(mousePos.Y),
+                        PosTick = midiVM.CanvasToSnappedTick(mousePos.X),
+                        DurTick = _lastNoteLength
+                    };
+                    midiVM.AddNote(newNote);
+                    midiVM.MarkUpdate();
+                    //// Enable drag
+                    midiVM.DeselectAll();
+                    _moveNote = true;
+                    _hitNoteControl = midiVM.GetNoteControl(newNote);
+                    _noteMoveRelativeTick = 0;
+                    _noteMoveStartTick = newNote.PosTick;
+                }
+            }
+            ((UIElement)sender).CaptureMouse();
         }
 
         private void notesCanvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            //noteInDrag = null;
-            //noteInResize = null;
-            //selectionStart = null;
-            //if (selectionBox != null)
-            //{
-            //    Canvas.SetZIndex(selectionBox, -100);
-            //}
-            //ncModel.trackPart.FinishSelectTemp();
-            //((Canvas)sender).ReleaseMouseCapture();
-            //Mouse.OverrideCursor = Cursors.Arrow;
+            _moveNote = false;
+            _resizeNote = false;
+            _hitNoteControl = null;
+            // End selection
+            selectionStart = null;
+            if (selectionBox != null)
+            {
+                Canvas.SetZIndex(selectionBox, -100);
+                selectionBox.Visibility = System.Windows.Visibility.Hidden;
+            }
+            midiVM.DoneTempSelect();
+            ((Canvas)sender).ReleaseMouseCapture();
+            Mouse.OverrideCursor = null;
         }
 
         private void notesCanvas_MouseMove(object sender, MouseEventArgs e)
@@ -241,129 +228,96 @@ namespace OpenUtau.UI
 
         private void notesCanvas_MouseMove_Helper(Point mousePos)
         {
+            if (selectionStart != null) // Selection
+            {
+                double top = midiVM.NoteNumToCanvas(Math.Max(midiVM.CanvasToNoteNum(mousePos.Y), (int)selectionStart.Value.Y));
+                double bottom = midiVM.NoteNumToCanvas(Math.Min(midiVM.CanvasToNoteNum(mousePos.Y), (int)selectionStart.Value.Y) - 1);
+                double left = Math.Min(mousePos.X, midiVM.QuarterToCanvas(selectionStart.Value.X));
+                selectionBox.Width = Math.Abs(mousePos.X - midiVM.QuarterToCanvas(selectionStart.Value.X));
+                selectionBox.Height = bottom - top;
+                Canvas.SetLeft(selectionBox, left);
+                Canvas.SetTop(selectionBox, top);
+                midiVM.TempSelectInBox(selectionStart.Value.X, midiVM.CanvasToQuarter(mousePos.X), (int)selectionStart.Value.Y, midiVM.CanvasToNoteNum(mousePos.Y));
+            }
+            else if (_moveNote) // Move Note
+            {
+                if (midiVM.SelectedNotes.Count == 0)
+                {
+                    _hitNoteControl.Note.NoteNum = Math.Max(0, Math.Min(UIConstants.MaxNoteNum - 1, midiVM.CanvasToNoteNum(mousePos.Y)));
+                    _hitNoteControl.Note.PosTick = Math.Max(0, (int)(midiVM.Project.Resolution * midiVM.CanvasToSnappedQuarter(mousePos.X)) - _noteMoveRelativeTick);
+                    midiVM.MarkUpdate();
+                }
+                else
+                {
+                    int deltaNoteNum = midiVM.CanvasToNoteNum(mousePos.Y) - _hitNoteControl.Note.NoteNum;
+                    int deltaPosTick = ((int)(midiVM.Project.Resolution * midiVM.CanvasToSnappedQuarter(mousePos.X)) - _noteMoveRelativeTick) - _hitNoteControl.Note.PosTick;
 
-            //if (selectionStart != null) // Selection
-            //{
-            //    double top = ncModel.keyToCanvas(Math.Max(ncModel.snapNoteKey(mousePos.Y), (int)selectionStart.Value.Y));
-            //    double bottom = ncModel.keyToCanvas(Math.Min(ncModel.snapNoteKey(mousePos.Y), (int)selectionStart.Value.Y) - 1);
-            //    selectionBox.Width = Math.Abs(mousePos.X - ncModel.offsetToCanvas(selectionStart.Value.X));
-            //    selectionBox.Height = bottom - top;
-            //    Canvas.SetLeft(selectionBox, Math.Min(mousePos.X, ncModel.offsetToCanvas(selectionStart.Value.X)));
-            //    Canvas.SetTop(selectionBox, top);
-            //    ncModel.trackPart.SelectTempInBox(
-            //        ncModel.canvasToOffset(mousePos.X),
-            //        selectionStart.Value.X,
-            //        ncModel.snapNoteKey(mousePos.Y),
-            //        selectionStart.Value.Y);
-            //}
-            //else if (noteInDrag != null) // Drag Note
-            //{
-            //    double movedOffset = ncModel.snapNoteOffset(mousePos.X) - noteOffsetOfDrag - noteInDrag.offset;
-            //    if (leftMostNoteOfDrag.offset + movedOffset < 0) movedOffset = -leftMostNoteOfDrag.offset;
-            //    int movedKeyNo = ncModel.snapNoteKey(mousePos.Y) - noteInDrag.keyNo;
-            //    if (maxNoteOfDrag.keyNo + movedKeyNo > NotesCanvasModel.numNotesHeight - 1)
-            //        movedKeyNo = NotesCanvasModel.numNotesHeight - 1 - maxNoteOfDrag.keyNo;
-            //    if (minNoteOfDrag.keyNo + movedKeyNo < 0)
-            //        movedKeyNo = -minNoteOfDrag.keyNo;
-            //    if (ncModel.trackPart.selectedNotes.Count == 0)
-            //    {
-            //        noteInDrag.keyNo += movedKeyNo;
-            //        noteInDrag.offset += movedOffset;
-            //        noteInDrag.updateGraphics(ncModel);
-            //    }
-            //    else
-            //    {
-            //        foreach (UNote note in ncModel.trackPart.selectedNotes)
-            //        {
-            //            note.keyNo += movedKeyNo;
-            //            note.offset += movedOffset;
-            //            note.updateGraphics(ncModel);
-            //        }
-            //    }
+                    if (deltaNoteNum + _noteMoveNoteMin.NoteNum >= 0 && deltaNoteNum + _noteMoveNoteMax.NoteNum < UIConstants.MaxNoteNum)
+                        foreach (UNote note in midiVM.SelectedNotes) note.NoteNum += deltaNoteNum;
 
-            //    ncModel.trackPart.Notes.Sort();
-            //    Mouse.OverrideCursor = Cursors.SizeAll;
-            //}
-            //else if (noteInResize != null) // Resize Note
-            //{
-            //    double newLength = ncModel.snapLength ?
-            //        ncModel.getLengthSnapUnit() + Math.Max(0, ncModel.snapNoteLength(mousePos.X - ncModel.offsetToCanvas(noteInResize.offset) - ncModel.getViewOffsetX())) :
-            //        Math.Max(UNote.minLength, ncModel.snapNoteLength(mousePos.X) - noteInResize.offset);
-            //    double deltaLength = newLength - noteInResize.length;
-            //    if (shortedNoteInResize.length + deltaLength < ncModel.getOffsetSnapUnit()) deltaLength = ncModel.getOffsetSnapUnit() - shortedNoteInResize.length;
-            //    if (ncModel.trackPart.selectedNotes.Count == 0)
-            //    {
-            //        noteInResize.length += deltaLength;
-            //        noteInResize.updateGraphics(ncModel);
-            //    }
-            //    else
-            //    {
-            //        foreach (UNote note in ncModel.trackPart.selectedNotes)
-            //        {
-            //            note.length += deltaLength;
-            //            note.updateGraphics(ncModel);
-            //        }
-            //    }
+                    if (deltaPosTick + _noteMoveNoteLeft.PosTick >= 0 && deltaPosTick + _noteMoveNoteRight.EndTick <= midiVM.QuarterCount * midiVM.Project.Resolution)
+                        foreach (UNote note in midiVM.SelectedNotes) note.PosTick += deltaPosTick;
 
-            //    lastNoteLength = noteInResize.length;
-            //}
-            //else if (Mouse.RightButton == MouseButtonState.Pressed) // Remove Note
-            //{
-            //    NoteControl hitNoteControl = getNoteVisualHit(VisualTreeHelper.HitTest(notesCanvas, mousePos));
-
-            //    if (hitNoteControl != null)
-            //    {
-            //        UNote note = ncModel.getNoteFromControl(hitNoteControl);
-            //        ncModel.trackPart.RemoveNote(note);
-            //    }
-            //}
-            //else if (Mouse.LeftButton == MouseButtonState.Released && Mouse.RightButton == MouseButtonState.Released)
-            //{
-            //    NoteControl hitNoteControl = getNoteVisualHit(VisualTreeHelper.HitTest(notesCanvas, mousePos));
-
-            //    if (hitNoteControl != null) // Change Cursor
-            //    {
-            //        if (Mouse.GetPosition(hitNoteControl).X < hitNoteControl.ActualWidth - NotesCanvasModel.resizeMargin)
-            //        {
-            //            Mouse.OverrideCursor = Cursors.Arrow;
-            //        }
-            //        else
-            //        {
-            //            if (!hitNoteControl.IsLyricBoxActive())
-            //                Mouse.OverrideCursor = Cursors.SizeWE;
-            //        }
-            //    }
-            //    else
-            //    {
-            //        Mouse.OverrideCursor = Cursors.Arrow;
-            //    }
-            //}
+                    midiVM.MarkUpdate();
+                }
+                Mouse.OverrideCursor = Cursors.SizeAll;
+            }
+            else if (_resizeNote) // resize
+            {
+                if (midiVM.SelectedNotes.Count == 0)
+                {
+                    int newDurTick = (int)(midiVM.CanvasRoundToSnappedQuarter(mousePos.X) * midiVM.Project.Resolution) - _hitNoteControl.Note.PosTick;
+                    if (newDurTick >= midiVM.GetSnapUnit() * midiVM.Project.Resolution) _lastNoteLength = _hitNoteControl.Note.DurTick = newDurTick;
+                    midiVM.MarkUpdate();
+                }
+                else
+                {
+                    int deltaDurTick = (int)(midiVM.CanvasRoundToSnappedQuarter(mousePos.X) * midiVM.Project.Resolution) - _hitNoteControl.Note.EndTick;
+                    if (deltaDurTick + _noteResizeShortest.DurTick > midiVM.GetSnapUnit())
+                        foreach (UNote note in midiVM.SelectedNotes) note.DurTick += deltaDurTick;
+                    midiVM.MarkUpdate();
+                }
+            }
+            else if (Mouse.RightButton == MouseButtonState.Pressed) // Remove Note
+            {
+                NoteControl hitNoteControl = getNoteVisualHit(VisualTreeHelper.HitTest(notesCanvas, mousePos));
+                if (hitNoteControl != null) midiVM.RemoveNote(hitNoteControl);
+            }
+            else if (Mouse.LeftButton == MouseButtonState.Released && Mouse.RightButton == MouseButtonState.Released)
+            {
+                NoteControl hitNoteControl = getNoteVisualHit(VisualTreeHelper.HitTest(notesCanvas, mousePos));
+                if (hitNoteControl != null) // Change Cursor
+                {
+                    if (Mouse.GetPosition(hitNoteControl).X > hitNoteControl.ActualWidth - UIConstants.ResizeMargin) Mouse.OverrideCursor = Cursors.SizeWE;
+                    else Mouse.OverrideCursor = null;
+                }
+                else
+                {
+                    Mouse.OverrideCursor = null;
+                }
+            }
         }
 
         private void notesCanvas_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-            //FocusManager.SetFocusedElement(this, null);
-            //Point mousePos = e.GetPosition((Canvas)sender);
-            //NoteControl hitNoteControl = getNoteVisualHit(VisualTreeHelper.HitTest(notesCanvas, mousePos));
-
-            //if (hitNoteControl != null)
-            //{
-            //    UNote note = ncModel.getNoteFromControl(hitNoteControl);
-            //    notesCanvas.Children.Remove(note.noteControl);
-            //    ncModel.trackPart.RemoveNote(note);
-            //}
-            //else
-            //{
-            //    ncModel.trackPart.DeselectAll();
-            //}
-            //((UIElement)sender).CaptureMouse();
-            //Mouse.OverrideCursor = Cursors.No;
+            FocusManager.SetFocusedElement(this, null);
+            Point mousePos = e.GetPosition((Canvas)sender);
+            NoteControl hitNoteControl = getNoteVisualHit(VisualTreeHelper.HitTest(notesCanvas, mousePos));
+            if (hitNoteControl != null) midiVM.RemoveNote(hitNoteControl);
+            else
+            {
+                midiVM.DeselectAll();
+            }
+            ((UIElement)sender).CaptureMouse();
+            Mouse.OverrideCursor = Cursors.No;
+            System.Diagnostics.Debug.WriteLine("Total notes: " + midiVM.Part.Notes.Count +
+                " controls: " + midiVM.NoteControls.Count + " selected: " + midiVM.SelectedNotes.Count);
         }
 
         private void notesCanvas_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
-            //Mouse.OverrideCursor = Cursors.Arrow;
-            //((UIElement)sender).ReleaseMouseCapture();
+            Mouse.OverrideCursor = null;
+            ((UIElement)sender).ReleaseMouseCapture();
         }
 
         // TODO : resize show same portion of view
@@ -377,21 +331,20 @@ namespace OpenUtau.UI
 
         private void notesCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-            if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
+            if (Keyboard.Modifiers == ModifierKeys.Control)
             {
                 timelineCanvas_MouseWheel(sender, e);
             }
-            else if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
+            else if (Keyboard.Modifiers == ModifierKeys.Shift)
             {
-                horizontalScroll_MouseWheel(sender, e);
+                midiVM.OffsetX -= midiVM.ViewWidth * 0.001 * e.Delta;
             }
-            else if (Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt))
+            else if (Keyboard.Modifiers == ModifierKeys.Alt)
             {
-
             }
             else
             {
-                notesVerticalScroll_MouseWheel(sender, e);
+                midiVM.OffsetY -= midiVM.ViewHeight * 0.001 * e.Delta;
             }
         }
 
@@ -401,14 +354,10 @@ namespace OpenUtau.UI
 
         private void navigateDrag_NavDrag(object sender, EventArgs e)
         {
-            //this.notesVerticalScroll.Value += ((NavDragEventArgs)e).Y;
-            //this.horizontalScroll.Value += ((NavDragEventArgs)e).X;
-            //ncModel.updateGraphics();
+            midiVM.OffsetX += ((NavDragEventArgs)e).X * midiVM.SmallChangeX * 5;
+            midiVM.OffsetY += ((NavDragEventArgs)e).Y * midiVM.SmallChangeY * 5;
+            midiVM.MarkUpdate();
         }
-
-        #endregion
-
-        #region Vertical Zoom Control
 
         #endregion
 
@@ -416,10 +365,13 @@ namespace OpenUtau.UI
         
         private void timelineCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-            //const double zoomSpeed = 0.0012;
-            //ncModel.hZoom(e.Delta * zoomSpeed, e.GetPosition((UIElement)sender).X);
-            //ncModel.updateScroll();
-            //ncModel.updateGraphics();
+            const double zoomSpeed = 0.0012;
+            Point mousePos = e.GetPosition((UIElement)sender);
+            double zoomCenter;
+            if (midiVM.OffsetX == 0 && mousePos.X < 128) zoomCenter = 0;
+            else zoomCenter = (midiVM.OffsetX + mousePos.X) / midiVM.QuarterWidth;
+            midiVM.QuarterWidth *= 1 + e.Delta * zoomSpeed;
+            midiVM.OffsetX = Math.Max(0, Math.Min(midiVM.TotalWidth, zoomCenter * midiVM.QuarterWidth - mousePos.X));
         }
 
         private void timelineCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -451,36 +403,6 @@ namespace OpenUtau.UI
 
         # endregion
 
-        # region Notes Vertical Scrollbar
-
-        private void notesVerticalScroll_Scroll(object sender, System.Windows.Controls.Primitives.ScrollEventArgs e)
-        {
-            //keyTrackBackground.VerticalOffset = notesVerticalScroll.Value;
-            //keyboardBackground.VerticalOffset = notesVerticalScroll.Value;
-        }
-
-        private void notesVerticalScroll_MouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            this.notesVerticalScroll.Value = this.notesVerticalScroll.Value - 0.01 * notesVerticalScroll.SmallChange * e.Delta;
-        }
-
-        # endregion
-
-        # region Horizontal Scrollbar
-
-        private void horizontalScroll_Scroll(object sender, System.Windows.Controls.Primitives.ScrollEventArgs e)
-        {
-            //ncModel.updateGraphics();
-        }
-
-        private void horizontalScroll_MouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            this.horizontalScroll.Value = this.horizontalScroll.Value - 0.01 * horizontalScroll.SmallChange * e.Delta;
-            //ncModel.updateGraphics();
-        }
-
-        # endregion
-
         #region Keys Action
 
         // TODO : keys mouse over, click, release, click and move
@@ -507,10 +429,9 @@ namespace OpenUtau.UI
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.A && (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)))
+            if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.A)
             {
-                // Select all notes
-                //ncModel.trackPart.SelectAll();
+                midiVM.SelectAll();
             }
             else if (e.Key == Key.Delete)
             {
@@ -546,12 +467,12 @@ namespace OpenUtau.UI
 
                 if (mousePos.Y < 0 && Mouse.Captured == this.notesCanvas)
                 {
-                    this.notesVerticalScroll.Value = this.notesVerticalScroll.Value - 0.01 * notesVerticalScroll.SmallChange * scrollSpeed * deltaTime;
+                    //this.notesVerticalScroll.Value = this.notesVerticalScroll.Value - 0.01 * notesVerticalScroll.SmallChange * scrollSpeed * deltaTime;
                     needUdpate = true;
                 }
                 else if (mousePos.Y > notesCanvas.ActualHeight && Mouse.Captured == this.notesCanvas)
                 {
-                    this.notesVerticalScroll.Value = this.notesVerticalScroll.Value + 0.01 * notesVerticalScroll.SmallChange * scrollSpeed * deltaTime;
+                    //this.notesVerticalScroll.Value = this.notesVerticalScroll.Value + 0.01 * notesVerticalScroll.SmallChange * scrollSpeed * deltaTime;
                     needUdpate = true;
                 }
 
@@ -568,19 +489,11 @@ namespace OpenUtau.UI
             lastFrame = nextFrame;
         }
 
-        # region Splitter
-
-        private void GridSplitter_MouseEnter(object sender, MouseEventArgs e)
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            Mouse.OverrideCursor = Cursors.SizeNS;
+            e.Cancel = true;
+            this.Hide();
         }
-
-        private void GridSplitter_MouseLeave(object sender, MouseEventArgs e)
-        {
-            Mouse.OverrideCursor = Cursors.Arrow;
-        }
-
-        # endregion
 
     }
 }

@@ -7,7 +7,7 @@
         xmlns:ic="clr-namespace:Microsoft.Expression.Interactivity.Core;assembly=Microsoft.Expression.Interactions"
         xmlns:il="clr-namespace:Microsoft.Expression.Interactivity.Layout;assembly=Microsoft.Expression.Interactions"
         xmlns:ib="clr-namespace:OpenUtau.UI.Behaviors"
-        Style="{StaticResource UBorderlessWindow}" Title="New Part"  KeyDown="Window_KeyDown">
+        Style="{StaticResource UBorderlessWindow}" Title="New Part"  KeyDown="Window_KeyDown" Closing="Window_Closing">
     <i:Interaction.Behaviors>
         <ib:BorderlessWindowBehavior/>
     </i:Interaction.Behaviors>
@@ -76,7 +76,7 @@
                     <ib:ScrollbarBehavior/>
                 </i:Interaction.Behaviors>
             </ScrollBar>
-            <local:NavigateDrag x:Name="navigateDrag" HorizontalAlignment="Right" VerticalAlignment="Top" Width="20" Height="20" Margin="0,0,0,0"/>
+            <local:NavigateDrag x:Name="navigateDrag" HorizontalAlignment="Right" VerticalAlignment="Top" Width="20" Height="20" Margin="0,0,0,0" NavDrag="navigateDrag_NavDrag"/>
             <local:ViewScaler x:Name="viewScaler" HorizontalAlignment="Right" VerticalAlignment="Top" Width="20" Height="20" Margin="0,20,0,0"/>
             <Border x:Name="notesCanvasShadow" Grid.Row="0" Background="{x:Null}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="48,20,20,0" BorderThickness="0" ClipToBounds="True">
                 <Border Background="{x:Null}" BorderBrush="Black" BorderThickness="1" Margin="-1">
@@ -85,8 +85,7 @@
                     </Border.Effect>
                 </Border>
             </Border>
-            <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="10" Margin="0,0,0,0" Background="White" Focusable="False"
-                          MouseEnter="GridSplitter_MouseEnter" MouseLeave="GridSplitter_MouseLeave"/>
+            <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="10" Margin="0,0,0,0" Background="White" Focusable="False"/>
             <Grid x:Name="expBackgroundGrid" Grid.Row="2" ClipToBounds="True" Margin="48,0,20,1">
                 <local:TickBackground x:Name="expTickBackground" QuarterOffset="{Binding QuarterOffset, Source={StaticResource midiVM}}"
                     QuarterWidth="{Binding QuarterWidth, Source={StaticResource midiVM}}" OffsetX="{Binding OffsetX, Source={StaticResource midiVM}}"

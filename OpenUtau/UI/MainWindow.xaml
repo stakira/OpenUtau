@@ -7,7 +7,7 @@
         xmlns:ic="clr-namespace:Microsoft.Expression.Interactivity.Core;assembly=Microsoft.Expression.Interactions"
         xmlns:il="clr-namespace:Microsoft.Expression.Interactivity.Layout;assembly=Microsoft.Expression.Interactions"
         xmlns:ib="clr-namespace:OpenUtau.UI.Behaviors"
-        Style="{StaticResource UBorderlessWindow}" Title="OpenUTAU">
+        Style="{StaticResource UBorderlessWindow}" Title="OpenUTAU" KeyDown="Window_KeyDown">
     <i:Interaction.Behaviors>
         <ib:BorderlessWindowBehavior/>
     </i:Interaction.Behaviors>
@@ -37,10 +37,10 @@
                 <MenuItem Header="Select _All" InputGestureText="Ctrl+A"/>
             </MenuItem>
             <MenuItem Header="_Window">
-                <MenuItem Header="Reset Layout"/>
+                <MenuItem Header="Midi Editor" Click="Menu_OpenMidiEditor"/>
             </MenuItem>
             <MenuItem Header="_Tools">
-                <MenuItem Header="Add Plugin..."/>
+                <MenuItem Header="Refresh Plugins"/>
             </MenuItem>
             <MenuItem Header="_Help">
                 <MenuItem Header="About OpenUTAU"/>
@@ -106,7 +106,7 @@
                     <ib:ScrollbarBehavior/>
                 </i:Interaction.Behaviors>
             </ScrollBar>
-            <local:NavigateDrag x:Name="navigateDrag" HorizontalAlignment="Right" VerticalAlignment="Top" Width="20" Height="20" Margin="0,0,0,0"/>
+            <local:NavigateDrag x:Name="navigateDrag" HorizontalAlignment="Right" VerticalAlignment="Top" Width="20" Height="20" Margin="0,0,0,0" NavDrag="navigateDrag_NavDrag"/>
             <local:ViewScaler x:Name="viewScaler" HorizontalAlignment="Right" VerticalAlignment="Top" Width="20" Height="20" Margin="0,20,0,0"
                               Value="{Binding TrackHeight, Source={StaticResource tracksVM}, Mode=TwoWay}"/>
             <Border x:Name="notesCanvasShadow" Grid.Row="0" Background="{x:Null}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,20,20,0" BorderThickness="0" ClipToBounds="True">
