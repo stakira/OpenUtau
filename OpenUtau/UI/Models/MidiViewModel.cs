@@ -33,7 +33,7 @@ namespace OpenUtau.UI.Models
 
         string _title = "New Part";
         double _trackHeight = UIConstants.NoteDefaultHeight;
-        double _quarterCount = UIConstants.DefaultQuarterCount;
+        double _quarterCount = UIConstants.MinQuarterCount;
         double _quarterWidth = UIConstants.MidiQuarterDefaultWidth;
         double _viewWidth;
         double _viewHeight;
@@ -43,11 +43,13 @@ namespace OpenUtau.UI.Models
         double _minTickWidth = UIConstants.MidiTickMinWidth;
         int _beatPerBar = 4;
         int _beatUnit = 4;
+        int _visualPosTick;
+        int _visualDurTick;
 
         public string Title { set { _title = value; } get { return _title; } }
         public double TotalHeight { get { return UIConstants.MaxNoteNum * _trackHeight - _viewHeight; } }
         public double TotalWidth { get { return _quarterCount * _quarterWidth - _viewWidth; } }
-        public double QuarterCount { set { _quarterCount = value; } get { return _quarterCount; } }
+        public double QuarterCount { set { _quarterCount = value; HorizontalPropertiesChanged(); } get { return _quarterCount; } }
         public double TrackHeight
         {
             set
@@ -68,12 +70,12 @@ namespace OpenUtau.UI.Models
             get { return _quarterWidth; }
         }
 
-        public double ViewWidth { set { _viewWidth = value; HorizontalPropertiesChanged(); } get { return _viewWidth; } }
-        public double ViewHeight { set { _viewHeight = value; VerticalPropertiesChanged(); } get { return _viewHeight; } }
-        public double OffsetX { set { _offsetX = Math.Max(0, value); HorizontalPropertiesChanged(); } get { return _offsetX; } }
-        public double OffsetY { set { _offsetY = Math.Max(0, value); VerticalPropertiesChanged(); } get { return _offsetY; } }
-        public double ViewportSizeX { get { if (TotalWidth <= 0) return 10000; else return ViewWidth * (TotalWidth + ViewWidth) / TotalWidth; } }
-        public double ViewportSizeY { get { if (TotalHeight <= 0) return 10000; else return ViewHeight * (TotalHeight + ViewHeight) / TotalHeight; } }
+        public double ViewWidth { set { _viewWidth = value; HorizontalPropertiesChanged(); QuarterWidth = QuarterWidth; OffsetX = OffsetX; } get { return _viewWidth; } }
+        public double ViewHeight { set { _viewHeight = value; VerticalPropertiesChanged(); TrackHeight = TrackHeight; OffsetY = OffsetY; } get { return _viewHeight; } }
+        public double OffsetX { set { _offsetX = Math.Min(TotalWidth, Math.Max(0, value)); HorizontalPropertiesChanged(); } get { return _offsetX; } }
+        public double OffsetY { set { _offsetY = Math.Min(TotalHeight, Math.Max(0, value)); VerticalPropertiesChanged(); } get { return _offsetY; } }
+        public double ViewportSizeX { get { if (TotalWidth < 1) return 10000; else return ViewWidth * (TotalWidth + ViewWidth) / TotalWidth; } }
+        public double ViewportSizeY { get { if (TotalHeight < 1) return 10000; else return ViewHeight * (TotalHeight + ViewHeight) / TotalHeight; } }
         public double SmallChangeX { get { return ViewportSizeX / 10; } }
         public double SmallChangeY { get { return ViewportSizeY / 10; } }
         public double QuarterOffset { set { _quarterOffset = value; HorizontalPropertiesChanged(); } get { return _quarterOffset; } }
@@ -89,6 +91,7 @@ namespace OpenUtau.UI.Models
             OnPropertyChanged("ViewportSizeX");
             OnPropertyChanged("SmallChangeX");
             OnPropertyChanged("QuarterOffset");
+            OnPropertyChanged("QuarterCount");
             OnPropertyChanged("MinTickWidth");
             OnPropertyChanged("BeatPerBar");
             OnPropertyChanged("BeatUnit");
@@ -113,12 +116,16 @@ namespace OpenUtau.UI.Models
 
         public void RedrawIfUpdated()
         {
+            if (Part.PosTick != _visualPosTick || Part.DurTick != _visualDurTick) PartUpdated();
             if (_updated)
             {
                 foreach (NoteControl noteControl in NoteControls)
                 {
-                    noteControl.Width = Math.Max(UIConstants.NoteMinDisplayWidth, QuarterWidth * noteControl.Note.DurTick / Project.Resolution - 1);
-                    noteControl.Height = TrackHeight - 2;
+                    if (NoteIsInView(noteControl.Note))
+                    {
+                        noteControl.Width = Math.Max(UIConstants.NoteMinDisplayWidth, QuarterWidth * noteControl.Note.DurTick / Project.Resolution - 1);
+                        noteControl.Height = TrackHeight - 2;
+                    }
                     Canvas.SetLeft(noteControl, QuarterWidth * noteControl.Note.PosTick / Project.Resolution - OffsetX + 1);
                     Canvas.SetTop(noteControl, NoteNumToCanvas(noteControl.Note.NoteNum) + 1);
                 }
@@ -140,7 +147,7 @@ namespace OpenUtau.UI.Models
         public void SelectAll() { SelectedNotes.Clear(); foreach (UNote note in Part.Notes) SelectedNotes.Add(note); UpdateSelectedVisual(); }
         public void DeselectAll() { SelectedNotes.Clear(); UpdateSelectedVisual(); }
 
-        public void SelectNote(UNote note) { SelectedNotes.Add(note); }
+        public void SelectNote(UNote note) { if (!SelectedNotes.Contains(note)) SelectedNotes.Add(note); }
         public void DeselectNote(UNote note) { SelectedNotes.Remove(note); }
 
         public void SelectTempNote(UNote note) { TempSelectedNotes.Add(note); }
@@ -166,6 +173,18 @@ namespace OpenUtau.UI.Models
             UpdateSelectedVisual();
         }
 
+        public void RemoveSelectedNotes()
+        {
+            foreach (UNote note in SelectedNotes)
+            {
+                NoteControl nc = GetNoteControl(note);
+                Part.Notes.Remove(nc.Note);
+                MidiCanvas.Children.Remove(nc);
+                NoteControls.Remove(nc);
+            }
+            SelectedNotes.Clear();
+        }
+
         # endregion
 
         # region Note operation
@@ -188,12 +207,19 @@ namespace OpenUtau.UI.Models
 
             foreach (UNote note in part.Notes) AddNoteControl(note);
 
-            Title = part.Name;
-            QuarterOffset = (double)part.PosTick / project.Resolution;
-            QuarterCount = (double)part.DurTick / project.Resolution;
-            OffsetX = OffsetX;
+            PartUpdated();
+        }
+
+        public void PartUpdated()
+        {
+            Title = Part.Name;
+            QuarterOffset = (double)Part.PosTick / Project.Resolution;
+            QuarterCount = (double)Part.DurTick / Project.Resolution;
             QuarterWidth = QuarterWidth;
+            OffsetX = OffsetX;
             MarkUpdate();
+            _visualPosTick = Part.PosTick;
+            _visualDurTick = Part.DurTick;
         }
 
         public NoteControl GetNoteControl(UNote note)
@@ -225,6 +251,7 @@ namespace OpenUtau.UI.Models
 
         public void RemoveNote(NoteControl nc)
         {
+            if (SelectedNotes.Contains(nc.Note)) SelectedNotes.Remove(nc.Note);
             Part.Notes.Remove(nc.Note);
             MidiCanvas.Children.Remove(nc);
             NoteControls.Remove(nc);
@@ -265,6 +292,12 @@ namespace OpenUtau.UI.Models
 
         public int CanvasToNoteNum(double Y) { return UIConstants.MaxNoteNum - 1 - (int)((Y + OffsetY) / TrackHeight); }
         public double NoteNumToCanvas(int noteNum) { return TrackHeight * (UIConstants.MaxNoteNum - 1 - noteNum) - OffsetY; }
+
+        public bool NoteIsInView(UNote note) // FIXME : improve performance
+        {
+            return (double)note.PosTick / Project.Resolution * QuarterWidth < OffsetX + ViewWidth &&
+                (double)note.EndTick / Project.Resolution * QuarterWidth > OffsetX;
+        }
 
         # endregion
     }

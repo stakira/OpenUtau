@@ -109,6 +109,7 @@ namespace OpenUtau.UI
         bool _resizeThumbnail = false;
         double _partMoveStartMouseQuater;
         int _partMoveStartTick;
+        int _resizeMinDurTick;
         Point _mouseDownPos;
         PartThumbnail _hitThumbnail;
         List<PartThumbnail> selectedParts = new List<PartThumbnail>();
@@ -161,7 +162,7 @@ namespace OpenUtau.UI
                 _mouseDownPos = mousePos;
                 if (e.ClickCount == 2) // load part into midi window
                 {
-                    if (midiWindow == null) midiWindow = new MidiWindow();
+                    if (midiWindow == null) midiWindow = new MidiWindow(this);
                     midiWindow.Show();
                     midiWindow.LoadPart(thumb.Part, trackVM.Project);
                     midiWindow.Focus();
@@ -169,6 +170,7 @@ namespace OpenUtau.UI
                 else if (mousePos.X > thumb.X + thumb.DisplayWidth - UIConstants.ResizeMargin) // resize
                 {
                     _resizeThumbnail = true;
+                    _resizeMinDurTick = trackVM.GetPartMinDurTick(_hitThumbnail.Part);
                     Mouse.OverrideCursor = Cursors.SizeWE;
                 }
                 else // move
@@ -193,9 +195,9 @@ namespace OpenUtau.UI
                 Canvas.SetZIndex(selectionBox, -100);
                 selectionBox.Visibility = System.Windows.Visibility.Hidden;
             }
+            trackVM.UpdateViewSize();
             ((UIElement)sender).ReleaseMouseCapture();
             Mouse.OverrideCursor = null;
-            // TODO : Reload midiwindow if part moved
         }
 
         private void trackCanvas_MouseMove(object sender, MouseEventArgs e)
@@ -240,8 +242,11 @@ namespace OpenUtau.UI
                 if (selectedParts.Count == 0)
                 {
                     int newDurTick = (int)(trackVM.Project.Resolution * trackVM.CanvasRoundToSnappedQuarter(mousePos.X)) - _hitThumbnail.Part.PosTick;
-                    if (_hitThumbnail.Part.ValidateDurTick(newDurTick)) _hitThumbnail.Part.DurTick = newDurTick;
-                    trackVM.MarkUpdate();
+                    if (newDurTick > _resizeMinDurTick)
+                    {
+                        _hitThumbnail.Part.DurTick = newDurTick;
+                        trackVM.MarkUpdate();
+                    }
                 }
                 else
                 {
@@ -273,7 +278,7 @@ namespace OpenUtau.UI
 
         private void trackCanvas_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
-
+            trackVM.UpdateViewSize();
             ((UIElement)sender).ReleaseMouseCapture();
         }
 
@@ -286,7 +291,7 @@ namespace OpenUtau.UI
 
         private void Menu_OpenMidiEditor(object sender, RoutedEventArgs e)
         {
-            if (midiWindow == null) midiWindow = new MidiWindow();
+            if (midiWindow == null) midiWindow = new MidiWindow(this);
             midiWindow.Show();
             midiWindow.Focus();
         }
@@ -303,11 +308,15 @@ namespace OpenUtau.UI
 
         private void CmdOpenFile()
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
+            OpenFileDialog openFileDialog = new OpenFileDialog() { Filter = "Project Files|*.ustx; *.vsqx; *.ust|All Files|*.*" };
             if (openFileDialog.ShowDialog() == true)
             {
-                uproject = OpenUtau.Core.Formats.VSQx.Load(openFileDialog.FileName);
-                if (uproject != null) trackVM.LoadProject(uproject);
+                uproject = OpenUtau.Core.Formats.Formats.Load(openFileDialog.FileName);
+                if (uproject != null)
+                {
+                    trackVM.LoadProject(uproject);
+                    Title = "OpenUTAU - [" + uproject.Name + "]";
+                }
             }
         }
 
@@ -320,9 +329,39 @@ namespace OpenUtau.UI
 
         private void navigateDrag_NavDrag(object sender, EventArgs e)
         {
-            trackVM.OffsetX += ((NavDragEventArgs)e).X * trackVM.SmallChangeX * 5;
-            trackVM.OffsetY += ((NavDragEventArgs)e).Y * trackVM.SmallChangeY * 5;
+            trackVM.OffsetX += ((NavDragEventArgs)e).X * trackVM.SmallChangeX;
+            trackVM.OffsetY += ((NavDragEventArgs)e).Y * trackVM.SmallChangeY * 0.2;
             trackVM.MarkUpdate();
+        }
+
+        public void UpdatePartThumbnail(UPart part)
+        {
+            trackVM.UpdatePartThumbnail(part);
+        }
+
+        private void trackCanvas_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop)) e.Effects = DragDropEffects.Copy;
+        }
+
+        private void trackCanvas_Drop(object sender, DragEventArgs e)
+        {
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+            if (files.Length == 1)
+            {
+                uproject = OpenUtau.Core.Formats.Formats.Load(files[0]);
+            }
+            else if (files.Length > 1)
+            {
+                uproject = OpenUtau.Core.Formats.Ust.Load(files);
+            }
+
+            if (uproject != null)
+            {
+                trackVM.LoadProject(uproject);
+                Title = trackVM.Title;
+            }
         }
     }
 }

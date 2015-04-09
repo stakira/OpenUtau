@@ -54,7 +54,7 @@ namespace OpenUtau.UI.Controls
 
         public string Lyric
         {
-            set { _lyric = value; lyricText.Text = value; AbbreLyricText.Text = value[0] + ".."; }
+            set { _lyric = value; lyricText.Text = value; if (value != null) AbbreLyricText.Text = value[0] + ".."; }
             get { return _lyric; }
         }
         

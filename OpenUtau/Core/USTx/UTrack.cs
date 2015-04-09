@@ -13,8 +13,6 @@ namespace OpenUtau.Core.USTx
 
         public int TrackNo;
 
-        public UTrack()
-        {
-        }
+        public UTrack() { }
     }
 }

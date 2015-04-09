@@ -54,8 +54,7 @@
             <Canvas x:Name="notesCanvas" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="48,40,20,0" Background="Transparent"
                     ClipToBounds="True" SnapsToDevicePixels="True"
                     MouseLeftButtonDown="notesCanvas_MouseLeftButtonDown" MouseRightButtonDown="notesCanvas_MouseRightButtonDown"
-                    MouseLeftButtonUp="notesCanvas_MouseLeftButtonUp" MouseMove="notesCanvas_MouseMove" SizeChanged="notesCanvas_SizeChanged"
-                    MouseWheel="notesCanvas_MouseWheel" MouseRightButtonUp="notesCanvas_MouseRightButtonUp"/>
+                    MouseLeftButtonUp="notesCanvas_MouseLeftButtonUp" MouseMove="notesCanvas_MouseMove" MouseWheel="notesCanvas_MouseWheel" MouseRightButtonUp="notesCanvas_MouseRightButtonUp"/>
             <ScrollBar x:Name="horizontalScroll" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="20" Margin="48,0,20,0" Orientation="Horizontal" Minimum="0"
                        Maximum="{Binding TotalWidth, Mode=OneWay, Source={StaticResource midiVM}}"
                        Value="{Binding OffsetX, Mode=TwoWay, Source={StaticResource midiVM}, UpdateSourceTrigger=PropertyChanged}"

@@ -57,7 +57,11 @@ namespace OpenUtau.UI.Controls
         public int TrackNo { get { return Part.TrackNo; } }
         public int PosTick { get { return Part.PosTick; } }
         public double DisplayWidth { get { return Part.DurTick * ScaleX; } }
-        public int VisualDurTick;
+
+        int _visualDurTick;
+        double _height;
+
+        public bool Modified { get { return _visualDurTick != Part.DurTick; } }
 
         bool _selected = false;
         bool _error = false;
@@ -97,12 +101,14 @@ namespace OpenUtau.UI.Controls
                     new LineGeometry(new Point(unote.PosTick, UIConstants.MaxNoteNum - unote.NoteNum),
                         new Point(unote.PosTick + unote.DurTick, UIConstants.MaxNoteNum - unote.NoteNum)));
             }
-            VisualDurTick = Part.DurTick;
+            _visualDurTick = Part.DurTick;
+            FitHeight(_height);
         }
 
         public void FitHeight(double height)
         {
             sTrans.ScaleY = height / Source.Height;
+            _height = height;
         }
 
         public void FitWidth(double width)

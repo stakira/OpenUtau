@@ -11,10 +11,8 @@ namespace OpenUtau.Core.USTx
         public double BPM = 120;
         public int BeatPerBar = 4;
         public int BeatUnit = 4;
-        public int Resolution = 960;
-        public int DurTick = 960 * 32;
+        public int Resolution = 480;
 
-        public string FilePath;
         public string Name = "New Project";
         public string Comment = "";
         public string OutputDir = "Vocal";
@@ -23,8 +21,8 @@ namespace OpenUtau.Core.USTx
         public List<UTrack> Tracks = new List<UTrack>();
         public List<UPart> Parts = new List<UPart>();
 
-        public UProject()
-        {
-        }
+        public string FilePath;
+
+        public UProject() { }
     }
 }

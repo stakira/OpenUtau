@@ -39,8 +39,8 @@ namespace OpenUtau.UI.Controls
         double dragLastX;
         double dragLastY;
 
-        const double navigateSpeedX = 0.0005;
-        const double navigateSpeedY = 0.0002;
+        const double navigateSpeedX = 0.05;
+        const double navigateSpeedY = 0.05;
 
         public NavigateDrag()
         {

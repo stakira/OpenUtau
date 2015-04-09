@@ -8,24 +8,14 @@ namespace OpenUtau.Core.USTx
 {
     public class UNote : IComparable
     {
-        public const double minLength = 4.0 / 64;  // Actual minimal possible note length is 1/64 note
-
         public int PosTick;
         public int DurTick;
         public int NoteNum;
         public int Velocity;
         public string Lyric;
         public string Phoneme;
+        public int Channel = 0;
 
-        public OpenUtau.UI.Controls.NoteControl noteControl;
-
-        int _channel = 0;
-        bool _error = false;
-        bool _selected = false;
-
-        public int Channel { set { _channel = value; } get { return _channel; } }
-        public bool Error { set { _error = value; } get { return _error; } }
-        public bool Selected { set { _selected = value; } get { return _selected; } }
         public int EndTick { get { return PosTick + DurTick; } }
 
         public UNote() { }

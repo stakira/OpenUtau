@@ -38,8 +38,10 @@ namespace OpenUtau.UI
         public const double TrackQuarterDefaultWidth = 16;
         public const double TrackTickMinWidth = 16;
 
-        public const int DefaultTrackCount = 8;
-        public const int DefaultQuarterCount = 256;
+        public const int MinTrackCount = 8;
+        public const int MinQuarterCount = 256;
+        public const int SpareTrackCount = 4;
+        public const int SpareQuarterCount = 16;
 
         public const double TickMinDisplayWidth = 6;
         public const double NoteMinDisplayWidth = 2;

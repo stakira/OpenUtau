@@ -36,8 +36,8 @@ namespace OpenUtau.UI.Models
         public void MarkUpdate() { _updated = true; }
 
         double _trackHeight = UIConstants.TrackDefaultHeight;
-        double _trackCount = UIConstants.DefaultTrackCount;
-        double _quarterCount = UIConstants.DefaultQuarterCount;
+        double _trackCount = UIConstants.MinTrackCount;
+        double _quarterCount = UIConstants.MinQuarterCount;
         double _quarterWidth = UIConstants.TrackQuarterDefaultWidth;
         double _viewWidth = 0;
         double _viewHeight = 0;
@@ -48,9 +48,11 @@ namespace OpenUtau.UI.Models
         int _beatPerBar = 4;
         int _beatUnit = 4;
 
+        public string Title { get { if (Project != null) return "OpenUtau - [" + Project.Name + "]"; else return "OpenUtau"; } }
         public double TotalHeight { get { return _trackCount * _trackHeight - _viewHeight; } }
         public double TotalWidth { get { return _quarterCount * _quarterWidth - _viewWidth; } }
-
+        public double TrackCount { set { if (_trackCount != value) { _trackCount = value; VerticalPropertiesChanged(); } } get { return _trackCount; } }
+        public double QuarterCount { set { if (_quarterCount != value) { _quarterCount = value; HorizontalPropertiesChanged(); } } get { return _quarterCount; } }
         public double TrackHeight
         {
             set
@@ -71,8 +73,8 @@ namespace OpenUtau.UI.Models
             get { return _quarterWidth; }
         }
 
-        public double ViewWidth { set { _viewWidth = value; HorizontalPropertiesChanged(); } get { return _viewWidth; } }
-        public double ViewHeight { set { _viewHeight = value; VerticalPropertiesChanged(); } get { return _viewHeight; } }
+        public double ViewWidth { set { if (_viewWidth != value) { _viewWidth = value; HorizontalPropertiesChanged(); } } get { return _viewWidth; } }
+        public double ViewHeight { set { if (_viewHeight != value) { _viewHeight = value; VerticalPropertiesChanged(); } } get { return _viewHeight; } }
         public double OffsetX { set { _offsetX = Math.Max(0, value); HorizontalPropertiesChanged(); } get { return _offsetX; } }
         public double OffsetY { set { _offsetY = Math.Max(0, value); VerticalPropertiesChanged(); } get { return _offsetY; } }
         public double ViewportSizeX { get { if (TotalWidth <= 0) return 10000; else return ViewWidth * (TotalWidth + ViewWidth) / TotalWidth; } }
@@ -148,6 +150,7 @@ namespace OpenUtau.UI.Models
                 partThumb.Box = thumbBox;
                 Thumbnails.Add(partThumb);
             }
+            UpdateViewSize();
             MarkUpdate();
         }
 
@@ -157,7 +160,7 @@ namespace OpenUtau.UI.Models
             {
                 foreach (PartThumbnail thumb in Thumbnails)
                 {
-                    if (thumb.VisualDurTick != thumb.Part.DurTick) thumb.Redraw();
+                    if (thumb.Modified) thumb.Redraw();
                     thumb.X = -OffsetX + thumb.PosTick * QuarterWidth / Project.Resolution;
                     thumb.Y = -OffsetY + thumb.TrackNo * TrackHeight + 1;
                     thumb.FitHeight(TrackHeight - 2);
@@ -170,6 +173,31 @@ namespace OpenUtau.UI.Models
                 }
             }
             _updated = false;
+        }
+
+        public void UpdatePartThumbnail(UPart part)
+        {
+            foreach (PartThumbnail thumb in Thumbnails) if (thumb.Part == part) thumb.Redraw();
+        }
+
+        public void UpdateViewSize()
+        {
+            double quarterCount = UIConstants.MinQuarterCount;
+            if (Project != null)
+                foreach (UPart part in Project.Parts)
+                    quarterCount = Math.Max(quarterCount, (part.DurTick + part.PosTick) / Project.Resolution + UIConstants.SpareQuarterCount);
+            QuarterCount = quarterCount;
+
+            int trackCount = UIConstants.MinTrackCount;
+            if (Project != null) foreach (UPart part in Project.Parts) trackCount = Math.Max(trackCount, part.TrackNo + 1 + UIConstants.SpareTrackCount);
+            TrackCount = trackCount;
+        }
+
+        public int GetPartMinDurTick(UPart part)
+        {
+            int durTick = 0;
+            foreach (UNote note in part.Notes) durTick = Math.Max(durTick, note.PosTick + note.DurTick);
+            return durTick;
         }
 
         # region Calculation

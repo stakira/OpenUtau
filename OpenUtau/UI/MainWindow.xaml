@@ -19,8 +19,10 @@
             <MenuItem Header="_File">
                 <MenuItem Header="_New..." InputGestureText="Ctrl+N"/>
                 <MenuItem Header="_Open..." InputGestureText="Ctrl+O" Click="MenuOpen_Click"/>
+                <MenuItem Header="O_pen As..."/>
                 <MenuItem Header="_Save" InputGestureText="Ctrl+S"/>
                 <MenuItem Header="Save _As..."/>
+                <Separator/>
                 <MenuItem Header="Recent _Files">
                     <MenuItem Header="1.vsqx"/>
                     <MenuItem Header="2.vsqx"/>
@@ -79,13 +81,13 @@
                                       BeatUnit="{Binding BeatUnit, Source={StaticResource tracksVM}}"/>
             </Grid>
             <Canvas x:Name="trackCanvas" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent" Margin="0,40,20,0"
-                    ClipToBounds="True" SnapsToDevicePixels="True"
+                    ClipToBounds="True" SnapsToDevicePixels="True" AllowDrop="True"
                     local:SizeObserver.Observe="True"
                     local:SizeObserver.ObservedHeight="{Binding ViewHeight, Source={StaticResource tracksVM}, Mode=OneWayToSource}"
                     local:SizeObserver.ObservedWidth="{Binding ViewWidth, Source={StaticResource tracksVM}, Mode=OneWayToSource}"
                     MouseLeftButtonDown="trackCanvas_MouseLeftButtonDown" MouseLeftButtonUp="trackCanvas_MouseLeftButtonUp"
                     MouseRightButtonDown="trackCanvas_MouseRightButtonDown" MouseRightButtonUp="trackCanvas_MouseRightButtonUp"
-                    MouseMove="trackCanvas_MouseMove"/>
+                    MouseMove="trackCanvas_MouseMove" DragEnter="trackCanvas_DragEnter" Drop="trackCanvas_Drop"/>
             <ScrollBar x:Name="horizontalScroll" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="20" Margin="0,0,20,0" Orientation="Horizontal" Minimum="0"
                        Maximum="{Binding TotalWidth, Mode=OneWay, Source={StaticResource tracksVM}}"
                        Value="{Binding OffsetX, Mode=TwoWay, Source={StaticResource tracksVM}, UpdateSourceTrigger=PropertyChanged}"
