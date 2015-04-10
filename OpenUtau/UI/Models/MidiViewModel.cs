@@ -191,16 +191,22 @@ namespace OpenUtau.UI.Models
 
         public void UnloadPart()
         {
+            if (Part == null || Project == null) return;
             foreach (NoteControl noteControl in NoteControls)
             {
                 MidiCanvas.Children.Remove(noteControl);
             }
             SelectedNotes.Clear();
             NoteControls.Clear();
+
+            Title = "Midi Editor";
+            Part = null;
+            Project = null;
         }
 
         public void LoadPart(UPart part, UProject project)
         {
+            if (project == Project && part == Part) return;
             UnloadPart();
             Part = part;
             Project = project;

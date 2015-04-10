@@ -116,6 +116,7 @@ namespace OpenUtau.UI
 
         private void trackCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            if (_viewLocked) return;
             Point mousePos = e.GetPosition((UIElement)sender);
 
             var hit = VisualTreeHelper.HitTest(trackCanvas, mousePos).VisualHit;
@@ -162,10 +163,12 @@ namespace OpenUtau.UI
                 _mouseDownPos = mousePos;
                 if (e.ClickCount == 2) // load part into midi window
                 {
+                    LockView();
                     if (midiWindow == null) midiWindow = new MidiWindow(this);
-                    midiWindow.Show();
                     midiWindow.LoadPart(thumb.Part, trackVM.Project);
+                    midiWindow.Show();
                     midiWindow.Focus();
+                    UnlockView();
                 }
                 else if (mousePos.X > thumb.X + thumb.DisplayWidth - UIConstants.ResizeMargin) // resize
                 {
@@ -272,7 +275,7 @@ namespace OpenUtau.UI
 
         private void trackCanvas_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-
+            if (_viewLocked) return;
             ((UIElement)sender).CaptureMouse();
         }
 
@@ -286,7 +289,7 @@ namespace OpenUtau.UI
 
         # region menu commands
 
-        private void MenuOpen_Click(object sender, RoutedEventArgs e) { CmdOpenFile(); }
+        private void MenuOpen_Click(object sender, RoutedEventArgs e) { CmdOpenFileDialog(); }
         private void MenuExit_Click(object sender, RoutedEventArgs e) { CmdExit(); }
 
         private void Menu_OpenMidiEditor(object sender, RoutedEventArgs e)
@@ -300,24 +303,45 @@ namespace OpenUtau.UI
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
+            if (_viewLocked) return;
             if (Keyboard.Modifiers == ModifierKeys.Alt && e.Key == Key.F4) CmdExit();
-            else if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.O) CmdOpenFile();
+            else if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.O) CmdOpenFileDialog();
         }
 
         # region application commmands
 
-        private void CmdOpenFile()
+        private void CmdOpenFileDialog()
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog() { Filter = "Project Files|*.ustx; *.vsqx; *.ust|All Files|*.*" };
-            if (openFileDialog.ShowDialog() == true)
+            OpenFileDialog openFileDialog = new OpenFileDialog()
             {
-                uproject = OpenUtau.Core.Formats.Formats.Load(openFileDialog.FileName);
-                if (uproject != null)
-                {
-                    trackVM.LoadProject(uproject);
-                    Title = "OpenUTAU - [" + uproject.Name + "]";
-                }
+                Filter = "Project Files|*.ustx; *.vsqx; *.ust|All Files|*.*",
+                Multiselect = true,
+                CheckFileExists = true
+            };
+            if (openFileDialog.ShowDialog() == true) CmdOpenFile(openFileDialog.FileNames);
+        }
+
+        private void CmdOpenFile(string[] files)
+        {
+            if (midiWindow != null) midiWindow.UnloadPart();
+            LockView();
+
+            if (files.Length == 1)
+            {
+                uproject = OpenUtau.Core.Formats.Formats.Load(files[0]);
             }
+            else if (files.Length > 1)
+            {
+                uproject = OpenUtau.Core.Formats.Ust.Load(files);
+            }
+
+            if (uproject != null)
+            {
+                trackVM.LoadProject(uproject);
+                Title = trackVM.Title;
+            }
+
+            UnlockView();
         }
 
         private void CmdExit()
@@ -347,21 +371,11 @@ namespace OpenUtau.UI
         private void trackCanvas_Drop(object sender, DragEventArgs e)
         {
             string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-
-            if (files.Length == 1)
-            {
-                uproject = OpenUtau.Core.Formats.Formats.Load(files[0]);
-            }
-            else if (files.Length > 1)
-            {
-                uproject = OpenUtau.Core.Formats.Ust.Load(files);
-            }
-
-            if (uproject != null)
-            {
-                trackVM.LoadProject(uproject);
-                Title = trackVM.Title;
-            }
+            CmdOpenFile(files);
         }
+
+        bool _viewLocked = false;
+        private void LockView() { _viewLocked = true; Mouse.OverrideCursor = Cursors.AppStarting; }
+        private void UnlockView() { _viewLocked = false; Mouse.OverrideCursor = null; }
     }
 }

@@ -57,8 +57,17 @@ namespace OpenUtau.UI
             midiVM.MarkUpdate();
         }
 
+        private TimeSpan lastFrame = TimeSpan.Zero;
+
         void RenderLoop(object sender, EventArgs e)
         {
+            if (midiVM.Part == null || midiVM.Project == null) return;
+
+            TimeSpan nextFrame = ((RenderingEventArgs)e).RenderingTime;
+            double deltaTime = (nextFrame - lastFrame).TotalMilliseconds;
+            lastFrame = nextFrame;
+
+            DragScroll(deltaTime);
             keyboardBackground.RenderIfUpdated();
             tickBackground.RenderIfUpdated();
             timelineBackground.RenderIfUpdated();
@@ -67,10 +76,58 @@ namespace OpenUtau.UI
             midiVM.RedrawIfUpdated();
         }
 
+        public void DragScroll(double deltaTime)
+        {
+            if ((Mouse.Captured == this.notesCanvas || Mouse.Captured == this.timelineCanvas)
+                && Mouse.LeftButton == MouseButtonState.Pressed)
+            {
+
+                const double scrollSpeed = 0.015;
+                Point mousePos = Mouse.GetPosition(notesCanvas);
+                bool needUdpate = false;
+                double delta = scrollSpeed * deltaTime;
+                if (mousePos.X < 0)
+                {
+                    this.horizontalScroll.Value = this.horizontalScroll.Value - this.horizontalScroll.SmallChange * delta;
+                    needUdpate = true;
+                }
+                else if (mousePos.X > notesCanvas.ActualWidth)
+                {
+                    this.horizontalScroll.Value = this.horizontalScroll.Value + this.horizontalScroll.SmallChange * delta;
+                    needUdpate = true;
+                }
+
+                if (mousePos.Y < 0 && Mouse.Captured == this.notesCanvas)
+                {
+                    this.verticalScroll.Value = this.verticalScroll.Value - this.verticalScroll.SmallChange * delta;
+                    needUdpate = true;
+                }
+                else if (mousePos.Y > notesCanvas.ActualHeight && Mouse.Captured == this.notesCanvas)
+                {
+                    this.verticalScroll.Value = this.verticalScroll.Value + this.verticalScroll.SmallChange * delta;
+                    needUdpate = true;
+                }
+
+                if (needUdpate)
+                {
+                    notesCanvas_MouseMove_Helper(mousePos);
+                    if (Mouse.Captured == this.timelineCanvas) timelineCanvas_MouseMove_Helper(mousePos);
+                }
+            }
+        }
+
+        public void UnloadPart()
+        {
+            _viewLocked = true;
+            midiVM.UnloadPart();
+            Title = midiVM.Title;
+        }
+
         public void LoadPart(UPart part, UProject project)
         {
             midiVM.LoadPart(part, project);
             Title = midiVM.Title;
+            _viewLocked = false;
         }
 
         # region Note Canvas
@@ -101,6 +158,7 @@ namespace OpenUtau.UI
 
         private void notesCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            if (_viewLocked) return;
             FocusManager.SetFocusedElement(this, null);
             Point mousePos = e.GetPosition((Canvas)sender);
 
@@ -305,6 +363,7 @@ namespace OpenUtau.UI
 
         private void notesCanvas_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
+            if (_viewLocked) return;
             FocusManager.SetFocusedElement(this, null);
             Point mousePos = e.GetPosition((Canvas)sender);
             NoteControl hitNoteControl = getNoteVisualHit(VisualTreeHelper.HitTest(notesCanvas, mousePos));
@@ -373,9 +432,10 @@ namespace OpenUtau.UI
 
         private void timelineCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            if (_viewLocked) return;
             //ncModel.playPosMarkerOffset = ncModel.snapNoteOffset(e.GetPosition((UIElement)sender).X);
             //ncModel.updatePlayPosMarker();
-            //((Canvas)sender).CaptureMouse();
+            ((Canvas)sender).CaptureMouse();
         }
 
         private void timelineCanvas_MouseMove(object sender, MouseEventArgs e)
@@ -426,6 +486,7 @@ namespace OpenUtau.UI
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
+            if (_viewLocked) return;
             if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.A)
             {
                 midiVM.SelectAll();
@@ -438,55 +499,6 @@ namespace OpenUtau.UI
             }
         }
 
-        private TimeSpan lastFrame = TimeSpan.Zero;
-
-        private void Window_PerFrameCallback(object sender, EventArgs e)
-        {
-            TimeSpan nextFrame = ((RenderingEventArgs)e).RenderingTime;
-            if (lastFrame == nextFrame) return; // Skip redundant call
-            double deltaTime = (nextFrame - lastFrame).TotalMilliseconds;
-
-            if (Mouse.Captured == this.notesCanvas || Mouse.Captured == this.timelineCanvas
-                && Mouse.LeftButton == MouseButtonState.Pressed)
-            {
-                const double scrollSpeed = 2.5;
-                Point mousePos = Mouse.GetPosition(notesCanvas);
-                bool needUdpate = false;
-                if (mousePos.X < 0)
-                {
-                    this.horizontalScroll.Value = this.horizontalScroll.Value - 0.01 * horizontalScroll.SmallChange * scrollSpeed * deltaTime;
-                    needUdpate = true;
-                }
-                else if (mousePos.X > notesCanvas.ActualWidth)
-                {
-                    this.horizontalScroll.Value = this.horizontalScroll.Value + 0.01 * horizontalScroll.SmallChange * scrollSpeed * deltaTime;
-                    needUdpate = true;
-                }
-
-                if (mousePos.Y < 0 && Mouse.Captured == this.notesCanvas)
-                {
-                    //this.notesVerticalScroll.Value = this.notesVerticalScroll.Value - 0.01 * notesVerticalScroll.SmallChange * scrollSpeed * deltaTime;
-                    needUdpate = true;
-                }
-                else if (mousePos.Y > notesCanvas.ActualHeight && Mouse.Captured == this.notesCanvas)
-                {
-                    //this.notesVerticalScroll.Value = this.notesVerticalScroll.Value + 0.01 * notesVerticalScroll.SmallChange * scrollSpeed * deltaTime;
-                    needUdpate = true;
-                }
-
-                if (needUdpate)
-                {
-                    //ncModel.updateGraphics();
-                    notesCanvas_MouseMove_Helper(mousePos);
-                    if (Mouse.Captured == this.timelineCanvas) timelineCanvas_MouseMove_Helper(mousePos);
-                }
-            }
-
-            //ncModel.trackPart.CheckOverlap();
-
-            lastFrame = nextFrame;
-        }
-
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             e.Cancel = true;
@@ -497,5 +509,9 @@ namespace OpenUtau.UI
         {
             midiVM.HorizontalPropertiesChanged();
         }
+
+        bool _viewLocked = false;
+        private void LockView() { _viewLocked = true; Mouse.OverrideCursor = Cursors.AppStarting; }
+        private void UnlockView() { _viewLocked = false; Mouse.OverrideCursor = null; }
     }
 }

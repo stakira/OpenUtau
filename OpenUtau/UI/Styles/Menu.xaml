@@ -16,6 +16,40 @@
         </Setter>
     </Style>
 
+    <!-- Separator -->
+    <Style x:Key="{x:Static MenuItem.SeparatorStyleKey}" TargetType="{x:Type Separator}">
+        <Setter Property="OverridesDefaultStyle" Value="true" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Separator">
+                    <Border x:Name="Border" SnapsToDevicePixels="True" Background="White">
+                        <Grid x:Name="Grid">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" SharedSizeGroup="MenuItemIconColumnGroup"/>
+                                <ColumnDefinition Width="*" SharedSizeGroup="MenuTextColumnGroup"/>
+                                <ColumnDefinition Width="40" SharedSizeGroup="MenuSpaceColumnGroup"/>
+                                <ColumnDefinition Width="Auto" SharedSizeGroup="MenuItemIGTColumnGroup"/>
+                                <ColumnDefinition Width="13" SharedSizeGroup="MenuMarkColumnGroup"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="1" Margin="0,2,0,2">
+                                <Rectangle Fill="{StaticResource ScrollBarBrushNormal}" Height="1"/>
+                            </Border>
+                            <Border Grid.Column="2" Margin="0,2,0,2">
+                                <Rectangle Fill="{StaticResource ScrollBarBrushNormal}" Height="1"/>
+                            </Border>
+                            <Border Grid.Column="3" Margin="0,2,0,2">
+                                <Rectangle Fill="{StaticResource ScrollBarBrushNormal}" Height="1"/>
+                            </Border>
+                            <Border Grid.Column="4" Margin="0,2,0,2">
+                                <Rectangle Fill="{StaticResource ScrollBarBrushNormal}" Height="1"/>
+                            </Border>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!-- TopLevelHeader -->
     <ControlTemplate x:Key="{x:Static MenuItem.TopLevelHeaderTemplateKey}" TargetType="MenuItem">
         <Border x:Name="Border" SnapsToDevicePixels="True" Background="White">

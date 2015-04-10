@@ -13,8 +13,6 @@ namespace OpenUtau.Core.USTx
 
         public List<UNote> Notes = new List<UNote>();
 
-        int _durTick;
-
         public int PosTick;
         public int DurTick;
         public int TrackNo;
