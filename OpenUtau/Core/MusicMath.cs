@@ -47,5 +47,10 @@ namespace OpenUtau.Core
                 return zoomRatios[i];
             }
         }
+
+        public static double MinutesToTick(double minutes, OpenUtau.Core.USTx.UProject project)
+        {
+            return minutes * project.BPM / project.BeatUnit * 4 * project.Resolution;
+        }
     }
 }

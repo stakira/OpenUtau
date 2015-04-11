@@ -17,7 +17,7 @@ namespace OpenUtau.Core.Formats
         const string vsq3Match = @"http://www.yamaha.co.jp/vocaloid/schema/vsq3/";
         const string vsq4Match = @"http://www.yamaha.co.jp/vocaloid/schema/vsq4/";
 
-        static public ProjectFormats DetectFormat(string file)
+        static public ProjectFormats DetectProjectFormat(string file)
         {
             string contents;
             try
@@ -36,9 +36,9 @@ namespace OpenUtau.Core.Formats
             else return ProjectFormats.Unknown;
         }
 
-        static public UProject Load(string file)
+        static public UProject LoadProject(string file)
         {
-            ProjectFormats format = DetectFormat(file);
+            ProjectFormats format = DetectProjectFormat(file);
 
             if (format == ProjectFormats.Vsq3 || format == ProjectFormats.Vsq4) { return VSQx.Load(file); }
             else if (format == ProjectFormats.Ust) { return Ust.Load(file); }

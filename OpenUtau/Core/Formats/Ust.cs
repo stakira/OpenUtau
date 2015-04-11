@@ -23,7 +23,7 @@ namespace OpenUtau.Core.Formats
             bool ustTracks = true;
             foreach (string file in files)
             {
-                if (OpenUtau.Core.Formats.Formats.DetectFormat(file) != Core.Formats.ProjectFormats.Ust) { ustTracks = false; break; }
+                if (OpenUtau.Core.Formats.Formats.DetectProjectFormat(file) != Core.Formats.ProjectFormats.Ust) { ustTracks = false; break; }
             }
 
             if (!ustTracks)

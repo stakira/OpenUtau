@@ -37,6 +37,10 @@ namespace OpenUtau.UI
         {
             InitializeComponent();
 
+            this.Width = Properties.Settings.Default.MainWidth;
+            this.Height = Properties.Settings.Default.MainHeight;
+            this.WindowState = Properties.Settings.Default.MainMaximized ? WindowState.Maximized : WindowState.Normal;
+
             ThemeManager.LoadTheme(); // TODO : move to program entry point
 
             this.CloseButtonClicked += (o, e) => { CmdExit(); };
@@ -48,6 +52,9 @@ namespace OpenUtau.UI
 
             trackVM = (TracksViewModel)this.Resources["tracksVM"];
             trackVM.TrackCanvas = this.trackCanvas;
+
+            uproject = new UProject();
+            trackVM.Project = uproject;
         }
 
         void RenderLoop(object sender, EventArgs e)
@@ -116,7 +123,7 @@ namespace OpenUtau.UI
 
         private void trackCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (_viewLocked) return;
+            if (_uiLocked) return;
             Point mousePos = e.GetPosition((UIElement)sender);
 
             var hit = VisualTreeHelper.HitTest(trackCanvas, mousePos).VisualHit;
@@ -163,12 +170,12 @@ namespace OpenUtau.UI
                 _mouseDownPos = mousePos;
                 if (e.ClickCount == 2) // load part into midi window
                 {
-                    LockView();
+                    LockUI();
                     if (midiWindow == null) midiWindow = new MidiWindow(this);
                     midiWindow.LoadPart(thumb.Part, trackVM.Project);
                     midiWindow.Show();
                     midiWindow.Focus();
-                    UnlockView();
+                    UnlockUI();
                 }
                 else if (mousePos.X > thumb.X + thumb.DisplayWidth - UIConstants.ResizeMargin) // resize
                 {
@@ -275,7 +282,7 @@ namespace OpenUtau.UI
 
         private void trackCanvas_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (_viewLocked) return;
+            if (_uiLocked) return;
             ((UIElement)sender).CaptureMouse();
         }
 
@@ -292,6 +299,19 @@ namespace OpenUtau.UI
         private void MenuOpen_Click(object sender, RoutedEventArgs e) { CmdOpenFileDialog(); }
         private void MenuExit_Click(object sender, RoutedEventArgs e) { CmdExit(); }
 
+        private void MenuImportAidio_Click(object sender, RoutedEventArgs e)
+        {
+            LockUI();
+            OpenFileDialog openFileDialog = new OpenFileDialog()
+            {
+                Filter = "Audio Files|*.*",
+                Multiselect = false,
+                CheckFileExists = true
+            };
+            if (openFileDialog.ShowDialog() == true) CmdImportAudio(openFileDialog.FileName);
+            UnlockUI();
+        }
+
         private void Menu_OpenMidiEditor(object sender, RoutedEventArgs e)
         {
             if (midiWindow == null) midiWindow = new MidiWindow(this);
@@ -303,7 +323,7 @@ namespace OpenUtau.UI
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            if (_viewLocked) return;
+            if (_uiLocked) return;
             if (Keyboard.Modifiers == ModifierKeys.Alt && e.Key == Key.F4) CmdExit();
             else if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.O) CmdOpenFileDialog();
         }
@@ -324,11 +344,11 @@ namespace OpenUtau.UI
         private void CmdOpenFile(string[] files)
         {
             if (midiWindow != null) midiWindow.UnloadPart();
-            LockView();
+            LockUI();
 
             if (files.Length == 1)
             {
-                uproject = OpenUtau.Core.Formats.Formats.Load(files[0]);
+                uproject = OpenUtau.Core.Formats.Formats.LoadProject(files[0]);
             }
             else if (files.Length > 1)
             {
@@ -341,11 +361,28 @@ namespace OpenUtau.UI
                 Title = trackVM.Title;
             }
 
-            UnlockView();
+            UnlockUI();
+        }
+
+        private void CmdImportAudio(string file)
+        {
+            UWave uwave = OpenUtau.Core.Formats.Sound.Load(file);
+            if (uwave != null)
+            {
+                uproject.Tracks.Add(new UTrack());
+                uwave.TrackNo = uproject.Tracks.Count - 1;
+                uwave.PosTick = 0;
+                uwave.DurTick = (int)Math.Ceiling(MusicMath.MinutesToTick(uwave.Stream.TotalTime.TotalMinutes, uproject));
+                System.Diagnostics.Debug.WriteLine("{0} {1} {2} {3} {4}", uwave.TrackNo, uwave.PosTick, uwave.DurTick, uwave.Name, uwave.ToString());
+                uproject.Parts.Add(uwave);
+                trackVM.AddPart(uwave);
+            }
         }
 
         private void CmdExit()
         {
+            Properties.Settings.Default.MainMaximized = this.WindowState == System.Windows.WindowState.Maximized;
+            Properties.Settings.Default.Save();
             Application.Current.Shutdown();
         }
 
@@ -374,8 +411,9 @@ namespace OpenUtau.UI
             CmdOpenFile(files);
         }
 
-        bool _viewLocked = false;
-        private void LockView() { _viewLocked = true; Mouse.OverrideCursor = Cursors.AppStarting; }
-        private void UnlockView() { _viewLocked = false; Mouse.OverrideCursor = null; }
+        bool _uiLocked = false;
+        private void LockUI() { _uiLocked = true; Mouse.OverrideCursor = Cursors.AppStarting; }
+        private void UnlockUI() { _uiLocked = false; Mouse.OverrideCursor = null; }
+
     }
 }

@@ -29,6 +29,7 @@
                 </MenuItem>
                 <MenuItem Header="_Save" InputGestureText="Ctrl+S"/>
                 <MenuItem Header="Save _As..."/>
+                <MenuItem Header="_Import Audio..." Click="MenuImportAidio_Click"/>
                 <MenuItem Header="Recent _Files">
                     <MenuItem Header="1.vsqx"/>
                     <MenuItem Header="2.vsqx"/>

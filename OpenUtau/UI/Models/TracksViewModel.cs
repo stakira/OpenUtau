@@ -113,6 +113,8 @@ namespace OpenUtau.UI.Models
         List<PartThumbnail> SelectedThumbnails = new List<PartThumbnail>();
         List<PartThumbnail> Thumbnails = new List<PartThumbnail>();
 
+        List<WaveThumbnail> WaveThumbnails = new List<WaveThumbnail>();
+
         public TracksViewModel() { }
 
         public void DeselectAll()
@@ -131,14 +133,26 @@ namespace OpenUtau.UI.Models
             Project = null;
         }
 
-        public void LoadProject(UProject project)
+        public void AddPart(UPart part)
         {
-            UnloadProject();
-            Project = project;
-
-            foreach (UPart part in project.Parts)
+            if (part is UWave)
             {
-                PartThumbnail partThumb = new PartThumbnail() { Brush = Brushes.White, Part = part};
+                WaveThumbnail waveThumb = new WaveThumbnail() { Brush = Brushes.White };
+                waveThumb.Wave = (UWave)part;
+                waveThumb.Redraw();
+                TrackCanvas.Children.Add(waveThumb.WavePath);
+                Canvas.SetZIndex(waveThumb.WavePath, UIConstants.PartThumbnailZIndex);
+
+                Rectangle thumbBox = new Rectangle() { RadiusX = 4, RadiusY = 4, Fill = ThemeManager.NoteFillBrushes[0], Stroke = ThemeManager.NoteFillErrorBrushes[0], StrokeThickness = 0 };
+                TrackCanvas.Children.Add(thumbBox);
+                Canvas.SetZIndex(thumbBox, UIConstants.PartRectangleZIndex);
+
+                waveThumb.Box = thumbBox;
+                WaveThumbnails.Add(waveThumb);
+            }
+            else
+            {
+                PartThumbnail partThumb = new PartThumbnail() { Brush = Brushes.White, Part = part };
                 partThumb.Redraw();
                 TrackCanvas.Children.Add(partThumb);
                 Canvas.SetZIndex(partThumb, UIConstants.PartThumbnailZIndex);
@@ -152,6 +166,17 @@ namespace OpenUtau.UI.Models
             }
             UpdateViewSize();
             MarkUpdate();
+        }
+
+        public void LoadProject(UProject project)
+        {
+            UnloadProject();
+            Project = project;
+
+            foreach (UPart part in project.Parts)
+            {
+                AddPart(part);
+            }
         }
 
         public void RedrawIfUpdated()
@@ -169,6 +194,18 @@ namespace OpenUtau.UI.Models
                     thumb.Box.Height = TrackHeight - 2;
                     thumb.Box.Width = thumb.DisplayWidth - 1;
                     Canvas.SetTop(thumb.Box, thumb.Y);
+                    Canvas.SetLeft(thumb.Box, thumb.X + 1);
+                }
+                foreach (WaveThumbnail thumb in WaveThumbnails)
+                {
+                    thumb.X = -OffsetX + thumb.PosTick * QuarterWidth / Project.Resolution;
+                    thumb.Y = -OffsetY + (thumb.TrackNo + 0.5) * TrackHeight;
+                    thumb.FitHeight(TrackHeight / 2 - 1);
+                    thumb.ScaleX = QuarterWidth / Project.Resolution * 15;
+
+                    thumb.Box.Height = TrackHeight - 2;
+                    thumb.Box.Width = thumb.DisplayWidth - 1;
+                    Canvas.SetTop(thumb.Box, -OffsetY + thumb.TrackNo * TrackHeight + 1);
                     Canvas.SetLeft(thumb.Box, thumb.X + 1);
                 }
             }
