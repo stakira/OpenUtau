@@ -48,9 +48,9 @@ namespace OpenUtau.Core
             }
         }
 
-        public static double MinutesToTick(double minutes, OpenUtau.Core.USTx.UProject project)
+        public static int TimeToTick(TimeSpan timespan, double BPM, int BeatUnit, int Resolution)
         {
-            return minutes * project.BPM / project.BeatUnit * 4 * project.Resolution;
+            return (int)Math.Ceiling(timespan.TotalMinutes * BPM / BeatUnit * 4 * Resolution);
         }
     }
 }
