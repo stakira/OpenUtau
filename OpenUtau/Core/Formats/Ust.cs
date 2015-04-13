@@ -80,7 +80,7 @@ namespace OpenUtau.Core.Formats
             UProject uproject = new UProject() { Resolution = 480 };
             uproject.Tracks.Add(new UTrack());
             uproject.Tracks.First().TrackNo = 0;
-            UPart upart = new UPart() { TrackNo = 0, PosTick = 0 };
+            UVoicePart upart = new UVoicePart() { TrackNo = 0, PosTick = 0 };
             uproject.Parts.Add(upart);
             UNote currNote = null;
             int currTick = 0;

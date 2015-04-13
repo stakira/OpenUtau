@@ -123,7 +123,7 @@ namespace OpenUtau.UI
             Title = midiVM.Title;
         }
 
-        public void LoadPart(UPart part, UProject project)
+        public void LoadPart(UVoicePart part, UProject project)
         {
             midiVM.LoadPart(part, project);
             Title = midiVM.Title;
@@ -266,7 +266,7 @@ namespace OpenUtau.UI
 
         private void notesCanvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            mainwindow.UpdatePartThumbnail(midiVM.Part);
+            mainwindow.UpdatePartElement(midiVM.Part);
             _moveNote = false;
             _resizeNote = false;
             _hitNoteControl = null;
@@ -367,11 +367,10 @@ namespace OpenUtau.UI
             FocusManager.SetFocusedElement(this, null);
             Point mousePos = e.GetPosition((Canvas)sender);
             NoteControl hitNoteControl = getNoteVisualHit(VisualTreeHelper.HitTest(notesCanvas, mousePos));
-            if (hitNoteControl != null) midiVM.RemoveNote(hitNoteControl);
-            else
-            {
-                midiVM.DeselectAll();
-            }
+            
+            if (hitNoteControl != null && midiVM.SelectedNotes.Contains(hitNoteControl.Note)) midiVM.RemoveNote(hitNoteControl);
+            else midiVM.DeselectAll();
+
             ((UIElement)sender).CaptureMouse();
             Mouse.OverrideCursor = Cursors.No;
             System.Diagnostics.Debug.WriteLine("Total notes: " + midiVM.Part.Notes.Count +
@@ -380,7 +379,7 @@ namespace OpenUtau.UI
 
         private void notesCanvas_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
-            mainwindow.UpdatePartThumbnail(midiVM.Part);
+            mainwindow.UpdatePartElement(midiVM.Part);
             Mouse.OverrideCursor = null;
             ((UIElement)sender).ReleaseMouseCapture();
         }
@@ -495,7 +494,7 @@ namespace OpenUtau.UI
             {
                 // Delete notes
                 midiVM.RemoveSelectedNotes();
-                mainwindow.UpdatePartThumbnail(midiVM.Part);
+                mainwindow.UpdatePartElement(midiVM.Part);
             }
         }
 

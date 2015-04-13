@@ -30,7 +30,7 @@ namespace OpenUtau.UI
         public const double MidiTickMinWidth = 16;
 
         public const double TrackMaxHeight = 256;
-        public const double TrackMinHeight = 16;
+        public const double TrackMinHeight = 40;
         public const double TrackDefaultHeight = 64;
 
         public const double TrackQuarterMaxWidth = 256;
@@ -48,5 +48,6 @@ namespace OpenUtau.UI
 
         public const int PartRectangleZIndex = 100;
         public const int PartThumbnailZIndex = 200;
+        public const int PartElementZIndex = 200;
     }
 }

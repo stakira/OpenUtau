@@ -25,7 +25,7 @@ namespace OpenUtau.UI.Models
         }
 
         public UProject Project;
-        public UPart Part;
+        public UVoicePart Part;
         public Canvas MidiCanvas;
 
         protected bool _updated = false;
@@ -204,7 +204,7 @@ namespace OpenUtau.UI.Models
             Project = null;
         }
 
-        public void LoadPart(UPart part, UProject project)
+        public void LoadPart(UVoicePart part, UProject project)
         {
             if (project == Project && part == Part) return;
             UnloadPart();

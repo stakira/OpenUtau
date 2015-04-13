@@ -53,8 +53,7 @@ namespace OpenUtau.UI
             trackVM = (TracksViewModel)this.Resources["tracksVM"];
             trackVM.TrackCanvas = this.trackCanvas;
 
-            uproject = new UProject();
-            trackVM.Project = uproject;
+            CmdNewFile();
         }
 
         void RenderLoop(object sender, EventArgs e)
@@ -112,14 +111,16 @@ namespace OpenUtau.UI
         Rectangle selectionBox;
         Nullable<Point> selectionStart;
 
-        bool _moveThumbnail = false;
-        bool _resizeThumbnail = false;
-        double _partMoveStartMouseQuater;
+        bool _movePartElement = false;
+        bool _resizePartElement = false;
+        PartElement _hitPartElement;
+        //double _partMoveStartMouseQuater;
+        int _partMoveRelativeTick;
         int _partMoveStartTick;
         int _resizeMinDurTick;
-        Point _mouseDownPos;
-        PartThumbnail _hitThumbnail;
-        List<PartThumbnail> selectedParts = new List<PartThumbnail>();
+        UPart _partMovePartLeft;
+        UPart _partMovePartMin;
+        UPart _partResizeShortest;
 
         private void trackCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -129,13 +130,12 @@ namespace OpenUtau.UI
             var hit = VisualTreeHelper.HitTest(trackCanvas, mousePos).VisualHit;
             System.Diagnostics.Debug.WriteLine("Mouse hit " + hit.ToString());
 
-            if (Keyboard.Modifiers == ModifierKeys.Control)
+            if (Keyboard.Modifiers == ModifierKeys.Control || Keyboard.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift))
             {
                 selectionStart = new Point(trackVM.CanvasToQuarter(mousePos.X), trackVM.CanvasToTrack(mousePos.Y));
-                if (Keyboard.IsKeyUp(Key.LeftShift) && Keyboard.IsKeyUp(Key.RightShift))
-                {
-                    trackVM.DeselectAll();
-                }
+
+                if (Keyboard.IsKeyUp(Key.LeftShift) && Keyboard.IsKeyUp(Key.RightShift)) trackVM.DeselectAll();
+                
                 if (selectionBox == null)
                 {
                     selectionBox = new Rectangle()
@@ -163,48 +163,88 @@ namespace OpenUtau.UI
                 }
                 Mouse.OverrideCursor = Cursors.Cross;
             }
-            else if (hit is PartThumbnail)
+            else if (hit is DrawingVisual)
             {
-                PartThumbnail thumb = hit as PartThumbnail;
-                _hitThumbnail = thumb;
-                _mouseDownPos = mousePos;
-                if (e.ClickCount == 2) // load part into midi window
+                PartElement partEl = ((DrawingVisual)hit).Parent as PartElement;
+                _hitPartElement = partEl;
+
+                if (!trackVM.SelectedParts.Contains(_hitPartElement.Part)) trackVM.DeselectAll();
+
+                if (e.ClickCount == 2 && partEl is VoicePartElement) // load part into midi window
                 {
                     LockUI();
                     if (midiWindow == null) midiWindow = new MidiWindow(this);
-                    midiWindow.LoadPart(thumb.Part, trackVM.Project);
+                    midiWindow.LoadPart((UVoicePart)partEl.Part, trackVM.Project);
                     midiWindow.Show();
                     midiWindow.Focus();
                     UnlockUI();
                 }
-                else if (mousePos.X > thumb.X + thumb.DisplayWidth - UIConstants.ResizeMargin) // resize
+                else if (mousePos.X > partEl.X + partEl.VisualWidth - UIConstants.ResizeMargin && partEl is VoicePartElement) // resize
                 {
-                    _resizeThumbnail = true;
-                    _resizeMinDurTick = trackVM.GetPartMinDurTick(_hitThumbnail.Part);
+                    _resizePartElement = true;
+                    _resizeMinDurTick = trackVM.GetPartMinDurTick(_hitPartElement.Part);
                     Mouse.OverrideCursor = Cursors.SizeWE;
+                    if (trackVM.SelectedParts.Count > 0)
+                    {
+                        _partResizeShortest = _hitPartElement.Part;
+                        foreach (UPart part in trackVM.SelectedParts)
+                        {
+                            if (part.DurTick - part.GetMinDurTick(trackVM.Project) <
+                                _partResizeShortest.DurTick - _partResizeShortest.GetMinDurTick(trackVM.Project))
+                                _partResizeShortest = part;
+                        }
+                    }
                 }
                 else // move
                 {
-                    _moveThumbnail = true;
-                    _partMoveStartMouseQuater = trackVM.CanvasToSnappedQuarter(mousePos.X);
-                    _partMoveStartTick = thumb.Part.PosTick;
+                    _movePartElement = true;
+                    _partMoveRelativeTick = trackVM.CanvasToSnappedTick(mousePos.X) - _hitPartElement.Part.PosTick;
+                    _partMoveStartTick = partEl.Part.PosTick;
                     Mouse.OverrideCursor = Cursors.SizeAll;
+                    if (trackVM.SelectedParts.Count > 0)
+                    {
+                        _partMovePartLeft = _partMovePartMin = _hitPartElement.Part;
+                        foreach (UPart part in trackVM.SelectedParts)
+                        {
+                            if (part.PosTick < _partMovePartLeft.PosTick) _partMovePartLeft = part;
+                            if (part.TrackNo < _partMovePartMin.TrackNo) _partMovePartMin = part;
+                        }
+                    }
                 }
+            }
+            else
+            {
+                UVoicePart part = new UVoicePart()
+                {
+                    PosTick = trackVM.CanvasToSnappedTick(mousePos.X),
+                    TrackNo = trackVM.CanvasToTrack(mousePos.Y),
+                    DurTick = trackVM.Project.Resolution * 4 / trackVM.Project.BeatUnit * trackVM.Project.BeatPerBar
+                };
+                trackVM.AddPart(part);
+                trackVM.MarkUpdate();
+                // Enable drag
+                trackVM.DeselectAll();
+                _movePartElement = true;
+                _hitPartElement = trackVM.GetPartElement(part);
+                _partMoveRelativeTick = 0;
+                _partMoveStartTick = part.PosTick;
             }
             ((UIElement)sender).CaptureMouse();
         }
 
         private void trackCanvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            _moveThumbnail = false;
-            _resizeThumbnail = false;
-            _hitThumbnail = null;
+            _movePartElement = false;
+            _resizePartElement = false;
+            _hitPartElement = null;
+            // End selection
             selectionStart = null;
             if (selectionBox != null)
             {
                 Canvas.SetZIndex(selectionBox, -100);
                 selectionBox.Visibility = System.Windows.Visibility.Hidden;
             }
+            trackVM.DoneTempSelect();
             trackVM.UpdateViewSize();
             ((UIElement)sender).ReleaseMouseCapture();
             Mouse.OverrideCursor = null;
@@ -228,49 +268,69 @@ namespace OpenUtau.UI
                 selectionBox.Height = bottom - top;
                 Canvas.SetLeft(selectionBox, left);
                 Canvas.SetTop(selectionBox, top);
-                //ncModel.trackPart.SelectTempInBox(
-                //    ncModel.canvasToOffset(mousePos.X),
-                //    selectionStart.Value.X,
-                //    ncModel.snapNoteKey(mousePos.Y),
-                //    selectionStart.Value.Y);
+                trackVM.TempSelectInBox(selectionStart.Value.X, trackVM.CanvasToQuarter(mousePos.X), (int)selectionStart.Value.Y, trackVM.CanvasToTrack(mousePos.Y));
             }
-            else if (_moveThumbnail) // move
+            else if (_movePartElement) // move
             {
-                if (selectedParts.Count == 0)
+                if (trackVM.SelectedParts.Count == 0)
                 {
-                    _hitThumbnail.Part.TrackNo = trackVM.CanvasToTrack(mousePos.Y);
-                    _hitThumbnail.Part.PosTick = Math.Max(0, _partMoveStartTick +
-                        (int)(trackVM.Project.Resolution * (trackVM.CanvasToSnappedQuarter(mousePos.X) - _partMoveStartMouseQuater)));
+                    _hitPartElement.Part.TrackNo = Math.Max(0, trackVM.CanvasToTrack(mousePos.Y));
+                    _hitPartElement.Part.PosTick = Math.Max(0, (int)(trackVM.Project.Resolution * trackVM.CanvasToSnappedQuarter(mousePos.X)) - _partMoveRelativeTick);
                     trackVM.MarkUpdate();
                 }
                 else
                 {
+                    int deltaTrack = trackVM.CanvasToTrack(mousePos.Y) - _hitPartElement.Part.TrackNo;
+                    int deltaPosTick = (int)(trackVM.Project.Resolution * trackVM.CanvasToSnappedQuarter(mousePos.X) - _partMoveRelativeTick) - _hitPartElement.Part.PosTick;
+
+                    if (deltaTrack + _partMovePartMin.TrackNo >= 0)
+                        foreach (UPart part in trackVM.SelectedParts) part.TrackNo += deltaTrack;
+
+                    if (deltaPosTick + _partMovePartLeft.PosTick >= 0)
+                        foreach (UPart part in trackVM.SelectedParts) part.PosTick += deltaPosTick;
+
+                    trackVM.MarkUpdate();
                 }
             }
-            else if (_resizeThumbnail) // resize
+            else if (_resizePartElement) // resize
             {
-                if (selectedParts.Count == 0)
+                if (trackVM.SelectedParts.Count == 0)
                 {
-                    int newDurTick = (int)(trackVM.Project.Resolution * trackVM.CanvasRoundToSnappedQuarter(mousePos.X)) - _hitThumbnail.Part.PosTick;
+                    int newDurTick = (int)(trackVM.Project.Resolution * trackVM.CanvasRoundToSnappedQuarter(mousePos.X)) - _hitPartElement.Part.PosTick;
                     if (newDurTick > _resizeMinDurTick)
                     {
-                        _hitThumbnail.Part.DurTick = newDurTick;
+                        _hitPartElement.Part.DurTick = newDurTick;
                         trackVM.MarkUpdate();
                     }
                 }
                 else
                 {
+                    int deltaDurTick = (int)(trackVM.CanvasRoundToSnappedQuarter(mousePos.X) * trackVM.Project.Resolution) - _hitPartElement.Part.EndTick;
+                    if (_partResizeShortest.DurTick + deltaDurTick >= _partResizeShortest.GetMinDurTick(trackVM.Project))
+                        foreach (UPart part in trackVM.SelectedParts) part.DurTick += deltaDurTick;
+                    trackVM.MarkUpdate();
                 }
             }
-            else
+            else if (Mouse.RightButton == MouseButtonState.Pressed) // Remove Note
             {
                 HitTestResult result = VisualTreeHelper.HitTest(trackCanvas, mousePos);
                 if (result == null) return;
                 var hit = result.VisualHit;
-                if (hit is PartThumbnail)
+                if (hit is DrawingVisual)
                 {
-                    PartThumbnail thumb = hit as PartThumbnail;
-                    if (mousePos.X > thumb.X + thumb.DisplayWidth - UIConstants.ResizeMargin) Mouse.OverrideCursor = Cursors.SizeWE;
+                    PartElement partEl = ((DrawingVisual)hit).Parent as PartElement;
+                    if (partEl != null) trackVM.RemovePart(partEl);
+                }
+            }
+            else if (Mouse.LeftButton == MouseButtonState.Released && Mouse.RightButton == MouseButtonState.Released)
+            {
+                HitTestResult result = VisualTreeHelper.HitTest(trackCanvas, mousePos);
+                if (result == null) return;
+                var hit = result.VisualHit;
+                if (hit is DrawingVisual)
+                {
+                    PartElement partEl = ((DrawingVisual)hit).Parent as PartElement;
+                    if (mousePos.X > partEl.X + partEl.VisualWidth - UIConstants.ResizeMargin && partEl is VoicePartElement) Mouse.OverrideCursor = Cursors.SizeWE;
                     else Mouse.OverrideCursor = null;
                 }
                 else
@@ -283,12 +343,29 @@ namespace OpenUtau.UI
         private void trackCanvas_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (_uiLocked) return;
+            FocusManager.SetFocusedElement(this, null);
+            Point mousePos = e.GetPosition((Canvas)sender);
+            HitTestResult result = VisualTreeHelper.HitTest(trackCanvas, mousePos);
+            if (result == null) return;
+            var hit = result.VisualHit;
+            if (hit is DrawingVisual)
+            {
+                PartElement partEl = ((DrawingVisual)hit).Parent as PartElement;
+                if (partEl != null && trackVM.SelectedParts.Contains(partEl.Part)) trackVM.RemovePart(partEl);
+                else trackVM.DeselectAll();
+            }
+            else
+            {
+                trackVM.DeselectAll();
+            }
             ((UIElement)sender).CaptureMouse();
+            Mouse.OverrideCursor = Cursors.No;
         }
 
         private void trackCanvas_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
             trackVM.UpdateViewSize();
+            Mouse.OverrideCursor = null;
             ((UIElement)sender).ReleaseMouseCapture();
         }
 
@@ -296,6 +373,7 @@ namespace OpenUtau.UI
 
         # region menu commands
 
+        private void MenuNew_Click(object sender, RoutedEventArgs e) { CmdNewFile(); }
         private void MenuOpen_Click(object sender, RoutedEventArgs e) { CmdOpenFileDialog(); }
         private void MenuExit_Click(object sender, RoutedEventArgs e) { CmdExit(); }
 
@@ -329,6 +407,19 @@ namespace OpenUtau.UI
         }
 
         # region application commmands
+
+        private void CmdNewFile()
+        {
+            CmdCloseFile();
+            uproject = new UProject();
+            trackVM.LoadProject(uproject);
+        }
+
+        private void CmdCloseFile()
+        {
+            if (midiWindow != null) midiWindow.UnloadPart();
+            trackVM.UnloadProject();
+        }
 
         private void CmdOpenFileDialog()
         {
@@ -366,17 +457,17 @@ namespace OpenUtau.UI
 
         private void CmdImportAudio(string file)
         {
-            UWave uwave = OpenUtau.Core.Formats.Sound.Load(file);
-            if (uwave != null)
+            LockUI();
+            UWavePart uwavepart = OpenUtau.Core.Formats.Sound.CreateUWavePart(file);
+            if (uwavepart != null)
             {
                 uproject.Tracks.Add(new UTrack());
-                uwave.TrackNo = uproject.Tracks.Count - 1;
-                uwave.PosTick = 0;
-                uwave.DurTick = (int)Math.Ceiling(MusicMath.MinutesToTick(uwave.Stream.TotalTime.TotalMinutes, uproject));
-                System.Diagnostics.Debug.WriteLine("{0} {1} {2} {3} {4}", uwave.TrackNo, uwave.PosTick, uwave.DurTick, uwave.Name, uwave.ToString());
-                uproject.Parts.Add(uwave);
-                trackVM.AddPart(uwave);
+                uwavepart.TrackNo = uproject.Tracks.Count - 1;
+                uwavepart.DurTick = uwavepart.GetMinDurTick(uproject);
+                uproject.Parts.Add(uwavepart);
+                trackVM.AddPart(uwavepart);
             }
+            UnlockUI();
         }
 
         private void CmdExit()
@@ -395,9 +486,9 @@ namespace OpenUtau.UI
             trackVM.MarkUpdate();
         }
 
-        public void UpdatePartThumbnail(UPart part)
+        public void UpdatePartElement(UPart part)
         {
-            trackVM.UpdatePartThumbnail(part);
+            trackVM.UpdatePartElement(part);
         }
 
         private void trackCanvas_DragEnter(object sender, DragEventArgs e)
@@ -414,6 +505,25 @@ namespace OpenUtau.UI
         bool _uiLocked = false;
         private void LockUI() { _uiLocked = true; Mouse.OverrideCursor = Cursors.AppStarting; }
         private void UnlockUI() { _uiLocked = false; Mouse.OverrideCursor = null; }
+
+        private void trackCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                timelineCanvas_MouseWheel(sender, e);
+            }
+            else if (Keyboard.Modifiers == ModifierKeys.Shift)
+            {
+                trackVM.OffsetX -= trackVM.ViewWidth * 0.001 * e.Delta;
+            }
+            else if (Keyboard.Modifiers == ModifierKeys.Alt)
+            {
+            }
+            else
+            {
+                trackVM.OffsetY -= trackVM.ViewHeight * 0.001 * e.Delta;
+            }
+        }
 
     }
 }

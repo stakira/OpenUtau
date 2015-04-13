@@ -110,62 +110,114 @@ namespace OpenUtau.UI.Models
             MarkUpdate();
         }
 
-        List<PartThumbnail> SelectedThumbnails = new List<PartThumbnail>();
-        List<PartThumbnail> Thumbnails = new List<PartThumbnail>();
-
-        List<WaveThumbnail> WaveThumbnails = new List<WaveThumbnail>();
+        public List<UPart> SelectedParts = new List<UPart>();
+        List<UPart> TempSelectedParts = new List<UPart>();
+        List<PartElement> PartElements = new List<PartElement>();
 
         public TracksViewModel() { }
 
-        public void DeselectAll()
+        # region Selection
+
+        public void UpdateSelectedVisual()
         {
-            SelectedThumbnails.Clear();
+            foreach (PartElement partEl in PartElements)
+            {
+                if (SelectedParts.Contains(partEl.Part) || TempSelectedParts.Contains(partEl.Part)) partEl.Selected = true;
+                else partEl.Selected = false;
+            }
         }
+
+        public void SelectAll() { SelectedParts.Clear(); foreach (UPart part in Project.Parts) SelectedParts.Add(part); UpdateSelectedVisual(); }
+        public void DeselectAll() { SelectedParts.Clear(); UpdateSelectedVisual(); }
+
+        public void SelectPart(UPart part) { if (!SelectedParts.Contains(part)) SelectedParts.Add(part); }
+        public void DeselectPart(UPart part) { SelectedParts.Remove(part); }
+
+        public void SelectTempPart(UPart part) { TempSelectedParts.Add(part); }
+        public void TempSelectInBox(double quarter1, double quarter2, int track1, int track2)
+        {
+            if (quarter2 < quarter1) { double temp = quarter1; quarter1 = quarter2; quarter2 = temp; }
+            if (track2 < track1) { int temp = track1; track1 = track2; track2 = temp; }
+            int tick1 = (int)(quarter1 * Project.Resolution);
+            int tick2 = (int)(quarter2 * Project.Resolution);
+            TempSelectedParts.Clear();
+            foreach (UPart part in Project.Parts)
+            {
+                if (part.PosTick <= tick2 && part.EndTick >= tick1 &&
+                    part.TrackNo <= track2 && part.TrackNo >= track1) SelectTempPart(part);
+            }
+            UpdateSelectedVisual();
+        }
+
+        public void DoneTempSelect()
+        {
+            foreach (UPart part in TempSelectedParts) SelectPart(part);
+            TempSelectedParts.Clear();
+            UpdateSelectedVisual();
+        }
+
+        public void RemoveSelectedParts()
+        {
+            foreach (UPart part in SelectedParts)
+            {
+                PartElement partEl = GetPartElement(part);
+                Project.Parts.Remove(part);
+                TrackCanvas.Children.Remove(partEl);
+                PartElements.Remove(partEl);
+                partEl.Part.Dispose();
+            }
+            SelectedParts.Clear();
+        }
+
+        # endregion
 
         public void UnloadProject()
         {
-            foreach (PartThumbnail thumbnail in Thumbnails)
+            foreach (PartElement element in PartElements)
             {
-                TrackCanvas.Children.Remove(thumbnail);
-                TrackCanvas.Children.Remove(thumbnail.Box);
+                TrackCanvas.Children.Remove(element);
             }
-            Thumbnails.Clear();
-            Project = null;
+            SelectedParts.Clear();
+            PartElements.Clear();
+            if (Project != null)
+            {
+                foreach (UPart part in Project.Parts) part.Dispose();
+                Project = null;
+            }
+        }
+
+        public PartElement GetPartElement(UPart part)
+        {
+            foreach (PartElement partEl in PartElements)
+            {
+                if (partEl.Part == part) return partEl;
+            }
+            return null;
         }
 
         public void AddPart(UPart part)
         {
-            if (part is UWave)
-            {
-                WaveThumbnail waveThumb = new WaveThumbnail() { Brush = Brushes.White };
-                waveThumb.Wave = (UWave)part;
-                waveThumb.Redraw();
-                TrackCanvas.Children.Add(waveThumb.WavePath);
-                Canvas.SetZIndex(waveThumb.WavePath, UIConstants.PartThumbnailZIndex);
+            PartElement partElement;
 
-                Rectangle thumbBox = new Rectangle() { RadiusX = 4, RadiusY = 4, Fill = ThemeManager.NoteFillBrushes[0], Stroke = ThemeManager.NoteFillErrorBrushes[0], StrokeThickness = 0 };
-                TrackCanvas.Children.Add(thumbBox);
-                Canvas.SetZIndex(thumbBox, UIConstants.PartRectangleZIndex);
+            if (part is UWavePart) partElement = new WavePartElement() { Part = part, Project = Project };
+            else partElement = new VoicePartElement() { Part = part, Project = Project };
 
-                waveThumb.Box = thumbBox;
-                WaveThumbnails.Add(waveThumb);
-            }
-            else
-            {
-                PartThumbnail partThumb = new PartThumbnail() { Brush = Brushes.White, Part = part };
-                partThumb.Redraw();
-                TrackCanvas.Children.Add(partThumb);
-                Canvas.SetZIndex(partThumb, UIConstants.PartThumbnailZIndex);
+            partElement.Redraw();
+            PartElements.Add(partElement);
+            TrackCanvas.Children.Add(partElement);
+            Canvas.SetZIndex(partElement, UIConstants.PartElementZIndex);
 
-                Rectangle thumbBox = new Rectangle() { RadiusX = 4, RadiusY = 4, Fill = ThemeManager.NoteFillBrushes[0], Stroke = ThemeManager.NoteFillErrorBrushes[0], StrokeThickness = 0 };
-                TrackCanvas.Children.Add(thumbBox);
-                Canvas.SetZIndex(thumbBox, UIConstants.PartRectangleZIndex);
-
-                partThumb.Box = thumbBox;
-                Thumbnails.Add(partThumb);
-            }
             UpdateViewSize();
             MarkUpdate();
+        }
+
+        public void RemovePart(PartElement partEl)
+        {
+            if (SelectedParts.Contains(partEl.Part)) SelectedParts.Remove(partEl.Part);
+            Project.Parts.Remove(partEl.Part);
+            TrackCanvas.Children.Remove(partEl);
+            PartElements.Remove(partEl);
+            partEl.Part.Dispose();
         }
 
         public void LoadProject(UProject project)
@@ -183,38 +235,21 @@ namespace OpenUtau.UI.Models
         {
             if (_updated)
             {
-                foreach (PartThumbnail thumb in Thumbnails)
+                foreach (PartElement partElement in PartElements)
                 {
-                    if (thumb.Modified) thumb.Redraw();
-                    thumb.X = -OffsetX + thumb.PosTick * QuarterWidth / Project.Resolution;
-                    thumb.Y = -OffsetY + thumb.TrackNo * TrackHeight + 1;
-                    thumb.FitHeight(TrackHeight - 2);
-                    thumb.ScaleX = QuarterWidth / Project.Resolution;
-
-                    thumb.Box.Height = TrackHeight - 2;
-                    thumb.Box.Width = thumb.DisplayWidth - 1;
-                    Canvas.SetTop(thumb.Box, thumb.Y);
-                    Canvas.SetLeft(thumb.Box, thumb.X + 1);
-                }
-                foreach (WaveThumbnail thumb in WaveThumbnails)
-                {
-                    thumb.X = -OffsetX + thumb.PosTick * QuarterWidth / Project.Resolution;
-                    thumb.Y = -OffsetY + (thumb.TrackNo + 0.5) * TrackHeight;
-                    thumb.FitHeight(TrackHeight / 2 - 1);
-                    thumb.ScaleX = QuarterWidth / Project.Resolution * 15;
-
-                    thumb.Box.Height = TrackHeight - 2;
-                    thumb.Box.Width = thumb.DisplayWidth - 1;
-                    Canvas.SetTop(thumb.Box, -OffsetY + thumb.TrackNo * TrackHeight + 1);
-                    Canvas.SetLeft(thumb.Box, thumb.X + 1);
+                    if (partElement.Modified) partElement.Redraw();
+                    partElement.X = -OffsetX + partElement.Part.PosTick * QuarterWidth / Project.Resolution;
+                    partElement.Y = -OffsetY + partElement.Part.TrackNo * TrackHeight + 1;
+                    partElement.VisualHeight = TrackHeight - 2;
+                    partElement.ScaleX = QuarterWidth / Project.Resolution;
                 }
             }
             _updated = false;
         }
 
-        public void UpdatePartThumbnail(UPart part)
+        public void UpdatePartElement(UPart part)
         {
-            foreach (PartThumbnail thumb in Thumbnails) if (thumb.Part == part) thumb.Redraw();
+            foreach (PartElement partElement in PartElements) if (partElement.Part == part) partElement.Redraw();
         }
 
         public void UpdateViewSize()
@@ -232,9 +267,7 @@ namespace OpenUtau.UI.Models
 
         public int GetPartMinDurTick(UPart part)
         {
-            int durTick = 0;
-            foreach (UNote note in part.Notes) durTick = Math.Max(durTick, note.PosTick + note.DurTick);
-            return durTick;
+            return part.GetMinDurTick(Project);
         }
 
         # region Calculation

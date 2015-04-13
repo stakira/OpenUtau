@@ -17,7 +17,7 @@
     <local:BorderlessWindow.MenuContent>
         <Menu IsMainMenu="True" VerticalAlignment="Top" HorizontalAlignment="Left" Background="White">
             <MenuItem Header="_File">
-                <MenuItem Header="_New..." InputGestureText="Ctrl+N"/>
+                <MenuItem Header="_New..." InputGestureText="Ctrl+N" Click="MenuNew_Click"/>
                 <MenuItem Header="_Open..." InputGestureText="Ctrl+O" Click="MenuOpen_Click"/>
                 <MenuItem Header="O_pen As">
                     <MenuItem Header="Ustx..."/>
@@ -78,8 +78,9 @@
                                       BeatUnit="{Binding BeatUnit, Source={StaticResource tracksVM}}"/>
             </Grid>
             <Canvas x:Name="timelineCanvas" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="20" Margin="0,20,20,0"
-                        ClipToBounds="True" Background="Transparent"
-                        MouseWheel="timelineCanvas_MouseWheel" MouseLeftButtonDown="timelineCanvas_MouseLeftButtonDown" MouseMove="timelineCanvas_MouseMove" MouseLeftButtonUp="timelineCanvas_MouseLeftButtonUp" />
+                    ClipToBounds="True" Background="Transparent"
+                    MouseWheel="timelineCanvas_MouseWheel" MouseLeftButtonDown="timelineCanvas_MouseLeftButtonDown" MouseMove="timelineCanvas_MouseMove"
+                    MouseLeftButtonUp="timelineCanvas_MouseLeftButtonUp" />
             <Grid x:Name="trackBackgroundGrid" Grid.Row="0" Margin="0,40,20,0" ClipToBounds="True">
                 <local:TrackBackground x:Name="trackBackground" TrackHeight="{Binding TrackHeight, Source={StaticResource tracksVM}}" OffsetY="{Binding OffsetY, Source={StaticResource tracksVM}}"/>
                 <local:TickBackground x:Name="tickBackground" QuarterOffset="{Binding QuarterOffset, Source={StaticResource tracksVM}}"
@@ -94,7 +95,7 @@
                     local:SizeObserver.ObservedWidth="{Binding ViewWidth, Source={StaticResource tracksVM}, Mode=OneWayToSource}"
                     MouseLeftButtonDown="trackCanvas_MouseLeftButtonDown" MouseLeftButtonUp="trackCanvas_MouseLeftButtonUp"
                     MouseRightButtonDown="trackCanvas_MouseRightButtonDown" MouseRightButtonUp="trackCanvas_MouseRightButtonUp"
-                    MouseMove="trackCanvas_MouseMove" DragEnter="trackCanvas_DragEnter" Drop="trackCanvas_Drop"/>
+                    MouseMove="trackCanvas_MouseMove" DragEnter="trackCanvas_DragEnter" Drop="trackCanvas_Drop" MouseWheel="trackCanvas_MouseWheel"/>
             <ScrollBar x:Name="horizontalScroll" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="20" Margin="0,0,20,0" Orientation="Horizontal" Minimum="0"
                        Maximum="{Binding TotalWidth, Mode=OneWay, Source={StaticResource tracksVM}}"
                        Value="{Binding OffsetX, Mode=TwoWay, Source={StaticResource tracksVM}, UpdateSourceTrigger=PropertyChanged}"
