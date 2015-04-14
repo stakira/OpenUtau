@@ -12,12 +12,12 @@ using OpenUtau.Core.USTx;
 
 namespace OpenUtau.UI.Controls
 {
-    class UVisualElement : FrameworkElement
+    class BackgroundElement : FrameworkElement
     {
         protected Size _size;
         protected bool _updated = false;
 
-        public UVisualElement()
+        public BackgroundElement()
         {
             this.SizeChanged += (o, e) => { _size = e.NewSize; MarkUpdate(); };
         }
@@ -26,10 +26,10 @@ namespace OpenUtau.UI.Controls
 
         public void RenderIfUpdated() { if (_updated) this.InvalidateVisual(); _updated = false; }
 
-        public static void MarkUpdateCallback(DependencyObject source, DependencyPropertyChangedEventArgs e) { ((UVisualElement)source).MarkUpdate(); }
+        public static void MarkUpdateCallback(DependencyObject source, DependencyPropertyChangedEventArgs e) { ((BackgroundElement)source).MarkUpdate(); }
     }
 
-    class TrackBackground : UVisualElement
+    class TrackBackground : BackgroundElement
     {
         public double TrackHeight
         {
@@ -126,7 +126,7 @@ namespace OpenUtau.UI.Controls
         }
     }
 
-    class TickBackground : UVisualElement
+    class TickBackground : BackgroundElement
     {
         public double QuarterWidth
         {

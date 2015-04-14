@@ -134,7 +134,8 @@ namespace OpenUtau.UI.Controls
             else return OpenUtau.UI.Models.ThemeManager.NoteFillBrushes[Channel];
         }
 
-        public bool Modified = false;
+        protected bool _modified = false;
+        public virtual bool Modified { set { _modified = value; } get { return _modified; } }
 
         protected override int VisualChildrenCount { get { return 4; } }
 

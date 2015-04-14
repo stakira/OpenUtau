@@ -72,6 +72,8 @@ namespace OpenUtau.Core.Formats
             string lyricPath = string.Format("{0}{1}", nsPrefix, nsPrefix == "v3:" ? "lyric" : "y");
             string phonemePath = string.Format("{0}{1}", nsPrefix, nsPrefix == "v3:" ? "phnms" : "p");
             string playtimePath = string.Format("{0}playTime", nsPrefix);
+            string partstyleattrPath = string.Format("{0}{1}/{0}{2}", nsPrefix, nsPrefix == "v3:" ? "partStyle" : "pStyle", nsPrefix == "v3:" ? "attr" : "v");
+            string notestyleattrPath = string.Format("{0}{1}/{0}{2}", nsPrefix, nsPrefix == "v3:" ? "noteStyle" : "nStyle", nsPrefix == "v3:" ? "attr" : "v");
 
             uproject.BPM = Convert.ToDouble(root.SelectSingleNode(bpmPath, nsmanager).InnerText) / 100;
             uproject.BeatPerBar = Convert.ToInt32(root.SelectSingleNode(beatperbarPath, nsmanager).InnerText);
@@ -112,9 +114,12 @@ namespace OpenUtau.Core.Formats
                         unote.PosTick = Convert.ToInt32(note.SelectSingleNode(postickPath, nsmanager).InnerText);
                         unote.DurTick = Convert.ToInt32(note.SelectSingleNode(durtickPath, nsmanager).InnerText);
                         unote.NoteNum = Convert.ToInt32(note.SelectSingleNode(notenumPath, nsmanager).InnerText);
-                        unote.Velocity = Convert.ToInt32(note.SelectSingleNode(velocityPath, nsmanager).InnerText);
                         unote.Lyric = note.SelectSingleNode(lyricPath, nsmanager).InnerText;
                         unote.Phoneme = note.SelectSingleNode(phonemePath, nsmanager).InnerText;
+
+                        unote.styles.Add("velocity", Convert.ToInt32(note.SelectSingleNode(velocityPath, nsmanager).InnerText));
+                        foreach (XmlNode attr in note.SelectNodes(notestyleattrPath, nsmanager))
+                            unote.styles.Add(attr.Attributes[0].Value, Convert.ToInt32(attr.InnerText));
 
                         unote.Channel = 0; // FIXME
                     }

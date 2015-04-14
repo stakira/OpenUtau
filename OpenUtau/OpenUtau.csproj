@@ -75,6 +75,7 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="UI\Controls\ExpElements.cs" />
     <Compile Include="UI\Controls\PartElements.cs" />
     <Page Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>

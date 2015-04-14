@@ -47,6 +47,7 @@ namespace OpenUtau.UI
 
             midiVM = (MidiViewModel)this.Resources["midiVM"];
             midiVM.MidiCanvas = this.notesCanvas;
+            midiVM.ExpCanvas = this.expCanvas;
         }
 
         void viewScaler_ViewScaled(object sender, EventArgs e)
@@ -512,5 +513,37 @@ namespace OpenUtau.UI
         bool _viewLocked = false;
         private void LockView() { _viewLocked = true; Mouse.OverrideCursor = Cursors.AppStarting; }
         private void UnlockView() { _viewLocked = false; Mouse.OverrideCursor = null; }
+
+        private void expCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Point mousePos = e.GetPosition((UIElement)sender);
+            expCanvas_SetExpHelper(mousePos);
+            ((Canvas)sender).CaptureMouse();
+        }
+
+        private void expCanvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            ((Canvas)sender).ReleaseMouseCapture();
+        }
+
+        private void expCanvas_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (Mouse.LeftButton == MouseButtonState.Pressed)
+            {
+                Point mousePos = e.GetPosition((UIElement)sender);
+                expCanvas_SetExpHelper(mousePos);
+            }
+        }
+
+        private void expCanvas_SetExpHelper(Point mousePos)
+        {
+            int newValue;
+            if (Keyboard.Modifiers == ModifierKeys.Alt) newValue = 64;
+            else newValue = (int)Math.Max(0, Math.Min(127, (1 - mousePos.Y / expCanvas.ActualHeight) * 127));
+            UNote note = midiVM.CanvasXToNote(mousePos.X);
+            if (midiVM.SelectedNotes.Count == 0 || midiVM.SelectedNotes.Contains(note))
+            if (note != null) note.styles[midiVM.expElement.Key] = (object)newValue;
+            midiVM.expElement.Redraw();
+        }
     }
 }

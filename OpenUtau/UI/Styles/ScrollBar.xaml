@@ -212,6 +212,7 @@
     <Style x:Key="{x:Type ScrollBar}" TargetType="ScrollBar">
         <Setter Property="SnapsToDevicePixels" Value="True"/>
         <Setter Property="OverridesDefaultStyle" Value="True"/>
+        <Setter Property="ContextMenuService.IsEnabled" Value="False"/>
         <Style.Triggers>
             <Trigger Property="Orientation" Value="Vertical">
                 <Setter Property="Width" Value="18"/>

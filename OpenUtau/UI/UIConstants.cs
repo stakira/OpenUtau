@@ -26,7 +26,7 @@ namespace OpenUtau.UI
 
         public const double MidiQuarterMaxWidth = 512;
         public const double MidiQuarterMinWidth = 8;
-        public const double MidiQuarterDefaultWidth = 32;
+        public const double MidiQuarterDefaultWidth = 128;
         public const double MidiTickMinWidth = 16;
 
         public const double TrackMaxHeight = 256;

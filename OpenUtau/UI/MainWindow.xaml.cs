@@ -170,14 +170,21 @@ namespace OpenUtau.UI
 
                 if (!trackVM.SelectedParts.Contains(_hitPartElement.Part)) trackVM.DeselectAll();
 
-                if (e.ClickCount == 2 && partEl is VoicePartElement) // load part into midi window
+                if (e.ClickCount == 2)
                 {
-                    LockUI();
-                    if (midiWindow == null) midiWindow = new MidiWindow(this);
-                    midiWindow.LoadPart((UVoicePart)partEl.Part, trackVM.Project);
-                    midiWindow.Show();
-                    midiWindow.Focus();
-                    UnlockUI();
+                    if (partEl is VoicePartElement) // load part into midi window
+                    {
+                        LockUI();
+                        if (midiWindow == null) midiWindow = new MidiWindow(this);
+                        midiWindow.LoadPart((UVoicePart)partEl.Part, trackVM.Project);
+                        midiWindow.Show();
+                        midiWindow.Focus();
+                        UnlockUI();
+                    }
+                    else if (partEl is WavePartElement)
+                    {
+                        partEl.Redraw();
+                    }
                 }
                 else if (mousePos.X > partEl.X + partEl.VisualWidth - UIConstants.ResizeMargin && partEl is VoicePartElement) // resize
                 {
@@ -458,7 +465,12 @@ namespace OpenUtau.UI
         private void CmdImportAudio(string file)
         {
             LockUI();
-            UWavePart uwavepart = OpenUtau.Core.Formats.Sound.CreateUWavePart(file);
+            UWavePart uwavepart = OpenUtau.Core.Formats.Sound.CreateUWavePart(file, (part) =>
+            {
+                trackVM.UpdatePartElement(part);
+                trackVM.GetPartElement(part).VisualHeight = 1; // for force redraw
+                trackVM.MarkUpdate();
+            });
             if (uwavepart != null)
             {
                 uproject.Tracks.Add(new UTrack());

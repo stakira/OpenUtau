@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 
 using NAudio;
@@ -14,17 +13,19 @@ namespace OpenUtau.Core.Formats
 {
     static class Sound
     {
-        public static UWavePart CreateUWavePart(string filepath)
+        public delegate void BuildPeaksDone(UWavePart part);
+
+        public static UWavePart CreateUWavePart(string filepath, BuildPeaksDone f)
         {
             UWavePart uwavepart = new UWavePart();
             uwavepart.FilePath = filepath;
             uwavepart.Name = Path.GetFileName(filepath);
             uwavepart.PosTick = 0;
-            LoadUWavePart(uwavepart);
+            LoadUWavePart(uwavepart, f);
             return uwavepart;
         }
 
-        public static void LoadUWavePart(UWavePart uwavepart)
+        public static void LoadUWavePart(UWavePart uwavepart, BuildPeaksDone f)
         {
             WaveStream stream;
             try
@@ -39,10 +40,10 @@ namespace OpenUtau.Core.Formats
 
             uwavepart.PeaksPath = uwavepart.FilePath + ".oupeaks";
             uwavepart.Stream = stream;
-            GetPeaks(uwavepart);
+            GetPeaks(uwavepart, f);
         }
 
-        private static void GetPeaks(UWavePart uwavepart)
+        private static void GetPeaks(UWavePart uwavepart, BuildPeaksDone f)
         {
             if (!File.Exists(uwavepart.FilePath)) return;
 
@@ -64,7 +65,14 @@ namespace OpenUtau.Core.Formats
                 }
             }
 
-            BuildPeaks(uwavepart);
+            System.ComponentModel.BackgroundWorker bw = new System.ComponentModel.BackgroundWorker()
+            {
+                WorkerReportsProgress = false,
+                WorkerSupportsCancellation = false
+            };
+            bw.DoWork += (o, e) => { BuildPeaks((UWavePart)e.Argument); e.Result = e.Argument; };
+            bw.RunWorkerCompleted += (o, e) => { f((UWavePart)e.Result); };
+            bw.RunWorkerAsync(uwavepart);
         }
 
         private static void BuildPeaks(UWavePart uwavepart)

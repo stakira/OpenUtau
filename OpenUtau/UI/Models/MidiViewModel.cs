@@ -27,6 +27,7 @@ namespace OpenUtau.UI.Models
         public UProject Project;
         public UVoicePart Part;
         public Canvas MidiCanvas;
+        public Canvas ExpCanvas;
 
         protected bool _updated = false;
         public void MarkUpdate() { _updated = true; }
@@ -111,8 +112,12 @@ namespace OpenUtau.UI.Models
         public List<UNote> SelectedNotes = new List<UNote>();
         public List<UNote> TempSelectedNotes = new List<UNote>();
         public List<NoteControl> NoteControls = new List<NoteControl>();
+        //public List<NoteExpElement> NoteExpElements = new List<NoteExpElement>();
+        public NoteExpElement expElement;
 
-        public MidiViewModel() { }
+        public MidiViewModel()
+        {
+        }
 
         public void RedrawIfUpdated()
         {
@@ -129,6 +134,9 @@ namespace OpenUtau.UI.Models
                     Canvas.SetLeft(noteControl, QuarterWidth * noteControl.Note.PosTick / Project.Resolution - OffsetX + 1);
                     Canvas.SetTop(noteControl, NoteNumToCanvas(noteControl.Note.NoteNum) + 1);
                 }
+                expElement.X = -OffsetX;
+                expElement.ScaleX = QuarterWidth / Project.Resolution;
+                expElement.VisualHeight = ExpCanvas.ActualHeight;
             }
             _updated = false;
         }
@@ -202,6 +210,8 @@ namespace OpenUtau.UI.Models
             Title = "Midi Editor";
             Part = null;
             Project = null;
+
+            expElement.Part = null;
         }
 
         public void LoadPart(UVoicePart part, UProject project)
@@ -211,9 +221,18 @@ namespace OpenUtau.UI.Models
             Part = part;
             Project = project;
 
-            foreach (UNote note in part.Notes) AddNoteControl(note);
-
+            foreach (UNote note in part.Notes)
+            {
+                AddNoteControl(note);
+            }
             PartUpdated();
+
+            if (expElement == null)
+            {
+                expElement = new NoteExpElement() { Key = "velocity" };
+                ExpCanvas.Children.Add(expElement);
+            }
+            expElement.Part = Part;
         }
 
         public void PartUpdated()
@@ -230,10 +249,7 @@ namespace OpenUtau.UI.Models
 
         public NoteControl GetNoteControl(UNote note)
         {
-            foreach (NoteControl nc in NoteControls)
-            {
-                if (nc.Note == note) return nc;
-            }
+            foreach (NoteControl nc in NoteControls) if (nc.Note == note) return nc;
             return null;
         }
 
@@ -241,6 +257,7 @@ namespace OpenUtau.UI.Models
         {
             Part.Notes.Add(note);
             AddNoteControl(note);
+            expElement.Redraw();
         }
 
         public void AddNoteControl(UNote note)
@@ -261,6 +278,7 @@ namespace OpenUtau.UI.Models
             Part.Notes.Remove(nc.Note);
             MidiCanvas.Children.Remove(nc);
             NoteControls.Remove(nc);
+            expElement.Redraw();
         }
 
         public void RemoveNote(UNote note)
@@ -303,6 +321,16 @@ namespace OpenUtau.UI.Models
         {
             return (double)note.PosTick / Project.Resolution * QuarterWidth < OffsetX + ViewWidth &&
                 (double)note.EndTick / Project.Resolution * QuarterWidth > OffsetX;
+        }
+
+        public UNote CanvasXToNote(double X)
+        {
+            int tick = (int)(CanvasToQuarter(X) * Project.Resolution);
+            foreach (UNote note in Part.Notes)
+            {
+                if (note.PosTick <= tick && note.EndTick >= tick) return note;
+            }
+            return null;
         }
 
         # endregion

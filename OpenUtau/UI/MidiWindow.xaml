@@ -92,7 +92,8 @@
                     BeatUnit="{Binding BeatUnit, Source={StaticResource midiVM}}"/>
             </Grid>
             <Canvas x:Name="CCCanvas" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="48" Margin="0,0,0,1" Background="Transparent" ClipToBounds="True"/>
-            <Canvas x:Name="expCanvas" Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="48,0,20,1" Background="Transparent" ClipToBounds="True"/>
+            <Canvas x:Name="expCanvas" Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="48,0,20,1" Background="Transparent" ClipToBounds="True"
+                    MouseLeftButtonDown="expCanvas_MouseLeftButtonDown" MouseLeftButtonUp="expCanvas_MouseLeftButtonUp" MouseMove="expCanvas_MouseMove"/>
             <ScrollBar x:Name="expVerticalScroll" Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="20"
                        Margin="0,0,0,20" Orientation="Vertical" ViewportSize="10000"/>
             <Border x:Name="expCanvasShadow" Grid.Row="2" Background="{x:Null}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="48,0,20,1" BorderThickness="0" ClipToBounds="True">
