@@ -69,12 +69,15 @@ namespace OpenUtau.UI.Controls
             {
                 foreach (UNote note in Part.Notes)
                 {
-                    double x1 = Math.Round(ScaleX * note.PosTick);
-                    double x2 = Math.Round(ScaleX * note.EndTick);
-                    double valueHeight = Math.Round(VisualHeight - VisualHeight * (int)note.styles[Key] / 127);
-                    cxt.DrawLine(pen3, new Point(x1 + 0.5, VisualHeight + 0.5), new Point(x1 + 0.5, valueHeight + 3));
-                    cxt.DrawEllipse(Brushes.White, pen2, new Point(x1 + 0.5, valueHeight), 2.5, 2.5);
-                    cxt.DrawLine(pen2, new Point(x1 + 3, valueHeight), new Point(Math.Max(x1 + 3, x2 - 3), valueHeight));
+                    if (note.styles.ContainsKey(Key))
+                    {
+                        double x1 = Math.Round(ScaleX * note.PosTick);
+                        double x2 = Math.Round(ScaleX * note.EndTick);
+                        double valueHeight = Math.Round(VisualHeight - VisualHeight * (int)note.styles[Key] / 127);
+                        cxt.DrawLine(pen3, new Point(x1 + 0.5, VisualHeight + 0.5), new Point(x1 + 0.5, valueHeight + 3));
+                        cxt.DrawEllipse(Brushes.White, pen2, new Point(x1 + 0.5, valueHeight), 2.5, 2.5);
+                        cxt.DrawLine(pen2, new Point(x1 + 3, valueHeight), new Point(Math.Max(x1 + 3, x2 - 3), valueHeight));
+                    }
                 }
             }
             else

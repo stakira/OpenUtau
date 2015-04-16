@@ -181,10 +181,6 @@ namespace OpenUtau.UI
                         midiWindow.Focus();
                         UnlockUI();
                     }
-                    else if (partEl is WavePartElement)
-                    {
-                        partEl.Redraw();
-                    }
                 }
                 else if (mousePos.X > partEl.X + partEl.VisualWidth - UIConstants.ResizeMargin && partEl is VoicePartElement) // resize
                 {

@@ -94,5 +94,17 @@ namespace OpenUtau.Properties {
                 this["EditMaximized"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("100")]
+        public int UndoLimit {
+            get {
+                return ((int)(this["UndoLimit"]));
+            }
+            set {
+                this["UndoLimit"] = value;
+            }
+        }
     }
 }
