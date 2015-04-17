@@ -7,7 +7,7 @@
         xmlns:ic="clr-namespace:Microsoft.Expression.Interactivity.Core;assembly=Microsoft.Expression.Interactions"
         xmlns:il="clr-namespace:Microsoft.Expression.Interactivity.Layout;assembly=Microsoft.Expression.Interactions"
         xmlns:ib="clr-namespace:OpenUtau.UI.Behaviors"
-        Style="{StaticResource UBorderlessWindow}" Title="New Part"  KeyDown="Window_KeyDown" Closing="Window_Closing">
+        Style="{StaticResource UBorderlessWindow}" Title="Midi Editor"  KeyDown="Window_KeyDown" Closing="Window_Closing">
     <i:Interaction.Behaviors>
         <ib:BorderlessWindowBehavior/>
     </i:Interaction.Behaviors>

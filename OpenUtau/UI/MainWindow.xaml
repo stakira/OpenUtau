@@ -27,7 +27,7 @@
                     <MenuItem Header="Ust (GB2312)..."/>
                     <MenuItem Header="Ust (Shift-JIS)..."/>
                 </MenuItem>
-                <MenuItem Header="_Save" InputGestureText="Ctrl+S"/>
+                <MenuItem Header="_Save" InputGestureText="Ctrl+S" Click="MenuSave_Click"/>
                 <MenuItem Header="Save _As..."/>
                 <MenuItem Header="_Import Audio..." Click="MenuImportAidio_Click"/>
                 <MenuItem Header="Recent _Files">
@@ -37,8 +37,8 @@
                 <MenuItem Header="_Exit" InputGestureText="Alt+F4" Click="MenuExit_Click"/>
             </MenuItem>
             <MenuItem Header="_Edit">
-                <MenuItem Header="_Undo" InputGestureText="Ctrl+Z"/>
-                <MenuItem Header="_Redo" InputGestureText="Ctrl+Y"/>
+                <MenuItem Header="_Undo" InputGestureText="Ctrl+Z" Click="MenuUndo_Click" />
+                <MenuItem Header="_Redo" InputGestureText="Ctrl+Y" Click="MenuRedo_Click"/>
                 <MenuItem Header="Cu_t" InputGestureText="Ctrl+X"/>
                 <MenuItem Header="_Copy" InputGestureText="Ctrl+C"/>
                 <MenuItem Header="_Paste" InputGestureText="Ctrl+V"/>

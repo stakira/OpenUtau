@@ -75,9 +75,12 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\Formats\USTx.cs" />
     <Compile Include="Core\USTx\NoteCommands.cs" />
     <Compile Include="Core\USTx\Deque.cs" />
     <Compile Include="Core\USTx\DocManager.cs" />
+    <Compile Include="Core\USTx\Notifications.cs" />
+    <Compile Include="Core\USTx\PartCommands.cs" />
     <Compile Include="Core\USTx\UCommand.cs" />
     <Compile Include="UI\Controls\ExpElements.cs" />
     <Compile Include="UI\Controls\PartElements.cs" />

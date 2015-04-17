@@ -6,32 +6,6 @@ using System.Threading.Tasks;
 
 namespace OpenUtau.Core.USTx
 {
-    public enum UCommandTypes
-    {
-        //AddNote,
-        //RemoveNote,
-        //ChangeNotePos,
-        //ChangeNoteDur,
-        //ChangeNoteNum,
-        ChangeNoteChannel,
-        AddVoicePart,
-        RemoveVoicePart,
-        ChangeVoicePartPos,
-        ChangeVoicePartDur,
-        ChangeVoicePartTrack,
-        AddWavePart,
-        RemoveWavePart,
-        ChangeWavePartPos,
-        ChangeWavePartDur,
-        ChangeWavePartTrack,
-        //AddTrack,
-        //RemoveTrack,
-        NewProject,
-        LoadProject,
-        CloseProject,
-        SaveProject
-    };
-
     public abstract class UCommand
     {
         public abstract void Execute();
@@ -40,30 +14,22 @@ namespace OpenUtau.Core.USTx
         public override abstract string ToString();
     }
 
-    public class UCommandGroup : ICollection<UCommand>
+    public class UCommandGroup
     {
-        List<UCommand> commands;
+        public List<UCommand> Commands;
+        public UCommandGroup() { Commands = new List<UCommand>(); }
+        public override string ToString() { return Commands.Count == 0 ? "No op" : Commands.First().ToString(); }
+    }
 
-        // Constructor
-        public UCommandGroup() { commands = new List<UCommand>(); }
+    public interface ICmdPublisher
+    {
+        void Subscribe(ICmdSubscriber subscriber);
+        void Publish(UCommand cmd, bool isUndo);
+    }
 
-        // ICollection Methods
-        public void Add(UCommand item) { commands.Add(item); }
-        public void Clear() { commands.Clear(); }
-        public bool Contains(UCommand item) { return commands.Contains(item); }
-        public void CopyTo(UCommand[] array, int arrayIndex) { commands.CopyTo(array, arrayIndex); }
-        public int Count { get { return commands.Count; } }
-        public bool IsReadOnly { get { return false; } }
-        public bool Remove(UCommand item) { return commands.Remove(item); }
-        public IEnumerator<UCommand> GetEnumerator() { return commands.GetEnumerator(); }
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() { return commands.GetEnumerator(); }
-        public UCommand First() { return commands.First(); }
-        public UCommand Last() { return commands.Last(); }
-
-        // Command Methods
-        public void Execute() { foreach (UCommand cmd in commands) cmd.Execute(); }
-        public void Unexecute() { foreach (UCommand cmd in commands) cmd.Unexecute(); }
-
-        public override string ToString() { return base.ToString(); } // TODO
+    public interface ICmdSubscriber
+    {
+        void Subscribe(ICmdPublisher publisher);
+        void OnNext(UCommand cmd, bool isUndo);
     }
 }

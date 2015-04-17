@@ -48,9 +48,11 @@ namespace OpenUtau.UI.Controls
         protected double _height;
         public double VisualHeight
         {
-            set { if (value != _height) { _height = value; sTransPost.ScaleY = value / partVisual.ContentBounds.Height; RedrawFrame(); } }
+            set { if (value != _height) { _height = value; FitHeight(value); } }
             get { return _height; }
         }
+        protected void FitHeight(double height)
+        { sTransPost.ScaleY = height / partVisual.ContentBounds.Height; RedrawFrame(); }
 
         public double VisualWidth { get { return Part.DurTick * ScaleX; } }
 
@@ -166,6 +168,7 @@ namespace OpenUtau.UI.Controls
                                                                  new Point(note.EndTick, UIConstants.MaxNoteNum - note.NoteNum));
             cxt.Close();
             tTransPre.Y = -partVisual.ContentBounds.Top;
+            FitHeight(VisualHeight);
         }
     }
 

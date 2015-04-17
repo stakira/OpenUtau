@@ -6,43 +6,80 @@ using System.Threading.Tasks;
 
 namespace OpenUtau.Core.USTx
 {
-    class DocManager
+    class DocManager : ICmdPublisher
     {
+        DocManager() { project = new UProject(); }
         static DocManager _s;
-        private DocManager() { project = new UProject(); }
-        public static DocManager GetInst() { if (_s == null) { _s = new DocManager(); } return _s; }
+        static DocManager GetInst() { if (_s == null) { _s = new DocManager(); } return _s; }
+        public static DocManager Inst { get { return GetInst(); } }
 
         public UProject project;
 
         # region Command Queue
 
-        public Deque<UCommandGroup> undoQueue = new Deque<UCommandGroup>();
-        public Deque<UCommandGroup> redoQueue = new Deque<UCommandGroup>();
-        public UCommandGroup undoGroup = null;
+        Deque<UCommandGroup> undoQueue = new Deque<UCommandGroup>();
+        Deque<UCommandGroup> redoQueue = new Deque<UCommandGroup>();
+        UCommandGroup undoGroup = null;
+        UCommandGroup savedPoint = null;
 
         public void ExecuteCmd(UCommand cmd)
         {
+            if (cmd is UNotification)
+            {
+                if (cmd is SaveProjectNotification && undoQueue.Count > 0) { savedPoint = undoQueue.Last(); }
+                Publish(cmd);
+                System.Diagnostics.Debug.WriteLine("Publish notification " + cmd.ToString());
+                return;
+            }
             if (undoGroup == null) { System.Diagnostics.Debug.WriteLine("Null undoGroup"); return; }
-            undoGroup.Add(cmd);
+            undoGroup.Commands.Add(cmd);
             cmd.Execute();
+            Publish(cmd);
+            System.Diagnostics.Debug.WriteLine("ExecuteCmd " + cmd.ToString());
         }
 
         public void StartUndoGroup()
         {
-            redoQueue.Clear();
-            if (undoGroup != null) throw new Exception("undoGroup already started");
+            if (undoGroup != null) { System.Diagnostics.Debug.WriteLine("undoGroup already started"); EndUndoGroup(); }
             undoGroup = new UCommandGroup();
+            System.Diagnostics.Debug.WriteLine("undoGroup started");
         }
 
         public void EndUndoGroup()
         {
-            undoQueue.AddToBack(undoGroup);
-            undoGroup = null;
+            if (undoGroup != null && undoGroup.Commands.Count > 0) { undoQueue.AddToBack(undoGroup); redoQueue.Clear(); }
             if (undoQueue.Count > Properties.Settings.Default.UndoLimit) undoQueue.RemoveFromFront();
+            undoGroup = null;
+            System.Diagnostics.Debug.WriteLine("undoGroup ended");
         }
 
-        public void Undo() { var cmdg = undoQueue.RemoveFromBack(); cmdg.Unexecute(); redoQueue.AddToBack(cmdg); }
-        public void Redo() { var cmdg = redoQueue.RemoveFromBack(); cmdg.Execute(); undoQueue.AddToBack(cmdg); }
+        public void Undo()
+        {
+            if (undoQueue.Count == 0) return;
+            var cmdg = undoQueue.RemoveFromBack();
+            for (int i = cmdg.Commands.Count - 1; i >= 0; i--) { var cmd = cmdg.Commands[i]; cmd.Unexecute(); Publish(cmd, true); }
+            redoQueue.AddToBack(cmdg);
+        }
+
+        public void Redo()
+        {
+            if (redoQueue.Count == 0) return;
+            var cmdg = redoQueue.RemoveFromBack();
+            foreach (var cmd in cmdg.Commands) { cmd.Execute(); Publish(cmd); }
+            undoQueue.AddToBack(cmdg);
+        }
+
+        # endregion
+
+        # region ICmdPublisher
+
+        private List<ICmdSubscriber> subscribers = new List<ICmdSubscriber>();
+        public void Subscribe(ICmdSubscriber sub) { if (!subscribers.Contains(sub)) subscribers.Add(sub); }
+        public void Publish(UCommand cmd, bool isUndo = false) { foreach (var sub in subscribers) sub.OnNext(cmd, isUndo); }
+
+        # endregion
+
+        # region Command handeling
 
         # endregion
     }

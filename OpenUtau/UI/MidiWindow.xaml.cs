@@ -28,14 +28,11 @@ namespace OpenUtau.UI
     /// </summary>
     public partial class MidiWindow : BorderlessWindow
     {
-        MainWindow mainwindow;
         MidiViewModel midiVM;
 
-        public MidiWindow(MainWindow mw)
+        public MidiWindow()
         {
             InitializeComponent();
-
-            mainwindow = mw;
 
             this.CloseButtonClicked += (o, e) => { Hide(); };
             CompositionTargetEx.FrameUpdating += RenderLoop;
@@ -48,6 +45,7 @@ namespace OpenUtau.UI
             midiVM = (MidiViewModel)this.Resources["midiVM"];
             midiVM.MidiCanvas = this.notesCanvas;
             midiVM.ExpCanvas = this.expCanvas;
+            midiVM.Subscribe(DocManager.Inst);
         }
 
         void viewScaler_ViewScaled(object sender, EventArgs e)
@@ -117,20 +115,6 @@ namespace OpenUtau.UI
             }
         }
 
-        public void UnloadPart()
-        {
-            _viewLocked = true;
-            midiVM.UnloadPart();
-            Title = midiVM.Title;
-        }
-
-        public void LoadPart(UVoicePart part, UProject project)
-        {
-            midiVM.LoadPart(part, project);
-            Title = midiVM.Title;
-            _viewLocked = false;
-        }
-
         # region Note Canvas
 
         Rectangle selectionBox;
@@ -159,7 +143,7 @@ namespace OpenUtau.UI
 
         private void notesCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (_viewLocked) return;
+            if (midiVM.Part == null) return;
             FocusManager.SetFocusedElement(this, null);
             Point mousePos = e.GetPosition((Canvas)sender);
 
@@ -229,6 +213,7 @@ namespace OpenUtau.UI
                                 if (note.NoteNum > _noteMoveNoteMax.NoteNum) _noteMoveNoteMax = note;
                             }
                         }
+                        DocManager.Inst.StartUndoGroup();
                     }
                     else if (!hitNoteControl.IsLyricBoxActive())
                     {
@@ -241,6 +226,7 @@ namespace OpenUtau.UI
                             foreach (UNote note in midiVM.SelectedNotes)
                                 if (note.DurTick < _noteResizeShortest.DurTick) _noteResizeShortest = note;
                         }
+                        DocManager.Inst.StartUndoGroup();
                     }
                 }
                 else // Add note
@@ -252,7 +238,9 @@ namespace OpenUtau.UI
                         PosTick = midiVM.CanvasToSnappedTick(mousePos.X),
                         DurTick = _lastNoteLength
                     };
-                    midiVM.AddNote(newNote);
+                    DocManager.Inst.StartUndoGroup();
+                    DocManager.Inst.ExecuteCmd(new AddNoteCommand(midiVM.Part, newNote));
+                    DocManager.Inst.EndUndoGroup();
                     midiVM.MarkUpdate();
                     // Enable drag
                     midiVM.DeselectAll();
@@ -260,6 +248,7 @@ namespace OpenUtau.UI
                     _hitNoteControl = midiVM.GetNoteControl(newNote);
                     _noteMoveRelativeTick = 0;
                     _noteMoveStartTick = newNote.PosTick;
+                    DocManager.Inst.StartUndoGroup();
                 }
             }
             ((UIElement)sender).CaptureMouse();
@@ -267,10 +256,11 @@ namespace OpenUtau.UI
 
         private void notesCanvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            mainwindow.UpdatePartElement(midiVM.Part);
+            if (midiVM.Part == null) return;
             _moveNote = false;
             _resizeNote = false;
             _hitNoteControl = null;
+            DocManager.Inst.EndUndoGroup();
             // End selection
             selectionStart = null;
             if (selectionBox != null)
@@ -291,6 +281,7 @@ namespace OpenUtau.UI
 
         private void notesCanvas_MouseMove_Helper(Point mousePos)
         {
+            if (midiVM.Part == null) return;
             if (selectionStart != null) // Selection
             {
                 double top = midiVM.NoteNumToCanvas(Math.Max(midiVM.CanvasToNoteNum(mousePos.Y), (int)selectionStart.Value.Y));
@@ -306,23 +297,27 @@ namespace OpenUtau.UI
             {
                 if (midiVM.SelectedNotes.Count == 0)
                 {
-                    _hitNoteControl.Note.NoteNum = Math.Max(0, Math.Min(UIConstants.MaxNoteNum - 1, midiVM.CanvasToNoteNum(mousePos.Y)));
-                    _hitNoteControl.Note.PosTick = Math.Max(0, Math.Min((int)(midiVM.QuarterCount * midiVM.Project.Resolution) - _hitNoteControl.Note.DurTick,
+                    int newNoteNum = Math.Max(0, Math.Min(UIConstants.MaxNoteNum - 1, midiVM.CanvasToNoteNum(mousePos.Y)));
+                    int newPosTick = Math.Max(0, Math.Min((int)(midiVM.QuarterCount * midiVM.Project.Resolution) - _hitNoteControl.Note.DurTick,
                         (int)(midiVM.Project.Resolution * midiVM.CanvasToSnappedQuarter(mousePos.X)) - _noteMoveRelativeTick));
-                    midiVM.MarkUpdate();
+                    if (newNoteNum != _hitNoteControl.Note.NoteNum || newPosTick != _hitNoteControl.Note.PosTick)
+                        DocManager.Inst.ExecuteCmd(new MoveNoteCommand(midiVM.Part, _hitNoteControl.Note, newPosTick, newNoteNum));
                 }
                 else
                 {
                     int deltaNoteNum = midiVM.CanvasToNoteNum(mousePos.Y) - _hitNoteControl.Note.NoteNum;
                     int deltaPosTick = ((int)(midiVM.Project.Resolution * midiVM.CanvasToSnappedQuarter(mousePos.X)) - _noteMoveRelativeTick) - _hitNoteControl.Note.PosTick;
 
-                    if (deltaNoteNum + _noteMoveNoteMin.NoteNum >= 0 && deltaNoteNum + _noteMoveNoteMax.NoteNum < UIConstants.MaxNoteNum)
-                        foreach (UNote note in midiVM.SelectedNotes) note.NoteNum += deltaNoteNum;
-
-                    if (deltaPosTick + _noteMoveNoteLeft.PosTick >= 0 && deltaPosTick + _noteMoveNoteRight.EndTick <= midiVM.QuarterCount * midiVM.Project.Resolution)
-                        foreach (UNote note in midiVM.SelectedNotes) note.PosTick += deltaPosTick;
-
-                    midiVM.MarkUpdate();
+                    if (deltaNoteNum != 0 || deltaPosTick != 0)
+                    {
+                        bool changeNoteNum = deltaNoteNum + _noteMoveNoteMin.NoteNum >= 0 && deltaNoteNum + _noteMoveNoteMax.NoteNum < UIConstants.MaxNoteNum;
+                        bool changePosTick = deltaPosTick + _noteMoveNoteLeft.PosTick >= 0 && deltaPosTick + _noteMoveNoteRight.EndTick <= midiVM.QuarterCount * midiVM.Project.Resolution;
+                        if (changeNoteNum || changePosTick)
+                            foreach (UNote note in midiVM.SelectedNotes)
+                                DocManager.Inst.ExecuteCmd(new MoveNoteCommand(midiVM.Part, note,
+                                    changePosTick ? note.PosTick + deltaPosTick : note.PosTick,
+                                    changeNoteNum ? note.NoteNum + deltaNoteNum : note.NoteNum));
+                    }
                 }
                 Mouse.OverrideCursor = Cursors.SizeAll;
             }
@@ -331,21 +326,26 @@ namespace OpenUtau.UI
                 if (midiVM.SelectedNotes.Count == 0)
                 {
                     int newDurTick = (int)(midiVM.CanvasRoundToSnappedQuarter(mousePos.X) * midiVM.Project.Resolution) - _hitNoteControl.Note.PosTick;
-                    if (newDurTick >= midiVM.GetSnapUnit() * midiVM.Project.Resolution) _lastNoteLength = _hitNoteControl.Note.DurTick = newDurTick;
-                    midiVM.MarkUpdate();
+                    if (newDurTick != _hitNoteControl.Note.DurTick && newDurTick >= midiVM.GetSnapUnit() * midiVM.Project.Resolution)
+                    {
+                        DocManager.Inst.ExecuteCmd(new ResizeNoteCommand(midiVM.Part, _hitNoteControl.Note, newDurTick));
+                        _lastNoteLength = newDurTick;
+                    }
                 }
                 else
                 {
                     int deltaDurTick = (int)(midiVM.CanvasRoundToSnappedQuarter(mousePos.X) * midiVM.Project.Resolution) - _hitNoteControl.Note.EndTick;
-                    if (deltaDurTick + _noteResizeShortest.DurTick > midiVM.GetSnapUnit())
-                        foreach (UNote note in midiVM.SelectedNotes) note.DurTick += deltaDurTick;
-                    midiVM.MarkUpdate();
+                    if (deltaDurTick != 0 && deltaDurTick + _noteResizeShortest.DurTick > midiVM.GetSnapUnit())
+                    {
+                        foreach (UNote note in midiVM.SelectedNotes) DocManager.Inst.ExecuteCmd(new ResizeNoteCommand(midiVM.Part, note, note.DurTick + deltaDurTick));
+                        _lastNoteLength = _hitNoteControl.Note.DurTick;
+                    }
                 }
             }
             else if (Mouse.RightButton == MouseButtonState.Pressed) // Remove Note
             {
                 NoteControl hitNoteControl = getNoteVisualHit(VisualTreeHelper.HitTest(notesCanvas, mousePos));
-                if (hitNoteControl != null) midiVM.RemoveNote(hitNoteControl);
+                if (hitNoteControl != null) DocManager.Inst.ExecuteCmd(new RemoveNoteCommand(midiVM.Part, hitNoteControl.Note));
             }
             else if (Mouse.LeftButton == MouseButtonState.Released && Mouse.RightButton == MouseButtonState.Released)
             {
@@ -364,12 +364,13 @@ namespace OpenUtau.UI
 
         private void notesCanvas_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (_viewLocked) return;
+            if (midiVM.Part == null) return;
             FocusManager.SetFocusedElement(this, null);
             Point mousePos = e.GetPosition((Canvas)sender);
             NoteControl hitNoteControl = getNoteVisualHit(VisualTreeHelper.HitTest(notesCanvas, mousePos));
-            
-            if (hitNoteControl != null && midiVM.SelectedNotes.Contains(hitNoteControl.Note)) midiVM.RemoveNote(hitNoteControl);
+            DocManager.Inst.StartUndoGroup();
+            if (hitNoteControl != null && midiVM.SelectedNotes.Contains(hitNoteControl.Note))
+                DocManager.Inst.ExecuteCmd(new RemoveNoteCommand(midiVM.Part, hitNoteControl.Note));
             else midiVM.DeselectAll();
 
             ((UIElement)sender).CaptureMouse();
@@ -380,9 +381,10 @@ namespace OpenUtau.UI
 
         private void notesCanvas_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
-            mainwindow.UpdatePartElement(midiVM.Part);
+            if (midiVM.Part == null) return;
             Mouse.OverrideCursor = null;
             ((UIElement)sender).ReleaseMouseCapture();
+            DocManager.Inst.EndUndoGroup();
         }
 
         private void notesCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
@@ -432,7 +434,7 @@ namespace OpenUtau.UI
 
         private void timelineCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (_viewLocked) return;
+            if (midiVM.Part == null) return;
             //ncModel.playPosMarkerOffset = ncModel.snapNoteOffset(e.GetPosition((UIElement)sender).X);
             //ncModel.updatePlayPosMarker();
             ((Canvas)sender).CaptureMouse();
@@ -486,16 +488,26 @@ namespace OpenUtau.UI
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            if (_viewLocked) return;
+            if (midiVM.Part == null) return;
             if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.A)
             {
                 midiVM.SelectAll();
             }
-            else if (e.Key == Key.Delete)
+            else if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.Z)
             {
-                // Delete notes
-                midiVM.RemoveSelectedNotes();
-                mainwindow.UpdatePartElement(midiVM.Part);
+                midiVM.DeselectAll();
+                DocManager.Inst.Undo();
+            }
+            else if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.Y)
+            {
+                midiVM.DeselectAll();
+                DocManager.Inst.Redo();
+            }
+            else if (Keyboard.Modifiers == 0 && e.Key == Key.Delete)
+            {
+                DocManager.Inst.StartUndoGroup();
+                while (midiVM.SelectedNotes.Count > 0) DocManager.Inst.ExecuteCmd(new RemoveNoteCommand(midiVM.Part, midiVM.SelectedNotes.Last()));
+                DocManager.Inst.EndUndoGroup();
             }
         }
 
@@ -504,15 +516,6 @@ namespace OpenUtau.UI
             e.Cancel = true;
             this.Hide();
         }
-
-        public void UpdatePart()
-        {
-            midiVM.HorizontalPropertiesChanged();
-        }
-
-        bool _viewLocked = false;
-        private void LockView() { _viewLocked = true; Mouse.OverrideCursor = Cursors.AppStarting; }
-        private void UnlockView() { _viewLocked = false; Mouse.OverrideCursor = null; }
 
         private void expCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {

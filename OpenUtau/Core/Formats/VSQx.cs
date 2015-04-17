@@ -12,6 +12,9 @@ namespace OpenUtau.Core.Formats
 {
     static class VSQx
     {
+        public const string vsq3NameSpace = @"http://www.yamaha.co.jp/vocaloid/schema/vsq3/";
+        public const string vsq4NameSpace = @"http://www.yamaha.co.jp/vocaloid/schema/vsq4/";
+
         static public UProject Load(string file)
         {
             XmlDocument vsqx = new XmlDocument();
@@ -27,8 +30,8 @@ namespace OpenUtau.Core.Formats
             }
 
             XmlNamespaceManager nsmanager = new XmlNamespaceManager(vsqx.NameTable);
-            nsmanager.AddNamespace("v3", "http://www.yamaha.co.jp/vocaloid/schema/vsq3/");
-            nsmanager.AddNamespace("v4", "http://www.yamaha.co.jp/vocaloid/schema/vsq4/");
+            nsmanager.AddNamespace("v3", vsq3NameSpace);
+            nsmanager.AddNamespace("v4", vsq4NameSpace);
 
             XmlNode root;
             string nsPrefix;
@@ -76,14 +79,14 @@ namespace OpenUtau.Core.Formats
             string notestyleattrPath = string.Format("{0}{1}/{0}{2}", nsPrefix, nsPrefix == "v3:" ? "noteStyle" : "nStyle", nsPrefix == "v3:" ? "attr" : "v");
 
             uproject.BPM = Convert.ToDouble(root.SelectSingleNode(bpmPath, nsmanager).InnerText) / 100;
-            uproject.BeatPerBar = Convert.ToInt32(root.SelectSingleNode(beatperbarPath, nsmanager).InnerText);
-            uproject.BeatUnit = Convert.ToInt32(root.SelectSingleNode(beatunitPath, nsmanager).InnerText);
-            uproject.Resolution = Convert.ToInt32(root.SelectSingleNode(resolutionPath, nsmanager).InnerText);
+            uproject.BeatPerBar = int.Parse(root.SelectSingleNode(beatperbarPath, nsmanager).InnerText);
+            uproject.BeatUnit = int.Parse(root.SelectSingleNode(beatunitPath, nsmanager).InnerText);
+            uproject.Resolution = int.Parse(root.SelectSingleNode(resolutionPath, nsmanager).InnerText);
             uproject.FilePath = file;
             uproject.Name = root.SelectSingleNode(projectnamePath, nsmanager).InnerText;
             uproject.Comment = root.SelectSingleNode(projectcommentPath, nsmanager).InnerText;
 
-            int preMeasure = Convert.ToInt32(root.SelectSingleNode(premeasurePath, nsmanager).InnerText);
+            int preMeasure = int.Parse(root.SelectSingleNode(premeasurePath, nsmanager).InnerText);
             int partPosTickShift = -preMeasure * uproject.Resolution * uproject.BeatPerBar * 4 / uproject.BeatUnit;
 
             foreach (XmlNode track in root.SelectNodes(nsPrefix + "vsTrack", nsmanager)) // track
@@ -93,7 +96,7 @@ namespace OpenUtau.Core.Formats
 
                 utrack.Name = track.SelectSingleNode(tracknamePath, nsmanager).InnerText;
                 utrack.Comment = track.SelectSingleNode(trackcommentPath, nsmanager).InnerText;
-                utrack.TrackNo = Convert.ToInt32(track.SelectSingleNode(tracknoPath, nsmanager).InnerText);
+                utrack.TrackNo = int.Parse(track.SelectSingleNode(tracknoPath, nsmanager).InnerText);
 
                 foreach (XmlNode part in track.SelectNodes(partPath, nsmanager)) // musical part
                 {
@@ -102,8 +105,8 @@ namespace OpenUtau.Core.Formats
 
                     upart.Name = part.SelectSingleNode(partnamePath, nsmanager).InnerText;
                     upart.Comment = part.SelectSingleNode(partcommentPath, nsmanager).InnerText;
-                    upart.PosTick = Convert.ToInt32(part.SelectSingleNode(postickPath, nsmanager).InnerText) + partPosTickShift;
-                    upart.DurTick = Convert.ToInt32(part.SelectSingleNode(playtimePath, nsmanager).InnerText);
+                    upart.PosTick = int.Parse(part.SelectSingleNode(postickPath, nsmanager).InnerText) + partPosTickShift;
+                    upart.DurTick = int.Parse(part.SelectSingleNode(playtimePath, nsmanager).InnerText);
                     upart.TrackNo = utrack.TrackNo;
 
                     foreach (XmlNode note in part.SelectNodes(notePath, nsmanager))
@@ -111,15 +114,15 @@ namespace OpenUtau.Core.Formats
                         UNote unote = new UNote();
                         upart.Notes.Add(unote);
 
-                        unote.PosTick = Convert.ToInt32(note.SelectSingleNode(postickPath, nsmanager).InnerText);
-                        unote.DurTick = Convert.ToInt32(note.SelectSingleNode(durtickPath, nsmanager).InnerText);
-                        unote.NoteNum = Convert.ToInt32(note.SelectSingleNode(notenumPath, nsmanager).InnerText);
+                        unote.PosTick = int.Parse(note.SelectSingleNode(postickPath, nsmanager).InnerText);
+                        unote.DurTick = int.Parse(note.SelectSingleNode(durtickPath, nsmanager).InnerText);
+                        unote.NoteNum = int.Parse(note.SelectSingleNode(notenumPath, nsmanager).InnerText);
                         unote.Lyric = note.SelectSingleNode(lyricPath, nsmanager).InnerText;
                         unote.Phoneme = note.SelectSingleNode(phonemePath, nsmanager).InnerText;
 
-                        unote.styles.Add("velocity", Convert.ToInt32(note.SelectSingleNode(velocityPath, nsmanager).InnerText));
+                        unote.styles.Add("velocity", int.Parse(note.SelectSingleNode(velocityPath, nsmanager).InnerText));
                         foreach (XmlNode attr in note.SelectNodes(notestyleattrPath, nsmanager))
-                            unote.styles.Add(attr.Attributes[0].Value, Convert.ToInt32(attr.InnerText));
+                            unote.styles.Add(attr.Attributes[0].Value, int.Parse(attr.InnerText));
 
                         unote.Channel = 0; // FIXME
                     }

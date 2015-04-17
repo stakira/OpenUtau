@@ -16,7 +16,7 @@ using OpenUtau.UI.Controls;
 
 namespace OpenUtau.UI.Models
 {
-    public class TracksViewModel : INotifyPropertyChanged
+    public class TracksViewModel : INotifyPropertyChanged, ICmdSubscriber
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -156,19 +156,6 @@ namespace OpenUtau.UI.Models
             UpdateSelectedVisual();
         }
 
-        public void RemoveSelectedParts()
-        {
-            foreach (UPart part in SelectedParts)
-            {
-                PartElement partEl = GetPartElement(part);
-                Project.Parts.Remove(part);
-                TrackCanvas.Children.Remove(partEl);
-                PartElements.Remove(partEl);
-                partEl.Part.Dispose();
-            }
-            SelectedParts.Clear();
-        }
-
         # endregion
 
         public void UnloadProject()
@@ -195,31 +182,6 @@ namespace OpenUtau.UI.Models
             return null;
         }
 
-        public void AddPart(UPart part)
-        {
-            PartElement partElement;
-
-            if (part is UWavePart) partElement = new WavePartElement() { Part = part, Project = Project };
-            else partElement = new VoicePartElement() { Part = part, Project = Project };
-
-            partElement.Redraw();
-            PartElements.Add(partElement);
-            TrackCanvas.Children.Add(partElement);
-            Canvas.SetZIndex(partElement, UIConstants.PartElementZIndex);
-
-            UpdateViewSize();
-            MarkUpdate();
-        }
-
-        public void RemovePart(PartElement partEl)
-        {
-            if (SelectedParts.Contains(partEl.Part)) SelectedParts.Remove(partEl.Part);
-            Project.Parts.Remove(partEl.Part);
-            TrackCanvas.Children.Remove(partEl);
-            PartElements.Remove(partEl);
-            partEl.Part.Dispose();
-        }
-
         public void LoadProject(UProject project)
         {
             UnloadProject();
@@ -227,7 +189,7 @@ namespace OpenUtau.UI.Models
 
             foreach (UPart part in project.Parts)
             {
-                AddPart(part);
+                OnPartAdded(part);
             }
         }
 
@@ -298,5 +260,67 @@ namespace OpenUtau.UI.Models
         public int CanvasToSnappedTick(double X) { return (int)(CanvasToSnappedQuarter(X) * Project.Resolution); }
 
         # endregion
+
+        # region Cmd Handling
+
+        public void OnPartAdded(UPart part)
+        {
+            PartElement partElement;
+            if (part is UWavePart) partElement = new WavePartElement() { Part = part, Project = Project };
+            else partElement = new VoicePartElement() { Part = part, Project = Project };
+
+            partElement.Redraw();
+            PartElements.Add(partElement);
+            TrackCanvas.Children.Add(partElement);
+            Canvas.SetZIndex(partElement, UIConstants.PartElementZIndex);
+
+            UpdateViewSize();
+            MarkUpdate();
+        }
+
+        public void OnPartRemoved(UPart part)
+        {
+            if (SelectedParts.Contains(part)) SelectedParts.Remove(part);
+            var partElement = GetPartElement(part);
+            TrackCanvas.Children.Remove(partElement);
+            PartElements.Remove(partElement);
+
+            UpdateViewSize();
+            MarkUpdate();
+        }
+
+        # endregion
+
+        # region ICmdSubscriber
+
+        public void Subscribe(ICmdPublisher publisher) { if (publisher != null) publisher.Subscribe(this); }
+
+        public void OnNext(UCommand cmd, bool isUndo)
+        {
+            if (cmd is NoteCommand)
+            {
+                var _cmd = cmd as NoteCommand;
+                UpdatePartElement(_cmd.part);
+            }
+            else if (cmd is PartCommand)
+            {
+                var _cmd = cmd as PartCommand;
+                if (_cmd is AddPartCommand)
+                {
+                    if (!isUndo) OnPartAdded(_cmd.part);
+                    else OnPartRemoved(_cmd.part);
+                }
+                else if (_cmd is RemovePartCommand)
+                {
+                    if (!isUndo) OnPartRemoved(_cmd.part);
+                    else OnPartAdded(_cmd.part);
+                }
+                else if (_cmd is ResizePartCommand) MarkUpdate();
+                else if (_cmd is MovePartCommand) MarkUpdate();
+            }
+        }
+
+        # endregion
+
     }
 }

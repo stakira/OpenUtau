@@ -51,16 +51,8 @@ namespace OpenUtau.UI.Controls
             this.AddVisualChild(visual);
         }
 
-        protected override int VisualChildrenCount
-        {
-            //get { if (Part == null) return 0; else return 0; }
-            get { return 1; }
-        }
-
-        protected override Visual GetVisualChild(int index)
-        {
-            return visual;
-        }
+        protected override int VisualChildrenCount { get { return 1; } }
+        protected override Visual GetVisualChild(int index) { return visual; }
 
         public void Redraw()
         {
