@@ -76,6 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\Formats\USTx.cs" />
+    <Compile Include="Core\USTx\Expressions.cs" />
     <Compile Include="Core\USTx\NoteCommands.cs" />
     <Compile Include="Core\USTx\Deque.cs" />
     <Compile Include="Core\USTx\DocManager.cs" />
