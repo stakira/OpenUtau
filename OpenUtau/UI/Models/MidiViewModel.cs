@@ -112,7 +112,7 @@ namespace OpenUtau.UI.Models
         public List<UNote> SelectedNotes = new List<UNote>();
         public List<UNote> TempSelectedNotes = new List<UNote>();
         public List<NoteControl> NoteControls = new List<NoteControl>();
-        public NoteExpElement expElement;
+        public CCExpElement expElement;
 
         public MidiViewModel() { }
 
@@ -260,7 +260,7 @@ namespace OpenUtau.UI.Models
 
             if (expElement == null)
             {
-                expElement = new NoteExpElement() { Key = "velocity" };
+                expElement = new CCExpElement() { Key = "velocity" };
                 ExpCanvas.Children.Add(expElement);
             }
             expElement.Part = Part;

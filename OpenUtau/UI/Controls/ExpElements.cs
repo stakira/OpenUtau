@@ -24,7 +24,7 @@ namespace OpenUtau.UI.Controls
         public double X { set { if (tTrans.X != Math.Round(value)) { tTrans.X = Math.Round(value); } } get { return tTrans.X; } }
     }
 
-    public class NoteExpElement : ExpElement
+    public class CCExpElement : ExpElement
     {
         protected DrawingVisual visual;
 
@@ -40,7 +40,7 @@ namespace OpenUtau.UI.Controls
         Pen pen3;
         Pen pen2;
 
-        public NoteExpElement()
+        public CCExpElement()
         {
             pen3 = new Pen(OpenUtau.UI.Models.ThemeManager.NoteFillBrushes[0], 3);
             pen2 = new Pen(OpenUtau.UI.Models.ThemeManager.NoteFillBrushes[0], 2);
@@ -61,11 +61,11 @@ namespace OpenUtau.UI.Controls
             {
                 foreach (UNote note in Part.Notes)
                 {
-                    if (note.styles.ContainsKey(Key))
+                    if (note.Expressions.ContainsKey(Key))
                     {
                         double x1 = Math.Round(ScaleX * note.PosTick);
                         double x2 = Math.Round(ScaleX * note.EndTick);
-                        double valueHeight = Math.Round(VisualHeight - VisualHeight * (int)note.styles[Key] / 127);
+                        double valueHeight = Math.Round(VisualHeight - VisualHeight * (int)note.Expressions[Key].Data / 127);
                         cxt.DrawLine(pen3, new Point(x1 + 0.5, VisualHeight + 0.5), new Point(x1 + 0.5, valueHeight + 3));
                         cxt.DrawEllipse(Brushes.White, pen2, new Point(x1 + 0.5, valueHeight), 2.5, 2.5);
                         cxt.DrawLine(pen2, new Point(x1 + 3, valueHeight), new Point(Math.Max(x1 + 3, x2 - 3), valueHeight));

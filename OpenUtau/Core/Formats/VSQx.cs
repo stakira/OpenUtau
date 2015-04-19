@@ -53,6 +53,8 @@ namespace OpenUtau.Core.Formats
             }
 
             UProject uproject = new UProject();
+            uproject.RegisterExpression(new CCExpression(null, "velocity"));
+            uproject.RegisterExpression(new CCExpression(null, "opening"));
 
             string bpmPath = string.Format("{0}masterTrack/{0}tempo/{0}{1}", nsPrefix, nsPrefix == "v3:" ? "bpm" : "v");
             string beatperbarPath = string.Format("{0}masterTrack/{0}timeSig/{0}{1}", nsPrefix, nsPrefix == "v3:" ? "nume" : "nu");
@@ -111,7 +113,7 @@ namespace OpenUtau.Core.Formats
 
                     foreach (XmlNode note in part.SelectNodes(notePath, nsmanager))
                     {
-                        UNote unote = new UNote();
+                        UNote unote = uproject.CreateNote();
                         upart.Notes.Add(unote);
 
                         unote.PosTick = int.Parse(note.SelectSingleNode(postickPath, nsmanager).InnerText);
@@ -120,9 +122,7 @@ namespace OpenUtau.Core.Formats
                         unote.Lyric = note.SelectSingleNode(lyricPath, nsmanager).InnerText;
                         unote.Phoneme = note.SelectSingleNode(phonemePath, nsmanager).InnerText;
 
-                        unote.styles.Add("velocity", int.Parse(note.SelectSingleNode(velocityPath, nsmanager).InnerText));
-                        foreach (XmlNode attr in note.SelectNodes(notestyleattrPath, nsmanager))
-                            unote.styles.Add(attr.Attributes[0].Value, int.Parse(attr.InnerText));
+                        unote.Expressions["velocity"].Data = int.Parse(note.SelectSingleNode(velocityPath, nsmanager).InnerText);
 
                         unote.Channel = 0; // FIXME
                     }

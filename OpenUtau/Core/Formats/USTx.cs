@@ -67,12 +67,16 @@ namespace OpenUtau.Core.Formats
                         );
                     foreach (UNote note in ((UVoicePart)part).Notes)
                     {
+                        XElement xexpressions = new XElement(u + "expressions");
+                        foreach (var pair in note.Expressions) xexpressions.Add(pair.Value.ToXml(u));
+
                         XElement xnote = new XElement(u + "note",
                             new XElement(u + "pos", note.PosTick),
                             new XElement(u + "dur", note.DurTick),
                             new XElement(u + "n", note.NoteNum),
                             new XElement(u + "y", new XCData(note.Lyric)),
-                            new XElement(u + "p", new XCData(note.Phoneme)));
+                            new XElement(u + "p", new XCData(note.Phoneme)),
+                            xexpressions);
                         xpart.Add(xnote);
                     }
                     xroot.Add(xpart);

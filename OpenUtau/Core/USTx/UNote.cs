@@ -13,11 +13,10 @@ namespace OpenUtau.Core.USTx
         public int NoteNum;
         public string Lyric;
         public string Phoneme;
+        public Dictionary<string, Expression> Expressions = new Dictionary<string, Expression>();
         public int Channel = 0;
 
         public int EndTick { get { return PosTick + DurTick; } }
-
-        public Dictionary<string, object> styles = new Dictionary<string, object>();
 
         public UNote() { }
 

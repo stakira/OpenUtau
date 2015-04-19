@@ -545,7 +545,7 @@ namespace OpenUtau.UI
             else newValue = (int)Math.Max(0, Math.Min(127, (1 - mousePos.Y / expCanvas.ActualHeight) * 127));
             UNote note = midiVM.CanvasXToNote(mousePos.X);
             if (midiVM.SelectedNotes.Count == 0 || midiVM.SelectedNotes.Contains(note))
-            if (note != null) note.styles[midiVM.expElement.Key] = (object)newValue;
+            if (note != null) note.Expressions[midiVM.expElement.Key].Data = newValue;
             midiVM.expElement.Redraw();
         }
     }
