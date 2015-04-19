@@ -8,12 +8,13 @@ namespace OpenUtau.Core.USTx
 {
     class DocManager : ICmdPublisher
     {
-        DocManager() { project = new UProject(); }
+        DocManager() { _project = new UProject(); }
         static DocManager _s;
         static DocManager GetInst() { if (_s == null) { _s = new DocManager(); } return _s; }
         public static DocManager Inst { get { return GetInst(); } }
 
-        public UProject project;
+        UProject _project;
+        public UProject Project { get { return _project; } }
 
         # region Command Queue
 
@@ -27,6 +28,7 @@ namespace OpenUtau.Core.USTx
             if (cmd is UNotification)
             {
                 if (cmd is SaveProjectNotification && undoQueue.Count > 0) { savedPoint = undoQueue.Last(); }
+                else if (cmd is LoadProjectNotification) { this._project = ((LoadProjectNotification)cmd).project; }
                 Publish(cmd);
                 System.Diagnostics.Debug.WriteLine("Publish notification " + cmd.ToString());
                 return;

@@ -46,6 +46,19 @@ namespace OpenUtau.UI
             midiVM.MidiCanvas = this.notesCanvas;
             midiVM.ExpCanvas = this.expCanvas;
             midiVM.Subscribe(DocManager.Inst);
+
+            List<ExpComboBoxViewModel> comboVMs = new List<ExpComboBoxViewModel>()
+            {
+                new ExpComboBoxViewModel() { Index=0 },
+                new ExpComboBoxViewModel() { Index=1 },
+                new ExpComboBoxViewModel() { Index=2 },
+                new ExpComboBoxViewModel() { Index=3 }
+            };
+
+            comboVMs[0].CreateBindings(expCombo0);
+            comboVMs[1].CreateBindings(expCombo1);
+            comboVMs[2].CreateBindings(expCombo2);
+            comboVMs[3].CreateBindings(expCombo3);
         }
 
         void viewScaler_ViewScaled(object sender, EventArgs e)

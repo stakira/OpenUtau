@@ -426,14 +426,7 @@ namespace OpenUtau.UI
 
         private void CmdNewFile()
         {
-            CmdCloseFile();
-            trackVM.LoadProject(new UProject());
-        }
-
-        private void CmdCloseFile()
-        {
-            DocManager.Inst.ExecuteCmd(new UnloadPartNotification());
-            trackVM.UnloadProject();
+            DocManager.Inst.ExecuteCmd(new LoadProjectNotification(new UProject()));
         }
 
         private void CmdOpenFileDialog()
@@ -449,22 +442,13 @@ namespace OpenUtau.UI
 
         private void CmdOpenFile(string[] files)
         {
-            DocManager.Inst.ExecuteCmd(new UnloadPartNotification());
-            UProject uproject = null;
-
             if (files.Length == 1)
             {
-                uproject = OpenUtau.Core.Formats.Formats.LoadProject(files[0]);
+                OpenUtau.Core.Formats.Formats.LoadProject(files[0]);
             }
             else if (files.Length > 1)
             {
-                uproject = OpenUtau.Core.Formats.Ust.Load(files);
-            }
-
-            if (uproject != null)
-            {
-                trackVM.LoadProject(uproject);
-                Title = trackVM.Title;
+                OpenUtau.Core.Formats.Ust.Load(files);
             }
         }
 

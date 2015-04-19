@@ -24,8 +24,11 @@ namespace OpenUtau.UI.Models
             }
         }
 
-        public UProject Project;
-        public UVoicePart Part;
+        public UProject Project { get { return DocManager.Inst.Project; } }
+        
+        UVoicePart _part;
+        public UVoicePart Part { get { return _part; } }
+
         public Canvas MidiCanvas;
         public Canvas ExpCanvas;
 
@@ -244,19 +247,17 @@ namespace OpenUtau.UI.Models
             NoteControls.Clear();
 
             Title = "";
-            Part = null;
-            Project = null;
+            _part = null;
 
             expElement.Part = null;
         }
 
         private void LoadPart(UPart part, UProject project)
         {
-            if (project == Project && part == Part) return;
+            if (part == Part) return;
             if (!(part is UVoicePart)) return;
             UnloadPart();
-            Part = (UVoicePart)part;
-            Project = project;
+            _part = (UVoicePart)part;
 
             if (expElement == null)
             {
@@ -346,7 +347,7 @@ namespace OpenUtau.UI.Models
             {
                 var _cmd = cmd as UNotification;
                 if (_cmd is LoadPartNotification) LoadPart(_cmd.part, _cmd.project);
-                else if (_cmd is LoadPartNotification) UnloadPart();
+                else if (_cmd is LoadProjectNotification) UnloadPart();
             }
         }
 

@@ -29,7 +29,7 @@ namespace OpenUtau.UI.Models
             }
         }
 
-        public UProject Project;
+        public UProject Project { get { return DocManager.Inst.Project; } }
         public Canvas TrackCanvas;
 
         protected bool _updated = false;
@@ -158,21 +158,6 @@ namespace OpenUtau.UI.Models
 
         # endregion
 
-        public void UnloadProject()
-        {
-            foreach (PartElement element in PartElements)
-            {
-                TrackCanvas.Children.Remove(element);
-            }
-            SelectedParts.Clear();
-            PartElements.Clear();
-            if (Project != null)
-            {
-                foreach (UPart part in Project.Parts) part.Dispose();
-                Project = null;
-            }
-        }
-
         public PartElement GetPartElement(UPart part)
         {
             foreach (PartElement partEl in PartElements)
@@ -180,17 +165,6 @@ namespace OpenUtau.UI.Models
                 if (partEl.Part == part) return partEl;
             }
             return null;
-        }
-
-        public void LoadProject(UProject project)
-        {
-            UnloadProject();
-            Project = project;
-
-            foreach (UPart part in project.Parts)
-            {
-                OnPartAdded(part);
-            }
         }
 
         public void RedrawIfUpdated()
@@ -263,7 +237,7 @@ namespace OpenUtau.UI.Models
 
         # region Cmd Handling
 
-        public void OnPartAdded(UPart part)
+        private void OnPartAdded(UPart part)
         {
             PartElement partElement;
             if (part is UWavePart) partElement = new WavePartElement() { Part = part, Project = Project };
@@ -278,7 +252,7 @@ namespace OpenUtau.UI.Models
             MarkUpdate();
         }
 
-        public void OnPartRemoved(UPart part)
+        private void OnPartRemoved(UPart part)
         {
             if (SelectedParts.Contains(part)) SelectedParts.Remove(part);
             var partElement = GetPartElement(part);
@@ -287,6 +261,30 @@ namespace OpenUtau.UI.Models
 
             UpdateViewSize();
             MarkUpdate();
+        }
+
+        private void OnProjectLoad(UProject project)
+        {
+            OnProjectUnload();
+
+            foreach (UPart part in project.Parts)
+            {
+                OnPartAdded(part);
+            }
+        }
+
+        private void OnProjectUnload()
+        {
+            foreach (PartElement element in PartElements)
+            {
+                TrackCanvas.Children.Remove(element);
+            }
+            SelectedParts.Clear();
+            PartElements.Clear();
+            if (Project != null)
+            {
+                foreach (UPart part in Project.Parts) part.Dispose();
+            }
         }
 
         # endregion
@@ -317,6 +315,10 @@ namespace OpenUtau.UI.Models
                 }
                 else if (_cmd is ResizePartCommand) MarkUpdate();
                 else if (_cmd is MovePartCommand) MarkUpdate();
+            }
+            else if (cmd is LoadProjectNotification)
+            {
+                OnProjectLoad(((LoadProjectNotification)cmd).project);
             }
         }
 

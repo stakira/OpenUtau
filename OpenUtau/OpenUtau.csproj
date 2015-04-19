@@ -83,6 +83,9 @@
     <Compile Include="Core\USTx\Notifications.cs" />
     <Compile Include="Core\USTx\PartCommands.cs" />
     <Compile Include="Core\USTx\UCommand.cs" />
+    <Compile Include="UI\Controls\ExpComboBox.xaml.cs">
+      <DependentUpon>ExpComboBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Controls\ExpElements.cs" />
     <Compile Include="UI\Controls\PartElements.cs" />
     <Page Include="App.xaml">
@@ -115,10 +118,15 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Controls\SizeObserver.cs" />
+    <Compile Include="UI\Models\ExpComboBoxViewModel.cs" />
     <Compile Include="UI\Models\MidiViewModel.cs" />
     <Compile Include="UI\Colors\ThemeManager.cs" />
     <Compile Include="UI\Models\TracksViewModel.cs" />
     <Compile Include="UI\UIConstants.cs" />
+    <Page Include="UI\Controls\ExpComboBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\Controls\NavigateDrag.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -38,18 +38,19 @@ namespace OpenUtau.Core.Formats
             else return ProjectFormats.Unknown;
         }
 
-        static public UProject LoadProject(string file)
+        static public void LoadProject(string file)
         {
             ProjectFormats format = DetectProjectFormat(file);
+            UProject project = null;
 
-            if (format == ProjectFormats.Ustx) { return USTx.Load(file); }
-            else if (format == ProjectFormats.Vsq3 || format == ProjectFormats.Vsq4) { return VSQx.Load(file); }
-            else if (format == ProjectFormats.Ust) { return Ust.Load(file); }
+            if (format == ProjectFormats.Ustx) { project = USTx.Load(file); }
+            else if (format == ProjectFormats.Vsq3 || format == ProjectFormats.Vsq4) { project = VSQx.Load(file); }
+            else if (format == ProjectFormats.Ust) { project = Ust.Load(file); }
             else
             {
                 System.Windows.MessageBox.Show("Unknown file format");
-                return null;
             }
+            if (project != null) { DocManager.Inst.ExecuteCmd(new LoadProjectNotification(project)); }
         }
     }
 }

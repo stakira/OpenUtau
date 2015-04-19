@@ -15,12 +15,24 @@ namespace OpenUtau.Core.Formats
         public const string ustxNameSpace = @"http://openutau.github.io/schema/ustx/";
         static XNamespace u = ustxNameSpace;
 
+        static Expression GetExpFromXml(XElement x, UNote parent)
+        {
+            if (x.Attribute("t").Value == CCExpression.Type) return CCExpression.FromXml(x, parent, u);
+            else if (x.Attribute("t").Value == "float") return CCExpression.FromXml(x, parent, u);
+            else if (x.Attribute("t").Value == "serial") return CCExpression.FromXml(x, parent, u);
+            else return null;
+        }
+
         static public UProject Load(string file)
         {
             UProject project = new UProject();
 
             XDocument xdoc = XDocument.Load(file);
             XElement xroot = xdoc.Descendants(u + "ustx").First();
+
+            foreach (XElement xexp in xroot.Element(u + "expressionTable").Descendants(u + "exp"))
+                project.RegisterExpression(GetExpFromXml(xexp, null));
+
             foreach (XElement xpart in xroot.Descendants(u + "voicepart"))
             {
                 UVoicePart part = new UVoicePart()
@@ -34,18 +46,20 @@ namespace OpenUtau.Core.Formats
                 project.Parts.Add(part);
                 foreach (XElement xnote in xpart.Descendants(u + "note"))
                 {
-                    UNote note = new UNote()
-                    {
-                        PosTick = int.Parse(xnote.Element(u + "pos").Value),
-                        DurTick = int.Parse(xnote.Element(u + "dur").Value),
-                        NoteNum = int.Parse(xnote.Element(u + "n").Value),
-                        Lyric = xnote.Element(u + "y").Value,
-                        Phoneme = xnote.Element(u + "p").Value
-                    };
+                    UNote note = project.CreateNote();
+
+                    note.PosTick = int.Parse(xnote.Element(u + "pos").Value);
+                    note.DurTick = int.Parse(xnote.Element(u + "dur").Value);
+                    note.NoteNum = int.Parse(xnote.Element(u + "n").Value);
+                    note.Lyric = xnote.Element(u + "y").Value;
+                    note.Phoneme = xnote.Element(u + "p").Value;
+
+                    foreach (XElement xexp in xnote.Descendants(u + "exp"))
+                        note.Expressions[xexp.Attribute("id").Value] = GetExpFromXml(xexp, note);
+
                     part.Notes.Add(note);
                 }
             }
-
             return project;
         }
 
@@ -55,6 +69,15 @@ namespace OpenUtau.Core.Formats
                 new XAttribute("xmlns", ustxNameSpace),
                 new XElement(u + "version", new XCData(ustxVersion)));
             XDocument xdoc = new XDocument(xroot);
+
+            XElement xexptable = new XElement(u + "expressionTable");
+            foreach (var pair in project.ExpressionTable)
+            {
+                XElement xexp = pair.Value.ToXml(u);
+                xexptable.Add(xexp);
+            }
+            xroot.Add(xexptable);
+
             foreach (UPart part in project.Parts)
             {
                 if (part is UVoicePart){

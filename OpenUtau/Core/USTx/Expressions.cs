@@ -17,11 +17,11 @@ namespace OpenUtau.Core.USTx
         public abstract Expression Split(UNote newParent, int postick);
         public abstract void Trim(int postick);
         public abstract XElement ToXml(XNamespace ns);
-        public abstract void FromXml(XElement x);
     }
 
     public class CCExpression : Expression
     {
+        public const string Type = "cc";
         public CCExpression(UNote parent, string name) { this.Parent = parent; _name = name; }
         string _name;
         int _data;
@@ -30,7 +30,8 @@ namespace OpenUtau.Core.USTx
         public override Expression Clone(UNote newParent) { return new CCExpression(newParent, _name) { Data = Data }; }
         public override Expression Split(UNote newParent, int postick) { var note = Clone(newParent); return note; }
         public override void Trim(int postick) { }
-        public override XElement ToXml(XNamespace ns) { return new XElement(ns + "exp", new XAttribute("type", "cc"), new XAttribute("id", Name), (int)Data); }
+        public override XElement ToXml(XNamespace ns) { return new XElement(ns + "exp", new XAttribute("t", Type), new XAttribute("id", Name), (int)Data); }
+        public static Expression FromXml(XElement x, UNote parent, XNamespace ns) { return new CCExpression(parent, x.Attribute("id").Value) { Data = int.Parse(x.Value) }; }
     }
 
     //public class VibratoExpression : Expression

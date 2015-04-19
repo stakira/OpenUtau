@@ -17,7 +17,7 @@ namespace OpenUtau.Core.Formats
         private const string settingTag = "[#SETTING]";
         private const string endTag = "[#TRACKEND]";
 
-        static public UProject Load(string[] files)
+        static public void Load(string[] files)
         {
 
             bool ustTracks = true;
@@ -29,7 +29,7 @@ namespace OpenUtau.Core.Formats
             if (!ustTracks)
             {
                 System.Windows.MessageBox.Show("Multiple files must be all Ust files");
-                return null;
+                return;
             }
 
             List<UProject> projects = new List<UProject>();
@@ -48,7 +48,7 @@ namespace OpenUtau.Core.Formats
             if (!sameBpm)
             {
                 System.Windows.MessageBox.Show("Ust files BPM must match");
-                return null;
+                return;
             }
 
             UProject uproject = new UProject() { BPM = bpm, Name = "Merged Project" };
@@ -58,7 +58,8 @@ namespace OpenUtau.Core.Formats
                 uproject.Parts.Add(p.Parts[0]);
                 uproject.Parts.Last().TrackNo = uproject.Tracks.Count - 1;
             }
-            return uproject;
+
+            if (uproject != null) DocManager.Inst.ExecuteCmd(new LoadProjectNotification(uproject));
         }
 
         static public UProject Load(string file)

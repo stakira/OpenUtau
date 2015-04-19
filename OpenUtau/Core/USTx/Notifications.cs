@@ -21,11 +21,6 @@ namespace OpenUtau.Core.USTx
         public override string ToString() { return "Load part"; }
     }
 
-    public class UnloadPartNotification : UNotification
-    {
-        public override string ToString() { return "Unload part"; }
-    }
-
     public class LoadProjectNotification : UNotification
     {
         public LoadProjectNotification(UProject project) { this.project = project; }
@@ -37,8 +32,16 @@ namespace OpenUtau.Core.USTx
         public override string ToString() { return "Save project"; }
     }
 
-    public class UnloadProjectNotification : UNotification
+    public class ChangeExpressionListNotification : UNotification
     {
-        public override string ToString() { return "Unload project"; }
+        public override string ToString() { return "Change expression list"; }
+    }
+
+    public class SelectExpressionNotification : UNotification
+    {
+        public string ExpKey;
+        public OpenUtau.UI.Models.ExpComboBoxViewModel VM;
+        public SelectExpressionNotification(string expKey, OpenUtau.UI.Models.ExpComboBoxViewModel vm) { ExpKey = expKey; VM = vm; }
+        public override string ToString() { return "Select expression"; }
     }
 }
