@@ -76,6 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\Formats\USTx.cs" />
+    <Compile Include="Core\USTx\ExpCommands.cs" />
     <Compile Include="Core\USTx\Expressions.cs" />
     <Compile Include="Core\USTx\NoteCommands.cs" />
     <Compile Include="Core\USTx\Deque.cs" />
@@ -164,6 +165,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\Styles\Button.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Styles\ComboBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

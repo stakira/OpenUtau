@@ -99,7 +99,9 @@ namespace OpenUtau.Core.Formats
                         catch { System.Windows.MessageBox.Show("Unknown ust format"); return null; }
                         currentBlock = UstBlock.Note;
                         if (currNote != null && !currNote.Lyric.Replace("R", "").Equals("")) upart.Notes.Add(currNote);
-                        currNote = new UNote() { Lyric = "R" ,PosTick = currTick};
+                        currNote = uproject.CreateNote();
+                        currNote.Lyric = "R";
+                        currNote.PosTick = currTick;
                     }
                 }
                 else

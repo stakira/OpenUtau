@@ -7,6 +7,7 @@ using System.Windows;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
 using System.Windows.Media;
+using System.Windows.Controls;
 using System.Windows.Data;
 
 using OpenUtau.Core.USTx;
@@ -35,25 +36,47 @@ namespace OpenUtau.UI.Models
         ObservableCollection<string> _keys = new ObservableCollection<string>();
         public ObservableCollection<string> Keys { get { return _keys; } }
 
-        bool _isChecked = false;
-        public bool IsChecked
+        ExpDisMode _displayMode = ExpDisMode.Hidden;
+
+        public ExpDisMode DisplayMode
         {
             set
             {
-                if (_isChecked != value)
+                if (_displayMode != value)
                 {
-                    _isChecked = value;
-                    OnPropertyChanged("Foreground");
+                    _displayMode = value;
+                    OnPropertyChanged("TagBrush");
                     OnPropertyChanged("Background");
                     OnPropertyChanged("Highlight");
                 }
             }
-            get { return _isChecked; }
+            get { return _displayMode; }
         }
 
-        public Brush Foreground { get { return IsChecked ? ThemeManager.BlackKeyNameBrushNormal : ThemeManager.WhiteKeyNameBrushNormal; } }
-        public Brush Background { get { return IsChecked ? ThemeManager.BlackKeyBrushNormal : ThemeManager.WhiteKeyBrushNormal; } }
-        public Brush Highlight { get { return IsChecked ? Brushes.Black : Brushes.Black; } }
+        public Brush TagBrush
+        {
+            get
+            {
+                return DisplayMode == ExpDisMode.Visible ? ThemeManager.BlackKeyNameBrushNormal :
+                    DisplayMode == ExpDisMode.Shadow ? ThemeManager.CenterKeyNameBrushNormal : ThemeManager.WhiteKeyNameBrushNormal;
+            }
+        }
+        public Brush Background
+        {
+            get
+            {
+                return DisplayMode == ExpDisMode.Visible ? ThemeManager.BlackKeyBrushNormal :
+                    DisplayMode == ExpDisMode.Shadow ? ThemeManager.CenterKeyBrushNormal : ThemeManager.WhiteKeyBrushNormal;
+            }
+        }
+        public Brush Highlight
+        {
+            get
+            {
+                return DisplayMode == ExpDisMode.Visible ? Brushes.Black :
+                    DisplayMode == ExpDisMode.Shadow ? Brushes.Black : Brushes.Black;
+            }
+        }
 
         public ExpComboBoxViewModel() { this.Subscribe(DocManager.Inst); }
 
@@ -61,10 +84,26 @@ namespace OpenUtau.UI.Models
         {
             box.DataContext = this;
             box.SetBinding(ExpComboBox.ItemsSourceProperty, new Binding("Keys") { Source = this });
-            box.SetBinding(ExpComboBox.SelectedIndexProperty, new Binding("SelectedIndex") { Source = this });
-            box.SetBinding(ExpComboBox.ForegroundProperty, new Binding("Foreground") { Source = this });
+            box.SetBinding(ExpComboBox.SelectedIndexProperty, new Binding("SelectedIndex") { Source = this, Mode = BindingMode.TwoWay });
+            box.SetBinding(ExpComboBox.TagBrushProperty, new Binding("TagBrush") { Source = this });
             box.SetBinding(ExpComboBox.BackgroundProperty, new Binding("Background") { Source = this });
             box.SetBinding(ExpComboBox.HighlightProperty, new Binding("Highlight") { Source = this });
+            box.Click += box_Click;
+            box.SelectionChanged += box_SelectionChanged;
+        }
+
+        void box_Click(object sender, EventArgs e)
+        {
+            if (DisplayMode != ExpDisMode.Visible)
+                DocManager.Inst.ExecuteCmd(new SelectExpressionNotification(Keys[SelectedIndex], this.Index, true));
+        }
+
+        void box_SelectionChanged(object sender, EventArgs e)
+        {
+            if (DisplayMode != ExpDisMode.Visible)
+                DocManager.Inst.ExecuteCmd(new SelectExpressionNotification(Keys[SelectedIndex], this.Index, true));
+            else
+                DocManager.Inst.ExecuteCmd(new SelectExpressionNotification(Keys[SelectedIndex], this.Index, false));
         }
 
         # region ICmdSubscriber
@@ -86,20 +125,23 @@ namespace OpenUtau.UI.Models
         {
             _keys = new ObservableCollection<string>(DocManager.Inst.Project.ExpressionTable.Keys);
             if (_keys.Count == 0) return;
-            DocManager.Inst.ExecuteCmd(new SelectExpressionNotification(_keys[Index % _keys.Count], this));
+            DocManager.Inst.ExecuteCmd(new SelectExpressionNotification(_keys[Index % _keys.Count], this.Index, true));
             OnPropertyChanged("Keys");
         }
 
         private void OnSelectExp(SelectExpressionNotification cmd)
         {
-            if (Keys.Count > SelectedIndex && cmd.VM == this)
+            if (cmd.SelectorIndex == this.Index)
             {
                 if (Keys[SelectedIndex] != cmd.ExpKey)
                 {
                     SelectedIndex = Keys.IndexOf(cmd.ExpKey);
-                    // change visual
                 }
-                // switch visual
+                DisplayMode = ExpDisMode.Visible;
+            }
+            else if (cmd.UpdateShadow)
+            {
+                DisplayMode = DisplayMode == ExpDisMode.Visible ? ExpDisMode.Shadow : ExpDisMode.Hidden;
             }
         }
 

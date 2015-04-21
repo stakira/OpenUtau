@@ -244,13 +244,12 @@ namespace OpenUtau.UI
                 }
                 else // Add note
                 {
-                    UNote newNote = new UNote()
-                    {
-                        Lyric = "a",
-                        NoteNum = midiVM.CanvasToNoteNum(mousePos.Y),
-                        PosTick = midiVM.CanvasToSnappedTick(mousePos.X),
-                        DurTick = _lastNoteLength
-                    };
+                    UNote newNote = DocManager.Inst.Project.CreateNote();
+                    newNote.Lyric = "a";
+                    newNote.NoteNum = midiVM.CanvasToNoteNum(mousePos.Y);
+                    newNote.PosTick = midiVM.CanvasToSnappedTick(mousePos.X);
+                    newNote.DurTick = _lastNoteLength;
+
                     DocManager.Inst.StartUndoGroup();
                     DocManager.Inst.ExecuteCmd(new AddNoteCommand(midiVM.Part, newNote));
                     DocManager.Inst.EndUndoGroup();
@@ -532,13 +531,15 @@ namespace OpenUtau.UI
 
         private void expCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            ((Canvas)sender).CaptureMouse();
+            DocManager.Inst.StartUndoGroup();
             Point mousePos = e.GetPosition((UIElement)sender);
             expCanvas_SetExpHelper(mousePos);
-            ((Canvas)sender).CaptureMouse();
         }
 
         private void expCanvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
+            DocManager.Inst.EndUndoGroup();
             ((Canvas)sender).ReleaseMouseCapture();
         }
 
@@ -553,13 +554,13 @@ namespace OpenUtau.UI
 
         private void expCanvas_SetExpHelper(Point mousePos)
         {
-            int newValue;
-            if (Keyboard.Modifiers == ModifierKeys.Alt) newValue = 64;
+            if (midiVM.Part == null) return;
+            float newValue;
+            if (Keyboard.Modifiers == ModifierKeys.Alt) newValue = (float)DocManager.Inst.Project.ExpressionTable[midiVM.visibleExpElement.Key].Data;
             else newValue = (int)Math.Max(0, Math.Min(127, (1 - mousePos.Y / expCanvas.ActualHeight) * 127));
             UNote note = midiVM.CanvasXToNote(mousePos.X);
             if (midiVM.SelectedNotes.Count == 0 || midiVM.SelectedNotes.Contains(note))
-            if (note != null) note.Expressions[midiVM.expElement.Key].Data = newValue;
-            midiVM.expElement.Redraw();
+                if (note != null) DocManager.Inst.ExecuteCmd(new SetFloatExpCommand(midiVM.Part, note, midiVM.visibleExpElement.Key, newValue));
         }
     }
 }

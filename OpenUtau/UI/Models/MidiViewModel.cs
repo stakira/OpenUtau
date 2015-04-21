@@ -115,7 +115,8 @@ namespace OpenUtau.UI.Models
         public List<UNote> SelectedNotes = new List<UNote>();
         public List<UNote> TempSelectedNotes = new List<UNote>();
         public List<NoteControl> NoteControls = new List<NoteControl>();
-        public CCExpElement expElement;
+        Dictionary<string, FloatExpElement> expElements = new Dictionary<string, FloatExpElement>();
+        public FloatExpElement visibleExpElement, shadowExpElement;
 
         public MidiViewModel() { }
 
@@ -133,11 +134,21 @@ namespace OpenUtau.UI.Models
                     Canvas.SetLeft(noteControl, QuarterWidth * noteControl.Note.PosTick / Project.Resolution - OffsetX + 1);
                     Canvas.SetTop(noteControl, NoteNumToCanvas(noteControl.Note.NoteNum) + 1);
                 }
-                expElement.X = -OffsetX;
-                expElement.ScaleX = QuarterWidth / Project.Resolution;
-                expElement.VisualHeight = ExpCanvas.ActualHeight;
+                if (visibleExpElement != null)
+                {
+                    visibleExpElement.X = -OffsetX;
+                    visibleExpElement.ScaleX = QuarterWidth / Project.Resolution;
+                    visibleExpElement.VisualHeight = ExpCanvas.ActualHeight;
+                }
+                if (shadowExpElement != null)
+                {
+                    shadowExpElement.X = -OffsetX;
+                    shadowExpElement.ScaleX = QuarterWidth / Project.Resolution;
+                    shadowExpElement.VisualHeight = ExpCanvas.ActualHeight;
+                }
             }
             _updated = false;
+            foreach (var pair in expElements) pair.Value.RedrawIfUpdated();
         }
 
         public NoteControl GetNoteControl(UNote note)
@@ -249,7 +260,7 @@ namespace OpenUtau.UI.Models
             Title = "";
             _part = null;
 
-            expElement.Part = null;
+            foreach (var pair in expElements) { pair.Value.Part = null; pair.Value.MarkUpdate(); pair.Value.RedrawIfUpdated(); }
         }
 
         private void LoadPart(UPart part, UProject project)
@@ -259,19 +270,14 @@ namespace OpenUtau.UI.Models
             UnloadPart();
             _part = (UVoicePart)part;
 
-            if (expElement == null)
-            {
-                expElement = new CCExpElement() { Key = "velocity" };
-                ExpCanvas.Children.Add(expElement);
-            }
-            expElement.Part = Part;
-
             Title = Part.Name;
             foreach (UNote note in Part.Notes)
             {
                 OnNoteAdded(note);
             }
             OnPartModified();
+
+            foreach (var pair in expElements) { pair.Value.Part = this.Part; pair.Value.MarkUpdate(); }
         }
 
         private void OnNoteAdded(UNote note)
@@ -284,7 +290,7 @@ namespace OpenUtau.UI.Models
             };
             MidiCanvas.Children.Add(nc);
             NoteControls.Add(nc);
-            expElement.Redraw();
+            foreach (var pair in expElements) pair.Value.MarkUpdate();
             MarkUpdate();
         }
 
@@ -294,7 +300,7 @@ namespace OpenUtau.UI.Models
             if (SelectedNotes.Contains(nc.Note)) SelectedNotes.Remove(nc.Note);
             MidiCanvas.Children.Remove(nc);
             NoteControls.Remove(nc);
-            expElement.Redraw();
+            foreach (var pair in expElements) pair.Value.MarkUpdate();
             MarkUpdate();
         }
 
@@ -310,6 +316,26 @@ namespace OpenUtau.UI.Models
             _visualDurTick = Part.DurTick;
         }
 
+        private void OnSelectExpression(UNotification cmd)
+        {
+            var _cmd = cmd as SelectExpressionNotification;
+            if (!expElements.ContainsKey(_cmd.ExpKey))
+            {
+                var expEl = new FloatExpElement() { Key = _cmd.ExpKey, Part = this.Part };
+                expElements.Add(_cmd.ExpKey, expEl);
+                ExpCanvas.Children.Add(expEl);
+            }
+
+            if (_cmd.UpdateShadow) shadowExpElement = visibleExpElement;
+            visibleExpElement = expElements[_cmd.ExpKey];
+            visibleExpElement.MarkUpdate();
+            this.MarkUpdate();
+
+            foreach (var pair in expElements) pair.Value.DisplayMode = ExpDisMode.Hidden;
+            if (shadowExpElement != null) shadowExpElement.DisplayMode = ExpDisMode.Shadow;
+            visibleExpElement.DisplayMode = ExpDisMode.Visible;
+        }
+
         # endregion
 
         # region ICmdSubscriber
@@ -321,19 +347,19 @@ namespace OpenUtau.UI.Models
             if (cmd is NoteCommand)
             {
                 var _cmd = cmd as NoteCommand;
-                if (_cmd.part != this.Part) return;
+                if (_cmd.Part != this.Part) return;
                 else if (_cmd is AddNoteCommand)
                 {
-                    if (!isUndo) OnNoteAdded(_cmd.note);
-                    else OnNoteRemoved(_cmd.note);
+                    if (!isUndo) OnNoteAdded(_cmd.Note);
+                    else OnNoteRemoved(_cmd.Note);
                 }
                 else if (_cmd is RemoveNoteCommand)
                 {
-                    if (!isUndo) OnNoteRemoved(_cmd.note);
-                    else OnNoteAdded(_cmd.note);
+                    if (!isUndo) OnNoteRemoved(_cmd.Note);
+                    else OnNoteAdded(_cmd.Note);
                 }
-                else if (_cmd is MoveNoteCommand) MarkUpdate();
-                else if (_cmd is ResizeNoteCommand) MarkUpdate();
+                else if (_cmd is MoveNoteCommand) { MarkUpdate(); foreach (var pair in expElements) pair.Value.MarkUpdate(); }
+                else if (_cmd is ResizeNoteCommand) { MarkUpdate(); foreach (var pair in expElements) pair.Value.MarkUpdate(); }
             }
             else if (cmd is PartCommand)
             {
@@ -343,11 +369,18 @@ namespace OpenUtau.UI.Models
                 else if (_cmd is ResizePartCommand) OnPartModified();
                 else if (_cmd is MovePartCommand) OnPartModified();
             }
+            else if (cmd is ExpCommand)
+            {
+                var _cmd = cmd as ExpCommand;
+                if (_cmd.Part != this.Part) return;
+                else if (_cmd is SetFloatExpCommand) expElements[_cmd.Key].MarkUpdate();
+            }
             else if (cmd is UNotification)
             {
                 var _cmd = cmd as UNotification;
                 if (_cmd is LoadPartNotification) LoadPart(_cmd.part, _cmd.project);
                 else if (_cmd is LoadProjectNotification) UnloadPart();
+                else if (_cmd is SelectExpressionNotification) OnSelectExpression(_cmd);
             }
         }
 

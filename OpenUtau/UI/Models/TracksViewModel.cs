@@ -298,7 +298,7 @@ namespace OpenUtau.UI.Models
             if (cmd is NoteCommand)
             {
                 var _cmd = cmd as NoteCommand;
-                UpdatePartElement(_cmd.part);
+                UpdatePartElement(_cmd.Part);
             }
             else if (cmd is PartCommand)
             {

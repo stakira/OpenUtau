@@ -53,8 +53,10 @@ namespace OpenUtau.Core.Formats
             }
 
             UProject uproject = new UProject();
-            uproject.RegisterExpression(new CCExpression(null, "velocity"));
-            uproject.RegisterExpression(new CCExpression(null, "opening"));
+            uproject.RegisterExpression(new CCExpression(null, "velocity") { Data = 64f });
+            uproject.RegisterExpression(new CCExpression(null, "opening") { Data = 127f });
+            uproject.RegisterExpression(new FloatExpression(null, "accent") { Data = 50f, Min = 0f, Max = 100f });
+            uproject.RegisterExpression(new FloatExpression(null, "decay") { Data = 50f, Min = 0f, Max = 100f });
 
             string bpmPath = string.Format("{0}masterTrack/{0}tempo/{0}{1}", nsPrefix, nsPrefix == "v3:" ? "bpm" : "v");
             string beatperbarPath = string.Format("{0}masterTrack/{0}timeSig/{0}{1}", nsPrefix, nsPrefix == "v3:" ? "nume" : "nu");
@@ -122,7 +124,17 @@ namespace OpenUtau.Core.Formats
                         unote.Lyric = note.SelectSingleNode(lyricPath, nsmanager).InnerText;
                         unote.Phoneme = note.SelectSingleNode(phonemePath, nsmanager).InnerText;
 
-                        unote.Expressions["velocity"].Data = int.Parse(note.SelectSingleNode(velocityPath, nsmanager).InnerText);
+                        unote.Expressions["velocity"].Data = float.Parse(note.SelectSingleNode(velocityPath, nsmanager).InnerText);
+
+                        foreach (XmlNode notestyle in note.SelectNodes(notestyleattrPath, nsmanager))
+                        {
+                            if (notestyle.Attributes["id"].Value == "opening")
+                                unote.Expressions["opening"].Data = float.Parse(notestyle.InnerText);
+                            else if (notestyle.Attributes["id"].Value == "accent")
+                                unote.Expressions["accent"].Data = float.Parse(notestyle.InnerText);
+                            else if (notestyle.Attributes["id"].Value == "decay")
+                                unote.Expressions["decay"].Data = float.Parse(notestyle.InnerText);
+                        }
 
                         unote.Channel = 0; // FIXME
                     }

@@ -15,12 +15,19 @@ namespace OpenUtau.Core.Formats
         public const string ustxNameSpace = @"http://openutau.github.io/schema/ustx/";
         static XNamespace u = ustxNameSpace;
 
-        static Expression GetExpFromXml(XElement x, UNote parent)
+        static UExpression GetExpFromXml(XElement x, UNote parent)
         {
-            if (x.Attribute("t").Value == CCExpression.Type) return CCExpression.FromXml(x, parent, u);
-            else if (x.Attribute("t").Value == "float") return CCExpression.FromXml(x, parent, u);
+            if (x.Attribute("t").Value == "cc") return CCExpression.FromXml(x, parent, u);
+            else if (x.Attribute("t").Value == "float") return FloatExpression.FromXml(x, parent, u);
             else if (x.Attribute("t").Value == "serial") return CCExpression.FromXml(x, parent, u);
             else return null;
+        }
+
+        static public UProject Create()
+        {
+            UProject project = new UProject();
+            project.RegisterExpression(new CCExpression(null, "velocity") { Data = 64f });
+            return project;
         }
 
         static public UProject Load(string file)
@@ -73,7 +80,7 @@ namespace OpenUtau.Core.Formats
             XElement xexptable = new XElement(u + "expressionTable");
             foreach (var pair in project.ExpressionTable)
             {
-                XElement xexp = pair.Value.ToXml(u);
+                XElement xexp = pair.Value.ToTableXml(u);
                 xexptable.Add(xexp);
             }
             xroot.Add(xexptable);

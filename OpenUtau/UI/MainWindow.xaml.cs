@@ -426,7 +426,7 @@ namespace OpenUtau.UI
 
         private void CmdNewFile()
         {
-            DocManager.Inst.ExecuteCmd(new LoadProjectNotification(new UProject()));
+            DocManager.Inst.ExecuteCmd(new LoadProjectNotification(OpenUtau.Core.Formats.USTx.Create()));
         }
 
         private void CmdOpenFileDialog()

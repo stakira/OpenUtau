@@ -40,8 +40,9 @@ namespace OpenUtau.Core.USTx
     public class SelectExpressionNotification : UNotification
     {
         public string ExpKey;
-        public OpenUtau.UI.Models.ExpComboBoxViewModel VM;
-        public SelectExpressionNotification(string expKey, OpenUtau.UI.Models.ExpComboBoxViewModel vm) { ExpKey = expKey; VM = vm; }
-        public override string ToString() { return "Select expression"; }
+        public bool UpdateShadow;
+        public int SelectorIndex;
+        public SelectExpressionNotification(string expKey, int index, bool updateShadow) { ExpKey = expKey; SelectorIndex = index; UpdateShadow = updateShadow; }
+        public override string ToString() { return "Select expression " + ExpKey; }
     }
 }

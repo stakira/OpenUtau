@@ -9,24 +9,14 @@
     <UserControl.Template>
         <ControlTemplate TargetType="UserControl">
             <Grid x:Name="mainGrid" Background="{TemplateBinding Background}" MouseLeftButtonDown="mainGrid_MouseLeftButtonDown" >
-                <TextBlock x:Name="textBox" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,7,0" Foreground="{TemplateBinding Foreground}"
+                <TextBlock x:Name="tag" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,7,0"
+                           Foreground="{Binding TagBrush, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
                            Text="{Binding Text, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" />
-                <ComboBox x:Name="dropList" VerticalAlignment="Center" HorizontalAlignment="Left" Width="22" Height="22" Focusable="False"
+                <ComboBox x:Name="dropList" Style="{StaticResource ExpComboBoxStyle}" VerticalAlignment="Center" HorizontalAlignment="Left" Width="20" Height="22" Focusable="False"
+                          Foreground="Black"
                           SelectedIndex="{Binding SelectedIndex, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
-                          ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" SelectionChanged="dropList_SelectionChanged">
-                    <ComboBox.ItemContainerStyle>
-                        <Style TargetType="ComboBoxItem">
-                            <Setter Property="Width" Value="46"/>
-                            <Setter Property="HorizontalContentAlignment" Value="Right"/>
-                        </Style>
-                    </ComboBox.ItemContainerStyle>
-                </ComboBox>
+                          ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" SelectionChanged="dropList_SelectionChanged"/>
             </Grid>
-            <ControlTemplate.Triggers>
-                <Trigger Property="IsMouseOver" SourceName="dropList" Value="True">
-                    <Setter Property="Foreground" TargetName="dropList" Value="{Binding Highlight, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
-                </Trigger>
-            </ControlTemplate.Triggers>
         </ControlTemplate>
     </UserControl.Template>
 </UserControl>

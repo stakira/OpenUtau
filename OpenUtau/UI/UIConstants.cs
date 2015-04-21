@@ -49,5 +49,9 @@ namespace OpenUtau.UI
         public const int PartRectangleZIndex = 100;
         public const int PartThumbnailZIndex = 200;
         public const int PartElementZIndex = 200;
+
+        public const int ExpressionHiddenZIndex = 0;
+        public const int ExpressionVisibleZIndex = 200;
+        public const int ExpressionShadowZIndex = 100;
     }
 }

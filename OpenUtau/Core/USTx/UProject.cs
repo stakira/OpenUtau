@@ -21,11 +21,11 @@ namespace OpenUtau.Core.USTx
         public List<UTrack> Tracks = new List<UTrack>();
         public List<UPart> Parts = new List<UPart>();
 
-        public Dictionary<string, Expression> ExpressionTable = new Dictionary<string, Expression>();
-        public void RegisterExpression(Expression exp) { if (!ExpressionTable.ContainsKey(exp.Name)) ExpressionTable.Add(exp.Name, exp); }
+        public Dictionary<string, UExpression> ExpressionTable = new Dictionary<string, UExpression>();
+        public void RegisterExpression(UExpression exp) { if (!ExpressionTable.ContainsKey(exp.Name)) ExpressionTable.Add(exp.Name, exp); }
         public UNote CreateNote()
         {
-            UNote note = new UNote();
+            UNote note = UNote.Create();
             foreach (var pair in ExpressionTable) { note.Expressions.Add(pair.Key, pair.Value.Clone(note)); }
             return note;
         }
