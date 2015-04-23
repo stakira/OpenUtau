@@ -116,6 +116,7 @@ namespace OpenUtau.UI.Models
         public List<UNote> TempSelectedNotes = new List<UNote>();
         public List<NoteControl> NoteControls = new List<NoteControl>();
         Dictionary<string, FloatExpElement> expElements = new Dictionary<string, FloatExpElement>();
+        public PitchExpElement pitchExpElement;
         public FloatExpElement visibleExpElement, shadowExpElement;
 
         public MidiViewModel() { }
@@ -316,6 +317,28 @@ namespace OpenUtau.UI.Models
             _visualDurTick = Part.DurTick;
         }
 
+        private void OnShowPitchExpression()
+        {
+            if (pitchExpElement == null)
+            {
+                pitchExpElement = new PitchExpElement() { Key = "pitchbend", Part = this.Part };
+                MidiCanvas.Children.Add(pitchExpElement);
+                Canvas.SetZIndex(pitchExpElement, UIConstants.NoteZIndex - 10);
+            }
+            pitchExpElement.Visibility = System.Windows.Visibility.Visible;
+            pitchExpElement.MarkUpdate();
+            this.MarkUpdate();
+        }
+
+        private void OnHidePitchExpression()
+        {
+            if (pitchExpElement != null)
+            {
+                Canvas.SetZIndex(pitchExpElement, -100);
+                pitchExpElement.Visibility = System.Windows.Visibility.Hidden;
+            }
+        }
+
         private void OnSelectExpression(UNotification cmd)
         {
             var _cmd = cmd as SelectExpressionNotification;
@@ -381,6 +404,8 @@ namespace OpenUtau.UI.Models
                 if (_cmd is LoadPartNotification) LoadPart(_cmd.part, _cmd.project);
                 else if (_cmd is LoadProjectNotification) UnloadPart();
                 else if (_cmd is SelectExpressionNotification) OnSelectExpression(_cmd);
+                else if (_cmd is ShowPitchExpNotification) OnShowPitchExpression();
+                else if (_cmd is HidePitchExpNotification) OnHidePitchExpression();
             }
         }
 

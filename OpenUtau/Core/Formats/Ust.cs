@@ -65,7 +65,7 @@ namespace OpenUtau.Core.Formats
 
         static public UProject Load(string file, string encoding = "")
         {
-            int currentNote = 0;
+            int currentNoteIndex = 0;
             UstBlock currentBlock = UstBlock.None;
             string[] lines;
 
@@ -81,16 +81,16 @@ namespace OpenUtau.Core.Formats
             }
 
             UProject uproject = new UProject() { Resolution = 480 };
-            uproject.RegisterExpression(new CCExpression(null, "velocity") { Data = 64f });
-            uproject.RegisterExpression(new CCExpression(null, "opening") { Data = 127f });
-            uproject.RegisterExpression(new FloatExpression(null, "accent") { Data = 50f, Min = 0f, Max = 100f });
-            uproject.RegisterExpression(new FloatExpression(null, "decay") { Data = 50f, Min = 0f, Max = 100f });
+            uproject.RegisterExpression(new FloatExpression(null, "velocity") { Data = 100f, Min = 0f, Max = 200f });
+            uproject.RegisterExpression(new FloatExpression(null, "volume") { Data = 100f, Min = 0f, Max = 200f });
+            uproject.RegisterExpression(new SequenceExpression(null, "pitchbend"));
 
             uproject.Tracks.Add(new UTrack());
             uproject.Tracks.First().TrackNo = 0;
             UVoicePart upart = new UVoicePart() { TrackNo = 0, PosTick = 0 };
             uproject.Parts.Add(upart);
-            UNote currNote = null;
+            UNote currentNote = null;
+            string pbs = ""; string pbw = ""; string pby = ""; string pbm = "";
             int currTick = 0;
 
             foreach (string line in lines)
@@ -102,13 +102,37 @@ namespace OpenUtau.Core.Formats
                     else if (line.Equals(endTag)) currentBlock = UstBlock.Trackend;
                     else
                     {
-                        try { currentNote = int.Parse(line.Replace("[#", "").Replace("]", "")); }
+                        try { currentNoteIndex = int.Parse(line.Replace("[#", "").Replace("]", "")); }
                         catch { System.Windows.MessageBox.Show("Unknown ust format"); return null; }
                         currentBlock = UstBlock.Note;
-                        if (currNote != null && !currNote.Lyric.Replace("R", "").Replace("r", "").Equals("")) upart.Notes.Add(currNote);
-                        currNote = uproject.CreateNote();
-                        currNote.Lyric = "R";
-                        currNote.PosTick = currTick;
+                        // Finalize note
+                        if (currentNote != null && !currentNote.Lyric.Replace("R", "").Replace("r", "").Equals(""))
+                        {
+                            if (pbs != "")
+                            {
+                                var pts = currentNote.Expressions["pitchbend"].Data as List<ExpPoint>;
+                                if (pbs.Contains(';')) pts.Add(new ExpPoint(float.Parse(pbs.Split(new[] { ';' })[0]), float.Parse(pbs.Split(new[] { ';' })[1])));
+                                else pts.Add(new ExpPoint(float.Parse(pbs), 0));
+                                if (pbw != "")
+                                {
+                                    string[] w = pbw.Split(new[] { ',' });
+                                    string[] y = null;
+                                    if (w.Count() > 1) y = pby.Split(new[] { ',' });
+                                    for (int i = 0; i < w.Count() - 1; i++)
+                                    {
+                                        pts.Add(new ExpPoint(float.Parse(w[i]), float.Parse(y[i])));
+                                    }
+                                    pts.Add(new ExpPoint(float.Parse(w[w.Count() - 1]), 0));
+                                }
+                            }
+                            upart.Notes.Add(currentNote);
+                        }
+                        // Clean up
+                        pbs = pbw = pby = "";
+                        // Next note
+                        currentNote = uproject.CreateNote();
+                        currentNote.Lyric = "R";
+                        currentNote.PosTick = currTick;
                     }
                 }
                 else
@@ -127,9 +151,15 @@ namespace OpenUtau.Core.Formats
                     }
                     else if (currentBlock == UstBlock.Note)
                     {
-                        if (line.StartsWith("Lyric=")) currNote.Lyric = line.Trim().Replace("Lyric=", "");
-                        if (line.StartsWith("Length=")) { currNote.DurTick = int.Parse(line.Trim().Replace("Length=", "")); currTick += currNote.DurTick; }
-                        if (line.StartsWith("NoteNum=")) currNote.NoteNum = int.Parse(line.Trim().Replace("NoteNum=", ""));
+                        if (line.StartsWith("Lyric=")) currentNote.Lyric = line.Trim().Replace("Lyric=", "");
+                        if (line.StartsWith("Length=")) { currentNote.DurTick = int.Parse(line.Trim().Replace("Length=", "")); currTick += currentNote.DurTick; }
+                        if (line.StartsWith("NoteNum=")) currentNote.NoteNum = int.Parse(line.Trim().Replace("NoteNum=", ""));
+                        if (line.StartsWith("Velocity=")) currentNote.Expressions["velocity"].Data = float.Parse(line.Trim().Replace("Velocity=", ""));
+                        if (line.StartsWith("Intensity=")) currentNote.Expressions["volume"].Data = float.Parse(line.Trim().Replace("Intensity=", ""));
+                        if (line.StartsWith("PBS=")) pbs = line.Trim().Replace("PBS=", "");
+                        if (line.StartsWith("PBW=")) pbw = line.Trim().Replace("PBW=", "");
+                        if (line.StartsWith("PBY=")) pby = line.Trim().Replace("PBY=", "");
+                        if (line.StartsWith("PBM=")) pbm = line.Trim().Replace("PBM=", "");
                     }
                     else if (currentBlock == UstBlock.Trackend)
                     {
@@ -138,9 +168,9 @@ namespace OpenUtau.Core.Formats
                 }
             }
             if (currentBlock != UstBlock.Trackend) System.Windows.MessageBox.Show("Unexpected ust file end");
-            if (currNote != null && currNote.Lyric != "R") upart.Notes.Add(currNote);
+            if (currentNote != null && currentNote.Lyric != "R") upart.Notes.Add(currentNote);
             upart.DurTick = currTick;
-            currNote = null;
+            currentNote = null;
             return uproject;
         }
     }

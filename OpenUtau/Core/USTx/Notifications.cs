@@ -45,4 +45,14 @@ namespace OpenUtau.Core.USTx
         public SelectExpressionNotification(string expKey, int index, bool updateShadow) { ExpKey = expKey; SelectorIndex = index; UpdateShadow = updateShadow; }
         public override string ToString() { return "Select expression " + ExpKey; }
     }
+
+    public class ShowPitchExpNotification : UNotification
+    {
+        public override string ToString() { return "Show pitch expression list"; }
+    }
+
+    public class HidePitchExpNotification : UNotification
+    {
+        public override string ToString() { return "Hide pitch expression list"; }
+    }
 }

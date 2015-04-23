@@ -16,12 +16,29 @@ namespace OpenUtau.UI.Controls
 
     public class ExpElement : FrameworkElement
     {
+        protected DrawingVisual visual;
+
+        protected override int VisualChildrenCount { get { return 1; } }
+        protected override Visual GetVisualChild(int index) { return visual; }
+
+        protected UVoicePart _part;
+        public UVoicePart Part { set { _part = value; MarkUpdate(); } get { return _part; } }
+
+        public string Key;
         protected TranslateTransform tTrans;
+
+        protected double _visualHeight;
+        public double VisualHeight { set { if (_visualHeight != value) { _visualHeight = value; MarkUpdate(); } } get { return _visualHeight; } }
+        protected double _scaleX;
+        public double ScaleX { set { if (_scaleX != value) { _scaleX = value; MarkUpdate(); } } get { return _scaleX; } }
 
         public ExpElement()
         {
             tTrans = new TranslateTransform();
             this.RenderTransform = tTrans;
+            visual = new DrawingVisual();
+            MarkUpdate();
+            this.AddVisualChild(visual);
         }
 
         public double X { set { if (tTrans.X != Math.Round(value)) { tTrans.X = Math.Round(value); } } get { return tTrans.X; } }
@@ -50,21 +67,12 @@ namespace OpenUtau.UI.Controls
 
         protected bool _updated = false;
         public void MarkUpdate() { _updated = true; }
+
+        public virtual void RedrawIfUpdated() { }
     }
 
     public class FloatExpElement : ExpElement
     {
-        protected DrawingVisual visual;
-
-        protected double _visualHeight;
-        public double VisualHeight { set { if (_visualHeight != value) { _visualHeight = value; MarkUpdate(); } } get { return _visualHeight; } }
-        protected double _scaleX;
-        public double ScaleX { set { if (_scaleX != value) { _scaleX = value; MarkUpdate(); } } get { return _scaleX; } }
-
-        UVoicePart _part;
-        public UVoicePart Part { set { _part = value; MarkUpdate(); } get { return _part; } }
-        public string Key;
-
         Pen pen3;
         Pen pen2;
 
@@ -74,15 +82,9 @@ namespace OpenUtau.UI.Controls
             pen2 = new Pen(OpenUtau.UI.Models.ThemeManager.NoteFillBrushes[0], 2);
             pen3.Freeze();
             pen2.Freeze();
-            visual = new DrawingVisual();
-            MarkUpdate();
-            this.AddVisualChild(visual);
         }
 
-        protected override int VisualChildrenCount { get { return 1; } }
-        protected override Visual GetVisualChild(int index) { return visual; }
-
-        public void RedrawIfUpdated()
+        public override void RedrawIfUpdated()
         {
             if (!_updated) return;
             DrawingContext cxt = visual.RenderOpen();
@@ -102,6 +104,28 @@ namespace OpenUtau.UI.Controls
                         cxt.DrawLine(pen2, new Point(x1 + 3, valueHeight), new Point(Math.Max(x1 + 3, x2 - 3), valueHeight));
                     }
                 }
+            }
+            else
+            {
+                cxt.DrawRectangle(Brushes.Transparent, null, new Rect(new Point(0,0), new Point(100,100)));
+            }
+            cxt.Close();
+            _updated = false;
+        }
+    }
+
+    public class PitchExpElement : ExpElement
+    {
+        protected double _trackHeight;
+        public double TrackHeight { set { if (_trackHeight != value) { _trackHeight = value; MarkUpdate(); } } get { return _trackHeight; } }
+
+        public override void RedrawIfUpdated()
+        {
+            if (!_updated) return;
+            DrawingContext cxt = visual.RenderOpen();
+            if (Part != null)
+            {
+
             }
             else
             {

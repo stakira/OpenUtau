@@ -77,17 +77,23 @@ namespace OpenUtau.Core.USTx
 
     public class ExpPoint : IComparable<ExpPoint>
     {
-        public int X;
+        public float X;
         public float Y;
-        public ExpPoint(int x, float y) { X = x; Y = y; }
-        public int CompareTo(ExpPoint other) { return this.X - ((ExpPoint)other).X; }
+        public char Shape;
+        public ExpPoint(float x, float y, char shape = ' ') { X = x; Y = y; Shape = shape; }
+        public int CompareTo(ExpPoint other)
+        {
+            if (this.X > other.X) return 1;
+            else if (this.X == other.X) return 0;
+            else return -1;
+        }
     }
 
-    public class SerialExpression : UExpression
+    public class SequenceExpression : UExpression
     {
-        public SerialExpression(UNote parent, string name) { this.Parent = parent; _name = name; }
+        public SequenceExpression(UNote parent, string name) { this.Parent = parent; _name = name; }
         protected string _name;
-        protected List<ExpPoint> _data;
+        protected List<ExpPoint> _data = new List<ExpPoint>();
         protected float _min = 0;
         protected float _max = 127;
         public override string Name { get { return _name; } }
@@ -100,14 +106,14 @@ namespace OpenUtau.Core.USTx
         public override UExpression Clone(UNote newParent)
         {
             var data = new List<ExpPoint>();
-            foreach (var p in this._data) data.Add(new ExpPoint(p.X, p.Y));
-            return new SerialExpression(newParent, _name) { Min = this.Min, Max = this.Max, Data = data, };
+            foreach (var p in this._data) data.Add(new ExpPoint(p.X, p.Y, p.Shape));
+            return new SequenceExpression(newParent, _name) { Min = this.Min, Max = this.Max, Data = data, };
         }
         public override UExpression Split(UNote newParent, int postick) {
             var newdata = new List<ExpPoint>();
             while (_data.Count > 0 && _data.Last().X >= postick) { newdata.Add(_data.Last()); _data.Remove(_data.Last()); }
             newdata.Reverse();
-            return new SerialExpression(newParent, _name) { Min = this.Min, Max = this.Max, Data = newdata };
+            return new SequenceExpression(newParent, _name) { Min = this.Min, Max = this.Max, Data = newdata };
         }
         public override XElement ToXml(XNamespace ns) // FIXME
         {
@@ -123,7 +129,7 @@ namespace OpenUtau.Core.USTx
         }
         public static UExpression FromXml(XElement x, UNote parent, XNamespace ns) // FIXME
         {
-            return new SerialExpression(parent, x.Attribute("id").Value);
+            return new SequenceExpression(parent, x.Attribute("id").Value);
         }
     }
 
@@ -134,20 +140,6 @@ namespace OpenUtau.Core.USTx
     //    public float Start;
     //    public float End;
     //    public float Fade;
-    //}
-
-    //public class PitchExpression : Expression
-    //{
-    //    public override string Name { get { return "Pitch"; } }
-    //    public List<Point> Points;
-    //    public UPart Parent;
-    //}
-
-    //public class FineExpression : Expression
-    //{
-    //    public override string Name { get { return "Fine"; } }
-    //    public List<Point> Points;
-    //    public UPart Parent;
     //}
 
     //public class TimeExpression : Expression
