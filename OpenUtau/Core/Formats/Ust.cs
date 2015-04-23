@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 using System.IO;
 
 using OpenUtau.Core.USTx;
+using OpenUtau.Core.Lib;
 
 namespace OpenUtau.Core.Formats
 {
-    static class Ust
+    public static class Ust
     {
         private enum UstBlock { Version, Setting, Note, Trackend, None };
 
@@ -62,7 +63,7 @@ namespace OpenUtau.Core.Formats
             if (uproject != null) DocManager.Inst.ExecuteCmd(new LoadProjectNotification(uproject));
         }
 
-        static public UProject Load(string file)
+        static public UProject Load(string file, string encoding = "")
         {
             int currentNote = 0;
             UstBlock currentBlock = UstBlock.None;
@@ -70,7 +71,8 @@ namespace OpenUtau.Core.Formats
 
             try
             {
-                lines = File.ReadAllLines(file);
+                if (encoding == "") lines = File.ReadAllLines(file, EncodingUtil.DetectFileEncoding(file));
+                else lines = File.ReadAllLines(file, Encoding.GetEncoding(encoding));
             }
             catch (Exception e)
             {
@@ -79,6 +81,11 @@ namespace OpenUtau.Core.Formats
             }
 
             UProject uproject = new UProject() { Resolution = 480 };
+            uproject.RegisterExpression(new CCExpression(null, "velocity") { Data = 64f });
+            uproject.RegisterExpression(new CCExpression(null, "opening") { Data = 127f });
+            uproject.RegisterExpression(new FloatExpression(null, "accent") { Data = 50f, Min = 0f, Max = 100f });
+            uproject.RegisterExpression(new FloatExpression(null, "decay") { Data = 50f, Min = 0f, Max = 100f });
+
             uproject.Tracks.Add(new UTrack());
             uproject.Tracks.First().TrackNo = 0;
             UVoicePart upart = new UVoicePart() { TrackNo = 0, PosTick = 0 };
@@ -98,7 +105,7 @@ namespace OpenUtau.Core.Formats
                         try { currentNote = int.Parse(line.Replace("[#", "").Replace("]", "")); }
                         catch { System.Windows.MessageBox.Show("Unknown ust format"); return null; }
                         currentBlock = UstBlock.Note;
-                        if (currNote != null && !currNote.Lyric.Replace("R", "").Equals("")) upart.Notes.Add(currNote);
+                        if (currNote != null && !currNote.Lyric.Replace("R", "").Replace("r", "").Equals("")) upart.Notes.Add(currNote);
                         currNote = uproject.CreateNote();
                         currNote.Lyric = "R";
                         currNote.PosTick = currTick;
@@ -110,6 +117,13 @@ namespace OpenUtau.Core.Formats
                     {
                         if (line.StartsWith("Tempo=")) uproject.BPM = double.Parse(line.Trim().Replace("Tempo=", ""));
                         if (line.StartsWith("ProjectName=")) uproject.Name = line.Trim().Replace("ProjectName=", "");
+                        if (line.StartsWith("VoiceDir="))
+                        {
+                            string singerpath = line.Trim().Replace("VoiceDir=", "").Replace("%VOICE%", "");
+                            //if (singerpath.StartsWith("%VOICE%"))
+                            //    singerpath = Path.Combine(@"E:\Utau\voice", singerpath.Replace("%VOICE%", ""));
+                            uproject.Singers.Add(UtauSoundbank.LoadSinger(singerpath, EncodingUtil.DetectFileEncoding(file)));
+                        }
                     }
                     else if (currentBlock == UstBlock.Note)
                     {

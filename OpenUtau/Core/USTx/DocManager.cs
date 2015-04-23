@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using OpenUtau.Core.Lib;
+
 namespace OpenUtau.Core.USTx
 {
     class DocManager : ICmdPublisher

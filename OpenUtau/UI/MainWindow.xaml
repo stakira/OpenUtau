@@ -49,6 +49,7 @@
                 <MenuItem Header="Midi Editor" Click="Menu_OpenMidiEditor"/>
             </MenuItem>
             <MenuItem Header="_Tools">
+                <MenuItem Header="Singers..." Click="MenuSingers_Click"/>
                 <MenuItem Header="Refresh Plugins"/>
             </MenuItem>
             <MenuItem Header="_Help">

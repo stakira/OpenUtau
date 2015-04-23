@@ -10,7 +10,7 @@ namespace OpenUtau.Core
     {
         public static string[] noteStrings = new String[12] { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
 
-        public static string GetKeyString(int keyNo) { return keyNo < 0 ? "" : noteStrings[keyNo % 12] + (keyNo / 12 - 2).ToString(); }
+        public static string GetNoteString(int noteNum) { return noteNum < 0 ? "" : noteStrings[noteNum % 12] + (noteNum / 12 - 1).ToString(); }
 
         public static double TickToNote(int tick, int resolution) { return tick / resolution; }
 

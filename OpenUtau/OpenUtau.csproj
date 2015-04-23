@@ -70,20 +70,27 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="Ude">
+      <HintPath>..\packages\UDE.CSharp.1.1.0\lib\Ude.dll</HintPath>
+    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\Formats\USTx.cs" />
+    <Compile Include="Core\Formats\UtauSoundbank.cs" />
+    <Compile Include="Core\Lib\xxHash.cs" />
     <Compile Include="Core\USTx\ExpCommands.cs" />
     <Compile Include="Core\USTx\Expressions.cs" />
     <Compile Include="Core\USTx\NoteCommands.cs" />
-    <Compile Include="Core\USTx\Deque.cs" />
+    <Compile Include="Core\Lib\Deque.cs" />
     <Compile Include="Core\USTx\DocManager.cs" />
     <Compile Include="Core\USTx\Notifications.cs" />
     <Compile Include="Core\USTx\PartCommands.cs" />
     <Compile Include="Core\USTx\UCommand.cs" />
+    <Compile Include="Core\USTx\USinger.cs" />
+    <Compile Include="Core\Lib\EncodingUtil.cs" />
     <Compile Include="UI\Controls\ExpComboBox.xaml.cs">
       <DependentUpon>ExpComboBox.xaml</DependentUpon>
     </Compile>
@@ -115,6 +122,9 @@
       <DependentUpon>ViewScaler.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="UI\Dialogs\SingerViewDialog.xaml.cs">
+      <DependentUpon>SingerViewDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
@@ -137,6 +147,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\Controls\ViewScaler.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Dialogs\SingerViewDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -226,6 +240,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

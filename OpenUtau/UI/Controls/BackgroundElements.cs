@@ -110,7 +110,7 @@ namespace OpenUtau.UI.Controls
                 if (TrackHeight >= 12)
                 {
                     FormattedText text = new FormattedText(
-                        MusicMath.GetKeyString(UIConstants.MaxNoteNum - alt - 1),
+                        MusicMath.GetNoteString(UIConstants.MaxNoteNum - alt - 1),
                         System.Threading.Thread.CurrentThread.CurrentUICulture,
                         FlowDirection.LeftToRight,
                         SystemFonts.CaptionFontFamily.GetTypefaces().First(),

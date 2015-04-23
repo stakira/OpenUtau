@@ -10,6 +10,7 @@ namespace OpenUtau.Core.USTx
     {
         public string Name = "New Track";
         public string Comment = "";
+        public USinger Singer;
 
         public int TrackNo;
 

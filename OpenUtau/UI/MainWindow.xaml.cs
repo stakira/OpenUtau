@@ -538,5 +538,11 @@ namespace OpenUtau.UI
             }
         }
 
+        private void MenuSingers_Click(object sender, RoutedEventArgs e)
+        {
+            var w = new Dialogs.SingerViewDialog();
+            w.SetSinger(DocManager.Inst.Project.Singers[0]);
+            w.ShowDialog();
+        }
     }
 }
