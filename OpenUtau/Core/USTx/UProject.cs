@@ -18,11 +18,14 @@ namespace OpenUtau.Core.USTx
         public string OutputDir = "Vocal";
         public string CacheDir = "UCache";
 
+        public MusicTiming Timing { get { return new MusicTiming(BPM, BeatPerBar, BeatUnit, Resolution); } }
+
         public List<UTrack> Tracks = new List<UTrack>();
         public List<UPart> Parts = new List<UPart>();
         public List<USinger> Singers = new List<USinger>();
 
         public Dictionary<string, UExpression> ExpressionTable = new Dictionary<string, UExpression>();
+
         public void RegisterExpression(UExpression exp) { if (!ExpressionTable.ContainsKey(exp.Name)) ExpressionTable.Add(exp.Name, exp); }
         public UNote CreateNote()
         {

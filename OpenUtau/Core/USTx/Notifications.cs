@@ -15,6 +15,16 @@ namespace OpenUtau.Core.USTx
         public override string ToString() { return "Notification"; }
     }
 
+    /// <summary>
+    /// Message for user's information.
+    /// </summary>
+    public class UserMessageNotification : UNotification
+    {
+        public string message;
+        public UserMessageNotification(string message) { this.message = message; }
+        public override string ToString() { return "User message: " + message; }
+    }
+
     public class LoadPartNotification : UNotification
     {
         public LoadPartNotification(UPart part, UProject project) { this.part = part; this.project = project; }

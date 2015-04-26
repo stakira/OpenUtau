@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OpenUtau.Core.USTx
 {
-    public class UTrack
+    public class UTrack : IComparable<UTrack>
     {
         public string Name = "New Track";
         public string Comment = "";
@@ -15,5 +15,10 @@ namespace OpenUtau.Core.USTx
         public int TrackNo;
 
         public UTrack() { }
+
+        public int CompareTo(UTrack other)
+        {
+            return TrackNo - other.TrackNo;
+        }
     }
 }

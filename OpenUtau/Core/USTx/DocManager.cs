@@ -35,10 +35,23 @@ namespace OpenUtau.Core.USTx
                 System.Diagnostics.Debug.WriteLine("Publish notification " + cmd.ToString());
                 return;
             }
-            if (undoGroup == null) { System.Diagnostics.Debug.WriteLine("Null undoGroup"); return; }
-            undoGroup.Commands.Add(cmd);
-            cmd.Execute();
-            Publish(cmd);
+            else if (undoGroup == null) { System.Diagnostics.Debug.WriteLine("Null undoGroup"); return; }
+            else if (cmd is NoteCommand)
+            {
+                var _cmd = cmd as NoteCommand;
+                lock (_cmd.Part)
+                {
+                    undoGroup.Commands.Add(cmd);
+                    cmd.Execute();
+                    Publish(cmd);
+                }
+            }
+            else
+            {
+                undoGroup.Commands.Add(cmd);
+                cmd.Execute();
+                Publish(cmd);
+            }
             System.Diagnostics.Debug.WriteLine("ExecuteCmd " + cmd.ToString());
         }
 

@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
+using OpenUtau.Core;
 using OpenUtau.Core.USTx;
 
 namespace OpenUtau.UI.Controls
@@ -94,12 +95,13 @@ namespace OpenUtau.UI.Controls
                 {
                     if (note.Expressions.ContainsKey(Key))
                     {
-                        var _exp = note.Expressions[Key] as FloatExpression;
-                        var _expTemplate = DocManager.Inst.Project.ExpressionTable[Key] as FloatExpression;
+                        var _exp = note.Expressions[Key] as IntExpression;
+                        var _expTemplate = DocManager.Inst.Project.ExpressionTable[Key] as IntExpression;
                         double x1 = Math.Round(ScaleX * note.PosTick);
                         double x2 = Math.Round(ScaleX * note.EndTick);
-                        double valueHeight = Math.Round(VisualHeight - VisualHeight * (float)_exp.Data / (_expTemplate.Max - _expTemplate.Min));
-                        cxt.DrawLine(pen3, new Point(x1 + 0.5, VisualHeight + 0.5), new Point(x1 + 0.5, valueHeight + 3));
+                        double valueHeight = Math.Round(VisualHeight - VisualHeight * ((int)_exp.Data - _expTemplate.Min) / (_expTemplate.Max - _expTemplate.Min));
+                        double zeroHeight = Math.Round(VisualHeight - VisualHeight * (0f - _expTemplate.Min) / (_expTemplate.Max - _expTemplate.Min));
+                        cxt.DrawLine(pen3, new Point(x1 + 0.5, zeroHeight + 0.5), new Point(x1 + 0.5, valueHeight + 3));
                         cxt.DrawEllipse(Brushes.White, pen2, new Point(x1 + 0.5, valueHeight), 2.5, 2.5);
                         cxt.DrawLine(pen2, new Point(x1 + 3, valueHeight), new Point(Math.Max(x1 + 3, x2 - 3), valueHeight));
                     }
@@ -116,16 +118,74 @@ namespace OpenUtau.UI.Controls
 
     public class PitchExpElement : ExpElement
     {
-        protected double _trackHeight;
+        public new double X { set { if (tTrans.X != Math.Round(value)) { tTrans.X = Math.Round(value); MarkUpdate(); } } get { return tTrans.X; } }
+        public double Y { set { if (tTrans.Y != Math.Round(value)) { tTrans.Y = Math.Round(value); } } get { return tTrans.Y; } }
+
+        double _trackHeight;
         public double TrackHeight { set { if (_trackHeight != value) { _trackHeight = value; MarkUpdate(); } } get { return _trackHeight; } }
+
+        double _quarterWidth;
+        public double QuarterWidth { set { if (_quarterWidth != value) { _quarterWidth = value; MarkUpdate(); } } get { return _quarterWidth; } }
+
+        public OpenUtau.UI.Models.MidiViewModel midiVM;
+
+        Pen pen;
+
+        public PitchExpElement()
+        {
+            pen = new Pen(OpenUtau.UI.Models.ThemeManager.WhiteKeyNameBrushNormal, 1);
+            pen.Freeze();
+            this.IsHitTestVisible = false;
+        }
 
         public override void RedrawIfUpdated()
         {
-            if (!_updated) return;
+            //if (!_updated) return;
             DrawingContext cxt = visual.RenderOpen();
             if (Part != null)
             {
+                foreach (var note in Part.Notes)
+                {
+                    var _pitchExp = note.PitchBend as PitchBendExpression;
+                    var _pts = _pitchExp.Data as List<PitchPoint>;
+                    if (_pts.Count < 2) return;
 
+                    double pt0Tick = note.PosTick + MusicMath.TimeToTick(_pts[0].X, DocManager.Inst.Project.BPM, DocManager.Inst.Project.BeatUnit, DocManager.Inst.Project.Resolution);
+                    double pt0X = midiVM.QuarterWidth * pt0Tick / DocManager.Inst.Project.Resolution;
+                    double pt0Pit = note.NoteNum + _pts[0].Y / 10.0;
+                    double pt0Y = TrackHeight * ((double)UIConstants.MaxNoteNum - 1.0 - pt0Pit) + TrackHeight / 2;
+
+                    if (!midiVM.NoteIsInView(note)) continue;
+
+                    cxt.DrawEllipse(null, pen, new Point(pt0X, pt0Y), 2.5, 2.5);
+                    for (int i = 1; i < _pts.Count; i++)
+                    {
+                        double pt1Tick = note.PosTick + MusicMath.TimeToTick(_pts[i].X, DocManager.Inst.Project.BPM, DocManager.Inst.Project.BeatUnit, DocManager.Inst.Project.Resolution);
+                        double pt1X = midiVM.QuarterWidth * pt1Tick / DocManager.Inst.Project.Resolution;
+                        double pt1Pit = note.NoteNum + _pts[i].Y / 10.0;
+                        double pt1Y = TrackHeight * ((double)UIConstants.MaxNoteNum - 1.0 - pt1Pit) + TrackHeight / 2;
+
+                        // Draw arc
+                        double _x = pt0X;
+                        double _x2 = pt0X;
+                        double _y = pt0Y;
+                        double _y2 = pt0Y;
+                        while (_x2 < pt1X)
+                        {
+                            _x = Math.Min(_x + 4, pt1X);
+                            _y = pt0Y - (pt1Y - pt0Y) / 2 * (Math.Cos(Math.PI * (_x - pt0X) / (pt1X - pt0X)) - 1);
+                            cxt.DrawLine(pen, new Point(_x, _y), new Point(_x2, _y2));
+                            _x2 = _x;
+                            _y2 = _y;
+                        }
+
+                        pt0Tick = pt1Tick;
+                        pt0X = pt1X;
+                        pt0Pit = pt1Pit;
+                        pt0Y = pt1Y;
+                        cxt.DrawEllipse(null, pen, new Point(pt0X, pt0Y), 2.5, 2.5);
+                    }
+                }
             }
             else
             {

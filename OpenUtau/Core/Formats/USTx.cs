@@ -17,16 +17,15 @@ namespace OpenUtau.Core.Formats
 
         static UExpression GetExpFromXml(XElement x, UNote parent)
         {
-            if (x.Attribute("t").Value == "cc") return CCExpression.FromXml(x, parent, u);
-            else if (x.Attribute("t").Value == "float") return FloatExpression.FromXml(x, parent, u);
+            /*if (x.Attribute("t").Value == "cc") return CCExpression.FromXml(x, parent, u);
+            else if (x.Attribute("t").Value == "float") return IntExpression.FromXml(x, parent, u);
             else if (x.Attribute("t").Value == "serial") return CCExpression.FromXml(x, parent, u);
-            else return null;
+            else*/ return null;
         }
 
         static public UProject Create()
         {
             UProject project = new UProject();
-            project.RegisterExpression(new CCExpression(null, "velocity") { Data = 64f });
             return project;
         }
 
@@ -59,7 +58,6 @@ namespace OpenUtau.Core.Formats
                     note.DurTick = int.Parse(xnote.Element(u + "dur").Value);
                     note.NoteNum = int.Parse(xnote.Element(u + "n").Value);
                     note.Lyric = xnote.Element(u + "y").Value;
-                    note.Phoneme = xnote.Element(u + "p").Value;
 
                     foreach (XElement xexp in xnote.Descendants(u + "exp"))
                         note.Expressions[xexp.Attribute("id").Value] = GetExpFromXml(xexp, note);
@@ -80,8 +78,8 @@ namespace OpenUtau.Core.Formats
             XElement xexptable = new XElement(u + "expressionTable");
             foreach (var pair in project.ExpressionTable)
             {
-                XElement xexp = pair.Value.ToTableXml(u);
-                xexptable.Add(xexp);
+                //XElement xexp = pair.Value.ToTableXml(u);
+                //xexptable.Add(xexp);
             }
             xroot.Add(xexptable);
 
@@ -98,14 +96,14 @@ namespace OpenUtau.Core.Formats
                     foreach (UNote note in ((UVoicePart)part).Notes)
                     {
                         XElement xexpressions = new XElement(u + "expressions");
-                        foreach (var pair in note.Expressions) xexpressions.Add(pair.Value.ToXml(u));
+                        //foreach (var pair in note.Expressions) xexpressions.Add(pair.Value.ToXml(u));
 
                         XElement xnote = new XElement(u + "note",
                             new XElement(u + "pos", note.PosTick),
                             new XElement(u + "dur", note.DurTick),
                             new XElement(u + "n", note.NoteNum),
                             new XElement(u + "y", new XCData(note.Lyric)),
-                            new XElement(u + "p", new XCData(note.Phoneme)),
+                            //new XElement(u + "p", new XCData(note.Phoneme)),
                             xexpressions);
                         xpart.Add(xnote);
                     }

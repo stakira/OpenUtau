@@ -23,7 +23,8 @@
                 <RowDefinition Height="150" MinHeight="100" MaxHeight="450"/>
             </Grid.RowDefinitions>
 
-            <Button x:Name="mainButton" Grid.Row="0" Style="{StaticResource MidiWindowMainButton}" HorizontalAlignment="Left" VerticalAlignment="Top" Height="21" Width="21" Margin="14,7,0,0"/>
+            <Button x:Name="mainButton" Grid.Row="0" Style="{StaticResource MidiWindowMainButton}" HorizontalAlignment="Left" VerticalAlignment="Top" Height="21" Width="21" Margin="14,7,0,0"
+                    Click="mainButton_Click"/>
             <Grid x:Name="keyboardBackgroundGrid" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="48" Margin="0,40,0,0" ClipToBounds="True">
                 <local:KeyboardBackground x:Name="keyboardBackground" TrackHeight="{Binding TrackHeight, Source={StaticResource midiVM}}"
                                           OffsetY="{Binding OffsetY, Source={StaticResource midiVM}}"/>

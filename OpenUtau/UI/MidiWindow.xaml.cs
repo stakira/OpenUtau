@@ -556,11 +556,18 @@ namespace OpenUtau.UI
         {
             if (midiVM.Part == null) return;
             float newValue;
-            if (Keyboard.Modifiers == ModifierKeys.Alt) newValue = (float)DocManager.Inst.Project.ExpressionTable[midiVM.visibleExpElement.Key].Data;
-            else newValue = (int)Math.Max(0, Math.Min(127, (1 - mousePos.Y / expCanvas.ActualHeight) * 127));
+            string _key = midiVM.visibleExpElement.Key;
+            var _expTemplate = DocManager.Inst.Project.ExpressionTable[_key] as IntExpression;
+            if (Keyboard.Modifiers == ModifierKeys.Alt) newValue = (float)_expTemplate.Data;
+            else newValue = (int)Math.Max(_expTemplate.Min, Math.Min(_expTemplate.Max, (1 - mousePos.Y / expCanvas.ActualHeight) * (_expTemplate.Max - _expTemplate.Min) + _expTemplate.Min));
             UNote note = midiVM.CanvasXToNote(mousePos.X);
             if (midiVM.SelectedNotes.Count == 0 || midiVM.SelectedNotes.Contains(note))
                 if (note != null) DocManager.Inst.ExecuteCmd(new SetFloatExpCommand(midiVM.Part, note, midiVM.visibleExpElement.Key, newValue));
+        }
+
+        private void mainButton_Click(object sender, RoutedEventArgs e)
+        {
+            DocManager.Inst.ExecuteCmd(new ShowPitchExpNotification());
         }
     }
 }

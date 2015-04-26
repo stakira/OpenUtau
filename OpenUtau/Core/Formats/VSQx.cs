@@ -53,10 +53,10 @@ namespace OpenUtau.Core.Formats
             }
 
             UProject uproject = new UProject();
-            uproject.RegisterExpression(new CCExpression(null, "velocity") { Data = 64f });
-            uproject.RegisterExpression(new CCExpression(null, "opening") { Data = 127f });
-            uproject.RegisterExpression(new FloatExpression(null, "accent") { Data = 50f, Min = 0f, Max = 100f });
-            uproject.RegisterExpression(new FloatExpression(null, "decay") { Data = 50f, Min = 0f, Max = 100f });
+            uproject.RegisterExpression(new CCExpression(null, "velocity", "VEL") { Data = 64 });
+            uproject.RegisterExpression(new CCExpression(null, "opening", "OPE") { Data = 127 });
+            uproject.RegisterExpression(new IntExpression(null, "accent", "ACC") { Data = 50, Min = 0, Max = 100 });
+            uproject.RegisterExpression(new IntExpression(null, "decay", "DEC") { Data = 50, Min = 0, Max = 100 });
 
             string bpmPath = string.Format("{0}masterTrack/{0}tempo/{0}{1}", nsPrefix, nsPrefix == "v3:" ? "bpm" : "v");
             string beatperbarPath = string.Format("{0}masterTrack/{0}timeSig/{0}{1}", nsPrefix, nsPrefix == "v3:" ? "nume" : "nu");
@@ -122,7 +122,7 @@ namespace OpenUtau.Core.Formats
                         unote.DurTick = int.Parse(note.SelectSingleNode(durtickPath, nsmanager).InnerText);
                         unote.NoteNum = int.Parse(note.SelectSingleNode(notenumPath, nsmanager).InnerText);
                         unote.Lyric = note.SelectSingleNode(lyricPath, nsmanager).InnerText;
-                        unote.Phoneme = note.SelectSingleNode(phonemePath, nsmanager).InnerText;
+                        unote.Phonemes.Add(new UPhoneme() { Phoneme = note.SelectSingleNode(phonemePath, nsmanager).InnerText });
 
                         unote.Expressions["velocity"].Data = float.Parse(note.SelectSingleNode(velocityPath, nsmanager).InnerText);
 

@@ -58,6 +58,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Blend.Interctivity.WPF.v4.0.1.0.3\lib\net40\System.Windows.Interactivity.dll</HintPath>
@@ -78,9 +79,12 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core\Formats\USTx.cs" />
+    <Compile Include="Core\Formats\USTx.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Core\Formats\UtauSoundbank.cs" />
     <Compile Include="Core\Lib\xxHash.cs" />
+    <Compile Include="Core\Render\ResamplerInterface.cs" />
     <Compile Include="Core\USTx\ExpCommands.cs" />
     <Compile Include="Core\USTx\Expressions.cs" />
     <Compile Include="Core\USTx\NoteCommands.cs" />
@@ -89,6 +93,8 @@
     <Compile Include="Core\USTx\Notifications.cs" />
     <Compile Include="Core\USTx\PartCommands.cs" />
     <Compile Include="Core\USTx\UCommand.cs" />
+    <Compile Include="Core\USTx\PartManager.cs" />
+    <Compile Include="Core\USTx\UPhoneme.cs" />
     <Compile Include="Core\USTx\USinger.cs" />
     <Compile Include="Core\Lib\EncodingUtil.cs" />
     <Compile Include="UI\Controls\ExpComboBox.xaml.cs">
@@ -118,6 +124,7 @@
     <Compile Include="UI\Controls\NoteControl.xaml.cs">
       <DependentUpon>NoteControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Controls\PhonemeElement.cs" />
     <Compile Include="UI\Controls\ViewScaler.xaml.cs">
       <DependentUpon>ViewScaler.xaml</DependentUpon>
       <SubType>Code</SubType>

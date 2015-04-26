@@ -24,10 +24,9 @@ namespace OpenUtau
         {
             Thread backgroundThread = new Thread(new ThreadStart(() =>
             {
-                System.Diagnostics.Debug.WriteLine("Another thread");
+                var pm = new OpenUtau.Core.USTx.PartManager();
             }));
             backgroundThread.Start();
-
             App app = new App();
             UI.MainWindow window = new UI.MainWindow();
             app.Run(window);

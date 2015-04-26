@@ -124,7 +124,6 @@ namespace OpenUtau.UI.Models
         private void OnListChange()
         {
             _keys = new ObservableCollection<string>(DocManager.Inst.Project.ExpressionTable.Keys);
-            if (_keys.Contains("pitchbend")) _keys.Remove("pitchbend");
             if (_keys.Count == 0) return;
             DocManager.Inst.ExecuteCmd(new SelectExpressionNotification(_keys[Index % _keys.Count], this.Index, true));
             OnPropertyChanged("Keys");

@@ -544,5 +544,11 @@ namespace OpenUtau.UI
             w.SetSinger(DocManager.Inst.Project.Singers[0]);
             w.ShowDialog();
         }
+
+        private void MenuRenderAll_Click(object sender, RoutedEventArgs e)
+        {
+            var ri = new OpenUtau.Core.Render.ResamplerInterface();
+            ri.RenderAll(DocManager.Inst.Project);
+        }
     }
 }

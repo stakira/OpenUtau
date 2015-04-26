@@ -117,6 +117,7 @@ namespace OpenUtau.UI.Models
         public List<NoteControl> NoteControls = new List<NoteControl>();
         Dictionary<string, FloatExpElement> expElements = new Dictionary<string, FloatExpElement>();
         public PitchExpElement pitchExpElement;
+        public PhonemeElement phonemeElement;
         public FloatExpElement visibleExpElement, shadowExpElement;
 
         public MidiViewModel() { }
@@ -147,9 +148,24 @@ namespace OpenUtau.UI.Models
                     shadowExpElement.ScaleX = QuarterWidth / Project.Resolution;
                     shadowExpElement.VisualHeight = ExpCanvas.ActualHeight;
                 }
+                if (pitchExpElement != null)
+                {
+                    pitchExpElement.X = -OffsetX;
+                    pitchExpElement.Y = -OffsetY;
+                    pitchExpElement.VisualHeight = MidiCanvas.ActualHeight;
+                    pitchExpElement.TrackHeight = TrackHeight;
+                    pitchExpElement.QuarterWidth = QuarterWidth;
+                }
+                if (phonemeElement != null)
+                {
+                    phonemeElement.X = -OffsetX;
+                    phonemeElement.VisualHeight = MidiCanvas.ActualHeight;
+                }
             }
             _updated = false;
             foreach (var pair in expElements) pair.Value.RedrawIfUpdated();
+            if (pitchExpElement != null) pitchExpElement.RedrawIfUpdated();
+            if (phonemeElement != null) phonemeElement.RedrawIfUpdated();
         }
 
         public NoteControl GetNoteControl(UNote note)
@@ -230,8 +246,9 @@ namespace OpenUtau.UI.Models
 
         public bool NoteIsInView(UNote note) // FIXME : improve performance
         {
-            return (double)note.PosTick / Project.Resolution * QuarterWidth < OffsetX + ViewWidth &&
-                (double)note.EndTick / Project.Resolution * QuarterWidth > OffsetX;
+            double leftTick = OffsetX / QuarterWidth * Project.Resolution - 512;
+            double rightTick = leftTick + ViewWidth / QuarterWidth * Project.Resolution + 512;
+            return ((double)note.PosTick < rightTick && (double)note.EndTick > leftTick);
         }
 
         public UNote CanvasXToNote(double X)
@@ -292,6 +309,7 @@ namespace OpenUtau.UI.Models
             MidiCanvas.Children.Add(nc);
             NoteControls.Add(nc);
             foreach (var pair in expElements) pair.Value.MarkUpdate();
+            if (pitchExpElement != null) pitchExpElement.MarkUpdate();
             MarkUpdate();
         }
 
@@ -302,6 +320,7 @@ namespace OpenUtau.UI.Models
             MidiCanvas.Children.Remove(nc);
             NoteControls.Remove(nc);
             foreach (var pair in expElements) pair.Value.MarkUpdate();
+            if (pitchExpElement != null) pitchExpElement.MarkUpdate();
             MarkUpdate();
         }
 
@@ -321,13 +340,20 @@ namespace OpenUtau.UI.Models
         {
             if (pitchExpElement == null)
             {
-                pitchExpElement = new PitchExpElement() { Key = "pitchbend", Part = this.Part };
+                pitchExpElement = new PitchExpElement() { Key = "pitchbend", Part = this.Part, midiVM = this };
                 MidiCanvas.Children.Add(pitchExpElement);
                 Canvas.SetZIndex(pitchExpElement, UIConstants.NoteZIndex - 10);
             }
             pitchExpElement.Visibility = System.Windows.Visibility.Visible;
             pitchExpElement.MarkUpdate();
             this.MarkUpdate();
+            if (phonemeElement == null)
+            {
+                phonemeElement = new PhonemeElement() { Part = this.Part, midiVM = this };
+                MidiCanvas.Children.Add(phonemeElement);
+                Canvas.SetZIndex(phonemeElement, UIConstants.NoteZIndex - 10);
+                phonemeElement.MarkUpdate();
+            }
         }
 
         private void OnHidePitchExpression()
@@ -381,8 +407,12 @@ namespace OpenUtau.UI.Models
                     if (!isUndo) OnNoteRemoved(_cmd.Note);
                     else OnNoteAdded(_cmd.Note);
                 }
-                else if (_cmd is MoveNoteCommand) { MarkUpdate(); foreach (var pair in expElements) pair.Value.MarkUpdate(); }
-                else if (_cmd is ResizeNoteCommand) { MarkUpdate(); foreach (var pair in expElements) pair.Value.MarkUpdate(); }
+                else if (_cmd is MoveNoteCommand || _cmd is ResizeNoteCommand)
+                {
+                    MarkUpdate();
+                    foreach (var pair in expElements) pair.Value.MarkUpdate();
+                    if (pitchExpElement != null) pitchExpElement.MarkUpdate();
+                }
             }
             else if (cmd is PartCommand)
             {
