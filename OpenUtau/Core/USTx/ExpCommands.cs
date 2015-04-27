@@ -13,16 +13,16 @@ namespace OpenUtau.Core.USTx
         public string Key;
     }
 
-    public class SetFloatExpCommand : ExpCommand
+    public class SetIntExpCommand : ExpCommand
     {
-        public float NewValue, OldValue;
-        public SetFloatExpCommand(UVoicePart part, UNote note, string key, float newValue)
+        public int NewValue, OldValue;
+        public SetIntExpCommand(UVoicePart part, UNote note, string key, int newValue)
         {
             this.Part = part;
             this.Note = note;
             this.Key = key;
             this.NewValue = newValue;
-            this.OldValue = (float)Note.Expressions[Key].Data;
+            this.OldValue = (int)Note.Expressions[Key].Data;
         }
         public override string ToString() { return "Set note expression " + Key; }
         public override void Execute() { Note.Expressions[Key].Data = NewValue; }

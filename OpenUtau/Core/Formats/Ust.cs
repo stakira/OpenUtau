@@ -166,7 +166,15 @@ namespace OpenUtau.Core.Formats
 
             foreach (string line in lines)
             {
-                if (line.StartsWith("Lyric=")) note.Phonemes[0].Phoneme = note.Lyric = line.Trim().Replace("Lyric=", "");
+                if (line.StartsWith("Lyric="))
+                {
+                    note.Phonemes[0].Phoneme = note.Lyric = line.Trim().Replace("Lyric=", "");
+                    if (note.Phonemes[0].Phoneme.StartsWith("?"))
+                    {
+                        note.Phonemes[0].Phoneme = note.Phonemes[0].Phoneme.Substring(1);
+                        note.Phonemes[0].AutoRemapped = false;
+                    }
+                }
                 if (line.StartsWith("Length=")) note.DurTick = int.Parse(line.Trim().Replace("Length=", ""));
                 if (line.StartsWith("NoteNum=")) note.NoteNum = int.Parse(line.Trim().Replace("NoteNum=", ""));
                 if (line.StartsWith("Velocity=")) note.Expressions["velocity"].Data = int.Parse(line.Trim().Replace("Velocity=", ""));
@@ -191,15 +199,14 @@ namespace OpenUtau.Core.Formats
                 if (pbs.Contains(';'))
                 {
                     pts.Add(new PitchPoint(float.Parse(pbs.Split(new[] { ';' })[0]), float.Parse(pbs.Split(new[] { ';' })[1])));
-                    note.PitchBend.SnapFirst = false;
+                        note.PitchBend.SnapFirst = false;
                 }
                 else
                 {
                     pts.Add(new PitchPoint(float.Parse(pbs), 0));
                     note.PitchBend.SnapFirst = true;
                 }
-                // PBW, PBY
-                float x = pts.First().X;
+                double x = pts.First().X;
                 if (pbw != "")
                 {
                     string[] w = pbw.Split(new[] { ',' });
@@ -213,9 +220,6 @@ namespace OpenUtau.Core.Formats
                     pts.Add(new PitchPoint(x + float.Parse(w[w.Count() - 1]), 0));
                 }
             }
-            if (!note.PitchBend.SnapFirst)
-                if (lastNote.NoteNum - note.NoteNum == note.PitchBend.Points[0].Y / 10)
-                    note.PitchBend.SnapFirst = true;
             return note;
         }
 

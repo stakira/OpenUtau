@@ -18,71 +18,65 @@ namespace OpenUtau.Core.Render
 
         public void Render(UVoicePart part, UProject project)
         {
-            for (int i = 0; i < part.Notes.Count; i++)
+            lock (part)
             {
-                UNote note = part.Notes[i];
-                UNote nextNote = null;
-                if (i != part.Notes.Count - 1 && part.Notes[i].EndTick == part.Notes[i + 1].PosTick)
-                    nextNote = part.Notes[i + 1];
-                System.Diagnostics.Debug.WriteLine(BuildArgs(note, part, project, nextNote));
+                foreach (UNote note in part.Notes)
+                {
+                    foreach (UPhoneme phoneme in note.Phonemes)
+                    {
+                        System.Diagnostics.Debug.WriteLine(BuildResamplerArgs(phoneme, part, project));
+                        System.Diagnostics.Debug.WriteLine(BuildConnectorArgs(phoneme, part, project));
+                    }
+                }
             }
         }
 
-        private string BuildArgs(UNote note, UPart part, UProject project, UNote nextNote)
+        private string BuildResamplerArgs(UPhoneme phoneme, UPart part, UProject project)
         {
             USinger singer = project.Tracks[part.TrackNo].Singer;
-            string noteName = MusicMath.GetNoteString(note.NoteNum);
-            string lyric = note.Lyric;
-            if (lyric.StartsWith("?")) lyric = lyric.Substring(1);
-            else if (singer.PitchMap.ContainsKey(noteName)) lyric += singer.PitchMap[noteName];
-            UOto oto = singer.AliasMap[lyric];
-            string inputfile;
-            if (singer.PitchMap.ContainsKey(noteName))
-                inputfile = Lib.EncodingUtil.ConvertEncoding(singer.FileEncoding, singer.PathEncoding,
-                    System.IO.Path.Combine(singer.PitchMap[noteName], oto.File));
-            else
-                inputfile = Lib.EncodingUtil.ConvertEncoding(singer.FileEncoding, singer.PathEncoding, oto.File);
+            string noteName = MusicMath.GetNoteString(phoneme.Parent.NoteNum);
+            string inputfile = Lib.EncodingUtil.ConvertEncoding(singer.FileEncoding, singer.PathEncoding, phoneme.Oto.File);
             inputfile = System.IO.Path.Combine(singer.ActualPath, inputfile);
 
-            double strechRatio = Math.Pow(2, 1.0 - ((float)note.Expressions["velocity"].Data / 100));
-            double length = 60.0 * 1000.0 * note.DurTick / project.BPM / 480;
-            length += (double)oto.Preutter * strechRatio;
-            if (nextNote != null)
-            {
-                var nextOto = GetOto(nextNote, part, project);
-                double nextStrechRatio = Math.Pow(2, 1.0 - ((float)nextNote.Expressions["velocity"].Data / 100));
-                length += nextOto.Overlap * nextStrechRatio - nextOto.Preutter * nextStrechRatio;
-                length = Math.Max(length, oto.Consonant);
-            }
-            double requiredLength = Math.Ceiling(length / 50) * 50;
+            double strechRatio = Math.Pow(2, 1.0 - (double)(int)phoneme.Parent.Expressions["velocity"].Data / 100);
+            double length = phoneme.Oto.Preutter * strechRatio + phoneme.Envelope.Points[4].X;
+            double requiredLength = Math.Ceiling(length / 50 + 0.5) * 50;
             // fresamp.exe <infile> <outfile> <tone> <velocity> <flags> <offset> <length_req>
             // <fixed_length> <endblank> <volume> <modulation> <pitch>
             string args = string.Format(
                 "{0} {1:D} {2} {3:D} {4:D} {5:D} {6:D} {7:D} {8:D} {9}",
                 noteName,
-                (int)(float)note.Expressions["velocity"].Data,
-                note.GetResamplerFlags(),
-                oto.Offset,
+                (int)phoneme.Parent.Expressions["velocity"].Data,
+                phoneme.Parent.GetResamplerFlags(),
+                phoneme.Oto.Offset,
                 (int)requiredLength,
-                oto.Consonant,
-                oto.Cutoff,
-                (int)(float)note.Expressions["volume"].Data,
+                phoneme.Oto.Consonant,
+                phoneme.Oto.Cutoff,
+                (int)phoneme.Parent.Expressions["volume"].Data,
                 0,
-                "pitches"
+                BuildPitchArgs(phoneme, part, project)
                 );
-            string outputfile = string.Format("{0:x}_{1:x}.wav", note.GetHashCode(), Lib.xxHash.CalcStringHash(inputfile + " " + args));
+            string outputfile = string.Format("{0:x}_{1:x}.wav", phoneme.GetHashCode(), Lib.xxHash.CalcStringHash(inputfile + " " + args));
             args = string.Format("{0} {1} {2}", inputfile, outputfile, args);
             return args;
         }
 
-        private UOto GetOto(UNote note, UPart part, UProject project)
+        private string BuildConnectorArgs(UPhoneme phoneme, UPart part, UProject project)
         {
-            USinger singer = project.Tracks[part.TrackNo].Singer;
-            string noteName = MusicMath.GetNoteString(note.NoteNum);
-            string lyric = note.Lyric;
-            if (lyric.StartsWith("?")) lyric = lyric.Substring(1);
-            else if (singer.PitchMap.ContainsKey(noteName)) lyric += singer.PitchMap[noteName];
-            return singer.AliasMap[lyric];
+            double strechRatio = Math.Pow(2, 1.0 - ((double)(int)phoneme.Parent.Expressions["velocity"].Data / 100));
+            string offset = string.Format("{0:0.###}", phoneme.Oto.Preutter * strechRatio - phoneme.PreUtter);
+            double lengthAdjustment = phoneme.TailIntrude == 0 ? phoneme.PreUtter : phoneme.PreUtter - phoneme.TailIntrude + phoneme.TailOverlap;
+            string length = phoneme.DurTick + "@" + project.BPM + (lengthAdjustment >= 0 ? "+" : "-") + string.Format("{0:0.###}", Math.Abs(lengthAdjustment));
+            var pts = phoneme.Envelope.Points;
+            string envelope = string.Format("{0:0.#####} {1:0.#####} {2:0.#####}", 0, pts[1].X - pts[0].X, pts[4].X - pts[3].X);
+            envelope += string.Format(" {0:0.#####} {1:0.#####} {2:0.#####}", pts[0].Y, pts[1].Y, pts[3].Y);
+            envelope += string.Format(" {0:0.#####} {1:0.#####} {2:0.#####}", 0, phoneme.Overlap, pts[4].Y);
+            return string.Format("{0} {1} {2}", offset, length, envelope);
+        }
+
+        private string BuildPitchArgs(UPhoneme phoneme, UPart part, UProject project)
+        {
+            return "";
         }
     }
 }

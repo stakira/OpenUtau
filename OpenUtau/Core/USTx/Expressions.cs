@@ -57,15 +57,15 @@ namespace OpenUtau.Core.USTx
     
     public class ExpPoint : IComparable<ExpPoint>
     {
-        public float X;
-        public float Y;
+        public double X;
+        public double Y;
         public int CompareTo(ExpPoint other)
         {
             if (this.X > other.X) return 1;
             else if (this.X == other.X) return 0;
             else return -1;
         }
-        public ExpPoint(float x, float y) { X = x; Y = y;}
+        public ExpPoint(double x, double y) { X = x; Y = y; }
         public ExpPoint Clone() { return new ExpPoint(X, Y); }
     }
 
@@ -73,7 +73,7 @@ namespace OpenUtau.Core.USTx
     public class PitchPoint : ExpPoint
     {
         public PitchPointShape Shape;
-        public PitchPoint(float x, float y, PitchPointShape shape = PitchPointShape.SineIn) : base(x, y) { Shape = shape; }
+        public PitchPoint(double x, double y, PitchPointShape shape = PitchPointShape.SineIn) : base(x, y) { Shape = shape; }
         public new PitchPoint Clone() { return new PitchPoint(X, Y, Shape); }
     }
 

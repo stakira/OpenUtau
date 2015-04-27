@@ -20,6 +20,7 @@ namespace OpenUtau.Core.USTx
         public PitchBendExpression PitchBend;
         public VibratoExpression Vibratio;
         public int Channel = 0;
+        public bool Error = false;
 
         public int EndTick { get { return PosTick + DurTick; } }
 

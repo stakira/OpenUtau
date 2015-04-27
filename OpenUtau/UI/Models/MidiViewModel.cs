@@ -426,7 +426,7 @@ namespace OpenUtau.UI.Models
             {
                 var _cmd = cmd as ExpCommand;
                 if (_cmd.Part != this.Part) return;
-                else if (_cmd is SetFloatExpCommand) expElements[_cmd.Key].MarkUpdate();
+                else if (_cmd is SetIntExpCommand) expElements[_cmd.Key].MarkUpdate();
             }
             else if (cmd is UNotification)
             {

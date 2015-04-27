@@ -16,17 +16,21 @@ namespace OpenUtau.Core.USTx
         public int DurTick;
         public int EndTick { get { return PosTick + DurTick; } }
         public string Phoneme;
-        public string PhonemeRemapped;
+        public string PhonemeRemapped { get { return AutoRemapped ? Phoneme + RemappedBank : Phoneme; } }
+        public string RemappedBank = "";
         public bool AutoTiming = true;
         public bool AutoRemapped = true;
 
-        public float PreUtter;
-        public float Overlap;
+        public double PreUtter;
+        public double Overlap;
+        public double TailIntrude;
+        public double TailOverlap;
         public UOto Oto;
+        public bool Overlapped = false;
         public bool OverlapCorrection = true;
         public EnvelopeExpression Envelope;
 
-        public bool IsValid;
+        public bool PhonemeError = false;
 
         public UPhoneme() { Envelope = new EnvelopeExpression(this.Parent) { ParentPhoneme = this }; }
         public UPhoneme Clone(UNote newParent) { var p = new UPhoneme() { Parent = newParent }; return p; }

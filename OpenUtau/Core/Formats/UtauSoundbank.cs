@@ -69,15 +69,16 @@ namespace OpenUtau.Core.Formats
         static void LoadOtos(USinger singer)
         {
             string path = singer.ActualPath;
-            var otopaths = new List<string>();
-            if (File.Exists(Path.Combine(path, "oto.ini"))) otopaths.Add(Path.Combine(path, "oto.ini"));
+            if (File.Exists(Path.Combine(path, "oto.ini"))) LoadOto(path, path, singer);
             foreach (var dirpath in Directory.EnumerateDirectories(path))
-                if (File.Exists(Path.Combine(dirpath, "oto.ini"))) otopaths.Add(Path.Combine(dirpath, "oto.ini"));
-            foreach (var otopath in otopaths) LoadOto(otopath, singer);
+                if (File.Exists(Path.Combine(dirpath, "oto.ini"))) LoadOto(dirpath, path, singer);
         }
-        
-        static void LoadOto(string file, USinger singer)
+
+        static void LoadOto(string dirpath, string path, USinger singer)
         {
+            string file = Path.Combine(dirpath, "oto.ini");
+            string relativeDir = dirpath.Replace(path, "");
+            while (relativeDir.StartsWith("\\")) relativeDir = relativeDir.Substring(1);
             string[] lines = File.ReadAllLines(file, singer.FileEncoding);
             foreach (var line in lines)
             {
@@ -89,7 +90,7 @@ namespace OpenUtau.Core.Formats
                     if (singer.AliasMap.ContainsKey(args[0])) continue;
                     singer.AliasMap.Add(args[0], new UOto()
                     {
-                        File = wavfile,
+                        File = Path.Combine(relativeDir, wavfile),
                         Alias = args[0],
                         Offset = int.Parse(args[1]),
                         Consonant = int.Parse(args[2]),
