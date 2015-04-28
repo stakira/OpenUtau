@@ -104,7 +104,7 @@ namespace OpenUtau.Core.Formats
 
                         if (currentLines.Count != 0)
                         {
-                            currentNote = NoteFromUst(project.CreateNote(), currentLines, version, currentNote);
+                            currentNote = NoteFromUst(project.CreateNote(), currentLines, version);
                             currentNote.PosTick = currentTick;
                             if (!currentNote.Lyric.Replace("R", "").Replace("r", "").Equals("")) part.Notes.Add(currentNote);
                             currentTick += currentNote.DurTick;
@@ -159,10 +159,9 @@ namespace OpenUtau.Core.Formats
             return project;
         }
 
-        static UNote NoteFromUst(UNote note, List<string> lines, UstVersion version, UNote lastNote)
+        static UNote NoteFromUst(UNote note, List<string> lines, UstVersion version)
         {
             string pbs = "", pbw = "", pby = "", pbm = "";
-            note.Phonemes.Add(new UPhoneme() { Parent = note, PosTick = 0 });
 
             foreach (string line in lines)
             {
@@ -182,7 +181,7 @@ namespace OpenUtau.Core.Formats
                 if (line.StartsWith("PreUtterance="))
                 {
                     if (line.Trim() == "PreUtterance=") note.Phonemes[0].AutoTiming = true;
-                    else { note.Phonemes[0].AutoTiming = false; note.Phonemes[0].PreUtter = float.Parse(line.Trim().Replace("PreUtterance=", "")); }
+                    else { note.Phonemes[0].AutoTiming = false; note.Phonemes[0].Preutter = float.Parse(line.Trim().Replace("PreUtterance=", "")); }
                 }
                 if (line.StartsWith("VoiceOverlap=")) note.Phonemes[0].Overlap = float.Parse(line.Trim().Replace("VoiceOverlap=", ""));
                 if (line.StartsWith("VBR=")) VibratoFromUst(note.Vibratio, line.Trim().Replace("VBR=", ""));
@@ -195,6 +194,7 @@ namespace OpenUtau.Core.Formats
             if (pbs != "")
             {
                 var pts = note.PitchBend.Data as List<PitchPoint>;
+                pts.Clear();
                 // PBS
                 if (pbs.Contains(';'))
                 {

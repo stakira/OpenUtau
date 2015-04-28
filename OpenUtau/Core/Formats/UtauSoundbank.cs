@@ -15,7 +15,7 @@ namespace OpenUtau.Core.Formats
         public static USinger LoadSinger(string path, Encoding ustEncoding)
         {
             USinger singer = new USinger();
-            singer.HomePath = @"E:\Utau\voice";
+            singer.HomePath = @"I:\Utau\voice";
             singer.SoundbankPath = path;
             singer.PathEncoding = GetPathEncoding(ustEncoding, singer.HomePath, singer.SoundbankPath);
             if (singer.PathEncoding == null) return null;

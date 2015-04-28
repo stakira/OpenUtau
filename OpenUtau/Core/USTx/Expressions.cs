@@ -79,7 +79,10 @@ namespace OpenUtau.Core.USTx
 
     public class PitchBendExpression : UExpression
     {
-        public PitchBendExpression(UNote parent) : base(parent, "pitch", "PIT") { }
+        public PitchBendExpression(UNote parent) : base(parent, "pitch", "PIT") {
+            _data.Add(new PitchPoint(0, 0));
+            _data.Add(new PitchPoint(0, 0));
+        }
         protected List<PitchPoint> _data = new List<PitchPoint>();
         protected bool _snapFirst = true;
         public override string Type { get { return "pitch"; } }

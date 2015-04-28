@@ -15,13 +15,13 @@ namespace OpenUtau.Core.USTx
         public int PosTick;
         public int DurTick;
         public int EndTick { get { return PosTick + DurTick; } }
-        public string Phoneme;
+        public string Phoneme = "a";
         public string PhonemeRemapped { get { return AutoRemapped ? Phoneme + RemappedBank : Phoneme; } }
         public string RemappedBank = "";
         public bool AutoTiming = true;
         public bool AutoRemapped = true;
 
-        public double PreUtter;
+        public double Preutter;
         public double Overlap;
         public double TailIntrude;
         public double TailOverlap;

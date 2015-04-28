@@ -245,10 +245,11 @@ namespace OpenUtau.UI
                 else // Add note
                 {
                     UNote newNote = DocManager.Inst.Project.CreateNote();
-                    newNote.Lyric = "a";
                     newNote.NoteNum = midiVM.CanvasToNoteNum(mousePos.Y);
                     newNote.PosTick = midiVM.CanvasToSnappedTick(mousePos.X);
                     newNote.DurTick = _lastNoteLength;
+                    newNote.PitchBend.Points[0].X = -25;
+                    newNote.PitchBend.Points[1].X = Math.Min(25, DocManager.Inst.Project.TickToMillisecond(newNote.DurTick) / 2);
 
                     DocManager.Inst.StartUndoGroup();
                     DocManager.Inst.ExecuteCmd(new AddNoteCommand(midiVM.Part, newNote));

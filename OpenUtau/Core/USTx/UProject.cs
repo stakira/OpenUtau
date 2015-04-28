@@ -18,8 +18,6 @@ namespace OpenUtau.Core.USTx
         public string OutputDir = "Vocal";
         public string CacheDir = "UCache";
 
-        public MusicTiming Timing { get { return new MusicTiming(BPM, BeatPerBar, BeatUnit, Resolution); } }
-
         public List<UTrack> Tracks = new List<UTrack>();
         public List<UPart> Parts = new List<UPart>();
         public List<USinger> Singers = new List<USinger>();
@@ -37,5 +35,16 @@ namespace OpenUtau.Core.USTx
         public string FilePath;
 
         public UProject() { }
+
+        public int MillisecondToTick(double ms)
+        {
+            return MusicMath.MillisecondToTick(ms, BPM, BeatUnit, Resolution);
+        }
+
+        public double TickToMillisecond(int tick)
+        {
+            return MusicMath.TickToMillisecond(tick, BPM, BeatUnit, Resolution);
+        }
+
     }
 }

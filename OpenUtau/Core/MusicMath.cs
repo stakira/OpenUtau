@@ -6,21 +6,6 @@ using System.Threading.Tasks;
 
 namespace OpenUtau.Core
 {
-    public struct MusicTiming
-    {
-        public double BPM;
-        public int BeatPerBar;
-        public int BeatUnit;
-        public int Resolution;
-        public MusicTiming(double bpm, int beatperbar, int beatunit, int resolution)
-        {
-            BPM = bpm;
-            BeatPerBar = beatperbar;
-            BeatUnit = beatunit;
-            Resolution = resolution;
-        }
-    }
-
     public static class MusicMath
     {
         public static string[] noteStrings = new String[12] { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
@@ -63,23 +48,34 @@ namespace OpenUtau.Core
             }
         }
 
-        public static double TickToMillisecond(int tick, MusicTiming timing)
+        public static double TickToMillisecond(int tick, double BPM, int BeatUnit, int Resolution)
         {
-            return tick * 60000.0 / timing.BPM * timing.BeatUnit / 4 / timing.Resolution;
+            return tick * 60000.0 / BPM * BeatUnit / 4 / Resolution;
         }
 
-        public static int TimeToTick(double ms, MusicTiming timing)
-        {
-            return (int)Math.Ceiling(ms / 60000.0 * timing.BPM / timing.BeatUnit * 4 * timing.Resolution);
-        }
-        public static int TimeToTick(TimeSpan timespan, double BPM, int BeatUnit, int Resolution)
-        {
-            return (int)Math.Ceiling(timespan.TotalMinutes * BPM / BeatUnit * 4 * Resolution);
-        }
-
-        public static int TimeToTick(double ms, double BPM, int BeatUnit, int Resolution)
+        public static int MillisecondToTick(double ms, double BPM, int BeatUnit, int Resolution)
         {
             return (int)Math.Ceiling(ms / 60000.0 * BPM / BeatUnit * 4 * Resolution);
+        }
+
+        public static double SinEasingInOut(double x0, double x1, double y0, double y1, double x)
+        {
+            return y0 + (y1 - y0) * (1 - Math.Cos((x - x0) / (x1 - x0) * Math.PI)) / 2;
+        }
+
+        public static double SinEasingIn(double x0, double x1, double y0, double y1, double x)
+        {
+            return y0 + (y1 - y0) * (1 - Math.Cos((x - x0) / (x1 - x0) * Math.PI / 2));
+        }
+
+        public static double SinEasingOut(double x0, double x1, double y0, double y1, double x)
+        {
+            return y0 + (y1 - y0) * Math.Sin((x - x0) / (x1 - x0) * Math.PI / 2);
+        }
+
+        public static double Liner(double x0, double x1, double y0, double y1, double x)
+        {
+            return y0 + (y1 - y0) * (x - x0) / (x1 - x0);
         }
     }
 }

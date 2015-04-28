@@ -14,7 +14,7 @@ namespace OpenUtau.Core.USTx
         public int PosTick;
         public int DurTick;
         public int NoteNum;
-        public string Lyric;
+        public string Lyric = "a";
         public List<UPhoneme> Phonemes = new List<UPhoneme>();
         public Dictionary<string, UExpression> Expressions = new Dictionary<string, UExpression>();
         public PitchBendExpression PitchBend;
@@ -27,6 +27,7 @@ namespace OpenUtau.Core.USTx
         private UNote() {
             PitchBend = new PitchBendExpression(this);
             Vibratio = new VibratoExpression(this);
+            Phonemes.Add(new UPhoneme() { Parent = this, PosTick = 0 });
         }
 
         public static UNote Create() { return new UNote(); }
@@ -46,7 +47,7 @@ namespace OpenUtau.Core.USTx
             return _note;
         }
 
-        public string GetResamplerFlags() { return "\"\""; }
+        public string GetResamplerFlags() { return "Y0H0F-10"; }
 
         public int CompareTo(object obj)
         {

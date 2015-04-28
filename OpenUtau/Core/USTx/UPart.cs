@@ -48,7 +48,7 @@ namespace OpenUtau.Core.USTx
 
         public override int GetMinDurTick(UProject project)
         {
-            return MusicMath.TimeToTick(Stream.TotalTime, project.BPM, project.BeatUnit, project.Resolution);
+            return project.MillisecondToTick(Stream.TotalTime.TotalMilliseconds);
         }
 
         public override void Dispose()

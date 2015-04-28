@@ -42,6 +42,38 @@ namespace OpenUtau.Core.USTx
                 UpdatePhonemeOto(part);
                 UpdateOverlapAdjustment(part);
                 UpdateEnvelope(part);
+                UpdatePitchBend(part);
+            }
+        }
+
+        private void UpdatePitchBend(UVoicePart part)
+        {
+            UNote lastNote = null;
+            foreach (UNote note in part.Notes)
+            {
+                if (note.PitchBend.SnapFirst)
+                {
+                    if (note.Phonemes.Count > 0 && note.Phonemes[0].Overlapped && lastNote != null)
+                        note.PitchBend.Points[0].Y = (lastNote.NoteNum - note.NoteNum) * 10;
+                    else
+                        note.PitchBend.Points[0].Y = 0;
+                }
+                lastNote = note;
+            }
+        }
+
+        public void ResnapPitchBend(UVoicePart part)
+        {
+            UNote lastNote = null;
+            foreach (UNote note in part.Notes)
+            {
+                if (!note.PitchBend.SnapFirst)
+                {
+                    if (note.Phonemes.Count > 0 && note.Phonemes[0].Overlapped && lastNote != null)
+                        if (note.PitchBend.Points[0].Y == (lastNote.NoteNum - note.NoteNum) * 10)
+                            note.PitchBend.SnapFirst = true;
+                }
+                lastNote = note;
             }
         }
 
@@ -51,10 +83,10 @@ namespace OpenUtau.Core.USTx
             {
                 foreach (UPhoneme phoneme in note.Phonemes)
                 {
-                    phoneme.Envelope.Points[0].X = -phoneme.PreUtter;
+                    phoneme.Envelope.Points[0].X = -phoneme.Preutter;
                     phoneme.Envelope.Points[1].X = phoneme.Envelope.Points[0].X + (phoneme.Overlapped ? phoneme.Overlap : 5);
                     phoneme.Envelope.Points[2].X = phoneme.Envelope.Points[1].X;
-                    phoneme.Envelope.Points[3].X = MusicMath.TickToMillisecond(phoneme.DurTick, DocManager.Inst.Project.Timing) - phoneme.TailIntrude;
+                    phoneme.Envelope.Points[3].X = DocManager.Inst.Project.TickToMillisecond(phoneme.DurTick) - phoneme.TailIntrude;
                     phoneme.Envelope.Points[4].X = phoneme.Envelope.Points[3].X + phoneme.TailOverlap;
                 }
             }
@@ -71,25 +103,25 @@ namespace OpenUtau.Core.USTx
                     if (lastPhoneme != null)
                     {
                         int gapTick = phoneme.Parent.PosTick + phoneme.PosTick - lastPhoneme.Parent.PosTick - lastPhoneme.EndTick;
-                        double gapMs = MusicMath.TickToMillisecond(gapTick, DocManager.Inst.Project.Timing);
-                        if (gapMs < phoneme.PreUtter)
+                        double gapMs = DocManager.Inst.Project.TickToMillisecond(gapTick);
+                        if (gapMs < phoneme.Preutter)
                         {
                             phoneme.Overlapped = true;
-                            double lastDurMs = MusicMath.TickToMillisecond(lastPhoneme.DurTick, DocManager.Inst.Project.Timing);
-                            if (phoneme.PreUtter - phoneme.Overlap > (gapMs + lastDurMs) / 2)
+                            double lastDurMs = DocManager.Inst.Project.TickToMillisecond(lastPhoneme.DurTick);
+                            if (phoneme.Preutter - phoneme.Overlap > (gapMs + lastDurMs) / 2)
                             {
                                 phoneme.OverlapCorrection = true;
-                                double correctionRatio = (gapMs + lastDurMs) / 2 / (phoneme.PreUtter - phoneme.Overlap);
-                                if (phoneme.PreUtter * correctionRatio > gapMs + lastDurMs)
-                                    correctionRatio = (gapMs + lastDurMs) / phoneme.PreUtter;
-                                phoneme.PreUtter *= correctionRatio;
+                                double correctionRatio = (gapMs + lastDurMs) / 2 / (phoneme.Preutter - phoneme.Overlap);
+                                if (phoneme.Preutter * correctionRatio > gapMs + lastDurMs)
+                                    correctionRatio = (gapMs + lastDurMs) / phoneme.Preutter;
+                                phoneme.Preutter *= correctionRatio;
                                 phoneme.Overlap *= correctionRatio;
 
-                                if (phoneme.PreUtter - phoneme.Overlap < gapMs) phoneme.Overlap = phoneme.PreUtter - gapMs;
+                                if (phoneme.Preutter - phoneme.Overlap < gapMs) phoneme.Overlap = phoneme.Preutter - gapMs;
                             }
                             else phoneme.OverlapCorrection = false;
 
-                            lastPhoneme.TailIntrude = phoneme.PreUtter - gapMs;
+                            lastPhoneme.TailIntrude = phoneme.Preutter - gapMs;
                             lastPhoneme.TailOverlap = phoneme.Overlap;
                         }
                         else
@@ -133,20 +165,20 @@ namespace OpenUtau.Core.USTx
                         phoneme.Oto = singer.AliasMap[phoneme.PhonemeRemapped];
                         phoneme.PhonemeError = false;
                         phoneme.Overlap = phoneme.Oto.Overlap;
-                        phoneme.PreUtter = phoneme.Oto.Preutter;
+                        phoneme.Preutter = phoneme.Oto.Preutter;
                         int vel = (int)phoneme.Parent.Expressions["velocity"].Data;
                         if (vel != 100)
                         {
                             double stretchRatio = Math.Pow(2, 1.0 - (double)vel / 100);
                             phoneme.Overlap *= stretchRatio;
-                            phoneme.PreUtter *= stretchRatio;
+                            phoneme.Preutter *= stretchRatio;
                         }
                     }
                     else
                     {
                         phoneme.PhonemeError = true;
                         phoneme.Overlap = 0;
-                        phoneme.PreUtter = 0;
+                        phoneme.Preutter = 0;
                     }
                 }
             }
@@ -187,6 +219,13 @@ namespace OpenUtau.Core.USTx
 
         # region Cmd Handling
 
+        private void OnProjectLoad(UNotification cmd)
+        {
+            foreach (UPart part in cmd.project.Parts)
+                if (part is UVoicePart)
+                    ManagePart((UVoicePart)part);
+        }
+
         # endregion
 
         # region ICmdSubscriber
@@ -205,7 +244,7 @@ namespace OpenUtau.Core.USTx
             {
                 var _cmd = cmd as UNotification;
                 if (_cmd is LoadPartNotification) { if (!(_cmd.part is UVoicePart)) return; _partContainer.Part = (UVoicePart)_cmd.part; _project = _cmd.project; }
-                else if (_cmd is LoadProjectNotification) _partContainer.Part = null;
+                else if (_cmd is LoadProjectNotification) OnProjectLoad(_cmd);
             }
         }
 
