@@ -84,6 +84,7 @@
     </Compile>
     <Compile Include="Core\Formats\UtauSoundbank.cs" />
     <Compile Include="Core\Lib\xxHash.cs" />
+    <Compile Include="Core\Render\CachedRenderQueue.cs" />
     <Compile Include="Core\Render\ResamplerInterface.cs" />
     <Compile Include="Core\USTx\ExpCommands.cs" />
     <Compile Include="Core\USTx\Expressions.cs" />
@@ -97,6 +98,7 @@
     <Compile Include="Core\USTx\UPhoneme.cs" />
     <Compile Include="Core\USTx\USinger.cs" />
     <Compile Include="Core\Lib\EncodingUtil.cs" />
+    <Compile Include="Core\Util\PathManager.cs" />
     <Compile Include="UI\Controls\ExpComboBox.xaml.cs">
       <DependentUpon>ExpComboBox.xaml</DependentUpon>
     </Compile>
@@ -109,7 +111,7 @@
     <Compile Include="Core\Formats\Formats.cs" />
     <Compile Include="Core\Formats\Sound.cs" />
     <Compile Include="Core\Formats\Ust.cs" />
-    <Compile Include="Core\MusicMath.cs" />
+    <Compile Include="Core\Util\MusicMath.cs" />
     <Compile Include="Core\USTx\UPart.cs" />
     <Compile Include="Core\USTx\UProject.cs" />
     <Compile Include="Core\USTx\UTrack.cs" />

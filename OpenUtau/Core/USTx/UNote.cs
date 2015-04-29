@@ -18,7 +18,7 @@ namespace OpenUtau.Core.USTx
         public List<UPhoneme> Phonemes = new List<UPhoneme>();
         public Dictionary<string, UExpression> Expressions = new Dictionary<string, UExpression>();
         public PitchBendExpression PitchBend;
-        public VibratoExpression Vibratio;
+        public VibratoExpression Vibrato;
         public int Channel = 0;
         public bool Error = false;
 
@@ -26,7 +26,7 @@ namespace OpenUtau.Core.USTx
 
         private UNote() {
             PitchBend = new PitchBendExpression(this);
-            Vibratio = new VibratoExpression(this);
+            Vibrato = new VibratoExpression(this);
             Phonemes.Add(new UPhoneme() { Parent = this, PosTick = 0 });
         }
 
@@ -47,7 +47,7 @@ namespace OpenUtau.Core.USTx
             return _note;
         }
 
-        public string GetResamplerFlags() { return "Y0H0F-10"; }
+        public string GetResamplerFlags() { return "Y0H0F0"; }
 
         public int CompareTo(object obj)
         {

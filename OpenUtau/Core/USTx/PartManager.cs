@@ -85,9 +85,17 @@ namespace OpenUtau.Core.USTx
                 {
                     phoneme.Envelope.Points[0].X = -phoneme.Preutter;
                     phoneme.Envelope.Points[1].X = phoneme.Envelope.Points[0].X + (phoneme.Overlapped ? phoneme.Overlap : 5);
-                    phoneme.Envelope.Points[2].X = phoneme.Envelope.Points[1].X;
+                    phoneme.Envelope.Points[2].X = 0;
                     phoneme.Envelope.Points[3].X = DocManager.Inst.Project.TickToMillisecond(phoneme.DurTick) - phoneme.TailIntrude;
                     phoneme.Envelope.Points[4].X = phoneme.Envelope.Points[3].X + phoneme.TailOverlap;
+
+                    phoneme.Envelope.Points[1].Y = (int)phoneme.Parent.Expressions["volume"].Data;
+                    phoneme.Envelope.Points[1].X = phoneme.Envelope.Points[0].X + (phoneme.Overlapped ? phoneme.Overlap : 5) * (int)phoneme.Parent.Expressions["accent"].Data / 100.0;
+                    phoneme.Envelope.Points[1].Y = (int)phoneme.Parent.Expressions["accent"].Data;
+                    phoneme.Envelope.Points[2].Y = (int)phoneme.Parent.Expressions["volume"].Data;
+                    phoneme.Envelope.Points[3].Y = (int)phoneme.Parent.Expressions["volume"].Data;
+                    phoneme.Envelope.Points[3].X -= (phoneme.Envelope.Points[3].X - phoneme.Envelope.Points[2].X) * (int)phoneme.Parent.Expressions["decay"].Data / 500;
+                    phoneme.Envelope.Points[3].Y *= 1.0 - (int)phoneme.Parent.Expressions["decay"].Data / 100.0;
                 }
             }
         }
@@ -108,21 +116,27 @@ namespace OpenUtau.Core.USTx
                         {
                             phoneme.Overlapped = true;
                             double lastDurMs = DocManager.Inst.Project.TickToMillisecond(lastPhoneme.DurTick);
-                            if (phoneme.Preutter - phoneme.Overlap > (gapMs + lastDurMs) / 2)
+                            double correctionRatio = (lastDurMs + Math.Min(0, gapMs)) / 2 / (phoneme.Preutter - phoneme.Overlap);
+                            if (phoneme.Preutter - phoneme.Overlap > gapMs + lastDurMs / 2)
                             {
                                 phoneme.OverlapCorrection = true;
-                                double correctionRatio = (gapMs + lastDurMs) / 2 / (phoneme.Preutter - phoneme.Overlap);
-                                if (phoneme.Preutter * correctionRatio > gapMs + lastDurMs)
-                                    correctionRatio = (gapMs + lastDurMs) / phoneme.Preutter;
-                                phoneme.Preutter *= correctionRatio;
+                                phoneme.Preutter = gapMs + (phoneme.Preutter - gapMs) * correctionRatio;
                                 phoneme.Overlap *= correctionRatio;
-
-                                if (phoneme.Preutter - phoneme.Overlap < gapMs) phoneme.Overlap = phoneme.Preutter - gapMs;
+                            }
+                            else if (phoneme.Preutter > gapMs + lastDurMs / 2)
+                            {
+                                phoneme.OverlapCorrection = true;
+                                phoneme.Overlap *= correctionRatio; 
+                                phoneme.Preutter = gapMs + lastDurMs / 2;
                             }
                             else phoneme.OverlapCorrection = false;
 
+                                phoneme.Preutter = Math.Max(0, phoneme.Preutter);
+                                phoneme.Overlap = Math.Min(phoneme.Overlap, phoneme.Preutter);
+
                             lastPhoneme.TailIntrude = phoneme.Preutter - gapMs;
                             lastPhoneme.TailOverlap = phoneme.Overlap;
+
                         }
                         else
                         {

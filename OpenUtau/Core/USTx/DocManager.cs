@@ -4,17 +4,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using OpenUtau.Core;
 using OpenUtau.Core.Lib;
 
 namespace OpenUtau.Core.USTx
 {
     class DocManager : ICmdPublisher
     {
-        DocManager() { _project = new UProject(); }
+        DocManager() {
+            _project = new UProject();
+            _singers = Formats.UtauSoundbank.FindAllSingers();
+        }
+
         static DocManager _s;
         static DocManager GetInst() { if (_s == null) { _s = new DocManager(); } return _s; }
         public static DocManager Inst { get { return GetInst(); } }
 
+        Dictionary<string, USinger> _singers;
+        public Dictionary<string, USinger> Singers { get { return _singers; } }
         UProject _project;
         public UProject Project { get { return _project; } }
 

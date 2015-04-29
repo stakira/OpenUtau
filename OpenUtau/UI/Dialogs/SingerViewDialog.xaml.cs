@@ -31,7 +31,7 @@ namespace OpenUtau.UI.Dialogs
         {
             this.Title = this.name.Text = singer.Name;
             this.avatar.Source = singer.Avatar;
-            this.info.Text = "Author: " + singer.Author + "\nWebsite: " + singer.Website + "\nPath: " + singer.ActualPath;
+            this.info.Text = "Author: " + singer.Author + "\nWebsite: " + singer.Website + "\nPath: " + singer.Path;
             this.otoview.Items.Clear();
             foreach (var pair in singer.AliasMap) this.otoview.Items.Add(pair.Value);
         }

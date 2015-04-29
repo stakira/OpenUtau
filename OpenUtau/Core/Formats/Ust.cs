@@ -70,12 +70,14 @@ namespace OpenUtau.Core.Formats
                 return null;
             }
 
-            UProject project = new UProject() { Resolution = 480 };
+            UProject project = new UProject() { Resolution = 480, FilePath = file };
             project.RegisterExpression(new IntExpression(null, "velocity","VEL") { Data = 100, Min = 0, Max = 200});
             project.RegisterExpression(new IntExpression(null, "volume","VOL") { Data = 100, Min = 0, Max = 200});
             project.RegisterExpression(new IntExpression(null, "gender","GEN") { Data = 0, Min = -100, Max = 100});
             project.RegisterExpression(new IntExpression(null, "lowpass","LPF") { Data = 0, Min = 0, Max = 100});
-            project.RegisterExpression(new IntExpression(null, "highpass","HPF") { Data = 0, Min = 0, Max = 100});
+            project.RegisterExpression(new IntExpression(null, "highpass", "HPF") { Data = 0, Min = 0, Max = 100 });
+            project.RegisterExpression(new IntExpression(null, "accent", "ACC") { Data = 100, Min = 0, Max = 200 });
+            project.RegisterExpression(new IntExpression(null, "decay", "DEC") { Data = 0, Min = 0, Max = 100 });
 
             project.Tracks.Add(new UTrack());
             project.Tracks.First().TrackNo = 0;
@@ -134,10 +136,8 @@ namespace OpenUtau.Core.Formats
                         if (line.StartsWith("ProjectName=")) project.Name = line.Trim().Replace("ProjectName=", "");
                         if (line.StartsWith("VoiceDir="))
                         {
-                            string singerpath = line.Trim().Replace("VoiceDir=", "").Replace("%VOICE%", "");
-                            //if (singerpath.StartsWith("%VOICE%"))
-                            //    singerpath = Path.Combine(@"E:\Utau\voice", singerpath.Replace("%VOICE%", ""));
-                            var singer = UtauSoundbank.LoadSinger(singerpath, EncodingUtil.DetectFileEncoding(file));
+                            string singerpath = line.Trim().Replace("VoiceDir=", "");
+                            var singer = UtauSoundbank.GetSinger(singerpath, EncodingUtil.DetectFileEncoding(file), DocManager.Inst.Singers);
                             project.Singers.Add(singer);
                             project.Tracks[0].Singer = singer;
                         }
@@ -184,7 +184,7 @@ namespace OpenUtau.Core.Formats
                     else { note.Phonemes[0].AutoTiming = false; note.Phonemes[0].Preutter = float.Parse(line.Trim().Replace("PreUtterance=", "")); }
                 }
                 if (line.StartsWith("VoiceOverlap=")) note.Phonemes[0].Overlap = float.Parse(line.Trim().Replace("VoiceOverlap=", ""));
-                if (line.StartsWith("VBR=")) VibratoFromUst(note.Vibratio, line.Trim().Replace("VBR=", ""));
+                if (line.StartsWith("VBR=")) VibratoFromUst(note.Vibrato, line.Trim().Replace("VBR=", ""));
                 if (line.StartsWith("PBS=")) pbs = line.Trim().Replace("PBS=", "");
                 if (line.StartsWith("PBW=")) pbw = line.Trim().Replace("PBW=", "");
                 if (line.StartsWith("PBY=")) pby = line.Trim().Replace("PBY=", "");
@@ -225,7 +225,7 @@ namespace OpenUtau.Core.Formats
 
         static void VibratoFromUst(VibratoExpression vibrato, string ust)
         {
-            var args = ust.Split(new[] { ',' }).Select(float.Parse).ToList();
+            var args = ust.Split(new[] { ',' }).Select(double.Parse).ToList();
             if (args.Count() >= 7)
             {
                 vibrato.Length = args[0];
@@ -240,7 +240,7 @@ namespace OpenUtau.Core.Formats
 
         static String VibratoToUst(VibratoExpression vibrato)
         {
-            List<float> args = new List<float>()
+            List<double> args = new List<double>()
             {
                 vibrato.Length,
                 vibrato.Period,

@@ -252,10 +252,10 @@ namespace OpenUtau.Core.Lib
             return (value << count) | (value >> (32 - count));
         }
 
-        public static uint CalcStringHash(string str)
+        public static uint CalcStringHash(string str, uint seed = 0)
         {
             byte[] data = Encoding.UTF8.GetBytes(str);
-            return CalculateHash(data);
+            return CalculateHash(data, -1, seed);
         }
     }
 }

@@ -106,5 +106,16 @@ namespace OpenUtau.Properties {
                 this["UndoLimit"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Specialized.StringCollection SingerPaths {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["SingerPaths"]));
+            }
+            set {
+                this["SingerPaths"] = value;
+            }
+        }
     }
 }

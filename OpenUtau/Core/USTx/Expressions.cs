@@ -138,33 +138,33 @@ namespace OpenUtau.Core.USTx
     public class VibratoExpression : UExpression
     {
         public VibratoExpression(UNote parent) : base(parent, "vibrato", "VBR") { }
-        float _length;
-        float _period;
-        float _depth;
-        float _in;
-        float _out;
-        float _shift;
-        float _drift;
-        public float Length { set { _length = Math.Max(0, Math.Min(1, value)); } get { return _length; } }
-        public float Period { set { _period = Math.Max(64, Math.Min(512, value)); } get { return _period; } }
-        public float Depth { set { _depth = Math.Max(5, Math.Min(200, value)); } get { return _depth; } }
-        public float In { set { _in = Math.Max(0, Math.Min(1, value)); _out = Math.Min(_out, 1 - value); } get { return _in; } }
-        public float Out { set { _out = Math.Max(0, Math.Min(1, value)); _in = Math.Min(_in, 1 - value); } get { return _out; } }
-        public float Shift { set { _shift = Math.Max(0, Math.Min(1, value)); } get { return _shift; } }
-        public float Drift { set { _drift = Math.Max(-100, Math.Min(100, value)); } get { return _drift; } }
+        double _length;
+        double _period;
+        double _depth;
+        double _in;
+        double _out;
+        double _shift;
+        double _drift;
+        public double Length { set { _length = Math.Max(0, Math.Min(100, value)); } get { return _length; } }
+        public double Period { set { _period = Math.Max(64, Math.Min(512, value)); } get { return _period; } }
+        public double Depth { set { _depth = Math.Max(5, Math.Min(200, value)); } get { return _depth; } }
+        public double In { set { _in = Math.Max(0, Math.Min(100, value)); _out = Math.Min(_out, 100 - value); } get { return _in; } }
+        public double Out { set { _out = Math.Max(0, Math.Min(100, value)); _in = Math.Min(_in, 100 - value); } get { return _out; } }
+        public double Shift { set { _shift = Math.Max(0, Math.Min(100, value)); } get { return _shift; } }
+        public double Drift { set { _drift = Math.Max(-100, Math.Min(100, value)); } get { return _drift; } }
         public override string Type { get { return "pitch"; } }
         public override object Data { set; get; }
         public override UExpression Clone(UNote newParent)
         {
             return new VibratoExpression(newParent)
             {
-                Length = Length,
-                Period = Period,
-                Depth = Depth,
-                In = In,
-                Out= Out,
-                Shift = Shift,
-                Drift = Drift
+                _length = _length,
+                _period = _period,
+                _depth = _depth,
+                _in = _in,
+                _out = _out,
+                _shift = _shift,
+                _drift = _drift
             };
         }
         public override UExpression Split(UNote newParent, int postick) { var exp = Clone(newParent); return exp; }

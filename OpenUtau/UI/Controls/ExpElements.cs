@@ -146,45 +146,10 @@ namespace OpenUtau.UI.Controls
             {
                 foreach (var note in Part.Notes)
                 {
-                    var _pitchExp = note.PitchBend as PitchBendExpression;
-                    var _pts = _pitchExp.Data as List<PitchPoint>;
-                    if (_pts.Count < 2) return;
-
-                    double pt0Tick = note.PosTick + MusicMath.MillisecondToTick(_pts[0].X, DocManager.Inst.Project.BPM, DocManager.Inst.Project.BeatUnit, DocManager.Inst.Project.Resolution);
-                    double pt0X = midiVM.QuarterWidth * pt0Tick / DocManager.Inst.Project.Resolution;
-                    double pt0Pit = note.NoteNum + _pts[0].Y / 10.0;
-                    double pt0Y = TrackHeight * ((double)UIConstants.MaxNoteNum - 1.0 - pt0Pit) + TrackHeight / 2;
-
                     if (!midiVM.NoteIsInView(note)) continue;
 
-                    cxt.DrawEllipse(null, pen, new Point(pt0X, pt0Y), 2.5, 2.5);
-                    for (int i = 1; i < _pts.Count; i++)
-                    {
-                        double pt1Tick = note.PosTick + MusicMath.MillisecondToTick(_pts[i].X, DocManager.Inst.Project.BPM, DocManager.Inst.Project.BeatUnit, DocManager.Inst.Project.Resolution);
-                        double pt1X = midiVM.QuarterWidth * pt1Tick / DocManager.Inst.Project.Resolution;
-                        double pt1Pit = note.NoteNum + _pts[i].Y / 10.0;
-                        double pt1Y = TrackHeight * ((double)UIConstants.MaxNoteNum - 1.0 - pt1Pit) + TrackHeight / 2;
-
-                        // Draw arc
-                        double _x = pt0X;
-                        double _x2 = pt0X;
-                        double _y = pt0Y;
-                        double _y2 = pt0Y;
-                        while (_x2 < pt1X)
-                        {
-                            _x = Math.Min(_x + 4, pt1X);
-                            _y = MusicMath.SinEasingInOut(pt0X, pt1X, pt0Y, pt1Y, _x);
-                            cxt.DrawLine(pen, new Point(_x, _y), new Point(_x2, _y2));
-                            _x2 = _x;
-                            _y2 = _y;
-                        }
-
-                        pt0Tick = pt1Tick;
-                        pt0X = pt1X;
-                        pt0Pit = pt1Pit;
-                        pt0Y = pt1Y;
-                        cxt.DrawEllipse(null, pen, new Point(pt0X, pt0Y), 2.5, 2.5);
-                    }
+                    DrawPitchBend(note, cxt);
+                    DrawVibrato(note, cxt);
                 }
             }
             else
@@ -193,6 +158,72 @@ namespace OpenUtau.UI.Controls
             }
             cxt.Close();
             _updated = false;
+        }
+
+        private void DrawVibrato(UNote note, DrawingContext cxt)
+        {
+            if (note.Vibrato == null) return;
+            var vibrato = note.Vibrato;
+            double periodPix = DocManager.Inst.Project.MillisecondToTick(vibrato.Period) * midiVM.QuarterWidth / DocManager.Inst.Project.Resolution;
+            double lengthPix = note.DurTick * vibrato.Length / 100 * midiVM.QuarterWidth / DocManager.Inst.Project.Resolution;
+            
+            double startX = (note.PosTick + note.DurTick * (1 - vibrato.Length / 100)) * midiVM.QuarterWidth / DocManager.Inst.Project.Resolution;
+            double startY = TrackHeight * (UIConstants.MaxNoteNum - 1.0 - note.NoteNum) + TrackHeight / 2;
+            double inPix = lengthPix * vibrato.In / 100;
+            double outPix = lengthPix * vibrato.Out / 100;
+
+            double _x0 = 0, _y0 = 0, _x1 = 0, _y1 = 0;
+            while (_x1 < lengthPix)
+            {
+                cxt.DrawLine(pen, new Point(startX + _x0, startY + _y0), new Point(startX + _x1, startY + _y1));
+                _x0 = _x1;
+                _y0 = _y1;
+                _x1 += Math.Min(2, periodPix / 8);
+                _y1 = -Math.Sin(2 * Math.PI * (_x1 / periodPix + vibrato.Shift / 100)) * vibrato.Depth / 100 * midiVM.TrackHeight;
+                if (_x1 < inPix) _y1 = _y1 * _x1 / inPix;
+                else if (_x1 > lengthPix - outPix) _y1 = _y1 * (lengthPix - _x1) / outPix;
+            }
+        }
+
+        private void DrawPitchBend(UNote note, DrawingContext cxt)
+        {
+            var _pitchExp = note.PitchBend as PitchBendExpression;
+            var _pts = _pitchExp.Data as List<PitchPoint>;
+            if (_pts.Count < 2) return;
+
+            double pt0Tick = note.PosTick + MusicMath.MillisecondToTick(_pts[0].X, DocManager.Inst.Project.BPM, DocManager.Inst.Project.BeatUnit, DocManager.Inst.Project.Resolution);
+            double pt0X = midiVM.QuarterWidth * pt0Tick / DocManager.Inst.Project.Resolution;
+            double pt0Pit = note.NoteNum + _pts[0].Y / 10.0;
+            double pt0Y = TrackHeight * ((double)UIConstants.MaxNoteNum - 1.0 - pt0Pit) + TrackHeight / 2;
+
+            cxt.DrawEllipse(null, pen, new Point(pt0X, pt0Y), 2.5, 2.5);
+            for (int i = 1; i < _pts.Count; i++)
+            {
+                double pt1Tick = note.PosTick + MusicMath.MillisecondToTick(_pts[i].X, DocManager.Inst.Project.BPM, DocManager.Inst.Project.BeatUnit, DocManager.Inst.Project.Resolution);
+                double pt1X = midiVM.QuarterWidth * pt1Tick / DocManager.Inst.Project.Resolution;
+                double pt1Pit = note.NoteNum + _pts[i].Y / 10.0;
+                double pt1Y = TrackHeight * ((double)UIConstants.MaxNoteNum - 1.0 - pt1Pit) + TrackHeight / 2;
+
+                // Draw arc
+                double _x = pt0X;
+                double _x2 = pt0X;
+                double _y = pt0Y;
+                double _y2 = pt0Y;
+                while (_x2 < pt1X)
+                {
+                    _x = Math.Min(_x + 4, pt1X);
+                    _y = MusicMath.SinEasingInOut(pt0X, pt1X, pt0Y, pt1Y, _x);
+                    cxt.DrawLine(pen, new Point(_x, _y), new Point(_x2, _y2));
+                    _x2 = _x;
+                    _y2 = _y;
+                }
+
+                pt0Tick = pt1Tick;
+                pt0X = pt1X;
+                pt0Pit = pt1Pit;
+                pt0Y = pt1Y;
+                cxt.DrawEllipse(null, pen, new Point(pt0X, pt0Y), 2.5, 2.5);
+            }
         }
     }
 }

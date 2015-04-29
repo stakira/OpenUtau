@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 using OpenUtau.Core.USTx;
 
@@ -10,6 +11,7 @@ namespace OpenUtau.Core.Render
 {
     class ResamplerInterface
     {
+        const string DefaultEnvelope = "0 5 35 0 100 100 0";
         public void RenderAll(UProject project)
         {
             foreach (UPart part in project.Parts)
@@ -19,10 +21,11 @@ namespace OpenUtau.Core.Render
 
         public void Render(UVoicePart part, UProject project)
         {
+            System.Diagnostics.Debug.WriteLine(PathManager.Inst.HomePath);
             lock (part)
             {
-                string cache_dir = @"I:\Utau\cache";
-                var file = new System.IO.StreamWriter(@"I:\Utau\render.bat", false, Encoding.GetEncoding("gbk"));
+                string cache_dir = PathManager.Inst.GetCachePath(project.FilePath);
+                var file = new StreamWriter(Path.Combine(cache_dir, "render.bat"), false, Encoding.Default);
 
                 UNote lastNote = null;
                 foreach (UNote note in part.Notes)
@@ -33,10 +36,11 @@ namespace OpenUtau.Core.Render
                         {
                             USinger singer = project.Tracks[part.TrackNo].Singer;
 
-                            string inputfile = System.IO.Path.Combine(singer.ActualPath, "R.wav");
+                            string inputfile = Path.Combine(singer.Path, "R.wav");
 
                             string args2 = BuildConnectorArgsR(lastNote, note, part, project);
-                            string tool2_cmd = string.Format("wavtool.exe {0} {1} {2} 0 5 35 0 100 100 0", @"I:\Utau\cache\out.wav", inputfile, args2);
+                            string tool2_cmd = string.Format("{0} {1} {2} {3} {4}",
+                                PathManager.Inst.GetTool2Path(), Path.Combine(cache_dir, "out.wav"), inputfile, args2, DefaultEnvelope);
                             //System.Diagnostics.Debug.WriteLine(tool2_cmd);
                             file.WriteLine(tool2_cmd);
                         }
@@ -46,15 +50,15 @@ namespace OpenUtau.Core.Render
                         USinger singer = project.Tracks[part.TrackNo].Singer;
                         
                         string inputfile = Lib.EncodingUtil.ConvertEncoding(singer.FileEncoding, singer.PathEncoding, phoneme.Oto.File);
-                        inputfile = System.IO.Path.Combine(singer.ActualPath, inputfile);
+                        inputfile = Path.Combine(singer.Path, inputfile);
 
                         string args1 = BuildResamplerArgs(phoneme, part, project);
                         string args2 = BuildConnectorArgs(phoneme, part, project);
-                        string cachefile = string.Format("{0:x}_{1:x}.wav", phoneme.GetHashCode(), Lib.xxHash.CalcStringHash(inputfile + " " + args1));
-                        cachefile = System.IO.Path.Combine(cache_dir, cachefile);
+                        string cachefile = string.Format("{0:x}.wav", Lib.xxHash.CalcStringHash(inputfile + " " + args1));
+                        cachefile = Path.Combine(cache_dir, cachefile);
 
-                        string tool1_cmd = string.Format("fresamp14.exe {0} {1} {2}", inputfile, cachefile, args1);
-                        string tool2_cmd = string.Format("wavtool.exe {0} {1} {2}", cache_dir + "\\out.wav", cachefile, args2);
+                        string tool1_cmd = File.Exists(cachefile) ? "" : string.Format("{0} {1} {2} {3}", PathManager.Inst.GetTool1Path(), inputfile, cachefile, args1);
+                        string tool2_cmd = string.Format("{0} {1} {2} {3}", PathManager.Inst.GetTool2Path(), cache_dir + "\\out.wav", cachefile, args2);
 
                         //System.Diagnostics.Debug.WriteLine(tool1_cmd);
                         //System.Diagnostics.Debug.WriteLine(tool2_cmd);
@@ -63,8 +67,16 @@ namespace OpenUtau.Core.Render
                     }
                     lastNote = note;
                 }
-                file.WriteLine("copy /Y \"cache\\out.wav.whd\" /B + \"cache\\out.wav.dat\" /B \"cache\\out.wav\"");
+                string cmd = string.Format("copy /Y \"{0}\" /B + \"{1}\" /B \"{2}\"",
+                    Path.Combine(cache_dir, "out.wav.whd"), Path.Combine(cache_dir, "out.wav.dat"), Path.Combine(cache_dir, "out.wav"));
+                file.WriteLine(cmd);
+                cmd = string.Format("del \"{0}\"", Path.Combine(cache_dir, "out.wav.whd"));
+                file.WriteLine(cmd);
+                cmd = string.Format("del \"{0}\"", Path.Combine(cache_dir, "out.wav.dat"));
+                file.WriteLine(cmd);
                 file.Close();
+                var p = System.Diagnostics.Process.Start(Path.Combine(cache_dir, "render.bat"));
+                p.WaitForExit();
             }
         }
 
@@ -124,8 +136,16 @@ namespace OpenUtau.Core.Render
 
             // Get relevant pitch points
             List<PitchPoint> pps = new List<PitchPoint>();
+            
+            bool lastNoteInvolved = lastNote != null && phoneme.Overlapped;
+            bool nextNoteInvolved = nextNote != null && nextNote.Phonemes[0].Overlapped;
 
-            if (lastNote != null)
+            double lastVibratoStartMs = 0;
+            double lastVibratoEndMs = 0;
+            double vibratoStartMs = 0;
+            double vibratoEndMs = 0;
+
+            if (lastNoteInvolved)
             {
                 double offsetMs = DocManager.Inst.Project.TickToMillisecond(phoneme.Parent.PosTick - lastNote.PosTick);
                 foreach (PitchPoint pp in lastNote.PitchBend.Points)
@@ -135,11 +155,21 @@ namespace OpenUtau.Core.Render
                     newpp.Y -= (phoneme.Parent.NoteNum - lastNote.NoteNum) * 10;
                     pps.Add(newpp);
                 }
+                if (lastNote.Vibrato.Depth != 0)
+                {
+                    lastVibratoStartMs = -DocManager.Inst.Project.TickToMillisecond(lastNote.DurTick) * lastNote.Vibrato.Length / 100;
+                    lastVibratoEndMs = 0;
+                }
             }
 
             foreach (PitchPoint pp in phoneme.Parent.PitchBend.Points) pps.Add(pp);
+            if (phoneme.Parent.Vibrato.Depth !=0)
+            {
+                vibratoEndMs = DocManager.Inst.Project.TickToMillisecond(phoneme.Parent.DurTick);
+                vibratoStartMs = vibratoEndMs * (1 - phoneme.Parent.Vibrato.Length / 100);
+            }
 
-            if (nextNote != null)
+            if (nextNoteInvolved)
             {
                 double offsetMs = DocManager.Inst.Project.TickToMillisecond(phoneme.Parent.PosTick - nextNote.PosTick);
                 foreach (PitchPoint pp in nextNote.PitchBend.Points)
@@ -177,11 +207,35 @@ namespace OpenUtau.Core.Render
                     pps[i].Shape == PitchPointShape.SineOut ? MusicMath.SinEasingOut(pps[i].X, pps[i + 1].X, pps[i].Y, pps[i + 1].Y, currMs) :
                     pps[i].Shape == PitchPointShape.SineInOut ? MusicMath.SinEasingInOut(pps[i].X, pps[i + 1].X, pps[i].Y, pps[i + 1].Y, currMs) :
                     MusicMath.Liner(pps[i].X, pps[i + 1].X, pps[i].Y, pps[i + 1].Y, currMs);
-                pitches.Add((int)(pit * 10));
+
+                pit *= 10;
+
+                // Apply vibratos
+                if (currMs < lastVibratoEndMs && currMs >= lastVibratoStartMs)
+                    pit += InterpolateVibrato(lastNote.Vibrato, currMs - lastVibratoStartMs);
+
+                if (currMs < vibratoEndMs && currMs >= vibratoStartMs)
+                    pit += InterpolateVibrato(phoneme.Parent.Vibrato, currMs - vibratoStartMs);
+
+                pitches.Add((int)pit);
                 currMs += intervalMs;
             }
 
             return string.Format("!{0} {1}", project.BPM, Base64EncodeForResampler(pitches));
+        }
+
+        private double InterpolateVibrato(VibratoExpression vibrato, double posMs)
+        {
+            double lengthMs = vibrato.Length / 100 * DocManager.Inst.Project.TickToMillisecond(vibrato.Parent.DurTick);
+            double inMs = lengthMs * vibrato.In / 100;
+            double outMs = lengthMs * vibrato.Out / 100;
+            
+            double value = -Math.Sin(2 * Math.PI * (posMs / vibrato.Period + vibrato.Shift / 100)) *vibrato.Depth;
+
+            if (posMs < inMs) value *= posMs / inMs;
+            else if (posMs > lengthMs - outMs) value *= (lengthMs - posMs) / outMs;
+
+            return value;
         }
 
         private const string intToBase64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";

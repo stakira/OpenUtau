@@ -20,9 +20,7 @@ namespace OpenUtau.Core.USTx
     public class USinger
     {
         public string Name;
-        public string HomePath;
-        public string SoundbankPath;
-        public string ImagePath;
+        public string Path;
         public string Author;
         public string Website;
 
@@ -31,11 +29,7 @@ namespace OpenUtau.Core.USTx
         public Encoding FileEncoding;
         public Encoding PathEncoding;
 
-        public bool MultiPitch;
         public Dictionary<string, string> PitchMap = new Dictionary<string, string>();
         public Dictionary<string, UOto> AliasMap = new Dictionary<string, UOto>();
-
-        public string ActualPath { get { return System.IO.Path.Combine(HomePath,
-            Lib.EncodingUtil.ConvertEncoding(FileEncoding, PathEncoding, SoundbankPath)); } }
     }
 }

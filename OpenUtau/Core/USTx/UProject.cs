@@ -17,6 +17,7 @@ namespace OpenUtau.Core.USTx
         public string Comment = "";
         public string OutputDir = "Vocal";
         public string CacheDir = "UCache";
+        public string FilePath;
 
         public List<UTrack> Tracks = new List<UTrack>();
         public List<UPart> Parts = new List<UPart>();
@@ -31,8 +32,6 @@ namespace OpenUtau.Core.USTx
             foreach (var pair in ExpressionTable) { note.Expressions.Add(pair.Key, pair.Value.Clone(note)); }
             return note;
         }
-
-        public string FilePath;
 
         public UProject() { }
 
