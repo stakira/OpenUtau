@@ -11,7 +11,7 @@ using OpenUtau.Core.USTx;
 
 namespace OpenUtau.UI.Controls
 {
-    public class PartElement : FrameworkElement
+    class PartElement : FrameworkElement
     {
         protected DrawingVisual frameVisual;
         protected DrawingVisual partVisual;
@@ -132,8 +132,8 @@ namespace OpenUtau.UI.Controls
 
         public virtual Brush GetFrameBrush()
         {
-            if (Selected) return OpenUtau.UI.Models.ThemeManager.NoteFillSelectedBrush;
-            else return OpenUtau.UI.Models.ThemeManager.NoteFillBrushes[Channel];
+            if (Selected) return ThemeManager.NoteFillSelectedBrush;
+            else return ThemeManager.NoteFillBrushes[Channel];
         }
 
         protected bool _modified = false;
@@ -154,7 +154,7 @@ namespace OpenUtau.UI.Controls
         }
     }
 
-    public class VoicePartElement : PartElement
+    class VoicePartElement : PartElement
     {
         public override void RedrawPart()
         {
@@ -172,7 +172,7 @@ namespace OpenUtau.UI.Controls
         }
     }
 
-    public class WavePartElement : PartElement
+    class WavePartElement : PartElement
     {
         public override void RedrawPart()
         {

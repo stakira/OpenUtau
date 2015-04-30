@@ -5,7 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 
-namespace OpenUtau.Core.USTx
+using OpenUtau.Core.USTx;
+
+namespace OpenUtau.Core
 {
     public class PartManager : ICmdSubscriber
     {
@@ -30,10 +32,10 @@ namespace OpenUtau.Core.USTx
         {
             var partContainer = state as PartContainer;
             if (partContainer.Part == null) return;
-            ManagePart(partContainer.Part);
+            UpdatePart(partContainer.Part);
         }
 
-        public void ManagePart(UVoicePart part)
+        public void UpdatePart(UVoicePart part)
         {
             lock (part)
             {
@@ -43,6 +45,7 @@ namespace OpenUtau.Core.USTx
                 UpdateOverlapAdjustment(part);
                 UpdateEnvelope(part);
                 UpdatePitchBend(part);
+                DocManager.Inst.ExecuteCmd(new RedrawNotesNotification());
             }
         }
 
@@ -123,16 +126,13 @@ namespace OpenUtau.Core.USTx
                                 phoneme.Preutter = gapMs + (phoneme.Preutter - gapMs) * correctionRatio;
                                 phoneme.Overlap *= correctionRatio;
                             }
-                            else if (phoneme.Preutter > gapMs + lastDurMs / 2)
+                            else if (phoneme.Preutter > gapMs + lastDurMs)
                             {
                                 phoneme.OverlapCorrection = true;
                                 phoneme.Overlap *= correctionRatio; 
-                                phoneme.Preutter = gapMs + lastDurMs / 2;
+                                phoneme.Preutter = gapMs + lastDurMs;
                             }
                             else phoneme.OverlapCorrection = false;
-
-                                phoneme.Preutter = Math.Max(0, phoneme.Preutter);
-                                phoneme.Overlap = Math.Min(phoneme.Overlap, phoneme.Preutter);
 
                             lastPhoneme.TailIntrude = phoneme.Preutter - gapMs;
                             lastPhoneme.TailOverlap = phoneme.Overlap;
@@ -237,7 +237,7 @@ namespace OpenUtau.Core.USTx
         {
             foreach (UPart part in cmd.project.Parts)
                 if (part is UVoicePart)
-                    ManagePart((UVoicePart)part);
+                    UpdatePart((UVoicePart)part);
         }
 
         # endregion

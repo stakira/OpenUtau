@@ -10,12 +10,13 @@ using System.Windows.Media;
 using System.Windows.Controls;
 using System.Windows.Data;
 
+using OpenUtau.Core;
 using OpenUtau.Core.USTx;
 using OpenUtau.UI.Controls;
 
 namespace OpenUtau.UI.Models
 {
-    public class ExpComboBoxViewModel : INotifyPropertyChanged, ICmdSubscriber
+    class ExpComboBoxViewModel : INotifyPropertyChanged, ICmdSubscriber
     {
         public event PropertyChangedEventHandler PropertyChanged;
 

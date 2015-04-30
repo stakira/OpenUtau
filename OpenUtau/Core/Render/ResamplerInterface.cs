@@ -130,10 +130,11 @@ namespace OpenUtau.Core.Render
         private string BuildPitchArgs(UPhoneme phoneme, UVoicePart part, UProject project)
         {
             List<int> pitches = new List<int>();
-            int noteIdx = part.Notes.IndexOf(phoneme.Parent);
-            UNote lastNote = noteIdx == 0 ? null : part.Notes[noteIdx - 1];
-            UNote nextNote = noteIdx == part.Notes.Count - 1 ? null : part.Notes[noteIdx + 1];
-
+            //int noteIdx = part.Notes.IndexOf(phoneme.Parent);
+            //UNote lastNote = noteIdx == 0 ? null : part.Notes[noteIdx - 1];
+            //UNote nextNote = noteIdx == part.Notes.Count - 1 ? null : part.Notes[noteIdx + 1];
+            UNote lastNote = part.Notes.OrderByDescending(x => x).Where(x => x.CompareTo(phoneme.Parent) < 0).FirstOrDefault();
+            UNote nextNote = part.Notes.Where(x => x.CompareTo(phoneme.Parent) > 0).FirstOrDefault();
             // Get relevant pitch points
             List<PitchPoint> pps = new List<PitchPoint>();
             

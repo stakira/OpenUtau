@@ -17,7 +17,7 @@ namespace OpenUtau.UI.Behaviors
     /// BorderlessWindowBehavior
     /// Hide default window chrome. Fix maximizing problem. Disable window context menu.
     /// </summary>
-    public class BorderlessWindowBehavior : Behavior<Window>
+    class BorderlessWindowBehavior : Behavior<Window>
     {
         private WindowChrome windowChrome;
 

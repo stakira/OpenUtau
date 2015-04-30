@@ -14,7 +14,6 @@ namespace OpenUtau.Core.Formats
     static class Formats
     {
         const string ustMatch = "[#SETTING]";
-        const string ustxMatch = USTx.ustxNameSpace;
         const string vsq3Match = VSQx.vsq3NameSpace;
         const string vsq4Match = VSQx.vsq4NameSpace;
 
@@ -32,7 +31,7 @@ namespace OpenUtau.Core.Formats
             }
 
             if (contents.Contains(ustMatch)) return ProjectFormats.Ust;
-            else if (contents.Contains(ustxMatch)) return ProjectFormats.Ustx;
+            else if (contents.Length > 0 && contents[0] == '{') return ProjectFormats.Ustx;
             else if (contents.Contains(vsq3Match)) return ProjectFormats.Vsq3;
             else if (contents.Contains(vsq4Match)) return ProjectFormats.Vsq4;
             else return ProjectFormats.Unknown;

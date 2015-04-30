@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 using OpenUtau.Core;
 using OpenUtau.Core.Lib;
+using OpenUtau.Core.USTx;
 
-namespace OpenUtau.Core.USTx
+namespace OpenUtau.Core
 {
     class DocManager : ICmdPublisher
     {
@@ -43,16 +44,6 @@ namespace OpenUtau.Core.USTx
                 return;
             }
             else if (undoGroup == null) { System.Diagnostics.Debug.WriteLine("Null undoGroup"); return; }
-            else if (cmd is NoteCommand)
-            {
-                var _cmd = cmd as NoteCommand;
-                lock (_cmd.Part)
-                {
-                    undoGroup.Commands.Add(cmd);
-                    cmd.Execute();
-                    Publish(cmd);
-                }
-            }
             else
             {
                 undoGroup.Commands.Add(cmd);
@@ -81,7 +72,7 @@ namespace OpenUtau.Core.USTx
         {
             if (undoQueue.Count == 0) return;
             var cmdg = undoQueue.RemoveFromBack();
-            for (int i = cmdg.Commands.Count - 1; i >= 0; i--) { var cmd = cmdg.Commands[i]; cmd.Unexecute(); Publish(cmd, true); }
+            for (int i = cmdg.Commands.Count - 1; i >= 0; i--) { var cmd = cmdg.Commands[i]; cmd.Unexecute(); if (!(cmd is NoteCommand)) Publish(cmd, true); }
             redoQueue.AddToBack(cmdg);
         }
 

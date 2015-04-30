@@ -21,6 +21,7 @@ namespace OpenUtau.Core.USTx
         public VibratoExpression Vibrato;
         public int Channel = 0;
         public bool Error = false;
+        public bool Selected = false;
 
         public int EndTick { get { return PosTick + DurTick; } }
 
@@ -71,6 +72,12 @@ namespace OpenUtau.Core.USTx
                 return -1;
             else
                 return 0;
+        }
+
+        public override string ToString()
+        {
+            return string.Format("\"{0}\" Pos:{1} Dur:{2} Note:{3}", Lyric, PosTick, DurTick, NoteNum)
+                + (Error ? " Error" : "") + (Selected ? " Selected" : "");
         }
     }
 }

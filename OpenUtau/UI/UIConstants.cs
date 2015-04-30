@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OpenUtau.UI
 {
-    public static class UIConstants
+    static class UIConstants
     {
         public const int MaxNoteNum = 12 * 11;
         public const int HiddenNoteNum = 12 * 4;

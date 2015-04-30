@@ -1,116 +1,447 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
+using System.Web.Script.Serialization;
+
 using System.Xml.Linq;
 
+using OpenUtau.Core;
 using OpenUtau.Core.USTx;
 
 namespace OpenUtau.Core.Formats
 {
     class USTx
     {
-        public const string ustxVersion = @"alpha";
-        public const string ustxNameSpace = @"http://openutau.github.io/schema/ustx/";
-        static XNamespace u = ustxNameSpace;
-
-        static UExpression GetExpFromXml(XElement x, UNote parent)
+        class UNoteConvertor : JavaScriptConverter
         {
-            /*if (x.Attribute("t").Value == "cc") return CCExpression.FromXml(x, parent, u);
-            else if (x.Attribute("t").Value == "float") return IntExpression.FromXml(x, parent, u);
-            else if (x.Attribute("t").Value == "serial") return CCExpression.FromXml(x, parent, u);
-            else*/ return null;
-        }
-
-        static public UProject Create()
-        {
-            UProject project = new UProject();
-            return project;
-        }
-
-        static public UProject Load(string file)
-        {
-            UProject project = new UProject();
-
-            XDocument xdoc = XDocument.Load(file);
-            XElement xroot = xdoc.Descendants(u + "ustx").First();
-
-            foreach (XElement xexp in xroot.Element(u + "expressionTable").Descendants(u + "exp"))
-                project.RegisterExpression(GetExpFromXml(xexp, null));
-
-            foreach (XElement xpart in xroot.Descendants(u + "voicepart"))
+            public override object Deserialize(IDictionary<string, object> dictionary, Type type, JavaScriptSerializer serializer)
             {
-                UVoicePart part = new UVoicePart()
+                UNote result = UNote.Create();
+                result.Lyric = dictionary["lyr"] as string;
+                result.NoteNum = Convert.ToInt32(dictionary["num"]);
+                result.PosTick = Convert.ToInt32(dictionary["pos"]);
+                result.DurTick = Convert.ToInt32(dictionary["dur"]);
+                result.PitchBend.SnapFirst = Convert.ToBoolean(dictionary["pitsnap"]);
+
+                var pho = dictionary["pho"] as ArrayList;
+                foreach (var p in pho)
                 {
-                    TrackNo = int.Parse(xpart.Element(u + "track").Value),
-                    PosTick = int.Parse(xpart.Element(u + "pos").Value),
-                    DurTick = int.Parse(xpart.Element(u + "dur").Value),
-                    Name = xpart.Element(u + "name").Value,
-                    Comment = xpart.Element(u + "comment").Value
-                };
-                project.Parts.Add(part);
-                foreach (XElement xnote in xpart.Descendants(u + "note"))
-                {
-                    UNote note = project.CreateNote();
-
-                    note.PosTick = int.Parse(xnote.Element(u + "pos").Value);
-                    note.DurTick = int.Parse(xnote.Element(u + "dur").Value);
-                    note.NoteNum = int.Parse(xnote.Element(u + "n").Value);
-                    note.Lyric = xnote.Element(u + "y").Value;
-
-                    foreach (XElement xexp in xnote.Descendants(u + "exp"))
-                        note.Expressions[xexp.Attribute("id").Value] = GetExpFromXml(xexp, note);
-
-                    part.Notes.Add(note);
+                    var _p = serializer.ConvertToType<UPhoneme>(p);
+                    _p.Parent = result;
+                    result.Phonemes.Add(_p);
                 }
-            }
-            return project;
-        }
 
-        static public void Save(string file, UProject project)
-        {
-            XElement xroot = new XElement(u + "ustx",
-                new XAttribute("xmlns", ustxNameSpace),
-                new XElement(u + "version", new XCData(ustxVersion)));
-            XDocument xdoc = new XDocument(xroot);
-
-            XElement xexptable = new XElement(u + "expressionTable");
-            foreach (var pair in project.ExpressionTable)
-            {
-                //XElement xexp = pair.Value.ToTableXml(u);
-                //xexptable.Add(xexp);
-            }
-            xroot.Add(xexptable);
-
-            foreach (UPart part in project.Parts)
-            {
-                if (part is UVoicePart){
-                    XElement xpart = new XElement(u + "voicepart",
-                        new XElement(u + "track", part.TrackNo),
-                        new XElement(u + "pos", part.PosTick),
-                        new XElement(u + "dur", part.DurTick),
-                        new XElement(u + "name", new XCData(part.Name)),
-                        new XElement(u + "comment", new XCData(part.Comment))
-                        );
-                    foreach (UNote note in ((UVoicePart)part).Notes)
+                result.PitchBend.SnapFirst = Convert.ToBoolean(dictionary["pitsnap"]);
+                var pit = dictionary["pit"] as ArrayList;
+                double x = 0, y = 0;
+                result.PitchBend.Points.Clear();
+                for (int i = 0; i < pit.Count; i ++ )
+                {
+                    if (i % 2 == 0)
+                        x = Convert.ToDouble(pit[i]);
+                    else
                     {
-                        XElement xexpressions = new XElement(u + "expressions");
-                        //foreach (var pair in note.Expressions) xexpressions.Add(pair.Value.ToXml(u));
-
-                        XElement xnote = new XElement(u + "note",
-                            new XElement(u + "pos", note.PosTick),
-                            new XElement(u + "dur", note.DurTick),
-                            new XElement(u + "n", note.NoteNum),
-                            new XElement(u + "y", new XCData(note.Lyric)),
-                            //new XElement(u + "p", new XCData(note.Phoneme)),
-                            xexpressions);
-                        xpart.Add(xnote);
+                        y = Convert.ToDouble(pit[i]);
+                        result.PitchBend.AddPoint(new PitchPoint(x, y));
                     }
-                    xroot.Add(xpart);
+                }
+
+                if (dictionary.ContainsKey("vbr"))
+                {
+                    var vbr = dictionary["vbr"] as ArrayList;
+                    result.Vibrato.Length = Convert.ToDouble(vbr[0]);
+                    result.Vibrato.Period = Convert.ToDouble(vbr[1]);
+                    result.Vibrato.Depth = Convert.ToDouble(vbr[2]);
+                    result.Vibrato.In = Convert.ToDouble(vbr[3]);
+                    result.Vibrato.Out = Convert.ToDouble(vbr[4]);
+                    result.Vibrato.Shift = Convert.ToDouble(vbr[5]);
+                    result.Vibrato.Drift = Convert.ToDouble(vbr[6]);
+                }
+
+                var exp = dictionary["exp"] as Dictionary<string, object>;
+                foreach (var pair in exp)
+                    result.Expressions.Add(pair.Key, new IntExpression(result, pair.Key, "") { Data = pair.Value });
+
+                return result;
+            }
+
+            public override IDictionary<string, object> Serialize(object obj, JavaScriptSerializer serializer)
+            {
+                var _obj = obj as UNote;
+                Dictionary<string, object> result = new Dictionary<string, object>();
+                if (_obj == null) return result;
+
+                result.Add("lyr", _obj.Lyric);
+                result.Add("num", _obj.NoteNum);
+                result.Add("pos", _obj.PosTick);
+                result.Add("dur", _obj.DurTick);
+                result.Add("pho", _obj.Phonemes);
+
+                var pit = new List<double>();
+                foreach (var p in _obj.PitchBend.Points) { pit.Add(p.X); pit.Add(p.Y); }
+                result.Add("pitsnap", _obj.PitchBend.SnapFirst);
+                result.Add("pit", pit);
+
+                if (_obj.Vibrato.Length > 0 && _obj.Vibrato.Depth > 0)
+                {
+                    var vbr = new List<double>();
+                    vbr.Add(_obj.Vibrato.Length);
+                    vbr.Add(_obj.Vibrato.Period);
+                    vbr.Add(_obj.Vibrato.Depth);
+                    vbr.Add(_obj.Vibrato.In);
+                    vbr.Add(_obj.Vibrato.Out);
+                    vbr.Add(_obj.Vibrato.Shift);
+                    vbr.Add(_obj.Vibrato.Drift);
+                    result.Add("vbr", vbr);
+                }
+
+                var exp = new Dictionary<string, int>();
+                foreach (var pair in _obj.Expressions)
+                {
+                    if (pair.Value is IntExpression)
+                    {
+                        exp.Add(pair.Key, (int)pair.Value.Data);
+                    }
+                }
+                result.Add("exp", exp);
+
+                return result;
+            }
+
+            public override IEnumerable<Type> SupportedTypes
+            {
+                get { return new List<Type>(new Type[] { typeof(UNote) }); }
+            }
+        }
+
+        class UPhonemeConverter : JavaScriptConverter
+        {
+            public override object Deserialize(IDictionary<string, object> dictionary, Type type, JavaScriptSerializer serializer)
+            {
+                UPhoneme result = new UPhoneme()
+                {
+                    PosTick = Convert.ToInt32(dictionary["pos"]),
+                    Phoneme = dictionary["pho"] as string,
+                    AutoTiming = Convert.ToBoolean(dictionary["time"]),
+                    AutoRemapped = Convert.ToBoolean(dictionary["remap"])
+                };
+                var env = dictionary["env"] as ArrayList;
+                for (int i = 0; i < 10; i++)
+                {
+                    if (i % 2 == 0)
+                        result.Envelope.Points[i / 2].X = Convert.ToDouble(env[i]);
+                    else
+                        result.Envelope.Points[i / 2].Y = Convert.ToDouble(env[i]);
+                }
+                return result;
+            }
+
+            public override IDictionary<string, object> Serialize(object obj, JavaScriptSerializer serializer)
+            {
+                var _obj = obj as UPhoneme;
+                Dictionary<string, object> result = new Dictionary<string, object>();
+                if (_obj == null) return result;
+
+                result.Add("pos", _obj.PosTick);
+                result.Add("pho", _obj.Phoneme);
+                result.Add("time", _obj.AutoTiming);
+                result.Add("remap", _obj.AutoRemapped);
+
+                var env = new List<double>();
+                foreach (var p in _obj.Envelope.Points) { env.Add(p.X); env.Add(p.Y); }
+                result.Add("env", env);
+
+                return result;
+            }
+
+            public override IEnumerable<Type> SupportedTypes
+            {
+                get { return new List<Type>(new Type[] { typeof(UPhoneme) }); }
+            }
+        }
+
+        class UPartConvertor : JavaScriptConverter
+        {
+            public override object Deserialize(IDictionary<string, object> dictionary, Type type, JavaScriptSerializer serializer)
+            {
+                UPart result = null;
+                if (dictionary.ContainsKey("notes"))
+                {
+                    result = new UVoicePart();
+                    var _result = result as UVoicePart;
+
+                    var notes = dictionary["notes"] as ArrayList;
+                    foreach (var note in notes)
+                    {
+                        _result.Notes.Add(serializer.ConvertToType<UNote>(note));
+                    }
+                }
+                else if (dictionary.ContainsKey("path"))
+                    result = new UWavePart() { FilePath = dictionary["path"] as string };
+
+                if (result != null)
+                {
+                    result.Name = dictionary["name"] as string;
+                    result.Comment = dictionary["comment"] as string;
+                    result.TrackNo = Convert.ToInt32(dictionary["trackno"]);
+                    result.PosTick = Convert.ToInt32(dictionary["pos"]);
+                    result.DurTick = Convert.ToInt32(dictionary["dur"]);
+                }
+
+                return result;
+            }
+
+            public override IDictionary<string, object> Serialize(object obj, JavaScriptSerializer serializer)
+            {
+                Dictionary<string, object> result = new Dictionary<string, object>();
+                var _part = obj as UPart;
+                if (_part == null) return result;
+
+                result.Add("name", _part.Name);
+                result.Add("comment", _part.Comment);
+                result.Add("trackno", _part.TrackNo);
+                result.Add("pos", _part.PosTick);
+                result.Add("dur", _part.DurTick);
+
+                if (obj is UWavePart)
+                {
+                    var _obj = obj as UWavePart;
+                    result.Add("path", _obj.FilePath);
+                }
+                else if (obj is UVoicePart)
+                {
+                    var _obj = obj as UVoicePart;
+                    result.Add("notes", _obj.Notes);
+                }
+
+                return result;
+            }
+
+            public override IEnumerable<Type> SupportedTypes
+            {
+                get { return new List<Type>(new Type[] { typeof(UPart), typeof(UVoicePart), typeof(UWavePart) }); }
+            }
+        }
+
+        class UProjectConvertor : JavaScriptConverter
+        {
+            public override object Deserialize(IDictionary<string, object> dictionary, Type type, JavaScriptSerializer serializer)
+            {
+                UProject result = new UProject();
+                result.Name = dictionary["name"] as string;
+                result.Comment = dictionary["comment"] as string;
+                result.OutputDir = dictionary["output"] as string;
+                result.CacheDir = dictionary["cache"] as string;
+                result.BPM = Convert.ToDouble(dictionary["bpm"]);
+                result.BeatPerBar = Convert.ToInt32(dictionary["bpbar"]);
+                result.BeatUnit = Convert.ToInt32(dictionary["bunit"]);
+                result.Resolution = Convert.ToInt32(dictionary["res"]);
+
+                foreach (var pair in (Dictionary<string, object>)(dictionary["exptable"]))
+                {
+                    var exp = serializer.ConvertToType(pair.Value, typeof(IntExpression)) as IntExpression;
+                    var _exp = new IntExpression(null, pair.Key, exp.Abbr)
+                    {
+                        Data = exp.Data,
+                        Min = exp.Min,
+                        Max = exp.Max,
+                    };
+                    result.ExpressionTable.Add(pair.Key, _exp);
+                }
+
+                var singers = dictionary["singers"] as ArrayList;
+                foreach (var singer in singers)
+                    result.Singers.Add(serializer.ConvertToType(singer, typeof(USinger)) as USinger);
+
+                foreach (var track in dictionary["tracks"] as ArrayList)
+                    result.Tracks.Add(serializer.ConvertToType(track, typeof(UTrack)) as UTrack);
+
+                foreach (var part in dictionary["parts"] as ArrayList)
+                    result.Parts.Add(serializer.ConvertToType(part, typeof(UPart)) as UPart);
+
+                return result;
+            }
+
+            public override IDictionary<string, object> Serialize(object obj, JavaScriptSerializer serializer)
+            {
+                Dictionary<string, object> result = new Dictionary<string, object>();
+
+                var _obj = obj as UProject;
+                if (_obj != null)
+                {
+                    result.Add("name", _obj.Name);
+                    result.Add("comment", _obj.Comment);
+                    result.Add("output", _obj.OutputDir);
+                    result.Add("cache", _obj.CacheDir);
+                    result.Add("bpm", _obj.BPM);
+                    result.Add("bpbar", _obj.BeatPerBar);
+                    result.Add("bunit", _obj.BeatUnit);
+                    result.Add("res", _obj.Resolution);
+                    result.Add("singers", _obj.Singers);
+                    result.Add("tracks", _obj.Tracks);
+                    result.Add("parts", _obj.Parts);
+                    result.Add("exptable", _obj.ExpressionTable);
+                }
+
+                return result;
+            }
+
+            public override IEnumerable<Type> SupportedTypes
+            {
+                get { return new List<Type>(new Type[] { typeof(UProject) }); }
+            }
+        }
+
+        class MiscConvertor : JavaScriptConverter
+        {
+            public override object Deserialize(IDictionary<string, object> dictionary, Type type, JavaScriptSerializer serializer)
+            {
+                if (type == typeof(IntExpression))
+                {
+                    IntExpression result = new IntExpression(null, "", dictionary["abbr"] as string)
+                    {
+                        Data = dictionary["data"],
+                        Min = Convert.ToInt32(dictionary["min"]),
+                        Max = Convert.ToInt32(dictionary["max"]),
+                    };
+                    return result;
+                }
+                else if (type == typeof(UTrack))
+                {
+                    UTrack result = new UTrack()
+                    {
+                        Name = dictionary["name"] as string,
+                        Comment = dictionary["comment"] as string,
+                        TrackNo = Convert.ToInt32(dictionary["trackno"]),
+                        Singer = new USinger() { Name = dictionary["singer"] as string }
+                    };
+                    return result;
+                }
+                else if (type == typeof(USinger))
+                {
+                    USinger result = new USinger()
+                    {
+                        Name = dictionary["name"] as string,
+                        Path = dictionary["path"] as string
+                    };
+                    return result;
+                }
+                else return null;
+            }
+
+            public override IDictionary<string, object> Serialize(object obj, JavaScriptSerializer serializer)
+            {
+                Dictionary<string, object> result = new Dictionary<string, object>();
+
+                if (obj is UTrack)
+                {
+                    var _obj = obj as UTrack;
+                    if (_obj != null)
+                    {
+                        result.Add("trackno", _obj.TrackNo);
+                        result.Add("name", _obj.Name);
+                        result.Add("comment", _obj.Comment);
+                        result.Add("singer", _obj.Singer.Name);
+                    }
+                }
+                else if (obj is USinger)
+                {
+                    var _obj = obj as USinger;
+                    if (_obj != null)
+                    {
+                        result.Add("name", _obj.Name);
+                        result.Add("path", _obj.Path);
+                    }
+                }
+                else if (obj is IntExpression)
+                {
+                    var _obj = obj as IntExpression;
+                    if (_obj != null)
+                    {
+                        result.Add("abbr", _obj.Abbr);
+                        result.Add("type", _obj.Type);
+                        result.Add("min", _obj.Min);
+                        result.Add("max", _obj.Max);
+                        result.Add("data", _obj.Data);
+                    }
+                }
+                return result;
+            }
+
+            public override IEnumerable<Type> SupportedTypes
+            {
+                get {
+                    return new List<Type>(new Type[] {
+                        typeof(IntExpression),
+                        typeof(UTrack),
+                        typeof(USinger)
+                    });
                 }
             }
-            xdoc.Save(file);
+        }
+
+        public static UProject Create()
+        {
+            UProject project = new UProject();
+            return project;
+        }
+
+        public static void Save(string file, UProject project)
+        {
+            JavaScriptSerializer jss = new JavaScriptSerializer();
+            jss.RegisterConverters(
+                new List<JavaScriptConverter>()
+                    {
+                        new UProjectConvertor(),
+                        new MiscConvertor(),
+                        new UPartConvertor(),
+                        new UNoteConvertor(),
+                        new UPhonemeConverter()
+                    });
+            StringBuilder str = new StringBuilder();
+            try
+            {
+                jss.Serialize(project, str);
+                var f_out = new StreamWriter(file);
+                f_out.Write(str.ToString());
+                f_out.Close();
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine(e.ToString());
+            }
+        }
+
+        public static UProject Load(string file)
+        {
+            UProject project;
+
+            JavaScriptSerializer jss = new JavaScriptSerializer();
+            jss.RegisterConverters(
+                new List<JavaScriptConverter>()
+                    {
+                        new UProjectConvertor(),
+                        new MiscConvertor(),
+                        new UPartConvertor(),
+                        new UNoteConvertor(),
+                        new UPhonemeConverter()
+                    });
+
+            try
+            {
+                project = jss.Deserialize(File.ReadAllText(file), typeof(UProject)) as UProject;
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine(e.ToString());
+                return null;
+            }
+            
+            return project;
         }
     }
 }

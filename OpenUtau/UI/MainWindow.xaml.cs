@@ -140,7 +140,7 @@ namespace OpenUtau.UI
                     {
                         Stroke = Brushes.Black,
                         StrokeThickness = 2,
-                        Fill = ThemeManager.getBarNumberBrush(),
+                        Fill = ThemeManager.BarNumberBrush,
                         Width = 0,
                         Height = 0,
                         Opacity = 0.5,

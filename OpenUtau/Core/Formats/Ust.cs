@@ -181,9 +181,14 @@ namespace OpenUtau.Core.Formats
                 if (line.StartsWith("PreUtterance="))
                 {
                     if (line.Trim() == "PreUtterance=") note.Phonemes[0].AutoTiming = true;
-                    else { note.Phonemes[0].AutoTiming = false; note.Phonemes[0].Preutter = float.Parse(line.Trim().Replace("PreUtterance=", "")); }
+                    else { note.Phonemes[0].AutoTiming = false; note.Phonemes[0].Preutter = double.Parse(line.Trim().Replace("PreUtterance=", "")); }
                 }
-                if (line.StartsWith("VoiceOverlap=")) note.Phonemes[0].Overlap = float.Parse(line.Trim().Replace("VoiceOverlap=", ""));
+                if (line.StartsWith("VoiceOverlap=")) note.Phonemes[0].Overlap = double.Parse(line.Trim().Replace("VoiceOverlap=", ""));
+                if (line.StartsWith("Envelope="))
+                {
+                    var pts = line.Trim().Replace("Envelope=", "").Split(new[] { ',' });
+                    if (pts.Count() > 5) note.Expressions["decay"].Data = 100 - (int)double.Parse(pts[5]);
+                }
                 if (line.StartsWith("VBR=")) VibratoFromUst(note.Vibrato, line.Trim().Replace("VBR=", ""));
                 if (line.StartsWith("PBS=")) pbs = line.Trim().Replace("PBS=", "");
                 if (line.StartsWith("PBW=")) pbw = line.Trim().Replace("PBW=", "");
@@ -198,12 +203,12 @@ namespace OpenUtau.Core.Formats
                 // PBS
                 if (pbs.Contains(';'))
                 {
-                    pts.Add(new PitchPoint(float.Parse(pbs.Split(new[] { ';' })[0]), float.Parse(pbs.Split(new[] { ';' })[1])));
+                    pts.Add(new PitchPoint(double.Parse(pbs.Split(new[] { ';' })[0]), double.Parse(pbs.Split(new[] { ';' })[1])));
                         note.PitchBend.SnapFirst = false;
                 }
                 else
                 {
-                    pts.Add(new PitchPoint(float.Parse(pbs), 0));
+                    pts.Add(new PitchPoint(double.Parse(pbs), 0));
                     note.PitchBend.SnapFirst = true;
                 }
                 double x = pts.First().X;
@@ -215,9 +220,9 @@ namespace OpenUtau.Core.Formats
                     for (int i = 0; i < w.Count() - 1; i++)
                     {
                         x += w[i] == "" ? 0 : float.Parse(w[i]);
-                        pts.Add(new PitchPoint(x, y[i] == "" ? 0 : float.Parse(y[i])));
+                        pts.Add(new PitchPoint(x, y[i] == "" ? 0 : double.Parse(y[i])));
                     }
-                    pts.Add(new PitchPoint(x + float.Parse(w[w.Count() - 1]), 0));
+                    pts.Add(new PitchPoint(x + double.Parse(w[w.Count() - 1]), 0));
                 }
             }
             return note;

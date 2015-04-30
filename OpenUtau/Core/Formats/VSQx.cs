@@ -53,8 +53,8 @@ namespace OpenUtau.Core.Formats
             }
 
             UProject uproject = new UProject();
-            uproject.RegisterExpression(new CCExpression(null, "velocity", "VEL") { Data = 64 });
-            uproject.RegisterExpression(new CCExpression(null, "opening", "OPE") { Data = 127 });
+            uproject.RegisterExpression(new IntExpression(null, "velocity", "VEL") { Data = 64, Min = 0, Max = 127 });
+            uproject.RegisterExpression(new IntExpression(null, "opening", "OPE") { Data = 127, Min = 0, Max = 127 });
             uproject.RegisterExpression(new IntExpression(null, "accent", "ACC") { Data = 50, Min = 0, Max = 100 });
             uproject.RegisterExpression(new IntExpression(null, "decay", "DEC") { Data = 50, Min = 0, Max = 100 });
 

@@ -22,11 +22,9 @@ namespace OpenUtau
         [STAThread]
         static void Main()
         {
-            //Thread backgroundThread = new Thread(new ThreadStart(() =>
-            //{
-            //}));
+            //Thread backgroundThread = new Thread(new ThreadStart(() => { }));
             //backgroundThread.Start();
-            var pm = new OpenUtau.Core.USTx.PartManager();
+            var pm = new OpenUtau.Core.PartManager();
             App app = new App();
             UI.MainWindow window = new UI.MainWindow();
             app.Run(window);

@@ -4,7 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OpenUtau.Core.USTx
+using OpenUtau.Core.USTx;
+
+namespace OpenUtau.Core
 {
     public abstract class UCommand
     {

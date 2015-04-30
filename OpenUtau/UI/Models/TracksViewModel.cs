@@ -10,13 +10,14 @@ using System.Windows.Shapes;
 using System.Windows.Controls;
 using System.ComponentModel;
 
+using OpenUtau.Core;
 using OpenUtau.Core.USTx;
 using OpenUtau.UI.Models;
 using OpenUtau.UI.Controls;
 
 namespace OpenUtau.UI.Models
 {
-    public class TracksViewModel : INotifyPropertyChanged, ICmdSubscriber
+    class TracksViewModel : INotifyPropertyChanged, ICmdSubscriber
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -298,7 +299,7 @@ namespace OpenUtau.UI.Models
             if (cmd is NoteCommand)
             {
                 var _cmd = cmd as NoteCommand;
-                UpdatePartElement(_cmd.Part);
+                GetPartElement(_cmd.Part).Modified = true;
             }
             else if (cmd is PartCommand)
             {

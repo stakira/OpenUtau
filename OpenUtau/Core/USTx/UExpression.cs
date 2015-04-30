@@ -25,11 +25,6 @@ namespace OpenUtau.Core.USTx
 
         public abstract UExpression Clone(UNote newParent);
         public abstract UExpression Split(UNote newParent, int offset);
-        //public abstract void Merge(int offset, UExpression exp);
-        //public abstract void FromJson(UNote parent);
-        //public abstract void FromJsonTemplate(UNote parent);
-        //public abstract string ToJson(UNote parent);
-        //public abstract string ToJsonTemplate(UNote parent);
     }
 
     public class IntExpression : UExpression
@@ -46,15 +41,6 @@ namespace OpenUtau.Core.USTx
         public override UExpression Split(UNote newParent, int postick) { var exp = Clone(newParent); return exp; }
     }
 
-    public class CCExpression : IntExpression
-    {
-        public CCExpression(UNote parent, string name, string abbr) : base(parent, name, abbr) { }
-        public override int Min { set { } get { return 0; } }
-        public override int Max { set { } get { return 127; } }
-        public override string Type { get { return "cc"; } }
-        public override UExpression Clone(UNote newParent) { return new CCExpression(newParent, Name, Abbr) { Data = Data }; }
-    }
-    
     public class ExpPoint : IComparable<ExpPoint>
     {
         public double X;

@@ -4,7 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OpenUtau.Core.USTx
+using OpenUtau.Core.USTx;
+
+namespace OpenUtau.Core
 {
     public class UNotification : UCommand
     {
@@ -40,6 +42,11 @@ namespace OpenUtau.Core.USTx
     public class SaveProjectNotification : UNotification
     {
         public override string ToString() { return "Save project"; }
+    }
+
+    public class RedrawNotesNotification : UNotification
+    {
+        public override string ToString() { return "Redraw Notes"; }
     }
 
     public class ChangeExpressionListNotification : UNotification

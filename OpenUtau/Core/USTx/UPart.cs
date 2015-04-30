@@ -26,7 +26,7 @@ namespace OpenUtau.Core.USTx
 
     public class UVoicePart : UPart
     {
-        public List<UNote> Notes = new List<UNote>();
+        public SortedSet<UNote> Notes = new SortedSet<UNote>();
 
         public override int GetMinDurTick(UProject project)
         {
