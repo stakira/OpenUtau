@@ -41,7 +41,6 @@ namespace OpenUtau.Core.Render
                             string args2 = BuildConnectorArgsR(lastNote, note, part, project);
                             string tool2_cmd = string.Format("{0} {1} {2} {3} {4}",
                                 PathManager.Inst.GetTool2Path(), Path.Combine(cache_dir, "out.wav"), inputfile, args2, DefaultEnvelope);
-                            //System.Diagnostics.Debug.WriteLine(tool2_cmd);
                             file.WriteLine(tool2_cmd);
                         }
                     }
@@ -60,8 +59,6 @@ namespace OpenUtau.Core.Render
                         string tool1_cmd = File.Exists(cachefile) ? "" : string.Format("{0} {1} {2} {3}", PathManager.Inst.GetTool1Path(), inputfile, cachefile, args1);
                         string tool2_cmd = string.Format("{0} {1} {2} {3}", PathManager.Inst.GetTool2Path(), cache_dir + "\\out.wav", cachefile, args2);
 
-                        //System.Diagnostics.Debug.WriteLine(tool1_cmd);
-                        //System.Diagnostics.Debug.WriteLine(tool2_cmd);
                         file.WriteLine(tool1_cmd);
                         file.WriteLine(tool2_cmd);
                     }
@@ -130,9 +127,6 @@ namespace OpenUtau.Core.Render
         private string BuildPitchArgs(UPhoneme phoneme, UVoicePart part, UProject project)
         {
             List<int> pitches = new List<int>();
-            //int noteIdx = part.Notes.IndexOf(phoneme.Parent);
-            //UNote lastNote = noteIdx == 0 ? null : part.Notes[noteIdx - 1];
-            //UNote nextNote = noteIdx == part.Notes.Count - 1 ? null : part.Notes[noteIdx + 1];
             UNote lastNote = part.Notes.OrderByDescending(x => x).Where(x => x.CompareTo(phoneme.Parent) < 0).FirstOrDefault();
             UNote nextNote = part.Notes.Where(x => x.CompareTo(phoneme.Parent) > 0).FirstOrDefault();
             // Get relevant pitch points
@@ -204,9 +198,9 @@ namespace OpenUtau.Core.Render
             while (currMs < endMs)
             {
                 while (pps[i + 1].X < currMs) i++;
-                double pit = pps[i].Shape == PitchPointShape.SineIn ? MusicMath.SinEasingIn(pps[i].X, pps[i + 1].X, pps[i].Y, pps[i + 1].Y, currMs) :
-                    pps[i].Shape == PitchPointShape.SineOut ? MusicMath.SinEasingOut(pps[i].X, pps[i + 1].X, pps[i].Y, pps[i + 1].Y, currMs) :
-                    pps[i].Shape == PitchPointShape.SineInOut ? MusicMath.SinEasingInOut(pps[i].X, pps[i + 1].X, pps[i].Y, pps[i + 1].Y, currMs) :
+                double pit = pps[i].Shape == PitchPointShape.i ? MusicMath.SinEasingIn(pps[i].X, pps[i + 1].X, pps[i].Y, pps[i + 1].Y, currMs) :
+                    pps[i].Shape == PitchPointShape.o ? MusicMath.SinEasingOut(pps[i].X, pps[i + 1].X, pps[i].Y, pps[i + 1].Y, currMs) :
+                    pps[i].Shape == PitchPointShape.io ? MusicMath.SinEasingInOut(pps[i].X, pps[i + 1].X, pps[i].Y, pps[i + 1].Y, currMs) :
                     MusicMath.Liner(pps[i].X, pps[i + 1].X, pps[i].Y, pps[i + 1].Y, currMs);
 
                 pit *= 10;
@@ -222,7 +216,7 @@ namespace OpenUtau.Core.Render
                 currMs += intervalMs;
             }
 
-            return string.Format("!{0} {1}", project.BPM, Base64EncodeForResampler(pitches));
+            return string.Format("!{0} {1}", project.BPM, Base64EncodeInt12(pitches));
         }
 
         private double InterpolateVibrato(VibratoExpression vibrato, double posMs)
@@ -241,7 +235,7 @@ namespace OpenUtau.Core.Render
 
         private const string intToBase64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-        private string Base64EncodeForResampler(int data)
+        private string Base64EncodeInt12(int data)
         {
             if (data < 0) data += 4096;
             char[] base64 = new char[2];
@@ -250,10 +244,10 @@ namespace OpenUtau.Core.Render
             return new String(base64);
         }
 
-        private string Base64EncodeForResampler(List<int> data)
+        private string Base64EncodeInt12(List<int> data)
         {
             List<string> l = new List<string>();
-            foreach (int d in data) l.Add(Base64EncodeForResampler(d));
+            foreach (int d in data) l.Add(Base64EncodeInt12(d));
             StringBuilder base64 = new StringBuilder();
             string last = "";
             int dups = 0;

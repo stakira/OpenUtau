@@ -71,6 +71,9 @@
             <Trigger Property="IsSubmenuOpen" Value="True">
                 <Setter TargetName="Border" Property="Background" Value="{StaticResource BackgroundBrushActive}"/>
             </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="Gray"/>
+            </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
 
@@ -87,6 +90,9 @@
             </Trigger>
             <Trigger Property="IsSubmenuOpen" Value="True">
                 <Setter TargetName="Border" Property="Background" Value="{StaticResource BackgroundBrushActive}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="Gray"/>
             </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
@@ -120,6 +126,9 @@
             <Trigger Property="IsHighlighted" Value="True">
                 <Setter TargetName="Border" Property="Background" Value="{StaticResource BackgroundBrushActive}"/>
             </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="Gray"/>
+            </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
 
@@ -142,6 +151,9 @@
         <ControlTemplate.Triggers>
             <Trigger Property="IsHighlighted" Value="True">
                 <Setter TargetName="Border" Property="Background" Value="{StaticResource BackgroundBrushActive}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="Gray"/>
             </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>

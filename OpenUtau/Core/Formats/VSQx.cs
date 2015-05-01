@@ -18,12 +18,12 @@ namespace OpenUtau.Core.Formats
         static public UProject Load(string file)
         {
             XmlDocument vsqx = new XmlDocument();
-            
+
             try
             {
                 vsqx.Load(file);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 System.Windows.MessageBox.Show(e.GetType().ToString() + "\n" + e.Message);
                 return null;
@@ -38,7 +38,7 @@ namespace OpenUtau.Core.Formats
 
             // Detect vsqx version
             root = vsqx.SelectSingleNode("v3:vsq3", nsmanager);
-            
+
             if (root != null) nsPrefix = "v3:";
             else
             {
@@ -54,6 +54,7 @@ namespace OpenUtau.Core.Formats
 
             UProject uproject = new UProject();
             uproject.RegisterExpression(new IntExpression(null, "velocity", "VEL") { Data = 64, Min = 0, Max = 127 });
+            uproject.RegisterExpression(new IntExpression(null, "volume", "VOL") { Data = 100, Min = 0, Max = 200 });
             uproject.RegisterExpression(new IntExpression(null, "opening", "OPE") { Data = 127, Min = 0, Max = 127 });
             uproject.RegisterExpression(new IntExpression(null, "accent", "ACC") { Data = 50, Min = 0, Max = 100 });
             uproject.RegisterExpression(new IntExpression(null, "decay", "DEC") { Data = 50, Min = 0, Max = 100 });
@@ -65,6 +66,7 @@ namespace OpenUtau.Core.Formats
             string resolutionPath = string.Format("{0}masterTrack/{0}resolution", nsPrefix);
             string projectnamePath = string.Format("{0}masterTrack/{0}seqName", nsPrefix);
             string projectcommentPath = string.Format("{0}masterTrack/{0}comment", nsPrefix);
+            string trackPath = string.Format("{0}vsTrack", nsPrefix);
             string tracknamePath = string.Format("{0}{1}", nsPrefix, nsPrefix == "v3:" ? "trackName" : "name");
             string trackcommentPath = string.Format("{0}comment", nsPrefix);
             string tracknoPath = string.Format("{0}{1}", nsPrefix, nsPrefix == "v3:" ? "vsTrackNo" : "tNo");
@@ -93,10 +95,13 @@ namespace OpenUtau.Core.Formats
             int preMeasure = int.Parse(root.SelectSingleNode(premeasurePath, nsmanager).InnerText);
             int partPosTickShift = -preMeasure * uproject.Resolution * uproject.BeatPerBar * 4 / uproject.BeatUnit;
 
-            foreach (XmlNode track in root.SelectNodes(nsPrefix + "vsTrack", nsmanager)) // track
+            USinger usinger = new USinger();
+            uproject.Singers.Add(usinger);
+
+            foreach (XmlNode track in root.SelectNodes(trackPath, nsmanager)) // track
             {
-                UTrack utrack = new UTrack();
-                uproject.Tracks.Add(utrack);
+                UTrack utrack = new UTrack() { Singer = usinger, TrackNo = uproject.Tracks.Count };
+                uproject.Tracks.Add(utrack.TrackNo, utrack);
 
                 utrack.Name = track.SelectSingleNode(tracknamePath, nsmanager).InnerText;
                 utrack.Comment = track.SelectSingleNode(trackcommentPath, nsmanager).InnerText;
@@ -116,27 +121,28 @@ namespace OpenUtau.Core.Formats
                     foreach (XmlNode note in part.SelectNodes(notePath, nsmanager))
                     {
                         UNote unote = uproject.CreateNote();
-                        upart.Notes.Add(unote);
 
                         unote.PosTick = int.Parse(note.SelectSingleNode(postickPath, nsmanager).InnerText);
                         unote.DurTick = int.Parse(note.SelectSingleNode(durtickPath, nsmanager).InnerText);
                         unote.NoteNum = int.Parse(note.SelectSingleNode(notenumPath, nsmanager).InnerText);
                         unote.Lyric = note.SelectSingleNode(lyricPath, nsmanager).InnerText;
-                        unote.Phonemes.Add(new UPhoneme() { Phoneme = note.SelectSingleNode(phonemePath, nsmanager).InnerText });
+                        unote.Phonemes[0].Phoneme = note.SelectSingleNode(phonemePath, nsmanager).InnerText;
 
-                        unote.Expressions["velocity"].Data = float.Parse(note.SelectSingleNode(velocityPath, nsmanager).InnerText);
+                        unote.Expressions["velocity"].Data = int.Parse(note.SelectSingleNode(velocityPath, nsmanager).InnerText);
 
                         foreach (XmlNode notestyle in note.SelectNodes(notestyleattrPath, nsmanager))
                         {
                             if (notestyle.Attributes["id"].Value == "opening")
-                                unote.Expressions["opening"].Data = float.Parse(notestyle.InnerText);
+                                unote.Expressions["opening"].Data = int.Parse(notestyle.InnerText);
                             else if (notestyle.Attributes["id"].Value == "accent")
-                                unote.Expressions["accent"].Data = float.Parse(notestyle.InnerText);
+                                unote.Expressions["accent"].Data = int.Parse(notestyle.InnerText);
                             else if (notestyle.Attributes["id"].Value == "decay")
-                                unote.Expressions["decay"].Data = float.Parse(notestyle.InnerText);
+                                unote.Expressions["decay"].Data = int.Parse(notestyle.InnerText);
                         }
-
+                        unote.PitchBend.Points[0].X = -uproject.TickToMillisecond(Math.Min(15, unote.DurTick / 3));
+                        unote.PitchBend.Points[1].X = -unote.PitchBend.Points[0].X;
                         unote.Channel = 0; // FIXME
+                        upart.Notes.Add(unote);
                     }
                 }
             }

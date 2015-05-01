@@ -41,6 +41,8 @@ namespace OpenUtau.Core
 
     public class SaveProjectNotification : UNotification
     {
+        public string Path;
+        public SaveProjectNotification(string path) { Path = path; }
         public override string ToString() { return "Save project"; }
     }
 

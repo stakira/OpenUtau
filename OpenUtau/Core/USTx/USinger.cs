@@ -19,10 +19,13 @@ namespace OpenUtau.Core.USTx
 
     public class USinger
     {
-        public string Name;
-        public string Path;
+        public string Name = "Unknown";
+        public string Path = "";
         public string Author;
         public string Website;
+        public string Language;
+
+        public bool Loaded = false;
 
         public System.Windows.Media.Imaging.BitmapImage Avatar;
 

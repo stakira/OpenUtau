@@ -16,18 +16,21 @@ namespace OpenUtau.Core.Formats
 {
     class USTx
     {
+        static UProject Project;
+
         class UNoteConvertor : JavaScriptConverter
         {
             public override object Deserialize(IDictionary<string, object> dictionary, Type type, JavaScriptSerializer serializer)
             {
-                UNote result = UNote.Create();
-                result.Lyric = dictionary["lyr"] as string;
-                result.NoteNum = Convert.ToInt32(dictionary["num"]);
+                UNote result = USTx.Project.CreateNote();
+                result.Lyric = dictionary["y"] as string;
+                result.NoteNum = Convert.ToInt32(dictionary["n"]);
                 result.PosTick = Convert.ToInt32(dictionary["pos"]);
                 result.DurTick = Convert.ToInt32(dictionary["dur"]);
                 result.PitchBend.SnapFirst = Convert.ToBoolean(dictionary["pitsnap"]);
 
                 var pho = dictionary["pho"] as ArrayList;
+                result.Phonemes.Clear();
                 foreach (var p in pho)
                 {
                     var _p = serializer.ConvertToType<UPhoneme>(p);
@@ -37,6 +40,7 @@ namespace OpenUtau.Core.Formats
 
                 result.PitchBend.SnapFirst = Convert.ToBoolean(dictionary["pitsnap"]);
                 var pit = dictionary["pit"] as ArrayList;
+                var pitshape = dictionary["pitshape"] as ArrayList;
                 double x = 0, y = 0;
                 result.PitchBend.Points.Clear();
                 for (int i = 0; i < pit.Count; i ++ )
@@ -46,7 +50,8 @@ namespace OpenUtau.Core.Formats
                     else
                     {
                         y = Convert.ToDouble(pit[i]);
-                        result.PitchBend.AddPoint(new PitchPoint(x, y));
+                        result.PitchBend.AddPoint(new PitchPoint(x, y,
+                            (PitchPointShape)Enum.Parse(typeof(PitchPointShape), (string)pitshape[i / 2])));
                     }
                 }
 
@@ -64,7 +69,7 @@ namespace OpenUtau.Core.Formats
 
                 var exp = dictionary["exp"] as Dictionary<string, object>;
                 foreach (var pair in exp)
-                    result.Expressions.Add(pair.Key, new IntExpression(result, pair.Key, "") { Data = pair.Value });
+                    result.Expressions[pair.Key].Data = pair.Value;
 
                 return result;
             }
@@ -75,16 +80,18 @@ namespace OpenUtau.Core.Formats
                 Dictionary<string, object> result = new Dictionary<string, object>();
                 if (_obj == null) return result;
 
-                result.Add("lyr", _obj.Lyric);
-                result.Add("num", _obj.NoteNum);
+                result.Add("y", _obj.Lyric);
+                result.Add("n", _obj.NoteNum);
                 result.Add("pos", _obj.PosTick);
                 result.Add("dur", _obj.DurTick);
                 result.Add("pho", _obj.Phonemes);
 
                 var pit = new List<double>();
-                foreach (var p in _obj.PitchBend.Points) { pit.Add(p.X); pit.Add(p.Y); }
+                var pitshape = new List<string>();
+                foreach (var p in _obj.PitchBend.Points) { pit.Add(p.X); pit.Add(p.Y); pitshape.Add(p.Shape.ToString()); }
                 result.Add("pitsnap", _obj.PitchBend.SnapFirst);
                 result.Add("pit", pit);
+                result.Add("pitshape", pitshape);
 
                 if (_obj.Vibrato.Length > 0 && _obj.Vibrato.Depth > 0)
                 {
@@ -126,16 +133,20 @@ namespace OpenUtau.Core.Formats
                 {
                     PosTick = Convert.ToInt32(dictionary["pos"]),
                     Phoneme = dictionary["pho"] as string,
-                    AutoTiming = Convert.ToBoolean(dictionary["time"]),
+                    AutoEnvelope = Convert.ToBoolean(dictionary["autoenv"]),
                     AutoRemapped = Convert.ToBoolean(dictionary["remap"])
                 };
-                var env = dictionary["env"] as ArrayList;
-                for (int i = 0; i < 10; i++)
+
+                if (!result.AutoEnvelope)
                 {
-                    if (i % 2 == 0)
-                        result.Envelope.Points[i / 2].X = Convert.ToDouble(env[i]);
-                    else
-                        result.Envelope.Points[i / 2].Y = Convert.ToDouble(env[i]);
+                    var env = dictionary["env"] as ArrayList;
+                    for (int i = 0; i < 10; i++)
+                    {
+                        if (i % 2 == 0)
+                            result.Envelope.Points[i / 2].X = Convert.ToDouble(env[i]);
+                        else
+                            result.Envelope.Points[i / 2].Y = Convert.ToDouble(env[i]);
+                    }
                 }
                 return result;
             }
@@ -148,12 +159,15 @@ namespace OpenUtau.Core.Formats
 
                 result.Add("pos", _obj.PosTick);
                 result.Add("pho", _obj.Phoneme);
-                result.Add("time", _obj.AutoTiming);
+                result.Add("autoenv", _obj.AutoEnvelope);
                 result.Add("remap", _obj.AutoRemapped);
 
-                var env = new List<double>();
-                foreach (var p in _obj.Envelope.Points) { env.Add(p.X); env.Add(p.Y); }
-                result.Add("env", env);
+                if (!_obj.AutoEnvelope)
+                {
+                    var env = new List<double>();
+                    foreach (var p in _obj.Envelope.Points) { env.Add(p.X); env.Add(p.Y); }
+                    result.Add("env", env);
+                }
 
                 return result;
             }
@@ -232,6 +246,7 @@ namespace OpenUtau.Core.Formats
             public override object Deserialize(IDictionary<string, object> dictionary, Type type, JavaScriptSerializer serializer)
             {
                 UProject result = new UProject();
+                USTx.Project = result;
                 result.Name = dictionary["name"] as string;
                 result.Comment = dictionary["comment"] as string;
                 result.OutputDir = dictionary["output"] as string;
@@ -258,11 +273,15 @@ namespace OpenUtau.Core.Formats
                     result.Singers.Add(serializer.ConvertToType(singer, typeof(USinger)) as USinger);
 
                 foreach (var track in dictionary["tracks"] as ArrayList)
-                    result.Tracks.Add(serializer.ConvertToType(track, typeof(UTrack)) as UTrack);
+                {
+                    var _tarck = serializer.ConvertToType(track, typeof(UTrack)) as UTrack;
+                    result.Tracks.Add(_tarck.TrackNo, _tarck);
+                }
 
                 foreach (var part in dictionary["parts"] as ArrayList)
                     result.Parts.Add(serializer.ConvertToType(part, typeof(UPart)) as UPart);
 
+                USTx.Project = null;
                 return result;
             }
 
@@ -282,7 +301,7 @@ namespace OpenUtau.Core.Formats
                     result.Add("bunit", _obj.BeatUnit);
                     result.Add("res", _obj.Resolution);
                     result.Add("singers", _obj.Singers);
-                    result.Add("tracks", _obj.Tracks);
+                    result.Add("tracks", _obj.Tracks.Values.ToArray());
                     result.Add("parts", _obj.Parts);
                     result.Add("exptable", _obj.ExpressionTable);
                 }
@@ -386,7 +405,7 @@ namespace OpenUtau.Core.Formats
 
         public static UProject Create()
         {
-            UProject project = new UProject();
+            UProject project = new UProject() { Saved = false };
             return project;
         }
 
@@ -409,6 +428,8 @@ namespace OpenUtau.Core.Formats
                 var f_out = new StreamWriter(file);
                 f_out.Write(str.ToString());
                 f_out.Close();
+                project.Saved = true;
+                project.FilePath = file;
             }
             catch (Exception e)
             {
@@ -434,6 +455,8 @@ namespace OpenUtau.Core.Formats
             try
             {
                 project = jss.Deserialize(File.ReadAllText(file), typeof(UProject)) as UProject;
+                project.Saved = true;
+                project.FilePath = file;
             }
             catch (Exception e)
             {

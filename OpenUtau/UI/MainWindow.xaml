@@ -28,10 +28,10 @@
                     <MenuItem Header="Ust (Shift-JIS)..."/>
                 </MenuItem>
                 <MenuItem Header="_Save" InputGestureText="Ctrl+S" Click="MenuSave_Click"/>
-                <MenuItem Header="Save _As..."/>
+                <MenuItem Header="Save _As..." IsEnabled="False"/>
                 <MenuItem Header="_Import Audio..." Click="MenuImportAidio_Click"/>
                 <MenuItem Header="Render All..." Click="MenuRenderAll_Click"/>
-                <MenuItem Header="Recent _Files">
+                <MenuItem Header="Recent _Files" IsEnabled="False">
                     <MenuItem Header="1.vsqx"/>
                     <MenuItem Header="2.vsqx"/>
                 </MenuItem>
@@ -40,9 +40,9 @@
             <MenuItem Header="_Edit">
                 <MenuItem Header="_Undo" InputGestureText="Ctrl+Z" Click="MenuUndo_Click" />
                 <MenuItem Header="_Redo" InputGestureText="Ctrl+Y" Click="MenuRedo_Click"/>
-                <MenuItem Header="Cu_t" InputGestureText="Ctrl+X"/>
-                <MenuItem Header="_Copy" InputGestureText="Ctrl+C"/>
-                <MenuItem Header="_Paste" InputGestureText="Ctrl+V"/>
+                <MenuItem Header="Cu_t" InputGestureText="Ctrl+X" IsEnabled="False"/>
+                <MenuItem Header="_Copy" InputGestureText="Ctrl+C" IsEnabled="False"/>
+                <MenuItem Header="_Paste" InputGestureText="Ctrl+V" IsEnabled="False"/>
                 <MenuItem Header="_Delete" InputGestureText="Del"/>
                 <MenuItem Header="Select _All" InputGestureText="Ctrl+A"/>
             </MenuItem>
@@ -51,10 +51,10 @@
             </MenuItem>
             <MenuItem Header="_Tools">
                 <MenuItem Header="Singers..." Click="MenuSingers_Click"/>
-                <MenuItem Header="Refresh Plugins"/>
+                <MenuItem Header="Refresh Plugins" IsEnabled="False"/>
             </MenuItem>
             <MenuItem Header="_Help">
-                <MenuItem Header="About OpenUTAU"/>
+                <MenuItem Header="About OpenUTAU" Click="MenuAbout_Click"/>
             </MenuItem>
         </Menu>
     </local:BorderlessWindow.MenuContent>

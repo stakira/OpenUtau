@@ -39,13 +39,14 @@ namespace OpenUtau.Core
         {
             lock (part)
             {
+                if (part == null) return;
                 CheckOverlappedNotes(part);
                 UpdatePhonemeDurTick(part);
                 UpdatePhonemeOto(part);
                 UpdateOverlapAdjustment(part);
                 UpdateEnvelope(part);
                 UpdatePitchBend(part);
-                DocManager.Inst.ExecuteCmd(new RedrawNotesNotification());
+                DocManager.Inst.ExecuteCmd(new RedrawNotesNotification(), true);
             }
         }
 
@@ -56,7 +57,7 @@ namespace OpenUtau.Core
             {
                 if (note.PitchBend.SnapFirst)
                 {
-                    if (note.Phonemes.Count > 0 && note.Phonemes[0].Overlapped && lastNote != null)
+                    if (note.Phonemes.Count > 0 && lastNote != null && (note.Phonemes[0].Overlapped || note.PosTick == lastNote.EndTick))
                         note.PitchBend.Points[0].Y = (lastNote.NoteNum - note.NoteNum) * 10;
                     else
                         note.PitchBend.Points[0].Y = 0;
@@ -88,13 +89,13 @@ namespace OpenUtau.Core
                 {
                     phoneme.Envelope.Points[0].X = -phoneme.Preutter;
                     phoneme.Envelope.Points[1].X = phoneme.Envelope.Points[0].X + (phoneme.Overlapped ? phoneme.Overlap : 5);
-                    phoneme.Envelope.Points[2].X = 0;
+                    phoneme.Envelope.Points[2].X = Math.Max(0, phoneme.Envelope.Points[1].X);
                     phoneme.Envelope.Points[3].X = DocManager.Inst.Project.TickToMillisecond(phoneme.DurTick) - phoneme.TailIntrude;
                     phoneme.Envelope.Points[4].X = phoneme.Envelope.Points[3].X + phoneme.TailOverlap;
 
                     phoneme.Envelope.Points[1].Y = (int)phoneme.Parent.Expressions["volume"].Data;
                     phoneme.Envelope.Points[1].X = phoneme.Envelope.Points[0].X + (phoneme.Overlapped ? phoneme.Overlap : 5) * (int)phoneme.Parent.Expressions["accent"].Data / 100.0;
-                    phoneme.Envelope.Points[1].Y = (int)phoneme.Parent.Expressions["accent"].Data;
+                    phoneme.Envelope.Points[1].Y = (int)phoneme.Parent.Expressions["accent"].Data * (int)phoneme.Parent.Expressions["volume"].Data / 100;
                     phoneme.Envelope.Points[2].Y = (int)phoneme.Parent.Expressions["volume"].Data;
                     phoneme.Envelope.Points[3].Y = (int)phoneme.Parent.Expressions["volume"].Data;
                     phoneme.Envelope.Points[3].X -= (phoneme.Envelope.Points[3].X - phoneme.Envelope.Points[2].X) * (int)phoneme.Parent.Expressions["decay"].Data / 500;
@@ -142,7 +143,7 @@ namespace OpenUtau.Core
                         {
                             phoneme.Overlapped = false;
                             lastPhoneme.TailIntrude = 0;
-                            lastPhoneme.TailOverlap = 5;
+                            lastPhoneme.TailOverlap = 0;
                         }
                     }
                     else phoneme.Overlapped = false;

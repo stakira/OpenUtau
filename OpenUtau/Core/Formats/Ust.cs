@@ -40,13 +40,15 @@ namespace OpenUtau.Core.Formats
             }
 
             double bpm = projects.First().BPM;
-            UProject project = new UProject() { BPM = bpm, Name = "Merged Project" };
+            UProject project = new UProject() { BPM = bpm, Name = "Merged Project", Saved = false };
             foreach (UProject p in projects)
             {
-                project.Tracks.Add(p.Tracks[0]);
-                project.Parts.Add(p.Parts[0]);
-                project.Tracks.Last().TrackNo = project.Tracks.Count - 1;
-                project.Parts.Last().TrackNo = project.Tracks.Count - 1;
+                var _track = p.Tracks[0];
+                var _part = p.Parts[0];
+                _track.TrackNo = project.Tracks.Count;
+                _part.TrackNo = _track.TrackNo;
+                project.Tracks.Add(_track.TrackNo, _track);
+                project.Parts.Add(_part);
             }
 
             if (project != null) DocManager.Inst.ExecuteCmd(new LoadProjectNotification(project));
@@ -70,7 +72,7 @@ namespace OpenUtau.Core.Formats
                 return null;
             }
 
-            UProject project = new UProject() { Resolution = 480, FilePath = file };
+            UProject project = new UProject() { Resolution = 480, FilePath = file, Saved = false };
             project.RegisterExpression(new IntExpression(null, "velocity","VEL") { Data = 100, Min = 0, Max = 200});
             project.RegisterExpression(new IntExpression(null, "volume","VOL") { Data = 100, Min = 0, Max = 200});
             project.RegisterExpression(new IntExpression(null, "gender","GEN") { Data = 0, Min = -100, Max = 100});
@@ -79,8 +81,9 @@ namespace OpenUtau.Core.Formats
             project.RegisterExpression(new IntExpression(null, "accent", "ACC") { Data = 100, Min = 0, Max = 200 });
             project.RegisterExpression(new IntExpression(null, "decay", "DEC") { Data = 0, Min = 0, Max = 100 });
 
-            project.Tracks.Add(new UTrack());
-            project.Tracks.First().TrackNo = 0;
+            var _track = new UTrack();
+            project.Tracks.Add(0, _track);
+            _track.TrackNo = 0;
             UVoicePart part = new UVoicePart() { TrackNo = 0, PosTick = 0 };
             project.Parts.Add(part);
 
@@ -138,6 +141,7 @@ namespace OpenUtau.Core.Formats
                         {
                             string singerpath = line.Trim().Replace("VoiceDir=", "");
                             var singer = UtauSoundbank.GetSinger(singerpath, EncodingUtil.DetectFileEncoding(file), DocManager.Inst.Singers);
+                            if (singer == null) singer = new USinger() { Name = "", Path = singerpath };
                             project.Singers.Add(singer);
                             project.Tracks[0].Singer = singer;
                         }
@@ -180,8 +184,8 @@ namespace OpenUtau.Core.Formats
                 if (line.StartsWith("Intensity=")) note.Expressions["volume"].Data = int.Parse(line.Trim().Replace("Intensity=", ""));
                 if (line.StartsWith("PreUtterance="))
                 {
-                    if (line.Trim() == "PreUtterance=") note.Phonemes[0].AutoTiming = true;
-                    else { note.Phonemes[0].AutoTiming = false; note.Phonemes[0].Preutter = double.Parse(line.Trim().Replace("PreUtterance=", "")); }
+                    if (line.Trim() == "PreUtterance=") note.Phonemes[0].AutoEnvelope = true;
+                    else { note.Phonemes[0].AutoEnvelope = false; note.Phonemes[0].Preutter = double.Parse(line.Trim().Replace("PreUtterance=", "")); }
                 }
                 if (line.StartsWith("VoiceOverlap=")) note.Phonemes[0].Overlap = double.Parse(line.Trim().Replace("VoiceOverlap=", ""));
                 if (line.StartsWith("Envelope="))
@@ -223,6 +227,16 @@ namespace OpenUtau.Core.Formats
                         pts.Add(new PitchPoint(x, y[i] == "" ? 0 : double.Parse(y[i])));
                     }
                     pts.Add(new PitchPoint(x + double.Parse(w[w.Count() - 1]), 0));
+                }
+                if (pbm != "")
+                {
+                    string[] m = pbw.Split(new[] { ',' });
+                    for (int i = 0; i < m.Count() - 1; i++)
+                    {
+                        pts[i].Shape = m[i] == "r" ? PitchPointShape.o :
+                                       m[i] == "s" ? PitchPointShape.l :
+                                       m[i] == "j" ? PitchPointShape.i : PitchPointShape.io;
+                    }
                 }
             }
             return note;

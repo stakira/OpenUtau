@@ -18,8 +18,9 @@ namespace OpenUtau.Core.USTx
         public string OutputDir = "Vocal";
         public string CacheDir = "UCache";
         public string FilePath;
+        public bool Saved = false;
 
-        public List<UTrack> Tracks = new List<UTrack>();
+        public Dictionary<int, UTrack> Tracks = new Dictionary<int,UTrack>();
         public List<UPart> Parts = new List<UPart>();
         public List<USinger> Singers = new List<USinger>();
 

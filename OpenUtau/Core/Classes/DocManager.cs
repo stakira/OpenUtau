@@ -33,14 +33,34 @@ namespace OpenUtau.Core
         UCommandGroup undoGroup = null;
         UCommandGroup savedPoint = null;
 
-        public void ExecuteCmd(UCommand cmd)
+        public bool ChangesSaved
+        {
+            get
+            {
+                return Project.Saved && (undoQueue.Count > 0 && savedPoint == undoQueue.Last() || undoQueue.Count == 0 && savedPoint == null);
+            }
+        }
+
+        public void ExecuteCmd(UCommand cmd, bool quiet = false)
         {
             if (cmd is UNotification)
             {
-                if (cmd is SaveProjectNotification && undoQueue.Count > 0) { savedPoint = undoQueue.Last(); }
-                else if (cmd is LoadProjectNotification) { this._project = ((LoadProjectNotification)cmd).project; }
+                if (cmd is SaveProjectNotification) 
+                {
+                    var _cmd = cmd as SaveProjectNotification;
+                    if (undoQueue.Count > 0) savedPoint = undoQueue.Last();
+                    if (_cmd.Path == "") OpenUtau.Core.Formats.USTx.Save(Project.FilePath, Project);
+                    else OpenUtau.Core.Formats.USTx.Save(_cmd.Path, Project);
+                }
+                else if (cmd is LoadProjectNotification) {
+                    undoQueue.Clear();
+                    redoQueue.Clear();
+                    undoGroup = null;
+                    savedPoint = null;
+                    this._project = ((LoadProjectNotification)cmd).project;
+                }
                 Publish(cmd);
-                System.Diagnostics.Debug.WriteLine("Publish notification " + cmd.ToString());
+                if (!quiet) System.Diagnostics.Debug.WriteLine("Publish notification " + cmd.ToString());
                 return;
             }
             else if (undoGroup == null) { System.Diagnostics.Debug.WriteLine("Null undoGroup"); return; }
@@ -50,7 +70,7 @@ namespace OpenUtau.Core
                 cmd.Execute();
                 Publish(cmd);
             }
-            System.Diagnostics.Debug.WriteLine("ExecuteCmd " + cmd.ToString());
+            if (!quiet) System.Diagnostics.Debug.WriteLine("ExecuteCmd " + cmd.ToString());
         }
 
         public void StartUndoGroup()

@@ -18,7 +18,7 @@ namespace OpenUtau.Core.USTx
         public string Phoneme = "a";
         public string PhonemeRemapped { get { return AutoRemapped ? Phoneme + RemappedBank : Phoneme; } }
         public string RemappedBank = "";
-        public bool AutoTiming = true;
+        public bool AutoEnvelope = true;
         public bool AutoRemapped = true;
 
         public double Preutter;

@@ -378,7 +378,10 @@ namespace OpenUtau.UI
 
         private void MenuNew_Click(object sender, RoutedEventArgs e) { CmdNewFile(); }
         private void MenuOpen_Click(object sender, RoutedEventArgs e) { CmdOpenFileDialog(); }
+        private void MenuSave_Click(object sender, RoutedEventArgs e) { CmdSaveFile(); }
         private void MenuExit_Click(object sender, RoutedEventArgs e) { CmdExit(); }
+        private void MenuUndo_Click(object sender, RoutedEventArgs e) { DocManager.Inst.Undo(); }
+        private void MenuRedo_Click(object sender, RoutedEventArgs e) { DocManager.Inst.Redo(); }
 
         private void MenuImportAidio_Click(object sender, RoutedEventArgs e)
         {
@@ -396,6 +399,30 @@ namespace OpenUtau.UI
             if (midiWindow == null) midiWindow = new MidiWindow();
             midiWindow.Show();
             midiWindow.Focus();
+        }
+
+        private void MenuSingers_Click(object sender, RoutedEventArgs e)
+        {
+            var w = new Dialogs.SingerViewDialog();
+            w.SetSinger(DocManager.Inst.Project.Singers[0]);
+            w.ShowDialog();
+        }
+
+        private void MenuRenderAll_Click(object sender, RoutedEventArgs e)
+        {
+            var ri = new OpenUtau.Core.Render.ResamplerInterface();
+            ri.RenderAll(DocManager.Inst.Project);
+        }
+
+        private void MenuAbout_Click(object sender, RoutedEventArgs e)
+        {
+            string text = "OpenUtau is a free singing software synthesizer workstation, "
+                        + "designed and developed by Sugita Akira, "
+                        + "aiming to bring modern user experience, "
+                        + "including smooth editing and intellegent phonology support "
+                        + "to singing software synthesizer community."
+                        + "\n\nOpenUtau is an open source software under the MIT Licence. Visit us on GitHub.";
+            MessageBox.Show(text, "About OpenUtau", MessageBoxButton.OK, MessageBoxImage.None);
         }
 
         # endregion
@@ -452,6 +479,22 @@ namespace OpenUtau.UI
             }
         }
 
+        private void CmdSaveFile()
+        {
+            if (DocManager.Inst.Project.Saved == false)
+            {
+                SaveFileDialog dialog = new SaveFileDialog() { DefaultExt = "ustx", Filter = "Project Files|*.ustx", Title = "Save File" };
+                if (dialog.ShowDialog() == true)
+                {
+                    DocManager.Inst.ExecuteCmd(new SaveProjectNotification(dialog.FileName));
+                }
+            }
+            else
+            {
+                DocManager.Inst.ExecuteCmd(new SaveProjectNotification(""));
+            }
+        }
+
         private void CmdImportAudio(string file)
         {
             UWavePart uwavepart = OpenUtau.Core.Formats.Sound.CreateUWavePart(file, (part) =>
@@ -462,7 +505,8 @@ namespace OpenUtau.UI
             });
             if (uwavepart != null)
             {
-                trackVM.Project.Tracks.Add(new UTrack());
+                var _track = new UTrack() { TrackNo = trackVM.Project.Tracks.Last().Value.TrackNo };
+                trackVM.Project.Tracks.Add(_track.TrackNo, _track);
                 uwavepart.TrackNo = trackVM.Project.Tracks.Count - 1;
                 uwavepart.DurTick = uwavepart.GetMinDurTick(trackVM.Project);
                 trackVM.Project.Parts.Add(uwavepart);
@@ -516,39 +560,6 @@ namespace OpenUtau.UI
             {
                 trackVM.OffsetY -= trackVM.ViewHeight * 0.001 * e.Delta;
             }
-        }
-
-        private void MenuUndo_Click(object sender, RoutedEventArgs e)
-        {
-            DocManager.Inst.Undo();
-        }
-
-        private void MenuRedo_Click(object sender, RoutedEventArgs e)
-        {
-            DocManager.Inst.Redo();
-        }
-
-        private void MenuSave_Click(object sender, RoutedEventArgs e)
-        {
-            // temporary implementation
-            SaveFileDialog dialog = new SaveFileDialog() { DefaultExt = "ustx", Filter = "Project Files|*.ustx", Title = "Save File" };
-            if (dialog.ShowDialog() == true)
-            {
-                OpenUtau.Core.Formats.USTx.Save(dialog.FileName, trackVM.Project);
-            }
-        }
-
-        private void MenuSingers_Click(object sender, RoutedEventArgs e)
-        {
-            var w = new Dialogs.SingerViewDialog();
-            w.SetSinger(DocManager.Inst.Project.Singers[0]);
-            w.ShowDialog();
-        }
-
-        private void MenuRenderAll_Click(object sender, RoutedEventArgs e)
-        {
-            var ri = new OpenUtau.Core.Render.ResamplerInterface();
-            ri.RenderAll(DocManager.Inst.Project);
         }
     }
 }

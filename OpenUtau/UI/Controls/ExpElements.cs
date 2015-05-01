@@ -293,7 +293,10 @@ namespace OpenUtau.UI.Controls
                 while (_x2 < pt1X)
                 {
                     _x = Math.Min(_x + 4, pt1X);
-                    _y = MusicMath.SinEasingInOut(pt0X, pt1X, pt0Y, pt1Y, _x);
+                    _y = _pts[i - 1].Shape == PitchPointShape.l ? MusicMath.Liner(pt0X, pt1X, pt0Y, pt1Y, _x) :
+                         _pts[i - 1].Shape == PitchPointShape.i ? MusicMath.SinEasingIn(pt0X, pt1X, pt0Y, pt1Y, _x) :
+                         _pts[i - 1].Shape == PitchPointShape.o ? MusicMath.SinEasingOut(pt0X, pt1X, pt0Y, pt1Y, _x) :
+                                                                  MusicMath.SinEasingInOut(pt0X, pt1X, pt0Y, pt1Y, _x);
                     cxt.DrawLine(penPit, new Point(_x, _y), new Point(_x2, _y2));
                     _x2 = _x;
                     _y2 = _y;
