@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Diagnostics;
 
 using OpenUtau.Core.USTx;
 
@@ -21,7 +22,7 @@ namespace OpenUtau.Core.Render
 
         public void Render(UVoicePart part, UProject project)
         {
-            System.Diagnostics.Debug.WriteLine(PathManager.Inst.HomePath);
+            System.Diagnostics.Debug.WriteLine("Render start");
             lock (part)
             {
                 string cache_dir = PathManager.Inst.GetCachePath(project.FilePath);
@@ -39,9 +40,18 @@ namespace OpenUtau.Core.Render
                             string inputfile = Path.Combine(singer.Path, "R.wav");
 
                             string args2 = BuildConnectorArgsR(lastNote, note, part, project);
-                            string tool2_cmd = string.Format("{0} {1} {2} {3} {4}",
-                                PathManager.Inst.GetTool2Path(), Path.Combine(cache_dir, "out.wav"), inputfile, args2, DefaultEnvelope);
-                            file.WriteLine(tool2_cmd);
+                            //string tool2_cmd = string.Format("{0} {1} {2} {3} {4}",
+                            //    PathManager.Inst.GetTool2Path(), Path.Combine(cache_dir, "out.wav"), inputfile, args2, DefaultEnvelope);
+                            //file.WriteLine(tool2_cmd);
+
+                            //System.Diagnostics.Debug.WriteLine(tool2_cmd);
+                            ProcessStartInfo pinfo = new ProcessStartInfo(
+                                PathManager.Inst.GetTool2Path(),
+                                string.Format("{0} {1} {2} {3}", Path.Combine(cache_dir, "out.wav"), inputfile, args2, DefaultEnvelope));
+                            pinfo.CreateNoWindow = true;
+                            pinfo.UseShellExecute = false;
+                            var p = Process.Start(pinfo);
+                            p.WaitForExit();
                         }
                     }
                     foreach (UPhoneme phoneme in note.Phonemes)
@@ -56,11 +66,33 @@ namespace OpenUtau.Core.Render
                         string cachefile = string.Format("{0:x}.wav", Lib.xxHash.CalcStringHash(inputfile + " " + args1));
                         cachefile = Path.Combine(cache_dir, cachefile);
 
-                        string tool1_cmd = File.Exists(cachefile) ? "" : string.Format("{0} {1} {2} {3}", PathManager.Inst.GetTool1Path(), inputfile, cachefile, args1);
-                        string tool2_cmd = string.Format("{0} {1} {2} {3}", PathManager.Inst.GetTool2Path(), cache_dir + "\\out.wav", cachefile, args2);
+                        //string tool1_cmd = File.Exists(cachefile) ? "" : string.Format("{0} {1} {2} {3}", PathManager.Inst.GetTool1Path(), inputfile, cachefile, args1);
+                        //string tool2_cmd = string.Format("{0} {1} {2} {3}", PathManager.Inst.GetTool2Path(), cache_dir + "\\out.wav", cachefile, args2);
 
-                        file.WriteLine(tool1_cmd);
-                        file.WriteLine(tool2_cmd);
+                        //file.WriteLine(tool1_cmd);
+                        //file.WriteLine(tool2_cmd);
+
+                        //System.Diagnostics.Debug.WriteLine(tool1_cmd);
+                        if (!File.Exists(cachefile))
+                        {
+                            ProcessStartInfo pinfo = new ProcessStartInfo(
+                                PathManager.Inst.GetTool1Path(),
+                                string.Format("{0} {1} {2}", inputfile, cachefile, args1));
+                            pinfo.CreateNoWindow = true;
+                            pinfo.UseShellExecute = false;
+                            var p = Process.Start(pinfo);
+                            p.WaitForExit();
+                        }
+
+                        //System.Diagnostics.Debug.WriteLine(tool2_cmd);
+                        ProcessStartInfo pinfo2 = new ProcessStartInfo(
+                            PathManager.Inst.GetTool2Path(),
+                            string.Format("{0} {1} {2}", cache_dir + "\\out.wav", cachefile, args2));
+                        pinfo2.CreateNoWindow = true;
+                        pinfo2.UseShellExecute = false;
+                        var p2 = Process.Start(pinfo2);
+                        p2.WaitForExit();
+                        
                     }
                     lastNote = note;
                 }
@@ -72,9 +104,14 @@ namespace OpenUtau.Core.Render
                 cmd = string.Format("del \"{0}\"", Path.Combine(cache_dir, "out.wav.dat"));
                 file.WriteLine(cmd);
                 file.Close();
-                var p = System.Diagnostics.Process.Start(Path.Combine(cache_dir, "render.bat"));
-                p.WaitForExit();
+
+                var pinfo3 = new ProcessStartInfo(Path.Combine(cache_dir, "render.bat"), "");
+                pinfo3.CreateNoWindow = true;
+                pinfo3.UseShellExecute = false;
+                var p3 = System.Diagnostics.Process.Start(pinfo3);
+                p3.WaitForExit();
             }
+            System.Diagnostics.Debug.WriteLine("Render end");
         }
 
         private string BuildResamplerArgs(UPhoneme phoneme, UVoicePart part, UProject project)
@@ -131,7 +168,7 @@ namespace OpenUtau.Core.Render
             UNote nextNote = part.Notes.Where(x => x.CompareTo(phoneme.Parent) > 0).FirstOrDefault();
             // Get relevant pitch points
             List<PitchPoint> pps = new List<PitchPoint>();
-            
+
             bool lastNoteInvolved = lastNote != null && phoneme.Overlapped;
             bool nextNoteInvolved = nextNote != null && nextNote.Phonemes[0].Overlapped;
 
@@ -224,7 +261,7 @@ namespace OpenUtau.Core.Render
             double lengthMs = vibrato.Length / 100 * DocManager.Inst.Project.TickToMillisecond(vibrato.Parent.DurTick);
             double inMs = lengthMs * vibrato.In / 100;
             double outMs = lengthMs * vibrato.Out / 100;
-            
+
             double value = -Math.Sin(2 * Math.PI * (posMs / vibrato.Period + vibrato.Shift / 100)) *vibrato.Depth;
 
             if (posMs < inMs) value *= posMs / inMs;

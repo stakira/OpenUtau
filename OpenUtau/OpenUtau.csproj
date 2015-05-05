@@ -86,15 +86,16 @@
     <Compile Include="Core\Lib\xxHash.cs" />
     <Compile Include="Core\Render\CachedRenderQueue.cs" />
     <Compile Include="Core\Render\ResamplerInterface.cs" />
-    <Compile Include="Core\USTx\ExpCommands.cs" />
-    <Compile Include="Core\USTx\Expressions.cs" />
-    <Compile Include="Core\USTx\NoteCommands.cs" />
+    <Compile Include="Core\Classes\ExpCommands.cs" />
+    <Compile Include="Core\Render\Wavtool.cs" />
+    <Compile Include="Core\USTx\UExpression.cs" />
+    <Compile Include="Core\Classes\NoteCommands.cs" />
     <Compile Include="Core\Lib\Deque.cs" />
-    <Compile Include="Core\USTx\DocManager.cs" />
-    <Compile Include="Core\USTx\Notifications.cs" />
-    <Compile Include="Core\USTx\PartCommands.cs" />
-    <Compile Include="Core\USTx\UCommand.cs" />
-    <Compile Include="Core\USTx\PartManager.cs" />
+    <Compile Include="Core\Classes\DocManager.cs" />
+    <Compile Include="Core\Classes\Notifications.cs" />
+    <Compile Include="Core\Classes\PartCommands.cs" />
+    <Compile Include="Core\Classes\UCommand.cs" />
+    <Compile Include="Core\Classes\PartManager.cs" />
     <Compile Include="Core\USTx\UPhoneme.cs" />
     <Compile Include="Core\USTx\USinger.cs" />
     <Compile Include="Core\Lib\EncodingUtil.cs" />
@@ -123,10 +124,6 @@
     <Compile Include="UI\Controls\NavigateDrag.xaml.cs">
       <DependentUpon>NavigateDrag.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Controls\NoteControl.xaml.cs">
-      <DependentUpon>NoteControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Controls\PhonemeElement.cs" />
     <Compile Include="UI\Controls\ViewScaler.xaml.cs">
       <DependentUpon>ViewScaler.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -139,6 +136,7 @@
     </Compile>
     <Compile Include="UI\Controls\SizeObserver.cs" />
     <Compile Include="UI\Models\ExpComboBoxViewModel.cs" />
+    <Compile Include="UI\Models\MidiViewHitTest .cs" />
     <Compile Include="UI\Models\MidiViewModel.cs" />
     <Compile Include="UI\Colors\ThemeManager.cs" />
     <Compile Include="UI\Models\TracksViewModel.cs" />
@@ -148,10 +146,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\Controls\NavigateDrag.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Controls\NoteControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -249,7 +243,6 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

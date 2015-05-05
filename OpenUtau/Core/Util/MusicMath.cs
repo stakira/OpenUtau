@@ -63,6 +63,11 @@ namespace OpenUtau.Core
             return y0 + (y1 - y0) * (1 - Math.Cos((x - x0) / (x1 - x0) * Math.PI)) / 2;
         }
 
+        public static double SinEasingInOutY(double x0, double x1, double y0, double y1, double y)
+        {
+            return Math.Acos(1 - (y - y0) * 2 / (y1 - y0)) / Math.PI * (x1 - x0) + x0;
+        }
+
         public static double SinEasingIn(double x0, double x1, double y0, double y1, double x)
         {
             return y0 + (y1 - y0) * (1 - Math.Cos((x - x0) / (x1 - x0) * Math.PI / 2));

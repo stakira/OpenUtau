@@ -277,7 +277,9 @@ namespace OpenUtau.UI.Controls
             double pt0Pit = note.NoteNum + _pts[0].Y / 10.0;
             double pt0Y = TrackHeight * ((double)UIConstants.MaxNoteNum - 1.0 - pt0Pit) + TrackHeight / 2;
 
-            cxt.DrawEllipse(null, penPit, new Point(pt0X, pt0Y), 2.5, 2.5);
+            if (note.PitchBend.SnapFirst) cxt.DrawEllipse(ThemeManager.WhiteKeyNameBrushNormal, penPit, new Point(pt0X, pt0Y), 2.5, 2.5);
+            else cxt.DrawEllipse(null, penPit, new Point(pt0X, pt0Y), 2.5, 2.5);
+
             for (int i = 1; i < _pts.Count; i++)
             {
                 double pt1Tick = note.PosTick + MusicMath.MillisecondToTick(_pts[i].X, DocManager.Inst.Project.BPM, DocManager.Inst.Project.BeatUnit, DocManager.Inst.Project.Resolution);

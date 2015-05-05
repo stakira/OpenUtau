@@ -125,19 +125,16 @@ namespace OpenUtau.UI.Models
         private void OnListChange()
         {
             _keys = new ObservableCollection<string>(DocManager.Inst.Project.ExpressionTable.Keys);
-            if (_keys.Count == 0) return;
-            DocManager.Inst.ExecuteCmd(new SelectExpressionNotification(_keys[Index % _keys.Count], this.Index, true));
+            if (_keys.Count > 0) SelectedIndex = Index % _keys.Count;
             OnPropertyChanged("Keys");
         }
 
         private void OnSelectExp(SelectExpressionNotification cmd)
         {
+            if (Keys.Count == 0) return;
             if (cmd.SelectorIndex == this.Index)
             {
-                if (Keys[SelectedIndex] != cmd.ExpKey)
-                {
-                    SelectedIndex = Keys.IndexOf(cmd.ExpKey);
-                }
+                if (Keys[SelectedIndex] != cmd.ExpKey) SelectedIndex = Keys.IndexOf(cmd.ExpKey);
                 DisplayMode = ExpDisMode.Visible;
             }
             else if (cmd.UpdateShadow)

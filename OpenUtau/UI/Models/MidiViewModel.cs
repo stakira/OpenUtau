@@ -213,38 +213,18 @@ namespace OpenUtau.UI.Models
             return Math.Round(quater / snapUnit) * snapUnit;
         }
         public int CanvasToSnappedTick(double X) { return (int)(CanvasToSnappedQuarter(X) * Project.Resolution); }
+        public double TickToCanvas(int tick) { return (int)(QuarterToCanvas((double)tick / Project.Resolution)); }
 
         public int CanvasToNoteNum(double Y) { return UIConstants.MaxNoteNum - 1 - (int)((Y + OffsetY) / TrackHeight); }
+        public double CanvasToPitch(double Y) { return UIConstants.MaxNoteNum - 1 - (Y + OffsetY) / TrackHeight + 0.5; }
         public double NoteNumToCanvas(int noteNum) { return TrackHeight * (UIConstants.MaxNoteNum - 1 - noteNum) - OffsetY; }
+        public double NoteNumToCanvas(double noteNum) { return TrackHeight * (UIConstants.MaxNoteNum - 1 - noteNum) - OffsetY; }
 
         public bool NoteIsInView(UNote note) // FIXME : improve performance
         {
             double leftTick = OffsetX / QuarterWidth * Project.Resolution - 512;
             double rightTick = leftTick + ViewWidth / QuarterWidth * Project.Resolution + 512;
             return ((double)note.PosTick < rightTick && (double)note.EndTick > leftTick);
-        }
-
-        public UNote HitTestNoteX(double x)
-        {
-            int tick = (int)(CanvasToQuarter(x) * Project.Resolution);
-            foreach (UNote note in Part.Notes)
-                if (note.PosTick <= tick && note.EndTick >= tick) return note;
-            return null;
-        }
-
-        public UNote HitTestNote(Point mousePos)
-        {
-            int tick = (int)(CanvasToQuarter(mousePos.X) * Project.Resolution);
-            int noteNum = CanvasToNoteNum(mousePos.Y);
-            foreach (UNote note in Part.Notes)
-                if (note.PosTick <= tick && note.EndTick >= tick && note.NoteNum == noteNum) return note;
-            return null;
-        }
-
-        public bool HitNoteResizeArea(UNote note, Point mousePos)
-        {
-            double x = QuarterToCanvas((double)note.EndTick / Project.Resolution);
-            return mousePos.X <= x && mousePos.X > x - UIConstants.ResizeMargin;
         }
 
         # endregion
