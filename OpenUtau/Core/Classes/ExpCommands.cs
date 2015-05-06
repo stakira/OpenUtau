@@ -65,17 +65,13 @@ namespace OpenUtau.Core
 
     public class SnapPitchPointCommand : ExpCommand
     {
-        bool NewSnap;
-        bool OldSnap;
-        public SnapPitchPointCommand(UNote note, bool snap)
+        public SnapPitchPointCommand(UNote note)
         {
             this.Note = note;
-            this.NewSnap = snap;
-            this.OldSnap = note.PitchBend.SnapFirst;
         }
-        public override string ToString() { return "Snap pitch point"; }
-        public override void Execute() { Note.PitchBend.SnapFirst = NewSnap; }
-        public override void Unexecute() { Note.PitchBend.SnapFirst = OldSnap; }
+        public override string ToString() { return "Toggle pitch snap"; }
+        public override void Execute() { Note.PitchBend.SnapFirst = !Note.PitchBend.SnapFirst; }
+        public override void Unexecute() { Note.PitchBend.SnapFirst = !Note.PitchBend.SnapFirst; }
     }
 
     public class AddPitchPointCommand : ExpCommand
@@ -91,5 +87,20 @@ namespace OpenUtau.Core
         public override string ToString() { return "Add pitch point"; }
         public override void Execute() { Note.PitchBend.Points.Insert(Index, Point); }
         public override void Unexecute() { Note.PitchBend.Points.RemoveAt(Index); }
+    }
+
+    public class MovePitchPointCommand : ExpCommand
+    {
+        public PitchPoint Point;
+        public double DeltaX, DeltaY;
+        public MovePitchPointCommand(PitchPoint point, double deltaX, double deltaY)
+        {
+            this.Point = point;
+            this.DeltaX = deltaX;
+            this.DeltaY = deltaY;
+        }
+        public override string ToString() { return "Move pitch point"; }
+        public override void Execute() { Point.X += DeltaX; Point.Y += DeltaY; }
+        public override void Unexecute() { Point.X -= DeltaX; Point.Y -= DeltaY; }
     }
 }

@@ -70,12 +70,19 @@ namespace OpenUtau.UI.Models
                             // Hit test curve
                             var lastPit = note.PitchBend.Points[i - 1];
                             double castY = MusicMath.SinEasingInOut(lastX, x, lastY, y, mousePos.X) - mousePos.Y;
-                            if ((mousePos.Y - y) * (mousePos.Y - lastY) >= 0) break;
+                            if (y >= lastY)
+                            {
+                                if (mousePos.Y - y > 3 || lastY - mousePos.Y > 3) break;
+                            }
+                            else
+                            {
+                                if (y - mousePos.Y > 3 || mousePos.Y - lastY > 3) break;
+                            }
                             double castX = MusicMath.SinEasingInOutY(lastX, x, lastY, y, mousePos.Y) - mousePos.X;
-                            double dis = Math.Cos(Math.Atan2(Math.Abs(castY), Math.Abs(castX))) * Math.Abs(castY);
+                            double dis = castX != castX ? Math.Abs(castY) : Math.Cos(Math.Atan2(Math.Abs(castY), Math.Abs(castX))) * Math.Abs(castY);
                             if (dis < 3)
                             {
-                                double msX = DocManager.Inst.Project.TickToMillisecond((int)(midiVM.CanvasToQuarter(mousePos.X) * DocManager.Inst.Project.Resolution) - note.PosTick);
+                                double msX = DocManager.Inst.Project.TickToMillisecond(midiVM.CanvasToQuarter(mousePos.X) * DocManager.Inst.Project.Resolution - note.PosTick);
                                 double msY = (midiVM.CanvasToPitch(mousePos.Y) - note.NoteNum) * 10;
                                 return (new PitchPointHitTestResult() { Note = note, Index = i - 1, OnPoint = false, X = msX, Y = msY });
                             }

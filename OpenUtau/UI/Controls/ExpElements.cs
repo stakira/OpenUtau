@@ -292,16 +292,23 @@ namespace OpenUtau.UI.Controls
                 double _x2 = pt0X;
                 double _y = pt0Y;
                 double _y2 = pt0Y;
-                while (_x2 < pt1X)
+                if (pt1X - pt0X < 5)
                 {
-                    _x = Math.Min(_x + 4, pt1X);
-                    _y = _pts[i - 1].Shape == PitchPointShape.l ? MusicMath.Liner(pt0X, pt1X, pt0Y, pt1Y, _x) :
-                         _pts[i - 1].Shape == PitchPointShape.i ? MusicMath.SinEasingIn(pt0X, pt1X, pt0Y, pt1Y, _x) :
-                         _pts[i - 1].Shape == PitchPointShape.o ? MusicMath.SinEasingOut(pt0X, pt1X, pt0Y, pt1Y, _x) :
-                                                                  MusicMath.SinEasingInOut(pt0X, pt1X, pt0Y, pt1Y, _x);
-                    cxt.DrawLine(penPit, new Point(_x, _y), new Point(_x2, _y2));
-                    _x2 = _x;
-                    _y2 = _y;
+                    cxt.DrawLine(penPit, new Point(pt0X, pt0Y), new Point(pt1X, pt1Y));
+                }
+                else
+                {
+                    while (_x2 < pt1X)
+                    {
+                        _x = Math.Min(_x + 4, pt1X);
+                        _y = _pts[i - 1].Shape == PitchPointShape.l ? MusicMath.Liner(pt0X, pt1X, pt0Y, pt1Y, _x) :
+                             _pts[i - 1].Shape == PitchPointShape.i ? MusicMath.SinEasingIn(pt0X, pt1X, pt0Y, pt1Y, _x) :
+                             _pts[i - 1].Shape == PitchPointShape.o ? MusicMath.SinEasingOut(pt0X, pt1X, pt0Y, pt1Y, _x) :
+                                                                      MusicMath.SinEasingInOut(pt0X, pt1X, pt0Y, pt1Y, _x);
+                        cxt.DrawLine(penPit, new Point(_x, _y), new Point(_x2, _y2));
+                        _x2 = _x;
+                        _y2 = _y;
+                    }
                 }
 
                 pt0Tick = pt1Tick;

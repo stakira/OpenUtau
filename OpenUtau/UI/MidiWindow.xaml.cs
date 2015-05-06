@@ -91,7 +91,7 @@ namespace OpenUtau.UI
                 if (o == pitchCxtMenu.Items[4])
                 {
                     DocManager.Inst.StartUndoGroup();
-                    DocManager.Inst.ExecuteCmd(new SnapPitchPointCommand(pitHit.Note, !pitHit.Note.PitchBend.SnapFirst));
+                    DocManager.Inst.ExecuteCmd(new SnapPitchPointCommand(pitHit.Note));
                     DocManager.Inst.EndUndoGroup();
                 }
                 else if (o == pitchCxtMenu.Items[5])
@@ -203,6 +203,7 @@ namespace OpenUtau.UI
         UNote _noteHit;
         bool _inPitMove = false;
         PitchPoint _pitHit;
+        int _pitHitIndex;
         int _tickMoveRelative;
         int _tickMoveStart;
         UNote _noteMoveNoteLeft;
@@ -219,12 +220,18 @@ namespace OpenUtau.UI
             var hit = VisualTreeHelper.HitTest(notesCanvas, mousePos).VisualHit;
             System.Diagnostics.Debug.WriteLine("Mouse hit " + hit.ToString());
 
-            var pitHit = midiHT.HitTestPitchPoint(mousePos);
+            var pitHitResult = midiHT.HitTestPitchPoint(mousePos);
 
-            if (pitHit != null && pitHit.OnPoint)
+            if (pitHitResult != null)
             {
-                _inPitMove = true;
-                _pitHit = pitHit.Note.PitchBend.Points[pitHit.Index];
+                if (pitHitResult.OnPoint)
+                {
+                    _inPitMove = true;
+                    _pitHit = pitHitResult.Note.PitchBend.Points[pitHitResult.Index];
+                    _pitHitIndex = pitHitResult.Index;
+                    _noteHit = pitHitResult.Note;
+                    DocManager.Inst.StartUndoGroup();
+                }
             }
             else
             {
@@ -375,7 +382,15 @@ namespace OpenUtau.UI
             }
             else if (_inPitMove)
             {
-
+                double tickX = midiVM.CanvasToQuarter(mousePos.X) * DocManager.Inst.Project.Resolution - _noteHit.PosTick;
+                double deltaX = DocManager.Inst.Project.TickToMillisecond(tickX) - _pitHit.X;
+                if (_pitHitIndex != 0) deltaX = Math.Max(deltaX, _noteHit.PitchBend.Points[_pitHitIndex - 1].X - _pitHit.X);
+                if (_pitHitIndex != _noteHit.PitchBend.Points.Count - 1) deltaX = Math.Min(deltaX, _noteHit.PitchBend.Points[_pitHitIndex + 1].X - _pitHit.X);
+                double deltaY = Keyboard.Modifiers == ModifierKeys.Shift ? Math.Round(midiVM.CanvasToPitch(mousePos.Y) - _noteHit.NoteNum) * 10 - _pitHit.Y :
+                    (midiVM.CanvasToPitch(mousePos.Y) - _noteHit.NoteNum) * 10 - _pitHit.Y;
+                if (_noteHit.PitchBend.Points.First() == _pitHit && _noteHit.PitchBend.SnapFirst || _noteHit.PitchBend.Points.Last() == _pitHit) deltaY = 0;
+                if (deltaX != 0 || deltaY != 0)
+                    DocManager.Inst.ExecuteCmd(new MovePitchPointCommand(_pitHit, deltaX, deltaY));
             }
             else if (_inMove) // Move Note
             {

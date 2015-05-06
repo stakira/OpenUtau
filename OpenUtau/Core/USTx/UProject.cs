@@ -41,7 +41,7 @@ namespace OpenUtau.Core.USTx
             return MusicMath.MillisecondToTick(ms, BPM, BeatUnit, Resolution);
         }
 
-        public double TickToMillisecond(int tick)
+        public double TickToMillisecond(double tick)
         {
             return MusicMath.TickToMillisecond(tick, BPM, BeatUnit, Resolution);
         }

@@ -48,7 +48,7 @@ namespace OpenUtau.Core
             }
         }
 
-        public static double TickToMillisecond(int tick, double BPM, int BeatUnit, int Resolution)
+        public static double TickToMillisecond(double tick, double BPM, int BeatUnit, int Resolution)
         {
             return tick * 60000.0 / BPM * BeatUnit / 4 / Resolution;
         }
