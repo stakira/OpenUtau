@@ -2,7 +2,7 @@
 Current stage: Alpha
 
 ## Mission
-The mission of OpenUtau is to create a open source tunning environment for free singing software synthesizer community, with modern user experience and intelligent phonological support. The ultimate goal is to make UTAU technology better and more popular.
+The mission of OpenUtau is to create a open source editing environment for UTAU community, with modern user experience and intelligent phonological support. The ultimate goal is to make UTAU technology better and more popular.
 
 ## Scope
 The scope of OpenUtau includes:
@@ -13,6 +13,7 @@ The scope of OpenUtau includes:
 - Smooth preview/rendering experience.
 - A easy to use plugin system.
 - An efficient sample connecting engine.
+- A Windows version.
 
 The scope of OpenUtau does not include:
 - Resampling engines.
@@ -22,3 +23,5 @@ The scope of OpenUtau does not include:
 The scope of OpenUtau may include:
 - An efficient resampling engine interface.
 - Coorperate with other projects on resampling engine integration.
+- A OS X version, but only after Windows version is mature.
+- A Linux version, but not likely due to its small user base.
