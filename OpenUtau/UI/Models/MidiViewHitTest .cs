@@ -49,6 +49,16 @@ namespace OpenUtau.UI.Models
             return mousePos.X <= x && mousePos.X > x - UIConstants.ResizeMargin;
         }
 
+        public UNote HitTestVibrato(Point mousePos)
+        {
+            int tick = (int)(midiVM.CanvasToQuarter(mousePos.X) * Project.Resolution);
+            double pitch = midiVM.CanvasToPitch(mousePos.Y);
+            foreach (UNote note in midiVM.Part.Notes)
+                if (note.PosTick + note.DurTick * (1 - note.Vibrato.Length / 100) <= tick && note.EndTick >= tick &&
+                    Math.Abs(note.NoteNum - pitch) < note.Vibrato.Depth / 100) return note;
+            return null;
+        }
+
         public PitchPointHitTestResult HitTestPitchPoint(Point mousePos)
         {
             foreach (var note in midiVM.Part.Notes)

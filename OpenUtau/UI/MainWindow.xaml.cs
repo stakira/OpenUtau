@@ -54,6 +54,8 @@ namespace OpenUtau.UI
             trackVM.Subscribe(DocManager.Inst);
 
             CmdNewFile();
+
+            bool updated = UpdateChecker.Check();
         }
 
         void RenderLoop(object sender, EventArgs e)

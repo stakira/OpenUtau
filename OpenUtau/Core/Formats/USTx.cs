@@ -463,6 +463,18 @@ namespace OpenUtau.Core.Formats
                 System.Diagnostics.Debug.WriteLine(e.ToString());
                 return null;
             }
+
+            for (int i = 0; i < project.Singers.Count; i++)
+            {
+                foreach (var pair in DocManager.Inst.Singers)
+                {
+                    if (project.Singers[i].Name == pair.Value.Name)
+                    {
+                        project.Singers[i] = pair.Value;
+                        continue;
+                    }
+                }
+            }
             
             return project;
         }

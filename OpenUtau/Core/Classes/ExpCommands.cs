@@ -65,13 +65,33 @@ namespace OpenUtau.Core
 
     public class SnapPitchPointCommand : ExpCommand
     {
+        double X;
+        double Y;
         public SnapPitchPointCommand(UNote note)
         {
             this.Note = note;
+            this.X = Note.PitchBend.Points.First().X;
+            this.Y = Note.PitchBend.Points.First().Y;
         }
         public override string ToString() { return "Toggle pitch snap"; }
-        public override void Execute() { Note.PitchBend.SnapFirst = !Note.PitchBend.SnapFirst; }
-        public override void Unexecute() { Note.PitchBend.SnapFirst = !Note.PitchBend.SnapFirst; }
+        public override void Execute()
+        {
+            Note.PitchBend.SnapFirst = !Note.PitchBend.SnapFirst;
+            if (!Note.PitchBend.SnapFirst)
+            {
+                Note.PitchBend.Points.First().X = this.X;
+                Note.PitchBend.Points.First().Y = this.Y;
+            }
+        }
+        public override void Unexecute()
+        {
+            Note.PitchBend.SnapFirst = !Note.PitchBend.SnapFirst;
+            if (!Note.PitchBend.SnapFirst)
+            {
+                Note.PitchBend.Points.First().X = this.X;
+                Note.PitchBend.Points.First().Y = this.Y;
+            }
+        }
     }
 
     public class AddPitchPointCommand : ExpCommand

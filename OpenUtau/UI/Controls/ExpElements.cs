@@ -252,6 +252,23 @@ namespace OpenUtau.UI.Controls
             double startY = TrackHeight * (UIConstants.MaxNoteNum - 1.0 - note.NoteNum) + TrackHeight / 2;
             double inPix = lengthPix * vibrato.In / 100;
             double outPix = lengthPix * vibrato.Out / 100;
+            double depthPix = vibrato.Depth / 100 * midiVM.TrackHeight;
+
+            if (vibrato.Length > 0 && vibrato.Depth > 0)
+            {
+                StreamGeometry g = new StreamGeometry();
+                using (var gcxt = g.Open())
+                {
+                    gcxt.BeginFigure(new Point(startX, startY), true, true);
+                    gcxt.LineTo(new Point(startX + inPix, startY + depthPix), false, false);
+                    gcxt.LineTo(new Point(startX + lengthPix - outPix, startY + depthPix), false, false);
+                    gcxt.LineTo(new Point(startX + lengthPix, startY), false, false);
+                    gcxt.LineTo(new Point(startX + lengthPix - outPix, startY - depthPix), false, false);
+                    gcxt.LineTo(new Point(startX + inPix, startY - depthPix), false, false);
+                    gcxt.Close();
+                }
+                cxt.DrawGeometry(Brushes.White, null, g);
+            }
 
             double _x0 = 0, _y0 = 0, _x1 = 0, _y1 = 0;
             while (_x1 < lengthPix)
@@ -260,7 +277,7 @@ namespace OpenUtau.UI.Controls
                 _x0 = _x1;
                 _y0 = _y1;
                 _x1 += Math.Min(2, periodPix / 8);
-                _y1 = -Math.Sin(2 * Math.PI * (_x1 / periodPix + vibrato.Shift / 100)) * vibrato.Depth / 100 * midiVM.TrackHeight;
+                _y1 = -Math.Sin(2 * Math.PI * (_x1 / periodPix + vibrato.Shift / 100)) * depthPix;
                 if (_x1 < inPix) _y1 = _y1 * _x1 / inPix;
                 else if (_x1 > lengthPix - outPix) _y1 = _y1 * (lengthPix - _x1) / outPix;
             }

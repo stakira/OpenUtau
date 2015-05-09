@@ -455,14 +455,15 @@ namespace OpenUtau.UI
                 else
                 {
                     UNote noteHit = midiHT.HitTestNote(mousePos);
-                    if (noteHit != null) // Change Cursor
-                    {
-                        if (midiHT.HitNoteResizeArea(noteHit, mousePos)) Mouse.OverrideCursor = Cursors.SizeWE;
-                        else Mouse.OverrideCursor = null;
-                    }
+                    if (noteHit != null && midiHT.HitNoteResizeArea(noteHit, mousePos)) Mouse.OverrideCursor = Cursors.SizeWE;
                     else
                     {
-                        Mouse.OverrideCursor = null;
+                        UNote vibHit = midiHT.HitTestVibrato(mousePos);
+                        if (vibHit != null)
+                        {
+                            Mouse.OverrideCursor = Cursors.SizeNS;
+                        }
+                        else Mouse.OverrideCursor = null;
                     }
                 }
             }
