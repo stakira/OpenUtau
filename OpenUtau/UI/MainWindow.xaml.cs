@@ -51,11 +51,17 @@ namespace OpenUtau.UI
 
             trackVM = (TracksViewModel)this.Resources["tracksVM"];
             trackVM.TrackCanvas = this.trackCanvas;
+            trackVM.HeaderCanvas = this.headerCanvas;
             trackVM.Subscribe(DocManager.Inst);
 
             CmdNewFile();
 
-            bool updated = UpdateChecker.Check();
+            if (UpdateChecker.Check())
+                this.mainMenu.Items.Add(new MenuItem()
+                {
+                    Header = @"Update available",
+                    Foreground = ThemeManager.WhiteKeyNameBrushNormal
+                });
         }
 
         void RenderLoop(object sender, EventArgs e)

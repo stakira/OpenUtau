@@ -100,7 +100,7 @@
     <Compile Include="Core\USTx\USinger.cs" />
     <Compile Include="Core\Lib\EncodingUtil.cs" />
     <Compile Include="Core\Util\PathManager.cs" />
-    <Compile Include="Core\Classes\UpdateChecker.cs" />
+    <Compile Include="Core\Util\UpdateChecker.cs" />
     <Compile Include="UI\Controls\ExpComboBox.xaml.cs">
       <DependentUpon>ExpComboBox.xaml</DependentUpon>
     </Compile>
@@ -125,6 +125,10 @@
     <Compile Include="UI\Controls\NavigateDrag.xaml.cs">
       <DependentUpon>NavigateDrag.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Controls\TrackHeader.xaml.cs">
+      <DependentUpon>TrackHeader.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Controls\TrackHeaderElement.cs" />
     <Compile Include="UI\Controls\ViewScaler.xaml.cs">
       <DependentUpon>ViewScaler.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -147,6 +151,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\Controls\NavigateDrag.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Controls\TrackHeader.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -195,6 +203,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\Styles\ScrollBar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Styles\TrackHeaderStyles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -1,0 +1,24 @@
+﻿<UserControl x:Class="OpenUtau.UI.Controls.TrackHeader"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d"
+             d:DesignHeight="64" d:DesignWidth="256">
+    <Grid>
+        <Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0" Stroke="LightGray"/>
+        <Rectangle HorizontalAlignment="Left" VerticalAlignment="Top" Margin="4" Width="20" Height="16" Fill="LightGray"/>
+        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" Width="20" Height="16" Margin="4,6,0,0" TextAlignment="Center" Text="1" FontWeight="Bold" FontFamily="Arial" FontSize="11" Foreground="White"/>
+        <Button Style="{StaticResource TrackHeaderSingerButton}" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="16" Margin="28,4,44,0" Content="波音" HorizontalContentAlignment="Left"/>
+        <ToggleButton Style="{StaticResource TrackHeaderSoloToggleButton}" HorizontalAlignment="Right" VerticalAlignment="Top" Height="16" Width="16" Margin="0,4,4,0" Content="S"/>
+        <ToggleButton Style="{StaticResource TrackHeaderMuteToggleButton}" HorizontalAlignment="Right" VerticalAlignment="Top" Height="16" Width="16" Margin="0,4,24,0" Content="M"/>
+        <Slider x:Name="faderSlider" Style="{StaticResource TrackHeaderFader}" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="16" Margin="4,21,92,0" Maximum="12" Minimum="-48" Value="0"
+                PreviewMouseDown="faderSlider_PreviewMouseDown" PreviewMouseUp="faderSlider_PreviewMouseUp" PreviewMouseMove="faderSlider_PreviewMouseMove" MouseWheel="faderSlider_MouseWheel"/>
+        <Slider x:Name="panSlider" Style="{StaticResource TrackHeaderPan}" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="16" Margin="172,21,52,0" Maximum="90" Minimum="-90" Value="0"
+                PreviewMouseDown="faderSlider_PreviewMouseDown" PreviewMouseUp="faderSlider_PreviewMouseUp" PreviewMouseMove="faderSlider_PreviewMouseMove" MouseWheel="faderSlider_MouseWheel"/>
+        <TextBlock HorizontalAlignment="Right" VerticalAlignment="Top" Height="16" Width="30" Margin="0,22,25,0" TextAlignment="Right" FontSize="10"
+                   Text="{Binding ElementName=faderSlider, Path=Value, StringFormat={}{0:+00.0;-00.0}}"/>
+        <TextBlock HorizontalAlignment="Right" VerticalAlignment="Top" Height="16" Width="30" Margin="0,22,5,0" TextAlignment="Right" FontSize="10"
+                   Text="{Binding ElementName=panSlider, Path=Value, StringFormat={}{0:+00.;-00.}}"/>
+    </Grid>
+</UserControl>

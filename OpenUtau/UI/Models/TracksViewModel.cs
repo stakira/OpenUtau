@@ -32,6 +32,7 @@ namespace OpenUtau.UI.Models
 
         public UProject Project { get { return DocManager.Inst.Project; } }
         public Canvas TrackCanvas;
+        public Canvas HeaderCanvas;
 
         protected bool _updated = false;
         public void MarkUpdate() { _updated = true; }
@@ -114,6 +115,7 @@ namespace OpenUtau.UI.Models
         public List<UPart> SelectedParts = new List<UPart>();
         List<UPart> TempSelectedParts = new List<UPart>();
         List<PartElement> PartElements = new List<PartElement>();
+        List<TrackHeader> TrackHeaders = new List<TrackHeader>();
 
         public TracksViewModel() { }
 
@@ -180,6 +182,12 @@ namespace OpenUtau.UI.Models
                     partElement.VisualHeight = TrackHeight - 2;
                     partElement.ScaleX = QuarterWidth / Project.Resolution;
                 }
+                foreach (TrackHeader trackHeader in TrackHeaders)
+                {
+                    Canvas.SetTop(trackHeader, -OffsetY + TrackHeight * trackHeader.Track.TrackNo + 1);
+                    trackHeader.Height = TrackHeight - 2;
+                    trackHeader.Width = HeaderCanvas.ActualWidth;
+                }
             }
             _updated = false;
         }
@@ -238,6 +246,14 @@ namespace OpenUtau.UI.Models
 
         # region Cmd Handling
 
+        private void OnTrackAdded(UTrack track)
+        {
+            var trackHeader = new TrackHeader() { Track = track, Height = TrackHeight };
+            TrackHeaders.Add(trackHeader);
+            HeaderCanvas.Children.Add(trackHeader);
+            MarkUpdate();
+        }
+
         private void OnPartAdded(UPart part)
         {
             PartElement partElement;
@@ -271,6 +287,11 @@ namespace OpenUtau.UI.Models
             foreach (UPart part in project.Parts)
             {
                 OnPartAdded(part);
+            }
+
+            foreach (var pair in project.Tracks)
+            {
+                OnTrackAdded(pair.Value);
             }
         }
 

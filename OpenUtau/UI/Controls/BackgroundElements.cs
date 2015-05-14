@@ -62,7 +62,7 @@ namespace OpenUtau.UI.Controls
             while (top < _size.Height)
             {
                 drawingContext.DrawRectangle(
-                    alt ? ThemeManager.TrackBackgroundBrush : ThemeManager.TrackBackgroundBrushAlt,
+                    alt ? ThemeManager.TrackBackgroundBrushAlt : ThemeManager.TrackBackgroundBrush,
                     null,
                     new Rect(0, (int)top, _size.Width, TrackHeight));
                 top += TrackHeight;

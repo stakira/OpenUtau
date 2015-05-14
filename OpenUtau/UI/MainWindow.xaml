@@ -15,7 +15,7 @@
         <localvm:TracksViewModel x:Key="tracksVM"/>
     </Window.Resources>
     <local:BorderlessWindow.MenuContent>
-        <Menu IsMainMenu="True" VerticalAlignment="Top" HorizontalAlignment="Left" Background="White">
+        <Menu x:Name="mainMenu" IsMainMenu="True" VerticalAlignment="Top" HorizontalAlignment="Left" Background="White">
             <MenuItem Header="_File">
                 <MenuItem Header="_New..." InputGestureText="Ctrl+N" Click="MenuNew_Click"/>
                 <MenuItem Header="_Open..." InputGestureText="Ctrl+O" Click="MenuOpen_Click"/>
@@ -60,37 +60,31 @@
     </local:BorderlessWindow.MenuContent>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="0" MinWidth="0" MaxWidth="480"/>
-            <ColumnDefinition Width="10"/>
+            <ColumnDefinition Width="264"/>
             <ColumnDefinition Width="*" MinWidth="200"/>
         </Grid.ColumnDefinitions>
-        <Grid x:Name="BrowserGrid" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="20,20,0,20">
+        <Grid x:Name="HeaderGrid" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,40,0,20">
+            <Canvas x:Name="headerCanvas" ClipToBounds="True" Margin="4,0,4,0"/>
         </Grid>
-        <Grid x:Name="WorkspaceGrid" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*" MinHeight="200"/>
-                <RowDefinition Height="10"/>
-                <RowDefinition Height="250" MinHeight="200" MaxHeight="300"/>
-            </Grid.RowDefinitions>
-
-            <Grid x:Name="timelineBackgroundGrid" Grid.Row="0" VerticalAlignment="Top" Height="20" Margin="0,20,20,0" ClipToBounds="True">
+        <Grid x:Name="WorkspaceGrid" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,20">
+            <Grid x:Name="timelineBackgroundGrid" VerticalAlignment="Top" Height="20" Margin="0,20,20,0" ClipToBounds="True">
                 <local:TimelineBackground x:Name="timelineBackground" QuarterOffset="{Binding QuarterOffset, Source={StaticResource tracksVM}}"
                                       QuarterWidth="{Binding QuarterWidth, Source={StaticResource tracksVM}}" OffsetX="{Binding OffsetX, Source={StaticResource tracksVM}}"
                                       MinTickWidth="{Binding MinTickWidth, Source={StaticResource tracksVM}}" BeatPerBar="{Binding BeatPerBar, Source={StaticResource tracksVM}}"
                                       BeatUnit="{Binding BeatUnit, Source={StaticResource tracksVM}}"/>
             </Grid>
-            <Canvas x:Name="timelineCanvas" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="20" Margin="0,20,20,0"
+            <Canvas x:Name="timelineCanvas" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="20" Margin="0,20,20,0"
                     ClipToBounds="True" Background="Transparent"
                     MouseWheel="timelineCanvas_MouseWheel" MouseLeftButtonDown="timelineCanvas_MouseLeftButtonDown" MouseMove="timelineCanvas_MouseMove"
                     MouseLeftButtonUp="timelineCanvas_MouseLeftButtonUp" />
-            <Grid x:Name="trackBackgroundGrid" Grid.Row="0" Margin="0,40,20,0" ClipToBounds="True">
+            <Grid x:Name="trackBackgroundGrid" Margin="0,40,20,0" ClipToBounds="True">
                 <local:TrackBackground x:Name="trackBackground" TrackHeight="{Binding TrackHeight, Source={StaticResource tracksVM}}" OffsetY="{Binding OffsetY, Source={StaticResource tracksVM}}"/>
                 <local:TickBackground x:Name="tickBackground" QuarterOffset="{Binding QuarterOffset, Source={StaticResource tracksVM}}"
                                       QuarterWidth="{Binding QuarterWidth, Source={StaticResource tracksVM}}" OffsetX="{Binding OffsetX, Source={StaticResource tracksVM}}"
                                       MinTickWidth="{Binding MinTickWidth, Source={StaticResource tracksVM}}" BeatPerBar="{Binding BeatPerBar, Source={StaticResource tracksVM}}"
                                       BeatUnit="{Binding BeatUnit, Source={StaticResource tracksVM}}"/>
             </Grid>
-            <Canvas x:Name="trackCanvas" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent" Margin="0,40,20,0"
+            <Canvas x:Name="trackCanvas" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent" Margin="0,40,20,0"
                     ClipToBounds="True" SnapsToDevicePixels="True" AllowDrop="True"
                     local:SizeObserver.Observe="True"
                     local:SizeObserver.ObservedHeight="{Binding ViewHeight, Source={StaticResource tracksVM}, Mode=OneWayToSource}"
@@ -98,7 +92,7 @@
                     MouseLeftButtonDown="trackCanvas_MouseLeftButtonDown" MouseLeftButtonUp="trackCanvas_MouseLeftButtonUp"
                     MouseRightButtonDown="trackCanvas_MouseRightButtonDown" MouseRightButtonUp="trackCanvas_MouseRightButtonUp"
                     MouseMove="trackCanvas_MouseMove" DragEnter="trackCanvas_DragEnter" Drop="trackCanvas_Drop" MouseWheel="trackCanvas_MouseWheel"/>
-            <ScrollBar x:Name="horizontalScroll" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="20" Margin="0,0,20,0" Orientation="Horizontal" Minimum="0"
+            <ScrollBar x:Name="horizontalScroll" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="20" Margin="0,0,20,0" Orientation="Horizontal" Minimum="0"
                        Maximum="{Binding TotalWidth, Mode=OneWay, Source={StaticResource tracksVM}}"
                        Value="{Binding OffsetX, Mode=TwoWay, Source={StaticResource tracksVM}, UpdateSourceTrigger=PropertyChanged}"
                        ViewportSize="{Binding ViewportSizeX, Source={StaticResource tracksVM}}"
@@ -108,7 +102,7 @@
                     <ib:ScrollbarBehavior/>
                 </i:Interaction.Behaviors>
             </ScrollBar>
-            <ScrollBar x:Name="verticalScroll" Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="20" Margin="0,40,0,0" Orientation="Vertical" Minimum="0"
+            <ScrollBar x:Name="verticalScroll" HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="20" Margin="0,40,0,0" Orientation="Vertical" Minimum="0"
                        Maximum="{Binding TotalHeight, Mode=OneWay, Source={StaticResource tracksVM}}"
                        Value="{Binding OffsetY, Mode=TwoWay, Source={StaticResource tracksVM}, UpdateSourceTrigger=PropertyChanged}"
                        ViewportSize="{Binding ViewportSizeY, Source={StaticResource tracksVM}}"
@@ -121,18 +115,7 @@
             <local:NavigateDrag x:Name="navigateDrag" HorizontalAlignment="Right" VerticalAlignment="Top" Width="20" Height="20" Margin="0,0,0,0" NavDrag="navigateDrag_NavDrag"/>
             <local:ViewScaler x:Name="viewScaler" HorizontalAlignment="Right" VerticalAlignment="Top" Width="20" Height="20" Margin="0,20,0,0"
                               Value="{Binding TrackHeight, Source={StaticResource tracksVM}, Mode=TwoWay}"/>
-            <Border x:Name="notesCanvasShadow" Grid.Row="0" Background="{x:Null}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,20,20,0" BorderThickness="0" ClipToBounds="True">
-                <Border Background="{x:Null}" BorderBrush="Black" BorderThickness="1" Margin="-1">
-                    <Border.Effect>
-                        <DropShadowEffect Color="Black" ShadowDepth="0" BlurRadius="5" Opacity="0.75"/>
-                    </Border.Effect>
-                </Border>
-            </Border>
-            <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="10" Margin="0,0,0,0" Background="White" Focusable="False"/>
-            <Canvas x:Name="expCanvas" Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,20,20" Background="White" ClipToBounds="True"/>
-            <ScrollBar x:Name="MixerScroll" Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
-                           Height="20" Margin="0,0,20,0" Orientation="Horizontal" Minimum="0" Maximum="1" Value="0" ViewportSize="10000"/>
-            <Border x:Name="expCanvasShadow" Grid.Row="2" Background="{x:Null}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,20,20" BorderThickness="0" ClipToBounds="True">
+            <Border x:Name="notesCanvasShadow" Background="{x:Null}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,20,20,0" BorderThickness="0" ClipToBounds="True">
                 <Border Background="{x:Null}" BorderBrush="Black" BorderThickness="1" Margin="-1">
                     <Border.Effect>
                         <DropShadowEffect Color="Black" ShadowDepth="0" BlurRadius="5" Opacity="0.75"/>
@@ -140,7 +123,5 @@
                 </Border>
             </Border>
         </Grid>
-        <GridSplitter x:Name="BrowserSplitter" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="10"
-                          Margin="0,0,0,0" Background="White" Focusable="False" />
     </Grid>
 </local:BorderlessWindow>
