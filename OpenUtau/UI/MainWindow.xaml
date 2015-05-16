@@ -60,11 +60,11 @@
     </local:BorderlessWindow.MenuContent>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="264"/>
+            <ColumnDefinition Width="256"/>
             <ColumnDefinition Width="*" MinWidth="200"/>
         </Grid.ColumnDefinitions>
         <Grid x:Name="HeaderGrid" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,40,0,20">
-            <Canvas x:Name="headerCanvas" ClipToBounds="True" Margin="4,0,4,0"/>
+            <Canvas x:Name="headerCanvas" ClipToBounds="True" Margin="0"/>
         </Grid>
         <Grid x:Name="WorkspaceGrid" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,20">
             <Grid x:Name="timelineBackgroundGrid" VerticalAlignment="Top" Height="20" Margin="0,20,20,0" ClipToBounds="True">

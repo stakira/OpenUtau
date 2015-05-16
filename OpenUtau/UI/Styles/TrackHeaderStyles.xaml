@@ -80,7 +80,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Thumb}">
                     <Grid>
-                        <Rectangle Height="7" Width="31" RadiusX="1" RadiusY="1" Fill="{TemplateBinding Foreground}"/>
+                        <Rectangle Height="7" Width="31" RadiusX="1.5" RadiusY="1.5" Fill="{TemplateBinding Foreground}"/>
                         <Line Stroke="Gray" X1="16.5" Y1="1" X2="16.5" Y2="8"/>
                     </Grid>
                 </ControlTemplate>
@@ -97,7 +97,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Thumb}">
                     <Grid>
-                        <Rectangle Height="7" Width="9" RadiusX="1" RadiusY="1" Fill="{TemplateBinding Foreground}"/>
+                        <Rectangle Height="7" Width="9" RadiusX="1.5" RadiusY="1.5" Fill="{TemplateBinding Foreground}"/>
                         <Line Stroke="Gray" X1="5.5" Y1="1" X2="5.5" Y2="8"/>
                     </Grid>
                 </ControlTemplate>

@@ -79,6 +79,7 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\Classes\TrackCommands.cs" />
     <Compile Include="Core\Formats\USTx.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -128,7 +129,6 @@
     <Compile Include="UI\Controls\TrackHeader.xaml.cs">
       <DependentUpon>TrackHeader.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Controls\TrackHeaderElement.cs" />
     <Compile Include="UI\Controls\ViewScaler.xaml.cs">
       <DependentUpon>ViewScaler.xaml</DependentUpon>
       <SubType>Code</SubType>

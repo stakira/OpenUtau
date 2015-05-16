@@ -101,7 +101,7 @@ namespace OpenUtau.Core.Formats
             foreach (XmlNode track in root.SelectNodes(trackPath, nsmanager)) // track
             {
                 UTrack utrack = new UTrack() { Singer = usinger, TrackNo = uproject.Tracks.Count };
-                uproject.Tracks.Add(utrack.TrackNo, utrack);
+                uproject.Tracks.Add(utrack);
 
                 utrack.Name = track.SelectSingleNode(tracknamePath, nsmanager).InnerText;
                 utrack.Comment = track.SelectSingleNode(trackcommentPath, nsmanager).InnerText;

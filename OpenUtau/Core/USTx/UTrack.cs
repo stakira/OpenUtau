@@ -12,7 +12,13 @@ namespace OpenUtau.Core.USTx
         public string Comment = "";
         public USinger Singer;
 
-        public int TrackNo;
+        public string SingerName { get { if (Singer != null) return Singer.Name; else return ""; } }
+        public int TrackNo { set; get; }
+        public int DisplayTrackNo { get { return TrackNo + 1; } }
+        public bool Mute { set; get; }
+        public bool Solo { set; get; }
+        public double Volume { set; get; }
+        public double Pan { set; get; }
 
         public UTrack() { }
 

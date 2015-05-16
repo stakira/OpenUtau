@@ -22,7 +22,20 @@ namespace OpenUtau.UI.Controls
     /// </summary>
     public partial class TrackHeader : UserControl
     {
-        public UTrack Track;
+        //public int TrackNo { set { SetValue(TrackNoProperty, value); } get { return (int)GetValue(TrackNoProperty); } }
+        //public bool Mute { set { SetValue(MuteProperty, value); } get { return (bool)GetValue(MuteProperty); } }
+        //public bool Solo { set { SetValue(SoloProperty, value); } get { return (bool)GetValue(SoloProperty); } }
+        //public double Volume { set { SetValue(VolumeProperty, value); } get { return (double)GetValue(VolumeProperty); } }
+        //public double Pan { set { SetValue(PanProperty, value); } get { return (double)GetValue(PanProperty); } }
+
+        //public static readonly DependencyProperty TrackNoProperty = DependencyProperty.Register("TrackNo", typeof(int), typeof(TrackHeader), new PropertyMetadata(0));
+        //public static readonly DependencyProperty MuteProperty = DependencyProperty.Register("Mute", typeof(bool), typeof(TrackHeader), new PropertyMetadata(false));
+        //public static readonly DependencyProperty SoloProperty = DependencyProperty.Register("Solo", typeof(bool), typeof(TrackHeader), new PropertyMetadata(false));
+        //public static readonly DependencyProperty VolumeProperty = DependencyProperty.Register("Volume", typeof(double), typeof(TrackHeader), new PropertyMetadata(0.0));
+        //public static readonly DependencyProperty PanProperty = DependencyProperty.Register("Pan", typeof(double), typeof(TrackHeader), new PropertyMetadata(0.0));
+
+        UTrack _track;
+        public UTrack Track { set { _track = value; this.DataContext = value; } get { return _track; } }
 
         [System.Runtime.InteropServices.DllImport("User32.dll")]
         private static extern bool SetCursorPos(int X, int Y);
@@ -42,11 +55,11 @@ namespace OpenUtau.UI.Controls
         {
             var slider = sender as Slider;
             int thumbWidth = slider == this.faderSlider ? 33 : 11;
-            if (Keyboard.Modifiers == ModifierKeys.Shift)
+            if (e.ChangedButton == MouseButton.Right)
             {
                 slider.Value = 0;
             }
-            else
+            else if (e.ChangedButton == MouseButton.Left)
             {
                 double x = (slider.Value - slider.Minimum) / (slider.Maximum - slider.Minimum) * (slider.ActualWidth - thumbWidth) + (thumbWidth - 1) / 2;
                 double y = e.GetPosition(slider).Y;

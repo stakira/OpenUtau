@@ -20,7 +20,7 @@ namespace OpenUtau.Core.USTx
         public string FilePath;
         public bool Saved = false;
 
-        public Dictionary<int, UTrack> Tracks = new Dictionary<int,UTrack>();
+        public List<UTrack> Tracks = new List<UTrack>();
         public List<UPart> Parts = new List<UPart>();
         public List<USinger> Singers = new List<USinger>();
 

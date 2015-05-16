@@ -170,6 +170,15 @@ namespace OpenUtau.UI.Models
             return null;
         }
 
+        public TrackHeader GetTrackHeader(UTrack track)
+        {
+            foreach (var trackHeader in TrackHeaders)
+            {
+                if (trackHeader.Track == track) return trackHeader;
+            }
+            return null;
+        }
+
         public void RedrawIfUpdated()
         {
             if (_updated)
@@ -186,7 +195,6 @@ namespace OpenUtau.UI.Models
                 {
                     Canvas.SetTop(trackHeader, -OffsetY + TrackHeight * trackHeader.Track.TrackNo + 1);
                     trackHeader.Height = TrackHeight - 2;
-                    trackHeader.Width = HeaderCanvas.ActualWidth;
                 }
             }
             _updated = false;
@@ -251,6 +259,16 @@ namespace OpenUtau.UI.Models
             var trackHeader = new TrackHeader() { Track = track, Height = TrackHeight };
             TrackHeaders.Add(trackHeader);
             HeaderCanvas.Children.Add(trackHeader);
+            Canvas.SetTop(trackHeader, -OffsetY + TrackHeight * trackHeader.Track.TrackNo + 1);
+            trackHeader.Width = HeaderCanvas.ActualWidth;
+            MarkUpdate();
+        }
+
+        private void OnTrackRemoved(UTrack track)
+        {
+            var trackHeader = GetTrackHeader(track);
+            HeaderCanvas.Children.Remove(trackHeader);
+            TrackHeaders.Remove(trackHeader);
             MarkUpdate();
         }
 
@@ -289,9 +307,9 @@ namespace OpenUtau.UI.Models
                 OnPartAdded(part);
             }
 
-            foreach (var pair in project.Tracks)
+            foreach (var track in project.Tracks)
             {
-                OnTrackAdded(pair.Value);
+                OnTrackAdded(track);
             }
         }
 
@@ -303,6 +321,11 @@ namespace OpenUtau.UI.Models
             }
             SelectedParts.Clear();
             PartElements.Clear();
+            foreach (TrackHeader trackHeader in TrackHeaders)
+            {
+                HeaderCanvas.Children.Remove(trackHeader);
+            }
+            TrackHeaders.Clear();
             if (Project != null)
             {
                 foreach (UPart part in Project.Parts) part.Dispose();
@@ -337,6 +360,20 @@ namespace OpenUtau.UI.Models
                 }
                 else if (_cmd is ResizePartCommand) MarkUpdate();
                 else if (_cmd is MovePartCommand) MarkUpdate();
+            }
+            else if (cmd is TrackCommand)
+            {
+                var _cmd = cmd as TrackCommand;
+                if (_cmd is AddTrackCommand)
+                {
+                    if (!isUndo) OnTrackAdded(_cmd.track);
+                    else OnTrackRemoved(_cmd.track);
+                }
+                else if (_cmd is RemoveTrackCommand)
+                {
+                    if (!isUndo) OnTrackRemoved(_cmd.track);
+                    else OnTrackAdded(_cmd.track);
+                }
             }
             else if (cmd is LoadProjectNotification)
             {

@@ -513,11 +513,12 @@ namespace OpenUtau.UI
             });
             if (uwavepart != null)
             {
-                var _track = new UTrack() { TrackNo = trackVM.Project.Tracks.Last().Value.TrackNo };
-                trackVM.Project.Tracks.Add(_track.TrackNo, _track);
-                uwavepart.TrackNo = trackVM.Project.Tracks.Count - 1;
+                int _trackNo = trackVM.Project.Tracks.Count;
+                DocManager.Inst.StartUndoGroup();
+                DocManager.Inst.ExecuteCmd(new AddTrackCommand(trackVM.Project, new UTrack() { TrackNo = _trackNo }));
+                DocManager.Inst.EndUndoGroup();
+                uwavepart.TrackNo = _trackNo;
                 uwavepart.DurTick = uwavepart.GetMinDurTick(trackVM.Project);
-                trackVM.Project.Parts.Add(uwavepart);
                 DocManager.Inst.StartUndoGroup();
                 DocManager.Inst.ExecuteCmd(new AddPartCommand(trackVM.Project, uwavepart));
                 DocManager.Inst.EndUndoGroup();

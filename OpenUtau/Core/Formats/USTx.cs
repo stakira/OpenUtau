@@ -275,7 +275,7 @@ namespace OpenUtau.Core.Formats
                 foreach (var track in dictionary["tracks"] as ArrayList)
                 {
                     var _tarck = serializer.ConvertToType(track, typeof(UTrack)) as UTrack;
-                    result.Tracks.Add(_tarck.TrackNo, _tarck);
+                    result.Tracks.Add(_tarck);
                 }
 
                 foreach (var part in dictionary["parts"] as ArrayList)
@@ -301,7 +301,7 @@ namespace OpenUtau.Core.Formats
                     result.Add("bunit", _obj.BeatUnit);
                     result.Add("res", _obj.Resolution);
                     result.Add("singers", _obj.Singers);
-                    result.Add("tracks", _obj.Tracks.Values.ToArray());
+                    result.Add("tracks", _obj.Tracks.ToArray());
                     result.Add("parts", _obj.Parts);
                     result.Add("exptable", _obj.ExpressionTable);
                 }

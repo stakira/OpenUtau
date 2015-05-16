@@ -47,7 +47,7 @@ namespace OpenUtau.Core.Formats
                 var _part = p.Parts[0];
                 _track.TrackNo = project.Tracks.Count;
                 _part.TrackNo = _track.TrackNo;
-                project.Tracks.Add(_track.TrackNo, _track);
+                project.Tracks.Add(_track);
                 project.Parts.Add(_part);
             }
 
@@ -82,7 +82,7 @@ namespace OpenUtau.Core.Formats
             project.RegisterExpression(new IntExpression(null, "decay", "DEC") { Data = 0, Min = 0, Max = 100 });
 
             var _track = new UTrack();
-            project.Tracks.Add(0, _track);
+            project.Tracks.Add(_track);
             _track.TrackNo = 0;
             UVoicePart part = new UVoicePart() { TrackNo = 0, PosTick = 0 };
             project.Parts.Add(part);
