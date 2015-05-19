@@ -88,7 +88,7 @@
     <Compile Include="Core\Render\CachedRenderQueue.cs" />
     <Compile Include="Core\Render\ResamplerInterface.cs" />
     <Compile Include="Core\Classes\ExpCommands.cs" />
-    <Compile Include="Core\Render\Wavtool.cs" />
+    <Compile Include="Core\Render\WaveConnector.cs" />
     <Compile Include="Core\USTx\UExpression.cs" />
     <Compile Include="Core\Classes\NoteCommands.cs" />
     <Compile Include="Core\Lib\Deque.cs" />
@@ -133,6 +133,9 @@
       <DependentUpon>ViewScaler.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="UI\Dialogs\PreferencesDialog.xaml.cs">
+      <DependentUpon>PreferencesDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Dialogs\SingerViewDialog.xaml.cs">
       <DependentUpon>SingerViewDialog.xaml</DependentUpon>
     </Compile>
@@ -159,6 +162,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\Controls\ViewScaler.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Dialogs\PreferencesDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

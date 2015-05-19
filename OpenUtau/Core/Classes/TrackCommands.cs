@@ -40,4 +40,13 @@ namespace OpenUtau.Core
             UpdateTrackNo();
         }
     }
+
+    public class TrackChangeSingerCommand : TrackCommand
+    {
+        USinger newSinger, oldSinger;
+        public TrackChangeSingerCommand(UProject project, UTrack track, USinger newSinger) { this.project = project; this.track = track; this.newSinger = newSinger; this.oldSinger = track.Singer; }
+        public override string ToString() { return "Change singer"; }
+        public override void Execute() { track.Singer = newSinger; }
+        public override void Unexecute() { track.Singer = oldSinger; }
+    }
 }

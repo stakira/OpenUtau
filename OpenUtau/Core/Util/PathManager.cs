@@ -21,8 +21,7 @@ namespace OpenUtau.Core
             _homePath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             if (Properties.Settings.Default.SingerPaths == null)
                 Properties.Settings.Default.SingerPaths = new System.Collections.Specialized.StringCollection();
-            AddSingerSearchPath(@"E:\Utau\voice");
-            AddSingerSearchPath(@"I:\Utau\voice");
+            AddSingerSearchPath(@"Singers");
         }
         private static PathManager _inst;
         public static PathManager Inst { get { if (_inst == null) { _inst = new PathManager(); } return _inst; } }

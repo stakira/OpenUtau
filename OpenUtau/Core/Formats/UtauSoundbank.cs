@@ -97,6 +97,7 @@ namespace OpenUtau.Core.Formats
             }
 
             LoadPrefixMap(singer);
+            singer.Loaded = true;
 
             return singer;
         }

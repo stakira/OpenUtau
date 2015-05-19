@@ -49,6 +49,7 @@ namespace OpenUtau.UI
             viewScaler.ViewScaled += viewScaler_ViewScaled;
 
             midiVM = (MidiViewModel)this.Resources["midiVM"];
+            midiVM.TimelineCanvas = this.timelineCanvas;
             midiVM.MidiCanvas = this.notesCanvas;
             midiVM.ExpCanvas = this.expCanvas;
             midiVM.Subscribe(DocManager.Inst);
@@ -537,7 +538,8 @@ namespace OpenUtau.UI
             }
             else
             {
-                midiVM.OffsetY -= midiVM.ViewHeight * 0.001 * e.Delta;
+                verticalScroll.Value -= verticalScroll.SmallChange * e.Delta / 100;
+                verticalScroll.Value = Math.Max(verticalScroll.Minimum, Math.Min(verticalScroll.Maximum, verticalScroll.Value));
             }
         }
 
@@ -570,8 +572,9 @@ namespace OpenUtau.UI
         private void timelineCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (midiVM.Part == null) return;
-            //ncModel.playPosMarkerOffset = ncModel.snapNoteOffset(e.GetPosition((UIElement)sender).X);
-            //ncModel.updatePlayPosMarker();
+            Point mousePos = e.GetPosition((UIElement)sender);
+            int tick = (int)(midiVM.CanvasToSnappedQuarter(mousePos.X) * midiVM.Project.Resolution);
+            DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(Math.Max(0, tick) + midiVM.Part.PosTick));
             ((Canvas)sender).CaptureMouse();
         }
 
@@ -585,8 +588,9 @@ namespace OpenUtau.UI
         {
             if (Mouse.LeftButton == MouseButtonState.Pressed && Mouse.Captured == timelineCanvas)
             {
-                //ncModel.playPosMarkerOffset = ncModel.snapNoteOffset(mousePos.X);
-                //ncModel.updatePlayPosMarker();
+                int tick = (int)(midiVM.CanvasToSnappedQuarter(mousePos.X) * midiVM.Project.Resolution);
+                if (midiVM.playPosTick != tick + midiVM.Part.PosTick)
+                    DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(Math.Max(0, tick) + midiVM.Part.PosTick));
             }
         }
 

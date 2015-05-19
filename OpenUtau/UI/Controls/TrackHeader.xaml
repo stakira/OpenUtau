@@ -11,15 +11,29 @@
         <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" Width="20" Height="16" Margin="4,6,0,0" TextAlignment="Center"
                    FontWeight="Bold" FontFamily="Arial" FontSize="11" Foreground="White"
                    Text="{Binding Path=DisplayTrackNo}"/>
-        <Button Style="{StaticResource TrackHeaderSingerButton}" HorizontalAlignment="Stretch" VerticalAlignment="Top"
+        <Button x:Name="singerNameButton" Style="{StaticResource TrackHeaderSingerButton}" HorizontalAlignment="Stretch" VerticalAlignment="Top"
                 Height="16" Margin="28,4,44,0" HorizontalContentAlignment="Left"
-                Content="{Binding Path=SingerName}"/>
+                Content="{Binding Path=SingerName}" Click="singerNameButton_Click"/>
         <ToggleButton Style="{StaticResource TrackHeaderSoloToggleButton}" HorizontalAlignment="Right" VerticalAlignment="Top"
                       Height="16" Width="16" Margin="0,4,4,0" Content="S" FontFamily="Arial" FontSize="11"
-                      IsChecked="{Binding Path=Solo}"/>
+                      IsChecked="{Binding Path=Solo}">
+            <ToggleButton.ContextMenu>
+                <ContextMenu Foreground="Black" FontSize="12">
+                    <MenuItem Header="Solo this only"/>
+                    <MenuItem Header="Unsolo all"/>
+                </ContextMenu>
+            </ToggleButton.ContextMenu>
+        </ToggleButton>
         <ToggleButton Style="{StaticResource TrackHeaderMuteToggleButton}" HorizontalAlignment="Right" VerticalAlignment="Top"
                       Height="16" Width="16" Margin="0,4,24,0" Content="M" FontFamily="Arial" FontSize="11"
-                      IsChecked="{Binding Path=Mute}"/>
+                      IsChecked="{Binding Path=Mute}">
+            <ToggleButton.ContextMenu>
+                <ContextMenu Foreground="Black" FontSize="12">
+                    <MenuItem Header="Mute this only"/>
+                    <MenuItem Header="Unmute all"/>
+                </ContextMenu>
+            </ToggleButton.ContextMenu>
+        </ToggleButton>
         <Slider x:Name="faderSlider" Style="{StaticResource TrackHeaderFader}" HorizontalAlignment="Stretch" VerticalAlignment="Top"
                 Height="16" Margin="4,21,92,0" Maximum="12" Minimum="-48"
                 Value="{Binding Path=Volume}"

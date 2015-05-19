@@ -19,6 +19,8 @@ namespace OpenUtau.UI.Models
 {
     class TracksViewModel : INotifyPropertyChanged, ICmdSubscriber
     {
+        # region Properties
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected void OnPropertyChanged(string name)
@@ -31,6 +33,7 @@ namespace OpenUtau.UI.Models
         }
 
         public UProject Project { get { return DocManager.Inst.Project; } }
+        public Canvas TimelineCanvas;
         public Canvas TrackCanvas;
         public Canvas HeaderCanvas;
 
@@ -112,14 +115,17 @@ namespace OpenUtau.UI.Models
             MarkUpdate();
         }
 
-        public List<UPart> SelectedParts = new List<UPart>();
-        List<UPart> TempSelectedParts = new List<UPart>();
+        # endregion
+        
         List<PartElement> PartElements = new List<PartElement>();
         List<TrackHeader> TrackHeaders = new List<TrackHeader>();
 
         public TracksViewModel() { }
 
         # region Selection
+
+        public List<UPart> SelectedParts = new List<UPart>();
+        List<UPart> TempSelectedParts = new List<UPart>();
 
         public void UpdateSelectedVisual()
         {
@@ -196,6 +202,7 @@ namespace OpenUtau.UI.Models
                     Canvas.SetTop(trackHeader, -OffsetY + TrackHeight * trackHeader.Track.TrackNo + 1);
                     trackHeader.Height = TrackHeight - 2;
                 }
+                UpdatePlayPosMarker();
             }
             _updated = false;
         }
@@ -222,6 +229,49 @@ namespace OpenUtau.UI.Models
         {
             return part.GetMinDurTick(Project);
         }
+
+        # region PlayPosMarker
+
+        public int playPosTick = 0;
+        Path playPosMarker;
+        Rectangle playPosMarkerHighlight;
+
+        private void initPlayPosMarker()
+        {
+            playPosTick = 0;
+            if (playPosMarker == null)
+            {
+                playPosMarker = new Path()
+                {
+                    Fill = ThemeManager.TickLineBrushDark,
+                    Data = Geometry.Parse("M 0 0 L 13 0 L 13 3 L 6.5 9 L 0 3 Z")
+                };
+                TimelineCanvas.Children.Add(playPosMarker);
+
+                playPosMarkerHighlight = new Rectangle()
+                {
+                    Fill = ThemeManager.TickLineBrushDark,
+                    Opacity = 0.25,
+                    Width = 32
+                };
+                TrackCanvas.Children.Add(playPosMarkerHighlight);
+            }
+        }
+
+        public void UpdatePlayPosMarker()
+        {
+            double quarter = (double)playPosTick / DocManager.Inst.Project.Resolution;
+            int playPosMarkerOffset = (int)Math.Round(QuarterToCanvas(quarter) + 0.5);
+            Canvas.SetLeft(playPosMarker, playPosMarkerOffset - 6);
+            playPosMarkerHighlight.Height = TrackCanvas.ActualHeight;
+            double zoomRatio = MusicMath.getZoomRatio(QuarterWidth, BeatPerBar, BeatUnit, MinTickWidth);
+            double interval = zoomRatio * QuarterWidth;
+            int left = (int)Math.Round(QuarterToCanvas((int)(quarter / zoomRatio) * zoomRatio) + 0.5);
+            playPosMarkerHighlight.Width = interval;
+            Canvas.SetLeft(playPosMarkerHighlight, left);
+        }
+
+        # endregion
 
         # region Calculation
 
@@ -311,6 +361,8 @@ namespace OpenUtau.UI.Models
             {
                 OnTrackAdded(track);
             }
+
+            initPlayPosMarker();
         }
 
         private void OnProjectUnload()
@@ -330,6 +382,12 @@ namespace OpenUtau.UI.Models
             {
                 foreach (UPart part in Project.Parts) part.Dispose();
             }
+        }
+
+        private void OnPlayPosSet(int playPosTick)
+        {
+            this.playPosTick = playPosTick;
+            MarkUpdate();
         }
 
         # endregion
@@ -374,10 +432,19 @@ namespace OpenUtau.UI.Models
                     if (!isUndo) OnTrackRemoved(_cmd.track);
                     else OnTrackAdded(_cmd.track);
                 }
+                else if (_cmd is TrackChangeSingerCommand)
+                {
+                    foreach (var trackHeader in TrackHeaders) trackHeader.UpdateSingerName();
+                }
             }
             else if (cmd is LoadProjectNotification)
             {
                 OnProjectLoad(((LoadProjectNotification)cmd).project);
+            }
+            else if (cmd is SetPlayPosTickNotification)
+            {
+                var _cmd = cmd as SetPlayPosTickNotification;
+                OnPlayPosSet(_cmd.playPosTick);
             }
         }
 

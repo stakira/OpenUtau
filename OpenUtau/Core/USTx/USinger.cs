@@ -19,7 +19,8 @@ namespace OpenUtau.Core.USTx
 
     public class USinger
     {
-        public string Name = "Unknown";
+        public string Name = "";
+        public string DisplayName { get { return Loaded ? Name : Name + "[Unloaded]"; } }
         public string Path = "";
         public string Author;
         public string Website;

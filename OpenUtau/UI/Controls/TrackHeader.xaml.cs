@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using OpenUtau.Core;
 using OpenUtau.Core.USTx;
 
 namespace OpenUtau.UI.Controls
@@ -22,18 +23,6 @@ namespace OpenUtau.UI.Controls
     /// </summary>
     public partial class TrackHeader : UserControl
     {
-        //public int TrackNo { set { SetValue(TrackNoProperty, value); } get { return (int)GetValue(TrackNoProperty); } }
-        //public bool Mute { set { SetValue(MuteProperty, value); } get { return (bool)GetValue(MuteProperty); } }
-        //public bool Solo { set { SetValue(SoloProperty, value); } get { return (bool)GetValue(SoloProperty); } }
-        //public double Volume { set { SetValue(VolumeProperty, value); } get { return (double)GetValue(VolumeProperty); } }
-        //public double Pan { set { SetValue(PanProperty, value); } get { return (double)GetValue(PanProperty); } }
-
-        //public static readonly DependencyProperty TrackNoProperty = DependencyProperty.Register("TrackNo", typeof(int), typeof(TrackHeader), new PropertyMetadata(0));
-        //public static readonly DependencyProperty MuteProperty = DependencyProperty.Register("Mute", typeof(bool), typeof(TrackHeader), new PropertyMetadata(false));
-        //public static readonly DependencyProperty SoloProperty = DependencyProperty.Register("Solo", typeof(bool), typeof(TrackHeader), new PropertyMetadata(false));
-        //public static readonly DependencyProperty VolumeProperty = DependencyProperty.Register("Volume", typeof(double), typeof(TrackHeader), new PropertyMetadata(0.0));
-        //public static readonly DependencyProperty PanProperty = DependencyProperty.Register("Pan", typeof(double), typeof(TrackHeader), new PropertyMetadata(0.0));
-
         UTrack _track;
         public UTrack Track { set { _track = value; this.DataContext = value; } get { return _track; } }
 
@@ -89,6 +78,39 @@ namespace OpenUtau.UI.Controls
         {
             var slider = sender as Slider;
             slider.Value += e.Delta / 120 * (slider.Maximum - slider.Minimum) / 50;
+        }
+
+        ContextMenu changeSingerMenu;
+        private void singerNameButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (changeSingerMenu == null)
+            {
+                changeSingerMenu = new ContextMenu();
+                changeSingerMenu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
+                changeSingerMenu.PlacementTarget = (Button)sender;
+                changeSingerMenu.HorizontalOffset = -10;
+                foreach (var pair in DocManager.Inst.Singers)
+                {
+                    var menuItem = new MenuItem() { Header = pair.Value.Name };
+                    menuItem.Click += (_o, _e) =>
+                    {
+                        if (this.Track.Singer != pair.Value)
+                        {
+                            DocManager.Inst.StartUndoGroup();
+                            DocManager.Inst.ExecuteCmd(new TrackChangeSingerCommand(DocManager.Inst.Project, this.Track, pair.Value));
+                            DocManager.Inst.EndUndoGroup();
+                        }
+                    };
+                    changeSingerMenu.Items.Add(menuItem);
+                }
+            }
+            changeSingerMenu.IsOpen = true;
+            e.Handled = true;
+        }
+
+        public void UpdateSingerName()
+        {
+            this.singerNameButton.GetBindingExpression(Button.ContentProperty).UpdateTarget();
         }
     }
 }

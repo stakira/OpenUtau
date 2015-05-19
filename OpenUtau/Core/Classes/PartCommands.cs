@@ -52,7 +52,7 @@ namespace OpenUtau.Core
         public override void Execute()
         {
             if (project.Tracks.Count <= newTrackNo)
-                DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, new UTrack() { TrackNo = newTrackNo }));
+                DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, new UTrack() { TrackNo = newTrackNo, Singer = project.Tracks[oldTrackNo].Singer }));
             part.PosTick = newPos;
             part.TrackNo = newTrackNo;
         }

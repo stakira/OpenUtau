@@ -50,6 +50,7 @@ namespace OpenUtau.UI
             viewScaler.Value = UIConstants.TrackDefaultHeight;
 
             trackVM = (TracksViewModel)this.Resources["tracksVM"];
+            trackVM.TimelineCanvas = this.timelineCanvas;
             trackVM.TrackCanvas = this.trackCanvas;
             trackVM.HeaderCanvas = this.headerCanvas;
             trackVM.Subscribe(DocManager.Inst);
@@ -87,8 +88,9 @@ namespace OpenUtau.UI
 
         private void timelineCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            //ncModel.playPosMarkerOffset = ncModel.snapNoteOffset(e.GetPosition((UIElement)sender).X);
-            //ncModel.updatePlayPosMarker();
+            Point mousePos = e.GetPosition((UIElement)sender);
+            int tick = (int)(trackVM.CanvasToSnappedQuarter(mousePos.X) * trackVM.Project.Resolution);
+            DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(Math.Max(0, tick)));
             ((Canvas)sender).CaptureMouse();
         }
 
@@ -102,8 +104,9 @@ namespace OpenUtau.UI
         {
             if (Mouse.LeftButton == MouseButtonState.Pressed && Mouse.Captured == timelineCanvas)
             {
-                //ncModel.playPosMarkerOffset = ncModel.snapNoteOffset(mousePos.X);
-                //ncModel.updatePlayPosMarker();
+                int tick = (int)(trackVM.CanvasToSnappedQuarter(mousePos.X) * trackVM.Project.Resolution);
+                if (trackVM.playPosTick != tick)
+                    DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(Math.Max(0, tick)));
             }
         }
 
@@ -402,17 +405,9 @@ namespace OpenUtau.UI
             if (openFileDialog.ShowDialog() == true) CmdImportAudio(openFileDialog.FileName);
         }
 
-        private void Menu_OpenMidiEditor(object sender, RoutedEventArgs e)
-        {
-            if (midiWindow == null) midiWindow = new MidiWindow();
-            midiWindow.Show();
-            midiWindow.Focus();
-        }
-
         private void MenuSingers_Click(object sender, RoutedEventArgs e)
         {
             var w = new Dialogs.SingerViewDialog();
-            w.SetSinger(DocManager.Inst.Project.Singers[0]);
             w.ShowDialog();
         }
 
@@ -431,6 +426,12 @@ namespace OpenUtau.UI
                         + "to singing software synthesizer community."
                         + "\n\nOpenUtau is an open source software under the MIT Licence. Visit us on GitHub.";
             MessageBox.Show(text, "About OpenUtau", MessageBoxButton.OK, MessageBoxImage.None);
+        }
+
+        private void MenuPrefs_Click(object sender, RoutedEventArgs e)
+        {
+            var w = new Dialogs.PreferencesDialog();
+            w.ShowDialog();
         }
 
         # endregion
@@ -567,8 +568,14 @@ namespace OpenUtau.UI
             }
             else
             {
-                trackVM.OffsetY -= trackVM.ViewHeight * 0.001 * e.Delta;
+                verticalScroll.Value -= verticalScroll.SmallChange * e.Delta / 100;
+                verticalScroll.Value = Math.Min(verticalScroll.Maximum, Math.Max(verticalScroll.Minimum, verticalScroll.Value));
             }
+        }
+
+        private void Window_Activated(object sender, EventArgs e)
+        {
+            if (trackVM != null) trackVM.MarkUpdate();
         }
     }
 }

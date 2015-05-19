@@ -12,7 +12,7 @@ namespace OpenUtau.Core.USTx
         public string Comment = "";
         public USinger Singer;
 
-        public string SingerName { get { if (Singer != null) return Singer.Name; else return ""; } }
+        public string SingerName { get { if (Singer != null) return Singer.DisplayName; else return "[No Signer]"; } }
         public int TrackNo { set; get; }
         public int DisplayTrackNo { get { return TrackNo + 1; } }
         public bool Mute { set; get; }

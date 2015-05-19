@@ -1,0 +1,49 @@
+﻿<Window x:Class="OpenUtau.UI.Dialogs.PreferencesDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Preferences" Height="400" Width="600" ResizeMode="NoResize">
+    <Grid>
+        <TreeView x:Name="treeView" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Stretch" Width="150"
+                  SelectedItemChanged="treeView_SelectedItemChanged">
+            <TreeViewItem Header="General" IsExpanded="True">
+                <TreeViewItem x:Name="pathsItem" Header="Paths" Margin="-12,0,0,0"/>
+            </TreeViewItem>
+            <TreeViewItem Header="Appearance" IsExpanded="True">
+                <TreeViewItem x:Name="themesItem" Header="Themes" Margin="-12,0,0,0"/>
+                <TreeViewItem Header="Media" Margin="-12,0,0,0"/>
+            </TreeViewItem>
+            <TreeViewItem Header="Audio" IsExpanded="True">
+                <TreeViewItem Header="Rendering" Margin="-12,0,0,0"/>
+                <TreeViewItem x:Name="playbackItem" Header="Playback" Margin="-12,0,0,0"/>
+                <TreeViewItem Header="Buffering" Margin="-12,0,0,0"/>
+            </TreeViewItem>
+        </TreeView>
+        <Grid x:Name="pathsGrid" Margin="170,2,10,10" Visibility="Hidden">
+            <GroupBox Header="Singer paths" Height="200" VerticalAlignment="Top">
+                <Grid>
+                    <ListBox x:Name="singerPathsList" Margin="10,10,10,42" SelectionChanged="singerPathsList_SelectionChanged"/>
+                    <Button x:Name="singerPathAddButton" Margin="10" Width="75" Height="22" VerticalAlignment="Bottom" HorizontalAlignment="Left" Content="Add"
+                            Focusable="False" Click="singerPathAddButton_Click"/>
+                    <Button x:Name="singerPathRemoveButton" Margin="95,0,0,10" Width="75" Height="22" VerticalAlignment="Bottom" HorizontalAlignment="Left"
+                            Focusable="False" Content="Remove" IsEnabled="False" Click="singerPathRemoveButton_Click"/>
+                </Grid>
+            </GroupBox>
+        </Grid>
+        <Grid x:Name="themesGrid" Margin="170,2,10,10" Visibility="Hidden">
+            <TextBlock Text="Theme" Margin="10,4,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+            <ComboBox Width="256" Height="22" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,25,0,0">
+                <ComboBoxItem Content="Clean" IsSelected="True"/>
+                <ComboBoxItem Content="Dark"/>
+            </ComboBox>
+        </Grid>
+        <Grid x:Name="playbackGrid" Margin="170,2,10,10" Visibility="Hidden">
+            <TextBlock Text="Output device" Margin="10,4,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+            <ComboBox Width="256" Height="22" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,25,0,0">
+                <ComboBoxItem Content="WASAPI" IsSelected="True"/>
+                <ComboBoxItem Content="DirectSound"/>
+                <ComboBoxItem Content="WaveOut"/>
+                <ComboBoxItem Content="ASIO"/>
+            </ComboBox>
+        </Grid>
+    </Grid>
+</Window>

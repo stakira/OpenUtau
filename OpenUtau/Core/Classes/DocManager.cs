@@ -21,6 +21,8 @@ namespace OpenUtau.Core
         static DocManager GetInst() { if (_s == null) { _s = new DocManager(); } return _s; }
         public static DocManager Inst { get { return GetInst(); } }
 
+        public int playPosTick = 0;
+
         Dictionary<string, USinger> _singers;
         public Dictionary<string, USinger> Singers { get { return _singers; } }
         UProject _project;
@@ -45,19 +47,26 @@ namespace OpenUtau.Core
         {
             if (cmd is UNotification)
             {
-                if (cmd is SaveProjectNotification) 
+                if (cmd is SaveProjectNotification)
                 {
                     var _cmd = cmd as SaveProjectNotification;
                     if (undoQueue.Count > 0) savedPoint = undoQueue.Last();
                     if (_cmd.Path == "") OpenUtau.Core.Formats.USTx.Save(Project.FilePath, Project);
                     else OpenUtau.Core.Formats.USTx.Save(_cmd.Path, Project);
                 }
-                else if (cmd is LoadProjectNotification) {
+                else if (cmd is LoadProjectNotification)
+                {
                     undoQueue.Clear();
                     redoQueue.Clear();
                     undoGroup = null;
                     savedPoint = null;
                     this._project = ((LoadProjectNotification)cmd).project;
+                    this.playPosTick = 0;
+                }
+                else if (cmd is SetPlayPosTickNotification)
+                {
+                    var _cmd = cmd as SetPlayPosTickNotification;
+                    this.playPosTick = _cmd.playPosTick;
                 }
                 Publish(cmd);
                 if (!quiet) System.Diagnostics.Debug.WriteLine("Publish notification " + cmd.ToString());

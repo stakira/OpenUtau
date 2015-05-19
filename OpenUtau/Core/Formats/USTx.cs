@@ -406,6 +406,13 @@ namespace OpenUtau.Core.Formats
         public static UProject Create()
         {
             UProject project = new UProject() { Saved = false };
+            project.RegisterExpression(new IntExpression(null, "velocity", "VEL") { Data = 100, Min = 0, Max = 200 });
+            project.RegisterExpression(new IntExpression(null, "volume", "VOL") { Data = 100, Min = 0, Max = 200 });
+            project.RegisterExpression(new IntExpression(null, "gender", "GEN") { Data = 0, Min = -100, Max = 100 });
+            project.RegisterExpression(new IntExpression(null, "lowpass", "LPF") { Data = 0, Min = 0, Max = 100 });
+            project.RegisterExpression(new IntExpression(null, "highpass", "HPF") { Data = 0, Min = 0, Max = 100 });
+            project.RegisterExpression(new IntExpression(null, "accent", "ACC") { Data = 100, Min = 0, Max = 200 });
+            project.RegisterExpression(new IntExpression(null, "decay", "DEC") { Data = 0, Min = 0, Max = 100 });
             return project;
         }
 
@@ -464,6 +471,7 @@ namespace OpenUtau.Core.Formats
                 return null;
             }
 
+            // Load singers
             for (int i = 0; i < project.Singers.Count; i++)
             {
                 foreach (var pair in DocManager.Inst.Singers)
@@ -472,6 +480,17 @@ namespace OpenUtau.Core.Formats
                     {
                         project.Singers[i] = pair.Value;
                         continue;
+                    }
+                }
+            }
+
+            foreach (var track in project.Tracks)
+            {
+                foreach (var singer in project.Singers)
+                {
+                    if (track.Singer.Name == singer.Name)
+                    {
+                        track.Singer = singer;
                     }
                 }
             }

@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Shapes;
 using System.ComponentModel;
 
 using OpenUtau.Core;
@@ -33,6 +35,7 @@ namespace OpenUtau.UI.Models
         UVoicePart _part;
         public UVoicePart Part { get { return _part; } }
 
+        public Canvas TimelineCanvas;
         public Canvas MidiCanvas;
         public Canvas ExpCanvas;
 
@@ -118,8 +121,6 @@ namespace OpenUtau.UI.Models
 
         # endregion
 
-        public List<UNote> SelectedNotes = new List<UNote>();
-        public List<UNote> TempSelectedNotes = new List<UNote>();
         Dictionary<string, FloatExpElement> expElements = new Dictionary<string, FloatExpElement>();
         public PitchExpElement pitchExpElement;
         public FloatExpElement visibleExpElement, shadowExpElement;
@@ -150,13 +151,61 @@ namespace OpenUtau.UI.Models
                     pitchExpElement.TrackHeight = TrackHeight;
                     pitchExpElement.QuarterWidth = QuarterWidth;
                 }
+                updatePlayPosMarker();
             }
             _updated = false;
             foreach (var pair in expElements) pair.Value.RedrawIfUpdated();
             if (pitchExpElement != null) pitchExpElement.RedrawIfUpdated();
         }
 
+        # region PlayPosMarker
+
+        public int playPosTick = 0;
+        Path playPosMarker;
+        Rectangle playPosMarkerHighlight;
+
+        private void initPlayPosMarker()
+        {
+            playPosTick = 0;
+            if (playPosMarker == null)
+            {
+                playPosMarker = new Path()
+                {
+                    Fill = ThemeManager.TickLineBrushDark,
+                    Data = Geometry.Parse("M 0 0 L 13 0 L 13 3 L 6.5 9 L 0 3 Z")
+                };
+                TimelineCanvas.Children.Add(playPosMarker);
+
+                playPosMarkerHighlight = new Rectangle()
+                {
+                    Fill = ThemeManager.TickLineBrushDark,
+                    Opacity = 0.25,
+                    Width = 32
+                };
+                MidiCanvas.Children.Add(playPosMarkerHighlight);
+                Canvas.SetZIndex(playPosMarkerHighlight, UIConstants.PosMarkerHightlighZIndex);
+            }
+        }
+
+        public void updatePlayPosMarker()
+        {
+            double quarter = (double)(playPosTick - Part.PosTick) / DocManager.Inst.Project.Resolution;
+            int playPosMarkerOffset = (int)Math.Round(QuarterToCanvas(quarter) + 0.5);
+            Canvas.SetLeft(playPosMarker, playPosMarkerOffset - 6);
+            playPosMarkerHighlight.Height = MidiCanvas.ActualHeight;
+            double zoomRatio = MusicMath.getZoomRatio(QuarterWidth, BeatPerBar, BeatUnit, MinTickWidth);
+            double interval = zoomRatio * QuarterWidth;
+            int left = (int)Math.Round(QuarterToCanvas((int)(quarter / zoomRatio) * zoomRatio) + 0.5);
+            playPosMarkerHighlight.Width = interval;
+            Canvas.SetLeft(playPosMarkerHighlight, left);
+        }
+
+        # endregion
+
         # region Selection
+
+        public List<UNote> SelectedNotes = new List<UNote>();
+        public List<UNote> TempSelectedNotes = new List<UNote>();
 
         public void SelectAll() { SelectedNotes.Clear(); foreach (UNote note in Part.Notes) { SelectedNotes.Add(note); note.Selected = true; } DocManager.Inst.ExecuteCmd(new RedrawNotesNotification()); }
         public void DeselectAll() { SelectedNotes.Clear(); foreach (UNote note in Part.Notes) note.Selected = false; DocManager.Inst.ExecuteCmd(new RedrawNotesNotification()); }
@@ -265,6 +314,7 @@ namespace OpenUtau.UI.Models
             }
 
             foreach (var pair in expElements) { pair.Value.Part = this.Part; pair.Value.MarkUpdate(); }
+            initPlayPosMarker();
         }
 
         private void OnPartModified()
@@ -297,6 +347,12 @@ namespace OpenUtau.UI.Models
             foreach (var pair in expElements) pair.Value.DisplayMode = ExpDisMode.Hidden;
             if (shadowExpElement != null) shadowExpElement.DisplayMode = ExpDisMode.Shadow;
             visibleExpElement.DisplayMode = ExpDisMode.Visible;
+        }
+
+        private void OnPlayPosSet(int playPosTick)
+        {
+            this.playPosTick = playPosTick;
+            MarkUpdate();
         }
 
         # endregion
@@ -334,6 +390,7 @@ namespace OpenUtau.UI.Models
                 else if (_cmd is ShowPitchExpNotification) { }
                 else if (_cmd is HidePitchExpNotification) { }
                 else if (_cmd is RedrawNotesNotification) { if (pitchExpElement != null) pitchExpElement.MarkUpdate(); }
+                else if (_cmd is SetPlayPosTickNotification) { OnPlayPosSet(((SetPlayPosTickNotification)_cmd).playPosTick); }
             }
         }
 

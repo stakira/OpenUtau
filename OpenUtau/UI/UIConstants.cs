@@ -11,10 +11,7 @@ namespace OpenUtau.UI
         public const int MaxNoteNum = 12 * 11;
         public const int HiddenNoteNum = 12 * 4;
 
-        public const int KeyTrackZIndex = 0;
-        public const int PosMarkerHightlighZIndex = 100;
-        public const int NoteZIndex = 200;
-        public const int NoteWithLyricBoxZIndex = 1000;
+        public const int PosMarkerHightlighZIndex = -100;
 
         public const int ResizeMargin = 8;
 
