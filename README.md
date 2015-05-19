@@ -8,7 +8,7 @@ The mission of OpenUtau is to create a open source editing environment for UTAU 
 #### The scope of OpenUtau includes:
 - Modern user experience.
 - Compatibility with UTAU technologies.
-- Intelligent CVC, CVVC an other voicebank sampling technique support.
+- Intelligent VCV, CVVC an other voicebank sampling technique support.
 - Internationalization, including UI translation and file system encoding support.
 - Smooth preview/rendering experience.
 - A easy to use plugin system.
@@ -37,7 +37,7 @@ OpenUtau的目标，是为UTAU用户群体提供一个开源的编辑环境，�
 #### OpenUtau将包含:
 - 现代的用户体验
 - 与UTAU技术的兼容性
-- 对CVC、CVVC等音库采样方案的智能支持
+- 对VCV、CVVC等音库采样方案的智能支持
 - 国际化，包括多语言UI以及各文件系统编码支持
 - 流畅的预览及合成体验
 - 易用的插件系统
@@ -65,7 +65,7 @@ OpenUtauは現代的なユーザー体験と知能音声に基づき、音声合
 #### OpenUtauには、以下の機能と優れを含む：
 - 現代的なユーザー体験
 - UTAU技術との互換性
-- CVC、CVVCまた他の音声ベースのサンプリングへの支援
+- VCV、CVVCまた他の音声ベースのサンプリングへの支援
 - 国際化（他言語化）への支援、UIの交換とファイルシステムへの支援を含む
 - スムーズなプレビュー合成の体験
 - 簡単で便利なプラグインシステム
