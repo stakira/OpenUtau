@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Diagnostics;
+using System.ComponentModel;
 
 using OpenUtau.Core.USTx;
 
@@ -17,148 +18,124 @@ namespace OpenUtau.Core.Render
         {
             foreach (UPart part in project.Parts)
                 if (part is UVoicePart)
-                    Render((UVoicePart)part, project);
+                    Start((UVoicePart)part, project);
         }
 
-        public void Render(UVoicePart part, UProject project)
+        public void Start(UVoicePart part, UProject project)
         {
+            BackgroundWorker worker = new BackgroundWorker();
+            worker.WorkerReportsProgress = true;
+            worker.DoWork += worker_DoWork;
+            worker.RunWorkerCompleted += worker_RunWorkerCompleted;
+            worker.ProgressChanged += worker_ProgressChanged;
+            worker.RunWorkerAsync(new Tuple<UVoicePart, UProject>(part, project));
+        }
+
+        void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            DocManager.Inst.ExecuteCmd(new ProgressBarNotification(e.ProgressPercentage, (string)e.UserState));
+        }
+
+        void worker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            var args = e.Argument as Tuple<UVoicePart, UProject>;
+            var part = args.Item1;
+            var project = args.Item2;
+            e.Result = RenderAsync(part, project, sender as BackgroundWorker);
+        }
+
+        void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            var waveConnector = e.Result as WaveConnector;
+            DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, string.Format("")));
+            System.Diagnostics.Debug.WriteLine("Render end");
+            System.Diagnostics.Debug.WriteLine("Total cache size {0:n0} bytes", RenderCache.Inst.TotalMemSize);
+
+            //waveConnector.WriteToFile("out.wav");
+            var waveout = new NAudio.Wave.WaveOut();
+            var stream = new NAudio.Wave.SampleProviders.SampleToWaveProvider16(waveConnector.GetMixingSampleProvider());
+            waveout.Init(stream);
+            waveout.Play();
+        }
+
+        public WaveConnector RenderAsync(UVoicePart part, UProject project, BackgroundWorker worker)
+        {
+            WaveConnector waveConnector = new WaveConnector();
             System.Diagnostics.Debug.WriteLine("Render start");
             lock (part)
             {
                 string cache_dir = PathManager.Inst.GetCachePath(project.FilePath);
-                var file = new StreamWriter(Path.Combine(cache_dir, "render.bat"), false, Encoding.Default);
 
-                UNote lastNote = null;
+                int count = 0, i = 0;
+                foreach (UNote note in part.Notes) foreach (UPhoneme phoneme in note.Phonemes) count++;
+
                 foreach (UNote note in part.Notes)
                 {
-                    if (lastNote == null || lastNote.EndTick < note.PosTick)
-                    {
-                        if (!note.Phonemes[0].Overlapped)
-                        {
-                            USinger singer = project.Tracks[part.TrackNo].Singer;
-
-                            string inputfile = Path.Combine(singer.Path, "R.wav");
-
-                            string args2 = BuildConnectorArgsR(lastNote, note, part, project);
-                            //string tool2_cmd = string.Format("{0} {1} {2} {3} {4}",
-                            //    PathManager.Inst.GetTool2Path(), Path.Combine(cache_dir, "out.wav"), inputfile, args2, DefaultEnvelope);
-                            //file.WriteLine(tool2_cmd);
-
-                            //System.Diagnostics.Debug.WriteLine(tool2_cmd);
-                            ProcessStartInfo pinfo = new ProcessStartInfo(
-                                PathManager.Inst.GetTool2Path(),
-                                string.Format("{0} {1} {2} {3}", Path.Combine(cache_dir, "out.wav"), inputfile, args2, DefaultEnvelope));
-                            pinfo.CreateNoWindow = true;
-                            pinfo.UseShellExecute = false;
-                            var p = Process.Start(pinfo);
-                            p.WaitForExit();
-                        }
-                    }
                     foreach (UPhoneme phoneme in note.Phonemes)
                     {
-                        USinger singer = project.Tracks[part.TrackNo].Singer;
-                        
-                        string inputfile = Lib.EncodingUtil.ConvertEncoding(singer.FileEncoding, singer.PathEncoding, phoneme.Oto.File);
-                        inputfile = Path.Combine(singer.Path, inputfile);
+                        RenderItem item = BuildRenderItem(phoneme, part, project);
+                        var sound = RenderCache.Inst.Get(item.HashParameters());
 
-                        string args1 = BuildResamplerArgs(phoneme, part, project);
-                        string args2 = BuildConnectorArgs(phoneme, part, project);
-                        string cachefile = string.Format("{0:x}.wav", Lib.xxHash.CalcStringHash(inputfile + " " + args1));
-                        cachefile = Path.Combine(cache_dir, cachefile);
-
-                        //string tool1_cmd = File.Exists(cachefile) ? "" : string.Format("{0} {1} {2} {3}", PathManager.Inst.GetTool1Path(), inputfile, cachefile, args1);
-                        //string tool2_cmd = string.Format("{0} {1} {2} {3}", PathManager.Inst.GetTool2Path(), cache_dir + "\\out.wav", cachefile, args2);
-
-                        //file.WriteLine(tool1_cmd);
-                        //file.WriteLine(tool2_cmd);
-
-                        //System.Diagnostics.Debug.WriteLine(tool1_cmd);
-                        if (!File.Exists(cachefile))
+                        if (sound == null)
                         {
-                            ProcessStartInfo pinfo = new ProcessStartInfo(
-                                PathManager.Inst.GetTool1Path(),
-                                string.Format("{0} {1} {2}", inputfile, cachefile, args1));
-                            pinfo.CreateNoWindow = true;
-                            pinfo.UseShellExecute = false;
-                            var p = Process.Start(pinfo);
-                            p.WaitForExit();
+                            string cachefile = Path.Combine(cache_dir, string.Format("{0:x}.wav", item.HashParameters()));
+                            if (!File.Exists(cachefile))
+                            {
+                                System.Diagnostics.Debug.WriteLine("Sound {0:x} not found in cache, resampling {1}", item.HashParameters(), item.GetResamplerExeArgs());
+                                ProcessStartInfo pinfo = new ProcessStartInfo(
+                                    PathManager.Inst.GetTool1Path(),
+                                    string.Format("{0} {1} {2}", item.RawFile, cachefile, item.GetResamplerExeArgs()));
+                                pinfo.CreateNoWindow = true;
+                                pinfo.UseShellExecute = false;
+                                var p = Process.Start(pinfo);
+                                p.WaitForExit();
+                            }
+                            else System.Diagnostics.Debug.WriteLine("Sound {0:x} found on disk {1}", item.HashParameters(), item.GetResamplerExeArgs());
+                            sound = new CachedSound(cachefile);
+                            RenderCache.Inst.Put(item.HashParameters(), sound);
                         }
+                        else System.Diagnostics.Debug.WriteLine("Sound {0} found in cache {1}", item.HashParameters(), item.GetResamplerExeArgs());
 
-                        //System.Diagnostics.Debug.WriteLine(tool2_cmd);
-                        ProcessStartInfo pinfo2 = new ProcessStartInfo(
-                            PathManager.Inst.GetTool2Path(),
-                            string.Format("{0} {1} {2}", cache_dir + "\\out.wav", cachefile, args2));
-                        pinfo2.CreateNoWindow = true;
-                        pinfo2.UseShellExecute = false;
-                        var p2 = Process.Start(pinfo2);
-                        p2.WaitForExit();
-                        
+                        item.Sound = sound;
+                        waveConnector.RenderItems.Add(item);
+                        worker.ReportProgress(100 * ++i / count, string.Format("Rendering \"{0}\" {1}/{2}", phoneme.Phoneme, i, count));
                     }
-                    lastNote = note;
                 }
-                string cmd = string.Format("copy /Y \"{0}\" /B + \"{1}\" /B \"{2}\"",
-                    Path.Combine(cache_dir, "out.wav.whd"), Path.Combine(cache_dir, "out.wav.dat"), Path.Combine(cache_dir, "out.wav"));
-                file.WriteLine(cmd);
-                cmd = string.Format("del \"{0}\"", Path.Combine(cache_dir, "out.wav.whd"));
-                file.WriteLine(cmd);
-                cmd = string.Format("del \"{0}\"", Path.Combine(cache_dir, "out.wav.dat"));
-                file.WriteLine(cmd);
-                file.Close();
-
-                var pinfo3 = new ProcessStartInfo(Path.Combine(cache_dir, "render.bat"), "");
-                pinfo3.CreateNoWindow = true;
-                pinfo3.UseShellExecute = false;
-                var p3 = System.Diagnostics.Process.Start(pinfo3);
-                p3.WaitForExit();
             }
-            System.Diagnostics.Debug.WriteLine("Render end");
+            return waveConnector;
         }
 
-        private string BuildResamplerArgs(UPhoneme phoneme, UVoicePart part, UProject project)
+        private RenderItem BuildRenderItem(UPhoneme phoneme, UVoicePart part, UProject project)
         {
             USinger singer = project.Tracks[part.TrackNo].Singer;
-            string noteName = MusicMath.GetNoteString(phoneme.Parent.NoteNum);
+            string rawfile = Lib.EncodingUtil.ConvertEncoding(singer.FileEncoding, singer.PathEncoding, phoneme.Oto.File);
+            rawfile = Path.Combine(singer.Path, rawfile);
 
             double strechRatio = Math.Pow(2, 1.0 - (double)(int)phoneme.Parent.Expressions["velocity"].Data / 100);
             double length = phoneme.Oto.Preutter * strechRatio + phoneme.Envelope.Points[4].X;
             double requiredLength = Math.Ceiling(length / 50 + 1) * 50;
-            // fresamp.exe <infile> <outfile> <tone> <velocity> <flags> <offset> <length_req>
-            // <fixed_length> <endblank> <volume> <modulation> <pitch>
-            string args = string.Format(
-                "{0} {1:D} {2} {3:D} {4:D} {5:D} {6:D} {7:D} {8:D} {9}",
-                noteName,
-                (int)phoneme.Parent.Expressions["velocity"].Data,
-                phoneme.Parent.GetResamplerFlags(),
-                phoneme.Oto.Offset,
-                (int)requiredLength,
-                phoneme.Oto.Consonant,
-                phoneme.Oto.Cutoff,
-                (int)phoneme.Parent.Expressions["volume"].Data,
-                0,
-                BuildPitchArgs(phoneme, part, project)
-                );
-            return args;
-        }
-
-        private string BuildConnectorArgs(UPhoneme phoneme, UVoicePart part, UProject project)
-        {
-            double strechRatio = Math.Pow(2, 1.0 - ((double)(int)phoneme.Parent.Expressions["velocity"].Data / 100));
-            string offset = string.Format("{0:0.###}", phoneme.Oto.Preutter * strechRatio - phoneme.Preutter);
             double lengthAdjustment = phoneme.TailIntrude == 0 ? phoneme.Preutter : phoneme.Preutter - phoneme.TailIntrude + phoneme.TailOverlap;
-            string length = phoneme.DurTick + "@" + project.BPM + (lengthAdjustment >= 0 ? "+" : "-") + string.Format("{0:0.###}", Math.Abs(lengthAdjustment));
-            var pts = phoneme.Envelope.Points;
-            string envelope = string.Format("{0:0.#####} {1:0.#####} {2:0.#####}", 0, pts[1].X - pts[0].X, pts[4].X - pts[3].X);
-            envelope += string.Format(" {0:0.#####} {1:0.#####} {2:0.#####}", pts[0].Y, pts[1].Y, pts[3].Y);
-            envelope += string.Format(" {0:0.#####} {1:0.#####} {2:0.#####}", 0, phoneme.Overlap, pts[4].Y);
-            return string.Format("{0} {1} {2}", offset, length, envelope);
-        }
 
-        private string BuildConnectorArgsR(UNote lastNote, UNote note, UVoicePart part, UProject project)
-        {
-            int durTick = lastNote == null ? note.PosTick : note.PosTick - lastNote.EndTick;
-            double lengthAdjustment = -note.Phonemes[0].Preutter + note.Phonemes[0].Overlap;
-            string length = durTick + "@" + project.BPM + (lengthAdjustment >= 0 ? "+" : "-") + string.Format("{0:0.###}", Math.Abs(lengthAdjustment));
-            return string.Format("0 {0}", length);
+            RenderItem item = new RenderItem()
+            {
+                // For resampler
+                RawFile = rawfile,
+                NoteNum = phoneme.Parent.NoteNum,
+                Velocity = (int)phoneme.Parent.Expressions["velocity"].Data,
+                Volume = (int)phoneme.Parent.Expressions["volume"].Data,
+                StrFlags = phoneme.Parent.GetResamplerFlags(),
+                B64Pitch = BuildPitchArgs(phoneme, part, project),
+                RequiredLength = (int)requiredLength,
+                Oto = phoneme.Oto,
+
+                // For connector
+                SkipOver = phoneme.Oto.Preutter * strechRatio - phoneme.Preutter,
+                PosMs = project.TickToMillisecond(part.PosTick + phoneme.Parent.PosTick + phoneme.PosTick) - phoneme.Preutter,
+                DurMs = project.TickToMillisecond(phoneme.DurTick) + lengthAdjustment,
+                Envelope = phoneme.Envelope.Points
+            };
+
+            return item;
         }
 
         private string BuildPitchArgs(UPhoneme phoneme, UVoicePart part, UProject project)

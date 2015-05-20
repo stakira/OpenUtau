@@ -31,6 +31,7 @@ namespace OpenUtau.UI
     {
         MidiWindow midiWindow;
         TracksViewModel trackVM;
+        ProgressBarViewModel progVM;
 
         public MainWindow()
         {
@@ -42,6 +43,10 @@ namespace OpenUtau.UI
 
             ThemeManager.LoadTheme(); // TODO : move to program entry point
 
+            progVM = this.Resources["progVM"] as ProgressBarViewModel;
+            progVM.Subscribe(DocManager.Inst);
+            progVM.Foreground = ThemeManager.NoteFillBrushes[0];
+
             this.CloseButtonClicked += (o, e) => { CmdExit(); };
             CompositionTargetEx.FrameUpdating += RenderLoop;
 
@@ -49,7 +54,7 @@ namespace OpenUtau.UI
             viewScaler.Min = UIConstants.TrackMinHeight;
             viewScaler.Value = UIConstants.TrackDefaultHeight;
 
-            trackVM = (TracksViewModel)this.Resources["tracksVM"];
+            trackVM = this.Resources["tracksVM"] as TracksViewModel;
             trackVM.TimelineCanvas = this.timelineCanvas;
             trackVM.TrackCanvas = this.trackCanvas;
             trackVM.HeaderCanvas = this.headerCanvas;
@@ -436,6 +441,13 @@ namespace OpenUtau.UI
 
         # endregion
 
+        // Disable system menu and main menu
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            Window_KeyDown(this, e);
+            e.Handled = true;
+        }
+
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
             if (Keyboard.Modifiers == 0 && e.Key == Key.Delete)
@@ -444,7 +456,7 @@ namespace OpenUtau.UI
                 while (trackVM.SelectedParts.Count > 0) DocManager.Inst.ExecuteCmd(new RemovePartCommand(trackVM.Project, trackVM.SelectedParts.Last()));
                 DocManager.Inst.EndUndoGroup();
             }
-            else if (Keyboard.Modifiers == ModifierKeys.Alt && e.Key == Key.F4) CmdExit();
+            else if (Keyboard.Modifiers == ModifierKeys.Alt && e.SystemKey == Key.F4) CmdExit();
             else if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.O) CmdOpenFileDialog();
             else if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.Z)
             {

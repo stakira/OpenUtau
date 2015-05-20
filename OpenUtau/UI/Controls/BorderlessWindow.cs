@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Input;
 using System.Windows.Controls;
+using System.Windows.Shell;
 
 using OpenUtau.UI.Models;
 
@@ -43,6 +44,17 @@ namespace OpenUtau.UI.Controls
         {
             set { SetValue(MenuContentProperty, value); }
             get { return (FrameworkElement)GetValue(MenuContentProperty); }
+        }
+
+        private WindowChrome windowChrome;
+
+        public BorderlessWindow()
+        {
+            windowChrome = new WindowChrome();
+            WindowChrome.SetWindowChrome(this, windowChrome);
+            windowChrome.GlassFrameThickness = new Thickness(1);
+            windowChrome.CornerRadius = new CornerRadius(0);
+            windowChrome.CaptionHeight = 0;
         }
 
         static BorderlessWindow()

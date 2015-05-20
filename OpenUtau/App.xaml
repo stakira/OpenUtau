@@ -11,6 +11,7 @@
                 <ResourceDictionary Source="UI\Styles\BorderlessWindow.xaml"/>
                 <ResourceDictionary Source="UI\Styles\ComboBox.xaml"/>
                 <ResourceDictionary Source="UI\Styles\TrackHeaderStyles.xaml"/>
+                <ResourceDictionary Source="UI\Styles\ProgressBar.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

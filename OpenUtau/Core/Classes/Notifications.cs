@@ -81,4 +81,12 @@ namespace OpenUtau.Core
         public SetPlayPosTickNotification(int tick) { this.playPosTick = tick; }
         public override string ToString() { return "Set play position to tick " + playPosTick; }
     }
+
+    public class ProgressBarNotification : UNotification
+    {
+        public int Progress;
+        public string Info;
+        public ProgressBarNotification(int progress, string info) { Progress = progress; Info = info; }
+        public override string ToString() { return string.Format("Set progress {0} {1}", Progress, Info); }
+    }
 }
