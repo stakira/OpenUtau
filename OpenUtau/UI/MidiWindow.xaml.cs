@@ -625,10 +625,23 @@ namespace OpenUtau.UI
 
         # endregion
 
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            Window_KeyDown(this, e);
+            e.Handled = true;
+        }
+
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            if (midiVM.Part == null) return;
-            if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.A)
+            if (Keyboard.Modifiers == ModifierKeys.Alt && e.SystemKey == Key.F4)
+            {
+                this.Hide();
+            }
+            else if (midiVM.Part == null)
+            {
+                return;
+            }
+            else if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.A)
             {
                 midiVM.SelectAll();
             }

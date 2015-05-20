@@ -24,8 +24,6 @@ namespace OpenUtau.UI.Behaviors
             base.OnAttached();
         }
 
-        #region Avoid hiding task bar upon maximalisation
-
         void AddHwndSourceHook()
         {
             System.IntPtr handle = (new WinInterop.WindowInteropHelper((Window)AssociatedObject)).EnsureHandle();
@@ -45,10 +43,19 @@ namespace OpenUtau.UI.Behaviors
                     WmGetMinMaxInfo(hwnd, lParam);
                     handled = true;
                     break;
+                case 0x0084:/* WM_NCHITTEST */
+                    if (HitCaptionTest(hwnd, lParam))
+                    {
+                        handled = true;
+                        return (System.IntPtr)2; /*HTCAPTION*/
+                    }
+                    break;
             }
 
             return (System.IntPtr)0;
         }
+
+        #region Avoid hiding task bar upon maximization
 
         private static void WmGetMinMaxInfo(System.IntPtr hwnd, System.IntPtr lParam)
         {
@@ -213,6 +220,20 @@ namespace OpenUtau.UI.Behaviors
 
         [DllImport("User32")]
         internal static extern IntPtr MonitorFromWindow(IntPtr handle, int flags);
+
+        #endregion
+
+        #region Hit caption test
+
+        private static bool HitCaptionTest(System.IntPtr hwnd, System.IntPtr lParam)
+        {
+            Window window = (Window)WinInterop.HwndSource.FromHwnd(hwnd).RootVisual;
+            int x = lParam.ToInt32() << 16 >> 16, y = lParam.ToInt32() >> 16;
+            var point = window.PointFromScreen(new Point(x, y));
+            var result = System.Windows.Media.VisualTreeHelper.HitTest(window, point);
+            var textblock = result.VisualHit as TextBlock;
+            return textblock != null && textblock.Name == "PART_Titlelabel";
+        }
 
         #endregion
     }

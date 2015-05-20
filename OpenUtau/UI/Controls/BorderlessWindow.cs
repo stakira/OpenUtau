@@ -24,8 +24,6 @@ namespace OpenUtau.UI.Controls
     [TemplatePart(Name = PART_WindowBorder, Type = typeof(UIElement))]
     public class BorderlessWindow : Window
     {
-        private bool restoreIfMove = false;
-
         public event EventHandler CloseButtonClicked;
 
         private const string PART_WindowBody = "PART_WindowBody";
@@ -39,11 +37,22 @@ namespace OpenUtau.UI.Controls
         private const string PART_WindowBorder = "PART_WindowBorder";
 
         public static readonly DependencyProperty MenuContentProperty = DependencyProperty.Register("MenuContent", typeof(object), typeof(FrameworkElement), new UIPropertyMetadata(null));
+        public static readonly DependencyProperty ResizableProperty = DependencyProperty.Register("Resizable", typeof(bool), typeof(FrameworkElement), new UIPropertyMetadata(true, ResizablePropertyChangedCallback));
+
+        private static void ResizablePropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((BorderlessWindow)d).OnResizableChanged((bool)e.NewValue);
+        }
         
         public FrameworkElement MenuContent
         {
             set { SetValue(MenuContentProperty, value); }
             get { return (FrameworkElement)GetValue(MenuContentProperty); }
+        }
+        public bool Resizable
+        {
+            set { SetValue(ResizableProperty, value); }
+            get { return (bool)GetValue(ResizableProperty); }
         }
 
         private WindowChrome windowChrome;
@@ -55,6 +64,21 @@ namespace OpenUtau.UI.Controls
             windowChrome.GlassFrameThickness = new Thickness(1);
             windowChrome.CornerRadius = new CornerRadius(0);
             windowChrome.CaptionHeight = 0;
+            Loaded += Window_Loaded;
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            OnResizableChanged(Resizable);
+        }
+
+        private void OnResizableChanged(bool resizable)
+        {
+            var minButton = this.GetTemplateChild(PART_MinButton) as Button;
+            var maxButton = this.GetTemplateChild(PART_MaxButton) as Button;
+            if (minButton != null) minButton.Visibility = resizable ? Visibility.Visible : Visibility.Collapsed;
+            if (maxButton != null) maxButton.Visibility = resizable ? Visibility.Visible : Visibility.Collapsed;
+            if (windowChrome != null) windowChrome.ResizeBorderThickness = resizable ? new Thickness(4) : new Thickness(0);
         }
 
         static BorderlessWindow()
@@ -77,11 +101,6 @@ namespace OpenUtau.UI.Controls
 
             var closeButton = GetTemplateChild(PART_CloseButton) as Button;
             closeButton.Click += closeButton_Click;
-
-            var titleBar = GetTemplateChild(PART_TitleBar) as Border;
-            titleBar.MouseLeftButtonDown += titleBar_MouseLeftButtonDown;
-            titleBar.MouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs e) { restoreIfMove = false; };
-            titleBar.MouseMove += titleBar_MouseMove;
         }
 
         void maxButton_Click(object sender, RoutedEventArgs e)
@@ -100,48 +119,6 @@ namespace OpenUtau.UI.Controls
         {
             EventHandler handler = CloseButtonClicked;
             if (handler != null) handler(this, e);
-        }
-
-        private void titleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ClickCount == 2)
-            {
-                if (WindowState == System.Windows.WindowState.Maximized)
-                {
-                    WindowState = System.Windows.WindowState.Normal;
-                }
-                else
-                {
-                    WindowState = System.Windows.WindowState.Maximized;
-                }
-            }
-            else if (WindowState != System.Windows.WindowState.Maximized)
-            {
-                DragMove();
-                // The 'correct' way to make a borderless window movable
-                // http://stackoverflow.com/questions/3274097/way-to-make-a-windowless-wpf-window-draggable-without-getting-invalidoperationex/3275712#3275712
-            }
-            else
-            {
-                restoreIfMove = true;
-            }
-        }
-
-        private void titleBar_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (restoreIfMove)
-            {
-                restoreIfMove = false;
-                double maximizedWidth = this.ActualWidth;
-                double mouseX = e.GetPosition(this).X;
-                double width = RestoreBounds.Width;
-                double x = PointToScreen(new Point(0, 0)).X + mouseX * (1.0 - width / maximizedWidth);
-
-                WindowState = WindowState.Normal;
-                Left = x;
-                Top = 0;
-                DragMove();
-            }
         }
     }
 
