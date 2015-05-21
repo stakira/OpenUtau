@@ -12,8 +12,6 @@ namespace OpenUtau.Core
 
         public static string GetNoteString(int noteNum) { return noteNum < 0 ? "" : noteStrings[noteNum % 12] + (noteNum / 12 - 1).ToString(); }
 
-        public static double TickToNote(int tick, int resolution) { return tick / resolution; }
-
         public static int[] BlackNoteNums = { 1, 3, 6, 8, 10 };
         public static bool IsBlackKey(int noteNum) { return BlackNoteNums.Contains(noteNum % 12); }
 
@@ -48,14 +46,14 @@ namespace OpenUtau.Core
             }
         }
 
-        public static double TickToMillisecond(double tick, double BPM, int BeatUnit, int Resolution)
+        public static double TickToMillisecond(double tick, double BPM, int beatUnit, int resolution)
         {
-            return tick * 60000.0 / BPM * BeatUnit / 4 / Resolution;
+            return tick * 60000.0 / BPM * beatUnit / 4 / resolution;
         }
 
-        public static int MillisecondToTick(double ms, double BPM, int BeatUnit, int Resolution)
+        public static int MillisecondToTick(double ms, double BPM, int beatUnit, int resolution)
         {
-            return (int)Math.Ceiling(ms / 60000.0 * BPM / BeatUnit * 4 * Resolution);
+            return (int)Math.Ceiling(ms / 60000.0 * BPM / beatUnit * 4 * resolution);
         }
 
         public static double SinEasingInOut(double x0, double x1, double y0, double y1, double x)

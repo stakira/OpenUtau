@@ -87,7 +87,7 @@ namespace OpenUtau.Core
 
         public string GetTool1Path()
         {
-            return Path.Combine(_homePath, "fresamp14.exe");
+            return Path.Combine(_homePath, "tn_fnds.exe");
         }
 
         public string GetTool2Path()

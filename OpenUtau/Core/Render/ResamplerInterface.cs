@@ -14,14 +14,19 @@ namespace OpenUtau.Core.Render
     class ResamplerInterface
     {
         const string DefaultEnvelope = "0 5 35 0 100 100 0";
-        public void RenderAll(UProject project)
+
+        Action<SequencingSampleProvider> resampleDoneCallback;
+
+        public void ResampleAll(UProject project, Action<SequencingSampleProvider> resampleDoneCallback)
         {
-            foreach (UPart part in project.Parts)
-                if (part is UVoicePart)
-                    Start((UVoicePart)part, project);
+            this.resampleDoneCallback = resampleDoneCallback;
+            //foreach (UPart part in project.Parts)
+            //    if (part is UVoicePart)
+            //        ResamplePart((UVoicePart)part, project);
+            if (project.Parts.Count > 0) ResamplePart((UVoicePart)project.Parts[0], project);
         }
 
-        public void Start(UVoicePart part, UProject project)
+        private void ResamplePart(UVoicePart part, UProject project)
         {
             BackgroundWorker worker = new BackgroundWorker();
             worker.WorkerReportsProgress = true;
@@ -31,12 +36,12 @@ namespace OpenUtau.Core.Render
             worker.RunWorkerAsync(new Tuple<UVoicePart, UProject>(part, project));
         }
 
-        void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        private void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             DocManager.Inst.ExecuteCmd(new ProgressBarNotification(e.ProgressPercentage, (string)e.UserState));
         }
 
-        void worker_DoWork(object sender, DoWorkEventArgs e)
+        private void worker_DoWork(object sender, DoWorkEventArgs e)
         {
             var args = e.Argument as Tuple<UVoicePart, UProject>;
             var part = args.Item1;
@@ -44,24 +49,21 @@ namespace OpenUtau.Core.Render
             e.Result = RenderAsync(part, project, sender as BackgroundWorker);
         }
 
-        void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            var waveConnector = e.Result as WaveConnector;
+            List<RenderItem> renderItems = e.Result as List<RenderItem>;
+            List<RenderItemSampleProvider> renderItemSampleProviders = new List<RenderItemSampleProvider>();
+            foreach (var item in renderItems) renderItemSampleProviders.Add(new RenderItemSampleProvider(item));
             DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, string.Format("")));
-            System.Diagnostics.Debug.WriteLine("Render end");
-            System.Diagnostics.Debug.WriteLine("Total cache size {0:n0} bytes", RenderCache.Inst.TotalMemSize);
-
-            //waveConnector.WriteToFile("out.wav");
-            var waveout = new NAudio.Wave.WaveOut();
-            var stream = new NAudio.Wave.SampleProviders.SampleToWaveProvider16(waveConnector.GetMixingSampleProvider());
-            waveout.Init(stream);
-            waveout.Play();
+            resampleDoneCallback(new SequencingSampleProvider(renderItemSampleProviders));
         }
 
-        public WaveConnector RenderAsync(UVoicePart part, UProject project, BackgroundWorker worker)
+        private List<RenderItem> RenderAsync(UVoicePart part, UProject project, BackgroundWorker worker)
         {
-            WaveConnector waveConnector = new WaveConnector();
-            System.Diagnostics.Debug.WriteLine("Render start");
+            List<RenderItem> renderItems = new List<RenderItem>();
+            System.Diagnostics.Stopwatch watch = new Stopwatch();
+            watch.Start();
+            System.Diagnostics.Debug.WriteLine("Resampling start");
             lock (part)
             {
                 string cache_dir = PathManager.Inst.GetCachePath(project.FilePath);
@@ -97,12 +99,16 @@ namespace OpenUtau.Core.Render
                         else System.Diagnostics.Debug.WriteLine("Sound {0} found in cache {1}", item.HashParameters(), item.GetResamplerExeArgs());
 
                         item.Sound = sound;
-                        waveConnector.RenderItems.Add(item);
-                        worker.ReportProgress(100 * ++i / count, string.Format("Rendering \"{0}\" {1}/{2}", phoneme.Phoneme, i, count));
+                        renderItems.Add(item);
+                        worker.ReportProgress(100 * ++i / count, string.Format("Resampling \"{0}\" {1}/{2}", phoneme.Phoneme, i, count));
                     }
                 }
             }
-            return waveConnector;
+            watch.Stop();
+            System.Diagnostics.Debug.WriteLine("Resampling end");
+            System.Diagnostics.Debug.WriteLine("Total cache size {0:n0} bytes", RenderCache.Inst.TotalMemSize);
+            System.Diagnostics.Debug.WriteLine("Total time {0} ms", watch.Elapsed.TotalMilliseconds);
+            return renderItems;
         }
 
         private RenderItem BuildRenderItem(UPhoneme phoneme, UVoicePart part, UProject project)

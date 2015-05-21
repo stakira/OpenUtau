@@ -4,30 +4,29 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using OpenUtau.Core.USTx;
 using NAudio.Wave;
-using NAudio.Wave.SampleProviders;
+using OpenUtau.Core.USTx;
 
 namespace OpenUtau.Core.Render
 {
     class EnvelopeSampleProvider : ISampleProvider
     {
         private readonly object lockObject = new object();
-        private readonly OffsetSampleProvider sourceSkipped;
+        private readonly ISampleProvider source;
         private readonly List<ExpPoint> envelope = new List<ExpPoint>();
         private int samplePosition = 0;
 
         public EnvelopeSampleProvider(ISampleProvider source, List<ExpPoint> envelope, double skipOver)
         {
+            this.source = source;
             foreach (var pt in envelope) this.envelope.Add(pt.Clone());
-            sourceSkipped = new OffsetSampleProvider(source);
-            sourceSkipped.SkipOverSamples = (int)(skipOver * source.WaveFormat.SampleRate / 1000);
-            ConvertEnvelope();
+            int skipOverSamples = (int)(skipOver * WaveFormat.SampleRate / 1000);
+            ConvertEnvelope(skipOverSamples);
         }
 
         public int Read(float[] buffer, int offset, int count)
         {
-            int sourceSamplesRead = sourceSkipped.Read(buffer, offset, count);
+            int sourceSamplesRead = source.Read(buffer, offset, count);
             lock (lockObject)
             {
                 ApplyEnvelope(buffer, offset, sourceSamplesRead);
@@ -42,7 +41,7 @@ namespace OpenUtau.Core.Render
             {
                 // TODO: optimization, skip between unit volume points
                 float multiplier = GetGain();
-                for (int ch = 0; ch < sourceSkipped.WaveFormat.Channels; ch++)
+                for (int ch = 0; ch < WaveFormat.Channels; ch++)
                 {
                     buffer[offset + sample++] *= multiplier;
                 }
@@ -52,7 +51,7 @@ namespace OpenUtau.Core.Render
 
         public WaveFormat WaveFormat
         {
-            get { return sourceSkipped.WaveFormat; }
+            get { return source.WaveFormat; }
         }
 
         private int x0, x1;
@@ -77,43 +76,14 @@ namespace OpenUtau.Core.Render
             else return y0 + (y1 - y0) * (samplePosition - x0) / (x1 - x0);
         }
 
-        private void ConvertEnvelope()
+        private void ConvertEnvelope(int skipOverSamples)
         {
             double shift = -envelope[0].X;
             foreach (var point in envelope)
             {
-                point.X = (int)((point.X + shift) * sourceSkipped.WaveFormat.SampleRate / 1000);
+                point.X = (int)((point.X + shift) * WaveFormat.SampleRate / 1000) + skipOverSamples;
                 point.Y /= 100;
             }
-        }
-    }
-
-    class WaveConnector
-    {
-        public List<RenderItem> RenderItems = new List<RenderItem>();
-
-        public WaveConnector() { }
-
-        public void WriteToFile(string file)
-        {
-            WaveFileWriter.CreateWaveFile16(file, GetMixingSampleProvider());
-        }
-
-        public MixingSampleProvider GetMixingSampleProvider()
-        {
-            List<ISampleProvider> segmentProviders = new List<ISampleProvider>();
-
-            foreach (var item in RenderItems)
-            {
-                var segmentSource = new CachedSoundSampleProvider(item.Sound);
-                segmentProviders.Add(new OffsetSampleProvider(new EnvelopeSampleProvider(segmentSource, item.Envelope, item.SkipOver))
-                {
-                    DelayBySamples = (int)(item.PosMs * segmentSource.WaveFormat.SampleRate / 1000),
-                    TakeSamples = (int)(item.DurMs * segmentSource.WaveFormat.SampleRate / 1000)
-                });
-            }
-
-            return new MixingSampleProvider(segmentProviders);
         }
     }
 }

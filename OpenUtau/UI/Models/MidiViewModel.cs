@@ -166,7 +166,7 @@ namespace OpenUtau.UI.Models
 
         private void initPlayPosMarker()
         {
-            playPosTick = 0;
+            playPosTick = DocManager.Inst.playPosTick;
             if (playPosMarker == null)
             {
                 playPosMarker = new Path()
@@ -352,6 +352,11 @@ namespace OpenUtau.UI.Models
         private void OnPlayPosSet(int playPosTick)
         {
             this.playPosTick = playPosTick;
+            double playPosPix = TickToCanvas(playPosTick);
+            if (playPosPix < MidiCanvas.ActualWidth * UIConstants.PlayPosMarkerMargin)
+                OffsetX += playPosPix - MidiCanvas.ActualWidth * UIConstants.PlayPosMarkerMargin;
+            else if (playPosPix > MidiCanvas.ActualWidth * (1 - UIConstants.PlayPosMarkerMargin))
+                OffsetX += playPosPix - MidiCanvas.ActualWidth * (1 - UIConstants.PlayPosMarkerMargin);
             MarkUpdate();
         }
 

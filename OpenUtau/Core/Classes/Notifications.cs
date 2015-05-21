@@ -75,11 +75,20 @@ namespace OpenUtau.Core
         public override string ToString() { return "Hide pitch expression list"; }
     }
 
+    // Notification for UI to move PlayPosMarker
     public class SetPlayPosTickNotification : UNotification
     {
         public int playPosTick;
         public SetPlayPosTickNotification(int tick) { this.playPosTick = tick; }
         public override string ToString() { return "Set play position to tick " + playPosTick; }
+    }
+
+    // Notification for playback manager to change play position
+    public class SeekPlayPosTickNotification : UNotification
+    {
+        public int playPosTick;
+        public SeekPlayPosTickNotification(int tick) { this.playPosTick = tick; }
+        public override string ToString() { return "Seek play position to tick " + playPosTick; }
     }
 
     public class ProgressBarNotification : UNotification

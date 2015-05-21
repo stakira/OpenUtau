@@ -95,7 +95,7 @@ namespace OpenUtau.UI
         {
             Point mousePos = e.GetPosition((UIElement)sender);
             int tick = (int)(trackVM.CanvasToSnappedQuarter(mousePos.X) * trackVM.Project.Resolution);
-            DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(Math.Max(0, tick)));
+            DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(Math.Max(0, tick)));
             ((Canvas)sender).CaptureMouse();
         }
 
@@ -111,7 +111,7 @@ namespace OpenUtau.UI
             {
                 int tick = (int)(trackVM.CanvasToSnappedQuarter(mousePos.X) * trackVM.Project.Resolution);
                 if (trackVM.playPosTick != tick)
-                    DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(Math.Max(0, tick)));
+                    DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(Math.Max(0, tick)));
             }
         }
 
@@ -135,6 +135,7 @@ namespace OpenUtau.UI
         int _resizeMinDurTick;
         UPart _partMovePartLeft;
         UPart _partMovePartMin;
+        UPart _partMovePartMax;
         UPart _partResizeShortest;
 
         private void trackCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -220,11 +221,12 @@ namespace OpenUtau.UI
                     Mouse.OverrideCursor = Cursors.SizeAll;
                     if (trackVM.SelectedParts.Count > 0)
                     {
-                        _partMovePartLeft = _partMovePartMin = _hitPartElement.Part;
+                        _partMovePartLeft = _partMovePartMin = _partMovePartMax = _hitPartElement.Part;
                         foreach (UPart part in trackVM.SelectedParts)
                         {
                             if (part.PosTick < _partMovePartLeft.PosTick) _partMovePartLeft = part;
                             if (part.TrackNo < _partMovePartMin.TrackNo) _partMovePartMin = part;
+                            if (part.TrackNo > _partMovePartMax.TrackNo) _partMovePartMax = part;
                         }
                     }
                     DocManager.Inst.StartUndoGroup();
@@ -232,6 +234,7 @@ namespace OpenUtau.UI
             }
             else
             {
+                if (trackVM.CanvasToTrack(mousePos.Y) > trackVM.Project.Tracks.Count - 1) return;
                 UVoicePart part = new UVoicePart()
                 {
                     PosTick = trackVM.CanvasToSnappedTick(mousePos.X),
@@ -290,11 +293,11 @@ namespace OpenUtau.UI
                 Canvas.SetTop(selectionBox, top);
                 trackVM.TempSelectInBox(selectionStart.Value.X, trackVM.CanvasToQuarter(mousePos.X), (int)selectionStart.Value.Y, trackVM.CanvasToTrack(mousePos.Y));
             }
-            else if (_movePartElement) // move
+            else if (_movePartElement) // Move
             {
                 if (trackVM.SelectedParts.Count == 0)
                 {
-                    int newTrackNo = Math.Max(0, trackVM.CanvasToTrack(mousePos.Y));
+                    int newTrackNo = Math.Min(trackVM.Project.Tracks.Count - 1, Math.Max(0, trackVM.CanvasToTrack(mousePos.Y)));
                     int newPosTick = Math.Max(0, (int)(trackVM.Project.Resolution * trackVM.CanvasToSnappedQuarter(mousePos.X)) - _partMoveRelativeTick);
                     if (newTrackNo != _hitPartElement.Part.TrackNo || newPosTick != _hitPartElement.Part.PosTick)
                         DocManager.Inst.ExecuteCmd(new MovePartCommand(trackVM.Project, _hitPartElement.Part, newPosTick, newTrackNo));
@@ -303,7 +306,7 @@ namespace OpenUtau.UI
                 {
                     int deltaTrackNo = trackVM.CanvasToTrack(mousePos.Y) - _hitPartElement.Part.TrackNo;
                     int deltaPosTick = (int)(trackVM.Project.Resolution * trackVM.CanvasToSnappedQuarter(mousePos.X) - _partMoveRelativeTick) - _hitPartElement.Part.PosTick;
-                    bool changeTrackNo = deltaTrackNo + _partMovePartMin.TrackNo >= 0;
+                    bool changeTrackNo = deltaTrackNo + _partMovePartMin.TrackNo >= 0 && deltaTrackNo + _partMovePartMax.TrackNo < trackVM.Project.Tracks.Count;
                     bool changePosTick = deltaPosTick + _partMovePartLeft.PosTick >= 0;
                     if (changeTrackNo || changePosTick)
                         foreach (UPart part in trackVM.SelectedParts)
@@ -312,7 +315,7 @@ namespace OpenUtau.UI
                                 changeTrackNo ? part.TrackNo + deltaTrackNo : part.TrackNo));
                 }
             }
-            else if (_resizePartElement) // resize
+            else if (_resizePartElement) // Resize
             {
                 if (trackVM.SelectedParts.Count == 0)
                 {
@@ -328,7 +331,7 @@ namespace OpenUtau.UI
                             DocManager.Inst.ExecuteCmd(new ResizePartCommand(trackVM.Project, part, part.DurTick + deltaDurTick));
                 }
             }
-            else if (Mouse.RightButton == MouseButtonState.Pressed) // Remove Note
+            else if (Mouse.RightButton == MouseButtonState.Pressed) // Remove
             {
                 HitTestResult result = VisualTreeHelper.HitTest(trackCanvas, mousePos);
                 if (result == null) return;
@@ -419,7 +422,7 @@ namespace OpenUtau.UI
         private void MenuRenderAll_Click(object sender, RoutedEventArgs e)
         {
             var ri = new OpenUtau.Core.Render.ResamplerInterface();
-            ri.RenderAll(DocManager.Inst.Project);
+            ri.ResampleAll(DocManager.Inst.Project, delegate(OpenUtau.Core.Render.SequencingSampleProvider sp) { PlaybackManager.Inst.Play(sp); });
         }
 
         private void MenuAbout_Click(object sender, RoutedEventArgs e)
@@ -588,6 +591,23 @@ namespace OpenUtau.UI
         private void Window_Activated(object sender, EventArgs e)
         {
             if (trackVM != null) trackVM.MarkUpdate();
+        }
+
+        private void headerCanvas_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 2)
+            {
+                var project = DocManager.Inst.Project;
+                DocManager.Inst.StartUndoGroup();
+                DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, new UTrack() { TrackNo = project.Tracks.Count() }));
+                DocManager.Inst.EndUndoGroup();
+            }
+        }
+
+        private void playButton_Click(object sender, RoutedEventArgs e)
+        {
+            var ri = new OpenUtau.Core.Render.ResamplerInterface();
+            ri.ResampleAll(DocManager.Inst.Project, delegate(OpenUtau.Core.Render.SequencingSampleProvider sp) { PlaybackManager.Inst.Play(sp); });
         }
     }
 }

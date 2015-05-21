@@ -155,8 +155,7 @@ namespace OpenUtau.UI
 
         public void DragScroll(double deltaTime)
         {
-            if ((Mouse.Captured == this.notesCanvas || Mouse.Captured == this.timelineCanvas)
-                && Mouse.LeftButton == MouseButtonState.Pressed)
+            if (Mouse.Captured == this.notesCanvas && Mouse.LeftButton == MouseButtonState.Pressed)
             {
 
                 const double scrollSpeed = 0.015;
@@ -190,6 +189,11 @@ namespace OpenUtau.UI
                     notesCanvas_MouseMove_Helper(mousePos);
                     if (Mouse.Captured == this.timelineCanvas) timelineCanvas_MouseMove_Helper(mousePos);
                 }
+            }
+            else if (Mouse.Captured == timelineCanvas && Mouse.LeftButton == MouseButtonState.Pressed)
+            {
+                Point mousePos = Mouse.GetPosition(timelineCanvas);
+                timelineCanvas_MouseMove_Helper(mousePos);
             }
         }
 
@@ -574,14 +578,12 @@ namespace OpenUtau.UI
             if (midiVM.Part == null) return;
             Point mousePos = e.GetPosition((UIElement)sender);
             int tick = (int)(midiVM.CanvasToSnappedQuarter(mousePos.X) * midiVM.Project.Resolution);
-            DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(Math.Max(0, tick) + midiVM.Part.PosTick));
+            DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(Math.Max(0, tick) + midiVM.Part.PosTick));
             ((Canvas)sender).CaptureMouse();
         }
 
         private void timelineCanvas_MouseMove(object sender, MouseEventArgs e)
         {
-            Point mousePos = e.GetPosition((UIElement)sender);
-            timelineCanvas_MouseMove_Helper(mousePos);
         }
 
         private void timelineCanvas_MouseMove_Helper(Point mousePos)
@@ -590,7 +592,7 @@ namespace OpenUtau.UI
             {
                 int tick = (int)(midiVM.CanvasToSnappedQuarter(mousePos.X) * midiVM.Project.Resolution);
                 if (midiVM.playPosTick != tick + midiVM.Part.PosTick)
-                    DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(Math.Max(0, tick) + midiVM.Part.PosTick));
+                    DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(Math.Max(0, tick) + midiVM.Part.PosTick));
             }
         }
 

@@ -88,8 +88,10 @@ namespace OpenUtau.UI.Models
         public double SmallChangeY { get { return ViewportSizeY / 10; } }
         public double QuarterOffset { set { _quarterOffset = value; HorizontalPropertiesChanged(); } get { return _quarterOffset; } }
         public double MinTickWidth { set { _minTickWidth = value; HorizontalPropertiesChanged(); } get { return _minTickWidth; } }
+        public double BPM { get { return Project.BPM; } }
         public int BeatPerBar { set { _beatPerBar = value; HorizontalPropertiesChanged(); } get { return _beatPerBar; } }
         public int BeatUnit { set { _beatUnit = value; HorizontalPropertiesChanged(); } get { return _beatUnit; } }
+        public TimeSpan PlayPosTime { get { return TimeSpan.FromMilliseconds((int)Project.TickToMillisecond(playPosTick)); } }
 
         public void HorizontalPropertiesChanged()
         {
@@ -199,12 +201,13 @@ namespace OpenUtau.UI.Models
                 }
                 foreach (TrackHeader trackHeader in TrackHeaders)
                 {
-                    Canvas.SetTop(trackHeader, -OffsetY + TrackHeight * trackHeader.Track.TrackNo + 1);
-                    trackHeader.Height = TrackHeight - 2;
+                    Canvas.SetTop(trackHeader, -OffsetY + TrackHeight * trackHeader.Track.TrackNo);
+                    trackHeader.Height = TrackHeight;
                 }
                 UpdatePlayPosMarker();
             }
             _updated = false;
+            PlaybackManager.Inst.UpdatePlayPos();
         }
 
         public void UpdatePartElement(UPart part)
@@ -309,7 +312,7 @@ namespace OpenUtau.UI.Models
             var trackHeader = new TrackHeader() { Track = track, Height = TrackHeight };
             TrackHeaders.Add(trackHeader);
             HeaderCanvas.Children.Add(trackHeader);
-            Canvas.SetTop(trackHeader, -OffsetY + TrackHeight * trackHeader.Track.TrackNo + 1);
+            Canvas.SetTop(trackHeader, -OffsetY + TrackHeight * trackHeader.Track.TrackNo);
             trackHeader.Width = HeaderCanvas.ActualWidth;
             MarkUpdate();
         }
@@ -387,7 +390,14 @@ namespace OpenUtau.UI.Models
         private void OnPlayPosSet(int playPosTick)
         {
             this.playPosTick = playPosTick;
+            double playPosPix = QuarterToCanvas(playPosTick / Project.Resolution);
+            if (playPosPix < TrackCanvas.ActualWidth * UIConstants.PlayPosMarkerMargin)
+                OffsetX += playPosPix - TrackCanvas.ActualWidth * UIConstants.PlayPosMarkerMargin;
+            else if (playPosPix > TrackCanvas.ActualWidth * (1 - UIConstants.PlayPosMarkerMargin))
+                OffsetX += playPosPix - TrackCanvas.ActualWidth * (1 - UIConstants.PlayPosMarkerMargin);
             MarkUpdate();
+            OnPropertyChanged("PlayPosTime");
+            OnPropertyChanged("PlayPosBar");
         }
 
         # endregion

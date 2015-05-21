@@ -50,5 +50,7 @@ namespace OpenUtau.UI
         public const int ExpressionHiddenZIndex = 0;
         public const int ExpressionVisibleZIndex = 200;
         public const int ExpressionShadowZIndex = 100;
+
+        public const double PlayPosMarkerMargin = 0.08;
     }
 }

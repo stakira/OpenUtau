@@ -63,8 +63,37 @@
                 <ColumnDefinition Width="256"/>
                 <ColumnDefinition Width="*" MinWidth="200"/>
             </Grid.ColumnDefinitions>
-            <Grid x:Name="HeaderGrid" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,40,0,20">
-                <Canvas x:Name="headerCanvas" ClipToBounds="True" Margin="0"/>
+            <Grid x:Name="playbackGrid" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="40">
+                <Grid x:Name="bpmGrid" Height="20" Width="64" HorizontalAlignment="Left" Margin="10,0,0,0">
+                    <Border CornerRadius="4" BorderThickness="1" BorderBrush="LightGray"/>
+                    <TextBlock x:Name="bpmText" FontFamily="GlobalMonospace.CompositeFont"
+                               HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="11" Margin="0,1,0,0">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}{1}/{2}  {0:#.00}">
+                                <Binding Path="BPM" Source="{StaticResource tracksVM}"/>
+                                <Binding Path="BeatPerBar" Source="{StaticResource tracksVM}"/>
+                                <Binding Path="BeatUnit" Source="{StaticResource tracksVM}"/>
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                </Grid>
+                <Grid x:Name="playbackIndicatorGrid" Height="20" Width="64" HorizontalAlignment="Right" Margin="0,0,10,0">
+                    <Border CornerRadius="4" BorderThickness="1" BorderBrush="LightGray"/>
+                    <TextBlock x:Name="playPosTime" FontFamily="GlobalMonospace.CompositeFont"
+                               HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="11" Margin="0,1,0,0"
+                               Text="{Binding Path=PlayPosTime, Source={StaticResource tracksVM}, StringFormat={}{0:mm\\:ss\\.fff}}"/>
+                </Grid>
+                <Grid x:Name="playbackButtonGrid" Height="20" Width="88" HorizontalAlignment="Left" Margin="84,0,0,0">
+                    <Button x:Name="seekHomeButton" Style="{StaticResource SeekHomeButtonStyle}" Margin="4,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                    <Button x:Name="playButton" Style="{StaticResource PlayButtonStyle}" Margin="24,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"
+                            Click="playButton_Click"/>
+                    <Button x:Name="pauseButton" Style="{StaticResource PauseButtonStyle}" Margin="44,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                    <Button x:Name="seekEndButton" Style="{StaticResource SeekEndButtonStyle}" Margin="64,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                    <Border CornerRadius="4" BorderThickness="1" BorderBrush="LightGray"/>
+                </Grid>
+            </Grid>
+            <Grid x:Name="HeaderGrid" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,40,0,0">
+                <Canvas x:Name="headerCanvas" ClipToBounds="True" Margin="0" MouseDown="headerCanvas_MouseDown" Background="Transparent"/>
             </Grid>
             <Grid x:Name="WorkspaceGrid" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Grid x:Name="timelineBackgroundGrid" VerticalAlignment="Top" Height="20" Margin="0,20,20,0" ClipToBounds="True">

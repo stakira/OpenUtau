@@ -32,7 +32,14 @@ namespace OpenUtau.Core
     {
         public RemoveTrackCommand(UProject project, UTrack track) { this.project = project; this.track = track; }
         public override string ToString() { return "Remove track"; }
-        public override void Execute() { project.Tracks.Remove(track); UpdateTrackNo(); }
+        public override void Execute() {
+            //for (int i = DocManager.Inst.Project.Parts.Count - 1; i >= 0; i--)
+            //{
+            //    if (DocManager.Inst.Project.Parts[i].TrackNo == track.TrackNo)
+            //        DocManager.Inst.ExecuteCmd(new RemovePartCommand(DocManager.Inst.Project, DocManager.Inst.Project.Parts[i]));
+            //} // what happens when redo?
+            project.Tracks.Remove(track); UpdateTrackNo();
+        }
         public override void Unexecute()
         {
             if (track.TrackNo < project.Tracks.Count) project.Tracks.Insert(track.TrackNo, track);

@@ -18,13 +18,7 @@ namespace OpenUtau.Core
     {
         public AddPartCommand(UProject project, UPart part) { this.project = project; this.part = part; }
         public override string ToString() { return "Add part"; }
-        public override void Execute()
-        {
-            if (project.Tracks.Count <= part.TrackNo)
-                for (int i = project.Tracks.Count; i <= part.TrackNo; i++)
-                    DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, new UTrack() { TrackNo = i }));
-            project.Parts.Add(part);
-        }
+        public override void Execute() { project.Parts.Add(part); }
         public override void Unexecute() { project.Parts.Remove(part); }
     }
 
@@ -49,13 +43,7 @@ namespace OpenUtau.Core
             this.oldTrackNo = part.TrackNo;
         }
         public override string ToString() { return "Move parts"; }
-        public override void Execute()
-        {
-            if (project.Tracks.Count <= newTrackNo)
-                DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, new UTrack() { TrackNo = newTrackNo, Singer = project.Tracks[oldTrackNo].Singer }));
-            part.PosTick = newPos;
-            part.TrackNo = newTrackNo;
-        }
+        public override void Execute() { part.PosTick = newPos; part.TrackNo = newTrackNo; }
         public override void Unexecute() { part.PosTick = oldPos; part.TrackNo = oldTrackNo; }
     }
 

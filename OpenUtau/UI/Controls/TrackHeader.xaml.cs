@@ -112,5 +112,27 @@ namespace OpenUtau.UI.Controls
         {
             this.singerNameButton.GetBindingExpression(Button.ContentProperty).UpdateTarget();
         }
+
+        ContextMenu headerMenu;
+        private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.RightButton == MouseButtonState.Pressed)
+            {
+                if (headerMenu == null)
+                {
+                    headerMenu = new ContextMenu();
+                    var item = new MenuItem() { Header = "Remove track" };
+                    item.Click += (_o, _e) =>
+                    {
+                        DocManager.Inst.StartUndoGroup();
+                        DocManager.Inst.ExecuteCmd(new RemoveTrackCommand(DocManager.Inst.Project, this.Track));
+                        DocManager.Inst.EndUndoGroup();
+                    };
+                    headerMenu.Items.Add(item);
+                }
+                headerMenu.IsOpen = true;
+            }
+            e.Handled = true;
+        }
     }
 }
