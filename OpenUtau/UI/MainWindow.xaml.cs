@@ -521,24 +521,14 @@ namespace OpenUtau.UI
 
         private void CmdImportAudio(string file)
         {
-            UWavePart uwavepart = OpenUtau.Core.Formats.Wavepeak.CreateUWavePart(file, (part) =>
-            {
-                trackVM.UpdatePartElement(part);
-                trackVM.GetPartElement(part).VisualHeight = 1; // for force redraw
-                trackVM.MarkUpdate();
-            });
-            if (uwavepart != null)
-            {
-                int _trackNo = trackVM.Project.Tracks.Count;
-                DocManager.Inst.StartUndoGroup();
-                DocManager.Inst.ExecuteCmd(new AddTrackCommand(trackVM.Project, new UTrack() { TrackNo = _trackNo }));
-                DocManager.Inst.EndUndoGroup();
-                uwavepart.TrackNo = _trackNo;
-                uwavepart.DurTick = uwavepart.GetMinDurTick(trackVM.Project);
-                DocManager.Inst.StartUndoGroup();
-                DocManager.Inst.ExecuteCmd(new AddPartCommand(trackVM.Project, uwavepart));
-                DocManager.Inst.EndUndoGroup();
-            }
+            UWavePart part = Core.Formats.Wave.CreatePart(file);
+            if (part == null) return;
+            int trackNo = trackVM.Project.Tracks.Count;
+            part.TrackNo = trackNo;
+            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.ExecuteCmd(new AddTrackCommand(trackVM.Project, new UTrack() { TrackNo = trackNo }));
+            DocManager.Inst.ExecuteCmd(new AddPartCommand(trackVM.Project, part));
+            DocManager.Inst.EndUndoGroup();
         }
 
         private void CmdExit()

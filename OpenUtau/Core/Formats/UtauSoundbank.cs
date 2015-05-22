@@ -35,7 +35,8 @@ namespace OpenUtau.Core.Formats
         public static USinger GetSinger(string path, Encoding ustEncoding, Dictionary<string, USinger> loadedSingers)
         {
             var absPath = DetectSingerPath(path, ustEncoding);
-            if (loadedSingers.ContainsKey(absPath)) return loadedSingers[absPath];
+            if (absPath == "") return null;
+            else if (loadedSingers.ContainsKey(absPath)) return loadedSingers[absPath];
             else
             {
                 var singer = LoadSinger(absPath);
@@ -47,6 +48,7 @@ namespace OpenUtau.Core.Formats
         static string DetectSingerPath(string path, Encoding ustEncoding)
         {
             var pathEncoding = DetectSingerPathEncoding(path, ustEncoding);
+            if (pathEncoding == null) return "";
             return PathManager.Inst.GetSingerAbsPath(EncodingUtil.ConvertEncoding(ustEncoding, pathEncoding, path));
         }
 

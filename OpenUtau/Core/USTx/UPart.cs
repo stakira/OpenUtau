@@ -42,6 +42,7 @@ namespace OpenUtau.Core.USTx
             set { _filePath = value; Name = System.IO.Path.GetFileName(value); }
             get { return _filePath; }
         }
+        public int Channels;
         public int FileDurTick;
         public int HeadTrimTick = 0;
         public int TailTrimTick = 0;
@@ -50,7 +51,6 @@ namespace OpenUtau.Core.USTx
             get { return FileDurTick - HeadTrimTick - TailTrimTick; }
             set { TailTrimTick = FileDurTick - HeadTrimTick - value; }
         }
-        # warning Check MinDurTick
-        public override int GetMinDurTick(UProject project) { return 0; }
+        public override int GetMinDurTick(UProject project) { return 60; }
     }
 }

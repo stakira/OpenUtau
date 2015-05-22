@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using System.Windows.Controls;
+using System.Windows.Media.Imaging;
+using System.ComponentModel;
 
 using OpenUtau.Core.USTx;
 
@@ -24,16 +27,18 @@ namespace OpenUtau.UI.Controls
         protected ScaleTransform sTransPre;
         protected ScaleTransform sTransPost;
 
+        protected Pen pen;
+
         public UPart Part;
         public UProject Project;
 
-        public double X
+        public virtual double X
         {
             set { tTransPost.X = value; }
             get { return tTransPost.X; }
         }
 
-        public double Y
+        public virtual double Y
         {
             set { tTransPost.Y = value; }
             get { return tTransPost.Y; }
@@ -51,13 +56,11 @@ namespace OpenUtau.UI.Controls
             set { if (value != _height) { _height = value; FitHeight(value); } }
             get { return _height; }
         }
-        protected void FitHeight(double height)
+        protected virtual void FitHeight(double height)
         { sTransPost.ScaleY = height / partVisual.ContentBounds.Height; RedrawFrame(); }
+        public virtual double CanvasWidth { set; get; }
 
         public double VisualWidth { get { return Part.DurTick * ScaleX; } }
-
-        protected int _channel = 0;
-        public int Channel { set { if (_channel != value) { _channel = value; RedrawFrame(); } } get { return _channel; } }
 
         protected bool _selected = false;
         public bool Selected { set { if (_selected != value) { _selected = value; RedrawFrame(); } } get { return _selected; } }
@@ -133,7 +136,7 @@ namespace OpenUtau.UI.Controls
         public virtual Brush GetFrameBrush()
         {
             if (Selected) return ThemeManager.NoteFillSelectedBrush;
-            else return ThemeManager.NoteFillBrushes[Channel];
+            else return ThemeManager.NoteFillBrushes[0];
         }
 
         protected bool _modified = false;
@@ -156,11 +159,11 @@ namespace OpenUtau.UI.Controls
 
     class VoicePartElement : PartElement
     {
+        public VoicePartElement() : base() { pen = new Pen(Brushes.White, 3); pen.Freeze(); }
+
         public override void RedrawPart()
         {
             DrawingContext cxt = partVisual.RenderOpen();
-            Pen pen = new Pen(Brushes.White, 3);
-            pen.Freeze();
             cxt.DrawLine(pen, new Point(0, UIConstants.HiddenNoteNum), new Point(0, UIConstants.HiddenNoteNum));
             cxt.DrawLine(pen, new Point(Part.DurTick, UIConstants.MaxNoteNum - UIConstants.HiddenNoteNum),
                               new Point(Part.DurTick, UIConstants.MaxNoteNum - UIConstants.HiddenNoteNum));
@@ -174,65 +177,172 @@ namespace OpenUtau.UI.Controls
 
     class WavePartElement : PartElement
     {
-        public override void RedrawPart()
+        class PartImage : Image
         {
-            Pen pen = new Pen(Brushes.White, 1);
-            pen.Freeze();
-
-            /*if (((UWavePart)Part).Peaks == null)*/ return;
-            /*byte[] peaksArray = ToArray(((UWavePart)Part).Peaks);
-
-            List<double> peaks = new List<double>();
-
-            int i = 0;
-            double sum = 0;
-            int srcratio = 64;
-            while (i < peaksArray.Length)
+            protected override HitTestResult HitTestCore(PointHitTestParameters hitTestParameters)
             {
-                int data = (int)peaksArray[i] - 128;
-                sum += data * data;
-                if (i % srcratio == 0)
-                {
-                    peaks.Add(Math.Sqrt(sum / srcratio));
-                    sum = 0;
-                }
-                i++;
+                return null;
             }
-
-            var geometry = new StreamGeometry();
-            using (StreamGeometryContext ctx = geometry.Open())
-            {
-                i = 0;
-                ctx.BeginFigure(new Point(0, 0), true, true);
-                foreach (float peak in peaks)
-                {
-                    ctx.LineTo(new Point(i + 1, peak), true, false);
-                    i++;
-                }
-                ctx.LineTo(new Point(i, 0), true, false);
-                while (i > 0)
-                {
-                    i--;
-                    ctx.LineTo(new Point(i + 1, -peaks[i]), true, false);
-                }
-            }
-            geometry.Freeze();
-
-            DrawingContext cxt = partVisual.RenderOpen();
-            cxt.DrawGeometry(Brushes.White, null, geometry);
-            cxt.Close();
-            sTransPre.ScaleX = Project.BPM / Project.BeatUnit * 4 * Project.Resolution / 60 / 2000 * srcratio;
-            tTransPre.Y = partVisual.ContentBounds.Height / 2;*/
         }
 
-        public static byte[] ToArray(NAudio.Wave.WaveStream stream)
+        BackgroundWorker worker;
+        float[] peaks;
+
+        PartImage partImage;
+        WriteableBitmap partBitmap;
+        protected TranslateTransform partImageTrans;
+
+        double _canvasWidth;
+        public override double CanvasWidth
         {
-            byte[] buffer = new byte[4096];
-            int reader = 0;
-            System.IO.MemoryStream memoryStream = new System.IO.MemoryStream();
-            while ((reader = stream.Read(buffer, 0, buffer.Length)) != 0)
-                memoryStream.Write(buffer, 0, reader);
-            return memoryStream.ToArray();
+            set { if (_canvasWidth != value) { _canvasWidth = value; RedrawPart(); } }
+            get { return _canvasWidth; }
+        }
+
+        public override double Y
+        {
+            set { tTransPost.Y = value; partImageTrans.Y = value; }
+            get { return tTransPost.Y; }
+        }
+
+        public override double X
+        {
+            set { tTransPost.X = value; RedrawPart(); }
+            get { return tTransPost.X; }
+        }
+
+        protected override void FitHeight(double height)
+        {
+            base.FitHeight(height);
+            RedrawPart();
+        }
+
+        public WavePartElement(UPart part) : base() {
+            partImageTrans = new TranslateTransform();
+            this.Part = part;
+
+            partBitmap = BitmapFactory.New(
+                (int)System.Windows.SystemParameters.VirtualScreenWidth,
+                (int)UIConstants.TrackMaxHeight);
+            partImage = new PartImage() { RenderTransform = partImageTrans, IsHitTestVisible = false };
+            partImage.Arrange(new Rect(0, 0, partBitmap.PixelWidth, partBitmap.PixelHeight));
+            partImage.Source = partBitmap;
+            this.RemoveVisualChild(partVisual);
+            this.AddVisualChild(partImage);
+
+            worker = new BackgroundWorker() { WorkerReportsProgress = true };
+            worker.DoWork += BuildPeaksAsync;
+            worker.ProgressChanged += BuildPeaksProgressChanged;
+            worker.RunWorkerCompleted += BuildPeaksCompleted;
+            worker.RunWorkerAsync((UWavePart)Part);
+        }
+
+        protected override Visual GetVisualChild(int index)
+        {
+            switch (index)
+            {
+                case 0: return frameVisual;
+                case 1: return partImage;
+                case 2: return nameVisual;
+                case 3: return commentVisual;
+                default: return null;
+            }
+        }
+
+        public override void RedrawPart()
+        {
+            if (peaks == null) return;
+            else DrawWaveform();
+        }
+
+        private void DrawWaveform()
+        {
+            int x = 0;
+            double width = Part.DurTick * ScaleX;
+            double height = _height;
+            double samplesPerPixel = peaks.Length / width;
+            using (BitmapContext cxt = partBitmap.GetBitmapContext())
+            {
+                double monoChnlAmp = (height - 4) / 2;
+                double stereoChnlAmp = (height - 6) / 4;
+
+                int channels = ((UWavePart)Part).Channels;
+                partBitmap.Clear();
+                float left, right, lmax, lmin, rmax, rmin;
+                lmax = lmin = rmax = rmin = 0;
+                double position = 0;
+
+                int skippedPixels = (int)Math.Max(0, -this.X);
+                if (skippedPixels > 0) { skippedPixels -= 1; x -= 1; } // draw 1 pixel out of view
+                else if (this.X > 0) x = (int)Math.Round(this.X);
+                position += skippedPixels * samplesPerPixel;
+
+                for (int i = (int)(position / channels) * channels; i < peaks.Length; i += channels)
+                {
+                    left = peaks[i];
+                    right = peaks[i + 1];
+                    lmax = Math.Max(left, lmax);
+                    lmin = Math.Min(left, lmin);
+                    if (channels > 1)
+                    {
+                        rmax = Math.Max(right, rmax);
+                        rmin = Math.Min(right, rmin);
+                    }
+                    if (i > position)
+                    {
+                        if (channels > 1)
+                        {
+                            WriteableBitmapExtensions.DrawLine(
+                                partBitmap,
+                                x, (int)(stereoChnlAmp * (1 + lmin)) + 2,
+                                x, (int)(stereoChnlAmp * (1 + lmax)) + 2,
+                                Colors.White);
+                            WriteableBitmapExtensions.DrawLine(
+                                partBitmap,
+                                x, (int)(stereoChnlAmp * (1 + rmin) + monoChnlAmp) + 3,
+                                x, (int)(stereoChnlAmp * (1 + rmax) + monoChnlAmp) + 3,
+                                Colors.White);
+                        }
+                        else
+                        {
+                            WriteableBitmapExtensions.DrawLine(
+                                partBitmap,
+                                x, (int)(monoChnlAmp * (1 + lmin)) + 2,
+                                x, (int)(monoChnlAmp * (1 + lmax)) + 2,
+                                Colors.White);
+                        }
+                        lmax = lmin = rmax = rmin = 0;
+                        position += samplesPerPixel;
+                        x++;
+                        if (x > CanvasWidth) break;
+                    }
+                }
+            }
+        }
+
+        private void BuildPeaksProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            using (BitmapContext cxt = partBitmap.GetBitmapContext())
+            {
+                WriteableBitmapExtensions.FillRectangle(
+                    partBitmap,
+                    1, (int)(_height - 2),
+                    17, (int)((_height - 4) * (1 - e.ProgressPercentage / 100.0)) + 2,
+                    Colors.White);
+            }
+        }
+
+        private void BuildPeaksAsync(object sender, DoWorkEventArgs e)
+        {
+            var _part = e.Argument as UWavePart;
+            float[] peaks = Core.Formats.Wave.BuildPeaks(_part, sender as BackgroundWorker);
+            e.Result = peaks;
+        }
+
+        private void BuildPeaksCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            peaks = e.Result as float[];
+            RedrawPart();
         }
     }
 }

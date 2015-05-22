@@ -20,10 +20,12 @@ namespace OpenUtau.Core.Render
         public void ResampleAll(UProject project, Action<SequencingSampleProvider> resampleDoneCallback)
         {
             this.resampleDoneCallback = resampleDoneCallback;
-            //foreach (UPart part in project.Parts)
-            //    if (part is UVoicePart)
-            //        ResamplePart((UVoicePart)part, project);
-            if (project.Parts.Count > 0) ResamplePart((UVoicePart)project.Parts[0], project);
+            foreach (UPart part in project.Parts)
+                if (part is UVoicePart)
+                {
+                    ResamplePart((UVoicePart)part, project);
+                    break;
+                }
         }
 
         private void ResamplePart(UVoicePart part, UProject project)

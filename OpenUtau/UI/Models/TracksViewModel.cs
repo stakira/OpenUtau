@@ -198,6 +198,7 @@ namespace OpenUtau.UI.Models
                     partElement.Y = -OffsetY + partElement.Part.TrackNo * TrackHeight + 1;
                     partElement.VisualHeight = TrackHeight - 2;
                     partElement.ScaleX = QuarterWidth / Project.Resolution;
+                    partElement.CanvasWidth = this.TrackCanvas.ActualWidth;
                 }
                 foreach (TrackHeader trackHeader in TrackHeaders)
                 {
@@ -208,11 +209,6 @@ namespace OpenUtau.UI.Models
             }
             _updated = false;
             PlaybackManager.Inst.UpdatePlayPos();
-        }
-
-        public void UpdatePartElement(UPart part)
-        {
-            foreach (PartElement partElement in PartElements) if (partElement.Part == part) partElement.Redraw();
         }
 
         public void UpdateViewSize()
@@ -330,7 +326,7 @@ namespace OpenUtau.UI.Models
         private void OnPartAdded(UPart part)
         {
             PartElement partElement;
-            if (part is UWavePart) partElement = new WavePartElement() { Part = part, Project = Project };
+            if (part is UWavePart) partElement = new WavePartElement(part) { Project = Project };
             else partElement = new VoicePartElement() { Part = part, Project = Project };
 
             partElement.Redraw();

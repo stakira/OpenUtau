@@ -77,6 +77,9 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="WriteableBitmapEx.Wpf">
+      <HintPath>..\packages\WriteableBitmapEx.1.5.0.0\lib\net40\WriteableBitmapEx.Wpf.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\Classes\PlaybackManager.cs" />
@@ -120,7 +123,7 @@
       <SubType>Designer</SubType>
     </Page>
     <Compile Include="Core\Formats\Formats.cs" />
-    <Compile Include="Core\Formats\Sound.cs" />
+    <Compile Include="Core\Formats\Wave.cs" />
     <Compile Include="Core\Formats\Ust.cs" />
     <Compile Include="Core\Util\MusicMath.cs" />
     <Compile Include="Core\USTx\UPart.cs" />

@@ -80,6 +80,25 @@ namespace OpenUtau.UI.Controls
             slider.Value += e.Delta / 120 * (slider.Maximum - slider.Minimum) / 50;
         }
 
+        private void buildChangeSingerMenuItems()
+        {
+            changeSingerMenu.Items.Clear();
+            foreach (var pair in DocManager.Inst.Singers)
+            {
+                var menuItem = new MenuItem() { Header = pair.Value.Name };
+                menuItem.Click += (_o, _e) =>
+                {
+                    if (this.Track.Singer != pair.Value)
+                    {
+                        DocManager.Inst.StartUndoGroup();
+                        DocManager.Inst.ExecuteCmd(new TrackChangeSingerCommand(DocManager.Inst.Project, this.Track, pair.Value));
+                        DocManager.Inst.EndUndoGroup();
+                    }
+                };
+                changeSingerMenu.Items.Add(menuItem);
+            }
+        }
+
         ContextMenu changeSingerMenu;
         private void singerNameButton_Click(object sender, RoutedEventArgs e)
         {
@@ -89,22 +108,12 @@ namespace OpenUtau.UI.Controls
                 changeSingerMenu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
                 changeSingerMenu.PlacementTarget = (Button)sender;
                 changeSingerMenu.HorizontalOffset = -10;
-                foreach (var pair in DocManager.Inst.Singers)
-                {
-                    var menuItem = new MenuItem() { Header = pair.Value.Name };
-                    menuItem.Click += (_o, _e) =>
-                    {
-                        if (this.Track.Singer != pair.Value)
-                        {
-                            DocManager.Inst.StartUndoGroup();
-                            DocManager.Inst.ExecuteCmd(new TrackChangeSingerCommand(DocManager.Inst.Project, this.Track, pair.Value));
-                            DocManager.Inst.EndUndoGroup();
-                        }
-                    };
-                    changeSingerMenu.Items.Add(menuItem);
-                }
             }
-            changeSingerMenu.IsOpen = true;
+            if (DocManager.Inst.Singers.Count != 0)
+            {
+                buildChangeSingerMenuItems();
+                changeSingerMenu.IsOpen = true;
+            }
             e.Handled = true;
         }
 
