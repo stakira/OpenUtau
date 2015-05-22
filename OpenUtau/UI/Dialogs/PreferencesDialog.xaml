@@ -13,9 +13,8 @@
                 <TreeViewItem Header="Media" Margin="-12,0,0,0"/>
             </TreeViewItem>
             <TreeViewItem Header="Audio" IsExpanded="True">
-                <TreeViewItem Header="Rendering" Margin="-12,0,0,0"/>
                 <TreeViewItem x:Name="playbackItem" Header="Playback" Margin="-12,0,0,0"/>
-                <TreeViewItem Header="Buffering" Margin="-12,0,0,0"/>
+                <TreeViewItem x:Name="renderingItem" Header="Rendering" Margin="-12,0,0,0"/>
             </TreeViewItem>
         </TreeView>
         <Grid x:Name="pathsGrid" Margin="170,2,10,10" Visibility="Hidden">
@@ -44,6 +43,38 @@
                 <ComboBoxItem Content="WaveOut"/>
                 <ComboBoxItem Content="ASIO"/>
             </ComboBox>
+        </Grid>
+        <Grid x:Name="renderingGrid" Margin="170,2,10,10" Visibility="Hidden">
+            <GroupBox Header="Resampling engine for preview" Height="112" VerticalAlignment="Top">
+                <Grid>
+                    <RadioButton HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8,10,0,0" GroupName="preview" IsChecked="True">
+                        Internal resampling engine (Recommended)
+                    </RadioButton>
+                    <RadioButton HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8,36,0,0" GroupName="preview">
+                        External DLL engine
+                    </RadioButton>
+                    <RadioButton HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8,62,0,0" GroupName="preview">
+                        External EXE engine
+                    </RadioButton>
+                    <ComboBox Margin="136,34,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="256"/>
+                    <ComboBox Margin="136,60,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="256"/>
+                </Grid>
+            </GroupBox>
+            <GroupBox Header="Resampling engine for export" Height="112" VerticalAlignment="Top" Margin="0,112,0,0">
+                <Grid>
+                    <RadioButton HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8,10,0,0" GroupName="export" IsChecked="True">
+                        Internal resampling engine
+                    </RadioButton>
+                    <RadioButton HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8,36,0,0" GroupName="export">
+                        External DLL engine
+                    </RadioButton>
+                    <RadioButton HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8,62,0,0" GroupName="export">
+                        External EXE engine
+                    </RadioButton>
+                    <ComboBox Margin="136,34,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="256"/>
+                    <ComboBox Margin="136,60,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="256"/>
+                </Grid>
+            </GroupBox>
         </Grid>
     </Grid>
 </Window>

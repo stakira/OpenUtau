@@ -218,11 +218,7 @@ namespace OpenUtau.Core.Render
             while (currMs < endMs)
             {
                 while (pps[i + 1].X < currMs) i++;
-                double pit = pps[i].Shape == PitchPointShape.i ? MusicMath.SinEasingIn(pps[i].X, pps[i + 1].X, pps[i].Y, pps[i + 1].Y, currMs) :
-                    pps[i].Shape == PitchPointShape.o ? MusicMath.SinEasingOut(pps[i].X, pps[i + 1].X, pps[i].Y, pps[i + 1].Y, currMs) :
-                    pps[i].Shape == PitchPointShape.io ? MusicMath.SinEasingInOut(pps[i].X, pps[i + 1].X, pps[i].Y, pps[i + 1].Y, currMs) :
-                    MusicMath.Liner(pps[i].X, pps[i + 1].X, pps[i].Y, pps[i + 1].Y, currMs);
-
+                double pit = MusicMath.InterpolateShape(pps[i].X, pps[i + 1].X, pps[i].Y, pps[i + 1].Y, currMs, pps[i].Shape);
                 pit *= 10;
 
                 // Apply vibratos

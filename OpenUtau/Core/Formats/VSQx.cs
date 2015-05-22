@@ -141,7 +141,6 @@ namespace OpenUtau.Core.Formats
                         }
                         unote.PitchBend.Points[0].X = -uproject.TickToMillisecond(Math.Min(15, unote.DurTick / 3));
                         unote.PitchBend.Points[1].X = -unote.PitchBend.Points[0].X;
-                        unote.Channel = 0; // FIXME
                         upart.Notes.Add(unote);
                     }
                 }

@@ -14,7 +14,7 @@ namespace OpenUtau.Core
     {
         DocManager() {
             _project = new UProject();
-            _singers = Formats.UtauSoundbank.FindAllSingers();
+            SearchAllSingers();
         }
 
         static DocManager _s;
@@ -27,6 +27,11 @@ namespace OpenUtau.Core
         public Dictionary<string, USinger> Singers { get { return _singers; } }
         UProject _project;
         public UProject Project { get { return _project; } }
+
+        public void SearchAllSingers()
+        {
+            _singers = Formats.UtauSoundbank.FindAllSingers();
+        }
 
         # region Command Queue
 

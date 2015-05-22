@@ -80,5 +80,16 @@ namespace OpenUtau.Core
         {
             return y0 + (y1 - y0) * (x - x0) / (x1 - x0);
         }
+
+        public static double InterpolateShape(double x0, double x1, double y0, double y1, double x, USTx.PitchPointShape shape)
+        {
+            switch (shape)
+            {
+                case USTx.PitchPointShape.io: return MusicMath.SinEasingInOut(x0, x1, y0, y1, x);
+                case USTx.PitchPointShape.i: return MusicMath.SinEasingIn(x0, x1, y0, y1, x);
+                case USTx.PitchPointShape.o: return MusicMath.SinEasingOut(x0, x1, y0, y1, x);
+                default: return MusicMath.Liner(x0, x1, y0, y1, x);
+            }
+        }
     }
 }

@@ -19,7 +19,6 @@ namespace OpenUtau.Core.USTx
         public Dictionary<string, UExpression> Expressions = new Dictionary<string, UExpression>();
         public PitchBendExpression PitchBend;
         public VibratoExpression Vibrato;
-        public int Channel = 0;
         public bool Error = false;
         public bool Selected = false;
 
@@ -39,8 +38,7 @@ namespace OpenUtau.Core.USTx
                 PosTick = PosTick,
                 DurTick = DurTick,
                 NoteNum = NoteNum,
-                Lyric = Lyric,
-                Channel = Channel
+                Lyric = Lyric
             };
             foreach (var phoneme in this.Phonemes) _note.Phonemes.Add(phoneme.Clone(_note));
             foreach (var pair in this.Expressions) _note.Expressions.Add(pair.Key, pair.Value.Clone(_note));
@@ -58,11 +56,7 @@ namespace OpenUtau.Core.USTx
             if (other == null)
                 throw new ArgumentException("CompareTo object is not a Note");
 
-            if (other.Channel < this.Channel)
-                return 1;
-            else if (other.Channel > this.Channel)
-                return -1;
-            else if (other.PosTick < this.PosTick)
+            if (other.PosTick < this.PosTick)
                 return 1;
             else if (other.PosTick > this.PosTick)
                 return -1;

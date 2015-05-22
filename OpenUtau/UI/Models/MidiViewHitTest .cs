@@ -66,6 +66,7 @@ namespace OpenUtau.UI.Models
                 if (midiVM.NoteIsInView(note)) // FIXME this is not enough
                 {
                     double lastX = 0, lastY = 0;
+                    PitchPointShape lastShape = PitchPointShape.l;
                     for (int i = 0; i < note.PitchBend.Points.Count; i++)
                     {
                         var pit = note.PitchBend.Points[i];
@@ -79,7 +80,8 @@ namespace OpenUtau.UI.Models
                         {
                             // Hit test curve
                             var lastPit = note.PitchBend.Points[i - 1];
-                            double castY = MusicMath.SinEasingInOut(lastX, x, lastY, y, mousePos.X) - mousePos.Y;
+                            # warning castY is not implemented for all shapes yet
+                            double castY = MusicMath.InterpolateShape(lastX, x, lastY, y, mousePos.X, lastShape) - mousePos.Y;
                             if (y >= lastY)
                             {
                                 if (mousePos.Y - y > 3 || lastY - mousePos.Y > 3) break;
@@ -89,7 +91,7 @@ namespace OpenUtau.UI.Models
                                 if (y - mousePos.Y > 3 || mousePos.Y - lastY > 3) break;
                             }
                             double castX = MusicMath.SinEasingInOutY(lastX, x, lastY, y, mousePos.Y) - mousePos.X;
-                            double dis = castX != castX ? Math.Abs(castY) : Math.Cos(Math.Atan2(Math.Abs(castY), Math.Abs(castX))) * Math.Abs(castY);
+                            double dis = double.IsNaN(castX) ? Math.Abs(castY) : Math.Cos(Math.Atan2(Math.Abs(castY), Math.Abs(castX))) * Math.Abs(castY);
                             if (dis < 3)
                             {
                                 double msX = DocManager.Inst.Project.TickToMillisecond(midiVM.CanvasToQuarter(mousePos.X) * DocManager.Inst.Project.Resolution - note.PosTick);
@@ -100,6 +102,7 @@ namespace OpenUtau.UI.Models
                         }
                         lastX = x;
                         lastY = y;
+                        lastShape = pit.Shape;
                     }
                 }
             }

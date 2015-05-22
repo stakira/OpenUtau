@@ -307,21 +307,23 @@ namespace OpenUtau.UI.Models
 
         # region Cmd Handling
 
-        private void OnTrackAdded(UTrack track)
+        private void OnTrackAdded(UTrack track, List<UPart> addedParts = null)
         {
             var trackHeader = new TrackHeader() { Track = track, Height = TrackHeight };
             TrackHeaders.Add(trackHeader);
             HeaderCanvas.Children.Add(trackHeader);
             Canvas.SetTop(trackHeader, -OffsetY + TrackHeight * trackHeader.Track.TrackNo);
             trackHeader.Width = HeaderCanvas.ActualWidth;
+            if (addedParts != null) foreach (var part in addedParts) OnPartAdded(part);
             MarkUpdate();
         }
 
-        private void OnTrackRemoved(UTrack track)
+        private void OnTrackRemoved(UTrack track, List<UPart> removedParts = null)
         {
             var trackHeader = GetTrackHeader(track);
             HeaderCanvas.Children.Remove(trackHeader);
             TrackHeaders.Remove(trackHeader);
+            if (removedParts != null) foreach (var part in removedParts) OnPartRemoved(part);
             MarkUpdate();
         }
 
@@ -365,32 +367,27 @@ namespace OpenUtau.UI.Models
                 OnTrackAdded(track);
             }
 
+            OnPropertyChanged("BeatPerBar");
+            OnPropertyChanged("BeatUnit");
+            OnPropertyChanged("BPM");
             initPlayPosMarker();
         }
 
         private void OnProjectUnload()
         {
             foreach (PartElement element in PartElements)
-            {
                 TrackCanvas.Children.Remove(element);
-            }
             SelectedParts.Clear();
             PartElements.Clear();
             foreach (TrackHeader trackHeader in TrackHeaders)
-            {
                 HeaderCanvas.Children.Remove(trackHeader);
-            }
             TrackHeaders.Clear();
-            if (Project != null)
-            {
-                foreach (UPart part in Project.Parts) part.Dispose();
-            }
         }
 
         private void OnPlayPosSet(int playPosTick)
         {
             this.playPosTick = playPosTick;
-            double playPosPix = QuarterToCanvas(playPosTick / Project.Resolution);
+            double playPosPix = QuarterToCanvas((double)playPosTick / Project.Resolution);
             if (playPosPix < TrackCanvas.ActualWidth * UIConstants.PlayPosMarkerMargin)
                 OffsetX += playPosPix - TrackCanvas.ActualWidth * UIConstants.PlayPosMarkerMargin;
             else if (playPosPix > TrackCanvas.ActualWidth * (1 - UIConstants.PlayPosMarkerMargin))
@@ -439,8 +436,8 @@ namespace OpenUtau.UI.Models
                 }
                 else if (_cmd is RemoveTrackCommand)
                 {
-                    if (!isUndo) OnTrackRemoved(_cmd.track);
-                    else OnTrackAdded(_cmd.track);
+                    if (!isUndo) OnTrackRemoved(_cmd.track, ((RemoveTrackCommand)_cmd).removedParts);
+                    else OnTrackAdded(_cmd.track, ((RemoveTrackCommand)_cmd).removedParts);
                 }
                 else if (_cmd is TrackChangeSingerCommand)
                 {

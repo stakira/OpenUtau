@@ -179,8 +179,8 @@ namespace OpenUtau.UI.Controls
             Pen pen = new Pen(Brushes.White, 1);
             pen.Freeze();
 
-            if (((UWavePart)Part).Peaks == null) return;
-            byte[] peaksArray = ToArray(((UWavePart)Part).Peaks);
+            /*if (((UWavePart)Part).Peaks == null)*/ return;
+            /*byte[] peaksArray = ToArray(((UWavePart)Part).Peaks);
 
             List<double> peaks = new List<double>();
 
@@ -222,7 +222,7 @@ namespace OpenUtau.UI.Controls
             cxt.DrawGeometry(Brushes.White, null, geometry);
             cxt.Close();
             sTransPre.ScaleX = Project.BPM / Project.BeatUnit * 4 * Project.Resolution / 60 / 2000 * srcratio;
-            tTransPre.Y = partVisual.ContentBounds.Height / 2;
+            tTransPre.Y = partVisual.ContentBounds.Height / 2;*/
         }
 
         public static byte[] ToArray(NAudio.Wave.WaveStream stream)

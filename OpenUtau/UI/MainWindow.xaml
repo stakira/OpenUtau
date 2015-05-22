@@ -67,7 +67,8 @@
                 <Grid x:Name="bpmGrid" Height="20" Width="64" HorizontalAlignment="Left" Margin="10,0,0,0">
                     <Border CornerRadius="4" BorderThickness="1" BorderBrush="LightGray"/>
                     <TextBlock x:Name="bpmText" FontFamily="GlobalMonospace.CompositeFont"
-                               HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="11" Margin="0,1,0,0">
+                               HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="11" Margin="0,1,0,0"
+                               MouseLeftButtonDown="bpmText_MouseLeftButtonDown">
                         <TextBlock.Text>
                             <MultiBinding StringFormat="{}{1}/{2}  {0:#.00}">
                                 <Binding Path="BPM" Source="{StaticResource tracksVM}"/>

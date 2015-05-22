@@ -9,9 +9,9 @@ namespace OpenUtau.Core
 {
     public class PathManager
     {
-        const string UtauVoicePath = "%VOICE%";
-        const string DefaultSingerPath = "Singers";
-        const string DefaultCachePath = "UCache";
+        public const string UtauVoicePath = "%VOICE%";
+        public const string DefaultSingerPath = "Singers";
+        public const string DefaultCachePath = "UCache";
 
         private string _homePath;
         public string HomePath { get { return _homePath; } }
@@ -49,16 +49,14 @@ namespace OpenUtau.Core
 
         public string[] GetSingerSearchPaths()
         {
-            string[] singerSearchPaths = new string[Properties.Settings.Default.SingerPaths.Count + 1];
-            singerSearchPaths[0] = DefaultSingerPath;
-            Properties.Settings.Default.SingerPaths.CopyTo(singerSearchPaths, 1);
+            string[] singerSearchPaths = new string[Properties.Settings.Default.SingerPaths.Count];
+            Properties.Settings.Default.SingerPaths.CopyTo(singerSearchPaths, 0);
             return singerSearchPaths;
         }
 
         public void AddSingerSearchPath(string path)
         {
             path = MakeRelativeToHome(path);
-            if (path == DefaultSingerPath) return;
             if (!Properties.Settings.Default.SingerPaths.Contains(path))
             {
                 Properties.Settings.Default.SingerPaths.Add(path);

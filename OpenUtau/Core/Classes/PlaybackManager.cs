@@ -23,25 +23,35 @@ namespace OpenUtau.Core
         private static PlaybackManager _s;
         public static PlaybackManager Inst { get { if (_s == null) { _s = new PlaybackManager(); } return _s; } }
 
-        SequencingSampleProvider bus;
+        MixingSampleProvider mix;
         public void Play(SequencingSampleProvider source)
         {
             if (outDevice != null && outDevice.PlaybackState == PlaybackState.Playing) return;
             if (outDevice != null) outDevice.Dispose();
-            bus = source;
+            var stereo = new MonoToStereoSampleProvider(source);
+            mix = new MixingSampleProvider(stereo.WaveFormat);
+            mix.AddMixerInput(stereo);
+            /*foreach (var part in DocManager.Inst.Project.Parts)
+            {
+                if (part is OpenUtau.Core.USTx.UWavePart)
+                {
+                    var _part = part as OpenUtau.Core.USTx.UWavePart;
+                    _part.Stream.Position = 0;
+                    var _offset = new OffsetSampleProvider(new WaveToSampleProvider(_part.Stream));
+                    _offset.DelayBy = TimeSpan.FromMilliseconds(DocManager.Inst.Project.TickToMillisecond(_part.PosTick));
+                    mix.AddMixerInput(_offset);
+                }
+            }*/
             outDevice = new WaveOut();
-            outDevice.Init(bus);
+            outDevice.Init(mix);
             outDevice.Play();
-            outDevice.PlaybackStopped += (o, e) => {
-                System.Diagnostics.Debug.WriteLine(bus.LastSample);
-            };
         }
 
         public void UpdatePlayPos()
         {
             if (outDevice != null && outDevice.PlaybackState == PlaybackState.Playing)
             {
-                double ms = outDevice.GetPosition() * 1000.0 / bus.WaveFormat.BitsPerSample * 8 / bus.WaveFormat.SampleRate;
+                double ms = outDevice.GetPosition() * 1000.0 / mix.WaveFormat.BitsPerSample /mix.WaveFormat.Channels * 8 / mix.WaveFormat.SampleRate;
                 int tick = DocManager.Inst.Project.MillisecondToTick(ms);
                 DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(tick), true);
             }

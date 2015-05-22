@@ -17,6 +17,7 @@ namespace OpenUtau.Core.Formats
     class USTx
     {
         static UProject Project;
+        private const string thisUstxVersion = "0.1";
 
         class UNoteConvertor : JavaScriptConverter
         {
@@ -246,6 +247,7 @@ namespace OpenUtau.Core.Formats
             public override object Deserialize(IDictionary<string, object> dictionary, Type type, JavaScriptSerializer serializer)
             {
                 UProject result = new UProject();
+                string ustxVersion = dictionary["ustxversion"] as string;
                 USTx.Project = result;
                 result.Name = dictionary["name"] as string;
                 result.Comment = dictionary["comment"] as string;
@@ -292,6 +294,7 @@ namespace OpenUtau.Core.Formats
                 var _obj = obj as UProject;
                 if (_obj != null)
                 {
+                    result.Add("ustxversion", thisUstxVersion);
                     result.Add("name", _obj.Name);
                     result.Add("comment", _obj.Comment);
                     result.Add("output", _obj.OutputDir);
@@ -364,7 +367,7 @@ namespace OpenUtau.Core.Formats
                         result.Add("trackno", _obj.TrackNo);
                         result.Add("name", _obj.Name);
                         result.Add("comment", _obj.Comment);
-                        result.Add("singer", _obj.Singer.Name);
+                        result.Add("singer", _obj.Singer == null ? "" : _obj.Singer.Name);
                     }
                 }
                 else if (obj is USinger)

@@ -13,48 +13,44 @@ namespace OpenUtau.Core.USTx
         public string Name = "New Part";
         public string Comment = "";
 
-        public int PosTick = 0;
-        public int DurTick;
         public int TrackNo;
+        public int PosTick = 0;
+        public virtual int DurTick { set; get; }
         public int EndTick { get { return PosTick + DurTick; } }
 
         public UPart() { }
 
         public abstract int GetMinDurTick(UProject project);
-        public abstract void Dispose();
     }
 
     public class UVoicePart : UPart
     {
         public SortedSet<UNote> Notes = new SortedSet<UNote>();
-
         public override int GetMinDurTick(UProject project)
         {
             int durTick = 0;
             foreach (UNote note in Notes) durTick = Math.Max(durTick, note.PosTick + note.DurTick);
             return durTick;
         }
-
-        public override void Dispose() { }
     }
 
     public class UWavePart : UPart
     {
-        public WaveStream Stream;
-        public WaveStream Peaks;
-
-        public string FilePath;
-        public string PeaksPath;
-
-        public override int GetMinDurTick(UProject project)
+        string _filePath;
+        public string FilePath
         {
-            return project.MillisecondToTick(Stream.TotalTime.TotalMilliseconds);
+            set { _filePath = value; Name = System.IO.Path.GetFileName(value); }
+            get { return _filePath; }
         }
-
-        public override void Dispose()
+        public int FileDurTick;
+        public int HeadTrimTick = 0;
+        public int TailTrimTick = 0;
+        public override int DurTick
         {
-            if (Stream != null) Stream.Dispose();
-            if (Peaks != null) Peaks.Dispose();
+            get { return FileDurTick - HeadTrimTick - TailTrimTick; }
+            set { TailTrimTick = FileDurTick - HeadTrimTick - value; }
         }
+        # warning Check MinDurTick
+        public override int GetMinDurTick(UProject project) { return 0; }
     }
 }

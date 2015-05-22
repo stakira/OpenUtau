@@ -12,7 +12,19 @@ namespace OpenUtau.Core
     {
         public UProject project;
         public UTrack track;
-        public void UpdateTrackNo() { for (int i = 0; i < project.Tracks.Count; i++) project.Tracks[i].TrackNo = i; }
+        public void UpdateTrackNo()
+        {
+            Dictionary<int, int> trackNoRemapTable = new Dictionary<int, int>();
+            for (int i = 0; i < project.Tracks.Count; i++)
+                if (project.Tracks[i].TrackNo != i)
+                {
+                    trackNoRemapTable.Add(project.Tracks[i].TrackNo, i);
+                    project.Tracks[i].TrackNo = i;
+                }
+            foreach (var part in project.Parts)
+                if (trackNoRemapTable.Keys.Contains(part.TrackNo))
+                    part.TrackNo = trackNoRemapTable[part.TrackNo];
+        }
     }
 
     public class AddTrackCommand : TrackCommand
@@ -30,20 +42,31 @@ namespace OpenUtau.Core
 
     public class RemoveTrackCommand : TrackCommand
     {
-        public RemoveTrackCommand(UProject project, UTrack track) { this.project = project; this.track = track; }
+        public List<UPart> removedParts = new List<UPart>();
+        public RemoveTrackCommand(UProject project, UTrack track)
+        {
+            this.project = project;
+            this.track = track;
+            foreach (var part in project.Parts)
+                if (part.TrackNo == track.TrackNo)
+                    removedParts.Add(part);
+        }
         public override string ToString() { return "Remove track"; }
         public override void Execute() {
-            //for (int i = DocManager.Inst.Project.Parts.Count - 1; i >= 0; i--)
-            //{
-            //    if (DocManager.Inst.Project.Parts[i].TrackNo == track.TrackNo)
-            //        DocManager.Inst.ExecuteCmd(new RemovePartCommand(DocManager.Inst.Project, DocManager.Inst.Project.Parts[i]));
-            //} // what happens when redo?
-            project.Tracks.Remove(track); UpdateTrackNo();
+            project.Tracks.Remove(track);
+            foreach (var part in removedParts)
+            {
+                project.Parts.Remove(part);
+                part.TrackNo = -1;
+            }
+            UpdateTrackNo();
         }
         public override void Unexecute()
         {
             if (track.TrackNo < project.Tracks.Count) project.Tracks.Insert(track.TrackNo, track);
             else project.Tracks.Add(track);
+            foreach (var part in removedParts) project.Parts.Add(part);
+            track.TrackNo = -1;
             UpdateTrackNo();
         }
     }

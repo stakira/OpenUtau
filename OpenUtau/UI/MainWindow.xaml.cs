@@ -415,7 +415,7 @@ namespace OpenUtau.UI
 
         private void MenuSingers_Click(object sender, RoutedEventArgs e)
         {
-            var w = new Dialogs.SingerViewDialog();
+            var w = new Dialogs.SingerViewDialog() { Owner = this };
             w.ShowDialog();
         }
 
@@ -438,7 +438,7 @@ namespace OpenUtau.UI
 
         private void MenuPrefs_Click(object sender, RoutedEventArgs e)
         {
-            var w = new Dialogs.PreferencesDialog();
+            var w = new Dialogs.PreferencesDialog() { Owner = this };
             w.ShowDialog();
         }
 
@@ -521,7 +521,7 @@ namespace OpenUtau.UI
 
         private void CmdImportAudio(string file)
         {
-            UWavePart uwavepart = OpenUtau.Core.Formats.Sound.CreateUWavePart(file, (part) =>
+            UWavePart uwavepart = OpenUtau.Core.Formats.Wavepeak.CreateUWavePart(file, (part) =>
             {
                 trackVM.UpdatePartElement(part);
                 trackVM.GetPartElement(part).VisualHeight = 1; // for force redraw
@@ -608,6 +608,11 @@ namespace OpenUtau.UI
         {
             var ri = new OpenUtau.Core.Render.ResamplerInterface();
             ri.ResampleAll(DocManager.Inst.Project, delegate(OpenUtau.Core.Render.SequencingSampleProvider sp) { PlaybackManager.Inst.Play(sp); });
+        }
+
+        private void bpmText_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            // TODO: set bpm
         }
     }
 }
