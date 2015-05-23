@@ -196,7 +196,7 @@ namespace OpenUtau.Core.Formats
                     }
                 }
                 else if (dictionary.ContainsKey("path"))
-                    result = new UWavePart() { FilePath = dictionary["path"] as string };
+                    result = Wave.CreatePart(dictionary["path"] as string);
 
                 if (result != null)
                 {

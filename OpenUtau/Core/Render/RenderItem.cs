@@ -8,6 +8,8 @@ using OpenUtau.Core.USTx;
 
 namespace OpenUtau.Core.Render
 {
+    public enum RenderQuality { Unknown, Preview, Export };
+
     class RenderItem
     {
         // For resampler

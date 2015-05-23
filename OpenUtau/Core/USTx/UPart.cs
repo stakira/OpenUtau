@@ -42,6 +42,8 @@ namespace OpenUtau.Core.USTx
             set { _filePath = value; Name = System.IO.Path.GetFileName(value); }
             get { return _filePath; }
         }
+        public float[] Peaks;
+
         public int Channels;
         public int FileDurTick;
         public int HeadTrimTick = 0;

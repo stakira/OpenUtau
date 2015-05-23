@@ -92,7 +92,7 @@
     <Compile Include="Core\Render\NAudio\CachedSound.cs" />
     <Compile Include="Core\Render\NAudio\CachedSoundSampleProvider.cs" />
     <Compile Include="Core\Render\NAudio\EnvelopeSampleProvider.cs" />
-    <Compile Include="Core\Render\NAudio\MasterBusSampleProvider.cs" />
+    <Compile Include="Core\Render\NAudio\TrackSampleProvider.cs" />
     <Compile Include="Core\Render\NAudio\SequencingSampleProvider.cs" />
     <Compile Include="Core\Render\RenderItem.cs" />
     <Compile Include="Core\Render\RenderCache.cs" />

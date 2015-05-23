@@ -421,8 +421,7 @@ namespace OpenUtau.UI
 
         private void MenuRenderAll_Click(object sender, RoutedEventArgs e)
         {
-            var ri = new OpenUtau.Core.Render.ResamplerInterface();
-            ri.ResampleAll(DocManager.Inst.Project, delegate(OpenUtau.Core.Render.SequencingSampleProvider sp) { PlaybackManager.Inst.Play(sp); });
+            PlaybackManager.Inst.Play(DocManager.Inst.Project);
         }
 
         private void MenuAbout_Click(object sender, RoutedEventArgs e)
@@ -594,15 +593,23 @@ namespace OpenUtau.UI
             }
         }
 
+        # region Playback controls
+
         private void playButton_Click(object sender, RoutedEventArgs e)
         {
-            var ri = new OpenUtau.Core.Render.ResamplerInterface();
-            ri.ResampleAll(DocManager.Inst.Project, delegate(OpenUtau.Core.Render.SequencingSampleProvider sp) { PlaybackManager.Inst.Play(sp); });
+            PlaybackManager.Inst.Play(DocManager.Inst.Project);
+        }
+
+        private void pauseButton_Click(object sender, RoutedEventArgs e)
+        {
+            PlaybackManager.Inst.PausePlayback();
         }
 
         private void bpmText_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             // TODO: set bpm
         }
+
+        # endregion
     }
 }

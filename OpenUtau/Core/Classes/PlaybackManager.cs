@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
+using OpenUtau.Core.USTx;
 using OpenUtau.Core.Render;
 
 namespace OpenUtau.Core
@@ -13,45 +14,110 @@ namespace OpenUtau.Core
     class PlaybackManager : ICmdSubscriber
     {
         private WaveOut outDevice;
-        private MasterBusSampleProvider masterBus;
 
-        private PlaybackManager() {
-            this.Subscribe(DocManager.Inst);
-            masterBus = (new MasterBusSampleProvider());
-        }
+        private PlaybackManager() { this.Subscribe(DocManager.Inst); }
 
         private static PlaybackManager _s;
         public static PlaybackManager Inst { get { if (_s == null) { _s = new PlaybackManager(); } return _s; } }
 
-        MixingSampleProvider mix;
-        public void Play(SequencingSampleProvider source)
+        MixingSampleProvider masterMix;
+        List<TrackSampleProvider> trackSources;
+
+        public void Play(UProject project)
         {
-            if (outDevice != null && outDevice.PlaybackState == PlaybackState.Playing) return;
-            if (outDevice != null) outDevice.Dispose();
-            var stereo = new MonoToStereoSampleProvider(source);
-            mix = new MixingSampleProvider(stereo.WaveFormat);
-            mix.AddMixerInput(stereo);
-            /*foreach (var part in DocManager.Inst.Project.Parts)
+            if (pendingParts > 0) return;
+            else if (outDevice != null)
             {
-                if (part is OpenUtau.Core.USTx.UWavePart)
-                {
-                    var _part = part as OpenUtau.Core.USTx.UWavePart;
-                    _part.Stream.Position = 0;
-                    var _offset = new OffsetSampleProvider(new WaveToSampleProvider(_part.Stream));
-                    _offset.DelayBy = TimeSpan.FromMilliseconds(DocManager.Inst.Project.TickToMillisecond(_part.PosTick));
-                    mix.AddMixerInput(_offset);
-                }
-            }*/
+                if (outDevice.PlaybackState == PlaybackState.Playing) return;
+                else if (outDevice.PlaybackState == PlaybackState.Paused) { outDevice.Play(); return; }
+                else outDevice.Dispose();
+            }
+            BuildAudio(project);
+        }
+
+        public void StopPlayback()
+        {
+            if (outDevice != null) outDevice.Stop();
+        }
+
+        public void PausePlayback()
+        {
+            if (outDevice != null) outDevice.Pause();
+        }
+
+        private void StartPlayback()
+        {
+            masterMix = new MixingSampleProvider(WaveFormat.CreateIeeeFloatWaveFormat(44100, 2));
+            foreach (var source in trackSources) masterMix.AddMixerInput(source);
             outDevice = new WaveOut();
-            outDevice.Init(mix);
+            outDevice.Init(masterMix);
             outDevice.Play();
+        }
+
+        private ISampleProvider BuildWavePartAudio(UWavePart part, UProject project)
+        {
+            AudioFileReader stream;
+            try { stream = new AudioFileReader(part.FilePath); }
+            catch { return null; }
+            return new WaveToSampleProvider(stream);
+        }
+
+        private void BuildVoicePartAudio(UVoicePart part, UProject project)
+        {
+            ResamplerInterface ri = new ResamplerInterface();
+            ri.ResamplePart(part, project, (o) => { this.BuildVoicePartDone(o, part, project); });
+        }
+
+        private void BuildVoicePartDone(SequencingSampleProvider source, UPart part, UProject project)
+        {
+            lock (lockObject)
+            {
+                trackSources[part.TrackNo].AddSource(
+                    source,
+                    TimeSpan.FromMilliseconds(project.TickToMillisecond(part.PosTick)));
+                pendingParts--;
+            }
+
+            if (pendingParts == 0) StartPlayback();
+        }
+
+        int pendingParts = 0;
+        object lockObject = new object();
+
+        private void BuildAudio(UProject project)
+        {
+            trackSources = new List<TrackSampleProvider>();
+            foreach (UTrack track in project.Tracks)
+            {
+                trackSources.Add(new TrackSampleProvider());
+            }
+            pendingParts = project.Parts.Count;
+            foreach (UPart part in project.Parts)
+            {
+                if (part is UWavePart)
+                {
+                    lock (lockObject)
+                    {
+                        trackSources[part.TrackNo].AddSource(
+                            BuildWavePartAudio(part as UWavePart, project),
+                            TimeSpan.FromMilliseconds(project.TickToMillisecond(part.PosTick)));
+                        pendingParts--;
+                    }
+                }
+                else
+                {
+                    BuildVoicePartAudio(part as UVoicePart, project);
+                }
+            }
+
+            if (pendingParts == 0) StartPlayback();
         }
 
         public void UpdatePlayPos()
         {
             if (outDevice != null && outDevice.PlaybackState == PlaybackState.Playing)
             {
-                double ms = outDevice.GetPosition() * 1000.0 / mix.WaveFormat.BitsPerSample /mix.WaveFormat.Channels * 8 / mix.WaveFormat.SampleRate;
+                double ms = outDevice.GetPosition() * 1000.0 / masterMix.WaveFormat.BitsPerSample /masterMix.WaveFormat.Channels * 8 / masterMix.WaveFormat.SampleRate;
                 int tick = DocManager.Inst.Project.MillisecondToTick(ms);
                 DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(tick), true);
             }
@@ -65,7 +131,7 @@ namespace OpenUtau.Core
         {
             if (cmd is SeekPlayPosTickNotification)
             {
-                if (outDevice != null) outDevice.Stop();
+                StopPlayback();
                 int tick = ((SeekPlayPosTickNotification)cmd).playPosTick;
                 DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(tick));
             }

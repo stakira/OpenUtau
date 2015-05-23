@@ -13,23 +13,11 @@ namespace OpenUtau.Core.Render
 {
     class ResamplerInterface
     {
-        const string DefaultEnvelope = "0 5 35 0 100 100 0";
-
         Action<SequencingSampleProvider> resampleDoneCallback;
 
-        public void ResampleAll(UProject project, Action<SequencingSampleProvider> resampleDoneCallback)
+        public void ResamplePart(UVoicePart part, UProject project, Action<SequencingSampleProvider> resampleDoneCallback)
         {
             this.resampleDoneCallback = resampleDoneCallback;
-            foreach (UPart part in project.Parts)
-                if (part is UVoicePart)
-                {
-                    ResamplePart((UVoicePart)part, project);
-                    break;
-                }
-        }
-
-        private void ResamplePart(UVoicePart part, UProject project)
-        {
             BackgroundWorker worker = new BackgroundWorker();
             worker.WorkerReportsProgress = true;
             worker.DoWork += worker_DoWork;
@@ -148,6 +136,11 @@ namespace OpenUtau.Core.Render
 
         private string BuildPitchArgs(UPhoneme phoneme, UVoicePart part, UProject project)
         {
+            return string.Format("!{0} {1}", project.BPM, Base64EncodeInt12(BuildPitchData(phoneme, part, project)));
+        }
+
+        private List<int> BuildPitchData(UPhoneme phoneme, UVoicePart part, UProject project)
+        {
             List<int> pitches = new List<int>();
             UNote lastNote = part.Notes.OrderByDescending(x => x).Where(x => x.CompareTo(phoneme.Parent) < 0).FirstOrDefault();
             UNote nextNote = part.Notes.Where(x => x.CompareTo(phoneme.Parent) > 0).FirstOrDefault();
@@ -234,7 +227,7 @@ namespace OpenUtau.Core.Render
                 currMs += intervalMs;
             }
 
-            return string.Format("!{0} {1}", project.BPM, Base64EncodeInt12(pitches));
+            return pitches;
         }
 
         private double InterpolateVibrato(VibratoExpression vibrato, double posMs)

@@ -44,7 +44,7 @@ namespace OpenUtau.UI.Controls
             get { return tTransPost.Y; }
         }
 
-        public double ScaleX
+        public virtual double ScaleX
         {
             set { sTransPost.ScaleX = value; RedrawFrame(); }
             get { return sTransPost.ScaleX; }
@@ -186,7 +186,6 @@ namespace OpenUtau.UI.Controls
         }
 
         BackgroundWorker worker;
-        float[] peaks;
 
         PartImage partImage;
         WriteableBitmap partBitmap;
@@ -211,6 +210,12 @@ namespace OpenUtau.UI.Controls
             get { return tTransPost.X; }
         }
 
+        public override double ScaleX
+        {
+            set { sTransPost.ScaleX = value; RedrawFrame(); RedrawPart(); }
+            get { return sTransPost.ScaleX; }
+        }
+
         protected override void FitHeight(double height)
         {
             base.FitHeight(height);
@@ -230,11 +235,14 @@ namespace OpenUtau.UI.Controls
             this.RemoveVisualChild(partVisual);
             this.AddVisualChild(partImage);
 
-            worker = new BackgroundWorker() { WorkerReportsProgress = true };
-            worker.DoWork += BuildPeaksAsync;
-            worker.ProgressChanged += BuildPeaksProgressChanged;
-            worker.RunWorkerCompleted += BuildPeaksCompleted;
-            worker.RunWorkerAsync((UWavePart)Part);
+            if (((UWavePart)Part).Peaks == null)
+            {
+                worker = new BackgroundWorker() { WorkerReportsProgress = true };
+                worker.DoWork += BuildPeaksAsync;
+                worker.ProgressChanged += BuildPeaksProgressChanged;
+                worker.RunWorkerCompleted += BuildPeaksCompleted;
+                worker.RunWorkerAsync((UWavePart)Part);
+            }
         }
 
         protected override Visual GetVisualChild(int index)
@@ -251,12 +259,13 @@ namespace OpenUtau.UI.Controls
 
         public override void RedrawPart()
         {
-            if (peaks == null) return;
+            if (((UWavePart)Part).Peaks == null) return;
             else DrawWaveform();
         }
 
         private void DrawWaveform()
         {
+            float[] peaks = ((UWavePart)Part).Peaks;
             int x = 0;
             double width = Part.DurTick * ScaleX;
             double height = _height;
@@ -341,7 +350,7 @@ namespace OpenUtau.UI.Controls
 
         private void BuildPeaksCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            peaks = e.Result as float[];
+            ((UWavePart)Part).Peaks = e.Result as float[];
             RedrawPart();
         }
     }

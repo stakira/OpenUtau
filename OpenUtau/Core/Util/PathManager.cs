@@ -87,10 +87,5 @@ namespace OpenUtau.Core
         {
             return Path.Combine(_homePath, "tn_fnds.exe");
         }
-
-        public string GetTool2Path()
-        {
-            return Path.Combine(_homePath, "wavtool.exe");
-        }
     }
 }

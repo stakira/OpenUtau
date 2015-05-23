@@ -16,6 +16,21 @@ namespace OpenUtau.Core.Formats
     {
         public static UWavePart CreatePart(string filepath)
         {
+            foreach(var part in DocManager.Inst.Project.Parts)
+            {
+                var _part = part as UWavePart;
+                if (_part != null && _part.FilePath == filepath)
+                {
+                    return new UWavePart()
+                    {
+                        FilePath = filepath,
+                        FileDurTick = _part.FileDurTick,
+                        DurTick = _part.DurTick,
+                        Channels = _part.Channels,
+                        Peaks = _part.Peaks
+                    };
+                }
+            }
             WaveStream stream = null;
             try
             {
@@ -23,12 +38,16 @@ namespace OpenUtau.Core.Formats
             }
             catch
             {
-                DocManager.Inst.ExecuteCmd(new UserMessageNotification("Cannot open file."));
-                stream.Dispose();
                 return null;
             }
             int durTick = DocManager.Inst.Project.MillisecondToTick(1000.0 * stream.Length / stream.WaveFormat.AverageBytesPerSecond);
-            UWavePart uwavepart = new UWavePart() { FilePath = filepath, FileDurTick = durTick, DurTick = durTick, Channels = stream.WaveFormat.Channels };
+            UWavePart uwavepart = new UWavePart()
+            {
+                FilePath = filepath,
+                FileDurTick = durTick,
+                DurTick = durTick,
+                Channels = stream.WaveFormat.Channels
+            };
             stream.Close();
             return uwavepart;
         }

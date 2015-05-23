@@ -88,7 +88,8 @@
                     <Button x:Name="seekHomeButton" Style="{StaticResource SeekHomeButtonStyle}" Margin="4,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                     <Button x:Name="playButton" Style="{StaticResource PlayButtonStyle}" Margin="24,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"
                             Click="playButton_Click"/>
-                    <Button x:Name="pauseButton" Style="{StaticResource PauseButtonStyle}" Margin="44,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                    <Button x:Name="pauseButton" Style="{StaticResource PauseButtonStyle}" Margin="44,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"
+                            Click="pauseButton_Click"/>
                     <Button x:Name="seekEndButton" Style="{StaticResource SeekEndButtonStyle}" Margin="64,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                     <Border CornerRadius="4" BorderThickness="1" BorderBrush="LightGray"/>
                 </Grid>
