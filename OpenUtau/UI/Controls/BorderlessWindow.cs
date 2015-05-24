@@ -65,6 +65,26 @@ namespace OpenUtau.UI.Controls
             windowChrome.CornerRadius = new CornerRadius(0);
             windowChrome.CaptionHeight = 0;
             Loaded += Window_Loaded;
+
+            // for systems below Windows 8
+            var osversion = Environment.OSVersion.Version;
+            if (osversion.Major == 6 && osversion.Minor < 2)
+            {
+                Activated += Window_Activated;
+                Deactivated += Window_Deactivated;
+            }
+        }
+
+        private void Window_Deactivated(object sender, EventArgs e)
+        {
+            var border = this.GetTemplateChild(PART_WindowBorder) as Border;
+            border.BorderThickness = new Thickness(1);
+        }
+
+        private void Window_Activated(object sender, EventArgs e)
+        {
+            var border = this.GetTemplateChild(PART_WindowBorder) as Border;
+            border.BorderThickness = new Thickness(0);
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)

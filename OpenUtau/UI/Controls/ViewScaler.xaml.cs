@@ -64,6 +64,8 @@ namespace OpenUtau.UI.Controls
             double offset = 7 * Math.Log(Max / Value, 2) / Math.Log(Max / Min, 2);
             double size = offset < 4 ? 4 : 8 - offset;
 
+            if (double.IsNaN(offset) || double.IsNaN(size)) return;
+
             PathData = Geometry.Parse(
                 " M " + (8 - size) + " " + (offset + size) +
                 " L 8 " + (offset).ToString() +

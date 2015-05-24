@@ -16,12 +16,9 @@
             <Button x:Name="PART_MaxButton" Style="{StaticResource MaximizeButton}" Content="1" Margin="0,0,24,0"/>
             <Button x:Name="PART_CloseButton" Style="{StaticResource CloseButton}" Content="r" Margin="0,0,0,0"/>
             <ContentPresenter x:Name="PART_Content" Content="{TemplateBinding Content}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0,24,0,0"/>
-            <Border x:Name="PART_WindowBorder" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0" BorderBrush="Gray" BorderThickness="0"/>
+            <Border x:Name="PART_WindowBorder" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0" BorderBrush="Gray" BorderThickness="1"/>
         </Grid>
         <ControlTemplate.Triggers>
-            <Trigger Property="IsActive" Value="False">
-                <Setter TargetName="PART_WindowBorder" Property="BorderThickness" Value="1"/>
-            </Trigger>
             <Trigger Property="WindowState" Value="Maximized">
                 <Setter TargetName="PART_MaxButton" Property="Content" Value="2"/>
             </Trigger>
