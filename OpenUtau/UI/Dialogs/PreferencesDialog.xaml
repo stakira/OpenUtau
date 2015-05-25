@@ -45,36 +45,31 @@
             </ComboBox>
         </Grid>
         <Grid x:Name="renderingGrid" Margin="170,2,10,10" Visibility="Hidden">
-            <GroupBox Header="Resampling engine for preview" Height="112" VerticalAlignment="Top">
+            <GroupBox Header="Resampling engine for preview" Height="80" VerticalAlignment="Top">
                 <Grid>
-                    <RadioButton HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8,10,0,0" GroupName="preview" IsChecked="True">
-                        Internal resampling engine (Recommended)
+                    <RadioButton x:Name="previewRatioInternal" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8,10,0,0" GroupName="preview" Checked="previewEngine_Checked">
+                        Internal engine (Recommended)
                     </RadioButton>
-                    <RadioButton HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8,36,0,0" GroupName="preview">
-                        External DLL engine
+                    <RadioButton x:Name="previewRatioExternal" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8,36,0,0" GroupName="preview" Checked="previewEngine_Checked">
+                        External engine
                     </RadioButton>
-                    <RadioButton HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8,62,0,0" GroupName="preview">
-                        External EXE engine
-                    </RadioButton>
-                    <ComboBox Margin="136,34,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="256"/>
-                    <ComboBox Margin="136,60,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="256"/>
+                    <ComboBox x:Name="previewEngineCombo" Margin="110,34,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="256" SelectionChanged="previewEngineCombo_SelectionChanged"/>
                 </Grid>
             </GroupBox>
-            <GroupBox Header="Resampling engine for export" Height="112" VerticalAlignment="Top" Margin="0,112,0,0">
+            <GroupBox Header="Resampling engine for export" Height="80" VerticalAlignment="Top" Margin="0,80,0,0">
                 <Grid>
-                    <RadioButton HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8,10,0,0" GroupName="export" IsChecked="True">
-                        Internal resampling engine
+                    <RadioButton x:Name="exportRatioInternal" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8,10,0,0" GroupName="export" Checked="exportEngine_Checked">
+                        Internal engine
                     </RadioButton>
-                    <RadioButton HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8,36,0,0" GroupName="export">
-                        External DLL engine
+                    <RadioButton x:Name="exportRatioExternal" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8,36,0,0" GroupName="export" Checked="exportEngine_Checked">
+                        External engine
                     </RadioButton>
-                    <RadioButton HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8,62,0,0" GroupName="export">
-                        External EXE engine
-                    </RadioButton>
-                    <ComboBox Margin="136,34,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="256"/>
-                    <ComboBox Margin="136,60,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="256"/>
+                    <ComboBox x:Name="exportEngineCombo" Margin="110,34,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="256" SelectionChanged="exportEngineCombo_SelectionChanged"/>
                 </Grid>
             </GroupBox>
+            <TextBlock Margin="9,162,0,0" TextWrapping="Wrap">
+                Note: to use external resamplers, please add resampler DLL or EXE file to Resamplers folder under OpenUtau install path.
+            </TextBlock>
         </Grid>
     </Grid>
 </Window>

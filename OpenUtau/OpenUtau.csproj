@@ -111,6 +111,7 @@
     <Compile Include="Core\USTx\UPhoneme.cs" />
     <Compile Include="Core\USTx\USinger.cs" />
     <Compile Include="Core\Lib\EncodingUtil.cs" />
+    <Compile Include="Core\Util\Base64.cs" />
     <Compile Include="Core\Util\PathManager.cs" />
     <Compile Include="Core\Util\UpdateChecker.cs" />
     <Compile Include="UI\Controls\ExpComboBox.xaml.cs">
@@ -155,6 +156,7 @@
     </Compile>
     <Compile Include="UI\Controls\SizeObserver.cs" />
     <Compile Include="UI\Models\ExpComboBoxViewModel.cs" />
+    <Compile Include="UI\Models\TrackHeaderConverters.cs" />
     <Compile Include="UI\Models\MidiViewHitTest .cs" />
     <Compile Include="UI\Models\MidiViewModel.cs" />
     <Compile Include="UI\Colors\ThemeManager.cs" />

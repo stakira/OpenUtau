@@ -143,5 +143,10 @@ namespace OpenUtau.UI.Controls
             }
             e.Handled = true;
         }
+
+        private void faderSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            DocManager.Inst.ExecuteCmd(new VolumeChangeNotification(this.Track.TrackNo, ((Slider)sender).Value));
+        }
     }
 }

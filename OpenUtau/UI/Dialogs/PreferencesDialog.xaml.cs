@@ -44,6 +44,7 @@ namespace OpenUtau.UI.Dialogs
 
             pathsItem.IsSelected = true;
             UpdateSingerPaths();
+            UpdateEngines();
         }
 
         # region Paths
@@ -89,5 +90,63 @@ namespace OpenUtau.UI.Dialogs
         }
 
         # endregion
+
+        # region Engine select
+
+        List<string> engines;
+
+        private void UpdateEngines()
+        {
+            if (Properties.Settings.Default.InternalEnginePreview) this.previewRatioInternal.IsChecked = true;
+            else this.previewRatioExternal.IsChecked = true;
+            if (Properties.Settings.Default.InternalEngineExport) this.exportRatioInternal.IsChecked = true;
+            else this.exportRatioExternal.IsChecked = true;
+
+            // TODO : Get engine list
+            engines = new List<string>();
+            if (engines.Count == 0)
+            {
+                this.previewRatioInternal.IsChecked = true;
+                this.exportRatioInternal.IsChecked = true;
+                this.previewRatioExternal.IsEnabled = false;
+                this.exportRatioExternal.IsEnabled = false;
+                this.previewEngineCombo.IsEnabled = false;
+                this.exportEngineCombo.IsEnabled = false;
+            }
+            else
+            {
+                this.previewEngineCombo.ItemsSource = engines;
+                this.exportEngineCombo.ItemsSource = engines;
+                previewEngineCombo.SelectedIndex = Math.Max(0, engines.IndexOf(Properties.Settings.Default.ExternalPreviewEngine));
+                exportEngineCombo.SelectedIndex = Math.Max(0, engines.IndexOf(Properties.Settings.Default.ExternalExportEngine));
+            }
+        }
+
+        private void previewEngine_Checked(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.InternalEnginePreview = sender == this.previewRatioInternal;
+            Properties.Settings.Default.Save();
+        }
+
+        private void exportEngine_Checked(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.InternalEngineExport = sender == this.exportRatioInternal;
+            Properties.Settings.Default.Save();
+        }
+
+        private void previewEngineCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Properties.Settings.Default.ExternalPreviewEngine = engines[this.previewEngineCombo.SelectedIndex];
+            Properties.Settings.Default.Save();
+        }
+
+        private void exportEngineCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Properties.Settings.Default.ExternalExportEngine = engines[this.exportEngineCombo.SelectedIndex];
+            Properties.Settings.Default.Save();
+        }
+
+        # endregion
+
     }
 }

@@ -91,5 +91,9 @@ namespace OpenUtau.Core
                 default: return MusicMath.Liner(x0, x1, y0, y1, x);
             }
         }
+
+        public static double DecibelToLinear(double db) { return Math.Pow(10, db / 20); }
+
+        public static double LinearToDecibel(double v) { return Math.Log10(v) * 20; }
     }
 }

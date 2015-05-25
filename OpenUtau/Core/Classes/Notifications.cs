@@ -98,4 +98,12 @@ namespace OpenUtau.Core
         public ProgressBarNotification(int progress, string info) { Progress = progress; Info = info; }
         public override string ToString() { return string.Format("Set progress {0} {1}", Progress, Info); }
     }
+
+    public class VolumeChangeNotification : UNotification
+    {
+        public double Volume;
+        public int TrackNo;
+        public VolumeChangeNotification(int trackNo, double volume) { this.TrackNo = trackNo; this.Volume = volume; }
+        public override string ToString() { return string.Format("Set track {0} volume to {1}", TrackNo, Volume); }
+    }
 }

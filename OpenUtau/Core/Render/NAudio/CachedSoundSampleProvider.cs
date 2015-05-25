@@ -13,6 +13,8 @@ namespace OpenUtau.Core.Render
         private readonly CachedSound cachedSound;
         private long position;
 
+        public long Position { set { position = value; } get { return position; } }
+
         public CachedSoundSampleProvider(CachedSound cachedSound)
         {
             this.cachedSound = cachedSound;

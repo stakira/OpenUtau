@@ -89,7 +89,7 @@ namespace OpenUtau.Core
             trackSources = new List<TrackSampleProvider>();
             foreach (UTrack track in project.Tracks)
             {
-                trackSources.Add(new TrackSampleProvider());
+                trackSources.Add(new TrackSampleProvider() { Volume = DecibelToVolume(track.Volume) });
             }
             pendingParts = project.Parts.Count;
             foreach (UPart part in project.Parts)
@@ -106,7 +106,9 @@ namespace OpenUtau.Core
                 }
                 else
                 {
-                    BuildVoicePartAudio(part as UVoicePart, project);
+                    var singer = project.Tracks[part.TrackNo].Singer;
+                    if (singer != null && singer.Loaded) BuildVoicePartAudio(part as UVoicePart, project);
+                    else lock (lockObject) { pendingParts--; }
                 }
             }
 
@@ -123,6 +125,11 @@ namespace OpenUtau.Core
             }
         }
 
+        private float DecibelToVolume(double db)
+        {
+            return db == -24 ? 0 : db < -16 ? (float)MusicMath.DecibelToLinear(db * 2 + 16) : (float)MusicMath.DecibelToLinear(db);
+        }
+
         # region ICmdSubscriber
 
         public void Subscribe(ICmdPublisher publisher) { if (publisher != null) publisher.Subscribe(this); }
@@ -134,6 +141,14 @@ namespace OpenUtau.Core
                 StopPlayback();
                 int tick = ((SeekPlayPosTickNotification)cmd).playPosTick;
                 DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(tick));
+            }
+            else if (cmd is VolumeChangeNotification)
+            {
+                var _cmd = cmd as VolumeChangeNotification;
+                if (trackSources != null && trackSources.Count > _cmd.TrackNo)
+                {
+                    trackSources[_cmd.TrackNo].Volume = DecibelToVolume(_cmd.Volume);
+                }
             }
         }
 

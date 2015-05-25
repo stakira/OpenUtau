@@ -384,10 +384,8 @@ namespace OpenUtau.UI.Models
         {
             this.playPosTick = playPosTick;
             double playPosPix = QuarterToCanvas((double)playPosTick / Project.Resolution);
-            if (playPosPix < TrackCanvas.ActualWidth * UIConstants.PlayPosMarkerMargin)
+            if (playPosPix > TrackCanvas.ActualWidth * UIConstants.PlayPosMarkerMargin)
                 OffsetX += playPosPix - TrackCanvas.ActualWidth * UIConstants.PlayPosMarkerMargin;
-            else if (playPosPix > TrackCanvas.ActualWidth * (1 - UIConstants.PlayPosMarkerMargin))
-                OffsetX += playPosPix - TrackCanvas.ActualWidth * (1 - UIConstants.PlayPosMarkerMargin);
             MarkUpdate();
             OnPropertyChanged("PlayPosTime");
             OnPropertyChanged("PlayPosBar");

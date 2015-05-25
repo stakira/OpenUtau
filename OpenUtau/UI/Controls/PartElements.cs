@@ -281,7 +281,7 @@ namespace OpenUtau.UI.Controls
                 lmax = lmin = rmax = rmin = 0;
                 double position = 0;
 
-                int skippedPixels = (int)Math.Max(0, -this.X);
+                int skippedPixels = (int)Math.Round(Math.Max(0, -this.X));
                 if (skippedPixels > 0) { skippedPixels -= 1; x -= 1; } // draw 1 pixel out of view
                 else if (this.X > 0) x = (int)Math.Round(this.X);
                 position += skippedPixels * samplesPerPixel;
@@ -333,10 +333,10 @@ namespace OpenUtau.UI.Controls
         {
             using (BitmapContext cxt = partBitmap.GetBitmapContext())
             {
-                WriteableBitmapExtensions.FillRectangle(
-                    partBitmap,
-                    1, (int)(_height - 2),
-                    17, (int)((_height - 4) * (1 - e.ProgressPercentage / 100.0)) + 2,
+                partBitmap.Clear();
+                partBitmap.FillRectangle(
+                    1 + (int)this.X, (int)(_height - 2),
+                    17 + (int)this.X, (int)((_height - 4) * (1 - e.ProgressPercentage / 100.0)) + 2,
                     Colors.White);
             }
         }

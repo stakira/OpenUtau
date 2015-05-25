@@ -56,8 +56,8 @@ namespace OpenUtau.Core.Render
             System.Diagnostics.Debug.WriteLine("Resampling start");
             lock (part)
             {
-                string cache_dir = PathManager.Inst.GetCachePath(project.FilePath);
-
+                string cacheDir = PathManager.Inst.GetCachePath(project.FilePath);
+                string[] cacheFiles = Directory.EnumerateFiles(cacheDir).ToArray();
                 int count = 0, i = 0;
                 foreach (UNote note in part.Notes) foreach (UPhoneme phoneme in note.Phonemes) count++;
 
@@ -70,8 +70,8 @@ namespace OpenUtau.Core.Render
 
                         if (sound == null)
                         {
-                            string cachefile = Path.Combine(cache_dir, string.Format("{0:x}.wav", item.HashParameters()));
-                            if (!File.Exists(cachefile))
+                            string cachefile = Path.Combine(cacheDir, string.Format("{0:x}.wav", item.HashParameters()));
+                            if (!cacheFiles.Contains(cachefile))
                             {
                                 System.Diagnostics.Debug.WriteLine("Sound {0:x} not found in cache, resampling {1}", item.HashParameters(), item.GetResamplerExeArgs());
                                 ProcessStartInfo pinfo = new ProcessStartInfo(
@@ -136,7 +136,7 @@ namespace OpenUtau.Core.Render
 
         private string BuildPitchArgs(UPhoneme phoneme, UVoicePart part, UProject project)
         {
-            return string.Format("!{0} {1}", project.BPM, Base64EncodeInt12(BuildPitchData(phoneme, part, project)));
+            return string.Format("!{0} {1}", project.BPM, OpenUtau.Core.Util.Base64.Base64EncodeInt12(BuildPitchData(phoneme, part, project).ToArray()));
         }
 
         private List<int> BuildPitchData(UPhoneme phoneme, UVoicePart part, UProject project)
@@ -242,47 +242,6 @@ namespace OpenUtau.Core.Render
             else if (posMs > lengthMs - outMs) value *= (lengthMs - posMs) / outMs;
 
             return value;
-        }
-
-        private const string intToBase64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-
-        private string Base64EncodeInt12(int data)
-        {
-            if (data < 0) data += 4096;
-            char[] base64 = new char[2];
-            base64[0] = intToBase64[(data >> 6) & 0x003F];
-            base64[1] = intToBase64[data & 0x003F];
-            return new String(base64);
-        }
-
-        private string Base64EncodeInt12(List<int> data)
-        {
-            List<string> l = new List<string>();
-            foreach (int d in data) l.Add(Base64EncodeInt12(d));
-            StringBuilder base64 = new StringBuilder();
-            string last = "";
-            int dups = 0;
-            foreach (string b in l)
-            {
-                if (last == b) dups++;
-                else if (dups == 0) base64.Append(b);
-                else
-                {
-                    base64.Append('#');
-                    base64.Append(dups + 1);
-                    base64.Append('#');
-                    dups = 0;
-                    base64.Append(b);
-                }
-                last = b;
-            }
-            if (dups != 0)
-            {
-                base64.Append('#');
-                base64.Append(dups + 1);
-                base64.Append('#');
-            }
-            return base64.ToString();
         }
     }
 }

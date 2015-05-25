@@ -353,10 +353,8 @@ namespace OpenUtau.UI.Models
         {
             this.playPosTick = playPosTick;
             double playPosPix = TickToCanvas(playPosTick);
-            if (playPosPix < MidiCanvas.ActualWidth * UIConstants.PlayPosMarkerMargin)
+            if (playPosPix > MidiCanvas.ActualWidth * UIConstants.PlayPosMarkerMargin)
                 OffsetX += playPosPix - MidiCanvas.ActualWidth * UIConstants.PlayPosMarkerMargin;
-            else if (playPosPix > MidiCanvas.ActualWidth * (1 - UIConstants.PlayPosMarkerMargin))
-                OffsetX += playPosPix - MidiCanvas.ActualWidth * (1 - UIConstants.PlayPosMarkerMargin);
             MarkUpdate();
         }
 
