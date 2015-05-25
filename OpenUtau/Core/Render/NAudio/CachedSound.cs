@@ -28,6 +28,21 @@ namespace OpenUtau.Core.Render
                 AudioData = wholeFile.ToArray();
             }
         }
+        public CachedSound(System.IO.Stream WavStream)
+        {
+            using (var audioFileReader = new AudioStreamReader(WavStream))
+            {
+                WaveFormat = audioFileReader.WaveFormat;
+                var wholeFile = new List<float>((int)(audioFileReader.Length / 4));
+                var readBuffer = new float[audioFileReader.WaveFormat.SampleRate * audioFileReader.WaveFormat.Channels];
+                int samplesRead;
+                while ((samplesRead = audioFileReader.Read(readBuffer, 0, readBuffer.Length)) > 0)
+                {
+                    wholeFile.AddRange(readBuffer.Take(samplesRead));
+                }
+                AudioData = wholeFile.ToArray();
+            }
+        }
     }
 
 }

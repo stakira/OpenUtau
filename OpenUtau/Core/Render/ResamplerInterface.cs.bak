@@ -113,7 +113,6 @@ namespace OpenUtau.Core.Render
                 PitchData = BuildPitchData(phoneme, part, project),
                 RequiredLength = (int)requiredLength,
                 Oto = phoneme.Oto,
-				Tempo = project.BPM,
 
                 // For connector
                 SkipOver = phoneme.Oto.Preutter * strechRatio - phoneme.Preutter,
