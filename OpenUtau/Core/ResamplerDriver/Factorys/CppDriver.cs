@@ -25,6 +25,19 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys
             public int nWavData;
             public IntPtr wavData;
         }
+
+
+        [StructLayoutAttribute(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        struct EngineInformation_Cpp
+        {
+            public string Name;
+            public string Version;
+            public string Author;
+            public string Usuage;
+            public int FlagItemCount;
+            public IntPtr FlgItem;
+        }
+
         /// <summary>
         /// Cpp指针转换过程-EngineOutput
         /// </summary>
@@ -61,10 +74,22 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys
             Ret.Version = "Error";
             try
             {
-                EngineInformation ret = (EngineInformation)Marshal.PtrToStructure(Ptr, typeof(EngineInformation));
+                EngineInformation_Cpp ret = (EngineInformation_Cpp)Marshal.PtrToStructure(Ptr, typeof(EngineInformation_Cpp));
                 if (ret.Name != "")
                 {
-                    Ret = ret;
+                    Ret.Author = ret.Author;
+                    Ret.FlagItemCount = ret.FlagItemCount;
+                    Ret.Name = ret.Name;
+                    Ret.Usuage = ret.Usuage;
+                    Ret.Version = ret.Version;
+                    Ret.FlagItem = new EngineFlagItem[ret.FlagItemCount];
+                    int basePtr = ret.FlgItem.ToInt32();
+                    int PtrSize = Marshal.SizeOf(Ret.FlagItem[0]);
+                    for (int i = 0; i < Ret.FlagItemCount; i++)
+                    {
+                        Ret.FlagItem[i] = (EngineFlagItem)Marshal.PtrToStructure(new IntPtr(basePtr + i * PtrSize), typeof(EngineFlagItem));
+                    }
+                    //Ret = ret;
                 }
             }
             catch { ;}

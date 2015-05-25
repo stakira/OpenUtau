@@ -96,15 +96,26 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys
         }
         public DriverModels.EngineInformation GetResamplerInformation()
         {
-            DriverModels.EngineInformation ret = new EngineInformation();
+            EngineInformation ret = new EngineInformation();
             ret.Version = "Error";
             if (!_isLegalPlugin) return ret;
             if (GetInformationMethod != null)
             {
-                object Ret=GetInformationMethod.Invoke(null,new object[0]);
+                object Ret = GetInformationMethod.Invoke(null, new object[0]);
                 if (Ret != null)
                 {
-                    ret = (DriverModels.EngineInformation)CopyObjectToNewType(Ret, typeof(DriverModels.EngineInformation));
+                    ret.Author = (string)Ret.GetType().GetField("Author").GetValue(Ret);
+                    ret.Name = (string)Ret.GetType().GetField("Name").GetValue(Ret);
+                    ret.Usuage = (string)Ret.GetType().GetField("Usuage").GetValue(Ret);
+                    ret.Version = (string)Ret.GetType().GetField("Version").GetValue(Ret);
+                    ret.Author = (string)Ret.GetType().GetField("Author").GetValue(Ret);
+                    ret.FlagItemCount = (int)Ret.GetType().GetField("FlagItemCount").GetValue(Ret);
+                    Array ItemArray = (Ret.GetType().GetField("FlagItem").GetValue(Ret)) as Array;
+                    ret.FlagItem = new EngineFlagItem[ret.FlagItemCount];
+                    for (int i = 0; i < ret.FlagItemCount; i++)
+                    {
+                        ret.FlagItem[i] = (EngineFlagItem)CopyObjectToNewType(ItemArray.GetValue(i), typeof(EngineFlagItem));
+                    }
                 }
             }
             return ret;

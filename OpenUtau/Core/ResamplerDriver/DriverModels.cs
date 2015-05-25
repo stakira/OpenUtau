@@ -3,7 +3,7 @@
     Resample引擎IO模型类
     引擎输入输出对象应严格按照这3个结构体进行定义。
     若开发语言为C#应保证：
-        1.引擎DLL文件的Assmbley的某一个public属性的class中应包含以下结构体，并保证结构体声明内容和ResamplerIOModels相同（结构体名可自定义）
+        1.引擎DLL文件的Assmbley的某一个public属性的class中应包含以下结构体，并保证结构体声明内容和ResamplerIOModels相同（结构体名可自定义,但结构体内字段含字段名称必须一致用于反射调用）
             public struct EngineInformation
             public struct EngineInput
             public struct EngineOutput
@@ -14,12 +14,23 @@
  
     若开发语言为C++，应保证
         1.存在以下结构体声明
- 	        typedef struct sEngineInformation
+ 	        typedef struct sEngineFlgItem
+	        {
+                char* flagStr;
+                char* ThreeLetterName;
+                double Max;
+                double Min;
+		        double Default;
+            }EngineFlgItem;	
+
+	        typedef struct sEngineInformation
             {
                 char* Name;
                 char* Version;
                 char* Author;
                 char* Usuage;
+		        int FlgItemCount;
+		        EngineFlgItem* FlgItem;
             }EngineInformation;
 
 	        typedef struct sEngineInput
@@ -66,12 +77,24 @@ namespace OpenUtau.Core.ResamplerDriver
     {
         #region 信息模型
         [StructLayoutAttribute(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        public struct EngineFlagItem
+        {
+            public string flagStr;
+            public string ThreeLetterName;
+            public double Max;
+            public double Min;
+            public double Default;
+        }
+
+        [StructLayoutAttribute(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public struct EngineInformation
         {
             public string Name;
             public string Version;
             public string Author;
             public string Usuage;
+            public int FlagItemCount;
+            public EngineFlagItem[] FlagItem;
         }
         #endregion
 
