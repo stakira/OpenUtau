@@ -31,6 +31,8 @@ namespace OpenUtau
             }
             //Thread backgroundThread = new Thread(new ThreadStart(() => { }));
             //backgroundThread.Start();
+
+            Core.DocManager.Inst.SearchAllSingers();
             var pm = new OpenUtau.Core.PartManager();
             App app = new App();
             UI.MainWindow window = new UI.MainWindow();

@@ -43,7 +43,7 @@ namespace OpenUtau.Core.Render
             // fresamp.exe <infile> <outfile> <tone> <velocity> <flags> <offset> <length_req>
             // <fixed_length> <endblank> <volume> <modulation> <pitch>
             return string.Format(
-                "{0} {1:D} {2} {3:D} {4:D} {5:D} {6:D} {7:D} {8:D} {9}",
+                "{0} {1:D} {2} {3} {4:D} {5} {6} {7:D} {8:D} {9}",
                 MusicMath.GetNoteString(NoteNum),
                 Velocity,
                 StrFlags,

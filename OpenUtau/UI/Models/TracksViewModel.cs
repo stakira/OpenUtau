@@ -447,6 +447,11 @@ namespace OpenUtau.UI.Models
                 var _cmd = cmd as SetPlayPosTickNotification;
                 OnPlayPosSet(_cmd.playPosTick);
             }
+            else if (cmd is UserMessageNotification)
+            {
+                var _cmd = cmd as UserMessageNotification;
+                MessageBox.Show(_cmd.message);
+            }
         }
 
         # endregion

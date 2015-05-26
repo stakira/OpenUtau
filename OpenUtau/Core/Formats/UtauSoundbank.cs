@@ -60,7 +60,7 @@ namespace OpenUtau.Core.Formats
             
             USinger singer = new USinger();
             singer.Path = path;
-            singer.FileEncoding = EncodingUtil.DetectFileEncoding(Path.Combine(singer.Path, "oto.ini"));
+            singer.FileEncoding = EncodingUtil.DetectFileEncoding(Path.Combine(singer.Path, "oto.ini"), Encoding.Default);
             singer.PathEncoding = Encoding.Default;
             string[] lines = File.ReadAllLines(Path.Combine(singer.Path, "oto.ini"), singer.FileEncoding);
 
@@ -140,6 +140,7 @@ namespace OpenUtau.Core.Formats
             string relativeDir = dirpath.Replace(path, "");
             while (relativeDir.StartsWith("\\")) relativeDir = relativeDir.Substring(1);
             string[] lines = File.ReadAllLines(file, singer.FileEncoding);
+            List<string> errorLines = new List<string>();
             foreach (var line in lines)
             {
                 var s = line.Split(new[] { '=' });
@@ -148,18 +149,28 @@ namespace OpenUtau.Core.Formats
                     string wavfile = s[0];
                     var args = s[1].Split(new[] { ',' });
                     if (singer.AliasMap.ContainsKey(args[0])) continue;
-                    singer.AliasMap.Add(args[0], new UOto()
+                    try
                     {
-                        File = Path.Combine(relativeDir, wavfile),
-                        Alias = args[0],
-                        Offset = int.Parse(args[1]),
-                        Consonant = int.Parse(args[2]),
-                        Cutoff = int.Parse(args[3]),
-                        Preutter = int.Parse(args[4]),
-                        Overlap = int.Parse(args[5])
-                    });
+                        singer.AliasMap.Add(args[0], new UOto()
+                        {
+                            File = Path.Combine(relativeDir, wavfile),
+                            Alias = args[0],
+                            Offset = double.Parse(args[1]),
+                            Consonant = double.Parse(args[2]),
+                            Cutoff = double.Parse(args[3]),
+                            Preutter = double.Parse(args[4]),
+                            Overlap = double.Parse(args[5])
+                        });
+                    }
+                    catch
+                    {
+                        errorLines.Add(line);
+                    }
                 }
             }
+            if (errorLines.Count > 0)
+                System.Diagnostics.Debug.WriteLine(string.Format(
+                    "Oto file {0} has following errors:\n{1}", file, string.Join("\n", errorLines.ToArray())));
         }
 
         static void LoadPrefixMap(USinger singer)

@@ -10,11 +10,11 @@ namespace OpenUtau.Core.USTx
     {
         public string Alias { set; get; }
         public string File { set; get; }
-        public int Offset { set; get; }
-        public int Consonant { set; get; }
-        public int Cutoff { set; get; }
-        public int Preutter { set; get; }
-        public int Overlap { set; get; }
+        public double Offset { set; get; }
+        public double Consonant { set; get; }
+        public double Cutoff { set; get; }
+        public double Preutter { set; get; }
+        public double Overlap { set; get; }
     }
 
     public class USinger

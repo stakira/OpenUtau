@@ -14,7 +14,6 @@ namespace OpenUtau.Core
     {
         DocManager() {
             _project = new UProject();
-            SearchAllSingers();
         }
 
         static DocManager _s;
