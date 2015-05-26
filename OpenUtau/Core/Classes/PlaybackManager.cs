@@ -8,6 +8,7 @@ using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using OpenUtau.Core.USTx;
 using OpenUtau.Core.Render;
+using OpenUtau.Core.ResamplerDriver;
 
 namespace OpenUtau.Core
 {
@@ -62,10 +63,10 @@ namespace OpenUtau.Core
             return new WaveToSampleProvider(stream);
         }
 
-        private void BuildVoicePartAudio(UVoicePart part, UProject project)
+        private void BuildVoicePartAudio(UVoicePart part, UProject project,IResamplerDriver engine)
         {
             ResamplerInterface ri = new ResamplerInterface();
-            ri.ResamplePart(part, project, (o) => { this.BuildVoicePartDone(o, part, project); });
+            ri.ResamplePart(part, project, engine, (o) => { this.BuildVoicePartDone(o, part, project); });
         }
 
         private void BuildVoicePartDone(SequencingSampleProvider source, UPart part, UProject project)
@@ -107,7 +108,12 @@ namespace OpenUtau.Core
                 else
                 {
                     var singer = project.Tracks[part.TrackNo].Singer;
-                    if (singer != null && singer.Loaded) BuildVoicePartAudio(part as UVoicePart, project);
+                    if (singer != null && singer.Loaded)
+                    {
+                        System.IO.FileInfo ResamplerFile = new System.IO.FileInfo(PathManager.Inst.GetTool1Path());
+                        IResamplerDriver engine = ResamplerDriver.ResamplerDriver.LoadEngine(ResamplerFile.FullName);
+                        BuildVoicePartAudio(part as UVoicePart, project, engine);
+                    }
                     else lock (lockObject) { pendingParts--; }
                 }
             }

@@ -89,6 +89,7 @@
     </Compile>
     <Compile Include="Core\Formats\UtauSoundbank.cs" />
     <Compile Include="Core\Lib\xxHash.cs" />
+    <Compile Include="Core\Render\NAudio\AudioStreamReader.cs" />
     <Compile Include="Core\Render\NAudio\CachedSound.cs" />
     <Compile Include="Core\Render\NAudio\CachedSoundSampleProvider.cs" />
     <Compile Include="Core\Render\NAudio\EnvelopeSampleProvider.cs" />
@@ -100,6 +101,11 @@
     <Compile Include="Core\Render\ResamplerInterface.cs" />
     <Compile Include="Core\Classes\ExpCommands.cs" />
     <Compile Include="Core\Render\RenderDispatcher.cs" />
+    <Compile Include="Core\ResamplerDriver\DriverEngine.cs" />
+    <Compile Include="Core\ResamplerDriver\DriverModels.cs" />
+    <Compile Include="Core\ResamplerDriver\Factorys\CppDriver.cs" />
+    <Compile Include="Core\ResamplerDriver\Factorys\ExeDriver.cs" />
+    <Compile Include="Core\ResamplerDriver\Factorys\SharpDriver.cs" />
     <Compile Include="Core\USTx\UExpression.cs" />
     <Compile Include="Core\Classes\NoteCommands.cs" />
     <Compile Include="Core\Lib\Deque.cs" />
@@ -112,6 +118,7 @@
     <Compile Include="Core\USTx\USinger.cs" />
     <Compile Include="Core\Lib\EncodingUtil.cs" />
     <Compile Include="Core\Util\Base64.cs" />
+    <Compile Include="Core\Util\IniFileClass.cs" />
     <Compile Include="Core\Util\PathManager.cs" />
     <Compile Include="Core\Util\UpdateChecker.cs" />
     <Compile Include="UI\Controls\ExpComboBox.xaml.cs">
