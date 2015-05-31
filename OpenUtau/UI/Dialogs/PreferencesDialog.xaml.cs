@@ -102,8 +102,8 @@ namespace OpenUtau.UI.Dialogs
             if (Properties.Settings.Default.InternalEngineExport) this.exportRatioInternal.IsChecked = true;
             else this.exportRatioExternal.IsChecked = true;
 
-            // TODO : Get engine list
-            engines = new List<string>();
+            var enginesInfo = Core.ResamplerDriver.ResamplerDriver.SearchEngines(PathManager.Inst.GetEngineSearchPath());
+            engines = enginesInfo.Select(x => x.Name).ToList();
             if (engines.Count == 0)
             {
                 this.previewRatioInternal.IsChecked = true;

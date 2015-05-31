@@ -41,7 +41,14 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys
             }
             else
             {
-                asm = Assembly.LoadFrom(DllPath);
+                try
+                {
+                    asm = Assembly.LoadFrom(DllPath);
+                }
+                catch
+                {
+
+                }
                 LoadTable.Add(DllPath,asm);
             }
             if (asm == null) _isLegalPlugin = false;
@@ -94,9 +101,9 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys
             }
             return ms;
         }
-        public DriverModels.EngineInformation GetResamplerInformation()
+        public DriverModels.EngineInfo GetInfo()
         {
-            EngineInformation ret = new EngineInformation();
+            EngineInfo ret = new EngineInfo();
             ret.Version = "Error";
             if (!_isLegalPlugin) return ret;
             if (GetInformationMethod != null)

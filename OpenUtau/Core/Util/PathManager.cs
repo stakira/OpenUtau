@@ -83,9 +83,21 @@ namespace OpenUtau.Core
             return cachepath;
         }
 
-        public string GetTool1Path()
+        public string GetEngineSearchPath()
         {
-            return Path.Combine(_homePath, "tn_fnds.exe");
+            return Path.Combine(_homePath, "Resamplers");
+        }
+
+        public string GetPreviewEnginePath()
+        {
+            if (Properties.Settings.Default.InternalEnginePreview) return Path.Combine(GetEngineSearchPath(), "TnFndsOU.dll");
+            else return Path.Combine(GetEngineSearchPath(), Properties.Settings.Default.ExternalPreviewEngine);
+        }
+
+        public string GetExportEnginePath()
+        {
+            if (Properties.Settings.Default.InternalEngineExport) return Path.Combine(GetEngineSearchPath(), "TnFndsOU.dll");
+            else return Path.Combine(GetEngineSearchPath(), Properties.Settings.Default.ExternalExportEngine);
         }
     }
 }

@@ -16,7 +16,7 @@ namespace OpenUtau.Core.Render
     {
         Action<SequencingSampleProvider> resampleDoneCallback;
 
-        public void ResamplePart(UVoicePart part, UProject project,IResamplerDriver engine, Action<SequencingSampleProvider> resampleDoneCallback)
+        public void ResamplePart(UVoicePart part, UProject project, IResamplerDriver engine, Action<SequencingSampleProvider> resampleDoneCallback)
         {
             this.resampleDoneCallback = resampleDoneCallback;
             BackgroundWorker worker = new BackgroundWorker();
@@ -24,7 +24,7 @@ namespace OpenUtau.Core.Render
             worker.DoWork += worker_DoWork;
             worker.RunWorkerCompleted += worker_RunWorkerCompleted;
             worker.ProgressChanged += worker_ProgressChanged;
-            worker.RunWorkerAsync(new Tuple<UVoicePart, UProject, IResamplerDriver>(part, project,engine));
+            worker.RunWorkerAsync(new Tuple<UVoicePart, UProject, IResamplerDriver>(part, project, engine));
         }
 
         private void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -38,7 +38,7 @@ namespace OpenUtau.Core.Render
             var part = args.Item1;
             var project = args.Item2;
             var engine = args.Item3;
-            e.Result = RenderAsync(part, project ,engine, sender as BackgroundWorker);
+            e.Result = RenderAsync(part, project, engine, sender as BackgroundWorker);
         }
 
         private void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -50,7 +50,7 @@ namespace OpenUtau.Core.Render
             resampleDoneCallback(new SequencingSampleProvider(renderItemSampleProviders));
         }
 
-        private List<RenderItem> RenderAsync(UVoicePart part, UProject project,IResamplerDriver engine, BackgroundWorker worker)
+        private List<RenderItem> RenderAsync(UVoicePart part, UProject project, IResamplerDriver engine, BackgroundWorker worker)
         {
             List<RenderItem> renderItems = new List<RenderItem>();
             System.Diagnostics.Stopwatch watch = new Stopwatch();
@@ -85,7 +85,7 @@ namespace OpenUtau.Core.Render
                                 System.Diagnostics.Debug.WriteLine("Sound {0:x} found on disk {1}", item.HashParameters(), item.GetResamplerExeArgs());
                                 sound = new CachedSound(cachefile);
                             }
-                            RenderCache.Inst.Put(item.HashParameters(), sound);
+                            RenderCache.Inst.Put(item.HashParameters(), sound, engine.GetInfo().ToString());
                         }
                         else System.Diagnostics.Debug.WriteLine("Sound {0} found in cache {1}", item.HashParameters(), item.GetResamplerExeArgs());
 
@@ -124,7 +124,7 @@ namespace OpenUtau.Core.Render
                 PitchData = BuildPitchData(phoneme, part, project),
                 RequiredLength = (int)requiredLength,
                 Oto = phoneme.Oto,
-				Tempo = project.BPM,
+                Tempo = project.BPM,
 
                 // For connector
                 SkipOver = phoneme.Oto.Preutter * strechRatio - phoneme.Preutter,
@@ -170,7 +170,7 @@ namespace OpenUtau.Core.Render
             }
 
             foreach (PitchPoint pp in phoneme.Parent.PitchBend.Points) pps.Add(pp);
-            if (phoneme.Parent.Vibrato.Depth !=0)
+            if (phoneme.Parent.Vibrato.Depth != 0)
             {
                 vibratoEndMs = DocManager.Inst.Project.TickToMillisecond(phoneme.Parent.DurTick);
                 vibratoStartMs = vibratoEndMs * (1 - phoneme.Parent.Vibrato.Length / 100);
@@ -233,7 +233,7 @@ namespace OpenUtau.Core.Render
             double inMs = lengthMs * vibrato.In / 100;
             double outMs = lengthMs * vibrato.Out / 100;
 
-            double value = -Math.Sin(2 * Math.PI * (posMs / vibrato.Period + vibrato.Shift / 100)) *vibrato.Depth;
+            double value = -Math.Sin(2 * Math.PI * (posMs / vibrato.Period + vibrato.Shift / 100)) * vibrato.Depth;
 
             if (posMs < inMs) value *= posMs / inMs;
             else if (posMs > lengthMs - outMs) value *= (lengthMs - posMs) / outMs;

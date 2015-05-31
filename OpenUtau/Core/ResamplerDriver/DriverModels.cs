@@ -87,7 +87,7 @@ namespace OpenUtau.Core.ResamplerDriver
         }
 
         [StructLayoutAttribute(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-        public struct EngineInformation
+        public struct EngineInfo
         {
             public string Name;
             public string Version;
@@ -95,6 +95,7 @@ namespace OpenUtau.Core.ResamplerDriver
             public string Usuage;
             public int FlagItemCount;
             public EngineFlagItem[] FlagItem;
+            public override string ToString() { return Name + " " + Version; }
         }
         #endregion
 

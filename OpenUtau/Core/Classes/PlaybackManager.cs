@@ -110,7 +110,7 @@ namespace OpenUtau.Core
                     var singer = project.Tracks[part.TrackNo].Singer;
                     if (singer != null && singer.Loaded)
                     {
-                        System.IO.FileInfo ResamplerFile = new System.IO.FileInfo(PathManager.Inst.GetTool1Path());
+                        System.IO.FileInfo ResamplerFile = new System.IO.FileInfo(PathManager.Inst.GetPreviewEnginePath());
                         IResamplerDriver engine = ResamplerDriver.ResamplerDriver.LoadEngine(ResamplerFile.FullName);
                         BuildVoicePartAudio(part as UVoicePart, project, engine);
                     }

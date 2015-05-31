@@ -11,6 +11,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+
+using OpenUtau.Core.ResamplerDriver;
 using OpenUtau.Core.ResamplerDriver.Factorys;
 
 namespace OpenUtau.Core.ResamplerDriver
@@ -18,7 +20,7 @@ namespace OpenUtau.Core.ResamplerDriver
     internal interface IResamplerDriver
     {
         System.IO.Stream DoResampler(DriverModels.EngineInput Args);
-        DriverModels.EngineInformation GetResamplerInformation();
+        DriverModels.EngineInfo GetInfo();
     }
     internal class ResamplerDriver
     {
@@ -49,6 +51,17 @@ namespace OpenUtau.Core.ResamplerDriver
                 }
             }
             return ret;
+        }
+        public static List<DriverModels.EngineInfo> SearchEngines(string path)
+        {
+            var engineInfoList = new List<DriverModels.EngineInfo>();
+            var files = Directory.EnumerateFiles(path);
+            foreach (var file in files)
+            {
+                var engine = LoadEngine(file);
+                if (engine != null) engineInfoList.Add(engine.GetInfo());
+            }
+            return engineInfoList;
         }
     }
 }

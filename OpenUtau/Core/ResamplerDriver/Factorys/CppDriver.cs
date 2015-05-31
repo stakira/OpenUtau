@@ -68,9 +68,9 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys
         /// </summary>
         /// <param name="Ptr"></param>
         /// <returns></returns>
-        protected static EngineInformation Intptr2EngineInformation(IntPtr Ptr)
+        protected static EngineInfo Intptr2EngineInformation(IntPtr Ptr)
         {
-            EngineInformation Ret = new EngineInformation();
+            EngineInfo Ret = new EngineInfo();
             Ret.Version = "Error";
             try
             {
@@ -164,9 +164,9 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys
             catch { ;}
             return ms;
         }
-        public DriverModels.EngineInformation GetResamplerInformation()
+        public DriverModels.EngineInfo GetInfo()
         {
-            DriverModels.EngineInformation ret = new EngineInformation();
+            DriverModels.EngineInfo ret = new EngineInfo();
             ret.Version = "Error";
             if (!_isLegalPlugin) return ret;
             try
