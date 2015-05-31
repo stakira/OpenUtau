@@ -358,6 +358,12 @@ namespace OpenUtau.UI.Models
             MarkUpdate();
         }
 
+        private void OnPitchModified()
+        {
+            MarkUpdate();
+            pitchExpElement.MarkUpdate();
+        }
+
         # endregion
 
         # region ICmdSubscriber
@@ -381,8 +387,8 @@ namespace OpenUtau.UI.Models
             else if (cmd is ExpCommand)
             {
                 var _cmd = cmd as ExpCommand;
-                if (_cmd.Part != this.Part) return;
-                else if (_cmd is SetIntExpCommand) expElements[_cmd.Key].MarkUpdate();
+                if (_cmd is SetIntExpCommand) expElements[_cmd.Key].MarkUpdate();
+                else if (_cmd is PitchExpCommand) OnPitchModified();
             }
             else if (cmd is UNotification)
             {

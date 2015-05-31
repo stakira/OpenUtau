@@ -31,7 +31,9 @@ namespace OpenUtau.Core
         public override void Unexecute() { Note.Expressions[Key].Data = OldValue; }
     }
 
-    public class DeletePitchPointCommand : ExpCommand
+    public abstract class PitchExpCommand : ExpCommand { }
+
+    public class DeletePitchPointCommand : PitchExpCommand
     {
         public int Index;
         public PitchPoint Point;
@@ -47,7 +49,7 @@ namespace OpenUtau.Core
         public override void Unexecute() { Note.PitchBend.Points.Insert(Index, Point); }
     }
 
-    public class ChangePitchPointShapeCommand : ExpCommand
+    public class ChangePitchPointShapeCommand : PitchExpCommand
     {
         public PitchPoint Point;
         public PitchPointShape NewShape;
@@ -63,7 +65,7 @@ namespace OpenUtau.Core
         public override void Unexecute() { Point.Shape = OldShape; }
     }
 
-    public class SnapPitchPointCommand : ExpCommand
+    public class SnapPitchPointCommand : PitchExpCommand
     {
         double X;
         double Y;
@@ -94,7 +96,7 @@ namespace OpenUtau.Core
         }
     }
 
-    public class AddPitchPointCommand : ExpCommand
+    public class AddPitchPointCommand : PitchExpCommand
     {
         public int Index;
         public PitchPoint Point;
@@ -109,7 +111,7 @@ namespace OpenUtau.Core
         public override void Unexecute() { Note.PitchBend.Points.RemoveAt(Index); }
     }
 
-    public class MovePitchPointCommand : ExpCommand
+    public class MovePitchPointCommand : PitchExpCommand
     {
         public PitchPoint Point;
         public double DeltaX, DeltaY;
