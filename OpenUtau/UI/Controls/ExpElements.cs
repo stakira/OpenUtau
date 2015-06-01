@@ -23,7 +23,7 @@ namespace OpenUtau.UI.Controls
         protected override Visual GetVisualChild(int index) { return visual; }
 
         protected UVoicePart _part;
-        public UVoicePart Part { set { _part = value; MarkUpdate(); } get { return _part; } }
+        public virtual UVoicePart Part { set { _part = value; MarkUpdate(); } get { return _part; } }
 
         public string Key;
         protected TranslateTransform tTrans;
@@ -130,10 +130,16 @@ namespace OpenUtau.UI.Controls
         double _quarterWidth;
         public double QuarterWidth { set { if (_quarterWidth != value) { _quarterWidth = value; MarkUpdate(); } } get { return _quarterWidth; } }
 
+        public override UVoicePart Part { set { _part = value; ClearFormattedTextPool(); MarkUpdate(); } get { return _part; } }
+
         public OpenUtau.UI.Models.MidiViewModel midiVM;
 
         Pen penPit;
         Pen penEnv;
+
+        Dictionary<string, FormattedText> fTextPool = new Dictionary<string, FormattedText>();
+        Dictionary<string, double> fTextWidths = new Dictionary<string, double>();
+        Dictionary<string, double> fTextHeights = new Dictionary<string, double>();
         
         public PitchExpElement()
         {
@@ -171,6 +177,13 @@ namespace OpenUtau.UI.Controls
             _updated = false;
         }
 
+        private void ClearFormattedTextPool()
+        {
+            fTextPool.Clear();
+            fTextWidths.Clear();
+            fTextHeights.Clear();
+        }
+
         private void DrawNote(UNote note, DrawingContext cxt)
         {
             DrawNoteBody(note, cxt);
@@ -195,21 +208,35 @@ namespace OpenUtau.UI.Controls
                 null, new Rect(new Point(left, top), new Size(width, height)), 2, 2);
             if (height >= 10)
             {
-                var text = new FormattedText(
-                        note.Lyric,
-                        System.Threading.Thread.CurrentThread.CurrentUICulture,
-                        FlowDirection.LeftToRight, SystemFonts.CaptionFontFamily.GetTypefaces().First(),
-                        12,
-                        Brushes.White);
-                if (text.Width + 5 > width && note.Lyric.Length > 0)
-                    text = new FormattedText(
-                        note.Lyric[0] + "..",
-                        System.Threading.Thread.CurrentThread.CurrentUICulture,
-                        FlowDirection.LeftToRight, SystemFonts.CaptionFontFamily.GetTypefaces().First(),
-                        12,
-                        Brushes.White);
-                if (text.Width + 5 <= width) cxt.DrawText(text, new Point((int)left + 5, Math.Round(top + (height - text.Height) / 2)));
+                if (note.Lyric.Length == 0) return;
+                string displayLyric = note.Lyric;
+
+                if (!fTextPool.ContainsKey(displayLyric)) AddToFormattedTextPool(displayLyric);
+                var fText = fTextPool[displayLyric];
+
+                if (fTextWidths[displayLyric] + 5 > width)
+                {
+                    displayLyric = note.Lyric[0] + "..";
+                    if (!fTextPool.ContainsKey(displayLyric)) AddToFormattedTextPool(displayLyric);
+                    fText = fTextPool[displayLyric];
+                    if (fTextWidths[displayLyric] + 5 > width) return;
+                }
+
+                cxt.DrawText(fText, new Point((int)left + 5, Math.Round(top + (height - fTextHeights[displayLyric]) / 2)));
             }
+        }
+
+        private void AddToFormattedTextPool(string text)
+        {
+            var fText = new FormattedText(
+                    text,
+                    System.Threading.Thread.CurrentThread.CurrentUICulture,
+                    FlowDirection.LeftToRight, SystemFonts.CaptionFontFamily.GetTypefaces().First(),
+                    12,
+                    Brushes.White);
+            fTextPool.Add(text, fText);
+            fTextWidths.Add(text, fText.Width);
+            fTextHeights.Add(text, fText.Height);
         }
 
         private void DrawEnvelope(UNote note, DrawingContext cxt)

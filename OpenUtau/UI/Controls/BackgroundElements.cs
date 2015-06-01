@@ -230,6 +230,8 @@ namespace OpenUtau.UI.Controls
 
     class TimelineBackground : TickBackground
     {
+        Dictionary<int, FormattedText> fTextPool = new Dictionary<int, FormattedText>();
+
         protected override void OnRender(DrawingContext drawingContext)
         {
             double zoomRatio = MusicMath.getZoomRatio(QuarterWidth, BeatPerBar, BeatUnit, MinTickWidth);
@@ -244,15 +246,21 @@ namespace OpenUtau.UI.Controls
                 if ((tick * zoomRatio * BeatUnit) % (BeatPerBar * 4) == 0)
                 {
                     if (!first_tick) drawingContext.DrawLine(darkPen, new Point(snappedLeft, -0.5), new Point(snappedLeft, ActualHeight + 0.5));
-                    drawingContext.DrawText(
-                        new FormattedText(
-                            ((tick * zoomRatio * BeatUnit) / BeatPerBar / 4 + 1).ToString(),
+                    int barNumber = (int)((tick * zoomRatio * BeatUnit) / BeatPerBar / 4 + 1);
+
+                    FormattedText fText;
+                    if (!fTextPool.ContainsKey(barNumber))
+                    {
+                        fText = new FormattedText(
+                            barNumber.ToString(),
                             System.Threading.Thread.CurrentThread.CurrentUICulture,
                             FlowDirection.LeftToRight, SystemFonts.CaptionFontFamily.GetTypefaces().First(),
                             12,
-                            darkPen.Brush),
-                        new Point(snappedLeft + 3, 3)
-                    );
+                            darkPen.Brush);
+                        fTextPool.Add(barNumber, fText);
+                    }
+                    else fText = fTextPool[barNumber];
+                    drawingContext.DrawText(fText, new Point(snappedLeft + 3, 3));
                 }
                 left += interval;
                 tick++;
