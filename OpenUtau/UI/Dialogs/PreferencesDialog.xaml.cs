@@ -97,9 +97,9 @@ namespace OpenUtau.UI.Dialogs
 
         private void UpdateEngines()
         {
-            if (Properties.Settings.Default.InternalEnginePreview) this.previewRatioInternal.IsChecked = true;
+            if (Core.Util.Preferences.Default.InternalEnginePreview) this.previewRatioInternal.IsChecked = true;
             else this.previewRatioExternal.IsChecked = true;
-            if (Properties.Settings.Default.InternalEngineExport) this.exportRatioInternal.IsChecked = true;
+            if (Core.Util.Preferences.Default.InternalEngineExport) this.exportRatioInternal.IsChecked = true;
             else this.exportRatioExternal.IsChecked = true;
 
             var enginesInfo = Core.ResamplerDriver.ResamplerDriver.SearchEngines(PathManager.Inst.GetEngineSearchPath());
@@ -117,33 +117,33 @@ namespace OpenUtau.UI.Dialogs
             {
                 this.previewEngineCombo.ItemsSource = engines;
                 this.exportEngineCombo.ItemsSource = engines;
-                previewEngineCombo.SelectedIndex = Math.Max(0, engines.IndexOf(Properties.Settings.Default.ExternalPreviewEngine));
-                exportEngineCombo.SelectedIndex = Math.Max(0, engines.IndexOf(Properties.Settings.Default.ExternalExportEngine));
+                previewEngineCombo.SelectedIndex = Math.Max(0, engines.IndexOf(Core.Util.Preferences.Default.ExternalPreviewEngine));
+                exportEngineCombo.SelectedIndex = Math.Max(0, engines.IndexOf(Core.Util.Preferences.Default.ExternalExportEngine));
             }
         }
 
         private void previewEngine_Checked(object sender, RoutedEventArgs e)
         {
-            Properties.Settings.Default.InternalEnginePreview = sender == this.previewRatioInternal;
-            Properties.Settings.Default.Save();
+            Core.Util.Preferences.Default.InternalEnginePreview = sender == this.previewRatioInternal;
+            Core.Util.Preferences.Save();
         }
 
         private void exportEngine_Checked(object sender, RoutedEventArgs e)
         {
-            Properties.Settings.Default.InternalEngineExport = sender == this.exportRatioInternal;
-            Properties.Settings.Default.Save();
+            Core.Util.Preferences.Default.InternalEngineExport = sender == this.exportRatioInternal;
+            Core.Util.Preferences.Save();
         }
 
         private void previewEngineCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Properties.Settings.Default.ExternalPreviewEngine = engines[this.previewEngineCombo.SelectedIndex];
-            Properties.Settings.Default.Save();
+            Core.Util.Preferences.Default.ExternalPreviewEngine = engines[this.previewEngineCombo.SelectedIndex];
+            Core.Util.Preferences.Save();
         }
 
         private void exportEngineCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Properties.Settings.Default.ExternalExportEngine = engines[this.exportEngineCombo.SelectedIndex];
-            Properties.Settings.Default.Save();
+            Core.Util.Preferences.Default.ExternalExportEngine = engines[this.exportEngineCombo.SelectedIndex];
+            Core.Util.Preferences.Save();
         }
 
         # endregion

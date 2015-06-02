@@ -1,45 +1,5 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="OpenUtau.Properties" GeneratedClassName="Settings">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)">
   <Profiles />
-  <Settings>
-    <Setting Name="MainWidth" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">1024</Value>
-    </Setting>
-    <Setting Name="MainHeight" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">768</Value>
-    </Setting>
-    <Setting Name="MainMaximized" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
-    <Setting Name="EditWidth" Type="System.String" Scope="User">
-      <Value Profile="(Default)">1024</Value>
-    </Setting>
-    <Setting Name="EditHeight" Type="System.String" Scope="User">
-      <Value Profile="(Default)">768</Value>
-    </Setting>
-    <Setting Name="EditMaximized" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
-    <Setting Name="UndoLimit" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">100</Value>
-    </Setting>
-    <Setting Name="SingerPaths" Type="System.Collections.Specialized.StringCollection" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="UpgradeRequired" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="InternalEnginePreview" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="InternalEngineExport" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="ExternalPreviewEngine" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="ExternalExportEngine" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-  </Settings>
+  <Settings />
 </SettingsFile>

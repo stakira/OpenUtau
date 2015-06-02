@@ -22,13 +22,6 @@ namespace OpenUtau
         [STAThread]
         static void Main()
         {
-            // Merge settings after update
-            if (OpenUtau.Properties.Settings.Default.UpgradeRequired)
-            {
-                OpenUtau.Properties.Settings.Default.Upgrade();
-                OpenUtau.Properties.Settings.Default.UpgradeRequired = false;
-                OpenUtau.Properties.Settings.Default.Save();
-            }
             //Thread backgroundThread = new Thread(new ThreadStart(() => { }));
             //backgroundThread.Start();
 

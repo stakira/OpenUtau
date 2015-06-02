@@ -55,6 +55,7 @@ namespace OpenUtau.Core.ResamplerDriver
         public static List<DriverModels.EngineInfo> SearchEngines(string path)
         {
             var engineInfoList = new List<DriverModels.EngineInfo>();
+            if (!Directory.Exists(path)) Directory.CreateDirectory(path);
             var files = Directory.EnumerateFiles(path);
             foreach (var file in files)
             {

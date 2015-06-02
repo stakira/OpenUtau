@@ -19,10 +19,8 @@ namespace OpenUtau.Core
         private PathManager()
         {
             _homePath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            if (Properties.Settings.Default.SingerPaths == null)
-                Properties.Settings.Default.SingerPaths = new System.Collections.Specialized.StringCollection();
-            AddSingerSearchPath(@"Singers");
         }
+
         private static PathManager _inst;
         public static PathManager Inst { get { if (_inst == null) { _inst = new PathManager(); } return _inst; } }
         
@@ -49,28 +47,36 @@ namespace OpenUtau.Core
 
         public string[] GetSingerSearchPaths()
         {
-            string[] singerSearchPaths = new string[Properties.Settings.Default.SingerPaths.Count];
-            Properties.Settings.Default.SingerPaths.CopyTo(singerSearchPaths, 0);
-            return singerSearchPaths;
+            string[] paths = Core.Util.Preferences.Default.SingerSearchPaths;
+            return paths;
+        }
+
+        public void SetSingerSearchPaths(string[] paths)
+        {
+            Core.Util.Preferences.Default.SingerSearchPaths = paths;
         }
 
         public void AddSingerSearchPath(string path)
         {
             path = MakeRelativeToHome(path);
-            if (!Properties.Settings.Default.SingerPaths.Contains(path))
+            var paths = GetSingerSearchPaths().ToList();
+            if (!paths.Contains(path))
             {
-                Properties.Settings.Default.SingerPaths.Add(path);
-                Properties.Settings.Default.Save();
+                paths.Add(path);
+                SetSingerSearchPaths(paths.ToArray());
+                Core.Util.Preferences.Save();
             }
         }
 
         public void RemoveSingerSearchPath(string path)
         {
             if (path == DefaultSingerPath) return;
-            if (Properties.Settings.Default.SingerPaths.Contains(path))
+            var paths = GetSingerSearchPaths().ToList();
+            if (paths.Contains(path))
             {
-                Properties.Settings.Default.SingerPaths.Remove(path);
-                Properties.Settings.Default.Save();
+                paths.Remove(path);
+                SetSingerSearchPaths(paths.ToArray());
+                Core.Util.Preferences.Save();
             }
         }
 
@@ -90,14 +96,14 @@ namespace OpenUtau.Core
 
         public string GetPreviewEnginePath()
         {
-            if (Properties.Settings.Default.InternalEnginePreview) return Path.Combine(GetEngineSearchPath(), "TnFndsOU.dll");
-            else return Path.Combine(GetEngineSearchPath(), Properties.Settings.Default.ExternalPreviewEngine);
+            if (Core.Util.Preferences.Default.InternalEnginePreview) return "TnFndsOU.dll";
+            else return Path.Combine(GetEngineSearchPath(), Core.Util.Preferences.Default.ExternalPreviewEngine);
         }
 
         public string GetExportEnginePath()
         {
-            if (Properties.Settings.Default.InternalEngineExport) return Path.Combine(GetEngineSearchPath(), "TnFndsOU.dll");
-            else return Path.Combine(GetEngineSearchPath(), Properties.Settings.Default.ExternalExportEngine);
+            if (Core.Util.Preferences.Default.InternalEngineExport) return "TnFndsOU.dll";
+            else return Path.Combine(GetEngineSearchPath(), Core.Util.Preferences.Default.ExternalExportEngine);
         }
     }
 }

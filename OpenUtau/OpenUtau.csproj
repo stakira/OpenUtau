@@ -49,6 +49,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="JsonFx">
+      <HintPath>..\packages\JsonFx.2.0.1209.2802\lib\net40\JsonFx.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Expression.Interactions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Blend.Interctivity.WPF.v4.0.1.0.3\lib\net40\Microsoft.Expression.Interactions.dll</HintPath>
     </Reference>
@@ -120,6 +123,7 @@
     <Compile Include="Core\Util\Base64.cs" />
     <Compile Include="Core\Util\IniFileClass.cs" />
     <Compile Include="Core\Util\PathManager.cs" />
+    <Compile Include="Core\Util\Preferences.cs" />
     <Compile Include="Core\Util\UpdateChecker.cs" />
     <Compile Include="UI\Controls\ExpComboBox.xaml.cs">
       <DependentUpon>ExpComboBox.xaml</DependentUpon>
@@ -287,6 +291,9 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\prefs.json" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -24,8 +24,13 @@ namespace OpenUtau.Core.Formats
                     if (File.Exists(Path.Combine(dirpath, "character.txt")) &&
                         File.Exists(Path.Combine(dirpath, "oto.ini")))
                     {
-                        var singer = LoadSinger(dirpath);
-                        singers.Add(singer.Path, singer);
+                        USinger singer = null;
+                        try
+                        {
+                            singer = LoadSinger(dirpath);
+                            singers.Add(singer.Path, singer);
+                        }
+                        catch { }
                     }
                 }
             }

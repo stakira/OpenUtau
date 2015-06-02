@@ -1,0 +1,16 @@
+﻿{
+    "MainWidth": 1024,
+    "MainHeight": 768,
+    "MainMaximized": false,
+    "MidiWidth": 1024,
+    "MidiHeight": 768,
+	"MidiMaximized": false,
+    "UndoLimit": 100,
+    "SingerSearchPaths": [
+        "Singers"
+    ],
+    "InternalEnginePreview": true,
+    "InternalEngineExport": true,
+    "ExternalPreviewEngine": "",
+    "ExternalExportEngine": ""
+}

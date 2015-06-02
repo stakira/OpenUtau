@@ -37,9 +37,9 @@ namespace OpenUtau.UI
         {
             InitializeComponent();
 
-            this.Width = Properties.Settings.Default.MainWidth;
-            this.Height = Properties.Settings.Default.MainHeight;
-            this.WindowState = Properties.Settings.Default.MainMaximized ? WindowState.Maximized : WindowState.Normal;
+            this.Width = Core.Util.Preferences.Default.MainWidth;
+            this.Height = Core.Util.Preferences.Default.MainHeight;
+            this.WindowState = Core.Util.Preferences.Default.MainMaximized ? WindowState.Maximized : WindowState.Normal;
 
             ThemeManager.LoadTheme(); // TODO : move to program entry point
 
@@ -532,8 +532,10 @@ namespace OpenUtau.UI
 
         private void CmdExit()
         {
-            Properties.Settings.Default.MainMaximized = this.WindowState == System.Windows.WindowState.Maximized;
-            Properties.Settings.Default.Save();
+            Core.Util.Preferences.Default.MainMaximized = this.WindowState == System.Windows.WindowState.Maximized;
+            if (midiWindow != null)
+                Core.Util.Preferences.Default.MidiMaximized = midiWindow.WindowState == System.Windows.WindowState.Maximized;
+            Core.Util.Preferences.Save();
             Application.Current.Shutdown();
         }
 

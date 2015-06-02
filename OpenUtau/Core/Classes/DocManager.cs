@@ -96,7 +96,7 @@ namespace OpenUtau.Core
         public void EndUndoGroup()
         {
             if (undoGroup != null && undoGroup.Commands.Count > 0) { undoQueue.AddToBack(undoGroup); redoQueue.Clear(); }
-            if (undoQueue.Count > Properties.Settings.Default.UndoLimit) undoQueue.RemoveFromFront();
+            if (undoQueue.Count > Core.Util.Preferences.Default.UndoLimit) undoQueue.RemoveFromFront();
             undoGroup = null;
             System.Diagnostics.Debug.WriteLine("undoGroup ended");
         }
