@@ -230,6 +230,7 @@ namespace OpenUtau.UI.Behaviors
             Window window = (Window)WinInterop.HwndSource.FromHwnd(hwnd).RootVisual;
             int x = lParam.ToInt32() << 16 >> 16, y = lParam.ToInt32() >> 16;
             var point = window.PointFromScreen(new Point(x, y));
+            if (point.Y > 24) return false; // Skip VisualTreeHelper.HitTest
             var result = System.Windows.Media.VisualTreeHelper.HitTest(window, point);
             var textblock = result.VisualHit as TextBlock;
             return textblock != null && textblock.Name == "PART_Titlelabel";

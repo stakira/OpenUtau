@@ -7,31 +7,60 @@
         xmlns:ic="clr-namespace:Microsoft.Expression.Interactivity.Core;assembly=Microsoft.Expression.Interactions"
         xmlns:il="clr-namespace:Microsoft.Expression.Interactivity.Layout;assembly=Microsoft.Expression.Interactions"
         xmlns:ib="clr-namespace:OpenUtau.UI.Behaviors"
-        Style="{StaticResource UBorderlessWindow}" Title="Midi Editor"  KeyDown="Window_KeyDown" Closing="Window_Closing">
+        Style="{StaticResource ResourceKey=UBorderlessWindow}" Title="Midi Editor"  KeyDown="Window_KeyDown" Closing="Window_Closing">
     <i:Interaction.Behaviors>
         <ib:BorderlessWindowBehavior/>
     </i:Interaction.Behaviors>
     <Window.Resources>
         <localvm:MidiViewModel x:Key="midiVM"/>
     </Window.Resources>
+    <local:BorderlessWindow.MenuContent>
+        <Grid Width="60" Height="20">
+            <ToggleButton x:Name="showPitchToggle" Style="{StaticResource ShowPitchToggleButtonStyle}"
+                          Width="20" Margin="0,0,0,0" HorizontalAlignment="Left" Focusable="False"
+                          IsChecked="{Binding ShowPitch, Source={StaticResource midiVM}}" ToolTip="Toggle pitch (I)">
+                <ToggleButton.Content>
+                    <Grid Width="18" Height="18">
+                        <Ellipse Height="5" Width="5" StrokeThickness="1" Margin="2,0,0,4" HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                                 Stroke="{Binding ElementName=showPitchToggle, Path=Foreground}"/>
+                        <Ellipse Height="5" Width="5" StrokeThickness="1" Margin="0,4,2,0" HorizontalAlignment="Right" VerticalAlignment="Top"
+                                 Stroke="{Binding ElementName=showPitchToggle, Path=Foreground}"/>
+                        <Path Data="M 6.5 11.5 L 8 11.5 L 8.5 11 L 9.5 7 L 10 6.5 L 11.5 6.5" StrokeThickness="1" 
+                              Stroke="{Binding ElementName=showPitchToggle, Path=Foreground}"/>
+                    </Grid>
+                </ToggleButton.Content>
+            </ToggleButton>
+            <ToggleButton x:Name="showPhonemeToggle" Style="{StaticResource ShowPitchToggleButtonStyle}"
+                          Width="20" Margin="20,0,0,0" HorizontalAlignment="Left" Focusable="False"
+                          IsChecked="{Binding ShowPhoneme, Source={StaticResource midiVM}}" ToolTip="Toggle phoneme (O)">
+                <ToggleButton.Content>
+                    <Grid Width="18" Height="18">
+                        <Path Data="M 3 13 L 6 5.5 L 12 5.5 L 15 13" StrokeThickness="1"
+                              Stroke="{Binding ElementName=showPhonemeToggle, Path=Foreground}"/>
+                    </Grid>
+                </ToggleButton.Content>
+            </ToggleButton>
+            <ToggleButton x:Name="snapToggle" Style="{StaticResource ShowPitchToggleButtonStyle}"
+                          Width="20" Margin="40,0,0,0" HorizontalAlignment="Left" Focusable="False"
+                          IsChecked="{Binding Snap, Source={StaticResource midiVM}}" ToolTip="Snap (P)">
+                <ToggleButton.Content>
+                    <Grid Width="18" Height="18">
+                        <Path Data="M 4.5 13.5 L 7.5 13.5 L 7.5 9.5 A 1,1 0 1 1 10.5,9.5 L 10.5 13.5 L 13.5 13.5 L 13.5 8.5 A 1,1 0 1 0 4.5,8.5 Z" StrokeThickness="1"
+                              Stroke="{Binding Foreground, ElementName=snapToggle}"/>
+                    </Grid>
+                </ToggleButton.Content>
+            </ToggleButton>
+        </Grid>
+    </local:BorderlessWindow.MenuContent>
     <Grid>
         <Grid x:Name="mainGrid" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0">
-
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" MinHeight="200"/>
                 <RowDefinition Height="10"/>
                 <RowDefinition Height="150" MinHeight="100" MaxHeight="450"/>
             </Grid.RowDefinitions>
-
             <Button x:Name="mainButton" Grid.Row="0" Style="{StaticResource MidiWindowMainButton}" HorizontalAlignment="Left" VerticalAlignment="Top" Height="21" Width="21" Margin="14,7,0,0"
                     Click="mainButton_Click"/>
-            <Grid x:Name="keyboardBackgroundGrid" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="48" Margin="0,40,0,0" ClipToBounds="True">
-                <local:KeyboardBackground x:Name="keyboardBackground" TrackHeight="{Binding TrackHeight, Source={StaticResource midiVM}}"
-                                          OffsetY="{Binding OffsetY, Source={StaticResource midiVM}}"/>
-            </Grid>
-            <Canvas x:Name="keysCanvas" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="48" Margin="0,40,0,0" Background="Transparent" ClipToBounds="True"
-                    MouseLeftButtonDown="keysCanvas_MouseLeftButtonDown" MouseLeftButtonUp="keysCanvas_MouseLeftButtonUp"
-                    MouseMove="keysCanvas_MouseMove" MouseWheel="keysCanvas_MouseWheel"/>
             <Grid x:Name="timelineBackgroundGrid" Grid.Row="0" VerticalAlignment="Top" Height="20" Margin="48,20,20,0" ClipToBounds="True">
                 <local:TimelineBackground x:Name="timelineBackground" QuarterOffset="{Binding QuarterOffset, Source={StaticResource midiVM}}"
                                       QuarterWidth="{Binding QuarterWidth, Source={StaticResource midiVM}}" OffsetX="{Binding OffsetX, Source={StaticResource midiVM}}"
@@ -40,7 +69,7 @@
             </Grid>
             <Canvas x:Name="timelineCanvas" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="20" Margin="48,20,20,0"
                     Background="Transparent" ClipToBounds="True"
-                    MouseWheel="timelineCanvas_MouseWheel" MouseLeftButtonDown="timelineCanvas_MouseLeftButtonDown" MouseMove="timelineCanvas_MouseMove" MouseLeftButtonUp="timelineCanvas_MouseLeftButtonUp" />
+                    MouseWheel="timelineCanvas_MouseWheel" MouseLeftButtonDown="timelineCanvas_MouseLeftButtonDown" MouseMove="timelineCanvas_MouseMove" MouseLeftButtonUp="timelineCanvas_MouseLeftButtonUp"/>
             <Grid x:Name="notesBackgroundGrid" Grid.Row="0" ClipToBounds="True" Margin="48,40,20,0">
                 <local:KeyTrackBackground x:Name="keyTrackBackground" TrackHeight="{Binding TrackHeight, Source={StaticResource midiVM}}"
                     OffsetY="{Binding OffsetY, Source={StaticResource midiVM}}"
@@ -56,6 +85,19 @@
                     ClipToBounds="True" SnapsToDevicePixels="True"
                     MouseLeftButtonDown="notesCanvas_MouseLeftButtonDown" MouseRightButtonDown="notesCanvas_MouseRightButtonDown"
                     MouseLeftButtonUp="notesCanvas_MouseLeftButtonUp" MouseMove="notesCanvas_MouseMove" MouseWheel="notesCanvas_MouseWheel" MouseRightButtonUp="notesCanvas_MouseRightButtonUp"/>
+            <Rectangle x:Name="phonemeCanvasShadow" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="48,40,20,48" Height="5"
+                       SnapsToDevicePixels="True" Opacity="0.15" IsHitTestVisible="False"
+                       Visibility="{Binding PhonemeVisibility, Source={StaticResource midiVM}}">
+                <Rectangle.Fill>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <GradientStop Color="Transparent" Offset="0"/>
+                        <GradientStop Color="Black" Offset="1"/>
+                    </LinearGradientBrush>
+                </Rectangle.Fill>
+            </Rectangle>
+            <Canvas x:Name="phonemeCanvas" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="48,40,20,0" Height="48"
+                    ClipToBounds="True" SnapsToDevicePixels="True" Background="White" Opacity="0.75"
+                    Visibility="{Binding PhonemeVisibility, Source={StaticResource midiVM}}"/>
             <ScrollBar x:Name="horizontalScroll" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="20" Margin="48,0,20,0" Orientation="Horizontal" Minimum="0"
                        Maximum="{Binding TotalWidth, Mode=OneWay, Source={StaticResource midiVM}}"
                        Value="{Binding OffsetX, Mode=TwoWay, Source={StaticResource midiVM}, UpdateSourceTrigger=PropertyChanged}"
@@ -85,6 +127,13 @@
                     </Border.Effect>
                 </Border>
             </Border>
+            <Grid x:Name="keyboardBackgroundGrid" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="48" Margin="0,40,0,0" ClipToBounds="True">
+                <local:KeyboardBackground x:Name="keyboardBackground" TrackHeight="{Binding TrackHeight, Source={StaticResource midiVM}}"
+                                          OffsetY="{Binding OffsetY, Source={StaticResource midiVM}}"/>
+                <Canvas x:Name="keysCanvas" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="48" Margin="0,40,0,0" Background="Transparent"
+                        ClipToBounds="True" MouseLeftButtonDown="keysCanvas_MouseLeftButtonDown" MouseLeftButtonUp="keysCanvas_MouseLeftButtonUp"
+                        MouseMove="keysCanvas_MouseMove" MouseWheel="keysCanvas_MouseWheel"/>
+            </Grid>
             <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="10" Margin="0,0,0,0" Background="White" Focusable="False"/>
             <Grid x:Name="expBackgroundGrid" Grid.Row="2" ClipToBounds="True" Margin="48,0,20,1">
                 <local:TickBackground x:Name="expTickBackground" QuarterOffset="{Binding QuarterOffset, Source={StaticResource midiVM}}"
@@ -109,6 +158,8 @@
                     </Border.Effect>
                 </Border>
             </Border>
+            <Grid Width="18" Height="18">
+            </Grid>
         </Grid>
     </Grid>
 </local:BorderlessWindow>

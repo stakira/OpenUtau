@@ -402,7 +402,7 @@ namespace OpenUtau.UI
         private void MenuUndo_Click(object sender, RoutedEventArgs e) { DocManager.Inst.Undo(); }
         private void MenuRedo_Click(object sender, RoutedEventArgs e) { DocManager.Inst.Redo(); }
 
-        private void MenuImportAidio_Click(object sender, RoutedEventArgs e)
+        private void MenuImportAudio_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog()
             {
@@ -411,6 +411,30 @@ namespace OpenUtau.UI
                 CheckFileExists = true
             };
             if (openFileDialog.ShowDialog() == true) CmdImportAudio(openFileDialog.FileName);
+        }
+
+        private void MenuImportMidi_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog()
+            {
+                Filter = "Midi File|*.mid",
+                Multiselect = false,
+                CheckFileExists = true
+            };
+            if (openFileDialog.ShowDialog() == true) CmdImportAudio(openFileDialog.FileName);
+            var project = DocManager.Inst.Project;
+            var parts = Core.Formats.Midi.Load(openFileDialog.FileName, project);
+
+            DocManager.Inst.StartUndoGroup();
+            foreach (var part in parts)
+            {
+                var track = new UTrack();
+                track.TrackNo = project.Tracks.Count;
+                part.TrackNo = track.TrackNo;
+                DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, track));
+                DocManager.Inst.ExecuteCmd(new AddPartCommand(project, part));
+            }
+            DocManager.Inst.EndUndoGroup();
         }
 
         private void MenuSingers_Click(object sender, RoutedEventArgs e)

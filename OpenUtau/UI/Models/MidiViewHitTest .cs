@@ -65,6 +65,7 @@ namespace OpenUtau.UI.Models
             {
                 if (midiVM.NoteIsInView(note)) // FIXME this is not enough
                 {
+                    if (note.Error) continue;
                     double lastX = 0, lastY = 0;
                     PitchPointShape lastShape = PitchPointShape.l;
                     for (int i = 0; i < note.PitchBend.Points.Count; i++)
@@ -80,7 +81,6 @@ namespace OpenUtau.UI.Models
                         {
                             // Hit test curve
                             var lastPit = note.PitchBend.Points[i - 1];
-                            # warning castY is not implemented for all shapes yet
                             double castY = MusicMath.InterpolateShape(lastX, x, lastY, y, mousePos.X, lastShape) - mousePos.Y;
                             if (y >= lastY)
                             {
@@ -90,7 +90,7 @@ namespace OpenUtau.UI.Models
                             {
                                 if (y - mousePos.Y > 3 || mousePos.Y - lastY > 3) break;
                             }
-                            double castX = MusicMath.SinEasingInOutY(lastX, x, lastY, y, mousePos.Y) - mousePos.X;
+                            double castX = MusicMath.InterpolateShapeX(lastX, x, lastY, y, mousePos.Y, lastShape) - mousePos.X;
                             double dis = double.IsNaN(castX) ? Math.Abs(castY) : Math.Cos(Math.Atan2(Math.Abs(castY), Math.Abs(castX))) * Math.Abs(castY);
                             if (dis < 3)
                             {

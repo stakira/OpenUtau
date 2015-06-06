@@ -61,7 +61,7 @@ namespace OpenUtau.Core
             return y0 + (y1 - y0) * (1 - Math.Cos((x - x0) / (x1 - x0) * Math.PI)) / 2;
         }
 
-        public static double SinEasingInOutY(double x0, double x1, double y0, double y1, double y)
+        public static double SinEasingInOutX(double x0, double x1, double y0, double y1, double y)
         {
             return Math.Acos(1 - (y - y0) * 2 / (y1 - y0)) / Math.PI * (x1 - x0) + x0;
         }
@@ -71,14 +71,29 @@ namespace OpenUtau.Core
             return y0 + (y1 - y0) * (1 - Math.Cos((x - x0) / (x1 - x0) * Math.PI / 2));
         }
 
+        public static double SinEasingInX(double x0, double x1, double y0, double y1, double y)
+        {
+            return Math.Acos(1 - (y - y0) / (y1 - y0)) / Math.PI * 2 * (x1 - x0) + x0;
+        }
+
         public static double SinEasingOut(double x0, double x1, double y0, double y1, double x)
         {
             return y0 + (y1 - y0) * Math.Sin((x - x0) / (x1 - x0) * Math.PI / 2);
         }
 
-        public static double Liner(double x0, double x1, double y0, double y1, double x)
+        public static double SinEasingOutX(double x0, double x1, double y0, double y1, double y)
+        {
+            return Math.Asin((y - y0) / (y1 - y0)) / Math.PI * 2 * (x1 - x0) + x0;
+        }
+
+        public static double Linear(double x0, double x1, double y0, double y1, double x)
         {
             return y0 + (y1 - y0) * (x - x0) / (x1 - x0);
+        }
+
+        public static double LinearX(double x0, double x1, double y0, double y1, double y)
+        {
+            return (y - y0) / (y1 - y0) * (x1 - x0) + x0;
         }
 
         public static double InterpolateShape(double x0, double x1, double y0, double y1, double x, USTx.PitchPointShape shape)
@@ -88,7 +103,18 @@ namespace OpenUtau.Core
                 case USTx.PitchPointShape.io: return MusicMath.SinEasingInOut(x0, x1, y0, y1, x);
                 case USTx.PitchPointShape.i: return MusicMath.SinEasingIn(x0, x1, y0, y1, x);
                 case USTx.PitchPointShape.o: return MusicMath.SinEasingOut(x0, x1, y0, y1, x);
-                default: return MusicMath.Liner(x0, x1, y0, y1, x);
+                default: return MusicMath.Linear(x0, x1, y0, y1, x);
+            }
+        }
+
+        public static double InterpolateShapeX(double x0, double x1, double y0, double y1, double y, USTx.PitchPointShape shape)
+        {
+            switch (shape)
+            {
+                case USTx.PitchPointShape.io: return MusicMath.SinEasingInOutX(x0, x1, y0, y1, y);
+                case USTx.PitchPointShape.i: return MusicMath.SinEasingInX(x0, x1, y0, y1, y);
+                case USTx.PitchPointShape.o: return MusicMath.SinEasingOutX(x0, x1, y0, y1, y);
+                default: return MusicMath.LinearX(x0, x1, y0, y1, y);
             }
         }
 

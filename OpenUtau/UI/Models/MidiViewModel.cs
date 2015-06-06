@@ -38,6 +38,7 @@ namespace OpenUtau.UI.Models
         public Canvas TimelineCanvas;
         public Canvas MidiCanvas;
         public Canvas ExpCanvas;
+        public Canvas PhonemeCanvas;
 
         protected bool _updated = false;
         public void MarkUpdate() { _updated = true; }
@@ -56,6 +57,9 @@ namespace OpenUtau.UI.Models
         int _beatUnit = 4;
         int _visualPosTick;
         int _visualDurTick;
+        bool _showPhoneme = true;
+        bool _showPitch = true;
+        bool _snap = true;
 
         public string Title { set { _title = value; OnPropertyChanged("Title"); } get { return "Midi Editor - " + _title; } }
         public double TotalHeight { get { return UIConstants.MaxNoteNum * _trackHeight - _viewHeight; } }
@@ -93,6 +97,10 @@ namespace OpenUtau.UI.Models
         public double MinTickWidth { set { _minTickWidth = value; HorizontalPropertiesChanged(); } get { return _minTickWidth; } }
         public int BeatPerBar { set { _beatPerBar = value; HorizontalPropertiesChanged(); } get { return _beatPerBar; } }
         public int BeatUnit { set { _beatUnit = value; HorizontalPropertiesChanged(); } get { return _beatUnit; } }
+        public bool ShowPitch { set { _showPitch = value; notesElement.ShowPitch = value; OnPropertyChanged("ShowPitch"); } get { return _showPitch; } }
+        public bool ShowPhoneme { set { _showPhoneme = value; OnPropertyChanged("PhonemeVisibility"); OnPropertyChanged("ShowPhoneme"); } get { return _showPhoneme; } }
+        public Visibility PhonemeVisibility { get { return _showPhoneme ? Visibility.Visible : Visibility.Collapsed; } }
+        public bool Snap { set { _snap = value; OnPropertyChanged("Snap"); } get { return _snap; } }
 
         public void HorizontalPropertiesChanged()
         {
@@ -122,7 +130,8 @@ namespace OpenUtau.UI.Models
         # endregion
 
         Dictionary<string, FloatExpElement> expElements = new Dictionary<string, FloatExpElement>();
-        public PitchExpElement pitchExpElement;
+        public NotesElement notesElement;
+        public PhonemesElement phonemesElement;
         public FloatExpElement visibleExpElement, shadowExpElement;
 
         public MidiViewModel() { }
@@ -143,19 +152,25 @@ namespace OpenUtau.UI.Models
                     shadowExpElement.ScaleX = QuarterWidth / Project.Resolution;
                     shadowExpElement.VisualHeight = ExpCanvas.ActualHeight;
                 }
-                if (pitchExpElement != null)
+                if (notesElement != null)
                 {
-                    pitchExpElement.X = -OffsetX;
-                    pitchExpElement.Y = -OffsetY;
-                    pitchExpElement.VisualHeight = MidiCanvas.ActualHeight;
-                    pitchExpElement.TrackHeight = TrackHeight;
-                    pitchExpElement.QuarterWidth = QuarterWidth;
+                    notesElement.X = -OffsetX;
+                    notesElement.Y = -OffsetY;
+                    notesElement.VisualHeight = MidiCanvas.ActualHeight;
+                    notesElement.TrackHeight = TrackHeight;
+                    notesElement.QuarterWidth = QuarterWidth;
+                }
+                if (phonemesElement != null)
+                {
+                    phonemesElement.X = -OffsetX;
+                    phonemesElement.QuarterWidth = QuarterWidth;
                 }
                 updatePlayPosMarker();
             }
             _updated = false;
             foreach (var pair in expElements) pair.Value.RedrawIfUpdated();
-            if (pitchExpElement != null) pitchExpElement.RedrawIfUpdated();
+            if (notesElement != null) notesElement.RedrawIfUpdated();
+            if (phonemesElement != null && ShowPhoneme) phonemesElement.RedrawIfUpdated();
         }
 
         # region PlayPosMarker
@@ -286,9 +301,13 @@ namespace OpenUtau.UI.Models
             Title = "";
             _part = null;
 
-            if (pitchExpElement != null)
+            if (notesElement != null)
             {
-                pitchExpElement.Part = null;
+                notesElement.Part = null;
+            }
+            if (phonemesElement != null)
+            {
+                phonemesElement.Part = null;
             }
 
             foreach (var pair in expElements) { pair.Value.Part = null; pair.Value.MarkUpdate(); pair.Value.RedrawIfUpdated(); }
@@ -303,14 +322,23 @@ namespace OpenUtau.UI.Models
 
             OnPartModified();
 
-            if (pitchExpElement == null)
+            if (notesElement == null)
             {
-                pitchExpElement = new PitchExpElement() { Key = "pitchbend", Part = this.Part, midiVM = this };
-                MidiCanvas.Children.Add(pitchExpElement);
+                notesElement = new NotesElement() { Key = "pitchbend", Part = this.Part, midiVM = this };
+                MidiCanvas.Children.Add(notesElement);
             }
             else
             {
-                pitchExpElement.Part = this.Part;
+                notesElement.Part = this.Part;
+            }
+
+            if (phonemesElement == null)
+            {
+                phonemesElement = new PhonemesElement() { Part = this.Part, midiVM = this };
+                PhonemeCanvas.Children.Add(phonemesElement);
+            }else
+            {
+                phonemesElement.Part = this.Part;
             }
 
             foreach (var pair in expElements) { pair.Value.Part = this.Part; pair.Value.MarkUpdate(); }
@@ -361,7 +389,7 @@ namespace OpenUtau.UI.Models
         private void OnPitchModified()
         {
             MarkUpdate();
-            pitchExpElement.MarkUpdate();
+            notesElement.MarkUpdate();
         }
 
         # endregion
@@ -374,7 +402,8 @@ namespace OpenUtau.UI.Models
         {
             if (cmd is NoteCommand)
             {
-                pitchExpElement.MarkUpdate();
+                notesElement.MarkUpdate();
+                phonemesElement.MarkUpdate();
             }
             else if (cmd is PartCommand)
             {
@@ -398,7 +427,10 @@ namespace OpenUtau.UI.Models
                 else if (_cmd is SelectExpressionNotification) OnSelectExpression(_cmd);
                 else if (_cmd is ShowPitchExpNotification) { }
                 else if (_cmd is HidePitchExpNotification) { }
-                else if (_cmd is RedrawNotesNotification) { if (pitchExpElement != null) pitchExpElement.MarkUpdate(); }
+                else if (_cmd is RedrawNotesNotification) {
+                    if (notesElement != null) notesElement.MarkUpdate();
+                    if (phonemesElement != null) phonemesElement.MarkUpdate();
+                }
                 else if (_cmd is SetPlayPosTickNotification) { OnPlayPosSet(((SetPlayPosTickNotification)_cmd).playPosTick); }
             }
         }

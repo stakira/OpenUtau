@@ -51,6 +51,7 @@ namespace OpenUtau.UI
             midiVM = (MidiViewModel)this.Resources["midiVM"];
             midiVM.TimelineCanvas = this.timelineCanvas;
             midiVM.MidiCanvas = this.notesCanvas;
+            midiVM.PhonemeCanvas = this.phonemeCanvas;
             midiVM.ExpCanvas = this.expCanvas;
             midiVM.Subscribe(DocManager.Inst);
 
@@ -643,25 +644,46 @@ namespace OpenUtau.UI
             {
                 return;
             }
-            else if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.A)
+            else if (Keyboard.Modifiers == ModifierKeys.Control) // Ctrl
             {
-                midiVM.SelectAll();
+                if (e.Key == Key.A)
+                {
+                    midiVM.SelectAll();
+                }
+                else if (e.Key == Key.Z)
+                {
+                    midiVM.DeselectAll();
+                    DocManager.Inst.Undo();
+                }
+                else if (e.Key == Key.Y)
+                {
+                    midiVM.DeselectAll();
+                    DocManager.Inst.Redo();
+                }
             }
-            else if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.Z)
+            else if (Keyboard.Modifiers == 0) // No midifiers
             {
-                midiVM.DeselectAll();
-                DocManager.Inst.Undo();
-            }
-            else if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.Y)
-            {
-                midiVM.DeselectAll();
-                DocManager.Inst.Redo();
-            }
-            else if (Keyboard.Modifiers == 0 && e.Key == Key.Delete)
-            {
-                DocManager.Inst.StartUndoGroup();
-                if (midiVM.SelectedNotes.Count > 0) DocManager.Inst.ExecuteCmd(new RemoveNoteCommand(midiVM.Part, midiVM.SelectedNotes));
-                DocManager.Inst.EndUndoGroup();
+                if (e.Key == Key.Delete)
+                {
+                    if (midiVM.SelectedNotes.Count > 0)
+                    {
+                        DocManager.Inst.StartUndoGroup();
+                        DocManager.Inst.ExecuteCmd(new RemoveNoteCommand(midiVM.Part, midiVM.SelectedNotes));
+                        DocManager.Inst.EndUndoGroup();
+                    }
+                }
+                else if (e.Key == Key.I)
+                {
+                    midiVM.ShowPitch = !midiVM.ShowPitch;
+                }
+                else if (e.Key == Key.O)
+                {
+                    midiVM.ShowPhoneme = !midiVM.ShowPhoneme;
+                }
+                else if (e.Key == Key.P)
+                {
+                    midiVM.Snap = !midiVM.Snap;
+                }
             }
         }
 
