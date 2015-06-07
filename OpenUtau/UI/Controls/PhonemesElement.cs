@@ -47,7 +47,7 @@ namespace OpenUtau.UI.Controls
 
                     if (inView && !lastInView)
                         if (lastNote != null)
-                            DrawPhoneme(note, cxt);
+                            DrawPhoneme(lastNote, cxt);
 
                     if (inView || !inView && lastInView)
                         DrawPhoneme(note, cxt);
