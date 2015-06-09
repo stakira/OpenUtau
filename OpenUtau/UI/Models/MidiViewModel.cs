@@ -255,7 +255,7 @@ namespace OpenUtau.UI.Models
 
         # region Calculation
 
-        public double GetSnapUnit() { return OpenUtau.Core.MusicMath.getZoomRatio(QuarterWidth, BeatPerBar, BeatUnit, MinTickWidth); }
+        public double GetSnapUnit() { return Snap ? OpenUtau.Core.MusicMath.getZoomRatio(QuarterWidth, BeatPerBar, BeatUnit, MinTickWidth) : 1.0 / 96; }
         public double CanvasToQuarter(double X) { return (X + OffsetX) / QuarterWidth; }
         public double QuarterToCanvas(double X) { return X * QuarterWidth - OffsetX; }
         public double CanvasToSnappedQuarter(double X)

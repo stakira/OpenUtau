@@ -24,10 +24,10 @@ namespace OpenUtau.Core.Formats
                     {
                         var _e = e as NoteOnEvent;
                         if (!parts.ContainsKey(_e.Channel)) parts.Add(_e.Channel, new UVoicePart());
-                        var note = project.CreateNote();
-                        note.PosTick = (int)_e.AbsoluteTime * project.Resolution / midi.DeltaTicksPerQuarterNote;
-                        note.DurTick = _e.NoteLength * project.Resolution / midi.DeltaTicksPerQuarterNote;
-                        note.NoteNum = _e.NoteNumber;
+                        var note = project.CreateNote(
+                            _e.NoteNumber,
+                            (int)_e.AbsoluteTime * project.Resolution / midi.DeltaTicksPerQuarterNote,
+                            _e.NoteLength * project.Resolution / midi.DeltaTicksPerQuarterNote);
                         parts[e.Channel].Notes.Add(note);
                     }
                 foreach (var pair in parts)
