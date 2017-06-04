@@ -217,10 +217,12 @@ namespace OpenUtau.UI
         UNote _noteMoveNoteMin;
         UNote _noteMoveNoteMax;
         UNote _noteResizeShortest;
+        UNote _noteInEdit;
 
         private void notesCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (midiVM.Part == null) return;
+            EndNoteEditing();
             Point mousePos = e.GetPosition((Canvas)sender);
 
             var hit = VisualTreeHelper.HitTest(notesCanvas, mousePos).VisualHit;
@@ -284,7 +286,17 @@ namespace OpenUtau.UI
                         _noteHit = noteHit;
                         if (!midiVM.SelectedNotes.Contains(noteHit)) midiVM.DeselectAll();
 
-                        if (!midiHT.HitNoteResizeArea(noteHit, mousePos))
+                        if (e.ClickCount == 2)
+                        {
+                            _noteInEdit = _noteHit;
+                            LyricBox.Visibility = Visibility.Visible;
+                            LyricBox.Text = _noteInEdit.Lyric;
+                            // TODO: clear undo from last note edited
+                            LyricBox.Focus();
+                            LyricBox.SelectAll();
+                            // TODO: auto complete list
+                        }
+                        else if (!midiHT.HitNoteResizeArea(noteHit, mousePos))
                         {
                             // Move note
                             _inMove = true;
@@ -476,6 +488,7 @@ namespace OpenUtau.UI
         private void notesCanvas_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (midiVM.Part == null) return;
+            EndNoteEditing();
             Point mousePos = e.GetPosition((Canvas)sender);
 
             var pitHit = midiHT.HitTestPitchPoint(mousePos);
@@ -730,6 +743,38 @@ namespace OpenUtau.UI
         private void mainButton_Click(object sender, RoutedEventArgs e)
         {
             DocManager.Inst.ExecuteCmd(new ShowPitchExpNotification());
+        }
+
+        private void LyricBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.Key)
+            {
+                case Key.Enter:
+                    if (!string.IsNullOrEmpty(LyricBox.Text.Trim()))
+                    {
+                        DocManager.Inst.StartUndoGroup();
+                        DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(midiVM.Part, _noteInEdit, LyricBox.Text));
+                        DocManager.Inst.EndUndoGroup();
+                    }
+                    EndNoteEditing();
+                    break;
+                case Key.Escape:
+                    EndNoteEditing();
+                    break;
+                default:
+                    var singer = DocManager.Inst.Project.Tracks[midiVM.Part.TrackNo].Singer;
+                    if (singer != null && singer.AliasMap != null)
+                    {
+                    }
+                    break;
+            }
+        }
+
+        private void EndNoteEditing()
+        {
+            LyricBox.Text = "";
+            LyricBox.Visibility = Visibility.Hidden;
+            _noteInEdit = null;
         }
     }
 }

@@ -125,6 +125,7 @@
                     <Border.Effect>
                         <DropShadowEffect Color="Black" ShadowDepth="0" BlurRadius="5" Opacity="0.75"/>
                     </Border.Effect>
+                    <TextBox x:Name="LyricBox" TextWrapping="Wrap" Width="240" Height="28" FontSize="18" Visibility="Hidden" KeyDown="LyricBox_KeyDown"/>
                 </Border>
             </Border>
             <Grid x:Name="keyboardBackgroundGrid" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="48" Margin="0,40,0,0" ClipToBounds="True">
