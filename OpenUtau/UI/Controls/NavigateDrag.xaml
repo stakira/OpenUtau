@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-             d:DesignHeight="20" d:DesignWidth="20" d:Background="White" d:Foreground="Black"
+             d:DesignHeight="20" d:DesignWidth="20"
              MouseLeftButtonDown="NavigateDrag_MouseLeftButtonDown" MouseLeftButtonUp="NavigateDrag_MouseLeftButtonUp"
              MouseMove="NavigateDrag_MouseMove" MouseEnter="UserControl_MouseEnter"  MouseLeave="UserControl_MouseLeave">
     <UserControl.Template>
