@@ -29,7 +29,7 @@ namespace OpenUtau.Core.Render
 
         private void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            DocManager.Inst.ExecuteCmd(new ProgressBarNotification(e.ProgressPercentage, (string)e.UserState));
+            DocManager.Inst.ExecuteCmd(new ProgressBarNotification(e.ProgressPercentage, (string)e.UserState), true);
         }
 
         private void worker_DoWork(object sender, DoWorkEventArgs e)
@@ -67,6 +67,12 @@ namespace OpenUtau.Core.Render
                 {
                     foreach (UPhoneme phoneme in note.Phonemes)
                     {
+                        if (string.IsNullOrEmpty(phoneme.Oto.File))
+                        {
+                            Debug.WriteLine(string.Format("[Error] Cannot find phoneme in note {0}", note.Lyric));
+                            continue;
+                        }
+
                         RenderItem item = BuildRenderItem(phoneme, part, project);
                         var sound = RenderCache.Inst.Get(item.HashParameters());
 
@@ -75,19 +81,22 @@ namespace OpenUtau.Core.Render
                             string cachefile = Path.Combine(cacheDir, string.Format("{0:x}.wav", item.HashParameters()));
                             if (!cacheFiles.Contains(cachefile))
                             {
-                                System.Diagnostics.Debug.WriteLine("Sound {0:x} resampling {1}", item.HashParameters(), item.GetResamplerExeArgs());
+                                // System.Diagnostics.Debug.WriteLine("Sound {0:x} resampling {1}", item.HashParameters(), item.GetResamplerExeArgs());
                                 DriverModels.EngineInput engineArgs = DriverModels.CreateInputModel(item, 0);
                                 System.IO.Stream output = engine.DoResampler(engineArgs);
                                 sound = new CachedSound(output);
                             }
                             else
                             {
-                                System.Diagnostics.Debug.WriteLine("Sound {0:x} found on disk {1}", item.HashParameters(), item.GetResamplerExeArgs());
+                                // System.Diagnostics.Debug.WriteLine("Sound {0:x} found on disk {1}", item.HashParameters(), item.GetResamplerExeArgs());
                                 sound = new CachedSound(cachefile);
                             }
                             RenderCache.Inst.Put(item.HashParameters(), sound, engine.GetInfo().ToString());
                         }
-                        else System.Diagnostics.Debug.WriteLine("Sound {0} found in cache {1}", item.HashParameters(), item.GetResamplerExeArgs());
+                        else
+                        {
+                            // System.Diagnostics.Debug.WriteLine("Sound {0} found in cache {1}", item.HashParameters(), item.GetResamplerExeArgs());
+                        }
 
                         item.Sound = sound;
                         renderItems.Add(item);
