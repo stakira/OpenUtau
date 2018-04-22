@@ -222,7 +222,7 @@ namespace OpenUtau.UI
         private void notesCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (midiVM.Part == null) return;
-            EndNoteEditing();
+            EndNoteEditing(false);
             Point mousePos = e.GetPosition((Canvas)sender);
 
             var hit = VisualTreeHelper.HitTest(notesCanvas, mousePos).VisualHit;
@@ -488,7 +488,7 @@ namespace OpenUtau.UI
         private void notesCanvas_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (midiVM.Part == null) return;
-            EndNoteEditing();
+            EndNoteEditing(false);
             Point mousePos = e.GetPosition((Canvas)sender);
 
             var pitHit = midiHT.HitTestPitchPoint(mousePos);
@@ -641,8 +641,15 @@ namespace OpenUtau.UI
 
         protected override void OnKeyDown(KeyEventArgs e)
         {
-            Window_KeyDown(this, e);
-            e.Handled = true;
+            if (LyricBox.IsFocused)
+            {
+
+            }
+            else
+            {
+                Window_KeyDown(this, e);
+                e.Handled = true;
+            }
         }
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
@@ -750,16 +757,10 @@ namespace OpenUtau.UI
             switch (e.Key)
             {
                 case Key.Enter:
-                    if (!string.IsNullOrEmpty(LyricBox.Text.Trim()))
-                    {
-                        DocManager.Inst.StartUndoGroup();
-                        DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(midiVM.Part, _noteInEdit, LyricBox.Text));
-                        DocManager.Inst.EndUndoGroup();
-                    }
-                    EndNoteEditing();
+                    EndNoteEditing(false);
                     break;
                 case Key.Escape:
-                    EndNoteEditing();
+                    EndNoteEditing(true);
                     break;
                 default:
                     var singer = DocManager.Inst.Project.Tracks[midiVM.Part.TrackNo].Singer;
@@ -770,8 +771,14 @@ namespace OpenUtau.UI
             }
         }
 
-        private void EndNoteEditing()
+        private void EndNoteEditing(bool cancel)
         {
+            if (!string.IsNullOrEmpty(LyricBox.Text.Trim()))
+            {
+                DocManager.Inst.StartUndoGroup();
+                DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(midiVM.Part, _noteInEdit, LyricBox.Text));
+                DocManager.Inst.EndUndoGroup();
+            }
             LyricBox.Text = "";
             LyricBox.Visibility = Visibility.Hidden;
             _noteInEdit = null;
