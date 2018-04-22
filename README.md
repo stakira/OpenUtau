@@ -4,6 +4,24 @@ Current stage: Alpha
 ## Mission
 The mission of OpenUtau is to create a open source editing environment for UTAU community, with modern user experience and intelligent phonological support. The ultimate goal is to make UTAU technology better and more popular.
 
+## Preview
+
+Fluent navigation using scroll wheel
+
+![Editor](Misc/GIFs/editor.gif)
+
+Feature-Rich Midi Editor
+
+![Editor](Misc/GIFs/editor2.gif)
+
+Render and Playback
+
+![Playback](Misc/GIFs/playback.gif)
+
+Redo Undo
+
+![undo](Misc/GIFs/undo.gif)
+
 ## Scope
 #### The scope of OpenUtau includes:
 - Modern user experience.
@@ -24,7 +42,6 @@ The mission of OpenUtau is to create a open source editing environment for UTAU 
 - An efficient resampling engine interface.
 - Coorperate with other projects on resampling engine integration.
 - A OS X version, but only after Windows version is mature.
-- A Linux version, but not likely due to its small user base.
 
 
 # OpenUtau
@@ -53,7 +70,6 @@ OpenUtau的目标，是为UTAU用户群体提供一个开源的编辑环境，�
 - 高效的重采样引擎接口
 - 和其他重采样引擎项目合作
 - Windows版本完善后，可能开发OS X版本
-- Linux版本，但可能性不高
 
 
 # OpenUtau (未確認の翻訳)
@@ -81,4 +97,3 @@ OpenUtauは現代的なユーザー体験と知能音声に基づき、音声合
 - 簡単で効率的なリサンプリングのインターフェース
 - 他のプロジェクトのサンプリングエンジンとの組み合わせ
 - OS X版
-- Linux版、可能性が低いです
