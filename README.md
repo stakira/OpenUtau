@@ -43,6 +43,32 @@ Redo Undo
 - Coorperate with other projects on resampling engine integration.
 - A OS X version, but only after Windows version is mature.
 
+# OpenUtau
+開發進度：Alpha
+
+## 專案目標
+OpenUtau 的目標是為 UTAU 社群建立開源環境、現代的用戶介面及智慧語音學支援。此專案的終極目標是讓 UTAU 技術更臻完美且廣為流傳。
+
+## 範圍
+#### OpenUtau 專案範圍包括：
+- 現代化使用者體驗
+- 與現有 UTAU 技術的相容性
+- 提供智慧化的 VCV、CVVC 及其它聲音資料庫之取樣方案
+- 國際化，包含使用者介面翻譯及檔案系統編碼支援
+- 流暢的預覽及渲染體驗
+- 易於使用的插件系統
+- 高效能樣本連接引擎（或稱 wavetool）
+- Windows 版本
+
+#### OpenUtau 專案範圍不包括：
+- 重新取樣引擎（或稱 resampler）
+- 全功能數位音樂工作站
+- 專注於完整 VOCALOID 相容性
+
+#### OpenUtau 專案範圍可能包括：
+- 高效能重新採樣引擎輸入介面
+- 與其它重新採樣引擎專案合作
+- 完善 Windows 版本的開發後，開發 macOS 版本
 
 # OpenUtau
 开发进度: Alpha
