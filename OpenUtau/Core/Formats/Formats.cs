@@ -25,7 +25,10 @@ namespace OpenUtau.Core.Formats
             try
             {
                 streamReader = File.OpenText(file);
-                for (int i = 0; i < 10; i++) { if (streamReader.Peek() < 0) break; contents += streamReader.ReadLine(); }
+                for (int i = 0; i < 10; i++) {
+                    if (streamReader.Peek() < 0) break;
+                    contents += streamReader.ReadLine();
+                }
             }
             catch (Exception e)
             {

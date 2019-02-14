@@ -59,30 +59,30 @@ namespace OpenUtau.Core.Formats
             uproject.RegisterExpression(new IntExpression(null, "accent", "ACC") { Data = 50, Min = 0, Max = 100 });
             uproject.RegisterExpression(new IntExpression(null, "decay", "DEC") { Data = 50, Min = 0, Max = 100 });
 
-            string bpmPath = string.Format("{0}masterTrack/{0}tempo/{0}{1}", nsPrefix, nsPrefix == "v3:" ? "bpm" : "v");
-            string beatperbarPath = string.Format("{0}masterTrack/{0}timeSig/{0}{1}", nsPrefix, nsPrefix == "v3:" ? "nume" : "nu");
-            string beatunitPath = string.Format("{0}masterTrack/{0}timeSig/{0}{1}", nsPrefix, nsPrefix == "v3:" ? "denomi" : "de");
-            string premeasurePath = string.Format("{0}masterTrack/{0}preMeasure", nsPrefix);
-            string resolutionPath = string.Format("{0}masterTrack/{0}resolution", nsPrefix);
-            string projectnamePath = string.Format("{0}masterTrack/{0}seqName", nsPrefix);
-            string projectcommentPath = string.Format("{0}masterTrack/{0}comment", nsPrefix);
-            string trackPath = string.Format("{0}vsTrack", nsPrefix);
-            string tracknamePath = string.Format("{0}{1}", nsPrefix, nsPrefix == "v3:" ? "trackName" : "name");
-            string trackcommentPath = string.Format("{0}comment", nsPrefix);
-            string tracknoPath = string.Format("{0}{1}", nsPrefix, nsPrefix == "v3:" ? "vsTrackNo" : "tNo");
-            string partPath = string.Format("{0}{1}", nsPrefix, nsPrefix == "v3:" ? "musicalPart" : "vsPart");
-            string partnamePath = string.Format("{0}{1}", nsPrefix, nsPrefix == "v3:" ? "partName" : "name");
-            string partcommentPath = string.Format("{0}comment", nsPrefix);
-            string notePath = string.Format("{0}note", nsPrefix);
-            string postickPath = string.Format("{0}{1}", nsPrefix, nsPrefix == "v3:" ? "posTick" : "t");
-            string durtickPath = string.Format("{0}{1}", nsPrefix, nsPrefix == "v3:" ? "durTick" : "dur");
-            string notenumPath = string.Format("{0}{1}", nsPrefix, nsPrefix == "v3:" ? "noteNum" : "n");
-            string velocityPath = string.Format("{0}{1}", nsPrefix, nsPrefix == "v3:" ? "velocity" : "v");
-            string lyricPath = string.Format("{0}{1}", nsPrefix, nsPrefix == "v3:" ? "lyric" : "y");
-            string phonemePath = string.Format("{0}{1}", nsPrefix, nsPrefix == "v3:" ? "phnms" : "p");
-            string playtimePath = string.Format("{0}playTime", nsPrefix);
-            string partstyleattrPath = string.Format("{0}{1}/{0}{2}", nsPrefix, nsPrefix == "v3:" ? "partStyle" : "pStyle", nsPrefix == "v3:" ? "attr" : "v");
-            string notestyleattrPath = string.Format("{0}{1}/{0}{2}", nsPrefix, nsPrefix == "v3:" ? "noteStyle" : "nStyle", nsPrefix == "v3:" ? "attr" : "v");
+            string bpmPath = $"{nsPrefix}masterTrack/{nsPrefix}tempo/{nsPrefix}{(nsPrefix == "v3:" ? "bpm" : "v")}";
+            string beatperbarPath = $"{nsPrefix}masterTrack/{nsPrefix}timeSig/{nsPrefix}{(nsPrefix == "v3:" ? "nume" : "nu")}";
+            string beatunitPath = $"{nsPrefix}masterTrack/{nsPrefix}timeSig/{nsPrefix}{(nsPrefix == "v3:" ? "denomi" : "de")}";
+            string premeasurePath = $"{nsPrefix}masterTrack/{nsPrefix}preMeasure";
+            string resolutionPath = $"{nsPrefix}masterTrack/{nsPrefix}resolution";
+            string projectnamePath = $"{nsPrefix}masterTrack/{nsPrefix}seqName";
+            string projectcommentPath = $"{nsPrefix}masterTrack/{nsPrefix}comment";
+            string trackPath = $"{nsPrefix}vsTrack";
+            string tracknamePath = $"{nsPrefix}{(nsPrefix == "v3:" ? "trackName" : "name")}";
+            string trackcommentPath = $"{nsPrefix}comment";
+            string tracknoPath = $"{nsPrefix}{(nsPrefix == "v3:" ? "vsTrackNo" : "tNo")}";
+            string partPath = $"{nsPrefix}{(nsPrefix == "v3:" ? "musicalPart" : "vsPart")}";
+            string partnamePath = $"{nsPrefix}{(nsPrefix == "v3:" ? "partName" : "name")}";
+            string partcommentPath = $"{nsPrefix}comment";
+            string notePath = $"{nsPrefix}note";
+            string postickPath = $"{nsPrefix}{(nsPrefix == "v3:" ? "posTick" : "t")}";
+            string durtickPath = $"{nsPrefix}{(nsPrefix == "v3:" ? "durTick" : "dur")}";
+            string notenumPath = $"{nsPrefix}{(nsPrefix == "v3:" ? "noteNum" : "n")}";
+            string velocityPath = $"{nsPrefix}{(nsPrefix == "v3:" ? "velocity" : "v")}";
+            string lyricPath = $"{nsPrefix}{(nsPrefix == "v3:" ? "lyric" : "y")}";
+            string phonemePath = $"{nsPrefix}{(nsPrefix == "v3:" ? "phnms" : "p")}";
+            string playtimePath = $"{nsPrefix}playTime";
+            string partstyleattrPath = $"{nsPrefix}{(nsPrefix == "v3:" ? "partStyle" : "pStyle")}/{nsPrefix}{(nsPrefix == "v3:" ? "attr" : "v")}";
+            string notestyleattrPath = $"{nsPrefix}{(nsPrefix == "v3:" ? "noteStyle" : "nStyle")}/{nsPrefix}{(nsPrefix == "v3:" ? "attr" : "v")}";
 
             uproject.BPM = Convert.ToDouble(root.SelectSingleNode(bpmPath, nsmanager).InnerText) / 100;
             uproject.BeatPerBar = int.Parse(root.SelectSingleNode(beatperbarPath, nsmanager).InnerText);
@@ -139,6 +139,7 @@ namespace OpenUtau.Core.Formats
                             else if (notestyle.Attributes["id"].Value == "decay")
                                 unote.Expressions["decay"].Data = int.Parse(notestyle.InnerText);
                         }
+
                         unote.PitchBend.Points[0].X = -uproject.TickToMillisecond(Math.Min(15, unote.DurTick / 3));
                         unote.PitchBend.Points[1].X = -unote.PitchBend.Points[0].X;
                         upart.Notes.Add(unote);

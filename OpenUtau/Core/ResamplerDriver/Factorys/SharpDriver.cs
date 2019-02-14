@@ -10,7 +10,7 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys
     internal class SharpDriver:DriverModels,IResamplerDriver
     {
         static Dictionary<string, Assembly> LoadTable = new Dictionary<string, Assembly>();
-        bool _isLegalPlugin=false;
+        bool _isLegalPlugin = false;
 
         #region 对象转换接口
         /// <summary>
@@ -30,7 +30,7 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys
         }
         #endregion
 
-        Assembly asm=null;
+        Assembly asm = null;
         MethodInfo DoResamplerMethod = null;
         MethodInfo GetInformationMethod = null;
         public SharpDriver(string DllPath)
@@ -54,7 +54,7 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys
             if (asm == null) _isLegalPlugin = false;
             else
             {
-                foreach(Type t in asm.GetExportedTypes())
+                foreach (Type t in asm.GetExportedTypes())
                 {
                     if (DoResamplerMethod == null)
                     {
@@ -103,8 +103,10 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys
         }
         public DriverModels.EngineInfo GetInfo()
         {
-            EngineInfo ret = new EngineInfo();
-            ret.Version = "Error";
+            EngineInfo ret = new EngineInfo
+            {
+                Version = "Error"
+            };
             if (!_isLegalPlugin) return ret;
             if (GetInformationMethod != null)
             {

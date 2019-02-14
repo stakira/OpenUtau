@@ -70,8 +70,7 @@ namespace OpenUtau.Core.USTx
 
         public override string ToString()
         {
-            return string.Format("\"{0}\" Pos:{1} Dur:{2} Note:{3}", Lyric, PosTick, DurTick, NoteNum)
-                + (Error ? " Error" : "") + (Selected ? " Selected" : "");
+            return $"\"{Lyric}\" Pos:{PosTick} Dur:{DurTick} Note:{NoteNum}{(Error ? " Error" : string.Empty)}{(Selected ? " Selected" : string.Empty)}";
         }
     }
 }

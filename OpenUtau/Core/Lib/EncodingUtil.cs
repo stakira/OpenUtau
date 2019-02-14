@@ -109,7 +109,7 @@ namespace OpenUtau.Core.Lib
                 return true;
             }
 
-            // http://stackoverflow.com/questions/910873/how-can-i-determine-if-a-file-is-binary-or-text-in-c
+            // https://stackoverflow.com/q/910873/3646475
             // http://www.gnu.org/software/diffutils/manual/html_node/Binary.html
             // count the number od null bytes sequences
             // considering only sequeces of 2 0s: "\0\0" or control characters below 10

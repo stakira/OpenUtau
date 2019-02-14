@@ -44,7 +44,7 @@ namespace OpenUtau.Core.Formats
                 var pitshape = dictionary["pitshape"] as ArrayList;
                 double x = 0, y = 0;
                 result.PitchBend.Points.Clear();
-                for (int i = 0; i < pit.Count; i ++ )
+                for (int i = 0; i < pit.Count; i++)
                 {
                     if (i % 2 == 0)
                         x = Convert.ToDouble(pit[i]);
@@ -77,8 +77,8 @@ namespace OpenUtau.Core.Formats
 
             public override IDictionary<string, object> Serialize(object obj, JavaScriptSerializer serializer)
             {
-                var _obj = obj as UNote;
                 Dictionary<string, object> result = new Dictionary<string, object>();
+                var _obj = obj as UNote;
                 if (_obj == null) return result;
 
                 result.Add("y", _obj.Lyric);
@@ -96,14 +96,16 @@ namespace OpenUtau.Core.Formats
 
                 if (_obj.Vibrato.Length > 0 && _obj.Vibrato.Depth > 0)
                 {
-                    var vbr = new List<double>();
-                    vbr.Add(_obj.Vibrato.Length);
-                    vbr.Add(_obj.Vibrato.Period);
-                    vbr.Add(_obj.Vibrato.Depth);
-                    vbr.Add(_obj.Vibrato.In);
-                    vbr.Add(_obj.Vibrato.Out);
-                    vbr.Add(_obj.Vibrato.Shift);
-                    vbr.Add(_obj.Vibrato.Drift);
+                    var vbr = new List<double>
+                    {
+                        _obj.Vibrato.Length,
+                        _obj.Vibrato.Period,
+                        _obj.Vibrato.Depth,
+                        _obj.Vibrato.In,
+                        _obj.Vibrato.Out,
+                        _obj.Vibrato.Shift,
+                        _obj.Vibrato.Drift
+                    };
                     result.Add("vbr", vbr);
                 }
 
@@ -154,8 +156,8 @@ namespace OpenUtau.Core.Formats
 
             public override IDictionary<string, object> Serialize(object obj, JavaScriptSerializer serializer)
             {
-                var _obj = obj as UPhoneme;
                 Dictionary<string, object> result = new Dictionary<string, object>();
+                var _obj = obj as UPhoneme;
                 if (_obj == null) return result;
 
                 result.Add("pos", _obj.PosTick);

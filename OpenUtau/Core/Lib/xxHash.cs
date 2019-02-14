@@ -29,10 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace OpenUtau.Core.Lib
 {
@@ -108,7 +105,7 @@ namespace OpenUtau.Core.Lib
                 index += 4;
             }
 
-            while(index<len)
+            while (index < len)
             {
                 h32 += buf[index] * PRIME32_5;
                 h32 = RotateLeft(h32, 11) * PRIME32_1;

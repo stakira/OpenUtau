@@ -14,7 +14,7 @@ namespace OpenUtau.Core.USTx
         public int Resolution = 480;
 
         public string Name = "New Project";
-        public string Comment = "";
+        public string Comment = string.Empty;
         public string OutputDir = "Vocal";
         public string CacheDir = "UCache";
         public string FilePath;
@@ -26,7 +26,12 @@ namespace OpenUtau.Core.USTx
 
         public Dictionary<string, UExpression> ExpressionTable = new Dictionary<string, UExpression>();
 
-        public void RegisterExpression(UExpression exp) { if (!ExpressionTable.ContainsKey(exp.Name)) ExpressionTable.Add(exp.Name, exp); }
+        public void RegisterExpression(UExpression exp)
+        {
+            if (!ExpressionTable.ContainsKey(exp.Name))
+                ExpressionTable.Add(exp.Name, exp);
+        }
+
         public UNote CreateNote()
         {
             UNote note = UNote.Create();

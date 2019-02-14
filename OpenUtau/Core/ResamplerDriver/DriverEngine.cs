@@ -22,6 +22,7 @@ namespace OpenUtau.Core.ResamplerDriver
         System.IO.Stream DoResampler(DriverModels.EngineInput Args);
         DriverModels.EngineInfo GetInfo();
     }
+
     internal class ResamplerDriver
     {
         public static IResamplerDriver LoadEngine(string FilePath)
@@ -52,6 +53,7 @@ namespace OpenUtau.Core.ResamplerDriver
             }
             return ret;
         }
+
         public static List<DriverModels.EngineInfo> SearchEngines(string path)
         {
             var engineInfoList = new List<DriverModels.EngineInfo>();

@@ -174,8 +174,7 @@ namespace OpenUtau.Core.Formats
                 }
             }
             if (errorLines.Count > 0)
-                System.Diagnostics.Debug.WriteLine(string.Format(
-                    "Oto file {0} has following errors:\n{1}", file, string.Join("\n", errorLines.ToArray())));
+                System.Diagnostics.Debug.WriteLine($"Oto file {file} has following errors:\n{string.Join("\n", errorLines.ToArray())}");
         }
 
         static void LoadPrefixMap(USinger singer)

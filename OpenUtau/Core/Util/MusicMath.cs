@@ -10,7 +10,7 @@ namespace OpenUtau.Core
     {
         public static string[] noteStrings = new String[12] { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
 
-        public static string GetNoteString(int noteNum) { return noteNum < 0 ? "" : noteStrings[noteNum % 12] + (noteNum / 12 - 1).ToString(); }
+        public static string GetNoteString(int noteNum) { return noteNum < 0 ? string.Empty : noteStrings[noteNum % 12] + (noteNum / 12 - 1).ToString(); }
 
         public static int[] BlackNoteNums = { 1, 3, 6, 8, 10 };
         public static bool IsBlackKey(int noteNum) { return BlackNoteNums.Contains(noteNum % 12); }

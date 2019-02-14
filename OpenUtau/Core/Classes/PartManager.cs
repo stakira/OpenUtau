@@ -133,7 +133,8 @@ namespace OpenUtau.Core
                                 phoneme.Overlap *= correctionRatio; 
                                 phoneme.Preutter = gapMs + lastDurMs;
                             }
-                            else phoneme.OverlapCorrection = false;
+                            else
+                                phoneme.OverlapCorrection = false;
 
                             lastPhoneme.TailIntrude = phoneme.Preutter - gapMs;
                             lastPhoneme.TailOverlap = phoneme.Overlap;

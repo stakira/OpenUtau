@@ -102,7 +102,7 @@ namespace OpenUtau.Core.Formats
                         if (line.Equals(endTag)) currentBlock = UstBlock.Trackend;
                         else
                         {
-                            try { currentNoteIndex = int.Parse(line.Replace("[#", "").Replace("]", "")); }
+                            try { currentNoteIndex = int.Parse(line.Replace("[#", string.Empty).Replace("]", string.Empty)); }
                             catch { DocManager.Inst.ExecuteCmd(new UserMessageNotification("Unknown ust format")); return null; }
                             currentBlock = UstBlock.Note;
                         }
@@ -111,7 +111,7 @@ namespace OpenUtau.Core.Formats
                         {
                             currentNote = NoteFromUst(project.CreateNote(), currentLines, version);
                             currentNote.PosTick = currentTick;
-                            if (!currentNote.Lyric.Replace("R", "").Replace("r", "").Equals("")) part.Notes.Add(currentNote);
+                            if (!currentNote.Lyric.Replace("R", string.Empty).Replace("r", string.Empty).Equals(string.Empty)) part.Notes.Add(currentNote);
                             currentTick += currentNote.DurTick;
                             currentLines.Clear();
                         }
@@ -122,24 +122,35 @@ namespace OpenUtau.Core.Formats
                     if (currentBlock == UstBlock.Version) {
                         if (line.StartsWith("UST Version"))
                         {
-                            string v = line.Trim().Replace("UST Version", "");
-                            if (v == "1.0") version = UstVersion.V1_0;
-                            else if (v == "1.1") version = UstVersion.V1_1;
-                            else if (v == "1.2") version = UstVersion.V1_2;
-                            else version = UstVersion.Unknown;
+                            string v = line.Trim().Replace("UST Version", string.Empty);
+                            switch (v)
+                            {
+                                case "1.0":
+                                    version = UstVersion.V1_0;
+                                    break;
+                                case "1.1":
+                                    version = UstVersion.V1_1;
+                                    break;
+                                case "1.2":
+                                    version = UstVersion.V1_2;
+                                    break;
+                                default:
+                                    version = UstVersion.Unknown;
+                                    break;
+                            }
                         }
                     }
                     if (currentBlock == UstBlock.Setting)
                     {
                         if (line.StartsWith("Tempo="))
                         {
-                            project.BPM = double.Parse(line.Trim().Replace("Tempo=", ""));
+                            project.BPM = double.Parse(line.Trim().Replace("Tempo=", string.Empty));
                             if (project.BPM == 0) project.BPM = 120;
                         }
-                        if (line.StartsWith("ProjectName=")) project.Name = line.Trim().Replace("ProjectName=", "");
+                        if (line.StartsWith("ProjectName=")) project.Name = line.Trim().Replace("ProjectName=", string.Empty);
                         if (line.StartsWith("VoiceDir="))
                         {
-                            string singerpath = line.Trim().Replace("VoiceDir=", "");
+                            string singerpath = line.Trim().Replace("VoiceDir=", string.Empty);
                             var singer = UtauSoundbank.GetSinger(singerpath, EncodingUtil.DetectFileEncoding(file), DocManager.Inst.Singers);
                             if (singer == null) singer = new USinger() { Name = "", Path = singerpath };
                             project.Singers.Add(singer);
@@ -171,36 +182,36 @@ namespace OpenUtau.Core.Formats
             {
                 if (line.StartsWith("Lyric="))
                 {
-                    note.Phonemes[0].Phoneme = note.Lyric = line.Trim().Replace("Lyric=", "");
+                    note.Phonemes[0].Phoneme = note.Lyric = line.Trim().Replace("Lyric=", string.Empty);
                     if (note.Phonemes[0].Phoneme.StartsWith("?"))
                     {
                         note.Phonemes[0].Phoneme = note.Phonemes[0].Phoneme.Substring(1);
                         note.Phonemes[0].AutoRemapped = false;
                     }
                 }
-                if (line.StartsWith("Length=")) note.DurTick = int.Parse(line.Trim().Replace("Length=", ""));
-                if (line.StartsWith("NoteNum=")) note.NoteNum = int.Parse(line.Trim().Replace("NoteNum=", ""));
-                if (line.StartsWith("Velocity=")) note.Expressions["velocity"].Data = int.Parse(line.Trim().Replace("Velocity=", ""));
-                if (line.StartsWith("Intensity=")) note.Expressions["volume"].Data = int.Parse(line.Trim().Replace("Intensity=", ""));
+                if (line.StartsWith("Length=")) note.DurTick = int.Parse(line.Trim().Replace("Length=", string.Empty));
+                if (line.StartsWith("NoteNum=")) note.NoteNum = int.Parse(line.Trim().Replace("NoteNum=", string.Empty));
+                if (line.StartsWith("Velocity=")) note.Expressions["velocity"].Data = int.Parse(line.Trim().Replace("Velocity=", string.Empty));
+                if (line.StartsWith("Intensity=")) note.Expressions["volume"].Data = int.Parse(line.Trim().Replace("Intensity=", string.Empty));
                 if (line.StartsWith("PreUtterance="))
                 {
                     if (line.Trim() == "PreUtterance=") note.Phonemes[0].AutoEnvelope = true;
                     else { note.Phonemes[0].AutoEnvelope = false; note.Phonemes[0].Preutter = double.Parse(line.Trim().Replace("PreUtterance=", "")); }
                 }
-                if (line.StartsWith("VoiceOverlap=")) note.Phonemes[0].Overlap = double.Parse(line.Trim().Replace("VoiceOverlap=", ""));
+                if (line.StartsWith("VoiceOverlap=")) note.Phonemes[0].Overlap = double.Parse(line.Trim().Replace("VoiceOverlap=", string.Empty));
                 if (line.StartsWith("Envelope="))
                 {
-                    var pts = line.Trim().Replace("Envelope=", "").Split(new[] { ',' });
+                    var pts = line.Trim().Replace("Envelope=", string.Empty).Split(new[] { ',' });
                     if (pts.Count() > 5) note.Expressions["decay"].Data = 100 - (int)double.Parse(pts[5]);
                 }
-                if (line.StartsWith("VBR=")) VibratoFromUst(note.Vibrato, line.Trim().Replace("VBR=", ""));
-                if (line.StartsWith("PBS=")) pbs = line.Trim().Replace("PBS=", "");
-                if (line.StartsWith("PBW=")) pbw = line.Trim().Replace("PBW=", "");
-                if (line.StartsWith("PBY=")) pby = line.Trim().Replace("PBY=", "");
-                if (line.StartsWith("PBM=")) pbm = line.Trim().Replace("PBM=", "");
+                if (line.StartsWith("VBR=")) VibratoFromUst(note.Vibrato, line.Trim().Replace("VBR=", string.Empty));
+                if (line.StartsWith("PBS=")) pbs = line.Trim().Replace("PBS=", string.Empty);
+                if (line.StartsWith("PBW=")) pbw = line.Trim().Replace("PBW=", string.Empty);
+                if (line.StartsWith("PBY=")) pby = line.Trim().Replace("PBY=", string.Empty);
+                if (line.StartsWith("PBM=")) pbm = line.Trim().Replace("PBM=", string.Empty);
             }
 
-            if (pbs != "")
+            if (pbs != string.Empty)
             {
                 var pts = note.PitchBend.Data as List<PitchPoint>;
                 pts.Clear();
@@ -216,19 +227,19 @@ namespace OpenUtau.Core.Formats
                     note.PitchBend.SnapFirst = true;
                 }
                 double x = pts.First().X;
-                if (pbw != "")
+                if (pbw != string.Empty)
                 {
                     string[] w = pbw.Split(new[] { ',' });
                     string[] y = null;
                     if (w.Count() > 1) y = pby.Split(new[] { ',' });
                     for (int i = 0; i < w.Count() - 1; i++)
                     {
-                        x += w[i] == "" ? 0 : float.Parse(w[i]);
-                        pts.Add(new PitchPoint(x, y[i] == "" ? 0 : double.Parse(y[i])));
+                        x += w[i] == string.Empty ? 0 : float.Parse(w[i]);
+                        pts.Add(new PitchPoint(x, y[i] == string.Empty ? 0 : double.Parse(y[i])));
                     }
                     pts.Add(new PitchPoint(x + double.Parse(w[w.Count() - 1]), 0));
                 }
-                if (pbm != "")
+                if (pbm != string.Empty)
                 {
                     string[] m = pbw.Split(new[] { ',' });
                     for (int i = 0; i < m.Count() - 1; i++)

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,7 +12,7 @@ namespace OpenUtau.Core.Util
             List<string> l = new List<string>();
             foreach (int d in data) l.Add(Base64EncodeInt12(d));
             StringBuilder base64 = new StringBuilder();
-            string last = "";
+            string last = string.Empty;
             int dups = 0;
             foreach (string b in l)
             {

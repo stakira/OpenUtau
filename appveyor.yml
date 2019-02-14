@@ -1,0 +1,13 @@
+version: 0.0.{build}
+image: Visual Studio 2017
+configuration:
+- Release
+platform: Any CPU
+before_build:
+- cmd: nuget restore -verbosity quiet
+build_script:
+- cmd: msbuild OpenUtau.sln /p:Configuration=Release /verbosity:quiet
+artifacts:
+- path: OpenUtau\bin\Release
+  name: OpenUtau
+  type: zip

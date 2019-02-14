@@ -11,7 +11,7 @@ namespace OpenUtau.Core.USTx
     public abstract class UPart
     {
         public string Name = "New Part";
-        public string Comment = "";
+        public string Comment = string.Empty;
 
         public int TrackNo;
         public int PosTick = 0;
@@ -29,7 +29,8 @@ namespace OpenUtau.Core.USTx
         public override int GetMinDurTick(UProject project)
         {
             int durTick = 0;
-            foreach (UNote note in Notes) durTick = Math.Max(durTick, note.PosTick + note.DurTick);
+            foreach (UNote note in Notes)
+                durTick = Math.Max(durTick, note.PosTick + note.DurTick);
             return durTick;
         }
     }
