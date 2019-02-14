@@ -42,7 +42,7 @@ namespace OpenUtau.Core
                 if (Directory.Exists(absPath)) return absPath;
             }
             if (Directory.Exists(path)) return path;
-            return "";
+            return string.Empty;
         }
 
         public string[] GetSingerSearchPaths()
@@ -83,7 +83,7 @@ namespace OpenUtau.Core
         public string GetCachePath(string filepath)
         {
             string cachepath;
-            if (filepath == "") cachepath = Path.Combine(_homePath, DefaultCachePath);
+            if (filepath == string.Empty) cachepath = Path.Combine(_homePath, DefaultCachePath);
             else cachepath = Path.Combine(Path.GetDirectoryName(filepath), DefaultCachePath);
             if (!Directory.Exists(cachepath)) Directory.CreateDirectory(cachepath);
             return cachepath;

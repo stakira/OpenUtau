@@ -65,8 +65,7 @@ namespace OpenUtau.UI.Controls
             double size = offset < 4 ? 4 : 8 - offset;
             if (double.IsNaN(offset) || double.IsNaN(size) ||
                 double.IsInfinity(offset) || double.IsInfinity(size)) return;
-            PathData = Geometry.Parse(string.Format("M {0} {1} L 8 {2} L {3} {1} M {0} {4} L 8 {5} L {3} {4}",
-                8 - size, offset + size, offset, 8 + size, 16 - size - offset, 16 - offset));
+            PathData = Geometry.Parse($"M {8 - size} {offset + size} L 8 {offset} L {8 + size} {offset + size} M {8 - size} {16 - size - offset} L 8 {16 - offset} L {8 + size} {16 - size - offset}");
         }
 
         private void Control_MouseWheel(object sender, MouseWheelEventArgs e)

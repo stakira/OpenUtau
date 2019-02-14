@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -19,9 +18,9 @@ namespace OpenUtau.Core.USTx
 
     public class USinger
     {
-        public string Name = "";
-        public string DisplayName { get { return Loaded ? Name : Name + "[Unloaded]"; } }
-        public string Path = "";
+        public string Name = string.Empty;
+        public string DisplayName { get { return Loaded ? Name : $"{Name}[Unloaded]"; } }
+        public string Path = string.Empty;
         public string Author;
         public string Website;
         public string Language;

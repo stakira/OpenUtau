@@ -779,7 +779,7 @@ namespace OpenUtau.UI
                 DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(midiVM.Part, _noteInEdit, LyricBox.Text));
                 DocManager.Inst.EndUndoGroup();
             }
-            LyricBox.Text = "";
+            LyricBox.Text = string.Empty;
             LyricBox.Visibility = Visibility.Hidden;
             _noteInEdit = null;
         }

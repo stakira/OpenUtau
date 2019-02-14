@@ -24,9 +24,9 @@ namespace OpenUtau.Core
             this.Note = note;
             this.Key = key;
             this.NewValue = newValue;
-            this.OldValue = (int)Note.Expressions[Key].Data;
+            this.OldValue = (int) Note.Expressions[Key].Data;
         }
-        public override string ToString() { return "Set note expression " + Key; }
+        public override string ToString() { return $"Set note expression {Key}"; }
         public override void Execute() { Note.Expressions[Key].Data = NewValue; }
         public override void Unexecute() { Note.Expressions[Key].Data = OldValue; }
     }
@@ -67,8 +67,7 @@ namespace OpenUtau.Core
 
     public class SnapPitchPointCommand : PitchExpCommand
     {
-        double X;
-        double Y;
+        double X, Y;
         public SnapPitchPointCommand(UNote note)
         {
             this.Note = note;

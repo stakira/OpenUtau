@@ -17,7 +17,7 @@ namespace OpenUtau.Core.USTx
         public int EndTick { get { return PosTick + DurTick; } }
         public string Phoneme = "a";
         public string PhonemeRemapped { get { return AutoRemapped ? Phoneme + RemappedBank : Phoneme; } }
-        public string RemappedBank = "";
+        public string RemappedBank = string.Empty;
         public bool AutoEnvelope = true;
         public bool AutoRemapped = true;
 

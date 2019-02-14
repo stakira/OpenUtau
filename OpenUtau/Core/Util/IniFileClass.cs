@@ -39,8 +39,8 @@ namespace OpenUtau.Core.Util
 
         //读取字符串键值
         [DllImport("kernel32", EntryPoint = "GetPrivateProfileStringW", CharSet = CharSet.Unicode)]
-        private extern static int getKeyValue(string section, string key, int lpDefault,
-            [MarshalAs(UnmanagedType.LPWStr)] string szValue, int nlen, string filename);
+        private static extern int getKeyValue(string section, string key, string lpDefault,
+            string szValue, int nlen, string filename);
 
         //
         //
@@ -184,7 +184,7 @@ namespace OpenUtau.Core.Util
         public string getKeyValue(string section, string key)
         {
             string szBuffer = new string('0', 256);
-            int nlen = getKeyValue(section, key, 0, szBuffer, 256, m_Path);
+            int nlen = getKeyValue(section, key, string.Empty, szBuffer, 256, m_Path);
             string ret = szBuffer.Substring(0, nlen);
             return ret.Split('\0')[0];
         }

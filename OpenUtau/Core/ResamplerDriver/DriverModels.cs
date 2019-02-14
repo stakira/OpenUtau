@@ -95,7 +95,7 @@ namespace OpenUtau.Core.ResamplerDriver
             public string Usuage;
             public int FlagItemCount;
             public EngineFlagItem[] FlagItem;
-            public override string ToString() { return Name + " " + Version; }
+            public override string ToString() { return $"{Name} {Version}"; }
         }
         #endregion
 
@@ -126,20 +126,22 @@ namespace OpenUtau.Core.ResamplerDriver
         /// <returns></returns>
         public static EngineInput CreateInputModel()
         {
-            EngineInput Input = new EngineInput();
-            Input.inputWaveFile = "";
-            Input.NoteString = "";
-            Input.Velocity = 100;
-            Input.StrFlags = "";
-            Input.Offset = 0;
-            Input.RequiredLength = 0;
-            Input.Consonant = 0;
-            Input.Cutoff = 0;
-            Input.Volume = 100;
-            Input.Modulation = 0;
-            Input.Tempo = 120;
-            Input.nPitchBend = 0;
-            Input.pitchBend = new int[0];
+            EngineInput Input = new EngineInput
+            {
+                inputWaveFile = string.Empty,
+                NoteString = string.Empty,
+                Velocity = 100,
+                StrFlags = string.Empty,
+                Offset = 0,
+                RequiredLength = 0,
+                Consonant = 0,
+                Cutoff = 0,
+                Volume = 100,
+                Modulation = 0,
+                Tempo = 120,
+                nPitchBend = 0,
+                pitchBend = new int[0]
+            };
             return Input;
         }
         /// <summary>
@@ -148,20 +150,22 @@ namespace OpenUtau.Core.ResamplerDriver
         /// <returns></returns>
         internal static EngineInput CreateInputModel(RenderItem renderItem,double Modulation)
         {
-            EngineInput Ret = new EngineInput();
-            Ret.inputWaveFile = renderItem.RawFile;
-            Ret.NoteString = MusicMath.GetNoteString(renderItem.NoteNum);
-            Ret.Velocity = renderItem.Velocity;
-            Ret.StrFlags = renderItem.StrFlags;
-            Ret.Offset = renderItem.Oto.Offset;
-            Ret.RequiredLength = renderItem.RequiredLength;
-            Ret.Consonant = renderItem.Oto.Consonant;
-            Ret.Cutoff = renderItem.Oto.Cutoff;
-            Ret.Volume = renderItem.Volume;
-            Ret.Modulation = Modulation;
-            Ret.pitchBend = renderItem.PitchData.ToArray();
-            Ret.nPitchBend = renderItem.PitchData.Count;
-            Ret.Tempo =  renderItem.Tempo;
+            EngineInput Ret = new EngineInput
+            {
+                inputWaveFile = renderItem.RawFile,
+                NoteString = MusicMath.GetNoteString(renderItem.NoteNum),
+                Velocity = renderItem.Velocity,
+                StrFlags = renderItem.StrFlags,
+                Offset = renderItem.Oto.Offset,
+                RequiredLength = renderItem.RequiredLength,
+                Consonant = renderItem.Oto.Consonant,
+                Cutoff = renderItem.Oto.Cutoff,
+                Volume = renderItem.Volume,
+                Modulation = Modulation,
+                pitchBend = renderItem.PitchData.ToArray(),
+                nPitchBend = renderItem.PitchData.Count,
+                Tempo = renderItem.Tempo
+            };
             return Ret;
         }
         #endregion

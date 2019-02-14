@@ -96,7 +96,7 @@ namespace OpenUtau.Core
         public int Progress;
         public string Info;
         public ProgressBarNotification(int progress, string info) { Progress = progress; Info = info; }
-        public override string ToString() { return string.Format("Set progress {0} {1}", Progress, Info); }
+        public override string ToString() { return $"Set progress {Progress} {Info}"; }
     }
 
     public class VolumeChangeNotification : UNotification
@@ -104,6 +104,6 @@ namespace OpenUtau.Core
         public double Volume;
         public int TrackNo;
         public VolumeChangeNotification(int trackNo, double volume) { this.TrackNo = trackNo; this.Volume = volume; }
-        public override string ToString() { return string.Format("Set track {0} volume to {1}", TrackNo, Volume); }
+        public override string ToString() { return $"Set track {TrackNo} volume to {Volume}"; }
     }
 }

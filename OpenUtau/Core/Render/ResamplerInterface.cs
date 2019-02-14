@@ -46,7 +46,7 @@ namespace OpenUtau.Core.Render
             List<RenderItem> renderItems = e.Result as List<RenderItem>;
             List<RenderItemSampleProvider> renderItemSampleProviders = new List<RenderItemSampleProvider>();
             foreach (var item in renderItems) renderItemSampleProviders.Add(new RenderItemSampleProvider(item));
-            DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, string.Format("")));
+            DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, string.Format(string.Empty)));
             resampleDoneCallback(new SequencingSampleProvider(renderItemSampleProviders));
         }
 
@@ -69,7 +69,7 @@ namespace OpenUtau.Core.Render
                     {
                         if (string.IsNullOrEmpty(phoneme.Oto.File))
                         {
-                            Debug.WriteLine(string.Format("[Error] Cannot find phoneme in note {0}", note.Lyric));
+                            Debug.WriteLine($"[Error] Cannot find phoneme in note {note.Lyric}");
                             continue;
                         }
 
@@ -78,7 +78,7 @@ namespace OpenUtau.Core.Render
 
                         if (sound == null)
                         {
-                            string cachefile = Path.Combine(cacheDir, string.Format("{0:x}.wav", item.HashParameters()));
+                            string cachefile = Path.Combine(cacheDir, $"{item.HashParameters():x}.wav");
                             if (!cacheFiles.Contains(cachefile))
                             {
                                 // System.Diagnostics.Debug.WriteLine("Sound {0:x} resampling {1}", item.HashParameters(), item.GetResamplerExeArgs());
@@ -100,7 +100,7 @@ namespace OpenUtau.Core.Render
 
                         item.Sound = sound;
                         renderItems.Add(item);
-                        worker.ReportProgress(100 * ++i / count, string.Format("Resampling \"{0}\" {1}/{2}", phoneme.Phoneme, i, count));
+                        worker.ReportProgress(100 * ++i / count, $"Resampling \"{phoneme.Phoneme}\" {i}/{count}");
                     }
                 }
             }

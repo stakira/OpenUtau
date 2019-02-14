@@ -36,9 +36,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace OpenUtau.Core.Lib
+namespace OpenUtau.SimpleHelpers
 {
-    public class EncodingUtil
+    public class FileEncoding
     {
         const int DEFAULT_BUFFER_SIZE = 128 * 1024;
 
@@ -64,7 +64,7 @@ namespace OpenUtau.Core.Lib
         /// <returns></returns>
         public static Encoding DetectFileEncoding (Stream inputStream, Encoding defaultIfNotDetected = null)
         {
-            var det = new EncodingUtil ();
+            var det = new FileEncoding ();
             det.Detect (inputStream);
             return det.Complete () ?? defaultIfNotDetected;
         }
@@ -79,9 +79,31 @@ namespace OpenUtau.Core.Lib
         /// <returns></returns>
         public static Encoding DetectFileEncoding (byte[] inputData, int start, int count, Encoding defaultIfNotDetected = null)
         {
-            var det = new EncodingUtil ();
+            var det = new FileEncoding ();
             det.Detect (inputData, start, count);
             return det.Complete () ?? defaultIfNotDetected;            
+        }
+
+        /// <summary>
+        /// Tries to load file content with the correct encoding.
+        /// </summary>
+        /// <param name="filename">The filename.</param>
+        /// <param name="defaultValue">The default value if unable to load file content.</param>
+        /// <returns>File content</returns>
+        public static string TryLoadFile (string filename, string defaultValue = "")
+        {
+            try
+            {
+                if (System.IO.File.Exists (filename))
+                {
+                    // enable file encoding detection
+                    var encoding = SimpleHelpers.FileEncoding.DetectFileEncoding (filename);
+                    // Load data based on parameters
+                    return System.IO.File.ReadAllText (filename, encoding);
+                }
+            }
+            catch { }
+            return defaultValue;
         }
 
         /// <summary>
@@ -109,7 +131,7 @@ namespace OpenUtau.Core.Lib
                 return true;
             }
 
-            // https://stackoverflow.com/q/910873/3646475
+            // http://stackoverflow.com/questions/910873/how-can-i-determine-if-a-file-is-binary-or-text-in-c
             // http://www.gnu.org/software/diffutils/manual/html_node/Binary.html
             // count the number od null bytes sequences
             // considering only sequeces of 2 0s: "\0\0" or control characters below 10
@@ -192,7 +214,7 @@ namespace OpenUtau.Core.Lib
         /// </summary>
         public bool HasByteOrderMark { get; set; }
 
-        List<string> singleEncodings = new List<string> ();
+        Dictionary<string, int> encodingFrequency = new Dictionary<string, int> (StringComparer.Ordinal);
 
         /// <summary>
         /// Resets this instance.
@@ -202,20 +224,35 @@ namespace OpenUtau.Core.Lib
             _started = false;
             Done = false;
             HasByteOrderMark = false;
-            singleEncodings.Clear ();
+            encodingFrequency.Clear ();
             ude.Reset ();
             EncodingName = null;
+        }
+
+        /// <summary>
+        /// Detects the encoding of textual data of the specified input data.<para/>
+        /// Only the stream first 20Mb will be analysed.
+        /// </summary>
+        /// <param name="inputData">The input data.</param>
+        /// <returns>Detected encoding name</returns>
+        public string Detect (Stream inputData)
+        {
+            return Detect (inputData, 20 * 1024 * 1024);
         }
 
         /// <summary>
         /// Detects the encoding of textual data of the specified input data.
         /// </summary>
         /// <param name="inputData">The input data.</param>
+        /// <param name="maxSize">Size in byte of analysed data, if you want to analysed only a sample. Use 0 to read all stream data.</param>
+        /// <param name="bufferSize">Size of the buffer for the stream read.</param>
         /// <returns>Detected encoding name</returns>
-        public string Detect (Stream inputData)
+        /// <exception cref="ArgumentOutOfRangeException">bufferSize parameter cannot be 0 or less.</exception>
+        public string Detect (Stream inputData, int maxSize, int bufferSize = 16 * 1024)
         {
-            const int bufferSize = 16 * 1024;
-            const int maxIterations = (20 * 1024 * 1024) / bufferSize;
+            if (bufferSize <= 0)
+                throw new ArgumentOutOfRangeException ("bufferSize", "Buffer size cannot be 0 or less.");
+            int maxIterations = maxSize <= 0 ? Int32.MaxValue : maxSize / bufferSize;
             int i = 0;
             byte[] buffer = new byte[bufferSize];
             while (i++ < maxIterations)
@@ -263,29 +300,30 @@ namespace OpenUtau.Core.Lib
             ude.DataEnd ();
             if (ude.IsDone () && !String.IsNullOrEmpty (ude.Charset))
             {
+                IncrementFrequency (ude.Charset);
                 Done = true;
                 return EncodingName;
             }
 
-            const int bufferSize = 4 * 1024;
-
             // singular buffer detection
-            if (singleEncodings.Count < 2000)
+            var singleUde = new Ude.CharsetDetector ();
+            const int udeFeedSize = 4 * 1024;
+            int step = (count - start) < udeFeedSize ? (count - start) : udeFeedSize;
+            for (var pos = start; pos < count; pos += step)
             {
-                var u = new Ude.CharsetDetector ();
-                int step = (count - start) < bufferSize ? (count - start) : bufferSize;
-                for (var i = start; i < count; i += step)
-                {
-                    u.Reset ();
-                    if (i + step > count)
-                        u.Feed (inputData, i, count - i);
-                    else
-                        u.Feed (inputData, i, step);
-                    u.DataEnd ();
-                    if (u.Confidence > 0.3 && !String.IsNullOrEmpty (u.Charset))
-                        singleEncodings.Add (u.Charset);
-                }
+                singleUde.Reset ();
+                if (pos + step > count)
+                    singleUde.Feed (inputData, pos, count - pos);
+                else
+                    singleUde.Feed (inputData, pos, step);
+                singleUde.DataEnd ();
+                // update encoding frequency
+                if (singleUde.Confidence > 0.3 && !String.IsNullOrEmpty (singleUde.Charset))
+                    IncrementFrequency (singleUde.Charset);
             }
+            // vote for best encoding
+            EncodingName = GetCurrentEncoding ();
+            // update current encoding name
             return EncodingName;
         }
 
@@ -301,31 +339,29 @@ namespace OpenUtau.Core.Lib
             {
                 EncodingName = ude.Charset;
             }
-            else if (singleEncodings.Count > 0)
-            {
-                // vote for best encoding
-                EncodingName = singleEncodings.GroupBy (i => i)
-                    .OrderByDescending (i => i.Count () * 
-                    (i.Key.StartsWith ("UTF-32") ? 2 :
-                    i.Key.StartsWith ("UTF-16") ? 1.8 :
-                    i.Key.StartsWith ("UTF-8") ? 1.5 :
-                    i.Key.StartsWith ("UTF-7") ? 1.3 :
-                    i.Key != ("ASCII") ? 1 : 0.2))
-                    .Select (i => i.Key).FirstOrDefault ();
-            }
+            // vote for best encoding
+            EncodingName = GetCurrentEncoding ();
+            // check result
             if (!String.IsNullOrEmpty (EncodingName))
                 return Encoding.GetEncoding (EncodingName);
             return null;
         }
 
-        public static string ConvertEncoding(string sourceEncoding, string targetEncoding, string text)
+        private void IncrementFrequency (string charset)
         {
-            return ConvertEncoding(Encoding.GetEncoding(sourceEncoding), Encoding.GetEncoding(targetEncoding), text);
+            int currentCount;
+            encodingFrequency.TryGetValue (charset, out currentCount);
+            encodingFrequency[charset] = ++currentCount;
         }
 
-        public static string ConvertEncoding(Encoding source, Encoding target, string text)
+        private string GetCurrentEncoding ()
         {
-            return target.GetString(source.GetBytes(text));
+            if (encodingFrequency.Count == 0)
+                return null;
+            // ASCII should be the last option, since other encodings often has ASCII included...
+            return encodingFrequency
+                    .OrderByDescending (i => i.Value * (i.Key != ("ASCII") ? 1 : 0))
+                    .FirstOrDefault ().Key;
         }
     }
 }

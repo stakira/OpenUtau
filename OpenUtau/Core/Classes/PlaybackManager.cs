@@ -49,7 +49,8 @@ namespace OpenUtau.Core
         private void StartPlayback()
         {
             masterMix = new MixingSampleProvider(WaveFormat.CreateIeeeFloatWaveFormat(44100, 2));
-            foreach (var source in trackSources) masterMix.AddMixerInput(source);
+            foreach (var source in trackSources)
+                masterMix.AddMixerInput(source);
             outDevice = new WaveOut();
             outDevice.Init(masterMix);
             outDevice.Play();
@@ -75,7 +76,8 @@ namespace OpenUtau.Core
             {
                 trackSources[part.TrackNo].AddSource(
                     source,
-                    TimeSpan.FromMilliseconds(project.TickToMillisecond(part.PosTick)));
+                    TimeSpan.FromMilliseconds(project.TickToMillisecond(part.PosTick))
+                );
                 pendingParts--;
             }
 
@@ -83,7 +85,7 @@ namespace OpenUtau.Core
         }
 
         int pendingParts = 0;
-        object lockObject = new object();
+        private readonly object lockObject = new object();
 
         private void BuildAudio(UProject project)
         {
@@ -101,7 +103,8 @@ namespace OpenUtau.Core
                     {
                         trackSources[part.TrackNo].AddSource(
                             BuildWavePartAudio(part as UWavePart, project),
-                            TimeSpan.FromMilliseconds(project.TickToMillisecond(part.PosTick)));
+                            TimeSpan.FromMilliseconds(project.TickToMillisecond(part.PosTick))
+                        );
                         pendingParts--;
                     }
                 }
@@ -133,7 +136,7 @@ namespace OpenUtau.Core
 
         private float DecibelToVolume(double db)
         {
-            return db == -24 ? 0 : db < -16 ? (float)MusicMath.DecibelToLinear(db * 2 + 16) : (float)MusicMath.DecibelToLinear(db);
+            return (db == -24) ? 0 : (float)((db < -16) ? MusicMath.DecibelToLinear(db * 2 + 16) : MusicMath.DecibelToLinear(db));
         }
 
         # region ICmdSubscriber

@@ -43,14 +43,8 @@ namespace OpenUtau.Core.USTx
 
     public class ExpPoint : IComparable<ExpPoint>
     {
-        public double X;
-        public double Y;
-        public int CompareTo(ExpPoint other)
-        {
-            if (this.X > other.X) return 1;
-            else if (this.X == other.X) return 0;
-            else return -1;
-        }
+        public double X, Y;
+        public int CompareTo(ExpPoint other) { return this.X.CompareTo(other.X); }
         public ExpPoint(double x, double y) { X = x; Y = y; }
         public ExpPoint Clone() { return new ExpPoint(X, Y); }
     }

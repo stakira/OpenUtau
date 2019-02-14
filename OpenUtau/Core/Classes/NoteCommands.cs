@@ -49,7 +49,7 @@ namespace OpenUtau.Core
             this.DeltaPos = deltaPos;
             this.DeltaNoteNum = deltaNoteNum;
         }
-        public override string ToString() { return string.Format("Move {0} notes", Notes.Count()); }
+        public override string ToString() { return $"Move {Notes.Count()} notes"; }
         public override void Execute() {
             lock (Part)
             {
@@ -82,7 +82,7 @@ namespace OpenUtau.Core
         int DeltaDur;
         public ResizeNoteCommand(UVoicePart part, List<UNote> notes, int deltaDur) { this.Part = part; this.Notes = notes.ToArray(); this.DeltaDur = deltaDur; }
         public ResizeNoteCommand(UVoicePart part, UNote note, int deltaDur) { this.Part = part; this.Notes = new UNote[] { note }; this.DeltaDur = deltaDur; }
-        public override string ToString() { return string.Format("Change {0} notes duration", Notes.Count()); }
+        public override string ToString() { return $"Change {Notes.Count()} notes duration"; }
         public override void Execute() { lock (Part) { foreach (var note in Notes) note.DurTick += DeltaDur; } }
         public override void Unexecute() { lock (Part) { foreach (var note in Notes) note.DurTick -= DeltaDur; } }
     }

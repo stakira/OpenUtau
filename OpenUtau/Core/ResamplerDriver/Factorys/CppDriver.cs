@@ -8,9 +8,9 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys
 {
     internal class CppDriver : DriverModels, IResamplerDriver
     {
-        [DllImport("kernel32.dll", EntryPoint = "LoadLibrary",SetLastError=true)]
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, EntryPoint = "LoadLibrary", SetLastError=true)]
         static extern IntPtr LoadLibrary([MarshalAs(UnmanagedType.LPStr)] string lpLibFileName);
-        [DllImport("kernel32.dll", EntryPoint = "GetProcAddress")]
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, EntryPoint = "GetProcAddress")]
         static extern IntPtr GetProcAddress(IntPtr hModule, [MarshalAs(UnmanagedType.LPStr)] string lpProcName);
         [DllImport("kernel32.dll", EntryPoint = "FreeLibrary")]
         static extern bool FreeLibrary(IntPtr hModule);
@@ -110,7 +110,7 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys
 
         #endregion
 
-        string DllPath = "";
+        string DllPath = string.Empty;
         bool _isLegalPlugin = false;
 
         public CppDriver(string DllPath)
@@ -133,6 +133,7 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys
             }
 
         }
+
         public bool isLegalPlugin
         {
             get
@@ -154,7 +155,7 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys
                     IntPtr m = GetProcAddress(hModule, "DoResampler");
                     if (m != IntPtr.Zero)
                     {
-                        DoResamplerDelegate g = (DoResamplerDelegate)Marshal.GetDelegateForFunctionPointer(m, typeof(DoResamplerDelegate));
+                        DoResamplerDelegate g = (DoResamplerDelegate) Marshal.GetDelegateForFunctionPointer(m, typeof(DoResamplerDelegate));
                         DriverModels.EngineOutput Output = Intptr2EngineOutput(g(Args));
                         ms = new System.IO.MemoryStream(Output.wavData);
                     }
@@ -164,10 +165,13 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys
             catch { ;}
             return ms;
         }
+    
         public DriverModels.EngineInfo GetInfo()
         {
-            DriverModels.EngineInfo ret = new EngineInfo();
-            ret.Version = "Error";
+            DriverModels.EngineInfo ret = new EngineInfo
+            {
+                Version = "Error"
+            };
             if (!_isLegalPlugin) return ret;
             try
             {

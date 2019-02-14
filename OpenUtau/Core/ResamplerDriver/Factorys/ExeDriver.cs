@@ -18,7 +18,7 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys
         {
             if (System.IO.File.Exists(ExePath))
             {
-                if (Path.GetExtension(ExePath).ToLower()==".exe")
+                if (Path.GetExtension(ExePath).ToLower() == ".exe")
                 {
                     this.ExePath = ExePath;
                     _isLegalPlugin = true;
@@ -40,21 +40,7 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys
             try
             {
                 string tmpFile = System.IO.Path.GetTempFileName();
-                string ArgParam = string.Format(
-                    "\"{0}\" \"{1}\" {2} {3} \"{4}\" {5} {6} {7} {8} {9} {10} !{11} {12}",
-                    Args.inputWaveFile,
-                    tmpFile,
-                    Args.NoteString,
-                    Args.Velocity,
-                    Args.StrFlags,
-                    Args.Offset,
-                    Args.RequiredLength,
-                    Args.Consonant,
-                    Args.Cutoff,
-                    Args.Volume,
-                    Args.Modulation,
-                    Args.Tempo,
-                    Base64.Base64EncodeInt12(Args.pitchBend));
+                string ArgParam = $"\"{Args.inputWaveFile}\" \"{tmpFile}\" {Args.NoteString} {Args.Velocity} \"{Args.StrFlags}\" {Args.Offset} {Args.RequiredLength} {Args.Consonant} {Args.Cutoff} {Args.Volume} {Args.Modulation} !{Args.Tempo} {Base64.Base64EncodeInt12(Args.pitchBend)}";
 
                 var p = Process.Start(new ProcessStartInfo(ExePath, ArgParam) { UseShellExecute = false, CreateNoWindow = true });
                 p.WaitForExit();
@@ -64,6 +50,7 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys
                     p.Dispose();
                     p = null;
                 }
+
                 if (System.IO.File.Exists(tmpFile))
                 {
                     byte[] Dat = System.IO.File.ReadAllBytes(tmpFile);
@@ -75,7 +62,7 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys
                     catch { ;}
                 }
             }
-            catch(Exception e) { ;}
+            catch (Exception) { ;}
             return ms;
         }
         /*
@@ -108,29 +95,31 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys
 
         public DriverModels.EngineInfo GetInfo()
         {
-            DriverModels.EngineInfo ret = new EngineInfo();
-            ret.Version = "Error";
+            DriverModels.EngineInfo ret = new EngineInfo
+            {
+                Version = "Error"
+            };
             if (!_isLegalPlugin) return ret;
             ret.Author = "Unknown";
             ret.Name = System.IO.Path.GetFileName(ExePath);
             ret.Version = "Unknown";
-            ret.Usuage = "Traditional Resample Engine in "+ExePath;
+            ret.Usuage = $"Traditional Resample Engine in {ExePath}";
             ret.FlagItem = new EngineFlagItem[0];
             ret.FlagItemCount = 0;
             try
             {
-                if(ExePath.ToLower().EndsWith(".exe"))
+                if (ExePath.EndsWith(".exe", StringComparison.CurrentCultureIgnoreCase))
                 {
-                    string RealFile=ExePath.Substring(0,ExePath.Length-3)+"ini";
+                    string RealFile = ExePath.Substring(0, ExePath.Length-3) + "ini";
                     if (System.IO.File.Exists(RealFile))
                     {
                         IniFileClass IniFile = new IniFileClass(RealFile);
-                        string Name=IniFile.getKeyValue("Information", "Name");
-                        if (Name != "") ret.Name = Name;
+                        string Name = IniFile.getKeyValue("Information", "Name");
+                        if (Name != string.Empty) ret.Name = Name;
                         string Author = IniFile.getKeyValue("Information", "Author");
-                        if (Author != "") ret.Author = Author;
+                        if (Author != string.Empty) ret.Author = Author;
                         string Version = IniFile.getKeyValue("Information", "Version");
-                        if (Version != "") ret.Version = Version;
+                        if (Version != string.Empty) ret.Version = Version;
                         StringBuilder Usuage = new StringBuilder();
                         Usuage.Append(IniFile.SectionValues("Usuage"));
                         if (Usuage.Length > 10) ret.Usuage = Usuage.ToString();
@@ -141,12 +130,14 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys
                         {
                             try
                             {
-                                EngineFlagItem I = new EngineFlagItem();
-                                I.Default = double.Parse(IniFile.getKeyValue("Flag" + i.ToString(), "Default"));
-                                I.flagStr = IniFile.getKeyValue("Flag" + i.ToString(), "Flag");
-                                I.Max = double.Parse(IniFile.getKeyValue("Flag" + i.ToString(), "Max"));
-                                I.Min = double.Parse(IniFile.getKeyValue("Flag" + i.ToString(), "Min"));
-                                I.ThreeLetterName = IniFile.getKeyValue("Flag" + i.ToString(), "ThreeLetterName");
+                                EngineFlagItem I = new EngineFlagItem
+                                {
+                                    Default = double.Parse(IniFile.getKeyValue($"Flag{i}", "Default")),
+                                    flagStr = IniFile.getKeyValue($"Flag{i}", "Flag"),
+                                    Max = double.Parse(IniFile.getKeyValue($"Flag{i}", "Max")),
+                                    Min = double.Parse(IniFile.getKeyValue($"Flag{i}", "Min")),
+                                    ThreeLetterName = IniFile.getKeyValue($"Flag{i}", "ThreeLetterName")
+                                };
                                 Items.Add(I);
                             }
                             catch { ;}

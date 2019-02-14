@@ -14,7 +14,7 @@ namespace OpenUtau.UI.Models
             double db = (double)value;
             if (db  == -24) return "-Inf";
             if (db < -16) db = db * 2 + 16;
-            var result = db > 0 ? string.Format("{0:+00.0}", db) : string.Format("{0:00.0}", db);
+            var result = db > 0 ? $"{db:+00.0}" : $"{db:00.0}";
             return result;
         }
 
