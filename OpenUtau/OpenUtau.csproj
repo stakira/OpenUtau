@@ -129,7 +129,6 @@
     <Compile Include="Core\Util\PathManager.cs" />
     <Compile Include="Core\Util\Preferences.cs" />
     <Compile Include="Core\Util\UpdateChecker.cs" />
-    <Compile Include="SimpleHelpers\FileEncoding.cs" />
     <Compile Include="UI\Controls\ExpComboBox.xaml.cs">
       <DependentUpon>ExpComboBox.xaml</DependentUpon>
     </Compile>
