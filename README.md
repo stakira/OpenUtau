@@ -1,5 +1,10 @@
+
 # OpenUtau
 Current stage: Alpha
+
+<img src="https://ci.appveyor.com/api/projects/status/github/stakira/OpenUtau?svg=true" alt="CI Badge"/>
+
+[Latest Build](https://ci.appveyor.com/project/stakira/openutau/build/artifacts)
 
 ## Mission
 The mission of OpenUtau is to create a open source editing environment for UTAU community, with modern user experience and intelligent phonological support. The ultimate goal is to make UTAU technology better and more popular.
