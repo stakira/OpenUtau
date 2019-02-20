@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace OpenUtau
@@ -21,12 +16,14 @@ namespace OpenUtau
         [STAThread]
         static void Main()
         {
-            //Thread backgroundThread = new Thread(new ThreadStart(() => { }));
-            //backgroundThread.Start();
-
+            NBug.Settings.ReleaseMode = true;
+            NBug.Settings.StoragePath = NBug.Enums.StoragePath.CurrentDirectory;
+            NBug.Settings.UIMode = NBug.Enums.UIMode.Full;
+            AppDomain.CurrentDomain.UnhandledException += NBug.Handler.UnhandledException;
             Core.DocManager.Inst.SearchAllSingers();
             var pm = new Core.PartManager();
             App app = new App();
+            app.DispatcherUnhandledException += NBug.Handler.DispatcherUnhandledException;
             UI.MainWindow window = new UI.MainWindow();
             app.Run(window);
         }
