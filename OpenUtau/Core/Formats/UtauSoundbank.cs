@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
-using System.Threading.Tasks;
 
 using OpenUtau.Core.USTx;
-using OpenUtau.Core.Lib;
+using OpenUtau.SimpleHelpers;
 
 namespace OpenUtau.Core.Formats
 {
@@ -54,7 +53,7 @@ namespace OpenUtau.Core.Formats
         {
             var pathEncoding = DetectSingerPathEncoding(path, ustEncoding);
             if (pathEncoding == null) return "";
-            return PathManager.Inst.GetSingerAbsPath(EncodingUtil.ConvertEncoding(ustEncoding, pathEncoding, path));
+            return PathManager.Inst.GetSingerAbsPath(FileEncoding.ConvertEncoding(ustEncoding, pathEncoding, path));
         }
 
         static USinger LoadSinger(string path)
@@ -65,7 +64,7 @@ namespace OpenUtau.Core.Formats
             
             USinger singer = new USinger();
             singer.Path = path;
-            singer.FileEncoding = EncodingUtil.DetectFileEncoding(Path.Combine(singer.Path, "oto.ini"), Encoding.Default);
+            singer.FileEncoding = FileEncoding.DetectFileEncoding(Path.Combine(singer.Path, "oto.ini"), Encoding.Default);
             singer.PathEncoding = Encoding.Default;
             string[] lines = File.ReadAllLines(Path.Combine(singer.Path, "oto.ini"), singer.FileEncoding);
 
@@ -95,7 +94,7 @@ namespace OpenUtau.Core.Formats
                 if (line.StartsWith("image="))
                 {
                     string imagePath = line.Trim().Replace("image=", "");
-                    Uri imagepath = new Uri(Path.Combine(singer.Path, EncodingUtil.ConvertEncoding(singer.FileEncoding, singer.PathEncoding, imagePath)));
+                    Uri imagepath = new Uri(Path.Combine(singer.Path, FileEncoding.ConvertEncoding(singer.FileEncoding, singer.PathEncoding, imagePath)));
                     singer.Avatar = new System.Windows.Media.Imaging.BitmapImage(imagepath);
                     singer.Avatar.Freeze();
                 }
@@ -114,7 +113,7 @@ namespace OpenUtau.Core.Formats
             string[] encodings = new string[] { "shift_jis", "gbk", "utf-8" };
             foreach (string encoding in encodings)
             {
-                string path = EncodingUtil.ConvertEncoding(ustEncoding, Encoding.GetEncoding(encoding), singerPath);
+                string path = FileEncoding.ConvertEncoding(ustEncoding, Encoding.GetEncoding(encoding), singerPath);
                 if (PathManager.Inst.GetSingerAbsPath(path) != "") return Encoding.GetEncoding(encoding);
             }
             return null;
@@ -125,7 +124,7 @@ namespace OpenUtau.Core.Formats
             string[] encodings = new string[] { "shift_jis", "gbk", "utf-8" };
             foreach (string enc in encodings)
             {
-                string absPath = Path.Combine(basePath, EncodingUtil.ConvertEncoding(encoding, Encoding.GetEncoding(enc), path));
+                string absPath = Path.Combine(basePath, FileEncoding.ConvertEncoding(encoding, Encoding.GetEncoding(enc), path));
                 if (File.Exists(absPath) || Directory.Exists(absPath)) return Encoding.GetEncoding(enc);
             }
             return null;

@@ -1,5 +1,6 @@
-﻿using System.Linq;
+﻿using System;
 using System.IO;
+using System.Linq;
 
 namespace OpenUtau.Core
 {
@@ -9,21 +10,18 @@ namespace OpenUtau.Core
         public const string DefaultSingerPath = "Singers";
         public const string DefaultCachePath = "UCache";
 
-        private string _homePath;
-        public string HomePath { get { return _homePath; } }
-        
-        private PathManager()
-        {
-            _homePath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-        }
+        public readonly string HomePath = AppContext.BaseDirectory;
 
-        private static PathManager _inst;
+        static PathManager _inst;
         public static PathManager Inst { get { if (_inst == null) { _inst = new PathManager(); } return _inst; } }
-        
-        public string MakeRelativeToHome(string path)
+
+        public string TryMakeRelative(string path)
         {
-            if (path.StartsWith(_homePath)) path = path.Replace(_homePath, "");
-            while (path.StartsWith(Path.DirectorySeparatorChar.ToString())) path = path.Substring(1);
+            if (path.StartsWith(HomePath, StringComparison.Ordinal))
+            {
+                path = path.Replace(HomePath, "");
+                return path.TrimStart(Path.DirectorySeparatorChar);
+            }
             return path;
         }
 
@@ -43,24 +41,24 @@ namespace OpenUtau.Core
 
         public string[] GetSingerSearchPaths()
         {
-            string[] paths = Core.Util.Preferences.Default.SingerSearchPaths;
+            string[] paths = Util.Preferences.Default.SingerSearchPaths;
             return paths;
         }
 
         public void SetSingerSearchPaths(string[] paths)
         {
-            Core.Util.Preferences.Default.SingerSearchPaths = paths;
+            Util.Preferences.Default.SingerSearchPaths = paths;
         }
 
         public void AddSingerSearchPath(string path)
         {
-            path = MakeRelativeToHome(path);
+            path = TryMakeRelative(path);
             var paths = GetSingerSearchPaths().ToList();
             if (!paths.Contains(path))
             {
                 paths.Add(path);
                 SetSingerSearchPaths(paths.ToArray());
-                Core.Util.Preferences.Save();
+                Util.Preferences.Save();
             }
         }
 
@@ -72,14 +70,14 @@ namespace OpenUtau.Core
             {
                 paths.Remove(path);
                 SetSingerSearchPaths(paths.ToArray());
-                Core.Util.Preferences.Save();
+                Util.Preferences.Save();
             }
         }
 
         public string GetCachePath(string filepath)
         {
             string cachepath;
-            if (filepath == string.Empty) cachepath = Path.Combine(_homePath, DefaultCachePath);
+            if (filepath == string.Empty) cachepath = Path.Combine(HomePath, DefaultCachePath);
             else cachepath = Path.Combine(Path.GetDirectoryName(filepath), DefaultCachePath);
             if (!Directory.Exists(cachepath)) Directory.CreateDirectory(cachepath);
             return cachepath;
@@ -87,19 +85,19 @@ namespace OpenUtau.Core
 
         public string GetEngineSearchPath()
         {
-            return Path.Combine(_homePath, "Resamplers");
+            return Path.Combine(HomePath, "Resamplers");
         }
 
         public string GetPreviewEnginePath()
         {
-            if (Core.Util.Preferences.Default.InternalEnginePreview) return "TnFndsOU.dll";
-            else return Path.Combine(GetEngineSearchPath(), Core.Util.Preferences.Default.ExternalPreviewEngine);
+            if (Util.Preferences.Default.InternalEnginePreview) return "TnFndsOU.dll";
+            else return Path.Combine(GetEngineSearchPath(), Util.Preferences.Default.ExternalPreviewEngine);
         }
 
         public string GetExportEnginePath()
         {
-            if (Core.Util.Preferences.Default.InternalEngineExport) return "TnFndsOU.dll";
-            else return Path.Combine(GetEngineSearchPath(), Core.Util.Preferences.Default.ExternalExportEngine);
+            if (Util.Preferences.Default.InternalEngineExport) return "TnFndsOU.dll";
+            else return Path.Combine(GetEngineSearchPath(), Util.Preferences.Default.ExternalExportEngine);
         }
     }
 }

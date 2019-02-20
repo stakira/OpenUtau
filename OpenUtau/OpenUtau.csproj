@@ -89,6 +89,9 @@
     <Reference Include="WriteableBitmapEx.Wpf, Version=1.5.0.0, Culture=neutral, PublicKeyToken=50375ca6144f1c69, processorArchitecture=MSIL">
       <HintPath>..\packages\WriteableBitmapEx.1.5.1.0\lib\net40\WriteableBitmapEx.Wpf.dll</HintPath>
     </Reference>
+    <Reference Include="xxHashSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\xxHashSharp.1.0.0\lib\net45\xxHashSharp.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\Classes\PlaybackManager.cs" />
@@ -98,7 +101,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Core\Formats\UtauSoundbank.cs" />
-    <Compile Include="Core\Lib\xxHash.cs" />
     <Compile Include="Core\Render\NAudio\AudioStreamReader.cs" />
     <Compile Include="Core\Render\NAudio\CachedSound.cs" />
     <Compile Include="Core\Render\NAudio\CachedSoundSampleProvider.cs" />
@@ -118,7 +120,7 @@
     <Compile Include="Core\ResamplerDriver\Factorys\SharpDriver.cs" />
     <Compile Include="Core\USTx\UExpression.cs" />
     <Compile Include="Core\Classes\NoteCommands.cs" />
-    <Compile Include="Core\Lib\Deque.cs" />
+    <Compile Include="ThirdParty\Deque.cs" />
     <Compile Include="Core\Classes\DocManager.cs" />
     <Compile Include="Core\Classes\Notifications.cs" />
     <Compile Include="Core\Classes\PartCommands.cs" />
@@ -126,9 +128,10 @@
     <Compile Include="Core\Classes\PartManager.cs" />
     <Compile Include="Core\USTx\UPhoneme.cs" />
     <Compile Include="Core\USTx\USinger.cs" />
-    <Compile Include="Core\Lib\EncodingUtil.cs" />
+    <Compile Include="ThirdParty\FileEncoding.cs" />
     <Compile Include="Core\Util\Base64.cs" />
     <Compile Include="Core\Util\IniFileClass.cs" />
+    <Compile Include="Core\Util\Logger.cs" />
     <Compile Include="Core\Util\PathManager.cs" />
     <Compile Include="Core\Util\Preferences.cs" />
     <Compile Include="Core\Util\UpdateChecker.cs" />
@@ -304,6 +307,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\prefs.json" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -1,21 +1,40 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OpenUtau.Core
 {
     public static class MusicMath
     {
-        public static string[] noteStrings = new String[12] { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
+        public enum KeyColor { White, Black }
 
-        public static string GetNoteString(int noteNum) { return noteNum < 0 ? string.Empty : noteStrings[noteNum % 12] + (noteNum / 12 - 1).ToString(); }
+        public static readonly Tuple<string, KeyColor>[] KeysInOctave = {
+            Tuple.Create("C", KeyColor.White),
+            Tuple.Create("C#", KeyColor.Black),
+            Tuple.Create("D", KeyColor.White),
+            Tuple.Create("D#", KeyColor.Black),
+            Tuple.Create("E", KeyColor.White),
+            Tuple.Create("F", KeyColor.White),
+            Tuple.Create("F#", KeyColor.Black),
+            Tuple.Create("G", KeyColor.White),
+            Tuple.Create("G#", KeyColor.Black),
+            Tuple.Create("A", KeyColor.White),
+            Tuple.Create("A#", KeyColor.Black),
+            Tuple.Create("B" , KeyColor.White),
+        };
 
-        public static int[] BlackNoteNums = { 1, 3, 6, 8, 10 };
-        public static bool IsBlackKey(int noteNum) { return BlackNoteNums.Contains(noteNum % 12); }
+        public static string GetNoteString(int noteNum)
+        {
+            return noteNum < 0 ? string.Empty : KeysInOctave[noteNum % 12].Item1 + (noteNum / 12 - 1).ToString();
+        }
 
-        public static bool IsCenterKey(int noteNum) { return noteNum % 12 == 0; }
+        public static bool IsBlackKey(int noteNum)
+        {
+            return KeysInOctave[noteNum % 12].Item2 == KeyColor.Black;
+        }
+
+        public static bool IsCenterKey(int noteNum)
+        {
+            return noteNum % 12 == 0;
+        }
 
         public static double[] zoomRatios = { 4.0, 2.0, 1.0, 1.0 / 2, 1.0 / 4, 1.0 / 8, 1.0 / 16, 1.0 / 32, 1.0 / 64 };
 
@@ -32,7 +51,10 @@ namespace OpenUtau.Core
                 default: throw new Exception("Invalid beat unit.");
             }
 
-            if (beatPerBar % 4 == 0) i--; // level below bar is half bar, or 2 beatunit
+            if (beatPerBar % 4 == 0)
+            {
+                i--; // level below bar is half bar, or 2 beatunit
+            }
             // else // otherwise level below bar is beat unit
 
             if (quarterWidth * beatPerBar * 4 <= minWidth * beatUnit)
@@ -41,7 +63,11 @@ namespace OpenUtau.Core
             }
             else
             {
-                while (i + 1 < zoomRatios.Length && quarterWidth * zoomRatios[i + 1] > minWidth) i++;
+                while (i + 1 < zoomRatios.Length && quarterWidth * zoomRatios[i + 1] > minWidth)
+                {
+                    i++;
+                }
+
                 return zoomRatios[i];
             }
         }
@@ -100,10 +126,10 @@ namespace OpenUtau.Core
         {
             switch (shape)
             {
-                case USTx.PitchPointShape.io: return MusicMath.SinEasingInOut(x0, x1, y0, y1, x);
-                case USTx.PitchPointShape.i: return MusicMath.SinEasingIn(x0, x1, y0, y1, x);
-                case USTx.PitchPointShape.o: return MusicMath.SinEasingOut(x0, x1, y0, y1, x);
-                default: return MusicMath.Linear(x0, x1, y0, y1, x);
+                case USTx.PitchPointShape.io: return SinEasingInOut(x0, x1, y0, y1, x);
+                case USTx.PitchPointShape.i: return SinEasingIn(x0, x1, y0, y1, x);
+                case USTx.PitchPointShape.o: return SinEasingOut(x0, x1, y0, y1, x);
+                default: return Linear(x0, x1, y0, y1, x);
             }
         }
 
@@ -111,15 +137,21 @@ namespace OpenUtau.Core
         {
             switch (shape)
             {
-                case USTx.PitchPointShape.io: return MusicMath.SinEasingInOutX(x0, x1, y0, y1, y);
-                case USTx.PitchPointShape.i: return MusicMath.SinEasingInX(x0, x1, y0, y1, y);
-                case USTx.PitchPointShape.o: return MusicMath.SinEasingOutX(x0, x1, y0, y1, y);
-                default: return MusicMath.LinearX(x0, x1, y0, y1, y);
+                case USTx.PitchPointShape.io: return SinEasingInOutX(x0, x1, y0, y1, y);
+                case USTx.PitchPointShape.i: return SinEasingInX(x0, x1, y0, y1, y);
+                case USTx.PitchPointShape.o: return SinEasingOutX(x0, x1, y0, y1, y);
+                default: return LinearX(x0, x1, y0, y1, y);
             }
         }
 
-        public static double DecibelToLinear(double db) { return Math.Pow(10, db / 20); }
+        public static double DecibelToLinear(double db)
+        {
+            return Math.Pow(10, db / 20);
+        }
 
-        public static double LinearToDecibel(double v) { return Math.Log10(v) * 20; }
+        public static double LinearToDecibel(double v)
+        {
+            return Math.Log10(v) * 20;
+        }
     }
 }

@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using xxHashSharp;
 
 using OpenUtau.Core.USTx;
 
@@ -30,11 +29,9 @@ namespace OpenUtau.Core.Render
         // Sound data
         public CachedSound Sound = null;
 
-        public RenderItem() { }
-
         public uint HashParameters()
         {
-            return Lib.xxHash.CalcStringHash(RawFile + " " + GetResamplerExeArgs());
+            return xxHash.CalculateHash(Encoding.UTF8.GetBytes(RawFile + " " + GetResamplerExeArgs()));
         }
 
         public string GetResamplerExeArgs()

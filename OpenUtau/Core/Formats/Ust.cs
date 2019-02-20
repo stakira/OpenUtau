@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 
 using OpenUtau.Core.USTx;
-using OpenUtau.Core.Lib;
+using OpenUtau.SimpleHelpers;
 
 namespace OpenUtau.Core.Formats
 {
@@ -63,7 +62,7 @@ namespace OpenUtau.Core.Formats
 
             try
             {
-                if (encoding == null) lines = File.ReadAllLines(file, EncodingUtil.DetectFileEncoding(file));
+                if (encoding == null) lines = File.ReadAllLines(file, FileEncoding.DetectFileEncoding(file));
                 else lines = File.ReadAllLines(file, encoding);
             }
             catch (Exception e)
@@ -151,7 +150,7 @@ namespace OpenUtau.Core.Formats
                         if (line.StartsWith("VoiceDir="))
                         {
                             string singerpath = line.Trim().Replace("VoiceDir=", string.Empty);
-                            var singer = UtauSoundbank.GetSinger(singerpath, EncodingUtil.DetectFileEncoding(file), DocManager.Inst.Singers);
+                            var singer = UtauSoundbank.GetSinger(singerpath, FileEncoding.DetectFileEncoding(file), DocManager.Inst.Singers);
                             if (singer == null) singer = new USinger() { Name = "", Path = singerpath };
                             project.Singers.Add(singer);
                             project.Tracks[0].Singer = singer;

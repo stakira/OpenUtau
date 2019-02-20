@@ -36,9 +36,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace OpenUtau.Core.Lib
+namespace OpenUtau.SimpleHelpers
 {
-    public class EncodingUtil
+    public class FileEncoding
     {
         const int DEFAULT_BUFFER_SIZE = 128 * 1024;
 
@@ -62,11 +62,11 @@ namespace OpenUtau.Core.Lib
         /// <param name="inputStream">The input stream.</param>
         /// <param name="defaultIfNotDetected">The default encoding if none was detected.</param>
         /// <returns></returns>
-        public static Encoding DetectFileEncoding (Stream inputStream, Encoding defaultIfNotDetected = null)
+        public static Encoding DetectFileEncoding(Stream inputStream, Encoding defaultIfNotDetected = null)
         {
-            var det = new EncodingUtil ();
-            det.Detect (inputStream);
-            return det.Complete () ?? defaultIfNotDetected;
+            var det = new FileEncoding();
+            det.Detect(inputStream);
+            return det.Complete() ?? defaultIfNotDetected;
         }
 
         /// <summary>
@@ -77,11 +77,11 @@ namespace OpenUtau.Core.Lib
         /// <param name="count">The count.</param>
         /// <param name="defaultIfNotDetected">The default encoding if none was detected.</param>
         /// <returns></returns>
-        public static Encoding DetectFileEncoding (byte[] inputData, int start, int count, Encoding defaultIfNotDetected = null)
+        public static Encoding DetectFileEncoding(byte[] inputData, int start, int count, Encoding defaultIfNotDetected = null)
         {
-            var det = new EncodingUtil ();
-            det.Detect (inputData, start, count);
-            return det.Complete () ?? defaultIfNotDetected;            
+            var det = new FileEncoding();
+            det.Detect(inputData, start, count);
+            return det.Complete() ?? defaultIfNotDetected;
         }
 
         /// <summary>

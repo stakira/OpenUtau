@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 using System.Diagnostics;
 using System.ComponentModel;
 
 using OpenUtau.Core.USTx;
 using OpenUtau.Core.ResamplerDriver;
+using OpenUtau.SimpleHelpers;
 
 namespace OpenUtau.Core.Render
 {
@@ -114,7 +113,7 @@ namespace OpenUtau.Core.Render
         private RenderItem BuildRenderItem(UPhoneme phoneme, UVoicePart part, UProject project)
         {
             USinger singer = project.Tracks[part.TrackNo].Singer;
-            string rawfile = Lib.EncodingUtil.ConvertEncoding(singer.FileEncoding, singer.PathEncoding, phoneme.Oto.File);
+            string rawfile = FileEncoding.ConvertEncoding(singer.FileEncoding, singer.PathEncoding, phoneme.Oto.File);
             rawfile = Path.Combine(singer.Path, rawfile);
 
             double strechRatio = Math.Pow(2, 1.0 - (double)(int)phoneme.Parent.Expressions["velocity"].Data / 100);
