@@ -8,16 +8,16 @@
             <TreeViewItem Header="General" IsExpanded="True">
                 <TreeViewItem x:Name="pathsItem" Header="Paths" Margin="-12,0,0,0"/>
             </TreeViewItem>
-            <TreeViewItem Header="Appearance" IsExpanded="True">
+            <TreeViewItem Header="Audio" IsExpanded="True">
+                <TreeViewItem x:Name="playbackItem" Header="Playback" Margin="-12,0,0,0" Visibility="Collapsed"/>
+                <TreeViewItem x:Name="renderingItem" Header="Rendering" Margin="-12,0,0,0"/>
+            </TreeViewItem>
+            <TreeViewItem Header="Appearance" IsExpanded="True" Visibility="Collapsed">
                 <TreeViewItem x:Name="themesItem" Header="Themes" Margin="-12,0,0,0"/>
                 <TreeViewItem Header="Media" Margin="-12,0,0,0"/>
             </TreeViewItem>
-            <TreeViewItem Header="Audio" IsExpanded="True">
-                <TreeViewItem x:Name="playbackItem" Header="Playback" Margin="-12,0,0,0"/>
-                <TreeViewItem x:Name="renderingItem" Header="Rendering" Margin="-12,0,0,0"/>
-            </TreeViewItem>
         </TreeView>
-        <Grid x:Name="pathsGrid" Margin="170,2,10,10" Visibility="Hidden">
+        <Grid x:Name="pathsGrid" Margin="170,2,10,10" Visibility="Collapsed">
             <GroupBox Header="Singer paths" Height="200" VerticalAlignment="Top">
                 <Grid>
                     <ListBox x:Name="singerPathsList" Margin="10,10,10,42" SelectionChanged="singerPathsList_SelectionChanged"/>
@@ -28,14 +28,14 @@
                 </Grid>
             </GroupBox>
         </Grid>
-        <Grid x:Name="themesGrid" Margin="170,2,10,10" Visibility="Hidden">
+        <Grid x:Name="themesGrid" Margin="170,2,10,10" Visibility="Collapsed">
             <TextBlock Text="Theme" Margin="10,4,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
             <ComboBox Width="256" Height="22" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,25,0,0">
                 <ComboBoxItem Content="Clean" IsSelected="True"/>
                 <ComboBoxItem Content="Dark"/>
             </ComboBox>
         </Grid>
-        <Grid x:Name="playbackGrid" Margin="170,2,10,10" Visibility="Hidden">
+        <Grid x:Name="playbackGrid" Margin="170,2,10,10" Visibility="Collapsed">
             <TextBlock Text="Output device" Margin="10,4,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
             <ComboBox Width="256" Height="22" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,25,0,0">
                 <ComboBoxItem Content="WASAPI" IsSelected="True"/>
@@ -44,32 +44,16 @@
                 <ComboBoxItem Content="ASIO"/>
             </ComboBox>
         </Grid>
-        <Grid x:Name="renderingGrid" Margin="170,2,10,10" Visibility="Hidden">
-            <GroupBox Header="Resampling engine for preview" Height="80" VerticalAlignment="Top">
-                <Grid>
-                    <RadioButton x:Name="previewRatioInternal" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8,10,0,0" GroupName="preview" Checked="previewEngine_Checked">
-                        Internal engine (Recommended)
-                    </RadioButton>
-                    <RadioButton x:Name="previewRatioExternal" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8,36,0,0" GroupName="preview" Checked="previewEngine_Checked">
-                        External engine
-                    </RadioButton>
-                    <ComboBox x:Name="previewEngineCombo" Margin="110,34,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="256" SelectionChanged="previewEngineCombo_SelectionChanged"/>
-                </Grid>
-            </GroupBox>
-            <GroupBox Header="Resampling engine for export" Height="80" VerticalAlignment="Top" Margin="0,80,0,0">
-                <Grid>
-                    <RadioButton x:Name="exportRatioInternal" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8,10,0,0" GroupName="export" Checked="exportEngine_Checked">
-                        Internal engine
-                    </RadioButton>
-                    <RadioButton x:Name="exportRatioExternal" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8,36,0,0" GroupName="export" Checked="exportEngine_Checked">
-                        External engine
-                    </RadioButton>
-                    <ComboBox x:Name="exportEngineCombo" Margin="110,34,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="256" SelectionChanged="exportEngineCombo_SelectionChanged"/>
-                </Grid>
-            </GroupBox>
-            <TextBlock Margin="9,162,0,0" TextWrapping="Wrap">
-                Note: to use external resamplers, please add resampler DLL or EXE file to Resamplers folder under OpenUtau install path.
-            </TextBlock>
+        <Grid x:Name="renderingGrid" Margin="170,2,10,10" Visibility="Collapsed">
+            <StackPanel Margin="0,0,0,0">
+                <Label Margin="10,0">Resampler for preview</Label>
+                <ComboBox x:Name="previewEngineCombo" SelectionChanged="previewEngineCombo_SelectionChanged" Margin="10,0"/>
+                <Label Margin="10,0">Resampler for export</Label>
+                <ComboBox x:Name="exportEngineCombo" SelectionChanged="exportEngineCombo_SelectionChanged" Margin="10,0"/>
+                <TextBlock TextWrapping="Wrap" Margin="10,10">
+                    Note: to use external resamplers, please add resampler DLL or EXE file to Resamplers folder under OpenUtau install path.
+                </TextBlock>
+            </StackPanel>
         </Grid>
     </Grid>
 </Window>

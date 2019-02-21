@@ -1,13 +1,17 @@
 
 # OpenUtau
+
+OpenUtau aims to be an open source editing environment for UTAU community, with modern user experience and intelligent phonological support.
+
 Current stage: Alpha
 
 <img src="https://ci.appveyor.com/api/projects/status/github/stakira/OpenUtau?svg=true" alt="CI Badge"/>
 
-<a href="https://ci.appveyor.com/project/stakira/openutau/build/artifacts" target="_blank">Latest Build</a>
+## How to Use
 
-## Mission
-The mission of OpenUtau is to create a open source editing environment for UTAU community, with modern user experience and intelligent phonological support. The ultimate goal is to make UTAU technology better and more popular.
+Download the <a href="https://ci.appveyor.com/project/stakira/openutau/build/artifacts" target="_blank">Latest Build</a>.
+You will need to provide your own sound libraries and your favourite resampler.
+Put resampler exe or dll under Resamplers folder. Open Preferences menu to select resampler.
 
 ## Preview
 
@@ -73,12 +77,8 @@ OpenUtau 的目標是為 UTAU 社群建立開源環境、現代的用戶介面�
 #### OpenUtau 專案範圍可能包括：
 - 高效能重新採樣引擎輸入介面
 - 與其它重新採樣引擎專案合作
-- 完善 Windows 版本的開發後，開發 macOS 版本
 
 # OpenUtau
-开发进度: Alpha
-
-## 项目目标
 OpenUtau的目标，是为UTAU用户群体提供一个开源的编辑环境，包括现代的用户体验，和智能的语音学支持。该项目的最终目的，是提高和推广UTAU技术。
 
 ## 项目范围
@@ -100,7 +100,6 @@ OpenUtau的目标，是为UTAU用户群体提供一个开源的编辑环境，�
 #### OpenUtau可能包含:
 - 高效的重采样引擎接口
 - 和其他重采样引擎项目合作
-- Windows版本完善后，可能开发OS X版本
 
 
 # OpenUtau (未確認の翻訳)
@@ -127,4 +126,3 @@ OpenUtauは現代的なユーザー体験と知能音声に基づき、音声合
 #### なお、予定上以下の機能も実装されるが、場合によって実装されない可能性もある：
 - 簡単で効率的なリサンプリングのインターフェース
 - 他のプロジェクトのサンプリングエンジンとの組み合わせ
-- OS X版

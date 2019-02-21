@@ -9,8 +9,6 @@
     "SingerSearchPaths": [
         "Singers"
     ],
-    "InternalEnginePreview": true,
-    "InternalEngineExport": true,
     "ExternalPreviewEngine": "",
     "ExternalExportEngine": ""
 }
