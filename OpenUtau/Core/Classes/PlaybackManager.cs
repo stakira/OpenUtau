@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -23,6 +23,12 @@ namespace OpenUtau.Core
 
         MixingSampleProvider masterMix;
         List<TrackSampleProvider> trackSources;
+
+        public bool CheckResampler() {
+            var path = PathManager.Inst.GetPreviewEnginePath();
+            Directory.CreateDirectory(PathManager.Inst.GetEngineSearchPath());
+            return File.Exists(path); // TODO: validate exe / dll
+        }
 
         public void Play(UProject project)
         {

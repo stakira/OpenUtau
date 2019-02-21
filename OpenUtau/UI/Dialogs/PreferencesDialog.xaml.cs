@@ -46,7 +46,7 @@ namespace OpenUtau.UI.Dialogs {
         # region Paths
 
         private void UpdateSingerPaths() {
-            singerPaths = PathManager.Inst.GetSingerSearchPaths().ToList();
+            singerPaths = Core.Util.Preferences.GetSingerSearchPaths();
             singerPathsList.ItemsSource = singerPaths;
         }
 

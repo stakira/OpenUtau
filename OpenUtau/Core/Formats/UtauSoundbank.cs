@@ -14,7 +14,7 @@ namespace OpenUtau.Core.Formats
         public static Dictionary<string, USinger> FindAllSingers()
         {
             Dictionary<string, USinger> singers = new Dictionary<string, USinger>();
-            var singerSearchPaths = PathManager.Inst.GetSingerSearchPaths();
+            var singerSearchPaths = Util.Preferences.GetSingerSearchPaths();
             foreach (string searchPath in singerSearchPaths)
             {
                 if (!Directory.Exists(searchPath)) continue;

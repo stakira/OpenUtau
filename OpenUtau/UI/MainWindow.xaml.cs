@@ -623,7 +623,11 @@ namespace OpenUtau.UI
 
         private void playButton_Click(object sender, RoutedEventArgs e)
         {
-            PlaybackManager.Inst.Play(DocManager.Inst.Project);
+            if (PlaybackManager.Inst.CheckResampler()) {
+                PlaybackManager.Inst.Play(DocManager.Inst.Project);
+            } else {
+                MessageBox.Show("No resampler! Put your favourate resampler exe or dll in Resamplers folder!", "No resampler");
+            }
         }
 
         private void pauseButton_Click(object sender, RoutedEventArgs e)
