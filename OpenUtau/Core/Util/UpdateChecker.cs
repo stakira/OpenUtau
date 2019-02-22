@@ -1,42 +1,33 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Diagnostics;
 using System.Net;
-using System.Text.RegularExpressions;
+using System.Reflection;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
-namespace OpenUtau.Core
-{
-    static class UpdateChecker
-    {
-        const string VersionUrl = "https://raw.githubusercontent.com/stakira/OpenUtau/master/README.md";
-        public static bool Check()
-        {
-            string result;
-            
-            try
-            {
-                using (WebClient client = new WebClient())
-                {
-                    result = client.DownloadString(VersionUrl);
+namespace OpenUtau.Core {
+
+    internal static class UpdateChecker {
+        private const string VersionUrl = "https://ci.appveyor.com/api/projects/stakira/openutau";
+
+        public static bool Check() {
+            try {
+                using (var client = new WebClient()) {
+                    var result = client.DownloadString(VersionUrl);
+                    var dict = JsonConvert.DeserializeObject<JObject>(result);
+                    var lastest = new Version(dict["build"]["version"].ToString());
+                    var info = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
+                    var current = new Version(info.ProductVersion);
+                    Console.WriteLine("current version {0}, latest version {1}", current, lastest);
+                    return current.CompareTo(lastest) < 0;
                 }
-            }
-            catch
-            {
+            } catch {
                 return false;
             }
+        }
 
-            Regex regex = new Regex(@"Current stage: (\w+)");
-            Match match = regex.Match(result);
-            if (match.Success)
-            {
-                string thisVer = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
-                string latestVer = match.Groups[1].ToString();
-                System.Diagnostics.Debug.WriteLine("Latest version: {0}, this version: {1}", latestVer, thisVer);
-                return latestVer != thisVer;
-            }
-            else return false;
+        public static string GetVersion() {
+            return FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
         }
     }
 }

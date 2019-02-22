@@ -1,32 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-
-using JsonFx.Json;
+using Newtonsoft.Json;
 
 namespace OpenUtau.Core.Util {
 
     internal static class Preferences {
         public static SerializablePreferences Default;
         private const string filename = "prefs.json";
-        private static JsonWriter writer;
-        private static JsonReader reader;
 
         static Preferences() {
-            writer = new JsonWriter();
-            writer.Settings.PrettyPrint = true;
-            reader = new JsonReader();
             Load();
         }
 
         public static void Save() {
-            File.WriteAllText(filename, writer.Write(Default));
+            File.WriteAllText(filename, JsonConvert.SerializeObject(Default, Formatting.Indented));
         }
 
         public static void Reset() {
             var assembly = System.Reflection.Assembly.GetExecutingAssembly();
             var stream = new StreamReader(assembly.GetManifestResourceStream("OpenUtau.Resources.prefs.json"));
-            Default = reader.Read<SerializablePreferences>(stream.ReadToEnd());
+            Default = JsonConvert.DeserializeObject<SerializablePreferences>(stream.ReadToEnd());
             Save();
         }
 
@@ -41,7 +35,7 @@ namespace OpenUtau.Core.Util {
 
         private static void Load() {
             if (File.Exists(filename)) {
-                Default = reader.Read<SerializablePreferences>(File.ReadAllText(filename));
+                Default = JsonConvert.DeserializeObject<SerializablePreferences>(File.ReadAllText(filename));
             } else {
                 Reset();
             }

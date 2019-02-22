@@ -62,12 +62,17 @@ namespace OpenUtau.UI
 
             CmdNewFile();
 
-            if (UpdateChecker.Check())
-                this.mainMenu.Items.Add(new MenuItem()
-                {
-                    Header = @"Update available",
-                    Foreground = ThemeManager.WhiteKeyNameBrushNormal
-                });
+            if (UpdateChecker.Check()) {
+                var menuItem = new MenuItem() {
+                    Header = (string)FindResource("menu.updateavail"),
+                    Foreground = ThemeManager.WhiteKeyNameBrushNormal,
+                };
+                menuItem.Click += (sender, e) => {
+                    System.Diagnostics.Process.Start("https://github.com/stakira/OpenUtau");
+                };
+
+                mainMenu.Items.Add(menuItem);
+            }
         }
 
         void RenderLoop(object sender, EventArgs e)
@@ -448,15 +453,12 @@ namespace OpenUtau.UI
             PlaybackManager.Inst.Play(DocManager.Inst.Project);
         }
 
-        private void MenuAbout_Click(object sender, RoutedEventArgs e)
-        {
-            string text = "OpenUtau is a free singing software synthesizer workstation, "
-                        + "designed and developed by Sugita Akira, "
-                        + "aiming to bring modern user experience, "
-                        + "including smooth editing and intellegent phonology support "
-                        + "to singing software synthesizer community."
-                        + "\n\nOpenUtau is an open source software under the MIT Licence. Visit us on GitHub.";
-            MessageBox.Show(text, "About OpenUtau", MessageBoxButton.OK, MessageBoxImage.None);
+        private void MenuAbout_Click(object sender, RoutedEventArgs e) {
+            MessageBox.Show(
+                (string)FindResource("dialogs.about.message"),
+                (string)FindResource("dialogs.about.caption") + " " + UpdateChecker.GetVersion(),
+                MessageBoxButton.OK,
+                MessageBoxImage.None);
         }
 
         private void MenuPrefs_Click(object sender, RoutedEventArgs e)
@@ -626,7 +628,9 @@ namespace OpenUtau.UI
             if (PlaybackManager.Inst.CheckResampler()) {
                 PlaybackManager.Inst.Play(DocManager.Inst.Project);
             } else {
-                MessageBox.Show("No resampler! Put your favourate resampler exe or dll in Resamplers folder!", "No resampler");
+                MessageBox.Show(
+                    (string)FindResource("dialogs.noresampler.message"),
+                    (string)FindResource("dialogs.noresampler.caption"));
             }
         }
 

@@ -1,30 +1,32 @@
 ﻿<Window x:Class="OpenUtau.UI.Dialogs.PreferencesDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Preferences" Height="400" Width="600" ResizeMode="NoResize">
+        Title="{StaticResource prefs.caption}" Height="400" Width="600" ResizeMode="NoResize">
     <Grid>
         <TreeView x:Name="treeView" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Stretch" Width="150"
                   SelectedItemChanged="treeView_SelectedItemChanged">
-            <TreeViewItem Header="General" IsExpanded="True">
-                <TreeViewItem x:Name="pathsItem" Header="Paths" Margin="-12,0,0,0"/>
+            <TreeViewItem Header="{StaticResource prefs.general}" IsExpanded="True">
+                <TreeViewItem x:Name="pathsItem" Header="{StaticResource prefs.general.paths}" Margin="-12,0,0,0"/>
             </TreeViewItem>
-            <TreeViewItem Header="Audio" IsExpanded="True">
-                <TreeViewItem x:Name="playbackItem" Header="Playback" Margin="-12,0,0,0" Visibility="Collapsed"/>
-                <TreeViewItem x:Name="renderingItem" Header="Rendering" Margin="-12,0,0,0"/>
+            <TreeViewItem Header="{StaticResource prefs.audio}" IsExpanded="True">
+                <TreeViewItem x:Name="playbackItem" Header="{StaticResource prefs.audio.playback}" Margin="-12,0,0,0" Visibility="Collapsed"/>
+                <TreeViewItem x:Name="renderingItem" Header="{StaticResource prefs.audio.rendering}" Margin="-12,0,0,0"/>
             </TreeViewItem>
-            <TreeViewItem Header="Appearance" IsExpanded="True" Visibility="Collapsed">
+            <TreeViewItem Header="{StaticResource prefs.appearance}" IsExpanded="True" Visibility="Collapsed">
                 <TreeViewItem x:Name="themesItem" Header="Themes" Margin="-12,0,0,0"/>
                 <TreeViewItem Header="Media" Margin="-12,0,0,0"/>
             </TreeViewItem>
         </TreeView>
         <Grid x:Name="pathsGrid" Margin="170,2,10,10" Visibility="Collapsed">
-            <GroupBox Header="Singer paths" Height="200" VerticalAlignment="Top">
+            <GroupBox Header="{StaticResource prefs.general.paths.singer}" Height="200" VerticalAlignment="Top">
                 <Grid>
                     <ListBox x:Name="singerPathsList" Margin="10,10,10,42" SelectionChanged="singerPathsList_SelectionChanged"/>
-                    <Button x:Name="singerPathAddButton" Margin="10" Width="75" Height="22" VerticalAlignment="Bottom" HorizontalAlignment="Left" Content="Add"
+                    <Button x:Name="singerPathAddButton" Margin="10" Width="75" Height="22" VerticalAlignment="Bottom" HorizontalAlignment="Left"
+                            Content="{StaticResource prefs.general.paths.add}"
                             Focusable="False" Click="singerPathAddButton_Click"/>
                     <Button x:Name="singerPathRemoveButton" Margin="95,0,0,10" Width="75" Height="22" VerticalAlignment="Bottom" HorizontalAlignment="Left"
-                            Focusable="False" Content="Remove" IsEnabled="False" Click="singerPathRemoveButton_Click"/>
+                            Content="{StaticResource prefs.general.paths.remove}" 
+                            Focusable="False" IsEnabled="False" Click="singerPathRemoveButton_Click"/>
                 </Grid>
             </GroupBox>
         </Grid>
@@ -46,13 +48,11 @@
         </Grid>
         <Grid x:Name="renderingGrid" Margin="170,2,10,10" Visibility="Collapsed">
             <StackPanel Margin="0,0,0,0">
-                <Label Margin="10,0">Resampler for preview</Label>
+                <Label Margin="10,0" Content="{StaticResource prefs.audio.rendering.resampler.preview}" />
                 <ComboBox x:Name="previewEngineCombo" SelectionChanged="previewEngineCombo_SelectionChanged" Margin="10,0"/>
-                <Label Margin="10,0">Resampler for export</Label>
+                <Label Margin="10,0" Content="{StaticResource prefs.audio.rendering.resampler.export}" />
                 <ComboBox x:Name="exportEngineCombo" SelectionChanged="exportEngineCombo_SelectionChanged" Margin="10,0"/>
-                <TextBlock TextWrapping="Wrap" Margin="10,10">
-                    Note: to use external resamplers, please add resampler DLL or EXE file to Resamplers folder under OpenUtau install path.
-                </TextBlock>
+                <TextBlock TextWrapping="Wrap" Margin="10,10" Text="{StaticResource prefs.audio.rendering.resampler.note}"/>
             </StackPanel>
         </Grid>
     </Grid>

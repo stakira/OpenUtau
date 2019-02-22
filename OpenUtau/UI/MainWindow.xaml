@@ -17,10 +17,10 @@
     </Window.Resources>
     <local:BorderlessWindow.MenuContent>
         <Menu x:Name="mainMenu" IsMainMenu="True" VerticalAlignment="Top" HorizontalAlignment="Left" Background="White">
-            <MenuItem Header="_File">
-                <MenuItem Header="_New..." InputGestureText="Ctrl+N" Click="MenuNew_Click"/>
-                <MenuItem Header="_Open..." InputGestureText="Ctrl+O" Click="MenuOpen_Click"/>
-                <MenuItem Header="O_pen As">
+            <MenuItem Header="{StaticResource menu.file}">
+                <MenuItem Header="{StaticResource menu.file.new}" InputGestureText="Ctrl+N" Click="MenuNew_Click"/>
+                <MenuItem Header="{StaticResource menu.file.open}" InputGestureText="Ctrl+O" Click="MenuOpen_Click"/>
+                <MenuItem Header="{StaticResource menu.file.openas}">
                     <MenuItem Header="Ustx..."/>
                     <MenuItem Header="Vsqx..."/>
                     <MenuItem Header="Ust (ANSI)..."/>
@@ -28,33 +28,32 @@
                     <MenuItem Header="Ust (GB2312)..."/>
                     <MenuItem Header="Ust (Shift-JIS)..."/>
                 </MenuItem>
-                <MenuItem Header="_Save" InputGestureText="Ctrl+S" Click="MenuSave_Click"/>
-                <MenuItem Header="Save _As..." IsEnabled="False"/>
-                <MenuItem Header="_Import Audio..." Click="MenuImportAudio_Click"/>
-                <MenuItem Header="_Import Midi..." Click="MenuImportMidi_Click"/>
-                <MenuItem Header="Render All..." Click="MenuRenderAll_Click"/>
-                <MenuItem Header="Recent _Files" IsEnabled="False">
+                <MenuItem Header="{StaticResource menu.file.save}" InputGestureText="Ctrl+S" Click="MenuSave_Click"/>
+                <MenuItem Header="{StaticResource menu.file.saveas}" IsEnabled="False"/>
+                <MenuItem Header="{StaticResource menu.file.importaudio}" Click="MenuImportAudio_Click"/>
+                <MenuItem Header="{StaticResource menu.file.importmidi}" Click="MenuImportMidi_Click"/>
+                <MenuItem Header="{StaticResource menu.file.renderall}" Click="MenuRenderAll_Click"/>
+                <MenuItem Header="{StaticResource menu.file.recentfiles}" IsEnabled="False">
                     <MenuItem Header="1.vsqx"/>
                     <MenuItem Header="2.vsqx"/>
                 </MenuItem>
-                <MenuItem Header="_Exit" InputGestureText="Alt+F4" Click="MenuExit_Click"/>
+                <MenuItem Header="{StaticResource menu.file.exit}" InputGestureText="Alt+F4" Click="MenuExit_Click"/>
             </MenuItem>
-            <MenuItem Header="_Edit">
-                <MenuItem Header="_Undo" InputGestureText="Ctrl+Z" Click="MenuUndo_Click" />
-                <MenuItem Header="_Redo" InputGestureText="Ctrl+Y" Click="MenuRedo_Click"/>
-                <MenuItem Header="Cu_t" InputGestureText="Ctrl+X" IsEnabled="False"/>
-                <MenuItem Header="_Copy" InputGestureText="Ctrl+C" IsEnabled="False"/>
-                <MenuItem Header="_Paste" InputGestureText="Ctrl+V" IsEnabled="False"/>
-                <MenuItem Header="_Delete" InputGestureText="Del"/>
-                <MenuItem Header="Select _All" InputGestureText="Ctrl+A"/>
+            <MenuItem Header="{StaticResource menu.edit}">
+                <MenuItem Header="{StaticResource menu.edit.undo}" InputGestureText="Ctrl+Z" Click="MenuUndo_Click" />
+                <MenuItem Header="{StaticResource menu.edit.redo}" InputGestureText="Ctrl+Y" Click="MenuRedo_Click"/>
+                <MenuItem Header="{StaticResource menu.edit.cut}" InputGestureText="Ctrl+X" IsEnabled="False"/>
+                <MenuItem Header="{StaticResource menu.edit.copy}" InputGestureText="Ctrl+C" IsEnabled="False"/>
+                <MenuItem Header="{StaticResource menu.edit.paste}" InputGestureText="Ctrl+V" IsEnabled="False"/>
+                <MenuItem Header="{StaticResource menu.edit.delete}" InputGestureText="Del"/>
+                <MenuItem Header="{StaticResource menu.edit.selectall}" InputGestureText="Ctrl+A"/>
             </MenuItem>
-            <MenuItem Header="_Tools">
-                <MenuItem Header="Singers..." Click="MenuSingers_Click"/>
-                <MenuItem Header="Refresh Plugins" IsEnabled="False"/>
-                <MenuItem Header="Preferences" Click="MenuPrefs_Click"/>
+            <MenuItem Header="{StaticResource menu.tools}">
+                <MenuItem Header="{StaticResource menu.tools.singers}" Click="MenuSingers_Click"/>
+                <MenuItem Header="{StaticResource menu.tools.prefs}" Click="MenuPrefs_Click"/>
             </MenuItem>
-            <MenuItem Header="_Help">
-                <MenuItem Header="About OpenUTAU" Click="MenuAbout_Click"/>
+            <MenuItem Header="{StaticResource menu.help}">
+                <MenuItem Header="{StaticResource menu.help.about}" Click="MenuAbout_Click"/>
             </MenuItem>
         </Menu>
     </local:BorderlessWindow.MenuContent>
