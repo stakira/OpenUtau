@@ -7,23 +7,23 @@
     <system:String x:Key="menu.file">_File</system:String>
     <system:String x:Key="menu.file.new">_New...</system:String>
     <system:String x:Key="menu.file.open">_Open...</system:String>
-    <system:String x:Key="menu.file.openas">_Open As</system:String>
+    <system:String x:Key="menu.file.openas">O_pen As</system:String>
     <system:String x:Key="menu.file.save">_Save</system:String>
-    <system:String x:Key="menu.file.saveas">_Save As...</system:String>
+    <system:String x:Key="menu.file.saveas">Save _As...</system:String>
     <system:String x:Key="menu.file.importaudio">_Import Audio...</system:String>
     <system:String x:Key="menu.file.importmidi">_Import Midi...</system:String>
     <system:String x:Key="menu.file.renderall">Render All...</system:String>
-    <system:String x:Key="menu.file.recentfiles">_Recent Files</system:String>
+    <system:String x:Key="menu.file.recentfiles">Recent _Files</system:String>
     <system:String x:Key="menu.file.exit">_Exit</system:String>
 
     <system:String x:Key="menu.edit">_Edit</system:String>
     <system:String x:Key="menu.edit.undo">_Undo</system:String>
     <system:String x:Key="menu.edit.redo">_Redo</system:String>
-    <system:String x:Key="menu.edit.cut">_Cut</system:String>
+    <system:String x:Key="menu.edit.cut">Cu_t</system:String>
     <system:String x:Key="menu.edit.copy">_Copy</system:String>
     <system:String x:Key="menu.edit.paste">_Paste</system:String>
     <system:String x:Key="menu.edit.delete">_Delete</system:String>
-    <system:String x:Key="menu.edit.selectall">_Select All</system:String>
+    <system:String x:Key="menu.edit.selectall">Select _All</system:String>
 
     <system:String x:Key="menu.tools">_Tools</system:String>
     <system:String x:Key="menu.tools.singers">Singers...</system:String>
@@ -47,16 +47,16 @@
     <system:String x:Key="prefs.audio.rendering.resampler.preview">Resampler for preview</system:String>
     <system:String x:Key="prefs.audio.rendering.resampler.export">Resampler for export</system:String>
     <system:String x:Key="prefs.audio.rendering.resampler.note">
-        Note: to use external resamplers, please add resampler DLL or EXE file to the Resamplers folder in the OpenUtau install path.
+        Note: to use external resamplers, please add resampler DLL or EXE file to Resamplers folder under OpenUtau install path.
     </system:String>
     <system:String x:Key="prefs.appearance">Appearance</system:String>
 
     <!-- Dialogs -->
     <system:String x:Key="dialogs.noresampler.caption">No resampler</system:String>
-    <system:String x:Key="dialogs.noresampler.message">No resampler! Put your favourite resampler exe or dll in the Resamplers folder!</system:String>
+    <system:String x:Key="dialogs.noresampler.message">No resampler! Put your favourate resampler exe or dll in Resamplers folder!</system:String>
     <system:String x:Key="dialogs.about.caption">About OpenUTAU</system:String>
     <system:String x:Key="dialogs.about.message">
-        OpenUtau aims to be an open source editing environment for the UTAU community, with a modern user experience and intelligent phonological support. Visit us on Github.
+        OpenUtau aims to be an open source editing environment for UTAU community, with modern user experience and intelligent phonological support. Visit us on Github.
     </system:String>
 
 </ResourceDictionary>
