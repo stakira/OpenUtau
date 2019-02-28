@@ -76,17 +76,16 @@ namespace OpenUtau.Core
             ri.ResamplePart(part, project, engine, (o) => { this.BuildVoicePartDone(o, part, project); });
         }
 
-        private void BuildVoicePartDone(SequencingSampleProvider source, UPart part, UProject project)
-        {
-            lock (lockObject)
-            {
-                trackSources[part.TrackNo].AddSource(
-                    source,
-                    TimeSpan.FromMilliseconds(project.TickToMillisecond(part.PosTick))
-                );
+        private void BuildVoicePartDone(SequencingSampleProvider source, UPart part, UProject project) {
+            lock (lockObject) {
+                if (source != null) {
+                    trackSources[part.TrackNo].AddSource(
+                        source,
+                        TimeSpan.FromMilliseconds(project.TickToMillisecond(part.PosTick))
+                    );
+                }
                 pendingParts--;
             }
-
             if (pendingParts == 0) StartPlayback();
         }
 

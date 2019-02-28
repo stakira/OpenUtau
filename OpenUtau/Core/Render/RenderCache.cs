@@ -36,7 +36,7 @@ namespace OpenUtau.Core.Render
         {
             if (cache.ContainsKey(hash))
             {
-                if (engine == string.Empty || cache[hash].Engine == engine)
+                if (string.IsNullOrEmpty(engine) || cache[hash].Engine == engine)
                     return cache[hash].Sound;
                 else return null;
             }

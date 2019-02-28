@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
+using System.Reflection;
 using OpenUtau.Core.Util;
+using Serilog;
 
 namespace OpenUtau.Core {
 
@@ -9,10 +11,17 @@ namespace OpenUtau.Core {
         public const string DefaultSingerPath = "Singers";
         public const string DefaultCachePath = "UCache";
 
-        public readonly string HomePath = AppContext.BaseDirectory;
-
         private static PathManager _inst;
+
+        public PathManager() {
+            var assemblyPath = Assembly.GetExecutingAssembly().Location;
+            Log.Logger.Information($"Assembly path = {assemblyPath}");
+            HomePath = Directory.GetParent(assemblyPath).ToString();
+            Log.Logger.Information($"Home path = {HomePath}");
+        }
+
         public static PathManager Inst { get { if (_inst == null) { _inst = new PathManager(); } return _inst; } }
+        public string HomePath { get; private set; }
 
         public string TryMakeRelative(string path) {
             if (path.StartsWith(HomePath, StringComparison.Ordinal)) {
@@ -63,7 +72,7 @@ namespace OpenUtau.Core {
 
         public string GetCachePath(string filepath) {
             string cachepath;
-            if (filepath == string.Empty) {
+            if (string.IsNullOrEmpty(filepath)) {
                 cachepath = Path.Combine(HomePath, DefaultCachePath);
             } else {
                 cachepath = Path.Combine(Path.GetDirectoryName(filepath), DefaultCachePath);

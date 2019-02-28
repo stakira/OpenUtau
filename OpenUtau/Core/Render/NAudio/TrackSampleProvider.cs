@@ -45,6 +45,9 @@ namespace OpenUtau.Core.Render
         public void AddSource(ISampleProvider source, TimeSpan delayBy)
         {
             ISampleProvider _source;
+            if (source == null || source.WaveFormat == null) {
+                return;
+            }
             if (source.WaveFormat.Channels == 1) _source = new MonoToStereoSampleProvider(source);
             else if (source.WaveFormat.Channels == 2) _source = source;
             else return;

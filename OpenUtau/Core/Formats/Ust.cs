@@ -233,8 +233,8 @@ namespace OpenUtau.Core.Formats
                     if (w.Count() > 1) y = pby.Split(new[] { ',' });
                     for (int i = 0; i < w.Count() - 1; i++)
                     {
-                        x += w[i] == string.Empty ? 0 : float.Parse(w[i]);
-                        pts.Add(new PitchPoint(x, y[i] == string.Empty ? 0 : double.Parse(y[i])));
+                        x += string.IsNullOrEmpty(w[i]) ? 0 : float.Parse(w[i]);
+                        pts.Add(new PitchPoint(x, string.IsNullOrEmpty(y[i]) ? 0 : double.Parse(y[i])));
                     }
                     pts.Add(new PitchPoint(x + double.Parse(w[w.Count() - 1]), 0));
                 }

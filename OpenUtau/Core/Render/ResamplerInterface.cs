@@ -8,6 +8,7 @@ using System.ComponentModel;
 using OpenUtau.Core.USTx;
 using OpenUtau.Core.ResamplerDriver;
 using OpenUtau.SimpleHelpers;
+using Serilog;
 
 namespace OpenUtau.Core.Render
 {
@@ -40,13 +41,18 @@ namespace OpenUtau.Core.Render
             e.Result = RenderAsync(part, project, engine, sender as BackgroundWorker);
         }
 
-        private void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            List<RenderItem> renderItems = e.Result as List<RenderItem>;
-            List<RenderItemSampleProvider> renderItemSampleProviders = new List<RenderItemSampleProvider>();
-            foreach (var item in renderItems) renderItemSampleProviders.Add(new RenderItemSampleProvider(item));
-            DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, string.Format(string.Empty)));
-            resampleDoneCallback(new SequencingSampleProvider(renderItemSampleProviders));
+        private void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
+            try {
+                var renderItems = e.Result as List<RenderItem>;
+                var renderItemSampleProviders = new List<RenderItemSampleProvider>();
+                foreach (var item in renderItems) renderItemSampleProviders.Add(new RenderItemSampleProvider(item));
+                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, string.Format(string.Empty)));
+                resampleDoneCallback(new SequencingSampleProvider(renderItemSampleProviders));
+            } catch (Exception ex) {
+                Log.Error(ex, "Error while resampling.");
+                throw ex;
+                resampleDoneCallback(null);
+            }
         }
 
         private List<RenderItem> RenderAsync(UVoicePart part, UProject project, IResamplerDriver engine, BackgroundWorker worker)

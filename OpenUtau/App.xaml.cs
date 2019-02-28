@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Windows;
+using Serilog;
 
 namespace OpenUtau {
 
@@ -34,14 +37,23 @@ namespace OpenUtau {
 
         [STAThread]
         private static void Main() {
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Information()
+                .WriteTo.Console()
+                .WriteTo.File("log.txt", rollingInterval: RollingInterval.Day)
+                .CreateLogger();
             NBug.Settings.ReleaseMode = true;
             NBug.Settings.StoragePath = NBug.Enums.StoragePath.CurrentDirectory;
             NBug.Settings.UIMode = NBug.Enums.UIMode.Full;
-            AppDomain.CurrentDomain.UnhandledException += NBug.Handler.UnhandledException;
+
             Core.DocManager.Inst.SearchAllSingers();
             var pm = new Core.PartManager();
+
             var app = new App();
-            app.DispatcherUnhandledException += NBug.Handler.DispatcherUnhandledException;
+            if (!Debugger.IsAttached) {
+                AppDomain.CurrentDomain.UnhandledException += NBug.Handler.UnhandledException;
+                app.DispatcherUnhandledException += NBug.Handler.DispatcherUnhandledException;
+            }
             var window = new UI.MainWindow();
             app.Run(window);
         }

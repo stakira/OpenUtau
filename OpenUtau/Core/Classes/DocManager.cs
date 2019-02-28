@@ -55,7 +55,7 @@ namespace OpenUtau.Core
                 {
                     var _cmd = cmd as SaveProjectNotification;
                     if (undoQueue.Count > 0) savedPoint = undoQueue.Last();
-                    if (_cmd.Path == string.Empty) OpenUtau.Core.Formats.USTx.Save(Project.FilePath, Project);
+                    if (string.IsNullOrEmpty(_cmd.Path)) OpenUtau.Core.Formats.USTx.Save(Project.FilePath, Project);
                     else OpenUtau.Core.Formats.USTx.Save(_cmd.Path, Project);
                 }
                 else if (cmd is LoadProjectNotification)

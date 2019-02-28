@@ -31,10 +31,6 @@ namespace OpenUtau.Core.Render
             {
                 AddSequencingInput(source);
             }
-            if (this.sources.Count == 0)
-            {
-                throw new ArgumentException("Must provide at least one input in this constructor");
-            }
         }
 
         /// <summary>
