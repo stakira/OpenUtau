@@ -111,13 +111,11 @@
     </Compile>
     <Compile Include="Core\Formats\UtauSoundbank.cs" />
     <Compile Include="Core\Render\NAudio\AudioStreamReader.cs" />
-    <Compile Include="Core\Render\NAudio\CachedSound.cs" />
-    <Compile Include="Core\Render\NAudio\CachedSoundSampleProvider.cs" />
     <Compile Include="Core\Render\NAudio\EnvelopeSampleProvider.cs" />
+    <Compile Include="Core\Render\NAudio\MemorySampleProvider.cs" />
     <Compile Include="Core\Render\NAudio\TrackSampleProvider.cs" />
     <Compile Include="Core\Render\NAudio\SequencingSampleProvider.cs" />
     <Compile Include="Core\Render\RenderItem.cs" />
-    <Compile Include="Core\Render\RenderCache.cs" />
     <Compile Include="Core\Render\NAudio\RenderItemSampleProvider.cs" />
     <Compile Include="Core\Render\ResamplerInterface.cs" />
     <Compile Include="Core\Classes\ExpCommands.cs" />
