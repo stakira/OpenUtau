@@ -29,7 +29,7 @@ namespace OpenUtau.Core.Formats
                             singer = LoadSinger(dirpath);
                             singers.Add(singer.Path, singer);
                         }
-                        catch { }
+                        catch(Exception e) { throw e; }
                     }
                 }
             }
@@ -94,7 +94,7 @@ namespace OpenUtau.Core.Formats
                 if (line.StartsWith("image="))
                 {
                     string imagePath = line.Trim().Replace("image=", "");
-                    Uri imagepath = new Uri(Path.Combine(singer.Path, FileEncoding.ConvertEncoding(singer.FileEncoding, singer.PathEncoding, imagePath)));
+                    Uri imagepath = new Uri(Path.Combine(singer.Path, FileEncoding.ConvertEncoding(singer.FileEncoding, singer.PathEncoding, imagePath)),UriKind.RelativeOrAbsolute);
                     singer.Avatar = new System.Windows.Media.Imaging.BitmapImage(imagepath);
                     singer.Avatar.Freeze();
                 }
