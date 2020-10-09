@@ -63,5 +63,14 @@ namespace OpenUtau.Core.USTx
             return MusicMath.TickToMillisecond(tick, BPM, BeatUnit, Resolution);
         }
 
+        public int EndTick {
+            get {
+                int lastTick = 0;
+                foreach (var part in Parts) {
+                    lastTick = Math.Max(lastTick, part.EndTick);
+                }
+                return lastTick;
+            }
+        }
     }
 }

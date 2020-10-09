@@ -68,12 +68,14 @@
                                Text="{Binding Path=PlayPosTime, Source={StaticResource tracksVM}, StringFormat={}{0:mm\\:ss\\.fff}}"/>
                 </Grid>
                 <Grid x:Name="playbackButtonGrid" Height="20" Width="88" HorizontalAlignment="Left" Margin="84,0,0,0">
-                    <Button x:Name="seekHomeButton" Style="{StaticResource SeekHomeButtonStyle}" Margin="4,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                    <Button x:Name="seekHomeButton" Style="{StaticResource SeekHomeButtonStyle}" Margin="4,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"
+                            Click="seekHomeButton_Click" Focusable="False"/>
                     <Button x:Name="playButton" Style="{StaticResource PlayButtonStyle}" Margin="24,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"
-                            Click="playButton_Click"/>
+                            Click="playButton_Click" Focusable="False"/>
                     <Button x:Name="pauseButton" Style="{StaticResource PauseButtonStyle}" Margin="44,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"
-                            Click="pauseButton_Click"/>
-                    <Button x:Name="seekEndButton" Style="{StaticResource SeekEndButtonStyle}" Margin="64,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                            Click="pauseButton_Click" Focusable="False"/>
+                    <Button x:Name="seekEndButton" Style="{StaticResource SeekEndButtonStyle}" Margin="64,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"
+                            Click="seekEndButton_Click" Focusable="False"/>
                     <Border CornerRadius="4" BorderThickness="1" BorderBrush="LightGray"/>
                 </Grid>
             </Grid>

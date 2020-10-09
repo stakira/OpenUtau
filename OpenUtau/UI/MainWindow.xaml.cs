@@ -456,7 +456,7 @@ namespace OpenUtau.UI {
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            if (Keyboard.Modifiers == 0 && e.Key == Key.Delete)
+            if (Keyboard.Modifiers == ModifierKeys.None && e.Key == Key.Delete)
             {
                 DocManager.Inst.StartUndoGroup();
                 while (trackVM.SelectedParts.Count > 0) DocManager.Inst.ExecuteCmd(new RemovePartCommand(trackVM.Project, trackVM.SelectedParts.Last()));
@@ -473,6 +473,9 @@ namespace OpenUtau.UI {
             {
                 trackVM.DeselectAll();
                 DocManager.Inst.Redo();
+            }
+            else if (Keyboard.Modifiers == ModifierKeys.None && e.Key == Key.Space) {
+                PlayOrPause();
             }
         }
 
@@ -599,10 +602,9 @@ namespace OpenUtau.UI {
             }
         }
 
-        # region Playback controls
+        #region Playback controls
 
-        private void playButton_Click(object sender, RoutedEventArgs e)
-        {
+        private void Play() {
             if (PlaybackManager.Inst.CheckResampler()) {
                 PlaybackManager.Inst.Play(DocManager.Inst.Project);
             } else {
@@ -612,9 +614,27 @@ namespace OpenUtau.UI {
             }
         }
 
-        private void pauseButton_Click(object sender, RoutedEventArgs e)
-        {
+        private void Pause() {
             PlaybackManager.Inst.PausePlayback();
+        }
+
+        private void PlayOrPause() {
+            if (!PlaybackManager.Inst.Playing) {
+                Play();
+            } else {
+                Pause();
+            }
+        }
+
+        private void playButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!PlaybackManager.Inst.Playing) {
+                Play();
+            }
+        }
+
+        private void pauseButton_Click(object sender, RoutedEventArgs e) {
+            Pause();
         }
 
         private void bpmText_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -622,6 +642,16 @@ namespace OpenUtau.UI {
             // TODO: set bpm
         }
 
-        # endregion
+        private void seekHomeButton_Click(object sender, RoutedEventArgs e) {
+            Pause();
+            DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(0));
+        }
+
+        private void seekEndButton_Click(object sender, RoutedEventArgs e) {
+            Pause();
+            DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(DocManager.Inst.Project.EndTick));
+        }
+
+        #endregion
     }
 }

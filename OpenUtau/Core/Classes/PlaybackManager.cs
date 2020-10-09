@@ -23,6 +23,8 @@ namespace OpenUtau.Core
         MixingSampleProvider masterMix;
         List<TrackSampleProvider> trackSources;
 
+        public bool Playing => pendingParts > 0 || outDevice != null && outDevice.PlaybackState == PlaybackState.Playing;
+
         public bool CheckResampler() {
             var path = PathManager.Inst.GetPreviewEnginePath();
             Directory.CreateDirectory(PathManager.Inst.GetEngineSearchPath());
@@ -31,7 +33,7 @@ namespace OpenUtau.Core
 
         public void Play(UProject project)
         {
-            if (pendingParts > 0) return;
+            if (pendingParts > 0) return; // Rendering
             else if (outDevice != null)
             {
                 if (outDevice.PlaybackState == PlaybackState.Playing) return;
