@@ -20,14 +20,6 @@
             <MenuItem Header="{StaticResource menu.file}">
                 <MenuItem Header="{StaticResource menu.file.new}" InputGestureText="Ctrl+N" Click="MenuNew_Click"/>
                 <MenuItem Header="{StaticResource menu.file.open}" InputGestureText="Ctrl+O" Click="MenuOpen_Click"/>
-                <MenuItem Header="{StaticResource menu.file.openas}">
-                    <MenuItem Header="Ustx..."/>
-                    <MenuItem Header="Vsqx..."/>
-                    <MenuItem Header="Ust (ANSI)..."/>
-                    <MenuItem Header="Ust (UTF-8)..."/>
-                    <MenuItem Header="Ust (GB2312)..."/>
-                    <MenuItem Header="Ust (Shift-JIS)..."/>
-                </MenuItem>
                 <MenuItem Header="{StaticResource menu.file.save}" InputGestureText="Ctrl+S" Click="MenuSave_Click"/>
                 <MenuItem Header="{StaticResource menu.file.saveas}" IsEnabled="False"/>
                 <MenuItem Header="{StaticResource menu.file.importaudio}" Click="MenuImportAudio_Click"/>
@@ -38,15 +30,6 @@
                     <MenuItem Header="2.vsqx"/>
                 </MenuItem>
                 <MenuItem Header="{StaticResource menu.file.exit}" InputGestureText="Alt+F4" Click="MenuExit_Click"/>
-            </MenuItem>
-            <MenuItem Header="{StaticResource menu.edit}">
-                <MenuItem Header="{StaticResource menu.edit.undo}" InputGestureText="Ctrl+Z" Click="MenuUndo_Click" />
-                <MenuItem Header="{StaticResource menu.edit.redo}" InputGestureText="Ctrl+Y" Click="MenuRedo_Click"/>
-                <MenuItem Header="{StaticResource menu.edit.cut}" InputGestureText="Ctrl+X" IsEnabled="False"/>
-                <MenuItem Header="{StaticResource menu.edit.copy}" InputGestureText="Ctrl+C" IsEnabled="False"/>
-                <MenuItem Header="{StaticResource menu.edit.paste}" InputGestureText="Ctrl+V" IsEnabled="False"/>
-                <MenuItem Header="{StaticResource menu.edit.delete}" InputGestureText="Del"/>
-                <MenuItem Header="{StaticResource menu.edit.selectall}" InputGestureText="Ctrl+A"/>
             </MenuItem>
             <MenuItem Header="{StaticResource menu.tools}">
                 <MenuItem Header="{StaticResource menu.tools.singers}" Click="MenuSingers_Click"/>

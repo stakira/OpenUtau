@@ -32,8 +32,6 @@
     <system:String x:Key="menu.help">_Help</system:String>
     <system:String x:Key="menu.help.about">About OpenUTAU</system:String>
 
-    <system:String x:Key="menu.updateavail">Update Available</system:String>
-
     <!-- Preferences -->
     <system:String x:Key="prefs.caption">Preferences</system:String>
     <system:String x:Key="prefs.general">General</system:String>

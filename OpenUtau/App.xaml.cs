@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
@@ -45,6 +44,10 @@ namespace OpenUtau {
             NBug.Settings.ReleaseMode = true;
             NBug.Settings.StoragePath = NBug.Enums.StoragePath.CurrentDirectory;
             NBug.Settings.UIMode = NBug.Enums.UIMode.Full;
+
+            var characters = Classic.Character.SearchAndLoadCharacters(Core.Util.Preferences.GetSingerSearchPaths());
+
+            Classic.VoicebankInstaller.IndexAllArchive(Core.Util.Preferences.GetSingerSearchPaths());
 
             Core.DocManager.Inst.SearchAllSingers();
             var pm = new Core.PartManager();

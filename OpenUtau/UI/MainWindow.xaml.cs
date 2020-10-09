@@ -1,20 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using System.Windows.Shell;
-
-using WinInterop = System.Windows.Interop;
-using System.Runtime.InteropServices;
 using Microsoft.Win32;
 
 using OpenUtau.UI.Models;
@@ -22,8 +12,7 @@ using OpenUtau.UI.Controls;
 using OpenUtau.Core;
 using OpenUtau.Core.USTx;
 
-namespace OpenUtau.UI
-{
+namespace OpenUtau.UI {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -61,18 +50,6 @@ namespace OpenUtau.UI
             trackVM.Subscribe(DocManager.Inst);
 
             CmdNewFile();
-
-            if (UpdateChecker.Check()) {
-                var menuItem = new MenuItem() {
-                    Header = (string)FindResource("menu.updateavail"),
-                    Foreground = ThemeManager.WhiteKeyNameBrushNormal,
-                };
-                menuItem.Click += (sender, e) => {
-                    System.Diagnostics.Process.Start("https://github.com/stakira/OpenUtau");
-                };
-
-                mainMenu.Items.Add(menuItem);
-            }
         }
 
         void RenderLoop(object sender, EventArgs e)
@@ -404,8 +381,6 @@ namespace OpenUtau.UI
         private void MenuOpen_Click(object sender, RoutedEventArgs e) { CmdOpenFileDialog(); }
         private void MenuSave_Click(object sender, RoutedEventArgs e) { CmdSaveFile(); }
         private void MenuExit_Click(object sender, RoutedEventArgs e) { CmdExit(); }
-        private void MenuUndo_Click(object sender, RoutedEventArgs e) { DocManager.Inst.Undo(); }
-        private void MenuRedo_Click(object sender, RoutedEventArgs e) { DocManager.Inst.Redo(); }
 
         private void MenuImportAudio_Click(object sender, RoutedEventArgs e)
         {
@@ -459,7 +434,7 @@ namespace OpenUtau.UI
         private void MenuAbout_Click(object sender, RoutedEventArgs e) {
             MessageBox.Show(
                 (string)FindResource("dialogs.about.message"),
-                (string)FindResource("dialogs.about.caption") + " " + UpdateChecker.GetVersion(),
+                (string)FindResource("dialogs.about.caption"),
                 MessageBoxButton.OK,
                 MessageBoxImage.None);
         }
