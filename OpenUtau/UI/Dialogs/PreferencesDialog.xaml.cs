@@ -90,7 +90,7 @@ namespace OpenUtau.UI.Dialogs {
         # region Engine selection
 
         private void UpdateEngines() {
-            var enginesInfo = Core.ResamplerDriver.ResamplerDriver.SearchEngines(PathManager.Inst.GetEngineSearchPath());
+            var enginesInfo = Core.ResamplerDriver.ResamplerDriver.Search(PathManager.Inst.GetEngineSearchPath());
             engines = enginesInfo.Select(x => x.Name).ToList();
             if (engines.Count == 0) {
                 previewEngineCombo.IsEnabled = false;

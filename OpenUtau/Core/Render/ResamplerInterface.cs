@@ -4,16 +4,19 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using OpenUtau.Core.ResamplerDriver;
 using OpenUtau.Core.USTx;
 using Serilog;
+using xxHashSharp;
 
 namespace OpenUtau.Core.Render {
 
     internal class ResamplerInterface {
-        private Action<SequencingSampleProvider> resampleDoneCallback;
+        Action<SequencingSampleProvider> resampleDoneCallback;
+        object srcFileLock = new object();
 
-        public void ResamplePart(UVoicePart part, UProject project, IResamplerDriver engine, Action<SequencingSampleProvider> resampleDoneCallback) {
+        public void ResamplePart(UVoicePart part, UProject project, IResamplerDriver driver, Action<SequencingSampleProvider> resampleDoneCallback) {
             this.resampleDoneCallback = resampleDoneCallback;
             var worker = new BackgroundWorker {
                 WorkerReportsProgress = true
@@ -21,7 +24,7 @@ namespace OpenUtau.Core.Render {
             worker.DoWork += Worker_DoWork;
             worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
             worker.ProgressChanged += Worker_ProgressChanged;
-            worker.RunWorkerAsync(new Tuple<UVoicePart, UProject, IResamplerDriver>(part, project, engine));
+            worker.RunWorkerAsync(new Tuple<UVoicePart, UProject, IResamplerDriver>(part, project, driver));
         }
 
         private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e) {
@@ -74,8 +77,9 @@ namespace OpenUtau.Core.Render {
                         }
 
                         var item = new RenderItem(phoneme, part, project);
+                        PrepareSourceFile(cacheDir, item);
 
-                        // System.Diagnostics.Debug.WriteLine("Sound {0:x} resampling {1}", item.HashParameters(), item.GetResamplerExeArgs());
+                        Log.Verbose($"Sound {item.HashParameters():x} resampling {item.GetResamplerExeArgs()}");
                         var engineArgs = DriverModels.CreateInputModel(item, 0);
                         var output = engine.DoResampler(engineArgs);
                         item.Sound = MemorySampleProvider.FromStream(output);
@@ -88,6 +92,23 @@ namespace OpenUtau.Core.Render {
             watch.Stop();
             Log.Information($"Resampling end, total time {watch.Elapsed}");
             return renderItems;
+        }
+
+
+        /// <summary>
+        /// Non-ASCII source file path does not well work with Process.Start(). Makes a copy to avoid Non-ASCII path.
+        /// </summary>
+        /// <param name="cacheDir"></param>
+        /// <param name="item"></param>
+        void PrepareSourceFile(string cacheDir, RenderItem item) {
+            uint srcHash = xxHash.CalculateHash(Encoding.UTF8.GetBytes(item.SourceFile));
+            string srcFilePath = Path.Combine(cacheDir, $"src_{srcHash}.wav");
+            lock (srcFileLock) {
+                if (!File.Exists(srcFilePath)) {
+                    File.Copy(item.SourceFile, srcFilePath);
+                }
+            }
+            item.SourceFile = srcFilePath;
         }
     }
 }

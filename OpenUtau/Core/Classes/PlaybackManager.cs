@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using System.Threading.Tasks;
 
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using OpenUtau.Core.USTx;
 using OpenUtau.Core.Render;
 using OpenUtau.Core.ResamplerDriver;
+using Serilog;
 
 namespace OpenUtau.Core
 {
@@ -92,37 +91,33 @@ namespace OpenUtau.Core
         int pendingParts = 0;
         private readonly object lockObject = new object();
 
-        private void BuildAudio(UProject project)
-        {
+        private void BuildAudio(UProject project) {
             trackSources = new List<TrackSampleProvider>();
-            foreach (UTrack track in project.Tracks)
-            {
+            foreach (UTrack track in project.Tracks) {
                 trackSources.Add(new TrackSampleProvider() { Volume = DecibelToVolume(track.Volume) });
             }
             pendingParts = project.Parts.Count;
-            foreach (UPart part in project.Parts)
-            {
-                if (part is UWavePart)
-                {
-                    lock (lockObject)
-                    {
+            foreach (UPart part in project.Parts) {
+                if (part is UWavePart) {
+                    lock (lockObject) {
                         trackSources[part.TrackNo].AddSource(
                             BuildWavePartAudio(part as UWavePart, project),
                             TimeSpan.FromMilliseconds(project.TickToMillisecond(part.PosTick))
                         );
                         pendingParts--;
                     }
-                }
-                else
-                {
+                } else {
                     var singer = project.Tracks[part.TrackNo].Singer;
-                    if (singer != null && singer.Loaded)
-                    {
-                        System.IO.FileInfo ResamplerFile = new System.IO.FileInfo(PathManager.Inst.GetPreviewEnginePath());
-                        IResamplerDriver engine = ResamplerDriver.ResamplerDriver.LoadEngine(ResamplerFile.FullName);
-                        BuildVoicePartAudio(part as UVoicePart, project, engine);
-                    }
-                    else lock (lockObject) { pendingParts--; }
+                    if (singer != null && singer.Loaded) {
+                        FileInfo ResamplerFile = new FileInfo(PathManager.Inst.GetPreviewEnginePath());
+                        IResamplerDriver driver = ResamplerDriver.ResamplerDriver.Load(ResamplerFile.FullName);
+                        if (driver != null) {
+                            Log.Information($"ResamplerDriver loaded ({driver.GetType()}).");
+                            BuildVoicePartAudio(part as UVoicePart, project, driver);
+                        } else {
+                            Log.Error("ResamplerDriver failed to load.");
+                        }
+                    } else lock (lockObject) { pendingParts--; }
                 }
             }
 
