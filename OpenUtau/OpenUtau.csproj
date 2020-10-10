@@ -51,6 +51,9 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>OpenUtau.App</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Expression.Interactions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Blend.Interctivity.WPF.v4.0.1.0.3\lib\net40\Microsoft.Expression.Interactions.dll</HintPath>
@@ -121,9 +124,8 @@
     <Compile Include="Core\Render\NAudio\SequencingSampleProvider.cs" />
     <Compile Include="Core\Render\RenderItem.cs" />
     <Compile Include="Core\Render\NAudio\RenderItemSampleProvider.cs" />
-    <Compile Include="Core\Render\ResamplerInterface.cs" />
+    <Compile Include="Core\Render\RenderEngine.cs" />
     <Compile Include="Core\Classes\ExpCommands.cs" />
-    <Compile Include="Core\Render\RenderDispatcher.cs" />
     <Compile Include="Core\ResamplerDriver\ResamplerDriver.cs" />
     <Compile Include="Core\ResamplerDriver\DriverModels.cs" />
     <Compile Include="Core\ResamplerDriver\Factorys\CppDriver.cs" />

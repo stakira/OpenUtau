@@ -36,6 +36,10 @@ namespace OpenUtau.Core.Render {
         // Sound data
         public MemorySampleProvider Sound;
 
+        // Progress
+        public string phonemeName;
+        public RenderEngine.Progress progress;
+
         public RenderItem(UPhoneme phoneme, UVoicePart part, UProject project) {
             var singer = project.Tracks[part.TrackNo].Singer;
             SourceFile = FileEncoding.ConvertEncoding(singer.FileEncoding, singer.PathEncoding, phoneme.Oto.File);
@@ -59,6 +63,8 @@ namespace OpenUtau.Core.Render {
             PosMs = project.TickToMillisecond(part.PosTick + phoneme.Parent.PosTick + phoneme.PosTick) - phoneme.Preutter;
             DurMs = project.TickToMillisecond(phoneme.DurTick) + lengthAdjustment;
             Envelope = phoneme.Envelope.Points;
+
+            phonemeName = phoneme.Phoneme;
         }
 
         public uint HashParameters() {

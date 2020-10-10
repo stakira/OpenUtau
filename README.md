@@ -7,20 +7,21 @@ Current stage: Alpha
 
 <img src="https://ci.appveyor.com/api/projects/status/github/stakira/OpenUtau?svg=true" alt="CI Badge"/>
 
-## How to Use
+[Discord](https://discord.gg/N3JjB3)
+
+## How to Install
 
 - Download the <a href="https://ci.appveyor.com/project/stakira/openutau/build/artifacts" target="_blank">Latest Build</a> or build it yourself.
 - You will need to provide your own sound libraries and your favourite resampler.
 - Open Preferences menu to select a singer folder, such as the voice folder under UTAU.
 - Put resampler exe or dll under Resamplers folder. Open Preferences menu to select resampler.
 
-## How to Build
+Tested resamplers
+- fresamp14.exe
+- tn_fnds.exe
+- TIPS.exe
 
-Requires:
-- Visual Studio 2019
-- .NET Framework 4.8 Developer Pack
-
-## Preview
+## How to Use
 
 Fluent Navigation Using Scroll Wheel
 
@@ -42,7 +43,12 @@ Other Actions
 - Scroll wheel on the measure bar (the bar with numbers right below the horizontal scroll bar) to zoom horizontally.
 - Scroll wheel on the widget right above the vertical scroll bar to zoom vertically.
 - Press `Ctrl` key to select multiple notes.
-- Press spacebar key anywhere to start playing or pause.
+- Press `Space` key anywhere to start playing or pause.
+
+## How to Build
+
+- Visual Studio 2019
+- .NET Framework 4.8 Developer Pack
 
 ## Scope
 #### The scope of OpenUtau includes:
@@ -53,14 +59,10 @@ Other Actions
 - Smooth preview/rendering experience.
 - A easy to use plugin system.
 - An efficient sample connecting engine (a.k.a. wavetool).
+- An efficient resampling engine interface.
 - A Windows version.
 
 #### The scope of OpenUtau does not include:
 - Resampling engines (a.k.a resampler).
 - Full feature digital music workstation.
 - OpenUtau does not strike for Vocaliod compatibility, other than limited features.
-
-#### The scope of OpenUtau may include:
-- An efficient resampling engine interface.
-- Coorperate with other projects on resampling engine integration.
-- A OS X version, but only after Windows version is mature.
