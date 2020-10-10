@@ -18,12 +18,12 @@ namespace OpenUtau.UI {
     /// </summary>
     public partial class MainWindow : BorderlessWindow
     {
+        bool initialized;
         MidiWindow midiWindow;
         TracksViewModel trackVM;
         ProgressBarViewModel progVM;
 
-        public MainWindow()
-        {
+        public MainWindow() {
             InitializeComponent();
 
             this.Width = Core.Util.Preferences.Default.MainWidth;
@@ -50,10 +50,14 @@ namespace OpenUtau.UI {
             trackVM.Subscribe(DocManager.Inst);
 
             CmdNewFile();
+
+            initialized = true;
         }
 
-        void RenderLoop(object sender, EventArgs e)
-        {
+        void RenderLoop(object sender, EventArgs e) {
+            if (!initialized) {
+                return;
+            }
             tickBackground.RenderIfUpdated();
             timelineBackground.RenderIfUpdated();
             trackBackground.RenderIfUpdated();
