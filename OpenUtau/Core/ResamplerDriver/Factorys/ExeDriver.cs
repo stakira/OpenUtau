@@ -1,11 +1,11 @@
-﻿using OpenUtau.Core.ResamplerDriver;
-using OpenUtau.Core.Util;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Text;
+using OpenUtau.Core.Util;
+using Serilog;
 
 namespace OpenUtau.Core.ResamplerDriver.Factorys
 {
@@ -40,7 +40,8 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys
             try
             {
                 string tmpFile = System.IO.Path.GetTempFileName();
-                string ArgParam = $"\"{Args.inputWaveFile}\" \"{tmpFile}\" {Args.NoteString} {Args.Velocity} \"{Args.StrFlags}\" {Args.Offset} {Args.RequiredLength} {Args.Consonant} {Args.Cutoff} {Args.Volume} {Args.Modulation} !{Args.Tempo} {Base64.Base64EncodeInt12(Args.pitchBend)}";
+                string ArgParam = FormattableString.Invariant(
+                    $"\"{Args.inputWaveFile}\" \"{tmpFile}\" {Args.NoteString} {Args.Velocity} \"{Args.StrFlags}\" {Args.Offset} {Args.RequiredLength} {Args.Consonant} {Args.Cutoff} {Args.Volume} {Args.Modulation} !{Args.Tempo} {Base64.Base64EncodeInt12(Args.pitchBend)}");
 
                 var p = Process.Start(new ProcessStartInfo(ExePath, ArgParam) { UseShellExecute = false, CreateNoWindow = true });
                 p.WaitForExit();

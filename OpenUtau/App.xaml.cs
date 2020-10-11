@@ -15,13 +15,11 @@ namespace OpenUtau {
 
         private App() {
             InitializeComponent();
-            SelectCulture(CultureInfo.InstalledUICulture.Name);
+            InitializeCulture();
         }
 
-        public static void SelectCulture(string culture) {
-            if (string.IsNullOrEmpty(culture)) {
-                return;
-            }
+        public static void InitializeCulture() {
+            var culture = CultureInfo.InstalledUICulture.Name;
             var dictionaryList = Current.Resources.MergedDictionaries.ToList();
             var resDictName = string.Format(@"UI\Strings.{0}.xaml", culture);
             var resDict = dictionaryList.
@@ -30,8 +28,9 @@ namespace OpenUtau {
                 Current.Resources.MergedDictionaries.Remove(resDict);
                 Current.Resources.MergedDictionaries.Add(resDict);
             }
-            Thread.CurrentThread.CurrentCulture = new CultureInfo(culture);
-            Thread.CurrentThread.CurrentUICulture = new CultureInfo(culture);
+            // Force using InvariantCulture to prevent issues caused by culture dependent string conversion, especially for floating point numbers.
+            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+            Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
         }
 
         [STAThread]

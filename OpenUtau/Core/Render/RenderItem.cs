@@ -6,9 +6,9 @@ using System.Text;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using OpenUtau.Core.USTx;
+using OpenUtau.Core.Util;
 using OpenUtau.SimpleHelpers;
 using xxHashSharp;
-using static OpenUtau.Core.ResamplerDriver.DriverModels;
 
 namespace OpenUtau.Core.Render {
 
@@ -23,6 +23,7 @@ namespace OpenUtau.Core.Render {
         public string StrFlags;
         public List<int> PitchData;
         public int RequiredLength;
+        public int Modulation;
         public double Tempo;
         public UOto Oto;
 
@@ -74,7 +75,7 @@ namespace OpenUtau.Core.Render {
         public string GetResamplerExeArgs() {
             // fresamp.exe <infile> <outfile> <tone> <velocity> <flags> <offset> <length_req>
             // <fixed_length> <endblank> <volume> <modulation> <pitch>
-            return $"{MusicMath.GetNoteString(NoteNum)} {Velocity:D} {StrFlags} {Oto.Offset} {RequiredLength:D} {Oto.Consonant} {Oto.Cutoff} {Volume:D} {0:D} {Tempo} {string.Join(",", PitchData)}";
+            return FormattableString.Invariant($"{MusicMath.GetNoteString(NoteNum)} {Velocity:D} \"{StrFlags}\" {Oto.Offset} {RequiredLength:D} {Oto.Consonant} {Oto.Cutoff} {Volume:D} {Modulation:D} {Tempo} {Base64.Base64EncodeInt12(PitchData.ToArray())}");
         }
 
         public ISampleProvider GetSampleProvider() {
@@ -84,24 +85,6 @@ namespace OpenUtau.Core.Render {
                 DelayBySamples = (int)(PosMs * sampleRate / 1000),
                 TakeSamples = (int)(DurMs * sampleRate / 1000),
                 SkipOverSamples = (int)(SkipOver * sampleRate / 1000),
-            };
-        }
-
-        public EngineInput ToEngineInput() {
-            return new EngineInput {
-                inputWaveFile = SourceFile,
-                NoteString = MusicMath.GetNoteString(NoteNum),
-                Velocity = Velocity,
-                StrFlags = StrFlags,
-                Offset = Oto.Offset,
-                RequiredLength = RequiredLength,
-                Consonant = Oto.Consonant,
-                Cutoff = Oto.Cutoff,
-                Volume = Volume,
-                Modulation = 0,
-                pitchBend = PitchData.ToArray(),
-                nPitchBend = PitchData.Count,
-                Tempo = Tempo
             };
         }
 
