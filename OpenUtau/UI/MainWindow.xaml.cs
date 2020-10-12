@@ -11,6 +11,8 @@ using OpenUtau.UI.Models;
 using OpenUtau.UI.Controls;
 using OpenUtau.Core;
 using OpenUtau.Core.USTx;
+using System.Threading.Tasks;
+using Serilog;
 
 namespace OpenUtau.UI {
     /// <summary>
@@ -428,6 +430,38 @@ namespace OpenUtau.UI {
         {
             var w = new Dialogs.SingerViewDialog() { Owner = this };
             w.ShowDialog();
+        }
+
+        private void MenuInstallSingers_Click(object sender, RoutedEventArgs e) {
+            OpenFileDialog dialog = new OpenFileDialog() {
+                Filter = "Archive File|*.zip;*.rar;*.7z",
+                Multiselect = false,
+                CheckFileExists = true,
+            };
+            if (dialog.ShowDialog() == true) {
+                Task.Run(() => {
+                    var task = Task.Run(() => {
+                        var installer = new Classic.VoicebankInstaller(PathManager.Inst.InstalledSingersPath, (progress, info) => {
+                            DocManager.Inst.Publish(new ProgressBarNotification(progress, info));
+                        });
+                        installer.LoadArchive(dialog.FileName);
+                    });
+                    try {
+                        task.Wait();
+                    } catch (AggregateException ae) {
+                        string message = null;
+                        foreach (var ex in ae.Flatten().InnerExceptions) {
+                            if (message == null) {
+                                message = ex.ToString();
+                            }
+                            Log.Error(ex, "failed to install");
+                            break;
+                        }
+                        MessageBox.Show(message, (string)FindResource("errors.caption"), MessageBoxButton.OK, MessageBoxImage.None);
+                    }
+                    DocManager.Inst.Publish(new Core.ProgressBarNotification(0, ""));
+                });
+            }
         }
 
         private void MenuRenderAll_Click(object sender, RoutedEventArgs e)

@@ -5,7 +5,7 @@
     <Grid>
         <TreeView x:Name="treeView" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Stretch" Width="150"
                   SelectedItemChanged="treeView_SelectedItemChanged">
-            <TreeViewItem Header="{StaticResource prefs.general}" IsExpanded="True">
+            <TreeViewItem Header="{StaticResource prefs.general}" IsExpanded="True" Visibility="Collapsed">
                 <TreeViewItem x:Name="pathsItem" Header="{StaticResource prefs.general.paths}" Margin="-12,0,0,0"/>
             </TreeViewItem>
             <TreeViewItem Header="{StaticResource prefs.audio}" IsExpanded="True">

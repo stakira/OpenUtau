@@ -7,13 +7,14 @@ using System.Threading.Tasks;
 using OpenUtau.Core;
 using OpenUtau.Core.Lib;
 using OpenUtau.Core.USTx;
+using Serilog;
 
 namespace OpenUtau.Core
 {
     class DocManager : ICmdPublisher
     {
         DocManager() {
-            _project = new UProject();
+            Project = new UProject();
         }
 
         static DocManager _s;
@@ -22,14 +23,21 @@ namespace OpenUtau.Core
 
         public int playPosTick = 0;
 
-        Dictionary<string, USinger> _singers;
-        public Dictionary<string, USinger> Singers { get { return _singers; } }
-        UProject _project;
-        public UProject Project { get { return _project; } }
+        public Dictionary<string, USinger> Singers { get; private set; }
+        public UProject Project { get; private set; }
 
         public void SearchAllSingers()
         {
-            _singers = Formats.UtauSoundbank.FindAllSingers();
+            Singers = Formats.UtauSoundbank.FindAllSingers();
+        }
+
+        public USinger GetSinger(string name) {
+            Log.Information(name);
+            name = name.Replace(PathManager.UtauVoicePath, "");
+            if (Singers.ContainsKey(name)) {
+                return Singers[name];
+            }
+            return null;
         }
 
         # region Command Queue
@@ -64,7 +72,7 @@ namespace OpenUtau.Core
                     redoQueue.Clear();
                     undoGroup = null;
                     savedPoint = null;
-                    this._project = ((LoadProjectNotification)cmd).project;
+                    this.Project = ((LoadProjectNotification)cmd).project;
                     this.playPosTick = 0;
                 }
                 else if (cmd is SetPlayPosTickNotification)

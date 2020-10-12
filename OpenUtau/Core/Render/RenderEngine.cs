@@ -93,7 +93,6 @@ namespace OpenUtau.Core.Render {
                     }
                     var item = new RenderItem(phoneme, part, project);
                     item.progress = progress;
-                    PrepareSourceFile(cacheDir, item);
                     tasks.Add(Task<RenderItem>.Factory.StartNew(ResamplePhonemeAsync, item, cancellationTokenSource.Token));
                 }
             }
@@ -110,22 +109,6 @@ namespace OpenUtau.Core.Render {
             output.Dispose();
             item.progress.CompleteOne($"Resampling \"{item.phonemeName}\"");
             return item;
-        }
-
-        /// <summary>
-        /// Non-ASCII source file path does not well work with Process.Start(). Makes a copy to avoid Non-ASCII path.
-        /// </summary>
-        /// <param name="cacheDir"></param>
-        /// <param name="item"></param>
-        void PrepareSourceFile(string cacheDir, RenderItem item) {
-            uint srcHash = xxHash.CalculateHash(Encoding.UTF8.GetBytes(item.SourceFile));
-            string srcFilePath = Path.Combine(cacheDir, $"src_{srcHash}.wav");
-            lock (srcFileLock) {
-                if (!File.Exists(srcFilePath)) {
-                    File.Copy(item.SourceFile, srcFilePath);
-                }
-            }
-            item.SourceFile = srcFilePath;
         }
     }
 }

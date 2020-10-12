@@ -20,7 +20,7 @@ namespace OpenUtau.UI.Dialogs {
         public PreferencesDialog() {
             InitializeComponent();
 
-            pathsItem.IsSelected = true;
+            renderingItem.IsSelected = true;
             UpdateSingerPaths();
             UpdateEngines();
         }

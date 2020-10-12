@@ -22,6 +22,7 @@ namespace OpenUtau.Core {
 
         public static PathManager Inst { get { if (_inst == null) { _inst = new PathManager(); } return _inst; } }
         public string HomePath { get; private set; }
+        public string InstalledSingersPath => Path.Combine(HomePath, "Content", "Singers");
 
         public string TryMakeRelative(string path) {
             if (path.StartsWith(HomePath, StringComparison.Ordinal)) {

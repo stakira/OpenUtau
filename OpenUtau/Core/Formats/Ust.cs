@@ -146,7 +146,7 @@ namespace OpenUtau.Core.Formats {
 
                         if (line.StartsWith("VoiceDir=")) {
                             var singerpath = line.Trim().Replace("VoiceDir=", string.Empty);
-                            var singer = UtauSoundbank.GetSinger(singerpath, FileEncoding.DetectFileEncoding(file), DocManager.Inst.Singers);
+                            var singer = DocManager.Inst.GetSinger(singerpath);
                             if (singer == null) {
                                 singer = new USinger() { Name = "", Path = singerpath };
                             }
