@@ -12,8 +12,7 @@ Current stage: Alpha
 ## How to Install
 
 - Download the <a href="https://ci.appveyor.com/project/stakira/openutau/build/artifacts" target="_blank">Latest Build</a> or build it yourself.
-- You will need to provide your own sound libraries and your favourite resampler.
-- Open Preferences menu to select a singer folder, such as the voice folder under UTAU.
+- Install singer from menu Tools -> Install Singer. Select the singer zip or rar file.
 - Put resampler exe or dll under Resamplers folder. Open Preferences menu to select resampler.
 
 Tested resamplers
