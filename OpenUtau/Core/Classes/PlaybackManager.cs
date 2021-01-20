@@ -14,7 +14,9 @@ namespace OpenUtau.Core {
     class PlaybackManager : ICmdSubscriber {
         private WaveOutEvent outDevice;
 
-        private PlaybackManager() { this.Subscribe(DocManager.Inst); }
+        private PlaybackManager() {
+            DocManager.Inst.AddSubscriber(this);
+        }
 
         private static PlaybackManager _s;
         public static PlaybackManager Inst { get { if (_s == null) { _s = new PlaybackManager(); } return _s; } }
@@ -106,8 +108,6 @@ namespace OpenUtau.Core {
         }
 
         # region ICmdSubscriber
-
-        public void Subscribe(ICmdPublisher publisher) { if (publisher != null) publisher.Subscribe(this); }
 
         public void OnNext(UCommand cmd, bool isUndo) {
             if (cmd is SeekPlayPosTickNotification) {

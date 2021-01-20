@@ -21,10 +21,9 @@ namespace OpenUtau.Core
         UProject _project;
         PartContainer _partContainer;
 
-        public PartManager()
-        {
+        public PartManager() {
             _partContainer = new PartContainer();
-            this.Subscribe(DocManager.Inst);
+            DocManager.Inst.AddSubscriber(this);
             timer = new Timer(Update, _partContainer, 0, 100);
         }
 
@@ -246,8 +245,6 @@ namespace OpenUtau.Core
         # endregion
 
         # region ICmdSubscriber
-
-        public void Subscribe(ICmdPublisher publisher) { if (publisher != null) publisher.Subscribe(this); }
 
         public void OnNext(UCommand cmd, bool isUndo)
         {

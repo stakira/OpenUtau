@@ -18,7 +18,6 @@ namespace OpenUtau.Classic {
             foreach (var file in Directory.EnumerateFiles(basePath, "_voicebank.json", SearchOption.AllDirectories)) {
                 var voicebank = LoadVoicebank(Path.GetDirectoryName(file), file);
                 result.Add(Path.GetDirectoryName(voicebank.OrigFile), voicebank);
-
             }
             return result;
         }

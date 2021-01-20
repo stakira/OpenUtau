@@ -9,10 +9,8 @@ using OpenUtau.Core.Lib;
 using OpenUtau.Core.USTx;
 using Serilog;
 
-namespace OpenUtau.Core
-{
-    class DocManager : ICmdPublisher
-    {
+namespace OpenUtau.Core {
+    class DocManager {
         DocManager() {
             Project = new UProject();
         }
@@ -26,8 +24,7 @@ namespace OpenUtau.Core
         public Dictionary<string, USinger> Singers { get; private set; }
         public UProject Project { get; private set; }
 
-        public void SearchAllSingers()
-        {
+        public void SearchAllSingers() {
             Singers = Formats.UtauSoundbank.FindAllSingers();
         }
 
@@ -47,46 +44,36 @@ namespace OpenUtau.Core
         UCommandGroup undoGroup = null;
         UCommandGroup savedPoint = null;
 
-        public bool ChangesSaved
-        {
-            get
-            {
+        public bool ChangesSaved {
+            get {
                 return Project.Saved && (undoQueue.Count > 0 && savedPoint == undoQueue.Last() || undoQueue.Count == 0 && savedPoint == null);
             }
         }
 
-        public void ExecuteCmd(UCommand cmd, bool quiet = false)
-        {
-            if (cmd is UNotification)
-            {
-                if (cmd is SaveProjectNotification)
-                {
+        public void ExecuteCmd(UCommand cmd, bool quiet = false) {
+            if (cmd is UNotification) {
+                if (cmd is SaveProjectNotification) {
                     var _cmd = cmd as SaveProjectNotification;
                     if (undoQueue.Count > 0) savedPoint = undoQueue.Last();
                     if (string.IsNullOrEmpty(_cmd.Path)) OpenUtau.Core.Formats.USTx.Save(Project.FilePath, Project);
                     else OpenUtau.Core.Formats.USTx.Save(_cmd.Path, Project);
-                }
-                else if (cmd is LoadProjectNotification)
-                {
+                } else if (cmd is LoadProjectNotification) {
                     undoQueue.Clear();
                     redoQueue.Clear();
                     undoGroup = null;
                     savedPoint = null;
-                    this.Project = ((LoadProjectNotification)cmd).project;
-                    this.playPosTick = 0;
-                }
-                else if (cmd is SetPlayPosTickNotification)
-                {
+                    Project = ((LoadProjectNotification)cmd).project;
+                    playPosTick = 0;
+                } else if (cmd is SetPlayPosTickNotification) {
                     var _cmd = cmd as SetPlayPosTickNotification;
-                    this.playPosTick = _cmd.playPosTick;
+                    playPosTick = _cmd.playPosTick;
+                } else if (cmd is SingersChangedNotification) {
+                    SearchAllSingers();
                 }
                 Publish(cmd);
                 if (!quiet) System.Diagnostics.Debug.WriteLine("Publish notification " + cmd.ToString());
                 return;
-            }
-            else if (undoGroup == null) { System.Diagnostics.Debug.WriteLine("Null undoGroup"); return; }
-            else
-            {
+            } else if (undoGroup == null) { System.Diagnostics.Debug.WriteLine("Null undoGroup"); return; } else {
                 undoGroup.Commands.Add(cmd);
                 cmd.Execute();
                 Publish(cmd);
@@ -94,31 +81,27 @@ namespace OpenUtau.Core
             if (!quiet) System.Diagnostics.Debug.WriteLine("ExecuteCmd " + cmd.ToString());
         }
 
-        public void StartUndoGroup()
-        {
+        public void StartUndoGroup() {
             if (undoGroup != null) { System.Diagnostics.Debug.WriteLine("undoGroup already started"); EndUndoGroup(); }
             undoGroup = new UCommandGroup();
             System.Diagnostics.Debug.WriteLine("undoGroup started");
         }
 
-        public void EndUndoGroup()
-        {
+        public void EndUndoGroup() {
             if (undoGroup != null && undoGroup.Commands.Count > 0) { undoQueue.AddToBack(undoGroup); redoQueue.Clear(); }
             if (undoQueue.Count > Core.Util.Preferences.Default.UndoLimit) undoQueue.RemoveFromFront();
             undoGroup = null;
             System.Diagnostics.Debug.WriteLine("undoGroup ended");
         }
 
-        public void Undo()
-        {
+        public void Undo() {
             if (undoQueue.Count == 0) return;
             var cmdg = undoQueue.RemoveFromBack();
             for (int i = cmdg.Commands.Count - 1; i >= 0; i--) { var cmd = cmdg.Commands[i]; cmd.Unexecute(); if (!(cmd is NoteCommand)) Publish(cmd, true); }
             redoQueue.AddToBack(cmdg);
         }
 
-        public void Redo()
-        {
+        public void Redo() {
             if (redoQueue.Count == 0) return;
             var cmdg = redoQueue.RemoveFromBack();
             foreach (var cmd in cmdg.Commands) { cmd.Execute(); Publish(cmd); }
@@ -127,16 +110,28 @@ namespace OpenUtau.Core
 
         # endregion
 
-        # region ICmdPublisher
+        # region Command Subscribers
 
         private List<ICmdSubscriber> subscribers = new List<ICmdSubscriber>();
-        public void Subscribe(ICmdSubscriber sub) { if (!subscribers.Contains(sub)) subscribers.Add(sub); }
-        public void Publish(UCommand cmd, bool isUndo = false) { foreach (var sub in subscribers) sub.OnNext(cmd, isUndo); }
 
-        # endregion
+        public void AddSubscriber(ICmdSubscriber sub) {
+            if (!subscribers.Contains(sub)) {
+                subscribers.Add(sub);
+            }
+        }
 
-        # region Command handeling
+        public void RemoveSubscriber(ICmdSubscriber sub) {
+            if (subscribers.Contains(sub)) {
+                subscribers.Remove(sub);
+            }
+        }
 
-        # endregion
+        private void Publish(UCommand cmd, bool isUndo = false) {
+            foreach (var sub in subscribers) {
+                sub.OnNext(cmd, isUndo);
+            }
+        }
+
+        #endregion
     }
 }

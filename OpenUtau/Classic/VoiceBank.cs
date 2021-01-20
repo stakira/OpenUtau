@@ -8,6 +8,7 @@ namespace OpenUtau.Classic {
         public string Image;
         public string Author;
         public string Web;
+        public string OtherInfo;
         public List<OtoSet> OtoSets;
         public PrefixMap PrefixMap;
 

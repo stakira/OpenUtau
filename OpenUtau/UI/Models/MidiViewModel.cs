@@ -396,8 +396,6 @@ namespace OpenUtau.UI.Models
 
         # region ICmdSubscriber
 
-        public void Subscribe(ICmdPublisher publisher) { if (publisher != null) publisher.Subscribe(this); }
-
         public void OnNext(UCommand cmd, bool isUndo)
         {
             if (cmd is NoteCommand)

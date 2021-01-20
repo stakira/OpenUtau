@@ -26,7 +26,7 @@ namespace OpenUtau.Core.Formats {
             var imagePath = Path.Combine(singer.Path, voicebank.Image);
             singer.Avatar = LoadAvatar(imagePath);
             singer.Loaded = true;
-            singer.PitchMap = voicebank.PrefixMap.Map;
+            singer.PitchMap = voicebank.PrefixMap?.Map;
             foreach (var otoSet in voicebank.OtoSets) {
                 var otoDir = Path.Combine(Path.GetDirectoryName(otoSet.File));
                 foreach (var oto in otoSet.Otos) {

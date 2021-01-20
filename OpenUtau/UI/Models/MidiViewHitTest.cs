@@ -19,7 +19,7 @@ namespace OpenUtau.UI.Models
         public double Y;
     }
 
-    class MidiViewHitTest : ICmdSubscriber
+    class MidiViewHitTest
     {
         MidiViewModel midiVM;
         UProject Project { get { return DocManager.Inst.Project; } }
@@ -108,17 +108,5 @@ namespace OpenUtau.UI.Models
             }
             return null;
         }
-
-        # region ICmdSubscriber
-
-        public void Subscribe(ICmdPublisher publisher) { if (publisher != null) publisher.Subscribe(this); }
-
-        public void OnNext(UCommand cmd, bool isUndo)
-        {
-
-            if (cmd is RedrawNotesNotification) { }
-        }
-
-        # endregion
     }
 }

@@ -79,7 +79,9 @@ namespace OpenUtau.UI.Models
             }
         }
 
-        public ExpComboBoxViewModel() { this.Subscribe(DocManager.Inst); }
+        public ExpComboBoxViewModel() {
+            DocManager.Inst.AddSubscriber(this);
+        }
 
         public void CreateBindings(ExpComboBox box)
         {
@@ -108,8 +110,6 @@ namespace OpenUtau.UI.Models
         }
 
         # region ICmdSubscriber
-
-        public void Subscribe(ICmdPublisher publisher) { if (publisher != null) publisher.Subscribe(this); }
 
         public void OnNext(UCommand cmd, bool isUndo)
         {

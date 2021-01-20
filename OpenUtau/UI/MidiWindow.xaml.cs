@@ -53,7 +53,7 @@ namespace OpenUtau.UI
             midiVM.MidiCanvas = this.notesCanvas;
             midiVM.PhonemeCanvas = this.phonemeCanvas;
             midiVM.ExpCanvas = this.expCanvas;
-            midiVM.Subscribe(DocManager.Inst);
+            DocManager.Inst.AddSubscriber(midiVM);
 
             midiHT = new MidiViewHitTest(midiVM);
 
@@ -71,6 +71,11 @@ namespace OpenUtau.UI
             comboVMs[3].CreateBindings(expCombo3);
 
             InitPitchPointContextMenu();
+        }
+
+        protected override void OnClosed(EventArgs e) {
+            base.OnClosed(e);
+            DocManager.Inst.RemoveSubscriber(midiVM);
         }
 
         void InitPitchPointContextMenu()

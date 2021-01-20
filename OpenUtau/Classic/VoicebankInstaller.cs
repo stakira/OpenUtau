@@ -1,9 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using IniParser;
-using IniParser.Model;
 using Newtonsoft.Json;
 using Serilog;
 using SharpCompress.Archives;
@@ -32,7 +31,7 @@ namespace OpenUtau.Classic {
         }
 
         public void LoadArchive(string path) {
-            var encoding = DetectArchiveFileEncoding(path);
+            var encoding = Encoding.GetEncoding(932);
             if (encoding == null) {
                 throw new Exception($"Failed to detect encoding of {path}.");
             }
@@ -70,18 +69,33 @@ namespace OpenUtau.Classic {
                         continue;
                     }
                     if (Path.GetFileName(entry.Key) == "character.txt") {
-                        var iniParser = new StreamIniDataParser();
-                        IniData iniData;
+                        Voicebank voicebank = new Voicebank { OrigFile = entry.Key };
                         using (var streamReader = new StreamReader(entry.OpenEntryStream(), encoding)) {
-                            iniData = iniParser.ReadData(streamReader);
+                            var otherLines = new List<string>();
+                            while (!streamReader.EndOfStream) {
+                                string line = streamReader.ReadLine().Trim();
+                                var s = line.Split(new char[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
+                                if (s.Length == 2) {
+                                    if (s[0] == "name") {
+                                        voicebank.Name = s[1];
+                                    } else if (s[0] == "image") {
+                                        voicebank.Image = s[1];
+                                    } else if (s[0] == "author") {
+                                        voicebank.Author = s[1];
+                                    } else if (s[0] == "web") {
+                                        voicebank.Web = s[1];
+                                    } else {
+                                        otherLines.Add(line);
+                                    }
+                                } else {
+                                    otherLines.Add(line);
+                                }
+                            }
+                            voicebank.OtherInfo = string.Join("\n", otherLines);
                         }
-                        Voicebank voicebank = new Voicebank {
-                            OrigFile = entry.Key,
-                            Name = iniData.Global["name"],
-                            Image = iniData.Global["image"],
-                            Author = iniData.Global["author"],
-                            Web = iniData.Global["web"],
-                        };
+                        if (string.IsNullOrEmpty(voicebank.Name)) {
+                            throw new FileFormatException(string.Format("Failed to load character.txt using encoding {0}", encoding));
+                        }
                         string filePath = Path.Combine(HashPath(Path.GetDirectoryName(entry.Key)), "_voicebank.json");
                         voicebank.File = filePath;
                         filePath = Path.Combine(basePath, filePath);

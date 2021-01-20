@@ -16,41 +16,39 @@ using OpenUtau.UI.Controls;
 using OpenUtau.Core;
 using OpenUtau.Core.USTx;
 
-namespace OpenUtau.UI.Dialogs
-{
+namespace OpenUtau.UI.Dialogs {
     /// <summary>
     /// Interaction logic for SingerViewDialog.xaml
     /// </summary>
-    public partial class SingerViewDialog : Window
-    {
+    public partial class SingerViewDialog : Window, ICmdSubscriber {
         List<string> singerNames;
-        public SingerViewDialog()
-        {
+        public SingerViewDialog() {
             InitializeComponent();
             UpdateSingers();
+            DocManager.Inst.AddSubscriber(this);
         }
 
-        private void UpdateSingers()
-        {
+        protected override void OnClosed(EventArgs e) {
+            base.OnClosed(e);
+            DocManager.Inst.RemoveSubscriber(this);
+        }
+
+        private void UpdateSingers() {
             singerNames = new List<string>();
-            foreach (var pair in DocManager.Inst.Singers)
-            {
+            foreach (var pair in DocManager.Inst.Singers) {
                 singerNames.Add(pair.Value.Name);
             }
-            if (singerNames.Count > 0)
-            {
+            if (singerNames.Count > 0) {
                 this.name.SelectedIndex = 0;
                 SetSinger(singerNames[0]);
             }
             this.name.ItemsSource = singerNames;
         }
 
-        public void SetSinger(string singerName)
-        {
+        public void SetSinger(string singerName) {
             USinger singer = null;
-            foreach(var pair in DocManager.Inst.Singers)
-                if (pair.Value.Name == singerName)
-                {
+            foreach (var pair in DocManager.Inst.Singers)
+                if (pair.Value.Name == singerName) {
                     singer = pair.Value;
                 }
             if (singer == null) return;
@@ -61,9 +59,18 @@ namespace OpenUtau.UI.Dialogs
             foreach (var pair in singer.AliasMap) this.otoview.Items.Add(pair.Value);
         }
 
-        private void name_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
+        private void name_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             SetSinger(singerNames[this.name.SelectedIndex]);
         }
+
+        #region ICmdSubscriber
+
+        public void OnNext(UCommand cmd, bool isUndo) {
+            if (cmd is SingersChangedNotification) {
+                UpdateSingers();
+            }
+        }
+
+        # endregion
     }
 }

@@ -35,7 +35,7 @@ namespace OpenUtau.UI {
             ThemeManager.LoadTheme(); // TODO : move to program entry point
 
             progVM = this.Resources["progVM"] as ProgressBarViewModel;
-            progVM.Subscribe(DocManager.Inst);
+            DocManager.Inst.AddSubscriber(progVM);
             progVM.Foreground = ThemeManager.NoteFillBrushes[0];
 
             this.CloseButtonClicked += (o, e) => { CmdExit(); };
@@ -49,11 +49,17 @@ namespace OpenUtau.UI {
             trackVM.TimelineCanvas = this.timelineCanvas;
             trackVM.TrackCanvas = this.trackCanvas;
             trackVM.HeaderCanvas = this.headerCanvas;
-            trackVM.Subscribe(DocManager.Inst);
+            DocManager.Inst.AddSubscriber(trackVM);
 
             CmdNewFile();
 
             initialized = true;
+        }
+
+        protected override void OnClosed(EventArgs e) {
+            base.OnClosed(e);
+            DocManager.Inst.RemoveSubscriber(progVM);
+            DocManager.Inst.RemoveSubscriber(trackVM);
         }
 
         void RenderLoop(object sender, EventArgs e) {
@@ -442,7 +448,7 @@ namespace OpenUtau.UI {
                 Task.Run(() => {
                     var task = Task.Run(() => {
                         var installer = new Classic.VoicebankInstaller(PathManager.Inst.InstalledSingersPath, (progress, info) => {
-                            DocManager.Inst.Publish(new ProgressBarNotification(progress, info));
+                            DocManager.Inst.ExecuteCmd(new ProgressBarNotification(progress, info));
                         });
                         installer.LoadArchive(dialog.FileName);
                     });
@@ -459,7 +465,8 @@ namespace OpenUtau.UI {
                         }
                         MessageBox.Show(message, (string)FindResource("errors.caption"), MessageBoxButton.OK, MessageBoxImage.None);
                     }
-                    DocManager.Inst.Publish(new Core.ProgressBarNotification(0, ""));
+                    DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, ""));
+                    DocManager.Inst.ExecuteCmd(new SingersChangedNotification());
                 });
             }
         }
