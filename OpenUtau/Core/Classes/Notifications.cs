@@ -73,9 +73,9 @@ namespace OpenUtau.Core {
     }
 
     public class ProgressBarNotification : UNotification {
-        public int Progress;
+        public double Progress;
         public string Info;
-        public ProgressBarNotification(int progress, string info) { Progress = progress; Info = info; }
+        public ProgressBarNotification(double progress, string info) { Progress = progress; Info = info; }
         public override string ToString() { return $"Set progress {Progress} {Info}"; }
     }
 

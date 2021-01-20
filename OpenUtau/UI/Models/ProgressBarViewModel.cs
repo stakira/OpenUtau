@@ -25,7 +25,7 @@ namespace OpenUtau.UI.Models
         object lockObject = new object();
         Brush _foreground;
         public Brush Foreground { set { _foreground = value; OnPropertyChanged("Foreground"); } get { return _foreground; } }
-        public int Progress { set; get; }
+        public double Progress { set; get; }
         public string Info { set; get; }
 
         public void Update(ProgressBarNotification cmd)

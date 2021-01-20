@@ -14,9 +14,9 @@ namespace OpenUtau.Classic {
 
     class VoicebankInstaller {
         readonly string basePath;
-        readonly Action<int, string> progress;
+        readonly Action<double, string> progress;
 
-        public VoicebankInstaller(string basePath, Action<int, string> progress) {
+        public VoicebankInstaller(string basePath, Action<double, string> progress) {
             if (basePath.Length > 80) {
                 throw new ArgumentException("Path too long. Try to move OpenUtau to a shorter path.");
             }
@@ -51,7 +51,7 @@ namespace OpenUtau.Classic {
                 int total = archive.Entries.Count();
                 int count = 0;
                 foreach (var entry in archive.Entries) {
-                    progress.Invoke(++count * 100 / total, entry.Key);
+                    progress.Invoke(++count * 100.0 / total, entry.Key);
                     if (entry.IsDirectory) {
                         continue;
                     }
