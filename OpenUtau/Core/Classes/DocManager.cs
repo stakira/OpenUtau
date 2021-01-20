@@ -1,10 +1,7 @@
-﻿using System;
+﻿using System.IO;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-using OpenUtau.Core;
 using OpenUtau.Core.Lib;
 using OpenUtau.Core.USTx;
 using Serilog;
@@ -26,6 +23,7 @@ namespace OpenUtau.Core {
 
         public void SearchAllSingers() {
             Singers = Formats.UtauSoundbank.FindAllSingers();
+            Directory.CreateDirectory(PathManager.Inst.GetEngineSearchPath());
         }
 
         public USinger GetSinger(string name) {
