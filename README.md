@@ -7,7 +7,7 @@ Current stage: Alpha
 
 <img src="https://ci.appveyor.com/api/projects/status/github/stakira/OpenUtau?svg=true" alt="CI Badge"/>
 
-[Discord](https://discord.gg/N3JjB3)
+[Discord](https://discord.gg/UfpMnqMmEM)
 
 ## How to Install
 
