@@ -7,7 +7,7 @@
         xmlns:ic="clr-namespace:Microsoft.Expression.Interactivity.Core;assembly=Microsoft.Expression.Interactions"
         xmlns:il="clr-namespace:Microsoft.Expression.Interactivity.Layout;assembly=Microsoft.Expression.Interactions"
         xmlns:ib="clr-namespace:OpenUtau.UI.Behaviors"
-        Style="{StaticResource ResourceKey=UBorderlessWindow}" Title="Midi Editor"  KeyDown="Window_KeyDown" Closing="Window_Closing">
+        Style="{StaticResource ResourceKey=UBorderlessWindow}" Title="Midi Editor" KeyDown="Window_KeyDown" Closing="Window_Closing">
     <i:Interaction.Behaviors>
         <ib:BorderlessWindowBehavior/>
     </i:Interaction.Behaviors>
@@ -125,7 +125,7 @@
                     <Border.Effect>
                         <DropShadowEffect Color="Black" ShadowDepth="0" BlurRadius="5" Opacity="0.75"/>
                     </Border.Effect>
-                    <TextBox x:Name="LyricBox" TextWrapping="Wrap" Width="240" Height="28" FontSize="18" Visibility="Hidden" KeyDown="LyricBox_KeyDown"/>
+                    <local:LyricBox x:Name="LyricBox" Width="360" Height="28" Visibility="Hidden"/>
                 </Border>
             </Border>
             <Grid x:Name="keyboardBackgroundGrid" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="48" Margin="0,40,0,0" ClipToBounds="True">
