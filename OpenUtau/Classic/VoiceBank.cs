@@ -32,11 +32,11 @@ namespace OpenUtau.Classic {
         public string Name;
         public string Wav;
         public string OrigWav;
-        public int Offset;
-        public int Consonant;
-        public int Cutoff;
-        public int Preutter;
-        public int Overlap;
+        public double Offset;
+        public double Consonant;
+        public double Cutoff;
+        public double Preutter;
+        public double Overlap;
 
         public override string ToString() {
             return Name;

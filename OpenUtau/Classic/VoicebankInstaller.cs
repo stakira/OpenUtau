@@ -104,8 +104,9 @@ namespace OpenUtau.Classic {
                         continue;
                     }
                     if (Path.GetFileName(entry.Key) == "prefix.map") {
-                        var prefixMap = new PrefixMap();
-                        prefixMap.OrigFile = entry.Key;
+                        var prefixMap = new PrefixMap {
+                            OrigFile = entry.Key
+                        };
                         using (var streamReader = new StreamReader(entry.OpenEntryStream(), encoding)) {
                             while (!streamReader.EndOfStream) {
                                 var s = streamReader.ReadLine().Trim().Split(new char[0], StringSplitOptions.RemoveEmptyEntries);
@@ -208,11 +209,11 @@ namespace OpenUtau.Classic {
                 Wav = HashPath(wav.Replace(ext, "")) + ext,
                 Name = parts[0].Trim()
             };
-            int.TryParse(parts[1], out result.Offset);
-            int.TryParse(parts[2], out result.Consonant);
-            int.TryParse(parts[3], out result.Cutoff);
-            int.TryParse(parts[4], out result.Preutter);
-            int.TryParse(parts[5], out result.Overlap);
+            double.TryParse(parts[1], out result.Offset);
+            double.TryParse(parts[2], out result.Consonant);
+            double.TryParse(parts[3], out result.Cutoff);
+            double.TryParse(parts[4], out result.Preutter);
+            double.TryParse(parts[5], out result.Overlap);
             return result;
         }
     }
