@@ -1,12 +1,10 @@
 version: 0.0.{build}
-image: Visual Studio 2017
+image: Visual Studio 2019
 configuration:
 - Release
 platform: Any CPU
 before_build:
-- cmd: nuget restore -verbosity quiet
-build_script:
-- cmd: msbuild OpenUtau.sln /p:Configuration=Release /verbosity:quiet
+- cmd: nuget restore
 artifacts:
 - path: OpenUtau\bin\Release
   name: OpenUtau

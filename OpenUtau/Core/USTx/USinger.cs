@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Immutable;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Media.Imaging;
@@ -16,7 +15,7 @@ namespace OpenUtau.Core.USTx {
         public double Cutoff { private set; get; }
         public double Preutter { private set; get; }
         public double Overlap { private set; get; }
-        public ImmutableList<string> SearchTerms { private set; get; }
+        public List<string> SearchTerms { private set; get; }
 
         public UOto(Oto oto, UOtoSet set) {
             Alias = oto.Name;
@@ -27,30 +26,28 @@ namespace OpenUtau.Core.USTx {
             Cutoff = oto.Cutoff;
             Preutter = oto.Preutter;
             Overlap = oto.Overlap;
-            var searchTerms = new List<string>();
-            searchTerms.Add(Alias.ToLowerInvariant().Replace(" ", ""));
-            searchTerms.Add(WanaKana.ToRomaji(Alias).ToLowerInvariant().Replace(" ", ""));
-            SearchTerms = searchTerms.ToImmutableList();
+            SearchTerms = new List<string>();
+            SearchTerms.Add(Alias.ToLowerInvariant().Replace(" ", ""));
+            SearchTerms.Add(WanaKana.ToRomaji(Alias).ToLowerInvariant().Replace(" ", ""));
         }
     }
 
     public class UOtoSet {
         public readonly string Name;
         public readonly string Location;
-        public readonly ImmutableDictionary<string, UOto> Otos;
+        public readonly Dictionary<string, UOto> Otos;
 
         public UOtoSet(OtoSet otoSet, USinger singer, string singersPath) {
             Name = otoSet.Name;
             Location = Path.Combine(singersPath, Path.GetDirectoryName(otoSet.File));
-            var otos = new Dictionary<string, UOto>();
+            Otos = new Dictionary<string, UOto>();
             foreach (var oto in otoSet.Otos) {
-                if (!otos.ContainsKey(oto.Name)) {
-                    otos.Add(oto.Name, new UOto(oto, this));
+                if (!Otos.ContainsKey(oto.Name)) {
+                    Otos.Add(oto.Name, new UOto(oto, this));
                 } else {
                     Serilog.Log.Error("{0} {1} {2}", singer.Name, Name, oto.Name);
                 }
             }
-            Otos = otos.ToImmutableDictionary();
         }
     }
 
@@ -60,8 +57,8 @@ namespace OpenUtau.Core.USTx {
         public readonly string Author;
         public readonly string Web;
         public readonly BitmapImage Avatar;
-        public readonly ImmutableDictionary<string, string> PitchMap;
-        public readonly ImmutableList<UOtoSet> OtoSets;
+        public readonly Dictionary<string, string> PitchMap;
+        public readonly List<UOtoSet> OtoSets;
         public readonly bool Loaded;
 
         public string DisplayName { get { return Loaded ? Name : $"{Name}[Unloaded]"; } }
@@ -80,15 +77,14 @@ namespace OpenUtau.Core.USTx {
             Avatar = LoadAvatar(imagePath);
             Loaded = true;
             if (voicebank.PrefixMap != null) {
-                PitchMap = voicebank.PrefixMap.Map.ToImmutableDictionary();
+                PitchMap = voicebank.PrefixMap.Map;
             } else {
-                PitchMap = ImmutableDictionary<string, string>.Empty;
+                PitchMap = new Dictionary<string, string>();
             }
-            var otoSets = new List<UOtoSet>();
+            OtoSets = new List<UOtoSet>();
             foreach (var otoSet in voicebank.OtoSets) {
-                otoSets.Add(new UOtoSet(otoSet, this, singersPath));
+                OtoSets.Add(new UOtoSet(otoSet, this, singersPath));
             }
-            OtoSets = otoSets.ToImmutableList();
         }
 
         public bool TryGetOto(string lyric, out UOto oto) {
