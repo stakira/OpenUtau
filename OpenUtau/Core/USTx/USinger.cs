@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows.Media.Imaging;
 using OpenUtau.Classic;
+using WanaKanaSharp;
 
 namespace OpenUtau.Core.USTx {
     public struct UOto {
@@ -15,16 +16,41 @@ namespace OpenUtau.Core.USTx {
         public double Cutoff { private set; get; }
         public double Preutter { private set; get; }
         public double Overlap { private set; get; }
+        public ImmutableList<string> SearchTerms { private set; get; }
 
-        public UOto(Oto oto, OtoSet otoSet) {
+        public UOto(Oto oto, UOtoSet set) {
             Alias = oto.Name;
-            Set = otoSet.Name;
-            File = Path.Combine(Path.GetDirectoryName(otoSet.File), oto.Wav);
+            Set = set.Name;
+            File = Path.Combine(set.Location, oto.Wav);
             Offset = oto.Offset;
             Consonant = oto.Consonant;
             Cutoff = oto.Cutoff;
             Preutter = oto.Preutter;
             Overlap = oto.Overlap;
+            var searchTerms = new List<string>();
+            searchTerms.Add(Alias.ToLowerInvariant().Replace(" ", ""));
+            searchTerms.Add(WanaKana.ToRomaji(Alias).ToLowerInvariant().Replace(" ", ""));
+            SearchTerms = searchTerms.ToImmutableList();
+        }
+    }
+
+    public class UOtoSet {
+        public readonly string Name;
+        public readonly string Location;
+        public readonly ImmutableDictionary<string, UOto> Otos;
+
+        public UOtoSet(OtoSet otoSet, USinger singer, string singersPath) {
+            Name = otoSet.Name;
+            Location = Path.Combine(singersPath, Path.GetDirectoryName(otoSet.File));
+            var otos = new Dictionary<string, UOto>();
+            foreach (var oto in otoSet.Otos) {
+                if (!otos.ContainsKey(oto.Name)) {
+                    otos.Add(oto.Name, new UOto(oto, this));
+                } else {
+                    Serilog.Log.Error("{0} {1} {2}", singer.Name, Name, oto.Name);
+                }
+            }
+            Otos = otos.ToImmutableDictionary();
         }
     }
 
@@ -35,7 +61,7 @@ namespace OpenUtau.Core.USTx {
         public readonly string Web;
         public readonly BitmapImage Avatar;
         public readonly ImmutableDictionary<string, string> PitchMap;
-        public readonly ImmutableDictionary<string, UOto> AliasMap;
+        public readonly ImmutableList<UOtoSet> OtoSets;
         public readonly bool Loaded;
 
         public string DisplayName { get { return Loaded ? Name : $"{Name}[Unloaded]"; } }
@@ -58,15 +84,35 @@ namespace OpenUtau.Core.USTx {
             } else {
                 PitchMap = ImmutableDictionary<string, string>.Empty;
             }
-            var aliasMap = new Dictionary<string, UOto>();
+            var otoSets = new List<UOtoSet>();
             foreach (var otoSet in voicebank.OtoSets) {
-                foreach (var oto in otoSet.Otos) {
-                    if (!aliasMap.ContainsKey(oto.Name)) {
-                        aliasMap.Add(oto.Name, new UOto(oto, otoSet));
+                otoSets.Add(new UOtoSet(otoSet, this, singersPath));
+            }
+            OtoSets = otoSets.ToImmutableList();
+        }
+
+        public bool TryGetOto(string lyric, out UOto oto) {
+            oto = default;
+            foreach (var set in OtoSets) {
+                if (set.Otos.TryGetValue(lyric, out oto)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public void GetSuggestions(string text, Action<UOto> provide) {
+            if (text != null) {
+                text = text.ToLowerInvariant().Replace(" ", "");
+            }
+            bool all = string.IsNullOrEmpty(text);
+            foreach (var set in OtoSets) {
+                foreach (var oto in set.Otos.Values) {
+                    if (all || oto.SearchTerms.Exists(term => term.Contains(text))) {
+                        provide(oto);
                     }
                 }
             }
-            AliasMap = aliasMap.ToImmutableDictionary();
         }
 
         private static BitmapImage LoadAvatar(string path) {

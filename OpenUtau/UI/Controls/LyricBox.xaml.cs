@@ -39,9 +39,9 @@ namespace OpenUtau.UI.Controls {
             UpdateSuggestion();
         }
 
-        public void EndNoteEditing(bool cancel) {
+        public void EndNoteEditing(bool edit = false) {
             string finalText = Text;
-            if (!cancel && Note != null && finalText != Note.Lyric) {
+            if (edit && Note != null && finalText != Note.Lyric) {
                 DocManager.Inst.StartUndoGroup();
                 DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(Part, Note, finalText));
                 DocManager.Inst.EndUndoGroup();
@@ -56,11 +56,11 @@ namespace OpenUtau.UI.Controls {
         public void TextBox_KeyDown(object sender, KeyEventArgs e) {
             switch (e.Key) {
                 case Key.Enter:
-                    EndNoteEditing(false);
+                    EndNoteEditing(true);
                     e.Handled = true;
                     break;
                 case Key.Escape:
-                    EndNoteEditing(true);
+                    EndNoteEditing();
                     e.Handled = true;
                     break;
                 default:
@@ -80,9 +80,9 @@ namespace OpenUtau.UI.Controls {
                     e.Handled = true;
                     return;
                 }
-                if (singer.AliasMap.ContainsKey(textBlock.Text)) {
+                if (textBlock.Text != "No Singer") {
                     Text = textBlock.Text;
-                    EndNoteEditing(false);
+                    EndNoteEditing(true);
                     e.Handled = true;
                 }
             }
@@ -101,18 +101,7 @@ namespace OpenUtau.UI.Controls {
                 itemList.Items.Add("No Singer");
                 return;
             }
-            string text = Text;
-            if (string.IsNullOrEmpty(text)) {
-                foreach (var key in singer.AliasMap.Keys) {
-                    itemList.Items.Add(key);
-                }
-            } else if (singer != null && singer.AliasMap != null) {
-                foreach (var key in singer.AliasMap.Keys) {
-                    if (key.Contains(text)) {
-                        itemList.Items.Add(key);
-                    }
-                }
-            }
+            singer.GetSuggestions(Text, oto => itemList.Items.Add(oto.Alias));
         }
     }
 }

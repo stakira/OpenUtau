@@ -45,7 +45,11 @@ namespace OpenUtau.UI.Dialogs {
             this.avatar.Source = singer.Avatar;
             this.info.Text = "Author: " + singer.Author + "\nWeb: " + singer.Web + "\nLocation: " + singer.Location;
             this.otoview.Items.Clear();
-            foreach (var pair in singer.AliasMap) this.otoview.Items.Add(pair.Value);
+            foreach (var set in singer.OtoSets) {
+                foreach (var oto in set.Otos.Values) {
+                    otoview.Items.Add(oto);
+                }
+            }
         }
 
         private void name_SelectionChanged(object sender, SelectionChangedEventArgs e) {

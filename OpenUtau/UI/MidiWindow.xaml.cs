@@ -75,7 +75,7 @@ namespace OpenUtau.UI
 
         protected override void OnDeactivated(EventArgs e) {
             base.OnDeactivated(e);
-            LyricBox.EndNoteEditing(true);
+            LyricBox.EndNoteEditing();
         }
 
         protected override void OnClosed(EventArgs e) {
@@ -232,7 +232,7 @@ namespace OpenUtau.UI
         private void notesCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (midiVM.Part == null) return;
-            LyricBox.EndNoteEditing(false);
+            LyricBox.EndNoteEditing();
             Point mousePos = e.GetPosition((Canvas)sender);
 
             var hit = VisualTreeHelper.HitTest(notesCanvas, mousePos).VisualHit;
@@ -493,7 +493,7 @@ namespace OpenUtau.UI
         private void notesCanvas_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (midiVM.Part == null) return;
-            LyricBox.EndNoteEditing(false);
+            LyricBox.EndNoteEditing();
             Point mousePos = e.GetPosition((Canvas)sender);
 
             var pitHit = midiHT.HitTestPitchPoint(mousePos);

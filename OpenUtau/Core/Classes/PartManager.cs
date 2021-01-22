@@ -176,9 +176,9 @@ namespace OpenUtau.Core
                         }
                     }
 
-                    if (singer.AliasMap.ContainsKey(phoneme.PhonemeRemapped))
+                    if (singer.TryGetOto(phoneme.PhonemeRemapped, out UOto oto))
                     {
-                        phoneme.Oto = singer.AliasMap[phoneme.PhonemeRemapped];
+                        phoneme.Oto = oto;
                         phoneme.PhonemeError = false;
                         phoneme.Overlap = phoneme.Oto.Overlap;
                         phoneme.Preutter = phoneme.Oto.Preutter;
