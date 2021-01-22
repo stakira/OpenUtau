@@ -32,7 +32,6 @@ namespace OpenUtau.Core.Render {
             }
         }
 
-        readonly object srcFileLock = new object();
         readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         readonly UProject project;
         readonly IResamplerDriver driver;
@@ -57,9 +56,7 @@ namespace OpenUtau.Core.Render {
                 if (voicePart != null) {
                     SequencingSampleProvider sampleProvider = await RenderPartAsync(voicePart, project, cacheDir);
                     if (sampleProvider != null) {
-                        trackSampleProviders[voicePart.TrackNo].AddSource(
-                            sampleProvider,
-                            TimeSpan.FromMilliseconds(project.TickToMillisecond(voicePart.PosTick)));
+                        trackSampleProviders[voicePart.TrackNo].AddSource(sampleProvider, TimeSpan.Zero);
                     }
                 }
                 UWavePart wavePart = part as UWavePart;
