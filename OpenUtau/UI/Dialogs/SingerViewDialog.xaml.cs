@@ -1,18 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-
-using OpenUtau.UI.Controls;
 using OpenUtau.Core;
 using OpenUtau.Core.USTx;
 
@@ -54,7 +43,7 @@ namespace OpenUtau.UI.Dialogs {
             if (singer == null) return;
             this.name.Text = singer.Name;
             this.avatar.Source = singer.Avatar;
-            this.info.Text = "Author: " + singer.Author + "\nWebsite: " + singer.Website + "\nPath: " + singer.Path;
+            this.info.Text = "Author: " + singer.Author + "\nWeb: " + singer.Web + "\nLocation: " + singer.Location;
             this.otoview.Items.Clear();
             foreach (var pair in singer.AliasMap) this.otoview.Items.Add(pair.Value);
         }

@@ -336,22 +336,17 @@ namespace OpenUtau.Core.Formats
                 }
                 else if (type == typeof(UTrack))
                 {
-                    UTrack result = new UTrack()
-                    {
+                    UTrack result = new UTrack() {
                         Name = dictionary["name"] as string,
                         Comment = dictionary["comment"] as string,
                         TrackNo = Convert.ToInt32(dictionary["trackno"]),
-                        Singer = new USinger() { Name = dictionary["singer"] as string }
+                        Singer = new USinger(dictionary["singer"] as string),
                     };
                     return result;
                 }
                 else if (type == typeof(USinger))
                 {
-                    USinger result = new USinger()
-                    {
-                        Name = dictionary["name"] as string,
-                        Path = dictionary["path"] as string
-                    };
+                    USinger result = new USinger(dictionary["name"] as string);
                     return result;
                 }
                 else return null;
@@ -378,7 +373,7 @@ namespace OpenUtau.Core.Formats
                     if (_obj != null)
                     {
                         result.Add("name", _obj.Name);
-                        result.Add("path", _obj.Path);
+                        result.Add("path", _obj.Location);
                     }
                 }
                 else if (obj is IntExpression)

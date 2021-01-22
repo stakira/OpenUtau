@@ -148,7 +148,7 @@ namespace OpenUtau.Core.Formats {
                             var singerpath = line.Trim().Replace("VoiceDir=", string.Empty);
                             var singer = DocManager.Inst.GetSinger(singerpath);
                             if (singer == null) {
-                                singer = new USinger() { Name = "", Path = singerpath };
+                                singer = new USinger("");
                             }
 
                             project.Singers.Add(singer);

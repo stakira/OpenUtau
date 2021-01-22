@@ -47,6 +47,15 @@ namespace OpenUtau.Classic {
             };
             var copied = new string[] { ".bmp", ".jpg", ".gif" };
             var hashed = new string[] { ".wav", "_wav.frq" };
+            string characterPath = null;
+            using (var archive = ArchiveFactory.Open(path, readerOptions)) {
+                foreach (var entry in archive.Entries) {
+                    if (Path.GetFileName(entry.Key) == "character.txt") {
+                        characterPath = Path.GetDirectoryName(entry.Key);
+                        break;
+                    }
+                }
+            }
             using (var archive = ArchiveFactory.Open(path, readerOptions)) {
                 int total = archive.Entries.Count();
                 int count = 0;
@@ -63,6 +72,7 @@ namespace OpenUtau.Classic {
                         otoSet.OrigFile = entry.Key;
                         string filePath = Path.Combine(HashPath(Path.GetDirectoryName(entry.Key)), "_oto.json");
                         otoSet.File = filePath;
+                        otoSet.Name = Path.GetDirectoryName(entry.Key).Replace(characterPath, "").Trim(new char[] { '/', '\\' });
                         filePath = Path.Combine(basePath, filePath);
                         Directory.CreateDirectory(Path.GetDirectoryName(filePath));
                         File.WriteAllText(filePath, JsonConvert.SerializeObject(otoSet, Formatting.Indented, jsonSeriSettings));
