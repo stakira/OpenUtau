@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Input;
 
 namespace OpenUtau.UI.Dialogs {
     /// <summary>
@@ -13,10 +14,24 @@ namespace OpenUtau.UI.Dialogs {
         public Action<string> onFinish;
 
         private void Button_Click(object sender, RoutedEventArgs e) {
+            Finish();
+        }
+
+        private void Finish() {
             if (onFinish != null) {
                 onFinish.Invoke(textBox.Text);
             }
             Close();
+        }
+
+        protected override void OnKeyDown(KeyEventArgs e) {
+            if (e.Key == Key.Escape) {
+                Close();
+            } else if (e.Key == Key.Enter) {
+                Finish();
+            } else {
+                base.OnKeyDown(e);
+            }
         }
     }
 }

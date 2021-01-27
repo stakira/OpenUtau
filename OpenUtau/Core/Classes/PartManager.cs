@@ -190,10 +190,12 @@ namespace OpenUtau.Core {
 
         # region Cmd Handling
 
-        private void OnProjectLoad(UNotification cmd) {
-            foreach (UPart part in cmd.project.Parts)
-                if (part is UVoicePart)
+        private void RefreshProject(UProject project) {
+            foreach (UPart part in project.Parts) {
+                if (part is UVoicePart) {
                     UpdatePart((UVoicePart)part);
+                }
+            }
         }
 
         # endregion
@@ -203,11 +205,25 @@ namespace OpenUtau.Core {
         public void OnNext(UCommand cmd, bool isUndo) {
             if (cmd is PartCommand) {
                 var _cmd = cmd as PartCommand;
-                if (_cmd.part != _partContainer.Part) return;
-                else if (_cmd is RemovePartCommand) _partContainer.Part = null;
+                if (_cmd.part != _partContainer.Part) {
+                    return;
+                } else if (_cmd is RemovePartCommand) {
+                    _partContainer.Part = null;
+                }
+            } else if (cmd is BpmCommand) {
+                var _cmd = cmd as BpmCommand;
+                RefreshProject(_cmd.Project);
             } else if (cmd is UNotification) {
                 var _cmd = cmd as UNotification;
-                if (_cmd is LoadPartNotification) { if (!(_cmd.part is UVoicePart)) return; _partContainer.Part = (UVoicePart)_cmd.part; _project = _cmd.project; } else if (_cmd is LoadProjectNotification) OnProjectLoad(_cmd);
+                if (_cmd is LoadPartNotification) {
+                    if (!(_cmd.part is UVoicePart)) {
+                        return;
+                    }
+                    _partContainer.Part = (UVoicePart)_cmd.part;
+                    _project = _cmd.project;
+                } else if (_cmd is LoadProjectNotification) {
+                    RefreshProject(_cmd.project);
+                }
             }
         }
 

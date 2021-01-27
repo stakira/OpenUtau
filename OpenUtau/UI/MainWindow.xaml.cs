@@ -606,6 +606,9 @@ namespace OpenUtau.UI {
             w.textBox.Text = project.BPM.ToString();
             w.onFinish = s => {
                 if (double.TryParse(s, out double bpm)) {
+                    if (bpm == DocManager.Inst.Project.BPM) {
+                        return;
+                    }
                     DocManager.Inst.StartUndoGroup();
                     DocManager.Inst.ExecuteCmd(new BpmCommand(project, bpm));
                     DocManager.Inst.EndUndoGroup();
