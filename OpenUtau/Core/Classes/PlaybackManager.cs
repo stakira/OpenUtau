@@ -24,6 +24,7 @@ namespace OpenUtau.Core {
         MixingSampleProvider masterMix;
         List<TrackSampleProvider> trackSources;
         Task<List<TrackSampleProvider>> renderTask;
+        readonly RenderCache cache = new RenderCache(2048);
 
         public bool Playing => renderTask != null || outDevice != null && outDevice.PlaybackState == PlaybackState.Playing;
 
@@ -79,7 +80,7 @@ namespace OpenUtau.Core {
             }
             Task.Run(() => {
                 var task = Task.Run(async () => {
-                    RenderEngine engine = new RenderEngine(project, driver);
+                    RenderEngine engine = new RenderEngine(project, driver, cache);
                     renderTask = engine.RenderAsync();
                     trackSources = await renderTask;
                     StartPlayback();

@@ -149,6 +149,7 @@
     <Compile Include="Core\Render\NAudio\MemorySampleProvider.cs" />
     <Compile Include="Core\Render\NAudio\TrackSampleProvider.cs" />
     <Compile Include="Core\Render\NAudio\SequencingSampleProvider.cs" />
+    <Compile Include="Core\Render\RenderCache.cs" />
     <Compile Include="Core\Render\RenderItem.cs" />
     <Compile Include="Core\Render\NAudio\RenderItemSampleProvider.cs" />
     <Compile Include="Core\Render\RenderEngine.cs" />

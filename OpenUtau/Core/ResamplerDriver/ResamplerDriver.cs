@@ -4,7 +4,7 @@ using OpenUtau.Core.ResamplerDriver.Factorys;
 
 namespace OpenUtau.Core.ResamplerDriver {
     internal interface IResamplerDriver {
-        Stream DoResampler(DriverModels.EngineInput Args);
+        byte[] DoResampler(DriverModels.EngineInput Args);
         DriverModels.EngineInfo GetInfo();
     }
 

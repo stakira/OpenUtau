@@ -1,70 +1,53 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Text;
 using OpenUtau.Core.Util;
-using Serilog;
 
-namespace OpenUtau.Core.ResamplerDriver.Factorys
-{
-    internal class ExeDriver : DriverModels, IResamplerDriver
-    {
+namespace OpenUtau.Core.ResamplerDriver.Factorys {
+    internal class ExeDriver : DriverModels, IResamplerDriver {
         string ExePath = "";
         bool _isLegalPlugin = false;
 
-        public ExeDriver(string ExePath)
-        {
-            if (System.IO.File.Exists(ExePath))
-            {
-                if (Path.GetExtension(ExePath).ToLower() == ".exe")
-                {
+        public ExeDriver(string ExePath) {
+            if (File.Exists(ExePath)) {
+                if (Path.GetExtension(ExePath).ToLower() == ".exe") {
                     this.ExePath = ExePath;
                     _isLegalPlugin = true;
                 }
             }
         }
-        public bool isLegalPlugin
-        {
-            get
-            {
+        public bool isLegalPlugin {
+            get {
                 return _isLegalPlugin;
             }
         }
 
-        public System.IO.Stream DoResampler(DriverModels.EngineInput Args)
-        {
-            System.IO.MemoryStream ms = new System.IO.MemoryStream();
-            if (!_isLegalPlugin) return ms;
-            try
-            {
-                string tmpFile = System.IO.Path.GetTempFileName();
+        public byte[] DoResampler(DriverModels.EngineInput Args) {
+            byte[] data = new byte[0];
+            if (!_isLegalPlugin) return data;
+            try {
+                string tmpFile = Path.GetTempFileName();
                 string ArgParam = FormattableString.Invariant(
                     $"\"{Args.inputWaveFile}\" \"{tmpFile}\" {Args.NoteString} {Args.Velocity} \"{Args.StrFlags}\" {Args.Offset} {Args.RequiredLength} {Args.Consonant} {Args.Cutoff} {Args.Volume} {Args.Modulation} !{Args.Tempo} {Base64.Base64EncodeInt12(Args.pitchBend)}");
 
                 var p = Process.Start(new ProcessStartInfo(ExePath, ArgParam) { UseShellExecute = false, CreateNoWindow = true });
                 p.WaitForExit();
-                if (p != null)
-                {
+                if (p != null) {
                     p.Close();
                     p.Dispose();
                     p = null;
                 }
 
-                if (System.IO.File.Exists(tmpFile))
-                {
-                    byte[] Dat = System.IO.File.ReadAllBytes(tmpFile);
-                    ms = new MemoryStream(Dat);
-                    try
-                    {
-                        System.IO.File.Delete(tmpFile);
-                    }
-                    catch { ;}
+                if (File.Exists(tmpFile)) {
+                    data = File.ReadAllBytes(tmpFile);
+                    try {
+                        File.Delete(tmpFile);
+                    } catch {; }
                 }
-            }
-            catch (Exception) { ;}
-            return ms;
+            } catch (Exception) {; }
+            return data;
         }
         /*
          付：外挂ini配置文件格式：
@@ -94,26 +77,21 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys
          Default=10
          */
 
-        public DriverModels.EngineInfo GetInfo()
-        {
-            DriverModels.EngineInfo ret = new EngineInfo
-            {
+        public DriverModels.EngineInfo GetInfo() {
+            DriverModels.EngineInfo ret = new EngineInfo {
                 Version = "Error"
             };
             if (!_isLegalPlugin) return ret;
             ret.Author = "Unknown";
-            ret.Name = System.IO.Path.GetFileName(ExePath);
+            ret.Name = Path.GetFileName(ExePath);
             ret.Version = "Unknown";
             ret.Usuage = $"Traditional Resample Engine in {ExePath}";
             ret.FlagItem = new EngineFlagItem[0];
             ret.FlagItemCount = 0;
-            try
-            {
-                if (ExePath.EndsWith(".exe", StringComparison.CurrentCultureIgnoreCase))
-                {
-                    string RealFile = ExePath.Substring(0, ExePath.Length-3) + "ini";
-                    if (System.IO.File.Exists(RealFile))
-                    {
+            try {
+                if (ExePath.EndsWith(".exe", StringComparison.CurrentCultureIgnoreCase)) {
+                    string RealFile = ExePath.Substring(0, ExePath.Length - 3) + "ini";
+                    if (File.Exists(RealFile)) {
                         IniFileClass IniFile = new IniFileClass(RealFile);
                         string Name = IniFile.getKeyValue("Information", "Name");
                         if (Name != string.Empty) ret.Name = Name;
@@ -127,12 +105,9 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys
                         string FlagItemCount = IniFile.getKeyValue("FlagsSetting", "ItemCount");
                         int.TryParse(FlagItemCount, out ret.FlagItemCount);
                         List<EngineFlagItem> Items = new List<EngineFlagItem>();
-                        for (int i = 1; i <= ret.FlagItemCount; i++)
-                        {
-                            try
-                            {
-                                EngineFlagItem I = new EngineFlagItem
-                                {
+                        for (int i = 1; i <= ret.FlagItemCount; i++) {
+                            try {
+                                EngineFlagItem I = new EngineFlagItem {
                                     Default = double.Parse(IniFile.getKeyValue($"Flag{i}", "Default")),
                                     flagStr = IniFile.getKeyValue($"Flag{i}", "Flag"),
                                     Max = double.Parse(IniFile.getKeyValue($"Flag{i}", "Max")),
@@ -140,15 +115,13 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys
                                     ThreeLetterName = IniFile.getKeyValue($"Flag{i}", "ThreeLetterName")
                                 };
                                 Items.Add(I);
-                            }
-                            catch { ;}
+                            } catch {; }
                         }
                         ret.FlagItemCount = Items.Count;
                         ret.FlagItem = Items.ToArray();
                     }
                 }
-            }
-            catch { ;}
+            } catch {; }
             return ret;
         }
 

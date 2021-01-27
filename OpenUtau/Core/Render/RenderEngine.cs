@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using NAudio.Wave;
@@ -10,7 +9,6 @@ using NAudio.Wave.SampleProviders;
 using OpenUtau.Core.ResamplerDriver;
 using OpenUtau.Core.USTx;
 using Serilog;
-using xxHashSharp;
 
 namespace OpenUtau.Core.Render {
     class RenderEngine {
@@ -35,10 +33,12 @@ namespace OpenUtau.Core.Render {
         readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         readonly UProject project;
         readonly IResamplerDriver driver;
+        readonly RenderCache cache;
 
-        public RenderEngine(UProject project, IResamplerDriver driver) {
+        public RenderEngine(UProject project, IResamplerDriver driver, RenderCache cache) {
             this.project = project;
             this.driver = driver;
+            this.cache = cache;
         }
 
         public void Cancel() {
@@ -100,10 +100,17 @@ namespace OpenUtau.Core.Render {
 
         RenderItem ResamplePhonemeAsync(object state) {
             RenderItem item = state as RenderItem;
-            Log.Verbose($"Sound {item.HashParameters():x} resampling {item.GetResamplerExeArgs()}");
-            var output = driver.DoResampler(DriverModels.CreateInputModel(item, 0));
-            item.Sound = MemorySampleProvider.FromStream(output);
-            output.Dispose();
+            uint hash = item.HashParameters();
+            byte[] data = cache.Get(hash);
+            if (data == null) {
+                data = driver.DoResampler(DriverModels.CreateInputModel(item, 0));
+                cache.Put(hash, data);
+                Log.Information($"Sound {hash:x} {item.GetResamplerExeArgs()} resampled.");
+            } else {
+                Log.Information($"Sound {hash:x} {item.GetResamplerExeArgs()} cache retrieved.");
+            }
+            var stream = new MemoryStream(data);
+            item.Sound = MemorySampleProvider.FromStream(stream);
             item.progress.CompleteOne($"Resampling \"{item.phonemeName}\"");
             return item;
         }
