@@ -104,7 +104,7 @@ namespace OpenUtau.Classic {
                             voicebank.OtherInfo = string.Join("\n", otherLines);
                         }
                         if (string.IsNullOrEmpty(voicebank.Name)) {
-                            throw new FileFormatException(string.Format("Failed to load character.txt using encoding {0}", encoding));
+                            throw new FileFormatException(string.Format("Failed to load character.txt using encoding {0}", encoding.EncodingName));
                         }
                         string filePath = Path.Combine(HashPath(Path.GetDirectoryName(entry.Key)), "_voicebank.json");
                         voicebank.File = filePath;

@@ -18,8 +18,7 @@ namespace OpenUtau.UI {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : BorderlessWindow
-    {
+    public partial class MainWindow : BorderlessWindow {
         bool initialized;
         MidiWindow midiWindow;
         TracksViewModel trackVM;
@@ -74,8 +73,7 @@ namespace OpenUtau.UI {
 
         # region Timeline Canvas
 
-        private void timelineCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
-        {
+        private void timelineCanvas_MouseWheel(object sender, MouseWheelEventArgs e) {
             const double zoomSpeed = 0.0012;
             Point mousePos = e.GetPosition((UIElement)sender);
             double zoomCenter;
@@ -85,32 +83,27 @@ namespace OpenUtau.UI {
             trackVM.OffsetX = Math.Max(0, Math.Min(trackVM.TotalWidth, zoomCenter * trackVM.QuarterWidth - mousePos.X));
         }
 
-        private void timelineCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
+        private void timelineCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
             Point mousePos = e.GetPosition((UIElement)sender);
             int tick = (int)(trackVM.CanvasToSnappedQuarter(mousePos.X) * trackVM.Project.Resolution);
             DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(Math.Max(0, tick)));
             ((Canvas)sender).CaptureMouse();
         }
 
-        private void timelineCanvas_MouseMove(object sender, MouseEventArgs e)
-        {
+        private void timelineCanvas_MouseMove(object sender, MouseEventArgs e) {
             Point mousePos = e.GetPosition((UIElement)sender);
             timelineCanvas_MouseMove_Helper(mousePos);
         }
 
-        private void timelineCanvas_MouseMove_Helper(Point mousePos)
-        {
-            if (Mouse.LeftButton == MouseButtonState.Pressed && Mouse.Captured == timelineCanvas)
-            {
+        private void timelineCanvas_MouseMove_Helper(Point mousePos) {
+            if (Mouse.LeftButton == MouseButtonState.Pressed && Mouse.Captured == timelineCanvas) {
                 int tick = (int)(trackVM.CanvasToSnappedQuarter(mousePos.X) * trackVM.Project.Resolution);
                 if (trackVM.playPosTick != tick)
                     DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(Math.Max(0, tick)));
             }
         }
 
-        private void timelineCanvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
+        private void timelineCanvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
             ((Canvas)sender).ReleaseMouseCapture();
         }
 
@@ -132,23 +125,19 @@ namespace OpenUtau.UI {
         UPart _partMovePartMax;
         UPart _partResizeShortest;
 
-        private void trackCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
+        private void trackCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
             Point mousePos = e.GetPosition((UIElement)sender);
 
             var hit = VisualTreeHelper.HitTest(trackCanvas, mousePos).VisualHit;
             System.Diagnostics.Debug.WriteLine("Mouse hit " + hit.ToString());
 
-            if (Keyboard.Modifiers == ModifierKeys.Control || Keyboard.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift))
-            {
+            if (Keyboard.Modifiers == ModifierKeys.Control || Keyboard.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift)) {
                 selectionStart = new Point(trackVM.CanvasToQuarter(mousePos.X), trackVM.CanvasToTrack(mousePos.Y));
 
                 if (Keyboard.IsKeyUp(Key.LeftShift) && Keyboard.IsKeyUp(Key.RightShift)) trackVM.DeselectAll();
-                
-                if (selectionBox == null)
-                {
-                    selectionBox = new Rectangle()
-                    {
+
+                if (selectionBox == null) {
+                    selectionBox = new Rectangle() {
                         Stroke = Brushes.Black,
                         StrokeThickness = 2,
                         Fill = ThemeManager.BarNumberBrush,
@@ -162,25 +151,20 @@ namespace OpenUtau.UI {
                     trackCanvas.Children.Add(selectionBox);
                     Canvas.SetZIndex(selectionBox, 1000);
                     selectionBox.Visibility = System.Windows.Visibility.Visible;
-                }
-                else
-                {
+                } else {
                     selectionBox.Width = 0;
                     selectionBox.Height = 0;
                     Canvas.SetZIndex(selectionBox, 1000);
                     selectionBox.Visibility = System.Windows.Visibility.Visible;
                 }
                 Mouse.OverrideCursor = Cursors.Cross;
-            }
-            else if (hit is DrawingVisual)
-            {
+            } else if (hit is DrawingVisual) {
                 PartElement partEl = ((DrawingVisual)hit).Parent as PartElement;
                 _hitPartElement = partEl;
 
                 if (!trackVM.SelectedParts.Contains(_hitPartElement.Part)) trackVM.DeselectAll();
 
-                if (e.ClickCount == 2)
-                {
+                if (e.ClickCount == 2) {
                     if (partEl is VoicePartElement) // load part into midi window
                     {
                         if (midiWindow == null) midiWindow = new MidiWindow();
@@ -188,17 +172,14 @@ namespace OpenUtau.UI {
                         midiWindow.Show();
                         midiWindow.Focus();
                     }
-                }
-                else if (mousePos.X > partEl.X + partEl.VisualWidth - UIConstants.ResizeMargin && partEl is VoicePartElement) // resize
-                {
+                } else if (mousePos.X > partEl.X + partEl.VisualWidth - UIConstants.ResizeMargin && partEl is VoicePartElement) // resize
+                  {
                     _resizePartElement = true;
                     _resizeMinDurTick = trackVM.GetPartMinDurTick(_hitPartElement.Part);
                     Mouse.OverrideCursor = Cursors.SizeWE;
-                    if (trackVM.SelectedParts.Count > 0)
-                    {
+                    if (trackVM.SelectedParts.Count > 0) {
                         _partResizeShortest = _hitPartElement.Part;
-                        foreach (UPart part in trackVM.SelectedParts)
-                        {
+                        foreach (UPart part in trackVM.SelectedParts) {
                             if (part.DurTick - part.GetMinDurTick(trackVM.Project) <
                                 _partResizeShortest.DurTick - _partResizeShortest.GetMinDurTick(trackVM.Project))
                                 _partResizeShortest = part;
@@ -206,18 +187,15 @@ namespace OpenUtau.UI {
                         _resizeMinDurTick = _partResizeShortest.GetMinDurTick(trackVM.Project);
                     }
                     DocManager.Inst.StartUndoGroup();
-                }
-                else // move
-                {
+                } else // move
+                  {
                     _movePartElement = true;
                     _partMoveRelativeTick = trackVM.CanvasToSnappedTick(mousePos.X) - _hitPartElement.Part.PosTick;
                     _partMoveStartTick = partEl.Part.PosTick;
                     Mouse.OverrideCursor = Cursors.SizeAll;
-                    if (trackVM.SelectedParts.Count > 0)
-                    {
+                    if (trackVM.SelectedParts.Count > 0) {
                         _partMovePartLeft = _partMovePartMin = _partMovePartMax = _hitPartElement.Part;
-                        foreach (UPart part in trackVM.SelectedParts)
-                        {
+                        foreach (UPart part in trackVM.SelectedParts) {
                             if (part.PosTick < _partMovePartLeft.PosTick) _partMovePartLeft = part;
                             if (part.TrackNo < _partMovePartMin.TrackNo) _partMovePartMin = part;
                             if (part.TrackNo > _partMovePartMax.TrackNo) _partMovePartMax = part;
@@ -225,12 +203,9 @@ namespace OpenUtau.UI {
                     }
                     DocManager.Inst.StartUndoGroup();
                 }
-            }
-            else
-            {
+            } else {
                 if (trackVM.CanvasToTrack(mousePos.Y) > trackVM.Project.Tracks.Count - 1) return;
-                UVoicePart part = new UVoicePart()
-                {
+                UVoicePart part = new UVoicePart() {
                     PosTick = trackVM.CanvasToSnappedTick(mousePos.X),
                     TrackNo = trackVM.CanvasToTrack(mousePos.Y),
                     DurTick = trackVM.Project.Resolution * 4 / trackVM.Project.BeatUnit * trackVM.Project.BeatPerBar
@@ -248,16 +223,14 @@ namespace OpenUtau.UI {
             ((UIElement)sender).CaptureMouse();
         }
 
-        private void trackCanvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
+        private void trackCanvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
             _movePartElement = false;
             _resizePartElement = false;
             _hitPartElement = null;
             DocManager.Inst.EndUndoGroup();
             // End selection
             selectionStart = null;
-            if (selectionBox != null)
-            {
+            if (selectionBox != null) {
                 Canvas.SetZIndex(selectionBox, -100);
                 selectionBox.Visibility = System.Windows.Visibility.Hidden;
             }
@@ -267,14 +240,12 @@ namespace OpenUtau.UI {
             Mouse.OverrideCursor = null;
         }
 
-        private void trackCanvas_MouseMove(object sender, MouseEventArgs e)
-        {
+        private void trackCanvas_MouseMove(object sender, MouseEventArgs e) {
             Point mousePos = e.GetPosition((UIElement)sender);
             trackCanvas_MouseMove_Helper(mousePos);
         }
 
-        private void trackCanvas_MouseMove_Helper(Point mousePos)
-        {
+        private void trackCanvas_MouseMove_Helper(Point mousePos) {
 
             if (selectionStart != null) // Selection
             {
@@ -286,18 +257,14 @@ namespace OpenUtau.UI {
                 Canvas.SetLeft(selectionBox, left);
                 Canvas.SetTop(selectionBox, top);
                 trackVM.TempSelectInBox(selectionStart.Value.X, trackVM.CanvasToQuarter(mousePos.X), (int)selectionStart.Value.Y, trackVM.CanvasToTrack(mousePos.Y));
-            }
-            else if (_movePartElement) // Move
-            {
-                if (trackVM.SelectedParts.Count == 0)
-                {
+            } else if (_movePartElement) // Move
+              {
+                if (trackVM.SelectedParts.Count == 0) {
                     int newTrackNo = Math.Min(trackVM.Project.Tracks.Count - 1, Math.Max(0, trackVM.CanvasToTrack(mousePos.Y)));
                     int newPosTick = Math.Max(0, (int)(trackVM.Project.Resolution * trackVM.CanvasToSnappedQuarter(mousePos.X)) - _partMoveRelativeTick);
                     if (newTrackNo != _hitPartElement.Part.TrackNo || newPosTick != _hitPartElement.Part.PosTick)
                         DocManager.Inst.ExecuteCmd(new MovePartCommand(trackVM.Project, _hitPartElement.Part, newPosTick, newTrackNo));
-                }
-                else
-                {
+                } else {
                     int deltaTrackNo = trackVM.CanvasToTrack(mousePos.Y) - _hitPartElement.Part.TrackNo;
                     int deltaPosTick = (int)(trackVM.Project.Resolution * trackVM.CanvasToSnappedQuarter(mousePos.X) - _partMoveRelativeTick) - _hitPartElement.Part.PosTick;
                     bool changeTrackNo = deltaTrackNo + _partMovePartMin.TrackNo >= 0 && deltaTrackNo + _partMovePartMax.TrackNo < trackVM.Project.Tracks.Count;
@@ -308,77 +275,61 @@ namespace OpenUtau.UI {
                                 changePosTick ? part.PosTick + deltaPosTick : part.PosTick,
                                 changeTrackNo ? part.TrackNo + deltaTrackNo : part.TrackNo));
                 }
-            }
-            else if (_resizePartElement) // Resize
-            {
-                if (trackVM.SelectedParts.Count == 0)
-                {
+            } else if (_resizePartElement) // Resize
+              {
+                if (trackVM.SelectedParts.Count == 0) {
                     int newDurTick = (int)(trackVM.Project.Resolution * trackVM.CanvasRoundToSnappedQuarter(mousePos.X)) - _hitPartElement.Part.PosTick;
                     if (newDurTick > _resizeMinDurTick && newDurTick != _hitPartElement.Part.DurTick)
                         DocManager.Inst.ExecuteCmd(new ResizePartCommand(trackVM.Project, _hitPartElement.Part, newDurTick));
-                }
-                else
-                {
+                } else {
                     int deltaDurTick = (int)(trackVM.CanvasRoundToSnappedQuarter(mousePos.X) * trackVM.Project.Resolution) - _hitPartElement.Part.EndTick;
                     if (deltaDurTick != 0 && _partResizeShortest.DurTick + deltaDurTick > _resizeMinDurTick)
                         foreach (UPart part in trackVM.SelectedParts)
                             DocManager.Inst.ExecuteCmd(new ResizePartCommand(trackVM.Project, part, part.DurTick + deltaDurTick));
                 }
-            }
-            else if (Mouse.RightButton == MouseButtonState.Pressed) // Remove
-            {
+            } else if (Mouse.RightButton == MouseButtonState.Pressed) // Remove
+              {
                 HitTestResult result = VisualTreeHelper.HitTest(trackCanvas, mousePos);
                 if (result == null) return;
                 var hit = result.VisualHit;
-                if (hit is DrawingVisual)
-                {
+                if (hit is DrawingVisual) {
                     PartElement partEl = ((DrawingVisual)hit).Parent as PartElement;
                     if (partEl != null) DocManager.Inst.ExecuteCmd(new RemovePartCommand(trackVM.Project, partEl.Part));
                 }
-            }
-            else if (Mouse.LeftButton == MouseButtonState.Released && Mouse.RightButton == MouseButtonState.Released)
-            {
+            } else if (Mouse.LeftButton == MouseButtonState.Released && Mouse.RightButton == MouseButtonState.Released) {
                 HitTestResult result = VisualTreeHelper.HitTest(trackCanvas, mousePos);
                 if (result == null) return;
                 var hit = result.VisualHit;
-                if (hit is DrawingVisual)
-                {
+                if (hit is DrawingVisual) {
                     PartElement partEl = ((DrawingVisual)hit).Parent as PartElement;
                     if (mousePos.X > partEl.X + partEl.VisualWidth - UIConstants.ResizeMargin && partEl is VoicePartElement) Mouse.OverrideCursor = Cursors.SizeWE;
                     else Mouse.OverrideCursor = null;
-                }
-                else
-                {
+                } else {
                     Mouse.OverrideCursor = null;
                 }
             }
         }
 
-        private void trackCanvas_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
-        {
+        private void trackCanvas_MouseRightButtonDown(object sender, MouseButtonEventArgs e) {
             FocusManager.SetFocusedElement(this, null);
             DocManager.Inst.StartUndoGroup();
             Point mousePos = e.GetPosition((Canvas)sender);
             HitTestResult result = VisualTreeHelper.HitTest(trackCanvas, mousePos);
             if (result == null) return;
             var hit = result.VisualHit;
-            if (hit is DrawingVisual)
-            {
+            if (hit is DrawingVisual) {
                 PartElement partEl = ((DrawingVisual)hit).Parent as PartElement;
                 if (partEl != null && trackVM.SelectedParts.Contains(partEl.Part))
                     DocManager.Inst.ExecuteCmd(new RemovePartCommand(trackVM.Project, partEl.Part));
                 else trackVM.DeselectAll();
-            }
-            else
-            {
+            } else {
                 trackVM.DeselectAll();
             }
             ((UIElement)sender).CaptureMouse();
             Mouse.OverrideCursor = Cursors.No;
         }
 
-        private void trackCanvas_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
-        {
+        private void trackCanvas_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
             trackVM.UpdateViewSize();
             Mouse.OverrideCursor = null;
             ((UIElement)sender).ReleaseMouseCapture();
@@ -394,10 +345,8 @@ namespace OpenUtau.UI {
         private void MenuSave_Click(object sender, RoutedEventArgs e) { CmdSaveFile(); }
         private void MenuExit_Click(object sender, RoutedEventArgs e) { CmdExit(); }
 
-        private void MenuImportAudio_Click(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog openFileDialog = new OpenFileDialog()
-            {
+        private void MenuImportAudio_Click(object sender, RoutedEventArgs e) {
+            OpenFileDialog openFileDialog = new OpenFileDialog() {
                 Filter = "Audio Files|*.*",
                 Multiselect = false,
                 CheckFileExists = true
@@ -405,23 +354,19 @@ namespace OpenUtau.UI {
             if (openFileDialog.ShowDialog() == true) CmdImportAudio(openFileDialog.FileName);
         }
 
-        private void MenuImportMidi_Click(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog openFileDialog = new OpenFileDialog()
-            {
+        private void MenuImportMidi_Click(object sender, RoutedEventArgs e) {
+            OpenFileDialog openFileDialog = new OpenFileDialog() {
                 Filter = "Midi File|*.mid",
                 Multiselect = false,
                 CheckFileExists = true
             };
-            if (openFileDialog.ShowDialog() == true)
-            {
+            if (openFileDialog.ShowDialog() == true) {
                 CmdImportAudio(openFileDialog.FileName);
                 var project = DocManager.Inst.Project;
                 var parts = Core.Formats.Midi.Load(openFileDialog.FileName, project);
 
                 DocManager.Inst.StartUndoGroup();
-                foreach (var part in parts)
-                {
+                foreach (var part in parts) {
                     var track = new UTrack();
                     track.TrackNo = project.Tracks.Count;
                     part.TrackNo = track.TrackNo;
@@ -432,8 +377,7 @@ namespace OpenUtau.UI {
             }
         }
 
-        private void MenuSingers_Click(object sender, RoutedEventArgs e)
-        {
+        private void MenuSingers_Click(object sender, RoutedEventArgs e) {
             var w = new Dialogs.SingerViewDialog() { Owner = this };
             w.ShowDialog();
         }
@@ -471,8 +415,7 @@ namespace OpenUtau.UI {
             }
         }
 
-        private void MenuRenderAll_Click(object sender, RoutedEventArgs e)
-        {
+        private void MenuRenderAll_Click(object sender, RoutedEventArgs e) {
             PlaybackManager.Inst.Play(DocManager.Inst.Project);
         }
 
@@ -484,8 +427,7 @@ namespace OpenUtau.UI {
                 MessageBoxImage.None);
         }
 
-        private void MenuPrefs_Click(object sender, RoutedEventArgs e)
-        {
+        private void MenuPrefs_Click(object sender, RoutedEventArgs e) {
             var w = new Dialogs.PreferencesDialog() { Owner = this };
             w.ShowDialog();
         }
@@ -493,48 +435,37 @@ namespace OpenUtau.UI {
         # endregion
 
         // Disable system menu and main menu
-        protected override void OnKeyDown(KeyEventArgs e)
-        {
+        protected override void OnKeyDown(KeyEventArgs e) {
             Window_KeyDown(this, e);
             e.Handled = true;
         }
 
-        private void Window_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (Keyboard.Modifiers == ModifierKeys.None && e.Key == Key.Delete)
-            {
+        private void Window_KeyDown(object sender, KeyEventArgs e) {
+            if (Keyboard.Modifiers == ModifierKeys.None && e.Key == Key.Delete) {
                 DocManager.Inst.StartUndoGroup();
                 while (trackVM.SelectedParts.Count > 0) DocManager.Inst.ExecuteCmd(new RemovePartCommand(trackVM.Project, trackVM.SelectedParts.Last()));
                 DocManager.Inst.EndUndoGroup();
-            }
-            else if (Keyboard.Modifiers == ModifierKeys.Alt && e.SystemKey == Key.F4) CmdExit();
+            } else if (Keyboard.Modifiers == ModifierKeys.Alt && e.SystemKey == Key.F4) CmdExit();
             else if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.O) CmdOpenFileDialog();
-            else if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.Z)
-            {
+            else if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.Z) {
                 trackVM.DeselectAll();
                 DocManager.Inst.Undo();
-            }
-            else if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.Y)
-            {
+            } else if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.Y) {
                 trackVM.DeselectAll();
                 DocManager.Inst.Redo();
-            }
-            else if (Keyboard.Modifiers == ModifierKeys.None && e.Key == Key.Space) {
+            } else if (Keyboard.Modifiers == ModifierKeys.None && e.Key == Key.Space) {
                 PlayOrPause();
             }
         }
 
         # region application commmands
 
-        private void CmdNewFile()
-        {
+        private void CmdNewFile() {
             DocManager.Inst.ExecuteCmd(new LoadProjectNotification(OpenUtau.Core.Formats.USTx.Create()));
         }
 
-        private void CmdOpenFileDialog()
-        {
-            OpenFileDialog openFileDialog = new OpenFileDialog()
-            {
+        private void CmdOpenFileDialog() {
+            OpenFileDialog openFileDialog = new OpenFileDialog() {
                 Filter = "Project Files|*.ustx; *.vsqx; *.ust|All Files|*.*",
                 Multiselect = true,
                 CheckFileExists = true
@@ -542,36 +473,26 @@ namespace OpenUtau.UI {
             if (openFileDialog.ShowDialog() == true) CmdOpenFile(openFileDialog.FileNames);
         }
 
-        private void CmdOpenFile(string[] files)
-        {
-            if (files.Length == 1)
-            {
+        private void CmdOpenFile(string[] files) {
+            if (files.Length == 1) {
                 OpenUtau.Core.Formats.Formats.LoadProject(files[0]);
-            }
-            else if (files.Length > 1)
-            {
+            } else if (files.Length > 1) {
                 OpenUtau.Core.Formats.Ust.Load(files);
             }
         }
 
-        private void CmdSaveFile()
-        {
-            if (DocManager.Inst.Project.Saved == false)
-            {
+        private void CmdSaveFile() {
+            if (DocManager.Inst.Project.Saved == false) {
                 SaveFileDialog dialog = new SaveFileDialog() { DefaultExt = "ustx", Filter = "Project Files|*.ustx", Title = "Save File" };
-                if (dialog.ShowDialog() == true)
-                {
+                if (dialog.ShowDialog() == true) {
                     DocManager.Inst.ExecuteCmd(new SaveProjectNotification(dialog.FileName));
                 }
-            }
-            else
-            {
+            } else {
                 DocManager.Inst.ExecuteCmd(new SaveProjectNotification(""));
             }
         }
 
-        private void CmdImportAudio(string file)
-        {
+        private void CmdImportAudio(string file) {
             UWavePart part = Core.Formats.Wave.CreatePart(file);
             if (part == null) return;
             int trackNo = trackVM.Project.Tracks.Count;
@@ -582,8 +503,7 @@ namespace OpenUtau.UI {
             DocManager.Inst.EndUndoGroup();
         }
 
-        private void CmdExit()
-        {
+        private void CmdExit() {
             Core.Util.Preferences.Default.MainMaximized = this.WindowState == System.Windows.WindowState.Maximized;
             if (midiWindow != null)
                 Core.Util.Preferences.Default.MidiMaximized = midiWindow.WindowState == System.Windows.WindowState.Maximized;
@@ -593,53 +513,39 @@ namespace OpenUtau.UI {
 
         # endregion
 
-        private void navigateDrag_NavDrag(object sender, EventArgs e)
-        {
+        private void navigateDrag_NavDrag(object sender, EventArgs e) {
             trackVM.OffsetX += ((NavDragEventArgs)e).X * trackVM.SmallChangeX;
             trackVM.OffsetY += ((NavDragEventArgs)e).Y * trackVM.SmallChangeY * 0.2;
             trackVM.MarkUpdate();
         }
 
-        private void trackCanvas_DragEnter(object sender, DragEventArgs e)
-        {
+        private void trackCanvas_DragEnter(object sender, DragEventArgs e) {
             if (e.Data.GetDataPresent(DataFormats.FileDrop)) e.Effects = DragDropEffects.Copy;
         }
 
-        private void trackCanvas_Drop(object sender, DragEventArgs e)
-        {
+        private void trackCanvas_Drop(object sender, DragEventArgs e) {
             string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
             CmdOpenFile(files);
         }
 
-        private void trackCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            if (Keyboard.Modifiers == ModifierKeys.Control)
-            {
+        private void trackCanvas_MouseWheel(object sender, MouseWheelEventArgs e) {
+            if (Keyboard.Modifiers == ModifierKeys.Control) {
                 timelineCanvas_MouseWheel(sender, e);
-            }
-            else if (Keyboard.Modifiers == ModifierKeys.Shift)
-            {
+            } else if (Keyboard.Modifiers == ModifierKeys.Shift) {
                 trackVM.OffsetX -= trackVM.ViewWidth * 0.001 * e.Delta;
-            }
-            else if (Keyboard.Modifiers == ModifierKeys.Alt)
-            {
-            }
-            else
-            {
+            } else if (Keyboard.Modifiers == ModifierKeys.Alt) {
+            } else {
                 verticalScroll.Value -= verticalScroll.SmallChange * e.Delta / 100;
                 verticalScroll.Value = Math.Min(verticalScroll.Maximum, Math.Max(verticalScroll.Minimum, verticalScroll.Value));
             }
         }
 
-        private void Window_Activated(object sender, EventArgs e)
-        {
+        private void Window_Activated(object sender, EventArgs e) {
             if (trackVM != null) trackVM.MarkUpdate();
         }
 
-        private void headerCanvas_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ClickCount == 2)
-            {
+        private void headerCanvas_MouseDown(object sender, MouseButtonEventArgs e) {
+            if (e.ClickCount == 2) {
                 var project = DocManager.Inst.Project;
                 DocManager.Inst.StartUndoGroup();
                 DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, new UTrack() { TrackNo = project.Tracks.Count() }));
@@ -671,8 +577,7 @@ namespace OpenUtau.UI {
             }
         }
 
-        private void playButton_Click(object sender, RoutedEventArgs e)
-        {
+        private void playButton_Click(object sender, RoutedEventArgs e) {
             if (!PlaybackManager.Inst.Playing) {
                 Play();
             }
@@ -680,11 +585,6 @@ namespace OpenUtau.UI {
 
         private void pauseButton_Click(object sender, RoutedEventArgs e) {
             Pause();
-        }
-
-        private void bpmText_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            // TODO: set bpm
         }
 
         private void seekHomeButton_Click(object sender, RoutedEventArgs e) {
@@ -698,5 +598,22 @@ namespace OpenUtau.UI {
         }
 
         #endregion
+
+        private void bpmText_MouseUp(object sender, MouseButtonEventArgs e) {
+            var project = DocManager.Inst.Project;
+            var w = new Dialogs.TypeInDialog() { Owner = this };
+            w.Title = "BPM";
+            w.textBox.Text = project.BPM.ToString();
+            w.onFinish = s => {
+                if (double.TryParse(s, out double bpm)) {
+                    DocManager.Inst.StartUndoGroup();
+                    DocManager.Inst.ExecuteCmd(new BpmCommand(project, bpm));
+                    DocManager.Inst.EndUndoGroup();
+                }
+            };
+            w.Left = Left + (Width - w.Width) / 2;
+            w.Top = Top + (Height - w.Height) / 2;
+            w.ShowDialog();
+        }
     }
 }

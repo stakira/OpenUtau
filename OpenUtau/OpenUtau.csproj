@@ -136,6 +136,7 @@
     <Compile Include="Classic\VoicebankInstaller.cs" />
     <Compile Include="Classic\Voicebank.cs" />
     <Compile Include="Classic\VoicebankLoader.cs" />
+    <Compile Include="Core\Classes\ProjectCommands.cs" />
     <Compile Include="Core\Classes\PlaybackManager.cs" />
     <Compile Include="Core\Classes\TrackCommands.cs" />
     <Compile Include="Core\Formats\Midi.cs" />
@@ -215,6 +216,9 @@
     <Compile Include="UI\Dialogs\SingerViewDialog.xaml.cs">
       <DependentUpon>SingerViewDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Dialogs\TypeInDialog.xaml.cs">
+      <DependentUpon>TypeInDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
@@ -228,6 +232,10 @@
     <Compile Include="UI\Models\TracksViewModel.cs" />
     <Compile Include="UI\UIConstants.cs" />
     <Page Include="UI\Controls\LyricBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Dialogs\TypeInDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
