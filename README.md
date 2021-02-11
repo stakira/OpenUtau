@@ -64,4 +64,4 @@ Other Actions
 #### The scope of OpenUtau does not include:
 - Resampling engines (a.k.a resampler).
 - Full feature digital music workstation.
-- OpenUtau does not strike for Vocaliod compatibility, other than limited features.
+- OpenUtau does not strike for Vocaloid compatibility, other than limited features.
