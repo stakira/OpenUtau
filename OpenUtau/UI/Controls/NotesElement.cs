@@ -1,20 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Shapes;
 
 using OpenUtau.Core;
 using OpenUtau.Core.USTx;
 
-namespace OpenUtau.UI.Controls
-{
-    class NotesElement : ExpElement
-    {
+namespace OpenUtau.UI.Controls {
+    class NotesElement : ExpElement {
         public new double X { set { if (tTrans.X != Math.Round(value)) { tTrans.X = Math.Round(value); MarkUpdate(); } } get { return tTrans.X; } }
         public double Y { set { if (tTrans.Y != Math.Round(value)) { tTrans.Y = Math.Round(value); } } get { return tTrans.Y; } }
 
@@ -37,23 +31,17 @@ namespace OpenUtau.UI.Controls
         protected Dictionary<string, double> fTextWidths = new Dictionary<string, double>();
         protected Dictionary<string, double> fTextHeights = new Dictionary<string, double>();
 
-        public NotesElement()
-        {
+        public NotesElement() {
             penPit = new Pen(ThemeManager.WhiteKeyNameBrushNormal, 1);
             penPit.Freeze();
             this.IsHitTestVisible = false;
         }
 
-        public override void RedrawIfUpdated()
-        {
-            if (!_updated) return;
-            DrawingContext cxt = visual.RenderOpen();
-            if (Part != null)
-            {
+        public override void Redraw(DrawingContext cxt) {
+            if (Part != null) {
                 bool inView, lastInView = false;
                 UNote lastNote = null;
-                foreach (var note in Part.Notes)
-                {
+                foreach (var note in Part.Notes) {
                     inView = midiVM.NoteIsInView(note);
 
                     if (inView && !lastInView)
@@ -67,29 +55,23 @@ namespace OpenUtau.UI.Controls
                     lastInView = inView;
                 }
             }
-            cxt.Close();
-            _updated = false;
         }
 
-        private void ClearFormattedTextPool()
-        {
+        private void ClearFormattedTextPool() {
             fTextPool.Clear();
             fTextWidths.Clear();
             fTextHeights.Clear();
         }
 
-        private void DrawNote(UNote note, DrawingContext cxt)
-        {
+        private void DrawNote(UNote note, DrawingContext cxt) {
             DrawNoteBody(note, cxt);
-            if (!note.Error)
-            {
+            if (!note.Error) {
                 if (ShowPitch) DrawPitchBend(note, cxt);
                 if (ShowPitch) DrawVibrato(note, cxt);
             }
         }
 
-        private void DrawNoteBody(UNote note, DrawingContext cxt)
-        {
+        private void DrawNoteBody(UNote note, DrawingContext cxt) {
             double left = note.PosTick * midiVM.QuarterWidth / DocManager.Inst.Project.Resolution + 1;
             double top = midiVM.TrackHeight * ((double)UIConstants.MaxNoteNum - 1 - note.NoteNum) + 1;
             double width = Math.Max(2, note.DurTick * midiVM.QuarterWidth / DocManager.Inst.Project.Resolution - 1);
@@ -99,16 +81,14 @@ namespace OpenUtau.UI.Controls
                 note.Selected ? ThemeManager.NoteFillSelectedErrorBrushes : ThemeManager.NoteFillErrorBrushes[0] :
                 note.Selected ? ThemeManager.NoteFillSelectedBrush : ThemeManager.NoteFillBrushes[0],
                 null, new Rect(new Point(left, top), new Size(width, height)), 2, 2);
-            if (height >= 10)
-            {
+            if (height >= 10) {
                 if (note.Lyric.Length == 0) return;
                 string displayLyric = note.Lyric;
 
                 if (!fTextPool.ContainsKey(displayLyric)) AddToFormattedTextPool(displayLyric);
                 var fText = fTextPool[displayLyric];
 
-                if (fTextWidths[displayLyric] + 5 > width)
-                {
+                if (fTextWidths[displayLyric] + 5 > width) {
                     displayLyric = note.Lyric[0] + "..";
                     if (!fTextPool.ContainsKey(displayLyric)) AddToFormattedTextPool(displayLyric);
                     fText = fTextPool[displayLyric];
@@ -119,8 +99,7 @@ namespace OpenUtau.UI.Controls
             }
         }
 
-        protected virtual void AddToFormattedTextPool(string text)
-        {
+        protected virtual void AddToFormattedTextPool(string text) {
             var fText = new FormattedText(
                     text,
                     System.Threading.Thread.CurrentThread.CurrentUICulture,
@@ -132,8 +111,7 @@ namespace OpenUtau.UI.Controls
             fTextHeights.Add(text, fText.Height);
         }
 
-        private void DrawVibrato(UNote note, DrawingContext cxt)
-        {
+        private void DrawVibrato(UNote note, DrawingContext cxt) {
             if (note.Vibrato == null) return;
             var vibrato = note.Vibrato;
             double periodPix = DocManager.Inst.Project.MillisecondToTick(vibrato.Period) * midiVM.QuarterWidth / DocManager.Inst.Project.Resolution;
@@ -162,8 +140,7 @@ namespace OpenUtau.UI.Controls
             }*/
 
             double _x0 = 0, _y0 = 0, _x1 = 0, _y1 = 0;
-            while (_x1 < lengthPix)
-            {
+            while (_x1 < lengthPix) {
                 cxt.DrawLine(penPit, new Point(startX + _x0, startY + _y0), new Point(startX + _x1, startY + _y1));
                 _x0 = _x1;
                 _y0 = _y1;
@@ -174,8 +151,7 @@ namespace OpenUtau.UI.Controls
             }
         }
 
-        private void DrawPitchBend(UNote note, DrawingContext cxt)
-        {
+        private void DrawPitchBend(UNote note, DrawingContext cxt) {
             var _pitchExp = note.PitchBend as PitchBendExpression;
             var _pts = _pitchExp.Data as List<PitchPoint>;
             if (_pts.Count < 2) return;
@@ -188,8 +164,7 @@ namespace OpenUtau.UI.Controls
             if (note.PitchBend.SnapFirst) cxt.DrawEllipse(ThemeManager.WhiteKeyNameBrushNormal, penPit, new Point(pt0X, pt0Y), 2.5, 2.5);
             else cxt.DrawEllipse(null, penPit, new Point(pt0X, pt0Y), 2.5, 2.5);
 
-            for (int i = 1; i < _pts.Count; i++)
-            {
+            for (int i = 1; i < _pts.Count; i++) {
                 double pt1Tick = note.PosTick + MusicMath.MillisecondToTick(_pts[i].X, DocManager.Inst.Project.BPM, DocManager.Inst.Project.BeatUnit, DocManager.Inst.Project.Resolution);
                 double pt1X = midiVM.QuarterWidth * pt1Tick / DocManager.Inst.Project.Resolution;
                 double pt1Pit = note.NoteNum + _pts[i].Y / 10.0;
@@ -200,14 +175,10 @@ namespace OpenUtau.UI.Controls
                 double _x2 = pt0X;
                 double _y = pt0Y;
                 double _y2 = pt0Y;
-                if (pt1X - pt0X < 5)
-                {
+                if (pt1X - pt0X < 5) {
                     cxt.DrawLine(penPit, new Point(pt0X, pt0Y), new Point(pt1X, pt1Y));
-                }
-                else
-                {
-                    while (_x2 < pt1X)
-                    {
+                } else {
+                    while (_x2 < pt1X) {
                         _x = Math.Min(_x + 4, pt1X);
                         _y = MusicMath.InterpolateShape(pt0X, pt1X, pt0Y, pt1Y, _x, _pts[i - 1].Shape);
                         cxt.DrawLine(penPit, new Point(_x, _y), new Point(_x2, _y2));
