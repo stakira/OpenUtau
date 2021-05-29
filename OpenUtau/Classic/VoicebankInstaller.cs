@@ -86,6 +86,7 @@ namespace OpenUtau.Classic {
                                 string line = streamReader.ReadLine().Trim();
                                 var s = line.Split(new char[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
                                 if (s.Length == 2) {
+                                    s[0] = s[0].ToLowerInvariant();
                                     if (s[0] == "name") {
                                         voicebank.Name = s[1];
                                     } else if (s[0] == "image") {
