@@ -5,13 +5,13 @@ OpenUtau aims to be an open source editing environment for UTAU community, with 
 
 Current stage: Alpha
 
-<img src="https://ci.appveyor.com/api/projects/status/github/stakira/OpenUtau?svg=true" alt="CI Badge"/>
+<a href="https://ci.appveyor.com/project/stakira/openutau" target="_blank"><img src="https://ci.appveyor.com/api/projects/status/github/stakira/OpenUtau?svg=true" alt="CI Badge"/></a>
 
 [Discord](https://discord.gg/UfpMnqMmEM)
 
 ## How to Install
 
-- Download the <a href="https://ci.appveyor.com/project/stakira/openutau/build/artifacts" target="_blank">Latest Build</a> or build it yourself.
+- Download the <a href="https://github.com/stakira/OpenUtau/releases">Latest Build</a> or build it yourself.
 - Install singer from menu Tools -> Install Singer. Select the singer zip or rar file.
 - Put resampler exe or dll under Resamplers folder. Open Preferences menu to select resampler.
 

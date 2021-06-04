@@ -9,3 +9,15 @@ artifacts:
 - path: OpenUtau\bin\Release
   name: OpenUtau
   type: zip
+deploy:
+  release: OpenUtau-Latest
+  description: ''
+  provider: GitHub
+  auth_token:
+    secure: VoTH2ml/pRgjLSGhfPO+NZfCoFzFcfrQjEIl/5+0UufeW6mEvccfwvef3gOaD2ke
+  draft: false
+  prerelease: false
+  force_update: true
+  on:
+    branch: master
+    APPVEYOR_REPO_TAG: false
