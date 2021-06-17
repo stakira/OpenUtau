@@ -13,6 +13,17 @@ using xxHashSharp;
 namespace OpenUtau.Classic {
 
     class VoicebankInstaller {
+
+        class FileLoc {
+            public string file;
+            public int lineNumber;
+            public string line;
+
+            public override string ToString() {
+                return $"\"{file}\"\nat line {lineNumber}:\n\"{line}\"";
+            }
+        }
+
         readonly string basePath;
         readonly Action<double, string> progress;
 
@@ -67,7 +78,7 @@ namespace OpenUtau.Classic {
                     if (Path.GetFileName(entry.Key) == "oto.ini") {
                         OtoSet otoSet;
                         using (var streamReader = new StreamReader(entry.OpenEntryStream(), encoding)) {
-                            otoSet = ParseOtoSet(streamReader);
+                            otoSet = ParseOtoSet(streamReader, new FileLoc { file = entry.Key, lineNumber = 0 });
                         }
                         otoSet.OrigFile = entry.Key;
                         string filePath = Path.Combine(HashPath(Path.GetDirectoryName(entry.Key)), "_oto.json");
@@ -189,30 +200,41 @@ namespace OpenUtau.Classic {
             return Path.Combine(HashPath(dir), file);
         }
 
-        static OtoSet ParseOtoSet(StreamReader streamReader) {
+        static OtoSet ParseOtoSet(StreamReader streamReader, FileLoc fileLoc) {
             OtoSet otoSet = new OtoSet();
             while (!streamReader.EndOfStream) {
                 var line = streamReader.ReadLine();
-                Oto oto = ParseOto(line);
-                if (oto != null) {
-                    otoSet.Otos.Add(oto);
+                fileLoc.line = line;
+                try {
+                    Oto oto = ParseOto(line);
+                    if (oto != null) {
+                        otoSet.Otos.Add(oto);
+                    }
+                } catch (Exception e) {
+                    throw new FileFormatException($"Failed to parse\n{fileLoc}", e);
                 }
+                fileLoc.line = null;
+                fileLoc.lineNumber++;
             }
             return otoSet;
         }
 
         static Oto ParseOto(string line) {
-            if (!line.Contains("=")) {
+            const string format = "<wav>=<name>,<offset>,<consonant>,<cutoff>,<preutter>,<overlap>";
+            if (string.IsNullOrWhiteSpace(line)) {
                 return null;
+            }
+            if (!line.Contains("=")) {
+                throw new FileFormatException($"Line does not match format {format}.");
             }
             var parts = line.Split('=');
             if (parts.Length != 2) {
-                return null;
+                throw new FileFormatException($"Line does not match format {format}.");
             }
             var wav = parts[0].Trim();
             parts = parts[1].Split(',');
             if (parts.Length != 6) {
-                return null;
+                throw new FileFormatException($"Line does not match format {format}.");
             }
             var ext = Path.GetExtension(wav);
             var result = new Oto {
@@ -220,11 +242,24 @@ namespace OpenUtau.Classic {
                 Wav = HashPath(wav.Replace(ext, "")) + ext,
                 Name = parts[0].Trim()
             };
-            double.TryParse(parts[1], out result.Offset);
-            double.TryParse(parts[2], out result.Consonant);
-            double.TryParse(parts[3], out result.Cutoff);
-            double.TryParse(parts[4], out result.Preutter);
-            double.TryParse(parts[5], out result.Overlap);
+            if (string.IsNullOrEmpty(result.Name)) {
+                result.Name = wav.Replace(ext, "");
+            }
+            if (!double.TryParse(parts[1], out result.Offset)) {
+                throw new FileFormatException($"Failed to parse offset. Format is {format}.");
+            }
+            if (!double.TryParse(parts[2], out result.Consonant)) {
+                throw new FileFormatException($"Failed to parse consonant. Format is {format}.");
+            }
+            if (!double.TryParse(parts[3], out result.Cutoff)) {
+                throw new FileFormatException($"Failed to parse cutoff. Format is {format}.");
+            }
+            if (!double.TryParse(parts[4], out result.Preutter)) {
+                throw new FileFormatException($"Failed to parse preutter. Format is {format}.");
+            }
+            if (!double.TryParse(parts[5], out result.Overlap)) {
+                throw new FileFormatException($"Failed to parse overlap. Format is {format}.");
+            }
             return result;
         }
     }
