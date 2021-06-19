@@ -134,6 +134,7 @@ namespace OpenUtau.UI.Controls
                     item.Click += (_o, _e) =>
                     {
                         DocManager.Inst.StartUndoGroup();
+                        DocManager.Inst.ExecuteCmd(new WillRemoveTrackNotification(Track.TrackNo));
                         DocManager.Inst.ExecuteCmd(new RemoveTrackCommand(DocManager.Inst.Project, this.Track));
                         DocManager.Inst.EndUndoGroup();
                     };

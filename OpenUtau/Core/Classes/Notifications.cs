@@ -82,12 +82,18 @@ namespace OpenUtau.Core {
     public class VolumeChangeNotification : UNotification {
         public double Volume;
         public int TrackNo;
-        public VolumeChangeNotification(int trackNo, double volume) { this.TrackNo = trackNo; this.Volume = volume; }
+        public VolumeChangeNotification(int trackNo, double volume) { TrackNo = trackNo; Volume = volume; }
         public override string ToString() { return $"Set track {TrackNo} volume to {Volume}"; }
     }
 
     public class SingersChangedNotification : UNotification {
         public SingersChangedNotification() { }
         public override string ToString() { return "Singers changed."; }
+    }
+
+    public class WillRemoveTrackNotification : UNotification {
+        public int TrackNo;
+        public WillRemoveTrackNotification(int trackNo) { TrackNo = trackNo; }
+        public override string ToString() { return $"Will remove track {TrackNo}."; }
     }
 }

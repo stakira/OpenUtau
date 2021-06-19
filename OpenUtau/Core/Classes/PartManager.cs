@@ -10,37 +10,38 @@ using OpenUtau.Core.USTx;
 namespace OpenUtau.Core {
     public class PartManager : ICmdSubscriber {
         class PartContainer {
-            public UVoicePart Part = null;
+            public readonly object _obj = new object();
+            public UVoicePart Part;
+            public UProject Project;
         }
 
         Timer timer;
 
-        UProject _project;
-        PartContainer _partContainer;
+        readonly PartContainer _partContainer = new PartContainer();
 
         public PartManager() {
-            _partContainer = new PartContainer();
             DocManager.Inst.AddSubscriber(this);
             timer = new Timer(Update, _partContainer, 0, 100);
         }
 
         private void Update(Object state) {
             var partContainer = state as PartContainer;
-            if (partContainer.Part == null) return;
-            UpdatePart(partContainer.Part);
+            lock (partContainer._obj) {
+                UpdatePart(partContainer.Part);
+            }
         }
 
         public void UpdatePart(UVoicePart part) {
-            lock (part) {
-                if (part == null) return;
-                CheckOverlappedNotes(part);
-                UpdatePhonemeDurTick(part);
-                UpdatePhonemeOto(part);
-                UpdateOverlapAdjustment(part);
-                UpdateEnvelope(part);
-                UpdatePitchBend(part);
-                DocManager.Inst.ExecuteCmd(new RedrawNotesNotification(), true);
+            if (part == null) {
+                return;
             }
+            CheckOverlappedNotes(part);
+            UpdatePhonemeDurTick(part);
+            UpdatePhonemeOto(part);
+            UpdateOverlapAdjustment(part);
+            UpdateEnvelope(part);
+            UpdatePitchBend(part);
+            DocManager.Inst.ExecuteCmd(new RedrawNotesNotification(), true);
         }
 
         private void UpdatePitchBend(UVoicePart part) {
@@ -205,24 +206,39 @@ namespace OpenUtau.Core {
         public void OnNext(UCommand cmd, bool isUndo) {
             if (cmd is PartCommand) {
                 var _cmd = cmd as PartCommand;
-                if (_cmd.part != _partContainer.Part) {
-                    return;
-                } else if (_cmd is RemovePartCommand) {
-                    _partContainer.Part = null;
+                lock (_partContainer._obj) {
+                    if (_cmd.part != _partContainer.Part) {
+                        return;
+                    }
+                    if (_cmd is RemovePartCommand) {
+                        _partContainer.Part = null;
+                        _partContainer.Project = null;
+                    }
                 }
             } else if (cmd is BpmCommand) {
                 var _cmd = cmd as BpmCommand;
                 RefreshProject(_cmd.Project);
             } else if (cmd is UNotification) {
-                var _cmd = cmd as UNotification;
-                if (_cmd is LoadPartNotification) {
+                if (cmd is LoadPartNotification) {
+                    var _cmd = cmd as LoadPartNotification;
                     if (!(_cmd.part is UVoicePart)) {
                         return;
                     }
-                    _partContainer.Part = (UVoicePart)_cmd.part;
-                    _project = _cmd.project;
-                } else if (_cmd is LoadProjectNotification) {
+                    lock (_partContainer._obj) {
+                        _partContainer.Part = (UVoicePart)_cmd.part;
+                        _partContainer.Project = _cmd.project;
+                    }
+                } else if (cmd is LoadProjectNotification) {
+                    var _cmd = cmd as LoadProjectNotification;
                     RefreshProject(_cmd.project);
+                } else if (cmd is WillRemoveTrackNotification) {
+                    var _cmd = cmd as WillRemoveTrackNotification;
+                    lock (_partContainer._obj) {
+                        if (_partContainer.Part != null && _cmd.TrackNo == _partContainer.Part.TrackNo) {
+                            _partContainer.Part = null;
+                            _partContainer.Project = null;
+                        }
+                    }
                 }
             }
         }

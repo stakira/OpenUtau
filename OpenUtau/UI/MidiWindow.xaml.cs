@@ -16,7 +16,7 @@ namespace OpenUtau.UI {
     /// <summary>
     /// Interaction logic for BorderlessWindow.xaml
     /// </summary>
-    public partial class MidiWindow : BorderlessWindow {
+    public partial class MidiWindow : BorderlessWindow, ICmdSubscriber {
         MidiViewModel midiVM;
         MidiViewHitTest midiHT;
         ContextMenu pitchCxtMenu;
@@ -59,6 +59,8 @@ namespace OpenUtau.UI {
             comboVMs[3].CreateBindings(expCombo3);
 
             InitPitchPointContextMenu();
+
+            DocManager.Inst.AddSubscriber(this);
         }
 
         protected override void OnDeactivated(EventArgs e) {
@@ -626,6 +628,12 @@ namespace OpenUtau.UI {
 
         private void mainButton_Click(object sender, RoutedEventArgs e) {
             DocManager.Inst.ExecuteCmd(new ShowPitchExpNotification());
+        }
+
+        void ICmdSubscriber.OnNext(UCommand cmd, bool isUndo) {
+            if (cmd is WillRemoveTrackNotification) {
+                Hide();
+            }
         }
     }
 }

@@ -309,9 +309,20 @@ namespace OpenUtau.Core.Formats {
                 if (!string.IsNullOrWhiteSpace(pbm)) {
                     var m = pbw.Split(new[] { ',' });
                     for (var i = 0; i < m.Count() - 1; i++) {
-                        points[i].Shape = m[i] == "r" ? PitchPointShape.o :
-                                       m[i] == "s" ? PitchPointShape.l :
-                                       m[i] == "j" ? PitchPointShape.i : PitchPointShape.io;
+                        switch (m[i]) {
+                            case "r":
+                                points[i].Shape = PitchPointShape.o;
+                                break;
+                            case "s":
+                                points[i].Shape = PitchPointShape.l;
+                                break;
+                            case "j":
+                                points[i].Shape = PitchPointShape.i;
+                                break;
+                            default:
+                                points[i].Shape = PitchPointShape.io;
+                                break;
+                        }
                     }
                 }
             }
