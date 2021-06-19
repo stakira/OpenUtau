@@ -20,7 +20,7 @@ namespace OpenUtau.Classic {
             public string line;
 
             public override string ToString() {
-                return $"\"{file}\"\nat line {lineNumber}:\n\"{line}\"";
+                return $"\"{file}\"\nat line {lineNumber + 1}:\n\"{line}\"";
             }
         }
 
@@ -220,12 +220,9 @@ namespace OpenUtau.Classic {
         }
 
         static Oto ParseOto(string line) {
-            const string format = "<wav>=<name>,<offset>,<consonant>,<cutoff>,<preutter>,<overlap>";
+            const string format = "<wav>=<alias>,<offset>,<consonant>,<cutoff>,<preutter>,<overlap>";
             if (string.IsNullOrWhiteSpace(line)) {
                 return null;
-            }
-            if (!line.Contains("=")) {
-                throw new FileFormatException($"Line does not match format {format}.");
             }
             var parts = line.Split('=');
             if (parts.Length != 2) {
