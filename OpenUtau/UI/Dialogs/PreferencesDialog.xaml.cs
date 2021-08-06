@@ -16,13 +16,17 @@ namespace OpenUtau.UI.Dialogs {
         private List<string> singerPaths;
 
         private List<string> engines;
+        private List<NAudio.Wave.WaveOutCapabilities> playbackDevices;
 
         public PreferencesDialog() {
             InitializeComponent();
 
-            renderingItem.IsSelected = true;
+            playbackItem.IsSelected = true;
             UpdateSingerPaths();
             UpdateEngines();
+            playbackDevices = PlaybackManager.Inst.GetOutputDevices();
+            playbackDeviceCombo.ItemsSource = playbackDevices;
+            playbackDeviceCombo.SelectedIndex = PlaybackManager.Inst.PlaybackDeviceNumber;
         }
 
         private Grid SelectedGrid {
@@ -113,6 +117,22 @@ namespace OpenUtau.UI.Dialogs {
             Core.Util.Preferences.Save();
         }
 
-        # endregion
+        #endregion
+
+        #region Playback
+
+        private void playbackDeviceCombo_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            var device = (NAudio.Wave.WaveOutCapabilities)playbackDeviceCombo.SelectedItem;
+            PlaybackManager.Inst.SelectOutputDevice(device.ProductGuid, playbackDeviceCombo.SelectedIndex);
+            Core.Util.Preferences.Default.PlaybackDevice = device.ProductGuid.ToString();
+            Core.Util.Preferences.Default.PlaybackDeviceNumber = playbackDeviceCombo.SelectedIndex;
+            Core.Util.Preferences.Save();
+        }
+
+        private void testPlaybackButton_Click(object sender, RoutedEventArgs e) {
+            PlaybackManager.Inst.PlayTestSound();
+        }
+
+        #endregion
     }
 }

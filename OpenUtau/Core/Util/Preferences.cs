@@ -53,6 +53,8 @@ namespace OpenUtau.Core.Util {
             public List<string> SingerSearchPaths;
             public string ExternalPreviewEngine;
             public string ExternalExportEngine;
+            public string PlaybackDevice;
+            public int PlaybackDeviceNumber;
         }
     }
 }

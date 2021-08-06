@@ -9,7 +9,7 @@
                 <TreeViewItem x:Name="pathsItem" Header="{StaticResource prefs.general.paths}" Margin="-12,0,0,0"/>
             </TreeViewItem>
             <TreeViewItem Header="{StaticResource prefs.audio}" IsExpanded="True">
-                <TreeViewItem x:Name="playbackItem" Header="{StaticResource prefs.audio.playback}" Margin="-12,0,0,0" Visibility="Collapsed"/>
+                <TreeViewItem x:Name="playbackItem" Header="{StaticResource prefs.audio.playback}" Margin="-12,0,0,0"/>
                 <TreeViewItem x:Name="renderingItem" Header="{StaticResource prefs.audio.rendering}" Margin="-12,0,0,0"/>
             </TreeViewItem>
             <TreeViewItem Header="{StaticResource prefs.appearance}" IsExpanded="True" Visibility="Collapsed">
@@ -38,13 +38,11 @@
             </ComboBox>
         </Grid>
         <Grid x:Name="playbackGrid" Margin="170,2,10,10" Visibility="Collapsed">
-            <TextBlock Text="Output device" Margin="10,4,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-            <ComboBox Width="256" Height="22" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,25,0,0">
-                <ComboBoxItem Content="WASAPI" IsSelected="True"/>
-                <ComboBoxItem Content="DirectSound"/>
-                <ComboBoxItem Content="WaveOut"/>
-                <ComboBoxItem Content="ASIO"/>
+            <TextBlock Text="Playback Device" Margin="10,4,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+            <ComboBox x:Name="playbackDeviceCombo" Width="329" Height="22" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,25,0,0"
+                      DisplayMemberPath="ProductName" SelectionChanged="playbackDeviceCombo_SelectionChanged">
             </ComboBox>
+            <Button Content="Test" Width="60" Height="22" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="344,25,0,0" Click="testPlaybackButton_Click"/>
         </Grid>
         <Grid x:Name="renderingGrid" Margin="170,2,10,10" Visibility="Collapsed">
             <StackPanel Margin="0,0,0,0">
