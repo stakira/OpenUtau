@@ -106,6 +106,8 @@ namespace OpenUtau.Classic {
                                         voicebank.Image = s[1];
                                     } else if (s[0] == "author") {
                                         voicebank.Author = s[1];
+                                    } else if (s[0] == "created by") {
+                                        voicebank.Author = s[1];
                                     } else if (s[0] == "web") {
                                         voicebank.Web = s[1];
                                     } else {
