@@ -96,6 +96,8 @@ namespace OpenUtau.Classic {
                             while (!streamReader.EndOfStream) {
                                 string line = streamReader.ReadLine().Trim();
                                 var s = line.Split(new char[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
+                                if (s.Length != 2)
+                                    s = line.Split(new string[] { ": " }, StringSplitOptions.RemoveEmptyEntries);
                                 if (s.Length == 2) {
                                     s[0] = s[0].ToLowerInvariant();
                                     if (s[0] == "name") {
