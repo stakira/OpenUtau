@@ -96,6 +96,9 @@ namespace OpenUtau.Classic {
                             while (!streamReader.EndOfStream) {
                                 string line = streamReader.ReadLine().Trim();
                                 var s = line.Split(new char[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
+                                if (s.Length != 2)
+                                    s = line.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
+                                Array.ForEach(s, temp => temp.Trim());
                                 if (s.Length == 2) {
                                     s[0] = s[0].ToLowerInvariant();
                                     if (s[0] == "name") {
@@ -103,6 +106,8 @@ namespace OpenUtau.Classic {
                                     } else if (s[0] == "image") {
                                         voicebank.Image = s[1];
                                     } else if (s[0] == "author") {
+                                        voicebank.Author = s[1];
+                                    } else if (s[0] == "created by") {
                                         voicebank.Author = s[1];
                                     } else if (s[0] == "web") {
                                         voicebank.Web = s[1];
