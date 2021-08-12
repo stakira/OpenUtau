@@ -15,7 +15,7 @@ namespace OpenUtau.Core.Render
     /// </summary>
     class SequencingSampleProvider : ISampleProvider
     {
-        private List<RenderItemSampleProvider> sources;
+        private readonly List<RenderItemSampleProvider> sources;
         private WaveFormat waveFormat;
         private float[] sourceBuffer;
         private int lastSample;

@@ -11,7 +11,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 
 using OpenUtau.Core;
-using OpenUtau.Core.USTx;
+using OpenUtau.Core.Ustx;
 using OpenUtau.UI.Controls;
 
 namespace OpenUtau.UI.Models
@@ -124,7 +124,7 @@ namespace OpenUtau.UI.Models
 
         private void OnListChange()
         {
-            _keys = new ObservableCollection<string>(DocManager.Inst.Project.ExpressionTable.Keys);
+            _keys = new ObservableCollection<string>(DocManager.Inst.Project.expressions.Keys);
             if (_keys.Count > 0) SelectedIndex = Index % _keys.Count;
             OnPropertyChanged("Keys");
         }

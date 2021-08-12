@@ -5,7 +5,7 @@ using System.Windows.Media.Imaging;
 using OpenUtau.Classic;
 using WanaKanaSharp;
 
-namespace OpenUtau.Core.USTx {
+namespace OpenUtau.Core.Ustx {
     public struct UOto {
         public string Alias { private set; get; }
         public string Set { private set; get; }

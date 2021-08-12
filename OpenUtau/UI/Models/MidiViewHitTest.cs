@@ -2,27 +2,26 @@
 using System.Windows;
 
 using OpenUtau.Core;
-using OpenUtau.Core.USTx;
+using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.UI.Models {
     public class PitchPointHitInfo {
         public UNote Note;
         public int Index;
         public bool OnPoint;
-        public double X;
-        public double Y;
+        public float X;
+        public float Y;
     }
 
     public struct NoteHitInfo {
         public UNote note;
         public bool hitBody;
         public bool hitResizeArea;
-        public bool hitVibrato;
         public bool hitX;
     }
 
     class MidiViewHitTest {
-        MidiViewModel midiVM;
+        readonly MidiViewModel midiVM;
         UProject Project => DocManager.Inst.Project;
 
         public MidiViewHitTest(MidiViewModel midiVM) {
@@ -31,20 +30,17 @@ namespace OpenUtau.UI.Models {
 
         public NoteHitInfo HitTestNote(Point mousePos) {
             NoteHitInfo result = default;
-            int tick = (int)(midiVM.CanvasToQuarter(mousePos.X) * Project.Resolution);
-            foreach (UNote note in midiVM.Part.Notes) {
-                if (note.PosTick <= tick && note.EndTick >= tick) {
+            int tick = (int)(midiVM.CanvasToQuarter(mousePos.X) * Project.resolution);
+            foreach (UNote note in midiVM.Part.notes) {
+                if (note.position <= tick && note.End >= tick) {
                     result.note = note;
                     result.hitX = true;
                     var noteNum = midiVM.CanvasToNoteNum(mousePos.Y);
-                    if (noteNum == note.NoteNum) {
-                        result.hitVibrato = false;
+                    if (noteNum == note.noteNum) {
                         result.hitBody = true;
-                        double x = midiVM.QuarterToCanvas((double)note.EndTick / Project.Resolution);
+                        double x = midiVM.QuarterToCanvas((double)note.End / Project.resolution);
                         result.hitResizeArea = mousePos.X <= x && mousePos.X > x - UIConstants.ResizeMargin;
                         break;
-                    } else if (noteNum == note.NoteNum - 1) {
-                        result.hitVibrato = true;
                     }
                 }
             }
@@ -52,16 +48,16 @@ namespace OpenUtau.UI.Models {
         }
 
         public PitchPointHitInfo HitTestPitchPoint(Point mousePos) {
-            foreach (var note in midiVM.Part.Notes) {
+            foreach (var note in midiVM.Part.notes) {
                 if (midiVM.NoteIsInView(note)) // FIXME this is not enough
                 {
                     if (note.Error) continue;
                     double lastX = 0, lastY = 0;
                     PitchPointShape lastShape = PitchPointShape.l;
-                    for (int i = 0; i < note.PitchBend.Points.Count; i++) {
-                        var pit = note.PitchBend.Points[i];
-                        int posTick = note.PosTick + Project.MillisecondToTick(pit.X);
-                        double noteNum = note.NoteNum + pit.Y / 10;
+                    for (int i = 0; i < note.pitch.data.Count; i++) {
+                        var pit = note.pitch.data[i];
+                        int posTick = note.position + Project.MillisecondToTick(pit.X);
+                        double noteNum = note.noteNum + pit.Y / 10;
                         double x = midiVM.TickToCanvas(posTick);
                         double y = midiVM.NoteNumToCanvas(noteNum) + midiVM.TrackHeight / 2;
                         if (Math.Abs(mousePos.X - x) < 4 && Math.Abs(mousePos.Y - y) < 4)
@@ -77,14 +73,14 @@ namespace OpenUtau.UI.Models {
                             double castX = MusicMath.InterpolateShapeX(lastX, x, lastY, y, mousePos.Y, lastShape) - mousePos.X;
                             double dis = double.IsNaN(castX) ? Math.Abs(castY) : Math.Cos(Math.Atan2(Math.Abs(castY), Math.Abs(castX))) * Math.Abs(castY);
                             if (dis < 3) {
-                                double msX = DocManager.Inst.Project.TickToMillisecond(midiVM.CanvasToQuarter(mousePos.X) * DocManager.Inst.Project.Resolution - note.PosTick);
-                                double msY = (midiVM.CanvasToPitch(mousePos.Y) - note.NoteNum) * 10;
-                                return (new PitchPointHitInfo() { Note = note, Index = i - 1, OnPoint = false, X = msX, Y = msY });
+                                double msX = DocManager.Inst.Project.TickToMillisecond(midiVM.CanvasToQuarter(mousePos.X) * DocManager.Inst.Project.resolution - note.position);
+                                double msY = (midiVM.CanvasToPitch(mousePos.Y) - note.noteNum) * 10;
+                                return new PitchPointHitInfo() { Note = note, Index = i - 1, OnPoint = false, X = (float)msX, Y = (float)msY };
                             } else break;
                         }
                         lastX = x;
                         lastY = y;
-                        lastShape = pit.Shape;
+                        lastShape = pit.shape;
                     }
                 }
             }

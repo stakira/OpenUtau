@@ -125,7 +125,10 @@
                     <Border.Effect>
                         <DropShadowEffect Color="Black" ShadowDepth="0" BlurRadius="5" Opacity="0.75"/>
                     </Border.Effect>
-                    <local:LyricBox x:Name="LyricBox" Width="360" Height="28" Visibility="Hidden"/>
+                    <Grid>
+                        <local:LyricBox x:Name="LyricBox" Width="360" Height="28" Visibility="Hidden"/>
+                        <local:VibratoControl x:Name="VibratoControl" Width="360" Height="28" HorizontalAlignment="Left" VerticalAlignment="Top" Visibility="Collapsed"/>
+                    </Grid>
                 </Border>
             </Border>
             <Grid x:Name="keyboardBackgroundGrid" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="48" Margin="0,40,0,0" ClipToBounds="True">

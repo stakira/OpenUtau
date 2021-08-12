@@ -22,7 +22,7 @@ namespace OpenUtau.UI.Models
             }
         }
 
-        object lockObject = new object();
+        readonly object lockObject = new object();
         Brush _foreground;
         public Brush Foreground { set { _foreground = value; OnPropertyChanged("Foreground"); } get { return _foreground; } }
         public double Progress { set; get; }

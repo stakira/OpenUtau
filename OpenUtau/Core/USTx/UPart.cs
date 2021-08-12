@@ -1,45 +1,49 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Newtonsoft.Json;
 
-using NAudio.Wave;
+namespace OpenUtau.Core.Ustx {
+    [JsonObject(MemberSerialization.OptIn)]
+    public abstract class UPart {
+        [JsonProperty] public string Name = "New Part";
+        [JsonProperty] public string Comment = string.Empty;
 
-namespace OpenUtau.Core.USTx
-{
-    public abstract class UPart
-    {
-        public string Name = "New Part";
-        public string Comment = string.Empty;
-
-        public int TrackNo;
-        public int PosTick = 0;
+        [JsonProperty] public int TrackNo;
+        [JsonProperty] public int PosTick = 0;
         public virtual int DurTick { set; get; }
         public int EndTick { get { return PosTick + DurTick; } }
 
         public UPart() { }
 
         public abstract int GetMinDurTick(UProject project);
+
+        public virtual void Validate(UProject project) { }
     }
 
-    public class UVoicePart : UPart
-    {
-        public SortedSet<UNote> Notes = new SortedSet<UNote>();
-        public override int GetMinDurTick(UProject project)
-        {
+    [JsonObject(MemberSerialization.OptIn)]
+    public class UVoicePart : UPart {
+        [JsonProperty] public SortedSet<UNote> notes = new SortedSet<UNote>();
+        public override int GetMinDurTick(UProject project) {
             int durTick = 0;
-            foreach (UNote note in Notes)
-                durTick = Math.Max(durTick, note.PosTick + note.DurTick);
+            foreach (UNote note in notes)
+                durTick = Math.Max(durTick, note.position + note.duration);
             return durTick;
+        }
+
+        public override void Validate(UProject project) {
+            foreach (var note in notes) {
+                note.Validate(project);
+            }
+            DurTick = GetMinDurTick(project) + project.resolution;
         }
     }
 
-    public class UWavePart : UPart
-    {
+    [JsonObject(MemberSerialization.OptIn)]
+    public class UWavePart : UPart {
         string _filePath;
-        public string FilePath
-        {
+
+        [JsonProperty]
+        public string FilePath {
             set { _filePath = value; Name = System.IO.Path.GetFileName(value); }
             get { return _filePath; }
         }
@@ -49,8 +53,7 @@ namespace OpenUtau.Core.USTx
         public int FileDurTick;
         public int HeadTrimTick = 0;
         public int TailTrimTick = 0;
-        public override int DurTick
-        {
+        public override int DurTick {
             get { return FileDurTick - HeadTrimTick - TailTrimTick; }
             set { TailTrimTick = FileDurTick - HeadTrimTick - value; }
         }

@@ -5,7 +5,7 @@ using System.Windows;
 using System.Windows.Media;
 
 using OpenUtau.Core;
-using OpenUtau.Core.USTx;
+using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.UI.Controls {
     class PhonemesElement : NotesElement {
@@ -30,7 +30,7 @@ namespace OpenUtau.UI.Controls {
             if (Part != null) {
                 bool inView, lastInView = false;
                 UNote lastNote = null;
-                foreach (var note in Part.Notes) {
+                foreach (var note in Part.notes) {
                     inView = midiVM.NoteIsInView(note);
 
                     if (inView && !lastInView)
@@ -50,24 +50,24 @@ namespace OpenUtau.UI.Controls {
             const double y = 23.5;
             const double height = 24;
             if (note.Error) return;
-            for (int i = 0; i < note.Phonemes.Count; i++) {
-                var phoneme = note.Phonemes[i];
-                double x = Math.Round(note.PosTick * midiVM.QuarterWidth / DocManager.Inst.Project.Resolution) + 0.5;
-                double x0 = (note.PosTick + DocManager.Inst.Project.MillisecondToTick(phoneme.Envelope.Points[0].X))
-                    * midiVM.QuarterWidth / DocManager.Inst.Project.Resolution;
-                double y0 = (1 - phoneme.Envelope.Points[0].Y / 100) * height;
-                double x1 = (note.PosTick + DocManager.Inst.Project.MillisecondToTick(phoneme.Envelope.Points[1].X))
-                    * midiVM.QuarterWidth / DocManager.Inst.Project.Resolution;
-                double y1 = (1 - phoneme.Envelope.Points[1].Y / 100) * height;
-                double x2 = (note.PosTick + DocManager.Inst.Project.MillisecondToTick(phoneme.Envelope.Points[2].X))
-                    * midiVM.QuarterWidth / DocManager.Inst.Project.Resolution;
-                double y2 = (1 - phoneme.Envelope.Points[2].Y / 100) * height;
-                double x3 = (note.PosTick + DocManager.Inst.Project.MillisecondToTick(phoneme.Envelope.Points[3].X))
-                    * midiVM.QuarterWidth / DocManager.Inst.Project.Resolution;
-                double y3 = (1 - phoneme.Envelope.Points[3].Y / 100) * height;
-                double x4 = (note.PosTick + DocManager.Inst.Project.MillisecondToTick(phoneme.Envelope.Points[4].X))
-                    * midiVM.QuarterWidth / DocManager.Inst.Project.Resolution;
-                double y4 = (1 - phoneme.Envelope.Points[4].Y / 100) * height;
+            for (int i = 0; i < note.phonemes.Count; i++) {
+                var phoneme = note.phonemes[i];
+                double x = Math.Round(note.position * midiVM.QuarterWidth / DocManager.Inst.Project.resolution) + 0.5;
+                double x0 = (note.position + DocManager.Inst.Project.MillisecondToTick(phoneme.envelope.data[0].X))
+                    * midiVM.QuarterWidth / DocManager.Inst.Project.resolution;
+                double y0 = (1 - phoneme.envelope.data[0].Y / 100) * height;
+                double x1 = (note.position + DocManager.Inst.Project.MillisecondToTick(phoneme.envelope.data[1].X))
+                    * midiVM.QuarterWidth / DocManager.Inst.Project.resolution;
+                double y1 = (1 - phoneme.envelope.data[1].Y / 100) * height;
+                double x2 = (note.position + DocManager.Inst.Project.MillisecondToTick(phoneme.envelope.data[2].X))
+                    * midiVM.QuarterWidth / DocManager.Inst.Project.resolution;
+                double y2 = (1 - phoneme.envelope.data[2].Y / 100) * height;
+                double x3 = (note.position + DocManager.Inst.Project.MillisecondToTick(phoneme.envelope.data[3].X))
+                    * midiVM.QuarterWidth / DocManager.Inst.Project.resolution;
+                double y3 = (1 - phoneme.envelope.data[3].Y / 100) * height;
+                double x4 = (note.position + DocManager.Inst.Project.MillisecondToTick(phoneme.envelope.data[4].X))
+                    * midiVM.QuarterWidth / DocManager.Inst.Project.resolution;
+                double y4 = (1 - phoneme.envelope.data[4].Y / 100) * height;
 
                 Pen pen = note.Selected ? penEnvSel : penEnv;
                 Brush brush = note.Selected ? ThemeManager.NoteFillSelectedErrorBrushes : ThemeManager.NoteFillErrorBrushes[0];
@@ -90,7 +90,7 @@ namespace OpenUtau.UI.Controls {
 
                 cxt.DrawLine(penEnvSel, new Point(x, y), new Point(x, y + height));
 
-                string text = phoneme.Phoneme;
+                string text = phoneme.phoneme;
                 if (!fTextPool.ContainsKey(text)) AddToFormattedTextPool(text);
                 var fText = fTextPool[text];
                 if (midiVM.QuarterWidth > UIConstants.MidiQuarterMinWidthShowPhoneme)

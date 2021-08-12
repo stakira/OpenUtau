@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using OpenUtau.Core.USTx;
+using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core.Formats {
 
@@ -34,15 +34,15 @@ namespace OpenUtau.Core.Formats {
                 projects.Add(Load(file));
             }
 
-            var bpm = projects.First().BPM;
-            var project = new UProject() { BPM = bpm, Name = "Merged Project", Saved = false };
+            var bpm = projects.First().bpm;
+            var project = new UProject() { bpm = bpm, name = "Merged Project", Saved = false };
             foreach (var p in projects) {
-                var _track = p.Tracks[0];
-                var _part = p.Parts[0];
-                _track.TrackNo = project.Tracks.Count;
+                var _track = p.tracks[0];
+                var _part = p.parts[0];
+                _track.TrackNo = project.tracks.Count;
                 _part.TrackNo = _track.TrackNo;
-                project.Tracks.Add(_track);
-                project.Parts.Add(_part);
+                project.tracks.Add(_track);
+                project.parts.Add(_part);
             }
 
             if (project != null) {
@@ -51,23 +51,23 @@ namespace OpenUtau.Core.Formats {
         }
 
         public static UProject Load(string file, Encoding encoding = null) {
-            var project = new UProject() { Resolution = 480, FilePath = file, Saved = false };
-            project.RegisterExpression(new IntExpression(null, "velocity", "VEL") { Data = 100, Min = 0, Max = 200 });
-            project.RegisterExpression(new IntExpression(null, "volume", "VOL") { Data = 100, Min = 0, Max = 200 });
-            project.RegisterExpression(new IntExpression(null, "gender", "GEN") { Data = 0, Min = -100, Max = 100 });
-            project.RegisterExpression(new IntExpression(null, "lowpass", "LPF") { Data = 0, Min = 0, Max = 100 });
-            project.RegisterExpression(new IntExpression(null, "highpass", "HPF") { Data = 0, Min = 0, Max = 100 });
-            project.RegisterExpression(new IntExpression(null, "accent", "ACC") { Data = 100, Min = 0, Max = 200 });
-            project.RegisterExpression(new IntExpression(null, "decay", "DEC") { Data = 0, Min = 0, Max = 100 });
+            var project = new UProject() { resolution = 480, filePath = file, Saved = false };
+            project.RegisterExpression(new UExpressionDescriptor("velocity", "vel", 0, 200, 100));
+            project.RegisterExpression(new UExpressionDescriptor("volume", "vol", 0, 200, 100));
+            project.RegisterExpression(new UExpressionDescriptor("gender", "gen", -100, 100, 0));
+            project.RegisterExpression(new UExpressionDescriptor("lowpass", "lpf", 0, 100, 0));
+            project.RegisterExpression(new UExpressionDescriptor("highpass", "hpf", 0, 100, 0));
+            project.RegisterExpression(new UExpressionDescriptor("accent", "acc", 0, 200, 100));
+            project.RegisterExpression(new UExpressionDescriptor("decay", "dec", 0, 100, 0));
 
-            project.Tracks.Add(new UTrack { TrackNo = 0 });
+            project.tracks.Add(new UTrack { TrackNo = 0 });
             var part = new UVoicePart() { TrackNo = 0, PosTick = 0 };
-            project.Parts.Add(part);
+            project.parts.Add(part);
 
             var blocks = ReadBlocks(file, encoding ?? Encoding.GetEncoding("shift_jis"));
             ParsePart(project, part, blocks);
 
-            part.DurTick = part.Notes.Select(note => note.EndTick).Max() + project.Resolution;
+            part.DurTick = part.notes.Select(note => note.End).Max() + project.resolution;
             return project;
         }
 
@@ -112,11 +112,14 @@ namespace OpenUtau.Core.Formats {
                         default:
                             if (int.TryParse(header.Substring(2, header.Length - 3), out int noteIndex)) {
                                 UNote note = project.CreateNote();
+                                foreach (var phoneme in note.phonemes) {
+                                    phoneme.envelope = new UEnvelope();
+                                }
                                 ParseNote(note, block);
-                                note.PosTick = tick;
-                                tick += note.DurTick;
-                                if (note.Lyric != "R") {
-                                    part.Notes.Add(note);
+                                note.position = tick;
+                                tick += note.duration;
+                                if (note.lyric != "R") {
+                                    part.notes.Add(note);
                                 }
                             } else {
                                 throw new FileFormatException($"Unexpected header\n{block[0]}");
@@ -140,12 +143,12 @@ namespace OpenUtau.Core.Formats {
                 string param = parts[0].Trim();
                 switch (param) {
                     case "Tempo":
-                        if (double.TryParse(parts[1], out double temp)) {
-                            project.BPM = temp;
+                        if (float.TryParse(parts[1], out float temp)) {
+                            project.bpm = temp;
                         }
                         break;
                     case "ProjectName":
-                        project.Name = parts[1].Trim();
+                        project.name = parts[1].Trim();
                         break;
                     case "VoiceDir":
                         var singerpath = parts[1].Trim();
@@ -153,8 +156,8 @@ namespace OpenUtau.Core.Formats {
                         if (singer == null) {
                             singer = new USinger("");
                         }
-                        project.Singers.Add(singer);
-                        project.Tracks[0].Singer = singer;
+                        project.singers.Add(singer);
+                        project.tracks[0].Singer = singer;
                         break;
                 }
             }
@@ -171,30 +174,30 @@ namespace OpenUtau.Core.Formats {
                 }
                 string param = parts[0].Trim();
                 bool error = false;
-                bool isDouble = double.TryParse(parts[1], out double doubleValue);
+                bool isFloat = float.TryParse(parts[1], out float floatValue);
                 switch (param) {
                     case "Length":
-                        error |= !isDouble;
-                        note.DurTick = (int)doubleValue;
+                        error |= !isFloat;
+                        note.duration = (int)floatValue;
                         break;
                     case "Lyric":
                         ParseLyric(note, parts[1]);
                         break;
                     case "NoteNum":
-                        error |= !isDouble;
-                        note.NoteNum = (int)doubleValue;
+                        error |= !isFloat;
+                        note.noteNum = (int)floatValue;
                         break;
                     case "Velocity":
-                        error |= !isDouble;
-                        note.Expressions["velocity"].Data = (int)doubleValue;
+                        error |= !isFloat;
+                        note.expressions["vel"].value = floatValue;
                         break;
                     case "Intensity":
-                        error |= !isDouble;
-                        note.Expressions["volume"].Data = (int)doubleValue;
+                        error |= !isFloat;
+                        note.expressions["vol"].value = floatValue;
                         break;
                     case "VoiceOverlap":
-                        error |= !isDouble;
-                        note.Phonemes[0].Overlap = doubleValue;
+                        error |= !isFloat;
+                        note.phonemes[0].overlap = floatValue;
                         break;
                     case "PreUtterance":
                         ParsePreUtterance(note, parts[1], ustBlock[i]);
@@ -229,37 +232,37 @@ namespace OpenUtau.Core.Formats {
 
         private static void ParseLyric(UNote note, string ust) {
             if (ust.StartsWith("?")) {
-                note.Phonemes[0].AutoRemapped = false;
+                note.phonemes[0].AutoRemapped = false;
                 ust = ust.Substring(1);
             }
-            note.Phonemes[0].Phoneme = ust;
-            note.Lyric = ust;
+            note.phonemes[0].phoneme = ust;
+            note.lyric = ust;
         }
 
         private static void ParsePreUtterance(UNote note, string ust, UstLine ustLine) {
             if (string.IsNullOrWhiteSpace(ust)) {
-                note.Phonemes[0].AutoEnvelope = true;
+                note.phonemes[0].AutoEnvelope = true;
                 return;
             }
-            note.Phonemes[0].AutoEnvelope = false;
-            if (!double.TryParse(ust, out double preutter)) {
+            note.phonemes[0].AutoEnvelope = false;
+            if (!float.TryParse(ust, out float preutter)) {
                 throw new FileFormatException($"Invalid PreUtterance\n${ustLine}");
             }
-            note.Phonemes[0].Preutter = preutter;
+            note.phonemes[0].preutter = preutter;
         }
 
         private static void ParseEnvelope(UNote note, string ust, UstLine ustLine) {
             // p1,p2,p3,v1,v2,v3,v4,%,p4,p5,v5 (0,5,35,0,100,100,0,%,0,0,100)
             try {
-                var parts = ust.Split(new[] { ',' }).Select(s => double.TryParse(s, out double v) ? v : -1).ToArray();
+                var parts = ust.Split(new[] { ',' }).Select(s => float.TryParse(s, out float v) ? v : -1).ToArray();
                 if (parts.Length < 7) {
                     return;
                 }
-                double p1 = parts[0], p2 = parts[1], p3 = parts[2], v1 = parts[3], v2 = parts[4], v3 = parts[5], v4 = parts[6];
+                float p1 = parts[0], p2 = parts[1], p3 = parts[2], v1 = parts[3], v2 = parts[4], v3 = parts[5], v4 = parts[6];
                 if (parts.Length == 11) {
-                    double p4 = parts[8], p5 = parts[9], v5 = parts[11];
+                    float p4 = parts[8], p5 = parts[9], v5 = parts[11];
                 }
-                note.Expressions["decay"].Data = 100 - (int)v3;
+                note.expressions["dec"].value = 100f - v3;
             } catch (Exception e) {
                 throw new FileFormatException($"Invalid Envelope\n{ustLine}", e);
             }
@@ -267,17 +270,17 @@ namespace OpenUtau.Core.Formats {
 
         private static void ParseVibrato(UNote note, string ust, UstLine ustLine) {
             try {
-                var args = ust.Split(',').Select(double.Parse).ToArray();
+                var args = ust.Split(',').Select(float.Parse).ToArray();
                 if (args.Length < 7) {
                     throw new Exception();
                 }
-                note.Vibrato.Length = args[0];
-                note.Vibrato.Period = args[1];
-                note.Vibrato.Depth = args[2];
-                note.Vibrato.In = args[3];
-                note.Vibrato.Out = args[4];
-                note.Vibrato.Shift = args[5];
-                note.Vibrato.Drift = args[6];
+                note.vibrato.length = args[0];
+                note.vibrato.period = args[1];
+                note.vibrato.depth = args[2];
+                note.vibrato.@in = args[3];
+                note.vibrato.@out = args[4];
+                note.vibrato.shift = args[5];
+                note.vibrato.drift = args[6];
             } catch {
                 throw new FileFormatException($"Invalid VBR\n{ustLine}");
             }
@@ -285,19 +288,19 @@ namespace OpenUtau.Core.Formats {
 
         private static void ParsePitchBend(UNote note, string pbs, string pbw, string pby, string pbm) {
             if (!string.IsNullOrWhiteSpace(pbs)) {
-                var points = note.PitchBend.Data as List<PitchPoint>;
+                var points = note.pitch.data;
                 points.Clear();
                 if (pbs.Contains(';')) {
-                    points.Add(new PitchPoint(double.Parse(pbs.Split(new[] { ';' })[0]), double.Parse(pbs.Split(new[] { ';' })[1])));
-                    note.PitchBend.SnapFirst = false;
+                    points.Add(new PitchPoint(float.Parse(pbs.Split(new[] { ';' })[0]), float.Parse(pbs.Split(new[] { ';' })[1])));
+                    note.pitch.snapFirst = false;
                 } else {
-                    points.Add(new PitchPoint(double.Parse(pbs), 0));
-                    note.PitchBend.SnapFirst = true;
+                    points.Add(new PitchPoint(float.Parse(pbs), 0));
+                    note.pitch.snapFirst = true;
                 }
                 var x = points.First().X;
                 if (!string.IsNullOrWhiteSpace(pbw)) {
-                    var w = pbw.Split(',').Select(s => string.IsNullOrEmpty(s) ? 0 : double.Parse(s)).ToList();
-                    var y = (pby ?? "").Split(',').Select(s => string.IsNullOrEmpty(s) ? 0 : double.Parse(s)).ToList();
+                    var w = pbw.Split(',').Select(s => string.IsNullOrEmpty(s) ? 0 : float.Parse(s)).ToList();
+                    var y = (pby ?? "").Split(',').Select(s => string.IsNullOrEmpty(s) ? 0 : float.Parse(s)).ToList();
                     while (w.Count > y.Count) {
                         y.Add(0);
                     }
@@ -311,16 +314,16 @@ namespace OpenUtau.Core.Formats {
                     for (var i = 0; i < m.Count() - 1; i++) {
                         switch (m[i]) {
                             case "r":
-                                points[i].Shape = PitchPointShape.o;
+                                points[i].shape = PitchPointShape.o;
                                 break;
                             case "s":
-                                points[i].Shape = PitchPointShape.l;
+                                points[i].shape = PitchPointShape.l;
                                 break;
                             case "j":
-                                points[i].Shape = PitchPointShape.i;
+                                points[i].shape = PitchPointShape.i;
                                 break;
                             default:
-                                points[i].Shape = PitchPointShape.io;
+                                points[i].shape = PitchPointShape.io;
                                 break;
                         }
                     }

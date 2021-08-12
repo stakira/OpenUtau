@@ -93,7 +93,7 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys {
 
         #endregion
 
-        string DllPath = string.Empty;
+        readonly string DllPath = string.Empty;
         bool _isLegalPlugin = false;
 
         public CppDriver(string DllPath) {

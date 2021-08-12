@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using OpenUtau.Core.USTx;
+using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core
 {
@@ -15,16 +15,16 @@ namespace OpenUtau.Core
         public void UpdateTrackNo()
         {
             Dictionary<int, int> trackNoRemapTable = new Dictionary<int, int>();
-            for (int i = 0; i < project.Tracks.Count; i++)
+            for (int i = 0; i < project.tracks.Count; i++)
             {
-                if (project.Tracks[i].TrackNo != i)
+                if (project.tracks[i].TrackNo != i)
                 {
-                    trackNoRemapTable.Add(project.Tracks[i].TrackNo, i);
-                    project.Tracks[i].TrackNo = i;
+                    trackNoRemapTable.Add(project.tracks[i].TrackNo, i);
+                    project.tracks[i].TrackNo = i;
                 }
             }
 
-            foreach (var part in project.Parts)
+            foreach (var part in project.parts)
             {
                 if (trackNoRemapTable.Keys.Contains(part.TrackNo))
                     part.TrackNo = trackNoRemapTable[part.TrackNo];
@@ -38,11 +38,11 @@ namespace OpenUtau.Core
         public override string ToString() { return "Add track"; }
         public override void Execute()
         {
-            if (track.TrackNo < project.Tracks.Count) project.Tracks.Insert(track.TrackNo, track);
-            else project.Tracks.Add(track);
+            if (track.TrackNo < project.tracks.Count) project.tracks.Insert(track.TrackNo, track);
+            else project.tracks.Add(track);
             UpdateTrackNo();
         }
-        public override void Unexecute() { project.Tracks.Remove(track); UpdateTrackNo(); }
+        public override void Unexecute() { project.tracks.Remove(track); UpdateTrackNo(); }
     }
 
     public class RemoveTrackCommand : TrackCommand
@@ -52,7 +52,7 @@ namespace OpenUtau.Core
         {
             this.project = project;
             this.track = track;
-            foreach (var part in project.Parts)
+            foreach (var part in project.parts)
             {
                 if (part.TrackNo == track.TrackNo)
                     removedParts.Add(part);
@@ -60,22 +60,22 @@ namespace OpenUtau.Core
         }
         public override string ToString() { return "Remove track"; }
         public override void Execute() {
-            project.Tracks.Remove(track);
+            project.tracks.Remove(track);
             foreach (var part in removedParts)
             {
-                project.Parts.Remove(part);
+                project.parts.Remove(part);
                 part.TrackNo = -1;
             }
             UpdateTrackNo();
         }
         public override void Unexecute()
         {
-            if (track.TrackNo < project.Tracks.Count)
-                project.Tracks.Insert(track.TrackNo, track);
+            if (track.TrackNo < project.tracks.Count)
+                project.tracks.Insert(track.TrackNo, track);
             else
-                project.Tracks.Add(track);
+                project.tracks.Add(track);
             foreach (var part in removedParts)
-                project.Parts.Add(part);
+                project.parts.Add(part);
             track.TrackNo = -1;
             UpdateTrackNo();
         }
@@ -83,7 +83,7 @@ namespace OpenUtau.Core
 
     public class TrackChangeSingerCommand : TrackCommand
     {
-        USinger newSinger, oldSinger;
+        readonly USinger newSinger, oldSinger;
         public TrackChangeSingerCommand(UProject project, UTrack track, USinger newSinger) {
             this.project = project;
             this.track = track;

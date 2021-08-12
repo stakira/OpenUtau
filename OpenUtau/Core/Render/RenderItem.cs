@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
-using OpenUtau.Core.USTx;
+using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
-using OpenUtau.SimpleHelpers;
 using xxHashSharp;
 
 namespace OpenUtau.Core.Render {
@@ -32,7 +32,7 @@ namespace OpenUtau.Core.Render {
 
         public double PosMs;
         public double DurMs;
-        public List<ExpPoint> Envelope;
+        public List<Vector2> Envelope;
 
         // Sound data
         public MemorySampleProvider Sound;
@@ -42,30 +42,29 @@ namespace OpenUtau.Core.Render {
         public RenderEngine.Progress progress;
 
         public RenderItem(UPhoneme phoneme, UVoicePart part, UProject project) {
-            var singer = project.Tracks[part.TrackNo].Singer;
             SourceFile = phoneme.Oto.File;
             SourceFile = Path.Combine(PathManager.Inst.InstalledSingersPath, SourceFile);
 
-            var strechRatio = Math.Pow(2, 1.0 - (double)(int)phoneme.Parent.Expressions["velocity"].Data / 100);
-            var length = phoneme.Oto.Preutter * strechRatio + phoneme.Envelope.Points[4].X;
+            var strechRatio = Math.Pow(2, 1.0 - phoneme.Parent.expressions["vel"].value / 100);
+            var length = phoneme.Oto.Preutter * strechRatio + phoneme.envelope.data[4].X;
             var requiredLength = Math.Ceiling(length / 50 + 1) * 50;
-            var lengthAdjustment = phoneme.TailIntrude == 0 ? phoneme.Preutter : phoneme.Preutter - phoneme.TailIntrude + phoneme.TailOverlap;
+            var lengthAdjustment = phoneme.TailIntrude == 0 ? phoneme.preutter : phoneme.preutter - phoneme.TailIntrude + phoneme.TailOverlap;
 
-            NoteNum = phoneme.Parent.NoteNum;
-            Velocity = (int)phoneme.Parent.Expressions["velocity"].Data;
-            Volume = (int)phoneme.Parent.Expressions["volume"].Data;
+            NoteNum = phoneme.Parent.noteNum;
+            Velocity = (int)phoneme.Parent.expressions["vel"].value;
+            Volume = (int)phoneme.Parent.expressions["vol"].value;
             StrFlags = phoneme.Parent.GetResamplerFlags();
-            PitchData = BuildPitchData(phoneme, part, project);
+            PitchData = BuildPitchData(phoneme, part);
             RequiredLength = (int)requiredLength;
             Oto = phoneme.Oto;
-            Tempo = project.BPM;
+            Tempo = project.bpm;
 
-            SkipOver = phoneme.Oto.Preutter * strechRatio - phoneme.Preutter;
-            PosMs = project.TickToMillisecond(part.PosTick + phoneme.Parent.PosTick + phoneme.PosTick) - phoneme.Preutter;
-            DurMs = project.TickToMillisecond(phoneme.DurTick) + lengthAdjustment;
-            Envelope = phoneme.Envelope.Points;
+            SkipOver = phoneme.Oto.Preutter * strechRatio - phoneme.preutter;
+            PosMs = project.TickToMillisecond(part.PosTick + phoneme.Parent.position + phoneme.position) - phoneme.preutter;
+            DurMs = project.TickToMillisecond(phoneme.Duration) + lengthAdjustment;
+            Envelope = phoneme.envelope.data;
 
-            phonemeName = phoneme.Phoneme;
+            phonemeName = phoneme.phoneme;
         }
 
         public uint HashParameters() {
@@ -88,15 +87,15 @@ namespace OpenUtau.Core.Render {
             };
         }
 
-        private List<int> BuildPitchData(UPhoneme phoneme, UVoicePart part, UProject project) {
+        private List<int> BuildPitchData(UPhoneme phoneme, UVoicePart part) {
             var pitches = new List<int>();
-            var lastNote = part.Notes.OrderByDescending(x => x).Where(x => x.CompareTo(phoneme.Parent) < 0).FirstOrDefault();
-            var nextNote = part.Notes.Where(x => x.CompareTo(phoneme.Parent) > 0).FirstOrDefault();
+            var lastNote = part.notes.OrderByDescending(x => x).Where(x => x.CompareTo(phoneme.Parent) < 0).FirstOrDefault();
+            var nextNote = part.notes.Where(x => x.CompareTo(phoneme.Parent) > 0).FirstOrDefault();
             // Get relevant pitch points
             var pps = new List<PitchPoint>();
 
             var lastNoteInvolved = lastNote != null && phoneme.Overlapped;
-            var nextNoteInvolved = nextNote != null && nextNote.Phonemes[0].Overlapped;
+            var nextNoteInvolved = nextNote != null && nextNote.phonemes[0].Overlapped;
 
             double lastVibratoStartMs = 0;
             double lastVibratoEndMs = 0;
@@ -104,41 +103,41 @@ namespace OpenUtau.Core.Render {
             double vibratoEndMs = 0;
 
             if (lastNoteInvolved) {
-                var offsetMs = DocManager.Inst.Project.TickToMillisecond(phoneme.Parent.PosTick - lastNote.PosTick);
-                foreach (var pp in lastNote.PitchBend.Points) {
+                var offsetMs = (float)DocManager.Inst.Project.TickToMillisecond(phoneme.Parent.position - lastNote.position);
+                foreach (var pp in lastNote.pitch.data) {
                     var newpp = pp.Clone();
                     newpp.X -= offsetMs;
-                    newpp.Y -= (phoneme.Parent.NoteNum - lastNote.NoteNum) * 10;
+                    newpp.Y -= (phoneme.Parent.noteNum - lastNote.noteNum) * 10;
                     pps.Add(newpp);
                 }
-                if (lastNote.Vibrato.Depth != 0) {
-                    lastVibratoStartMs = -DocManager.Inst.Project.TickToMillisecond(lastNote.DurTick) * lastNote.Vibrato.Length / 100;
+                if (lastNote.vibrato.depth != 0) {
+                    lastVibratoStartMs = -DocManager.Inst.Project.TickToMillisecond(lastNote.duration) * lastNote.vibrato.length / 100;
                     lastVibratoEndMs = 0;
                 }
             }
 
-            foreach (var pp in phoneme.Parent.PitchBend.Points) {
+            foreach (var pp in phoneme.Parent.pitch.data) {
                 pps.Add(pp);
             }
 
-            if (phoneme.Parent.Vibrato.Depth != 0) {
-                vibratoEndMs = DocManager.Inst.Project.TickToMillisecond(phoneme.Parent.DurTick);
-                vibratoStartMs = vibratoEndMs * (1 - phoneme.Parent.Vibrato.Length / 100);
+            if (phoneme.Parent.vibrato.depth != 0) {
+                vibratoEndMs = DocManager.Inst.Project.TickToMillisecond(phoneme.Parent.duration);
+                vibratoStartMs = vibratoEndMs * (1 - phoneme.Parent.vibrato.length / 100);
             }
 
             if (nextNoteInvolved) {
-                var offsetMs = DocManager.Inst.Project.TickToMillisecond(phoneme.Parent.PosTick - nextNote.PosTick);
-                foreach (var pp in nextNote.PitchBend.Points) {
+                var offsetMs = (float)DocManager.Inst.Project.TickToMillisecond(phoneme.Parent.position - nextNote.position);
+                foreach (var pp in nextNote.pitch.data) {
                     var newpp = pp.Clone();
                     newpp.X -= offsetMs;
-                    newpp.Y -= (phoneme.Parent.NoteNum - nextNote.NoteNum) * 10;
+                    newpp.Y -= (phoneme.Parent.noteNum - nextNote.noteNum) * 10;
                     pps.Add(newpp);
                 }
             }
 
-            var startMs = DocManager.Inst.Project.TickToMillisecond(phoneme.PosTick) - phoneme.Oto.Preutter;
-            var endMs = DocManager.Inst.Project.TickToMillisecond(phoneme.DurTick) -
-                (nextNote != null && nextNote.Phonemes[0].Overlapped ? nextNote.Phonemes[0].Preutter - nextNote.Phonemes[0].Overlap : 0);
+            var startMs = (float)(DocManager.Inst.Project.TickToMillisecond(phoneme.position) - phoneme.Oto.Preutter);
+            var endMs = (float)DocManager.Inst.Project.TickToMillisecond(phoneme.Duration) -
+                (nextNote != null && nextNote.phonemes[0].Overlapped ? nextNote.phonemes[0].preutter - nextNote.phonemes[0].overlap : 0);
             if (pps.Count > 0) {
                 if (pps.First().X > startMs) {
                     pps.Insert(0, new PitchPoint(startMs, pps.First().Y));
@@ -153,7 +152,7 @@ namespace OpenUtau.Core.Render {
 
             // Interpolation
             const int intervalTick = 5;
-            var intervalMs = DocManager.Inst.Project.TickToMillisecond(intervalTick);
+            var intervalMs = (float)DocManager.Inst.Project.TickToMillisecond(intervalTick);
             var currMs = startMs;
             var i = 0;
 
@@ -162,16 +161,16 @@ namespace OpenUtau.Core.Render {
                     i++;
                 }
 
-                var pit = MusicMath.InterpolateShape(pps[i].X, pps[i + 1].X, pps[i].Y, pps[i + 1].Y, currMs, pps[i].Shape);
+                var pit = MusicMath.InterpolateShape(pps[i].X, pps[i + 1].X, pps[i].Y, pps[i + 1].Y, currMs, pps[i].shape);
                 pit *= 10;
 
                 // Apply vibratos
                 if (currMs < lastVibratoEndMs && currMs >= lastVibratoStartMs) {
-                    pit += InterpolateVibrato(lastNote.Vibrato, currMs - lastVibratoStartMs);
+                    pit += InterpolateVibrato(lastNote.vibrato, currMs - lastVibratoStartMs, lastNote);
                 }
 
                 if (currMs < vibratoEndMs && currMs >= vibratoStartMs) {
-                    pit += InterpolateVibrato(phoneme.Parent.Vibrato, currMs - vibratoStartMs);
+                    pit += InterpolateVibrato(phoneme.Parent.vibrato, currMs - vibratoStartMs, phoneme.Parent);
                 }
 
                 pitches.Add((int)pit);
@@ -181,12 +180,12 @@ namespace OpenUtau.Core.Render {
             return pitches;
         }
 
-        private double InterpolateVibrato(VibratoExpression vibrato, double posMs) {
-            var lengthMs = vibrato.Length / 100 * DocManager.Inst.Project.TickToMillisecond(vibrato.Parent.DurTick);
-            var inMs = lengthMs * vibrato.In / 100;
-            var outMs = lengthMs * vibrato.Out / 100;
+        private double InterpolateVibrato(UVibrato vibrato, double posMs, UNote note) {
+            var lengthMs = vibrato.length / 100 * DocManager.Inst.Project.TickToMillisecond(note.duration);
+            var inMs = lengthMs * vibrato.@in / 100;
+            var outMs = lengthMs * vibrato.@out / 100;
 
-            var value = -Math.Sin(2 * Math.PI * (posMs / vibrato.Period + vibrato.Shift / 100)) * vibrato.Depth;
+            var value = -Math.Sin(2 * Math.PI * (posMs / vibrato.period + vibrato.shift / 100)) * vibrato.depth;
 
             if (posMs < inMs) {
                 value *= posMs / inMs;

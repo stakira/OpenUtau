@@ -4,7 +4,7 @@ using System.IO;
 
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
-using OpenUtau.Core.USTx;
+using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Render;
 using OpenUtau.Core.ResamplerDriver;
 using Serilog;

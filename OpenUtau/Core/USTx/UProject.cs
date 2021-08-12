@@ -1,75 +1,73 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Newtonsoft.Json;
 
-namespace OpenUtau.Core.USTx
-{
-    public class UProject
-    {
-        public double BPM = 120;
-        public int BeatPerBar = 4;
-        public int BeatUnit = 4;
-        public int Resolution = 480;
+namespace OpenUtau.Core.Ustx {
+    [JsonObject(MemberSerialization.OptIn)]
+    public class UProject {
+        [JsonProperty] public string name = "New Project";
+        [JsonProperty] public string comment = string.Empty;
+        public string filePath;
+        [JsonProperty] public string outputDir = "Vocal";
+        [JsonProperty] public string cacheDir = "UCache";
+        [JsonProperty] public Version ustxVersion;
 
-        public string Name = "New Project";
-        public string Comment = string.Empty;
-        public string OutputDir = "Vocal";
-        public string CacheDir = "UCache";
-        public string FilePath;
-        public bool Saved = false;
+        [JsonProperty] public double bpm = 120;
+        [JsonProperty] public int beatPerBar = 4;
+        [JsonProperty] public int beatUnit = 4;
+        [JsonProperty] public int resolution = 480;
 
-        public List<UTrack> Tracks = new List<UTrack>();
-        public List<UPart> Parts = new List<UPart>();
-        public List<USinger> Singers = new List<USinger>();
+        [JsonProperty] public Dictionary<string, UExpressionDescriptor> expressions = new Dictionary<string, UExpressionDescriptor>();
+        [JsonProperty] public List<UTrack> tracks = new List<UTrack>();
+        [JsonProperty] public List<UPart> parts = new List<UPart>();
 
-        public Dictionary<string, UExpression> ExpressionTable = new Dictionary<string, UExpression>();
+        public List<USinger> singers = new List<USinger>();
+        public bool Saved { get; set; } = false;
 
-        public void RegisterExpression(UExpression exp)
-        {
-            if (!ExpressionTable.ContainsKey(exp.Name))
-                ExpressionTable.Add(exp.Name, exp);
+        public void RegisterExpression(UExpressionDescriptor def) {
+            expressions.Add(def.abbr, def);
         }
 
-        public UNote CreateNote()
-        {
+        public UNote CreateNote() {
             UNote note = UNote.Create();
-            foreach (var pair in ExpressionTable) { note.Expressions.Add(pair.Key, pair.Value.Clone(note)); }
-            note.PitchBend.Points[0].X = -25;
-            note.PitchBend.Points[1].X = 25;
+            foreach (var pair in expressions) {
+                note.expressions.Add(pair.Key, pair.Value.Create());
+            }
+            note.pitch.AddPoint(new PitchPoint(-25, 0));
+            note.pitch.AddPoint(new PitchPoint(25, 0));
             return note;
         }
 
-        public UNote CreateNote(int noteNum, int posTick, int durTick)
-        {
+        public UNote CreateNote(int noteNum, int posTick, int durTick) {
             var note = CreateNote();
-            note.NoteNum = noteNum;
-            note.PosTick = posTick;
-            note.DurTick = durTick;
-            note.PitchBend.Points[1].X = Math.Min(25, DocManager.Inst.Project.TickToMillisecond(note.DurTick) / 2);
+            note.noteNum = noteNum;
+            note.position = posTick;
+            note.duration = durTick;
+            note.pitch.data[1].X = (float)Math.Min(25, DocManager.Inst.Project.TickToMillisecond(note.duration) / 2);
             return note;
         }
 
-        public UProject() { }
-
-        public int MillisecondToTick(double ms)
-        {
-            return MusicMath.MillisecondToTick(ms, BPM, BeatUnit, Resolution);
+        public int MillisecondToTick(double ms) {
+            return MusicMath.MillisecondToTick(ms, bpm, beatUnit, resolution);
         }
 
-        public double TickToMillisecond(double tick)
-        {
-            return MusicMath.TickToMillisecond(tick, BPM, BeatUnit, Resolution);
+        public double TickToMillisecond(double tick) {
+            return MusicMath.TickToMillisecond(tick, bpm, beatUnit, resolution);
         }
 
         public int EndTick {
             get {
                 int lastTick = 0;
-                foreach (var part in Parts) {
+                foreach (var part in parts) {
                     lastTick = Math.Max(lastTick, part.EndTick);
                 }
                 return lastTick;
+            }
+        }
+
+        public void Validate() {
+            foreach (var part in parts) {
+                part.Validate(this);
             }
         }
     }

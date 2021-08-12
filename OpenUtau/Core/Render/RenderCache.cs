@@ -10,12 +10,12 @@ namespace OpenUtau.Core.Render {
             public Node next;
         }
 
-        private int capacity;
+        private readonly int capacity;
         private int size;
-        private Node dummyHead;
-        private Node dummyTail;
-        private Dictionary<uint, Node> dict;
-        private object lockObj = new object();
+        private readonly Node dummyHead;
+        private readonly Node dummyTail;
+        private readonly Dictionary<uint, Node> dict;
+        private readonly object lockObj = new object();
 
         public RenderCache(int capacity) {
             this.capacity = capacity;

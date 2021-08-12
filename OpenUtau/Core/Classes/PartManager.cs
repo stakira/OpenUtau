@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Numerics;
 using System.Threading;
 
-using OpenUtau.Core.USTx;
+using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core {
     public class PartManager : ICmdSubscriber {
@@ -15,7 +12,7 @@ namespace OpenUtau.Core {
             public UProject Project;
         }
 
-        Timer timer;
+        readonly Timer timer;
 
         readonly PartContainer _partContainer = new PartContainer();
 
@@ -46,12 +43,12 @@ namespace OpenUtau.Core {
 
         private void UpdatePitchBend(UVoicePart part) {
             UNote lastNote = null;
-            foreach (UNote note in part.Notes) {
-                if (note.PitchBend.SnapFirst) {
-                    if (note.Phonemes.Count > 0 && lastNote != null && (note.Phonemes[0].Overlapped || note.PosTick == lastNote.EndTick))
-                        note.PitchBend.Points[0].Y = (lastNote.NoteNum - note.NoteNum) * 10;
+            foreach (UNote note in part.notes) {
+                if (note.pitch.snapFirst) {
+                    if (note.phonemes.Count > 0 && lastNote != null && (note.phonemes[0].Overlapped || note.position == lastNote.End))
+                        note.pitch.data[0].Y = (lastNote.noteNum - note.noteNum) * 10;
                     else
-                        note.PitchBend.Points[0].Y = 0;
+                        note.pitch.data[0].Y = 0;
                 }
                 lastNote = note;
             }
@@ -59,61 +56,69 @@ namespace OpenUtau.Core {
 
         public void ResnapPitchBend(UVoicePart part) {
             UNote lastNote = null;
-            foreach (UNote note in part.Notes) {
-                if (!note.PitchBend.SnapFirst) {
-                    if (note.Phonemes.Count > 0 && note.Phonemes[0].Overlapped && lastNote != null)
-                        if (note.PitchBend.Points[0].Y == (lastNote.NoteNum - note.NoteNum) * 10)
-                            note.PitchBend.SnapFirst = true;
+            foreach (UNote note in part.notes) {
+                if (!note.pitch.snapFirst) {
+                    if (note.phonemes.Count > 0 && note.phonemes[0].Overlapped && lastNote != null)
+                        if (note.pitch.data[0].Y == (lastNote.noteNum - note.noteNum) * 10)
+                            note.pitch.snapFirst = true;
                 }
                 lastNote = note;
             }
         }
 
         private void UpdateEnvelope(UVoicePart part) {
-            foreach (UNote note in part.Notes) {
-                foreach (UPhoneme phoneme in note.Phonemes) {
-                    phoneme.Envelope.Points[0].X = -phoneme.Preutter;
-                    phoneme.Envelope.Points[1].X = phoneme.Envelope.Points[0].X + (phoneme.Overlapped ? phoneme.Overlap : 5);
-                    phoneme.Envelope.Points[2].X = Math.Max(0, phoneme.Envelope.Points[1].X);
-                    phoneme.Envelope.Points[3].X = DocManager.Inst.Project.TickToMillisecond(phoneme.DurTick) - phoneme.TailIntrude;
-                    phoneme.Envelope.Points[4].X = phoneme.Envelope.Points[3].X + phoneme.TailOverlap;
+            foreach (UNote note in part.notes) {
+                foreach (UPhoneme phoneme in note.phonemes) {
+                    Vector2 p0, p1, p2, p3, p4;
+                    p0.X = (float)-phoneme.preutter;
+                    p1.X = (float)(p0.X + (phoneme.Overlapped ? phoneme.overlap : 5f));
+                    p2.X = Math.Max(0f, p1.X);
+                    p3.X = (float)(DocManager.Inst.Project.TickToMillisecond(phoneme.Duration) - phoneme.TailIntrude);
+                    p4.X = (float)(p3.X + phoneme.TailOverlap);
 
-                    phoneme.Envelope.Points[1].Y = (int)phoneme.Parent.Expressions["volume"].Data;
-                    phoneme.Envelope.Points[1].X = phoneme.Envelope.Points[0].X + (phoneme.Overlapped ? phoneme.Overlap : 5) * (int)phoneme.Parent.Expressions["accent"].Data / 100.0;
-                    phoneme.Envelope.Points[1].Y = (int)phoneme.Parent.Expressions["accent"].Data * (int)phoneme.Parent.Expressions["volume"].Data / 100;
-                    phoneme.Envelope.Points[2].Y = (int)phoneme.Parent.Expressions["volume"].Data;
-                    phoneme.Envelope.Points[3].Y = (int)phoneme.Parent.Expressions["volume"].Data;
-                    phoneme.Envelope.Points[3].X -= (phoneme.Envelope.Points[3].X - phoneme.Envelope.Points[2].X) * (int)phoneme.Parent.Expressions["decay"].Data / 500;
-                    phoneme.Envelope.Points[3].Y *= 1.0 - (int)phoneme.Parent.Expressions["decay"].Data / 100.0;
+                    p0.Y = 0f;
+                    p1.Y = phoneme.Parent.expressions["vol"].value;
+                    p1.X = (float)(p0.X + (phoneme.Overlapped ? phoneme.overlap : 5f) * phoneme.Parent.expressions["acc"].value / 100f);
+                    p1.Y = phoneme.Parent.expressions["acc"].value * phoneme.Parent.expressions["vol"].value / 100f;
+                    p2.Y = phoneme.Parent.expressions["vol"].value;
+                    p3.Y = phoneme.Parent.expressions["vol"].value;
+                    p3.X -= (p3.X - p2.X) * phoneme.Parent.expressions["dec"].value / 500f;
+                    p3.Y *= 1f - phoneme.Parent.expressions["dec"].value / 100f;
+                    p4.Y = 0f;
+
+                    phoneme.envelope.data[0] = p0;
+                    phoneme.envelope.data[1] = p1;
+                    phoneme.envelope.data[2] = p2;
+                    phoneme.envelope.data[3] = p3;
+                    phoneme.envelope.data[4] = p4;
                 }
             }
         }
 
         private void UpdateOverlapAdjustment(UVoicePart part) {
             UPhoneme lastPhoneme = null;
-            UNote lastNote = null;
-            foreach (UNote note in part.Notes) {
-                foreach (UPhoneme phoneme in note.Phonemes) {
+            foreach (UNote note in part.notes) {
+                foreach (UPhoneme phoneme in note.phonemes) {
                     if (lastPhoneme != null) {
-                        int gapTick = phoneme.Parent.PosTick + phoneme.PosTick - lastPhoneme.Parent.PosTick - lastPhoneme.EndTick;
-                        double gapMs = DocManager.Inst.Project.TickToMillisecond(gapTick);
-                        if (gapMs < phoneme.Preutter) {
+                        int gapTick = phoneme.Parent.position + phoneme.position - lastPhoneme.Parent.position - lastPhoneme.EndPosition;
+                        float gapMs = (float)DocManager.Inst.Project.TickToMillisecond(gapTick);
+                        if (gapMs < phoneme.preutter) {
                             phoneme.Overlapped = true;
-                            double lastDurMs = DocManager.Inst.Project.TickToMillisecond(lastPhoneme.DurTick);
-                            double correctionRatio = (lastDurMs + Math.Min(0, gapMs)) / 2 / (phoneme.Preutter - phoneme.Overlap);
-                            if (phoneme.Preutter - phoneme.Overlap > gapMs + lastDurMs / 2) {
+                            float lastDurMs = (float)DocManager.Inst.Project.TickToMillisecond(lastPhoneme.Duration);
+                            float correctionRatio = (lastDurMs + Math.Min(0, gapMs)) / 2 / (phoneme.preutter - phoneme.overlap);
+                            if (phoneme.preutter - phoneme.overlap > gapMs + lastDurMs / 2) {
                                 phoneme.OverlapCorrection = true;
-                                phoneme.Preutter = gapMs + (phoneme.Preutter - gapMs) * correctionRatio;
-                                phoneme.Overlap *= correctionRatio;
-                            } else if (phoneme.Preutter > gapMs + lastDurMs) {
+                                phoneme.preutter = gapMs + (phoneme.preutter - gapMs) * correctionRatio;
+                                phoneme.overlap *= correctionRatio;
+                            } else if (phoneme.preutter > gapMs + lastDurMs) {
                                 phoneme.OverlapCorrection = true;
-                                phoneme.Overlap *= correctionRatio;
-                                phoneme.Preutter = gapMs + lastDurMs;
+                                phoneme.overlap *= correctionRatio;
+                                phoneme.preutter = gapMs + lastDurMs;
                             } else
                                 phoneme.OverlapCorrection = false;
 
-                            lastPhoneme.TailIntrude = phoneme.Preutter - gapMs;
-                            lastPhoneme.TailOverlap = phoneme.Overlap;
+                            lastPhoneme.TailIntrude = phoneme.preutter - gapMs;
+                            lastPhoneme.TailOverlap = phoneme.overlap;
 
                         } else {
                             phoneme.Overlapped = false;
@@ -123,21 +128,20 @@ namespace OpenUtau.Core {
                     } else phoneme.Overlapped = false;
                     lastPhoneme = phoneme;
                 }
-                lastNote = note;
             }
         }
 
         private void UpdatePhonemeOto(UVoicePart part) {
-            var singer = DocManager.Inst.Project.Tracks[part.TrackNo].Singer;
+            var singer = DocManager.Inst.Project.tracks[part.TrackNo].Singer;
             if (singer == null || !singer.Loaded) return;
-            foreach (UNote note in part.Notes) {
-                foreach (UPhoneme phoneme in note.Phonemes) {
+            foreach (UNote note in part.notes) {
+                foreach (UPhoneme phoneme in note.phonemes) {
                     if (phoneme.AutoRemapped) {
-                        if (phoneme.Phoneme.StartsWith("?")) {
-                            phoneme.Phoneme = phoneme.Phoneme.Substring(1);
+                        if (phoneme.phoneme.StartsWith("?")) {
+                            phoneme.phoneme = phoneme.phoneme.Substring(1);
                             phoneme.AutoRemapped = false;
                         } else {
-                            string noteString = MusicMath.GetNoteString(note.NoteNum);
+                            string noteString = MusicMath.GetNoteString(note.noteNum);
                             if (singer.PitchMap.ContainsKey(noteString))
                                 phoneme.RemappedBank = singer.PitchMap[noteString];
                         }
@@ -146,42 +150,40 @@ namespace OpenUtau.Core {
                     if (singer.TryGetOto(phoneme.PhonemeRemapped, out UOto oto)) {
                         phoneme.Oto = oto;
                         phoneme.PhonemeError = false;
-                        phoneme.Overlap = phoneme.Oto.Overlap;
-                        phoneme.Preutter = phoneme.Oto.Preutter;
-                        int vel = (int)phoneme.Parent.Expressions["velocity"].Data;
+                        phoneme.overlap = (float)phoneme.Oto.Overlap;
+                        phoneme.preutter = (float)phoneme.Oto.Preutter;
+                        float vel = phoneme.Parent.expressions["vel"].value;
                         if (vel != 100) {
-                            double stretchRatio = Math.Pow(2, 1.0 - (double)vel / 100);
-                            phoneme.Overlap *= stretchRatio;
-                            phoneme.Preutter *= stretchRatio;
+                            float stretchRatio = (float)Math.Pow(2f, 1.0f - vel / 100f);
+                            phoneme.overlap *= stretchRatio;
+                            phoneme.preutter *= stretchRatio;
                         }
                     } else {
                         phoneme.PhonemeError = true;
-                        phoneme.Overlap = 0;
-                        phoneme.Preutter = 0;
+                        phoneme.overlap = 0;
+                        phoneme.preutter = 0;
                     }
                 }
             }
         }
 
         private void UpdatePhonemeDurTick(UVoicePart part) {
-            UNote lastNote = null;
             UPhoneme lastPhoneme = null;
-            foreach (UNote note in part.Notes) {
-                foreach (UPhoneme phoneme in note.Phonemes) {
-                    phoneme.DurTick = phoneme.Parent.DurTick - phoneme.PosTick;
+            foreach (UNote note in part.notes) {
+                foreach (UPhoneme phoneme in note.phonemes) {
+                    phoneme.Duration = phoneme.Parent.duration - phoneme.position;
                     if (lastPhoneme != null)
                         if (lastPhoneme.Parent == phoneme.Parent)
-                            lastPhoneme.DurTick = phoneme.PosTick - lastPhoneme.PosTick;
+                            lastPhoneme.Duration = phoneme.position - lastPhoneme.position;
                     lastPhoneme = phoneme;
                 }
-                lastNote = note;
             }
         }
 
         private void CheckOverlappedNotes(UVoicePart part) {
             UNote lastNote = null;
-            foreach (UNote note in part.Notes) {
-                if (lastNote != null && lastNote.EndTick > note.PosTick) {
+            foreach (UNote note in part.notes) {
+                if (lastNote != null && lastNote.End > note.position) {
                     lastNote.Error = true;
                     note.Error = true;
                 } else note.Error = false;
@@ -192,9 +194,9 @@ namespace OpenUtau.Core {
         # region Cmd Handling
 
         private void RefreshProject(UProject project) {
-            foreach (UPart part in project.Parts) {
-                if (part is UVoicePart) {
-                    UpdatePart((UVoicePart)part);
+            foreach (UPart part in project.parts) {
+                if (part is UVoicePart vPart) {
+                    UpdatePart(vPart);
                 }
             }
         }

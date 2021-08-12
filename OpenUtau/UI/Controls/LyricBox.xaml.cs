@@ -3,7 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using OpenUtau.Core;
-using OpenUtau.Core.USTx;
+using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.UI.Controls {
     /// <summary>
@@ -41,7 +41,7 @@ namespace OpenUtau.UI.Controls {
 
         public void EndNoteEditing(bool edit = false) {
             string finalText = Text;
-            if (edit && Note != null && finalText != Note.Lyric) {
+            if (edit && Note != null && finalText != Note.lyric) {
                 DocManager.Inst.StartUndoGroup();
                 DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(Part, Note, finalText));
                 DocManager.Inst.EndUndoGroup();
@@ -75,7 +75,7 @@ namespace OpenUtau.UI.Controls {
         private void ItemList_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
             TextBlock textBlock = e.OriginalSource as TextBlock;
             if (textBlock != null) {
-                var singer = DocManager.Inst.Project.Tracks[Part.TrackNo].Singer;
+                var singer = DocManager.Inst.Project.tracks[Part.TrackNo].Singer;
                 if (singer == null) {
                     e.Handled = true;
                     return;
@@ -96,7 +96,7 @@ namespace OpenUtau.UI.Controls {
             }
             itemList.Items.Clear();
             popup.IsOpen = true;
-            var singer = DocManager.Inst.Project.Tracks[Part.TrackNo].Singer;
+            var singer = DocManager.Inst.Project.tracks[Part.TrackNo].Singer;
             if (singer == null) {
                 itemList.Items.Add("No Singer");
                 return;

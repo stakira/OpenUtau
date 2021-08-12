@@ -4,7 +4,7 @@ using NAudio.Wave.SampleProviders;
 namespace OpenUtau.Core.Render {
 
     internal class RenderItemSampleProvider : ISampleProvider {
-        private ISampleProvider signalChain;
+        private readonly ISampleProvider signalChain;
 
         public RenderItemSampleProvider(RenderItem renderItem) {
             RenderItem = renderItem;

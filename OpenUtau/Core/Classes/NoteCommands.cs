@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using OpenUtau.Core.USTx;
+using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core {
     public abstract class NoteCommand : UCommand {
@@ -16,20 +16,20 @@ namespace OpenUtau.Core {
         public AddNoteCommand(UVoicePart part, UNote note) { this.Part = part; this.Notes = new UNote[] { note }; }
         public AddNoteCommand(UVoicePart part, List<UNote> notes) { this.Part = part; this.Notes = notes.ToArray(); }
         public override string ToString() { return "Add note"; }
-        public override void Execute() { lock (Part) { foreach (var note in Notes) Part.Notes.Add(note); } }
-        public override void Unexecute() { lock (Part) { foreach (var note in Notes) Part.Notes.Remove(note); } }
+        public override void Execute() { lock (Part) { foreach (var note in Notes) Part.notes.Add(note); } }
+        public override void Unexecute() { lock (Part) { foreach (var note in Notes) Part.notes.Remove(note); } }
     }
 
     public class RemoveNoteCommand : NoteCommand {
         public RemoveNoteCommand(UVoicePart part, UNote note) { this.Part = part; this.Notes = new UNote[] { note }; }
         public RemoveNoteCommand(UVoicePart part, List<UNote> notes) { this.Part = part; this.Notes = notes.ToArray(); }
         public override string ToString() { return "Remove note"; }
-        public override void Execute() { lock (Part) { foreach (var note in Notes) Part.Notes.Remove(note); } }
-        public override void Unexecute() { lock (Part) { foreach (var note in Notes) Part.Notes.Add(note); } }
+        public override void Execute() { lock (Part) { foreach (var note in Notes) Part.notes.Remove(note); } }
+        public override void Unexecute() { lock (Part) { foreach (var note in Notes) Part.notes.Add(note); } }
     }
 
     public class MoveNoteCommand : NoteCommand {
-        int DeltaPos, DeltaNoteNum;
+        readonly int DeltaPos, DeltaNoteNum;
         public MoveNoteCommand(UVoicePart part, List<UNote> notes, int deltaPos, int deltaNoteNum) {
             this.Part = part;
             this.Notes = notes.ToArray();
@@ -46,43 +46,43 @@ namespace OpenUtau.Core {
         public override void Execute() {
             lock (Part) {
                 foreach (UNote note in Notes) {
-                    Part.Notes.Remove(note);
-                    note.PosTick += DeltaPos;
-                    note.NoteNum += DeltaNoteNum;
-                    Part.Notes.Add(note);
+                    Part.notes.Remove(note);
+                    note.position += DeltaPos;
+                    note.noteNum += DeltaNoteNum;
+                    Part.notes.Add(note);
                 }
             }
         }
         public override void Unexecute() {
             lock (Part) {
                 foreach (UNote note in Notes) {
-                    Part.Notes.Remove(note);
-                    note.PosTick -= DeltaPos;
-                    note.NoteNum -= DeltaNoteNum;
-                    Part.Notes.Add(note);
+                    Part.notes.Remove(note);
+                    note.position -= DeltaPos;
+                    note.noteNum -= DeltaNoteNum;
+                    Part.notes.Add(note);
                 }
             }
         }
     }
 
     public class ResizeNoteCommand : NoteCommand {
-        int DeltaDur;
+        readonly int DeltaDur;
         public ResizeNoteCommand(UVoicePart part, List<UNote> notes, int deltaDur) { this.Part = part; this.Notes = notes.ToArray(); this.DeltaDur = deltaDur; }
         public ResizeNoteCommand(UVoicePart part, UNote note, int deltaDur) { this.Part = part; this.Notes = new UNote[] { note }; this.DeltaDur = deltaDur; }
         public override string ToString() { return $"Change {Notes.Count()} notes duration"; }
-        public override void Execute() { lock (Part) { foreach (var note in Notes) note.DurTick += DeltaDur; } }
-        public override void Unexecute() { lock (Part) { foreach (var note in Notes) note.DurTick -= DeltaDur; } }
+        public override void Execute() { lock (Part) { foreach (var note in Notes) note.duration += DeltaDur; } }
+        public override void Unexecute() { lock (Part) { foreach (var note in Notes) note.duration -= DeltaDur; } }
     }
 
     public class ChangeNoteLyricCommand : NoteCommand {
         public UNote Note;
-        string NewLyric, OldLyric;
+        readonly string NewLyric, OldLyric;
 
         public ChangeNoteLyricCommand(UVoicePart part, UNote note, string newLyric) {
             Part = part;
             Note = note;
             NewLyric = newLyric;
-            OldLyric = note.Lyric;
+            OldLyric = note.lyric;
         }
 
         public override string ToString() {
@@ -91,15 +91,15 @@ namespace OpenUtau.Core {
 
         public override void Execute() {
             lock (Part) {
-                Note.Lyric = NewLyric;
-                Note.Phonemes[0].Phoneme = NewLyric;
+                Note.lyric = NewLyric;
+                Note.phonemes[0].phoneme = NewLyric;
             }
         }
 
         public override void Unexecute() {
             lock (Part) {
-                Note.Lyric = OldLyric;
-                Note.Phonemes[0].Phoneme = OldLyric;
+                Note.lyric = OldLyric;
+                Note.phonemes[0].phoneme = OldLyric;
             }
         }
     }

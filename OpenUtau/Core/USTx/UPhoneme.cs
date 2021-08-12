@@ -1,38 +1,49 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Numerics;
+using Newtonsoft.Json;
 
-namespace OpenUtau.Core.USTx
-{
-    /// <summary>
-    /// The basic unit of synthesis.
-    /// </summary>
-    public class UPhoneme
-    {
-        public UNote Parent;
-        public int PosTick;
-        public int DurTick;
-        public int EndTick { get { return PosTick + DurTick; } }
-        public string Phoneme = "a";
-        public string PhonemeRemapped { get { return AutoRemapped ? Phoneme + RemappedBank : Phoneme; } }
+namespace OpenUtau.Core.Ustx {
+    [JsonObject(MemberSerialization.OptIn)]
+    public class UPhoneme {
+        [JsonProperty] public int position;
+        [JsonProperty] public string phoneme = "a";
+        [JsonProperty] public float preutter;
+        [JsonProperty] public float overlap;
+        [JsonProperty] public UEnvelope envelope = new UEnvelope();
+
+        public UNote Parent { get; set; }
+        public int Duration { get; set; }
+        public int EndPosition { get { return position + Duration; } }
+        public string PhonemeRemapped { get { return AutoRemapped ? phoneme + RemappedBank : phoneme; } }
         public string RemappedBank = string.Empty;
         public bool AutoEnvelope = true;
         public bool AutoRemapped = true;
-
-        public double Preutter;
-        public double Overlap;
         public double TailIntrude;
         public double TailOverlap;
         public UOto Oto;
         public bool Overlapped = false;
         public bool OverlapCorrection = true;
-        public EnvelopeExpression Envelope;
 
         public bool PhonemeError = false;
 
-        public UPhoneme() { Envelope = new EnvelopeExpression(this.Parent) { ParentPhoneme = this }; }
-        public UPhoneme Clone(UNote newParent) { var p = new UPhoneme() { Parent = newParent }; return p; }
+        public UPhoneme Clone(UNote newParent) {
+            return new UPhoneme() {
+                Parent = newParent,
+            };
+        }
+
+        public void Validate() { }
+    }
+
+    public class UEnvelope {
+        public List<Vector2> data = new List<Vector2>();
+
+        public UEnvelope() {
+            data.Add(new Vector2(0, 0));
+            data.Add(new Vector2(0, 100));
+            data.Add(new Vector2(0, 100));
+            data.Add(new Vector2(0, 100));
+            data.Add(new Vector2(0, 0));
+        }
     }
 }

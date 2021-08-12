@@ -122,24 +122,24 @@ namespace OpenUtau.Core
             return (y - y0) / (y1 - y0) * (x1 - x0) + x0;
         }
 
-        public static double InterpolateShape(double x0, double x1, double y0, double y1, double x, USTx.PitchPointShape shape)
+        public static double InterpolateShape(double x0, double x1, double y0, double y1, double x, Ustx.PitchPointShape shape)
         {
             switch (shape)
             {
-                case USTx.PitchPointShape.io: return SinEasingInOut(x0, x1, y0, y1, x);
-                case USTx.PitchPointShape.i: return SinEasingIn(x0, x1, y0, y1, x);
-                case USTx.PitchPointShape.o: return SinEasingOut(x0, x1, y0, y1, x);
+                case Ustx.PitchPointShape.io: return SinEasingInOut(x0, x1, y0, y1, x);
+                case Ustx.PitchPointShape.i: return SinEasingIn(x0, x1, y0, y1, x);
+                case Ustx.PitchPointShape.o: return SinEasingOut(x0, x1, y0, y1, x);
                 default: return Linear(x0, x1, y0, y1, x);
             }
         }
 
-        public static double InterpolateShapeX(double x0, double x1, double y0, double y1, double y, USTx.PitchPointShape shape)
+        public static double InterpolateShapeX(double x0, double x1, double y0, double y1, double y, Ustx.PitchPointShape shape)
         {
             switch (shape)
             {
-                case USTx.PitchPointShape.io: return SinEasingInOutX(x0, x1, y0, y1, y);
-                case USTx.PitchPointShape.i: return SinEasingInX(x0, x1, y0, y1, y);
-                case USTx.PitchPointShape.o: return SinEasingOutX(x0, x1, y0, y1, y);
+                case Ustx.PitchPointShape.io: return SinEasingInOutX(x0, x1, y0, y1, y);
+                case Ustx.PitchPointShape.i: return SinEasingInX(x0, x1, y0, y1, y);
+                case Ustx.PitchPointShape.o: return SinEasingOutX(x0, x1, y0, y1, y);
                 default: return LinearX(x0, x1, y0, y1, y);
             }
         }

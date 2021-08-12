@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using OpenUtau.Core.Lib;
-using OpenUtau.Core.USTx;
+using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Core {
@@ -35,10 +35,10 @@ namespace OpenUtau.Core {
             return null;
         }
 
-        # region Command Queue
+        #region Command Queue
 
-        Deque<UCommandGroup> undoQueue = new Deque<UCommandGroup>();
-        Deque<UCommandGroup> redoQueue = new Deque<UCommandGroup>();
+        readonly Deque<UCommandGroup> undoQueue = new Deque<UCommandGroup>();
+        readonly Deque<UCommandGroup> redoQueue = new Deque<UCommandGroup>();
         UCommandGroup undoGroup = null;
         UCommandGroup savedPoint = null;
 
@@ -53,14 +53,14 @@ namespace OpenUtau.Core {
                 if (cmd is SaveProjectNotification) {
                     var _cmd = cmd as SaveProjectNotification;
                     if (undoQueue.Count > 0) savedPoint = undoQueue.Last();
-                    if (string.IsNullOrEmpty(_cmd.Path)) OpenUtau.Core.Formats.USTx.Save(Project.FilePath, Project);
-                    else OpenUtau.Core.Formats.USTx.Save(_cmd.Path, Project);
-                } else if (cmd is LoadProjectNotification) {
+                    if (string.IsNullOrEmpty(_cmd.Path)) OpenUtau.Core.Formats.Ustx.Save(Project.filePath, Project);
+                    else OpenUtau.Core.Formats.Ustx.Save(_cmd.Path, Project);
+                } else if (cmd is LoadProjectNotification notification) {
                     undoQueue.Clear();
                     redoQueue.Clear();
                     undoGroup = null;
                     savedPoint = null;
-                    Project = ((LoadProjectNotification)cmd).project;
+                    Project = notification.project;
                     playPosTick = 0;
                 } else if (cmd is SetPlayPosTickNotification) {
                     var _cmd = cmd as SetPlayPosTickNotification;
@@ -110,7 +110,7 @@ namespace OpenUtau.Core {
 
         # region Command Subscribers
 
-        private List<ICmdSubscriber> subscribers = new List<ICmdSubscriber>();
+        private readonly List<ICmdSubscriber> subscribers = new List<ICmdSubscriber>();
 
         public void AddSubscriber(ICmdSubscriber sub) {
             if (!subscribers.Contains(sub)) {

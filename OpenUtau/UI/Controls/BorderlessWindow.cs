@@ -55,7 +55,7 @@ namespace OpenUtau.UI.Controls
             get { return (bool)GetValue(ResizableProperty); }
         }
 
-        private WindowChrome windowChrome;
+        private readonly WindowChrome windowChrome;
 
         public BorderlessWindow()
         {

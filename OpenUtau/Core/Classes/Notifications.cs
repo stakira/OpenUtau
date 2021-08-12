@@ -1,4 +1,4 @@
-﻿using OpenUtau.Core.USTx;
+﻿using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core {
     public class UNotification : UCommand {

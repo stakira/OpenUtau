@@ -10,7 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System.ComponentModel;
 
-using OpenUtau.Core.USTx;
+using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.UI.Controls
 {
@@ -167,8 +167,8 @@ namespace OpenUtau.UI.Controls
             cxt.DrawLine(pen, new Point(0, UIConstants.HiddenNoteNum), new Point(0, UIConstants.HiddenNoteNum));
             cxt.DrawLine(pen, new Point(Part.DurTick, UIConstants.MaxNoteNum - UIConstants.HiddenNoteNum),
                               new Point(Part.DurTick, UIConstants.MaxNoteNum - UIConstants.HiddenNoteNum));
-            foreach (UNote note in ((UVoicePart)Part).Notes) cxt.DrawLine(pen, new Point(note.PosTick, UIConstants.MaxNoteNum - note.NoteNum),
-                                                                 new Point(note.EndTick, UIConstants.MaxNoteNum - note.NoteNum));
+            foreach (UNote note in ((UVoicePart)Part).notes) cxt.DrawLine(pen, new Point(note.position, UIConstants.MaxNoteNum - note.noteNum),
+                                                                 new Point(note.End, UIConstants.MaxNoteNum - note.noteNum));
             cxt.Close();
             tTransPre.Y = -partVisual.ContentBounds.Top;
             FitHeight(VisualHeight);
@@ -185,10 +185,9 @@ namespace OpenUtau.UI.Controls
             }
         }
 
-        BackgroundWorker worker;
-
-        PartImage partImage;
-        WriteableBitmap partBitmap;
+        readonly BackgroundWorker worker;
+        readonly PartImage partImage;
+        readonly WriteableBitmap partBitmap;
         protected TranslateTransform partImageTrans;
 
         double _canvasWidth;

@@ -11,9 +11,9 @@ namespace OpenUtau.Core.Render
 {
     class TrackSampleProvider : ISampleProvider
     {
-        private PanningSampleProvider pan;
-        private VolumeSampleProvider volume;
-        private MixingSampleProvider mix;
+        private readonly PanningSampleProvider pan;
+        private readonly VolumeSampleProvider volume;
+        private readonly MixingSampleProvider mix;
 
         /// <summary>
         /// Pan. -1f (left) to 1f (right).

@@ -5,8 +5,8 @@ using System.Runtime.InteropServices;
 
 namespace OpenUtau.Core.ResamplerDriver.Factorys {
     internal class SharpDriver : DriverModels, IResamplerDriver {
-        static Dictionary<string, Assembly> LoadTable = new Dictionary<string, Assembly>();
-        bool _isLegalPlugin = false;
+        static readonly Dictionary<string, Assembly> LoadTable = new Dictionary<string, Assembly>();
+        readonly bool _isLegalPlugin = false;
 
         #region 对象转换接口
         /// <summary>
@@ -25,9 +25,9 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys {
         }
         #endregion
 
-        Assembly asm = null;
-        MethodInfo DoResamplerMethod = null;
-        MethodInfo GetInformationMethod = null;
+        readonly Assembly asm = null;
+        readonly MethodInfo DoResamplerMethod = null;
+        readonly MethodInfo GetInformationMethod = null;
         public SharpDriver(string DllPath) {
             if (LoadTable.ContainsKey(DllPath)) {
                 asm = LoadTable[DllPath];

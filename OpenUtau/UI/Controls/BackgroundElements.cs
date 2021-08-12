@@ -8,7 +8,7 @@ using System.Windows.Media;
 
 using OpenUtau.UI.Models;
 using OpenUtau.Core;
-using OpenUtau.Core.USTx;
+using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.UI.Controls {
     class BackgroundElement : FrameworkElement {
@@ -192,7 +192,7 @@ namespace OpenUtau.UI.Controls {
     }
 
     class TimelineBackground : TickBackground {
-        Dictionary<int, FormattedText> fTextPool = new Dictionary<int, FormattedText>();
+        readonly Dictionary<int, FormattedText> fTextPool = new Dictionary<int, FormattedText>();
 
         protected override void OnRender(DrawingContext drawingContext) {
             double zoomRatio = MusicMath.getZoomRatio(QuarterWidth, BeatPerBar, BeatUnit, MinTickWidth);

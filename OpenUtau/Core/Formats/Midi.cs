@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using NAudio.Midi;
 
-using OpenUtau.Core.USTx;
+using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core.Formats
 {
@@ -26,9 +26,9 @@ namespace OpenUtau.Core.Formats
                         if (!parts.ContainsKey(_e.Channel)) parts.Add(_e.Channel, new UVoicePart());
                         var note = project.CreateNote(
                             _e.NoteNumber,
-                            (int)_e.AbsoluteTime * project.Resolution / midi.DeltaTicksPerQuarterNote,
-                            _e.NoteLength * project.Resolution / midi.DeltaTicksPerQuarterNote);
-                        parts[e.Channel].Notes.Add(note);
+                            (int)_e.AbsoluteTime * project.resolution / midi.DeltaTicksPerQuarterNote,
+                            _e.NoteLength * project.resolution / midi.DeltaTicksPerQuarterNote);
+                        parts[e.Channel].notes.Add(note);
                     }
                 foreach (var pair in parts)
                 {

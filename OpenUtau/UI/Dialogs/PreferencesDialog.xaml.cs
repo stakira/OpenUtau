@@ -16,7 +16,7 @@ namespace OpenUtau.UI.Dialogs {
         private List<string> singerPaths;
 
         private List<string> engines;
-        private List<NAudio.Wave.WaveOutCapabilities> playbackDevices;
+        private readonly List<NAudio.Wave.WaveOutCapabilities> playbackDevices;
 
         public PreferencesDialog() {
             InitializeComponent();

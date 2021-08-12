@@ -167,7 +167,7 @@ namespace OpenUtau.SimpleHelpers
             return false;
         }
 
-        Ude.CharsetDetector ude = new Ude.CharsetDetector ();
+        readonly Ude.CharsetDetector ude = new Ude.CharsetDetector ();
         bool _started = false;
         
 
@@ -192,7 +192,7 @@ namespace OpenUtau.SimpleHelpers
         /// </summary>
         public bool HasByteOrderMark { get; set; }
 
-        List<string> singleEncodings = new List<string> ();
+        readonly List<string> singleEncodings = new List<string> ();
 
         /// <summary>
         /// Resets this instance.

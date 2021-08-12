@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using OpenUtau.Core.ResamplerDriver;
-using OpenUtau.Core.USTx;
+using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Core.Render {
     class RenderEngine {
 
         public class Progress {
-            int total;
+            readonly int total;
             int completed = 0;
             public Progress(int total) {
                 this.total = total;
@@ -46,12 +46,12 @@ namespace OpenUtau.Core.Render {
         }
 
         public async Task<List<TrackSampleProvider>> RenderAsync() {
-            List<TrackSampleProvider> trackSampleProviders = project.Tracks.Select(
+            List<TrackSampleProvider> trackSampleProviders = project.tracks.Select(
                 track => new TrackSampleProvider() {
                     Volume = PlaybackManager.DecibelToVolume(track.Volume)
                 }).ToList();
-            var cacheDir = PathManager.Inst.GetCachePath(project.FilePath);
-            foreach (UPart part in project.Parts) {
+            var cacheDir = PathManager.Inst.GetCachePath(project.filePath);
+            foreach (UPart part in project.parts) {
                 UVoicePart voicePart = part as UVoicePart;
                 if (voicePart != null) {
                     SequencingSampleProvider sampleProvider = await RenderPartAsync(voicePart, project, cacheDir);
@@ -75,17 +75,17 @@ namespace OpenUtau.Core.Render {
         }
 
         async Task<SequencingSampleProvider> RenderPartAsync(UVoicePart part, UProject project, string cacheDir) {
-            var singer = project.Tracks[part.TrackNo].Singer;
+            var singer = project.tracks[part.TrackNo].Singer;
             if (singer == null || !singer.Loaded) {
                 return null;
             }
             var tasks = new List<Task<RenderItem>>();
-            var progress = new Progress(part.Notes.Sum(note => note.Phonemes.Count));
+            var progress = new Progress(part.notes.Sum(note => note.phonemes.Count));
             progress.Clear();
-            foreach (var note in part.Notes) {
-                foreach (var phoneme in note.Phonemes) {
+            foreach (var note in part.notes) {
+                foreach (var phoneme in note.phonemes) {
                     if (string.IsNullOrEmpty(phoneme.Oto.File)) {
-                        Log.Warning($"Cannot find phoneme in note {note.Lyric}");
+                        Log.Warning($"Cannot find phoneme in note {note.lyric}");
                         continue;
                     }
                     var item = new RenderItem(phoneme, part, project);

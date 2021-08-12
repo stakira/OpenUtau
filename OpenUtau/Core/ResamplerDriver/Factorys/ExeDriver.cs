@@ -7,8 +7,8 @@ using OpenUtau.Core.Util;
 
 namespace OpenUtau.Core.ResamplerDriver.Factorys {
     internal class ExeDriver : DriverModels, IResamplerDriver {
-        string ExePath = "";
-        bool _isLegalPlugin = false;
+        readonly string ExePath = "";
+        readonly bool _isLegalPlugin = false;
 
         public ExeDriver(string ExePath) {
             if (File.Exists(ExePath)) {

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 
-using OpenUtau.Core.USTx;
+using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core.Formats
 {
@@ -49,7 +49,7 @@ namespace OpenUtau.Core.Formats
             ProjectFormats format = DetectProjectFormat(file);
             UProject project = null;
 
-            if (format == ProjectFormats.Ustx) { project = USTx.Load(file); }
+            if (format == ProjectFormats.Ustx) { project = Ustx.Load(file); }
             else if (format == ProjectFormats.Vsq3 || format == ProjectFormats.Vsq4) { project = VSQx.Load(file); }
             else if (format == ProjectFormats.Ust) { project = Ust.Load(file); }
             else

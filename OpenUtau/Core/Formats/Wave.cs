@@ -8,7 +8,7 @@ using NAudio;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 
-using OpenUtau.Core.USTx;
+using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core.Formats
 {
@@ -16,7 +16,7 @@ namespace OpenUtau.Core.Formats
     {
         public static UWavePart CreatePart(string filepath)
         {
-            foreach(var part in DocManager.Inst.Project.Parts)
+            foreach(var part in DocManager.Inst.Project.parts)
             {
                 var _part = part as UWavePart;
                 if (_part != null && _part.FilePath == filepath)

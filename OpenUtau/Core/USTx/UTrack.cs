@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Newtonsoft.Json;
 
-namespace OpenUtau.Core.USTx
-{
-    public class UTrack
-    {
-        public string Name = "New Track";
-        public string Comment = string.Empty;
+namespace OpenUtau.Core.Ustx {
+    [JsonObject(MemberSerialization.OptIn)]
+    public class UTrack {
+        [JsonProperty] public string Name = "New Track";
+        [JsonProperty] public string Comment = string.Empty;
         public USinger Singer;
 
         public string SingerName { get { if (Singer != null) return Singer.DisplayName; else return "[No Singer]"; } }

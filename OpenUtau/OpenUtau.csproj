@@ -69,8 +69,8 @@
     <Reference Include="NBug, Version=1.2.0.0, Culture=neutral, PublicKeyToken=a4292a325f69b123, processorArchitecture=MSIL">
       <HintPath>..\packages\NBug.1.2.2\lib\net40-client\NBug.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
       <HintPath>..\packages\Serilog.2.10.0\lib\net46\Serilog.dll</HintPath>
@@ -140,7 +140,7 @@
     <Compile Include="Core\Classes\PlaybackManager.cs" />
     <Compile Include="Core\Classes\TrackCommands.cs" />
     <Compile Include="Core\Formats\Midi.cs" />
-    <Compile Include="Core\Formats\USTx.cs">
+    <Compile Include="Core\Formats\Ustx.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Core\Formats\UtauSoundbank.cs" />
@@ -159,7 +159,7 @@
     <Compile Include="Core\ResamplerDriver\Factorys\CppDriver.cs" />
     <Compile Include="Core\ResamplerDriver\Factorys\ExeDriver.cs" />
     <Compile Include="Core\ResamplerDriver\Factorys\SharpDriver.cs" />
-    <Compile Include="Core\USTx\UExpression.cs" />
+    <Compile Include="Core\Ustx\UExpression.cs" />
     <Compile Include="Core\Classes\NoteCommands.cs" />
     <Compile Include="ThirdParty\Deque.cs" />
     <Compile Include="Core\Classes\DocManager.cs" />
@@ -167,8 +167,8 @@
     <Compile Include="Core\Classes\PartCommands.cs" />
     <Compile Include="Core\Classes\UCommand.cs" />
     <Compile Include="Core\Classes\PartManager.cs" />
-    <Compile Include="Core\USTx\UPhoneme.cs" />
-    <Compile Include="Core\USTx\USinger.cs" />
+    <Compile Include="Core\Ustx\UPhoneme.cs" />
+    <Compile Include="Core\Ustx\USinger.cs" />
     <Compile Include="ThirdParty\FileEncoding.cs" />
     <Compile Include="Core\Util\Base64.cs" />
     <Compile Include="Core\Util\IniFileClass.cs" />
@@ -192,9 +192,9 @@
     <Compile Include="Core\Formats\Wave.cs" />
     <Compile Include="Core\Formats\Ust.cs" />
     <Compile Include="Core\Util\MusicMath.cs" />
-    <Compile Include="Core\USTx\UPart.cs" />
-    <Compile Include="Core\USTx\UProject.cs" />
-    <Compile Include="Core\USTx\UTrack.cs" />
+    <Compile Include="Core\Ustx\UPart.cs" />
+    <Compile Include="Core\Ustx\UProject.cs" />
+    <Compile Include="Core\Ustx\UTrack.cs" />
     <Compile Include="Core\Formats\VSQx.cs" />
     <Compile Include="UI\Behaviors\BorderlessWindowBehavior.cs" />
     <Compile Include="UI\Behaviors\ScrollbarBehavior.cs" />
@@ -206,6 +206,9 @@
     <Compile Include="UI\Controls\PhonemesElement.cs" />
     <Compile Include="UI\Controls\TrackHeader.xaml.cs">
       <DependentUpon>TrackHeader.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Controls\VibratoControl.xaml.cs">
+      <DependentUpon>VibratoControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Controls\ViewScaler.xaml.cs">
       <DependentUpon>ViewScaler.xaml</DependentUpon>
@@ -233,6 +236,10 @@
     <Compile Include="UI\Models\TracksViewModel.cs" />
     <Compile Include="UI\UIConstants.cs" />
     <Page Include="UI\Controls\LyricBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Controls\VibratoControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -288,7 +295,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Core\USTx\UNote.cs" />
+    <Compile Include="Core\Ustx\UNote.cs" />
     <Compile Include="UI\MidiWindow.xaml.cs">
       <DependentUpon>MidiWindow.xaml</DependentUpon>
     </Compile>

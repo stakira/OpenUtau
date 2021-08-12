@@ -4,118 +4,100 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using OpenUtau.Core.USTx;
+using OpenUtau.Core.Ustx;
 
-namespace OpenUtau.Core
-{
-    public abstract class ExpCommand : UCommand
-    {
+namespace OpenUtau.Core {
+    public abstract class ExpCommand : UCommand {
         public UVoicePart Part;
         public UNote Note;
         public string Key;
     }
 
-    public class SetIntExpCommand : ExpCommand
-    {
-        public int NewValue, OldValue;
-        public SetIntExpCommand(UVoicePart part, UNote note, string key, int newValue)
-        {
-            this.Part = part;
-            this.Note = note;
-            this.Key = key;
-            this.NewValue = newValue;
-            this.OldValue = (int) Note.Expressions[Key].Data;
+    public class SetUExpressionCommand : ExpCommand {
+        public float NewValue, OldValue;
+        public SetUExpressionCommand(UVoicePart part, UNote note, string key, float newValue) {
+            Part = part;
+            Note = note;
+            Key = key;
+            NewValue = newValue;
+            OldValue = Note.expressions[Key].value;
         }
         public override string ToString() { return $"Set note expression {Key}"; }
-        public override void Execute() { Note.Expressions[Key].Data = NewValue; }
-        public override void Unexecute() { Note.Expressions[Key].Data = OldValue; }
+        public override void Execute() { Note.expressions[Key].value = NewValue; }
+        public override void Unexecute() { Note.expressions[Key].value = OldValue; }
     }
 
     public abstract class PitchExpCommand : ExpCommand { }
 
-    public class DeletePitchPointCommand : PitchExpCommand
-    {
+    public class DeletePitchPointCommand : PitchExpCommand {
         public int Index;
         public PitchPoint Point;
-        public DeletePitchPointCommand(UVoicePart part, UNote note, int index)
-        {
+        public DeletePitchPointCommand(UVoicePart part, UNote note, int index) {
             this.Part = part;
             this.Note = note;
             this.Index = index;
-            this.Point = Note.PitchBend.Points[Index];
+            this.Point = Note.pitch.data[Index];
         }
         public override string ToString() { return "Delete pitch point"; }
-        public override void Execute() { Note.PitchBend.Points.RemoveAt(Index); }
-        public override void Unexecute() { Note.PitchBend.Points.Insert(Index, Point); }
+        public override void Execute() { Note.pitch.data.RemoveAt(Index); }
+        public override void Unexecute() { Note.pitch.data.Insert(Index, Point); }
     }
 
-    public class ChangePitchPointShapeCommand : PitchExpCommand
-    {
+    public class ChangePitchPointShapeCommand : PitchExpCommand {
         public PitchPoint Point;
         public PitchPointShape NewShape;
         public PitchPointShape OldShape;
-        public ChangePitchPointShapeCommand(PitchPoint point, PitchPointShape shape)
-        {
+        public ChangePitchPointShapeCommand(PitchPoint point, PitchPointShape shape) {
             this.Point = point;
             this.NewShape = shape;
-            this.OldShape = point.Shape;
+            this.OldShape = point.shape;
         }
         public override string ToString() { return "Change pitch point shape"; }
-        public override void Execute() { Point.Shape = NewShape; }
-        public override void Unexecute() { Point.Shape = OldShape; }
+        public override void Execute() { Point.shape = NewShape; }
+        public override void Unexecute() { Point.shape = OldShape; }
     }
 
-    public class SnapPitchPointCommand : PitchExpCommand
-    {
-        double X, Y;
-        public SnapPitchPointCommand(UNote note)
-        {
-            this.Note = note;
-            this.X = Note.PitchBend.Points.First().X;
-            this.Y = Note.PitchBend.Points.First().Y;
+    public class SnapPitchPointCommand : PitchExpCommand {
+        readonly float X, Y;
+        public SnapPitchPointCommand(UNote note) {
+            Note = note;
+            X = Note.pitch.data.First().X;
+            Y = Note.pitch.data.First().Y;
         }
         public override string ToString() { return "Toggle pitch snap"; }
-        public override void Execute()
-        {
-            Note.PitchBend.SnapFirst = !Note.PitchBend.SnapFirst;
-            if (!Note.PitchBend.SnapFirst)
-            {
-                Note.PitchBend.Points.First().X = this.X;
-                Note.PitchBend.Points.First().Y = this.Y;
+        public override void Execute() {
+            Note.pitch.snapFirst = !Note.pitch.snapFirst;
+            if (!Note.pitch.snapFirst) {
+                Note.pitch.data.First().X = X;
+                Note.pitch.data.First().Y = Y;
             }
         }
-        public override void Unexecute()
-        {
-            Note.PitchBend.SnapFirst = !Note.PitchBend.SnapFirst;
-            if (!Note.PitchBend.SnapFirst)
-            {
-                Note.PitchBend.Points.First().X = this.X;
-                Note.PitchBend.Points.First().Y = this.Y;
+        public override void Unexecute() {
+            Note.pitch.snapFirst = !Note.pitch.snapFirst;
+            if (!Note.pitch.snapFirst) {
+                Note.pitch.data.First().X = X;
+                Note.pitch.data.First().Y = Y;
             }
         }
     }
 
-    public class AddPitchPointCommand : PitchExpCommand
-    {
+    public class AddPitchPointCommand : PitchExpCommand {
         public int Index;
         public PitchPoint Point;
-        public AddPitchPointCommand(UNote note, PitchPoint point, int index)
-        {
+        public AddPitchPointCommand(UNote note, PitchPoint point, int index) {
             this.Note = note;
             this.Index = index;
             this.Point = point;
         }
         public override string ToString() { return "Add pitch point"; }
-        public override void Execute() { Note.PitchBend.Points.Insert(Index, Point); }
-        public override void Unexecute() { Note.PitchBend.Points.RemoveAt(Index); }
+        public override void Execute() { Note.pitch.data.Insert(Index, Point); }
+        public override void Unexecute() { Note.pitch.data.RemoveAt(Index); }
     }
 
-    public class MovePitchPointCommand : PitchExpCommand
-    {
+    public class MovePitchPointCommand : PitchExpCommand {
         public PitchPoint Point;
-        public double DeltaX, DeltaY;
-        public MovePitchPointCommand(PitchPoint point, double deltaX, double deltaY)
-        {
+        public float DeltaX, DeltaY;
+        public MovePitchPointCommand(PitchPoint point, float deltaX, float deltaY) {
             this.Point = point;
             this.DeltaX = deltaX;
             this.DeltaY = deltaY;

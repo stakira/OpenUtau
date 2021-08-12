@@ -4,7 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 
 using OpenUtau.Core;
-using OpenUtau.Core.USTx;
+using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.UI.Controls {
     enum ExpDisMode { Hidden, Visible, Shadow };
@@ -70,9 +70,8 @@ namespace OpenUtau.UI.Controls {
 
     class FloatExpElement : ExpElement {
         public OpenUtau.UI.Models.MidiViewModel midiVM;
-
-        Pen pen3;
-        Pen pen2;
+        readonly Pen pen3;
+        readonly Pen pen2;
 
         public FloatExpElement() {
             pen3 = new Pen(ThemeManager.NoteFillBrushes[0], 3);
@@ -83,15 +82,15 @@ namespace OpenUtau.UI.Controls {
 
         public override void Redraw(DrawingContext cxt) {
             if (Part != null) {
-                foreach (UNote note in Part.Notes) {
+                foreach (UNote note in Part.notes) {
                     if (!midiVM.NoteIsInView(note)) continue;
-                    if (note.Expressions.ContainsKey(Key)) {
-                        var _exp = note.Expressions[Key] as IntExpression;
-                        var _expTemplate = DocManager.Inst.Project.ExpressionTable[Key] as IntExpression;
-                        double x1 = Math.Round(ScaleX * note.PosTick);
-                        double x2 = Math.Round(ScaleX * note.EndTick);
-                        double valueHeight = Math.Round(VisualHeight - VisualHeight * ((int)_exp.Data - _expTemplate.Min) / (_expTemplate.Max - _expTemplate.Min));
-                        double zeroHeight = Math.Round(VisualHeight - VisualHeight * (0f - _expTemplate.Min) / (_expTemplate.Max - _expTemplate.Min));
+                    if (note.expressions.ContainsKey(Key)) {
+                        var _exp = note.expressions[Key];
+                        var _expDef = DocManager.Inst.Project.expressions[Key];
+                        double x1 = Math.Round(ScaleX * note.position);
+                        double x2 = Math.Round(ScaleX * note.End);
+                        double valueHeight = Math.Round(VisualHeight - VisualHeight * (_exp.value - _expDef.min) / (_expDef.max - _expDef.min));
+                        double zeroHeight = Math.Round(VisualHeight - VisualHeight * (0f - _expDef.min) / (_expDef.max - _expDef.min));
                         cxt.DrawLine(pen3, new Point(x1 + 0.5, zeroHeight + 0.5), new Point(x1 + 0.5, valueHeight + 3));
                         cxt.DrawEllipse(Brushes.White, pen2, new Point(x1 + 0.5, valueHeight), 2.5, 2.5);
                         cxt.DrawLine(pen2, new Point(x1 + 3, valueHeight), new Point(Math.Max(x1 + 3, x2 - 3), valueHeight));

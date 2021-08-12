@@ -12,7 +12,7 @@ namespace OpenUtau.UI
     {
         static public string[] noteStrings = new String[12] { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
 
-        static int[] blackKeys = { 1, 3, 6, 8, 10 };
+        static readonly int[] blackKeys = { 1, 3, 6, 8, 10 };
 
         // Window UI
         public static SolidColorBrush UIBackgroundBrushNormal = new SolidColorBrush();

@@ -10,7 +10,7 @@ using System.Windows.Shapes;
 using System.ComponentModel;
 
 using OpenUtau.Core;
-using OpenUtau.Core.USTx;
+using OpenUtau.Core.Ustx;
 using OpenUtau.UI.Controls;
 
 namespace OpenUtau.UI.Models
@@ -127,9 +127,9 @@ namespace OpenUtau.UI.Models
             MarkUpdate();
         }
 
-        # endregion
+        #endregion
 
-        Dictionary<string, FloatExpElement> expElements = new Dictionary<string, FloatExpElement>();
+        readonly Dictionary<string, FloatExpElement> expElements = new Dictionary<string, FloatExpElement>();
         public NotesElement notesElement;
         public PhonemesElement phonemesElement;
         public FloatExpElement visibleExpElement, shadowExpElement;
@@ -143,13 +143,13 @@ namespace OpenUtau.UI.Models
                 if (visibleExpElement != null)
                 {
                     visibleExpElement.X = -OffsetX;
-                    visibleExpElement.ScaleX = QuarterWidth / Project.Resolution;
+                    visibleExpElement.ScaleX = QuarterWidth / Project.resolution;
                     visibleExpElement.VisualHeight = ExpCanvas.ActualHeight;
                 }
                 if (shadowExpElement != null)
                 {
                     shadowExpElement.X = -OffsetX;
-                    shadowExpElement.ScaleX = QuarterWidth / Project.Resolution;
+                    shadowExpElement.ScaleX = QuarterWidth / Project.resolution;
                     shadowExpElement.VisualHeight = ExpCanvas.ActualHeight;
                 }
                 if (notesElement != null)
@@ -204,7 +204,7 @@ namespace OpenUtau.UI.Models
 
         public void updatePlayPosMarker()
         {
-            double quarter = (double)(playPosTick - Part.PosTick) / DocManager.Inst.Project.Resolution;
+            double quarter = (double)(playPosTick - Part.PosTick) / DocManager.Inst.Project.resolution;
             int playPosMarkerOffset = (int)Math.Round(QuarterToCanvas(quarter) + 0.5);
             Canvas.SetLeft(playPosMarker, playPosMarkerOffset - 6);
             playPosMarkerHighlight.Height = MidiCanvas.ActualHeight;
@@ -222,8 +222,8 @@ namespace OpenUtau.UI.Models
         public List<UNote> SelectedNotes = new List<UNote>();
         public List<UNote> TempSelectedNotes = new List<UNote>();
 
-        public void SelectAll() { SelectedNotes.Clear(); foreach (UNote note in Part.Notes) { SelectedNotes.Add(note); note.Selected = true; } DocManager.Inst.ExecuteCmd(new RedrawNotesNotification()); }
-        public void DeselectAll() { SelectedNotes.Clear(); foreach (UNote note in Part.Notes) note.Selected = false; DocManager.Inst.ExecuteCmd(new RedrawNotesNotification()); }
+        public void SelectAll() { SelectedNotes.Clear(); foreach (UNote note in Part.notes) { SelectedNotes.Add(note); note.Selected = true; } DocManager.Inst.ExecuteCmd(new RedrawNotesNotification()); }
+        public void DeselectAll() { SelectedNotes.Clear(); foreach (UNote note in Part.notes) note.Selected = false; DocManager.Inst.ExecuteCmd(new RedrawNotesNotification()); }
 
         public void SelectNote(UNote note) { if (!SelectedNotes.Contains(note)) { SelectedNotes.Add(note); note.Selected = true; DocManager.Inst.ExecuteCmd(new RedrawNotesNotification()); } }
         public void DeselectNote(UNote note) { SelectedNotes.Remove(note); note.Selected = false; DocManager.Inst.ExecuteCmd(new RedrawNotesNotification()); }
@@ -233,14 +233,14 @@ namespace OpenUtau.UI.Models
         {
             if (quarter2 < quarter1) { double temp = quarter1; quarter1 = quarter2; quarter2 = temp; }
             if (noteNum2 < noteNum1) { int temp = noteNum1; noteNum1 = noteNum2; noteNum2 = temp; }
-            int tick1 = (int)(quarter1 * Project.Resolution);
-            int tick2 = (int)(quarter2 * Project.Resolution);
+            int tick1 = (int)(quarter1 * Project.resolution);
+            int tick2 = (int)(quarter2 * Project.resolution);
             foreach (UNote note in TempSelectedNotes) note.Selected = false;
             TempSelectedNotes.Clear();
-            foreach (UNote note in Part.Notes)
+            foreach (UNote note in Part.notes)
             {
-                if (note.PosTick <= tick2 && note.PosTick + note.DurTick >= tick1 &&
-                    note.NoteNum >= noteNum1 && note.NoteNum <= noteNum2) SelectTempNote(note);
+                if (note.position <= tick2 && note.position + note.duration >= tick1 &&
+                    note.noteNum >= noteNum1 && note.noteNum <= noteNum2) SelectTempNote(note);
             }
             DocManager.Inst.ExecuteCmd(new RedrawNotesNotification());
         }
@@ -276,8 +276,8 @@ namespace OpenUtau.UI.Models
             double snapUnit = GetSnapUnit();
             return Math.Round(quater / snapUnit) * snapUnit;
         }
-        public int CanvasToSnappedTick(double X) { return (int)(CanvasToSnappedQuarter(X) * Project.Resolution); }
-        public double TickToCanvas(int tick) { return (int)(QuarterToCanvas((double)tick / Project.Resolution)); }
+        public int CanvasToSnappedTick(double X) { return (int)(CanvasToSnappedQuarter(X) * Project.resolution); }
+        public double TickToCanvas(int tick) { return (int)(QuarterToCanvas((double)tick / Project.resolution)); }
 
         public int CanvasToNoteNum(double Y) { return UIConstants.MaxNoteNum - 1 - (int)((Y + OffsetY) / TrackHeight); }
         public double CanvasToPitch(double Y) { return UIConstants.MaxNoteNum - 1 - (Y + OffsetY) / TrackHeight + 0.5; }
@@ -286,9 +286,9 @@ namespace OpenUtau.UI.Models
 
         public bool NoteIsInView(UNote note) // FIXME : improve performance
         {
-            double leftTick = OffsetX / QuarterWidth * Project.Resolution - 512;
-            double rightTick = leftTick + ViewWidth / QuarterWidth * Project.Resolution + 512;
-            return ((double)note.PosTick < rightTick && (double)note.EndTick > leftTick);
+            double leftTick = OffsetX / QuarterWidth * Project.resolution - 512;
+            double rightTick = leftTick + ViewWidth / QuarterWidth * Project.resolution + 512;
+            return ((double)note.position < rightTick && (double)note.End > leftTick);
         }
 
         # endregion
@@ -348,8 +348,8 @@ namespace OpenUtau.UI.Models
         private void OnPartModified()
         {
             Title = Part.Name;
-            QuarterOffset = (double)Part.PosTick / Project.Resolution;
-            QuarterCount = (double)Part.DurTick / Project.Resolution;
+            QuarterOffset = (double)Part.PosTick / Project.resolution;
+            QuarterCount = (double)Part.DurTick / Project.resolution;
             QuarterWidth = QuarterWidth;
             OffsetX = OffsetX;
             MarkUpdate();
@@ -414,7 +414,7 @@ namespace OpenUtau.UI.Models
             else if (cmd is ExpCommand)
             {
                 var _cmd = cmd as ExpCommand;
-                if (_cmd is SetIntExpCommand) expElements[_cmd.Key].MarkUpdate();
+                if (_cmd is SetUExpressionCommand) expElements[_cmd.Key].MarkUpdate();
                 else if (_cmd is PitchExpCommand) OnPitchModified();
             }
             else if (cmd is UNotification)

@@ -14,13 +14,11 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Collections.ObjectModel;
 
-namespace OpenUtau.UI.Controls
-{
+namespace OpenUtau.UI.Controls {
     /// <summary>
     /// Interaction logic for ExpComboBox.xaml
     /// </summary>
-    public partial class ExpComboBox : UserControl
-    {
+    public partial class ExpComboBox : UserControl {
         public event EventHandler Click;
         public event EventHandler SelectionChanged;
 
@@ -36,22 +34,19 @@ namespace OpenUtau.UI.Controls
         public static readonly DependencyProperty HighlightProperty = DependencyProperty.Register("Highlight", typeof(Brush), typeof(ExpComboBox), new PropertyMetadata(Brushes.Black));
         public static readonly DependencyProperty TextProperty = DependencyProperty.Register("Text", typeof(string), typeof(ExpComboBox), new PropertyMetadata(""));
 
-        public ExpComboBox()
-        {
+        public ExpComboBox() {
             InitializeComponent();
         }
 
-        private void mainGrid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
+        private void mainGrid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
             EventHandler handler = Click;
             if (handler != null) handler(this, e);
         }
 
-        private void dropList_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
+        private void dropList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             string name = ItemsSource[SelectedIndex];
-            string abbr = OpenUtau.Core.DocManager.Inst.Project.ExpressionTable[name].Abbr;
-            Text = abbr.Substring(0, Math.Min(3, abbr.Length));
+            string abbr = OpenUtau.Core.DocManager.Inst.Project.expressions[name].abbr;
+            Text = abbr.Substring(0, Math.Min(3, abbr.Length)).ToUpper();
             EventHandler handler = SelectionChanged;
             if (handler != null) handler(this, e);
         }
