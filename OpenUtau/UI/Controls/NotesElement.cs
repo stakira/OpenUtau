@@ -143,14 +143,14 @@ namespace OpenUtau.UI.Controls {
         }
 
         private void DrawPitchBend(UNote note, DrawingContext cxt) {
-            var _pitchExp = note.pitch as UPitch;
-            var _pts = _pitchExp.data as List<PitchPoint>;
+            var _pitchExp = note.pitch;
+            var _pts = _pitchExp.data;
             if (_pts.Count < 2) return;
 
             double pt0Tick = note.position + MusicMath.MillisecondToTick(_pts[0].X, DocManager.Inst.Project.bpm, DocManager.Inst.Project.beatUnit, DocManager.Inst.Project.resolution);
             double pt0X = midiVM.QuarterWidth * pt0Tick / DocManager.Inst.Project.resolution;
             double pt0Pit = note.noteNum + _pts[0].Y / 10.0;
-            double pt0Y = TrackHeight * ((double)UIConstants.MaxNoteNum - 1.0 - pt0Pit) + TrackHeight / 2;
+            double pt0Y = TrackHeight * (UIConstants.MaxNoteNum - 1.0 - pt0Pit) + TrackHeight / 2;
 
             if (note.pitch.snapFirst) cxt.DrawEllipse(ThemeManager.WhiteKeyNameBrushNormal, penPit, new Point(pt0X, pt0Y), 2.5, 2.5);
             else cxt.DrawEllipse(null, penPit, new Point(pt0X, pt0Y), 2.5, 2.5);
@@ -159,7 +159,7 @@ namespace OpenUtau.UI.Controls {
                 double pt1Tick = note.position + MusicMath.MillisecondToTick(_pts[i].X, DocManager.Inst.Project.bpm, DocManager.Inst.Project.beatUnit, DocManager.Inst.Project.resolution);
                 double pt1X = midiVM.QuarterWidth * pt1Tick / DocManager.Inst.Project.resolution;
                 double pt1Pit = note.noteNum + _pts[i].Y / 10.0;
-                double pt1Y = TrackHeight * ((double)UIConstants.MaxNoteNum - 1.0 - pt1Pit) + TrackHeight / 2;
+                double pt1Y = TrackHeight * (UIConstants.MaxNoteNum - 1.0 - pt1Pit) + TrackHeight / 2;
 
                 // Draw arc
                 double _x = pt0X;

@@ -59,6 +59,7 @@ namespace OpenUtau.Core.Ustx {
         public readonly BitmapImage Avatar;
         public readonly Dictionary<string, string> PitchMap;
         public readonly List<UOtoSet> OtoSets;
+        public readonly string VoicebankName;
         public readonly bool Loaded;
 
         public string DisplayName { get { return Loaded ? Name : $"{Name}[Unloaded]"; } }
@@ -75,7 +76,6 @@ namespace OpenUtau.Core.Ustx {
             Location = Path.Combine(singersPath, Path.GetDirectoryName(voicebank.File));
             var imagePath = Path.Combine(Location, voicebank.Image);
             Avatar = LoadAvatar(imagePath);
-            Loaded = true;
             if (voicebank.PrefixMap != null) {
                 PitchMap = voicebank.PrefixMap.Map;
             } else {
@@ -85,6 +85,8 @@ namespace OpenUtau.Core.Ustx {
             foreach (var otoSet in voicebank.OtoSets) {
                 OtoSets.Add(new UOtoSet(otoSet, this, singersPath));
             }
+            VoicebankName = Path.GetDirectoryName(voicebank.OrigFile);
+            Loaded = true;
         }
 
         public bool TryGetOto(string lyric, out UOto oto) {

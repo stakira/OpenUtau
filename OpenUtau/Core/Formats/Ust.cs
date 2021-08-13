@@ -68,6 +68,9 @@ namespace OpenUtau.Core.Formats {
             ParsePart(project, part, blocks);
 
             part.DurTick = part.notes.Select(note => note.End).Max() + project.resolution;
+
+            project.AfterLoad();
+            project.Validate();
             return project;
         }
 
@@ -112,13 +115,10 @@ namespace OpenUtau.Core.Formats {
                         default:
                             if (int.TryParse(header.Substring(2, header.Length - 3), out int noteIndex)) {
                                 UNote note = project.CreateNote();
-                                foreach (var phoneme in note.phonemes) {
-                                    phoneme.envelope = new UEnvelope();
-                                }
                                 ParseNote(note, block);
                                 note.position = tick;
                                 tick += note.duration;
-                                if (note.lyric != "R") {
+                                if (note.lyric.ToLower() != "r") {
                                     part.notes.Add(note);
                                 }
                             } else {
@@ -129,6 +129,21 @@ namespace OpenUtau.Core.Formats {
                 } catch (Exception e) when (!(e is FileFormatException)) {
                     throw new FileFormatException($"Failed to parse block\n{block[0]}", e);
                 }
+            }
+            SnapPitchPoints(part);
+        }
+
+        private static void SnapPitchPoints(UVoicePart part) {
+            UNote lastNote = null;
+            foreach (var note in part.notes) {
+                if (lastNote != null && !note.pitch.snapFirst && note.position == lastNote.End) {
+                    float dy = note.pitch.data[0].Y - lastNote.pitch.data[0].Y;
+                    float dn = note.noteNum - lastNote.noteNum;
+                    if (Math.Abs(dy + 10 * dn) < 1) {
+                        note.pitch.snapFirst = true;
+                    }
+                }
+                lastNote = note;
             }
         }
 
@@ -156,7 +171,6 @@ namespace OpenUtau.Core.Formats {
                         if (singer == null) {
                             singer = new USinger("");
                         }
-                        project.singers.Add(singer);
                         project.tracks[0].Singer = singer;
                         break;
                 }
@@ -232,7 +246,7 @@ namespace OpenUtau.Core.Formats {
 
         private static void ParseLyric(UNote note, string ust) {
             if (ust.StartsWith("?")) {
-                note.phonemes[0].AutoRemapped = false;
+                note.phonemes[0].autoRemap = false;
                 ust = ust.Substring(1);
             }
             note.phonemes[0].phoneme = ust;
@@ -241,14 +255,12 @@ namespace OpenUtau.Core.Formats {
 
         private static void ParsePreUtterance(UNote note, string ust, UstLine ustLine) {
             if (string.IsNullOrWhiteSpace(ust)) {
-                note.phonemes[0].AutoEnvelope = true;
                 return;
             }
-            note.phonemes[0].AutoEnvelope = false;
             if (!float.TryParse(ust, out float preutter)) {
                 throw new FileFormatException($"Invalid PreUtterance\n${ustLine}");
             }
-            note.phonemes[0].preutter = preutter;
+            note.phonemes[0].preutter = preutter; // Currently unused, overwritten by oto.
         }
 
         private static void ParseEnvelope(UNote note, string ust, UstLine ustLine) {
@@ -291,7 +303,7 @@ namespace OpenUtau.Core.Formats {
                 var points = note.pitch.data;
                 points.Clear();
                 if (pbs.Contains(';')) {
-                    points.Add(new PitchPoint(float.Parse(pbs.Split(new[] { ';' })[0]), float.Parse(pbs.Split(new[] { ';' })[1])));
+                    points.Add(new PitchPoint(float.Parse(pbs.Split(';')[0]), float.Parse(pbs.Split(';')[1])));
                     note.pitch.snapFirst = false;
                 } else {
                     points.Add(new PitchPoint(float.Parse(pbs), 0));

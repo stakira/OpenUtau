@@ -14,7 +14,7 @@ namespace OpenUtau.UI.Behaviors
 
         protected override void OnAttached()
         {
-            scrollbar = (ScrollBar)AssociatedObject;
+            scrollbar = AssociatedObject;
             scrollbar.MouseWheel += scrollbar_MouseWheel;
         }
 

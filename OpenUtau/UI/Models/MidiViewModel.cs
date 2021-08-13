@@ -288,7 +288,7 @@ namespace OpenUtau.UI.Models
         {
             double leftTick = OffsetX / QuarterWidth * Project.resolution - 512;
             double rightTick = leftTick + ViewWidth / QuarterWidth * Project.resolution + 512;
-            return ((double)note.position < rightTick && (double)note.End > leftTick);
+            return (note.position < rightTick && note.End > leftTick);
         }
 
         # endregion

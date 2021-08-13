@@ -220,7 +220,7 @@ namespace OpenUtau.SimpleHelpers
             byte[] buffer = new byte[bufferSize];
             while (i++ < maxIterations)
             {
-                int sz = inputData.Read (buffer, 0, (int)buffer.Length);
+                int sz = inputData.Read (buffer, 0, buffer.Length);
                 if (sz <= 0)
                 {
                     break;

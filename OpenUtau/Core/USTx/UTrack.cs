@@ -3,8 +3,8 @@
 namespace OpenUtau.Core.Ustx {
     [JsonObject(MemberSerialization.OptIn)]
     public class UTrack {
-        [JsonProperty] public string Name = "New Track";
-        [JsonProperty] public string Comment = string.Empty;
+        [JsonProperty] public string singer;
+
         public USinger Singer;
 
         public string SingerName { get { if (Singer != null) return Singer.DisplayName; else return "[No Singer]"; } }
@@ -15,6 +15,14 @@ namespace OpenUtau.Core.Ustx {
         public double Volume { set; get; }
         public double Pan { set; get; }
 
-        public UTrack() { }
+        public void BeforeSave() {
+            singer = Singer == null ? null : Singer.VoicebankName;
+        }
+
+        public void AfterLoad() {
+            if (Singer == null && !string.IsNullOrEmpty(singer)) {
+                Singer = DocManager.Inst.GetSinger(singer);
+            }
+        }
     }
 }

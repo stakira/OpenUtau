@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 
 namespace OpenUtau.Core.Ustx {
@@ -21,7 +22,6 @@ namespace OpenUtau.Core.Ustx {
         [JsonProperty] public List<UTrack> tracks = new List<UTrack>();
         [JsonProperty] public List<UPart> parts = new List<UPart>();
 
-        public List<USinger> singers = new List<USinger>();
         public bool Saved { get; set; } = false;
 
         public void RegisterExpression(UExpressionDescriptor def) {
@@ -65,9 +65,24 @@ namespace OpenUtau.Core.Ustx {
             }
         }
 
+        public void BeforeSave() {
+            foreach (var track in tracks) {
+                track.BeforeSave();
+            }
+        }
+
+        public void AfterLoad() {
+            foreach (var track in tracks) {
+                track.AfterLoad();
+            }
+            foreach (var part in parts) {
+                part.AfterLoad(this, tracks[part.TrackNo]);
+            }
+        }
+
         public void Validate() {
             foreach (var part in parts) {
-                part.Validate(this);
+                part.Validate(this, tracks[part.TrackNo]);
             }
         }
     }

@@ -10,6 +10,7 @@ namespace OpenUtau.Core.Ustx {
 
         [JsonProperty] public int TrackNo;
         [JsonProperty] public int PosTick = 0;
+
         public virtual int DurTick { set; get; }
         public int EndTick { get { return PosTick + DurTick; } }
 
@@ -17,7 +18,9 @@ namespace OpenUtau.Core.Ustx {
 
         public abstract int GetMinDurTick(UProject project);
 
-        public virtual void Validate(UProject project) { }
+        public virtual void AfterLoad(UProject project, UTrack track) { }
+
+        public virtual void Validate(UProject project, UTrack track) { }
     }
 
     [JsonObject(MemberSerialization.OptIn)]
@@ -30,11 +33,35 @@ namespace OpenUtau.Core.Ustx {
             return durTick;
         }
 
-        public override void Validate(UProject project) {
+        public override void AfterLoad(UProject project, UTrack track) {
             foreach (var note in notes) {
-                note.Validate(project);
+                note.AfterLoad(project, track, this);
             }
             DurTick = GetMinDurTick(project) + project.resolution;
+        }
+
+        public override void Validate(UProject project, UTrack track) {
+            UNote lastNote = null;
+            UPhoneme lastPhoneme = null;
+            foreach (UNote note in notes) {
+                note.Prev = lastNote;
+                note.Next = null;
+                if (lastNote != null) {
+                    lastNote.Next = note;
+                }
+                foreach (var phoneme in note.phonemes) {
+                    phoneme.Prev = lastPhoneme;
+                    phoneme.Next = null;
+                    if (lastPhoneme != null) {
+                        lastPhoneme.Next = phoneme;
+                    }
+                    lastPhoneme = phoneme;
+                }
+                lastNote = note;
+            }
+            foreach (UNote note in notes) {
+                note.Validate(project, track, this);
+            }
         }
     }
 

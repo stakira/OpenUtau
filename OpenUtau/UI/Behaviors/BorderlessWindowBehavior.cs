@@ -26,7 +26,7 @@ namespace OpenUtau.UI.Behaviors
 
         void AddHwndSourceHook()
         {
-            System.IntPtr handle = (new WinInterop.WindowInteropHelper((Window)AssociatedObject)).EnsureHandle();
+            System.IntPtr handle = (new WinInterop.WindowInteropHelper(AssociatedObject)).EnsureHandle();
             WinInterop.HwndSource.FromHwnd(handle).AddHook(new WinInterop.HwndSourceHook(WindowProc));
         }
 

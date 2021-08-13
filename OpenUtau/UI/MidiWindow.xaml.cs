@@ -99,7 +99,7 @@ namespace OpenUtau.UI {
                     DocManager.Inst.EndUndoGroup();
                 } else if (o == pitchCxtMenu.Items[6]) {
                     DocManager.Inst.StartUndoGroup();
-                    DocManager.Inst.ExecuteCmd(new AddPitchPointCommand(pitHit.Note, new PitchPoint((float)pitHit.X, pitHit.Y), pitHit.Index + 1));
+                    DocManager.Inst.ExecuteCmd(new AddPitchPointCommand(pitHit.Note, new PitchPoint(pitHit.X, pitHit.Y), pitHit.Index + 1));
                     DocManager.Inst.EndUndoGroup();
                 } else {
                     PitchPointShape shape =

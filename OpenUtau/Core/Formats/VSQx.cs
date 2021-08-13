@@ -88,15 +88,14 @@ namespace OpenUtau.Core.Formats {
             int partPosTickShift = -preMeasure * uproject.resolution * uproject.beatPerBar * 4 / uproject.beatUnit;
 
             USinger usinger = new USinger("");
-            uproject.singers.Add(usinger);
 
             foreach (XmlNode track in root.SelectNodes(trackPath, nsmanager)) // track
             {
                 UTrack utrack = new UTrack() { Singer = usinger, TrackNo = uproject.tracks.Count };
                 uproject.tracks.Add(utrack);
 
-                utrack.Name = track.SelectSingleNode(tracknamePath, nsmanager).InnerText;
-                utrack.Comment = track.SelectSingleNode(trackcommentPath, nsmanager).InnerText;
+                //utrack.Name = track.SelectSingleNode(tracknamePath, nsmanager).InnerText;
+                //utrack.Comment = track.SelectSingleNode(trackcommentPath, nsmanager).InnerText;
                 utrack.TrackNo = int.Parse(track.SelectSingleNode(tracknoPath, nsmanager).InnerText);
 
                 foreach (XmlNode part in track.SelectNodes(partPath, nsmanager)) // musical part

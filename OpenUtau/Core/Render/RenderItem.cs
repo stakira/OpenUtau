@@ -42,13 +42,13 @@ namespace OpenUtau.Core.Render {
         public RenderEngine.Progress progress;
 
         public RenderItem(UPhoneme phoneme, UVoicePart part, UProject project) {
-            SourceFile = phoneme.Oto.File;
+            SourceFile = phoneme.oto.File;
             SourceFile = Path.Combine(PathManager.Inst.InstalledSingersPath, SourceFile);
 
             var strechRatio = Math.Pow(2, 1.0 - phoneme.Parent.expressions["vel"].value / 100);
-            var length = phoneme.Oto.Preutter * strechRatio + phoneme.envelope.data[4].X;
+            var length = phoneme.oto.Preutter * strechRatio + phoneme.envelope.data[4].X;
             var requiredLength = Math.Ceiling(length / 50 + 1) * 50;
-            var lengthAdjustment = phoneme.TailIntrude == 0 ? phoneme.preutter : phoneme.preutter - phoneme.TailIntrude + phoneme.TailOverlap;
+            var lengthAdjustment = phoneme.tailIntrude == 0 ? phoneme.preutter : phoneme.preutter - phoneme.tailIntrude + phoneme.tailOverlap;
 
             NoteNum = phoneme.Parent.noteNum;
             Velocity = (int)phoneme.Parent.expressions["vel"].value;
@@ -56,10 +56,10 @@ namespace OpenUtau.Core.Render {
             StrFlags = phoneme.Parent.GetResamplerFlags();
             PitchData = BuildPitchData(phoneme, part);
             RequiredLength = (int)requiredLength;
-            Oto = phoneme.Oto;
+            Oto = phoneme.oto;
             Tempo = project.bpm;
 
-            SkipOver = phoneme.Oto.Preutter * strechRatio - phoneme.preutter;
+            SkipOver = phoneme.oto.Preutter * strechRatio - phoneme.preutter;
             PosMs = project.TickToMillisecond(part.PosTick + phoneme.Parent.position + phoneme.position) - phoneme.preutter;
             DurMs = project.TickToMillisecond(phoneme.Duration) + lengthAdjustment;
             Envelope = phoneme.envelope.data;
@@ -94,8 +94,8 @@ namespace OpenUtau.Core.Render {
             // Get relevant pitch points
             var pps = new List<PitchPoint>();
 
-            var lastNoteInvolved = lastNote != null && phoneme.Overlapped;
-            var nextNoteInvolved = nextNote != null && nextNote.phonemes[0].Overlapped;
+            var lastNoteInvolved = lastNote != null && phoneme.overlapped;
+            var nextNoteInvolved = nextNote != null && nextNote.phonemes[0].overlapped;
 
             double lastVibratoStartMs = 0;
             double lastVibratoEndMs = 0;
@@ -135,9 +135,9 @@ namespace OpenUtau.Core.Render {
                 }
             }
 
-            var startMs = (float)(DocManager.Inst.Project.TickToMillisecond(phoneme.position) - phoneme.Oto.Preutter);
+            var startMs = (float)(DocManager.Inst.Project.TickToMillisecond(phoneme.position) - phoneme.oto.Preutter);
             var endMs = (float)DocManager.Inst.Project.TickToMillisecond(phoneme.Duration) -
-                (nextNote != null && nextNote.phonemes[0].Overlapped ? nextNote.phonemes[0].preutter - nextNote.phonemes[0].overlap : 0);
+                (nextNote != null && nextNote.phonemes[0].overlapped ? nextNote.phonemes[0].preutter - nextNote.phonemes[0].overlap : 0);
             if (pps.Count > 0) {
                 if (pps.First().X > startMs) {
                     pps.Insert(0, new PitchPoint(startMs, pps.First().Y));

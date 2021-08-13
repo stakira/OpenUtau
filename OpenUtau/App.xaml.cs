@@ -38,7 +38,7 @@ namespace OpenUtau {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Information()
                 .WriteTo.Console()
-                .WriteTo.File("log.txt", rollingInterval: RollingInterval.Day)
+                .WriteTo.File("log.txt", rollingInterval: RollingInterval.Day, encoding: System.Text.Encoding.UTF8)
                 .CreateLogger();
             NBug.Settings.ReleaseMode = true;
             NBug.Settings.StoragePath = NBug.Enums.StoragePath.CurrentDirectory;

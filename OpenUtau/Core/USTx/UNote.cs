@@ -17,6 +17,8 @@ namespace OpenUtau.Core.Ustx {
 
         public int End { get { return position + duration; } }
         public bool Selected { get; set; } = false;
+        public UNote Prev { get; set; }
+        public UNote Next { get; set; }
         public bool Error { get; set; } = false;
 
         public static UNote Create() {
@@ -48,16 +50,31 @@ namespace OpenUtau.Core.Ustx {
             return $"\"{lyric}\" Pos:{position} Dur:{duration} Note:{noteNum}{(Error ? " Error" : string.Empty)}{(Selected ? " Selected" : string.Empty)}";
         }
 
-        public void Validate(UProject project) {
-            int lastPosition = duration;
-            for (var i = phonemes.Count - 1; i >= 0; --i) {
-                var phoneme = phonemes[i];
-                phoneme.Parent = this;
-                phoneme.Duration = lastPosition - phoneme.position;
-                phoneme.Validate();
-            }
+        public void AfterLoad(UProject project, UTrack track, UVoicePart part) {
             foreach (var pair in expressions) {
                 pair.Value.descriptor = project.expressions[pair.Key];
+            }
+        }
+
+        public void Validate(UProject project, UTrack track, UVoicePart part) {
+            if (Prev != null && Prev.End > position) {
+                Error = true;
+                return;
+            }
+            Error = false;
+            if (pitch.snapFirst) {
+                if (Prev != null && Prev.End == position) {
+                    pitch.data[0].Y = (Prev.noteNum - noteNum) * 10;
+                } else {
+                    pitch.data[0].Y = 0;
+                }
+            }
+            foreach (var phoneme in phonemes) {
+                phoneme.Parent = this;
+            }
+            foreach (var phoneme in phonemes) {
+                phoneme.Validate(project, track, part, this);
+                Error |= phoneme.Error;
             }
         }
     }

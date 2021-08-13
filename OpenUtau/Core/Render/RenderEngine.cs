@@ -84,7 +84,7 @@ namespace OpenUtau.Core.Render {
             progress.Clear();
             foreach (var note in part.notes) {
                 foreach (var phoneme in note.phonemes) {
-                    if (string.IsNullOrEmpty(phoneme.Oto.File)) {
+                    if (string.IsNullOrEmpty(phoneme.oto.File)) {
                         Log.Warning($"Cannot find phoneme in note {note.lyric}");
                         continue;
                     }

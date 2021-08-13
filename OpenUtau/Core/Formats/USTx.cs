@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OpenUtau.Core.Ustx;
@@ -22,21 +23,23 @@ namespace OpenUtau.Core.Formats {
 
         public static void Save(string filePath, UProject project) {
             project.ustxVersion = kUstxVersion;
+            project.BeforeSave();
             File.WriteAllText(filePath, JsonConvert.SerializeObject(
                 project,
                 Formatting.Indented,
                 new VersionConverter(),
                 new UPartConverter(),
-                new UExpressionConverter()));
+                new UExpressionConverter()), Encoding.UTF8);
         }
 
         public static UProject Load(string filePath) {
             UProject project = JsonConvert.DeserializeObject<UProject>(
-                File.ReadAllText(filePath),
+                File.ReadAllText(filePath, Encoding.UTF8),
                 new VersionConverter(),
                 new UPartConverter(),
                 new UExpressionConverter());
             project.filePath = filePath;
+            project.AfterLoad();
             project.Validate();
             return project;
         }
@@ -77,7 +80,7 @@ namespace OpenUtau.Core.Formats {
         }
 
         public override void WriteJson(JsonWriter writer, UExpression value, JsonSerializer serializer) {
-            var exp = value as UExpression;
+            var exp = value;
             writer.WriteValue(exp.value);
         }
     }
