@@ -302,13 +302,13 @@ namespace OpenUtau.Core.Formats {
             if (!string.IsNullOrWhiteSpace(pbs)) {
                 var points = note.pitch.data;
                 points.Clear();
-                if (pbs.Contains(';')) {
-                    points.Add(new PitchPoint(float.Parse(pbs.Split(';')[0]), float.Parse(pbs.Split(';')[1])));
-                    note.pitch.snapFirst = false;
-                } else {
-                    points.Add(new PitchPoint(float.Parse(pbs), 0));
-                    note.pitch.snapFirst = true;
-                }
+                // PBS
+                var parts = pbs.Split(';');
+                float pbsX = parts.Length >= 1 && float.TryParse(parts[0], out pbsX) ? pbsX : 0;
+                float pbsY = parts.Length >= 2 && float.TryParse(parts[1], out pbsY) ? pbsY : 0;
+                points.Add(new PitchPoint(pbsX, pbsY));
+                note.pitch.snapFirst = parts.Length < 2;
+                // PBW, PBY
                 var x = points.First().X;
                 if (!string.IsNullOrWhiteSpace(pbw)) {
                     var w = pbw.Split(',').Select(s => string.IsNullOrEmpty(s) ? 0 : float.Parse(s)).ToList();
@@ -321,8 +321,9 @@ namespace OpenUtau.Core.Formats {
                         points.Add(new PitchPoint(x, y[i]));
                     }
                 }
+                // PBM
                 if (!string.IsNullOrWhiteSpace(pbm)) {
-                    var m = pbw.Split(new[] { ',' });
+                    var m = pbm.Split(new[] { ',' });
                     for (var i = 0; i < m.Count() - 1; i++) {
                         switch (m[i]) {
                             case "r":
