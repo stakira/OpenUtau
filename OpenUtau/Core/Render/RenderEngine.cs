@@ -22,11 +22,11 @@ namespace OpenUtau.Core.Render {
 
             public void CompleteOne(string info) {
                 completed++;
-                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(completed * 100.0 / total, info), true);
+                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(completed * 100.0 / total, info));
             }
 
             public void Clear() {
-                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, string.Empty), true);
+                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, string.Empty));
             }
         }
 

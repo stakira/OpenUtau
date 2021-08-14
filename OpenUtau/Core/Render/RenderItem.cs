@@ -45,14 +45,16 @@ namespace OpenUtau.Core.Render {
             SourceFile = phoneme.oto.File;
             SourceFile = Path.Combine(PathManager.Inst.InstalledSingersPath, SourceFile);
 
-            var strechRatio = Math.Pow(2, 1.0 - phoneme.Parent.expressions["vel"].value / 100);
+            float vel = phoneme.Parent.expressions["vel"].value;
+            float vol = phoneme.Parent.expressions["vol"].value;
+            var strechRatio = Math.Pow(2, 1.0 - vel / 100);
             var length = phoneme.oto.Preutter * strechRatio + phoneme.envelope.data[4].X;
             var requiredLength = Math.Ceiling(length / 50 + 1) * 50;
             var lengthAdjustment = phoneme.tailIntrude == 0 ? phoneme.preutter : phoneme.preutter - phoneme.tailIntrude + phoneme.tailOverlap;
 
             NoteNum = phoneme.Parent.noteNum;
-            Velocity = (int)phoneme.Parent.expressions["vel"].value;
-            Volume = (int)phoneme.Parent.expressions["vol"].value;
+            Velocity = (int)vel;
+            Volume = (int)vol;
             StrFlags = phoneme.Parent.GetResamplerFlags();
             PitchData = BuildPitchData(phoneme, part);
             RequiredLength = (int)requiredLength;

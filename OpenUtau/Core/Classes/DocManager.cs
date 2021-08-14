@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using System.Collections.Generic;
 using System.Linq;
-
 using OpenUtau.Core.Lib;
 using OpenUtau.Core.Ustx;
 using Serilog;
@@ -48,13 +47,18 @@ namespace OpenUtau.Core {
             }
         }
 
-        public void ExecuteCmd(UCommand cmd, bool quiet = false) {
+        public void ExecuteCmd(UCommand cmd) {
             if (cmd is UNotification) {
                 if (cmd is SaveProjectNotification) {
                     var _cmd = cmd as SaveProjectNotification;
-                    if (undoQueue.Count > 0) savedPoint = undoQueue.Last();
-                    if (string.IsNullOrEmpty(_cmd.Path)) OpenUtau.Core.Formats.Ustx.Save(Project.filePath, Project);
-                    else OpenUtau.Core.Formats.Ustx.Save(_cmd.Path, Project);
+                    if (undoQueue.Count > 0) {
+                        savedPoint = undoQueue.Last();
+                    }
+                    if (string.IsNullOrEmpty(_cmd.Path)) {
+                        Formats.Ustx.Save(Project.filePath, Project);
+                    } else {
+                        Formats.Ustx.Save(_cmd.Path, Project);
+                    }
                 } else if (cmd is LoadProjectNotification notification) {
                     undoQueue.Clear();
                     redoQueue.Clear();
@@ -69,41 +73,74 @@ namespace OpenUtau.Core {
                     SearchAllSingers();
                 }
                 Publish(cmd);
-                if (!quiet) System.Diagnostics.Debug.WriteLine("Publish notification " + cmd.ToString());
+                if (!cmd.Silent) {
+                    Log.Information($"Publish notification {cmd}");
+                }
                 return;
-            } else if (undoGroup == null) { System.Diagnostics.Debug.WriteLine("Null undoGroup"); return; } else {
-                undoGroup.Commands.Add(cmd);
-                cmd.Execute();
-                Publish(cmd);
             }
-            if (!quiet) System.Diagnostics.Debug.WriteLine("ExecuteCmd " + cmd.ToString());
+            if (undoGroup == null) {
+                Log.Error($"No active UndoGroup {cmd}");
+                return;
+            }
+            undoGroup.Commands.Add(cmd);
+            cmd.Execute();
+            if (!cmd.Silent) {
+                Log.Information($"ExecuteCmd {cmd}");
+            }
+            Publish(cmd);
+            Project.Validate();
         }
 
         public void StartUndoGroup() {
-            if (undoGroup != null) { System.Diagnostics.Debug.WriteLine("undoGroup already started"); EndUndoGroup(); }
+            if (undoGroup != null) {
+                Log.Error("undoGroup already started");
+                EndUndoGroup();
+            }
             undoGroup = new UCommandGroup();
-            System.Diagnostics.Debug.WriteLine("undoGroup started");
+            Log.Information("undoGroup started");
         }
 
         public void EndUndoGroup() {
-            if (undoGroup != null && undoGroup.Commands.Count > 0) { undoQueue.AddToBack(undoGroup); redoQueue.Clear(); }
-            if (undoQueue.Count > Core.Util.Preferences.Default.UndoLimit) undoQueue.RemoveFromFront();
+            if (undoGroup == null) {
+                Log.Error("No active undoGroup to end.");
+                return;
+            }
+            if (undoGroup.Commands.Count > 0) {
+                undoQueue.AddToBack(undoGroup);
+                redoQueue.Clear();
+            }
+            while (undoQueue.Count > Util.Preferences.Default.UndoLimit) {
+                undoQueue.RemoveFromFront();
+            }
             undoGroup = null;
-            System.Diagnostics.Debug.WriteLine("undoGroup ended");
+            Log.Information("undoGroup ended");
         }
 
         public void Undo() {
-            if (undoQueue.Count == 0) return;
-            var cmdg = undoQueue.RemoveFromBack();
-            for (int i = cmdg.Commands.Count - 1; i >= 0; i--) { var cmd = cmdg.Commands[i]; cmd.Unexecute(); if (!(cmd is NoteCommand)) Publish(cmd, true); }
-            redoQueue.AddToBack(cmdg);
+            if (undoQueue.Count == 0) {
+                return;
+            }
+            var group = undoQueue.RemoveFromBack();
+            for (int i = group.Commands.Count - 1; i >= 0; i--) {
+                var cmd = group.Commands[i];
+                cmd.Unexecute();
+                Publish(cmd, true);
+            }
+            redoQueue.AddToBack(group);
+            Project.Validate();
         }
 
         public void Redo() {
-            if (redoQueue.Count == 0) return;
-            var cmdg = redoQueue.RemoveFromBack();
-            foreach (var cmd in cmdg.Commands) { cmd.Execute(); Publish(cmd); }
-            undoQueue.AddToBack(cmdg);
+            if (redoQueue.Count == 0) {
+                return;
+            }
+            var group = redoQueue.RemoveFromBack();
+            foreach (var cmd in group.Commands) {
+                cmd.Execute();
+                Publish(cmd);
+            }
+            undoQueue.AddToBack(group);
+            Project.Validate();
         }
 
         # endregion

@@ -23,13 +23,38 @@ namespace OpenUtau.UI.Controls {
 
         public override UVoicePart Part { set { _part = value; ClearFormattedTextPool(); MarkUpdate(); } get { return _part; } }
 
-        public OpenUtau.UI.Models.MidiViewModel midiVM;
+        public Models.MidiViewModel midiVM;
 
         protected Pen penPit;
 
-        protected Dictionary<string, FormattedText> fTextPool = new Dictionary<string, FormattedText>();
-        protected Dictionary<string, double> fTextWidths = new Dictionary<string, double>();
-        protected Dictionary<string, double> fTextHeights = new Dictionary<string, double>();
+        #region FormattedText cache
+
+        protected class FormattedTextItem {
+            public FormattedText fText;
+            public double width;
+            public double height;
+        }
+        protected static Dictionary<Tuple<string, bool>, FormattedTextItem> fTextPool2 = new Dictionary<Tuple<string, bool>, FormattedTextItem>();
+        protected static FormattedTextItem GetFormattedText(string text, bool white) {
+            var key = Tuple.Create(text, white);
+            if (!fTextPool2.TryGetValue(key, out var fTextItem)) {
+                var fText = new FormattedText(
+                       text,
+                       System.Threading.Thread.CurrentThread.CurrentUICulture,
+                       FlowDirection.LeftToRight,
+                       SystemFonts.CaptionFontFamily.GetTypefaces().First(),
+                       12, white ? Brushes.White : Brushes.Black, 1);
+                fTextItem = new FormattedTextItem {
+                    fText = fText,
+                    width = fText.Width,
+                    height = fText.Height,
+                };
+                fTextPool2.Add(key, fTextItem);
+            }
+            return fTextItem;
+        }
+
+        #endregion
 
         private readonly Geometry vibratoIcon = Geometry.Parse("M3 18 L4 19 L7 16 L12 21 L17 16 L22 21 L29 14 L28 13 L25 16 L20 11 L15 16 L10 11 Z");
 
@@ -60,9 +85,7 @@ namespace OpenUtau.UI.Controls {
         }
 
         private void ClearFormattedTextPool() {
-            fTextPool.Clear();
-            fTextWidths.Clear();
-            fTextHeights.Clear();
+            fTextPool2.Clear();
         }
 
         private void DrawNote(UNote note, DrawingContext cxt) {
@@ -87,30 +110,18 @@ namespace OpenUtau.UI.Controls {
                 if (note.lyric.Length == 0) return;
                 string displayLyric = note.lyric;
 
-                if (!fTextPool.ContainsKey(displayLyric)) AddToFormattedTextPool(displayLyric);
-                var fText = fTextPool[displayLyric];
+                var fTextItem = GetFormattedText(displayLyric, true);
 
-                if (fTextWidths[displayLyric] + 5 > width) {
+                if (fTextItem.width + 5 > width) {
                     displayLyric = note.lyric[0] + "..";
-                    if (!fTextPool.ContainsKey(displayLyric)) AddToFormattedTextPool(displayLyric);
-                    fText = fTextPool[displayLyric];
-                    if (fTextWidths[displayLyric] + 5 > width) return;
+                    fTextItem = GetFormattedText(displayLyric, true);
+                    if (fTextItem.width + 5 > width) {
+                        return;
+                    }
                 }
 
-                cxt.DrawText(fText, new Point((int)left + 5, Math.Round(top + (height - fTextHeights[displayLyric]) / 2)));
+                cxt.DrawText(fTextItem.fText, new Point((int)left + 5, Math.Round(top + (height - fTextItem.height) / 2)));
             }
-        }
-
-        protected virtual void AddToFormattedTextPool(string text) {
-            var fText = new FormattedText(
-                    text,
-                    System.Threading.Thread.CurrentThread.CurrentUICulture,
-                    FlowDirection.LeftToRight, SystemFonts.CaptionFontFamily.GetTypefaces().First(),
-                    12,
-                    Brushes.White);
-            fTextPool.Add(text, fText);
-            fTextWidths.Add(text, fText.Width);
-            fTextHeights.Add(text, fText.Height);
         }
 
         private void DrawVibrato(UNote note, DrawingContext cxt) {

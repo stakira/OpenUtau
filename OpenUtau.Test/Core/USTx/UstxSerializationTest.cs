@@ -59,32 +59,7 @@ namespace OpenUtau.Core.Ustx {
     {
       'position': 0,
       'phoneme': 'a',
-      'preutter': 0.0,
-      'overlap': 0.0,
-      'envelope': {
-        'data': [
-          {
-            'X': 0.0,
-            'Y': 0.0
-          },
-          {
-            'X': 0.0,
-            'Y': 100.0
-          },
-          {
-            'X': 0.0,
-            'Y': 100.0
-          },
-          {
-            'X': 0.0,
-            'Y': 100.0
-          },
-          {
-            'X': 0.0,
-            'Y': 0.0
-          }
-        ]
-      }
+      'autoRemap': true
     }
   ],
   'pit': {
@@ -121,8 +96,6 @@ namespace OpenUtau.Core.Ustx {
             Assert.Single(actual.phonemes);
             Assert.Equal(0, actual.phonemes[0].position);
             Assert.Equal("a", actual.phonemes[0].phoneme);
-            Assert.Equal(0, actual.phonemes[0].preutter);
-            Assert.Equal(0, actual.phonemes[0].overlap);
             Assert.Single(actual.expressions);
             var vel = actual.expressions["vel"];
             Assert.NotNull(vel);

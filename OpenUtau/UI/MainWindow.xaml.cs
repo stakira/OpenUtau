@@ -474,11 +474,7 @@ namespace OpenUtau.UI {
         }
 
         private void CmdOpenFile(string[] files) {
-            if (files.Length == 1) {
-                OpenUtau.Core.Formats.Formats.LoadProject(files[0]);
-            } else if (files.Length > 1) {
-                OpenUtau.Core.Formats.Ust.Load(files);
-            }
+            Core.Formats.Formats.LoadProject(files);
         }
 
         private void CmdSaveFile() {

@@ -32,10 +32,26 @@ namespace OpenUtau.Classic {
         public string Name;
         public string Wav;
         public string OrigWav;
+
+        // Wav layout:
+        // |-offset-|-consonant-(fixed)-|-stretched-|-cutoff-|
+        // |        |-preutter-----|
+        // |        |-overlap-|
+        // Note position:
+        // ... ----------prev-note-|-this-note-- ...
+        // Phoneme overlap:
+        // ... --prev-phoneme-\
+        //          /-this-phoneme-------------- ...
+
+        // Length of left offset.
         public double Offset;
+        // Length of unstretched consonant in wav, AKA fixed.
         public double Consonant;
+        // Length of right cutoff, AKA end blank. If negative, length of (consonant + stretched). 
         public double Cutoff;
+        // Length before note start, usually within consonant range.
         public double Preutter;
+        // Length overlap with previous note, usually within consonant range.
         public double Overlap;
 
         public override string ToString() {

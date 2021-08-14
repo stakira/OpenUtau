@@ -3,6 +3,8 @@ using System.Linq;
 
 namespace OpenUtau.Core {
     public abstract class UCommand {
+        public virtual bool Silent => false;
+
         public abstract void Execute();
         public abstract void Unexecute();
 

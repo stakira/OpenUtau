@@ -18,15 +18,18 @@ namespace OpenUtau.Core.Formats {
             }
         }
 
-        public static void Load(string[] files) {
+        public static UProject Load(string[] files) {
             var ustTracks = true;
             foreach (var file in files) {
-                if (Formats.DetectProjectFormat(file) != Core.Formats.ProjectFormats.Ust) { ustTracks = false; break; }
+                if (Formats.DetectProjectFormat(file) != ProjectFormats.Ust) {
+                    ustTracks = false;
+                    break;
+                }
             }
 
             if (!ustTracks) {
                 DocManager.Inst.ExecuteCmd(new UserMessageNotification("Multiple files must be all Ust files"));
-                return;
+                return null;
             }
 
             var projects = new List<UProject>();
@@ -34,23 +37,25 @@ namespace OpenUtau.Core.Formats {
                 projects.Add(Load(file));
             }
 
-            var bpm = projects.First().bpm;
-            var project = new UProject() { bpm = bpm, name = "Merged Project", Saved = false };
+            var project = projects.First();
+            project.name = "Merged Project";
             foreach (var p in projects) {
-                var _track = p.tracks[0];
-                var _part = p.parts[0];
-                _track.TrackNo = project.tracks.Count;
-                _part.TrackNo = _track.TrackNo;
-                project.tracks.Add(_track);
-                project.parts.Add(_part);
+                if (p == project) {
+                    continue;
+                }
+                var track = p.tracks[0];
+                var part = p.parts[0];
+                track.TrackNo = project.tracks.Count;
+                part.TrackNo = track.TrackNo;
+                project.tracks.Add(track);
+                project.parts.Add(part);
             }
-
-            if (project != null) {
-                DocManager.Inst.ExecuteCmd(new LoadProjectNotification(project));
-            }
+            project.AfterLoad();
+            project.Validate();
+            return project;
         }
 
-        public static UProject Load(string file, Encoding encoding = null) {
+        private static UProject Load(string file, Encoding encoding = null) {
             var project = new UProject() { resolution = 480, filePath = file, Saved = false };
             project.RegisterExpression(new UExpressionDescriptor("velocity", "vel", 0, 200, 100));
             project.RegisterExpression(new UExpressionDescriptor("volume", "vol", 0, 200, 100));
@@ -69,8 +74,6 @@ namespace OpenUtau.Core.Formats {
 
             part.DurTick = part.notes.Select(note => note.End).Max() + project.resolution;
 
-            project.AfterLoad();
-            project.Validate();
             return project;
         }
 
@@ -211,7 +214,7 @@ namespace OpenUtau.Core.Formats {
                         break;
                     case "VoiceOverlap":
                         error |= !isFloat;
-                        note.phonemes[0].overlap = floatValue;
+                        //note.phonemes[0].overlap = floatValue;
                         break;
                     case "PreUtterance":
                         ParsePreUtterance(note, parts[1], ustBlock[i]);
@@ -260,7 +263,7 @@ namespace OpenUtau.Core.Formats {
             if (!float.TryParse(ust, out float preutter)) {
                 throw new FileFormatException($"Invalid PreUtterance\n${ustLine}");
             }
-            note.phonemes[0].preutter = preutter; // Currently unused, overwritten by oto.
+            //note.phonemes[0].preutter = preutter; // Currently unused, overwritten by oto.
         }
 
         private static void ParseEnvelope(UNote note, string ust, UstLine ustLine) {

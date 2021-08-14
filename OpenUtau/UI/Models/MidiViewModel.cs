@@ -13,25 +13,21 @@ using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using OpenUtau.UI.Controls;
 
-namespace OpenUtau.UI.Models
-{
-    class MidiViewModel : INotifyPropertyChanged, ICmdSubscriber
-    {
+namespace OpenUtau.UI.Models {
+    class MidiViewModel : INotifyPropertyChanged, ICmdSubscriber {
         # region Properties
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected void OnPropertyChanged(string name)
-        {
+        protected void OnPropertyChanged(string name) {
             PropertyChangedEventHandler handler = PropertyChanged;
-            if (handler != null)
-            {
+            if (handler != null) {
                 handler(this, new PropertyChangedEventArgs(name));
             }
         }
 
         public UProject Project { get { return DocManager.Inst.Project; } }
-        
+
         UVoicePart _part;
         public UVoicePart Part { get { return _part; } }
 
@@ -65,20 +61,16 @@ namespace OpenUtau.UI.Models
         public double TotalHeight { get { return UIConstants.MaxNoteNum * _trackHeight - _viewHeight; } }
         public double TotalWidth { get { return _quarterCount * _quarterWidth - _viewWidth; } }
         public double QuarterCount { set { _quarterCount = value; HorizontalPropertiesChanged(); } get { return _quarterCount; } }
-        public double TrackHeight
-        {
-            set
-            {
+        public double TrackHeight {
+            set {
                 _trackHeight = Math.Max(ViewHeight / UIConstants.MaxNoteNum, Math.Max(UIConstants.NoteMinHeight, Math.Min(UIConstants.NoteMaxHeight, value)));
                 VerticalPropertiesChanged();
             }
             get { return _trackHeight; }
         }
 
-        public double QuarterWidth
-        {
-            set
-            {
+        public double QuarterWidth {
+            set {
                 _quarterWidth = Math.Max(ViewWidth / QuarterCount, Math.Max(UIConstants.MidiQuarterMinWidth, Math.Min(UIConstants.MidiQuarterMaxWidth, value)));
                 HorizontalPropertiesChanged();
             }
@@ -89,8 +81,24 @@ namespace OpenUtau.UI.Models
         public double ViewHeight { set { _viewHeight = value; VerticalPropertiesChanged(); TrackHeight = TrackHeight; OffsetY = OffsetY; } get { return _viewHeight; } }
         public double OffsetX { set { _offsetX = Math.Min(TotalWidth, Math.Max(0, value)); HorizontalPropertiesChanged(); } get { return _offsetX; } }
         public double OffsetY { set { _offsetY = Math.Min(TotalHeight, Math.Max(0, value)); VerticalPropertiesChanged(); } get { return _offsetY; } }
-        public double ViewportSizeX { get { if (TotalWidth < 1) return 10000; else return ViewWidth * (TotalWidth + ViewWidth) / TotalWidth; } }
-        public double ViewportSizeY { get { if (TotalHeight < 1) return 10000; else return ViewHeight * (TotalHeight + ViewHeight) / TotalHeight; } }
+        public double ViewportSizeX {
+            get {
+                if (TotalWidth < 1) {
+                    return 10000;
+                } else {
+                    return ViewWidth * (TotalWidth + ViewWidth) / TotalWidth;
+                }
+            }
+        }
+        public double ViewportSizeY {
+            get {
+                if (TotalHeight < 1) {
+                    return 10000;
+                } else {
+                    return ViewHeight * (TotalHeight + ViewHeight) / TotalHeight;
+                }
+            }
+        }
         public double SmallChangeX { get { return ViewportSizeX / 10; } }
         public double SmallChangeY { get { return ViewportSizeY / 10; } }
         public double QuarterOffset { set { _quarterOffset = value; HorizontalPropertiesChanged(); } get { return _quarterOffset; } }
@@ -102,8 +110,7 @@ namespace OpenUtau.UI.Models
         public Visibility PhonemeVisibility { get { return _showPhoneme ? Visibility.Visible : Visibility.Collapsed; } }
         public bool Snap { set { _snap = value; OnPropertyChanged("Snap"); } get { return _snap; } }
 
-        public void HorizontalPropertiesChanged()
-        {
+        public void HorizontalPropertiesChanged() {
             OnPropertyChanged("QuarterWidth");
             OnPropertyChanged("TotalWidth");
             OnPropertyChanged("OffsetX");
@@ -117,8 +124,7 @@ namespace OpenUtau.UI.Models
             MarkUpdate();
         }
 
-        public void VerticalPropertiesChanged()
-        {
+        public void VerticalPropertiesChanged() {
             OnPropertyChanged("TrackHeight");
             OnPropertyChanged("TotalHeight");
             OnPropertyChanged("OffsetY");
@@ -136,41 +142,43 @@ namespace OpenUtau.UI.Models
 
         public MidiViewModel() { }
 
-        public void RedrawIfUpdated()
-        {
-            if (_updated)
-            {
-                if (visibleExpElement != null)
-                {
+        public void RedrawIfUpdated() {
+            if (_updated) {
+                if (visibleExpElement != null) {
                     visibleExpElement.X = -OffsetX;
                     visibleExpElement.ScaleX = QuarterWidth / Project.resolution;
                     visibleExpElement.VisualHeight = ExpCanvas.ActualHeight;
                 }
-                if (shadowExpElement != null)
-                {
+                if (shadowExpElement != null) {
                     shadowExpElement.X = -OffsetX;
                     shadowExpElement.ScaleX = QuarterWidth / Project.resolution;
                     shadowExpElement.VisualHeight = ExpCanvas.ActualHeight;
                 }
-                if (notesElement != null)
-                {
+                if (notesElement != null) {
                     notesElement.X = -OffsetX;
                     notesElement.Y = -OffsetY;
                     notesElement.VisualHeight = MidiCanvas.ActualHeight;
                     notesElement.TrackHeight = TrackHeight;
                     notesElement.QuarterWidth = QuarterWidth;
                 }
-                if (phonemesElement != null)
-                {
+                if (phonemesElement != null) {
                     phonemesElement.X = -OffsetX;
                     phonemesElement.QuarterWidth = QuarterWidth;
                 }
                 updatePlayPosMarker();
             }
             _updated = false;
-            foreach (var pair in expElements) pair.Value.RedrawIfUpdated();
-            if (notesElement != null) notesElement.RedrawIfUpdated();
-            if (phonemesElement != null && ShowPhoneme) phonemesElement.RedrawIfUpdated();
+            foreach (var pair in expElements) {
+                pair.Value.RedrawIfUpdated();
+            }
+
+            if (notesElement != null) {
+                notesElement.RedrawIfUpdated();
+            }
+
+            if (phonemesElement != null && ShowPhoneme) {
+                phonemesElement.RedrawIfUpdated();
+            }
         }
 
         # region PlayPosMarker
@@ -179,20 +187,16 @@ namespace OpenUtau.UI.Models
         Path playPosMarker;
         Rectangle playPosMarkerHighlight;
 
-        private void initPlayPosMarker()
-        {
+        private void initPlayPosMarker() {
             playPosTick = DocManager.Inst.playPosTick;
-            if (playPosMarker == null)
-            {
-                playPosMarker = new Path()
-                {
+            if (playPosMarker == null) {
+                playPosMarker = new Path() {
                     Fill = ThemeManager.TickLineBrushDark,
                     Data = Geometry.Parse("M 0 0 L 13 0 L 13 3 L 6.5 9 L 0 3 Z")
                 };
                 TimelineCanvas.Children.Add(playPosMarker);
 
-                playPosMarkerHighlight = new Rectangle()
-                {
+                playPosMarkerHighlight = new Rectangle() {
                     Fill = ThemeManager.TickLineBrushDark,
                     Opacity = 0.25,
                     Width = 32
@@ -202,8 +206,7 @@ namespace OpenUtau.UI.Models
             }
         }
 
-        public void updatePlayPosMarker()
-        {
+        public void updatePlayPosMarker() {
             double quarter = (double)(playPosTick - Part.PosTick) / DocManager.Inst.Project.resolution;
             int playPosMarkerOffset = (int)Math.Round(QuarterToCanvas(quarter) + 0.5);
             Canvas.SetLeft(playPosMarker, playPosMarkerOffset - 6);
@@ -222,32 +225,62 @@ namespace OpenUtau.UI.Models
         public List<UNote> SelectedNotes = new List<UNote>();
         public List<UNote> TempSelectedNotes = new List<UNote>();
 
-        public void SelectAll() { SelectedNotes.Clear(); foreach (UNote note in Part.notes) { SelectedNotes.Add(note); note.Selected = true; } DocManager.Inst.ExecuteCmd(new RedrawNotesNotification()); }
-        public void DeselectAll() { SelectedNotes.Clear(); foreach (UNote note in Part.notes) note.Selected = false; DocManager.Inst.ExecuteCmd(new RedrawNotesNotification()); }
-
-        public void SelectNote(UNote note) { if (!SelectedNotes.Contains(note)) { SelectedNotes.Add(note); note.Selected = true; DocManager.Inst.ExecuteCmd(new RedrawNotesNotification()); } }
-        public void DeselectNote(UNote note) { SelectedNotes.Remove(note); note.Selected = false; DocManager.Inst.ExecuteCmd(new RedrawNotesNotification()); }
-
-        public void SelectTempNote(UNote note) { TempSelectedNotes.Add(note); note.Selected = true; }
-        public void TempSelectInBox(double quarter1, double quarter2, int noteNum1, int noteNum2)
-        {
-            if (quarter2 < quarter1) { double temp = quarter1; quarter1 = quarter2; quarter2 = temp; }
-            if (noteNum2 < noteNum1) { int temp = noteNum1; noteNum1 = noteNum2; noteNum2 = temp; }
-            int tick1 = (int)(quarter1 * Project.resolution);
-            int tick2 = (int)(quarter2 * Project.resolution);
-            foreach (UNote note in TempSelectedNotes) note.Selected = false;
-            TempSelectedNotes.Clear();
-            foreach (UNote note in Part.notes)
-            {
-                if (note.position <= tick2 && note.position + note.duration >= tick1 &&
-                    note.noteNum >= noteNum1 && note.noteNum <= noteNum2) SelectTempNote(note);
+        public void SelectAll() {
+            SelectedNotes.Clear();
+            SelectedNotes.AddRange(Part.notes);
+            foreach (UNote note in Part.notes) {
+                note.Selected = true;
+            }
+            DocManager.Inst.ExecuteCmd(new RedrawNotesNotification());
+        }
+        public void DeselectAll() {
+            SelectedNotes.Clear();
+            foreach (UNote note in Part.notes) {
+                note.Selected = false;
             }
             DocManager.Inst.ExecuteCmd(new RedrawNotesNotification());
         }
 
-        public void DoneTempSelect()
-        {
-            foreach (UNote note in TempSelectedNotes) SelectNote(note);
+        public void SelectNote(UNote note) {
+            if (!SelectedNotes.Contains(note)) {
+                SelectedNotes.Add(note);
+                note.Selected = true;
+                DocManager.Inst.ExecuteCmd(new RedrawNotesNotification());
+            }
+        }
+        public void DeselectNote(UNote note) {
+            SelectedNotes.Remove(note);
+            note.Selected = false;
+            DocManager.Inst.ExecuteCmd(new RedrawNotesNotification());
+        }
+
+        public void SelectTempNote(UNote note) {
+            TempSelectedNotes.Add(note);
+            note.Selected = true;
+        }
+        public void TempSelectInBox(double quarter1, double quarter2, int noteNum1, int noteNum2) {
+            if (quarter2 < quarter1) { double temp = quarter1; quarter1 = quarter2; quarter2 = temp; }
+            if (noteNum2 < noteNum1) { int temp = noteNum1; noteNum1 = noteNum2; noteNum2 = temp; }
+            int tick1 = (int)(quarter1 * Project.resolution);
+            int tick2 = (int)(quarter2 * Project.resolution);
+            foreach (UNote note in TempSelectedNotes) {
+                note.Selected = false;
+            }
+
+            TempSelectedNotes.Clear();
+            foreach (UNote note in Part.notes) {
+                if (note.position <= tick2 && note.position + note.duration >= tick1 &&
+                    note.noteNum >= noteNum1 && note.noteNum <= noteNum2) {
+                    SelectTempNote(note);
+                }
+            }
+            DocManager.Inst.ExecuteCmd(new RedrawNotesNotification());
+        }
+
+        public void DoneTempSelect() {
+            foreach (UNote note in TempSelectedNotes) {
+                SelectNote(note);
+            }
             TempSelectedNotes.Clear();
         }
 
@@ -258,20 +291,17 @@ namespace OpenUtau.UI.Models
         public double GetSnapUnit() { return Snap ? OpenUtau.Core.MusicMath.getZoomRatio(QuarterWidth, BeatPerBar, BeatUnit, MinTickWidth) : 1.0 / 96; }
         public double CanvasToQuarter(double X) { return (X + OffsetX) / QuarterWidth; }
         public double QuarterToCanvas(double X) { return X * QuarterWidth - OffsetX; }
-        public double CanvasToSnappedQuarter(double X)
-        {
+        public double CanvasToSnappedQuarter(double X) {
             double quater = CanvasToQuarter(X);
             double snapUnit = GetSnapUnit();
             return (int)(quater / snapUnit) * snapUnit;
         }
-        public double CanvasToNextSnappedQuarter(double X)
-        {
+        public double CanvasToNextSnappedQuarter(double X) {
             double quater = CanvasToQuarter(X);
             double snapUnit = GetSnapUnit();
             return (int)(quater / snapUnit) * snapUnit + snapUnit;
         }
-        public double CanvasRoundToSnappedQuarter(double X)
-        {
+        public double CanvasRoundToSnappedQuarter(double X) {
             double quater = CanvasToQuarter(X);
             double snapUnit = GetSnapUnit();
             return Math.Round(quater / snapUnit) * snapUnit;
@@ -295,49 +325,50 @@ namespace OpenUtau.UI.Models
 
         # region Cmd Handling
 
-        private void UnloadPart()
-        {
+        private void UnloadPart() {
             SelectedNotes.Clear();
             Title = "";
             _part = null;
 
-            if (notesElement != null)
-            {
+            if (notesElement != null) {
                 notesElement.Part = null;
             }
-            if (phonemesElement != null)
-            {
+            if (phonemesElement != null) {
                 phonemesElement.Part = null;
             }
 
-            foreach (var pair in expElements) { pair.Value.Part = null; pair.Value.MarkUpdate(); pair.Value.RedrawIfUpdated(); }
+            foreach (var pair in expElements) {
+                pair.Value.Part = null;
+                pair.Value.MarkUpdate();
+                pair.Value.RedrawIfUpdated();
+            }
         }
 
-        private void LoadPart(UPart part, UProject project)
-        {
-            if (part == Part) return;
-            if (!(part is UVoicePart)) return;
+        private void LoadPart(UPart part, UProject project) {
+            if (part == Part) {
+                return;
+            }
+
+            if (!(part is UVoicePart)) {
+                return;
+            }
+
             UnloadPart();
             _part = (UVoicePart)part;
 
             OnPartModified();
 
-            if (notesElement == null)
-            {
+            if (notesElement == null) {
                 notesElement = new NotesElement() { Key = "pitchbend", Part = this.Part, midiVM = this };
                 MidiCanvas.Children.Add(notesElement);
-            }
-            else
-            {
+            } else {
                 notesElement.Part = this.Part;
             }
 
-            if (phonemesElement == null)
-            {
+            if (phonemesElement == null) {
                 phonemesElement = new PhonemesElement() { Part = this.Part, midiVM = this };
                 PhonemeCanvas.Children.Add(phonemesElement);
-            }else
-            {
+            } else {
                 phonemesElement.Part = this.Part;
             }
 
@@ -345,8 +376,7 @@ namespace OpenUtau.UI.Models
             initPlayPosMarker();
         }
 
-        private void OnPartModified()
-        {
+        private void OnPartModified() {
             Title = Part.Name;
             QuarterOffset = (double)Part.PosTick / Project.resolution;
             QuarterCount = (double)Part.DurTick / Project.resolution;
@@ -357,37 +387,44 @@ namespace OpenUtau.UI.Models
             _visualDurTick = Part.DurTick;
         }
 
-        private void OnSelectExpression(UNotification cmd)
-        {
+        private void OnSelectExpression(UNotification cmd) {
             var _cmd = cmd as SelectExpressionNotification;
-            if (!expElements.ContainsKey(_cmd.ExpKey))
-            {
+            if (!expElements.ContainsKey(_cmd.ExpKey)) {
                 var expEl = new FloatExpElement() { Key = _cmd.ExpKey, Part = this.Part, midiVM = this };
                 expElements.Add(_cmd.ExpKey, expEl);
                 ExpCanvas.Children.Add(expEl);
             }
 
-            if (_cmd.UpdateShadow) shadowExpElement = visibleExpElement;
+            if (_cmd.UpdateShadow) {
+                shadowExpElement = visibleExpElement;
+            }
+
             visibleExpElement = expElements[_cmd.ExpKey];
             visibleExpElement.MarkUpdate();
             this.MarkUpdate();
 
-            foreach (var pair in expElements) pair.Value.DisplayMode = ExpDisMode.Hidden;
-            if (shadowExpElement != null) shadowExpElement.DisplayMode = ExpDisMode.Shadow;
+            foreach (var pair in expElements) {
+                pair.Value.DisplayMode = ExpDisMode.Hidden;
+            }
+
+            if (shadowExpElement != null) {
+                shadowExpElement.DisplayMode = ExpDisMode.Shadow;
+            }
+
             visibleExpElement.DisplayMode = ExpDisMode.Visible;
         }
 
-        private void OnPlayPosSet(int playPosTick)
-        {
+        private void OnPlayPosSet(int playPosTick) {
             this.playPosTick = playPosTick;
             double playPosPix = TickToCanvas(playPosTick);
-            if (playPosPix > MidiCanvas.ActualWidth * UIConstants.PlayPosMarkerMargin)
+            if (playPosPix > MidiCanvas.ActualWidth * UIConstants.PlayPosMarkerMargin) {
                 OffsetX += playPosPix - MidiCanvas.ActualWidth * UIConstants.PlayPosMarkerMargin;
+            }
+
             MarkUpdate();
         }
 
-        private void OnPitchModified()
-        {
+        private void OnPitchModified() {
             MarkUpdate();
             notesElement.MarkUpdate();
         }
@@ -396,40 +433,48 @@ namespace OpenUtau.UI.Models
 
         # region ICmdSubscriber
 
-        public void OnNext(UCommand cmd, bool isUndo)
-        {
-            if (cmd is NoteCommand)
-            {
+        public void OnNext(UCommand cmd, bool isUndo) {
+            if (cmd is NoteCommand) {
                 notesElement.MarkUpdate();
                 phonemesElement.MarkUpdate();
-            }
-            else if (cmd is PartCommand)
-            {
+            } else if (cmd is PartCommand) {
                 var _cmd = cmd as PartCommand;
-                if (_cmd.part != this.Part) return;
-                else if (_cmd is RemovePartCommand) UnloadPart();
-                else if (_cmd is ResizePartCommand) OnPartModified();
-                else if (_cmd is MovePartCommand) OnPartModified();
-            }
-            else if (cmd is ExpCommand)
-            {
-                var _cmd = cmd as ExpCommand;
-                if (_cmd is SetUExpressionCommand) expElements[_cmd.Key].MarkUpdate();
-                else if (_cmd is PitchExpCommand) OnPitchModified();
-            }
-            else if (cmd is UNotification)
-            {
-                var _cmd = cmd as UNotification;
-                if (_cmd is LoadPartNotification) LoadPart(_cmd.part, _cmd.project);
-                else if (_cmd is LoadProjectNotification) UnloadPart();
-                else if (_cmd is SelectExpressionNotification) OnSelectExpression(_cmd);
-                else if (_cmd is ShowPitchExpNotification) { }
-                else if (_cmd is HidePitchExpNotification) { }
-                else if (_cmd is RedrawNotesNotification) {
-                    if (notesElement != null) notesElement.MarkUpdate();
-                    if (phonemesElement != null) phonemesElement.MarkUpdate();
+                if (_cmd.part != this.Part) {
+                    return;
+                } else if (_cmd is RemovePartCommand) {
+                    UnloadPart();
+                } else if (_cmd is ResizePartCommand) {
+                    OnPartModified();
+                } else if (_cmd is MovePartCommand) {
+                    OnPartModified();
                 }
-                else if (_cmd is SetPlayPosTickNotification) { OnPlayPosSet(((SetPlayPosTickNotification)_cmd).playPosTick); }
+            } else if (cmd is ExpCommand) {
+                var _cmd = cmd as ExpCommand;
+                if (_cmd is SetUExpressionCommand) {
+                    expElements[_cmd.Key].MarkUpdate();
+                } else if (_cmd is PitchExpCommand) {
+                    OnPitchModified();
+                }
+            } else if (cmd is UNotification) {
+                var _cmd = cmd as UNotification;
+                if (_cmd is LoadPartNotification) {
+                    LoadPart(_cmd.part, _cmd.project);
+                } else if (_cmd is LoadProjectNotification) {
+                    UnloadPart();
+                } else if (_cmd is SelectExpressionNotification) {
+                    OnSelectExpression(_cmd);
+                } else if (_cmd is ShowPitchExpNotification) {
+                } else if (_cmd is HidePitchExpNotification) {
+                } else if (_cmd is RedrawNotesNotification) {
+                    if (notesElement != null) {
+                        notesElement.MarkUpdate();
+                    }
+                    if (phonemesElement != null) {
+                        phonemesElement.MarkUpdate();
+                    }
+                } else if (_cmd is SetPlayPosTickNotification) {
+                    OnPlayPosSet(((SetPlayPosTickNotification)_cmd).playPosTick);
+                }
             }
         }
 

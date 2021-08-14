@@ -640,8 +640,16 @@ namespace OpenUtau.UI {
         }
 
         void ICmdSubscriber.OnNext(UCommand cmd, bool isUndo) {
-            if (cmd is WillRemoveTrackNotification) {
-                Hide();
+            switch (cmd) {
+                case WillRemoveTrackNotification _:
+                    Hide();
+                    break;
+                case ExpCommand _:
+                    midiVM.notesElement.MarkUpdate();
+                    midiVM.phonemesElement.MarkUpdate();
+                    break;
+                default:
+                    break;
             }
         }
     }

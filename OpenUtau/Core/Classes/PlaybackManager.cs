@@ -140,7 +140,7 @@ namespace OpenUtau.Core {
             if (outDevice != null && outDevice.PlaybackState == PlaybackState.Playing) {
                 double ms = outDevice.GetPosition() * 1000.0 / masterMix.WaveFormat.BitsPerSample / masterMix.WaveFormat.Channels * 8 / masterMix.WaveFormat.SampleRate;
                 int tick = DocManager.Inst.Project.MillisecondToTick(ms);
-                DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(tick), true);
+                DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(tick));
             }
         }
 

@@ -7,31 +7,25 @@ using System.IO;
 
 using OpenUtau.Core.Ustx;
 
-namespace OpenUtau.Core.Formats
-{
+namespace OpenUtau.Core.Formats {
     public enum ProjectFormats { Unknown, Vsq3, Vsq4, Ust, Ustx };
 
-    static class Formats
-    {
+    static class Formats {
         const string ustMatch = "[#SETTING]";
         const string vsq3Match = VSQx.vsq3NameSpace;
         const string vsq4Match = VSQx.vsq4NameSpace;
 
-        public static ProjectFormats DetectProjectFormat(string file)
-        {
+        public static ProjectFormats DetectProjectFormat(string file) {
             if (!IsTextFile(file)) return ProjectFormats.Unknown;
             string contents = "";
             StreamReader streamReader = null;
-            try
-            {
+            try {
                 streamReader = File.OpenText(file);
                 for (int i = 0; i < 10; i++) {
                     if (streamReader.Peek() < 0) break;
                     contents += streamReader.ReadLine();
                 }
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 if (streamReader != null) streamReader.Dispose();
                 System.Windows.MessageBox.Show(e.GetType().ToString() + "\n" + e.Message);
                 return ProjectFormats.Unknown;
@@ -44,45 +38,50 @@ namespace OpenUtau.Core.Formats
             else return ProjectFormats.Unknown;
         }
 
-        public static void LoadProject(string file)
-        {
-            ProjectFormats format = DetectProjectFormat(file);
+        public static void LoadProject(string[] files) {
+            if (files.Length < 1) {
+                return;
+            }
+            ProjectFormats format = DetectProjectFormat(files[0]);
             UProject project = null;
 
-            if (format == ProjectFormats.Ustx) { project = Ustx.Load(file); }
-            else if (format == ProjectFormats.Vsq3 || format == ProjectFormats.Vsq4) { project = VSQx.Load(file); }
-            else if (format == ProjectFormats.Ust) { project = Ust.Load(file); }
-            else
-            {
-                System.Windows.MessageBox.Show("Unknown file format");
+            switch (format) {
+                case ProjectFormats.Ustx:
+                    project = Ustx.Load(files[0]);
+                    break;
+                case ProjectFormats.Vsq3:
+                case ProjectFormats.Vsq4:
+                    project = VSQx.Load(files[0]);
+                    break;
+                case ProjectFormats.Ust:
+                    project = Ust.Load(files);
+                    break;
+                default:
+                    System.Windows.MessageBox.Show("Unknown file format");
+                    break;
             }
-            if (project != null) { DocManager.Inst.ExecuteCmd(new LoadProjectNotification(project)); }
+            if (project != null) {
+                DocManager.Inst.ExecuteCmd(new LoadProjectNotification(project));
+            }
         }
 
-        public static bool IsTextFile(string file)
-        {
+        public static bool IsTextFile(string file) {
             FileStream stream = null;
-            try
-            {
+            try {
                 FileInfo info = new FileInfo(file);
                 if (info.Length > 8 * 1024 * 1024) return false;
                 stream = info.OpenRead();
                 byte[] data = new byte[1024];
                 stream.Read(data, 0, 1024);
                 int i = 1;
-                while (i < 1024 && i < info.Length)
-                {
+                while (i < 1024 && i < info.Length) {
                     if (data[i - 1] == 0 && data[i] == 0) return false;
                     i++;
                 }
                 return true;
-            }
-            catch
-            {
+            } catch {
                 return false;
-            }
-            finally
-            {
+            } finally {
                 if (stream != null) stream.Dispose();
             }
         }

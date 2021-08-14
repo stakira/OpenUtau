@@ -136,9 +136,9 @@
     <Compile Include="Classic\VoicebankInstaller.cs" />
     <Compile Include="Classic\Voicebank.cs" />
     <Compile Include="Classic\VoicebankLoader.cs" />
-    <Compile Include="Core\Classes\ProjectCommands.cs" />
+    <Compile Include="Core\Commands\ProjectCommands.cs" />
     <Compile Include="Core\Classes\PlaybackManager.cs" />
-    <Compile Include="Core\Classes\TrackCommands.cs" />
+    <Compile Include="Core\Commands\TrackCommands.cs" />
     <Compile Include="Core\Formats\Midi.cs" />
     <Compile Include="Core\Formats\Ustx.cs">
       <SubType>Code</SubType>
@@ -153,20 +153,19 @@
     <Compile Include="Core\Render\RenderItem.cs" />
     <Compile Include="Core\Render\NAudio\RenderItemSampleProvider.cs" />
     <Compile Include="Core\Render\RenderEngine.cs" />
-    <Compile Include="Core\Classes\ExpCommands.cs" />
+    <Compile Include="Core\Commands\ExpCommands.cs" />
     <Compile Include="Core\ResamplerDriver\ResamplerDriver.cs" />
     <Compile Include="Core\ResamplerDriver\DriverModels.cs" />
     <Compile Include="Core\ResamplerDriver\Factorys\CppDriver.cs" />
     <Compile Include="Core\ResamplerDriver\Factorys\ExeDriver.cs" />
     <Compile Include="Core\ResamplerDriver\Factorys\SharpDriver.cs" />
     <Compile Include="Core\Ustx\UExpression.cs" />
-    <Compile Include="Core\Classes\NoteCommands.cs" />
+    <Compile Include="Core\Commands\NoteCommands.cs" />
     <Compile Include="ThirdParty\Deque.cs" />
     <Compile Include="Core\Classes\DocManager.cs" />
-    <Compile Include="Core\Classes\Notifications.cs" />
-    <Compile Include="Core\Classes\PartCommands.cs" />
-    <Compile Include="Core\Classes\UCommand.cs" />
-    <Compile Include="Core\Classes\PartManager.cs" />
+    <Compile Include="Core\Commands\Notifications.cs" />
+    <Compile Include="Core\Commands\PartCommands.cs" />
+    <Compile Include="Core\Commands\UCommand.cs" />
     <Compile Include="Core\Ustx\UPhoneme.cs" />
     <Compile Include="Core\Ustx\USinger.cs" />
     <Compile Include="ThirdParty\FileEncoding.cs" />

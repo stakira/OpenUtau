@@ -10,16 +10,17 @@ namespace OpenUtau.Core.Ustx {
         [JsonProperty] public string phoneme = "a";
         [JsonProperty] public bool autoRemap = true;
 
-        public UEnvelope envelope = new UEnvelope();
-        public UOto oto;
-        public float preutter;
-        public float overlap;
-        public bool overlapped = false;
-        public float tailIntrude;
-        public float tailOverlap;
+        public string phonemeMapped { get; private set; }
+        public UEnvelope envelope { get; private set; } = new UEnvelope();
+        public UOto oto { get; private set; }
+        public float preutter { get; private set; }
+        public float overlap { get; private set; }
+        public bool overlapped { get; private set; }
+        public float tailIntrude { get; private set; }
+        public float tailOverlap { get; private set; }
 
         public UNote Parent { get; set; }
-        public int Duration { get; set; }
+        public int Duration { get; private set; }
         public int End { get { return position + Duration; } }
         public UPhoneme Prev { get; set; }
         public UPhoneme Next { get; set; }
@@ -56,7 +57,7 @@ namespace OpenUtau.Core.Ustx {
                 return;
             }
             // Select phoneme.
-            string phonemeMapped = phoneme;
+            phonemeMapped = phoneme;
             if (autoRemap) {
                 string noteString = MusicMath.GetNoteString(note.noteNum);
                 if (track.Singer.PitchMap.ContainsKey(noteString)) {
@@ -78,6 +79,7 @@ namespace OpenUtau.Core.Ustx {
             } else {
                 this.oto = default;
                 Error = true;
+                phonemeMapped = string.Empty;
                 overlap = 0;
                 preutter = 0;
             }
@@ -91,7 +93,7 @@ namespace OpenUtau.Core.Ustx {
                 overlapped = false;
                 return;
             }
-            int gapTick = Parent.position + position - Prev.Parent.position - Prev.End;
+            int gapTick = Parent.position + position - (Prev.Parent.position + Prev.End);
             float gapMs = (float)project.TickToMillisecond(gapTick);
             if (gapMs < preutter) {
                 overlapped = true;
@@ -111,6 +113,7 @@ namespace OpenUtau.Core.Ustx {
                 Prev.tailIntrude = 0;
                 Prev.tailOverlap = 0;
             }
+            Prev.ValidateEnvelope(project, Prev.Parent);
         }
 
         void ValidateEnvelope(UProject project, UNote note) {
@@ -127,6 +130,9 @@ namespace OpenUtau.Core.Ustx {
             p2.X = Math.Max(0f, p1.X);
             p3.X = (float)project.TickToMillisecond(Duration) - (float)tailIntrude;
             p4.X = p3.X + (float)tailOverlap;
+            if (p3.X == p4.X) {
+                p3.X -= 5f;
+            }
 
             p0.Y = 0f;
             p1.Y = vol;

@@ -45,7 +45,6 @@ namespace OpenUtau {
             NBug.Settings.UIMode = NBug.Enums.UIMode.Full;
 
             Core.DocManager.Inst.SearchAllSingers();
-            var pm = new Core.PartManager();
 
             var app = new App();
             if (!Debugger.IsAttached) {

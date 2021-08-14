@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 
@@ -90,24 +89,11 @@ namespace OpenUtau.UI.Controls {
 
                 cxt.DrawLine(penEnvSel, new Point(x, y), new Point(x, y + height));
 
-                string text = phoneme.phoneme;
-                if (!fTextPool.ContainsKey(text)) AddToFormattedTextPool(text);
-                var fText = fTextPool[text];
-                if (midiVM.QuarterWidth > UIConstants.MidiQuarterMinWidthShowPhoneme)
+                var fText = GetFormattedText(phoneme.phonemeMapped, false).fText;
+                if (midiVM.QuarterWidth > UIConstants.MidiQuarterMinWidthShowPhoneme) {
                     cxt.DrawText(fText, new Point(Math.Round(x), 8));
+                }
             }
-        }
-
-        protected override void AddToFormattedTextPool(string text) {
-            var fText = new FormattedText(
-                    text,
-                    System.Threading.Thread.CurrentThread.CurrentUICulture,
-                    FlowDirection.LeftToRight, SystemFonts.CaptionFontFamily.GetTypefaces().First(),
-                    12,
-                    Brushes.Black);
-            fTextPool.Add(text, fText);
-            fTextWidths.Add(text, fText.Width);
-            fTextHeights.Add(text, fText.Height);
         }
     }
 }
