@@ -5,14 +5,14 @@
 
     <!-- Menu -->
     <system:String x:Key="menu.file">文件</system:String>
-    <system:String x:Key="menu.file.new">新建...</system:String>
+    <system:String x:Key="menu.file.new">新建</system:String>
     <system:String x:Key="menu.file.open">打开...</system:String>
     <system:String x:Key="menu.file.openas">打开为</system:String>
     <system:String x:Key="menu.file.save">保存</system:String>
     <system:String x:Key="menu.file.saveas">另存为...</system:String>
     <system:String x:Key="menu.file.importaudio">导入音频...</system:String>
     <system:String x:Key="menu.file.importmidi">导入Midi...</system:String>
-    <system:String x:Key="menu.file.renderall">全部导出...</system:String>
+    <system:String x:Key="menu.file.exportall">导出全部</system:String>
     <system:String x:Key="menu.file.recentfiles">最近打开...</system:String>
     <system:String x:Key="menu.file.exit">退出</system:String>
 

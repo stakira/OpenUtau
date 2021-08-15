@@ -415,8 +415,17 @@ namespace OpenUtau.UI {
             }
         }
 
-        private void MenuRenderAll_Click(object sender, RoutedEventArgs e) {
-            PlaybackManager.Inst.Play(DocManager.Inst.Project);
+        private void MenuExportAll_Click(object sender, RoutedEventArgs e) {
+            var project = DocManager.Inst.Project;
+            if (string.IsNullOrEmpty(project.filePath)) {
+                MessageBox.Show(
+                    (string)FindResource("dialogs.export.savefirst"),
+                    (string)FindResource("dialogs.export.caption"),
+                    MessageBoxButton.OK,
+                    MessageBoxImage.None);
+                return;
+            }
+            PlaybackManager.Inst.RenderToFiles(project);
         }
 
         private void MenuAbout_Click(object sender, RoutedEventArgs e) {

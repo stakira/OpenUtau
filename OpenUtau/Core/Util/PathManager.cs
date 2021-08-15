@@ -10,6 +10,7 @@ namespace OpenUtau.Core {
         public const string UtauVoicePath = "%VOICE%";
         public const string DefaultSingerPath = "Singers";
         public const string DefaultCachePath = "UCache";
+        public const string kExportPath = "Export";
 
         private static PathManager _inst;
 
@@ -84,6 +85,12 @@ namespace OpenUtau.Core {
             }
 
             return cachepath;
+        }
+
+        public string GetExportPath(string filepath, int trackNo) {
+            var dir = Path.Combine(Path.GetDirectoryName(filepath), kExportPath);
+            Directory.CreateDirectory(dir);
+            return Path.Combine(dir, $"{trackNo:D2}.wav");
         }
 
         public string GetEngineSearchPath() {

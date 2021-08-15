@@ -148,7 +148,36 @@ namespace OpenUtau.Core {
             return (db == -24) ? 0 : (float)((db < -16) ? MusicMath.DecibelToLinear(db * 2 + 16) : MusicMath.DecibelToLinear(db));
         }
 
-        # region ICmdSubscriber
+        public void RenderToFiles(UProject project) {
+            FileInfo ResamplerFile = new FileInfo(PathManager.Inst.GetExportEnginePath());
+            IResamplerDriver driver = ResamplerDriver.ResamplerDriver.Load(ResamplerFile.FullName);
+            if (driver == null) {
+                return;
+            }
+            Task.Run(() => {
+                var task = Task.Run(async () => {
+                    RenderEngine engine = new RenderEngine(project, driver, cache);
+                    renderTask = engine.RenderAsync();
+                    trackSources = await renderTask;
+                    for (int i = 0; i < trackSources.Count; ++i) {
+                        var file = PathManager.Inst.GetExportPath(project.filePath, i + 1);
+                        DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exporting to {file}."));
+                        WaveFileWriter.CreateWaveFile16(file, trackSources[i]);
+                        DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exported to {file}."));
+                    }
+                    renderTask = null;
+                });
+                try {
+                    task.Wait();
+                } catch (AggregateException ae) {
+                    foreach (var e in ae.Flatten().InnerExceptions) {
+                        Log.Error(e, "Failed to render.");
+                    }
+                }
+            });
+        }
+
+        #region ICmdSubscriber
 
         public void OnNext(UCommand cmd, bool isUndo) {
             if (cmd is SeekPlayPosTickNotification) {
@@ -163,6 +192,6 @@ namespace OpenUtau.Core {
             }
         }
 
-        # endregion
+        #endregion
     }
 }

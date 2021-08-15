@@ -5,15 +5,15 @@
 
     <!-- Menu -->
     <system:String x:Key="menu.file">_File</system:String>
-    <system:String x:Key="menu.file.new">_New...</system:String>
+    <system:String x:Key="menu.file.new">_New</system:String>
     <system:String x:Key="menu.file.open">_Open...</system:String>
     <system:String x:Key="menu.file.openas">O_pen As</system:String>
     <system:String x:Key="menu.file.save">_Save</system:String>
     <system:String x:Key="menu.file.saveas">Save _As...</system:String>
     <system:String x:Key="menu.file.importaudio">_Import Audio...</system:String>
     <system:String x:Key="menu.file.importmidi">_Import Midi...</system:String>
-    <system:String x:Key="menu.file.renderall">Render All...</system:String>
-    <system:String x:Key="menu.file.recentfiles">Recent _Files</system:String>
+    <system:String x:Key="menu.file.exportall">Export All</system:String>
+    <system:String x:Key="menu.file.recentfiles">Open Recent</system:String>
     <system:String x:Key="menu.file.exit">_Exit</system:String>
 
     <system:String x:Key="menu.edit">_Edit</system:String>
@@ -57,6 +57,8 @@
     <system:String x:Key="dialogs.about.message">
         OpenUtau aims to be an open source editing environment for UTAU community, with a modern user experience and intelligent phonological support. Visit us on Github.
     </system:String>
+    <system:String x:Key="dialogs.export.caption">Export</system:String>
+    <system:String x:Key="dialogs.export.savefirst">Save project file first</system:String>
 
     <!-- Errors -->
     <system:String x:Key="errors.caption">Error</system:String>

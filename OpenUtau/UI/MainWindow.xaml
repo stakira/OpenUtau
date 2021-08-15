@@ -20,15 +20,15 @@
             <MenuItem Header="{StaticResource menu.file}">
                 <MenuItem Header="{StaticResource menu.file.new}" InputGestureText="Ctrl+N" Click="MenuNew_Click"/>
                 <MenuItem Header="{StaticResource menu.file.open}" InputGestureText="Ctrl+O" Click="MenuOpen_Click"/>
+                <MenuItem Header="{StaticResource menu.file.recentfiles}" IsEnabled="False" Visibility="Collapsed">
+                    <MenuItem Header="1.vsqx"/>
+                    <MenuItem Header="2.vsqx"/>
+                </MenuItem>
                 <MenuItem Header="{StaticResource menu.file.save}" InputGestureText="Ctrl+S" Click="MenuSave_Click"/>
                 <MenuItem Header="{StaticResource menu.file.saveas}" IsEnabled="False"/>
                 <MenuItem Header="{StaticResource menu.file.importaudio}" Click="MenuImportAudio_Click"/>
                 <MenuItem Header="{StaticResource menu.file.importmidi}" Click="MenuImportMidi_Click"/>
-                <MenuItem Header="{StaticResource menu.file.renderall}" Click="MenuRenderAll_Click"/>
-                <MenuItem Header="{StaticResource menu.file.recentfiles}" IsEnabled="False">
-                    <MenuItem Header="1.vsqx"/>
-                    <MenuItem Header="2.vsqx"/>
-                </MenuItem>
+                <MenuItem Header="{StaticResource menu.file.exportall}" Click="MenuExportAll_Click"/>
                 <MenuItem Header="{StaticResource menu.file.exit}" InputGestureText="Alt+F4" Click="MenuExit_Click"/>
             </MenuItem>
             <MenuItem Header="{StaticResource menu.tools}">
