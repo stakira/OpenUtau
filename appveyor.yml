@@ -21,3 +21,8 @@ deploy:
   on:
     branch: master
     APPVEYOR_REPO_TAG: false
+assembly_info:
+  patch: true
+  file: AssemblyInfo.cs
+  assembly_version: '{version}'
+  assembly_file_version: '{version}'

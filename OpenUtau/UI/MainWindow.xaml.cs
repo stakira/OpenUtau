@@ -429,8 +429,9 @@ namespace OpenUtau.UI {
         }
 
         private void MenuAbout_Click(object sender, RoutedEventArgs e) {
+            var version = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
             MessageBox.Show(
-                (string)FindResource("dialogs.about.message"),
+                (string)FindResource("dialogs.about.message") + $"\n\n{version}",
                 (string)FindResource("dialogs.about.caption"),
                 MessageBoxButton.OK,
                 MessageBoxImage.None);
