@@ -33,8 +33,11 @@ namespace OpenUtau.Core.Formats {
             }
 
             var projects = new List<UProject>();
+            var encoding = Encoding.GetEncoding("shift_jis");
             foreach (var file in files) {
-                projects.Add(Load(file));
+                using (var reader = new StreamReader(file, encoding)) {
+                    projects.Add(Load(reader, file));
+                }
             }
 
             var project = projects.First();
@@ -55,7 +58,7 @@ namespace OpenUtau.Core.Formats {
             return project;
         }
 
-        private static UProject Load(string file, Encoding encoding = null) {
+        public static UProject Load(StreamReader reader, string file) {
             var project = new UProject() { resolution = 480, filePath = file, Saved = false };
             project.RegisterExpression(new UExpressionDescriptor("velocity", "vel", 0, 200, 100));
             project.RegisterExpression(new UExpressionDescriptor("volume", "vol", 0, 200, 100));
@@ -69,16 +72,14 @@ namespace OpenUtau.Core.Formats {
             var part = new UVoicePart() { TrackNo = 0, PosTick = 0 };
             project.parts.Add(part);
 
-            var blocks = ReadBlocks(file, encoding ?? Encoding.GetEncoding("shift_jis"));
+            var blocks = ReadBlocks(reader, file);
             ParsePart(project, part, blocks);
-
             part.DurTick = part.notes.Select(note => note.End).Max() + project.resolution;
 
             return project;
         }
 
-        private static List<List<UstLine>> ReadBlocks(string file, Encoding encoding) {
-            var reader = new StreamReader(file, encoding);
+        private static List<List<UstLine>> ReadBlocks(StreamReader reader, string file) {
             var result = new List<List<UstLine>>();
             int lineNumber = -1;
             while (!reader.EndOfStream) {

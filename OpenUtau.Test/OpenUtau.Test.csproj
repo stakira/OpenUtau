@@ -9,6 +9,9 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="SharpCompress" Version="0.28.3" />
+    <PackageReference Include="System.IO.Packaging" Version="5.0.0" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="5.0.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -23,5 +26,9 @@
   <ItemGroup>
     <ProjectReference Include="..\OpenUtau\OpenUtau.csproj" />
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="(if not exist &quot;$(TargetDir)Usts&quot; mkdir &quot;$(TargetDir)Usts&quot;) &amp;&amp; (xcopy &quot;$(ProjectDir)Usts&quot; &quot;$(TargetDir)Usts&quot; /S /Y)" />
+  </Target>
 
 </Project>

@@ -17,7 +17,7 @@ namespace OpenUtau.Core {
 
         public int playPosTick = 0;
 
-        public Dictionary<string, USinger> Singers { get; private set; }
+        public Dictionary<string, USinger> Singers { get; private set; } = new Dictionary<string, USinger>();
         public UProject Project { get; private set; }
 
         public void SearchAllSingers() {
