@@ -35,7 +35,7 @@ namespace OpenUtau.Core.Ustx {
         public void Validate(UProject project, UTrack track, UVoicePart part, UNote note) {
             ValidateDuration(note);
             ValidateOto(track, note);
-            ValidateOverlap(project, part);
+            ValidateOverlap(project, note);
             ValidateEnvelope(project, note);
         }
 
@@ -68,51 +68,42 @@ namespace OpenUtau.Core.Ustx {
             if (track.Singer.TryGetOto(phonemeMapped, out var oto)) {
                 this.oto = oto;
                 Error = false;
-                overlap = (float)oto.Overlap;
-                preutter = (float)oto.Preutter;
-                float vel = note.expressions["vel"].value;
-                if (vel != 100) {
-                    float stretchRatio = (float)Math.Pow(2f, 1.0f - vel / 100f);
-                    overlap *= stretchRatio;
-                    preutter *= stretchRatio;
-                }
             } else {
                 this.oto = default;
                 Error = true;
                 phonemeMapped = string.Empty;
-                overlap = 0;
-                preutter = 0;
             }
         }
 
-        void ValidateOverlap(UProject project, UVoicePart part) {
+        void ValidateOverlap(UProject project, UNote note) {
             if (Error) {
                 return;
             }
+            float consonantStretch = (float)Math.Pow(2f, 1.0f - note.expressions["vel"].value / 100f);
+            overlap = (float)oto.Overlap * consonantStretch;
+            preutter = (float)oto.Preutter * consonantStretch;
+            overlapped = false;
+
             if (Prev == null) {
-                overlapped = false;
                 return;
             }
             int gapTick = Parent.position + position - (Prev.Parent.position + Prev.End);
             float gapMs = (float)project.TickToMillisecond(gapTick);
-            if (gapMs < preutter) {
+            float maxPreutter = preutter;
+            if (gapMs == 0) {
+                // Keep at least half of last phoneme.
                 overlapped = true;
-                float lastDurMs = (float)project.TickToMillisecond(Prev.Duration);
-                float correctionRatio = (lastDurMs + Math.Min(0, gapMs)) / 2 / (preutter - overlap);
-                if (preutter - overlap > gapMs + lastDurMs / 2) {
-                    preutter = gapMs + (preutter - gapMs) * correctionRatio;
-                    overlap *= correctionRatio;
-                } else if (preutter > gapMs + lastDurMs) {
-                    overlap *= correctionRatio;
-                    preutter = gapMs + lastDurMs;
-                }
-                Prev.tailIntrude = preutter - gapMs;
-                Prev.tailOverlap = overlap;
-            } else {
-                overlapped = false;
-                Prev.tailIntrude = 0;
-                Prev.tailOverlap = 0;
+                maxPreutter = (float)project.TickToMillisecond(Prev.Duration) / 2;
+            } else if (gapMs < preutter) {
+                maxPreutter = gapMs;
             }
+            if (preutter > maxPreutter) {
+                float ratio = maxPreutter / preutter;
+                preutter = maxPreutter;
+                overlap *= ratio;
+            }
+            Prev.tailIntrude = overlapped ? preutter : 0;
+            Prev.tailOverlap = overlapped ? overlap : 0;
             Prev.ValidateEnvelope(project, Prev.Parent);
         }
 
@@ -131,7 +122,7 @@ namespace OpenUtau.Core.Ustx {
             p3.X = (float)project.TickToMillisecond(Duration) - (float)tailIntrude;
             p4.X = p3.X + (float)tailOverlap;
             if (p3.X == p4.X) {
-                p3.X -= 5f;
+                p3.X = Math.Max(p2.X, p3.X - 25f);
             }
 
             p0.Y = 0f;

@@ -437,6 +437,9 @@ namespace OpenUtau.UI.Models {
             if (cmd is NoteCommand) {
                 notesElement.MarkUpdate();
                 phonemesElement.MarkUpdate();
+                foreach (var element in expElements.Values) {
+                    element.MarkUpdate();
+                }
             } else if (cmd is PartCommand) {
                 var _cmd = cmd as PartCommand;
                 if (_cmd.part != this.Part) {
@@ -455,6 +458,8 @@ namespace OpenUtau.UI.Models {
                 } else if (_cmd is PitchExpCommand) {
                     OnPitchModified();
                 }
+                notesElement.MarkUpdate();
+                phonemesElement.MarkUpdate();
             } else if (cmd is UNotification) {
                 var _cmd = cmd as UNotification;
                 if (_cmd is LoadPartNotification) {

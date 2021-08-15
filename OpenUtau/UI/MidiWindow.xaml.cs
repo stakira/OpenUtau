@@ -644,10 +644,6 @@ namespace OpenUtau.UI {
                 case WillRemoveTrackNotification _:
                     Hide();
                     break;
-                case ExpCommand _:
-                    midiVM.notesElement.MarkUpdate();
-                    midiVM.phonemesElement.MarkUpdate();
-                    break;
                 default:
                     break;
             }
