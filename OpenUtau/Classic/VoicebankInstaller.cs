@@ -247,22 +247,30 @@ namespace OpenUtau.Classic {
             if (string.IsNullOrEmpty(result.Name)) {
                 result.Name = wav.Replace(ext, "");
             }
-            if (!double.TryParse(parts[1], out result.Offset)) {
+            if (!ParseDouble(parts[1], out result.Offset)) {
                 throw new FileFormatException($"Failed to parse offset. Format is {format}.");
             }
-            if (!double.TryParse(parts[2], out result.Consonant)) {
+            if (!ParseDouble(parts[2], out result.Consonant)) {
                 throw new FileFormatException($"Failed to parse consonant. Format is {format}.");
             }
-            if (!double.TryParse(parts[3], out result.Cutoff)) {
+            if (!ParseDouble(parts[3], out result.Cutoff)) {
                 throw new FileFormatException($"Failed to parse cutoff. Format is {format}.");
             }
-            if (!double.TryParse(parts[4], out result.Preutter)) {
+            if (!ParseDouble(parts[4], out result.Preutter)) {
                 throw new FileFormatException($"Failed to parse preutter. Format is {format}.");
             }
-            if (!double.TryParse(parts[5], out result.Overlap)) {
+            if (!ParseDouble(parts[5], out result.Overlap)) {
                 throw new FileFormatException($"Failed to parse overlap. Format is {format}.");
             }
             return result;
+        }
+
+        static bool ParseDouble(string s, out double value) {
+            if (string.IsNullOrEmpty(s)) {
+                value = 0;
+                return true;
+            }
+            return double.TryParse(s, out value);
         }
     }
 }
