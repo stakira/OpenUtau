@@ -127,7 +127,6 @@
                     </Border.Effect>
                     <Grid>
                         <local:LyricBox x:Name="LyricBox" Width="360" Height="28" Visibility="Hidden"/>
-                        <local:VibratoControl x:Name="VibratoControl" Width="360" Height="28" HorizontalAlignment="Left" VerticalAlignment="Top" Visibility="Collapsed"/>
                     </Grid>
                 </Border>
             </Border>

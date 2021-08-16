@@ -48,6 +48,8 @@ namespace OpenUtau.UI
         public static List<SolidColorBrush> NoteStrokeBrushes = new List<SolidColorBrush>();
         public static List<SolidColorBrush> NoteFillErrorBrushes = new List<SolidColorBrush>();
 
+        public static SolidColorBrush VibratoBrush = new SolidColorBrush();
+
         public static bool LoadTheme(){
 
             const int NumberOfChannel = 1;
@@ -95,6 +97,8 @@ namespace OpenUtau.UI
                 NoteFillErrorBrushes[i].Color = GetColorVariationAlpha(NoteFillBrushes[i].Color, 127);
                 NoteStrokeBrushes[i].Color = GetColor("NoteStrokeColorCh" + i);
             }
+
+            VibratoBrush.Color = GetColor("VibratoBrushColor");
 
             return true;
         }

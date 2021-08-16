@@ -117,29 +117,123 @@ namespace OpenUtau.Core {
 
     public class ChangeNoteLyricCommand : NoteCommand {
         public UNote Note;
-        readonly string NewLyric, OldLyric;
-
+        readonly string NewLyric;
+        readonly string OldLyric;
         public ChangeNoteLyricCommand(UVoicePart part, UNote note, string newLyric) : base(part, note) {
             Note = note;
             NewLyric = newLyric;
             OldLyric = note.lyric;
         }
-
         public override string ToString() {
             return "Change notes lyric";
         }
-
         public override void Execute() {
             lock (Part) {
                 Note.lyric = NewLyric;
                 Note.phonemes[0].phoneme = NewLyric;
             }
         }
-
         public override void Unexecute() {
             lock (Part) {
                 Note.lyric = OldLyric;
                 Note.phonemes[0].phoneme = OldLyric;
+            }
+        }
+    }
+
+    public class VibratoLengthCommand : NoteCommand {
+        readonly UNote note;
+        readonly float newLength;
+        readonly float oldLength;
+        public VibratoLengthCommand(UVoicePart part, UNote note, float length) : base(part, note) {
+            this.note = note;
+            newLength = length;
+            oldLength = note.vibrato.length;
+        }
+        public override string ToString() {
+            return "Change vibrato length";
+        }
+        public override void Execute() {
+            lock (Part) {
+                note.vibrato.length = newLength;
+            }
+        }
+        public override void Unexecute() {
+            lock (Part) {
+                note.vibrato.length = oldLength;
+            }
+        }
+    }
+
+    public class VibratoFadeInCommand : NoteCommand {
+        readonly UNote note;
+        readonly float newFadeIn;
+        readonly float oldFadeIn;
+        public VibratoFadeInCommand(UVoicePart part, UNote note, float fadeIn) : base(part, note) {
+            this.note = note;
+            newFadeIn = fadeIn;
+            oldFadeIn = note.vibrato.@in;
+
+        }
+        public override string ToString() {
+            return "Change vibrato fade in";
+        }
+        public override void Execute() {
+            lock (Part) {
+                note.vibrato.@in = newFadeIn;
+            }
+        }
+        public override void Unexecute() {
+            lock (Part) {
+                note.vibrato.@in = oldFadeIn;
+            }
+        }
+    }
+
+    public class VibratoFadeOutCommand : NoteCommand {
+        readonly UNote note;
+        readonly float newFadeOut;
+        readonly float oldFadeOut;
+        public VibratoFadeOutCommand(UVoicePart part, UNote note, float fadeOut) : base(part, note) {
+            this.note = note;
+            newFadeOut = fadeOut;
+            oldFadeOut = note.vibrato.@out;
+        }
+        public override string ToString() {
+            return "Change vibrato fade out";
+        }
+        public override void Execute() {
+            lock (Part) {
+                note.vibrato.@out = newFadeOut;
+            }
+        }
+        public override void Unexecute() {
+            lock (Part) {
+                note.vibrato.@out = oldFadeOut;
+            }
+        }
+    }
+
+    public class VibratoDepthCommand : NoteCommand {
+        readonly UNote note;
+        readonly float newDepth;
+        readonly float oldDepth;
+        public VibratoDepthCommand(UVoicePart part, UNote note, float depth) : base(part, note) {
+            this.note = note;
+            newDepth = depth;
+            oldDepth = note.vibrato.depth;
+        }
+        public override string ToString() {
+            return "Change vibrato depth";
+        }
+        public override void Execute() {
+            lock (Part) {
+                note.vibrato.depth = newDepth;
+            }
+        }
+        public override void Unexecute() {
+            lock (Part) {
+                note.vibrato.depth = oldDepth;
             }
         }
     }

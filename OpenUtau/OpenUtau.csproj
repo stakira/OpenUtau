@@ -206,9 +206,6 @@
     <Compile Include="UI\Controls\TrackHeader.xaml.cs">
       <DependentUpon>TrackHeader.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Controls\VibratoControl.xaml.cs">
-      <DependentUpon>VibratoControl.xaml</DependentUpon>
-    </Compile>
     <Compile Include="UI\Controls\ViewScaler.xaml.cs">
       <DependentUpon>ViewScaler.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -235,10 +232,6 @@
     <Compile Include="UI\Models\TracksViewModel.cs" />
     <Compile Include="UI\UIConstants.cs" />
     <Page Include="UI\Controls\LyricBox.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Controls\VibratoControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

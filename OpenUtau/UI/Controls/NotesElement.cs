@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Windows;
 using System.Windows.Media;
 
@@ -26,6 +27,7 @@ namespace OpenUtau.UI.Controls {
         public Models.MidiViewModel midiVM;
 
         protected Pen penPit;
+        protected Pen penVbr;
 
         #region FormattedText cache
 
@@ -56,11 +58,13 @@ namespace OpenUtau.UI.Controls {
 
         #endregion
 
-        private readonly Geometry vibratoIcon = Geometry.Parse("M3 18 L4 19 L7 16 L12 21 L17 16 L22 21 L29 14 L28 13 L25 16 L20 11 L15 16 L10 11 Z");
+        private readonly Geometry vibratoIcon = Geometry.Parse("M-6.5 1 L-6 1.5 L-4.5 0 L-2 2.5 L0.5 0 L3 2.5 L6.5 -1 L6 -1.5 L4.5 0 L2 -2.5 L-0.5 0 L-3 -2.5 Z");
 
         public NotesElement() {
             penPit = new Pen(ThemeManager.WhiteKeyNameBrushNormal, 1);
             penPit.Freeze();
+            penVbr = new Pen(ThemeManager.VibratoBrush, 1);
+            penVbr.Freeze();
             this.IsHitTestVisible = false;
         }
 
@@ -90,67 +94,63 @@ namespace OpenUtau.UI.Controls {
 
         private void DrawNote(UNote note, DrawingContext cxt) {
             DrawNoteBody(note, cxt);
-            if (!note.Error) {
-                if (ShowPitch) DrawPitchBend(note, cxt);
-                if (ShowPitch) DrawVibrato(note, cxt);
+            if (!note.Error && ShowPitch) {
+                DrawPitchBend(note, cxt);
+                DrawVibrato(note, cxt);
+                DrawVibratoToggle(note, cxt);
+                DrawVibratoControl(note, cxt);
             }
+        }
+
+
+        private Brush GetNoteBrush(UNote note) {
+            return note.Error
+                ? note.Selected
+                    ? ThemeManager.NoteFillSelectedErrorBrushes
+                    : ThemeManager.NoteFillErrorBrushes[0]
+                : note.Selected
+                    ? ThemeManager.NoteFillSelectedBrush
+                    : ThemeManager.NoteFillBrushes[0];
         }
 
         private void DrawNoteBody(UNote note, DrawingContext cxt) {
-            double left = note.position * midiVM.QuarterWidth / DocManager.Inst.Project.resolution + 1;
-            double top = midiVM.TrackHeight * ((double)UIConstants.MaxNoteNum - 1 - note.noteNum) + 1;
-            double width = Math.Max(2, note.duration * midiVM.QuarterWidth / DocManager.Inst.Project.resolution - 1);
-            double height = Math.Max(2, midiVM.TrackHeight - 2);
-            cxt.DrawRoundedRectangle(
-                note.Error ?
-                note.Selected ? ThemeManager.NoteFillSelectedErrorBrushes : ThemeManager.NoteFillErrorBrushes[0] :
-                note.Selected ? ThemeManager.NoteFillSelectedBrush : ThemeManager.NoteFillBrushes[0],
-                null, new Rect(new Point(left, top), new Size(width, height)), 2, 2);
-            if (height >= 10) {
-                if (note.lyric.Length == 0) return;
-                string displayLyric = note.lyric;
-
-                var fTextItem = GetFormattedText(displayLyric, true);
-
-                if (fTextItem.width + 5 > width) {
-                    displayLyric = note.lyric[0] + "..";
-                    fTextItem = GetFormattedText(displayLyric, true);
-                    if (fTextItem.width + 5 > width) {
-                        return;
-                    }
-                }
-
-                cxt.DrawText(fTextItem.fText, new Point((int)left + 5, Math.Round(top + (height - fTextItem.height) / 2)));
+            Point leftTop = PosToPoint(new Vector2(note.position, note.noteNum));
+            leftTop.X += 1;
+            leftTop.Y += 1;
+            Point rightBottom = PosToPoint(new Vector2(note.position + note.duration, note.noteNum - 1));
+            rightBottom.Y -= 1;
+            Size size = new Size(Math.Max(1, rightBottom.X - leftTop.X), Math.Max(1, rightBottom.Y - leftTop.Y));
+            cxt.DrawRoundedRectangle(GetNoteBrush(note), null, new Rect(leftTop, rightBottom), 2, 2);
+            if (size.Height < 10 || note.lyric.Length == 0) {
+                return;
             }
+            string displayLyric = note.lyric;
+            var fTextItem = GetFormattedText(displayLyric, true);
+            if (fTextItem.width + 5 > size.Width) {
+                displayLyric = note.lyric[0] + "..";
+                fTextItem = GetFormattedText(displayLyric, true);
+                if (fTextItem.width + 5 > size.Width) {
+                    return;
+                }
+            }
+            cxt.DrawText(fTextItem.fText, new Point((int)leftTop.X + 5, Math.Round(leftTop.Y + (size.Height - fTextItem.height) / 2)));
         }
 
         private void DrawVibrato(UNote note, DrawingContext cxt) {
-            if (note.vibrato == null || note.vibrato.length == 0) {
+            var vibrato = note.vibrato;
+            if (vibrato == null || vibrato.length == 0) {
                 return;
             }
-            var vibrato = note.vibrato;
 
-            double periodPix = DocManager.Inst.Project.MillisecondToTick(vibrato.period) * midiVM.QuarterWidth / DocManager.Inst.Project.resolution;
-            double lengthPix = note.duration * vibrato.length / 100 * midiVM.QuarterWidth / DocManager.Inst.Project.resolution;
-
-            double startX = (note.position + note.duration * (1 - vibrato.length / 100)) * midiVM.QuarterWidth / DocManager.Inst.Project.resolution;
-            double startY = TrackHeight * (UIConstants.MaxNoteNum - 1.0 - note.noteNum) + TrackHeight / 2;
-            double inPix = lengthPix * vibrato.@in / 100;
-            double outPix = lengthPix * vibrato.@out / 100;
-            double depthPix = vibrato.depth / 100 * midiVM.TrackHeight;
-
-            cxt.PushTransform(new TranslateTransform(startX, startY));
-            double _x0 = 0, _y0 = 0, _x1 = 0, _y1 = 0;
-            while (_x1 < lengthPix) {
-                cxt.DrawLine(penPit, new Point(_x0, _y0), new Point(_x1, _y1));
-                _x0 = _x1;
-                _y0 = _y1;
-                _x1 += Math.Min(2, periodPix / 8);
-                _y1 = -Math.Sin(2 * Math.PI * (_x1 / periodPix + vibrato.shift / 100)) * depthPix;
-                if (_x1 < inPix) _y1 = _y1 * _x1 / inPix;
-                else if (_x1 > lengthPix - outPix) _y1 = _y1 * (lengthPix - _x1) / outPix;
+            float nPeriod = (float)DocManager.Inst.Project.MillisecondToTick(vibrato.period) / note.duration;
+            float nPos = vibrato.NormalizedStart;
+            Point p0 = PosToPoint(vibrato.Evaluate(nPos, nPeriod, note));
+            while (nPos < 1) {
+                nPos = Math.Min(1, nPos + nPeriod / 16);
+                var p1 = PosToPoint(vibrato.Evaluate(nPos, nPeriod, note));
+                cxt.DrawLine(penPit, p0, p1);
+                p0 = p1;
             }
-            cxt.Pop();
         }
 
         private void DrawPitchBend(UNote note, DrawingContext cxt) {
@@ -163,8 +163,7 @@ namespace OpenUtau.UI.Controls {
             double pt0Pit = note.noteNum + _pts[0].Y / 10.0;
             double pt0Y = TrackHeight * (UIConstants.MaxNoteNum - 1.0 - pt0Pit) + TrackHeight / 2;
 
-            if (note.pitch.snapFirst) cxt.DrawEllipse(ThemeManager.WhiteKeyNameBrushNormal, penPit, new Point(pt0X, pt0Y), 2.5, 2.5);
-            else cxt.DrawEllipse(null, penPit, new Point(pt0X, pt0Y), 2.5, 2.5);
+            cxt.DrawEllipse(note.pitch.snapFirst ? penPit.Brush : null, penPit, new Point(pt0X, pt0Y), 2.5, 2.5);
 
             for (int i = 1; i < _pts.Count; i++) {
                 double pt1Tick = note.position + MusicMath.MillisecondToTick(_pts[i].X, DocManager.Inst.Project.bpm, DocManager.Inst.Project.beatUnit, DocManager.Inst.Project.resolution);
@@ -195,6 +194,45 @@ namespace OpenUtau.UI.Controls {
                 pt0Y = pt1Y;
                 cxt.DrawEllipse(null, penPit, new Point(pt0X, pt0Y), 2.5, 2.5);
             }
+        }
+
+        private void DrawVibratoToggle(UNote note, DrawingContext cxt) {
+            var vibrato = note.vibrato;
+            Point icon = PosToPoint(vibrato.GetToggle(note));
+            cxt.PushTransform(new TranslateTransform(icon.X - 10, icon.Y));
+            cxt.DrawGeometry(vibrato.length == 0 ? null : penVbr.Brush, penVbr, vibratoIcon);
+            cxt.Pop();
+        }
+
+        private void DrawVibratoControl(UNote note, DrawingContext cxt) {
+            var vibrato = note.vibrato;
+            if (vibrato.length == 0) {
+                return;
+            }
+            Point start = PosToPoint(vibrato.GetEnvelopeStart(note));
+            Point fadeIn = PosToPoint(vibrato.GetEnvelopeFadeIn(note));
+            Point fadeOut = PosToPoint(vibrato.GetEnvelopeFadeOut(note));
+            Point end = PosToPoint(vibrato.GetEnvelopeEnd(note));
+            cxt.DrawLine(penVbr, start, fadeIn);
+            cxt.DrawLine(penVbr, fadeIn, fadeOut);
+            cxt.DrawLine(penVbr, fadeOut, end);
+            cxt.DrawEllipse(penVbr.Brush, penVbr, start, 2.5, 2.5);
+            cxt.DrawEllipse(penVbr.Brush, penVbr, fadeIn, 2.5, 2.5);
+            cxt.DrawEllipse(penVbr.Brush, penVbr, fadeOut, 2.5, 2.5);
+        }
+
+        public Point PosToPoint(Vector2 pos) {
+            float tick = pos.X;
+            float noteNum = pos.Y;
+            double x = tick * midiVM.QuarterWidth / DocManager.Inst.Project.resolution;
+            double y = midiVM.TrackHeight * (UIConstants.MaxNoteNum - 1f - noteNum);
+            return new Point(x, y);
+        }
+
+        public Vector2 PointToPos(Point point) {
+            double tick = point.X / midiVM.QuarterWidth * DocManager.Inst.Project.resolution;
+            double noteNum = UIConstants.MaxNoteNum - 1f - point.Y / midiVM.TrackHeight;
+            return new Vector2((float)tick, (float)noteNum);
         }
     }
 }

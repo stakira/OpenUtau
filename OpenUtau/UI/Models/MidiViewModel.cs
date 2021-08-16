@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.ComponentModel;
-
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using OpenUtau.UI.Controls;
@@ -306,19 +302,22 @@ namespace OpenUtau.UI.Models {
             double snapUnit = GetSnapUnit();
             return Math.Round(quater / snapUnit) * snapUnit;
         }
+        public int CanvasToTick(double X) { return (int)(CanvasToQuarter(X) * Project.resolution); }
         public int CanvasToSnappedTick(double X) { return (int)(CanvasToSnappedQuarter(X) * Project.resolution); }
-        public double TickToCanvas(int tick) { return (int)(QuarterToCanvas((double)tick / Project.resolution)); }
+        public double TickToCanvas(int tick) { return (int)QuarterToCanvas((double)tick / Project.resolution); }
 
         public int CanvasToNoteNum(double Y) { return UIConstants.MaxNoteNum - 1 - (int)((Y + OffsetY) / TrackHeight); }
+        public float CanvasToTone(double Y) { return UIConstants.MaxNoteNum - 1 - (float)((Y + OffsetY) / TrackHeight); }
         public double CanvasToPitch(double Y) { return UIConstants.MaxNoteNum - 1 - (Y + OffsetY) / TrackHeight + 0.5; }
         public double NoteNumToCanvas(int noteNum) { return TrackHeight * (UIConstants.MaxNoteNum - 1 - noteNum) - OffsetY; }
         public double NoteNumToCanvas(double noteNum) { return TrackHeight * (UIConstants.MaxNoteNum - 1 - noteNum) - OffsetY; }
-
-        public bool NoteIsInView(UNote note) // FIXME : improve performance
-        {
+        public Point TickToneToCanvas(System.Numerics.Vector2 pos) {
+            return new Point(TickToCanvas((int)pos.X), NoteNumToCanvas(pos.Y));
+        }
+        public bool NoteIsInView(UNote note) {
             double leftTick = OffsetX / QuarterWidth * Project.resolution - 512;
             double rightTick = leftTick + ViewWidth / QuarterWidth * Project.resolution + 512;
-            return (note.position < rightTick && note.End > leftTick);
+            return note.position < rightTick && note.End > leftTick;
         }
 
         # endregion
@@ -437,9 +436,8 @@ namespace OpenUtau.UI.Models {
             if (cmd is NoteCommand) {
                 notesElement.MarkUpdate();
                 phonemesElement.MarkUpdate();
-                foreach (var element in expElements.Values) {
-                    element.MarkUpdate();
-                }
+                visibleExpElement.MarkUpdate();
+                shadowExpElement.MarkUpdate();
             } else if (cmd is PartCommand) {
                 var _cmd = cmd as PartCommand;
                 if (_cmd.part != this.Part) {

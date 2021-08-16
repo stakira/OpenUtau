@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using Newtonsoft.Json;
 
 namespace OpenUtau.Core.Ustx {
@@ -81,23 +82,29 @@ namespace OpenUtau.Core.Ustx {
 
     [JsonObject(MemberSerialization.OptIn)]
     public class UVibrato {
+        // Vibrato percentage of note length.
         float _length;
-        float _period;
-        float _depth;
-        float _in;
-        float _out;
+        // Period in milliseconds.
+        float _period = 100f;
+        // Depth in cents (1 semitone = 100 cents).
+        float _depth = 32f;
+        // Fade-in percentage of vibrato length.
+        float _in = 10f;
+        // Fade-out percentage of vibrato length.
+        float _out = 10f;
+        // Shift percentage of period length.
         float _shift;
         float _drift;
 
         [JsonProperty] public float length { get => _length; set => _length = Math.Max(0, Math.Min(100, value)); }
-        [JsonProperty] public float period { get => _period; set => _period = Math.Max(64, Math.Min(512, value)); }
+        [JsonProperty] public float period { get => _period; set => _period = Math.Max(50, Math.Min(500, value)); }
         [JsonProperty] public float depth { get => _depth; set => _depth = Math.Max(5, Math.Min(200, value)); }
         [JsonProperty]
         public float @in {
             get => _in;
             set {
                 _in = Math.Max(0, Math.Min(100, value));
-                _out = Math.Min(_out, 100 - value);
+                _out = Math.Min(_out, 100 - _in);
             }
         }
         [JsonProperty]
@@ -105,11 +112,13 @@ namespace OpenUtau.Core.Ustx {
             get => _out;
             set {
                 _out = Math.Max(0, Math.Min(100, value));
-                _in = Math.Min(_in, 100 - value);
+                _in = Math.Min(_in, 100 - _out);
             }
         }
         [JsonProperty] public float shift { get => _shift; set => _shift = Math.Max(0, Math.Min(100, value)); }
         [JsonProperty] public float drift { get => _drift; set => _drift = Math.Max(-100, Math.Min(100, value)); }
+
+        public float NormalizedStart => 1f - length / 100f;
 
         public UVibrato Clone() {
             var result = new UVibrato {
@@ -127,6 +136,61 @@ namespace OpenUtau.Core.Ustx {
         public UVibrato Split(int offset) {
             // TODO
             return Clone();
+        }
+
+        /// <summary>
+        /// Evaluate a position on the vibrato curve.
+        /// </summary>
+        /// <param name="nPos">Normalized position in note length.</param>
+        /// <returns>Vector2(tick, noteNum)</returns>
+        public Vector2 Evaluate(float nPos, float nPeriod, UNote note) {
+            float nStart = NormalizedStart;
+            float nIn = length / 100f * @in / 100f;
+            float nInPos = nStart + nIn;
+            float nOut = length / 100f * @out / 100f;
+            float nOutPos = 1f - nOut;
+            float t = (nPos - nStart) / nPeriod + shift / 100f;
+            float y = (float)Math.Sin(2 * Math.PI * t) * depth;
+            if (nPos < nStart) {
+                y = 0;
+            } else if (nPos < nInPos) {
+                y *= (nPos - nStart) / nIn;
+            } else if (nPos > nOutPos) {
+                y *= (1f - nPos) / nOut;
+            }
+            return new Vector2(note.position + note.duration * nPos, note.noteNum - 0.5f + y / 100f);
+        }
+
+        public Vector2 GetEnvelopeStart(UNote note) {
+            return new Vector2(
+                note.position + note.duration * NormalizedStart,
+                note.noteNum - 3f);
+        }
+
+        public Vector2 GetEnvelopeFadeIn(UNote note) {
+            return new Vector2(
+                note.position + note.duration * (NormalizedStart + length / 100f * @in / 100f),
+                note.noteNum - 3f + depth / 50f);
+        }
+
+        public Vector2 GetEnvelopeFadeOut(UNote note) {
+            return new Vector2(
+                note.position + note.duration * (1f - length / 100f * @out / 100f),
+                note.noteNum - 3f + depth / 50f);
+        }
+
+        public Vector2 GetEnvelopeEnd(UNote note) {
+            return new Vector2(
+                note.position + note.duration,
+                note.noteNum - 3f);
+        }
+
+        public Vector2 GetToggle(UNote note) {
+            return new Vector2(note.position + note.duration, note.noteNum - 1.5f);
+        }
+
+        public float ToneToDepth(UNote note, float tone) {
+            return (tone - (note.noteNum - 3f)) * 50f;
         }
     }
 

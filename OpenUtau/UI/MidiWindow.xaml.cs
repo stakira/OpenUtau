@@ -168,7 +168,7 @@ namespace OpenUtau.UI {
                 }
 
                 if (needUdpate) {
-                    notesCanvas_MouseMove_Helper(mousePos);
+                    notesCanvas_MouseMoveInternal(mousePos);
                     if (Mouse.Captured == this.timelineCanvas) timelineCanvas_MouseMove_Helper(mousePos);
                 }
             } else if (Mouse.Captured == timelineCanvas && Mouse.LeftButton == MouseButtonState.Pressed) {
@@ -197,6 +197,8 @@ namespace OpenUtau.UI {
         UNote _noteMoveNoteMax;
         UNote _noteResizeShortest;
         UNote _noteInEdit;
+        bool _inVibratoEdit;
+        VibratoHitInfo _vibratoHit;
 
         private void notesCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
             if (midiVM.Part == null) return;
@@ -207,13 +209,25 @@ namespace OpenUtau.UI {
             System.Diagnostics.Debug.WriteLine("Mouse hit " + visualHit.ToString());
 
             var pitHitResult = midiHT.HitTestPitchPoint(mousePos);
-
+            var vbrHitResult = midiHT.HitTestVibrato(mousePos);
             if (pitHitResult != null) {
                 if (pitHitResult.OnPoint) {
                     _inPitMove = true;
                     _pitHit = pitHitResult.Note.pitch.data[pitHitResult.Index];
                     _pitHitIndex = pitHitResult.Index;
                     _noteHit = pitHitResult.Note;
+                    DocManager.Inst.StartUndoGroup();
+                }
+            } else if (vbrHitResult.hit) {
+                if (vbrHitResult.hitToggle) {
+                    var note = vbrHitResult.note;
+                    var vibrato = note.vibrato;
+                    DocManager.Inst.StartUndoGroup();
+                    DocManager.Inst.ExecuteCmd(new VibratoLengthCommand(midiVM.Part, note, vibrato.length == 0 ? 50f : 0));
+                    DocManager.Inst.EndUndoGroup();
+                } else {
+                    _inVibratoEdit = true;
+                    _vibratoHit = vbrHitResult;
                     DocManager.Inst.StartUndoGroup();
                 }
             } else {
@@ -318,6 +332,8 @@ namespace OpenUtau.UI {
             _noteHit = null;
             _inPitMove = false;
             _pitHit = null;
+            _inVibratoEdit = false;
+            _vibratoHit = default;
             DocManager.Inst.EndUndoGroup();
             // End selection
             selectionStart = null;
@@ -332,13 +348,12 @@ namespace OpenUtau.UI {
 
         private void notesCanvas_MouseMove(object sender, MouseEventArgs e) {
             Point mousePos = e.GetPosition((Canvas)sender);
-            notesCanvas_MouseMove_Helper(mousePos);
+            notesCanvas_MouseMoveInternal(mousePos);
         }
 
-        private void notesCanvas_MouseMove_Helper(Point mousePos) {
+        private void notesCanvas_MouseMoveInternal(Point mousePos) {
             if (midiVM.Part == null) return;
-            if (selectionStart != null) // Selection
-            {
+            if (selectionStart != null) { // Selection
                 double top = midiVM.NoteNumToCanvas(Math.Max(midiVM.CanvasToNoteNum(mousePos.Y), (int)selectionStart.Value.Y));
                 double bottom = midiVM.NoteNumToCanvas(Math.Min(midiVM.CanvasToNoteNum(mousePos.Y), (int)selectionStart.Value.Y) - 1);
                 double left = Math.Min(mousePos.X, midiVM.QuarterToCanvas(selectionStart.Value.X));
@@ -357,8 +372,37 @@ namespace OpenUtau.UI {
                 if (_noteHit.pitch.data.First() == _pitHit && _noteHit.pitch.snapFirst || _noteHit.pitch.data.Last() == _pitHit) deltaY = 0;
                 if (deltaX != 0 || deltaY != 0)
                     DocManager.Inst.ExecuteCmd(new MovePitchPointCommand(_pitHit, (float)deltaX, (float)deltaY));
-            } else if (_inMove) // Move Note
-              {
+            } else if (_inVibratoEdit) {
+                var note = _vibratoHit.note;
+                if (_vibratoHit.hitStart) {
+                    int tick = midiVM.CanvasToTick(mousePos.X);
+                    float newLength = 100f - 100f * (tick - note.position) / note.duration;
+                    if (newLength != note.vibrato.length) {
+                        DocManager.Inst.ExecuteCmd(new VibratoLengthCommand(midiVM.Part, note, newLength));
+                    }
+                } else if (_vibratoHit.hitIn) {
+                    int tick = midiVM.CanvasToTick(mousePos.X);
+                    float vibratoTick = note.vibrato.length / 100f * note.duration;
+                    float startTick = note.position + note.duration - vibratoTick;
+                    float newIn = (tick - startTick) / vibratoTick * 100f;
+                    if (newIn != note.vibrato.@in) {
+                        DocManager.Inst.ExecuteCmd(new VibratoFadeInCommand(midiVM.Part, note, newIn));
+                    }
+                } else if (_vibratoHit.hitOut) {
+                    int tick = midiVM.CanvasToTick(mousePos.X);
+                    float vibratoTick = note.vibrato.length / 100f * note.duration;
+                    float newOut = (note.position + note.duration - tick) / vibratoTick * 100f;
+                    if (newOut != note.vibrato.@out) {
+                        DocManager.Inst.ExecuteCmd(new VibratoFadeOutCommand(midiVM.Part, note, newOut));
+                    }
+                } else if (_vibratoHit.hitDepth) {
+                    float tone = midiVM.CanvasToTone(mousePos.Y);
+                    float newDepth = note.vibrato.ToneToDepth(note, tone);
+                    if (newDepth != note.vibrato.depth) {
+                        DocManager.Inst.ExecuteCmd(new VibratoDepthCommand(midiVM.Part, note, newDepth));
+                    }
+                }
+            } else if (_inMove) { // Move Note
                 if (midiVM.SelectedNotes.Count == 0) {
                     int newNoteNum = Math.Max(0, Math.Min(UIConstants.MaxNoteNum - 1, midiVM.CanvasToNoteNum(mousePos.Y)));
                     int newPosTick = Math.Max(0, Math.Min((int)(midiVM.QuarterCount * midiVM.Project.resolution) - _noteHit.duration,
@@ -379,8 +423,7 @@ namespace OpenUtau.UI {
                     }
                 }
                 Mouse.OverrideCursor = Cursors.SizeAll;
-            } else if (_inResize) // resize
-              {
+            } else if (_inResize) { // resize
                 if (midiVM.SelectedNotes.Count == 0) {
                     int newDurTick = (int)(midiVM.CanvasRoundToSnappedQuarter(mousePos.X) * midiVM.Project.resolution) - _noteHit.position;
                     if (newDurTick != _noteHit.duration && newDurTick >= midiVM.GetSnapUnit() * midiVM.Project.resolution) {
@@ -402,20 +445,20 @@ namespace OpenUtau.UI {
                 }
             } else if (Mouse.LeftButton == MouseButtonState.Released && Mouse.RightButton == MouseButtonState.Released) {
                 var pitHit = midiHT.HitTestPitchPoint(mousePos);
+                var vbrHit = midiHT.HitTestVibrato(mousePos);
                 if (pitHit != null) {
                     Mouse.OverrideCursor = Cursors.Hand;
+                } else if (vbrHit.hit) {
+                    if (vbrHit.hitDepth) {
+                        Mouse.OverrideCursor = Cursors.SizeNS;
+                    } else {
+                        Mouse.OverrideCursor = Cursors.Hand;
+                    }
                 } else {
-                    VibratoControl.Visibility = Visibility.Collapsed;
                     NoteHitInfo hit = midiHT.HitTestNote(mousePos);
                     if (hit.hitResizeArea) {
                         Mouse.OverrideCursor = Cursors.SizeWE;
                     } else if (hit.hitX) {
-                        VibratoControl.Visibility = Visibility.Collapsed;
-                        double x = midiVM.TickToCanvas(hit.note.position);
-                        double y = midiVM.NoteNumToCanvas(hit.note.noteNum - 1);
-                        VibratoControl.Width = midiVM.TickToCanvas(hit.note.End) - x;
-                        VibratoControl.Height = midiVM.TrackHeight;
-                        VibratoControl.RenderTransform = new TranslateTransform(x, y);
                         Mouse.OverrideCursor = null;
                     } else {
                         Mouse.OverrideCursor = null;

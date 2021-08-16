@@ -65,6 +65,8 @@
 
     <Color x:Key="PlayPosMarkerHighlightColor">#ebdaf3</Color>
 
+    <Color x:Key="VibratoBrushColor">#ab96b5</Color>
+
     <SolidColorBrush x:Key="ScrollBarBrushNormal" Color="{StaticResource ScrollBarColorNormal}"/>
     <SolidColorBrush x:Key="ScrollBarBrushActive" Color="{StaticResource ScrollBarColorActive}"/>
     <SolidColorBrush x:Key="BackgroundBrushNormal" Color="{StaticResource BackgroundColorNormal}"/>

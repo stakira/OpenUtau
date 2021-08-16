@@ -20,6 +20,16 @@ namespace OpenUtau.UI.Models {
         public bool hitX;
     }
 
+    public struct VibratoHitInfo {
+        public UNote note;
+        public bool hit;
+        public bool hitToggle;
+        public bool hitStart;
+        public bool hitIn;
+        public bool hitOut;
+        public bool hitDepth;
+    }
+
     class MidiViewHitTest {
         readonly MidiViewModel midiVM;
         UProject Project => DocManager.Inst.Project;
@@ -49,9 +59,8 @@ namespace OpenUtau.UI.Models {
 
         public PitchPointHitInfo HitTestPitchPoint(Point mousePos) {
             foreach (var note in midiVM.Part.notes) {
-                if (midiVM.NoteIsInView(note)) // FIXME this is not enough
-                {
-                    if (note.Error) continue;
+                // FIXME pitch point maybe in view while note is not.
+                if (midiVM.NoteIsInView(note) && !note.Error) {
                     double lastX = 0, lastY = 0;
                     PitchPointShape lastShape = PitchPointShape.l;
                     for (int i = 0; i < note.pitch.data.Count; i++) {
@@ -85,6 +94,47 @@ namespace OpenUtau.UI.Models {
                 }
             }
             return null;
+        }
+
+        public VibratoHitInfo HitTestVibrato(Point mousePos) {
+            UNote note = HitTestNote(mousePos).note;
+            if (note == null) {
+                return default;
+            }
+            VibratoHitInfo result = default;
+            result.note = note;
+            UVibrato vibrato = note.vibrato;
+            Point toggle = midiVM.TickToneToCanvas(vibrato.GetToggle(note));
+            toggle.X -= 10;
+            if (WithIn(toggle, mousePos, 5)) {
+                result.hit = true;
+                result.hitToggle = true;
+                return result;
+            }
+            if (vibrato.length == 0) {
+                return result;
+            }
+            Point start = midiVM.TickToneToCanvas(vibrato.GetEnvelopeStart(note));
+            Point fadeIn = midiVM.TickToneToCanvas(vibrato.GetEnvelopeFadeIn(note));
+            Point fadeOut = midiVM.TickToneToCanvas(vibrato.GetEnvelopeFadeOut(note));
+            if (WithIn(start, mousePos, 3)) {
+                result.hit = true;
+                result.hitStart = true;
+            } else if (WithIn(fadeIn, mousePos, 3)) {
+                result.hit = true;
+                result.hitIn = true;
+            } else if (WithIn(fadeOut, mousePos, 3)) {
+                result.hit = true;
+                result.hitOut = true;
+            } else if (Math.Abs(fadeIn.Y - mousePos.Y) < 3 && fadeIn.X < mousePos.X && mousePos.X < fadeOut.X) {
+                result.hit = true;
+                result.hitDepth = true;
+            }
+            return result;
+        }
+
+        bool WithIn(Point p0, Point p1, double dist) {
+            return Math.Abs(p0.X - p1.X) < dist && Math.Abs(p0.Y - p1.Y) < dist;
         }
     }
 }
