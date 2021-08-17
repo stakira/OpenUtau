@@ -104,6 +104,7 @@ namespace OpenUtau.UI.Models {
             VibratoHitInfo result = default;
             result.point = mousePos;
             foreach (var note in midiVM.Part.notes) {
+                result.note = note;
                 UVibrato vibrato = note.vibrato;
                 Point toggle = midiVM.TickToneToCanvas(vibrato.GetToggle(note));
                 toggle.X -= 10;
@@ -146,7 +147,6 @@ namespace OpenUtau.UI.Models {
                     }
                 }
                 if (result.hit) {
-                    result.note = note;
                     return result;
                 }
             }

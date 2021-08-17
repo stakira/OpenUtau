@@ -642,6 +642,8 @@ namespace OpenUtau.UI {
                         DocManager.Inst.ExecuteCmd(new RemoveNoteCommand(midiVM.Part, midiVM.SelectedNotes));
                         DocManager.Inst.EndUndoGroup();
                     }
+                } else if (e.Key == Key.U) {
+                    midiVM.ShowVibrato = !midiVM.ShowVibrato;
                 } else if (e.Key == Key.I) {
                     midiVM.ShowPitch = !midiVM.ShowPitch;
                 } else if (e.Key == Key.O) {
