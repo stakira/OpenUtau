@@ -237,4 +237,52 @@ namespace OpenUtau.Core {
             }
         }
     }
+
+    public class VibratoPeriodCommand : NoteCommand {
+        readonly UNote note;
+        readonly float newPeriod;
+        readonly float oldPeriod;
+        public VibratoPeriodCommand(UVoicePart part, UNote note, float period) : base(part, note) {
+            this.note = note;
+            newPeriod = period;
+            oldPeriod = note.vibrato.period;
+        }
+        public override string ToString() {
+            return "Change vibrato period";
+        }
+        public override void Execute() {
+            lock (Part) {
+                note.vibrato.period = newPeriod;
+            }
+        }
+        public override void Unexecute() {
+            lock (Part) {
+                note.vibrato.period = oldPeriod;
+            }
+        }
+    }
+
+    public class VibratoShiftCommand : NoteCommand {
+        readonly UNote note;
+        readonly float newShift;
+        readonly float oldShift;
+        public VibratoShiftCommand(UVoicePart part, UNote note, float shift) : base(part, note) {
+            this.note = note;
+            newShift = shift;
+            oldShift = note.vibrato.shift;
+        }
+        public override string ToString() {
+            return "Change vibrato shift";
+        }
+        public override void Execute() {
+            lock (Part) {
+                note.vibrato.shift = newShift;
+            }
+        }
+        public override void Unexecute() {
+            lock (Part) {
+                note.vibrato.shift = oldShift;
+            }
+        }
+    }
 }

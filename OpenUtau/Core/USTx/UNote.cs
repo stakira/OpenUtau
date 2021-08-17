@@ -97,7 +97,7 @@ namespace OpenUtau.Core.Ustx {
         float _drift;
 
         [JsonProperty] public float length { get => _length; set => _length = Math.Max(0, Math.Min(100, value)); }
-        [JsonProperty] public float period { get => _period; set => _period = Math.Max(50, Math.Min(500, value)); }
+        [JsonProperty] public float period { get => _period; set => _period = Math.Max(20, Math.Min(500, value)); }
         [JsonProperty] public float depth { get => _depth; set => _depth = Math.Max(5, Math.Min(200, value)); }
         [JsonProperty]
         public float @in {
@@ -187,6 +187,17 @@ namespace OpenUtau.Core.Ustx {
 
         public Vector2 GetToggle(UNote note) {
             return new Vector2(note.position + note.duration, note.noteNum - 1.5f);
+        }
+
+        public void GetPeriodStartEnd(UNote note, UProject project, out Vector2 start, out Vector2 end) {
+            float periodTick = project.MillisecondToTick(period);
+            float shiftTick = periodTick * shift / 100f;
+            start = new Vector2(
+                note.position + note.duration * NormalizedStart + shiftTick,
+                note.noteNum - 3.5f);
+            end = new Vector2(
+                note.position + note.duration * NormalizedStart + shiftTick + periodTick,
+                note.noteNum - 3.5f);
         }
 
         public float ToneToDepth(UNote note, float tone) {

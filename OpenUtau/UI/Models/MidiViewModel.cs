@@ -50,6 +50,7 @@ namespace OpenUtau.UI.Models {
         int _visualPosTick;
         int _visualDurTick;
         bool _showPhoneme = true;
+        bool _showVibrato = true;
         bool _showPitch = true;
         bool _snap = true;
 
@@ -101,6 +102,7 @@ namespace OpenUtau.UI.Models {
         public double MinTickWidth { set { _minTickWidth = value; HorizontalPropertiesChanged(); } get { return _minTickWidth; } }
         public int BeatPerBar { set { _beatPerBar = value; HorizontalPropertiesChanged(); } get { return _beatPerBar; } }
         public int BeatUnit { set { _beatUnit = value; HorizontalPropertiesChanged(); } get { return _beatUnit; } }
+        public bool ShowVibrato { set { _showVibrato = value; notesElement.ShowVibrato = value; OnPropertyChanged("ShowVibrato"); } get { return _showVibrato; } }
         public bool ShowPitch { set { _showPitch = value; notesElement.ShowPitch = value; OnPropertyChanged("ShowPitch"); } get { return _showPitch; } }
         public bool ShowPhoneme { set { _showPhoneme = value; OnPropertyChanged("PhonemeVisibility"); OnPropertyChanged("ShowPhoneme"); } get { return _showPhoneme; } }
         public Visibility PhonemeVisibility { get { return _showPhoneme ? Visibility.Visible : Visibility.Collapsed; } }

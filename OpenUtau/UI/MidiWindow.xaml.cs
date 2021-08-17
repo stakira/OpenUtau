@@ -373,7 +373,10 @@ namespace OpenUtau.UI {
                 if (deltaX != 0 || deltaY != 0)
                     DocManager.Inst.ExecuteCmd(new MovePitchPointCommand(_pitHit, (float)deltaX, (float)deltaY));
             } else if (_inVibratoEdit) {
+                var project = DocManager.Inst.Project;
                 var note = _vibratoHit.note;
+                float vibratoTick = note.vibrato.length / 100f * note.duration;
+                float startTick = note.position + note.duration - vibratoTick;
                 if (_vibratoHit.hitStart) {
                     int tick = midiVM.CanvasToTick(mousePos.X);
                     float newLength = 100f - 100f * (tick - note.position) / note.duration;
@@ -382,15 +385,12 @@ namespace OpenUtau.UI {
                     }
                 } else if (_vibratoHit.hitIn) {
                     int tick = midiVM.CanvasToTick(mousePos.X);
-                    float vibratoTick = note.vibrato.length / 100f * note.duration;
-                    float startTick = note.position + note.duration - vibratoTick;
                     float newIn = (tick - startTick) / vibratoTick * 100f;
                     if (newIn != note.vibrato.@in) {
                         DocManager.Inst.ExecuteCmd(new VibratoFadeInCommand(midiVM.Part, note, newIn));
                     }
                 } else if (_vibratoHit.hitOut) {
                     int tick = midiVM.CanvasToTick(mousePos.X);
-                    float vibratoTick = note.vibrato.length / 100f * note.duration;
                     float newOut = (note.position + note.duration - tick) / vibratoTick * 100f;
                     if (newOut != note.vibrato.@out) {
                         DocManager.Inst.ExecuteCmd(new VibratoFadeOutCommand(midiVM.Part, note, newOut));
@@ -400,6 +400,22 @@ namespace OpenUtau.UI {
                     float newDepth = note.vibrato.ToneToDepth(note, tone);
                     if (newDepth != note.vibrato.depth) {
                         DocManager.Inst.ExecuteCmd(new VibratoDepthCommand(midiVM.Part, note, newDepth));
+                    }
+                } else if (_vibratoHit.hitPeriod) {
+                    float periodTick = project.MillisecondToTick(note.vibrato.period);
+                    float shiftTick = periodTick * note.vibrato.shift / 100f;
+                    float tick = midiVM.CanvasToTick(mousePos.X) - startTick - shiftTick;
+                    float newPeriod = (float)DocManager.Inst.Project.TickToMillisecond(tick);
+                    if (newPeriod != note.vibrato.depth) {
+                        DocManager.Inst.ExecuteCmd(new VibratoPeriodCommand(midiVM.Part, note, newPeriod));
+                    }
+                } else if (_vibratoHit.hitShift) {
+                    float periodTick = project.MillisecondToTick(note.vibrato.period);
+                    float deltaTick = midiVM.CanvasToTick(mousePos.X) - midiVM.CanvasToTick(_vibratoHit.point.X);
+                    float deltaShift = deltaTick / periodTick * 100f;
+                    float newShift = _vibratoHit.initialShift + deltaShift;
+                    if (newShift != note.vibrato.depth) {
+                        DocManager.Inst.ExecuteCmd(new VibratoShiftCommand(midiVM.Part, note, newShift));
                     }
                 }
             } else if (_inMove) { // Move Note
@@ -451,6 +467,8 @@ namespace OpenUtau.UI {
                 } else if (vbrHit.hit) {
                     if (vbrHit.hitDepth) {
                         Mouse.OverrideCursor = Cursors.SizeNS;
+                    } else if (vbrHit.hitPeriod) {
+                        Mouse.OverrideCursor = Cursors.SizeWE;
                     } else {
                         Mouse.OverrideCursor = Cursors.Hand;
                     }

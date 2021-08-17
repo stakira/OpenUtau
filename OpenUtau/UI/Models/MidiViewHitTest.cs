@@ -28,6 +28,10 @@ namespace OpenUtau.UI.Models {
         public bool hitIn;
         public bool hitOut;
         public bool hitDepth;
+        public bool hitShift;
+        public bool hitPeriod;
+        public Point point;
+        public float initialShift;
     }
 
     class MidiViewHitTest {
@@ -97,40 +101,56 @@ namespace OpenUtau.UI.Models {
         }
 
         public VibratoHitInfo HitTestVibrato(Point mousePos) {
-            UNote note = HitTestNote(mousePos).note;
-            if (note == null) {
-                return default;
-            }
             VibratoHitInfo result = default;
-            result.note = note;
-            UVibrato vibrato = note.vibrato;
-            Point toggle = midiVM.TickToneToCanvas(vibrato.GetToggle(note));
-            toggle.X -= 10;
-            if (WithIn(toggle, mousePos, 5)) {
-                result.hit = true;
-                result.hitToggle = true;
-                return result;
+            result.point = mousePos;
+            foreach (var note in midiVM.Part.notes) {
+                UVibrato vibrato = note.vibrato;
+                Point toggle = midiVM.TickToneToCanvas(vibrato.GetToggle(note));
+                toggle.X -= 10;
+                if (WithIn(toggle, mousePos, 5)) {
+                    result.hit = true;
+                    result.hitToggle = true;
+                    return result;
+                }
+                if (vibrato.length == 0) {
+                    continue;
+                }
+                Point start = midiVM.TickToneToCanvas(vibrato.GetEnvelopeStart(note));
+                Point fadeIn = midiVM.TickToneToCanvas(vibrato.GetEnvelopeFadeIn(note));
+                Point fadeOut = midiVM.TickToneToCanvas(vibrato.GetEnvelopeFadeOut(note));
+                if (WithIn(start, mousePos, 3)) {
+                    result.hit = true;
+                    result.hitStart = true;
+                } else if (WithIn(fadeIn, mousePos, 3)) {
+                    result.hit = true;
+                    result.hitIn = true;
+                } else if (WithIn(fadeOut, mousePos, 3)) {
+                    result.hit = true;
+                    result.hitOut = true;
+                } else if (Math.Abs(fadeIn.Y - mousePos.Y) < 3 && fadeIn.X < mousePos.X && mousePos.X < fadeOut.X) {
+                    result.hit = true;
+                    result.hitDepth = true;
+                }
+
+                vibrato.GetPeriodStartEnd(note, DocManager.Inst.Project, out var periodStartPos, out var periodEndPos);
+                Point periodStart = midiVM.TickToneToCanvas(periodStartPos);
+                Point periodEnd = midiVM.TickToneToCanvas(periodEndPos);
+                if (Math.Abs(mousePos.Y - periodEnd.Y) < midiVM.TrackHeight / 6) {
+                    if (Math.Abs(mousePos.X - periodEnd.X) < 3) {
+                        result.hit = true;
+                        result.hitPeriod = true;
+                    } else if (mousePos.X > periodStart.X && mousePos.X < periodEnd.X) {
+                        result.hit = true;
+                        result.hitShift = true;
+                        result.initialShift = vibrato.shift;
+                    }
+                }
+                if (result.hit) {
+                    result.note = note;
+                    return result;
+                }
             }
-            if (vibrato.length == 0) {
-                return result;
-            }
-            Point start = midiVM.TickToneToCanvas(vibrato.GetEnvelopeStart(note));
-            Point fadeIn = midiVM.TickToneToCanvas(vibrato.GetEnvelopeFadeIn(note));
-            Point fadeOut = midiVM.TickToneToCanvas(vibrato.GetEnvelopeFadeOut(note));
-            if (WithIn(start, mousePos, 3)) {
-                result.hit = true;
-                result.hitStart = true;
-            } else if (WithIn(fadeIn, mousePos, 3)) {
-                result.hit = true;
-                result.hitIn = true;
-            } else if (WithIn(fadeOut, mousePos, 3)) {
-                result.hit = true;
-                result.hitOut = true;
-            } else if (Math.Abs(fadeIn.Y - mousePos.Y) < 3 && fadeIn.X < mousePos.X && mousePos.X < fadeOut.X) {
-                result.hit = true;
-                result.hitDepth = true;
-            }
-            return result;
+            return default;
         }
 
         bool WithIn(Point p0, Point p1, double dist) {

@@ -21,6 +21,8 @@ namespace OpenUtau.UI.Controls {
 
         bool _showPitch = true;
         public bool ShowPitch { set { if (_showPitch != value) { _showPitch = value; MarkUpdate(); } } get { return _showPitch; } }
+        bool _showVibrato = true;
+        public bool ShowVibrato { set { if (_showVibrato != value) { _showVibrato = value; MarkUpdate(); } } get { return _showVibrato; } }
 
         public override UVoicePart Part { set { _part = value; ClearFormattedTextPool(); MarkUpdate(); } get { return _part; } }
 
@@ -94,11 +96,17 @@ namespace OpenUtau.UI.Controls {
 
         private void DrawNote(UNote note, DrawingContext cxt) {
             DrawNoteBody(note, cxt);
-            if (!note.Error && ShowPitch) {
-                DrawPitchBend(note, cxt);
-                DrawVibrato(note, cxt);
-                DrawVibratoToggle(note, cxt);
-                DrawVibratoControl(note, cxt);
+            if (!note.Error) {
+                if (ShowPitch) {
+                    DrawPitchBend(note, cxt);
+                }
+                if (ShowPitch || ShowVibrato) {
+                    DrawVibrato(note, cxt);
+                }
+                if (ShowVibrato) {
+                    DrawVibratoToggle(note, cxt);
+                    DrawVibratoControl(note, cxt);
+                }
             }
         }
 
@@ -219,6 +227,16 @@ namespace OpenUtau.UI.Controls {
             cxt.DrawEllipse(penVbr.Brush, penVbr, start, 2.5, 2.5);
             cxt.DrawEllipse(penVbr.Brush, penVbr, fadeIn, 2.5, 2.5);
             cxt.DrawEllipse(penVbr.Brush, penVbr, fadeOut, 2.5, 2.5);
+            vibrato.GetPeriodStartEnd(note, DocManager.Inst.Project, out var periodStartPos, out var periodEndPos);
+            Point periodStart = PosToPoint(periodStartPos);
+            Point periodEnd = PosToPoint(periodEndPos);
+            float height = (float)TrackHeight / 3;
+            periodStart.Y -= height / 2 + 0.5f;
+            double width = periodEnd.X - periodStart.X;
+            periodEnd.X -= 2;
+            periodEnd.Y -= height / 2 + 0.5f;
+            cxt.DrawRoundedRectangle(null, penVbr, new Rect(periodStart, new Size(width, height)), 1, 1);
+            cxt.DrawLine(penVbr, periodEnd, periodEnd + new System.Windows.Vector(0, height));
         }
 
         public Point PosToPoint(Vector2 pos) {

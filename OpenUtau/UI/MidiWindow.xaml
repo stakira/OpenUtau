@@ -15,9 +15,23 @@
         <localvm:MidiViewModel x:Key="midiVM"/>
     </Window.Resources>
     <local:BorderlessWindow.MenuContent>
-        <Grid Width="60" Height="20">
-            <ToggleButton x:Name="showPitchToggle" Style="{StaticResource ShowPitchToggleButtonStyle}"
+        <Grid Width="80" Height="20">
+            <ToggleButton x:Name="showVibratoToggle" Style="{StaticResource ShowPitchToggleButtonStyle}"
                           Width="20" Margin="0,0,0,0" HorizontalAlignment="Left" Focusable="False"
+                          IsChecked="{Binding ShowVibrato, Source={StaticResource midiVM}}" ToolTip="Toggle vibrato (U)">
+                <ToggleButton.Content>
+                    <Grid Width="18" Height="18">
+                        <Path Data="M-6.5 1 L-6 1.5 L-4.5 0 L-2 2.5 L0.5 0 L3 2.5 L6.5 -1 L6 -1.5 L4.5 0 L2 -2.5 L-0.5 0 L-3 -2.5 Z" StrokeThickness="1" 
+                              Stroke="{Binding ElementName=showVibratoToggle, Path=Foreground}">
+                            <Path.RenderTransform>
+                                <TranslateTransform X="9" Y="9"/>
+                            </Path.RenderTransform>
+                        </Path>
+                    </Grid>
+                </ToggleButton.Content>
+            </ToggleButton>
+            <ToggleButton x:Name="showPitchToggle" Style="{StaticResource ShowPitchToggleButtonStyle}"
+                          Width="20" Margin="20,0,0,0" HorizontalAlignment="Left" Focusable="False"
                           IsChecked="{Binding ShowPitch, Source={StaticResource midiVM}}" ToolTip="Toggle pitch (I)">
                 <ToggleButton.Content>
                     <Grid Width="18" Height="18">
@@ -31,7 +45,7 @@
                 </ToggleButton.Content>
             </ToggleButton>
             <ToggleButton x:Name="showPhonemeToggle" Style="{StaticResource ShowPitchToggleButtonStyle}"
-                          Width="20" Margin="20,0,0,0" HorizontalAlignment="Left" Focusable="False"
+                          Width="20" Margin="40,0,0,0" HorizontalAlignment="Left" Focusable="False"
                           IsChecked="{Binding ShowPhoneme, Source={StaticResource midiVM}}" ToolTip="Toggle phoneme (O)">
                 <ToggleButton.Content>
                     <Grid Width="18" Height="18">
@@ -41,7 +55,7 @@
                 </ToggleButton.Content>
             </ToggleButton>
             <ToggleButton x:Name="snapToggle" Style="{StaticResource ShowPitchToggleButtonStyle}"
-                          Width="20" Margin="40,0,0,0" HorizontalAlignment="Left" Focusable="False"
+                          Width="20" Margin="60,0,0,0" HorizontalAlignment="Left" Focusable="False"
                           IsChecked="{Binding Snap, Source={StaticResource midiVM}}" ToolTip="Snap (P)">
                 <ToggleButton.Content>
                     <Grid Width="18" Height="18">
