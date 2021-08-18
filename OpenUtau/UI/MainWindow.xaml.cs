@@ -563,7 +563,7 @@ namespace OpenUtau.UI {
 
         private void Play() {
             if (PlaybackManager.Inst.CheckResampler()) {
-                PlaybackManager.Inst.Play(DocManager.Inst.Project);
+                PlaybackManager.Inst.Play(DocManager.Inst.Project, DocManager.Inst.playPosTick);
             } else {
                 MessageBox.Show(
                     (string)FindResource("dialogs.noresampler.message"),

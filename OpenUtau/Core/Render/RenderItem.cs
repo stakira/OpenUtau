@@ -15,35 +15,37 @@ namespace OpenUtau.Core.Render {
     internal class RenderItem {
 
         // For resampler
-        public string SourceFile;
+        public readonly string SourceFile;
+        public readonly string ResamplerName;
 
-        public int NoteNum;
-        public int Velocity;
-        public int Volume;
-        public string StrFlags;
-        public List<int> PitchData;
-        public int RequiredLength;
-        public int Modulation;
-        public double Tempo;
-        public UOto Oto;
+        public readonly int NoteNum;
+        public readonly int Velocity;
+        public readonly int Volume;
+        public readonly string StrFlags;
+        public readonly List<int> PitchData;
+        public readonly int RequiredLength;
+        public readonly int Modulation;
+        public readonly double Tempo;
+        public readonly UOto Oto;
 
         // For connector
-        public double SkipOver;
+        public readonly double SkipOver;
 
-        public double PosMs;
-        public double DurMs;
-        public List<Vector2> Envelope;
+        public readonly double PosMs;
+        public readonly double DurMs;
+        public readonly List<Vector2> Envelope;
 
         // Sound data
-        public MemorySampleProvider Sound;
+        public byte[] Data;
 
         // Progress
-        public string phonemeName;
+        public readonly string phonemeName;
         public RenderEngine.Progress progress;
 
-        public RenderItem(UPhoneme phoneme, UVoicePart part, UProject project) {
+        public RenderItem(UPhoneme phoneme, UVoicePart part, UProject project, string resamplerName) {
             SourceFile = phoneme.oto.File;
             SourceFile = Path.Combine(PathManager.Inst.InstalledSingersPath, SourceFile);
+            ResamplerName = resamplerName;
 
             float vel = phoneme.Parent.expressions["vel"].value;
             float vol = phoneme.Parent.expressions["vol"].value;
@@ -70,23 +72,13 @@ namespace OpenUtau.Core.Render {
         }
 
         public uint HashParameters() {
-            return xxHash.CalculateHash(Encoding.UTF8.GetBytes(SourceFile + " " + GetResamplerExeArgs()));
+            return xxHash.CalculateHash(Encoding.UTF8.GetBytes(ResamplerName + " " + SourceFile + " " + GetResamplerExeArgs()));
         }
 
         public string GetResamplerExeArgs() {
             // fresamp.exe <infile> <outfile> <tone> <velocity> <flags> <offset> <length_req>
             // <fixed_length> <endblank> <volume> <modulation> <pitch>
             return FormattableString.Invariant($"{MusicMath.GetNoteString(NoteNum)} {Velocity:D} \"{StrFlags}\" {Oto.Offset} {RequiredLength:D} {Oto.Consonant} {Oto.Cutoff} {Volume:D} {Modulation:D} {Tempo} {Base64.Base64EncodeInt12(PitchData.ToArray())}");
-        }
-
-        public ISampleProvider GetSampleProvider() {
-            var envelopeSampleProvider = new EnvelopeSampleProvider(Sound, Envelope, SkipOver);
-            var sampleRate = Sound.WaveFormat.SampleRate;
-            return new OffsetSampleProvider(envelopeSampleProvider) {
-                DelayBySamples = (int)(PosMs * sampleRate / 1000),
-                TakeSamples = (int)(DurMs * sampleRate / 1000),
-                SkipOverSamples = (int)(SkipOver * sampleRate / 1000),
-            };
         }
 
         private List<int> BuildPitchData(UPhoneme phoneme, UVoicePart part) {

@@ -614,6 +614,32 @@ namespace OpenUtau.UI {
 
         #endregion
 
+        #region Playback controls
+
+        private void Play() {
+            if (PlaybackManager.Inst.CheckResampler()) {
+                PlaybackManager.Inst.Play(DocManager.Inst.Project, DocManager.Inst.playPosTick);
+            } else {
+                MessageBox.Show(
+                    (string)FindResource("dialogs.noresampler.message"),
+                    (string)FindResource("dialogs.noresampler.caption"));
+            }
+        }
+
+        private void Pause() {
+            PlaybackManager.Inst.PausePlayback();
+        }
+
+        private void PlayOrPause() {
+            if (!PlaybackManager.Inst.Playing) {
+                Play();
+            } else {
+                Pause();
+            }
+        }
+
+        #endregion
+
         private void Window_KeyDown(object sender, KeyEventArgs e) {
             if (LyricBox.IsVisible) {
                 // Prevents window from handling events, so that events can be handled by text box default behaviour.
@@ -650,6 +676,8 @@ namespace OpenUtau.UI {
                     midiVM.ShowPhoneme = !midiVM.ShowPhoneme;
                 } else if (e.Key == Key.P) {
                     midiVM.Snap = !midiVM.Snap;
+                } else if (e.Key == Key.Space) {
+                    PlayOrPause();
                 }
             }
             e.Handled = true;

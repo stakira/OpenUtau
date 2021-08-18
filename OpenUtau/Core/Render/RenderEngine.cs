@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -30,7 +29,6 @@ namespace OpenUtau.Core.Render {
             }
         }
 
-        readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         readonly UProject project;
         readonly IResamplerDriver driver;
         readonly RenderCache cache;
@@ -41,20 +39,15 @@ namespace OpenUtau.Core.Render {
             this.cache = cache;
         }
 
-        public void Cancel() {
-            cancellationTokenSource.Cancel();
-        }
-
         public async Task<List<TrackSampleProvider>> RenderAsync() {
             List<TrackSampleProvider> trackSampleProviders = project.tracks.Select(
                 track => new TrackSampleProvider() {
                     Volume = PlaybackManager.DecibelToVolume(track.Volume)
                 }).ToList();
-            var cacheDir = PathManager.Inst.GetCachePath(project.filePath);
             foreach (UPart part in project.parts) {
                 UVoicePart voicePart = part as UVoicePart;
                 if (voicePart != null) {
-                    SequencingSampleProvider sampleProvider = await RenderPartAsync(voicePart, project, cacheDir);
+                    SequencingSampleProvider sampleProvider = await RenderPartAsync(voicePart, project);
                     if (sampleProvider != null) {
                         trackSampleProviders[voicePart.TrackNo].AddSource(sampleProvider, TimeSpan.Zero);
                     }
@@ -74,45 +67,84 @@ namespace OpenUtau.Core.Render {
             return trackSampleProviders;
         }
 
-        async Task<SequencingSampleProvider> RenderPartAsync(UVoicePart part, UProject project, string cacheDir) {
+        async Task<SequencingSampleProvider> RenderPartAsync(UVoicePart part, UProject project) {
             var singer = project.tracks[part.TrackNo].Singer;
             if (singer == null || !singer.Loaded) {
                 return null;
             }
-            var tasks = new List<Task<RenderItem>>();
             var progress = new Progress(part.notes.Sum(note => note.phonemes.Count));
             progress.Clear();
-            foreach (var note in part.notes) {
-                foreach (var phoneme in note.phonemes) {
-                    if (string.IsNullOrEmpty(phoneme.oto.File)) {
-                        Log.Warning($"Cannot find phoneme in note {note.lyric}");
-                        continue;
-                    }
-                    var item = new RenderItem(phoneme, part, project);
-                    item.progress = progress;
-                    tasks.Add(Task<RenderItem>.Factory.StartNew(ResamplePhonemeAsync, item, cancellationTokenSource.Token));
-                }
-            }
-            await Task.WhenAll(tasks.ToArray());
+            var source = new CancellationTokenSource();
+            var tasks = PreparePart(part, project).Select(item => {
+                item.progress = progress;
+                return Task<RenderItem>.Factory.StartNew(ResampleItem, item, source.Token);
+            }).ToArray();
+            await Task.WhenAll(tasks);
+            source.Dispose();
             progress.Clear();
             return new SequencingSampleProvider(tasks.Select(task => new RenderItemSampleProvider(task.Result)));
         }
 
-        RenderItem ResamplePhonemeAsync(object state) {
-            RenderItem item = state as RenderItem;
+        public CancellationTokenSource PreRenderProject() {
+            var source = new CancellationTokenSource();
+            Task.Run(() => {
+                Thread.Sleep(100);
+                if (source.Token.IsCancellationRequested) {
+                    return;
+                }
+                TaskFactory<RenderItem> factory = new TaskFactory<RenderItem>(source.Token);
+                using (SemaphoreSlim slim = new SemaphoreSlim(4)) {
+                    var items = PrepareProject(project).ToArray();
+                    var progress = new Progress(items.Length);
+                    var tasks = items
+                        .Select(item => factory.StartNew((obj) => {
+                            slim.Wait();
+                            if (source.Token.IsCancellationRequested) {
+                                return null;
+                            }
+                            var renderItem = obj as RenderItem;
+                            renderItem.progress = progress;
+                            Resample(renderItem);
+                            slim.Release();
+                            return renderItem;
+                        }, item, source.Token)).ToArray();
+                    Task.WaitAll(tasks);
+                    progress.Clear();
+                }
+            });
+            return source;
+        }
+
+        IEnumerable<RenderItem> PrepareProject(UProject project) {
+            return project.parts
+                .Where(part => part is UVoicePart)
+                .Select(part => part as UVoicePart)
+                .SelectMany(part => PreparePart(part, project));
+        }
+
+        IEnumerable<RenderItem> PreparePart(UVoicePart part, UProject project) {
+            return part.notes
+                .SelectMany(note => note.phonemes)
+                .Where(phoneme => !phoneme.Error)
+                .Select(phoneme => new RenderItem(phoneme, part, project, driver.GetInfo().Name));
+        }
+
+        RenderItem ResampleItem(object state) {
+            var item = state as RenderItem;
+            Resample(item);
+            return item;
+        }
+
+        void Resample(RenderItem item) {
             uint hash = item.HashParameters();
             byte[] data = cache.Get(hash);
             if (data == null) {
                 data = driver.DoResampler(DriverModels.CreateInputModel(item, 0));
                 cache.Put(hash, data);
                 Log.Information($"Sound {hash:x} {item.GetResamplerExeArgs()} resampled.");
-            } else {
-                Log.Information($"Sound {hash:x} {item.GetResamplerExeArgs()} cache retrieved.");
             }
-            var stream = new MemoryStream(data);
-            item.Sound = MemorySampleProvider.FromStream(stream);
-            item.progress.CompleteOne($"Resampling \"{item.phonemeName}\"");
-            return item;
+            item.Data = data;
+            item.progress?.CompleteOne($"Resampling \"{item.phonemeName}\"");
         }
     }
 }

@@ -19,6 +19,7 @@ namespace OpenUtau.Core {
 
         public Dictionary<string, USinger> Singers { get; private set; } = new Dictionary<string, USinger>();
         public UProject Project { get; private set; }
+        public bool HasOpenUndoGroup => undoGroup != null;
 
         public void SearchAllSingers() {
             Singers = Formats.UtauSoundbank.FindAllSingers();

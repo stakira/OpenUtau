@@ -33,6 +33,7 @@ namespace OpenUtau.Core.Ustx {
         }
 
         public void Validate(UProject project, UTrack track, UVoicePart part, UNote note) {
+            Error = note.Error;
             ValidateDuration(note);
             ValidateOto(track, note);
             ValidateOverlap(project, note);
@@ -40,6 +41,9 @@ namespace OpenUtau.Core.Ustx {
         }
 
         void ValidateDuration(UNote note) {
+            if (Error) {
+                return;
+            }
             if (Next != null && Next.Parent == Parent) {
                 Duration = Next.position - position;
             } else {
