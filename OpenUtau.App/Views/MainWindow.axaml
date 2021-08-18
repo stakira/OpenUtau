@@ -1,0 +1,117 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:OpenUtau.App.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="OpenUtau.App.Views.MainWindow"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="OpenUtau">
+  <Window.Styles>
+    <StyleInclude Source="/Themes/Dark.axaml"/>
+    <Style Selector="ProgressBar /template/ Border">
+      <Setter Property="CornerRadius" Value="0,0,0,0"/>
+    </Style>
+    <Style Selector="ScrollBar /template/ Rectangle">
+      <Setter Property="Fill" Value="White"/>
+    </Style>
+    <Style Selector="Border.playback">
+      <Setter Property="CornerRadius" Value="4"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="BorderBrush" Value="LightGray"/>
+      <Setter Property="Height" Value="20"/>
+    </Style>
+    <Style Selector="Border.playback TextBlock">
+      <Setter Property="FontSize" Value="10"/>
+      <Setter Property="VerticalAlignment" Value="Center"/>
+      <Setter Property="HorizontalAlignment" Value="Center"/>
+    </Style>
+    <Style Selector="Border.playback StackPanel">
+      <Setter Property="VerticalAlignment" Value="Center"/>
+      <Setter Property="HorizontalAlignment" Value="Center"/>
+    </Style>
+    <Style Selector="Border.playback Button">
+      <Setter Property="Margin" Value="0"/>
+      <Setter Property="Padding" Value="0"/>
+      <Setter Property="Width" Value="21"/>
+      <Setter Property="Height" Value="20"/>
+      <Setter Property="Background" Value="Transparent"/>
+    </Style>
+  </Window.Styles>
+  <Window.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source='/Strings/Strings.axaml'/>
+      </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
+  </Window.Resources>
+  <Design.DataContext>
+    <vm:MainWindowViewModel/>
+  </Design.DataContext>
+  <Grid RowDefinitions="24,1*,Auto,5" ColumnDefinitions="250,*,24" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+    <Menu Grid.Row="0" Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Left">
+      <MenuItem Header="{DynamicResource menu.file}">
+        <MenuItem Header="{DynamicResource menu.file.new}" InputGesture="Ctrl+N"/>
+        <MenuItem Header="{DynamicResource menu.file.open}" InputGesture="Ctrl+O"/>
+        <MenuItem Header="{DynamicResource menu.file.save}" InputGesture="Ctrl+S"/>
+        <MenuItem Header="{DynamicResource menu.file.saveas}" IsEnabled="False"/>
+        <MenuItem Header="{DynamicResource menu.file.importaudio}"/>
+        <MenuItem Header="{DynamicResource menu.file.importmidi}"/>
+        <MenuItem Header="{DynamicResource menu.file.exportall}"/>
+        <MenuItem Header="{DynamicResource menu.file.exit}" InputGesture="Alt+F4"/>
+      </MenuItem>
+      <MenuItem Header="{DynamicResource menu.tools}">
+        <MenuItem Header="{DynamicResource menu.tools.singers}"/>
+        <MenuItem Header="{DynamicResource menu.tools.singer.install}"/>
+        <MenuItem Header="{DynamicResource menu.tools.prefs}"/>
+      </MenuItem>
+      <MenuItem Header="{DynamicResource menu.help}">
+        <MenuItem Header="{Binding AppVersion}"/>
+      </MenuItem>
+    </Menu>
+    <ScrollBar Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,4,0,4" Orientation="Horizontal" AllowAutoHide="False"/>
+    <Border Grid.Row="0" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0" Background="AliceBlue">
+    </Border>
+    <Panel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0">
+      <Panel HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="24">
+        <Border Classes="playback" Width="72" HorizontalAlignment="Left" Margin="4,0">
+          <TextBlock Classes="playback" PointerPressed="OnEditTempo">4/4  120.00</TextBlock>
+        </Border>
+        <Border Classes="playback" Width="88" HorizontalAlignment="Center">
+          <StackPanel Orientation="Horizontal">
+            <Button Command="{Binding SeekStart}">
+              <Path Fill="Black" VerticalAlignment="Center" HorizontalAlignment="Center"
+                    Data="M 0 0 L 2 0 L 2 9 L 0 9 Z M 2 4.5 L 7 0 L 7 9 Z"/>
+            </Button>
+            <Button Command="{Binding PlayOrPause}">
+              <Path Fill="Black" VerticalAlignment="Center" HorizontalAlignment="Center"
+                    Data="M 0 0 L 7 6.5 L 0 13 Z"/>
+            </Button>
+            <Button Command="{Binding Stop}">
+              <Path Fill="Black" VerticalAlignment="Center" HorizontalAlignment="Center"
+                    Data="M 0 0 L 2 0 L 2 9 L 0 9 Z M 4 0 L 6 0 L 6 9 L 4 9 Z"/>
+            </Button>
+            <Button Command="{Binding SeekEnd}">
+              <Path Fill="Black" VerticalAlignment="Center" HorizontalAlignment="Center"
+                    Data="M 0 0 L 5 4.5 L 0 9 Z M 5 0 L 7 0 L 7 9 L 5 9 Z"/>
+            </Button>
+          </StackPanel>
+        </Border>
+        <Border Classes="playback" Width="72" HorizontalAlignment="Right" Margin="4,0">
+          <TextBlock Classes="playback">00:00.000</TextBlock>
+        </Border>
+      </Panel>
+      <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,24,0,0" Background="Wheat"/>
+    </Panel>
+    <Panel Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0">
+      <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="24" Background="AliceBlue"/>
+      <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent" BoxShadow="inset 0 0 5 0.75 Gray" ClipToBounds="True">
+      </Border>
+    </Panel>
+    <Border Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,0,0,0" Height="24" Background="Wheat">
+    </Border>
+    <ScrollBar Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="4,24,4,0" Orientation="Vertical" AllowAutoHide="False"/>
+    <TextBlock Grid.Row="2" Grid.ColumnSpan="3" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Height="15" Text="Progress"/>
+    <ProgressBar Grid.Row="3" Grid.ColumnSpan="3" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Height="5" Value="50"/>
+  </Grid>
+</Window>

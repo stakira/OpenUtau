@@ -1,0 +1,36 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Styles.Resources>
+    <!-- Colors -->
+    <Color x:Key="BackgroundColor">#000000</Color>
+    <Color x:Key="BackgroundColor1">#101010</Color>
+    <Color x:Key="NeutralColor">#404040</Color>
+    <Color x:Key="NeutralColor1">#606060</Color>
+
+    <!-- Avalonia brushes -->
+    <SolidColorBrush x:Key="BackgroundBrush" Color="{DynamicResource BackgroundColor}" />
+    <SolidColorBrush x:Key="BackgroundBrush1" Color="{DynamicResource BackgroundColor1}" />
+    <SolidColorBrush x:Key="NeutralBrush" Color="{DynamicResource NeutralColor}" />
+    <SolidColorBrush x:Key="NeutralBrush1" Color="{DynamicResource NeutralColor1}" />
+  </Styles.Resources>
+
+  <Style Selector="Menu">
+    <Setter Property="Height" Value="24"/>
+  </Style>
+  <Style Selector="MenuItem">
+    <Setter Property="Background" Value="White"/>
+    <Setter Property="FontSize" Value="12"/>
+    <Setter Property="Height" Value="24"/>
+    <Setter Property="Padding" Value="8,2,8,2"/>
+  </Style>
+  <Style Selector="TextBlock">
+    <Setter Property="FontSize" Value="12"/>
+  </Style>
+  <Style Selector="ProgressBar">
+    <Setter Property="Background" Value="White"/>
+    <Setter Property="Foreground" Value="BlueViolet"/>
+  </Style>
+  <Style Selector="ProgressBar /template/ Border">
+    <Setter Property="CornerRadius" Value="0,0,0,0"/>
+  </Style>
+</Styles>
