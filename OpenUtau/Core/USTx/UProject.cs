@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Newtonsoft.Json;
 
 namespace OpenUtau.Core.Ustx {
@@ -24,8 +23,10 @@ namespace OpenUtau.Core.Ustx {
         public string FilePath { get; set; }
         public bool Saved { get; set; } = false;
 
-        public void RegisterExpression(UExpressionDescriptor def) {
-            expressions.Add(def.abbr, def);
+        public void RegisterExpression(UExpressionDescriptor descriptor) {
+            if (!expressions.ContainsKey(descriptor.abbr)) {
+                expressions.Add(descriptor.abbr, descriptor);
+            }
         }
 
         public UNote CreateNote() {

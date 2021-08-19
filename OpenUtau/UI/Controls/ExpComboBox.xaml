@@ -15,7 +15,8 @@
                 <ComboBox x:Name="dropList" Style="{StaticResource ExpComboBoxStyle}" VerticalAlignment="Center" HorizontalAlignment="Left" Width="20" Height="22" Focusable="False"
                           Foreground="Black"
                           SelectedIndex="{Binding SelectedIndex, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
-                          ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" SelectionChanged="dropList_SelectionChanged"/>
+                          ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"
+                          SelectionChanged="dropList_SelectionChanged"/>
             </Grid>
         </ControlTemplate>
     </UserControl.Template>

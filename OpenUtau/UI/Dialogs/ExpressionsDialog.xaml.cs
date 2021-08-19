@@ -63,9 +63,7 @@ namespace OpenUtau.UI.Dialogs {
     public partial class ExpressionsDialog : Window, INotifyPropertyChanged {
         public ObservableCollection<ExpressionBuilder> Builders { get; set; }
         public ExpressionBuilder Selected { get; set; }
-        public bool IsBuiltIn { get; set; }
-
-        string[] builtIns = { "vel", "vol", "acc", "dec" };
+        public bool IsFlag { get; set; }
 
         public ExpressionsDialog() {
             InitializeComponent();
@@ -89,10 +87,10 @@ namespace OpenUtau.UI.Dialogs {
 
         private void expList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             Selected = Builders[expList.SelectedIndex];
-            IsBuiltIn = !builtIns.Contains(Selected.Abbr);
+            IsFlag = Selected.Flag != '\0';
             if (PropertyChanged != null) {
                 PropertyChanged(this, new PropertyChangedEventArgs(nameof(Selected)));
-                PropertyChanged(this, new PropertyChangedEventArgs(nameof(IsBuiltIn)));
+                PropertyChanged(this, new PropertyChangedEventArgs(nameof(IsFlag)));
             }
         }
 

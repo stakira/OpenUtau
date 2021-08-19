@@ -9,15 +9,23 @@ namespace OpenUtau.Core.Formats {
     class Ustx {
         public static readonly Version kUstxVersion = new Version(0, 1);
 
-        public static UProject Create() {
-            UProject project = new UProject() { Saved = false };
+        public static void AddBuiltInExpressions(UProject project) {
             project.RegisterExpression(new UExpressionDescriptor("velocity", "vel", 0, 200, 100));
             project.RegisterExpression(new UExpressionDescriptor("volume", "vol", 0, 200, 100));
             project.RegisterExpression(new UExpressionDescriptor("accent", "acc", 0, 200, 100));
             project.RegisterExpression(new UExpressionDescriptor("decay", "dec", 0, 100, 0));
+        }
+
+        public static void AddDefaultExpressions(UProject project) {
+            AddBuiltInExpressions(project);
             project.RegisterExpression(new UExpressionDescriptor("gender", "gen", -100, 100, 0, 'g'));
             project.RegisterExpression(new UExpressionDescriptor("breath", "bre", 0, 100, 0, 'B'));
             project.RegisterExpression(new UExpressionDescriptor("lowpass", "lpf", 0, 100, 0, 'H'));
+        }
+
+        public static UProject Create() {
+            UProject project = new UProject() { Saved = false };
+            AddDefaultExpressions(project);
             return project;
         }
 
@@ -38,6 +46,7 @@ namespace OpenUtau.Core.Formats {
                 new VersionConverter(),
                 new UPartConverter(),
                 new UExpressionConverter());
+            AddDefaultExpressions(project);
             project.FilePath = filePath;
             project.Saved = true;
             project.AfterLoad();

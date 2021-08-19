@@ -60,13 +60,7 @@ namespace OpenUtau.Core.Formats {
 
         public static UProject Load(StreamReader reader, string file) {
             var project = new UProject() { resolution = 480, FilePath = file, Saved = false };
-            project.RegisterExpression(new UExpressionDescriptor("velocity", "vel", 0, 200, 100));
-            project.RegisterExpression(new UExpressionDescriptor("volume", "vol", 0, 200, 100));
-            project.RegisterExpression(new UExpressionDescriptor("accent", "acc", 0, 200, 100));
-            project.RegisterExpression(new UExpressionDescriptor("decay", "dec", 0, 100, 0));
-            project.RegisterExpression(new UExpressionDescriptor("gender", "gen", -100, 100, 0, 'g'));
-            project.RegisterExpression(new UExpressionDescriptor("breath", "bre", 0, 100, 0, 'B'));
-            project.RegisterExpression(new UExpressionDescriptor("lowpass", "lpf", 0, 100, 0, 'H'));
+            Ustx.AddDefaultExpressions(project);
 
             project.tracks.Add(new UTrack { TrackNo = 0 });
             var part = new UVoicePart() { TrackNo = 0, PosTick = 0 };

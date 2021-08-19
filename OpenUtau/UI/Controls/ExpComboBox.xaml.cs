@@ -28,11 +28,11 @@ namespace OpenUtau.UI.Controls {
         public Brush Highlight { set { SetValue(HighlightProperty, value); } get { return (Brush)GetValue(HighlightProperty); } }
         public string Text { set { SetValue(TextProperty, value); } get { return (string)GetValue(TextProperty); } }
 
-        public static readonly DependencyProperty SelectedIndexProperty = DependencyProperty.Register("SelectedIndex", typeof(int), typeof(ExpComboBox), new PropertyMetadata(0));
-        public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register("ItemsSource", typeof(ObservableCollection<string>), typeof(ExpComboBox));
-        public static readonly DependencyProperty TagBrushProperty = DependencyProperty.Register("TagBrush", typeof(Brush), typeof(ExpComboBox), new PropertyMetadata(Brushes.Black));
-        public static readonly DependencyProperty HighlightProperty = DependencyProperty.Register("Highlight", typeof(Brush), typeof(ExpComboBox), new PropertyMetadata(Brushes.Black));
-        public static readonly DependencyProperty TextProperty = DependencyProperty.Register("Text", typeof(string), typeof(ExpComboBox), new PropertyMetadata(""));
+        public static readonly DependencyProperty SelectedIndexProperty = DependencyProperty.Register(nameof(SelectedIndex), typeof(int), typeof(ExpComboBox), new PropertyMetadata(0));
+        public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register(nameof(ItemsSource), typeof(ObservableCollection<string>), typeof(ExpComboBox));
+        public static readonly DependencyProperty TagBrushProperty = DependencyProperty.Register(nameof(TagBrush), typeof(Brush), typeof(ExpComboBox), new PropertyMetadata(Brushes.Black));
+        public static readonly DependencyProperty HighlightProperty = DependencyProperty.Register(nameof(Highlight), typeof(Brush), typeof(ExpComboBox), new PropertyMetadata(Brushes.Black));
+        public static readonly DependencyProperty TextProperty = DependencyProperty.Register(nameof(Text), typeof(string), typeof(ExpComboBox), new PropertyMetadata(""));
 
         public ExpComboBox() {
             InitializeComponent();
@@ -45,7 +45,7 @@ namespace OpenUtau.UI.Controls {
 
         private void dropList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             string name = ItemsSource[SelectedIndex];
-            string abbr = OpenUtau.Core.DocManager.Inst.Project.expressions[name].abbr;
+            string abbr = Core.DocManager.Inst.Project.expressions.Values.First(d => d.name == name).abbr;
             Text = abbr.Substring(0, Math.Min(3, abbr.Length)).ToUpper();
             EventHandler handler = SelectionChanged;
             if (handler != null) handler(this, e);
