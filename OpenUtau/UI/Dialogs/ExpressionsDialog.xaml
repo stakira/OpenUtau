@@ -24,7 +24,7 @@
                 <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
             <Button Grid.Column="0" HorizontalAlignment="Stretch" Click="AddButton_Click">+</Button>
-            <Button Grid.Column="2" HorizontalAlignment="Stretch" Click="RemoveButton_Click" IsEnabled="{Binding IsFlag}">-</Button>
+            <Button Grid.Column="2" HorizontalAlignment="Stretch" Click="RemoveButton_Click" IsEnabled="{Binding IsEditable}">-</Button>
         </Grid>
         <Grid Margin="10,10,10,40" Width="410" HorizontalAlignment="Right">
             <Grid.ColumnDefinitions>
@@ -41,15 +41,15 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <Label Grid.Column="0" Grid.Row="0">Name</Label>
-            <TextBox Grid.Column="1" Grid.Row="0" Height="19" IsEnabled="{Binding IsFlag}" Text="{Binding Selected.Name}"/>
+            <TextBox Grid.Column="1" Grid.Row="0" Height="19" IsEnabled="{Binding IsEditable}" Text="{Binding Selected.Name}"/>
             <Label Grid.Column="0" Grid.Row="1">Abbreviation</Label>
-            <TextBox Grid.Column="1" Grid.Row="1" Height="19" IsEnabled="{Binding IsFlag}" Text="{Binding Selected.Abbr}"/>
+            <TextBox Grid.Column="1" Grid.Row="1" Height="19" IsEnabled="{Binding IsEditable}" Text="{Binding Selected.Abbr}"/>
             <Label Grid.Column="0" Grid.Row="2">Resampler Flag</Label>
-            <TextBox Grid.Column="1" Grid.Row="2" Height="19" IsEnabled="{Binding IsFlag}" Text="{Binding Selected.Flag}"/>
+            <TextBox Grid.Column="1" Grid.Row="2" Height="19" IsEnabled="{Binding IsEditable}" Text="{Binding Selected.Flag}"/>
             <Label Grid.Column="0" Grid.Row="3">Min</Label>
-            <TextBox Grid.Column="1" Grid.Row="3" Height="19" IsEnabled="{Binding IsFlag}" Text="{Binding Selected.Min}"/>
+            <TextBox Grid.Column="1" Grid.Row="3" Height="19" IsEnabled="{Binding IsEditable}" Text="{Binding Selected.Min}"/>
             <Label Grid.Column="0" Grid.Row="4">Max</Label>
-            <TextBox Grid.Column="1" Grid.Row="4" Height="19" IsEnabled="{Binding IsFlag}" Text="{Binding Selected.Max}"/>
+            <TextBox Grid.Column="1" Grid.Row="4" Height="19" IsEnabled="{Binding IsEditable}" Text="{Binding Selected.Max}"/>
             <Label Grid.Column="0" Grid.Row="5">Default</Label>
             <TextBox Grid.Column="1" Grid.Row="5" Height="19" Text="{Binding Selected.DefaultValue}"/>
         </Grid>

@@ -26,9 +26,9 @@ namespace OpenUtau.UI.Dialogs {
         public string Name { get; set; }
         public string Abbr { get; set; }
         public float Min { get; set; }
-        public float Max { get; set; }
+        public float Max { get; set; } = 100;
         public float DefaultValue { get; set; }
-        public char Flag { get; set; } = '\0';
+        public string Flag { get; set; }
 
         public ExpressionBuilder(UExpressionDescriptor descriptor) {
             Name = descriptor.name;
@@ -44,16 +44,16 @@ namespace OpenUtau.UI.Dialogs {
         }
 
         public bool IsValid() {
-            return !string.IsNullOrEmpty(Name)
-                && !string.IsNullOrEmpty(Abbr)
-                && Abbr.Length == 3
+            return !string.IsNullOrWhiteSpace(Name)
+                && !string.IsNullOrWhiteSpace(Abbr)
+                && Abbr.Trim().Length == 3
                 && Min < Max
                 && Min <= DefaultValue
                 && DefaultValue <= Max;
         }
 
         public UExpressionDescriptor Build() {
-            return new UExpressionDescriptor(Name, Abbr.ToLower(), Min, Max, DefaultValue, Flag);
+            return new UExpressionDescriptor(Name.Trim(), Abbr.Trim().ToLower(), Min, Max, DefaultValue, Flag);
         }
     }
 
@@ -61,9 +61,10 @@ namespace OpenUtau.UI.Dialogs {
     /// Interaction logic for ExpressionsDialog.xaml
     /// </summary>
     public partial class ExpressionsDialog : Window, INotifyPropertyChanged {
+        static readonly string[] kBuiltIns = { "vel", "vol", "acc", "dec" };
         public ObservableCollection<ExpressionBuilder> Builders { get; set; }
         public ExpressionBuilder Selected { get; set; }
-        public bool IsFlag { get; set; }
+        public bool IsEditable { get; set; }
 
         public ExpressionsDialog() {
             InitializeComponent();
@@ -87,19 +88,39 @@ namespace OpenUtau.UI.Dialogs {
 
         private void expList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             Selected = Builders[expList.SelectedIndex];
-            IsFlag = Selected.Flag != '\0';
+            IsEditable = !kBuiltIns.Contains(Selected.Abbr);
             if (PropertyChanged != null) {
                 PropertyChanged(this, new PropertyChangedEventArgs(nameof(Selected)));
-                PropertyChanged(this, new PropertyChangedEventArgs(nameof(IsFlag)));
+                PropertyChanged(this, new PropertyChangedEventArgs(nameof(IsEditable)));
             }
         }
 
         private void ApplyButton_Click(object sender, RoutedEventArgs e) {
             if (Builders.All(builder => builder.IsValid())) {
+                var abbrs = Builders.Select(builder => builder.Abbr);
+                if (abbrs.Count() != abbrs.Distinct().Count()) {
+                    MessageBox.Show("Abbreviations must be unique.", "Error");
+                    return;
+                }
+                var flags = Builders.Where(builder => !string.IsNullOrEmpty(builder.Flag)).Select(builder => builder.Flag);
+                if (flags.Count() != flags.Distinct().Count()) {
+                    MessageBox.Show("Flags must be unique.", "Error");
+                    return;
+                }
                 Apply();
                 Close();
             } else {
-                expList.SelectedItem = Builders.First(builder => !builder.IsValid());
+                var invalid = Builders.First(builder => !builder.IsValid());
+                expList.SelectedItem = invalid;
+                if (string.IsNullOrWhiteSpace(invalid.Name)) {
+                    MessageBox.Show("Name must be set.", "Error");
+                } else if (string.IsNullOrWhiteSpace(invalid.Abbr)) {
+                    MessageBox.Show("Abbreviation must be set.", "Error");
+                } else if (invalid.Abbr.Trim().Length != 3) {
+                    MessageBox.Show("Abbreviation must be 3 characters long.", "Error");
+                } else {
+                    MessageBox.Show("Invalid min, max or default Value.", "Error");
+                }
             }
         }
 

@@ -18,9 +18,9 @@ namespace OpenUtau.Core.Formats {
 
         public static void AddDefaultExpressions(UProject project) {
             AddBuiltInExpressions(project);
-            project.RegisterExpression(new UExpressionDescriptor("gender", "gen", -100, 100, 0, 'g'));
-            project.RegisterExpression(new UExpressionDescriptor("breath", "bre", 0, 100, 0, 'B'));
-            project.RegisterExpression(new UExpressionDescriptor("lowpass", "lpf", 0, 100, 0, 'H'));
+            project.RegisterExpression(new UExpressionDescriptor("gender", "gen", -100, 100, 0, "g"));
+            project.RegisterExpression(new UExpressionDescriptor("breath", "bre", 0, 100, 0, "B"));
+            project.RegisterExpression(new UExpressionDescriptor("lowpass", "lpf", 0, 100, 0, "H"));
         }
 
         public static UProject Create() {

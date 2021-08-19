@@ -37,7 +37,7 @@ namespace OpenUtau.Core.Ustx {
         public string GetResamplerFlags() {
             StringBuilder builder = new StringBuilder();
             foreach (var exp in expressions.Values) {
-                if (exp.descriptor.flag != '\0') {
+                if (!string.IsNullOrEmpty(exp.descriptor.flag)) {
                     builder.Append(exp.descriptor.flag);
                     builder.Append((int)exp.value);
                 }

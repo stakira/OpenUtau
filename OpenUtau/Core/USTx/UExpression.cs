@@ -9,9 +9,9 @@ namespace OpenUtau.Core.Ustx {
         [JsonProperty] public readonly float min;
         [JsonProperty] public readonly float max;
         [JsonProperty] public readonly float defaultValue;
-        [JsonProperty] public readonly char flag;
+        [JsonProperty] public readonly string flag;
 
-        public UExpressionDescriptor(string name, string abbr, float min, float max, float defaultValue, char flag = '\0') {
+        public UExpressionDescriptor(string name, string abbr, float min, float max, float defaultValue, string flag = "") {
             this.name = name;
             this.abbr = abbr.ToLower();
             this.min = min;
