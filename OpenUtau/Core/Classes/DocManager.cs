@@ -56,7 +56,7 @@ namespace OpenUtau.Core {
                         savedPoint = undoQueue.Last();
                     }
                     if (string.IsNullOrEmpty(_cmd.Path)) {
-                        Formats.Ustx.Save(Project.filePath, Project);
+                        Formats.Ustx.Save(Project.FilePath, Project);
                     } else {
                         Formats.Ustx.Save(_cmd.Path, Project);
                     }

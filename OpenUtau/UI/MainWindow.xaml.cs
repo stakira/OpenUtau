@@ -167,7 +167,10 @@ namespace OpenUtau.UI {
                 if (e.ClickCount == 2) {
                     if (partEl is VoicePartElement) // load part into midi window
                     {
-                        if (midiWindow == null) midiWindow = new MidiWindow();
+                        if (midiWindow == null) {
+                            midiWindow = new MidiWindow();
+                            midiWindow.mainWindow = this;
+                        }
                         DocManager.Inst.ExecuteCmd(new LoadPartNotification(partEl.Part, trackVM.Project));
                         midiWindow.Show();
                         midiWindow.Focus();
@@ -422,7 +425,7 @@ namespace OpenUtau.UI {
 
         private void MenuExportAll_Click(object sender, RoutedEventArgs e) {
             var project = DocManager.Inst.Project;
-            if (string.IsNullOrEmpty(project.filePath)) {
+            if (string.IsNullOrEmpty(project.FilePath)) {
                 MessageBox.Show(
                     (string)FindResource("dialogs.export.savefirst"),
                     (string)FindResource("dialogs.export.caption"),
@@ -460,16 +463,28 @@ namespace OpenUtau.UI {
                 DocManager.Inst.StartUndoGroup();
                 while (trackVM.SelectedParts.Count > 0) DocManager.Inst.ExecuteCmd(new RemovePartCommand(trackVM.Project, trackVM.SelectedParts.Last()));
                 DocManager.Inst.EndUndoGroup();
-            } else if (Keyboard.Modifiers == ModifierKeys.Alt && e.SystemKey == Key.F4) CmdExit();
-            else if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.O) CmdOpenFileDialog();
-            else if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.Z) {
-                trackVM.DeselectAll();
-                DocManager.Inst.Undo();
-            } else if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.Y) {
-                trackVM.DeselectAll();
-                DocManager.Inst.Redo();
-            } else if (Keyboard.Modifiers == ModifierKeys.None && e.Key == Key.Space) {
-                PlayOrPause();
+            } else if (Keyboard.Modifiers == ModifierKeys.Alt) {
+                if (e.SystemKey == Key.F4) {
+                    CmdExit();
+                }
+            } else if (Keyboard.Modifiers == ModifierKeys.Control) {
+                if (e.Key == Key.N) {
+                    CmdNewFile();
+                } else if (e.Key == Key.O) {
+                    CmdOpenFileDialog();
+                } else if (e.Key == Key.S) {
+                    CmdSaveFile();
+                } else if (e.Key == Key.Z) {
+                    trackVM.DeselectAll();
+                    DocManager.Inst.Undo();
+                } else if (e.Key == Key.Y) {
+                    trackVM.DeselectAll();
+                    DocManager.Inst.Redo();
+                }
+            } else if (Keyboard.Modifiers == ModifierKeys.None) {
+                if (e.Key == Key.Space) {
+                    PlayOrPause();
+                }
             }
         }
 
@@ -492,8 +507,9 @@ namespace OpenUtau.UI {
             Core.Formats.Formats.LoadProject(files);
         }
 
-        private void CmdSaveFile() {
-            if (DocManager.Inst.Project.Saved == false) {
+        public void CmdSaveFile() {
+            var project = DocManager.Inst.Project;
+            if (string.IsNullOrEmpty(project.FilePath) || !project.Saved) {
                 SaveFileDialog dialog = new SaveFileDialog() { DefaultExt = "ustx", Filter = "Project Files|*.ustx", Title = "Save File" };
                 if (dialog.ShowDialog() == true) {
                     DocManager.Inst.ExecuteCmd(new SaveProjectNotification(dialog.FileName));

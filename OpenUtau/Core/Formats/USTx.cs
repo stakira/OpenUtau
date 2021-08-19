@@ -38,7 +38,8 @@ namespace OpenUtau.Core.Formats {
                 new VersionConverter(),
                 new UPartConverter(),
                 new UExpressionConverter());
-            project.filePath = filePath;
+            project.FilePath = filePath;
+            project.Saved = true;
             project.AfterLoad();
             project.Validate();
             return project;

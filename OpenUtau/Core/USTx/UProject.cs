@@ -8,7 +8,6 @@ namespace OpenUtau.Core.Ustx {
     public class UProject {
         [JsonProperty] public string name = "New Project";
         [JsonProperty] public string comment = string.Empty;
-        public string filePath;
         [JsonProperty] public string outputDir = "Vocal";
         [JsonProperty] public string cacheDir = "UCache";
         [JsonProperty] public Version ustxVersion;
@@ -22,6 +21,7 @@ namespace OpenUtau.Core.Ustx {
         [JsonProperty] public List<UTrack> tracks = new List<UTrack>();
         [JsonProperty] public List<UPart> parts = new List<UPart>();
 
+        public string FilePath { get; set; }
         public bool Saved { get; set; } = false;
 
         public void RegisterExpression(UExpressionDescriptor def) {

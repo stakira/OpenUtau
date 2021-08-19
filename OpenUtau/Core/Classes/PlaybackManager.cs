@@ -185,7 +185,7 @@ namespace OpenUtau.Core {
                     renderTask = engine.RenderAsync();
                     trackSources = await renderTask;
                     for (int i = 0; i < trackSources.Count; ++i) {
-                        var file = PathManager.Inst.GetExportPath(project.filePath, i + 1);
+                        var file = PathManager.Inst.GetExportPath(project.FilePath, i + 1);
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exporting to {file}."));
                         WaveFileWriter.CreateWaveFile16(file, trackSources[i]);
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exported to {file}."));

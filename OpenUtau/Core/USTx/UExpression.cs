@@ -1,6 +1,5 @@
 ﻿using System;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace OpenUtau.Core.Ustx {
     [JsonObject(MemberSerialization.OptIn)]

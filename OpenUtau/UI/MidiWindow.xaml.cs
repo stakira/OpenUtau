@@ -17,6 +17,7 @@ namespace OpenUtau.UI {
     /// Interaction logic for BorderlessWindow.xaml
     /// </summary>
     public partial class MidiWindow : BorderlessWindow, ICmdSubscriber {
+        public MainWindow mainWindow;
         readonly MidiViewModel midiVM;
         readonly MidiViewHitTest midiHT;
         ContextMenu pitchCxtMenu;
@@ -645,12 +646,13 @@ namespace OpenUtau.UI {
                 // Prevents window from handling events, so that events can be handled by text box default behaviour.
                 return;
             }
-            if (Keyboard.Modifiers == ModifierKeys.Alt && e.SystemKey == Key.F4) {
-                this.Hide();
+            if (Keyboard.Modifiers == ModifierKeys.Alt) {
+                if (e.SystemKey == Key.F4) {
+                    Hide();
+                }
             } else if (midiVM.Part == null) {
                 return;
-            } else if (Keyboard.Modifiers == ModifierKeys.Control) // Ctrl
-              {
+            } else if (Keyboard.Modifiers == ModifierKeys.Control) {
                 if (e.Key == Key.A) {
                     midiVM.SelectAll();
                 } else if (e.Key == Key.Z) {
@@ -659,9 +661,10 @@ namespace OpenUtau.UI {
                 } else if (e.Key == Key.Y) {
                     midiVM.DeselectAll();
                     DocManager.Inst.Redo();
+                } else if (e.Key == Key.S) {
+                    mainWindow.CmdSaveFile();
                 }
-            } else if (Keyboard.Modifiers == 0) // No midifiers
-              {
+            } else if (Keyboard.Modifiers == ModifierKeys.None) {
                 if (e.Key == Key.Delete) {
                     if (midiVM.SelectedNotes.Count > 0) {
                         DocManager.Inst.StartUndoGroup();

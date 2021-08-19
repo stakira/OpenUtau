@@ -80,7 +80,7 @@ namespace OpenUtau.Core.Formats {
             uproject.beatPerBar = int.Parse(root.SelectSingleNode(beatperbarPath, nsmanager).InnerText);
             uproject.beatUnit = int.Parse(root.SelectSingleNode(beatunitPath, nsmanager).InnerText);
             uproject.resolution = int.Parse(root.SelectSingleNode(resolutionPath, nsmanager).InnerText);
-            uproject.filePath = file;
+            uproject.FilePath = file;
             uproject.name = root.SelectSingleNode(projectnamePath, nsmanager).InnerText;
             uproject.comment = root.SelectSingleNode(projectcommentPath, nsmanager).InnerText;
 

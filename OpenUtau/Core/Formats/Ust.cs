@@ -59,7 +59,7 @@ namespace OpenUtau.Core.Formats {
         }
 
         public static UProject Load(StreamReader reader, string file) {
-            var project = new UProject() { resolution = 480, filePath = file, Saved = false };
+            var project = new UProject() { resolution = 480, FilePath = file, Saved = false };
             project.RegisterExpression(new UExpressionDescriptor("velocity", "vel", 0, 200, 100));
             project.RegisterExpression(new UExpressionDescriptor("volume", "vol", 0, 200, 100));
             project.RegisterExpression(new UExpressionDescriptor("accent", "acc", 0, 200, 100));
