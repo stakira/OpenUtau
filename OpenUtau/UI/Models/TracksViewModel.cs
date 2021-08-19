@@ -38,8 +38,6 @@ namespace OpenUtau.UI.Models {
         double _offsetY = 0;
         double _quarterOffset = 0;
         double _minTickWidth = UIConstants.TrackTickMinWidth;
-        int _beatPerBar = 4;
-        int _beatUnit = 4;
 
         public string Title { get { if (Project != null) return "OpenUtau - [" + Project.name + "]"; else return "OpenUtau"; } }
         public double TotalHeight { get { return _trackCount * _trackHeight - _viewHeight; } }
@@ -72,9 +70,9 @@ namespace OpenUtau.UI.Models {
         public double SmallChangeY { get { return ViewportSizeY / 10; } }
         public double QuarterOffset { set { _quarterOffset = value; HorizontalPropertiesChanged(); } get { return _quarterOffset; } }
         public double MinTickWidth { set { _minTickWidth = value; HorizontalPropertiesChanged(); } get { return _minTickWidth; } }
-        public double BPM { get { return Project.bpm; } }
-        public int BeatPerBar { set { _beatPerBar = value; HorizontalPropertiesChanged(); } get { return _beatPerBar; } }
-        public int BeatUnit { set { _beatUnit = value; HorizontalPropertiesChanged(); } get { return _beatUnit; } }
+        public double BPM => Project.bpm;
+        public int BeatPerBar => Project.beatPerBar;
+        public int BeatUnit => Project.beatUnit;
         public TimeSpan PlayPosTime { get { return TimeSpan.FromMilliseconds((int)Project.TickToMillisecond(playPosTick)); } }
 
         public void HorizontalPropertiesChanged() {
@@ -372,6 +370,9 @@ namespace OpenUtau.UI.Models {
                 }
             } else if (cmd is BpmCommand) {
                 OnPropertyChanged("BPM");
+            } else if (cmd is TimeSignatureCommand) {
+                OnPropertyChanged("BeatPerBar");
+                OnPropertyChanged("BeatUnit");
             } else if (cmd is LoadProjectNotification) {
                 OnProjectLoad(((LoadProjectNotification)cmd).project);
             } else if (cmd is SetPlayPosTickNotification) {

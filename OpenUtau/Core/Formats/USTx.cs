@@ -13,11 +13,11 @@ namespace OpenUtau.Core.Formats {
             UProject project = new UProject() { Saved = false };
             project.RegisterExpression(new UExpressionDescriptor("velocity", "vel", 0, 200, 100));
             project.RegisterExpression(new UExpressionDescriptor("volume", "vol", 0, 200, 100));
-            project.RegisterExpression(new UExpressionDescriptor("gender", "gen", -100, 100, 0));
-            project.RegisterExpression(new UExpressionDescriptor("lowpass", "lpf", 0, 100, 0));
-            project.RegisterExpression(new UExpressionDescriptor("highpass", "hpf", 0, 100, 0));
             project.RegisterExpression(new UExpressionDescriptor("accent", "acc", 0, 200, 100));
             project.RegisterExpression(new UExpressionDescriptor("decay", "dec", 0, 100, 0));
+            project.RegisterExpression(new UExpressionDescriptor("gender", "gen", -100, 100, 0, 'g'));
+            project.RegisterExpression(new UExpressionDescriptor("breath", "bre", 0, 100, 0, 'B'));
+            project.RegisterExpression(new UExpressionDescriptor("lowpass", "lpf", 0, 100, 0, 'H'));
             return project;
         }
 
@@ -74,14 +74,20 @@ namespace OpenUtau.Core.Formats {
 
     public class UExpressionConverter : JsonConverter<UExpression> {
         public override UExpression ReadJson(JsonReader reader, Type objectType, UExpression existingValue, bool hasExistingValue, JsonSerializer serializer) {
+            bool overridden = reader.Value != null;
             return new UExpression(null) {
-                value = (float)(double)reader.Value,
+                overridden = overridden,
+                value = overridden ? (float)(double)reader.Value : 0,
             };
         }
 
         public override void WriteJson(JsonWriter writer, UExpression value, JsonSerializer serializer) {
             var exp = value;
-            writer.WriteValue(exp.value);
+            if (exp.overridden) {
+                writer.WriteValue(exp.value);
+            } else {
+                writer.WriteNull();
+            }
         }
     }
 }

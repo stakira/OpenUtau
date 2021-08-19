@@ -92,8 +92,8 @@ namespace OpenUtau.UI.Controls {
                         double valueHeight = Math.Round(VisualHeight - VisualHeight * (_exp.value - _expDef.min) / (_expDef.max - _expDef.min));
                         double zeroHeight = Math.Round(VisualHeight - VisualHeight * (0f - _expDef.min) / (_expDef.max - _expDef.min));
                         cxt.DrawLine(pen3, new Point(x1 + 0.5, zeroHeight + 0.5), new Point(x1 + 0.5, valueHeight + 3));
-                        cxt.DrawEllipse(Brushes.White, pen2, new Point(x1 + 0.5, valueHeight), 2.5, 2.5);
                         cxt.DrawLine(pen2, new Point(x1 + 3, valueHeight), new Point(Math.Max(x1 + 3, x2 - 3), valueHeight));
+                        cxt.DrawEllipse(_exp.overridden ? pen2.Brush : Brushes.White, pen2, new Point(x1 + 0.5, valueHeight), 2.5, 2.5);
                     }
                 }
             } else {

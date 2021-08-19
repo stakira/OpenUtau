@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Text;
 using Newtonsoft.Json;
 
 namespace OpenUtau.Core.Ustx {
@@ -33,7 +34,16 @@ namespace OpenUtau.Core.Ustx {
             return note;
         }
 
-        public string GetResamplerFlags() { return "Y0H0F0"; }
+        public string GetResamplerFlags() {
+            StringBuilder builder = new StringBuilder();
+            foreach (var exp in expressions.Values) {
+                if (exp.descriptor.flag != '\0') {
+                    builder.Append(exp.descriptor.flag);
+                    builder.Append((int)exp.value);
+                }
+            }
+            return builder.ToString();
+        }
 
         public int CompareTo(object obj) {
             if (obj == null) return 1;
@@ -53,7 +63,18 @@ namespace OpenUtau.Core.Ustx {
 
         public void AfterLoad(UProject project, UTrack track, UVoicePart part) {
             foreach (var pair in expressions) {
-                pair.Value.descriptor = project.expressions[pair.Key];
+                if (project.expressions.TryGetValue(pair.Key, out var descriptor)) {
+                    pair.Value.descriptor = descriptor;
+                    pair.Value.value = pair.Value.value;
+                }
+            }
+            foreach (var key in project.expressions.Keys.Except(expressions.Keys)) {
+                expressions.Add(key, new UExpression(project.expressions[key]));
+            }
+            foreach (var key in expressions.Keys.Except(project.expressions.Keys)) {
+                if (!expressions[key].overridden) {
+                    expressions.Remove(key);
+                }
             }
         }
 

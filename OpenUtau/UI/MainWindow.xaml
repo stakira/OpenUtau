@@ -29,6 +29,7 @@
                 <MenuItem Header="{StaticResource menu.file.importaudio}" Click="MenuImportAudio_Click"/>
                 <MenuItem Header="{StaticResource menu.file.importmidi}" Click="MenuImportMidi_Click"/>
                 <MenuItem Header="{StaticResource menu.file.exportall}" Click="MenuExportAll_Click"/>
+                <MenuItem Header="{StaticResource menu.tools.project.expressions}" Click="MenuProjectExpressions_Click"/>
                 <MenuItem Header="{StaticResource menu.file.exit}" InputGestureText="Alt+F4" Click="MenuExit_Click"/>
             </MenuItem>
             <MenuItem Header="{StaticResource menu.tools}">
@@ -50,14 +51,22 @@
             <Grid x:Name="playbackGrid" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="40">
                 <Grid x:Name="bpmGrid" Height="20" Width="64" HorizontalAlignment="Left" Margin="10,0,0,0">
                     <Border CornerRadius="4" BorderThickness="1" BorderBrush="LightGray"/>
-                    <TextBlock x:Name="bpmText" FontFamily="GlobalMonospace.CompositeFont"
-                               HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="11" Margin="5,4,5,0"
-                               MouseUp="bpmText_MouseUp">
+                    <TextBlock x:Name="timeSigText" FontFamily="GlobalMonospace.CompositeFont"
+                               HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="11" Margin="5,4,39,0"
+                               MouseUp="timeSigText_MouseUp" Width="20">
                         <TextBlock.Text>
-                            <MultiBinding StringFormat="{}{1}/{2}  {0:#.00}">
-                                <Binding Path="BPM" Source="{StaticResource tracksVM}"/>
+                            <MultiBinding StringFormat="{}{0}/{1}">
                                 <Binding Path="BeatPerBar" Source="{StaticResource tracksVM}"/>
                                 <Binding Path="BeatUnit" Source="{StaticResource tracksVM}"/>
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                    <TextBlock x:Name="bpmText" FontFamily="GlobalMonospace.CompositeFont"
+                               HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="11" Margin="25,4,5,0"
+                               MouseUp="bpmText_MouseUp" Width="34" TextAlignment="Right">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}{0:#.00}">
+                                <Binding Path="BPM" Source="{StaticResource tracksVM}"/>
                             </MultiBinding>
                         </TextBlock.Text>
                     </TextBlock>

@@ -415,6 +415,11 @@ namespace OpenUtau.UI {
             }
         }
 
+        private void MenuProjectExpressions_Click(object sender, RoutedEventArgs e) {
+            var w = new Dialogs.ExpressionsDialog() { Owner = this };
+            w.ShowDialog();
+        }
+
         private void MenuExportAll_Click(object sender, RoutedEventArgs e) {
             var project = DocManager.Inst.Project;
             if (string.IsNullOrEmpty(project.filePath)) {
@@ -604,6 +609,26 @@ namespace OpenUtau.UI {
         }
 
         #endregion
+
+        private void timeSigText_MouseUp(object sender, MouseButtonEventArgs e) {
+            var project = DocManager.Inst.Project;
+            var w = new Dialogs.TypeInDialog() { Owner = this };
+            w.Title = "Time Signature";
+            w.textBox.Text = $"{project.beatPerBar}/{project.beatUnit}";
+            w.onFinish = s => {
+                var parts = s.Split('/');
+                int beatPerBar = parts.Length > 0 && int.TryParse(parts[0], out beatPerBar) ? beatPerBar : project.beatPerBar;
+                int beatUnit = parts.Length > 1 && int.TryParse(parts[1], out beatUnit) ? beatUnit : project.beatUnit;
+                if (beatPerBar > 1 && (beatUnit == 2 || beatUnit == 4 || beatUnit == 8 || beatUnit == 16)) {
+                    DocManager.Inst.StartUndoGroup();
+                    DocManager.Inst.ExecuteCmd(new TimeSignatureCommand(project, beatPerBar, beatUnit));
+                    DocManager.Inst.EndUndoGroup();
+                }
+            };
+            w.Left = Left + (Width - w.Width) / 2;
+            w.Top = Top + (Height - w.Height) / 2;
+            w.ShowDialog();
+        }
 
         private void bpmText_MouseUp(object sender, MouseButtonEventArgs e) {
             var project = DocManager.Inst.Project;

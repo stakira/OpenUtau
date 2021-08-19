@@ -100,8 +100,8 @@ namespace OpenUtau.UI.Models {
         public double SmallChangeY { get { return ViewportSizeY / 10; } }
         public double QuarterOffset { set { _quarterOffset = value; HorizontalPropertiesChanged(); } get { return _quarterOffset; } }
         public double MinTickWidth { set { _minTickWidth = value; HorizontalPropertiesChanged(); } get { return _minTickWidth; } }
-        public int BeatPerBar { set { _beatPerBar = value; HorizontalPropertiesChanged(); } get { return _beatPerBar; } }
-        public int BeatUnit { set { _beatUnit = value; HorizontalPropertiesChanged(); } get { return _beatUnit; } }
+        public int BeatPerBar => Project.beatPerBar;
+        public int BeatUnit => Project.beatUnit;
         public bool ShowVibrato { set { _showVibrato = value; notesElement.ShowVibrato = value; OnPropertyChanged("ShowVibrato"); } get { return _showVibrato; } }
         public bool ShowPitch { set { _showPitch = value; notesElement.ShowPitch = value; OnPropertyChanged("ShowPitch"); } get { return _showPitch; } }
         public bool ShowPhoneme { set { _showPhoneme = value; OnPropertyChanged("PhonemeVisibility"); OnPropertyChanged("ShowPhoneme"); } get { return _showPhoneme; } }
@@ -146,11 +146,13 @@ namespace OpenUtau.UI.Models {
                     visibleExpElement.X = -OffsetX;
                     visibleExpElement.ScaleX = QuarterWidth / Project.resolution;
                     visibleExpElement.VisualHeight = ExpCanvas.ActualHeight;
+                    visibleExpElement.MarkUpdate();
                 }
                 if (shadowExpElement != null) {
                     shadowExpElement.X = -OffsetX;
                     shadowExpElement.ScaleX = QuarterWidth / Project.resolution;
                     shadowExpElement.VisualHeight = ExpCanvas.ActualHeight;
+                    shadowExpElement.MarkUpdate();
                 }
                 if (notesElement != null) {
                     notesElement.X = -OffsetX;
@@ -435,7 +437,10 @@ namespace OpenUtau.UI.Models {
         # region ICmdSubscriber
 
         public void OnNext(UCommand cmd, bool isUndo) {
-            if (cmd is NoteCommand) {
+            if (cmd is TimeSignatureCommand) {
+                OnPropertyChanged("BeatPerBar");
+                OnPropertyChanged("BeatUnit");
+            } else if (cmd is NoteCommand) {
                 notesElement.MarkUpdate();
                 phonemesElement.MarkUpdate();
                 visibleExpElement.MarkUpdate();

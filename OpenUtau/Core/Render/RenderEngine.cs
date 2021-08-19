@@ -88,7 +88,7 @@ namespace OpenUtau.Core.Render {
         public CancellationTokenSource PreRenderProject() {
             var source = new CancellationTokenSource();
             Task.Run(() => {
-                Thread.Sleep(100);
+                Thread.Sleep(200);
                 if (source.Token.IsCancellationRequested) {
                     return;
                 }

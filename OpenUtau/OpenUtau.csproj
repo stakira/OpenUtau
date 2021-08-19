@@ -213,6 +213,9 @@
     <Compile Include="UI\Dialogs\PreferencesDialog.xaml.cs">
       <DependentUpon>PreferencesDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Dialogs\ExpressionsDialog.xaml.cs">
+      <DependentUpon>ExpressionsDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Dialogs\SingerViewDialog.xaml.cs">
       <DependentUpon>SingerViewDialog.xaml</DependentUpon>
     </Compile>
@@ -232,6 +235,10 @@
     <Compile Include="UI\Models\TracksViewModel.cs" />
     <Compile Include="UI\UIConstants.cs" />
     <Page Include="UI\Controls\LyricBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Dialogs\ExpressionsDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
