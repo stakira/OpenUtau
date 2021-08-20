@@ -270,7 +270,7 @@ namespace OpenUtau.Core.Formats {
                 }
                 float p1 = parts[0], p2 = parts[1], p3 = parts[2], v1 = parts[3], v2 = parts[4], v3 = parts[5], v4 = parts[6];
                 if (parts.Length == 11) {
-                    float p4 = parts[8], p5 = parts[9], v5 = parts[11];
+                    float p4 = parts[8], p5 = parts[9], v5 = parts[10];
                 }
                 note.expressions["dec"].value = 100f - v3;
             } catch (Exception e) {
@@ -323,6 +323,8 @@ namespace OpenUtau.Core.Formats {
                 if (!string.IsNullOrWhiteSpace(pbm)) {
                     var m = pbm.Split(new[] { ',' });
                     for (var i = 0; i < m.Count() - 1; i++) {
+                        if (i >= points.Count)
+                            break;
                         switch (m[i]) {
                             case "r":
                                 points[i].shape = PitchPointShape.o;
