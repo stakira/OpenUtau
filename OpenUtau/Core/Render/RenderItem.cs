@@ -16,6 +16,7 @@ namespace OpenUtau.Core.Render {
 
         // For resampler
         public readonly string SourceFile;
+        public readonly string SourceTemp;
         public readonly string ResamplerName;
 
         public readonly int NoteNum;
@@ -46,6 +47,9 @@ namespace OpenUtau.Core.Render {
             SourceFile = phoneme.oto.File;
             SourceFile = Path.Combine(PathManager.Inst.InstalledSingersPath, SourceFile);
             ResamplerName = resamplerName;
+            var voicebankName = project.tracks[part.TrackNo].Singer.VoicebankName;
+            SourceTemp = Path.Combine(PathManager.Inst.GetCachePath(null),
+                $"{HashHex(voicebankName)}-{HashHex(phoneme.oto.Set)}-{HashHex(SourceFile)}.wav");
 
             float vel = phoneme.Parent.expressions["vel"].value;
             float vol = phoneme.Parent.expressions["vol"].value;
@@ -69,6 +73,10 @@ namespace OpenUtau.Core.Render {
             Envelope = phoneme.envelope.data;
 
             phonemeName = phoneme.phoneme;
+        }
+
+        string HashHex(string s) {
+            return $"{xxHash.CalculateHash(Encoding.UTF8.GetBytes(s)):x8}";
         }
 
         public uint HashParameters() {

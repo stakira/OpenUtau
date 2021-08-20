@@ -58,8 +58,7 @@ namespace OpenUtau.Core.Ustx {
   'pho': [
     {
       'position': 0,
-      'phoneme': 'a',
-      'autoRemap': true
+      'phoneme': 'a'
     }
   ],
   'pit': {

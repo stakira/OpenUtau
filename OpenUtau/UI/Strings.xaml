@@ -47,13 +47,13 @@
     <system:String x:Key="prefs.audio.rendering.resampler.preview">Resampler for preview</system:String>
     <system:String x:Key="prefs.audio.rendering.resampler.export">Resampler for export</system:String>
     <system:String x:Key="prefs.audio.rendering.resampler.note">
-        Note: to use external resamplers, please add the resampler DLL or EXE file in the Resamplers folder in the OpenUtau install path.
+        Note: to use external resamplers, please add the resampler DLL or EXE file in the Resamplers folder in the OpenUtau install path and choose it in Preferences.
     </system:String>
     <system:String x:Key="prefs.appearance">Appearance</system:String>
 
     <!-- Dialogs -->
     <system:String x:Key="dialogs.noresampler.caption">No resampler</system:String>
-    <system:String x:Key="dialogs.noresampler.message">No resampler! Put your favourite resampler exe or dll in the Resamplers folder!</system:String>
+    <system:String x:Key="dialogs.noresampler.message">No resampler! Put your favourite resampler exe or dll in the Resamplers folder and choose it in Preferences!</system:String>
     <system:String x:Key="dialogs.about.caption">About OpenUTAU</system:String>
     <system:String x:Key="dialogs.about.message">
         OpenUtau aims to be an open source editing environment for UTAU community, with a modern user experience and intelligent phonological support. Visit us on Github.

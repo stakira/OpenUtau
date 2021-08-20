@@ -74,7 +74,7 @@ namespace OpenUtau.Core.Ustx {
 
         public void AfterLoad() {
             foreach (var track in tracks) {
-                track.AfterLoad();
+                track.AfterLoad(this);
             }
             foreach (var part in parts) {
                 part.AfterLoad(this, tracks[part.TrackNo]);

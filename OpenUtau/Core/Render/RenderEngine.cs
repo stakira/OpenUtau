@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using NAudio.Wave;
@@ -32,14 +33,17 @@ namespace OpenUtau.Core.Render {
         readonly UProject project;
         readonly IResamplerDriver driver;
         readonly RenderCache cache;
+        readonly int startTick;
 
-        public RenderEngine(UProject project, IResamplerDriver driver, RenderCache cache) {
+        public RenderEngine(UProject project, IResamplerDriver driver, RenderCache cache, int startTick = 0) {
             this.project = project;
             this.driver = driver;
             this.cache = cache;
+            this.startTick = startTick;
         }
 
         public async Task<List<TrackSampleProvider>> RenderAsync() {
+            TimeSpan skip = TimeSpan.FromMilliseconds(project.TickToMillisecond(startTick));
             List<TrackSampleProvider> trackSampleProviders = project.tracks.Select(
                 track => new TrackSampleProvider() {
                     Volume = PlaybackManager.DecibelToVolume(track.Volume)
@@ -56,9 +60,11 @@ namespace OpenUtau.Core.Render {
                 if (wavePart != null) {
                     try {
                         var stream = new AudioFileReader(wavePart.FilePath);
+                        var offset = TimeSpan.FromMilliseconds(project.TickToMillisecond(wavePart.PosTick)) - skip;
+                        var skipOver = offset < TimeSpan.Zero ? -offset : TimeSpan.Zero;
+                        var delayBy = offset > TimeSpan.Zero ? offset : TimeSpan.Zero;
                         trackSampleProviders[wavePart.TrackNo].AddSource(
-                            new WaveToSampleProvider(stream),
-                            TimeSpan.FromMilliseconds(project.TickToMillisecond(wavePart.PosTick)));
+                            new WaveToSampleProvider(stream).Skip(skipOver), delayBy);
                     } catch (Exception e) {
                         Log.Error(e, "Failed to open audio file");
                     }
@@ -68,21 +74,23 @@ namespace OpenUtau.Core.Render {
         }
 
         async Task<SequencingSampleProvider> RenderPartAsync(UVoicePart part, UProject project) {
+            TimeSpan skip = TimeSpan.FromMilliseconds(project.TickToMillisecond(startTick));
             var singer = project.tracks[part.TrackNo].Singer;
             if (singer == null || !singer.Loaded) {
                 return null;
             }
-            var progress = new Progress(part.notes.Sum(note => note.phonemes.Count));
-            progress.Clear();
             var source = new CancellationTokenSource();
-            var tasks = PreparePart(part, project).Select(item => {
+            var items = PreparePart(part, project).ToArray();
+            var progress = new Progress(items.Length);
+            progress.Clear();
+            var tasks = items.Select(item => {
                 item.progress = progress;
                 return Task<RenderItem>.Factory.StartNew(ResampleItem, item, source.Token);
             }).ToArray();
             await Task.WhenAll(tasks);
             source.Dispose();
             progress.Clear();
-            return new SequencingSampleProvider(tasks.Select(task => new RenderItemSampleProvider(task.Result)));
+            return new SequencingSampleProvider(tasks.Select(task => new RenderItemSampleProvider(task.Result, skip)));
         }
 
         public CancellationTokenSource PreRenderProject() {
@@ -109,6 +117,7 @@ namespace OpenUtau.Core.Render {
                             return renderItem;
                         }, item, source.Token)).ToArray();
                     Task.WaitAll(tasks);
+                    ReleaseSourceTemp();
                     progress.Clear();
                 }
             });
@@ -126,6 +135,7 @@ namespace OpenUtau.Core.Render {
             return part.notes
                 .SelectMany(note => note.phonemes)
                 .Where(phoneme => !phoneme.Error)
+                .Where(phoneme => part.PosTick + phoneme.Parent.position + phoneme.End > startTick)
                 .Select(phoneme => new RenderItem(phoneme, part, project, driver.GetInfo().Name));
         }
 
@@ -139,12 +149,49 @@ namespace OpenUtau.Core.Render {
             uint hash = item.HashParameters();
             byte[] data = cache.Get(hash);
             if (data == null) {
+                CopySourceTemp(item);
                 data = driver.DoResampler(DriverModels.CreateInputModel(item, 0));
                 cache.Put(hash, data);
                 Log.Information($"Sound {hash:x} {item.GetResamplerExeArgs()} resampled.");
             }
             item.Data = data;
             item.progress?.CompleteOne($"Resampling \"{item.phonemeName}\"");
+        }
+
+        void CopySourceTemp(RenderItem item) {
+            string sourceTemp = item.SourceTemp;
+            Log.Information($"Copy temp {item.SourceFile} {sourceTemp}");
+            CopyOrStamp(item.SourceFile, sourceTemp);
+            var dir = Path.GetDirectoryName(item.SourceFile);
+            var pattern = Path.GetFileName(item.SourceFile).Replace(".wav", "_wav.*");
+            Directory.EnumerateFiles(dir, pattern, SearchOption.TopDirectoryOnly)
+                .ToList()
+                .ForEach(frq => {
+                    string newFrq = sourceTemp.Replace(".wav", "_wav") + Path.GetExtension(frq);
+                    CopyOrStamp(frq, newFrq);
+                    Log.Information($"Copy frequency map {frq} {newFrq}");
+                });
+        }
+
+        void CopyOrStamp(string source, string dest) {
+            bool exists = File.Exists(dest);
+            if (!exists) {
+                File.Copy(source, dest);
+            } else {
+                File.SetLastWriteTime(dest, DateTime.Now);
+            }
+        }
+
+        void ReleaseSourceTemp() {
+            var expire = DateTime.Now - TimeSpan.FromDays(3);
+            string path = PathManager.Inst.GetCachePath(null);
+            Log.Information($"ReleaseSourceTemp {path}");
+            Directory.EnumerateFiles(path, "*.*", SearchOption.TopDirectoryOnly)
+                .Where(file =>
+                    !File.GetAttributes(file).HasFlag(FileAttributes.Directory)
+                        && File.GetLastWriteTime(file) < expire)
+                .ToList()
+                .ForEach(file => File.Delete(file));
         }
     }
 }

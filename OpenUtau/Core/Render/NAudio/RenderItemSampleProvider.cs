@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 
@@ -7,13 +8,14 @@ namespace OpenUtau.Core.Render {
     internal class RenderItemSampleProvider : ISampleProvider {
         private readonly ISampleProvider signalChain;
 
-        public RenderItemSampleProvider(RenderItem renderItem) {
+        public RenderItemSampleProvider(RenderItem renderItem, TimeSpan skip) {
             RenderItem = renderItem;
             var cachedSampleProvider = MemorySampleProvider.FromStream(new MemoryStream(RenderItem.Data));
+            int delayBy = (int)((RenderItem.PosMs - skip.TotalMilliseconds) * cachedSampleProvider.WaveFormat.SampleRate / 1000);
             var offsetSampleProvider = new OffsetSampleProvider(new EnvelopeSampleProvider(cachedSampleProvider, RenderItem.Envelope, RenderItem.SkipOver)) {
-                DelayBySamples = (int)(RenderItem.PosMs * cachedSampleProvider.WaveFormat.SampleRate / 1000),
+                DelayBySamples = delayBy > 0 ? delayBy : 0,
                 TakeSamples = (int)(RenderItem.DurMs * cachedSampleProvider.WaveFormat.SampleRate / 1000),
-                SkipOverSamples = (int)(RenderItem.SkipOver * cachedSampleProvider.WaveFormat.SampleRate / 1000)
+                SkipOverSamples = (int)(RenderItem.SkipOver * cachedSampleProvider.WaveFormat.SampleRate / 1000) + (delayBy < 0 ? -delayBy : 0),
             };
             signalChain = offsetSampleProvider;
             FirstSample = offsetSampleProvider.DelayBySamples + offsetSampleProvider.SkipOverSamples;

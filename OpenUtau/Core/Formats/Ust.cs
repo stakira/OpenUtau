@@ -244,7 +244,6 @@ namespace OpenUtau.Core.Formats {
 
         private static void ParseLyric(UNote note, string ust) {
             if (ust.StartsWith("?")) {
-                note.phonemes[0].autoRemap = false;
                 ust = ust.Substring(1);
             }
             note.phonemes[0].phoneme = ust;
@@ -322,9 +321,7 @@ namespace OpenUtau.Core.Formats {
                 // PBM
                 if (!string.IsNullOrWhiteSpace(pbm)) {
                     var m = pbm.Split(new[] { ',' });
-                    for (var i = 0; i < m.Count() - 1; i++) {
-                        if (i >= points.Count)
-                            break;
+                    for (var i = 0; i < m.Count() && i < points.Count; i++) {
                         switch (m[i]) {
                             case "r":
                                 points[i].shape = PitchPointShape.o;

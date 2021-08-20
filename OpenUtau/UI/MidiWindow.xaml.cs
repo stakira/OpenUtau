@@ -742,5 +742,10 @@ namespace OpenUtau.UI {
                     break;
             }
         }
+
+        private void expGearButton_Click(object sender, RoutedEventArgs e) {
+            var w = new Dialogs.ExpressionsDialog() { Owner = this };
+            w.ShowDialog();
+        }
     }
 }

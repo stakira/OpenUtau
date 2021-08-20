@@ -9,7 +9,7 @@ namespace OpenUtau.Core {
     public class PathManager {
         public const string UtauVoicePath = "%VOICE%";
         public const string DefaultSingerPath = "Singers";
-        public const string DefaultCachePath = "UCache";
+        public const string DefaultCachePath = "Cache";
         public const string kExportPath = "Export";
 
         private static PathManager _inst;
@@ -72,12 +72,12 @@ namespace OpenUtau.Core {
             }
         }
 
-        public string GetCachePath(string filepath) {
+        public string GetCachePath(string projectPath) {
             string cachepath;
-            if (string.IsNullOrEmpty(filepath)) {
+            if (string.IsNullOrEmpty(projectPath)) {
                 cachepath = Path.Combine(HomePath, DefaultCachePath);
             } else {
-                cachepath = Path.Combine(Path.GetDirectoryName(filepath), DefaultCachePath);
+                cachepath = Path.Combine(Path.GetDirectoryName(projectPath), DefaultCachePath);
             }
 
             if (!Directory.Exists(cachepath)) {

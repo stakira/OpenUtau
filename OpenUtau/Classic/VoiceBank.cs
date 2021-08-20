@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace OpenUtau.Classic {
     public class Voicebank {
@@ -9,7 +10,7 @@ namespace OpenUtau.Classic {
         public string Author;
         public string Web;
         public string OtherInfo;
-        public List<OtoSet> OtoSets;
+        public List<OtoSet> OtoSets = new List<OtoSet>();
         public PrefixMap PrefixMap;
 
         public override string ToString() {
@@ -62,6 +63,6 @@ namespace OpenUtau.Classic {
     public class PrefixMap {
         public string File;
         public string OrigFile;
-        public Dictionary<string, string> Map = new Dictionary<string, string>();
+        public Dictionary<string, Tuple<string, string>> Map = new Dictionary<string, Tuple<string, string>>();
     }
 }

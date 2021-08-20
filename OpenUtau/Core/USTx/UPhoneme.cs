@@ -8,7 +8,6 @@ namespace OpenUtau.Core.Ustx {
     public class UPhoneme {
         [JsonProperty] public int position;
         [JsonProperty] public string phoneme = "a";
-        [JsonProperty] public bool autoRemap = true;
 
         public string phonemeMapped { get; private set; }
         public UEnvelope envelope { get; private set; } = new UEnvelope();
@@ -60,18 +59,11 @@ namespace OpenUtau.Core.Ustx {
                 Error = true;
                 return;
             }
-            // Select phoneme.
-            phonemeMapped = phoneme;
-            if (autoRemap) {
-                string noteString = MusicMath.GetNoteString(note.noteNum);
-                if (track.Singer.PitchMap.ContainsKey(noteString)) {
-                    phonemeMapped += track.Singer.PitchMap[noteString];
-                }
-            }
             // Load oto.
-            if (track.Singer.TryGetOto(phonemeMapped, out var oto)) {
+            if (track.Singer.TryGetOto(phoneme, note.noteNum, out var oto)) {
                 this.oto = oto;
                 Error = false;
+                phonemeMapped = oto.Alias;
             } else {
                 this.oto = default;
                 Error = true;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows.Media.Imaging;
 using OpenUtau.Classic;
 using WanaKanaSharp;
@@ -35,18 +36,17 @@ namespace OpenUtau.Core.Ustx {
     public class UOtoSet {
         public readonly string Name;
         public readonly string Location;
-        public readonly Dictionary<string, UOto> Otos;
+        public readonly Dictionary<string, List<UOto>> Otos;
 
         public UOtoSet(OtoSet otoSet, USinger singer, string singersPath) {
             Name = otoSet.Name;
             Location = Path.Combine(singersPath, Path.GetDirectoryName(otoSet.File));
-            Otos = new Dictionary<string, UOto>();
+            Otos = new Dictionary<string, List<UOto>>();
             foreach (var oto in otoSet.Otos) {
                 if (!Otos.ContainsKey(oto.Name)) {
-                    Otos.Add(oto.Name, new UOto(oto, this));
-                } else {
-                    Serilog.Log.Error("{0} {1} {2}", singer.Name, Name, oto.Name);
+                    Otos.Add(oto.Name, new List<UOto>());
                 }
+                Otos[oto.Name].Add(new UOto(oto, this));
             }
         }
     }
@@ -57,7 +57,7 @@ namespace OpenUtau.Core.Ustx {
         public readonly string Author;
         public readonly string Web;
         public readonly BitmapImage Avatar;
-        public readonly Dictionary<string, string> PitchMap;
+        public readonly Dictionary<string, Tuple<string, string>> PitchMap;
         public readonly List<UOtoSet> OtoSets;
         public readonly string VoicebankName;
         public readonly bool Loaded;
@@ -74,12 +74,16 @@ namespace OpenUtau.Core.Ustx {
             Author = voicebank.Author;
             Web = voicebank.Web;
             Location = Path.Combine(singersPath, Path.GetDirectoryName(voicebank.File));
-            var imagePath = Path.Combine(Location, voicebank.Image);
-            Avatar = LoadAvatar(imagePath);
+            if (!string.IsNullOrEmpty(voicebank.Image)) {
+                var imagePath = Path.Combine(Location, voicebank.Image);
+                if (File.Exists(imagePath)) {
+                    Avatar = LoadAvatar(imagePath);
+                }
+            }
             if (voicebank.PrefixMap != null) {
                 PitchMap = voicebank.PrefixMap.Map;
             } else {
-                PitchMap = new Dictionary<string, string>();
+                PitchMap = new Dictionary<string, Tuple<string, string>>();
             }
             OtoSets = new List<UOtoSet>();
             foreach (var otoSet in voicebank.OtoSets) {
@@ -89,10 +93,21 @@ namespace OpenUtau.Core.Ustx {
             Loaded = true;
         }
 
-        public bool TryGetOto(string lyric, out UOto oto) {
+        public bool TryGetOto(string phoneme, int tone, out UOto oto) {
             oto = default;
+            string noteString = MusicMath.GetNoteString(tone);
+            if (PitchMap.TryGetValue(noteString, out var mapped)) {
+                string phonemeMapped = mapped.Item1 + phoneme + mapped.Item2;
+                foreach (var set in OtoSets) {
+                    if (set.Otos.TryGetValue(phonemeMapped, out var list)) {
+                        oto = list[0];
+                        return true;
+                    }
+                }
+            }
             foreach (var set in OtoSets) {
-                if (set.Otos.TryGetValue(lyric, out oto)) {
+                if (set.Otos.TryGetValue(phoneme, out var list)) {
+                    oto = list[0];
                     return true;
                 }
             }
@@ -104,13 +119,12 @@ namespace OpenUtau.Core.Ustx {
                 text = text.ToLowerInvariant().Replace(" ", "");
             }
             bool all = string.IsNullOrEmpty(text);
-            foreach (var set in OtoSets) {
-                foreach (var oto in set.Otos.Values) {
-                    if (all || oto.SearchTerms.Exists(term => term.Contains(text))) {
-                        provide(oto);
-                    }
-                }
-            }
+            OtoSets
+                .SelectMany(set => set.Otos.Values)
+                .SelectMany(list => list)
+                .Where(oto => all || oto.SearchTerms.Exists(term => term.Contains(text)))
+                .ToList()
+                .ForEach(oto => provide(oto));
         }
 
         private static BitmapImage LoadAvatar(string path) {

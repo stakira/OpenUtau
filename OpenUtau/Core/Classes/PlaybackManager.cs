@@ -117,7 +117,7 @@ namespace OpenUtau.Core {
             foreach (var source in trackSources) {
                 mix.AddMixerInput(source);
             }
-            masterMix = mix.Skip(start);
+            masterMix = mix;
             outDevice = new WaveOutEvent() { DeviceNumber = PlaybackDeviceNumber };
             outDevice.Init(masterMix);
             outDevice.Play();
@@ -144,7 +144,7 @@ namespace OpenUtau.Core {
             StopPreRender();
             Task.Run(() => {
                 var task = Task.Run(async () => {
-                    RenderEngine engine = new RenderEngine(project, driver, cache);
+                    RenderEngine engine = new RenderEngine(project, driver, cache, tick);
                     renderTask = engine.RenderAsync();
                     trackSources = await renderTask;
                     StartPlayback(project.TickToMillisecond(tick));

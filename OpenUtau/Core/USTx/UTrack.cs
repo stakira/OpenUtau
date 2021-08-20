@@ -7,9 +7,9 @@ namespace OpenUtau.Core.Ustx {
 
         public USinger Singer;
 
-        public string SingerName { get { if (Singer != null) return Singer.DisplayName; else return "[No Singer]"; } }
+        public string SingerName => Singer != null ? Singer.DisplayName : "[No Singer]";
         public int TrackNo { set; get; }
-        public int DisplayTrackNo { get { return TrackNo + 1; } }
+        public int DisplayTrackNo => TrackNo + 1;
         public bool Mute { set; get; }
         public bool Solo { set; get; }
         public double Volume { set; get; }
@@ -19,10 +19,11 @@ namespace OpenUtau.Core.Ustx {
             singer = Singer == null ? null : Singer.VoicebankName;
         }
 
-        public void AfterLoad() {
+        public void AfterLoad(UProject project) {
             if (Singer == null && !string.IsNullOrEmpty(singer)) {
                 Singer = DocManager.Inst.GetSinger(singer);
             }
+            TrackNo = project.tracks.IndexOf(this);
         }
     }
 }
