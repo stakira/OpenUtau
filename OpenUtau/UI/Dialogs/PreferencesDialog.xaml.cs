@@ -21,7 +21,6 @@ namespace OpenUtau.UI.Dialogs {
         public PreferencesDialog() {
             InitializeComponent();
 
-            playbackItem.IsSelected = true;
             UpdateSingerPaths();
             UpdateEngines();
             playbackDevices = PlaybackManager.Inst.GetOutputDevices();
@@ -69,20 +68,6 @@ namespace OpenUtau.UI.Dialogs {
             UpdateSingerPaths();
             singerPathRemoveButton.IsEnabled = false;
             DocManager.Inst.SearchAllSingers();
-        }
-
-        private void treeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e) {
-            if (treeView.SelectedItem == pathsItem) {
-                SelectedGrid = pathsGrid;
-            } else if (treeView.SelectedItem == themesItem) {
-                SelectedGrid = themesGrid;
-            } else if (treeView.SelectedItem == playbackItem) {
-                SelectedGrid = playbackGrid;
-            } else if (treeView.SelectedItem == renderingItem) {
-                SelectedGrid = renderingGrid;
-            } else {
-                SelectedGrid = null;
-            }
         }
 
         private void singerPathsList_SelectionChanged(object sender, SelectionChangedEventArgs e) {

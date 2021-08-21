@@ -1,57 +1,47 @@
 ﻿<Window x:Class="OpenUtau.UI.Dialogs.PreferencesDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="{StaticResource prefs.caption}" Height="400" Width="600" ResizeMode="NoResize">
+        Title="{StaticResource prefs.caption}" Height="600" Width="500" ResizeMode="NoResize">
     <Grid>
-        <TreeView x:Name="treeView" HorizontalAlignment="Left" Margin="10" VerticalAlignment="Stretch" Width="150"
-                  SelectedItemChanged="treeView_SelectedItemChanged">
-            <TreeViewItem Header="{StaticResource prefs.general}" IsExpanded="True" Visibility="Collapsed">
-                <TreeViewItem x:Name="pathsItem" Header="{StaticResource prefs.general.paths}" Margin="-12,0,0,0"/>
-            </TreeViewItem>
-            <TreeViewItem Header="{StaticResource prefs.audio}" IsExpanded="True">
-                <TreeViewItem x:Name="playbackItem" Header="{StaticResource prefs.audio.playback}" Margin="-12,0,0,0"/>
-                <TreeViewItem x:Name="renderingItem" Header="{StaticResource prefs.audio.rendering}" Margin="-12,0,0,0"/>
-            </TreeViewItem>
-            <TreeViewItem Header="{StaticResource prefs.appearance}" IsExpanded="True" Visibility="Collapsed">
-                <TreeViewItem x:Name="themesItem" Header="Themes" Margin="-12,0,0,0"/>
-                <TreeViewItem Header="Media" Margin="-12,0,0,0"/>
-            </TreeViewItem>
-        </TreeView>
-        <Grid x:Name="pathsGrid" Margin="170,2,10,10" Visibility="Collapsed">
-            <GroupBox Header="{StaticResource prefs.general.paths.singer}" Height="200" VerticalAlignment="Top">
-                <Grid>
-                    <ListBox x:Name="singerPathsList" Margin="10,10,10,42" SelectionChanged="singerPathsList_SelectionChanged"/>
-                    <Button x:Name="singerPathAddButton" Margin="10" Width="75" Height="22" VerticalAlignment="Bottom" HorizontalAlignment="Left"
-                            Content="{StaticResource prefs.general.paths.add}"
-                            Focusable="False" Click="singerPathAddButton_Click"/>
-                    <Button x:Name="singerPathRemoveButton" Margin="95,0,0,10" Width="75" Height="22" VerticalAlignment="Bottom" HorizontalAlignment="Left"
-                            Content="{StaticResource prefs.general.paths.remove}" 
-                            Focusable="False" IsEnabled="False" Click="singerPathRemoveButton_Click"/>
-                </Grid>
-            </GroupBox>
-        </Grid>
-        <Grid x:Name="themesGrid" Margin="170,2,10,10" Visibility="Collapsed">
-            <TextBlock Text="Theme" Margin="10,4,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-            <ComboBox Width="256" Height="22" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,25,0,0">
-                <ComboBoxItem Content="Clean" IsSelected="True"/>
-                <ComboBoxItem Content="Dark"/>
-            </ComboBox>
-        </Grid>
-        <Grid x:Name="playbackGrid" Margin="170,2,10,10" Visibility="Collapsed">
-            <TextBlock Text="Playback Device" Margin="10,4,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-            <ComboBox x:Name="playbackDeviceCombo" Width="329" Height="22" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,25,0,0"
-                      DisplayMemberPath="ProductName" SelectionChanged="playbackDeviceCombo_SelectionChanged">
-            </ComboBox>
-            <Button Content="Test" Width="60" Height="22" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="344,25,0,0" Click="testPlaybackButton_Click"/>
-        </Grid>
-        <Grid x:Name="renderingGrid" Margin="170,2,10,10" Visibility="Collapsed">
-            <StackPanel Margin="0,0,0,0">
-                <Label Margin="10,0" Content="{StaticResource prefs.audio.rendering.resampler.preview}" />
-                <ComboBox x:Name="previewEngineCombo" SelectionChanged="previewEngineCombo_SelectionChanged" Margin="10,0"/>
-                <Label Margin="10,0" Content="{StaticResource prefs.audio.rendering.resampler.export}" />
-                <ComboBox x:Name="exportEngineCombo" SelectionChanged="exportEngineCombo_SelectionChanged" Margin="10,0"/>
-                <TextBlock TextWrapping="Wrap" Margin="10,10" Text="{StaticResource prefs.audio.rendering.resampler.note}"/>
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="5">
+                <GroupBox Header="{StaticResource prefs.playback}" Margin="5">
+                    <StackPanel>
+                        <Label Margin="4,0" Content="{StaticResource prefs.playback.device}"/>
+                        <ComboBox x:Name="playbackDeviceCombo"  Margin="10,0" DisplayMemberPath="ProductName" SelectionChanged="playbackDeviceCombo_SelectionChanged"/>
+                        <Button Content="{StaticResource prefs.playback.test}" Margin="10" Click="testPlaybackButton_Click"/>
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox Header="{StaticResource prefs.rendering}" Margin="5">
+                    <StackPanel>
+                        <Label Margin="4,0" Content="{StaticResource prefs.rendering.resampler.preview}" />
+                        <ComboBox x:Name="previewEngineCombo" SelectionChanged="previewEngineCombo_SelectionChanged" Margin="10,0"/>
+                        <Label Margin="4,0" Content="{StaticResource prefs.rendering.resampler.export}" />
+                        <ComboBox x:Name="exportEngineCombo" SelectionChanged="exportEngineCombo_SelectionChanged" Margin="10,0"/>
+                        <TextBlock TextWrapping="Wrap" Margin="10" Text="{StaticResource prefs.rendering.resampler.note}"/>
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox Header="{StaticResource prefs.appearance}" Margin="5" Visibility="Collapsed">
+                    <StackPanel>
+                        <Label Content="Theme" Margin="4,0"/>
+                        <ComboBox Margin="10,0,10,10">
+                            <ComboBoxItem Content="Clean" IsSelected="True"/>
+                            <ComboBoxItem Content="Dark"/>
+                        </ComboBox>
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox Header="{StaticResource prefs.paths.singer}" Margin="5" Visibility="Collapsed">
+                    <StackPanel>
+                        <ListBox Height="100" x:Name="singerPathsList" Margin="10" SelectionChanged="singerPathsList_SelectionChanged"/>
+                        <StackPanel Orientation="Horizontal" Margin="10,0,10,10">
+                            <Button x:Name="singerPathAddButton" Width="75" Margin="0,0,10,0" Content="{StaticResource prefs.paths.add}"
+                                    Focusable="False" Click="singerPathAddButton_Click"/>
+                            <Button x:Name="singerPathRemoveButton" Width="75" Content="{StaticResource prefs.paths.remove}"
+                                    Focusable="False" IsEnabled="False" Click="singerPathRemoveButton_Click"/>
+                        </StackPanel>
+                    </StackPanel>
+                </GroupBox>
             </StackPanel>
-        </Grid>
+        </ScrollViewer>
     </Grid>
 </Window>

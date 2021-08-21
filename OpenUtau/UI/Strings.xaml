@@ -36,20 +36,21 @@
 
     <!-- Preferences -->
     <system:String x:Key="prefs.caption">Preferences</system:String>
-    <system:String x:Key="prefs.general">General</system:String>
-    <system:String x:Key="prefs.general.paths">Paths</system:String>
-    <system:String x:Key="prefs.general.paths.singer">Singer Paths</system:String>
-    <system:String x:Key="prefs.general.paths.add">Add</system:String>
-    <system:String x:Key="prefs.general.paths.remove">Remove</system:String>
-    <system:String x:Key="prefs.audio">Audio</system:String>
-    <system:String x:Key="prefs.audio.playback">Playback</system:String>
-    <system:String x:Key="prefs.audio.rendering">Rendering</system:String>
-    <system:String x:Key="prefs.audio.rendering.resampler.preview">Resampler for preview</system:String>
-    <system:String x:Key="prefs.audio.rendering.resampler.export">Resampler for export</system:String>
-    <system:String x:Key="prefs.audio.rendering.resampler.note">
+    <system:String x:Key="prefs.paths">Paths</system:String>
+    <system:String x:Key="prefs.paths.singer">Singer Paths</system:String>
+    <system:String x:Key="prefs.paths.add">Add</system:String>
+    <system:String x:Key="prefs.paths.remove">Remove</system:String>
+    <system:String x:Key="prefs.playback">Playback</system:String>
+    <system:String x:Key="prefs.playback.device">Playback Device</system:String>
+    <system:String x:Key="prefs.playback.test">Test</system:String>
+    <system:String x:Key="prefs.rendering">Rendering</system:String>
+    <system:String x:Key="prefs.rendering.resampler.preview">Resampler for preview</system:String>
+    <system:String x:Key="prefs.rendering.resampler.export">Resampler for export</system:String>
+    <system:String x:Key="prefs.rendering.resampler.note">
         Note: to use external resamplers, please add the resampler DLL or EXE file in the Resamplers folder in the OpenUtau install path and choose it in Preferences.
     </system:String>
     <system:String x:Key="prefs.appearance">Appearance</system:String>
+    <system:String x:Key="prefs.appearance.theme">Theme</system:String>
 
     <!-- Dialogs -->
     <system:String x:Key="dialogs.noresampler.caption">No resampler</system:String>

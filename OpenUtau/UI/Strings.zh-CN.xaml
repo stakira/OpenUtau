@@ -27,34 +27,42 @@
 
     <system:String x:Key="menu.tools">工具</system:String>
     <system:String x:Key="menu.tools.singers">歌手...</system:String>
-    <system:String x:Key="menu.tools.prefs">使用偏好</system:String>
+    <system:String x:Key="menu.tools.singer.install">安装歌手...</system:String>
+    <system:String x:Key="menu.tools.project.expressions">表情...</system:String>
+    <system:String x:Key="menu.tools.prefs">使用偏好...</system:String>
 
     <system:String x:Key="menu.help">帮助</system:String>
     <system:String x:Key="menu.help.about">关于 OpenUTAU</system:String>
 
     <!-- Preferences -->
     <system:String x:Key="prefs.caption">使用偏好</system:String>
-    <system:String x:Key="prefs.general">通用</system:String>
-    <system:String x:Key="prefs.general.paths">路径</system:String>
-    <system:String x:Key="prefs.general.paths.singer">歌手路径</system:String>
-    <system:String x:Key="prefs.general.paths.add">添加</system:String>
-    <system:String x:Key="prefs.general.paths.remove">移除</system:String>
-    <system:String x:Key="prefs.audio">音频</system:String>
-    <system:String x:Key="prefs.audio.playback">回放</system:String>
-    <system:String x:Key="prefs.audio.rendering">渲染</system:String>
-    <system:String x:Key="prefs.audio.rendering.resampler.preview">预览用重采样器</system:String>
-    <system:String x:Key="prefs.audio.rendering.resampler.export">导出用重采样器</system:String>
-    <system:String x:Key="prefs.audio.rendering.resampler.note">
-        注意: 将你选择的重采样器 exe 或者 dll 文件放入 Resamplers 文件夹中.
+    <system:String x:Key="prefs.paths">路径</system:String>
+    <system:String x:Key="prefs.paths.singer">歌手路径</system:String>
+    <system:String x:Key="prefs.paths.add">添加</system:String>
+    <system:String x:Key="prefs.paths.remove">移除</system:String>
+    <system:String x:Key="prefs.playback">回放</system:String>
+    <system:String x:Key="prefs.playback.device">回放设备</system:String>
+    <system:String x:Key="prefs.playback.test">测试</system:String>
+    <system:String x:Key="prefs.rendering">渲染</system:String>
+    <system:String x:Key="prefs.rendering.resampler.preview">预览用重采样器</system:String>
+    <system:String x:Key="prefs.rendering.resampler.export">导出用重采样器</system:String>
+    <system:String x:Key="prefs.rendering.resampler.note">
+        注意: 将你选择的重采样器 exe 或者 dll 文件放入 Resamplers 文件夹中并在使用偏好中选择它.
     </system:String>
     <system:String x:Key="prefs.appearance">外观</system:String>
+    <system:String x:Key="prefs.appearance.theme">主题</system:String>
 
     <!-- Dialogs -->
     <system:String x:Key="dialogs.noresampler.caption">无重采样器</system:String>
-    <system:String x:Key="dialogs.noresampler.message">无重采样器! 将你选择的重采样器 exe 或者 dll 文件放入 Resamplers 文件夹中!</system:String>
+    <system:String x:Key="dialogs.noresampler.message">无重采样器! 将你选择的重采样器 exe 或者 dll 文件放入 Resamplers 文件夹中并在使用偏好中选择它!</system:String>
     <system:String x:Key="dialogs.about.caption">关于 OpenUTAU</system:String>
     <system:String x:Key="dialogs.about.message">
         OpenUtau 是一个开源编辑环境, 旨在为 UTAU 用户社区提供现代的用户体验和智能的语音学支持. 请到 Github 访问我们.
     </system:String>
+    <system:String x:Key="dialogs.export.caption">导出</system:String>
+    <system:String x:Key="dialogs.export.savefirst">请先保存工程文件</system:String>
+
+    <!-- Errors -->
+    <system:String x:Key="errors.caption">错误</system:String>
 
 </ResourceDictionary>
