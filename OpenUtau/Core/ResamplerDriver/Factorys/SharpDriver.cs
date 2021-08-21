@@ -67,9 +67,12 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys {
             }
         }
 
-        public byte[] DoResampler(EngineInput Args) {
+        public byte[] DoResampler(EngineInput Args, out string output) {
             byte[] data = new byte[0];
-            if (!_isLegalPlugin) return data;
+            output = null;
+            if (!_isLegalPlugin) {
+                return data;
+            }
             if (DoResamplerMethod != null) {
                 object inputarg = CopyObjectToNewType(Args, DoResamplerMethod.GetParameters()[0].ParameterType);
                 object ret = DoResamplerMethod.Invoke(null, new object[1] { inputarg });

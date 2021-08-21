@@ -77,13 +77,13 @@ namespace OpenUtau.Core.Ustx {
                 track.AfterLoad(this);
             }
             foreach (var part in parts) {
-                part.AfterLoad(this, tracks[part.TrackNo]);
+                part.AfterLoad(this, tracks[part.trackNo]);
             }
         }
 
         public void Validate() {
             foreach (var part in parts) {
-                part.Validate(this, tracks[part.TrackNo]);
+                part.Validate(this, tracks[part.trackNo]);
             }
         }
     }

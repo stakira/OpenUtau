@@ -60,7 +60,7 @@ namespace OpenUtau.UI.Controls
         { sTransPost.ScaleY = height / partVisual.ContentBounds.Height; RedrawFrame(); }
         public virtual double CanvasWidth { set; get; }
 
-        public double VisualWidth { get { return Part.DurTick * ScaleX; } }
+        public double VisualWidth { get { return Part.Duration * ScaleX; } }
 
         protected bool _selected = false;
         public bool Selected { set { if (_selected != value) { _selected = value; RedrawFrame(); } } get { return _selected; } }
@@ -95,7 +95,7 @@ namespace OpenUtau.UI.Controls
         public virtual void RedrawFrame()
         {
             DrawingContext cxt = frameVisual.RenderOpen();
-            cxt.DrawRoundedRectangle(GetFrameBrush(), null, new Rect(0, 0, Part.DurTick * ScaleX, _height), 4, 4);
+            cxt.DrawRoundedRectangle(GetFrameBrush(), null, new Rect(0, 0, Part.Duration * ScaleX, _height), 4, 4);
             cxt.Close();
         }
 
@@ -105,7 +105,7 @@ namespace OpenUtau.UI.Controls
         {
             DrawingContext cxt = nameVisual.RenderOpen();
             FormattedText text = new FormattedText(
-                Part.Name,
+                Part.name,
                 System.Threading.Thread.CurrentThread.CurrentUICulture,
                 FlowDirection.LeftToRight,
                 SystemFonts.CaptionFontFamily.GetTypefaces().First(),
@@ -121,7 +121,7 @@ namespace OpenUtau.UI.Controls
         {
             DrawingContext cxt = commentVisual.RenderOpen();
             FormattedText text = new FormattedText(
-                Part.Comment,
+                Part.comment,
                 System.Threading.Thread.CurrentThread.CurrentUICulture,
                 FlowDirection.LeftToRight,
                 SystemFonts.CaptionFontFamily.GetTypefaces().First(),
@@ -165,8 +165,8 @@ namespace OpenUtau.UI.Controls
         {
             DrawingContext cxt = partVisual.RenderOpen();
             cxt.DrawLine(pen, new Point(0, UIConstants.HiddenNoteNum), new Point(0, UIConstants.HiddenNoteNum));
-            cxt.DrawLine(pen, new Point(Part.DurTick, UIConstants.MaxNoteNum - UIConstants.HiddenNoteNum),
-                              new Point(Part.DurTick, UIConstants.MaxNoteNum - UIConstants.HiddenNoteNum));
+            cxt.DrawLine(pen, new Point(Part.Duration, UIConstants.MaxNoteNum - UIConstants.HiddenNoteNum),
+                              new Point(Part.Duration, UIConstants.MaxNoteNum - UIConstants.HiddenNoteNum));
             foreach (UNote note in ((UVoicePart)Part).notes) cxt.DrawLine(pen, new Point(note.position, UIConstants.MaxNoteNum - note.noteNum),
                                                                  new Point(note.End, UIConstants.MaxNoteNum - note.noteNum));
             cxt.Close();
@@ -266,7 +266,7 @@ namespace OpenUtau.UI.Controls
         {
             float[] peaks = ((UWavePart)Part).Peaks;
             int x = 0;
-            double width = Part.DurTick * ScaleX;
+            double width = Part.Duration * ScaleX;
             double height = _height;
             double samplesPerPixel = peaks.Length / width;
             using (BitmapContext cxt = partBitmap.GetBitmapContext())

@@ -43,6 +43,7 @@ namespace OpenUtau.Core.Render {
         }
 
         public async Task<List<TrackSampleProvider>> RenderAsync() {
+            DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, "Starting rendering..."));
             TimeSpan skip = TimeSpan.FromMilliseconds(project.TickToMillisecond(startTick));
             List<TrackSampleProvider> trackSampleProviders = project.tracks.Select(
                 track => new TrackSampleProvider() {
@@ -53,29 +54,30 @@ namespace OpenUtau.Core.Render {
                 if (voicePart != null) {
                     SequencingSampleProvider sampleProvider = await RenderPartAsync(voicePart, project);
                     if (sampleProvider != null) {
-                        trackSampleProviders[voicePart.TrackNo].AddSource(sampleProvider, TimeSpan.Zero);
+                        trackSampleProviders[voicePart.trackNo].AddSource(sampleProvider, TimeSpan.Zero);
                     }
                 }
                 UWavePart wavePart = part as UWavePart;
                 if (wavePart != null) {
                     try {
                         var stream = new AudioFileReader(wavePart.FilePath);
-                        var offset = TimeSpan.FromMilliseconds(project.TickToMillisecond(wavePart.PosTick)) - skip;
+                        var offset = TimeSpan.FromMilliseconds(project.TickToMillisecond(wavePart.position)) - skip;
                         var skipOver = offset < TimeSpan.Zero ? -offset : TimeSpan.Zero;
                         var delayBy = offset > TimeSpan.Zero ? offset : TimeSpan.Zero;
-                        trackSampleProviders[wavePart.TrackNo].AddSource(
+                        trackSampleProviders[wavePart.trackNo].AddSource(
                             new WaveToSampleProvider(stream).Skip(skipOver), delayBy);
                     } catch (Exception e) {
                         Log.Error(e, "Failed to open audio file");
                     }
                 }
             }
+            DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, string.Empty));
             return trackSampleProviders;
         }
 
         async Task<SequencingSampleProvider> RenderPartAsync(UVoicePart part, UProject project) {
             TimeSpan skip = TimeSpan.FromMilliseconds(project.TickToMillisecond(startTick));
-            var singer = project.tracks[part.TrackNo].Singer;
+            var singer = project.tracks[part.trackNo].Singer;
             if (singer == null || !singer.Loaded) {
                 return null;
             }
@@ -89,36 +91,41 @@ namespace OpenUtau.Core.Render {
             }).ToArray();
             await Task.WhenAll(tasks);
             source.Dispose();
-            progress.Clear();
             return new SequencingSampleProvider(tasks.Select(task => new RenderItemSampleProvider(task.Result, skip)));
         }
 
         public CancellationTokenSource PreRenderProject() {
             var source = new CancellationTokenSource();
             Task.Run(() => {
-                Thread.Sleep(200);
-                if (source.Token.IsCancellationRequested) {
-                    return;
-                }
-                TaskFactory<RenderItem> factory = new TaskFactory<RenderItem>(source.Token);
-                using (SemaphoreSlim slim = new SemaphoreSlim(4)) {
-                    var items = PrepareProject(project).ToArray();
-                    var progress = new Progress(items.Length);
-                    var tasks = items
-                        .Select(item => factory.StartNew((obj) => {
-                            slim.Wait();
-                            if (source.Token.IsCancellationRequested) {
-                                return null;
-                            }
-                            var renderItem = obj as RenderItem;
-                            renderItem.progress = progress;
-                            Resample(renderItem);
-                            slim.Release();
-                            return renderItem;
-                        }, item, source.Token)).ToArray();
-                    Task.WaitAll(tasks);
-                    ReleaseSourceTemp();
-                    progress.Clear();
+                try {
+                    Thread.Sleep(200);
+                    if (source.Token.IsCancellationRequested) {
+                        return;
+                    }
+                    TaskFactory<RenderItem> factory = new TaskFactory<RenderItem>(source.Token);
+                    using (SemaphoreSlim slim = new SemaphoreSlim(4)) {
+                        var items = PrepareProject(project).ToArray();
+                        var progress = new Progress(items.Length);
+                        var tasks = items
+                            .Select(item => factory.StartNew((obj) => {
+                                slim.Wait();
+                                if (source.Token.IsCancellationRequested) {
+                                    return null;
+                                }
+                                var renderItem = obj as RenderItem;
+                                renderItem.progress = progress;
+                                Resample(renderItem);
+                                slim.Release();
+                                return renderItem;
+                            }, item, source.Token)).ToArray();
+                        Task.WaitAll(tasks);
+                        ReleaseSourceTemp();
+                        progress.Clear();
+                    }
+                } catch (Exception e) {
+                    if (!source.IsCancellationRequested) {
+                        Log.Error(e, "Failed to pre-render.");
+                    }
                 }
             });
             return source;
@@ -133,9 +140,10 @@ namespace OpenUtau.Core.Render {
 
         IEnumerable<RenderItem> PreparePart(UVoicePart part, UProject project) {
             return part.notes
+                .Where(note => !note.Error)
                 .SelectMany(note => note.phonemes)
                 .Where(phoneme => !phoneme.Error)
-                .Where(phoneme => part.PosTick + phoneme.Parent.position + phoneme.End > startTick)
+                .Where(phoneme => part.position + phoneme.Parent.position + phoneme.End > startTick)
                 .Select(phoneme => new RenderItem(phoneme, part, project, driver.GetInfo().Name));
         }
 
@@ -146,21 +154,28 @@ namespace OpenUtau.Core.Render {
         }
 
         void Resample(RenderItem item) {
-            uint hash = item.HashParameters();
-            byte[] data = cache.Get(hash);
-            if (data == null) {
-                CopySourceTemp(item);
-                data = driver.DoResampler(DriverModels.CreateInputModel(item, 0));
-                cache.Put(hash, data);
-                Log.Information($"Sound {hash:x} {item.GetResamplerExeArgs()} resampled.");
+            string output = string.Empty;
+            try {
+                uint hash = item.HashParameters();
+                byte[] data = cache.Get(hash);
+                if (data == null) {
+                    CopySourceTemp(item);
+                    data = driver.DoResampler(DriverModels.CreateInputModel(item, 0), out output);
+                    if (data == null || data.Length == 0) {
+                        throw new Exception("Empty render result.");
+                    }
+                    cache.Put(hash, data);
+                    Log.Information($"Sound {hash:x} {item.GetResamplerExeArgs()} resampled.");
+                }
+                item.Data = data;
+                item.progress?.CompleteOne($"Resampling \"{item.phonemeName}\"");
+            } catch (Exception e) {
+                Log.Error($"Failed to render item {item.SourceFile} {item.GetResamplerExeArgs()}.\noutput: {output}\n{e}");
             }
-            item.Data = data;
-            item.progress?.CompleteOne($"Resampling \"{item.phonemeName}\"");
         }
 
         void CopySourceTemp(RenderItem item) {
             string sourceTemp = item.SourceTemp;
-            Log.Information($"Copy temp {item.SourceFile} {sourceTemp}");
             CopyOrStamp(item.SourceFile, sourceTemp);
             var dir = Path.GetDirectoryName(item.SourceFile);
             var pattern = Path.GetFileName(item.SourceFile).Replace(".wav", "_wav.*");
@@ -169,16 +184,19 @@ namespace OpenUtau.Core.Render {
                 .ForEach(frq => {
                     string newFrq = sourceTemp.Replace(".wav", "_wav") + Path.GetExtension(frq);
                     CopyOrStamp(frq, newFrq);
-                    Log.Information($"Copy frequency map {frq} {newFrq}");
                 });
         }
 
+        object fileAccessLock = new object();
         void CopyOrStamp(string source, string dest) {
-            bool exists = File.Exists(dest);
-            if (!exists) {
-                File.Copy(source, dest);
-            } else {
-                File.SetLastWriteTime(dest, DateTime.Now);
+            lock (fileAccessLock) {
+                bool exists = File.Exists(dest);
+                if (!exists) {
+                    Log.Information($"Copy temp {source} {dest}");
+                    File.Copy(source, dest);
+                } else {
+                    File.SetLastWriteTime(dest, DateTime.Now);
+                }
             }
         }
 

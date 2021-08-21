@@ -207,7 +207,7 @@ namespace OpenUtau.UI.Models {
         }
 
         public void updatePlayPosMarker() {
-            double quarter = (double)(playPosTick - Part.PosTick) / DocManager.Inst.Project.resolution;
+            double quarter = (double)(playPosTick - Part.position) / DocManager.Inst.Project.resolution;
             int playPosMarkerOffset = (int)Math.Round(QuarterToCanvas(quarter) + 0.5);
             Canvas.SetLeft(playPosMarker, playPosMarkerOffset - 6);
             playPosMarkerHighlight.Height = MidiCanvas.ActualHeight;
@@ -380,14 +380,14 @@ namespace OpenUtau.UI.Models {
         }
 
         private void OnPartModified() {
-            Title = Part.Name;
-            QuarterOffset = (double)Part.PosTick / Project.resolution;
-            QuarterCount = (double)Part.DurTick / Project.resolution;
+            Title = Part.name;
+            QuarterOffset = (double)Part.position / Project.resolution;
+            QuarterCount = (double)Part.Duration / Project.resolution;
             QuarterWidth = QuarterWidth;
             OffsetX = OffsetX;
             MarkUpdate();
-            _visualPosTick = Part.PosTick;
-            _visualDurTick = Part.DurTick;
+            _visualPosTick = Part.position;
+            _visualDurTick = Part.Duration;
         }
 
         private void OnSelectExpression(UNotification cmd) {
@@ -419,7 +419,7 @@ namespace OpenUtau.UI.Models {
 
         private void OnPlayPosSet(int playPosTick) {
             this.playPosTick = playPosTick;
-            double playPosPix = TickToCanvas(playPosTick);
+            double playPosPix = TickToCanvas(playPosTick - (_part == null ? 0 : _part.position));
             if (playPosPix > MidiCanvas.ActualWidth * UIConstants.PlayPosMarkerMargin) {
                 OffsetX += playPosPix - MidiCanvas.ActualWidth * UIConstants.PlayPosMarkerMargin;
             }

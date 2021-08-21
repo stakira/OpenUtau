@@ -11,6 +11,7 @@ namespace OpenUtau.Core.Ustx {
         public string Alias { private set; get; }
         public string Set { private set; get; }
         public string File { private set; get; }
+        public string DisplayFile { private set; get; }
         public double Offset { private set; get; }
         public double Consonant { private set; get; }
         public double Cutoff { private set; get; }
@@ -22,6 +23,7 @@ namespace OpenUtau.Core.Ustx {
             Alias = oto.Name;
             Set = set.Name;
             File = Path.Combine(set.Location, oto.Wav);
+            DisplayFile = oto.Wav;
             Offset = oto.Offset;
             Consonant = oto.Consonant;
             Cutoff = oto.Cutoff;
@@ -56,10 +58,11 @@ namespace OpenUtau.Core.Ustx {
         public readonly string Location;
         public readonly string Author;
         public readonly string Web;
+        public readonly string OtherInfo;
         public readonly BitmapImage Avatar;
         public readonly Dictionary<string, Tuple<string, string>> PitchMap;
         public readonly List<UOtoSet> OtoSets;
-        public readonly string VoicebankName;
+        public readonly string Id;
         public readonly bool Loaded;
 
         public string DisplayName { get { return Loaded ? Name : $"{Name}[Unloaded]"; } }
@@ -73,7 +76,8 @@ namespace OpenUtau.Core.Ustx {
             Name = voicebank.Name;
             Author = voicebank.Author;
             Web = voicebank.Web;
-            Location = Path.Combine(singersPath, Path.GetDirectoryName(voicebank.File));
+            OtherInfo = voicebank.OtherInfo;
+            Location = Path.GetDirectoryName(voicebank.File);
             if (!string.IsNullOrEmpty(voicebank.Image)) {
                 var imagePath = Path.Combine(Location, voicebank.Image);
                 if (File.Exists(imagePath)) {
@@ -89,7 +93,7 @@ namespace OpenUtau.Core.Ustx {
             foreach (var otoSet in voicebank.OtoSets) {
                 OtoSets.Add(new UOtoSet(otoSet, this, singersPath));
             }
-            VoicebankName = Path.GetDirectoryName(voicebank.OrigFile);
+            Id = voicebank.Id;
             Loaded = true;
         }
 

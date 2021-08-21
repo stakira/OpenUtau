@@ -26,8 +26,8 @@ namespace OpenUtau.Core
 
             foreach (var part in project.parts)
             {
-                if (trackNoRemapTable.Keys.Contains(part.TrackNo))
-                    part.TrackNo = trackNoRemapTable[part.TrackNo];
+                if (trackNoRemapTable.Keys.Contains(part.trackNo))
+                    part.trackNo = trackNoRemapTable[part.trackNo];
             }
         }
     }
@@ -54,7 +54,7 @@ namespace OpenUtau.Core
             this.track = track;
             foreach (var part in project.parts)
             {
-                if (part.TrackNo == track.TrackNo)
+                if (part.trackNo == track.TrackNo)
                     removedParts.Add(part);
             }
         }
@@ -64,7 +64,7 @@ namespace OpenUtau.Core
             foreach (var part in removedParts)
             {
                 project.parts.Remove(part);
-                part.TrackNo = -1;
+                part.trackNo = -1;
             }
             UpdateTrackNo();
         }

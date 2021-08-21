@@ -16,7 +16,7 @@ namespace OpenUtau.Core.Ustx {
         public double Pan { set; get; }
 
         public void BeforeSave() {
-            singer = Singer == null ? null : Singer.VoicebankName;
+            singer = Singer == null ? null : Singer.Id;
         }
 
         public void AfterLoad(UProject project) {

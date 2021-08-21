@@ -24,29 +24,36 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys {
             }
         }
 
-        public byte[] DoResampler(DriverModels.EngineInput Args) {
+        public byte[] DoResampler(DriverModels.EngineInput Args, out string output) {
             byte[] data = new byte[0];
-            if (!_isLegalPlugin) return data;
-            try {
-                string tmpFile = Path.GetTempFileName();
-                string ArgParam = FormattableString.Invariant(
-                    $"\"{Args.inputWaveFile}\" \"{tmpFile}\" {Args.NoteString} {Args.Velocity} \"{Args.StrFlags}\" {Args.Offset} {Args.RequiredLength} {Args.Consonant} {Args.Cutoff} {Args.Volume} {Args.Modulation} !{Args.Tempo} {Base64.Base64EncodeInt12(Args.pitchBend)}");
+            if (!_isLegalPlugin) {
+                output = null;
+                return data;
+            }
+            string tmpFile = Path.GetTempFileName();
+            string ArgParam = FormattableString.Invariant(
+                $"\"{Args.inputWaveFile}\" \"{tmpFile}\" {Args.NoteString} {Args.Velocity} \"{Args.StrFlags}\" {Args.Offset} {Args.RequiredLength} {Args.Consonant} {Args.Cutoff} {Args.Volume} {Args.Modulation} !{Args.Tempo} {Base64.Base64EncodeInt12(Args.pitchBend)}");
 
-                var p = Process.Start(new ProcessStartInfo(ExePath, ArgParam) { UseShellExecute = false, CreateNoWindow = true });
-                p.WaitForExit();
-                if (p != null) {
-                    p.Close();
-                    p.Dispose();
-                    p = null;
-                }
-
-                if (File.Exists(tmpFile)) {
-                    data = File.ReadAllBytes(tmpFile);
-                    try {
-                        File.Delete(tmpFile);
-                    } catch {; }
-                }
-            } catch (Exception) {; }
+            var p = Process.Start(new ProcessStartInfo(ExePath, ArgParam) {
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                CreateNoWindow = true,
+            });
+            List<string> outputLines = new List<string>();
+            while (!p.StandardOutput.EndOfStream) {
+                outputLines.Add(p.StandardOutput.ReadLine());
+            }
+            p.WaitForExit();
+            output = string.Join("\n", outputLines);
+            if (p != null) {
+                p.Close();
+                p.Dispose();
+            }
+            if (File.Exists(tmpFile)) {
+                data = File.ReadAllBytes(tmpFile);
+                File.Delete(tmpFile);
+            }
             return data;
         }
         /*

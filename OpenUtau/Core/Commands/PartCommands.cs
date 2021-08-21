@@ -33,20 +33,20 @@ namespace OpenUtau.Core
             this.part = part;
             this.newPos = newPos;
             this.newTrackNo = newTrackNo;
-            this.oldPos = part.PosTick;
-            this.oldTrackNo = part.TrackNo;
+            this.oldPos = part.position;
+            this.oldTrackNo = part.trackNo;
         }
         public override string ToString() { return "Move parts"; }
-        public override void Execute() { part.PosTick = newPos; part.TrackNo = newTrackNo; }
-        public override void Unexecute() { part.PosTick = oldPos; part.TrackNo = oldTrackNo; }
+        public override void Execute() { part.position = newPos; part.trackNo = newTrackNo; }
+        public override void Unexecute() { part.position = oldPos; part.trackNo = oldTrackNo; }
     }
 
     public class ResizePartCommand : PartCommand
     {
         readonly int newDur, oldDur;
-        public ResizePartCommand(UProject project, UPart part, int newDur) { this.project = project; this.part = part; this.newDur = newDur; this.oldDur = part.DurTick; }
+        public ResizePartCommand(UProject project, UPart part, int newDur) { this.project = project; this.part = part; this.newDur = newDur; this.oldDur = part.Duration; }
         public override string ToString() { return "Change parts duration"; }
-        public override void Execute() { part.DurTick = newDur; }
-        public override void Unexecute() { part.DurTick = oldDur; }
+        public override void Execute() { part.Duration = newDur; }
+        public override void Unexecute() { part.Duration = oldDur; }
     }
 }

@@ -5,14 +5,13 @@ using Newtonsoft.Json;
 namespace OpenUtau.Core.Ustx {
     [JsonObject(MemberSerialization.OptIn)]
     public abstract class UPart {
-        [JsonProperty] public string Name = "New Part";
-        [JsonProperty] public string Comment = string.Empty;
+        [JsonProperty] public string name = "New Part";
+        [JsonProperty] public string comment = string.Empty;
+        [JsonProperty] public int trackNo;
+        [JsonProperty] public int position = 0;
 
-        [JsonProperty] public int TrackNo;
-        [JsonProperty] public int PosTick = 0;
-
-        public virtual int DurTick { set; get; }
-        public int EndTick { get { return PosTick + DurTick; } }
+        public virtual int Duration { set; get; }
+        public int EndTick { get { return position + Duration; } }
 
         public UPart() { }
 
@@ -37,7 +36,7 @@ namespace OpenUtau.Core.Ustx {
             foreach (var note in notes) {
                 note.AfterLoad(project, track, this);
             }
-            DurTick = GetMinDurTick(project) + project.resolution;
+            Duration = GetMinDurTick(project) + project.resolution;
         }
 
         public override void Validate(UProject project, UTrack track) {
@@ -71,7 +70,7 @@ namespace OpenUtau.Core.Ustx {
 
         [JsonProperty]
         public string FilePath {
-            set { _filePath = value; Name = System.IO.Path.GetFileName(value); }
+            set { _filePath = value; name = System.IO.Path.GetFileName(value); }
             get { return _filePath; }
         }
         public float[] Peaks;
@@ -80,7 +79,7 @@ namespace OpenUtau.Core.Ustx {
         public int FileDurTick;
         public int HeadTrimTick = 0;
         public int TailTrimTick = 0;
-        public override int DurTick {
+        public override int Duration {
             get { return FileDurTick - HeadTrimTick - TailTrimTick; }
             set { TailTrimTick = FileDurTick - HeadTrimTick - value; }
         }

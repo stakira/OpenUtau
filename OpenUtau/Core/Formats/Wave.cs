@@ -25,7 +25,7 @@ namespace OpenUtau.Core.Formats
                     {
                         FilePath = filepath,
                         FileDurTick = _part.FileDurTick,
-                        DurTick = _part.DurTick,
+                        Duration = _part.Duration,
                         Channels = _part.Channels,
                         Peaks = _part.Peaks
                     };
@@ -45,7 +45,7 @@ namespace OpenUtau.Core.Formats
             {
                 FilePath = filepath,
                 FileDurTick = durTick,
-                DurTick = durTick,
+                Duration = durTick,
                 Channels = stream.WaveFormat.Channels
             };
             stream.Close();

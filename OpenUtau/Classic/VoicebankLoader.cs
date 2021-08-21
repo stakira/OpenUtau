@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -44,7 +45,7 @@ namespace OpenUtau.Classic {
                 var dir = Path.GetDirectoryName(otoSet.OrigFile);
                 for (int i = 0; i < bankDirs.Length; ++i) {
                     if (dir.StartsWith(bankDirs[i])) {
-                        otoSet.Name = Path.GetDirectoryName(otoSet.OrigFile).Replace(bankDirs[i], "").Trim('\\').Trim('/');
+                        otoSet.Name = PathUtils.MakeRelative(Path.GetDirectoryName(otoSet.OrigFile), bankDirs[i]);
                         banks[i].OtoSets.Add(otoSet);
                         break;
                     }
@@ -60,12 +61,12 @@ namespace OpenUtau.Classic {
                 }
             }
             foreach (var bank in banks) {
-                result.Add(Path.GetFileName(Path.GetDirectoryName(bank.File)), bank);
+                result.Add(bank.Id, bank);
             }
             return result;
         }
 
-        static Voicebank ParseCharacterTxt(string filePath, Encoding encoding) {
+        Voicebank ParseCharacterTxt(string filePath, Encoding encoding) {
             using (var stream = File.OpenRead(filePath)) {
                 using (var reader = new StreamReader(stream, encoding)) {
                     var voicebank = new Voicebank() {
@@ -75,9 +76,9 @@ namespace OpenUtau.Classic {
                     var otherLines = new List<string>();
                     while (!reader.EndOfStream) {
                         string line = reader.ReadLine().Trim();
-                        var s = line.Split(new char[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
+                        var s = line.Split(new char[] { '=' });
                         if (s.Length != 2)
-                            s = line.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
+                            s = line.Split(new char[] { ':' });
                         Array.ForEach(s, temp => temp.Trim());
                         if (s.Length == 2) {
                             s[0] = s[0].ToLowerInvariant();
@@ -85,10 +86,9 @@ namespace OpenUtau.Classic {
                                 voicebank.Name = s[1];
                             } else if (s[0] == "image") {
                                 voicebank.Image = s[1];
-                            } else if (s[0] == "author") {
+                            } else if (s[0] == "author" || s[0] == "created by") {
                                 voicebank.Author = s[1];
-                            } else if (s[0] == "created by") {
-                                voicebank.Author = s[1];
+                            } else if (s[0] == "sample") {
                             } else if (s[0] == "web") {
                                 voicebank.Web = s[1];
                             } else {
@@ -102,6 +102,7 @@ namespace OpenUtau.Classic {
                     if (string.IsNullOrEmpty(voicebank.Name)) {
                         throw new FileFormatException($"Failed to load character.txt using encoding {encoding.EncodingName}");
                     }
+                    voicebank.Id = PathUtils.MakeRelative(Path.GetDirectoryName(voicebank.File), basePath);
                     return voicebank;
                 }
             }
@@ -201,7 +202,7 @@ namespace OpenUtau.Classic {
                 value = 0;
                 return true;
             }
-            return double.TryParse(s, out value);
+            return double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out value);
         }
     }
 }

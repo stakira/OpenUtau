@@ -118,9 +118,12 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys {
             }
         }
 
-        public byte[] DoResampler(EngineInput Args) {
+        public byte[] DoResampler(EngineInput Args, out string output) {
             byte[] data = new byte[0];
-            if (!_isLegalPlugin) return data;
+            output = null;
+            if (!_isLegalPlugin) {
+                return data;
+            }
             try {
                 IntPtr hModule = LoadLibrary(DllPath);
                 if (hModule == IntPtr.Zero) _isLegalPlugin = false;

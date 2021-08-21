@@ -106,3 +106,15 @@ namespace OpenUtau.Core {
         }
     }
 }
+
+namespace OpenUtau {
+    public static class PathUtils {
+        public static string MakeRelative(string path, string basePath) {
+            if (path.StartsWith(basePath)) {
+                return path.Replace(basePath, "")
+                    .Trim(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            }
+            return path;
+        }
+    }
+}

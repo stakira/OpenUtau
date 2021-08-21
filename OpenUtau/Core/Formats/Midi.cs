@@ -32,7 +32,7 @@ namespace OpenUtau.Core.Formats
                     }
                 foreach (var pair in parts)
                 {
-                    pair.Value.DurTick = pair.Value.GetMinDurTick(project);
+                    pair.Value.Duration = pair.Value.GetMinDurTick(project);
                     resultParts.Add(pair.Value);
                 }
             }

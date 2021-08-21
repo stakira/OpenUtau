@@ -47,7 +47,7 @@ namespace OpenUtau.Core.Render {
             SourceFile = phoneme.oto.File;
             SourceFile = Path.Combine(PathManager.Inst.InstalledSingersPath, SourceFile);
             ResamplerName = resamplerName;
-            var voicebankName = project.tracks[part.TrackNo].Singer.VoicebankName;
+            var voicebankName = project.tracks[part.trackNo].Singer.Id;
             SourceTemp = Path.Combine(PathManager.Inst.GetCachePath(null),
                 $"{HashHex(voicebankName)}-{HashHex(phoneme.oto.Set)}-{HashHex(SourceFile)}.wav");
 
@@ -68,7 +68,7 @@ namespace OpenUtau.Core.Render {
             Tempo = project.bpm;
 
             SkipOver = phoneme.oto.Preutter * strechRatio - phoneme.preutter;
-            PosMs = project.TickToMillisecond(part.PosTick + phoneme.Parent.position + phoneme.position) - phoneme.preutter;
+            PosMs = project.TickToMillisecond(part.position + phoneme.Parent.position + phoneme.position) - phoneme.preutter;
             DurMs = project.TickToMillisecond(phoneme.Duration) + lengthAdjustment;
             Envelope = phoneme.envelope.data;
 

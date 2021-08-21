@@ -73,27 +73,27 @@ namespace OpenUtau.UI.Models {
         public double BPM => Project.bpm;
         public int BeatPerBar => Project.beatPerBar;
         public int BeatUnit => Project.beatUnit;
-        public TimeSpan PlayPosTime { get { return TimeSpan.FromMilliseconds((int)Project.TickToMillisecond(playPosTick)); } }
+        public TimeSpan PlayPosTime => TimeSpan.FromMilliseconds((int)Project.TickToMillisecond(playPosTick));
 
         public void HorizontalPropertiesChanged() {
-            OnPropertyChanged("QuarterWidth");
-            OnPropertyChanged("TotalWidth");
-            OnPropertyChanged("OffsetX");
-            OnPropertyChanged("ViewportSizeX");
-            OnPropertyChanged("SmallChangeX");
-            OnPropertyChanged("QuarterOffset");
-            OnPropertyChanged("MinTickWidth");
-            OnPropertyChanged("BeatPerBar");
-            OnPropertyChanged("BeatUnit");
+            OnPropertyChanged(nameof(QuarterWidth));
+            OnPropertyChanged(nameof(TotalWidth));
+            OnPropertyChanged(nameof(OffsetX));
+            OnPropertyChanged(nameof(ViewportSizeX));
+            OnPropertyChanged(nameof(SmallChangeX));
+            OnPropertyChanged(nameof(QuarterOffset));
+            OnPropertyChanged(nameof(MinTickWidth));
+            OnPropertyChanged(nameof(BeatPerBar));
+            OnPropertyChanged(nameof(BeatUnit));
             MarkUpdate();
         }
 
         public void VerticalPropertiesChanged() {
-            OnPropertyChanged("TrackHeight");
-            OnPropertyChanged("TotalHeight");
-            OnPropertyChanged("OffsetY");
-            OnPropertyChanged("ViewportSizeY");
-            OnPropertyChanged("SmallChangeY");
+            OnPropertyChanged(nameof(TrackHeight));
+            OnPropertyChanged(nameof(TotalHeight));
+            OnPropertyChanged(nameof(OffsetY));
+            OnPropertyChanged(nameof(ViewportSizeY));
+            OnPropertyChanged(nameof(SmallChangeY));
             MarkUpdate();
         }
 
@@ -130,8 +130,8 @@ namespace OpenUtau.UI.Models {
             int tick2 = (int)(quarter2 * Project.resolution);
             TempSelectedParts.Clear();
             foreach (UPart part in Project.parts) {
-                if (part.PosTick <= tick2 && part.EndTick >= tick1 &&
-                    part.TrackNo <= track2 && part.TrackNo >= track1) SelectTempPart(part);
+                if (part.position <= tick2 && part.EndTick >= tick1 &&
+                    part.trackNo <= track2 && part.trackNo >= track1) SelectTempPart(part);
             }
             UpdateSelectedVisual();
         }
@@ -162,8 +162,8 @@ namespace OpenUtau.UI.Models {
             if (_updated) {
                 foreach (PartElement partElement in PartElements) {
                     if (partElement.Modified) partElement.Redraw();
-                    partElement.X = -OffsetX + partElement.Part.PosTick * QuarterWidth / Project.resolution;
-                    partElement.Y = -OffsetY + partElement.Part.TrackNo * TrackHeight + 1;
+                    partElement.X = -OffsetX + partElement.Part.position * QuarterWidth / Project.resolution;
+                    partElement.Y = -OffsetY + partElement.Part.trackNo * TrackHeight + 1;
                     partElement.VisualHeight = TrackHeight - 2;
                     partElement.ScaleX = QuarterWidth / Project.resolution;
                     partElement.CanvasWidth = this.TrackCanvas.ActualWidth;
@@ -182,11 +182,11 @@ namespace OpenUtau.UI.Models {
             double quarterCount = UIConstants.MinQuarterCount;
             if (Project != null)
                 foreach (UPart part in Project.parts)
-                    quarterCount = Math.Max(quarterCount, (part.DurTick + part.PosTick) / Project.resolution + UIConstants.SpareQuarterCount);
+                    quarterCount = Math.Max(quarterCount, (part.Duration + part.position) / Project.resolution + UIConstants.SpareQuarterCount);
             QuarterCount = quarterCount;
 
             int trackCount = UIConstants.MinTrackCount;
-            if (Project != null) foreach (UPart part in Project.parts) trackCount = Math.Max(trackCount, part.TrackNo + 1 + UIConstants.SpareTrackCount);
+            if (Project != null) foreach (UPart part in Project.parts) trackCount = Math.Max(trackCount, part.trackNo + 1 + UIConstants.SpareTrackCount);
             TrackCount = trackCount;
         }
 
@@ -313,9 +313,9 @@ namespace OpenUtau.UI.Models {
                 OnTrackAdded(track);
             }
 
-            OnPropertyChanged("BeatPerBar");
-            OnPropertyChanged("BeatUnit");
-            OnPropertyChanged("BPM");
+            OnPropertyChanged(nameof(BeatPerBar));
+            OnPropertyChanged(nameof(BeatUnit));
+            OnPropertyChanged(nameof(BPM));
             initPlayPosMarker();
         }
 
@@ -332,11 +332,11 @@ namespace OpenUtau.UI.Models {
         private void OnPlayPosSet(int playPosTick) {
             this.playPosTick = playPosTick;
             double playPosPix = QuarterToCanvas((double)playPosTick / Project.resolution);
-            if (playPosPix > TrackCanvas.ActualWidth * UIConstants.PlayPosMarkerMargin)
+            if (playPosPix > TrackCanvas.ActualWidth * UIConstants.PlayPosMarkerMargin) {
                 OffsetX += playPosPix - TrackCanvas.ActualWidth * UIConstants.PlayPosMarkerMargin;
+            }
             MarkUpdate();
-            OnPropertyChanged("PlayPosTime");
-            OnPropertyChanged("PlayPosBar");
+            OnPropertyChanged(nameof(PlayPosTime));
         }
 
         # endregion
@@ -369,10 +369,10 @@ namespace OpenUtau.UI.Models {
                     foreach (var trackHeader in TrackHeaders) trackHeader.UpdateSingerName();
                 }
             } else if (cmd is BpmCommand) {
-                OnPropertyChanged("BPM");
+                OnPropertyChanged(nameof(BPM));
             } else if (cmd is TimeSignatureCommand) {
-                OnPropertyChanged("BeatPerBar");
-                OnPropertyChanged("BeatUnit");
+                OnPropertyChanged(nameof(BeatPerBar));
+                OnPropertyChanged(nameof(BeatUnit));
             } else if (cmd is LoadProjectNotification) {
                 OnProjectLoad(((LoadProjectNotification)cmd).project);
             } else if (cmd is SetPlayPosTickNotification) {

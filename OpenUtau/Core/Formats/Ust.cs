@@ -49,7 +49,7 @@ namespace OpenUtau.Core.Formats {
                 var track = p.tracks[0];
                 var part = p.parts[0];
                 track.TrackNo = project.tracks.Count;
-                part.TrackNo = track.TrackNo;
+                part.trackNo = track.TrackNo;
                 project.tracks.Add(track);
                 project.parts.Add(part);
             }
@@ -63,12 +63,12 @@ namespace OpenUtau.Core.Formats {
             Ustx.AddDefaultExpressions(project);
 
             project.tracks.Add(new UTrack { TrackNo = 0 });
-            var part = new UVoicePart() { TrackNo = 0, PosTick = 0 };
+            var part = new UVoicePart() { trackNo = 0, position = 0 };
             project.parts.Add(part);
 
             var blocks = ReadBlocks(reader, file);
             ParsePart(project, part, blocks);
-            part.DurTick = part.notes.Select(note => note.End).Max() + project.resolution;
+            part.Duration = part.notes.Select(note => note.End).Max() + project.resolution;
 
             return project;
         }

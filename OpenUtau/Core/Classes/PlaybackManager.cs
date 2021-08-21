@@ -169,7 +169,7 @@ namespace OpenUtau.Core {
         }
 
         public static float DecibelToVolume(double db) {
-            return (db == -24) ? 0 : (float)((db < -16) ? MusicMath.DecibelToLinear(db * 2 + 16) : MusicMath.DecibelToLinear(db));
+            return (db == -24) ? 0 : (float)MusicMath.DecibelToLinear((db < -16) ? db * 2 + 16 : db);
         }
 
         public void RenderToFiles(UProject project) {

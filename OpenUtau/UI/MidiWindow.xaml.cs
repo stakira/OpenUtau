@@ -574,7 +574,7 @@ namespace OpenUtau.UI {
             if (midiVM.Part == null) return;
             Point mousePos = e.GetPosition((UIElement)sender);
             int tick = (int)(midiVM.CanvasToSnappedQuarter(mousePos.X) * midiVM.Project.resolution);
-            DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(Math.Max(0, tick) + midiVM.Part.PosTick));
+            DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(Math.Max(0, tick) + midiVM.Part.position));
             ((Canvas)sender).CaptureMouse();
         }
 
@@ -584,8 +584,8 @@ namespace OpenUtau.UI {
         private void timelineCanvas_MouseMove_Helper(Point mousePos) {
             if (Mouse.LeftButton == MouseButtonState.Pressed && Mouse.Captured == timelineCanvas) {
                 int tick = (int)(midiVM.CanvasToSnappedQuarter(mousePos.X) * midiVM.Project.resolution);
-                if (midiVM.playPosTick != tick + midiVM.Part.PosTick)
-                    DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(Math.Max(0, tick) + midiVM.Part.PosTick));
+                if (midiVM.playPosTick != tick + midiVM.Part.position)
+                    DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(Math.Max(0, tick) + midiVM.Part.position));
             }
         }
 

@@ -12,6 +12,7 @@ namespace OpenUtau.Classic {
         public string OtherInfo;
         public List<OtoSet> OtoSets = new List<OtoSet>();
         public PrefixMap PrefixMap;
+        public string Id;
 
         public override string ToString() {
             return Name;

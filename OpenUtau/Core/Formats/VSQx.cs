@@ -103,11 +103,11 @@ namespace OpenUtau.Core.Formats {
                     UVoicePart upart = new UVoicePart();
                     uproject.parts.Add(upart);
 
-                    upart.Name = part.SelectSingleNode(partnamePath, nsmanager).InnerText;
-                    upart.Comment = part.SelectSingleNode(partcommentPath, nsmanager).InnerText;
-                    upart.PosTick = int.Parse(part.SelectSingleNode(postickPath, nsmanager).InnerText) + partPosTickShift;
-                    upart.DurTick = int.Parse(part.SelectSingleNode(playtimePath, nsmanager).InnerText);
-                    upart.TrackNo = utrack.TrackNo;
+                    upart.name = part.SelectSingleNode(partnamePath, nsmanager).InnerText;
+                    upart.comment = part.SelectSingleNode(partcommentPath, nsmanager).InnerText;
+                    upart.position = int.Parse(part.SelectSingleNode(postickPath, nsmanager).InnerText) + partPosTickShift;
+                    upart.Duration = int.Parse(part.SelectSingleNode(playtimePath, nsmanager).InnerText);
+                    upart.trackNo = utrack.TrackNo;
 
                     foreach (XmlNode note in part.SelectNodes(notePath, nsmanager)) {
                         UNote unote = uproject.CreateNote();

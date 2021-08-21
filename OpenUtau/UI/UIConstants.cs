@@ -22,7 +22,7 @@ namespace OpenUtau.UI
         public const double NoteDefaultHeight = 22;
 
         public const double MidiQuarterMaxWidth = 512;
-        public const double MidiQuarterMinWidth = 8;
+        public const double MidiQuarterMinWidth = 4;
         public const double MidiQuarterDefaultWidth = 128;
         public const double MidiQuarterMinWidthShowPhoneme = 64;
         public const double MidiTickMinWidth = 16;
@@ -32,7 +32,7 @@ namespace OpenUtau.UI
         public const double TrackDefaultHeight = 64;
 
         public const double TrackQuarterMaxWidth = 256;
-        public const double TrackQuarterMinWidth = 8;
+        public const double TrackQuarterMinWidth = 4;
         public const double TrackQuarterDefaultWidth = 16;
         public const double TrackTickMinWidth = 16;
 

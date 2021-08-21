@@ -75,7 +75,7 @@ namespace OpenUtau.UI.Controls {
         private void ItemList_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
             TextBlock textBlock = e.OriginalSource as TextBlock;
             if (textBlock != null) {
-                var singer = DocManager.Inst.Project.tracks[Part.TrackNo].Singer;
+                var singer = DocManager.Inst.Project.tracks[Part.trackNo].Singer;
                 if (singer == null) {
                     e.Handled = true;
                     return;
@@ -96,7 +96,7 @@ namespace OpenUtau.UI.Controls {
             }
             itemList.Items.Clear();
             popup.IsOpen = true;
-            var singer = DocManager.Inst.Project.tracks[Part.TrackNo].Singer;
+            var singer = DocManager.Inst.Project.tracks[Part.trackNo].Singer;
             if (singer == null) {
                 itemList.Items.Add("No Singer");
                 return;
