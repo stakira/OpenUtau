@@ -19,17 +19,11 @@ namespace OpenUtau.Core.Formats {
         }
 
         public static UProject Load(string[] files) {
-            var ustTracks = true;
             foreach (var file in files) {
                 if (Formats.DetectProjectFormat(file) != ProjectFormats.Ust) {
-                    ustTracks = false;
-                    break;
+                    DocManager.Inst.ExecuteCmd(new UserMessageNotification("Multiple files must be all Ust files"));
+                    return null;
                 }
-            }
-
-            if (!ustTracks) {
-                DocManager.Inst.ExecuteCmd(new UserMessageNotification("Multiple files must be all Ust files"));
-                return null;
             }
 
             var projects = new List<UProject>();

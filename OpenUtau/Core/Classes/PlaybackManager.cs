@@ -82,7 +82,7 @@ namespace OpenUtau.Core {
 
         public void Play(UProject project, int tick) {
             if (renderTask != null) {
-                if (renderTask.IsCompleted) {
+                if (renderTask.IsCompleted || renderTask.IsFaulted) {
                     renderTask = null;
                 } else {
                     return;
@@ -142,22 +142,21 @@ namespace OpenUtau.Core {
                 return;
             }
             StopPreRender();
-            Task.Run(() => {
-                var task = Task.Run(async () => {
-                    RenderEngine engine = new RenderEngine(project, driver, cache, tick);
-                    renderTask = engine.RenderAsync();
-                    trackSources = await renderTask;
-                    StartPlayback(project.TickToMillisecond(tick));
-                    renderTask = null;
-                });
-                try {
-                    task.Wait();
-                } catch (AggregateException ae) {
-                    foreach (var e in ae.Flatten().InnerExceptions) {
-                        Log.Error(e, "Failed to render.");
-                    }
+            var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
+            Task.Run(async () => {
+                RenderEngine engine = new RenderEngine(project, driver, cache, tick);
+                renderTask = engine.RenderAsync();
+                trackSources = await renderTask;
+                StartPlayback(project.TickToMillisecond(tick));
+                renderTask = null;
+            }).ContinueWith((task) => {
+                renderTask = null;
+                if (task.IsFaulted) {
+                    Log.Information($"{task.Exception}");
+                    DocManager.Inst.ExecuteCmd(new UserMessageNotification(task.Exception.ToString()));
+                    throw task.Exception;
                 }
-            });
+            }, CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted, scheduler);
         }
 
         public void UpdatePlayPos() {

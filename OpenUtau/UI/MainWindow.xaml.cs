@@ -500,11 +500,17 @@ namespace OpenUtau.UI {
                 Multiselect = true,
                 CheckFileExists = true
             };
-            if (openFileDialog.ShowDialog() == true) CmdOpenFile(openFileDialog.FileNames);
+            if (openFileDialog.ShowDialog() == true) {
+                CmdOpenFile(openFileDialog.FileNames);
+            }
         }
 
         private void CmdOpenFile(string[] files) {
-            Core.Formats.Formats.LoadProject(files);
+            try {
+                Core.Formats.Formats.LoadProject(files);
+            } catch (Exception e) {
+                MessageBox.Show(e.ToString());
+            }
         }
 
         public void CmdSaveFile() {

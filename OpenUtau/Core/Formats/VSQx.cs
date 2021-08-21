@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
 using System.IO;
+using System.Xml;
 
 using OpenUtau.Core.Ustx;
 
@@ -15,13 +11,7 @@ namespace OpenUtau.Core.Formats {
 
         static public UProject Load(string file) {
             XmlDocument vsqx = new XmlDocument();
-
-            try {
-                vsqx.Load(file);
-            } catch (Exception e) {
-                System.Windows.MessageBox.Show(e.GetType().ToString() + "\n" + e.Message);
-                return null;
-            }
+            vsqx.Load(file);
 
             XmlNamespaceManager nsmanager = new XmlNamespaceManager(vsqx.NameTable);
             nsmanager.AddNamespace("v3", vsq3NameSpace);
@@ -31,17 +21,12 @@ namespace OpenUtau.Core.Formats {
             string nsPrefix;
 
             // Detect vsqx version
-            root = vsqx.SelectSingleNode("v3:vsq3", nsmanager);
-
-            if (root != null) nsPrefix = "v3:";
-            else {
-                root = vsqx.SelectSingleNode("v4:vsq4", nsmanager);
-
-                if (root != null) nsPrefix = "v4:";
-                else {
-                    System.Windows.MessageBox.Show("Unrecognizable VSQx file format.");
-                    return null;
-                }
+            if ((root = vsqx.SelectSingleNode("v3:vsq3", nsmanager)) != null) {
+                nsPrefix = "v3:";
+            } else if ((root = vsqx.SelectSingleNode("v4:vsq4", nsmanager)) != null) {
+                nsPrefix = "v4:";
+            } else {
+                throw new FileFormatException("Unrecognizable VSQx file format.");
             }
 
             UProject uproject = new UProject();
@@ -136,6 +121,8 @@ namespace OpenUtau.Core.Formats {
                 }
             }
 
+            uproject.AfterLoad();
+            uproject.Validate();
             return uproject;
         }
     }
