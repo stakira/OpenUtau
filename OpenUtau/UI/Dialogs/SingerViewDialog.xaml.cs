@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
+using System.Windows.Navigation;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 
@@ -49,7 +51,19 @@ namespace OpenUtau.UI.Dialogs {
                 return;
             }
             avatar.Source = singer.Avatar;
-            info.Text = $"Author: {singer.Author}\nWeb: {singer.Web}\n{singer.OtherInfo}";
+            info.Inlines.Clear();
+            info.Inlines.Add($"Author: {singer.Author}\n");
+            info.Inlines.Add("Web: ");
+            if (!string.IsNullOrWhiteSpace(singer.Web)) {
+                var h = new Hyperlink() {
+                    NavigateUri = new Uri(singer.Web),
+                };
+                h.RequestNavigate += new RequestNavigateEventHandler(hyperlink_RequestNavigate);
+                h.Inlines.Add(singer.Web);
+                info.Inlines.Add(h);
+            }
+            info.Inlines.Add("\n");
+            info.Inlines.Add(singer.OtherInfo);
             location = singer.Location;
             otoview.Items.Clear();
             foreach (var set in singer.OtoSets) {
@@ -65,6 +79,11 @@ namespace OpenUtau.UI.Dialogs {
 
         private void locationButton_Click(object sender, RoutedEventArgs e) {
             OpenFolder(location);
+        }
+
+        private void hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e) {
+            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
+            e.Handled = true;
         }
 
         private void OpenFolder(string folderPath) {
