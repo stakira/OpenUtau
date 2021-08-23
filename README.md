@@ -30,6 +30,10 @@ Feature-Rich Midi Editor
 
 ![Editor](Misc/GIFs/editor2.gif)
 
+Vibrato Editing
+
+![Vibrato](Misc/GIFs/vibrato.gif)
+
 Render and Playback
 
 ![Playback](Misc/GIFs/playback.gif)

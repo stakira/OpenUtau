@@ -91,7 +91,10 @@ namespace OpenUtau.Core.Render {
             }).ToArray();
             await Task.WhenAll(tasks);
             source.Dispose();
-            return new SequencingSampleProvider(tasks.Select(task => new RenderItemSampleProvider(task.Result, skip)));
+            return new SequencingSampleProvider(tasks
+                .Select(task => task.Result)
+                .Where(item => item.Data != null && item.Data.Length > 0)
+                .Select(item => new RenderItemSampleProvider(item, skip)));
         }
 
         public CancellationTokenSource PreRenderProject() {
