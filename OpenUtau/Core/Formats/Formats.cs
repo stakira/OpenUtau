@@ -57,5 +57,41 @@ namespace OpenUtau.Core.Formats {
                 DocManager.Inst.ExecuteCmd(new LoadProjectNotification(project));
             }
         }
+
+        public static void ImportTracks(UProject project, string[] files) {
+            if (files.Length < 1) {
+                return;
+            }
+            foreach (string file in files) {
+                ProjectFormats format = DetectProjectFormat(file);
+                UProject loaded;
+                switch (format) {
+                    case ProjectFormats.Ustx:
+                        loaded = Ustx.Load(file);
+                        break;
+                    case ProjectFormats.Vsq3:
+                    case ProjectFormats.Vsq4:
+                        loaded = VSQx.Load(file);
+                        break;
+                    case ProjectFormats.Ust:
+                        loaded = Ust.Load(new[] { file });
+                        break;
+                    default:
+                        throw new FileFormatException("Unknown file format");
+                }
+                int trackCount = project.tracks.Count;
+                foreach (var track in loaded.tracks) {
+                    track.TrackNo = project.tracks.Count;
+                    project.tracks.Add(track);
+                }
+                foreach (var part in loaded.parts) {
+                    project.parts.Add(part);
+                    part.trackNo += trackCount;
+                }
+            }
+            project.AfterLoad();
+            project.Validate();
+            DocManager.Inst.ExecuteCmd(new LoadProjectNotification(project));
+        }
     }
 }

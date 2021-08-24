@@ -10,6 +10,7 @@
     <system:String x:Key="menu.file.openas">O_pen As</system:String>
     <system:String x:Key="menu.file.save">_Save</system:String>
     <system:String x:Key="menu.file.saveas">Save _As...</system:String>
+    <system:String x:Key="menu.file.import">_Import...</system:String>
     <system:String x:Key="menu.file.importaudio">_Import Audio...</system:String>
     <system:String x:Key="menu.file.importmidi">_Import Midi...</system:String>
     <system:String x:Key="menu.file.exportall">Export All</system:String>

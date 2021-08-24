@@ -56,8 +56,14 @@ namespace OpenUtau.Core.Formats {
             var project = new UProject() { resolution = 480, FilePath = file, Saved = false };
             Ustx.AddDefaultExpressions(project);
 
-            project.tracks.Add(new UTrack { TrackNo = 0 });
-            var part = new UVoicePart() { trackNo = 0, position = 0 };
+            project.tracks.Add(new UTrack {
+                TrackNo = 0,
+            });
+            var part = new UVoicePart() {
+                trackNo = 0,
+                position = 0,
+                name = Path.GetFileNameWithoutExtension(file),
+            };
             project.parts.Add(part);
 
             var blocks = ReadBlocks(reader, file);

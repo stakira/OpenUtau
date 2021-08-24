@@ -71,10 +71,14 @@ namespace OpenUtau.Core.Ustx {
             foreach (var key in project.expressions.Keys.Except(expressions.Keys)) {
                 expressions.Add(key, new UExpression(project.expressions[key]));
             }
+            var toRemove = new List<string>();
             foreach (var key in expressions.Keys.Except(project.expressions.Keys)) {
                 if (!expressions[key].overridden) {
-                    expressions.Remove(key);
+                    toRemove.Add(key);
                 }
+            }
+            foreach (var key in toRemove) {
+                expressions.Remove(key);
             }
         }
 

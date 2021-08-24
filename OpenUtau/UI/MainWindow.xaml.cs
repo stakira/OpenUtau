@@ -344,7 +344,8 @@ namespace OpenUtau.UI {
         # region menu commands
 
         private void MenuNew_Click(object sender, RoutedEventArgs e) { CmdNewFile(); }
-        private void MenuOpen_Click(object sender, RoutedEventArgs e) { CmdOpenFileDialog(); }
+        private void MenuOpen_Click(object sender, RoutedEventArgs e) { OpenFileDialog(); }
+        private void MenuImport_Click(object sender, RoutedEventArgs e) { ImportFilesDialog(); }
         private void MenuSave_Click(object sender, RoutedEventArgs e) { CmdSaveFile(); }
         private void MenuExit_Click(object sender, RoutedEventArgs e) { CmdExit(); }
 
@@ -471,7 +472,7 @@ namespace OpenUtau.UI {
                 if (e.Key == Key.N) {
                     CmdNewFile();
                 } else if (e.Key == Key.O) {
-                    CmdOpenFileDialog();
+                    OpenFileDialog();
                 } else if (e.Key == Key.S) {
                     CmdSaveFile();
                 } else if (e.Key == Key.Z) {
@@ -494,20 +495,39 @@ namespace OpenUtau.UI {
             DocManager.Inst.ExecuteCmd(new LoadProjectNotification(OpenUtau.Core.Formats.Ustx.Create()));
         }
 
-        private void CmdOpenFileDialog() {
+        private void OpenFileDialog() {
             OpenFileDialog openFileDialog = new OpenFileDialog() {
                 Filter = "Project Files|*.ustx; *.vsqx; *.ust|All Files|*.*",
                 Multiselect = true,
                 CheckFileExists = true
             };
             if (openFileDialog.ShowDialog() == true) {
-                CmdOpenFile(openFileDialog.FileNames);
+                OpenFiles(openFileDialog.FileNames);
             }
         }
 
-        private void CmdOpenFile(string[] files) {
+        private void OpenFiles(string[] files) {
             try {
                 Core.Formats.Formats.LoadProject(files);
+            } catch (Exception e) {
+                MessageBox.Show(e.ToString());
+            }
+        }
+
+        private void ImportFilesDialog() {
+            OpenFileDialog openFileDialog = new OpenFileDialog() {
+                Filter = "Project Files|*.ustx; *.vsqx; *.ust|All Files|*.*",
+                Multiselect = true,
+                CheckFileExists = true
+            };
+            if (openFileDialog.ShowDialog() == true) {
+                ImportFiles(openFileDialog.FileNames);
+            }
+        }
+
+        private void ImportFiles(string[] files) {
+            try {
+                Core.Formats.Formats.ImportTracks(DocManager.Inst.Project, files);
             } catch (Exception e) {
                 MessageBox.Show(e.ToString());
             }
@@ -558,7 +578,7 @@ namespace OpenUtau.UI {
 
         private void trackCanvas_Drop(object sender, DragEventArgs e) {
             string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-            CmdOpenFile(files);
+            ImportFiles(files);
         }
 
         private void trackCanvas_MouseWheel(object sender, MouseWheelEventArgs e) {
