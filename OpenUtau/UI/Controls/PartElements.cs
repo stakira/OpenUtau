@@ -12,10 +12,10 @@ using System.ComponentModel;
 
 using OpenUtau.Core.Ustx;
 
-namespace OpenUtau.UI.Controls
-{
-    class PartElement : FrameworkElement
-    {
+namespace OpenUtau.UI.Controls {
+    class PartElement : FrameworkElement {
+        static Geometry pencilIcon = Geometry.Parse("M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.12,5.12L18.87,8.87M3,17.25V21H6.75L17.81,9.93L14.06,6.18L3,17.25Z");
+
         protected DrawingVisual frameVisual;
         protected DrawingVisual partVisual;
         protected DrawingVisual nameVisual;
@@ -27,37 +27,34 @@ namespace OpenUtau.UI.Controls
         protected ScaleTransform sTransPre;
         protected ScaleTransform sTransPost;
 
+        protected RectangleGeometry clip;
+
         protected Pen pen;
 
         public UPart Part;
         public UProject Project;
 
-        public virtual double X
-        {
+        public virtual double X {
             set { tTransPost.X = value; }
             get { return tTransPost.X; }
         }
 
-        public virtual double Y
-        {
+        public virtual double Y {
             set { tTransPost.Y = value; }
             get { return tTransPost.Y; }
         }
 
-        public virtual double ScaleX
-        {
+        public virtual double ScaleX {
             set { sTransPost.ScaleX = value; RedrawFrame(); }
             get { return sTransPost.ScaleX; }
         }
 
         protected double _height;
-        public double VisualHeight
-        {
+        public double VisualHeight {
             set { if (value != _height) { _height = value; FitHeight(value); } }
             get { return _height; }
         }
-        protected virtual void FitHeight(double height)
-        { sTransPost.ScaleY = height / partVisual.ContentBounds.Height; RedrawFrame(); }
+        protected virtual void FitHeight(double height) { sTransPost.ScaleY = height / partVisual.ContentBounds.Height; RedrawFrame(); }
         public virtual double CanvasWidth { set; get; }
 
         public double VisualWidth { get { return Part.Duration * ScaleX; } }
@@ -65,8 +62,7 @@ namespace OpenUtau.UI.Controls
         protected bool _selected = false;
         public bool Selected { set { if (_selected != value) { _selected = value; RedrawFrame(); } } get { return _selected; } }
 
-        public PartElement()
-        {
+        public PartElement() {
             sTransPre = new ScaleTransform();
             sTransPost = new ScaleTransform();
             tTransPre = new TranslateTransform();
@@ -81,6 +77,7 @@ namespace OpenUtau.UI.Controls
             partVisual = new DrawingVisual() { Transform = trans };
             nameVisual = new DrawingVisual() { Transform = tTransPost };
             commentVisual = new DrawingVisual() { Transform = tTransPost };
+            clip = new RectangleGeometry(new Rect(0, 0, 0, 0));
 
             RenderOptions.SetEdgeMode(partVisual, EdgeMode.Aliased);
 
@@ -90,19 +87,22 @@ namespace OpenUtau.UI.Controls
             this.AddVisualChild(commentVisual);
         }
 
-        public virtual void Redraw() { RedrawPart(); RedrawName(); RedrawComment(); }
+        public virtual void Redraw() {
+            RedrawPart();
+            RedrawName();
+            RedrawComment();
+        }
 
-        public virtual void RedrawFrame()
-        {
+        public virtual void RedrawFrame() {
             DrawingContext cxt = frameVisual.RenderOpen();
             cxt.DrawRoundedRectangle(GetFrameBrush(), null, new Rect(0, 0, Part.Duration * ScaleX, _height), 4, 4);
+            clip.Rect = new Rect(0, 0, Part.Duration * ScaleX, _height);
             cxt.Close();
         }
 
         public virtual void RedrawPart() { }
 
-        public virtual void RedrawName()
-        {
+        public virtual void RedrawName() {
             DrawingContext cxt = nameVisual.RenderOpen();
             FormattedText text = new FormattedText(
                 Part.name,
@@ -110,15 +110,23 @@ namespace OpenUtau.UI.Controls
                 FlowDirection.LeftToRight,
                 SystemFonts.CaptionFontFamily.GetTypefaces().First(),
                 12,
-                Brushes.White
-            );
+                Brushes.White, 1);
             text.SetFontWeight(FontWeights.Medium);
+            cxt.PushClip(clip);
             cxt.DrawText(text, new Point(3, 2));
+            if (Part is UVoicePart) {
+                cxt.PushTransform(new TranslateTransform(5 + text.Width, 1));
+                cxt.PushTransform(new ScaleTransform(.75, .75));
+                cxt.DrawRectangle(GetFrameBrush(), null, new Rect(0, 0, 24, 24));
+                cxt.DrawGeometry(Brushes.White, null, pencilIcon);
+                cxt.Pop();
+                cxt.Pop();
+            }
+            cxt.Pop();
             cxt.Close();
         }
 
-        public virtual void RedrawComment()
-        {
+        public virtual void RedrawComment() {
             DrawingContext cxt = commentVisual.RenderOpen();
             FormattedText text = new FormattedText(
                 Part.comment,
@@ -126,15 +134,13 @@ namespace OpenUtau.UI.Controls
                 FlowDirection.LeftToRight,
                 SystemFonts.CaptionFontFamily.GetTypefaces().First(),
                 12,
-                Brushes.White
-            );
+                Brushes.White, 1);
             text.SetFontWeight(FontWeights.Regular);
             cxt.DrawText(text, new Point(3, 18));
             cxt.Close();
         }
 
-        public virtual Brush GetFrameBrush()
-        {
+        public virtual Brush GetFrameBrush() {
             if (Selected) return ThemeManager.NoteFillSelectedBrush;
             else return ThemeManager.NoteFillBrushes[0];
         }
@@ -144,10 +150,8 @@ namespace OpenUtau.UI.Controls
 
         protected override int VisualChildrenCount { get { return 4; } }
 
-        protected override Visual GetVisualChild(int index)
-        {
-            switch (index)
-            {
+        protected override Visual GetVisualChild(int index) {
+            switch (index) {
                 case 0: return frameVisual;
                 case 1: return partVisual;
                 case 2: return nameVisual;
@@ -155,14 +159,16 @@ namespace OpenUtau.UI.Controls
                 default: return null;
             }
         }
+
+        public bool HitEditName(DrawingVisual hit) {
+            return hit == nameVisual;
+        }
     }
 
-    class VoicePartElement : PartElement
-    {
+    class VoicePartElement : PartElement {
         public VoicePartElement() : base() { pen = new Pen(Brushes.White, 3); pen.Freeze(); }
 
-        public override void RedrawPart()
-        {
+        public override void RedrawPart() {
             DrawingContext cxt = partVisual.RenderOpen();
             cxt.DrawLine(pen, new Point(0, UIConstants.HiddenNoteNum), new Point(0, UIConstants.HiddenNoteNum));
             cxt.DrawLine(pen, new Point(Part.Duration, UIConstants.MaxNoteNum - UIConstants.HiddenNoteNum),
@@ -175,12 +181,9 @@ namespace OpenUtau.UI.Controls
         }
     }
 
-    class WavePartElement : PartElement
-    {
-        class PartImage : Image
-        {
-            protected override HitTestResult HitTestCore(PointHitTestParameters hitTestParameters)
-            {
+    class WavePartElement : PartElement {
+        class PartImage : Image {
+            protected override HitTestResult HitTestCore(PointHitTestParameters hitTestParameters) {
                 return null;
             }
         }
@@ -191,32 +194,27 @@ namespace OpenUtau.UI.Controls
         protected TranslateTransform partImageTrans;
 
         double _canvasWidth;
-        public override double CanvasWidth
-        {
+        public override double CanvasWidth {
             set { if (_canvasWidth != value) { _canvasWidth = value; RedrawPart(); } }
             get { return _canvasWidth; }
         }
 
-        public override double Y
-        {
+        public override double Y {
             set { tTransPost.Y = value; partImageTrans.Y = value; }
             get { return tTransPost.Y; }
         }
 
-        public override double X
-        {
+        public override double X {
             set { tTransPost.X = value; RedrawPart(); }
             get { return tTransPost.X; }
         }
 
-        public override double ScaleX
-        {
+        public override double ScaleX {
             set { sTransPost.ScaleX = value; RedrawFrame(); RedrawPart(); }
             get { return sTransPost.ScaleX; }
         }
 
-        protected override void FitHeight(double height)
-        {
+        protected override void FitHeight(double height) {
             base.FitHeight(height);
             RedrawPart();
         }
@@ -234,8 +232,7 @@ namespace OpenUtau.UI.Controls
             this.RemoveVisualChild(partVisual);
             this.AddVisualChild(partImage);
 
-            if (((UWavePart)Part).Peaks == null)
-            {
+            if (((UWavePart)Part).Peaks == null) {
                 worker = new BackgroundWorker() { WorkerReportsProgress = true };
                 worker.DoWork += BuildPeaksAsync;
                 worker.ProgressChanged += BuildPeaksProgressChanged;
@@ -244,10 +241,8 @@ namespace OpenUtau.UI.Controls
             }
         }
 
-        protected override Visual GetVisualChild(int index)
-        {
-            switch (index)
-            {
+        protected override Visual GetVisualChild(int index) {
+            switch (index) {
                 case 0: return frameVisual;
                 case 1: return partImage;
                 case 2: return nameVisual;
@@ -256,21 +251,18 @@ namespace OpenUtau.UI.Controls
             }
         }
 
-        public override void RedrawPart()
-        {
+        public override void RedrawPart() {
             if (((UWavePart)Part).Peaks == null) return;
             else DrawWaveform();
         }
 
-        private void DrawWaveform()
-        {
+        private void DrawWaveform() {
             float[] peaks = ((UWavePart)Part).Peaks;
             int x = 0;
             double width = Part.Duration * ScaleX;
             double height = _height;
             double samplesPerPixel = peaks.Length / width;
-            using (BitmapContext cxt = partBitmap.GetBitmapContext())
-            {
+            using (BitmapContext cxt = partBitmap.GetBitmapContext()) {
                 double monoChnlAmp = (height - 4) / 2;
                 double stereoChnlAmp = (height - 6) / 4;
 
@@ -285,21 +277,17 @@ namespace OpenUtau.UI.Controls
                 else if (this.X > 0) x = (int)Math.Round(this.X);
                 position += skippedPixels * samplesPerPixel;
 
-                for (int i = (int)(position / channels) * channels; i < peaks.Length; i += channels)
-                {
+                for (int i = (int)(position / channels) * channels; i < peaks.Length; i += channels) {
                     left = peaks[i];
                     right = peaks[i + 1];
                     lmax = Math.Max(left, lmax);
                     lmin = Math.Min(left, lmin);
-                    if (channels > 1)
-                    {
+                    if (channels > 1) {
                         rmax = Math.Max(right, rmax);
                         rmin = Math.Min(right, rmin);
                     }
-                    if (i > position)
-                    {
-                        if (channels > 1)
-                        {
+                    if (i > position) {
+                        if (channels > 1) {
                             WriteableBitmapExtensions.DrawLine(
                                 partBitmap,
                                 x, (int)(stereoChnlAmp * (1 + lmin)) + 2,
@@ -310,9 +298,7 @@ namespace OpenUtau.UI.Controls
                                 x, (int)(stereoChnlAmp * (1 + rmin) + monoChnlAmp) + 3,
                                 x, (int)(stereoChnlAmp * (1 + rmax) + monoChnlAmp) + 3,
                                 Colors.White);
-                        }
-                        else
-                        {
+                        } else {
                             WriteableBitmapExtensions.DrawLine(
                                 partBitmap,
                                 x, (int)(monoChnlAmp * (1 + lmin)) + 2,
@@ -328,10 +314,8 @@ namespace OpenUtau.UI.Controls
             }
         }
 
-        private void BuildPeaksProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            using (BitmapContext cxt = partBitmap.GetBitmapContext())
-            {
+        private void BuildPeaksProgressChanged(object sender, ProgressChangedEventArgs e) {
+            using (BitmapContext cxt = partBitmap.GetBitmapContext()) {
                 partBitmap.Clear();
                 partBitmap.FillRectangle(
                     1 + (int)this.X, (int)(_height - 2),
@@ -340,15 +324,13 @@ namespace OpenUtau.UI.Controls
             }
         }
 
-        private void BuildPeaksAsync(object sender, DoWorkEventArgs e)
-        {
+        private void BuildPeaksAsync(object sender, DoWorkEventArgs e) {
             var _part = e.Argument as UWavePart;
             float[] peaks = Core.Formats.Wave.BuildPeaks(_part, sender as BackgroundWorker);
             e.Result = peaks;
         }
 
-        private void BuildPeaksCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
+        private void BuildPeaksCompleted(object sender, RunWorkerCompletedEventArgs e) {
             ((UWavePart)Part).Peaks = e.Result as float[];
             RedrawPart();
         }

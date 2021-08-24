@@ -127,6 +127,7 @@ namespace OpenUtau.UI {
 
         private void trackCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
             Point mousePos = e.GetPosition((UIElement)sender);
+            bool noCapture = false;
 
             var hit = VisualTreeHelper.HitTest(trackCanvas, mousePos).VisualHit;
             System.Diagnostics.Debug.WriteLine("Mouse hit " + hit.ToString());
@@ -164,7 +165,12 @@ namespace OpenUtau.UI {
 
                 if (!trackVM.SelectedParts.Contains(_hitPartElement.Part)) trackVM.DeselectAll();
 
-                if (e.ClickCount == 2) {
+                if (partEl.HitEditName((DrawingVisual)hit)) {
+                    _hitPartElement = null;
+                    Mouse.OverrideCursor = null;
+                    noCapture = true;
+                    RenamePart(partEl.Part);
+                } else if (e.ClickCount == 2) {
                     if (partEl is VoicePartElement) // load part into midi window
                     {
                         if (midiWindow == null) {
@@ -223,7 +229,9 @@ namespace OpenUtau.UI {
                 _partMoveRelativeTick = 0;
                 _partMoveStartTick = part.position;
             }
-            ((UIElement)sender).CaptureMouse();
+            if (!noCapture) {
+                ((UIElement)sender).CaptureMouse();
+            }
         }
 
         private void trackCanvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
@@ -562,6 +570,22 @@ namespace OpenUtau.UI {
                 Core.Util.Preferences.Default.MidiMaximized = midiWindow.WindowState == System.Windows.WindowState.Maximized;
             Core.Util.Preferences.Save();
             Application.Current.Shutdown();
+        }
+
+        private void RenamePart(UPart part) {
+            var w = new Dialogs.TypeInDialog() { Owner = this };
+            w.Title = "Rename";
+            w.textBox.Text = part.name;
+            w.onFinish = name => {
+                if (!string.IsNullOrWhiteSpace(name) && name != part.name) {
+                    DocManager.Inst.StartUndoGroup();
+                    DocManager.Inst.ExecuteCmd(new RenamePartCommand(DocManager.Inst.Project, part, name));
+                    DocManager.Inst.EndUndoGroup();
+                }
+            };
+            w.Left = Left + (Width - w.Width) / 2;
+            w.Top = Top + (Height - w.Height) / 2;
+            w.ShowDialog();
         }
 
         # endregion

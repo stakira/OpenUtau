@@ -355,8 +355,11 @@ namespace OpenUtau.UI.Models {
                 } else if (_cmd is RemovePartCommand) {
                     if (!isUndo) OnPartRemoved(_cmd.part);
                     else OnPartAdded(_cmd.part);
-                } else if (_cmd is ResizePartCommand) MarkUpdate();
-                else if (_cmd is MovePartCommand) MarkUpdate();
+                } else {
+                    var element = PartElements.Find(el => el.Part == _cmd.part);
+                    element.Modified = true;
+                    MarkUpdate();
+                }
             } else if (cmd is TrackCommand) {
                 var _cmd = cmd as TrackCommand;
                 if (_cmd is AddTrackCommand) {
