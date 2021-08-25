@@ -1,13 +1,21 @@
 
 # OpenUtau
 
-OpenUtau aims to be an open source editing environment for UTAU community, with modern user experience and intelligent phonological support.
+OpenUtau is an open source editing environment for UTAU community with modern user experience.
 
-Current stage: Alpha
+[![AppVeyor](https://img.shields.io/appveyor/build/stakira/OpenUtau?style=for-the-badge&label=appveyor&logo=appveyor)](https://ci.appveyor.com/project/stakira/openutau)
+[![Discord](https://img.shields.io/discord/551606189386104834?style=for-the-badge&label=discord&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/UfpMnqMmEM)
+[![Trello](https://img.shields.io/badge/trello-go-blue?style=for-the-badge&logo=trello)](https://trello.com/b/93ANoCIV/openutau)
 
-<a href="https://ci.appveyor.com/project/stakira/openutau" target="_blank"><img src="https://ci.appveyor.com/api/projects/status/github/stakira/OpenUtau?svg=true" alt="CI Badge"/></a>
+## How to Contribute
 
-[Discord](https://discord.gg/UfpMnqMmEM)
+Tried OpenUtau and not satisfied? Don't just walk away! You could help shape it:
+- Report issues on [Discord](https://discord.gg/UfpMnqMmEM) or Github.
+- Suggest features on Discord or Github.
+
+Have coding skills? Don't just fork and keep it to yourself!
+- Contribute fixes through Pull Requests.
+- See the roadmap on [Trello](https://trello.com/b/93ANoCIV/openutau) and discuss it on Discord.
 
 ## How to Install
 
@@ -56,7 +64,8 @@ Other Actions
 ## Scope
 #### The scope of OpenUtau includes:
 - Modern user experience.
-- Compatibility with UTAU technologies.
+- Selected compatibility with UTAU technologies.
+  - OpenUtau aims to solve problems in less laborious ways, so don't expect it to replicate exact UTAU featuers.
 - Intelligent VCV, CVVC an other voicebank sampling technique support.
 - Internationalization, including UI translation and file system encoding support.
 - Smooth preview/rendering experience.

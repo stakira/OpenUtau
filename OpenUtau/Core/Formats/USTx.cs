@@ -21,6 +21,7 @@ namespace OpenUtau.Core.Formats {
             project.RegisterExpression(new UExpressionDescriptor("gender", "gen", -100, 100, 0, "g"));
             project.RegisterExpression(new UExpressionDescriptor("breath", "bre", 0, 100, 0, "B"));
             project.RegisterExpression(new UExpressionDescriptor("lowpass", "lpf", 0, 100, 0, "H"));
+            project.RegisterExpression(new UExpressionDescriptor("modulation", "mod", 0, 100, 0));
         }
 
         public static UProject Create() {

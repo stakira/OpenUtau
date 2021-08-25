@@ -57,6 +57,11 @@ namespace OpenUtau.Core.Render {
             var length = phoneme.oto.Preutter * strechRatio + phoneme.envelope.data[4].X;
             var requiredLength = Math.Ceiling(length / 50 + 1) * 50;
             var lengthAdjustment = phoneme.tailIntrude == 0 ? phoneme.preutter : phoneme.preutter - phoneme.tailIntrude + phoneme.tailOverlap;
+            if (phoneme.Parent.expressions.TryGetValue("mod", out var exp)) {
+                Modulation = (int)exp.value;
+            } else {
+                Modulation = 0;
+            }
 
             NoteNum = phoneme.Parent.noteNum;
             Velocity = (int)vel;
