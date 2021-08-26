@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -290,6 +291,17 @@ namespace OpenUtau.UI.Models {
         }
 
         # endregion
+
+        public void TransposeSelection(int deltaNoteNum) {
+            if (SelectedNotes.Count > 0) {
+                DocManager.Inst.StartUndoGroup();
+                if (SelectedNotes.Any(note => note.noteNum + deltaNoteNum <= 0 || note.noteNum + deltaNoteNum >= UIConstants.MaxNoteNum)) {
+                    return;
+                }
+                DocManager.Inst.ExecuteCmd(new MoveNoteCommand(Part, new List<UNote>(SelectedNotes), 0, deltaNoteNum));
+                DocManager.Inst.EndUndoGroup();
+            }
+        }
 
         # region Calculation
 

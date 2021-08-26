@@ -674,6 +674,10 @@ namespace OpenUtau.UI {
                     DocManager.Inst.Redo();
                 } else if (e.Key == Key.S) {
                     mainWindow.CmdSaveFile();
+                } else if (e.Key == Key.Up) {
+                    midiVM.TransposeSelection(12);
+                } else if (e.Key == Key.Down) {
+                    midiVM.TransposeSelection(-12);
                 }
             } else if (Keyboard.Modifiers == ModifierKeys.None) {
                 if (e.Key == Key.Delete) {
@@ -692,6 +696,10 @@ namespace OpenUtau.UI {
                     midiVM.Snap = !midiVM.Snap;
                 } else if (e.Key == Key.Space) {
                     PlayOrPause();
+                } else if (e.Key == Key.Up) {
+                    midiVM.TransposeSelection(1);
+                } else if (e.Key == Key.Down) {
+                    midiVM.TransposeSelection(-1);
                 }
             }
             e.Handled = true;
