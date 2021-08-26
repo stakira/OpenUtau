@@ -83,6 +83,7 @@ namespace OpenUtau.Core.Ustx {
         }
 
         public void Validate(UProject project, UTrack track, UVoicePart part) {
+            duration = Math.Max(10, duration);
             if (Prev != null && Prev.End > position) {
                 Error = true;
                 return;
@@ -102,6 +103,19 @@ namespace OpenUtau.Core.Ustx {
                 phoneme.Validate(project, track, part, this);
                 Error |= phoneme.Error;
             }
+        }
+
+        public UNote Clone() {
+            return new UNote() {
+                position = position,
+                duration = duration,
+                noteNum = noteNum,
+                lyric = lyric,
+                phonemes = phonemes.Select(phoneme => phoneme.Clone()).ToList(),
+                pitch = pitch.Clone(),
+                vibrato = vibrato.Clone(),
+                expressions = expressions.ToDictionary(pair => pair.Key, pair => pair.Value.Clone()),
+            };
         }
     }
 
@@ -283,10 +297,10 @@ namespace OpenUtau.Core.Ustx {
         }
 
         public UPitch Clone() {
-            var result = new UPitch();
-            foreach (var p in data) {
-                result.data.Add(p.Clone());
-            }
+            var result = new UPitch() {
+                data = data.Select(p => p.Clone()).ToList(),
+                snapFirst = snapFirst,
+            };
             return result;
         }
 

@@ -51,5 +51,12 @@ namespace OpenUtau.Core.Ustx {
         public UExpression(UExpressionDescriptor descriptor) {
             this.descriptor = descriptor;
         }
+
+        public UExpression Clone() {
+            return new UExpression(descriptor) {
+                overridden = overridden,
+                value = value,
+            };
+        }
     }
 }

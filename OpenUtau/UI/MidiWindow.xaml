@@ -73,8 +73,22 @@
                 <RowDefinition Height="10"/>
                 <RowDefinition Height="150" MinHeight="120" MaxHeight="450"/>
             </Grid.RowDefinitions>
-            <Button x:Name="mainButton" Grid.Row="0" Style="{StaticResource MidiWindowMainButton}" HorizontalAlignment="Left" VerticalAlignment="Top" Height="21" Width="21" Margin="14,7,0,0"
-                    Click="mainButton_Click"/>
+            <Menu x:Name="mainButton" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" Height="21" Width="21" Margin="14,7,0,0">
+                <MenuItem Margin="0" Padding="0" ItemsSource="{Binding Plugins, Source={StaticResource midiVM}}">
+                    <MenuItem.Header>
+                        <Grid>
+                            <Ellipse Fill="#61B3F2" Height="21" Width="21"/>
+                            <Path Fill="White" Data="M 8 10 L 13 10 L 10.5 12.5 Z"/>
+                        </Grid>
+                    </MenuItem.Header>
+                    <MenuItem.ItemContainerStyle>
+                        <Style TargetType="{x:Type MenuItem}">
+                            <Setter Property="Command" Value="{Binding PluginCommand, Source={StaticResource midiVM}}" />
+                            <Setter Property="CommandParameter" Value="{Binding}" />
+                        </Style>
+                    </MenuItem.ItemContainerStyle>
+                </MenuItem>
+            </Menu>
             <Grid x:Name="timelineBackgroundGrid" Grid.Row="0" VerticalAlignment="Top" Height="20" Margin="48,20,20,0" ClipToBounds="True">
                 <local:TimelineBackground x:Name="timelineBackground" QuarterOffset="{Binding QuarterOffset, Source={StaticResource midiVM}}"
                                       QuarterWidth="{Binding QuarterWidth, Source={StaticResource midiVM}}" OffsetX="{Binding OffsetX, Source={StaticResource midiVM}}"

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 
 namespace OpenUtau.Core.Ustx {
@@ -20,6 +21,8 @@ namespace OpenUtau.Core.Ustx {
         public virtual void AfterLoad(UProject project, UTrack track) { }
 
         public virtual void Validate(UProject project, UTrack track) { }
+
+        public abstract UPart Clone();
     }
 
     [JsonObject(MemberSerialization.OptIn)]
@@ -49,6 +52,7 @@ namespace OpenUtau.Core.Ustx {
                     lastNote.Next = note;
                 }
                 foreach (var phoneme in note.phonemes) {
+                    phoneme.Parent = note;
                     phoneme.Prev = lastPhoneme;
                     phoneme.Next = null;
                     if (lastPhoneme != null) {
@@ -61,6 +65,12 @@ namespace OpenUtau.Core.Ustx {
             foreach (UNote note in notes) {
                 note.Validate(project, track, this);
             }
+        }
+
+        public override UPart Clone() {
+            return new UVoicePart() {
+                notes = new SortedSet<UNote>(notes.Select(note => note.Clone())),
+            };
         }
     }
 
@@ -84,5 +94,16 @@ namespace OpenUtau.Core.Ustx {
             set { TailTrimTick = FileDurTick - HeadTrimTick - value; }
         }
         public override int GetMinDurTick(UProject project) { return 60; }
+
+        public override UPart Clone() {
+            return new UWavePart() {
+                _filePath = _filePath,
+                Peaks = Peaks,
+                Channels = Channels,
+                FileDurTick = FileDurTick,
+                HeadTrimTick = HeadTrimTick,
+                TailTrimTick = TailTrimTick,
+            };
+        }
     }
 }

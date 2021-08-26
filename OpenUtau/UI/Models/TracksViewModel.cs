@@ -355,6 +355,11 @@ namespace OpenUtau.UI.Models {
                 } else if (_cmd is RemovePartCommand) {
                     if (!isUndo) OnPartRemoved(_cmd.part);
                     else OnPartAdded(_cmd.part);
+                } else if (_cmd is ReplacePartCommand rpCmd) {
+                    var element = PartElements.Find(el => !isUndo ? el.Part == rpCmd.part : el.Part == rpCmd.newPart);
+                    element.Part = !isUndo ? rpCmd.newPart : rpCmd.part;
+                    element.Modified = true;
+                    MarkUpdate();
                 } else {
                     var element = PartElements.Find(el => el.Part == _cmd.part);
                     element.Modified = true;

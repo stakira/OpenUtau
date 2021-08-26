@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Collections.Generic;
 using System.Linq;
+using OpenUtau.Classic;
 using OpenUtau.Core.Lib;
 using OpenUtau.Core.Ustx;
 using Serilog;
@@ -18,6 +19,7 @@ namespace OpenUtau.Core {
         public int playPosTick = 0;
 
         public Dictionary<string, USinger> Singers { get; private set; } = new Dictionary<string, USinger>();
+        public Plugin[] Plugins { get; private set; }
         public UProject Project { get; private set; }
         public bool HasOpenUndoGroup => undoGroup != null;
 
@@ -33,6 +35,10 @@ namespace OpenUtau.Core {
                 return Singers[name];
             }
             return null;
+        }
+
+        public void SearchAllPlugins() {
+            Plugins = PluginLoader.LoadAll(PathManager.Inst.PluginsPath);
         }
 
         #region Command Queue

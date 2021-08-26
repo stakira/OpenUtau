@@ -2,12 +2,16 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.ComponentModel;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using OpenUtau.UI.Controls;
+using System.Globalization;
+using System.Windows.Input;
+using GalaSoft.MvvmLight.Command;
 
 namespace OpenUtau.UI.Models {
     class MidiViewModel : INotifyPropertyChanged, ICmdSubscriber {
@@ -26,6 +30,7 @@ namespace OpenUtau.UI.Models {
 
         UVoicePart _part;
         public UVoicePart Part { get { return _part; } }
+        public Classic.Plugin[] Plugins => DocManager.Inst.Plugins;
 
         public Canvas TimelineCanvas;
         public Canvas MidiCanvas;
@@ -432,6 +437,22 @@ namespace OpenUtau.UI.Models {
             notesElement.MarkUpdate();
         }
 
+        private ICommand pluginCommand;
+        public ICommand PluginCommand => pluginCommand ?? (pluginCommand = new RelayCommand<object>(OnPluginSelected));
+        void OnPluginSelected(object obj) {
+            var plugin = (Classic.Plugin)obj;
+            var project = DocManager.Inst.Project;
+            var tempFile = System.IO.Path.Combine(PathManager.Inst.GetCachePath(null), "temp.ust");
+            var newPart = (UVoicePart)Part.Clone();
+            var sequence = Core.Formats.Ust.WriteNotes(project, newPart, newPart.notes, tempFile);
+            plugin.Run(tempFile);
+            Core.Formats.Ust.ParseDiffs(project, newPart, sequence, tempFile);
+            newPart.AfterLoad(project, project.tracks[Part.trackNo]);
+            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.ExecuteCmd(new ReplacePartCommand(project, Part, newPart));
+            DocManager.Inst.EndUndoGroup();
+        }
+
         # endregion
 
         # region ICmdSubscriber
@@ -447,7 +468,15 @@ namespace OpenUtau.UI.Models {
                 shadowExpElement.MarkUpdate();
             } else if (cmd is PartCommand) {
                 var _cmd = cmd as PartCommand;
-                if (_cmd.part != this.Part) {
+                if (_cmd is ReplacePartCommand rpCmd) {
+                    if (isUndo && rpCmd.newPart == Part) {
+                        LoadPart(rpCmd.part, rpCmd.project);
+                        OnPartModified();
+                    } else if (!isUndo && rpCmd.part == Part) {
+                        LoadPart(rpCmd.newPart, rpCmd.project);
+                        OnPartModified();
+                    }
+                } else if (_cmd.part != this.Part) {
                     return;
                 } else if (_cmd is RemovePartCommand) {
                     UnloadPart();
@@ -456,6 +485,10 @@ namespace OpenUtau.UI.Models {
                 } else if (_cmd is MovePartCommand) {
                     OnPartModified();
                 }
+                notesElement.MarkUpdate();
+                phonemesElement.MarkUpdate();
+                visibleExpElement.MarkUpdate();
+                shadowExpElement.MarkUpdate();
             } else if (cmd is ExpCommand) {
                 var _cmd = cmd as ExpCommand;
                 if (_cmd is SetUExpressionCommand) {

@@ -65,4 +65,15 @@ namespace OpenUtau.Core {
         public override void Unexecute() => part.name = oldName;
     }
 
+    public class ReplacePartCommand : PartCommand {
+        public readonly int index;
+        public readonly UPart newPart;
+        public ReplacePartCommand(UProject project, UPart part, UPart newPart) : base(project, part) {
+            index = project.parts.IndexOf(part);
+            this.newPart = newPart;
+        }
+        public override string ToString() => "Replace part";
+        public override void Execute() => project.parts[index] = newPart;
+        public override void Unexecute() => project.parts[index] = part;
+    }
 }

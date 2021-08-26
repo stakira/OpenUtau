@@ -2,6 +2,9 @@
 using Xunit.Abstractions;
 using Newtonsoft.Json;
 using OpenUtau.Core.Formats;
+using System.Diagnostics;
+using System.IO;
+using System.Text;
 
 namespace OpenUtau.Core.Ustx {
     public class UstxSerializationTest {
@@ -100,6 +103,33 @@ namespace OpenUtau.Core.Ustx {
             Assert.NotNull(vel);
             Assert.Null(vel.descriptor);
             Assert.Equal(123, vel.value);
+        }
+
+        [Fact]
+        public void Start() {
+            var info = new ProcessStartInfo("powershell.exe") {
+                RedirectStandardInput = true,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                StandardInputEncoding = Encoding.UTF8,
+            };
+
+            using (Process p = new Process()) {
+                p.StartInfo = info;
+                p.Start();
+                using (StreamWriter writer = p.StandardInput) {
+                    if (writer.BaseStream.CanWrite) {
+                        writer.WriteLine("");
+                        writer.WriteLine("chcp 65001");
+                        writer.BaseStream.Write(Encoding.UTF8.GetBytes("echo 哈哈 > I:\\Code\\OpenUtau\\OpenUtau\\bin\\Debug\\1.txt\n"));
+                    }
+                }
+                while (!p.StandardOutput.EndOfStream) {
+                    output.WriteLine(p.StandardOutput.ReadLine());
+                }
+                p.WaitForExit();
+            }
         }
     }
 }

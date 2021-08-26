@@ -25,9 +25,10 @@ namespace OpenUtau.Core.Ustx {
         public UPhoneme Next { get; set; }
         public bool Error { get; set; } = false;
 
-        public UPhoneme Clone(UNote newParent) {
+        public UPhoneme Clone() {
             return new UPhoneme() {
-                Parent = newParent,
+                position = position,
+                phoneme = phoneme,
             };
         }
 
