@@ -355,6 +355,18 @@ namespace OpenUtau.UI {
         private void MenuOpen_Click(object sender, RoutedEventArgs e) { OpenFileDialog(); }
         private void MenuImport_Click(object sender, RoutedEventArgs e) { ImportFilesDialog(); }
         private void MenuSave_Click(object sender, RoutedEventArgs e) { CmdSaveFile(); }
+        private void MenuSaveAsUst_Click(object sender, RoutedEventArgs e) {
+            var project = DocManager.Inst.Project;
+            if (WarnToSave(project)) {
+                for (var i = 0; i < project.parts.Count; i++) {
+                    var part = project.parts[i];
+                    if (part is UVoicePart voicePart) {
+                        var savePath = PathManager.Inst.GetPartSavePath(project.FilePath, i);
+                        Core.Formats.Ust.SavePart(project, voicePart, savePath);
+                    }
+                }
+            }
+        }
         private void MenuExit_Click(object sender, RoutedEventArgs e) { CmdExit(); }
 
         private void MenuImportAudio_Click(object sender, RoutedEventArgs e) {
@@ -434,15 +446,21 @@ namespace OpenUtau.UI {
 
         private void MenuExportAll_Click(object sender, RoutedEventArgs e) {
             var project = DocManager.Inst.Project;
+            if (WarnToSave(project)) {
+                PlaybackManager.Inst.RenderToFiles(project);
+            }
+        }
+
+        private bool WarnToSave(UProject project) {
             if (string.IsNullOrEmpty(project.FilePath)) {
                 MessageBox.Show(
                     (string)FindResource("dialogs.export.savefirst"),
                     (string)FindResource("dialogs.export.caption"),
                     MessageBoxButton.OK,
                     MessageBoxImage.None);
-                return;
+                return false;
             }
-            PlaybackManager.Inst.RenderToFiles(project);
+            return true;
         }
 
         private void MenuAbout_Click(object sender, RoutedEventArgs e) {

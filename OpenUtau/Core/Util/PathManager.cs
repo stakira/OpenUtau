@@ -11,6 +11,7 @@ namespace OpenUtau.Core {
         public const string DefaultSingerPath = "Singers";
         public const string DefaultCachePath = "Cache";
         public const string kExportPath = "Export";
+        public const string kPluginPath = "Plugins";
 
         private static PathManager _inst;
 
@@ -24,6 +25,7 @@ namespace OpenUtau.Core {
         public static PathManager Inst { get { if (_inst == null) { _inst = new PathManager(); } return _inst; } }
         public string HomePath { get; private set; }
         public string InstalledSingersPath => Path.Combine(HomePath, "Content", "Singers");
+        public string PluginsPath => Path.Combine(HomePath, kPluginPath);
 
         public string TryMakeRelative(string path) {
             if (path.StartsWith(HomePath, StringComparison.Ordinal)) {
@@ -87,10 +89,17 @@ namespace OpenUtau.Core {
             return cachepath;
         }
 
-        public string GetExportPath(string filepath, int trackNo) {
-            var dir = Path.Combine(Path.GetDirectoryName(filepath), kExportPath);
+        public string GetPartSavePath(string projectPath, int partNo) {
+            var dir = Path.GetDirectoryName(projectPath);
+            var filename = Path.GetFileNameWithoutExtension(projectPath);
+            return Path.Combine(dir, $"{filename}-{partNo:D2}.ust");
+        }
+
+        public string GetExportPath(string projectPath, int trackNo) {
+            var dir = Path.Combine(Path.GetDirectoryName(projectPath), kExportPath);
             Directory.CreateDirectory(dir);
-            return Path.Combine(dir, $"{trackNo:D2}.wav");
+            var filename = Path.GetFileNameWithoutExtension(projectPath);
+            return Path.Combine(dir, $"{filename}-{trackNo:D2}.wav");
         }
 
         public string GetEngineSearchPath() {

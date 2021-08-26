@@ -207,6 +207,10 @@ namespace OpenUtau.Core.Formats {
                         error |= !isFloat;
                         note.expressions["vol"].value = floatValue;
                         break;
+                    case "Moduration":
+                        error |= !isFloat;
+                        note.expressions["mod"].value = floatValue;
+                        break;
                     case "VoiceOverlap":
                         error |= !isFloat;
                         //note.phonemes[0].overlap = floatValue;
@@ -338,6 +342,116 @@ namespace OpenUtau.Core.Formats {
                         }
                     }
                 }
+            }
+        }
+
+        public static void SavePart(UProject project, UVoicePart part, string filePath) {
+            using (var writer = new StreamWriter(filePath, false, Encoding.GetEncoding("shift_jis"))) {
+                WritePart(project, part, writer);
+            }
+        }
+
+        public static void WritePart(UProject project, UVoicePart part, StreamWriter writer) {
+            WriteNotes(project, part, part.notes, writer);
+        }
+
+        public static void WriteNotes(UProject project, UVoicePart part, IEnumerable<UNote> notes, StreamWriter writer) {
+            WriteHeader(project, part, writer);
+            int position = 0;
+            int index = 0;
+            foreach (var note in notes) {
+                if (note.position != position) {
+                    writer.WriteLine($"[#{index++:D4}]");
+                    writer.WriteLine($"Length={note.position - position}]");
+                    writer.WriteLine("Lyric=R");
+                    writer.WriteLine("NoteNum=60");
+                    writer.WriteLine("PreUtterance=");
+                }
+                writer.WriteLine($"[#{index++:D4}]");
+                WriteNoteBody(note, writer);
+                position = note.End;
+                index++;
+            }
+            WriteFooter(writer);
+        }
+
+        static void WriteHeader(UProject project, UVoicePart part, StreamWriter writer) {
+            writer.WriteLine("[#SETTING]");
+            writer.WriteLine($"Tempo={project.bpm}");
+            writer.WriteLine("Tracks=1");
+            var singer = project.tracks[part.trackNo].Singer;
+            writer.WriteLine($"VoiceDir=%VOICE%{singer.Id}");
+            writer.WriteLine($"CacheDir={project.cacheDir}");
+            writer.WriteLine("Mode2=True");
+        }
+
+        static void WriteFooter(StreamWriter writer) {
+            writer.WriteLine("[#TRACKEND]");
+        }
+
+        static void WriteNoteBody(UNote note, StreamWriter writer) {
+            writer.WriteLine($"Length={note.duration}");
+            writer.WriteLine($"Lyric={note.lyric}");
+            writer.WriteLine($"NoteNum={note.noteNum}");
+            writer.WriteLine("PreUtterance=");
+            writer.WriteLine("VoiceOverlap=");
+            if (note.expressions.TryGetValue("vel", out var vel)) {
+                writer.WriteLine($"Velocity={(int)vel.value}");
+            }
+            if (note.expressions.TryGetValue("vol", out var vol)) {
+                writer.WriteLine($"Intensity={(int)vol.value}");
+            }
+            if (note.expressions.TryGetValue("mod", out var mod)) {
+                writer.WriteLine($"Moduration={(int)mod.value}");
+            }
+            WriteEnvelope(note, writer);
+            WritePitch(note, writer);
+            WriteVibrato(note, writer);
+        }
+
+        static void WriteEnvelope(UNote note, StreamWriter writer) {
+
+        }
+
+        static void WritePitch(UNote note, StreamWriter writer) {
+            var points = note.pitch.data;
+            if (points.Count >= 2) {
+                writer.WriteLine($"PBS={points[0].X};{points[0].Y}");
+                List<string> pbw = new List<string>();
+                List<string> pby = new List<string>();
+                List<string> pbm = new List<string>();
+                for (int i = 0; i < points.Count; ++i) {
+                    switch (points[i].shape) {
+                        case PitchPointShape.o:
+                            pbm.Add("r");
+                            break;
+                        case PitchPointShape.l:
+                            pbm.Add("s");
+                            break;
+                        case PitchPointShape.i:
+                            pbm.Add("j");
+                            break;
+                        case PitchPointShape.io:
+                            pbm.Add("");
+                            break;
+                    }
+                }
+                for (int i = 1; i < points.Count; ++i) {
+                    var prev = points[i - 1];
+                    var current = points[i];
+                    pbw.Add((current.X - prev.X).ToString());
+                    pby.Add(current.Y.ToString());
+                }
+                writer.WriteLine($"PBW={string.Join(",", pbw.ToArray())}");
+                writer.WriteLine($"PBY={string.Join(",", pby.ToArray())}");
+                writer.WriteLine($"PBM={string.Join(",", pbm.ToArray())}");
+            }
+        }
+
+        static void WriteVibrato(UNote note, StreamWriter writer) {
+            var vbr = note.vibrato;
+            if (vbr.length > 0) {
+                writer.WriteLine($"VBR={vbr.length},{vbr.period},{vbr.depth},{vbr.@in},{vbr.@out},{vbr.shift},{vbr.drift}");
             }
         }
     }

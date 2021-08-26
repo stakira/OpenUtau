@@ -77,8 +77,9 @@ namespace OpenUtau.Classic {
                     while (!reader.EndOfStream) {
                         string line = reader.ReadLine().Trim();
                         var s = line.Split(new char[] { '=' });
-                        if (s.Length != 2)
+                        if (s.Length != 2) {
                             s = line.Split(new char[] { ':' });
+                        }
                         Array.ForEach(s, temp => temp.Trim());
                         if (s.Length == 2) {
                             s[0] = s[0].ToLowerInvariant();
@@ -100,7 +101,7 @@ namespace OpenUtau.Classic {
                     }
                     voicebank.OtherInfo = string.Join("\n", otherLines);
                     if (string.IsNullOrEmpty(voicebank.Name)) {
-                        throw new FileFormatException($"Failed to load character.txt using encoding {encoding.EncodingName}");
+                        throw new FileFormatException($"Failed to load {filePath} using encoding {encoding.EncodingName}");
                     }
                     voicebank.Id = PathUtils.MakeRelative(Path.GetDirectoryName(voicebank.File), basePath);
                     return voicebank;
