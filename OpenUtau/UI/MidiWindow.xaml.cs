@@ -443,8 +443,19 @@ namespace OpenUtau.UI {
             } else if (_inResize) { // resize
                 if (midiVM.SelectedNotes.Count == 0) {
                     int newDurTick = (int)(midiVM.CanvasRoundToSnappedQuarter(mousePos.X) * midiVM.Project.resolution) - _noteHit.position;
-                    if (newDurTick != _noteHit.duration && newDurTick >= midiVM.GetSnapUnit() * midiVM.Project.resolution) {
-                        DocManager.Inst.ExecuteCmd(new ResizeNoteCommand(midiVM.Part, _noteHit, newDurTick - _noteHit.duration));
+                    int minDurTick = (int)(midiVM.GetSnapUnit() * midiVM.Project.resolution);
+                    newDurTick = Math.Max(newDurTick, minDurTick);
+                    bool alsoResizeNextNote = Keyboard.Modifiers == ModifierKeys.Alt && _noteHit.Next != null && _noteHit.End == _noteHit.Next.position;
+                    if (alsoResizeNextNote) {
+                        newDurTick = Math.Min(newDurTick, _noteHit.duration + _noteHit.Next.duration - minDurTick);
+                    }
+                    if (newDurTick != _noteHit.duration) {
+                        int deltaDurTick = newDurTick - _noteHit.duration;
+                        if (alsoResizeNextNote) {
+                            DocManager.Inst.ExecuteCmd(new ResizeNoteCommand(midiVM.Part, _noteHit.Next, -deltaDurTick));
+                            DocManager.Inst.ExecuteCmd(new MoveNoteCommand(midiVM.Part, _noteHit.Next, deltaDurTick, 0));
+                        }
+                        DocManager.Inst.ExecuteCmd(new ResizeNoteCommand(midiVM.Part, _noteHit, deltaDurTick));
                         _lastNoteLength = newDurTick;
                     }
                 } else {
