@@ -479,6 +479,12 @@ namespace OpenUtau.UI.Models {
             notesElement.MarkUpdate();
         }
 
+        private void FocusNote(UNote note) {
+            OffsetX = (note.position + note.duration * 0.5) * QuarterWidth / Project.resolution - ViewWidth * 0.5;
+            OffsetY = TrackHeight * (UIConstants.MaxNoteNum - note.noteNum + 2) - ViewHeight * 0.5;
+            MarkUpdate();
+        }
+
         private ICommand pluginCommand;
         public ICommand PluginCommand => pluginCommand ?? (pluginCommand = new RelayCommand<object>(OnPluginSelected));
         void OnPluginSelected(object obj) {
@@ -559,6 +565,10 @@ namespace OpenUtau.UI.Models {
                     }
                 } else if (_cmd is SetPlayPosTickNotification) {
                     OnPlayPosSet(((SetPlayPosTickNotification)_cmd).playPosTick);
+                } else if (_cmd is FocusNoteNotification focusNote) {
+                    if (focusNote.part == Part) {
+                        FocusNote(focusNote.note);
+                    };
                 }
             }
         }

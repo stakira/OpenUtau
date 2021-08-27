@@ -63,6 +63,33 @@ namespace OpenUtau.UI.Controls {
                     EndNoteEditing();
                     e.Handled = true;
                     break;
+                case Key.Tab:
+                    Text = (string)itemList.SelectedItem;
+                    var part = Part;
+                    var note = Note.Next;
+                    EndNoteEditing(!string.IsNullOrEmpty(Text));
+                    e.Handled = true;
+                    if (note == null) {
+                        break;
+                    }
+                    Show(part, note, note.lyric);
+                    DocManager.Inst.ExecuteCmd(new FocusNoteNotification(part, note));
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void TextBox_PreviewKeyDown(object sender, KeyEventArgs e) {
+            switch (e.Key) {
+                case Key.Up:
+                case Key.Down:
+                    int move = e.Key == Key.Up ? -1 : 1;
+                    int newIndex = (itemList.SelectedIndex + itemList.Items.Count + move) % itemList.Items.Count;
+                    itemList.SelectedIndex = newIndex;
+                    itemList.ScrollIntoView(itemList.Items[newIndex]);
+                    e.Handled = true;
+                    break;
                 default:
                     break;
             }

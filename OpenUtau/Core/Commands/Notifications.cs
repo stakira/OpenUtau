@@ -124,4 +124,13 @@ namespace OpenUtau.Core {
         }
         public override string ToString() => $"Will remove track {TrackNo}.";
     }
+
+    public class FocusNoteNotification : UNotification {
+        public readonly UNote note;
+        public FocusNoteNotification(UPart part, UNote note) {
+            this.part = part;
+            this.note = note;
+        }
+        public override string ToString() => $"Focus note {note.lyric} at {note.position}.";
+    }
 }

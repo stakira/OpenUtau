@@ -10,6 +10,7 @@
                             <Popup x:Name="PART_Popup" AllowsTransparency="true" Placement="Bottom" IsOpen="False" Width="360" Height="180" StaysOpen="False">
                                 <ListBox x:Name="PART_ItemList" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" KeyboardNavigation.DirectionalNavigation="Contained" />
                             </Popup>
+                            <Label HorizontalAlignment="Right" Margin="0,-20,0,0" FontSize="10" Content="Tab: Next Note"/>
                         </Grid>
                     </Border>
                 </ControlTemplate>
