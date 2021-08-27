@@ -678,6 +678,12 @@ namespace OpenUtau.UI {
                     midiVM.TransposeSelection(12);
                 } else if (e.Key == Key.Down) {
                     midiVM.TransposeSelection(-12);
+                } else if (e.Key == Key.C) {
+                    midiVM.CopyNotes();
+                } else if (e.Key == Key.X) {
+                    midiVM.CutNotes();
+                } else if (e.Key == Key.V) {
+                    midiVM.PasteNotes();
                 }
             } else if (Keyboard.Modifiers == ModifierKeys.None) {
                 if (e.Key == Key.Delete) {

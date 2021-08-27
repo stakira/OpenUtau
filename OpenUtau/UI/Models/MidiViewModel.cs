@@ -303,6 +303,36 @@ namespace OpenUtau.UI.Models {
             }
         }
 
+        public void CopyNotes() {
+            if (SelectedNotes.Count > 0) {
+                DocManager.Inst.NotesClipboard = SelectedNotes.Select(note => note.Clone()).ToList();
+            }
+        }
+
+        public void CutNotes() {
+            if (SelectedNotes.Count > 0) {
+                DocManager.Inst.NotesClipboard = SelectedNotes.Select(note => note.Clone()).ToList();
+                DocManager.Inst.StartUndoGroup();
+                DocManager.Inst.ExecuteCmd(new RemoveNoteCommand(Part, SelectedNotes));
+                DocManager.Inst.EndUndoGroup();
+            }
+        }
+
+        public void PasteNotes() {
+            if (DocManager.Inst.NotesClipboard != null && DocManager.Inst.NotesClipboard.Count > 0) {
+                double snapUnit = GetSnapUnit();
+                int snapUnitTick = (int)(snapUnit * Project.resolution);
+                int position = (int)(Math.Ceiling(OffsetX / QuarterWidth / snapUnit) * snapUnitTick);
+                int minPosition = DocManager.Inst.NotesClipboard.Select(note => note.position).Min();
+                int offset = position - (int)Math.Floor((double)minPosition / snapUnitTick) * snapUnitTick;
+                DocManager.Inst.NotesClipboard.ForEach(note => note.position += offset);
+                DocManager.Inst.StartUndoGroup();
+                DocManager.Inst.ExecuteCmd(new AddNoteCommand(Part,
+                    DocManager.Inst.NotesClipboard.Select(note => note.Clone()).ToList()));
+                DocManager.Inst.EndUndoGroup();
+            }
+        }
+
         # region Calculation
 
         public double GetSnapUnit() { return Snap ? OpenUtau.Core.MusicMath.getZoomRatio(QuarterWidth, BeatPerBar, BeatUnit, MinTickWidth) : 1.0 / 96; }

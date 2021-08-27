@@ -22,6 +22,7 @@ namespace OpenUtau.Core {
         public Plugin[] Plugins { get; private set; }
         public UProject Project { get; private set; }
         public bool HasOpenUndoGroup => undoGroup != null;
+        public List<UNote> NotesClipboard { get; set; }
 
         public void SearchAllSingers() {
             Singers = Formats.UtauSoundbank.FindAllSingers();
