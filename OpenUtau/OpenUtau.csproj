@@ -185,7 +185,6 @@
     <Compile Include="ThirdParty\FileEncoding.cs" />
     <Compile Include="Core\Util\Base64.cs" />
     <Compile Include="Core\Util\IniFileClass.cs" />
-    <Compile Include="Core\Util\Logger.cs" />
     <Compile Include="Core\Util\PathManager.cs" />
     <Compile Include="Core\Util\Preferences.cs" />
     <Compile Include="UI\Controls\ExpComboBox.xaml.cs">

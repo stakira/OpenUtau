@@ -8,6 +8,7 @@ using Serilog;
 namespace OpenUtau.Classic {
     class PluginLoader {
         public static Plugin[] LoadAll(string basePath) {
+            Directory.CreateDirectory(basePath);
             var encoding = Encoding.GetEncoding("shift_jis");
             return Directory.EnumerateFiles(basePath, "plugin.txt", SearchOption.AllDirectories)
                 .Select(filePath => ParsePluginTxt(filePath, encoding))
