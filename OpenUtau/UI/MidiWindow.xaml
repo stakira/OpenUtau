@@ -15,7 +15,7 @@
         <localvm:MidiViewModel x:Key="midiVM"/>
     </Window.Resources>
     <local:BorderlessWindow.MenuContent>
-        <Grid Width="80" Height="20">
+        <Grid Width="100" Height="20">
             <ToggleButton x:Name="showVibratoToggle" Style="{StaticResource ShowPitchToggleButtonStyle}"
                           Width="20" Margin="0,0,0,0" HorizontalAlignment="Left" Focusable="False"
                           IsChecked="{Binding ShowVibrato, Source={StaticResource midiVM}}" ToolTip="Toggle vibrato (U)">
@@ -56,11 +56,20 @@
             </ToggleButton>
             <ToggleButton x:Name="snapToggle" Style="{StaticResource ShowPitchToggleButtonStyle}"
                           Width="20" Margin="60,0,0,0" HorizontalAlignment="Left" Focusable="False"
-                          IsChecked="{Binding Snap, Source={StaticResource midiVM}}" ToolTip="Snap (P)">
+                          IsChecked="{Binding Snap, Source={StaticResource midiVM}}" ToolTip="Toggle Snap (P)">
                 <ToggleButton.Content>
                     <Grid Width="18" Height="18">
                         <Path Data="M 4.5 13.5 L 7.5 13.5 L 7.5 9.5 A 1,1 0 1 1 10.5,9.5 L 10.5 13.5 L 13.5 13.5 L 13.5 8.5 A 1,1 0 1 0 4.5,8.5 Z" StrokeThickness="1"
                               Stroke="{Binding Foreground, ElementName=snapToggle}"/>
+                    </Grid>
+                </ToggleButton.Content>
+            </ToggleButton>
+            <ToggleButton x:Name="tipsToggle" Style="{StaticResource ShowPitchToggleButtonStyle}"
+                          Width="20" Margin="80,0,0,0" HorizontalAlignment="Left" Focusable="False"
+                          IsChecked="{Binding Tips, Source={StaticResource midiVM}}" ToolTip="Toggle Tips (T)">
+                <ToggleButton.Content>
+                    <Grid Width="18" Height="18">
+                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="?" FontWeight="Bold"/>
                     </Grid>
                 </ToggleButton.Content>
             </ToggleButton>
@@ -155,6 +164,27 @@
                     </Border.Effect>
                     <Grid>
                         <local:LyricBox x:Name="LyricBox" Width="360" Height="28" Margin="0,4,0,0" Visibility="Hidden"/>
+                        <Border Style="{StaticResource TipsBorder}" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                Visibility="{Binding TipsVisible, Source={StaticResource midiVM}}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" TextAlignment="Right" Style="{StaticResource TipsText}" Margin="10,0,3,0"
+                                           Text="{DynamicResource tip.notes.basics.keys}"/>
+                                <TextBlock Grid.Column="2" TextAlignment="Left" Style="{StaticResource TipsText}" Margin="3,0,10,0"
+                                           Text="{DynamicResource tip.notes.basics.actions}"/>
+                            </Grid>
+                        </Border>
+                        <Border Style="{StaticResource TipsBorder}" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="2"
+                                 Visibility="{Binding TipsVisible, Source={StaticResource midiVM}}">
+                            <TextBlock Style="{StaticResource TipsText}" Text="{DynamicResource tip.notes.zoomx}"/>
+                        </Border>
+                        <Border Style="{StaticResource TipsBorder}" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="2"
+                                 Visibility="{Binding TipsVisible, Source={StaticResource midiVM}}">
+                            <TextBlock Style="{StaticResource TipsText}" Text="{DynamicResource tip.notes.zoomy}"/>
+                        </Border>
                     </Grid>
                 </Border>
             </Border>

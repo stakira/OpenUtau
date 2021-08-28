@@ -113,6 +113,16 @@ namespace OpenUtau.UI.Models {
         public bool ShowPhoneme { set { _showPhoneme = value; OnPropertyChanged("PhonemeVisibility"); OnPropertyChanged("ShowPhoneme"); } get { return _showPhoneme; } }
         public Visibility PhonemeVisibility { get { return _showPhoneme ? Visibility.Visible : Visibility.Collapsed; } }
         public bool Snap { set { _snap = value; OnPropertyChanged("Snap"); } get { return _snap; } }
+        public bool Tips {
+            set {
+                Core.Util.Preferences.Default.ShowTips = value;
+                Core.Util.Preferences.Save();
+                OnPropertyChanged(nameof(Tips));
+                OnPropertyChanged(nameof(TipsVisible));
+            }
+            get => Core.Util.Preferences.Default.ShowTips;
+        }
+        public Visibility TipsVisible => Tips ? Visibility.Visible : Visibility.Collapsed;
 
         public void HorizontalPropertiesChanged() {
             OnPropertyChanged("QuarterWidth");

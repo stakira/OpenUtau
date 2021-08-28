@@ -66,8 +66,21 @@
     <!-- Errors -->
     <system:String x:Key="errors.caption">错误</system:String>
 
-    <!-- Lyric Box -->
-    <system:String x:Key="lyricbox.prev">Shift+Tab: 上一个</system:String>
-    <system:String x:Key="lyricbox.next">Tab: 下一个</system:String>
+    <!-- Tips -->
+    <system:String x:Key="tip.lyricbox.prev">Shift+Tab: 上一个</system:String>
+    <system:String x:Key="tip.lyricbox.next">Tab: 下一个</system:String>
+    <system:String x:Key="tip.notes.basics.actions" xml:space="preserve">开/关提示
+添加音符
+删除音符
+删除多个音符
+移动音符
+调整音符长度
+调整相邻两个音符长度
+选择音符
+为选中音符移调
+为选中音符移调八度
+播放</system:String>
+    <system:String x:Key="tip.notes.zoomx">◀ 鼠标滚轮横向缩放 ▶</system:String>
+    <system:String x:Key="tip.notes.zoomy">鼠标滚轮纵向缩放 ▶</system:String>
 
 </ResourceDictionary>

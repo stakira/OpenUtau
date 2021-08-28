@@ -67,8 +67,32 @@
     <!-- Errors -->
     <system:String x:Key="errors.caption">Error</system:String>
 
-    <!-- Lyric Box -->
-    <system:String x:Key="lyricbox.prev">Shift+Tab: Previous Note</system:String>
-    <system:String x:Key="lyricbox.next">Tab: Next Note</system:String>
+    <!-- Tips -->
+    <system:String x:Key="tip.lyricbox.prev">Shift+Tab: Previous Note</system:String>
+    <system:String x:Key="tip.lyricbox.next">Tab: Next Note</system:String>
+    <system:String x:Key="tip.notes.basics.keys" xml:space="preserve">T:
+Left Click:
+Right Click:
+Hold Right Mouse Button:
+Drag Note:
+Drag End of Note:
+Alt + Drag End of Note:
+Ctrl + Box Select:
+Up/Down:
+Ctrl + Up/Down:
+Space:</system:String>
+    <system:String x:Key="tip.notes.basics.actions" xml:space="preserve">Toggle tips
+Add note
+Remove note
+Remove multiple notes
+Move note
+Resize note
+Resize neighbouring notes
+Select notes
+Transpose selected notes
+Transpose selected notes by octave
+Play</system:String>
+    <system:String x:Key="tip.notes.zoomx">◀ Scroll here to zoom horizontally ▶</system:String>
+    <system:String x:Key="tip.notes.zoomy">Scroll here to zoom vertically ▶</system:String>
 
 </ResourceDictionary>

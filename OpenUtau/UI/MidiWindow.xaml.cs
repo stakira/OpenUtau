@@ -700,6 +700,8 @@ namespace OpenUtau.UI {
                     midiVM.ShowPhoneme = !midiVM.ShowPhoneme;
                 } else if (e.Key == Key.P) {
                     midiVM.Snap = !midiVM.Snap;
+                } else if (e.Key == Key.T) {
+                    midiVM.Tips = !midiVM.Tips;
                 } else if (e.Key == Key.Space) {
                     PlayOrPause();
                 } else if (e.Key == Key.Up) {
