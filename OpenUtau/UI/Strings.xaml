@@ -67,4 +67,8 @@
     <!-- Errors -->
     <system:String x:Key="errors.caption">Error</system:String>
 
+    <!-- Lyric Box -->
+    <system:String x:Key="lyricbox.prev">Shift+Tab: Previous Note</system:String>
+    <system:String x:Key="lyricbox.next">Tab: Next Note</system:String>
+
 </ResourceDictionary>

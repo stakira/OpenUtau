@@ -154,7 +154,7 @@
                         <DropShadowEffect Color="Black" ShadowDepth="0" BlurRadius="5" Opacity="0.75"/>
                     </Border.Effect>
                     <Grid>
-                        <local:LyricBox x:Name="LyricBox" Width="360" Height="28" Visibility="Hidden"/>
+                        <local:LyricBox x:Name="LyricBox" Width="360" Height="28" Margin="0,4,0,0" Visibility="Hidden"/>
                     </Grid>
                 </Border>
             </Border>

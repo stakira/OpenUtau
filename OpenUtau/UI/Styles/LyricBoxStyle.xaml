@@ -10,7 +10,12 @@
                             <Popup x:Name="PART_Popup" AllowsTransparency="true" Placement="Bottom" IsOpen="False" Width="360" Height="180" StaysOpen="False">
                                 <ListBox x:Name="PART_ItemList" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" KeyboardNavigation.DirectionalNavigation="Contained" />
                             </Popup>
-                            <Label HorizontalAlignment="Right" Margin="0,-20,0,0" FontSize="10" Content="Tab: Next Note"/>
+                            <Border Background="{DynamicResource BackgroundBrushNormal}" HorizontalAlignment="Left" Margin="0,-20,0,30" CornerRadius="3">
+                                <Label HorizontalAlignment="Left" FontSize="10" Content="{DynamicResource lyricbox.prev}" Padding="2"/>
+                            </Border>
+                            <Border Background="{DynamicResource BackgroundBrushNormal}" HorizontalAlignment="Right" Margin="0,-20,0,30" CornerRadius="3">
+                                <Label HorizontalAlignment="Right" FontSize="10" Content="{DynamicResource lyricbox.next}" Padding="2"/>
+                            </Border>
                         </Grid>
                     </Border>
                 </ControlTemplate>
