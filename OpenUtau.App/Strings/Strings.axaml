@@ -52,6 +52,9 @@
   <system:String x:Key="prefs.appearance">Appearance</system:String>
   <system:String x:Key="prefs.appearance.theme">Theme</system:String>
 
+  <!-- Singers -->
+  <system:String x:Key="singers.caption">Singers</system:String>
+
   <!-- Dialogs -->
   <system:String x:Key="dialogs.noresampler.caption">No resampler</system:String>
   <system:String x:Key="dialogs.noresampler.message">No resampler! Put your favourite resampler exe or dll in the Resamplers folder and choose it in Preferences!</system:String>

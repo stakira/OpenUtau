@@ -23,9 +23,16 @@ namespace OpenUtau.App.Views {
 
         }
 
-        void OnMenuPreferences(object sender, RoutedEventArgs args) {
-            var dialog = new PreferencesDialog() {
+        void OnMenuSingers(object sender, RoutedEventArgs args) {
+            DocManager.Inst.SearchAllSingers();
+            var dialog = new SingersDialog() {
+                DataContext = new SingersViewModel(),
             };
+            dialog.ShowDialog(this);
+        }
+
+        void OnMenuPreferences(object sender, RoutedEventArgs args) {
+            var dialog = new PreferencesDialog();
             dialog.ShowDialog(this);
         }
 

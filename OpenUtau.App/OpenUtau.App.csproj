@@ -16,6 +16,7 @@
     <AvaloniaResource Include="Styles\Styles.axaml" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="0.10.3" />
     <PackageReference Include="System.IO.Packaging" Version="5.0.0" />
     <PackageReference Include="Avalonia" Version="0.10.3" />
     <PackageReference Include="Avalonia.Desktop" Version="0.10.3" />

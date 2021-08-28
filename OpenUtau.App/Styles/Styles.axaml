@@ -5,7 +5,8 @@
       <CornerRadius x:Key="ControlCornerRadius">0</CornerRadius>
       <CornerRadius x:Key="OverlayCornerRadius">0</CornerRadius>
       <x:Double x:Key="MenuFlyoutThemeMinHeight">24</x:Double>
-      <Thickness x:Key="MenuFlyoutScrollerMargin">0,0,0,0</Thickness>
+      <Thickness x:Key="MenuFlyoutScrollerMargin">0</Thickness>
+      <Thickness x:Key="ComboBoxDropdownContentMargin">0</Thickness>
     </Style.Resources>
   </Style>
   <Style Selector="Menu">
@@ -25,10 +26,37 @@
     <Setter Property="FontSize" Value="12"/>
   </Style>
   <Style Selector="Button">
-    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="FontSize" Value="12"/>
+    <Setter Property="Height" Value="20"/>
+    <Setter Property="Margin" Value="0,4"/>
+    <Setter Property="Padding" Value="4,0,4,2"/>
+    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    <Setter Property="VerticalContentAlignment" Value="Center"/>
   </Style>
   <Style Selector="Button:pressed, RepeatButton:pressed, ToggleButton:pressed">
-    <Setter Property="RenderTransform" Value="scale(1)" />
+    <Setter Property="RenderTransform" Value="scale(1)"/>
+  </Style>
+  <Style Selector="ComboBox">
+    <Setter Property="FontSize" Value="12"/>
+    <Setter Property="Height" Value="20"/>
+    <Setter Property="Margin" Value="0,4"/>
+    <Setter Property="Padding" Value="4,0,0,2"/>
+  </Style>
+  <Style Selector="ComboBoxItem">
+    <Setter Property="FontSize" Value="12"/>
+    <Setter Property="Height" Value="20"/>
+    <Setter Property="Margin" Value="0"/>
+    <Setter Property="Padding" Value="4,2,0,0"/>
+  </Style>
+
+  <Style Selector="DataGridColumnHeader">
+    <Setter Property="FontSize" Value="12" />
+    <Setter Property="MinHeight" Value="20" />
+  </Style>
+  <Style Selector="DataGridCell">
+    <Setter Property="FontSize" Value="12" />
+    <Setter Property="MinHeight" Value="20" />
   </Style>
 
   <Style Selector="ProgressBar">
@@ -87,18 +115,5 @@
         </ControlTemplate>
       </Setter.Value>
     </Setter>
-  </Style>
-  <Style Selector="HeaderedContentControl.groupbox ComboBox">
-    <Setter Property="FontSize" Value="12"/>
-    <Setter Property="Height" Value="20"/>
-    <Setter Property="Margin" Value="0,4"/>
-  </Style>
-  <Style Selector="HeaderedContentControl.groupbox Button">
-    <Setter Property="FontSize" Value="12"/>
-    <Setter Property="Height" Value="20"/>
-    <Setter Property="Margin" Value="0,4"/>
-    <Setter Property="Padding" Value="0"/>
-    <Setter Property="HorizontalContentAlignment" Value="Center"/>
-    <Setter Property="VerticalContentAlignment" Value="Center"/>
   </Style>
 </Styles>

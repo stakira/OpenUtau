@@ -40,7 +40,7 @@
       </MenuItem>
       <MenuItem Header="{DynamicResource menu.tools}">
         <MenuItem Header="{StaticResource menu.tools.project.expressions}"/>
-        <MenuItem Header="{DynamicResource menu.tools.singers}"/>
+        <MenuItem Header="{DynamicResource menu.tools.singers}" Click="OnMenuSingers"/>
         <MenuItem Header="{DynamicResource menu.tools.singer.install}"/>
         <MenuItem Header="{DynamicResource menu.tools.prefs}" Click="OnMenuPreferences"/>
       </MenuItem>
