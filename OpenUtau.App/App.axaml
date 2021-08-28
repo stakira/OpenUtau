@@ -2,11 +2,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="using:OpenUtau.App"
              x:Class="OpenUtau.App.App">
-    <Application.DataTemplates>
-        <local:ViewLocator/>
-    </Application.DataTemplates>
+  <Application.DataTemplates>
+    <local:ViewLocator/>
+  </Application.DataTemplates>
 
-    <Application.Styles>
-        <FluentTheme Mode="Light"/>
-    </Application.Styles>
+  <Application.Styles>
+    <StyleInclude Source="avares://Avalonia.Themes.Fluent/FluentLight.xaml"/>
+    <StyleInclude Source="/Styles/Styles.axaml"/>
+  </Application.Styles>
 </Application>

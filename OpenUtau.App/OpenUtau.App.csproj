@@ -10,12 +10,13 @@
     <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
   <ItemGroup>
-    <AvaloniaXaml Remove="Themes\Dark.axaml" />
+    <AvaloniaXaml Remove="Styles\Styles.axaml" />
   </ItemGroup>
   <ItemGroup>
-    <AvaloniaResource Include="Themes\Dark.axaml" />
+    <AvaloniaResource Include="Styles\Styles.axaml" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="System.IO.Packaging" Version="5.0.0" />
     <PackageReference Include="Avalonia" Version="0.10.3" />
     <PackageReference Include="Avalonia.Desktop" Version="0.10.3" />
     <PackageReference Include="Avalonia.Diagnostics" Version="0.10.3" />
@@ -28,5 +29,10 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OpenUtau.Core\OpenUtau.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Views\PreferencesDialog.axaml.cs">
+      <DependentUpon>PreferencesDialog.axaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 </Project>

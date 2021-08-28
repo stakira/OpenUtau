@@ -8,34 +8,9 @@
         Icon="/Assets/avalonia-logo.ico"
         Title="OpenUtau">
   <Window.Styles>
-    <StyleInclude Source="/Themes/Dark.axaml"/>
-    <Style Selector="ProgressBar /template/ Border">
-      <Setter Property="CornerRadius" Value="0,0,0,0"/>
-    </Style>
-    <Style Selector="ScrollBar /template/ Rectangle">
-      <Setter Property="Fill" Value="White"/>
-    </Style>
-    <Style Selector="Border.playback">
-      <Setter Property="CornerRadius" Value="4"/>
-      <Setter Property="BorderThickness" Value="1"/>
-      <Setter Property="BorderBrush" Value="LightGray"/>
-      <Setter Property="Height" Value="20"/>
-    </Style>
-    <Style Selector="Border.playback TextBlock">
-      <Setter Property="FontSize" Value="10"/>
-      <Setter Property="VerticalAlignment" Value="Center"/>
-      <Setter Property="HorizontalAlignment" Value="Center"/>
-    </Style>
-    <Style Selector="Border.playback StackPanel">
-      <Setter Property="VerticalAlignment" Value="Center"/>
-      <Setter Property="HorizontalAlignment" Value="Center"/>
-    </Style>
-    <Style Selector="Border.playback Button">
-      <Setter Property="Margin" Value="0"/>
-      <Setter Property="Padding" Value="0"/>
-      <Setter Property="Width" Value="21"/>
-      <Setter Property="Height" Value="20"/>
-      <Setter Property="Background" Value="Transparent"/>
+    <Style>
+      <Style.Resources>
+      </Style.Resources>
     </Style>
   </Window.Styles>
   <Window.Resources>
@@ -54,16 +29,20 @@
         <MenuItem Header="{DynamicResource menu.file.new}" InputGesture="Ctrl+N"/>
         <MenuItem Header="{DynamicResource menu.file.open}" InputGesture="Ctrl+O"/>
         <MenuItem Header="{DynamicResource menu.file.save}" InputGesture="Ctrl+S"/>
-        <MenuItem Header="{DynamicResource menu.file.saveas}" IsEnabled="False"/>
+        <MenuItem Header="{DynamicResource menu.file.saveas}">
+          <MenuItem Header="{DynamicResource menu.file.saveasust}"/>
+        </MenuItem>
+        <MenuItem Header="{DynamicResource menu.file.import}"/>
         <MenuItem Header="{DynamicResource menu.file.importaudio}"/>
         <MenuItem Header="{DynamicResource menu.file.importmidi}"/>
         <MenuItem Header="{DynamicResource menu.file.exportall}"/>
         <MenuItem Header="{DynamicResource menu.file.exit}" InputGesture="Alt+F4"/>
       </MenuItem>
       <MenuItem Header="{DynamicResource menu.tools}">
+        <MenuItem Header="{StaticResource menu.tools.project.expressions}"/>
         <MenuItem Header="{DynamicResource menu.tools.singers}"/>
         <MenuItem Header="{DynamicResource menu.tools.singer.install}"/>
-        <MenuItem Header="{DynamicResource menu.tools.prefs}"/>
+        <MenuItem Header="{DynamicResource menu.tools.prefs}" Click="OnMenuPreferences"/>
       </MenuItem>
       <MenuItem Header="{DynamicResource menu.help}">
         <MenuItem Header="{Binding AppVersion}"/>
@@ -75,30 +54,38 @@
     <Panel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0">
       <Panel HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="24">
         <Border Classes="playback" Width="72" HorizontalAlignment="Left" Margin="4,0">
-          <TextBlock Classes="playback" PointerPressed="OnEditTempo">4/4  120.00</TextBlock>
+          <TextBlock Classes="playback" PointerPressed="OnEditTempo">
+            <TextBlock.Text>
+              <MultiBinding StringFormat="{}{0}/{1}  {2:#0.00}">
+                <Binding Path="BeatPerBar"/>
+                <Binding Path="BeatUnit"/>
+                <Binding Path="BPM"/>
+              </MultiBinding>
+            </TextBlock.Text>
+          </TextBlock>
         </Border>
         <Border Classes="playback" Width="88" HorizontalAlignment="Center">
           <StackPanel Orientation="Horizontal">
             <Button Command="{Binding SeekStart}">
-              <Path Fill="Black" VerticalAlignment="Center" HorizontalAlignment="Center"
+              <Path Fill="{Binding $parent.Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center"
                     Data="M 0 0 L 2 0 L 2 9 L 0 9 Z M 2 4.5 L 7 0 L 7 9 Z"/>
             </Button>
-            <Button Command="{Binding PlayOrPause}">
-              <Path Fill="Black" VerticalAlignment="Center" HorizontalAlignment="Center"
+            <Button Click="OnPlayOrStop">
+              <Path Fill="{Binding $parent.Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center"
                     Data="M 0 0 L 7 6.5 L 0 13 Z"/>
             </Button>
             <Button Command="{Binding Stop}">
-              <Path Fill="Black" VerticalAlignment="Center" HorizontalAlignment="Center"
+              <Path Fill="{Binding $parent.Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center"
                     Data="M 0 0 L 2 0 L 2 9 L 0 9 Z M 4 0 L 6 0 L 6 9 L 4 9 Z"/>
             </Button>
             <Button Command="{Binding SeekEnd}">
-              <Path Fill="Black" VerticalAlignment="Center" HorizontalAlignment="Center"
+              <Path Fill="{Binding $parent.Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center"
                     Data="M 0 0 L 5 4.5 L 0 9 Z M 5 0 L 7 0 L 7 9 L 5 9 Z"/>
             </Button>
           </StackPanel>
         </Border>
         <Border Classes="playback" Width="72" HorizontalAlignment="Right" Margin="4,0">
-          <TextBlock Classes="playback">00:00.000</TextBlock>
+          <TextBlock Classes="playback" Text="{Binding Path=PlayPosTime, StringFormat={}{0:mm\\:ss\\.fff}}"/>
         </Border>
       </Panel>
       <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,24,0,0" Background="Wheat"/>
