@@ -9,6 +9,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
+using Serilog;
 
 namespace OpenUtau.UI.Dialogs {
     /// <summary>
@@ -97,13 +98,21 @@ namespace OpenUtau.UI.Dialogs {
         }
 
         private static BitmapImage LoadAvatar(string path) {
-            var avatar = new BitmapImage();
-            avatar.BeginInit();
-            avatar.CacheOption = BitmapCacheOption.OnLoad;
-            avatar.UriSource = new Uri(path, UriKind.RelativeOrAbsolute);
-            avatar.EndInit();
-            avatar.Freeze();
-            return avatar;
+            if (string.IsNullOrEmpty(path)) {
+                return null;
+            }
+            try {
+                var avatar = new BitmapImage();
+                avatar.BeginInit();
+                avatar.CacheOption = BitmapCacheOption.OnLoad;
+                avatar.UriSource = new Uri(path, UriKind.RelativeOrAbsolute);
+                avatar.EndInit();
+                avatar.Freeze();
+                return avatar;
+            } catch (Exception e) {
+                Log.Error(e, $"Failed to load avatar at {path}");
+                return null;
+            }
         }
 
         #region ICmdSubscriber

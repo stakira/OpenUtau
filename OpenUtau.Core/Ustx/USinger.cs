@@ -78,10 +78,7 @@ namespace OpenUtau.Core.Ustx {
             OtherInfo = voicebank.OtherInfo;
             Location = Path.GetDirectoryName(voicebank.File);
             if (!string.IsNullOrEmpty(voicebank.Image)) {
-                var imagePath = Path.Combine(Location, voicebank.Image);
-                if (File.Exists(imagePath)) {
-                    Avatar = imagePath;
-                }
+                Avatar = Path.Combine(Location, voicebank.Image);
             }
             if (voicebank.PrefixMap != null) {
                 PitchMap = voicebank.PrefixMap.Map;

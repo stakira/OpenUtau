@@ -13,7 +13,7 @@ using xxHashSharp;
 namespace OpenUtau.Classic {
 
     public class VoicebankInstaller {
-        readonly string basePath;
+        private string basePath;
         readonly Action<double, string> progress;
 
         public VoicebankInstaller(string basePath, Action<double, string> progress) {
@@ -31,7 +31,7 @@ namespace OpenUtau.Classic {
         }
 
         public void LoadArchive(string path) {
-            var encoding = Encoding.GetEncoding(932);
+            var encoding = Encoding.GetEncoding("shift_jis");
             if (encoding == null) {
                 throw new Exception($"Failed to detect encoding of {path}.");
             }
@@ -47,6 +47,7 @@ namespace OpenUtau.Classic {
             };
             string[] textFiles = { ".txt", ".ini", ".map" };
             using (var archive = ArchiveFactory.Open(path, readerOptions)) {
+                AdjustBasePath(archive);
                 int total = archive.Entries.Count();
                 int count = 0;
                 foreach (var entry in archive.Entries) {
@@ -65,6 +66,30 @@ namespace OpenUtau.Classic {
                     progress.Invoke(100.0 * ++count / total, entry.Key);
                 }
             }
+        }
+
+        private void AdjustBasePath(IArchive archive) {
+            var characters = archive.Entries.Where(e => Path.GetFileName(e.Key) == "character.txt").ToList();
+            if (characters.Count > 0) {
+                var entry = characters.FirstOrDefault(e => e.Key == "character.txt");
+                if (entry == null) {
+                    return;
+                }
+                var encoding = Encoding.GetEncoding("shift_jis");
+                using (var stream = entry.OpenEntryStream()) {
+                    using (var reader = new StreamReader(stream, encoding)) {
+                        while (!reader.EndOfStream) {
+                            var line = reader.ReadLine();
+                            if (line.StartsWith("name=")) {
+                                var name = line.Replace("name=", "").Trim();
+                                basePath = Path.Combine(basePath, name);
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+            basePath = Path.Combine(basePath, DateTime.Now.ToString("yyyyMMdd-HHmmss"));
         }
 
         static string HashPath(string path) {
