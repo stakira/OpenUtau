@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Reflection;
 using System.Text;
+using OpenUtau.Core.Ustx;
 using SharpCompress.Archives;
 using SharpCompress.Common;
 using SharpCompress.Readers;
@@ -36,7 +37,7 @@ namespace OpenUtau.Core.Formats {
                             project.AfterLoad();
                             project.Validate();
                             Assert.Single(project.parts);
-                            var part = project.parts[0] as Ustx.UVoicePart;
+                            var part = project.parts[0] as UVoicePart;
                             Assert.True(part.notes.Count > 0);
                         }
                     }

@@ -45,7 +45,7 @@ namespace OpenUtau.Core.Util {
             public const int MidiHeight = 768;
             public int MainWidth = 1024;
             public int MainHeight = 768;
-            public bool MainMaximized = false;
+            public bool MainMaximized;
             public bool MidiMaximized;
             public int UndoLimit = 100;
             public List<string> SingerSearchPaths = new List<string>();

@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OpenUtau\OpenUtau.csproj" />
+    <ProjectReference Include="..\OpenUtau.Core\OpenUtau.Core.csproj" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
