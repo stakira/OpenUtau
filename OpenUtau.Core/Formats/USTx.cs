@@ -6,7 +6,7 @@ using Newtonsoft.Json.Linq;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core.Formats {
-    class Ustx {
+    public class Ustx {
         public static readonly Version kUstxVersion = new Version(0, 1);
 
         public static void AddBuiltInExpressions(UProject project) {

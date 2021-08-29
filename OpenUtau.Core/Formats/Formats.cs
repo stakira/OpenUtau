@@ -6,7 +6,7 @@ using OpenUtau.Core.Ustx;
 namespace OpenUtau.Core.Formats {
     public enum ProjectFormats { Unknown, Vsq3, Vsq4, Ust, Ustx };
 
-    static class Formats {
+    public static class Formats {
         const string ustMatch = "[#SETTING]";
         const string ustxMatch = "ustxVersion";
         const string vsq3Match = VSQx.vsq3NameSpace;

@@ -5,6 +5,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
@@ -50,7 +51,7 @@ namespace OpenUtau.UI.Dialogs {
                 location = null;
                 return;
             }
-            avatar.Source = singer.Avatar;
+            avatar.Source = LoadAvatar(singer.Avatar);
             info.Inlines.Clear();
             info.Inlines.Add($"Author: {singer.Author}\n");
             info.Inlines.Add("Web: ");
@@ -93,6 +94,16 @@ namespace OpenUtau.UI.Dialogs {
                     FileName = "explorer.exe",
                 });
             }
+        }
+
+        private static BitmapImage LoadAvatar(string path) {
+            var avatar = new BitmapImage();
+            avatar.BeginInit();
+            avatar.CacheOption = BitmapCacheOption.OnLoad;
+            avatar.UriSource = new Uri(path, UriKind.RelativeOrAbsolute);
+            avatar.EndInit();
+            avatar.Freeze();
+            return avatar;
         }
 
         #region ICmdSubscriber

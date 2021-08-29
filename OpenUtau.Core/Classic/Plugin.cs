@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 
 namespace OpenUtau.Classic {
-    class Plugin {
+    public class Plugin {
         public string Name;
         public string Executable;
         public bool AllNotes;

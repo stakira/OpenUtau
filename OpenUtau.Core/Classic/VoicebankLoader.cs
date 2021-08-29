@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 
 namespace OpenUtau.Classic {
-    class VoicebankLoader {
+    public class VoicebankLoader {
         class FileLoc {
             public string file;
             public int lineNumber;

@@ -3,12 +3,12 @@ using System.IO;
 using OpenUtau.Core.ResamplerDriver.Factorys;
 
 namespace OpenUtau.Core.ResamplerDriver {
-    internal interface IResamplerDriver {
+    public interface IResamplerDriver {
         byte[] DoResampler(DriverModels.EngineInput Args, out string output);
         DriverModels.EngineInfo GetInfo();
     }
 
-    internal class ResamplerDriver {
+    public class ResamplerDriver {
         public static IResamplerDriver Load(string filePath) {
             string ext = Path.GetExtension(filePath).ToLower();
             if (!File.Exists(filePath)) {

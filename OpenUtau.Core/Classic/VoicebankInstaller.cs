@@ -12,7 +12,7 @@ using xxHashSharp;
 
 namespace OpenUtau.Classic {
 
-    class VoicebankInstaller {
+    public class VoicebankInstaller {
         readonly string basePath;
         readonly Action<double, string> progress;
 
@@ -65,23 +65,6 @@ namespace OpenUtau.Classic {
                     progress.Invoke(100.0 * ++count / total, entry.Key);
                 }
             }
-        }
-
-        static Encoding DetectArchiveFileEncoding(string path) {
-            Encoding encoding = Encoding.GetEncoding(1252);
-            var options = new ReaderOptions {
-                ArchiveEncoding = new ArchiveEncoding(encoding, encoding)
-            };
-            var detector = new Ude.CharsetDetector();
-            using (var archive = ArchiveFactory.Open(path, options)) {
-                foreach (var entry in archive.Entries) {
-                    byte[] buffer = encoding.GetBytes(entry.Key);
-                    detector.Feed(buffer, 0, buffer.Length);
-                }
-            }
-            detector.DataEnd();
-            Log.Information($"{path} charset: {detector.Charset} confidence: {detector.Confidence}");
-            return Encoding.GetEncoding(detector.Charset);
         }
 
         static string HashPath(string path) {

@@ -1,0 +1,126 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{25A15BBB-A9EF-449E-9C12-67F5C28BD088}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>OpenUtau.Core</RootNamespace>
+    <AssemblyName>OpenUtau.Core</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Classes\DocManager.cs" />
+    <Compile Include="Classes\PlaybackManager.cs" />
+    <Compile Include="Classic\Plugin.cs" />
+    <Compile Include="Classic\PluginLoader.cs" />
+    <Compile Include="Classic\VoiceBank.cs" />
+    <Compile Include="Classic\VoicebankInstaller.cs" />
+    <Compile Include="Classic\VoicebankLoader.cs" />
+    <Compile Include="Commands\ExpCommands.cs" />
+    <Compile Include="Commands\NoteCommands.cs" />
+    <Compile Include="Commands\Notifications.cs" />
+    <Compile Include="Commands\PartCommands.cs" />
+    <Compile Include="Commands\ProjectCommands.cs" />
+    <Compile Include="Commands\TrackCommands.cs" />
+    <Compile Include="Commands\UCommand.cs" />
+    <Compile Include="Formats\Formats.cs" />
+    <Compile Include="Formats\Midi.cs" />
+    <Compile Include="Formats\Ust.cs" />
+    <Compile Include="Formats\USTx.cs" />
+    <Compile Include="Formats\UtauSoundbank.cs" />
+    <Compile Include="Formats\VSQx.cs" />
+    <Compile Include="Formats\Wave.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Render\NAudio\AudioStreamReader.cs" />
+    <Compile Include="Render\NAudio\EnvelopeSampleProvider.cs" />
+    <Compile Include="Render\NAudio\MemorySampleProvider.cs" />
+    <Compile Include="Render\NAudio\RenderItemSampleProvider.cs" />
+    <Compile Include="Render\NAudio\SequencingSampleProvider.cs" />
+    <Compile Include="Render\NAudio\TrackSampleProvider.cs" />
+    <Compile Include="Render\RenderCache.cs" />
+    <Compile Include="Render\RenderEngine.cs" />
+    <Compile Include="Render\RenderItem.cs" />
+    <Compile Include="ResamplerDriver\DriverModels.cs" />
+    <Compile Include="ResamplerDriver\Factorys\CppDriver.cs" />
+    <Compile Include="ResamplerDriver\Factorys\ExeDriver.cs" />
+    <Compile Include="ResamplerDriver\Factorys\SharpDriver.cs" />
+    <Compile Include="ResamplerDriver\ResamplerDriver.cs" />
+    <Compile Include="ThirdParty\Deque.cs" />
+    <Compile Include="Ustx\UExpression.cs" />
+    <Compile Include="Ustx\UNote.cs" />
+    <Compile Include="Ustx\UPart.cs" />
+    <Compile Include="Ustx\UPhoneme.cs" />
+    <Compile Include="Ustx\UProject.cs" />
+    <Compile Include="Ustx\USinger.cs" />
+    <Compile Include="Ustx\UTrack.cs" />
+    <Compile Include="Util\Base64.cs" />
+    <Compile Include="Util\IniFileClass.cs" />
+    <Compile Include="Util\MusicMath.cs" />
+    <Compile Include="Util\PathManager.cs" />
+    <Compile Include="Util\Preferences.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="NAudio">
+      <Version>2.0.1</Version>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>13.0.1</Version>
+    </PackageReference>
+    <PackageReference Include="Serilog">
+      <Version>2.10.0</Version>
+    </PackageReference>
+    <PackageReference Include="SharpCompress">
+      <Version>0.28.3</Version>
+    </PackageReference>
+    <PackageReference Include="System.IO">
+      <Version>4.3.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.IO.Packaging">
+      <Version>5.0.0</Version>
+    </PackageReference>
+    <PackageReference Include="WanaKanaSharp">
+      <Version>0.1.1</Version>
+    </PackageReference>
+    <PackageReference Include="xxHashSharp">
+      <Version>1.0.0</Version>
+    </PackageReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

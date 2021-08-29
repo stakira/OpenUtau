@@ -57,69 +57,12 @@
     <StartupObject>OpenUtau.App</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CommonServiceLocator, Version=2.0.2.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
-      <HintPath>..\packages\CommonServiceLocator.2.0.2\lib\net47\CommonServiceLocator.dll</HintPath>
-    </Reference>
-    <Reference Include="GalaSoft.MvvmLight, Version=5.4.1.0, Culture=neutral, PublicKeyToken=e7570ab207bcb616, processorArchitecture=MSIL">
-      <HintPath>..\packages\MvvmLightLibs.5.4.1.1\lib\net45\GalaSoft.MvvmLight.dll</HintPath>
-    </Reference>
-    <Reference Include="GalaSoft.MvvmLight.Extras, Version=5.4.1.0, Culture=neutral, PublicKeyToken=669f0b5e8f868abf, processorArchitecture=MSIL">
-      <HintPath>..\packages\MvvmLightLibs.5.4.1.1\lib\net45\GalaSoft.MvvmLight.Extras.dll</HintPath>
-    </Reference>
-    <Reference Include="GalaSoft.MvvmLight.Platform, Version=5.4.1.0, Culture=neutral, PublicKeyToken=5f873c45e98af8a1, processorArchitecture=MSIL">
-      <HintPath>..\packages\MvvmLightLibs.5.4.1.1\lib\net45\GalaSoft.MvvmLight.Platform.dll</HintPath>
-    </Reference>
-    <Reference Include="INIFileParser, Version=2.5.2.0, Culture=neutral, PublicKeyToken=79af7b307b65cf3c, processorArchitecture=MSIL">
-      <HintPath>..\packages\ini-parser.2.5.2\lib\net20\INIFileParser.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Expression.Interactions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Blend.Interctivity.WPF.v4.0.1.0.3\lib\net40\Microsoft.Expression.Interactions.dll</HintPath>
-    </Reference>
-    <Reference Include="NAudio, Version=1.10.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\NAudio.1.10.0\lib\net35\NAudio.dll</HintPath>
-    </Reference>
-    <Reference Include="NBug, Version=1.2.0.0, Culture=neutral, PublicKeyToken=a4292a325f69b123, processorArchitecture=MSIL">
-      <HintPath>..\packages\NBug.1.2.2\lib\net40-client\NBug.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
-      <HintPath>..\packages\Serilog.2.10.0\lib\net46\Serilog.dll</HintPath>
-    </Reference>
-    <Reference Include="Serilog.Sinks.Console, Version=3.1.1.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
-      <HintPath>..\packages\Serilog.Sinks.Console.3.1.1\lib\net45\Serilog.Sinks.Console.dll</HintPath>
-    </Reference>
-    <Reference Include="Serilog.Sinks.File, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
-      <HintPath>..\packages\Serilog.Sinks.File.4.1.0\lib\net45\Serilog.Sinks.File.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpCompress, Version=0.27.1.0, Culture=neutral, PublicKeyToken=afb0a02973931d96, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharpCompress.0.27.1\lib\netstandard2.0\SharpCompress.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
-    </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
-    </Reference>
     <Reference Include="System.Numerics" />
-    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.5.0.0\lib\net45\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Text.Encoding.CodePages, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Text.Encoding.CodePages.5.0.0\lib\net461\System.Text.Encoding.CodePages.dll</HintPath>
-    </Reference>
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\MvvmLightLibs.5.4.1.1\lib\net45\System.Windows.Interactivity.dll</HintPath>
-    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -128,65 +71,11 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="Ude">
-      <HintPath>..\packages\UDE.CSharp.1.1.0\lib\Ude.dll</HintPath>
-    </Reference>
-    <Reference Include="WanaKanaSharp, Version=0.1.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\WanaKanaSharp.0.1.1\lib\netstandard2.0\WanaKanaSharp.dll</HintPath>
-    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="WriteableBitmapEx.Wpf, Version=1.6.7.0, Culture=neutral, PublicKeyToken=50375ca6144f1c69, processorArchitecture=MSIL">
-      <HintPath>..\packages\WriteableBitmapEx.1.6.7\lib\net40\WriteableBitmapEx.Wpf.dll</HintPath>
-    </Reference>
-    <Reference Include="xxHashSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\xxHashSharp.1.0.0\lib\net45\xxHashSharp.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Classic\Plugin.cs" />
-    <Compile Include="Classic\PluginLoader.cs" />
-    <Compile Include="Classic\VoicebankInstaller.cs" />
-    <Compile Include="Classic\Voicebank.cs" />
-    <Compile Include="Classic\VoicebankLoader.cs" />
-    <Compile Include="Core\Commands\ProjectCommands.cs" />
-    <Compile Include="Core\Classes\PlaybackManager.cs" />
-    <Compile Include="Core\Commands\TrackCommands.cs" />
-    <Compile Include="Core\Formats\Midi.cs" />
-    <Compile Include="Core\Formats\Ustx.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Core\Formats\UtauSoundbank.cs" />
-    <Compile Include="Core\Render\NAudio\AudioStreamReader.cs" />
-    <Compile Include="Core\Render\NAudio\EnvelopeSampleProvider.cs" />
-    <Compile Include="Core\Render\NAudio\MemorySampleProvider.cs" />
-    <Compile Include="Core\Render\NAudio\TrackSampleProvider.cs" />
-    <Compile Include="Core\Render\NAudio\SequencingSampleProvider.cs" />
-    <Compile Include="Core\Render\RenderCache.cs" />
-    <Compile Include="Core\Render\RenderItem.cs" />
-    <Compile Include="Core\Render\NAudio\RenderItemSampleProvider.cs" />
-    <Compile Include="Core\Render\RenderEngine.cs" />
-    <Compile Include="Core\Commands\ExpCommands.cs" />
-    <Compile Include="Core\ResamplerDriver\ResamplerDriver.cs" />
-    <Compile Include="Core\ResamplerDriver\DriverModels.cs" />
-    <Compile Include="Core\ResamplerDriver\Factorys\CppDriver.cs" />
-    <Compile Include="Core\ResamplerDriver\Factorys\ExeDriver.cs" />
-    <Compile Include="Core\ResamplerDriver\Factorys\SharpDriver.cs" />
-    <Compile Include="Core\Ustx\UExpression.cs" />
-    <Compile Include="Core\Commands\NoteCommands.cs" />
-    <Compile Include="ThirdParty\Deque.cs" />
-    <Compile Include="Core\Classes\DocManager.cs" />
-    <Compile Include="Core\Commands\Notifications.cs" />
-    <Compile Include="Core\Commands\PartCommands.cs" />
-    <Compile Include="Core\Commands\UCommand.cs" />
-    <Compile Include="Core\Ustx\UPhoneme.cs" />
-    <Compile Include="Core\Ustx\USinger.cs" />
-    <Compile Include="ThirdParty\FileEncoding.cs" />
-    <Compile Include="Core\Util\Base64.cs" />
-    <Compile Include="Core\Util\IniFileClass.cs" />
-    <Compile Include="Core\Util\PathManager.cs" />
-    <Compile Include="Core\Util\Preferences.cs" />
     <Compile Include="UI\Controls\ExpComboBox.xaml.cs">
       <DependentUpon>ExpComboBox.xaml</DependentUpon>
     </Compile>
@@ -200,14 +89,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="Core\Formats\Formats.cs" />
-    <Compile Include="Core\Formats\Wave.cs" />
-    <Compile Include="Core\Formats\Ust.cs" />
-    <Compile Include="Core\Util\MusicMath.cs" />
-    <Compile Include="Core\Ustx\UPart.cs" />
-    <Compile Include="Core\Ustx\UProject.cs" />
-    <Compile Include="Core\Ustx\UTrack.cs" />
-    <Compile Include="Core\Formats\VSQx.cs" />
     <Compile Include="UI\Behaviors\BorderlessWindowBehavior.cs" />
     <Compile Include="UI\Behaviors\ScrollbarBehavior.cs" />
     <Compile Include="UI\Controls\BackgroundElements.cs" />
@@ -307,7 +188,6 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Core\Ustx\UNote.cs" />
     <Compile Include="UI\MidiWindow.xaml.cs">
       <DependentUpon>MidiWindow.xaml</DependentUpon>
     </Compile>
@@ -370,7 +250,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -398,9 +277,58 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\prefs.json" />
+    <ProjectReference Include="..\OpenUtau.Core\OpenUtau.Core.csproj">
+      <Project>{25a15bbb-a9ef-449e-9c12-67f5c28bd088}</Project>
+      <Name>OpenUtau.Core</Name>
+    </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <PackageReference Include="Blend.Interctivity.WPF.v4.0">
+      <Version>1.0.3</Version>
+    </PackageReference>
+    <PackageReference Include="Expression.Blend.Sdk">
+      <Version>1.0.2</Version>
+    </PackageReference>
+    <PackageReference Include="ini-parser">
+      <Version>2.5.2</Version>
+    </PackageReference>
+    <PackageReference Include="MvvmLightLibs">
+      <Version>5.4.1.1</Version>
+    </PackageReference>
+    <PackageReference Include="NAudio">
+      <Version>2.0.1</Version>
+    </PackageReference>
+    <PackageReference Include="NBug">
+      <Version>1.2.2</Version>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>13.0.1</Version>
+    </PackageReference>
+    <PackageReference Include="Serilog">
+      <Version>2.10.0</Version>
+    </PackageReference>
+    <PackageReference Include="Serilog.Sinks.Console">
+      <Version>4.0.0</Version>
+    </PackageReference>
+    <PackageReference Include="Serilog.Sinks.File">
+      <Version>5.0.0</Version>
+    </PackageReference>
+    <PackageReference Include="SharpCompress">
+      <Version>0.28.3</Version>
+    </PackageReference>
+    <PackageReference Include="UDE.CSharp">
+      <Version>1.1.0</Version>
+    </PackageReference>
+    <PackageReference Include="WanaKanaSharp">
+      <Version>0.1.1</Version>
+    </PackageReference>
+    <PackageReference Include="WriteableBitmapEx">
+      <Version>1.6.8</Version>
+    </PackageReference>
+    <PackageReference Include="xxHashSharp">
+      <Version>1.0.0</Version>
+    </PackageReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -11,7 +11,7 @@ using OpenUtau.Core.ResamplerDriver;
 using Serilog;
 
 namespace OpenUtau.Core {
-    class PlaybackManager : ICmdSubscriber {
+    public class PlaybackManager : ICmdSubscriber {
         private WaveOutEvent outDevice;
         private WaveOutEvent testDevice;
 

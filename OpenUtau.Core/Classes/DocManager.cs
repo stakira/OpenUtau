@@ -7,7 +7,7 @@ using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Core {
-    class DocManager {
+    public class DocManager {
         DocManager() {
             Project = new UProject();
         }

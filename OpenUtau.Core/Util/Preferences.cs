@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace OpenUtau.Core.Util {
 
-    internal static class Preferences {
+    public static class Preferences {
         public static SerializablePreferences Default;
         private const string filename = "prefs.json";
 
@@ -18,9 +18,7 @@ namespace OpenUtau.Core.Util {
         }
 
         public static void Reset() {
-            var assembly = System.Reflection.Assembly.GetExecutingAssembly();
-            var stream = new StreamReader(assembly.GetManifestResourceStream("OpenUtau.Resources.prefs.json"));
-            Default = JsonConvert.DeserializeObject<SerializablePreferences>(stream.ReadToEnd());
+            Default = new SerializablePreferences();
             Save();
         }
 
@@ -50,10 +48,10 @@ namespace OpenUtau.Core.Util {
             public bool MainMaximized = false;
             public bool MidiMaximized;
             public int UndoLimit = 100;
-            public List<string> SingerSearchPaths;
-            public string ExternalPreviewEngine;
-            public string ExternalExportEngine;
-            public string PlaybackDevice;
+            public List<string> SingerSearchPaths = new List<string>();
+            public string ExternalPreviewEngine = string.Empty;
+            public string ExternalExportEngine = string.Empty;
+            public string PlaybackDevice = string.Empty;
             public int PlaybackDeviceNumber;
             public bool ShowTips = true;
         }

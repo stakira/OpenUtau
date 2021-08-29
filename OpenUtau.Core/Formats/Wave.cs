@@ -10,19 +10,13 @@ using NAudio.Wave.SampleProviders;
 
 using OpenUtau.Core.Ustx;
 
-namespace OpenUtau.Core.Formats
-{
-    static class Wave
-    {
-        public static UWavePart CreatePart(string filepath)
-        {
-            foreach(var part in DocManager.Inst.Project.parts)
-            {
+namespace OpenUtau.Core.Formats {
+    public static class Wave {
+        public static UWavePart CreatePart(string filepath) {
+            foreach (var part in DocManager.Inst.Project.parts) {
                 var _part = part as UWavePart;
-                if (_part != null && _part.FilePath == filepath)
-                {
-                    return new UWavePart()
-                    {
+                if (_part != null && _part.FilePath == filepath) {
+                    return new UWavePart() {
                         FilePath = filepath,
                         FileDurTick = _part.FileDurTick,
                         Duration = _part.Duration,
@@ -32,17 +26,13 @@ namespace OpenUtau.Core.Formats
                 }
             }
             WaveStream stream = null;
-            try
-            {
+            try {
                 stream = new AudioFileReader(filepath);
-            }
-            catch
-            {
+            } catch {
                 return null;
             }
             int durTick = DocManager.Inst.Project.MillisecondToTick(1000.0 * stream.Length / stream.WaveFormat.AverageBytesPerSecond);
-            UWavePart uwavepart = new UWavePart()
-            {
+            UWavePart uwavepart = new UWavePart() {
                 FilePath = filepath,
                 FileDurTick = durTick,
                 Duration = durTick,
@@ -52,14 +42,12 @@ namespace OpenUtau.Core.Formats
             return uwavepart;
         }
 
-        public static float[] BuildPeaks(UWavePart part, System.ComponentModel.BackgroundWorker worker)
-        {
+        public static float[] BuildPeaks(UWavePart part, System.ComponentModel.BackgroundWorker worker) {
             const double peaksRate = 4000;
             System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
             sw.Start();
             float[] peaks;
-            using (var stream = new AudioFileReader(part.FilePath))
-            {
+            using (var stream = new AudioFileReader(part.FilePath)) {
                 int channels = part.Channels;
                 double peaksSamples = (int)((double)stream.Length / stream.WaveFormat.BlockAlign / stream.WaveFormat.SampleRate * peaksRate);
                 peaks = new float[(int)(peaksSamples + 1) * channels];
@@ -74,20 +62,16 @@ namespace OpenUtau.Core.Formats
                 int peaksPos = 0;
                 double bufferPos = 0;
                 float lmax = 0, lmin = 0, rmax = 0, rmin = 0;
-                while ((readed = converted.Read(buffer, 0, 4096)) != 0)
-                {
+                while ((readed = converted.Read(buffer, 0, 4096)) != 0) {
                     readPos += readed;
-                    for (int i = 0; i < readed; i += channels)
-                    {
+                    for (int i = 0; i < readed; i += channels) {
                         lmax = Math.Max(lmax, buffer[i]);
                         lmin = Math.Min(lmin, buffer[i]);
-                        if (channels > 1)
-                        {
+                        if (channels > 1) {
                             rmax = Math.Max(rmax, buffer[i + 1]);
                             rmin = Math.Min(rmin, buffer[i + 1]);
                         }
-                        if (i > bufferPos)
-                        {
+                        if (i > bufferPos) {
                             lmax = -lmax; lmin = -lmin; rmax = -rmax; rmin = -rmin; // negate peaks to fipped waveform
                             peaks[peaksPos * channels] = lmax == 0 ? lmin : lmin == 0 ? lmax : (lmin + lmax) / 2;
                             peaks[peaksPos * channels + 1] = rmax == 0 ? rmin : rmin == 0 ? rmax : (rmin + rmax) / 2;

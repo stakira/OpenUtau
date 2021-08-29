@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Windows.Media.Imaging;
 using OpenUtau.Classic;
 using WanaKanaSharp;
 
@@ -59,7 +58,7 @@ namespace OpenUtau.Core.Ustx {
         public readonly string Author;
         public readonly string Web;
         public readonly string OtherInfo;
-        public readonly BitmapImage Avatar;
+        public readonly string Avatar;
         public readonly Dictionary<string, Tuple<string, string>> PitchMap;
         public readonly List<UOtoSet> OtoSets;
         public readonly string Id;
@@ -81,7 +80,7 @@ namespace OpenUtau.Core.Ustx {
             if (!string.IsNullOrEmpty(voicebank.Image)) {
                 var imagePath = Path.Combine(Location, voicebank.Image);
                 if (File.Exists(imagePath)) {
-                    Avatar = LoadAvatar(imagePath);
+                    Avatar = imagePath;
                 }
             }
             if (voicebank.PrefixMap != null) {
@@ -129,16 +128,6 @@ namespace OpenUtau.Core.Ustx {
                 .Where(oto => all || oto.SearchTerms.Exists(term => term.Contains(text)))
                 .ToList()
                 .ForEach(oto => provide(oto));
-        }
-
-        private static BitmapImage LoadAvatar(string path) {
-            var avatar = new BitmapImage();
-            avatar.BeginInit();
-            avatar.CacheOption = BitmapCacheOption.OnLoad;
-            avatar.UriSource = new Uri(path, UriKind.RelativeOrAbsolute);
-            avatar.EndInit();
-            avatar.Freeze();
-            return avatar;
         }
     }
 }

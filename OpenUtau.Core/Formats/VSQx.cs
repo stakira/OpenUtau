@@ -5,7 +5,7 @@ using System.Xml;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core.Formats {
-    static class VSQx {
+    public static class VSQx {
         public const string vsq3NameSpace = @"http://www.yamaha.co.jp/vocaloid/schema/vsq3/";
         public const string vsq4NameSpace = @"http://www.yamaha.co.jp/vocaloid/schema/vsq4/";
 
