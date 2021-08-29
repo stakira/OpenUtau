@@ -109,6 +109,9 @@
     <PackageReference Include="SharpCompress">
       <Version>0.28.3</Version>
     </PackageReference>
+    <PackageReference Include="System.Buffers">
+      <Version>4.5.1</Version>
+    </PackageReference>
     <PackageReference Include="System.IO">
       <Version>4.3.0</Version>
     </PackageReference>
