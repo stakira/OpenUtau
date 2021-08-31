@@ -44,8 +44,7 @@ namespace OpenUtau.App {
         }
 
         public void InitializeDocument() {
-            DocManager.Inst.SearchAllSingers();
-            DocManager.Inst.SearchAllPlugins();
+            DocManager.Inst.Initialize();
         }
     }
 }

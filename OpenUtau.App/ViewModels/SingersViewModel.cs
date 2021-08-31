@@ -61,8 +61,6 @@ namespace OpenUtau.App.ViewModels {
             }
         }
 
-
-
         public void OpenLocation() {
             if (Singer != null) {
                 OpenFolder(Singer.Location);

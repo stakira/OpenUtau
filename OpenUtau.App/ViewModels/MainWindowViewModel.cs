@@ -1,20 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using Avalonia;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using ReactiveUI;
 
 namespace OpenUtau.App.ViewModels {
     public class MainWindowViewModel : ViewModelBase {
-        public string AppVersion => $"OpenUtau v{System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version}";
-
-        private TracksViewModel tracksViewModel;
-
-        public MainWindowViewModel() {
-            tracksViewModel = new TracksViewModel();
-        }
-
+        public TracksViewModel TracksViewModel { get; set; }
         UProject Project => DocManager.Inst.Project;
         public int BeatPerBar {
             get => Project.beatPerBar;
@@ -29,6 +21,11 @@ namespace OpenUtau.App.ViewModels {
             set => this.RaiseAndSetIfChanged(ref Project.bpm, value);
         }
         public TimeSpan PlayPosTime => TimeSpan.FromMilliseconds((int)Project.TickToMillisecond(DocManager.Inst.playPosTick));
+        public string AppVersion => $"OpenUtau v{System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version}";
+
+        public MainWindowViewModel() {
+            TracksViewModel = new TracksViewModel();
+        }
 
         public void SeekStart() {
             Stop();
@@ -52,5 +49,8 @@ namespace OpenUtau.App.ViewModels {
         public void Stop() {
             PlaybackManager.Inst.PausePlayback();
         }
+
+        public void OnXZoomed(Point position, double delta) => TracksViewModel.OnXZoomed(position, delta);
+        public void OnYZoomed(Point position, double delta) => TracksViewModel.OnYZoomed(position, delta);
     }
 }

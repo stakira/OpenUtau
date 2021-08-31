@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.VisualTree;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
 
@@ -24,7 +25,6 @@ namespace OpenUtau.App.Views {
         }
 
         void OnMenuSingers(object sender, RoutedEventArgs args) {
-            DocManager.Inst.SearchAllSingers();
             var dialog = new SingersDialog() {
                 DataContext = new SingersViewModel(),
             };
@@ -50,6 +50,18 @@ namespace OpenUtau.App.Views {
                    "dialogs.noresampler.caption",
                    MessageBox.MessageBoxButtons.Ok);
             }
+        }
+
+        public void TimelinePointerWheelChanged(object sender, PointerWheelEventArgs args) {
+            var canvas = (Canvas)sender;
+            var position = args.GetCurrentPoint((IVisual)sender).Position;
+            var size = canvas.Bounds.Size;
+            position = position.WithX(position.X / size.Width).WithY(position.Y / size.Height);
+            (DataContext as MainWindowViewModel)?.OnXZoomed(position, 0.05 * args.Delta.Y);
+        }
+
+        public void ZoomerPointerWheelChanged(object sender, PointerWheelEventArgs args) {
+            (DataContext as MainWindowViewModel)?.OnYZoomed(new Point(0, 0.5), 0.05 * args.Delta.Y);
         }
     }
 }

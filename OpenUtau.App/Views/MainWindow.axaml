@@ -41,7 +41,20 @@
         <MenuItem Header="{Binding AppVersion}"/>
       </MenuItem>
     </Menu>
-    <ScrollBar Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,4,0,4" Orientation="Horizontal" AllowAutoHide="False"/>
+    <ScrollBar Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,4,0,4" Orientation="Horizontal" AllowAutoHide="False"
+               DataContext="{Binding TracksViewModel}"
+               Maximum="{Binding TotalWidth}"
+               Value="{Binding ViewportX}"
+               ViewportSize="{Binding ViewportWidth}"
+               LargeChange="{Binding ViewportWidth}"
+               SmallChange="{Binding SmallChangeX}"/>
+    <ScrollBar Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="4,24,4,0" Orientation="Vertical" AllowAutoHide="False"
+               DataContext="{Binding TracksViewModel}"
+               Maximum="{Binding TotalHeight}"
+               Value="{Binding ViewportY}"
+               ViewportSize="{Binding ViewportHeight}"
+               LargeChange="{Binding ViewportHeight}"
+               SmallChange="{Binding SmallChangeY}"/>
     <Border Grid.Row="0" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0" Background="AliceBlue">
     </Border>
     <Panel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0">
@@ -84,13 +97,15 @@
       <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,24,0,0" Background="Wheat"/>
     </Panel>
     <Panel Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0">
-      <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="24" Background="AliceBlue"/>
-      <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent" BoxShadow="inset 0 0 5 0.75 Gray" ClipToBounds="True">
+      <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="24" Background="AliceBlue"
+              PointerWheelChanged="TimelinePointerWheelChanged"/>
+      <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent"
+              BoxShadow="inset 0 0 5 0.75 Gray" ClipToBounds="True" IsHitTestVisible="False">
       </Border>
     </Panel>
-    <Border Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,0,0,0" Height="24" Background="Wheat">
+    <Border Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,0,0,0" Height="24" Background="Wheat"
+            PointerWheelChanged="ZoomerPointerWheelChanged">
     </Border>
-    <ScrollBar Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="4,24,4,0" Orientation="Vertical" AllowAutoHide="False"/>
     <TextBlock Grid.Row="2" Grid.ColumnSpan="3" VerticalAlignment="Center" HorizontalAlignment="Stretch" Text="Progress"/>
     <ProgressBar Grid.Row="3" Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Value="50"/>
   </Grid>
