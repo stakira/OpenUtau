@@ -1,14 +1,17 @@
 version: 0.0.{build}
 image: Visual Studio 2019
 configuration:
-- Release
+  - Release
 platform: Any CPU
 before_build:
-- cmd: nuget restore
+  - cmd: nuget restore
+after_build:
+  - ps: ./Misc/after_build.ps1
 artifacts:
-- path: OpenUtau\bin\Release
-  name: OpenUtau
-  type: zip
+  - path: OpenUtau\bin\Release
+    name: OpenUtau
+    type: zip
+  - path: release.xml
 deploy:
   release: OpenUtau-Latest
   description: ''
