@@ -5,7 +5,8 @@
     <Style x:Key="TrackHeaderSingerButton" TargetType="Button">
         <Setter Property="IsTabStop" Value="False"/>
         <Setter Property="Focusable" Value="False"/>
-        <Setter Property="Background" Value="White"/>
+        <Setter Property="Foreground" Value="{DynamicResource ForegroundBrushNormal}"/>
+        <Setter Property="Background" Value="{DynamicResource BackgroundBrushNormal}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
@@ -14,7 +15,7 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="LightGray"/>
+                            <Setter Property="Background" Value="{DynamicResource BackgroundBrushActive}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -25,7 +26,8 @@
     <Style x:Key="TrackHeaderSoloToggleButton" TargetType="ToggleButton">
         <Setter Property="IsTabStop" Value="False"/>
         <Setter Property="Focusable" Value="False"/>
-        <Setter Property="Background" Value="White"/>
+        <Setter Property="Foreground" Value="{DynamicResource ForegroundBrushNormal}"/>
+        <Setter Property="Background" Value="{DynamicResource BackgroundBrushNormal}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ToggleButton">
@@ -34,7 +36,7 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="LightGray"/>
+                            <Setter Property="Background" Value="{DynamicResource BackgroundBrushActive}"/>
                         </Trigger>
                         <Trigger Property="IsChecked" Value="True">
                             <Setter Property="Background" Value="DarkCyan"/>
@@ -49,7 +51,8 @@
     <Style x:Key="TrackHeaderMuteToggleButton" TargetType="ToggleButton">
         <Setter Property="IsTabStop" Value="False"/>
         <Setter Property="Focusable" Value="False"/>
-        <Setter Property="Background" Value="White"/>
+        <Setter Property="Foreground" Value="{DynamicResource ForegroundBrushNormal}"/>
+        <Setter Property="Background" Value="{DynamicResource BackgroundBrushNormal}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ToggleButton">
@@ -58,7 +61,7 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="LightGray"/>
+                            <Setter Property="Background" Value="{DynamicResource BackgroundBrushActive}"/>
                         </Trigger>
                         <Trigger Property="IsChecked" Value="True">
                             <Setter Property="Background" Value="OrangeRed"/>
@@ -75,7 +78,7 @@
         <Setter Property="SnapsToDevicePixels" Value="true"/>
         <Setter Property="Width" Value="33"/>
         <Setter Property="Height" Value="9"/>
-        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Foreground" Value="{DynamicResource BackgroundBrushNormal}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Thumb}">
@@ -92,7 +95,7 @@
         <Setter Property="SnapsToDevicePixels" Value="true"/>
         <Setter Property="Width" Value="11"/>
         <Setter Property="Height" Value="9"/>
-        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Foreground" Value="{DynamicResource BackgroundBrushNormal}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Thumb}">

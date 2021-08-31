@@ -5,10 +5,11 @@
     <Style x:Key="{x:Type Menu}" TargetType="Menu">
         <Setter Property="OverridesDefaultStyle" Value="True"/>
         <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Setter Property="Foreground" Value="{DynamicResource ForegroundBrushNormal}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Menu">
-                    <Border Background="White">
+                    <Border Background="{DynamicResource BackgroundBrushNormal}">
                         <StackPanel ClipToBounds="True" Orientation="Horizontal" IsItemsHost="True"/>
                     </Border>
                 </ControlTemplate>
@@ -19,6 +20,7 @@
     <!-- Separator -->
     <Style x:Key="{x:Static MenuItem.SeparatorStyleKey}" TargetType="{x:Type Separator}">
         <Setter Property="OverridesDefaultStyle" Value="true" />
+        <Setter Property="Background" Value="{DynamicResource BackgroundBrushNormal}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Separator">
@@ -32,16 +34,16 @@
                                 <ColumnDefinition Width="13" SharedSizeGroup="MenuMarkColumnGroup"/>
                             </Grid.ColumnDefinitions>
                             <Border Grid.Column="1" Margin="0,2,0,2">
-                                <Rectangle Fill="{StaticResource ScrollBarBrushNormal}" Height="1"/>
+                                <Rectangle Fill="{DynamicResource ScrollBarBrushNormal}" Height="1"/>
                             </Border>
                             <Border Grid.Column="2" Margin="0,2,0,2">
-                                <Rectangle Fill="{StaticResource ScrollBarBrushNormal}" Height="1"/>
+                                <Rectangle Fill="{DynamicResource ScrollBarBrushNormal}" Height="1"/>
                             </Border>
                             <Border Grid.Column="3" Margin="0,2,0,2">
-                                <Rectangle Fill="{StaticResource ScrollBarBrushNormal}" Height="1"/>
+                                <Rectangle Fill="{DynamicResource ScrollBarBrushNormal}" Height="1"/>
                             </Border>
                             <Border Grid.Column="4" Margin="0,2,0,2">
-                                <Rectangle Fill="{StaticResource ScrollBarBrushNormal}" Height="1"/>
+                                <Rectangle Fill="{DynamicResource ScrollBarBrushNormal}" Height="1"/>
                             </Border>
                         </Grid>
                     </Border>
@@ -52,13 +54,13 @@
 
     <!-- TopLevelHeader -->
     <ControlTemplate x:Key="{x:Static MenuItem.TopLevelHeaderTemplateKey}" TargetType="MenuItem">
-        <Border x:Name="Border" SnapsToDevicePixels="True" Background="White">
+        <Border x:Name="Border" SnapsToDevicePixels="True" Background="{DynamicResource BackgroundBrushNormal}">
             <Grid x:Name="Grid">
                 <ContentPresenter Name="HeaderHost" ContentSource="Header" RecognizesAccessKey="True" Margin="{TemplateBinding Padding}" VerticalAlignment="Center"/>
                 <Popup x:Name="SubMenuPopup" Placement="Bottom" Focusable="false"
                        IsOpen="{Binding Path=IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}"
                        PopupAnimation="{DynamicResource {x:Static SystemParameters.MenuPopupAnimationKey}}">
-                    <Border SnapsToDevicePixels="True" BorderThickness="1" BorderBrush="{StaticResource ScrollBarBrushNormal}" Background="White">
+                    <Border SnapsToDevicePixels="True" BorderThickness="1" BorderBrush="{DynamicResource ScrollBarBrushNormal}" Background="{DynamicResource BackgroundBrushNormal}">
                         <StackPanel IsItemsHost="True" Margin="2" KeyboardNavigation.DirectionalNavigation="Cycle"/>
                     </Border>
                 </Popup>
@@ -66,10 +68,10 @@
         </Border>
         <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter TargetName="Border" Property="Background" Value="{StaticResource BackgroundBrushActive}"/>
+                <Setter TargetName="Border" Property="Background" Value="{DynamicResource BackgroundBrushActive}"/>
             </Trigger>
             <Trigger Property="IsSubmenuOpen" Value="True">
-                <Setter TargetName="Border" Property="Background" Value="{StaticResource BackgroundBrushActive}"/>
+                <Setter TargetName="Border" Property="Background" Value="{DynamicResource BackgroundBrushActive}"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
                 <Setter Property="Foreground" Value="Gray"/>
@@ -79,17 +81,17 @@
 
     <!-- TopLevelItem -->
     <ControlTemplate x:Key="{x:Static MenuItem.TopLevelItemTemplateKey}" TargetType="MenuItem">
-        <Border x:Name="Border" SnapsToDevicePixels="True" Background="White">
+        <Border x:Name="Border" SnapsToDevicePixels="True" Background="{DynamicResource BackgroundBrushNormal}">
             <Grid x:Name="Grid">
                 <ContentPresenter Name="HeaderHost" ContentSource="Header" RecognizesAccessKey="True" Margin="{TemplateBinding Padding}" VerticalAlignment="Center"/>
             </Grid>
         </Border>
         <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter TargetName="Border" Property="Background" Value="{StaticResource BackgroundBrushActive}"/>
+                <Setter TargetName="Border" Property="Background" Value="{DynamicResource BackgroundBrushActive}"/>
             </Trigger>
             <Trigger Property="IsSubmenuOpen" Value="True">
-                <Setter TargetName="Border" Property="Background" Value="{StaticResource BackgroundBrushActive}"/>
+                <Setter TargetName="Border" Property="Background" Value="{DynamicResource BackgroundBrushActive}"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
                 <Setter Property="Foreground" Value="Gray"/>
@@ -99,7 +101,7 @@
 
     <!-- SubmenuHeader -->
     <ControlTemplate x:Key="{x:Static MenuItem.SubmenuHeaderTemplateKey}" TargetType="MenuItem">
-        <Border x:Name="Border" SnapsToDevicePixels="True" Background="White">
+        <Border x:Name="Border" SnapsToDevicePixels="True">
             <Grid x:Name="Grid">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="MenuItemIconColumnGroup"/>
@@ -116,7 +118,7 @@
                 <Popup x:Name="SubMenuPopup" Placement="Right" Focusable="false" VerticalOffset="-3"
                        IsOpen="{Binding Path=IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}"
                        PopupAnimation="{DynamicResource {x:Static SystemParameters.MenuPopupAnimationKey}}">
-                    <Border SnapsToDevicePixels="True" BorderThickness="1" BorderBrush="{StaticResource ScrollBarBrushNormal}" Background="White">
+                    <Border SnapsToDevicePixels="True" BorderThickness="1" BorderBrush="{DynamicResource ScrollBarBrushNormal}" Background="{DynamicResource BackgroundBrushNormal}">
                         <StackPanel IsItemsHost="True" Margin="2" KeyboardNavigation.DirectionalNavigation="Cycle"/>
                     </Border>
                 </Popup>
@@ -124,7 +126,7 @@
         </Border>
         <ControlTemplate.Triggers>
             <Trigger Property="IsHighlighted" Value="True">
-                <Setter TargetName="Border" Property="Background" Value="{StaticResource BackgroundBrushActive}"/>
+                <Setter TargetName="Border" Property="Background" Value="{DynamicResource BackgroundBrushActive}"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
                 <Setter Property="Foreground" Value="Gray"/>
@@ -134,7 +136,7 @@
 
     <!-- SubmenuItem -->
     <ControlTemplate x:Key="{x:Static MenuItem.SubmenuItemTemplateKey}" TargetType="MenuItem">
-        <Border x:Name="Border" SnapsToDevicePixels="True" Background="White">
+        <Border x:Name="Border" SnapsToDevicePixels="True">
             <Grid x:Name="Grid">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="MenuItemIconColumnGroup"/>
@@ -150,16 +152,16 @@
         </Border>
         <ControlTemplate.Triggers>
             <Trigger Property="IsHighlighted" Value="True">
-                <Setter TargetName="Border" Property="Background" Value="{StaticResource BackgroundBrushActive}"/>
+                <Setter TargetName="Border" Property="Background" Value="{DynamicResource BackgroundBrushActive}"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
                 <Setter Property="Foreground" Value="Gray"/>
             </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
-    
+
     <PopupAnimation x:Key="{x:Static SystemParameters.MenuPopupAnimationKey}">None</PopupAnimation>
-    
+
     <!--ContextMenu-->
     <Style TargetType="{x:Type ContextMenu}">
         <Setter Property="SnapsToDevicePixels" Value="True" />
@@ -169,7 +171,8 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ContextMenu}">
-                    <Border x:Name="Border" BorderBrush="{StaticResource ScrollBarBrushNormal}" Background="White" BorderThickness="1">
+                    <Border x:Name="Border" BorderBrush="{DynamicResource ScrollBarBrushNormal}" BorderThickness="1"
+                            Background="{DynamicResource BackgroundBrushNormal}">
                         <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle" />
                     </Border>
                     <ControlTemplate.Triggers>

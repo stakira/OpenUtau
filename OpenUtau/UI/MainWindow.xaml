@@ -14,9 +14,15 @@
     <Window.Resources>
         <localvm:TracksViewModel x:Key="tracksVM"/>
         <localvm:ProgressBarViewModel x:Key="progVM"/>
+        <Style TargetType="{x:Type TextBlock}">
+            <Setter Property="Foreground" Value="{DynamicResource ForegroundBrushNormal}"/>
+        </Style>
+        <Style TargetType="{x:Type TextBox}">
+            <Setter Property="Foreground" Value="{DynamicResource ForegroundBrushNormal}"/>
+        </Style>
     </Window.Resources>
     <local:BorderlessWindow.MenuContent>
-        <Menu x:Name="mainMenu" IsMainMenu="True" VerticalAlignment="Top" HorizontalAlignment="Left" Background="White">
+        <Menu x:Name="mainMenu" IsMainMenu="True" VerticalAlignment="Top" HorizontalAlignment="Left">
             <MenuItem Header="{StaticResource menu.file}">
                 <MenuItem Header="{StaticResource menu.file.new}" InputGestureText="Ctrl+N" Click="MenuNew_Click"/>
                 <MenuItem Header="{StaticResource menu.file.open}" InputGestureText="Ctrl+O" Click="MenuOpen_Click"/>

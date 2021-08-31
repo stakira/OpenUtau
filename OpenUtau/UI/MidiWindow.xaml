@@ -13,6 +13,12 @@
     </i:Interaction.Behaviors>
     <Window.Resources>
         <localvm:MidiViewModel x:Key="midiVM"/>
+        <Style TargetType="{x:Type TextBlock}">
+            <Setter Property="Foreground" Value="{DynamicResource ForegroundBrushNormal}"/>
+        </Style>
+        <Style TargetType="{x:Type TextBox}">
+            <Setter Property="Foreground" Value="{DynamicResource ForegroundBrushNormal}"/>
+        </Style>
     </Window.Resources>
     <local:BorderlessWindow.MenuContent>
         <Grid Width="100" Height="20">
@@ -60,7 +66,7 @@
                 <ToggleButton.Content>
                     <Grid Width="18" Height="18">
                         <Path Data="M 4.5 13.5 L 7.5 13.5 L 7.5 9.5 A 1,1 0 1 1 10.5,9.5 L 10.5 13.5 L 13.5 13.5 L 13.5 8.5 A 1,1 0 1 0 4.5,8.5 Z" StrokeThickness="1"
-                              Stroke="{Binding Foreground, ElementName=snapToggle}"/>
+                              Stroke="{Binding ElementName=snapToggle, Path=Foreground}"/>
                     </Grid>
                 </ToggleButton.Content>
             </ToggleButton>
@@ -69,7 +75,8 @@
                           IsChecked="{Binding Tips, Source={StaticResource midiVM}}" ToolTip="Toggle Tips (T)">
                 <ToggleButton.Content>
                     <Grid Width="18" Height="18">
-                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="?" FontWeight="Bold"/>
+                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="?" FontWeight="Bold"
+                                   Foreground="{Binding ElementName=tipsToggle, Path=Foreground}"/>
                     </Grid>
                 </ToggleButton.Content>
             </ToggleButton>
@@ -87,7 +94,7 @@
                     <MenuItem.Header>
                         <Grid>
                             <Ellipse Fill="#61B3F2" Height="21" Width="21"/>
-                            <Path Fill="White" Data="M 8 10 L 13 10 L 10.5 12.5 Z"/>
+                            <Path Fill="{DynamicResource BackgroundBrushNormal}" Data="M 8 10 L 13 10 L 10.5 12.5 Z"/>
                         </Grid>
                     </MenuItem.Header>
                     <MenuItem.ItemContainerStyle>
@@ -133,7 +140,7 @@
                 </Rectangle.Fill>
             </Rectangle>
             <Canvas x:Name="phonemeCanvas" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="48,40,20,0" Height="48"
-                    ClipToBounds="True" SnapsToDevicePixels="True" Background="White" Opacity="0.75"
+                    ClipToBounds="True" SnapsToDevicePixels="True" Background="{DynamicResource BackgroundBrushNormal}" Opacity="0.75"
                     Visibility="{Binding PhonemeVisibility, Source={StaticResource midiVM}}"/>
             <ScrollBar x:Name="horizontalScroll" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="20" Margin="48,0,20,0" Orientation="Horizontal" Minimum="0"
                        Maximum="{Binding TotalWidth, Mode=OneWay, Source={StaticResource midiVM}}"
@@ -195,7 +202,7 @@
                         ClipToBounds="True" MouseLeftButtonDown="keysCanvas_MouseLeftButtonDown" MouseLeftButtonUp="keysCanvas_MouseLeftButtonUp"
                         MouseMove="keysCanvas_MouseMove" MouseWheel="keysCanvas_MouseWheel"/>
             </Grid>
-            <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="10" Margin="0,0,0,0" Background="White" Focusable="False"/>
+            <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="10" Margin="0,0,0,0" Background="{StaticResource BackgroundBrushNormal}" Focusable="False"/>
             <Grid x:Name="expBackgroundGrid" Grid.Row="2" ClipToBounds="True" Margin="48,0,20,1">
                 <local:TickBackground x:Name="expTickBackground" QuarterOffset="{Binding QuarterOffset, Source={StaticResource midiVM}}"
                     QuarterWidth="{Binding QuarterWidth, Source={StaticResource midiVM}}" OffsetX="{Binding OffsetX, Source={StaticResource midiVM}}"

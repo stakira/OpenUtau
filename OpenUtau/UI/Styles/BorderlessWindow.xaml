@@ -5,7 +5,7 @@
                     xmlns:ic="clr-namespace:Microsoft.Expression.Interactivity.Core;assembly=Microsoft.Expression.Interactions"
                     xmlns:il="clr-namespace:Microsoft.Expression.Interactivity.Layout;assembly=Microsoft.Expression.Interactions"
                     xmlns:ib="clr-namespace:OpenUtau.UI.Behaviors">
-    
+
     <ControlTemplate x:Key="BorderlessWindowTemplateKey" TargetType="{x:Type local:BorderlessWindow}">
         <Grid x:Name="PART_WindowBody" Background="{TemplateBinding Background}">
             <Border x:Name="PART_TitleBar" Height="24" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,0,0,0" SnapsToDevicePixels="True" BorderThickness="0" Background="{TemplateBinding Background}">
@@ -35,5 +35,6 @@
         <Setter Property="MinHeight" Value="600"/>
         <Setter Property="ResizeMode" Value="CanResizeWithGrip"/>
         <Setter Property="WindowStyle" Value="None"/>
+        <Setter Property="Background" Value="{DynamicResource BackgroundBrushNormal}"/>
     </Style>
 </ResourceDictionary>

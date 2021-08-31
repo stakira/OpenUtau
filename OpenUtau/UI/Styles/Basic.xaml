@@ -1,0 +1,34 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <SolidColorBrush x:Key="ScrollBarBrushNormal" Color="{StaticResource ScrollBarColorNormal}"/>
+    <SolidColorBrush x:Key="ScrollBarBrushActive" Color="{StaticResource ScrollBarColorActive}"/>
+    <SolidColorBrush x:Key="BackgroundBrushNormal" Color="{StaticResource BackgroundColorNormal}"/>
+    <SolidColorBrush x:Key="BackgroundBrushActive" Color="{StaticResource BackgroundColorActive}"/>
+    <SolidColorBrush x:Key="WindowButtonBrushNormal" Color="{StaticResource WindowButtonColorNormal}"/>
+    <SolidColorBrush x:Key="WindowButtonBrushActive" Color="{StaticResource WindowButtonColorActive}"/>
+    <SolidColorBrush x:Key="ForegroundBrushNormal" Color="{StaticResource ForegroundColorNormal}"/>
+    <SolidColorBrush x:Key="ForegroundBrushActive" Color="{StaticResource ForegroundColorActive}"/>
+
+    <LinearGradientBrush x:Key="BlackKeyBrushNormal" EndPoint="1,0.5" StartPoint="0,0.5">
+        <GradientStop Color="{StaticResource BlackKeyColorNormalLeft}" Offset="0"/>
+        <GradientStop Color="{StaticResource BlackKeyColorNormalRight}" Offset="1"/>
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="BlackKeyNoteBrushNormal" Color="{StaticResource BlackKeyNoteColorNormal}"/>
+
+    <LinearGradientBrush x:Key="WhiteKeyBrushNormal" EndPoint="1,0.5" StartPoint="0,0.5">
+        <GradientStop Color="{StaticResource WhiteKeyColorNormalLeft}" Offset="0"/>
+        <GradientStop Color="{StaticResource WhiteKeyColorNormalRight}" Offset="1"/>
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="WhiteKeyNoteBrushNormal" Color="{StaticResource WhiteKeyNoteColorNormal}"/>
+
+    <LinearGradientBrush x:Key="CenterKeyBrushNormal" EndPoint="1,0.5" StartPoint="0,0.5">
+        <GradientStop Color="{StaticResource CenterKeyColorNormalLeft}" Offset="0"/>
+        <GradientStop Color="{StaticResource CenterKeyColorNormalRight}" Offset="1"/>
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="CenterKeyNoteBrushNormal" Color="{StaticResource CenterKeyNoteColorNormal}"/>
+
+    <SolidColorBrush x:Key="BlackKeyTrackBrushNormal" Color="{StaticResource BlackKeyTrackColorNormal}"/>
+    <SolidColorBrush x:Key="WhiteKeyTrackBrushNormal" Color="{StaticResource WhiteKeyTrackColorNormal}"/>
+
+    <SolidColorBrush x:Key="TimelineBrushNormal" Color="{StaticResource TimelineColorNormal}"/>
+</ResourceDictionary>
