@@ -54,6 +54,15 @@
 
   <!-- Singers -->
   <system:String x:Key="singers.caption">Singers</system:String>
+  <system:String x:Key="singers.location">Location</system:String>
+  <system:String x:Key="oto.alias">Alias</system:String>
+  <system:String x:Key="oto.set">Set</system:String>
+  <system:String x:Key="oto.file">File</system:String>
+  <system:String x:Key="oto.offset">Offset</system:String>
+  <system:String x:Key="oto.consonant">Consonant</system:String>
+  <system:String x:Key="oto.cutoff">Cutoff</system:String>
+  <system:String x:Key="oto.preutter">Preutter</system:String>
+  <system:String x:Key="oto.overlap">Overlap</system:String>
 
   <!-- Dialogs -->
   <system:String x:Key="dialogs.noresampler.caption">No resampler</system:String>

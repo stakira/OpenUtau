@@ -32,7 +32,9 @@ namespace OpenUtau.App.Views {
         }
 
         void OnMenuPreferences(object sender, RoutedEventArgs args) {
-            var dialog = new PreferencesDialog();
+            var dialog = new PreferencesDialog() {
+                DataContext = new PreferencesViewModel(),
+            };
             dialog.ShowDialog(this);
         }
 

@@ -61,7 +61,7 @@
 
   <Style Selector="ProgressBar">
     <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAltHighBrush}"/>
-    <Setter Property="Foreground" Value="BlueViolet"/>
+    <Setter Property="Foreground" Value="{DynamicResource SystemAccentColor}"/>
   </Style>
 
   <Style Selector="Border.playback">

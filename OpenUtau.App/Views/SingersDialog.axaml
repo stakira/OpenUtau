@@ -7,19 +7,6 @@
         mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
         x:Class="OpenUtau.App.Views.SingersDialog"
         Title="{DynamicResource singers.caption}" Width="500" Height="600">
-  <Window.Styles>
-    <Style>
-      <Style.Resources>
-      </Style.Resources>
-    </Style>
-  </Window.Styles>
-  <Window.Resources>
-    <ResourceDictionary>
-      <ResourceDictionary.MergedDictionaries>
-        <ResourceInclude Source='/Strings/Strings.axaml'/>
-      </ResourceDictionary.MergedDictionaries>
-    </ResourceDictionary>
-  </Window.Resources>
   <Design.DataContext>
     <vm:SingersViewModel/>
   </Design.DataContext>
@@ -29,7 +16,7 @@
       <RowDefinition Height="*"/>
     </Grid.RowDefinitions>
     <Image Grid.Row="0" Width="120" Height="120" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0" Source="{Binding Avatar}"/>
-    <Button Grid.Row="0" Margin="10" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="20" Width="120" Content="Location"
+    <Button Grid.Row="0" Margin="10" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="20" Width="120" Content="{DynamicResource singers.location}"
             IsEnabled="{Binding Singer, Converter={x:Static ObjectConverters.IsNotNull}}" Command="{Binding OpenLocation}"/>
     <ComboBox Grid.Row="0" x:Name="name" HorizontalAlignment="Stretch" Margin="140,10,10,10" VerticalAlignment="Top"
               Items="{Binding Singers}" SelectedItem="{Binding Singer}"/>
@@ -38,14 +25,14 @@
     </ScrollViewer>
     <DataGrid Grid.Row="1" Margin="10,0,10,10" Items="{Binding Otos}" IsReadOnly="True">
       <DataGrid.Columns>
-        <DataGridTextColumn Header="Alias" Binding="{Binding Alias}"/>
-        <DataGridTextColumn Header="Set" Binding="{Binding Set}"/>
-        <DataGridTextColumn Header="File" Binding="{Binding DisplayFile}"/>
-        <DataGridTextColumn Header="Offset" Binding="{Binding Offset}"/>
-        <DataGridTextColumn Header="Consonant" Binding="{Binding Consonant}"/>
-        <DataGridTextColumn Header="Cutoff" Binding="{Binding Cutoff}"/>
-        <DataGridTextColumn Header="Preutter" Binding="{Binding Preutter}"/>
-        <DataGridTextColumn Header="Overlap" Binding="{Binding Overlap}"/>
+        <DataGridTextColumn Header="{StaticResource oto.alias}" Binding="{Binding Alias}"/>
+        <DataGridTextColumn Header="{StaticResource oto.set}" Binding="{Binding Set}"/>
+        <DataGridTextColumn Header="{StaticResource oto.file}" Binding="{Binding DisplayFile}"/>
+        <DataGridTextColumn Header="{StaticResource oto.offset}" Binding="{Binding Offset}"/>
+        <DataGridTextColumn Header="{StaticResource oto.consonant}" Binding="{Binding Consonant}"/>
+        <DataGridTextColumn Header="{StaticResource oto.cutoff}" Binding="{Binding Cutoff}"/>
+        <DataGridTextColumn Header="{StaticResource oto.preutter}" Binding="{Binding Preutter}"/>
+        <DataGridTextColumn Header="{StaticResource oto.overlap}" Binding="{Binding Overlap}"/>
       </DataGrid.Columns>
     </DataGrid>
   </Grid>

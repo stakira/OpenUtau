@@ -7,6 +7,7 @@ using Avalonia.Media.Imaging;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using ReactiveUI;
+using Serilog;
 
 namespace OpenUtau.App.ViewModels {
     public class SingersViewModel : ViewModelBase {
@@ -47,11 +48,16 @@ namespace OpenUtau.App.ViewModels {
         }
 
         Bitmap? LoadAvatar(USinger singer) {
-            if (singer.Avatar == null) {
+            if (string.IsNullOrWhiteSpace(singer.Avatar)) {
                 return null;
             }
-            using (var stream = new FileStream(singer.Avatar, FileMode.Open)) {
-                return Bitmap.DecodeToWidth(stream, 120);
+            try {
+                using (var stream = new FileStream(singer.Avatar, FileMode.Open)) {
+                    return Bitmap.DecodeToWidth(stream, 120);
+                }
+            } catch (Exception e) {
+                Log.Error(e, "Failed to load avatar.");
+                return null;
             }
         }
 
