@@ -59,7 +59,7 @@
             </Grid.ColumnDefinitions>
             <Grid x:Name="playbackGrid" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="40">
                 <Grid x:Name="bpmGrid" Height="20" Width="64" HorizontalAlignment="Left" Margin="10,0,0,0">
-                    <Border CornerRadius="4" BorderThickness="1" BorderBrush="LightGray"/>
+                    <Border CornerRadius="4" BorderThickness="1" BorderBrush="{DynamicResource ScrollBarBrushNormal}"/>
                     <TextBlock x:Name="timeSigText" FontFamily="GlobalMonospace.CompositeFont"
                                HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="11" Margin="5,4,39,0"
                                MouseUp="timeSigText_MouseUp" Width="20">
@@ -81,7 +81,7 @@
                     </TextBlock>
                 </Grid>
                 <Grid x:Name="playbackIndicatorGrid" Height="20" Width="64" HorizontalAlignment="Right" Margin="0,0,10,0">
-                    <Border CornerRadius="4" BorderThickness="1" BorderBrush="LightGray"/>
+                    <Border CornerRadius="4" BorderThickness="1" BorderBrush="{DynamicResource ScrollBarBrushNormal}"/>
                     <TextBlock x:Name="playPosTime" FontFamily="GlobalMonospace.CompositeFont"
                                HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="11" Margin="0,1,0,0"
                                Text="{Binding Path=PlayPosTime, Source={StaticResource tracksVM}, StringFormat={}{0:mm\\:ss\\.fff}}"/>
@@ -95,7 +95,7 @@
                             Click="pauseButton_Click" Focusable="False"/>
                     <Button x:Name="seekEndButton" Style="{StaticResource SeekEndButtonStyle}" Margin="64,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"
                             Click="seekEndButton_Click" Focusable="False"/>
-                    <Border CornerRadius="4" BorderThickness="1" BorderBrush="LightGray"/>
+                    <Border CornerRadius="4" BorderThickness="1" BorderBrush="{DynamicResource ScrollBarBrushNormal}"/>
                 </Grid>
             </Grid>
             <Grid x:Name="HeaderGrid" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,40,0,0">
