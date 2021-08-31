@@ -19,6 +19,8 @@ namespace OpenUtau.UI
         public static SolidColorBrush UIBackgroundBrushActive = new SolidColorBrush();
         public static SolidColorBrush UINeutralBrushNormal = new SolidColorBrush();
         public static SolidColorBrush UINeutralBrushActive = new SolidColorBrush();
+        public static SolidColorBrush ForegroundBrushNormal = new SolidColorBrush();
+        public static SolidColorBrush ForegroundBrushActive = new SolidColorBrush();
 
         // Midi editor background
         public static LinearGradientBrush WhiteKeyBrushNormal = new LinearGradientBrush() { StartPoint = new Point(0, 0.5), EndPoint = new Point(1, 0.5) };
@@ -48,6 +50,7 @@ namespace OpenUtau.UI
         public static List<SolidColorBrush> NoteStrokeBrushes = new List<SolidColorBrush>();
         public static List<SolidColorBrush> NoteFillErrorBrushes = new List<SolidColorBrush>();
 
+        public static SolidColorBrush PitchBrush = new SolidColorBrush();
         public static SolidColorBrush VibratoBrush = new SolidColorBrush();
 
         public static bool LoadTheme(){
@@ -70,6 +73,8 @@ namespace OpenUtau.UI
             UIBackgroundBrushActive.Color = GetColor("UIBackgroundColorActive");
             UINeutralBrushNormal.Color = GetColor("UINeutralColorNormal");
             UINeutralBrushActive.Color = GetColor("UINeutralColorActive");
+            ForegroundBrushNormal.Color = GetColor("ForegroundColorNormal");
+            ForegroundBrushActive.Color = GetColor("ForegroundColorActive");
 
             TrackBackgroundBrush.Color = GetColor("TrackBackgroundColor");
             TrackBackgroundBrushAlt.Color = GetColor("TrackBackgroundColorAlt");
@@ -98,6 +103,7 @@ namespace OpenUtau.UI
                 NoteStrokeBrushes[i].Color = GetColor("NoteStrokeColorCh" + i);
             }
 
+            PitchBrush.Color = GetColor("PitchBrushColor");
             VibratoBrush.Color = GetColor("VibratoBrushColor");
 
             return true;

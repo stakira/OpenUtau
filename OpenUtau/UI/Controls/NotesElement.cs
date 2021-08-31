@@ -47,7 +47,7 @@ namespace OpenUtau.UI.Controls {
                        System.Threading.Thread.CurrentThread.CurrentUICulture,
                        FlowDirection.LeftToRight,
                        SystemFonts.CaptionFontFamily.GetTypefaces().First(),
-                       12, white ? Brushes.White : Brushes.Black, 1);
+                       12, white ? Brushes.White : ThemeManager.ForegroundBrushNormal, 1);
                 fTextItem = new FormattedTextItem {
                     fText = fText,
                     width = fText.Width,
@@ -63,7 +63,7 @@ namespace OpenUtau.UI.Controls {
         private readonly Geometry vibratoIcon = Geometry.Parse("M-6.5 1 L-6 1.5 L-4.5 0 L-2 2.5 L0.5 0 L3 2.5 L6.5 -1 L6 -1.5 L4.5 0 L2 -2.5 L-0.5 0 L-3 -2.5 Z");
 
         public NotesElement() {
-            penPit = new Pen(ThemeManager.WhiteKeyNameBrushNormal, 1);
+            penPit = new Pen(ThemeManager.PitchBrush, 1);
             penPit.Freeze();
             penVbr = new Pen(ThemeManager.VibratoBrush, 1);
             penVbr.Freeze();

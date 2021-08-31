@@ -21,13 +21,14 @@
                         <TextBlock TextWrapping="Wrap" Margin="10" Text="{StaticResource prefs.rendering.resampler.note}"/>
                     </StackPanel>
                 </GroupBox>
-                <GroupBox Header="{StaticResource prefs.appearance}" Margin="5" Visibility="Collapsed">
+                <GroupBox Header="{StaticResource prefs.appearance}" Margin="5">
                     <StackPanel>
-                        <Label Content="Theme" Margin="4,0"/>
-                        <ComboBox Margin="10,0,10,10">
-                            <ComboBoxItem Content="Clean" IsSelected="True"/>
-                            <ComboBoxItem Content="Dark"/>
+                        <Label Content="{StaticResource prefs.appearance.theme}" Margin="4,0"/>
+                        <ComboBox x:Name="themeCombo" Margin="10,0" SelectionChanged="themeCombo_SelectionChanged">
+                            <ComboBoxItem Content="{StaticResource prefs.appearance.theme.light}"/>
+                            <ComboBoxItem Content="{StaticResource prefs.appearance.theme.dark}"/>
                         </ComboBox>
+                        <TextBlock TextWrapping="Wrap" Margin="10" Text="{StaticResource prefs.appearance.theme.note}"/>
                     </StackPanel>
                 </GroupBox>
                 <GroupBox Header="{StaticResource prefs.paths.singer}" Margin="5" Visibility="Collapsed">

@@ -53,6 +53,9 @@
     </system:String>
     <system:String x:Key="prefs.appearance">Appearance</system:String>
     <system:String x:Key="prefs.appearance.theme">Theme</system:String>
+    <system:String x:Key="prefs.appearance.theme.light">Light</system:String>
+    <system:String x:Key="prefs.appearance.theme.dark">Dark</system:String>
+    <system:String x:Key="prefs.appearance.theme.note">Note: please restart OpenUtau after changing theme.</system:String>
 
     <!-- Dialogs -->
     <system:String x:Key="dialogs.noresampler.caption">No resampler</system:String>

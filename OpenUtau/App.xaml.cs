@@ -16,6 +16,7 @@ namespace OpenUtau {
         private App() {
             InitializeComponent();
             InitializeCulture();
+            InitializeTheme();
         }
 
         public static void InitializeCulture() {
@@ -31,6 +32,20 @@ namespace OpenUtau {
             // Force using InvariantCulture to prevent issues caused by culture dependent string conversion, especially for floating point numbers.
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
+        }
+
+        public static void InitializeTheme() {
+            var light = Current.Resources.MergedDictionaries
+                .FirstOrDefault(d => d.Source.OriginalString == @"UI\Colors\LightTheme.xaml");
+            var dark = Current.Resources.MergedDictionaries
+                .FirstOrDefault(d => d.Source.OriginalString == @"UI\Colors\DarkTheme.xaml");
+            Current.Resources.MergedDictionaries.Remove(light);
+            Current.Resources.MergedDictionaries.Remove(dark);
+            if (Core.Util.Preferences.Default.theme == 0) {
+                Current.Resources.MergedDictionaries.Add(light);
+            } else {
+                Current.Resources.MergedDictionaries.Add(dark);
+            }
         }
 
         [STAThread]

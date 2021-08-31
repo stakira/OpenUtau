@@ -26,6 +26,7 @@ namespace OpenUtau.UI.Dialogs {
             playbackDevices = PlaybackManager.Inst.GetOutputDevices();
             playbackDeviceCombo.ItemsSource = playbackDevices;
             playbackDeviceCombo.SelectedIndex = PlaybackManager.Inst.PlaybackDeviceNumber;
+            themeCombo.SelectedIndex = Core.Util.Preferences.Default.theme % 2;
         }
 
         private Grid SelectedGrid {
@@ -119,5 +120,10 @@ namespace OpenUtau.UI.Dialogs {
         }
 
         #endregion
+
+        private void themeCombo_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            Core.Util.Preferences.Default.theme = themeCombo.SelectedIndex % 2;
+            Core.Util.Preferences.Save();
+        }
     }
 }

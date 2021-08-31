@@ -54,6 +54,7 @@ namespace OpenUtau.Core.Util {
             public string PlaybackDevice = string.Empty;
             public int PlaybackDeviceNumber;
             public bool ShowTips = true;
+            public int theme;
         }
     }
 }

@@ -52,6 +52,9 @@
     </system:String>
     <system:String x:Key="prefs.appearance">外观</system:String>
     <system:String x:Key="prefs.appearance.theme">主题</system:String>
+    <system:String x:Key="prefs.appearance.theme.light">亮</system:String>
+    <system:String x:Key="prefs.appearance.theme.dark">暗</system:String>
+    <system:String x:Key="prefs.appearance.theme.note">注意: 切换主题后请重启OpenUtau</system:String>
 
     <!-- Dialogs -->
     <system:String x:Key="dialogs.noresampler.caption">无重采样器</system:String>
