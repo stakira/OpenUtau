@@ -7,6 +7,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using Microsoft.Win32;
 
+using AutoUpdaterDotNET;
 using OpenUtau.UI.Models;
 using OpenUtau.UI.Controls;
 using OpenUtau.Core;
@@ -51,6 +52,7 @@ namespace OpenUtau.UI {
             DocManager.Inst.AddSubscriber(trackVM);
 
             CmdNewFile();
+            AutoUpdater.Start("https://github.com/stakira/OpenUtau/releases/download/OpenUtau-Latest/release.xml");
 
             initialized = true;
         }
