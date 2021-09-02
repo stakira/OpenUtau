@@ -171,6 +171,7 @@ namespace OpenUtau.UI.Models {
                 foreach (TrackHeader trackHeader in TrackHeaders) {
                     Canvas.SetTop(trackHeader, -OffsetY + TrackHeight * trackHeader.Track.TrackNo);
                     trackHeader.Height = TrackHeight;
+                    trackHeader.UpdateTrackNo();
                 }
                 UpdatePlayPosMarker();
             }
@@ -374,8 +375,15 @@ namespace OpenUtau.UI.Models {
                     if (!isUndo) OnTrackRemoved(_cmd.track, ((RemoveTrackCommand)_cmd).removedParts);
                     else OnTrackAdded(_cmd.track, ((RemoveTrackCommand)_cmd).removedParts);
                 } else if (_cmd is TrackChangeSingerCommand) {
-                    foreach (var trackHeader in TrackHeaders) trackHeader.UpdateSingerName();
+                    foreach (var trackHeader in TrackHeaders) {
+                        trackHeader.UpdateSingerName();
+                    }
+                } else if (_cmd is TrackChangePhonemizerCommand) {
+                    foreach (var trackHeader in TrackHeaders) {
+                        trackHeader.UpdatePhonemizerName();
+                    }
                 }
+                MarkUpdate();
             } else if (cmd is BpmCommand) {
                 OnPropertyChanged(nameof(BPM));
             } else if (cmd is TimeSignatureCommand) {

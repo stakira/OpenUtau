@@ -21,7 +21,7 @@ namespace OpenUtau.Core {
         public abstract void SetSinger(Ustx.USinger singer);
         public abstract Phoneme[] Process(Note note, Note? prev, Note? next);
 
-        public override string ToString() => Name;
+        public override string ToString() => $"[{Tag}] {Name}";
 
         public static IList<string> ToUnicodeElements(string lyric) {
             var result = new List<string>();

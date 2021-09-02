@@ -19,7 +19,8 @@ namespace OpenUtau.Core.Ustx {
             }
         }
 
-        public Phonemizer Phonemizer = new DefaultPhonemizer();
+        public Phonemizer Phonemizer { get; set; } = new DefaultPhonemizer();
+        public string PhonemizerTag => Phonemizer.Tag;
 
         public string SingerName => Singer != null ? Singer.DisplayName : "[No Singer]";
         public int TrackNo { set; get; }

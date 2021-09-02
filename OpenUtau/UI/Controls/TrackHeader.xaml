@@ -9,17 +9,20 @@
     <UserControl.Resources>
         <localvm:FaderValueConverter x:Key="FaderValueConverter" />
     </UserControl.Resources>
-    <Grid Background="Transparent" MouseDown="Grid_MouseDown">
+    <Grid Background="Transparent">
         <Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="1" Stroke="{DynamicResource ScrollBarBrushNormal}"/>
         <Rectangle HorizontalAlignment="Left" VerticalAlignment="Top" Margin="4" Width="20" Height="16" Fill="{DynamicResource ScrollBarBrushNormal}"/>
-        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Top" Width="20" Height="16" Margin="4,6,0,0" TextAlignment="Center"
+        <TextBlock x:Name="trackNoText" HorizontalAlignment="Left" VerticalAlignment="Top" Width="20" Height="16" Margin="4,6,0,0" TextAlignment="Center"
                    FontWeight="Bold" FontFamily="Arial" FontSize="11" Foreground="White"
                    Text="{Binding Path=DisplayTrackNo}"/>
         <Button x:Name="singerNameButton" Style="{StaticResource TrackHeaderSingerButton}" HorizontalAlignment="Stretch" VerticalAlignment="Top"
-                Height="16" Margin="28,4,44,0" HorizontalContentAlignment="Left"
+                Height="16" Margin="28,4,22,0" HorizontalContentAlignment="Left"
                 Content="{Binding Path=SingerName}" Click="singerNameButton_Click"/>
+        <Button x:Name="phonemizerButton"  Style="{StaticResource TrackHeaderSingerButton}" HorizontalAlignment="Stretch" VerticalAlignment="Top"
+                Height="16" Margin="28,22,22,0" HorizontalContentAlignment="Left"
+                Content="{Binding PhonemizerTag}" Click="phonemizerButton_Click"/>
         <ToggleButton Style="{StaticResource TrackHeaderSoloToggleButton}" HorizontalAlignment="Right" VerticalAlignment="Top"
-                      Height="16" Width="16" Margin="0,4,4,0" Content="S" FontFamily="Arial" FontSize="11"
+                      Height="16" Width="16" Margin="0,22,4,0" Content="S" FontFamily="Arial" FontSize="11"
                       IsChecked="{Binding Path=Solo}">
             <ToggleButton.ContextMenu>
                 <ContextMenu Foreground="Black" FontSize="12">
@@ -29,7 +32,7 @@
             </ToggleButton.ContextMenu>
         </ToggleButton>
         <ToggleButton Style="{StaticResource TrackHeaderMuteToggleButton}" HorizontalAlignment="Right" VerticalAlignment="Top"
-                      Height="16" Width="16" Margin="0,4,24,0" Content="M" FontFamily="Arial" FontSize="11"
+                      Height="16" Width="16" Margin="0,4,4,0" Content="M" FontFamily="Arial" FontSize="11"
                       IsChecked="{Binding Path=Mute}">
             <ToggleButton.ContextMenu>
                 <ContextMenu Foreground="Black" FontSize="12">
@@ -39,18 +42,25 @@
             </ToggleButton.ContextMenu>
         </ToggleButton>
         <Slider x:Name="faderSlider" Style="{StaticResource TrackHeaderFader}" HorizontalAlignment="Stretch" VerticalAlignment="Top"
-                Height="16" Margin="4,21,92,0" Maximum="6" Minimum="-24"
+                Height="16" Margin="4,38,92,0" Maximum="6" Minimum="-24"
                 Value="{Binding Path=Volume}"
                 PreviewMouseDown="faderSlider_PreviewMouseDown" PreviewMouseUp="faderSlider_PreviewMouseUp"
                 PreviewMouseMove="faderSlider_PreviewMouseMove" MouseWheel="faderSlider_MouseWheel" ValueChanged="faderSlider_ValueChanged"/>
         <Slider x:Name="panSlider" Style="{StaticResource TrackHeaderPan}" HorizontalAlignment="Stretch" VerticalAlignment="Top"
-                Height="16" Margin="170,21,54,0" Maximum="90" Minimum="-90"
+                Height="16" Margin="170,38,54,0" Maximum="90" Minimum="-90"
                 Value="{Binding Path=Pan}"
                 PreviewMouseDown="faderSlider_PreviewMouseDown" PreviewMouseUp="faderSlider_PreviewMouseUp"
                 PreviewMouseMove="faderSlider_PreviewMouseMove" MouseWheel="faderSlider_MouseWheel"/>
-        <TextBlock HorizontalAlignment="Right" VerticalAlignment="Top" Height="16" Width="30" Margin="0,22,25,0" TextAlignment="Right" FontSize="10"
+        <TextBlock HorizontalAlignment="Right" VerticalAlignment="Top" Height="16" Width="30" Margin="0,39,25,0" TextAlignment="Right" FontSize="10"
                    Text="{Binding ElementName=faderSlider, Path=Value, Converter={StaticResource FaderValueConverter}}"/>
-        <TextBlock HorizontalAlignment="Right" VerticalAlignment="Top" Height="16" Width="30" Margin="0,22,4,0" TextAlignment="Right" FontSize="10"
+        <TextBlock HorizontalAlignment="Right" VerticalAlignment="Top" Height="16" Width="30" Margin="0,39,4,0" TextAlignment="Right" FontSize="10"
                    Text="{Binding ElementName=panSlider, Path=Value, StringFormat={}{0:+00.;-00.}}"/>
+        <Grid.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="{StaticResource tracks.remove}" Click="RemoveTrackClicked"/>
+                <MenuItem Header="{StaticResource tracks.moveup}" Click="MoveUpClicked"/>
+                <MenuItem Header="{StaticResource tracks.movedown}" Click="MoveDownClicked"/>
+            </ContextMenu>
+        </Grid.ContextMenu>
     </Grid>
 </UserControl>

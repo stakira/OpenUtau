@@ -32,7 +32,6 @@ namespace OpenUtau.UI.Models {
         UVoicePart _part;
         public UVoicePart Part { get { return _part; } }
         public Classic.Plugin[] Plugins => DocManager.Inst.Plugins;
-        public Phonemizer[] Phonemizers => DocManager.Inst.Phonemizers;
 
         public Canvas TimelineCanvas;
         public Canvas MidiCanvas;
@@ -514,22 +513,6 @@ namespace OpenUtau.UI.Models {
             DocManager.Inst.EndUndoGroup();
         }
 
-        private ICommand phonemizerCommand;
-        public ICommand PhonemizerCommand => phonemizerCommand ?? (phonemizerCommand = new RelayCommand<object>(OnPhonemizerSelected));
-        void OnPhonemizerSelected(object obj) {
-            var phonemizer = (Phonemizer)obj;
-            phonemizer = Activator.CreateInstance(phonemizer.GetType()) as Phonemizer;
-            if (phonemizer != null) {
-                var project = DocManager.Inst.Project;
-                DocManager.Inst.StartUndoGroup();
-                DocManager.Inst.ExecuteCmd(new TrackChangePhonemizerCommand(project, project.tracks[Part.trackNo], phonemizer));
-                DocManager.Inst.EndUndoGroup();
-                notesElement.MarkUpdate();
-                phonemesElement.MarkUpdate();
-                MarkUpdate();
-            }
-        }
-
         # region ICmdSubscriber
 
         public void OnNext(UCommand cmd, bool isUndo) {
@@ -564,6 +547,13 @@ namespace OpenUtau.UI.Models {
                 phonemesElement.MarkUpdate();
                 visibleExpElement.MarkUpdate();
                 shadowExpElement.MarkUpdate();
+            } else if (cmd is TrackCommand tcmd) {
+                if (tcmd.track.TrackNo == Part.trackNo) {
+                    notesElement.MarkUpdate();
+                    phonemesElement.MarkUpdate();
+                    visibleExpElement.MarkUpdate();
+                    shadowExpElement.MarkUpdate();
+                }
             } else if (cmd is ExpCommand) {
                 var _cmd = cmd as ExpCommand;
                 if (_cmd is SetUExpressionCommand) {

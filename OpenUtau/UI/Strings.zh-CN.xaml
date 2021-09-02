@@ -66,6 +66,11 @@
     <system:String x:Key="dialogs.export.caption">导出</system:String>
     <system:String x:Key="dialogs.export.savefirst">请先保存工程文件</system:String>
 
+    <!-- Tracks -->
+    <system:String x:Key="tracks.remove">移除</system:String>
+    <system:String x:Key="tracks.moveup">上移</system:String>
+    <system:String x:Key="tracks.movedown">下移</system:String>
+
     <!-- Errors -->
     <system:String x:Key="errors.caption">错误</system:String>
 

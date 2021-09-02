@@ -27,7 +27,7 @@ namespace OpenUtau.Core {
         private Ustx.USinger singer;
 
         public override string Name => "Japanese VCV Phonemizer";
-        public override string Tag => "ja-JP VCV";
+        public override string Tag => "JP VCV";
         public override void SetSinger(Ustx.USinger singer) => this.singer = singer;
         public override Phoneme[] Process(Note note, Note? prev, Note? next) {
             var phoneme = $"- {note.lyric}";
