@@ -31,4 +31,9 @@
     <SolidColorBrush x:Key="WhiteKeyTrackBrushNormal" Color="{StaticResource WhiteKeyTrackColorNormal}"/>
 
     <SolidColorBrush x:Key="TimelineBrushNormal" Color="{StaticResource TimelineColorNormal}"/>
+
+    <SolidColorBrush x:Key="NoteFillBrushCh0" Color="{StaticResource NoteFillColorCh0}"/>
+    <SolidColorBrush x:Key="NoteFillBrushCh1" Color="{StaticResource NoteFillColorCh1}"/>
+    <SolidColorBrush x:Key="NoteFillBrushCh2" Color="{StaticResource NoteFillColorCh2}"/>
+    <SolidColorBrush x:Key="NoteFillBrushCh3" Color="{StaticResource NoteFillColorCh3}"/>
 </ResourceDictionary>

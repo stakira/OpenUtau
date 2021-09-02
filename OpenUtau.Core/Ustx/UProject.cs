@@ -41,7 +41,7 @@ namespace OpenUtau.Core.Ustx {
 
         public UNote CreateNote(int noteNum, int posTick, int durTick) {
             var note = CreateNote();
-            note.noteNum = noteNum;
+            note.tone = noteNum;
             note.position = posTick;
             note.duration = durTick;
             note.pitch.data[1].X = (float)Math.Min(25, DocManager.Inst.Project.TickToMillisecond(note.duration) / 2);

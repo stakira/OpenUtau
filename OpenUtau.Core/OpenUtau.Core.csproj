@@ -43,8 +43,11 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Classes\DocManager.cs" />
-    <Compile Include="Classes\PlaybackManager.cs" />
+    <Compile Include="DocManager.cs" />
+    <Compile Include="Phonetic\BasicJapaneseVCVPhonemizer.cs" />
+    <Compile Include="Phonetic\DefaultPhonemizer.cs" />
+    <Compile Include="Phonetic\Phonemizer.cs" />
+    <Compile Include="PlaybackManager.cs" />
     <Compile Include="Classic\Plugin.cs" />
     <Compile Include="Classic\PluginLoader.cs" />
     <Compile Include="Classic\VoiceBank.cs" />

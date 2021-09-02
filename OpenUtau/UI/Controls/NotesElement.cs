@@ -122,10 +122,10 @@ namespace OpenUtau.UI.Controls {
         }
 
         private void DrawNoteBody(UNote note, DrawingContext cxt) {
-            Point leftTop = PosToPoint(new Vector2(note.position, note.noteNum));
+            Point leftTop = PosToPoint(new Vector2(note.position, note.tone));
             leftTop.X += 1;
             leftTop.Y += 1;
-            Point rightBottom = PosToPoint(new Vector2(note.position + note.duration, note.noteNum - 1));
+            Point rightBottom = PosToPoint(new Vector2(note.position + note.duration, note.tone - 1));
             rightBottom.Y -= 1;
             Size size = new Size(Math.Max(1, rightBottom.X - leftTop.X), Math.Max(1, rightBottom.Y - leftTop.Y));
             cxt.DrawRoundedRectangle(GetNoteBrush(note), null, new Rect(leftTop, rightBottom), 2, 2);
@@ -168,7 +168,7 @@ namespace OpenUtau.UI.Controls {
 
             double pt0Tick = note.position + MusicMath.MillisecondToTick(_pts[0].X, DocManager.Inst.Project.bpm, DocManager.Inst.Project.beatUnit, DocManager.Inst.Project.resolution);
             double pt0X = midiVM.QuarterWidth * pt0Tick / DocManager.Inst.Project.resolution;
-            double pt0Pit = note.noteNum + _pts[0].Y / 10.0;
+            double pt0Pit = note.tone + _pts[0].Y / 10.0;
             double pt0Y = TrackHeight * (UIConstants.MaxNoteNum - 1.0 - pt0Pit) + TrackHeight / 2;
 
             cxt.DrawEllipse(note.pitch.snapFirst ? penPit.Brush : null, penPit, new Point(pt0X, pt0Y), 2.5, 2.5);
@@ -176,7 +176,7 @@ namespace OpenUtau.UI.Controls {
             for (int i = 1; i < _pts.Count; i++) {
                 double pt1Tick = note.position + MusicMath.MillisecondToTick(_pts[i].X, DocManager.Inst.Project.bpm, DocManager.Inst.Project.beatUnit, DocManager.Inst.Project.resolution);
                 double pt1X = midiVM.QuarterWidth * pt1Tick / DocManager.Inst.Project.resolution;
-                double pt1Pit = note.noteNum + _pts[i].Y / 10.0;
+                double pt1Pit = note.tone + _pts[i].Y / 10.0;
                 double pt1Y = TrackHeight * (UIConstants.MaxNoteNum - 1.0 - pt1Pit) + TrackHeight / 2;
 
                 // Draw arc

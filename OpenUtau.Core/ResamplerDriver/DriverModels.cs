@@ -153,7 +153,7 @@ namespace OpenUtau.Core.ResamplerDriver
             EngineInput Ret = new EngineInput
             {
                 inputWaveFile = renderItem.SourceTemp,
-                NoteString = MusicMath.GetNoteString(renderItem.NoteNum),
+                NoteString = MusicMath.GetToneName(renderItem.NoteNum),
                 Velocity = renderItem.Velocity,
                 StrFlags = renderItem.StrFlags,
                 Offset = renderItem.Oto.Offset,

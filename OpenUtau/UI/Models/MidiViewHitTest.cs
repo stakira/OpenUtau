@@ -50,7 +50,7 @@ namespace OpenUtau.UI.Models {
                     result.note = note;
                     result.hitX = true;
                     var noteNum = midiVM.CanvasToNoteNum(mousePos.Y);
-                    if (noteNum == note.noteNum) {
+                    if (noteNum == note.tone) {
                         result.hitBody = true;
                         double x = midiVM.QuarterToCanvas((double)note.End / Project.resolution);
                         result.hitResizeArea = mousePos.X <= x && mousePos.X > x - UIConstants.ResizeMargin;
@@ -70,7 +70,7 @@ namespace OpenUtau.UI.Models {
                     for (int i = 0; i < note.pitch.data.Count; i++) {
                         var pit = note.pitch.data[i];
                         int posTick = note.position + Project.MillisecondToTick(pit.X);
-                        double noteNum = note.noteNum + pit.Y / 10;
+                        double noteNum = note.tone + pit.Y / 10;
                         double x = midiVM.TickToCanvas(posTick);
                         double y = midiVM.NoteNumToCanvas(noteNum) + midiVM.TrackHeight / 2;
                         if (Math.Abs(mousePos.X - x) < 4 && Math.Abs(mousePos.Y - y) < 4)
@@ -87,7 +87,7 @@ namespace OpenUtau.UI.Models {
                             double dis = double.IsNaN(castX) ? Math.Abs(castY) : Math.Cos(Math.Atan2(Math.Abs(castY), Math.Abs(castX))) * Math.Abs(castY);
                             if (dis < 3) {
                                 double msX = DocManager.Inst.Project.TickToMillisecond(midiVM.CanvasToQuarter(mousePos.X) * DocManager.Inst.Project.resolution - note.position);
-                                double msY = (midiVM.CanvasToPitch(mousePos.Y) - note.noteNum) * 10;
+                                double msY = (midiVM.CanvasToPitch(mousePos.Y) - note.tone) * 10;
                                 return new PitchPointHitInfo() { Note = note, Index = i - 1, OnPoint = false, X = (float)msX, Y = (float)msY };
                             } else break;
                         }

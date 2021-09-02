@@ -59,8 +59,7 @@ namespace OpenUtau {
             NBug.Settings.StoragePath = NBug.Enums.StoragePath.CurrentDirectory;
             NBug.Settings.UIMode = NBug.Enums.UIMode.Full;
 
-            Core.DocManager.Inst.SearchAllSingers();
-            Core.DocManager.Inst.SearchAllPlugins();
+            Core.DocManager.Inst.Initialize();
 
             var app = new App();
             if (!Debugger.IsAttached) {

@@ -10,7 +10,7 @@ namespace OpenUtau.Core.Ustx {
     public class UNote : IComparable {
         [JsonProperty("pos")] public int position;
         [JsonProperty("dur")] public int duration;
-        [JsonProperty("num")] public int noteNum;
+        [JsonProperty("num")] public int tone;
         [JsonProperty("lrc")] public string lyric = "a";
         [JsonProperty("pho")] public List<UPhoneme> phonemes = new List<UPhoneme>();
         [JsonProperty("pit")] public UPitch pitch;
@@ -25,10 +25,6 @@ namespace OpenUtau.Core.Ustx {
 
         public static UNote Create() {
             var note = new UNote();
-            note.phonemes.Add(new UPhoneme() {
-                Parent = note,
-                position = 0,
-            });
             note.pitch = new UPitch();
             note.vibrato = new UVibrato();
             return note;
@@ -58,7 +54,7 @@ namespace OpenUtau.Core.Ustx {
         }
 
         public override string ToString() {
-            return $"\"{lyric}\" Pos:{position} Dur:{duration} Note:{noteNum}{(Error ? " Error" : string.Empty)}{(Selected ? " Selected" : string.Empty)}";
+            return $"\"{lyric}\" Pos:{position} Dur:{duration} Note:{tone}{(Error ? " Error" : string.Empty)}{(Selected ? " Selected" : string.Empty)}";
         }
 
         public void AfterLoad(UProject project, UTrack track, UVoicePart part) {
@@ -91,7 +87,7 @@ namespace OpenUtau.Core.Ustx {
             Error = false;
             if (pitch.snapFirst) {
                 if (Prev != null && Prev.End == position) {
-                    pitch.data[0].Y = (Prev.noteNum - noteNum) * 10;
+                    pitch.data[0].Y = (Prev.tone - tone) * 10;
                 } else {
                     pitch.data[0].Y = 0;
                 }
@@ -105,11 +101,51 @@ namespace OpenUtau.Core.Ustx {
             }
         }
 
+        public void Phonemize(UTrack track) {
+            if (track.Singer == null || !track.Singer.Loaded) {
+                return;
+            }
+            var newPhonemes = track.Phonemizer.Process(
+                ToProcessorNote(),
+                Prev?.ToProcessorNote(),
+                Next?.ToProcessorNote());
+            while (phonemes.Count < newPhonemes.Length) {
+                phonemes.Add(new UPhoneme());
+            }
+            while (phonemes.Count > newPhonemes.Length) {
+                phonemes.RemoveAt(phonemes.Count - 1);
+            }
+            for (var i = 0; i < newPhonemes.Length; i++) {
+                newPhonemes[i].duration = Math.Max(10, newPhonemes[i].duration);
+            }
+            int totalDurtaion = newPhonemes.Sum(p => p.duration);
+            if (totalDurtaion > duration) {
+                for (var i = 0; i < newPhonemes.Length; i++) {
+                    newPhonemes[i].duration = (int)(1.0 * duration / totalDurtaion * newPhonemes[i].duration);
+                }
+            }
+            int position = 0;
+            for (var i = 0; i < phonemes.Count; i++) {
+                phonemes[i].phoneme = newPhonemes[i].phoneme;
+                phonemes[i].position = position;
+                position += newPhonemes[i].duration;
+            }
+        }
+
+        private Phonemizer.Note ToProcessorNote() {
+            return new Phonemizer.Note() {
+                lyric = lyric,
+                tone = tone,
+                position = position,
+                duration = duration,
+            };
+        }
+
         public UNote Clone() {
             return new UNote() {
                 position = position,
                 duration = duration,
-                noteNum = noteNum,
+                tone = tone,
                 lyric = lyric,
                 phonemes = phonemes.Select(phoneme => phoneme.Clone()).ToList(),
                 pitch = pitch.Clone(),
@@ -197,35 +233,35 @@ namespace OpenUtau.Core.Ustx {
             } else if (nPos > nOutPos) {
                 y *= (1f - nPos) / nOut;
             }
-            return new Vector2(note.position + note.duration * nPos, note.noteNum - 0.5f + y / 100f);
+            return new Vector2(note.position + note.duration * nPos, note.tone - 0.5f + y / 100f);
         }
 
         public Vector2 GetEnvelopeStart(UNote note) {
             return new Vector2(
                 note.position + note.duration * NormalizedStart,
-                note.noteNum - 3f);
+                note.tone - 3f);
         }
 
         public Vector2 GetEnvelopeFadeIn(UNote note) {
             return new Vector2(
                 note.position + note.duration * (NormalizedStart + length / 100f * @in / 100f),
-                note.noteNum - 3f + depth / 50f);
+                note.tone - 3f + depth / 50f);
         }
 
         public Vector2 GetEnvelopeFadeOut(UNote note) {
             return new Vector2(
                 note.position + note.duration * (1f - length / 100f * @out / 100f),
-                note.noteNum - 3f + depth / 50f);
+                note.tone - 3f + depth / 50f);
         }
 
         public Vector2 GetEnvelopeEnd(UNote note) {
             return new Vector2(
                 note.position + note.duration,
-                note.noteNum - 3f);
+                note.tone - 3f);
         }
 
         public Vector2 GetToggle(UNote note) {
-            return new Vector2(note.position + note.duration, note.noteNum - 1.5f);
+            return new Vector2(note.position + note.duration, note.tone - 1.5f);
         }
 
         public void GetPeriodStartEnd(UNote note, UProject project, out Vector2 start, out Vector2 end) {
@@ -233,14 +269,14 @@ namespace OpenUtau.Core.Ustx {
             float shiftTick = periodTick * shift / 100f;
             start = new Vector2(
                 note.position + note.duration * NormalizedStart + shiftTick,
-                note.noteNum - 3.5f);
+                note.tone - 3.5f);
             end = new Vector2(
                 note.position + note.duration * NormalizedStart + shiftTick + periodTick,
-                note.noteNum - 3.5f);
+                note.tone - 3.5f);
         }
 
         public float ToneToDepth(UNote note, float tone) {
-            return (tone - (note.noteNum - 3f)) * 50f;
+            return (tone - (note.tone - 3f)) * 50f;
         }
     }
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
+using Serilog;
 
 namespace OpenUtau.Core.Ustx {
     [JsonObject(MemberSerialization.OptIn)]
@@ -44,13 +45,19 @@ namespace OpenUtau.Core.Ustx {
 
         public override void Validate(UProject project, UTrack track) {
             UNote lastNote = null;
-            UPhoneme lastPhoneme = null;
             foreach (UNote note in notes) {
                 note.Prev = lastNote;
                 note.Next = null;
                 if (lastNote != null) {
                     lastNote.Next = note;
                 }
+                lastNote = note;
+            }
+            foreach (UNote note in notes) {
+                note.Phonemize(track);
+            }
+            UPhoneme lastPhoneme = null;
+            foreach (UNote note in notes) {
                 foreach (var phoneme in note.phonemes) {
                     phoneme.Parent = note;
                     phoneme.Prev = lastPhoneme;
@@ -60,7 +67,6 @@ namespace OpenUtau.Core.Ustx {
                     }
                     lastPhoneme = phoneme;
                 }
-                lastNote = note;
             }
             foreach (UNote note in notes) {
                 note.Validate(project, track, this);

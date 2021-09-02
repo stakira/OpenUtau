@@ -73,7 +73,7 @@ namespace OpenUtau.Core {
                 foreach (UNote note in Notes) {
                     Part.notes.Remove(note);
                     note.position += DeltaPos;
-                    note.noteNum += DeltaNoteNum;
+                    note.tone += DeltaNoteNum;
                     Part.notes.Add(note);
                 }
             }
@@ -83,7 +83,7 @@ namespace OpenUtau.Core {
                 foreach (UNote note in Notes) {
                     Part.notes.Remove(note);
                     note.position -= DeltaPos;
-                    note.noteNum -= DeltaNoteNum;
+                    note.tone -= DeltaNoteNum;
                     Part.notes.Add(note);
                 }
             }

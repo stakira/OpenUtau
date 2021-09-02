@@ -286,8 +286,8 @@ namespace OpenUtau.UI {
                                 foreach (UNote note in midiVM.SelectedNotes) {
                                     if (note.position < _noteMoveNoteLeft.position) _noteMoveNoteLeft = note;
                                     if (note.End > _noteMoveNoteRight.End) _noteMoveNoteRight = note;
-                                    if (note.noteNum < _noteMoveNoteMin.noteNum) _noteMoveNoteMin = note;
-                                    if (note.noteNum > _noteMoveNoteMax.noteNum) _noteMoveNoteMax = note;
+                                    if (note.tone < _noteMoveNoteMin.tone) _noteMoveNoteMin = note;
+                                    if (note.tone > _noteMoveNoteMax.tone) _noteMoveNoteMax = note;
                                 }
                             }
                             DocManager.Inst.StartUndoGroup();
@@ -368,8 +368,8 @@ namespace OpenUtau.UI {
                 double deltaX = DocManager.Inst.Project.TickToMillisecond(tickX) - _pitHit.X;
                 if (_pitHitIndex != 0) deltaX = Math.Max(deltaX, _noteHit.pitch.data[_pitHitIndex - 1].X - _pitHit.X);
                 if (_pitHitIndex != _noteHit.pitch.data.Count - 1) deltaX = Math.Min(deltaX, _noteHit.pitch.data[_pitHitIndex + 1].X - _pitHit.X);
-                double deltaY = Keyboard.Modifiers == ModifierKeys.Shift ? Math.Round(midiVM.CanvasToPitch(mousePos.Y) - _noteHit.noteNum) * 10 - _pitHit.Y :
-                    (midiVM.CanvasToPitch(mousePos.Y) - _noteHit.noteNum) * 10 - _pitHit.Y;
+                double deltaY = Keyboard.Modifiers == ModifierKeys.Shift ? Math.Round(midiVM.CanvasToPitch(mousePos.Y) - _noteHit.tone) * 10 - _pitHit.Y :
+                    (midiVM.CanvasToPitch(mousePos.Y) - _noteHit.tone) * 10 - _pitHit.Y;
                 if (_noteHit.pitch.data.First() == _pitHit && _noteHit.pitch.snapFirst || _noteHit.pitch.data.Last() == _pitHit) deltaY = 0;
                 if (deltaX != 0 || deltaY != 0)
                     DocManager.Inst.ExecuteCmd(new MovePitchPointCommand(_pitHit, (float)deltaX, (float)deltaY));
@@ -424,14 +424,14 @@ namespace OpenUtau.UI {
                     int newNoteNum = Math.Max(0, Math.Min(UIConstants.MaxNoteNum - 1, midiVM.CanvasToNoteNum(mousePos.Y)));
                     int newPosTick = Math.Max(0, Math.Min((int)(midiVM.QuarterCount * midiVM.Project.resolution) - _noteHit.duration,
                         (int)(midiVM.Project.resolution * midiVM.CanvasToSnappedQuarter(mousePos.X)) - _tickMoveRelative));
-                    if (newNoteNum != _noteHit.noteNum || newPosTick != _noteHit.position)
-                        DocManager.Inst.ExecuteCmd(new MoveNoteCommand(midiVM.Part, _noteHit, newPosTick - _noteHit.position, newNoteNum - _noteHit.noteNum));
+                    if (newNoteNum != _noteHit.tone || newPosTick != _noteHit.position)
+                        DocManager.Inst.ExecuteCmd(new MoveNoteCommand(midiVM.Part, _noteHit, newPosTick - _noteHit.position, newNoteNum - _noteHit.tone));
                 } else {
-                    int deltaNoteNum = midiVM.CanvasToNoteNum(mousePos.Y) - _noteHit.noteNum;
+                    int deltaNoteNum = midiVM.CanvasToNoteNum(mousePos.Y) - _noteHit.tone;
                     int deltaPosTick = ((int)(midiVM.Project.resolution * midiVM.CanvasToSnappedQuarter(mousePos.X)) - _tickMoveRelative) - _noteHit.position;
 
                     if (deltaNoteNum != 0 || deltaPosTick != 0) {
-                        bool changeNoteNum = deltaNoteNum + _noteMoveNoteMin.noteNum >= 0 && deltaNoteNum + _noteMoveNoteMax.noteNum < UIConstants.MaxNoteNum;
+                        bool changeNoteNum = deltaNoteNum + _noteMoveNoteMin.tone >= 0 && deltaNoteNum + _noteMoveNoteMax.tone < UIConstants.MaxNoteNum;
                         bool changePosTick = deltaPosTick + _noteMoveNoteLeft.position >= 0 && deltaPosTick + _noteMoveNoteRight.End <= midiVM.QuarterCount * midiVM.Project.resolution;
                         if (changeNoteNum || changePosTick)
 
@@ -720,32 +720,57 @@ namespace OpenUtau.UI {
 
         private void expCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
             ((Canvas)sender).CaptureMouse();
-            DocManager.Inst.StartUndoGroup();
+            if (Mouse.RightButton == MouseButtonState.Released) {
+                DocManager.Inst.StartUndoGroup();
+            }
             Point mousePos = e.GetPosition((UIElement)sender);
-            expCanvas_SetExpHelper(mousePos);
+            expCanvas_SetExpHelper(mousePos, e.ChangedButton);
         }
 
         private void expCanvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
-            DocManager.Inst.EndUndoGroup();
+            if (Mouse.RightButton == MouseButtonState.Released) {
+                DocManager.Inst.EndUndoGroup();
+            }
+            ((Canvas)sender).ReleaseMouseCapture();
+        }
+
+        private void expCanvas_MouseRightButtonDown(object sender, MouseButtonEventArgs e) {
+            ((Canvas)sender).CaptureMouse();
+            if (Mouse.LeftButton == MouseButtonState.Released) {
+                DocManager.Inst.StartUndoGroup();
+            }
+            Point mousePos = e.GetPosition((UIElement)sender);
+            expCanvas_SetExpHelper(mousePos, e.ChangedButton);
+        }
+
+        private void expCanvas_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
+            if (Mouse.LeftButton == MouseButtonState.Released) {
+                DocManager.Inst.EndUndoGroup();
+            }
             ((Canvas)sender).ReleaseMouseCapture();
         }
 
         private void expCanvas_MouseMove(object sender, MouseEventArgs e) {
             if (Mouse.LeftButton == MouseButtonState.Pressed) {
                 Point mousePos = e.GetPosition((UIElement)sender);
-                expCanvas_SetExpHelper(mousePos);
+                expCanvas_SetExpHelper(mousePos, MouseButton.Left);
+            } else if (Mouse.RightButton == MouseButtonState.Pressed) {
+                Point mousePos = e.GetPosition((UIElement)sender);
+                expCanvas_SetExpHelper(mousePos, MouseButton.Right);
             }
         }
 
-        private void expCanvas_SetExpHelper(Point mousePos) {
+        private void expCanvas_SetExpHelper(Point mousePos, MouseButton mouseButton) {
             if (midiVM.Part == null) return;
             float newValue;
             string _key = midiVM.visibleExpElement.Key;
             var _expDef = DocManager.Inst.Project.expressions[_key];
-            if (Keyboard.Modifiers == ModifierKeys.Alt) {
+            if (mouseButton == MouseButton.Right) {
                 newValue = _expDef.defaultValue;
-            } else {
+            } else if (mouseButton == MouseButton.Left) {
                 newValue = (float)Math.Max(_expDef.min, Math.Min(_expDef.max, (1 - mousePos.Y / expCanvas.ActualHeight) * (_expDef.max - _expDef.min) + _expDef.min));
+            } else {
+                return;
             }
             NoteHitInfo hit = midiHT.HitTestNote(mousePos);
             if (!hit.hitX) {

@@ -139,7 +139,7 @@ namespace OpenUtau.Core.Formats {
             foreach (var note in part.notes) {
                 if (lastNote != null && !note.pitch.snapFirst && note.position == lastNote.End) {
                     float dy = note.pitch.data[0].Y - lastNote.pitch.data[0].Y;
-                    float dn = note.noteNum - lastNote.noteNum;
+                    float dn = note.tone - lastNote.tone;
                     if (Math.Abs(dy + 10 * dn) < 1) {
                         note.pitch.snapFirst = true;
                     }
@@ -200,7 +200,7 @@ namespace OpenUtau.Core.Formats {
                         break;
                     case "NoteNum":
                         error |= !isFloat;
-                        note.noteNum = (int)floatValue;
+                        note.tone = (int)floatValue;
                         break;
                     case "Velocity":
                         error |= !isFloat;
@@ -254,7 +254,6 @@ namespace OpenUtau.Core.Formats {
             if (ust.StartsWith("?")) {
                 ust = ust.Substring(1);
             }
-            note.phonemes[0].phoneme = ust;
             note.lyric = ust;
         }
 
@@ -363,7 +362,7 @@ namespace OpenUtau.Core.Formats {
                         spacer.position = position;
                         spacer.duration = note.position - position;
                         spacer.lyric = "R";
-                        spacer.noteNum = 60;
+                        spacer.tone = 60;
                         sequence.Add(spacer);
                         WriteNoteBody(spacer, writer);
                     }
@@ -394,7 +393,7 @@ namespace OpenUtau.Core.Formats {
         static void WriteNoteBody(UNote note, StreamWriter writer) {
             writer.WriteLine($"Length={note.duration}");
             writer.WriteLine($"Lyric={note.lyric}");
-            writer.WriteLine($"NoteNum={note.noteNum}");
+            writer.WriteLine($"NoteNum={note.tone}");
             writer.WriteLine("PreUtterance=");
             //writer.WriteLine("VoiceOverlap=");
             if (note.expressions.TryGetValue("vel", out var vel)) {

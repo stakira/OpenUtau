@@ -1,5 +1,6 @@
-﻿using System.IO;
+﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using OpenUtau.Classic;
 using OpenUtau.Core.Lib;
@@ -20,11 +21,18 @@ namespace OpenUtau.Core {
 
         public Dictionary<string, USinger> Singers { get; private set; } = new Dictionary<string, USinger>();
         public Plugin[] Plugins { get; private set; }
+        public Phonemizer[] Phonemizers { get; private set; }
         public UProject Project { get; private set; }
         public bool HasOpenUndoGroup => undoGroup != null;
         public List<UNote> NotesClipboard { get; set; }
 
-        public void SearchAllSingers() {
+        public void Initialize() {
+            SearchAllSingers();
+            SearchAllPlugins();
+            SearchAllLyricPhonemizers();
+        }
+
+        void SearchAllSingers() {
             Singers = Formats.UtauSoundbank.FindAllSingers();
             Directory.CreateDirectory(PathManager.Inst.GetEngineSearchPath());
         }
@@ -38,8 +46,15 @@ namespace OpenUtau.Core {
             return null;
         }
 
-        public void SearchAllPlugins() {
+        void SearchAllPlugins() {
             Plugins = PluginLoader.LoadAll(PathManager.Inst.PluginsPath);
+        }
+
+        void SearchAllLyricPhonemizers() {
+            Phonemizers = GetType().Assembly.GetTypes()
+                .Where(t => !t.IsAbstract && t.IsSubclassOf(typeof(Phonemizer)))
+                .Select(t => Activator.CreateInstance(t) as Phonemizer)
+                .ToArray();
         }
 
         #region Command Queue

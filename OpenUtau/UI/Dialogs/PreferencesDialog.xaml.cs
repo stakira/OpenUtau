@@ -60,7 +60,7 @@ namespace OpenUtau.UI.Dialogs {
             if (result == System.Windows.Forms.DialogResult.OK) {
                 PathManager.Inst.AddSingerSearchPath(dialog.SelectedPath);
                 UpdateSingerPaths();
-                DocManager.Inst.SearchAllSingers();
+                DocManager.Inst.Initialize();
             }
         }
 
@@ -68,7 +68,7 @@ namespace OpenUtau.UI.Dialogs {
             PathManager.Inst.RemoveSingerSearchPath((string)singerPathsList.SelectedItem);
             UpdateSingerPaths();
             singerPathRemoveButton.IsEnabled = false;
-            DocManager.Inst.SearchAllSingers();
+            DocManager.Inst.Initialize();
         }
 
         private void singerPathsList_SelectionChanged(object sender, SelectionChangedEventArgs e) {

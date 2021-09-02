@@ -1,11 +1,25 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
+using Serilog;
 
 namespace OpenUtau.Core.Ustx {
     [JsonObject(MemberSerialization.OptIn)]
     public class UTrack {
         [JsonProperty] public string singer;
+        [JsonProperty] public string phonemizer;
 
-        public USinger Singer;
+        private USinger singer_;
+        public USinger Singer {
+            get => singer_;
+            set {
+                if (singer_ != value) {
+                    singer_ = value;
+                    Phonemizer.SetSinger(value);
+                }
+            }
+        }
+
+        public Phonemizer Phonemizer = new DefaultPhonemizer();
 
         public string SingerName => Singer != null ? Singer.DisplayName : "[No Singer]";
         public int TrackNo { set; get; }
@@ -16,10 +30,20 @@ namespace OpenUtau.Core.Ustx {
         public double Pan { set; get; }
 
         public void BeforeSave() {
-            singer = Singer == null ? null : Singer.Id;
+            singer = Singer?.Id;
+            phonemizer = Phonemizer.GetType().FullName;
         }
 
         public void AfterLoad(UProject project) {
+            try {
+                var type = Type.GetType(phonemizer);
+                Phonemizer = Activator.CreateInstance(type) as Phonemizer;
+            } catch (Exception e) {
+                Log.Error(e, $"Failed to load phonemizer {phonemizer}");
+            }
+            if (Phonemizer == null) {
+                Phonemizer = new DefaultPhonemizer();
+            }
             if (Singer == null && !string.IsNullOrEmpty(singer)) {
                 Singer = DocManager.Inst.GetSinger(singer);
             }

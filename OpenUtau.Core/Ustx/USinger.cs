@@ -59,7 +59,7 @@ namespace OpenUtau.Core.Ustx {
         public readonly string Web;
         public readonly string OtherInfo;
         public readonly string Avatar;
-        public readonly Dictionary<string, Tuple<string, string>> PitchMap;
+        public readonly Dictionary<string, Tuple<string, string>> PrefixMap;
         public readonly List<UOtoSet> OtoSets;
         public readonly string Id;
         public readonly bool Loaded;
@@ -81,9 +81,9 @@ namespace OpenUtau.Core.Ustx {
                 Avatar = Path.Combine(Location, voicebank.Image);
             }
             if (voicebank.PrefixMap != null) {
-                PitchMap = voicebank.PrefixMap.Map;
+                PrefixMap = voicebank.PrefixMap.Map;
             } else {
-                PitchMap = new Dictionary<string, Tuple<string, string>>();
+                PrefixMap = new Dictionary<string, Tuple<string, string>>();
             }
             OtoSets = new List<UOtoSet>();
             foreach (var otoSet in voicebank.OtoSets) {
@@ -95,8 +95,8 @@ namespace OpenUtau.Core.Ustx {
 
         public bool TryGetOto(string phoneme, int tone, out UOto oto) {
             oto = default;
-            string noteString = MusicMath.GetNoteString(tone);
-            if (PitchMap.TryGetValue(noteString, out var mapped)) {
+            string toneName = MusicMath.GetToneName(tone);
+            if (PrefixMap.TryGetValue(toneName, out var mapped)) {
                 string phonemeMapped = mapped.Item1 + phoneme + mapped.Item2;
                 foreach (var set in OtoSets) {
                     if (set.Otos.TryGetValue(phonemeMapped, out var list)) {
@@ -112,6 +112,15 @@ namespace OpenUtau.Core.Ustx {
                 }
             }
             return false;
+        }
+
+        public UOto? FindOto(string phoneme) {
+            foreach (var set in OtoSets) {
+                if (set.Otos.TryGetValue(phoneme, out var list)) {
+                    return list[0];
+                }
+            }
+            return null;
         }
 
         public void GetSuggestions(string text, Action<UOto> provide) {

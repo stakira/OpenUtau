@@ -72,6 +72,17 @@
     <!-- Tips -->
     <system:String x:Key="tip.lyricbox.prev">Shift+Tab: 上一个</system:String>
     <system:String x:Key="tip.lyricbox.next">Tab: 下一个</system:String>
+    <system:String x:Key="tip.notes.basics.keys" xml:space="preserve">T:
+鼠标左键:
+鼠标右键:
+按住鼠标左键:
+拖动音符:
+拖动音符尾部:
+Alt + 拖动音符尾部:
+Ctrl + 框选:
+上方向键/下方向键:
+Ctrl + 上方向键/下方向键:
+空格:</system:String>
     <system:String x:Key="tip.notes.basics.actions" xml:space="preserve">开/关提示
 添加音符
 删除音符
@@ -85,5 +96,9 @@
 播放</system:String>
     <system:String x:Key="tip.notes.zoomx">◀ 鼠标滚轮横向缩放 ▶</system:String>
     <system:String x:Key="tip.notes.zoomy">鼠标滚轮纵向缩放 ▶</system:String>
+    <system:String x:Key="tip.exps.keys" xml:space="preserve">按住鼠标左键:
+按住鼠标右键:</system:String>
+    <system:String x:Key="tip.exps.actions" xml:space="preserve">设定表情
+重置表情</system:String>
 
 </ResourceDictionary>

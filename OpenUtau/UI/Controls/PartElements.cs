@@ -173,8 +173,8 @@ namespace OpenUtau.UI.Controls {
             cxt.DrawLine(pen, new Point(0, UIConstants.HiddenNoteNum), new Point(0, UIConstants.HiddenNoteNum));
             cxt.DrawLine(pen, new Point(Part.Duration, UIConstants.MaxNoteNum - UIConstants.HiddenNoteNum),
                               new Point(Part.Duration, UIConstants.MaxNoteNum - UIConstants.HiddenNoteNum));
-            foreach (UNote note in ((UVoicePart)Part).notes) cxt.DrawLine(pen, new Point(note.position, UIConstants.MaxNoteNum - note.noteNum),
-                                                                 new Point(note.End, UIConstants.MaxNoteNum - note.noteNum));
+            foreach (UNote note in ((UVoicePart)Part).notes) cxt.DrawLine(pen, new Point(note.position, UIConstants.MaxNoteNum - note.tone),
+                                                                 new Point(note.End, UIConstants.MaxNoteNum - note.tone));
             cxt.Close();
             tTransPre.Y = -partVisual.ContentBounds.Top;
             FitHeight(VisualHeight);

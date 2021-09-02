@@ -21,7 +21,7 @@ namespace OpenUtau.Core.Ustx {
             note = UNote.Create();
             note.position = 120;
             note.duration = 60;
-            note.noteNum = 42;
+            note.tone = 42;
             note.lyric = "あ";
             note.expressions.Clear();
             var exp = new UExpression(descriptor) { value = 123 };
@@ -93,7 +93,7 @@ namespace OpenUtau.Core.Ustx {
 
             Assert.Equal(120, actual.position);
             Assert.Equal(60, actual.duration);
-            Assert.Equal(42, actual.noteNum);
+            Assert.Equal(42, actual.tone);
             Assert.Equal("あ", actual.lyric);
             Assert.Single(actual.phonemes);
             Assert.Equal(0, actual.phonemes[0].position);

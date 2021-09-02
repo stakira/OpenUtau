@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 using OpenUtau.Core.Ustx;
 
-namespace OpenUtau.Core
-{
+namespace OpenUtau.Core {
     public abstract class TrackCommand : UCommand
     {
         public UProject project;
@@ -93,5 +92,24 @@ namespace OpenUtau.Core
         public override string ToString() { return "Change singer"; }
         public override void Execute() { track.Singer = newSinger; }
         public override void Unexecute() { track.Singer = oldSinger; }
+    }
+
+    public class TrackChangePhonemizerCommand : TrackCommand {
+        readonly Phonemizer newPhonemizer, oldPhonemizer;
+        public TrackChangePhonemizerCommand(UProject project, UTrack track, Phonemizer newPhonemizer) {
+            this.project = project;
+            this.track = track;
+            this.newPhonemizer = newPhonemizer;
+            this.oldPhonemizer = track.Phonemizer;
+        }
+        public override string ToString() { return "Change phonemizer"; }
+        public override void Execute() { 
+            track.Phonemizer = newPhonemizer;
+            track.Phonemizer.SetSinger(track.Singer);
+        }
+        public override void Unexecute() {
+            track.Phonemizer = oldPhonemizer;
+            track.Phonemizer.SetSinger(track.Singer);
+        }
     }
 }

@@ -63,7 +63,7 @@ namespace OpenUtau.Core.Render {
                 Modulation = 0;
             }
 
-            NoteNum = phoneme.Parent.noteNum;
+            NoteNum = phoneme.Parent.tone;
             Velocity = (int)vel;
             Volume = (int)vol;
             StrFlags = phoneme.Parent.GetResamplerFlags();
@@ -91,7 +91,7 @@ namespace OpenUtau.Core.Render {
         public string GetResamplerExeArgs() {
             // fresamp.exe <infile> <outfile> <tone> <velocity> <flags> <offset> <length_req>
             // <fixed_length> <endblank> <volume> <modulation> <pitch>
-            return FormattableString.Invariant($"{MusicMath.GetNoteString(NoteNum)} {Velocity:D} \"{StrFlags}\" {Oto.Offset} {RequiredLength:D} {Oto.Consonant} {Oto.Cutoff} {Volume:D} {Modulation:D} {Tempo} {Base64.Base64EncodeInt12(PitchData.ToArray())}");
+            return FormattableString.Invariant($"{MusicMath.GetToneName(NoteNum)} {Velocity:D} \"{StrFlags}\" {Oto.Offset} {RequiredLength:D} {Oto.Consonant} {Oto.Cutoff} {Volume:D} {Modulation:D} {Tempo} {Base64.Base64EncodeInt12(PitchData.ToArray())}");
         }
 
         private List<int> BuildPitchData(UPhoneme phoneme, UVoicePart part) {
@@ -114,7 +114,7 @@ namespace OpenUtau.Core.Render {
                 foreach (var pp in lastNote.pitch.data) {
                     var newpp = pp.Clone();
                     newpp.X -= offsetMs;
-                    newpp.Y -= (phoneme.Parent.noteNum - lastNote.noteNum) * 10;
+                    newpp.Y -= (phoneme.Parent.tone - lastNote.tone) * 10;
                     pps.Add(newpp);
                 }
                 if (lastNote.vibrato.depth != 0) {
@@ -137,7 +137,7 @@ namespace OpenUtau.Core.Render {
                 foreach (var pp in nextNote.pitch.data) {
                     var newpp = pp.Clone();
                     newpp.X -= offsetMs;
-                    newpp.Y -= (phoneme.Parent.noteNum - nextNote.noteNum) * 10;
+                    newpp.Y -= (phoneme.Parent.tone - nextNote.tone) * 10;
                     pps.Add(newpp);
                 }
             }

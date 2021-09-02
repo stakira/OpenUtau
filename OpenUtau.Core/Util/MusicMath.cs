@@ -21,7 +21,7 @@ namespace OpenUtau.Core
             Tuple.Create("B" , KeyColor.White),
         };
 
-        public static string GetNoteString(int noteNum)
+        public static string GetToneName(int noteNum)
         {
             return noteNum < 0 ? string.Empty : KeysInOctave[noteNum % 12].Item1 + (noteNum / 12 - 1).ToString();
         }

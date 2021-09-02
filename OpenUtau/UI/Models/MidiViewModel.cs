@@ -32,6 +32,7 @@ namespace OpenUtau.UI.Models {
         UVoicePart _part;
         public UVoicePart Part { get { return _part; } }
         public Classic.Plugin[] Plugins => DocManager.Inst.Plugins;
+        public Phonemizer[] Phonemizers => DocManager.Inst.Phonemizers;
 
         public Canvas TimelineCanvas;
         public Canvas MidiCanvas;
@@ -286,7 +287,7 @@ namespace OpenUtau.UI.Models {
             TempSelectedNotes.Clear();
             foreach (UNote note in Part.notes) {
                 if (note.position <= tick2 && note.position + note.duration >= tick1 &&
-                    note.noteNum >= noteNum1 && note.noteNum <= noteNum2) {
+                    note.tone >= noteNum1 && note.tone <= noteNum2) {
                     SelectTempNote(note);
                 }
             }
@@ -305,7 +306,7 @@ namespace OpenUtau.UI.Models {
         public void TransposeSelection(int deltaNoteNum) {
             if (SelectedNotes.Count > 0) {
                 DocManager.Inst.StartUndoGroup();
-                if (SelectedNotes.Any(note => note.noteNum + deltaNoteNum <= 0 || note.noteNum + deltaNoteNum >= UIConstants.MaxNoteNum)) {
+                if (SelectedNotes.Any(note => note.tone + deltaNoteNum <= 0 || note.tone + deltaNoteNum >= UIConstants.MaxNoteNum)) {
                     return;
                 }
                 DocManager.Inst.ExecuteCmd(new MoveNoteCommand(Part, new List<UNote>(SelectedNotes), 0, deltaNoteNum));
@@ -491,9 +492,11 @@ namespace OpenUtau.UI.Models {
 
         private void FocusNote(UNote note) {
             OffsetX = (note.position + note.duration * 0.5) * QuarterWidth / Project.resolution - ViewWidth * 0.5;
-            OffsetY = TrackHeight * (UIConstants.MaxNoteNum - note.noteNum + 2) - ViewHeight * 0.5;
+            OffsetY = TrackHeight * (UIConstants.MaxNoteNum - note.tone + 2) - ViewHeight * 0.5;
             MarkUpdate();
         }
+
+        # endregion
 
         private ICommand pluginCommand;
         public ICommand PluginCommand => pluginCommand ?? (pluginCommand = new RelayCommand<object>(OnPluginSelected));
@@ -511,7 +514,19 @@ namespace OpenUtau.UI.Models {
             DocManager.Inst.EndUndoGroup();
         }
 
-        # endregion
+        private ICommand phonemizerCommand;
+        public ICommand PhonemizerCommand => phonemizerCommand ?? (phonemizerCommand = new RelayCommand<object>(OnPhonemizerSelected));
+        void OnPhonemizerSelected(object obj) {
+            var phonemizer = (Phonemizer)obj;
+            phonemizer = Activator.CreateInstance(phonemizer.GetType()) as Phonemizer;
+            if (phonemizer != null) {
+                var project = DocManager.Inst.Project;
+                DocManager.Inst.StartUndoGroup();
+                DocManager.Inst.ExecuteCmd(new TrackChangePhonemizerCommand(project, project.tracks[Part.trackNo], phonemizer));
+                DocManager.Inst.EndUndoGroup();
+                MarkUpdate();
+            }
+        }
 
         # region ICmdSubscriber
 
