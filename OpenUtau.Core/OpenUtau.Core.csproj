@@ -44,7 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DocManager.cs" />
-    <Compile Include="Phonetic\BasicJapaneseVCVPhonemizer.cs" />
+    <Compile Include="Phonetic\JapaneseVCVPhonemizer.cs" />
     <Compile Include="Phonetic\DefaultPhonemizer.cs" />
     <Compile Include="Phonetic\Phonemizer.cs" />
     <Compile Include="PlaybackManager.cs" />

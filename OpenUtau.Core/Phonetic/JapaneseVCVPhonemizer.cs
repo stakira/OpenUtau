@@ -2,7 +2,7 @@
 using System.Linq;
 
 namespace OpenUtau.Core {
-    public class BasicJapaneseVCVPhonemizer : Phonemizer {
+    public class JapaneseVCVPhonemizer : Phonemizer {
         static readonly string[] vowels = new string[] {
             "a=ぁ,あ,か,が,さ,ざ,た,だ,な,は,ば,ぱ,ま,ゃ,や,ら,わ,ァ,ア,カ,ガ,サ,ザ,タ,ダ,ナ,ハ,バ,パ,マ,ャ,ヤ,ラ,ワ",
             "e=ぇ,え,け,げ,せ,ぜ,て,で,ね,へ,べ,ぺ,め,れ,ゑ,ェ,エ,ケ,ゲ,セ,ゼ,テ,デ,ネ,ヘ,ベ,ペ,メ,レ,ヱ",
@@ -15,7 +15,7 @@ namespace OpenUtau.Core {
 
         static readonly Dictionary<string, string> vowelLookup;
 
-        static BasicJapaneseVCVPhonemizer() {
+        static JapaneseVCVPhonemizer() {
             vowelLookup = vowels.ToList()
                 .SelectMany(line => {
                     var parts = line.Split('=');
@@ -26,8 +26,8 @@ namespace OpenUtau.Core {
 
         private Ustx.USinger singer;
 
-        public override string Name => "Basic Japanese VCV Phonemizer";
-        public override string Tag => "JP VCV";
+        public override string Name => "Japanese VCV Phonemizer";
+        public override string Tag => "ja-JP VCV";
         public override void SetSinger(Ustx.USinger singer) => this.singer = singer;
         public override Phoneme[] Process(Note note, Note? prev, Note? next) {
             var phoneme = $"- {note.lyric}";
@@ -39,6 +39,9 @@ namespace OpenUtau.Core {
                 }
             }
             phoneme = TryMapPhoneme(phoneme, note.tone, singer);
+            if (singer.FindOto(phoneme) == null) {
+                phoneme = note.lyric;
+            }
             return new Phoneme[] {
                 new Phoneme {
                     phoneme = phoneme,

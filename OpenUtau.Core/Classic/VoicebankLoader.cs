@@ -149,7 +149,7 @@ namespace OpenUtau.Classic {
                             }
                         } catch (Exception e) {
                             Log.Error(e, $"Failed to parse\n{fileLoc}");
-                            otoSet.Errors.Add($"Failed to parse\n{fileLoc}");
+                            otoSet.Errors.Add($"Oto error:\n{fileLoc}");
                         }
                         fileLoc.line = null;
                         fileLoc.lineNumber++;
