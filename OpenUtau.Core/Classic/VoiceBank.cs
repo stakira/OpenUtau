@@ -24,6 +24,7 @@ namespace OpenUtau.Classic {
         public string OrigFile;
         public string Name;
         public List<Oto> Otos = new List<Oto>();
+        public List<string> Errors = new List<string>();
 
         public override string ToString() {
             return Name;

@@ -38,6 +38,7 @@ namespace OpenUtau.Core.Ustx {
         public readonly string Name;
         public readonly string Location;
         public readonly Dictionary<string, List<UOto>> Otos;
+        public readonly List<string> Errors;
 
         public UOtoSet(OtoSet otoSet, USinger singer, string singersPath) {
             Name = otoSet.Name;
@@ -49,6 +50,7 @@ namespace OpenUtau.Core.Ustx {
                 }
                 Otos[oto.Name].Add(new UOto(oto, this));
             }
+            Errors = otoSet.Errors;
         }
     }
 

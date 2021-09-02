@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using OpenUtau.Core;
@@ -73,6 +75,14 @@ namespace OpenUtau.UI.Dialogs {
                     otoview.Items.Add(oto);
                 }
             }
+
+            singer.OtoSets
+                .SelectMany(set => set.Errors)
+                .ToList()
+                .ForEach(e => {
+                    info.Inlines.Add(new LineBreak());
+                    info.Inlines.Add(new Run(e) { Foreground = Brushes.Red });
+                });
         }
 
         private void name_SelectionChanged(object sender, SelectionChangedEventArgs e) {

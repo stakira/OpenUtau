@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Serilog;
 
 namespace OpenUtau.Classic {
     public class VoicebankLoader {
@@ -147,7 +148,8 @@ namespace OpenUtau.Classic {
                                 otoSet.Otos.Add(oto);
                             }
                         } catch (Exception e) {
-                            throw new FileFormatException($"Failed to parse\n{fileLoc}", e);
+                            Log.Error(e, $"Failed to parse\n{fileLoc}");
+                            otoSet.Errors.Add($"Failed to parse\n{fileLoc}");
                         }
                         fileLoc.line = null;
                         fileLoc.lineNumber++;
