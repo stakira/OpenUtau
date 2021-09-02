@@ -58,12 +58,7 @@ namespace OpenUtau.Core.Ustx {
   'dur': 60,
   'num': 42,
   'lrc': 'あ',
-  'pho': [
-    {
-      'position': 0,
-      'phoneme': 'a'
-    }
-  ],
+  'pho': [],
   'pit': {
     'data': [],
     'snapFirst': true
@@ -95,9 +90,7 @@ namespace OpenUtau.Core.Ustx {
             Assert.Equal(60, actual.duration);
             Assert.Equal(42, actual.tone);
             Assert.Equal("あ", actual.lyric);
-            Assert.Single(actual.phonemes);
-            Assert.Equal(0, actual.phonemes[0].position);
-            Assert.Equal("a", actual.phonemes[0].phoneme);
+            Assert.Empty(actual.phonemes);
             Assert.Single(actual.expressions);
             var vel = actual.expressions["vel"];
             Assert.NotNull(vel);

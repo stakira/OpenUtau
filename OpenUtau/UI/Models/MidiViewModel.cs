@@ -524,6 +524,8 @@ namespace OpenUtau.UI.Models {
                 DocManager.Inst.StartUndoGroup();
                 DocManager.Inst.ExecuteCmd(new TrackChangePhonemizerCommand(project, project.tracks[Part.trackNo], phonemizer));
                 DocManager.Inst.EndUndoGroup();
+                notesElement.MarkUpdate();
+                phonemesElement.MarkUpdate();
                 MarkUpdate();
             }
         }

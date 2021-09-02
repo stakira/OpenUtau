@@ -4,6 +4,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
+using WanaKanaNet;
 
 namespace OpenUtau.UI.Controls {
     /// <summary>
@@ -128,7 +129,10 @@ namespace OpenUtau.UI.Controls {
                 itemList.Items.Add("No Singer");
                 return;
             }
-            singer.GetSuggestions(Text, oto => itemList.Items.Add(oto.Alias));
+            if (!string.IsNullOrEmpty(Text)) {
+                itemList.Items.Add(WanaKana.ToHiragana(Text));
+            }
+            singer.GetSuggestions(Text, suggestion => itemList.Items.Add(suggestion));
         }
     }
 }

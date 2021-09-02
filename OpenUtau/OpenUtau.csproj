@@ -330,8 +330,8 @@
     <PackageReference Include="UDE.CSharp">
       <Version>1.1.0</Version>
     </PackageReference>
-    <PackageReference Include="WanaKanaSharp">
-      <Version>0.1.1</Version>
+    <PackageReference Include="WanaKana-net">
+      <Version>1.0.0</Version>
     </PackageReference>
     <PackageReference Include="WriteableBitmapEx">
       <Version>1.6.8</Version>

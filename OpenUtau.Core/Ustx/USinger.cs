@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using OpenUtau.Classic;
-using WanaKanaSharp;
+using WanaKanaNet;
 
 namespace OpenUtau.Core.Ustx {
     public struct UOto {
@@ -123,7 +123,7 @@ namespace OpenUtau.Core.Ustx {
             return null;
         }
 
-        public void GetSuggestions(string text, Action<UOto> provide) {
+        public void GetSuggestions(string text, Action<string> provide) {
             if (text != null) {
                 text = text.ToLowerInvariant().Replace(" ", "");
             }
@@ -133,7 +133,7 @@ namespace OpenUtau.Core.Ustx {
                 .SelectMany(list => list)
                 .Where(oto => all || oto.SearchTerms.Exists(term => term.Contains(text)))
                 .ToList()
-                .ForEach(oto => provide(oto));
+                .ForEach(oto => provide(oto.Alias));
         }
     }
 }
