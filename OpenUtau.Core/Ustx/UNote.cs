@@ -85,6 +85,9 @@ namespace OpenUtau.Core.Ustx {
                 return;
             }
             Error = false;
+            if (track.Singer == null || !track.Singer.Loaded) {
+                Error |= true;
+            }
             if (pitch.snapFirst) {
                 if (Prev != null && Prev.End == position) {
                     pitch.data[0].Y = (Prev.tone - tone) * 10;
