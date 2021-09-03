@@ -65,7 +65,9 @@ namespace OpenUtau.UI.Controls {
                     e.Handled = true;
                     break;
                 case Key.Tab:
-                    Text = (string)itemList.SelectedItem;
+                    if (itemList.SelectedItem != null) {
+                        Text = (string)itemList.SelectedItem;
+                    }
                     var part = Part;
                     var note = Keyboard.Modifiers == ModifierKeys.Shift ? Note.Prev : Note.Next;
                     EndNoteEditing(!string.IsNullOrEmpty(Text));

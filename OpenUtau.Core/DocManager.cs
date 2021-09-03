@@ -106,7 +106,9 @@ namespace OpenUtau.Core {
                 return;
             }
             undoGroup.Commands.Add(cmd);
-            cmd.Execute();
+            lock (Project) {
+                cmd.Execute();
+            }
             if (!cmd.Silent) {
                 Log.Information($"ExecuteCmd {cmd}");
             }

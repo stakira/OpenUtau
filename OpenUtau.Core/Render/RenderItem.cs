@@ -43,13 +43,12 @@ namespace OpenUtau.Core.Render {
         public readonly string phonemeName;
         public RenderEngine.Progress progress;
 
-        public RenderItem(UPhoneme phoneme, UVoicePart part, UProject project, string resamplerName) {
+        public RenderItem(UPhoneme phoneme, UVoicePart part, UTrack track, UProject project, string resamplerName) {
             SourceFile = phoneme.oto.File;
             SourceFile = Path.Combine(PathManager.Inst.InstalledSingersPath, SourceFile);
             ResamplerName = resamplerName;
-            var voicebankName = project.tracks[part.trackNo].Singer.Id;
             SourceTemp = Path.Combine(PathManager.Inst.GetCachePath(null),
-                $"{HashHex(voicebankName)}-{HashHex(phoneme.oto.Set)}-{HashHex(SourceFile)}.wav");
+                $"{HashHex(track.Singer.Id)}-{HashHex(phoneme.oto.Set)}-{HashHex(SourceFile)}.wav");
 
             float vel = phoneme.Parent.expressions["vel"].value;
             float vol = phoneme.Parent.expressions["vol"].value;

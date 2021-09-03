@@ -49,7 +49,11 @@ namespace OpenUtau.Core.Render {
                 track => new TrackSampleProvider() {
                     Volume = PlaybackManager.DecibelToVolume(track.Volume)
                 }).ToList();
-            foreach (UPart part in project.parts) {
+            List<UPart> parts;
+            lock (project) {
+                parts = new List<UPart>(project.parts);
+            }
+            foreach (UPart part in parts) {
                 UVoicePart voicePart = part as UVoicePart;
                 if (voicePart != null) {
                     SequencingSampleProvider sampleProvider = await RenderPartAsync(voicePart, project);
@@ -82,7 +86,7 @@ namespace OpenUtau.Core.Render {
                 return null;
             }
             var source = new CancellationTokenSource();
-            var items = PreparePart(part, project).ToArray();
+            var items = PreparePart(part, project.tracks[part.trackNo], project, startTick).ToArray();
             var progress = new Progress(items.Length);
             progress.Clear();
             var tasks = items.Select(item => {
@@ -107,7 +111,10 @@ namespace OpenUtau.Core.Render {
                     }
                     TaskFactory<RenderItem> factory = new TaskFactory<RenderItem>(source.Token);
                     using (SemaphoreSlim slim = new SemaphoreSlim(4)) {
-                        var items = PrepareProject(project).ToArray();
+                        RenderItem[] items;
+                        lock (project) {
+                            items = PrepareProject(project, startTick).ToArray();
+                        }
                         var progress = new Progress(items.Length);
                         var tasks = items
                             .Select(item => factory.StartNew((obj) => {
@@ -134,20 +141,26 @@ namespace OpenUtau.Core.Render {
             return source;
         }
 
-        IEnumerable<RenderItem> PrepareProject(UProject project) {
-            return project.parts
-                .Where(part => part is UVoicePart)
-                .Select(part => part as UVoicePart)
-                .SelectMany(part => PreparePart(part, project));
+        IEnumerable<RenderItem> PrepareProject(UProject project, int startTick) {
+            return project.tracks
+                .SelectMany(track => PrepareTrack(track, project, startTick));
         }
 
-        IEnumerable<RenderItem> PreparePart(UVoicePart part, UProject project) {
+        IEnumerable<RenderItem> PrepareTrack(UTrack track, UProject project, int startTick) {
+            return project.parts
+                .Where(part => part.trackNo == track.TrackNo)
+                .Where(part => part is UVoicePart)
+                .Select(part => part as UVoicePart)
+                .SelectMany(part => PreparePart(part, track, project, startTick));
+        }
+
+        IEnumerable<RenderItem> PreparePart(UVoicePart part, UTrack track, UProject project, int startTick) {
             return part.notes
                 .Where(note => !note.Error)
                 .SelectMany(note => note.phonemes)
                 .Where(phoneme => !phoneme.Error)
                 .Where(phoneme => part.position + phoneme.Parent.position + phoneme.End > startTick)
-                .Select(phoneme => new RenderItem(phoneme, part, project, driver.GetInfo().Name));
+                .Select(phoneme => new RenderItem(phoneme, part, track, project, driver.GetInfo().Name));
         }
 
         RenderItem ResampleItem(object state) {

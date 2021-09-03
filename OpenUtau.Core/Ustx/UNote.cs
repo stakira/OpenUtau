@@ -108,10 +108,15 @@ namespace OpenUtau.Core.Ustx {
             if (track.Singer == null || !track.Singer.Loaded) {
                 return;
             }
-            var newPhonemes = track.Phonemizer.Process(
-                ToProcessorNote(),
-                Prev?.ToProcessorNote(),
-                Next?.ToProcessorNote());
+            var prev = Prev?.ToProcessorNote();
+            var next = Next?.ToProcessorNote();
+            if (Prev?.End < this.position) {
+                prev = null;
+            }
+            if (End < Next?.position) {
+                next = null;
+            }
+            var newPhonemes = track.Phonemizer.Process(ToProcessorNote(), prev, next);
             while (phonemes.Count < newPhonemes.Length) {
                 phonemes.Add(new UPhoneme());
             }

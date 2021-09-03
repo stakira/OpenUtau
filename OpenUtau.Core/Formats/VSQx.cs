@@ -101,7 +101,6 @@ namespace OpenUtau.Core.Formats {
                         unote.duration = int.Parse(note.SelectSingleNode(durtickPath, nsmanager).InnerText);
                         unote.tone = int.Parse(note.SelectSingleNode(notenumPath, nsmanager).InnerText);
                         unote.lyric = note.SelectSingleNode(lyricPath, nsmanager).InnerText;
-                        unote.phonemes[0].phoneme = note.SelectSingleNode(phonemePath, nsmanager).InnerText;
 
                         unote.expressions["vel"].value = int.Parse(note.SelectSingleNode(velocityPath, nsmanager).InnerText);
 
