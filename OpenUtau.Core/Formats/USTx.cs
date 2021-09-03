@@ -39,6 +39,8 @@ namespace OpenUtau.Core.Formats {
                 new VersionConverter(),
                 new UPartConverter(),
                 new UExpressionConverter()), Encoding.UTF8);
+            project.FilePath = filePath;
+            project.Saved = true;
         }
 
         public static UProject Load(string filePath) {

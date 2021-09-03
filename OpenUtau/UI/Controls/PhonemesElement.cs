@@ -51,20 +51,21 @@ namespace OpenUtau.UI.Controls {
             if (note.Error) return;
             for (int i = 0; i < note.phonemes.Count; i++) {
                 var phoneme = note.phonemes[i];
-                double x = Math.Round(note.position * midiVM.QuarterWidth / DocManager.Inst.Project.resolution) + 0.5;
-                double x0 = (note.position + DocManager.Inst.Project.MillisecondToTick(phoneme.envelope.data[0].X))
+                int position = note.position + phoneme.position;
+                double x = Math.Round(position * midiVM.QuarterWidth / DocManager.Inst.Project.resolution) + 0.5;
+                double x0 = (position + DocManager.Inst.Project.MillisecondToTick(phoneme.envelope.data[0].X))
                     * midiVM.QuarterWidth / DocManager.Inst.Project.resolution;
                 double y0 = (1 - phoneme.envelope.data[0].Y / 100) * height;
-                double x1 = (note.position + DocManager.Inst.Project.MillisecondToTick(phoneme.envelope.data[1].X))
+                double x1 = (position + DocManager.Inst.Project.MillisecondToTick(phoneme.envelope.data[1].X))
                     * midiVM.QuarterWidth / DocManager.Inst.Project.resolution;
                 double y1 = (1 - phoneme.envelope.data[1].Y / 100) * height;
-                double x2 = (note.position + DocManager.Inst.Project.MillisecondToTick(phoneme.envelope.data[2].X))
+                double x2 = (position + DocManager.Inst.Project.MillisecondToTick(phoneme.envelope.data[2].X))
                     * midiVM.QuarterWidth / DocManager.Inst.Project.resolution;
                 double y2 = (1 - phoneme.envelope.data[2].Y / 100) * height;
-                double x3 = (note.position + DocManager.Inst.Project.MillisecondToTick(phoneme.envelope.data[3].X))
+                double x3 = (position + DocManager.Inst.Project.MillisecondToTick(phoneme.envelope.data[3].X))
                     * midiVM.QuarterWidth / DocManager.Inst.Project.resolution;
                 double y3 = (1 - phoneme.envelope.data[3].Y / 100) * height;
-                double x4 = (note.position + DocManager.Inst.Project.MillisecondToTick(phoneme.envelope.data[4].X))
+                double x4 = (position + DocManager.Inst.Project.MillisecondToTick(phoneme.envelope.data[4].X))
                     * midiVM.QuarterWidth / DocManager.Inst.Project.resolution;
                 double y4 = (1 - phoneme.envelope.data[4].Y / 100) * height;
 
