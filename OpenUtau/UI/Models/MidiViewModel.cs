@@ -378,7 +378,7 @@ namespace OpenUtau.UI.Models {
         public bool NoteIsInView(UNote note) {
             double leftTick = OffsetX / QuarterWidth * Project.resolution - 512;
             double rightTick = leftTick + ViewWidth / QuarterWidth * Project.resolution + 512;
-            return note.position < rightTick && note.End > leftTick;
+            return note.position < rightTick && note.ExtendedEnd > leftTick;
         }
 
         # endregion

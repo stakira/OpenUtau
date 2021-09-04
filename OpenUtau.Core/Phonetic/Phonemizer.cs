@@ -68,5 +68,18 @@ namespace OpenUtau.Core {
             }
             return phoneme;
         }
+
+        public static void MapPhonemes(Note[] notes, Phoneme[] phonemes, Ustx.USinger singer) {
+            int durationLeft = 0;
+            int index = 0;
+            foreach (var note in notes) {
+                durationLeft += note.duration;
+                while (index < phonemes.Length && durationLeft > phonemes[index].duration * 0.5) {
+                    phonemes[index].phoneme = TryMapPhoneme(phonemes[index].phoneme, note.tone, singer);
+                    durationLeft -= phonemes[index].duration;
+                    index++;
+                }
+            }
+        }
     }
 }

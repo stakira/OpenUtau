@@ -107,16 +107,6 @@ namespace OpenUtau.Core.Ustx {
 
         public bool TryGetOto(string phoneme, int tone, out UOto oto) {
             oto = default;
-            string toneName = MusicMath.GetToneName(tone);
-            if (PrefixMap.TryGetValue(toneName, out var mapped)) {
-                string phonemeMapped = mapped.Item1 + phoneme + mapped.Item2;
-                foreach (var set in OtoSets) {
-                    if (set.Otos.TryGetValue(phonemeMapped, out var list)) {
-                        oto = list[0];
-                        return true;
-                    }
-                }
-            }
             foreach (var set in OtoSets) {
                 if (set.Otos.TryGetValue(phoneme, out var list)) {
                     oto = list[0];

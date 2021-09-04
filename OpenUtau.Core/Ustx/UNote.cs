@@ -17,11 +17,13 @@ namespace OpenUtau.Core.Ustx {
         [JsonProperty("vbr")] public UVibrato vibrato;
         [JsonProperty("exp")] public Dictionary<string, UExpression> expressions = new Dictionary<string, UExpression>();
 
-        public int End { get { return position + duration; } }
+        public int End => position + duration;
         public bool Selected { get; set; } = false;
         public UNote Prev { get; set; }
         public UNote Next { get; set; }
         public UNote Extends { get; set; }
+        public int ExtendedDuration { get; set; }
+        public int ExtendedEnd => position + ExtendedDuration;
         public bool Error { get; set; } = false;
 
         public static UNote Create() {
@@ -123,6 +125,11 @@ namespace OpenUtau.Core.Ustx {
             var next = notes.Last().Next?.ToProcessorNote();
             if (Prev?.End < this.position) {
                 prev = null;
+            } else if (Prev?.Extends != null) {
+                prev = Prev.Extends.ToProcessorNote();
+                var phoneme = prev.Value;
+                phoneme.duration = Prev.ExtendedDuration;
+                prev = phoneme;
             }
             if (notes.Last().End < notes.Last().Next?.position) {
                 next = null;
