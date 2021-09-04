@@ -21,6 +21,7 @@ namespace OpenUtau.Core.Ustx {
         public bool Selected { get; set; } = false;
         public UNote Prev { get; set; }
         public UNote Next { get; set; }
+        public UNote Extends { get; set; }
         public bool Error { get; set; } = false;
 
         public static UNote Create() {
@@ -104,19 +105,31 @@ namespace OpenUtau.Core.Ustx {
             }
         }
 
-        public void Phonemize(UTrack track) {
+        public void Phonemize(UProject project, UTrack track) {
             if (track.Singer == null || !track.Singer.Loaded) {
                 return;
             }
+            if (Extends != null) {
+                return;
+            }
+
+            List<UNote> notes = new List<UNote>();
+            notes.Add(this);
+            while (notes.Last().Next != null && notes.Last().Next.Extends == this) {
+                notes.Add(notes.Last().Next);
+            }
+
             var prev = Prev?.ToProcessorNote();
-            var next = Next?.ToProcessorNote();
+            var next = notes.Last().Next?.ToProcessorNote();
             if (Prev?.End < this.position) {
                 prev = null;
             }
-            if (End < Next?.position) {
+            if (notes.Last().End < notes.Last().Next?.position) {
                 next = null;
             }
-            var newPhonemes = track.Phonemizer.Process(ToProcessorNote(), prev, next);
+            track.Phonemizer.SetTiming(project.bpm, project.beatUnit, project.resolution);
+            var newPhonemes = track.Phonemizer.Process(
+                notes.Select(note => note.ToProcessorNote()).ToArray(), prev, next);
             while (phonemes.Count < newPhonemes.Length) {
                 phonemes.Add(new UPhoneme());
             }
@@ -126,10 +139,11 @@ namespace OpenUtau.Core.Ustx {
             for (var i = 0; i < newPhonemes.Length; i++) {
                 newPhonemes[i].duration = Math.Max(10, newPhonemes[i].duration);
             }
+            int totalNoteDuration = notes.Sum(n => n.duration);
             int totalDurtaion = newPhonemes.Sum(p => p.duration);
-            if (totalDurtaion > duration) {
+            if (totalDurtaion > totalNoteDuration) {
                 for (var i = 0; i < newPhonemes.Length; i++) {
-                    newPhonemes[i].duration = (int)(1.0 * duration / totalDurtaion * newPhonemes[i].duration);
+                    newPhonemes[i].duration = (int)(1.0 * totalNoteDuration / totalDurtaion * newPhonemes[i].duration);
                 }
             }
             int position = 0;
@@ -137,6 +151,9 @@ namespace OpenUtau.Core.Ustx {
                 phonemes[i].phoneme = newPhonemes[i].phoneme;
                 phonemes[i].position = position;
                 position += newPhonemes[i].duration;
+            }
+            for (int i = 1; i < notes.Count; ++i) {
+                notes[i].phonemes.Clear();
             }
         }
 

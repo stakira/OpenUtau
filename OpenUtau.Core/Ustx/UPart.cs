@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
-using Serilog;
 
 namespace OpenUtau.Core.Ustx {
     [JsonObject(MemberSerialization.OptIn)]
@@ -54,7 +53,14 @@ namespace OpenUtau.Core.Ustx {
                 lastNote = note;
             }
             foreach (UNote note in notes) {
-                note.Phonemize(track);
+                if (note.Prev != null && note.Prev.End == note.position && note.lyric.StartsWith("...")) {
+                    note.Extends = note.Prev.Extends ?? note.Prev;
+                } else {
+                    note.Extends = null;
+                }
+            }
+            foreach (UNote note in notes) {
+                note.Phonemize(project, track);
             }
             UPhoneme lastPhoneme = null;
             foreach (UNote note in notes) {

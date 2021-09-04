@@ -44,10 +44,16 @@ namespace OpenUtau.Core.Ustx {
             if (Error) {
                 return;
             }
-            if (Next != null && Next.Parent == Parent) {
+            if (Next != null && (Next.Parent == Parent || Next.Parent.Extends == Parent)) {
                 Duration = Next.position - position;
             } else {
-                Duration = note.duration - position;
+                int duration = note.duration;
+                var nextNote = Parent.Next;
+                while (nextNote != null && nextNote.Extends == Parent) {
+                    duration += nextNote.duration;
+                    nextNote = nextNote.Next;
+                }
+                Duration = duration - position;
             }
             Error = Duration <= 0;
         }

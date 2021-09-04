@@ -60,7 +60,8 @@ namespace OpenUtau.Core {
         public override string Tag => "EN ARPA";
         public override void SetSinger(USinger singer) => this.singer = singer;
 
-        public override Phoneme[] Process(Note note, Note? prev, Note? next) {
+        public override Phoneme[] Process(Note[] notes, Note? prev, Note? next) {
+            var note = notes[0];
             var prevSymbols = prev == null ? null : QueryTrie(root, prev?.lyric, 0);
             var symbols = QueryTrie(root, note.lyric, 0);
             if (symbols == null || symbols.Length == 0) {
@@ -101,7 +102,7 @@ namespace OpenUtau.Core {
             // Distrubute duration
             int consonants = 0;
             int vowels = 0;
-            int duration = note.duration;
+            int duration = notes.Sum(n => n.duration);
             for (int i = 0; i < symbols.Length; i++) {
                 if (phones[symbols[i]] == PhoneType.vowel || phones[symbols[i]] == PhoneType.semivowel) {
                     vowels++;
