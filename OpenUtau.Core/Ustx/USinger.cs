@@ -137,5 +137,7 @@ namespace OpenUtau.Core.Ustx {
                 .ToList()
                 .ForEach(oto => provide(oto.Alias));
         }
+
+        public override string ToString() => Name;
     }
 }

@@ -85,13 +85,9 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys {
          */
 
         public DriverModels.EngineInfo GetInfo() {
-            DriverModels.EngineInfo ret = new EngineInfo {
-                Version = "Error"
-            };
+            DriverModels.EngineInfo ret = new EngineInfo();
             if (!_isLegalPlugin) return ret;
-            ret.Author = "Unknown";
             ret.Name = Path.GetFileName(ExePath);
-            ret.Version = "Unknown";
             ret.Usuage = $"Traditional Resample Engine in {ExePath}";
             ret.FlagItem = new EngineFlagItem[0];
             ret.FlagItemCount = 0;

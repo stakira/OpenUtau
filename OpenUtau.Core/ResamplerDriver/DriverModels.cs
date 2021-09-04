@@ -95,7 +95,7 @@ namespace OpenUtau.Core.ResamplerDriver
             public string Usuage;
             public int FlagItemCount;
             public EngineFlagItem[] FlagItem;
-            public override string ToString() { return $"{Name} {Version}"; }
+            public override string ToString() => string.IsNullOrEmpty(Version) ? Name : $"{Name} {Version}";
         }
         #endregion
 
