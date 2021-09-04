@@ -38,7 +38,9 @@ namespace OpenUtau.Core.Ustx {
         public void AfterLoad(UProject project) {
             try {
                 var type = Type.GetType(phonemizer);
-                Phonemizer = Activator.CreateInstance(type) as Phonemizer;
+                if (Phonemizer == null || type != Phonemizer.GetType()) {
+                    Phonemizer = Activator.CreateInstance(type) as Phonemizer;
+                }
             } catch (Exception e) {
                 Log.Error(e, $"Failed to load phonemizer {phonemizer}");
             }
@@ -47,6 +49,7 @@ namespace OpenUtau.Core.Ustx {
             }
             if (Singer == null && !string.IsNullOrEmpty(singer)) {
                 Singer = DocManager.Inst.GetSinger(singer);
+                Phonemizer.SetSinger(Singer);
             }
             TrackNo = project.tracks.IndexOf(this);
         }
