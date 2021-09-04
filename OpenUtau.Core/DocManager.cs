@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using OpenUtau.Classic;
 using OpenUtau.Core.Lib;
 using OpenUtau.Core.Ustx;
@@ -33,8 +35,11 @@ namespace OpenUtau.Core {
         }
 
         void SearchAllSingers() {
+            var stopWatch = Stopwatch.StartNew();
             Singers = Formats.UtauSoundbank.FindAllSingers();
             Directory.CreateDirectory(PathManager.Inst.GetEngineSearchPath());
+            stopWatch.Stop();
+            Log.Information($"Search all singers: {stopWatch.Elapsed}");
         }
 
         public USinger GetSinger(string name) {
@@ -47,14 +52,23 @@ namespace OpenUtau.Core {
         }
 
         void SearchAllPlugins() {
+            var stopWatch = Stopwatch.StartNew();
             Plugins = PluginLoader.LoadAll(PathManager.Inst.PluginsPath);
+            stopWatch.Stop();
+            Log.Information($"Search all plugins: {stopWatch.Elapsed}");
         }
 
         void SearchAllLyricPhonemizers() {
-            Phonemizers = GetType().Assembly.GetTypes()
-                .Where(t => !t.IsAbstract && t.IsSubclassOf(typeof(Phonemizer)))
-                .Select(t => Activator.CreateInstance(t) as Phonemizer)
-                .ToArray();
+            Phonemizers = new[] { new DefaultPhonemizer() };
+            Task.Run(() => {
+                var stopWatch = Stopwatch.StartNew();
+                Phonemizers = GetType().Assembly.GetTypes()
+                    .Where(t => !t.IsAbstract && t.IsSubclassOf(typeof(Phonemizer)))
+                    .Select(t => Activator.CreateInstance(t) as Phonemizer)
+                    .ToArray();
+                stopWatch.Stop();
+                Log.Information($"Search all lyric phonemizers: {stopWatch.Elapsed}");
+            });
         }
 
         #region Command Queue

@@ -214,7 +214,7 @@ namespace OpenUtau.UI.Controls {
                             System.Threading.Thread.CurrentThread.CurrentUICulture,
                             FlowDirection.LeftToRight, SystemFonts.CaptionFontFamily.GetTypefaces().First(),
                             12,
-                            darkPen.Brush,
+                            ThemeManager.BarNumberBrush,
                             VisualTreeHelper.GetDpi(this).PixelsPerDip);
                         fTextPool.Add(barNumber, fText);
                     } else fText = fTextPool[barNumber];

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using OpenUtau.Classic;
 using WanaKanaNet;
 
@@ -29,8 +30,6 @@ namespace OpenUtau.Core.Ustx {
             Preutter = oto.Preutter;
             Overlap = oto.Overlap;
             SearchTerms = new List<string>();
-            SearchTerms.Add(Alias.ToLowerInvariant().Replace(" ", ""));
-            SearchTerms.Add(WanaKana.ToRomaji(Alias).ToLowerInvariant().Replace(" ", ""));
         }
     }
 
@@ -93,6 +92,17 @@ namespace OpenUtau.Core.Ustx {
             }
             Id = voicebank.Id;
             Loaded = true;
+
+            Task.Run(() => {
+                OtoSets
+                    .SelectMany(set => set.Otos.Values)
+                    .SelectMany(otos => otos)
+                    .ToList()
+                    .ForEach(oto => {
+                        oto.SearchTerms.Add(oto.Alias.ToLowerInvariant().Replace(" ", ""));
+                        oto.SearchTerms.Add(WanaKana.ToRomaji(oto.Alias).ToLowerInvariant().Replace(" ", ""));
+                    });
+            });
         }
 
         public bool TryGetOto(string phoneme, int tone, out UOto oto) {

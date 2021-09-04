@@ -219,7 +219,7 @@ namespace OpenUtau.UI {
                 UVoicePart part = new UVoicePart() {
                     position = trackVM.CanvasToSnappedTick(mousePos.X),
                     trackNo = trackVM.CanvasToTrack(mousePos.Y),
-                    Duration = trackVM.Project.resolution * 4 / trackVM.Project.beatUnit * trackVM.Project.beatPerBar
+                    Duration = trackVM.Project.resolution * 16 / trackVM.Project.beatUnit * trackVM.Project.beatPerBar
                 };
                 DocManager.Inst.StartUndoGroup();
                 DocManager.Inst.ExecuteCmd(new AddPartCommand(trackVM.Project, part));

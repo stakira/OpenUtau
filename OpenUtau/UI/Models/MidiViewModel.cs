@@ -548,7 +548,7 @@ namespace OpenUtau.UI.Models {
                 visibleExpElement.MarkUpdate();
                 shadowExpElement.MarkUpdate();
             } else if (cmd is TrackCommand tcmd) {
-                if (tcmd.track.TrackNo == Part.trackNo) {
+                if (Part != null && tcmd.track.TrackNo == Part.trackNo) {
                     notesElement.MarkUpdate();
                     phonemesElement.MarkUpdate();
                     visibleExpElement.MarkUpdate();

@@ -72,12 +72,12 @@ namespace OpenUtau.UI.Controls {
 
         private void buildChangeSingerMenuItems() {
             changeSingerMenu.Items.Clear();
-            foreach (var pair in DocManager.Inst.Singers) {
-                var menuItem = new MenuItem() { Header = pair.Value.Name };
+            foreach (var singer in DocManager.Inst.Singers.Values.OrderBy(singer => singer.Name)) {
+                var menuItem = new MenuItem() { Header = singer.Name };
                 menuItem.Click += (_o, _e) => {
-                    if (Track.Singer != pair.Value) {
+                    if (Track.Singer != singer) {
                         DocManager.Inst.StartUndoGroup();
-                        DocManager.Inst.ExecuteCmd(new TrackChangeSingerCommand(DocManager.Inst.Project, Track, pair.Value));
+                        DocManager.Inst.ExecuteCmd(new TrackChangeSingerCommand(DocManager.Inst.Project, Track, singer));
                         DocManager.Inst.EndUndoGroup();
                     }
                 };

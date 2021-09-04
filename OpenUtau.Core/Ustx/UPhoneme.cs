@@ -53,6 +53,7 @@ namespace OpenUtau.Core.Ustx {
         }
 
         void ValidateOto(UTrack track, UNote note) {
+            phonemeMapped = string.Empty;
             if (Error) {
                 return;
             }

@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Windows;
+using System.Windows.Threading;
 using Serilog;
 
 namespace OpenUtau {
@@ -55,17 +55,13 @@ namespace OpenUtau {
                 .WriteTo.Console()
                 .WriteTo.File("log.txt", rollingInterval: RollingInterval.Day, encoding: System.Text.Encoding.UTF8)
                 .CreateLogger();
-            NBug.Settings.ReleaseMode = true;
-            NBug.Settings.StoragePath = NBug.Enums.StoragePath.CurrentDirectory;
-            NBug.Settings.UIMode = NBug.Enums.UIMode.Full;
+            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler((sender, args) => {
+                Log.Error((Exception)args.ExceptionObject, "Unhandled exception");
+            });
 
             Core.DocManager.Inst.Initialize();
 
             var app = new App();
-            if (!Debugger.IsAttached) {
-                AppDomain.CurrentDomain.UnhandledException += NBug.Handler.UnhandledException;
-                app.DispatcherUnhandledException += NBug.Handler.DispatcherUnhandledException;
-            }
             var window = new UI.MainWindow();
             app.Run(window);
         }

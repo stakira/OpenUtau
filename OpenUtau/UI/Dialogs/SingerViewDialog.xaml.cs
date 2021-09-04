@@ -18,7 +18,6 @@ namespace OpenUtau.UI.Dialogs {
     /// Interaction logic for SingerViewDialog.xaml
     /// </summary>
     public partial class SingerViewDialog : Window, ICmdSubscriber {
-        List<string> singerNames;
         string location;
 
         public SingerViewDialog() {
@@ -33,10 +32,10 @@ namespace OpenUtau.UI.Dialogs {
         }
 
         private void UpdateSingers() {
-            singerNames = new List<string>();
-            foreach (var pair in DocManager.Inst.Singers) {
-                singerNames.Add(pair.Value.Name);
-            }
+           var singerNames = DocManager.Inst.Singers.Values
+                .Select(singer => singer.Name)
+                .OrderBy(name => name)
+                .ToList();
             if (singerNames.Count > 0) {
                 name.SelectedIndex = 0;
                 SetSinger(singerNames[0]);
@@ -86,7 +85,7 @@ namespace OpenUtau.UI.Dialogs {
         }
 
         private void name_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            SetSinger(singerNames[name.SelectedIndex]);
+            SetSinger((string)name.SelectedItem);
         }
 
         private void locationButton_Click(object sender, RoutedEventArgs e) {

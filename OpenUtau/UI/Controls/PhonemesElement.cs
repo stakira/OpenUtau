@@ -48,9 +48,11 @@ namespace OpenUtau.UI.Controls {
         private void DrawPhoneme(UNote note, DrawingContext cxt) {
             const double y = 23.5;
             const double height = 24;
-            if (note.Error) return;
             for (int i = 0; i < note.phonemes.Count; i++) {
                 var phoneme = note.phonemes[i];
+                if (phoneme.Error) {
+                    continue;
+                }
                 int position = note.position + phoneme.position;
                 double x = Math.Round(position * midiVM.QuarterWidth / DocManager.Inst.Project.resolution) + 0.5;
                 double x0 = (position + DocManager.Inst.Project.MillisecondToTick(phoneme.envelope.data[0].X))
@@ -90,9 +92,11 @@ namespace OpenUtau.UI.Controls {
 
                 cxt.DrawLine(penEnvSel, new Point(x, y), new Point(x, y + height));
 
-                var fText = GetFormattedText(phoneme.phonemeMapped, false).fText;
-                if (midiVM.QuarterWidth > UIConstants.MidiQuarterMinWidthShowPhoneme) {
-                    cxt.DrawText(fText, new Point(Math.Round(x), 8));
+                if (!string.IsNullOrEmpty(phoneme.phonemeMapped)) {
+                    var fText = GetFormattedText(phoneme.phonemeMapped, false).fText;
+                    if (midiVM.QuarterWidth > UIConstants.MidiQuarterMinWidthShowPhoneme) {
+                        cxt.DrawText(fText, new Point(Math.Round(x), 8));
+                    }
                 }
             }
         }

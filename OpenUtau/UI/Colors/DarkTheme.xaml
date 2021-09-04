@@ -8,7 +8,7 @@
     <Color x:Key="BackgroundColorActive">#505050</Color>
     <Color x:Key="WindowButtonColorNormal">#606060</Color>
     <Color x:Key="WindowButtonColorActive">#FCFCFC</Color>
-    <Color x:Key="ForegroundColorNormal">#FCFCFC</Color>
+    <Color x:Key="ForegroundColorNormal">#E0E0E0</Color>
     <Color x:Key="ForegroundColorActive">#FCFCFC</Color>
 
     <Color x:Key="BlackKeyNoteColorNormal">#303030</Color>
@@ -22,17 +22,17 @@
 
     <Color x:Key="TimelineColorNormal">#303030</Color>
 
-    <Color x:Key="TickLineColorLight">#060606</Color>
-    <Color x:Key="TickLineColorDark">#B5B5B5</Color>
-    <Color x:Key="BarNumberColor">#B5B5B5</Color>
+    <Color x:Key="TickLineColorLight">#505050</Color>
+    <Color x:Key="TickLineColorDark">#707070</Color>
+    <Color x:Key="BarNumberColor">#D0D0D0</Color>
 
     <!--Keyboard Background-->
-    <Color x:Key="BlackKeyColorNormalLeft">#EB6795</Color>
-    <Color x:Key="BlackKeyColorNormalRight">#ED2F73</Color>
+    <Color x:Key="BlackKeyColorNormalLeft">#303030</Color>
+    <Color x:Key="BlackKeyColorNormalRight">#303030</Color>
     <Color x:Key="BlackKeyNameColorNormal">#FCFCFC</Color>
 
-    <Color x:Key="WhiteKeyColorNormalLeft">#303030</Color>
-    <Color x:Key="WhiteKeyColorNormalRight">#303030</Color>
+    <Color x:Key="WhiteKeyColorNormalLeft">#EB6795</Color>
+    <Color x:Key="WhiteKeyColorNormalRight">#ED2F73</Color>
     <Color x:Key="WhiteKeyNameColorNormal">#FCFCFC</Color>
 
     <Color x:Key="CenterKeyColorNormalLeft">#E6C5CE</Color>

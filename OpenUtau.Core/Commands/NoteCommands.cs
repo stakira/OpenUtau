@@ -130,13 +130,11 @@ namespace OpenUtau.Core {
         public override void Execute() {
             lock (Part) {
                 Note.lyric = NewLyric;
-                Note.phonemes[0].phoneme = NewLyric;
             }
         }
         public override void Unexecute() {
             lock (Part) {
                 Note.lyric = OldLyric;
-                Note.phonemes[0].phoneme = OldLyric;
             }
         }
     }
