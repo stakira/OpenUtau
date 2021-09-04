@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
 using OpenUtau.Core.Util;
@@ -19,11 +20,21 @@ namespace OpenUtau.Core {
             var assemblyPath = Assembly.GetExecutingAssembly().Location;
             Log.Logger.Information($"Assembly path = {assemblyPath}");
             HomePath = Directory.GetParent(assemblyPath).ToString();
+            HomePathIsAscii = true;
+            var etor = StringInfo.GetTextElementEnumerator(HomePath);
+            while (etor.MoveNext()) {
+                string s = etor.GetTextElement();
+                if (s.Length != 1 || s[0] >= 128) {
+                    HomePathIsAscii = false;
+                    break;
+                }
+            }
             Log.Logger.Information($"Home path = {HomePath}");
         }
 
         public static PathManager Inst { get { if (_inst == null) { _inst = new PathManager(); } return _inst; } }
         public string HomePath { get; private set; }
+        public bool HomePathIsAscii { get; private set; }
         public string InstalledSingersPath => Path.Combine(HomePath, "Content", "Singers");
         public string PluginsPath => Path.Combine(HomePath, kPluginPath);
 

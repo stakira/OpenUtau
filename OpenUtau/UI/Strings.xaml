@@ -74,6 +74,8 @@
 
     <!-- Errors -->
     <system:String x:Key="errors.caption">Error</system:String>
+    <system:String x:Key="warning">Warning</system:String>
+    <system:String x:Key="warning.asciipath">Your OpenUtau home path "{0}" contains non-ASCII character. Exe resamplers may not work.</system:String>
 
     <!-- Tips -->
     <system:String x:Key="tip.lyricbox.prev">Shift+Tab: Previous Note</system:String>

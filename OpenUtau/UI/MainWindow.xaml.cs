@@ -637,8 +637,17 @@ namespace OpenUtau.UI {
             }
         }
 
+        bool firstActivate = true;
         private void Window_Activated(object sender, EventArgs e) {
-            if (trackVM != null) trackVM.MarkUpdate();
+            if (trackVM != null) {
+                trackVM.MarkUpdate();
+            }
+            if (firstActivate && !PathManager.Inst.HomePathIsAscii) {
+                MessageBox.Show(
+                    string.Format((string)FindResource("warning.asciipath"), PathManager.Inst.HomePath),
+                    (string)FindResource("warning"));
+                firstActivate = false;
+            }
         }
 
         private void headerCanvas_MouseDown(object sender, MouseButtonEventArgs e) {
