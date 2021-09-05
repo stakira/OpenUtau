@@ -156,6 +156,7 @@ namespace OpenUtau.Core.Render {
 
         IEnumerable<RenderItem> PreparePart(UVoicePart part, UTrack track, UProject project, int startTick) {
             return part.notes
+                .Where(note => !note.OverlapError)
                 .SelectMany(note => note.phonemes)
                 .Where(phoneme => !phoneme.Error)
                 .Where(phoneme => part.position + phoneme.Parent.position + phoneme.End > startTick)

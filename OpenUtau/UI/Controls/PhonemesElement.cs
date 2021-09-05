@@ -50,7 +50,7 @@ namespace OpenUtau.UI.Controls {
             const double height = 24;
             for (int i = 0; i < note.phonemes.Count; i++) {
                 var phoneme = note.phonemes[i];
-                if (phoneme.Error) {
+                if (note.OverlapError || phoneme.Error) {
                     continue;
                 }
                 int position = note.position + phoneme.position;

@@ -30,6 +30,7 @@ namespace OpenUtau.Core.Ustx {
         public int LeftBound => position + Math.Min(0, phonemes.Count > 0 ? phonemes.First().position : 0);
         public int RightBound => position + Math.Max(duration, phonemes.Count > 0 ? phonemes.Last().position + phonemes.Last().Duration : 0);
         public bool Error { get; set; } = false;
+        public bool OverlapError { get; set; } = false;
 
         public static UNote Create() {
             var note = new UNote();
@@ -90,9 +91,11 @@ namespace OpenUtau.Core.Ustx {
             duration = Math.Max(10, duration);
             if (Prev != null && Prev.End > position) {
                 Error = true;
+                OverlapError = true;
                 return;
             }
             Error = false;
+            OverlapError = false;
             if (track.Singer == null || !track.Singer.Loaded) {
                 Error |= true;
             }
