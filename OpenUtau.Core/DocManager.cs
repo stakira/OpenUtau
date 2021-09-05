@@ -60,15 +60,13 @@ namespace OpenUtau.Core {
 
         void SearchAllLyricPhonemizers() {
             Phonemizers = new[] { new DefaultPhonemizer() };
-            Task.Run(() => {
-                var stopWatch = Stopwatch.StartNew();
-                Phonemizers = GetType().Assembly.GetTypes()
-                    .Where(t => !t.IsAbstract && t.IsSubclassOf(typeof(Phonemizer)))
-                    .Select(t => Activator.CreateInstance(t) as Phonemizer)
-                    .ToArray();
-                stopWatch.Stop();
-                Log.Information($"Search all lyric phonemizers: {stopWatch.Elapsed}");
-            });
+            var stopWatch = Stopwatch.StartNew();
+            Phonemizers = GetType().Assembly.GetTypes()
+                .Where(t => !t.IsAbstract && t.IsSubclassOf(typeof(Phonemizer)))
+                .Select(t => Activator.CreateInstance(t) as Phonemizer)
+                .ToArray();
+            stopWatch.Stop();
+            Log.Information($"Search all lyric phonemizers: {stopWatch.Elapsed}");
         }
 
         #region Command Queue

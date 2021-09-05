@@ -538,6 +538,7 @@ namespace OpenUtau.UI {
             try {
                 Core.Formats.Formats.LoadProject(files);
             } catch (Exception e) {
+                Log.Error(e, $"Failed to open files {string.Join("\n", files)}");
                 MessageBox.Show(e.ToString());
             }
         }

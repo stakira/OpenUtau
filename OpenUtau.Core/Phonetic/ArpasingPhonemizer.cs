@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using OpenUtau.Core.Ustx;
+using Serilog;
 
 namespace OpenUtau.Core {
     public class ArpasingPhonemizer : Phonemizer {
@@ -11,24 +13,9 @@ namespace OpenUtau.Core {
             public string[] symbols;
         }
 
+        static object initLock = new object();
         static Dictionary<string, PhoneType> phones;
         static TrieNode root;
-
-        static ArpasingPhonemizer() {
-            root = new TrieNode();
-            phones = Properties.Resources.cmudict_0_7b_phones.Split('\n')
-                .Select(line => line.ToLowerInvariant())
-                .Select(line => line.Split())
-                .Where(parts => parts.Length == 2)
-                .ToDictionary(parts => parts[0], parts => (PhoneType)Enum.Parse(typeof(PhoneType), parts[1]));
-            Properties.Resources.cmudict_0_7b.Split('\n')
-               .Where(line => !line.StartsWith(";;;"))
-                .Select(line => line.ToLowerInvariant())
-               .Select(line => line.Split(new string[] { "  " }, StringSplitOptions.None))
-               .Where(parts => parts.Length == 2)
-               .ToList()
-               .ForEach(parts => BuildTrie(root, parts[0], 0, parts[1]));
-        }
 
         static void BuildTrie(TrieNode node, string word, int index, string symbols) {
             if (index == word.Length) {
@@ -59,9 +46,47 @@ namespace OpenUtau.Core {
 
         public override string Name => "Arpasing Phonemizer";
         public override string Tag => "EN ARPA";
+
+        public ArpasingPhonemizer() {
+            Initialize();
+        }
+
+        private static void Initialize() {
+            Task.Run(() => {
+                try {
+                    lock (initLock) {
+                        if (ArpasingPhonemizer.root != null) {
+                            return;
+                        }
+                        var root = new TrieNode();
+                        phones = Properties.Resources.cmudict_0_7b_phones.Split('\n')
+                            .Select(line => line.Trim().ToLowerInvariant())
+                            .Select(line => line.Split())
+                            .Where(parts => parts.Length == 2)
+                            .ToDictionary(parts => parts[0], parts => (PhoneType)Enum.Parse(typeof(PhoneType), parts[1]));
+                        Properties.Resources.cmudict_0_7b.Split('\n')
+                           .Where(line => !line.StartsWith(";;;"))
+                            .Select(line => line.Trim().ToLowerInvariant())
+                           .Select(line => line.Split(new string[] { "  " }, StringSplitOptions.None))
+                           .Where(parts => parts.Length == 2)
+                           .ToList()
+                           .ForEach(parts => BuildTrie(root, parts[0], 0, parts[1]));
+                        ArpasingPhonemizer.root = root;
+                    }
+                } catch (Exception e) {
+                    Log.Error(e, "Failed to initialize.");
+                }
+            });
+        }
+
         public override void SetSinger(USinger singer) => this.singer = singer;
 
         public override Phoneme[] Process(Note[] notes, Note? prev, Note? next) {
+            lock (initLock) {
+                if (root == null) {
+                    return new Phoneme[0];
+                }
+            }
             var note = notes[0];
             var prevSymbols = prev == null ? null : QueryTrie(root, prev?.lyric, 0);
             var symbols = QueryTrie(root, note.lyric, 0);
