@@ -53,6 +53,7 @@ namespace OpenUtau.Core.Ustx {
                 lastNote = note;
             }
             foreach (UNote note in notes) {
+                note.ExtendedDuration = note.duration;
                 if (note.Prev != null && note.Prev.End == note.position && note.lyric.StartsWith("...")) {
                     note.Extends = note.Prev.Extends ?? note.Prev;
                     note.Extends.ExtendedDuration = note.End - note.Extends.position;
@@ -61,7 +62,10 @@ namespace OpenUtau.Core.Ustx {
                 }
             }
             foreach (UNote note in notes) {
-                note.Phonemize(project, track);
+                note.Phonemize1ndPass(project, track);
+            }
+            foreach (UNote note in notes) {
+                note.Phonemize2ndPass(project, track);
             }
             UPhoneme lastPhoneme = null;
             foreach (UNote note in notes) {

@@ -109,7 +109,21 @@ namespace OpenUtau.Core.Ustx {
             }
         }
 
-        public void Phonemize(UProject project, UTrack track) {
+        public void Phonemize1ndPass(UProject project, UTrack track) {
+            Phonemize(project, track, 0);
+        }
+
+        public void Phonemize2ndPass(UProject project, UTrack track) {
+            var last = this;
+            while (last.Next != null && last.Next.Extends == this) {
+                last = last.Next;
+            }
+            if (last.Next != null && last.Next.phonemes.Count > 0 && last.Next.phonemes[0].position != 0) {
+                Phonemize(project, track, last.Next.phonemes[0].position);
+            }
+        }
+
+        void Phonemize(UProject project, UTrack track, int endOffset) {
             if (track.Singer == null || !track.Singer.Loaded) {
                 return;
             }
@@ -137,8 +151,9 @@ namespace OpenUtau.Core.Ustx {
                 next = null;
             }
             track.Phonemizer.SetTiming(project.bpm, project.beatUnit, project.resolution);
-            var newPhonemes = track.Phonemizer.Process(
-                notes.Select(note => note.ToProcessorNote()).ToArray(), prev, next);
+            var phonemizerNotes = notes.Select(note => note.ToProcessorNote()).ToArray();
+            phonemizerNotes[phonemizerNotes.Length - 1].duration += endOffset;
+            var newPhonemes = track.Phonemizer.Process(phonemizerNotes, prev, next);
             // Safety treatment of phonemizer output.
             newPhonemes = newPhonemes
                 .GroupBy(p => p.position)

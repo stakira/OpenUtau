@@ -46,14 +46,13 @@ namespace OpenUtau.Core.Ustx {
             if (Error) {
                 return;
             }
-            if (Next != null && (Next.Parent == Parent || Next.Parent.Extends == Parent || Parent.Extends != null && Next.Parent.Extends == Parent.Extends)) {
-                Duration = Next.Parent.position + Next.position - (Parent.position + position);
+            if (Parent.Extends != null) {
+                Duration = Parent.Extends.ExtendedEnd - Parent.position - position;
             } else {
-                if (Parent.Extends != null) {
-                    Duration = Parent.Extends.ExtendedEnd - Parent.position - position;
-                } else {
-                    Duration = Parent.duration - position;
-                }
+                Duration = Parent.ExtendedDuration - position;
+            }
+            if (Next != null) {
+                Duration = Math.Min(Duration, Next.Parent.position + Next.position - (Parent.position + position));
             }
             Error = Duration <= 0;
         }

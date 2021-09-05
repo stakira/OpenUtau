@@ -105,6 +105,7 @@ namespace OpenUtau.Core {
                 };
             }
             var phoneTypes = symbols.Select(s => phones[s]).ToArray();
+            int firstVowel = Array.IndexOf(phoneTypes, PhoneType.vowel);
             var phonemes = new Phoneme[symbols.Length];
             string prevSymbol = prevSymbols == null ? "-" : prevSymbols.Last();
             string phoneme = $"{prevSymbol} {symbols[0]}";
@@ -126,6 +127,11 @@ namespace OpenUtau.Core {
 
             // Alignments
             alignments.Clear();
+            if (firstVowel == 1 || firstVowel == 2) {
+                alignments.Add(Tuple.Create(firstVowel, 0));
+            } else {
+                firstVowel = 0;
+            }
             int position = 0;
             for (int i = 0; i < notes.Length; ++i) {
                 string alignmentHint = notes[i].lyric;
@@ -146,7 +152,7 @@ namespace OpenUtau.Core {
             alignments.Add(Tuple.Create(phonemes.Length, position));
 
             int startIndex = 0;
-            int startTick = 0;
+            int startTick = -60 * firstVowel;
             foreach (var alignment in alignments) {
                 DistributeDuration(phoneTypes, phonemes, startIndex, alignment.Item1, startTick, alignment.Item2);
                 startIndex = alignment.Item1;
@@ -159,33 +165,28 @@ namespace OpenUtau.Core {
         }
 
         void DistributeDuration(PhoneType[] phoneTypes, Phoneme[] phonemes, int startIndex, int endIndex, int startTick, int endTick) {
-            float consonants = 0;
-            float vowels = 0;
+            int consonants = 0;
+            int vowels = 0;
             int duration = endTick - startTick;
             for (int i = startIndex; i < endIndex; i++) {
                 if (phoneTypes[i] == PhoneType.vowel) {
                     vowels++;
-                } else if (phoneTypes[i] == PhoneType.semivowel) {
-                    vowels += 0.5f;
                 } else {
                     consonants++;
                 }
             }
-            float consonantDuration = vowels > 0
+            int consonantDuration = vowels > 0
                 ? (consonants > 0 ? Math.Min(60, duration / 2 / consonants) : 0)
                 : duration / consonants;
-            float vowelDuration = vowels > 0 ? (duration - consonantDuration * consonants) / vowels : 0;
+            int vowelDuration = vowels > 0 ? (duration - consonantDuration * consonants) / vowels : 0;
             int position = startTick;
             for (int i = startIndex; i < endIndex; i++) {
                 if (phoneTypes[i] == PhoneType.vowel) {
                     phonemes[i].position = position;
-                    position += (int)vowelDuration;
-                } else if (phoneTypes[i] == PhoneType.semivowel) {
-                    phonemes[i].position = position;
-                    position += (int)(vowelDuration * 0.5);
+                    position += vowelDuration;
                 } else {
                     phonemes[i].position = position;
-                    position += (int)consonantDuration;
+                    position += consonantDuration;
                 }
             }
         }
