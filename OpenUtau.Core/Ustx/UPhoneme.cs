@@ -93,7 +93,7 @@ namespace OpenUtau.Core.Ustx {
             int gapTick = Parent.position + position - (Prev.Parent.position + Prev.End);
             float gapMs = (float)project.TickToMillisecond(gapTick);
             float maxPreutter = preutter;
-            if (gapMs == 0) {
+            if (gapMs <= 0) {
                 // Keep at least half of last phoneme.
                 overlapped = true;
                 maxPreutter = (float)project.TickToMillisecond(Prev.Duration) / 2;

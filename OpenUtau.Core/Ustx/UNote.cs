@@ -109,21 +109,7 @@ namespace OpenUtau.Core.Ustx {
             }
         }
 
-        public void Phonemize1ndPass(UProject project, UTrack track) {
-            Phonemize(project, track, 0);
-        }
-
-        public void Phonemize2ndPass(UProject project, UTrack track) {
-            var last = this;
-            while (last.Next != null && last.Next.Extends == this) {
-                last = last.Next;
-            }
-            if (last.Next != null && last.Next.phonemes.Count > 0 && last.Next.phonemes[0].position != 0) {
-                Phonemize(project, track, last.Next.phonemes[0].position);
-            }
-        }
-
-        void Phonemize(UProject project, UTrack track, int endOffset) {
+        public void Phonemize(UProject project, UTrack track) {
             if (track.Singer == null || !track.Singer.Loaded) {
                 return;
             }
@@ -135,6 +121,11 @@ namespace OpenUtau.Core.Ustx {
             notes.Add(this);
             while (notes.Last().Next != null && notes.Last().Next.Extends == this) {
                 notes.Add(notes.Last().Next);
+            }
+
+            int endOffset = 0;
+            if (notes.Last().Next != null && notes.Last().Next.phonemes.Count > 0) {
+                endOffset = Math.Min(0, notes.Last().Next.position - notes.Last().End + notes.Last().Next.phonemes[0].position);
             }
 
             var prev = Prev?.ToProcessorNote();

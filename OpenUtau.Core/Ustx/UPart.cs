@@ -61,11 +61,8 @@ namespace OpenUtau.Core.Ustx {
                     note.Extends = null;
                 }
             }
-            foreach (UNote note in notes) {
-                note.Phonemize1ndPass(project, track);
-            }
-            foreach (UNote note in notes) {
-                note.Phonemize2ndPass(project, track);
+            foreach (UNote note in notes.Reverse()) {
+                note.Phonemize(project, track);
             }
             UPhoneme lastPhoneme = null;
             foreach (UNote note in notes) {

@@ -46,6 +46,7 @@ namespace OpenUtau.Core {
 
         public override string Name => "Arpasing Phonemizer";
         public override string Tag => "EN ARPA";
+        public int ConsonantLength { get; set; } = 60;
 
         public ArpasingPhonemizer() {
             Initialize();
@@ -127,7 +128,7 @@ namespace OpenUtau.Core {
 
             // Alignments
             alignments.Clear();
-            if (firstVowel == 1 || firstVowel == 2) {
+            if (firstVowel > 0) {
                 alignments.Add(Tuple.Create(firstVowel, 0));
             } else {
                 firstVowel = 0;
@@ -152,7 +153,7 @@ namespace OpenUtau.Core {
             alignments.Add(Tuple.Create(phonemes.Length, position));
 
             int startIndex = 0;
-            int startTick = -60 * firstVowel;
+            int startTick = -ConsonantLength * firstVowel;
             foreach (var alignment in alignments) {
                 DistributeDuration(phoneTypes, phonemes, startIndex, alignment.Item1, startTick, alignment.Item2);
                 startIndex = alignment.Item1;
@@ -176,7 +177,7 @@ namespace OpenUtau.Core {
                 }
             }
             int consonantDuration = vowels > 0
-                ? (consonants > 0 ? Math.Min(60, duration / 2 / consonants) : 0)
+                ? (consonants > 0 ? Math.Min(ConsonantLength, duration / 2 / consonants) : 0)
                 : duration / consonants;
             int vowelDuration = vowels > 0 ? (duration - consonantDuration * consonants) / vowels : 0;
             int position = startTick;
