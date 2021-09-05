@@ -5,7 +5,7 @@ namespace OpenUtau.Core {
     public abstract class Phonemizer {
         public struct Note {
             public string lyric;
-            public string hints;
+            public string phoneticHint;
             public int tone;
             public int position;
             public int duration;

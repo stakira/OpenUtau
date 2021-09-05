@@ -31,6 +31,15 @@ namespace OpenUtau.Core {
             BuildTrie(child, word, index + 1, symbols);
         }
 
+        static string[] GetSymbols(Note note) {
+            if (string.IsNullOrEmpty(note.phoneticHint)) {
+                return QueryTrie(root, note.lyric, 0);
+            }
+            return note.phoneticHint.Split()
+                .Where(s => phones.ContainsKey(s))
+                .ToArray();
+        }
+
         static string[] QueryTrie(TrieNode node, string word, int index) {
             if (index == word.Length) {
                 return node.symbols;
@@ -39,6 +48,13 @@ namespace OpenUtau.Core {
                 return QueryTrie(child, word, index + 1);
             }
             return null;
+        }
+
+        static string RemoveTailDigits(string s) {
+            while (char.IsDigit(s.Last())) {
+                s = s.Substring(0, s.Length - 1);
+            }
+            return s;
         }
 
         private USinger singer;
@@ -89,8 +105,8 @@ namespace OpenUtau.Core {
                 }
             }
             var note = notes[0];
-            var prevSymbols = prevNeighbour == null ? null : QueryTrie(root, prevNeighbour?.lyric, 0);
-            var symbols = QueryTrie(root, note.lyric, 0);
+            var prevSymbols = prevNeighbour == null ? null : GetSymbols(prevNeighbour.Value);
+            var symbols = GetSymbols(note);
             if (symbols == null || symbols.Length == 0) {
                 if (note.lyric == "-" && prevSymbols != null) {
                     return new Phoneme[] {
@@ -190,13 +206,6 @@ namespace OpenUtau.Core {
                     position += consonantDuration;
                 }
             }
-        }
-
-        static string RemoveTailDigits(string s) {
-            while (char.IsDigit(s.Last())) {
-                s = s.Substring(0, s.Length - 1);
-            }
-            return s;
         }
     }
 }

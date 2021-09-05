@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Text;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 
 namespace OpenUtau.Core.Ustx {
     [JsonObject(MemberSerialization.OptIn)]
     public class UNote : IComparable {
+        static Regex phoneticHintPattern = new Regex(@"\[(.*)\]");
+
         [JsonProperty("pos")] public int position;
         [JsonProperty("dur")] public int duration;
         [JsonProperty("num")] public int tone;
@@ -155,8 +158,15 @@ namespace OpenUtau.Core.Ustx {
         }
 
         private Phonemizer.Note ToProcessorNote() {
+            string lrc = lyric;
+            string phoneticHint = null;
+            lrc = phoneticHintPattern.Replace(lrc, match => {
+                phoneticHint = match.Groups[1].Value;
+                return "";
+            });
             return new Phonemizer.Note() {
-                lyric = lyric,
+                lyric = lrc.Trim(),
+                phoneticHint = phoneticHint?.Trim(),
                 tone = tone,
                 position = position,
                 duration = duration,

@@ -31,15 +31,22 @@ namespace OpenUtau.Core {
         public override void SetSinger(Ustx.USinger singer) => this.singer = singer;
         public override Phoneme[] Process(Note[] notes, Note? prevNeighbour, Note? nextNeighbour) {
             var note = notes[0];
+            if (!string.IsNullOrEmpty(note.phoneticHint)) {
+                return new Phoneme[] {
+                    new Phoneme {
+                        phoneme = note.phoneticHint,
+                    }
+                };
+            }
             var phoneme = $"- {note.lyric}";
-            if (prevNeighbour != null && !string.IsNullOrEmpty(prevNeighbour?.lyric)) {
-                var lyric = prevNeighbour?.lyric;
+            if (prevNeighbour != null) {
+                var lyric = prevNeighbour?.phoneticHint ?? prevNeighbour?.lyric;
                 var unicode = ToUnicodeElements(lyric);
                 if (vowelLookup.TryGetValue(unicode.Last(), out var vow)) {
                     phoneme = $"{vow} {note.lyric}";
                 }
             }
-            if (singer.TryGetMappedOto(phoneme, note.tone, out var _)) {
+            if (!singer.TryGetMappedOto(phoneme, note.tone, out var _)) {
                 phoneme = note.lyric;
             }
             return new Phoneme[] {
