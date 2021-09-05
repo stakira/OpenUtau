@@ -23,7 +23,7 @@ namespace OpenUtau.Core {
         public override string Tag => "ZH CVX";
         public override void SetSinger(USinger singer) => this.singer = singer;
 
-        public override Phoneme[] Process(Note[] notes, Note? prev, Note? next) {
+        public override Phoneme[] Process(Note[] notes, Note? prevNeighbour, Note? nextNeighbour) {
             var note = notes[0];
             string vowel = string.Empty;
             if (note.lyric.Length > 2 && cSet.Contains(note.lyric.Substring(0, 2))) {
@@ -31,10 +31,9 @@ namespace OpenUtau.Core {
             } else if (note.lyric.Length > 1 && cSet.Contains(note.lyric.Substring(0, 1))) {
                 vowel = note.lyric.Substring(1);
             }
-            string phoneme0 = TryMapPhoneme(note.lyric, note.tone, singer);
+            string phoneme0 = note.lyric;
             int totalDuration = notes.Sum(n => n.duration);
             if (vDict.TryGetValue(vowel, out var phoneme1)) {
-                phoneme1 = TryMapPhoneme(phoneme1, note.tone, singer);
                 int length1 = 120;
                 if (length1 > totalDuration / 2) {
                     length1 = totalDuration / 2;
@@ -42,18 +41,16 @@ namespace OpenUtau.Core {
                 return new Phoneme[] {
                     new Phoneme() {
                         phoneme = phoneme0,
-                        duration = totalDuration - length1,
                     },
                     new Phoneme() {
                         phoneme = phoneme1,
-                        duration = length1,
+                        position = totalDuration - length1,
                     }
                 };
             }
             return new Phoneme[] {
                 new Phoneme() {
                     phoneme = phoneme0,
-                    duration = totalDuration,
                 }
             };
         }

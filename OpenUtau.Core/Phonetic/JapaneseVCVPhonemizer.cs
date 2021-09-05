@@ -29,24 +29,22 @@ namespace OpenUtau.Core {
         public override string Name => "Japanese VCV Phonemizer";
         public override string Tag => "JP VCV";
         public override void SetSinger(Ustx.USinger singer) => this.singer = singer;
-        public override Phoneme[] Process(Note[] notes, Note? prev, Note? next) {
+        public override Phoneme[] Process(Note[] notes, Note? prevNeighbour, Note? nextNeighbour) {
             var note = notes[0];
             var phoneme = $"- {note.lyric}";
-            if (prev != null && !string.IsNullOrEmpty(prev?.lyric)) {
-                var lyric = prev?.lyric;
+            if (prevNeighbour != null && !string.IsNullOrEmpty(prevNeighbour?.lyric)) {
+                var lyric = prevNeighbour?.lyric;
                 var unicode = ToUnicodeElements(lyric);
                 if (vowelLookup.TryGetValue(unicode.Last(), out var vow)) {
                     phoneme = $"{vow} {note.lyric}";
                 }
             }
-            phoneme = TryMapPhoneme(phoneme, note.tone, singer);
-            if (singer.FindOto(phoneme) == null) {
+            if (singer.TryGetMappedOto(phoneme, note.tone, out var _)) {
                 phoneme = note.lyric;
             }
             return new Phoneme[] {
                 new Phoneme {
                     phoneme = phoneme,
-                    duration = notes.Sum(n => n.duration),
                 }
             };
         }

@@ -105,13 +105,28 @@ namespace OpenUtau.Core.Ustx {
             });
         }
 
-        public bool TryGetOto(string phoneme, int tone, out UOto oto) {
+        public bool TryGetOto(string phoneme, out UOto oto) {
             oto = default;
             foreach (var set in OtoSets) {
                 if (set.Otos.TryGetValue(phoneme, out var list)) {
                     oto = list[0];
                     return true;
                 }
+            }
+            return false;
+        }
+
+        public bool TryGetMappedOto(string phoneme, int tone, out UOto oto) {
+            oto = default;
+            string toneName = MusicMath.GetToneName(tone);
+            if (PrefixMap.TryGetValue(toneName, out var mapped)) {
+                string phonemeMapped = mapped.Item1 + phoneme + mapped.Item2;
+                if (TryGetOto(phonemeMapped, out oto)) {
+                    return true;
+                }
+            }
+            if (TryGetOto(phoneme, out oto)) {
+                return true;
             }
             return false;
         }

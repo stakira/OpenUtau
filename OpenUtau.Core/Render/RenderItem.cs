@@ -92,19 +92,29 @@ namespace OpenUtau.Core.Render {
         }
 
         private List<int> BuildPitchData(UPhoneme phoneme, UVoicePart part, UProject project) {
-            var startNote = phoneme.Parent.Prev ?? phoneme.Parent;
-            var endNote = phoneme.Parent;
-            while (endNote.Next != null && endNote.Next.Extends == phoneme.Parent) {
-                endNote = endNote.Next;
+            int leftBound = phoneme.Parent.position + phoneme.position - project.MillisecondToTick(phoneme.preutter);
+            int rightBound = phoneme.Parent.position + phoneme.position + phoneme.Duration - project.MillisecondToTick(phoneme.tailIntrude - phoneme.tailOverlap);
+            var leftNote = phoneme.Parent;
+            var rightNote = phoneme.Parent;
+            bool oneMore = true;
+            while ((leftBound < leftNote.RightBound || oneMore) && leftNote.Prev != null && leftNote.Prev.End == leftNote.position) {
+                leftNote = leftNote.Prev;
+                if (leftBound >= leftNote.RightBound) {
+                    oneMore = false;
+                }
             }
-            if (endNote.Next != null && endNote.Next.position == endNote.End) {
-                endNote = endNote.Next;
+            oneMore = true;
+            while ((rightBound > rightNote.LeftBound || oneMore) && rightNote.Next != null && rightNote.Next.position == rightNote.End) {
+                rightNote = rightNote.Next;
+                if (rightBound <= rightNote.LeftBound) {
+                    oneMore = false;
+                }
             }
 
             // Collect pitch curve and vibratos.
             var points = new List<PitchPoint>();
             var vibratos = new List<Tuple<double, double, UVibrato>>();
-            var note = startNote;
+            var note = leftNote;
             while (true) {
                 var offsetMs = (float)project.TickToMillisecond(phoneme.Parent.position - note.position);
                 foreach (var point in note.pitch.data) {
@@ -118,7 +128,7 @@ namespace OpenUtau.Core.Render {
                     double vibratoEndMs = project.TickToMillisecond(note.End - phoneme.Parent.position);
                     vibratos.Add(Tuple.Create(vibratoStartMs, vibratoEndMs, note.vibrato));
                 }
-                if (note == endNote) {
+                if (note == rightNote) {
                     break;
                 }
                 note = note.Next;

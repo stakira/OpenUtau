@@ -25,6 +25,8 @@ namespace OpenUtau.Core.Ustx {
         public UPhoneme Next { get; set; }
         public bool Error { get; set; } = false;
 
+        public override string ToString() => $"\"{phoneme}\" pos:{position}";
+
         public UPhoneme Clone() {
             return new UPhoneme() {
                 position = position,
@@ -44,16 +46,14 @@ namespace OpenUtau.Core.Ustx {
             if (Error) {
                 return;
             }
-            if (Next != null && (Next.Parent == Parent || Next.Parent.Extends == Parent)) {
-                Duration = Next.position - position;
+            if (Next != null && (Next.Parent == Parent || Next.Parent.Extends == Parent || Parent.Extends != null && Next.Parent.Extends == Parent.Extends)) {
+                Duration = Next.Parent.position + Next.position - (Parent.position + position);
             } else {
-                int duration = note.duration;
-                var nextNote = Parent.Next;
-                while (nextNote != null && nextNote.Extends == Parent) {
-                    duration += nextNote.duration;
-                    nextNote = nextNote.Next;
+                if (Parent.Extends != null) {
+                    Duration = Parent.Extends.ExtendedEnd - Parent.position - position;
+                } else {
+                    Duration = Parent.duration - position;
                 }
-                Duration = duration - position;
             }
             Error = Duration <= 0;
         }
@@ -68,7 +68,7 @@ namespace OpenUtau.Core.Ustx {
                 return;
             }
             // Load oto.
-            if (track.Singer.TryGetOto(phoneme, note.tone, out var oto)) {
+            if (track.Singer.TryGetMappedOto(phoneme, note.tone, out var oto)) {
                 this.oto = oto;
                 Error = false;
                 phonemeMapped = oto.Alias;

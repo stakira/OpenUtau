@@ -24,6 +24,8 @@ namespace OpenUtau.Core.Ustx {
         public UNote Extends { get; set; }
         public int ExtendedDuration { get; set; }
         public int ExtendedEnd => position + ExtendedDuration;
+        public int LeftBound => position + Math.Min(0, phonemes.Count > 0 ? phonemes.First().position : 0);
+        public int RightBound => position + Math.Max(duration, phonemes.Count > 0 ? phonemes.Last().position + phonemes.Last().Duration : 0);
         public bool Error { get; set; } = false;
 
         public static UNote Create() {
@@ -57,7 +59,7 @@ namespace OpenUtau.Core.Ustx {
         }
 
         public override string ToString() {
-            return $"\"{lyric}\" Pos:{position} Dur:{duration} Note:{tone}{(Error ? " Error" : string.Empty)}{(Selected ? " Selected" : string.Empty)}";
+            return $"\"{lyric}\" Pos:{position} Dur:{duration} Tone:{tone}{(Error ? " Error" : string.Empty)}{(Selected ? " Selected" : string.Empty)}";
         }
 
         public void AfterLoad(UProject project, UTrack track, UVoicePart part) {
@@ -123,7 +125,7 @@ namespace OpenUtau.Core.Ustx {
 
             var prev = Prev?.ToProcessorNote();
             var next = notes.Last().Next?.ToProcessorNote();
-            if (Prev?.End < this.position) {
+            if (Prev?.End < position) {
                 prev = null;
             } else if (Prev?.Extends != null) {
                 prev = Prev.Extends.ToProcessorNote();
@@ -137,31 +139,13 @@ namespace OpenUtau.Core.Ustx {
             track.Phonemizer.SetTiming(project.bpm, project.beatUnit, project.resolution);
             var newPhonemes = track.Phonemizer.Process(
                 notes.Select(note => note.ToProcessorNote()).ToArray(), prev, next);
-            while (phonemes.Count < newPhonemes.Length) {
-                phonemes.Add(new UPhoneme());
-            }
-            while (phonemes.Count > newPhonemes.Length) {
-                phonemes.RemoveAt(phonemes.Count - 1);
-            }
-            for (var i = 0; i < newPhonemes.Length; i++) {
-                newPhonemes[i].duration = Math.Max(10, newPhonemes[i].duration);
-            }
-            int totalNoteDuration = notes.Sum(n => n.duration);
-            int totalDurtaion = newPhonemes.Sum(p => p.duration);
-            if (totalDurtaion > totalNoteDuration) {
-                for (var i = 0; i < newPhonemes.Length; i++) {
-                    newPhonemes[i].duration = (int)(1.0 * totalNoteDuration / totalDurtaion * newPhonemes[i].duration);
-                }
-            }
-            int position = 0;
-            for (var i = 0; i < phonemes.Count; i++) {
-                phonemes[i].phoneme = newPhonemes[i].phoneme;
-                phonemes[i].position = position;
-                position += newPhonemes[i].duration;
-            }
-            for (int i = 1; i < notes.Count; ++i) {
-                notes[i].phonemes.Clear();
-            }
+            // Safety treatment of phonemizer output.
+            newPhonemes = newPhonemes
+                .GroupBy(p => p.position)
+                .Select(group => group.First())
+                .OrderBy(p => p.position)
+                .ToArray();
+            DistributePhonemes(notes, newPhonemes);
         }
 
         private Phonemizer.Note ToProcessorNote() {
@@ -171,6 +155,27 @@ namespace OpenUtau.Core.Ustx {
                 position = position,
                 duration = duration,
             };
+        }
+
+        private void DistributePhonemes(List<UNote> notes, Phonemizer.Phoneme[] phonemes) {
+            int endPosition = 0;
+            int index = 0;
+            foreach (var note in notes) {
+                endPosition += note.duration;
+                int indexInNote = 0;
+                while (index < phonemes.Length && phonemes[index].position < endPosition) {
+                    while (note.phonemes.Count - 1 < indexInNote) {
+                        note.phonemes.Add(new UPhoneme());
+                    }
+                    note.phonemes[indexInNote].phoneme = phonemes[index].phoneme;
+                    note.phonemes[indexInNote].position = phonemes[index].position - (note.position - notes[0].position);
+                    index++;
+                    indexInNote++;
+                }
+                while (note.phonemes.Count > indexInNote) {
+                    note.phonemes.RemoveAt(note.phonemes.Count - 1);
+                }
+            }
         }
 
         public UNote Clone() {

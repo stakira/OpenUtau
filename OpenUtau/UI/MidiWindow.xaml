@@ -249,8 +249,6 @@
                     </Border>
                 </Border>
             </Border>
-            <Grid Width="18" Height="18">
-            </Grid>
         </Grid>
     </Grid>
 </local:BorderlessWindow>

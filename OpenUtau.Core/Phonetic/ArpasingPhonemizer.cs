@@ -81,43 +81,42 @@ namespace OpenUtau.Core {
 
         public override void SetSinger(USinger singer) => this.singer = singer;
 
-        public override Phoneme[] Process(Note[] notes, Note? prev, Note? next) {
+        public override Phoneme[] Process(Note[] notes, Note? prevNeighbour, Note? nextNeighbour) {
             lock (initLock) {
                 if (root == null) {
                     return new Phoneme[0];
                 }
             }
             var note = notes[0];
-            var prevSymbols = prev == null ? null : QueryTrie(root, prev?.lyric, 0);
+            var prevSymbols = prevNeighbour == null ? null : QueryTrie(root, prevNeighbour?.lyric, 0);
             var symbols = QueryTrie(root, note.lyric, 0);
             if (symbols == null || symbols.Length == 0) {
                 if (note.lyric == "-" && prevSymbols != null) {
                     return new Phoneme[] {
                         new Phoneme() {
-                            phoneme = TryMapPhoneme($"{prevSymbols.Last()} -", note.tone, singer),
-                            duration = note.duration,
+                            phoneme = $"{prevSymbols.Last()} -",
                         }
-            };
+                    };
                 }
                 return new Phoneme[] {
                     new Phoneme() {
-                        phoneme = TryMapPhoneme(note.lyric, note.tone, singer),
-                        duration = note.duration,
+                        phoneme = note.lyric,
                     }
                 };
             }
+            var phoneTypes = symbols.Select(s => phones[s]).ToArray();
             var phonemes = new Phoneme[symbols.Length];
             string prevSymbol = prevSymbols == null ? "-" : prevSymbols.Last();
-            string phoneme = TryMapPhoneme($"{prevSymbol} {symbols[0]}", note.tone, singer);
-            if (!singer.TryGetOto(phoneme, note.tone, out var _)) {
-                phoneme = TryMapPhoneme($"- {symbols[0]}", note.tone, singer); // Fallback to not use vc
+            string phoneme = $"{prevSymbol} {symbols[0]}";
+            if (!singer.TryGetMappedOto(phoneme, note.tone, out var _)) {
+                phoneme = $"- {symbols[0]}"; // Fallback to not use vc
             }
             phonemes[0] = new Phoneme {
                 phoneme = phoneme,
             };
             for (int i = 1; i < symbols.Length; i++) {
                 phoneme = $"{symbols[i - 1]} {symbols[i]}";
-                if (!singer.TryGetOto(TryMapPhoneme(phoneme, note.tone, singer), note.tone, out var _)) {
+                if (!singer.TryGetOto(MapPhoneme(phoneme, note.tone, singer), out var _)) {
                     phoneme = $"- {symbols[i]}"; // Fallback to not use vc
                 }
                 phonemes[i] = new Phoneme {
@@ -149,7 +148,7 @@ namespace OpenUtau.Core {
             int startIndex = 0;
             int startTick = 0;
             foreach (var alignment in alignments) {
-                DistributeDuration(symbols, phonemes, startIndex, alignment.Item1, startTick, alignment.Item2);
+                DistributeDuration(phoneTypes, phonemes, startIndex, alignment.Item1, startTick, alignment.Item2);
                 startIndex = alignment.Item1;
                 startTick = alignment.Item2;
             }
@@ -159,26 +158,34 @@ namespace OpenUtau.Core {
             return phonemes;
         }
 
-        void DistributeDuration(string[] symbols, Phoneme[] phonemes, int startIndex, int endIndex, int startTick, int endTick) {
-            int consonants = 0;
-            int vowels = 0;
+        void DistributeDuration(PhoneType[] phoneTypes, Phoneme[] phonemes, int startIndex, int endIndex, int startTick, int endTick) {
+            float consonants = 0;
+            float vowels = 0;
             int duration = endTick - startTick;
             for (int i = startIndex; i < endIndex; i++) {
-                if (phones[symbols[i]] == PhoneType.vowel || phones[symbols[i]] == PhoneType.semivowel) {
+                if (phoneTypes[i] == PhoneType.vowel) {
                     vowels++;
+                } else if (phoneTypes[i] == PhoneType.semivowel) {
+                    vowels += 0.5f;
                 } else {
                     consonants++;
                 }
             }
-            int consonantDuration = vowels > 0
+            float consonantDuration = vowels > 0
                 ? (consonants > 0 ? Math.Min(60, duration / 2 / consonants) : 0)
                 : duration / consonants;
-            int vowelDuration = vowels > 0 ? (duration - consonantDuration * consonants) / vowels : 0;
+            float vowelDuration = vowels > 0 ? (duration - consonantDuration * consonants) / vowels : 0;
+            int position = startTick;
             for (int i = startIndex; i < endIndex; i++) {
-                if (phones[symbols[i]] == PhoneType.vowel || phones[symbols[i]] == PhoneType.semivowel) {
-                    phonemes[i].duration = vowelDuration;
+                if (phoneTypes[i] == PhoneType.vowel) {
+                    phonemes[i].position = position;
+                    position += (int)vowelDuration;
+                } else if (phoneTypes[i] == PhoneType.semivowel) {
+                    phonemes[i].position = position;
+                    position += (int)(vowelDuration * 0.5);
                 } else {
-                    phonemes[i].duration = consonantDuration;
+                    phonemes[i].position = position;
+                    position += (int)consonantDuration;
                 }
             }
         }

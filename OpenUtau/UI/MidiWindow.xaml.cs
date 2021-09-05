@@ -788,6 +788,8 @@ namespace OpenUtau.UI {
         void ICmdSubscriber.OnNext(UCommand cmd, bool isUndo) {
             switch (cmd) {
                 case WillRemoveTrackNotification _:
+                case LoadProjectNotification _:
+                case RemovePartCommand _:
                     Hide();
                     break;
                 default:

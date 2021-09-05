@@ -13,7 +13,9 @@ namespace OpenUtau.Core {
 
         public struct Phoneme {
             public string phoneme;
-            public int duration;
+            public int position;
+
+            public override string ToString() => $"\"{phoneme}\" pos:{position}";
         }
 
         private double bpm;
@@ -28,10 +30,10 @@ namespace OpenUtau.Core {
         /// Phonemize a consecutive sequence of notes.
         /// </summary>
         /// <param name="notes">A note and its extender notes. Always one or more.</param>
-        /// <param name="prev">The consecutive note before the leading note.</param>
-        /// <param name="next">The consecutive note after the last extender note.</param>
+        /// <param name="prevNeighbour">The neighbour note before the leading note.</param>
+        /// <param name="nextNeighbour">The neighbour note after the last extender note.</param>
         /// <returns></returns>
-        public abstract Phoneme[] Process(Note[] notes, Note? prev, Note? next);
+        public abstract Phoneme[] Process(Note[] notes, Note? prevNeighbour, Note? nextNeighbour);
 
         public override string ToString() => $"[{Tag}] {Name}";
 
@@ -58,7 +60,19 @@ namespace OpenUtau.Core {
             return result;
         }
 
-        public static string TryMapPhoneme(string phoneme, int tone, Ustx.USinger singer) {
+        public static void MapPhonemes(Note[] notes, Phoneme[] phonemes, Ustx.USinger singer) {
+            int endPosition = 0;
+            int index = 0;
+            foreach (var note in notes) {
+                endPosition += note.duration;
+                while (index < phonemes.Length && phonemes[index].position < endPosition) {
+                    phonemes[index].phoneme = MapPhoneme(phonemes[index].phoneme, note.tone, singer);
+                    index++;
+                }
+            }
+        }
+
+        public static string MapPhoneme(string phoneme, int tone, Ustx.USinger singer) {
             var toneName = MusicMath.GetToneName(tone);
             if (singer.PrefixMap.TryGetValue(toneName, out var prefix)) {
                 var phonemeMapped = prefix.Item1 + phoneme + prefix.Item2;
@@ -67,19 +81,6 @@ namespace OpenUtau.Core {
                 }
             }
             return phoneme;
-        }
-
-        public static void MapPhonemes(Note[] notes, Phoneme[] phonemes, Ustx.USinger singer) {
-            int durationLeft = 0;
-            int index = 0;
-            foreach (var note in notes) {
-                durationLeft += note.duration;
-                while (index < phonemes.Length && durationLeft > phonemes[index].duration * 0.5) {
-                    phonemes[index].phoneme = TryMapPhoneme(phonemes[index].phoneme, note.tone, singer);
-                    durationLeft -= phonemes[index].duration;
-                    index++;
-                }
-            }
         }
     }
 }
