@@ -3,16 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.ComponentModel;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using OpenUtau.UI.Controls;
-using System.Globalization;
 using System.Windows.Input;
 using GalaSoft.MvvmLight.Command;
+using Serilog;
 
 namespace OpenUtau.UI.Models {
     class MidiViewModel : INotifyPropertyChanged, ICmdSubscriber {
@@ -32,6 +31,7 @@ namespace OpenUtau.UI.Models {
         UVoicePart _part;
         public UVoicePart Part { get { return _part; } }
         public Classic.Plugin[] Plugins => DocManager.Inst.Plugins;
+        public Transformer[] Transformers => DocManager.Inst.Transformers;
 
         public Canvas TimelineCanvas;
         public Canvas MidiCanvas;
@@ -378,7 +378,7 @@ namespace OpenUtau.UI.Models {
         public bool NoteIsInView(UNote note) {
             double leftTick = OffsetX / QuarterWidth * Project.resolution - 512;
             double rightTick = leftTick + ViewWidth / QuarterWidth * Project.resolution + 512;
-            return note.LeftBound < rightTick && note.RightBound > leftTick ;
+            return note.LeftBound < rightTick && note.RightBound > leftTick;
         }
 
         # endregion
@@ -510,6 +510,22 @@ namespace OpenUtau.UI.Models {
             newPart.AfterLoad(project, project.tracks[Part.trackNo]);
             DocManager.Inst.StartUndoGroup();
             DocManager.Inst.ExecuteCmd(new ReplacePartCommand(project, Part, newPart));
+            DocManager.Inst.EndUndoGroup();
+        }
+
+        private ICommand transformerCommand;
+        public ICommand TransformerCommand => transformerCommand ?? (transformerCommand = new RelayCommand<object>(OnTransformerSelected));
+        void OnTransformerSelected(object obj) {
+            var transformer = (Transformer)obj;
+            DocManager.Inst.StartUndoGroup();
+            try {
+                foreach (var note in Part.notes) {
+                    string newLyric = transformer.Transform(note.lyric);
+                    DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(Part, note, newLyric));
+                }
+            } catch (Exception e) {
+                Log.Error(e, $"Failed to run transformer {transformer.Name}");
+            }
             DocManager.Inst.EndUndoGroup();
         }
 

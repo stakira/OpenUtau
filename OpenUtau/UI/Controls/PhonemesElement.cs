@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
-
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 

@@ -24,6 +24,7 @@ namespace OpenUtau.Core {
         public Dictionary<string, USinger> Singers { get; private set; } = new Dictionary<string, USinger>();
         public Plugin[] Plugins { get; private set; }
         public Phonemizer[] Phonemizers { get; private set; }
+        public Transformer[] Transformers { get; private set; }
         public UProject Project { get; private set; }
         public bool HasOpenUndoGroup => undoGroup != null;
         public List<UNote> NotesClipboard { get; set; }
@@ -31,7 +32,8 @@ namespace OpenUtau.Core {
         public void Initialize() {
             SearchAllSingers();
             SearchAllPlugins();
-            SearchAllLyricPhonemizers();
+            SearchAllTransformers();
+            SearchAllPhonemizers();
         }
 
         void SearchAllSingers() {
@@ -58,15 +60,24 @@ namespace OpenUtau.Core {
             Log.Information($"Search all plugins: {stopWatch.Elapsed}");
         }
 
-        void SearchAllLyricPhonemizers() {
-            Phonemizers = new[] { new DefaultPhonemizer() };
+        void SearchAllTransformers() {
+            var stopWatch = Stopwatch.StartNew();
+            Transformers = GetType().Assembly.GetTypes()
+                .Where(t => !t.IsAbstract && t.IsSubclassOf(typeof(Transformer)))
+                .Select(t => Activator.CreateInstance(t) as Transformer)
+                .ToArray();
+            stopWatch.Stop();
+            Log.Information($"Search all transformers: {stopWatch.Elapsed}");
+        }
+
+        void SearchAllPhonemizers() {
             var stopWatch = Stopwatch.StartNew();
             Phonemizers = GetType().Assembly.GetTypes()
                 .Where(t => !t.IsAbstract && t.IsSubclassOf(typeof(Phonemizer)))
                 .Select(t => Activator.CreateInstance(t) as Phonemizer)
                 .ToArray();
             stopWatch.Stop();
-            Log.Information($"Search all lyric phonemizers: {stopWatch.Elapsed}");
+            Log.Information($"Search all phonemizers: {stopWatch.Elapsed}");
         }
 
         #region Command Queue
