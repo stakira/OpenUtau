@@ -15,6 +15,7 @@ namespace OpenUtau.Core {
 
         static object initLock = new object();
         static Dictionary<string, PhoneType> phones;
+        static Dictionary<string, string[]> vowelFallback;
         static TrieNode root;
 
         static void BuildTrie(TrieNode node, string word, int index, string symbols) {
@@ -81,6 +82,9 @@ namespace OpenUtau.Core {
                             .Select(line => line.Split())
                             .Where(parts => parts.Length == 2)
                             .ToDictionary(parts => parts[0], parts => (PhoneType)Enum.Parse(typeof(PhoneType), parts[1]));
+                        vowelFallback = "aa=ah,ae;ae=ah,aa;ah=aa,ae;ao=ow;ow=ao;eh=ae;ih=iy;iy=ih;uh=uw;uw=uh;aw=ao".Split(';')
+                            .Select(entry => entry.Split('='))
+                            .ToDictionary(parts => parts[0], parts => parts[1].Split(','));
                         Properties.Resources.cmudict_0_7b.Split('\n')
                            .Where(line => !line.StartsWith(";;;"))
                             .Select(line => line.Trim().ToLowerInvariant())
@@ -133,12 +137,8 @@ namespace OpenUtau.Core {
                 phoneme = phoneme,
             };
             for (int i = 1; i < symbols.Length; i++) {
-                phoneme = $"{symbols[i - 1]} {symbols[i]}";
-                if (!singer.TryGetOto(MapPhoneme(phoneme, note.tone, singer), out var _)) {
-                    phoneme = $"- {symbols[i]}"; // Fallback to not use vc
-                }
                 phonemes[i] = new Phoneme {
-                    phoneme = phoneme,
+                    phoneme = GetPhonemeOrFallback(symbols[i - 1], symbols[i], note.tone),
                 };
             }
 
@@ -179,6 +179,22 @@ namespace OpenUtau.Core {
 
             MapPhonemes(notes, phonemes, singer);
             return phonemes;
+        }
+
+        string GetPhonemeOrFallback(string prevSymbol, string symbol, int tone) {
+            string phoneme = $"{prevSymbol} {symbol}";
+            if (singer.TryGetMappedOto(phoneme, tone, out var _)) {
+                return phoneme;
+            }
+            if (vowelFallback.TryGetValue(symbol, out string[] fallbacks)) {
+                foreach (var fallback in fallbacks) {
+                    phoneme = $"{prevSymbol} {fallback}";
+                    if (singer.TryGetMappedOto(phoneme, tone, out var _)) {
+                        return phoneme;
+                    }
+                }
+            }
+            return $"- {symbol}";
         }
 
         void DistributeDuration(PhoneType[] phoneTypes, Phoneme[] phonemes, int startIndex, int endIndex, int startTick, int endTick) {
