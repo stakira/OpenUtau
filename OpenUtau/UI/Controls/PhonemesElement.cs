@@ -14,6 +14,7 @@ namespace OpenUtau.UI.Controls {
 
         protected Pen penEnv;
         protected Pen penEnvSel;
+        protected Pen penLineThick;
 
         public PhonemesElement()
             : base() {
@@ -21,6 +22,8 @@ namespace OpenUtau.UI.Controls {
             penEnv.Freeze();
             penEnvSel = new Pen(ThemeManager.NoteFillSelectedBrush, 1);
             penEnvSel.Freeze();
+            penLineThick = new Pen(ThemeManager.NoteFillSelectedBrush, 3);
+            penLineThick.Freeze();
         }
 
         public override void Redraw(DrawingContext cxt) {
@@ -89,7 +92,11 @@ namespace OpenUtau.UI.Controls {
                 }
                 cxt.DrawGeometry(brush, pen, g);
 
-                cxt.DrawLine(penEnvSel, new Point(x, y), new Point(x, y + height));
+                var penPos = penEnvSel;
+                if (phoneme.HasOffsetOverride) {
+                    penPos = penLineThick;
+                }
+                cxt.DrawLine(penPos, new Point(x, y), new Point(x, y + height));
 
                 if (!string.IsNullOrEmpty(phoneme.phonemeMapped)) {
                     var fText = GetFormattedText(phoneme.phonemeMapped, false).fText;

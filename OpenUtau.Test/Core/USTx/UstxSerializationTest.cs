@@ -58,7 +58,6 @@ namespace OpenUtau.Core.Ustx {
   'dur': 60,
   'num': 42,
   'lrc': 'あ',
-  'pho': [],
   'pit': {
     'data': [],
     'snapFirst': true
@@ -74,7 +73,8 @@ namespace OpenUtau.Core.Ustx {
   },
   'exp': {
     'vel': 123.0
-  }
+  },
+  'phm': []
 }";
 
             Assert.Equal(expected.Replace('\'', '\"').Replace("\r\n", "\n"), actual.Replace("\r\n", "\n"));

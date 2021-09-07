@@ -151,7 +151,12 @@
             </Rectangle>
             <Canvas x:Name="phonemeCanvas" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="48,40,20,0" Height="48"
                     ClipToBounds="True" SnapsToDevicePixels="True" Background="{DynamicResource BackgroundBrushNormal}" Opacity="0.75"
-                    Visibility="{Binding PhonemeVisibility, Source={StaticResource midiVM}}"/>
+                    Visibility="{Binding PhonemeVisibility, Source={StaticResource midiVM}}"
+                    MouseLeftButtonDown="phonemeCanvas_MouseLeftButtonDown"
+                    MouseLeftButtonUp="phonemeCanvas_MouseLeftButtonUp"
+                    MouseRightButtonDown="phonemeCanvas_MouseRightButtonDown"
+                    MouseRightButtonUp="phonemeCanvas_MouseRightButtonUp"
+                    MouseMove="phonemeCanvas_MouseMove"/>
             <ScrollBar x:Name="horizontalScroll" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="20" Margin="48,0,20,0" Orientation="Horizontal" Minimum="0"
                        Maximum="{Binding TotalWidth, Mode=OneWay, Source={StaticResource midiVM}}"
                        Value="{Binding OffsetX, Mode=TwoWay, Source={StaticResource midiVM}, UpdateSourceTrigger=PropertyChanged}"

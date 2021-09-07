@@ -4,10 +4,9 @@ using System.Numerics;
 using Newtonsoft.Json;
 
 namespace OpenUtau.Core.Ustx {
-    [JsonObject(MemberSerialization.OptIn)]
     public class UPhoneme {
-        [JsonProperty] public int position;
-        [JsonProperty] public string phoneme = "a";
+        public int position;
+        public string phoneme = "a";
 
         public string phonemeMapped { get; private set; }
         public UEnvelope envelope { get; private set; } = new UEnvelope();
@@ -24,6 +23,9 @@ namespace OpenUtau.Core.Ustx {
         public UPhoneme Prev { get; set; }
         public UPhoneme Next { get; set; }
         public bool Error { get; set; } = false;
+
+        public bool HasPhonemeOverride { get; set; }
+        public bool HasOffsetOverride { get; set; }
 
         public override string ToString() => $"\"{phoneme}\" pos:{position}";
 
@@ -156,5 +158,14 @@ namespace OpenUtau.Core.Ustx {
             data.Add(new Vector2(0, 100));
             data.Add(new Vector2(0, 0));
         }
+    }
+
+    [JsonObject(MemberSerialization.OptIn)]
+    public class UPhonemeOverride {
+        [JsonProperty] public int index;
+        [JsonProperty] public string phoneme;
+        [JsonProperty] public int? offset;
+
+        public bool IsEmpty => string.IsNullOrEmpty(phoneme) && !offset.HasValue;
     }
 }

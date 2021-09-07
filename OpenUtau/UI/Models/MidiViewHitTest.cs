@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Numerics;
 using System.Windows;
-
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 
@@ -32,6 +32,13 @@ namespace OpenUtau.UI.Models {
         public bool hitPeriod;
         public Point point;
         public float initialShift;
+    }
+
+    public struct PhonemeHitInfo {
+        public UPhoneme phoneme;
+        public bool hit;
+        public bool hitPosition;
+        public Point point;
     }
 
     class MidiViewHitTest {
@@ -151,6 +158,22 @@ namespace OpenUtau.UI.Models {
                 }
             }
             return default;
+        }
+
+        public PhonemeHitInfo HitTestPhoneme(Point mousePos) {
+            PhonemeHitInfo result = default;
+            result.point = mousePos;
+            foreach (var note in midiVM.Part.notes) {
+                foreach (var phoneme in note.phonemes) {
+                    Point point = midiVM.TickToneToCanvas(new Vector2(phoneme.Parent.position + phoneme.position, 0));
+                    if (Math.Abs(point.X - mousePos.X) < 3) {
+                        result.phoneme = phoneme;
+                        result.hitPosition = true;
+                        return result;
+                    }
+                }
+            }
+            return result;
         }
 
         bool WithIn(Point p0, Point p1, double dist) {

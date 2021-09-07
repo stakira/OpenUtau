@@ -718,6 +718,8 @@ namespace OpenUtau.UI {
             this.Hide();
         }
 
+        #region Exp Canvas
+
         private void expCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
             ((Canvas)sender).CaptureMouse();
             if (Mouse.RightButton == MouseButtonState.Released) {
@@ -751,11 +753,10 @@ namespace OpenUtau.UI {
         }
 
         private void expCanvas_MouseMove(object sender, MouseEventArgs e) {
+            Point mousePos = e.GetPosition((UIElement)sender);
             if (Mouse.LeftButton == MouseButtonState.Pressed) {
-                Point mousePos = e.GetPosition((UIElement)sender);
                 expCanvas_SetExpHelper(mousePos, MouseButton.Left);
             } else if (Mouse.RightButton == MouseButtonState.Pressed) {
-                Point mousePos = e.GetPosition((UIElement)sender);
                 expCanvas_SetExpHelper(mousePos, MouseButton.Right);
             }
         }
@@ -780,6 +781,131 @@ namespace OpenUtau.UI {
                 DocManager.Inst.ExecuteCmd(new SetUExpressionCommand(midiVM.Part, hit.note, midiVM.visibleExpElement.Key, newValue));
             }
         }
+
+        #endregion
+
+        #region Phoneme Canvas
+
+        class EditState {
+            public MidiViewModel vm;
+            public Canvas canvas;
+            public MouseButton button;
+            public Point startPos;
+            public virtual void Start(Point mousePos) {
+                canvas.CaptureMouse();
+                startPos = mousePos;
+                DocManager.Inst.StartUndoGroup();
+            }
+            public virtual void End(Point mousePos) {
+                DocManager.Inst.EndUndoGroup();
+                canvas.ReleaseMouseCapture();
+                Mouse.OverrideCursor = null;
+            }
+            public virtual void Update(Point mousePos) { }
+        }
+
+        class MovePhonemeEditState : EditState {
+            public UNote leadingNote;
+            public int index;
+            public int startOffset;
+            public override void Start(Point mousePos) {
+                base.Start(mousePos);
+                startOffset = leadingNote.GetPhonemeOverride(index).offset ?? 0;
+            }
+            public override void Update(Point mousePos) {
+                int offset = startOffset + vm.CanvasToTick(mousePos.X) - vm.CanvasToTick(startPos.X);
+                DocManager.Inst.ExecuteCmd(new PhonemeOffsetCommand(vm.Part, leadingNote, index, offset));
+            }
+        }
+
+        class ResetPhonemeEditState : EditState {
+            public MidiViewHitTest midiHT;
+            public override void Start(Point mousePos) {
+                base.Start(mousePos);
+            }
+            public override void Update(Point mousePos) {
+                var hitInfo = midiHT.HitTestPhoneme(mousePos);
+                if (hitInfo.hitPosition) {
+                    var phoneme = hitInfo.phoneme;
+                    var parent = phoneme.Parent;
+                    var leadingNote = parent.Extends ?? parent;
+                    int index = parent.PhonemeOffset + parent.phonemes.IndexOf(phoneme);
+                    DocManager.Inst.ExecuteCmd(new PhonemeOffsetCommand(vm.Part, leadingNote, index, 0));
+                }
+            }
+        }
+
+        EditState phonemeCanvasEditState;
+
+        private void phonemeCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+            if (phonemeCanvasEditState != null) {
+                return;
+            }
+            Point mousePos = e.GetPosition((UIElement)sender);
+            var hitInfo = midiHT.HitTestPhoneme(mousePos);
+            if (hitInfo.hitPosition) {
+                var phoneme = hitInfo.phoneme;
+                var parent = phoneme.Parent;
+                phonemeCanvasEditState = new MovePhonemeEditState() {
+                    vm = midiVM,
+                    canvas = (Canvas)sender,
+                    button = MouseButton.Left,
+                    leadingNote = parent.Extends ?? parent,
+                    index = parent.PhonemeOffset + parent.phonemes.IndexOf(phoneme),
+                };
+                phonemeCanvasEditState.Start(mousePos);
+                phonemeCanvasEditState.Update(mousePos);
+            }
+        }
+
+        private void phonemeCanvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
+            if (phonemeCanvasEditState != null && phonemeCanvasEditState.button == MouseButton.Left) {
+                Point mousePos = e.GetPosition((UIElement)sender);
+                phonemeCanvasEditState.Update(mousePos);
+                phonemeCanvasEditState.End(mousePos);
+                phonemeCanvasEditState = null;
+            }
+        }
+
+        private void phonemeCanvas_MouseRightButtonDown(object sender, MouseButtonEventArgs e) {
+            if (phonemeCanvasEditState != null) {
+                return;
+            }
+            Point mousePos = e.GetPosition((UIElement)sender);
+            phonemeCanvasEditState = new ResetPhonemeEditState() {
+                vm = midiVM,
+                canvas = (Canvas)sender,
+                button = MouseButton.Right,
+                midiHT = midiHT,
+            };
+            phonemeCanvasEditState.Start(mousePos);
+            phonemeCanvasEditState.Update(mousePos);
+        }
+
+        private void phonemeCanvas_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
+            if (phonemeCanvasEditState != null && phonemeCanvasEditState.button == MouseButton.Right) {
+                Point mousePos = e.GetPosition((UIElement)sender);
+                phonemeCanvasEditState.Update(mousePos);
+                phonemeCanvasEditState.End(mousePos);
+                phonemeCanvasEditState = null;
+            }
+        }
+
+        private void phonemeCanvas_MouseMove(object sender, MouseEventArgs e) {
+            Point mousePos = e.GetPosition((UIElement)sender);
+            if (phonemeCanvasEditState != null) {
+                phonemeCanvasEditState.Update(mousePos);
+                return;
+            }
+            var hitInfo = midiHT.HitTestPhoneme(mousePos);
+            if (hitInfo.hitPosition) {
+                Mouse.OverrideCursor = Cursors.SizeWE;
+            } else {
+                Mouse.OverrideCursor = null;
+            }
+        }
+
+        #endregion
 
         private void mainButton_Click(object sender, RoutedEventArgs e) {
             DocManager.Inst.ExecuteCmd(new ShowPitchExpNotification());

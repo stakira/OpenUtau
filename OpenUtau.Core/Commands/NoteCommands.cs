@@ -283,4 +283,35 @@ namespace OpenUtau.Core {
             }
         }
     }
+
+    public class PhonemeOffsetCommand : NoteCommand {
+        readonly UNote note;
+        readonly int index;
+        readonly int oldOffset;
+        readonly int newOffset;
+        public PhonemeOffsetCommand(UVoicePart part, UNote note, int index, int offset) : base(part, note) {
+            this.note = note;
+            this.index = index;
+            var o = this.note.GetPhonemeOverride(index);
+            oldOffset = o.offset ?? 0;
+            newOffset = offset;
+        }
+        public override void Execute() {
+            var o = note.GetPhonemeOverride(index);
+            if (newOffset == 0) {
+                o.offset = null;
+            } else {
+                o.offset = newOffset;
+            }
+        }
+        public override void Unexecute() {
+            var o = note.GetPhonemeOverride(index);
+            if (oldOffset == 0) {
+                o.offset = null;
+            } else {
+                o.offset = oldOffset;
+            }
+        }
+        public override string ToString() => "Set phoneme offset";
+    }
 }
