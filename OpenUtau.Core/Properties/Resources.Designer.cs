@@ -72,8 +72,7 @@ namespace OpenUtau.Core.Properties {
         ///;;; #
         ///;;; # ========================================================================
         ///;;; # Copyright (C) 1993-2015 Carnegie Mellon University. All rights reserved.
-        ///;;; #
-        ///;;; # Red [rest of string was truncated]&quot;;.
+        ///;;;  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string cmudict_0_7b {
             get {

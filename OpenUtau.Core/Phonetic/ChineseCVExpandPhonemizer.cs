@@ -11,7 +11,7 @@ namespace OpenUtau.Core {
         static Dictionary<string, string> vDict;
 
         static ChineseCVExpandPhonemizer() {
-            cSet = consonants.Split(',').ToHashSet();
+            cSet = new HashSet<string>(consonants.Split(','));
             vDict = vowels.Split(',')
                 .Select(s => s.Split('='))
                 .ToDictionary(a => a[0], a => a[1]);

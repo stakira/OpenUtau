@@ -60,6 +60,8 @@ namespace OpenUtau {
             });
 
             Core.DocManager.Inst.Initialize();
+            Core.PlaybackManager.Inst.AudioOutput = new Audio.WaveOutAudioOutput();
+            Core.AudioFileUtilsProvider.Utils = new Audio.NAudioFileUtils();
 
             var app = new App();
             var window = new UI.MainWindow();

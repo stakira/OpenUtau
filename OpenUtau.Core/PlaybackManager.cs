@@ -11,17 +11,31 @@ using OpenUtau.Core.ResamplerDriver;
 using Serilog;
 
 namespace OpenUtau.Core {
-    public class PlaybackManager : ICmdSubscriber {
-        private WaveOutEvent outDevice;
-        private WaveOutEvent testDevice;
+    public interface IAudioOutput {
+        PlaybackState PlaybackState { get; }
+        int DeviceNumber { get; }
 
+        void SelectDevice(Guid productGuid, int deviceNumber);
+        void Init(ISampleProvider waveProvider);
+        void Pause();
+        void Play();
+        void Stop();
+        long GetPosition();
+    }
+
+    public interface IAudioFileUtils {
+        void GetAudioFileInfo(string file, out WaveFormat waveFormat, out TimeSpan duration);
+        WaveStream OpenAudioFileAsWaveStream(string file);
+        ISampleProvider OpenAudioFileAsSampleProvider(string file);
+    }
+
+    public static class AudioFileUtilsProvider {
+        public static IAudioFileUtils Utils { get; set; }
+    }
+
+    public class PlaybackManager : ICmdSubscriber {
         private PlaybackManager() {
             DocManager.Inst.AddSubscriber(this);
-            if (Guid.TryParse(Util.Preferences.Default.PlaybackDevice, out var guid)) {
-                SelectOutputDevice(guid, Util.Preferences.Default.PlaybackDeviceNumber);
-            } else {
-                SelectOutputDevice(new Guid(), 0);
-            }
         }
 
         private static PlaybackManager _s;
@@ -38,32 +52,8 @@ namespace OpenUtau.Core {
         IResamplerDriver previewDriver;
         CancellationTokenSource previewCancellationTokenSource;
 
-        public int PlaybackDeviceNumber { get; private set; }
-        public bool Playing => renderTask != null || outDevice != null && outDevice.PlaybackState == PlaybackState.Playing;
-
-        public List<WaveOutCapabilities> GetOutputDevices() {
-            var outDevices = new List<WaveOutCapabilities>();
-            for (int i = 0; i < WaveOut.DeviceCount; ++i) {
-                outDevices.Add(WaveOut.GetCapabilities(i));
-            }
-            return outDevices;
-        }
-
-        public void SelectOutputDevice(Guid productGuid, int deviceNumber) {
-            // Product guid may not be unique. Use device number first.
-            if (deviceNumber < WaveOut.DeviceCount && WaveOut.GetCapabilities(deviceNumber).ProductGuid == productGuid) {
-                PlaybackDeviceNumber = deviceNumber;
-                return;
-            }
-            // If guid does not match, device number may have changed. Search guid instead.
-            PlaybackDeviceNumber = 0;
-            for (int i = 0; i < WaveOut.DeviceCount; ++i) {
-                if (WaveOut.GetCapabilities(i).ProductGuid == productGuid) {
-                    PlaybackDeviceNumber = i;
-                    break;
-                }
-            }
-        }
+        public IAudioOutput AudioOutput { get; set; }
+        public bool Playing => renderTask != null || AudioOutput.PlaybackState == PlaybackState.Playing;
 
         public bool CheckResampler() {
             var path = PathManager.Inst.GetPreviewEnginePath();
@@ -72,12 +62,9 @@ namespace OpenUtau.Core {
         }
 
         public void PlayTestSound() {
-            if (testDevice != null) {
-                testDevice.Dispose();
-            }
-            testDevice = new WaveOutEvent() { DeviceNumber = PlaybackDeviceNumber };
-            testDevice.Init(new SignalGenerator().Take(TimeSpan.FromSeconds(1)));
-            testDevice.Play();
+            AudioOutput.Stop();
+            AudioOutput.Init(new SignalGenerator().Take(TimeSpan.FromSeconds(1)));
+            AudioOutput.Play();
         }
 
         public void Play(UProject project, int tick) {
@@ -88,25 +75,20 @@ namespace OpenUtau.Core {
                     return;
                 }
             }
-            if (outDevice != null) {
-                if (outDevice.PlaybackState == PlaybackState.Playing) {
-                    return;
-                }
-                if (outDevice.PlaybackState == PlaybackState.Paused) {
-                    outDevice.Play();
-                    return;
-                }
-                outDevice.Dispose();
+            if (AudioOutput.PlaybackState == PlaybackState.Paused) {
+                AudioOutput.Play();
+                return;
             }
+            AudioOutput.Stop();
             Render(project, tick);
         }
 
         public void StopPlayback() {
-            if (outDevice != null) outDevice.Stop();
+            AudioOutput.Stop();
         }
 
         public void PausePlayback() {
-            if (outDevice != null) outDevice.Pause();
+            AudioOutput.Pause();
         }
 
         private void StartPlayback(double startMs) {
@@ -118,9 +100,9 @@ namespace OpenUtau.Core {
                 mix.AddMixerInput(source);
             }
             masterMix = mix;
-            outDevice = new WaveOutEvent() { DeviceNumber = PlaybackDeviceNumber };
-            outDevice.Init(masterMix);
-            outDevice.Play();
+            AudioOutput.Stop();
+            AudioOutput.Init(masterMix);
+            AudioOutput.Play();
         }
 
         private IResamplerDriver GetPreviewDriver() {
@@ -160,8 +142,8 @@ namespace OpenUtau.Core {
         }
 
         public void UpdatePlayPos() {
-            if (outDevice != null && outDevice.PlaybackState == PlaybackState.Playing) {
-                double ms = outDevice.GetPosition() * 1000.0 / masterMix.WaveFormat.BitsPerSample / masterMix.WaveFormat.Channels * 8 / masterMix.WaveFormat.SampleRate;
+            if (AudioOutput.PlaybackState == PlaybackState.Playing) {
+                double ms = AudioOutput.GetPosition() * 1000.0 / masterMix.WaveFormat.BitsPerSample / masterMix.WaveFormat.Channels * 8 / masterMix.WaveFormat.SampleRate;
                 int tick = DocManager.Inst.Project.MillisecondToTick(startMs + ms);
                 DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(tick));
             }

@@ -19,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenUtau.Test", "OpenUtau.T
 		{D951492F-0901-4296-AE7F-831430C07FA9} = {D951492F-0901-4296-AE7F-831430C07FA9}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenUtau.Core", "OpenUtau.Core\OpenUtau.Core.csproj", "{25A15BBB-A9EF-449E-9C12-67F5C28BD088}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenUtau.Core", "OpenUtau.Core\OpenUtau.Core.csproj", "{7793257C-054C-4935-A1EF-CAB345E9F6C5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,10 +35,10 @@ Global
 		{7B351EB5-B83A-4938-99A0-45C2B2116DEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7B351EB5-B83A-4938-99A0-45C2B2116DEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7B351EB5-B83A-4938-99A0-45C2B2116DEF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{25A15BBB-A9EF-449E-9C12-67F5C28BD088}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{25A15BBB-A9EF-449E-9C12-67F5C28BD088}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{25A15BBB-A9EF-449E-9C12-67F5C28BD088}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{25A15BBB-A9EF-449E-9C12-67F5C28BD088}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7793257C-054C-4935-A1EF-CAB345E9F6C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7793257C-054C-4935-A1EF-CAB345E9F6C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7793257C-054C-4935-A1EF-CAB345E9F6C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7793257C-054C-4935-A1EF-CAB345E9F6C5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

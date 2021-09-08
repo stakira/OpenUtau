@@ -23,9 +23,9 @@ namespace OpenUtau.UI.Dialogs {
 
             UpdateSingerPaths();
             UpdateEngines();
-            playbackDevices = PlaybackManager.Inst.GetOutputDevices();
+            playbackDevices = (PlaybackManager.Inst.AudioOutput as Audio.WaveOutAudioOutput).GetOutputDevices();
             playbackDeviceCombo.ItemsSource = playbackDevices;
-            playbackDeviceCombo.SelectedIndex = PlaybackManager.Inst.PlaybackDeviceNumber;
+            playbackDeviceCombo.SelectedIndex = PlaybackManager.Inst.AudioOutput.DeviceNumber;
             themeCombo.SelectedIndex = Core.Util.Preferences.Default.theme % 2;
         }
 
@@ -109,7 +109,7 @@ namespace OpenUtau.UI.Dialogs {
 
         private void playbackDeviceCombo_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             var device = (NAudio.Wave.WaveOutCapabilities)playbackDeviceCombo.SelectedItem;
-            PlaybackManager.Inst.SelectOutputDevice(device.ProductGuid, playbackDeviceCombo.SelectedIndex);
+            PlaybackManager.Inst.AudioOutput.SelectDevice(device.ProductGuid, playbackDeviceCombo.SelectedIndex);
             Core.Util.Preferences.Default.PlaybackDevice = device.ProductGuid.ToString();
             Core.Util.Preferences.Default.PlaybackDeviceNumber = playbackDeviceCombo.SelectedIndex;
             Core.Util.Preferences.Save();

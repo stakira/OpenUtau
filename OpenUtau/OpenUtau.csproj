@@ -76,6 +76,8 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Audio\NAudioFileUtils.cs" />
+    <Compile Include="Audio\WaveOutAudioOutput.cs" />
     <Compile Include="UI\Controls\ExpComboBox.xaml.cs">
       <DependentUpon>ExpComboBox.xaml</DependentUpon>
     </Compile>
@@ -285,12 +287,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\OpenUtau.Core\OpenUtau.Core.csproj">
-      <Project>{25a15bbb-a9ef-449e-9c12-67f5c28bd088}</Project>
-      <Name>OpenUtau.Core</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Autoupdater.NET.Official">
       <Version>1.7.0</Version>
     </PackageReference>
@@ -336,6 +332,12 @@
     <PackageReference Include="xxHashSharp">
       <Version>1.0.0</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\OpenUtau.Core\OpenUtau.Core.csproj">
+      <Project>{7793257c-054c-4935-a1ef-cab345e9f6c5}</Project>
+      <Name>OpenUtau.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

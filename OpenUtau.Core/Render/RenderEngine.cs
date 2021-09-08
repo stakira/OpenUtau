@@ -64,12 +64,11 @@ namespace OpenUtau.Core.Render {
                 UWavePart wavePart = part as UWavePart;
                 if (wavePart != null) {
                     try {
-                        var stream = new AudioFileReader(wavePart.FilePath);
                         var offset = TimeSpan.FromMilliseconds(project.TickToMillisecond(wavePart.position)) - skip;
                         var skipOver = offset < TimeSpan.Zero ? -offset : TimeSpan.Zero;
                         var delayBy = offset > TimeSpan.Zero ? offset : TimeSpan.Zero;
                         trackSampleProviders[wavePart.trackNo].AddSource(
-                            new WaveToSampleProvider(stream).Skip(skipOver), delayBy);
+                            AudioFileUtilsProvider.Utils.OpenAudioFileAsSampleProvider(wavePart.FilePath).Skip(skipOver), delayBy);
                     } catch (Exception e) {
                         Log.Error(e, "Failed to open audio file");
                     }

@@ -25,20 +25,14 @@ namespace OpenUtau.Core.Formats {
                     };
                 }
             }
-            WaveStream stream = null;
-            try {
-                stream = new AudioFileReader(filepath);
-            } catch {
-                return null;
-            }
-            int durTick = DocManager.Inst.Project.MillisecondToTick(1000.0 * stream.Length / stream.WaveFormat.AverageBytesPerSecond);
+            AudioFileUtilsProvider.Utils.GetAudioFileInfo(filepath, out var waveFormat, out var timeSpan);
+            int durTick = DocManager.Inst.Project.MillisecondToTick(timeSpan.TotalMilliseconds);
             UWavePart uwavepart = new UWavePart() {
                 FilePath = filepath,
                 FileDurTick = durTick,
                 Duration = durTick,
-                Channels = stream.WaveFormat.Channels
+                Channels = waveFormat.Channels
             };
-            stream.Close();
             return uwavepart;
         }
 
@@ -47,7 +41,7 @@ namespace OpenUtau.Core.Formats {
             System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
             sw.Start();
             float[] peaks;
-            using (var stream = new AudioFileReader(part.FilePath)) {
+            using (var stream = AudioFileUtilsProvider.Utils.OpenAudioFileAsWaveStream(part.FilePath)) {
                 int channels = part.Channels;
                 double peaksSamples = (int)((double)stream.Length / stream.WaveFormat.BlockAlign / stream.WaveFormat.SampleRate * peaksRate);
                 peaks = new float[(int)(peaksSamples + 1) * channels];
