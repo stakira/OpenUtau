@@ -1,0 +1,37 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:OpenUtau.App.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="256" d:DesignHeight="64"
+             x:Class="OpenUtau.App.Controls.HeadTracker">
+  <Design.DataContext>
+    <vm:TrackHeaderViewModel/>
+  </Design.DataContext>
+  <UserControl.Styles>
+    <Style Selector="Button">
+      <Setter Property="Background" Value="White"/>
+    </Style>
+    <Style Selector="ToggleButton">
+      <Setter Property="Background" Value="White"/>
+    </Style>
+  </UserControl.Styles>
+  <Border Margin="1" BorderThickness="1" BorderBrush="Gray">
+    <Grid Background="Transparent" RowDefinitions="18,18,18" ColumnDefinitions="22,*,18">
+      <Rectangle Grid.Row="0" Grid.Column="0" Margin="1" Fill="Gray" Height="16"/>
+      <TextBlock Grid.Row="0" Grid.Column="0" Margin="1" TextAlignment="Center" FontWeight="Bold"
+                 Text="{Binding TrackNo}" Foreground="White" VerticalAlignment="Center"/>
+      <Button Grid.Row="0" Grid.Column="1" Margin="1" Padding="0" Height="16" HorizontalAlignment="Stretch"/>
+      <Button Grid.Row="1" Grid.Column="1" Margin="1" Padding="0" Height="16" HorizontalAlignment="Stretch"/>
+      <ToggleButton Grid.Row="0" Grid.Column="2" Margin="1" Padding="0" Height="16" HorizontalAlignment="Stretch"/>
+      <ToggleButton Grid.Row="1" Grid.Column="2" Margin="1" Padding="0" Height="16" HorizontalAlignment="Stretch"/>
+      <Grid.ContextMenu>
+        <ContextMenu>
+          <MenuItem Header="{StaticResource tracks.remove}"/>
+          <MenuItem Header="{StaticResource tracks.moveup}"/>
+          <MenuItem Header="{StaticResource tracks.movedown}"/>
+        </ContextMenu>
+      </Grid.ContextMenu>
+    </Grid>
+  </Border>
+</UserControl>

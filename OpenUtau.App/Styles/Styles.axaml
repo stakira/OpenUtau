@@ -34,6 +34,15 @@
     <Setter Property="HorizontalContentAlignment" Value="Center"/>
     <Setter Property="VerticalContentAlignment" Value="Center"/>
   </Style>
+  <Style Selector="ToggleButton">
+    <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="FontSize" Value="12"/>
+    <Setter Property="Height" Value="20"/>
+    <Setter Property="Margin" Value="0,4"/>
+    <Setter Property="Padding" Value="4,0,4,2"/>
+    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    <Setter Property="VerticalContentAlignment" Value="Center"/>
+  </Style>
   <Style Selector="Button:pressed, RepeatButton:pressed, ToggleButton:pressed">
     <Setter Property="RenderTransform" Value="scale(1)"/>
   </Style>

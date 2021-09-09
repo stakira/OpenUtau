@@ -1,12 +1,13 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="using:OpenUtau.App.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:OpenUtau.App.ViewModels"
+        xmlns:c="clr-namespace:OpenUtau.App.Controls"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="OpenUtau.App.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
-        Title="OpenUtau">
+        Title="OpenUtau" KeyDown="OnKeyDown">
   <Window.Styles>
     <Style>
       <Style.Resources>
@@ -19,42 +20,26 @@
   <Grid RowDefinitions="24,1*,20,4" ColumnDefinitions="250,*,24" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
     <Menu Grid.Row="0" Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Left">
       <MenuItem Header="{DynamicResource menu.file}">
-        <MenuItem Header="{DynamicResource menu.file.new}" InputGesture="Ctrl+N"/>
-        <MenuItem Header="{DynamicResource menu.file.open}" InputGesture="Ctrl+O"/>
-        <MenuItem Header="{DynamicResource menu.file.save}" InputGesture="Ctrl+S"/>
-        <MenuItem Header="{DynamicResource menu.file.saveas}">
-          <MenuItem Header="{DynamicResource menu.file.saveasust}"/>
-        </MenuItem>
-        <MenuItem Header="{DynamicResource menu.file.import}"/>
-        <MenuItem Header="{DynamicResource menu.file.importaudio}"/>
-        <MenuItem Header="{DynamicResource menu.file.importmidi}"/>
+        <MenuItem Header="{DynamicResource menu.file.new}" InputGesture="Ctrl+N" Click="OnMenuNew"/>
+        <MenuItem Header="{DynamicResource menu.file.open}" InputGesture="Ctrl+O" Click="OnMenuOpen"/>
+        <MenuItem Header="{DynamicResource menu.file.save}" InputGesture="Ctrl+S" Click="OnMenuSave"/>
+        <MenuItem Header="{DynamicResource menu.file.saveas}" Click="OnMenuSaveAs"/>
+        <MenuItem Header="{DynamicResource menu.file.import}" Click="OnMenuImport"/>
+        <MenuItem Header="{DynamicResource menu.file.importaudio}" Click="OnMenuImportAudio"/>
+        <MenuItem Header="{DynamicResource menu.file.importmidi}" Click="OnMenuImportMidi"/>
         <MenuItem Header="{DynamicResource menu.file.exportall}"/>
-        <MenuItem Header="{DynamicResource menu.file.exit}" InputGesture="Alt+F4"/>
+        <MenuItem Header="{DynamicResource menu.file.exportust}"/>
       </MenuItem>
       <MenuItem Header="{DynamicResource menu.tools}">
         <MenuItem Header="{StaticResource menu.tools.project.expressions}"/>
         <MenuItem Header="{DynamicResource menu.tools.singers}" Click="OnMenuSingers"/>
-        <MenuItem Header="{DynamicResource menu.tools.singer.install}"/>
+        <MenuItem Header="{DynamicResource menu.tools.singer.install}" Click="OnMenuInstallSinger"/>
         <MenuItem Header="{DynamicResource menu.tools.prefs}" Click="OnMenuPreferences"/>
       </MenuItem>
       <MenuItem Header="{DynamicResource menu.help}">
         <MenuItem Header="{Binding AppVersion}"/>
       </MenuItem>
     </Menu>
-    <ScrollBar Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,4,0,4" Orientation="Horizontal" AllowAutoHide="False"
-               DataContext="{Binding TracksViewModel}"
-               Maximum="{Binding TotalWidth}"
-               Value="{Binding ViewportX}"
-               ViewportSize="{Binding ViewportWidth}"
-               LargeChange="{Binding ViewportWidth}"
-               SmallChange="{Binding SmallChangeX}"/>
-    <ScrollBar Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="4,24,4,0" Orientation="Vertical" AllowAutoHide="False"
-               DataContext="{Binding TracksViewModel}"
-               Maximum="{Binding TotalHeight}"
-               Value="{Binding ViewportY}"
-               ViewportSize="{Binding ViewportHeight}"
-               LargeChange="{Binding ViewportHeight}"
-               SmallChange="{Binding SmallChangeY}"/>
     <Border Grid.Row="0" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0" Background="AliceBlue">
     </Border>
     <Panel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0">
@@ -63,42 +48,68 @@
           <TextBlock Classes="playback" PointerPressed="OnEditTempo">
             <TextBlock.Text>
               <MultiBinding StringFormat="{}{0}/{1}  {2:#0.00}">
-                <Binding Path="BeatPerBar"/>
-                <Binding Path="BeatUnit"/>
-                <Binding Path="BPM"/>
+                <Binding Path="PlaybackViewModel.BeatPerBar"/>
+                <Binding Path="PlaybackViewModel.BeatUnit"/>
+                <Binding Path="PlaybackViewModel.BPM"/>
               </MultiBinding>
             </TextBlock.Text>
           </TextBlock>
         </Border>
         <Border Classes="playback" Width="88" HorizontalAlignment="Center">
           <StackPanel Orientation="Horizontal">
-            <Button Command="{Binding SeekStart}">
+            <Button Command="{Binding PlaybackViewModel.SeekStart}">
               <Path Fill="{DynamicResource SystemColorButtonTextColor}" VerticalAlignment="Center" HorizontalAlignment="Center"
                     Data="M 0 0 L 2 0 L 2 9 L 0 9 Z M 2 4.5 L 7 0 L 7 9 Z"/>
             </Button>
-            <Button Click="OnPlayOrStop">
+            <Button Click="OnPlayOrPause">
               <Path Fill="{DynamicResource SystemColorButtonTextColor}" VerticalAlignment="Center" HorizontalAlignment="Center"
                     Data="M 0 0 L 7 6.5 L 0 13 Z"/>
             </Button>
-            <Button Command="{Binding Stop}">
+            <Button Command="{Binding PlaybackViewModel.Pause}">
               <Path Fill="{DynamicResource SystemColorButtonTextColor}" VerticalAlignment="Center" HorizontalAlignment="Center"
                     Data="M 0 0 L 2 0 L 2 9 L 0 9 Z M 4 0 L 6 0 L 6 9 L 4 9 Z"/>
             </Button>
-            <Button Command="{Binding SeekEnd}">
+            <Button Command="{Binding PlaybackViewModel.SeekEnd}">
               <Path Fill="{DynamicResource SystemColorButtonTextColor}" VerticalAlignment="Center" HorizontalAlignment="Center"
                     Data="M 0 0 L 5 4.5 L 0 9 Z M 5 0 L 7 0 L 7 9 L 5 9 Z"/>
             </Button>
           </StackPanel>
         </Border>
         <Border Classes="playback" Width="72" HorizontalAlignment="Right" Margin="4,0">
-          <TextBlock Classes="playback" Text="{Binding Path=PlayPosTime, StringFormat={}{0:mm\\:ss\\.fff}}"/>
+          <TextBlock Classes="playback" Text="{Binding Path=PlaybackViewModel.PlayPosTime, StringFormat={}{0:mm\\:ss\\.fff}}"/>
         </Border>
       </Panel>
       <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,24,0,0" Background="Wheat"/>
     </Panel>
+    <ScrollBar Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,4,0,4" Orientation="Horizontal" AllowAutoHide="False"
+               DataContext="{Binding TracksViewModel}"
+               Maximum="{Binding TickCount, Mode=OneWay}"
+               Value="{Binding Tick}"
+               ViewportSize="{Binding ViewportTicks}"
+               LargeChange="{Binding ViewportTicks}"
+               SmallChange="{Binding SmallChangeX}"/>
+    <ScrollBar Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="4,24,4,0" Orientation="Vertical" AllowAutoHide="False"
+               DataContext="{Binding TracksViewModel}"
+               Maximum="{Binding TrackCount, Mode=OneWay}"
+               Value="{Binding Track}"
+               ViewportSize="{Binding ViewportTracks}"
+               LargeChange="{Binding ViewportTracks}"
+               SmallChange="{Binding SmallChangeY}"/>
     <Panel Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0">
-      <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="24" Background="AliceBlue"
+      <Canvas HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="24" Background="Transparent"
               PointerWheelChanged="TimelinePointerWheelChanged"/>
+      <c:TrackBackground Margin="0,24,0,0" IsHitTestVisible="False"
+                         Bounds="{Binding TracksViewModel.Bounds, Mode=OneWayToSource}"
+                         TrackHeight="{Binding TracksViewModel.TrackHeight}"
+                         Track="{Binding TracksViewModel.Track}"/>
+      <c:TickBackground Margin="0" IsHitTestVisible="False"
+                        BeatPerBar="{Binding PlaybackViewModel.BeatPerBar}"
+                        BeatUnit="{Binding PlaybackViewModel.BeatUnit}"
+                        Resolution="{Binding PlaybackViewModel.Resolution}"
+                        TickWidth="{Binding TracksViewModel.TickWidth}"
+                        Tick="{Binding TracksViewModel.Tick}"/>
+      <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+      </Border>
       <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent"
               BoxShadow="inset 0 0 5 0.75 Gray" ClipToBounds="True" IsHitTestVisible="False">
       </Border>
@@ -106,7 +117,7 @@
     <Border Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0,0,0,0" Height="24" Background="Wheat"
             PointerWheelChanged="ZoomerPointerWheelChanged">
     </Border>
-    <TextBlock Grid.Row="2" Grid.ColumnSpan="3" VerticalAlignment="Center" HorizontalAlignment="Stretch" Text="Progress"/>
-    <ProgressBar Grid.Row="3" Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Value="50"/>
+    <TextBlock Grid.Row="2" Grid.ColumnSpan="3" VerticalAlignment="Center" HorizontalAlignment="Stretch" Text="{Binding ProgressText}"/>
+    <ProgressBar Grid.Row="3" Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Value="{Binding Progress}"/>
   </Grid>
 </Window>

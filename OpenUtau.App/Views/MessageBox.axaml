@@ -10,7 +10,7 @@
       <RowDefinition Height="*"/>
       <RowDefinition Height="50"/>
     </Grid.RowDefinitions>
-    <TextBlock Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Name="Text"/>
+    <TextBlock Margin="20" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Name="Text" TextWrapping="Wrap" MaxWidth="560"/>
     <StackPanel Grid.Row="1" HorizontalAlignment="Center" Orientation="Horizontal" Name="Buttons">
       <StackPanel.Styles>
         <Style Selector="Button">

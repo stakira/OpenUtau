@@ -36,7 +36,7 @@ namespace OpenUtau.Core {
             SearchAllPhonemizers();
         }
 
-        void SearchAllSingers() {
+        public void SearchAllSingers() {
             var stopWatch = Stopwatch.StartNew();
             Singers = Formats.UtauSoundbank.FindAllSingers();
             Directory.CreateDirectory(PathManager.Inst.GetEngineSearchPath());
@@ -53,14 +53,14 @@ namespace OpenUtau.Core {
             return null;
         }
 
-        void SearchAllPlugins() {
+        public void SearchAllPlugins() {
             var stopWatch = Stopwatch.StartNew();
             Plugins = PluginLoader.LoadAll(PathManager.Inst.PluginsPath);
             stopWatch.Stop();
             Log.Information($"Search all plugins: {stopWatch.Elapsed}");
         }
 
-        void SearchAllTransformers() {
+        public void SearchAllTransformers() {
             var stopWatch = Stopwatch.StartNew();
             Transformers = GetType().Assembly.GetTypes()
                 .Where(t => !t.IsAbstract && t.IsSubclassOf(typeof(Transformer)))
@@ -70,7 +70,7 @@ namespace OpenUtau.Core {
             Log.Information($"Search all transformers: {stopWatch.Elapsed}");
         }
 
-        void SearchAllPhonemizers() {
+        public void SearchAllPhonemizers() {
             var stopWatch = Stopwatch.StartNew();
             Phonemizers = GetType().Assembly.GetTypes()
                 .Where(t => !t.IsAbstract && t.IsSubclassOf(typeof(Phonemizer)))
