@@ -38,6 +38,9 @@
     <ProjectReference Include="..\OpenUtau.Core\OpenUtau.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="Controls\TrackHeader.axaml.cs">
+      <DependentUpon>TrackHeader.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\PreferencesDialog.axaml.cs">
       <DependentUpon>PreferencesDialog.axaml</DependentUpon>
     </Compile>

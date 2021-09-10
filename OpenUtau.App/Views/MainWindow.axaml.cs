@@ -9,6 +9,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.VisualTree;
+using OpenUtau.App.Controls;
 using OpenUtau.App.ViewModels;
 using Serilog;
 

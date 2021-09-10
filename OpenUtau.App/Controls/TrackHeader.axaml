@@ -3,8 +3,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:OpenUtau.App.ViewModels"
-             mc:Ignorable="d" d:DesignWidth="256" d:DesignHeight="64"
-             x:Class="OpenUtau.App.Controls.HeadTracker">
+             mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="64"
+             x:Class="OpenUtau.App.Controls.TrackHeader" Width="250">
   <Design.DataContext>
     <vm:TrackHeaderViewModel/>
   </Design.DataContext>
@@ -17,7 +17,7 @@
     </Style>
   </UserControl.Styles>
   <Border Margin="1" BorderThickness="1" BorderBrush="Gray">
-    <Grid Background="Transparent" RowDefinitions="18,18,18" ColumnDefinitions="22,*,18">
+    <Grid Background="Transparent" RowDefinitions="18,18,18,*" ColumnDefinitions="22,*,18">
       <Rectangle Grid.Row="0" Grid.Column="0" Margin="1" Fill="Gray" Height="16"/>
       <TextBlock Grid.Row="0" Grid.Column="0" Margin="1" TextAlignment="Center" FontWeight="Bold"
                  Text="{Binding TrackNo}" Foreground="White" VerticalAlignment="Center"/>

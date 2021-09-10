@@ -1,11 +1,15 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
 using Avalonia;
+using DynamicData;
+using OpenUtau.Core;
+using OpenUtau.Core.Ustx;
 using ReactiveUI;
 
 namespace OpenUtau.App.ViewModels {
-    public class TracksViewModel : ViewModelBase {
+    public class TracksViewModel : ViewModelBase, ICmdSubscriber {
         public Rect Bounds {
             get => bounds;
             set => this.RaiseAndSetIfChanged(ref bounds, value);
@@ -46,10 +50,10 @@ namespace OpenUtau.App.ViewModels {
         private double trackHeight = ViewConstants.TrackHeightDefault;
         private double tick;
         private double track;
-        readonly ObservableAsPropertyHelper<double> viewportTicks;
-        readonly ObservableAsPropertyHelper<double> viewportTracks;
-        readonly ObservableAsPropertyHelper<double> smallChangeX;
-        readonly ObservableAsPropertyHelper<double> smallChangeY;
+        private readonly ObservableAsPropertyHelper<double> viewportTicks;
+        private readonly ObservableAsPropertyHelper<double> viewportTracks;
+        private readonly ObservableAsPropertyHelper<double> smallChangeX;
+        private readonly ObservableAsPropertyHelper<double> smallChangeY;
 
         public TracksViewModel() {
             viewportTicks = this.WhenAnyValue(x => x.Bounds, x => x.TickWidth)
@@ -64,8 +68,10 @@ namespace OpenUtau.App.ViewModels {
             smallChangeY = this.WhenAnyValue(x => x.ViewportTracks)
                 .Select(h => h / 8)
                 .ToProperty(this, x => x.SmallChangeY);
+
             TrackCount = 10;
             TickCount = 480 * 100;
+            DocManager.Inst.AddSubscriber(this);
         }
 
         public void OnXZoomed(Point position, double delta) {
@@ -95,5 +101,7 @@ namespace OpenUtau.App.ViewModels {
             Track = track - 1;
             Track = track;
         }
+
+        public void OnNext(UCommand cmd, bool isUndo) { }
     }
 }

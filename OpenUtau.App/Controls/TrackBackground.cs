@@ -1,10 +1,21 @@
-﻿using Avalonia;
+﻿using System;
+using Avalonia;
 using Avalonia.Controls.Primitives;
 using Avalonia.Media;
 using OpenUtau.Core;
 
 namespace OpenUtau.App.Controls {
     class TrackBackground : TemplatedControl {
+        public static readonly DirectProperty<TrackBackground, double> MaxTrackHeightProperty =
+            AvaloniaProperty.RegisterDirect<TrackBackground, double>(
+                nameof(MaxTrackHeight),
+                o => o.MaxTrackHeight,
+                (o, v) => o.MaxTrackHeight = v);
+        public static readonly DirectProperty<TrackBackground, double> MinTrackHeightProperty =
+            AvaloniaProperty.RegisterDirect<TrackBackground, double>(
+                nameof(MinTrackHeight),
+                o => o.MinTrackHeight,
+                (o, v) => o.MinTrackHeight = v);
         public static readonly DirectProperty<TrackBackground, double> TrackHeightProperty =
             AvaloniaProperty.RegisterDirect<TrackBackground, double>(
                 nameof(TrackHeight),
@@ -16,16 +27,35 @@ namespace OpenUtau.App.Controls {
                 o => o.Track,
                 (o, v) => o.Track = v);
 
+        public double MaxTrackHeight {
+            get { return _maxTrackHeight; }
+            set {
+                value = Math.Max(value, MinTrackHeight);
+                SetAndRaise(MaxTrackHeightProperty, ref _maxTrackHeight, value);
+            }
+        }
+        public double MinTrackHeight {
+            get { return _minTrackHeight; }
+            set {
+                SetAndRaise(MinTrackHeightProperty, ref _minTrackHeight, value);
+                MaxTrackHeight = Math.Max(MaxTrackHeight, MinTrackHeight);
+            }
+        }
         public double TrackHeight {
             get { return _trackHeight; }
-            private set { SetAndRaise(TrackHeightProperty, ref _trackHeight, value); }
+            private set {
+                value = Math.Clamp(value, MinTrackHeight, MaxTrackHeight);
+                SetAndRaise(TrackHeightProperty, ref _trackHeight, value);
+            }
         }
         public double Track {
             get { return _track; }
             private set { SetAndRaise(TrackProperty, ref _track, value); }
         }
 
-        private double _trackHeight = UIConstants.TrackDefaultHeight;
+        private double _maxTrackHeight;
+        private double _minTrackHeight;
+        private double _trackHeight;
         private double _track;
 
         protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change) {
@@ -39,6 +69,9 @@ namespace OpenUtau.App.Controls {
         }
 
         public override void Render(DrawingContext context) {
+            if (TrackHeight == 0) {
+                return;
+            }
             int track = (int)Track;
             double top = TrackHeight * (track - Track);
             while (top < Bounds.Height) {
@@ -58,8 +91,9 @@ namespace OpenUtau.App.Controls {
     }
 
     class KeyTrackBackground : TrackBackground {
+        public const int MaxNoteNum = 12 * 11;
         protected override bool IsAltTrack(int track) {
-            int note = UIConstants.MaxNoteNum - 1 - track;
+            int note = MaxNoteNum - 1 - track;
             return MusicMath.IsBlackKey(note);
         }
     }

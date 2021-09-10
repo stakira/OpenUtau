@@ -6,7 +6,7 @@ using OpenUtau.Core.Util;
 
 namespace OpenUtau.Audio {
     class WaveOutAudioOutput : IAudioOutput {
-        private object lockObj = new object();
+        private readonly object lockObj = new object();
         private WaveOutEvent waveOutEvent;
         private int deviceNumber;
 

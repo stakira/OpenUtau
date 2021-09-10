@@ -26,6 +26,16 @@ namespace OpenUtau.App.Controls {
                 nameof(Resolution),
                 o => o.Resolution,
                 (o, v) => o.Resolution = v);
+        public static readonly DirectProperty<TickBackground, double> MinTickWidthProperty =
+            AvaloniaProperty.RegisterDirect<TickBackground, double>(
+                nameof(MinTickWidth),
+                o => o.MinTickWidth,
+                (o, v) => o.MinTickWidth = v);
+        public static readonly DirectProperty<TickBackground, double> MaxTickWidthProperty =
+            AvaloniaProperty.RegisterDirect<TickBackground, double>(
+                nameof(MaxTickWidth),
+                o => o.MaxTickWidth,
+                (o, v) => o.MaxTickWidth = v);
         public static readonly DirectProperty<TickBackground, double> TickWidthProperty =
             AvaloniaProperty.RegisterDirect<TickBackground, double>(
                 nameof(TickWidth),
@@ -54,10 +64,27 @@ namespace OpenUtau.App.Controls {
             get { return _resolution; }
             private set { SetAndRaise(ResolutionProperty, ref _resolution, value); }
         }
+        public double MinTickWidth {
+            get { return _minTickWidth; }
+            set {
+                SetAndRaise(MinTickWidthProperty, ref _minTickWidth, value);
+                MaxTickWidth = Math.Max(MaxTickWidth, MinTickWidth);
+            }
+        }
+        public double MaxTickWidth {
+            get { return _maxTickWidth; }
+            set {
+                value = Math.Max(value, MinTickWidth);
+                SetAndRaise(MaxTickWidthProperty, ref _maxTickWidth, value);
+            }
+        }
         // Tick width in pixel.
         public double TickWidth {
             get { return _tickWidth; }
-            private set { SetAndRaise(TickWidthProperty, ref _tickWidth, value); }
+            private set {
+                value = Math.Clamp(value, MinTickWidth, MaxTickWidth);
+                SetAndRaise(TickWidthProperty, ref _tickWidth, value);
+            }
         }
         public double Tick {
             get { return _tick; }
@@ -71,7 +98,9 @@ namespace OpenUtau.App.Controls {
         private int _beatUnit = 4;
         private int _beatPerBar = 4;
         private int _resolution = 480;
-        private double _tickWidth = UIConstants.TrackTickDefaultWidth;
+        private double _minTickWidth;
+        private double _maxTickWidth;
+        private double _tickWidth;
         private double _tick;
         private int _tickOffset;
 
@@ -110,6 +139,9 @@ namespace OpenUtau.App.Controls {
         }
 
         public override void Render(DrawingContext context) {
+            if (TickWidth == 0) {
+                return;
+            }
             int beatTicks = Resolution * 4 / BeatUnit;
             double beatWidth = TickWidth * beatTicks;
             double pixelOffset = (Tick + TickOffset) * TickWidth;
