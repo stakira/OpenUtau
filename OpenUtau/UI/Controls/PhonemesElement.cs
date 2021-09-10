@@ -76,21 +76,22 @@ namespace OpenUtau.UI.Controls {
                 Pen pen = note.Selected ? penEnvSel : penEnv;
                 Brush brush = note.Selected ? ThemeManager.NoteFillSelectedErrorBrushes : ThemeManager.NoteFillErrorBrushes[0];
 
+                var point0 = new Point(x0, y + y0);
+                var point1 = new Point(x1, y + y1);
+                var point2 = new Point(x2, y + y2);
+                var point3 = new Point(x3, y + y3);
+                var point4 = new Point(x4, y + y4);
                 StreamGeometry g = new StreamGeometry();
-                List<Point> poly = new List<Point>() {
-                    new Point(x1, y + y1),
-                    new Point(x2, y + y2),
-                    new Point(x3, y + y3),
-                    new Point(x4, y + y4),
-                    new Point(x0, y + y0)
-                };
+                List<Point> poly = new List<Point>() { point0, point1, point2, point3, point4 };
 
                 using (var gcxt = g.Open()) {
-                    gcxt.BeginFigure(new Point(x0, y + y0), true, false);
+                    gcxt.BeginFigure(point0, true, false);
                     gcxt.PolyLineTo(poly, true, false);
                     gcxt.Close();
                 }
                 cxt.DrawGeometry(brush, pen, g);
+                cxt.DrawEllipse(phoneme.preutterScale.HasValue ? pen.Brush : ThemeManager.UIBackgroundBrushNormal, pen, new Point(x0, y + y0 - 1), 2.5, 2.5);
+                cxt.DrawEllipse(phoneme.overlapScale.HasValue ? pen.Brush : ThemeManager.UIBackgroundBrushNormal, pen, point1, 2.5, 2.5);
 
                 var penPos = penEnvSel;
                 if (phoneme.HasOffsetOverride) {

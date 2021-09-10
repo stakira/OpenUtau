@@ -38,6 +38,8 @@ namespace OpenUtau.UI.Models {
         public UPhoneme phoneme;
         public bool hit;
         public bool hitPosition;
+        public bool hitPreutter;
+        public bool hitOverlap;
         public Point point;
     }
 
@@ -164,10 +166,33 @@ namespace OpenUtau.UI.Models {
             PhonemeHitInfo result = default;
             result.point = mousePos;
             foreach (var note in midiVM.Part.notes) {
+                if (note.OverlapError) {
+                    continue;
+                }
                 foreach (var phoneme in note.phonemes) {
-                    Point point = midiVM.TickToneToCanvas(new Vector2(phoneme.Parent.position + phoneme.position, 0));
+                    if (phoneme.Error) {
+                        continue;
+                    }
+                    int p0x = midiVM.Project.MillisecondToTick(phoneme.envelope.data[0].X);
+                    var point = new Point(midiVM.TickToCanvas(phoneme.Parent.position + phoneme.position + p0x), 48 - phoneme.envelope.data[0].Y * 0.24 - 1);
+                    if (WithIn(point, mousePos, 3)) {
+                        result.phoneme = phoneme;
+                        result.hit = true;
+                        result.hitPreutter = true;
+                        return result;
+                    }
+                    int p1x = midiVM.Project.MillisecondToTick(phoneme.envelope.data[1].X);
+                    point = new Point(midiVM.TickToCanvas(phoneme.Parent.position + phoneme.position + p1x), 48 - phoneme.envelope.data[1].Y * 0.24);
+                    if (WithIn(point, mousePos, 3)) {
+                        result.phoneme = phoneme;
+                        result.hit = true;
+                        result.hitOverlap = true;
+                        return result;
+                    }
+                    point = new Point(midiVM.TickToCanvas(phoneme.Parent.position + phoneme.position), 0);
                     if (Math.Abs(point.X - mousePos.X) < 3) {
                         result.phoneme = phoneme;
+                        result.hit = true;
                         result.hitPosition = true;
                         return result;
                     }

@@ -799,7 +799,6 @@ namespace OpenUtau.UI {
             public virtual void End(Point mousePos) {
                 DocManager.Inst.EndUndoGroup();
                 canvas.ReleaseMouseCapture();
-                Mouse.OverrideCursor = null;
             }
             public virtual void Update(Point mousePos) { }
         }
@@ -818,6 +817,35 @@ namespace OpenUtau.UI {
             }
         }
 
+        class ChangePreutterEditState : EditState {
+            public UNote leadingNote;
+            public UPhoneme phoneme;
+            public int index;
+            public override void Start(Point mousePos) {
+                base.Start(mousePos);
+            }
+            public override void Update(Point mousePos) {
+                int preutterTicks = phoneme.Parent.position + phoneme.position - vm.CanvasToTick(mousePos.X);
+                double preutterScale = Math.Max(0, vm.Project.TickToMillisecond(preutterTicks) / phoneme.oto.Preutter);
+                DocManager.Inst.ExecuteCmd(new PhonemePreutterCommand(vm.Part, leadingNote, index, (float)preutterScale));
+            }
+        }
+
+        class ChangeOverlapEditState : EditState {
+            public UNote leadingNote;
+            public UPhoneme phoneme;
+            public int index;
+            public override void Start(Point mousePos) {
+                base.Start(mousePos);
+            }
+            public override void Update(Point mousePos) {
+                float preutter = phoneme.preutter;
+                double overlap = preutter - vm.Project.TickToMillisecond(phoneme.Parent.position + phoneme.position - vm.CanvasToTick(mousePos.X));
+                double overlapScale = Math.Max(0, Math.Min(overlap / phoneme.oto.Overlap, preutter / phoneme.oto.Overlap));
+                DocManager.Inst.ExecuteCmd(new PhonemeOverlapCommand(vm.Part, leadingNote, index, (float)overlapScale));
+            }
+        }
+
         class ResetPhonemeEditState : EditState {
             public MidiViewHitTest midiHT;
             public override void Start(Point mousePos) {
@@ -825,12 +853,18 @@ namespace OpenUtau.UI {
             }
             public override void Update(Point mousePos) {
                 var hitInfo = midiHT.HitTestPhoneme(mousePos);
-                if (hitInfo.hitPosition) {
+                if (hitInfo.hit) {
                     var phoneme = hitInfo.phoneme;
                     var parent = phoneme.Parent;
                     var leadingNote = parent.Extends ?? parent;
                     int index = parent.PhonemeOffset + parent.phonemes.IndexOf(phoneme);
-                    DocManager.Inst.ExecuteCmd(new PhonemeOffsetCommand(vm.Part, leadingNote, index, 0));
+                    if (hitInfo.hitPosition) {
+                        DocManager.Inst.ExecuteCmd(new PhonemeOffsetCommand(vm.Part, leadingNote, index, 0));
+                    } else if (hitInfo.hitPreutter) {
+                        DocManager.Inst.ExecuteCmd(new PhonemePreutterCommand(vm.Part, leadingNote, index, 1));
+                    } else if (hitInfo.hitOverlap) {
+                        DocManager.Inst.ExecuteCmd(new PhonemeOverlapCommand(vm.Part, leadingNote, index, 1));
+                    }
                 }
             }
         }
@@ -843,16 +877,37 @@ namespace OpenUtau.UI {
             }
             Point mousePos = e.GetPosition((UIElement)sender);
             var hitInfo = midiHT.HitTestPhoneme(mousePos);
-            if (hitInfo.hitPosition) {
+            if (hitInfo.hit) {
                 var phoneme = hitInfo.phoneme;
                 var parent = phoneme.Parent;
-                phonemeCanvasEditState = new MovePhonemeEditState() {
-                    vm = midiVM,
-                    canvas = (Canvas)sender,
-                    button = MouseButton.Left,
-                    leadingNote = parent.Extends ?? parent,
-                    index = parent.PhonemeOffset + parent.phonemes.IndexOf(phoneme),
-                };
+                var index = parent.PhonemeOffset + parent.phonemes.IndexOf(phoneme);
+                if (hitInfo.hitPosition) {
+                    phonemeCanvasEditState = new MovePhonemeEditState() {
+                        vm = midiVM,
+                        canvas = (Canvas)sender,
+                        button = MouseButton.Left,
+                        leadingNote = parent.Extends ?? parent,
+                        index = index,
+                    };
+                } else if (hitInfo.hitPreutter) {
+                    phonemeCanvasEditState = new ChangePreutterEditState() {
+                        vm = midiVM,
+                        canvas = (Canvas)sender,
+                        leadingNote = parent.Extends ?? parent,
+                        phoneme = phoneme,
+                        index = index,
+                    };
+                } else if (hitInfo.hitOverlap) {
+                    phonemeCanvasEditState = new ChangeOverlapEditState() {
+                        vm = midiVM,
+                        canvas = (Canvas)sender,
+                        leadingNote = parent.Extends ?? parent,
+                        phoneme = phoneme,
+                        index = index,
+                    };
+                }
+            }
+            if (phonemeCanvasEditState != null) {
                 phonemeCanvasEditState.Start(mousePos);
                 phonemeCanvasEditState.Update(mousePos);
             }
@@ -898,7 +953,7 @@ namespace OpenUtau.UI {
                 return;
             }
             var hitInfo = midiHT.HitTestPhoneme(mousePos);
-            if (hitInfo.hitPosition) {
+            if (hitInfo.hit) {
                 Mouse.OverrideCursor = Cursors.SizeWE;
             } else {
                 Mouse.OverrideCursor = null;

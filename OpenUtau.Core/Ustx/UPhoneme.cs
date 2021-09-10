@@ -16,6 +16,8 @@ namespace OpenUtau.Core.Ustx {
         public bool overlapped { get; private set; }
         public float tailIntrude { get; private set; }
         public float tailOverlap { get; private set; }
+        public float? preutterScale { get; set; }
+        public float? overlapScale { get; set; }
 
         public UNote Parent { get; set; }
         public int Duration { get; private set; }
@@ -85,8 +87,8 @@ namespace OpenUtau.Core.Ustx {
                 return;
             }
             float consonantStretch = (float)Math.Pow(2f, 1.0f - note.expressions["vel"].value / 100f);
-            overlap = (float)oto.Overlap * consonantStretch;
-            preutter = (float)oto.Preutter * consonantStretch;
+            overlap = (float)oto.Overlap * consonantStretch * (overlapScale ?? 1);
+            preutter = (float)oto.Preutter * consonantStretch * (preutterScale ?? 1);
             overlapped = false;
 
             if (Prev == null) {
@@ -96,9 +98,9 @@ namespace OpenUtau.Core.Ustx {
             float gapMs = (float)project.TickToMillisecond(gapTick);
             float maxPreutter = preutter;
             if (gapMs <= 0) {
-                // Keep at least half of last phoneme.
+                // Keep at least half of last phoneme, or 10% if preutterScale is set. 
                 overlapped = true;
-                maxPreutter = (float)project.TickToMillisecond(Prev.Duration) / 2;
+                maxPreutter = (float)project.TickToMillisecond(Prev.Duration) * (preutterScale == null ? 0.5f : 0.9f);
             } else if (gapMs < preutter) {
                 maxPreutter = gapMs;
             }
@@ -107,6 +109,8 @@ namespace OpenUtau.Core.Ustx {
                 preutter = maxPreutter;
                 overlap *= ratio;
             }
+            preutter = Math.Max(0, preutter);
+            overlap = Math.Min(overlap, preutter);
             Prev.tailIntrude = overlapped ? preutter : 0;
             Prev.tailOverlap = overlapped ? overlap : 0;
             Prev.ValidateEnvelope(project, Prev.Parent);
@@ -165,7 +169,9 @@ namespace OpenUtau.Core.Ustx {
         [JsonProperty] public int index;
         [JsonProperty] public string phoneme;
         [JsonProperty] public int? offset;
+        [JsonProperty] public float? preutterScale;
+        [JsonProperty] public float? overlapScale;
 
-        public bool IsEmpty => string.IsNullOrEmpty(phoneme) && !offset.HasValue;
+        public bool IsEmpty => string.IsNullOrEmpty(phoneme) && !offset.HasValue && !preutterScale.HasValue && !overlapScale.HasValue;
     }
 }
