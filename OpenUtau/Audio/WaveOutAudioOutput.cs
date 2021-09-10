@@ -7,7 +7,7 @@ using OpenUtau.Core.Util;
 namespace OpenUtau.Audio {
     class WaveOutAudioOutput : IAudioOutput {
         private object lockObj = new object();
-        private WaveOut waveOut;
+        private WaveOutEvent waveOutEvent;
         private int deviceNumber;
 
         public WaveOutAudioOutput() {
@@ -21,7 +21,7 @@ namespace OpenUtau.Audio {
         public PlaybackState PlaybackState {
             get {
                 lock (lockObj) {
-                    return waveOut == null ? PlaybackState.Stopped : waveOut.PlaybackState;
+                    return waveOutEvent == null ? PlaybackState.Stopped : waveOutEvent.PlaybackState;
                 }
             }
         }
@@ -30,45 +30,45 @@ namespace OpenUtau.Audio {
 
         public long GetPosition() {
             lock (lockObj) {
-                return waveOut == null ? 0 : waveOut.GetPosition();
+                return waveOutEvent == null ? 0 : waveOutEvent.GetPosition();
             }
         }
 
         public void Init(ISampleProvider sampleProvider) {
             lock (lockObj) {
-                if (waveOut != null) {
-                    waveOut.Stop();
-                    waveOut.Dispose();
+                if (waveOutEvent != null) {
+                    waveOutEvent.Stop();
+                    waveOutEvent.Dispose();
                 }
-                waveOut = new WaveOut() {
+                waveOutEvent = new WaveOutEvent() {
                     DeviceNumber = deviceNumber,
                 };
-                waveOut.Init(sampleProvider);
+                waveOutEvent.Init(sampleProvider);
             }
         }
 
         public void Pause() {
             lock (lockObj) {
-                if (waveOut != null) {
-                    waveOut.Pause();
+                if (waveOutEvent != null) {
+                    waveOutEvent.Pause();
                 }
             }
         }
 
         public void Play() {
             lock (lockObj) {
-                if (waveOut != null) {
-                    waveOut.Play();
+                if (waveOutEvent != null) {
+                    waveOutEvent.Play();
                 }
             }
         }
 
         public void Stop() {
             lock (lockObj) {
-                if (waveOut != null) {
-                    waveOut.Stop();
-                    waveOut.Dispose();
-                    waveOut = null;
+                if (waveOutEvent != null) {
+                    waveOutEvent.Stop();
+                    waveOutEvent.Dispose();
+                    waveOutEvent = null;
                 }
             }
         }
