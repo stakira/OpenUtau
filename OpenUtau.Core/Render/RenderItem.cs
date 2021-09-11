@@ -135,20 +135,20 @@ namespace OpenUtau.Core.Render {
             }
 
             // Expand curve if necessary.
-            var startMs = project.TickToMillisecond(phoneme.position) - phoneme.oto.Preutter;
-            var endMs = project.TickToMillisecond(phoneme.End) - phoneme.tailIntrude + phoneme.tailOverlap;
+            float startMs = (float)(project.TickToMillisecond(phoneme.position) - phoneme.oto.Preutter);
+            float endMs = (float)(project.TickToMillisecond(phoneme.End) - phoneme.tailIntrude + phoneme.tailOverlap);
             if (points.First().X > startMs) {
-                points.Insert(0, new PitchPoint((float)startMs, points.First().Y));
+                points.Insert(0, new PitchPoint(startMs, points.First().Y));
             }
             if (points.Last().X < endMs) {
-                points.Add(new PitchPoint((float)endMs, points.Last().Y));
+                points.Add(new PitchPoint(endMs, points.Last().Y));
             }
 
             // Interpolation.
             var pitches = new List<int>();
             const int intervalTick = 5;
-            var intervalMs = project.TickToMillisecond(intervalTick);
-            var currMs = startMs;
+            float intervalMs = (float)project.TickToMillisecond(intervalTick);
+            float currMs = startMs;
             int i = 0;
             int vibrato = 0;
             while (currMs < endMs) {
