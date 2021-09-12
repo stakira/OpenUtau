@@ -241,7 +241,13 @@
             </Grid>
             <Canvas x:Name="expCanvas" Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="48,0,20,1" Background="Transparent" ClipToBounds="True"
                     MouseLeftButtonDown="expCanvas_MouseLeftButtonDown" MouseLeftButtonUp="expCanvas_MouseLeftButtonUp"
-                    MouseRightButtonDown="expCanvas_MouseRightButtonDown" MouseRightButtonUp="expCanvas_MouseRightButtonUp" MouseMove="expCanvas_MouseMove"/>
+                    MouseRightButtonDown="expCanvas_MouseRightButtonDown" MouseRightButtonUp="expCanvas_MouseRightButtonUp" MouseMove="expCanvas_MouseMove">
+                <Popup x:Name="valueTip" Placement="Relative" PlacementTarget="{Binding ElementName=expCanvas}">
+                    <Border Background="{DynamicResource BackgroundBrushNormal}" BorderThickness="1" BorderBrush="{DynamicResource ScrollBarBrushActive}">
+                        <TextBlock x:Name="valueTipText" Margin="2,0">100</TextBlock>
+                    </Border>
+                </Popup>
+            </Canvas>
             <ScrollBar x:Name="expVerticalScroll" Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="20"
                        Margin="0,0,0,20" Orientation="Vertical" ViewportSize="10000"/>
             <Border x:Name="expCanvasShadow" Grid.Row="2" Background="{x:Null}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="48,0,20,1" BorderThickness="0" ClipToBounds="True">

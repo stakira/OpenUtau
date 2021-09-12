@@ -734,6 +734,7 @@ namespace OpenUtau.UI {
                 DocManager.Inst.EndUndoGroup();
             }
             ((Canvas)sender).ReleaseMouseCapture();
+            valueTip.IsOpen = false;
         }
 
         private void expCanvas_MouseRightButtonDown(object sender, MouseButtonEventArgs e) {
@@ -769,7 +770,11 @@ namespace OpenUtau.UI {
             if (mouseButton == MouseButton.Right) {
                 newValue = _expDef.defaultValue;
             } else if (mouseButton == MouseButton.Left) {
-                newValue = (float)Math.Max(_expDef.min, Math.Min(_expDef.max, (1 - mousePos.Y / expCanvas.ActualHeight) * (_expDef.max - _expDef.min) + _expDef.min));
+                newValue = (int)Math.Max(_expDef.min, Math.Min(_expDef.max, (1 - mousePos.Y / expCanvas.ActualHeight) * (_expDef.max - _expDef.min) + _expDef.min));
+                valueTipText.Text = newValue.ToString();
+                valueTip.HorizontalOffset = mousePos.X;
+                valueTip.VerticalOffset = mousePos.Y - 16;
+                valueTip.IsOpen = true;
             } else {
                 return;
             }
