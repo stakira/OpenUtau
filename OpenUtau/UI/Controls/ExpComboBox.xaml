@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:localvm="clr-namespace:OpenUtau.UI.Models"
              mc:Ignorable="d" x:Name="ComboBox"
              Height="22" Width="48">
     <UserControl.Template>

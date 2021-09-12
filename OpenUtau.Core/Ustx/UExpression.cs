@@ -25,6 +25,8 @@ namespace OpenUtau.Core.Ustx {
                 value = defaultValue,
             };
         }
+
+        public override string ToString() => name;
     }
 
     [JsonObject(MemberSerialization.OptIn)]
