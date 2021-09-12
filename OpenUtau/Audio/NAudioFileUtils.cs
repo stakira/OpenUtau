@@ -16,10 +16,6 @@ namespace OpenUtau.Audio {
             return new AudioFileReader(file);
         }
 
-        public ISampleProvider OpenAudioFileAsSampleProvider(string file) {
-            return new AudioFileReader(file);
-        }
-
         public float[] GetAudioSamples(string file) {
             using (var reader = new AudioFileReader(file)) {
                 var provider = new MediaFoundationResampler(reader, WaveFormat.CreateIeeeFloatWaveFormat(44100, 1)).ToSampleProvider();

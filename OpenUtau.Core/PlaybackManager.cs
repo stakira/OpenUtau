@@ -27,7 +27,6 @@ namespace OpenUtau.Core {
     public interface IAudioFileUtils {
         void GetAudioFileInfo(string file, out WaveFormat waveFormat, out TimeSpan duration);
         WaveStream OpenAudioFileAsWaveStream(string file);
-        ISampleProvider OpenAudioFileAsSampleProvider(string file);
         /// <summary>
         /// Returns audio samples.
         /// </summary>
@@ -52,6 +51,7 @@ namespace OpenUtau.Core {
         List<Fader> faders;
         MasterAdapter masterMix;
         double startMs;
+        CancellationTokenSource playbakCancellationTokenSource;
 
         object previewDriverLockObj = new object();
         string resamplerSelected;
@@ -124,6 +124,12 @@ namespace OpenUtau.Core {
                 RenderEngine engine = new RenderEngine(project, driver, cache, tick);
                 var result = engine.RenderProject(tick);
                 faders = result.Item2;
+                var source = result.Item3;
+                source = Interlocked.Exchange(ref playbakCancellationTokenSource, source);
+                if (source != null) {
+                    source.Cancel();
+                    Log.Information("Cancelling previous render");
+                }
                 StartPlayback(project.TickToMillisecond(tick), result.Item1);
             }).ContinueWith((task) => {
                 if (task.IsFaulted) {
