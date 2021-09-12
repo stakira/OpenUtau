@@ -137,12 +137,8 @@ namespace OpenUtau.Core.Formats {
         private static void SnapPitchPoints(UVoicePart part) {
             UNote lastNote = null;
             foreach (var note in part.notes) {
-                if (lastNote != null && !note.pitch.snapFirst && note.position == lastNote.End) {
-                    float dy = note.pitch.data[0].Y - lastNote.pitch.data[0].Y;
-                    float dn = note.tone - lastNote.tone;
-                    if (Math.Abs(dy + 10 * dn) < 1) {
-                        note.pitch.snapFirst = true;
-                    }
+                if (lastNote != null && note.position == lastNote.End) {
+                    note.pitch.snapFirst = true;
                 }
                 lastNote = note;
             }
@@ -301,7 +297,7 @@ namespace OpenUtau.Core.Formats {
                 float pbsX = parts.Length >= 1 && ParseFloat(parts[0], out pbsX) ? pbsX : 0;
                 float pbsY = parts.Length >= 2 && ParseFloat(parts[1], out pbsY) ? pbsY : 0;
                 points.Add(new PitchPoint(pbsX, pbsY));
-                note.pitch.snapFirst = parts.Length < 2;
+                note.pitch.snapFirst = false;
                 // PBW, PBY
                 var x = points.First().X;
                 if (!string.IsNullOrWhiteSpace(pbw)) {

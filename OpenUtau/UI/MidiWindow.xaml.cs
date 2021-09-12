@@ -773,7 +773,7 @@ namespace OpenUtau.UI {
                 newValue = (int)Math.Max(_expDef.min, Math.Min(_expDef.max, (1 - mousePos.Y / expCanvas.ActualHeight) * (_expDef.max - _expDef.min) + _expDef.min));
                 valueTipText.Text = newValue.ToString();
                 valueTip.HorizontalOffset = mousePos.X;
-                valueTip.VerticalOffset = mousePos.Y - 16;
+                valueTip.VerticalOffset = mousePos.Y - 18;
                 valueTip.IsOpen = true;
             } else {
                 return;
