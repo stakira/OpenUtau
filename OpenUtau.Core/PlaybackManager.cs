@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -42,6 +43,7 @@ namespace OpenUtau.Core {
         public static PlaybackManager Inst { get { if (_s == null) { _s = new PlaybackManager(); } return _s; } }
 
         readonly RenderCache cache = new RenderCache(2048);
+        List<Fader> faders;
         MasterAdapter masterMix;
         double startMs;
 
@@ -115,8 +117,8 @@ namespace OpenUtau.Core {
             Task.Run(() => {
                 RenderEngine engine = new RenderEngine(project, driver, cache, tick);
                 var result = engine.RenderProject(tick);
-                //result.Item3.Wait();
-                StartPlayback(project.TickToMillisecond(tick), result.Item2);
+                faders = result.Item2;
+                StartPlayback(project.TickToMillisecond(tick), result.Item1);
             }).ContinueWith((task) => {
                 if (task.IsFaulted) {
                     Log.Information($"{task.Exception}");
@@ -127,7 +129,7 @@ namespace OpenUtau.Core {
         }
 
         public void UpdatePlayPos() {
-            if (AudioOutput.PlaybackState == PlaybackState.Playing) {
+            if (AudioOutput.PlaybackState == PlaybackState.Playing && masterMix != null) {
                 double ms = (AudioOutput.GetPosition() / sizeof(float) - masterMix.Paused) * 1000.0 / 44100;
                 int tick = DocManager.Inst.Project.MillisecondToTick(startMs + ms);
                 DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(tick));
@@ -146,7 +148,7 @@ namespace OpenUtau.Core {
             }
             StopPreRender();
             Task.Run(() => {
-                var task = Task.Run(async () => {
+                var task = Task.Run(() => {
                     RenderEngine engine = new RenderEngine(project, driver, cache);
                     var trackMixes = engine.RenderTracks();
                     for (int i = 0; i < trackMixes.Count; ++i) {
@@ -196,9 +198,9 @@ namespace OpenUtau.Core {
                 DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(tick));
             } else if (cmd is VolumeChangeNotification) {
                 var _cmd = cmd as VolumeChangeNotification;
-                //if (trackSources != null && trackSources.Count > _cmd.TrackNo) {
-                //    trackSources[_cmd.TrackNo].Volume = DecibelToVolume(_cmd.Volume);
-                //}
+                if (faders != null && faders.Count > _cmd.TrackNo) {
+                    faders[_cmd.TrackNo].Scale = DecibelToVolume(_cmd.Volume);
+                }
             }
             if (!(cmd is UNotification) || cmd is LoadProjectNotification) {
                 SchedulePreRender();

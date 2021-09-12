@@ -41,17 +41,24 @@ namespace OpenUtau.Core.Render {
             this.startTick = startTick;
         }
 
-        public Tuple<CancellationTokenSource, MasterAdapter, Task> RenderProject(int startTick) {
+        public Tuple<MasterAdapter, List<Fader>, CancellationTokenSource, Task> RenderProject(int startTick) {
             var source = new CancellationTokenSource();
-            var items = PrepareProject(project, startTick)
-                .OrderBy(item => item.PosMs)
-                .ToArray();
-            var mix = new WaveMix(items.Select(item => {
-                var waveSource = new WaveSource(item.PosMs, item.DurMs, item.Envelope, item.SkipOver);
-                item.OnComplete = data => waveSource.SetWaveData(data);
-                return waveSource;
-            }));
-            var progress = new Progress(items.Length);
+            var items = new List<RenderItem>();
+            var faders = new List<Fader>();
+            foreach (var track in project.tracks) {
+                var trackItems = PrepareTrack(track, project, startTick).ToArray();
+                var trackMix = new WaveMix(trackItems.Select(item => {
+                    var waveSource = new WaveSource(item.PosMs, item.DurMs, item.Envelope, item.SkipOver);
+                    item.OnComplete = data => waveSource.SetWaveData(data);
+                    return waveSource;
+                }));
+                items.AddRange(trackItems);
+                var fader = new Fader(trackMix);
+                fader.Scale = PlaybackManager.DecibelToVolume(track.Volume);
+                faders.Add(fader);
+            }
+            items = items.OrderBy(item => item.PosMs).ToList();
+            var progress = new Progress(items.Count);
             var task = Task.Run(async () => {
                 var tasks = items.Select(item => {
                     item.progress = progress;
@@ -60,9 +67,9 @@ namespace OpenUtau.Core.Render {
                 await Task.WhenAll(tasks);
                 progress.Clear();
             });
-            var master = new MasterAdapter(mix);
+            var master = new MasterAdapter(new WaveMix(faders));
             master.SetPosition((int)(project.TickToMillisecond(startTick) * 44100 / 1000));
-            return Tuple.Create(source, master, task);
+            return Tuple.Create(master, faders, source, task);
         }
 
         public List<WaveMix> RenderTracks() {

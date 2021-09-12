@@ -129,7 +129,7 @@
                 <ControlTemplate TargetType="Slider">
                     <Grid>
                         <TickBar x:Name="TopTick" Visibility="Collapsed"/>
-                        <Line X1="118.5" Y1="2" X2="118.5" Y2="15" Stroke="Gray"/>
+                        <Line X1="140.5" Y1="2" X2="140.5" Y2="15" Stroke="Gray"/>
                         <Border x:Name="TrackBackground" Margin="0" CornerRadius="2" Height="9" BorderThickness="1" BorderBrush="Black">
                             <Border.Background>
                                 <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
