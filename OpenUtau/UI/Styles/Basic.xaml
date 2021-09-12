@@ -27,6 +27,17 @@
     </LinearGradientBrush>
     <SolidColorBrush x:Key="CenterKeyNoteBrushNormal" Color="{StaticResource CenterKeyNoteColorNormal}"/>
 
+    <LinearGradientBrush x:Key="ActiveExpBrush" EndPoint="1,0.5" StartPoint="0,0.5">
+        <GradientStop Color="{StaticResource ActiveExpColorLeft}" Offset="0"/>
+        <GradientStop Color="{StaticResource ActiveExpColorRight}" Offset="1"/>
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="ActiveExpNameBrush" Color="{StaticResource ActiveExpNameColor}"/>
+    <LinearGradientBrush x:Key="ShadowExpBrush" EndPoint="1,0.5" StartPoint="0,0.5">
+        <GradientStop Color="{StaticResource ShadowExpColorLeft}" Offset="0"/>
+        <GradientStop Color="{StaticResource ShadowExpColorRight}" Offset="1"/>
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="ShadowExpNameBrush" Color="{StaticResource ShadowExpNameColor}"/>
+
     <SolidColorBrush x:Key="BlackKeyTrackBrushNormal" Color="{StaticResource BlackKeyTrackColorNormal}"/>
     <SolidColorBrush x:Key="WhiteKeyTrackBrushNormal" Color="{StaticResource WhiteKeyTrackColorNormal}"/>
 

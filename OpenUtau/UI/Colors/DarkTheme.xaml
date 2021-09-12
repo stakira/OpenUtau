@@ -39,6 +39,15 @@
     <Color x:Key="CenterKeyColorNormalRight">#E6BAC6</Color>
     <Color x:Key="CenterKeyNameColorNormal">#040404</Color>
 
+    <!--Keyboard Background-->
+    <Color x:Key="ActiveExpColorLeft">#FF71a3</Color>
+    <Color x:Key="ActiveExpColorRight">#FF347C</Color>
+    <Color x:Key="ActiveExpNameColor">#FFFFFF</Color>
+    <Color x:Key="ShadowExpColorLeft">#FFDDE6</Color>
+    <Color x:Key="ShadowExpColorRight">#FFCEDC</Color>
+    <Color x:Key="ShadowExpNameColor">#FF347C</Color>
+    <Color x:Key="NormalExpNameColor">#FCFCFC</Color>
+
     <!--Track Background-->
     <Color x:Key="TrackBackgroundColor">#1E1E1E</Color>
     <Color x:Key="TrackBackgroundColorAlt">#121212</Color>

@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 
-namespace OpenUtau.UI
-{
-    class ThemeManager
-    {
+namespace OpenUtau.UI {
+    class ThemeManager {
         static public string[] noteStrings = new String[12] { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
 
         static readonly int[] blackKeys = { 1, 3, 6, 8, 10 };
@@ -29,6 +27,12 @@ namespace OpenUtau.UI
         public static SolidColorBrush BlackKeyNameBrushNormal = new SolidColorBrush();
         public static LinearGradientBrush CenterKeyBrushNormal = new LinearGradientBrush() { StartPoint = new Point(0, 0.5), EndPoint = new Point(1, 0.5) };
         public static SolidColorBrush CenterKeyNameBrushNormal = new SolidColorBrush();
+
+        public static LinearGradientBrush ActiveExpBrush = new LinearGradientBrush() { StartPoint = new Point(0, 0.5), EndPoint = new Point(1, 0.5) };
+        public static SolidColorBrush ActiveExpNameBrush = new SolidColorBrush();
+        public static LinearGradientBrush ShadowExpBrush = new LinearGradientBrush() { StartPoint = new Point(0, 0.5), EndPoint = new Point(1, 0.5) };
+        public static SolidColorBrush ShadowExpNameBrush = new SolidColorBrush();
+        public static SolidColorBrush NormalExpNameBrush = new SolidColorBrush();
 
         public static SolidColorBrush TrackBackgroundBrush = new SolidColorBrush();
         public static SolidColorBrush TrackBackgroundBrushAlt = new SolidColorBrush();
@@ -53,7 +57,7 @@ namespace OpenUtau.UI
         public static SolidColorBrush PitchBrush = new SolidColorBrush();
         public static SolidColorBrush VibratoBrush = new SolidColorBrush();
 
-        public static bool LoadTheme(){
+        public static bool LoadTheme() {
 
             const int NumberOfChannel = 1;
 
@@ -68,7 +72,15 @@ namespace OpenUtau.UI
             CenterKeyBrushNormal.GradientStops.Add(new GradientStop(GetColor("CenterKeyColorNormalLeft"), 0));
             CenterKeyBrushNormal.GradientStops.Add(new GradientStop(GetColor("CenterKeyColorNormalLeft"), 1));
             CenterKeyNameBrushNormal.Color = GetColor("CenterKeyNameColorNormal");
-            
+
+            ActiveExpBrush.GradientStops.Add(new GradientStop(GetColor("ActiveExpColorLeft"), 0));
+            ActiveExpBrush.GradientStops.Add(new GradientStop(GetColor("ActiveExpColorRight"), 0));
+            ActiveExpNameBrush.Color = GetColor("ActiveExpNameColor");
+            ShadowExpBrush.GradientStops.Add(new GradientStop(GetColor("ShadowExpColorLeft"), 0));
+            ShadowExpBrush.GradientStops.Add(new GradientStop(GetColor("ShadowExpColorRight"), 0));
+            ShadowExpNameBrush.Color = GetColor("ShadowExpNameColor");
+            NormalExpNameBrush.Color = GetColor("NormalExpNameColor");
+
             UIBackgroundBrushNormal.Color = GetColor("UIBackgroundColorNormal");
             UIBackgroundBrushActive.Color = GetColor("UIBackgroundColorActive");
             UINeutralBrushNormal.Color = GetColor("UINeutralColorNormal");
@@ -82,7 +94,7 @@ namespace OpenUtau.UI
             TickLineBrushLight.Color = GetColor("TickLineColorLight");
             TickLineBrushDark.Color = GetColor("TickLineColorDark");
             BarNumberBrush.Color = GetColor("BarNumberColor");
-            
+
             PlayPosMarkerHighlightBrush.Color = GetColor("PlayPosMarkerHighlightColor");
 
             // Midi notes
@@ -92,12 +104,11 @@ namespace OpenUtau.UI
             NoteStrokeSelectedBrush.Color = GetColor("NoteStrokeSelectedColor");
             NoteStrokeErrorBrush.Color = GetColor("NoteStrokeErrorColor");
 
-            for (int i = 0; i < NumberOfChannel; i++)
-            {
+            for (int i = 0; i < NumberOfChannel; i++) {
                 NoteFillBrushes.Add(new SolidColorBrush());
                 NoteStrokeBrushes.Add(new SolidColorBrush());
                 NoteFillErrorBrushes.Add(new SolidColorBrush());
-                
+
                 NoteFillBrushes[i].Color = GetColor("NoteFillColorBCh" + i);
                 NoteFillErrorBrushes[i].Color = GetColorVariationAlpha(NoteFillBrushes[i].Color, 127);
                 NoteStrokeBrushes[i].Color = GetColor("NoteStrokeColorCh" + i);
@@ -108,16 +119,13 @@ namespace OpenUtau.UI
 
             return true;
         }
-        
-        public static Color GetColor(string name)
-        {
+
+        public static Color GetColor(string name) {
             return (Color)Application.Current.FindResource(name);
         }
 
-        public static Color GetColorVariationAlpha(Color color, byte alpha)
-        {
-            return new Color()
-            {
+        public static Color GetColorVariationAlpha(Color color, byte alpha) {
+            return new Color() {
                 R = color.R,
                 G = color.G,
                 B = color.B,

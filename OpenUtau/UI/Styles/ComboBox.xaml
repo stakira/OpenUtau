@@ -49,7 +49,7 @@
                         <!-- Popup showing items -->
                         <Popup Name="Popup" Placement="Bottom" Focusable="False" AllowsTransparency="True" IsOpen="{TemplateBinding ComboBox.IsDropDownOpen}" PopupAnimation="Slide">
                             <Grid Name="DropDown" SnapsToDevicePixels="True" MinWidth="{TemplateBinding FrameworkElement.ActualWidth}" MaxHeight="{TemplateBinding ComboBox.MaxDropDownHeight}">
-                                <Border Name="DropDownBorder" Background="White" Margin="0" CornerRadius="0" BorderThickness="1" BorderBrush="Gray"/>
+                                <Border Name="DropDownBorder" Background="{DynamicResource BackgroundBrushNormal}" Margin="0" CornerRadius="0" BorderThickness="1" BorderBrush="Gray"/>
                                 <ScrollViewer Margin="2" SnapsToDevicePixels="True">
                                     <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained"  />
                                 </ScrollViewer>

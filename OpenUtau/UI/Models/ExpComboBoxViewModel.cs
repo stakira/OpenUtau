@@ -35,13 +35,13 @@ namespace OpenUtau.UI.Models {
             DocManager.Inst.AddSubscriber(this);
             this.WhenAnyValue(x => x.DisplayMode)
                 .Select(mode =>
-                    mode == ExpDisMode.Visible ? ThemeManager.BlackKeyNameBrushNormal :
-                    mode == ExpDisMode.Shadow ? ThemeManager.CenterKeyNameBrushNormal : ThemeManager.WhiteKeyNameBrushNormal)
+                    mode == ExpDisMode.Visible ? ThemeManager.ActiveExpNameBrush :
+                    mode == ExpDisMode.Shadow ? ThemeManager.ShadowExpNameBrush : ThemeManager.NormalExpNameBrush)
                 .ToProperty(this, x => x.TagBrush, out _tagBrush);
             this.WhenAnyValue(x => x.DisplayMode)
                 .Select(mode =>
-                    mode == ExpDisMode.Visible ? ThemeManager.BlackKeyBrushNormal :
-                    mode == ExpDisMode.Shadow ? ThemeManager.CenterKeyBrushNormal : ThemeManager.WhiteKeyBrushNormal)
+                    mode == ExpDisMode.Visible ? (Brush)ThemeManager.ActiveExpBrush :
+                    mode == ExpDisMode.Shadow ? (Brush)ThemeManager.ShadowExpBrush : Brushes.Transparent)
                 .ToProperty(this, x => x.Background, out _background);
         }
 
