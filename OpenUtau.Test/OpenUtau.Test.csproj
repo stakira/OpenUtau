@@ -28,7 +28,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="(if not exist &quot;$(TargetDir)Usts&quot; mkdir &quot;$(TargetDir)Usts&quot;) &amp;&amp; (xcopy &quot;$(ProjectDir)Usts&quot; &quot;$(TargetDir)Usts&quot; /S /Y)" />
+    <Exec Command="(if not exist &quot;$(TargetDir)Usts&quot; mkdir &quot;$(TargetDir)Usts&quot;) &amp;&amp; (xcopy &quot;$(ProjectDir)Usts&quot; &quot;$(TargetDir)Usts&quot; /S /Y) &amp;&amp; (if not exist &quot;$(TargetDir)Files&quot; mkdir &quot;$(TargetDir)Files&quot;) &amp;&amp; (xcopy &quot;$(ProjectDir)Files&quot; &quot;$(TargetDir)Files&quot; /S /Y)" />
   </Target>
 
 </Project>

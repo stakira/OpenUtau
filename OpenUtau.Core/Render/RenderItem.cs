@@ -41,6 +41,8 @@ namespace OpenUtau.Core.Render {
         public readonly string phonemeName;
         public RenderEngine.Progress progress;
 
+        public Action<byte[]> OnComplete;
+
         public RenderItem(UPhoneme phoneme, UVoicePart part, UTrack track, UProject project, string resamplerName) {
             SourceFile = phoneme.oto.File;
             SourceFile = Path.Combine(PathManager.Inst.InstalledSingersPath, SourceFile);

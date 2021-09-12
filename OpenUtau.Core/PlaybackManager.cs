@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
-using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Render;
 using OpenUtau.Core.ResamplerDriver;
+using OpenUtau.Core.SignalChain;
+using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Core {
@@ -41,11 +41,9 @@ namespace OpenUtau.Core {
         private static PlaybackManager _s;
         public static PlaybackManager Inst { get { if (_s == null) { _s = new PlaybackManager(); } return _s; } }
 
-        ISampleProvider masterMix;
-        double startMs;
-        List<TrackSampleProvider> trackSources;
-        Task<List<TrackSampleProvider>> renderTask;
         readonly RenderCache cache = new RenderCache(2048);
+        MasterAdapter masterMix;
+        double startMs;
 
         object previewDriverLockObj = new object();
         string resamplerSelected;
@@ -53,7 +51,7 @@ namespace OpenUtau.Core {
         CancellationTokenSource previewCancellationTokenSource;
 
         public IAudioOutput AudioOutput { get; set; }
-        public bool Playing => renderTask != null || AudioOutput.PlaybackState == PlaybackState.Playing;
+        public bool Playing => AudioOutput.PlaybackState == PlaybackState.Playing;
 
         public bool CheckResampler() {
             var path = PathManager.Inst.GetPreviewEnginePath();
@@ -68,13 +66,6 @@ namespace OpenUtau.Core {
         }
 
         public void Play(UProject project, int tick) {
-            if (renderTask != null) {
-                if (renderTask.IsCompleted || renderTask.IsFaulted) {
-                    renderTask = null;
-                } else {
-                    return;
-                }
-            }
             if (AudioOutput.PlaybackState == PlaybackState.Paused) {
                 AudioOutput.Play();
                 return;
@@ -91,15 +82,11 @@ namespace OpenUtau.Core {
             AudioOutput.Pause();
         }
 
-        private void StartPlayback(double startMs) {
+        private void StartPlayback(double startMs, MasterAdapter masterAdapter) {
             this.startMs = startMs;
             var start = TimeSpan.FromMilliseconds(startMs);
             Log.Information($"StartPlayback at {start}");
-            var mix = new MixingSampleProvider(WaveFormat.CreateIeeeFloatWaveFormat(44100, 2));
-            foreach (var source in trackSources) {
-                mix.AddMixerInput(source);
-            }
-            masterMix = mix;
+            masterMix = masterAdapter;
             AudioOutput.Stop();
             AudioOutput.Init(masterMix);
             AudioOutput.Play();
@@ -125,14 +112,12 @@ namespace OpenUtau.Core {
             }
             StopPreRender();
             var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
-            Task.Run(async () => {
+            Task.Run(() => {
                 RenderEngine engine = new RenderEngine(project, driver, cache, tick);
-                renderTask = engine.RenderAsync();
-                trackSources = await renderTask;
-                StartPlayback(project.TickToMillisecond(tick));
-                renderTask = null;
+                var result = engine.RenderProject(tick);
+                //result.Item3.Wait();
+                StartPlayback(project.TickToMillisecond(tick), result.Item2);
             }).ContinueWith((task) => {
-                renderTask = null;
                 if (task.IsFaulted) {
                     Log.Information($"{task.Exception}");
                     DocManager.Inst.ExecuteCmd(new UserMessageNotification(task.Exception.ToString()));
@@ -143,7 +128,7 @@ namespace OpenUtau.Core {
 
         public void UpdatePlayPos() {
             if (AudioOutput.PlaybackState == PlaybackState.Playing) {
-                double ms = AudioOutput.GetPosition() * 1000.0 / masterMix.WaveFormat.BitsPerSample / masterMix.WaveFormat.Channels * 8 / masterMix.WaveFormat.SampleRate;
+                double ms = (AudioOutput.GetPosition() / sizeof(float) - masterMix.Paused) * 1000.0 / 44100;
                 int tick = DocManager.Inst.Project.MillisecondToTick(startMs + ms);
                 DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(tick));
             }
@@ -163,15 +148,13 @@ namespace OpenUtau.Core {
             Task.Run(() => {
                 var task = Task.Run(async () => {
                     RenderEngine engine = new RenderEngine(project, driver, cache);
-                    renderTask = engine.RenderAsync();
-                    trackSources = await renderTask;
-                    for (int i = 0; i < trackSources.Count; ++i) {
+                    var trackMixes = engine.RenderTracks();
+                    for (int i = 0; i < trackMixes.Count; ++i) {
                         var file = PathManager.Inst.GetExportPath(project.FilePath, i + 1);
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exporting to {file}."));
-                        WaveFileWriter.CreateWaveFile16(file, trackSources[i]);
+                        WaveFileWriter.CreateWaveFile16(file, new ExportAdapter(trackMixes[i]));
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exported to {file}."));
                     }
-                    renderTask = null;
                 });
                 try {
                     task.Wait();
@@ -213,9 +196,9 @@ namespace OpenUtau.Core {
                 DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(tick));
             } else if (cmd is VolumeChangeNotification) {
                 var _cmd = cmd as VolumeChangeNotification;
-                if (trackSources != null && trackSources.Count > _cmd.TrackNo) {
-                    trackSources[_cmd.TrackNo].Volume = DecibelToVolume(_cmd.Volume);
-                }
+                //if (trackSources != null && trackSources.Count > _cmd.TrackNo) {
+                //    trackSources[_cmd.TrackNo].Volume = DecibelToVolume(_cmd.Volume);
+                //}
             }
             if (!(cmd is UNotification) || cmd is LoadProjectNotification) {
                 SchedulePreRender();

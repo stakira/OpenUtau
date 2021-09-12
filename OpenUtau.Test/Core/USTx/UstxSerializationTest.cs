@@ -2,9 +2,6 @@
 using Xunit.Abstractions;
 using Newtonsoft.Json;
 using OpenUtau.Core.Formats;
-using System.Diagnostics;
-using System.IO;
-using System.Text;
 
 namespace OpenUtau.Core.Ustx {
     public class UstxSerializationTest {

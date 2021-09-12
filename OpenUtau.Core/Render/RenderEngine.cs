@@ -4,11 +4,10 @@ using System.Linq;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using NAudio.Wave;
-using NAudio.Wave.SampleProviders;
 using OpenUtau.Core.ResamplerDriver;
 using OpenUtau.Core.Ustx;
 using Serilog;
+using OpenUtau.Core.SignalChain;
 
 namespace OpenUtau.Core.Render {
     class RenderEngine {
@@ -42,62 +41,46 @@ namespace OpenUtau.Core.Render {
             this.startTick = startTick;
         }
 
-        public async Task<List<TrackSampleProvider>> RenderAsync() {
-            DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, "Starting rendering..."));
-            TimeSpan skip = TimeSpan.FromMilliseconds(project.TickToMillisecond(startTick));
-            List<TrackSampleProvider> trackSampleProviders = project.tracks.Select(
-                track => new TrackSampleProvider() {
-                    Volume = PlaybackManager.DecibelToVolume(track.Volume)
-                }).ToList();
-            List<UPart> parts;
-            lock (project) {
-                parts = new List<UPart>(project.parts);
-            }
-            foreach (UPart part in parts) {
-                UVoicePart voicePart = part as UVoicePart;
-                if (voicePart != null) {
-                    SequencingSampleProvider sampleProvider = await RenderPartAsync(voicePart, project);
-                    if (sampleProvider != null) {
-                        trackSampleProviders[voicePart.trackNo].AddSource(sampleProvider, TimeSpan.Zero);
-                    }
-                }
-                UWavePart wavePart = part as UWavePart;
-                if (wavePart != null) {
-                    try {
-                        var offset = TimeSpan.FromMilliseconds(project.TickToMillisecond(wavePart.position)) - skip;
-                        var skipOver = offset < TimeSpan.Zero ? -offset : TimeSpan.Zero;
-                        var delayBy = offset > TimeSpan.Zero ? offset : TimeSpan.Zero;
-                        trackSampleProviders[wavePart.trackNo].AddSource(
-                            AudioFileUtilsProvider.Utils.OpenAudioFileAsSampleProvider(wavePart.FilePath).Skip(skipOver), delayBy);
-                    } catch (Exception e) {
-                        Log.Error(e, "Failed to open audio file");
-                    }
-                }
-            }
-            DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, string.Empty));
-            return trackSampleProviders;
+        public Tuple<CancellationTokenSource, MasterAdapter, Task> RenderProject(int startTick) {
+            var source = new CancellationTokenSource();
+            var items = PrepareProject(project, startTick)
+                .OrderBy(item => item.PosMs)
+                .ToArray();
+            var mix = new WaveMix(items.Select(item => {
+                var waveSource = new WaveSource(item.PosMs, item.DurMs, item.Envelope, item.SkipOver);
+                item.OnComplete = data => waveSource.SetWaveData(data);
+                return waveSource;
+            }));
+            var progress = new Progress(items.Length);
+            var task = Task.Run(async () => {
+                var tasks = items.Select(item => {
+                    item.progress = progress;
+                    return Task<RenderItem>.Factory.StartNew(ResampleItem, item, source.Token);
+                });
+                await Task.WhenAll(tasks);
+                progress.Clear();
+            });
+            var master = new MasterAdapter(mix);
+            master.SetPosition((int)(project.TickToMillisecond(startTick) * 44100 / 1000));
+            return Tuple.Create(source, master, task);
         }
 
-        async Task<SequencingSampleProvider> RenderPartAsync(UVoicePart part, UProject project) {
-            TimeSpan skip = TimeSpan.FromMilliseconds(project.TickToMillisecond(startTick));
-            var singer = project.tracks[part.trackNo].Singer;
-            if (singer == null || !singer.Loaded) {
-                return null;
+        public List<WaveMix> RenderTracks() {
+            List<WaveMix> result = new List<WaveMix>();
+            foreach (var track in project.tracks) {
+                var items = PrepareTrack(track, project, 0);
+                var progress = new Progress(items.Count());
+                var mix = new WaveMix(items.Select(item => {
+                    var waveSource = new WaveSource(item.PosMs, item.DurMs, item.Envelope, item.SkipOver);
+                    item.progress = progress;
+                    item.OnComplete = data => waveSource.SetWaveData(data);
+                    Resample(item);
+                    return waveSource;
+                }));
+                progress.Clear();
+                result.Add(mix);
             }
-            var source = new CancellationTokenSource();
-            var items = PreparePart(part, project.tracks[part.trackNo], project, startTick).ToArray();
-            var progress = new Progress(items.Length);
-            progress.Clear();
-            var tasks = items.Select(item => {
-                item.progress = progress;
-                return Task<RenderItem>.Factory.StartNew(ResampleItem, item, source.Token);
-            }).ToArray();
-            await Task.WhenAll(tasks);
-            source.Dispose();
-            return new SequencingSampleProvider(tasks
-                .Select(task => task.Result)
-                .Where(item => item.Data != null && item.Data.Length > 0)
-                .Select(item => new RenderItemSampleProvider(item, skip)));
+            return result;
         }
 
         public CancellationTokenSource PreRenderProject() {
@@ -109,10 +92,12 @@ namespace OpenUtau.Core.Render {
                         return;
                     }
                     TaskFactory<RenderItem> factory = new TaskFactory<RenderItem>(source.Token);
-                    using (SemaphoreSlim slim = new SemaphoreSlim(4)) {
+                    using (SemaphoreSlim slim = new SemaphoreSlim(8)) {
                         RenderItem[] items;
                         lock (project) {
-                            items = PrepareProject(project, startTick).ToArray();
+                            items = PrepareProject(project, startTick)
+                                .OrderBy(item => item.PosMs)
+                                .ToArray();
                         }
                         var progress = new Progress(items.Length);
                         var tasks = items
@@ -183,6 +168,7 @@ namespace OpenUtau.Core.Render {
                     Log.Information($"Sound {hash:x} {item.GetResamplerExeArgs()} resampled.");
                 }
                 item.Data = data;
+                item.OnComplete?.Invoke(data);
                 item.progress?.CompleteOne($"Resampling \"{item.phonemeName}\"");
             } catch (Exception e) {
                 Log.Error($"Failed to render item {item.SourceFile} {item.GetResamplerExeArgs()}.\noutput: {output}\n{e}");
