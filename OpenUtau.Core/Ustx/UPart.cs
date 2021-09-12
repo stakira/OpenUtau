@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 namespace OpenUtau.Core.Ustx {
@@ -97,7 +98,8 @@ namespace OpenUtau.Core.Ustx {
             set { _filePath = value; name = System.IO.Path.GetFileName(value); }
             get { return _filePath; }
         }
-        public float[] Peaks;
+        public float[] Peaks { get; set; }
+        public float[] Samples { get; private set; }
 
         public int Channels;
         public int FileDurTick;
@@ -118,6 +120,21 @@ namespace OpenUtau.Core.Ustx {
                 HeadTrimTick = HeadTrimTick,
                 TailTrimTick = TailTrimTick,
             };
+        }
+
+        private readonly object loadLockObj = new object();
+        public void Load() {
+            lock (loadLockObj) {
+                if (Samples != null) {
+                    return;
+                }
+            }
+            Task.Run(() => {
+                var samples = AudioFileUtilsProvider.Utils.GetAudioSamples(FilePath);
+                lock (loadLockObj) {
+                    Samples = samples;
+                }
+            });
         }
     }
 }

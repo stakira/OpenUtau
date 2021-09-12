@@ -19,6 +19,12 @@ namespace OpenUtau.Core.SignalChain {
             offset = (int)((offsetMs - skipOverMs) * 44100 / 1000);
             estimatedLength = (int)(estimatedLengthMs * 44100 / 1000);
             int skipSamples = (int)(skipOverMs * 44100 / 1000);
+            if (envelope == null) {
+                envelope = new List<Vector2>() {
+                    new Vector2(0, 1),
+                    new Vector2((float)estimatedLengthMs, 1),
+                };
+            }
             this.envelope = EnvelopeMsToSamples(envelope, skipSamples);
         }
 
@@ -61,6 +67,12 @@ namespace OpenUtau.Core.SignalChain {
             lock (lockObj) {
                 this.data = samples.ToArray();
                 ApplyEnvelope(this.data, envelope);
+            }
+        }
+
+        public void SetSamples(float[] samples) {
+            lock (lockObj) {
+                data = samples;
             }
         }
 

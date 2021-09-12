@@ -28,6 +28,12 @@ namespace OpenUtau.Core {
         void GetAudioFileInfo(string file, out WaveFormat waveFormat, out TimeSpan duration);
         WaveStream OpenAudioFileAsWaveStream(string file);
         ISampleProvider OpenAudioFileAsSampleProvider(string file);
+        /// <summary>
+        /// Returns audio samples.
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns>Float samples at mono 44100Hz</returns>
+        float[] GetAudioSamples(string file);
     }
 
     public static class AudioFileUtilsProvider {

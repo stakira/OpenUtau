@@ -47,11 +47,26 @@ namespace OpenUtau.Core.Render {
             var faders = new List<Fader>();
             foreach (var track in project.tracks) {
                 var trackItems = PrepareTrack(track, project, startTick).ToArray();
-                var trackMix = new WaveMix(trackItems.Select(item => {
+                var sources = trackItems.Select(item => {
                     var waveSource = new WaveSource(item.PosMs, item.DurMs, item.Envelope, item.SkipOver);
                     item.OnComplete = data => waveSource.SetWaveData(data);
                     return waveSource;
-                }));
+                }).ToList();
+                sources.AddRange(project.parts
+                    .Where(part => part is UWavePart && part.trackNo == track.TrackNo)
+                    .Select(part => part as UWavePart)
+                    .Select(part => {
+                        var waveSource = new WaveSource(
+                            project.TickToMillisecond(part.position),
+                            project.TickToMillisecond(part.Duration),
+                            null,
+                            project.TickToMillisecond(part.HeadTrimTick));
+                        if (part.Samples != null) {
+                            waveSource.SetSamples(part.Samples);
+                        }
+                        return waveSource;
+                    }));
+                var trackMix = new WaveMix(sources);
                 items.AddRange(trackItems);
                 var fader = new Fader(trackMix);
                 fader.Scale = PlaybackManager.DecibelToVolume(track.Volume);

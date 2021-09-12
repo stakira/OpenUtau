@@ -13,27 +13,16 @@ using OpenUtau.Core.Ustx;
 namespace OpenUtau.Core.Formats {
     public static class Wave {
         public static UWavePart CreatePart(string filepath) {
-            foreach (var part in DocManager.Inst.Project.parts) {
-                var _part = part as UWavePart;
-                if (_part != null && _part.FilePath == filepath) {
-                    return new UWavePart() {
-                        FilePath = filepath,
-                        FileDurTick = _part.FileDurTick,
-                        Duration = _part.Duration,
-                        Channels = _part.Channels,
-                        Peaks = _part.Peaks
-                    };
-                }
-            }
             AudioFileUtilsProvider.Utils.GetAudioFileInfo(filepath, out var waveFormat, out var timeSpan);
             int durTick = DocManager.Inst.Project.MillisecondToTick(timeSpan.TotalMilliseconds);
-            UWavePart uwavepart = new UWavePart() {
+            UWavePart part = new UWavePart() {
                 FilePath = filepath,
                 FileDurTick = durTick,
                 Duration = durTick,
                 Channels = waveFormat.Channels
             };
-            return uwavepart;
+            part.Load();
+            return part;
         }
 
         public static float[] BuildPeaks(UWavePart part, System.ComponentModel.BackgroundWorker worker) {
