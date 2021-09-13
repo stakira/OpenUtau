@@ -90,7 +90,7 @@ namespace OpenUtau.Core.Render {
         public string GetResamplerExeArgs() {
             // fresamp.exe <infile> <outfile> <tone> <velocity> <flags> <offset> <length_req>
             // <fixed_length> <endblank> <volume> <modulation> <pitch>
-            return FormattableString.Invariant($"{MusicMath.GetToneName(NoteNum)} {Velocity:D} \"{StrFlags}\" {Oto.Offset} {RequiredLength:D} {Oto.Consonant} {Oto.Cutoff} {Volume:D} {Modulation:D} {Tempo} {Base64.Base64EncodeInt12(PitchData.ToArray())}");
+            return FormattableString.Invariant($"{MusicMath.GetToneName(NoteNum)} {Velocity:D} \"{StrFlags}\" {Oto.Offset} {RequiredLength:D} {Oto.Consonant} {Oto.Cutoff} {Volume:D} {Modulation:D} T{Tempo} {Base64.Base64EncodeInt12(PitchData.ToArray())}");
         }
 
         private List<int> BuildPitchData(UPhoneme phoneme, UVoicePart part, UProject project) {
@@ -117,11 +117,14 @@ namespace OpenUtau.Core.Render {
             var points = new List<PitchPoint>();
             var vibratos = new List<Tuple<double, double, UVibrato>>();
             var note = leftNote;
+            float vel = phoneme.Parent.expressions["vel"].value;
+            var strechRatio = Math.Pow(2, 1.0 - vel / 100);
+            float correction = (float)(phoneme.oto.Preutter * (strechRatio - 1));
             while (true) {
-                var offsetMs = (float)project.TickToMillisecond(phoneme.Parent.position - note.position);
+                var offsetMs = (float)project.TickToMillisecond(note.position - phoneme.Parent.position);
                 foreach (var point in note.pitch.data) {
                     var newpp = point.Clone();
-                    newpp.X -= offsetMs;
+                    newpp.X += offsetMs + correction;
                     newpp.Y -= (phoneme.Parent.tone - note.tone) * 10;
                     points.Add(newpp);
                 }

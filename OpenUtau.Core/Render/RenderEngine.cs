@@ -187,13 +187,13 @@ namespace OpenUtau.Core.Render {
                         throw new Exception("Empty render result.");
                     }
                     cache.Put(hash, data);
-                    Log.Information($"Sound {hash:x} {item.GetResamplerExeArgs()} resampled.");
+                    Log.Information($"Sound {hash:x} {item.Oto.Alias} {item.GetResamplerExeArgs()} resampled.");
                 }
                 item.Data = data;
                 item.OnComplete?.Invoke(data);
                 item.progress?.CompleteOne($"Resampling \"{item.phonemeName}\"");
             } catch (Exception e) {
-                Log.Error($"Failed to render item {item.SourceFile} {item.GetResamplerExeArgs()}.\noutput: {output}\n{e}");
+                Log.Error($"Failed to render item {item.SourceFile} {item.Oto.Alias} {item.GetResamplerExeArgs()}.\noutput: {output}\n{e}");
             }
         }
 
