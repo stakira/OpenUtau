@@ -8,48 +8,79 @@ using WanaKanaNet;
 
 namespace OpenUtau.Core.Ustx {
     public struct UOto {
-        public string Alias { private set; get; }
-        public string Set { private set; get; }
+        public string Alias => oto.Alias;
+        public string Phonetic => oto.Phonetic;
+        public string Set => set.Name;
+        public string Prefix => set.Prefix;
+        public string Suffix => set.Suffix;
+        public string Flavor => set.Flavor;
         public string File { private set; get; }
-        public string DisplayFile { private set; get; }
-        public double Offset { private set; get; }
-        public double Consonant { private set; get; }
-        public double Cutoff { private set; get; }
-        public double Preutter { private set; get; }
-        public double Overlap { private set; get; }
+        public string DisplayFile => oto.Wav;
+        public double Offset => oto.Offset;
+        public double Consonant => oto.Consonant;
+        public double Cutoff => oto.Cutoff;
+        public double Preutter => oto.Preutter;
+        public double Overlap => oto.Overlap;
         public List<string> SearchTerms { private set; get; }
 
+        private readonly Oto oto;
+        private readonly UOtoSet set;
+
         public UOto(Oto oto, UOtoSet set) {
-            Alias = oto.Name;
-            Set = set.Name;
+            this.oto = oto;
+            this.set = set;
             File = Path.Combine(set.Location, oto.Wav);
-            DisplayFile = oto.Wav;
-            Offset = oto.Offset;
-            Consonant = oto.Consonant;
-            Cutoff = oto.Cutoff;
-            Preutter = oto.Preutter;
-            Overlap = oto.Overlap;
             SearchTerms = new List<string>();
         }
+
+        public override string ToString() => Alias;
     }
 
     public class UOtoSet {
-        public readonly string Name;
+        public string Name => otoSet.Name;
+        public string Prefix => otoSet.Prefix;
+        public string Suffix => otoSet.Suffix;
+        public string Flavor => otoSet.Flavor;
         public readonly string Location;
         public readonly Dictionary<string, List<UOto>> Otos;
         public readonly List<string> Errors;
 
+        private readonly OtoSet otoSet;
+
         public UOtoSet(OtoSet otoSet, USinger singer, string singersPath) {
-            Name = otoSet.Name;
+            this.otoSet = otoSet;
             Location = Path.Combine(singersPath, Path.GetDirectoryName(otoSet.File));
             Otos = new Dictionary<string, List<UOto>>();
             foreach (var oto in otoSet.Otos) {
-                if (!Otos.ContainsKey(oto.Name)) {
-                    Otos.Add(oto.Name, new List<UOto>());
+                if (!Otos.ContainsKey(oto.Alias)) {
+                    Otos.Add(oto.Alias, new List<UOto>());
                 }
-                Otos[oto.Name].Add(new UOto(oto, this));
+                Otos[oto.Alias].Add(new UOto(oto, this));
             }
             Errors = otoSet.Errors;
+        }
+
+        public override string ToString() => Name;
+
+        public bool StripPrefixSuffix(string str, out string result) {
+            result = str;
+            if (!string.IsNullOrEmpty(Prefix) && result.StartsWith(Prefix)) {
+                result = result.Substring(Prefix.Length);
+            }
+            if (!string.IsNullOrEmpty(Suffix) && result.EndsWith(Suffix)) {
+                result = result.Substring(0, result.Length - Suffix.Length);
+            }
+            return result != str;
+        }
+
+        public string ApplyPrefixSuffix(string str) {
+            if (!string.IsNullOrEmpty(Prefix)) {
+                str = $"{Prefix}{str}";
+            }
+            if (!string.IsNullOrEmpty(Suffix)) {
+                str = $"{str}{Suffix}";
+            }
+            return str;
         }
     }
 

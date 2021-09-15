@@ -4,7 +4,6 @@ using System.Collections.Generic;
 namespace OpenUtau.Classic {
     public class Voicebank {
         public string File;
-        public string OrigFile;
         public string Name;
         public string Image;
         public string Author;
@@ -21,8 +20,10 @@ namespace OpenUtau.Classic {
 
     public class OtoSet {
         public string File;
-        public string OrigFile;
         public string Name;
+        public string Prefix;
+        public string Suffix;
+        public string Flavor;
         public List<Oto> Otos = new List<Oto>();
         public List<string> Errors = new List<string>();
 
@@ -32,9 +33,9 @@ namespace OpenUtau.Classic {
     }
 
     public class Oto {
-        public string Name;
+        public string Alias;
+        public string Phonetic;
         public string Wav;
-        public string OrigWav;
 
         // Wav layout:
         // |-offset-|-consonant-(fixed)-|-stretched-|-cutoff-|
@@ -58,13 +59,12 @@ namespace OpenUtau.Classic {
         public double Overlap;
 
         public override string ToString() {
-            return Name;
+            return Alias;
         }
     }
 
     public class PrefixMap {
         public string File;
-        public string OrigFile;
         public Dictionary<string, Tuple<string, string>> Map = new Dictionary<string, Tuple<string, string>>();
     }
 }

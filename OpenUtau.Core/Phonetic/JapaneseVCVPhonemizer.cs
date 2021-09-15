@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core {
     public class JapaneseVCVPhonemizer : Phonemizer {
@@ -38,13 +39,31 @@ namespace OpenUtau.Core {
                     }
                 };
             }
-            var phoneme = $"- {note.lyric}";
-            if (prevNeighbour != null) {
-                var lyric = prevNeighbour?.phoneticHint ?? prevNeighbour?.lyric;
-                var unicode = ToUnicodeElements(lyric);
-                if (vowelLookup.TryGetValue(unicode.Last(), out var vow)) {
-                    phoneme = $"{vow} {note.lyric}";
+            UOtoSet otoSet = null;
+            string lyric = note.lyric;
+            foreach (var set in singer.OtoSets) {
+                if (set.StripPrefixSuffix(note.lyric, out lyric)) {
+                    otoSet = set;
+                    break;
                 }
+            }
+            var phoneme = $"- {lyric}";
+            if (prevNeighbour != null) {
+                var prevLyric = prevNeighbour?.phoneticHint ?? prevNeighbour?.lyric;
+                foreach (var set in singer.OtoSets) {
+                    if (set.StripPrefixSuffix(prevNeighbour?.lyric, out prevLyric)) {
+                        break;
+                    }
+                }
+                var unicode = ToUnicodeElements(prevLyric);
+                if (unicode.Count > 0) {
+                    if (vowelLookup.TryGetValue(unicode.Last(), out var vow)) {
+                        phoneme = $"{vow} {lyric}";
+                    }
+                }
+            }
+            if (otoSet != null) {
+                phoneme = otoSet.ApplyPrefixSuffix(phoneme);
             }
             if (!singer.TryGetMappedOto(phoneme, note.tone, out var _)) {
                 phoneme = note.lyric;

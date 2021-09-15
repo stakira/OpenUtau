@@ -1,7 +1,7 @@
 ﻿<Window x:Class="OpenUtau.UI.Dialogs.SingerViewDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Singers" Height="600" Width="500" Background="White">
+        Title="Singers" Height="600" Width="500" MinHeight="600" MinWidth="500">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="170"/>
@@ -20,6 +20,10 @@
                     <GridViewColumn Header="Alias" DisplayMemberBinding="{Binding Alias}"/>
                     <GridViewColumn Header="Set" DisplayMemberBinding="{Binding Set}"/>
                     <GridViewColumn Header="File" DisplayMemberBinding="{Binding DisplayFile}"/>
+                    <GridViewColumn Header="Phonetic" DisplayMemberBinding="{Binding Phonetic}"/>
+                    <GridViewColumn Header="Prefix" DisplayMemberBinding="{Binding Prefix}"/>
+                    <GridViewColumn Header="Suffix" DisplayMemberBinding="{Binding Suffix}"/>
+                    <GridViewColumn Header="Flavor" DisplayMemberBinding="{Binding Flavor}"/>
                     <GridViewColumn Header="Offset" DisplayMemberBinding="{Binding Offset}"/>
                     <GridViewColumn Header="Consonant" DisplayMemberBinding="{Binding Consonant}"/>
                     <GridViewColumn Header="Cutoff" DisplayMemberBinding="{Binding Cutoff}"/>

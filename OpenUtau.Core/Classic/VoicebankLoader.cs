@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using Serilog;
 
+
 namespace OpenUtau.Classic {
     public class VoicebankLoader {
         class FileLoc {
@@ -31,7 +32,7 @@ namespace OpenUtau.Classic {
             }
             var banks = Directory.EnumerateFiles(basePath, "character.txt", SearchOption.AllDirectories)
                 .Select(filePath => ParseCharacterTxt(filePath, Encoding.UTF8))
-                .OrderByDescending(bank => bank.OrigFile.Length)
+                .OrderByDescending(bank => bank.File.Length)
                 .ToArray();
             var otoSets = Directory.EnumerateFiles(basePath, "oto.ini", SearchOption.AllDirectories)
                 .Select(entry => ParseOtoSet(entry, Encoding.UTF8))
@@ -40,24 +41,59 @@ namespace OpenUtau.Classic {
                 .Select(entry => ParsePrefixMap(entry, Encoding.UTF8))
                 .ToArray();
             var bankDirs = banks
-                .Select(bank => Path.GetDirectoryName(bank.OrigFile))
+                .Select(bank => Path.GetDirectoryName(bank.File))
                 .ToArray();
             foreach (var otoSet in otoSets) {
-                var dir = Path.GetDirectoryName(otoSet.OrigFile);
+                var dir = Path.GetDirectoryName(otoSet.File);
                 for (int i = 0; i < bankDirs.Length; ++i) {
                     if (dir.StartsWith(bankDirs[i])) {
-                        otoSet.Name = PathUtils.MakeRelative(Path.GetDirectoryName(otoSet.OrigFile), bankDirs[i]);
+                        otoSet.Name = PathUtils.MakeRelative(Path.GetDirectoryName(otoSet.File), bankDirs[i]);
                         banks[i].OtoSets.Add(otoSet);
                         break;
                     }
                 }
             }
             foreach (var prefixMap in prefixMaps) {
-                var dir = Path.GetDirectoryName(prefixMap.OrigFile);
+                var dir = Path.GetDirectoryName(prefixMap.File);
                 for (int i = 0; i < bankDirs.Length; ++i) {
                     if (dir.StartsWith(bankDirs[i])) {
                         banks[i].PrefixMap = prefixMap;
                         break;
+                    }
+                }
+            }
+            foreach (var bank in banks) {
+                var dir = Path.GetDirectoryName(bank.File);
+                var file = Path.Combine(dir, "character.yaml");
+                if (File.Exists(file)) {
+                    using (var stream = File.OpenRead(file)) {
+                        var bankConfig = VoicebankConfig.Load(stream);
+                        foreach (var otoSet in bank.OtoSets) {
+                            var subbank = bankConfig.Subbanks.FirstOrDefault(b => b.Dir == otoSet.Name);
+                            if (subbank != null) {
+                                otoSet.Prefix = subbank.Prefix;
+                                otoSet.Suffix = subbank.Suffix;
+                                otoSet.Flavor = subbank.Flavor;
+                                if (!string.IsNullOrEmpty(subbank.Prefix)) {
+                                    foreach (var oto in otoSet.Otos) {
+                                        string phonetic = oto.Alias;
+                                        if (phonetic.StartsWith(subbank.Prefix)) {
+                                            phonetic = phonetic.Substring(subbank.Prefix.Length);
+                                        }
+                                        oto.Phonetic = phonetic;
+                                    }
+                                }
+                                if (!string.IsNullOrEmpty(subbank.Suffix)) {
+                                    foreach (var oto in otoSet.Otos) {
+                                        string phonetic = oto.Phonetic ?? oto.Alias;
+                                        if (phonetic.EndsWith(subbank.Suffix)) {
+                                            phonetic = phonetic.Substring(0, phonetic.Length - subbank.Suffix.Length);
+                                        }
+                                        oto.Phonetic = phonetic;
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -72,7 +108,6 @@ namespace OpenUtau.Classic {
                 using (var reader = new StreamReader(stream, encoding)) {
                     var voicebank = new Voicebank() {
                         File = filePath,
-                        OrigFile = filePath,
                     };
                     var otherLines = new List<string>();
                     while (!reader.EndOfStream) {
@@ -115,7 +150,6 @@ namespace OpenUtau.Classic {
                 using (var reader = new StreamReader(stream, encoding)) {
                     var prefixMap = new PrefixMap {
                         File = filePath,
-                        OrigFile = filePath,
                     };
                     while (!reader.EndOfStream) {
                         var s = reader.ReadLine().Split(new char[0]);
@@ -137,7 +171,6 @@ namespace OpenUtau.Classic {
                     var fileLoc = new FileLoc { file = filePath, lineNumber = 0 };
                     OtoSet otoSet = new OtoSet() {
                         File = filePath,
-                        OrigFile = filePath,
                     };
                     while (!reader.EndOfStream) {
                         var line = reader.ReadLine();
@@ -175,13 +208,13 @@ namespace OpenUtau.Classic {
             }
             var ext = Path.GetExtension(wav);
             var result = new Oto {
-                OrigWav = wav,
                 Wav = wav,
-                Name = parts[0].Trim()
+                Alias = parts[0].Trim()
             };
-            if (string.IsNullOrEmpty(result.Name)) {
-                result.Name = wav.Replace(ext, "");
+            if (string.IsNullOrEmpty(result.Alias)) {
+                result.Alias = wav.Replace(ext, "");
             }
+            result.Phonetic = result.Alias;
             if (!ParseDouble(parts[1], out result.Offset)) {
                 throw new FileFormatException($"Failed to parse offset. Format is {format}.");
             }
