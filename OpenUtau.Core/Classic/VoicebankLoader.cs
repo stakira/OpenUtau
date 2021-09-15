@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 using Serilog;
 
-
 namespace OpenUtau.Classic {
     public class VoicebankLoader {
         class FileLoc {
