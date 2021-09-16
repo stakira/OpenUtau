@@ -17,6 +17,7 @@ namespace OpenUtau.Core.Ustx {
         [JsonProperty("lrc")] public string lyric = "a";
         [JsonProperty("pit")] public UPitch pitch;
         [JsonProperty("vbr")] public UVibrato vibrato;
+        [JsonProperty("exp")] [Obsolete] public Dictionary<string, double?> expressions = new Dictionary<string, double?>();
         [JsonProperty("nex")] public List<UExpression> noteExpressions = new List<UExpression>();
         [JsonProperty("pex")] public List<UExpression> phonemeExpressions = new List<UExpression>();
         [JsonProperty("phm")] public List<UPhonemeOverride> phonemeOverrides = new List<UPhonemeOverride>();

@@ -1,13 +1,15 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OpenUtau.Core.Ustx;
+using Serilog;
 
 namespace OpenUtau.Core.Formats {
     public class Ustx {
-        public static readonly Version kUstxVersion = new Version(0, 1);
+        public static readonly Version kUstxVersion = new Version(0, 2);
 
         public static void AddBuiltInExpressions(UProject project) {
             project.RegisterExpression(new UExpressionDescriptor("velocity", "vel", 0, 200, 100));
@@ -52,6 +54,27 @@ namespace OpenUtau.Core.Formats {
             project.Saved = true;
             project.AfterLoad();
             project.Validate();
+            if (project.ustxVersion < kUstxVersion) {
+                Log.Information($"Upgrading project from {project.ustxVersion} to {kUstxVersion}");
+            }
+            if (project.ustxVersion == new Version(0, 1)) {
+                project.parts
+                    .Where(part => part is UVoicePart)
+                    .Select(part => part as UVoicePart)
+                    .SelectMany(part => part.notes)
+                    .ToList()
+                    .ForEach(note => {
+                        foreach (var kv in note.expressions) {
+                            if (kv.Value != null) {
+                                foreach (var phoneme in note.phonemes) {
+                                    phoneme.SetExpression(project, kv.Key, (float)kv.Value.Value);
+                                }
+                            }
+                        }
+                        note.expressions = null;
+                    });
+                project.ustxVersion = new Version(0, 2);
+            }
             return project;
         }
     }
