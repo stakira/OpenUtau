@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
-using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 
@@ -17,7 +17,8 @@ namespace OpenUtau.Core.Ustx {
         [JsonProperty("lrc")] public string lyric = "a";
         [JsonProperty("pit")] public UPitch pitch;
         [JsonProperty("vbr")] public UVibrato vibrato;
-        [JsonProperty("exp")] public Dictionary<string, UExpression> expressions = new Dictionary<string, UExpression>();
+        [JsonProperty("nex")] public List<UExpression> noteExpressions = new List<UExpression>();
+        [JsonProperty("pex")] public List<UExpression> phonemeExpressions = new List<UExpression>();
         [JsonProperty("phm")] public List<UPhonemeOverride> phonemeOverrides = new List<UPhonemeOverride>();
 
         public List<UPhoneme> phonemes = new List<UPhoneme>();
@@ -41,17 +42,6 @@ namespace OpenUtau.Core.Ustx {
             return note;
         }
 
-        public string GetResamplerFlags() {
-            StringBuilder builder = new StringBuilder();
-            foreach (var exp in expressions.Values) {
-                if (!string.IsNullOrEmpty(exp.descriptor.flag)) {
-                    builder.Append(exp.descriptor.flag);
-                    builder.Append((int)exp.value);
-                }
-            }
-            return builder.ToString();
-        }
-
         public int CompareTo(object obj) {
             if (obj == null) return 1;
 
@@ -69,24 +59,23 @@ namespace OpenUtau.Core.Ustx {
         }
 
         public void AfterLoad(UProject project, UTrack track, UVoicePart part) {
-            foreach (var pair in expressions) {
-                if (project.expressions.TryGetValue(pair.Key, out var descriptor)) {
-                    pair.Value.descriptor = descriptor;
-                    pair.Value.value = pair.Value.value;
-                }
+            foreach (var exp in noteExpressions) {
+                exp.descriptor = project.expressions[exp.abbr];
             }
-            foreach (var key in project.expressions.Keys.Except(expressions.Keys)) {
-                expressions.Add(key, new UExpression(project.expressions[key]));
+            foreach (var exp in phonemeExpressions) {
+                exp.descriptor = project.expressions[exp.abbr];
             }
-            var toRemove = new List<string>();
-            foreach (var key in expressions.Keys.Except(project.expressions.Keys)) {
-                if (!expressions[key].overridden) {
-                    toRemove.Add(key);
-                }
-            }
-            foreach (var key in toRemove) {
-                expressions.Remove(key);
-            }
+        }
+
+        public void BeforeSave(UProject project, UTrack track, UVoicePart part) {
+            noteExpressions.ForEach(exp => exp.index = null);
+            noteExpressions = noteExpressions
+                .OrderBy(exp => exp.abbr)
+                .ToList();
+            phonemeExpressions = phonemeExpressions
+                .OrderBy(exp => exp.index)
+                .ThenBy(exp => exp.abbr)
+                .ToList();
         }
 
         public void Validate(UProject project, UTrack track, UVoicePart part) {
@@ -108,8 +97,10 @@ namespace OpenUtau.Core.Ustx {
                     pitch.data[0].Y = 0;
                 }
             }
-            foreach (var phoneme in phonemes) {
+            for (var i = 0; i < phonemes.Count; i++) {
+                var phoneme = phonemes[i];
                 phoneme.Parent = this;
+                phoneme.Index = i;
             }
             foreach (var phoneme in phonemes) {
                 phoneme.Validate(project, track, part, this);
@@ -249,16 +240,44 @@ namespace OpenUtau.Core.Ustx {
             return result;
         }
 
+        public float GetExpression(UProject project, string abbr) {
+            var descriptor = project.expressions[abbr];
+            Trace.Assert(descriptor.isNoteExpression);
+            var note = Extends ?? this;
+            var expression = note.noteExpressions.FirstOrDefault(exp => exp.descriptor == descriptor);
+            return expression == null ? expression.value : descriptor.defaultValue;
+        }
+
+        public void SetExpression(UProject project, string abbr, float value) {
+            var descriptor = project.expressions[abbr];
+            Trace.Assert(descriptor.isNoteExpression);
+            var note = Extends ?? this;
+            if (value == descriptor.defaultValue) {
+                note.noteExpressions.RemoveAll(exp => exp.descriptor == descriptor);
+                return;
+            }
+            var expression = note.noteExpressions.FirstOrDefault(exp => exp.descriptor == descriptor);
+            if (expression != null) {
+                expression.value = value;
+            } else {
+                note.noteExpressions.Add(new UExpression(descriptor) {
+                    descriptor = descriptor,
+                    value = value,
+                });
+            }
+        }
+
         public UNote Clone() {
             return new UNote() {
                 position = position,
                 duration = duration,
                 tone = tone,
                 lyric = lyric,
-                phonemes = phonemes.Select(phoneme => phoneme.Clone()).ToList(),
                 pitch = pitch.Clone(),
                 vibrato = vibrato.Clone(),
-                expressions = expressions.ToDictionary(pair => pair.Key, pair => pair.Value.Clone()),
+                noteExpressions = noteExpressions.Select(exp => exp.Clone()).ToList(),
+                phonemeExpressions = phonemeExpressions.Select(exp => exp.Clone()).ToList(),
+                phonemeOverrides = phonemeOverrides.Select(o => o.Clone()).ToList(),
             };
         }
     }

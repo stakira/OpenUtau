@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Numerics;
+using System.Text;
 using Newtonsoft.Json;
 
 namespace OpenUtau.Core.Ustx {
@@ -20,6 +23,7 @@ namespace OpenUtau.Core.Ustx {
         public float? overlapScale { get; set; }
 
         public UNote Parent { get; set; }
+        public int Index { get; set; }
         public int Duration { get; private set; }
         public int End { get { return position + Duration; } }
         public UPhoneme Prev { get; set; }
@@ -86,7 +90,7 @@ namespace OpenUtau.Core.Ustx {
             if (Error) {
                 return;
             }
-            float consonantStretch = (float)Math.Pow(2f, 1.0f - note.expressions["vel"].value / 100f);
+            float consonantStretch = (float)Math.Pow(2f, 1.0f - GetExpression(project, "vel").Item1 / 100f);
             overlap = (float)oto.Overlap * consonantStretch * (overlapScale ?? 1);
             preutter = (float)oto.Preutter * consonantStretch * (preutterScale ?? 1);
             overlapped = false;
@@ -120,9 +124,9 @@ namespace OpenUtau.Core.Ustx {
             if (Error) {
                 return;
             }
-            var vol = note.expressions["vol"].value;
-            var acc = note.expressions["acc"].value;
-            var dec = note.expressions["dec"].value;
+            var vol = GetExpression(project, "vol").Item1;
+            var acc = GetExpression(project, "acc").Item1;
+            var dec = GetExpression(project, "dec").Item1;
 
             Vector2 p0, p1, p2, p3, p4;
             p0.X = -preutter;
@@ -150,6 +154,51 @@ namespace OpenUtau.Core.Ustx {
             envelope.data[3] = p3;
             envelope.data[4] = p4;
         }
+
+        public Tuple<float, bool> GetExpression(UProject project, string abbr) {
+            var descriptor = project.expressions[abbr];
+            Trace.Assert(!descriptor.isNoteExpression);
+            var note = Parent.Extends ?? Parent;
+            int index = Parent.PhonemeOffset + Index;
+            var expression = note.phonemeExpressions.FirstOrDefault(exp => exp.descriptor == descriptor && exp.index == index);
+            if (expression != null) {
+                return Tuple.Create(expression.value, true);
+            } else {
+                return Tuple.Create(descriptor.defaultValue, false);
+            }
+        }
+
+        public void SetExpression(UProject project, string abbr, float value) {
+            var descriptor = project.expressions[abbr];
+            Trace.Assert(!descriptor.isNoteExpression);
+            var note = Parent.Extends ?? Parent;
+            int index = Parent.PhonemeOffset + Index;
+            if (descriptor.defaultValue == value) {
+                note.phonemeExpressions.RemoveAll(exp => exp.descriptor == descriptor && exp.index == index);
+                return;
+            }
+            var expression = note.phonemeExpressions.FirstOrDefault(exp => exp.descriptor == descriptor && exp.index == index);
+            if (expression != null) {
+                expression.value = value;
+            } else {
+                note.phonemeExpressions.Add(new UExpression(descriptor) {
+                    descriptor = descriptor,
+                    index = index,
+                    value = value,
+                });
+            }
+        }
+
+        public string GetResamplerFlags(UProject project) {
+            StringBuilder builder = new StringBuilder();
+            foreach (var descriptor in project.expressions.Values) {
+                if (!descriptor.isNoteExpression && !string.IsNullOrEmpty(descriptor.flag)) {
+                    builder.Append(descriptor.flag);
+                    builder.Append((int)GetExpression(project, descriptor.abbr).Item1);
+                }
+            }
+            return builder.ToString();
+        }
     }
 
     public class UEnvelope {
@@ -173,5 +222,15 @@ namespace OpenUtau.Core.Ustx {
         [JsonProperty] public float? overlapScale;
 
         public bool IsEmpty => string.IsNullOrEmpty(phoneme) && !offset.HasValue && !preutterScale.HasValue && !overlapScale.HasValue;
+
+        public UPhonemeOverride Clone() {
+            return new UPhonemeOverride() {
+                index = index,
+                phoneme = phoneme,
+                offset = offset,
+                preutterScale = preutterScale,
+                overlapScale = overlapScale,
+            };
+        }
     }
 }

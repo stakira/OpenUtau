@@ -19,6 +19,7 @@ namespace OpenUtau.Core.Ustx {
 
         public abstract int GetMinDurTick(UProject project);
 
+        public virtual void BeforeSave(UProject project, UTrack track) { }
         public virtual void AfterLoad(UProject project, UTrack track) { }
 
         public virtual void Validate(UProject project, UTrack track) { }
@@ -34,6 +35,12 @@ namespace OpenUtau.Core.Ustx {
             foreach (UNote note in notes)
                 durTick = Math.Max(durTick, note.position + note.duration);
             return durTick;
+        }
+
+        public override void BeforeSave(UProject project, UTrack track) {
+            foreach (var note in notes) {
+                note.BeforeSave(project, track, this);
+            }
         }
 
         public override void AfterLoad(UProject project, UTrack track) {

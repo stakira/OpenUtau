@@ -31,9 +31,6 @@ namespace OpenUtau.Core.Ustx {
 
         public UNote CreateNote() {
             UNote note = UNote.Create();
-            foreach (var pair in expressions) {
-                note.expressions.Add(pair.Key, pair.Value.Create());
-            }
             note.pitch.AddPoint(new PitchPoint(-25, 0));
             note.pitch.AddPoint(new PitchPoint(25, 0));
             return note;
@@ -69,6 +66,9 @@ namespace OpenUtau.Core.Ustx {
         public void BeforeSave() {
             foreach (var track in tracks) {
                 track.BeforeSave();
+            }
+            foreach (var part in parts) {
+                part.BeforeSave(this, tracks[part.trackNo]);
             }
         }
 

@@ -15,6 +15,7 @@ namespace OpenUtau.UI.Models {
 
     public struct NoteHitInfo {
         public UNote note;
+        public UPhoneme phoneme;
         public bool hitBody;
         public bool hitResizeArea;
         public bool hitX;
@@ -64,6 +65,24 @@ namespace OpenUtau.UI.Models {
                         double x = midiVM.QuarterToCanvas((double)note.End / Project.resolution);
                         result.hitResizeArea = mousePos.X <= x && mousePos.X > x - UIConstants.ResizeMargin;
                         break;
+                    }
+                }
+            }
+            return result;
+        }
+
+        public NoteHitInfo HitTestExp(Point mousePos) {
+            NoteHitInfo result = default;
+            int tick = (int)(midiVM.CanvasToQuarter(mousePos.X) * Project.resolution);
+            foreach (UNote note in midiVM.Part.notes) {
+                foreach (var phoneme in note.phonemes) {
+                    int left = note.position + phoneme.position;
+                    int right = note.position + phoneme.position + phoneme.Duration;
+                    if (left <= tick && tick <= right) {
+                        result.note = note;
+                        result.phoneme = phoneme;
+                        result.hitX = true;
+                        return result;
                     }
                 }
             }

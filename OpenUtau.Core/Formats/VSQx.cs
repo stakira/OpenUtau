@@ -102,15 +102,27 @@ namespace OpenUtau.Core.Formats {
                             unote.lyric = "...";
                         }
 
-                        unote.expressions["vel"].value = int.Parse(note.SelectSingleNode(velocityPath, nsmanager).InnerText) * 100 / 64;
-
+                        unote.phonemeExpressions.Add(new UExpression("vel") {
+                            index = 0,
+                            value = int.Parse(note.SelectSingleNode(velocityPath, nsmanager).InnerText) * 100 / 64,
+                        });
                         foreach (XmlNode notestyle in note.SelectNodes(notestyleattrPath, nsmanager)) {
-                            if (notestyle.Attributes["id"].Value == "opening")
-                                unote.expressions["ope"].value = int.Parse(notestyle.InnerText);
-                            else if (notestyle.Attributes["id"].Value == "accent")
-                                unote.expressions["acc"].value = int.Parse(notestyle.InnerText) * 2;
-                            else if (notestyle.Attributes["id"].Value == "decay")
-                                unote.expressions["dec"].value = int.Parse(notestyle.InnerText) * 2 - 100;
+                            if (notestyle.Attributes["id"].Value == "opening") {
+                                unote.phonemeExpressions.Add(new UExpression("ope") {
+                                    index = 0,
+                                    value = int.Parse(notestyle.InnerText),
+                                });
+                            } else if (notestyle.Attributes["id"].Value == "accent") {
+                                unote.phonemeExpressions.Add(new UExpression("acc") {
+                                    index = 0,
+                                    value = int.Parse(notestyle.InnerText) * 2,
+                                });
+                            } else if (notestyle.Attributes["id"].Value == "decay") {
+                                unote.phonemeExpressions.Add(new UExpression("dec") {
+                                    index = 0,
+                                    value = int.Parse(notestyle.InnerText) * 2 - 100,
+                                });
+                            }
                         }
 
                         unote.pitch.data[0].X = -(float)uproject.TickToMillisecond(Math.Min(15, unote.duration / 3));

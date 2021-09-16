@@ -572,10 +572,10 @@ namespace OpenUtau.UI.Models {
                 }
             } else if (cmd is ExpCommand) {
                 var _cmd = cmd as ExpCommand;
-                if (_cmd is SetUExpressionCommand) {
-                    expElements[_cmd.Key].MarkUpdate();
-                } else if (_cmd is PitchExpCommand) {
+                if (_cmd is PitchExpCommand) {
                     OnPitchModified();
+                } else {
+                    expElements[_cmd.Key].MarkUpdate();
                 }
                 notesElement.MarkUpdate();
                 phonemesElement.MarkUpdate();

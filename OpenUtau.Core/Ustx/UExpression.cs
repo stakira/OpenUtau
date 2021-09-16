@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Newtonsoft.Json;
 
 namespace OpenUtau.Core.Ustx {
@@ -10,14 +11,16 @@ namespace OpenUtau.Core.Ustx {
         [JsonProperty] public readonly float max;
         [JsonProperty] public readonly float defaultValue;
         [JsonProperty] public readonly string flag;
+        [JsonProperty] public readonly bool isNoteExpression;
 
-        public UExpressionDescriptor(string name, string abbr, float min, float max, float defaultValue, string flag = "") {
+        public UExpressionDescriptor(string name, string abbr, float min, float max, float defaultValue, string flag = "", bool isNoteExpression = false) {
             this.name = name;
             this.abbr = abbr.ToLower();
             this.min = min;
             this.max = max;
             this.defaultValue = Math.Min(max, Math.Max(min, defaultValue));
             this.flag = flag;
+            this.isNoteExpression = isNoteExpression;
         }
 
         public UExpression Create() {
@@ -36,27 +39,32 @@ namespace OpenUtau.Core.Ustx {
         private float _value;
 
         [JsonProperty]
-        public bool overridden;
+        public int? index;
+        [JsonProperty]
+        public string abbr;
         [JsonProperty]
         public float value {
-            get => overridden ? _value : descriptor.defaultValue;
-            set {
-                if (descriptor == null) {
-                    _value = value;
-                } else {
-                    _value = Math.Min(descriptor.max, Math.Max(descriptor.min, value));
-                    overridden = descriptor.defaultValue != value;
-                }
-            }
+            get => _value;
+            set => _value = descriptor == null
+                ? value
+                : Math.Min(descriptor.max, Math.Max(descriptor.min, value));
         }
 
+        public UExpression() { }
+
         public UExpression(UExpressionDescriptor descriptor) {
+            Trace.Assert(descriptor != null);
             this.descriptor = descriptor;
+            abbr = descriptor.abbr;
+        }
+
+        public UExpression(string abbr) {
+            this.abbr = abbr;
         }
 
         public UExpression Clone() {
             return new UExpression(descriptor) {
-                overridden = overridden,
+                index = index,
                 value = value,
             };
         }

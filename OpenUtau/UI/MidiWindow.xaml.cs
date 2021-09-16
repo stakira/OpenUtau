@@ -765,12 +765,12 @@ namespace OpenUtau.UI {
         private void expCanvas_SetExpHelper(Point mousePos, MouseButton mouseButton) {
             if (midiVM.Part == null) return;
             float newValue;
-            string _key = midiVM.visibleExpElement.Key;
-            var _expDef = DocManager.Inst.Project.expressions[_key];
+            string key = midiVM.visibleExpElement.Key;
+            var descriptor = DocManager.Inst.Project.expressions[key];
             if (mouseButton == MouseButton.Right) {
-                newValue = _expDef.defaultValue;
+                newValue = descriptor.defaultValue;
             } else if (mouseButton == MouseButton.Left) {
-                newValue = (int)Math.Max(_expDef.min, Math.Min(_expDef.max, (1 - mousePos.Y / expCanvas.ActualHeight) * (_expDef.max - _expDef.min) + _expDef.min));
+                newValue = (int)Math.Max(descriptor.min, Math.Min(descriptor.max, (1 - mousePos.Y / expCanvas.ActualHeight) * (descriptor.max - descriptor.min) + descriptor.min));
                 valueTipText.Text = newValue.ToString();
                 valueTip.HorizontalOffset = mousePos.X;
                 valueTip.VerticalOffset = mousePos.Y - 18;
@@ -778,12 +778,16 @@ namespace OpenUtau.UI {
             } else {
                 return;
             }
-            NoteHitInfo hit = midiHT.HitTestNote(mousePos);
+            NoteHitInfo hit = midiHT.HitTestExp(mousePos);
             if (!hit.hitX) {
                 return;
             }
             if (midiVM.SelectedNotes.Count == 0 || midiVM.SelectedNotes.Contains(hit.note)) {
-                DocManager.Inst.ExecuteCmd(new SetUExpressionCommand(midiVM.Part, hit.note, midiVM.visibleExpElement.Key, newValue));
+                if (!descriptor.isNoteExpression) {
+                    DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(DocManager.Inst.Project, hit.phoneme, midiVM.visibleExpElement.Key, newValue));
+                } else {
+                    DocManager.Inst.ExecuteCmd(new SetNoteExpressionCommand(DocManager.Inst.Project, hit.note, midiVM.visibleExpElement.Key, newValue));
+                }
             }
         }
 
@@ -862,7 +866,7 @@ namespace OpenUtau.UI {
                     var phoneme = hitInfo.phoneme;
                     var parent = phoneme.Parent;
                     var leadingNote = parent.Extends ?? parent;
-                    int index = parent.PhonemeOffset + parent.phonemes.IndexOf(phoneme);
+                    int index = parent.PhonemeOffset + phoneme.Index;
                     if (hitInfo.hitPosition) {
                         DocManager.Inst.ExecuteCmd(new PhonemeOffsetCommand(vm.Part, leadingNote, index, 0));
                     } else if (hitInfo.hitPreutter) {

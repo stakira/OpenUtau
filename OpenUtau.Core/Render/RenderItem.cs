@@ -50,22 +50,16 @@ namespace OpenUtau.Core.Render {
             SourceTemp = Path.Combine(PathManager.Inst.GetCachePath(null),
                 $"{HashHex(track.Singer.Id)}-{HashHex(phoneme.oto.Set)}-{HashHex(SourceFile)}.wav");
 
-            float vel = phoneme.Parent.expressions["vel"].value;
-            float vol = phoneme.Parent.expressions["vol"].value;
-            var strechRatio = Math.Pow(2, 1.0 - vel / 100);
+            Velocity = (int)phoneme.GetExpression(project, "vel").Item1;
+            Volume = (int)phoneme.GetExpression(project, "vol").Item1;
+            Modulation = (int)phoneme.GetExpression(project, "mod").Item1;
+            var strechRatio = Math.Pow(2, 1.0 - Velocity / 100);
             var length = phoneme.oto.Preutter * strechRatio + phoneme.envelope.data[4].X;
             var requiredLength = Math.Ceiling(length / 50 + 1) * 50;
             var lengthAdjustment = phoneme.tailIntrude == 0 ? phoneme.preutter : phoneme.preutter - phoneme.tailIntrude + phoneme.tailOverlap;
-            if (phoneme.Parent.expressions.TryGetValue("mod", out var exp)) {
-                Modulation = (int)exp.value;
-            } else {
-                Modulation = 0;
-            }
 
             NoteNum = phoneme.Parent.tone;
-            Velocity = (int)vel;
-            Volume = (int)vol;
-            StrFlags = phoneme.Parent.GetResamplerFlags();
+            StrFlags = phoneme.GetResamplerFlags(project);
             PitchData = BuildPitchData(phoneme, part, project);
             RequiredLength = (int)requiredLength;
             Oto = phoneme.oto;
@@ -117,7 +111,7 @@ namespace OpenUtau.Core.Render {
             var points = new List<PitchPoint>();
             var vibratos = new List<Tuple<double, double, UVibrato>>();
             var note = leftNote;
-            float vel = phoneme.Parent.expressions["vel"].value;
+            float vel = Velocity;
             var strechRatio = Math.Pow(2, 1.0 - vel / 100);
             float correction = (float)(phoneme.oto.Preutter * (strechRatio - 1));
             while (true) {

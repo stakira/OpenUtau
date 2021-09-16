@@ -81,19 +81,25 @@ namespace OpenUtau.UI.Controls {
         }
 
         public override void Redraw(DrawingContext cxt) {
+            var project = DocManager.Inst.Project;
             if (Part != null) {
                 foreach (UNote note in Part.notes) {
-                    if (!midiVM.NoteIsInView(note)) continue;
-                    if (note.expressions.ContainsKey(Key)) {
-                        var _exp = note.expressions[Key];
-                        var _expDef = DocManager.Inst.Project.expressions[Key];
-                        double x1 = Math.Round(ScaleX * note.position);
-                        double x2 = Math.Round(ScaleX * note.End);
-                        double valueHeight = Math.Round(VisualHeight - VisualHeight * (_exp.value - _expDef.min) / (_expDef.max - _expDef.min));
-                        double zeroHeight = Math.Round(VisualHeight - VisualHeight * (0f - _expDef.min) / (_expDef.max - _expDef.min));
+                    if (!midiVM.NoteIsInView(note)) {
+                        continue;
+                    }
+                    foreach (var phoneme in note.phonemes) {
+                        if (phoneme.Error) {
+                            continue;
+                        }
+                        var (value, overriden) = phoneme.GetExpression(project, Key);
+                        var descriptor = project.expressions[Key];
+                        double x1 = Math.Round(ScaleX * (note.position + phoneme.position));
+                        double x2 = Math.Round(ScaleX * (note.position + phoneme.End));
+                        double valueHeight = Math.Round(VisualHeight - VisualHeight * (value - descriptor.min) / (descriptor.max - descriptor.min));
+                        double zeroHeight = Math.Round(VisualHeight - VisualHeight * (0f - descriptor.min) / (descriptor.max - descriptor.min));
                         cxt.DrawLine(pen3, new Point(x1 + 0.5, zeroHeight + 0.5), new Point(x1 + 0.5, valueHeight + 3));
                         cxt.DrawLine(pen2, new Point(x1 + 3, valueHeight), new Point(Math.Max(x1 + 3, x2 - 3), valueHeight));
-                        cxt.DrawEllipse(_exp.overridden ? pen2.Brush : Brushes.White, pen2, new Point(x1 + 0.5, valueHeight), 2.5, 2.5);
+                        cxt.DrawEllipse(overriden ? pen2.Brush : Brushes.White, pen2, new Point(x1 + 0.5, valueHeight), 2.5, 2.5);
                     }
                 }
             } else {

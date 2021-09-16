@@ -1,18 +1,15 @@
 ﻿using Xunit;
 using Xunit.Abstractions;
 using Newtonsoft.Json;
-using OpenUtau.Core.Formats;
 
 namespace OpenUtau.Core.Ustx {
     public class UstxSerializationTest {
         readonly ITestOutputHelper output;
-        readonly JsonConverter converter;
         readonly UExpressionDescriptor descriptor;
         readonly UNote note;
 
         public UstxSerializationTest(ITestOutputHelper output) {
             this.output = output;
-            converter = new UExpressionConverter();
             descriptor = new UExpressionDescriptor("velocity", "vel", 0, 200, 100);
 
             note = UNote.Create();
@@ -20,26 +17,22 @@ namespace OpenUtau.Core.Ustx {
             note.duration = 60;
             note.tone = 42;
             note.lyric = "あ";
-            note.expressions.Clear();
-            var exp = new UExpression(descriptor) { value = 123 };
-            note.expressions.Add(descriptor.abbr, exp);
-        }
-
-        [Fact]
-        public void UExpressionSerializationTest() {
-            var exp = new UExpression(descriptor) { value = 123 };
-
-            var actual = JsonConvert.SerializeObject(exp, Formatting.Indented, converter);
-            Assert.Equal("123.0", actual);
+            note.noteExpressions.Add(new UExpression(descriptor) {
+                value = 99,
+            });
+            note.phonemeExpressions.Add(new UExpression(descriptor) {
+                index = 0,
+                value = 123,
+            });
         }
 
         [Fact]
         public void UExpressionDeserializationTest() {
             var exp = new UExpression(descriptor) { value = 123 };
-            var json = JsonConvert.SerializeObject(exp, Formatting.Indented, converter);
+            var json = JsonConvert.SerializeObject(exp, Formatting.Indented);
             output.WriteLine(json);
 
-            var actual = JsonConvert.DeserializeObject<UExpression>(json, converter);
+            var actual = JsonConvert.DeserializeObject<UExpression>(json);
 
             Assert.Null(actual.descriptor);
             Assert.Equal(123, actual.value);
@@ -47,7 +40,7 @@ namespace OpenUtau.Core.Ustx {
 
         [Fact]
         public void UNoteSerializationTest() {
-            var actual = JsonConvert.SerializeObject(note, Formatting.Indented, converter);
+            var actual = JsonConvert.SerializeObject(note, Formatting.Indented);
             output.WriteLine(actual);
 
             string expected = @"{
@@ -68,9 +61,20 @@ namespace OpenUtau.Core.Ustx {
     'shift': 0.0,
     'drift': 0.0
   },
-  'exp': {
-    'vel': 123.0
-  },
+  'nex': [
+    {
+      'index': null,
+      'abbr': 'vel',
+      'value': 99.0
+    }
+  ],
+  'pex': [
+    {
+      'index': 0,
+      'abbr': 'vel',
+      'value': 123.0
+    }
+  ],
   'phm': []
 }";
 
@@ -79,17 +83,17 @@ namespace OpenUtau.Core.Ustx {
 
         [Fact]
         public void UNoteDeserializationTest() {
-            var json = JsonConvert.SerializeObject(note, Formatting.Indented, converter);
+            var json = JsonConvert.SerializeObject(note, Formatting.Indented);
 
-            var actual = JsonConvert.DeserializeObject<UNote>(json, converter);
+            var actual = JsonConvert.DeserializeObject<UNote>(json);
 
             Assert.Equal(120, actual.position);
             Assert.Equal(60, actual.duration);
             Assert.Equal(42, actual.tone);
             Assert.Equal("あ", actual.lyric);
             Assert.Empty(actual.phonemes);
-            Assert.Single(actual.expressions);
-            var vel = actual.expressions["vel"];
+            Assert.Single(actual.phonemeExpressions);
+            var vel = actual.phonemeExpressions[0];
             Assert.NotNull(vel);
             Assert.Null(vel.descriptor);
             Assert.Equal(123, vel.value);

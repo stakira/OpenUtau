@@ -200,15 +200,24 @@ namespace OpenUtau.Core.Formats {
                         break;
                     case "Velocity":
                         error |= !isFloat;
-                        note.expressions["vel"].value = floatValue;
+                        note.phonemeExpressions.Add(new UExpression("vel") {
+                            index = 0,
+                            value = floatValue,
+                        });
                         break;
                     case "Intensity":
                         error |= !isFloat;
-                        note.expressions["vol"].value = floatValue;
+                        note.phonemeExpressions.Add(new UExpression("vol") {
+                            index = 0,
+                            value = floatValue,
+                        });
                         break;
                     case "Moduration":
                         error |= !isFloat;
-                        note.expressions["mod"].value = floatValue;
+                        note.phonemeExpressions.Add(new UExpression("mod") {
+                            index = 0,
+                            value = floatValue,
+                        });
                         break;
                     case "VoiceOverlap":
                         error |= !isFloat;
@@ -264,7 +273,10 @@ namespace OpenUtau.Core.Formats {
                 if (parts.Length == 11) {
                     float p4 = parts[8], p5 = parts[9], v5 = parts[10];
                 }
-                note.expressions["dec"].value = 100f - v3;
+                note.phonemeExpressions.Add(new UExpression("dec") {
+                    index = 0,
+                    value = 100f - v3,
+                });
             } catch (Exception e) {
                 throw new FileFormatException($"Invalid Envelope\n{ustLine}", e);
             }
@@ -360,10 +372,10 @@ namespace OpenUtau.Core.Formats {
                         spacer.lyric = "R";
                         spacer.tone = 60;
                         sequence.Add(spacer);
-                        WriteNoteBody(spacer, writer);
+                        WriteNoteBody(project, spacer, writer);
                     }
                     writer.WriteLine($"[#{sequence.Count:D4}]");
-                    WriteNoteBody(note, writer);
+                    WriteNoteBody(project, note, writer);
                     position = note.End;
                     sequence.Add(note);
                 }
@@ -386,20 +398,19 @@ namespace OpenUtau.Core.Formats {
             writer.WriteLine("[#TRACKEND]");
         }
 
-        static void WriteNoteBody(UNote note, StreamWriter writer) {
+        static void WriteNoteBody(UProject project, UNote note, StreamWriter writer) {
             writer.WriteLine($"Length={note.duration}");
             writer.WriteLine($"Lyric={note.lyric}");
             writer.WriteLine($"NoteNum={note.tone}");
             writer.WriteLine("PreUtterance=");
             //writer.WriteLine("VoiceOverlap=");
-            if (note.expressions.TryGetValue("vel", out var vel)) {
-                writer.WriteLine($"Velocity={(int)vel.value}");
-            }
-            if (note.expressions.TryGetValue("vol", out var vol)) {
-                writer.WriteLine($"Intensity={(int)vol.value}");
-            }
-            if (note.expressions.TryGetValue("mod", out var mod)) {
-                writer.WriteLine($"Moduration={(int)mod.value}");
+            if (note.phonemes.Count > 0) {
+                float vel = note.phonemes[0].GetExpression(project, "vel").Item1;
+                writer.WriteLine($"Velocity={(int)vel}");
+                float vol = note.phonemes[0].GetExpression(project, "vol").Item1;
+                writer.WriteLine($"Intensity={(int)vol}");
+                float mod = note.phonemes[0].GetExpression(project, "mod").Item1;
+                writer.WriteLine($"Moduration={(int)mod}");
             }
             WriteEnvelope(note, writer);
             WritePitch(note, writer);

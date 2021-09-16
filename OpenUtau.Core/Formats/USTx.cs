@@ -37,8 +37,7 @@ namespace OpenUtau.Core.Formats {
                 project,
                 Formatting.Indented,
                 new VersionConverter(),
-                new UPartConverter(),
-                new UExpressionConverter()), Encoding.UTF8);
+                new UPartConverter()), Encoding.UTF8);
             project.FilePath = filePath;
             project.Saved = true;
         }
@@ -47,8 +46,7 @@ namespace OpenUtau.Core.Formats {
             UProject project = JsonConvert.DeserializeObject<UProject>(
                 File.ReadAllText(filePath, Encoding.UTF8),
                 new VersionConverter(),
-                new UPartConverter(),
-                new UExpressionConverter());
+                new UPartConverter());
             AddDefaultExpressions(project);
             project.FilePath = filePath;
             project.Saved = true;
@@ -83,24 +81,5 @@ namespace OpenUtau.Core.Formats {
 
         public override bool CanWrite => false;
         public override void WriteJson(JsonWriter writer, UPart value, JsonSerializer serializer) { }
-    }
-
-    public class UExpressionConverter : JsonConverter<UExpression> {
-        public override UExpression ReadJson(JsonReader reader, Type objectType, UExpression existingValue, bool hasExistingValue, JsonSerializer serializer) {
-            bool overridden = reader.Value != null;
-            return new UExpression(null) {
-                overridden = overridden,
-                value = overridden ? (float)(double)reader.Value : 0,
-            };
-        }
-
-        public override void WriteJson(JsonWriter writer, UExpression value, JsonSerializer serializer) {
-            var exp = value;
-            if (exp.overridden) {
-                writer.WriteValue(exp.value);
-            } else {
-                writer.WriteNull();
-            }
-        }
     }
 }

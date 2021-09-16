@@ -9,18 +9,38 @@ namespace OpenUtau.Core {
         public string Key;
     }
 
-    public class SetUExpressionCommand : ExpCommand {
-        public float NewValue, OldValue;
-        public SetUExpressionCommand(UVoicePart part, UNote note, string key, float newValue) {
-            Part = part;
-            Note = note;
-            Key = key;
-            NewValue = newValue;
-            OldValue = Note.expressions[Key].value;
+    public class SetNoteExpressionCommand : ExpCommand {
+        public readonly UProject project;
+        public readonly UPhoneme phoneme;
+        public readonly float newValue;
+        public readonly float oldValue;
+        public SetNoteExpressionCommand(UProject project, UNote note, string abbr, float value) {
+            this.project = project;
+            this.Note = note;
+            Key = abbr;
+            newValue = value;
+            oldValue = phoneme.GetExpression(project, abbr).Item1;
         }
-        public override string ToString() { return $"Set note expression {Key}"; }
-        public override void Execute() { Note.expressions[Key].value = NewValue; }
-        public override void Unexecute() { Note.expressions[Key].value = OldValue; }
+        public override string ToString() => $"Set note expression {Key}";
+        public override void Execute() => Note.SetExpression(project, Key, newValue);
+        public override void Unexecute() => Note.SetExpression(project, Key, oldValue);
+    }
+
+    public class SetPhonemeExpressionCommand : ExpCommand {
+        public readonly UProject project;
+        public readonly UPhoneme phoneme;
+        public readonly float newValue;
+        public readonly float oldValue;
+        public SetPhonemeExpressionCommand(UProject project, UPhoneme phoneme, string abbr, float value) {
+            this.project = project;
+            this.phoneme = phoneme;
+            Key = abbr;
+            newValue = value;
+            oldValue = phoneme.GetExpression(project, abbr).Item1;
+        }
+        public override string ToString() => $"Set phoneme expression {Key}";
+        public override void Execute() => phoneme.SetExpression(project, Key, newValue);
+        public override void Unexecute() => phoneme.SetExpression(project, Key, oldValue);
     }
 
     public abstract class PitchExpCommand : ExpCommand { }
