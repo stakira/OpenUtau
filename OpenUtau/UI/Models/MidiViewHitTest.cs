@@ -90,6 +90,9 @@ namespace OpenUtau.UI.Models {
         }
 
         public PitchPointHitInfo HitTestPitchPoint(Point mousePos) {
+            if (!midiVM.ShowPitch) {
+                return null;
+            }
             foreach (var note in midiVM.Part.notes) {
                 // FIXME pitch point maybe in view while note is not.
                 if (midiVM.NoteIsInView(note) && !note.Error) {

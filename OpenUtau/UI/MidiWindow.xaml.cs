@@ -218,6 +218,10 @@ namespace OpenUtau.UI {
                     _pitHitIndex = pitHitResult.Index;
                     _noteHit = pitHitResult.Note;
                     DocManager.Inst.StartUndoGroup();
+                } else {
+                    DocManager.Inst.StartUndoGroup();
+                    DocManager.Inst.ExecuteCmd(new AddPitchPointCommand(pitHitResult.Note, new PitchPoint(pitHitResult.X, pitHitResult.Y), pitHitResult.Index + 1));
+                    DocManager.Inst.EndUndoGroup();
                 }
             } else if (vbrHitResult.hit) {
                 if (vbrHitResult.hitToggle) {
