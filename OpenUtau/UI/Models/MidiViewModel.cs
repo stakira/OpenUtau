@@ -51,10 +51,6 @@ namespace OpenUtau.UI.Models {
         double _offsetY = UIConstants.NoteDefaultHeight * 5 * 12;
         double _quarterOffset = 0;
         double _minTickWidth = UIConstants.MidiTickMinWidth;
-        int _beatPerBar = 4;
-        int _beatUnit = 4;
-        int _visualPosTick;
-        int _visualDurTick;
         bool _showPhoneme = true;
         bool _showVibrato = true;
         bool _showPitch = true;
@@ -443,8 +439,6 @@ namespace OpenUtau.UI.Models {
             QuarterWidth = QuarterWidth;
             OffsetX = OffsetX;
             MarkUpdate();
-            _visualPosTick = Part.position;
-            _visualDurTick = Part.Duration;
         }
 
         private void OnSelectExpression(UNotification cmd) {

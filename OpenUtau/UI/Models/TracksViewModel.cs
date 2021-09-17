@@ -281,8 +281,16 @@ namespace OpenUtau.UI.Models {
 
         private void OnPartAdded(UPart part) {
             PartElement partElement;
-            if (part is UWavePart) partElement = new WavePartElement(part) { Project = Project };
-            else partElement = new VoicePartElement() { Part = part, Project = Project };
+            if (part is UWavePart) {
+                partElement = new WavePartElement(part) {
+                    Project = Project,
+                };
+            } else {
+                partElement = new VoicePartElement() {
+                    Part = part,
+                    Project = Project,
+                };
+            }
 
             partElement.Redraw();
             PartElements.Add(partElement);

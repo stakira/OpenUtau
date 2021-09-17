@@ -1,14 +1,16 @@
 ﻿using Xunit;
 using Xunit.Abstractions;
 using Newtonsoft.Json;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 namespace OpenUtau.Core.Ustx {
-    public class UstxSerializationTest {
+    public class UstxYamlTest {
         readonly ITestOutputHelper output;
         readonly UExpressionDescriptor descriptor;
         readonly UNote note;
 
-        public UstxSerializationTest(ITestOutputHelper output) {
+        public UstxYamlTest(ITestOutputHelper output) {
             this.output = output;
             descriptor = new UExpressionDescriptor("velocity", "vel", 0, 200, 100);
 
@@ -17,6 +19,8 @@ namespace OpenUtau.Core.Ustx {
             note.duration = 60;
             note.tone = 42;
             note.lyric = "あ";
+            note.pitch.AddPoint(new PitchPoint(-5, 0));
+            note.pitch.AddPoint(new PitchPoint(5, 0));
             note.noteExpressions.Add(new UExpression(descriptor) {
                 value = 99,
             });
@@ -27,66 +31,48 @@ namespace OpenUtau.Core.Ustx {
         }
 
         [Fact]
-        public void UExpressionDeserializationTest() {
-            var exp = new UExpression(descriptor) { value = 123 };
-            var json = JsonConvert.SerializeObject(exp, Formatting.Indented);
-            output.WriteLine(json);
-
-            var actual = JsonConvert.DeserializeObject<UExpression>(json);
-
-            Assert.Null(actual.descriptor);
-            Assert.Equal(123, actual.value);
-        }
-
-        [Fact]
         public void UNoteSerializationTest() {
-            var actual = JsonConvert.SerializeObject(note, Formatting.Indented);
+            var actual = Yaml.DefaultSerializer.Serialize(note);
             output.WriteLine(actual);
 
-            string expected = @"{
-  'pos': 120,
-  'dur': 60,
-  'num': 42,
-  'lrc': 'あ',
-  'pit': {
-    'data': [],
-    'snapFirst': true
-  },
-  'vbr': {
-    'length': 0.0,
-    'period': 100.0,
-    'depth': 32.0,
-    'in': 10.0,
-    'out': 10.0,
-    'shift': 0.0,
-    'drift': 0.0
-  },
-  'exp': null,
-  'nex': [
-    {
-      'index': null,
-      'abbr': 'vel',
-      'value': 99.0
-    }
-  ],
-  'pex': [
-    {
-      'index': 0,
-      'abbr': 'vel',
-      'value': 123.0
-    }
-  ],
-  'phm': []
-}";
+            string expected = @"position: 120
+duration: 60
+tone: 42
+lyric: あ
+pitch:
+  data:
+  - x: -5
+    y: 0
+    shape: io
+  - x: 5
+    y: 0
+    shape: io
+  snap_first: true
+vibrato:
+  length: 0
+  period: 100
+  depth: 32
+  in: 10
+  out: 10
+  shift: 0
+  drift: 0
+note_expressions:
+- abbr: vel
+  value: 99
+phoneme_expressions:
+- index: 0
+  abbr: vel
+  value: 123
+phoneme_overrides: []
+";
 
-            Assert.Equal(expected.Replace('\'', '\"').Replace("\r\n", "\n"), actual.Replace("\r\n", "\n"));
+            Assert.Equal(expected.Replace("\r\n", "\n"), actual.Replace("\r\n", "\n"));
         }
 
         [Fact]
         public void UNoteDeserializationTest() {
-            var json = JsonConvert.SerializeObject(note, Formatting.Indented);
-
-            var actual = JsonConvert.DeserializeObject<UNote>(json);
+            var yaml = Yaml.DefaultSerializer.Serialize(note);
+            var actual = Yaml.DefaultDeserializer.Deserialize<UNote>(yaml);
 
             Assert.Equal(120, actual.position);
             Assert.Equal(60, actual.duration);

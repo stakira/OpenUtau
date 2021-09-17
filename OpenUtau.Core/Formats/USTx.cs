@@ -9,7 +9,7 @@ using Serilog;
 
 namespace OpenUtau.Core.Formats {
     public class Ustx {
-        public static readonly Version kUstxVersion = new Version(0, 2);
+        public static readonly Version kUstxVersion = new Version(0, 3);
 
         public static void AddBuiltInExpressions(UProject project) {
             project.RegisterExpression(new UExpressionDescriptor("velocity", "vel", 0, 200, 100));
@@ -34,21 +34,18 @@ namespace OpenUtau.Core.Formats {
 
         public static void Save(string filePath, UProject project) {
             project.ustxVersion = kUstxVersion;
-            project.BeforeSave();
-            File.WriteAllText(filePath, JsonConvert.SerializeObject(
-                project,
-                Formatting.Indented,
-                new VersionConverter(),
-                new UPartConverter()), Encoding.UTF8);
             project.FilePath = filePath;
+            project.BeforeSave();
+            File.WriteAllText(filePath, Yaml.DefaultSerializer.Serialize(project), Encoding.UTF8);
             project.Saved = true;
+            project.AfterSave();
         }
 
         public static UProject Load(string filePath) {
-            UProject project = JsonConvert.DeserializeObject<UProject>(
-                File.ReadAllText(filePath, Encoding.UTF8),
-                new VersionConverter(),
-                new UPartConverter());
+            string text = File.ReadAllText(filePath, Encoding.UTF8);
+            UProject project = text.StartsWith("{")
+                ? JsonConvert.DeserializeObject<UProject>(text, new VersionConverter(), new UPartConverter())
+                : Yaml.DefaultDeserializer.Deserialize<UProject>(text);
             AddDefaultExpressions(project);
             project.FilePath = filePath;
             project.Saved = true;
@@ -73,8 +70,8 @@ namespace OpenUtau.Core.Formats {
                         }
                         note.expressions = null;
                     });
-                project.ustxVersion = new Version(0, 2);
             }
+            project.ustxVersion = new Version(0, 3);
             return project;
         }
     }

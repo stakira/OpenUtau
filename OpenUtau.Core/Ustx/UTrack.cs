@@ -1,6 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 using Serilog;
+using YamlDotNet.Serialization;
 
 namespace OpenUtau.Core.Ustx {
     [JsonObject(MemberSerialization.OptIn)]
@@ -9,6 +10,8 @@ namespace OpenUtau.Core.Ustx {
         [JsonProperty] public string phonemizer;
 
         private USinger singer_;
+
+        [YamlIgnore]
         public USinger Singer {
             get => singer_;
             set {
@@ -19,16 +22,16 @@ namespace OpenUtau.Core.Ustx {
             }
         }
 
-        public Phonemizer Phonemizer { get; set; } = new DefaultPhonemizer();
-        public string PhonemizerTag => Phonemizer.Tag;
+        [YamlIgnore] public Phonemizer Phonemizer { get; set; } = new DefaultPhonemizer();
+        [YamlIgnore] public string PhonemizerTag => Phonemizer.Tag;
 
-        public string SingerName => Singer != null ? Singer.DisplayName : "[No Singer]";
-        public int TrackNo { set; get; }
-        public int DisplayTrackNo => TrackNo + 1;
-        public bool Mute { set; get; }
-        public bool Solo { set; get; }
-        public double Volume { set; get; }
-        public double Pan { set; get; }
+        [YamlIgnore] public string SingerName => Singer != null ? Singer.DisplayName : "[No Singer]";
+        [YamlIgnore] public int TrackNo { set; get; }
+        [YamlIgnore] public int DisplayTrackNo => TrackNo + 1;
+        [YamlIgnore] public bool Mute { set; get; }
+        [YamlIgnore] public bool Solo { set; get; }
+        [YamlIgnore] public double Volume { set; get; }
+        [YamlIgnore] public double Pan { set; get; }
 
         public void BeforeSave() {
             singer = Singer?.Id;

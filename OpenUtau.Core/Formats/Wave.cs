@@ -1,27 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
-
-using NAudio;
-using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core.Formats {
     public static class Wave {
-        public static UWavePart CreatePart(string filepath) {
-            AudioFileUtilsProvider.Utils.GetAudioFileInfo(filepath, out var waveFormat, out var timeSpan);
-            int durTick = DocManager.Inst.Project.MillisecondToTick(timeSpan.TotalMilliseconds);
+        public static UWavePart CreatePart(UProject project, string filepath) {
             UWavePart part = new UWavePart() {
                 FilePath = filepath,
-                FileDurTick = durTick,
-                Duration = durTick,
-                Channels = waveFormat.Channels
             };
-            part.Load();
+            part.Load(project);
             return part;
         }
 

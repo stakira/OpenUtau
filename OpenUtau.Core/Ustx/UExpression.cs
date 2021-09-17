@@ -1,17 +1,23 @@
 ﻿using System;
 using System.Diagnostics;
 using Newtonsoft.Json;
+using YamlDotNet.Serialization;
 
 namespace OpenUtau.Core.Ustx {
     [JsonObject(MemberSerialization.OptIn)]
     public class UExpressionDescriptor {
-        [JsonProperty] public readonly string name;
-        [JsonProperty] public readonly string abbr;
-        [JsonProperty] public readonly float min;
-        [JsonProperty] public readonly float max;
-        [JsonProperty] public readonly float defaultValue;
-        [JsonProperty] public readonly string flag;
-        [JsonProperty] public readonly bool isNoteExpression;
+        [JsonProperty] public string name;
+        [JsonProperty] public string abbr;
+        [JsonProperty] public float min;
+        [JsonProperty] public float max;
+        [JsonProperty] public float defaultValue;
+        [JsonProperty] public string flag;
+        [JsonProperty] public bool isNoteExpression;
+
+        /// <summary>
+        /// Constructor for Yaml deserialization
+        /// </summary>
+        public UExpressionDescriptor() { }
 
         public UExpressionDescriptor(string name, string abbr, float min, float max, float defaultValue, string flag = "", bool isNoteExpression = false) {
             this.name = name;
@@ -34,7 +40,7 @@ namespace OpenUtau.Core.Ustx {
 
     [JsonObject(MemberSerialization.OptIn)]
     public class UExpression {
-        public UExpressionDescriptor descriptor;
+        [YamlIgnore] public UExpressionDescriptor descriptor;
 
         private float _value;
 
@@ -50,6 +56,9 @@ namespace OpenUtau.Core.Ustx {
                 : Math.Min(descriptor.max, Math.Max(descriptor.min, value));
         }
 
+        /// <summary>
+        /// Constructor for Yaml deserialization
+        /// </summary>
         public UExpression() { }
 
         public UExpression(UExpressionDescriptor descriptor) {

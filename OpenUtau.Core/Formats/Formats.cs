@@ -8,7 +8,8 @@ namespace OpenUtau.Core.Formats {
 
     public static class Formats {
         const string ustMatch = "[#SETTING]";
-        const string ustxMatch = "ustxVersion";
+        const string ustxMatchJson = "\"ustxVersion\":";
+        const string ustxMatchYaml = "ustx_version:";
         const string vsq3Match = VSQx.vsq3NameSpace;
         const string vsq4Match = VSQx.vsq4NameSpace;
 
@@ -22,7 +23,7 @@ namespace OpenUtau.Core.Formats {
             string contents = string.Join("\n", lines);
             if (contents.Contains(ustMatch)) {
                 return ProjectFormats.Ust;
-            } else if (contents.Contains(ustxMatch)) {
+            } else if (contents.Contains(ustxMatchJson) || contents.Contains(ustxMatchYaml)) {
                 return ProjectFormats.Ustx;
             } else if (contents.Contains(vsq3Match)) {
                 return ProjectFormats.Vsq3;

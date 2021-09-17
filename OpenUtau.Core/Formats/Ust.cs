@@ -9,7 +9,7 @@ using OpenUtau.Core.Ustx;
 namespace OpenUtau.Core.Formats {
 
     public static class Ust {
-        static Encoding ShiftJIS = Encoding.GetEncoding("shift_jis");
+        static readonly Encoding ShiftJIS = Encoding.GetEncoding("shift_jis");
 
         class UstLine {
             public string file;

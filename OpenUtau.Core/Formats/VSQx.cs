@@ -9,7 +9,7 @@ namespace OpenUtau.Core.Formats {
         public const string vsq3NameSpace = @"http://www.yamaha.co.jp/vocaloid/schema/vsq3/";
         public const string vsq4NameSpace = @"http://www.yamaha.co.jp/vocaloid/schema/vsq4/";
 
-        static public UProject Load(string file) {
+        public static UProject Load(string file) {
             XmlDocument vsqx = new XmlDocument();
             vsqx.Load(file);
 

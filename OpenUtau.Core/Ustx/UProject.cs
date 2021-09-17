@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
+using YamlDotNet.Serialization;
 
 namespace OpenUtau.Core.Ustx {
     [JsonObject(MemberSerialization.OptIn)]
@@ -9,7 +11,9 @@ namespace OpenUtau.Core.Ustx {
         [JsonProperty] public string comment = string.Empty;
         [JsonProperty] public string outputDir = "Vocal";
         [JsonProperty] public string cacheDir = "UCache";
-        [JsonProperty] public Version ustxVersion;
+        [JsonProperty]
+        [YamlMember(SerializeAs = typeof(string))]
+        public Version ustxVersion;
 
         [JsonProperty] public double bpm = 120;
         [JsonProperty] public int beatPerBar = 4;
@@ -18,10 +22,30 @@ namespace OpenUtau.Core.Ustx {
 
         [JsonProperty] public Dictionary<string, UExpressionDescriptor> expressions = new Dictionary<string, UExpressionDescriptor>();
         [JsonProperty] public List<UTrack> tracks = new List<UTrack>();
-        [JsonProperty] public List<UPart> parts = new List<UPart>();
+        [JsonProperty] [YamlIgnore] public List<UPart> parts = new List<UPart>();
 
-        public string FilePath { get; set; }
-        public bool Saved { get; set; } = false;
+        /// <summary>
+        /// Transient field used for serialization.
+        /// </summary>
+        public List<UVoicePart> voiceParts;
+        /// <summary>
+        /// Transient field used for serialization.
+        /// </summary>
+        public List<UWavePart> waveParts;
+
+        [YamlIgnore] public string FilePath { get; set; }
+        [YamlIgnore] public bool Saved { get; set; } = false;
+
+        [YamlIgnore]
+        public int EndTick {
+            get {
+                int lastTick = 0;
+                foreach (var part in parts) {
+                    lastTick = Math.Max(lastTick, part.EndTick);
+                }
+                return lastTick;
+            }
+        }
 
         public void RegisterExpression(UExpressionDescriptor descriptor) {
             if (!expressions.ContainsKey(descriptor.abbr)) {
@@ -53,16 +77,6 @@ namespace OpenUtau.Core.Ustx {
             return MusicMath.TickToMillisecond(tick, bpm, beatUnit, resolution);
         }
 
-        public int EndTick {
-            get {
-                int lastTick = 0;
-                foreach (var part in parts) {
-                    lastTick = Math.Max(lastTick, part.EndTick);
-                }
-                return lastTick;
-            }
-        }
-
         public void BeforeSave() {
             foreach (var track in tracks) {
                 track.BeforeSave();
@@ -70,11 +84,36 @@ namespace OpenUtau.Core.Ustx {
             foreach (var part in parts) {
                 part.BeforeSave(this, tracks[part.trackNo]);
             }
+            voiceParts = parts
+                .Where(part => part is UVoicePart)
+                .Select(part => part as UVoicePart)
+                .OrderBy(part => part.trackNo)
+                .ThenBy(part => part.position)
+                .ToList();
+            waveParts = parts
+                .Where(part => part is UWavePart)
+                .Select(part => part as UWavePart)
+                .OrderBy(part => part.trackNo)
+                .ThenBy(part => part.position)
+                .ToList();
+        }
+
+        public void AfterSave() {
+            voiceParts = null;
+            waveParts = null;
         }
 
         public void AfterLoad() {
             foreach (var track in tracks) {
                 track.AfterLoad(this);
+            }
+            if (voiceParts != null) {
+                parts.AddRange(voiceParts);
+                voiceParts = null;
+            }
+            if (waveParts != null) {
+                parts.AddRange(waveParts);
+                waveParts = null;
             }
             foreach (var part in parts) {
                 part.AfterLoad(this, tracks[part.trackNo]);

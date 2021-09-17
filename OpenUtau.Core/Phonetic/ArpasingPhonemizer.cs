@@ -13,7 +13,7 @@ namespace OpenUtau.Core {
             public string[] symbols;
         }
 
-        static object initLock = new object();
+        static readonly object initLock = new object();
         static Dictionary<string, PhoneType> phones;
         static Dictionary<string, string[]> vowelFallback;
         static TrieNode root;
@@ -59,7 +59,7 @@ namespace OpenUtau.Core {
         }
 
         private USinger singer;
-        private List<Tuple<int, int>> alignments = new List<Tuple<int, int>>();
+        private readonly List<Tuple<int, int>> alignments = new List<Tuple<int, int>>();
 
         public override string Name => "Arpasing Phonemizer";
         public override string Tag => "EN ARPA";

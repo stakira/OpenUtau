@@ -8,7 +8,7 @@ namespace OpenUtau.Core {
         public abstract void Execute();
         public abstract void Unexecute();
 
-        public override abstract string ToString();
+        public abstract override string ToString();
     }
 
     public class UCommandGroup {

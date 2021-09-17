@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using OpenUtau.Core;
 using Xunit;
 using Xunit.Abstractions;
-using YamlDotNet.Serialization;
-using YamlDotNet.Serialization.NamingConventions;
 
 namespace OpenUtau.Classic {
     public class VoicebankConfigTest {
@@ -12,7 +10,7 @@ namespace OpenUtau.Classic {
             this.output = output;
         }
 
-        VoicebankConfig CreateConfig() {
+        static VoicebankConfig CreateConfig() {
             return new VoicebankConfig() {
                 SymbolSet = new SymbolSet() {
                     Preset = SymbolSetPreset.hiragana,
@@ -60,10 +58,7 @@ namespace OpenUtau.Classic {
 
         [Fact]
         public void SerializationTest() {
-            var serializer = new SerializerBuilder()
-                .WithNamingConvention(new UnderscoredNamingConvention())
-                .Build();
-            var yaml = serializer.Serialize(CreateConfig());
+            var yaml = Yaml.DefaultSerializer.Serialize(CreateConfig());
             output.WriteLine(yaml);
 
             Assert.Equal(@"symbol_set:
@@ -100,16 +95,9 @@ subbanks:
 
         [Fact]
         public void RoundTripTest() {
-            var serializer = new SerializerBuilder()
-                .WithNamingConvention(new UnderscoredNamingConvention())
-                .Build();
-            var yaml = serializer.Serialize(CreateConfig());
-
-            var deserializer = new DeserializerBuilder()
-                .WithNamingConvention(new UnderscoredNamingConvention())
-                .Build();
-            var config = deserializer.Deserialize<VoicebankConfig>(yaml);
-            var yaml2 = serializer.Serialize(config);
+            var yaml = Yaml.DefaultSerializer.Serialize(CreateConfig());
+            var config = Yaml.DefaultDeserializer.Deserialize<VoicebankConfig>(yaml);
+            var yaml2 = Yaml.DefaultSerializer.Serialize(config);
 
             Assert.Equal(yaml, yaml2);
         }

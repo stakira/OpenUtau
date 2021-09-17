@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using OpenUtau.Core;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -54,20 +55,14 @@ namespace OpenUtau.Classic {
         public Subbank[] Subbanks { get; set; }
 
         public void Save(Stream stream) {
-            var serializer = new SerializerBuilder()
-                .WithNamingConvention(new UnderscoredNamingConvention())
-                .Build();
             using (var writer = new StreamWriter(stream)) {
-                serializer.Serialize(writer, this);
+                Yaml.DefaultSerializer.Serialize(writer, this);
             }
         }
 
         public static VoicebankConfig Load(Stream stream) {
-            var deserializer = new DeserializerBuilder()
-                .WithNamingConvention(new UnderscoredNamingConvention())
-                .Build();
             using (var reader = new StreamReader(stream)) {
-                return deserializer.Deserialize<VoicebankConfig>(reader);
+                return Yaml.DefaultDeserializer.Deserialize<VoicebankConfig>(reader);
             }
         }
     }

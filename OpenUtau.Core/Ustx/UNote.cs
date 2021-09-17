@@ -5,11 +5,12 @@ using System.Linq;
 using System.Numerics;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
+using YamlDotNet.Serialization;
 
 namespace OpenUtau.Core.Ustx {
     [JsonObject(MemberSerialization.OptIn)]
     public class UNote : IComparable {
-        static Regex phoneticHintPattern = new Regex(@"\[(.*)\]");
+        static readonly Regex phoneticHintPattern = new Regex(@"\[(.*)\]");
 
         [JsonProperty("pos")] public int position;
         [JsonProperty("dur")] public int duration;
@@ -17,24 +18,26 @@ namespace OpenUtau.Core.Ustx {
         [JsonProperty("lrc")] public string lyric = "a";
         [JsonProperty("pit")] public UPitch pitch;
         [JsonProperty("vbr")] public UVibrato vibrato;
-        [JsonProperty("exp")] [Obsolete] public Dictionary<string, double?> expressions = new Dictionary<string, double?>();
+        [JsonProperty("exp")]
+        [Obsolete("Only used for upgrading ustx v0.1")]
+        public Dictionary<string, double?> expressions;
         [JsonProperty("nex")] public List<UExpression> noteExpressions = new List<UExpression>();
         [JsonProperty("pex")] public List<UExpression> phonemeExpressions = new List<UExpression>();
         [JsonProperty("phm")] public List<UPhonemeOverride> phonemeOverrides = new List<UPhonemeOverride>();
 
-        public List<UPhoneme> phonemes = new List<UPhoneme>();
-        public int End => position + duration;
-        public bool Selected { get; set; } = false;
-        public UNote Prev { get; set; }
-        public UNote Next { get; set; }
-        public UNote Extends { get; set; }
-        public int PhonemeOffset { get; set; }
-        public int ExtendedDuration { get; set; }
-        public int ExtendedEnd => position + ExtendedDuration;
-        public int LeftBound => position + Math.Min(0, phonemes.Count > 0 ? phonemes.First().position : 0);
-        public int RightBound => position + Math.Max(duration, phonemes.Count > 0 ? phonemes.Last().position + phonemes.Last().Duration : 0);
-        public bool Error { get; set; } = false;
-        public bool OverlapError { get; set; } = false;
+        [YamlIgnore] public List<UPhoneme> phonemes = new List<UPhoneme>();
+        [YamlIgnore] public int End => position + duration;
+        [YamlIgnore] public bool Selected { get; set; } = false;
+        [YamlIgnore] public UNote Prev { get; set; }
+        [YamlIgnore] public UNote Next { get; set; }
+        [YamlIgnore] public UNote Extends { get; set; }
+        [YamlIgnore] public int PhonemeOffset { get; set; }
+        [YamlIgnore] public int ExtendedDuration { get; set; }
+        [YamlIgnore] public int ExtendedEnd => position + ExtendedDuration;
+        [YamlIgnore] public int LeftBound => position + Math.Min(0, phonemes.Count > 0 ? phonemes.First().position : 0);
+        [YamlIgnore] public int RightBound => position + Math.Max(duration, phonemes.Count > 0 ? phonemes.Last().position + phonemes.Last().Duration : 0);
+        [YamlIgnore] public bool Error { get; set; } = false;
+        [YamlIgnore] public bool OverlapError { get; set; } = false;
 
         public static UNote Create() {
             var note = new UNote();
@@ -137,8 +140,7 @@ namespace OpenUtau.Core.Ustx {
                 return;
             }
 
-            List<UNote> notes = new List<UNote>();
-            notes.Add(this);
+            List<UNote> notes = new List<UNote> { this };
             while (notes.Last().Next != null && notes.Last().Next.Extends == this) {
                 notes.Add(notes.Last().Next);
             }
@@ -321,7 +323,7 @@ namespace OpenUtau.Core.Ustx {
         [JsonProperty] public float shift { get => _shift; set => _shift = Math.Max(0, Math.Min(100, value)); }
         [JsonProperty] public float drift { get => _drift; set => _drift = Math.Max(-100, Math.Min(100, value)); }
 
-        public float NormalizedStart => 1f - length / 100f;
+        [YamlIgnore] public float NormalizedStart => 1f - length / 100f;
 
         public UVibrato Clone() {
             var result = new UVibrato {
@@ -432,6 +434,8 @@ namespace OpenUtau.Core.Ustx {
         [JsonProperty] public float X;
         [JsonProperty] public float Y;
         [JsonProperty] public PitchPointShape shape;
+
+        public PitchPoint() { }
 
         public PitchPoint(float x, float y, PitchPointShape shape = PitchPointShape.io) {
             X = x;

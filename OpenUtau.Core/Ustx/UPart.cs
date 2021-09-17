@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using YamlDotNet.Serialization;
 
 namespace OpenUtau.Core.Ustx {
     [JsonObject(MemberSerialization.OptIn)]
@@ -12,8 +14,8 @@ namespace OpenUtau.Core.Ustx {
         [JsonProperty] public int trackNo;
         [JsonProperty] public int position = 0;
 
-        public virtual int Duration { set; get; }
-        public int EndTick { get { return position + Duration; } }
+        [YamlIgnore] public virtual int Duration { set; get; }
+        [YamlIgnore] public int EndTick { get { return position + Duration; } }
 
         public UPart() { }
 
@@ -29,7 +31,10 @@ namespace OpenUtau.Core.Ustx {
 
     [JsonObject(MemberSerialization.OptIn)]
     public class UVoicePart : UPart {
-        [JsonProperty] public SortedSet<UNote> notes = new SortedSet<UNote>();
+        [JsonProperty]
+        [YamlMember(Order = 100)]
+        public SortedSet<UNote> notes = new SortedSet<UNote>();
+
         public override int GetMinDurTick(UProject project) {
             int durTick = 0;
             foreach (UNote note in notes)
@@ -101,17 +106,26 @@ namespace OpenUtau.Core.Ustx {
         string _filePath;
 
         [JsonProperty]
+        [YamlIgnore]
         public string FilePath {
-            set { _filePath = value; name = System.IO.Path.GetFileName(value); }
+            set {
+                _filePath = value;
+                name = Path.GetFileName(value);
+            }
             get { return _filePath; }
         }
-        public float[] Peaks { get; set; }
-        public float[] Samples { get; private set; }
 
-        public int Channels;
-        public int FileDurTick;
-        public int HeadTrimTick = 0;
-        public int TailTrimTick = 0;
+        [YamlMember(Order = 100)]
+        public string relativePath;
+
+        [YamlIgnore] public float[] Peaks { get; set; }
+        [YamlIgnore] public float[] Samples { get; private set; }
+
+        [YamlIgnore] public int Channels;
+        [YamlIgnore] public int FileDurTick;
+        [YamlIgnore] public int HeadTrimTick = 0;
+        [YamlIgnore] public int TailTrimTick = 0;
+        [YamlIgnore]
         public override int Duration {
             get { return FileDurTick - HeadTrimTick - TailTrimTick; }
             set { TailTrimTick = FileDurTick - HeadTrimTick - value; }
@@ -130,7 +144,13 @@ namespace OpenUtau.Core.Ustx {
         }
 
         private readonly object loadLockObj = new object();
-        public void Load() {
+        public void Load(UProject project) {
+            AudioFileUtilsProvider.Utils.GetAudioFileInfo(FilePath, out var waveFormat, out var timeSpan);
+            int durTick = project.MillisecondToTick(timeSpan.TotalMilliseconds);
+            FileDurTick = durTick;
+            Duration = durTick;
+            Channels = waveFormat.Channels;
+
             lock (loadLockObj) {
                 if (Samples != null) {
                     return;
@@ -142,6 +162,15 @@ namespace OpenUtau.Core.Ustx {
                     Samples = samples;
                 }
             });
+        }
+
+        public override void BeforeSave(UProject project, UTrack track) {
+            relativePath = PathUtils.MakeRelative(FilePath, Path.GetDirectoryName(project.FilePath));
+        }
+
+        public override void AfterLoad(UProject project, UTrack track) {
+            FilePath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(project.FilePath), relativePath));
+            Load(project);
         }
     }
 }

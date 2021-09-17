@@ -582,7 +582,7 @@ namespace OpenUtau.UI {
         private void CmdImportAudio(string file) {
             UWavePart part;
             try {
-                part = Core.Formats.Wave.CreatePart(file);
+                part = Core.Formats.Wave.CreatePart(DocManager.Inst.Project, file);
             } catch (Exception e) {
                 Log.Error(e, "Failed to read audio file");
                 MessageBox.Show(e.ToString());
