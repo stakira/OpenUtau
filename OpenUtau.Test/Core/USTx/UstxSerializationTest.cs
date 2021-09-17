@@ -61,6 +61,7 @@ namespace OpenUtau.Core.Ustx {
     'shift': 0.0,
     'drift': 0.0
   },
+  'exp': {},
   'nex': [
     {
       'index': null,
