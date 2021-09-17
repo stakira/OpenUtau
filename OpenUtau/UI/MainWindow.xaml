@@ -31,9 +31,8 @@
                     <MenuItem Header="2.vsqx"/>
                 </MenuItem>
                 <MenuItem Header="{StaticResource menu.file.save}" InputGestureText="Ctrl+S" Click="MenuSave_Click"/>
-                <MenuItem Header="{StaticResource menu.file.saveas}">
-                    <MenuItem Header="{StaticResource menu.file.saveasust}" Click="MenuSaveAsUst_Click"/>
-                </MenuItem>
+                <MenuItem Header="{StaticResource menu.file.saveas}"  Click="MenuSaveAs_Click"/>
+                <MenuItem Header="{StaticResource menu.file.saveasust}" Click="MenuSaveAsUst_Click"/>
                 <MenuItem Header="{StaticResource menu.file.import}" Click="MenuImport_Click"/>
                 <MenuItem Header="{StaticResource menu.file.importaudio}" Click="MenuImportAudio_Click"/>
                 <MenuItem Header="{StaticResource menu.file.importmidi}" Click="MenuImportMidi_Click"/>
