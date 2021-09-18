@@ -10,6 +10,7 @@ namespace OpenUtau.Core {
 
         public static IDeserializer DefaultDeserializer = new DeserializerBuilder()
             .WithNamingConvention(UnderscoredNamingConvention.Instance)
+            .IgnoreUnmatchedProperties()
             .Build();
     }
 }

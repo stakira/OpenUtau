@@ -14,7 +14,7 @@ namespace OpenUtau.Core.Ustx {
         public string Prefix => set.Prefix;
         public string Suffix => set.Suffix;
         public string Flavor => set.Flavor;
-        public string File { private set; get; }
+        public string File => Path.Combine(set.Location, oto.Wav);
         public string DisplayFile => oto.Wav;
         public double Offset => oto.Offset;
         public double Consonant => oto.Consonant;
@@ -29,7 +29,6 @@ namespace OpenUtau.Core.Ustx {
         public UOto(Oto oto, UOtoSet set) {
             this.oto = oto;
             this.set = set;
-            File = Path.Combine(set.Location, oto.Wav);
             SearchTerms = new List<string>();
         }
 

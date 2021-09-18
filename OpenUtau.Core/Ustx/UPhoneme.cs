@@ -5,6 +5,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using Newtonsoft.Json;
+using YamlDotNet.Serialization;
 
 namespace OpenUtau.Core.Ustx {
     public class UPhoneme {
@@ -221,7 +222,7 @@ namespace OpenUtau.Core.Ustx {
         [JsonProperty] public float? preutterScale;
         [JsonProperty] public float? overlapScale;
 
-        public bool IsEmpty => string.IsNullOrEmpty(phoneme) && !offset.HasValue && !preutterScale.HasValue && !overlapScale.HasValue;
+        [YamlIgnore] public bool IsEmpty => string.IsNullOrEmpty(phoneme) && !offset.HasValue && !preutterScale.HasValue && !overlapScale.HasValue;
 
         public UPhonemeOverride Clone() {
             return new UPhonemeOverride() {
