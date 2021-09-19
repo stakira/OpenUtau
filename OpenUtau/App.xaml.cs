@@ -1,19 +1,14 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Windows;
-using System.Windows.Threading;
-using Serilog;
 
 namespace OpenUtau {
-
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
     public partial class App : Application {
-
-        private App() {
+        public App() {
             InitializeComponent();
             InitializeCulture();
             InitializeTheme();
@@ -46,26 +41,6 @@ namespace OpenUtau {
             } else {
                 Current.Resources.MergedDictionaries.Add(dark);
             }
-        }
-
-        [STAThread]
-        private static void Main() {
-            Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Information()
-                .WriteTo.Console()
-                .WriteTo.File("log.txt", rollingInterval: RollingInterval.Day, encoding: System.Text.Encoding.UTF8)
-                .CreateLogger();
-            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler((sender, args) => {
-                Log.Error((Exception)args.ExceptionObject, "Unhandled exception");
-            });
-
-            Core.DocManager.Inst.Initialize();
-            Core.PlaybackManager.Inst.AudioOutput = new Audio.WaveOutAudioOutput();
-            Core.AudioFileUtilsProvider.Utils = new Audio.NAudioFileUtils();
-
-            var app = new App();
-            var window = new UI.MainWindow();
-            app.Run(window);
         }
     }
 }

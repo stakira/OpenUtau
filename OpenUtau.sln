@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31321.278
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenUtau", "OpenUtau\OpenUtau.csproj", "{D951492F-0901-4296-AE7F-831430C07FA9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenUtau", "OpenUtau\OpenUtau.csproj", "{D951492F-0901-4296-AE7F-831430C07FA9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8CC070AB-64DC-4C02-89E7-D8E5EC91A492}"
 	ProjectSection(SolutionItems) = preProject
@@ -19,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenUtau.Test", "OpenUtau.T
 		{D951492F-0901-4296-AE7F-831430C07FA9} = {D951492F-0901-4296-AE7F-831430C07FA9}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenUtau.Core", "OpenUtau.Core\OpenUtau.Core.csproj", "{7793257C-054C-4935-A1EF-CAB345E9F6C5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenUtau.Core", "OpenUtau.Core\OpenUtau.Core.csproj", "{7793257C-054C-4935-A1EF-CAB345E9F6C5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

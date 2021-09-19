@@ -24,11 +24,10 @@ deploy:
   on:
     branch: master
     APPVEYOR_REPO_TAG: false
-assembly_info:
+dotnet_csproj:
   patch: true
-  file: AssemblyInfo.cs
-  assembly_version: '{version}'
-  assembly_file_version: '{version}'
+  file: 'OpenUtau\OpenUtau.csproj'
+  version: '{version}'
 on_success:
   - ps: Invoke-RestMethod https://raw.githubusercontent.com/DiscordHooks/appveyor-discord-webhook/master/send.ps1 -o send.ps1
   - ps: ./send.ps1 success $env:discord_webhook
