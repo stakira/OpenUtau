@@ -8,7 +8,7 @@ before_build:
 after_build:
   - ps: ./Misc/after_build.ps1
 artifacts:
-  - path: OpenUtau\bin\Release
+  - path: OpenUtau\bin\Release\netcoreapp3.1
     name: OpenUtau
     type: zip
   - path: release.xml
