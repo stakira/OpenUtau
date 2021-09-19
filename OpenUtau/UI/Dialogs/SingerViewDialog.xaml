@@ -1,7 +1,7 @@
 ﻿<Window x:Class="OpenUtau.UI.Dialogs.SingerViewDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Singers" Height="600" Width="500" MinHeight="600" MinWidth="500">
+        Title="Singers" Height="600" Width="500" MinHeight="600" MinWidth="500" WindowStartupLocation="CenterOwner">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="170"/>

@@ -21,7 +21,8 @@ namespace OpenUtau {
             Core.PlaybackManager.Inst.AudioOutput = new Audio.WaveOutAudioOutput();
             Core.AudioFileUtilsProvider.Utils = new Audio.NAudioFileUtils();
 
-            var app = new App();
+            App.Program.InitInterop();
+            var app = new WpfApp();
             var window = new UI.MainWindow();
             app.Run(window);
         }

@@ -22,6 +22,7 @@ namespace OpenUtau.Core {
         public int playPosTick = 0;
 
         public Dictionary<string, USinger> Singers { get; private set; } = new Dictionary<string, USinger>();
+        public List<USinger> SingersOrdered { get; private set; } = new List<USinger>();
         public Plugin[] Plugins { get; private set; }
         public Phonemizer[] Phonemizers { get; private set; }
         public Transformer[] Transformers { get; private set; }
@@ -36,9 +37,10 @@ namespace OpenUtau.Core {
             SearchAllPhonemizers();
         }
 
-        void SearchAllSingers() {
+        public void SearchAllSingers() {
             var stopWatch = Stopwatch.StartNew();
             Singers = Formats.UtauSoundbank.FindAllSingers();
+            SingersOrdered = Singers.Values.OrderBy(singer => singer.Name).ToList();
             Directory.CreateDirectory(PathManager.Inst.GetEngineSearchPath());
             stopWatch.Stop();
             Log.Information($"Search all singers: {stopWatch.Elapsed}");
@@ -53,14 +55,14 @@ namespace OpenUtau.Core {
             return null;
         }
 
-        void SearchAllPlugins() {
+        public void SearchAllPlugins() {
             var stopWatch = Stopwatch.StartNew();
             Plugins = PluginLoader.LoadAll(PathManager.Inst.PluginsPath);
             stopWatch.Stop();
             Log.Information($"Search all plugins: {stopWatch.Elapsed}");
         }
 
-        void SearchAllTransformers() {
+        public void SearchAllTransformers() {
             var stopWatch = Stopwatch.StartNew();
             Transformers = GetType().Assembly.GetTypes()
                 .Where(t => !t.IsAbstract && t.IsSubclassOf(typeof(Transformer)))
@@ -70,7 +72,7 @@ namespace OpenUtau.Core {
             Log.Information($"Search all transformers: {stopWatch.Elapsed}");
         }
 
-        void SearchAllPhonemizers() {
+        public void SearchAllPhonemizers() {
             var stopWatch = Stopwatch.StartNew();
             Phonemizers = GetType().Assembly.GetTypes()
                 .Where(t => !t.IsAbstract && t.IsSubclassOf(typeof(Phonemizer)))

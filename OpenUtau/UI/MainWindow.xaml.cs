@@ -405,8 +405,22 @@ namespace OpenUtau.UI {
         }
 
         private void MenuSingers_Click(object sender, RoutedEventArgs e) {
-            var w = new Dialogs.SingerViewDialog() { Owner = this };
-            w.ShowDialog();
+            var dialog = new App.Views.SingersDialog() {
+                DataContext = new App.ViewModels.SingersViewModel(),
+            };
+            dialog.Closed += Dialog_Closed;
+            IsEnabled = false;
+            if (midiWindow != null) {
+                midiWindow.IsEnabled = false;
+            }
+            dialog.Show();
+        }
+
+        private void Dialog_Closed(object sender, EventArgs e) {
+            IsEnabled = true;
+            if (midiWindow != null) {
+                midiWindow.IsEnabled = true;
+            }
         }
 
         private void MenuInstallSingers_Click(object sender, RoutedEventArgs e) {
@@ -480,7 +494,7 @@ namespace OpenUtau.UI {
             w.ShowDialog();
         }
 
-        # endregion
+        #endregion
 
         // Disable system menu and main menu
         protected override void OnKeyDown(KeyEventArgs e) {
@@ -518,7 +532,7 @@ namespace OpenUtau.UI {
             }
         }
 
-        # region application commmands
+        #region application commmands
 
         private void CmdNewFile() {
             DocManager.Inst.ExecuteCmd(new LoadProjectNotification(OpenUtau.Core.Formats.Ustx.Create()));
@@ -621,7 +635,7 @@ namespace OpenUtau.UI {
             w.ShowDialog();
         }
 
-        # endregion
+        #endregion
 
         private void navigateDrag_NavDrag(object sender, EventArgs e) {
             trackVM.OffsetX += ((NavDragEventArgs)e).X * trackVM.SmallChangeX;

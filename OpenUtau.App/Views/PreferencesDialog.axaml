@@ -1,0 +1,35 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:OpenUtau.App.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
+        x:Class="OpenUtau.App.Views.PreferencesDialog"
+        Title="{DynamicResource prefs.caption}" Width="500" Height="600" CanResize="False"
+        WindowStartupLocation="CenterOwner">
+  <Design.DataContext>
+    <vm:PreferencesViewModel/>
+  </Design.DataContext>
+  <Grid>
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Visible">
+      <StackPanel Margin="5">
+        <HeaderedContentControl Classes="groupbox" Header="{DynamicResource prefs.playback}">
+          <StackPanel>
+            <TextBlock Text="{DynamicResource prefs.playback.device}"/>
+            <ComboBox HorizontalAlignment="Stretch"/>
+            <Button Content="{DynamicResource prefs.playback.test}" HorizontalAlignment="Stretch"/>
+          </StackPanel>
+        </HeaderedContentControl>
+        <HeaderedContentControl Classes="groupbox" Header="{DynamicResource prefs.rendering}">
+          <StackPanel>
+            <TextBlock Text="{DynamicResource prefs.rendering.resampler.preview}" />
+            <ComboBox HorizontalAlignment="Stretch" Items="{Binding Resamplers}" SelectedItem="{Binding PreviewResampler}"/>
+            <TextBlock Text="{DynamicResource prefs.rendering.resampler.export}" />
+            <ComboBox HorizontalAlignment="Stretch" Items="{Binding Resamplers}" SelectedItem="{Binding ExportResampler}"/>
+            <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.rendering.resampler.note}"/>
+          </StackPanel>
+        </HeaderedContentControl>
+      </StackPanel>
+    </ScrollViewer>
+  </Grid>
+</Window>
