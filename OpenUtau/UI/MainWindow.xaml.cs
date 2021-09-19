@@ -405,8 +405,10 @@ namespace OpenUtau.UI {
         }
 
         private void MenuSingers_Click(object sender, RoutedEventArgs e) {
-            var w = new Dialogs.SingerViewDialog() { Owner = this };
-            w.ShowDialog();
+            var dialog = new App.Views.SingersDialog() {
+                DataContext = new App.ViewModels.SingersViewModel(),
+            };
+            dialog.Show();
         }
 
         private void MenuInstallSingers_Click(object sender, RoutedEventArgs e) {

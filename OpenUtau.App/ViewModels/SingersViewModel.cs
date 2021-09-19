@@ -11,7 +11,7 @@ using Serilog;
 
 namespace OpenUtau.App.ViewModels {
     public class SingersViewModel : ViewModelBase {
-        public IEnumerable<USinger> Singers => DocManager.Inst.Singers.Values;
+        public IEnumerable<USinger> Singers => DocManager.Inst.SingersOrdered;
         public USinger? Singer {
             get => singer;
             set => this.RaiseAndSetIfChanged(ref singer, value);
@@ -43,7 +43,7 @@ namespace OpenUtau.App.ViewModels {
                 .Subscribe(singer => {
                     Avatar = LoadAvatar(singer);
                     Otos = singer.OtoSets.SelectMany(set => set.Otos.Values).SelectMany(list => list).ToList();
-                    Info = $"Author: {singer.Author}\nWeb: {singer.Web}\n{singer.OtherInfo}";
+                    Info = $"Author: {singer.Author}\nWeb: {singer.Web}\n{singer.OtherInfo}\n\n{string.Join("\n", singer.OtoSets.SelectMany(set => set.Errors))}";
                 });
         }
 

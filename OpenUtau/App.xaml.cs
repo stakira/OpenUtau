@@ -7,8 +7,8 @@ namespace OpenUtau {
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
-    public partial class App : Application {
-        public App() {
+    public partial class WpfApp : Application {
+        public WpfApp() {
             InitializeComponent();
             InitializeCulture();
             InitializeTheme();

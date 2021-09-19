@@ -53,7 +53,7 @@ namespace OpenUtau.App.Controls {
         private double _tick;
         private double _track;
 
-        Dictionary<UPart, PartControl> partControls = new();
+        Dictionary<UPart, PartControl> partControls = new Dictionary<UPart, PartControl>();
 
         public PartsCanvas() {
             this.WhenAnyValue(x => x.TickWidth, x => x.TrackHeight, x => x.Tick, x => x.Track)

@@ -21,10 +21,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenUtau.Test", "OpenUtau.T
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenUtau.Core", "OpenUtau.Core\OpenUtau.Core.csproj", "{7793257C-054C-4935-A1EF-CAB345E9F6C5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenUtau.App", "OpenUtau.App\OpenUtau.App.csproj", "{9535E26C-4584-4126-B6F7-B91B41113196}"
-	ProjectSection(ProjectDependencies) = postProject
-		{D951492F-0901-4296-AE7F-831430C07FA9} = {D951492F-0901-4296-AE7F-831430C07FA9}
-	EndProjectSection
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenUtau.App", "OpenUtau.App\OpenUtau.App.csproj", "{9535E26C-4584-4126-B6F7-B91B41113196}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

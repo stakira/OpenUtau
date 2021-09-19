@@ -58,6 +58,10 @@
   <system:String x:Key="oto.alias">Alias</system:String>
   <system:String x:Key="oto.set">Set</system:String>
   <system:String x:Key="oto.file">File</system:String>
+  <system:String x:Key="oto.phonetic">Phonetic</system:String>
+  <system:String x:Key="oto.prefix">Prefix</system:String>
+  <system:String x:Key="oto.suffix">Suffix</system:String>
+  <system:String x:Key="oto.flavor">Flavor</system:String>
   <system:String x:Key="oto.offset">Offset</system:String>
   <system:String x:Key="oto.consonant">Consonant</system:String>
   <system:String x:Key="oto.cutoff">Cutoff</system:String>

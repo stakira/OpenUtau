@@ -29,9 +29,17 @@ namespace OpenUtau.App.ViewModels {
             Resamplers = Core.ResamplerDriver.ResamplerDriver.Search(PathManager.Inst.GetEngineSearchPath());
             if (Resamplers.Count() > 0) {
                 int index = Resamplers.FindIndex(resampler => resampler.Name == Preferences.Default.ExternalPreviewEngine);
-                PreviewResampler = index > 0 ? Resamplers[index] : null;
+                if (index > 0) {
+                    PreviewResampler = Resamplers[index];
+                } else {
+                    PreviewResampler = null;
+                }
                 index = Resamplers.FindIndex(resampler => resampler.Name == Preferences.Default.ExternalExportEngine);
-                ExportResampler = index > 0 ? Resamplers[index] : null;
+                if (index > 0) {
+                    ExportResampler = Resamplers[index];
+                } else {
+                    ExportResampler = null;
+                }
             }
             this.WhenAnyValue(vm => vm.PreviewResampler)
                 .WhereNotNull()

@@ -1,12 +1,10 @@
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.ReactiveUI;
 using System;
 
-namespace OpenUtau.App
-{
-    class Program
-    {
+namespace OpenUtau.App {
+    public class Program {
         // Initialization code. Don't use any Avalonia, third-party APIs or any
         // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
         // yet and stuff might break.
@@ -19,5 +17,9 @@ namespace OpenUtau.App
                 .UsePlatformDetect()
                 .LogToTrace()
                 .UseReactiveUI();
+
+        public static void InitInterop() {
+            AppBuilder.Configure<App>().UseWin32().UseSkia().SetupWithoutStarting();
+        }
     }
 }

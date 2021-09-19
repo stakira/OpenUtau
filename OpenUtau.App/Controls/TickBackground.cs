@@ -9,7 +9,7 @@ using Avalonia.Media.Immutable;
 namespace OpenUtau.App.Controls {
     class TickBackground : TemplatedControl {
         private static readonly IDashStyle DashStyle = new ImmutableDashStyle(new double[] { 2, 4 }, 0);
-        readonly Dictionary<int, FormattedText> fTextPool = new();
+        readonly Dictionary<int, FormattedText> fTextPool = new Dictionary<int, FormattedText>();
 
         public static readonly DirectProperty<TickBackground, int> BeatPerBarProperty =
             AvaloniaProperty.RegisterDirect<TickBackground, int>(
