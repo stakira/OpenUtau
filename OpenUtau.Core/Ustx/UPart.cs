@@ -5,6 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using YamlDotNet.Serialization;
+using Serilog;
+using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
 
 namespace OpenUtau.Core.Ustx {
     [JsonObject(MemberSerialization.OptIn)]
@@ -130,7 +133,10 @@ namespace OpenUtau.Core.Ustx {
             get { return FileDurTick - HeadTrimTick - TailTrimTick; }
             set { TailTrimTick = FileDurTick - HeadTrimTick - value; }
         }
-        public override int GetMinDurTick(UProject project) { return 60; }
+
+        private TimeSpan duration;
+
+        public override int GetMinDurTick(UProject project) { return project.MillisecondToTick(duration.TotalMilliseconds); }
 
         public override UPart Clone() {
             return new UWavePart() {
@@ -145,23 +151,37 @@ namespace OpenUtau.Core.Ustx {
 
         private readonly object loadLockObj = new object();
         public void Load(UProject project) {
-            AudioFileUtilsProvider.Utils.GetAudioFileInfo(FilePath, out var waveFormat, out var timeSpan);
-            int durTick = project.MillisecondToTick(timeSpan.TotalMilliseconds);
-            FileDurTick = durTick;
-            Duration = durTick;
-            Channels = waveFormat.Channels;
-
+            using (var waveStream = Formats.Wave.OpenFile(FilePath)) {
+                duration = waveStream.TotalTime;
+                FileDurTick = project.MillisecondToTick(duration.TotalMilliseconds);
+                Channels = waveStream.WaveFormat.Channels;
+            }
             lock (loadLockObj) {
                 if (Samples != null) {
                     return;
                 }
             }
             Task.Run(() => {
-                var samples = AudioFileUtilsProvider.Utils.GetAudioSamples(FilePath);
-                lock (loadLockObj) {
-                    Samples = samples;
+                using (var waveStream = Formats.Wave.OpenFile(FilePath)) {
+                    var samples = Formats.Wave.GetSamples(waveStream);
+                    lock (loadLockObj) {
+                        Samples = samples;
+                    }
                 }
             });
+        }
+
+        public void BuildPeaks(IProgress<int> progress) {
+            using (var waveStream = Formats.Wave.OpenFile(FilePath)) {
+                var peaks = Formats.Wave.BuildPeaks(waveStream, progress);
+                lock (loadLockObj) {
+                    Peaks = peaks;
+                }
+            }
+        }
+
+        public override void Validate(UProject project, UTrack track) {
+            FileDurTick = project.MillisecondToTick(duration.TotalMilliseconds);
         }
 
         public override void BeforeSave(UProject project, UTrack track) {

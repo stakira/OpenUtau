@@ -11,6 +11,8 @@ using System.Windows.Media.Imaging;
 using System.ComponentModel;
 
 using OpenUtau.Core.Ustx;
+using Serilog;
+using System.Threading;
 
 namespace OpenUtau.UI.Controls {
     class PartElement : FrameworkElement {
@@ -181,7 +183,7 @@ namespace OpenUtau.UI.Controls {
         }
     }
 
-    class WavePartElement : PartElement {
+    class WavePartElement : PartElement, IProgress<int> {
         class PartImage : Image {
             protected override HitTestResult HitTestCore(PointHitTestParameters hitTestParameters) {
                 return null;
@@ -233,11 +235,18 @@ namespace OpenUtau.UI.Controls {
             this.AddVisualChild(partImage);
 
             if (((UWavePart)Part).Peaks == null) {
-                worker = new BackgroundWorker() { WorkerReportsProgress = true };
-                worker.DoWork += BuildPeaksAsync;
-                worker.ProgressChanged += BuildPeaksProgressChanged;
-                worker.RunWorkerCompleted += BuildPeaksCompleted;
-                worker.RunWorkerAsync((UWavePart)Part);
+                var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
+                Task.Run(() => {
+                    ((UWavePart)Part).BuildPeaks(this);
+                    Dispatcher.Invoke(() => {
+                        RedrawPart();
+                    });
+                }).ContinueWith((task) => {
+                    if (task.IsFaulted) {
+                        Log.Information($"{task.Exception}");
+                        throw task.Exception;
+                    }
+                }, CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted, scheduler);
             }
         }
 
@@ -314,25 +323,16 @@ namespace OpenUtau.UI.Controls {
             }
         }
 
-        private void BuildPeaksProgressChanged(object sender, ProgressChangedEventArgs e) {
-            using (BitmapContext cxt = partBitmap.GetBitmapContext()) {
-                partBitmap.Clear();
-                partBitmap.FillRectangle(
-                    1 + (int)this.X, (int)(_height - 2),
-                    17 + (int)this.X, (int)((_height - 4) * (1 - e.ProgressPercentage / 100.0)) + 2,
-                    Colors.White);
-            }
-        }
-
-        private void BuildPeaksAsync(object sender, DoWorkEventArgs e) {
-            var _part = e.Argument as UWavePart;
-            float[] peaks = Core.Formats.Wave.BuildPeaks(_part, sender as BackgroundWorker);
-            e.Result = peaks;
-        }
-
-        private void BuildPeaksCompleted(object sender, RunWorkerCompletedEventArgs e) {
-            ((UWavePart)Part).Peaks = e.Result as float[];
-            RedrawPart();
+        public void Report(int value) {
+            Dispatcher.Invoke(() => {
+                using (BitmapContext cxt = partBitmap.GetBitmapContext()) {
+                    partBitmap.Clear();
+                    partBitmap.FillRectangle(
+                        1 + (int)this.X, (int)(_height - 2),
+                        17 + (int)this.X, (int)((_height - 4) * (1 - value / 100.0)) + 2,
+                        Colors.White);
+                }
+            });
         }
     }
 }

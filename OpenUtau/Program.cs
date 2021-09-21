@@ -19,7 +19,7 @@ namespace OpenUtau {
 
             Core.DocManager.Inst.Initialize();
             Core.PlaybackManager.Inst.AudioOutput = new Audio.WaveOutAudioOutput();
-            Core.AudioFileUtilsProvider.Utils = new Audio.NAudioFileUtils();
+            Core.Formats.Wave.OverrideMp3Reader = filepath => new NAudio.Wave.AudioFileReader(filepath);
 
             App.Program.InitInterop();
             var app = new WpfApp();

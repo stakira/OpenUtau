@@ -68,7 +68,10 @@ namespace OpenUtau.App.ViewModels {
                 return;
             }
             var project = DocManager.Inst.Project;
-            UWavePart part = Core.Formats.Wave.CreatePart(project, file);
+            UWavePart part = new UWavePart() {
+                FilePath = file,
+            };
+            part.Load(project);
             if (part == null) {
                 return;
             }

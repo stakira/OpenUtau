@@ -89,12 +89,20 @@ namespace OpenUtau.Audio {
             }
         }
 
-        public List<WaveOutCapabilities> GetOutputDevices() {
-            var outDevices = new List<WaveOutCapabilities>();
+        public List<AudioOutputDevice> GetOutputDevices() {
+            var outDevices = new List<AudioOutputDevice>();
             for (int i = 0; i < WaveOut.DeviceCount; ++i) {
-                outDevices.Add(WaveOut.GetCapabilities(i));
+                var capability = WaveOut.GetCapabilities(i);
+                outDevices.Add(new AudioOutputDevice {
+                    api = "WaveOut",
+                    name = capability.ProductName,
+                    deviceNumber = i,
+                    guid = capability.ProductGuid,
+                });
             }
             return outDevices;
         }
+
+        public int CurrentOutputDeviceNumber => deviceNumber;
     }
 }

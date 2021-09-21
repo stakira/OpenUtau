@@ -374,11 +374,13 @@ namespace OpenUtau.UI {
 
         private void MenuImportAudio_Click(object sender, RoutedEventArgs e) {
             OpenFileDialog openFileDialog = new OpenFileDialog() {
-                Filter = "Audio Files|*.*",
+                Filter = $"Audio Files|{Core.Formats.Wave.kFileFilter}",
                 Multiselect = false,
                 CheckFileExists = true
             };
-            if (openFileDialog.ShowDialog() == true) CmdImportAudio(openFileDialog.FileName);
+            if (openFileDialog.ShowDialog() == true) {
+                CmdImportAudio(openFileDialog.FileName);
+            }
         }
 
         private void MenuImportMidi_Click(object sender, RoutedEventArgs e) {
@@ -417,10 +419,11 @@ namespace OpenUtau.UI {
         }
 
         private void Dialog_Closed(object sender, EventArgs e) {
-            IsEnabled = true;
             if (midiWindow != null) {
                 midiWindow.IsEnabled = true;
             }
+            IsEnabled = true;
+            Focus();
         }
 
         private void MenuInstallSingers_Click(object sender, RoutedEventArgs e) {
@@ -490,8 +493,15 @@ namespace OpenUtau.UI {
         }
 
         private void MenuPrefs_Click(object sender, RoutedEventArgs e) {
-            var w = new Dialogs.PreferencesDialog() { Owner = this };
-            w.ShowDialog();
+            var dialog = new App.Views.PreferencesDialog() {
+                DataContext = new App.ViewModels.PreferencesViewModel(),
+            };
+            dialog.Closed += Dialog_Closed;
+            IsEnabled = false;
+            if (midiWindow != null) {
+                midiWindow.IsEnabled = false;
+            }
+            dialog.Show();
         }
 
         #endregion
@@ -596,7 +606,10 @@ namespace OpenUtau.UI {
         private void CmdImportAudio(string file) {
             UWavePart part;
             try {
-                part = Core.Formats.Wave.CreatePart(DocManager.Inst.Project, file);
+                part = new UWavePart() {
+                    FilePath = file,
+                };
+                part.Load(trackVM.Project);
             } catch (Exception e) {
                 Log.Error(e, "Failed to read audio file");
                 MessageBox.Show(e.ToString());

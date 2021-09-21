@@ -12,6 +12,15 @@ using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Core {
+    public class AudioOutputDevice {
+        public string name;
+        public string api;
+        public int deviceNumber;
+        public Guid guid;
+
+        public override string ToString() => name;
+    }
+
     public interface IAudioOutput {
         PlaybackState PlaybackState { get; }
         int DeviceNumber { get; }
@@ -22,21 +31,9 @@ namespace OpenUtau.Core {
         void Play();
         void Stop();
         long GetPosition();
-    }
 
-    public interface IAudioFileUtils {
-        void GetAudioFileInfo(string file, out WaveFormat waveFormat, out TimeSpan duration);
-        WaveStream OpenAudioFileAsWaveStream(string file);
-        /// <summary>
-        /// Returns audio samples.
-        /// </summary>
-        /// <param name="file"></param>
-        /// <returns>Float samples at mono 44100Hz</returns>
-        float[] GetAudioSamples(string file);
-    }
-
-    public static class AudioFileUtilsProvider {
-        public static IAudioFileUtils Utils { get; set; }
+        List<AudioOutputDevice> GetOutputDevices();
+        int CurrentOutputDeviceNumber { get; }
     }
 
     public class PlaybackManager : ICmdSubscriber {
@@ -68,6 +65,7 @@ namespace OpenUtau.Core {
         }
 
         public void PlayTestSound() {
+            masterMix = null;
             AudioOutput.Stop();
             AudioOutput.Init(new SignalGenerator().Take(TimeSpan.FromSeconds(1)));
             AudioOutput.Play();
