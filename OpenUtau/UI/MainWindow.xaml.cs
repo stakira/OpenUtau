@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using Microsoft.Win32;
-
 using AutoUpdaterDotNET;
+using Microsoft.Win32;
 using OpenUtau.UI.Models;
 using OpenUtau.UI.Controls;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
-using System.Threading.Tasks;
 using Serilog;
 
 namespace OpenUtau.UI {
@@ -410,6 +409,13 @@ namespace OpenUtau.UI {
             var dialog = new App.Views.SingersDialog() {
                 DataContext = new App.ViewModels.SingersViewModel(),
             };
+            ShowDialog(dialog);
+        }
+
+        private void ShowDialog(Avalonia.Controls.Window dialog) {
+            var left = Left + Width / 2 - dialog.Width / 2;
+            var top = Top + Height / 2 - dialog.Height / 2;
+            dialog.Position = new Avalonia.PixelPoint((int)left, (int)top);
             dialog.Closed += Dialog_Closed;
             IsEnabled = false;
             if (midiWindow != null) {
@@ -496,12 +502,7 @@ namespace OpenUtau.UI {
             var dialog = new App.Views.PreferencesDialog() {
                 DataContext = new App.ViewModels.PreferencesViewModel(),
             };
-            dialog.Closed += Dialog_Closed;
-            IsEnabled = false;
-            if (midiWindow != null) {
-                midiWindow.IsEnabled = false;
-            }
-            dialog.Show();
+            ShowDialog(dialog);
         }
 
         #endregion
@@ -633,19 +634,17 @@ namespace OpenUtau.UI {
         }
 
         private void RenamePart(UPart part) {
-            var w = new Dialogs.TypeInDialog() { Owner = this };
-            w.Title = "Rename";
-            w.textBox.Text = part.name;
-            w.onFinish = name => {
+            var dialog = new App.Views.TypeInDialog();
+            dialog.Title = "Rename";
+            dialog.SetText(part.name);
+            dialog.onFinish = name => {
                 if (!string.IsNullOrWhiteSpace(name) && name != part.name) {
                     DocManager.Inst.StartUndoGroup();
                     DocManager.Inst.ExecuteCmd(new RenamePartCommand(DocManager.Inst.Project, part, name));
                     DocManager.Inst.EndUndoGroup();
                 }
             };
-            w.Left = Left + (Width - w.Width) / 2;
-            w.Top = Top + (Height - w.Height) / 2;
-            w.ShowDialog();
+            ShowDialog(dialog);
         }
 
         #endregion
@@ -747,10 +746,10 @@ namespace OpenUtau.UI {
 
         private void timeSigText_MouseUp(object sender, MouseButtonEventArgs e) {
             var project = DocManager.Inst.Project;
-            var w = new Dialogs.TypeInDialog() { Owner = this };
-            w.Title = "Time Signature";
-            w.textBox.Text = $"{project.beatPerBar}/{project.beatUnit}";
-            w.onFinish = s => {
+            var dialog = new App.Views.TypeInDialog();
+            dialog.Title = "Time Signature";
+            dialog.SetText($"{project.beatPerBar}/{project.beatUnit}");
+            dialog.onFinish = s => {
                 var parts = s.Split('/');
                 int beatPerBar = parts.Length > 0 && int.TryParse(parts[0], out beatPerBar) ? beatPerBar : project.beatPerBar;
                 int beatUnit = parts.Length > 1 && int.TryParse(parts[1], out beatUnit) ? beatUnit : project.beatUnit;
@@ -760,17 +759,15 @@ namespace OpenUtau.UI {
                     DocManager.Inst.EndUndoGroup();
                 }
             };
-            w.Left = Left + (Width - w.Width) / 2;
-            w.Top = Top + (Height - w.Height) / 2;
-            w.ShowDialog();
+            ShowDialog(dialog);
         }
 
         private void bpmText_MouseUp(object sender, MouseButtonEventArgs e) {
             var project = DocManager.Inst.Project;
-            var w = new Dialogs.TypeInDialog() { Owner = this };
-            w.Title = "BPM";
-            w.textBox.Text = project.bpm.ToString();
-            w.onFinish = s => {
+            var dialog = new App.Views.TypeInDialog();
+            dialog.Title = "BPM";
+            dialog.SetText(project.bpm.ToString());
+            dialog.onFinish = s => {
                 if (double.TryParse(s, out double bpm)) {
                     if (bpm == DocManager.Inst.Project.bpm) {
                         return;
@@ -780,9 +777,7 @@ namespace OpenUtau.UI {
                     DocManager.Inst.EndUndoGroup();
                 }
             };
-            w.Left = Left + (Width - w.Width) / 2;
-            w.Top = Top + (Height - w.Height) / 2;
-            w.ShowDialog();
+            ShowDialog(dialog);
         }
     }
 }
