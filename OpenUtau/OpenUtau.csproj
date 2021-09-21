@@ -3,6 +3,7 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <SatelliteResourceLanguages>none</SatelliteResourceLanguages>
     <UseWPF>true</UseWPF>
     <StartupObject>OpenUtau.Program</StartupObject>
     <Version>0.0.0.0</Version>

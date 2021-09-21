@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-
+    <SatelliteResourceLanguages>none</SatelliteResourceLanguages>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
