@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Text;
+using K4os.Hash.xxHash;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
-using xxHashSharp;
 
 namespace OpenUtau.Core.Render {
 
@@ -74,11 +74,11 @@ namespace OpenUtau.Core.Render {
         }
 
         string HashHex(string s) {
-            return $"{xxHash.CalculateHash(Encoding.UTF8.GetBytes(s)):x8}";
+            return $"{XXH32.DigestOf(Encoding.UTF8.GetBytes(s)):x8}";
         }
 
         public uint HashParameters() {
-            return xxHash.CalculateHash(Encoding.UTF8.GetBytes(ResamplerName + " " + SourceFile + " " + GetResamplerExeArgs()));
+            return XXH32.DigestOf(Encoding.UTF8.GetBytes(ResamplerName + " " + SourceFile + " " + GetResamplerExeArgs()));
         }
 
         public string GetResamplerExeArgs() {

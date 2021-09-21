@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using System.ComponentModel;
+using Microsoft.Toolkit.Mvvm.Input;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using OpenUtau.UI.Controls;
-using System.Windows.Input;
-using GalaSoft.MvvmLight.Command;
 using Serilog;
 
 namespace OpenUtau.UI.Models {

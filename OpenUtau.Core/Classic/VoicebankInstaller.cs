@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using K4os.Hash.xxHash;
 using Newtonsoft.Json;
-using Serilog;
 using SharpCompress.Archives;
 using SharpCompress.Common;
 using SharpCompress.Readers;
-using xxHashSharp;
 
 namespace OpenUtau.Classic {
 
@@ -95,7 +93,7 @@ namespace OpenUtau.Classic {
         static string HashPath(string path) {
             string file = Path.GetFileName(path);
             string dir = Path.GetDirectoryName(path);
-            file = $"{xxHash.CalculateHash(Encoding.UTF8.GetBytes(file)):x8}";
+            file = $"{XXH32.DigestOf(Encoding.UTF8.GetBytes(file)):x8}";
             if (string.IsNullOrEmpty(dir)) {
                 return file;
             }

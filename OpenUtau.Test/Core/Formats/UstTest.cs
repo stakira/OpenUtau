@@ -7,7 +7,6 @@ using SharpCompress.Common;
 using SharpCompress.Readers;
 using Xunit;
 using Xunit.Abstractions;
-using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core.Formats {
     public class UstTest {

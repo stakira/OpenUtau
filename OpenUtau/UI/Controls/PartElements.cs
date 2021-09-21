@@ -1,18 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media;
-using System.Windows.Shapes;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.ComponentModel;
-
 using OpenUtau.Core.Ustx;
 using Serilog;
-using System.Threading;
 
 namespace OpenUtau.UI.Controls {
     class PartElement : FrameworkElement {
@@ -190,7 +185,6 @@ namespace OpenUtau.UI.Controls {
             }
         }
 
-        readonly BackgroundWorker worker;
         readonly PartImage partImage;
         readonly WriteableBitmap partBitmap;
         protected TranslateTransform partImageTrans;
