@@ -416,20 +416,18 @@ namespace OpenUtau.UI {
             var left = Left + Width / 2 - dialog.Width / 2;
             var top = Top + Height / 2 - dialog.Height / 2;
             dialog.Position = new Avalonia.PixelPoint((int)left, (int)top);
-            dialog.Closed += Dialog_Closed;
+            dialog.Closed += delegate (object sender, EventArgs e) {
+                if (midiWindow != null) {
+                    midiWindow.IsEnabled = true;
+                }
+                IsEnabled = true;
+                Focus();
+            };
             IsEnabled = false;
             if (midiWindow != null) {
                 midiWindow.IsEnabled = false;
             }
             dialog.Show();
-        }
-
-        private void Dialog_Closed(object sender, EventArgs e) {
-            if (midiWindow != null) {
-                midiWindow.IsEnabled = true;
-            }
-            IsEnabled = true;
-            Focus();
         }
 
         private void MenuInstallSingers_Click(object sender, RoutedEventArgs e) {
@@ -466,8 +464,10 @@ namespace OpenUtau.UI {
         }
 
         private void MenuProjectExpressions_Click(object sender, RoutedEventArgs e) {
-            var w = new Dialogs.ExpressionsDialog() { Owner = this };
-            w.ShowDialog();
+            var dialog = new App.Views.ExpressionsDialog() {
+                DataContext = new App.ViewModels.ExpressionsViewModel(),
+            };
+            ShowDialog(dialog);
         }
 
         private void MenuExportAll_Click(object sender, RoutedEventArgs e) {

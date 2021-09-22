@@ -992,8 +992,24 @@ namespace OpenUtau.UI {
         }
 
         private void expGearButton_Click(object sender, RoutedEventArgs e) {
-            var w = new Dialogs.ExpressionsDialog() { Owner = this };
-            w.ShowDialog();
+            var dialog = new App.Views.ExpressionsDialog() {
+                DataContext = new App.ViewModels.ExpressionsViewModel(),
+            };
+            ShowDialog(dialog);
+        }
+
+        private void ShowDialog(Avalonia.Controls.Window dialog) {
+            var left = Left + Width / 2 - dialog.Width / 2;
+            var top = Top + Height / 2 - dialog.Height / 2;
+            dialog.Position = new Avalonia.PixelPoint((int)left, (int)top);
+            dialog.Closed += delegate (object sender, EventArgs e) {
+                IsEnabled = true;
+                mainWindow.IsEnabled = true;
+                Focus();
+            };
+            mainWindow.IsEnabled = false;
+            IsEnabled = false;
+            dialog.Show();
         }
     }
 }

@@ -71,6 +71,9 @@
   <system:String x:Key="oto.preutter">Preutter</system:String>
   <system:String x:Key="oto.overlap">Overlap</system:String>
 
+  <!-- Expressions -->
+  <system:String x:Key="exps.caption">Expressions</system:String>
+
   <!-- Dialogs -->
   <system:String x:Key="dialogs.noresampler.caption">No resampler</system:String>
   <system:String x:Key="dialogs.noresampler.message">No resampler! Put your favourite resampler exe or dll in the Resamplers folder and choose it in Preferences!</system:String>

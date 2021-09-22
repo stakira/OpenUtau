@@ -1,0 +1,61 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:OpenUtau.App.ViewModels"
+        mc:Ignorable="d"
+        x:Class="OpenUtau.App.Views.ExpressionsDialog"
+        Title="{DynamicResource exps.caption}" Width="600" Height="400" CanResize="False">
+  <Design.DataContext>
+    <vm:ExpressionsViewModel/>
+  </Design.DataContext>
+  <Grid>
+    <Border Margin="10,10,10,40" Width="150" HorizontalAlignment="Left">
+      <ListBox Items="{Binding Expressions}" SelectedItem="{Binding Expression}">
+        <ListBox.ItemTemplate>
+          <DataTemplate>
+            <TextBlock Text="{Binding}"/>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+    </Border>
+    <Grid Margin="10" Width="150" Height="20" HorizontalAlignment="Left" VerticalAlignment="Bottom">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="1*"/>
+        <ColumnDefinition Width="10"/>
+        <ColumnDefinition Width="1*"/>
+      </Grid.ColumnDefinitions>
+      <Button Grid.Column="0" HorizontalAlignment="Stretch" Margin="0" Command="{Binding Add}">+</Button>
+      <Button Grid.Column="2" HorizontalAlignment="Stretch" Margin="0" Command="{Binding Remove}" IsEnabled="{Binding Expression.IsCustom}">-</Button>
+    </Grid>
+    <Grid Margin="10,10,10,40" Width="410" HorizontalAlignment="Right">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="10"/>
+        <ColumnDefinition Width="*"/>
+      </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="*"/>
+      </Grid.RowDefinitions>
+      <Label Grid.Column="0" Grid.Row="0">Name</Label>
+      <TextBox Grid.Column="2" Grid.Row="0" IsEnabled="{Binding Expression.IsCustom}" Text="{Binding Expression.Name}"/>
+      <Label Grid.Column="0" Grid.Row="1">Abbreviation</Label>
+      <TextBox Grid.Column="2" Grid.Row="1" IsEnabled="{Binding Expression.IsCustom}" Text="{Binding Expression.Abbr}"/>
+      <Label Grid.Column="0" Grid.Row="2">Resampler Flag</Label>
+      <TextBox Grid.Column="2" Grid.Row="2" IsEnabled="{Binding Expression.IsCustom}" Text="{Binding Expression.Flag}"/>
+      <Label Grid.Column="0" Grid.Row="3">Min</Label>
+      <TextBox Grid.Column="2" Grid.Row="3" IsEnabled="{Binding Expression.IsCustom}" Text="{Binding Expression.Min}"/>
+      <Label Grid.Column="0" Grid.Row="4">Max</Label>
+      <TextBox Grid.Column="2" Grid.Row="4" IsEnabled="{Binding Expression.IsCustom}" Text="{Binding Expression.Max}"/>
+      <Label Grid.Column="0" Grid.Row="5">Default</Label>
+      <TextBox Grid.Column="2" Grid.Row="5" Text="{Binding Expression.DefaultValue}"/>
+    </Grid>
+    <Button Margin="10" Width="80" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="ApplyButtonClicked">Apply</Button>
+  </Grid>
+</Window>
