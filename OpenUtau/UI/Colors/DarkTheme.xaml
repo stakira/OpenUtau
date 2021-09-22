@@ -3,7 +3,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Color x:Key="ScrollBarColorNormal">#606060</Color>
-    <Color x:Key="ScrollBarColorActive">#909090</Color>
+    <Color x:Key="ScrollBarColorActive">#A0A0A0</Color>
     <Color x:Key="BackgroundColorNormal">#303030</Color>
     <Color x:Key="BackgroundColorActive">#505050</Color>
     <Color x:Key="WindowButtonColorNormal">#606060</Color>
@@ -55,8 +55,8 @@
     <!--Midi notes-->
     <Color x:Key="UIBackgroundColorNormal">#303030</Color>
     <Color x:Key="UIBackgroundColorActive">#505050</Color>
-    <Color x:Key="UINeutralColorNormal">#303030</Color>
-    <Color x:Key="UINeutralColorActive">#505050</Color>
+    <Color x:Key="UINeutralColorNormal">#606060</Color>
+    <Color x:Key="UINeutralColorActive">#A0A0A0</Color>
 
     <!--Midi notes-->
     <Color x:Key="NoteFillSelectedColorA">#ff7aa9</Color>

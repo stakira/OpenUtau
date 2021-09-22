@@ -114,7 +114,7 @@ namespace OpenUtau.UI.Controls {
             if (Part is UVoicePart) {
                 cxt.PushTransform(new TranslateTransform(5 + text.Width, 1));
                 cxt.PushTransform(new ScaleTransform(.75, .75));
-                cxt.DrawRectangle(GetFrameBrush(), null, new Rect(0, 0, 24, 24));
+                cxt.DrawRectangle(Brushes.Transparent, null, new Rect(0, 0, 24, 24));
                 cxt.DrawGeometry(Brushes.White, null, pencilIcon);
                 cxt.Pop();
                 cxt.Pop();
