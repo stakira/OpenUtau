@@ -67,6 +67,7 @@ namespace OpenUtau.App.Controls {
                 Foreground = Brushes.White,
                 Background = Brushes.Gray,
                 Text = part.name,
+                Part = part,
             };
             control.Width = 100;
             Children.Add(control);
@@ -85,6 +86,8 @@ namespace OpenUtau.App.Controls {
                 var part = pair.Key;
                 var control = pair.Value;
                 var position = offset + new Point(part.position * TickWidth, part.trackNo * TrackHeight);
+                control.TickWidth = TickWidth;
+                control.TrackHeight = TrackHeight;
                 control.Position = position;
                 control.Text = part.name;
                 control.Width = TickWidth * part.Duration;

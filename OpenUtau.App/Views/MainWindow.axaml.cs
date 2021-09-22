@@ -112,7 +112,7 @@ namespace OpenUtau.App.Views {
                 Filters = new List<FileDialogFilter>() {
                     new FileDialogFilter() {
                         Name = "Audio Files",
-                        Extensions = new List<string>(){ "*" },
+                        Extensions = new List<string>(){ "wav", "mp3", "ogg", "flac" },
                     },
                 },
                 AllowMultiple = false,

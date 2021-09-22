@@ -26,16 +26,6 @@ namespace OpenUtau.App.Controls {
                 nameof(Resolution),
                 o => o.Resolution,
                 (o, v) => o.Resolution = v);
-        public static readonly DirectProperty<TickBackground, double> MinTickWidthProperty =
-            AvaloniaProperty.RegisterDirect<TickBackground, double>(
-                nameof(MinTickWidth),
-                o => o.MinTickWidth,
-                (o, v) => o.MinTickWidth = v);
-        public static readonly DirectProperty<TickBackground, double> MaxTickWidthProperty =
-            AvaloniaProperty.RegisterDirect<TickBackground, double>(
-                nameof(MaxTickWidth),
-                o => o.MaxTickWidth,
-                (o, v) => o.MaxTickWidth = v);
         public static readonly DirectProperty<TickBackground, double> TickWidthProperty =
             AvaloniaProperty.RegisterDirect<TickBackground, double>(
                 nameof(TickWidth),
@@ -53,53 +43,34 @@ namespace OpenUtau.App.Controls {
                 (o, v) => o.TickOffset = v);
 
         public int BeatPerBar {
-            get { return _beatPerBar; }
-            private set { SetAndRaise(BeatPerBarProperty, ref _beatPerBar, value); }
+            get => _beatPerBar;
+            private set => SetAndRaise(BeatPerBarProperty, ref _beatPerBar, value);
         }
         public int BeatUnit {
-            get { return _beatUnit; }
-            private set { SetAndRaise(BeatUnitProperty, ref _beatUnit, value); }
+            get => _beatUnit;
+            private set => SetAndRaise(BeatUnitProperty, ref _beatUnit, value);
         }
         public int Resolution {
-            get { return _resolution; }
-            private set { SetAndRaise(ResolutionProperty, ref _resolution, value); }
-        }
-        public double MinTickWidth {
-            get { return _minTickWidth; }
-            set {
-                SetAndRaise(MinTickWidthProperty, ref _minTickWidth, value);
-                MaxTickWidth = Math.Max(MaxTickWidth, MinTickWidth);
-            }
-        }
-        public double MaxTickWidth {
-            get { return _maxTickWidth; }
-            set {
-                value = Math.Max(value, MinTickWidth);
-                SetAndRaise(MaxTickWidthProperty, ref _maxTickWidth, value);
-            }
+            get => _resolution;
+            private set => SetAndRaise(ResolutionProperty, ref _resolution, value);
         }
         // Tick width in pixel.
         public double TickWidth {
-            get { return _tickWidth; }
-            private set {
-                value = Math.Clamp(value, MinTickWidth, MaxTickWidth);
-                SetAndRaise(TickWidthProperty, ref _tickWidth, value);
-            }
+            get => _tickWidth;
+            private set => SetAndRaise(TickWidthProperty, ref _tickWidth, value);
         }
         public double Tick {
-            get { return _tick; }
-            private set { SetAndRaise(TickProperty, ref _tick, value); }
+            get => _tick;
+            private set => SetAndRaise(TickProperty, ref _tick, value);
         }
         public int TickOffset {
-            get { return _tickOffset; }
-            private set { SetAndRaise(TickOffsetProperty, ref _tickOffset, value); }
+            get => _tickOffset;
+            private set => SetAndRaise(TickOffsetProperty, ref _tickOffset, value);
         }
 
         private int _beatUnit = 4;
         private int _beatPerBar = 4;
         private int _resolution = 480;
-        private double _minTickWidth;
-        private double _maxTickWidth;
         private double _tickWidth;
         private double _tick;
         private int _tickOffset;

@@ -8,8 +8,8 @@ using ReactiveUI;
 
 namespace OpenUtau.App.ViewModels {
     public class MainWindowViewModel : ViewModelBase, ICmdSubscriber {
-        public TracksViewModel TracksViewModel { get; set; }
         public PlaybackViewModel PlaybackViewModel { get; set; }
+        public TracksViewModel TracksViewModel { get; set; }
 
         public bool ProjectSaved => !string.IsNullOrEmpty(DocManager.Inst.Project.FilePath) && DocManager.Inst.Project.Saved;
         public string AppVersion => $"OpenUtau v{System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version}";
@@ -26,8 +26,8 @@ namespace OpenUtau.App.ViewModels {
         private string progressText = string.Empty;
 
         public MainWindowViewModel() {
-            TracksViewModel = new TracksViewModel();
             PlaybackViewModel = new PlaybackViewModel();
+            TracksViewModel = new TracksViewModel();
             DocManager.Inst.AddSubscriber(this);
         }
 

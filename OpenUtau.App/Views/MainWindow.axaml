@@ -100,14 +100,12 @@
             PointerWheelChanged="TimelinePointerWheelChanged"/>
     <c:TrackBackground Grid.Row="2" Grid.Column="1" Margin="0" IsHitTestVisible="False"
                        Bounds="{Binding TracksViewModel.Bounds, Mode=OneWayToSource}"
-                       MinTrackHeight="40" MaxTrackHeight="256"
                        TrackHeight="{Binding TracksViewModel.TrackHeight}"
                        Track="{Binding TracksViewModel.Track}"/>
     <c:TickBackground Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Margin="0" IsHitTestVisible="False"
                       BeatPerBar="{Binding PlaybackViewModel.BeatPerBar}"
                       BeatUnit="{Binding PlaybackViewModel.BeatUnit}"
                       Resolution="{Binding PlaybackViewModel.Resolution}"
-                      MinTickWidth="0.01" MaxTickWidth="0.5"
                       TickWidth="{Binding TracksViewModel.TickWidth}"
                       Tick="{Binding TracksViewModel.Tick}"/>
     <c:PartsCanvas x:Name="partsCanvas" Grid.Row="2" Grid.Column="1" ClipToBounds="True"

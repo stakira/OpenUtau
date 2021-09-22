@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
 using Avalonia;
-using DynamicData;
 using OpenUtau.Core;
-using OpenUtau.Core.Ustx;
 using ReactiveUI;
 
 namespace OpenUtau.App.ViewModels {

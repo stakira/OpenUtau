@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace OpenUtau.App.ViewModels {
+﻿namespace OpenUtau.App {
     static class ViewConstants {
         public const double TickWidthMax = 256.0 / 480.0;
         public const double TickWidthMin = 4.0 / 480.0;
