@@ -31,16 +31,16 @@ namespace OpenUtau.App.Controls {
                 nameof(TickWidth),
                 o => o.TickWidth,
                 (o, v) => o.TickWidth = v);
-        public static readonly DirectProperty<TickBackground, double> TickProperty =
+        public static readonly DirectProperty<TickBackground, double> TickOffsetProperty =
             AvaloniaProperty.RegisterDirect<TickBackground, double>(
-                nameof(Tick),
-                o => o.Tick,
-                (o, v) => o.Tick = v);
-        public static readonly DirectProperty<TickBackground, int> TickOffsetProperty =
-            AvaloniaProperty.RegisterDirect<TickBackground, int>(
                 nameof(TickOffset),
                 o => o.TickOffset,
                 (o, v) => o.TickOffset = v);
+        public static readonly DirectProperty<TickBackground, int> TickOriginProperty =
+            AvaloniaProperty.RegisterDirect<TickBackground, int>(
+                nameof(TickOrigin),
+                o => o.TickOrigin,
+                (o, v) => o.TickOrigin = v);
 
         public int BeatPerBar {
             get => _beatPerBar;
@@ -59,21 +59,21 @@ namespace OpenUtau.App.Controls {
             get => _tickWidth;
             private set => SetAndRaise(TickWidthProperty, ref _tickWidth, value);
         }
-        public double Tick {
-            get => _tick;
-            private set => SetAndRaise(TickProperty, ref _tick, value);
-        }
-        public int TickOffset {
+        public double TickOffset {
             get => _tickOffset;
             private set => SetAndRaise(TickOffsetProperty, ref _tickOffset, value);
+        }
+        public int TickOrigin {
+            get => _tickOrigin;
+            private set => SetAndRaise(TickOriginProperty, ref _tickOrigin, value);
         }
 
         private int _beatUnit = 4;
         private int _beatPerBar = 4;
         private int _resolution = 480;
         private double _tickWidth;
-        private double _tick;
-        private int _tickOffset;
+        private double _tickOffset;
+        private int _tickOrigin;
 
         private Pen pen1;
         private Pen pen2;
@@ -102,9 +102,9 @@ namespace OpenUtau.App.Controls {
             if (change.Property == BeatPerBarProperty ||
                 change.Property == BeatUnitProperty ||
                 change.Property == ResolutionProperty ||
-                change.Property == TickOffsetProperty ||
+                change.Property == TickOriginProperty ||
                 change.Property == TickWidthProperty ||
-                change.Property == TickProperty) {
+                change.Property == TickOffsetProperty) {
                 InvalidateVisual();
             }
         }
@@ -115,8 +115,8 @@ namespace OpenUtau.App.Controls {
             }
             int beatTicks = Resolution * 4 / BeatUnit;
             double beatWidth = TickWidth * beatTicks;
-            double pixelOffset = (Tick + TickOffset) * TickWidth;
-            int beat = (int)((Tick + TickOffset) / beatTicks);
+            double pixelOffset = (TickOffset + TickOrigin) * TickWidth;
+            int beat = (int)((TickOffset + TickOrigin) / beatTicks);
             for (; beat * beatWidth - pixelOffset < Bounds.Width; ++beat) {
                 double x = Math.Round(beat * beatWidth - pixelOffset) + 0.5;
                 var pen = pen3;

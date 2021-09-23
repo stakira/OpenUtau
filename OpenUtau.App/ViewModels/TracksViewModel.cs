@@ -2,7 +2,9 @@
 using System.Linq;
 using System.Reactive.Linq;
 using Avalonia;
+using DynamicData.Binding;
 using OpenUtau.Core;
+using OpenUtau.Core.Ustx;
 using ReactiveUI;
 
 namespace OpenUtau.App.ViewModels {
@@ -27,26 +29,27 @@ namespace OpenUtau.App.ViewModels {
             get => trackHeight;
             set => this.RaiseAndSetIfChanged(ref trackHeight, Math.Clamp(value, ViewConstants.TrackHeightMin, ViewConstants.TrackHeightMax));
         }
-        public double Tick {
-            get => tick;
-            set => this.RaiseAndSetIfChanged(ref tick, value);
+        public double TickOffset {
+            get => tickOffset;
+            set => this.RaiseAndSetIfChanged(ref tickOffset, value);
         }
-        public double Track {
-            get => track;
-            set => this.RaiseAndSetIfChanged(ref track, value);
+        public double TrackOffset {
+            get => trackOffset;
+            set => this.RaiseAndSetIfChanged(ref trackOffset, value);
         }
         public double ViewportTicks => viewportTicks.Value;
         public double ViewportTracks => viewportTracks.Value;
         public double SmallChangeX => smallChangeX.Value;
         public double SmallChangeY => smallChangeY.Value;
+        public ObservableCollectionExtended<UPart> Parts { get; } = new ObservableCollectionExtended<UPart>();
 
         private Rect bounds;
         private int tickCount;
         private int trackCount;
         private double tickWidth = ViewConstants.TickWidthDefault;
         private double trackHeight = ViewConstants.TrackHeightDefault;
-        private double tick;
-        private double track;
+        private double tickOffset;
+        private double trackOffset;
         private readonly ObservableAsPropertyHelper<double> viewportTicks;
         private readonly ObservableAsPropertyHelper<double> viewportTracks;
         private readonly ObservableAsPropertyHelper<double> smallChangeX;
@@ -68,37 +71,67 @@ namespace OpenUtau.App.ViewModels {
 
             TrackCount = 10;
             TickCount = 480 * 100;
+
             DocManager.Inst.AddSubscriber(this);
         }
 
         public void OnXZoomed(Point position, double delta) {
-            double tick = Tick;
+            double tick = TickOffset;
             bool recenter = true;
-            if (Tick == 0 && position.X < 0.1) {
+            if (TickOffset == 0 && position.X < 0.1) {
                 recenter = false;
             }
-            double center = Tick + position.X * ViewportTicks;
+            double center = TickOffset + position.X * ViewportTicks;
             TickWidth *= 1.0 + delta;
             if (recenter) {
                 tick = Math.Max(0, center - position.X * ViewportTicks);
             }
-            if (Tick != tick) {
-                Tick = tick;
+            if (TickOffset != tick) {
+                TickOffset = tick;
             } else {
                 // Force a redraw when only ViewportWidth is changed.
-                Tick = tick + 1;
-                Tick = tick - 1;
+                TickOffset = tick + 1;
+                TickOffset = tick - 1;
             }
         }
 
         public void OnYZoomed(Point position, double delta) {
             TrackHeight *= 1.0 + delta;
-            double track = Track;
-            Track = track + 1;
-            Track = track - 1;
-            Track = track;
+            double track = TrackOffset;
+            TrackOffset = track + 1;
+            TrackOffset = track - 1;
+            TrackOffset = track;
         }
 
-        public void OnNext(UCommand cmd, bool isUndo) { }
+        public void OnNext(UCommand cmd, bool isUndo) {
+            if (cmd is PartCommand partCommand) {
+                if (partCommand is AddPartCommand) {
+                    if (!isUndo) {
+                        Parts.Add(partCommand.part);
+                    } else {
+                        Parts.Remove(partCommand.part);
+                    }
+                } else if (partCommand is RemovePartCommand) {
+                    if (!isUndo) {
+                        Parts.Remove(partCommand.part);
+                    } else {
+                        Parts.Add(partCommand.part);
+                    }
+                } else if (partCommand is ReplacePartCommand replacePart) {
+                    if (!isUndo) {
+                        Parts.Remove(replacePart.part);
+                        Parts.Add(replacePart.newPart);
+                    } else {
+                        Parts.Remove(replacePart.newPart);
+                        Parts.Add(replacePart.part);
+                    }
+                }
+            } else if (cmd is UNotification) {
+                if (cmd is LoadProjectNotification loadProjectNotif) {
+                    Parts.Clear();
+                    Parts.AddRange(loadProjectNotif.project.parts);
+                }
+            }
+        }
     }
 }

@@ -85,14 +85,14 @@
     <ScrollBar Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,4,0,4" Orientation="Horizontal" AllowAutoHide="False"
                DataContext="{Binding TracksViewModel}"
                Maximum="{Binding TickCount, Mode=OneWay}"
-               Value="{Binding Tick}"
+               Value="{Binding TickOffset}"
                ViewportSize="{Binding ViewportTicks}"
                LargeChange="{Binding ViewportTicks}"
                SmallChange="{Binding SmallChangeX}"/>
     <ScrollBar Grid.Row="2" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="4,0,4,0" Orientation="Vertical" AllowAutoHide="False"
                DataContext="{Binding TracksViewModel}"
                Maximum="{Binding TrackCount, Mode=OneWay}"
-               Value="{Binding Track}"
+               Value="{Binding TrackOffset}"
                ViewportSize="{Binding ViewportTracks}"
                LargeChange="{Binding ViewportTracks}"
                SmallChange="{Binding SmallChangeY}"/>
@@ -101,18 +101,19 @@
     <c:TrackBackground Grid.Row="2" Grid.Column="1" Margin="0" IsHitTestVisible="False"
                        Bounds="{Binding TracksViewModel.Bounds, Mode=OneWayToSource}"
                        TrackHeight="{Binding TracksViewModel.TrackHeight}"
-                       Track="{Binding TracksViewModel.Track}"/>
+                       TrackOffset="{Binding TracksViewModel.TrackOffset}"/>
     <c:TickBackground Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Margin="0" IsHitTestVisible="False"
                       BeatPerBar="{Binding PlaybackViewModel.BeatPerBar}"
                       BeatUnit="{Binding PlaybackViewModel.BeatUnit}"
                       Resolution="{Binding PlaybackViewModel.Resolution}"
                       TickWidth="{Binding TracksViewModel.TickWidth}"
-                      Tick="{Binding TracksViewModel.Tick}"/>
+                      TickOffset="{Binding TracksViewModel.TickOffset}"/>
     <c:PartsCanvas x:Name="partsCanvas" Grid.Row="2" Grid.Column="1" ClipToBounds="True"
                    TickWidth="{Binding TracksViewModel.TickWidth}"
                    TrackHeight="{Binding TracksViewModel.TrackHeight}"
-                   Tick="{Binding TracksViewModel.Tick}"
-                   Track="{Binding TracksViewModel.Track}"/>
+                   TickOffset="{Binding TracksViewModel.TickOffset}"
+                   TrackOffset="{Binding TracksViewModel.TrackOffset}"
+                   Items="{Binding TracksViewModel.Parts}"/>
     <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
     </Border>
     <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent"

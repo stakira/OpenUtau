@@ -10,30 +10,30 @@ namespace OpenUtau.App.Controls {
                 nameof(TrackHeight),
                 o => o.TrackHeight,
                 (o, v) => o.TrackHeight = v);
-        public static readonly DirectProperty<TrackBackground, double> TrackProperty =
+        public static readonly DirectProperty<TrackBackground, double> TrackOffsetProperty =
             AvaloniaProperty.RegisterDirect<TrackBackground, double>(
-                nameof(Track),
-                o => o.Track,
-                (o, v) => o.Track = v);
+                nameof(TrackOffset),
+                o => o.TrackOffset,
+                (o, v) => o.TrackOffset = v);
 
         public double TrackHeight {
             get => _trackHeight;
             private set => SetAndRaise(TrackHeightProperty, ref _trackHeight, value);
         }
-        public double Track {
-            get => _track;
-            private set => SetAndRaise(TrackProperty, ref _track, value);
+        public double TrackOffset {
+            get => _trackOffset;
+            private set => SetAndRaise(TrackOffsetProperty, ref _trackOffset, value);
         }
 
         private double _trackHeight;
-        private double _track;
+        private double _trackOffset;
 
         protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change) {
             base.OnPropertyChanged(change);
             if (!change.IsEffectiveValueChange) {
                 return;
             }
-            if (change.Property == TrackHeightProperty || change.Property == TrackProperty) {
+            if (change.Property == TrackHeightProperty || change.Property == TrackOffsetProperty) {
                 InvalidateVisual();
             }
         }
@@ -42,8 +42,8 @@ namespace OpenUtau.App.Controls {
             if (TrackHeight == 0) {
                 return;
             }
-            int track = (int)Track;
-            double top = TrackHeight * (track - Track);
+            int track = (int)TrackOffset;
+            double top = TrackHeight * (track - TrackOffset);
             while (top < Bounds.Height) {
                 var brush = IsAltTrack(track) ? Foreground : Background;
                 context.DrawRectangle(

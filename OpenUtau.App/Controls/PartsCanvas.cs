@@ -1,15 +1,19 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.Linq;
 using System.Reactive.Linq;
 using Avalonia;
+using Avalonia.Collections;
 using Avalonia.Controls;
-using Avalonia.Media;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using ReactiveUI;
 
 namespace OpenUtau.App.Controls {
-    class PartsCanvas : Canvas, ICmdSubscriber {
+    class PartsCanvas : Canvas {
         public static readonly DirectProperty<PartsCanvas, double> TickWidthProperty =
             AvaloniaProperty.RegisterDirect<PartsCanvas, double>(
                 nameof(TickWidth),
@@ -20,106 +24,105 @@ namespace OpenUtau.App.Controls {
                 nameof(TrackHeight),
                 o => o.TrackHeight,
                 (o, v) => o.TrackHeight = v);
-        public static readonly DirectProperty<PartsCanvas, double> TickProperty =
+        public static readonly DirectProperty<PartsCanvas, double> TickOffsetProperty =
             AvaloniaProperty.RegisterDirect<PartsCanvas, double>(
-                nameof(Tick),
-                o => o.Tick,
-                (o, v) => o.Tick = v);
-        public static readonly DirectProperty<PartsCanvas, double> TrackProperty =
+                nameof(TickOffset),
+                o => o.TickOffset,
+                (o, v) => o.TickOffset = v);
+        public static readonly DirectProperty<PartsCanvas, double> TrackOffsetProperty =
             AvaloniaProperty.RegisterDirect<PartsCanvas, double>(
-                nameof(Track),
-                o => o.Track,
-                (o, v) => o.Track = v);
+                nameof(TrackOffset),
+                o => o.TrackOffset,
+                (o, v) => o.TrackOffset = v);
+        public static readonly DirectProperty<PartsCanvas, ObservableCollection<UPart>> ItemsProperty =
+            AvaloniaProperty.RegisterDirect<PartsCanvas, ObservableCollection<UPart>>(
+                nameof(Items),
+                o => o.Items,
+                (o, v) => o.Items = v);
 
         public double TickWidth {
-            get => _tickWidth;
-            private set => SetAndRaise(TickWidthProperty, ref _tickWidth, value);
+            get => tickWidth;
+            private set => SetAndRaise(TickWidthProperty, ref tickWidth, value);
         }
         public double TrackHeight {
-            get => _trackHeight;
-            private set => SetAndRaise(TrackHeightProperty, ref _trackHeight, value);
+            get => trackHeight;
+            private set => SetAndRaise(TrackHeightProperty, ref trackHeight, value);
         }
-        public double Tick {
-            get => _tick;
-            private set => SetAndRaise(TickProperty, ref _tick, value);
+        public double TickOffset {
+            get => tickOffset;
+            private set => SetAndRaise(TickOffsetProperty, ref tickOffset, value);
         }
-        public double Track {
-            get => _track;
-            private set => SetAndRaise(TrackProperty, ref _track, value);
+        public double TrackOffset {
+            get => trackOffset;
+            private set => SetAndRaise(TrackOffsetProperty, ref trackOffset, value);
+        }
+        public ObservableCollection<UPart> Items {
+            get => _items;
+            set => SetAndRaise(ItemsProperty, ref _items, value);
         }
 
-        private double _tickWidth;
-        private double _trackHeight;
-        private double _tick;
-        private double _track;
+        private double tickWidth;
+        private double trackHeight;
+        private double tickOffset;
+        private double trackOffset;
+        private ObservableCollection<UPart> _items;
 
         Dictionary<UPart, PartControl> partControls = new Dictionary<UPart, PartControl>();
 
-        public PartsCanvas() {
-            this.WhenAnyValue(x => x.TickWidth, x => x.TrackHeight, x => x.Tick, x => x.Track)
-                .Subscribe(_ => Refresh());
-            DocManager.Inst.AddSubscriber(this);
+        protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change) {
+            base.OnPropertyChanged(change);
+            if (!change.IsEffectiveValueChange) {
+                return;
+            }
+            if (change.Property == ItemsProperty) {
+                if (change.OldValue != null && change.OldValue.Value is ObservableCollection<UPart> oldCol) {
+                    oldCol.CollectionChanged -= Items_CollectionChanged;
+                }
+                if (change.NewValue.HasValue && change.NewValue.Value is ObservableCollection<UPart> newCol) {
+                    newCol.CollectionChanged += Items_CollectionChanged;
+                }
+            }
+        }
+
+        private void Items_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+            switch (e.Action) {
+                case NotifyCollectionChangedAction.Add:
+                case NotifyCollectionChangedAction.Remove:
+                case NotifyCollectionChangedAction.Replace:
+                    if (e.OldItems != null) {
+                        foreach (var item in e.OldItems) {
+                            if (item is UPart part) {
+                                Remove(part);
+                            }
+                        }
+                    }
+                    if (e.NewItems != null) {
+                        foreach (var item in e.NewItems) {
+                            if (item is UPart part) {
+                                Add(part);
+                            }
+                        }
+                    }
+                    break;
+                case NotifyCollectionChangedAction.Reset:
+                    foreach (var (part, _) in partControls) {
+                        Remove(part);
+                    }
+                    break;
+            }
         }
 
         void Add(UPart part) {
-            var control = new PartControl {
-                DataContext = part,
-                Foreground = Brushes.White,
-                Background = Brushes.Gray,
-                Text = part.name,
-                Part = part,
-            };
-            control.Width = 100;
+            var control = new PartControl(part, this);
             Children.Add(control);
             partControls.Add(part, control);
         }
 
         void Remove(UPart part) {
             var control = partControls[part];
+            control.Dispose();
             partControls.Remove(part);
             Children.Remove(control);
-        }
-
-        public void Refresh() {
-            var offset = new Point(-Tick * TickWidth, -Track * TrackHeight);
-            foreach (var pair in partControls) {
-                var part = pair.Key;
-                var control = pair.Value;
-                var position = offset + new Point(part.position * TickWidth, part.trackNo * TrackHeight);
-                control.TickWidth = TickWidth;
-                control.TrackHeight = TrackHeight;
-                control.Position = position;
-                control.Text = part.name;
-                control.Width = TickWidth * part.Duration;
-                control.Height = TrackHeight;
-            }
-        }
-
-        public void OnNext(UCommand cmd, bool isUndo) {
-            if (cmd is PartCommand partCmd) {
-                if (partCmd is AddPartCommand && !isUndo || partCmd is RemovePartCommand && isUndo) {
-                    Add(partCmd.part);
-                } else if (partCmd is AddPartCommand && isUndo || partCmd is RemovePartCommand && !isUndo) {
-                    Remove(partCmd.part);
-                } else if (partCmd is ReplacePartCommand replacePartCmd) {
-                    if (!isUndo) {
-                        Remove(replacePartCmd.part);
-                        Add(replacePartCmd.newPart);
-                    } else {
-                        Remove(replacePartCmd.newPart);
-                        Add(replacePartCmd.part);
-                    }
-                }
-            } else if (cmd is UNotification) {
-                if (cmd is LoadProjectNotification loadProjectNotif) {
-                    foreach (var part in partControls.Keys) {
-                        Remove(part);
-                    }
-                    foreach (var part in loadProjectNotif.project.parts) {
-                        Add(part);
-                    }
-                }
-            }
         }
     }
 }

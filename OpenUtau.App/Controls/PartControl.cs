@@ -1,12 +1,16 @@
-﻿using Avalonia;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reactive.Linq;
+using Avalonia;
 using Avalonia.Media;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using OpenUtau.Core.Ustx;
-using System.Linq;
+using ReactiveUI;
 
 namespace OpenUtau.App.Controls {
-    class PartControl : TemplatedControl {
+    class PartControl : TemplatedControl, IDisposable {
         public static readonly DirectProperty<PartControl, double> TickWidthProperty =
             AvaloniaProperty.RegisterDirect<PartControl, double>(
                 nameof(TickWidth),
@@ -17,21 +21,16 @@ namespace OpenUtau.App.Controls {
                 nameof(TrackHeight),
                 o => o.TrackHeight,
                 (o, v) => o.TrackHeight = v);
-        public static readonly DirectProperty<PartControl, Point> PositionProperty =
+        public static readonly DirectProperty<PartControl, Point> OffsetProperty =
             AvaloniaProperty.RegisterDirect<PartControl, Point>(
-                nameof(Position),
-                o => o.Position,
-                (o, v) => o.Position = v);
+                nameof(Offset),
+                o => o.Offset,
+                (o, v) => o.Offset = v);
         public static readonly DirectProperty<PartControl, string> TextProperty =
             AvaloniaProperty.RegisterDirect<PartControl, string>(
                 nameof(Text),
                 o => o.Text,
                 (o, v) => o.Text = v);
-        public static readonly DirectProperty<PartControl, UPart?> PartProperty =
-            AvaloniaProperty.RegisterDirect<PartControl, UPart?>(
-                nameof(Part),
-                o => o.Part,
-                (o, v) => o.Part = v);
 
         // Tick width in pixel.
         public double TickWidth {
@@ -42,37 +41,54 @@ namespace OpenUtau.App.Controls {
             get => trackHeight;
             set => SetAndRaise(TrackHeightProperty, ref trackHeight, value);
         }
-        public Point Position {
-            get { return position; }
-            set { SetAndRaise(PositionProperty, ref position, value); }
+        public Point Offset {
+            get { return offset; }
+            set { SetAndRaise(OffsetProperty, ref offset, value); }
         }
         public string Text {
             get { return text; }
             set { SetAndRaise(TextProperty, ref text, value); }
         }
-        public UPart? Part {
-            get { return part; }
-            set { SetAndRaise(PartProperty, ref part, value); }
-        }
 
         private double tickWidth;
         private double trackHeight;
-        private Point position;
+        private Point offset;
         private string text = string.Empty;
-        private UPart? part;
 
+        private readonly UPart part;
+        private readonly Pen notePen = new Pen(Brushes.White, 3);
         private FormattedText? formattedText;
-        private Pen notePen = new Pen(Brushes.White, 3);
+        private List<IDisposable> unbinds = new List<IDisposable>();
+
+        public PartControl(UPart part, PartsCanvas canvas) {
+            this.part = part;
+            Foreground = Brushes.White;
+            Background = Brushes.Gray;
+            Text = part.name;
+
+            unbinds.Add(this.Bind(TickWidthProperty, canvas.GetObservable(PartsCanvas.TickWidthProperty)));
+            unbinds.Add(this.Bind(TrackHeightProperty, canvas.GetObservable(PartsCanvas.TrackHeightProperty)));
+            unbinds.Add(this.Bind(WidthProperty, canvas.GetObservable(PartsCanvas.TickWidthProperty).Select(tickWidth => tickWidth * part.Duration)));
+            unbinds.Add(this.Bind(HeightProperty, canvas.GetObservable(PartsCanvas.TrackHeightProperty)));
+            unbinds.Add(this.Bind(OffsetProperty, canvas.WhenAnyValue(x => x.TickOffset, x => x.TrackOffset,
+                (tick, track) => new Point(-tick * TickWidth, -track * TrackHeight))));
+
+            SetPosition();
+        }
 
         protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change) {
             base.OnPropertyChanged(change);
             if (!change.IsEffectiveValueChange) {
                 return;
             }
-            if (change.Property == PositionProperty) {
-                Canvas.SetLeft(this, Position.X);
-                Canvas.SetTop(this, Position.Y);
+            if (change.Property == OffsetProperty) {
+                SetPosition();
             }
+        }
+
+        private void SetPosition() {
+            Canvas.SetLeft(this, Offset.X + part.position * tickWidth);
+            Canvas.SetTop(this, Offset.Y + part.trackNo * trackHeight);
         }
 
         public override void Render(DrawingContext context) {
@@ -92,7 +108,7 @@ namespace OpenUtau.App.Controls {
             context.DrawText(Foreground, new Point(3, 2), formattedText);
 
             // Notes
-            if (Part != null && Part is UVoicePart voicePart) {
+            if (part != null && part is UVoicePart voicePart) {
                 int maxTone = voicePart.notes.Max(note => note.tone);
                 int minTone = voicePart.notes.Min(note => note.tone);
                 if (maxTone - minTone < 36) {
@@ -107,6 +123,11 @@ namespace OpenUtau.App.Controls {
                     context.DrawLine(notePen, start, end);
                 }
             }
+        }
+
+        public void Dispose() {
+            unbinds.ForEach(u => u.Dispose());
+            unbinds.Clear();
         }
     }
 }
