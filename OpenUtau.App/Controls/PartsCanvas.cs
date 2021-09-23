@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Linq;
-using System.Reactive.Linq;
 using Avalonia;
-using Avalonia.Collections;
 using Avalonia.Controls;
-using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
-using ReactiveUI;
 
 namespace OpenUtau.App.Controls {
     class PartsCanvas : Canvas {

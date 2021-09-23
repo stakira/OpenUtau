@@ -42,6 +42,7 @@ namespace OpenUtau.App.ViewModels {
         public double SmallChangeX => smallChangeX.Value;
         public double SmallChangeY => smallChangeY.Value;
         public ObservableCollectionExtended<UPart> Parts { get; } = new ObservableCollectionExtended<UPart>();
+        public ObservableCollectionExtended<UTrack> Tracks { get; } = new ObservableCollectionExtended<UTrack>();
 
         private Rect bounds;
         private int tickCount;
@@ -126,10 +127,26 @@ namespace OpenUtau.App.ViewModels {
                         Parts.Add(replacePart.part);
                     }
                 }
+            } else if (cmd is TrackCommand) {
+                if (cmd is AddTrackCommand addTrack) {
+                    if (!isUndo) {
+                        Tracks.Add(addTrack.track);
+                    } else {
+                        Tracks.Remove(addTrack.track);
+                    }
+                } else if (cmd is RemoveTrackCommand removeTrack) {
+                    if (!isUndo) {
+                        Tracks.Remove(removeTrack.track);
+                    } else {
+                        Tracks.Add(removeTrack.track);
+                    }
+                }
             } else if (cmd is UNotification) {
                 if (cmd is LoadProjectNotification loadProjectNotif) {
                     Parts.Clear();
                     Parts.AddRange(loadProjectNotif.project.parts);
+                    Tracks.Clear();
+                    Tracks.AddRange(loadProjectNotif.project.tracks);
                 }
             }
         }

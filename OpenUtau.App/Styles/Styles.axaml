@@ -4,7 +4,7 @@
     <Style.Resources>
       <CornerRadius x:Key="ControlCornerRadius">0</CornerRadius>
       <CornerRadius x:Key="OverlayCornerRadius">0</CornerRadius>
-      <x:Double x:Key="MenuFlyoutThemeMinHeight">24</x:Double>
+      <x:Double x:Key="MenuFlyoutThemeMinHeight">20</x:Double>
       <Thickness x:Key="MenuFlyoutScrollerMargin">0</Thickness>
       <Thickness x:Key="ComboBoxDropdownContentMargin">0</Thickness>
     </Style.Resources>
@@ -17,6 +17,13 @@
     <Setter Property="FontSize" Value="12"/>
     <Setter Property="Height" Value="24"/>
     <Setter Property="Padding" Value="8,2,8,2"/>
+  </Style>
+
+  <Style Selector="ContextMenu MenuItem">
+    <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAltHighBrush}"/>
+    <Setter Property="FontSize" Value="12"/>
+    <Setter Property="Height" Value="20"/>
+    <Setter Property="Padding" Value="4,2,4,2"/>
   </Style>
 
   <Style Selector="TextBlock">

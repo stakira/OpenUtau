@@ -78,10 +78,11 @@
         <TextBlock Classes="playback" Text="{Binding Path=PlaybackViewModel.PlayPosTime, StringFormat={}{0:mm\\:ss\\.fff}}"/>
       </Border>
     </Panel>
-    <Canvas Grid.Row="2" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-      <c:TrackHeader Height="{Binding TracksViewModel.TrackHeight}"/>
-      <c:TrackHeader Height="{Binding TracksViewModel.TrackHeight}"/>
-    </Canvas>
+    <c:TrackHeaderCanvas Grid.Row="2" Grid.Column="0"  ClipToBounds="True"
+                         DataContext="{Binding TracksViewModel}"
+                         TrackHeight="{Binding TrackHeight}"
+                         TrackOffset="{Binding TrackOffset}"
+                         Items="{Binding Tracks}"/>
     <ScrollBar Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,4,0,4" Orientation="Horizontal" AllowAutoHide="False"
                DataContext="{Binding TracksViewModel}"
                Maximum="{Binding TickCount, Mode=OneWay}"
@@ -99,9 +100,10 @@
     <Canvas Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="24" Background="Transparent"
             PointerWheelChanged="TimelinePointerWheelChanged"/>
     <c:TrackBackground Grid.Row="2" Grid.Column="1" Margin="0" IsHitTestVisible="False"
-                       Bounds="{Binding TracksViewModel.Bounds, Mode=OneWayToSource}"
-                       TrackHeight="{Binding TracksViewModel.TrackHeight}"
-                       TrackOffset="{Binding TracksViewModel.TrackOffset}"/>
+                       DataContext="{Binding TracksViewModel}"
+                       Bounds="{Binding Bounds, Mode=OneWayToSource}"
+                       TrackHeight="{Binding TrackHeight}"
+                       TrackOffset="{Binding TrackOffset}"/>
     <c:TickBackground Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Margin="0" IsHitTestVisible="False"
                       BeatPerBar="{Binding PlaybackViewModel.BeatPerBar}"
                       BeatUnit="{Binding PlaybackViewModel.BeatUnit}"
@@ -109,11 +111,12 @@
                       TickWidth="{Binding TracksViewModel.TickWidth}"
                       TickOffset="{Binding TracksViewModel.TickOffset}"/>
     <c:PartsCanvas x:Name="partsCanvas" Grid.Row="2" Grid.Column="1" ClipToBounds="True"
-                   TickWidth="{Binding TracksViewModel.TickWidth}"
-                   TrackHeight="{Binding TracksViewModel.TrackHeight}"
-                   TickOffset="{Binding TracksViewModel.TickOffset}"
-                   TrackOffset="{Binding TracksViewModel.TrackOffset}"
-                   Items="{Binding TracksViewModel.Parts}"/>
+                   DataContext="{Binding TracksViewModel}"
+                   TickWidth="{Binding TickWidth}"
+                   TrackHeight="{Binding TrackHeight}"
+                   TickOffset="{Binding TickOffset}"
+                   TrackOffset="{Binding TrackOffset}"
+                   Items="{Binding Parts}"/>
     <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
     </Border>
     <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent"
