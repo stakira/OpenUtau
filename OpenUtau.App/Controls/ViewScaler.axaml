@@ -1,0 +1,9 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="20" d:DesignHeight="20"
+             x:Class="OpenUtau.App.Controls.ViewScaler">
+  <Path Name="Path" Width="16" Height="16" Stroke="Black" StrokeThickness="1.75"
+        StrokeLineCap="Flat" StrokeJoin="Miter"/>
+</UserControl>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -38,8 +39,6 @@ namespace OpenUtau.App.Controls {
         private List<IDisposable> unbinds = new List<IDisposable>();
 
         private UTrack track;
-        private ContextMenu singerMenu;
-        private ContextMenu phonemizerMenu;
 
         public TrackHeader() {
             InitializeComponent();
@@ -75,49 +74,17 @@ namespace OpenUtau.App.Controls {
         void SingerButtonClicked(object sender, RoutedEventArgs args) {
             var singerMenu = this.FindControl<ContextMenu>("SingersMenu");
             if (DocManager.Inst.Singers.Count > 0) {
-                singerMenu.Items = DocManager.Inst.Singers.Values.Select(singer => {
-                    var item = new MenuItem() {
-                        Header = singer.Name,
-                        DataContext = singer,
-                    };
-                    item.Classes.Add("context");
-                    item.Click += (o, e) => {
-                        if (track.Singer != singer) {
-                            DocManager.Inst.StartUndoGroup();
-                            DocManager.Inst.ExecuteCmd(new TrackChangeSingerCommand(DocManager.Inst.Project, track, singer));
-                            DocManager.Inst.EndUndoGroup();
-                        }
-                        (DataContext as TrackHeaderViewModel)?.ManuallyRaise();
-                        singerMenu.Close();
-                    };
-                    return item;
-                });
+                (DataContext as TrackHeaderViewModel)!.RefreshSingers();
                 singerMenu.Open();
             }
             args.Handled = true;
         }
 
+
         void PhonemizerButtonClicked(object sender, RoutedEventArgs args) {
             var phonemizerMenu = this.FindControl<ContextMenu>("PhonemizersMenu");
             if (DocManager.Inst.Phonemizers.Length > 0) {
-                phonemizerMenu.Items = DocManager.Inst.Phonemizers.Select(phonemizer => {
-                    var item = new MenuItem() {
-                        Header = phonemizer.ToString(),
-                        DataContext = phonemizer,
-                    };
-                    item.Classes.Add("context");
-                    item.Click += (o, e) => {
-                        if (track.Phonemizer.GetType() != phonemizer.GetType()) {
-                            var newPhonemizer = Activator.CreateInstance(phonemizer.GetType()) as Phonemizer;
-                            DocManager.Inst.StartUndoGroup();
-                            DocManager.Inst.ExecuteCmd(new TrackChangePhonemizerCommand(DocManager.Inst.Project, track, newPhonemizer));
-                            DocManager.Inst.EndUndoGroup();
-                        }
-                        (DataContext as TrackHeaderViewModel)?.ManuallyRaise();
-                        phonemizerMenu.Close();
-                    };
-                    return item;
-                });
+                (DataContext as TrackHeaderViewModel)!.RefreshPhonemizers();
                 phonemizerMenu.Open();
             }
             args.Handled = true;

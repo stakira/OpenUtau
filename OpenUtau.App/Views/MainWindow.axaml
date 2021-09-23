@@ -31,7 +31,7 @@
         <MenuItem Header="{DynamicResource menu.file.exportust}"/>
       </MenuItem>
       <MenuItem Header="{DynamicResource menu.tools}">
-        <MenuItem Header="{StaticResource menu.tools.project.expressions}"/>
+        <MenuItem Header="{StaticResource menu.tools.project.expressions}" Click="OnMenuExpressionss"/>
         <MenuItem Header="{DynamicResource menu.tools.singers}" Click="OnMenuSingers"/>
         <MenuItem Header="{DynamicResource menu.tools.singer.install}" Click="OnMenuInstallSinger"/>
         <MenuItem Header="{DynamicResource menu.tools.prefs}" Click="OnMenuPreferences"/>
@@ -122,8 +122,8 @@
     <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent"
             BoxShadow="inset 0 0 5 0.75 Gray" ClipToBounds="True" IsHitTestVisible="False">
     </Border>
-    <Border Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0" Height="24" Background="Wheat"
-            PointerWheelChanged="ZoomerPointerWheelChanged">
+    <Border Grid.Row="1" Grid.Column="2" Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0" Height="24" PointerWheelChanged="ZoomerPointerWheelChanged">
+      <c:ViewScaler Grid.Row="1" Grid.Column="2" DataContext="{Binding TracksViewModel}" Value="{Binding TrackHeight}"/>
     </Border>
     <TextBlock Grid.Row="3" Grid.ColumnSpan="3" VerticalAlignment="Center" HorizontalAlignment="Stretch" Height="20" Text="{Binding ProgressText}"/>
     <ProgressBar Grid.Row="4" Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Value="{Binding Progress}"/>

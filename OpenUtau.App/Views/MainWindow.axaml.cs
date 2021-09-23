@@ -159,6 +159,13 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        void OnMenuExpressionss(object sender, RoutedEventArgs args) {
+            var dialog = new ExpressionsDialog() {
+                DataContext = new ExpressionsViewModel(),
+            };
+            dialog.ShowDialog(this);
+        }
+
         void OnMenuSingers(object sender, RoutedEventArgs args) {
             var dialog = new SingersDialog() {
                 DataContext = new SingersViewModel(),
