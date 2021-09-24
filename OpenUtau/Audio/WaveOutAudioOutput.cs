@@ -73,16 +73,16 @@ namespace OpenUtau.Audio {
             }
         }
 
-        public void SelectDevice(Guid productGuid, int deviceNumber) {
+        public void SelectDevice(Guid guid, int deviceNumber) {
             // Product guid may not be unique. Use device number first.
-            if (deviceNumber < WaveOut.DeviceCount && WaveOut.GetCapabilities(deviceNumber).ProductGuid == productGuid) {
+            if (deviceNumber < WaveOut.DeviceCount && WaveOut.GetCapabilities(deviceNumber).ProductGuid == guid) {
                 this.deviceNumber = deviceNumber;
                 return;
             }
             // If guid does not match, device number may have changed. Search guid instead.
             this.deviceNumber = 0;
             for (int i = 0; i < WaveOut.DeviceCount; ++i) {
-                if (WaveOut.GetCapabilities(i).ProductGuid == productGuid) {
+                if (WaveOut.GetCapabilities(i).ProductGuid == guid) {
                     this.deviceNumber = i;
                     break;
                 }
@@ -102,7 +102,5 @@ namespace OpenUtau.Audio {
             }
             return outDevices;
         }
-
-        public int CurrentOutputDeviceNumber => deviceNumber;
     }
 }

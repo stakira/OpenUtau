@@ -185,7 +185,7 @@ namespace OpenUtau.Core.Ustx {
         }
 
         public override void BeforeSave(UProject project, UTrack track) {
-            relativePath = PathUtils.MakeRelative(FilePath, Path.GetDirectoryName(project.FilePath));
+            relativePath = Path.GetRelativePath(Path.GetDirectoryName(project.FilePath), FilePath);
         }
 
         public override void AfterLoad(UProject project, UTrack track) {

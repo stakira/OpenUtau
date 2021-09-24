@@ -44,7 +44,7 @@ namespace OpenUtau.App.ViewModels {
             var audioOutput = PlaybackManager.Inst.AudioOutput;
             if (audioOutput != null) {
                 audioOutputDevices = audioOutput.GetOutputDevices();
-                int deviceNumber = audioOutput.CurrentOutputDeviceNumber;
+                int deviceNumber = audioOutput.DeviceNumber;
                 if (audioOutputDevices.Count > deviceNumber) {
                     audioOutputDevice = audioOutputDevices[deviceNumber];
                 }

@@ -70,8 +70,8 @@ namespace OpenUtau.App.ViewModels {
         private void OpenFolder(string folderPath) {
             if (Directory.Exists(folderPath)) {
                 Process.Start(new ProcessStartInfo {
+                    FileName = OS.IsWindows() ? "explorer.exe" : OS.IsMacOS() ? "open" : "mimeopen",
                     Arguments = folderPath,
-                    FileName = "explorer.exe",
                 });
             }
         }

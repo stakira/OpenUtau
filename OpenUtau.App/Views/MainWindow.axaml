@@ -117,8 +117,6 @@
                    TickOffset="{Binding TickOffset}"
                    TrackOffset="{Binding TrackOffset}"
                    Items="{Binding Parts}"/>
-    <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-    </Border>
     <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent"
             BoxShadow="inset 0 0 5 0.75 Gray" ClipToBounds="True" IsHitTestVisible="False">
     </Border>

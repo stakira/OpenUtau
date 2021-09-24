@@ -126,20 +126,3 @@ namespace OpenUtau.Core {
         }
     }
 }
-
-namespace OpenUtau {
-    public static class PathUtils {
-        public static string MakeRelative(string path, string basePath) {
-            if (path == basePath) {
-                return "";
-            }
-            Uri pathUri = new Uri(path);
-            // Folders must end in a slash
-            if (!basePath.EndsWith(Path.DirectorySeparatorChar.ToString())) {
-                basePath += Path.DirectorySeparatorChar;
-            }
-            Uri folderUri = new Uri(basePath);
-            return Uri.UnescapeDataString(folderUri.MakeRelativeUri(pathUri).ToString().Replace('/', Path.DirectorySeparatorChar));
-        }
-    }
-}

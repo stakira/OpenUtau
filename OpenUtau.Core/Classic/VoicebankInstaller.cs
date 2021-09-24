@@ -15,12 +15,15 @@ namespace OpenUtau.Classic {
         readonly Action<double, string> progress;
 
         public VoicebankInstaller(string basePath, Action<double, string> progress) {
-            if (basePath.Length > 80) {
-                throw new ArgumentException("Path too long. Try to move OpenUtau to a shorter path.");
-            }
-            foreach (char c in basePath) {
-                if (c > 255) {
-                    throw new ArgumentException("Do not place OpenUtau in a non-ASCII path.");
+            if (OS.IsWindows()) {
+                // Only Windows need to work with exe resamplers.
+                if (basePath.Length > 80) {
+                    throw new ArgumentException("Path too long. Try to move OpenUtau to a shorter path.");
+                }
+                foreach (char c in basePath) {
+                    if (c > 255) {
+                        throw new ArgumentException("Do not place OpenUtau in a non-ASCII path.");
+                    }
                 }
             }
             Directory.CreateDirectory(basePath);

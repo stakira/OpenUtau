@@ -17,23 +17,23 @@ namespace OpenUtau.Core {
         public string api;
         public int deviceNumber;
         public Guid guid;
+        public object data;
 
-        public override string ToString() => name;
+        public override string ToString() => $"[{api}] {name}";
     }
 
     public interface IAudioOutput {
         PlaybackState PlaybackState { get; }
         int DeviceNumber { get; }
 
-        void SelectDevice(Guid productGuid, int deviceNumber);
-        void Init(ISampleProvider waveProvider);
+        void SelectDevice(Guid guid, int deviceNumber);
+        void Init(ISampleProvider sampleProvider);
         void Pause();
         void Play();
         void Stop();
         long GetPosition();
 
         List<AudioOutputDevice> GetOutputDevices();
-        int CurrentOutputDeviceNumber { get; }
     }
 
     public class PlaybackManager : ICmdSubscriber {

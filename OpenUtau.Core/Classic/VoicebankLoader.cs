@@ -46,7 +46,10 @@ namespace OpenUtau.Classic {
                 var dir = Path.GetDirectoryName(otoSet.File);
                 for (int i = 0; i < bankDirs.Length; ++i) {
                     if (dir.StartsWith(bankDirs[i])) {
-                        otoSet.Name = PathUtils.MakeRelative(Path.GetDirectoryName(otoSet.File), bankDirs[i]);
+                        otoSet.Name = Path.GetRelativePath(bankDirs[i], Path.GetDirectoryName(otoSet.File));
+                        if (otoSet.Name == ".") {
+                            otoSet.Name = string.Empty;
+                        }
                         banks[i].OtoSets.Add(otoSet);
                         break;
                     }
@@ -138,7 +141,7 @@ namespace OpenUtau.Classic {
                     if (string.IsNullOrEmpty(voicebank.Name)) {
                         throw new FileFormatException($"Failed to load {filePath} using encoding {encoding.EncodingName}");
                     }
-                    voicebank.Id = PathUtils.MakeRelative(Path.GetDirectoryName(voicebank.File), basePath);
+                    voicebank.Id = Path.GetRelativePath(basePath, Path.GetDirectoryName(voicebank.File));
                     return voicebank;
                 }
             }
