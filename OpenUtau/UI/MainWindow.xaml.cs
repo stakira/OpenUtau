@@ -499,6 +499,10 @@ namespace OpenUtau.UI {
         }
 
         private void MenuPrefs_Click(object sender, RoutedEventArgs e) {
+            ShowPrefs();
+        }
+
+        private void ShowPrefs() {
             var dialog = new App.Views.PreferencesDialog() {
                 DataContext = new App.ViewModels.PreferencesViewModel(),
             };
@@ -681,11 +685,18 @@ namespace OpenUtau.UI {
             if (trackVM != null) {
                 trackVM.MarkUpdate();
             }
-            if (firstActivate && !PathManager.Inst.HomePathIsAscii) {
+            if (!firstActivate) {
+                return;
+            }
+            if (!PathManager.Inst.HomePathIsAscii) {
                 MessageBox.Show(
                     string.Format((string)FindResource("warning.asciipath"), PathManager.Inst.HomePath),
                     (string)FindResource("warning"));
                 firstActivate = false;
+            } else if (Core.Util.Preferences.Default.ShowPrefs) {
+                ShowPrefs();
+                Core.Util.Preferences.Default.ShowPrefs = false;
+                Core.Util.Preferences.Save();
             }
         }
 
