@@ -513,10 +513,12 @@ namespace OpenUtau.UI.Models {
             var transformer = (Transformer)obj;
             DocManager.Inst.StartUndoGroup();
             try {
+                string[] newLyrics = new string[Part.notes.Count];
+                int i = 0;
                 foreach (var note in Part.notes) {
-                    string newLyric = transformer.Transform(note.lyric);
-                    DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(Part, note, newLyric));
+                    newLyrics[i++] = transformer.Transform(note.lyric);
                 }
+                DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(Part, Part.notes.ToArray(), newLyrics));
             } catch (Exception e) {
                 Log.Error(e, $"Failed to run transformer {transformer.Name}");
             }

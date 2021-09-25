@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using OpenUtau.Core.Ustx;
@@ -116,25 +117,36 @@ namespace OpenUtau.Core {
     }
 
     public class ChangeNoteLyricCommand : NoteCommand {
-        public UNote Note;
-        readonly string NewLyric;
-        readonly string OldLyric;
+        readonly string[] NewLyrics;
+        readonly string[] OldLyrics;
         public ChangeNoteLyricCommand(UVoicePart part, UNote note, string newLyric) : base(part, note) {
-            Note = note;
-            NewLyric = newLyric;
-            OldLyric = note.lyric;
+            NewLyrics = new string[] { newLyric };
+            OldLyrics = new string[] { note.lyric };
+        }
+        public ChangeNoteLyricCommand(UVoicePart part, UNote[] notes, string[] newLyrics) : base(part, notes) {
+            if (notes.Length != newLyrics.Length) {
+                throw new ArgumentException($"notes count {notes.Length} and lyrics count {newLyrics.Length} does not match.");
+            }
+            NewLyrics = newLyrics;
+            OldLyrics = notes.Select(note => note.lyric).ToArray();
         }
         public override string ToString() {
             return "Change notes lyric";
         }
         public override void Execute() {
             lock (Part) {
-                Note.lyric = NewLyric;
+                for (var i = 0; i < Notes.Length; i++) {
+                    var note = Notes[i];
+                    note.lyric = NewLyrics[i];
+                }
             }
         }
         public override void Unexecute() {
             lock (Part) {
-                Note.lyric = OldLyric;
+                for (var i = 0; i < Notes.Length; i++) {
+                    var note = Notes[i];
+                    note.lyric = OldLyrics[i];
+                }
             }
         }
     }

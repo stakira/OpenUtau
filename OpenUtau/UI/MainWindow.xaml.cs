@@ -432,7 +432,7 @@ namespace OpenUtau.UI {
 
         private void MenuInstallSingers_Click(object sender, RoutedEventArgs e) {
             OpenFileDialog dialog = new OpenFileDialog() {
-                Filter = "Archive File|*.zip;*.rar;*.7z",
+                Filter = "Archive File|*.zip;*.rar;*.7z;*.uar",
                 Multiselect = false,
                 CheckFileExists = true,
             };

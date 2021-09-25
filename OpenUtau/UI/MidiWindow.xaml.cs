@@ -228,7 +228,7 @@ namespace OpenUtau.UI {
                     var note = vbrHitResult.note;
                     var vibrato = note.vibrato;
                     DocManager.Inst.StartUndoGroup();
-                    DocManager.Inst.ExecuteCmd(new VibratoLengthCommand(midiVM.Part, note, vibrato.length == 0 ? 50f : 0));
+                    DocManager.Inst.ExecuteCmd(new VibratoLengthCommand(midiVM.Part, note, vibrato.length == 0 ? 75f : 0));
                     DocManager.Inst.EndUndoGroup();
                 } else {
                     _inVibratoEdit = true;

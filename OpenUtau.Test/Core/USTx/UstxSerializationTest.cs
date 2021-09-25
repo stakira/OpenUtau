@@ -54,8 +54,8 @@ namespace OpenUtau.Core.Ustx {
   },
   'vbr': {
     'length': 0.0,
-    'period': 100.0,
-    'depth': 32.0,
+    'period': 175.0,
+    'depth': 25.0,
     'in': 10.0,
     'out': 10.0,
     'shift': 0.0,

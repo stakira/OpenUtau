@@ -7,7 +7,8 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="OpenUtau.App.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
-        Title="OpenUtau" MinWidth="800" MinHeight="600" KeyDown="OnKeyDown">
+        Title="OpenUtau" MinWidth="800" MinHeight="600" KeyDown="OnKeyDown"
+        TransparencyLevelHint="None" Background="Transparent" ExtendClientAreaToDecorationsHint="False">
   <Window.Styles>
     <Style>
       <Style.Resources>
@@ -17,7 +18,7 @@
   <Design.DataContext>
     <vm:MainWindowViewModel/>
   </Design.DataContext>
-  <Grid RowDefinitions="24,24,1*,20,4" ColumnDefinitions="250,*,24" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+  <Grid RowDefinitions="24,24,1*,20,4" ColumnDefinitions="250,*,24" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="{Binding $parent.WindowDecorationMargin}">
     <Menu Grid.Row="0" Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Left">
       <MenuItem Header="{DynamicResource menu.file}">
         <MenuItem Header="{DynamicResource menu.file.new}" InputGesture="Ctrl+N" Click="OnMenuNew"/>
@@ -89,14 +90,14 @@
                Value="{Binding TickOffset}"
                ViewportSize="{Binding ViewportTicks}"
                LargeChange="{Binding ViewportTicks}"
-               SmallChange="{Binding SmallChangeX}"/>
+               SmallChange="{Binding SmallChangeX}" PointerWheelChanged="HScrollPointerWheelChanged"/>
     <ScrollBar Grid.Row="2" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="4,0,4,0" Orientation="Vertical" AllowAutoHide="False"
                DataContext="{Binding TracksViewModel}"
                Maximum="{Binding TrackCount, Mode=OneWay}"
                Value="{Binding TrackOffset}"
                ViewportSize="{Binding ViewportTracks}"
                LargeChange="{Binding ViewportTracks}"
-               SmallChange="{Binding SmallChangeY}"/>
+               SmallChange="{Binding SmallChangeY}" PointerWheelChanged="VScrollPointerWheelChanged"/>
     <Canvas Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="24" Background="Transparent"
             PointerWheelChanged="TimelinePointerWheelChanged"/>
     <c:TrackBackground Grid.Row="2" Grid.Column="1" Margin="0" IsHitTestVisible="False"

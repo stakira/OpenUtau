@@ -35,7 +35,7 @@ namespace OpenUtau.Core.Formats {
             } else if (tag == "fLaC") {
                 return new FlacReader(filepath);
             }
-            return null;
+            throw new Exception("Unsupported audio file format.");
         }
 
         public static float[] GetSamples(WaveStream waveStream) {

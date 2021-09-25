@@ -168,10 +168,11 @@ namespace OpenUtau.Classic {
         }
 
         static OtoSet ParseOtoSet(string filePath, Encoding encoding) {
+            OtoSet otoSet;
             using (var stream = File.OpenRead(filePath)) {
                 using (var reader = new StreamReader(stream, encoding)) {
                     var fileLoc = new FileLoc { file = filePath, lineNumber = 0 };
-                    OtoSet otoSet = new OtoSet() {
+                    otoSet = new OtoSet() {
                         File = filePath,
                     };
                     while (!reader.EndOfStream) {
@@ -189,9 +190,22 @@ namespace OpenUtau.Classic {
                         fileLoc.line = null;
                         fileLoc.lineNumber++;
                     }
-                    return otoSet;
                 }
             }
+            // Use filename as alias if not in oto.
+            var knownFiles = otoSet.Otos.Select(oto => oto.Wav).ToHashSet();
+            foreach (var wav in Directory.EnumerateFiles(Path.GetDirectoryName(filePath), "*.wav", SearchOption.TopDirectoryOnly)) {
+                var file = Path.GetFileName(wav);
+                if (!knownFiles.Contains(file)) {
+                    var oto = new Oto {
+                        Alias = Path.GetFileNameWithoutExtension(file),
+                        Wav = file,
+                    };
+                    oto.Phonetic = oto.Alias;
+                    otoSet.Otos.Add(oto);
+                }
+            }
+            return otoSet;
         }
 
         static Oto ParseOto(string line) {

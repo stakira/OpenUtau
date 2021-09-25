@@ -50,8 +50,8 @@ pitch:
   snap_first: true
 vibrato:
   length: 0
-  period: 100
-  depth: 32
+  period: 175
+  depth: 25
   in: 10
   out: 10
   shift: 0

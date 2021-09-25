@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
@@ -178,7 +179,7 @@ namespace OpenUtau.App.Views {
                 Filters = new List<FileDialogFilter>() {
                     new FileDialogFilter() {
                         Name = "Archive File",
-                        Extensions = new List<string>(){ "zip", "rar", "7z" },
+                        Extensions = new List<string>(){ "zip", "rar", "7z", "uar" },
                     },
                 },
                 AllowMultiple = false,
@@ -267,6 +268,17 @@ namespace OpenUtau.App.Views {
                    "dialogs.noresampler.caption",
                    MessageBox.MessageBoxButtons.Ok);
             }
+        }
+
+
+        public void HScrollPointerWheelChanged(object sender, PointerWheelEventArgs args) {
+            var scrollbar = (ScrollBar)sender;
+            scrollbar.Value = Math.Max(scrollbar.Minimum, Math.Min(scrollbar.Maximum, scrollbar.Value - 0.25 * scrollbar.SmallChange * args.Delta.Y));
+        }
+
+        public void VScrollPointerWheelChanged(object sender, PointerWheelEventArgs args) {
+            var scrollbar = (ScrollBar)sender;
+            scrollbar.Value = Math.Max(scrollbar.Minimum, Math.Min(scrollbar.Maximum, scrollbar.Value - 0.25 * scrollbar.SmallChange * args.Delta.Y));
         }
 
         public void TimelinePointerWheelChanged(object sender, PointerWheelEventArgs args) {

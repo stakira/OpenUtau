@@ -81,6 +81,11 @@ namespace OpenUtau.Core.Formats {
                         throw new FileFormatException("Unknown file format");
                 }
                 int trackCount = project.tracks.Count;
+                foreach (var (abbr, descriptor) in loaded.expressions) {
+                    if (!project.expressions.ContainsKey(abbr)) {
+                        project.expressions.Add(abbr, descriptor);
+                    }
+                }
                 foreach (var track in loaded.tracks) {
                     track.TrackNo = project.tracks.Count;
                     project.tracks.Add(track);

@@ -120,7 +120,8 @@ namespace OpenUtau.Core.Formats {
                             } else if (notestyle.Attributes["id"].Value == "decay") {
                                 unote.phonemeExpressions.Add(new UExpression("dec") {
                                     index = 0,
-                                    value = int.Parse(notestyle.InnerText) * 2 - 100,
+                                    // V4 default is 50. Translate it to no effect in OU. V4 dec 100 roughly maps to OU 50.
+                                    value = Math.Max(0, int.Parse(notestyle.InnerText) - 50),
                                 });
                             }
                         }

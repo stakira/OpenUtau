@@ -9,17 +9,7 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="Models\" />
     <AvaloniaResource Include="Assets\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <AvaloniaXaml Remove="Styles\Styles.axaml" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="Styles\LightTheme.xaml" />
-  </ItemGroup>
-  <ItemGroup>
-    <AvaloniaResource Include="Styles\Styles.axaml" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia.Controls.DataGrid" Version="0.10.7" />
@@ -35,22 +25,6 @@
     <PackageReference Include="System.Security.Permissions" Version="5.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Styles\LightTheme.xaml" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\OpenUtau.Core\OpenUtau.Core.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Update="Controls\TrackHeader.axaml.cs">
-      <DependentUpon>TrackHeader.axaml</DependentUpon>
-    </Compile>
-    <Compile Update="Views\PreferencesDialog.axaml.cs">
-      <DependentUpon>PreferencesDialog.axaml</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="Styles\LightTheme - Copy.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </None>
   </ItemGroup>
 </Project>

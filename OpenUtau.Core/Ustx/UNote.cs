@@ -290,9 +290,9 @@ namespace OpenUtau.Core.Ustx {
         // Vibrato percentage of note length.
         float _length;
         // Period in milliseconds.
-        float _period = 100f;
+        float _period = 175f;
         // Depth in cents (1 semitone = 100 cents).
-        float _depth = 32f;
+        float _depth = 25f;
         // Fade-in percentage of vibrato length.
         float _in = 10f;
         // Fade-out percentage of vibrato length.
