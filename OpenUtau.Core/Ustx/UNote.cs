@@ -5,6 +5,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
+using OpenUtau.Api;
 using YamlDotNet.Serialization;
 
 namespace OpenUtau.Core.Ustx {

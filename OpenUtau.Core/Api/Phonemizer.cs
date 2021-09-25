@@ -1,7 +1,26 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
+using OpenUtau.Core;
+using OpenUtau.Core.Ustx;
 
-namespace OpenUtau.Core {
+namespace OpenUtau.Api {
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
+    public class PhonemizerAttribute : Attribute {
+        public string Name { get; private set; }
+        public string Tag { get; private set; }
+        public string Author { get; private set; }
+
+        /// <param name="name">Name of phonemizer. Required.</param>
+        /// <param name="tag">Use IETF language code + phonetic type as tag, e.g., "EN ARPA", "JP VCV", etc. Required.</param>
+        /// <param name="author">Author of this phonemizer.</param>
+        public PhonemizerAttribute(string name, string tag, string author = null) {
+            Name = name;
+            Tag = tag;
+            Author = author;
+        }
+    }
+
     public abstract class Phonemizer {
         public struct Note {
             public string lyric;
@@ -18,13 +37,14 @@ namespace OpenUtau.Core {
             public override string ToString() => $"\"{phoneme}\" pos:{position}";
         }
 
+        public string Name { get; set; }
+        public string Tag { get; set; }
+
         private double bpm;
         private int beatUnit;
         private int resolution;
 
-        public abstract string Name { get; }
-        public abstract string Tag { get; }
-        public abstract void SetSinger(Ustx.USinger singer);
+        public abstract void SetSinger(USinger singer);
 
         /// <summary>
         /// Phonemize a consecutive sequence of notes.
@@ -60,7 +80,7 @@ namespace OpenUtau.Core {
             return result;
         }
 
-        public static void MapPhonemes(Note[] notes, Phoneme[] phonemes, Ustx.USinger singer) {
+        public static void MapPhonemes(Note[] notes, Phoneme[] phonemes, USinger singer) {
             int endPosition = 0;
             int index = 0;
             foreach (var note in notes) {
@@ -72,7 +92,7 @@ namespace OpenUtau.Core {
             }
         }
 
-        public static string MapPhoneme(string phoneme, int tone, Ustx.USinger singer) {
+        public static string MapPhoneme(string phoneme, int tone, USinger singer) {
             var toneName = MusicMath.GetToneName(tone);
             if (singer.PrefixMap.TryGetValue(toneName, out var prefix)) {
                 var phonemeMapped = prefix.Item1 + phoneme + prefix.Item2;

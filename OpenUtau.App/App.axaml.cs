@@ -13,9 +13,9 @@ namespace OpenUtau.App {
     public class App : Application {
         public override void Initialize() {
             AvaloniaXamlLoader.Load(this);
-            InitializeCulture();
-            InitializeLogging();
-            InitializeDocument();
+            //InitializeCulture();
+            //InitializeLogging();
+            //InitializeDocument();
         }
 
         public override void OnFrameworkInitializationCompleted() {

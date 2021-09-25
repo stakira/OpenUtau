@@ -1,7 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using OpenUtau.Api;
+using OpenUtau.Core.Ustx;
 
-namespace OpenUtau.Core {
+namespace OpenUtau.Plugin.Builtin {
+    [Phonemizer("Japanese VCV Phonemizer", "JA VCV")]
     public class JapaneseVCVPhonemizer : Phonemizer {
         static readonly string[] vowels = new string[] {
             "a=ぁ,あ,か,が,さ,ざ,た,だ,な,は,ば,ぱ,ま,ゃ,や,ら,わ,ァ,ア,カ,ガ,サ,ザ,タ,ダ,ナ,ハ,バ,パ,マ,ャ,ヤ,ラ,ワ",
@@ -24,11 +27,9 @@ namespace OpenUtau.Core {
                 .ToDictionary(t => t.Item1, t => t.Item2);
         }
 
-        private Ustx.USinger singer;
+        private USinger singer;
 
-        public override string Name => "Japanese VCV Phonemizer";
-        public override string Tag => "JA VCV";
-        public override void SetSinger(Ustx.USinger singer) => this.singer = singer;
+        public override void SetSinger(USinger singer) => this.singer = singer;
         public override Phoneme[] Process(Note[] notes, Note? prevNeighbour, Note? nextNeighbour) {
             var note = notes[0];
             if (!string.IsNullOrEmpty(note.phoneticHint)) {

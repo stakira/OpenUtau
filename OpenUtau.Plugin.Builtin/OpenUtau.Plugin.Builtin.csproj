@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <SatelliteResourceLanguages>none</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="cmudict-0_7b.txt" />
+    <None Remove="cmudict-0_7b_phones.txt" />
+    <None Remove="cmudict-0_7b_symbols.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="cmudict-0_7b.txt" />
+    <Content Include="cmudict-0_7b_phones.txt" />
+    <Content Include="cmudict-0_7b_symbols.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WanaKana-net" Version="1.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OpenUtau.Core\OpenUtau.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Resources.Designer.cs">
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources.resx">
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+</Project>

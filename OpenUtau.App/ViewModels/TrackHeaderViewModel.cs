@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
+using OpenUtau.Api;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using ReactiveUI;
@@ -15,7 +16,7 @@ namespace OpenUtau.App.ViewModels {
         public IReadOnlyList<MenuItemViewModel> SingerMenuItems { get; set; }
         public ReactiveCommand<USinger, Unit> SelectSingerCommand { get; }
         public IReadOnlyList<MenuItemViewModel> PhonemizerMenuItems { get; set; }
-        public ReactiveCommand<Phonemizer, Unit> SelectPhonemizerCommand { get; }
+        public ReactiveCommand<PhonemizerFactory, Unit> SelectPhonemizerCommand { get; }
 
         private readonly UTrack track;
 
@@ -32,11 +33,10 @@ namespace OpenUtau.App.ViewModels {
                 }
                 this.RaisePropertyChanged(nameof(Singer));
             });
-            SelectPhonemizerCommand = ReactiveCommand.Create<Phonemizer>(phonemizer => {
-                if (track.Phonemizer.GetType() != phonemizer.GetType()) {
-                    var newPhonemizer = Activator.CreateInstance(phonemizer.GetType()) as Phonemizer;
+            SelectPhonemizerCommand = ReactiveCommand.Create<PhonemizerFactory>(factory => {
+                if (track.Phonemizer.GetType() != factory.type) {
                     DocManager.Inst.StartUndoGroup();
-                    DocManager.Inst.ExecuteCmd(new TrackChangePhonemizerCommand(DocManager.Inst.Project, track, newPhonemizer));
+                    DocManager.Inst.ExecuteCmd(new TrackChangePhonemizerCommand(DocManager.Inst.Project, track, factory.Create()));
                     DocManager.Inst.EndUndoGroup();
                 }
                 this.RaisePropertyChanged(nameof(Phonemizer));
@@ -54,10 +54,10 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void RefreshPhonemizers() {
-            PhonemizerMenuItems = DocManager.Inst.Phonemizers.Select(phonemizer => new MenuItemViewModel() {
-                Header = phonemizer.ToString(),
+            PhonemizerMenuItems = DocManager.Inst.PhonemizerFactories.Select(factory => new MenuItemViewModel() {
+                Header = factory.ToString(),
                 Command = SelectPhonemizerCommand,
-                CommandParameter = phonemizer,
+                CommandParameter = factory,
             }).ToArray();
             this.RaisePropertyChanged(nameof(PhonemizerMenuItems));
         }

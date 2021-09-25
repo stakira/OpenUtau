@@ -38,52 +38,6 @@ namespace OpenUtau.Core {
         public string InstalledSingersPath => Path.Combine(HomePath, "Content", "Singers");
         public string PluginsPath => Path.Combine(HomePath, kPluginPath);
 
-        public string TryMakeRelative(string path) {
-            if (path.StartsWith(HomePath, StringComparison.Ordinal)) {
-                path = path.Replace(HomePath, "");
-                return path.TrimStart(Path.DirectorySeparatorChar);
-            }
-            return path;
-        }
-
-        public string GetSingerAbsPath(string path) {
-            path = path.Replace(UtauVoicePath, "");
-            foreach (var searchPath in Preferences.GetSingerSearchPaths()) {
-                if (!Directory.Exists(searchPath)) {
-                    continue;
-                }
-                var absPath = Path.Combine(searchPath, path);
-                if (Directory.Exists(absPath)) {
-                    return absPath;
-                }
-            }
-            if (Directory.Exists(path)) {
-                return path;
-            }
-
-            return string.Empty;
-        }
-
-        public void AddSingerSearchPath(string path) {
-            path = TryMakeRelative(path);
-            var paths = Preferences.GetSingerSearchPaths();
-            if (!paths.Contains(path)) {
-                paths.Add(path);
-                Preferences.SetSingerSearchPaths(paths);
-            }
-        }
-
-        public void RemoveSingerSearchPath(string path) {
-            if (path == DefaultSingerPath) {
-                return;
-            }
-
-            var paths = Preferences.GetSingerSearchPaths();
-            if (paths.Contains(path)) {
-                paths.Remove(path);
-                Preferences.SetSingerSearchPaths(paths);
-            }
-        }
 
         public string GetCachePath(string projectPath) {
             string cachepath;

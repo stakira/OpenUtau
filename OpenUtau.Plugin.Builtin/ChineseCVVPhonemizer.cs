@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
 
-namespace OpenUtau.Core {
+namespace OpenUtau.Plugin.Builtin {
+    [Phonemizer("Chinese CVV (十月式整音扩张) Phonemizer", "ZH CVV")]
     public class ChineseCVVPhonemizer : Phonemizer {
         static readonly string consonants = "b,p,m,f,d,t,n,l,g,k,h,j,q,x,z,c,s,zh,ch,sh,r,y,w";
         static readonly string vowels = "ai=_ai,uai=_uai,an=_an,ian=_en2,uan=_an,van=_en2,ang=_ang,iang=_ang,uang=_ang,ao=_ao,iao=_ao,ou=_ou,iu=_ou,ong=_ong,iong=_ong,ei=_ei,ui=_ei,uei=_ei,en=_en,un=_un,uen=_un,eng=_eng,in=_in,ing=_ing,vn=_vn";
@@ -19,8 +21,6 @@ namespace OpenUtau.Core {
 
         private USinger singer;
 
-        public override string Name => "Chinese CVV (十月式整音扩张) Phonemizer";
-        public override string Tag => "ZH CVV";
         public override void SetSinger(USinger singer) => this.singer = singer;
 
         public override Phoneme[] Process(Note[] notes, Note? prevNeighbour, Note? nextNeighbour) {

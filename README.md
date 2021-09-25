@@ -25,6 +25,10 @@ Have coding skills? Don't just fork and keep it to yourself!
 - Contribute fixes through Pull Requests.
 - See the roadmap on [Trello](https://trello.com/b/93ANoCIV/openutau) and discuss it on Discord.
 
+## Plugin Development
+
+[API Document](OpenUtau.Core/Api/README.md)
+
 ## How to Use
 
 Fluent Navigation Using Scroll Wheel

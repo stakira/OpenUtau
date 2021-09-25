@@ -23,6 +23,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenUtau.Core", "OpenUtau.C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenUtau.App", "OpenUtau.App\OpenUtau.App.csproj", "{9535E26C-4584-4126-B6F7-B91B41113196}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenUtau.Plugin.Builtin", "OpenUtau.Plugin.Builtin\OpenUtau.Plugin.Builtin.csproj", "{D24740E1-CC43-4226-A573-59C013FE50A2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{9535E26C-4584-4126-B6F7-B91B41113196}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9535E26C-4584-4126-B6F7-B91B41113196}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9535E26C-4584-4126-B6F7-B91B41113196}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D24740E1-CC43-4226-A573-59C013FE50A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D24740E1-CC43-4226-A573-59C013FE50A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D24740E1-CC43-4226-A573-59C013FE50A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D24740E1-CC43-4226-A573-59C013FE50A2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

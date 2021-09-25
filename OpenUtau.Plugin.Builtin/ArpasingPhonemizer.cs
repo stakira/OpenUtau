@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
 using Serilog;
 
-namespace OpenUtau.Core {
+namespace OpenUtau.Plugin.Builtin {
+    [Phonemizer("English Arpasing Phonemizer", "EN ARPA")]
     public class ArpasingPhonemizer : Phonemizer {
         enum PhoneType { vowel, stop, affricate, fricative, aspirate, liquid, nasal, semivowel }
         class TrieNode {
@@ -61,8 +63,6 @@ namespace OpenUtau.Core {
         private USinger singer;
         private readonly List<Tuple<int, int>> alignments = new List<Tuple<int, int>>();
 
-        public override string Name => "Arpasing Phonemizer";
-        public override string Tag => "EN ARPA";
         public int ConsonantLength { get; set; } = 60;
 
         public ArpasingPhonemizer() {
@@ -77,7 +77,7 @@ namespace OpenUtau.Core {
                             return;
                         }
                         var root = new TrieNode();
-                        phones = Properties.Resources.cmudict_0_7b_phones.Split('\n')
+                        phones = Resources.cmudict_0_7b_phones.Split('\n')
                             .Select(line => line.Trim().ToLowerInvariant())
                             .Select(line => line.Split())
                             .Where(parts => parts.Length == 2)
@@ -85,7 +85,7 @@ namespace OpenUtau.Core {
                         vowelFallback = "aa=ah,ae;ae=ah,aa;ah=aa,ae;ao=ow;ow=ao;eh=ae;ih=iy;iy=ih;uh=uw;uw=uh;aw=ao".Split(';')
                             .Select(entry => entry.Split('='))
                             .ToDictionary(parts => parts[0], parts => parts[1].Split(','));
-                        Properties.Resources.cmudict_0_7b.Split('\n')
+                        Resources.cmudict_0_7b.Split('\n')
                            .Where(line => !line.StartsWith(";;;"))
                             .Select(line => line.Trim().ToLowerInvariant())
                            .Select(line => line.Split(new string[] { "  " }, StringSplitOptions.None))

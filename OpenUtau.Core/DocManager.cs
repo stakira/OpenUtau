@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Reflection;
+using OpenUtau.Api;
 using OpenUtau.Classic;
 using OpenUtau.Core.Lib;
 using OpenUtau.Core.Ustx;
@@ -24,8 +25,8 @@ namespace OpenUtau.Core {
         public Dictionary<string, USinger> Singers { get; private set; } = new Dictionary<string, USinger>();
         public List<USinger> SingersOrdered { get; private set; } = new List<USinger>();
         public Plugin[] Plugins { get; private set; }
-        public Phonemizer[] Phonemizers { get; private set; }
-        public Transformer[] Transformers { get; private set; }
+        public PhonemizerFactory[] PhonemizerFactories { get; private set; }
+        public TransformerFactory[] TransformerFactories { get; private set; }
         public UProject Project { get; private set; }
         public bool HasOpenUndoGroup => undoGroup != null;
         public List<UNote> NotesClipboard { get; set; }
@@ -33,8 +34,7 @@ namespace OpenUtau.Core {
         public void Initialize() {
             SearchAllSingers();
             SearchAllPlugins();
-            SearchAllTransformers();
-            SearchAllPhonemizers();
+            SearchAllLegacyPlugins();
         }
 
         public void SearchAllSingers() {
@@ -55,31 +55,41 @@ namespace OpenUtau.Core {
             return null;
         }
 
-        public void SearchAllPlugins() {
+        public void SearchAllLegacyPlugins() {
             var stopWatch = Stopwatch.StartNew();
             Plugins = PluginLoader.LoadAll(PathManager.Inst.PluginsPath);
             stopWatch.Stop();
+            Log.Information($"Search all legacy plugins: {stopWatch.Elapsed}");
+        }
+
+        public void SearchAllPlugins() {
+            var stopWatch = Stopwatch.StartNew();
+            var phonemizerFactories = new List<PhonemizerFactory>();
+            phonemizerFactories.Add(PhonemizerFactory.Get(typeof(DefaultPhonemizer)));
+            var transformerFactories = new List<TransformerFactory>();
+            foreach (var file in Directory.EnumerateFiles(PathManager.Inst.PluginsPath, "*.dll", SearchOption.AllDirectories)) {
+                Assembly assembly;
+                try {
+                    assembly = Assembly.LoadFile(file);
+                } catch (Exception e) {
+                    Log.Warning(e, $"Failed to load {file}.");
+                    continue;
+                }
+                foreach (var type in assembly.GetExportedTypes()) {
+                    if (type.IsAbstract) {
+                        continue;
+                    }
+                    if (type.IsSubclassOf(typeof(Transformer))) {
+                        transformerFactories.Add(TransformerFactory.Get(type));
+                    } else if (type.IsSubclassOf(typeof(Phonemizer))) {
+                        phonemizerFactories.Add(PhonemizerFactory.Get(type));
+                    }
+                }
+            }
+            PhonemizerFactories = phonemizerFactories.ToArray();
+            TransformerFactories = transformerFactories.ToArray();
+            stopWatch.Stop();
             Log.Information($"Search all plugins: {stopWatch.Elapsed}");
-        }
-
-        public void SearchAllTransformers() {
-            var stopWatch = Stopwatch.StartNew();
-            Transformers = GetType().Assembly.GetTypes()
-                .Where(t => !t.IsAbstract && t.IsSubclassOf(typeof(Transformer)))
-                .Select(t => Activator.CreateInstance(t) as Transformer)
-                .ToArray();
-            stopWatch.Stop();
-            Log.Information($"Search all transformers: {stopWatch.Elapsed}");
-        }
-
-        public void SearchAllPhonemizers() {
-            var stopWatch = Stopwatch.StartNew();
-            Phonemizers = GetType().Assembly.GetTypes()
-                .Where(t => !t.IsAbstract && t.IsSubclassOf(typeof(Phonemizer)))
-                .Select(t => Activator.CreateInstance(t) as Phonemizer)
-                .ToArray();
-            stopWatch.Stop();
-            Log.Information($"Search all phonemizers: {stopWatch.Elapsed}");
         }
 
         #region Command Queue

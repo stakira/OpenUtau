@@ -4,7 +4,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-
+using OpenUtau.Api;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 
@@ -110,14 +110,14 @@ namespace OpenUtau.UI.Controls {
 
         private void buildChangePhonemizerMenuItems() {
             changePhonemizerMenu.Items.Clear();
-            foreach (var phonemizer in DocManager.Inst.Phonemizers) {
+            foreach (var factory in DocManager.Inst.PhonemizerFactories) {
                 var menuItem = new MenuItem() {
-                    Header = phonemizer.ToString(),
-                    IsChecked = phonemizer.GetType() == Track.Phonemizer.GetType(),
+                    Header = factory.ToString(),
+                    IsChecked = factory.type == Track.Phonemizer.GetType(),
                 };
                 menuItem.Click += (_o, _e) => {
-                    if (Track.Phonemizer.GetType() != phonemizer.GetType()) {
-                        var newPhonemizer = Activator.CreateInstance(phonemizer.GetType()) as Phonemizer;
+                    if (Track.Phonemizer.GetType() != factory.type) {
+                        var newPhonemizer = factory.Create();
                         DocManager.Inst.StartUndoGroup();
                         DocManager.Inst.ExecuteCmd(new TrackChangePhonemizerCommand(DocManager.Inst.Project, Track, newPhonemizer));
                         DocManager.Inst.EndUndoGroup();

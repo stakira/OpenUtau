@@ -83,7 +83,7 @@ namespace OpenUtau.App.Controls {
 
         void PhonemizerButtonClicked(object sender, RoutedEventArgs args) {
             var phonemizerMenu = this.FindControl<ContextMenu>("PhonemizersMenu");
-            if (DocManager.Inst.Phonemizers.Length > 0) {
+            if (DocManager.Inst.PhonemizerFactories.Length > 0) {
                 (DataContext as TrackHeaderViewModel)!.RefreshPhonemizers();
                 phonemizerMenu.Open();
             }

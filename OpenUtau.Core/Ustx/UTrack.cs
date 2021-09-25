@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using Newtonsoft.Json;
+using OpenUtau.Api;
 using Serilog;
 using YamlDotNet.Serialization;
 
@@ -22,7 +24,7 @@ namespace OpenUtau.Core.Ustx {
             }
         }
 
-        [YamlIgnore] public Phonemizer Phonemizer { get; set; } = new DefaultPhonemizer();
+        [YamlIgnore] public Phonemizer Phonemizer { get; set; } = PhonemizerFactory.Get(typeof(DefaultPhonemizer)).Create();
         [YamlIgnore] public string PhonemizerTag => Phonemizer.Tag;
 
         [YamlIgnore] public string SingerName => Singer != null ? Singer.DisplayName : "[No Singer]";
@@ -40,15 +42,13 @@ namespace OpenUtau.Core.Ustx {
 
         public void AfterLoad(UProject project) {
             try {
-                var type = Type.GetType(phonemizer);
-                if (Phonemizer == null || type != Phonemizer.GetType()) {
-                    Phonemizer = Activator.CreateInstance(type) as Phonemizer;
-                }
+                var factory = DocManager.Inst.PhonemizerFactories.FirstOrDefault(factory => factory.type.FullName == phonemizer);
+                Phonemizer = factory?.Create();
             } catch (Exception e) {
                 Log.Error(e, $"Failed to load phonemizer {phonemizer}");
             }
             if (Phonemizer == null) {
-                Phonemizer = new DefaultPhonemizer();
+                Phonemizer = PhonemizerFactory.Get(typeof(DefaultPhonemizer)).Create();
             }
             if (Singer == null && !string.IsNullOrEmpty(singer)) {
                 Singer = DocManager.Inst.GetSinger(singer);

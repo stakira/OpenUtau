@@ -8,6 +8,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using Microsoft.Toolkit.Mvvm.Input;
+using OpenUtau.Api;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using OpenUtau.UI.Controls;
@@ -31,7 +32,7 @@ namespace OpenUtau.UI.Models {
         UVoicePart _part;
         public UVoicePart Part { get { return _part; } }
         public Classic.Plugin[] Plugins => DocManager.Inst.Plugins;
-        public Transformer[] Transformers => DocManager.Inst.Transformers;
+        public TransformerFactory[] Transformers => DocManager.Inst.TransformerFactories;
 
         public Canvas TimelineCanvas;
         public Canvas MidiCanvas;
@@ -510,7 +511,8 @@ namespace OpenUtau.UI.Models {
         private ICommand transformerCommand;
         public ICommand TransformerCommand => transformerCommand ?? (transformerCommand = new RelayCommand<object>(OnTransformerSelected));
         void OnTransformerSelected(object obj) {
-            var transformer = (Transformer)obj;
+            var factory = (TransformerFactory)obj;
+            var transformer = factory.Create();
             DocManager.Inst.StartUndoGroup();
             try {
                 string[] newLyrics = new string[Part.notes.Count];

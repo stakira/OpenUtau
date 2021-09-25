@@ -1,12 +1,10 @@
-﻿using System.Linq;
+﻿using OpenUtau.Api;
+using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core {
+    [Phonemizer("Default Phonemizer", "CV")]
     public class DefaultPhonemizer : Phonemizer {
-        private Ustx.USinger singer;
-
-        public override string Name => "Default Phonemizer";
-        public override string Tag => "CV";
-        public override void SetSinger(Ustx.USinger singer) => this.singer = singer;
+        public override void SetSinger(USinger singer) { }
         public override Phoneme[] Process(Note[] notes, Note? prevNeighbour, Note? nextNeighbour) {
             return new Phoneme[] {
                 new Phoneme {
