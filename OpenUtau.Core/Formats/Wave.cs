@@ -15,24 +15,28 @@ namespace OpenUtau.Core.Formats {
         public readonly static string kFileFilter = "*.wav;*.mp3;*.ogg;*.flac";
 
         public static WaveStream OpenFile(string filepath) {
+            byte[] buffer = new byte[4];
             string tag = "";
             using (var stream = File.Open(filepath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
                 if (stream.CanSeek) {
-                    byte[] buffer = new byte[4];
                     stream.Read(buffer, 0, 4);
                     tag = System.Text.Encoding.UTF8.GetString(buffer);
                 }
             }
             if (tag == "RIFF") {
                 return new WaveFileReader(filepath);
-            } else if (tag.Substring(0, 3) == "ID3") {
+            }
+            if (buffer[0] == 0xFF && (buffer[1] == 0xFB || buffer[1] == 0xF3 || buffer[1] == 0xF2) ||
+                buffer[0] == 0x49 && buffer[1] == 0x44 && buffer[2] == 0x33) {
                 if (OverrideMp3Reader != null) {
                     return OverrideMp3Reader(filepath);
                 }
                 return new Mp3FileReaderBase(filepath, wf => new Mp3FrameDecompressor(wf));
-            } else if (tag == "OggS") {
+            }
+            if (tag == "OggS") {
                 return new VorbisWaveReader(filepath);
-            } else if (tag == "fLaC") {
+            }
+            if (tag == "fLaC") {
                 return new FlacReader(filepath);
             }
             throw new Exception("Unsupported audio file format.");
