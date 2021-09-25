@@ -284,7 +284,7 @@ namespace OpenUtau.Core.Formats {
 
         private static void ParseVibrato(UNote note, string ust, UstLine ustLine) {
             try {
-                var args = ust.Split(',').Select(float.Parse).ToArray();
+                var args = ust.Split(',').Select(s => float.TryParse(s, out float v) ? v : 0).ToArray();
                 if (args.Length < 7) {
                     throw new Exception();
                 }
