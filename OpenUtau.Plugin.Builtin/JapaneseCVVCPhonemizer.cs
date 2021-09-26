@@ -89,7 +89,7 @@ namespace OpenUtau.Plugin.Builtin {
                 var prevLyric = string.Join("", prevUnicode);
 
                 // Current note is VV
-                if (vowelLookup.TryGetValue(prevUnicode.Last(), out var vow)) {
+                if (vowelLookup.TryGetValue(prevUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
                     currentLyric = $"{vow} {currentLyric}";
                 }
             }
@@ -99,7 +99,7 @@ namespace OpenUtau.Plugin.Builtin {
                 var nextLyric = string.Join("", nextUnicode);
 
                 // Check if next note is a vowel and does not require VC
-                if (plainVowels.Contains(nextUnicode.First())) {
+                if (plainVowels.Contains(nextUnicode.FirstOrDefault() ?? string.Empty)) {
                     return new Phoneme[] {
                         new Phoneme() {
                             phoneme = currentLyric,
@@ -110,13 +110,13 @@ namespace OpenUtau.Plugin.Builtin {
                 // Insert VC before next neighbor
                 // Get vowel from current note
                 var vowel = "";
-                if (vowelLookup.TryGetValue(currentUnicode.Last(), out var vow)) {
+                if (vowelLookup.TryGetValue(currentUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
                     vowel = vow;
                 }
 
                 // Get consonant from next note
                 var consonant = "";
-                if (consonantLookup.TryGetValue(nextUnicode.First(), out var con)) {
+                if (consonantLookup.TryGetValue(nextUnicode.FirstOrDefault() ?? string.Empty, out var con)) {
                     consonant = con;
                 }
 
