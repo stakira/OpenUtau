@@ -54,7 +54,7 @@ namespace OpenUtau.Plugin.Builtin {
                 // Get the last unicode element of the hint or lyric. For example, "ゃ" from "きゃ" or "- きゃ".
                 var unicode = ToUnicodeElements(lyric);
                 // Look up the trailing vowel. For example "a" for "ゃ".
-                if (vowelLookup.TryGetValue(unicode.Last(), out var vow)) {
+                if (vowelLookup.TryGetValue(unicode.LastOrDefault() ?? string.Empty, out var vow)) {
                     // Now replace "- な" initially set to "a な".
                     phoneme = $"{vow} {note.lyric}";
                 }
