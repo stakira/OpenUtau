@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
@@ -75,8 +76,8 @@ namespace OpenUtau.Plugin.Builtin {
 
         public override Phoneme[] Process(Note[] notes, Note? prevNeighbour, Note? nextNeighbour) {
             var note = notes[0];
-            var currentUnicode = ToUnicodeElements(notes[0].lyric);
-            var currentLyric = string.Join("", currentUnicode);
+            var currentUnicode = ToUnicodeElements(note.lyric);
+            var currentLyric = note.lyric;
 
             if (prevNeighbour == null) {
                 // Use "- V" or "- CV" if present in voicebank
@@ -86,7 +87,6 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             } else if (plainVowels.Contains(currentLyric)){
                 var prevUnicode = ToUnicodeElements(prevNeighbour?.lyric);
-                var prevLyric = string.Join("", prevUnicode);
 
                 // Current note is VV
                 if (vowelLookup.TryGetValue(prevUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
@@ -127,10 +127,8 @@ namespace OpenUtau.Plugin.Builtin {
                 if (singer.TryGetMappedOto(nextLyric, note.tone, out var oto)) {
                     vcLength = MsToTick(oto.Preutter);
                 }
-
-                if (vcLength > totalDuration / 2) {
-                    vcLength = totalDuration = 2;
-                }
+                vcLength = Math.Min(totalDuration / 2, vcLength);
+                
                 return new Phoneme[] {
                     new Phoneme() {
                         phoneme = currentLyric,
