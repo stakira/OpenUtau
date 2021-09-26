@@ -30,14 +30,17 @@ namespace OpenUtau.Classic {
                 return result;
             }
             var banks = Directory.EnumerateFiles(basePath, "character.txt", SearchOption.AllDirectories)
-                .Select(filePath => ParseCharacterTxt(filePath, Encoding.UTF8))
+                .Select(filePath => ParseCharacterTxt(filePath, basePath, Encoding.UTF8))
+                .OfType<Voicebank>()
                 .OrderByDescending(bank => bank.File.Length)
                 .ToArray();
             var otoSets = Directory.EnumerateFiles(basePath, "oto.ini", SearchOption.AllDirectories)
                 .Select(entry => ParseOtoSet(entry, Encoding.UTF8))
+                .OfType<OtoSet>()
                 .ToArray();
             var prefixMaps = Directory.EnumerateFiles(basePath, "prefix.map", SearchOption.AllDirectories)
                 .Select(entry => ParsePrefixMap(entry, Encoding.UTF8))
+                .OfType<PrefixMap>()
                 .ToArray();
             var bankDirs = banks
                 .Select(bank => Path.GetDirectoryName(bank.File))
@@ -105,91 +108,118 @@ namespace OpenUtau.Classic {
             return result;
         }
 
-        Voicebank ParseCharacterTxt(string filePath, Encoding encoding) {
-            using (var stream = File.OpenRead(filePath)) {
-                using (var reader = new StreamReader(stream, encoding)) {
-                    var voicebank = new Voicebank() {
-                        File = filePath,
-                    };
-                    var otherLines = new List<string>();
-                    while (!reader.EndOfStream) {
-                        string line = reader.ReadLine().Trim();
-                        var s = line.Split(new char[] { '=' });
-                        if (s.Length != 2) {
-                            s = line.Split(new char[] { ':' });
-                        }
-                        Array.ForEach(s, temp => temp.Trim());
-                        if (s.Length == 2) {
-                            s[0] = s[0].ToLowerInvariant();
-                            if (s[0] == "name") {
-                                voicebank.Name = s[1];
-                            } else if (s[0] == "image") {
-                                voicebank.Image = s[1];
-                            } else if (s[0] == "author" || s[0] == "created by") {
-                                voicebank.Author = s[1];
-                            } else if (s[0] == "sample") {
-                            } else if (s[0] == "web") {
-                                voicebank.Web = s[1];
-                            } else {
-                                otherLines.Add(line);
-                            }
+        public static Voicebank ParseCharacterTxt(string filePath, string basePath, Encoding encoding) {
+            try {
+                using (var stream = File.OpenRead(filePath)) {
+                    return ParseCharacterTxt(stream, filePath, basePath, encoding);
+                }
+            } catch (Exception e) {
+                Log.Error(e, $"Failed to load {filePath}");
+            }
+            return null;
+        }
+
+        public static Voicebank ParseCharacterTxt(Stream stream, string filePath, string basePath, Encoding encoding) {
+            using (var reader = new StreamReader(stream, encoding)) {
+                var voicebank = new Voicebank() {
+                    File = filePath,
+                };
+                var otherLines = new List<string>();
+                while (!reader.EndOfStream) {
+                    string line = reader.ReadLine().Trim();
+                    var s = line.Split(new char[] { '=' });
+                    if (s.Length != 2) {
+                        s = line.Split(new char[] { ':' });
+                    }
+                    Array.ForEach(s, temp => temp.Trim());
+                    if (s.Length == 2) {
+                        s[0] = s[0].ToLowerInvariant();
+                        if (s[0] == "name") {
+                            voicebank.Name = s[1];
+                        } else if (s[0] == "image") {
+                            voicebank.Image = s[1];
+                        } else if (s[0] == "author" || s[0] == "created by") {
+                            voicebank.Author = s[1];
+                        } else if (s[0] == "sample") {
+                        } else if (s[0] == "web") {
+                            voicebank.Web = s[1];
                         } else {
                             otherLines.Add(line);
                         }
+                    } else {
+                        otherLines.Add(line);
                     }
-                    voicebank.OtherInfo = string.Join("\n", otherLines);
-                    if (string.IsNullOrEmpty(voicebank.Name)) {
-                        throw new FileFormatException($"Failed to load {filePath} using encoding {encoding.EncodingName}");
-                    }
-                    voicebank.Id = Path.GetRelativePath(basePath, Path.GetDirectoryName(voicebank.File));
-                    return voicebank;
                 }
+                voicebank.OtherInfo = string.Join("\n", otherLines);
+                voicebank.Id = Path.GetRelativePath(basePath, Path.GetDirectoryName(voicebank.File));
+                if (string.IsNullOrEmpty(voicebank.Name)) {
+                    voicebank.Name = $"No Name ({voicebank.Id})";
+                }
+                return voicebank;
             }
         }
 
-        static PrefixMap ParsePrefixMap(string filePath, Encoding encoding) {
-            using (var stream = File.OpenRead(filePath)) {
-                using (var reader = new StreamReader(stream, encoding)) {
-                    var prefixMap = new PrefixMap {
-                        File = filePath,
-                    };
-                    while (!reader.EndOfStream) {
-                        var s = reader.ReadLine().Split(new char[0]);
-                        if (s.Length == 3) {
-                            string source = s[0].Trim();
-                            string prefix = s[1].Trim();
-                            string suffix = s[2].Trim();
-                            prefixMap.Map[source] = new Tuple<string, string>(prefix, suffix);
-                        }
-                    }
-                    return prefixMap;
+        public static PrefixMap ParsePrefixMap(string filePath, Encoding encoding) {
+            try {
+                using (var stream = File.OpenRead(filePath)) {
+                    return ParsePrefixMap(stream, filePath, encoding);
                 }
+            } catch (Exception e) {
+                Log.Error(e, $"Failed to load {filePath}");
+            }
+            return null;
+        }
+
+        public static PrefixMap ParsePrefixMap(Stream stream, string filePath, Encoding encoding) {
+            using (var reader = new StreamReader(stream, encoding)) {
+                var prefixMap = new PrefixMap {
+                    File = filePath,
+                };
+                while (!reader.EndOfStream) {
+                    var s = reader.ReadLine().Split(new char[0]);
+                    if (s.Length == 3) {
+                        string source = s[0].Trim();
+                        string prefix = s[1].Trim();
+                        string suffix = s[2].Trim();
+                        prefixMap.Map[source] = new Tuple<string, string>(prefix, suffix);
+                    }
+                }
+                return prefixMap;
             }
         }
 
-        static OtoSet ParseOtoSet(string filePath, Encoding encoding) {
+        public static OtoSet ParseOtoSet(string filePath, Encoding encoding) {
+            try {
+                using (var stream = File.OpenRead(filePath)) {
+                    return ParseOtoSet(stream, filePath, encoding);
+                }
+            } catch (Exception e) {
+                Log.Error(e, $"Failed to load {filePath}");
+            }
+            return null;
+        }
+
+        public static OtoSet ParseOtoSet(Stream stream, string filePath, Encoding encoding) {
             OtoSet otoSet;
-            using (var stream = File.OpenRead(filePath)) {
-                using (var reader = new StreamReader(stream, encoding)) {
-                    var fileLoc = new FileLoc { file = filePath, lineNumber = 0 };
-                    otoSet = new OtoSet() {
-                        File = filePath,
-                    };
-                    while (!reader.EndOfStream) {
-                        var line = reader.ReadLine();
-                        fileLoc.line = line;
-                        try {
-                            Oto oto = ParseOto(line);
-                            if (oto != null) {
-                                otoSet.Otos.Add(oto);
-                            }
-                        } catch (Exception e) {
-                            Log.Error(e, $"Failed to parse\n{fileLoc}");
-                            otoSet.Errors.Add($"Oto error:\n{fileLoc}");
+            using (var reader = new StreamReader(stream, encoding)) {
+                var fileLoc = new FileLoc { file = filePath, lineNumber = 0 };
+                otoSet = new OtoSet() {
+                    File = filePath,
+                };
+                while (!reader.EndOfStream) {
+                    var line = reader.ReadLine();
+                    fileLoc.line = line;
+                    try {
+                        Oto oto = ParseOto(line);
+                        if (oto != null) {
+                            otoSet.Otos.Add(oto);
                         }
-                        fileLoc.line = null;
-                        fileLoc.lineNumber++;
+                    } catch (Exception e) {
+                        Log.Error(e, $"Failed to parse\n{fileLoc}");
+                        otoSet.Errors.Add($"Oto error:\n{fileLoc}");
                     }
+                    fileLoc.line = null;
+                    fileLoc.lineNumber++;
                 }
             }
             // Use filename as alias if not in oto.
@@ -208,7 +238,7 @@ namespace OpenUtau.Classic {
             return otoSet;
         }
 
-        static Oto ParseOto(string line) {
+        public static Oto ParseOto(string line) {
             const string format = "<wav>=<alias>,<offset>,<consonant>,<cutoff>,<preutter>,<overlap>";
             if (string.IsNullOrWhiteSpace(line)) {
                 return null;
