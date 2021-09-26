@@ -178,9 +178,9 @@ namespace OpenUtau.Classic {
                 while (!reader.EndOfStream) {
                     var s = reader.ReadLine().Split(new char[0]);
                     if (s.Length == 3) {
-                        string source = s[0].Trim();
-                        string prefix = s[1].Trim();
-                        string suffix = s[2].Trim();
+                        string source = s[0];
+                        string prefix = s[1];
+                        string suffix = s[2];
                         prefixMap.Map[source] = new Tuple<string, string>(prefix, suffix);
                     }
                 }
