@@ -6,6 +6,7 @@ using System.Numerics;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using OpenUtau.Api;
+using Serilog;
 using YamlDotNet.Serialization;
 
 namespace OpenUtau.Core.Ustx {
@@ -167,7 +168,13 @@ namespace OpenUtau.Core.Ustx {
             track.Phonemizer.SetTiming(project.bpm, project.beatUnit, project.resolution);
             var phonemizerNotes = notes.Select(note => note.ToProcessorNote()).ToArray();
             phonemizerNotes[phonemizerNotes.Length - 1].duration += endOffset;
-            var newPhonemes = track.Phonemizer.Process(phonemizerNotes, prev, next);
+            Phonemizer.Phoneme[] newPhonemes;
+            try {
+                newPhonemes = track.Phonemizer.Process(phonemizerNotes, prev, next);
+            } catch (Exception e) {
+                Log.Error(e, "phonemizer error");
+                newPhonemes = new Phonemizer.Phoneme[] { new Phonemizer.Phoneme { phoneme = "error" } };
+            }
             // Apply overrides.
             for (int i = phonemeOverrides.Count - 1; i >= 0; --i) {
                 if (phonemeOverrides[i].IsEmpty) {
