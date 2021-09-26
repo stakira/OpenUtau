@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -48,7 +49,8 @@ namespace OpenUtau.Classic {
             };
             string[] textFiles = { ".txt", ".ini", ".map" };
             using (var archive = ArchiveFactory.Open(path, readerOptions)) {
-                AdjustBasePath(archive);
+                var touches = new List<string>();
+                AdjustBasePath(archive, path, touches);
                 int total = archive.Entries.Count();
                 int count = 0;
                 foreach (var entry in archive.Entries) {
@@ -66,31 +68,38 @@ namespace OpenUtau.Classic {
                     }
                     progress.Invoke(100.0 * ++count / total, entry.Key);
                 }
+                foreach (var touch in touches) {
+                    File.WriteAllText(touch, "\n");
+                }
             }
         }
 
-        private void AdjustBasePath(IArchive archive) {
-            var characters = archive.Entries.Where(e => Path.GetFileName(e.Key) == "character.txt").ToList();
-            if (characters.Count > 0) {
-                var entry = characters.FirstOrDefault(e => e.Key == "character.txt");
-                if (entry == null) {
-                    return;
+        private void AdjustBasePath(IArchive archive, string archivePath, List<string> touches) {
+            const string kCharacterTxt = "character.txt";
+            var dirsAndFiles = archive.Entries.Select(e => e.Key).ToHashSet();
+            var rootDirs = archive.Entries
+                .Where(e => e.IsDirectory)
+                .Where(e => (e.Key.IndexOf('\\') < 0 || e.Key.IndexOf('\\') == e.Key.Length - 1)
+                         && (e.Key.IndexOf('/') < 0 || e.Key.IndexOf('/') == e.Key.Length - 1))
+                .ToArray();
+            var rootFiles = archive.Entries
+                .Where(e => !e.IsDirectory)
+                .Where(e => !e.Key.Contains('\\') && !e.Key.Contains('/') && e.Key != "install.txt")
+                .ToArray();
+            if (rootFiles.Count() > 0) {
+                // Need to create root folder.
+                basePath = Path.Combine(basePath, Path.GetFileNameWithoutExtension(archivePath));
+                if (rootFiles.Where(e => e.Key == kCharacterTxt).Count() == 0) {
+                    // Need to create character.txt.
+                    touches.Add(Path.Combine(basePath, kCharacterTxt));
                 }
-                var encoding = Encoding.GetEncoding("shift_jis");
-                using (var stream = entry.OpenEntryStream()) {
-                    using (var reader = new StreamReader(stream, encoding)) {
-                        while (!reader.EndOfStream) {
-                            var line = reader.ReadLine();
-                            if (line.StartsWith("name=")) {
-                                var name = line.Replace("name=", "").Trim();
-                                basePath = Path.Combine(basePath, name);
-                                return;
-                            }
-                        }
-                    }
+                return;
+            }
+            foreach (var rootDir in rootDirs) {
+                if (!dirsAndFiles.Contains($"{rootDir.Key}\\{kCharacterTxt}") && !dirsAndFiles.Contains($"{rootDir.Key}/{kCharacterTxt}")) {
+                    touches.Add(Path.Combine(basePath, rootDir.Key, kCharacterTxt));
                 }
             }
-            basePath = Path.Combine(basePath, DateTime.Now.ToString("yyyyMMdd-HHmmss"));
         }
 
         static string HashPath(string path) {
