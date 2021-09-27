@@ -28,6 +28,7 @@
   <system:String x:Key="menu.tools">Tools</system:String>
   <system:String x:Key="menu.tools.singers">Singers...</system:String>
   <system:String x:Key="menu.tools.singer.install">Install Singer...</system:String>
+  <system:String x:Key="menu.tools.singer.installadv">Install Singer (Advanced)...</system:String>
   <system:String x:Key="menu.tools.project.expressions">Expressions...</system:String>
   <system:String x:Key="menu.tools.prefs">Preferences...</system:String>
 

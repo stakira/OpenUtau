@@ -32,9 +32,10 @@
         <MenuItem Header="{DynamicResource menu.file.exportust}"/>
       </MenuItem>
       <MenuItem Header="{DynamicResource menu.tools}">
-        <MenuItem Header="{StaticResource menu.tools.project.expressions}" Click="OnMenuExpressionss"/>
+        <MenuItem Header="{DynamicResource menu.tools.project.expressions}" Click="OnMenuExpressionss"/>
         <MenuItem Header="{DynamicResource menu.tools.singers}" Click="OnMenuSingers"/>
         <MenuItem Header="{DynamicResource menu.tools.singer.install}" Click="OnMenuInstallSinger"/>
+        <MenuItem Header="{DynamicResource menu.tools.singer.installadv}" Click="OnMenuInstallSingerAdvanced"/>
         <MenuItem Header="{DynamicResource menu.tools.prefs}" Click="OnMenuPreferences"/>
       </MenuItem>
       <MenuItem Header="{DynamicResource menu.help}">

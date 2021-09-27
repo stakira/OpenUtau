@@ -16,9 +16,11 @@ namespace OpenUtau.Classic {
         const string kInstallTxt = "install.txt";
 
         private string basePath;
-        readonly Action<double, string> progress;
+        private readonly Action<double, string> progress;
+        private readonly Encoding archiveEncoding;
+        private readonly Encoding textEncoding;
 
-        public VoicebankInstaller(string basePath, Action<double, string> progress) {
+        public VoicebankInstaller(string basePath, Action<double, string> progress, Encoding archiveEncoding = null, Encoding textEncoding = null) {
             if (OS.IsWindows()) {
                 // Only Windows need to work with exe resamplers.
                 if (basePath.Length > 80) {
@@ -33,16 +35,14 @@ namespace OpenUtau.Classic {
             Directory.CreateDirectory(basePath);
             this.basePath = basePath;
             this.progress = progress;
+            this.archiveEncoding = archiveEncoding ?? Encoding.GetEncoding("shift_jis");
+            this.textEncoding = textEncoding ?? Encoding.GetEncoding("shift_jis");
         }
 
         public void LoadArchive(string path) {
-            var encoding = Encoding.GetEncoding("shift_jis");
-            if (encoding == null) {
-                throw new Exception($"Failed to detect encoding of {path}.");
-            }
             progress.Invoke(0, "Analyzing archive...");
             var readerOptions = new ReaderOptions {
-                ArchiveEncoding = new ArchiveEncoding(encoding, encoding)
+                ArchiveEncoding = new ArchiveEncoding(archiveEncoding, archiveEncoding)
             };
             var extractionOptions = new ExtractionOptions {
                 Overwrite = true,
@@ -62,7 +62,7 @@ namespace OpenUtau.Classic {
                     if (entry.IsDirectory || entry.Key == kInstallTxt) {
                     } else if (textFiles.Contains(Path.GetExtension(entry.Key))) {
                         using (var stream = entry.OpenEntryStream()) {
-                            using (var reader = new StreamReader(stream, encoding)) {
+                            using (var reader = new StreamReader(stream, textEncoding)) {
                                 File.WriteAllText(Path.Combine(basePath, entry.Key), reader.ReadToEnd(), Encoding.UTF8);
                             }
                         }

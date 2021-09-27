@@ -205,6 +205,28 @@ namespace OpenUtau.App.Views {
             });
         }
 
+        async void OnMenuInstallSingerAdvanced(object sender, RoutedEventArgs args) {
+            var dialog = new OpenFileDialog() {
+                Filters = new List<FileDialogFilter>() {
+                    new FileDialogFilter() {
+                        Name = "Archive File",
+                        Extensions = new List<string>(){ "zip", "rar", "7z", "uar" },
+                    },
+                },
+                AllowMultiple = false,
+            };
+            var files = await dialog.ShowAsync(this);
+            if (files == null || files.Length != 1) {
+                return;
+            }
+            var setup = new SingerSetupDialog() {
+                DataContext = new SingerSetupViewModel() {
+                    ArchiveFilePath = files[0],
+                },
+            };
+            _ = setup.ShowDialog(this);
+        }
+
         void OnMenuPreferences(object sender, RoutedEventArgs args) {
             var dialog = new PreferencesDialog() {
                 DataContext = new PreferencesViewModel(),

@@ -8,23 +8,17 @@ namespace OpenUtau {
         [STAThread]
         private static void Main() {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Information()
-                .WriteTo.Console()
-                .WriteTo.File("log.txt", rollingInterval: RollingInterval.Day, encoding: System.Text.Encoding.UTF8)
-                .CreateLogger();
-            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler((sender, args) => {
-                Log.Error((Exception)args.ExceptionObject, "Unhandled exception");
-            });
-
-            Core.DocManager.Inst.Initialize();
-            Core.PlaybackManager.Inst.AudioOutput = new Audio.WaveOutAudioOutput();
-            Core.Formats.Wave.OverrideMp3Reader = filepath => new NAudio.Wave.AudioFileReader(filepath);
+            App.Program.InitLogging();
+            App.Program.InitOpenUtau();
+            InitAudio();
 
             App.Program.InitInterop();
-            var app = new WpfApp();
-            var window = new UI.MainWindow();
-            app.Run(window);
+            new WpfApp().Run(new UI.MainWindow());
+        }
+
+        private static void InitAudio() {
+            Core.PlaybackManager.Inst.AudioOutput = new Audio.WaveOutAudioOutput();
+            Core.Formats.Wave.OverrideMp3Reader = filepath => new NAudio.Wave.AudioFileReader(filepath);
         }
     }
 }

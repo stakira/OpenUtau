@@ -1,15 +1,20 @@
-﻿using Avalonia;
-using Avalonia.Controls.ApplicationLifetimes;
+﻿using System;
+using System.Text;
+using Avalonia;
 using Avalonia.ReactiveUI;
-using System;
+using Serilog;
 
 namespace OpenUtau.App {
     public class Program {
         // Initialization code. Don't use any Avalonia, third-party APIs or any
         // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
         // yet and stuff might break.
-        public static void Main(string[] args) => BuildAvaloniaApp()
-            .StartWithClassicDesktopLifetime(args);
+        public static void Main(string[] args) {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            InitLogging();
+            InitOpenUtau();
+            BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+        }
 
         // Avalonia configuration, don't remove; also used by visual designer.
         public static AppBuilder BuildAvaloniaApp()
@@ -18,8 +23,26 @@ namespace OpenUtau.App {
                 .LogToTrace()
                 .UseReactiveUI();
 
-        public static void InitInterop() {
-            AppBuilder.Configure<App>().UseWin32().UseSkia().SetupWithoutStarting();
+        public static void InitInterop()
+            => AppBuilder.Configure<App>()
+                .UsePlatformDetect()
+                .LogToTrace()
+                .UseReactiveUI()
+                .SetupWithoutStarting();
+
+        public static void InitLogging() {
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Information()
+                .WriteTo.Debug()
+                .WriteTo.File("log.txt", rollingInterval: RollingInterval.Day, encoding: Encoding.UTF8)
+                .CreateLogger();
+            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler((sender, args) => {
+                Log.Error((Exception)args.ExceptionObject, "Unhandled exception");
+            });
+        }
+
+        public static void InitOpenUtau() {
+            Core.DocManager.Inst.Initialize();
         }
     }
 }

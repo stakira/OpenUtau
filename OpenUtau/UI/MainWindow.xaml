@@ -43,6 +43,7 @@
                 <MenuItem Header="{StaticResource menu.tools.project.expressions}" Click="MenuProjectExpressions_Click"/>
                 <MenuItem Header="{StaticResource menu.tools.singers}" Click="MenuSingers_Click"/>
                 <MenuItem Header="{StaticResource menu.tools.singer.install}" Click="MenuInstallSingers_Click"/>
+                <MenuItem Header="{StaticResource menu.tools.singer.installadv}" Click="MenuInstallSingersAdvanced_Click"/>
                 <MenuItem Header="{StaticResource menu.tools.prefs}" Click="MenuPrefs_Click"/>
             </MenuItem>
             <MenuItem Header="{StaticResource menu.help}">

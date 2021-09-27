@@ -436,31 +436,50 @@ namespace OpenUtau.UI {
                 Multiselect = false,
                 CheckFileExists = true,
             };
-            if (dialog.ShowDialog() == true) {
-                Task.Run(() => {
-                    var task = Task.Run(() => {
-                        var installer = new Classic.VoicebankInstaller(PathManager.Inst.InstalledSingersPath, (progress, info) => {
-                            DocManager.Inst.ExecuteCmd(new ProgressBarNotification(progress, info));
-                        });
-                        installer.LoadArchive(dialog.FileName);
-                    });
-                    try {
-                        task.Wait();
-                    } catch (AggregateException ae) {
-                        string message = null;
-                        foreach (var ex in ae.Flatten().InnerExceptions) {
-                            if (message == null) {
-                                message = ex.ToString();
-                            }
-                            Log.Error(ex, "failed to install");
-                            break;
-                        }
-                        MessageBox.Show(message, (string)FindResource("errors.caption"), MessageBoxButton.OK, MessageBoxImage.None);
-                    }
-                    DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, ""));
-                    DocManager.Inst.ExecuteCmd(new SingersChangedNotification());
-                });
+            if (dialog.ShowDialog() != true) {
+                return;
             }
+            Task.Run(() => {
+                var task = Task.Run(() => {
+                    var installer = new Classic.VoicebankInstaller(PathManager.Inst.InstalledSingersPath, (progress, info) => {
+                        DocManager.Inst.ExecuteCmd(new ProgressBarNotification(progress, info));
+                    });
+                    installer.LoadArchive(dialog.FileName);
+                });
+                try {
+                    task.Wait();
+                } catch (AggregateException ae) {
+                    string message = null;
+                    foreach (var ex in ae.Flatten().InnerExceptions) {
+                        if (message == null) {
+                            message = ex.ToString();
+                        }
+                        Log.Error(ex, "failed to install");
+                        break;
+                    }
+                    MessageBox.Show(message, (string)FindResource("errors.caption"), MessageBoxButton.OK, MessageBoxImage.None);
+                }
+                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, ""));
+                DocManager.Inst.ExecuteCmd(new SingersChangedNotification());
+            });
+        }
+
+        private void MenuInstallSingersAdvanced_Click(object sender, RoutedEventArgs e) {
+            OpenFileDialog dialog = new OpenFileDialog() {
+                Filter = "Archive File|*.zip;*.rar;*.7z;*.uar",
+                Multiselect = false,
+                CheckFileExists = true,
+            };
+            if (dialog.ShowDialog() != true) {
+                return;
+            }
+            var file = dialog.FileName;
+            var setup = new App.Views.SingerSetupDialog() {
+                DataContext = new App.ViewModels.SingerSetupViewModel() {
+                    ArchiveFilePath = file,
+                },
+            };
+            ShowDialog(setup);
         }
 
         private void MenuProjectExpressions_Click(object sender, RoutedEventArgs e) {

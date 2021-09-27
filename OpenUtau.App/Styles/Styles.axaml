@@ -35,7 +35,7 @@
   <Style Selector="TextBox">
     <Setter Property="MinHeight" Value="20"/>
     <Setter Property="Height" Value="20"/>
-    <Setter Property="Padding" Value="4,0"/>
+    <Setter Property="Padding" Value="4,1"/>
     <Setter Property="Margin" Value="0,0,0,4"/>
     <Setter Property="FontSize" Value="12"/>
     <Setter Property="VerticalAlignment" Value="Top"/>
