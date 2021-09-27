@@ -92,7 +92,7 @@ Ctrl + 박스 선택:
 위/아래 방향키:
 Ctrl + 위/아래 방향키:
 스페이스 바:</system:String>
-    <system:String x:Key="tip.notes.basics.actions" xml:space="preserve">Toggle tips
+    <system:String x:Key="tip.notes.basics.actions" xml:space="preserve">팁 전환
 노트 추가
 노트 제거
 여러 노트 제거
@@ -102,7 +102,7 @@ Ctrl + 위/아래 방향키:
 노트 선택
 선택한 노트 조옮김
 선택한 노트 옥타브 단위 조옮김
-Play</system:String>
+재생</system:String>
     <system:String x:Key="tip.notes.zoomx">◀ 수평으로 확대하려면 여기서 스크롤하세요 ▶</system:String>
     <system:String x:Key="tip.notes.zoomy">수직으로 확대하려면 여기서 스크롤하세요 ▶</system:String>
     <system:String x:Key="tip.exps.keys" xml:space="preserve">왼쪽 클릭 유지:
