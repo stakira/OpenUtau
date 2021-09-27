@@ -29,7 +29,7 @@
 
     <system:String x:Key="menu.tools">Ferramentas</system:String>
     <system:String x:Key="menu.tools.singers">Vozes...</system:String>
-    <system:String x:Key="menu.tools.singer.install">Instalar Vozes...</system:String>>
+    <system:String x:Key="menu.tools.singer.install">Instalar Vozes...</system:String>
     <system:String x:Key="menu.tools.singer.installadv">Instalar Vozes (Avançado)...</system:String>
     <system:String x:Key="menu.tools.project.expressions">Expressões...</system:String>
     <system:String x:Key="menu.tools.prefs">Preferências...</system:String>
