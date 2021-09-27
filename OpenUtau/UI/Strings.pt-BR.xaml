@@ -39,7 +39,7 @@
     <!-- Preferences -->
     <system:String x:Key="prefs.caption">Preferências</system:String>
     <system:String x:Key="prefs.paths">Caminhos</system:String>
-    <system:String x:Key="prefs.paths.singer">Singer Paths</system:String>
+    <system:String x:Key="prefs.paths.singer">Caminhos dos Cantores</system:String>
     <system:String x:Key="prefs.paths.add">Adicionar</system:String>
     <system:String x:Key="prefs.paths.remove">Remover</system:String>
     <system:String x:Key="prefs.playback">Reprodução</system:String>
