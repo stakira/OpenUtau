@@ -5,7 +5,7 @@ using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("Japanese CVVC Phonemizer", "JA CVVC", "KLAD")]
+    [Phonemizer("Japanese CVVC Phonemizer", "JA CVVC", "TUBS")]
     public class JapaneseCVVCPhonemizer : Phonemizer {
         static readonly string[] plainVowels = new string[] { "あ","い","う","え","お","ん"};
 
@@ -120,6 +120,14 @@ namespace OpenUtau.Plugin.Builtin {
                     consonant = con;
                 }
 
+                if (consonant == "") {
+                    return new Phoneme[] {
+                        new Phoneme() {
+                            phoneme = currentLyric,
+                        }
+                    };
+                }
+
                 var vcPhoneme = $"{vowel} {consonant}";
 
                 int totalDuration = notes.Sum(n => n.duration);
@@ -143,7 +151,7 @@ namespace OpenUtau.Plugin.Builtin {
             // No next neighbor
             return new Phoneme[] {
                 new Phoneme {
-                    phoneme = note.lyric,
+                    phoneme = currentLyric,
                 }
             };
         }
