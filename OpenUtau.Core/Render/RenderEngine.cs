@@ -5,9 +5,9 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using OpenUtau.Core.ResamplerDriver;
+using OpenUtau.Core.SignalChain;
 using OpenUtau.Core.Ustx;
 using Serilog;
-using OpenUtau.Core.SignalChain;
 
 namespace OpenUtau.Core.Render {
     class RenderEngine {
@@ -106,6 +106,7 @@ namespace OpenUtau.Core.Render {
         }
 
         public CancellationTokenSource PreRenderProject() {
+            int threads = Core.Util.Preferences.Default.PrerenderThreads;
             var source = new CancellationTokenSource();
             Task.Run(() => {
                 try {
@@ -114,7 +115,7 @@ namespace OpenUtau.Core.Render {
                         return;
                     }
                     TaskFactory<RenderItem> factory = new TaskFactory<RenderItem>(source.Token);
-                    using (SemaphoreSlim slim = new SemaphoreSlim(8)) {
+                    using (SemaphoreSlim slim = new SemaphoreSlim(threads)) {
                         RenderItem[] items;
                         lock (project) {
                             items = PrepareProject(project, startTick)
@@ -182,7 +183,7 @@ namespace OpenUtau.Core.Render {
                 byte[] data = cache.Get(hash);
                 if (data == null) {
                     CopySourceTemp(item);
-                    data = driver.DoResampler(DriverModels.CreateInputModel(item, 0), out output);
+                    data = driver.DoResampler(DriverModels.CreateInputModel(item, 0), Log.Logger);
                     if (data == null || data.Length == 0) {
                         throw new Exception("Empty render result.");
                     }
@@ -194,6 +195,7 @@ namespace OpenUtau.Core.Render {
                 item.progress?.CompleteOne($"Resampling \"{item.phonemeName}\"");
             } catch (Exception e) {
                 Log.Error($"Failed to render item {item.SourceFile} {item.Oto.Alias} {item.GetResamplerExeArgs()}.\noutput: {output}\n{e}");
+                item.Data = new byte[0];
             }
         }
 

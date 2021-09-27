@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Threading;
 using OpenUtau.Core.Util;
+using Serilog;
 
 namespace OpenUtau.Core.ResamplerDriver.Factorys {
     internal class ExeDriver : DriverModels, IResamplerDriver {
@@ -24,28 +26,26 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys {
             }
         }
 
-        public byte[] DoResampler(DriverModels.EngineInput Args, out string output) {
+        public byte[] DoResampler(DriverModels.EngineInput Args, ILogger logger) {
             byte[] data = new byte[0];
             if (!_isLegalPlugin) {
-                output = null;
                 return data;
             }
+            var threadId = Thread.CurrentThread.ManagedThreadId;
             string tmpFile = Path.GetTempFileName();
             string ArgParam = FormattableString.Invariant(
                 $"\"{Args.inputWaveFile}\" \"{tmpFile}\" {Args.NoteString} {Args.Velocity} \"{Args.StrFlags}\" {Args.Offset} {Args.RequiredLength} {Args.Consonant} {Args.Cutoff} {Args.Volume} {Args.Modulation} !{Args.Tempo} {Base64.Base64EncodeInt12(Args.pitchBend)}");
-
+            logger.Information($" > [thread-{threadId}] {ExePath} {ArgParam}");
             var p = Process.Start(new ProcessStartInfo(ExePath, ArgParam) {
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 CreateNoWindow = true,
             });
-            List<string> outputLines = new List<string>();
             while (!p.StandardOutput.EndOfStream) {
-                outputLines.Add(p.StandardOutput.ReadLine());
+                logger.Information($" >>> [thread-{threadId}] {p.StandardOutput.ReadLine()}");
             }
             p.WaitForExit();
-            output = string.Join("\n", outputLines);
             if (p != null) {
                 p.Close();
                 p.Dispose();

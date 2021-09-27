@@ -36,7 +36,7 @@ namespace OpenUtau {
                 .FirstOrDefault(d => d.Source.OriginalString == @"UI\Colors\DarkTheme.xaml");
             Current.Resources.MergedDictionaries.Remove(light);
             Current.Resources.MergedDictionaries.Remove(dark);
-            if (Core.Util.Preferences.Default.theme == 0) {
+            if (Core.Util.Preferences.Default.Theme == 0) {
                 Current.Resources.MergedDictionaries.Add(light);
             } else {
                 Current.Resources.MergedDictionaries.Add(dark);

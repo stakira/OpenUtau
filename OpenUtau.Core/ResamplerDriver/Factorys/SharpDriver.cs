@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using Serilog;
 
 namespace OpenUtau.Core.ResamplerDriver.Factorys {
     internal class SharpDriver : DriverModels, IResamplerDriver {
@@ -67,9 +68,8 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys {
             }
         }
 
-        public byte[] DoResampler(EngineInput Args, out string output) {
+        public byte[] DoResampler(EngineInput Args, ILogger logger) {
             byte[] data = new byte[0];
-            output = null;
             if (!_isLegalPlugin) {
                 return data;
             }

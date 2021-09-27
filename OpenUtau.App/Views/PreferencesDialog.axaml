@@ -22,6 +22,8 @@
         </HeaderedContentControl>
         <HeaderedContentControl Classes="groupbox" Header="{DynamicResource prefs.rendering}">
           <StackPanel>
+            <TextBlock Text="{DynamicResource prefs.rendering.prerender.threads}" />
+            <ComboBox HorizontalAlignment="Stretch" Items="{Binding PrerenderThreadsItems}" SelectedItem="{Binding PrerenderThreads}"/>
             <TextBlock Text="{DynamicResource prefs.rendering.resampler.preview}" />
             <ComboBox HorizontalAlignment="Stretch" Items="{Binding Resamplers}" SelectedItem="{Binding PreviewResampler}"/>
             <TextBlock Text="{DynamicResource prefs.rendering.resampler.export}" />

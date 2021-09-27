@@ -55,7 +55,8 @@ namespace OpenUtau.Core.Util {
             public int PlaybackDeviceNumber;
             public bool ShowPrefs = true;
             public bool ShowTips = true;
-            public int theme;
+            public int Theme;
+            public int PrerenderThreads = 8;
         }
     }
 }

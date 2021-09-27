@@ -58,4 +58,21 @@ namespace OpenUtau.Plugin.Builtin {
             }
         }
     }
+
+    /// <summary>
+    /// A Transformer that removes tone suffix like "C4" from lyric.
+    /// </summary>
+    [Transformer("Remove Tone Suffix")]
+    public class RemoveToneSuffixTransformer : Transformer {
+        public override string Transform(string lyric) {
+            if (lyric.Length <= 2) {
+                return lyric;
+            }
+            string last2 = lyric.Substring(lyric.Length - 2);
+            if (last2[0] >= 'A' && last2[0] <= 'G' && last2[1] >= '0' && last2[1] <= '9') {
+                return lyric.Substring(0, lyric.Length - 2);
+            }
+            return lyric;
+        }
+    }
 }

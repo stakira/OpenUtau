@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using OpenUtau.Core.ResamplerDriver.Factorys;
+using Serilog;
 
 namespace OpenUtau.Core.ResamplerDriver {
     public interface IResamplerDriver {
-        byte[] DoResampler(DriverModels.EngineInput Args, out string output);
+        byte[] DoResampler(DriverModels.EngineInput Args, ILogger logger);
         DriverModels.EngineInfo GetInfo();
     }
 

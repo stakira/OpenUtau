@@ -45,6 +45,7 @@
   <system:String x:Key="prefs.playback.device">Playback Device</system:String>
   <system:String x:Key="prefs.playback.test">Test</system:String>
   <system:String x:Key="prefs.rendering">Rendering</system:String>
+  <system:String x:Key="prefs.rendering.prerender.threads">Pre-render Threads</system:String>
   <system:String x:Key="prefs.rendering.resampler.preview">Resampler for preview</system:String>
   <system:String x:Key="prefs.rendering.resampler.export">Resampler for export</system:String>
   <system:String x:Key="prefs.rendering.resampler.note">
