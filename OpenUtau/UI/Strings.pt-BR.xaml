@@ -1,0 +1,113 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib"
+                    xmlns:local="clr-namespace:OpenUtau">
+
+     <!-- Menu -->
+    <system:String x:Key="menu.file">_Arquivo</system:String>
+    <system:String x:Key="menu.file.new">_Novo</system:String>
+    <system:String x:Key="menu.file.open">_Abrir...</system:String>
+    <system:String x:Key="menu.file.openas">Abrir_como...</system:String>
+    <system:String x:Key="menu.file.save">_Salvar</system:String>
+    <system:String x:Key="menu.file.saveas">Salvar _Como...</system:String>
+    <system:String x:Key="menu.file.saveasust">Salvar como arquivo Ust</system:String>
+    <system:String x:Key="menu.file.import">_Importar...</system:String>
+    <system:String x:Key="menu.file.importaudio">_Importar Áudio...</system:String>
+    <system:String x:Key="menu.file.importmidi">_Importar Midi...</system:String>
+    <system:String x:Key="menu.file.exportall">Exportar Tudo</system:String>
+    <system:String x:Key="menu.file.recentfiles">Abrir Recente</system:String>
+    <system:String x:Key="menu.file.exit">_Sair</system:String>
+
+    <system:String x:Key="menu.edit">_Editar</system:String>
+    <system:String x:Key="menu.edit.undo">_Desfazer</system:String>
+    <system:String x:Key="menu.edit.redo">_Refazer</system:String>
+    <system:String x:Key="menu.edit.cut">_Cortar</system:String>
+    <system:String x:Key="menu.edit.copy">_Copiar</system:String>
+    <system:String x:Key="menu.edit.paste">_Colar</system:String>
+    <system:String x:Key="menu.edit.delete">_Deletar</system:String>
+    <system:String x:Key="menu.edit.selectall">Selecionar _Tudo</system:String>
+
+    <system:String x:Key="menu.tools">_Ferramentas</system:String>
+    <system:String x:Key="menu.tools.singers">Vozes...</system:String>
+    <system:String x:Key="menu.tools.singer.install">Instalar Vozes...</system:String>
+    <system:String x:Key="menu.tools.singer.installadv">Instalar Vozes (Avançado)...</system:String>
+    <system:String x:Key="menu.tools.project.expressions">Expressões...</system:String>
+    <system:String x:Key="menu.tools.prefs">Preferências...</system:String>
+
+    <system:String x:Key="menu.help">_Ajuda</system:String>
+    <system:String x:Key="menu.help.about">Sobre OpenUTAU</system:String>
+
+    <!-- Preferences -->
+    <system:String x:Key="prefs.caption">Preferências</system:String>
+    <system:String x:Key="prefs.paths">Diretório</system:String>
+    <system:String x:Key="prefs.paths.singer">Diretório de Vozes</system:String>
+    <system:String x:Key="prefs.paths.add">Adicionar</system:String>
+    <system:String x:Key="prefs.paths.remove">Remover</system:String>
+    <system:String x:Key="prefs.playback">Reprodução</system:String>
+    <system:String x:Key="prefs.playback.device">Dispositivo de Reprodução</system:String>
+    <system:String x:Key="prefs.playback.test">Teste</system:String>
+    <system:String x:Key="prefs.rendering">Renderização</system:String>
+    <system:String x:Key="prefs.rendering.resampler.preview">Resampler para preview</system:String>
+    <system:String x:Key="prefs.rendering.resampler.export">Resampler Para Exportação</system:String>
+    <system:String x:Key="prefs.rendering.resampler.note">
+        Nota: para usar resamplers externos, favor adicionar o arquivo DLL ou EXE do resampler na pasta Resamplers no diretório de instalação do OpenUtau e o selecione em Preferências.
+    </system:String>
+    <system:String x:Key="prefs.appearance">Aparência</system:String>
+    <system:String x:Key="prefs.appearance.theme">Tema</system:String>
+    <system:String x:Key="prefs.appearance.theme.light">Claro</system:String>
+    <system:String x:Key="prefs.appearance.theme.dark">Escuro</system:String>
+    <system:String x:Key="prefs.appearance.theme.note">Nota: por favor, reinicie o OpenUtau após mudar de tema.</system:String>
+
+    <!-- Dialogs -->
+    <system:String x:Key="dialogs.noresampler.caption">Nenhum resampler selecionado</system:String>
+    <system:String x:Key="dialogs.noresampler.message">Nenhum resampler selecionado! Coloque seu resampler exe ou dll favorito na pasta Resamplers e escolha-o em Preferências!</system:String>
+    <system:String x:Key="dialogs.about.caption">Sobre OpenUTAU</system:String>
+    <system:String x:Key="dialogs.about.message">
+        OpenUtau pretende ser um ambiente de edição de código aberto para a comunidade UTAU, com uma experiência de usuário moderna e suporte fonológico inteligente. Visite-nos no Github!
+    </system:String>
+    <system:String x:Key="dialogs.export.caption">Exportar</system:String>
+    <system:String x:Key="dialogs.export.savefirst">Salve o projeto primeiro.</system:String>
+
+    <!-- Tracks -->
+    <system:String x:Key="tracks.remove">Remover</system:String>
+    <system:String x:Key="tracks.moveup">Mover Pra Cima</system:String>
+    <system:String x:Key="tracks.movedown">Mover Pra Baixo</system:String>
+
+    <!-- Errors -->
+    <system:String x:Key="errors.caption">Erro</system:String>
+    <system:String x:Key="warning">Aviso</system:String>
+    <system:String x:Key="warning.asciipath">Seu diretório de arquivos do OpenUtau "{0}" contém caracteres não-ASCII. Os resamplers Exe podem não funcionar.</system:String>
+
+    <!-- Tips -->
+    <system:String x:Key="tip.lyricbox.prev">Shift+Tab: Nota anterior</system:String>
+    <system:String x:Key="tip.lyricbox.next">Tab: Próxima Nota </system:String>
+    <system:String x:Key="tip.notes.basics.keys" xml:space="preserve">T:
+Botão esquerdo:
+Botão direito:
+Segurar Botão do Mouse Direito:
+Arrastar Nota:
+Arrastar Fim da Nota:
+Alt + Arrastar Fim da Nota
+Ctrl + Seleção:
+Para cima/Para baixo:
+Ctrl + Para cima/Para baixo:
+Espaço:</system:String>
+    <system:String x:Key="tip.notes.basics.actions" xml:space="preserve">Toggle tips
+Adicionar nota
+Remover nota
+Remover múltiplas notas
+Mover Nota
+Redimensionar Nota
+Redimensionar notas vizinhas
+Selecionar notas
+Transpor as notas selecionadas
+Transpor as notas selecionadas por uma oitava
+Play</system:String>
+    <system:String x:Key="tip.notes.zoomx">◀ Rolar aqui para ampliar horizontalmente ▶</system:String>
+    <system:String x:Key="tip.notes.zoomy">Rolar aqui para ampliar verticalmente ▶</system:String>
+    <system:String x:Key="tip.exps.keys" xml:space="preserve">Segure o botão esquerdo do mouse:
+Segure o botão direito do mouse:</system:String>
+    <system:String x:Key="tip.exps.actions" xml:space="preserve">Definir expressões
+Resetar expressões</system:String>
+
+</ResourceDictionary>
