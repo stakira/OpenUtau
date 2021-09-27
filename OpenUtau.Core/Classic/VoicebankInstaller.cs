@@ -12,6 +12,9 @@ using SharpCompress.Readers;
 namespace OpenUtau.Classic {
 
     public class VoicebankInstaller {
+        const string kCharacterTxt = "character.txt";
+        const string kInstallTxt = "install.txt";
+
         private string basePath;
         readonly Action<double, string> progress;
 
@@ -56,7 +59,7 @@ namespace OpenUtau.Classic {
                 foreach (var entry in archive.Entries) {
                     var filePath = Path.Combine(basePath, entry.Key);
                     Directory.CreateDirectory(Path.GetDirectoryName(filePath));
-                    if (entry.IsDirectory) {
+                    if (entry.IsDirectory || entry.Key == kInstallTxt) {
                     } else if (textFiles.Contains(Path.GetExtension(entry.Key))) {
                         using (var stream = entry.OpenEntryStream()) {
                             using (var reader = new StreamReader(stream, encoding)) {
@@ -75,7 +78,6 @@ namespace OpenUtau.Classic {
         }
 
         private void AdjustBasePath(IArchive archive, string archivePath, List<string> touches) {
-            const string kCharacterTxt = "character.txt";
             var dirsAndFiles = archive.Entries.Select(e => e.Key).ToHashSet();
             var rootDirs = archive.Entries
                 .Where(e => e.IsDirectory)
@@ -84,7 +86,7 @@ namespace OpenUtau.Classic {
                 .ToArray();
             var rootFiles = archive.Entries
                 .Where(e => !e.IsDirectory)
-                .Where(e => !e.Key.Contains('\\') && !e.Key.Contains('/') && e.Key != "install.txt")
+                .Where(e => !e.Key.Contains('\\') && !e.Key.Contains('/') && e.Key != kInstallTxt)
                 .ToArray();
             if (rootFiles.Count() > 0) {
                 // Need to create root folder.
@@ -96,7 +98,9 @@ namespace OpenUtau.Classic {
                 return;
             }
             foreach (var rootDir in rootDirs) {
-                if (!dirsAndFiles.Contains($"{rootDir.Key}\\{kCharacterTxt}") && !dirsAndFiles.Contains($"{rootDir.Key}/{kCharacterTxt}")) {
+                if (!dirsAndFiles.Contains($"{rootDir.Key}{kCharacterTxt}") &&
+                    !dirsAndFiles.Contains($"{rootDir.Key}\\{kCharacterTxt}") &&
+                    !dirsAndFiles.Contains($"{rootDir.Key}/{kCharacterTxt}")) {
                     touches.Add(Path.Combine(basePath, rootDir.Key, kCharacterTxt));
                 }
             }
