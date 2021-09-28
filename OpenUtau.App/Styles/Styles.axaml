@@ -40,7 +40,10 @@
     <Setter Property="FontSize" Value="12"/>
     <Setter Property="VerticalAlignment" Value="Top"/>
   </Style>
-
+  <Style Selector="TextBox:disabled">
+    <Setter Property="Foreground" Value="{DynamicResource TextControlForegroundDisabled}" />
+  </Style>
+  
   <Style Selector="Button">
     <Setter Property="BorderThickness" Value="0"/>
     <Setter Property="FontSize" Value="12"/>
@@ -122,8 +125,8 @@
 
   <Style Selector="HeaderedContentControl.groupbox">
     <Setter Property="Margin" Value="5"/>
-    <Setter Property="Background" Value="White"/>
-    <Setter Property="BorderBrush" Value="LightGray"/>
+    <Setter Property="Background" Value="{StaticResource SystemControlBackgroundAltHighBrush}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource SystemControlForegroundBaseMediumBrush}"/>
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate>

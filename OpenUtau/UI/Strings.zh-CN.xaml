@@ -30,6 +30,7 @@
     <system:String x:Key="menu.tools">工具</system:String>
     <system:String x:Key="menu.tools.singers">歌手...</system:String>
     <system:String x:Key="menu.tools.singer.install">安装歌手...</system:String>
+    <system:String x:Key="menu.tools.singer.installadv">安装歌手(高级模式)...</system:String>
     <system:String x:Key="menu.tools.project.expressions">表情...</system:String>
     <system:String x:Key="menu.tools.prefs">使用偏好...</system:String>
 

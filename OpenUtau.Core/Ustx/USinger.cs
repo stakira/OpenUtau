@@ -95,7 +95,7 @@ namespace OpenUtau.Core.Ustx {
         public readonly string Id;
         public readonly bool Loaded;
 
-        public string DisplayName { get { return Loaded ? Name : $"{Name}[Unloaded]"; } }
+        public string DisplayName { get { return Loaded ? Name : $"[Missing] {Name}"; } }
 
         public USinger(string name) {
             Name = name;

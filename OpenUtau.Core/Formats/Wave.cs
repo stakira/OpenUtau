@@ -15,6 +15,7 @@ namespace OpenUtau.Core.Formats {
         public readonly static string kFileFilter = "*.wav;*.mp3;*.ogg;*.flac";
 
         public static WaveStream OpenFile(string filepath) {
+            var ext = Path.GetExtension(filepath);
             byte[] buffer = new byte[4];
             string tag = "";
             using (var stream = File.Open(filepath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
@@ -26,8 +27,7 @@ namespace OpenUtau.Core.Formats {
             if (tag == "RIFF") {
                 return new WaveFileReader(filepath);
             }
-            if (buffer[0] == 0xFF && (buffer[1] == 0xFB || buffer[1] == 0xF3 || buffer[1] == 0xF2) ||
-                buffer[0] == 0x49 && buffer[1] == 0x44 && buffer[2] == 0x33) {
+            if (ext == ".mp3") {
                 if (OverrideMp3Reader != null) {
                     return OverrideMp3Reader(filepath);
                 }

@@ -8,7 +8,7 @@
         x:Class="OpenUtau.App.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
         Title="OpenUtau" MinWidth="800" MinHeight="600" KeyDown="OnKeyDown"
-        TransparencyLevelHint="None" Background="Transparent" ExtendClientAreaToDecorationsHint="False">
+        TransparencyLevelHint="None" Background="{DynamicResource MainWindowBackgroundBrush}" ExtendClientAreaToDecorationsHint="False">
   <Window.Styles>
     <Style>
       <Style.Resources>
@@ -59,19 +59,19 @@
       <Border Classes="playback" Width="88" HorizontalAlignment="Center">
         <StackPanel Orientation="Horizontal">
           <Button Command="{Binding PlaybackViewModel.SeekStart}">
-            <Path Fill="{DynamicResource SystemColorButtonTextColor}" VerticalAlignment="Center" HorizontalAlignment="Center"
+            <Path Fill="{Binding $parent.Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center"
                   Data="M 0 0 L 2 0 L 2 9 L 0 9 Z M 2 4.5 L 7 0 L 7 9 Z"/>
           </Button>
           <Button Click="OnPlayOrPause">
-            <Path Fill="{DynamicResource SystemColorButtonTextColor}" VerticalAlignment="Center" HorizontalAlignment="Center"
+            <Path Fill="{Binding $parent.Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center"
                   Data="M 0 0 L 7 6.5 L 0 13 Z"/>
           </Button>
           <Button Command="{Binding PlaybackViewModel.Pause}">
-            <Path Fill="{DynamicResource SystemColorButtonTextColor}" VerticalAlignment="Center" HorizontalAlignment="Center"
+            <Path Fill="{Binding $parent.Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center"
                   Data="M 0 0 L 2 0 L 2 9 L 0 9 Z M 4 0 L 6 0 L 6 9 L 4 9 Z"/>
           </Button>
           <Button Command="{Binding PlaybackViewModel.SeekEnd}">
-            <Path Fill="{DynamicResource SystemColorButtonTextColor}" VerticalAlignment="Center" HorizontalAlignment="Center"
+            <Path Fill="{Binding $parent.Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center"
                   Data="M 0 0 L 5 4.5 L 0 9 Z M 5 0 L 7 0 L 7 9 L 5 9 Z"/>
           </Button>
         </StackPanel>

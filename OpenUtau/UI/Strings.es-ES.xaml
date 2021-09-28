@@ -4,33 +4,33 @@
                     xmlns:local="clr-namespace:OpenUtau">
 
     <!-- Menu -->
-    <system:String x:Key="menu.file">_Archivo</system:String>
-    <system:String x:Key="menu.file.new">_Nuevo…</system:String>
-    <system:String x:Key="menu.file.open">_Abrir…</system:String>
-    <system:String x:Key="menu.file.openas">A_brir como</system:String>
-    <system:String x:Key="menu.file.save">_Guardar</system:String>
-    <system:String x:Key="menu.file.saveas">Guardar _como…</system:String>
-    <system:String x:Key="menu.file.importaudio">_Importar audio…</system:String>
-    <system:String x:Key="menu.file.importmidi">_Importar midi…</system:String>
+    <system:String x:Key="menu.file">Archivo</system:String>
+    <system:String x:Key="menu.file.new">Nuevo…</system:String>
+    <system:String x:Key="menu.file.open">Abrir…</system:String>
+    <system:String x:Key="menu.file.openas">Abrir como</system:String>
+    <system:String x:Key="menu.file.save">Guardar</system:String>
+    <system:String x:Key="menu.file.saveas">Guardar como…</system:String>
+    <system:String x:Key="menu.file.importaudio">Importar audio…</system:String>
+    <system:String x:Key="menu.file.importmidi">Importar midi…</system:String>
     <system:String x:Key="menu.file.renderall">Renderizar todo…</system:String>
-    <system:String x:Key="menu.file.recentfiles">_Archivos recientes</system:String>
-    <system:String x:Key="menu.file.exit">_Salir</system:String>
+    <system:String x:Key="menu.file.recentfiles">Archivos recientes</system:String>
+    <system:String x:Key="menu.file.exit">Salir</system:String>
 
-    <system:String x:Key="menu.edit">_Editar</system:String>
-    <system:String x:Key="menu.edit.undo">_Deshacer</system:String>
-    <system:String x:Key="menu.edit.redo">_Rehacer</system:String>
-    <system:String x:Key="menu.edit.cut">Cor_tar</system:String>
-    <system:String x:Key="menu.edit.copy">_Copiar</system:String>
-    <system:String x:Key="menu.edit.paste">_Pegar</system:String>
-    <system:String x:Key="menu.edit.delete">_Eliminar</system:String>
-    <system:String x:Key="menu.edit.selectall">Seleccionar _todo</system:String>
+    <system:String x:Key="menu.edit">Editar</system:String>
+    <system:String x:Key="menu.edit.undo">Deshacer</system:String>
+    <system:String x:Key="menu.edit.redo">Rehacer</system:String>
+    <system:String x:Key="menu.edit.cut">Cortar</system:String>
+    <system:String x:Key="menu.edit.copy">Copiar</system:String>
+    <system:String x:Key="menu.edit.paste">Pegar</system:String>
+    <system:String x:Key="menu.edit.delete">Eliminar</system:String>
+    <system:String x:Key="menu.edit.selectall">Seleccionar todo</system:String>
 
-    <system:String x:Key="menu.tools">_Herramientas</system:String>
+    <system:String x:Key="menu.tools">Herramientas</system:String>
     <system:String x:Key="menu.tools.singers">Cantantes…</system:String>
     <system:String x:Key="menu.tools.singer.install">Instalar cantante</system:String>
     <system:String x:Key="menu.tools.prefs">Preferencias</system:String>
 
-    <system:String x:Key="menu.help">_Ayuda</system:String>
+    <system:String x:Key="menu.help">Ayuda</system:String>
     <system:String x:Key="menu.help.about">Acerca de OpenUTAU</system:String>
 
     <!-- Preferences -->
