@@ -41,11 +41,13 @@ namespace OpenUtau.Core.Ustx {
         }
 
         public void AfterLoad(UProject project) {
-            try {
-                var factory = DocManager.Inst.PhonemizerFactories.FirstOrDefault(factory => factory.type.FullName == phonemizer);
-                Phonemizer = factory?.Create();
-            } catch (Exception e) {
-                Log.Error(e, $"Failed to load phonemizer {phonemizer}");
+            if (Phonemizer == null) {
+                try {
+                    var factory = DocManager.Inst.PhonemizerFactories.FirstOrDefault(factory => factory.type.FullName == phonemizer);
+                    Phonemizer = factory?.Create();
+                } catch (Exception e) {
+                    Log.Error(e, $"Failed to load phonemizer {phonemizer}");
+                }
             }
             if (Phonemizer == null) {
                 Phonemizer = PhonemizerFactory.Get(typeof(DefaultPhonemizer)).Create();

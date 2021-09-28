@@ -56,7 +56,7 @@ namespace OpenUtau.Plugin.Builtin {
         static string[] GetSymbols(Note note) {
             if (string.IsNullOrEmpty(note.phoneticHint)) {
                 // User has not provided hint, query CMUdict.
-                return QueryTrie(root, note.lyric, 0);
+                return QueryTrie(root, note.lyric.ToLowerInvariant(), 0);
             }
             // Split space-separated symbols into an array.
             return note.phoneticHint.Split()

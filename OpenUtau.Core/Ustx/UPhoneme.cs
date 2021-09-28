@@ -119,6 +119,10 @@ namespace OpenUtau.Core.Ustx {
             Prev.tailIntrude = overlapped ? preutter : 0;
             Prev.tailOverlap = overlapped ? overlap : 0;
             Prev.ValidateEnvelope(project, Prev.Parent);
+            if (Next == null) {
+                tailIntrude = 0;
+                tailOverlap = 0;
+            }
         }
 
         void ValidateEnvelope(UProject project, UNote note) {
@@ -141,12 +145,10 @@ namespace OpenUtau.Core.Ustx {
 
             p0.Y = 0f;
             p1.Y = vol;
-            p1.X = p0.X + (overlapped ? overlap : 5f) * acc / 100f;
+            p1.X = p0.X + (overlapped ? overlap : 5f);
             p1.Y = acc * vol / 100f;
             p2.Y = vol;
-            p3.Y = vol;
-            p3.X -= (p3.X - p2.X) * dec / 500f;
-            p3.Y *= 1f - dec / 100f;
+            p3.Y = vol * (1f - dec / 100f);
             p4.Y = 0f;
 
             envelope.data[0] = p0;
