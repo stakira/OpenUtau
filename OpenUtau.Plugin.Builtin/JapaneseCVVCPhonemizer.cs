@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
+using Serilog;
 
 namespace OpenUtau.Plugin.Builtin {
     [Phonemizer("Japanese CVVC Phonemizer", "JA CVVC", "TUBS")]
@@ -129,12 +130,19 @@ namespace OpenUtau.Plugin.Builtin {
                 }
 
                 var vcPhoneme = $"{vowel} {consonant}";
+                if (!singer.TryGetMappedOto(vcPhoneme, note.tone, out var _)) {
+                    return new Phoneme[] {
+                        new Phoneme() {
+                            phoneme = currentLyric,
+                        }
+                    };
+                }
 
                 int totalDuration = notes.Sum(n => n.duration);
                 int vcLength = 120;
                 if (singer.TryGetMappedOto(nextLyric, note.tone, out var oto)) {
                     vcLength = MsToTick(oto.Preutter);
-                }
+                } 
                 vcLength = Math.Min(totalDuration / 2, vcLength);
                 
                 return new Phoneme[] {
