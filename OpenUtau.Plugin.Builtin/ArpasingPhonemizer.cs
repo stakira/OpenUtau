@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
@@ -38,6 +40,7 @@ namespace OpenUtau.Plugin.Builtin {
             if (index == word.Length) {
                 node.symbols = symbols.Split()
                     .Select(symbol => RemoveTailDigits(symbol))
+                    .Where(symbol => phones.ContainsKey(symbol))
                     .ToArray();
                 return;
             }
@@ -97,6 +100,7 @@ namespace OpenUtau.Plugin.Builtin {
         /// Initializes the CMUdict.
         /// </summary>
         private static void Initialize() {
+            string dir = Path.GetDirectoryName(typeof(ArpasingPhonemizer).Assembly.Location);
             Task.Run(() => {
                 try {
                     lock (initLock) {
@@ -116,11 +120,26 @@ namespace OpenUtau.Plugin.Builtin {
                             .ToDictionary(parts => parts[0], parts => parts[1].Split(','));
                         Resources.cmudict_0_7b.Split('\n')
                            .Where(line => !line.StartsWith(";;;"))
-                            .Select(line => line.Trim().ToLowerInvariant())
+                           .Select(line => line.Trim().ToLowerInvariant())
                            .Select(line => line.Split(new string[] { "  " }, StringSplitOptions.None))
                            .Where(parts => parts.Length == 2)
                            .ToList()
                            .ForEach(parts => BuildTrie(root, parts[0], 0, parts[1]));
+                        var supplementalDict = Path.Combine(dir, "arpasing.dict");
+                        if (!File.Exists(supplementalDict)) {
+                            File.WriteAllText(supplementalDict, "# Supplemental Arpasing Dictionray\nopenutau=ow p eh n w uw t ah w uw", Encoding.UTF8);
+                        }
+                        try {
+                            File.ReadLines(supplementalDict, Encoding.UTF8)
+                               .Where(line => !line.StartsWith("# ") && !line.StartsWith("//"))
+                               .Select(line => line.Trim().ToLowerInvariant())
+                               .Select(line => line.Split('=', StringSplitOptions.None))
+                               .Where(parts => parts.Length == 2)
+                               .ToList()
+                               .ForEach(parts => BuildTrie(root, parts[0], 0, parts[1]));
+                        } catch (Exception e) {
+                            Log.Error(e, "Failed to read supplemental dictionray.");
+                        }
                         ArpasingPhonemizer.root = root;
                     }
                 } catch (Exception e) {

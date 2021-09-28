@@ -166,7 +166,7 @@ namespace OpenUtau.Core.Formats {
                         var singerpath = parts[1].Trim();
                         var singer = DocManager.Inst.GetSinger(singerpath);
                         if (singer == null) {
-                            singer = new USinger("");
+                            singer = new USinger(Path.GetFileName(singerpath.Replace("%DATA%", "").Replace("%VOICE%", "")));
                         }
                         project.tracks[0].Singer = singer;
                         break;

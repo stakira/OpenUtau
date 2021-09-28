@@ -54,6 +54,9 @@ namespace OpenUtau.Core.Ustx {
             }
             if (Singer == null && !string.IsNullOrEmpty(singer)) {
                 Singer = DocManager.Inst.GetSinger(singer);
+                if (Singer == null) {
+                    Singer = new USinger(singer);
+                }
                 Phonemizer.SetSinger(Singer);
             }
             TrackNo = project.tracks.IndexOf(this);

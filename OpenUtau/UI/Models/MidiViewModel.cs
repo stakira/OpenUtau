@@ -512,9 +512,9 @@ namespace OpenUtau.UI.Models {
         public ICommand TransformerCommand => transformerCommand ?? (transformerCommand = new RelayCommand<object>(OnTransformerSelected));
         void OnTransformerSelected(object obj) {
             var factory = (TransformerFactory)obj;
-            var transformer = factory.Create();
-            DocManager.Inst.StartUndoGroup();
             try {
+                var transformer = factory.Create();
+                DocManager.Inst.StartUndoGroup();
                 string[] newLyrics = new string[Part.notes.Count];
                 int i = 0;
                 foreach (var note in Part.notes) {
@@ -522,9 +522,11 @@ namespace OpenUtau.UI.Models {
                 }
                 DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(Part, Part.notes.ToArray(), newLyrics));
             } catch (Exception e) {
-                Log.Error(e, $"Failed to run transformer {transformer.Name}");
+                Log.Error(e, $"Failed to run transformer {factory.name}");
+                DocManager.Inst.ExecuteCmd(new UserMessageNotification(e.ToString()));
+            } finally {
+                DocManager.Inst.EndUndoGroup();
             }
-            DocManager.Inst.EndUndoGroup();
         }
 
         # region ICmdSubscriber
