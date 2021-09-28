@@ -22,6 +22,7 @@
                 <ResourceDictionary Source="UI\Strings.pl-PL.xaml"/>
                 <ResourceDictionary Source="UI\Strings.pt-BR.xaml"/>
                 <ResourceDictionary Source="UI\Strings.es-ES.xaml"/>
+                <ResourceDictionary Source="UI\Strings.it-IT.xaml"/>
                 <ResourceDictionary Source="UI\Strings.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
