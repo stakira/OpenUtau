@@ -32,10 +32,10 @@ namespace OpenUtau.Plugin.Builtin {
 
         static readonly string[] initialConsonants = new string[] {
             "g=ㄱ",
-            "k=ㄲ",
+            "k=ㄲ,ㅋ",
             "n=ㄴ",
             "d=ㄷ",
-            "t=ㄸ",
+            "t=ㄸ,ㅌ",
             "r=ㄹ",
             "m=ㅁ",
             "b=ㅂ",
@@ -45,8 +45,6 @@ namespace OpenUtau.Plugin.Builtin {
             "j=ㅈ",
             "zh=ㅉ",
             "ch=ㅊ",
-            "k=ㅋ",
-            "t=ㅌ",
             "p=ㅍ",
             "h=ㅎ",
         };
@@ -70,23 +68,48 @@ namespace OpenUtau.Plugin.Builtin {
             "wi=ㅟ",
         };
 
+        static readonly string[] subsequentVowels = new string[] {
+            "a=ㅏ,ㅑ,ㅘ",
+            "eo=ㅓ,ㅕ,ㅝ",
+            "o=ㅗ,ㅛ",
+            "u=ㅜ,ㅠ",
+            "eu=ㅡ",
+            "e=ㅔ,ㅐ,ㅞ,ㅙ"
+            "i=ㅣ,ㅢ,ㅟ"
+        }
+
         static readonly string[] lastConsonants = new string[] {
-            "g=ㄱ",
-            "k=ㄲ",
-            "n=ㄴ",
-            "d=ㄷ",
-            "r=ㄹ",
-            "m=ㅁ",
-            "b=ㅂ",
-            "s=ㅅ",
-            "j=ㅈ",
-            "zh=ㅉ",
-            "ch=ㅊ",
-            "k=ㅋ",
-            "t=ㅌ",
-            "p=ㅍ",
+            "g=ㄱ,ㄺ",
+            "gp=ㄲ,ㅋ,ㄳ"
+            "n=ㄴ,ㄵ,ㄶ",
+            "d=ㄷ,ㅅ,ㅆ,ㅈ,ㅊ",
+            "l=ㄹ,ㄽ,ㅀ",
+            "rp= ㄼ,ㄾ",
+            "m=ㅁ,ㄻ",
+            "b=ㅂ,ㅌ,ㅍ,ㄿ",
+            "bp=ㅄ"
             "h=ㅎ",
         };
+
+        static readonly string[] subsequentfirstConsonants = new string[] {
+            "g=ㄱ,ㄲ,ㅋ",
+            "ㄴ",
+            "ㄷ",
+            "ㄹ",
+            "ㅁ",
+            "ㅂ",
+            "ㅇ",
+        }
+
+        static readonly string[] subsequentsecondConsonants = new string[] {
+            "g,k=ㄳㄱ,ㄳㅋ,ㄳㄲ",
+            "g,n=ㄳㄴ",
+            "g,t=ㄳㄷ,ㄳㅌ,ㄳㄸ",
+            "g,r=ㄳㄹ",
+            "g,m=ㄳㅁ",
+            "g,=ㄳ"
+            "ㄱㄵㄼㄽㄾㅄ"
+        }
 
         static readonly Dictionary<string, string> initialConsonantLookup;
         static readonly Dictionary<string, string> vowelLookup;
