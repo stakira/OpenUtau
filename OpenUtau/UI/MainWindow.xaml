@@ -33,7 +33,7 @@
                 <MenuItem Header="{StaticResource menu.file.save}" InputGestureText="Ctrl+S" Click="MenuSave_Click"/>
                 <MenuItem Header="{StaticResource menu.file.saveas}"  Click="MenuSaveAs_Click"/>
                 <MenuItem Header="{StaticResource menu.file.saveasust}" Click="MenuSaveAsUst_Click"/>
-                <MenuItem Header="{StaticResource menu.file.import}" Click="MenuImport_Click"/>
+                <MenuItem Header="{StaticResource menu.file.importtracks}" Click="MenuImportTracks_Click"/>
                 <MenuItem Header="{StaticResource menu.file.importaudio}" Click="MenuImportAudio_Click"/>
                 <MenuItem Header="{StaticResource menu.file.importmidi}" Click="MenuImportMidi_Click"/>
                 <MenuItem Header="{StaticResource menu.file.exportall}" Click="MenuExportAll_Click"/>

@@ -11,7 +11,7 @@
     <system:String x:Key="menu.file.save">Save</system:String>
     <system:String x:Key="menu.file.saveas">Save As...</system:String>
     <system:String x:Key="menu.file.saveasust">Save As Ust Files</system:String>
-    <system:String x:Key="menu.file.import">Import...</system:String>
+    <system:String x:Key="menu.file.importtracks">Import Tracks...</system:String>
     <system:String x:Key="menu.file.importaudio">Import Audio...</system:String>
     <system:String x:Key="menu.file.importmidi">Import Midi...</system:String>
     <system:String x:Key="menu.file.exportall">Export All</system:String>

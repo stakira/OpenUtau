@@ -6,11 +6,12 @@
         xmlns:vm="using:OpenUtau.App.ViewModels"
         mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
         x:Class="OpenUtau.App.Views.SingersDialog"
-        Title="{DynamicResource singers.caption}" Width="500" Height="600" MinWidth="500" MinHeight="600">
+        Title="{DynamicResource singers.caption}" Width="500" Height="600" MinWidth="500" MinHeight="600"
+        ExtendClientAreaToDecorationsHint="False">
   <Design.DataContext>
     <vm:SingersViewModel/>
   </Design.DataContext>
-  <Grid>
+  <Grid Margin="{Binding $parent.WindowDecorationMargin}">
     <Grid.RowDefinitions>
       <RowDefinition Height="170"/>
       <RowDefinition Height="*"/>

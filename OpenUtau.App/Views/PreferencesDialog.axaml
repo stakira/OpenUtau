@@ -5,12 +5,13 @@
         xmlns:vm="using:OpenUtau.App.ViewModels"
         mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
         x:Class="OpenUtau.App.Views.PreferencesDialog"
-        Title="{DynamicResource prefs.caption}" Width="500" Height="600" CanResize="False"
-        WindowStartupLocation="CenterOwner">
+        Title="{DynamicResource prefs.caption}"
+        MinWidth="500" MinHeight="600" Width="500" Height="600"
+        WindowStartupLocation="CenterOwner" ExtendClientAreaToDecorationsHint="False">
   <Design.DataContext>
     <vm:PreferencesViewModel/>
   </Design.DataContext>
-  <Grid>
+  <Grid Margin="{Binding $parent.WindowDecorationMargin}">
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Visible">
       <StackPanel Margin="5">
         <HeaderedContentControl Classes="groupbox" Header="{DynamicResource prefs.playback}">
