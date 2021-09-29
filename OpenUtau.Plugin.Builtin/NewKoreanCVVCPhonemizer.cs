@@ -201,7 +201,7 @@ namespace OpenUtau.Plugin.Builtin {
         static readonly Dictionary<string, string> ruleOfConsonantsLookup;
 
 
-        static KoreanCVVCPhonemizer() {
+        static NewKoreanCVVCPhonemizer() {
             initialConsonantLookup = initialConsonants.ToList()
                 .SelectMany(line => {
                     var parts = line.Split('=');
