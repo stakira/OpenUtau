@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
 using Serilog;
@@ -54,7 +56,6 @@ namespace OpenUtau.Plugin.Builtin {
             "R=R",
             "息=息",
             "吸=吸",
-            "R=R",
             "-=-"
         };
 
@@ -76,7 +77,8 @@ namespace OpenUtau.Plugin.Builtin {
                 .ToDictionary(t => t.Item1, t => t.Item2);
         }
 
-        // Store singer in field, will try reading presamp.ini later
+
+        // Store singer in field
         private USinger singer;
         public override void SetSinger(USinger singer) => this.singer = singer;
 
@@ -84,6 +86,56 @@ namespace OpenUtau.Plugin.Builtin {
             var note = notes[0];
             var currentUnicode = ToUnicodeElements(note.lyric);
             var currentLyric = note.lyric;
+
+            // find global presamp.ini
+            string dir = Path.GetDirectoryName(typeof(JapaneseCVVCPhonemizer).Assembly.Location);
+            var presampIni = Path.Combine(dir, "presamp.ini");
+
+            // find singer presamp ini
+            if (File.Exists(Path.Combine(singer.Location, "presamp.ini"))) {
+                presampIni = Path.Combine(singer.Location, "presamp.ini");
+            }
+
+            Dictionary<string, string> presampConsonants;
+            Dictionary<string, string> presampVowels;
+
+            List<string> presampVowList = new List<string>();
+            List<string> presampConsList = new List<string>();
+
+            // if found, read it.
+            if (File.Exists(presampIni)) {
+                try {
+                    var Header = "";
+                    foreach (string line in File.ReadLines(presampIni, Encoding.UTF8).ToList()) {
+                        if (line.StartsWith(@"[") && line.EndsWith(@"]")) {
+                            Header = line;
+                            continue;
+                        }
+                        switch (Header) {
+                            case "[CONSONANT]":
+                                presampConsList.Add(line.Split("=")[0] + "=" + line.Split("=")[1]);
+                                break;
+                            case "[VOWEL]":
+                                presampVowList.Add(line.Split("=")[0] + "=" + line.Split("=")[1]);
+                                break;
+                        }
+                    }
+                } catch (Exception e) {
+                    Log.Error(e, "Failed to read presamp ini.");
+                }
+            }
+
+            // Create consonant dictionary from presamp if possible
+            presampConsonants = presampConsList.SelectMany(line => {
+                var parts = line.Split('=');
+                return parts[1].Split(',').Select(cv => (cv, parts[0]));
+            }).ToDictionary(t => t.Item1, t => t.Item2);
+
+            // and create vowel dictionary from presamp if possible
+            presampVowels = presampVowList.SelectMany(line => {
+                var parts = line.Split('=');
+                return parts[1].Split(',').Select(cv => (cv, parts[0]));
+            }).ToDictionary(t => t.Item1, t => t.Item2);
 
             if (prevNeighbour == null) {
                 // Use "- V" or "- CV" if present in voicebank
@@ -95,7 +147,10 @@ namespace OpenUtau.Plugin.Builtin {
                 var prevUnicode = ToUnicodeElements(prevNeighbour?.lyric);
 
                 // Current note is VV
-                if (vowelLookup.TryGetValue(prevUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
+                if (presampVowels.TryGetValue(prevUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
+                    currentLyric = $"{vow} {currentLyric}";
+                }
+                else if (vowelLookup.TryGetValue(prevUnicode.LastOrDefault() ?? string.Empty, out vow)) {
                     currentLyric = $"{vow} {currentLyric}";
                 }
             }
@@ -116,13 +171,19 @@ namespace OpenUtau.Plugin.Builtin {
                 // Insert VC before next neighbor
                 // Get vowel from current note
                 var vowel = "";
-                if (vowelLookup.TryGetValue(currentUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
+                string vow;
+                if (presampVowels.TryGetValue(currentUnicode.LastOrDefault() ?? string.Empty, out vow)) {
+                    vowel = vow;
+                } else if (vowelLookup.TryGetValue(currentUnicode.LastOrDefault() ?? string.Empty, out vow)) {
                     vowel = vow;
                 }
 
                 // Get consonant from next note
                 var consonant = "";
-                if (consonantLookup.TryGetValue(nextUnicode.FirstOrDefault() ?? string.Empty, out var con)) {
+                string con;
+                if (presampConsonants.TryGetValue(nextUnicode.FirstOrDefault() ?? string.Empty, out con)) {
+                    consonant = con;
+                } else if (consonantLookup.TryGetValue(nextUnicode.FirstOrDefault() ?? string.Empty, out con)) {
                     consonant = con;
                 }
 
