@@ -57,6 +57,8 @@
     <system:String x:Key="prefs.appearance.theme.light">Chiaro</system:String>
     <system:String x:Key="prefs.appearance.theme.dark">Scuro</system:String>
     <system:String x:Key="prefs.appearance.theme.note">Nota: Riavvia OpenUTAU dopo aver scelto un tema.</system:String>
+    <system:String x:Key="prefs.appearance.lang">Lingua</system:String>
+    <system:String x:Key="prefs.appearance.lang.note">Nota: Riavvia OpenUTAU dopo aver scelto una lingua.</system:String>
 
     <!-- Dialogs -->
     <system:String x:Key="dialogs.noresampler.caption">Nessun resampler</system:String>
