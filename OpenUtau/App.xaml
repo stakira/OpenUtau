@@ -16,13 +16,15 @@
                 <ResourceDictionary Source="UI\Styles\TrackHeaderStyles.xaml"/>
                 <ResourceDictionary Source="UI\Styles\ProgressBar.xaml"/>
                 <ResourceDictionary Source="UI\Styles\LyricBoxStyle.xaml"/>
+                <ResourceDictionary Source="UI\Strings.es-ES.xaml"/>
+                <ResourceDictionary Source="UI\Strings.es-LA.xaml"/>
+                <ResourceDictionary Source="UI\Strings.it-IT.xaml"/>
                 <ResourceDictionary Source="UI\Strings.ja-JP.xaml"/>
-                <ResourceDictionary Source="UI\Strings.zh-CN.xaml"/>
                 <ResourceDictionary Source="UI\Strings.ko-KR.xaml"/>
+                <ResourceDictionary Source="UI\Strings.nl-NL.xaml"/>
                 <ResourceDictionary Source="UI\Strings.pl-PL.xaml"/>
                 <ResourceDictionary Source="UI\Strings.pt-BR.xaml"/>
-                <ResourceDictionary Source="UI\Strings.es-ES.xaml"/>
-                <ResourceDictionary Source="UI\Strings.it-IT.xaml"/>
+                <ResourceDictionary Source="UI\Strings.zh-CN.xaml"/>
                 <ResourceDictionary Source="UI\Strings.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

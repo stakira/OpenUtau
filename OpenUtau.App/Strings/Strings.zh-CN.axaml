@@ -56,6 +56,8 @@
   <system:String x:Key="prefs.appearance.theme.light">亮</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">暗</system:String>
   <system:String x:Key="prefs.appearance.theme.note">注意: 切换主题后请重启OpenUtau</system:String>
+  <system:String x:Key="prefs.appearance.lang">语言</system:String>
+  <system:String x:Key="prefs.appearance.lang.note">注意: 切换语言后请重启OpenUtau.</system:String>
 
   <!-- Singers -->
   <system:String x:Key="singers.caption">歌手</system:String>
