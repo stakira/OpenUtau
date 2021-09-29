@@ -8,7 +8,7 @@ namespace OpenUtau.Plugin.Builtin {
     [Phonemizer("Korean CVVC Phonemizer (standard pronunciation) ", "KO CVVC", "RYUUSEI")]
     public class KoreanCVVCStandardPronunciationPhonemizer : Phonemizer {
         static readonly string initialConsonantsTable = "ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ";
-        static readonly string vowelsTable = "ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡ";
+        static readonly string vowelsTable = "ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ";
         static readonly string lastConsonantsTable = "　ㄱㄲㄳㄴㄵㄶㄷㄹㄺㄻㄼㄽㄾㄿㅀㅁㅂㅄㅅㅆㅇㅈㅊㅋㅌㅍㅎ";
         static readonly ushort unicodeKoreanBase = 0xAC00;
         static readonly ushort unicodeKoreanLast = 0xD79F;
@@ -66,7 +66,7 @@ namespace OpenUtau.Plugin.Builtin {
             "i=ㅣ",
             "e=ㅔ,ㅐ",
             "eui=ㅢ",
-            "ue=ㅞ,ㅙ",
+            "we=ㅞ,ㅙ",
             "uo=ㅝ",
             "wa=ㅘ",
             "wi=ㅟ",
