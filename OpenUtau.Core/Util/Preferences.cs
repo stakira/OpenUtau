@@ -32,10 +32,14 @@ namespace OpenUtau.Core.Util {
         }
 
         private static void Load() {
-            if (File.Exists(filename)) {
-                Default = JsonConvert.DeserializeObject<SerializablePreferences>(File.ReadAllText(filename));
-            } else {
-                Reset();
+            try {
+                if (File.Exists(filename)) {
+                    Default = JsonConvert.DeserializeObject<SerializablePreferences>(File.ReadAllText(filename));
+                } else {
+                    Reset();
+                }
+            } catch {
+                Default = new SerializablePreferences();
             }
         }
 
@@ -57,6 +61,7 @@ namespace OpenUtau.Core.Util {
             public bool ShowTips = true;
             public int Theme;
             public int PrerenderThreads = 8;
+            public string Language = string.Empty;
         }
     }
 }

@@ -7,13 +7,15 @@ OpenUtau is an open source editing environment for UTAU community with modern us
 [![Discord](https://img.shields.io/discord/551606189386104834?style=for-the-badge&label=discord&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/UfpMnqMmEM)
 [![Trello](https://img.shields.io/badge/trello-go-blue?style=for-the-badge&logo=trello)](https://trello.com/b/93ANoCIV/openutau)
 
-## How to Install
+## Getting Started
 
 [![Download](https://img.shields.io/static/v1?style=for-the-badge&logo=github&label=download&message=latest&labelColor=FF347C&color=4ea6ea)](https://github.com/stakira/OpenUtau/releases/download/OpenUtau-Latest/OpenUtau.zip)
 
-- Download from Github release. Currently Windows-Only, but the cross-platform version is a WIP.
-- Install singer from menu Tools -> Install Singer. Select the singer zip or rar file.
-- Put resampler exe or dll under Resamplers folder. Open Preferences menu to select resampler.
+It is **strongly recommend** to go through a few Wiki pages before use:
+- [Getting-Started](https://github.com/stakira/OpenUtau/wiki/Getting-Started)
+- [Resamplers](https://github.com/stakira/OpenUtau/wiki/Resamplers)
+- [Phonemizers](https://github.com/stakira/OpenUtau/wiki/Phonemizers)
+- [FAQ](https://github.com/stakira/OpenUtau/wiki/FAQ)
 
 ## How to Contribute
 

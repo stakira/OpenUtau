@@ -8,7 +8,19 @@
   <Application.Resources>
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
-        <ResourceInclude Source='/Strings/Strings.axaml'/>
+        <ResourceInclude Source="/Strings/Strings.es-ES.axaml"/>
+        <ResourceInclude Source="/Strings/Strings.es-LA.axaml"/>
+        <ResourceInclude Source="/Strings/Strings.it-IT.axaml"/>
+        <ResourceInclude Source="/Strings/Strings.ja-JP.axaml"/>
+        <ResourceInclude Source="/Strings/Strings.ko-KR.axaml"/>
+        <ResourceInclude Source="/Strings/Strings.nl-NL.axaml"/>
+        <ResourceInclude Source="/Strings/Strings.pl-PL.axaml"/>
+        <ResourceInclude Source="/Strings/Strings.pt-BR.axaml"/>
+        <ResourceInclude Source="/Strings/Strings.zh-CN.axaml"/>
+        <ResourceInclude Source="/Strings/Strings.axaml"/>
+        <ResourceInclude Source="/Colors/LightTheme.axaml"/>
+        <ResourceInclude Source="/Colors/DarkTheme.axaml"/>
+        <ResourceInclude Source="/Colors/Brushes.axaml"/>
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
   </Application.Resources>

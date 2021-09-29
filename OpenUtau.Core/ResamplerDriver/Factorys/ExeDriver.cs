@@ -27,6 +27,7 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys {
         }
 
         public byte[] DoResampler(DriverModels.EngineInput Args, ILogger logger) {
+            const bool debugResampler = false;
             byte[] data = new byte[0];
             if (!_isLegalPlugin) {
                 return data;
@@ -36,19 +37,33 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys {
             string ArgParam = FormattableString.Invariant(
                 $"\"{Args.inputWaveFile}\" \"{tmpFile}\" {Args.NoteString} {Args.Velocity} \"{Args.StrFlags}\" {Args.Offset} {Args.RequiredLength} {Args.Consonant} {Args.Cutoff} {Args.Volume} {Args.Modulation} !{Args.Tempo} {Base64.Base64EncodeInt12(Args.pitchBend)}");
             logger.Information($" > [thread-{threadId}] {ExePath} {ArgParam}");
-            var p = Process.Start(new ProcessStartInfo(ExePath, ArgParam) {
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                CreateNoWindow = true,
-            });
-            while (!p.StandardOutput.EndOfStream) {
-                logger.Information($" >>> [thread-{threadId}] {p.StandardOutput.ReadLine()}");
-            }
-            p.WaitForExit();
-            if (p != null) {
-                p.Close();
-                p.Dispose();
+            using (var proc = new Process()) {
+                proc.StartInfo = new ProcessStartInfo(ExePath, ArgParam) {
+                    UseShellExecute = false,
+                    RedirectStandardOutput = debugResampler,
+                    RedirectStandardError = debugResampler,
+                    CreateNoWindow = true,
+                };
+#pragma warning disable CS0162 // Unreachable code detected
+                if (debugResampler) {
+                    proc.OutputDataReceived += (o, e) => logger.Information($" >>> [thread-{threadId}] {e.Data}");
+                    proc.ErrorDataReceived += (o, e) => logger.Error($" >>> [thread-{threadId}] {e.Data}");
+                }
+                proc.Start();
+                if (debugResampler) {
+                    proc.BeginOutputReadLine();
+                    proc.BeginErrorReadLine();
+                }
+#pragma warning restore CS0162 // Unreachable code detected
+                if (!proc.WaitForExit(10000)) {
+                    logger.Warning($"[thread-{threadId}] Timeout, killing...");
+                    try {
+                        proc.Kill();
+                        logger.Warning($"[thread-{threadId}] Killed.");
+                    } catch (Exception e) {
+                        logger.Error(e, $"[thread-{threadId}] Failed to kill");
+                    }
+                }
             }
             if (File.Exists(tmpFile)) {
                 data = File.ReadAllBytes(tmpFile);

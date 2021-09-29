@@ -56,7 +56,7 @@ namespace OpenUtau.App.ViewModels {
             DocManager.Inst.ExecuteCmd(new SaveProjectNotification(file));
         }
 
-        public void Import(string[] files) {
+        public void ImportTracks(string[] files) {
             if (files == null) {
                 return;
             }

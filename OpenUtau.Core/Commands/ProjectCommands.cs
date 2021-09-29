@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core {
@@ -13,7 +14,7 @@ namespace OpenUtau.Core {
         public readonly double newBpm;
         public readonly double oldBpm;
         public BpmCommand(UProject project, double bpm) : base(project) {
-            newBpm = bpm;
+            newBpm = Math.Clamp(bpm, 10, 1000);
             oldBpm = project.bpm;
         }
         public override void Execute() => project.bpm = newBpm;

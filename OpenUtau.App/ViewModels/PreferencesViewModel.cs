@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
+using Avalonia;
+using Avalonia.Markup.Xaml.MarkupExtensions;
 using OpenUtau.Core;
 using OpenUtau.Core.Util;
 using ReactiveUI;
@@ -34,6 +38,11 @@ namespace OpenUtau.App.ViewModels {
             get => theme;
             set => this.RaiseAndSetIfChanged(ref theme, value);
         }
+        public List<CultureInfo?>? Languages { get; }
+        public CultureInfo? Language {
+            get => language;
+            set => this.RaiseAndSetIfChanged(ref language, value);
+        }
 
         private List<AudioOutputDevice>? audioOutputDevices;
         private AudioOutputDevice? audioOutputDevice;
@@ -41,6 +50,7 @@ namespace OpenUtau.App.ViewModels {
         private EngineInfo? previewResampler;
         private EngineInfo? exportResampler;
         private int theme;
+        private CultureInfo? language;
 
         public PreferencesViewModel() {
             var audioOutput = PlaybackManager.Inst.AudioOutput;
@@ -68,6 +78,20 @@ namespace OpenUtau.App.ViewModels {
                     exportResampler = null;
                 }
             }
+            var pattern = new Regex(@"Strings\.([\w-]+)\.axaml");
+            Languages = Application.Current.Resources.MergedDictionaries
+                .Select(res => (ResourceInclude)res)
+                .OfType<ResourceInclude>()
+                .Select(res => pattern.Match(res.Source!.OriginalString))
+                .Where(m => m.Success)
+                .Select(m => m.Groups[1].Value)
+                .Select(lang => CultureInfo.GetCultureInfo(lang))
+                .ToList();
+            Languages.Insert(0, CultureInfo.GetCultureInfo("en-US"));
+            Languages.Insert(0, null);
+            Language = string.IsNullOrEmpty(Preferences.Default.Language)
+                ? null
+                : CultureInfo.GetCultureInfo(Preferences.Default.Language);
             theme = Preferences.Default.Theme;
 
             this.WhenAnyValue(vm => vm.AudioOutputDevice)
@@ -97,16 +121,22 @@ namespace OpenUtau.App.ViewModels {
                     Preferences.Default.ExternalExportEngine = resampler?.Name;
                     Preferences.Save();
                 });
+            this.WhenAnyValue(vm => vm.Language)
+                .Subscribe(lang => {
+                    Preferences.Default.Language = lang?.Name ?? string.Empty;
+                    Preferences.Save();
+                    App.SetLanguage(Preferences.Default.Language);
+                });
             this.WhenAnyValue(vm => vm.Theme)
                 .Subscribe(theme => {
                     Preferences.Default.Theme = theme;
                     Preferences.Save();
+                    App.SetTheme();
                 });
         }
 
         public void TestAudioOutputDevice() {
             PlaybackManager.Inst.PlayTestSound();
         }
-
     }
 }

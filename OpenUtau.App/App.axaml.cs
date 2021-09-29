@@ -4,12 +4,15 @@ using Avalonia.Markup.Xaml;
 using System.Globalization;
 using System.Threading;
 using OpenUtau.App.Views;
+using Avalonia.Markup.Xaml.MarkupExtensions;
+using System.Linq;
 
 namespace OpenUtau.App {
     public class App : Application {
         public override void Initialize() {
             AvaloniaXamlLoader.Load(this);
             InitializeCulture();
+            InitializeTheme();
         }
 
         public override void OnFrameworkInitializationCompleted() {
@@ -21,9 +24,47 @@ namespace OpenUtau.App {
         }
 
         public void InitializeCulture() {
+            var language = CultureInfo.InstalledUICulture.Name;
+            if (!string.IsNullOrEmpty(Core.Util.Preferences.Default.Language)) {
+                language = Core.Util.Preferences.Default.Language;
+            }
+            SetLanguage(language);
+
             // Force using InvariantCulture to prevent issues caused by culture dependent string conversion, especially for floating point numbers.
-            Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("es");
-            Thread.CurrentThread.CurrentUICulture = CultureInfo.CreateSpecificCulture("es");
+            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+            Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
+        }
+
+        public static void SetLanguage(string language) {
+            var dictionaryList = Current.Resources.MergedDictionaries
+                .Select(res => (ResourceInclude)res)
+                .ToList();
+            var resDict = dictionaryList.
+                FirstOrDefault(d => d.Source!.OriginalString.Contains(language));
+            if (resDict != null) {
+                Current.Resources.MergedDictionaries.Remove(resDict);
+                Current.Resources.MergedDictionaries.Add(resDict);
+            }
+        }
+
+        static void InitializeTheme() {
+            SetTheme();
+        }
+
+        public static void SetTheme() {
+            var light = Current.Resources.MergedDictionaries
+                .Select(res => (ResourceInclude)res)
+                .FirstOrDefault(d => d.Source!.OriginalString.Contains("LightTheme"));
+            var dark = Current.Resources.MergedDictionaries
+                .Select(res => (ResourceInclude)res)
+                .FirstOrDefault(d => d.Source!.OriginalString.Contains("DarkTheme"));
+            if (Core.Util.Preferences.Default.Theme == 0) {
+                Current.Resources.MergedDictionaries.Remove(light);
+                Current.Resources.MergedDictionaries.Add(light);
+            } else {
+                Current.Resources.MergedDictionaries.Remove(dark);
+                Current.Resources.MergedDictionaries.Add(dark);
+            }
         }
     }
 }

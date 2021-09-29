@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
-using Avalonia.Data.Converters;
 using DynamicData.Binding;
 using OpenUtau.Core;
 using ReactiveUI;
@@ -16,16 +13,6 @@ using SharpCompress.Common;
 using SharpCompress.Readers;
 
 namespace OpenUtau.App.ViewModels {
-    public class EncodingNameConverter : IValueConverter {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-            return ((Encoding)value).EncodingName;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-            throw new NotImplementedException();
-        }
-    }
-
     public class SingerSetupViewModel : ViewModelBase {
         public int Step {
             get => step;
