@@ -5,8 +5,8 @@ using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("New Korean CVVC Phonemizer", "KO CVVC", "RYUUSEI")]
-    public class NewKoreanCVVCPhonemizer : Phonemizer {
+    [Phonemizer("Korean CVVC Phonemizer (standard pronunciation) ", "KO CVVC", "RYUUSEI")]
+    public class KoreanCVVCStandardPronunciationPhonemizer : Phonemizer {
         static readonly string initialConsonantsTable = "ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ";
         static readonly string vowelsTable = "ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡ";
         static readonly string lastConsonantsTable = "　ㄱㄲㄳㄴㄵㄶㄷㄹㄺㄻㄼㄽㄾㄿㅀㅁㅂㅄㅅㅆㅇㅈㅊㅋㅌㅍㅎ";
@@ -201,7 +201,7 @@ namespace OpenUtau.Plugin.Builtin {
         static readonly Dictionary<string, string> ruleOfConsonantsLookup;
 
 
-        static NewKoreanCVVCPhonemizer() {
+        static KoreanCVVCStandardPronunciationPhonemizer() {
             initialConsonantLookup = initialConsonants.ToList()
                 .SelectMany(line => {
                     var parts = line.Split('=');
