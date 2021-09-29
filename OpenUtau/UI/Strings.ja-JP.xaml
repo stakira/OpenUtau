@@ -91,7 +91,7 @@ Ctrl + ボックス選択:
 Up/Down:
 Ctrl + Up/Down:
 Space:</system:String>
-    <system:String x:Key="tip.notes.basics.actions" xml:space="preserve"ヒント表示・非表示
+    <system:String x:Key="tip.notes.basics.actions" xml:space="preserve">ヒント表示・非表示
 音符を追加
 音符を削除
 重複した音符を削除
