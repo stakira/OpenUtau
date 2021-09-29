@@ -27,9 +27,9 @@
     <system:String x:Key="menu.edit.selectall">全て選択</system:String>
 
     <system:String x:Key="menu.tools">ツール</system:String>
-    <system:String x:Key="menu.tools.singers">音源...</system:String>
-    <system:String x:Key="menu.tools.singer.install">音源を追加...</system:String>
-    <system:String x:Key="menu.tools.singer.installadv">音源を追加(高度)...</system:String>
+    <system:String x:Key="menu.tools.singers">シンガー...</system:String>
+    <system:String x:Key="menu.tools.singer.install">シンガーをインストール...</system:String>
+    <system:String x:Key="menu.tools.singer.installadv">シンガーをインストール(高度)...</system:String>
     <system:String x:Key="menu.tools.project.expressions">表情...</system:String>
     <system:String x:Key="menu.tools.prefs">設定...</system:String>
 
@@ -39,7 +39,7 @@
     <!-- Preferences -->
     <system:String x:Key="prefs.caption">環境設定</system:String>
     <system:String x:Key="prefs.paths">ファイルの場所</system:String>
-    <system:String x:Key="prefs.paths.singer">音源の場所</system:String>
+    <system:String x:Key="prefs.paths.singer">シンガーの場所</system:String>
     <system:String x:Key="prefs.paths.add">追加</system:String>
     <system:String x:Key="prefs.paths.remove">削除</system:String>
     <system:String x:Key="prefs.playback">再生</system:String>
