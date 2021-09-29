@@ -55,6 +55,8 @@
     <system:String x:Key="prefs.appearance.theme.light">ライト</system:String>
     <system:String x:Key="prefs.appearance.theme.dark">ダーク</system:String>
     <system:String x:Key="prefs.appearance.theme.note">Note: テーマを変更した際は、OpenUTAUを再起動してください。</system:String>
+    <system:String x:Key="prefs.appearance.lang">言語</system:String>
+    <system:String x:Key="prefs.appearance.lang.note">Note: 言語を変更した際は、OpenUTAUを再起動してください。</system:String>
 
     <!-- Dialogs -->
     <system:String x:Key="dialogs.noresampler.caption">エンジンがありません</system:String>
