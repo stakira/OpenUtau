@@ -190,6 +190,7 @@ namespace OpenUtau.Plugin.Builtin {
             "　ㅊ=ㅊㅇ",
             "　ㅋ=ㅋㅇ",
             "　ㅌ=ㅌㅇ",
+            "　ㅍ=ㅍㅇ",
             "　ㅎ=ㅎㅇ",
         };
 
