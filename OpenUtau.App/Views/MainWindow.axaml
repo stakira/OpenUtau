@@ -8,7 +8,8 @@
         x:Class="OpenUtau.App.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
         Title="OpenUtau" MinWidth="800" MinHeight="600" KeyDown="OnKeyDown"
-        TransparencyLevelHint="None" Background="Transparent" ExtendClientAreaToDecorationsHint="False">
+        TransparencyLevelHint="None" Background="{DynamicResource MainWindowBackgroundBrush}"
+        ExtendClientAreaToDecorationsHint="False">
   <Window.Styles>
     <Style>
       <Style.Resources>
@@ -16,7 +17,6 @@
     </Style>
   </Window.Styles>
   <Design.DataContext>
-    <vm:MainWindowViewModel/>
   </Design.DataContext>
   <Grid RowDefinitions="24,24,1*,20,4" ColumnDefinitions="250,*,24" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="{Binding $parent.WindowDecorationMargin}">
     <Menu Grid.Row="0" Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Left">
@@ -25,7 +25,7 @@
         <MenuItem Header="{DynamicResource menu.file.open}" InputGesture="Ctrl+O" Click="OnMenuOpen"/>
         <MenuItem Header="{DynamicResource menu.file.save}" InputGesture="Ctrl+S" Click="OnMenuSave"/>
         <MenuItem Header="{DynamicResource menu.file.saveas}" Click="OnMenuSaveAs"/>
-        <MenuItem Header="{DynamicResource menu.file.import}" Click="OnMenuImport"/>
+        <MenuItem Header="{DynamicResource menu.file.importtracks}" Click="OnMenuImportTracks"/>
         <MenuItem Header="{DynamicResource menu.file.importaudio}" Click="OnMenuImportAudio"/>
         <MenuItem Header="{DynamicResource menu.file.importmidi}" Click="OnMenuImportMidi"/>
         <MenuItem Header="{DynamicResource menu.file.exportall}"/>
@@ -59,19 +59,19 @@
       <Border Classes="playback" Width="88" HorizontalAlignment="Center">
         <StackPanel Orientation="Horizontal">
           <Button Command="{Binding PlaybackViewModel.SeekStart}">
-            <Path Fill="{DynamicResource SystemColorButtonTextColor}" VerticalAlignment="Center" HorizontalAlignment="Center"
+            <Path Fill="{Binding $parent.Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center"
                   Data="M 0 0 L 2 0 L 2 9 L 0 9 Z M 2 4.5 L 7 0 L 7 9 Z"/>
           </Button>
           <Button Click="OnPlayOrPause">
-            <Path Fill="{DynamicResource SystemColorButtonTextColor}" VerticalAlignment="Center" HorizontalAlignment="Center"
+            <Path Fill="{Binding $parent.Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center"
                   Data="M 0 0 L 7 6.5 L 0 13 Z"/>
           </Button>
           <Button Command="{Binding PlaybackViewModel.Pause}">
-            <Path Fill="{DynamicResource SystemColorButtonTextColor}" VerticalAlignment="Center" HorizontalAlignment="Center"
+            <Path Fill="{Binding $parent.Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center"
                   Data="M 0 0 L 2 0 L 2 9 L 0 9 Z M 4 0 L 6 0 L 6 9 L 4 9 Z"/>
           </Button>
           <Button Command="{Binding PlaybackViewModel.SeekEnd}">
-            <Path Fill="{DynamicResource SystemColorButtonTextColor}" VerticalAlignment="Center" HorizontalAlignment="Center"
+            <Path Fill="{Binding $parent.Foreground}" VerticalAlignment="Center" HorizontalAlignment="Center"
                   Data="M 0 0 L 5 4.5 L 0 9 Z M 5 0 L 7 0 L 7 9 L 5 9 Z"/>
           </Button>
         </StackPanel>
@@ -80,11 +80,6 @@
         <TextBlock Classes="playback" Text="{Binding Path=PlaybackViewModel.PlayPosTime, StringFormat={}{0:mm\\:ss\\.fff}}"/>
       </Border>
     </Panel>
-    <c:TrackHeaderCanvas Grid.Row="2" Grid.Column="0"  ClipToBounds="True"
-                         DataContext="{Binding TracksViewModel}"
-                         TrackHeight="{Binding TrackHeight}"
-                         TrackOffset="{Binding TrackOffset}"
-                         Items="{Binding Tracks}"/>
     <ScrollBar Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,4,0,4" Orientation="Horizontal" AllowAutoHide="False"
                DataContext="{Binding TracksViewModel}"
                Maximum="{Binding TickCount, Mode=OneWay}"
@@ -101,6 +96,11 @@
                SmallChange="{Binding SmallChangeY}" PointerWheelChanged="VScrollPointerWheelChanged"/>
     <Canvas Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="24" Background="Transparent"
             PointerWheelChanged="TimelinePointerWheelChanged"/>
+    <c:TrackHeaderCanvas Grid.Row="2" Grid.Column="0"  ClipToBounds="True"
+                         DataContext="{Binding TracksViewModel}"
+                         TrackHeight="{Binding TrackHeight}"
+                         TrackOffset="{Binding TrackOffset}"
+                         Items="{Binding Tracks}"/>
     <c:TrackBackground Grid.Row="2" Grid.Column="1" Margin="0" IsHitTestVisible="False"
                        DataContext="{Binding TracksViewModel}"
                        Bounds="{Binding Bounds, Mode=OneWayToSource}"

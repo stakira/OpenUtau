@@ -8,7 +8,7 @@
   <system:String x:Key="menu.file.openas">Open As</system:String>
   <system:String x:Key="menu.file.save">Save</system:String>
   <system:String x:Key="menu.file.saveas">Save As...</system:String>
-  <system:String x:Key="menu.file.import">Import...</system:String>
+  <system:String x:Key="menu.file.importtracks">Import Tracks...</system:String>
   <system:String x:Key="menu.file.importaudio">Import Audio...</system:String>
   <system:String x:Key="menu.file.importmidi">Import Midi...</system:String>
   <system:String x:Key="menu.file.exportall">Export All</system:String>
@@ -56,6 +56,8 @@
   <system:String x:Key="prefs.appearance.theme.light">Light</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">Dark</system:String>
   <system:String x:Key="prefs.appearance.theme.note">Note: please restart OpenUtau after changing theme.</system:String>
+  <system:String x:Key="prefs.appearance.lang">Language</system:String>
+  <system:String x:Key="prefs.appearance.lang.note">Note: please restart OpenUtau after changing language.</system:String>
 
   <!-- Singers -->
   <system:String x:Key="singers.caption">Singers</system:String>
@@ -123,4 +125,9 @@ Transpose selected notes by octave
 Play</system:String>
   <system:String x:Key="tip.notes.zoomx">◀ Scroll here to zoom horizontally ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">Scroll here to zoom vertically ▶</system:String>
+  <system:String x:Key="tip.exps.keys" xml:space="preserve">Hold Left Mouse Button:
+Hold Right Mouse Button:</system:String>
+  <system:String x:Key="tip.exps.actions" xml:space="preserve">Set expressions
+Reset expressions</system:String>
+
 </ResourceDictionary>

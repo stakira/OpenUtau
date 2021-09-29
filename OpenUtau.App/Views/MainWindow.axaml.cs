@@ -86,7 +86,7 @@ namespace OpenUtau.App.Views {
             viewModel.SaveProject(await dialog.ShowAsync(this));
         }
 
-        async void OnMenuImport(object sender, RoutedEventArgs args) {
+        async void OnMenuImportTracks(object sender, RoutedEventArgs args) {
             var dialog = new OpenFileDialog() {
                 Filters = new List<FileDialogFilter>() {
                     new FileDialogFilter() {
@@ -97,7 +97,7 @@ namespace OpenUtau.App.Views {
                 AllowMultiple = true,
             };
             try {
-                viewModel.Import(await dialog.ShowAsync(this));
+                viewModel.ImportTracks(await dialog.ShowAsync(this));
             } catch (Exception e) {
                 Log.Error(e, $"Failed to import files");
                 _ = await MessageBox.Show(

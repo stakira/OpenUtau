@@ -73,13 +73,20 @@ namespace OpenUtau.Core.Render {
                 faders.Add(fader);
             }
             items = items.OrderBy(item => item.PosMs).ToList();
+            int threads = Util.Preferences.Default.PrerenderThreads;
             var progress = new Progress(items.Count);
-            var task = Task.Run(async () => {
-                var tasks = items.Select(item => {
+            var task = Task.Run(() => {
+                var progress = new Progress(items.Count);
+                Parallel.ForEach(source: items, parallelOptions: new ParallelOptions() {
+                    MaxDegreeOfParallelism = threads
+                }, body: item => {
+                    if (source.Token.IsCancellationRequested) {
+                        return;
+                    }
                     item.progress = progress;
-                    return Task<RenderItem>.Factory.StartNew(ResampleItem, item, source.Token);
+                    Resample(item);
                 });
-                await Task.WhenAll(tasks);
+                ReleaseSourceTemp();
                 progress.Clear();
             });
             var master = new MasterAdapter(new WaveMix(faders));
@@ -106,7 +113,7 @@ namespace OpenUtau.Core.Render {
         }
 
         public CancellationTokenSource PreRenderProject() {
-            int threads = Core.Util.Preferences.Default.PrerenderThreads;
+            int threads = Util.Preferences.Default.PrerenderThreads;
             var source = new CancellationTokenSource();
             Task.Run(() => {
                 try {
@@ -114,31 +121,24 @@ namespace OpenUtau.Core.Render {
                     if (source.Token.IsCancellationRequested) {
                         return;
                     }
-                    TaskFactory<RenderItem> factory = new TaskFactory<RenderItem>(source.Token);
-                    using (SemaphoreSlim slim = new SemaphoreSlim(threads)) {
-                        RenderItem[] items;
-                        lock (project) {
-                            items = PrepareProject(project, startTick)
-                                .OrderBy(item => item.PosMs)
-                                .ToArray();
-                        }
-                        var progress = new Progress(items.Length);
-                        var tasks = items
-                            .Select(item => factory.StartNew((obj) => {
-                                slim.Wait();
-                                if (source.Token.IsCancellationRequested) {
-                                    return null;
-                                }
-                                var renderItem = obj as RenderItem;
-                                renderItem.progress = progress;
-                                Resample(renderItem);
-                                slim.Release();
-                                return renderItem;
-                            }, item, source.Token)).ToArray();
-                        Task.WaitAll(tasks);
-                        ReleaseSourceTemp();
-                        progress.Clear();
+                    RenderItem[] items;
+                    lock (project) {
+                        items = PrepareProject(project, startTick)
+                            .OrderBy(item => item.PosMs)
+                            .ToArray();
                     }
+                    var progress = new Progress(items.Length);
+                    Parallel.ForEach(source: items, parallelOptions: new ParallelOptions() {
+                        MaxDegreeOfParallelism = threads
+                    }, body: item => {
+                        if (source.Token.IsCancellationRequested) {
+                            return;
+                        }
+                        item.progress = progress;
+                        Resample(item);
+                    });
+                    ReleaseSourceTemp();
+                    progress.Clear();
                 } catch (Exception e) {
                     if (!source.IsCancellationRequested) {
                         Log.Error(e, "Failed to pre-render.");
@@ -177,10 +177,10 @@ namespace OpenUtau.Core.Render {
         }
 
         void Resample(RenderItem item) {
-            string output = string.Empty;
+            byte[] data = null;
             try {
                 uint hash = item.HashParameters();
-                byte[] data = cache.Get(hash);
+                data = cache.Get(hash);
                 if (data == null) {
                     CopySourceTemp(item);
                     data = driver.DoResampler(DriverModels.CreateInputModel(item, 0), Log.Logger);
@@ -190,12 +190,12 @@ namespace OpenUtau.Core.Render {
                     cache.Put(hash, data);
                     Log.Information($"Sound {hash:x} {item.Oto.Alias} {item.GetResamplerExeArgs()} resampled.");
                 }
-                item.Data = data;
-                item.OnComplete?.Invoke(data);
-                item.progress?.CompleteOne($"Resampling \"{item.phonemeName}\"");
             } catch (Exception e) {
-                Log.Error($"Failed to render item {item.SourceFile} {item.Oto.Alias} {item.GetResamplerExeArgs()}.\noutput: {output}\n{e}");
-                item.Data = new byte[0];
+                Log.Error(e, $"Failed to render item {item.SourceFile} {item.Oto.Alias} {item.GetResamplerExeArgs()}.");
+            } finally {
+                item.Data = data ?? new byte[0];
+                item.OnComplete?.Invoke(item.Data);
+                item.progress?.CompleteOne($"Resampling \"{item.phonemeName}\"");
             }
         }
 

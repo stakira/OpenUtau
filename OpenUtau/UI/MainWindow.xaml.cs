@@ -354,7 +354,7 @@ namespace OpenUtau.UI {
 
         private void MenuNew_Click(object sender, RoutedEventArgs e) { CmdNewFile(); }
         private void MenuOpen_Click(object sender, RoutedEventArgs e) { OpenFileDialog(); }
-        private void MenuImport_Click(object sender, RoutedEventArgs e) { ImportFilesDialog(); }
+        private void MenuImportTracks_Click(object sender, RoutedEventArgs e) { ImportFilesDialog(); }
         private void MenuSave_Click(object sender, RoutedEventArgs e) { CmdSaveFile(); }
         private void MenuSaveAs_Click(object sender, RoutedEventArgs e) { CmdSaveFile(true); }
         private void MenuSaveAsUst_Click(object sender, RoutedEventArgs e) {
