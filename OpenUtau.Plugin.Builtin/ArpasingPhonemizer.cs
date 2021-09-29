@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
 using Serilog;
@@ -18,73 +16,13 @@ namespace OpenUtau.Plugin.Builtin {
     /// </summary>
     [Phonemizer("English Arpasing Phonemizer", "EN ARPA")]
     public class ArpasingPhonemizer : Phonemizer {
-        enum PhoneType { vowel, stop, affricate, fricative, aspirate, liquid, nasal, semivowel }
-        /// <summary>
-        /// The CMUdict is stored as a trie for compact footprint and quick access.
-        /// See https://en.wikipedia.org/wiki/Trie.
-        /// </summary>
-        class TrieNode {
-            public Dictionary<char, TrieNode> children = new Dictionary<char, TrieNode>();
-            public string[] symbols;
-        }
-
-        static readonly object initLock = new object();
-        static Dictionary<string, PhoneType> phones;
-        static Dictionary<string, string[]> vowelFallback;
-        /// <summary>
-        /// The root node of the CMUdict trie.
-        /// </summary>
-        static TrieNode root;
-
-        static void BuildTrie(TrieNode node, string word, int index, string symbols) {
-            if (index == word.Length) {
-                node.symbols = symbols.Split()
-                    .Select(symbol => RemoveTailDigits(symbol))
-                    .Where(symbol => phones.ContainsKey(symbol))
-                    .ToArray();
-                return;
-            }
-            if (!node.children.TryGetValue(word[index], out var child)) {
-                child = new TrieNode();
-                node.children[word[index]] = child;
-            }
-            BuildTrie(child, word, index + 1, symbols);
-        }
-
-        /// <summary>
-        /// Produce a symbol list from hints or lyric.
-        /// </summary>
-        /// <param name="note"></param>
-        /// <returns></returns>
-        static string[] GetSymbols(Note note) {
-            if (string.IsNullOrEmpty(note.phoneticHint)) {
-                // User has not provided hint, query CMUdict.
-                return QueryTrie(root, note.lyric.ToLowerInvariant(), 0);
-            }
-            // Split space-separated symbols into an array.
-            return note.phoneticHint.Split()
-                .Where(s => phones.ContainsKey(s)) // skip the invalid symbols.
-                .ToArray();
-        }
-
-        static string[] QueryTrie(TrieNode node, string word, int index) {
-            if (index == word.Length) {
-                return node.symbols;
-            }
-            if (node.children.TryGetValue(word[index], out var child)) {
-                return QueryTrie(child, word, index + 1);
-            }
-            return null;
-        }
-
-        static string RemoveTailDigits(string s) {
-            while (char.IsDigit(s.Last())) {
-                s = s.Substring(0, s.Length - 1);
-            }
-            return s;
-        }
-
+        private Dictionary<string, string[]> vowelFallback;
         private USinger singer;
+        private IG2p cmudict;
+        private IG2p pluginDict;
+        private IG2p singerDict;
+        private IG2p mergedG2p;
+
         private readonly List<Tuple<int, int>> alignments = new List<Tuple<int, int>>();
 
         /// <summary>
@@ -93,70 +31,66 @@ namespace OpenUtau.Plugin.Builtin {
         public int ConsonantLength { get; set; } = 60;
 
         public ArpasingPhonemizer() {
-            Initialize();
+            try {
+                Initialize();
+            } catch (Exception e) {
+                Log.Error(e, "Failed to initialize.");
+            }
         }
 
         /// <summary>
         /// Initializes the CMUdict.
         /// </summary>
-        private static void Initialize() {
-            string dir = Path.GetDirectoryName(typeof(ArpasingPhonemizer).Assembly.Location);
-            Task.Run(() => {
-                try {
-                    lock (initLock) {
-                        if (ArpasingPhonemizer.root != null) {
-                            // If already initialized, skip it.
-                            return;
-                        }
-                        var root = new TrieNode();
-                        phones = Resources.cmudict_0_7b_phones.Split('\n')
-                            .Select(line => line.Trim().ToLowerInvariant())
-                            .Select(line => line.Split())
-                            .Where(parts => parts.Length == 2)
-                            .ToDictionary(parts => parts[0], parts => (PhoneType)Enum.Parse(typeof(PhoneType), parts[1]));
-                        // Arpasing voicebanks are often incomplete. A fallback table is used to slightly improve the situation.
-                        vowelFallback = "aa=ah,ae;ae=ah,aa;ah=aa,ae;ao=ow;ow=ao;eh=ae;ih=iy;iy=ih;uh=uw;uw=uh;aw=ao".Split(';')
-                            .Select(entry => entry.Split('='))
-                            .ToDictionary(parts => parts[0], parts => parts[1].Split(','));
-                        Resources.cmudict_0_7b.Split('\n')
-                           .Where(line => !line.StartsWith(";;;"))
-                           .Select(line => line.Trim().ToLowerInvariant())
-                           .Select(line => line.Split(new string[] { "  " }, StringSplitOptions.None))
-                           .Where(parts => parts.Length == 2)
-                           .ToList()
-                           .ForEach(parts => BuildTrie(root, parts[0], 0, parts[1]));
-                        var supplementalDict = Path.Combine(dir, "arpasing.dict");
-                        if (!File.Exists(supplementalDict)) {
-                            File.WriteAllText(supplementalDict, "# Supplemental Arpasing Dictionray\nopenutau=ow p eh n w uw t ah w uw", Encoding.UTF8);
-                        }
-                        try {
-                            File.ReadLines(supplementalDict, Encoding.UTF8)
-                               .Where(line => !line.StartsWith("# ") && !line.StartsWith("//"))
-                               .Select(line => line.Trim().ToLowerInvariant())
-                               .Select(line => line.Split('=', StringSplitOptions.None))
-                               .Where(parts => parts.Length == 2)
-                               .ToList()
-                               .ForEach(parts => BuildTrie(root, parts[0], 0, parts[1]));
-                        } catch (Exception e) {
-                            Log.Error(e, "Failed to read supplemental dictionray.");
-                        }
-                        ArpasingPhonemizer.root = root;
-                    }
-                } catch (Exception e) {
-                    Log.Error(e, "Failed to initialize.");
+        private void Initialize() {
+            // Load cmudict.
+            cmudict = G2pDictionary.GetShared("cmudict");
+            // Load g2p plugin dictionary.
+            string filepath = Path.Combine(Path.GetDirectoryName(typeof(ArpasingPhonemizer).Assembly.Location), "arpasing.yaml");
+            try {
+                CreateDefaultPluginDict(filepath);
+                if (File.Exists(filepath)) {
+                    pluginDict = G2pDictionary.NewBuilder().Load(File.ReadAllText(filepath)).Build();
                 }
-            });
+            } catch (Exception e) {
+                Log.Error(e, $"Failed to load {filepath}");
+            }
+            // Load g2p singer dictionary.
+            LoadSingerDict();
+            mergedG2p = new G2pFallbacks(new IG2p[] { pluginDict, singerDict, cmudict }.OfType<IG2p>().ToArray());
+            // Arpasing voicebanks are often incomplete. A fallback table is used to slightly improve the situation.
+            vowelFallback = "aa=ah,ae;ae=ah,aa;ah=aa,ae;ao=ow;ow=ao;eh=ae;ih=iy;iy=ih;uh=uw;uw=uh;aw=ao".Split(';')
+                .Select(entry => entry.Split('='))
+                .ToDictionary(parts => parts[0], parts => parts[1].Split(','));
+        }
+
+        private void CreateDefaultPluginDict(string filepath) {
+            if (File.Exists(filepath)) {
+                return;
+            }
+            File.WriteAllBytes(filepath, Core.Api.Resources.arpasing_template);
+        }
+
+        private void LoadSingerDict() {
+            if (singer != null && singer.Loaded) {
+                string file = Path.Combine(singer.Location, "arpasing.yaml");
+                if (File.Exists(file)) {
+                    try {
+                        singerDict = G2pDictionary.NewBuilder().Load(File.ReadAllText(file)).Build();
+                    } catch (Exception e) {
+                        Log.Error(e, $"Failed to load {file}");
+                    }
+                }
+            }
         }
 
         // Simply stores the singer in a field.
-        public override void SetSinger(USinger singer) => this.singer = singer;
+        public override void SetSinger(USinger singer) {
+            this.singer = singer;
+            LoadSingerDict();
+            mergedG2p = new G2pFallbacks(new IG2p[] { pluginDict, singerDict, cmudict }.OfType<IG2p>().ToArray());
+        }
 
         public override Phoneme[] Process(Note[] notes, Note? prevNeighbour, Note? nextNeighbour) {
-            lock (initLock) {
-                if (root == null) {
-                    return new Phoneme[0];
-                }
-            }
             var note = notes[0];
             // Get the symbols of previous note.
             var prevSymbols = prevNeighbour == null ? null : GetSymbols(prevNeighbour.Value);
@@ -180,10 +114,10 @@ namespace OpenUtau.Plugin.Builtin {
                 };
             }
             // Find phone types of symbols.
-            var phoneTypes = symbols.Select(s => phones[s]).ToArray();
+            var isVowel = symbols.Select(s => mergedG2p.IsVowel(s)).ToArray();
             // Arpasing aligns the first vowel at 0 and shifts leading consonants to negative positions,
             // so we need to find the first vowel.
-            int firstVowel = Array.IndexOf(phoneTypes, PhoneType.vowel);
+            int firstVowel = Array.IndexOf(isVowel, true);
             var phonemes = new Phoneme[symbols.Length];
             // Creates the first diphone using info of the previous note.
             string prevSymbol = prevSymbols == null ? "-" : prevSymbols.Last();
@@ -243,7 +177,7 @@ namespace OpenUtau.Plugin.Builtin {
             int startTick = -ConsonantLength * firstVowel;
             foreach (var alignment in alignments) {
                 // Distributes phonemes between two aligment points.
-                DistributeDuration(phoneTypes, phonemes, startIndex, alignment.Item1, startTick, alignment.Item2);
+                DistributeDuration(isVowel, phonemes, startIndex, alignment.Item1, startTick, alignment.Item2);
                 startIndex = alignment.Item1;
                 startTick = alignment.Item2;
             }
@@ -251,6 +185,17 @@ namespace OpenUtau.Plugin.Builtin {
 
             MapPhonemes(notes, phonemes, singer);
             return phonemes;
+        }
+
+        string[] GetSymbols(Note note) {
+            if (string.IsNullOrEmpty(note.phoneticHint)) {
+                // User has not provided hint, query CMUdict.
+                return mergedG2p.Query(note.lyric.ToLowerInvariant());
+            }
+            // Split space-separated symbols into an array.
+            return note.phoneticHint.Split()
+                .Where(s => mergedG2p.IsValidSymbol(s)) // skip the invalid symbols.
+                .ToArray();
         }
 
         string GetPhonemeOrFallback(string prevSymbol, string symbol, int tone) {
@@ -269,13 +214,13 @@ namespace OpenUtau.Plugin.Builtin {
             return $"- {symbol}";
         }
 
-        void DistributeDuration(PhoneType[] phoneTypes, Phoneme[] phonemes, int startIndex, int endIndex, int startTick, int endTick) {
+        void DistributeDuration(bool[] isVowel, Phoneme[] phonemes, int startIndex, int endIndex, int startTick, int endTick) {
             // First count number of vowels and consonants.
             int consonants = 0;
             int vowels = 0;
             int duration = endTick - startTick;
             for (int i = startIndex; i < endIndex; i++) {
-                if (phoneTypes[i] == PhoneType.vowel) {
+                if (isVowel[i]) {
                     vowels++;
                 } else {
                     consonants++;
@@ -291,7 +236,7 @@ namespace OpenUtau.Plugin.Builtin {
             int position = startTick;
             // Compute positions using previously computed durations.
             for (int i = startIndex; i < endIndex; i++) {
-                if (phoneTypes[i] == PhoneType.vowel) {
+                if (isVowel[i]) {
                     phonemes[i].position = position;
                     position += vowelDuration;
                 } else {
