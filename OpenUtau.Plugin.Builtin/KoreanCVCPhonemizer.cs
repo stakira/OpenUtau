@@ -5,9 +5,33 @@ using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
 using Serilog;
 
+
 namespace OpenUtau.Plugin.Builtin {
     [Phonemizer("Korean CVC Phonemizer", "KR CVC", "NANA")]
     public class KoreanCVCPhonemizer : Phonemizer {
+
+        bool isAlphaCon(string str) {
+            if (str == "gg") {return true;}
+            else if (str == "gg") { return true; }
+            else if (str == "dd") { return true; }
+            else if (str == "bb") { return true; }
+            else if (str == "ss") { return true; }
+            else if (str == "g") { return true; }
+            else if (str == "n") { return true; }
+            else if (str == "d") { return true; }
+            else if (str == "r") { return true; }
+            else if (str == "m") { return true; }
+            else if (str == "b") { return true; }
+            else if (str == "s") { return true; }
+            else if (str == "j") { return true; }
+            else if (str == "ch") { return true; }
+            else if (str == "k") { return true; }
+            else if (str == "t") { return true; }
+            else if (str == "p") { return true; }
+            else if (str == "h") { return true; }
+            else { return false;}
+        }
+
         static readonly string[] plainVowels = new string[] {"eu","eo","a","i","u","e","o"};
 
         static readonly string[] vowels = new string[] {
@@ -32,24 +56,37 @@ namespace OpenUtau.Plugin.Builtin {
             "dd=dd,dda,ddi,ddu,dde,ddo,ddeu,ddeo,ddya,ddyu,ddye,ddyo,ddyeo,ddwa,ddwi,ddwe,ddweo,ㄸ,따,띠,뚜,떼,때,또,뜨,떠,땨,뜌,뗴,떄,뚀,뗘,똬,뛰,뛔,뙈,뙤,뚸",
             "bb=bb,bba,bbi,bbu,bbe,bbo,bbeu,bbeo,bbya,bbyu,bbye,bbyo,bbyeo,bbwa,bbwi,bbwe,bbweo,ㅃ,빠,삐,뿌,뻬,빼,뽀,쁘,뻐,뺘,쀼,뼤,뺴,뾰,뼈,뽜,쀠,쀄,뽸,뾔,뿨",
             "ss=ss,ssa,ssi,ssu,sse,sso,sseu,sseo,ssya,ssyu,ssye,ssyo,ssyeo,sswa,sswi,sswe,ssweo,ㅆ,싸,씨,쑤,쎄,쌔,쏘,쓰,써,쌰,쓔,쎼,썌,쑈,쎠,쏴,쒸,쒜,쐐,쐬,쒀",
-            "g=g,ga,gi,gu,ge,go,geu,geo,gya,gyu,gye,gyo,gyeo,gwa,gwi,gwe,gweo,ㄱ,가,기,구,게,개,고,그,거,갸,규,계,걔,교,겨,과,귀,궤,괘,괴,궈",
-            "n=n,na,ni,nu,ne,no,neu,neo,nya,nyu,nye,nyo,nyeo,nwa,nwi,nwe,nweo,ㄴ,나,니,누,네,내,노,느,너,냐,뉴,녜,냬,뇨,녀,놔,뉘,눼,놰,뇌,눠",
-            "d=d,da,di,du,de,do,deu,deo,dya,dyu,dye,dyo,dyeo,dwa,dwi,dwe,dweo,ㄷ,다,디,두,데,대,도,드,더,댜,듀,뎨,댸,됴,뎌,돠,뒤,뒈,돼,되,둬",
-            "r=r,ra,ri,ru,re,ro,reu,reo,rya,ryu,rye,ryo,ryeo,rwa,rwi,rwe,rweo,ㄹ,라,리,루,레,래,로,르,러,랴,류,례,럐,료,려,롸,뤼,뤠,뢔,뤄",
-            "m=m,ma,mi,mu,me,mo,meu,meo,mya,myu,mye,myo,myeo,mwa,mwi,mwe,mweo,ㅁ,마,미,무,메,매,모,므,머,먀,뮤,몌,먜,묘,며,뫄,뮈,뭬,뫠,뫼,뭐",
-            "b=b,ba,bi,bu,be,bo,beu,beo,bya,byu,bye,byo,byeo,bwa,bwi,bwe,bweo,ㅂ,바,비,부,베,배,보,브,버,뱌,뷰,볘,뱨,뵤,벼,봐,뷔,붸,봬,뵈,붜",
-            "s=s,sa,si,su,se,so,seu,seo,sya,syu,sye,syo,syeo,swa,swi,swe,sweo,ㅅ,사,시,수,세,새,소,스,서,샤,슈,셰,섀,쇼,셔,솨,쉬,쉐,쇄,쇠,숴",
-            "j=j,ja,ji,ju,je,jo,jeu,jeo,jya,jyu,jye,jyo,jyeo,jwa,jwi,jwe,jweo,ㅈ,자,지,주,제,재,조,즈,저,쟈,쥬,졔,쟤,죠,져,좌,쥐,줴,좨,죄,줘",
-            "ch=ch,cha,chi,chu,che,cho,cheu,cheo,chya,chyu,chye,chyo,chyeo,chwa,chwi,chwe,chweo,ㅊ,차,치,추,체,채,초,츠,처,챠,츄,쳬,챼,쵸,쳐,촤,취,췌,쵀,최,춰",
-            "k=k,ka,ki,ku,ke,ko,keu,keo,kya,kyu,kye,kyo,kyeo,kwa,kwi,kwe,kweo,ㅋ,카,키,쿠,케,캐,코,크,커,캬,큐,켸,컈,쿄,켜,콰,퀴,퀘,쾌,쾨,쿼",
-            "t=t,ta,ti,tu,te,to,teu,teo,tya,tyu,tye,tyo,tyeo,twa,twi,twe,tweo,ㅌ,타,티,투,테,태,토,트,터,탸,튜,톄,턔,툐,텨,톼,튀,퉤,퇘,퇴,퉈",
-            "p=p,pa,pi,pu,pe,po,peu,peo,pya,pyu,pye,pyo,pyeo,pwa,pwi,pwe,pweo,ㅍ,파,피,푸,페,패,포,프,퍼,퍄,퓨,폐,퍠,표,펴,퐈,퓌,풰,퐤,푀,풔",
-            "h=h,ha,hi,hu,he,ho,heu,heo,hya,hyu,hye,hyo,hyeo,hwa,hwi,hwe,hweo,ㅎ,하,히,후,헤,해,호,흐,허,햐,휴,혜,햬,효,혀,화,휘,훼,홰,회,훠"
+            "g=g,ga,gi,gu,ge,go,geu,geo,gya,gyu,gye,gyo,gyeo,gwa,gwi,gwe,gweo,가,기,구,게,개,고,그,거,갸,규,계,걔,교,겨,과,귀,궤,괘,괴,궈",
+            "n=n,na,ni,nu,ne,no,neu,neo,nya,nyu,nye,nyo,nyeo,nwa,nwi,nwe,nweo,나,니,누,네,내,노,느,너,냐,뉴,녜,냬,뇨,녀,놔,뉘,눼,놰,뇌,눠",
+            "d=d,da,di,du,de,do,deu,deo,dya,dyu,dye,dyo,dyeo,dwa,dwi,dwe,dweo,다,디,두,데,대,도,드,더,댜,듀,뎨,댸,됴,뎌,돠,뒤,뒈,돼,되,둬",
+            "r=r,ra,ri,ru,re,ro,reu,reo,rya,ryu,rye,ryo,ryeo,rwa,rwi,rwe,rweo,라,리,루,레,래,로,르,러,랴,류,례,럐,료,려,롸,뤼,뤠,뢔,뤄",
+            "m=m,ma,mi,mu,me,mo,meu,meo,mya,myu,mye,myo,myeo,mwa,mwi,mwe,mweo,마,미,무,메,매,모,므,머,먀,뮤,몌,먜,묘,며,뫄,뮈,뭬,뫠,뫼,뭐",
+            "b=b,ba,bi,bu,be,bo,beu,beo,bya,byu,bye,byo,byeo,bwa,bwi,bwe,bweo,바,비,부,베,배,보,브,버,뱌,뷰,볘,뱨,뵤,벼,봐,뷔,붸,봬,뵈,붜",
+            "s=s,sa,si,su,se,so,seu,seo,sya,syu,sye,syo,syeo,swa,swi,swe,sweo,사,시,수,세,새,소,스,서,샤,슈,셰,섀,쇼,셔,솨,쉬,쉐,쇄,쇠,숴",
+            "j=j,ja,ji,ju,je,jo,jeu,jeo,jya,jyu,jye,jyo,jyeo,jwa,jwi,jwe,jweo,자,지,주,제,재,조,즈,저,쟈,쥬,졔,쟤,죠,져,좌,쥐,줴,좨,죄,줘",
+            "ch=ch,cha,chi,chu,che,cho,cheu,cheo,chya,chyu,chye,chyo,chyeo,chwa,chwi,chwe,chweo,차,치,추,체,채,초,츠,처,챠,츄,쳬,챼,쵸,쳐,촤,취,췌,쵀,최,춰",
+            "k=k,ka,ki,ku,ke,ko,keu,keo,kya,kyu,kye,kyo,kyeo,kwa,kwi,kwe,kweo,카,키,쿠,케,캐,코,크,커,캬,큐,켸,컈,쿄,켜,콰,퀴,퀘,쾌,쾨,쿼",
+            "t=t,ta,ti,tu,te,to,teu,teo,tya,tyu,tye,tyo,tyeo,twa,twi,twe,tweo,타,티,투,테,태,토,트,터,탸,튜,톄,턔,툐,텨,톼,튀,퉤,퇘,퇴,퉈",
+            "p=p,pa,pi,pu,pe,po,peu,peo,pya,pyu,pye,pyo,pyeo,pwa,pwi,pwe,pweo,파,피,푸,페,패,포,프,퍼,퍄,퓨,폐,퍠,표,펴,퐈,퓌,풰,퐤,푀,풔",
+            "h=h,ha,hi,hu,he,ho,heu,heo,hya,hyu,hye,hyo,hyeo,hwa,hwi,hwe,hweo,하,히,후,헤,해,호,흐,허,햐,휴,혜,햬,효,혀,화,휘,훼,홰,회,훠"
             };
 
 
         static readonly Dictionary<string, string> vowelLookup;
         static readonly Dictionary<string, string> consonantLookup;
+
+        string getConsonant(string str) {
+            str = str.Replace('a', ' ');
+            str = str.Replace('i', ' ');
+            str = str.Replace('u', ' ');
+            str = str.Replace('e', ' ');
+            str = str.Replace('o', ' ');
+            str = str.Replace('w', ' ');
+            str = str.Replace('y', ' ');
+            str = str.Trim();
+
+            return str;
+        }
 
         static KoreanCVCPhonemizer() {
             vowelLookup = vowels.ToList()
@@ -125,7 +162,8 @@ namespace OpenUtau.Plugin.Builtin {
                 // Get consonant from next note
                 var consonant = "";
                 if (consonantLookup.TryGetValue(nextUnicode.FirstOrDefault() ?? string.Empty, out var con)) {
-                    consonant = con;
+                    consonant = getConsonant(nextNeighbour?.lyric); //로마자만 가능
+                    if (!(isAlphaCon(consonant))) { consonant = con; }
                 }
 
                 if (consonant == "") {
