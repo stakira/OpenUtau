@@ -29,6 +29,12 @@ namespace OpenUtau.Core.SignalChain {
         }
 
         public void SetWaveData(byte[] data) {
+            if (data == null || data.Length == 0) {
+                lock (lockObj) {
+                    this.data = new float[0];
+                }
+                return;
+            }
             var samples = new List<float>();
             using (var stream = new MemoryStream(data)) {
                 using (var waveFileReader = new WaveFileReader(stream)) {
