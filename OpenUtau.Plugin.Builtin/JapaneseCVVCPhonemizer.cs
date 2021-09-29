@@ -101,6 +101,7 @@ namespace OpenUtau.Plugin.Builtin {
 
             List<string> presampVowList = new List<string>();
             List<string> presampConsList = new List<string>();
+            List<string> presampPlainVowels = new List<string>();
 
             // if found, read it.
             if (File.Exists(presampIni)) {
@@ -116,7 +117,8 @@ namespace OpenUtau.Plugin.Builtin {
                                 presampConsList.Add(line.Split("=")[0] + "=" + line.Split("=")[1]);
                                 break;
                             case "[VOWEL]":
-                                presampVowList.Add(line.Split("=")[0] + "=" + line.Split("=")[1]);
+                                presampVowList.Add(line.Split("=")[0] + "=" + line.Split("=")[2]);
+                                presampPlainVowels.Add(line.Split("=")[1]);
                                 break;
                         }
                     }
@@ -143,7 +145,7 @@ namespace OpenUtau.Plugin.Builtin {
                 if (singer.TryGetMappedOto(initial, note.tone, out var _)) {
                     currentLyric = initial;
                 }
-            } else if (plainVowels.Contains(currentLyric)){
+            } else if (plainVowels.Contains(currentLyric) || presampPlainVowels.Contains(currentLyric)){
                 var prevUnicode = ToUnicodeElements(prevNeighbour?.lyric);
 
                 // Current note is VV
@@ -160,7 +162,7 @@ namespace OpenUtau.Plugin.Builtin {
                 var nextLyric = string.Join("", nextUnicode);
 
                 // Check if next note is a vowel and does not require VC
-                if (plainVowels.Contains(nextUnicode.FirstOrDefault() ?? string.Empty)) {
+                if (plainVowels.Contains(nextUnicode.FirstOrDefault() ?? string.Empty) || presampPlainVowels.Contains(nextUnicode.FirstOrDefault() ?? string.Empty)) {
                     return new Phoneme[] {
                         new Phoneme() {
                             phoneme = currentLyric,
