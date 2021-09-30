@@ -22,4 +22,27 @@
     <PackageReference Include="YamlDotNet" Version="11.2.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="Api\cmudict-0_7b.txt" />
+    <None Remove="Api\cmudict-0_7b_phones.txt" />
+    <None Remove="Api\cmudict-0_7b_symbols.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Api\cmudict-0_7b.txt" />
+    <Content Include="Api\cmudict-0_7b_phones.txt" />
+    <Content Include="Api\cmudict-0_7b_symbols.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Api\Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Api\Resources.Designer.cs">
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+  </ItemGroup>
 </Project>

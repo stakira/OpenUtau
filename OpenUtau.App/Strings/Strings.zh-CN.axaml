@@ -8,7 +8,7 @@
   <system:String x:Key="menu.file.openas">打开为</system:String>
   <system:String x:Key="menu.file.save">保存</system:String>
   <system:String x:Key="menu.file.saveas">另存为...</system:String>
-  <system:String x:Key="menu.file.import">导入...</system:String>
+  <system:String x:Key="menu.file.importtracks">导入轨道...</system:String>
   <system:String x:Key="menu.file.importaudio">导入音频...</system:String>
   <system:String x:Key="menu.file.importmidi">导入Midi...</system:String>
   <system:String x:Key="menu.file.exportall">导出全部</system:String>
@@ -56,6 +56,8 @@
   <system:String x:Key="prefs.appearance.theme.light">亮</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">暗</system:String>
   <system:String x:Key="prefs.appearance.theme.note">注意: 切换主题后请重启OpenUtau</system:String>
+  <system:String x:Key="prefs.appearance.lang">语言</system:String>
+  <system:String x:Key="prefs.appearance.lang.note">注意: 切换语言后请重启OpenUtau.</system:String>
 
   <!-- Singers -->
   <system:String x:Key="singers.caption">歌手</system:String>
