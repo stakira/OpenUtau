@@ -288,7 +288,7 @@ namespace OpenUtau.Plugin.Builtin {
                                 phoneme = $"{iCon}{fVow}",
                             },
                             new Phoneme {
-                                phoneme = $"{cSVow} {lCon}",
+                                phoneme = $"{cSVow}{lCon}",
                                 position = totalDuration - vcLength,
                             },
                         };
@@ -317,7 +317,7 @@ namespace OpenUtau.Plugin.Builtin {
                                 phoneme = $"{iCon}{fVow}",
                             },
                             new Phoneme {
-                                phoneme = $"{cSVow} {lCon}",
+                                phoneme = $"{cSVow}{lCon}",
                                 position = totalDuration - vcLength,
                             },
                         };
@@ -344,7 +344,7 @@ namespace OpenUtau.Plugin.Builtin {
                                 phoneme = $"{iSCon}{fVow}",
                             },
                             new Phoneme {
-                                phoneme = $"{cSVow} {lCon}",
+                                phoneme = $"{cSVow}{lCon}",
                                 position = totalDuration - vcLength,
                             },
                         };
