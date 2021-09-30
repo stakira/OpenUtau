@@ -14,7 +14,7 @@ namespace OpenUtau.Plugin.Builtin {
         static readonly ushort unicodeKoreanLast = 0xD79F;
 
         private char[] SeparateHangul(char letter) {
-            if (letter == 0) return new char[] {'　', '　' , '　'};
+            if (letter == 0) return new char[] { '　', '　', '　' };
             var u16 = Convert.ToUInt16(letter);
 
             if (u16 < unicodeKoreanBase || u16 > unicodeKoreanLast)
@@ -97,17 +97,13 @@ namespace OpenUtau.Plugin.Builtin {
         // 표준발음법 적용
         static readonly string[] ruleOfConsonants = new string[] {
             // 자음동화: (비음화, 유음화)
-            "ㅇㄴ=ㄱㄴ",
-            "ㅇㄴ=ㄱㄹ",
-            "ㅇㄱ=ㄱㅁ",
-            "ㄴㄴ=ㄷㄴ",
-            "ㄴㅁ=ㄷㅁ",
-            "ㅁㄴ=ㅂㄴ",
-            "ㅁㄴ=ㅂㄹ",
-            "ㅁㅁ=ㅂㅁ",
-            "ㅇㄴ=ㅇㄹ",
-            "ㅁㄴ=ㅁㄹ",
-            "ㄹㄹ=ㄴㄹ",
+            "ㅇㄴ=ㅇㄴ,ㄱㄴ,ㄱㄹ,ㅇㄹ",
+            "ㅇㄱ=ㅇㄱ,ㄱㅁ",
+            "ㄴㄴ=ㄴㄴ,ㄷㄴ",
+            "ㄴㅁ=ㄴㅁ,ㄷㅁ",
+            "ㅁㄴ=ㅁㄴ,ㅂㄴ,ㅂㄹ,ㅁㄹ",
+            "ㅁㅁ=ㅁㅁ,ㅂㅁ",
+            "ㄹㄹ=ㄹㄹ,ㄴㄹ",
 
             // 구개음화
             "　ㅈㅣ=ㄷㅇㅣ",
@@ -130,32 +126,32 @@ namespace OpenUtau.Plugin.Builtin {
             "ㄹㅊㅓ=ㄾㅎㅕ",
 
             // 경음화
-            "ㄱㄲ=ㄱㄱ,ㄲㄱ",
-            "ㄱㄸ=ㄱㄷ,ㄺㄷ,ㄺㅌ,ㄺㄸ",
-            "ㄱㅃ=ㄱㅂ",
-            "ㄱㅆ=ㄱㅅ",
-            "ㄱㅉ=ㄱㅈ",
-            "ㄴㄸ=ㄵㄷ,ㄵㄸ",
-            "ㄷㄲ=ㄷㄱ",
-            "ㄷㄸ=ㄷㄷ",
-            "ㄷㅃ=ㄷㅂ",
-            "ㄷㅆ=ㄷㅅ",
-            "ㄷㅉ=ㅈㅈ",
-            "ㅁㄸ=ㄻㄷ,ㄻㅌ,ㄻㄸ",
-            "ㅂㄲ=ㅂㄱ,ㄼㄱ,ㄼㅋ,ㄼㄲ",
-            "ㅂㄸ=ㅂㄷ",
-            "ㅂㅃ=ㅂㅂ",
-            "ㅂㅆ=ㄼㅅ,ㄼㅆ,ㅂㅅ",
-            "ㅂㅉ=ㅂㅈ",
-            "ㅅㄲ=ㅅㄱ",
-            "ㅅㄸ=ㅅㄷ",
-            "ㅅㅃ=ㅅㅂ",
-            "ㅅㅆ=ㅅㅅ",
-            "ㅅㅉ=ㅅㅈ",
-            "ㅈㄲ=ㅈㄱ",
-            "ㅈㄸ=ㅈㄷ",
-            "ㅈㅃ=ㅈㅂ",
-            "ㅈㅆ=ㅈㅅ",
+            "ㄱㄲ=ㄱㄲ,ㄱㄱ,ㄲㄱ",
+            "ㄱㄸ=ㄱㄸ,ㄱㄷ,ㄺㄷ,ㄺㅌ,ㄺㄸ",
+            "ㄱㅃ=ㄱㅃ,ㄱㅂ",
+            "ㄱㅆ=ㄱㅆ,ㄱㅅ",
+            "ㄱㅉ=ㄱㅉ,ㄱㅈ",
+            "ㄴㄸ=ㄴㄸ,ㄵㄷ,ㄵㄸ, ㄶㅌ,ㄶㄸ",
+            "ㄷㄲ=ㄷㄲ,ㄷㄱ",
+            "ㄷㄸ=ㄷㄸ,ㄷㄷ",
+            "ㄷㅃ=ㄷㅃ,ㄷㅂ",
+            "ㄷㅆ=ㄷㅆ,ㄷㅅ",
+            "ㄷㅉ=ㄷㅉ,ㅈㅈ",
+            "ㅁㄸ=ㅁㄸ,ㄻㄷ,ㄻㅌ,ㄻㄸ",
+            "ㅂㄲ=ㅂㄲ,ㅂㄱ,ㄼㄱ,ㄼㅋ,ㄼㄲ",
+            "ㅂㄸ=ㅂㄸ,ㅂㄷ",
+            "ㅂㅃ=ㅂㅃ,ㅂㅂ",
+            "ㅂㅆ=ㅂㅆ,ㄼㅅ,ㄼㅆ,ㅂㅅ",
+            "ㅂㅉ=ㅂㅉ,ㅂㅈ",
+            "ㅅㄲ=ㅅㄲ,ㅅㄱ",
+            "ㅅㄸ=ㅅㄸ,ㅅㄷ",
+            "ㅅㅃ=ㅅㅃ,ㅅㅂ",
+            "ㅅㅆ=ㅅㅆ,ㅅㅅ",
+            "ㅅㅉ=ㅅㅉ,ㅅㅈ",
+            "ㅈㄲ=ㅈㄲ,ㅈㄱ",
+            "ㅈㄸ=ㅈㄸ,ㅈㄷ",
+            "ㅈㅃ=ㅈㅃ,ㅈㅂ",
+            "ㅈㅆ=ㅈㅆ,ㅈㅅ",
 
             // 자음 축약
             "　ㅋ=ㄱㅎ",
@@ -164,25 +160,23 @@ namespace OpenUtau.Plugin.Builtin {
             "　ㅊ=ㅈㅎ",
 
             // 탈락
-            "ㄴㅌ=ㄶㄷ",
-            "ㄴㄸ=ㄶㅌ,ㄶㄸ",
+            "ㄴㅌ=ㄴㅌ,ㄶㄷ",
             "　ㄴ=ㄶㅇ",
-            "ㄹㅌ=ㅀㄷ",
-            "ㄹㄸ=ㅀㅌ,ㅀㄸ",
+            "ㄹㅌ=ㄹㅌ,ㅀㄷ,ㄾㅇ",
+            "ㄹㄸ=ㄹㄸ,ㅀㅌ,ㅀㄸ",
             "　ㄹ=ㅀㅇ",
 
             // 연음
             "　ㄱ=ㄱㅇ",
             "　ㄲ=ㄲㅇ",
             "　ㄴ=ㄴㅇ",
-            "ㄴㅈ=ㄵㅇ",
+            "ㄴㅈ=ㄴㅈ,ㄵㅇ",
             "　ㄹ=ㄹㅇ",
-            "ㄹㄱ=ㄺㅇ",
-            "ㄹㅁ=ㄻㅇ",
-            "ㄹㅂ=ㄼㅇ",
-            "ㄹㅅ=ㄽㅇ",
-            "ㄹㅌ=ㄾㅇ",
-            "ㄹㅍ=ㄿㅇ",
+            "ㄹㄱ=ㄹㄱ,ㄺㅇ",
+            "ㄹㅁ=ㄹㅁ,ㄻㅇ",
+            "ㄹㅂ=ㄹㅂ,ㄼㅇ",
+            "ㄹㅅ=ㄹㅅ,ㄽㅇ",
+            "ㄹㅍ=ㄹㅍ,ㄿㅇ",
             "　ㅁ=ㅁㅇ",
             "　ㅂ=ㅂㅇ",
             "　ㅅ=ㅅㅇ",
@@ -233,7 +227,7 @@ namespace OpenUtau.Plugin.Builtin {
                     return parts[1].Split(',').Select(cv => (cv, parts[0]));
                 })
                 .ToDictionary(t => t.Item1, t => t.Item2);
-            
+
         }
 
         // Store singer in field, will try reading presamp.ini later
@@ -241,10 +235,65 @@ namespace OpenUtau.Plugin.Builtin {
         public override void SetSinger(USinger singer) => this.singer = singer;
 
         public override Phoneme[] Process(Note[] notes, Note? prevNeighbour, Note? nextNeighbour) {
+            var prevLyric = prevNeighbour?.lyric;
+            char[] prevKoreanLyrics = { '　', '　', '　' };
+            bool isPrevEndV = true;
+            if (prevLyric != null && prevLyric[0] >= '가' && prevLyric[0] <= '힣') {
+                prevKoreanLyrics = SeparateHangul(prevLyric != null ? prevLyric[0] : '\0');
+                isPrevEndV = prevKoreanLyrics[2] == '　' && prevKoreanLyrics[0] != '　';
+            }
+            
+            var currentLyric = notes[0].lyric;
+            if (!(currentLyric[0] >= '가' && currentLyric[0] <= '힣')) {
+                return new Phoneme[] {
+                    new Phoneme {
+                        phoneme = $"{currentLyric}",
+                    }};
+            }
+            var currentKoreanLyrics = SeparateHangul(currentLyric[0]);
+            var isCurrentEndV = currentKoreanLyrics[2] == '　' && currentKoreanLyrics[0] != '　';
+
+            var nextLyric = nextNeighbour?.lyric;
+            char[] nextKoreanLyrics  = { '　', '　', '　' };
+            if (nextLyric != null && nextLyric[0] >= '가' && nextLyric[0] <= '힣') {
+                nextKoreanLyrics = SeparateHangul(nextLyric != null ? nextLyric[0] : '\0');
+            }
+
+            string CV = "";
+            // 앞문자 존재
+            if(prevNeighbour == null) {
+                if (!isPrevEndV) {
+                    // 앞문자 종결이 C
+                    ruleOfConsonantsLookup.TryGetValue(prevKoreanLyrics[2].ToString() + currentKoreanLyrics[0].ToString(), out var CCConsonants);
+                    vowelLookup.TryGetValue(currentKoreanLyrics[1].ToString(), out var currentVowel);
+                    CV = $"{CCConsonants[1]}{currentVowel}";
+                } else {
+                    initialConsonantLookup.TryGetValue(currentKoreanLyrics[0].ToString(), out var currentInitialConsonants);
+                    vowelLookup.TryGetValue(currentKoreanLyrics[1].ToString(), out var currentVowel);
+
+                    CV = $"{currentInitialConsonants}{currentVowel}";
+                }
+            } else {
+                initialConsonantLookup.TryGetValue(currentKoreanLyrics[0].ToString(), out var currentInitialConsonants);
+                vowelLookup.TryGetValue(currentKoreanLyrics[1].ToString(), out var currentVowel);
+
+                CV = $"{currentInitialConsonants}{currentVowel}";
+            }
+
+            string VC = "";
+            // 뒷문자 존재
+            if (nextNeighbour != null) {
+                // 현재 문자 종결이 V
+
+                // 현재 문자 종결이 C
+
+            }
+
+
+            // 레거시
+            /*
             var note = notes[0];
             var currentUnicode = ToUnicodeElements(note.lyric);
-            var prevLyric = prevNeighbour?.lyric;
-            var prevKoreanLyrics = SeparateHangul(prevLyric != null ? prevLyric[0] : '\0');
             var isPrevCV = prevKoreanLyrics[2] == '　' && prevKoreanLyrics[0] != '　';
 
             var currentLyric = note.lyric;
@@ -288,7 +337,7 @@ namespace OpenUtau.Plugin.Builtin {
                                 phoneme = $"{iCon}{fVow}",
                             },
                             new Phoneme {
-                                phoneme = $"{cSVow}{lCon}",
+                                phoneme = $"{cSVow} {lCon}",
                                 position = totalDuration - vcLength,
                             },
                         };
@@ -317,7 +366,7 @@ namespace OpenUtau.Plugin.Builtin {
                                 phoneme = $"{iCon}{fVow}",
                             },
                             new Phoneme {
-                                phoneme = $"{cSVow}{lCon}",
+                                phoneme = $"{cSVow} {lCon}",
                                 position = totalDuration - vcLength,
                             },
                         };
@@ -344,7 +393,7 @@ namespace OpenUtau.Plugin.Builtin {
                                 phoneme = $"{iSCon}{fVow}",
                             },
                             new Phoneme {
-                                phoneme = $"{cSVow}{lCon}",
+                                phoneme = $"{cSVow} {lCon}",
                                 position = totalDuration - vcLength,
                             },
                         };
@@ -352,10 +401,10 @@ namespace OpenUtau.Plugin.Builtin {
                     }
                 }
             }
-
+            */
             return new Phoneme[] {
                 new Phoneme {
-                    phoneme = $"- {currentLyric}",
+                    phoneme = $"{currentLyric}",
                     },
             };
         }
