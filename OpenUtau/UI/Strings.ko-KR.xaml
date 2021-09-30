@@ -11,7 +11,7 @@
     <system:String x:Key="menu.file.save">저장</system:String>
     <system:String x:Key="menu.file.saveas">다른 이름으로 저장</system:String>
     <system:String x:Key="menu.file.saveasust">Ust파일로 저장</system:String>
-    <system:String x:Key="menu.file.import">가져오기</system:String>
+    <system:String x:Key="menu.file.importtracks">트랙 가져오기</system:String>
     <system:String x:Key="menu.file.importaudio">오디오 가져오기</system:String>
     <system:String x:Key="menu.file.importmidi">Midi 가져오기</system:String>
     <system:String x:Key="menu.file.exportall">전부 내보내기</system:String>
