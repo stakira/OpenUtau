@@ -44,7 +44,8 @@
     <system:String x:Key="prefs.playback">Reprodução</system:String>
     <system:String x:Key="prefs.playback.device">Dispositivo de Reprodução</system:String>
     <system:String x:Key="prefs.playback.test">Teste</system:String>
-    <system:String x:Key="prefs.rendering">Renderizando</system:String>
+    <system:String x:Key="prefs.rendering">Renderização</system:String>
+    <system:String x:Key="prefs.rendering.prerender.threads">Pre-render Threads</system:String>
     <system:String x:Key="prefs.rendering.resampler.preview">Resampler para visualização</system:String>
     <system:String x:Key="prefs.rendering.resampler.export">Resampler para exportação</system:String>
     <system:String x:Key="prefs.rendering.resampler.note">
@@ -55,6 +56,27 @@
     <system:String x:Key="prefs.appearance.theme.light">Claro</system:String>
     <system:String x:Key="prefs.appearance.theme.dark">Escuro</system:String>
     <system:String x:Key="prefs.appearance.theme.note">Nota: reinicie o OpenUtau após mudar o tema.</system:String>
+    <system:String x:Key="prefs.appearance.lang">Idioma</system:String>
+    <system:String x:Key="prefs.appearance.lang.note">Nota: reinicie o OpenUtau após mudar o idioma.</system:String>
+
+    <!-- Singers -->
+    <system:String x:Key="singers.caption">Vozes</system:String>
+    <system:String x:Key="singers.location">Localização</system:String>
+    <system:String x:Key="oto.alias">Alias</system:String>
+    <system:String x:Key="oto.set">Pasta</system:String>
+    <system:String x:Key="oto.file">Arquivo</system:String>
+    <system:String x:Key="oto.phonetic">Fonética</system:String>
+    <system:String x:Key="oto.prefix">Prefixo</system:String>
+    <system:String x:Key="oto.suffix">Sufixo</system:String>
+    <system:String x:Key="oto.flavor">Flavor</system:String>
+    <system:String x:Key="oto.offset">Offset</system:String>
+    <system:String x:Key="oto.consonant">Consonant</system:String>
+    <system:String x:Key="oto.cutoff">Cutoff</system:String>
+    <system:String x:Key="oto.preutter">Preutter</system:String>
+    <system:String x:Key="oto.overlap">Overlap</system:String>
+
+    <!-- Expressions -->
+    <system:String x:Key="exps.caption">Expressões</system:String>
 
     <!-- Dialogs -->
     <system:String x:Key="dialogs.noresampler.caption">Sem resampler</system:String>
@@ -90,7 +112,7 @@ Ctrl + Selecionar Caixa:
 Cima/Baixo:
 Ctrl + Cima/Baixo:
 Espaço:</system:String>
-    <system:String x:Key="tip.notes.basics.actions" xml:space="preserve">Toggle tips
+    <system:String x:Key="tip.notes.basics.actions" xml:space="preserve">Ativar ajuda
 Adiciona nota
 Remove nota
 Remove várias notas
@@ -106,6 +128,6 @@ Tocar</system:String>
     <system:String x:Key="tip.exps.keys" xml:space="preserve">Segurar o Clique Esquerdo:
 Segurar o Clique Direito:</system:String>
     <system:String x:Key="tip.exps.actions" xml:space="preserve">Define expressões
-Redefine espressões</system:String>
+Redefine expressões</system:String>
 
 </ResourceDictionary>

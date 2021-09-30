@@ -94,6 +94,9 @@ namespace OpenUtau.Core.Formats {
                     project.parts.Add(part);
                     part.trackNo += trackCount;
                 }
+                project.beatPerBar = loaded.beatPerBar;
+                project.beatUnit = loaded.beatUnit;
+                project.bpm = loaded.bpm;
             }
             project.AfterLoad();
             project.Validate();

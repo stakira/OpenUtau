@@ -154,23 +154,25 @@ namespace OpenUtau.Core.Ustx {
 
             var prev = Prev?.ToProcessorNote();
             var next = notes.Last().Next?.ToProcessorNote();
-            if (Prev?.End < position) {
-                prev = null;
-            } else if (Prev?.Extends != null) {
+            bool prevIsNeighbour = Prev?.End >= position;
+            if (Prev?.Extends != null) {
                 prev = Prev.Extends.ToProcessorNote();
                 var phoneme = prev.Value;
                 phoneme.duration = Prev.ExtendedDuration;
                 prev = phoneme;
             }
-            if (notes.Last().End < notes.Last().Next?.position) {
-                next = null;
-            }
+            bool nextIsNeighbour = notes.Last().End >= notes.Last().Next?.position;
             track.Phonemizer.SetTiming(project.bpm, project.beatUnit, project.resolution);
             var phonemizerNotes = notes.Select(note => note.ToProcessorNote()).ToArray();
             phonemizerNotes[phonemizerNotes.Length - 1].duration += endOffset;
             Phonemizer.Phoneme[] newPhonemes;
             try {
-                newPhonemes = track.Phonemizer.Process(phonemizerNotes, prev, next);
+                newPhonemes = track.Phonemizer.Process(
+                    phonemizerNotes,
+                    prev,
+                    next,
+                    prevIsNeighbour ? prev : null,
+                    nextIsNeighbour ? next : null);
             } catch (Exception e) {
                 Log.Error(e, "phonemizer error");
                 newPhonemes = new Phonemizer.Phoneme[] { new Phonemizer.Phoneme { phoneme = "error" } };

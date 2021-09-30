@@ -36,7 +36,7 @@ namespace OpenUtau.Plugin.Builtin {
         // Simply stores the singer in a field.
         public override void SetSinger(USinger singer) => this.singer = singer;
 
-        public override Phoneme[] Process(Note[] notes, Note? prevNeighbour, Note? nextNeighbour) {
+        public override Phoneme[] Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour) {
             var note = notes[0];
             if (!string.IsNullOrEmpty(note.phoneticHint)) {
                 // If a hint is present, returns the hint.
