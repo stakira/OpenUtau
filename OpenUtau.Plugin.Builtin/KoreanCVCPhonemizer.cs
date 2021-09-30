@@ -19,7 +19,7 @@ namespace OpenUtau.Plugin.Builtin {
             "ㅏ:a","ㅐ:e","ㅑ:ya","ㅒ:ye","ㅓ:eo","ㅔ:e","ㅕ:yeo","ㅖ:ye","ㅗ:o","ㅘ:wa","ㅙ:we","ㅚ:we","ㅛ:yo","ㅜ:u","ㅝ:weo","ㅞ:we","ㅟ:wi","ㅠ:yu","ㅡ:eu","ㅢ:eui","ㅣ:i"
         };
         static readonly string[] naFinals = new string[] {
-            ":","ㄱ:k","ㄲ:k","ㄳ:k","ㄴ:n","ㄵ:n","ㄶ:n","ㄷ:t","ㄹ:l","ㄺ:l","ㄻ:l","ㄼ:l","ㄽ:l","ㄾ:l","ㄿ:l","ㅀ:l","ㅁ:m","ㅂ:p","ㅄ:p","ㅅ:t","ㅆ:t","ㅇ:ng","ㅈ:t","ㅊ:t","ㅋ:t","ㅌ:t","ㅍ:p","ㅎ:t"
+            ":","ㄱ:k","ㄲ:k","ㄳ:k","ㄴ:n","ㄵ:n","ㄶ:n","ㄷ:t","ㄹ:l","ㄺ:k","ㄻ:m","ㄼ:l","ㄽ:l","ㄾ:l","ㄿ:l","ㅀ:l","ㅁ:m","ㅂ:p","ㅄ:p","ㅅ:t","ㅆ:t","ㅇ:ng","ㅈ:t","ㅊ:t","ㅋ:k","ㅌ:t","ㅍ:p","ㅎ:t"
         };
         private const int hangeulStartIndex = 0xAC00;
         private const int hangeulEndIndex = 0xD7A3;
