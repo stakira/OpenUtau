@@ -158,6 +158,7 @@ namespace OpenUtau.Plugin.Builtin {
             "　ㅌ=ㄷㅎ",
             "　ㅍ=ㅂㅎ",
             "　ㅊ=ㅈㅎ",
+            "ㄴㅊ=ㄵㅎ",
 
             // 탈락
             "ㄴㅌ=ㄴㅌ,ㄶㄷ",
@@ -259,14 +260,19 @@ namespace OpenUtau.Plugin.Builtin {
                 nextKoreanLyrics = SeparateHangul(nextLyric != null ? nextLyric[0] : '\0');
             }
 
+            int totalDuration = notes.Sum(n => n.duration);
+            int vcLength = 60;
+
             string CV = "";
             // 앞문자 존재
-            if(prevNeighbour == null) {
+            if(prevNeighbour != null) {
                 if (!isPrevEndV) {
                     // 앞문자 종결이 C
                     ruleOfConsonantsLookup.TryGetValue(prevKoreanLyrics[2].ToString() + currentKoreanLyrics[0].ToString(), out var CCConsonants);
                     vowelLookup.TryGetValue(currentKoreanLyrics[1].ToString(), out var currentVowel);
-                    CV = $"{CCConsonants[1]}{currentVowel}";
+                    initialConsonantLookup.TryGetValue(CCConsonants[1].ToString(), out var changedCurrentConsonants);
+                    CV = $"{changedCurrentConsonants}{currentVowel}";
+                    
                 } else {
                     initialConsonantLookup.TryGetValue(currentKoreanLyrics[0].ToString(), out var currentInitialConsonants);
                     vowelLookup.TryGetValue(currentKoreanLyrics[1].ToString(), out var currentVowel);
@@ -279,13 +285,21 @@ namespace OpenUtau.Plugin.Builtin {
 
                 CV = $"{currentInitialConsonants}{currentVowel}";
             }
+            System.Diagnostics.Debug.WriteLine(CV);
 
             string VC = "";
             // 뒷문자 존재
             if (nextNeighbour != null) {
-                // 현재 문자 종결이 V
+                if(isCurrentEndV) {
+                    // 현재 문자 종결이 V
 
-                // 현재 문자 종결이 C
+                } else {
+                    // 현재 문자 종결이 C
+
+                }
+
+
+
 
             }
 
@@ -404,8 +418,12 @@ namespace OpenUtau.Plugin.Builtin {
             */
             return new Phoneme[] {
                 new Phoneme {
-                    phoneme = $"{currentLyric}",
-                    },
+                    phoneme = CV,
+                },
+                new Phoneme {
+                    phoneme = VC,
+                    position = totalDuration - vcLength,
+                },
             };
         }
     }
