@@ -6,7 +6,7 @@ using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("KoreanCVCPhonemizer", "K CVC", "NANA")]
+    [Phonemizer("KoreanCVCPhonemizer", "KO CVC", "NANA")]
 
     public class KoreanCVCPhonemizer : Phonemizer {
    
