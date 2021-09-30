@@ -10,7 +10,7 @@
     <system:String x:Key="menu.file.openas">Apri come</system:String>
     <system:String x:Key="menu.file.save">Salva</system:String>
     <system:String x:Key="menu.file.saveas">Salva come</system:String>
-    <system:String x:Key="menu.file.saveasust">Salva UST</system:String>
+    <system:String x:Key="menu.file.saveasust">Salva come file UST</system:String>
     <system:String x:Key="menu.file.import">Importa...</system:String>
     <system:String x:Key="menu.file.importaudio">Importa Audio...</system:String>
     <system:String x:Key="menu.file.importmidi">Importa MIDI...</system:String>
@@ -50,20 +50,22 @@
     <system:String x:Key="prefs.rendering.resampler.preview">Resampler per l'anteprima</system:String>
     <system:String x:Key="prefs.rendering.resampler.export">Resampler per esportazione</system:String>
     <system:String x:Key="prefs.rendering.resampler.note">
-		Se vuoi utilizzare resampler esterni, aggiungi il file DLL o EXE del resampler nella cartella Resampler all'interno del percorso d'installazione.
+		Nota: Se vuoi utilizzare resampler esterni, aggiungi il file DLL o EXE del resampler nella cartella Resampler all'interno del percorso d'installazione.
     </system:String>
     <system:String x:Key="prefs.appearance">Aspetto</system:String>
     <system:String x:Key="prefs.appearance.theme">Tema</system:String>
     <system:String x:Key="prefs.appearance.theme.light">Chiaro</system:String>
     <system:String x:Key="prefs.appearance.theme.dark">Scuro</system:String>
-    <system:String x:Key="prefs.appearance.theme.note">Riavvia OpenUTAU dopo aver scelto un tema.</system:String>
+    <system:String x:Key="prefs.appearance.theme.note">Nota: Riavvia OpenUTAU dopo aver scelto un tema.</system:String>
+    <system:String x:Key="prefs.appearance.lang">Lingua</system:String>
+    <system:String x:Key="prefs.appearance.lang.note">Nota: Riavvia OpenUTAU dopo aver scelto una lingua.</system:String>
 
     <!-- Dialogs -->
     <system:String x:Key="dialogs.noresampler.caption">Nessun resampler</system:String>
     <system:String x:Key="dialogs.noresampler.message">Nessun resampler! Aggiungi il file DLL o EXE del resampler nella cartella Resampler e scegli nelle Preferenze!</system:String>
     <system:String x:Key="dialogs.about.caption">Informazioni su OpenUTAU</system:String>
     <system:String x:Key="dialogs.about.message">
-		OpenUTAU punta ad essere un programma open source con un'esperienza utente moderna e supporto fonetico intelligente per la communità di UTAU. Visitaci su GitHub.
+		OpenUTAU punta ad essere un programma open source con un'esperienza utente moderna e supporto fonetico intelligente per la community di UTAU. Visitaci su GitHub.
     </system:String>
     <system:String x:Key="dialogs.export.caption">Esporta</system:String>
     <system:String x:Key="dialogs.export.savefirst">Salva prima il progetto</system:String>
@@ -88,7 +90,7 @@ Tieni premuto mouse destro:
 Trascina nota:
 Trascina fine della nota: 
 Alt + Trascina fine della nota:
-Ctrl + Selezione
+Ctrl + Selezione:
 Su/Giù:
 Ctrl + Su/Giù:
 Spazio:</system:String>
@@ -98,7 +100,7 @@ Elimina nota
 Elimina più note
 Muovi nota
 Ridimensiona nota
-Ridimensiona note confinanti
+Ridimensiona note vicine
 Seleziona note
 Trasponi note selezionate
 Trasponi note selezionate per ottava
