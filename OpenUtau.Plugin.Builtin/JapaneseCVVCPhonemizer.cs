@@ -12,7 +12,10 @@ namespace OpenUtau.Plugin.Builtin {
     public class JapaneseCVVCPhonemizer : Phonemizer {
         static readonly string[] plainVowels = new string[] { "あ","い","う","え","お","ん"};
 
-        static readonly string[] vowels = new string[] {
+        // presamp plain vowels
+        private static List<string> presampPlainVowels = new List<string>();
+
+        private static string[] vowels = new string[] {
             "a=ぁ,あ,か,が,さ,ざ,た,だ,な,は,ば,ぱ,ま,ゃ,や,ら,わ,ァ,ア,カ,ガ,サ,ザ,タ,ダ,ナ,ハ,バ,パ,マ,ャ,ヤ,ラ,ワ",
             "e=ぇ,え,け,げ,せ,ぜ,て,で,ね,へ,べ,ぺ,め,れ,ゑ,ェ,エ,ケ,ゲ,セ,ゼ,テ,デ,ネ,ヘ,ベ,ペ,メ,レ,ヱ",
             "i=ぃ,い,き,ぎ,し,じ,ち,ぢ,に,ひ,び,ぴ,み,り,ゐ,ィ,イ,キ,ギ,シ,ジ,チ,ヂ,ニ,ヒ,ビ,ピ,ミ,リ,ヰ",
@@ -22,7 +25,7 @@ namespace OpenUtau.Plugin.Builtin {
             "N=ン",
         };
 
-        static readonly string[] consonants = new string[] {
+        private static string[] consonants = new string[] {
             "ch=ch,ち,ちぇ,ちゃ,ちゅ,ちょ",
             "gy=gy,ぎ,ぎぇ,ぎゃ,ぎゅ,ぎょ",
             "ts=ts,つ,つぁ,つぃ,つぇ,つぉ",
@@ -59,86 +62,66 @@ namespace OpenUtau.Plugin.Builtin {
             "-=-"
         };
 
-        static readonly Dictionary<string, string> vowelLookup;
-        static readonly Dictionary<string, string> consonantLookup;
+        private static Dictionary<string, string> vowelLookup;
+        private static Dictionary<string, string> consonantLookup;
 
-        static JapaneseCVVCPhonemizer() {
-            vowelLookup = vowels.ToList()
-                .SelectMany(line => {
-                    var parts = line.Split('=');
-                    return parts[1].Split(',').Select(cv => (cv, parts[0]));
-                })
-                .ToDictionary(t => t.Item1, t => t.Item2);
-            consonantLookup = consonants.ToList()
-                .SelectMany(line => {
-                    var parts = line.Split('=');
-                    return parts[1].Split(',').Select(cv => (cv, parts[0]));
-                })
-                .ToDictionary(t => t.Item1, t => t.Item2);
-        }
+        // Dictionaries for presamp data
+        private static Dictionary<string, string> presampConsonants;
+        private static Dictionary<string, string> presampVowels;
 
 
         // Store singer in field
         private USinger singer;
-        public override void SetSinger(USinger singer) => this.singer = singer;
+        public override void SetSinger(USinger singer) {
+            this.singer = singer;
 
-        public override Phoneme[] Process(Note[] notes, Note? prevNeighbour, Note? nextNeighbour) {
-            var note = notes[0];
-            var currentUnicode = ToUnicodeElements(note.lyric);
-            var currentLyric = note.lyric;
+            // load presamp config from singer
+            LoadPresampConfig(Path.Combine(singer.Location, "presamp.ini"));
+        }
 
+        public JapaneseCVVCPhonemizer() {
+            Initialize();
+        }
+
+        private void LoadPresampConfig(string presampIni) {
             // Lists for presamp data
             List<string> presampVowList = new List<string>();
             List<string> presampConsList = new List<string>();
-            List<string> presampPlainVowels = new List<string>();
 
-            // find global presamp.ini
-            string dir = Path.GetDirectoryName(typeof(JapaneseCVVCPhonemizer).Assembly.Location);
-            var presampIni = Path.Combine(dir, "presamp.ini");
-
-            // read presamp ini
-            for (int i = 0; i < 2; i++) {
-                if (File.Exists(presampIni)) {
-                    try {
-                        var Header = "";
-                        foreach (string line in File.ReadLines(presampIni, Encoding.UTF8).ToList()) {
-                            if (line.StartsWith(@"[") && line.EndsWith(@"]")) {
-                                Header = line;
-                                // clear consonants and vowels in case loading from a voicebank to prevent conflicts
-                                if (Header == "[CONSONANT]") { presampConsList.Clear(); }
-                                if (Header == "[VOWEL]") { presampVowList.Clear(); presampPlainVowels.Clear(); }
-                                continue;
-                            }
-                            switch (Header) {
-                                case "[CONSONANT]":
-                                    // If the consonant is not already pesent add it
-                                    if (!presampConsList.Contains(line.Split("=")[0] + "=" + line.Split("=")[1])) {
-                                        presampConsList.Add(line.Split("=")[0] + "=" + line.Split("=")[1]);
-                                    }
-                                    break;
-                                case "[VOWEL]":
-                                    // check the vowels don't already exist before adding them
-                                    if (!presampVowList.Contains(line.Split("=")[0] + "=" + line.Split("=")[2])) {
-                                        presampVowList.Add(line.Split("=")[0] + "=" + line.Split("=")[2]);
-                                    }
-                                    if (!presampPlainVowels.Contains(line.Split("=")[1])) {
-                                        presampPlainVowels.Add(line.Split("=")[1]);
-                                    }
-                                    break;
-                            }
+            // read presamp ini if it exists
+            if (File.Exists(presampIni)) {
+                try {
+                    var Header = "";
+                    foreach (string line in File.ReadLines(presampIni, Encoding.UTF8).ToList()) {
+                        if (line.StartsWith(@"[") && line.EndsWith(@"]")) {
+                            Header = line;
+                            // clear consonants and vowels in case loading from a voicebank to prevent conflicts
+                            if (Header == "[CONSONANT]") { presampConsList.Clear(); }
+                            if (Header == "[VOWEL]") { presampVowList.Clear(); presampPlainVowels.Clear(); }
+                            continue;
                         }
-                    } catch (Exception e) {
-                        Log.Error(e, "Failed to read \""+presampIni+"\".");
+                        switch (Header) {
+                            case "[CONSONANT]":
+                                // If the consonant is not already pesent add it
+                                if (!presampConsList.Contains(line.Split("=")[0] + "=" + line.Split("=")[1])) {
+                                    presampConsList.Add(line.Split("=")[0] + "=" + line.Split("=")[1]);
+                                }
+                                break;
+                            case "[VOWEL]":
+                                // check the vowels don't already exist before adding them
+                                if (!presampVowList.Contains(line.Split("=")[0] + "=" + line.Split("=")[2])) {
+                                    presampVowList.Add(line.Split("=")[0] + "=" + line.Split("=")[2]);
+                                }
+                                if (!presampPlainVowels.Contains(line.Split("=")[1])) {
+                                    presampPlainVowels.Add(line.Split("=")[1]);
+                                }
+                                break;
+                        }
                     }
+                } catch (Exception e) {
+                    Log.Error(e, "Failed to read \"" + presampIni + "\".");
                 }
-
-                // find singer presamp ini
-                presampIni = Path.Combine(singer.Location, "presamp.ini");
             }
-
-            // Dictionaries for presamp data
-            Dictionary<string, string> presampConsonants;
-            Dictionary<string, string> presampVowels;
 
             // Create consonant dictionary from presamp if possible
             presampConsonants = presampConsList.SelectMany(line => {
@@ -151,6 +134,34 @@ namespace OpenUtau.Plugin.Builtin {
                 var parts = line.Split('=');
                 return parts[1].Split(',').Select(cv => (cv, parts[0]));
             }).ToDictionary(t => t.Item1, t => t.Item2);
+        }
+
+        private void Initialize() {
+            vowelLookup = vowels.ToList()
+                .SelectMany(line => {
+                    var parts = line.Split('=');
+                    return parts[1].Split(',').Select(cv => (cv, parts[0]));
+                })
+                .ToDictionary(t => t.Item1, t => t.Item2);
+            consonantLookup = consonants.ToList()
+                .SelectMany(line => {
+                    var parts = line.Split('=');
+                    return parts[1].Split(',').Select(cv => (cv, parts[0]));
+                })
+                .ToDictionary(t => t.Item1, t => t.Item2);
+
+            // find global presamp.ini
+            string dir = Path.GetDirectoryName(typeof(JapaneseCVVCPhonemizer).Assembly.Location);
+            var presampIni = Path.Combine(dir, "presamp.ini");
+
+            // load presamp ini
+            LoadPresampConfig(presampIni);
+        }
+
+        public override Phoneme[] Process(Note[] notes, Note? prevNeighbour, Note? nextNeighbour) {
+            var note = notes[0];
+            var currentUnicode = ToUnicodeElements(note.lyric);
+            var currentLyric = note.lyric;
 
             if (prevNeighbour == null) {
                 // Use "- V" or "- CV" if present in voicebank
