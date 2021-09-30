@@ -389,7 +389,9 @@ namespace OpenUtau.Core.Formats {
             writer.WriteLine($"Tempo={project.bpm}");
             writer.WriteLine("Tracks=1");
             var singer = project.tracks[part.trackNo].Singer;
-            writer.WriteLine($"VoiceDir=%VOICE%{singer.Id}");
+            if (singer?.Id != null) {
+                writer.WriteLine($"VoiceDir=%VOICE%{singer.Id}");
+            }
             writer.WriteLine($"CacheDir={project.cacheDir}");
             writer.WriteLine("Mode2=True");
         }

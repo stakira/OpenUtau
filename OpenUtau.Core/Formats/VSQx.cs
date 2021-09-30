@@ -31,7 +31,7 @@ namespace OpenUtau.Core.Formats {
 
             UProject uproject = new UProject();
             Ustx.AddDefaultExpressions(uproject);
-            uproject.RegisterExpression(new UExpressionDescriptor("opening", "ope", 0, 127, 127));
+            uproject.RegisterExpression(new UExpressionDescriptor("opening", "ope", 0, 100, 100));
 
             string bpmPath = $"{nsPrefix}masterTrack/{nsPrefix}tempo/{nsPrefix}{(nsPrefix == "v3:" ? "bpm" : "v")}";
             string beatperbarPath = $"{nsPrefix}masterTrack/{nsPrefix}timeSig/{nsPrefix}{(nsPrefix == "v3:" ? "nume" : "nu")}";
@@ -110,7 +110,7 @@ namespace OpenUtau.Core.Formats {
                             if (notestyle.Attributes["id"].Value == "opening") {
                                 unote.phonemeExpressions.Add(new UExpression("ope") {
                                     index = 0,
-                                    value = int.Parse(notestyle.InnerText),
+                                    value = int.Parse(notestyle.InnerText) * 100 / 127,
                                 });
                             } else if (notestyle.Attributes["id"].Value == "accent") {
                                 unote.phonemeExpressions.Add(new UExpression("acc") {
