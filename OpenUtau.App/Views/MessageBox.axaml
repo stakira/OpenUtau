@@ -4,8 +4,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="OpenUtau.App.Views.MessageBox" SizeToContent="WidthAndHeight" CanResize="False"
-        Title="MessageBox" MinWidth="300" MinHeight="150" WindowStartupLocation="CenterOwner">
-  <Grid>
+        Title="MessageBox" MinWidth="300" MinHeight="150"
+        WindowStartupLocation="CenterOwner" ExtendClientAreaToDecorationsHint="False">
+  <Grid Margin="{Binding $parent.WindowDecorationMargin}">
     <Grid.RowDefinitions>
       <RowDefinition Height="*"/>
       <RowDefinition Height="50"/>

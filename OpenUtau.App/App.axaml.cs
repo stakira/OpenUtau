@@ -24,34 +24,49 @@ namespace OpenUtau.App {
         }
 
         public void InitializeCulture() {
-            var culture = CultureInfo.InstalledUICulture.Name;
-            var dictionaryList = Resources.MergedDictionaries
-                .Select(res => (ResourceInclude)res)
-                .ToList();
-            var resDict = dictionaryList.
-                FirstOrDefault(d => d.Source.OriginalString.Contains(culture.ToString()));
-            if (resDict != null) {
-                Resources.MergedDictionaries.Remove(resDict);
-                Resources.MergedDictionaries.Add(resDict);
+            var language = CultureInfo.InstalledUICulture.Name;
+            if (!string.IsNullOrEmpty(Core.Util.Preferences.Default.Language)) {
+                language = Core.Util.Preferences.Default.Language;
             }
+            SetLanguage(language);
 
             // Force using InvariantCulture to prevent issues caused by culture dependent string conversion, especially for floating point numbers.
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
         }
 
-        public void InitializeTheme() {
+        public static void SetLanguage(string language) {
+            var dictionaryList = Current.Resources.MergedDictionaries
+                .Select(res => (ResourceInclude)res)
+                .ToList();
+            var resDictName = string.Format(@"Strings.{0}.axaml", language);
+            var resDict = dictionaryList
+                .FirstOrDefault(d => d.Source!.OriginalString.Contains(resDictName));
+            if (resDict == null) {
+                resDict = dictionaryList.FirstOrDefault(d => d.Source!.OriginalString.Contains("Strings.axaml"));
+            }
+            if (resDict != null) {
+                Current.Resources.MergedDictionaries.Remove(resDict);
+                Current.Resources.MergedDictionaries.Add(resDict);
+            }
+        }
+
+        static void InitializeTheme() {
+            SetTheme();
+        }
+
+        public static void SetTheme() {
             var light = Current.Resources.MergedDictionaries
                 .Select(res => (ResourceInclude)res)
-                .FirstOrDefault(d => d.Source.OriginalString.Contains("LightTheme"));
+                .FirstOrDefault(d => d.Source!.OriginalString.Contains("LightTheme"));
             var dark = Current.Resources.MergedDictionaries
                 .Select(res => (ResourceInclude)res)
-                .FirstOrDefault(d => d.Source.OriginalString.Contains("DarkTheme"));
-            Current.Resources.MergedDictionaries.Remove(light);
-            Current.Resources.MergedDictionaries.Remove(dark);
+                .FirstOrDefault(d => d.Source!.OriginalString.Contains("DarkTheme"));
             if (Core.Util.Preferences.Default.Theme == 0) {
+                Current.Resources.MergedDictionaries.Remove(light);
                 Current.Resources.MergedDictionaries.Add(light);
             } else {
+                Current.Resources.MergedDictionaries.Remove(dark);
                 Current.Resources.MergedDictionaries.Add(dark);
             }
         }

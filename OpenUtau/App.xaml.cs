@@ -16,6 +16,9 @@ namespace OpenUtau {
 
         public static void InitializeCulture() {
             var culture = CultureInfo.InstalledUICulture.Name;
+            if (!string.IsNullOrEmpty(Core.Util.Preferences.Default.Language)) {
+                culture = Core.Util.Preferences.Default.Language;
+            }
             var dictionaryList = Current.Resources.MergedDictionaries.ToList();
             var resDictName = string.Format(@"UI\Strings.{0}.xaml", culture);
             var resDict = dictionaryList.

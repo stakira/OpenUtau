@@ -111,10 +111,12 @@ namespace OpenUtau.Api {
         /// Phonemize a consecutive sequence of notes. This is the main logic of a phonemizer.
         /// </summary>
         /// <param name="notes">A note and its extender notes. Always one or more.</param>
-        /// <param name="prevNeighbour">The immediate neighbour note before the leading note, if exists.</param>
-        /// <param name="nextNeighbour">The immediate neighbour note after the last extender note, if exists.</param>
+        /// <param name="prev">The note before the leading note, if exists.</param>
+        /// <param name="next">The note after the last extender note, if exists.</param>
+        /// <param name="prevNeighbour">Same as prev if is immediate neighbour, otherwise null.</param>
+        /// <param name="nextNeighbour">Same as next if is immediate neighbour, otherwise null.</param>
         /// <returns>An array of phonemes that are corresponding to input notes.</returns>
-        public abstract Phoneme[] Process(Note[] notes, Note? prevNeighbour, Note? nextNeighbour);
+        public abstract Phoneme[] Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour);
 
         public override string ToString() => $"[{Tag}] {Name}";
 
