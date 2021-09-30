@@ -87,45 +87,58 @@ namespace OpenUtau.Plugin.Builtin {
             var currentUnicode = ToUnicodeElements(note.lyric);
             var currentLyric = note.lyric;
 
-            // find global presamp.ini
-            string dir = Path.GetDirectoryName(typeof(JapaneseCVVCPhonemizer).Assembly.Location);
-            var presampIni = Path.Combine(dir, "presamp.ini");
-
-            // find singer presamp ini
-            if (File.Exists(Path.Combine(singer.Location, "presamp.ini"))) {
-                presampIni = Path.Combine(singer.Location, "presamp.ini");
-            }
-
-            Dictionary<string, string> presampConsonants;
-            Dictionary<string, string> presampVowels;
-
+            // Lists for presamp data
             List<string> presampVowList = new List<string>();
             List<string> presampConsList = new List<string>();
             List<string> presampPlainVowels = new List<string>();
 
-            // if found, read it.
-            if (File.Exists(presampIni)) {
-                try {
-                    var Header = "";
-                    foreach (string line in File.ReadLines(presampIni, Encoding.UTF8).ToList()) {
-                        if (line.StartsWith(@"[") && line.EndsWith(@"]")) {
-                            Header = line;
-                            continue;
+            // find global presamp.ini
+            string dir = Path.GetDirectoryName(typeof(JapaneseCVVCPhonemizer).Assembly.Location);
+            var presampIni = Path.Combine(dir, "presamp.ini");
+
+            // read presamp ini
+            for (int i = 0; i < 2; i++) {
+                if (File.Exists(presampIni)) {
+                    try {
+                        var Header = "";
+                        foreach (string line in File.ReadLines(presampIni, Encoding.UTF8).ToList()) {
+                            if (line.StartsWith(@"[") && line.EndsWith(@"]")) {
+                                Header = line;
+                                // clear consonants and vowels in case loading from a voicebank to prevent conflicts
+                                if (Header == "[CONSONANT]") { presampConsList.Clear(); }
+                                if (Header == "[VOWEL]") { presampVowList.Clear(); presampPlainVowels.Clear(); }
+                                continue;
+                            }
+                            switch (Header) {
+                                case "[CONSONANT]":
+                                    // If the consonant is not already pesent add it
+                                    if (!presampConsList.Contains(line.Split("=")[0] + "=" + line.Split("=")[1])) {
+                                        presampConsList.Add(line.Split("=")[0] + "=" + line.Split("=")[1]);
+                                    }
+                                    break;
+                                case "[VOWEL]":
+                                    // check the vowels don't already exist before adding them
+                                    if (!presampVowList.Contains(line.Split("=")[0] + "=" + line.Split("=")[2])) {
+                                        presampVowList.Add(line.Split("=")[0] + "=" + line.Split("=")[2]);
+                                    }
+                                    if (!presampPlainVowels.Contains(line.Split("=")[1])) {
+                                        presampPlainVowels.Add(line.Split("=")[1]);
+                                    }
+                                    break;
+                            }
                         }
-                        switch (Header) {
-                            case "[CONSONANT]":
-                                presampConsList.Add(line.Split("=")[0] + "=" + line.Split("=")[1]);
-                                break;
-                            case "[VOWEL]":
-                                presampVowList.Add(line.Split("=")[0] + "=" + line.Split("=")[2]);
-                                presampPlainVowels.Add(line.Split("=")[1]);
-                                break;
-                        }
+                    } catch (Exception e) {
+                        Log.Error(e, "Failed to read \""+presampIni+"\".");
                     }
-                } catch (Exception e) {
-                    Log.Error(e, "Failed to read presamp ini.");
                 }
+
+                // find singer presamp ini
+                presampIni = Path.Combine(singer.Location, "presamp.ini");
             }
+
+            // Dictionaries for presamp data
+            Dictionary<string, string> presampConsonants;
+            Dictionary<string, string> presampVowels;
 
             // Create consonant dictionary from presamp if possible
             presampConsonants = presampConsList.SelectMany(line => {
