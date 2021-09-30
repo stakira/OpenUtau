@@ -83,7 +83,24 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         bool isAlphaCon(string str) {
-            if (str == "gg") { return true; } else if (str == "gg") { return true; } else if (str == "dd") { return true; } else if (str == "bb") { return true; } else if (str == "ss") { return true; } else if (str == "g") { return true; } else if (str == "n") { return true; } else if (str == "d") { return true; } else if (str == "r") { return true; } else if (str == "m") { return true; } else if (str == "b") { return true; } else if (str == "s") { return true; } else if (str == "j") { return true; } else if (str == "ch") { return true; } else if (str == "k") { return true; } else if (str == "t") { return true; } else if (str == "p") { return true; } else if (str == "h") { return true; } else { return false; }
+            if (str == "gg") { return true; }
+            else if (str == "gg") { return true; }
+            else if (str == "dd") { return true; }
+            else if (str == "bb") { return true; }
+            else if (str == "ss") { return true; }
+            else if (str == "g") { return true; }
+            else if (str == "n") { return true; }
+            else if (str == "d") { return true; }
+            else if (str == "r") { return true; }
+            else if (str == "m") { return true; }
+            else if (str == "b") { return true; }
+            else if (str == "s") { return true; }
+            else if (str == "j") { return true; }
+            else if (str == "ch") { return true; }
+            else if (str == "k") { return true; }
+            else if (str == "t") { return true; }
+            else if (str == "p") { return true; }
+            else if (str == "h") { return true; }else { return false; }
         }
 
         static KoreanCVCPhonemizer() {
