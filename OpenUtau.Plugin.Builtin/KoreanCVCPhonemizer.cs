@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
@@ -7,7 +7,7 @@ using Serilog;
 
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("Korean CVC Phonemizer", "KR CVC", "NANA")]
+    [Phonemizer("Korean CVC Phonemizer", "KO CVC", "NANA")]
     public class KoreanCVCPhonemizer : Phonemizer {
 
         bool isAlphaCon(string str) {
@@ -107,7 +107,7 @@ namespace OpenUtau.Plugin.Builtin {
         private USinger singer;
         public override void SetSinger(USinger singer) => this.singer = singer;
 
-        public override Phoneme[] Process(Note[] notes, Note? prevNeighbour, Note? nextNeighbour) {
+        public override Phoneme[] Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour) {
             var note = notes[0];
             var currentUnicode = ToUnicodeElements(note.lyric);
             var currentLyric = note.lyric;
