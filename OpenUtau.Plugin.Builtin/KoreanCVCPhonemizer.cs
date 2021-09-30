@@ -24,15 +24,7 @@ namespace OpenUtau.Plugin.Builtin {
         private const int hangeulStartIndex = 0xAC00;
         private const int hangeulEndIndex = 0xD7A3;
 
-
-
         // ======================================================================================
-
-
-
-
-
-
 
         static readonly string[] plainVowels = new string[] { "eu", "eo", "a", "i", "u", "e", "o" };
 
@@ -109,17 +101,7 @@ namespace OpenUtau.Plugin.Builtin {
                 .ToDictionary(t => t.Item1, t => t.Item2);
         }
 
-
-
-
-
-
         // ======================================================================================
-
-
-
-
-
 
         private USinger singer;
         public override void SetSinger(USinger singer) => this.singer = singer;
@@ -267,14 +249,7 @@ namespace OpenUtau.Plugin.Builtin {
                 }; 
             }
 
-
-
-
             // ======================================================================================
-
-
-
-
 
             else {
                 if (prevNeighbour == null) {
