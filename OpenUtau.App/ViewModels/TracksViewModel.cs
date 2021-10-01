@@ -8,6 +8,8 @@ using OpenUtau.Core.Ustx;
 using ReactiveUI;
 
 namespace OpenUtau.App.ViewModels {
+    public class TracksRefreshEvent { }
+
     public class TracksViewModel : ViewModelBase, ICmdSubscriber {
         public Rect Bounds {
             get => bounds;
@@ -104,6 +106,30 @@ namespace OpenUtau.App.ViewModels {
             TrackOffset = track;
         }
 
+        public void AddTrack() {
+            var project = DocManager.Inst.Project;
+            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, new UTrack() { TrackNo = project.tracks.Count() }));
+            DocManager.Inst.EndUndoGroup();
+        }
+
+        public void MaybeAddPart(Point position) {
+            double tick = position.X / TickWidth - TickOffset;
+            int trackNo = (int)(position.Y / TrackHeight - TrackOffset);
+            var project = DocManager.Inst.Project;
+            if (trackNo >= project.tracks.Count) {
+                return;
+            }
+            UVoicePart part = new UVoicePart() {
+                position = (int)tick, // todo: snap
+                trackNo = trackNo,
+                Duration = project.resolution * 16 / project.beatUnit * project.beatPerBar,
+            };
+            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.ExecuteCmd(new AddPartCommand(project, part));
+            DocManager.Inst.EndUndoGroup();
+        }
+
         public void OnNext(UCommand cmd, bool isUndo) {
             if (cmd is PartCommand partCommand) {
                 if (partCommand is AddPartCommand) {
@@ -141,6 +167,7 @@ namespace OpenUtau.App.ViewModels {
                         Tracks.Add(removeTrack.track);
                     }
                 }
+                MessageBus.Current.SendMessage(new TracksRefreshEvent());
             } else if (cmd is UNotification) {
                 if (cmd is LoadProjectNotification loadProjectNotif) {
                     Parts.Clear();

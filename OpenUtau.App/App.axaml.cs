@@ -39,8 +39,12 @@ namespace OpenUtau.App {
             var dictionaryList = Current.Resources.MergedDictionaries
                 .Select(res => (ResourceInclude)res)
                 .ToList();
-            var resDict = dictionaryList.
-                FirstOrDefault(d => d.Source!.OriginalString.Contains(language));
+            var resDictName = string.Format(@"Strings.{0}.axaml", language);
+            var resDict = dictionaryList
+                .FirstOrDefault(d => d.Source!.OriginalString.Contains(resDictName));
+            if (resDict == null) {
+                resDict = dictionaryList.FirstOrDefault(d => d.Source!.OriginalString.Contains("Strings.axaml"));
+            }
             if (resDict != null) {
                 Current.Resources.MergedDictionaries.Remove(resDict);
                 Current.Resources.MergedDictionaries.Add(resDict);
