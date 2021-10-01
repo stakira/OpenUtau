@@ -66,7 +66,7 @@ namespace OpenUtau.Plugin.Builtin {
             "i=ㅣ",
             "e=ㅔ,ㅐ",
             "eui=ㅢ",
-            "we=ㅞ,ㅙ",
+            "we=ㅞ,ㅙ,ㅚ",
             "uo=ㅝ",
             "wa=ㅘ",
             "wi=ㅟ",
