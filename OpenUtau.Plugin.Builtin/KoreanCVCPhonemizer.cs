@@ -470,7 +470,7 @@ namespace OpenUtau.Plugin.Builtin {
                         int totalDuration = notes.Sum(n => n.duration);
                         int vcLength = 60;
                         if ((TNLconsonant == "r") || (TNLconsonant == "h")) { vcLength = 30; }
-                        else if (TNLconsonant == "s") { vcLength = 70; }
+                        else if (TNLconsonant == "s") { vcLength = totalDuration/3; }
                         else if ((TNLconsonant == "k") || (TNLconsonant == "t") || (TNLconsonant == "p") || (TNLconsonant == "ch")) { vcLength = totalDuration / 2; }
                         else if ((TNLconsonant == "gg") || (TNLconsonant == "dd") || (TNLconsonant == "bb") || (TNLconsonant == "ss") || (TNLconsonant == "jj")) { vcLength = totalDuration / 2; }
                         vcLength = Math.Min(totalDuration / 2, vcLength);
