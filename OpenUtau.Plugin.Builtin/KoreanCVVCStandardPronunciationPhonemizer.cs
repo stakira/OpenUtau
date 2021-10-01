@@ -411,7 +411,7 @@ namespace OpenUtau.Plugin.Builtin {
         private USinger singer;
         public override void SetSinger(USinger singer) => this.singer = singer;
 
-        public override Phoneme[] Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour) {
+        public override Phoneme[] Process(Note[] notes, Note? prevNeighbour, Note? nextNeighbour) {
             var prevLyric = prevNeighbour?.lyric;
             char[] prevKoreanLyrics = { '　', '　', '　' };
             bool isPrevEndV = true;
@@ -502,7 +502,7 @@ namespace OpenUtau.Plugin.Builtin {
                         VC = $"{currentVowel} {nextInitialConsonants}";
                     } else {
                         // 현재 노트가 CVC가 유지되는 경우
-                        lastConsonantsLookup.TryGetValue(currentKoreanLyrics[2].ToString(), out var lastConsonants);
+                        lastConsonantsLookup.TryGetValue(ruleVC[0].ToString(), out var lastConsonants);
                         VC = $"{currentVowels} {lastConsonants}";
                     }
                 }
