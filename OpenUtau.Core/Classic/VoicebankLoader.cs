@@ -176,7 +176,7 @@ namespace OpenUtau.Classic {
                     File = filePath,
                 };
                 while (!reader.EndOfStream) {
-                    var s = reader.ReadLine().Split(new char[0]);
+                    var s = reader.ReadLine().Split('\t');
                     if (s.Length == 3) {
                         string source = s[0];
                         string prefix = s[1];

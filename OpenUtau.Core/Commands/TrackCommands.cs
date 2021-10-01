@@ -67,7 +67,7 @@ namespace OpenUtau.Core {
     }
 
     public class MoveTrackCommand : TrackCommand {
-        readonly int index;
+        public readonly int index;
         public MoveTrackCommand(UProject project, UTrack track, bool up) {
             this.project = project;
             this.track = track;
