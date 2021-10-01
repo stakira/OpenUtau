@@ -411,7 +411,7 @@ namespace OpenUtau.Plugin.Builtin {
         private USinger singer;
         public override void SetSinger(USinger singer) => this.singer = singer;
 
-        public override Phoneme[] Process(Note[] notes, Note? prevNeighbour, Note? nextNeighbour) {
+        public override Phoneme[] Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour) {
             var prevLyric = prevNeighbour?.lyric;
             char[] prevKoreanLyrics = { '　', '　', '　' };
             bool isPrevEndV = true;
