@@ -1,9 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Reactive.Linq;
 using Avalonia;
 using Avalonia.Controls;
+using OpenUtau.App.ViewModels;
 using OpenUtau.Core.Ustx;
+using ReactiveUI;
 
 namespace OpenUtau.App.Controls {
     class PartsCanvas : Canvas {
@@ -61,6 +65,15 @@ namespace OpenUtau.App.Controls {
         private ObservableCollection<UPart> _items;
 
         Dictionary<UPart, PartControl> partControls = new Dictionary<UPart, PartControl>();
+
+        public PartsCanvas() {
+            MessageBus.Current.Listen<TracksRefreshEvent>()
+                .Subscribe(_ => {
+                    foreach (var (part, control) in partControls) {
+                        control.SetPosition();
+                    }
+                });
+        }
 
         protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change) {
             base.OnPropertyChanged(change);

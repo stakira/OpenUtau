@@ -55,7 +55,7 @@ namespace OpenUtau.App.Controls {
         private Point offset;
         private string text = string.Empty;
 
-        private readonly UPart part;
+        public readonly UPart part;
         private readonly Pen notePen = new Pen(Brushes.White, 3);
         private FormattedText? formattedText;
         private List<IDisposable> unbinds = new List<IDisposable>();
@@ -86,7 +86,7 @@ namespace OpenUtau.App.Controls {
             }
         }
 
-        private void SetPosition() {
+        public void SetPosition() {
             Canvas.SetLeft(this, Offset.X + part.position * tickWidth);
             Canvas.SetTop(this, Offset.Y + part.trackNo * trackHeight);
         }
