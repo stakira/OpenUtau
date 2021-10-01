@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
 using Serilog;
@@ -10,7 +12,10 @@ namespace OpenUtau.Plugin.Builtin {
     public class JapaneseCVVCPhonemizer : Phonemizer {
         static readonly string[] plainVowels = new string[] { "あ","い","う","え","お","ん"};
 
-        static readonly string[] vowels = new string[] {
+        // presamp plain vowels
+        private static List<string> presampPlainVowels = new List<string>();
+
+        private static string[] vowels = new string[] {
             "a=ぁ,あ,か,が,さ,ざ,た,だ,な,は,ば,ぱ,ま,ゃ,や,ら,わ,ァ,ア,カ,ガ,サ,ザ,タ,ダ,ナ,ハ,バ,パ,マ,ャ,ヤ,ラ,ワ",
             "e=ぇ,え,け,げ,せ,ぜ,て,で,ね,へ,べ,ぺ,め,れ,ゑ,ェ,エ,ケ,ゲ,セ,ゼ,テ,デ,ネ,ヘ,ベ,ペ,メ,レ,ヱ",
             "i=ぃ,い,き,ぎ,し,じ,ち,ぢ,に,ひ,び,ぴ,み,り,ゐ,ィ,イ,キ,ギ,シ,ジ,チ,ヂ,ニ,ヒ,ビ,ピ,ミ,リ,ヰ",
@@ -20,7 +25,7 @@ namespace OpenUtau.Plugin.Builtin {
             "N=ン",
         };
 
-        static readonly string[] consonants = new string[] {
+        private static string[] consonants = new string[] {
             "ch=ch,ち,ちぇ,ちゃ,ちゅ,ちょ",
             "gy=gy,ぎ,ぎぇ,ぎゃ,ぎゅ,ぎょ",
             "ts=ts,つ,つぁ,つぃ,つぇ,つぉ",
@@ -50,13 +55,88 @@ namespace OpenUtau.Plugin.Builtin {
             "y=y,いぃ,いぇ,や,ゆ,よ,ゐ,ゑ",
             "ky=ky,き,きぇ,きゃ,きゅ,きょ",
             "z=z,ざ,ず,ずぃ,ぜ,ぞ",
-            "my=my,み,みぇ,みゃ,みゅ,みょ"
+            "my=my,み,みぇ,みゃ,みゅ,みょ",
+            "R=R",
+            "息=息",
+            "吸=吸",
+            "-=-"
         };
 
-        static readonly Dictionary<string, string> vowelLookup;
-        static readonly Dictionary<string, string> consonantLookup;
+        private static Dictionary<string, string> vowelLookup;
+        private static Dictionary<string, string> consonantLookup;
 
-        static JapaneseCVVCPhonemizer() {
+        // Dictionaries for presamp data
+        private static Dictionary<string, string> presampConsonants;
+        private static Dictionary<string, string> presampVowels;
+
+
+        // Store singer in field
+        private USinger singer;
+        public override void SetSinger(USinger singer) {
+            this.singer = singer;
+
+            // load presamp config from singer
+            LoadPresampConfig(Path.Combine(singer.Location, "presamp.ini"));
+        }
+
+        public JapaneseCVVCPhonemizer() {
+            Initialize();
+        }
+
+        private void LoadPresampConfig(string presampIni) {
+            // Lists for presamp data
+            List<string> presampVowList = new List<string>();
+            List<string> presampConsList = new List<string>();
+
+            // read presamp ini if it exists
+            if (File.Exists(presampIni)) {
+                try {
+                    var Header = "";
+                    foreach (string line in File.ReadLines(presampIni, Encoding.UTF8).ToList()) {
+                        if (line.StartsWith(@"[") && line.EndsWith(@"]")) {
+                            Header = line;
+                            // clear consonants and vowels in case loading from a voicebank to prevent conflicts
+                            if (Header == "[CONSONANT]") { presampConsList.Clear(); }
+                            if (Header == "[VOWEL]") { presampVowList.Clear(); presampPlainVowels.Clear(); }
+                            continue;
+                        }
+                        switch (Header) {
+                            case "[CONSONANT]":
+                                // If the consonant is not already pesent add it
+                                if (!presampConsList.Contains(line.Split("=")[0] + "=" + line.Split("=")[1])) {
+                                    presampConsList.Add(line.Split("=")[0] + "=" + line.Split("=")[1]);
+                                }
+                                break;
+                            case "[VOWEL]":
+                                // check the vowels don't already exist before adding them
+                                if (!presampVowList.Contains(line.Split("=")[0] + "=" + line.Split("=")[2])) {
+                                    presampVowList.Add(line.Split("=")[0] + "=" + line.Split("=")[2]);
+                                }
+                                if (!presampPlainVowels.Contains(line.Split("=")[1])) {
+                                    presampPlainVowels.Add(line.Split("=")[1]);
+                                }
+                                break;
+                        }
+                    }
+                } catch (Exception e) {
+                    Log.Error(e, "Failed to read \"" + presampIni + "\".");
+                }
+            }
+
+            // Create consonant dictionary from presamp if possible
+            presampConsonants = presampConsList.SelectMany(line => {
+                var parts = line.Split('=');
+                return parts[1].Split(',').Select(cv => (cv, parts[0]));
+            }).ToDictionary(t => t.Item1, t => t.Item2);
+
+            // and create vowel dictionary from presamp if possible
+            presampVowels = presampVowList.SelectMany(line => {
+                var parts = line.Split('=');
+                return parts[1].Split(',').Select(cv => (cv, parts[0]));
+            }).ToDictionary(t => t.Item1, t => t.Item2);
+        }
+
+        private void Initialize() {
             vowelLookup = vowels.ToList()
                 .SelectMany(line => {
                     var parts = line.Split('=');
@@ -69,13 +149,16 @@ namespace OpenUtau.Plugin.Builtin {
                     return parts[1].Split(',').Select(cv => (cv, parts[0]));
                 })
                 .ToDictionary(t => t.Item1, t => t.Item2);
+
+            // find global presamp.ini
+            string dir = Path.GetDirectoryName(typeof(JapaneseCVVCPhonemizer).Assembly.Location);
+            var presampIni = Path.Combine(dir, "presamp.ini");
+
+            // load presamp ini
+            LoadPresampConfig(presampIni);
         }
 
-        // Store singer in field, will try reading presamp.ini later
-        private USinger singer;
-        public override void SetSinger(USinger singer) => this.singer = singer;
-
-        public override Phoneme[] Process(Note[] notes, Note? prevNeighbour, Note? nextNeighbour) {
+        public override Phoneme[] Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour) {
             var note = notes[0];
             var currentUnicode = ToUnicodeElements(note.lyric);
             var currentLyric = note.lyric;
@@ -86,11 +169,14 @@ namespace OpenUtau.Plugin.Builtin {
                 if (singer.TryGetMappedOto(initial, note.tone, out var _)) {
                     currentLyric = initial;
                 }
-            } else if (plainVowels.Contains(currentLyric)){
+            } else if (plainVowels.Contains(currentLyric) || presampPlainVowels.Contains(currentLyric)){
                 var prevUnicode = ToUnicodeElements(prevNeighbour?.lyric);
 
                 // Current note is VV
-                if (vowelLookup.TryGetValue(prevUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
+                if (presampVowels.TryGetValue(prevUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
+                    currentLyric = $"{vow} {currentLyric}";
+                }
+                else if (vowelLookup.TryGetValue(prevUnicode.LastOrDefault() ?? string.Empty, out vow)) {
                     currentLyric = $"{vow} {currentLyric}";
                 }
             }
@@ -100,7 +186,7 @@ namespace OpenUtau.Plugin.Builtin {
                 var nextLyric = string.Join("", nextUnicode);
 
                 // Check if next note is a vowel and does not require VC
-                if (plainVowels.Contains(nextUnicode.FirstOrDefault() ?? string.Empty)) {
+                if (plainVowels.Contains(nextUnicode.FirstOrDefault() ?? string.Empty) || presampPlainVowels.Contains(nextUnicode.FirstOrDefault() ?? string.Empty)) {
                     return new Phoneme[] {
                         new Phoneme() {
                             phoneme = currentLyric,
@@ -111,13 +197,19 @@ namespace OpenUtau.Plugin.Builtin {
                 // Insert VC before next neighbor
                 // Get vowel from current note
                 var vowel = "";
-                if (vowelLookup.TryGetValue(currentUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
+                string vow;
+                if (presampVowels.TryGetValue(currentUnicode.LastOrDefault() ?? string.Empty, out vow)) {
+                    vowel = vow;
+                } else if (vowelLookup.TryGetValue(currentUnicode.LastOrDefault() ?? string.Empty, out vow)) {
                     vowel = vow;
                 }
 
                 // Get consonant from next note
                 var consonant = "";
-                if (consonantLookup.TryGetValue(nextUnicode.FirstOrDefault() ?? string.Empty, out var con)) {
+                string con;
+                if (presampConsonants.TryGetValue(nextUnicode.FirstOrDefault() ?? string.Empty, out con)) {
+                    consonant = con;
+                } else if (consonantLookup.TryGetValue(nextUnicode.FirstOrDefault() ?? string.Empty, out con)) {
                     consonant = con;
                 }
 

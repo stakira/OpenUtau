@@ -12,11 +12,14 @@ using Avalonia.Markup.Xaml;
 using Avalonia.VisualTree;
 using OpenUtau.App.Controls;
 using OpenUtau.App.ViewModels;
+using OpenUtau.Core;
+using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.App.Views {
     public partial class MainWindow : Window {
         private readonly MainWindowViewModel viewModel;
+        private object midiWindow;
 
         public MainWindow() {
             InitializeComponent();
@@ -313,6 +316,31 @@ namespace OpenUtau.App.Views {
 
         public void ZoomerPointerWheelChanged(object sender, PointerWheelEventArgs args) {
             viewModel.TracksViewModel.OnYZoomed(new Point(0, 0.5), 0.1 * args.Delta.Y);
+        }
+
+        public void TrackHeaderCanvasDoubleTapped(object sender, RoutedEventArgs args) {
+            viewModel.TracksViewModel.AddTrack();
+        }
+
+        public void PartsCanvasPointerPressed(object sender, PointerPressedEventArgs args) {
+            if (!(sender is Canvas canvas)) {
+                return;
+            }
+            var position = args.GetPosition(canvas);
+            var control = canvas.InputHitTest(position);
+            if (control == canvas) {
+                viewModel.TracksViewModel.MaybeAddPart(position);
+            }
+        }
+
+        public void PartsCanvasDoubleTapped(object sender, RoutedEventArgs args) {
+            if (!(sender is Canvas canvas)) {
+                return;
+            }
+            var e = (TappedEventArgs)args;
+            var control = canvas.InputHitTest(e.GetPosition(canvas));
+            if (control is PartControl partControl) {
+            }
         }
     }
 }

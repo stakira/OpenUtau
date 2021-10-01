@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.IO;
 
 namespace OpenUtau.Classic {
     public class Plugin {
@@ -17,6 +18,7 @@ namespace OpenUtau.Classic {
                  : new ProcessStartInfo() {
                      FileName = Executable,
                      Arguments = tempFile,
+                     WorkingDirectory = Path.GetDirectoryName(Executable),
                  };
             using (var process = Process.Start(startInfo)) {
                 process.WaitForExit();

@@ -219,8 +219,9 @@ namespace OpenUtau.Core.Render {
                 if (!exists) {
                     Log.Information($"Copy temp {source} {dest}");
                     File.Copy(source, dest);
+                    File.SetLastAccessTime(dest, DateTime.Now);
                 } else {
-                    File.SetLastWriteTime(dest, DateTime.Now);
+                    File.SetLastAccessTime(dest, DateTime.Now);
                 }
             }
         }
@@ -232,7 +233,7 @@ namespace OpenUtau.Core.Render {
             Directory.EnumerateFiles(path, "*.*", SearchOption.TopDirectoryOnly)
                 .Where(file =>
                     !File.GetAttributes(file).HasFlag(FileAttributes.Directory)
-                        && File.GetLastWriteTime(file) < expire)
+                        && File.GetLastAccessTime(file) < expire)
                 .ToList()
                 .ForEach(file => File.Delete(file));
         }

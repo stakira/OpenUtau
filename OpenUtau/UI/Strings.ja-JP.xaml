@@ -10,9 +10,9 @@
     <system:String x:Key="menu.file.save">保存</system:String>
     <system:String x:Key="menu.file.saveas">別名で保存...</system:String>
     <system:String x:Key="menu.file.saveasust">USTを保存</system:String>
-    <system:String x:Key="menu.file.import">インポート...</system:String>
-    <system:String x:Key="menu.file.importaudio">音声インポート...</system:String>
-    <system:String x:Key="menu.file.importmidi">MIDIインポート...</system:String>
+    <system:String x:Key="menu.file.importtracks">トラックをインポート...</system:String>
+    <system:String x:Key="menu.file.importaudio">音声をインポート...</system:String>
+    <system:String x:Key="menu.file.importmidi">MIDIをインポート...</system:String>
     <system:String x:Key="menu.file.exportall">すべてエクスポート</system:String>
     <system:String x:Key="menu.file.recentfiles">最近開いたファイル</system:String>
     <system:String x:Key="menu.file.exit">OpenUTAUを終了</system:String>
@@ -24,7 +24,7 @@
     <system:String x:Key="menu.edit.copy">コピー</system:String>
     <system:String x:Key="menu.edit.paste">貼り付け</system:String>
     <system:String x:Key="menu.edit.delete">削除</system:String>
-    <system:String x:Key="menu.edit.selectall">全て選択</system:String>
+    <system:String x:Key="menu.edit.selectall">すべて選択</system:String>
 
     <system:String x:Key="menu.tools">ツール</system:String>
     <system:String x:Key="menu.tools.singers">シンガー...</system:String>
@@ -101,7 +101,7 @@ Space:</system:String>
 音符を選択
 選択した音符をトランスポーズ
 選択した音符をオクターブ毎にトランスポーズ
-Play</system:String>
+再生</system:String>
     <system:String x:Key="tip.notes.zoomx">◀ ここをスクロールして左右にズーム ▶</system:String>
     <system:String x:Key="tip.notes.zoomy">ここをスクロールして上下にズーム ▶</system:String>
     <system:String x:Key="tip.exps.keys" xml:space="preserve">左クリック:

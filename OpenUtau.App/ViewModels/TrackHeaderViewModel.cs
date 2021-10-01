@@ -2,21 +2,24 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Disposables;
 using OpenUtau.Api;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using ReactiveUI;
 
 namespace OpenUtau.App.ViewModels {
-    public class TrackHeaderViewModel : ViewModelBase {
+    public class TrackHeaderViewModel : ViewModelBase, IActivatableViewModel {
         public int TrackNo => track.TrackNo;
         public USinger Singer => track.Singer;
         public Phonemizer Phonemizer => track.Phonemizer;
         public string PhonemizerTag => track.Phonemizer.Tag;
-        public IReadOnlyList<MenuItemViewModel> SingerMenuItems { get; set; }
+        public IReadOnlyList<MenuItemViewModel>? SingerMenuItems { get; set; }
         public ReactiveCommand<USinger, Unit> SelectSingerCommand { get; }
-        public IReadOnlyList<MenuItemViewModel> PhonemizerMenuItems { get; set; }
+        public IReadOnlyList<MenuItemViewModel>? PhonemizerMenuItems { get; set; }
         public ReactiveCommand<PhonemizerFactory, Unit> SelectPhonemizerCommand { get; }
+
+        public ViewModelActivator Activator { get; }
 
         private readonly UTrack track;
 
@@ -42,6 +45,16 @@ namespace OpenUtau.App.ViewModels {
                 this.RaisePropertyChanged(nameof(Phonemizer));
                 this.RaisePropertyChanged(nameof(PhonemizerTag));
             });
+
+            Activator = new ViewModelActivator();
+            this.WhenActivated((CompositeDisposable disposables) => {
+                Disposable.Create(() => {
+                    MessageBus.Current.Listen<TracksRefreshEvent>()
+                        .Subscribe(_ => {
+                            ManuallyRaise();
+                        }).DisposeWith(disposables);
+                });
+            });
         }
 
         public void RefreshSingers() {
@@ -64,6 +77,7 @@ namespace OpenUtau.App.ViewModels {
 
         public void ManuallyRaise() {
             this.RaisePropertyChanged(nameof(Singer));
+            this.RaisePropertyChanged(nameof(TrackNo));
             this.RaisePropertyChanged(nameof(Phonemizer));
             this.RaisePropertyChanged(nameof(PhonemizerTag));
         }

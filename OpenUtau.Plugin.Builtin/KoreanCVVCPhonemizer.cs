@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
@@ -7,7 +7,7 @@ using Serilog;
 
 namespace OpenUtau.Plugin.Builtin
 {
-    [Phonemizer("Korean CVVC Phonemizer", "KR CVVC", "Coludy")]
+    [Phonemizer("Korean CVVC Phonemizer", "KO CVVC", "Coludy")]
     public class KoreanCVVCPhonemizer : Phonemizer
     {
         static readonly string[] plainVowels = new string[] { "아", "야", "와", "이", "위", "의", "우", "유", "에", "예", "애", "얘", "외", "왜", "웨", "오", "요", "으", "어", "여", "ㄴ", "ㅁ", "ㅇ", "ㄹ" };
@@ -81,8 +81,7 @@ namespace OpenUtau.Plugin.Builtin
         private USinger singer;
         public override void SetSinger(USinger singer) => this.singer = singer;
 
-        public override Phoneme[] Process(Note[] notes, Note? prevNeighbour, Note? nextNeighbour)
-        {
+        public override Phoneme[] Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour) {
             var note = notes[0];
             var currentUnicode = ToUnicodeElements(note.lyric);
             var currentLyric = note.lyric;
