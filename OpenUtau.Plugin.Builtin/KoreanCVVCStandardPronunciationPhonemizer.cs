@@ -44,7 +44,7 @@ namespace OpenUtau.Plugin.Builtin {
             "p=ㅃ",
             "s=ㅅ",
             "ss=ㅆ",
-            "=ㅇ",
+            "=ㅇ,　",
             "j=ㅈ",
             "zh=ㅉ",
             "ch=ㅊ",
@@ -264,8 +264,8 @@ namespace OpenUtau.Plugin.Builtin {
             int vcLength = 60;
 
             string CV = "";
-            // 앞문자 존재
             if(prevNeighbour != null) {
+                // 앞문자 존재
                 if (!isPrevEndV) {
                     // 앞문자 종결이 C
                     ruleOfConsonantsLookup.TryGetValue(prevKoreanLyrics[2].ToString() + currentKoreanLyrics[0].ToString(), out var CCConsonants);
@@ -274,12 +274,14 @@ namespace OpenUtau.Plugin.Builtin {
                     CV = $"{changedCurrentConsonants}{currentVowel}";
                     
                 } else {
+                    // 앞문자 종결이 V
                     initialConsonantLookup.TryGetValue(currentKoreanLyrics[0].ToString(), out var currentInitialConsonants);
                     vowelLookup.TryGetValue(currentKoreanLyrics[1].ToString(), out var currentVowel);
 
                     CV = $"{currentInitialConsonants}{currentVowel}";
                 }
             } else {
+                // 앞문자 없음
                 initialConsonantLookup.TryGetValue(currentKoreanLyrics[0].ToString(), out var currentInitialConsonants);
                 vowelLookup.TryGetValue(currentKoreanLyrics[1].ToString(), out var currentVowel);
 
@@ -292,10 +294,37 @@ namespace OpenUtau.Plugin.Builtin {
             if (nextNeighbour != null) {
                 if(isCurrentEndV) {
                     // 현재 문자 종결이 V
-
+                    initialConsonantLookup.TryGetValue(nextLyrics[0].ToString(), out var nextInitialConsonants);
+                    subsequentVowelsLookup.TryGetValue(currentKoreanLyrics[1].ToString(), out var currentSubsequentVowel);
+                    if (nextInitialConsonants == "") {
+                        // 다음 문자 시작이 V(VV 형태)
+                        vowelLookup.TryGetValue(nextKoreanLyrics[1].ToString(), out var nextVowel);
+                        VC = $"{currentSubsequentVowel} {nextVowel}";
+                    } else {
+                        // 다음 문자 시작이 C(VC 형태)
+                        VC = $"{currentSubsequentVowel} {nextInitialConsonants}";
+                    }
                 } else {
                     // 현재 문자 종결이 C
-
+                    ruleOfConsonantsLookup.TryGetValue(currentKoreanLyrics[2].ToString() + nextKoreanLyrics[0].ToString(), out var VCConsonants);       
+                    initialConsonantLookup.TryGetValue(VCConsonants[1].ToString(), out var changedNextConsonants);
+                    if (changedNextConsonants == "") {
+                        // 다음 문자 시작이 V(CV 형태)
+                        vowelLookup.TryGetValue(nextKoreanLyrics[1].ToString(), out var nextVowel);
+                        if (VCConsonants[0] == "　") {
+                            // 현재 문자 종결이 V로 바뀌는 경우(VV)
+                            subsequentVowelsLookup.TryGetValue(currentKoreanLyrics[1].ToString(), out var currentSubsequentVowel);
+                            VC = $"{currentSubsequentVowel} {nextVowel}";
+                        } else {
+                            // 현재 문자 종결이 C가 유지되는 경우(CV)
+                            lastConsonantsLookup.TryGetValue(currentKoreanLyrics[2].ToString(), out var currentLastConsonants);
+                            VC = $"{currentLastConsonants} {nextVowel}";
+                        }
+                    } else {
+                        // 다음 문자 시작이 C(CC 형태)
+                        lastConsonantsLookup.TryGetValue(VCConsonants[1].ToString(), out var currentLastConsonants);
+                        VC = $"{currentLastConsonants} {changedNextConsonants[0]}";
+                    }
                 }
 
 
