@@ -243,7 +243,7 @@ namespace OpenUtau.Plugin.Builtin {
                 prevKoreanLyrics = SeparateHangul(prevLyric != null ? prevLyric[0] : '\0');
                 isPrevEndV = prevKoreanLyrics[2] == '　' && prevKoreanLyrics[0] != '　';
             }
-            
+
             var currentLyric = notes[0].lyric;
             if (!(currentLyric[0] >= '가' && currentLyric[0] <= '힣')) {
                 return new Phoneme[] {
@@ -255,7 +255,7 @@ namespace OpenUtau.Plugin.Builtin {
             var isCurrentEndV = currentKoreanLyrics[2] == '　' && currentKoreanLyrics[0] != '　';
 
             var nextLyric = nextNeighbour?.lyric;
-            char[] nextKoreanLyrics  = { '　', '　', '　' };
+            char[] nextKoreanLyrics = { '　', '　', '　' };
             if (nextLyric != null && nextLyric[0] >= '가' && nextLyric[0] <= '힣') {
                 nextKoreanLyrics = SeparateHangul(nextLyric != null ? nextLyric[0] : '\0');
             }
@@ -264,15 +264,15 @@ namespace OpenUtau.Plugin.Builtin {
             int vcLength = 60;
 
             string CV = "";
-            if(prevNeighbour != null) {
+            if (prevNeighbour != null) {
                 // 앞문자 존재
                 if (!isPrevEndV) {
                     // 앞문자 종결이 C
                     ruleOfConsonantsLookup.TryGetValue(prevKoreanLyrics[2].ToString() + currentKoreanLyrics[0].ToString(), out var CCConsonants);
                     vowelLookup.TryGetValue(currentKoreanLyrics[1].ToString(), out var currentVowel);
-                    initialConsonantLookup.TryGetValue(CCConsonants[1].ToString(), out var changedCurrentConsonants);
+                    initialConsonantLookup.TryGetValue(CCConsonants == null ? currentKoreanLyrics[0].ToString() : CCConsonants[1].ToString(), out var changedCurrentConsonants);
                     CV = $"{changedCurrentConsonants}{currentVowel}";
-                    
+
                 } else {
                     // 앞문자 종결이 V
                     initialConsonantLookup.TryGetValue(currentKoreanLyrics[0].ToString(), out var currentInitialConsonants);
@@ -287,14 +287,14 @@ namespace OpenUtau.Plugin.Builtin {
 
                 CV = $"{currentInitialConsonants}{currentVowel}";
             }
-            System.Diagnostics.Debug.WriteLine(CV);
+            //System.Diagnostics.Debug.WriteLine(CV);
 
             string VC = "";
-            // 뒷문자 존재
-            if (nextNeighbour != null) {
-                if(isCurrentEndV) {
+            if (nextLyric != null && nextKoreanLyrics[0] != '　') {
+                // 뒷문자 존재
+                if (isCurrentEndV) {
                     // 현재 문자 종결이 V
-                    initialConsonantLookup.TryGetValue(nextLyrics[0].ToString(), out var nextInitialConsonants);
+                    initialConsonantLookup.TryGetValue(nextLyric[0].ToString(), out var nextInitialConsonants);
                     subsequentVowelsLookup.TryGetValue(currentKoreanLyrics[1].ToString(), out var currentSubsequentVowel);
                     if (nextInitialConsonants == "") {
                         // 다음 문자 시작이 V(VV 형태)
@@ -306,12 +306,12 @@ namespace OpenUtau.Plugin.Builtin {
                     }
                 } else {
                     // 현재 문자 종결이 C
-                    ruleOfConsonantsLookup.TryGetValue(currentKoreanLyrics[2].ToString() + nextKoreanLyrics[0].ToString(), out var VCConsonants);       
-                    initialConsonantLookup.TryGetValue(VCConsonants[1].ToString(), out var changedNextConsonants);
+                    ruleOfConsonantsLookup.TryGetValue(currentKoreanLyrics[2].ToString() + nextKoreanLyrics[0].ToString(), out var VCConsonants);
+                    initialConsonantLookup.TryGetValue(VCConsonants == null ? nextKoreanLyrics[0].ToString() : VCConsonants[1].ToString(), out var changedNextConsonants);
                     if (changedNextConsonants == "") {
                         // 다음 문자 시작이 V(CV 형태)
                         vowelLookup.TryGetValue(nextKoreanLyrics[1].ToString(), out var nextVowel);
-                        if (VCConsonants[0] == "　") {
+                        if (VCConsonants != null && VCConsonants[0] == '　') {
                             // 현재 문자 종결이 V로 바뀌는 경우(VV)
                             subsequentVowelsLookup.TryGetValue(currentKoreanLyrics[1].ToString(), out var currentSubsequentVowel);
                             VC = $"{currentSubsequentVowel} {nextVowel}";
@@ -321,16 +321,24 @@ namespace OpenUtau.Plugin.Builtin {
                             VC = $"{currentLastConsonants} {nextVowel}";
                         }
                     } else {
-                        // 다음 문자 시작이 C(CC 형태)
+                        // FIXME: CC 인경우 오류남
+                        // 다음 문자 시작이 C(VC 형태로 교체)
                         lastConsonantsLookup.TryGetValue(VCConsonants[1].ToString(), out var currentLastConsonants);
-                        VC = $"{currentLastConsonants} {changedNextConsonants[0]}";
+                        VC = $"{currentLastConsonants} {changedNextConsonants}";
                     }
                 }
 
-
-
-
+            } else {
+                // 뒷문자 없음
+                if (!isCurrentEndV) {
+                    // C로 끝나는 경우
+                    subsequentVowelsLookup.TryGetValue(currentKoreanLyrics[1].ToString(), out var currentSubsequentVowel);
+                    lastConsonantsLookup.TryGetValue(currentKoreanLyrics[2].ToString(), out var currentLastConsonants);
+                    VC = $"{currentSubsequentVowel} {currentLastConsonants}";
+                }
             }
+
+            System.Diagnostics.Debug.WriteLine("@@@@" + VC);
 
 
             // 레거시
@@ -445,6 +453,14 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             }
             */
+
+            if (VC == "") {
+                return new Phoneme[] {
+                    new Phoneme {
+                        phoneme = CV,
+                    },
+                };
+            }
             return new Phoneme[] {
                 new Phoneme {
                     phoneme = CV,
