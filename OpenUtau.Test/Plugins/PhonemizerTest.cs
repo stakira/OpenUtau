@@ -24,7 +24,7 @@ namespace OpenUtau.Plugins {
 
     public class DefaultPhonemizerTest : PhonemizerTest<DefaultPhonemizer> { }
     public class ArpasingPhonemizerTest : PhonemizerTest<ArpasingPhonemizer> { }
-    //public class JapaneseCVVCPhonemizerTest : PhonemizerTest<JapaneseCVVCPhonemizer> { }
+    public class JapaneseCVVCPhonemizerTest : PhonemizerTest<JapaneseCVVCPhonemizer> { }
     public class JapaneseVCVPhonemizerTest : PhonemizerTest<JapaneseVCVPhonemizer> { }
     public class KoreanCVCPhonemizerTest : PhonemizerTest<KoreanCVCPhonemizer> { }
     public class KoreanCVVCPhonemizerTest : PhonemizerTest<KoreanCVVCPhonemizer> { }

@@ -54,7 +54,6 @@ namespace OpenUtau.Plugin.Builtin {
             "R=R",
             "息=息",
             "吸=吸",
-            "R=R",
             "-=-"
         };
 
