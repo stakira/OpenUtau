@@ -466,6 +466,7 @@ namespace OpenUtau.Plugin.Builtin {
                 // 만약 받침이 없다면
                 if (TCLfinal == "") {
                     // 뒤에 노트가 있다면
+                    if(nextExist) { if((nextNeighbour?.lyric)[0] == 'ㄹ') { VC = ""; } }
                     if ((VC != "") && (TNLconsonant != "")) {
                         int totalDuration = notes.Sum(n => n.duration);
                         int vcLength = 60;
