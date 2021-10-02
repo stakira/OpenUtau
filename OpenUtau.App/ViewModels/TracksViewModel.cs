@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using Avalonia;
@@ -9,6 +10,22 @@ using ReactiveUI;
 
 namespace OpenUtau.App.ViewModels {
     public class TracksRefreshEvent { }
+    public class PartsSelectionEvent {
+        public readonly UPart[] selectedParts;
+        public readonly UPart[] tempSelectedParts;
+        public PartsSelectionEvent(UPart[] selectedParts, UPart[] tempSelectedParts) {
+            this.selectedParts = selectedParts;
+            this.tempSelectedParts = tempSelectedParts;
+        }
+    }
+    public class PartResizeEvent {
+        public readonly UPart part;
+        public PartResizeEvent(UPart part) { this.part = part; }
+    }
+    public class PartMoveEvent {
+        public readonly UPart part;
+        public PartMoveEvent(UPart part) { this.part = part; }
+    }
 
     public class TracksViewModel : ViewModelBase, ICmdSubscriber {
         public Rect Bounds {
@@ -33,11 +50,11 @@ namespace OpenUtau.App.ViewModels {
         }
         public double TickOffset {
             get => tickOffset;
-            set => this.RaiseAndSetIfChanged(ref tickOffset, value);
+            set => this.RaiseAndSetIfChanged(ref tickOffset, Math.Max(0, value));
         }
         public double TrackOffset {
             get => trackOffset;
-            set => this.RaiseAndSetIfChanged(ref trackOffset, value);
+            set => this.RaiseAndSetIfChanged(ref trackOffset, Math.Max(0, value));
         }
         public double ViewportTicks => viewportTicks.Value;
         public double ViewportTracks => viewportTracks.Value;
@@ -57,6 +74,9 @@ namespace OpenUtau.App.ViewModels {
         private readonly ObservableAsPropertyHelper<double> viewportTracks;
         private readonly ObservableAsPropertyHelper<double> smallChangeX;
         private readonly ObservableAsPropertyHelper<double> smallChangeY;
+
+        public readonly List<UPart> SelectedParts = new List<UPart>();
+        private readonly HashSet<UPart> TempSelectedParts = new HashSet<UPart>();
 
         public TracksViewModel() {
             viewportTicks = this.WhenAnyValue(x => x.Bounds, x => x.TickWidth)
@@ -106,6 +126,30 @@ namespace OpenUtau.App.ViewModels {
             TrackOffset = track;
         }
 
+        public int PointToTick(Point point) {
+            return (int)(point.X / TickWidth - TickOffset);
+        }
+
+        public int SnapUnit { get; private set; } = 480;
+        public int PointToSnappedTick(Point point) {
+            int tick = (int)(point.X / TickWidth + TickOffset);
+            return (int)((double)tick / SnapUnit) * SnapUnit;
+        }
+
+        public int PointToTrackNo(Point point) {
+            return (int)(point.Y / TrackHeight + TrackOffset);
+        }
+
+        public Point TickTrackToPoint(int tick, int trackNo) {
+            return new Point(
+                (tick - TickOffset) * TickWidth,
+                (trackNo - TrackOffset) * TrackHeight);
+        }
+
+        public Size TickTrackToSize(int ticks, int tracks) {
+            return new Size(ticks * TickWidth, tracks * TrackHeight);
+        }
+
         public void AddTrack() {
             var project = DocManager.Inst.Project;
             DocManager.Inst.StartUndoGroup();
@@ -113,21 +157,61 @@ namespace OpenUtau.App.ViewModels {
             DocManager.Inst.EndUndoGroup();
         }
 
-        public void MaybeAddPart(Point position) {
-            double tick = position.X / TickWidth - TickOffset;
-            int trackNo = (int)(position.Y / TrackHeight - TrackOffset);
+        public UPart? MaybeAddPart(Point point) {
+            int trackNo = PointToTrackNo(point);
             var project = DocManager.Inst.Project;
             if (trackNo >= project.tracks.Count) {
-                return;
+                return null;
             }
             UVoicePart part = new UVoicePart() {
-                position = (int)tick, // todo: snap
+                position = PointToSnappedTick(point), // todo: snap
                 trackNo = trackNo,
                 Duration = project.resolution * 16 / project.beatUnit * project.beatPerBar,
             };
             DocManager.Inst.StartUndoGroup();
             DocManager.Inst.ExecuteCmd(new AddPartCommand(project, part));
             DocManager.Inst.EndUndoGroup();
+            return part;
+        }
+
+        public void DeselectParts() {
+            SelectedParts.Clear();
+            TempSelectedParts.Clear();
+            MessageBus.Current.SendMessage(
+                new PartsSelectionEvent(
+                    SelectedParts.ToArray(), TempSelectedParts.ToArray()));
+        }
+
+        public void SelectAllParts() {
+            var project = DocManager.Inst.Project;
+            DeselectParts();
+            SelectedParts.AddRange(project.parts);
+            MessageBus.Current.SendMessage(
+                new PartsSelectionEvent(
+                    SelectedParts.ToArray(), TempSelectedParts.ToArray()));
+        }
+
+        public void TempSelectParts(int x0, int x1, int y0, int y1) {
+            var project = DocManager.Inst.Project;
+            TempSelectedParts.Clear();
+            foreach (var part in project.parts) {
+                if (part.EndTick >= x0 && part.position <= x1 && part.trackNo >= y0 && part.trackNo < y1) {
+                    TempSelectedParts.Add(part);
+                }
+            }
+            MessageBus.Current.SendMessage(
+                new PartsSelectionEvent(
+                    SelectedParts.ToArray(), TempSelectedParts.ToArray()));
+        }
+
+        public void CommitTempSelectParts() {
+            var newSelection = SelectedParts.Union(TempSelectedParts).ToList();
+            SelectedParts.Clear();
+            SelectedParts.AddRange(newSelection);
+            TempSelectedParts.Clear();
+            MessageBus.Current.SendMessage(
+                new PartsSelectionEvent(
+                    SelectedParts.ToArray(), TempSelectedParts.ToArray()));
         }
 
         public void OnNext(UCommand cmd, bool isUndo) {
@@ -152,6 +236,10 @@ namespace OpenUtau.App.ViewModels {
                         Parts.Remove(replacePart.newPart);
                         Parts.Add(replacePart.part);
                     }
+                } else if (partCommand is ResizePartCommand resizePart) {
+                    MessageBus.Current.SendMessage(new PartResizeEvent(resizePart.part));
+                } else if (partCommand is MovePartCommand movePart) {
+                    MessageBus.Current.SendMessage(new PartMoveEvent(movePart.part));
                 }
             } else if (cmd is TrackCommand) {
                 if (cmd is AddTrackCommand addTrack) {

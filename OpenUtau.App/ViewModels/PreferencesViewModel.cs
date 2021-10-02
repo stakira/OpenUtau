@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Text.RegularExpressions;
 using Avalonia;
 using Avalonia.Markup.Xaml.MarkupExtensions;
@@ -43,6 +44,7 @@ namespace OpenUtau.App.ViewModels {
             get => language;
             set => this.RaiseAndSetIfChanged(ref language, value);
         }
+        public bool MoresamplerSelected => moresamplerSelected.Value;
 
         private List<AudioOutputDevice>? audioOutputDevices;
         private AudioOutputDevice? audioOutputDevice;
@@ -51,6 +53,7 @@ namespace OpenUtau.App.ViewModels {
         private EngineInfo? exportResampler;
         private int theme;
         private CultureInfo? language;
+        private readonly ObservableAsPropertyHelper<bool> moresamplerSelected;
 
         public PreferencesViewModel() {
             var audioOutput = PlaybackManager.Inst.AudioOutput;
@@ -133,6 +136,11 @@ namespace OpenUtau.App.ViewModels {
                     Preferences.Save();
                     App.SetTheme();
                 });
+            this.WhenAnyValue(vm => vm.PreviewResampler, vm => vm.ExportResampler)
+                .Select(engines =>
+                    (engines.Item1?.Name?.Contains("moresampler", StringComparison.InvariantCultureIgnoreCase) ?? false) ||
+                    (engines.Item2?.Name?.Contains("moresampler", StringComparison.InvariantCultureIgnoreCase) ?? false))
+                .ToProperty(this, x => x.MoresamplerSelected, out moresamplerSelected);
         }
 
         public void TestAudioOutputDevice() {

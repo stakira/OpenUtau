@@ -87,6 +87,16 @@ namespace OpenUtau.Api {
             public override string ToString() => $"\"{phoneme}\" pos:{position}";
         }
 
+        /// <summary>
+        /// Result returned by Process().
+        /// </summary>
+        public struct Result {
+            /// <summary>
+            /// An array of phonemes that are corresponding to input notes.
+            /// </summary>
+            public Phoneme[] phonemes;
+        }
+
         public string Name { get; set; }
         public string Tag { get; set; }
 
@@ -115,8 +125,7 @@ namespace OpenUtau.Api {
         /// <param name="next">The note after the last extender note, if exists.</param>
         /// <param name="prevNeighbour">Same as prev if is immediate neighbour, otherwise null.</param>
         /// <param name="nextNeighbour">Same as next if is immediate neighbour, otherwise null.</param>
-        /// <returns>An array of phonemes that are corresponding to input notes.</returns>
-        public abstract Phoneme[] Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour);
+        public abstract Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour);
 
         public override string ToString() => $"[{Tag}] {Name}";
 

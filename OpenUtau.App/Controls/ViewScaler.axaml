@@ -4,6 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="20" d:DesignHeight="20"
              x:Class="OpenUtau.App.Controls.ViewScaler">
-  <Path Name="Path" Width="16" Height="16" Stroke="Black" StrokeThickness="1.75"
+  <Path Name="Path" Width="16" Height="16" Stroke="{DynamicResource NeutralAccentBrush}" StrokeThickness="1.75"
         StrokeLineCap="Flat" StrokeJoin="Miter"/>
 </UserControl>

@@ -31,6 +31,8 @@
             <ComboBox HorizontalAlignment="Stretch" Items="{Binding Resamplers}" SelectedItem="{Binding PreviewResampler}"/>
             <TextBlock Text="{DynamicResource prefs.rendering.resampler.export}" />
             <ComboBox HorizontalAlignment="Stretch" Items="{Binding Resamplers}" SelectedItem="{Binding ExportResampler}"/>
+            <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.rendering.resampler.warn}" FontWeight="Bold"
+                       Foreground="Red" Margin="0,0,0,4" IsVisible="{Binding MoresamplerSelected}"/>
             <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.rendering.resampler.note}"/>
           </StackPanel>
         </HeaderedContentControl>

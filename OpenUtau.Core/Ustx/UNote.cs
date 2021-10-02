@@ -165,9 +165,9 @@ namespace OpenUtau.Core.Ustx {
             track.Phonemizer.SetTiming(project.bpm, project.beatUnit, project.resolution);
             var phonemizerNotes = notes.Select(note => note.ToProcessorNote()).ToArray();
             phonemizerNotes[phonemizerNotes.Length - 1].duration += endOffset;
-            Phonemizer.Phoneme[] newPhonemes;
+            Phonemizer.Result phonemizerResult;
             try {
-                newPhonemes = track.Phonemizer.Process(
+                phonemizerResult = track.Phonemizer.Process(
                     phonemizerNotes,
                     prev,
                     next,
@@ -175,8 +175,15 @@ namespace OpenUtau.Core.Ustx {
                     nextIsNeighbour ? next : null);
             } catch (Exception e) {
                 Log.Error(e, "phonemizer error");
-                newPhonemes = new Phonemizer.Phoneme[] { new Phonemizer.Phoneme { phoneme = "error" } };
+                phonemizerResult = new Phonemizer.Result() {
+                    phonemes = new Phonemizer.Phoneme[] {
+                        new Phonemizer.Phoneme {
+                            phoneme = "error"
+                        }
+                    }
+                };
             }
+            var newPhonemes = phonemizerResult.phonemes;
             // Apply overrides.
             for (int i = phonemeOverrides.Count - 1; i >= 0; --i) {
                 if (phonemeOverrides[i].IsEmpty) {

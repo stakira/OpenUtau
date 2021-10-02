@@ -71,4 +71,21 @@
                    Color="{DynamicResource BackgroundColorDisabled}" />
   <SolidColorBrush x:Key="MenuFlyoutPresenterBorderBrush"
                    Color="{DynamicResource BorderColor}" />
+
+  <SolidColorBrush x:Key="TickLineBrush"
+                   Color="{DynamicResource TickLineColor}" />
+  <SolidColorBrush x:Key="TickLineBrushLow"
+                   Color="{DynamicResource TickLineColor}" Opacity="0.5"/>
+  <SolidColorBrush x:Key="BarNumberBrush"
+                   Color="{DynamicResource BarNumberColor}" />
+  <SolidColorBrush x:Key="TrackBackgroundAltBrush"
+                   Color="{DynamicResource TrackBackgroundAltColor}"/>
+  <SolidColorBrush x:Key="NeutralAccentBrush"
+                   Color="{DynamicResource NeutralAccentColor}" />
+  <SolidColorBrush x:Key="NeutralAccentBrushPointerOver"
+                   Color="{DynamicResource NeutralAccentColorPointerOver}" />
+  <SolidColorBrush x:Key="AccentBrush1"
+                   Color="{DynamicResource AccentColor1}" />
+  <SolidColorBrush x:Key="AccentBrush2"
+                   Color="{DynamicResource AccentColor2}" />
 </ResourceDictionary>

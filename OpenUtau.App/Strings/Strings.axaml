@@ -51,6 +51,12 @@
   <system:String x:Key="prefs.rendering.resampler.note">
     Note: to use external resamplers, please add the resampler DLL or EXE file in the Resamplers folder in the OpenUtau install path and choose it in Preferences.
   </system:String>
+  <system:String x:Key="prefs.rendering.resampler.warn">
+    Warning: moresampler is not supported yet. It will be extremely slow and cause high CPU usage. If you insist, please:
+    1. Turn on "resampler-compatibility" in moreconfig.txt.
+    2. Reduce pre-render threads to 1 or 2.
+    3. Patiently wait for prerender to finish before play.
+  </system:String>
   <system:String x:Key="prefs.appearance">Appearance</system:String>
   <system:String x:Key="prefs.appearance.theme">Theme</system:String>
   <system:String x:Key="prefs.appearance.theme.light">Light</system:String>

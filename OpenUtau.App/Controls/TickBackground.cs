@@ -82,7 +82,7 @@ namespace OpenUtau.App.Controls {
         public TickBackground() {
             pen1 = new Pen(Foreground, 1);
             pen2 = new Pen(Foreground, 1);
-            pen3 = new Pen(Foreground, 1) {
+            pen3 = new Pen(Background, 1) {
                 DashStyle = DashStyle,
             };
         }
@@ -133,7 +133,7 @@ namespace OpenUtau.App.Controls {
                             new Size(beatWidth, 20));
                         fTextPool.Add(bar, formattedText);
                     }
-                    context.DrawText(Foreground, new Point(x + 3, 8), formattedText);
+                    context.DrawText(ThemeManager.BarNumberBrush, new Point(x + 3, 8), formattedText);
                 }
                 context.DrawLine(pen, new Point(x, -0.5), new Point(x, Bounds.Height + 0.5f));
             }
