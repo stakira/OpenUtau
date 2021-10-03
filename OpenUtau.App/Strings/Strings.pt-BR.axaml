@@ -42,7 +42,7 @@
   <system:String x:Key="menu.file.exportust">Export Ust Files</system:String>
   <system:String x:Key="menu.file.importaudio">Importar Audio...</system:String>
   <system:String x:Key="menu.file.importmidi">Importar Midi...</system:String>
-  <system:String x:Key="menu.file.importtracks">Import Tracks...</system:String>
+  <system:String x:Key="menu.file.importtracks">Importar Faixas...</system:String>
   <system:String x:Key="menu.file.new">Novo</system:String>
   <system:String x:Key="menu.file.open">Abrir...</system:String>
   <system:String x:Key="menu.file.openas">Abrir como</system:String>
@@ -87,14 +87,14 @@
   <system:String x:Key="prefs.playback.device">Dispositivo de Reprodução</system:String>
   <system:String x:Key="prefs.playback.test">Teste</system:String>
   <system:String x:Key="prefs.rendering">Renderização</system:String>
-  <system:String x:Key="prefs.rendering.prerender.threads">Pre-render Threads</system:String>
+  <system:String x:Key="prefs.rendering.prerender.threads">Threads do Pre-render</system:String>
   <system:String x:Key="prefs.rendering.resampler.export">Resampler para exportação</system:String>
   <system:String x:Key="prefs.rendering.resampler.note">
         Observação: para usar resamplers externos, adicione o arquivo .dll ou .exe do resampler na pasta Resamplers no caminho de instalação do OpenUtau e escolha-o em Preferências. 
     </system:String>
   <system:String x:Key="prefs.rendering.resampler.preview">Resampler para visualização</system:String>
   <system:String x:Key="prefs.rendering.resampler.warn">
-    Aviso: ainda não há suporte para moresampler. Ele estará extremamente devegar e causar alto uso da CPU. Se deseja usar, por favor:
+    Aviso: ainda não há suporte para moresampler. Ele estará extremamente devegar e causará alto uso da CPU. Se deseja usar, por favor:
     1. Em moreconfig.txt, edite "resampler-compatibility" de "off" para "on".
     2. Reduza as threads do pre-render para 1 ou 2.
     3. Pacientemente espere o pre-render finalizar antes de tocar.
