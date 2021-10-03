@@ -13,20 +13,20 @@
 
   <system:String x:Key="errors.caption">Erro</system:String>
 
-  <system:String x:Key="exps.abbr">Abbreviation</system:String>
-  <system:String x:Key="exps.apply">Apply</system:String>
+  <system:String x:Key="exps.abbr">Abreviação</system:String>
+  <system:String x:Key="exps.apply">Aplicar</system:String>
   <system:String x:Key="exps.caption">Expressões</system:String>
-  <system:String x:Key="exps.defaultvalue">Default</system:String>
+  <system:String x:Key="exps.defaultvalue">Padrão</system:String>
   <system:String x:Key="exps.flag">Resampler Flag</system:String>
-  <system:String x:Key="exps.isflag">Is Resampler Flag</system:String>
+  <system:String x:Key="exps.isflag">É um Resampler Flag</system:String>
   <system:String x:Key="exps.maxvalue">Max</system:String>
   <system:String x:Key="exps.minvalue">Min</system:String>
-  <system:String x:Key="exps.name">Name</system:String>
-  <system:String x:Key="exps.optionvalues">Option Values</system:String>
-  <system:String x:Key="exps.sepbycomma">Separate values by ','</system:String>
-  <system:String x:Key="exps.type">Type</system:String>
-  <system:String x:Key="exps.type.numerical">Numerical</system:String>
-  <system:String x:Key="exps.type.options">Options</system:String>
+  <system:String x:Key="exps.name">Nome</system:String>
+  <system:String x:Key="exps.optionvalues">Valores</system:String>
+  <system:String x:Key="exps.sepbycomma">Separe os valores por ','</system:String>
+  <system:String x:Key="exps.type">Tipo</system:String>
+  <system:String x:Key="exps.type.numerical">Numérico</system:String>
+  <system:String x:Key="exps.type.options">Opções</system:String>
 
   <system:String x:Key="menu.edit">Editar</system:String>
   <system:String x:Key="menu.edit.copy">Copiar</system:String>
@@ -42,7 +42,7 @@
   <system:String x:Key="menu.file.exportust">Export Ust Files</system:String>
   <system:String x:Key="menu.file.importaudio">Importar Audio...</system:String>
   <system:String x:Key="menu.file.importmidi">Importar Midi...</system:String>
-  <system:String x:Key="menu.file.importtracks">Import Tracks...</system:String>
+  <system:String x:Key="menu.file.importtracks">Importar Faixas...</system:String>
   <system:String x:Key="menu.file.new">Novo</system:String>
   <system:String x:Key="menu.file.open">Abrir...</system:String>
   <system:String x:Key="menu.file.openas">Abrir como</system:String>
@@ -87,17 +87,17 @@
   <system:String x:Key="prefs.playback.device">Dispositivo de Reprodução</system:String>
   <system:String x:Key="prefs.playback.test">Teste</system:String>
   <system:String x:Key="prefs.rendering">Renderização</system:String>
-  <system:String x:Key="prefs.rendering.prerender.threads">Pre-render Threads</system:String>
+  <system:String x:Key="prefs.rendering.prerender.threads">Threads do Pre-render</system:String>
   <system:String x:Key="prefs.rendering.resampler.export">Resampler para exportação</system:String>
   <system:String x:Key="prefs.rendering.resampler.note">
         Observação: para usar resamplers externos, adicione o arquivo .dll ou .exe do resampler na pasta Resamplers no caminho de instalação do OpenUtau e escolha-o em Preferências. 
     </system:String>
   <system:String x:Key="prefs.rendering.resampler.preview">Resampler para visualização</system:String>
   <system:String x:Key="prefs.rendering.resampler.warn">
-    Warning: moresampler is not supported yet. It will be extremely slow and cause high CPU usage. If you insist, please:
-    1. Turn on "resampler-compatibility" in moreconfig.txt.
-    2. Reduce pre-render threads to 1 or 2.
-    3. Patiently wait for prerender to finish before play.
+    Aviso: ainda não há suporte para moresampler. Ele estará extremamente devegar e causará alto uso da CPU. Se deseja usar, por favor:
+    1. Em moreconfig.txt, edite "resampler-compatibility" de "off" para "on".
+    2. Reduza as threads do pre-render para 1 ou 2.
+    3. Pacientemente espere o pre-render finalizar antes de tocar.
   </system:String>
 
   <system:String x:Key="singers.caption">Vozes</system:String>
