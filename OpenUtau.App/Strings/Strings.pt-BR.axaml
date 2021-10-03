@@ -13,20 +13,20 @@
 
   <system:String x:Key="errors.caption">Erro</system:String>
 
-  <system:String x:Key="exps.abbr">Abbreviation</system:String>
-  <system:String x:Key="exps.apply">Apply</system:String>
+  <system:String x:Key="exps.abbr">Abreviação</system:String>
+  <system:String x:Key="exps.apply">Aplicar</system:String>
   <system:String x:Key="exps.caption">Expressões</system:String>
-  <system:String x:Key="exps.defaultvalue">Default</system:String>
+  <system:String x:Key="exps.defaultvalue">Padrão</system:String>
   <system:String x:Key="exps.flag">Resampler Flag</system:String>
-  <system:String x:Key="exps.isflag">Is Resampler Flag</system:String>
+  <system:String x:Key="exps.isflag">É um Resampler Flag</system:String>
   <system:String x:Key="exps.maxvalue">Max</system:String>
   <system:String x:Key="exps.minvalue">Min</system:String>
-  <system:String x:Key="exps.name">Name</system:String>
-  <system:String x:Key="exps.optionvalues">Option Values</system:String>
-  <system:String x:Key="exps.sepbycomma">Separate values by ','</system:String>
-  <system:String x:Key="exps.type">Type</system:String>
-  <system:String x:Key="exps.type.numerical">Numerical</system:String>
-  <system:String x:Key="exps.type.options">Options</system:String>
+  <system:String x:Key="exps.name">Nome</system:String>
+  <system:String x:Key="exps.optionvalues">Valores</system:String>
+  <system:String x:Key="exps.sepbycomma">Separe os valores por ','</system:String>
+  <system:String x:Key="exps.type">Tipo</system:String>
+  <system:String x:Key="exps.type.numerical">Numérico</system:String>
+  <system:String x:Key="exps.type.options">Opções</system:String>
 
   <system:String x:Key="menu.edit">Editar</system:String>
   <system:String x:Key="menu.edit.copy">Copiar</system:String>
@@ -94,10 +94,10 @@
     </system:String>
   <system:String x:Key="prefs.rendering.resampler.preview">Resampler para visualização</system:String>
   <system:String x:Key="prefs.rendering.resampler.warn">
-    Warning: moresampler is not supported yet. It will be extremely slow and cause high CPU usage. If you insist, please:
-    1. Turn on "resampler-compatibility" in moreconfig.txt.
-    2. Reduce pre-render threads to 1 or 2.
-    3. Patiently wait for prerender to finish before play.
+    Aviso: ainda não há suporte para moresampler. Ele estará extremamente devegar e causar alto uso da CPU. Se deseja usar, por favor:
+    1. Em moreconfig.txt, edite "resampler-compatibility" de "off" para "on".
+    2. Reduza as threads do pre-render para 1 ou 2.
+    3. Patientementre espere o pre-render finalizar antes de dar play.
   </system:String>
 
   <system:String x:Key="singers.caption">Vozes</system:String>
