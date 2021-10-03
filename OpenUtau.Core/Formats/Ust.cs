@@ -116,11 +116,15 @@ namespace OpenUtau.Core.Formats {
                         default:
                             if (int.TryParse(header.Substring(2, header.Length - 3), out int noteIndex)) {
                                 UNote note = project.CreateNote();
-                                ParseNote(note, block);
+                                ParseNote(note, block, out var noteTempo);
                                 note.position = tick;
                                 tick += note.duration;
                                 if (note.lyric.ToLower() != "r") {
                                     part.notes.Add(note);
+                                }
+                                if (noteTempo != null && (project.bpm <= 0 || project.bpm > 1000)) {
+                                    // Fix tempo=500k error.
+                                    project.bpm = noteTempo.Value;
                                 }
                             } else {
                                 throw new FileFormatException($"Unexpected header\n{block[0]}");
@@ -174,8 +178,9 @@ namespace OpenUtau.Core.Formats {
             }
         }
 
-        private static void ParseNote(UNote note, List<UstLine> ustBlock) {
+        private static void ParseNote(UNote note, List<UstLine> ustBlock, out float? noteTempo) {
             const string format = "<param>=<value>";
+            noteTempo = null;
             string pbs = null, pbw = null, pby = null, pbm = null;
             for (int i = 1; i < ustBlock.Count; i++) {
                 string line = ustBlock[i].line;
@@ -244,6 +249,11 @@ namespace OpenUtau.Core.Formats {
                         break;
                     case "PBM":
                         pbm = parts[1];
+                        break;
+                    case "Tempo":
+                        if (isFloat) {
+                            noteTempo = floatValue;
+                        }
                         break;
                     default:
                         break;
@@ -485,7 +495,7 @@ namespace OpenUtau.Core.Formats {
                         default:
                             if (int.TryParse(header.Substring(2, header.Length - 3), out int noteIndex)) {
                                 if (noteIndex < sequence.Count) {
-                                    ParseNote(sequence[noteIndex], block);
+                                    ParseNote(sequence[noteIndex], block, out var _);
                                 }
                             }
                             break;

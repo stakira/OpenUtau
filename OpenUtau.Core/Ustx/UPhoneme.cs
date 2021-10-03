@@ -130,7 +130,7 @@ namespace OpenUtau.Core.Ustx {
                 return;
             }
             var vol = GetExpression(project, "vol").Item1;
-            var acc = GetExpression(project, "acc").Item1;
+            var atk = GetExpression(project, "atk").Item1;
             var dec = GetExpression(project, "dec").Item1;
 
             Vector2 p0, p1, p2, p3, p4;
@@ -146,7 +146,7 @@ namespace OpenUtau.Core.Ustx {
             p0.Y = 0f;
             p1.Y = vol;
             p1.X = p0.X + (overlapped ? overlap : 5f);
-            p1.Y = acc * vol / 100f;
+            p1.Y = atk * vol / 100f;
             p2.Y = vol;
             p3.Y = vol * (1f - dec / 100f);
             p4.Y = 0f;

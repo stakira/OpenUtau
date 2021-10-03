@@ -9,7 +9,7 @@ using ReactiveUI;
 
 namespace OpenUtau.App.ViewModels {
     public class ExpressionBuilder {
-        private static readonly string[] required = { "vel", "vol", "acc", "dec" };
+        private static readonly string[] required = { "vel", "vol", "atk", "dec" };
 
         public string Name { get; set; } = string.Empty;
         public string Abbr { get; set; } = string.Empty;
