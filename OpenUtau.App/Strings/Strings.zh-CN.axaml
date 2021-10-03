@@ -13,7 +13,20 @@
 
   <system:String x:Key="errors.caption">错误</system:String>
 
+  <system:String x:Key="exps.abbr">简称</system:String>
+  <system:String x:Key="exps.apply">应用</system:String>
   <system:String x:Key="exps.caption">表情</system:String>
+  <system:String x:Key="exps.defaultvalue">默认值</system:String>
+  <system:String x:Key="exps.flag">重采样器flag</system:String>
+  <system:String x:Key="exps.isflag">是否重采样器flag</system:String>
+  <system:String x:Key="exps.maxvalue">最大值</system:String>
+  <system:String x:Key="exps.minvalue">最小值</system:String>
+  <system:String x:Key="exps.name">名称</system:String>
+  <system:String x:Key="exps.optionvalues">选项值</system:String>
+  <system:String x:Key="exps.sepbycomma">用','分隔多项值</system:String>
+  <system:String x:Key="exps.type">类型</system:String>
+  <system:String x:Key="exps.type.numerical">数值</system:String>
+  <system:String x:Key="exps.type.options">选项</system:String>
 
   <system:String x:Key="menu.edit">编辑</system:String>
   <system:String x:Key="menu.edit.copy">复制</system:String>
@@ -81,10 +94,10 @@
   </system:String>
   <system:String x:Key="prefs.rendering.resampler.preview">预览用重采样器</system:String>
   <system:String x:Key="prefs.rendering.resampler.warn">
-    Warning: moresampler is not supported yet. It will be extremely slow and cause high CPU usage. If you insist, please:
-    1. Turn on "resampler-compatibility" in moreconfig.txt.
-    2. Reduce pre-render threads to 1 or 2.
-    3. Patiently wait for prerender to finish before play.
+    警告: 暂不支持 moresampler。可能导致渲染极慢和高CPU使用率。如果您仍想使用，请:
+    1. 在 moreconfig.txt 中将 “resampler-compatibility” 设为 “on”
+    2. 减少预渲染线程数至 1 或 2
+    3. 预览前耐心等待预渲染完成
   </system:String>
 
   <system:String x:Key="singers.caption">歌手</system:String>

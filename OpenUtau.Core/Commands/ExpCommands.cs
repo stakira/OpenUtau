@@ -9,6 +9,7 @@ namespace OpenUtau.Core {
         public string Key;
     }
 
+    /*
     public class SetNoteExpressionCommand : ExpCommand {
         public readonly UProject project;
         public readonly UPhoneme phoneme;
@@ -25,6 +26,7 @@ namespace OpenUtau.Core {
         public override void Execute() => Note.SetExpression(project, Key, newValue);
         public override void Unexecute() => Note.SetExpression(project, Key, oldValue);
     }
+    */
 
     public class SetPhonemeExpressionCommand : ExpCommand {
         public readonly UProject project;

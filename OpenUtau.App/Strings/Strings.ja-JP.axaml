@@ -13,7 +13,20 @@
 
   <system:String x:Key="errors.caption">エラー</system:String>
 
+  <system:String x:Key="exps.abbr">Abbreviation</system:String>
+  <system:String x:Key="exps.apply">Apply</system:String>
   <system:String x:Key="exps.caption">Expressions</system:String>
+  <system:String x:Key="exps.defaultvalue">Default</system:String>
+  <system:String x:Key="exps.flag">Resampler Flag</system:String>
+  <system:String x:Key="exps.isflag">Is Resampler Flag</system:String>
+  <system:String x:Key="exps.maxvalue">Max</system:String>
+  <system:String x:Key="exps.minvalue">Min</system:String>
+  <system:String x:Key="exps.name">Name</system:String>
+  <system:String x:Key="exps.optionvalues">Option Values</system:String>
+  <system:String x:Key="exps.sepbycomma">Separate values by ','</system:String>
+  <system:String x:Key="exps.type">Type</system:String>
+  <system:String x:Key="exps.type.numerical">Numerical</system:String>
+  <system:String x:Key="exps.type.options">Options</system:String>
 
   <system:String x:Key="menu.edit">編集</system:String>
   <system:String x:Key="menu.edit.copy">コピー</system:String>

@@ -1,0 +1,63 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:OpenUtau.App.ViewModels"
+        xmlns:c="clr-namespace:OpenUtau.App.Controls"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="OpenUtau.App.Views.PianoRollWindow"
+        Title="PianoRoll" MinWidth="800" MinHeight="600"
+        TransparencyLevelHint="None" Background="{DynamicResource MainWindowBackgroundBrush}"
+        ExtendClientAreaToDecorationsHint="False">
+  <Grid>
+    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="{Binding $parent.WindowDecorationMargin}">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="24"/>
+        <RowDefinition Height="24"/>
+        <RowDefinition Height="*" MinHeight="200"/>
+        <RowDefinition Height="10"/>
+        <RowDefinition Height="150" MinHeight="120" MaxHeight="450"/>
+      </Grid.RowDefinitions>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="60"/>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="24"/>
+      </Grid.ColumnDefinitions>
+      <ScrollBar Name="HScrollBar" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                 Margin="0,4,0,4" Orientation="Horizontal" AllowAutoHide="False"/>
+      <ScrollBar Name="VScrollBar" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                 Margin="4,0,4,0" Orientation="Vertical" AllowAutoHide="False"/>
+      <Border Grid.Column="0" Grid.Row="2" Background="Red"></Border>
+      <Border Grid.Column="0" Grid.Row="4" Background="Red"></Border>
+      <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent"
+              BoxShadow="inset 0 0 5 0.75 #7F7F7F" ClipToBounds="True" IsHitTestVisible="False">
+      </Border>
+      <Canvas Name="TimelineCanvas" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Top"
+        Height="24" Background="Transparent"/>
+      <c:TrackBackground Grid.Row="2" Grid.Column="1" IsHitTestVisible="False"
+                         Foreground="{DynamicResource TrackBackgroundAltBrush}"
+                         TrackHeight ="20"/>
+      <c:TickBackground Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" IsHitTestVisible="False"
+                        Foreground="{DynamicResource TickLineBrush}"
+                        Background="{DynamicResource TickLineBrushLow}"
+                        TickWidth =".05"/>
+      <GridSplitter Grid.Row="3" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Wheat" Focusable="False" Cursor="SizeNorthSouth"/>
+      <c:TrackBackground Grid.Row="4" Grid.Column="1" IsHitTestVisible="False"
+                         Foreground="{DynamicResource TrackBackgroundAltBrush}"
+                         TrackHeight ="40"/>
+      <c:TickBackground Grid.Row="4"  Grid.Column="1" IsHitTestVisible="False"
+                        Foreground="{DynamicResource TickLineBrush}"
+                        Background="{DynamicResource TickLineBrushLow}"
+                        TickWidth =".05"/>
+      <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent"
+              BoxShadow="inset 0 0 5 0.75 #7F7F7F" ClipToBounds="True" IsHitTestVisible="False">
+      </Border>
+      <Border Grid.Row="4" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent"
+              BoxShadow="inset 0 0 5 0.75 #7F7F7F" ClipToBounds="True" IsHitTestVisible="False">
+      </Border>
+      <Border Grid.Row="1" Grid.Column="2" Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0" Height="24">
+        <c:ViewScaler/>
+      </Border>
+    </Grid>
+  </Grid>
+</Window>

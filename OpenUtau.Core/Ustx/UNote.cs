@@ -260,6 +260,7 @@ namespace OpenUtau.Core.Ustx {
             return result;
         }
 
+        /*
         public float GetExpression(UProject project, string abbr) {
             var descriptor = project.expressions[abbr];
             Trace.Assert(descriptor.isNoteExpression);
@@ -286,6 +287,7 @@ namespace OpenUtau.Core.Ustx {
                 });
             }
         }
+        */
 
         public UNote Clone() {
             return new UNote() {

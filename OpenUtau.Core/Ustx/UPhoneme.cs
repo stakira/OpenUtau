@@ -160,7 +160,6 @@ namespace OpenUtau.Core.Ustx {
 
         public Tuple<float, bool> GetExpression(UProject project, string abbr) {
             var descriptor = project.expressions[abbr];
-            Trace.Assert(!descriptor.isNoteExpression);
             var note = Parent.Extends ?? Parent;
             int index = Parent.PhonemeOffset + Index;
             var expression = note.phonemeExpressions.FirstOrDefault(exp => exp.descriptor == descriptor && exp.index == index);
@@ -173,7 +172,6 @@ namespace OpenUtau.Core.Ustx {
 
         public void SetExpression(UProject project, string abbr, float value) {
             var descriptor = project.expressions[abbr];
-            Trace.Assert(!descriptor.isNoteExpression);
             var note = Parent.Extends ?? Parent;
             int index = Parent.PhonemeOffset + Index;
             if (descriptor.defaultValue == value) {
@@ -195,9 +193,18 @@ namespace OpenUtau.Core.Ustx {
         public string GetResamplerFlags(UProject project) {
             StringBuilder builder = new StringBuilder();
             foreach (var descriptor in project.expressions.Values) {
-                if (!descriptor.isNoteExpression && !string.IsNullOrEmpty(descriptor.flag)) {
-                    builder.Append(descriptor.flag);
-                    builder.Append((int)GetExpression(project, descriptor.abbr).Item1);
+                if (descriptor.type == UExpressionType.Numerical) {
+                    if (!string.IsNullOrEmpty(descriptor.flag)) {
+                        builder.Append(descriptor.flag);
+                        int value = (int)GetExpression(project, descriptor.abbr).Item1;
+                        builder.Append(value);
+                    }
+                }
+                if (descriptor.type == UExpressionType.Options) {
+                    if (descriptor.isFlag) {
+                        int value = (int)GetExpression(project, descriptor.abbr).Item1;
+                        builder.Append(descriptor.options[value]);
+                    }
                 }
             }
             return builder.ToString();

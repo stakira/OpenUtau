@@ -1,35 +1,69 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Binding;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace OpenUtau.App.ViewModels {
-    public class ExpressionBuilder {
+    public class ExpressionBuilder : ReactiveObject {
         private static readonly string[] required = { "vel", "vol", "atk", "dec" };
 
-        public string Name { get; set; } = string.Empty;
-        public string Abbr { get; set; } = string.Empty;
-        public float Min { get; set; }
-        public float Max { get; set; } = 100;
-        public float DefaultValue { get; set; }
-        public string Flag { get; set; } = string.Empty;
-        public bool IsCustom => !required.Contains(Abbr);
+        [Reactive] public string Name { get; set; }
+        [Reactive] public string Abbr { get; set; }
+        [Reactive] public UExpressionType ExpressionType { get; set; }
+        [Reactive] public float Min { get; set; }
+        [Reactive] public float Max { get; set; }
+        [Reactive] public float DefaultValue { get; set; }
+        [Reactive] public bool IsFlag { get; set; }
+        [Reactive] public string Flag { get; set; }
+        [Reactive] public string OptionValues { get; set; }
 
-        public ExpressionBuilder(UExpressionDescriptor descriptor) {
-            Name = descriptor.name;
-            Abbr = descriptor.abbr;
-            Min = descriptor.min;
-            Max = descriptor.max;
+        public bool IsCustom => isCustom.Value;
+        public bool IsNumerical => isNumerical.Value;
+        public bool IsOptions => isOptions.Value;
+        public int SelectedType => selectedType.Value;
+
+        private ObservableAsPropertyHelper<bool> isCustom;
+        private ObservableAsPropertyHelper<bool> isNumerical;
+        private ObservableAsPropertyHelper<bool> isOptions;
+        private ObservableAsPropertyHelper<int> selectedType;
+
+        public ExpressionBuilder(UExpressionDescriptor descriptor)
+            : this(descriptor.name, descriptor.abbr, descriptor.min, descriptor.max, descriptor.flag,
+                  descriptor.options == null ? string.Empty : string.Join(',', descriptor.options)) {
+            ExpressionType = descriptor.type;
             DefaultValue = descriptor.defaultValue;
-            Flag = descriptor.flag;
         }
 
-        public ExpressionBuilder() {
-            Name = "new expression";
+        public ExpressionBuilder()
+            : this("new expression", string.Empty, 0, 100, string.Empty, string.Empty) {
+        }
+
+        public ExpressionBuilder(string name, string abbr, float min, float max, string flag, string optionValues) {
+            Name = name;
+            Abbr = abbr;
+            Min = min;
+            Max = max;
+            Flag = flag;
+            OptionValues = optionValues;
+
+            this.WhenAnyValue(x => x.Abbr)
+            .Select(abbr => !required.Contains(abbr))
+            .ToProperty(this, x => x.IsCustom, out isCustom);
+            this.WhenAnyValue(x => x.ExpressionType)
+                .Select(type => type == UExpressionType.Numerical)
+                .ToProperty(this, x => x.IsNumerical, out isNumerical);
+            this.WhenAnyValue(x => x.ExpressionType)
+                .Select(type => type == UExpressionType.Options)
+                .ToProperty(this, x => x.IsOptions, out isOptions);
+            this.WhenAnyValue(x => x.ExpressionType)
+                .Select(type => (int)type)
+                .ToProperty(this, x => x.SelectedType, out selectedType);
         }
 
         public bool IsValid() {
@@ -42,7 +76,11 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public UExpressionDescriptor Build() {
-            return new UExpressionDescriptor(Name.Trim(), Abbr.Trim().ToLower(), Min, Max, DefaultValue, Flag);
+            return ExpressionType == UExpressionType.Numerical
+            ? new UExpressionDescriptor(
+                Name.Trim(), Abbr.Trim().ToLower(), Min, Max, DefaultValue, Flag)
+            : new UExpressionDescriptor(
+                Name.Trim(), Abbr.Trim().ToLower(), IsFlag, OptionValues.Split(','));
         }
 
         public override string ToString() => Name;

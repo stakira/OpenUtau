@@ -4,29 +4,47 @@ using Newtonsoft.Json;
 using YamlDotNet.Serialization;
 
 namespace OpenUtau.Core.Ustx {
+    public enum UExpressionType : int {
+        Numerical = 0,
+        Options = 1,
+    }
+
     [JsonObject(MemberSerialization.OptIn)]
     public class UExpressionDescriptor {
         [JsonProperty] public string name;
         [JsonProperty] public string abbr;
+        [JsonProperty] public UExpressionType type;
         [JsonProperty] public float min;
         [JsonProperty] public float max;
         [JsonProperty] public float defaultValue;
+        [JsonProperty] public bool isFlag;
         [JsonProperty] public string flag;
-        [JsonProperty] public bool isNoteExpression;
+        [JsonProperty] public string[] options;
+
 
         /// <summary>
         /// Constructor for Yaml deserialization
         /// </summary>
         public UExpressionDescriptor() { }
 
-        public UExpressionDescriptor(string name, string abbr, float min, float max, float defaultValue, string flag = "", bool isNoteExpression = false) {
+        public UExpressionDescriptor(string name, string abbr, float min, float max, float defaultValue, string flag = "") {
             this.name = name;
             this.abbr = abbr.ToLower();
             this.min = min;
             this.max = max;
             this.defaultValue = Math.Min(max, Math.Max(min, defaultValue));
+            isFlag = !string.IsNullOrEmpty(flag);
             this.flag = flag;
-            this.isNoteExpression = isNoteExpression;
+        }
+
+        public UExpressionDescriptor(string name, string abbr, bool isFlag, string[] options) {
+            this.name = name;
+            this.abbr = abbr.ToLower();
+            type = UExpressionType.Options;
+            min = 0;
+            max = options.Length - 1;
+            this.isFlag = isFlag;
+            this.options = options;
         }
 
         public UExpression Create() {
