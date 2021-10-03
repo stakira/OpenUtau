@@ -97,7 +97,7 @@
     Aviso: ainda não há suporte para moresampler. Ele estará extremamente devegar e causar alto uso da CPU. Se deseja usar, por favor:
     1. Em moreconfig.txt, edite "resampler-compatibility" de "off" para "on".
     2. Reduza as threads do pre-render para 1 ou 2.
-    3. Patientementre espere o pre-render finalizar antes de dar play.
+    3. Pacientemente espere o pre-render finalizar antes de tocar.
   </system:String>
 
   <system:String x:Key="singers.caption">Vozes</system:String>
