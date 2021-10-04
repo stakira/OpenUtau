@@ -7,6 +7,7 @@
         mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
         x:Class="OpenUtau.App.Views.SingersDialog"
         Title="{DynamicResource singers.caption}" Width="500" Height="600" MinWidth="500" MinHeight="600"
+        WindowStartupLocation="CenterScreen"
         ExtendClientAreaToDecorationsHint="False">
   <Design.DataContext>
     <vm:SingersViewModel/>

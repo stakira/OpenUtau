@@ -25,7 +25,10 @@ namespace OpenUtau.Core {
     }
 
     public class MovePartCommand : PartCommand {
-        readonly int newPos, oldPos, newTrackNo, oldTrackNo;
+        public readonly int newPos;
+        public readonly int oldPos;
+        public readonly int newTrackNo;
+        public readonly int oldTrackNo;
         public MovePartCommand(UProject project, UPart part, int position, int trackNo) : base(project, part) {
             newPos = position;
             newTrackNo = trackNo;

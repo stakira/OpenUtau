@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia;
@@ -15,14 +16,15 @@ using Avalonia.VisualTree;
 using OpenUtau.App.Controls;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
-using OpenUtau.Core.Ustx;
 using Serilog;
 using Point = Avalonia.Point;
 
 namespace OpenUtau.App.Views {
     public partial class MainWindow : Window {
         private readonly MainWindowViewModel viewModel;
-        private object? midiWindow;
+
+        private PianoRollWindow? pianoRollWindow;
+        private bool openPianoRollWindow;
 
         private Cursor cursorCross = new Cursor(StandardCursorType.Cross);
         private Cursor cursorHand = new Cursor(StandardCursorType.Hand);
@@ -203,6 +205,9 @@ namespace OpenUtau.App.Views {
                 DataContext = new ExpressionsViewModel(),
             };
             dialog.ShowDialog(this);
+            if (dialog.Position.Y < 0) {
+                dialog.Position = dialog.Position.WithY(0);
+            }
         }
 
         void OnMenuSingers(object sender, RoutedEventArgs args) {
@@ -210,6 +215,9 @@ namespace OpenUtau.App.Views {
                 DataContext = new SingersViewModel(),
             };
             dialog.ShowDialog(this);
+            if (dialog.Position.Y < 0) {
+                dialog.Position = dialog.Position.WithY(0);
+            }
         }
 
         async void OnMenuInstallSinger(object sender, RoutedEventArgs args) {
@@ -263,6 +271,9 @@ namespace OpenUtau.App.Views {
                 },
             };
             _ = setup.ShowDialog(this);
+            if (setup.Position.Y < 0) {
+                setup.Position = setup.Position.WithY(0);
+            }
         }
 
         void OnMenuPreferences(object sender, RoutedEventArgs args) {
@@ -270,6 +281,9 @@ namespace OpenUtau.App.Views {
                 DataContext = new PreferencesViewModel(),
             };
             dialog.ShowDialog(this);
+            if (dialog.Position.Y < 0) {
+                dialog.Position = dialog.Position.WithY(0);
+            }
         }
 
         void OnKeyDown(object sender, KeyEventArgs args) {
@@ -478,6 +492,11 @@ namespace OpenUtau.App.Views {
                 partEditState = null;
                 Cursor = null;
             }
+            if (openPianoRollWindow) {
+                pianoRollWindow?.Show();
+                pianoRollWindow?.Activate();
+                openPianoRollWindow = false;
+            }
         }
 
         public void PartsCanvasDoubleTapped(object sender, RoutedEventArgs args) {
@@ -487,6 +506,17 @@ namespace OpenUtau.App.Views {
             var e = (TappedEventArgs)args;
             var control = canvas.InputHitTest(e.GetPosition(canvas));
             if (control is PartControl partControl) {
+                if (pianoRollWindow == null) {
+                    pianoRollWindow = new PianoRollWindow() {
+                        DataContext = new PianoRollViewModel() {
+                            NotesViewModel = new NotesViewModel(),
+                            PlaybackViewModel = viewModel.PlaybackViewModel,
+                        }
+                    };
+                }
+                // Workaround for new window losing focus.
+                openPianoRollWindow = true;
+                DocManager.Inst.ExecuteCmd(new LoadPartNotification(partControl.part, DocManager.Inst.Project));
             }
         }
 
@@ -500,6 +530,12 @@ namespace OpenUtau.App.Views {
             } else if (args.KeyModifiers == KeyModifiers.None) {
                 var scrollbar = this.FindControl<ScrollBar>("VScrollBar");
                 VScrollPointerWheelChanged(scrollbar, args);
+            }
+        }
+
+        public void WindowClosing(object? sender, CancelEventArgs e) {
+            if (!DocManager.Inst.ChangesSaved) {
+                //e.Cancel = true;
             }
         }
     }

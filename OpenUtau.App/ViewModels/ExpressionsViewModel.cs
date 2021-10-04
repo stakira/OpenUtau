@@ -69,7 +69,7 @@ namespace OpenUtau.App.ViewModels {
         public bool IsValid() {
             return !string.IsNullOrWhiteSpace(Name)
                 && !string.IsNullOrWhiteSpace(Abbr)
-                && Abbr.Trim().Length == 3
+                && Abbr.Trim().Length >= 1 && Abbr.Trim().Length <= 4
                 && Min < Max
                 && Min <= DefaultValue
                 && DefaultValue <= Max;
@@ -119,8 +119,8 @@ namespace OpenUtau.App.ViewModels {
                     throw new ArgumentException("Name must be set.");
                 } else if (string.IsNullOrWhiteSpace(invalid.Abbr)) {
                     throw new ArgumentException("Abbreviation must be set.");
-                } else if (invalid.Abbr.Trim().Length != 3) {
-                    throw new ArgumentException("Abbreviation must be 3 characters long.");
+                } else if (invalid.Abbr.Trim().Length < 1 || invalid.Abbr.Trim().Length > 4) {
+                    throw new ArgumentException("Abbreviation must be between 1 and 4 characters long.");
                 } else {
                     throw new ArgumentException("Invalid min, max or default Value.");
                 }

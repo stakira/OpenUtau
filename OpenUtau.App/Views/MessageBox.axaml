@@ -5,7 +5,8 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="OpenUtau.App.Views.MessageBox" SizeToContent="WidthAndHeight" CanResize="False"
         Title="MessageBox" MinWidth="300" MinHeight="150"
-        WindowStartupLocation="CenterOwner" ExtendClientAreaToDecorationsHint="False">
+        WindowStartupLocation="CenterScreen"
+        ExtendClientAreaToDecorationsHint="False">
   <Grid Margin="{Binding $parent.WindowDecorationMargin}">
     <Grid.RowDefinitions>
       <RowDefinition Height="*"/>

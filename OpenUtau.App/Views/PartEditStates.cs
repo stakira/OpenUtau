@@ -81,6 +81,10 @@ namespace OpenUtau.App.Views {
         private double xOffset;
         public PartMoveEditState(Canvas canvas, MainWindowViewModel vm, UPart part) : base(canvas, vm) {
             this.part = part;
+            var tracksVm = vm.TracksViewModel;
+            if (!tracksVm.SelectedParts.Contains(part)) {
+                tracksVm.DeselectParts();
+            }
         }
         public override void Begin(IPointer pointer, Point point) {
             base.Begin(pointer, point);
@@ -131,11 +135,15 @@ namespace OpenUtau.App.Views {
         public readonly UPart part;
         public PartResizeEditState(Canvas canvas, MainWindowViewModel vm, UPart part) : base(canvas, vm) {
             this.part = part;
+            var tracksVm = vm.TracksViewModel;
+            if (!tracksVm.SelectedParts.Contains(part)) {
+                tracksVm.DeselectParts();
+            }
         }
         public override void Update(IPointer pointer, Point point) {
             var project = DocManager.Inst.Project;
             var tracksVm = vm.TracksViewModel;
-            int deltaDuration = tracksVm.PointToSnappedTick(point) - part.EndTick;
+            int deltaDuration = tracksVm.PointToSnappedTick(point) + tracksVm.SnapUnit - part.EndTick;
             if (deltaDuration < 0) {
                 int maxDurReduction = part.Duration - part.GetMinDurTick(project);
                 if (tracksVm.SelectedParts.Count > 0) {
@@ -186,8 +194,8 @@ namespace OpenUtau.App.Views {
             double deltaX = (point.X - startPoint.X) / tracksVm.TickWidth;
             double deltaY = (point.Y - startPoint.Y) / tracksVm.TrackHeight;
             startPoint = point;
-            tracksVm.TickOffset -= deltaX;
-            tracksVm.TrackOffset -= deltaY;
+            tracksVm.TickOffset = Math.Max(0, tracksVm.TickOffset - deltaX);
+            tracksVm.TrackOffset = Math.Max(0, tracksVm.TrackOffset - deltaY);
         }
     }
 }

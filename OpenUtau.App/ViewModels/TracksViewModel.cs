@@ -50,11 +50,11 @@ namespace OpenUtau.App.ViewModels {
         }
         public double TickOffset {
             get => tickOffset;
-            set => this.RaiseAndSetIfChanged(ref tickOffset, Math.Max(0, value));
+            set => this.RaiseAndSetIfChanged(ref tickOffset, value);
         }
         public double TrackOffset {
             get => trackOffset;
-            set => this.RaiseAndSetIfChanged(ref trackOffset, Math.Max(0, value));
+            set => this.RaiseAndSetIfChanged(ref trackOffset, value);
         }
         public double ViewportTicks => viewportTicks.Value;
         public double ViewportTracks => viewportTracks.Value;

@@ -10,14 +10,18 @@ namespace OpenUtau.App {
 
         public static void LoadTheme(IResourceDictionary resDict) {
             object? outVar;
-            resDict.TryGetResource("AccentBrush1", out outVar);
-            AccentBrush1 = (IBrush?)outVar;
-            resDict.TryGetResource("AccentBrush2", out outVar);
-            AccentBrush2 = (IBrush?)outVar;
-            resDict.TryGetResource("TickLineBrushLow", out outVar);
-            TickLineBrushLow = (IBrush?)outVar;
-            resDict.TryGetResource("BarNumberBrush", out outVar);
-            BarNumberBrush = (IBrush?)outVar;
+            if (resDict.TryGetResource("AccentBrush1", out outVar)) {
+                AccentBrush1 = (IBrush?)outVar;
+            }
+            if (resDict.TryGetResource("AccentBrush2", out outVar)) {
+                AccentBrush2 = (IBrush?)outVar;
+            }
+            if (resDict.TryGetResource("TickLineBrushLow", out outVar)) {
+                TickLineBrushLow = (IBrush?)outVar;
+            }
+            if (resDict.TryGetResource("BarNumberBrush", out outVar)) {
+                BarNumberBrush = (IBrush?)outVar;
+            }
         }
     }
 }

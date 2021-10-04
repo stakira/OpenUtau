@@ -6,8 +6,9 @@
         mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
         x:Class="OpenUtau.App.Views.PreferencesDialog"
         Title="{DynamicResource prefs.caption}"
+        WindowStartupLocation="CenterScreen"
         MinWidth="500" MinHeight="600" Width="500" Height="600"
-        WindowStartupLocation="CenterOwner" ExtendClientAreaToDecorationsHint="False">
+        ExtendClientAreaToDecorationsHint="False">
   <Window.Resources>
     <vm:CultureNameConverter x:Key="cultureNameConverter"/>
   </Window.Resources>

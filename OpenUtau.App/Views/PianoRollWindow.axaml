@@ -6,11 +6,12 @@
         xmlns:c="clr-namespace:OpenUtau.App.Controls"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="OpenUtau.App.Views.PianoRollWindow"
-        Title="PianoRoll" MinWidth="800" MinHeight="600"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="Piano Roll" MinWidth="800" MinHeight="300" KeyDown="OnKeyDown" Closing="WindowClosing"
         TransparencyLevelHint="None" Background="{DynamicResource MainWindowBackgroundBrush}"
         ExtendClientAreaToDecorationsHint="False">
   <Grid>
-    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="{Binding $parent.WindowDecorationMargin}">
+    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="{Binding $parent[1].WindowDecorationMargin}">
       <Grid.RowDefinitions>
         <RowDefinition Height="24"/>
         <RowDefinition Height="24"/>
@@ -24,39 +25,69 @@
         <ColumnDefinition Width="24"/>
       </Grid.ColumnDefinitions>
       <ScrollBar Name="HScrollBar" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                 Margin="0,4,0,4" Orientation="Horizontal" AllowAutoHide="False"/>
+                 Margin="0,4,0,4" Orientation="Horizontal" AllowAutoHide="False"
+                 DataContext="{Binding NotesViewModel}"
+                 Maximum="{Binding TickCount, Mode=OneWay}"
+                 Value="{Binding TickOffset}"
+                 ViewportSize="{Binding ViewportTicks}"
+                 LargeChange="{Binding ViewportTicks}"
+                 SmallChange="{Binding SmallChangeX}" PointerWheelChanged="HScrollPointerWheelChanged"/>
       <ScrollBar Name="VScrollBar" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                 Margin="4,0,4,0" Orientation="Vertical" AllowAutoHide="False"/>
+                 Margin="4,0,4,0" Orientation="Vertical" AllowAutoHide="False"
+                 DataContext="{Binding NotesViewModel}"
+                 Maximum="{Binding TrackCount, Mode=OneWay}"
+                 Value="{Binding TrackOffset}"
+                 ViewportSize="{Binding ViewportTracks}"
+                 LargeChange="{Binding ViewportTracks}"
+                 SmallChange="{Binding SmallChangeY}" PointerWheelChanged="VScrollPointerWheelChanged"/>
       <Border Grid.Column="0" Grid.Row="2" Background="Red"></Border>
       <Border Grid.Column="0" Grid.Row="4" Background="Red"></Border>
       <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent"
               BoxShadow="inset 0 0 5 0.75 #7F7F7F" ClipToBounds="True" IsHitTestVisible="False">
       </Border>
       <Canvas Name="TimelineCanvas" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Top"
-        Height="24" Background="Transparent"/>
+              PointerWheelChanged="TimelinePointerWheelChanged"
+              PointerPressed="TimelinePointerPressed"
+              PointerMoved="TimelinePointerMoved"
+              PointerReleased="TimelinePointerReleased"/>
       <c:TrackBackground Grid.Row="2" Grid.Column="1" IsHitTestVisible="False"
                          Foreground="{DynamicResource TrackBackgroundAltBrush}"
-                         TrackHeight ="20"/>
+                         DataContext="{Binding NotesViewModel}"
+                         Bounds="{Binding Bounds, Mode=OneWayToSource}"
+                         TrackHeight="{Binding TrackHeight}"
+                         TrackOffset="{Binding TrackOffset}"/>
       <c:TickBackground Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" IsHitTestVisible="False"
                         Foreground="{DynamicResource TickLineBrush}"
                         Background="{DynamicResource TickLineBrushLow}"
-                        TickWidth =".05"/>
+                        BeatPerBar="{Binding PlaybackViewModel.BeatPerBar}"
+                        BeatUnit="{Binding PlaybackViewModel.BeatUnit}"
+                        Resolution="{Binding PlaybackViewModel.Resolution}"
+                        TickWidth="{Binding NotesViewModel.TickWidth}"
+                        TickOrigin="{Binding NotesViewModel.TickOrigin}"
+                        TickOffset="{Binding NotesViewModel.TickOffset}"/>
       <GridSplitter Grid.Row="3" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Wheat" Focusable="False" Cursor="SizeNorthSouth"/>
       <c:TrackBackground Grid.Row="4" Grid.Column="1" IsHitTestVisible="False"
                          Foreground="{DynamicResource TrackBackgroundAltBrush}"
-                         TrackHeight ="40"/>
+                         />
       <c:TickBackground Grid.Row="4"  Grid.Column="1" IsHitTestVisible="False"
                         Foreground="{DynamicResource TickLineBrush}"
                         Background="{DynamicResource TickLineBrushLow}"
-                        TickWidth =".05"/>
+                        BeatPerBar="{Binding PlaybackViewModel.BeatPerBar}"
+                        BeatUnit="{Binding PlaybackViewModel.BeatUnit}"
+                        Resolution="{Binding PlaybackViewModel.Resolution}"
+                        TickWidth="{Binding NotesViewModel.TickWidth}"
+                        TickOrigin="{Binding NotesViewModel.TickOrigin}"
+                        TickOffset="{Binding NotesViewModel.TickOffset}"/>
       <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent"
               BoxShadow="inset 0 0 5 0.75 #7F7F7F" ClipToBounds="True" IsHitTestVisible="False">
       </Border>
       <Border Grid.Row="4" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent"
               BoxShadow="inset 0 0 5 0.75 #7F7F7F" ClipToBounds="True" IsHitTestVisible="False">
       </Border>
-      <Border Grid.Row="1" Grid.Column="2" Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0" Height="24">
-        <c:ViewScaler/>
+      <Border Grid.Row="1" Grid.Column="2" Background="Transparent"
+              HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0" Height="24"
+              PointerWheelChanged="ViewScalerPointerWheelChanged">
+        <c:ViewScaler DataContext="{Binding NotesViewModel}" Value="{Binding TrackHeight}"/>
       </Border>
     </Grid>
   </Grid>
