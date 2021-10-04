@@ -52,7 +52,7 @@
       </Grid>
       <Grid IsVisible="{Binding Expression.IsOptions}">
         <Label Content="{DynamicResource exps.isflag}" Width="130" HorizontalAlignment="Left"/>
-        <CheckBox Margin="140,0,0,4" IsChecked="{Binding Expression.IsFlag}"/>
+        <CheckBox Margin="140,0,0,4" IsEnabled="{Binding Expression.IsCustom}" IsChecked="{Binding Expression.IsFlag}"/>
       </Grid>
       <Grid IsVisible="{Binding Expression.IsNumerical}">
         <Label Content="{DynamicResource exps.flag}" Width="130" HorizontalAlignment="Left"/>

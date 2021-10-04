@@ -47,6 +47,13 @@ namespace OpenUtau.Core.Render {
             SourceFile = phoneme.oto.File;
             SourceFile = Path.Combine(PathManager.Inst.InstalledSingersPath, SourceFile);
             ResamplerName = resamplerName;
+            if (project.expressions.TryGetValue("eng", out var descriptor)) {
+                int index = (int)phoneme.GetExpression(project, "eng").Item1;
+                string resampler = descriptor.options[index];
+                if (!string.IsNullOrEmpty(resampler)) {
+                    ResamplerName = resampler;
+                }
+            }
             SourceTemp = Path.Combine(PathManager.Inst.GetCachePath(null),
                 $"{HashHex(track.Singer.Id)}-{HashHex(phoneme.oto.Set)}-{HashHex(SourceFile)}.wav");
 

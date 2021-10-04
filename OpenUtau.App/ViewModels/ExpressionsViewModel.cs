@@ -34,27 +34,28 @@ namespace OpenUtau.App.ViewModels {
         private ObservableAsPropertyHelper<int> selectedType;
 
         public ExpressionBuilder(UExpressionDescriptor descriptor)
-            : this(descriptor.name, descriptor.abbr, descriptor.min, descriptor.max, descriptor.flag,
+            : this(descriptor.name, descriptor.abbr, descriptor.min, descriptor.max, descriptor.isFlag, descriptor.flag,
                   descriptor.options == null ? string.Empty : string.Join(',', descriptor.options)) {
             ExpressionType = descriptor.type;
             DefaultValue = descriptor.defaultValue;
         }
 
         public ExpressionBuilder()
-            : this("new expression", string.Empty, 0, 100, string.Empty, string.Empty) {
+            : this("new expression", string.Empty, 0, 100, false, string.Empty, string.Empty) {
         }
 
-        public ExpressionBuilder(string name, string abbr, float min, float max, string flag, string optionValues) {
+        public ExpressionBuilder(string name, string abbr, float min, float max, bool isFlag, string flag, string optionValues) {
             Name = name;
             Abbr = abbr;
             Min = min;
             Max = max;
+            IsFlag = isFlag;
             Flag = flag;
             OptionValues = optionValues;
 
             this.WhenAnyValue(x => x.Abbr)
-            .Select(abbr => !required.Contains(abbr))
-            .ToProperty(this, x => x.IsCustom, out isCustom);
+                .Select(abbr => !required.Contains(abbr))
+                .ToProperty(this, x => x.IsCustom, out isCustom);
             this.WhenAnyValue(x => x.ExpressionType)
                 .Select(type => type == UExpressionType.Numerical)
                 .ToProperty(this, x => x.IsNumerical, out isNumerical);
@@ -66,13 +67,30 @@ namespace OpenUtau.App.ViewModels {
                 .ToProperty(this, x => x.SelectedType, out selectedType);
         }
 
-        public bool IsValid() {
-            return !string.IsNullOrWhiteSpace(Name)
-                && !string.IsNullOrWhiteSpace(Abbr)
-                && Abbr.Trim().Length >= 1 && Abbr.Trim().Length <= 4
-                && Min < Max
-                && Min <= DefaultValue
-                && DefaultValue <= Max;
+        public string? Validate() {
+            if (string.IsNullOrWhiteSpace(Name)) {
+                return "Name must be set.";
+            }
+            if (string.IsNullOrWhiteSpace(Abbr)) {
+                return "Abbreviation must be set.";
+            }
+            if (ExpressionType == UExpressionType.Numerical) {
+                if (Abbr.Trim().Length < 1 || Abbr.Trim().Length > 4) {
+                    return "Abbreviation must be between 1 and 4 characters long.";
+                }
+                if (Min >= Max) {
+                    return "Min must be smaller than max.";
+                }
+                if (DefaultValue < Min || DefaultValue > Max) {
+                    return "Default value must be between min and max.";
+                }
+            } else {
+                var options = OptionValues.Split(',');
+                if (options.Length < 2) {
+                    return "No options specified.";
+                }
+            }
+            return null;
         }
 
         public UExpressionDescriptor Build() {
@@ -112,18 +130,10 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void Apply() {
-            if (!Expressions.All(builder => builder.IsValid())) {
-                var invalid = Expressions.First(builder => !builder.IsValid());
+            if (!Expressions.All(builder => builder.Validate() == null)) {
+                var invalid = Expressions.First(builder => builder.Validate() != null);
                 Expression = invalid;
-                if (string.IsNullOrWhiteSpace(invalid.Name)) {
-                    throw new ArgumentException("Name must be set.");
-                } else if (string.IsNullOrWhiteSpace(invalid.Abbr)) {
-                    throw new ArgumentException("Abbreviation must be set.");
-                } else if (invalid.Abbr.Trim().Length < 1 || invalid.Abbr.Trim().Length > 4) {
-                    throw new ArgumentException("Abbreviation must be between 1 and 4 characters long.");
-                } else {
-                    throw new ArgumentException("Invalid min, max or default Value.");
-                }
+                throw new ArgumentException(invalid.Validate());
             }
             var abbrs = Expressions.Select(builder => builder.Abbr);
             if (abbrs.Count() != abbrs.Distinct().Count()) {

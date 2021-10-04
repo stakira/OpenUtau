@@ -66,7 +66,10 @@ namespace OpenUtau.App.ViewModels {
             }
             PrerenderThreadsItems = Enumerable.Range(1, 16).ToList();
             PrerenderThreads = Preferences.Default.PrerenderThreads;
-            Resamplers = Core.ResamplerDriver.ResamplerDriver.Search(PathManager.Inst.GetEngineSearchPath());
+            Resamplers = Core.ResamplerDriver.ResamplerDriver
+                .Search(PathManager.Inst.GetEngineSearchPath())
+                .Select(resampler => resampler.GetInfo())
+                .ToList();
             if (Resamplers.Count > 0) {
                 int index = Resamplers.FindIndex(resampler => resampler.Name == Preferences.Default.ExternalPreviewEngine);
                 if (index >= 0) {
