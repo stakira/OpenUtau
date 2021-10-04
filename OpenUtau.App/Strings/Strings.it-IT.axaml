@@ -45,6 +45,7 @@
     <system:String x:Key="prefs.playback.device">Dispositivo audio</system:String>
     <system:String x:Key="prefs.playback.test">Test</system:String>
     <system:String x:Key="prefs.rendering">Renderizzazione</system:String>
+    <system:String x:Key="prefs.rendering.prerender.threads">Threads per il pre-render</system:String>
     <system:String x:Key="prefs.rendering.resampler.preview">Resampler per l'anteprima</system:String>
     <system:String x:Key="prefs.rendering.resampler.export">Resampler per esportazione</system:String>
     <system:String x:Key="prefs.rendering.resampler.note">
@@ -54,7 +55,28 @@
     <system:String x:Key="prefs.appearance.theme">Tema</system:String>
     <system:String x:Key="prefs.appearance.theme.light">Chiaro</system:String>
     <system:String x:Key="prefs.appearance.theme.dark">Scuro</system:String>
-    <system:String x:Key="prefs.appearance.theme.note">Riavvia OpenUTAU dopo aver scelto un tema.</system:String>
+    <system:String x:Key="prefs.appearance.theme.note">Nota: Riavvia OpenUTAU dopo aver scelto un tema.</system:String>
+    <system:String x:Key="prefs.appearance.lang">Lingua</system:String>
+    <system:String x:Key="prefs.appearance.lang.note">Nota: Riavvia OpenUTAU dopo aver scelto una lingua.</system:String>
+
+    <!-- Singers -->
+    <system:String x:Key="singers.caption">Cantanti</system:String>
+    <system:String x:Key="singers.location">Posizione</system:String>
+    <system:String x:Key="oto.alias">Pseudonimo</system:String>
+    <system:String x:Key="oto.set">Gruppo</system:String>
+    <system:String x:Key="oto.file">File</system:String>
+    <system:String x:Key="oto.phonetic">Suono</system:String>
+    <system:String x:Key="oto.prefix">Prefisso</system:String>
+    <system:String x:Key="oto.suffix">Suffisso</system:String>
+    <system:String x:Key="oto.flavor">Tono</system:String>
+    <system:String x:Key="oto.offset">Compenso</system:String>
+    <system:String x:Key="oto.consonant">Consonante</system:String>
+    <system:String x:Key="oto.cutoff">Taglio</system:String>
+    <system:String x:Key="oto.preutter">Pre-Espressione</system:String>
+    <system:String x:Key="oto.overlap">Ciclo</system:String>
+
+    <!-- Expressions -->
+    <system:String x:Key="exps.caption">Espressioni</system:String>
 
     <!-- Dialogs -->
     <system:String x:Key="dialogs.noresampler.caption">Nessun resampler</system:String>
