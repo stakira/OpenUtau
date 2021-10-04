@@ -90,7 +90,7 @@ namespace OpenUtau.Plugin.Builtin {
             mergedG2p = new G2pFallbacks(new IG2p[] { pluginDict, singerDict, cmudict }.OfType<IG2p>().ToArray());
         }
 
-        public override Phoneme[] Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour) {
+        public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour) {
             var note = notes[0];
             // Get the symbols of previous note.
             var prevSymbols = prevNeighbour == null ? null : GetSymbols(prevNeighbour.Value);
@@ -100,17 +100,21 @@ namespace OpenUtau.Plugin.Builtin {
                 // No symbol is found for current note.
                 if (note.lyric == "-" && prevSymbols != null) {
                     // The user is using a tail "-" note to produce a "<something> -" sound.
-                    return new Phoneme[] {
-                        new Phoneme() {
-                            phoneme = $"{prevSymbols.Last()} -",
-                        }
+                    return new Result {
+                        phonemes = new Phoneme[] {
+                            new Phoneme() {
+                                phoneme = $"{prevSymbols.Last()} -",
+                            }
+                        },
                     };
                 }
-                // Otherwise assumes the user put in a 
-                return new Phoneme[] {
-                    new Phoneme() {
-                        phoneme = note.lyric,
-                    }
+                // Otherwise assumes the user put in an alias.
+                return new Result {
+                    phonemes = new Phoneme[] {
+                        new Phoneme() {
+                            phoneme = note.lyric,
+                        }
+                    },
                 };
             }
             // Find phone types of symbols.
@@ -184,7 +188,9 @@ namespace OpenUtau.Plugin.Builtin {
             alignments.Clear();
 
             MapPhonemes(notes, phonemes, singer);
-            return phonemes;
+            return new Result {
+                phonemes = phonemes,
+            };
         }
 
         string[] GetSymbols(Note note) {

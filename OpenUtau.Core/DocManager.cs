@@ -71,19 +71,19 @@ namespace OpenUtau.Core {
                 Assembly assembly;
                 try {
                     assembly = Assembly.LoadFile(file);
+                    foreach (var type in assembly.GetExportedTypes()) {
+                        if (type.IsAbstract) {
+                            continue;
+                        }
+                        if (type.IsSubclassOf(typeof(Transformer))) {
+                            transformerFactories.Add(TransformerFactory.Get(type));
+                        } else if (type.IsSubclassOf(typeof(Phonemizer))) {
+                            phonemizerFactories.Add(PhonemizerFactory.Get(type));
+                        }
+                    }
                 } catch (Exception e) {
                     Log.Warning(e, $"Failed to load {file}.");
                     continue;
-                }
-                foreach (var type in assembly.GetExportedTypes()) {
-                    if (type.IsAbstract) {
-                        continue;
-                    }
-                    if (type.IsSubclassOf(typeof(Transformer))) {
-                        transformerFactories.Add(TransformerFactory.Get(type));
-                    } else if (type.IsSubclassOf(typeof(Phonemizer))) {
-                        phonemizerFactories.Add(PhonemizerFactory.Get(type));
-                    }
                 }
             }
             PhonemizerFactories = phonemizerFactories.ToArray();

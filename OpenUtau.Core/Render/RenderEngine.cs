@@ -33,12 +33,16 @@ namespace OpenUtau.Core.Render {
         readonly IResamplerDriver driver;
         readonly RenderCache cache;
         readonly int startTick;
+        readonly Dictionary<string, IResamplerDriver> resamplers;
 
         public RenderEngine(UProject project, IResamplerDriver driver, RenderCache cache, int startTick = 0) {
             this.project = project;
             this.driver = driver;
             this.cache = cache;
             this.startTick = startTick;
+            resamplers = ResamplerDriver.ResamplerDriver
+                .Search(PathManager.Inst.GetEngineSearchPath())
+                .ToDictionary(resampler => resampler.GetInfo().Name, resampler => resampler);
         }
 
         public Tuple<MasterAdapter, List<Fader>, CancellationTokenSource, Task> RenderProject(int startTick) {
@@ -183,6 +187,9 @@ namespace OpenUtau.Core.Render {
                 data = cache.Get(hash);
                 if (data == null) {
                     CopySourceTemp(item);
+                    if (!resamplers.TryGetValue(item.ResamplerName, out var driver)) {
+                        driver = this.driver;
+                    }
                     data = driver.DoResampler(DriverModels.CreateInputModel(item, 0), Log.Logger);
                     if (data == null || data.Length == 0) {
                         throw new Exception("Empty render result.");

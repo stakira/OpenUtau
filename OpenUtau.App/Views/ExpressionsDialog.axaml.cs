@@ -4,6 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using OpenUtau.App.ViewModels;
+using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.App.Views {
     public partial class ExpressionsDialog : Window {
@@ -26,6 +27,14 @@ namespace OpenUtau.App.Views {
                 MessageBox.Show(this, e.Message, "Error", MessageBox.MessageBoxButtons.Ok);
             } catch (Exception e) {
                 MessageBox.Show(this, e.ToString(), "Error", MessageBox.MessageBoxButtons.Ok);
+            }
+        }
+
+        private void OnExpressionTypeChanged(object sender, SelectionChangedEventArgs e) {
+            var comboBox = (ComboBox)sender;
+            var vm = DataContext as ExpressionsViewModel;
+            if (vm?.Expression != null) {
+                vm.Expression!.ExpressionType = (UExpressionType)comboBox.SelectedIndex;
             }
         }
     }

@@ -18,7 +18,7 @@ namespace OpenUtau.Api {
 
         public override string ToString() => string.IsNullOrEmpty(author)
             ? $"[{tag}] {name}"
-            : $"[{tag}] {name} by {author}";
+            : $"[{tag}] {name} (Contributed by {author})";
 
         private static Dictionary<Type, PhonemizerFactory> factories = new Dictionary<Type, PhonemizerFactory>();
         public static PhonemizerFactory Get(Type type) {

@@ -9,12 +9,12 @@ using Serilog;
 
 namespace OpenUtau.Core.Formats {
     public class Ustx {
-        public static readonly Version kUstxVersion = new Version(0, 3);
+        public static readonly Version kUstxVersion = new Version(0, 4);
 
         public static void AddBuiltInExpressions(UProject project) {
             project.RegisterExpression(new UExpressionDescriptor("velocity", "vel", 0, 200, 100));
             project.RegisterExpression(new UExpressionDescriptor("volume", "vol", 0, 200, 100));
-            project.RegisterExpression(new UExpressionDescriptor("accent", "acc", 0, 200, 100));
+            project.RegisterExpression(new UExpressionDescriptor("attack", "atk", 0, 200, 100));
             project.RegisterExpression(new UExpressionDescriptor("decay", "dec", 0, 100, 0));
         }
 
@@ -24,6 +24,7 @@ namespace OpenUtau.Core.Formats {
             project.RegisterExpression(new UExpressionDescriptor("breath", "bre", 0, 100, 0, "B"));
             project.RegisterExpression(new UExpressionDescriptor("lowpass", "lpf", 0, 100, 0, "H"));
             project.RegisterExpression(new UExpressionDescriptor("modulation", "mod", 0, 100, 0));
+            project.RegisterExpression(new UExpressionDescriptor("resampler engine", "eng", false, new string[] { "", "resampler.exe" }));
         }
 
         public static UProject Create() {
@@ -71,7 +72,24 @@ namespace OpenUtau.Core.Formats {
                         note.expressions = null;
                     });
             }
-            project.ustxVersion = new Version(0, 3);
+            if (project.ustxVersion < new Version(0, 4)) {
+                if (project.expressions.TryGetValue("acc", out var exp) && exp.name == "accent") {
+                    project.expressions.Remove("acc");
+                    exp.abbr = "atk";
+                    exp.name = "attack";
+                    project.expressions["atk"] = exp;
+                    project.parts
+                        .Where(part => part is UVoicePart)
+                        .Select(part => part as UVoicePart)
+                        .SelectMany(part => part.notes)
+                        .SelectMany(note => note.phonemeExpressions)
+                        .Where(exp => exp.abbr == "acc")
+                        .ToList()
+                        .ForEach(exp => exp.abbr = "atk");
+                    project.Validate();
+                }
+            }
+            project.ustxVersion = kUstxVersion;
             return project;
         }
     }

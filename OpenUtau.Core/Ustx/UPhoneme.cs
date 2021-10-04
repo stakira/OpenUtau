@@ -130,7 +130,7 @@ namespace OpenUtau.Core.Ustx {
                 return;
             }
             var vol = GetExpression(project, "vol").Item1;
-            var acc = GetExpression(project, "acc").Item1;
+            var atk = GetExpression(project, "atk").Item1;
             var dec = GetExpression(project, "dec").Item1;
 
             Vector2 p0, p1, p2, p3, p4;
@@ -146,7 +146,7 @@ namespace OpenUtau.Core.Ustx {
             p0.Y = 0f;
             p1.Y = vol;
             p1.X = p0.X + (overlapped ? overlap : 5f);
-            p1.Y = acc * vol / 100f;
+            p1.Y = atk * vol / 100f;
             p2.Y = vol;
             p3.Y = vol * (1f - dec / 100f);
             p4.Y = 0f;
@@ -160,7 +160,6 @@ namespace OpenUtau.Core.Ustx {
 
         public Tuple<float, bool> GetExpression(UProject project, string abbr) {
             var descriptor = project.expressions[abbr];
-            Trace.Assert(!descriptor.isNoteExpression);
             var note = Parent.Extends ?? Parent;
             int index = Parent.PhonemeOffset + Index;
             var expression = note.phonemeExpressions.FirstOrDefault(exp => exp.descriptor == descriptor && exp.index == index);
@@ -173,7 +172,6 @@ namespace OpenUtau.Core.Ustx {
 
         public void SetExpression(UProject project, string abbr, float value) {
             var descriptor = project.expressions[abbr];
-            Trace.Assert(!descriptor.isNoteExpression);
             var note = Parent.Extends ?? Parent;
             int index = Parent.PhonemeOffset + Index;
             if (descriptor.defaultValue == value) {
@@ -195,9 +193,18 @@ namespace OpenUtau.Core.Ustx {
         public string GetResamplerFlags(UProject project) {
             StringBuilder builder = new StringBuilder();
             foreach (var descriptor in project.expressions.Values) {
-                if (!descriptor.isNoteExpression && !string.IsNullOrEmpty(descriptor.flag)) {
-                    builder.Append(descriptor.flag);
-                    builder.Append((int)GetExpression(project, descriptor.abbr).Item1);
+                if (descriptor.type == UExpressionType.Numerical) {
+                    if (!string.IsNullOrEmpty(descriptor.flag)) {
+                        builder.Append(descriptor.flag);
+                        int value = (int)GetExpression(project, descriptor.abbr).Item1;
+                        builder.Append(value);
+                    }
+                }
+                if (descriptor.type == UExpressionType.Options) {
+                    if (descriptor.isFlag) {
+                        int value = (int)GetExpression(project, descriptor.abbr).Item1;
+                        builder.Append(descriptor.options[value]);
+                    }
                 }
             }
             return builder.ToString();

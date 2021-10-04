@@ -31,17 +31,17 @@ namespace OpenUtau.Core.ResamplerDriver {
             return null;
         }
 
-        public static List<DriverModels.EngineInfo> Search(string path) {
-            var engineInfoList = new List<DriverModels.EngineInfo>();
+        public static List<IResamplerDriver> Search(string path) {
+            var resamplers = new List<IResamplerDriver>();
             if (!Directory.Exists(path)) Directory.CreateDirectory(path);
             var files = Directory.EnumerateFiles(path);
             foreach (var file in files) {
                 var driver = Load(file);
                 if (driver != null) {
-                    engineInfoList.Add(driver.GetInfo());
+                    resamplers.Add(driver);
                 }
             }
-            return engineInfoList;
+            return resamplers;
         }
     }
 }

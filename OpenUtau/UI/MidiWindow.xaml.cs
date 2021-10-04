@@ -775,7 +775,14 @@ namespace OpenUtau.UI {
                 newValue = descriptor.defaultValue;
             } else if (mouseButton == MouseButton.Left) {
                 newValue = (int)Math.Max(descriptor.min, Math.Min(descriptor.max, (1 - mousePos.Y / expCanvas.ActualHeight) * (descriptor.max - descriptor.min) + descriptor.min));
-                valueTipText.Text = newValue.ToString();
+                if (descriptor.type == UExpressionType.Numerical) {
+                    valueTipText.Text = newValue.ToString();
+                } else if (descriptor.type == UExpressionType.Options) {
+                    valueTipText.Text = descriptor.options[(int)newValue];
+                    if (valueTipText.Text == "") {
+                        valueTipText.Text = "\"\"";
+                    }
+                }
                 valueTip.HorizontalOffset = mousePos.X;
                 valueTip.VerticalOffset = mousePos.Y - 18;
                 valueTip.IsOpen = true;
@@ -787,11 +794,11 @@ namespace OpenUtau.UI {
                 return;
             }
             if (midiVM.SelectedNotes.Count == 0 || midiVM.SelectedNotes.Contains(hit.note)) {
-                if (!descriptor.isNoteExpression) {
-                    DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(DocManager.Inst.Project, hit.phoneme, midiVM.visibleExpElement.Key, newValue));
-                } else {
-                    DocManager.Inst.ExecuteCmd(new SetNoteExpressionCommand(DocManager.Inst.Project, hit.note, midiVM.visibleExpElement.Key, newValue));
-                }
+                //if (!descriptor.isNoteExpression) {
+                DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(DocManager.Inst.Project, hit.phoneme, midiVM.visibleExpElement.Key, newValue));
+                //} else {
+                //    DocManager.Inst.ExecuteCmd(new SetNoteExpressionCommand(DocManager.Inst.Project, hit.note, midiVM.visibleExpElement.Key, newValue));
+                //}
             }
         }
 

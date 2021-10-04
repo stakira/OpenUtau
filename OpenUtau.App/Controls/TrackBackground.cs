@@ -33,7 +33,9 @@ namespace OpenUtau.App.Controls {
             if (!change.IsEffectiveValueChange) {
                 return;
             }
-            if (change.Property == TrackHeightProperty || change.Property == TrackOffsetProperty) {
+            if (change.Property == TrackHeightProperty ||
+                change.Property == TrackOffsetProperty ||
+                change.Property == ForegroundProperty) {
                 InvalidateVisual();
             }
         }

@@ -5,7 +5,7 @@
     <SatelliteResourceLanguages>none</SatelliteResourceLanguages>
     <Nullable>enable</Nullable>
     <Version>0.0.0</Version>
-    <ApplicationIcon />
+    <ApplicationIcon>Assets\open-utau.ico</ApplicationIcon>
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
@@ -13,6 +13,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia.Controls.DataGrid" Version="0.10.7" />
+    <PackageReference Include="ReactiveUI.Fody" Version="13.2.10" />
     <PackageReference Include="System.IO.Packaging" Version="5.0.0" />
     <PackageReference Include="Avalonia" Version="0.10.7" />
     <PackageReference Include="Avalonia.Desktop" Version="0.10.7" />

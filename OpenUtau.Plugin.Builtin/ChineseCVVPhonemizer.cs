@@ -34,7 +34,7 @@ namespace OpenUtau.Plugin.Builtin {
         // Simply stores the singer in a field.
         public override void SetSinger(USinger singer) => this.singer = singer;
 
-        public override Phoneme[] Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour) {
+        public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour) {
             // The overall logic is:
             // 1. Remove consonant: "duang" -> "uang".
             // 2. Lookup the trailing sound in vowel table: "uang" -> "_ang".
@@ -59,21 +59,25 @@ namespace OpenUtau.Plugin.Builtin {
                 if (length1 > totalDuration / 2) {
                     length1 = totalDuration / 2;
                 }
-                return new Phoneme[] {
-                    new Phoneme() {
-                        phoneme = phoneme0,
+                return new Result {
+                    phonemes = new Phoneme[] {
+                        new Phoneme() {
+                            phoneme = phoneme0,
+                        },
+                        new Phoneme() {
+                            phoneme = phoneme1,
+                            position = totalDuration - length1,
+                        }
                     },
-                    new Phoneme() {
-                        phoneme = phoneme1,
-                        position = totalDuration - length1,
-                    }
                 };
             }
             // Not spliting is needed. Return as is.
-            return new Phoneme[] {
-                new Phoneme() {
-                    phoneme = phoneme0,
-                }
+            return new Result {
+                phonemes = new Phoneme[] {
+                    new Phoneme() {
+                        phoneme = phoneme0,
+                    }
+                },
             };
         }
     }

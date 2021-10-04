@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Reactive.Linq;
 using Avalonia;
 using Avalonia.Controls;
@@ -31,8 +32,8 @@ namespace OpenUtau.App.Controls {
                 nameof(TrackOffset),
                 o => o.TrackOffset,
                 (o, v) => o.TrackOffset = v);
-        public static readonly DirectProperty<PartsCanvas, ObservableCollection<UPart>> ItemsProperty =
-            AvaloniaProperty.RegisterDirect<PartsCanvas, ObservableCollection<UPart>>(
+        public static readonly DirectProperty<PartsCanvas, ObservableCollection<UPart>?> ItemsProperty =
+            AvaloniaProperty.RegisterDirect<PartsCanvas, ObservableCollection<UPart>?>(
                 nameof(Items),
                 o => o.Items,
                 (o, v) => o.Items = v);
@@ -53,7 +54,7 @@ namespace OpenUtau.App.Controls {
             get => trackOffset;
             private set => SetAndRaise(TrackOffsetProperty, ref trackOffset, value);
         }
-        public ObservableCollection<UPart> Items {
+        public ObservableCollection<UPart>? Items {
             get => _items;
             set => SetAndRaise(ItemsProperty, ref _items, value);
         }
@@ -62,7 +63,7 @@ namespace OpenUtau.App.Controls {
         private double trackHeight;
         private double tickOffset;
         private double trackOffset;
-        private ObservableCollection<UPart> _items;
+        private ObservableCollection<UPart>? _items;
 
         Dictionary<UPart, PartControl> partControls = new Dictionary<UPart, PartControl>();
 
@@ -72,6 +73,21 @@ namespace OpenUtau.App.Controls {
                     foreach (var (part, control) in partControls) {
                         control.SetPosition();
                     }
+                });
+            MessageBus.Current.Listen<PartsSelectionEvent>()
+                .Subscribe(e => {
+                    foreach (var (part, control) in partControls) {
+                        control.Selected = e.selectedParts.Contains(part)
+                            || e.tempSelectedParts.Contains(part);
+                    }
+                });
+            MessageBus.Current.Listen<PartResizeEvent>()
+                .Subscribe(e => {
+                    partControls[e.part].SetSize();
+                });
+            MessageBus.Current.Listen<PartMoveEvent>()
+                .Subscribe(e => {
+                    partControls[e.part].SetPosition();
                 });
         }
 

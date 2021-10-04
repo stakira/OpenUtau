@@ -38,10 +38,6 @@ namespace OpenUtau.Classic {
                 .Select(entry => ParseOtoSet(entry, Encoding.UTF8))
                 .OfType<OtoSet>()
                 .ToArray();
-            var prefixMaps = Directory.EnumerateFiles(basePath, "prefix.map", SearchOption.AllDirectories)
-                .Select(entry => ParsePrefixMap(entry, Encoding.UTF8))
-                .OfType<PrefixMap>()
-                .ToArray();
             var bankDirs = banks
                 .Select(bank => Path.GetDirectoryName(bank.File))
                 .ToArray();
@@ -58,48 +54,17 @@ namespace OpenUtau.Classic {
                     }
                 }
             }
-            foreach (var prefixMap in prefixMaps) {
-                var dir = Path.GetDirectoryName(prefixMap.File);
-                for (int i = 0; i < bankDirs.Length; ++i) {
-                    if (dir.StartsWith(bankDirs[i])) {
-                        banks[i].PrefixMap = prefixMap;
-                        break;
-                    }
-                }
-            }
             foreach (var bank in banks) {
                 var dir = Path.GetDirectoryName(bank.File);
                 var file = Path.Combine(dir, "character.yaml");
                 if (File.Exists(file)) {
                     using (var stream = File.OpenRead(file)) {
-                        var bankConfig = VoicebankConfig.Load(stream);
-                        foreach (var otoSet in bank.OtoSets) {
-                            var subbank = bankConfig.Subbanks.FirstOrDefault(b => b.Dir == otoSet.Name);
-                            if (subbank != null) {
-                                otoSet.Prefix = subbank.Prefix;
-                                otoSet.Suffix = subbank.Suffix;
-                                otoSet.Flavor = subbank.Flavor;
-                                if (!string.IsNullOrEmpty(subbank.Prefix)) {
-                                    foreach (var oto in otoSet.Otos) {
-                                        string phonetic = oto.Alias;
-                                        if (phonetic.StartsWith(subbank.Prefix)) {
-                                            phonetic = phonetic.Substring(subbank.Prefix.Length);
-                                        }
-                                        oto.Phonetic = phonetic;
-                                    }
-                                }
-                                if (!string.IsNullOrEmpty(subbank.Suffix)) {
-                                    foreach (var oto in otoSet.Otos) {
-                                        string phonetic = oto.Phonetic ?? oto.Alias;
-                                        if (phonetic.EndsWith(subbank.Suffix)) {
-                                            phonetic = phonetic.Substring(0, phonetic.Length - subbank.Suffix.Length);
-                                        }
-                                        oto.Phonetic = phonetic;
-                                    }
-                                }
-                            }
-                        }
+                        ParseCharacterConfig(stream, bank);
                     }
+                }
+                file = Path.Combine(dir, "prefix.map");
+                if (File.Exists(file)) {
+                    bank.PrefixMap = ParsePrefixMap(file, Encoding.UTF8);
                 }
             }
             foreach (var bank in banks) {
@@ -156,6 +121,36 @@ namespace OpenUtau.Classic {
                     voicebank.Name = $"No Name ({voicebank.Id})";
                 }
                 return voicebank;
+            }
+        }
+
+        public static void ParseCharacterConfig(Stream stream, Voicebank bank) {
+            var bankConfig = VoicebankConfig.Load(stream);
+            foreach (var otoSet in bank.OtoSets) {
+                var subbank = bankConfig.Subbanks.FirstOrDefault(b => b.Dir == otoSet.Name);
+                if (subbank != null) {
+                    otoSet.Prefix = subbank.Prefix;
+                    otoSet.Suffix = subbank.Suffix;
+                    otoSet.Flavor = subbank.Flavor;
+                    if (!string.IsNullOrEmpty(subbank.Prefix)) {
+                        foreach (var oto in otoSet.Otos) {
+                            string phonetic = oto.Alias;
+                            if (phonetic.StartsWith(subbank.Prefix)) {
+                                phonetic = phonetic.Substring(subbank.Prefix.Length);
+                            }
+                            oto.Phonetic = phonetic;
+                        }
+                    }
+                    if (!string.IsNullOrEmpty(subbank.Suffix)) {
+                        foreach (var oto in otoSet.Otos) {
+                            string phonetic = oto.Phonetic ?? oto.Alias;
+                            if (phonetic.EndsWith(subbank.Suffix)) {
+                                phonetic = phonetic.Substring(0, phonetic.Length - subbank.Suffix.Length);
+                            }
+                            oto.Phonetic = phonetic;
+                        }
+                    }
+                }
             }
         }
 

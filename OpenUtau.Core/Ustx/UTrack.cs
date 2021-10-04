@@ -58,8 +58,8 @@ namespace OpenUtau.Core.Ustx {
                 if (Singer == null) {
                     Singer = new USinger(singer);
                 }
-                Phonemizer.SetSinger(Singer);
             }
+            Phonemizer.SetSinger(Singer);
             TrackNo = project.tracks.IndexOf(this);
         }
     }

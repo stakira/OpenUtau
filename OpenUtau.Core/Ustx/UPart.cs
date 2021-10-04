@@ -39,7 +39,7 @@ namespace OpenUtau.Core.Ustx {
         public SortedSet<UNote> notes = new SortedSet<UNote>();
 
         public override int GetMinDurTick(UProject project) {
-            int durTick = 0;
+            int durTick = 480;
             foreach (UNote note in notes)
                 durTick = Math.Max(durTick, note.position + note.duration);
             return durTick;
