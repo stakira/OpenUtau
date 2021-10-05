@@ -13,20 +13,20 @@
 
   <system:String x:Key="errors.caption">Errore</system:String>
 
-  <system:String x:Key="exps.abbr">Abbreviation</system:String>
-  <system:String x:Key="exps.apply">Apply</system:String>
-  <system:String x:Key="exps.caption">Expressions</system:String>
-  <system:String x:Key="exps.defaultvalue">Default</system:String>
-  <system:String x:Key="exps.flag">Resampler Flag</system:String>
-  <system:String x:Key="exps.isflag">Is Resampler Flag</system:String>
+  <system:String x:Key="exps.abbr">Abbreviazione</system:String>
+  <system:String x:Key="exps.apply">Applica</system:String>
+  <system:String x:Key="exps.caption">Espressioni</system:String>
+  <system:String x:Key="exps.defaultvalue">Predefinito</system:String>
+  <system:String x:Key="exps.flag">Insegna Resampler</system:String>
+  <system:String x:Key="exps.isflag">È Insegna Resampler</system:String>
   <system:String x:Key="exps.maxvalue">Max</system:String>
   <system:String x:Key="exps.minvalue">Min</system:String>
-  <system:String x:Key="exps.name">Name</system:String>
-  <system:String x:Key="exps.optionvalues">Option Values</system:String>
-  <system:String x:Key="exps.sepbycomma">Separate values by ','</system:String>
-  <system:String x:Key="exps.type">Type</system:String>
-  <system:String x:Key="exps.type.numerical">Numerical</system:String>
-  <system:String x:Key="exps.type.options">Options</system:String>
+  <system:String x:Key="exps.name">Nome</system:String>
+  <system:String x:Key="exps.optionvalues">Opzione Valori</system:String>
+  <system:String x:Key="exps.sepbycomma">Separa i valori con ','</system:String>
+  <system:String x:Key="exps.type">Tipo</system:String>
+  <system:String x:Key="exps.type.numerical">Numerico</system:String>
+  <system:String x:Key="exps.type.options">Opzioni</system:String>
 
   <system:String x:Key="menu.edit">Modifica</system:String>
   <system:String x:Key="menu.edit.copy">Copia</system:String>
@@ -58,18 +58,18 @@
   <system:String x:Key="menu.tools.singer.installadv">Installa cantante (Avanzato)...</system:String>
   <system:String x:Key="menu.tools.singers">Cantanti...</system:String>
 
-  <system:String x:Key="oto.alias">Alias</system:String>
-  <system:String x:Key="oto.consonant">Consonant</system:String>
-  <system:String x:Key="oto.cutoff">Cutoff</system:String>
+  <system:String x:Key="oto.alias">Pseudonimo</system:String>
+  <system:String x:Key="oto.consonant">Consonante</system:String>
+  <system:String x:Key="oto.cutoff">Taglio</system:String>
   <system:String x:Key="oto.file">File</system:String>
   <system:String x:Key="oto.flavor">Flavor</system:String>
   <system:String x:Key="oto.offset">Offset</system:String>
-  <system:String x:Key="oto.overlap">Overlap</system:String>
-  <system:String x:Key="oto.phonetic">Phonetic</system:String>
-  <system:String x:Key="oto.prefix">Prefix</system:String>
-  <system:String x:Key="oto.preutter">Preutter</system:String>
-  <system:String x:Key="oto.set">Set</system:String>
-  <system:String x:Key="oto.suffix">Suffix</system:String>
+  <system:String x:Key="oto.overlap">Ciclo</system:String>
+  <system:String x:Key="oto.phonetic">Fonetico</system:String>
+  <system:String x:Key="oto.prefix">Prefisso</system:String>
+  <system:String x:Key="oto.preutter">Pre-Espressione</system:String>
+  <system:String x:Key="oto.set">Gruppo</system:String>
+  <system:String x:Key="oto.suffix">Suffisso</system:String>
 
   <system:String x:Key="prefs.appearance">Aspetto</system:String>
   <system:String x:Key="prefs.appearance.lang">Language</system:String>
@@ -94,14 +94,14 @@
     </system:String>
   <system:String x:Key="prefs.rendering.resampler.preview">Resampler per l'anteprima</system:String>
   <system:String x:Key="prefs.rendering.resampler.warn">
-    Warning: moresampler is not supported yet. It will be extremely slow and cause high CPU usage. If you insist, please:
-    1. Turn on "resampler-compatibility" in moreconfig.txt.
-    2. Reduce pre-render threads to 1 or 2.
-    3. Patiently wait for prerender to finish before play.
+    Attenzione: moresampler non è ancora supportato. Sarà molto lento e causerà un alto utilizzo della CPU. Se proprio vuoi, per favore:
+    1. Abilita "resampler-compatibility" nel file moreconfig.txt.
+    2. Riduci i threads della pre-renderizzazione ad 1 o 2.
+    3. Aspetta pazientemente la fine della pre-renderizzazione prima di riprodurre.
   </system:String>
 
-  <system:String x:Key="singers.caption">Singers</system:String>
-  <system:String x:Key="singers.location">Location</system:String>
+  <system:String x:Key="singers.caption">Cantanti</system:String>
+  <system:String x:Key="singers.location">Posizione</system:String>
 
   <system:String x:Key="tip.exps.actions">Salva espressioni
 Resetta espressioni</system:String>
