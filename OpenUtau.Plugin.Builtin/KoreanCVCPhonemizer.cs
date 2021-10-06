@@ -30,13 +30,13 @@ namespace OpenUtau.Plugin.Builtin {
         static readonly string[] plainVowels = new string[] { "eu", "eo", "a", "i", "u", "e", "o" };
 
         static readonly string[] vowels = new string[] {
-            "eu=geu,neu,deu,reu,leu,meu,beu,seu,eu,jeu,cheu,keu,teu,peu,heu,ggeu,ddeu,bbeu,sseu,jjeu",
-            "eo=geo,neo,deo,reo,leo,meo,beo,seo,eo,jeo,cheo,keo,teo,peo,heo,ggeo,ddeo,bbeo,sseo,jjeo,gyeo,nyeo,dyeo,ryeo,lyeo,myeo,byeo,syeo,yeo,jyeo,chyeo,kyeo,tyeo,pyeo,hyeo,ggyeo,ddyeo,bbyeo,ssyeo,jjyeo,gweo,nweo,dweo,rweo,lweo,mweo,bweo,sweo,weo,jweo,chweo,kweo,tweo,pweo,hweo,ggweo,ddweo,bbweo,ssweo,jjweo",
-            "a=ga,na,da,ra,la,ma,ba,sa,a,ja,cha,ka,ta,pa,ha,gga,dda,bba,ssa,jja,gya,nya,dya,rya,lya,mya,bya,sya,ya,jya,chya,kya,tya,pya,hya,ggya,ddya,bbya,ssya,jjya,gwa,nwa,dwa,rwa,lwa,mwa,bwa,swa,wa,jwa,chwa,kwa,twa,pwa,hwa,ggwa,ddwa,bbwa,sswa,jjwa",
-            "e=ge,ne,de,re,le,me,be,se,e,je,che,ke,te,pe,he,gge,dde,bbe,sse,jje,gye,nye,dye,rye,lye,mye,bye,sye,ye,jye,chye,kye,tye,pye,hye,ggye,ddye,bbye,ssye,jjye,gwe,nwe,dwe,rwe,lwe,mwe,bwe,swe,we,jwe,chwe,kwe,twe,pwe,hwe,ggwe,ddwe,bbwe,sswe,jjwe",
-            "i=gi,ni,di,ri,li,mi,bi,si,i,ji,chi,ki,ti,pi,hi,ggi,ddi,bbi,ssi,jji,gwi,nwi,dwi,rwi,lwi,mwi,bwi,swi,wi,jwi,chwi,kwi,twi,pwi,hwi,ggwi,ddwi,bbwi,sswi,jjwi",
-            "o=go,no,do,ro,lo,mo,bo,so,o,jo,cho,ko,to,po,ho,ggo,ddo,bbo,sso,jjo,gyo,nyo,dyo,ryo,lyo,myo,byo,syo,yo,jyo,chyo,kyo,tyo,pyo,hyo,ggyo,ddyo,bbyo,ssyo,jjyo",
-            "u=gu,nu,du,ru,lu,mu,bu,su,u,ju,chu,ku,tu,pu,hu,ggu,ddu,bbu,ssu,jju,gyu,nyu,dyu,ryu,lyu,myu,byu,syu,yu,jyu,chyu,kyu,tyu,pyu,hyu,ggyu,ddyu,bbyu,ssyu,jjyu",
+            "eu=geu,neu,deu,reu,leu,meu,beu,seu,eu,jeu,cheu,keu,teu,peu,heu,ggeu,ddeu,bbeu,sseu,jjeu,feu,veu,zeu,theu,rreu",
+            "eo=geo,neo,deo,reo,leo,meo,beo,seo,eo,jeo,cheo,keo,teo,peo,heo,ggeo,ddeo,bbeo,sseo,jjeo,feo,veo,zeo,theo,rreo,gyeo,nyeo,dyeo,ryeo,lyeo,myeo,byeo,syeo,yeo,jyeo,chyeo,kyeo,tyeo,pyeo,hyeo,ggyeo,ddyeo,bbyeo,ssyeo,jjyeo,fyeo,vyeo,zyeo,thyeo,gweo,nweo,dweo,rweo,lweo,mweo,bweo,sweo,weo,jweo,chweo,kweo,tweo,pweo,hweo,ggweo,ddweo,bbweo,ssweo,jjweo,fweo,vweo,zweo,thweo",
+            "a=ga,na,da,ra,la,ma,ba,sa,a,ja,cha,ka,ta,pa,ha,gga,dda,bba,ssa,jja,fa,va,za,tha,rra,gya,nya,dya,rya,lya,mya,bya,sya,ya,jya,chya,kya,tya,pya,hya,ggya,ddya,bbya,ssya,jjya,fya,vya,zya,thya,gwa,nwa,dwa,rwa,lwa,mwa,bwa,swa,wa,jwa,chwa,kwa,twa,pwa,hwa,ggwa,ddwa,bbwa,sswa,jjwa,fwa,vwa,zwa,thwa",
+            "e=ge,ne,de,re,le,me,be,se,e,je,che,ke,te,pe,he,gge,dde,bbe,sse,jje,fe,ve,ze,the,rre,gye,nye,dye,rye,lye,mye,bye,sye,ye,jye,chye,kye,tye,pye,hye,ggye,ddye,bbye,ssye,jjye,fye,vye,zye,thye,gwe,nwe,dwe,rwe,lwe,mwe,bwe,swe,we,jwe,chwe,kwe,twe,pwe,hwe,ggwe,ddwe,bbwe,sswe,jjwe,fwe,vwe,zwe,thwe",
+            "i=gi,ni,di,ri,li,mi,bi,si,i,ji,chi,ki,ti,pi,hi,ggi,ddi,bbi,ssi,jji,fi,vi,zi,thi,rri,gwi,nwi,dwi,rwi,lwi,mwi,bwi,swi,wi,jwi,chwi,kwi,twi,pwi,hwi,ggwi,ddwi,bbwi,sswi,jjwi,fwi,vwi,zwi,thwi",
+            "o=go,no,do,ro,lo,mo,bo,so,o,jo,cho,ko,to,po,ho,ggo,ddo,bbo,sso,jjo,fo,vo,zo,tho,rro,gyo,nyo,dyo,ryo,lyo,myo,byo,syo,yo,jyo,chyo,kyo,tyo,pyo,hyo,ggyo,ddyo,bbyo,ssyo,jjyo,fyo,vyo,zyo,thyo",
+            "u=gu,nu,du,ru,lu,mu,bu,su,u,ju,chu,ku,tu,pu,hu,ggu,ddu,bbu,ssu,jju,fu,vu,zu,thu,rru,gyu,nyu,dyu,ryu,lyu,myu,byu,syu,yu,jyu,chyu,kyu,tyu,pyu,hyu,ggyu,ddyu,bbyu,ssyu,jjyu,fyu,vyu,zyu,thyu",
             "ng=ang,ing,ung,eng,ong,eung,eong",
             "n=an,in,un,en,on,eun,eon",
             "m=am,im,um,em,om,eum,eom",
@@ -51,6 +51,13 @@ namespace OpenUtau.Plugin.Builtin {
             "dd=dd,dda,ddi,ddu,dde,ddo,ddeu,ddeo,ddya,ddyu,ddye,ddyo,ddyeo,ddwa,ddwi,ddwe,ddweo",
             "bb=bb,bba,bbi,bbu,bbe,bbo,bbeu,bbeo,bbya,bbyu,bbye,bbyo,bbyeo,bbwa,bbwi,bbwe,bbweo",
             "ss=ss,ssa,ssi,ssu,sse,sso,sseu,sseo,ssya,ssyu,ssye,ssyo,ssyeo,sswa,sswi,sswe,ssweo",
+            
+            "f=f,fa,fi,fu,fe,fo,feu,feo,fya,fyu,fye,fyo,fyeo,fwa,fwi,fwe,fweo",
+            "v=v,va,vi,vu,ve,vo,veu,veo,vya,vyu,vye,vyo,vyeo,vwa,vwi,vwe,vweo",
+            "z=z,za,zi,zu,ze,zo,zeu,zeo,zya,zyu,zye,zyo,zyeo,zwa,zwi,zwe,zweo",
+            "th=th,tha,thi,thu,the,tho,theu,theo,thya,thyu,thye,thyo,thyeo,thwa,thwi,thwe,thweo",
+            "rr=rr,rra,rri,rru,rre,rro,rreu,rreo",
+
             "g=g,ga,gi,gu,ge,go,geu,geo,gya,gyu,gye,gyo,gyeo,gwa,gwi,gwe,gweo",
             "n=n,na,ni,nu,ne,no,neu,neo,nya,nyu,nye,nyo,nyeo,nwa,nwi,nwe,nweo",
             "d=d,da,di,du,de,do,deu,deo,dya,dyu,dye,dyo,dyeo,dwa,dwi,dwe,dweo",
@@ -85,10 +92,14 @@ namespace OpenUtau.Plugin.Builtin {
 
         bool isAlphaCon(string str) {
             if (str == "gg") { return true; }
-            else if (str == "gg") { return true; }
             else if (str == "dd") { return true; }
             else if (str == "bb") { return true; }
             else if (str == "ss") { return true; }
+            else if (str == "f") { return true; }
+            else if (str == "v") { return true; }
+            else if (str == "z") { return true; }
+            else if (str == "th") { return true; }
+            else if (str == "rr") { return true; }
             else if (str == "g") { return true; }
             else if (str == "n") { return true; }
             else if (str == "d") { return true; }
@@ -412,24 +423,9 @@ namespace OpenUtau.Plugin.Builtin {
                     if (prevExist && prevHangeul && (TPLfinal != "")) { lCL = 1; }
 
 
-
-                    // consonant에 변경 사항이 있을 때
-                    if (prevExist && prevHangeul) {
-
-
-                        // 비음화
-                        // (1) ㄱ(ㄲㅋㄳㄺ)
-                        //     ㄷ(ㅅ,ㅆ,ㅈ,ㅊ,ㅌ,ㅎ)
-                        //     ㅂ(ㅍ,ㄼ,ㄿ,ㅄ)
-
-
-                    }
-                    // final에 변경 사항이 있을 때
-
-
                 }
 
-
+                if (lCL == 1) { TCLconsonant = "l"; }
 
                 string CV = TCLconsonant + TCLvowel;
                 string VC = "";
@@ -439,7 +435,7 @@ namespace OpenUtau.Plugin.Builtin {
                 if (TCLfinal != "") { FC = TCLplainvowel + TCLfinal; }
 
 
-                if (lCL == 1) { CV = CV.Replace("r", "l"); }
+                
 
 
                 // 만약 앞에 노트가 없다면
@@ -463,28 +459,31 @@ namespace OpenUtau.Plugin.Builtin {
                 }
 
 
+                
+
                 // 만약 받침이 없다면
                 if (TCLfinal == "") {
                     // 뒤에 노트가 있다면
                     if(nextExist) { if((nextNeighbour?.lyric)[0] == 'ㄹ') { VC = ""; } }
-                    if ((VC != "") && (TNLconsonant != "")) {
+                    if ((VC != "") && (TNLconsonant != "")){
                         int totalDuration = notes.Sum(n => n.duration);
                         int vcLength = 60;
                         if ((TNLconsonant == "r") || (TNLconsonant == "h")) { vcLength = 30; }
-                        else if (TNLconsonant == "s") { vcLength = totalDuration/3; }
+                        else if (TNLconsonant == "s") { vcLength = totalDuration / 3; }
                         else if ((TNLconsonant == "k") || (TNLconsonant == "t") || (TNLconsonant == "p") || (TNLconsonant == "ch")) { vcLength = totalDuration / 2; }
                         else if ((TNLconsonant == "gg") || (TNLconsonant == "dd") || (TNLconsonant == "bb") || (TNLconsonant == "ss") || (TNLconsonant == "jj")) { vcLength = totalDuration / 2; }
                         vcLength = Math.Min(totalDuration / 2, vcLength);
 
+
                         return new Phoneme[] {
-                    new Phoneme() {
-                        phoneme = CV,
-                    },
-                    new Phoneme() {
-                        phoneme = VC,
-                        position = totalDuration - vcLength,
-                        }
-                    };
+                            new Phoneme() {
+                                phoneme = CV,
+                            },
+                            new Phoneme() {
+                                phoneme = VC,
+                                position = totalDuration - vcLength,
+                                }
+                            };
                     }
                 }
 
