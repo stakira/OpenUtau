@@ -113,7 +113,7 @@ namespace OpenUtau.Core.Formats {
                                     value = int.Parse(notestyle.InnerText) * 100 / 127,
                                 });
                             } else if (notestyle.Attributes["id"].Value == "accent") {
-                                unote.phonemeExpressions.Add(new UExpression("acc") {
+                                unote.phonemeExpressions.Add(new UExpression("atk") {
                                     index = 0,
                                     value = int.Parse(notestyle.InnerText) * 2,
                                 });

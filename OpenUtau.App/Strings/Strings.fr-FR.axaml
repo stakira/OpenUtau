@@ -1,96 +1,115 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-  <!-- Menu -->
-    <system:String x:Key="menu.file">Fichier</system:String>
-    <system:String x:Key="menu.file.new">Nouveau</system:String>
-    <system:String x:Key="menu.file.open">Ouvrir</system:String>
-    <system:String x:Key="menu.file.openas">Ouvrir en tant que...</system:String>
-    <system:String x:Key="menu.file.save">Sauvegarder</system:String>
-    <system:String x:Key="menu.file.saveas">Sauvegarder en tant que...</system:String>
-    <system:String x:Key="menu.file.saveasust">Sauvegarder en UST</system:String>
-    <system:String x:Key="menu.file.importtracks">Importer une pistes</system:String>
-    <system:String x:Key="menu.file.importaudio">Importer une musique</system:String>
-    <system:String x:Key="menu.file.importmidi">Importer un MIDI</system:String>
-    <system:String x:Key="menu.file.exportall">Exporter tout</system:String>
-    <system:String x:Key="menu.file.recentfiles">Fichier récent</system:String>
-    <system:String x:Key="menu.file.exit">Quitter</system:String>
 
-    <system:String x:Key="menu.edit">Editer</system:String>
-    <system:String x:Key="menu.edit.undo">Annuler</system:String>
-    <system:String x:Key="menu.edit.redo">Retablir</system:String>
-    <system:String x:Key="menu.edit.cut">Couper</system:String>
-    <system:String x:Key="menu.edit.copy">Copier</system:String>
-    <system:String x:Key="menu.edit.paste">Coller</system:String>
-    <system:String x:Key="menu.edit.delete">Supprimer</system:String>
-    <system:String x:Key="menu.edit.selectall">Selectionner</system:String>
-
-    <system:String x:Key="menu.tools">Outils</system:String>
-    <system:String x:Key="menu.tools.singers">Voicebank</system:String>
-    <system:String x:Key="menu.tools.singer.install">Installer une Voicebank</system:String>
-    <system:String x:Key="menu.tools.singer.installadv">Installer une Voicebank (méthode avancée)</system:String>
-    <system:String x:Key="menu.tools.project.expressions">Expressions...</system:String>
-    <system:String x:Key="menu.tools.prefs">Préférences...</system:String>
-
-    <system:String x:Key="menu.help">Aide</system:String>
-    <system:String x:Key="menu.help.about">A propos de OpenUTAU</system:String>
-
-    <!-- Preferences -->
-    <system:String x:Key="prefs.caption">Préférences</system:String>
-    <system:String x:Key="prefs.paths">Chemins</system:String>
-    <system:String x:Key="prefs.paths.singer">Chemin de Voicebank</system:String>
-    <system:String x:Key="prefs.paths.add">Ajouter</system:String>
-    <system:String x:Key="prefs.paths.remove">Retirer</system:String>
-    <system:String x:Key="prefs.playback">Audio</system:String>
-    <system:String x:Key="prefs.playback.device">Audio de sortie</system:String>
-    <system:String x:Key="prefs.playback.test">Test</system:String>
-    <system:String x:Key="prefs.rendering">Render</system:String>
-    <system:String x:Key="prefs.rendering.resampler.preview">Resampler de preview</system:String>
-    <system:String x:Key="prefs.rendering.resampler.export">Resampler d'exportation</system:String>
-    <system:String x:Key="prefs.rendering.resampler.note">
-        Note: pour utiliser des resamplers externes, ajoutez le resampler choisis en .exe/.dll dans le dossier "Resampler" de OpenUTAU, puit choisissez-le dans Préférances.
-    </system:String>
-    <system:String x:Key="prefs.appearance">Appearence</system:String>
-    <system:String x:Key="prefs.appearance.theme">Thème</system:String>
-    <system:String x:Key="prefs.appearance.theme.light">Jour</system:String>
-    <system:String x:Key="prefs.appearance.theme.dark">Nuit</system:String>
-    <system:String x:Key="prefs.appearance.theme.note">Note: relancez OpenUTAU pour appliquer le thème.</system:String>
-
-    <!-- Dialogs -->
-    <system:String x:Key="dialogs.noresampler.caption">Aucun resampler</system:String>
-    <system:String x:Key="dialogs.noresampler.message">Aucun resampler! Ajoutez le resampler voulu dans le dossier "Resampler" de OpenUTAU, puit choisissez-le dans Préférances!</system:String>
-    <system:String x:Key="dialogs.about.caption">About OpenUTAU</system:String>
-    <system:String x:Key="dialogs.about.message">
+  <system:String x:Key="dialogs.about.caption">About OpenUTAU</system:String>
+  <system:String x:Key="dialogs.about.message">
         OpenUtau est logiciel de synthétiseur vocal open source pour la communauté UTAU, avec une interface moderne et un support phonétique intelligent. Allez sur notre Github.
     </system:String>
-    <system:String x:Key="dialogs.export.caption">Exporter</system:String>
-    <system:String x:Key="dialogs.export.savefirst">Sauvegardez le fichier d'abord</system:String>
+  <system:String x:Key="dialogs.export.caption">Exporter</system:String>
+  <system:String x:Key="dialogs.export.savefirst">Sauvegardez le fichier d'abord</system:String>
+  <system:String x:Key="dialogs.noresampler.caption">Aucun resampler</system:String>
+  <system:String x:Key="dialogs.noresampler.message">Aucun resampler! Ajoutez le resampler voulu dans le dossier "Resampler" de OpenUTAU, puit choisissez-le dans Préférances!</system:String>
 
-    <!-- Tracks -->
-    <system:String x:Key="tracks.remove">Retirer</system:String>
-    <system:String x:Key="tracks.moveup">Monter</system:String>
-    <system:String x:Key="tracks.movedown">Descendre</system:String>
+  <system:String x:Key="errors.caption">Erreur</system:String>
 
-    <!-- Errors -->
-    <system:String x:Key="errors.caption">Erreur</system:String>
-    <system:String x:Key="warning">Attention</system:String>
-    <system:String x:Key="warning.asciipath">Le dossier d'installation d'OpenUTAU "{0}" contient des lettres non-ASCII, les resamplers .exe peuvent ne pas marcher.</system:String>
+  <system:String x:Key="exps.abbr">Abbreviation</system:String>
+  <system:String x:Key="exps.apply">Apply</system:String>
+  <system:String x:Key="exps.caption">Expressions</system:String>
+  <system:String x:Key="exps.defaultvalue">Default</system:String>
+  <system:String x:Key="exps.flag">Resampler Flag</system:String>
+  <system:String x:Key="exps.isflag">Is Resampler Flag</system:String>
+  <system:String x:Key="exps.maxvalue">Max</system:String>
+  <system:String x:Key="exps.minvalue">Min</system:String>
+  <system:String x:Key="exps.name">Name</system:String>
+  <system:String x:Key="exps.optionvalues">Option Values</system:String>
+  <system:String x:Key="exps.sepbycomma">Separate values by ','</system:String>
+  <system:String x:Key="exps.type">Type</system:String>
+  <system:String x:Key="exps.type.numerical">Numerical</system:String>
+  <system:String x:Key="exps.type.options">Options</system:String>
 
-    <!-- Tips -->
-    <system:String x:Key="tip.lyricbox.prev">Shift+Tab: Note Précédente</system:String>
-    <system:String x:Key="tip.lyricbox.next">Tab: Note Suivante</system:String>
-    <system:String x:Key="tip.notes.basics.keys" xml:space="preserve">T:
-Clic Gauche:
-Clic Droit:
-Tenir le Clic Gauche:
-Glisser une Note:
-Glisser l'extremitée de la Note:
-Alt + Glisser l'extremitée de la Note:
-Ctrl + Glisser Clic Gauche:
-Haut/Bas:
-Ctrl + Haut/Bas:
-Espace:</system:String>
-    <system:String x:Key="tip.notes.basics.actions" xml:space="preserve">Ouvrir l'aide
+  <system:String x:Key="menu.edit">Editer</system:String>
+  <system:String x:Key="menu.edit.copy">Copier</system:String>
+  <system:String x:Key="menu.edit.cut">Couper</system:String>
+  <system:String x:Key="menu.edit.delete">Supprimer</system:String>
+  <system:String x:Key="menu.edit.paste">Coller</system:String>
+  <system:String x:Key="menu.edit.redo">Retablir</system:String>
+  <system:String x:Key="menu.edit.selectall">Selectionner</system:String>
+  <system:String x:Key="menu.edit.undo">Annuler</system:String>
+  <system:String x:Key="menu.file">Fichier</system:String>
+  <system:String x:Key="menu.file.exit">Quitter</system:String>
+  <system:String x:Key="menu.file.exportall">Exporter tout</system:String>
+  <system:String x:Key="menu.file.exportust">Export Ust Files</system:String>
+  <system:String x:Key="menu.file.importaudio">Importer une musique</system:String>
+  <system:String x:Key="menu.file.importmidi">Importer un MIDI</system:String>
+  <system:String x:Key="menu.file.importtracks">Importer une pistes</system:String>
+  <system:String x:Key="menu.file.new">Nouveau</system:String>
+  <system:String x:Key="menu.file.open">Ouvrir</system:String>
+  <system:String x:Key="menu.file.openas">Ouvrir en tant que...</system:String>
+  <system:String x:Key="menu.file.recentfiles">Fichier récent</system:String>
+  <system:String x:Key="menu.file.save">Sauvegarder</system:String>
+  <system:String x:Key="menu.file.saveas">Sauvegarder en tant que...</system:String>
+  <system:String x:Key="menu.help">Aide</system:String>
+  <system:String x:Key="menu.help.about">A propos de OpenUTAU</system:String>
+  <system:String x:Key="menu.tools">Outils</system:String>
+  <system:String x:Key="menu.tools.prefs">Préférences...</system:String>
+  <system:String x:Key="menu.tools.project.expressions">Expressions...</system:String>
+  <system:String x:Key="menu.tools.singer.install">Installer une Voicebank</system:String>
+  <system:String x:Key="menu.tools.singer.installadv">Installer une Voicebank (méthode avancée)</system:String>
+  <system:String x:Key="menu.tools.singers">Voicebank</system:String>
+
+  <system:String x:Key="oto.alias">Alias</system:String>
+  <system:String x:Key="oto.consonant">Consonant</system:String>
+  <system:String x:Key="oto.cutoff">Cutoff</system:String>
+  <system:String x:Key="oto.file">File</system:String>
+  <system:String x:Key="oto.flavor">Flavor</system:String>
+  <system:String x:Key="oto.offset">Offset</system:String>
+  <system:String x:Key="oto.overlap">Overlap</system:String>
+  <system:String x:Key="oto.phonetic">Phonetic</system:String>
+  <system:String x:Key="oto.prefix">Prefix</system:String>
+  <system:String x:Key="oto.preutter">Preutter</system:String>
+  <system:String x:Key="oto.set">Set</system:String>
+  <system:String x:Key="oto.suffix">Suffix</system:String>
+
+  <system:String x:Key="prefs.appearance">Appearence</system:String>
+  <system:String x:Key="prefs.appearance.lang">Language</system:String>
+  <system:String x:Key="prefs.appearance.lang.note">Note: please restart OpenUtau after changing language.</system:String>
+  <system:String x:Key="prefs.appearance.theme">Thème</system:String>
+  <system:String x:Key="prefs.appearance.theme.dark">Nuit</system:String>
+  <system:String x:Key="prefs.appearance.theme.light">Jour</system:String>
+  <system:String x:Key="prefs.appearance.theme.note">Note: relancez OpenUTAU pour appliquer le thème.</system:String>
+  <system:String x:Key="prefs.caption">Préférences</system:String>
+  <system:String x:Key="prefs.paths">Chemins</system:String>
+  <system:String x:Key="prefs.paths.add">Ajouter</system:String>
+  <system:String x:Key="prefs.paths.remove">Retirer</system:String>
+  <system:String x:Key="prefs.paths.singer">Chemin de Voicebank</system:String>
+  <system:String x:Key="prefs.playback">Audio</system:String>
+  <system:String x:Key="prefs.playback.device">Audio de sortie</system:String>
+  <system:String x:Key="prefs.playback.test">Test</system:String>
+  <system:String x:Key="prefs.rendering">Render</system:String>
+  <system:String x:Key="prefs.rendering.prerender.threads">Pre-render Threads</system:String>
+  <system:String x:Key="prefs.rendering.resampler.export">Resampler d'exportation</system:String>
+  <system:String x:Key="prefs.rendering.resampler.note">
+        Note: pour utiliser des resamplers externes, ajoutez le resampler choisis en .exe/.dll dans le dossier "Resampler" de OpenUTAU, puit choisissez-le dans Préférances.
+    </system:String>
+  <system:String x:Key="prefs.rendering.resampler.preview">Resampler de preview</system:String>
+  <system:String x:Key="prefs.rendering.resampler.warn">
+    Warning: moresampler is not supported yet. It will be extremely slow and cause high CPU usage. If you insist, please:
+    1. Turn on "resampler-compatibility" in moreconfig.txt.
+    2. Reduce pre-render threads to 1 or 2.
+    3. Patiently wait for prerender to finish before play.
+  </system:String>
+
+  <system:String x:Key="singers.caption">Singers</system:String>
+  <system:String x:Key="singers.location">Location</system:String>
+
+  <system:String x:Key="tip.exps.actions">Ajouter une expression
+Retirer les expressions</system:String>
+  <system:String x:Key="tip.exps.keys">Tenir le Clic Gauche:
+Tenir le Clic Droit:</system:String>
+  <system:String x:Key="tip.lyricbox.next">Tab: Note Suivante</system:String>
+  <system:String x:Key="tip.lyricbox.prev">Shift+Tab: Note Précédente</system:String>
+  <system:String x:Key="tip.notes.basics.actions">Ouvrir l'aide
 Ajouter une note
 Retirer une note
 Ajouter des notes
@@ -101,11 +120,24 @@ Selectionner les notes
 Déplacer ces notes
 Déplacer ces notes par octaves
 Play</system:String>
-    <system:String x:Key="tip.notes.zoomx">◀ Scrollez ici pour zoomer horizontalement ▶</system:String>
-    <system:String x:Key="tip.notes.zoomy">Scrollez ici pour zoomer verticalement ▶</system:String>
-    <system:String x:Key="tip.exps.keys" xml:space="preserve">Tenir le Clic Gauche:
-Tenir le Clic Droit:</system:String>
-    <system:String x:Key="tip.exps.actions" xml:space="preserve">Ajouter une expression
-Retirer les expressions</system:String>
+  <system:String x:Key="tip.notes.basics.keys">T:
+Clic Gauche:
+Clic Droit:
+Tenir le Clic Gauche:
+Glisser une Note:
+Glisser l'extremitée de la Note:
+Alt + Glisser l'extremitée de la Note:
+Ctrl + Glisser Clic Gauche:
+Haut/Bas:
+Ctrl + Haut/Bas:
+Espace:</system:String>
+  <system:String x:Key="tip.notes.zoomx">◀ Scrollez ici pour zoomer horizontalement ▶</system:String>
+  <system:String x:Key="tip.notes.zoomy">Scrollez ici pour zoomer verticalement ▶</system:String>
 
+  <system:String x:Key="tracks.movedown">Descendre</system:String>
+  <system:String x:Key="tracks.moveup">Monter</system:String>
+  <system:String x:Key="tracks.remove">Retirer</system:String>
+
+  <system:String x:Key="warning">Attention</system:String>
+  <system:String x:Key="warning.asciipath">Le dossier d'installation d'OpenUTAU "{0}" contient des lettres non-ASCII, les resamplers .exe peuvent ne pas marcher.</system:String>
 </ResourceDictionary>

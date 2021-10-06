@@ -1,48 +1,104 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Binding;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace OpenUtau.App.ViewModels {
-    public class ExpressionBuilder {
-        private static readonly string[] required = { "vel", "vol", "acc", "dec" };
+    public class ExpressionBuilder : ReactiveObject {
+        private static readonly string[] required = { "vel", "vol", "atk", "dec" };
 
-        public string Name { get; set; } = string.Empty;
-        public string Abbr { get; set; } = string.Empty;
-        public float Min { get; set; }
-        public float Max { get; set; } = 100;
-        public float DefaultValue { get; set; }
-        public string Flag { get; set; } = string.Empty;
-        public bool IsCustom => !required.Contains(Abbr);
+        [Reactive] public string Name { get; set; }
+        [Reactive] public string Abbr { get; set; }
+        [Reactive] public UExpressionType ExpressionType { get; set; }
+        [Reactive] public float Min { get; set; }
+        [Reactive] public float Max { get; set; }
+        [Reactive] public float DefaultValue { get; set; }
+        [Reactive] public bool IsFlag { get; set; }
+        [Reactive] public string Flag { get; set; }
+        [Reactive] public string OptionValues { get; set; }
 
-        public ExpressionBuilder(UExpressionDescriptor descriptor) {
-            Name = descriptor.name;
-            Abbr = descriptor.abbr;
-            Min = descriptor.min;
-            Max = descriptor.max;
+        public bool IsCustom => isCustom.Value;
+        public bool IsNumerical => isNumerical.Value;
+        public bool IsOptions => isOptions.Value;
+        public int SelectedType => selectedType.Value;
+
+        private ObservableAsPropertyHelper<bool> isCustom;
+        private ObservableAsPropertyHelper<bool> isNumerical;
+        private ObservableAsPropertyHelper<bool> isOptions;
+        private ObservableAsPropertyHelper<int> selectedType;
+
+        public ExpressionBuilder(UExpressionDescriptor descriptor)
+            : this(descriptor.name, descriptor.abbr, descriptor.min, descriptor.max, descriptor.isFlag, descriptor.flag,
+                  descriptor.options == null ? string.Empty : string.Join(',', descriptor.options)) {
+            ExpressionType = descriptor.type;
             DefaultValue = descriptor.defaultValue;
-            Flag = descriptor.flag;
         }
 
-        public ExpressionBuilder() {
-            Name = "new expression";
+        public ExpressionBuilder()
+            : this("new expression", string.Empty, 0, 100, false, string.Empty, string.Empty) {
         }
 
-        public bool IsValid() {
-            return !string.IsNullOrWhiteSpace(Name)
-                && !string.IsNullOrWhiteSpace(Abbr)
-                && Abbr.Trim().Length == 3
-                && Min < Max
-                && Min <= DefaultValue
-                && DefaultValue <= Max;
+        public ExpressionBuilder(string name, string abbr, float min, float max, bool isFlag, string flag, string optionValues) {
+            Name = name;
+            Abbr = abbr;
+            Min = min;
+            Max = max;
+            IsFlag = isFlag;
+            Flag = flag;
+            OptionValues = optionValues;
+
+            this.WhenAnyValue(x => x.Abbr)
+                .Select(abbr => !required.Contains(abbr))
+                .ToProperty(this, x => x.IsCustom, out isCustom);
+            this.WhenAnyValue(x => x.ExpressionType)
+                .Select(type => type == UExpressionType.Numerical)
+                .ToProperty(this, x => x.IsNumerical, out isNumerical);
+            this.WhenAnyValue(x => x.ExpressionType)
+                .Select(type => type == UExpressionType.Options)
+                .ToProperty(this, x => x.IsOptions, out isOptions);
+            this.WhenAnyValue(x => x.ExpressionType)
+                .Select(type => (int)type)
+                .ToProperty(this, x => x.SelectedType, out selectedType);
+        }
+
+        public string? Validate() {
+            if (string.IsNullOrWhiteSpace(Name)) {
+                return "Name must be set.";
+            }
+            if (string.IsNullOrWhiteSpace(Abbr)) {
+                return "Abbreviation must be set.";
+            }
+            if (ExpressionType == UExpressionType.Numerical) {
+                if (Abbr.Trim().Length < 1 || Abbr.Trim().Length > 4) {
+                    return "Abbreviation must be between 1 and 4 characters long.";
+                }
+                if (Min >= Max) {
+                    return "Min must be smaller than max.";
+                }
+                if (DefaultValue < Min || DefaultValue > Max) {
+                    return "Default value must be between min and max.";
+                }
+            } else {
+                var options = OptionValues.Split(',');
+                if (options.Length < 2) {
+                    return "No options specified.";
+                }
+            }
+            return null;
         }
 
         public UExpressionDescriptor Build() {
-            return new UExpressionDescriptor(Name.Trim(), Abbr.Trim().ToLower(), Min, Max, DefaultValue, Flag);
+            return ExpressionType == UExpressionType.Numerical
+            ? new UExpressionDescriptor(
+                Name.Trim(), Abbr.Trim().ToLower(), Min, Max, DefaultValue, Flag)
+            : new UExpressionDescriptor(
+                Name.Trim(), Abbr.Trim().ToLower(), IsFlag, OptionValues.Split(','));
         }
 
         public override string ToString() => Name;
@@ -74,18 +130,10 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void Apply() {
-            if (!Expressions.All(builder => builder.IsValid())) {
-                var invalid = Expressions.First(builder => !builder.IsValid());
+            if (!Expressions.All(builder => builder.Validate() == null)) {
+                var invalid = Expressions.First(builder => builder.Validate() != null);
                 Expression = invalid;
-                if (string.IsNullOrWhiteSpace(invalid.Name)) {
-                    throw new ArgumentException("Name must be set.");
-                } else if (string.IsNullOrWhiteSpace(invalid.Abbr)) {
-                    throw new ArgumentException("Abbreviation must be set.");
-                } else if (invalid.Abbr.Trim().Length != 3) {
-                    throw new ArgumentException("Abbreviation must be 3 characters long.");
-                } else {
-                    throw new ArgumentException("Invalid min, max or default Value.");
-                }
+                throw new ArgumentException(invalid.Validate());
             }
             var abbrs = Expressions.Select(builder => builder.Abbr);
             if (abbrs.Count() != abbrs.Distinct().Count()) {

@@ -31,6 +31,11 @@ namespace OpenUtau.App.Controls {
                 nameof(Text),
                 o => o.Text,
                 (o, v) => o.Text = v);
+        public static readonly DirectProperty<PartControl, bool> SelectedProperty =
+            AvaloniaProperty.RegisterDirect<PartControl, bool>(
+                nameof(Selected),
+                o => o.Selected,
+                (o, v) => o.Selected = v);
 
         // Tick width in pixel.
         public double TickWidth {
@@ -49,13 +54,18 @@ namespace OpenUtau.App.Controls {
             get { return text; }
             set { SetAndRaise(TextProperty, ref text, value); }
         }
+        public bool Selected {
+            get { return selected; }
+            set { SetAndRaise(SelectedProperty, ref selected, value); }
+        }
 
         private double tickWidth;
         private double trackHeight;
         private Point offset;
         private string text = string.Empty;
+        private bool selected;
 
-        private readonly UPart part;
+        public readonly UPart part;
         private readonly Pen notePen = new Pen(Brushes.White, 3);
         private FormattedText? formattedText;
         private List<IDisposable> unbinds = new List<IDisposable>();
@@ -63,7 +73,6 @@ namespace OpenUtau.App.Controls {
         public PartControl(UPart part, PartsCanvas canvas) {
             this.part = part;
             Foreground = Brushes.White;
-            Background = Brushes.Gray;
             Text = part.name;
 
             unbinds.Add(this.Bind(TickWidthProperty, canvas.GetObservable(PartsCanvas.TickWidthProperty)));
@@ -84,16 +93,26 @@ namespace OpenUtau.App.Controls {
             if (change.Property == OffsetProperty) {
                 SetPosition();
             }
+            if (change.Property == SelectedProperty) {
+                InvalidateVisual();
+            }
         }
 
-        private void SetPosition() {
+        public void SetPosition() {
             Canvas.SetLeft(this, Offset.X + part.position * tickWidth);
             Canvas.SetTop(this, Offset.Y + part.trackNo * trackHeight);
         }
 
+        public void SetSize() {
+            Width = TickWidth * part.Duration;
+            Height = trackHeight;
+        }
+
         public override void Render(DrawingContext context) {
             // Background
-            context.DrawRectangle(Background, null, new Rect(1, 1, Width - 2, Height - 2), 4, 4);
+            context.DrawRectangle(
+                Selected ? ThemeManager.AccentBrush2 : ThemeManager.AccentBrush1,
+                null, new Rect(1, 0, Width - 1, Height - 1), 4, 4);
 
             // Text
             if (formattedText == null || formattedText.Text != Text) {
@@ -108,7 +127,7 @@ namespace OpenUtau.App.Controls {
             context.DrawText(Foreground, new Point(3, 2), formattedText);
 
             // Notes
-            if (part != null && part is UVoicePart voicePart) {
+            if (part != null && part is UVoicePart voicePart && voicePart.notes.Count > 0) {
                 int maxTone = voicePart.notes.Max(note => note.tone);
                 int minTone = voicePart.notes.Min(note => note.tone);
                 if (maxTone - minTone < 36) {

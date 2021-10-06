@@ -7,6 +7,7 @@ using System.Windows.Input;
 using OpenUtau.Api;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
+using Serilog;
 
 namespace OpenUtau.UI.Controls {
     /// <summary>
@@ -117,7 +118,18 @@ namespace OpenUtau.UI.Controls {
                 };
                 menuItem.Click += (_o, _e) => {
                     if (Track.Phonemizer.GetType() != factory.type) {
-                        var newPhonemizer = factory.Create();
+                        Phonemizer newPhonemizer;
+                        try {
+                            newPhonemizer = factory.Create();
+                        } catch (Exception e) {
+                            Log.Error(e, $"Failed to create {factory}");
+                            DocManager.Inst.ExecuteCmd(new UserMessageNotification(
+                                $"Failed to create {factory}\n\n" + e.ToString()));
+                            newPhonemizer = null;
+                        }
+                        if (newPhonemizer == null) {
+                            return;
+                        }
                         DocManager.Inst.StartUndoGroup();
                         DocManager.Inst.ExecuteCmd(new TrackChangePhonemizerCommand(DocManager.Inst.Project, Track, newPhonemizer));
                         DocManager.Inst.EndUndoGroup();

@@ -57,7 +57,7 @@ namespace OpenUtau.UI.Controls {
             }
             string name = ((UExpressionDescriptor)e.AddedItems[0]).name;
             string abbr = ((UExpressionDescriptor)e.AddedItems[0]).abbr;
-            Text = abbr.Substring(0, Math.Min(3, abbr.Length)).ToUpper();
+            Text = abbr.ToUpper();
             EventHandler handler = SelectionChanged;
             if (handler != null) {
                 handler(this, e);

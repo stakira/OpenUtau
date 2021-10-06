@@ -8,7 +8,7 @@ using Serilog;
 namespace OpenUtau.Plugin.Builtin {
     [Phonemizer("Japanese CVVC Phonemizer", "JA CVVC", "TUBS")]
     public class JapaneseCVVCPhonemizer : Phonemizer {
-        static readonly string[] plainVowels = new string[] { "あ","い","う","え","お","ん"};
+        static readonly string[] plainVowels = new string[] { "あ", "い", "う", "え", "お", "ん" };
 
         static readonly string[] vowels = new string[] {
             "a=ぁ,あ,か,が,さ,ざ,た,だ,な,は,ば,ぱ,ま,ゃ,や,ら,わ,ァ,ア,カ,ガ,サ,ザ,タ,ダ,ナ,ハ,バ,パ,マ,ャ,ヤ,ラ,ワ",
@@ -50,7 +50,11 @@ namespace OpenUtau.Plugin.Builtin {
             "y=y,いぃ,いぇ,や,ゆ,よ,ゐ,ゑ",
             "ky=ky,き,きぇ,きゃ,きゅ,きょ",
             "z=z,ざ,ず,ずぃ,ぜ,ぞ",
-            "my=my,み,みぇ,みゃ,みゅ,みょ"
+            "my=my,み,みぇ,みゃ,みゅ,みょ",
+            "R=R",
+            "息=息",
+            "吸=吸",
+            "-=-"
         };
 
         static readonly Dictionary<string, string> vowelLookup;
@@ -75,7 +79,7 @@ namespace OpenUtau.Plugin.Builtin {
         private USinger singer;
         public override void SetSinger(USinger singer) => this.singer = singer;
 
-        public override Phoneme[] Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour) {
+        public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour) {
             var note = notes[0];
             var currentUnicode = ToUnicodeElements(note.lyric);
             var currentLyric = note.lyric;
@@ -86,7 +90,7 @@ namespace OpenUtau.Plugin.Builtin {
                 if (singer.TryGetMappedOto(initial, note.tone, out var _)) {
                     currentLyric = initial;
                 }
-            } else if (plainVowels.Contains(currentLyric)){
+            } else if (plainVowels.Contains(currentLyric)) {
                 var prevUnicode = ToUnicodeElements(prevNeighbour?.lyric);
 
                 // Current note is VV
@@ -101,10 +105,12 @@ namespace OpenUtau.Plugin.Builtin {
 
                 // Check if next note is a vowel and does not require VC
                 if (plainVowels.Contains(nextUnicode.FirstOrDefault() ?? string.Empty)) {
-                    return new Phoneme[] {
-                        new Phoneme() {
-                            phoneme = currentLyric,
-                        }
+                    return new Result {
+                        phonemes = new Phoneme[] {
+                            new Phoneme() {
+                                phoneme = currentLyric,
+                            }
+                        },
                     };
                 }
 
@@ -122,19 +128,23 @@ namespace OpenUtau.Plugin.Builtin {
                 }
 
                 if (consonant == "") {
-                    return new Phoneme[] {
-                        new Phoneme() {
-                            phoneme = currentLyric,
-                        }
+                    return new Result {
+                        phonemes = new Phoneme[] {
+                            new Phoneme() {
+                                phoneme = currentLyric,
+                            }
+                        },
                     };
                 }
 
                 var vcPhoneme = $"{vowel} {consonant}";
                 if (!singer.TryGetMappedOto(vcPhoneme, note.tone, out var _)) {
-                    return new Phoneme[] {
-                        new Phoneme() {
-                            phoneme = currentLyric,
-                        }
+                    return new Result {
+                        phonemes = new Phoneme[] {
+                            new Phoneme() {
+                                phoneme = currentLyric,
+                            }
+                        },
                     };
                 }
 
@@ -142,25 +152,29 @@ namespace OpenUtau.Plugin.Builtin {
                 int vcLength = 120;
                 if (singer.TryGetMappedOto(nextLyric, note.tone, out var oto)) {
                     vcLength = MsToTick(oto.Preutter);
-                } 
-                vcLength = Math.Min(totalDuration / 2, vcLength);
-                
-                return new Phoneme[] {
-                    new Phoneme() {
-                        phoneme = currentLyric,
-                    },
-                    new Phoneme() {
-                        phoneme = vcPhoneme,
-                        position = totalDuration - vcLength,
-                    }
-                };
-            } 
-            
-            // No next neighbor
-            return new Phoneme[] {
-                new Phoneme {
-                    phoneme = currentLyric,
                 }
+                vcLength = Math.Min(totalDuration / 2, vcLength);
+
+                return new Result {
+                    phonemes = new Phoneme[] {
+                        new Phoneme() {
+                            phoneme = currentLyric,
+                        },
+                        new Phoneme() {
+                            phoneme = vcPhoneme,
+                            position = totalDuration - vcLength,
+                        }
+                    },
+                };
+            }
+
+            // No next neighbor
+            return new Result {
+                phonemes = new Phoneme[] {
+                    new Phoneme {
+                        phoneme = currentLyric,
+                    }
+                },
             };
         }
     }

@@ -47,13 +47,20 @@ namespace OpenUtau.Core.Render {
             SourceFile = phoneme.oto.File;
             SourceFile = Path.Combine(PathManager.Inst.InstalledSingersPath, SourceFile);
             ResamplerName = resamplerName;
+            if (project.expressions.TryGetValue("eng", out var descriptor)) {
+                int index = (int)phoneme.GetExpression(project, "eng").Item1;
+                string resampler = descriptor.options[index];
+                if (!string.IsNullOrEmpty(resampler)) {
+                    ResamplerName = resampler;
+                }
+            }
             SourceTemp = Path.Combine(PathManager.Inst.GetCachePath(null),
                 $"{HashHex(track.Singer.Id)}-{HashHex(phoneme.oto.Set)}-{HashHex(SourceFile)}.wav");
 
             Velocity = (int)phoneme.GetExpression(project, "vel").Item1;
             Volume = (int)phoneme.GetExpression(project, "vol").Item1;
             Modulation = (int)phoneme.GetExpression(project, "mod").Item1;
-            var strechRatio = Math.Pow(2, 1.0 - Velocity / 100);
+            var strechRatio = Math.Pow(2, 1.0 - Velocity / 100.0);
             var length = phoneme.oto.Preutter * strechRatio + phoneme.envelope.data[4].X;
             var requiredLength = Math.Ceiling(length / 50 + 1) * 50;
             var lengthAdjustment = phoneme.tailIntrude == 0 ? phoneme.preutter : phoneme.preutter - phoneme.tailIntrude + phoneme.tailOverlap;

@@ -211,6 +211,9 @@ namespace OpenUtau.Core {
                 if (faders != null && faders.Count > _cmd.TrackNo) {
                     faders[_cmd.TrackNo].Scale = DecibelToVolume(_cmd.Volume);
                 }
+            } else if (cmd is LoadProjectNotification) {
+                StopPlayback();
+                DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(0));
             }
             if (!(cmd is UNotification) || cmd is LoadProjectNotification) {
                 SchedulePreRender();

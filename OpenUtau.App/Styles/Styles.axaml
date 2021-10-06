@@ -43,7 +43,7 @@
   <Style Selector="TextBox:disabled">
     <Setter Property="Foreground" Value="{DynamicResource TextControlForegroundDisabled}" />
   </Style>
-  
+
   <Style Selector="Button">
     <Setter Property="BorderThickness" Value="0"/>
     <Setter Property="FontSize" Value="12"/>
@@ -84,6 +84,21 @@
     <Setter Property="Height" Value="24"/>
     <Setter Property="Padding" Value="4"/>
     <Setter Property="Margin" Value="0"/>
+  </Style>
+
+  <Style Selector="CheckBox">
+    <Setter Property="MinHeight" Value="20" />
+    <Setter Property="MinWidth" Value="20" />
+  </Style>
+  <Style Selector="CheckBox /template/ Grid">
+    <Setter Property="Height" Value="20" />
+    <Setter Property="Width" Value="20" />
+  </Style>
+  <Style Selector="CheckBox /template/ Border#NormalRectangle">
+    <Setter Property="VerticalAlignment" Value="Top" />
+  </Style>
+  <Style Selector="CheckBox /template/ Viewbox">
+    <Setter Property="VerticalAlignment" Value="Top" />
   </Style>
 
   <Style Selector="DataGridColumnHeader">

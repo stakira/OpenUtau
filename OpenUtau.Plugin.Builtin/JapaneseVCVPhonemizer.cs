@@ -36,14 +36,16 @@ namespace OpenUtau.Plugin.Builtin {
         // Simply stores the singer in a field.
         public override void SetSinger(USinger singer) => this.singer = singer;
 
-        public override Phoneme[] Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour) {
+        public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour) {
             var note = notes[0];
             if (!string.IsNullOrEmpty(note.phoneticHint)) {
                 // If a hint is present, returns the hint.
-                return new Phoneme[] {
-                    new Phoneme {
-                        phoneme = note.phoneticHint,
-                    }
+                return new Result {
+                    phonemes = new Phoneme[] {
+                        new Phoneme {
+                            phoneme = note.phoneticHint,
+                        }
+                    },
                 };
             }
             // The alias for no previous neighbour note. For example, "- な" for "な".
@@ -63,10 +65,12 @@ namespace OpenUtau.Plugin.Builtin {
             if (!singer.TryGetMappedOto(phoneme, note.tone, out var _)) {
                 phoneme = note.lyric;
             }
-            return new Phoneme[] {
-                new Phoneme {
-                    phoneme = phoneme,
-                }
+            return new Result {
+                phonemes = new Phoneme[] {
+                    new Phoneme {
+                        phoneme = phoneme,
+                    }
+                },
             };
         }
     }

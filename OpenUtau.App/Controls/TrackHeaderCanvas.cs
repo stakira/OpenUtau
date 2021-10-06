@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Reactive.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core.Ustx;
+using ReactiveUI;
 
 namespace OpenUtau.App.Controls {
     class TrackHeaderCanvas : Canvas {
@@ -42,6 +45,15 @@ namespace OpenUtau.App.Controls {
         private ObservableCollection<UTrack> _items;
 
         Dictionary<UTrack, TrackHeader> trackHeaders = new Dictionary<UTrack, TrackHeader>();
+
+        public TrackHeaderCanvas() {
+            MessageBus.Current.Listen<TracksRefreshEvent>()
+                .Subscribe(_ => {
+                    foreach (var (track, header) in trackHeaders) {
+                        header.TrackNo = track.TrackNo;
+                    }
+                });
+        }
 
         protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change) {
             base.OnPropertyChanged(change);

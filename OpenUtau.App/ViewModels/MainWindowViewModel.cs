@@ -1,8 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Avalonia;
-using OpenUtau.App.Views;
-using OpenUtau.Core;
+﻿using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using ReactiveUI;
 
