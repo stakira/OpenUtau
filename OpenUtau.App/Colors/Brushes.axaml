@@ -4,6 +4,8 @@
                    Color="{DynamicResource MainWindowColor}"/>
   <SolidColorBrush x:Key="SystemControlBackgroundAltHighBrush"
                    Color="{DynamicResource BackgroundColor}"/>
+  <SolidColorBrush x:Key="BackgroundBrushSemi"
+                   Color="{DynamicResource BackgroundColor}" Opacity="0.5"/>
   <SolidColorBrush x:Key="SystemControlBackgroundAltHighBrushPointerOver"
                    Color="{DynamicResource BackgroundColorPointerOver}"/>
   <SolidColorBrush x:Key="SystemControlBackgroundAltHighBrushDisabled"
@@ -86,6 +88,14 @@
                    Color="{DynamicResource NeutralAccentColorPointerOver}" />
   <SolidColorBrush x:Key="AccentBrush1"
                    Color="{DynamicResource AccentColor1}" />
+  <SolidColorBrush x:Key="AccentBrush1Semi"
+                   Color="{DynamicResource AccentColor1}" Opacity="0.5" />
   <SolidColorBrush x:Key="AccentBrush2"
                    Color="{DynamicResource AccentColor2}" />
+  <SolidColorBrush x:Key="AccentBrush2Semi"
+                   Color="{DynamicResource AccentColor2}" Opacity="0.5" />
+  <SolidColorBrush x:Key="AccentBrush3"
+                   Color="{DynamicResource AccentColor3}" />
+  <SolidColorBrush x:Key="AccentBrush3Semi"
+                   Color="{DynamicResource AccentColor3}" Opacity="0.5" />
 </ResourceDictionary>

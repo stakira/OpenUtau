@@ -1,4 +1,4 @@
-<Window xmlns="https://github.com/avaloniaui"
+﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -6,7 +6,7 @@
         xmlns:c="clr-namespace:OpenUtau.App.Controls"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="OpenUtau.App.Views.PianoRollWindow"
-        Icon="/Assets/avalonia-logo.ico"
+        Icon="/Assets/open-utau.ico"
         Title="Piano Roll" MinWidth="800" MinHeight="300" KeyDown="OnKeyDown" Closing="WindowClosing"
         TransparencyLevelHint="None" Background="{DynamicResource MainWindowBackgroundBrush}"
         ExtendClientAreaToDecorationsHint="False">
@@ -20,7 +20,7 @@
         <RowDefinition Height="150" MinHeight="120" MaxHeight="450"/>
       </Grid.RowDefinitions>
       <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="60"/>
+        <ColumnDefinition Width="100"/>
         <ColumnDefinition Width="*"/>
         <ColumnDefinition Width="24"/>
       </Grid.ColumnDefinitions>
@@ -41,11 +41,13 @@
                  LargeChange="{Binding ViewportTracks}"
                  SmallChange="{Binding SmallChangeY}" PointerWheelChanged="VScrollPointerWheelChanged"/>
       <Border Grid.Column="0" Grid.Row="2" Background="Red"></Border>
-      <Border Grid.Column="0" Grid.Row="4" Background="Red"></Border>
-      <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent"
-              BoxShadow="inset 0 0 5 0.75 #7F7F7F" ClipToBounds="True" IsHitTestVisible="False">
-      </Border>
-      <Canvas Name="TimelineCanvas" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Top"
+      <Grid Grid.Column="0" Grid.Row="4">
+        <c:ExpSelector HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top" Index="0" Margin="0,0,0,0"/>
+        <c:ExpSelector HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top" Index="1" Margin="0,22,0,0"/>
+        <c:ExpSelector HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top" Index="2" Margin="0,44,0,0"/>
+        <c:ExpSelector HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top" Index="3" Margin="0,66,0,0"/>
+      </Grid>
+      <Canvas Name="TimelineCanvas" Grid.Row="1" Grid.Column="1" Background="Transparent"
               PointerWheelChanged="TimelinePointerWheelChanged"
               PointerPressed="TimelinePointerPressed"
               PointerMoved="TimelinePointerMoved"
@@ -65,10 +67,30 @@
                         TickWidth="{Binding NotesViewModel.TickWidth}"
                         TickOrigin="{Binding NotesViewModel.TickOrigin}"
                         TickOffset="{Binding NotesViewModel.TickOffset}"/>
-      <GridSplitter Grid.Row="3" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Wheat" Focusable="False" Cursor="SizeNorthSouth"/>
+      <c:NotesCanvas Grid.Row="2" Grid.Column="1" Background="Transparent"
+                     TickWidth="{Binding NotesViewModel.TickWidth}"
+                     TrackHeight="{Binding NotesViewModel.TrackHeight}"
+                     TickOffset="{Binding NotesViewModel.TickOffset}"
+                     TrackOffset="{Binding NotesViewModel.TrackOffset}"
+                     Part="{Binding NotesViewModel.Part}"
+                     PointerWheelChanged="NotesCanvasPointerWheelChanged"/>
+      <Rectangle Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="0,0,0,48" Height="6" Opacity="0.15">
+        <Rectangle.Fill>
+          <LinearGradientBrush StartPoint="0,0" EndPoint="0,6">
+            <GradientStop Color="Transparent" Offset="0"/>
+            <GradientStop Color="Black" Offset="1"/>
+          </LinearGradientBrush>
+        </Rectangle.Fill>
+      </Rectangle>
+      <c:PhonemeCanvas Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="0" Height="48"
+                       Background="{DynamicResource BackgroundBrushSemi}"
+                       TickWidth="{Binding NotesViewModel.TickWidth}"
+                       TickOffset="{Binding NotesViewModel.TickOffset}"
+                       Part="{Binding NotesViewModel.Part}"/>
+      <GridSplitter Grid.Row="3" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                    Background="Transparent" Focusable="False" Cursor="SizeNorthSouth"/>
       <c:TrackBackground Grid.Row="4" Grid.Column="1" IsHitTestVisible="False"
-                         Foreground="{DynamicResource TrackBackgroundAltBrush}"
-                         />
+                         Foreground="{DynamicResource TrackBackgroundAltBrush}"/>
       <c:TickBackground Grid.Row="4"  Grid.Column="1" IsHitTestVisible="False"
                         Foreground="{DynamicResource TickLineBrush}"
                         Background="{DynamicResource TickLineBrushLow}"
@@ -78,16 +100,26 @@
                         TickWidth="{Binding NotesViewModel.TickWidth}"
                         TickOrigin="{Binding NotesViewModel.TickOrigin}"
                         TickOffset="{Binding NotesViewModel.TickOffset}"/>
-      <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent"
-              BoxShadow="inset 0 0 5 0.75 #7F7F7F" ClipToBounds="True" IsHitTestVisible="False">
+      <c:ExpressionCanvas Grid.Row="4" Grid.Column="1" Opacity="0.3"
+                          TickWidth="{Binding NotesViewModel.TickWidth}"
+                          TickOffset="{Binding NotesViewModel.TickOffset}"
+                          Part="{Binding NotesViewModel.Part}"
+                          Key="vel"/>
+      <c:ExpressionCanvas Grid.Row="4" Grid.Column="1"
+                          TickWidth="{Binding NotesViewModel.TickWidth}"
+                          TickOffset="{Binding NotesViewModel.TickOffset}"
+                          Part="{Binding NotesViewModel.Part}"
+                          Key="vol"/>
+      <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+              BoxShadow="inset 0 0 5 1 #7f7F7F7F" ClipToBounds="True" IsHitTestVisible="False">
       </Border>
-      <Border Grid.Row="4" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent"
-              BoxShadow="inset 0 0 5 0.75 #7F7F7F" ClipToBounds="True" IsHitTestVisible="False">
+      <Border Grid.Row="4" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+              BoxShadow="inset 0 0 5 1 #7f7F7F7F" ClipToBounds="True" IsHitTestVisible="False">
       </Border>
       <Border Grid.Row="1" Grid.Column="2" Background="Transparent"
               HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0" Height="24"
               PointerWheelChanged="ViewScalerPointerWheelChanged">
-        <c:ViewScaler DataContext="{Binding NotesViewModel}" Value="{Binding TrackHeight}"/>
+        <c:ViewScaler DataContext="{Binding NotesViewModel}" Value="{Binding TrackHeight}" Min="{Binding TrackHeightMin}" Max="{Binding TrackHeightMax}"/>
       </Border>
     </Grid>
   </Grid>

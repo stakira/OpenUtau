@@ -5,6 +5,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Media;
 using Avalonia.Media.Immutable;
+using ReactiveUI;
 
 namespace OpenUtau.App.Controls {
     class TickBackground : TemplatedControl {
@@ -85,6 +86,8 @@ namespace OpenUtau.App.Controls {
             pen3 = new Pen(Background, 1) {
                 DashStyle = DashStyle,
             };
+            MessageBus.Current.Listen<ThemeChangedEvent>()
+                .Subscribe(e => InvalidateVisual());
         }
 
         protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change) {

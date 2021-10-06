@@ -1,0 +1,32 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:OpenUtau.App.ViewModels"
+             x:Class="OpenUtau.App.Controls.ExpSelector">
+  <Design.DataContext>
+    <vm:ExpSelectorViewModel/>
+  </Design.DataContext>
+  <Grid Height="22" Width="100" Background="{Binding Background}">
+    <ComboBox VerticalAlignment="Center" HorizontalAlignment="Right" Width="100" Height="22"
+              Focusable="False" Foreground="Transparent"
+              SelectedItem="{Binding Descriptor}" Items="{Binding Descriptors}">
+      <ComboBox.Styles>
+        <Style Selector="ComboBox">
+          <Setter Property="Background" Value="Transparent"/>
+          <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+        <Style Selector="ComboBox:pointerover /template/ Border#Background">
+          <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="ComboBox:pressed /template/ Border#Background">
+          <Setter Property="Background" Value="Transparent" />
+        </Style>
+      </ComboBox.Styles>
+    </ComboBox>
+    <TextBlock VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0,0,24,0" Height="22"
+               Foreground="{Binding TagBrush}" Background="Transparent"
+               Padding="4,3,0,3" FontWeight="Bold"
+               Text="{Binding Header}" PointerPressed="TextBlockPointerPressed"/>
+  </Grid>
+</UserControl>

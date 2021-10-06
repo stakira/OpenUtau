@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 using System.Reactive.Linq;
 using Avalonia;
 using OpenUtau.Core;
@@ -13,32 +14,32 @@ namespace OpenUtau.App.ViewModels {
         public int TrackCount => ViewConstants.MaxNoteNum;
         public double TickWidth {
             get => tickWidth;
-            set => this.RaiseAndSetIfChanged(ref tickWidth, Math.Clamp(value, ViewConstants.TickWidthMin, ViewConstants.TickWidthMax));
+            set => this.RaiseAndSetIfChanged(ref tickWidth, Math.Clamp(value, ViewConstants.PianoRollTickWidthMin, ViewConstants.PianoRollTickWidthMax));
         }
+        public double TrackHeightMin => ViewConstants.NoteHeightMin;
+        public double TrackHeightMax => ViewConstants.NoteHeightMax;
         public double TrackHeight {
             get => trackHeight;
-            set => this.RaiseAndSetIfChanged(ref trackHeight, Math.Clamp(value, ViewConstants.TrackHeightMin, ViewConstants.TrackHeightMax));
+            set => this.RaiseAndSetIfChanged(ref trackHeight, Math.Clamp(value, ViewConstants.NoteHeightMin, ViewConstants.NoteHeightMax));
         }
         [Reactive] public double TickOrigin { get; set; }
         [Reactive] public double TickOffset { get; set; }
         [Reactive] public double TrackOffset { get; set; }
-        [Reactive] public string PartName { get; set; }
+        [Reactive] public UPart? Part { get; set; }
         public double ViewportTicks => viewportTicks.Value;
         public double ViewportTracks => viewportTracks.Value;
         public double SmallChangeX => smallChangeX.Value;
         public double SmallChangeY => smallChangeY.Value;
+        public UProject Project => DocManager.Inst.Project;
 
-        private double tickWidth = ViewConstants.TickWidthDefault;
-        private double trackHeight = ViewConstants.NoteDefaultHeight;
+        private double tickWidth = ViewConstants.PianoRollTickWidthDefault;
+        private double trackHeight = ViewConstants.NoteHeightDefault;
         private readonly ObservableAsPropertyHelper<double> viewportTicks;
         private readonly ObservableAsPropertyHelper<double> viewportTracks;
         private readonly ObservableAsPropertyHelper<double> smallChangeX;
         private readonly ObservableAsPropertyHelper<double> smallChangeY;
 
-        private UPart? part;
-
         public NotesViewModel() {
-            PartName = string.Empty;
             viewportTicks = this.WhenAnyValue(x => x.Bounds, x => x.TickWidth)
                 .Select(v => v.Item1.Width / v.Item2)
                 .ToProperty(this, x => x.ViewportTicks);
@@ -53,6 +54,7 @@ namespace OpenUtau.App.ViewModels {
                 .ToProperty(this, x => x.SmallChangeY);
 
             TickCount = 480 * 100;
+            TrackOffset = 5 * 12;
 
             DocManager.Inst.AddSubscriber(this);
         }
@@ -89,24 +91,27 @@ namespace OpenUtau.App.ViewModels {
             return (int)(point.X / TickWidth - TickOffset);
         }
 
-        public int SnapUnit { get; private set; } = 480;
+        public int SnapUnit { get; private set; } = 120;
         public int PointToSnappedTick(Point point) {
             int tick = (int)(point.X / TickWidth + TickOffset);
             return (int)((double)tick / SnapUnit) * SnapUnit;
         }
 
-        public int PointToTrackNo(Point point) {
-            return (int)(point.Y / TrackHeight + TrackOffset);
+        public int PointToTone(Point point) {
+            return (int)(ViewConstants.MaxNoteNum - 1 - point.Y / TrackHeight - TrackOffset);
         }
 
-        public Point TickTrackToPoint(int tick, int trackNo) {
+        public Point TickToneToPoint(double tick, double tone) {
             return new Point(
                 (tick - TickOffset) * TickWidth,
-                (trackNo - TrackOffset) * TrackHeight);
+                (ViewConstants.MaxNoteNum - 1 - tone - TrackOffset) * TrackHeight);
+        }
+        public Point TickToneToPoint(Vector2 tickTone) {
+            return TickToneToPoint(tickTone.X, tickTone.Y);
         }
 
-        public Size TickTrackToSize(int ticks, int tracks) {
-            return new Size(ticks * TickWidth, tracks * TrackHeight);
+        public Size TickToneToSize(double ticks, double tone) {
+            return new Size(ticks * TickWidth, tone * TrackHeight);
         }
 
         private void LoadPart(UPart part, UProject project) {
@@ -114,21 +119,20 @@ namespace OpenUtau.App.ViewModels {
                 return;
             }
             UnloadPart();
-            this.part = part;
+            this.Part = part;
             OnPartModified();
         }
 
         private void UnloadPart() {
-            part = null;
+            Part = null;
         }
 
         private void OnPartModified() {
-            if (part == null) {
+            if (Part == null) {
                 return;
             }
-            PartName = part.name;
-            TickOrigin = part.position;
-            TickCount = part.Duration;
+            TickOrigin = Part.position;
+            TickCount = Part.Duration;
         }
 
         public void OnNext(UCommand cmd, bool isUndo) {
@@ -146,7 +150,7 @@ namespace OpenUtau.App.ViewModels {
                         LoadPart(replacePart.newPart, replacePart.project);
                     }
                 }
-                if (partCommand.part != part) {
+                if (partCommand.part != Part) {
                     return;
                 }
                 if (cmd is RemovePartCommand) {

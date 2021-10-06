@@ -82,13 +82,11 @@ namespace OpenUtau.App.Controls {
                     }
                 });
             MessageBus.Current.Listen<PartResizeEvent>()
-                .Subscribe(e => {
-                    partControls[e.part].SetSize();
-                });
+                .Subscribe(e => partControls[e.part].SetSize());
             MessageBus.Current.Listen<PartMoveEvent>()
-                .Subscribe(e => {
-                    partControls[e.part].SetPosition();
-                });
+                .Subscribe(e => partControls[e.part].SetPosition());
+            MessageBus.Current.Listen<ThemeChangedEvent>()
+                .Subscribe(_ => InvalidateVisual());
         }
 
         protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change) {

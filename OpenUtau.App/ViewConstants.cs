@@ -8,21 +8,24 @@
         public const double TrackHeightMin = 40;
         public const double TrackHeightDefault = 64;
 
+        public const double PianoRollTickWidthMax = 512.0 / 480.0;
+        public const double PianoRollTickWidthMin = 4.0 / 480.0;
+        public const double PianoRollTickWidthDefault = 128.0 / 480.0;
+        public const double PianoRollTickWidthShowDetails = 64.0 / 480.0;
+
+        public const double NoteHeightMax = 128;
+        public const double NoteHeightMin = 8;
+        public const double NoteHeightDefault = 22;
+
         public const int MaxNoteNum = 12 * 11;
-        public const int HiddenNoteNum = 12 * 4;
 
         public const int PosMarkerHightlighZIndex = -100;
 
         public const int ResizeMargin = 8;
 
-        public const double NoteMaxHeight = 128;
-        public const double NoteMinHeight = 8;
-        public const double NoteDefaultHeight = 22;
-
         public const double MidiQuarterMaxWidth = 512;
         public const double MidiQuarterMinWidth = 4;
         public const double MidiQuarterDefaultWidth = 128;
-        public const double MidiQuarterMinWidthShowPhoneme = 64;
         public const double MidiTickMinWidth = 16;
 
         public const int MinTrackCount = 8;

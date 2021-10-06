@@ -1,7 +1,10 @@
-﻿using Avalonia;
+﻿using System;
+using System.Reactive.Linq;
+using Avalonia;
 using Avalonia.Controls.Primitives;
 using Avalonia.Media;
 using OpenUtau.Core;
+using ReactiveUI;
 
 namespace OpenUtau.App.Controls {
     class TrackBackground : TemplatedControl {
@@ -27,6 +30,11 @@ namespace OpenUtau.App.Controls {
 
         private double _trackHeight;
         private double _trackOffset;
+
+        public TrackBackground() {
+            MessageBus.Current.Listen<ThemeChangedEvent>()
+                .Subscribe(e => InvalidateVisual());
+        }
 
         protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change) {
             base.OnPropertyChanged(change);

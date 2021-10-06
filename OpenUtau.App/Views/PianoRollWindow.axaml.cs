@@ -25,12 +25,12 @@ namespace OpenUtau.App.Views {
 
         public void HScrollPointerWheelChanged(object sender, PointerWheelEventArgs args) {
             var scrollbar = (ScrollBar)sender;
-            scrollbar.Value = Math.Max(scrollbar.Minimum, Math.Min(scrollbar.Maximum, scrollbar.Value - 0.25 * scrollbar.SmallChange * args.Delta.Y));
+            scrollbar.Value = Math.Max(scrollbar.Minimum, Math.Min(scrollbar.Maximum, scrollbar.Value - scrollbar.SmallChange * args.Delta.Y));
         }
 
         public void VScrollPointerWheelChanged(object sender, PointerWheelEventArgs args) {
             var scrollbar = (ScrollBar)sender;
-            scrollbar.Value = Math.Max(scrollbar.Minimum, Math.Min(scrollbar.Maximum, scrollbar.Value - 0.25 * scrollbar.SmallChange * args.Delta.Y));
+            scrollbar.Value = Math.Max(scrollbar.Minimum, Math.Min(scrollbar.Maximum, scrollbar.Value - scrollbar.SmallChange * args.Delta.Y));
         }
 
         public void TimelinePointerWheelChanged(object sender, PointerWheelEventArgs args) {
@@ -68,7 +68,7 @@ namespace OpenUtau.App.Views {
             args.Pointer.Capture(null);
         }
 
-        public void NotesCanvasWheelChanged(object sender, PointerWheelEventArgs args) {
+        public void NotesCanvasPointerWheelChanged(object sender, PointerWheelEventArgs args) {
             if (args.KeyModifiers == KeyModifiers.Control) {
                 var canvas = this.FindControl<Canvas>("TimelineCanvas");
                 TimelinePointerWheelChanged(canvas, args);

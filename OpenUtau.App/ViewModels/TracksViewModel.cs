@@ -44,6 +44,8 @@ namespace OpenUtau.App.ViewModels {
             get => tickWidth;
             set => this.RaiseAndSetIfChanged(ref tickWidth, Math.Clamp(value, ViewConstants.TickWidthMin, ViewConstants.TickWidthMax));
         }
+        public double TrackHeightMin => ViewConstants.TrackHeightMin;
+        public double TrackHeightMax => ViewConstants.TrackHeightMax;
         public double TrackHeight {
             get => trackHeight;
             set => this.RaiseAndSetIfChanged(ref trackHeight, Math.Clamp(value, ViewConstants.TrackHeightMin, ViewConstants.TrackHeightMax));
