@@ -9,7 +9,7 @@ namespace OpenUtau.Plugin.Builtin {
     [Phonemizer("KoreanCVCPhonemizer", "KO CVC", "NANA")]
 
     public class KoreanCVCPhonemizer : Phonemizer {
-   
+
         static readonly string[] naPlainVowels = new string[] { "a", "e", "a", "e", "eo", "e", "eo", "e", "o", "a", "e", "e", "o", "u", "eo", "e", "i", "u", "eu", "i", "i" };
 
         static readonly string[] naConsonants = new string[] {
@@ -25,7 +25,7 @@ namespace OpenUtau.Plugin.Builtin {
         private const int hangeulEndIndex = 0xD7A3;
 
         // ======================================================================================
-        
+
 
         static readonly string[] plainVowels = new string[] { "eu", "eo", "a", "i", "u", "e", "o" };
 
@@ -51,8 +51,8 @@ namespace OpenUtau.Plugin.Builtin {
             "dd=dd,dda,ddi,ddu,dde,ddo,ddeu,ddeo,ddya,ddyu,ddye,ddyo,ddyeo,ddwa,ddwi,ddwe,ddweo",
             "bb=bb,bba,bbi,bbu,bbe,bbo,bbeu,bbeo,bbya,bbyu,bbye,bbyo,bbyeo,bbwa,bbwi,bbwe,bbweo",
             "ss=ss,ssa,ssi,ssu,sse,sso,sseu,sseo,ssya,ssyu,ssye,ssyo,ssyeo,sswa,sswi,sswe,ssweo",
-            
-            "f=f,fa,fi,fu,fe,fo,feu,feo,fya,fyu,fye,fyo,fyeo,fwa,fwi,fwe,fweo",
+	
+	"f=f,fa,fi,fu,fe,fo,feu,feo,fya,fyu,fye,fyo,fyeo,fwa,fwi,fwe,fweo",
             "v=v,va,vi,vu,ve,vo,veu,veo,vya,vyu,vye,vyo,vyeo,vwa,vwi,vwe,vweo",
             "z=z,za,zi,zu,ze,zo,zeu,zeo,zya,zyu,zye,zyo,zyeo,zwa,zwi,zwe,zweo",
             "th=th,tha,thi,thu,the,tho,theu,theo,thya,thyu,thye,thyo,thyeo,thwa,thwi,thwe,thweo",
@@ -129,14 +129,14 @@ namespace OpenUtau.Plugin.Builtin {
                 })
                 .ToDictionary(t => t.Item1, t => t.Item2);
         }
-     
+
 
         // ======================================================================================
-        
+
 
         private USinger singer;
         public override void SetSinger(USinger singer) => this.singer = singer;
-        public override Phoneme[] Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour) {
+        public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour) {
             var note = notes[0];
             var currentUnicode = ToUnicodeElements(note.lyric); // 현재 가사의 유니코드
             string currentLyric = note.lyric; // 현재 가사
@@ -263,7 +263,7 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             }
 
-            if(currentHangeul) {
+            if (currentHangeul) {
                 // 음운규칙 적용
                 if (currentHangeul) {
 
@@ -272,7 +272,7 @@ namespace OpenUtau.Plugin.Builtin {
                     string tempTCLfinal = "";
                     bool yeoneum = false;
                     bool yeoneum2 = false;
-                    
+
                     if (prevExist && prevHangeul && (CLconsonant == 11) && (TPLfinal != "")) {
                         int temp = PLfinal;
                         if (temp == 1) { TCLtemp = naConsonants[0].Split(":"); tempTCLconsonant = TCLtemp[1]; yeoneum = true; }
@@ -327,13 +327,13 @@ namespace OpenUtau.Plugin.Builtin {
                         else if (temp == 18) { TCLfinal = "p"; yeoneum2 = true; }
                         else if (temp == 19) { TCLtemp = naConsonants[9].Split(":"); tempTCLfinal = TCLtemp[1]; TCLfinal = ""; yeoneum2 = true; }
                         else if (temp == 20) { TCLtemp = naConsonants[10].Split(":"); tempTCLfinal = TCLtemp[1]; TCLfinal = ""; yeoneum2 = true; }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             //else if (temp == 21) { TCLtemp = naConsonants[11].Split(":"); tempTCLfinal = TCLtemp[1]; TCLfinal = ""; yeoneum2 = true; }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             else if (temp == 22) { TCLtemp = naConsonants[12].Split(":"); tempTCLfinal = TCLtemp[1]; TCLfinal = ""; yeoneum2 = true; } else if (temp == 23) { TCLtemp = naConsonants[14].Split(":"); tempTCLfinal = TCLtemp[1]; TCLfinal = ""; yeoneum2 = true; } else if (temp == 24) { TCLtemp = naConsonants[15].Split(":"); tempTCLfinal = TCLtemp[1]; TCLfinal = ""; yeoneum2 = true; } else if (temp == 25) { TCLtemp = naConsonants[16].Split(":"); tempTCLfinal = TCLtemp[1]; TCLfinal = ""; yeoneum2 = true; } else if (temp == 26) { TCLtemp = naConsonants[17].Split(":"); tempTCLfinal = TCLtemp[1]; TCLfinal = ""; yeoneum2 = true; } else if (temp == 27) { TCLtemp = naConsonants[18].Split(":"); tempTCLfinal = TCLtemp[1]; TCLfinal = ""; yeoneum2 = true; }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             //else if (temp == 21) { TCLtemp = naConsonants[11].Split(":"); tempTCLfinal = TCLtemp[1]; TCLfinal = ""; yeoneum2 = true; }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             else if (temp == 22) { TCLtemp = naConsonants[12].Split(":"); tempTCLfinal = TCLtemp[1]; TCLfinal = ""; yeoneum2 = true; } else if (temp == 23) { TCLtemp = naConsonants[14].Split(":"); tempTCLfinal = TCLtemp[1]; TCLfinal = ""; yeoneum2 = true; } else if (temp == 24) { TCLtemp = naConsonants[15].Split(":"); tempTCLfinal = TCLtemp[1]; TCLfinal = ""; yeoneum2 = true; } else if (temp == 25) { TCLtemp = naConsonants[16].Split(":"); tempTCLfinal = TCLtemp[1]; TCLfinal = ""; yeoneum2 = true; } else if (temp == 26) { TCLtemp = naConsonants[17].Split(":"); tempTCLfinal = TCLtemp[1]; TCLfinal = ""; yeoneum2 = true; } else if (temp == 27) { TCLtemp = naConsonants[18].Split(":"); tempTCLfinal = TCLtemp[1]; TCLfinal = ""; yeoneum2 = true; }
 
                     }
                     if (yeoneum) { TCLconsonant = tempTCLconsonant; }
                     if (yeoneum2) { TNLconsonant = tempTCLfinal; }
-                    
+
 
                     // 2. 격음화/유기음화/거센소리되기
                     if (prevExist && prevHangeul && (TPLfinal != "")) {
@@ -423,9 +423,24 @@ namespace OpenUtau.Plugin.Builtin {
                     if (prevExist && prevHangeul && (TPLfinal != "")) { lCL = 1; }
 
 
+
+                    // consonant에 변경 사항이 있을 때
+                    if (prevExist && prevHangeul) {
+
+
+                        // 비음화
+                        // (1) ㄱ(ㄲㅋㄳㄺ)
+                        //     ㄷ(ㅅ,ㅆ,ㅈ,ㅊ,ㅌ,ㅎ)
+                        //     ㅂ(ㅍ,ㄼ,ㄿ,ㅄ)
+
+
+                    }
+                    // final에 변경 사항이 있을 때
+
+
                 }
 
-                if (lCL == 1) { TCLconsonant = "l"; }
+
 
                 string CV = TCLconsonant + TCLvowel;
                 string VC = "";
@@ -435,7 +450,7 @@ namespace OpenUtau.Plugin.Builtin {
                 if (TCLfinal != "") { FC = TCLplainvowel + TCLfinal; }
 
 
-                
+                if (lCL == 1) { CV = CV.Replace("r", "l"); }
 
 
                 // 만약 앞에 노트가 없다면
@@ -447,56 +462,59 @@ namespace OpenUtau.Plugin.Builtin {
                     int fcLength = totalDuration / 3;
                     if ((TCLfinal == "k") || (TCLfinal == "p") || (TCLfinal == "t")) { fcLength = totalDuration / 2; }
 
-                    return new Phoneme[] {
-                    new Phoneme() {
-                        phoneme = CV,
-                    },
-                    new Phoneme() {
-                        phoneme = FC,
-                        position = totalDuration - fcLength,
-                    }
-                };
-                }
-
-
-                
-
-                // 만약 받침이 없다면
-                if (TCLfinal == "") {
-                    // 뒤에 노트가 있다면
-                    if(nextExist) { if((nextNeighbour?.lyric)[0] == 'ㄹ') { VC = ""; } }
-                    if ((VC != "") && (TNLconsonant != "")){
-                        int totalDuration = notes.Sum(n => n.duration);
-                        int vcLength = 60;
-                        if ((TNLconsonant == "r") || (TNLconsonant == "h")) { vcLength = 30; }
-                        else if (TNLconsonant == "s") { vcLength = totalDuration / 3; }
-                        else if ((TNLconsonant == "k") || (TNLconsonant == "t") || (TNLconsonant == "p") || (TNLconsonant == "ch")) { vcLength = totalDuration / 2; }
-                        else if ((TNLconsonant == "gg") || (TNLconsonant == "dd") || (TNLconsonant == "bb") || (TNLconsonant == "ss") || (TNLconsonant == "jj")) { vcLength = totalDuration / 2; }
-                        vcLength = Math.Min(totalDuration / 2, vcLength);
-
-
-                        return new Phoneme[] {
+                    return new Result {
+                        phonemes = new Phoneme[] {
                             new Phoneme() {
                                 phoneme = CV,
                             },
                             new Phoneme() {
-                                phoneme = VC,
-                                position = totalDuration - vcLength,
+                                phoneme = FC,
+                                position = totalDuration - fcLength,
+                            }
+                        },
+                    };
+                }
+
+
+                // 만약 받침이 없다면
+                if (TCLfinal == "") {
+                    // 뒤에 노트가 있다면
+                    if (nextExist) { if ((nextNeighbour?.lyric)[0] == 'ㄹ') { VC = ""; } }
+                    if ((VC != "") && (TNLconsonant != "")) {
+                        int totalDuration = notes.Sum(n => n.duration);
+                        int vcLength = 60;
+                        if ((TNLconsonant == "r") || (TNLconsonant == "h")) { vcLength = 30; }
+                        else if (TNLconsonant == "s") { vcLength = totalDuration/3; }
+                        else if ((TNLconsonant == "k") || (TNLconsonant == "t") || (TNLconsonant == "p") || (TNLconsonant == "ch")) { vcLength = totalDuration / 2; }
+                        else if ((TNLconsonant == "gg") || (TNLconsonant == "dd") || (TNLconsonant == "bb") || (TNLconsonant == "ss") || (TNLconsonant == "jj")) { vcLength = totalDuration / 2; }
+                        vcLength = Math.Min(totalDuration / 2, vcLength);
+
+                        return new Result {
+                            phonemes = new Phoneme[] {
+                                new Phoneme() {
+                                    phoneme = CV,
+                                },
+                                new Phoneme() {
+                                    phoneme = VC,
+                                    position = totalDuration - vcLength,
                                 }
-                            };
+                            },
+                        };
                     }
                 }
 
 
                 // 그 외(받침 없는 마지막 노트)
 
-                return new Phoneme[] {
-                new Phoneme() {
-                    phoneme = CV,
-                    }
+                return new Result {
+                    phonemes = new Phoneme[] {
+                        new Phoneme() {
+                            phoneme = CV,
+                        }
+                    },
                 };
             }
-            
+
 
 
 
@@ -505,95 +523,98 @@ namespace OpenUtau.Plugin.Builtin {
 
 
             if (prevNeighbour == null) {
-                    // Usevkf "- V" or "- CV" if present in voicebank
-                    var initial = $"- {currentLyric}";
-                    if (singer.TryGetMappedOto(initial, note.tone, out var _)) {
-                        currentLyric = initial;
-                    }
-                } else if (plainVowels.Contains(currentLyric)) {
-                    var prevUnicode = ToUnicodeElements(prevNeighbour?.lyric);
+                // Usevkf "- V" or "- CV" if present in voicebank
+                var initial = $"- {currentLyric}";
+                if (singer.TryGetMappedOto(initial, note.tone, out var _)) {
+                    currentLyric = initial;
+                }
+            } else if (plainVowels.Contains(currentLyric)) {
+                var prevUnicode = ToUnicodeElements(prevNeighbour?.lyric);
+            }
 
-                    // CVC는 VV 구현하지 않음
-                    //if (vowelLookup.TryGetValue(prevUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
-                    //    currentLyric = $"{vow} {currentLyric}";
-                    //}
+            if (nextNeighbour != null) { // 다음에 노트가 있으면
+                var nextUnicode = ToUnicodeElements(nextNeighbour?.lyric);
+                var nextLyric = string.Join("", nextUnicode);
+
+                // Check if next note is a vowel and does not require VC
+                if (plainVowels.Contains(nextUnicode.FirstOrDefault() ?? string.Empty)) {
+                    return new Result {
+                        phonemes = new Phoneme[] {
+                            new Phoneme() {
+                                phoneme = currentLyric,
+                            }
+                        },
+                    };
                 }
 
-                if (nextNeighbour != null) { // 다음에 노트가 있으면
-                    var nextUnicode = ToUnicodeElements(nextNeighbour?.lyric);
-                    var nextLyric = string.Join("", nextUnicode);
+                // Insert VC before next neighbor
+                // Get vowel from current note
+                var vowel = "";
+                if (vowelLookup.TryGetValue(currentUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
 
-                    // Check if next note is a vowel and does not require VC
-                    if (plainVowels.Contains(nextUnicode.FirstOrDefault() ?? string.Empty)) {
-                        return new Phoneme[] {
+                    vowel = vow;
+                }
+
+                // Get consonant from next note
+                var consonant = "";
+                if (consonantLookup.TryGetValue(nextUnicode.FirstOrDefault() ?? string.Empty, out var con)) {
+                    consonant = getConsonant(nextNeighbour?.lyric); //로마자만 가능
+                    if (!(isAlphaCon(consonant))) { consonant = con; }
+                }
+
+                if (consonant == "") {
+                    return new Result {
+                        phonemes = new Phoneme[] {
+                            new Phoneme() {
+                                phoneme = currentLyric,
+                            }
+                        },
+                    };
+                }
+
+                var vcPhoneme = $"{vowel} {consonant}";
+                if (!singer.TryGetMappedOto(vcPhoneme, note.tone, out var _)) {
+                    return new Result {
+                        phonemes = new Phoneme[] {
+                            new Phoneme() {
+                                phoneme = currentLyric,
+                            }
+                        },
+                    };
+                }
+
+                int totalDuration = notes.Sum(n => n.duration);
+                int vcLength = 60;
+                if (singer.TryGetMappedOto(nextLyric, note.tone, out var oto)) {
+                    vcLength = MsToTick(oto.Preutter);
+                }
+
+                vcLength = Math.Min(totalDuration / 2, vcLength);
+
+
+
+                return new Result {
+                    phonemes = new Phoneme[] {
                         new Phoneme() {
                             phoneme = currentLyric,
-                        }
-                    };
-                    }
-
-                    // Insert VC before next neighbor
-                    // Get vowel from current note
-                    var vowel = "";
-                    if (vowelLookup.TryGetValue(currentUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
-
-                        vowel = vow;
-                    }
-
-                    // Get consonant from next note
-                    var consonant = "";
-                    if (consonantLookup.TryGetValue(nextUnicode.FirstOrDefault() ?? string.Empty, out var con)) {
-                        consonant = getConsonant(nextNeighbour?.lyric); //로마자만 가능
-                        if (!(isAlphaCon(consonant))) { consonant = con; }
-                    }
-
-                    if (consonant == "") {
-                        return new Phoneme[] {
+                        },
                         new Phoneme() {
-                            phoneme = currentLyric,
+                            phoneme = vcPhoneme,
+                            position = totalDuration - vcLength,
                         }
-                    };
-                    }
-
-                    var vcPhoneme = $"{vowel} {consonant}";
-                    if (!singer.TryGetMappedOto(vcPhoneme, note.tone, out var _)) {
-                        return new Phoneme[] {
-                        new Phoneme() {
-                            phoneme = currentLyric,
-                        }
-                    };
-                    }
-
-                    int totalDuration = notes.Sum(n => n.duration);
-                    int vcLength = 60;
-                    if (singer.TryGetMappedOto(nextLyric, note.tone, out var oto)) {
-                        vcLength = MsToTick(oto.Preutter);
-                    }
-
-                    vcLength = Math.Min(totalDuration / 2, vcLength);
-
-
-
-                    return new Phoneme[] {
-                    new Phoneme() {
-                        phoneme = currentLyric,
                     },
-                    new Phoneme() {
-                        phoneme = vcPhoneme,
-                        position = totalDuration - vcLength,
-                    }
                 };
-                }
+            }
 
 
-                // No next neighbor
-                return new Phoneme[] {
-                new Phoneme {
-                    phoneme = currentLyric,
+            // No next neighbor
+            return new Result {
+                phonemes = new Phoneme[] {
+                    new Phoneme {
+                        phoneme = currentLyric,
                     }
-                };
-            }     
-            
-        
+                },
+            };
+        }
     }
 }
