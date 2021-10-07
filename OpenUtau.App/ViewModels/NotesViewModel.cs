@@ -11,7 +11,7 @@ namespace OpenUtau.App.ViewModels {
     public class NotesViewModel : ViewModelBase, ICmdSubscriber {
         [Reactive] public Rect Bounds { get; set; }
         [Reactive] public int TickCount { get; set; }
-        public int TrackCount => ViewConstants.MaxNoteNum;
+        public int TrackCount => ViewConstants.MaxTone;
         public double TickWidth {
             get => tickWidth;
             set => this.RaiseAndSetIfChanged(ref tickWidth, Math.Clamp(value, ViewConstants.PianoRollTickWidthMin, ViewConstants.PianoRollTickWidthMax));
@@ -25,6 +25,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public double TickOrigin { get; set; }
         [Reactive] public double TickOffset { get; set; }
         [Reactive] public double TrackOffset { get; set; }
+        [Reactive] public int SnapUnit { get; set; }
         [Reactive] public UPart? Part { get; set; }
         public double ViewportTicks => viewportTicks.Value;
         public double ViewportTracks => viewportTracks.Value;
@@ -53,8 +54,18 @@ namespace OpenUtau.App.ViewModels {
                 .Select(h => h / 8)
                 .ToProperty(this, x => x.SmallChangeY);
 
-            TickCount = 480 * 100;
-            TrackOffset = 5 * 12;
+            this.WhenAnyValue(x => x.TickWidth)
+                .Subscribe(tickWidth => {
+                    int ticks = Project.resolution * 4 / Project.beatUnit;
+                    double width = ticks * tickWidth;
+                    while (width / 2 >= ViewConstants.PianoRollMinTicklineWidth && ticks % 2 == 0) {
+                        width /= 2;
+                        ticks /= 2;
+                    }
+                    SnapUnit = ticks;
+                });
+
+            TrackOffset = 4 * 12 + 6;
 
             DocManager.Inst.AddSubscriber(this);
         }
@@ -66,7 +77,11 @@ namespace OpenUtau.App.ViewModels {
                 recenter = false;
             }
             double center = TickOffset + position.X * ViewportTicks;
-            TickWidth *= 1.0 + delta;
+            double before = TickWidth;
+            TickWidth *= 1.0 + delta * 2;
+            if (before == TickWidth) {
+                return;
+            }
             if (recenter) {
                 tick = Math.Max(0, center - position.X * ViewportTicks);
             }
@@ -91,20 +106,19 @@ namespace OpenUtau.App.ViewModels {
             return (int)(point.X / TickWidth - TickOffset);
         }
 
-        public int SnapUnit { get; private set; } = 120;
         public int PointToSnappedTick(Point point) {
             int tick = (int)(point.X / TickWidth + TickOffset);
             return (int)((double)tick / SnapUnit) * SnapUnit;
         }
 
         public int PointToTone(Point point) {
-            return (int)(ViewConstants.MaxNoteNum - 1 - point.Y / TrackHeight - TrackOffset);
+            return (int)(ViewConstants.MaxTone - 1 - point.Y / TrackHeight - TrackOffset);
         }
 
         public Point TickToneToPoint(double tick, double tone) {
             return new Point(
                 (tick - TickOffset) * TickWidth,
-                (ViewConstants.MaxNoteNum - 1 - tone - TrackOffset) * TrackHeight);
+                (ViewConstants.MaxTone - 1 - tone - TrackOffset) * TrackHeight);
         }
         public Point TickToneToPoint(Vector2 tickTone) {
             return TickToneToPoint(tickTone.X, tickTone.Y);

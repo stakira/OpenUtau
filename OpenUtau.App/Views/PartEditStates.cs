@@ -78,9 +78,11 @@ namespace OpenUtau.App.Views {
 
     class PartMoveEditState : PartEditState {
         public readonly UPart part;
+        public readonly bool isVoice;
         private double xOffset;
         public PartMoveEditState(Canvas canvas, MainWindowViewModel vm, UPart part) : base(canvas, vm) {
             this.part = part;
+            isVoice = part is UVoicePart;
             var tracksVm = vm.TracksViewModel;
             if (!tracksVm.SelectedParts.Contains(part)) {
                 tracksVm.DeselectParts();
@@ -107,7 +109,9 @@ namespace OpenUtau.App.Views {
             }
             deltaTrack = Math.Clamp(deltaTrack, minDeltaTrack, maxDeltaTrack);
 
-            int deltaTick = tracksVm.PointToSnappedTick(point - new Point(xOffset, 0)) - part.position;
+            int deltaTick = isVoice
+                ? tracksVm.PointToSnappedTick(point - new Point(xOffset, 0)) - part.position
+                : tracksVm.PointToTick(point - new Point(xOffset, 0)) - part.position;
             int minDeltaTick;
             if (tracksVm.SelectedParts.Count > 0) {
                 minDeltaTick = -tracksVm.SelectedParts.Select(p => p.position).Min();

@@ -7,8 +7,9 @@
   <Design.DataContext>
     <vm:ExpSelectorViewModel/>
   </Design.DataContext>
-  <Grid Height="22" Width="100" Background="{Binding Background}">
-    <ComboBox VerticalAlignment="Center" HorizontalAlignment="Right" Width="100" Height="22"
+  <Grid Height="22" Width="60" Background="{Binding Background}">
+    <ComboBox VerticalAlignment="Center" HorizontalAlignment="Left"
+              Height="22"
               Focusable="False" Foreground="Transparent"
               SelectedItem="{Binding Descriptor}" Items="{Binding Descriptors}">
       <ComboBox.Styles>
@@ -24,9 +25,9 @@
         </Style>
       </ComboBox.Styles>
     </ComboBox>
-    <TextBlock VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0,0,24,0" Height="22"
+    <TextBlock VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="20,0,4,0" Height="22"
                Foreground="{Binding TagBrush}" Background="Transparent"
-               Padding="4,3,0,3" FontWeight="Bold"
+               Padding="0,3,0,3" TextAlignment="Right"
                Text="{Binding Header}" PointerPressed="TextBlockPointerPressed"/>
   </Grid>
 </UserControl>

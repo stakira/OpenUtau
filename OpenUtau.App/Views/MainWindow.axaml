@@ -121,7 +121,8 @@
                         BeatUnit="{Binding PlaybackViewModel.BeatUnit}"
                         Resolution="{Binding PlaybackViewModel.Resolution}"
                         TickWidth="{Binding TracksViewModel.TickWidth}"
-                        TickOffset="{Binding TracksViewModel.TickOffset}"/>
+                        TickOffset="{Binding TracksViewModel.TickOffset}"
+                        SnapUnit="{Binding TracksViewModel.SnapUnit}" ShowBarNumber="True"/>
       <c:PartsCanvas x:Name="partsCanvas" Grid.Row="2" Grid.Column="1" ClipToBounds="True" Background="Transparent"
                      DataContext="{Binding TracksViewModel}"
                      TickWidth="{Binding TickWidth}"

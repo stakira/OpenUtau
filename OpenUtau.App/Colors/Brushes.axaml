@@ -98,4 +98,29 @@
                    Color="{DynamicResource AccentColor3}" />
   <SolidColorBrush x:Key="AccentBrush3Semi"
                    Color="{DynamicResource AccentColor3}" Opacity="0.5" />
+
+  <LinearGradientBrush x:Key="KeyboardWhiteKeyBrush" StartPoint="0%,50%" EndPoint="100%,50%">
+    <LinearGradientBrush.GradientStops>
+      <GradientStop Color="{DynamicResource WhiteKeyColorLeft}" Offset="0"/>
+      <GradientStop Color="{DynamicResource WhiteKeyColorRight}" Offset="1"/>
+    </LinearGradientBrush.GradientStops>
+  </LinearGradientBrush >
+  <SolidColorBrush x:Key="KeyboardWhiteKeyNameBrush"
+                   Color="{DynamicResource WhiteKeyNameColor}"/>
+  <LinearGradientBrush x:Key="KeyboardCenterKeyBrush" StartPoint="0%,50%" EndPoint="100%,50%">
+    <LinearGradientBrush.GradientStops>
+      <GradientStop Color="{DynamicResource CenterKeyColorLeft}" Offset="0"/>
+      <GradientStop Color="{DynamicResource CenterKeyColorRight}" Offset="1"/>
+    </LinearGradientBrush.GradientStops>
+  </LinearGradientBrush >
+  <SolidColorBrush x:Key="KeyboardCenterKeyNameBrush"
+                   Color="{DynamicResource CenterKeyNameColor}"/>
+  <LinearGradientBrush x:Key="KeyboardBlackKeyBrush" StartPoint="0%,50%" EndPoint="100%,50%">
+    <LinearGradientBrush.GradientStops>
+      <GradientStop Color="{DynamicResource BlackKeyColorLeft}" Offset="0"/>
+      <GradientStop Color="{DynamicResource BlackKeyColorRight}" Offset="1"/>
+    </LinearGradientBrush.GradientStops>
+  </LinearGradientBrush >
+  <SolidColorBrush x:Key="KeyboardBlackKeyNameBrush"
+                   Color="{DynamicResource BlackKeyNameColor}"/>
 </ResourceDictionary>

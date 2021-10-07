@@ -28,14 +28,18 @@ namespace OpenUtau.App.ViewModels {
         public ExpSelectorViewModel() {
             DocManager.Inst.AddSubscriber(this);
             this.WhenAnyValue(x => x.DisplayMode)
-                .Select(mode =>
-                    mode == ExpDisMode.Visible ? Brushes.White :
-                    mode == ExpDisMode.Shadow ? ThemeManager.AccentBrush3! : ThemeManager.AccentBrush3!)
+                .Select(mode => mode == ExpDisMode.Visible
+                    ? ThemeManager.KeyboardBlackKeyNameBrush
+                    : mode == ExpDisMode.Shadow
+                    ? ThemeManager.KeyboardCenterKeyNameBrush
+                    : ThemeManager.KeyboardWhiteKeyNameBrush)
                 .ToProperty(this, x => x.TagBrush, out tagBrush);
             this.WhenAnyValue(x => x.DisplayMode)
-                .Select(mode =>
-                    mode == ExpDisMode.Visible ? ThemeManager.AccentBrush3! :
-                    mode == ExpDisMode.Shadow ? ThemeManager.AccentBrush3Semi! : Brushes.Transparent)
+                .Select(mode => mode == ExpDisMode.Visible
+                    ? ThemeManager.KeyboardBlackKeyBrush
+                    : mode == ExpDisMode.Shadow
+                    ? ThemeManager.KeyboardCenterKeyBrush
+                    : ThemeManager.KeyboardWhiteKeyBrush)
                 .ToProperty(this, x => x.Background, out background);
             this.WhenAnyValue(x => x.Descriptor)
                 .Select(descriptor => descriptor == null ? string.Empty : descriptor.abbr.ToUpperInvariant())

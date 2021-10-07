@@ -24,4 +24,17 @@
   <Color x:Key="TickLineColor">#AFA3B5</Color>
   <Color x:Key="BarNumberColor">#AFA3B5</Color>
   <Color x:Key="TrackBackgroundAltColor">#F0F0F0</Color>
+
+  <!--Keyboard Background-->
+  <Color x:Key="WhiteKeyColorLeft">#FFFFFF</Color>
+  <Color x:Key="WhiteKeyColorRight">#FFFFFF</Color>
+  <Color x:Key="WhiteKeyNameColor">#FF347c</Color>
+
+  <Color x:Key="CenterKeyColorLeft">#FFDDE6</Color>
+  <Color x:Key="CenterKeyColorRight">#FFCEDC</Color>
+  <Color x:Key="CenterKeyNameColor">#FF347C</Color>
+
+  <Color x:Key="BlackKeyColorLeft">#FF71a3</Color>
+  <Color x:Key="BlackKeyColorRight">#FF347C</Color>
+  <Color x:Key="BlackKeyNameColor">#FFFFFF</Color>
 </ResourceDictionary>

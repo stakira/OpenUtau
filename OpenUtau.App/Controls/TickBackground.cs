@@ -10,7 +10,6 @@ using ReactiveUI;
 namespace OpenUtau.App.Controls {
     class TickBackground : TemplatedControl {
         private static readonly IDashStyle DashStyle = new ImmutableDashStyle(new double[] { 2, 4 }, 0);
-        readonly Dictionary<int, FormattedText> fTextPool = new Dictionary<int, FormattedText>();
 
         public static readonly DirectProperty<TickBackground, int> BeatPerBarProperty =
             AvaloniaProperty.RegisterDirect<TickBackground, int>(
@@ -42,6 +41,21 @@ namespace OpenUtau.App.Controls {
                 nameof(TickOrigin),
                 o => o.TickOrigin,
                 (o, v) => o.TickOrigin = v);
+        public static readonly DirectProperty<TickBackground, int> SnapUnitProperty =
+            AvaloniaProperty.RegisterDirect<TickBackground, int>(
+                nameof(SnapUnit),
+                o => o.SnapUnit,
+                (o, v) => o.SnapUnit = v);
+        public static readonly DirectProperty<TickBackground, bool> IsPianoRollProperty =
+            AvaloniaProperty.RegisterDirect<TickBackground, bool>(
+                nameof(IsPianoRoll),
+                o => o.IsPianoRoll,
+                (o, v) => o.IsPianoRoll = v);
+        public static readonly DirectProperty<TickBackground, bool> ShowBarNumberProperty =
+            AvaloniaProperty.RegisterDirect<TickBackground, bool>(
+                nameof(ShowBarNumber),
+                o => o.ShowBarNumber,
+                (o, v) => o.ShowBarNumber = v);
 
         public int BeatPerBar {
             get => _beatPerBar;
@@ -68,6 +82,18 @@ namespace OpenUtau.App.Controls {
             get => _tickOrigin;
             private set => SetAndRaise(TickOriginProperty, ref _tickOrigin, value);
         }
+        public int SnapUnit {
+            get => _snapUnit;
+            set => SetAndRaise(SnapUnitProperty, ref _snapUnit, value);
+        }
+        public bool IsPianoRoll {
+            get => _isPianoRoll;
+            set => SetAndRaise(IsPianoRollProperty, ref _isPianoRoll, value);
+        }
+        public bool ShowBarNumber {
+            get => _showBarNumber;
+            set => SetAndRaise(ShowBarNumberProperty, ref _showBarNumber, value);
+        }
 
         private int _beatUnit = 4;
         private int _beatPerBar = 4;
@@ -75,15 +101,18 @@ namespace OpenUtau.App.Controls {
         private double _tickWidth;
         private double _tickOffset;
         private int _tickOrigin;
+        private int _snapUnit;
+        private bool _isPianoRoll;
+        private bool _showBarNumber;
 
-        private Pen pen1;
-        private Pen pen2;
-        private Pen pen3;
+        private Pen penBar;
+        private Pen penBeatUnit;
+        private Pen penDanshed;
 
         public TickBackground() {
-            pen1 = new Pen(Foreground, 1);
-            pen2 = new Pen(Foreground, 1);
-            pen3 = new Pen(Background, 1) {
+            penBar = new Pen(Foreground, 1);
+            penBeatUnit = new Pen(Background, 1);
+            penDanshed = new Pen(Background, 1) {
                 DashStyle = DashStyle,
             };
             MessageBus.Current.Listen<ThemeChangedEvent>()
@@ -96,9 +125,11 @@ namespace OpenUtau.App.Controls {
                 return;
             }
             if (change.Property == ForegroundProperty) {
-                pen1 = new Pen(Foreground, 1);
-                pen2 = new Pen(Foreground, 1);
-                pen3 = new Pen(Foreground, 1) {
+                penBar = new Pen(Foreground, 1);
+            }
+            if (change.Property == BackgroundProperty) {
+                penBeatUnit = new Pen(Background, 1);
+                penDanshed = new Pen(Background, 1) {
                     DashStyle = DashStyle,
                 };
             }
@@ -113,32 +144,32 @@ namespace OpenUtau.App.Controls {
         }
 
         public override void Render(DrawingContext context) {
-            if (TickWidth == 0) {
+            if (TickWidth <= 0 || SnapUnit <= 0) {
                 return;
             }
-            int beatTicks = Resolution * 4 / BeatUnit;
-            double beatWidth = TickWidth * beatTicks;
+            int beatUnitTicks = Resolution * 4 / BeatUnit;
+            int barTicks = beatUnitTicks * BeatPerBar;
+            int snapUnitIndex = (int)((TickOffset + TickOrigin) / SnapUnit);
             double pixelOffset = (TickOffset + TickOrigin) * TickWidth;
-            int beat = (int)((TickOffset + TickOrigin) / beatTicks);
-            for (; beat * beatWidth - pixelOffset < Bounds.Width; ++beat) {
-                double x = Math.Round(beat * beatWidth - pixelOffset) + 0.5;
-                var pen = pen3;
-                if (beat % BeatPerBar == 0) {
-                    pen = pen1;
-                    int bar = beat / BeatPerBar + 1;
-                    if (!fTextPool.TryGetValue(bar, out var formattedText)) {
-                        formattedText = new FormattedText(
-                            bar.ToString(),
-                            new Typeface(TextBlock.GetFontFamily(this)),
-                            12,
-                            TextAlignment.Left,
-                            TextWrapping.NoWrap,
-                            new Size(beatWidth, 20));
-                        fTextPool.Add(bar, formattedText);
+            for (; snapUnitIndex * SnapUnit * TickWidth - pixelOffset < Bounds.Width; ++snapUnitIndex) {
+                int tick = snapUnitIndex * SnapUnit;
+                double x = Math.Round(tick * TickWidth - pixelOffset) + 0.5;
+                double y = ShowBarNumber ? 24.5 : -0.5;
+                var pen = penDanshed;
+                if (tick % barTicks == 0) {
+                    pen = penBar;
+                    if (ShowBarNumber) {
+                        y = -0.5;
+                        int bar = tick / barTicks + 1;
+                        var textLayout = TextLayoutCache.Get(bar.ToString(), ThemeManager.BarNumberBrush, 12);
+                        using (var state = context.PushPreTransform(Matrix.CreateTranslation(x + 3, 8))) {
+                            textLayout.Draw(context);
+                        }
                     }
-                    context.DrawText(ThemeManager.BarNumberBrush, new Point(x + 3, 8), formattedText);
+                } else if (tick % beatUnitTicks == 0) {
+                    pen = penBeatUnit;
                 }
-                context.DrawLine(pen, new Point(x, -0.5), new Point(x, Bounds.Height + 0.5f));
+                context.DrawLine(pen, new Point(x, y), new Point(x, Bounds.Height + 0.5f));
             }
         }
     }

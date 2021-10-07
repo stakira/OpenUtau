@@ -534,9 +534,10 @@ namespace OpenUtau.App.Views {
         }
 
         public void WindowClosing(object? sender, CancelEventArgs e) {
-            if (!DocManager.Inst.ChangesSaved) {
-                //e.Cancel = true;
-            }
+            //if (!DocManager.Inst.ChangesSaved) {
+            //    e.Cancel = true;
+            //}
+            pianoRollWindow?.Close();
         }
     }
 }

@@ -106,9 +106,9 @@ namespace OpenUtau.App.Controls {
                 return;
             }
             double leftTick = TickOffset - 480;
-            double rightTick = leftTick + Width / TickWidth + 480;
+            double rightTick = leftTick + Bounds.Width / TickWidth + 480;
             foreach (var note in Part.notes) {
-                if (note.LeftBound >= rightTick && note.RightBound <= leftTick) {
+                if (note.LeftBound >= rightTick || note.RightBound <= leftTick) {
                     continue;
                 }
                 RenderNoteBody(note, viewModel, context);
@@ -133,7 +133,7 @@ namespace OpenUtau.App.Controls {
             Point rightBottom = viewModel.TickToneToPoint(note.End, note.tone - 1);
             double width = (rightBottom - leftTop).X;
             double height = (rightBottom - leftTop).Y;
-            rightBottom = rightBottom.WithX(rightBottom.X - 1).WithY(rightBottom.Y - 1);
+            rightBottom = rightBottom.WithX(rightBottom.X).WithY(rightBottom.Y - 1);
             var brush = note.Error ? ThemeManager.AccentBrush1Semi :
                 note.Selected ? ThemeManager.AccentBrush2 : ThemeManager.AccentBrush1;
             context.DrawRectangle(brush, null, new Rect(leftTop, rightBottom), 2, 2);

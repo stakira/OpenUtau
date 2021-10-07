@@ -20,7 +20,7 @@
         <RowDefinition Height="150" MinHeight="120" MaxHeight="450"/>
       </Grid.RowDefinitions>
       <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="100"/>
+        <ColumnDefinition Width="60"/>
         <ColumnDefinition Width="*"/>
         <ColumnDefinition Width="24"/>
       </Grid.ColumnDefinitions>
@@ -40,7 +40,12 @@
                  ViewportSize="{Binding ViewportTracks}"
                  LargeChange="{Binding ViewportTracks}"
                  SmallChange="{Binding SmallChangeY}" PointerWheelChanged="VScrollPointerWheelChanged"/>
-      <Border Grid.Column="0" Grid.Row="2" Background="Red"></Border>
+      <c:TrackBackground Grid.Column="0" Grid.Row="2" IsPianoRoll="True" IsKeyboard="True"
+                         Foreground="{DynamicResource KeyboardBlackKeyBrush}"
+                         Background="{DynamicResource KeyboardWhiteKeyBrush}"
+                         DataContext="{Binding NotesViewModel}"
+                         TrackHeight="{Binding TrackHeight}"
+                         TrackOffset="{Binding TrackOffset}"/>
       <Grid Grid.Column="0" Grid.Row="4">
         <c:ExpSelector HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top" Index="0" Margin="0,0,0,0"/>
         <c:ExpSelector HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top" Index="1" Margin="0,22,0,0"/>
@@ -57,7 +62,7 @@
                          DataContext="{Binding NotesViewModel}"
                          Bounds="{Binding Bounds, Mode=OneWayToSource}"
                          TrackHeight="{Binding TrackHeight}"
-                         TrackOffset="{Binding TrackOffset}"/>
+                         TrackOffset="{Binding TrackOffset}" IsPianoRoll="True"/>
       <c:TickBackground Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" IsHitTestVisible="False"
                         Foreground="{DynamicResource TickLineBrush}"
                         Background="{DynamicResource TickLineBrushLow}"
@@ -66,7 +71,9 @@
                         Resolution="{Binding PlaybackViewModel.Resolution}"
                         TickWidth="{Binding NotesViewModel.TickWidth}"
                         TickOrigin="{Binding NotesViewModel.TickOrigin}"
-                        TickOffset="{Binding NotesViewModel.TickOffset}"/>
+                        TickOffset="{Binding NotesViewModel.TickOffset}"
+                        SnapUnit="{Binding NotesViewModel.SnapUnit}"
+                        IsPianoRoll="True" ShowBarNumber="True"/>
       <c:NotesCanvas Grid.Row="2" Grid.Column="1" Background="Transparent"
                      TickWidth="{Binding NotesViewModel.TickWidth}"
                      TrackHeight="{Binding NotesViewModel.TrackHeight}"
@@ -99,7 +106,8 @@
                         Resolution="{Binding PlaybackViewModel.Resolution}"
                         TickWidth="{Binding NotesViewModel.TickWidth}"
                         TickOrigin="{Binding NotesViewModel.TickOrigin}"
-                        TickOffset="{Binding NotesViewModel.TickOffset}"/>
+                        TickOffset="{Binding NotesViewModel.TickOffset}"
+                        SnapUnit="{Binding NotesViewModel.SnapUnit}" IsPianoRoll="True"/>
       <c:ExpressionCanvas Grid.Row="4" Grid.Column="1" Opacity="0.3"
                           TickWidth="{Binding NotesViewModel.TickWidth}"
                           TickOffset="{Binding NotesViewModel.TickOffset}"

@@ -7,6 +7,7 @@ using DynamicData.Binding;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace OpenUtau.App.ViewModels {
     public class TracksRefreshEvent { }
@@ -28,18 +29,10 @@ namespace OpenUtau.App.ViewModels {
     }
 
     public class TracksViewModel : ViewModelBase, ICmdSubscriber {
-        public Rect Bounds {
-            get => bounds;
-            set => this.RaiseAndSetIfChanged(ref bounds, value);
-        }
-        public int TickCount {
-            get => tickCount;
-            set => this.RaiseAndSetIfChanged(ref tickCount, value);
-        }
-        public int TrackCount {
-            get => trackCount;
-            set => this.RaiseAndSetIfChanged(ref trackCount, value);
-        }
+        public UProject Project => DocManager.Inst.Project;
+        [Reactive] public Rect Bounds { get; set; }
+        [Reactive] public int TickCount { get; set; }
+        [Reactive] public int TrackCount { get; set; }
         public double TickWidth {
             get => tickWidth;
             set => this.RaiseAndSetIfChanged(ref tickWidth, Math.Clamp(value, ViewConstants.TickWidthMin, ViewConstants.TickWidthMax));
@@ -50,14 +43,9 @@ namespace OpenUtau.App.ViewModels {
             get => trackHeight;
             set => this.RaiseAndSetIfChanged(ref trackHeight, Math.Clamp(value, ViewConstants.TrackHeightMin, ViewConstants.TrackHeightMax));
         }
-        public double TickOffset {
-            get => tickOffset;
-            set => this.RaiseAndSetIfChanged(ref tickOffset, value);
-        }
-        public double TrackOffset {
-            get => trackOffset;
-            set => this.RaiseAndSetIfChanged(ref trackOffset, value);
-        }
+        [Reactive] public double TickOffset { get; set; }
+        [Reactive] public double TrackOffset { get; set; }
+        [Reactive] public int SnapUnit { get; set; }
         public double ViewportTicks => viewportTicks.Value;
         public double ViewportTracks => viewportTracks.Value;
         public double SmallChangeX => smallChangeX.Value;
@@ -65,13 +53,8 @@ namespace OpenUtau.App.ViewModels {
         public ObservableCollectionExtended<UPart> Parts { get; } = new ObservableCollectionExtended<UPart>();
         public ObservableCollectionExtended<UTrack> Tracks { get; } = new ObservableCollectionExtended<UTrack>();
 
-        private Rect bounds;
-        private int tickCount;
-        private int trackCount;
         private double tickWidth = ViewConstants.TickWidthDefault;
         private double trackHeight = ViewConstants.TrackHeightDefault;
-        private double tickOffset;
-        private double trackOffset;
         private readonly ObservableAsPropertyHelper<double> viewportTicks;
         private readonly ObservableAsPropertyHelper<double> viewportTracks;
         private readonly ObservableAsPropertyHelper<double> smallChangeX;
@@ -94,6 +77,21 @@ namespace OpenUtau.App.ViewModels {
                 .Select(h => h / 8)
                 .ToProperty(this, x => x.SmallChangeY);
 
+            this.WhenAnyValue(x => x.TickWidth)
+                .Subscribe(tickWidth => {
+                    int ticks = Project.resolution * 4 / Project.beatUnit;
+                    double width = ticks * tickWidth;
+                    if (width < ViewConstants.MinTicklineWidth) {
+                        SnapUnit = ticks * Project.beatPerBar;
+                        return;
+                    }
+                    while (width / 2 >= ViewConstants.MinTicklineWidth) {
+                        width /= 2;
+                        ticks /= 2;
+                    }
+                    SnapUnit = ticks;
+                });
+
             TrackCount = 10;
             TickCount = 480 * 100;
 
@@ -107,7 +105,11 @@ namespace OpenUtau.App.ViewModels {
                 recenter = false;
             }
             double center = TickOffset + position.X * ViewportTicks;
-            TickWidth *= 1.0 + delta;
+            double before = TickWidth;
+            TickWidth *= 1.0 + delta * 2;
+            if (before == TickWidth) {
+                return;
+            }
             if (recenter) {
                 tick = Math.Max(0, center - position.X * ViewportTicks);
             }
@@ -129,10 +131,9 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public int PointToTick(Point point) {
-            return (int)(point.X / TickWidth - TickOffset);
+            return (int)(point.X / TickWidth + TickOffset);
         }
 
-        public int SnapUnit { get; private set; } = 480;
         public int PointToSnappedTick(Point point) {
             int tick = (int)(point.X / TickWidth + TickOffset);
             return (int)((double)tick / SnapUnit) * SnapUnit;
