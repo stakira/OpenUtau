@@ -70,7 +70,7 @@ namespace OpenUtau.App.Views {
             var Size = tracksVm.TickTrackToSize(x1 - x0, y1 - y0);
             Canvas.SetLeft(selectionBox, leftTop.X);
             Canvas.SetTop(selectionBox, leftTop.Y);
-            selectionBox.Width = Size.Width;
+            selectionBox.Width = Size.Width + 1;
             selectionBox.Height = Size.Height;
             tracksVm.TempSelectParts(x0, x1, y0, y1);
         }

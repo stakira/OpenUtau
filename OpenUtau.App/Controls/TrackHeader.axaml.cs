@@ -52,14 +52,6 @@ namespace OpenUtau.App.Controls {
             InitializeComponent();
         }
 
-        internal void Bind(UTrack track, TrackHeaderCanvas canvas) {
-            this.track = track;
-            unbinds.Add(this.Bind(TrackHeightProperty, canvas.GetObservable(TrackHeaderCanvas.TrackHeightProperty)));
-            unbinds.Add(this.Bind(HeightProperty, canvas.GetObservable(TrackHeaderCanvas.TrackHeightProperty)));
-            unbinds.Add(this.Bind(OffsetProperty, canvas.WhenAnyValue(x => x.TrackOffset, trackOffset => new Point(0, -trackOffset * TrackHeight))));
-            SetPosition();
-        }
-
         private void InitializeComponent() {
             AvaloniaXamlLoader.Load(this);
         }
@@ -72,6 +64,14 @@ namespace OpenUtau.App.Controls {
             if (change.Property == OffsetProperty || change.Property == TrackNoProperty) {
                 SetPosition();
             }
+        }
+
+        internal void Bind(UTrack track, TrackHeaderCanvas canvas) {
+            this.track = track;
+            unbinds.Add(this.Bind(TrackHeightProperty, canvas.GetObservable(TrackHeaderCanvas.TrackHeightProperty)));
+            unbinds.Add(this.Bind(HeightProperty, canvas.GetObservable(TrackHeaderCanvas.TrackHeightProperty)));
+            unbinds.Add(this.Bind(OffsetProperty, canvas.WhenAnyValue(x => x.TrackOffset, trackOffset => new Point(0, -trackOffset * TrackHeight))));
+            SetPosition();
         }
 
         private void SetPosition() {

@@ -80,6 +80,10 @@
                      TickOffset="{Binding NotesViewModel.TickOffset}"
                      TrackOffset="{Binding NotesViewModel.TrackOffset}"
                      Part="{Binding NotesViewModel.Part}"
+                     PointerPressed="NotesCanvasPointerPressed"
+                     PointerMoved="NotesCanvasPointerMoved"
+                     PointerReleased="NotesCanvasPointerReleased"
+                     DoubleTapped="NotesCanvasDoubleTapped"
                      PointerWheelChanged="NotesCanvasPointerWheelChanged"/>
       <Rectangle Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="0,0,0,48" Height="6" Opacity="0.15">
         <Rectangle.Fill>
@@ -127,7 +131,7 @@
       <Border Grid.Row="1" Grid.Column="2" Background="Transparent"
               HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0" Height="24"
               PointerWheelChanged="ViewScalerPointerWheelChanged">
-        <c:ViewScaler DataContext="{Binding NotesViewModel}" Value="{Binding TrackHeight}" Min="{Binding TrackHeightMin}" Max="{Binding TrackHeightMax}"/>
+        <c:ViewScaler Name="VScaler" DataContext="{Binding NotesViewModel}" Value="{Binding TrackHeight}" Min="{Binding TrackHeightMin}" Max="{Binding TrackHeightMax}"/>
       </Border>
     </Grid>
   </Grid>

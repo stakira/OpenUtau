@@ -165,6 +165,11 @@ namespace OpenUtau.Core.Ustx {
             track.Phonemizer.SetTiming(project.bpm, project.beatUnit, project.resolution);
             var phonemizerNotes = notes.Select(note => note.ToProcessorNote()).ToArray();
             phonemizerNotes[phonemizerNotes.Length - 1].duration += endOffset;
+            if (string.IsNullOrEmpty(phonemizerNotes[0].lyric) &&
+                string.IsNullOrEmpty(phonemizerNotes[0].phoneticHint)) {
+                phonemes.Clear();
+                return;
+            }
             Phonemizer.Result phonemizerResult;
             try {
                 phonemizerResult = track.Phonemizer.Process(

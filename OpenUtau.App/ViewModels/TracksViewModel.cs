@@ -167,7 +167,7 @@ namespace OpenUtau.App.ViewModels {
                 return null;
             }
             UVoicePart part = new UVoicePart() {
-                position = PointToSnappedTick(point), // todo: snap
+                position = PointToSnappedTick(point),
                 trackNo = trackNo,
                 Duration = project.resolution * 16 / project.beatUnit * project.beatPerBar,
             };

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using System.Reactive.Linq;
 using Avalonia;
@@ -8,6 +10,23 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 namespace OpenUtau.App.ViewModels {
+    public class NotesSelectionEvent {
+        public readonly UNote[] selectedNotes;
+        public readonly UNote[] tempSelectedNotes;
+        public NotesSelectionEvent(UNote[] selectedNotes, UNote[] tempSelectedNotes) {
+            this.selectedNotes = selectedNotes;
+            this.tempSelectedNotes = tempSelectedNotes;
+        }
+    }
+    public class NoteResizeEvent {
+        public readonly UNote note;
+        public NoteResizeEvent(UNote note) { this.note = note; }
+    }
+    public class NoteMoveEvent {
+        public readonly UNote note;
+        public NoteMoveEvent(UNote note) { this.note = note; }
+    }
+
     public class NotesViewModel : ViewModelBase, ICmdSubscriber {
         [Reactive] public Rect Bounds { get; set; }
         [Reactive] public int TickCount { get; set; }
@@ -26,7 +45,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public double TickOffset { get; set; }
         [Reactive] public double TrackOffset { get; set; }
         [Reactive] public int SnapUnit { get; set; }
-        [Reactive] public UPart? Part { get; set; }
+        [Reactive] public UVoicePart? Part { get; set; }
         public double ViewportTicks => viewportTicks.Value;
         public double ViewportTracks => viewportTracks.Value;
         public double SmallChangeX => smallChangeX.Value;
@@ -39,6 +58,9 @@ namespace OpenUtau.App.ViewModels {
         private readonly ObservableAsPropertyHelper<double> viewportTracks;
         private readonly ObservableAsPropertyHelper<double> smallChangeX;
         private readonly ObservableAsPropertyHelper<double> smallChangeY;
+
+        public readonly List<UNote> SelectedNotes = new List<UNote>();
+        private readonly HashSet<UNote> TempSelectedNotes = new HashSet<UNote>();
 
         public NotesViewModel() {
             viewportTicks = this.WhenAnyValue(x => x.Bounds, x => x.TickWidth)
@@ -128,12 +150,32 @@ namespace OpenUtau.App.ViewModels {
             return new Size(ticks * TickWidth, tone * TrackHeight);
         }
 
+        public UNote? MaybeAddNote(Point point) {
+            if (Part == null) {
+                return null;
+            }
+            int tone = PointToTone(point);
+            var project = DocManager.Inst.Project;
+            if (tone >= ViewConstants.MaxTone || tone < 0) {
+                return null;
+            }
+            UNote note = new UNote() {
+                position = PointToSnappedTick(point),
+                tone = tone,
+                duration = project.resolution * 16 / project.beatUnit * project.beatPerBar,
+            };
+            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.ExecuteCmd(new AddNoteCommand(Part, note));
+            DocManager.Inst.EndUndoGroup();
+            return note;
+        }
+
         private void LoadPart(UPart part, UProject project) {
             if (!(part is UVoicePart)) {
                 return;
             }
             UnloadPart();
-            this.Part = part;
+            Part = part as UVoicePart;
             OnPartModified();
         }
 
@@ -147,6 +189,50 @@ namespace OpenUtau.App.ViewModels {
             }
             TickOrigin = Part.position;
             TickCount = Part.Duration;
+        }
+
+        public void DeselectNotes() {
+            SelectedNotes.Clear();
+            TempSelectedNotes.Clear();
+            MessageBus.Current.SendMessage(
+                new NotesSelectionEvent(
+                    SelectedNotes.ToArray(), TempSelectedNotes.ToArray()));
+        }
+
+        public void SelectAllNotes() {
+            DeselectNotes();
+            if (Part == null) {
+                return;
+            }
+            SelectedNotes.AddRange(Part.notes);
+            MessageBus.Current.SendMessage(
+                new NotesSelectionEvent(
+                    SelectedNotes.ToArray(), TempSelectedNotes.ToArray()));
+        }
+
+        public void TempSelectNotes(int x0, int x1, int y0, int y1) {
+            TempSelectedNotes.Clear();
+            if (Part == null) {
+                return;
+            }
+            foreach (var note in Part.notes) {
+                if (note.End >= x0 && note.position <= x1 && note.tone >= y0 && note.tone < y1) {
+                    TempSelectedNotes.Add(note);
+                }
+            }
+            MessageBus.Current.SendMessage(
+                new NotesSelectionEvent(
+                    SelectedNotes.ToArray(), TempSelectedNotes.ToArray()));
+        }
+
+        public void CommitTempSelectNotes() {
+            var newSelection = SelectedNotes.Union(TempSelectedNotes).ToList();
+            SelectedNotes.Clear();
+            SelectedNotes.AddRange(newSelection);
+            TempSelectedNotes.Clear();
+            MessageBus.Current.SendMessage(
+                new NotesSelectionEvent(
+                    SelectedNotes.ToArray(), TempSelectedNotes.ToArray()));
         }
 
         public void OnNext(UCommand cmd, bool isUndo) {

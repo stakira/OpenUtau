@@ -26,12 +26,6 @@ namespace OpenUtau.App.Views {
         private PianoRollWindow? pianoRollWindow;
         private bool openPianoRollWindow;
 
-        private Cursor cursorCross = new Cursor(StandardCursorType.Cross);
-        private Cursor cursorHand = new Cursor(StandardCursorType.Hand);
-        private Cursor cursorNo = new Cursor(StandardCursorType.No);
-        private Cursor cursorSizeAll = new Cursor(StandardCursorType.SizeAll);
-        private Cursor cursorSizeWE = new Cursor(StandardCursorType.SizeWestEast);
-
         private PartEditState? partEditState;
         private Rectangle? selectionBox;
 
@@ -408,36 +402,36 @@ namespace OpenUtau.App.Views {
                     // New selection.
                     viewModel.TracksViewModel.DeselectParts();
                     partEditState = new PartSelectionEditState(canvas, viewModel, GetSelectionBox(canvas));
-                    Cursor = cursorCross;
+                    Cursor = ViewConstants.cursorCross;
                 } else if (args.KeyModifiers == (KeyModifiers.Control | KeyModifiers.Shift)) {
                     // Additional selection.
                     partEditState = new PartSelectionEditState(canvas, viewModel, GetSelectionBox(canvas));
-                    Cursor = cursorCross;
+                    Cursor = ViewConstants.cursorCross;
                 } else if (control == canvas) {
                     viewModel.TracksViewModel.DeselectParts();
                     var part = viewModel.TracksViewModel.MaybeAddPart(point.Position);
                     if (part != null) {
                         // Start moving right away
                         partEditState = new PartMoveEditState(canvas, viewModel, part);
-                        Cursor = cursorSizeAll;
+                        Cursor = ViewConstants.cursorSizeAll;
                     }
                 } else if (control is PartControl partControl) {
                     // TODO: edit part name
                     if (point.Position.X > partControl.Bounds.Right - ViewConstants.ResizeMargin) {
                         partEditState = new PartResizeEditState(canvas, viewModel, partControl.part);
-                        Cursor = cursorSizeWE;
+                        Cursor = ViewConstants.cursorSizeWE;
                     } else {
                         partEditState = new PartMoveEditState(canvas, viewModel, partControl.part);
-                        Cursor = cursorSizeAll;
+                        Cursor = ViewConstants.cursorSizeAll;
                     }
                 }
             } else if (point.Properties.IsRightButtonPressed) {
                 viewModel.TracksViewModel.DeselectParts();
                 partEditState = new PartEraseEditState(canvas, viewModel);
-                Cursor = cursorNo;
+                Cursor = ViewConstants.cursorNo;
             } else if (point.Properties.IsMiddleButtonPressed) {
                 partEditState = new PartPanningState(canvas, viewModel);
-                Cursor = cursorHand;
+                Cursor = ViewConstants.cursorHand;
             }
             if (partEditState != null) {
                 partEditState.Begin(point.Pointer, point.Position);
@@ -450,7 +444,7 @@ namespace OpenUtau.App.Views {
                 return selectionBox;
             }
             selectionBox = new Rectangle() {
-                Stroke = Brushes.Black,
+                Stroke = ThemeManager.ForegroundBrush,
                 StrokeThickness = 2,
                 Fill = ThemeManager.TickLineBrushLow,
                 // radius = 8
@@ -471,7 +465,7 @@ namespace OpenUtau.App.Views {
             var control = canvas.InputHitTest(point.Position);
             if (control is PartControl partControl) {
                 if (point.Position.X > partControl.Bounds.Right - ViewConstants.ResizeMargin) {
-                    Cursor = cursorSizeWE;
+                    Cursor = ViewConstants.cursorSizeWE;
                 } else {
                     Cursor = null;
                 }
@@ -520,13 +514,16 @@ namespace OpenUtau.App.Views {
             }
         }
 
-        public void PartsCanvasWheelChanged(object sender, PointerWheelEventArgs args) {
+        public void PartsCanvasPointerWheelChanged(object sender, PointerWheelEventArgs args) {
             if (args.KeyModifiers == KeyModifiers.Control) {
                 var canvas = this.FindControl<Canvas>("TimelineCanvas");
                 TimelinePointerWheelChanged(canvas, args);
             } else if (args.KeyModifiers == KeyModifiers.Shift) {
                 var scrollbar = this.FindControl<ScrollBar>("HScrollBar");
                 HScrollPointerWheelChanged(scrollbar, args);
+            } else if (args.KeyModifiers == (KeyModifiers.Shift | KeyModifiers.Control)) {
+                var scaler = this.FindControl<ViewScaler>("VScaler");
+                ViewScalerPointerWheelChanged(scaler, args);
             } else if (args.KeyModifiers == KeyModifiers.None) {
                 var scrollbar = this.FindControl<ScrollBar>("VScrollBar");
                 VScrollPointerWheelChanged(scrollbar, args);

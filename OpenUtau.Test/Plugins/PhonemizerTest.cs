@@ -1,5 +1,6 @@
 ﻿using System;
 using OpenUtau.Api;
+using OpenUtau.Classic;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Plugin.Builtin;
@@ -7,6 +8,23 @@ using Xunit;
 
 namespace OpenUtau.Plugins {
     public abstract class PhonemizerTest<T> where T : Phonemizer {
+        USinger GetDummySinger() {
+            var voicebank = new Voicebank {
+                File = "null",
+                Name = "Dummy",
+            };
+            var otoSet = new OtoSet {
+                File = "null",
+                Name = "",
+            };
+            otoSet.Otos.Add(new Oto {
+                Alias = "a",
+                Wav = "a.wav",
+            });
+            voicebank.OtoSets.Add(otoSet);
+            return new USinger(voicebank, "null");
+        }
+
         [Fact]
         public virtual void CreationTest() {
             var phonemizer = Activator.CreateInstance(typeof(T)) as Phonemizer;
@@ -17,8 +35,23 @@ namespace OpenUtau.Plugins {
         public virtual void SetSingerTest() {
             var phonemizer = Activator.CreateInstance(typeof(T)) as Phonemizer;
             Assert.NotNull(phonemizer);
-            phonemizer.SetSinger(new USinger("Dummy"));
+            phonemizer.SetSinger(new USinger("Unloaded"));
             phonemizer.SetSinger(null);
+        }
+
+        [Fact]
+        public virtual void DummySingerPhonemizeTest() {
+            var phonemizer = Activator.CreateInstance(typeof(T)) as Phonemizer;
+            Assert.NotNull(phonemizer);
+            phonemizer.SetSinger(GetDummySinger());
+            phonemizer.Process(new Phonemizer.Note[] {
+                new Phonemizer.Note {
+                    lyric = "a",
+                    duration = 480,
+                    position = 240,
+                    tone = 60,
+                }
+            }, null, null, null, null);
         }
     }
 

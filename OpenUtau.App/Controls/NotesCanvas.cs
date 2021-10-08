@@ -129,11 +129,10 @@ namespace OpenUtau.App.Controls {
 
         private void RenderNoteBody(UNote note, NotesViewModel viewModel, DrawingContext context) {
             Point leftTop = viewModel.TickToneToPoint(note.position, note.tone);
-            leftTop = leftTop.WithX(leftTop.X + 1).WithY(leftTop.Y + 1);
-            Point rightBottom = viewModel.TickToneToPoint(note.End, note.tone - 1);
-            double width = (rightBottom - leftTop).X;
-            double height = (rightBottom - leftTop).Y;
-            rightBottom = rightBottom.WithX(rightBottom.X).WithY(rightBottom.Y - 1);
+            leftTop = leftTop.WithX(leftTop.X + 1).WithY(Math.Round(leftTop.Y + 1));
+            Size size = viewModel.TickToneToSize(note.duration, 1);
+            size = size.WithWidth(size.Width - 1).WithHeight(Math.Floor(size.Height - 1));
+            Point rightBottom = new Point(leftTop.X + size.Width, leftTop.Y + size.Height);
             var brush = note.Error ? ThemeManager.AccentBrush1Semi :
                 note.Selected ? ThemeManager.AccentBrush2 : ThemeManager.AccentBrush1;
             context.DrawRectangle(brush, null, new Rect(leftTop, rightBottom), 2, 2);
@@ -142,15 +141,15 @@ namespace OpenUtau.App.Controls {
             }
             string displayLyric = note.lyric;
             var textLayout = TextLayoutCache.Get(displayLyric, Brushes.White, 12);
-            if (textLayout.Size.Width + 5 > width) {
+            if (textLayout.Size.Width + 5 > size.Width) {
                 displayLyric = displayLyric[0] + "..";
                 textLayout = TextLayoutCache.Get(displayLyric, Brushes.White, 12);
-                if (textLayout.Size.Width + 5 > width) {
+                if (textLayout.Size.Width + 5 > size.Width) {
                     return;
                 }
             }
             Point textPosition = leftTop.WithX(leftTop.X + 5)
-                .WithY(Math.Round(leftTop.Y + (height - textLayout.Size.Height) / 2));
+                .WithY(Math.Round(leftTop.Y + (size.Height - textLayout.Size.Height) / 2));
             using (var state = context.PushPreTransform(Matrix.CreateTranslation(textPosition.X, textPosition.Y))) {
                 textLayout.Draw(context);
             }

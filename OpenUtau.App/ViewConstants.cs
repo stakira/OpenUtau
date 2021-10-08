@@ -1,4 +1,6 @@
-﻿namespace OpenUtau.App {
+﻿using Avalonia.Input;
+
+namespace OpenUtau.App {
     static class ViewConstants {
         public const double TickWidthMax = 256.0 / 480.0;
         public const double TickWidthMin = 4.0 / 480.0;
@@ -21,13 +23,15 @@
 
         public const int MaxTone = 12 * 11;
 
+        public static readonly Cursor cursorCross = new Cursor(StandardCursorType.Cross);
+        public static readonly Cursor cursorHand = new Cursor(StandardCursorType.Hand);
+        public static readonly Cursor cursorNo = new Cursor(StandardCursorType.No);
+        public static readonly Cursor cursorSizeAll = new Cursor(StandardCursorType.SizeAll);
+        public static readonly Cursor cursorSizeWE = new Cursor(StandardCursorType.SizeWestEast);
+
         public const int PosMarkerHightlighZIndex = -100;
 
         public const int ResizeMargin = 8;
-
-        public const double MidiQuarterMaxWidth = 512;
-        public const double MidiQuarterMinWidth = 4;
-        public const double MidiQuarterDefaultWidth = 128;
 
         public const int MinTrackCount = 8;
         public const int MinQuarterCount = 256;

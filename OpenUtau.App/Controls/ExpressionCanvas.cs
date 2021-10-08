@@ -91,7 +91,8 @@ namespace OpenUtau.App.Controls {
                 if (note.LeftBound >= rightTick || note.RightBound <= leftTick) {
                     continue;
                 }
-                var pen = note.Selected ? ThemeManager.AccentPen2 : ThemeManager.AccentPen1;
+                var hPen = note.Selected ? ThemeManager.AccentPen2Thickness2 : ThemeManager.AccentPen1Thickness2;
+                var vPen = note.Selected ? ThemeManager.AccentPen2Thickness3 : ThemeManager.AccentPen1Thickness3;
                 var brush = note.Selected ? ThemeManager.AccentBrush2 : ThemeManager.AccentBrush1;
                 foreach (var phoneme in note.phonemes) {
                     if (phoneme.Error) {
@@ -102,10 +103,10 @@ namespace OpenUtau.App.Controls {
                     double x2 = Math.Round(viewModel.TickToneToPoint(note.position + phoneme.End, 0).X);
                     double valueHeight = Math.Round(Bounds.Height - Bounds.Height * (value - descriptor.min) / (descriptor.max - descriptor.min));
                     double zeroHeight = Math.Round(Bounds.Height - Bounds.Height * (0f - descriptor.min) / (descriptor.max - descriptor.min));
-                    context.DrawLine(pen, new Point(x1 + 0.5, zeroHeight + 0.5), new Point(x1 + 0.5, valueHeight + 3));
-                    context.DrawLine(pen, new Point(x1 + 3, valueHeight), new Point(Math.Max(x1 + 3, x2 - 3), valueHeight));
-                    using (var state = context.PushPreTransform(Matrix.CreateTranslation(x1 + 0.5, valueHeight))) {
-                        context.DrawGeometry(overriden ? brush : ThemeManager.BackgroundBrush, pen, pointGeometry);
+                    context.DrawLine(vPen, new Point(x1 + 0.5, zeroHeight + 0.5), new Point(x1 + 0.5, valueHeight + 3));
+                    context.DrawLine(hPen, new Point(x1 + 3, valueHeight), new Point(Math.Max(x1 + 3, x2 - 3), valueHeight));
+                    using (var state = context.PushPreTransform(Matrix.CreateTranslation(x1 + 1, valueHeight + 0.5))) {
+                        context.DrawGeometry(overriden ? brush : ThemeManager.BackgroundBrush, hPen, pointGeometry);
                     }
                 }
             }

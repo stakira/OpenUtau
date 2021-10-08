@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
+using Avalonia.Media.Imaging;
 using OpenUtau.Api;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
+using Serilog;
 
 namespace OpenUtau.App.ViewModels {
     public class TrackHeaderViewModel : ViewModelBase, IActivatableViewModel {
@@ -18,12 +22,19 @@ namespace OpenUtau.App.ViewModels {
         public ReactiveCommand<USinger, Unit> SelectSingerCommand { get; }
         public IReadOnlyList<MenuItemViewModel>? PhonemizerMenuItems { get; set; }
         public ReactiveCommand<PhonemizerFactory, Unit> SelectPhonemizerCommand { get; }
+        [Reactive] public Bitmap? Avatar { get; set; }
 
         public ViewModelActivator Activator { get; }
 
         private readonly UTrack track;
 
         public TrackHeaderViewModel() {
+#if DEBUG
+            SelectSingerCommand = ReactiveCommand.Create<USinger>(_ => { });
+            SelectPhonemizerCommand = ReactiveCommand.Create<PhonemizerFactory>(_ => { });
+            Activator = new ViewModelActivator();
+            track = new UTrack();
+#endif
         }
 
         public TrackHeaderViewModel(UTrack track) {
@@ -35,6 +46,7 @@ namespace OpenUtau.App.ViewModels {
                     DocManager.Inst.EndUndoGroup();
                 }
                 this.RaisePropertyChanged(nameof(Singer));
+                RefreshAvatar();
             });
             SelectPhonemizerCommand = ReactiveCommand.Create<PhonemizerFactory>(factory => {
                 if (track.Phonemizer.GetType() != factory.type) {
@@ -75,8 +87,24 @@ namespace OpenUtau.App.ViewModels {
             this.RaisePropertyChanged(nameof(PhonemizerMenuItems));
         }
 
+        public void RefreshAvatar() {
+            var singer = track?.Singer;
+            if (singer == null || string.IsNullOrWhiteSpace(singer.Avatar)) {
+                Avatar = null;
+                return;
+            }
+            try {
+                using (var stream = new FileStream(singer.Avatar, FileMode.Open)) {
+                    Avatar = Bitmap.DecodeToWidth(stream, 80);
+                }
+            } catch (Exception e) {
+                Log.Error(e, "Failed to load avatar.");
+            }
+        }
+
         public void ManuallyRaise() {
             this.RaisePropertyChanged(nameof(Singer));
+            RefreshAvatar();
             this.RaisePropertyChanged(nameof(TrackNo));
             this.RaisePropertyChanged(nameof(Phonemizer));
             this.RaisePropertyChanged(nameof(PhonemizerTag));

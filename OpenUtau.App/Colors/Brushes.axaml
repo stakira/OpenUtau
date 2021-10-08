@@ -84,6 +84,8 @@
                    Color="{DynamicResource TrackBackgroundAltColor}"/>
   <SolidColorBrush x:Key="NeutralAccentBrush"
                    Color="{DynamicResource NeutralAccentColor}" />
+  <SolidColorBrush x:Key="NeutralAccentBrushSemi"
+                   Color="{DynamicResource NeutralAccentColor}" Opacity="0.5" />
   <SolidColorBrush x:Key="NeutralAccentBrushPointerOver"
                    Color="{DynamicResource NeutralAccentColorPointerOver}" />
   <SolidColorBrush x:Key="AccentBrush1"

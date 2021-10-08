@@ -112,13 +112,13 @@
 
   <Style Selector="ProgressBar">
     <Setter Property="Background" Value="Transparent"/>
-    <Setter Property="Foreground" Value="{DynamicResource SystemAccentColor}"/>
+    <Setter Property="Foreground" Value="{DynamicResource AccentBrush1}"/>
   </Style>
 
   <Style Selector="Border.playback">
     <Setter Property="CornerRadius" Value="4"/>
     <Setter Property="BorderThickness" Value="1"/>
-    <Setter Property="BorderBrush" Value="LightGray"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource NeutralAccentBrushSemi}"/>
     <Setter Property="Height" Value="20"/>
   </Style>
   <Style Selector="Border.playback TextBlock">
