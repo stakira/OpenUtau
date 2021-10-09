@@ -138,6 +138,18 @@
     <Setter Property="Background" Value="Transparent"/>
   </Style>
 
+  <Style Selector="Border.tips">
+    <Setter Property="CornerRadius" Value="4"/>
+    <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAltHighBrush}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource NeutralAccentBrushSemi}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="Padding" Value="2"/>
+    <Setter Property="IsHitTestVisible" Value="False"/>
+  </Style>
+  <Style Selector="TextBlock.tips">
+    <Setter Property="LineHeight" Value="18"/>
+  </Style>
+
   <Style Selector="HeaderedContentControl.groupbox">
     <Setter Property="Margin" Value="5"/>
     <Setter Property="Background" Value="{StaticResource SystemControlBackgroundAltHighBrush}"/>

@@ -97,7 +97,7 @@ namespace OpenUtau.App.Views {
         }
 
         async void OnMenuSave(object sender, RoutedEventArgs args) => await Save();
-        async Task Save() {
+        public async Task Save() {
             if (!viewModel.ProjectSaved) {
                 await SaveAs();
             } else {
@@ -280,48 +280,53 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        void OnMenuWiki(object sender, RoutedEventArgs args) {
+            OS.OpenWeb("https://github.com/stakira/OpenUtau/wiki");
+        }
+
+        void OnMenuLayoutVSplit11(object sender, RoutedEventArgs args) => LayoutSplit(null, 1.0 / 2);
+        void OnMenuLayoutVSplit12(object sender, RoutedEventArgs args) => LayoutSplit(null, 1.0 / 3);
+        void OnMenuLayoutVSplit13(object sender, RoutedEventArgs args) => LayoutSplit(null, 1.0 / 4);
+        void OnMenuLayoutHSplit11(object sender, RoutedEventArgs args) => LayoutSplit(1.0 / 2, null);
+        void OnMenuLayoutHSplit12(object sender, RoutedEventArgs args) => LayoutSplit(1.0 / 3, null);
+        void OnMenuLayoutHSplit13(object sender, RoutedEventArgs args) => LayoutSplit(1.0 / 4, null);
+
+        private void LayoutSplit(double? x, double? y) {
+            var wa = Screens.Primary.WorkingArea;
+            WindowState = WindowState.Normal;
+            double borderThickness = (FrameSize!.Value.Width - ClientSize.Width) / 2;
+            double titleBarHeight = FrameSize!.Value.Height - ClientSize.Height - borderThickness;
+            Position = new PixelPoint(0, 0);
+            Width = x != null ? wa.Size.Width * x.Value : wa.Size.Width;
+            Height = (y != null ? wa.Size.Height * y.Value : wa.Size.Height) - titleBarHeight;
+            if (pianoRollWindow != null) {
+                pianoRollWindow.Position = new PixelPoint(x != null ? (int)Width : 0, y != null ? (int)(Height + titleBarHeight) : 0);
+                pianoRollWindow.Width = x != null ? wa.Size.Width - Width : wa.Size.Width;
+                pianoRollWindow.Height = (y != null ? wa.Size.Height - (Height + titleBarHeight) : wa.Size.Height) - titleBarHeight;
+            }
+        }
+
         void OnKeyDown(object sender, KeyEventArgs args) {
             if (args.KeyModifiers == KeyModifiers.None) {
                 switch (args.Key) {
-                    case Key.Delete:
-                        // TODO
-                        break;
-                    case Key.Space:
-                        PlayOrPause();
-                        break;
-                    default:
-                        break;
+                    case Key.Delete: viewModel.TracksViewModel.DeleteSelectedParts(); break;
+                    case Key.Space: PlayOrPause(); break;
+                    default: break;
                 }
             } else if (args.KeyModifiers == KeyModifiers.Alt) {
                 switch (args.Key) {
-                    case Key.F4:
-                        ((IControlledApplicationLifetime)Application.Current.ApplicationLifetime).Shutdown();
-                        break;
-                    default:
-                        break;
+                    case Key.F4: ((IControlledApplicationLifetime)Application.Current.ApplicationLifetime).Shutdown(); break;
+                    default: break;
                 }
             } else if (args.KeyModifiers == KeyModifiers.Control) {
                 switch (args.Key) {
-                    case Key.A:
-                        viewModel.TracksViewModel.SelectAllParts();
-                        break;
-                    case Key.N:
-                        viewModel.NewProject();
-                        break;
-                    case Key.O:
-                        Open();
-                        break;
-                    case Key.S:
-                        _ = Save();
-                        break;
-                    case Key.Z:
-                        viewModel.Undo();
-                        break;
-                    case Key.Y:
-                        viewModel.Redo();
-                        break;
-                    default:
-                        break;
+                    case Key.A: viewModel.TracksViewModel.SelectAllParts(); break;
+                    case Key.N: viewModel.NewProject(); break;
+                    case Key.O: Open(); break;
+                    case Key.S: _ = Save(); break;
+                    case Key.Z: viewModel.Undo(); break;
+                    case Key.Y: viewModel.Redo(); break;
+                    default: break;
                 }
             }
             args.Handled = true;
@@ -505,7 +510,8 @@ namespace OpenUtau.App.Views {
                         DataContext = new PianoRollViewModel() {
                             NotesViewModel = new NotesViewModel(),
                             PlaybackViewModel = viewModel.PlaybackViewModel,
-                        }
+                        },
+                        MainWindow = this,
                     };
                 }
                 // Workaround for new window losing focus.
@@ -515,18 +521,18 @@ namespace OpenUtau.App.Views {
         }
 
         public void PartsCanvasPointerWheelChanged(object sender, PointerWheelEventArgs args) {
-            if (args.KeyModifiers == KeyModifiers.Control) {
-                var canvas = this.FindControl<Canvas>("TimelineCanvas");
-                TimelinePointerWheelChanged(canvas, args);
+            if (args.KeyModifiers == KeyModifiers.None) {
+                var scrollbar = this.FindControl<ScrollBar>("VScrollBar");
+                VScrollPointerWheelChanged(scrollbar, args);
+            } else if (args.KeyModifiers == KeyModifiers.Control) {
+                var scaler = this.FindControl<ViewScaler>("VScaler");
+                ViewScalerPointerWheelChanged(scaler, args);
             } else if (args.KeyModifiers == KeyModifiers.Shift) {
                 var scrollbar = this.FindControl<ScrollBar>("HScrollBar");
                 HScrollPointerWheelChanged(scrollbar, args);
             } else if (args.KeyModifiers == (KeyModifiers.Shift | KeyModifiers.Control)) {
-                var scaler = this.FindControl<ViewScaler>("VScaler");
-                ViewScalerPointerWheelChanged(scaler, args);
-            } else if (args.KeyModifiers == KeyModifiers.None) {
-                var scrollbar = this.FindControl<ScrollBar>("VScrollBar");
-                VScrollPointerWheelChanged(scrollbar, args);
+                var canvas = this.FindControl<Canvas>("TimelineCanvas");
+                TimelinePointerWheelChanged(canvas, args);
             }
         }
 

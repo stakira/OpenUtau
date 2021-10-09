@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
+using ReactiveUI;
 
 namespace OpenUtau.App.Controls {
     class NotesCanvas : Canvas {
@@ -81,11 +83,21 @@ namespace OpenUtau.App.Controls {
         private bool showPitch = true;
         private bool showVibrato = true;
 
+        private HashSet<UNote> selectedNotes = new HashSet<UNote>();
         private Geometry pointGeometry;
 
         public NotesCanvas() {
             ClipToBounds = true;
-            pointGeometry = new EllipseGeometry(new Rect(-3, -3, 5, 5));
+            pointGeometry = new EllipseGeometry(new Rect(-2.5, -2.5, 5, 5));
+            MessageBus.Current.Listen<NotesRefreshEvent>()
+                .Subscribe(_ => InvalidateVisual());
+            MessageBus.Current.Listen<NotesSelectionEvent>()
+                .Subscribe(e => {
+                    selectedNotes.Clear();
+                    selectedNotes.UnionWith(e.selectedNotes);
+                    selectedNotes.UnionWith(e.tempSelectedNotes);
+                    InvalidateVisual();
+                });
         }
 
         protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change) {
@@ -133,8 +145,9 @@ namespace OpenUtau.App.Controls {
             Size size = viewModel.TickToneToSize(note.duration, 1);
             size = size.WithWidth(size.Width - 1).WithHeight(Math.Floor(size.Height - 1));
             Point rightBottom = new Point(leftTop.X + size.Width, leftTop.Y + size.Height);
-            var brush = note.Error ? ThemeManager.AccentBrush1Semi :
-                note.Selected ? ThemeManager.AccentBrush2 : ThemeManager.AccentBrush1;
+            var brush = selectedNotes.Contains(note)
+                ? (note.Error ? ThemeManager.AccentBrush2Semi : ThemeManager.AccentBrush2)
+                : (note.Error ? ThemeManager.AccentBrush1Semi : ThemeManager.AccentBrush1);
             context.DrawRectangle(brush, null, new Rect(leftTop, rightBottom), 2, 2);
             if (TrackHeight < 10 || note.lyric.Length == 0) {
                 return;

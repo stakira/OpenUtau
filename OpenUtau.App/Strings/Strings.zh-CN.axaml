@@ -51,20 +51,28 @@
   <system:String x:Key="menu.file.saveas">另存为...</system:String>
   <system:String x:Key="menu.help">帮助</system:String>
   <system:String x:Key="menu.help.about">关于 OpenUTAU</system:String>
+  <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
   <system:String x:Key="menu.tools">工具</system:String>
+  <system:String x:Key="menu.tools.layout">界面布局</system:String>
+  <system:String x:Key="menu.tools.layout.hsplit11">水平分布 1:1</system:String>
+  <system:String x:Key="menu.tools.layout.hsplit12">水平分布 1:2</system:String>
+  <system:String x:Key="menu.tools.layout.hsplit13">水平分布 1:3</system:String>
+  <system:String x:Key="menu.tools.layout.vsplit11">垂直分布 1:1</system:String>
+  <system:String x:Key="menu.tools.layout.vsplit12">垂直分布 1:2</system:String>
+  <system:String x:Key="menu.tools.layout.vsplit13">垂直分布 1:3</system:String>
   <system:String x:Key="menu.tools.prefs">使用偏好...</system:String>
   <system:String x:Key="menu.tools.project.expressions">表情...</system:String>
   <system:String x:Key="menu.tools.singer.install">安装歌手...</system:String>
   <system:String x:Key="menu.tools.singer.installadv">安装歌手(高级模式)...</system:String>
   <system:String x:Key="menu.tools.singers">歌手...</system:String>
 
-  <system:String x:Key="oto.alias">Alias</system:String>
+  <!--<system:String x:Key="oto.alias">Alias</system:String>-->
   <system:String x:Key="oto.consonant">辅音速度</system:String>
-  <system:String x:Key="oto.cutoff">Cutoff</system:String>
+  <!--<system:String x:Key="oto.cutoff">Cutoff</system:String>-->
   <system:String x:Key="oto.file">文件</system:String>
   <system:String x:Key="oto.flavor">风格</system:String>
-  <system:String x:Key="oto.offset">Offset</system:String>
-  <system:String x:Key="oto.overlap">Overlap</system:String>
+  <!--<system:String x:Key="oto.offset">Offset</system:String>-->
+  <!--<system:String x:Key="oto.overlap">Overlap</system:String>-->
   <system:String x:Key="oto.phonetic">发音</system:String>
   <system:String x:Key="oto.prefix">前缀</system:String>
   <system:String x:Key="oto.preutter">先行发音</system:String>
@@ -103,13 +111,18 @@
   <system:String x:Key="singers.caption">歌手</system:String>
   <system:String x:Key="singers.location">位置</system:String>
 
-  <system:String x:Key="tip.exps.actions">设定表情
-重置表情</system:String>
-  <system:String x:Key="tip.exps.keys">按住鼠标左键:
-按住鼠标右键:</system:String>
+  <system:String x:Key="tip.exps.actions">
+设定表情
+重置表情
+  </system:String>
+  <system:String x:Key="tip.exps.keys">
+按住鼠标左键:
+按住鼠标右键:
+  </system:String>
   <system:String x:Key="tip.lyricbox.next">Tab: 下一个</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: 上一个</system:String>
-  <system:String x:Key="tip.notes.basics.actions">开/关提示
+  <system:String x:Key="tip.notes.basics.actions">
+开/关提示
 添加音符
 删除音符
 删除多个音符
@@ -119,8 +132,10 @@
 选择音符
 为选中音符移调
 为选中音符移调八度
-播放</system:String>
-  <system:String x:Key="tip.notes.basics.keys">T:
+播放
+  </system:String>
+  <system:String x:Key="tip.notes.basics.keys">
+T:
 鼠标左键:
 鼠标右键:
 按住鼠标左键:
@@ -130,7 +145,8 @@ Alt + 拖动音符尾部:
 Ctrl + 框选:
 上方向键/下方向键:
 Ctrl + 上方向键/下方向键:
-空格:</system:String>
+空格:
+  </system:String>
   <system:String x:Key="tip.notes.zoomx">◀ 鼠标滚轮横向缩放 ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">鼠标滚轮纵向缩放 ▶</system:String>
 

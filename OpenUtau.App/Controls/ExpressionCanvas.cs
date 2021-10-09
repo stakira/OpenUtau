@@ -6,6 +6,7 @@ using Avalonia.Media;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
+using ReactiveUI;
 
 namespace OpenUtau.App.Controls {
     public enum ExpDisMode { Hidden, Visible, Shadow };
@@ -54,11 +55,21 @@ namespace OpenUtau.App.Controls {
         private UVoicePart? part;
         private string key = string.Empty;
 
+        private HashSet<UNote> selectedNotes = new HashSet<UNote>();
         private Geometry pointGeometry;
 
         public ExpressionCanvas() {
             ClipToBounds = true;
-            pointGeometry = new EllipseGeometry(new Rect(-3, -3, 5, 5));
+            pointGeometry = new EllipseGeometry(new Rect(-2.5, -2.5, 5, 5));
+            MessageBus.Current.Listen<NotesRefreshEvent>()
+                .Subscribe(_ => InvalidateVisual());
+            MessageBus.Current.Listen<NotesSelectionEvent>()
+                .Subscribe(e => {
+                    selectedNotes.Clear();
+                    selectedNotes.UnionWith(e.selectedNotes);
+                    selectedNotes.UnionWith(e.tempSelectedNotes);
+                    InvalidateVisual();
+                });
         }
 
         protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change) {
@@ -91,9 +102,9 @@ namespace OpenUtau.App.Controls {
                 if (note.LeftBound >= rightTick || note.RightBound <= leftTick) {
                     continue;
                 }
-                var hPen = note.Selected ? ThemeManager.AccentPen2Thickness2 : ThemeManager.AccentPen1Thickness2;
-                var vPen = note.Selected ? ThemeManager.AccentPen2Thickness3 : ThemeManager.AccentPen1Thickness3;
-                var brush = note.Selected ? ThemeManager.AccentBrush2 : ThemeManager.AccentBrush1;
+                var hPen = selectedNotes.Contains(note) ? ThemeManager.AccentPen2Thickness2 : ThemeManager.AccentPen1Thickness2;
+                var vPen = selectedNotes.Contains(note) ? ThemeManager.AccentPen2Thickness3 : ThemeManager.AccentPen1Thickness3;
+                var brush = selectedNotes.Contains(note) ? ThemeManager.AccentBrush2 : ThemeManager.AccentBrush1;
                 foreach (var phoneme in note.phonemes) {
                     if (phoneme.Error) {
                         continue;
@@ -105,7 +116,7 @@ namespace OpenUtau.App.Controls {
                     double zeroHeight = Math.Round(Bounds.Height - Bounds.Height * (0f - descriptor.min) / (descriptor.max - descriptor.min));
                     context.DrawLine(vPen, new Point(x1 + 0.5, zeroHeight + 0.5), new Point(x1 + 0.5, valueHeight + 3));
                     context.DrawLine(hPen, new Point(x1 + 3, valueHeight), new Point(Math.Max(x1 + 3, x2 - 3), valueHeight));
-                    using (var state = context.PushPreTransform(Matrix.CreateTranslation(x1 + 1, valueHeight + 0.5))) {
+                    using (var state = context.PushPreTransform(Matrix.CreateTranslation(x1 + 0.5, valueHeight))) {
                         context.DrawGeometry(overriden ? brush : ThemeManager.BackgroundBrush, hPen, pointGeometry);
                     }
                 }

@@ -11,6 +11,13 @@ namespace OpenUtau.App.ViewModels {
             DocManager.Inst.AddSubscriber(this);
         }
 
+        public void Undo() {
+            DocManager.Inst.Undo();
+        }
+        public void Redo() {
+            DocManager.Inst.Redo();
+        }
+
         public void OnNext(UCommand cmd, bool isUndo) {
         }
     }

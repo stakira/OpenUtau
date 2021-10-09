@@ -55,10 +55,11 @@ namespace OpenUtau.Core.Ustx {
             foreach (var note in notes) {
                 note.AfterLoad(project, track, this);
             }
-            Duration = GetMinDurTick(project) + project.resolution;
         }
 
         public override void Validate(UProject project, UTrack track) {
+            int barTicks = project.resolution * 4 / project.beatUnit * project.beatPerBar;
+            Duration = (int)Math.Ceiling((double)GetMinDurTick(project) / barTicks) * barTicks;
             UNote lastNote = null;
             foreach (UNote note in notes) {
                 note.Prev = lastNote;

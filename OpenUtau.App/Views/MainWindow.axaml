@@ -7,7 +7,7 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="OpenUtau.App.Views.MainWindow"
         Icon="/Assets/open-utau.ico"
-        Title="OpenUtau" MinWidth="800" MinHeight="300" KeyDown="OnKeyDown" Closing="WindowClosing"
+        Title="OpenUtau (Beta)" MinWidth="300" MinHeight="200" KeyDown="OnKeyDown" Closing="WindowClosing"
         TransparencyLevelHint="None" Background="{DynamicResource MainWindowBackgroundBrush}"
         ExtendClientAreaToDecorationsHint="False">
   <Grid>
@@ -25,6 +25,14 @@
           <MenuItem Header="{DynamicResource menu.file.exportust}"/>
         </MenuItem>
         <MenuItem Header="{DynamicResource menu.tools}">
+          <MenuItem Header="{DynamicResource menu.tools.layout}">
+            <MenuItem Header="{DynamicResource menu.tools.layout.vsplit11}" Click="OnMenuLayoutVSplit11"/>
+            <MenuItem Header="{DynamicResource menu.tools.layout.vsplit12}" Click="OnMenuLayoutVSplit12"/>
+            <MenuItem Header="{DynamicResource menu.tools.layout.vsplit13}" Click="OnMenuLayoutVSplit13"/>
+            <MenuItem Header="{DynamicResource menu.tools.layout.hsplit11}" Click="OnMenuLayoutHSplit11"/>
+            <MenuItem Header="{DynamicResource menu.tools.layout.hsplit12}" Click="OnMenuLayoutHSplit12"/>
+            <MenuItem Header="{DynamicResource menu.tools.layout.hsplit13}" Click="OnMenuLayoutHSplit13"/>
+          </MenuItem>
           <MenuItem Header="{DynamicResource menu.tools.project.expressions}" Click="OnMenuExpressionss"/>
           <MenuItem Header="{DynamicResource menu.tools.singers}" Click="OnMenuSingers"/>
           <MenuItem Header="{DynamicResource menu.tools.singer.install}" Click="OnMenuInstallSinger"/>
@@ -33,6 +41,7 @@
         </MenuItem>
         <MenuItem Header="{DynamicResource menu.help}">
           <MenuItem Header="{Binding AppVersion}"/>
+          <MenuItem Header="{DynamicResource menu.help.wiki}" Click="OnMenuWiki"/>
         </MenuItem>
       </Menu>
       <Panel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="24">

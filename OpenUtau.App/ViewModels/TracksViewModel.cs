@@ -198,7 +198,7 @@ namespace OpenUtau.App.ViewModels {
             var project = DocManager.Inst.Project;
             TempSelectedParts.Clear();
             foreach (var part in project.parts) {
-                if (part.EndTick >= x0 && part.position <= x1 && part.trackNo >= y0 && part.trackNo < y1) {
+                if (part.EndTick > x0 && part.position < x1 && part.trackNo >= y0 && part.trackNo < y1) {
                     TempSelectedParts.Add(part);
                 }
             }
@@ -215,6 +215,18 @@ namespace OpenUtau.App.ViewModels {
             MessageBus.Current.SendMessage(
                 new PartsSelectionEvent(
                     SelectedParts.ToArray(), TempSelectedParts.ToArray()));
+        }
+
+        public void DeleteSelectedParts() {
+            if (SelectedParts.Count <= 0) {
+                return;
+            }
+            DocManager.Inst.StartUndoGroup();
+            foreach (var part in SelectedParts) {
+                DocManager.Inst.ExecuteCmd(new RemovePartCommand(Project, part));
+            }
+            DocManager.Inst.EndUndoGroup();
+            DeselectParts();
         }
 
         public void OnNext(UCommand cmd, bool isUndo) {

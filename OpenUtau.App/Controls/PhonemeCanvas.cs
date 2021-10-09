@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core.Ustx;
+using ReactiveUI;
 
 namespace OpenUtau.App.Controls {
     class PhonemeCanvas : Canvas {
@@ -50,11 +52,21 @@ namespace OpenUtau.App.Controls {
         private UVoicePart? part;
         private bool showPhoneme = true;
 
+        private HashSet<UNote> selectedNotes = new HashSet<UNote>();
         private Geometry pointGeometry;
 
         public PhonemeCanvas() {
             ClipToBounds = true;
-            pointGeometry = new EllipseGeometry(new Rect(-3, -3, 5, 5));
+            pointGeometry = new EllipseGeometry(new Rect(-2.5, -2.5, 5, 5));
+            MessageBus.Current.Listen<NotesRefreshEvent>()
+                .Subscribe(_ => InvalidateVisual());
+            MessageBus.Current.Listen<NotesSelectionEvent>()
+                .Subscribe(e => {
+                    selectedNotes.Clear();
+                    selectedNotes.UnionWith(e.selectedNotes);
+                    selectedNotes.UnionWith(e.tempSelectedNotes);
+                    InvalidateVisual();
+                });
         }
 
         protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change) {
@@ -109,8 +121,8 @@ namespace OpenUtau.App.Controls {
                     double x4 = viewModel.TickToneToPoint(position + viewModel.Project.MillisecondToTick(phoneme.envelope.data[4].X), 0).X;
                     double y4 = (1 - phoneme.envelope.data[4].Y / 100) * height;
 
-                    var pen = note.Selected ? ThemeManager.AccentPen2 : ThemeManager.AccentPen1;
-                    var brush = note.Selected ? ThemeManager.AccentBrush2Semi : ThemeManager.AccentBrush1Semi;
+                    var pen = selectedNotes.Contains(note) ? ThemeManager.AccentPen2 : ThemeManager.AccentPen1;
+                    var brush = selectedNotes.Contains(note) ? ThemeManager.AccentBrush2Semi : ThemeManager.AccentBrush1Semi;
 
                     var point0 = new Point(x0, y + y0);
                     var point1 = new Point(x1, y + y1);
