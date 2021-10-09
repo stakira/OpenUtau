@@ -144,7 +144,7 @@ namespace OpenUtau.App.Controls {
 
                 var penPos = ThemeManager.AccentPen2;
                 if (phoneme.HasOffsetOverride) {
-                    penPos = ThemeManager.AccentPen2Thick;
+                    penPos = ThemeManager.AccentPen2Thickness3;
                 }
                 context.DrawLine(penPos, new Point(x, y), new Point(x, y + height));
 

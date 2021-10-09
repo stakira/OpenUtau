@@ -22,6 +22,20 @@ namespace OpenUtau.App.ViewModels {
         public float Y;
     }
 
+    public struct VibratoHitInfo {
+        public UNote note;
+        public bool hit;
+        public bool hitToggle;
+        public bool hitStart;
+        public bool hitIn;
+        public bool hitOut;
+        public bool hitDepth;
+        public bool hitShift;
+        public bool hitPeriod;
+        public Point point;
+        public float initialShift;
+    }
+
     public struct PhonemeHitInfo {
         public UPhoneme phoneme;
         public bool hit;
@@ -140,5 +154,114 @@ namespace OpenUtau.App.ViewModels {
             return default;
         }
 
+        public VibratoHitInfo HitTestVibrato(Point mousePos) {
+            if (viewModel.Part == null || !viewModel.ShowVibrato) {
+                return default;
+            }
+            VibratoHitInfo result = default;
+            result.point = mousePos;
+            foreach (var note in viewModel.Part.notes) {
+                result.note = note;
+                UVibrato vibrato = note.vibrato;
+                Point toggle = viewModel.TickToneToPoint(vibrato.GetToggle(note));
+                toggle = toggle.WithX(toggle.X - 10);
+                if (WithIn(toggle, mousePos, 5)) {
+                    result.hit = true;
+                    result.hitToggle = true;
+                    return result;
+                }
+                if (vibrato.length == 0) {
+                    continue;
+                }
+                Point start = viewModel.TickToneToPoint(vibrato.GetEnvelopeStart(note));
+                Point fadeIn = viewModel.TickToneToPoint(vibrato.GetEnvelopeFadeIn(note));
+                Point fadeOut = viewModel.TickToneToPoint(vibrato.GetEnvelopeFadeOut(note));
+                if (WithIn(start, mousePos, 3)) {
+                    result.hit = true;
+                    result.hitStart = true;
+                } else if (WithIn(fadeIn, mousePos, 3)) {
+                    result.hit = true;
+                    result.hitIn = true;
+                } else if (WithIn(fadeOut, mousePos, 3)) {
+                    result.hit = true;
+                    result.hitOut = true;
+                } else if (Math.Abs(fadeIn.Y - mousePos.Y) < 3 && fadeIn.X < mousePos.X && mousePos.X < fadeOut.X) {
+                    result.hit = true;
+                    result.hitDepth = true;
+                }
+
+                vibrato.GetPeriodStartEnd(note, DocManager.Inst.Project, out var periodStartPos, out var periodEndPos);
+                Point periodStart = viewModel.TickToneToPoint(periodStartPos);
+                Point periodEnd = viewModel.TickToneToPoint(periodEndPos);
+                if (Math.Abs(mousePos.Y - periodEnd.Y) < viewModel.TrackHeight / 6) {
+                    if (Math.Abs(mousePos.X - periodEnd.X) < 3) {
+                        result.hit = true;
+                        result.hitPeriod = true;
+                    } else if (mousePos.X > periodStart.X && mousePos.X < periodEnd.X) {
+                        result.hit = true;
+                        result.hitShift = true;
+                        result.initialShift = vibrato.shift;
+                    }
+                }
+                if (result.hit) {
+                    return result;
+                }
+            }
+            return default;
+        }
+
+        public PhonemeHitInfo HitTestPhoneme(Point mousePos) {
+            if (viewModel.Part == null || !viewModel.ShowPhoneme) {
+                return default;
+            }
+            var project = viewModel.Project;
+            PhonemeHitInfo result = default;
+            result.point = mousePos;
+            double leftTick = viewModel.TickOffset - 480;
+            double rightTick = leftTick + viewModel.ViewportTicks + 480;
+            foreach (var note in viewModel.Part.notes) {
+                if (note.LeftBound >= rightTick || note.RightBound <= leftTick || note.Error) {
+                    continue;
+                }
+                if (note.OverlapError) {
+                    continue;
+                }
+                foreach (var phoneme in note.phonemes) {
+                    if (phoneme.Error) {
+                        continue;
+                    }
+                    int p0Tick = phoneme.Parent.position + phoneme.position + project.MillisecondToTick(phoneme.envelope.data[0].X);
+                    double p0x = viewModel.TickToneToPoint(p0Tick, 0).X;
+                    var point = new Point(p0x, 48 - phoneme.envelope.data[0].Y * 0.24 - 1);
+                    if (WithIn(point, mousePos, 3)) {
+                        result.phoneme = phoneme;
+                        result.hit = true;
+                        result.hitPreutter = true;
+                        return result;
+                    }
+                    int p1Tick = phoneme.Parent.position + phoneme.position + viewModel.Project.MillisecondToTick(phoneme.envelope.data[1].X);
+                    double p1x = viewModel.TickToneToPoint(p1Tick, 0).X;
+                    point = new Point(p1x, 48 - phoneme.envelope.data[1].Y * 0.24);
+                    if (WithIn(point, mousePos, 3)) {
+                        result.phoneme = phoneme;
+                        result.hit = true;
+                        result.hitOverlap = true;
+                        return result;
+                    }
+                    point = viewModel.TickToneToPoint(phoneme.Parent.position + phoneme.position, 0);
+                    if (Math.Abs(point.X - mousePos.X) < 3) {
+                        result.phoneme = phoneme;
+                        result.hit = true;
+                        result.hitPosition = true;
+                        return result;
+                    }
+                }
+            }
+            return result;
+        }
+
+        private bool WithIn(Point p0, Point p1, double dist) {
+            return Math.Abs(p0.X - p1.X) < dist && Math.Abs(p0.Y - p1.Y) < dist;
+        }
     }
 }

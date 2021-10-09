@@ -146,7 +146,10 @@
                        Background="{DynamicResource BackgroundBrushSemi}"
                        TickWidth="{Binding NotesViewModel.TickWidth}"
                        TickOffset="{Binding NotesViewModel.TickOffset}"
-                       Part="{Binding NotesViewModel.Part}" IsVisible="{Binding NotesViewModel.ShowPhoneme}"/>
+                       Part="{Binding NotesViewModel.Part}" IsVisible="{Binding NotesViewModel.ShowPhoneme}"
+                       PointerPressed="PhonemeCanvasPointerPressed"
+                       PointerMoved="PhonemeCanvasPointerMoved"
+                       PointerReleased="PhonemeCanvasPointerReleased"/>
       <GridSplitter Grid.Row="3" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                     Background="Transparent" Focusable="False" Cursor="SizeNorthSouth"/>
       <c:TrackBackground Grid.Row="4" Grid.Column="1" IsHitTestVisible="False"

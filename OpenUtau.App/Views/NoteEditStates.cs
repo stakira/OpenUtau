@@ -5,7 +5,6 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Input;
-using OpenUtau.App.Controls;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
@@ -319,6 +318,193 @@ namespace OpenUtau.App.Views {
             if (value != descriptor.defaultValue) {
                 DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(
                     notesVm.Project, noteHitInfo.phoneme, key, descriptor.defaultValue));
+            }
+        }
+    }
+
+    class VibratoChangeStartState : NoteEditState {
+        public readonly UNote note;
+        public VibratoChangeStartState(Canvas canvas, PianoRollViewModel vm, UNote note) : base(canvas, vm) {
+            this.note = note;
+        }
+        public override void Update(IPointer pointer, Point point) {
+            var notesVm = vm.NotesViewModel;
+            int tick = notesVm.PointToTick(point);
+            float newLength = 100f - 100f * (tick - note.position) / note.duration;
+            if (newLength != note.vibrato.length) {
+                DocManager.Inst.ExecuteCmd(new VibratoLengthCommand(notesVm.Part, note, newLength));
+            }
+        }
+    }
+
+    class VibratoChangeInState : NoteEditState {
+        public readonly UNote note;
+        public VibratoChangeInState(Canvas canvas, PianoRollViewModel vm, UNote note) : base(canvas, vm) {
+            this.note = note;
+        }
+        public override void Update(IPointer pointer, Point point) {
+            var notesVm = vm.NotesViewModel;
+            int tick = notesVm.PointToTick(point);
+            float vibratoTick = note.vibrato.length / 100f * note.duration;
+            float startTick = note.position + note.duration - vibratoTick;
+            float newIn = (tick - startTick) / vibratoTick * 100f;
+            if (newIn != note.vibrato.@in) {
+                DocManager.Inst.ExecuteCmd(new VibratoFadeInCommand(notesVm.Part, note, newIn));
+            }
+        }
+    }
+
+    class VibratoChangeOutState : NoteEditState {
+        public readonly UNote note;
+        public VibratoChangeOutState(Canvas canvas, PianoRollViewModel vm, UNote note) : base(canvas, vm) {
+            this.note = note;
+        }
+        public override void Update(IPointer pointer, Point point) {
+            var notesVm = vm.NotesViewModel;
+            int tick = notesVm.PointToTick(point);
+            float vibratoTick = note.vibrato.length / 100f * note.duration;
+            float newOut = (note.position + note.duration - tick) / vibratoTick * 100f;
+            if (newOut != note.vibrato.@out) {
+                DocManager.Inst.ExecuteCmd(new VibratoFadeOutCommand(notesVm.Part, note, newOut));
+            }
+        }
+    }
+
+    class VibratoChangeDepthState : NoteEditState {
+        public readonly UNote note;
+        public VibratoChangeDepthState(Canvas canvas, PianoRollViewModel vm, UNote note) : base(canvas, vm) {
+            this.note = note;
+        }
+        public override void Update(IPointer pointer, Point point) {
+            var notesVm = vm.NotesViewModel;
+            float tone = (float)notesVm.PointToToneDouble(point);
+            float newDepth = note.vibrato.ToneToDepth(note, tone);
+            if (newDepth != note.vibrato.depth) {
+                DocManager.Inst.ExecuteCmd(new VibratoDepthCommand(notesVm.Part, note, newDepth));
+            }
+        }
+    }
+
+    class VibratoChangePeriodState : NoteEditState {
+        public readonly UNote note;
+        public VibratoChangePeriodState(Canvas canvas, PianoRollViewModel vm, UNote note) : base(canvas, vm) {
+            this.note = note;
+        }
+        public override void Update(IPointer pointer, Point point) {
+            var notesVm = vm.NotesViewModel;
+            var project = notesVm.Project;
+            float periodTick = project.MillisecondToTick(note.vibrato.period);
+            float shiftTick = periodTick * note.vibrato.shift / 100f;
+            float vibratoTick = note.vibrato.length / 100f * note.duration;
+            float startTick = note.position + note.duration - vibratoTick;
+            float tick = notesVm.PointToTick(point) - startTick - shiftTick;
+            float newPeriod = (float)DocManager.Inst.Project.TickToMillisecond(tick);
+            if (newPeriod != note.vibrato.period) {
+                DocManager.Inst.ExecuteCmd(new VibratoPeriodCommand(notesVm.Part, note, newPeriod));
+            }
+        }
+    }
+
+    class VibratoChangeShiftState : NoteEditState {
+        public readonly UNote note;
+        public readonly Point hitPoint;
+        public readonly float initialShift;
+        public VibratoChangeShiftState(Canvas canvas, PianoRollViewModel vm, UNote note, Point hitPoint, float initialShift) : base(canvas, vm) {
+            this.note = note;
+            this.hitPoint = hitPoint;
+            this.initialShift = initialShift;
+        }
+        public override void Update(IPointer pointer, Point point) {
+            var notesVm = vm.NotesViewModel;
+            var project = notesVm.Project;
+            float periodTick = project.MillisecondToTick(note.vibrato.period);
+            float deltaTick = notesVm.PointToTick(point) - notesVm.PointToTick(hitPoint);
+            float deltaShift = deltaTick / periodTick * 100f;
+            float newShift = initialShift + deltaShift;
+            if (newShift != note.vibrato.shift) {
+                DocManager.Inst.ExecuteCmd(new VibratoShiftCommand(notesVm.Part, note, newShift));
+            }
+        }
+    }
+
+    class PhonemeMoveState : NoteEditState {
+        public readonly UNote leadingNote;
+        public readonly int index;
+        public int startOffset;
+        public PhonemeMoveState(Canvas canvas, PianoRollViewModel vm,
+            UNote leadingNote, int index) : base(canvas, vm) {
+            this.leadingNote = leadingNote;
+            this.index = index;
+        }
+        public override void Begin(IPointer pointer, Point point) {
+            base.Begin(pointer, point);
+            startOffset = leadingNote.GetPhonemeOverride(index).offset ?? 0;
+        }
+        public override void Update(IPointer pointer, Point point) {
+            var notesVm = vm.NotesViewModel;
+            int offset = startOffset + notesVm.PointToTick(point) - notesVm.PointToTick(startPoint);
+            DocManager.Inst.ExecuteCmd(new PhonemeOffsetCommand(
+                notesVm.Part, leadingNote, index, offset));
+        }
+    }
+
+    class PhonemeChangePreutterState : NoteEditState {
+        public readonly UNote leadingNote;
+        public readonly UPhoneme phoneme;
+        public readonly int index;
+        public PhonemeChangePreutterState(Canvas canvas, PianoRollViewModel vm,
+            UNote leadingNote, UPhoneme phoneme, int index) : base(canvas, vm) {
+            this.leadingNote = leadingNote;
+            this.phoneme = phoneme;
+            this.index = index;
+        }
+        public override void Update(IPointer pointer, Point point) {
+            var notesVm = vm.NotesViewModel;
+            var project = notesVm.Project;
+            int preutterTicks = phoneme.Parent.position + phoneme.position - notesVm.PointToTick(point);
+            double preutterScale = Math.Max(0, project.TickToMillisecond(preutterTicks) / phoneme.oto.Preutter);
+            DocManager.Inst.ExecuteCmd(new PhonemePreutterCommand(notesVm.Part, leadingNote, index, (float)preutterScale));
+        }
+    }
+
+    class PhonemeChangeOverlapState : NoteEditState {
+        public readonly UNote leadingNote;
+        public readonly UPhoneme phoneme;
+        public readonly int index;
+        public PhonemeChangeOverlapState(Canvas canvas, PianoRollViewModel vm,
+            UNote leadingNote, UPhoneme phoneme, int index) : base(canvas, vm) {
+            this.leadingNote = leadingNote;
+            this.phoneme = phoneme;
+            this.index = index;
+        }
+        public override void Update(IPointer pointer, Point point) {
+            var notesVm = vm.NotesViewModel;
+            var project = notesVm.Project;
+            float preutter = phoneme.preutter;
+            double overlap = preutter - project.TickToMillisecond(phoneme.Parent.position + phoneme.position - notesVm.PointToTick(point));
+            double overlapScale = Math.Max(0, Math.Min(overlap / phoneme.oto.Overlap, preutter / phoneme.oto.Overlap));
+            DocManager.Inst.ExecuteCmd(new PhonemeOverlapCommand(notesVm.Part, leadingNote, index, (float)overlapScale));
+        }
+    }
+
+    class PhonemeResetState : NoteEditState {
+        public override MouseButton MouseButton => MouseButton.Right;
+        public PhonemeResetState(Canvas canvas, PianoRollViewModel vm) : base(canvas, vm) { }
+        public override void Update(IPointer pointer, Point point) {
+            var notesVm = vm.NotesViewModel;
+            var hitInfo = notesVm.HitTest.HitTestPhoneme(point);
+            if (hitInfo.hit) {
+                var phoneme = hitInfo.phoneme;
+                var parent = phoneme.Parent;
+                var leadingNote = parent.Extends ?? parent;
+                int index = parent.PhonemeOffset + phoneme.Index;
+                if (hitInfo.hitPosition) {
+                    DocManager.Inst.ExecuteCmd(new PhonemeOffsetCommand(notesVm.Part, leadingNote, index, 0));
+                } else if (hitInfo.hitPreutter) {
+                    DocManager.Inst.ExecuteCmd(new PhonemePreutterCommand(notesVm.Part, leadingNote, index, 1));
+                } else if (hitInfo.hitOverlap) {
+                    DocManager.Inst.ExecuteCmd(new PhonemeOverlapCommand(notesVm.Part, leadingNote, index, 1));
+                }
             }
         }
     }

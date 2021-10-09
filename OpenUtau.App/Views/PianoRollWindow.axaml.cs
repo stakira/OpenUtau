@@ -16,7 +16,7 @@ namespace OpenUtau.App.Views {
         public MainWindow? MainWindow { get; set; }
         private PianoRollViewModel ViewModel => (PianoRollViewModel)DataContext!;
 
-        private NoteEditState? noteEditState;
+        private NoteEditState? editState;
         private Rectangle? selectionBox;
         private Border? expValueTip;
 
@@ -83,53 +83,85 @@ namespace OpenUtau.App.Views {
             }
             var canvas = (Canvas)sender;
             var point = args.GetCurrentPoint(canvas);
-            if (noteEditState != null) {
+            if (editState != null) {
                 return;
             }
             if (point.Properties.IsLeftButtonPressed) {
                 NotesCanvasLeftPointerPressed(canvas, point, args);
             } else if (point.Properties.IsRightButtonPressed) {
                 ViewModel.NotesViewModel.DeselectNotes();
-                noteEditState = new NoteEraseEditState(canvas, ViewModel);
+                editState = new NoteEraseEditState(canvas, ViewModel);
                 Cursor = ViewConstants.cursorNo;
             } else if (point.Properties.IsMiddleButtonPressed) {
-                noteEditState = new NotePanningState(canvas, ViewModel);
+                editState = new NotePanningState(canvas, ViewModel);
                 Cursor = ViewConstants.cursorHand;
             }
-            if (noteEditState != null) {
-                noteEditState.Begin(point.Pointer, point.Position);
-                noteEditState.Update(point.Pointer, point.Position);
+            if (editState != null) {
+                editState.Begin(point.Pointer, point.Position);
+                editState.Update(point.Pointer, point.Position);
             }
         }
 
         private void NotesCanvasLeftPointerPressed(Canvas canvas, PointerPoint point, PointerPressedEventArgs args) {
             var pitHitInfo = ViewModel.NotesViewModel.HitTest.HitTestPitchPoint(point.Position);
             if (pitHitInfo.Note != null) {
-                noteEditState = new PitchPointEditState(canvas, ViewModel,
+                editState = new PitchPointEditState(canvas, ViewModel,
                     pitHitInfo.Note, pitHitInfo.Index, pitHitInfo.OnPoint, pitHitInfo.X, pitHitInfo.Y);
-                Cursor = ViewConstants.cursorHand;
+                return;
+            }
+            var vbrHitInfo = ViewModel.NotesViewModel.HitTest.HitTestVibrato(point.Position);
+            if (vbrHitInfo.hit) {
+                if (vbrHitInfo.hitToggle) {
+                    ViewModel.NotesViewModel.ToggleVibrato(vbrHitInfo.note);
+                    return;
+                }
+                if (vbrHitInfo.hitStart) {
+                    editState = new VibratoChangeStartState(canvas, ViewModel, vbrHitInfo.note);
+                    return;
+                }
+                if (vbrHitInfo.hitIn) {
+                    editState = new VibratoChangeInState(canvas, ViewModel, vbrHitInfo.note);
+                    return;
+                }
+                if (vbrHitInfo.hitOut) {
+                    editState = new VibratoChangeOutState(canvas, ViewModel, vbrHitInfo.note);
+                    return;
+                }
+                if (vbrHitInfo.hitDepth) {
+                    editState = new VibratoChangeDepthState(canvas, ViewModel, vbrHitInfo.note);
+                    return;
+                }
+                if (vbrHitInfo.hitPeriod) {
+                    editState = new VibratoChangePeriodState(canvas, ViewModel, vbrHitInfo.note);
+                    return;
+                }
+                if (vbrHitInfo.hitShift) {
+                    editState = new VibratoChangeShiftState(
+                        canvas, ViewModel, vbrHitInfo.note, vbrHitInfo.point, vbrHitInfo.initialShift);
+                    return;
+                }
                 return;
             }
             var noteHitInfo = ViewModel.NotesViewModel.HitTest.HitTestNote(point.Position);
             if (args.KeyModifiers == KeyModifiers.Control) {
                 // New selection.
                 ViewModel.NotesViewModel.DeselectNotes();
-                noteEditState = new NoteSelectionEditState(canvas, ViewModel, GetSelectionBox(canvas));
+                editState = new NoteSelectionEditState(canvas, ViewModel, GetSelectionBox(canvas));
                 Cursor = ViewConstants.cursorCross;
                 return;
             }
             if (args.KeyModifiers == (KeyModifiers.Control | KeyModifiers.Shift)) {
                 // Additional selection.
-                noteEditState = new NoteSelectionEditState(canvas, ViewModel, GetSelectionBox(canvas));
+                editState = new NoteSelectionEditState(canvas, ViewModel, GetSelectionBox(canvas));
                 Cursor = ViewConstants.cursorCross;
                 return;
             }
             if (noteHitInfo.hitBody) {
                 if (noteHitInfo.hitResizeArea) {
-                    noteEditState = new NoteResizeEditState(canvas, ViewModel, noteHitInfo.note);
+                    editState = new NoteResizeEditState(canvas, ViewModel, noteHitInfo.note);
                     Cursor = ViewConstants.cursorSizeWE;
                 } else {
-                    noteEditState = new NoteMoveEditState(canvas, ViewModel, noteHitInfo.note);
+                    editState = new NoteMoveEditState(canvas, ViewModel, noteHitInfo.note);
                     Cursor = ViewConstants.cursorSizeAll;
                 }
                 return;
@@ -138,7 +170,7 @@ namespace OpenUtau.App.Views {
             var note = ViewModel.NotesViewModel.MaybeAddNote(point.Position);
             if (note != null) {
                 // Start moving right away
-                noteEditState = new NoteMoveEditState(canvas, ViewModel, note);
+                editState = new NoteMoveEditState(canvas, ViewModel, note);
                 Cursor = ViewConstants.cursorSizeAll;
             }
         }
@@ -162,8 +194,8 @@ namespace OpenUtau.App.Views {
         public void NotesCanvasPointerMoved(object sender, PointerEventArgs args) {
             var canvas = (Canvas)sender;
             var point = args.GetCurrentPoint(canvas);
-            if (noteEditState != null) {
-                noteEditState.Update(point.Pointer, point.Position);
+            if (editState != null) {
+                editState.Update(point.Pointer, point.Position);
                 return;
             }
             if (ViewModel?.NotesViewModel?.HitTest == null) {
@@ -172,6 +204,17 @@ namespace OpenUtau.App.Views {
             var pitHitInfo = ViewModel.NotesViewModel.HitTest.HitTestPitchPoint(point.Position);
             if (pitHitInfo.Note != null) {
                 Cursor = ViewConstants.cursorHand;
+                return;
+            }
+            var vbrHitInfo = ViewModel.NotesViewModel.HitTest.HitTestVibrato(point.Position);
+            if (vbrHitInfo.hit) {
+                if (vbrHitInfo.hitDepth) {
+                    Cursor = ViewConstants.cursorSizeNS;
+                } else if (vbrHitInfo.hitPeriod) {
+                    Cursor = ViewConstants.cursorSizeWE;
+                } else {
+                    Cursor = ViewConstants.cursorHand;
+                }
                 return;
             }
             var noteHitInfo = ViewModel.NotesViewModel.HitTest.HitTestNote(point.Position);
@@ -183,17 +226,17 @@ namespace OpenUtau.App.Views {
         }
 
         public void NotesCanvasPointerReleased(object sender, PointerReleasedEventArgs args) {
-            if (noteEditState == null) {
+            if (editState == null) {
                 return;
             }
-            if (noteEditState.MouseButton != args.InitialPressMouseButton) {
+            if (editState.MouseButton != args.InitialPressMouseButton) {
                 return;
             }
             var canvas = (Canvas)sender;
             var point = args.GetCurrentPoint(canvas);
-            noteEditState.Update(point.Pointer, point.Position);
-            noteEditState.End(point.Pointer, point.Position);
-            noteEditState = null;
+            editState.Update(point.Pointer, point.Position);
+            editState.End(point.Pointer, point.Position);
+            editState = null;
             Cursor = null;
         }
 
@@ -226,41 +269,109 @@ namespace OpenUtau.App.Views {
             }
             var canvas = (Canvas)sender;
             var point = args.GetCurrentPoint(canvas);
-            if (noteEditState != null) {
+            if (editState != null) {
                 return;
             }
             if (point.Properties.IsLeftButtonPressed) {
-                noteEditState = new ExpSetValueState(canvas, ViewModel, expValueTip!);
+                editState = new ExpSetValueState(canvas, ViewModel, expValueTip!);
             } else if (point.Properties.IsRightButtonPressed) {
-                noteEditState = new ExpResetValueState(canvas, ViewModel);
+                editState = new ExpResetValueState(canvas, ViewModel);
                 Cursor = ViewConstants.cursorNo;
             }
-            if (noteEditState != null) {
-                noteEditState.Begin(point.Pointer, point.Position);
-                noteEditState.Update(point.Pointer, point.Position);
+            if (editState != null) {
+                editState.Begin(point.Pointer, point.Position);
+                editState.Update(point.Pointer, point.Position);
             }
         }
 
         public void ExpCanvasPointerMoved(object sender, PointerEventArgs args) {
             var canvas = (Canvas)sender;
             var point = args.GetCurrentPoint(canvas);
-            if (noteEditState != null) {
-                noteEditState.Update(point.Pointer, point.Position);
+            if (editState != null) {
+                editState.Update(point.Pointer, point.Position);
+            } else {
+                Cursor = null;
             }
         }
 
         public void ExpCanvasPointerReleased(object sender, PointerReleasedEventArgs args) {
-            if (noteEditState == null) {
+            if (editState == null) {
                 return;
             }
-            if (noteEditState.MouseButton != args.InitialPressMouseButton) {
+            if (editState.MouseButton != args.InitialPressMouseButton) {
                 return;
             }
             var canvas = (Canvas)sender;
             var point = args.GetCurrentPoint(canvas);
-            noteEditState.Update(point.Pointer, point.Position);
-            noteEditState.End(point.Pointer, point.Position);
-            noteEditState = null;
+            editState.Update(point.Pointer, point.Position);
+            editState.End(point.Pointer, point.Position);
+            editState = null;
+            Cursor = null;
+        }
+
+        public void PhonemeCanvasPointerPressed(object sender, PointerPressedEventArgs args) {
+            if (ViewModel.NotesViewModel.Part == null) {
+                return;
+            }
+            var canvas = (Canvas)sender;
+            var point = args.GetCurrentPoint(canvas);
+            if (editState != null) {
+                return;
+            }
+            if (point.Properties.IsLeftButtonPressed) {
+                var hitInfo = ViewModel.NotesViewModel.HitTest.HitTestPhoneme(point.Position);
+                if (hitInfo.hit) {
+                    var phoneme = hitInfo.phoneme;
+                    var note = phoneme.Parent;
+                    var index = note.PhonemeOffset + note.phonemes.IndexOf(phoneme);
+                    if (hitInfo.hitPosition) {
+                        editState = new PhonemeMoveState(
+                            canvas, ViewModel, note.Extends ?? note, index);
+                    } else if (hitInfo.hitPreutter) {
+                        editState = new PhonemeChangePreutterState(
+                            canvas, ViewModel, note.Extends ?? note, phoneme, index);
+                    } else if (hitInfo.hitOverlap) {
+                        editState = new PhonemeChangeOverlapState(
+                            canvas, ViewModel, note.Extends ?? note, phoneme, index);
+                    }
+                }
+            } else if (point.Properties.IsRightButtonPressed) {
+                editState = new PhonemeResetState(canvas, ViewModel);
+                Cursor = ViewConstants.cursorNo;
+            }
+            if (editState != null) {
+                editState.Begin(point.Pointer, point.Position);
+                editState.Update(point.Pointer, point.Position);
+            }
+        }
+
+        public void PhonemeCanvasPointerMoved(object sender, PointerEventArgs args) {
+            var canvas = (Canvas)sender;
+            var point = args.GetCurrentPoint(canvas);
+            if (editState != null) {
+                editState.Update(point.Pointer, point.Position);
+                return;
+            }
+            var hitInfo = ViewModel.NotesViewModel.HitTest.HitTestPhoneme(point.Position);
+            if (hitInfo.hit) {
+                Cursor = ViewConstants.cursorSizeWE;
+            } else {
+                Cursor = null;
+            }
+        }
+
+        public void PhonemeCanvasPointerReleased(object sender, PointerReleasedEventArgs args) {
+            if (editState == null) {
+                return;
+            }
+            if (editState.MouseButton != args.InitialPressMouseButton) {
+                return;
+            }
+            var canvas = (Canvas)sender;
+            var point = args.GetCurrentPoint(canvas);
+            editState.Update(point.Pointer, point.Position);
+            editState.End(point.Pointer, point.Position);
+            editState = null;
             Cursor = null;
         }
 
