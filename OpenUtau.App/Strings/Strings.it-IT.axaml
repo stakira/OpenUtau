@@ -72,8 +72,8 @@
   <system:String x:Key="oto.suffix">Suffisso</system:String>
 
   <system:String x:Key="prefs.appearance">Aspetto</system:String>
-  <system:String x:Key="prefs.appearance.lang">Language</system:String>
-  <system:String x:Key="prefs.appearance.lang.note">Note: please restart OpenUtau after changing language.</system:String>
+  <system:String x:Key="prefs.appearance.lang">Lingua</system:String>
+  <system:String x:Key="prefs.appearance.lang.note">Nota: Riavvia OpenUTAU dopo aver scelto una lingua.</system:String>
   <system:String x:Key="prefs.appearance.theme">Tema</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">Scuro</system:String>
   <system:String x:Key="prefs.appearance.theme.light">Chiaro</system:String>
