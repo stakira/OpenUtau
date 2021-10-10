@@ -24,20 +24,20 @@
         <ColumnDefinition Width="*"/>
         <ColumnDefinition Width="24"/>
       </Grid.ColumnDefinitions>
-      <ScrollBar Name="HScrollBar" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+      <ScrollBar Name="HScrollBar" Classes="music" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                  Margin="0,4,0,4" Orientation="Horizontal" AllowAutoHide="False"
                  DataContext="{Binding NotesViewModel}"
-                 Maximum="{Binding TickCount, Mode=OneWay}"
+                 Maximum="{Binding HScrollBarMax, Mode=OneWay}"
                  Value="{Binding TickOffset}"
-                 ViewportSize="{Binding ViewportTicks}"
+                 ViewportSize="{Binding HScrollBarMax}"
                  LargeChange="{Binding ViewportTicks}"
                  SmallChange="{Binding SmallChangeX}" PointerWheelChanged="HScrollPointerWheelChanged"/>
-      <ScrollBar Name="VScrollBar" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+      <ScrollBar Name="VScrollBar" Classes="music" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                  Margin="4,0,4,0" Orientation="Vertical" AllowAutoHide="False"
                  DataContext="{Binding NotesViewModel}"
-                 Maximum="{Binding TrackCount, Mode=OneWay}"
+                 Maximum="{Binding VScrollBarMax, Mode=OneWay}"
                  Value="{Binding TrackOffset}"
-                 ViewportSize="{Binding ViewportTracks}"
+                 ViewportSize="{Binding VScrollBarMax}"
                  LargeChange="{Binding ViewportTracks}"
                  SmallChange="{Binding SmallChangeY}" PointerWheelChanged="VScrollPointerWheelChanged"/>
       <c:TrackBackground Grid.Column="0" Grid.Row="2" IsPianoRoll="True" IsKeyboard="True"

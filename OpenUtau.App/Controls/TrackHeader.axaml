@@ -9,9 +9,6 @@
     <vm:TrackHeaderViewModel/>
   </Design.DataContext>
   <UserControl.Styles>
-    <Style Selector="Button">
-      <Setter Property="Background" Value="Transparent"/>
-    </Style>
     <Style Selector="ToggleButton">
       <Setter Property="Background" Value="Transparent"/>
     </Style>
@@ -29,7 +26,7 @@
                      Text="{Binding TrackNo}" Foreground="White" VerticalAlignment="Center"/>
         </Border>
       </Grid>
-      <Button Grid.Row="0" Grid.Column="2" Margin="1" Padding="2,1,0,0" Height="16"
+      <Button Classes="clear" Grid.Row="0" Grid.Column="2" Margin="1" Padding="2,1,0,0" Height="16"
               HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
               Content="{Binding Singer}" Click="SingerButtonClicked">
         <Button.ContextMenu>
@@ -44,7 +41,7 @@
           </ContextMenu>
         </Button.ContextMenu>
       </Button>
-      <Button Grid.Row="1" Grid.Column="2" Margin="1" Padding="2,1,0,0" Height="16"
+      <Button Classes="clear" Grid.Row="1" Grid.Column="2" Margin="1" Padding="2,1,0,0" Height="16"
               HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
               Content="{Binding PhonemizerTag}" Click="PhonemizerButtonClicked">
         <Button.ContextMenu>

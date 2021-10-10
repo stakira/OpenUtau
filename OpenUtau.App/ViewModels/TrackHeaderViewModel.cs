@@ -89,16 +89,17 @@ namespace OpenUtau.App.ViewModels {
 
         public void RefreshAvatar() {
             var singer = track?.Singer;
-            if (singer == null || string.IsNullOrWhiteSpace(singer.Avatar)) {
+            if (singer == null || singer.AvatarData == null) {
                 Avatar = null;
                 return;
             }
             try {
-                using (var stream = new FileStream(singer.Avatar, FileMode.Open)) {
-                    Avatar = Bitmap.DecodeToWidth(stream, 80);
+                using (var memoryStream = new MemoryStream(singer.AvatarData)) {
+                    Avatar = Bitmap.DecodeToWidth(memoryStream, 80);
                 }
             } catch (Exception e) {
-                Log.Error(e, "Failed to load avatar.");
+                Avatar = null;
+                Log.Error(e, "Failed to decode avatar.");
             }
         }
 

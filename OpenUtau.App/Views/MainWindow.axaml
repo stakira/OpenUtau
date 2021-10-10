@@ -10,6 +10,8 @@
         Title="OpenUtau (Beta)" MinWidth="300" MinHeight="200" KeyDown="OnKeyDown" Closing="WindowClosing"
         TransparencyLevelHint="None" Background="{DynamicResource MainWindowBackgroundBrush}"
         ExtendClientAreaToDecorationsHint="False">
+  <Window.Styles>
+  </Window.Styles>
   <Grid>
     <Grid RowDefinitions="24,24,1*,20,4" ColumnDefinitions="250,*,24" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="{Binding $parent[1].WindowDecorationMargin}">
       <Menu Grid.Row="0" Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Left">
@@ -90,18 +92,18 @@
           <TextBlock Classes="playback" Text="{Binding Path=PlaybackViewModel.PlayPosTime, StringFormat={}{0:mm\\:ss\\.fff}}"/>
         </Border>
       </Panel>
-      <ScrollBar Name="HScrollBar" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+      <ScrollBar Name="HScrollBar" Classes="music" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                  Margin="0,4,0,4" Orientation="Horizontal" AllowAutoHide="False"
                  DataContext="{Binding TracksViewModel}"
-                 Maximum="{Binding TickCount, Mode=OneWay}"
+                 Maximum="{Binding HScrollBarMax, Mode=OneWay}"
                  Value="{Binding TickOffset}"
                  ViewportSize="{Binding ViewportTicks}"
                  LargeChange="{Binding ViewportTicks}"
                  SmallChange="{Binding SmallChangeX}" PointerWheelChanged="HScrollPointerWheelChanged"/>
-      <ScrollBar Name="VScrollBar" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+      <ScrollBar Name="VScrollBar" Classes="music" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                  Margin="4,0,4,0" Orientation="Vertical" AllowAutoHide="False"
                  DataContext="{Binding TracksViewModel}"
-                 Maximum="{Binding TrackCount, Mode=OneWay}"
+                 Maximum="{Binding VScrollBarMax, Mode=OneWay}"
                  Value="{Binding TrackOffset}"
                  ViewportSize="{Binding ViewportTracks}"
                  LargeChange="{Binding ViewportTracks}"

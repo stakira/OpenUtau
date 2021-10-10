@@ -30,18 +30,12 @@ namespace OpenUtau.App.ViewModels {
 
     public class NotesViewModel : ViewModelBase, ICmdSubscriber {
         [Reactive] public Rect Bounds { get; set; }
-        [Reactive] public int TickCount { get; set; }
+        public int TickCount => Part?.Duration ?? 480 * 4;
         public int TrackCount => ViewConstants.MaxTone;
-        public double TickWidth {
-            get => tickWidth;
-            set => this.RaiseAndSetIfChanged(ref tickWidth, Math.Clamp(value, ViewConstants.PianoRollTickWidthMin, ViewConstants.PianoRollTickWidthMax));
-        }
+        [Reactive] public double TickWidth { get; set; }
         public double TrackHeightMin => ViewConstants.NoteHeightMin;
         public double TrackHeightMax => ViewConstants.NoteHeightMax;
-        public double TrackHeight {
-            get => trackHeight;
-            set => this.RaiseAndSetIfChanged(ref trackHeight, Math.Clamp(value, ViewConstants.NoteHeightMin, ViewConstants.NoteHeightMax));
-        }
+        [Reactive] public double TrackHeight { get; set; }
         [Reactive] public double TickOrigin { get; set; }
         [Reactive] public double TickOffset { get; set; }
         [Reactive] public double TrackOffset { get; set; }
@@ -60,10 +54,10 @@ namespace OpenUtau.App.ViewModels {
         public double ViewportTracks => viewportTracks.Value;
         public double SmallChangeX => smallChangeX.Value;
         public double SmallChangeY => smallChangeY.Value;
+        public double HScrollBarMax => Math.Max(0, TickCount - ViewportTicks);
+        public double VScrollBarMax => Math.Max(0, TrackCount - ViewportTracks);
         public UProject Project => DocManager.Inst.Project;
 
-        private double tickWidth = ViewConstants.PianoRollTickWidthDefault;
-        private double trackHeight = ViewConstants.NoteHeightDefault;
         private readonly ObservableAsPropertyHelper<double> viewportTicks;
         private readonly ObservableAsPropertyHelper<double> viewportTracks;
         private readonly ObservableAsPropertyHelper<double> smallChangeX;
@@ -88,6 +82,11 @@ namespace OpenUtau.App.ViewModels {
             smallChangeY = this.WhenAnyValue(x => x.ViewportTracks)
                 .Select(h => h / 8)
                 .ToProperty(this, x => x.SmallChangeY);
+            this.WhenAnyValue(x => x.Bounds)
+                .Subscribe(_ => {
+                    OnXZoomed(new Point(), 0);
+                    OnYZoomed(new Point(), 0);
+                });
 
             this.WhenAnyValue(x => x.TickWidth)
                 .Subscribe(tickWidth => {
@@ -100,6 +99,9 @@ namespace OpenUtau.App.ViewModels {
                     SnapUnit = ticks;
                 });
 
+            TickWidth = ViewConstants.PianoRollTickWidthDefault;
+            TrackHeight = ViewConstants.NoteHeightDefault;
+            ExpValueTipText = string.Empty;
             TrackOffset = 4 * 12 + 6;
             IsSnapOn = true;
             ShowPitch = true;
@@ -124,29 +126,33 @@ namespace OpenUtau.App.ViewModels {
                 recenter = false;
             }
             double center = TickOffset + position.X * ViewportTicks;
-            double before = TickWidth;
-            TickWidth *= 1.0 + delta * 2;
-            if (before == TickWidth) {
-                return;
-            }
-            if (recenter) {
-                tick = Math.Max(0, center - position.X * ViewportTicks);
-            }
-            if (TickOffset != tick) {
-                TickOffset = tick;
-            } else {
-                // Force a redraw when only ViewportWidth is changed.
-                TickOffset = tick + 1;
-                TickOffset = tick - 1;
-            }
+            double tickWidth = TickWidth * (1.0 + delta * 2);
+            tickWidth = Math.Clamp(tickWidth, ViewConstants.PianoRollTickWidthMin, ViewConstants.PianoRollTickWidthMax);
+            tickWidth = Math.Max(tickWidth, Bounds.Width / TickCount);
+            TickWidth = tickWidth;
+            double tickOffset = recenter
+                    ? center - position.X * ViewportTicks
+                    : TickOffset;
+            TickOffset = Math.Clamp(tickOffset, 0, HScrollBarMax);
+            Notify();
         }
 
         public void OnYZoomed(Point position, double delta) {
-            TrackHeight *= 1.0 + delta;
-            double track = TrackOffset;
-            TrackOffset = track + 1;
-            TrackOffset = track - 1;
-            TrackOffset = track;
+            double trackHeight = TrackHeight * (1.0 + delta * 2);
+            trackHeight = Math.Clamp(trackHeight, ViewConstants.NoteHeightMin, ViewConstants.NoteHeightMax);
+            trackHeight = Math.Max(trackHeight, Bounds.Height / TrackCount);
+            TrackHeight = trackHeight;
+            TrackOffset = Math.Clamp(TrackOffset, 0, VScrollBarMax);
+            Notify();
+        }
+
+        private void Notify() {
+            this.RaisePropertyChanged(nameof(TickCount));
+            this.RaisePropertyChanged(nameof(HScrollBarMax));
+            this.RaisePropertyChanged(nameof(ViewportTicks));
+            this.RaisePropertyChanged(nameof(TrackCount));
+            this.RaisePropertyChanged(nameof(VScrollBarMax));
+            this.RaisePropertyChanged(nameof(ViewportTracks));
         }
 
         public int PointToTick(Point point) {
@@ -208,7 +214,6 @@ namespace OpenUtau.App.ViewModels {
                 return;
             }
             TickOrigin = Part.position;
-            TickCount = Part.Duration;
         }
 
         public void DeselectNotes() {
@@ -300,6 +305,9 @@ namespace OpenUtau.App.ViewModels {
                 notes.ForEach(note => note.position += offset);
                 DocManager.Inst.StartUndoGroup();
                 DocManager.Inst.ExecuteCmd(new AddNoteCommand(Part, notes));
+                if (Part.Duration < Part.GetMinDurTick(Project)) {
+                    DocManager.Inst.ExecuteCmd(new ResizePartCommand(Project, Part, Part.GetBarDurTick(Project)));
+                }
                 DocManager.Inst.EndUndoGroup();
                 DeselectNotes();
                 SelectedNotes.AddRange(notes);

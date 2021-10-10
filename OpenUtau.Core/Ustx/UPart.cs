@@ -39,10 +39,12 @@ namespace OpenUtau.Core.Ustx {
         public SortedSet<UNote> notes = new SortedSet<UNote>();
 
         public override int GetMinDurTick(UProject project) {
-            int durTick = 480;
-            foreach (UNote note in notes)
-                durTick = Math.Max(durTick, note.position + note.duration);
-            return durTick;
+            return Math.Max(480, notes.Last().End);
+        }
+
+        public int GetBarDurTick(UProject project) {
+            int barTicks = project.resolution * 4 / project.beatUnit * project.beatPerBar;
+            return (int)Math.Ceiling((double)GetMinDurTick(project) / barTicks) * barTicks;
         }
 
         public override void BeforeSave(UProject project, UTrack track) {
@@ -55,11 +57,10 @@ namespace OpenUtau.Core.Ustx {
             foreach (var note in notes) {
                 note.AfterLoad(project, track, this);
             }
+            Duration = GetBarDurTick(project);
         }
 
         public override void Validate(UProject project, UTrack track) {
-            int barTicks = project.resolution * 4 / project.beatUnit * project.beatPerBar;
-            Duration = (int)Math.Ceiling((double)GetMinDurTick(project) / barTicks) * barTicks;
             UNote lastNote = null;
             foreach (UNote note in notes) {
                 note.Prev = lastNote;

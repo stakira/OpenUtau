@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using OpenUtau.Classic;
+using Serilog;
 using WanaKanaNet;
 
 namespace OpenUtau.Core.Ustx {
@@ -90,6 +91,7 @@ namespace OpenUtau.Core.Ustx {
         public readonly string Web;
         public readonly string OtherInfo;
         public readonly string Avatar;
+        public readonly byte[] AvatarData;
         public readonly Dictionary<string, Tuple<string, string>> PrefixMap;
         public readonly List<UOtoSet> OtoSets;
         public readonly string Id;
@@ -110,6 +112,17 @@ namespace OpenUtau.Core.Ustx {
             Location = Path.GetDirectoryName(voicebank.File);
             if (!string.IsNullOrEmpty(voicebank.Image)) {
                 Avatar = Path.Combine(Location, voicebank.Image);
+                try {
+                    using (var stream = new FileStream(Avatar, FileMode.Open)) {
+                        using (var memoryStream = new MemoryStream()) {
+                            stream.CopyTo(memoryStream);
+                            AvatarData = memoryStream.ToArray();
+                        }
+                    }
+                } catch (Exception e) {
+                    AvatarData = null;
+                    Log.Error(e, "Failed to load avatar data.");
+                }
             }
             if (voicebank.PrefixMap != null) {
                 PrefixMap = voicebank.PrefixMap.Map;

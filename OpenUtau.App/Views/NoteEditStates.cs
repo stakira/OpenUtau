@@ -93,6 +93,9 @@ namespace OpenUtau.App.Views {
         public override void Update(IPointer pointer, Point point) {
             var notesVm = vm.NotesViewModel;
             var part = notesVm.Part;
+            if (part == null) {
+                return;
+            }
 
             int deltaTone = notesVm.PointToTone(point) - note.tone;
             int minDeltaTone;
@@ -110,12 +113,15 @@ namespace OpenUtau.App.Views {
                 ? notesVm.PointToSnappedTick(point - new Point(xOffset, 0)) - note.position
                 : notesVm.PointToTick(point - new Point(xOffset, 0)) - note.position;
             int minDeltaTick;
+            int maxDeltaTick;
             if (notesVm.SelectedNotes.Count > 0) {
                 minDeltaTick = -notesVm.SelectedNotes.Select(n => n.position).Min();
+                maxDeltaTick = part.Duration - notesVm.SelectedNotes.Select(n => n.End).Max();
             } else {
                 minDeltaTick = -note.position;
+                maxDeltaTick = part.Duration - note.End;
             }
-            deltaTick = Math.Max(deltaTick, minDeltaTick);
+            deltaTick = Math.Clamp(deltaTick, minDeltaTick, maxDeltaTick);
 
             if (deltaTone == 0 && deltaTick == 0) {
                 return;
