@@ -41,8 +41,8 @@
                  LargeChange="{Binding ViewportTracks}"
                  SmallChange="{Binding SmallChangeY}" PointerWheelChanged="VScrollPointerWheelChanged"/>
       <c:TrackBackground Grid.Column="0" Grid.Row="2" IsPianoRoll="True" IsKeyboard="True"
-                         Foreground="{DynamicResource KeyboardBlackKeyBrush}"
-                         Background="{DynamicResource KeyboardWhiteKeyBrush}"
+                         Foreground="{DynamicResource BlackKeyBrush}"
+                         Background="{DynamicResource WhiteKeyBrush}"
                          DataContext="{Binding NotesViewModel}"
                          TrackHeight="{Binding TrackHeight}"
                          TrackOffset="{Binding TrackOffset}"/>
@@ -52,11 +52,18 @@
         <c:ExpSelector HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top" Index="2" Margin="0,44,0,0"/>
         <c:ExpSelector HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top" Index="3" Margin="0,66,0,0"/>
       </Grid>
-      <Canvas Name="TimelineCanvas" Grid.Row="1" Grid.Column="1" Background="Transparent"
+      <Canvas Name="TimelineCanvas" Grid.Row="1" Grid.Column="1"
+              Background="Transparent" ClipToBounds="True"
               PointerWheelChanged="TimelinePointerWheelChanged"
               PointerPressed="TimelinePointerPressed"
               PointerMoved="TimelinePointerMoved"
-              PointerReleased="TimelinePointerReleased"/>
+              PointerReleased="TimelinePointerReleased">
+        <Path Name="PlayPos"
+              Canvas.Left="{Binding NotesViewModel.PlayPosX}"
+              Canvas.Top="0" ZIndex="100" IsHitTestVisible="False"
+              Fill="{DynamicResource NeutralAccentBrushSemi}"
+              Data="M -6.5 0 L 6.5 0 L 6.5 3 L 0 9 L -6.5 3 Z"/>
+      </Canvas>
       <c:TrackBackground Grid.Row="2" Grid.Column="1" IsHitTestVisible="False"
                          Foreground="{DynamicResource TrackBackgroundAltBrush}"
                          DataContext="{Binding NotesViewModel}"
@@ -86,50 +93,58 @@
                      PointerMoved="NotesCanvasPointerMoved"
                      PointerReleased="NotesCanvasPointerReleased"
                      DoubleTapped="NotesCanvasDoubleTapped"
-                     PointerWheelChanged="NotesCanvasPointerWheelChanged"/>
+                     PointerWheelChanged="NotesCanvasPointerWheelChanged">
+        <Rectangle Name="PlayPosHighlight"
+                   Width="{Binding NotesViewModel.SnapUnitWidth, Mode=OneWay}"
+                   Height="{Binding $parent.Bounds.Height, Mode=OneWay}"
+                   Canvas.Left="{Binding NotesViewModel.PlayPosHighlightX, Mode=OneWay}"
+                   Canvas.Top="0" ZIndex="-10"
+                   Fill="{DynamicResource NeutralAccentBrushSemi}"
+                   IsHitTestVisible="False"/>
+      </c:NotesCanvas>
       <StackPanel Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top"
                   Margin="12,12,0,0" Spacing="1" Orientation="Horizontal">
-        <ToggleButton Margin="0" Padding="1" Height="20" Width="20" CornerRadius="2" IsChecked="{Binding NotesViewModel.ShowVibrato}">
+        <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="20" Width="20" CornerRadius="2" IsChecked="{Binding NotesViewModel.ShowVibrato}">
           <ToolTip.Tip>U</ToolTip.Tip>
           <Grid Width="18" Height="18">
             <Path Data="M-6.5 1 L-6 1.5 L-4.5 0 L-2 2.5 L0.5 0 L3 2.5 L6.5 -1 L6 -1.5 L4.5 0 L2 -2.5 L-0.5 0 L-3 -2.5 Z" StrokeThickness="1"
-                Stroke="Black">
+                Stroke="{DynamicResource SystemControlForegroundBaseHighBrush}">
               <Path.RenderTransform>
                 <TranslateTransform X="9" Y="9"/>
               </Path.RenderTransform>
             </Path>
           </Grid>
         </ToggleButton>
-        <ToggleButton Margin="0" Padding="1" Height="20" Width="20" CornerRadius="2" IsChecked="{Binding NotesViewModel.ShowPitch}">
+        <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="20" Width="20" CornerRadius="2" IsChecked="{Binding NotesViewModel.ShowPitch}">
           <ToolTip.Tip>I</ToolTip.Tip>
           <Grid Width="18" Height="18">
             <Ellipse Height="5" Width="5" StrokeThickness="1" Margin="2,0,0,4" HorizontalAlignment="Left" VerticalAlignment="Bottom"
-                     Stroke="Black"/>
+                     Stroke="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
             <Ellipse Height="5" Width="5" StrokeThickness="1" Margin="0,4,2,0" HorizontalAlignment="Right" VerticalAlignment="Top"
-                     Stroke="Black"/>
+                     Stroke="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
             <Path Data="M 6.5 11.5 L 8 11.5 L 8.5 11 L 9.5 7 L 10 6.5 L 11.5 6.5" StrokeThickness="1"
-                  Stroke="Black"/>
+                  Stroke="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
           </Grid>
         </ToggleButton>
-        <ToggleButton Margin="0" Padding="1" Height="20" Width="20" CornerRadius="2" IsChecked="{Binding NotesViewModel.ShowPhoneme}">
+        <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="20" Width="20" CornerRadius="2" IsChecked="{Binding NotesViewModel.ShowPhoneme}">
           <ToolTip.Tip>O</ToolTip.Tip>
           <Grid Width="18" Height="18">
             <Path Data="M 3 13 L 6 5.5 L 12 5.5 L 15 13" StrokeThickness="1"
-                  Stroke="Black"/>
+                  Stroke="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
           </Grid>
         </ToggleButton>
-        <ToggleButton Margin="0" Padding="1" Height="20" Width="20" CornerRadius="2" IsChecked="{Binding NotesViewModel.IsSnapOn}">
+        <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="20" Width="20" CornerRadius="2" IsChecked="{Binding NotesViewModel.IsSnapOn}">
           <ToolTip.Tip>P</ToolTip.Tip>
           <Grid Width="18" Height="18">
             <Path Data="M 4.5 13.5 L 7.5 13.5 L 7.5 9.5 A 1,1 0 1 1 10.5,9.5 L 10.5 13.5 L 13.5 13.5 L 13.5 8.5 A 1,1 0 1 0 4.5,8.5 Z" StrokeThickness="1"
-                  Stroke="Black"/>
+                  Stroke="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
           </Grid>
         </ToggleButton>
-        <ToggleButton Margin="0" Padding="1" Height="20" Width="20" CornerRadius="2" IsChecked="{Binding NotesViewModel.ShowTips}">
+        <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="20" Width="20" CornerRadius="2" IsChecked="{Binding NotesViewModel.ShowTips}">
           <ToolTip.Tip>T</ToolTip.Tip>
           <Grid Width="18" Height="18">
             <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="?" FontWeight="Bold"
-                       Foreground="Black"/>
+                       Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
           </Grid>
         </ToggleButton>
       </StackPanel>

@@ -10,8 +10,6 @@
         Title="OpenUtau (Beta)" MinWidth="300" MinHeight="200" KeyDown="OnKeyDown" Closing="WindowClosing"
         TransparencyLevelHint="None" Background="{DynamicResource MainWindowBackgroundBrush}"
         ExtendClientAreaToDecorationsHint="False">
-  <Window.Styles>
-  </Window.Styles>
   <Grid>
     <Grid RowDefinitions="24,24,1*,20,4" ColumnDefinitions="250,*,24" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="{Binding $parent[1].WindowDecorationMargin}">
       <Menu Grid.Row="0" Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Left">
@@ -49,8 +47,8 @@
       <Panel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="24">
         <Border Classes="playback" Width="72" HorizontalAlignment="Left" Margin="4,0">
           <Grid>
-            <TextBlock Classes="playback" Width="28" HorizontalAlignment="Left"
-                       Padding="6,3" Background="Transparent" PointerPressed="OnEditTimeSignature">
+            <TextBlock Width="28" HorizontalAlignment="Left"
+                       Background="Transparent" PointerPressed="OnEditTimeSignature">
               <TextBlock.Text>
                 <MultiBinding StringFormat="{}{0}/{1}">
                   <Binding Path="PlaybackViewModel.BeatPerBar"/>
@@ -58,8 +56,8 @@
                 </MultiBinding>
               </TextBlock.Text>
             </TextBlock>
-            <TextBlock Classes="playback" Width="42" HorizontalAlignment="Right"
-                       Padding="6,3" Background="Transparent" PointerPressed="OnEditBpm">
+            <TextBlock Width="42" HorizontalAlignment="Right"
+                        Background="Transparent" PointerPressed="OnEditBpm">
               <TextBlock.Text>
                 <MultiBinding StringFormat="{}{0:#0.00}">
                   <Binding Path="PlaybackViewModel.Bpm"/>
@@ -89,7 +87,9 @@
           </StackPanel>
         </Border>
         <Border Classes="playback" Width="72" HorizontalAlignment="Right" Margin="4,0">
-          <TextBlock Classes="playback" Text="{Binding Path=PlaybackViewModel.PlayPosTime, StringFormat={}{0:mm\\:ss\\.fff}}"/>
+          <Grid>
+            <TextBlock Text="{Binding Path=PlaybackViewModel.PlayPosTime, StringFormat={}{0:mm\\:ss\\.fff}}"/>
+          </Grid>
         </Border>
       </Panel>
       <ScrollBar Name="HScrollBar" Classes="music" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
@@ -108,12 +108,18 @@
                  ViewportSize="{Binding ViewportTracks}"
                  LargeChange="{Binding ViewportTracks}"
                  SmallChange="{Binding SmallChangeY}" PointerWheelChanged="VScrollPointerWheelChanged"/>
-      <Canvas Name="TimelineCanvas" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Top"
-              Height="24" Background="Transparent"
+      <Canvas Name="TimelineCanvas" Grid.Row="1" Grid.Column="1"
+              Background="Transparent" ClipToBounds="True"
               PointerWheelChanged="TimelinePointerWheelChanged"
               PointerPressed="TimelinePointerPressed"
               PointerMoved="TimelinePointerMoved"
-              PointerReleased="TimelinePointerReleased"/>
+              PointerReleased="TimelinePointerReleased">
+        <Path Name="PlayPos"
+              Canvas.Left="{Binding TracksViewModel.PlayPosX}"
+              Canvas.Top="0" ZIndex="100" IsHitTestVisible="False"
+              Fill="{DynamicResource NeutralAccentBrushSemi}"
+              Data="M -6.5 0 L 6.5 0 L 6.5 3 L 0 9 L -6.5 3 Z"/>
+      </Canvas>
       <c:TrackHeaderCanvas Grid.Row="2" Grid.Column="0" ClipToBounds="True" Background="Transparent"
                            DataContext="{Binding TracksViewModel}"
                            TrackHeight="{Binding TrackHeight}"
@@ -145,7 +151,15 @@
                      PointerMoved="PartsCanvasPointerMoved"
                      PointerReleased="PartsCanvasPointerReleased"
                      DoubleTapped="PartsCanvasDoubleTapped"
-                     PointerWheelChanged="PartsCanvasPointerWheelChanged"/>
+                     PointerWheelChanged="PartsCanvasPointerWheelChanged">
+        <Rectangle Name="PlayPosHighlight"
+                   Width="{Binding SnapUnitWidth, Mode=OneWay}"
+                   Height="{Binding $parent.Bounds.Height, Mode=OneWay}"
+                   Canvas.Left="{Binding PlayPosHighlightX, Mode=OneWay}"
+                   Canvas.Top="0"
+                   Fill="{DynamicResource NeutralAccentBrushSemi}"
+                   IsHitTestVisible="False"/>
+      </c:PartsCanvas>
       <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent"
               BoxShadow="inset 0 0 5 1 #7f7F7F7F" ClipToBounds="True" IsHitTestVisible="False">
       </Border>

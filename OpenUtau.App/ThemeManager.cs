@@ -7,6 +7,7 @@ namespace OpenUtau.App {
     class ThemeChangedEvent { }
 
     class ThemeManager {
+        public static bool IsDarkMode = false;
         public static IBrush ForegroundBrush = Brushes.Black;
         public static IBrush BackgroundBrush = Brushes.White;
         public static IBrush AccentBrush1 = Brushes.White;
@@ -27,15 +28,27 @@ namespace OpenUtau.App {
         public static IBrush TickLineBrushLow = Brushes.Black;
         public static IBrush BarNumberBrush = Brushes.Black;
         public static IPen BarNumberPen = new Pen(Brushes.White);
-        public static IBrush KeyboardWhiteKeyBrush = Brushes.White;
-        public static IBrush KeyboardWhiteKeyNameBrush = Brushes.Black;
-        public static IBrush KeyboardCenterKeyBrush = Brushes.White;
-        public static IBrush KeyboardCenterKeyNameBrush = Brushes.Black;
-        public static IBrush KeyboardBlackKeyBrush = Brushes.Black;
-        public static IBrush KeyboardBlackKeyNameBrush = Brushes.White;
+        public static IBrush WhiteKeyBrush = Brushes.White;
+        public static IBrush WhiteKeyNameBrush = Brushes.Black;
+        public static IBrush CenterKeyBrush = Brushes.White;
+        public static IBrush CenterKeyNameBrush = Brushes.Black;
+        public static IBrush BlackKeyBrush = Brushes.Black;
+        public static IBrush BlackKeyNameBrush = Brushes.White;
+        public static IBrush ExpBrush = Brushes.White;
+        public static IBrush ExpNameBrush = Brushes.Black;
+        public static IBrush ExpShadowBrush = Brushes.Gray;
+        public static IBrush ExpShadowNameBrush = Brushes.White;
+        public static IBrush ExpActiveBrush = Brushes.Black;
+        public static IBrush ExpActiveNameBrush = Brushes.White;
 
         public static void LoadTheme(IResourceDictionary resDict) {
             object? outVar;
+            IsDarkMode = false;
+            if (resDict.TryGetResource("IsDarkMode", out outVar)) {
+                if (outVar is bool b) {
+                    IsDarkMode = b;
+                }
+            }
             if (resDict.TryGetResource("SystemControlForegroundBaseHighBrush", out outVar)) {
                 ForegroundBrush = (IBrush)outVar!;
             }
@@ -75,23 +88,38 @@ namespace OpenUtau.App {
                 BarNumberBrush = (IBrush)outVar!;
                 BarNumberPen = new Pen(BarNumberBrush, 1);
             }
-            if (resDict.TryGetResource("KeyboardWhiteKeyBrush", out outVar)) {
-                KeyboardWhiteKeyBrush = (IBrush)outVar!;
+            if (resDict.TryGetResource("WhiteKeyBrush", out outVar)) {
+                WhiteKeyBrush = (IBrush)outVar!;
             }
-            if (resDict.TryGetResource("KeyboardWhiteKeyNameBrush", out outVar)) {
-                KeyboardWhiteKeyNameBrush = (IBrush)outVar!;
+            if (resDict.TryGetResource("WhiteKeyNameBrush", out outVar)) {
+                WhiteKeyNameBrush = (IBrush)outVar!;
             }
-            if (resDict.TryGetResource("KeyboardCenterKeyBrush", out outVar)) {
-                KeyboardCenterKeyBrush = (IBrush)outVar!;
+            if (resDict.TryGetResource("CenterKeyBrush", out outVar)) {
+                CenterKeyBrush = (IBrush)outVar!;
             }
-            if (resDict.TryGetResource("KeyboardCenterKeyNameBrush", out outVar)) {
-                KeyboardCenterKeyNameBrush = (IBrush)outVar!;
+            if (resDict.TryGetResource("CenterKeyNameBrush", out outVar)) {
+                CenterKeyNameBrush = (IBrush)outVar!;
             }
-            if (resDict.TryGetResource("KeyboardBlackKeyBrush", out outVar)) {
-                KeyboardBlackKeyBrush = (IBrush)outVar!;
+            if (resDict.TryGetResource("BlackKeyBrush", out outVar)) {
+                BlackKeyBrush = (IBrush)outVar!;
             }
-            if (resDict.TryGetResource("KeyboardBlackKeyNameBrush", out outVar)) {
-                KeyboardBlackKeyNameBrush = (IBrush)outVar!;
+            if (resDict.TryGetResource("BlackKeyNameBrush", out outVar)) {
+                BlackKeyNameBrush = (IBrush)outVar!;
+            }
+            if (!IsDarkMode) {
+                ExpBrush = WhiteKeyBrush;
+                ExpNameBrush = WhiteKeyNameBrush;
+                ExpActiveBrush = BlackKeyBrush;
+                ExpActiveNameBrush = BlackKeyNameBrush;
+                ExpShadowBrush = CenterKeyBrush;
+                ExpShadowNameBrush = CenterKeyNameBrush;
+            } else {
+                ExpBrush = BlackKeyBrush;
+                ExpNameBrush = BlackKeyNameBrush;
+                ExpActiveBrush = WhiteKeyBrush;
+                ExpActiveNameBrush = WhiteKeyNameBrush;
+                ExpShadowBrush = CenterKeyBrush;
+                ExpShadowNameBrush = CenterKeyNameBrush;
             }
             TextLayoutCache.Clear();
             MessageBus.Current.SendMessage(new ThemeChangedEvent());

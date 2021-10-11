@@ -1,5 +1,8 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <system:Boolean x:Key="IsDarkMode">false</system:Boolean>
+  
   <Color x:Key="MainWindowColor">#FFFFFF</Color>
 
   <Color x:Key="BackgroundColor">#FFFFFF</Color>
@@ -26,15 +29,15 @@
   <Color x:Key="TrackBackgroundAltColor">#F0F0F0</Color>
 
   <!--Keyboard Background-->
-  <Color x:Key="WhiteKeyColorLeft">#FFFFFF</Color>
-  <Color x:Key="WhiteKeyColorRight">#FFFFFF</Color>
+  <Color x:Key="WhiteKeyColorLeft">Transparent</Color>
+  <Color x:Key="WhiteKeyColorRight">Transparent</Color>
   <Color x:Key="WhiteKeyNameColor">#FF347c</Color>
 
   <Color x:Key="CenterKeyColorLeft">#FFDDE6</Color>
   <Color x:Key="CenterKeyColorRight">#FFCEDC</Color>
   <Color x:Key="CenterKeyNameColor">#FF347C</Color>
 
-  <Color x:Key="BlackKeyColorLeft">#FF71a3</Color>
+  <Color x:Key="BlackKeyColorLeft">#FF71A3</Color>
   <Color x:Key="BlackKeyColorRight">#FF347C</Color>
   <Color x:Key="BlackKeyNameColor">#FFFFFF</Color>
 </ResourceDictionary>

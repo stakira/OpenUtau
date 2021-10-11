@@ -11,7 +11,7 @@ using Avalonia.Controls.Shapes;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
-using Avalonia.Media;
+using Avalonia.Threading;
 using Avalonia.VisualTree;
 using OpenUtau.App.Controls;
 using OpenUtau.App.ViewModels;
@@ -28,6 +28,7 @@ namespace OpenUtau.App.Views {
 
         private PartEditState? partEditState;
         private Rectangle? selectionBox;
+        private DispatcherTimer timer;
 
         public MainWindow() {
             InitializeComponent();
@@ -35,6 +36,9 @@ namespace OpenUtau.App.Views {
 #if DEBUG
             this.AttachDevTools();
 #endif
+            timer = new DispatcherTimer(DispatcherPriority.Normal);
+            timer.Tick += (sender, args) => PlaybackManager.Inst.UpdatePlayPos();
+            timer.Start();
         }
 
         private void InitializeComponent() {
@@ -507,12 +511,9 @@ namespace OpenUtau.App.Views {
             if (control is PartControl partControl) {
                 if (pianoRollWindow == null) {
                     pianoRollWindow = new PianoRollWindow() {
-                        DataContext = new PianoRollViewModel() {
-                            NotesViewModel = new NotesViewModel(),
-                            PlaybackViewModel = viewModel.PlaybackViewModel,
-                        },
                         MainWindow = this,
                     };
+                    pianoRollWindow.ViewModel.PlaybackViewModel = viewModel.PlaybackViewModel;
                 }
                 // Workaround for new window losing focus.
                 openPianoRollWindow = true;

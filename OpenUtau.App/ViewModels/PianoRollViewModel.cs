@@ -1,13 +1,13 @@
 ﻿using OpenUtau.Core;
-using OpenUtau.Core.Ustx;
-using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace OpenUtau.App.ViewModels {
     public class PianoRollViewModel : ViewModelBase, ICmdSubscriber {
-        public NotesViewModel NotesViewModel { get; set; }
-        public PlaybackViewModel PlaybackViewModel { get; set; }
+        [Reactive] public NotesViewModel NotesViewModel { get; set; }
+        [Reactive] public PlaybackViewModel? PlaybackViewModel { get; set; }
 
         public PianoRollViewModel() {
+            NotesViewModel = new NotesViewModel();
             DocManager.Inst.AddSubscriber(this);
         }
 

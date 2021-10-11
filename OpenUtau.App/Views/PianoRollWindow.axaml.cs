@@ -14,7 +14,7 @@ using OpenUtau.App.ViewModels;
 namespace OpenUtau.App.Views {
     public partial class PianoRollWindow : Window {
         public MainWindow? MainWindow { get; set; }
-        private PianoRollViewModel ViewModel => (PianoRollViewModel)DataContext!;
+        public readonly PianoRollViewModel ViewModel;
 
         private NoteEditState? editState;
         private Rectangle? selectionBox;
@@ -25,6 +25,7 @@ namespace OpenUtau.App.Views {
 #if DEBUG
             this.AttachDevTools();
 #endif
+            DataContext = ViewModel = new PianoRollViewModel();
         }
 
         private void InitializeComponent() {
@@ -60,7 +61,7 @@ namespace OpenUtau.App.Views {
             if (point.Properties.IsLeftButtonPressed) {
                 args.Pointer.Capture(canvas);
                 int tick = ViewModel.NotesViewModel.PointToSnappedTick(point.Position);
-                ViewModel.PlaybackViewModel.MovePlayPos(tick);
+                ViewModel.PlaybackViewModel?.MovePlayPos(tick);
             }
         }
 
@@ -69,7 +70,7 @@ namespace OpenUtau.App.Views {
             var point = args.GetCurrentPoint(canvas);
             if (point.Properties.IsLeftButtonPressed) {
                 int tick = ViewModel.NotesViewModel.PointToSnappedTick(point.Position);
-                ViewModel.PlaybackViewModel.MovePlayPos(tick);
+                ViewModel.PlaybackViewModel?.MovePlayPos(tick);
             }
         }
 
@@ -252,8 +253,11 @@ namespace OpenUtau.App.Views {
                 var scrollbar = this.FindControl<ScrollBar>("VScrollBar");
                 VScrollPointerWheelChanged(scrollbar, args);
             } else if (args.KeyModifiers == KeyModifiers.Control) {
-                var scaler = this.FindControl<ViewScaler>("VScaler");
-                ViewScalerPointerWheelChanged(scaler, args);
+                var canvas = (Canvas)sender;
+                var position = args.GetCurrentPoint((IVisual)sender).Position;
+                var size = canvas.Bounds.Size;
+                position = position.WithX(position.X / size.Width).WithY(position.Y / size.Height);
+                ViewModel.NotesViewModel.OnYZoomed(position, 0.1 * args.Delta.Y);
             } else if (args.KeyModifiers == KeyModifiers.Shift) {
                 var scrollbar = this.FindControl<ScrollBar>("HScrollBar");
                 HScrollPointerWheelChanged(scrollbar, args);
@@ -310,7 +314,7 @@ namespace OpenUtau.App.Views {
         }
 
         public void PhonemeCanvasPointerPressed(object sender, PointerPressedEventArgs args) {
-            if (ViewModel.NotesViewModel.Part == null) {
+            if (ViewModel?.NotesViewModel?.Part == null) {
                 return;
             }
             var canvas = (Canvas)sender;
@@ -346,6 +350,9 @@ namespace OpenUtau.App.Views {
         }
 
         public void PhonemeCanvasPointerMoved(object sender, PointerEventArgs args) {
+            if (ViewModel?.NotesViewModel?.Part == null) {
+                return;
+            }
             var canvas = (Canvas)sender;
             var point = args.GetCurrentPoint(canvas);
             if (editState != null) {
@@ -390,7 +397,16 @@ namespace OpenUtau.App.Views {
                     case Key.T: notesVm.ShowTips = !notesVm.ShowTips; break;
                     case Key.Up: notesVm.TransposeSelection(1); break;
                     case Key.Down: notesVm.TransposeSelection(-1); break;
-                    case Key.Space: break;
+                    case Key.Space:
+                        if (ViewModel.PlaybackViewModel != null &&
+                            !ViewModel.PlaybackViewModel.PlayOrPause()) {
+                            MessageBox.Show(
+                               this,
+                               "dialogs.noresampler.message",
+                               "dialogs.noresampler.caption",
+                               MessageBox.MessageBoxButtons.Ok);
+                        }
+                        break;
                     default: break;
                 }
             } else if (args.KeyModifiers == KeyModifiers.Control) {

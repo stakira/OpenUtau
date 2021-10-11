@@ -40,6 +40,9 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public double TickOffset { get; set; }
         [Reactive] public double TrackOffset { get; set; }
         [Reactive] public int SnapUnit { get; set; }
+        public double SnapUnitWidth => snapUnitWidth.Value;
+        [Reactive] public double PlayPosX { get; set; }
+        [Reactive] public double PlayPosHighlightX { get; set; }
         [Reactive] public bool IsSnapOn { get; set; }
         [Reactive] public bool ShowPitch { get; set; }
         [Reactive] public bool ShowVibrato { get; set; }
@@ -58,6 +61,7 @@ namespace OpenUtau.App.ViewModels {
         public double VScrollBarMax => Math.Max(0, TrackCount - ViewportTracks);
         public UProject Project => DocManager.Inst.Project;
 
+        private readonly ObservableAsPropertyHelper<double> snapUnitWidth;
         private readonly ObservableAsPropertyHelper<double> viewportTicks;
         private readonly ObservableAsPropertyHelper<double> viewportTracks;
         private readonly ObservableAsPropertyHelper<double> smallChangeX;
@@ -70,6 +74,9 @@ namespace OpenUtau.App.ViewModels {
         private int _lastNoteLength = 480;
 
         public NotesViewModel() {
+            snapUnitWidth = this.WhenAnyValue(x => x.SnapUnit, x => x.TickWidth)
+                .Select(v => v.Item1 * v.Item2)
+                .ToProperty(this, v => v.SnapUnitWidth);
             viewportTicks = this.WhenAnyValue(x => x.Bounds, x => x.TickWidth)
                 .Select(v => v.Item1.Width / v.Item2)
                 .ToProperty(this, x => x.ViewportTicks);
@@ -98,6 +105,10 @@ namespace OpenUtau.App.ViewModels {
                     }
                     SnapUnit = ticks;
                 });
+            this.WhenAnyValue(x => x.TickOffset)
+                .Subscribe(tickOffset => {
+                    SetPlayPos(DocManager.Inst.playPosTick, true);
+                });
 
             TickWidth = ViewConstants.PianoRollTickWidthDefault;
             TrackHeight = ViewConstants.NoteHeightDefault;
@@ -120,7 +131,6 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void OnXZoomed(Point position, double delta) {
-            double tick = TickOffset;
             bool recenter = true;
             if (TickOffset == 0 && position.X < 0.1) {
                 recenter = false;
@@ -138,11 +148,13 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void OnYZoomed(Point position, double delta) {
+            double center = TrackOffset + position.Y * ViewportTracks;
             double trackHeight = TrackHeight * (1.0 + delta * 2);
             trackHeight = Math.Clamp(trackHeight, ViewConstants.NoteHeightMin, ViewConstants.NoteHeightMax);
             trackHeight = Math.Max(trackHeight, Bounds.Height / TrackCount);
             TrackHeight = trackHeight;
-            TrackOffset = Math.Clamp(TrackOffset, 0, VScrollBarMax);
+            double trackOffset = center - position.Y * ViewportTracks;
+            TrackOffset = Math.Clamp(trackOffset, 0, VScrollBarMax);
             Notify();
         }
 
@@ -324,6 +336,21 @@ namespace OpenUtau.App.ViewModels {
             DocManager.Inst.EndUndoGroup();
         }
 
+        private void SetPlayPos(int tick, bool noScroll = false) {
+            double playPosX = TickToneToPoint(tick, 0).X;
+            double scroll = 0;
+            if (!noScroll && playPosX > PlayPosX) {
+                double margin = ViewConstants.PlayPosMarkerMargin * Bounds.Width;
+                if (playPosX > margin) {
+                    scroll = playPosX - margin;
+                }
+                TickOffset = Math.Clamp(TickOffset + scroll, 0, HScrollBarMax);
+            }
+            PlayPosX = playPosX + scroll;
+            int highlightTick = (int)Math.Floor((double)tick / SnapUnit) * SnapUnit;
+            PlayPosHighlightX = TickToneToPoint(highlightTick, 0).X + scroll;
+        }
+
         public void OnNext(UCommand cmd, bool isUndo) {
             if (cmd is UNotification) {
                 if (cmd is LoadPartNotification loadPart) {
@@ -333,6 +360,8 @@ namespace OpenUtau.App.ViewModels {
                 } else if (cmd is SelectExpressionNotification selectExp) {
                     SecondaryKey = PrimaryKey;
                     PrimaryKey = selectExp.ExpKey;
+                } else if (cmd is SetPlayPosTickNotification setPlayPosTick) {
+                    SetPlayPos(setPlayPosTick.playPosTick);
                 }
             } else if (cmd is PartCommand partCommand) {
                 if (cmd is ReplacePartCommand replacePart) {

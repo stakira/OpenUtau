@@ -1,11 +1,12 @@
 ﻿using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace OpenUtau.App.ViewModels {
     public class MainWindowViewModel : ViewModelBase, ICmdSubscriber {
-        public PlaybackViewModel PlaybackViewModel { get; set; }
-        public TracksViewModel TracksViewModel { get; set; }
+        [Reactive] public PlaybackViewModel PlaybackViewModel { get; set; }
+        [Reactive] public TracksViewModel TracksViewModel { get; set; }
 
         public bool ProjectSaved => !string.IsNullOrEmpty(DocManager.Inst.Project.FilePath) && DocManager.Inst.Project.Saved;
         public string AppVersion => $"OpenUtau v{System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version}";

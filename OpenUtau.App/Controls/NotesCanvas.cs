@@ -118,7 +118,7 @@ namespace OpenUtau.App.Controls {
                 return;
             }
             double leftTick = TickOffset - 480;
-            double rightTick = leftTick + Bounds.Width / TickWidth + 480;
+            double rightTick = TickOffset + Bounds.Width / TickWidth + 480;
             foreach (var note in Part.notes) {
                 if (note.LeftBound >= rightTick || note.RightBound <= leftTick) {
                     continue;
@@ -143,7 +143,7 @@ namespace OpenUtau.App.Controls {
             Point leftTop = viewModel.TickToneToPoint(note.position, note.tone);
             leftTop = leftTop.WithX(leftTop.X + 1).WithY(Math.Round(leftTop.Y + 1));
             Size size = viewModel.TickToneToSize(note.duration, 1);
-            size = size.WithWidth(size.Width - 1).WithHeight(Math.Floor(size.Height - 1));
+            size = size.WithWidth(size.Width - 1).WithHeight(Math.Floor(size.Height - 2));
             Point rightBottom = new Point(leftTop.X + size.Width, leftTop.Y + size.Height);
             var brush = selectedNotes.Contains(note)
                 ? (note.Error ? ThemeManager.AccentBrush2Semi : ThemeManager.AccentBrush2)

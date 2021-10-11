@@ -79,14 +79,16 @@
   <system:String x:Key="oto.set">Set</system:String>
   <system:String x:Key="oto.suffix">Suffix</system:String>
 
+  <system:String x:Key="prefs.advanced">Advanced</system:String>
+  <system:String x:Key="prefs.advanced.beta">Beta</system:String>
+  <system:String x:Key="prefs.advanced.stable">Stable</system:String>
   <system:String x:Key="prefs.appearance">Appearance</system:String>
   <system:String x:Key="prefs.appearance.lang">Language</system:String>
-  <system:String x:Key="prefs.appearance.lang.note">Note: please restart OpenUtau after changing language.</system:String>
   <system:String x:Key="prefs.appearance.theme">Theme</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">Dark</system:String>
   <system:String x:Key="prefs.appearance.theme.light">Light</system:String>
-  <system:String x:Key="prefs.appearance.theme.note">Note: please restart OpenUtau after changing theme.</system:String>
   <system:String x:Key="prefs.caption">Preferences</system:String>
+  <system:String x:Key="prefs.note.restart">Note: please restart OpenUtau after changing this item.</system:String>
   <system:String x:Key="prefs.paths">Paths</system:String>
   <system:String x:Key="prefs.paths.add">Add</system:String>
   <system:String x:Key="prefs.paths.remove">Remove</system:String>

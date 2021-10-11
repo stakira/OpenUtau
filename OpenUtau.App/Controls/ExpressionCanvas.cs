@@ -97,7 +97,7 @@ namespace OpenUtau.App.Controls {
                 return;
             }
             double leftTick = TickOffset - 480;
-            double rightTick = leftTick + Bounds.Width / TickWidth + 480;
+            double rightTick = TickOffset + Bounds.Width / TickWidth + 480;
             foreach (UNote note in Part.notes) {
                 if (note.LeftBound >= rightTick || note.RightBound <= leftTick) {
                     continue;

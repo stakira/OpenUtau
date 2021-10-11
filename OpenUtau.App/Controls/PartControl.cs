@@ -89,7 +89,9 @@ namespace OpenUtau.App.Controls {
             if (!change.IsEffectiveValueChange) {
                 return;
             }
-            if (change.Property == OffsetProperty) {
+            if (change.Property == OffsetProperty ||
+                change.Property == TrackHeightProperty ||
+                change.Property == TickWidthProperty) {
                 SetPosition();
             }
             if (change.Property == SelectedProperty) {

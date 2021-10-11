@@ -77,16 +77,16 @@ namespace OpenUtau.App.Controls {
             while (top < Bounds.Height) {
                 bool isAltTrack = IsAltTrack(track);
                 bool isCenterKey = IsKeyboard && IsCenterKey(track);
-                var brush = isCenterKey ? ThemeManager.KeyboardCenterKeyBrush
+                var brush = isCenterKey ? ThemeManager.CenterKeyBrush
                     : isAltTrack ? Foreground : Background;
                 context.DrawRectangle(
                     brush,
                     null,
                     new Rect(0, (int)top, Bounds.Width, TrackHeight));
                 if (IsKeyboard && TrackHeight >= 12) {
-                    brush = isCenterKey ? ThemeManager.KeyboardCenterKeyNameBrush
-                        : isAltTrack ? ThemeManager.KeyboardBlackKeyNameBrush
-                            : ThemeManager.KeyboardWhiteKeyNameBrush;
+                    brush = isCenterKey ? ThemeManager.CenterKeyNameBrush
+                        : isAltTrack ? ThemeManager.BlackKeyNameBrush
+                            : ThemeManager.WhiteKeyNameBrush;
                     string toneName = MusicMath.GetToneName(ViewConstants.MaxTone - 1 - track);
                     var textLayout = TextLayoutCache.Get(toneName, brush, 12);
                     var textPosition = new Point(Bounds.Width - 4 - (int)textLayout.Size.Width, (int)(top + (TrackHeight - textLayout.Size.Height) / 2));

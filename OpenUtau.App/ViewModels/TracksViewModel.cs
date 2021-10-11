@@ -40,6 +40,9 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public double TickOffset { get; set; }
         [Reactive] public double TrackOffset { get; set; }
         [Reactive] public int SnapUnit { get; set; }
+        public double SnapUnitWidth => snapUnitWidth.Value;
+        [Reactive] public double PlayPosX { get; set; }
+        [Reactive] public double PlayPosHighlightX { get; set; }
         public double ViewportTicks => viewportTicks.Value;
         public double ViewportTracks => viewportTracks.Value;
         public double SmallChangeX => smallChangeX.Value;
@@ -49,6 +52,7 @@ namespace OpenUtau.App.ViewModels {
         public ObservableCollectionExtended<UPart> Parts { get; } = new ObservableCollectionExtended<UPart>();
         public ObservableCollectionExtended<UTrack> Tracks { get; } = new ObservableCollectionExtended<UTrack>();
 
+        private readonly ObservableAsPropertyHelper<double> snapUnitWidth;
         private readonly ObservableAsPropertyHelper<double> viewportTicks;
         private readonly ObservableAsPropertyHelper<double> viewportTracks;
         private readonly ObservableAsPropertyHelper<double> smallChangeX;
@@ -58,6 +62,9 @@ namespace OpenUtau.App.ViewModels {
         private readonly HashSet<UPart> TempSelectedParts = new HashSet<UPart>();
 
         public TracksViewModel() {
+            snapUnitWidth = this.WhenAnyValue(x => x.SnapUnit, x => x.TickWidth)
+                .Select(v => v.Item1 * v.Item2)
+                .ToProperty(this, v => v.SnapUnitWidth);
             viewportTicks = this.WhenAnyValue(x => x.Bounds, x => x.TickWidth)
                 .Select(v => v.Item1.Width / v.Item2)
                 .ToProperty(this, x => x.ViewportTicks);
@@ -89,6 +96,10 @@ namespace OpenUtau.App.ViewModels {
                         ticks /= 2;
                     }
                     SnapUnit = ticks;
+                });
+            this.WhenAnyValue(x => x.TickOffset)
+                .Subscribe(tickOffset => {
+                    SetPlayPos(DocManager.Inst.playPosTick, true);
                 });
 
             TickWidth = ViewConstants.TickWidthDefault;
@@ -232,6 +243,21 @@ namespace OpenUtau.App.ViewModels {
             DeselectParts();
         }
 
+        private void SetPlayPos(int tick, bool noScroll = false) {
+            double playPosX = TickTrackToPoint(tick, 0).X;
+            double scroll = 0;
+            if (!noScroll && playPosX > PlayPosX) {
+                double margin = ViewConstants.PlayPosMarkerMargin * Bounds.Width;
+                if (playPosX > margin) {
+                    scroll = playPosX - margin;
+                }
+                TickOffset = Math.Clamp(TickOffset + scroll, 0, HScrollBarMax);
+            }
+            PlayPosX = playPosX + scroll;
+            int highlightTick = (int)Math.Floor((double)tick / SnapUnit) * SnapUnit;
+            PlayPosHighlightX = TickTrackToPoint(highlightTick, 0).X + scroll;
+        }
+
         public void OnNext(UCommand cmd, bool isUndo) {
             if (cmd is PartCommand partCommand) {
                 if (partCommand is AddPartCommand) {
@@ -282,6 +308,8 @@ namespace OpenUtau.App.ViewModels {
                     Parts.AddRange(loadProjectNotif.project.parts);
                     Tracks.Clear();
                     Tracks.AddRange(loadProjectNotif.project.tracks);
+                } else if (cmd is SetPlayPosTickNotification setPlayPosTick) {
+                    SetPlayPos(setPlayPosTick.playPosTick);
                 }
                 Notify();
             }

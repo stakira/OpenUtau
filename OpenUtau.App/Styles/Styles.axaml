@@ -18,6 +18,13 @@
     <Setter Property="Height" Value="24"/>
     <Setter Property="Padding" Value="8,2,8,2"/>
   </Style>
+  <Style Selector="MenuItem /template/ Path#PART_ChevronPath">
+    <Setter Property="RenderTransform" Value="Scale(0.75,0.75)"/>
+    <Setter Property="Fill" Value="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+  </Style>
+  <Style Selector="MenuItem /template/ TextBlock#PART_InputGestureText">
+    <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+  </Style>
 
   <Style Selector="ContextMenu MenuItem">
     <Setter Property="Background" Value="Transparent"/>
@@ -53,15 +60,6 @@
     <Setter Property="HorizontalContentAlignment" Value="Center"/>
     <Setter Property="VerticalContentAlignment" Value="Center"/>
   </Style>
-  <Style Selector="ToggleButton">
-    <Setter Property="BorderThickness" Value="0"/>
-    <Setter Property="FontSize" Value="12"/>
-    <Setter Property="Height" Value="20"/>
-    <Setter Property="Margin" Value="0,4"/>
-    <Setter Property="Padding" Value="4,0,4,2"/>
-    <Setter Property="HorizontalContentAlignment" Value="Center"/>
-    <Setter Property="VerticalContentAlignment" Value="Center"/>
-  </Style>
   <Style Selector="Button:pressed, RepeatButton:pressed, ToggleButton:pressed">
     <Setter Property="RenderTransform" Value="scale(1)"/>
   </Style>
@@ -79,6 +77,42 @@
     <Setter Property="Background" Value="{DynamicResource BackgroundColorPointerOver}"/>
   </Style>
 
+  <Style Selector="ToggleButton">
+    <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="FontSize" Value="12"/>
+    <Setter Property="Height" Value="20"/>
+    <Setter Property="Margin" Value="0,4"/>
+    <Setter Property="Padding" Value="4,0,4,2"/>
+    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    <Setter Property="VerticalContentAlignment" Value="Center"/>
+    <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAltHighBrush}" />
+  </Style>
+  <Style Selector="ToggleButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource NeutralAccentBrushSemi}" />
+  </Style>
+  <Style Selector="ToggleButton:pressed  /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource NeutralAccentBrush}" />
+  </Style>
+  <Style Selector="ToggleButton:checked /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource NeutralAccentBrush}" />
+  </Style>
+  <Style Selector="ToggleButton:checked:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource NeutralAccentBrushPointerOver}" />
+  </Style>
+  <Style Selector="ToggleButton:checked:pressed /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource NeutralAccentBrushPointerOver}" />
+  </Style>
+
+  <Style Selector="ToggleButton.toolbar">
+    <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="FontSize" Value="12"/>
+    <Setter Property="Height" Value="20"/>
+    <Setter Property="Margin" Value="0,4"/>
+    <Setter Property="Padding" Value="4,0,4,2"/>
+    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    <Setter Property="VerticalContentAlignment" Value="Center"/>
+  </Style>
+
   <Style Selector="ComboBox">
     <Setter Property="FontSize" Value="12"/>
     <Setter Property="Height" Value="20"/>
@@ -90,6 +124,9 @@
     <Setter Property="Height" Value="20"/>
     <Setter Property="Margin" Value="0"/>
     <Setter Property="Padding" Value="4,2,0,0"/>
+  </Style>
+  <Style Selector="ComboBox /template/ Path#DropDownGlyph">
+    <Setter Property="Fill" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
   </Style>
 
   <Style Selector="ListBoxItem">
@@ -135,7 +172,9 @@
     <Setter Property="Height" Value="20"/>
   </Style>
   <Style Selector="Border.playback TextBlock">
-    <Setter Property="FontSize" Value="10"/>
+    <Setter Property="Padding" Value="6,0,0,1"/>
+    <Setter Property="FontSize" Value="11"/>
+    <Setter Property="FontFamily" Value="Monospace"/>
     <Setter Property="VerticalAlignment" Value="Center"/>
     <Setter Property="HorizontalAlignment" Value="Center"/>
   </Style>

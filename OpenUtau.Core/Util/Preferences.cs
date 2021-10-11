@@ -60,6 +60,7 @@ namespace OpenUtau.Core.Util {
             public bool ShowPrefs = true;
             public bool ShowTips = true;
             public int Theme;
+            public int Beta = 0;
             public int PrerenderThreads = 8;
             public string Language = string.Empty;
         }

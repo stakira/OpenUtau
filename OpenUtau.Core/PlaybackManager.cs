@@ -71,6 +71,18 @@ namespace OpenUtau.Core {
             AudioOutput.Play();
         }
 
+        public bool PlayOrPause() {
+            if (Playing) {
+                PausePlayback();
+                return true;
+            }
+            if (!CheckResampler()) {
+                return false;
+            }
+            Play(DocManager.Inst.Project, DocManager.Inst.playPosTick);
+            return true;
+        }
+
         public void Play(UProject project, int tick) {
             if (AudioOutput.PlaybackState == PlaybackState.Paused) {
                 AudioOutput.Play();
@@ -139,7 +151,7 @@ namespace OpenUtau.Core {
         }
 
         public void UpdatePlayPos() {
-            if (AudioOutput.PlaybackState == PlaybackState.Playing && masterMix != null) {
+            if (AudioOutput != null && AudioOutput.PlaybackState == PlaybackState.Playing && masterMix != null) {
                 double ms = (AudioOutput.GetPosition() / sizeof(float) - masterMix.Paused) * 1000.0 / 44100;
                 int tick = DocManager.Inst.Project.MillisecondToTick(startMs + ms);
                 DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(tick));

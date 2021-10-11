@@ -17,30 +17,16 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public UExpressionDescriptor? Descriptor { get; set; }
         public ObservableCollection<UExpressionDescriptor> Descriptors => descriptors;
         public string Header => header.Value;
-        public IBrush TagBrush => tagBrush.Value;
-        public IBrush Background => background.Value;
+        [Reactive] public IBrush TagBrush { get; set; }
+        [Reactive] public IBrush Background { get; set; }
 
         ObservableCollection<UExpressionDescriptor> descriptors = new ObservableCollection<UExpressionDescriptor>();
         ObservableAsPropertyHelper<string> header;
-        ObservableAsPropertyHelper<IBrush> tagBrush;
-        ObservableAsPropertyHelper<IBrush> background;
 
         public ExpSelectorViewModel() {
             DocManager.Inst.AddSubscriber(this);
             this.WhenAnyValue(x => x.DisplayMode)
-                .Select(mode => mode == ExpDisMode.Visible
-                    ? ThemeManager.KeyboardBlackKeyNameBrush
-                    : mode == ExpDisMode.Shadow
-                    ? ThemeManager.KeyboardCenterKeyNameBrush
-                    : ThemeManager.KeyboardWhiteKeyNameBrush)
-                .ToProperty(this, x => x.TagBrush, out tagBrush);
-            this.WhenAnyValue(x => x.DisplayMode)
-                .Select(mode => mode == ExpDisMode.Visible
-                    ? ThemeManager.KeyboardBlackKeyBrush
-                    : mode == ExpDisMode.Shadow
-                    ? ThemeManager.KeyboardCenterKeyBrush
-                    : ThemeManager.KeyboardWhiteKeyBrush)
-                .ToProperty(this, x => x.Background, out background);
+                .Subscribe(_ => RefreshBrushes());
             this.WhenAnyValue(x => x.Descriptor)
                 .Select(descriptor => descriptor == null ? string.Empty : descriptor.abbr.ToUpperInvariant())
                 .ToProperty(this, x => x.Header, out header);
@@ -52,6 +38,10 @@ namespace OpenUtau.App.ViewModels {
                         Descriptor = tuple.Item2[tuple.Item1];
                     }
                 });
+            MessageBus.Current.Listen<ThemeChangedEvent>()
+                .Subscribe(_ => RefreshBrushes());
+            TagBrush = ThemeManager.ExpNameBrush;
+            Background = ThemeManager.ExpBrush;
             OnListChange();
         }
 
@@ -100,6 +90,19 @@ namespace OpenUtau.App.ViewModels {
             } else if (cmd.UpdateShadow) {
                 DisplayMode = DisplayMode == ExpDisMode.Visible ? ExpDisMode.Shadow : ExpDisMode.Hidden;
             }
+        }
+
+        private void RefreshBrushes() {
+            TagBrush = DisplayMode == ExpDisMode.Visible
+                    ? ThemeManager.ExpActiveNameBrush
+                    : DisplayMode == ExpDisMode.Shadow
+                    ? ThemeManager.ExpShadowNameBrush
+                    : ThemeManager.ExpNameBrush;
+            Background = DisplayMode == ExpDisMode.Visible
+                    ? ThemeManager.ExpActiveBrush
+                    : DisplayMode == ExpDisMode.Shadow
+                    ? ThemeManager.ExpShadowBrush
+                    : ThemeManager.ExpBrush;
         }
     }
 }

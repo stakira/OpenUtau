@@ -14,8 +14,7 @@ namespace OpenUtau.App {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             InitLogging();
             InitOpenUtau();
-            BuildAvaloniaApp().StartWithClassicDesktopLifetime(
-                args, ShutdownMode.OnMainWindowClose);
+            Run(args);
         }
 
         // Avalonia configuration, don't remove; also used by visual designer.
@@ -31,6 +30,11 @@ namespace OpenUtau.App {
                 .LogToTrace()
                 .UseReactiveUI()
                 .SetupWithoutStarting();
+
+        public static void Run(string[] args)
+            => BuildAvaloniaApp()
+                .StartWithClassicDesktopLifetime(
+                    args, ShutdownMode.OnMainWindowClose);
 
         public static void InitLogging() {
             Log.Logger = new LoggerConfiguration()
