@@ -144,7 +144,7 @@ namespace OpenUtau.App.Controls {
         }
 
         public override void Render(DrawingContext context) {
-            if (TickWidth <= 0 || SnapUnit <= 0) {
+            if (TickWidth <= 0 || SnapUnit <= 0 || BeatUnit <= 0) {
                 return;
             }
             int beatUnitTicks = Resolution * 4 / BeatUnit;

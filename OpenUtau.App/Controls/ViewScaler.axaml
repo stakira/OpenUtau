@@ -24,7 +24,7 @@
       <Setter Property="Background" Value="Transparent"/>
     </Style>
   </UserControl.Styles>
-  <Button Margin="0" Padding="0" Width="24" Height="24" Background="Transparent">
+  <Button Margin="0" Padding="0" Width="24" Height="24" Background="Transparent" Focusable="False">
     <Path Name="Path" Width="16" Height="16" Stroke="{Binding $parent.Foreground}"
           StrokeThickness="1.75" StrokeLineCap="Flat" StrokeJoin="Miter"/>
   </Button>

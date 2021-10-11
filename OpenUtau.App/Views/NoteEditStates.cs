@@ -91,6 +91,10 @@ namespace OpenUtau.App.Views {
             xOffset = point.X - notesVm.TickToneToPoint(note.position, 0).X;
         }
         public override void Update(IPointer pointer, Point point) {
+            var delta = point - startPoint;
+            if (Math.Abs(delta.X) + Math.Abs(delta.Y) < 4) {
+                return;
+            }
             var notesVm = vm.NotesViewModel;
             var part = notesVm.Part;
             if (part == null) {

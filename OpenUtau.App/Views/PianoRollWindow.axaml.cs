@@ -19,6 +19,7 @@ namespace OpenUtau.App.Views {
         private NoteEditState? editState;
         private Rectangle? selectionBox;
         private Border? expValueTip;
+        private LyricBox? lyricBox;
 
         public PianoRollWindow() {
             InitializeComponent();
@@ -31,16 +32,23 @@ namespace OpenUtau.App.Views {
         private void InitializeComponent() {
             AvaloniaXamlLoader.Load(this);
             expValueTip = this.FindControl<Border>("ExpValueTip");
+            lyricBox = this.FindControl<LyricBox>("LyricBox");
+        }
+
+        public void WindowDeactivated(object sender, EventArgs args) {
+            //lyricBox?.EndEdit();
         }
 
         public void HScrollPointerWheelChanged(object sender, PointerWheelEventArgs args) {
             var scrollbar = (ScrollBar)sender;
             scrollbar.Value = Math.Max(scrollbar.Minimum, Math.Min(scrollbar.Maximum, scrollbar.Value - scrollbar.SmallChange * args.Delta.Y));
+            lyricBox?.EndEdit();
         }
 
         public void VScrollPointerWheelChanged(object sender, PointerWheelEventArgs args) {
             var scrollbar = (ScrollBar)sender;
             scrollbar.Value = Math.Max(scrollbar.Minimum, Math.Min(scrollbar.Maximum, scrollbar.Value - scrollbar.SmallChange * args.Delta.Y));
+            lyricBox?.EndEdit();
         }
 
         public void TimelinePointerWheelChanged(object sender, PointerWheelEventArgs args) {
@@ -49,10 +57,12 @@ namespace OpenUtau.App.Views {
             var size = canvas.Bounds.Size;
             position = position.WithX(position.X / size.Width).WithY(position.Y / size.Height);
             ViewModel.NotesViewModel.OnXZoomed(position, 0.1 * args.Delta.Y);
+            lyricBox?.EndEdit();
         }
 
         public void ViewScalerPointerWheelChanged(object sender, PointerWheelEventArgs args) {
             ViewModel.NotesViewModel.OnYZoomed(new Point(0, 0.5), 0.1 * args.Delta.Y);
+            lyricBox?.EndEdit();
         }
 
         public void TimelinePointerPressed(object sender, PointerPressedEventArgs args) {
@@ -63,6 +73,7 @@ namespace OpenUtau.App.Views {
                 int tick = ViewModel.NotesViewModel.PointToSnappedTick(point.Position);
                 ViewModel.PlaybackViewModel?.MovePlayPos(tick);
             }
+            lyricBox?.EndEdit();
         }
 
         public void TimelinePointerMoved(object sender, PointerEventArgs args) {
@@ -79,6 +90,7 @@ namespace OpenUtau.App.Views {
         }
 
         public void NotesCanvasPointerPressed(object sender, PointerPressedEventArgs args) {
+            lyricBox?.EndEdit();
             if (ViewModel.NotesViewModel.Part == null) {
                 return;
             }
@@ -246,9 +258,21 @@ namespace OpenUtau.App.Views {
                 return;
             }
             var e = (TappedEventArgs)args;
+            var point = e.GetPosition(canvas);
+            if (editState != null) {
+                editState.End(e.Pointer, point);
+                editState = null;
+                Cursor = null;
+            }
+            var noteHitInfo = ViewModel.NotesViewModel.HitTest.HitTestNote(point);
+            if (noteHitInfo.hitBody && ViewModel?.NotesViewModel?.Part != null) {
+                var note = noteHitInfo.note;
+                lyricBox?.Show(ViewModel.NotesViewModel.Part, note, note.lyric);
+            }
         }
 
         public void NotesCanvasPointerWheelChanged(object sender, PointerWheelEventArgs args) {
+            lyricBox?.EndEdit();
             if (args.KeyModifiers == KeyModifiers.None) {
                 var scrollbar = this.FindControl<ScrollBar>("VScrollBar");
                 VScrollPointerWheelChanged(scrollbar, args);
@@ -268,6 +292,7 @@ namespace OpenUtau.App.Views {
         }
 
         public void ExpCanvasPointerPressed(object sender, PointerPressedEventArgs args) {
+            lyricBox?.EndEdit();
             if (ViewModel.NotesViewModel.Part == null) {
                 return;
             }
@@ -314,6 +339,7 @@ namespace OpenUtau.App.Views {
         }
 
         public void PhonemeCanvasPointerPressed(object sender, PointerPressedEventArgs args) {
+            lyricBox?.EndEdit();
             if (ViewModel?.NotesViewModel?.Part == null) {
                 return;
             }
@@ -383,6 +409,7 @@ namespace OpenUtau.App.Views {
         }
 
         void OnKeyDown(object sender, KeyEventArgs args) {
+            lyricBox?.EndEdit();
             var notesVm = ViewModel.NotesViewModel;
             if (notesVm.Part == null) {
                 return;

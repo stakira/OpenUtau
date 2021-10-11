@@ -157,7 +157,7 @@
                    Height="{Binding $parent.Bounds.Height, Mode=OneWay}"
                    Canvas.Left="{Binding PlayPosHighlightX, Mode=OneWay}"
                    Canvas.Top="0"
-                   Fill="{DynamicResource NeutralAccentBrushSemi}"
+                   Fill="{DynamicResource NeutralAccentBrushSemi2}"
                    IsHitTestVisible="False"/>
       </c:PartsCanvas>
       <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent"

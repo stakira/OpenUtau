@@ -9,7 +9,7 @@
         Icon="/Assets/open-utau.ico"
         Title="Piano Roll" MinWidth="300" MinHeight="200" KeyDown="OnKeyDown" Closing="WindowClosing"
         TransparencyLevelHint="None" Background="{DynamicResource MainWindowBackgroundBrush}"
-        ExtendClientAreaToDecorationsHint="False">
+        ExtendClientAreaToDecorationsHint="False" Deactivated="WindowDeactivated">
   <Grid>
     <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="{Binding $parent[1].WindowDecorationMargin}">
       <Grid.RowDefinitions>
@@ -99,7 +99,7 @@
                    Height="{Binding $parent.Bounds.Height, Mode=OneWay}"
                    Canvas.Left="{Binding NotesViewModel.PlayPosHighlightX, Mode=OneWay}"
                    Canvas.Top="0" ZIndex="-10"
-                   Fill="{DynamicResource NeutralAccentBrushSemi}"
+                   Fill="{DynamicResource NeutralAccentBrushSemi2}"
                    IsHitTestVisible="False"/>
       </c:NotesCanvas>
       <StackPanel Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top"
@@ -225,6 +225,8 @@
           </Border>
         </Grid>
       </Border>
+      <c:LyricBox Name="LyricBox" Grid.Row="2" Grid.Column="1" Width="360"
+               HorizontalAlignment="Center" VerticalAlignment="Center"/>
       <Border Grid.Row="4" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
               BoxShadow="inset 0 0 5 1 #7f7F7F7F" ClipToBounds="True" IsHitTestVisible="False">
         <Border Classes="tips" HorizontalAlignment="Center" VerticalAlignment="Center"
