@@ -81,10 +81,12 @@ namespace OpenUtau.App.Controls {
                             || e.tempSelectedParts.Contains(part);
                     }
                 });
-            MessageBus.Current.Listen<PartResizeEvent>()
-                .Subscribe(e => partControls[e.part].SetSize());
-            MessageBus.Current.Listen<PartMoveEvent>()
-                .Subscribe(e => partControls[e.part].SetPosition());
+            MessageBus.Current.Listen<PartRefreshEvent>()
+                .Subscribe(e => {
+                    partControls[e.part].SetSize();
+                    partControls[e.part].SetPosition();
+                    partControls[e.part].Refersh();
+                });
             MessageBus.Current.Listen<ThemeChangedEvent>()
                 .Subscribe(_ => InvalidateVisual());
         }

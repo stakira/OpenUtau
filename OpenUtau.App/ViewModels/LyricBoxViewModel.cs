@@ -50,9 +50,9 @@ namespace OpenUtau.App.ViewModels {
                     Source = "a->あ",
                 });
             }
-            singer.GetSuggestions(Text, suggestion => Suggestions.Add(new SuggestionItem() {
-                Alias = suggestion,
-                Source = singer.Id,
+            singer.GetSuggestions(Text, oto => Suggestions.Add(new SuggestionItem() {
+                Alias = oto.Alias,
+                Source = string.IsNullOrEmpty(oto.Set) ? singer.Id : $"{singer.Id} / {oto.Set}",
             }));
         }
 

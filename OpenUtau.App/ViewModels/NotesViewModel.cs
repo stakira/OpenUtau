@@ -40,6 +40,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public double TickOffset { get; set; }
         [Reactive] public double TrackOffset { get; set; }
         [Reactive] public int SnapUnit { get; set; }
+        [Reactive] public string SnapUnitText { get; set; }
         public double SnapUnitWidth => snapUnitWidth.Value;
         [Reactive] public double PlayPosX { get; set; }
         [Reactive] public double PlayPosHighlightX { get; set; }
@@ -97,19 +98,23 @@ namespace OpenUtau.App.ViewModels {
 
             this.WhenAnyValue(x => x.TickWidth)
                 .Subscribe(tickWidth => {
+                    int div = Project.beatUnit;
                     int ticks = Project.resolution * 4 / Project.beatUnit;
                     double width = ticks * tickWidth;
                     while (width / 2 >= ViewConstants.PianoRollMinTicklineWidth && ticks % 2 == 0) {
                         width /= 2;
                         ticks /= 2;
+                        div *= 2;
                     }
                     SnapUnit = ticks;
+                    SnapUnitText = $"1/{div}";
                 });
             this.WhenAnyValue(x => x.TickOffset)
                 .Subscribe(tickOffset => {
                     SetPlayPos(DocManager.Inst.playPosTick, true);
                 });
 
+            SnapUnitText = string.Empty;
             TickWidth = ViewConstants.PianoRollTickWidthDefault;
             TrackHeight = ViewConstants.NoteHeightDefault;
             ExpValueTipText = string.Empty;
@@ -309,7 +314,7 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void PasteNotes() {
-            if (DocManager.Inst.NotesClipboard != null && DocManager.Inst.NotesClipboard.Count > 0) {
+            if (Part != null && DocManager.Inst.NotesClipboard != null && DocManager.Inst.NotesClipboard.Count > 0) {
                 int position = (int)(Math.Ceiling(TickOffset / SnapUnit) * SnapUnit);
                 int minPosition = DocManager.Inst.NotesClipboard.Select(note => note.position).Min();
                 int offset = position - (int)Math.Floor((double)minPosition / SnapUnit) * SnapUnit;
@@ -351,6 +356,11 @@ namespace OpenUtau.App.ViewModels {
             PlayPosHighlightX = TickToneToPoint(highlightTick, 0).X + scroll;
         }
 
+        private void FocusNote(UNote note) {
+            TickOffset = TickOffset = Math.Clamp(note.position + note.duration * 0.5 - ViewportTicks * 0.5, 0, HScrollBarMax);
+            TrackOffset = Math.Clamp(ViewConstants.MaxTone - note.tone + 2 - ViewportTracks * 0.5, 0, VScrollBarMax);
+        }
+
         public void OnNext(UCommand cmd, bool isUndo) {
             if (cmd is UNotification) {
                 if (cmd is LoadPartNotification loadPart) {
@@ -362,6 +372,10 @@ namespace OpenUtau.App.ViewModels {
                     PrimaryKey = selectExp.ExpKey;
                 } else if (cmd is SetPlayPosTickNotification setPlayPosTick) {
                     SetPlayPos(setPlayPosTick.playPosTick);
+                } else if (cmd is FocusNoteNotification focusNote) {
+                    if (focusNote.part == Part) {
+                        FocusNote(focusNote.note);
+                    }
                 }
             } else if (cmd is PartCommand partCommand) {
                 if (cmd is ReplacePartCommand replacePart) {
@@ -387,7 +401,7 @@ namespace OpenUtau.App.ViewModels {
                 if (noteCommand.Part == Part) {
                     MessageBus.Current.SendMessage(new NotesRefreshEvent());
                 }
-            } else if (cmd is ExpCommand) {
+            } else if (cmd is ExpCommand || cmd is TrackCommand) {
                 MessageBus.Current.SendMessage(new NotesRefreshEvent());
             }
         }

@@ -183,7 +183,7 @@ namespace OpenUtau.Core.Ustx {
             return null;
         }
 
-        public void GetSuggestions(string text, Action<string> provide) {
+        public void GetSuggestions(string text, Action<UOto> provide) {
             if (text != null) {
                 text = text.ToLowerInvariant().Replace(" ", "");
             }
@@ -193,7 +193,7 @@ namespace OpenUtau.Core.Ustx {
                 .SelectMany(list => list)
                 .Where(oto => all || oto.SearchTerms.Exists(term => term.Contains(text)))
                 .ToList()
-                .ForEach(oto => provide(oto.Alias));
+                .ForEach(oto => provide(oto));
         }
 
         public override string ToString() => Name;

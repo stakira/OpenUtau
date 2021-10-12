@@ -50,5 +50,7 @@ namespace OpenUtau.App {
         public static void InitOpenUtau() {
             Core.DocManager.Inst.Initialize();
         }
+
+        public static Action? AutoUpdate { get;set; }
     }
 }

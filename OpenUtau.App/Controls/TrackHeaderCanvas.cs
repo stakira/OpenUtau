@@ -51,7 +51,7 @@ namespace OpenUtau.App.Controls {
             MessageBus.Current.Listen<TracksRefreshEvent>()
                 .Subscribe(_ => {
                     foreach (var (track, header) in trackHeaders) {
-                        header.TrackNo = track.TrackNo;
+                        header.ViewModel?.ManuallyRaise();
                     }
                     if (trackAdder != null) {
                         trackAdder.TrackNo = trackHeaders.Count;
@@ -114,8 +114,10 @@ namespace OpenUtau.App.Controls {
         }
 
         void Add(UTrack track) {
+            var vm = new TrackHeaderViewModel(track);
             var header = new TrackHeader() {
-                DataContext = new TrackHeaderViewModel(track),
+                DataContext = vm,
+                ViewModel = vm,
             };
             header.Bind(track, this);
             Children.Add(header);

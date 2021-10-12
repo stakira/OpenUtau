@@ -14,7 +14,7 @@ using Serilog;
 
 namespace OpenUtau.App.ViewModels {
     public class TrackHeaderViewModel : ViewModelBase, IActivatableViewModel {
-        public int TrackNo => track.TrackNo;
+        public int TrackNo => track.TrackNo + 1;
         public USinger Singer => track.Singer;
         public Phonemizer Phonemizer => track.Phonemizer;
         public string PhonemizerTag => track.Phonemizer.Tag;
@@ -67,6 +67,8 @@ namespace OpenUtau.App.ViewModels {
                         }).DisposeWith(disposables);
                 });
             });
+
+            RefreshAvatar();
         }
 
         public void RefreshSingers() {
@@ -74,7 +76,7 @@ namespace OpenUtau.App.ViewModels {
                 Header = singer.Name,
                 Command = SelectSingerCommand,
                 CommandParameter = singer,
-            }).ToArray();
+            }).OrderBy(item => item.Header).ToArray();
             this.RaisePropertyChanged(nameof(SingerMenuItems));
         }
 
@@ -105,10 +107,10 @@ namespace OpenUtau.App.ViewModels {
 
         public void ManuallyRaise() {
             this.RaisePropertyChanged(nameof(Singer));
-            RefreshAvatar();
             this.RaisePropertyChanged(nameof(TrackNo));
             this.RaisePropertyChanged(nameof(Phonemizer));
             this.RaisePropertyChanged(nameof(PhonemizerTag));
+            RefreshAvatar();
         }
 
         public void Remove() {

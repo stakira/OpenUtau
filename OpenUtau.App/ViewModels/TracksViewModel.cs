@@ -19,13 +19,9 @@ namespace OpenUtau.App.ViewModels {
             this.tempSelectedParts = tempSelectedParts;
         }
     }
-    public class PartResizeEvent {
+    public class PartRefreshEvent {
         public readonly UPart part;
-        public PartResizeEvent(UPart part) { this.part = part; }
-    }
-    public class PartMoveEvent {
-        public readonly UPart part;
-        public PartMoveEvent(UPart part) { this.part = part; }
+        public PartRefreshEvent(UPart part) { this.part = part; }
     }
 
     public class TracksViewModel : ViewModelBase, ICmdSubscriber {
@@ -280,11 +276,8 @@ namespace OpenUtau.App.ViewModels {
                         Parts.Remove(replacePart.newPart);
                         Parts.Add(replacePart.part);
                     }
-                } else if (partCommand is ResizePartCommand resizePart) {
-                    MessageBus.Current.SendMessage(new PartResizeEvent(resizePart.part));
-                } else if (partCommand is MovePartCommand movePart) {
-                    MessageBus.Current.SendMessage(new PartMoveEvent(movePart.part));
                 }
+                MessageBus.Current.SendMessage(new PartRefreshEvent(partCommand.part));
                 Notify();
             } else if (cmd is TrackCommand) {
                 if (cmd is AddTrackCommand addTrack) {
@@ -308,6 +301,7 @@ namespace OpenUtau.App.ViewModels {
                     Parts.AddRange(loadProjectNotif.project.parts);
                     Tracks.Clear();
                     Tracks.AddRange(loadProjectNotif.project.tracks);
+                    MessageBus.Current.SendMessage(new TracksRefreshEvent());
                 } else if (cmd is SetPlayPosTickNotification setPlayPosTick) {
                     SetPlayPos(setPlayPosTick.playPosTick);
                 }

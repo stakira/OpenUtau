@@ -45,6 +45,7 @@
     <Setter Property="Padding" Value="4,1"/>
     <Setter Property="Margin" Value="0,0,0,4"/>
     <Setter Property="FontSize" Value="12"/>
+    <Setter Property="FontFamily" Value="Microsoft YaHei,Simsun,苹方-简,宋体-简"/>
     <Setter Property="VerticalAlignment" Value="Top"/>
   </Style>
   <Style Selector="TextBox:disabled">
@@ -88,16 +89,16 @@
     <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAltHighBrush}" />
   </Style>
   <Style Selector="ToggleButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="{DynamicResource NeutralAccentBrushSemi}" />
+    <Setter Property="Background" Value="{DynamicResource NeutralAccentBrush}" />
   </Style>
   <Style Selector="ToggleButton:pressed  /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="{DynamicResource NeutralAccentBrush}" />
+    <Setter Property="Background" Value="{DynamicResource NeutralAccentBrushPointerOver}" />
   </Style>
   <Style Selector="ToggleButton:checked /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="{DynamicResource NeutralAccentBrush}" />
+    <Setter Property="Background" Value="{DynamicResource NeutralAccentBrushSemi}" />
   </Style>
   <Style Selector="ToggleButton:checked:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="{DynamicResource NeutralAccentBrushPointerOver}" />
+    <Setter Property="Background" Value="{DynamicResource NeutralAccentBrush}" />
   </Style>
   <Style Selector="ToggleButton:checked:pressed /template/ ContentPresenter#PART_ContentPresenter">
     <Setter Property="Background" Value="{DynamicResource NeutralAccentBrushPointerOver}" />

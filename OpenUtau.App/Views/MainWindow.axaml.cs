@@ -36,9 +36,11 @@ namespace OpenUtau.App.Views {
 #if DEBUG
             this.AttachDevTools();
 #endif
+            viewModel.NewProject();
             timer = new DispatcherTimer(DispatcherPriority.Normal);
             timer.Tick += (sender, args) => PlaybackManager.Inst.UpdatePlayPos();
             timer.Start();
+            Program.AutoUpdate?.Invoke();
         }
 
         private void InitializeComponent() {
@@ -393,10 +395,6 @@ namespace OpenUtau.App.Views {
 
         public void TimelinePointerReleased(object sender, PointerReleasedEventArgs args) {
             args.Pointer.Capture(null);
-        }
-
-        public void TrackHeaderCanvasDoubleTapped(object sender, RoutedEventArgs args) {
-            viewModel.TracksViewModel.AddTrack();
         }
 
         public void PartsCanvasPointerPressed(object sender, PointerPressedEventArgs args) {

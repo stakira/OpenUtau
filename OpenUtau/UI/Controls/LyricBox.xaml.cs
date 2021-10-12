@@ -134,7 +134,7 @@ namespace OpenUtau.UI.Controls {
             if (!string.IsNullOrEmpty(Text)) {
                 itemList.Items.Add(WanaKana.ToHiragana(Text));
             }
-            singer.GetSuggestions(Text, suggestion => itemList.Items.Add(suggestion));
+            singer.GetSuggestions(Text, oto => itemList.Items.Add(oto.Alias));
         }
     }
 }

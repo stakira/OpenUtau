@@ -44,6 +44,8 @@ namespace OpenUtau.App.Controls {
         private Point offset;
         private int trackNo;
 
+        public TrackHeaderViewModel? ViewModel;
+
         private List<IDisposable> unbinds = new List<IDisposable>();
 
         private UTrack? track;
@@ -84,7 +86,7 @@ namespace OpenUtau.App.Controls {
         void SingerButtonClicked(object sender, RoutedEventArgs args) {
             var singerMenu = this.FindControl<ContextMenu>("SingersMenu");
             if (DocManager.Inst.Singers.Count > 0) {
-                (DataContext as TrackHeaderViewModel)!.RefreshSingers();
+                ViewModel?.RefreshSingers();
                 singerMenu.Open();
             }
             args.Handled = true;
@@ -93,7 +95,7 @@ namespace OpenUtau.App.Controls {
         void PhonemizerButtonClicked(object sender, RoutedEventArgs args) {
             var phonemizerMenu = this.FindControl<ContextMenu>("PhonemizersMenu");
             if (DocManager.Inst.PhonemizerFactories.Length > 0) {
-                (DataContext as TrackHeaderViewModel)!.RefreshPhonemizers();
+                ViewModel?.RefreshPhonemizers();
                 phonemizerMenu.Open();
             }
             args.Handled = true;

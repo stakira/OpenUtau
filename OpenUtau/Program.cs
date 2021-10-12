@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Text;
-using Serilog;
+using AutoUpdaterDotNET;
 
 namespace OpenUtau {
     class Program {
@@ -16,6 +16,7 @@ namespace OpenUtau {
                 App.Program.InitInterop();
                 new WpfApp().Run(new UI.MainWindow());
             } else {
+                App.Program.AutoUpdate = () => AutoUpdater.Start("https://github.com/stakira/OpenUtau/releases/download/OpenUtau-Latest/release.xml");
                 App.Program.Run(args);
             }
         }

@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:OpenUtau.App.ViewModels"
              mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="64"
-             x:Class="OpenUtau.App.Controls.TrackHeader" Width="250">
+             x:Class="OpenUtau.App.Controls.TrackHeader" Width="250" TrackNo="{Binding TrackNo}">
   <Design.DataContext>
     <vm:TrackHeaderViewModel/>
   </Design.DataContext>

@@ -94,7 +94,8 @@ namespace OpenUtau.App.Controls {
                 change.Property == TickWidthProperty) {
                 SetPosition();
             }
-            if (change.Property == SelectedProperty) {
+            if (change.Property == SelectedProperty ||
+                change.Property == TextProperty) {
                 InvalidateVisual();
             }
         }
@@ -107,6 +108,10 @@ namespace OpenUtau.App.Controls {
         public void SetSize() {
             Width = TickWidth * part.Duration;
             Height = trackHeight;
+        }
+
+        public void Refersh() {
+            Text = part.name;
         }
 
         public override void Render(DrawingContext context) {

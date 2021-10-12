@@ -39,6 +39,27 @@ namespace OpenUtau.App.Views {
             //lyricBox?.EndEdit();
         }
 
+        void WindowClosing(object? sender, CancelEventArgs e) {
+            Hide();
+            e.Cancel = true;
+        }
+
+        void OnMenuRenamePart(object? sender, RoutedEventArgs e) {
+            var part = ViewModel.NotesViewModel.Part;
+            if (part == null) {
+                return;
+            }
+            var dialog = new TypeInDialog();
+            dialog.Title = "Rename";
+            dialog.SetText(part.name);
+            dialog.onFinish = name => {
+                if (!string.IsNullOrWhiteSpace(name) && name != part.name) {
+                    ViewModel.RenamePart(part, name);
+                }
+            };
+            dialog.Show(this);
+        }
+
         public void HScrollPointerWheelChanged(object sender, PointerWheelEventArgs args) {
             var scrollbar = (ScrollBar)sender;
             scrollbar.Value = Math.Max(scrollbar.Minimum, Math.Min(scrollbar.Maximum, scrollbar.Value - scrollbar.SmallChange * args.Delta.Y));
@@ -458,11 +479,6 @@ namespace OpenUtau.App.Views {
                         break;
                 }
             }
-        }
-
-        void WindowClosing(object? sender, CancelEventArgs e) {
-            Hide();
-            e.Cancel = true;
         }
     }
 }
