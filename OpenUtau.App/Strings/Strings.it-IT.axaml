@@ -54,17 +54,22 @@
   <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
   <system:String x:Key="menu.tools">Strumenti</system:String>
   <!--<system:String x:Key="menu.tools.layout">Layout</system:String>-->
-  <!--<system:String x:Key="menu.tools.layout.hsplit11">Horizontal Split 1:1</system:String>-->
-  <!--<system:String x:Key="menu.tools.layout.hsplit12">Horizontal Split 1:2</system:String>-->
-  <!--<system:String x:Key="menu.tools.layout.hsplit13">Horizontal Split 1:3</system:String>-->
-  <!--<system:String x:Key="menu.tools.layout.vsplit11">Vertical Split 1:1</system:String>-->
-  <!--<system:String x:Key="menu.tools.layout.vsplit12">Vertical Split 1:2</system:String>-->
-  <!--<system:String x:Key="menu.tools.layout.vsplit13">Vertical Split 1:3</system:String>-->
+  <!--<system:String x:Key="menu.tools.layout.hsplit11">Horizontal 1:1</system:String>-->
+  <!--<system:String x:Key="menu.tools.layout.hsplit12">Horizontal 1:2</system:String>-->
+  <!--<system:String x:Key="menu.tools.layout.hsplit13">Horizontal 1:3</system:String>-->
+  <!--<system:String x:Key="menu.tools.layout.vsplit11">Vertical 1:1</system:String>-->
+  <!--<system:String x:Key="menu.tools.layout.vsplit12">Vertical 1:2</system:String>-->
+  <!--<system:String x:Key="menu.tools.layout.vsplit13">Vertical 1:3</system:String>-->
   <system:String x:Key="menu.tools.prefs">Preferenze...</system:String>
   <system:String x:Key="menu.tools.project.expressions">Espressioni...</system:String>
   <system:String x:Key="menu.tools.singer.install">Installa cantante...</system:String>
   <system:String x:Key="menu.tools.singer.installadv">Installa cantante (Avanzato)...</system:String>
   <system:String x:Key="menu.tools.singers">Cantanti...</system:String>
+
+  <!--<system:String x:Key="menu2.lyrics">Lyrics</system:String>-->
+  <!--<system:String x:Key="menu2.notes">Notes</system:String>-->
+  <!--<system:String x:Key="menu2.part">Part</system:String>-->
+  <!--<system:String x:Key="menu2.part.rename">Rename</system:String>-->
 
   <system:String x:Key="oto.alias">Pseudonimo</system:String>
   <system:String x:Key="oto.consonant">Consonante</system:String>
@@ -79,14 +84,16 @@
   <system:String x:Key="oto.set">Gruppo</system:String>
   <system:String x:Key="oto.suffix">Suffisso</system:String>
 
+  <!--<system:String x:Key="prefs.advanced">Advanced</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.stable">Stable</system:String>-->
   <system:String x:Key="prefs.appearance">Aspetto</system:String>
   <system:String x:Key="prefs.appearance.lang">Lingua</system:String>
-  <system:String x:Key="prefs.appearance.lang.note">Nota: Riavvia OpenUTAU dopo aver scelto una lingua.</system:String>
   <system:String x:Key="prefs.appearance.theme">Tema</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">Scuro</system:String>
   <system:String x:Key="prefs.appearance.theme.light">Chiaro</system:String>
-  <system:String x:Key="prefs.appearance.theme.note">Riavvia OpenUTAU dopo aver scelto un tema.</system:String>
   <system:String x:Key="prefs.caption">Preferenze</system:String>
+  <!--<system:String x:Key="prefs.note.restart">Note: please restart OpenUtau after changing this item.</system:String>-->
   <system:String x:Key="prefs.paths">Percorsi</system:String>
   <system:String x:Key="prefs.paths.add">Aggiungi</system:String>
   <system:String x:Key="prefs.paths.remove">Rimuovi</system:String>

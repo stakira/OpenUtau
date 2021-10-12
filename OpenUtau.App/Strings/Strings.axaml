@@ -66,10 +66,10 @@
   <system:String x:Key="menu.tools.singer.installadv">Install Singer (Advanced)...</system:String>
   <system:String x:Key="menu.tools.singers">Singers...</system:String>
 
+  <system:String x:Key="menu2.lyrics">Lyrics</system:String>
+  <system:String x:Key="menu2.notes">Notes</system:String>
   <system:String x:Key="menu2.part">Part</system:String>
   <system:String x:Key="menu2.part.rename">Rename</system:String>
-  <system:String x:Key="menu2.notes">Notes</system:String>
-  <system:String x:Key="menu2.lyrics">Lyrics</system:String>
 
   <system:String x:Key="oto.alias">Alias</system:String>
   <system:String x:Key="oto.consonant">Consonant</system:String>

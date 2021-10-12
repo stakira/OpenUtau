@@ -66,6 +66,11 @@
   <system:String x:Key="menu.tools.singer.installadv">安装歌手(高级模式)...</system:String>
   <system:String x:Key="menu.tools.singers">歌手...</system:String>
 
+  <!--<system:String x:Key="menu2.lyrics">Lyrics</system:String>-->
+  <!--<system:String x:Key="menu2.notes">Notes</system:String>-->
+  <!--<system:String x:Key="menu2.part">Part</system:String>-->
+  <!--<system:String x:Key="menu2.part.rename">Rename</system:String>-->
+
   <!--<system:String x:Key="oto.alias">Alias</system:String>-->
   <system:String x:Key="oto.consonant">辅音速度</system:String>
   <!--<system:String x:Key="oto.cutoff">Cutoff</system:String>-->
@@ -79,14 +84,16 @@
   <system:String x:Key="oto.set">子集</system:String>
   <system:String x:Key="oto.suffix">后缀</system:String>
 
+  <!--<system:String x:Key="prefs.advanced">Advanced</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.stable">Stable</system:String>-->
   <system:String x:Key="prefs.appearance">外观</system:String>
   <system:String x:Key="prefs.appearance.lang">语言</system:String>
-  <system:String x:Key="prefs.appearance.lang.note">注意: 切换语言后请重启OpenUtau.</system:String>
   <system:String x:Key="prefs.appearance.theme">主题</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">暗</system:String>
   <system:String x:Key="prefs.appearance.theme.light">亮</system:String>
-  <system:String x:Key="prefs.appearance.theme.note">注意: 切换主题后请重启OpenUtau</system:String>
   <system:String x:Key="prefs.caption">使用偏好</system:String>
+  <!--<system:String x:Key="prefs.note.restart">Note: please restart OpenUtau after changing this item.</system:String>-->
   <system:String x:Key="prefs.paths">路径</system:String>
   <system:String x:Key="prefs.paths.add">添加</system:String>
   <system:String x:Key="prefs.paths.remove">移除</system:String>
