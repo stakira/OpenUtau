@@ -6,10 +6,10 @@
   <system:String x:Key="dialogs.about.message">
         O OpenUtau é um ambiente de edição de código aberto para a comunidade UTAU, com uma experiência de usuário moderna e suporte fonológico inteligente. Visite-nos no Github.
     </system:String>
-  <!--<system:String x:Key="dialogs.exitsave.caption">Exit OpenUtau</system:String>-->
-  <!--<system:String x:Key="dialogs.exitsave.message">The current project contains unsaved changes. Do you want to save it?</system:String>-->
+  <!--<system:String x:Key="dialogs.exitsave.caption">Fechar OpenUtau</system:String>-->
+  <!--<system:String x:Key="dialogs.exitsave.message">O projeto atual contém alterações não salvas. Deseja salvar? </system:String>-->
   <system:String x:Key="dialogs.export.caption">Exportar</system:String>
-  <system:String x:Key="dialogs.export.savefirst">Salve o arquivo de projeto primeiro</system:String>
+  <system:String x:Key="dialogs.export.savefirst">Salve o arquivo de projeto antes de exportar</system:String>
   <system:String x:Key="dialogs.noresampler.caption">Sem resampler</system:String>
   <system:String x:Key="dialogs.noresampler.message">Sem resampler! Coloque o .exe ou .dll do seu resampler favorito na pasta Resampler e selecione-o em Preferências!</system:String>
 
@@ -20,7 +20,7 @@
   <system:String x:Key="exps.caption">Expressões</system:String>
   <system:String x:Key="exps.defaultvalue">Padrão</system:String>
   <!--<system:String x:Key="exps.flag">Resampler Flag</system:String>-->
-  <system:String x:Key="exps.isflag">É um Resampler Flag</system:String>
+  <system:String x:Key="exps.isflag">É um Flag de Resampler</system:String>
   <!--<system:String x:Key="exps.maxvalue">Max</system:String>-->
   <!--<system:String x:Key="exps.minvalue">Min</system:String>-->
   <system:String x:Key="exps.name">Nome</system:String>
@@ -41,7 +41,7 @@
   <system:String x:Key="menu.file">Arquivo</system:String>
   <system:String x:Key="menu.file.exit">Fechar</system:String>
   <system:String x:Key="menu.file.exportall">Exportar Tudo</system:String>
-  <!--<system:String x:Key="menu.file.exportust">Export Ust Files</system:String>-->
+  <!--<system:String x:Key="menu.file.exportust">Exportar como Ust</system:String>-->
   <system:String x:Key="menu.file.importaudio">Importar Audio...</system:String>
   <system:String x:Key="menu.file.importmidi">Importar Midi...</system:String>
   <system:String x:Key="menu.file.importtracks">Importar Faixas...</system:String>
@@ -68,10 +68,10 @@
   <system:String x:Key="menu.tools.singer.installadv">Instalar Vozes (Avançado)...</system:String>
   <system:String x:Key="menu.tools.singers">Vozes...</system:String>
 
-  <!--<system:String x:Key="menu2.lyrics">Lyrics</system:String>-->
-  <!--<system:String x:Key="menu2.notes">Notes</system:String>-->
-  <!--<system:String x:Key="menu2.part">Part</system:String>-->
-  <!--<system:String x:Key="menu2.part.rename">Rename</system:String>-->
+  <!--<system:String x:Key="menu2.lyrics">Lírica</system:String>-->
+  <!--<system:String x:Key="menu2.notes">Nota</system:String>-->
+  <!--<system:String x:Key="menu2.part">Parte</system:String>-->
+  <!--<system:String x:Key="menu2.part.rename">Renomear</system:String>-->
 
   <!--<system:String x:Key="oto.alias">Alias</system:String>-->
   <!--<system:String x:Key="oto.consonant">Consonant</system:String>-->
@@ -86,16 +86,16 @@
   <system:String x:Key="oto.set">Pasta</system:String>
   <system:String x:Key="oto.suffix">Sufixo</system:String>
 
-  <!--<system:String x:Key="prefs.advanced">Advanced</system:String>-->
+  <!--<system:String x:Key="prefs.advanced">Avançado</system:String>-->
   <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
-  <!--<system:String x:Key="prefs.advanced.stable">Stable</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.stable">Estável</system:String>-->
   <system:String x:Key="prefs.appearance">Aparência</system:String>
   <system:String x:Key="prefs.appearance.lang">Idioma</system:String>
   <system:String x:Key="prefs.appearance.theme">Tema</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">Escuro</system:String>
   <system:String x:Key="prefs.appearance.theme.light">Claro</system:String>
   <system:String x:Key="prefs.caption">Preferências</system:String>
-  <!--<system:String x:Key="prefs.note.restart">Note: please restart OpenUtau after changing this item.</system:String>-->
+  <!--<system:String x:Key="prefs.note.restart">Nota: reinicie o OpenUtau após alterar este item.</system:String>-->
   <system:String x:Key="prefs.paths">Diretório</system:String>
   <system:String x:Key="prefs.paths.add">Adicionar</system:String>
   <system:String x:Key="prefs.paths.remove">Remover</system:String>
