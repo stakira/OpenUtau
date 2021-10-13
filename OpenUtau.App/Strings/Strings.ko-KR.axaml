@@ -6,6 +6,8 @@
   <system:String x:Key="dialogs.about.message">
       OpenUtau는 현대적인 사용자 경험과 지능적인 음운 지원을 통해 UTAU 커뮤니티를 위한 오픈 소스 편집 환경을 목표로 합니다. Github의 우리 프로젝트에 방문하세요.
     </system:String>
+  <!--<system:String x:Key="dialogs.exitsave.caption">Exit OpenUtau</system:String>-->
+  <!--<system:String x:Key="dialogs.exitsave.message">The current project contains unsaved changes. Do you want to save it?</system:String>-->
   <system:String x:Key="dialogs.export.caption">내보내기</system:String>
   <system:String x:Key="dialogs.export.savefirst">먼저 프로젝트 파일 저장</system:String>
   <system:String x:Key="dialogs.noresampler.caption">엔진 없음</system:String>

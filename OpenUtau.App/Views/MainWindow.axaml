@@ -10,6 +10,11 @@
         Title="OpenUtau (Beta)" MinWidth="300" MinHeight="200" KeyDown="OnKeyDown" Closing="WindowClosing"
         TransparencyLevelHint="None" Background="{DynamicResource MainWindowBackgroundBrush}"
         ExtendClientAreaToDecorationsHint="False">
+  <Window.Styles>
+    <Style Selector="Button,ToggleButton">
+      <Setter Property="Focusable" Value="False"/>
+    </Style>
+  </Window.Styles>
   <Grid>
     <Grid RowDefinitions="24,24,1*,20,4" ColumnDefinitions="250,*,24" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="{Binding $parent[1].WindowDecorationMargin}">
       <Menu Grid.Row="0" Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Left">
@@ -21,8 +26,8 @@
           <MenuItem Header="{DynamicResource menu.file.importtracks}" Click="OnMenuImportTracks"/>
           <MenuItem Header="{DynamicResource menu.file.importaudio}" Click="OnMenuImportAudio"/>
           <MenuItem Header="{DynamicResource menu.file.importmidi}" Click="OnMenuImportMidi"/>
-          <MenuItem Header="{DynamicResource menu.file.exportall}"/>
-          <MenuItem Header="{DynamicResource menu.file.exportust}"/>
+          <MenuItem Header="{DynamicResource menu.file.exportall}" Click="OnMenuExportAll"/>
+          <MenuItem Header="{DynamicResource menu.file.exportust}" Click="OnMenuExportUst"/>
         </MenuItem>
         <MenuItem Header="{DynamicResource menu.tools}">
           <MenuItem Header="{DynamicResource menu.tools.layout}">
@@ -41,7 +46,7 @@
         </MenuItem>
         <MenuItem Header="{DynamicResource menu.help}">
           <MenuItem Header="{DynamicResource menu.help.wiki}" Click="OnMenuWiki"/>
-          <MenuItem Header="{Binding AppVersion}"/>
+          <MenuItem Header="{Binding AppVersion}" Click="OnMenuVersion"/>
         </MenuItem>
       </Menu>
       <Panel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="24">

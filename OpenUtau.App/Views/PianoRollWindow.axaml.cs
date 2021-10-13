@@ -16,6 +16,7 @@ namespace OpenUtau.App.Views {
         public MainWindow? MainWindow { get; set; }
         public readonly PianoRollViewModel ViewModel;
 
+        private KeyboardPlayState? keyboardPlayState;
         private NoteEditState? editState;
         private Rectangle? selectionBox;
         private Border? expValueTip;
@@ -60,6 +61,37 @@ namespace OpenUtau.App.Views {
             dialog.Show(this);
         }
 
+        public void KeyboardPointerWheelChanged(object sender, PointerWheelEventArgs args) {
+            lyricBox?.EndEdit();
+            var scrollbar = this.FindControl<ScrollBar>("VScrollBar");
+            VScrollPointerWheelChanged(scrollbar, args);
+        }
+
+        public void KeyboardPointerPressed(object sender, PointerPressedEventArgs args) {
+            lyricBox?.EndEdit();
+            if (keyboardPlayState != null) {
+                return;
+            }
+            var element = (TrackBackground)sender;
+            keyboardPlayState = new KeyboardPlayState(element, ViewModel);
+            keyboardPlayState.Begin(args.Pointer, args.GetPosition(element));
+        }
+
+        public void KeyboardPointerMoved(object sender, PointerEventArgs args) {
+            if (keyboardPlayState != null) {
+                var element = (TrackBackground)sender;
+                keyboardPlayState.Update(args.Pointer, args.GetPosition(element));
+            }
+        }
+
+        public void KeyboardPointerReleased(object sender, PointerReleasedEventArgs args) {
+            if (keyboardPlayState != null) {
+                var element = (TrackBackground)sender;
+                keyboardPlayState.End(args.Pointer, args.GetPosition(element));
+                keyboardPlayState = null;
+            }
+        }
+
         public void HScrollPointerWheelChanged(object sender, PointerWheelEventArgs args) {
             var scrollbar = (ScrollBar)sender;
             scrollbar.Value = Math.Max(scrollbar.Minimum, Math.Min(scrollbar.Maximum, scrollbar.Value - scrollbar.SmallChange * args.Delta.Y));
@@ -91,7 +123,8 @@ namespace OpenUtau.App.Views {
             var point = args.GetCurrentPoint(canvas);
             if (point.Properties.IsLeftButtonPressed) {
                 args.Pointer.Capture(canvas);
-                int tick = ViewModel.NotesViewModel.PointToSnappedTick(point.Position);
+                int tick = ViewModel.NotesViewModel.PointToSnappedTick(point.Position)
+                    + ViewModel.NotesViewModel.Part?.position ?? 0;
                 ViewModel.PlaybackViewModel?.MovePlayPos(tick);
             }
             lyricBox?.EndEdit();
@@ -101,7 +134,8 @@ namespace OpenUtau.App.Views {
             var canvas = (Canvas)sender;
             var point = args.GetCurrentPoint(canvas);
             if (point.Properties.IsLeftButtonPressed) {
-                int tick = ViewModel.NotesViewModel.PointToSnappedTick(point.Position);
+                int tick = ViewModel.NotesViewModel.PointToSnappedTick(point.Position)
+                    + ViewModel.NotesViewModel.Part?.position ?? 0;
                 ViewModel.PlaybackViewModel?.MovePlayPos(tick);
             }
         }
@@ -192,7 +226,9 @@ namespace OpenUtau.App.Views {
             }
             if (noteHitInfo.hitBody) {
                 if (noteHitInfo.hitResizeArea) {
-                    editState = new NoteResizeEditState(canvas, ViewModel, noteHitInfo.note);
+                    editState = new NoteResizeEditState(
+                        canvas, ViewModel, noteHitInfo.note,
+                        args.KeyModifiers == KeyModifiers.Alt);
                     Cursor = ViewConstants.cursorSizeWE;
                 } else {
                     editState = new NoteMoveEditState(canvas, ViewModel, noteHitInfo.note);
@@ -450,8 +486,8 @@ namespace OpenUtau.App.Views {
                             !ViewModel.PlaybackViewModel.PlayOrPause()) {
                             MessageBox.Show(
                                this,
-                               "dialogs.noresampler.message",
-                               "dialogs.noresampler.caption",
+                               ThemeManager.GetString("dialogs.noresampler.message"),
+                               ThemeManager.GetString("dialogs.noresampler.caption"),
                                MessageBox.MessageBoxButtons.Ok);
                         }
                         break;

@@ -6,6 +6,8 @@
   <system:String x:Key="dialogs.about.message">
         OpenUTAUは、最新のユーザー体験と聡明な音声合成についてのサポートを備えたUTAUコミュニティのためのオープンソースな編集環境を目指しています。私たちのGithubを訪れてください。
     </system:String>
+  <!--<system:String x:Key="dialogs.exitsave.caption">Exit OpenUtau</system:String>-->
+  <!--<system:String x:Key="dialogs.exitsave.message">The current project contains unsaved changes. Do you want to save it?</system:String>-->
   <system:String x:Key="dialogs.export.caption">エクスポート</system:String>
   <system:String x:Key="dialogs.export.savefirst">プロジェクトを保存してください。</system:String>
   <system:String x:Key="dialogs.noresampler.caption">エンジンがありません</system:String>

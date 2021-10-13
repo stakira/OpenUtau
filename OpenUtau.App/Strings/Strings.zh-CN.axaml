@@ -6,6 +6,8 @@
   <system:String x:Key="dialogs.about.message">
     OpenUtau 是一个开源编辑环境, 旨在为 UTAU 用户社区提供现代的用户体验和智能的语音学支持. 请到 Github 访问我们.
   </system:String>
+  <!--<system:String x:Key="dialogs.exitsave.caption">Exit OpenUtau</system:String>-->
+  <!--<system:String x:Key="dialogs.exitsave.message">The current project contains unsaved changes. Do you want to save it?</system:String>-->
   <system:String x:Key="dialogs.export.caption">导出</system:String>
   <system:String x:Key="dialogs.export.savefirst">请先保存工程文件</system:String>
   <system:String x:Key="dialogs.noresampler.caption">无重采样器</system:String>

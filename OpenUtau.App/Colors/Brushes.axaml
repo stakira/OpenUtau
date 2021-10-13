@@ -66,6 +66,8 @@
                    Color="{DynamicResource BackgroundColorPointerOver}" />
   <SolidColorBrush x:Key="DataGridColumnHeaderForegroundBrush"
                    Color="{DynamicResource ForegroundColor}" />
+  <SolidColorBrush x:Key="DataGridScrollBarsSeparatorBackground"
+                   Color="{DynamicResource BackgroundColor}" />
   <!--botton background pointer over overlap-->
   <SolidColorBrush x:Key="ButtonBackgroundPointerOver"
                    Color="{DynamicResource ForegroundColorPressed}" Opacity="0.25" />

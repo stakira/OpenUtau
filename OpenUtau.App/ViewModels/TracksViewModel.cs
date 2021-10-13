@@ -23,6 +23,10 @@ namespace OpenUtau.App.ViewModels {
         public readonly UPart part;
         public PartRefreshEvent(UPart part) { this.part = part; }
     }
+    public class PartRedrawEvent {
+        public readonly UPart part;
+        public PartRedrawEvent(UPart part) { this.part = part; }
+    }
 
     public class TracksViewModel : ViewModelBase, ICmdSubscriber {
         public UProject Project => DocManager.Inst.Project;
@@ -255,7 +259,9 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void OnNext(UCommand cmd, bool isUndo) {
-            if (cmd is PartCommand partCommand) {
+            if (cmd is NoteCommand noteCommand) {
+                MessageBus.Current.SendMessage(new PartRedrawEvent(noteCommand.Part));
+            } else if (cmd is PartCommand partCommand) {
                 if (partCommand is AddPartCommand) {
                     if (!isUndo) {
                         Parts.Add(partCommand.part);

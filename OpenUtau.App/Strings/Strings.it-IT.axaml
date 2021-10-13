@@ -6,6 +6,8 @@
   <system:String x:Key="dialogs.about.message">
 		OpenUTAU punta ad essere un programma open source con un'esperienza utente moderna e supporto fonetico intelligente per la communità di UTAU. Visitaci su GitHub.
     </system:String>
+  <!--<system:String x:Key="dialogs.exitsave.caption">Exit OpenUtau</system:String>-->
+  <!--<system:String x:Key="dialogs.exitsave.message">The current project contains unsaved changes. Do you want to save it?</system:String>-->
   <system:String x:Key="dialogs.export.caption">Esporta</system:String>
   <system:String x:Key="dialogs.export.savefirst">Salva prima il progetto</system:String>
   <system:String x:Key="dialogs.noresampler.caption">Nessun resampler</system:String>

@@ -11,6 +11,11 @@
         Title="Piano Roll" MinWidth="300" MinHeight="200" KeyDown="OnKeyDown" Closing="WindowClosing"
         TransparencyLevelHint="None" Background="{DynamicResource MainWindowBackgroundBrush}"
         ExtendClientAreaToDecorationsHint="False" Deactivated="WindowDeactivated">
+  <Window.Styles>
+    <Style Selector="Button,ToggleButton">
+      <Setter Property="Focusable" Value="False"/>
+    </Style>
+  </Window.Styles>
   <Grid>
     <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="{Binding $parent[1].WindowDecorationMargin}">
       <Grid.RowDefinitions>
@@ -30,7 +35,7 @@
                  DataContext="{Binding NotesViewModel}"
                  Maximum="{Binding HScrollBarMax, Mode=OneWay}"
                  Value="{Binding TickOffset}"
-                 ViewportSize="{Binding HScrollBarMax}"
+                 ViewportSize="{Binding ViewportTicks}"
                  LargeChange="{Binding ViewportTicks}"
                  SmallChange="{Binding SmallChangeX}" PointerWheelChanged="HScrollPointerWheelChanged"/>
       <ScrollBar Name="VScrollBar" Classes="music" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
@@ -38,7 +43,7 @@
                  DataContext="{Binding NotesViewModel}"
                  Maximum="{Binding VScrollBarMax, Mode=OneWay}"
                  Value="{Binding TrackOffset}"
-                 ViewportSize="{Binding VScrollBarMax}"
+                 ViewportSize="{Binding ViewportTracks}"
                  LargeChange="{Binding ViewportTracks}"
                  SmallChange="{Binding SmallChangeY}" PointerWheelChanged="VScrollPointerWheelChanged"/>
       <c:TrackBackground Grid.Column="0" Grid.Row="2" IsPianoRoll="True" IsKeyboard="True"
@@ -46,7 +51,11 @@
                          Background="{DynamicResource WhiteKeyBrush}"
                          DataContext="{Binding NotesViewModel}"
                          TrackHeight="{Binding TrackHeight}"
-                         TrackOffset="{Binding TrackOffset}"/>
+                         TrackOffset="{Binding TrackOffset}"
+                         PointerWheelChanged="KeyboardPointerWheelChanged"
+                         PointerPressed="KeyboardPointerPressed"
+                         PointerMoved="KeyboardPointerMoved"
+                         PointerReleased="KeyboardPointerReleased"/>
       <Grid Grid.Column="0" Grid.Row="4">
         <c:ExpSelector HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top" Index="0" Margin="0,0,0,0"/>
         <c:ExpSelector HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top" Index="1" Margin="0,22,0,0"/>

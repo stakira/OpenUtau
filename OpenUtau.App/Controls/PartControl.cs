@@ -72,7 +72,7 @@ namespace OpenUtau.App.Controls {
         public PartControl(UPart part, PartsCanvas canvas) {
             this.part = part;
             Foreground = Brushes.White;
-            Text = part.name;
+            Text = part.DisplayName;
 
             unbinds.Add(this.Bind(TickWidthProperty, canvas.GetObservable(PartsCanvas.TickWidthProperty)));
             unbinds.Add(this.Bind(TrackHeightProperty, canvas.GetObservable(PartsCanvas.TrackHeightProperty)));

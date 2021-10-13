@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Reactive;
 using OpenUtau.Api;
-using OpenUtau.App.Views;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using ReactiveUI;
@@ -10,7 +9,7 @@ using ReactiveUI.Fody.Helpers;
 using Serilog;
 
 namespace OpenUtau.App.ViewModels {
-    public class PianoRollViewModel : ViewModelBase, ICmdSubscriber {
+    public class PianoRollViewModel : ViewModelBase {
         public static ReactiveCommand<TransformerFactory, Unit>? TransformerCommand { get; private set; }
 
         [Reactive] public NotesViewModel NotesViewModel { get; set; }
@@ -21,7 +20,6 @@ namespace OpenUtau.App.ViewModels {
 
         public PianoRollViewModel() {
             NotesViewModel = new NotesViewModel();
-            DocManager.Inst.AddSubscriber(this);
             TransformerCommand = ReactiveCommand.Create<TransformerFactory>((factory) => {
                 var part = NotesViewModel.Part;
                 if (part == null) {
@@ -57,9 +55,6 @@ namespace OpenUtau.App.ViewModels {
                 DocManager.Inst.ExecuteCmd(new RenamePartCommand(DocManager.Inst.Project, part, name));
                 DocManager.Inst.EndUndoGroup();
             }
-        }
-
-        public void OnNext(UCommand cmd, bool isUndo) {
         }
     }
 }

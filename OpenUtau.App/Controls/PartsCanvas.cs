@@ -83,9 +83,17 @@ namespace OpenUtau.App.Controls {
                 });
             MessageBus.Current.Listen<PartRefreshEvent>()
                 .Subscribe(e => {
-                    partControls[e.part].SetSize();
-                    partControls[e.part].SetPosition();
-                    partControls[e.part].Refersh();
+                    if (partControls.TryGetValue(e.part, out var control)) {
+                        control.SetSize();
+                        control.SetPosition();
+                        control.Refersh();
+                    }
+                });
+            MessageBus.Current.Listen<PartRedrawEvent>()
+                .Subscribe(e => {
+                    if (partControls.TryGetValue(e.part, out var control)) {
+                        control.InvalidateVisual();
+                    }
                 });
             MessageBus.Current.Listen<ThemeChangedEvent>()
                 .Subscribe(_ => InvalidateVisual());

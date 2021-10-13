@@ -269,7 +269,7 @@ namespace OpenUtau.UI.Controls {
                 double monoChnlAmp = (height - 4) / 2;
                 double stereoChnlAmp = (height - 6) / 4;
 
-                int channels = ((UWavePart)Part).Channels;
+                int channels = ((UWavePart)Part).channels;
                 partBitmap.Clear();
                 float left, right, lmax, lmin, rmax, rmin;
                 lmax = lmin = rmax = rmin = 0;

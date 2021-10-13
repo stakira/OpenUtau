@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
+using Serilog;
 
 namespace OpenUtau.Core.Util {
 
@@ -14,7 +15,11 @@ namespace OpenUtau.Core.Util {
         }
 
         public static void Save() {
-            File.WriteAllText(filename, JsonConvert.SerializeObject(Default, Formatting.Indented));
+            try {
+                File.WriteAllText(filename, JsonConvert.SerializeObject(Default, Formatting.Indented));
+            } catch (Exception e) {
+                Log.Error(e, "Failed to save prefs.");
+            }
         }
 
         public static void Reset() {
@@ -38,7 +43,8 @@ namespace OpenUtau.Core.Util {
                 } else {
                     Reset();
                 }
-            } catch {
+            } catch (Exception e) {
+                Log.Error(e, "Failed to load prefs.");
                 Default = new SerializablePreferences();
             }
         }

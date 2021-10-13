@@ -231,6 +231,7 @@ namespace OpenUtau.App.ViewModels {
                 return;
             }
             TickOrigin = Part.position;
+            Notify();
         }
 
         public void DeselectNotes() {
@@ -342,6 +343,7 @@ namespace OpenUtau.App.ViewModels {
         }
 
         private void SetPlayPos(int tick, bool noScroll = false) {
+            tick = tick - Part?.position ?? 0;
             double playPosX = TickToneToPoint(tick, 0).X;
             double scroll = 0;
             if (!noScroll && playPosX > PlayPosX) {
@@ -351,9 +353,9 @@ namespace OpenUtau.App.ViewModels {
                 }
                 TickOffset = Math.Clamp(TickOffset + scroll, 0, HScrollBarMax);
             }
-            PlayPosX = playPosX + scroll;
+            PlayPosX = playPosX;
             int highlightTick = (int)Math.Floor((double)tick / SnapUnit) * SnapUnit;
-            PlayPosHighlightX = TickToneToPoint(highlightTick, 0).X + scroll;
+            PlayPosHighlightX = TickToneToPoint(highlightTick, 0).X;
         }
 
         private void FocusNote(UNote note) {

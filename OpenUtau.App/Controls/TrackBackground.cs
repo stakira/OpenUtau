@@ -75,7 +75,7 @@ namespace OpenUtau.App.Controls {
             int track = (int)TrackOffset;
             double top = TrackHeight * (track - TrackOffset);
             while (top < Bounds.Height) {
-                bool isAltTrack = IsAltTrack(track);
+                bool isAltTrack = IsAltTrack(track) ^ (ThemeManager.IsDarkMode && !IsKeyboard);
                 bool isCenterKey = IsKeyboard && IsCenterKey(track);
                 var brush = isCenterKey ? ThemeManager.CenterKeyBrush
                     : isAltTrack ? Foreground : Background;

@@ -27,7 +27,7 @@
         </Border>
       </Grid>
       <Button Classes="clear" Grid.Row="0" Grid.Column="2" Margin="1" Padding="2,1,0,0" Height="16"
-              HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+              HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Focusable="False"
               Content="{Binding Singer}" Click="SingerButtonClicked">
         <Button.ContextMenu>
           <ContextMenu Classes="context" Name="SingersMenu" PlacementMode="Bottom" HorizontalOffset="-3" Items="{Binding SingerMenuItems}">
@@ -42,7 +42,7 @@
         </Button.ContextMenu>
       </Button>
       <Button Classes="clear" Grid.Row="1" Grid.Column="2" Margin="1" Padding="2,1,0,0" Height="16"
-              HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+              HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Focusable="False"
               Content="{Binding PhonemizerTag}" Click="PhonemizerButtonClicked">
         <Button.ContextMenu>
           <ContextMenu Classes="context" Name="PhonemizersMenu" PlacementMode="Bottom" HorizontalOffset="-3" Items="{Binding PhonemizerMenuItems}">

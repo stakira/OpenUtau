@@ -1,4 +1,5 @@
-﻿using Avalonia.Controls;
+﻿using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Media;
 using OpenUtau.App.Controls;
 using ReactiveUI;
@@ -41,7 +42,8 @@ namespace OpenUtau.App {
         public static IBrush ExpActiveBrush = Brushes.Black;
         public static IBrush ExpActiveNameBrush = Brushes.White;
 
-        public static void LoadTheme(IResourceDictionary resDict) {
+        public static void LoadTheme() {
+            IResourceDictionary resDict = Application.Current.Resources;
             object? outVar;
             IsDarkMode = false;
             if (resDict.TryGetResource("IsDarkMode", out outVar)) {
@@ -123,6 +125,14 @@ namespace OpenUtau.App {
             }
             TextLayoutCache.Clear();
             MessageBus.Current.SendMessage(new ThemeChangedEvent());
+        }
+
+        public static string GetString(string key) {
+            IResourceDictionary resDict = Application.Current.Resources;
+            if (resDict.TryGetResource(key, out var outVar) && outVar is string s) {
+                return s;
+            }
+            return key;
         }
     }
 }

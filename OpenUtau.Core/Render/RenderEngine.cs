@@ -64,7 +64,7 @@ namespace OpenUtau.Core.Render {
                             project.TickToMillisecond(part.position),
                             project.TickToMillisecond(part.Duration),
                             null,
-                            project.TickToMillisecond(part.HeadTrimTick));
+                            part.skipMs);
                         if (part.Samples != null) {
                             waveSource.SetSamples(part.Samples);
                         }

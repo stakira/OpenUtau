@@ -16,6 +16,7 @@ using Avalonia.VisualTree;
 using OpenUtau.App.Controls;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
+using OpenUtau.Core.Ustx;
 using Serilog;
 using Point = Avalonia.Point;
 
@@ -29,6 +30,7 @@ namespace OpenUtau.App.Views {
         private PartEditState? partEditState;
         private Rectangle? selectionBox;
         private DispatcherTimer timer;
+        private bool forceClose;
 
         public MainWindow() {
             InitializeComponent();
@@ -97,7 +99,7 @@ namespace OpenUtau.App.Views {
                 _ = await MessageBox.Show(
                      this,
                      e.ToString(),
-                     "errors.caption",
+                     ThemeManager.GetString("errors.caption"),
                      MessageBox.MessageBoxButtons.Ok);
             }
         }
@@ -143,7 +145,7 @@ namespace OpenUtau.App.Views {
                 _ = await MessageBox.Show(
                      this,
                      e.ToString(),
-                     "errors.caption",
+                     ThemeManager.GetString("errors.caption"),
                      MessageBox.MessageBoxButtons.Ok);
             }
         }
@@ -169,7 +171,7 @@ namespace OpenUtau.App.Views {
                 _ = await MessageBox.Show(
                      this,
                      e.ToString(),
-                     "errors.caption",
+                     ThemeManager.GetString("errors.caption"),
                      MessageBox.MessageBoxButtons.Ok);
             }
         }
@@ -195,9 +197,41 @@ namespace OpenUtau.App.Views {
                 _ = await MessageBox.Show(
                      this,
                      e.ToString(),
-                     "errors.caption",
+                     ThemeManager.GetString("errors.caption"),
                      MessageBox.MessageBoxButtons.Ok);
             }
+        }
+
+        async void OnMenuExportAll(object sender, RoutedEventArgs args) {
+            var project = DocManager.Inst.Project;
+            if (await WarnToSave(project)) {
+                PlaybackManager.Inst.RenderToFiles(project);
+            }
+        }
+
+        async void OnMenuExportUst(object sender, RoutedEventArgs e) {
+            var project = DocManager.Inst.Project;
+            if (await WarnToSave(project)) {
+                for (var i = 0; i < project.parts.Count; i++) {
+                    var part = project.parts[i];
+                    if (part is UVoicePart voicePart) {
+                        var savePath = PathManager.Inst.GetPartSavePath(project.FilePath, i);
+                        Core.Formats.Ust.SavePart(project, voicePart, savePath);
+                    }
+                }
+            }
+        }
+
+        private async Task<bool> WarnToSave(UProject project) {
+            if (string.IsNullOrEmpty(project.FilePath)) {
+                await MessageBox.Show(
+                    this,
+                    ThemeManager.GetString("dialogs.export.savefirst"),
+                    ThemeManager.GetString("dialogs.export.caption"),
+                    MessageBox.MessageBoxButtons.Ok);
+                return false;
+            }
+            return true;
         }
 
         void OnMenuExpressionss(object sender, RoutedEventArgs args) {
@@ -245,7 +279,7 @@ namespace OpenUtau.App.Views {
                     MessageBox.Show(
                         this,
                         ae.Flatten().InnerExceptions.First().ToString(),
-                        "errors.caption",
+                        ThemeManager.GetString("errors.caption"),
                         MessageBox.MessageBoxButtons.Ok);
                 }
             });
@@ -287,6 +321,10 @@ namespace OpenUtau.App.Views {
         }
 
         void OnMenuWiki(object sender, RoutedEventArgs args) {
+            OS.OpenWeb("https://github.com/stakira/OpenUtau/wiki");
+        }
+
+        void OnMenuVersion(object sender, RoutedEventArgs args) {
             OS.OpenWeb("https://github.com/stakira/OpenUtau/wiki");
         }
 
@@ -346,8 +384,8 @@ namespace OpenUtau.App.Views {
             if (!viewModel.PlaybackViewModel.PlayOrPause()) {
                 MessageBox.Show(
                    this,
-                   "dialogs.noresampler.message",
-                   "dialogs.noresampler.caption",
+                   ThemeManager.GetString("dialogs.noresampler.message"),
+                   ThemeManager.GetString("dialogs.noresampler.caption"),
                    MessageBox.MessageBoxButtons.Ok);
             }
         }
@@ -423,10 +461,17 @@ namespace OpenUtau.App.Views {
                         Cursor = ViewConstants.cursorSizeAll;
                     }
                 } else if (control is PartControl partControl) {
-                    // TODO: edit part name
-                    if (point.Position.X > partControl.Bounds.Right - ViewConstants.ResizeMargin) {
+                    bool isVoice = partControl.part is UVoicePart;
+                    bool isWave = partControl.part is UWavePart;
+                    bool trim = point.Position.X > partControl.Bounds.Right - ViewConstants.ResizeMargin;
+                    bool skip = point.Position.X < partControl.Bounds.Left + ViewConstants.ResizeMargin;
+                    if (isVoice && trim) {
                         partEditState = new PartResizeEditState(canvas, viewModel, partControl.part);
                         Cursor = ViewConstants.cursorSizeWE;
+                    } else if (isWave && skip) {
+                        // TODO
+                    } else if (isWave && trim) {
+                        // TODO
                     } else {
                         partEditState = new PartMoveEditState(canvas, viewModel, partControl.part);
                         Cursor = ViewConstants.cursorSizeAll;
@@ -471,8 +516,14 @@ namespace OpenUtau.App.Views {
             }
             var control = canvas.InputHitTest(point.Position);
             if (control is PartControl partControl) {
-                if (point.Position.X > partControl.Bounds.Right - ViewConstants.ResizeMargin) {
+                bool isVoice = partControl.part is UVoicePart;
+                bool isWave = partControl.part is UWavePart;
+                bool trim = point.Position.X > partControl.Bounds.Right - ViewConstants.ResizeMargin;
+                bool skip = point.Position.X < partControl.Bounds.Left + ViewConstants.ResizeMargin;
+                if (isVoice && trim) {
                     Cursor = ViewConstants.cursorSizeWE;
+                } else if (isWave && (skip || trim)) {
+                    Cursor = null; // TODO
                 } else {
                     Cursor = null;
                 }
@@ -535,11 +586,27 @@ namespace OpenUtau.App.Views {
             }
         }
 
-        public void WindowClosing(object? sender, CancelEventArgs e) {
-            //if (!DocManager.Inst.ChangesSaved) {
-            //    e.Cancel = true;
-            //}
-            pianoRollWindow?.Close();
+        public async void WindowClosing(object? sender, CancelEventArgs e) {
+            if (!forceClose && !DocManager.Inst.ChangesSaved) {
+                e.Cancel = true;
+                var result = await MessageBox.Show(
+                    this,
+                    ThemeManager.GetString("dialogs.exitsave.message"),
+                    ThemeManager.GetString("dialogs.exitsave.caption"),
+                    MessageBox.MessageBoxButtons.YesNoCancel);
+                switch (result) {
+                    case MessageBox.MessageBoxResult.Yes:
+                        await Save();
+                        goto case MessageBox.MessageBoxResult.No;
+                    case MessageBox.MessageBoxResult.No:
+                        pianoRollWindow?.Close();
+                        forceClose = true;
+                        Close();
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
     }
 }
