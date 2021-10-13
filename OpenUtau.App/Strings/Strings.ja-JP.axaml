@@ -6,8 +6,8 @@
   <system:String x:Key="dialogs.about.message">
         OpenUTAUは、最新のユーザー体験と聡明な音声合成についてのサポートを備えたUTAUコミュニティのためのオープンソースな編集環境を目指しています。私たちのGithubを訪れてください。
     </system:String>
-  <!--<system:String x:Key="dialogs.exitsave.caption">Exit OpenUtau</system:String>-->
-  <!--<system:String x:Key="dialogs.exitsave.message">The current project contains unsaved changes. Do you want to save it?</system:String>-->
+  <system:String x:Key="dialogs.exitsave.caption">OpenUtauを終了</system:String>
+  <system:String x:Key="dialogs.exitsave.message">保存されていない変更があります。保存しますか？</system:String>
   <system:String x:Key="dialogs.export.caption">エクスポート</system:String>
   <system:String x:Key="dialogs.export.savefirst">プロジェクトを保存してください。</system:String>
   <system:String x:Key="dialogs.noresampler.caption">エンジンがありません</system:String>
@@ -15,20 +15,20 @@
 
   <system:String x:Key="errors.caption">エラー</system:String>
 
-  <!--<system:String x:Key="exps.abbr">Abbreviation</system:String>-->
-  <!--<system:String x:Key="exps.apply">Apply</system:String>-->
-  <!--<system:String x:Key="exps.caption">Expressions</system:String>-->
-  <!--<system:String x:Key="exps.defaultvalue">Default</system:String>-->
-  <!--<system:String x:Key="exps.flag">Resampler Flag</system:String>-->
-  <!--<system:String x:Key="exps.isflag">Is Resampler Flag</system:String>-->
-  <!--<system:String x:Key="exps.maxvalue">Max</system:String>-->
-  <!--<system:String x:Key="exps.minvalue">Min</system:String>-->
-  <!--<system:String x:Key="exps.name">Name</system:String>-->
-  <!--<system:String x:Key="exps.optionvalues">Option Values</system:String>-->
-  <!--<system:String x:Key="exps.sepbycomma">Separate values by ','</system:String>-->
-  <!--<system:String x:Key="exps.type">Type</system:String>-->
-  <!--<system:String x:Key="exps.type.numerical">Numerical</system:String>-->
-  <!--<system:String x:Key="exps.type.options">Options</system:String>-->
+  <system:String x:Key="exps.abbr">パラメータ名</system:String>
+  <system:String x:Key="exps.apply">適用</system:String>
+  <system:String x:Key="exps.caption">表情</system:String>
+  <system:String x:Key="exps.defaultvalue">初期値</system:String>
+  <system:String x:Key="exps.flag">フラグ</system:String>
+  <system:String x:Key="exps.isflag">エンジン内フラグ</system:String>
+  <system:String x:Key="exps.maxvalue">最大</system:String>
+  <system:String x:Key="exps.minvalue">最小</system:String>
+  <system:String x:Key="exps.name">名称</system:String>
+  <system:String x:Key="exps.optionvalues">カスタム値</system:String>
+  <system:String x:Key="exps.sepbycomma">カスタム値は ','で区切ってください。</system:String>
+  <system:String x:Key="exps.type">タイプ</system:String>
+  <system:String x:Key="exps.type.numerical">数値</system:String>
+  <system:String x:Key="exps.type.options">カスタム</system:String>
 
   <system:String x:Key="menu.edit">編集</system:String>
   <system:String x:Key="menu.edit.copy">コピー</system:String>
@@ -41,61 +41,61 @@
   <system:String x:Key="menu.file">ファイル</system:String>
   <system:String x:Key="menu.file.exit">OpenUTAUを終了</system:String>
   <system:String x:Key="menu.file.exportall">すべてエクスポート</system:String>
-  <!--<system:String x:Key="menu.file.exportust">Export Ust Files</system:String>-->
+  <system:String x:Key="menu.file.exportust">USTをエクスポート</system:String>
   <system:String x:Key="menu.file.importaudio">音声インポート...</system:String>
   <system:String x:Key="menu.file.importmidi">MIDIインポート...</system:String>
-  <!--<system:String x:Key="menu.file.importtracks">Import Tracks...</system:String>-->
+  <system:String x:Key="menu.file.importtracks">トラックをインポート...</system:String>
   <system:String x:Key="menu.file.new">新規作成</system:String>
   <system:String x:Key="menu.file.open">開く...</system:String>
-  <!--<system:String x:Key="menu.file.openas">Open As</system:String>-->
+  <system:String x:Key="menu.file.openas">Open As</system:String>
   <system:String x:Key="menu.file.recentfiles">最近開いたファイル</system:String>
   <system:String x:Key="menu.file.save">保存</system:String>
   <system:String x:Key="menu.file.saveas">別名で保存...</system:String>
   <system:String x:Key="menu.help">ヘルプ</system:String>
   <system:String x:Key="menu.help.about">OpenUTAUについて</system:String>
-  <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
+  <system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>
   <system:String x:Key="menu.tools">ツール</system:String>
-  <!--<system:String x:Key="menu.tools.layout">Layout</system:String>-->
-  <!--<system:String x:Key="menu.tools.layout.hsplit11">Horizontal 1:1</system:String>-->
-  <!--<system:String x:Key="menu.tools.layout.hsplit12">Horizontal 1:2</system:String>-->
-  <!--<system:String x:Key="menu.tools.layout.hsplit13">Horizontal 1:3</system:String>-->
-  <!--<system:String x:Key="menu.tools.layout.vsplit11">Vertical 1:1</system:String>-->
-  <!--<system:String x:Key="menu.tools.layout.vsplit12">Vertical 1:2</system:String>-->
-  <!--<system:String x:Key="menu.tools.layout.vsplit13">Vertical 1:3</system:String>-->
+  <system:String x:Key="menu.tools.layout">レイアウト</system:String>
+  <system:String x:Key="menu.tools.layout.hsplit11">平行 1:1</system:String>
+  <system:String x:Key="menu.tools.layout.hsplit12">平行 1:2</system:String>
+  <system:String x:Key="menu.tools.layout.hsplit13">平行 1:3</system:String>
+  <system:String x:Key="menu.tools.layout.vsplit11">垂直 1:1</system:String>
+  <system:String x:Key="menu.tools.layout.vsplit12">垂直 1:2</system:String>
+  <system:String x:Key="menu.tools.layout.vsplit13">垂直 1:3</system:String>
   <system:String x:Key="menu.tools.prefs">設定...</system:String>
   <system:String x:Key="menu.tools.project.expressions">表情...</system:String>
   <system:String x:Key="menu.tools.singer.install">シンガーをインストール...</system:String>
   <system:String x:Key="menu.tools.singer.installadv">シンガーをインストール(高度)...</system:String>
   <system:String x:Key="menu.tools.singers">シンガー...</system:String>
 
-  <!--<system:String x:Key="menu2.lyrics">Lyrics</system:String>-->
-  <!--<system:String x:Key="menu2.notes">Notes</system:String>-->
-  <!--<system:String x:Key="menu2.part">Part</system:String>-->
-  <!--<system:String x:Key="menu2.part.rename">Rename</system:String>-->
+  <system:String x:Key="menu2.lyrics">歌詞</system:String>
+  <system:String x:Key="menu2.notes">音符</system:String>
+  <system:String x:Key="menu2.part">パート</system:String>
+  <system:String x:Key="menu2.part.rename">名前を変更</system:String>
 
-  <!--<system:String x:Key="oto.alias">Alias</system:String>-->
-  <!--<system:String x:Key="oto.consonant">Consonant</system:String>-->
-  <!--<system:String x:Key="oto.cutoff">Cutoff</system:String>-->
-  <!--<system:String x:Key="oto.file">File</system:String>-->
-  <!--<system:String x:Key="oto.flavor">Flavor</system:String>-->
-  <!--<system:String x:Key="oto.offset">Offset</system:String>-->
-  <!--<system:String x:Key="oto.overlap">Overlap</system:String>-->
-  <!--<system:String x:Key="oto.phonetic">Phonetic</system:String>-->
-  <!--<system:String x:Key="oto.prefix">Prefix</system:String>-->
-  <!--<system:String x:Key="oto.preutter">Preutter</system:String>-->
-  <!--<system:String x:Key="oto.set">Set</system:String>-->
-  <!--<system:String x:Key="oto.suffix">Suffix</system:String>-->
+  <system:String x:Key="oto.alias">エイリアス</system:String>
+  <system:String x:Key="oto.consonant">子音部</system:String>
+  <system:String x:Key="oto.cutoff">ブランク</system:String>
+  <system:String x:Key="oto.file">ファイル</system:String>
+  <system:String x:Key="oto.flavor">Flavor</system:String>
+  <system:String x:Key="oto.offset">オフセット</system:String>
+  <system:String x:Key="oto.overlap">オーバーラップ</system:String>
+  <system:String x:Key="oto.phonetic">読み方</system:String>
+  <system:String x:Key="oto.prefix">Prefix</system:String>
+  <system:String x:Key="oto.preutter">先行発声</system:String>
+  <system:String x:Key="oto.set">セット</system:String> 
+  <system:String x:Key="oto.suffix">Suffix</system:String>
 
-  <!--<system:String x:Key="prefs.advanced">Advanced</system:String>-->
-  <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
-  <!--<system:String x:Key="prefs.advanced.stable">Stable</system:String>-->
+  <system:String x:Key="prefs.advanced">高度な設定</system:String>
+  <system:String x:Key="prefs.advanced.beta">ベータ版</system:String>
+  <system:String x:Key="prefs.advanced.stable">安定版</system:String>
   <system:String x:Key="prefs.appearance">外観</system:String>
   <system:String x:Key="prefs.appearance.lang">言語</system:String>
   <system:String x:Key="prefs.appearance.theme">テーマ</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">ダーク</system:String>
   <system:String x:Key="prefs.appearance.theme.light">ライト</system:String>
   <system:String x:Key="prefs.caption">環境設定</system:String>
-  <!--<system:String x:Key="prefs.note.restart">Note: please restart OpenUtau after changing this item.</system:String>-->
+  <system:String x:Key="prefs.note.restart">Note: この設定を変更した後は、OpenUtauを再起動してください。</system:String>
   <system:String x:Key="prefs.paths">ファイルの場所</system:String>
   <system:String x:Key="prefs.paths.add">追加</system:String>
   <system:String x:Key="prefs.paths.remove">削除</system:String>
@@ -104,21 +104,21 @@
   <system:String x:Key="prefs.playback.device">再生デバイス</system:String>
   <system:String x:Key="prefs.playback.test">再生テスト</system:String>
   <system:String x:Key="prefs.rendering">レンダリング</system:String>
-  <!--<system:String x:Key="prefs.rendering.prerender.threads">Pre-render Threads</system:String>-->
+  <system:String x:Key="prefs.rendering.prerender.threads">プリレンダースレッド数</system:String>
   <system:String x:Key="prefs.rendering.resampler.export">エクスポート用エンジン</system:String>
   <system:String x:Key="prefs.rendering.resampler.note">
         Note: エンジンを使用するには、使用したいエンジンのDLLまたはEXEファイルをOpenUTAUフォルダ内のResamplersフォルダに追加し、選択してください。
     </system:String>
   <system:String x:Key="prefs.rendering.resampler.preview">プレビュー用エンジン</system:String>
-  <!--<system:String x:Key="prefs.rendering.resampler.warn">
-    Warning: moresampler is not supported yet. It will be extremely slow and cause high CPU usage. If you insist, please:
-    1. Turn on "resampler-compatibility" in moreconfig.txt.
-    2. Reduce pre-render threads to 1 or 2.
-    3. Patiently wait for prerender to finish before play.
-  </system:String>-->
+  <system:String x:Key="prefs.rendering.resampler.warn">
+    警告: moresamplerはまだサポートされていません。CPU使用率が高くなり、動作が極端に遅くなります。それでも使用する場合:
+    1. moreconfig.txt内の"resampler-compatibility"をオンにしてください。
+    2. プリレンダースレッド数を1か2に設定してください。
+    3. 再生する前に、プリレンダーの処理が完了するのを辛抱強く待ってください。
+  </system:String>
 
-  <!--<system:String x:Key="singers.caption">Singers</system:String>-->
-  <!--<system:String x:Key="singers.location">Location</system:String>-->
+  <system:String x:Key="singers.caption">シンガー</system:String>
+  <system:String x:Key="singers.location">ファイルの場所</system:String>
 
   <system:String x:Key="tip.exps.actions">表情を設定
 表情をリセット</system:String>
@@ -136,7 +136,7 @@
 音符を選択
 選択した音符をトランスポーズ
 選択した音符をオクターブ毎にトランスポーズ
-Play</system:String>
+再生</system:String>
   <system:String x:Key="tip.notes.basics.keys">T:
 左クリック:
 右クリック:
@@ -147,7 +147,7 @@ Alt + 音符の末尾をドラッグ:
 Ctrl + ボックス選択:
 Up/Down:
 Ctrl + Up/Down:
-Space:</system:String>
+スペース:</system:String>
   <system:String x:Key="tip.notes.zoomx">◀ ここをスクロールして左右にズーム ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">ここをスクロールして上下にズーム ▶</system:String>
 
