@@ -48,7 +48,7 @@
   <system:String x:Key="menu.file.new">새로 만들기</system:String>
   <system:String x:Key="menu.file.open">열기</system:String>
   <system:String x:Key="menu.file.openas">O_pen As</system:String>
-  <system:String x:Key="menu.file.recentfiles">최근 파일 열기</system:String>
+  <system:String x:Key="menu.file.openrecent">최근 파일 열기</system:String>
   <system:String x:Key="menu.file.save">저장</system:String>
   <system:String x:Key="menu.file.saveas">다른 이름으로 저장</system:String>
   <system:String x:Key="menu.help">도움말</system:String>

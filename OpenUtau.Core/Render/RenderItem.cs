@@ -54,8 +54,9 @@ namespace OpenUtau.Core.Render {
                     ResamplerName = resampler;
                 }
             }
+            string ext = Path.GetExtension(SourceFile);
             SourceTemp = Path.Combine(PathManager.Inst.GetCachePath(null),
-                $"{HashHex(track.Singer.Id)}-{HashHex(phoneme.oto.Set)}-{HashHex(SourceFile)}.wav");
+                $"{HashHex(track.Singer.Id)}-{HashHex(phoneme.oto.Set)}-{HashHex(SourceFile)}{ext}");
 
             Velocity = (int)phoneme.GetExpression(project, "vel").Item1;
             Volume = (int)phoneme.GetExpression(project, "vol").Item1;

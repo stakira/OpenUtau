@@ -48,7 +48,7 @@
   <system:String x:Key="menu.file.new">Nieuw bestand</system:String>
   <system:String x:Key="menu.file.open">_Open...</system:String>
   <system:String x:Key="menu.file.openas">Open als</system:String>
-  <!--<system:String x:Key="menu.file.recentfiles">Open Recent</system:String>-->
+  <!--<system:String x:Key="menu.file.openrecent">Open Recent</system:String>-->
   <system:String x:Key="menu.file.save">_Opslaan</system:String>
   <system:String x:Key="menu.file.saveas">Opslaan _als...</system:String>
   <system:String x:Key="menu.help">_Help</system:String>

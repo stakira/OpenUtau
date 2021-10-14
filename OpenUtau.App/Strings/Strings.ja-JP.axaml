@@ -48,7 +48,7 @@
   <system:String x:Key="menu.file.new">新規作成</system:String>
   <system:String x:Key="menu.file.open">開く...</system:String>
   <system:String x:Key="menu.file.openas">Open As</system:String>
-  <system:String x:Key="menu.file.recentfiles">最近開いたファイル</system:String>
+  <system:String x:Key="menu.file.openrecent">最近開いたファイル</system:String>
   <system:String x:Key="menu.file.save">保存</system:String>
   <system:String x:Key="menu.file.saveas">別名で保存...</system:String>
   <system:String x:Key="menu.help">ヘルプ</system:String>

@@ -48,7 +48,7 @@
   <system:String x:Key="menu.file.new">Nouveau</system:String>
   <system:String x:Key="menu.file.open">Ouvrir</system:String>
   <system:String x:Key="menu.file.openas">Ouvrir en tant que...</system:String>
-  <system:String x:Key="menu.file.recentfiles">Fichier récent</system:String>
+  <system:String x:Key="menu.file.openrecent">Fichier récent</system:String>
   <system:String x:Key="menu.file.save">Sauvegarder</system:String>
   <system:String x:Key="menu.file.saveas">Sauvegarder en tant que...</system:String>
   <system:String x:Key="menu.help">Aide</system:String>

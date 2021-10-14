@@ -104,6 +104,10 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        void OnMainMenuOpened(object sender, RoutedEventArgs args) {
+            viewModel.RefreshOpenRecent();
+        }
+
         async void OnMenuSave(object sender, RoutedEventArgs args) => await Save();
         public async Task Save() {
             if (!viewModel.ProjectSaved) {
