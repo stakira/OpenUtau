@@ -11,11 +11,12 @@ using Avalonia.Controls.Shapes;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
-using Avalonia.Media;
+using Avalonia.Threading;
 using Avalonia.VisualTree;
 using OpenUtau.App.Controls;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
+using OpenUtau.Core.Ustx;
 using Serilog;
 using Point = Avalonia.Point;
 
@@ -26,14 +27,10 @@ namespace OpenUtau.App.Views {
         private PianoRollWindow? pianoRollWindow;
         private bool openPianoRollWindow;
 
-        private Cursor cursorCross = new Cursor(StandardCursorType.Cross);
-        private Cursor cursorHand = new Cursor(StandardCursorType.Hand);
-        private Cursor cursorNo = new Cursor(StandardCursorType.No);
-        private Cursor cursorSizeAll = new Cursor(StandardCursorType.SizeAll);
-        private Cursor cursorSizeWE = new Cursor(StandardCursorType.SizeWestEast);
-
         private PartEditState? partEditState;
         private Rectangle? selectionBox;
+        private DispatcherTimer timer;
+        private bool forceClose;
 
         public MainWindow() {
             InitializeComponent();
@@ -41,6 +38,11 @@ namespace OpenUtau.App.Views {
 #if DEBUG
             this.AttachDevTools();
 #endif
+            viewModel.NewProject();
+            timer = new DispatcherTimer(DispatcherPriority.Normal);
+            timer.Tick += (sender, args) => PlaybackManager.Inst.UpdatePlayPos();
+            timer.Start();
+            Program.AutoUpdate?.Invoke();
         }
 
         private void InitializeComponent() {
@@ -97,13 +99,17 @@ namespace OpenUtau.App.Views {
                 _ = await MessageBox.Show(
                      this,
                      e.ToString(),
-                     "errors.caption",
+                     ThemeManager.GetString("errors.caption"),
                      MessageBox.MessageBoxButtons.Ok);
             }
         }
 
+        void OnMainMenuOpened(object sender, RoutedEventArgs args) {
+            viewModel.RefreshOpenRecent();
+        }
+
         async void OnMenuSave(object sender, RoutedEventArgs args) => await Save();
-        async Task Save() {
+        public async Task Save() {
             if (!viewModel.ProjectSaved) {
                 await SaveAs();
             } else {
@@ -143,7 +149,7 @@ namespace OpenUtau.App.Views {
                 _ = await MessageBox.Show(
                      this,
                      e.ToString(),
-                     "errors.caption",
+                     ThemeManager.GetString("errors.caption"),
                      MessageBox.MessageBoxButtons.Ok);
             }
         }
@@ -169,7 +175,7 @@ namespace OpenUtau.App.Views {
                 _ = await MessageBox.Show(
                      this,
                      e.ToString(),
-                     "errors.caption",
+                     ThemeManager.GetString("errors.caption"),
                      MessageBox.MessageBoxButtons.Ok);
             }
         }
@@ -195,9 +201,41 @@ namespace OpenUtau.App.Views {
                 _ = await MessageBox.Show(
                      this,
                      e.ToString(),
-                     "errors.caption",
+                     ThemeManager.GetString("errors.caption"),
                      MessageBox.MessageBoxButtons.Ok);
             }
+        }
+
+        async void OnMenuExportAll(object sender, RoutedEventArgs args) {
+            var project = DocManager.Inst.Project;
+            if (await WarnToSave(project)) {
+                PlaybackManager.Inst.RenderToFiles(project);
+            }
+        }
+
+        async void OnMenuExportUst(object sender, RoutedEventArgs e) {
+            var project = DocManager.Inst.Project;
+            if (await WarnToSave(project)) {
+                for (var i = 0; i < project.parts.Count; i++) {
+                    var part = project.parts[i];
+                    if (part is UVoicePart voicePart) {
+                        var savePath = PathManager.Inst.GetPartSavePath(project.FilePath, i);
+                        Core.Formats.Ust.SavePart(project, voicePart, savePath);
+                    }
+                }
+            }
+        }
+
+        private async Task<bool> WarnToSave(UProject project) {
+            if (string.IsNullOrEmpty(project.FilePath)) {
+                await MessageBox.Show(
+                    this,
+                    ThemeManager.GetString("dialogs.export.savefirst"),
+                    ThemeManager.GetString("dialogs.export.caption"),
+                    MessageBox.MessageBoxButtons.Ok);
+                return false;
+            }
+            return true;
         }
 
         void OnMenuExpressionss(object sender, RoutedEventArgs args) {
@@ -245,7 +283,7 @@ namespace OpenUtau.App.Views {
                     MessageBox.Show(
                         this,
                         ae.Flatten().InnerExceptions.First().ToString(),
-                        "errors.caption",
+                        ThemeManager.GetString("errors.caption"),
                         MessageBox.MessageBoxButtons.Ok);
                 }
             });
@@ -286,48 +324,57 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        void OnMenuWiki(object sender, RoutedEventArgs args) {
+            OS.OpenWeb("https://github.com/stakira/OpenUtau/wiki");
+        }
+
+        void OnMenuVersion(object sender, RoutedEventArgs args) {
+            OS.OpenWeb("https://github.com/stakira/OpenUtau/wiki");
+        }
+
+        void OnMenuLayoutVSplit11(object sender, RoutedEventArgs args) => LayoutSplit(null, 1.0 / 2);
+        void OnMenuLayoutVSplit12(object sender, RoutedEventArgs args) => LayoutSplit(null, 1.0 / 3);
+        void OnMenuLayoutVSplit13(object sender, RoutedEventArgs args) => LayoutSplit(null, 1.0 / 4);
+        void OnMenuLayoutHSplit11(object sender, RoutedEventArgs args) => LayoutSplit(1.0 / 2, null);
+        void OnMenuLayoutHSplit12(object sender, RoutedEventArgs args) => LayoutSplit(1.0 / 3, null);
+        void OnMenuLayoutHSplit13(object sender, RoutedEventArgs args) => LayoutSplit(1.0 / 4, null);
+
+        private void LayoutSplit(double? x, double? y) {
+            var wa = Screens.Primary.WorkingArea;
+            WindowState = WindowState.Normal;
+            double borderThickness = (FrameSize!.Value.Width - ClientSize.Width) / 2;
+            double titleBarHeight = FrameSize!.Value.Height - ClientSize.Height - borderThickness;
+            Position = new PixelPoint(0, 0);
+            Width = x != null ? wa.Size.Width * x.Value : wa.Size.Width;
+            Height = (y != null ? wa.Size.Height * y.Value : wa.Size.Height) - titleBarHeight;
+            if (pianoRollWindow != null) {
+                pianoRollWindow.Position = new PixelPoint(x != null ? (int)Width : 0, y != null ? (int)(Height + titleBarHeight) : 0);
+                pianoRollWindow.Width = x != null ? wa.Size.Width - Width : wa.Size.Width;
+                pianoRollWindow.Height = (y != null ? wa.Size.Height - (Height + titleBarHeight) : wa.Size.Height) - titleBarHeight;
+            }
+        }
+
         void OnKeyDown(object sender, KeyEventArgs args) {
             if (args.KeyModifiers == KeyModifiers.None) {
                 switch (args.Key) {
-                    case Key.Delete:
-                        // TODO
-                        break;
-                    case Key.Space:
-                        PlayOrPause();
-                        break;
-                    default:
-                        break;
+                    case Key.Delete: viewModel.TracksViewModel.DeleteSelectedParts(); break;
+                    case Key.Space: PlayOrPause(); break;
+                    default: break;
                 }
             } else if (args.KeyModifiers == KeyModifiers.Alt) {
                 switch (args.Key) {
-                    case Key.F4:
-                        ((IControlledApplicationLifetime)Application.Current.ApplicationLifetime).Shutdown();
-                        break;
-                    default:
-                        break;
+                    case Key.F4: ((IControlledApplicationLifetime)Application.Current.ApplicationLifetime).Shutdown(); break;
+                    default: break;
                 }
             } else if (args.KeyModifiers == KeyModifiers.Control) {
                 switch (args.Key) {
-                    case Key.A:
-                        viewModel.TracksViewModel.SelectAllParts();
-                        break;
-                    case Key.N:
-                        viewModel.NewProject();
-                        break;
-                    case Key.O:
-                        Open();
-                        break;
-                    case Key.S:
-                        _ = Save();
-                        break;
-                    case Key.Z:
-                        viewModel.Undo();
-                        break;
-                    case Key.Y:
-                        viewModel.Redo();
-                        break;
-                    default:
-                        break;
+                    case Key.A: viewModel.TracksViewModel.SelectAllParts(); break;
+                    case Key.N: viewModel.NewProject(); break;
+                    case Key.O: Open(); break;
+                    case Key.S: _ = Save(); break;
+                    case Key.Z: viewModel.Undo(); break;
+                    case Key.Y: viewModel.Redo(); break;
+                    default: break;
                 }
             }
             args.Handled = true;
@@ -341,20 +388,20 @@ namespace OpenUtau.App.Views {
             if (!viewModel.PlaybackViewModel.PlayOrPause()) {
                 MessageBox.Show(
                    this,
-                   "dialogs.noresampler.message",
-                   "dialogs.noresampler.caption",
+                   ThemeManager.GetString("dialogs.noresampler.message"),
+                   ThemeManager.GetString("dialogs.noresampler.caption"),
                    MessageBox.MessageBoxButtons.Ok);
             }
         }
 
         public void HScrollPointerWheelChanged(object sender, PointerWheelEventArgs args) {
             var scrollbar = (ScrollBar)sender;
-            scrollbar.Value = Math.Max(scrollbar.Minimum, Math.Min(scrollbar.Maximum, scrollbar.Value - 0.25 * scrollbar.SmallChange * args.Delta.Y));
+            scrollbar.Value = Math.Max(scrollbar.Minimum, Math.Min(scrollbar.Maximum, scrollbar.Value - scrollbar.SmallChange * args.Delta.Y));
         }
 
         public void VScrollPointerWheelChanged(object sender, PointerWheelEventArgs args) {
             var scrollbar = (ScrollBar)sender;
-            scrollbar.Value = Math.Max(scrollbar.Minimum, Math.Min(scrollbar.Maximum, scrollbar.Value - 0.25 * scrollbar.SmallChange * args.Delta.Y));
+            scrollbar.Value = Math.Max(scrollbar.Minimum, Math.Min(scrollbar.Maximum, scrollbar.Value - scrollbar.SmallChange * args.Delta.Y));
         }
 
         public void TimelinePointerWheelChanged(object sender, PointerWheelEventArgs args) {
@@ -392,10 +439,6 @@ namespace OpenUtau.App.Views {
             args.Pointer.Capture(null);
         }
 
-        public void TrackHeaderCanvasDoubleTapped(object sender, RoutedEventArgs args) {
-            viewModel.TracksViewModel.AddTrack();
-        }
-
         public void PartsCanvasPointerPressed(object sender, PointerPressedEventArgs args) {
             var canvas = (Canvas)sender;
             var point = args.GetCurrentPoint(canvas);
@@ -408,36 +451,43 @@ namespace OpenUtau.App.Views {
                     // New selection.
                     viewModel.TracksViewModel.DeselectParts();
                     partEditState = new PartSelectionEditState(canvas, viewModel, GetSelectionBox(canvas));
-                    Cursor = cursorCross;
+                    Cursor = ViewConstants.cursorCross;
                 } else if (args.KeyModifiers == (KeyModifiers.Control | KeyModifiers.Shift)) {
                     // Additional selection.
                     partEditState = new PartSelectionEditState(canvas, viewModel, GetSelectionBox(canvas));
-                    Cursor = cursorCross;
+                    Cursor = ViewConstants.cursorCross;
                 } else if (control == canvas) {
                     viewModel.TracksViewModel.DeselectParts();
                     var part = viewModel.TracksViewModel.MaybeAddPart(point.Position);
                     if (part != null) {
                         // Start moving right away
                         partEditState = new PartMoveEditState(canvas, viewModel, part);
-                        Cursor = cursorSizeAll;
+                        Cursor = ViewConstants.cursorSizeAll;
                     }
                 } else if (control is PartControl partControl) {
-                    // TODO: edit part name
-                    if (point.Position.X > partControl.Bounds.Right - ViewConstants.ResizeMargin) {
+                    bool isVoice = partControl.part is UVoicePart;
+                    bool isWave = partControl.part is UWavePart;
+                    bool trim = point.Position.X > partControl.Bounds.Right - ViewConstants.ResizeMargin;
+                    bool skip = point.Position.X < partControl.Bounds.Left + ViewConstants.ResizeMargin;
+                    if (isVoice && trim) {
                         partEditState = new PartResizeEditState(canvas, viewModel, partControl.part);
-                        Cursor = cursorSizeWE;
+                        Cursor = ViewConstants.cursorSizeWE;
+                    } else if (isWave && skip) {
+                        // TODO
+                    } else if (isWave && trim) {
+                        // TODO
                     } else {
                         partEditState = new PartMoveEditState(canvas, viewModel, partControl.part);
-                        Cursor = cursorSizeAll;
+                        Cursor = ViewConstants.cursorSizeAll;
                     }
                 }
             } else if (point.Properties.IsRightButtonPressed) {
                 viewModel.TracksViewModel.DeselectParts();
                 partEditState = new PartEraseEditState(canvas, viewModel);
-                Cursor = cursorNo;
+                Cursor = ViewConstants.cursorNo;
             } else if (point.Properties.IsMiddleButtonPressed) {
                 partEditState = new PartPanningState(canvas, viewModel);
-                Cursor = cursorHand;
+                Cursor = ViewConstants.cursorHand;
             }
             if (partEditState != null) {
                 partEditState.Begin(point.Pointer, point.Position);
@@ -450,7 +500,7 @@ namespace OpenUtau.App.Views {
                 return selectionBox;
             }
             selectionBox = new Rectangle() {
-                Stroke = Brushes.Black,
+                Stroke = ThemeManager.ForegroundBrush,
                 StrokeThickness = 2,
                 Fill = ThemeManager.TickLineBrushLow,
                 // radius = 8
@@ -470,8 +520,14 @@ namespace OpenUtau.App.Views {
             }
             var control = canvas.InputHitTest(point.Position);
             if (control is PartControl partControl) {
-                if (point.Position.X > partControl.Bounds.Right - ViewConstants.ResizeMargin) {
-                    Cursor = cursorSizeWE;
+                bool isVoice = partControl.part is UVoicePart;
+                bool isWave = partControl.part is UWavePart;
+                bool trim = point.Position.X > partControl.Bounds.Right - ViewConstants.ResizeMargin;
+                bool skip = point.Position.X < partControl.Bounds.Left + ViewConstants.ResizeMargin;
+                if (isVoice && trim) {
+                    Cursor = ViewConstants.cursorSizeWE;
+                } else if (isWave && (skip || trim)) {
+                    Cursor = null; // TODO
                 } else {
                     Cursor = null;
                 }
@@ -508,11 +564,9 @@ namespace OpenUtau.App.Views {
             if (control is PartControl partControl) {
                 if (pianoRollWindow == null) {
                     pianoRollWindow = new PianoRollWindow() {
-                        DataContext = new PianoRollViewModel() {
-                            NotesViewModel = new NotesViewModel(),
-                            PlaybackViewModel = viewModel.PlaybackViewModel,
-                        }
+                        MainWindow = this,
                     };
+                    pianoRollWindow.ViewModel.PlaybackViewModel = viewModel.PlaybackViewModel;
                 }
                 // Workaround for new window losing focus.
                 openPianoRollWindow = true;
@@ -520,22 +574,42 @@ namespace OpenUtau.App.Views {
             }
         }
 
-        public void PartsCanvasWheelChanged(object sender, PointerWheelEventArgs args) {
-            if (args.KeyModifiers == KeyModifiers.Control) {
-                var canvas = this.FindControl<Canvas>("TimelineCanvas");
-                TimelinePointerWheelChanged(canvas, args);
+        public void PartsCanvasPointerWheelChanged(object sender, PointerWheelEventArgs args) {
+            if (args.KeyModifiers == KeyModifiers.None) {
+                var scrollbar = this.FindControl<ScrollBar>("VScrollBar");
+                VScrollPointerWheelChanged(scrollbar, args);
+            } else if (args.KeyModifiers == KeyModifiers.Alt) {
+                var scaler = this.FindControl<ViewScaler>("VScaler");
+                ViewScalerPointerWheelChanged(scaler, args);
             } else if (args.KeyModifiers == KeyModifiers.Shift) {
                 var scrollbar = this.FindControl<ScrollBar>("HScrollBar");
                 HScrollPointerWheelChanged(scrollbar, args);
-            } else if (args.KeyModifiers == KeyModifiers.None) {
-                var scrollbar = this.FindControl<ScrollBar>("VScrollBar");
-                VScrollPointerWheelChanged(scrollbar, args);
+            } else if (args.KeyModifiers == KeyModifiers.Control) {
+                var canvas = this.FindControl<Canvas>("TimelineCanvas");
+                TimelinePointerWheelChanged(canvas, args);
             }
         }
 
-        public void WindowClosing(object? sender, CancelEventArgs e) {
-            if (!DocManager.Inst.ChangesSaved) {
-                //e.Cancel = true;
+        public async void WindowClosing(object? sender, CancelEventArgs e) {
+            if (!forceClose && !DocManager.Inst.ChangesSaved) {
+                e.Cancel = true;
+                var result = await MessageBox.Show(
+                    this,
+                    ThemeManager.GetString("dialogs.exitsave.message"),
+                    ThemeManager.GetString("dialogs.exitsave.caption"),
+                    MessageBox.MessageBoxButtons.YesNoCancel);
+                switch (result) {
+                    case MessageBox.MessageBoxResult.Yes:
+                        await Save();
+                        goto case MessageBox.MessageBoxResult.No;
+                    case MessageBox.MessageBoxResult.No:
+                        pianoRollWindow?.Close();
+                        forceClose = true;
+                        Close();
+                        break;
+                    default:
+                        break;
+                }
             }
         }
     }

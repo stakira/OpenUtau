@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
 using System.Reactive.Linq;
 using Avalonia;
 using OpenUtau.Core;
@@ -7,38 +10,74 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
 namespace OpenUtau.App.ViewModels {
+    public class NotesRefreshEvent { }
+    public class NotesSelectionEvent {
+        public readonly UNote[] selectedNotes;
+        public readonly UNote[] tempSelectedNotes;
+        public NotesSelectionEvent(UNote[] selectedNotes, UNote[] tempSelectedNotes) {
+            this.selectedNotes = selectedNotes;
+            this.tempSelectedNotes = tempSelectedNotes;
+        }
+    }
+    public class NoteResizeEvent {
+        public readonly UNote note;
+        public NoteResizeEvent(UNote note) { this.note = note; }
+    }
+    public class NoteMoveEvent {
+        public readonly UNote note;
+        public NoteMoveEvent(UNote note) { this.note = note; }
+    }
+
     public class NotesViewModel : ViewModelBase, ICmdSubscriber {
         [Reactive] public Rect Bounds { get; set; }
-        [Reactive] public int TickCount { get; set; }
-        public int TrackCount => ViewConstants.MaxNoteNum;
-        public double TickWidth {
-            get => tickWidth;
-            set => this.RaiseAndSetIfChanged(ref tickWidth, Math.Clamp(value, ViewConstants.TickWidthMin, ViewConstants.TickWidthMax));
-        }
-        public double TrackHeight {
-            get => trackHeight;
-            set => this.RaiseAndSetIfChanged(ref trackHeight, Math.Clamp(value, ViewConstants.TrackHeightMin, ViewConstants.TrackHeightMax));
-        }
+        public int TickCount => Part?.Duration ?? 480 * 4;
+        public int TrackCount => ViewConstants.MaxTone;
+        [Reactive] public double TickWidth { get; set; }
+        public double TrackHeightMin => ViewConstants.NoteHeightMin;
+        public double TrackHeightMax => ViewConstants.NoteHeightMax;
+        [Reactive] public double TrackHeight { get; set; }
         [Reactive] public double TickOrigin { get; set; }
         [Reactive] public double TickOffset { get; set; }
         [Reactive] public double TrackOffset { get; set; }
-        [Reactive] public string PartName { get; set; }
+        [Reactive] public int SnapUnit { get; set; }
+        [Reactive] public string SnapUnitText { get; set; }
+        public double SnapUnitWidth => snapUnitWidth.Value;
+        [Reactive] public double PlayPosX { get; set; }
+        [Reactive] public double PlayPosHighlightX { get; set; }
+        [Reactive] public bool IsSnapOn { get; set; }
+        [Reactive] public bool ShowPitch { get; set; }
+        [Reactive] public bool ShowVibrato { get; set; }
+        [Reactive] public bool ShowPhoneme { get; set; }
+        [Reactive] public bool ShowTips { get; set; }
+        [Reactive] public bool ShowExpValueTip { get; set; }
+        [Reactive] public string ExpValueTipText { get; set; }
+        [Reactive] public string PrimaryKey { get; set; }
+        [Reactive] public string SecondaryKey { get; set; }
+        [Reactive] public UVoicePart? Part { get; set; }
         public double ViewportTicks => viewportTicks.Value;
         public double ViewportTracks => viewportTracks.Value;
         public double SmallChangeX => smallChangeX.Value;
         public double SmallChangeY => smallChangeY.Value;
+        public double HScrollBarMax => Math.Max(0, TickCount - ViewportTicks);
+        public double VScrollBarMax => Math.Max(0, TrackCount - ViewportTracks);
+        public UProject Project => DocManager.Inst.Project;
 
-        private double tickWidth = ViewConstants.TickWidthDefault;
-        private double trackHeight = ViewConstants.NoteDefaultHeight;
+        private readonly ObservableAsPropertyHelper<double> snapUnitWidth;
         private readonly ObservableAsPropertyHelper<double> viewportTicks;
         private readonly ObservableAsPropertyHelper<double> viewportTracks;
         private readonly ObservableAsPropertyHelper<double> smallChangeX;
         private readonly ObservableAsPropertyHelper<double> smallChangeY;
 
-        private UPart? part;
+        public readonly List<UNote> SelectedNotes = new List<UNote>();
+        private readonly HashSet<UNote> TempSelectedNotes = new HashSet<UNote>();
+
+        internal NotesViewModelHitTest HitTest;
+        private int _lastNoteLength = 480;
 
         public NotesViewModel() {
-            PartName = string.Empty;
+            snapUnitWidth = this.WhenAnyValue(x => x.SnapUnit, x => x.TickWidth)
+                .Select(v => v.Item1 * v.Item2)
+                .ToProperty(this, v => v.SnapUnitWidth);
             viewportTicks = this.WhenAnyValue(x => x.Bounds, x => x.TickWidth)
                 .Select(v => v.Item1.Width / v.Item2)
                 .ToProperty(this, x => x.ViewportTicks);
@@ -51,62 +90,127 @@ namespace OpenUtau.App.ViewModels {
             smallChangeY = this.WhenAnyValue(x => x.ViewportTracks)
                 .Select(h => h / 8)
                 .ToProperty(this, x => x.SmallChangeY);
+            this.WhenAnyValue(x => x.Bounds)
+                .Subscribe(_ => {
+                    OnXZoomed(new Point(), 0);
+                    OnYZoomed(new Point(), 0);
+                });
 
-            TickCount = 480 * 100;
+            this.WhenAnyValue(x => x.TickWidth)
+                .Subscribe(tickWidth => {
+                    int div = Project.beatUnit;
+                    int ticks = Project.resolution * 4 / Project.beatUnit;
+                    double width = ticks * tickWidth;
+                    while (width / 2 >= ViewConstants.PianoRollMinTicklineWidth && ticks % 2 == 0) {
+                        width /= 2;
+                        ticks /= 2;
+                        div *= 2;
+                    }
+                    SnapUnit = ticks;
+                    SnapUnitText = $"1/{div}";
+                });
+            this.WhenAnyValue(x => x.TickOffset)
+                .Subscribe(tickOffset => {
+                    SetPlayPos(DocManager.Inst.playPosTick, true);
+                });
 
+            SnapUnitText = string.Empty;
+            TickWidth = ViewConstants.PianoRollTickWidthDefault;
+            TrackHeight = ViewConstants.NoteHeightDefault;
+            ExpValueTipText = string.Empty;
+            TrackOffset = 4 * 12 + 6;
+            IsSnapOn = true;
+            ShowPitch = true;
+            ShowVibrato = true;
+            ShowPhoneme = true;
+            ShowTips = Core.Util.Preferences.Default.ShowTips;
+            if (Core.Util.Preferences.Default.ShowTips) {
+                Core.Util.Preferences.Default.ShowTips = false;
+                Core.Util.Preferences.Save();
+            }
+            PrimaryKey = "vel";
+            SecondaryKey = "vol";
+
+            HitTest = new NotesViewModelHitTest(this);
             DocManager.Inst.AddSubscriber(this);
         }
 
         public void OnXZoomed(Point position, double delta) {
-            double tick = TickOffset;
             bool recenter = true;
             if (TickOffset == 0 && position.X < 0.1) {
                 recenter = false;
             }
             double center = TickOffset + position.X * ViewportTicks;
-            TickWidth *= 1.0 + delta;
-            if (recenter) {
-                tick = Math.Max(0, center - position.X * ViewportTicks);
-            }
-            if (TickOffset != tick) {
-                TickOffset = tick;
-            } else {
-                // Force a redraw when only ViewportWidth is changed.
-                TickOffset = tick + 1;
-                TickOffset = tick - 1;
-            }
+            double tickWidth = TickWidth * (1.0 + delta * 2);
+            tickWidth = Math.Clamp(tickWidth, ViewConstants.PianoRollTickWidthMin, ViewConstants.PianoRollTickWidthMax);
+            tickWidth = Math.Max(tickWidth, Bounds.Width / TickCount);
+            TickWidth = tickWidth;
+            double tickOffset = recenter
+                    ? center - position.X * ViewportTicks
+                    : TickOffset;
+            TickOffset = Math.Clamp(tickOffset, 0, HScrollBarMax);
+            Notify();
         }
 
         public void OnYZoomed(Point position, double delta) {
-            TrackHeight *= 1.0 + delta;
-            double track = TrackOffset;
-            TrackOffset = track + 1;
-            TrackOffset = track - 1;
-            TrackOffset = track;
+            double center = TrackOffset + position.Y * ViewportTracks;
+            double trackHeight = TrackHeight * (1.0 + delta * 2);
+            trackHeight = Math.Clamp(trackHeight, ViewConstants.NoteHeightMin, ViewConstants.NoteHeightMax);
+            trackHeight = Math.Max(trackHeight, Bounds.Height / TrackCount);
+            TrackHeight = trackHeight;
+            double trackOffset = center - position.Y * ViewportTracks;
+            TrackOffset = Math.Clamp(trackOffset, 0, VScrollBarMax);
+            Notify();
+        }
+
+        private void Notify() {
+            this.RaisePropertyChanged(nameof(TickCount));
+            this.RaisePropertyChanged(nameof(HScrollBarMax));
+            this.RaisePropertyChanged(nameof(ViewportTicks));
+            this.RaisePropertyChanged(nameof(TrackCount));
+            this.RaisePropertyChanged(nameof(VScrollBarMax));
+            this.RaisePropertyChanged(nameof(ViewportTracks));
         }
 
         public int PointToTick(Point point) {
-            return (int)(point.X / TickWidth - TickOffset);
+            return (int)(point.X / TickWidth + TickOffset);
         }
-
-        public int SnapUnit { get; private set; } = 480;
         public int PointToSnappedTick(Point point) {
             int tick = (int)(point.X / TickWidth + TickOffset);
             return (int)((double)tick / SnapUnit) * SnapUnit;
         }
-
-        public int PointToTrackNo(Point point) {
-            return (int)(point.Y / TrackHeight + TrackOffset);
+        public int PointToTone(Point point) {
+            return ViewConstants.MaxTone - 1 - (int)(point.Y / TrackHeight + TrackOffset);
         }
-
-        public Point TickTrackToPoint(int tick, int trackNo) {
+        public double PointToToneDouble(Point point) {
+            return ViewConstants.MaxTone - 1 - (point.Y / TrackHeight + TrackOffset) + 0.5;
+        }
+        public Point TickToneToPoint(double tick, double tone) {
             return new Point(
                 (tick - TickOffset) * TickWidth,
-                (trackNo - TrackOffset) * TrackHeight);
+                (ViewConstants.MaxTone - 1 - tone - TrackOffset) * TrackHeight);
+        }
+        public Point TickToneToPoint(Vector2 tickTone) {
+            return TickToneToPoint(tickTone.X, tickTone.Y);
+        }
+        public Size TickToneToSize(double ticks, double tone) {
+            return new Size(ticks * TickWidth, tone * TrackHeight);
         }
 
-        public Size TickTrackToSize(int ticks, int tracks) {
-            return new Size(ticks * TickWidth, tracks * TrackHeight);
+        public UNote? MaybeAddNote(Point point) {
+            if (Part == null) {
+                return null;
+            }
+            var project = DocManager.Inst.Project;
+            int tone = PointToTone(point);
+            if (tone >= ViewConstants.MaxTone || tone < 0) {
+                return null;
+            }
+            UNote note = project.CreateNote(tone, PointToSnappedTick(point), _lastNoteLength);
+            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.ExecuteCmd(new AddNoteCommand(Part, note));
+            DocManager.Inst.EndUndoGroup();
+            return note;
         }
 
         private void LoadPart(UPart part, UProject project) {
@@ -114,21 +218,149 @@ namespace OpenUtau.App.ViewModels {
                 return;
             }
             UnloadPart();
-            this.part = part;
+            Part = part as UVoicePart;
             OnPartModified();
         }
 
         private void UnloadPart() {
-            part = null;
+            Part = null;
         }
 
         private void OnPartModified() {
-            if (part == null) {
+            if (Part == null) {
                 return;
             }
-            PartName = part.name;
-            TickOrigin = part.position;
-            TickCount = part.Duration;
+            TickOrigin = Part.position;
+            Notify();
+        }
+
+        public void DeselectNotes() {
+            SelectedNotes.Clear();
+            TempSelectedNotes.Clear();
+            MessageBus.Current.SendMessage(
+                new NotesSelectionEvent(
+                    SelectedNotes.ToArray(), TempSelectedNotes.ToArray()));
+        }
+
+        public void SelectAllNotes() {
+            DeselectNotes();
+            if (Part == null) {
+                return;
+            }
+            SelectedNotes.AddRange(Part.notes);
+            MessageBus.Current.SendMessage(
+                new NotesSelectionEvent(
+                    SelectedNotes.ToArray(), TempSelectedNotes.ToArray()));
+        }
+
+        public void TempSelectNotes(int x0, int x1, int y0, int y1) {
+            TempSelectedNotes.Clear();
+            if (Part == null) {
+                return;
+            }
+            foreach (var note in Part.notes) {
+                if (note.End > x0 && note.position < x1 && note.tone > y0 && note.tone <= y1) {
+                    TempSelectedNotes.Add(note);
+                }
+            }
+            MessageBus.Current.SendMessage(
+                new NotesSelectionEvent(
+                    SelectedNotes.ToArray(), TempSelectedNotes.ToArray()));
+        }
+
+        public void CommitTempSelectNotes() {
+            var newSelection = SelectedNotes.Union(TempSelectedNotes).ToList();
+            SelectedNotes.Clear();
+            SelectedNotes.AddRange(newSelection);
+            TempSelectedNotes.Clear();
+            MessageBus.Current.SendMessage(
+                new NotesSelectionEvent(
+                    SelectedNotes.ToArray(), TempSelectedNotes.ToArray()));
+        }
+
+        public void TransposeSelection(int deltaNoteNum) {
+            if (SelectedNotes.Count <= 0) {
+                return;
+            }
+            if (SelectedNotes.Any(note => note.tone + deltaNoteNum <= 0 || note.tone + deltaNoteNum >= ViewConstants.MaxTone)) {
+                return;
+            }
+            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.ExecuteCmd(new MoveNoteCommand(Part, new List<UNote>(SelectedNotes), 0, deltaNoteNum));
+            DocManager.Inst.EndUndoGroup();
+        }
+
+        internal void DeleteSelectedNotes() {
+            if (SelectedNotes.Count <= 0) {
+                return;
+            }
+            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.ExecuteCmd(new RemoveNoteCommand(Part, new List<UNote>(SelectedNotes)));
+            DocManager.Inst.EndUndoGroup();
+        }
+
+        public void CopyNotes() {
+            if (SelectedNotes.Count > 0) {
+                DocManager.Inst.NotesClipboard = SelectedNotes.Select(note => note.Clone()).ToList();
+            }
+        }
+
+        public void CutNotes() {
+            if (SelectedNotes.Count > 0) {
+                DocManager.Inst.NotesClipboard = SelectedNotes.Select(note => note.Clone()).ToList();
+                DocManager.Inst.StartUndoGroup();
+                DocManager.Inst.ExecuteCmd(new RemoveNoteCommand(Part, SelectedNotes));
+                DocManager.Inst.EndUndoGroup();
+            }
+        }
+
+        public void PasteNotes() {
+            if (Part != null && DocManager.Inst.NotesClipboard != null && DocManager.Inst.NotesClipboard.Count > 0) {
+                int position = (int)(Math.Ceiling(TickOffset / SnapUnit) * SnapUnit);
+                int minPosition = DocManager.Inst.NotesClipboard.Select(note => note.position).Min();
+                int offset = position - (int)Math.Floor((double)minPosition / SnapUnit) * SnapUnit;
+                var notes = DocManager.Inst.NotesClipboard.Select(note => note.Clone()).ToList();
+                notes.ForEach(note => note.position += offset);
+                DocManager.Inst.StartUndoGroup();
+                DocManager.Inst.ExecuteCmd(new AddNoteCommand(Part, notes));
+                if (Part.Duration < Part.GetMinDurTick(Project)) {
+                    DocManager.Inst.ExecuteCmd(new ResizePartCommand(Project, Part, Part.GetBarDurTick(Project)));
+                }
+                DocManager.Inst.EndUndoGroup();
+                DeselectNotes();
+                SelectedNotes.AddRange(notes);
+                MessageBus.Current.SendMessage(
+                    new NotesSelectionEvent(
+                        SelectedNotes.ToArray(), TempSelectedNotes.ToArray()));
+            }
+        }
+
+        public void ToggleVibrato(UNote note) {
+            var vibrato = note.vibrato;
+            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.ExecuteCmd(new VibratoLengthCommand(Part, note, vibrato.length == 0 ? 75f : 0));
+            DocManager.Inst.EndUndoGroup();
+        }
+
+        private void SetPlayPos(int tick, bool noScroll = false) {
+            tick = tick - Part?.position ?? 0;
+            double playPosX = TickToneToPoint(tick, 0).X;
+            double scroll = 0;
+            if (!noScroll && playPosX > PlayPosX) {
+                double margin = ViewConstants.PlayPosMarkerMargin * Bounds.Width;
+                if (playPosX > margin) {
+                    scroll = playPosX - margin;
+                }
+                TickOffset = Math.Clamp(TickOffset + scroll, 0, HScrollBarMax);
+            }
+            PlayPosX = playPosX;
+            int highlightTick = (int)Math.Floor((double)tick / SnapUnit) * SnapUnit;
+            PlayPosHighlightX = TickToneToPoint(highlightTick, 0).X;
+        }
+
+        private void FocusNote(UNote note) {
+            TickOffset = TickOffset = Math.Clamp(note.position + note.duration * 0.5 - ViewportTicks * 0.5, 0, HScrollBarMax);
+            TrackOffset = Math.Clamp(ViewConstants.MaxTone - note.tone + 2 - ViewportTracks * 0.5, 0, VScrollBarMax);
         }
 
         public void OnNext(UCommand cmd, bool isUndo) {
@@ -137,6 +369,15 @@ namespace OpenUtau.App.ViewModels {
                     LoadPart(loadPart.part, loadPart.project);
                 } else if (cmd is LoadProjectNotification) {
                     UnloadPart();
+                } else if (cmd is SelectExpressionNotification selectExp) {
+                    SecondaryKey = PrimaryKey;
+                    PrimaryKey = selectExp.ExpKey;
+                } else if (cmd is SetPlayPosTickNotification setPlayPosTick) {
+                    SetPlayPos(setPlayPosTick.playPosTick);
+                } else if (cmd is FocusNoteNotification focusNote) {
+                    if (focusNote.part == Part) {
+                        FocusNote(focusNote.note);
+                    }
                 }
             } else if (cmd is PartCommand partCommand) {
                 if (cmd is ReplacePartCommand replacePart) {
@@ -146,7 +387,7 @@ namespace OpenUtau.App.ViewModels {
                         LoadPart(replacePart.newPart, replacePart.project);
                     }
                 }
-                if (partCommand.part != part) {
+                if (partCommand.part != Part) {
                     return;
                 }
                 if (cmd is RemovePartCommand) {
@@ -158,6 +399,12 @@ namespace OpenUtau.App.ViewModels {
                 } else if (cmd is MovePartCommand) {
                     OnPartModified();
                 }
+            } else if (cmd is NoteCommand noteCommand) {
+                if (noteCommand.Part == Part) {
+                    MessageBus.Current.SendMessage(new NotesRefreshEvent());
+                }
+            } else if (cmd is ExpCommand || cmd is TrackCommand) {
+                MessageBus.Current.SendMessage(new NotesRefreshEvent());
             }
         }
     }

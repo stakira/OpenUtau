@@ -44,20 +44,14 @@ namespace OpenUtau.App.Controls {
         private Point offset;
         private int trackNo;
 
+        public TrackHeaderViewModel? ViewModel;
+
         private List<IDisposable> unbinds = new List<IDisposable>();
 
         private UTrack? track;
 
         public TrackHeader() {
             InitializeComponent();
-        }
-
-        internal void Bind(UTrack track, TrackHeaderCanvas canvas) {
-            this.track = track;
-            unbinds.Add(this.Bind(TrackHeightProperty, canvas.GetObservable(TrackHeaderCanvas.TrackHeightProperty)));
-            unbinds.Add(this.Bind(HeightProperty, canvas.GetObservable(TrackHeaderCanvas.TrackHeightProperty)));
-            unbinds.Add(this.Bind(OffsetProperty, canvas.WhenAnyValue(x => x.TrackOffset, trackOffset => new Point(0, -trackOffset * TrackHeight))));
-            SetPosition();
         }
 
         private void InitializeComponent() {
@@ -69,9 +63,19 @@ namespace OpenUtau.App.Controls {
             if (!change.IsEffectiveValueChange) {
                 return;
             }
-            if (change.Property == OffsetProperty || change.Property == TrackNoProperty) {
+            if (change.Property == OffsetProperty ||
+                change.Property == TrackNoProperty ||
+                change.Property == TrackHeightProperty) {
                 SetPosition();
             }
+        }
+
+        internal void Bind(UTrack track, TrackHeaderCanvas canvas) {
+            this.track = track;
+            unbinds.Add(this.Bind(TrackHeightProperty, canvas.GetObservable(TrackHeaderCanvas.TrackHeightProperty)));
+            unbinds.Add(this.Bind(HeightProperty, canvas.GetObservable(TrackHeaderCanvas.TrackHeightProperty)));
+            unbinds.Add(this.Bind(OffsetProperty, canvas.WhenAnyValue(x => x.TrackOffset, trackOffset => new Point(0, -trackOffset * TrackHeight))));
+            SetPosition();
         }
 
         private void SetPosition() {
@@ -82,7 +86,7 @@ namespace OpenUtau.App.Controls {
         void SingerButtonClicked(object sender, RoutedEventArgs args) {
             var singerMenu = this.FindControl<ContextMenu>("SingersMenu");
             if (DocManager.Inst.Singers.Count > 0) {
-                (DataContext as TrackHeaderViewModel)!.RefreshSingers();
+                ViewModel?.RefreshSingers();
                 singerMenu.Open();
             }
             args.Handled = true;
@@ -91,7 +95,7 @@ namespace OpenUtau.App.Controls {
         void PhonemizerButtonClicked(object sender, RoutedEventArgs args) {
             var phonemizerMenu = this.FindControl<ContextMenu>("PhonemizersMenu");
             if (DocManager.Inst.PhonemizerFactories.Length > 0) {
-                (DataContext as TrackHeaderViewModel)!.RefreshPhonemizers();
+                ViewModel?.RefreshPhonemizers();
                 phonemizerMenu.Open();
             }
             args.Handled = true;

@@ -63,7 +63,7 @@ namespace OpenUtau.App.Controls {
         }
 
         private void UpdatePath() {
-            double offset = 7 * Math.Log(ViewConstants.TrackHeightMax / Value, 2) / Math.Log(ViewConstants.TrackHeightMax / ViewConstants.TrackHeightMin, 2);
+            double offset = 7 * Math.Log(Max / Value, 2) / Math.Log(Max / Min, 2);
             double size = offset < 4 ? 4 : 8 - offset;
             if (double.IsNaN(offset) || double.IsNaN(size) ||
                 double.IsInfinity(offset) || double.IsInfinity(size)) return;

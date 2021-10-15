@@ -16,7 +16,7 @@ def file_to_dict(filename):
     return {child.get('{http://schemas.microsoft.com/winfx/2006/xaml}Key'): child.text for child in src_etree.getroot()[:]}
 
 
-def dict_to_file(filename, dict):
+def dict_to_file(filename, dict, en_dict):
     with open(filename, "w", encoding='utf8') as f:
         f.write('<ResourceDictionary xmlns="https://github.com/avaloniaui"\n')
         f.write(
@@ -32,8 +32,11 @@ def dict_to_file(filename, dict):
             if last_section != section:
                 f.write('\n')
             last_section = section
-            line = '  <system:String x:Key="%s">%s</system:String>\n' % (
+            line = '<system:String x:Key="%s">%s</system:String>' % (
                 key, dict[key])
+            if en_dict and dict[key] == en_dict[key]:
+                line = '<!--%s-->' % line
+            line = '  %s\n' % line
             f.write(line)
         f.write('</ResourceDictionary>\n')
 
@@ -48,13 +51,13 @@ if __name__ == "__main__":
     dst_files = map(lambda f: os.path.join(dir, f), dst_files)
 
     register_all_namespaces(src_file)
-    dict = file_to_dict(src_file)
-    dict_to_file(src_file, dict)
+    en_dict = file_to_dict(src_file)
+    dict_to_file(src_file, en_dict, None)
 
     for dst_file in dst_files:
         dst_dict = file_to_dict(dst_file)
-        to_remove = set(dst_dict.keys()) - set(dict.keys())
-        to_add = set(dict.keys()) - set(dst_dict.keys())
+        to_remove = set(dst_dict.keys()) - set(en_dict.keys())
+        to_add = set(en_dict.keys()) - set(dst_dict.keys())
         [dst_dict.pop(k) for k in to_remove]
-        [dst_dict.update({k: dict[k]}) for k in to_add]
-        dict_to_file(dst_file, dst_dict)
+        [dst_dict.update({k: en_dict[k]}) for k in to_add]
+        dict_to_file(dst_file, dst_dict, en_dict)

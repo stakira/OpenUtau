@@ -11,7 +11,6 @@ namespace OpenUtau.App.ViewModels {
         public double Bpm => Project.bpm;
         public int Resolution => Project.resolution;
         public int PlayPosTick => DocManager.Inst.playPosTick;
-
         public TimeSpan PlayPosTime => TimeSpan.FromMilliseconds((int)Project.TickToMillisecond(DocManager.Inst.playPosTick));
 
         public PlaybackViewModel() {
@@ -27,15 +26,7 @@ namespace OpenUtau.App.ViewModels {
             DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(Project.EndTick));
         }
         public bool PlayOrPause() {
-            if (PlaybackManager.Inst.Playing) {
-                Pause();
-                return true;
-            }
-            if (!PlaybackManager.Inst.CheckResampler()) {
-                return false;
-            }
-            PlaybackManager.Inst.Play(Project, DocManager.Inst.playPosTick);
-            return true;
+            return PlaybackManager.Inst.PlayOrPause();
         }
         public void Pause() {
             PlaybackManager.Inst.PausePlayback();
@@ -65,13 +56,17 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void OnNext(UCommand cmd, bool isUndo) {
-            if (cmd is BpmCommand) {
-                this.RaisePropertyChanged(nameof(Bpm));
-            } else if (cmd is TimeSignatureCommand) {
+            if (cmd is BpmCommand ||
+                cmd is TimeSignatureCommand ||
+                cmd is LoadProjectNotification) {
                 this.RaisePropertyChanged(nameof(BeatPerBar));
                 this.RaisePropertyChanged(nameof(BeatUnit));
-            } else if (cmd is SeekPlayPosTickNotification) {
+                this.RaisePropertyChanged(nameof(Bpm));
+                DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(0));
+            } else if (cmd is SeekPlayPosTickNotification ||
+                cmd is SetPlayPosTickNotification) {
                 this.RaisePropertyChanged(nameof(PlayPosTick));
+                this.RaisePropertyChanged(nameof(PlayPosTime));
             }
         }
     }

@@ -47,13 +47,23 @@
                 </DataTemplate>
               </ComboBox.ItemTemplate>
             </ComboBox>
-            <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.appearance.lang.note}"/>
+            <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.note.restart}"/>
             <TextBlock Margin="0,4,0,0" Text="{DynamicResource prefs.appearance.theme}" />
             <ComboBox HorizontalAlignment="Stretch" SelectedIndex="{Binding Theme}">
               <ComboBoxItem Content="{DynamicResource prefs.appearance.theme.light}"/>
               <ComboBoxItem Content="{DynamicResource prefs.appearance.theme.dark}"/>
             </ComboBox>
-            <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.appearance.theme.note}"/>
+            <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.note.restart}"/>
+          </StackPanel>
+        </HeaderedContentControl>
+        <HeaderedContentControl Classes="groupbox" Header="{DynamicResource prefs.advanced}">
+          <StackPanel>
+            <TextBlock Text="{DynamicResource prefs.advanced.beta}" />
+            <ComboBox HorizontalAlignment="Stretch" SelectedIndex="{Binding Beta}">
+              <ComboBoxItem Content="{DynamicResource prefs.advanced.stable}"/>
+              <ComboBoxItem Content="{DynamicResource prefs.advanced.beta}"/>
+            </ComboBox>
+            <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.note.restart}"/>
           </StackPanel>
         </HeaderedContentControl>
       </StackPanel>

@@ -7,6 +7,7 @@ using DynamicData.Binding;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace OpenUtau.App.ViewModels {
     public class TracksRefreshEvent { }
@@ -18,58 +19,40 @@ namespace OpenUtau.App.ViewModels {
             this.tempSelectedParts = tempSelectedParts;
         }
     }
-    public class PartResizeEvent {
+    public class PartRefreshEvent {
         public readonly UPart part;
-        public PartResizeEvent(UPart part) { this.part = part; }
+        public PartRefreshEvent(UPart part) { this.part = part; }
     }
-    public class PartMoveEvent {
+    public class PartRedrawEvent {
         public readonly UPart part;
-        public PartMoveEvent(UPart part) { this.part = part; }
+        public PartRedrawEvent(UPart part) { this.part = part; }
     }
 
     public class TracksViewModel : ViewModelBase, ICmdSubscriber {
-        public Rect Bounds {
-            get => bounds;
-            set => this.RaiseAndSetIfChanged(ref bounds, value);
-        }
-        public int TickCount {
-            get => tickCount;
-            set => this.RaiseAndSetIfChanged(ref tickCount, value);
-        }
-        public int TrackCount {
-            get => trackCount;
-            set => this.RaiseAndSetIfChanged(ref trackCount, value);
-        }
-        public double TickWidth {
-            get => tickWidth;
-            set => this.RaiseAndSetIfChanged(ref tickWidth, Math.Clamp(value, ViewConstants.TickWidthMin, ViewConstants.TickWidthMax));
-        }
-        public double TrackHeight {
-            get => trackHeight;
-            set => this.RaiseAndSetIfChanged(ref trackHeight, Math.Clamp(value, ViewConstants.TrackHeightMin, ViewConstants.TrackHeightMax));
-        }
-        public double TickOffset {
-            get => tickOffset;
-            set => this.RaiseAndSetIfChanged(ref tickOffset, value);
-        }
-        public double TrackOffset {
-            get => trackOffset;
-            set => this.RaiseAndSetIfChanged(ref trackOffset, value);
-        }
+        public UProject Project => DocManager.Inst.Project;
+        [Reactive] public Rect Bounds { get; set; }
+        public int TickCount => Math.Max(Project.BarTicks * 32, Project.EndTick);
+        public int TrackCount => Math.Max(16, Project.tracks.Count + 1);
+        [Reactive] public double TickWidth { get; set; }
+        public double TrackHeightMin => ViewConstants.TrackHeightMin;
+        public double TrackHeightMax => ViewConstants.TrackHeightMax;
+        [Reactive] public double TrackHeight { get; set; }
+        [Reactive] public double TickOffset { get; set; }
+        [Reactive] public double TrackOffset { get; set; }
+        [Reactive] public int SnapUnit { get; set; }
+        public double SnapUnitWidth => snapUnitWidth.Value;
+        [Reactive] public double PlayPosX { get; set; }
+        [Reactive] public double PlayPosHighlightX { get; set; }
         public double ViewportTicks => viewportTicks.Value;
         public double ViewportTracks => viewportTracks.Value;
         public double SmallChangeX => smallChangeX.Value;
         public double SmallChangeY => smallChangeY.Value;
+        public double HScrollBarMax => Math.Max(0, TickCount - ViewportTicks);
+        public double VScrollBarMax => Math.Max(0, TrackCount - ViewportTracks);
         public ObservableCollectionExtended<UPart> Parts { get; } = new ObservableCollectionExtended<UPart>();
         public ObservableCollectionExtended<UTrack> Tracks { get; } = new ObservableCollectionExtended<UTrack>();
 
-        private Rect bounds;
-        private int tickCount;
-        private int trackCount;
-        private double tickWidth = ViewConstants.TickWidthDefault;
-        private double trackHeight = ViewConstants.TrackHeightDefault;
-        private double tickOffset;
-        private double trackOffset;
+        private readonly ObservableAsPropertyHelper<double> snapUnitWidth;
         private readonly ObservableAsPropertyHelper<double> viewportTicks;
         private readonly ObservableAsPropertyHelper<double> viewportTracks;
         private readonly ObservableAsPropertyHelper<double> smallChangeX;
@@ -79,6 +62,9 @@ namespace OpenUtau.App.ViewModels {
         private readonly HashSet<UPart> TempSelectedParts = new HashSet<UPart>();
 
         public TracksViewModel() {
+            snapUnitWidth = this.WhenAnyValue(x => x.SnapUnit, x => x.TickWidth)
+                .Select(v => v.Item1 * v.Item2)
+                .ToProperty(this, v => v.SnapUnitWidth);
             viewportTicks = this.WhenAnyValue(x => x.Bounds, x => x.TickWidth)
                 .Select(v => v.Item1.Width / v.Item2)
                 .ToProperty(this, x => x.ViewportTicks);
@@ -91,46 +77,77 @@ namespace OpenUtau.App.ViewModels {
             smallChangeY = this.WhenAnyValue(x => x.ViewportTracks)
                 .Select(h => h / 8)
                 .ToProperty(this, x => x.SmallChangeY);
+            this.WhenAnyValue(x => x.Bounds)
+                .Subscribe(_ => {
+                    OnXZoomed(new Point(), 0);
+                    OnYZoomed(new Point(), 0);
+                });
 
-            TrackCount = 10;
-            TickCount = 480 * 100;
+            this.WhenAnyValue(x => x.TickWidth)
+                .Subscribe(tickWidth => {
+                    int ticks = Project.resolution * 4 / Project.beatUnit;
+                    double width = ticks * tickWidth;
+                    if (width < ViewConstants.MinTicklineWidth) {
+                        SnapUnit = ticks * Project.beatPerBar;
+                        return;
+                    }
+                    while (width / 2 >= ViewConstants.MinTicklineWidth) {
+                        width /= 2;
+                        ticks /= 2;
+                    }
+                    SnapUnit = ticks;
+                });
+            this.WhenAnyValue(x => x.TickOffset)
+                .Subscribe(tickOffset => {
+                    SetPlayPos(DocManager.Inst.playPosTick, true);
+                });
+
+            TickWidth = ViewConstants.TickWidthDefault;
+            TrackHeight = ViewConstants.TrackHeightDefault;
+            Notify();
 
             DocManager.Inst.AddSubscriber(this);
         }
 
         public void OnXZoomed(Point position, double delta) {
-            double tick = TickOffset;
             bool recenter = true;
             if (TickOffset == 0 && position.X < 0.1) {
                 recenter = false;
             }
             double center = TickOffset + position.X * ViewportTicks;
-            TickWidth *= 1.0 + delta;
-            if (recenter) {
-                tick = Math.Max(0, center - position.X * ViewportTicks);
-            }
-            if (TickOffset != tick) {
-                TickOffset = tick;
-            } else {
-                // Force a redraw when only ViewportWidth is changed.
-                TickOffset = tick + 1;
-                TickOffset = tick - 1;
-            }
+            double tickWidth = TickWidth * (1.0 + delta * 2);
+            tickWidth = Math.Clamp(tickWidth, ViewConstants.TickWidthMin, ViewConstants.TickWidthMax);
+            tickWidth = Math.Max(tickWidth, Bounds.Width / TickCount);
+            TickWidth = tickWidth;
+            double tickOffset = recenter
+                    ? center - position.X * ViewportTicks
+                    : TickOffset;
+            TickOffset = Math.Clamp(tickOffset, 0, HScrollBarMax);
+            Notify();
         }
 
         public void OnYZoomed(Point position, double delta) {
-            TrackHeight *= 1.0 + delta;
-            double track = TrackOffset;
-            TrackOffset = track + 1;
-            TrackOffset = track - 1;
-            TrackOffset = track;
+            double trackHeight = TrackHeight * (1.0 + delta * 2);
+            trackHeight = Math.Clamp(trackHeight, ViewConstants.TrackHeightMin, ViewConstants.TrackHeightMax);
+            trackHeight = Math.Max(trackHeight, Bounds.Height / TrackCount);
+            TrackHeight = trackHeight;
+            TrackOffset = Math.Clamp(TrackOffset, 0, VScrollBarMax);
+            Notify();
+        }
+
+        private void Notify() {
+            this.RaisePropertyChanged(nameof(TickCount));
+            this.RaisePropertyChanged(nameof(HScrollBarMax));
+            this.RaisePropertyChanged(nameof(ViewportTicks));
+            this.RaisePropertyChanged(nameof(TrackCount));
+            this.RaisePropertyChanged(nameof(VScrollBarMax));
+            this.RaisePropertyChanged(nameof(ViewportTracks));
         }
 
         public int PointToTick(Point point) {
-            return (int)(point.X / TickWidth - TickOffset);
+            return (int)(point.X / TickWidth + TickOffset);
         }
 
-        public int SnapUnit { get; private set; } = 480;
         public int PointToSnappedTick(Point point) {
             int tick = (int)(point.X / TickWidth + TickOffset);
             return (int)((double)tick / SnapUnit) * SnapUnit;
@@ -164,7 +181,7 @@ namespace OpenUtau.App.ViewModels {
                 return null;
             }
             UVoicePart part = new UVoicePart() {
-                position = PointToSnappedTick(point), // todo: snap
+                position = PointToSnappedTick(point),
                 trackNo = trackNo,
                 Duration = project.resolution * 16 / project.beatUnit * project.beatPerBar,
             };
@@ -195,7 +212,7 @@ namespace OpenUtau.App.ViewModels {
             var project = DocManager.Inst.Project;
             TempSelectedParts.Clear();
             foreach (var part in project.parts) {
-                if (part.EndTick >= x0 && part.position <= x1 && part.trackNo >= y0 && part.trackNo < y1) {
+                if (part.EndTick > x0 && part.position < x1 && part.trackNo >= y0 && part.trackNo < y1) {
                     TempSelectedParts.Add(part);
                 }
             }
@@ -214,8 +231,37 @@ namespace OpenUtau.App.ViewModels {
                     SelectedParts.ToArray(), TempSelectedParts.ToArray()));
         }
 
+        public void DeleteSelectedParts() {
+            if (SelectedParts.Count <= 0) {
+                return;
+            }
+            DocManager.Inst.StartUndoGroup();
+            foreach (var part in SelectedParts) {
+                DocManager.Inst.ExecuteCmd(new RemovePartCommand(Project, part));
+            }
+            DocManager.Inst.EndUndoGroup();
+            DeselectParts();
+        }
+
+        private void SetPlayPos(int tick, bool noScroll = false) {
+            double playPosX = TickTrackToPoint(tick, 0).X;
+            double scroll = 0;
+            if (!noScroll && playPosX > PlayPosX) {
+                double margin = ViewConstants.PlayPosMarkerMargin * Bounds.Width;
+                if (playPosX > margin) {
+                    scroll = playPosX - margin;
+                }
+                TickOffset = Math.Clamp(TickOffset + scroll, 0, HScrollBarMax);
+            }
+            PlayPosX = playPosX + scroll;
+            int highlightTick = (int)Math.Floor((double)tick / SnapUnit) * SnapUnit;
+            PlayPosHighlightX = TickTrackToPoint(highlightTick, 0).X + scroll;
+        }
+
         public void OnNext(UCommand cmd, bool isUndo) {
-            if (cmd is PartCommand partCommand) {
+            if (cmd is NoteCommand noteCommand) {
+                MessageBus.Current.SendMessage(new PartRedrawEvent(noteCommand.Part));
+            } else if (cmd is PartCommand partCommand) {
                 if (partCommand is AddPartCommand) {
                     if (!isUndo) {
                         Parts.Add(partCommand.part);
@@ -236,11 +282,9 @@ namespace OpenUtau.App.ViewModels {
                         Parts.Remove(replacePart.newPart);
                         Parts.Add(replacePart.part);
                     }
-                } else if (partCommand is ResizePartCommand resizePart) {
-                    MessageBus.Current.SendMessage(new PartResizeEvent(resizePart.part));
-                } else if (partCommand is MovePartCommand movePart) {
-                    MessageBus.Current.SendMessage(new PartMoveEvent(movePart.part));
                 }
+                MessageBus.Current.SendMessage(new PartRefreshEvent(partCommand.part));
+                Notify();
             } else if (cmd is TrackCommand) {
                 if (cmd is AddTrackCommand addTrack) {
                     if (!isUndo) {
@@ -255,6 +299,7 @@ namespace OpenUtau.App.ViewModels {
                         Tracks.Add(removeTrack.track);
                     }
                 }
+                Notify();
                 MessageBus.Current.SendMessage(new TracksRefreshEvent());
             } else if (cmd is UNotification) {
                 if (cmd is LoadProjectNotification loadProjectNotif) {
@@ -262,7 +307,11 @@ namespace OpenUtau.App.ViewModels {
                     Parts.AddRange(loadProjectNotif.project.parts);
                     Tracks.Clear();
                     Tracks.AddRange(loadProjectNotif.project.tracks);
+                    MessageBus.Current.SendMessage(new TracksRefreshEvent());
+                } else if (cmd is SetPlayPosTickNotification setPlayPosTick) {
+                    SetPlayPos(setPlayPosTick.playPosTick);
                 }
+                Notify();
             }
         }
     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using Serilog;
 
@@ -13,7 +14,7 @@ namespace OpenUtau.App {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             InitLogging();
             InitOpenUtau();
-            BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+            Run(args);
         }
 
         // Avalonia configuration, don't remove; also used by visual designer.
@@ -30,6 +31,11 @@ namespace OpenUtau.App {
                 .UseReactiveUI()
                 .SetupWithoutStarting();
 
+        public static void Run(string[] args)
+            => BuildAvaloniaApp()
+                .StartWithClassicDesktopLifetime(
+                    args, ShutdownMode.OnMainWindowClose);
+
         public static void InitLogging() {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Information()
@@ -44,5 +50,7 @@ namespace OpenUtau.App {
         public static void InitOpenUtau() {
             Core.DocManager.Inst.Initialize();
         }
+
+        public static Action? AutoUpdate { get;set; }
     }
 }

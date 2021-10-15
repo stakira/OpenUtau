@@ -1,15 +1,21 @@
-<Window xmlns="https://github.com/avaloniaui"
+﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="using:OpenUtau.App.ViewModels"
+        xmlns:api="using:OpenUtau.Api"
         xmlns:c="clr-namespace:OpenUtau.App.Controls"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="OpenUtau.App.Views.PianoRollWindow"
-        Icon="/Assets/avalonia-logo.ico"
-        Title="Piano Roll" MinWidth="800" MinHeight="300" KeyDown="OnKeyDown" Closing="WindowClosing"
+        Icon="/Assets/open-utau.ico"
+        Title="Piano Roll" MinWidth="300" MinHeight="200" KeyDown="OnKeyDown" Closing="WindowClosing"
         TransparencyLevelHint="None" Background="{DynamicResource MainWindowBackgroundBrush}"
-        ExtendClientAreaToDecorationsHint="False">
+        ExtendClientAreaToDecorationsHint="False" Deactivated="WindowDeactivated">
+  <Window.Styles>
+    <Style Selector="Button,ToggleButton">
+      <Setter Property="Focusable" Value="False"/>
+    </Style>
+  </Window.Styles>
   <Grid>
     <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="{Binding $parent[1].WindowDecorationMargin}">
       <Grid.RowDefinitions>
@@ -24,38 +30,56 @@
         <ColumnDefinition Width="*"/>
         <ColumnDefinition Width="24"/>
       </Grid.ColumnDefinitions>
-      <ScrollBar Name="HScrollBar" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+      <ScrollBar Name="HScrollBar" Classes="music" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                  Margin="0,4,0,4" Orientation="Horizontal" AllowAutoHide="False"
                  DataContext="{Binding NotesViewModel}"
-                 Maximum="{Binding TickCount, Mode=OneWay}"
+                 Maximum="{Binding HScrollBarMax, Mode=OneWay}"
                  Value="{Binding TickOffset}"
                  ViewportSize="{Binding ViewportTicks}"
                  LargeChange="{Binding ViewportTicks}"
                  SmallChange="{Binding SmallChangeX}" PointerWheelChanged="HScrollPointerWheelChanged"/>
-      <ScrollBar Name="VScrollBar" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+      <ScrollBar Name="VScrollBar" Classes="music" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                  Margin="4,0,4,0" Orientation="Vertical" AllowAutoHide="False"
                  DataContext="{Binding NotesViewModel}"
-                 Maximum="{Binding TrackCount, Mode=OneWay}"
+                 Maximum="{Binding VScrollBarMax, Mode=OneWay}"
                  Value="{Binding TrackOffset}"
                  ViewportSize="{Binding ViewportTracks}"
                  LargeChange="{Binding ViewportTracks}"
                  SmallChange="{Binding SmallChangeY}" PointerWheelChanged="VScrollPointerWheelChanged"/>
-      <Border Grid.Column="0" Grid.Row="2" Background="Red"></Border>
-      <Border Grid.Column="0" Grid.Row="4" Background="Red"></Border>
-      <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent"
-              BoxShadow="inset 0 0 5 0.75 #7F7F7F" ClipToBounds="True" IsHitTestVisible="False">
-      </Border>
-      <Canvas Name="TimelineCanvas" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Top"
+      <c:TrackBackground Grid.Column="0" Grid.Row="2" IsPianoRoll="True" IsKeyboard="True"
+                         Foreground="{DynamicResource BlackKeyBrush}"
+                         Background="{DynamicResource WhiteKeyBrush}"
+                         DataContext="{Binding NotesViewModel}"
+                         TrackHeight="{Binding TrackHeight}"
+                         TrackOffset="{Binding TrackOffset}"
+                         PointerWheelChanged="KeyboardPointerWheelChanged"
+                         PointerPressed="KeyboardPointerPressed"
+                         PointerMoved="KeyboardPointerMoved"
+                         PointerReleased="KeyboardPointerReleased"/>
+      <Grid Grid.Column="0" Grid.Row="4">
+        <c:ExpSelector HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top" Index="0" Margin="0,0,0,0"/>
+        <c:ExpSelector HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top" Index="1" Margin="0,22,0,0"/>
+        <c:ExpSelector HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top" Index="2" Margin="0,44,0,0"/>
+        <c:ExpSelector HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top" Index="3" Margin="0,66,0,0"/>
+      </Grid>
+      <Canvas Name="TimelineCanvas" Grid.Row="1" Grid.Column="1"
+              Background="Transparent" ClipToBounds="True"
               PointerWheelChanged="TimelinePointerWheelChanged"
               PointerPressed="TimelinePointerPressed"
               PointerMoved="TimelinePointerMoved"
-              PointerReleased="TimelinePointerReleased"/>
+              PointerReleased="TimelinePointerReleased">
+        <Path Name="PlayPos"
+              Canvas.Left="{Binding NotesViewModel.PlayPosX}"
+              Canvas.Top="0" ZIndex="100" IsHitTestVisible="False"
+              Fill="{DynamicResource NeutralAccentBrushSemi}"
+              Data="M -6.5 0 L 6.5 0 L 6.5 3 L 0 9 L -6.5 3 Z"/>
+      </Canvas>
       <c:TrackBackground Grid.Row="2" Grid.Column="1" IsHitTestVisible="False"
                          Foreground="{DynamicResource TrackBackgroundAltBrush}"
                          DataContext="{Binding NotesViewModel}"
                          Bounds="{Binding Bounds, Mode=OneWayToSource}"
                          TrackHeight="{Binding TrackHeight}"
-                         TrackOffset="{Binding TrackOffset}"/>
+                         TrackOffset="{Binding TrackOffset}" IsPianoRoll="True"/>
       <c:TickBackground Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" IsHitTestVisible="False"
                         Foreground="{DynamicResource TickLineBrush}"
                         Background="{DynamicResource TickLineBrushLow}"
@@ -64,11 +88,131 @@
                         Resolution="{Binding PlaybackViewModel.Resolution}"
                         TickWidth="{Binding NotesViewModel.TickWidth}"
                         TickOrigin="{Binding NotesViewModel.TickOrigin}"
-                        TickOffset="{Binding NotesViewModel.TickOffset}"/>
-      <GridSplitter Grid.Row="3" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Wheat" Focusable="False" Cursor="SizeNorthSouth"/>
+                        TickOffset="{Binding NotesViewModel.TickOffset}"
+                        SnapUnit="{Binding NotesViewModel.SnapUnit}"
+                        IsPianoRoll="True" ShowBarNumber="True"/>
+      <c:NotesCanvas Grid.Row="2" Grid.Column="1" Background="Transparent"
+                     TickWidth="{Binding NotesViewModel.TickWidth}"
+                     TrackHeight="{Binding NotesViewModel.TrackHeight}"
+                     TickOffset="{Binding NotesViewModel.TickOffset}"
+                     TrackOffset="{Binding NotesViewModel.TrackOffset}"
+                     ShowVibrato="{Binding NotesViewModel.ShowVibrato}"
+                     ShowPitch="{Binding NotesViewModel.ShowPitch}"
+                     Part="{Binding NotesViewModel.Part}"
+                     PointerPressed="NotesCanvasPointerPressed"
+                     PointerMoved="NotesCanvasPointerMoved"
+                     PointerReleased="NotesCanvasPointerReleased"
+                     DoubleTapped="NotesCanvasDoubleTapped"
+                     PointerWheelChanged="NotesCanvasPointerWheelChanged">
+        <Rectangle Name="PlayPosHighlight"
+                   Width="{Binding NotesViewModel.SnapUnitWidth, Mode=OneWay}"
+                   Height="{Binding $parent.Bounds.Height, Mode=OneWay}"
+                   Canvas.Left="{Binding NotesViewModel.PlayPosHighlightX, Mode=OneWay}"
+                   Canvas.Top="0" ZIndex="-10"
+                   Fill="{DynamicResource NeutralAccentBrushSemi2}"
+                   IsHitTestVisible="False"/>
+      </c:NotesCanvas>
+      <StackPanel Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top"
+                  Margin="12,12,0,0" Orientation="Horizontal">
+        <Border CornerRadius="2" BoxShadow="0 0 5 1 #3f7F7F7F"
+                Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+          <Border CornerRadius="2" ClipToBounds="True">
+            <StackPanel Orientation="Horizontal">
+              <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="20" Width="20" CornerRadius="2,0,0,2" IsChecked="{Binding NotesViewModel.ShowTips}">
+                <ToolTip.Tip>T</ToolTip.Tip>
+                <Grid Width="18" Height="18">
+                  <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="?" FontWeight="Bold"
+                             Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                </Grid>
+              </ToggleButton>
+              <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="20" Width="20" IsChecked="{Binding NotesViewModel.ShowVibrato}">
+                <ToolTip.Tip>U</ToolTip.Tip>
+                <Grid Width="18" Height="18">
+                  <Path Data="M-6.5 1 L-6 1.5 L-4.5 0 L-2 2.5 L0.5 0 L3 2.5 L6.5 -1 L6 -1.5 L4.5 0 L2 -2.5 L-0.5 0 L-3 -2.5 Z" StrokeThickness="1"
+                      Stroke="{DynamicResource SystemControlForegroundBaseHighBrush}">
+                    <Path.RenderTransform>
+                      <TranslateTransform X="9" Y="9"/>
+                    </Path.RenderTransform>
+                  </Path>
+                </Grid>
+              </ToggleButton>
+              <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="20" Width="20" IsChecked="{Binding NotesViewModel.ShowPitch}">
+                <ToolTip.Tip>I</ToolTip.Tip>
+                <Grid Width="18" Height="18">
+                  <Ellipse Height="5" Width="5" StrokeThickness="1" Margin="2,0,0,4" HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                           Stroke="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                  <Ellipse Height="5" Width="5" StrokeThickness="1" Margin="0,4,2,0" HorizontalAlignment="Right" VerticalAlignment="Top"
+                           Stroke="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                  <Path Data="M 6.5 11.5 L 8 11.5 L 8.5 11 L 9.5 7 L 10 6.5 L 11.5 6.5" StrokeThickness="1"
+                        Stroke="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                </Grid>
+              </ToggleButton>
+              <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="20" Width="20" IsChecked="{Binding NotesViewModel.ShowPhoneme}">
+                <ToolTip.Tip>O</ToolTip.Tip>
+                <Grid Width="18" Height="18">
+                  <Path Data="M 3 13 L 6 5.5 L 12 5.5 L 15 13" StrokeThickness="1"
+                        Stroke="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                </Grid>
+              </ToggleButton>
+              <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="20" CornerRadius="0,2,2,0" IsChecked="{Binding NotesViewModel.IsSnapOn}">
+                <ToolTip.Tip>P</ToolTip.Tip>
+                <Grid ColumnDefinitions="18,30" Height="18">
+                  <Path Data="M 4.5 13.5 L 7.5 13.5 L 7.5 9.5 A 1,1 0 1 1 10.5,9.5 L 10.5 13.5 L 13.5 13.5 L 13.5 8.5 A 1,1 0 1 0 4.5,8.5 Z" StrokeThickness="1"
+                        Stroke="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                  <TextBlock Margin="0,2,4,2" Grid.Column="1" Text="{Binding NotesViewModel.SnapUnitText}"
+                             TextAlignment="Right" FontSize="10" FontFamily="monospace"
+                             Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+                </Grid>
+              </ToggleButton>
+            </StackPanel>
+          </Border>
+        </Border>
+        <Border Width="12" Height="20"/>
+        <Border CornerRadius="2" BoxShadow="0 0 5 1 #3f7F7F7F">
+          <Border CornerRadius="2" ClipToBounds="True">
+            <Menu CornerRadius="2" Height="20" Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+              <MenuItem Height="20" Header="{DynamicResource menu2.part}">
+                <MenuItem Header="{DynamicResource menu2.part.rename}" Click="OnMenuRenamePart"/>
+              </MenuItem>
+              <MenuItem Height="20" Header="{DynamicResource menu2.notes}" Items="{Binding NoteBatchEdits}">
+                <MenuItem.DataTemplates>
+                  <DataTemplate DataType="vm:MenuItemViewModel">
+                    <MenuItem Header="{Binding Header}" Command="{Binding Command}" CommandParameter="{Binding CommandParameter}"/>
+                  </DataTemplate>
+                </MenuItem.DataTemplates>
+              </MenuItem>
+              <MenuItem Height="20" Header="{DynamicResource menu2.lyrics}" Items="{Binding Transformers}">
+                <MenuItem.DataTemplates>
+                  <DataTemplate DataType="api:TransformerFactory">
+                    <MenuItem Header="{Binding Name}" Command="{x:Static vm:PianoRollViewModel.TransformerCommand}" CommandParameter="{Binding}"/>
+                  </DataTemplate>
+                </MenuItem.DataTemplates>
+              </MenuItem>
+            </Menu>
+          </Border>
+        </Border>
+      </StackPanel>
+      <Rectangle Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
+                 Margin="0,0,0,48" Height="6" Opacity="0.15" IsVisible="{Binding NotesViewModel.ShowPhoneme}">
+        <Rectangle.Fill>
+          <LinearGradientBrush StartPoint="0,0" EndPoint="0,6">
+            <GradientStop Color="Transparent" Offset="0"/>
+            <GradientStop Color="Black" Offset="1"/>
+          </LinearGradientBrush>
+        </Rectangle.Fill>
+      </Rectangle>
+      <c:PhonemeCanvas Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="0" Height="48"
+                       Background="{DynamicResource BackgroundBrushSemi}"
+                       TickWidth="{Binding NotesViewModel.TickWidth}"
+                       TickOffset="{Binding NotesViewModel.TickOffset}"
+                       Part="{Binding NotesViewModel.Part}" IsVisible="{Binding NotesViewModel.ShowPhoneme}"
+                       PointerPressed="PhonemeCanvasPointerPressed"
+                       PointerMoved="PhonemeCanvasPointerMoved"
+                       PointerReleased="PhonemeCanvasPointerReleased"/>
+      <GridSplitter Grid.Row="3" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                    Background="Transparent" Focusable="False" Cursor="SizeNorthSouth"/>
       <c:TrackBackground Grid.Row="4" Grid.Column="1" IsHitTestVisible="False"
-                         Foreground="{DynamicResource TrackBackgroundAltBrush}"
-                         />
+                         Foreground="{DynamicResource TrackBackgroundAltBrush}"/>
       <c:TickBackground Grid.Row="4"  Grid.Column="1" IsHitTestVisible="False"
                         Foreground="{DynamicResource TickLineBrush}"
                         Background="{DynamicResource TickLineBrushLow}"
@@ -77,17 +221,81 @@
                         Resolution="{Binding PlaybackViewModel.Resolution}"
                         TickWidth="{Binding NotesViewModel.TickWidth}"
                         TickOrigin="{Binding NotesViewModel.TickOrigin}"
-                        TickOffset="{Binding NotesViewModel.TickOffset}"/>
-      <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent"
-              BoxShadow="inset 0 0 5 0.75 #7F7F7F" ClipToBounds="True" IsHitTestVisible="False">
+                        TickOffset="{Binding NotesViewModel.TickOffset}"
+                        SnapUnit="{Binding NotesViewModel.SnapUnit}" IsPianoRoll="True"/>
+      <c:ExpressionCanvas Grid.Row="4" Grid.Column="1" Opacity="0.3"
+                          TickWidth="{Binding NotesViewModel.TickWidth}"
+                          TickOffset="{Binding NotesViewModel.TickOffset}"
+                          Part="{Binding NotesViewModel.Part}"
+                          Key="{Binding NotesViewModel.SecondaryKey}"/>
+      <c:ExpressionCanvas Grid.Row="4" Grid.Column="1" Background="Transparent"
+                          TickWidth="{Binding NotesViewModel.TickWidth}"
+                          TickOffset="{Binding NotesViewModel.TickOffset}"
+                          Part="{Binding NotesViewModel.Part}"
+                          Key="{Binding NotesViewModel.PrimaryKey}"
+                          PointerPressed="ExpCanvasPointerPressed"
+                          PointerMoved="ExpCanvasPointerMoved"
+                          PointerReleased="ExpCanvasPointerReleased">
+        <Border Name="ExpValueTip" IsVisible="{Binding NotesViewModel.ShowExpValueTip}" BorderThickness="1"
+                BorderBrush="{DynamicResource NeutralAccentBrush}"
+                Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+          <TextBlock Margin="2" Text="{Binding NotesViewModel.ExpValueTipText}"/>
+        </Border>
+      </c:ExpressionCanvas>
+      <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+              BoxShadow="inset 0 0 5 1 #7f7F7F7F" ClipToBounds="True" IsHitTestVisible="False">
+        <Grid>
+          <Border Classes="tips" HorizontalAlignment="Center" VerticalAlignment="Center"
+                IsVisible="{Binding NotesViewModel.ShowTips}" BoxShadow="0 0 5 1 #7f7F7F7F">
+            <Grid Grid.IsSharedSizeScope="True">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition SharedSizeGroup="A"/>
+                <ColumnDefinition/>
+                <ColumnDefinition SharedSizeGroup="A"/>
+              </Grid.ColumnDefinitions>
+              <TextBlock Classes="tips" Grid.Column="0" TextAlignment="Right" Margin="10,0,3,0"
+                         Text="{DynamicResource tip.notes.basics.keys}"/>
+              <TextBlock Classes="tips" Grid.Column="2" TextAlignment="Left" Margin="3,0,10,0"
+                         Text="{DynamicResource tip.notes.basics.actions}"/>
+            </Grid>
+          </Border>
+          <Border Classes="tips" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0" Padding="4,4,4,2"
+                   IsVisible="{Binding NotesViewModel.ShowTips}" BoxShadow="0 0 5 1 #7f7F7F7F">
+            <TextBlock Classes="tips" Text="{DynamicResource tip.notes.zoomx}"/>
+          </Border>
+          <Border Classes="tips" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0" Padding="4,4,4,2"
+                   IsVisible="{Binding NotesViewModel.ShowTips}" BoxShadow="0 0 5 1 #7f7F7F7F">
+            <TextBlock Classes="tips" Text="{DynamicResource tip.notes.zoomy}"/>
+          </Border>
+        </Grid>
       </Border>
-      <Border Grid.Row="4" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent"
-              BoxShadow="inset 0 0 5 0.75 #7F7F7F" ClipToBounds="True" IsHitTestVisible="False">
+      <Grid Grid.Row="2" Grid.Column="1" RowDefinitions="1*,1*">
+        <Border Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Top"
+                BoxShadow="0 0 5 1 #7f7F7F7F">
+          <c:LyricBox Name="LyricBox" Width="360"/>
+        </Border>
+      </Grid>
+      <Border Grid.Row="4" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+              BoxShadow="inset 0 0 5 1 #7f7F7F7F" ClipToBounds="True" IsHitTestVisible="False">
+        <Border Classes="tips" HorizontalAlignment="Center" VerticalAlignment="Center"
+                IsVisible="{Binding NotesViewModel.ShowTips}" BoxShadow="0 0 5 1 #7f7F7F7F">
+          <Grid Grid.IsSharedSizeScope="True">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition SharedSizeGroup="A"/>
+              <ColumnDefinition/>
+              <ColumnDefinition SharedSizeGroup="A"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Classes="tips" Grid.Column="0" TextAlignment="Right" Margin="10,0,3,0"
+                       Text="{DynamicResource tip.exps.keys}"/>
+            <TextBlock Classes="tips" Grid.Column="2" TextAlignment="Left" Margin="3,0,10,0"
+                       Text="{DynamicResource tip.exps.actions}"/>
+          </Grid>
+        </Border>
       </Border>
       <Border Grid.Row="1" Grid.Column="2" Background="Transparent"
               HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0" Height="24"
               PointerWheelChanged="ViewScalerPointerWheelChanged">
-        <c:ViewScaler DataContext="{Binding NotesViewModel}" Value="{Binding TrackHeight}"/>
+        <c:ViewScaler Name="VScaler" DataContext="{Binding NotesViewModel}" Value="{Binding TrackHeight}" Min="{Binding TrackHeightMin}" Max="{Binding TrackHeightMax}"/>
       </Border>
     </Grid>
   </Grid>

@@ -44,15 +44,26 @@ namespace OpenUtau.App.Controls {
         private double trackOffset;
         private ObservableCollection<UTrack> _items;
 
-        Dictionary<UTrack, TrackHeader> trackHeaders = new Dictionary<UTrack, TrackHeader>();
+        private Dictionary<UTrack, TrackHeader> trackHeaders = new Dictionary<UTrack, TrackHeader>();
+        private TrackAdder? trackAdder;
 
         public TrackHeaderCanvas() {
             MessageBus.Current.Listen<TracksRefreshEvent>()
                 .Subscribe(_ => {
                     foreach (var (track, header) in trackHeaders) {
-                        header.TrackNo = track.TrackNo;
+                        header.ViewModel?.ManuallyRaise();
+                    }
+                    if (trackAdder != null) {
+                        trackAdder.TrackNo = trackHeaders.Count;
                     }
                 });
+        }
+
+        protected override void OnInitialized() {
+            base.OnInitialized();
+            trackAdder = new TrackAdder();
+            trackAdder.Bind(this);
+            Children.Add(trackAdder);
         }
 
         protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change) {
@@ -66,6 +77,10 @@ namespace OpenUtau.App.Controls {
                 }
                 if (change.NewValue.HasValue && change.NewValue.Value is ObservableCollection<UTrack> newCol) {
                     newCol.CollectionChanged += Items_CollectionChanged;
+                }
+            } else if (change.Property == DataContextProperty) {
+                if (trackAdder != null) {
+                    trackAdder.DataContext = DataContext;
                 }
             }
         }
@@ -99,12 +114,17 @@ namespace OpenUtau.App.Controls {
         }
 
         void Add(UTrack track) {
+            var vm = new TrackHeaderViewModel(track);
             var header = new TrackHeader() {
-                DataContext = new TrackHeaderViewModel(track),
+                DataContext = vm,
+                ViewModel = vm,
             };
             header.Bind(track, this);
             Children.Add(header);
             trackHeaders.Add(track, header);
+            if (trackAdder != null) {
+                trackAdder.TrackNo = trackHeaders.Count;
+            }
         }
 
         void Remove(UTrack track) {
@@ -112,6 +132,9 @@ namespace OpenUtau.App.Controls {
             header.Dispose();
             trackHeaders.Remove(track);
             Children.Remove(header);
+            if (trackAdder != null) {
+                trackAdder.TrackNo = trackHeaders.Count;
+            }
         }
     }
 }

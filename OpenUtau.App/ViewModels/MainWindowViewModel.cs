@@ -1,11 +1,18 @@
-﻿using OpenUtau.Core;
+﻿using System.IO;
+using System.Linq;
+using System.Reactive;
+using DynamicData.Binding;
+using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 
 namespace OpenUtau.App.ViewModels {
     public class MainWindowViewModel : ViewModelBase, ICmdSubscriber {
-        public PlaybackViewModel PlaybackViewModel { get; set; }
-        public TracksViewModel TracksViewModel { get; set; }
+        [Reactive] public PlaybackViewModel PlaybackViewModel { get; set; }
+        [Reactive] public TracksViewModel TracksViewModel { get; set; }
+        [Reactive] public ReactiveCommand<string, Unit>? OpenRecentCommand { get; private set; }
+        public ObservableCollectionExtended<MenuItemViewModel> OpenRecent => openRecent;
 
         public bool ProjectSaved => !string.IsNullOrEmpty(DocManager.Inst.Project.FilePath) && DocManager.Inst.Project.Saved;
         public string AppVersion => $"OpenUtau v{System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version}";
@@ -20,10 +27,13 @@ namespace OpenUtau.App.ViewModels {
 
         private double progress;
         private string progressText = string.Empty;
+        private ObservableCollectionExtended<MenuItemViewModel> openRecent
+            = new ObservableCollectionExtended<MenuItemViewModel>();
 
         public MainWindowViewModel() {
             PlaybackViewModel = new PlaybackViewModel();
             TracksViewModel = new TracksViewModel();
+            OpenRecentCommand = ReactiveCommand.Create<string>(file => OpenProject(new[] { file }));
             DocManager.Inst.AddSubscriber(this);
         }
 
@@ -109,12 +119,33 @@ namespace OpenUtau.App.ViewModels {
             }
         }
 
+        public void RefreshOpenRecent() {
+            openRecent.Clear();
+            openRecent.AddRange(Core.Util.Preferences.Default.RecentFiles.Select(file => new MenuItemViewModel() {
+                Header = file,
+                Command = OpenRecentCommand,
+                CommandParameter = file,
+            }));
+        }
+
         #region ICmdSubscriber
 
         public void OnNext(UCommand cmd, bool isUndo) {
             if (cmd is ProgressBarNotification progressBarNotification) {
                 Progress = progressBarNotification.Progress;
                 ProgressText = progressBarNotification.Info;
+            } else if (cmd is LoadProjectNotification loadProject) {
+                string filePath = loadProject.project.FilePath;
+                if (string.IsNullOrEmpty(filePath)) {
+                    return;
+                }
+                var recent = Core.Util.Preferences.Default.RecentFiles;
+                recent.RemoveAll(f => f == filePath || string.IsNullOrEmpty(f) || !File.Exists(f));
+                recent.Insert(0, filePath);
+                if (recent.Count > 16) {
+                    recent.RemoveRange(16, recent.Count - 16);
+                }
+                Core.Util.Preferences.Save();
             }
         }
 

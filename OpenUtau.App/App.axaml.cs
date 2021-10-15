@@ -69,7 +69,7 @@ namespace OpenUtau.App {
                 Current.Resources.MergedDictionaries.Remove(dark);
                 Current.Resources.MergedDictionaries.Add(dark);
             }
-            ThemeManager.LoadTheme(Current.Resources);
+            ThemeManager.LoadTheme();
         }
     }
 }

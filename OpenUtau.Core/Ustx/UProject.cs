@@ -46,6 +46,7 @@ namespace OpenUtau.Core.Ustx {
                 return lastTick;
             }
         }
+        [YamlIgnore] public int BarTicks => resolution * 4 * beatPerBar / beatUnit;
 
         public void RegisterExpression(UExpressionDescriptor descriptor) {
             if (!expressions.ContainsKey(descriptor.abbr)) {

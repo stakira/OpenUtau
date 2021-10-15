@@ -18,6 +18,13 @@
     <Setter Property="Height" Value="24"/>
     <Setter Property="Padding" Value="8,2,8,2"/>
   </Style>
+  <Style Selector="MenuItem /template/ Path#PART_ChevronPath">
+    <Setter Property="RenderTransform" Value="Scale(0.75,0.75)"/>
+    <Setter Property="Fill" Value="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+  </Style>
+  <Style Selector="MenuItem /template/ TextBlock#PART_InputGestureText">
+    <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+  </Style>
 
   <Style Selector="ContextMenu MenuItem">
     <Setter Property="Background" Value="Transparent"/>
@@ -38,6 +45,7 @@
     <Setter Property="Padding" Value="4,1"/>
     <Setter Property="Margin" Value="0,0,0,4"/>
     <Setter Property="FontSize" Value="12"/>
+    <Setter Property="FontFamily" Value="Microsoft YaHei,Simsun,苹方-简,宋体-简"/>
     <Setter Property="VerticalAlignment" Value="Top"/>
   </Style>
   <Style Selector="TextBox:disabled">
@@ -53,6 +61,23 @@
     <Setter Property="HorizontalContentAlignment" Value="Center"/>
     <Setter Property="VerticalContentAlignment" Value="Center"/>
   </Style>
+  <Style Selector="Button:pressed, RepeatButton:pressed, ToggleButton:pressed">
+    <Setter Property="RenderTransform" Value="scale(1)"/>
+  </Style>
+  <Style Selector="Button.clear">
+    <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="FontSize" Value="12"/>
+    <Setter Property="Height" Value="20"/>
+    <Setter Property="Margin" Value="0,4"/>
+    <Setter Property="Padding" Value="4,0,4,2"/>
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    <Setter Property="VerticalContentAlignment" Value="Center"/>
+  </Style>
+  <Style Selector="Button.clear:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource BackgroundColorPointerOver}"/>
+  </Style>
+
   <Style Selector="ToggleButton">
     <Setter Property="BorderThickness" Value="0"/>
     <Setter Property="FontSize" Value="12"/>
@@ -61,9 +86,32 @@
     <Setter Property="Padding" Value="4,0,4,2"/>
     <Setter Property="HorizontalContentAlignment" Value="Center"/>
     <Setter Property="VerticalContentAlignment" Value="Center"/>
+    <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAltHighBrush}" />
   </Style>
-  <Style Selector="Button:pressed, RepeatButton:pressed, ToggleButton:pressed">
-    <Setter Property="RenderTransform" Value="scale(1)"/>
+  <Style Selector="ToggleButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource NeutralAccentBrush}" />
+  </Style>
+  <Style Selector="ToggleButton:pressed  /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource NeutralAccentBrushPointerOver}" />
+  </Style>
+  <Style Selector="ToggleButton:checked /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource NeutralAccentBrushSemi}" />
+  </Style>
+  <Style Selector="ToggleButton:checked:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource NeutralAccentBrush}" />
+  </Style>
+  <Style Selector="ToggleButton:checked:pressed /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource NeutralAccentBrushPointerOver}" />
+  </Style>
+
+  <Style Selector="ToggleButton.toolbar">
+    <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="FontSize" Value="12"/>
+    <Setter Property="Height" Value="20"/>
+    <Setter Property="Margin" Value="0,4"/>
+    <Setter Property="Padding" Value="4,0,4,2"/>
+    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    <Setter Property="VerticalContentAlignment" Value="Center"/>
   </Style>
 
   <Style Selector="ComboBox">
@@ -77,6 +125,9 @@
     <Setter Property="Height" Value="20"/>
     <Setter Property="Margin" Value="0"/>
     <Setter Property="Padding" Value="4,2,0,0"/>
+  </Style>
+  <Style Selector="ComboBox /template/ Path#DropDownGlyph">
+    <Setter Property="Fill" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
   </Style>
 
   <Style Selector="ListBoxItem">
@@ -112,17 +163,19 @@
 
   <Style Selector="ProgressBar">
     <Setter Property="Background" Value="Transparent"/>
-    <Setter Property="Foreground" Value="{DynamicResource SystemAccentColor}"/>
+    <Setter Property="Foreground" Value="{DynamicResource AccentBrush1}"/>
   </Style>
 
   <Style Selector="Border.playback">
     <Setter Property="CornerRadius" Value="4"/>
     <Setter Property="BorderThickness" Value="1"/>
-    <Setter Property="BorderBrush" Value="LightGray"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource NeutralAccentBrushSemi}"/>
     <Setter Property="Height" Value="20"/>
   </Style>
   <Style Selector="Border.playback TextBlock">
-    <Setter Property="FontSize" Value="10"/>
+    <Setter Property="Padding" Value="6,0,0,1"/>
+    <Setter Property="FontSize" Value="11"/>
+    <Setter Property="FontFamily" Value="Monospace"/>
     <Setter Property="VerticalAlignment" Value="Center"/>
     <Setter Property="HorizontalAlignment" Value="Center"/>
   </Style>
@@ -136,6 +189,68 @@
     <Setter Property="Width" Value="21"/>
     <Setter Property="Height" Value="19"/>
     <Setter Property="Background" Value="Transparent"/>
+  </Style>
+
+  <Style Selector="Border.tips">
+    <Setter Property="CornerRadius" Value="4"/>
+    <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAltHighBrush}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource NeutralAccentBrushSemi}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="Padding" Value="2"/>
+    <Setter Property="IsHitTestVisible" Value="False"/>
+  </Style>
+  <Style Selector="TextBlock.tips">
+    <Setter Property="LineHeight" Value="18"/>
+  </Style>
+
+  <Style Selector="ScrollBar.music[IsExpanded=True] /template/ Rectangle#TrackRect">
+    <Setter Property="Fill" Value="Transparent" />
+  </Style>
+  <Style Selector="ScrollBar.music[IsExpanded=true] /template/ Thumb.thumb">
+    <Setter Property="Background" Value="{DynamicResource NeutralAccentBrushSemi}" />
+  </Style>
+  <Style Selector="ScrollBar.music[IsExpanded=true] /template/ Thumb.thumb:pointerover">
+    <Setter Property="Background" Value="{DynamicResource NeutralAccentBrush}" />
+  </Style>
+  <Style Selector="ScrollBar.music /template/ RepeatButton.line /template/ Border#Root" >
+    <Setter Property="Background" Value="Transparent" />
+  </Style>
+  <Style Selector="ScrollBar.music /template/ RepeatButton.line:pointerover /template/ Border#Root" >
+    <Setter Property="Background" Value="Transparent" />
+  </Style>
+  <Style Selector="ScrollBar.music /template/ RepeatButton.line:pressed /template/ Border#Root" >
+    <Setter Property="Background" Value="Transparent" />
+  </Style>
+  <Style Selector="ScrollBar.music:vertical /template/ RepeatButton.line.up /template/ Path">
+    <Setter Property="Data" Value="M 0 20 L 20 20 L 10 0 Z" />
+  </Style>
+  <Style Selector="ScrollBar.music:vertical /template/ RepeatButton.line.down /template/ Path">
+    <Setter Property="Data" Value="M 0 0 L 20 0 L 10 20 Z" />
+  </Style>
+  <Style Selector="ScrollBar.music:horizontal /template/ RepeatButton.line.up /template/ Path">
+    <Setter Property="Data" Value="M 0 10 L 20 0 L 20 20 Z" />
+  </Style>
+  <Style Selector="ScrollBar.music:horizontal /template/ RepeatButton.line.down /template/ Path">
+    <Setter Property="Data" Value="M 20 10 L 0 0 L 0 20 Z" />
+  </Style>
+  <Style Selector="ScrollBar.music /template/ RepeatButton.line /template/ Viewbox" >
+    <Setter Property="Width" Value="24" />
+    <Setter Property="Height" Value="24" />
+  </Style>
+  <Style Selector="ScrollBar.music /template/ RepeatButton.line /template/ Path#Arrow" >
+    <Setter Property="Width" Value="24" />
+    <Setter Property="Height" Value="24" />
+    <Setter Property="Fill" Value="{DynamicResource NeutralAccentBrushSemi}" />
+  </Style>
+  <Style Selector="ScrollBar.music /template/ RepeatButton.line:pointerover /template/ Path#Arrow" >
+    <Setter Property="Width" Value="24" />
+    <Setter Property="Height" Value="24" />
+    <Setter Property="Fill" Value="{DynamicResource NeutralAccentBrush}" />
+  </Style>
+  <Style Selector="ScrollBar.music /template/ RepeatButton.line:pressed /template/ Path#Arrow" >
+    <Setter Property="Width" Value="24" />
+    <Setter Property="Height" Value="24" />
+    <Setter Property="Fill" Value="{DynamicResource NeutralAccentBrush}" />
   </Style>
 
   <Style Selector="HeaderedContentControl.groupbox">

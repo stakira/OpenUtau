@@ -63,16 +63,7 @@ namespace OpenUtau.App.ViewModels {
 
         public void OpenLocation() {
             if (Singer != null) {
-                OpenFolder(Singer.Location);
-            }
-        }
-
-        private void OpenFolder(string folderPath) {
-            if (Directory.Exists(folderPath)) {
-                Process.Start(new ProcessStartInfo {
-                    FileName = OS.IsWindows() ? "explorer.exe" : OS.IsMacOS() ? "open" : "mimeopen",
-                    Arguments = folderPath,
-                });
+                OS.OpenFolder(Singer.Location);
             }
         }
     }

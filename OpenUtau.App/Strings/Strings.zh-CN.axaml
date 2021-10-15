@@ -6,8 +6,14 @@
   <system:String x:Key="dialogs.about.message">
     OpenUtau 是一个开源编辑环境, 旨在为 UTAU 用户社区提供现代的用户体验和智能的语音学支持. 请到 Github 访问我们.
   </system:String>
+  <system:String x:Key="dialogs.exitsave.caption">退出 OpenUtau</system:String>
+  <system:String x:Key="dialogs.exitsave.message">当前工程有未保存改动。是否保存？</system:String>
   <system:String x:Key="dialogs.export.caption">导出</system:String>
   <system:String x:Key="dialogs.export.savefirst">请先保存工程文件</system:String>
+  <system:String x:Key="dialogs.messagebox.cancel">取消</system:String>
+  <system:String x:Key="dialogs.messagebox.no">否</system:String>
+  <system:String x:Key="dialogs.messagebox.ok">好</system:String>
+  <system:String x:Key="dialogs.messagebox.yes">是</system:String>
   <system:String x:Key="dialogs.noresampler.caption">无重采样器</system:String>
   <system:String x:Key="dialogs.noresampler.message">无重采样器! 将你选择的重采样器 exe 或者 dll 文件放入 Resamplers 文件夹中并在使用偏好中选择它!</system:String>
 
@@ -46,39 +52,57 @@
   <system:String x:Key="menu.file.new">新建</system:String>
   <system:String x:Key="menu.file.open">打开...</system:String>
   <system:String x:Key="menu.file.openas">打开为</system:String>
-  <system:String x:Key="menu.file.recentfiles">最近打开...</system:String>
+  <system:String x:Key="menu.file.openrecent">最近打开...</system:String>
   <system:String x:Key="menu.file.save">保存</system:String>
   <system:String x:Key="menu.file.saveas">另存为...</system:String>
   <system:String x:Key="menu.help">帮助</system:String>
   <system:String x:Key="menu.help.about">关于 OpenUTAU</system:String>
+  <system:String x:Key="menu.help.wiki">OpenUtau 维基</system:String>
   <system:String x:Key="menu.tools">工具</system:String>
+  <system:String x:Key="menu.tools.layout">界面布局</system:String>
+  <system:String x:Key="menu.tools.layout.hsplit11">水平分布 1:1</system:String>
+  <system:String x:Key="menu.tools.layout.hsplit12">水平分布 1:2</system:String>
+  <system:String x:Key="menu.tools.layout.hsplit13">水平分布 1:3</system:String>
+  <system:String x:Key="menu.tools.layout.vsplit11">垂直分布 1:1</system:String>
+  <system:String x:Key="menu.tools.layout.vsplit12">垂直分布 1:2</system:String>
+  <system:String x:Key="menu.tools.layout.vsplit13">垂直分布 1:3</system:String>
   <system:String x:Key="menu.tools.prefs">使用偏好...</system:String>
   <system:String x:Key="menu.tools.project.expressions">表情...</system:String>
   <system:String x:Key="menu.tools.singer.install">安装歌手...</system:String>
   <system:String x:Key="menu.tools.singer.installadv">安装歌手(高级模式)...</system:String>
   <system:String x:Key="menu.tools.singers">歌手...</system:String>
 
-  <system:String x:Key="oto.alias">Alias</system:String>
+  <system:String x:Key="menu2.lyrics">歌词</system:String>
+  <system:String x:Key="menu2.notes">音符</system:String>
+  <system:String x:Key="menu2.notes.addtaildash">添加尾部"-"音符</system:String>
+  <system:String x:Key="menu2.notes.quantize15">量化至1/128音符</system:String>
+  <system:String x:Key="menu2.notes.quantize30">量化至1/64音符</system:String>
+  <system:String x:Key="menu2.part">片段</system:String>
+  <system:String x:Key="menu2.part.rename">重命名</system:String>
+
+  <system:String x:Key="oto.alias">别名</system:String>
   <system:String x:Key="oto.consonant">辅音速度</system:String>
-  <system:String x:Key="oto.cutoff">Cutoff</system:String>
+  <system:String x:Key="oto.cutoff">结束</system:String>
   <system:String x:Key="oto.file">文件</system:String>
   <system:String x:Key="oto.flavor">风格</system:String>
-  <system:String x:Key="oto.offset">Offset</system:String>
-  <system:String x:Key="oto.overlap">Overlap</system:String>
+  <system:String x:Key="oto.offset">开始</system:String>
+  <system:String x:Key="oto.overlap">重叠</system:String>
   <system:String x:Key="oto.phonetic">发音</system:String>
   <system:String x:Key="oto.prefix">前缀</system:String>
   <system:String x:Key="oto.preutter">先行发音</system:String>
   <system:String x:Key="oto.set">子集</system:String>
   <system:String x:Key="oto.suffix">后缀</system:String>
 
+  <system:String x:Key="prefs.advanced">高级</system:String>
+  <system:String x:Key="prefs.advanced.beta">Beta测试版</system:String>
+  <system:String x:Key="prefs.advanced.stable">稳定版</system:String>
   <system:String x:Key="prefs.appearance">外观</system:String>
   <system:String x:Key="prefs.appearance.lang">语言</system:String>
-  <system:String x:Key="prefs.appearance.lang.note">注意: 切换语言后请重启OpenUtau.</system:String>
   <system:String x:Key="prefs.appearance.theme">主题</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">暗</system:String>
   <system:String x:Key="prefs.appearance.theme.light">亮</system:String>
-  <system:String x:Key="prefs.appearance.theme.note">注意: 切换主题后请重启OpenUtau</system:String>
   <system:String x:Key="prefs.caption">使用偏好</system:String>
+  <system:String x:Key="prefs.note.restart">注意: 修改本项后请重启OpenUtau</system:String>
   <system:String x:Key="prefs.paths">路径</system:String>
   <system:String x:Key="prefs.paths.add">添加</system:String>
   <system:String x:Key="prefs.paths.remove">移除</system:String>
@@ -103,13 +127,18 @@
   <system:String x:Key="singers.caption">歌手</system:String>
   <system:String x:Key="singers.location">位置</system:String>
 
-  <system:String x:Key="tip.exps.actions">设定表情
-重置表情</system:String>
-  <system:String x:Key="tip.exps.keys">按住鼠标左键:
-按住鼠标右键:</system:String>
+  <system:String x:Key="tip.exps.actions">
+设定表情
+重置表情
+  </system:String>
+  <system:String x:Key="tip.exps.keys">
+按住鼠标左键:
+按住鼠标右键:
+  </system:String>
   <system:String x:Key="tip.lyricbox.next">Tab: 下一个</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: 上一个</system:String>
-  <system:String x:Key="tip.notes.basics.actions">开/关提示
+  <system:String x:Key="tip.notes.basics.actions">
+开/关提示
 添加音符
 删除音符
 删除多个音符
@@ -119,8 +148,10 @@
 选择音符
 为选中音符移调
 为选中音符移调八度
-播放</system:String>
-  <system:String x:Key="tip.notes.basics.keys">T:
+播放
+  </system:String>
+  <system:String x:Key="tip.notes.basics.keys">
+T:
 鼠标左键:
 鼠标右键:
 按住鼠标左键:
@@ -130,7 +161,8 @@ Alt + 拖动音符尾部:
 Ctrl + 框选:
 上方向键/下方向键:
 Ctrl + 上方向键/下方向键:
-空格:</system:String>
+空格:
+  </system:String>
   <system:String x:Key="tip.notes.zoomx">◀ 鼠标滚轮横向缩放 ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">鼠标滚轮纵向缩放 ▶</system:String>
 

@@ -67,13 +67,12 @@ namespace OpenUtau.App.Controls {
 
         public readonly UPart part;
         private readonly Pen notePen = new Pen(Brushes.White, 3);
-        private FormattedText? formattedText;
         private List<IDisposable> unbinds = new List<IDisposable>();
 
         public PartControl(UPart part, PartsCanvas canvas) {
             this.part = part;
             Foreground = Brushes.White;
-            Text = part.name;
+            Text = part.DisplayName;
 
             unbinds.Add(this.Bind(TickWidthProperty, canvas.GetObservable(PartsCanvas.TickWidthProperty)));
             unbinds.Add(this.Bind(TrackHeightProperty, canvas.GetObservable(PartsCanvas.TrackHeightProperty)));
@@ -90,10 +89,13 @@ namespace OpenUtau.App.Controls {
             if (!change.IsEffectiveValueChange) {
                 return;
             }
-            if (change.Property == OffsetProperty) {
+            if (change.Property == OffsetProperty ||
+                change.Property == TrackHeightProperty ||
+                change.Property == TickWidthProperty) {
                 SetPosition();
             }
-            if (change.Property == SelectedProperty) {
+            if (change.Property == SelectedProperty ||
+                change.Property == TextProperty) {
                 InvalidateVisual();
             }
         }
@@ -108,6 +110,10 @@ namespace OpenUtau.App.Controls {
             Height = trackHeight;
         }
 
+        public void Refersh() {
+            Text = part.name;
+        }
+
         public override void Render(DrawingContext context) {
             // Background
             context.DrawRectangle(
@@ -115,16 +121,10 @@ namespace OpenUtau.App.Controls {
                 null, new Rect(1, 0, Width - 1, Height - 1), 4, 4);
 
             // Text
-            if (formattedText == null || formattedText.Text != Text) {
-                formattedText = new FormattedText(
-                    Text,
-                    new Typeface(TextBlock.GetFontFamily(this), FontStyle.Normal, FontWeight.Bold),
-                    12,
-                    TextAlignment.Left,
-                    TextWrapping.NoWrap,
-                    new Size(Width, Height));
+            var textLayout = TextLayoutCache.Get(Text, Foreground!, 12);
+            using (var state = context.PushPreTransform(Matrix.CreateTranslation(3, 2))) {
+                textLayout.Draw(context);
             }
-            context.DrawText(Foreground, new Point(3, 2), formattedText);
 
             // Notes
             if (part != null && part is UVoicePart voicePart && voicePart.notes.Count > 0) {

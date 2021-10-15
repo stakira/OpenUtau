@@ -36,7 +36,7 @@ namespace OpenUtau.App.Views {
                     MessageBox.Show(
                         (Window)Parent,
                         task.Exception.Flatten().InnerExceptions.First().ToString(),
-                        "errors.caption",
+                        ThemeManager.GetString("errors.caption"),
                         MessageBox.MessageBoxButtons.Ok);
                 }
             }, CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted, scheduler);

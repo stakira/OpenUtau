@@ -9,6 +9,7 @@ using Avalonia.Markup.Xaml.MarkupExtensions;
 using OpenUtau.Core;
 using OpenUtau.Core.Util;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 using static OpenUtau.Core.ResamplerDriver.DriverModels;
 
 namespace OpenUtau.App.ViewModels {
@@ -35,10 +36,8 @@ namespace OpenUtau.App.ViewModels {
             get => exportResampler;
             set => this.RaiseAndSetIfChanged(ref exportResampler, value);
         }
-        public int Theme {
-            get => theme;
-            set => this.RaiseAndSetIfChanged(ref theme, value);
-        }
+        [Reactive] public int Theme { get; set; }
+        [Reactive] public int Beta { get; set; }
         public List<CultureInfo?>? Languages { get; }
         public CultureInfo? Language {
             get => language;
@@ -51,7 +50,6 @@ namespace OpenUtau.App.ViewModels {
         private int prerenderThreads;
         private EngineInfo? previewResampler;
         private EngineInfo? exportResampler;
-        private int theme;
         private CultureInfo? language;
         private readonly ObservableAsPropertyHelper<bool> moresamplerSelected;
 
@@ -98,7 +96,8 @@ namespace OpenUtau.App.ViewModels {
             Language = string.IsNullOrEmpty(Preferences.Default.Language)
                 ? null
                 : CultureInfo.GetCultureInfo(Preferences.Default.Language);
-            theme = Preferences.Default.Theme;
+            Theme = Preferences.Default.Theme;
+            Beta = Preferences.Default.Beta;
 
             this.WhenAnyValue(vm => vm.AudioOutputDevice)
                 .WhereNotNull()
@@ -127,6 +126,11 @@ namespace OpenUtau.App.ViewModels {
                     Preferences.Default.ExternalExportEngine = resampler?.Name;
                     Preferences.Save();
                 });
+            this.WhenAnyValue(vm => vm.PreviewResampler, vm => vm.ExportResampler)
+                .Select(engines =>
+                    (engines.Item1?.Name?.Contains("moresampler", StringComparison.InvariantCultureIgnoreCase) ?? false) ||
+                    (engines.Item2?.Name?.Contains("moresampler", StringComparison.InvariantCultureIgnoreCase) ?? false))
+                .ToProperty(this, x => x.MoresamplerSelected, out moresamplerSelected);
             this.WhenAnyValue(vm => vm.Language)
                 .Subscribe(lang => {
                     Preferences.Default.Language = lang?.Name ?? string.Empty;
@@ -139,11 +143,11 @@ namespace OpenUtau.App.ViewModels {
                     Preferences.Save();
                     App.SetTheme();
                 });
-            this.WhenAnyValue(vm => vm.PreviewResampler, vm => vm.ExportResampler)
-                .Select(engines =>
-                    (engines.Item1?.Name?.Contains("moresampler", StringComparison.InvariantCultureIgnoreCase) ?? false) ||
-                    (engines.Item2?.Name?.Contains("moresampler", StringComparison.InvariantCultureIgnoreCase) ?? false))
-                .ToProperty(this, x => x.MoresamplerSelected, out moresamplerSelected);
+            this.WhenAnyValue(vm => vm.Beta)
+                .Subscribe(beta => {
+                    Preferences.Default.Beta = beta;
+                    Preferences.Save();
+                });
         }
 
         public void TestAudioOutputDevice() {

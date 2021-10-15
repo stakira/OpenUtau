@@ -17,6 +17,7 @@ namespace OpenUtau.Core.Ustx {
         [JsonProperty] public int trackNo;
         [JsonProperty] public int position = 0;
 
+        [YamlIgnore] public virtual string DisplayName { get; }
         [YamlIgnore] public virtual int Duration { set; get; }
         [YamlIgnore] public int EndTick { get { return position + Duration; } }
 
@@ -38,11 +39,17 @@ namespace OpenUtau.Core.Ustx {
         [YamlMember(Order = 100)]
         public SortedSet<UNote> notes = new SortedSet<UNote>();
 
+        public override string DisplayName => name;
+
         public override int GetMinDurTick(UProject project) {
-            int durTick = 480;
-            foreach (UNote note in notes)
-                durTick = Math.Max(durTick, note.position + note.duration);
-            return durTick;
+            return notes.Count > 0
+                ? Math.Max(project.BarTicks, notes.Last().End)
+                : project.BarTicks;
+        }
+
+        public int GetBarDurTick(UProject project) {
+            int barTicks = project.BarTicks;
+            return (int)Math.Ceiling((double)GetMinDurTick(project) / barTicks) * barTicks;
         }
 
         public override void BeforeSave(UProject project, UTrack track) {
@@ -55,7 +62,7 @@ namespace OpenUtau.Core.Ustx {
             foreach (var note in notes) {
                 note.AfterLoad(project, track, this);
             }
-            Duration = GetMinDurTick(project) + project.resolution;
+            Duration = GetBarDurTick(project);
         }
 
         public override void Validate(UProject project, UTrack track) {
@@ -118,21 +125,24 @@ namespace OpenUtau.Core.Ustx {
             get { return _filePath; }
         }
 
-        [YamlMember(Order = 100)]
-        public string relativePath;
+        [YamlMember(Order = 100)] public string relativePath;
+        [YamlMember(Order = 101)] public double fileDurationMs;
+        [YamlMember(Order = 102)] public double skipMs;
+        [YamlMember(Order = 103)] public double TrimMs;
 
+        [YamlIgnore]
+        public override string DisplayName => Missing ? $"[Missing] {name}" : name;
+        [YamlIgnore]
+        public override int Duration {
+            get => fileDurTick;
+            set { }
+        }
+        [YamlIgnore] bool Missing { get; set; }
         [YamlIgnore] public float[] Peaks { get; set; }
         [YamlIgnore] public float[] Samples { get; private set; }
 
-        [YamlIgnore] public int Channels;
-        [YamlIgnore] public int FileDurTick;
-        [YamlIgnore] public int HeadTrimTick = 0;
-        [YamlIgnore] public int TailTrimTick = 0;
-        [YamlIgnore]
-        public override int Duration {
-            get { return FileDurTick - HeadTrimTick - TailTrimTick; }
-            set { TailTrimTick = FileDurTick - HeadTrimTick - value; }
-        }
+        [YamlIgnore] public int channels;
+        [YamlIgnore] public int fileDurTick;
 
         private TimeSpan duration;
 
@@ -142,22 +152,29 @@ namespace OpenUtau.Core.Ustx {
             return new UWavePart() {
                 _filePath = _filePath,
                 Peaks = Peaks,
-                Channels = Channels,
-                FileDurTick = FileDurTick,
-                HeadTrimTick = HeadTrimTick,
-                TailTrimTick = TailTrimTick,
+                channels = channels,
+                fileDurTick = fileDurTick,
             };
         }
 
         private readonly object loadLockObj = new object();
         public void Load(UProject project) {
-            using (var waveStream = Formats.Wave.OpenFile(FilePath)) {
-                duration = waveStream.TotalTime;
-                FileDurTick = project.MillisecondToTick(duration.TotalMilliseconds);
-                Channels = waveStream.WaveFormat.Channels;
+            try {
+                using (var waveStream = Formats.Wave.OpenFile(FilePath)) {
+                    duration = waveStream.TotalTime;
+                    fileDurationMs = duration.TotalMilliseconds;
+                    channels = waveStream.WaveFormat.Channels;
+                }
+            } catch (FileNotFoundException _) {
+                Missing = true;
+                if (fileDurationMs == 0) {
+                    fileDurationMs = 10000;
+                }
+                duration = TimeSpan.FromMilliseconds(fileDurationMs);
             }
+            fileDurTick = project.MillisecondToTick(fileDurationMs);
             lock (loadLockObj) {
-                if (Samples != null) {
+                if (Samples != null || Missing) {
                     return;
                 }
             }
@@ -181,7 +198,7 @@ namespace OpenUtau.Core.Ustx {
         }
 
         public override void Validate(UProject project, UTrack track) {
-            FileDurTick = project.MillisecondToTick(duration.TotalMilliseconds);
+            fileDurTick = project.MillisecondToTick(duration.TotalMilliseconds);
         }
 
         public override void BeforeSave(UProject project, UTrack track) {
@@ -189,7 +206,7 @@ namespace OpenUtau.Core.Ustx {
         }
 
         public override void AfterLoad(UProject project, UTrack track) {
-            FilePath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(project.FilePath), relativePath));
+            FilePath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(project.FilePath), relativePath ?? ""));
             Load(project);
         }
     }

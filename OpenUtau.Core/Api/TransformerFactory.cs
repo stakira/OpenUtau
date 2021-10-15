@@ -7,6 +7,7 @@ namespace OpenUtau.Api {
         public Type type;
         public string name;
         public string author;
+        public string Name => name;
 
         public Transformer Create() {
             var transformer = Activator.CreateInstance(type) as Transformer;
