@@ -578,13 +578,13 @@ namespace OpenUtau.App.Views {
             if (args.KeyModifiers == KeyModifiers.None) {
                 var scrollbar = this.FindControl<ScrollBar>("VScrollBar");
                 VScrollPointerWheelChanged(scrollbar, args);
-            } else if (args.KeyModifiers == KeyModifiers.Control) {
+            } else if (args.KeyModifiers == KeyModifiers.Alt) {
                 var scaler = this.FindControl<ViewScaler>("VScaler");
                 ViewScalerPointerWheelChanged(scaler, args);
             } else if (args.KeyModifiers == KeyModifiers.Shift) {
                 var scrollbar = this.FindControl<ScrollBar>("HScrollBar");
                 HScrollPointerWheelChanged(scrollbar, args);
-            } else if (args.KeyModifiers == (KeyModifiers.Shift | KeyModifiers.Control)) {
+            } else if (args.KeyModifiers == KeyModifiers.Control) {
                 var canvas = this.FindControl<Canvas>("TimelineCanvas");
                 TimelinePointerWheelChanged(canvas, args);
             }

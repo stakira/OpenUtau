@@ -174,7 +174,13 @@
               <MenuItem Height="20" Header="{DynamicResource menu2.part}">
                 <MenuItem Header="{DynamicResource menu2.part.rename}" Click="OnMenuRenamePart"/>
               </MenuItem>
-              <MenuItem Height="20" Header="{DynamicResource menu2.notes}"/>
+              <MenuItem Height="20" Header="{DynamicResource menu2.notes}" Items="{Binding NoteBatchEdits}">
+                <MenuItem.DataTemplates>
+                  <DataTemplate DataType="vm:MenuItemViewModel">
+                    <MenuItem Header="{Binding Header}" Command="{Binding Command}" CommandParameter="{Binding CommandParameter}"/>
+                  </DataTemplate>
+                </MenuItem.DataTemplates>
+              </MenuItem>
               <MenuItem Height="20" Header="{DynamicResource menu2.lyrics}" Items="{Binding Transformers}">
                 <MenuItem.DataTemplates>
                   <DataTemplate DataType="api:TransformerFactory">

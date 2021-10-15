@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using OpenUtau.Api;
 using OpenUtau.Core;
+using OpenUtau.Core.Editing;
 using OpenUtau.Core.Ustx;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -17,6 +19,9 @@ namespace OpenUtau.App.ViewModels {
 
         public Classic.Plugin[] Plugins => DocManager.Inst.Plugins;
         public TransformerFactory[] Transformers => DocManager.Inst.TransformerFactories;
+        [Reactive] public List<MenuItemViewModel> NoteBatchEdits { get; set; }
+
+        private ReactiveCommand<NoteBatchEdit, Unit> noteBatchEditCommand;
 
         public PianoRollViewModel() {
             NotesViewModel = new NotesViewModel();
@@ -44,6 +49,20 @@ namespace OpenUtau.App.ViewModels {
                     DocManager.Inst.EndUndoGroup();
                 }
             });
+            noteBatchEditCommand = ReactiveCommand.Create<NoteBatchEdit>(edit => {
+                if (NotesViewModel.Part != null) {
+                    edit.Run(NotesViewModel.Project, NotesViewModel.Part, NotesViewModel.SelectedNotes, DocManager.Inst);
+                }
+            });
+            NoteBatchEdits = new List<NoteBatchEdit>() {
+                new AddTailDash(),
+                new QuantizeNotes(15),
+                new QuantizeNotes(30),
+            }.Select(edit => new MenuItemViewModel() {
+                Header = ThemeManager.GetString(edit.Name),
+                Command = noteBatchEditCommand,
+                CommandParameter = edit,
+            }).ToList();
         }
 
         public void Undo() => DocManager.Inst.Undo();

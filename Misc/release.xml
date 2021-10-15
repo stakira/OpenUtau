@@ -2,6 +2,5 @@
 <item>
   <version>0.0.0.0</version>
   <url>https://github.com/stakira/OpenUtau/releases/download/OpenUtau-Latest/OpenUtau.zip</url>
-  <changelog>https://github.com/stakira/OpenUtau/releases/download/OpenUtau-Latest/changelog.txt</changelog>
   <mandatory>false</mandatory>
 </item>

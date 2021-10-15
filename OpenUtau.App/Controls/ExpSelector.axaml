@@ -10,7 +10,7 @@
   <Grid Height="22" Width="60" Background="{Binding Background}" PointerPressed="TextBlockPointerPressed">
     <ComboBox VerticalAlignment="Center" HorizontalAlignment="Left" Height="22"
               Focusable="False" Foreground="{Binding TagBrush}" Background="Transparent" Width="20"
-              SelectedItem="{Binding Descriptor}" Items="{Binding Descriptors}">
+              SelectedItem="{Binding Descriptor}" Items="{Binding Descriptors}" SelectedIndex="{Binding SelectedIndex}">
       <ComboBox.Styles>
         <Style Selector="ComboBox">
           <Setter Property="Padding" Value="{DynamicResource ComboBoxPadding}" />

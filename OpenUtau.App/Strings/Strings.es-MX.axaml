@@ -9,6 +9,10 @@
   <!--<system:String x:Key="dialogs.exitsave.message">The current project contains unsaved changes. Do you want to save it?</system:String>-->
   <system:String x:Key="dialogs.export.caption">Exportar</system:String>
   <system:String x:Key="dialogs.export.savefirst">Porfavor, guarda el archivo antes de exportarlo.</system:String>
+  <!--<system:String x:Key="dialogs.messagebox.cancel">Cancel</system:String>-->
+  <!--<system:String x:Key="dialogs.messagebox.no">No</system:String>-->
+  <!--<system:String x:Key="dialogs.messagebox.ok">Ok</system:String>-->
+  <!--<system:String x:Key="dialogs.messagebox.yes">Yes</system:String>-->
   <system:String x:Key="dialogs.noresampler.caption">Resampler no encontrado</system:String>
   <system:String x:Key="dialogs.noresampler.message">No se encontró un Resampler. Pone uno (sea .exe o .dll) en la carpeta Resamplers en la ruta de instalación de OpenUTAU.</system:String>
 
@@ -69,6 +73,9 @@
 
   <system:String x:Key="menu2.lyrics">Letras</system:String>
   <system:String x:Key="menu2.notes">Notas</system:String>
+  <!--<system:String x:Key="menu2.notes.addtaildash">Add tail "-"</system:String>-->
+  <!--<system:String x:Key="menu2.notes.quantize15">Quantize to 1/128</system:String>-->
+  <!--<system:String x:Key="menu2.notes.quantize30">Quantize to 1/64</system:String>-->
   <system:String x:Key="menu2.part">Partes</system:String>
   <system:String x:Key="menu2.part.rename">Renombrar</system:String>
 

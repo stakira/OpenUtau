@@ -186,7 +186,9 @@ namespace OpenUtau.App.Views {
         public override void Update(IPointer pointer, Point point) {
             var project = DocManager.Inst.Project;
             var notesVm = vm.NotesViewModel;
-            int deltaDuration = notesVm.PointToSnappedTick(point) + notesVm.SnapUnit - note.End;
+            int deltaDuration = notesVm.IsSnapOn
+                ? notesVm.PointToSnappedTick(point) + notesVm.SnapUnit - note.End
+                : notesVm.PointToTick(point) - note.End;
             int minNoteTicks = notesVm.IsSnapOn ? notesVm.SnapUnit : 15;
             if (deltaDuration < 0) {
                 int maxNegDelta = note.duration - minNoteTicks;

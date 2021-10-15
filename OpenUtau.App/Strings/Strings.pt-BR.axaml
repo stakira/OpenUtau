@@ -10,6 +10,10 @@
   <system:String x:Key="dialogs.exitsave.message">O projeto atual contém alterações não salvas. Deseja salvar? </system:String>
   <system:String x:Key="dialogs.export.caption">Exportar</system:String>
   <system:String x:Key="dialogs.export.savefirst">Salve o arquivo de projeto antes de exportar</system:String>
+  <!--<system:String x:Key="dialogs.messagebox.cancel">Cancel</system:String>-->
+  <!--<system:String x:Key="dialogs.messagebox.no">No</system:String>-->
+  <!--<system:String x:Key="dialogs.messagebox.ok">Ok</system:String>-->
+  <!--<system:String x:Key="dialogs.messagebox.yes">Yes</system:String>-->
   <system:String x:Key="dialogs.noresampler.caption">Sem resampler</system:String>
   <system:String x:Key="dialogs.noresampler.message">Sem resampler! Coloque o .exe ou .dll do seu resampler favorito na pasta Resampler e selecione-o em Preferências!</system:String>
 
@@ -21,8 +25,8 @@
   <system:String x:Key="exps.defaultvalue">Padrão</system:String>
   <system:String x:Key="exps.flag">Flag</system:String>
   <system:String x:Key="exps.isflag">É uma Flag</system:String>
-  <system:String x:Key="exps.maxvalue">Max</system:String>
-  <system:String x:Key="exps.minvalue">Min</system:String>
+  <!--<system:String x:Key="exps.maxvalue">Max</system:String>-->
+  <!--<system:String x:Key="exps.minvalue">Min</system:String>-->
   <system:String x:Key="exps.name">Nome</system:String>
   <system:String x:Key="exps.optionvalues">Valores</system:String>
   <system:String x:Key="exps.sepbycomma">Separe os valores por ','</system:String>
@@ -53,15 +57,15 @@
   <system:String x:Key="menu.file.saveas">Salvar como...</system:String>
   <system:String x:Key="menu.help">Ajuda</system:String>
   <system:String x:Key="menu.help.about">Sobre OpenUTAU</system:String>
-  <system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>
+  <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
   <system:String x:Key="menu.tools">Ferramentas</system:String>
-  <system:String x:Key="menu.tools.layout">Layout</system:String>
-  <system:String x:Key="menu.tools.layout.hsplit11">Horizontal 1:1</system:String>
-  <system:String x:Key="menu.tools.layout.hsplit12">Horizontal 1:2</system:String>
-  <system:String x:Key="menu.tools.layout.hsplit13">Horizontal 1:3</system:String>
-  <system:String x:Key="menu.tools.layout.vsplit11">Vertical 1:1</system:String>
-  <system:String x:Key="menu.tools.layout.vsplit12">Vertical 1:2</system:String>
-  <system:String x:Key="menu.tools.layout.vsplit13">Vertical 1:3</system:String>
+  <!--<system:String x:Key="menu.tools.layout">Layout</system:String>-->
+  <!--<system:String x:Key="menu.tools.layout.hsplit11">Horizontal 1:1</system:String>-->
+  <!--<system:String x:Key="menu.tools.layout.hsplit12">Horizontal 1:2</system:String>-->
+  <!--<system:String x:Key="menu.tools.layout.hsplit13">Horizontal 1:3</system:String>-->
+  <!--<system:String x:Key="menu.tools.layout.vsplit11">Vertical 1:1</system:String>-->
+  <!--<system:String x:Key="menu.tools.layout.vsplit12">Vertical 1:2</system:String>-->
+  <!--<system:String x:Key="menu.tools.layout.vsplit13">Vertical 1:3</system:String>-->
   <system:String x:Key="menu.tools.prefs">Preferências...</system:String>
   <system:String x:Key="menu.tools.project.expressions">Expressões...</system:String>
   <system:String x:Key="menu.tools.singer.install">Instalar Vozes...</system:String>
@@ -70,24 +74,27 @@
 
   <system:String x:Key="menu2.lyrics">Lírica</system:String>
   <system:String x:Key="menu2.notes">Nota</system:String>
+  <!--<system:String x:Key="menu2.notes.addtaildash">Add tail "-"</system:String>-->
+  <!--<system:String x:Key="menu2.notes.quantize15">Quantize to 1/128</system:String>-->
+  <!--<system:String x:Key="menu2.notes.quantize30">Quantize to 1/64</system:String>-->
   <system:String x:Key="menu2.part">Parte</system:String>
   <system:String x:Key="menu2.part.rename">Renomear</system:String>
 
-  <system:String x:Key="oto.alias">Alias</system:String>
-  <system:String x:Key="oto.consonant">Consonant</system:String>
-  <system:String x:Key="oto.cutoff">Cutoff</system:String>
+  <!--<system:String x:Key="oto.alias">Alias</system:String>-->
+  <!--<system:String x:Key="oto.consonant">Consonant</system:String>-->
+  <!--<system:String x:Key="oto.cutoff">Cutoff</system:String>-->
   <system:String x:Key="oto.file">Arquivo</system:String>
-  <system:String x:Key="oto.flavor">Flavor</system:String>
-  <system:String x:Key="oto.offset">Offset</system:String>
-  <system:String x:Key="oto.overlap">Overlap</system:String>
+  <!--<system:String x:Key="oto.flavor">Flavor</system:String>-->
+  <!--<system:String x:Key="oto.offset">Offset</system:String>-->
+  <!--<system:String x:Key="oto.overlap">Overlap</system:String>-->
   <system:String x:Key="oto.phonetic">Fonética</system:String>
   <system:String x:Key="oto.prefix">Prefixo</system:String>
-  <system:String x:Key="oto.preutter">Preutter</system:String>
+  <!--<system:String x:Key="oto.preutter">Preutter</system:String>-->
   <system:String x:Key="oto.set">Pasta</system:String>
   <system:String x:Key="oto.suffix">Sufixo</system:String>
 
   <system:String x:Key="prefs.advanced">Avançado</system:String>
-  <system:String x:Key="prefs.advanced.beta">Beta</system:String>
+  <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
   <system:String x:Key="prefs.advanced.stable">Estável</system:String>
   <system:String x:Key="prefs.appearance">Aparência</system:String>
   <system:String x:Key="prefs.appearance.lang">Idioma</system:String>
