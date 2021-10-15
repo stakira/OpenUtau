@@ -15,7 +15,7 @@ namespace OpenUtau.Core.Editing {
             List<UNote> toAdd = new List<UNote>();
             var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
             foreach (var note in notes) {
-                if (note.Next == null || note.Next.position > note.End + 120) {
+                if (note.lyric != "-" && (note.Next == null || note.Next.position > note.End + 120)) {
                     toAdd.Add(project.CreateNote(note.tone, note.End, 120));
                 }
             }
