@@ -206,7 +206,7 @@ namespace OpenUtau.Core.Ustx {
         }
 
         public override void AfterLoad(UProject project, UTrack track) {
-            FilePath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(project.FilePath), relativePath));
+            FilePath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(project.FilePath), relativePath ?? ""));
             Load(project);
         }
     }

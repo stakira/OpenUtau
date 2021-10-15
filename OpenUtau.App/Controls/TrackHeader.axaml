@@ -3,36 +3,18 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:OpenUtau.App.ViewModels"
-             mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="120"
+             mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="64"
              x:Class="OpenUtau.App.Controls.TrackHeader" Width="250" TrackNo="{Binding TrackNo}">
   <Design.DataContext>
     <vm:TrackHeaderViewModel/>
   </Design.DataContext>
-  <UserControl.Resources>
-    <GridLength x:Key="SliderPreContentMargin">0</GridLength>
-    <GridLength x:Key="SliderPostContentMargin">0</GridLength>
-  </UserControl.Resources>
   <UserControl.Styles>
     <Style Selector="ToggleButton">
       <Setter Property="Background" Value="Transparent"/>
     </Style>
-    <Style Selector="Slider">
-      <Setter Property="Background" Value="Wheat"/>
-      <Setter Property="Margin" Value="0"/>
-      <Setter Property="Padding" Value="0"/>
-    </Style>
-    <Style Selector="Slider /template/ Thumb.SliderThumbStyle">
-      <Setter Property="Template">
-        <Setter.Value>
-          <ControlTemplate>
-            <Border Background="{TemplateBinding Background}" Height="6" Width="16" CornerRadius="2"/>
-          </ControlTemplate>
-        </Setter.Value>
-      </Setter>
-    </Style>
   </UserControl.Styles>
   <Border Margin="1,1,1,1" BorderThickness="1" BorderBrush="{DynamicResource NeutralAccentBrushSemi}" CornerRadius="2">
-    <Grid Background="Transparent" RowDefinitions="18,18,18,*,*" ColumnDefinitions="Auto,1,*,18" VerticalAlignment="Top" ClipToBounds="True">
+    <Grid Background="Transparent" RowDefinitions="18,18,18,*" ColumnDefinitions="Auto,1,*,18" VerticalAlignment="Top" ClipToBounds="True">
       <Grid Grid.Row="0" Grid.RowSpan="4" Grid.Column="0"  VerticalAlignment="Top">
         <Border BorderThickness="0,0,1,1" Height="81" Width="81" VerticalAlignment="Top" CornerRadius="0,0,2,0"
                 BorderBrush="{DynamicResource NeutralAccentBrushSemi}" ClipToBounds="True">
@@ -76,9 +58,6 @@
       </Button>
       <ToggleButton Grid.Row="0" Grid.Column="3" Margin="1" Padding="0" Height="16" HorizontalAlignment="Stretch" Content="M"/>
       <ToggleButton Grid.Row="1" Grid.Column="3" Margin="1" Padding="0" Height="16" HorizontalAlignment="Stretch" Content="S"/>
-      <Border Grid.Row="2" Grid.Column="2" Background="Wheat">
-        <Slider Grid.ColumnSpan="2"/>
-      </Border>
       <Grid.ContextMenu>
         <ContextMenu>
           <MenuItem Classes="context" Header="{StaticResource tracks.remove}" Command="{Binding Remove}"/>

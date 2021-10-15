@@ -12,6 +12,7 @@ artifacts:
     name: OpenUtau
     type: zip
   - path: release.xml
+  - path: changelog.txt
 deploy:
   release: OpenUtau-Latest
   description: ''
