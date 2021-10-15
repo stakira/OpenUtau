@@ -5,15 +5,17 @@
 #ifndef OPENUTAU_PLUGIN_OPENUTAUPLUGIN_H
 #define OPENUTAU_PLUGIN_OPENUTAUPLUGIN_H
 #include <DistrhoPlugin.hpp>
+#include <string>
+#include <process.hpp>
 START_NAMESPACE_DISTRHO
 class OpenUTAUPlugin : public Plugin {
 public:
-    OpenUTAUPlugin() : Plugin(0,0,0)
-    {
-    }
+    OpenUTAUPlugin();
+    ~OpenUTAUPlugin() override;
 protected:
-    void run(const float** inputs, float** outputs, uint32_t frames) override;
-
+    void initAudioPort(bool input, uint32_t index, AudioPort& port) override;
+    void run(const float **, float **outputs, uint32_t frames, const MidiEvent *midiEvents,
+             uint32_t midiEventCount) override;
     const char *getLabel() const override {
         return "OpenUTAU";
     }
@@ -27,7 +29,7 @@ protected:
     }
 
     const char *getHomePage() const override{
-        return "https://github.com/SeleDreams/OpenUTAUPlugin";
+        return "https://github.com/stakira/OpenUtau";
     }
 
     uint32_t getVersion() const override{
@@ -38,8 +40,14 @@ protected:
     {
         return d_cconst('O','t','a','u');
     }
+    static std::string env(const char *name)
+    {
+        const char *ret = getenv(name);
+        if (!ret) return std::string();
+        return std::string(ret);
+    }
+    static TinyProcessLib::Process *uiProcess;
 };
-
 Plugin* createPlugin()
 {
     return new OpenUTAUPlugin;

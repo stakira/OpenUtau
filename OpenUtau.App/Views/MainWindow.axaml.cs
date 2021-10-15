@@ -591,6 +591,10 @@ namespace OpenUtau.App.Views {
         }
 
         public async void WindowClosing(object? sender, CancelEventArgs e) {
+            if (DocManager.Inst.isVst) {
+                e.Cancel = true;
+                return;
+            }
             if (!forceClose && !DocManager.Inst.ChangesSaved) {
                 e.Cancel = true;
                 var result = await MessageBox.Show(

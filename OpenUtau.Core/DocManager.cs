@@ -23,6 +23,9 @@ namespace OpenUtau.Core {
         public int playPosTick = 0;
 
         public Dictionary<string, USinger> Singers { get; private set; } = new Dictionary<string, USinger>();
+        public bool isVst { get; private set; }
+        
+        public uint serverPort { get; private set; }
         public List<USinger> SingersOrdered { get; private set; } = new List<USinger>();
         public Plugin[] Plugins { get; private set; }
         public PhonemizerFactory[] PhonemizerFactories { get; private set; }
@@ -31,7 +34,24 @@ namespace OpenUtau.Core {
         public bool HasOpenUndoGroup => undoGroup != null;
         public List<UNote> NotesClipboard { get; set; }
 
-        public void Initialize() {
+        public void Initialize(string[] args) {
+            
+            for(int i = 0; i < args.Length;i++) {
+                string arg = args[i];
+                switch (arg) {
+                    case "-vst":
+                        isVst = true;
+                        break;
+                    case "-port":
+                        if (!isVst) continue;
+                        string portNum = args[i + 1];
+                        if (!uint.TryParse(portNum, out var output)) {
+                            throw new ArgumentException($"The port number {portNum} is invalid !");
+                        }
+                        serverPort = output;
+                        break;
+                }
+            }
             SearchAllSingers();
             SearchAllPlugins();
             SearchAllLegacyPlugins();

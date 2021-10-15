@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
 project(OpenUTAU-Plugin)
 add_subdirectory(DPF)
+add_subdirectory(libs/tiny-process-library)
 add_subdirectory(src)

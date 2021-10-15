@@ -19,13 +19,15 @@
 
 #define DISTRHO_PLUGIN_BRAND "OpenUTAU by Stakira, Plugin by SeleDreams"
 #define DISTRHO_PLUGIN_NAME  "OpenUTAU"
-#define DISTRHO_PLUGIN_URI   "https://github.com/SeleDreams/OpenUTAUPlugin"
+#define DISTRHO_PLUGIN_URI   "https://github.com/stakira/OpenUtau"
 
-#define DISTRHO_PLUGIN_HAS_UI          0
+#define DISTRHO_PLUGIN_HAS_UI          1
+#define DISTRHO_PLUGIN_IS_SYNTH        1
 #define DISTRHO_PLUGIN_IS_RT_SAFE      1
 #define DISTRHO_PLUGIN_NUM_INPUTS      2
 #define DISTRHO_PLUGIN_NUM_OUTPUTS     2
 #define DISTRHO_PLUGIN_WANT_TIMEPOS    1
 #define DISTRHO_UI_USER_RESIZABLE      1
+#define DISTRHO_PLUGIN_WANT_MIDI_INPUT 1
 
 #endif // DISTRHO_PLUGIN_INFO_H_INCLUDED

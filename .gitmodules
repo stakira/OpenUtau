@@ -1,3 +1,9 @@
 [submodule "VST/dpf"]
 	path = VST/dpf
 	url = https://github.com/DISTRHO/DPF.git
+[submodule "VST/libs/tiny-process-library"]
+	path = VST/libs/tiny-process-library
+	url = https://gitlab.com/eidheim/tiny-process-library.git
+[submodule "VST/libs/asio"]
+	path = VST/libs/asio
+	url = https://github.com/boostorg/asio.git
