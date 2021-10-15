@@ -1,0 +1,3 @@
+[submodule "VST/dpf"]
+	path = VST/dpf
+	url = https://github.com/DISTRHO/DPF.git
