@@ -3,14 +3,14 @@
 //
 #include <iostream>
 #include "net/OpenUTAUServer.h"
+
 using namespace OpenUTAU;
 using asio::ip::tcp;
 
 OpenUTAUServer::OpenUTAUServer(IPV ipv, int setPort) :
         port{setPort},
         ipVersion{ipv},
-        acceptor(ioContext,tcp::endpoint (ipVersion == IPV::V4 ? tcp::v4() : tcp::v6(),port))
-{
+        acceptor(ioContext, tcp::endpoint(ipVersion == IPV::V4 ? tcp::v4() : tcp::v6(), port)) {
 
 }
 
@@ -23,11 +23,10 @@ void OpenUTAUServer::Stop() {
 }
 
 int OpenUTAUServer::Run() {
-    try{
+    try {
         ioContext.run();
     }
-    catch(std::exception &ex)
-    {
+    catch (std::exception &ex) {
         std::cerr << ex.what() << std::endl;
         return -1;
     }

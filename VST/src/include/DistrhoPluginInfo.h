@@ -21,7 +21,7 @@
 #define DISTRHO_PLUGIN_NAME  "OpenUTAU"
 #define DISTRHO_PLUGIN_URI   "https://github.com/stakira/OpenUtau"
 
-#define DISTRHO_PLUGIN_HAS_UI          1
+#define DISTRHO_PLUGIN_HAS_UI          0
 #define DISTRHO_PLUGIN_IS_SYNTH        1
 #define DISTRHO_PLUGIN_IS_RT_SAFE      1
 #define DISTRHO_PLUGIN_NUM_INPUTS      2
