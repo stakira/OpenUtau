@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Threading.Tasks;
 using AutoUpdaterDotNET;
 
 namespace OpenUtau {
@@ -9,7 +10,7 @@ namespace OpenUtau {
         private static void Main(string[] args) {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             App.Program.InitLogging();
-            App.Program.InitOpenUtau(args);
+            Task.Run(() =>App.Program.InitOpenUtau(args));
             InitAudio();
 
             if (Core.Util.Preferences.Default.Beta == 0 && !Core.DocManager.Inst.isVst) {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
@@ -10,10 +11,10 @@ namespace OpenUtau.App {
         // Initialization code. Don't use any Avalonia, third-party APIs or any
         // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
         // yet and stuff might break.
-        public static void Main(string[] args) {
+        public static async Task Main(string[] args) {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             InitLogging();
-            InitOpenUtau();
+            await InitOpenUtau();
             Run(args);
         }
 
@@ -47,8 +48,8 @@ namespace OpenUtau.App {
             });
         }
 
-        public static void InitOpenUtau(string[] args = null!) {
-            Core.DocManager.Inst.Initialize(args);
+        public static async Task InitOpenUtau(string[] args = null!) {
+            await Core.DocManager.Inst.Initialize(args);
         }
 
         public static Action? AutoUpdate { get;set; }

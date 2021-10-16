@@ -4,10 +4,12 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using OpenUtau.Api;
 using OpenUtau.Classic;
 using OpenUtau.Core.Lib;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Network;
 using Serilog;
 
 namespace OpenUtau.Core {
@@ -24,8 +26,8 @@ namespace OpenUtau.Core {
 
         public Dictionary<string, USinger> Singers { get; private set; } = new Dictionary<string, USinger>();
         public bool isVst { get; private set; }
-        
-        public uint serverPort { get; private set; }
+
+        public VSTClient VSTClient { get; private set; }
         public List<USinger> SingersOrdered { get; private set; } = new List<USinger>();
         public Plugin[] Plugins { get; private set; }
         public PhonemizerFactory[] PhonemizerFactories { get; private set; }
@@ -34,7 +36,7 @@ namespace OpenUtau.Core {
         public bool HasOpenUndoGroup => undoGroup != null;
         public List<UNote> NotesClipboard { get; set; }
 
-        public void Initialize(string[] args) {
+        public async Task Initialize(string[] args) {
             
             for(int i = 0; i < args.Length;i++) {
                 string arg = args[i];
@@ -43,12 +45,13 @@ namespace OpenUtau.Core {
                         isVst = true;
                         break;
                     case "-port":
-                        if (!isVst) continue;
                         string portNum = args[i + 1];
-                        if (!uint.TryParse(portNum, out var output)) {
+                        int output;
+                        if (!int.TryParse(portNum, out output)) {
                             throw new ArgumentException($"The port number {portNum} is invalid !");
                         }
-                        serverPort = output;
+                        VSTClient = new VSTClient("127.0.0.1", output);
+                        await VSTClient.Connect();
                         break;
                 }
             }

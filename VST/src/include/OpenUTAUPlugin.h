@@ -19,8 +19,6 @@ namespace OpenUTAU {
         ~OpenUTAUPlugin() override;
 
     protected:
-        void initAudioPort(bool input, uint32_t index, AudioPort &port) override;
-
         void run(const float **, float **outputs, uint32_t frames, const MidiEvent *midiEvents,
                  uint32_t midiEventCount) override;
 
@@ -50,11 +48,13 @@ namespace OpenUTAU {
 
         static std::string env(const char *name) {
             const char *ret = getenv(name);
-            if (!ret) return std::string();
-            return std::string(ret);
+            return ret;
         }
 
-        static TinyProcessLib::Process *uiProcess;
+    private:
+        std::string openUtauPath{R"(C:\Users\SeleDreams\Dropbox\Documents\Development\OpenUtau\OpenUtau\bin\Debug\netcoreapp3.1)"};
+        OpenUTAUServer server;
+        std::unique_ptr<TinyProcessLib::Process> uiProcess;
     };
 }
 START_NAMESPACE_DISTRHO
