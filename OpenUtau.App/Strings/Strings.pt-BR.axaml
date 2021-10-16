@@ -10,10 +10,10 @@
   <system:String x:Key="dialogs.exitsave.message">O projeto atual contém alterações não salvas. Deseja salvar? </system:String>
   <system:String x:Key="dialogs.export.caption">Exportar</system:String>
   <system:String x:Key="dialogs.export.savefirst">Salve o arquivo de projeto antes de exportar</system:String>
-  <!--<system:String x:Key="dialogs.messagebox.cancel">Cancel</system:String>-->
-  <!--<system:String x:Key="dialogs.messagebox.no">No</system:String>-->
-  <!--<system:String x:Key="dialogs.messagebox.ok">Ok</system:String>-->
-  <!--<system:String x:Key="dialogs.messagebox.yes">Yes</system:String>-->
+  <system:String x:Key="dialogs.messagebox.cancel">Cancelar</system:String>
+  <system:String x:Key="dialogs.messagebox.no">Não</system:String>
+  <system:String x:Key="dialogs.messagebox.ok">Ok</system:String>
+  <system:String x:Key="dialogs.messagebox.yes">Sim</system:String>
   <system:String x:Key="dialogs.noresampler.caption">Sem resampler</system:String>
   <system:String x:Key="dialogs.noresampler.message">Sem resampler! Coloque o .exe ou .dll do seu resampler favorito na pasta Resampler e selecione-o em Preferências!</system:String>
 
