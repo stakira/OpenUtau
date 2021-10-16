@@ -75,7 +75,7 @@
   <system:String x:Key="menu2.notes">Notas</system:String>
   <system:String x:Key="menu2.notes.addtaildash">Añadir cola "-"</system:String>
   <system:String x:Key="menu2.notes.quantize15">Cuantificar a 1/128</system:String>
-  system:String x:Key="menu2.notes.quantize30">Cuantificar a 1/64</system:String>
+  <system:String x:Key="menu2.notes.quantize30">Cuantificar a 1/64</system:String>
   <system:String x:Key="menu2.part">Partes</system:String>
   <system:String x:Key="menu2.part.rename">Renombrar</system:String>
 
