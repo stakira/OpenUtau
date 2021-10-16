@@ -7,22 +7,24 @@
 
 #include <DistrhoUI.hpp>
 
+namespace OpenUTAU{
+    class OpenUTAUPlugin;
+    class OpenUTAUUI : public UI
+    {
+    public:
+        OpenUTAUUI();
+        static float getParameterValue(uint32_t index) ;
+        void onDisplay() override;
+    protected:
+        void parameterChanged(uint32_t,float value) override;
+        void uiIdle() override;
+    };
+}
+
 START_NAMESPACE_DISTRHO
-class OpenUTAUPlugin;
-class OpenUTAUUI : public UI
-{
-public:
-    OpenUTAUUI();
-    static float getParameterValue(uint32_t index) ;
-    void onDisplay() override;
-protected:
-    void startOpenUTAU();
-    void parameterChanged(uint32_t,float value) override;
-    void uiIdle() override;
-};
 UI *createUI()
 {
-    return new OpenUTAUUI;
+    return new OpenUTAU::OpenUTAUUI;
 }
 END_NAMESPACE_DISTRHO
 #endif //OPENUTAU_PLUGIN_OPENUTAUUI_H

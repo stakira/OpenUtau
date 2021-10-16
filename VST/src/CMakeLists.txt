@@ -1,3 +1,6 @@
-dpf_add_plugin(OpenUTAU TARGETS vst3 lv2 FILES_DSP OpenUTAUPlugin.cpp FILES_UI OpenUTAUUI.cpp)
+dpf_add_plugin(OpenUTAU TARGETS vst3 lv2 FILES_DSP OpenUTAUPlugin.cpp OpenUTAUServer.cpp FILES_UI OpenUTAUUI.cpp)
 target_include_directories(OpenUTAU PUBLIC include)
 target_link_libraries(OpenUTAU PUBLIC tiny-process-library)
+if (WIN32)
+    target_link_libraries(OpenUTAU PUBLIC ws2_32 -static-libgcc -static-libstdc++)
+endif()

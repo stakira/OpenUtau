@@ -6,7 +6,7 @@
 #include <process.hpp>
 #include <iostream>
 #include "ui/OpenUTAUUI.h"
-
+using namespace OpenUTAU;
 OpenUTAUUI::OpenUTAUUI() {
     const uint minWidth = 400;
     const uint minHeight = 200;

@@ -3,6 +3,7 @@
 #include <memory>
 #include <iostream>
 
+using namespace OpenUTAU;
 TinyProcessLib::Process *OpenUTAUPlugin::uiProcess = nullptr;
 
 void OpenUTAUPlugin::run(const float **, float **outputs, uint32_t frames, const MidiEvent *midiEvents,
