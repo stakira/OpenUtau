@@ -45,10 +45,12 @@
   <!--<system:String x:Key="menu.file">File</system:String>-->
   <system:String x:Key="menu.file.exit">Esci</system:String>
   <system:String x:Key="menu.file.exportall">Esporta tutto</system:String>
-  <!--<system:String x:Key="menu.file.exportust">Export Ust Files</system:String>-->
+
+  <system:String x:Key="menu.file.exportust">Esporta File Ust</system:String>
   <system:String x:Key="menu.file.importaudio">Importa Audio...</system:String>
   <system:String x:Key="menu.file.importmidi">Importa MIDI...</system:String>
-  <!--<system:String x:Key="menu.file.importtracks">Import Tracks...</system:String>-->
+  <system:String x:Key="menu.file.importtracks">Importa Tracce...</system:String>
+
   <system:String x:Key="menu.file.new">Nuovo</system:String>
   <system:String x:Key="menu.file.open">Apri...</system:String>
   <system:String x:Key="menu.file.openas">Apri come</system:String>
@@ -118,7 +120,7 @@
     </system:String>
   <system:String x:Key="prefs.rendering.resampler.preview">Resampler per l'anteprima</system:String>
   <system:String x:Key="prefs.rendering.resampler.warn">
-    Attenzione: moresampler non è ancora supportato. Sarà molto lento e causerà un alto utilizzo della CPU. Se proprio vuoi, per favore:
+    Attenzione: moresampler non è ancora supportato. Sarà molto lento e causerà un alto utilizzo della CPU. Se proprio vuoi utilizzarlo:
     1. Abilita "resampler-compatibility" nel file moreconfig.txt.
     2. Riduci i threads della pre-renderizzazione ad 1 o 2.
     3. Aspetta pazientemente la fine della pre-renderizzazione prima di riprodurre.
