@@ -253,9 +253,9 @@ namespace OpenUtau.App.ViewModels {
                 }
                 TickOffset = Math.Clamp(TickOffset + scroll, 0, HScrollBarMax);
             }
-            PlayPosX = playPosX + scroll;
+            PlayPosX = playPosX;
             int highlightTick = (int)Math.Floor((double)tick / SnapUnit) * SnapUnit;
-            PlayPosHighlightX = TickTrackToPoint(highlightTick, 0).X + scroll;
+            PlayPosHighlightX = TickTrackToPoint(highlightTick, 0).X;
         }
 
         public void OnNext(UCommand cmd, bool isUndo) {

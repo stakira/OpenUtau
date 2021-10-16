@@ -35,6 +35,10 @@
     <ProjectReference Include="..\OpenUtau.Plugin.Builtin\OpenUtau.Plugin.Builtin.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="$(SolutionDir)libs\**" CopyToOutputDirectory="PreserveNewest" LinkBase="libs\" />
+  </ItemGroup>
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="(if not exist $(OutDir)Plugins mkdir $(OutDir)Plugins) &amp;&amp; (copy /y $(OutDir)OpenUtau.Plugin.Builtin.dll $(OutDir)Plugins\)" />
   </Target>

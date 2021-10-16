@@ -22,7 +22,11 @@ namespace OpenUtau {
         }
 
         private static void InitAudio() {
-            Core.PlaybackManager.Inst.AudioOutput = new Audio.WaveOutAudioOutput();
+            if (OS.IsWindows()) {
+                Core.PlaybackManager.Inst.AudioOutput = new Audio.WaveOutAudioOutput();
+            } else {
+                Core.PlaybackManager.Inst.AudioOutput = new Audio.AudioOutput();
+            }
             Core.Formats.Wave.OverrideMp3Reader = filepath => new NAudio.Wave.AudioFileReader(filepath);
         }
     }
