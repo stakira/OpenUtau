@@ -1,8 +1,11 @@
 ﻿using System.IO;
 using System.Linq;
 using System.Reactive;
+using System.Threading.Tasks;
+using Avalonia.Threading;
 using DynamicData.Binding;
 using OpenUtau.Core;
+using OpenUtau.Core.Network;
 using OpenUtau.Core.Ustx;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -13,13 +16,14 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public TracksViewModel TracksViewModel { get; set; }
         [Reactive] public ReactiveCommand<string, Unit>? OpenRecentCommand { get; private set; }
         public ObservableCollectionExtended<MenuItemViewModel> OpenRecent => openRecent;
-
+        
         public bool ProjectSaved => !string.IsNullOrEmpty(DocManager.Inst.Project.FilePath) && DocManager.Inst.Project.Saved;
         public string AppVersion => $"OpenUtau v{System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version}";
         public double Progress {
             get => progress;
             set => this.RaiseAndSetIfChanged(ref progress, value);
         }
+
         public string ProgressText {
             get => progressText;
             set => this.RaiseAndSetIfChanged(ref progressText, value);

@@ -9,7 +9,6 @@
 #include <string>
 #include <process.hpp>
 #include "net/OpenUTAUServer.h"
-#include "net/Message.h"
 
 namespace OpenUTAU {
     class OpenUTAUPlugin : public Plugin {
@@ -53,7 +52,7 @@ namespace OpenUTAU {
 
     private:
         std::string openUtauPath{R"(C:\Users\SeleDreams\Dropbox\Documents\Development\OpenUtau\OpenUtau\bin\Debug\netcoreapp3.1)"};
-        OpenUTAUServer server;
+        std::shared_ptr<OpenUTAUServer> server;
         std::unique_ptr<TinyProcessLib::Process> uiProcess;
     };
 }

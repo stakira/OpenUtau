@@ -10,7 +10,7 @@ namespace OpenUtau {
         private static void Main(string[] args) {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             App.Program.InitLogging();
-            Task.Run(() =>App.Program.InitOpenUtau(args));
+            App.Program.InitOpenUtau(args);
             InitAudio();
 
             if (Core.Util.Preferences.Default.Beta == 0 && !Core.DocManager.Inst.isVst) {

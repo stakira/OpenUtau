@@ -6,13 +6,19 @@ using System.Threading;
 using OpenUtau.App.Views;
 using Avalonia.Markup.Xaml.MarkupExtensions;
 using System.Linq;
+using Avalonia.Threading;
+using OpenUtau.Core;
 
 namespace OpenUtau.App {
     public class App : Application {
+        private DispatcherTimer timer;
         public override void Initialize() {
             AvaloniaXamlLoader.Load(this);
             InitializeCulture();
             InitializeTheme();
+            timer = new DispatcherTimer(DispatcherPriority.Render);
+            timer.Tick += (sender,args) => DocManager.Inst.VSTClient.Update();
+            timer.Start();
         }
 
         public override void OnFrameworkInitializationCompleted() {
