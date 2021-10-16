@@ -30,8 +30,8 @@ namespace OpenUtau.Core.Formats {
             }
 
             var projects = new List<UProject>();
-            var encoding = ShiftJIS;
             foreach (var file in files) {
+                var encoding = DetectEncoding(file);
                 using (var reader = new StreamReader(file, encoding)) {
                     projects.Add(Load(reader, file));
                 }
@@ -53,6 +53,22 @@ namespace OpenUtau.Core.Formats {
             project.AfterLoad();
             project.Validate();
             return project;
+        }
+
+        public static Encoding DetectEncoding(string file) {
+            using (var reader = new StreamReader(file, ShiftJIS)) {
+                for (int i = 0; i < 10; i++) {
+                    var line = reader.ReadLine();
+                    if (line == null) {
+                        break;
+                    }
+                    line = line.Trim();
+                    if (line.StartsWith("Charset=")) {
+                        return Encoding.GetEncoding(line.Replace("Charset=", ""));
+                    }
+                }
+            }
+            return ShiftJIS;
         }
 
         public static UProject Load(StreamReader reader, string file) {
