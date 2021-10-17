@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.VisualTree;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
@@ -92,11 +95,33 @@ namespace OpenUtau.App.Controls {
             args.Handled = true;
         }
 
+        void SingerButtonContextRequested(object sender, ContextRequestedEventArgs args) {
+            args.Handled = true;
+        }
+
         void PhonemizerButtonClicked(object sender, RoutedEventArgs args) {
             var phonemizerMenu = this.FindControl<ContextMenu>("PhonemizersMenu");
             if (DocManager.Inst.PhonemizerFactories.Length > 0) {
                 ViewModel?.RefreshPhonemizers();
                 phonemizerMenu.Open();
+            }
+            args.Handled = true;
+        }
+
+        void PhonemizerButtonContextRequested(object sender, ContextRequestedEventArgs args) {
+            args.Handled = true;
+        }
+
+        void FaderPointerPressed(object sender, PointerPressedEventArgs args) {
+            if (args.GetCurrentPoint((IVisual?)sender).Properties.IsRightButtonPressed && ViewModel != null) {
+                ViewModel.Volume = 0;
+                args.Handled = true;
+            }
+        }
+
+        void FaderContextRequested(object sender, ContextRequestedEventArgs args) {
+            if (ViewModel != null) {
+                ViewModel.Volume = 0;
             }
             args.Handled = true;
         }

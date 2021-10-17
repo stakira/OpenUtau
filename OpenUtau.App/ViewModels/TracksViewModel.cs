@@ -11,6 +11,14 @@ using ReactiveUI.Fody.Helpers;
 
 namespace OpenUtau.App.ViewModels {
     public class TracksRefreshEvent { }
+    public class TracksSoloEvent {
+        public readonly int trackNo;
+        public readonly bool solo;
+        public TracksSoloEvent(int trackNo, bool solo) {
+            this.trackNo = trackNo;
+            this.solo = solo;
+        }
+    }
     public class PartsSelectionEvent {
         public readonly UPart[] selectedParts;
         public readonly UPart[] tempSelectedParts;
@@ -32,7 +40,7 @@ namespace OpenUtau.App.ViewModels {
         public UProject Project => DocManager.Inst.Project;
         [Reactive] public Rect Bounds { get; set; }
         public int TickCount => Math.Max(Project.BarTicks * 32, Project.EndTick);
-        public int TrackCount => Math.Max(16, Project.tracks.Count + 1);
+        public int TrackCount => Math.Max(20, Project.tracks.Count + 1);
         [Reactive] public double TickWidth { get; set; }
         public double TrackHeightMin => ViewConstants.TrackHeightMin;
         public double TrackHeightMax => ViewConstants.TrackHeightMax;

@@ -57,6 +57,23 @@ namespace OpenUtau.App.Controls {
                         trackAdder.TrackNo = trackHeaders.Count;
                     }
                 });
+            MessageBus.Current.Listen<TracksSoloEvent>()
+                .Subscribe(e => {
+                    foreach (var (track, header) in trackHeaders) {
+                        if (header.ViewModel != null) {
+                            if (track.TrackNo == e.trackNo) {
+                                header.ViewModel.Solo = e.solo;
+                                if (e.solo) {
+                                    header.ViewModel.Mute = false;
+                                }
+                            } else {
+                                header.ViewModel.Solo = false;
+                                header.ViewModel.Mute = e.solo;
+                            }
+                            header.ViewModel.ManuallyRaise();
+                        }
+                    }
+                });
         }
 
         protected override void OnInitialized() {

@@ -50,6 +50,7 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys {
                     proc.ErrorDataReceived += (o, e) => logger.Error($" >>> [thread-{threadId}] {e.Data}");
                 }
                 proc.Start();
+                proc.PriorityClass = ProcessPriorityClass.BelowNormal;
                 if (debugResampler) {
                     proc.BeginOutputReadLine();
                     proc.BeginErrorReadLine();

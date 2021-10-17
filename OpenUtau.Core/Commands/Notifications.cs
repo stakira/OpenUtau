@@ -112,6 +112,16 @@ namespace OpenUtau.Core {
         public override string ToString() => $"Set track {TrackNo} volume to {Volume}";
     }
 
+    public class SoloTrackNotification : UNotification {
+        public readonly int trackNo;
+        public readonly bool solo;
+        public SoloTrackNotification(int trackNo, bool solo) {
+            this.trackNo = trackNo;
+            this.solo = solo;
+        }
+        public override string ToString() => $"Solo track {solo}";
+    }
+
     public class SingersChangedNotification : UNotification {
         public SingersChangedNotification() { }
         public override string ToString() => "Singers changed.";

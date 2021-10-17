@@ -29,4 +29,7 @@
   <ItemGroup>
     <ProjectReference Include="..\OpenUtau.Core\OpenUtau.Core.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="$(SolutionDir)libs\**" CopyToOutputDirectory="PreserveNewest" LinkBase="libs\" />
+  </ItemGroup>
 </Project>

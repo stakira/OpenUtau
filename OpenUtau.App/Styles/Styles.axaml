@@ -293,4 +293,56 @@
       </Setter.Value>
     </Setter>
   </Style>
+
+  <Style Selector="Slider.fader">
+    <Setter Property="Template">
+      <ControlTemplate>
+        <DataValidationErrors>
+          <Border>
+            <Grid x:Name="SliderContainer">
+              <Track Name="PART_Track" IsDirectionReversed="{TemplateBinding IsDirectionReversed}" Orientation="Horizontal">
+                <Track.DecreaseButton>
+                  <RepeatButton Name="PART_DecreaseButton" Background="{TemplateBinding Foreground}" Focusable="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <RepeatButton.Template>
+                      <ControlTemplate>
+                        <Grid>
+                          <Border Name="FocusTarget" Background="Transparent" Margin="0,-10" />
+                          <Border Name="TrackBackground" Background="{TemplateBinding Background}" Height="{DynamicResource SliderTrackThemeHeight}" VerticalAlignment="Center" />
+                        </Grid>
+                      </ControlTemplate>
+                    </RepeatButton.Template>
+                  </RepeatButton>
+                </Track.DecreaseButton>
+                <Track.IncreaseButton>
+                  <RepeatButton Name="PART_IncreaseButton" Background="{TemplateBinding Background}" Focusable="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <RepeatButton.Template>
+                      <ControlTemplate>
+                        <Grid>
+                          <Border Name="FocusTarget" Background="Transparent" Margin="0,-10" />
+                          <Border Name="TrackBackground" Background="{TemplateBinding Background}" Height="{DynamicResource SliderTrackThemeHeight}" VerticalAlignment="Center" />
+                        </Grid>
+                      </ControlTemplate>
+                    </RepeatButton.Template>
+                  </RepeatButton>
+                </Track.IncreaseButton>
+                <Thumb Name="thumb" Margin="0" Padding="0" DataContext="{TemplateBinding Value}" Height="6" Width="16" Background="{TemplateBinding Foreground}" />
+              </Track>
+            </Grid>
+          </Border>
+        </DataValidationErrors>
+      </ControlTemplate>
+    </Setter>
+  </Style>
+  <Style Selector="Slider:pointerover /template/ RepeatButton#PART_DecreaseButton">
+    <Setter Property="Background" Value="{DynamicResource AccentBrush1}" />
+  </Style>
+  <Style Selector="Slider.fader /template/ Thumb">
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate>
+          <Border Background="{TemplateBinding Background}" Height="6" Width="16" CornerRadius="2"/>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
 </Styles>

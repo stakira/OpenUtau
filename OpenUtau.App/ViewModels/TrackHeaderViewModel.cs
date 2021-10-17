@@ -22,6 +22,9 @@ namespace OpenUtau.App.ViewModels {
         public ReactiveCommand<USinger, Unit> SelectSingerCommand { get; }
         public IReadOnlyList<MenuItemViewModel>? PhonemizerMenuItems { get; set; }
         public ReactiveCommand<PhonemizerFactory, Unit> SelectPhonemizerCommand { get; }
+        [Reactive] public double Volume { get; set; }
+        [Reactive] public bool Mute { get; set; }
+        [Reactive] public bool Solo { get; set; }
         [Reactive] public Bitmap? Avatar { get; set; }
 
         public ViewModelActivator Activator { get; }
@@ -68,7 +71,29 @@ namespace OpenUtau.App.ViewModels {
                 });
             });
 
+            Volume = track.Volume;
+            Mute = track.Mute;
+            Solo = track.Solo;
+            this.WhenAnyValue(x => x.Volume)
+                .Subscribe(volume => {
+                    track.Volume = volume;
+                    DocManager.Inst.ExecuteCmd(new VolumeChangeNotification(track.TrackNo, Mute ? -24 : volume));
+                });
+            this.WhenAnyValue(x => x.Mute)
+                .Subscribe(mute => {
+                    track.Mute = mute;
+                    DocManager.Inst.ExecuteCmd(new VolumeChangeNotification(track.TrackNo, mute ? -24 : Volume));
+                });
+            this.WhenAnyValue(x => x.Solo)
+                .Subscribe(solo => {
+                    track.Solo = solo;
+                });
+
             RefreshAvatar();
+        }
+
+        public void ToggleSolo() {
+            MessageBus.Current.SendMessage(new TracksSoloEvent(track.TrackNo, !track.Solo));
         }
 
         public void RefreshSingers() {
@@ -110,6 +135,9 @@ namespace OpenUtau.App.ViewModels {
             this.RaisePropertyChanged(nameof(TrackNo));
             this.RaisePropertyChanged(nameof(Phonemizer));
             this.RaisePropertyChanged(nameof(PhonemizerTag));
+            this.RaisePropertyChanged(nameof(Mute));
+            this.RaisePropertyChanged(nameof(Solo));
+            this.RaisePropertyChanged(nameof(Volume));
             RefreshAvatar();
         }
 

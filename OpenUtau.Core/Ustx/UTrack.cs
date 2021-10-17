@@ -30,9 +30,9 @@ namespace OpenUtau.Core.Ustx {
         [YamlIgnore] public string SingerName => Singer != null ? Singer.DisplayName : "[No Singer]";
         [YamlIgnore] public int TrackNo { set; get; }
         [YamlIgnore] public int DisplayTrackNo => TrackNo + 1;
-        [YamlIgnore] public bool Mute { set; get; }
-        [YamlIgnore] public bool Solo { set; get; }
-        [YamlIgnore] public double Volume { set; get; }
+        public bool Mute { set; get; }
+        public bool Solo { set; get; }
+        public double Volume { set; get; }
         [YamlIgnore] public double Pan { set; get; }
 
         public void BeforeSave() {
