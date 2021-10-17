@@ -2,6 +2,14 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+  <system:String x:Key="context.pitch.easein">Ease in</system:String>
+  <system:String x:Key="context.pitch.easeinout">Ease in/out</system:String>
+  <system:String x:Key="context.pitch.easeout">Ease out</system:String>
+  <system:String x:Key="context.pitch.linear">Linear</system:String>
+  <system:String x:Key="context.pitch.pointsnapprev">Snap to previous note</system:String>
+  <system:String x:Key="context.pitch.pointdel">Delete point</system:String>
+  <system:String x:Key="context.pitch.pointadd">Add point</system:String>
+  
   <system:String x:Key="dialogs.about.caption">About OpenUTAU</system:String>
   <system:String x:Key="dialogs.about.message">
     OpenUtau aims to be an open source editing environment for UTAU community, with a modern user experience and intelligent phonological support. Visit us on Github.

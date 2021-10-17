@@ -22,6 +22,8 @@ using Point = Avalonia.Point;
 
 namespace OpenUtau.App.Views {
     public partial class MainWindow : Window {
+        private readonly KeyModifiers cmdKey =
+            OS.IsMacOS() ? KeyModifiers.Meta : KeyModifiers.Control;
         private readonly MainWindowViewModel viewModel;
 
         private PianoRollWindow? pianoRollWindow;
@@ -366,7 +368,7 @@ namespace OpenUtau.App.Views {
                     case Key.F4: ((IControlledApplicationLifetime)Application.Current.ApplicationLifetime).Shutdown(); break;
                     default: break;
                 }
-            } else if (args.KeyModifiers == KeyModifiers.Control) {
+            } else if (args.KeyModifiers == cmdKey) {
                 switch (args.Key) {
                     case Key.A: viewModel.TracksViewModel.SelectAllParts(); break;
                     case Key.N: viewModel.NewProject(); break;
@@ -447,12 +449,12 @@ namespace OpenUtau.App.Views {
                 return;
             }
             if (point.Properties.IsLeftButtonPressed) {
-                if (args.KeyModifiers == KeyModifiers.Control) {
+                if (args.KeyModifiers == cmdKey) {
                     // New selection.
                     viewModel.TracksViewModel.DeselectParts();
                     partEditState = new PartSelectionEditState(canvas, viewModel, GetSelectionBox(canvas));
                     Cursor = ViewConstants.cursorCross;
-                } else if (args.KeyModifiers == (KeyModifiers.Control | KeyModifiers.Shift)) {
+                } else if (args.KeyModifiers == (cmdKey | KeyModifiers.Shift)) {
                     // Additional selection.
                     partEditState = new PartSelectionEditState(canvas, viewModel, GetSelectionBox(canvas));
                     Cursor = ViewConstants.cursorCross;
@@ -584,7 +586,7 @@ namespace OpenUtau.App.Views {
             } else if (args.KeyModifiers == KeyModifiers.Shift) {
                 var scrollbar = this.FindControl<ScrollBar>("HScrollBar");
                 HScrollPointerWheelChanged(scrollbar, args);
-            } else if (args.KeyModifiers == KeyModifiers.Control) {
+            } else if (args.KeyModifiers == cmdKey) {
                 var canvas = this.FindControl<Canvas>("TimelineCanvas");
                 TimelinePointerWheelChanged(canvas, args);
             }

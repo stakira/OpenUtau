@@ -49,6 +49,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public bool EraserTool { get; set; }
         public ReactiveCommand<string, Unit> SelectToolCommand { get; }
         [Reactive] public bool ShowTips { get; set; }
+        [Reactive] public bool PlayTone { get; set; }
         [Reactive] public bool ShowVibrato { get; set; }
         [Reactive] public bool ShowPitch { get; set; }
         [Reactive] public bool ShowPhoneme { get; set; }
@@ -129,6 +130,7 @@ namespace OpenUtau.App.ViewModels {
             });
 
             ShowTips = Core.Util.Preferences.Default.ShowTips;
+            PlayTone = true;
             ShowVibrato = true;
             ShowPitch = true;
             ShowPhoneme = true;

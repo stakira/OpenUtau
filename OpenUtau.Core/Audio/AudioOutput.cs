@@ -119,12 +119,14 @@ namespace OpenUtau.Audio {
 
                 AudioEngine engine = audioEngine;
                 if (engine == null) {
+                    Thread.Sleep(10);
                     continue;
                 }
 
                 if (queue.Count == 0) {
                     if (eof) {
                         PlaybackState = PlaybackState.Stopped;
+                        Thread.Sleep(10);
                         continue;
                     }
                     Thread.Sleep(10);
@@ -132,6 +134,7 @@ namespace OpenUtau.Audio {
                 }
 
                 if (!queue.TryDequeue(out var frame)) {
+                    Thread.Sleep(10);
                     continue;
                 }
 
@@ -147,6 +150,7 @@ namespace OpenUtau.Audio {
             while (!shutdown) {
                 var sp = sampleProvider;
                 if (sp == null) {
+                    Thread.Sleep(10);
                     continue;
                 }
                 if (PlaybackState == PlaybackState.Paused ||
@@ -162,6 +166,7 @@ namespace OpenUtau.Audio {
                 var n = sp.Read(buffer, 0, buffer.Length);
                 if (n == 0) {
                     eof = true;
+                    Thread.Sleep(10);
                     continue;
                 }
                 var data = new float[n];

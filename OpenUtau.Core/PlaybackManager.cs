@@ -58,7 +58,7 @@ namespace OpenUtau.Core {
                     return i;
                 }
                 phase += delta;
-                double sampleValue = Math.Sin(phase) * gain;
+                double sampleValue = Math.Sin(phase) * 0.2 * gain;
                 buffer[offset++] = (float)sampleValue;
             }
             return count;

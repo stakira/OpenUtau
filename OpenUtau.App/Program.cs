@@ -14,6 +14,7 @@ namespace OpenUtau.App {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             InitLogging();
             InitOpenUtau();
+            InitAudio();
             Run(args);
         }
 
@@ -51,6 +52,10 @@ namespace OpenUtau.App {
             Core.DocManager.Inst.Initialize();
         }
 
-        public static Action? AutoUpdate { get;set; }
+        private static void InitAudio() {
+            Core.PlaybackManager.Inst.AudioOutput = new Audio.AudioOutput();
+        }
+
+        public static Action? AutoUpdate { get; set; }
     }
 }

@@ -16,11 +16,15 @@ namespace OpenUtau.App.Views {
         public MainWindow? MainWindow { get; set; }
         public readonly PianoRollViewModel ViewModel;
 
+        private readonly KeyModifiers cmdKey =
+            OS.IsMacOS() ? KeyModifiers.Meta : KeyModifiers.Control;
         private KeyboardPlayState? keyboardPlayState;
         private NoteEditState? editState;
         private Rectangle? selectionBox;
         private Border? expValueTip;
         private LyricBox? lyricBox;
+        private ContextMenu? pitchContextMenu;
+        private bool openingPitchContextMenu;
 
         public PianoRollWindow() {
             InitializeComponent();
@@ -34,10 +38,11 @@ namespace OpenUtau.App.Views {
             AvaloniaXamlLoader.Load(this);
             expValueTip = this.FindControl<Border>("ExpValueTip");
             lyricBox = this.FindControl<LyricBox>("LyricBox");
+            pitchContextMenu = this.FindControl<ContextMenu>("PitchContextMenu");
         }
 
         public void WindowDeactivated(object sender, EventArgs args) {
-            //lyricBox?.EndEdit();
+            lyricBox?.EndEdit();
         }
 
         void WindowClosing(object? sender, CancelEventArgs e) {
@@ -157,12 +162,7 @@ namespace OpenUtau.App.Views {
             if (point.Properties.IsLeftButtonPressed) {
                 NotesCanvasLeftPointerPressed(canvas, point, args);
             } else if (point.Properties.IsRightButtonPressed) {
-                ViewModel.NotesViewModel.DeselectNotes();
-                if (ViewModel.NotesViewModel.PencilTool || ViewModel.NotesViewModel.EraserTool) {
-                    ViewModel.NotesViewModel.DeselectNotes();
-                    editState = new NoteEraseEditState(canvas, ViewModel, MouseButton.Right);
-                    Cursor = ViewConstants.cursorNo;
-                }
+                NotesCanvasRightPointerPressed(canvas, point, args);
             } else if (point.Properties.IsMiddleButtonPressed) {
                 editState = new NotePanningState(canvas, ViewModel);
                 Cursor = ViewConstants.cursorHand;
@@ -240,7 +240,7 @@ namespace OpenUtau.App.Views {
                     Cursor = ViewConstants.cursorCross;
                     return;
                 }
-                if (args.KeyModifiers == KeyModifiers.Control) {
+                if (args.KeyModifiers == cmdKey) {
                     // Additional selection.
                     editState = new NoteSelectionEditState(canvas, ViewModel, GetSelectionBox(canvas));
                     Cursor = ViewConstants.cursorCross;
@@ -249,7 +249,36 @@ namespace OpenUtau.App.Views {
                 ViewModel.NotesViewModel.DeselectNotes();
             } else if (ViewModel.NotesViewModel.PencilTool) {
                 ViewModel.NotesViewModel.DeselectNotes();
-                editState = new NoteDrawEditState(canvas, ViewModel);
+                editState = new NoteDrawEditState(canvas, ViewModel, ViewModel.NotesViewModel.PlayTone);
+            }
+        }
+
+        private void NotesCanvasRightPointerPressed(Canvas canvas, PointerPoint point, PointerPressedEventArgs args) {
+            Serilog.Log.Information("NotesCanvasRightPointerPressed");
+            ViewModel.NotesViewModel.DeselectNotes();
+            if (ViewModel.NotesViewModel.ShowPitch) {
+                var pitHitInfo = ViewModel.NotesViewModel.HitTest.HitTestPitchPoint(point.Position);
+                if (pitHitInfo.Note != null && pitchContextMenu != null) {
+                    pitHitInfo.IsFirst = pitHitInfo.OnPoint && pitHitInfo.Index == 0;
+                    pitHitInfo.CanDel = pitHitInfo.OnPoint && pitHitInfo.Index != 0
+                        && pitHitInfo.Index != pitHitInfo.Note.pitch.data.Count - 1;
+                    pitHitInfo.CanAdd = !pitHitInfo.OnPoint;
+                    pitHitInfo.EaseInOutCommand = ViewModel.PitEaseInOutCommand;
+                    pitHitInfo.LinearCommand = ViewModel.PitLinearCommand;
+                    pitHitInfo.EaseInCommand = ViewModel.PitEaseInCommand;
+                    pitHitInfo.EaseOutCommand = ViewModel.PitEaseOutCommand;
+                    pitHitInfo.SnapCommand = ViewModel.PitSnapCommand;
+                    pitHitInfo.AddCommand = ViewModel.PitAddCommand;
+                    pitHitInfo.DelCommand = ViewModel.PitDelCommand;
+                    pitchContextMenu.DataContext = pitHitInfo;
+                    openingPitchContextMenu = true;
+                    return;
+                }
+            }
+            if (ViewModel.NotesViewModel.PencilTool || ViewModel.NotesViewModel.EraserTool) {
+                ViewModel.NotesViewModel.DeselectNotes();
+                editState = new NoteEraseEditState(canvas, ViewModel, MouseButton.Right);
+                Cursor = ViewConstants.cursorNo;
             }
         }
 
@@ -350,9 +379,17 @@ namespace OpenUtau.App.Views {
             } else if (args.KeyModifiers == KeyModifiers.Shift) {
                 var scrollbar = this.FindControl<ScrollBar>("HScrollBar");
                 HScrollPointerWheelChanged(scrollbar, args);
-            } else if (args.KeyModifiers == KeyModifiers.Control) {
+            } else if (args.KeyModifiers == cmdKey) {
                 var canvas = this.FindControl<Canvas>("TimelineCanvas");
                 TimelinePointerWheelChanged(canvas, args);
+            }
+        }
+
+        public void PitchContextMenuOpening(object sender, CancelEventArgs args) {
+            if (openingPitchContextMenu) {
+                openingPitchContextMenu = false;
+            } else {
+                args.Cancel = true;
             }
         }
 
@@ -481,7 +518,9 @@ namespace OpenUtau.App.Views {
             }
             if (args.KeyModifiers == KeyModifiers.None) {
                 switch (args.Key) {
-                    case Key.Delete: notesVm.DeleteSelectedNotes(); break;
+                    case Key.Back:
+                    case Key.Delete:
+                        notesVm.DeleteSelectedNotes(); break;
                     case Key.D1: notesVm.SelectToolCommand?.Execute("1").Subscribe(); break;
                     case Key.D2: notesVm.SelectToolCommand?.Execute("2").Subscribe(); break;
                     case Key.D3: notesVm.SelectToolCommand?.Execute("3").Subscribe(); break;
@@ -504,7 +543,7 @@ namespace OpenUtau.App.Views {
                         break;
                     default: break;
                 }
-            } else if (args.KeyModifiers == KeyModifiers.Control) {
+            } else if (args.KeyModifiers == cmdKey) {
                 switch (args.Key) {
                     case Key.A: notesVm.SelectAllNotes(); break;
                     case Key.S: _ = MainWindow?.Save(); break;
