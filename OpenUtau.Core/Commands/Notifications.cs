@@ -133,4 +133,8 @@ namespace OpenUtau.Core {
         }
         public override string ToString() => $"Focus note {note.lyric} at {note.position}.";
     }
+
+    public class PreRenderNotification : UNotification {
+        public override string ToString() => $"Pre-render notification.";
+    }
 }

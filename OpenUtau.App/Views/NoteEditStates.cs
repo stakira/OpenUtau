@@ -169,6 +169,57 @@ namespace OpenUtau.App.Views {
         }
     }
 
+    class NoteDrawEditState : NoteEditState {
+        private UNote? note;
+        private SineGen? sineGen;
+        public NoteDrawEditState(Canvas canvas, PianoRollViewModel vm) : base(canvas, vm) { }
+        public override void Begin(IPointer pointer, Point point) {
+            base.Begin(pointer, point);
+            note = vm.NotesViewModel.MaybeAddNote(point, false);
+            if (note != null) {
+                sineGen = PlaybackManager.Inst.PlayTone(MusicMath.ToneToFreq(note.tone));
+            }
+        }
+        public override void Update(IPointer pointer, Point point) {
+            if (note == null) {
+                return;
+            }
+            var project = DocManager.Inst.Project;
+            var notesVm = vm.NotesViewModel;
+            int tone = notesVm.PointToTone(point);
+            if (sineGen != null) {
+                sineGen.Freq = MusicMath.ToneToFreq(tone);
+            }
+            int deltaTone = tone - note.tone;
+            int deltaDuration = notesVm.IsSnapOn
+                ? notesVm.PointToSnappedTick(point) + notesVm.SnapUnit - note.End
+                : notesVm.PointToTick(point) - note.End;
+            int minNoteTicks = notesVm.IsSnapOn ? notesVm.SnapUnit : 15;
+            if (deltaDuration < 0) {
+                int maxNegDelta = note.duration - minNoteTicks;
+                if (notesVm.SelectedNotes.Count > 0) {
+                    maxNegDelta = notesVm.SelectedNotes.Min(n => n.duration - minNoteTicks);
+                }
+                if (notesVm.IsSnapOn && notesVm.SnapUnit > 0) {
+                    maxNegDelta = (int)Math.Floor((double)maxNegDelta / notesVm.SnapUnit) * notesVm.SnapUnit;
+                }
+                deltaDuration = Math.Max(deltaDuration, -maxNegDelta);
+            }
+            if (deltaTone != 0) {
+                DocManager.Inst.ExecuteCmd(new MoveNoteCommand(notesVm.Part, note, 0, deltaTone));
+            }
+            if (deltaDuration != 0) {
+                DocManager.Inst.ExecuteCmd(new ResizeNoteCommand(notesVm.Part, note, deltaDuration));
+            }
+        }
+        public override void End(IPointer pointer, Point point) {
+            base.End(pointer, point);
+            if (sineGen != null) {
+                sineGen.Stop = true;
+            }
+        }
+    }
+
     class NoteResizeEditState : NoteEditState {
         public readonly UNote note;
         public readonly UNote? nextNote;
@@ -220,8 +271,11 @@ namespace OpenUtau.App.Views {
     }
 
     class NoteEraseEditState : NoteEditState {
-        public override MouseButton MouseButton => MouseButton.Right;
-        public NoteEraseEditState(Canvas canvas, PianoRollViewModel vm) : base(canvas, vm) { }
+        public override MouseButton MouseButton => mouseButton;
+        private MouseButton mouseButton;
+        public NoteEraseEditState(Canvas canvas, PianoRollViewModel vm, MouseButton mouseButton) : base(canvas, vm) {
+            this.mouseButton = mouseButton;
+        }
         public override void Update(IPointer pointer, Point point) {
             var notesVm = vm.NotesViewModel;
             var noteHitInfo = notesVm.HitTest.HitTestNote(point);

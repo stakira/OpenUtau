@@ -103,6 +103,17 @@
   <Style Selector="ToggleButton:checked:pressed /template/ ContentPresenter#PART_ContentPresenter">
     <Setter Property="Background" Value="{DynamicResource NeutralAccentBrushPointerOver}" />
   </Style>
+  <Style Selector="ToggleButton.toolbar Path.filled">
+    <Setter Property="Fill" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+  </Style>
+  <Style Selector="ToggleButton.toolbar Ellipse.stroked">
+    <Setter Property="StrokeThickness" Value="1"/>
+    <Setter Property="Stroke" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+  </Style>
+  <Style Selector="ToggleButton.toolbar Path.stroked">
+    <Setter Property="StrokeThickness" Value="1"/>
+    <Setter Property="Stroke" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+  </Style>
 
   <Style Selector="ToggleButton.toolbar">
     <Setter Property="BorderThickness" Value="0"/>

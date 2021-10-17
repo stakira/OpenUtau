@@ -117,7 +117,8 @@ namespace OpenUtau.Core.Formats {
         }
 
         private static void ParsePart(UProject project, UVoicePart part, List<List<UstLine>> blocks) {
-            int tick = 0;
+            int lastNotePos = 0;
+            int lastNoteEnd = 0;
             foreach (var block in blocks) {
                 string header = block[0].line;
                 try {
@@ -132,9 +133,9 @@ namespace OpenUtau.Core.Formats {
                         default:
                             if (int.TryParse(header.Substring(2, header.Length - 3), out int noteIndex)) {
                                 UNote note = project.CreateNote();
-                                ParseNote(note, block, out var noteTempo);
-                                note.position = tick;
-                                tick += note.duration;
+                                ParseNote(note, lastNotePos, lastNoteEnd, block, out var noteTempo);
+                                lastNotePos = note.position;
+                                lastNoteEnd = note.End;
                                 if (note.lyric.ToLower() != "r") {
                                     part.notes.Add(note);
                                 }
@@ -194,10 +195,13 @@ namespace OpenUtau.Core.Formats {
             }
         }
 
-        private static void ParseNote(UNote note, List<UstLine> ustBlock, out float? noteTempo) {
+        private static void ParseNote(UNote note, int lastNotePos, int lastNoteEnd, List<UstLine> ustBlock, out float? noteTempo) {
             const string format = "<param>=<value>";
             noteTempo = null;
             string pbs = null, pbw = null, pby = null, pbm = null;
+            int? delta = null;
+            int? duration = null;
+            int? length = null;
             for (int i = 1; i < ustBlock.Count; i++) {
                 string line = ustBlock[i].line;
                 var parts = line.Split('=');
@@ -210,7 +214,15 @@ namespace OpenUtau.Core.Formats {
                 switch (param) {
                     case "Length":
                         error |= !isFloat;
-                        note.duration = (int)floatValue;
+                        length = (int)floatValue;
+                        break;
+                    case "Delta":
+                        error |= !isFloat;
+                        delta = (int)floatValue;
+                        break;
+                    case "Duration":
+                        error |= !isFloat;
+                        duration = (int)floatValue;
                         break;
                     case "Lyric":
                         ParseLyric(note, parts[1]);
@@ -278,6 +290,21 @@ namespace OpenUtau.Core.Formats {
                     throw new FileFormatException($"Invalid {param}\n${ustBlock[i]}");
                 }
             }
+            // UST Version < 2.0
+            // | length       | length       |
+            // | note1        | R            |
+            // UST Version = 2.0
+            // | length1      | length2      |
+            // | dur1  |      | dur2         |
+            // | note1 | R    | note2        |
+            // | delta2       |
+            if (delta != null && duration != null && length != null) {
+                note.position = lastNotePos + delta.Value;
+                note.duration = duration.Value;
+            } else if (length != null) {
+                note.position = lastNoteEnd;
+                note.duration = length.Value;
+            }
             ParsePitchBend(note, pbs, pbw, pby, pbm);
         }
 
@@ -331,7 +358,7 @@ namespace OpenUtau.Core.Formats {
                 var points = note.pitch.data;
                 points.Clear();
                 // PBS
-                var parts = pbs.Split(';');
+                var parts = pbs.Contains(';') ? pbs.Split(';') : pbs.Split(',');
                 float pbsX = parts.Length >= 1 && ParseFloat(parts[0], out pbsX) ? pbsX : 0;
                 float pbsY = parts.Length >= 2 && ParseFloat(parts[1], out pbsY) ? pbsY : 0;
                 points.Add(new PitchPoint(pbsX, pbsY));
@@ -511,7 +538,7 @@ namespace OpenUtau.Core.Formats {
                         default:
                             if (int.TryParse(header.Substring(2, header.Length - 3), out int noteIndex)) {
                                 if (noteIndex < sequence.Count) {
-                                    ParseNote(sequence[noteIndex], block, out var _);
+                                    ParseNote(sequence[noteIndex], 0, 0, block, out var _);
                                 }
                             }
                             break;

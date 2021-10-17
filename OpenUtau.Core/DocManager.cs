@@ -174,6 +174,7 @@ namespace OpenUtau.Core {
             }
             undoGroup = null;
             Log.Information("undoGroup ended");
+            ExecuteCmd(new PreRenderNotification());
         }
 
         public void Undo() {
@@ -188,6 +189,7 @@ namespace OpenUtau.Core {
             }
             redoQueue.AddToBack(group);
             Project.Validate();
+            ExecuteCmd(new PreRenderNotification());
         }
 
         public void Redo() {
@@ -201,6 +203,7 @@ namespace OpenUtau.Core {
             }
             undoQueue.AddToBack(group);
             Project.Validate();
+            ExecuteCmd(new PreRenderNotification());
         }
 
         # endregion

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Reactive;
 using System.Reactive.Linq;
 using Avalonia;
 using OpenUtau.Core;
@@ -40,15 +41,19 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public double TickOffset { get; set; }
         [Reactive] public double TrackOffset { get; set; }
         [Reactive] public int SnapUnit { get; set; }
-        [Reactive] public string SnapUnitText { get; set; }
         public double SnapUnitWidth => snapUnitWidth.Value;
         [Reactive] public double PlayPosX { get; set; }
         [Reactive] public double PlayPosHighlightX { get; set; }
-        [Reactive] public bool IsSnapOn { get; set; }
-        [Reactive] public bool ShowPitch { get; set; }
-        [Reactive] public bool ShowVibrato { get; set; }
-        [Reactive] public bool ShowPhoneme { get; set; }
+        [Reactive] public bool CursorTool { get; set; }
+        [Reactive] public bool PencilTool { get; set; }
+        [Reactive] public bool EraserTool { get; set; }
+        public ReactiveCommand<string, Unit> SelectToolCommand { get; }
         [Reactive] public bool ShowTips { get; set; }
+        [Reactive] public bool ShowVibrato { get; set; }
+        [Reactive] public bool ShowPitch { get; set; }
+        [Reactive] public bool ShowPhoneme { get; set; }
+        [Reactive] public bool IsSnapOn { get; set; }
+        [Reactive] public string SnapUnitText { get; set; }
         [Reactive] public bool ShowExpValueTip { get; set; }
         [Reactive] public string ExpValueTipText { get; set; }
         [Reactive] public string PrimaryKey { get; set; }
@@ -114,16 +119,26 @@ namespace OpenUtau.App.ViewModels {
                     SetPlayPos(DocManager.Inst.playPosTick, true);
                 });
 
+            CursorTool = false;
+            PencilTool = true;
+            EraserTool = false;
+            SelectToolCommand = ReactiveCommand.Create<string>(index => {
+                CursorTool = index == "1";
+                PencilTool = index == "2";
+                EraserTool = index == "3";
+            });
+
+            ShowTips = Core.Util.Preferences.Default.ShowTips;
+            ShowVibrato = true;
+            ShowPitch = true;
+            ShowPhoneme = true;
+            IsSnapOn = true;
             SnapUnitText = string.Empty;
+
             TickWidth = ViewConstants.PianoRollTickWidthDefault;
             TrackHeight = ViewConstants.NoteHeightDefault;
             ExpValueTipText = string.Empty;
             TrackOffset = 4 * 12 + 6;
-            IsSnapOn = true;
-            ShowPitch = true;
-            ShowVibrato = true;
-            ShowPhoneme = true;
-            ShowTips = Core.Util.Preferences.Default.ShowTips;
             if (Core.Util.Preferences.Default.ShowTips) {
                 Core.Util.Preferences.Default.ShowTips = false;
                 Core.Util.Preferences.Save();
@@ -197,7 +212,7 @@ namespace OpenUtau.App.ViewModels {
             return new Size(ticks * TickWidth, tone * TrackHeight);
         }
 
-        public UNote? MaybeAddNote(Point point) {
+        public UNote? MaybeAddNote(Point point, bool useLastLength) {
             if (Part == null) {
                 return null;
             }
@@ -206,10 +221,9 @@ namespace OpenUtau.App.ViewModels {
             if (tone >= ViewConstants.MaxTone || tone < 0) {
                 return null;
             }
-            UNote note = project.CreateNote(tone, PointToSnappedTick(point), _lastNoteLength);
-            DocManager.Inst.StartUndoGroup();
+            UNote note = project.CreateNote(tone, PointToSnappedTick(point),
+                useLastLength ? _lastNoteLength : IsSnapOn ? SnapUnit : 15);
             DocManager.Inst.ExecuteCmd(new AddNoteCommand(Part, note));
-            DocManager.Inst.EndUndoGroup();
             return note;
         }
 
