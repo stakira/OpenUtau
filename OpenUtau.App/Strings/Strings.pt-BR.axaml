@@ -2,6 +2,14 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+  <system:String x:Key="context.pitch.easein">Curva dentro</system:String>
+  <system:String x:Key="context.pitch.easeinout">Curva dentro/fora</system:String>
+  <system:String x:Key="context.pitch.easeout">Curva fora</system:String>
+  <system:String x:Key="context.pitch.linear">Linear</system:String>
+  <system:String x:Key="context.pitch.pointsnapprev">Ajustar à nota anterior </system:String>
+  <system:String x:Key="context.pitch.pointdel">Remover ponto</system:String>
+  <system:String x:Key="context.pitch.pointadd">Adicionar ponto</system:String>
+  
   <system:String x:Key="dialogs.about.caption">Sobre OpenUTAU</system:String>
   <system:String x:Key="dialogs.about.message">
         O OpenUtau é um ambiente de edição de código aberto para a comunidade UTAU, com uma experiência de usuário moderna e suporte fonológico inteligente. Visite-nos no Github.
