@@ -1,14 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using Avalonia;
+using Avalonia.Media;
+using Avalonia.Media.Imaging;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using Serilog;
 
 namespace OpenUtau.App.ViewModels {
     public class NotesRefreshEvent { }
@@ -60,6 +65,8 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public string PrimaryKey { get; set; }
         [Reactive] public string SecondaryKey { get; set; }
         [Reactive] public UVoicePart? Part { get; set; }
+        [Reactive] public Bitmap? Portrait { get; set; }
+        [Reactive] public IBrush? PortraitMask { get; set; }
         public double ViewportTicks => viewportTicks.Value;
         public double ViewportTracks => viewportTracks.Value;
         public double SmallChangeX => smallChangeX.Value;
@@ -79,6 +86,8 @@ namespace OpenUtau.App.ViewModels {
 
         internal NotesViewModelHitTest HitTest;
         private int _lastNoteLength = 480;
+        private string? portraitSource;
+        private readonly object portraitLock = new object();
 
         public NotesViewModel() {
             snapUnitWidth = this.WhenAnyValue(x => x.SnapUnit, x => x.TickWidth)
@@ -236,6 +245,48 @@ namespace OpenUtau.App.ViewModels {
             UnloadPart();
             Part = part as UVoicePart;
             OnPartModified();
+            LoadPortrait(part, project);
+        }
+
+        private void LoadPortrait(UPart? part, UProject? project) {
+            if (part == null || project == null) {
+                lock (portraitLock) {
+                    Portrait = null;
+                    portraitSource = null;
+                }
+                return;
+            }
+            var singer = project.tracks[part.trackNo].Singer;
+            if (singer == null || string.IsNullOrEmpty(singer.Portrait)) {
+                lock (portraitLock) {
+                    Portrait = null;
+                    portraitSource = null;
+                }
+                return;
+            }
+            if (portraitSource != singer.Portrait) {
+                lock (portraitLock) {
+                    Portrait = null;
+                    portraitSource = null;
+                }
+                PortraitMask = new SolidColorBrush(Colors.White, singer.PortraitOpacity);
+                Task.Run(() => {
+                    lock (portraitLock) {
+                        try {
+                            Portrait?.Dispose();
+                            using (var stream = File.OpenRead(singer.Portrait)) {
+                                Portrait = Bitmap.DecodeToHeight(stream, 500);
+                            }
+                            portraitSource = singer.Portrait;
+                        } catch (Exception e) {
+                            Portrait?.Dispose();
+                            Portrait = null;
+                            portraitSource = null;
+                            Log.Error(e, $"Failed to load Portrait {singer.Portrait}");
+                        }
+                    }
+                });
+            }
         }
 
         private void UnloadPart() {
@@ -385,6 +436,7 @@ namespace OpenUtau.App.ViewModels {
                     LoadPart(loadPart.part, loadPart.project);
                 } else if (cmd is LoadProjectNotification) {
                     UnloadPart();
+                    LoadPortrait(null, null);
                 } else if (cmd is SelectExpressionNotification selectExp) {
                     SecondaryKey = PrimaryKey;
                     PrimaryKey = selectExp.ExpKey;
@@ -419,8 +471,15 @@ namespace OpenUtau.App.ViewModels {
                 if (noteCommand.Part == Part) {
                     MessageBus.Current.SendMessage(new NotesRefreshEvent());
                 }
-            } else if (cmd is ExpCommand || cmd is TrackCommand) {
+            } else if (cmd is ExpCommand) {
                 MessageBus.Current.SendMessage(new NotesRefreshEvent());
+            } else if (cmd is TrackCommand) {
+                MessageBus.Current.SendMessage(new NotesRefreshEvent());
+                if (cmd is TrackChangeSingerCommand trackChangeSinger) {
+                    if (Part != null && trackChangeSinger.track.TrackNo == Part.trackNo) {
+                        LoadPortrait(Part, Project);
+                    }
+                }
             }
         }
     }

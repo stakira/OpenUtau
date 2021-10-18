@@ -67,6 +67,7 @@ namespace OpenUtau.Core {
             var phonemizerFactories = new List<PhonemizerFactory>();
             phonemizerFactories.Add(PhonemizerFactory.Get(typeof(DefaultPhonemizer)));
             var transformerFactories = new List<TransformerFactory>();
+            Directory.CreateDirectory(PathManager.Inst.PluginsPath);
             foreach (var file in Directory.EnumerateFiles(PathManager.Inst.PluginsPath, "*.dll", SearchOption.AllDirectories)) {
                 Assembly assembly;
                 try {
@@ -210,23 +211,30 @@ namespace OpenUtau.Core {
 
         # region Command Subscribers
 
+        private readonly object lockObj = new object();
         private readonly List<ICmdSubscriber> subscribers = new List<ICmdSubscriber>();
 
         public void AddSubscriber(ICmdSubscriber sub) {
-            if (!subscribers.Contains(sub)) {
-                subscribers.Add(sub);
+            lock (lockObj) {
+                if (!subscribers.Contains(sub)) {
+                    subscribers.Add(sub);
+                }
             }
         }
 
         public void RemoveSubscriber(ICmdSubscriber sub) {
-            if (subscribers.Contains(sub)) {
-                subscribers.Remove(sub);
+            lock (lockObj) {
+                if (subscribers.Contains(sub)) {
+                    subscribers.Remove(sub);
+                }
             }
         }
 
         private void Publish(UCommand cmd, bool isUndo = false) {
-            foreach (var sub in subscribers) {
-                sub.OnNext(cmd, isUndo);
+            lock (lockObj) {
+                foreach (var sub in subscribers) {
+                    sub.OnNext(cmd, isUndo);
+                }
             }
         }
 

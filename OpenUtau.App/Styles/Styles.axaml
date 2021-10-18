@@ -295,6 +295,7 @@
   </Style>
 
   <Style Selector="Slider.fader">
+    <Setter Property="Focusable" Value="False"/>
     <Setter Property="Template">
       <ControlTemplate>
         <DataValidationErrors>

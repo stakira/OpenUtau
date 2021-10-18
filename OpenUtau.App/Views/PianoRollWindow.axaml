@@ -91,6 +91,8 @@
                         TickOffset="{Binding NotesViewModel.TickOffset}"
                         SnapUnit="{Binding NotesViewModel.SnapUnit}"
                         IsPianoRoll="True" ShowBarNumber="True"/>
+      <Image Grid.Row="2" Grid.RowSpan="3" Grid.Column="1" HorizontalAlignment="Right" Height="500" Margin="0,0,100,0"
+             Source="{Binding NotesViewModel.Portrait}" OpacityMask="{Binding NotesViewModel.PortraitMask}" Stretch="None"/>
       <c:NotesCanvas Grid.Row="2" Grid.Column="1" Background="Transparent"
                      TickWidth="{Binding NotesViewModel.TickWidth}"
                      TrackHeight="{Binding NotesViewModel.TrackHeight}"
@@ -288,7 +290,7 @@
                        PointerMoved="PhonemeCanvasPointerMoved"
                        PointerReleased="PhonemeCanvasPointerReleased"/>
       <GridSplitter Grid.Row="3" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                    Background="Transparent" Focusable="False" Cursor="SizeNorthSouth"/>
+                    Background="{DynamicResource SystemControlBackgroundAltHighBrush}" Focusable="False" Cursor="SizeNorthSouth"/>
       <c:TrackBackground Grid.Row="4" Grid.Column="1" IsHitTestVisible="False"
                          Foreground="{DynamicResource TrackBackgroundAltBrush}"/>
       <c:TickBackground Grid.Row="4"  Grid.Column="1" IsHitTestVisible="False"

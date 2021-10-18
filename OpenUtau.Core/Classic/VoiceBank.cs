@@ -6,6 +6,8 @@ namespace OpenUtau.Classic {
         public string File;
         public string Name;
         public string Image;
+        public string Portrait;
+        public float PortraitOpacity;
         public string Author;
         public string Web;
         public string OtherInfo;

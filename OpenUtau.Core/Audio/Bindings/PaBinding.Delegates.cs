@@ -13,6 +13,7 @@ namespace OpenUtau.Audio.Bindings {
         private static GetDefaultHostApi _getDefaultHostApi;
         private static GetHostApiInfo _getHostApiInfo;
         private static GetHostApiCount _getHostApiCount;
+        private static IsFormatSupported _isFormatSupported;
         private static OpenStream _openStream;
         private static StartStream _startStream;
         private static WriteStream _writeStream;
@@ -58,6 +59,12 @@ namespace OpenUtau.Audio.Bindings {
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate int GetHostApiCount();
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private delegate int IsFormatSupported(
+            IntPtr inputParameters,
+            IntPtr outputParameters,
+            double sampleRate);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate int OpenStream(

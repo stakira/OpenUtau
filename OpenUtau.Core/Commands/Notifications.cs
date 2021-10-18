@@ -105,6 +105,7 @@ namespace OpenUtau.Core {
     public class VolumeChangeNotification : UNotification {
         public double Volume;
         public int TrackNo;
+        public override bool Silent => true;
         public VolumeChangeNotification(int trackNo, double volume) {
             TrackNo = trackNo;
             Volume = volume;

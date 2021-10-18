@@ -63,6 +63,7 @@ namespace OpenUtau.Core.Util {
             public string ExternalExportEngine = string.Empty;
             public string PlaybackDevice = string.Empty;
             public int PlaybackDeviceNumber;
+            public int? PlaybackDeviceIndex;
             public bool ShowPrefs = true;
             public bool ShowTips = true;
             public int Theme;

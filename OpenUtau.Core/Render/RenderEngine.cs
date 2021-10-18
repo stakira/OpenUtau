@@ -73,7 +73,7 @@ namespace OpenUtau.Core.Render {
                 var trackMix = new WaveMix(sources);
                 items.AddRange(trackItems);
                 var fader = new Fader(trackMix);
-                fader.Scale = PlaybackManager.DecibelToVolume(track.Volume);
+                fader.Scale = PlaybackManager.DecibelToVolume(track.Mute ? -24 : track.Volume);
                 faders.Add(fader);
             }
             items = items.OrderBy(item => item.PosMs).ToList();

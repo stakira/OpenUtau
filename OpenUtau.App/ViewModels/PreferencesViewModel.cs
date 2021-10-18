@@ -56,10 +56,11 @@ namespace OpenUtau.App.ViewModels {
         public PreferencesViewModel() {
             var audioOutput = PlaybackManager.Inst.AudioOutput;
             if (audioOutput != null) {
-                audioOutputDevices = audioOutput.GetOutputDevices();
+                AudioOutputDevices = audioOutput.GetOutputDevices();
                 int deviceNumber = audioOutput.DeviceNumber;
-                if (audioOutputDevices.Count > deviceNumber) {
-                    audioOutputDevice = audioOutputDevices[deviceNumber];
+                var device = AudioOutputDevices.FirstOrDefault(d => d.deviceNumber == deviceNumber);
+                if (device != null) {
+                    AudioOutputDevice = device;
                 }
             }
             PrerenderThreadsItems = Enumerable.Range(1, 16).ToList();
@@ -104,9 +105,6 @@ namespace OpenUtau.App.ViewModels {
                 .Subscribe(device => {
                     if (PlaybackManager.Inst.AudioOutput != null) {
                         PlaybackManager.Inst.AudioOutput.SelectDevice(device.guid, device.deviceNumber);
-                        Preferences.Default.PlaybackDevice = device.guid.ToString();
-                        Preferences.Default.PlaybackDeviceNumber = device.deviceNumber;
-                        Preferences.Save();
                     }
                 });
             this.WhenAnyValue(vm => vm.PrerenderThreads)

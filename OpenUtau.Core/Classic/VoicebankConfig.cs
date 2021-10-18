@@ -51,6 +51,12 @@ namespace OpenUtau.Classic {
     }
 
     public class VoicebankConfig {
+        public string Name;
+        public string Image;
+        public string Portrait;
+        public float PortraitOpacity = 0.67f;
+        public string Author;
+        public string Web;
         public SymbolSet SymbolSet { get; set; }
         public Subbank[] Subbanks { get; set; }
 

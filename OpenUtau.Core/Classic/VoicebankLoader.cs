@@ -126,8 +126,24 @@ namespace OpenUtau.Classic {
 
         public static void ParseCharacterConfig(Stream stream, Voicebank bank) {
             var bankConfig = VoicebankConfig.Load(stream);
+            if (!string.IsNullOrWhiteSpace(bankConfig.Name)) {
+                bank.Name = bankConfig.Name;
+            }
+            if (!string.IsNullOrWhiteSpace(bankConfig.Image)) {
+                bank.Image = bankConfig.Image;
+            }
+            if (!string.IsNullOrWhiteSpace(bankConfig.Portrait)) {
+                bank.Portrait = bankConfig.Portrait;
+                bank.PortraitOpacity = bankConfig.PortraitOpacity;
+            }
+            if (!string.IsNullOrWhiteSpace(bankConfig.Author)) {
+                bank.Author = bankConfig.Author;
+            }
+            if (!string.IsNullOrWhiteSpace(bankConfig.Web)) {
+                bank.Web = bankConfig.Web;
+            }
             foreach (var otoSet in bank.OtoSets) {
-                var subbank = bankConfig.Subbanks.FirstOrDefault(b => b.Dir == otoSet.Name);
+                var subbank = bankConfig?.Subbanks?.FirstOrDefault(b => b.Dir == otoSet.Name);
                 if (subbank != null) {
                     otoSet.Prefix = subbank.Prefix;
                     otoSet.Suffix = subbank.Suffix;

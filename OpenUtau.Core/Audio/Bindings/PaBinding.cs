@@ -18,6 +18,8 @@ namespace OpenUtau.Audio.Bindings {
             _getHostApiInfo = loader.LoadFunc<GetHostApiInfo>(nameof(Pa_GetHostApiInfo));
             _getHostApiCount = loader.LoadFunc<GetHostApiCount>(nameof(Pa_GetHostApiCount));
 
+            _isFormatSupported = loader.LoadFunc<IsFormatSupported>(nameof(Pa_IsFormatSupported));
+
             _openStream = loader.LoadFunc<OpenStream>(nameof(Pa_OpenStream));
             _readStream = loader.LoadFunc<ReadStream>(nameof(Pa_ReadStream));
             _writeStream = loader.LoadFunc<WriteStream>(nameof(Pa_WriteStream));
@@ -44,6 +46,16 @@ namespace OpenUtau.Audio.Bindings {
         public static PaHostApiInfo Pa_GetHostApiInfo(int hostApi) => Marshal.PtrToStructure<PaHostApiInfo>(_getHostApiInfo(hostApi));
         public static int Pa_GetDefaultHostApi() => _getDefaultHostApi();
         public static int Pa_GetHostApiCount() => _getHostApiCount();
+
+        public static int Pa_IsFormatSupported(
+            IntPtr inputParameters,
+            IntPtr outputParameters,
+            double sampleRate) {
+            return _isFormatSupported(
+                inputParameters,
+                outputParameters,
+                sampleRate);
+        }
 
         public static int Pa_OpenStream(
             IntPtr stream,

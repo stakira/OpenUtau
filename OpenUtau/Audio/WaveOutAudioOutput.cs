@@ -74,6 +74,9 @@ namespace OpenUtau.Audio {
         }
 
         public void SelectDevice(Guid guid, int deviceNumber) {
+            Preferences.Default.PlaybackDevice = guid.ToString();
+            Preferences.Default.PlaybackDeviceNumber = deviceNumber;
+            Preferences.Save();
             // Product guid may not be unique. Use device number first.
             if (deviceNumber < WaveOut.DeviceCount && WaveOut.GetCapabilities(deviceNumber).ProductGuid == guid) {
                 this.deviceNumber = deviceNumber;

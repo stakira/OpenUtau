@@ -92,6 +92,8 @@ namespace OpenUtau.Core.Ustx {
         public readonly string OtherInfo;
         public readonly string Avatar;
         public readonly byte[] AvatarData;
+        public readonly string Portrait;
+        public readonly float PortraitOpacity;
         public readonly Dictionary<string, Tuple<string, string>> PrefixMap;
         public readonly List<UOtoSet> OtoSets;
         public readonly string Id;
@@ -123,6 +125,10 @@ namespace OpenUtau.Core.Ustx {
                     AvatarData = null;
                     Log.Error(e, "Failed to load avatar data.");
                 }
+            }
+            if (!string.IsNullOrEmpty(voicebank.Portrait)) {
+                Portrait = Path.Combine(Location, voicebank.Portrait);
+                PortraitOpacity = voicebank.PortraitOpacity;
             }
             if (voicebank.PrefixMap != null) {
                 PrefixMap = voicebank.PrefixMap.Map;

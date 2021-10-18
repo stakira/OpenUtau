@@ -7,9 +7,13 @@ using NAudio.Wave;
 using OpenUtau.Audio.Bindings;
 using OpenUtau.Core;
 using OpenUtau.Core.Util;
+using Serilog;
 
 namespace OpenUtau.Audio {
     public class AudioOutput : IAudioOutput, IDisposable {
+        public const int Channels = 1;
+        public const int SampleRate = 44100;
+
         public PlaybackState PlaybackState { get; private set; }
         public int DeviceNumber { get; private set; }
 
@@ -32,9 +36,9 @@ namespace OpenUtau.Audio {
             PaBinding.InitializeBindings(new LibraryLoader(path, "portaudio"));
             PaBinding.Pa_Initialize();
 
-            buffer = new float[44100 * 1 * 10 / 1000]; // mono 10ms
-            if (Guid.TryParse(Preferences.Default.PlaybackDevice, out var guid)) {
-                SelectDevice(guid, Preferences.Default.PlaybackDeviceNumber);
+            buffer = new float[SampleRate * Channels * 10 / 1000]; // mono 10ms
+            if (Preferences.Default.PlaybackDeviceIndex != null) {
+                SelectDevice(new Guid(), Preferences.Default.PlaybackDeviceIndex.Value);
             } else {
                 SelectDevice(new Guid(), PaBinding.Pa_GetDefaultOutputDevice());
             }
@@ -50,12 +54,12 @@ namespace OpenUtau.Audio {
             int count = PaBinding.Pa_GetDeviceCount();
             PaBinding.Pa_MaybeThrow(count);
             for (int i = 0; i < count; ++i) {
-                var device = new AudioDevice(PaBinding.Pa_GetDeviceInfo(i), i);
-                if (device.MaxOutputChannels > 0) {
+                var device = GetEligibleOutputDevice(i);
+                if (device is AudioDevice dev) {
                     devices.Add(new AudioOutputDevice() {
-                        api = device.HostApi,
-                        name = device.Name,
-                        deviceNumber = device.DeviceIndex,
+                        api = dev.HostApi,
+                        name = dev.Name,
+                        deviceNumber = dev.DeviceIndex,
                         guid = new Guid(),
                     });
                 }
@@ -64,7 +68,7 @@ namespace OpenUtau.Audio {
         }
 
         public long GetPosition() {
-            return (long)(Math.Max(0, currentTimeMs - outputLatency) / 1000 * 44100 * 4);
+            return (long)(Math.Max(0, currentTimeMs - outputLatency) / 1000 * SampleRate * 4);
         }
 
         public void Init(ISampleProvider sampleProvider) {
@@ -89,15 +93,53 @@ namespace OpenUtau.Audio {
 
         public void SelectDevice(Guid guid, int deviceNumber) {
             lock (lockObj) {
-                deviceNumber = PaBinding.Pa_GetDefaultOutputDevice(); // Always use default device for now.
                 if (audioEngine == null || audioEngine.device.DeviceIndex != deviceNumber) {
-                    audioEngine?.Dispose();
-                    var device = new AudioDevice(PaBinding.Pa_GetDeviceInfo(deviceNumber), deviceNumber);
-                    outputLatency = device.DefaultHighOutputLatency;
-                    audioEngine = new AudioEngine(device, 1, 44100, outputLatency);
-                    DeviceNumber = deviceNumber;
+                    var device = GetEligibleOutputDevice(deviceNumber);
+                    if (device is AudioDevice dev) {
+                        try {
+                            audioEngine?.Dispose();
+                            outputLatency = dev.DefaultHighOutputLatency;
+                            audioEngine = new AudioEngine(dev, 1, SampleRate, outputLatency);
+                            DeviceNumber = deviceNumber;
+                        } catch (Exception e) {
+                            audioEngine = null;
+                            Log.Error(e, $"failed to select device {dev.Name}");
+                        }
+                    }
+                    if (audioEngine == null) {
+                        device = GetEligibleOutputDevice(PaBinding.Pa_GetDefaultOutputDevice());
+                        outputLatency = device.Value.DefaultHighOutputLatency;
+                        audioEngine = new AudioEngine(device.Value, 1, SampleRate, outputLatency);
+                        DeviceNumber = deviceNumber;
+                    }
+                    Preferences.Default.PlaybackDeviceIndex = DeviceNumber;
+                    Preferences.Save();
                 }
             }
+        }
+
+        private AudioDevice? GetEligibleOutputDevice(int index) {
+            var device = new AudioDevice(PaBinding.Pa_GetDeviceInfo(index), index);
+            if (device.MaxOutputChannels < Channels) {
+                return null;
+            }
+            var api = device.HostApi.ToLowerInvariant();
+            if (api.Contains("wasapi") || api.Contains("wdm-ks")) {
+                return null;
+            }
+            var parameters = new PaBinding.PaStreamParameters {
+                channelCount = Channels,
+                device = device.DeviceIndex,
+                hostApiSpecificStreamInfo = IntPtr.Zero,
+                sampleFormat = PaBinding.PaSampleFormat.paFloat32,
+            };
+            unsafe {
+                int code = PaBinding.Pa_IsFormatSupported(IntPtr.Zero, new IntPtr(&parameters), SampleRate);
+                if (code < 0) {
+                    return null;
+                }
+            }
+            return device;
         }
 
         public void Stop() {

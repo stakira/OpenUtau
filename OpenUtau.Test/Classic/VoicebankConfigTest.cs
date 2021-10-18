@@ -61,7 +61,8 @@ namespace OpenUtau.Classic {
             var yaml = Yaml.DefaultSerializer.Serialize(CreateConfig());
             output.WriteLine(yaml);
 
-            Assert.Equal(@"symbol_set:
+            Assert.Equal(@"portrait_opacity: 0.67000001668930054
+symbol_set:
   preset: hiragana
   head: '-'
   tail: R

@@ -22,7 +22,7 @@ namespace OpenUtau {
         }
 
         private static void InitAudio() {
-            if (OS.IsWindows()) {
+            if (OS.IsWindows() && Core.Util.Preferences.Default.Beta == 0) {
                 Core.PlaybackManager.Inst.AudioOutput = new Audio.WaveOutAudioOutput();
             } else {
                 Core.PlaybackManager.Inst.AudioOutput = new Audio.AudioOutput();
