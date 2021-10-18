@@ -29,7 +29,7 @@ namespace OpenUtau.Audio.Bindings {
         public readonly struct PaDeviceInfo {
             public readonly int structVersion;
 
-            [MarshalAs(UnmanagedType.LPStr)]
+            [MarshalAs(UnmanagedType.LPUTF8Str)]
             public readonly string name;
 
             public readonly int hostApi;
