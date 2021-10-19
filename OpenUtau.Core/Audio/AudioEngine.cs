@@ -6,9 +6,9 @@ namespace OpenUtau.Audio {
     class AudioEngine {
         private const int FramesPerBuffer = 0; // paFramesPerBufferUnspecified
         private const PaBinding.PaStreamFlags StreamFlags = PaBinding.PaStreamFlags.paNoFlag;
-        private readonly int channels;
-        private readonly int sampleRate;
-        private readonly double latency;
+        public readonly int channels;
+        public readonly int sampleRate;
+        public readonly double latency;
         private readonly IntPtr stream;
         private bool disposed;
 

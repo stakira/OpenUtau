@@ -21,7 +21,7 @@ using Serilog;
 using Point = Avalonia.Point;
 
 namespace OpenUtau.App.Views {
-    public partial class MainWindow : Window {
+    public partial class MainWindow : Window, ICmdSubscriber {
         private readonly KeyModifiers cmdKey =
             OS.IsMacOS() ? KeyModifiers.Meta : KeyModifiers.Control;
         private readonly MainWindowViewModel viewModel;
@@ -45,6 +45,8 @@ namespace OpenUtau.App.Views {
             timer.Tick += (sender, args) => PlaybackManager.Inst.UpdatePlayPos();
             timer.Start();
             Program.AutoUpdate?.Invoke();
+
+            DocManager.Inst.AddSubscriber(this);
         }
 
         private void InitializeComponent() {
@@ -590,6 +592,16 @@ namespace OpenUtau.App.Views {
                     default:
                         break;
                 }
+            }
+        }
+
+        public void OnNext(UCommand cmd, bool isUndo) {
+            if (cmd is UserMessageNotification userMessage) {
+                MessageBox.Show(
+                    this,
+                    userMessage.message,
+                    ThemeManager.GetString("errors.caption"),
+                    MessageBox.MessageBoxButtons.Ok);
             }
         }
     }

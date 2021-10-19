@@ -102,9 +102,14 @@ namespace OpenUtau.App.ViewModels {
 
             this.WhenAnyValue(vm => vm.AudioOutputDevice)
                 .WhereNotNull()
+                .SubscribeOn(RxApp.MainThreadScheduler)
                 .Subscribe(device => {
                     if (PlaybackManager.Inst.AudioOutput != null) {
-                        PlaybackManager.Inst.AudioOutput.SelectDevice(device.guid, device.deviceNumber);
+                        try {
+                            PlaybackManager.Inst.AudioOutput.SelectDevice(device.guid, device.deviceNumber);
+                        } catch (Exception e) {
+                            DocManager.Inst.ExecuteCmd(new UserMessageNotification($"Failed to select device {device.name}\n{e}"));
+                        }
                     }
                 });
             this.WhenAnyValue(vm => vm.PrerenderThreads)

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
 using OpenUtau.Audio.Bindings;
 using OpenUtau.Core;
 using OpenUtau.Core.Util;
@@ -11,8 +12,7 @@ using Serilog;
 
 namespace OpenUtau.Audio {
     public class AudioOutput : IAudioOutput, IDisposable {
-        public const int Channels = 1;
-        public const int SampleRate = 44100;
+        public const int Channels = 2;
 
         public PlaybackState PlaybackState { get; private set; }
         public int DeviceNumber { get; private set; }
@@ -22,7 +22,6 @@ namespace OpenUtau.Audio {
         private AudioEngine audioEngine;
         private ISampleProvider sampleProvider;
         private float[] buffer;
-        private double outputLatency;
         private double bufferedTimeMs;
         private double currentTimeMs;
         private Thread pushThread;
@@ -36,11 +35,20 @@ namespace OpenUtau.Audio {
             PaBinding.InitializeBindings(new LibraryLoader(path, "portaudio"));
             PaBinding.Pa_Initialize();
 
-            buffer = new float[SampleRate * Channels * 10 / 1000]; // mono 10ms
-            if (Preferences.Default.PlaybackDeviceIndex != null) {
-                SelectDevice(new Guid(), Preferences.Default.PlaybackDeviceIndex.Value);
-            } else {
-                SelectDevice(new Guid(), PaBinding.Pa_GetDefaultOutputDevice());
+            buffer = new float[0];
+            try {
+                if (Preferences.Default.PlaybackDeviceIndex != null) {
+                    try {
+                        SelectDevice(new Guid(), Preferences.Default.PlaybackDeviceIndex.Value);
+                    } catch {
+                        SelectDevice(new Guid(), PaBinding.Pa_GetDefaultOutputDevice());
+                        throw;
+                    }
+                } else {
+                    SelectDevice(new Guid(), PaBinding.Pa_GetDefaultOutputDevice());
+                }
+            } catch (Exception e) {
+                Log.Error(e, "Failed to initialize audio device");
             }
 
             pullThread = new Thread(Pull) { IsBackground = true };
@@ -68,7 +76,9 @@ namespace OpenUtau.Audio {
         }
 
         public long GetPosition() {
-            return (long)(Math.Max(0, currentTimeMs - outputLatency) / 1000 * SampleRate * 4);
+            var latency = audioEngine?.latency ?? 0;
+            var sampleRate = audioEngine?.sampleRate ?? 44100;
+            return (long)(Math.Max(0, currentTimeMs - latency) / 1000 * sampleRate * 2 /* currently assumes 16 bit */ * Channels);
         }
 
         public void Init(ISampleProvider sampleProvider) {
@@ -77,7 +87,11 @@ namespace OpenUtau.Audio {
             queue.Clear();
             bufferedTimeMs = 0;
             currentTimeMs = 0;
-            this.sampleProvider = sampleProvider;
+            var sampleRate = audioEngine?.sampleRate ?? 44100;
+            if (sampleRate != sampleProvider.WaveFormat.SampleRate) {
+                sampleProvider = new WdlResamplingSampleProvider(sampleProvider, sampleRate);
+            }
+            this.sampleProvider = sampleProvider.ToStereo();
         }
 
         public void Pause() {
@@ -96,21 +110,14 @@ namespace OpenUtau.Audio {
                 if (audioEngine == null || audioEngine.device.DeviceIndex != deviceNumber) {
                     var device = GetEligibleOutputDevice(deviceNumber);
                     if (device is AudioDevice dev) {
-                        try {
-                            audioEngine?.Dispose();
-                            outputLatency = dev.DefaultHighOutputLatency;
-                            audioEngine = new AudioEngine(dev, 1, SampleRate, outputLatency);
-                            DeviceNumber = deviceNumber;
-                        } catch (Exception e) {
-                            audioEngine = null;
-                            Log.Error(e, $"failed to select device {dev.Name}");
-                        }
-                    }
-                    if (audioEngine == null) {
-                        device = GetEligibleOutputDevice(PaBinding.Pa_GetDefaultOutputDevice());
-                        outputLatency = device.Value.DefaultHighOutputLatency;
-                        audioEngine = new AudioEngine(device.Value, 1, SampleRate, outputLatency);
+                        audioEngine?.Dispose();
+                        audioEngine = new AudioEngine(
+                            dev,
+                            Channels,
+                            dev.DefaultSampleRate,
+                            dev.DefaultHighOutputLatency);
                         DeviceNumber = deviceNumber;
+                        buffer = new float[dev.DefaultSampleRate * Channels * 10 / 1000]; // 10ms at 44.1kHz
                     }
                     Preferences.Default.PlaybackDeviceIndex = DeviceNumber;
                     Preferences.Save();
@@ -134,7 +141,7 @@ namespace OpenUtau.Audio {
                 sampleFormat = PaBinding.PaSampleFormat.paFloat32,
             };
             unsafe {
-                int code = PaBinding.Pa_IsFormatSupported(IntPtr.Zero, new IntPtr(&parameters), SampleRate);
+                int code = PaBinding.Pa_IsFormatSupported(IntPtr.Zero, new IntPtr(&parameters), 44100);
                 if (code < 0) {
                     return null;
                 }
@@ -214,7 +221,8 @@ namespace OpenUtau.Audio {
                 Array.Copy(buffer, data, n);
                 var frame = new AudioFrame(bufferedTimeMs, data);
                 queue.Enqueue(frame);
-                bufferedTimeMs += 10;
+                var sampleRate = audioEngine?.sampleRate ?? 44100;
+                bufferedTimeMs += n * 1000.0 / sampleRate / Channels;
             }
         }
 
