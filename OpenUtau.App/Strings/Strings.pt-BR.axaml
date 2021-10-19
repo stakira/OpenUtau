@@ -134,14 +134,21 @@
 
   <system:String x:Key="singers.caption">Vozes</system:String>
   <system:String x:Key="singers.location">Localização</system:String>
+  <system:String x:Key="singers.reload">Recarregar</system:String>
+  <system:String x:Key="singers.setencoding">Definir codificação</system:String>
 
-  <system:String x:Key="tip.exps.actions">Define expressões
-Redefine expressões</system:String>
-  <system:String x:Key="tip.exps.keys">Segurar o Clique Esquerdo:
-Segurar o Clique Direito:</system:String>
+  <system:String x:Key="tip.exps.actions">
+Define expressões
+Redefine expressões
+  </system:String>
+  <system:String x:Key="tip.exps.keys">
+Segurar o Clique Esquerdo:
+Segurar o Clique Direito:
+  </system:String>
   <system:String x:Key="tip.lyricbox.next">Tab: Próxima Nota</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: Nota Anterior</system:String>
-  <system:String x:Key="tip.notes.basics.actions">Ativar ajuda
+  <system:String x:Key="tip.notes.basics.actions">
+Ativar ajuda
 Adiciona nota
 Remove nota
 Remove várias notas
@@ -151,8 +158,10 @@ Redimensiona nota vizinha
 Seleciona notas
 Transpõe notas selecionadas
 Transpõe notas selecionadas por uma oitava
-Tocar</system:String>
-  <system:String x:Key="tip.notes.basics.keys">T:
+Tocar
+  </system:String>
+  <system:String x:Key="tip.notes.basics.keys">
+T:
 Clique Esquerdo:
 Clique Direito:
 Segurar o Clique Direito:
@@ -162,7 +171,8 @@ Alt + Arrastar o Fim da Nota:
 Ctrl + Selecionar Caixa:
 Cima/Baixo:
 Ctrl + Cima/Baixo:
-Espaço:</system:String>
+Espaço:
+  </system:String>
   <system:String x:Key="tip.notes.zoomx">◀ Role aqui para aumentar o zoom horizontalmente  ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">Role aqui para aumentar o zoom verticalmente ▶</system:String>
 
