@@ -367,21 +367,30 @@ namespace OpenUtau.App.Views {
 
         public void NotesCanvasPointerWheelChanged(object sender, PointerWheelEventArgs args) {
             lyricBox?.EndEdit();
-            if (args.KeyModifiers == KeyModifiers.None) {
-                var scrollbar = this.FindControl<ScrollBar>("VScrollBar");
-                VScrollPointerWheelChanged(scrollbar, args);
+            var canvas = (Canvas)sender;
+            var position = args.GetCurrentPoint(canvas).Position;
+            var size = canvas.Bounds.Size;
+            var delta = args.Delta;
+            if (args.KeyModifiers == KeyModifiers.None || args.KeyModifiers == KeyModifiers.Shift) {
+                if (args.KeyModifiers.HasFlag(KeyModifiers.Shift)) {
+                    delta = new Vector(delta.Y, delta.X);
+                }
+                if (delta.X != 0) {
+                    var scrollbar = this.FindControl<ScrollBar>("HScrollBar");
+                    scrollbar.Value = Math.Max(scrollbar.Minimum,
+                        Math.Min(scrollbar.Maximum, scrollbar.Value - scrollbar.SmallChange * delta.X));
+                }
+                if (delta.Y != 0) {
+                    var scrollbar = this.FindControl<ScrollBar>("VScrollBar");
+                    scrollbar.Value = Math.Max(scrollbar.Minimum,
+                        Math.Min(scrollbar.Maximum, scrollbar.Value - scrollbar.SmallChange * delta.Y));
+                }
             } else if (args.KeyModifiers == KeyModifiers.Alt) {
-                var canvas = (Canvas)sender;
-                var position = args.GetCurrentPoint((IVisual)sender).Position;
-                var size = canvas.Bounds.Size;
                 position = position.WithX(position.X / size.Width).WithY(position.Y / size.Height);
                 ViewModel.NotesViewModel.OnYZoomed(position, 0.1 * args.Delta.Y);
-            } else if (args.KeyModifiers == KeyModifiers.Shift) {
-                var scrollbar = this.FindControl<ScrollBar>("HScrollBar");
-                HScrollPointerWheelChanged(scrollbar, args);
             } else if (args.KeyModifiers == cmdKey) {
-                var canvas = this.FindControl<Canvas>("TimelineCanvas");
-                TimelinePointerWheelChanged(canvas, args);
+                var timelineCanvas = this.FindControl<Canvas>("TimelineCanvas");
+                TimelinePointerWheelChanged(timelineCanvas, args);
             }
         }
 

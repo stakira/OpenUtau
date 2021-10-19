@@ -14,6 +14,7 @@ namespace OpenUtau.App.ViewModels {
     public class PianoRollViewModel : ViewModelBase {
         public static ReactiveCommand<TransformerFactory, Unit>? TransformerCommand { get; private set; }
 
+        public bool ExtendToFrame => OS.IsMacOS();
         [Reactive] public NotesViewModel NotesViewModel { get; set; }
         [Reactive] public PlaybackViewModel? PlaybackViewModel { get; set; }
 

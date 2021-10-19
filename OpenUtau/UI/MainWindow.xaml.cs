@@ -441,9 +441,9 @@ namespace OpenUtau.UI {
             }
             Task.Run(() => {
                 var task = Task.Run(() => {
-                    var installer = new Classic.VoicebankInstaller(PathManager.Inst.InstalledSingersPath, (progress, info) => {
+                    var installer = new Classic.VoicebankInstaller(PathManager.Inst.SingersPath, (progress, info) => {
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(progress, info));
-                    });
+                    }, null, null);
                     installer.LoadArchive(dialog.FileName);
                 });
                 try {

@@ -45,7 +45,6 @@ namespace OpenUtau.Core.Render {
 
         public RenderItem(UPhoneme phoneme, UVoicePart part, UTrack track, UProject project, string resamplerName) {
             SourceFile = phoneme.oto.File;
-            SourceFile = Path.Combine(PathManager.Inst.InstalledSingersPath, SourceFile);
             ResamplerName = resamplerName;
             if (project.expressions.TryGetValue("eng", out var descriptor)) {
                 int index = (int)phoneme.GetExpression(project, "eng").Item1;
@@ -55,7 +54,7 @@ namespace OpenUtau.Core.Render {
                 }
             }
             string ext = Path.GetExtension(SourceFile);
-            SourceTemp = Path.Combine(PathManager.Inst.GetCachePath(null),
+            SourceTemp = Path.Combine(PathManager.Inst.GetCachePath(),
                 $"{HashHex(track.Singer.Id)}-{HashHex(phoneme.oto.Set)}-{HashHex(SourceFile)}{ext}");
 
             Velocity = (int)phoneme.GetExpression(project, "vel").Item1;

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <SatelliteResourceLanguages>none</SatelliteResourceLanguages>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
@@ -28,8 +28,8 @@
     <ProjectReference Include="..\OpenUtau.Plugin.Builtin\OpenUtau.Plugin.Builtin.csproj" />
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="(if not exist &quot;$(TargetDir)Usts&quot; mkdir &quot;$(TargetDir)Usts&quot;) &amp;&amp; (xcopy &quot;$(ProjectDir)Usts&quot; &quot;$(TargetDir)Usts&quot; /S /Y) &amp;&amp; (if not exist &quot;$(TargetDir)Files&quot; mkdir &quot;$(TargetDir)Files&quot;) &amp;&amp; (xcopy &quot;$(ProjectDir)Files&quot; &quot;$(TargetDir)Files&quot; /S /Y)" />
-  </Target>
-
+  <ItemGroup>
+    <None Include="Usts\**" CopyToOutputDirectory="PreserveNewest" LinkBase="Usts\" />
+    <None Include="Files\**" CopyToOutputDirectory="PreserveNewest" LinkBase="Files\" />
+  </ItemGroup>
 </Project>

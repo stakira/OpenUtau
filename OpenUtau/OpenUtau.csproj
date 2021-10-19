@@ -36,7 +36,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="$(SolutionDir)libs\**" CopyToOutputDirectory="PreserveNewest" LinkBase="libs\" />
+    <None Include="..\libs\**" CopyToOutputDirectory="PreserveNewest" LinkBase="libs\" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

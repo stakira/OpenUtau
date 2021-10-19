@@ -48,7 +48,7 @@ namespace OpenUtau.Core {
 
         public USinger GetSinger(string name) {
             Log.Information(name);
-            name = name.Replace(PathManager.UtauVoicePath, "");
+            name = name.Replace("%VOICE%", "");
             if (Singers.ContainsKey(name)) {
                 return Singers[name];
             }
@@ -102,7 +102,8 @@ namespace OpenUtau.Core {
 
         public bool ChangesSaved {
             get {
-                return Project.Saved && (undoQueue.Count > 0 && savedPoint == undoQueue.Last() || undoQueue.Count == 0 && savedPoint == null);
+                return (Project.Saved || Project.tracks.Count == 0) &&
+                    (undoQueue.Count > 0 && savedPoint == undoQueue.Last() || undoQueue.Count == 0 && savedPoint == null);
             }
         }
 

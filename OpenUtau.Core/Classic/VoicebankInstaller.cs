@@ -20,7 +20,7 @@ namespace OpenUtau.Classic {
         private readonly Encoding archiveEncoding;
         private readonly Encoding textEncoding;
 
-        public VoicebankInstaller(string basePath, Action<double, string> progress, Encoding archiveEncoding = null, Encoding textEncoding = null) {
+        public VoicebankInstaller(string basePath, Action<double, string> progress, Encoding archiveEncoding, Encoding textEncoding) {
             if (OS.IsWindows()) {
                 // Only Windows need to work with exe resamplers.
                 if (basePath.Length > 80) {
@@ -50,7 +50,6 @@ namespace OpenUtau.Classic {
             var jsonSeriSettings = new JsonSerializerSettings {
                 NullValueHandling = NullValueHandling.Ignore
             };
-            string[] textFiles = { ".txt", ".ini", ".map" };
             using (var archive = ArchiveFactory.Open(path, readerOptions)) {
                 var touches = new List<string>();
                 AdjustBasePath(archive, path, touches);
@@ -59,20 +58,27 @@ namespace OpenUtau.Classic {
                 foreach (var entry in archive.Entries) {
                     var filePath = Path.Combine(basePath, entry.Key);
                     Directory.CreateDirectory(Path.GetDirectoryName(filePath));
-                    if (entry.IsDirectory || entry.Key == kInstallTxt) {
-                    } else if (textFiles.Contains(Path.GetExtension(entry.Key))) {
-                        using (var stream = entry.OpenEntryStream()) {
-                            using (var reader = new StreamReader(stream, textEncoding)) {
-                                File.WriteAllText(Path.Combine(basePath, entry.Key), reader.ReadToEnd(), Encoding.UTF8);
+                    if (!entry.IsDirectory && entry.Key != kInstallTxt) {
+                        entry.WriteToFile(Path.Combine(basePath, entry.Key), extractionOptions);
+                        if (filePath.Contains(kCharacterTxt)) {
+                            var config = new VoicebankConfig() {
+                                TextFileEncoding = textEncoding.WebName,
+                            };
+                            using (var stream = File.Open(filePath.Replace(".txt", ".yaml"), FileMode.Create)) {
+                                config.Save(stream);
                             }
                         }
-                    } else {
-                        entry.WriteToFile(Path.Combine(basePath, entry.Key), extractionOptions);
                     }
                     progress.Invoke(100.0 * ++count / total, entry.Key);
                 }
                 foreach (var touch in touches) {
                     File.WriteAllText(touch, "\n");
+                    var config = new VoicebankConfig() {
+                        TextFileEncoding = textEncoding.WebName,
+                    };
+                    using (var stream = File.Open(touch.Replace(".txt", ".yaml"), FileMode.Create)) {
+                        config.Save(stream);
+                    }
                 }
             }
         }

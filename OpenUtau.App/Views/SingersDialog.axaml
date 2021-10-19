@@ -18,8 +18,24 @@
       <RowDefinition Height="*"/>
     </Grid.RowDefinitions>
     <Image Grid.Row="0" Width="120" Height="120" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0" Source="{Binding Avatar}"/>
-    <Button Grid.Row="0" Margin="10" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="20" Width="120" Content="{DynamicResource singers.location}"
+    <Button Grid.Row="0" Margin="10" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="20" Width="90" Content="{DynamicResource singers.location}"
             IsEnabled="{Binding Singer, Converter={x:Static ObjectConverters.IsNotNull}}" Command="{Binding OpenLocation}"/>
+    <Button Grid.Row="0" Margin="110,10,10,10" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="20" Width="20" Content="..."
+            IsEnabled="{Binding Singer, Converter={x:Static ObjectConverters.IsNotNull}}"
+            Click="OnSingerMenuButton">
+      <Button.ContextMenu>
+        <ContextMenu Name="SingerMenu" PlacementMode="Bottom">
+          <MenuItem Header="{DynamicResource singers.setencoding}" Items="{Binding SetEncodingMenuItems}">
+            <MenuItem.DataTemplates>
+              <DataTemplate DataType="vm:MenuItemViewModel">
+                <MenuItem Header="{Binding Header}" Command="{Binding Command}" CommandParameter="{Binding CommandParameter}"/>
+              </DataTemplate>
+            </MenuItem.DataTemplates>
+          </MenuItem>
+          <MenuItem Header="{DynamicResource singers.reload}" Command="{Binding Reload}"/>
+        </ContextMenu>
+      </Button.ContextMenu>
+    </Button>
     <ComboBox Grid.Row="0" x:Name="name" HorizontalAlignment="Stretch" Margin="140,10,10,10" VerticalAlignment="Top"
               Items="{Binding Singers}" SelectedItem="{Binding Singer}"/>
     <ScrollViewer Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="140,10,10,10" Height="118">

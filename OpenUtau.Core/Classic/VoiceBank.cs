@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace OpenUtau.Classic {
     public class Voicebank {
@@ -11,6 +12,7 @@ namespace OpenUtau.Classic {
         public string Author;
         public string Web;
         public string OtherInfo;
+        public Encoding TextFileEncoding;
         public List<OtoSet> OtoSets = new List<OtoSet>();
         public PrefixMap PrefixMap;
         public string Id;

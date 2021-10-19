@@ -274,37 +274,6 @@ namespace OpenUtau.App.Views {
             if (files == null || files.Length != 1) {
                 return;
             }
-            _ = Task.Run(() => {
-                var task = Task.Run(() => {
-                    viewModel.InstallSinger(files[0]);
-                });
-                try {
-                    task.Wait();
-                } catch (AggregateException ae) {
-                    Log.Error(ae, "Failed to install singer");
-                    MessageBox.Show(
-                        this,
-                        ae.Flatten().InnerExceptions.First().ToString(),
-                        ThemeManager.GetString("errors.caption"),
-                        MessageBox.MessageBoxButtons.Ok);
-                }
-            });
-        }
-
-        async void OnMenuInstallSingerAdvanced(object sender, RoutedEventArgs args) {
-            var dialog = new OpenFileDialog() {
-                Filters = new List<FileDialogFilter>() {
-                    new FileDialogFilter() {
-                        Name = "Archive File",
-                        Extensions = new List<string>(){ "zip", "rar", "uar" },
-                    },
-                },
-                AllowMultiple = false,
-            };
-            var files = await dialog.ShowAsync(this);
-            if (files == null || files.Length != 1) {
-                return;
-            }
             var setup = new SingerSetupDialog() {
                 DataContext = new SingerSetupViewModel() {
                     ArchiveFilePath = files[0],
@@ -350,7 +319,7 @@ namespace OpenUtau.App.Views {
             Width = x != null ? wa.Size.Width * x.Value : wa.Size.Width;
             Height = (y != null ? wa.Size.Height * y.Value : wa.Size.Height) - titleBarHeight;
             if (pianoRollWindow != null) {
-                pianoRollWindow.Position = new PixelPoint(x != null ? (int)Width : 0, y != null ? (int)(Height + titleBarHeight) : 0);
+                pianoRollWindow.Position = new PixelPoint(x != null ? (int)Width : 0, y != null ? (int)(Height + (OS.IsMacOS() ? 25 : titleBarHeight)) : 0);
                 pianoRollWindow.Width = x != null ? wa.Size.Width - Width : wa.Size.Width;
                 pianoRollWindow.Height = (y != null ? wa.Size.Height - (Height + titleBarHeight) : wa.Size.Height) - titleBarHeight;
             }
@@ -577,18 +546,27 @@ namespace OpenUtau.App.Views {
         }
 
         public void PartsCanvasPointerWheelChanged(object sender, PointerWheelEventArgs args) {
-            if (args.KeyModifiers == KeyModifiers.None) {
-                var scrollbar = this.FindControl<ScrollBar>("VScrollBar");
-                VScrollPointerWheelChanged(scrollbar, args);
+            var delta = args.Delta;
+            if (args.KeyModifiers == KeyModifiers.None || args.KeyModifiers == KeyModifiers.Shift) {
+                if (args.KeyModifiers.HasFlag(KeyModifiers.Shift)) {
+                    delta = new Vector(delta.Y, delta.X);
+                }
+                if (delta.X != 0) {
+                    var scrollbar = this.FindControl<ScrollBar>("HScrollBar");
+                    scrollbar.Value = Math.Max(scrollbar.Minimum,
+                        Math.Min(scrollbar.Maximum, scrollbar.Value - scrollbar.SmallChange * delta.X));
+                }
+                if (delta.Y != 0) {
+                    var scrollbar = this.FindControl<ScrollBar>("VScrollBar");
+                    scrollbar.Value = Math.Max(scrollbar.Minimum,
+                        Math.Min(scrollbar.Maximum, scrollbar.Value - scrollbar.SmallChange * delta.Y));
+                }
             } else if (args.KeyModifiers == KeyModifiers.Alt) {
                 var scaler = this.FindControl<ViewScaler>("VScaler");
                 ViewScalerPointerWheelChanged(scaler, args);
-            } else if (args.KeyModifiers == KeyModifiers.Shift) {
-                var scrollbar = this.FindControl<ScrollBar>("HScrollBar");
-                HScrollPointerWheelChanged(scrollbar, args);
             } else if (args.KeyModifiers == cmdKey) {
-                var canvas = this.FindControl<Canvas>("TimelineCanvas");
-                TimelinePointerWheelChanged(canvas, args);
+                var timelineCanvas = this.FindControl<Canvas>("TimelineCanvas");
+                TimelinePointerWheelChanged(timelineCanvas, args);
             }
         }
 

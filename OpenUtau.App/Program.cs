@@ -3,6 +3,7 @@ using System.Text;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
+using OpenUtau.Core;
 using Serilog;
 
 namespace OpenUtau.App {
@@ -41,7 +42,7 @@ namespace OpenUtau.App {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Information()
                 .WriteTo.Debug()
-                .WriteTo.File("log.txt", rollingInterval: RollingInterval.Day, encoding: Encoding.UTF8)
+                .WriteTo.File(PathManager.Inst.LogFilePath, rollingInterval: RollingInterval.Day, encoding: Encoding.UTF8)
                 .CreateLogger();
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler((sender, args) => {
                 Log.Error((Exception)args.ExceptionObject, "Unhandled exception");
@@ -49,11 +50,11 @@ namespace OpenUtau.App {
         }
 
         public static void InitOpenUtau() {
-            Core.DocManager.Inst.Initialize();
+            DocManager.Inst.Initialize();
         }
 
-        private static void InitAudio() {
-            Core.PlaybackManager.Inst.AudioOutput = new Audio.AudioOutput();
+        public static void InitAudio() {
+            PlaybackManager.Inst.AudioOutput = new Audio.AudioOutput();
         }
 
         public static Action? AutoUpdate { get; set; }

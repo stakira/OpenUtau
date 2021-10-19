@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using Newtonsoft.Json;
 using Serilog;
 
@@ -8,7 +9,6 @@ namespace OpenUtau.Core.Util {
 
     public static class Preferences {
         public static SerializablePreferences Default;
-        private const string filename = "prefs.json";
 
         static Preferences() {
             Load();
@@ -16,7 +16,9 @@ namespace OpenUtau.Core.Util {
 
         public static void Save() {
             try {
-                File.WriteAllText(filename, JsonConvert.SerializeObject(Default, Formatting.Indented));
+                File.WriteAllText(PathManager.Inst.PrefsFilePath,
+                    JsonConvert.SerializeObject(Default, Formatting.Indented),
+                    Encoding.UTF8);
             } catch (Exception e) {
                 Log.Error(e, "Failed to save prefs.");
             }
@@ -38,8 +40,9 @@ namespace OpenUtau.Core.Util {
 
         private static void Load() {
             try {
-                if (File.Exists(filename)) {
-                    Default = JsonConvert.DeserializeObject<SerializablePreferences>(File.ReadAllText(filename));
+                if (File.Exists(PathManager.Inst.PrefsFilePath)) {
+                    Default = JsonConvert.DeserializeObject<SerializablePreferences>(
+                        File.ReadAllText(PathManager.Inst.PrefsFilePath, Encoding.UTF8));
                 } else {
                     Reset();
                 }

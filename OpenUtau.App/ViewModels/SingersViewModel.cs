@@ -3,36 +3,26 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reactive;
+using System.Text;
 using Avalonia.Media.Imaging;
+using OpenUtau.Classic;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 using Serilog;
 
 namespace OpenUtau.App.ViewModels {
     public class SingersViewModel : ViewModelBase {
         public IEnumerable<USinger> Singers => DocManager.Inst.SingersOrdered;
-        public USinger? Singer {
-            get => singer;
-            set => this.RaiseAndSetIfChanged(ref singer, value);
-        }
-        public Bitmap? Avatar {
-            get => avatar;
-            set => this.RaiseAndSetIfChanged(ref avatar, value);
-        }
-        public string? Info {
-            get => info;
-            set => this.RaiseAndSetIfChanged(ref info, value);
-        }
-        public List<UOto>? Otos {
-            get => otos;
-            set => this.RaiseAndSetIfChanged(ref otos, value);
-        }
+        [Reactive] public USinger? Singer { get; set; }
+        [Reactive] public Bitmap? Avatar { get; set; }
+        [Reactive] public string? Info { get; set; }
+        [Reactive] public List<UOto>? Otos { get; set; }
+        [Reactive] public List<MenuItemViewModel> SetEncodingMenuItems { get; set; }
 
-        private USinger? singer;
-        private Bitmap? avatar;
-        public string? info;
-        private List<UOto>? otos;
+        private ReactiveCommand<Encoding, Unit> setEncodingCommand;
 
         public SingersViewModel() {
             if (Singers.Count() > 0) {
@@ -45,6 +35,67 @@ namespace OpenUtau.App.ViewModels {
                     Otos = singer.OtoSets.SelectMany(set => set.Otos.Values).SelectMany(list => list).ToList();
                     Info = $"Author: {singer.Author}\nWeb: {singer.Web}\n{singer.OtherInfo}\n\n{string.Join("\n", singer.OtoSets.SelectMany(set => set.Errors))}";
                 });
+
+            setEncodingCommand = ReactiveCommand.Create<Encoding>(encoding => {
+                SetEncoding(encoding);
+                Reload();
+            });
+            var encodings = new Encoding[] {
+                Encoding.GetEncoding("shift_jis"),
+                Encoding.ASCII,
+                Encoding.UTF8,
+                Encoding.GetEncoding("gb2312"),
+                Encoding.GetEncoding("big5"),
+                Encoding.GetEncoding("ks_c_5601-1987"),
+                Encoding.GetEncoding("Windows-1252"),
+                Encoding.GetEncoding("macintosh"),
+            };
+            SetEncodingMenuItems = encodings.Select(encoding =>
+                new MenuItemViewModel() {
+                    Header = encoding.EncodingName,
+                    Command = setEncodingCommand,
+                    CommandParameter = encoding,
+                }
+            ).ToList();
+        }
+
+        private void SetEncoding(Encoding encoding) {
+            if (Singer == null) {
+                return;
+            }
+            try {
+                var yamlFile = Path.Combine(Singer.Location, "character.yaml");
+                VoicebankConfig? bankConfig = null;
+                if (File.Exists(yamlFile)) {
+                    using (var stream = File.OpenRead(yamlFile)) {
+                        bankConfig = VoicebankConfig.Load(stream);
+                    }
+                }
+                if (bankConfig == null) {
+                    bankConfig = new VoicebankConfig();
+                }
+                bankConfig.TextFileEncoding = encoding.WebName;
+                using (var stream = File.Open(yamlFile, FileMode.Create)) {
+                    bankConfig.Save(stream);
+                }
+            } catch (Exception e) {
+                DocManager.Inst.ExecuteCmd(new UserMessageNotification(
+                    $"Failed to set encoding\n\n" + e.ToString()));
+            }
+        }
+
+        private void Reload() {
+            if (Singer == null) {
+                return;
+            }
+            var singerId = Singer.Id;
+            DocManager.Inst.SearchAllSingers();
+            this.RaisePropertyChanged(nameof(Singers));
+            if (DocManager.Inst.Singers.TryGetValue(singerId, out var singer)) {
+                Singer = singer;
+            } else {
+                Singer = Singers.FirstOrDefault();
+            }
         }
 
         Bitmap? LoadAvatar(USinger singer) {
@@ -52,7 +103,7 @@ namespace OpenUtau.App.ViewModels {
                 return null;
             }
             try {
-                using (var stream = new FileStream(singer.Avatar, FileMode.Open)) {
+                using (var stream = File.OpenRead(singer.Avatar)) {
                     return Bitmap.DecodeToWidth(stream, 120);
                 }
             } catch (Exception e) {

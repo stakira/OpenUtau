@@ -36,6 +36,18 @@ namespace OpenUtau.Core {
         List<AudioOutputDevice> GetOutputDevices();
     }
 
+    class DummyAudioOutput : IAudioOutput {
+        public PlaybackState PlaybackState => PlaybackState.Stopped;
+        public int DeviceNumber => 0;
+        public List<AudioOutputDevice> GetOutputDevices() => new List<AudioOutputDevice>();
+        public long GetPosition() => 0;
+        public void Init(ISampleProvider sampleProvider) {}
+        public void Pause() {}
+        public void Play() {}
+        public void SelectDevice(Guid guid, int deviceNumber) {}
+        public void Stop() {}
+    }
+
     public class SineGen : ISampleProvider {
         public WaveFormat WaveFormat => waveFormat;
         public double Freq { get; set; }
@@ -84,13 +96,13 @@ namespace OpenUtau.Core {
         IResamplerDriver previewDriver;
         CancellationTokenSource previewCancellationTokenSource;
 
-        public IAudioOutput AudioOutput { get; set; }
+        public IAudioOutput AudioOutput { get; set; } = new DummyAudioOutput();
         public bool Playing => AudioOutput.PlaybackState == PlaybackState.Playing;
 
         public bool CheckResampler() {
             var path = PathManager.Inst.GetPreviewEnginePath();
             Directory.CreateDirectory(PathManager.Inst.GetEngineSearchPath());
-            return File.Exists(path); // TODO: validate exe / dll
+            return File.Exists(path);
         }
 
         public void PlayTestSound() {

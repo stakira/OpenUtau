@@ -1,7 +1,6 @@
 ﻿using System.IO;
+using System.Text;
 using OpenUtau.Core;
-using YamlDotNet.Serialization;
-using YamlDotNet.Serialization.NamingConventions;
 
 namespace OpenUtau.Classic {
     public enum SymbolSetPreset { unknown, hiragana, arpabet }
@@ -52,6 +51,7 @@ namespace OpenUtau.Classic {
 
     public class VoicebankConfig {
         public string Name;
+        public string TextFileEncoding;
         public string Image;
         public string Portrait;
         public float PortraitOpacity = 0.67f;
@@ -61,13 +61,13 @@ namespace OpenUtau.Classic {
         public Subbank[] Subbanks { get; set; }
 
         public void Save(Stream stream) {
-            using (var writer = new StreamWriter(stream)) {
+            using (var writer = new StreamWriter(stream, Encoding.UTF8)) {
                 Yaml.DefaultSerializer.Serialize(writer, this);
             }
         }
 
         public static VoicebankConfig Load(Stream stream) {
-            using (var reader = new StreamReader(stream)) {
+            using (var reader = new StreamReader(stream, Encoding.UTF8)) {
                 return Yaml.DefaultDeserializer.Deserialize<VoicebankConfig>(reader);
             }
         }

@@ -30,22 +30,21 @@ namespace OpenUtau.Classic {
                 return result;
             }
             var banks = Directory.EnumerateFiles(basePath, "character.txt", SearchOption.AllDirectories)
-                .Select(filePath => ParseCharacterTxt(filePath, basePath, Encoding.UTF8))
+                .Select(filePath => ParseCharacterTxt(filePath, basePath))
                 .OfType<Voicebank>()
                 .OrderByDescending(bank => bank.File.Length)
                 .ToArray();
-            var otoSets = Directory.EnumerateFiles(basePath, "oto.ini", SearchOption.AllDirectories)
-                .Select(entry => ParseOtoSet(entry, Encoding.UTF8))
-                .OfType<OtoSet>()
+            var otoFiles = Directory.EnumerateFiles(basePath, "oto.ini", SearchOption.AllDirectories)
                 .ToArray();
             var bankDirs = banks
                 .Select(bank => Path.GetDirectoryName(bank.File))
                 .ToArray();
-            foreach (var otoSet in otoSets) {
-                var dir = Path.GetDirectoryName(otoSet.File);
+            foreach (var otoFile in otoFiles) {
+                var dir = Path.GetDirectoryName(otoFile);
                 for (int i = 0; i < bankDirs.Length; ++i) {
                     if (dir.StartsWith(bankDirs[i])) {
-                        otoSet.Name = Path.GetRelativePath(bankDirs[i], Path.GetDirectoryName(otoSet.File));
+                        var otoSet = ParseOtoSet(otoFile, banks[i].TextFileEncoding);
+                        otoSet.Name = Path.GetRelativePath(bankDirs[i], Path.GetDirectoryName(otoFile));
                         if (otoSet.Name == ".") {
                             otoSet.Name = string.Empty;
                         }
@@ -57,14 +56,9 @@ namespace OpenUtau.Classic {
             foreach (var bank in banks) {
                 var dir = Path.GetDirectoryName(bank.File);
                 var file = Path.Combine(dir, "character.yaml");
-                if (File.Exists(file)) {
-                    using (var stream = File.OpenRead(file)) {
-                        ParseCharacterConfig(stream, bank);
-                    }
-                }
                 file = Path.Combine(dir, "prefix.map");
                 if (File.Exists(file)) {
-                    bank.PrefixMap = ParsePrefixMap(file, Encoding.UTF8);
+                    bank.PrefixMap = ParsePrefixMap(file, bank.TextFileEncoding);
                 }
             }
             foreach (var bank in banks) {
@@ -73,11 +67,28 @@ namespace OpenUtau.Classic {
             return result;
         }
 
-        public static Voicebank ParseCharacterTxt(string filePath, string basePath, Encoding encoding) {
+        public static Voicebank ParseCharacterTxt(string filePath, string basePath) {
             try {
-                using (var stream = File.OpenRead(filePath)) {
-                    return ParseCharacterTxt(stream, filePath, basePath, encoding);
+                var dir = Path.GetDirectoryName(filePath);
+                var yamlFile = Path.Combine(dir, "character.yaml");
+                VoicebankConfig bankConfig = null;
+                if (File.Exists(yamlFile)) {
+                    using (var stream = File.OpenRead(yamlFile)) {
+                        bankConfig = VoicebankConfig.Load(stream);
+                    }
                 }
+                Encoding encoding = Encoding.UTF8;
+                if (!string.IsNullOrEmpty(bankConfig?.TextFileEncoding)) {
+                    encoding = Encoding.GetEncoding(bankConfig.TextFileEncoding);
+                }
+                Voicebank bank = null;
+                using (var stream = File.OpenRead(filePath)) {
+                    bank = ParseCharacterTxt(stream, filePath, basePath, encoding);
+                }
+                if (bank != null && bankConfig != null) {
+                    ApplyConfig(bank, bankConfig);
+                }
+                return bank;
             } catch (Exception e) {
                 Log.Error(e, $"Failed to load {filePath}");
             }
@@ -88,6 +99,7 @@ namespace OpenUtau.Classic {
             using (var reader = new StreamReader(stream, encoding)) {
                 var voicebank = new Voicebank() {
                     File = filePath,
+                    TextFileEncoding = encoding,
                 };
                 var otherLines = new List<string>();
                 while (!reader.EndOfStream) {
@@ -124,8 +136,7 @@ namespace OpenUtau.Classic {
             }
         }
 
-        public static void ParseCharacterConfig(Stream stream, Voicebank bank) {
-            var bankConfig = VoicebankConfig.Load(stream);
+        public static void ApplyConfig(Voicebank bank, VoicebankConfig bankConfig) {
             if (!string.IsNullOrWhiteSpace(bankConfig.Name)) {
                 bank.Name = bankConfig.Name;
             }

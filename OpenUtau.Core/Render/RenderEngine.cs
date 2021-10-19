@@ -250,7 +250,7 @@ namespace OpenUtau.Core.Render {
 
         void ReleaseSourceTemp() {
             var expire = DateTime.Now - TimeSpan.FromDays(7);
-            string path = PathManager.Inst.GetCachePath(null);
+            string path = PathManager.Inst.GetCachePath();
             Log.Information($"ReleaseSourceTemp {path}");
             Directory.EnumerateFiles(path, "*.*", SearchOption.TopDirectoryOnly)
                 .Where(file =>

@@ -14,7 +14,8 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys {
 
         public ExeDriver(string ExePath) {
             if (File.Exists(ExePath)) {
-                if (Path.GetExtension(ExePath).ToLower() == ".exe") {
+                if (Path.GetExtension(ExePath).ToLower() == ".exe" ||
+                    Path.GetExtension(ExePath).ToLower() == ".sh") {
                     this.ExePath = ExePath;
                     _isLegalPlugin = true;
                 }
@@ -50,13 +51,12 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys {
                     proc.ErrorDataReceived += (o, e) => logger.Error($" >>> [thread-{threadId}] {e.Data}");
                 }
                 proc.Start();
-                proc.PriorityClass = ProcessPriorityClass.BelowNormal;
                 if (debugResampler) {
                     proc.BeginOutputReadLine();
                     proc.BeginErrorReadLine();
                 }
 #pragma warning restore CS0162 // Unreachable code detected
-                if (!proc.WaitForExit(10000)) {
+                if (!proc.WaitForExit(60000)) {
                     logger.Warning($"[thread-{threadId}] Timeout, killing...");
                     try {
                         proc.Kill();

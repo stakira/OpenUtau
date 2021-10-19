@@ -165,7 +165,8 @@ namespace OpenUtau.Core.Ustx {
                     fileDurationMs = duration.TotalMilliseconds;
                     channels = waveStream.WaveFormat.Channels;
                 }
-            } catch (FileNotFoundException _) {
+            } catch (Exception e) {
+                Log.Error(e, $"Failed to load wave part {FilePath}");
                 Missing = true;
                 if (fileDurationMs == 0) {
                     fileDurationMs = 10000;

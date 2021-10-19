@@ -15,17 +15,22 @@ namespace OpenUtau.Core.ResamplerDriver {
             if (!File.Exists(filePath)) {
                 return null;
             }
-            if (ext == ".exe") {
+            if (OS.IsWindows() && ext == ".exe" ||
+                !OS.IsWindows() && ext == ".sh") {
                 return new ExeDriver(filePath);
             }
             if (ext == ".dll") {
-                CppDriver cppDriver = new CppDriver(filePath);
-                if (cppDriver.isLegalPlugin) {
-                    return cppDriver;
-                }
                 SharpDriver csDriver = new SharpDriver(filePath);
                 if (csDriver.isLegalPlugin) {
                     return csDriver;
+                }
+            }
+            if (OS.IsWindows() && ext == ".dll" ||
+                OS.IsMacOS() && ext == ".dylib" ||
+                OS.IsLinux() && ext == ".so") {
+                CppDriver cppDriver = new CppDriver(filePath);
+                if (cppDriver.isLegalPlugin) {
+                    return cppDriver;
                 }
             }
             return null;
@@ -34,7 +39,9 @@ namespace OpenUtau.Core.ResamplerDriver {
         public static List<IResamplerDriver> Search(string path) {
             var resamplers = new List<IResamplerDriver>();
             if (!Directory.Exists(path)) Directory.CreateDirectory(path);
-            var files = Directory.EnumerateFiles(path);
+            var files = Directory.EnumerateFiles(path, "*.*", new EnumerationOptions() {
+                RecurseSubdirectories = true
+            });
             foreach (var file in files) {
                 var driver = Load(file);
                 if (driver != null) {

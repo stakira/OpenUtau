@@ -134,6 +134,8 @@
 
   <system:String x:Key="singers.caption">Singers</system:String>
   <system:String x:Key="singers.location">Location</system:String>
+  <system:String x:Key="singers.reload">Reload</system:String>
+  <system:String x:Key="singers.setencoding">Set Encoding</system:String>
 
   <system:String x:Key="tip.exps.actions">
 Set expressions

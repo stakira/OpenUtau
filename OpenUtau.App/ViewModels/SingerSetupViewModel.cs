@@ -235,7 +235,7 @@ namespace OpenUtau.App.ViewModels {
             var textEncoding = TextEncoding;
             return Task.Run(() => {
                 try {
-                    var installer = new Classic.VoicebankInstaller(PathManager.Inst.InstalledSingersPath, (progress, info) => {
+                    var installer = new Classic.VoicebankInstaller(PathManager.Inst.SingersPath, (progress, info) => {
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(progress, info));
                     }, archiveEncoding, textEncoding);
                     installer.LoadArchive(archiveFilePath);

@@ -9,7 +9,7 @@
         Icon="/Assets/open-utau.ico"
         Title="OpenUtau (Beta)" MinWidth="300" MinHeight="200" KeyDown="OnKeyDown" Closing="WindowClosing"
         TransparencyLevelHint="None" Background="{DynamicResource MainWindowBackgroundBrush}"
-        ExtendClientAreaToDecorationsHint="False">
+        ExtendClientAreaToDecorationsHint="{Binding ExtendToFrame}">
   <Window.Styles>
     <Style Selector="Button,ToggleButton">
       <Setter Property="Focusable" Value="False"/>
@@ -48,7 +48,6 @@
           <MenuItem Header="{DynamicResource menu.tools.project.expressions}" Click="OnMenuExpressionss"/>
           <MenuItem Header="{DynamicResource menu.tools.singers}" Click="OnMenuSingers"/>
           <MenuItem Header="{DynamicResource menu.tools.singer.install}" Click="OnMenuInstallSinger"/>
-          <MenuItem Header="{DynamicResource menu.tools.singer.installadv}" Click="OnMenuInstallSingerAdvanced"/>
           <MenuItem Header="{DynamicResource menu.tools.prefs}" Click="OnMenuPreferences"/>
         </MenuItem>
         <MenuItem Header="{DynamicResource menu.help}">

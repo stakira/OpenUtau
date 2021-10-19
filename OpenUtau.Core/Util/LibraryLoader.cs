@@ -12,7 +12,7 @@ namespace OpenUtau {
             if (OS.IsWindows()) {
                 _handle = LoadLibrary(Path.Combine(
                     path,
-                    Environment.Is64BitOperatingSystem ? "win-x64" : "win-x86",
+                    Environment.Is64BitProcess ? "win-x64" : "win-x86",
                     $"{library}.dll"));
             } else if (OS.IsLinux()) {
                 _handle = dlopen(Path.Combine(path, "linux-x64", $"lib{library}.so"), RTLD_NOW);

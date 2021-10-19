@@ -23,7 +23,16 @@
     <Setter Property="Fill" Value="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
   </Style>
   <Style Selector="MenuItem /template/ TextBlock#PART_InputGestureText">
-    <Setter Property="Foreground" Value="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
+    <Setter Property="Foreground" Value="{DynamicResource MenuFlyoutItemForeground}"/>
+  </Style>
+  <Style Selector="MenuItem:selected /template/ TextBlock#PART_InputGestureText">
+    <Setter Property="Foreground" Value="{DynamicResource MenuFlyoutItemForegroundPointerOver}"/>
+  </Style>
+  <Style Selector="MenuItem:pressed /template/ TextBlock#PART_InputGestureText">
+    <Setter Property="Foreground" Value="{DynamicResource MenuFlyoutItemForegroundPressed}"/>
+  </Style>
+  <Style Selector="MenuItem:disabled /template/ TextBlock#PART_InputGestureText">
+    <Setter Property="Foreground" Value="{DynamicResource MenuFlyoutItemForegroundDisabled}"/>
   </Style>
 
   <Style Selector="ContextMenu MenuItem">

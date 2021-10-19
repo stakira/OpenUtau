@@ -9,6 +9,7 @@ using ReactiveUI.Fody.Helpers;
 
 namespace OpenUtau.App.ViewModels {
     public class MainWindowViewModel : ViewModelBase, ICmdSubscriber {
+        public bool ExtendToFrame => OS.IsMacOS();
         [Reactive] public PlaybackViewModel PlaybackViewModel { get; set; }
         [Reactive] public TracksViewModel TracksViewModel { get; set; }
         [Reactive] public ReactiveCommand<string, Unit>? OpenRecentCommand { get; private set; }
@@ -105,18 +106,6 @@ namespace OpenUtau.App.ViewModels {
                 DocManager.Inst.ExecuteCmd(new AddPartCommand(project, part));
             }
             DocManager.Inst.EndUndoGroup();
-        }
-
-        public void InstallSinger(string file) {
-            try {
-                var installer = new Classic.VoicebankInstaller(PathManager.Inst.InstalledSingersPath, (progress, info) => {
-                    DocManager.Inst.ExecuteCmd(new ProgressBarNotification(progress, info));
-                });
-                installer.LoadArchive(file);
-            } finally {
-                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, ""));
-                DocManager.Inst.ExecuteCmd(new SingersChangedNotification());
-            }
         }
 
         public void RefreshOpenRecent() {

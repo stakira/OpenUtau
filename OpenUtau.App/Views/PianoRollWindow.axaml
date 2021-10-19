@@ -10,7 +10,7 @@
         Icon="/Assets/open-utau.ico"
         Title="Piano Roll" MinWidth="300" MinHeight="200" KeyDown="OnKeyDown" Closing="WindowClosing"
         TransparencyLevelHint="None" Background="{DynamicResource MainWindowBackgroundBrush}"
-        ExtendClientAreaToDecorationsHint="False" Deactivated="WindowDeactivated">
+        ExtendClientAreaToDecorationsHint="{Binding ExtendToFrame}" Deactivated="WindowDeactivated">
   <Window.Styles>
     <Style Selector="Button,ToggleButton">
       <Setter Property="Focusable" Value="False"/>
