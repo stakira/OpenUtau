@@ -8,7 +8,7 @@
   <!--<system:String x:Key="context.pitch.linear">Linear</system:String>-->
   <system:String x:Key="context.pitch.pointadd">Adicionar ponto</system:String>
   <system:String x:Key="context.pitch.pointdel">Remover ponto</system:String>
-  <system:String x:Key="context.pitch.pointsnapprev">Ajustar à nota anterior </system:String>
+  <system:String x:Key="context.pitch.pointsnapprev">Conectar à nota anterior </system:String>
 
   <system:String x:Key="dialogs.about.caption">Sobre OpenUTAU</system:String>
   <system:String x:Key="dialogs.about.message">
@@ -100,18 +100,18 @@
   <!--<system:String x:Key="pianoroll.menu.notes.quantize30">Quantize to 1/64</system:String>-->
   <system:String x:Key="pianoroll.menu.part">Parte</system:String>
   <system:String x:Key="pianoroll.menu.part.rename">Renomear</system:String>
-  <!--<system:String x:Key="pianoroll.toggle.phoneme">View Phonemes (O)</system:String>-->
-  <!--<system:String x:Key="pianoroll.toggle.pitch">View Pitch Bend (I)</system:String>-->
-  <!--<system:String x:Key="pianoroll.toggle.snap">Toggle Snap (P)</system:String>-->
-  <!--<system:String x:Key="pianoroll.toggle.tips">View Tips (T)</system:String>-->
-  <!--<system:String x:Key="pianoroll.toggle.tone">Toggle Note Tone (Y)</system:String>-->
-  <!--<system:String x:Key="pianoroll.toggle.vibrato">View Vibrato (U)</system:String>-->
-  <!--<system:String x:Key="pianoroll.tool.eraser">Eraser Tool (3)</system:String>-->
-  <!--<system:String x:Key="pianoroll.tool.pen">Pen Tool (2)
-Left click to draw
-Right click to delete</system:String>-->
-  <!--<system:String x:Key="pianoroll.tool.selection">Selection Tool (1)
-Hold Ctrl to select more</system:String>-->
+  <system:String x:Key="pianoroll.toggle.phoneme">Ver Fonemas (O)</system:String>
+  <system:String x:Key="pianoroll.toggle.pitch">Ver Pitch Bend (I)</system:String>
+  <system:String x:Key="pianoroll.toggle.snap">Ativar Ajuste (P)</system:String>
+  <system:String x:Key="pianoroll.toggle.tips">Ver Dicas (T)</system:String>
+  <system:String x:Key="pianoroll.toggle.tone">Ativar Tom de Nota (Y)</system:String>
+  <system:String x:Key="pianoroll.toggle.vibrato">Ver Vibrato (U)</system:String>
+  <system:String x:Key="pianoroll.tool.eraser">Ferramenta Borracha (3)</system:String>
+  <system:String x:Key="pianoroll.tool.pen">Ferramenta Caneta (2)
+Botão esquerdo para desenhar
+Botão direito para apagar</system:String>
+  <system:String x:Key="pianoroll.tool.selection">Ferramenta Seleção  (1)
+Segure Ctrl para selecionar mais notas</system:String>
 
   <system:String x:Key="prefs.advanced">Avançado</system:String>
   <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
@@ -145,33 +145,33 @@ Hold Ctrl to select more</system:String>-->
   </system:String>
 
   <system:String x:Key="singers.caption">Vozes</system:String>
-  <system:String x:Key="singers.location">Localização</system:String>
-  <!--<system:String x:Key="singers.refresh">Refresh</system:String>-->
-  <system:String x:Key="singers.setencoding">Definir codificação</system:String>
+  <system:String x:Key="singers.location">Pasta</system:String>
+  <system:String x:Key="singers.refresh">Atualizar</system:String>
+  <system:String x:Key="singers.setencoding">Definir Codificação</system:String>
 
-  <!--<system:String x:Key="tip.exps">
-Left Button Draw: Set expressions
-Right Button Draw: Reset expressions
-  </system:String>-->
+  <system:String x:Key="tip.exps">
+Desenhar com o Botão Esquerdo: Definir expressões
+Desenhar com o Botão Direito: Redefinir expressões
+  </system:String>
   <system:String x:Key="tip.lyricbox.next">Tab: Próxima Nota</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: Nota Anterior</system:String>
-  <!--<system:String x:Key="tip.notes.basics">
-Selection Tool
-    Box Select: Select notes
-    Ctrl + Box Select: Select more notes
-    Up/Down: Transpose selected notes
-    Ctrl + Up/Down: Transpose selected notes by octave
-Pen Tool
-    Left Button Draw: Add note
-    Right Click: Remove note
-    Right Button Draw: Remove multiple notes
-General
-    T: Toggle tips
-    Drag Note: Move note
-    Drag End of Note: Resize note
-    Alt + Drag End of Note: Resize neighbouring notes
-    Space: Play
-  </system:String>-->
+  <system:String x:Key="tip.notes.basics">
+Ferramenta Seleção
+     Seleção em caixa: Selecione notas
+     Ctrl + Seleção em caixa: Selecione mais notas
+     Cima/Baixo: Transpõe as notas selecionadas
+     Ctrl + Cima/Baixo: Transpõe as notas selecionadas em uma oitava
+Ferramenta Caneta
+     Desenhar com o Botão Esquerdo: Adicionar nota
+     Clique com o Botão Direito: Remover nota
+     Desenhar com o Botão Direito: Remover várias notas
+Geral
+     T: Ativar dicas
+     Arrastar Nota: Mover nota
+     Arrastar Fim da Nota: Redimensionar nota
+     Alt + Arrastar Fim da Nota: Redimensionar notas vizinhas
+     Espaço: Tocar
+  </system:String>
   <system:String x:Key="tip.notes.zoomx">◀ Role aqui para aumentar o zoom horizontalmente  ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">Role aqui para aumentar o zoom verticalmente ▶</system:String>
 
