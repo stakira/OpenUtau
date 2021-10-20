@@ -38,6 +38,19 @@ namespace OpenUtau.Core.Util {
             Save();
         }
 
+        public static void AddRecentFile(string filePath) {
+            if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath)) {
+                return;
+            }
+            var recent = Default.RecentFiles;
+            recent.RemoveAll(f => f == filePath || string.IsNullOrEmpty(f) || !File.Exists(f));
+            recent.Insert(0, filePath);
+            if (recent.Count > 16) {
+                recent.RemoveRange(16, recent.Count - 16);
+            }
+            Save();
+        }
+
         private static void Load() {
             try {
                 if (File.Exists(PathManager.Inst.PrefsFilePath)) {

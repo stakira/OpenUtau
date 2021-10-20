@@ -124,17 +124,9 @@ namespace OpenUtau.App.ViewModels {
                 Progress = progressBarNotification.Progress;
                 ProgressText = progressBarNotification.Info;
             } else if (cmd is LoadProjectNotification loadProject) {
-                string filePath = loadProject.project.FilePath;
-                if (string.IsNullOrEmpty(filePath)) {
-                    return;
-                }
-                var recent = Core.Util.Preferences.Default.RecentFiles;
-                recent.RemoveAll(f => f == filePath || string.IsNullOrEmpty(f) || !File.Exists(f));
-                recent.Insert(0, filePath);
-                if (recent.Count > 16) {
-                    recent.RemoveRange(16, recent.Count - 16);
-                }
-                Core.Util.Preferences.Save();
+                Core.Util.Preferences.AddRecentFile(loadProject.project.FilePath);
+            } else if (cmd is SaveProjectNotification saveProject) {
+                Core.Util.Preferences.AddRecentFile(saveProject.Path);
             }
         }
 

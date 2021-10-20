@@ -42,7 +42,7 @@ namespace OpenUtau.Core.Render {
             this.startTick = startTick;
             resamplers = ResamplerDriver.ResamplerDriver
                 .Search(PathManager.Inst.GetEngineSearchPath())
-                .ToDictionary(resampler => resampler.GetInfo().Name, resampler => resampler);
+                .ToDictionary(resampler => resampler.FilePath, resampler => resampler);
         }
 
         public Tuple<MasterAdapter, List<Fader>, CancellationTokenSource, Task> RenderProject(int startTick) {

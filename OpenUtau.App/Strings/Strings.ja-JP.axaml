@@ -2,6 +2,14 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+  <!--<system:String x:Key="context.pitch.easein">Ease in</system:String>-->
+  <!--<system:String x:Key="context.pitch.easeinout">Ease in/out</system:String>-->
+  <!--<system:String x:Key="context.pitch.easeout">Ease out</system:String>-->
+  <!--<system:String x:Key="context.pitch.linear">Linear</system:String>-->
+  <!--<system:String x:Key="context.pitch.pointadd">Add point</system:String>-->
+  <!--<system:String x:Key="context.pitch.pointdel">Delete point</system:String>-->
+  <!--<system:String x:Key="context.pitch.pointsnapprev">Snap to previous note</system:String>-->
+
   <system:String x:Key="dialogs.about.caption">OpenUTAUについて</system:String>
   <system:String x:Key="dialogs.about.message">
         OpenUTAUは、最新のユーザー体験と聡明な音声合成についてのサポートを備えたUTAUコミュニティのためのオープンソースな編集環境を目指しています。私たちのGithubを訪れてください。
@@ -72,14 +80,6 @@
   <system:String x:Key="menu.tools.singer.installadv">シンガーをインストール(高度)...</system:String>
   <system:String x:Key="menu.tools.singers">シンガー...</system:String>
 
-  <system:String x:Key="menu2.lyrics">歌詞</system:String>
-  <system:String x:Key="menu2.notes">音符</system:String>
-  <!--<system:String x:Key="menu2.notes.addtaildash">Add tail "-"</system:String>-->
-  <!--<system:String x:Key="menu2.notes.quantize15">Quantize to 1/128</system:String>-->
-  <!--<system:String x:Key="menu2.notes.quantize30">Quantize to 1/64</system:String>-->
-  <system:String x:Key="menu2.part">パート</system:String>
-  <system:String x:Key="menu2.part.rename">名前を変更</system:String>
-
   <system:String x:Key="oto.alias">エイリアス</system:String>
   <system:String x:Key="oto.consonant">子音部</system:String>
   <system:String x:Key="oto.cutoff">ブランク</system:String>
@@ -92,6 +92,26 @@
   <system:String x:Key="oto.preutter">先行発声</system:String>
   <system:String x:Key="oto.set">セット</system:String>
   <!--<system:String x:Key="oto.suffix">Suffix</system:String>-->
+
+  <system:String x:Key="pianoroll.menu.lyrics">歌詞</system:String>
+  <system:String x:Key="pianoroll.menu.notes">音符</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notes.addtaildash">Add tail "-"</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.quantize15">Quantize to 1/128</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.quantize30">Quantize to 1/64</system:String>-->
+  <system:String x:Key="pianoroll.menu.part">パート</system:String>
+  <system:String x:Key="pianoroll.menu.part.rename">名前を変更</system:String>
+  <!--<system:String x:Key="pianoroll.toggle.phoneme">View Phonemes (O)</system:String>-->
+  <!--<system:String x:Key="pianoroll.toggle.pitch">View Pitch Bend (I)</system:String>-->
+  <!--<system:String x:Key="pianoroll.toggle.snap">Toggle Snap (P)</system:String>-->
+  <!--<system:String x:Key="pianoroll.toggle.tips">View Tips (T)</system:String>-->
+  <!--<system:String x:Key="pianoroll.toggle.tone">Toggle Note Tone (Y)</system:String>-->
+  <!--<system:String x:Key="pianoroll.toggle.vibrato">View Vibrato (U)</system:String>-->
+  <!--<system:String x:Key="pianoroll.tool.eraser">Eraser Tool (3)</system:String>-->
+  <!--<system:String x:Key="pianoroll.tool.pen">Pen Tool (2)
+Left click to draw
+Right click to delete</system:String>-->
+  <!--<system:String x:Key="pianoroll.tool.selection">Selection Tool (1)
+Hold Ctrl to select more</system:String>-->
 
   <system:String x:Key="prefs.advanced">高度な設定</system:String>
   <system:String x:Key="prefs.advanced.beta">ベータ版</system:String>
@@ -126,35 +146,32 @@
 
   <system:String x:Key="singers.caption">シンガー</system:String>
   <system:String x:Key="singers.location">ファイルの場所</system:String>
+  <!--<system:String x:Key="singers.refresh">Refresh</system:String>-->
+  <!--<system:String x:Key="singers.setencoding">Set Encoding</system:String>-->
 
-  <system:String x:Key="tip.exps.actions">表情を設定
-表情をリセット</system:String>
-  <system:String x:Key="tip.exps.keys">左クリック:
-右クリック:</system:String>
+  <!--<system:String x:Key="tip.exps">
+Left Button Draw: Set expressions
+Right Button Draw: Reset expressions
+  </system:String>-->
   <system:String x:Key="tip.lyricbox.next">Tab: 次の音符へ</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: 前の音符へ</system:String>
-  <system:String x:Key="tip.notes.basics.actions">ヒント表示・非表示
-音符を追加
-音符を削除
-重複した音符を削除
-音符を移動
-音符の長さを調節
-隣接する音符との境界を調節
-音符を選択
-選択した音符をトランスポーズ
-選択した音符をオクターブ毎にトランスポーズ
-再生</system:String>
-  <system:String x:Key="tip.notes.basics.keys">T:
-左クリック:
-右クリック:
-右マウスボタン長押し:
-音符をドラッグ:
-音符の末尾をドラッグ:
-Alt + 音符の末尾をドラッグ:
-Ctrl + ボックス選択:
-Up/Down:
-Ctrl + Up/Down:
-スペース:</system:String>
+  <!--<system:String x:Key="tip.notes.basics">
+Selection Tool
+    Box Select: Select notes
+    Ctrl + Box Select: Select more notes
+    Up/Down: Transpose selected notes
+    Ctrl + Up/Down: Transpose selected notes by octave
+Pen Tool
+    Left Button Draw: Add note
+    Right Click: Remove note
+    Right Button Draw: Remove multiple notes
+General
+    T: Toggle tips
+    Drag Note: Move note
+    Drag End of Note: Resize note
+    Alt + Drag End of Note: Resize neighbouring notes
+    Space: Play
+  </system:String>-->
   <system:String x:Key="tip.notes.zoomx">◀ ここをスクロールして左右にズーム ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">ここをスクロールして上下にズーム ▶</system:String>
 

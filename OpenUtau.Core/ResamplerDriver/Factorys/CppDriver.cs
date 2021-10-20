@@ -96,8 +96,10 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys {
 
         readonly string DllPath = string.Empty;
         bool _isLegalPlugin = false;
+        public string FilePath { get; }
 
         public CppDriver(string DllPath) {
+            FilePath = DllPath;
             IntPtr hModule = LoadLibrary(DllPath);
             if (hModule == IntPtr.Zero) {
                 _isLegalPlugin = false;

@@ -2,6 +2,14 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+  <!--<system:String x:Key="context.pitch.easein">Ease in</system:String>-->
+  <!--<system:String x:Key="context.pitch.easeinout">Ease in/out</system:String>-->
+  <!--<system:String x:Key="context.pitch.easeout">Ease out</system:String>-->
+  <!--<system:String x:Key="context.pitch.linear">Linear</system:String>-->
+  <!--<system:String x:Key="context.pitch.pointadd">Add point</system:String>-->
+  <!--<system:String x:Key="context.pitch.pointdel">Delete point</system:String>-->
+  <!--<system:String x:Key="context.pitch.pointsnapprev">Snap to previous note</system:String>-->
+
   <!--<system:String x:Key="dialogs.about.caption">About OpenUTAU</system:String>-->
   <system:String x:Key="dialogs.about.message">
         OpenUtau est logiciel de synthétiseur vocal open source pour la communauté UTAU, avec une interface moderne et un support phonétique intelligent. Allez sur notre Github.
@@ -72,14 +80,6 @@
   <system:String x:Key="menu.tools.singer.installadv">Installer une Voicebank (méthode avancée)</system:String>
   <system:String x:Key="menu.tools.singers">Voicebank</system:String>
 
-  <!--<system:String x:Key="menu2.lyrics">Lyrics</system:String>-->
-  <!--<system:String x:Key="menu2.notes">Notes</system:String>-->
-  <!--<system:String x:Key="menu2.notes.addtaildash">Add tail "-"</system:String>-->
-  <!--<system:String x:Key="menu2.notes.quantize15">Quantize to 1/128</system:String>-->
-  <!--<system:String x:Key="menu2.notes.quantize30">Quantize to 1/64</system:String>-->
-  <!--<system:String x:Key="menu2.part">Part</system:String>-->
-  <!--<system:String x:Key="menu2.part.rename">Rename</system:String>-->
-
   <!--<system:String x:Key="oto.alias">Alias</system:String>-->
   <!--<system:String x:Key="oto.consonant">Consonant</system:String>-->
   <!--<system:String x:Key="oto.cutoff">Cutoff</system:String>-->
@@ -92,6 +92,26 @@
   <!--<system:String x:Key="oto.preutter">Preutter</system:String>-->
   <!--<system:String x:Key="oto.set">Set</system:String>-->
   <!--<system:String x:Key="oto.suffix">Suffix</system:String>-->
+
+  <!--<system:String x:Key="pianoroll.menu.lyrics">Lyrics</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes">Notes</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.addtaildash">Add tail "-"</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.quantize15">Quantize to 1/128</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.quantize30">Quantize to 1/64</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.part">Part</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.part.rename">Rename</system:String>-->
+  <!--<system:String x:Key="pianoroll.toggle.phoneme">View Phonemes (O)</system:String>-->
+  <!--<system:String x:Key="pianoroll.toggle.pitch">View Pitch Bend (I)</system:String>-->
+  <!--<system:String x:Key="pianoroll.toggle.snap">Toggle Snap (P)</system:String>-->
+  <!--<system:String x:Key="pianoroll.toggle.tips">View Tips (T)</system:String>-->
+  <!--<system:String x:Key="pianoroll.toggle.tone">Toggle Note Tone (Y)</system:String>-->
+  <!--<system:String x:Key="pianoroll.toggle.vibrato">View Vibrato (U)</system:String>-->
+  <!--<system:String x:Key="pianoroll.tool.eraser">Eraser Tool (3)</system:String>-->
+  <!--<system:String x:Key="pianoroll.tool.pen">Pen Tool (2)
+Left click to draw
+Right click to delete</system:String>-->
+  <!--<system:String x:Key="pianoroll.tool.selection">Selection Tool (1)
+Hold Ctrl to select more</system:String>-->
 
   <!--<system:String x:Key="prefs.advanced">Advanced</system:String>-->
   <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
@@ -126,35 +146,32 @@
 
   <!--<system:String x:Key="singers.caption">Singers</system:String>-->
   <!--<system:String x:Key="singers.location">Location</system:String>-->
+  <!--<system:String x:Key="singers.refresh">Refresh</system:String>-->
+  <!--<system:String x:Key="singers.setencoding">Set Encoding</system:String>-->
 
-  <system:String x:Key="tip.exps.actions">Ajouter une expression
-Retirer les expressions</system:String>
-  <system:String x:Key="tip.exps.keys">Tenir le Clic Gauche:
-Tenir le Clic Droit:</system:String>
+  <!--<system:String x:Key="tip.exps">
+Left Button Draw: Set expressions
+Right Button Draw: Reset expressions
+  </system:String>-->
   <system:String x:Key="tip.lyricbox.next">Tab: Note Suivante</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: Note Précédente</system:String>
-  <system:String x:Key="tip.notes.basics.actions">Ouvrir l'aide
-Ajouter une note
-Retirer une note
-Ajouter des notes
-Déplacer une note
-Changer sa taille
-Changer la taille des notes autour
-Selectionner les notes
-Déplacer ces notes
-Déplacer ces notes par octaves
-Play</system:String>
-  <system:String x:Key="tip.notes.basics.keys">T:
-Clic Gauche:
-Clic Droit:
-Tenir le Clic Gauche:
-Glisser une Note:
-Glisser l'extremitée de la Note:
-Alt + Glisser l'extremitée de la Note:
-Ctrl + Glisser Clic Gauche:
-Haut/Bas:
-Ctrl + Haut/Bas:
-Espace:</system:String>
+  <!--<system:String x:Key="tip.notes.basics">
+Selection Tool
+    Box Select: Select notes
+    Ctrl + Box Select: Select more notes
+    Up/Down: Transpose selected notes
+    Ctrl + Up/Down: Transpose selected notes by octave
+Pen Tool
+    Left Button Draw: Add note
+    Right Click: Remove note
+    Right Button Draw: Remove multiple notes
+General
+    T: Toggle tips
+    Drag Note: Move note
+    Drag End of Note: Resize note
+    Alt + Drag End of Note: Resize neighbouring notes
+    Space: Play
+  </system:String>-->
   <system:String x:Key="tip.notes.zoomx">◀ Scrollez ici pour zoomer horizontalement ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">Scrollez ici pour zoomer verticalement ▶</system:String>
 

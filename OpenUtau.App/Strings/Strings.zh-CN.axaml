@@ -2,6 +2,14 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+  <system:String x:Key="context.pitch.easein">缓入</system:String>
+  <system:String x:Key="context.pitch.easeinout">缓入缓出</system:String>
+  <system:String x:Key="context.pitch.easeout">缓出</system:String>
+  <system:String x:Key="context.pitch.linear">线性</system:String>
+  <system:String x:Key="context.pitch.pointadd">添加控制点</system:String>
+  <system:String x:Key="context.pitch.pointdel">删除控制点</system:String>
+  <system:String x:Key="context.pitch.pointsnapprev">吸附到上一个音符</system:String>
+
   <system:String x:Key="dialogs.about.caption">关于 OpenUTAU</system:String>
   <system:String x:Key="dialogs.about.message">
     OpenUtau 是一个开源编辑环境, 旨在为 UTAU 用户社区提供现代的用户体验和智能的语音学支持. 请到 Github 访问我们.
@@ -72,14 +80,6 @@
   <system:String x:Key="menu.tools.singer.installadv">安装歌手(高级模式)...</system:String>
   <system:String x:Key="menu.tools.singers">歌手...</system:String>
 
-  <system:String x:Key="menu2.lyrics">歌词</system:String>
-  <system:String x:Key="menu2.notes">音符</system:String>
-  <system:String x:Key="menu2.notes.addtaildash">添加尾部"-"音符</system:String>
-  <system:String x:Key="menu2.notes.quantize15">量化至1/128音符</system:String>
-  <system:String x:Key="menu2.notes.quantize30">量化至1/64音符</system:String>
-  <system:String x:Key="menu2.part">片段</system:String>
-  <system:String x:Key="menu2.part.rename">重命名</system:String>
-
   <system:String x:Key="oto.alias">别名</system:String>
   <system:String x:Key="oto.consonant">辅音速度</system:String>
   <system:String x:Key="oto.cutoff">结束</system:String>
@@ -92,6 +92,26 @@
   <system:String x:Key="oto.preutter">先行发音</system:String>
   <system:String x:Key="oto.set">子集</system:String>
   <system:String x:Key="oto.suffix">后缀</system:String>
+
+  <system:String x:Key="pianoroll.menu.lyrics">歌词</system:String>
+  <system:String x:Key="pianoroll.menu.notes">音符</system:String>
+  <system:String x:Key="pianoroll.menu.notes.addtaildash">添加尾部"-"音符</system:String>
+  <system:String x:Key="pianoroll.menu.notes.quantize15">量化至1/128音符</system:String>
+  <system:String x:Key="pianoroll.menu.notes.quantize30">量化至1/64音符</system:String>
+  <system:String x:Key="pianoroll.menu.part">片段</system:String>
+  <system:String x:Key="pianoroll.menu.part.rename">重命名</system:String>
+  <system:String x:Key="pianoroll.toggle.phoneme">显示音素 (O)</system:String>
+  <system:String x:Key="pianoroll.toggle.pitch">显示弯音 (I)</system:String>
+  <system:String x:Key="pianoroll.toggle.snap">开关吸附 (P)</system:String>
+  <system:String x:Key="pianoroll.toggle.tips">显示提示 (T)</system:String>
+  <system:String x:Key="pianoroll.toggle.tone">开关音符音 (Y)</system:String>
+  <system:String x:Key="pianoroll.toggle.vibrato">显示颤音 (U)</system:String>
+  <system:String x:Key="pianoroll.tool.eraser">橡皮工具 (3)</system:String>
+  <system:String x:Key="pianoroll.tool.pen">笔工具 (2)
+鼠标左键绘制音符
+鼠标右键擦除音符</system:String>
+  <system:String x:Key="pianoroll.tool.selection">选择工具 (1)
+按住Ctrl选择更多</system:String>
 
   <system:String x:Key="prefs.advanced">高级</system:String>
   <system:String x:Key="prefs.advanced.beta">Beta测试版</system:String>
@@ -126,42 +146,31 @@
 
   <system:String x:Key="singers.caption">歌手</system:String>
   <system:String x:Key="singers.location">位置</system:String>
+  <system:String x:Key="singers.refresh">刷新</system:String>
+  <system:String x:Key="singers.setencoding">选择编码</system:String>
 
-  <system:String x:Key="tip.exps.actions">
-设定表情
-重置表情
-  </system:String>
-  <system:String x:Key="tip.exps.keys">
-按住鼠标左键:
-按住鼠标右键:
+  <system:String x:Key="tip.exps">
+鼠标左键绘制: 设定表情
+鼠标右键绘制: 重置表情
   </system:String>
   <system:String x:Key="tip.lyricbox.next">Tab: 下一个</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: 上一个</system:String>
-  <system:String x:Key="tip.notes.basics.actions">
-开/关提示
-添加音符
-删除音符
-删除多个音符
-移动音符
-调整音符长度
-调整相邻两个音符长度
-选择音符
-为选中音符移调
-为选中音符移调八度
-播放
-  </system:String>
-  <system:String x:Key="tip.notes.basics.keys">
-T:
-鼠标左键:
-鼠标右键:
-按住鼠标左键:
-拖动音符:
-拖动音符尾部:
-Alt + 拖动音符尾部:
-Ctrl + 框选:
-上方向键/下方向键:
-Ctrl + 上方向键/下方向键:
-空格:
+  <system:String x:Key="tip.notes.basics">
+选择工具
+    框选: 选择音符
+    Ctrl + 框选: 选择更多音符
+    上方向键/下方向键: 为选中音符移调
+    Ctrl + 上方向键/下方向键: 为选中音符移调八度
+笔工具
+    鼠标左键绘制: 添加音符
+    鼠标右键: 删除音符
+    鼠标右键绘制: 删除多个音符
+通用
+    T: 开/关提示
+    拖动音符: 移动音符
+    拖动音符尾部: 调整音符长度
+    Alt + 拖动音符尾部: 调整相邻两个音符长度
+    空格键: 播放
   </system:String>
   <system:String x:Key="tip.notes.zoomx">◀ 鼠标滚轮横向缩放 ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">鼠标滚轮纵向缩放 ▶</system:String>

@@ -534,6 +534,7 @@ namespace OpenUtau.App.Views {
                     case Key.D2: notesVm.SelectToolCommand?.Execute("2").Subscribe(); break;
                     case Key.D3: notesVm.SelectToolCommand?.Execute("3").Subscribe(); break;
                     case Key.T: notesVm.ShowTips = !notesVm.ShowTips; break;
+                    case Key.Y: notesVm.PlayTone = !notesVm.PlayTone; break;
                     case Key.U: notesVm.ShowVibrato = !notesVm.ShowVibrato; break;
                     case Key.I: notesVm.ShowPitch = !notesVm.ShowPitch; break;
                     case Key.O: notesVm.ShowPhoneme = !notesVm.ShowPhoneme; break;

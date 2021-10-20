@@ -73,11 +73,15 @@ namespace OpenUtau.Classic {
                 var yamlFile = Path.Combine(dir, "character.yaml");
                 VoicebankConfig bankConfig = null;
                 if (File.Exists(yamlFile)) {
-                    using (var stream = File.OpenRead(yamlFile)) {
-                        bankConfig = VoicebankConfig.Load(stream);
+                    try {
+                        using (var stream = File.OpenRead(yamlFile)) {
+                            bankConfig = VoicebankConfig.Load(stream);
+                        }
+                    } catch (Exception e) {
+                        Log.Error(e, $"Failed to load yaml {yamlFile}");
                     }
                 }
-                Encoding encoding = Encoding.UTF8;
+                Encoding encoding = Encoding.GetEncoding("shift_jis");
                 if (!string.IsNullOrEmpty(bankConfig?.TextFileEncoding)) {
                     encoding = Encoding.GetEncoding(bankConfig.TextFileEncoding);
                 }

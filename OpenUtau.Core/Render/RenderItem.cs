@@ -95,84 +95,74 @@ namespace OpenUtau.Core.Render {
         }
 
         private List<int> BuildPitchData(UPhoneme phoneme, UVoicePart part, UProject project) {
-            int leftBound = phoneme.Parent.position + phoneme.position - project.MillisecondToTick(phoneme.preutter);
-            int rightBound = phoneme.Parent.position + phoneme.position + phoneme.Duration - project.MillisecondToTick(phoneme.tailIntrude - phoneme.tailOverlap);
-            var leftNote = phoneme.Parent;
-            var rightNote = phoneme.Parent;
-            bool oneMore = true;
-            while ((leftBound < leftNote.RightBound || oneMore) && leftNote.Prev != null && leftNote.Prev.End == leftNote.position) {
-                leftNote = leftNote.Prev;
-                if (leftBound >= leftNote.RightBound) {
-                    oneMore = false;
-                }
-            }
-            oneMore = true;
-            while ((rightBound > rightNote.LeftBound || oneMore) && rightNote.Next != null && rightNote.Next.position == rightNote.End) {
-                rightNote = rightNote.Next;
-                if (rightBound <= rightNote.LeftBound) {
-                    oneMore = false;
-                }
-            }
-
-            // Collect pitch curve and vibratos.
-            var points = new List<PitchPoint>();
-            var vibratos = new List<Tuple<double, double, UVibrato>>();
-            var note = leftNote;
-            float vel = Velocity;
-            var strechRatio = Math.Pow(2, 1.0 - vel / 100);
-            float correction = (float)(phoneme.oto.Preutter * (strechRatio - 1));
-            while (true) {
-                var offsetMs = (float)project.TickToMillisecond(note.position - phoneme.Parent.position);
-                foreach (var point in note.pitch.data) {
-                    var newpp = point.Clone();
-                    newpp.X += offsetMs + correction;
-                    newpp.Y -= (phoneme.Parent.tone - note.tone) * 10;
-                    points.Add(newpp);
-                }
-                if (note.vibrato.length != 0) {
-                    double vibratoStartMs = project.TickToMillisecond(note.position + note.duration * (1 - note.vibrato.length / 100) - phoneme.Parent.position);
-                    double vibratoEndMs = project.TickToMillisecond(note.End - phoneme.Parent.position);
-                    vibratos.Add(Tuple.Create(vibratoStartMs, vibratoEndMs, note.vibrato));
-                }
-                if (note == rightNote) {
-                    break;
-                }
-                note = note.Next;
-            }
-
-            // Expand curve if necessary.
-            float startMs = (float)(project.TickToMillisecond(phoneme.position) - phoneme.oto.Preutter);
-            float endMs = (float)(project.TickToMillisecond(phoneme.End) - phoneme.tailIntrude + phoneme.tailOverlap);
-            if (points.First().X > startMs) {
-                points.Insert(0, new PitchPoint(startMs, points.First().Y));
-            }
-            if (points.Last().X < endMs) {
-                points.Add(new PitchPoint(endMs, points.Last().Y));
-            }
-
-            // Interpolation.
-            var pitches = new List<int>();
             const int intervalTick = 5;
-            float intervalMs = (float)project.TickToMillisecond(intervalTick);
-            float currMs = startMs;
-            int i = 0;
-            int vibrato = 0;
-            while (currMs < endMs) {
-                while (points[i + 1].X < currMs) {
-                    i++;
-                }
-                var pit = MusicMath.InterpolateShape(points[i].X, points[i + 1].X, points[i].Y, points[i + 1].Y, currMs, points[i].shape) * 10;
-                while (vibrato < vibratos.Count - 1 && vibratos[vibrato].Item2 < currMs) {
-                    vibrato++;
-                }
-                if (vibrato < vibratos.Count && vibratos[vibrato].Item1 <= currMs && currMs < vibratos[vibrato].Item2) {
-                    pit += InterpolateVibrato(vibratos[vibrato].Item3, currMs - vibratos[vibrato].Item1, vibratos[vibrato].Item2 - vibratos[vibrato].Item1, project);
-                }
-                pitches.Add((int)pit);
-                currMs += intervalMs;
-            }
+            double intervalMs = project.TickToMillisecond(intervalTick);
+            double startMs = project.TickToMillisecond(phoneme.position) - phoneme.oto.Preutter;
+            double endMs = project.TickToMillisecond(phoneme.End) - phoneme.tailIntrude + phoneme.tailOverlap;
+            double correction = phoneme.oto.Preutter * (Math.Pow(2, 1.0 - Velocity / 100.0) - 1);
+            var pitches = new double[(int)((endMs - startMs) / intervalMs)];
+            Array.Clear(pitches, 0, pitches.Length);
+            var basePitches = new double[pitches.Length];
+            Array.Clear(basePitches, 0, basePitches.Length);
 
-            return pitches;
+            var note = phoneme.Parent;
+            var notes = new List<UNote>();
+            if (note.Prev != null) {
+                notes.Add(note.Prev);
+            }
+            notes.Add(note);
+            if (note.Next != null) {
+                notes.Add(note.Next);
+            }
+            double currMs = startMs;
+            int index = 0;
+            foreach (var currNote in notes) {
+                double noteStartMs = project.TickToMillisecond(currNote.position - note.position);
+                double noteEndMs = project.TickToMillisecond(currNote.End - note.position);
+                double vibratoStartMs = noteStartMs + project.TickToMillisecond(note.duration * (1 - note.vibrato.length / 100.0));
+                double vibratoLengthMs = noteEndMs - vibratoStartMs;
+                while (currMs < noteStartMs && index < pitches.Length) {
+                    currMs += intervalMs;
+                    index++;
+                }
+                while (currMs < noteEndMs && index < pitches.Length) {
+                    pitches[index] = (currNote.tone - note.tone) * 100;
+                    basePitches[index] = pitches[index];
+                    if (currMs >= vibratoStartMs) {
+                        pitches[index] += InterpolateVibrato(currNote.vibrato, currMs - vibratoStartMs, vibratoLengthMs, project);
+                    }
+                    currMs += intervalMs;
+                    index++;
+                }
+            }
+            foreach (var currNote in notes) {
+                double noteStartMs = project.TickToMillisecond(currNote.position - note.position);
+                PitchPoint lastPoint = null;
+                foreach (var pp in currNote.pitch.data) {
+                    var point = pp.Clone();
+                    point.X += (float)(noteStartMs + (currNote == note ? correction : 0));
+                    point.Y = point.Y * 10 + (currNote.tone - note.tone) * 100;
+                    if (lastPoint == null && point.X > noteStartMs) {
+                        lastPoint = new PitchPoint((float)(noteStartMs - intervalMs), point.Y);
+                    }
+                    if (lastPoint != null) {
+                        currMs = startMs;
+                        index = 0;
+                        while (currMs < lastPoint.X && index < pitches.Length) {
+                            currMs += intervalMs;
+                            index++;
+                        }
+                        while (currMs < point.X && index < pitches.Length) {
+                            double pitch = MusicMath.InterpolateShape(lastPoint.X, point.X, lastPoint.Y, point.Y, currMs, lastPoint.shape) - basePitches[index];
+                            pitches[index] += pitch;
+                            currMs += intervalMs;
+                            index++;
+                        }
+                    }
+                    lastPoint = point;
+                }
+            }
+            return pitches.Select(p => (int)p).ToList();
         }
 
         private double InterpolateVibrato(UVibrato vibrato, double posMs, double lengthMs, UProject project) {

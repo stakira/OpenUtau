@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace OpenUtau.Classic {
+    public enum VoicebankType { Classic, Enunu }
+
     public class Voicebank {
         public string File;
         public string Name;
@@ -13,6 +15,7 @@ namespace OpenUtau.Classic {
         public string Web;
         public string OtherInfo;
         public Encoding TextFileEncoding;
+        public VoicebankType VoicebankType;
         public List<OtoSet> OtoSets = new List<OtoSet>();
         public PrefixMap PrefixMap;
         public string Id;

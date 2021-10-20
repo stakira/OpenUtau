@@ -21,6 +21,7 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys {
                 }
             }
         }
+        public string FilePath => ExePath;
         public bool isLegalPlugin {
             get {
                 return _isLegalPlugin;
@@ -103,7 +104,7 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys {
         public DriverModels.EngineInfo GetInfo() {
             DriverModels.EngineInfo ret = new EngineInfo();
             if (!_isLegalPlugin) return ret;
-            ret.Name = Path.GetFileName(ExePath);
+            ret.Name = Path.GetRelativePath(PathManager.Inst.GetEngineSearchPath(), ExePath);
             ret.Usuage = $"Traditional Resample Engine in {ExePath}";
             ret.FlagItem = new EngineFlagItem[0];
             ret.FlagItemCount = 0;
