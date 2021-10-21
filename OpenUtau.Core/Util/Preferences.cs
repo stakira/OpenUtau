@@ -43,8 +43,11 @@ namespace OpenUtau.Core.Util {
                 return;
             }
             var recent = Default.RecentFiles;
-            recent.RemoveAll(f => f == filePath || string.IsNullOrEmpty(f) || !File.Exists(f));
+            recent.RemoveAll(f => f == filePath);
             recent.Insert(0, filePath);
+            recent.RemoveAll(f => string.IsNullOrEmpty(f)
+                || !File.Exists(f)
+                || f.Contains(PathManager.Inst.TemplatesPath));
             if (recent.Count > 16) {
                 recent.RemoveRange(16, recent.Count - 16);
             }

@@ -8,7 +8,7 @@ using SharpCompress.Readers;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace OpenUtau.Core.Formats {
+namespace OpenUtau.Classic {
     public class UstTest {
         readonly ITestOutputHelper output;
 

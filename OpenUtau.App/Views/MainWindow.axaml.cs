@@ -15,6 +15,7 @@ using Avalonia.Threading;
 using Avalonia.VisualTree;
 using OpenUtau.App.Controls;
 using OpenUtau.App.ViewModels;
+using OpenUtau.Classic;
 using OpenUtau.Core;
 using OpenUtau.Core.Formats;
 using OpenUtau.Core.Ustx;
@@ -245,7 +246,7 @@ namespace OpenUtau.App.Views {
                     var part = project.parts[i];
                     if (part is UVoicePart voicePart) {
                         var savePath = PathManager.Inst.GetPartSavePath(project.FilePath, i);
-                        Core.Formats.Ust.SavePart(project, voicePart, savePath);
+                        Ust.SavePart(project, voicePart, savePath);
                     }
                 }
             }
