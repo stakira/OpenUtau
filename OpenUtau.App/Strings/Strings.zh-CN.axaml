@@ -58,11 +58,13 @@
   <system:String x:Key="menu.file.importmidi">导入Midi...</system:String>
   <system:String x:Key="menu.file.importtracks">导入轨道...</system:String>
   <system:String x:Key="menu.file.new">新建</system:String>
+  <system:String x:Key="menu.file.newfromtemplate">从模板新建</system:String>
   <system:String x:Key="menu.file.open">打开...</system:String>
   <system:String x:Key="menu.file.openas">打开为</system:String>
   <system:String x:Key="menu.file.openrecent">最近打开...</system:String>
   <system:String x:Key="menu.file.save">保存</system:String>
   <system:String x:Key="menu.file.saveas">另存为...</system:String>
+  <system:String x:Key="menu.file.savetemplate">保存模板...</system:String>
   <system:String x:Key="menu.help">帮助</system:String>
   <system:String x:Key="menu.help.about">关于 OpenUTAU</system:String>
   <system:String x:Key="menu.help.wiki">OpenUtau 维基</system:String>
