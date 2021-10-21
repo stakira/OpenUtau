@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using Serilog;
 
 namespace OpenUtau {
     internal sealed class LibraryLoader : IDisposable {
@@ -9,11 +10,18 @@ namespace OpenUtau {
         private bool _disposed;
 
         public LibraryLoader(string path, string library) {
+            Log.Information($"Is64BitOperatingSystem {Environment.Is64BitOperatingSystem} Is64BitProcess {Environment.Is64BitProcess}");
             if (OS.IsWindows()) {
-                _handle = LoadLibrary(Path.Combine(
-                    path,
-                    Environment.Is64BitProcess ? "win-x64" : "win-x86",
-                    $"{library}.dll"));
+                string attempt1 = Environment.Is64BitProcess ? "win-x64" : "win-x86";
+                string attempt2 = Environment.Is64BitProcess ? "win-x86" : "win-x64";
+                _handle = LoadLibrary(Path.Combine(path, attempt1, $"{library}.dll"));
+                if (_handle == IntPtr.Zero) {
+                    Log.Error($"Error loading {attempt1}: {Marshal.GetLastWin32Error()}");
+                    _handle = LoadLibrary(Path.Combine(path, attempt2, $"{library}.dll"));
+                }
+                if (_handle == IntPtr.Zero) {
+                    Log.Error($"Error loading {attempt2}: {Marshal.GetLastWin32Error()}");
+                }
             } else if (OS.IsLinux()) {
                 _handle = dlopen(Path.Combine(path, "linux-x64", $"lib{library}.so"), RTLD_NOW);
             } else if (OS.IsMacOS()) {
@@ -51,7 +59,7 @@ namespace OpenUtau {
             _disposed = true;
         }
 
-        [DllImport("kernel32")] static extern IntPtr LoadLibrary(string fileName);
+        [DllImport("kernel32", SetLastError = true)] static extern IntPtr LoadLibrary(string fileName);
         [DllImport("kernel32")] static extern IntPtr GetProcAddress(IntPtr module, string procName);
         [DllImport("kernel32")] static extern int FreeLibrary(IntPtr module);
         [DllImport("libdl")] static extern IntPtr dlopen(string fileName, int flags);

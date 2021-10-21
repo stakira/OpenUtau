@@ -109,13 +109,18 @@ namespace OpenUtau.Classic {
                 while (!reader.EndOfStream) {
                     string line = reader.ReadLine().Trim();
                     var s = line.Split(new char[] { '=' });
-                    if (s.Length != 2) {
+                    if (s.Length < 2) {
                         s = line.Split(new char[] { ':' });
+                    }
+                    if (s.Length < 2) {
+                        s = line.Split(new char[] { '：' });
                     }
                     Array.ForEach(s, temp => temp.Trim());
                     if (s.Length == 2) {
                         s[0] = s[0].ToLowerInvariant();
                         if (s[0] == "name") {
+                            voicebank.Name = s[1];
+                        } else if (s[0] == "名前" && string.IsNullOrEmpty(voicebank.Name)) {
                             voicebank.Name = s[1];
                         } else if (s[0] == "image") {
                             voicebank.Image = s[1];

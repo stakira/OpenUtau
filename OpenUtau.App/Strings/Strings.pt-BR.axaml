@@ -58,11 +58,13 @@
   <system:String x:Key="menu.file.importmidi">Importar Midi...</system:String>
   <system:String x:Key="menu.file.importtracks">Importar Faixas...</system:String>
   <system:String x:Key="menu.file.new">Novo</system:String>
+  <!--<system:String x:Key="menu.file.newfromtemplate">New From Template</system:String>-->
   <system:String x:Key="menu.file.open">Abrir...</system:String>
   <system:String x:Key="menu.file.openas">Abrir como</system:String>
   <system:String x:Key="menu.file.openrecent">Abrir Recente</system:String>
   <system:String x:Key="menu.file.save">Salvar</system:String>
   <system:String x:Key="menu.file.saveas">Salvar como...</system:String>
+  <!--<system:String x:Key="menu.file.savetemplate">Save Template...</system:String>-->
   <system:String x:Key="menu.help">Ajuda</system:String>
   <system:String x:Key="menu.help.about">Sobre OpenUTAU</system:String>
   <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
