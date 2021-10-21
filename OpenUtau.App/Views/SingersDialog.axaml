@@ -32,7 +32,7 @@
               </DataTemplate>
             </MenuItem.DataTemplates>
           </MenuItem>
-          <MenuItem Header="{DynamicResource singers.reload}" Command="{Binding Reload}"/>
+          <MenuItem Header="{DynamicResource singers.refresh}" Command="{Binding Refresh}"/>
         </ContextMenu>
       </Button.ContextMenu>
     </Button>

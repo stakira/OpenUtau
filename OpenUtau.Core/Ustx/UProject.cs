@@ -99,6 +99,16 @@ namespace OpenUtau.Core.Ustx {
                 .ToList();
         }
 
+        public UProject CloneAsTemplate() {
+            var project = new UProject() {
+                ustxVersion = ustxVersion,
+            };
+            foreach (var kv in expressions) {
+                project.expressions.Add(kv.Key, kv.Value.Clone());
+            }
+            return project;
+        }
+
         public void AfterSave() {
             voiceParts = null;
             waveParts = null;

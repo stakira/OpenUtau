@@ -53,6 +53,20 @@ namespace OpenUtau.Core.Ustx {
             };
         }
 
+        public UExpressionDescriptor Clone() {
+            return new UExpressionDescriptor() {
+                name = name,
+                abbr = abbr,
+                type = type,
+                min = min,
+                max = max,
+                defaultValue = defaultValue,
+                isFlag = isFlag,
+                flag = flag,
+                options = (string[])options?.Clone(),
+            };
+        }
+
         public override string ToString() => name;
     }
 

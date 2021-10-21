@@ -38,7 +38,7 @@ namespace OpenUtau.App.ViewModels {
 
             setEncodingCommand = ReactiveCommand.Create<Encoding>(encoding => {
                 SetEncoding(encoding);
-                Reload();
+                Refresh();
             });
             var encodings = new Encoding[] {
                 Encoding.GetEncoding("shift_jis"),
@@ -84,7 +84,7 @@ namespace OpenUtau.App.ViewModels {
             }
         }
 
-        private void Reload() {
+        private void Refresh() {
             if (Singer == null) {
                 return;
             }

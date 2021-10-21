@@ -57,11 +57,13 @@
   <system:String x:Key="menu.file.importmidi">_Importar MIDI</system:String>
   <system:String x:Key="menu.file.importtracks">Importar Pistas...</system:String>
   <system:String x:Key="menu.file.new">_Nuevo</system:String>
+  <!--<system:String x:Key="menu.file.newfromtemplate">New From Template</system:String>-->
   <system:String x:Key="menu.file.open">_Abrir</system:String>
   <system:String x:Key="menu.file.openas">A_brir como</system:String>
   <system:String x:Key="menu.file.openrecent">Abrir Archivo Reciente</system:String>
   <system:String x:Key="menu.file.save">_Guardar</system:String>
   <system:String x:Key="menu.file.saveas">Guardar _como</system:String>
+  <!--<system:String x:Key="menu.file.savetemplate">Save Template...</system:String>-->
   <system:String x:Key="menu.help">_Ayuda</system:String>
   <system:String x:Key="menu.help.about">Sobre OpenUTAU</system:String>
   <system:String x:Key="menu.help.wiki">Wiki de OpenUTAU</system:String>
@@ -107,7 +109,7 @@
   <!--<system:String x:Key="pianoroll.toggle.vibrato">View Vibrato (U)</system:String>-->
   <!--<system:String x:Key="pianoroll.tool.eraser">Eraser Tool (3)</system:String>-->
   <!--<system:String x:Key="pianoroll.tool.pen">Pen Tool (2)
-Left click to draw
+    Left click to draw
 Right click to delete</system:String>-->
   <!--<system:String x:Key="pianoroll.tool.selection">Selection Tool (1)
 Hold Ctrl to select more</system:String>-->
@@ -149,22 +151,22 @@ Hold Ctrl to select more</system:String>-->
   <!--<system:String x:Key="singers.setencoding">Set Encoding</system:String>-->
 
   <!--<system:String x:Key="tip.exps">
-Left Button Draw: Set expressions
-Right Button Draw: Reset expressions
+    Left Button Draw: Set expressions
+    Right Button Draw: Reset expressions
   </system:String>-->
   <system:String x:Key="tip.lyricbox.next">Tab: Siguiente Nota</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: Nota Previa</system:String>
   <!--<system:String x:Key="tip.notes.basics">
-Selection Tool
+    Selection Tool
     Box Select: Select notes
     Ctrl + Box Select: Select more notes
     Up/Down: Transpose selected notes
     Ctrl + Up/Down: Transpose selected notes by octave
-Pen Tool
+    Pen Tool
     Left Button Draw: Add note
     Right Click: Remove note
     Right Button Draw: Remove multiple notes
-General
+    General
     T: Toggle tips
     Drag Note: Move note
     Drag End of Note: Resize note
