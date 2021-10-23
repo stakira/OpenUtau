@@ -40,7 +40,7 @@ namespace OpenUtau.Api {
             public string lyric;
 
             /// <summary>
-            /// Phonetic hint, 
+            /// Phonetic hint,
             /// Example: if lyric on note is "read". The hint is null.
             /// Example: if lyric on note is "read[r iy d]". The hint is "r iy d".
             /// </summary>
@@ -111,7 +111,7 @@ namespace OpenUtau.Api {
         /// a phonemizer can also use this method to load singer-specific resource,
         /// such as a custom dictionary file in the singer directory.
         /// Use singer.Location to access the singer directory.
-        /// 
+        ///
         /// Do not modify the singer.
         /// </summary>
         /// <param name="singer"></param>
@@ -190,13 +190,9 @@ namespace OpenUtau.Api {
         /// <param name="singer">The singer.</param>
         /// <returns>Mapped alias.</returns>
         public static string MapPhoneme(string phoneme, int tone, USinger singer) {
-            var toneName = MusicMath.GetToneName(tone);
-            //if (singer.PrefixMap.TryGetValue(toneName, out var prefix)) {
-            //    var phonemeMapped = prefix.Item1 + phoneme + prefix.Item2;
-            //    if (singer.FindOto(phonemeMapped) != null) {
-            //        phoneme = phonemeMapped;
-            //    }
-            //}
+            if (singer.TryGetMappedOto(phoneme, tone, out var oto)) {
+                phoneme = oto.Alias;
+            }
             return phoneme;
         }
     }

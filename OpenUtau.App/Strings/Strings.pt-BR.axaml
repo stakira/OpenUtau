@@ -86,7 +86,6 @@
   <!--<system:String x:Key="oto.consonant">Consonant</system:String>-->
   <!--<system:String x:Key="oto.cutoff">Cutoff</system:String>-->
   <system:String x:Key="oto.file">Arquivo</system:String>
-  <!--<system:String x:Key="oto.flavor">Flavor</system:String>-->
   <!--<system:String x:Key="oto.offset">Offset</system:String>-->
   <!--<system:String x:Key="oto.overlap">Overlap</system:String>-->
   <system:String x:Key="oto.phonetic">Fonética</system:String>
@@ -94,6 +93,7 @@
   <!--<system:String x:Key="oto.preutter">Preutter</system:String>-->
   <system:String x:Key="oto.set">Pasta</system:String>
   <system:String x:Key="oto.suffix">Sufixo</system:String>
+  <system:String x:Key="oto.tags">Tags</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">Lírica</system:String>
   <system:String x:Key="pianoroll.menu.notes">Nota</system:String>
@@ -114,7 +114,11 @@ Botão esquerdo para desenhar
 Botão direito para apagar</system:String>
   <system:String x:Key="pianoroll.tool.selection">Ferramenta Seleção  (1)
 Segure Ctrl para selecionar mais notas</system:String>
-
+  <system:String x:Key="pianoroll.tool.tagger">Ferramenta Tag (4)
+Botão esquerdo para desenhar
+Botão direito para apagar</system:String>
+  <system:String x:Key="pianoroll.tool.tagger.setup">Setup Tags</system:String>
+  
   <system:String x:Key="prefs.advanced">Avançado</system:String>
   <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
   <system:String x:Key="prefs.advanced.stable">Estável</system:String>
@@ -150,6 +154,16 @@ Segure Ctrl para selecionar mais notas</system:String>
   <system:String x:Key="singers.location">Pasta</system:String>
   <system:String x:Key="singers.refresh">Atualizar</system:String>
   <system:String x:Key="singers.setencoding">Definir Codificação</system:String>
+  <system:String x:Key="singers.subbanks.add">Adicionar</system:String>
+  <system:String x:Key="singers.subbanks.caption">Editor Tag</system:String>
+  <system:String x:Key="singers.subbanks.dir">Pasta</system:String>
+  <system:String x:Key="singers.subbanks.prefix">Prefixo</system:String>
+  <system:String x:Key="singers.subbanks.remove">Remover</system:String>
+  <system:String x:Key="singers.subbanks.reset">Redefinir</system:String>
+  <system:String x:Key="singers.subbanks.save">Salvar</system:String>
+  <system:String x:Key="singers.subbanks.suffix">Sufixo</system:String>
+  <system:String x:Key="singers.subbanks.tags">Tags</system:String>
+  <system:String x:Key="singers.subbanks.toneranges">Alcance</system:String>
 
   <system:String x:Key="tip.exps">
 Desenhar com o Botão Esquerdo: Definir expressões
