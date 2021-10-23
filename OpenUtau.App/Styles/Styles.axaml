@@ -186,6 +186,9 @@
     <Setter Property="FontSize" Value="12" />
     <Setter Property="MinHeight" Value="20" />
   </Style>
+  <Style Selector="DataGridCell > TextBox">
+    <Setter Property="Margin" Value="0"/>
+  </Style>
 
   <Style Selector="ProgressBar">
     <Setter Property="Background" Value="Transparent"/>

@@ -76,11 +76,12 @@ namespace OpenUtau.App.Views {
             this.selectionBox = selectionBox;
         }
         public override void Begin(IPointer pointer, Point point) {
-            base.Begin(pointer, point);
+            pointer.Capture(canvas);
+            startPoint = point;
             selectionBox.IsVisible = true;
         }
         public override void End(IPointer pointer, Point point) {
-            base.End(pointer, point);
+            pointer.Capture(null);
             selectionBox.IsVisible = false;
             var notesVm = vm.NotesViewModel;
             notesVm.CommitTempSelectNotes();

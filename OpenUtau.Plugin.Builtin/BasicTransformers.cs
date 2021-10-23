@@ -75,4 +75,21 @@ namespace OpenUtau.Plugin.Builtin {
             return lyric;
         }
     }
+
+    /// <summary>
+    /// A Transformer that simply removes an english letter from end of lyric.
+    /// </summary>
+    [Transformer("Remove Letter Suffix")]
+    public class RemoveLetterSuffixTransformer : Transformer {
+        public override string Transform(string lyric) {
+            if (lyric.Length <= 2) {
+                return lyric;
+            }
+            var c = lyric[lyric.Length - 1];
+            if ((c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z') && c != 'R' && c != 'r') {
+                return lyric.Substring(0, lyric.Length - 1);
+            }
+            return lyric;
+        }
+    }
 }

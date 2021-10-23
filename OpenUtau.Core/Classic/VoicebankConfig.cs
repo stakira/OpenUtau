@@ -1,6 +1,9 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text;
 using OpenUtau.Core;
+using YamlDotNet.Serialization;
 
 namespace OpenUtau.Classic {
     public enum SymbolSetPreset { unknown, hiragana, arpabet }
@@ -11,42 +14,27 @@ namespace OpenUtau.Classic {
         public string Tail { get; set; } = "R";
     }
 
-    /// <summary>
-    /// A subbank of a voicebank. A valid subbank should be:
-    ///   1. All its sounds are contained in a single oto.ini.
-    ///   2. All its sounds use the same prefix and suffix.
-    /// If a directory does not meet these conditions, do not list it as a subbank.
-    /// </summary>
-    public class Subbank {
-        /// <summary>
-        /// Subbank directory relative to character.txt. Leav unspecified if not in a subfolder.
-        /// </summary>
-        public string Dir { get; set; }
 
+    public class Subbank {
         /// <summary>
         /// Subbank prefix. Leave unspecified if none.
         /// </summary>
-        public string Prefix { get; set; }
+        public string Prefix { get; set; } = string.Empty;
 
         /// <summary>
         /// Subbank suffix. Leave unspecified if none.
         /// </summary>
-        public string Suffix { get; set; }
+        public string Suffix { get; set; } = string.Empty;
 
         /// <summary>
-        /// Flavor of subbank, e.g., "power", "whisper". Leave unspecified for the main bank.
+        /// Tone ranges. Each range specified as "C1-C4" or "C4".
         /// </summary>
-        public string Flavor { get; set; }
+        public string[] ToneRanges { get; set; }
 
         /// <summary>
-        /// Start of tone range in prefix.map. Required.
+        /// Tags of subbank, e.g., "power", "whisper". Leave unspecified for the main bank.
         /// </summary>
-        public string ToneStart { get; set; }
-
-        /// <summary>
-        /// End of tone range in prefix.map. Required.
-        /// </summary>
-        public string ToneEnd { get; set; }
+        public string[] Tags { get; set; }
     }
 
     public class VoicebankConfig {
@@ -68,7 +56,8 @@ namespace OpenUtau.Classic {
 
         public static VoicebankConfig Load(Stream stream) {
             using (var reader = new StreamReader(stream, Encoding.UTF8)) {
-                return Yaml.DefaultDeserializer.Deserialize<VoicebankConfig>(reader);
+                var bankConfig = Yaml.DefaultDeserializer.Deserialize<VoicebankConfig>(reader);
+                return bankConfig;
             }
         }
     }

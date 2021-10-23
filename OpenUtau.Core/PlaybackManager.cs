@@ -41,11 +41,11 @@ namespace OpenUtau.Core {
         public int DeviceNumber => 0;
         public List<AudioOutputDevice> GetOutputDevices() => new List<AudioOutputDevice>();
         public long GetPosition() => 0;
-        public void Init(ISampleProvider sampleProvider) {}
-        public void Pause() {}
-        public void Play() {}
-        public void SelectDevice(Guid guid, int deviceNumber) {}
-        public void Stop() {}
+        public void Init(ISampleProvider sampleProvider) { }
+        public void Pause() { }
+        public void Play() { }
+        public void SelectDevice(Guid guid, int deviceNumber) { }
+        public void Stop() { }
     }
 
     public class SineGen : ISampleProvider {
@@ -226,6 +226,11 @@ namespace OpenUtau.Core {
                     RenderEngine engine = new RenderEngine(project, driver, cache);
                     var trackMixes = engine.RenderTracks();
                     for (int i = 0; i < trackMixes.Count; ++i) {
+                        if (project.tracks.Count > i) {
+                            if (project.tracks[i].Mute) {
+                                continue;
+                            }
+                        }
                         var file = PathManager.Inst.GetExportPath(project.FilePath, i + 1);
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exporting to {file}."));
                         WaveFileWriter.CreateWaveFile16(file, new ExportAdapter(trackMixes[i]));

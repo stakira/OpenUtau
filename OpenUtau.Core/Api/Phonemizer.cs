@@ -190,12 +190,8 @@ namespace OpenUtau.Api {
         /// <param name="singer">The singer.</param>
         /// <returns>Mapped alias.</returns>
         public static string MapPhoneme(string phoneme, int tone, USinger singer) {
-            var toneName = MusicMath.GetToneName(tone);
-            if (singer.PrefixMap.TryGetValue(toneName, out var prefix)) {
-                var phonemeMapped = prefix.Item1 + phoneme + prefix.Item2;
-                if (singer.FindOto(phonemeMapped) != null) {
-                    phoneme = phonemeMapped;
-                }
+            if (singer.TryGetMappedOto(phoneme, tone, out var oto)) {
+                phoneme = oto.Alias;
             }
             return phoneme;
         }

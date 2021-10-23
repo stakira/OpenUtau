@@ -56,8 +56,8 @@ namespace OpenUtau.Core.Ustx {
 
         public UNote CreateNote() {
             UNote note = UNote.Create();
-            note.pitch.AddPoint(new PitchPoint(-25, 0));
-            note.pitch.AddPoint(new PitchPoint(25, 0));
+            note.pitch.AddPoint(new PitchPoint(-40, 0));
+            note.pitch.AddPoint(new PitchPoint(40, 0));
             return note;
         }
 

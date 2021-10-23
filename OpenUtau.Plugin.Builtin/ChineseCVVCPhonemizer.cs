@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using OpenUtau.Api;
 using OpenUtau.Classic;
 using OpenUtau.Core.Ustx;
@@ -79,7 +80,7 @@ namespace OpenUtau.Plugin.Builtin {
             }
             try {
                 string file = Path.Combine(singer.Location, "presamp.ini");
-                using (var reader = new StreamReader(file)) {
+                using (var reader = new StreamReader(file, singer.TextFileEncoding)) {
                     var blocks = Ini.ReadBlocks(reader, file, @"\[\w+\]");
                     var vowelLines = blocks.Find(block => block.header == "[VOWEL]").lines;
                     foreach (var iniLine in vowelLines) {
