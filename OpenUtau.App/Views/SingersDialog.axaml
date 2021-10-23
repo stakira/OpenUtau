@@ -15,7 +15,9 @@
   <Grid Margin="{Binding $parent.WindowDecorationMargin}">
     <Grid.RowDefinitions>
       <RowDefinition Height="170"/>
-      <RowDefinition Height="*"/>
+      <RowDefinition Height="180" MinHeight="180"/>
+      <RowDefinition Height="10"/>
+      <RowDefinition Height="*" MinHeight="180"/>
     </Grid.RowDefinitions>
     <Image Grid.Row="0" Width="120" Height="120" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0" Source="{Binding Avatar}"/>
     <Button Grid.Row="0" Margin="10" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="20" Width="90" Content="{DynamicResource singers.location}"
@@ -41,7 +43,36 @@
     <ScrollViewer Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="140,10,10,10" Height="118">
       <TextBlock x:Name="info" TextWrapping="Wrap" Text="{Binding Info}"/>
     </ScrollViewer>
-    <DataGrid Grid.Row="1" Margin="10,0,10,10" Items="{Binding Otos}" IsReadOnly="True" CanUserResizeColumns="True">
+    <DataGrid Grid.Row="1" Margin="10,0,10,30" CanUserSortColumns="False" BorderThickness="1"
+              BorderBrush="{DynamicResource SystemControlHighlightBaseMediumHighBrush}"
+              Items="{Binding Subbanks}" SelectedItem="{Binding SelectedSubbank}">
+      <DataGrid.Columns>
+        <DataGridTextColumn Header="{StaticResource singers.subbanks.prefix}" Binding="{Binding Prefix}"/>
+        <DataGridTextColumn Header="{StaticResource singers.subbanks.suffix}" Binding="{Binding Suffix}"/>
+        <DataGridTextColumn Header="{StaticResource singers.subbanks.toneranges}" Binding="{Binding ToneRangesString}"/>
+        <DataGridTextColumn Header="{StaticResource singers.subbanks.tags}" Binding="{Binding TagsString}"/>
+      </DataGrid.Columns>
+      <DataGrid.ContextMenu>
+        <ContextMenu>
+          <MenuItem Header="{StaticResource singers.subbanks.add}"
+                    Command="{Binding AddSubbank}"/>
+          <MenuItem Header="{StaticResource singers.subbanks.remove}"
+                    Command="{Binding RemoveSubbank}"
+                    IsVisible="{Binding SelectedSubbank, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+        </ContextMenu>
+      </DataGrid.ContextMenu>
+    </DataGrid>
+    <StackPanel Grid.Row="1" Spacing="10" Margin="10,0"
+                Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+      <Button Margin="0" Content="{DynamicResource singers.subbanks.reset}"
+              Command="{Binding LoadSubbanks}"/>
+      <Button Margin="0" Content="{DynamicResource singers.subbanks.save}"
+              Command="{Binding SaveSubbanks}"/>
+    </StackPanel>
+    <GridSplitter Grid.Row="2" Height="10"/>
+    <DataGrid Grid.Row="3" Margin="10,0,10,10" CanUserResizeColumns="True" BorderThickness="1"
+              BorderBrush="{DynamicResource SystemControlHighlightBaseMediumHighBrush}"
+              Items="{Binding Otos}" IsReadOnly="True">
       <DataGrid.Columns>
         <DataGridTextColumn Header="{StaticResource oto.alias}" Binding="{Binding Alias}"/>
         <DataGridTextColumn Header="{StaticResource oto.set}" Binding="{Binding Set}"/>
@@ -49,7 +80,7 @@
         <DataGridTextColumn Header="{StaticResource oto.phonetic}" Binding="{Binding Phonetic}"/>
         <DataGridTextColumn Header="{StaticResource oto.prefix}" Binding="{Binding Prefix}"/>
         <DataGridTextColumn Header="{StaticResource oto.suffix}" Binding="{Binding Suffix}"/>
-        <DataGridTextColumn Header="{StaticResource oto.flavor}" Binding="{Binding Flavor}"/>
+        <DataGridTextColumn Header="{StaticResource oto.tags}" Binding="{Binding TagsString}"/>
         <DataGridTextColumn Header="{StaticResource oto.offset}" Binding="{Binding Offset}"/>
         <DataGridTextColumn Header="{StaticResource oto.consonant}" Binding="{Binding Consonant}"/>
         <DataGridTextColumn Header="{StaticResource oto.cutoff}" Binding="{Binding Cutoff}"/>

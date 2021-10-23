@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
 
 namespace OpenUtau.Classic {
     public enum VoicebankType { Classic, Enunu }
 
     public class Voicebank {
+        public string BasePath;
         public string File;
         public string Name;
         public string Image;
@@ -17,8 +17,25 @@ namespace OpenUtau.Classic {
         public Encoding TextFileEncoding;
         public VoicebankType VoicebankType;
         public List<OtoSet> OtoSets = new List<OtoSet>();
-        public PrefixMap PrefixMap;
+        public List<Subbank> Subbanks = new List<Subbank>();
         public string Id;
+
+        public void Reset() {
+            BasePath = null;
+            File = null;
+            Name = null;
+            Image = null;
+            Portrait = null;
+            PortraitOpacity = 0;
+            Author = null;
+            Web = null;
+            OtherInfo = null;
+            TextFileEncoding = null;
+            VoicebankType = VoicebankType.Classic;
+            OtoSets = new List<OtoSet>();
+            Subbanks = new List<Subbank>();
+            Id = null;
+        }
 
         public override string ToString() {
             return Name;
@@ -28,9 +45,6 @@ namespace OpenUtau.Classic {
     public class OtoSet {
         public string File;
         public string Name;
-        public string Prefix;
-        public string Suffix;
-        public string Flavor;
         public List<Oto> Otos = new List<Oto>();
         public List<string> Errors = new List<string>();
 
@@ -68,10 +82,5 @@ namespace OpenUtau.Classic {
         public override string ToString() {
             return Alias;
         }
-    }
-
-    public class PrefixMap {
-        public string File;
-        public Dictionary<string, Tuple<string, string>> Map = new Dictionary<string, Tuple<string, string>>();
     }
 }

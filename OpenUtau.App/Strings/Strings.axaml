@@ -86,7 +86,6 @@
   <system:String x:Key="oto.consonant">Consonant</system:String>
   <system:String x:Key="oto.cutoff">Cutoff</system:String>
   <system:String x:Key="oto.file">File</system:String>
-  <system:String x:Key="oto.flavor">Flavor</system:String>
   <system:String x:Key="oto.offset">Offset</system:String>
   <system:String x:Key="oto.overlap">Overlap</system:String>
   <system:String x:Key="oto.phonetic">Phonetic</system:String>
@@ -94,6 +93,7 @@
   <system:String x:Key="oto.preutter">Preutter</system:String>
   <system:String x:Key="oto.set">Set</system:String>
   <system:String x:Key="oto.suffix">Suffix</system:String>
+  <system:String x:Key="oto.tags">Tags</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">Lyrics</system:String>
   <system:String x:Key="pianoroll.menu.notes">Notes</system:String>
@@ -110,10 +110,14 @@
   <system:String x:Key="pianoroll.toggle.vibrato">View Vibrato (U)</system:String>
   <system:String x:Key="pianoroll.tool.eraser">Eraser Tool (3)</system:String>
   <system:String x:Key="pianoroll.tool.pen">Pen Tool (2)
-    Left click to draw
+Left click to draw
 Right click to delete</system:String>
   <system:String x:Key="pianoroll.tool.selection">Selection Tool (1)
 Hold Ctrl to select more</system:String>
+  <system:String x:Key="pianoroll.tool.tagger">Tagger Tool (4)
+Left click to draw
+Right click to erase</system:String>
+  <system:String x:Key="pianoroll.tool.tagger.setup">Setup Tags</system:String>
 
   <system:String x:Key="prefs.advanced">Advanced</system:String>
   <system:String x:Key="prefs.advanced.beta">Beta</system:String>
@@ -150,6 +154,16 @@ Hold Ctrl to select more</system:String>
   <system:String x:Key="singers.location">Location</system:String>
   <system:String x:Key="singers.refresh">Refresh</system:String>
   <system:String x:Key="singers.setencoding">Set Encoding</system:String>
+  <system:String x:Key="singers.subbanks.add">Add</system:String>
+  <system:String x:Key="singers.subbanks.caption">Tag Editor</system:String>
+  <system:String x:Key="singers.subbanks.dir">Directory</system:String>
+  <system:String x:Key="singers.subbanks.prefix">Prefix</system:String>
+  <system:String x:Key="singers.subbanks.remove">Remove</system:String>
+  <system:String x:Key="singers.subbanks.reset">Reset</system:String>
+  <system:String x:Key="singers.subbanks.save">Save</system:String>
+  <system:String x:Key="singers.subbanks.suffix">Suffix</system:String>
+  <system:String x:Key="singers.subbanks.tags">Tags</system:String>
+  <system:String x:Key="singers.subbanks.toneranges">Tone Ranges</system:String>
 
   <system:String x:Key="tip.exps">
     Left Button Draw: Set expressions

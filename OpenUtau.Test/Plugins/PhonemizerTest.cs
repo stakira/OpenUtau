@@ -22,7 +22,7 @@ namespace OpenUtau.Plugins {
                 Wav = "a.wav",
             });
             voicebank.OtoSets.Add(otoSet);
-            return new USinger(voicebank, "null");
+            return new USinger(voicebank);
         }
 
         [Fact]

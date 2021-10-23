@@ -9,13 +9,13 @@ namespace OpenUtau.Core.Formats {
             var voicebanks = loader.LoadAll();
             Dictionary<string, USinger> singers = new Dictionary<string, USinger>();
             foreach (var pair in voicebanks) {
-                singers[pair.Key] = new USinger(pair.Value, PathManager.Inst.SingersPathOld);
+                singers[pair.Key] = new USinger(pair.Value);
             }
 
             loader = new VoicebankLoader(PathManager.Inst.SingersPath);
             voicebanks = loader.LoadAll();
             foreach (var pair in voicebanks) {
-                singers[pair.Key] = new USinger(pair.Value, PathManager.Inst.SingersPathOld);
+                singers[pair.Key] = new USinger(pair.Value);
             }
 
             return singers;

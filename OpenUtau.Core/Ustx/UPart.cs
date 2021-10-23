@@ -38,6 +38,8 @@ namespace OpenUtau.Core.Ustx {
         [JsonProperty]
         [YamlMember(Order = 100)]
         public SortedSet<UNote> notes = new SortedSet<UNote>();
+        [YamlMember(Order = 101)]
+        public SortedSet<UTag> tags = new SortedSet<UTag>();
 
         public override string DisplayName => name;
 

@@ -91,7 +91,7 @@
                         TickOffset="{Binding NotesViewModel.TickOffset}"
                         SnapUnit="{Binding NotesViewModel.SnapUnit}"
                         IsPianoRoll="True" ShowBarNumber="True"/>
-      <Image Grid.Row="2" Grid.RowSpan="3" Grid.Column="1" HorizontalAlignment="Right" Height="500" Margin="0,0,100,0"
+      <Image Grid.Row="2" Grid.RowSpan="3" Grid.Column="1" HorizontalAlignment="Right" Margin="0,0,100,0"
              Source="{Binding NotesViewModel.Portrait}" OpacityMask="{Binding NotesViewModel.PortraitMask}" Stretch="None"/>
       <c:NotesCanvas Grid.Row="2" Grid.Column="1" Background="Transparent"
                      TickWidth="{Binding NotesViewModel.TickWidth}"
@@ -168,7 +168,10 @@
                   </Path>
                 </Grid>
               </ToggleButton>
-              <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="20" Width="20" CornerRadius="0,2,2,0"
+              <Menu Height="20" IsVisible="False">
+                <MenuItem Header="..." IsVisible="{Binding NotesViewModel.PencilTool, Mode=OneWay}"/>
+              </Menu>
+              <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="20" Width="20"
                             IsChecked="{Binding NotesViewModel.EraserTool, Mode=OneWay}"
                             Command="{Binding NotesViewModel.SelectToolCommand}" CommandParameter="3"
                             ToolTip.Tip="{DynamicResource pianoroll.tool.eraser}">
@@ -183,6 +186,24 @@
                   </Path>
                 </Grid>
               </ToggleButton>
+              <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="20" Width="20"
+                            IsChecked="{Binding NotesViewModel.TaggerTool, Mode=OneWay}"
+                            Command="{Binding NotesViewModel.SelectToolCommand}" CommandParameter="4"
+                            ToolTip.Tip="{DynamicResource pianoroll.tool.tagger}">
+                <Grid Width="18" Height="18">
+                  <Path Classes="filled" Data="M21.41 11.58L12.41 2.58A2 2 0 0 0 11 2H4A2 2 0 0 0 2 4V11A2 2 0 0 0 2.59 12.42L11.59 21.42A2 2 0 0 0 13 22A2 2 0 0 0 14.41 21.41L21.41 14.41A2 2 0 0 0 22 13A2 2 0 0 0 21.41 11.58M13 20L4 11V4H11L20 13M6.5 5A1.5 1.5 0 1 1 5 6.5A1.5 1.5 0 0 1 6.5 5Z" >
+                    <Path.RenderTransform>
+                      <TransformGroup>
+                        <ScaleTransform ScaleX=".55" ScaleY=".55"/>
+                        <TranslateTransform X="-1.5" Y="-1.5"/>
+                      </TransformGroup>
+                    </Path.RenderTransform>
+                  </Path>
+                </Grid>
+              </ToggleButton>
+              <Menu Height="20">
+                <MenuItem Header="..." IsVisible="{Binding NotesViewModel.TaggerTool, Mode=OneWay}"/>
+              </Menu>
             </StackPanel>
           </Border>
         </Border>
