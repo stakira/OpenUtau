@@ -12,7 +12,8 @@
 
   <system:String x:Key="dialogs.about.caption">Sobre OpenUTAU</system:String>
   <system:String x:Key="dialogs.about.message">
-        OpenUTAU es un entorno de edición de código abierto para el programa de síntesis UTAU. Su objetivo es ofrecer una interfaz moderna, y soporte fonológico inteligente. ¡Visítanos en GitHub!</system:String>
+        OpenUTAU es un entorno de edición de código abierto para el programa de síntesis UTAU. Su objetivo es ofrecer una interfaz moderna, y soporte fonológico inteligente. ¡Visítanos en GitHub!
+        </system:String>
   <system:String x:Key="dialogs.exitsave.caption">Salir de OpenUTAU</system:String>
   <system:String x:Key="dialogs.exitsave.message">El projecto tiene cambios sin guardar. ¿Quieres guardar el archivo?</system:String>
   <system:String x:Key="dialogs.export.caption">Exportar</system:String>
@@ -113,6 +114,10 @@ Click izquierdo para dibujar
 Click derecho para borrar</system:String>
   <system:String x:Key="pianoroll.tool.selection">Herramienta de Selección (1)
 Mantiene Ctrl para seleccionar más</system:String>
+  <system:String x:Key="pianoroll.tool.tagger">Herramienta de Etiquetas (4)
+Click izquierdo para dibujar
+Click derecho para borrar</system:String>
+  <system:String x:Key="pianoroll.tool.tagger.setup">Configurar Etiquetas</system:String>
 
   <system:String x:Key="prefs.advanced">Avanzado</system:String>
   <system:String x:Key="prefs.advanced.beta">Beta</system:String>
@@ -149,6 +154,16 @@ Mantiene Ctrl para seleccionar más</system:String>
   <system:String x:Key="singers.location">Rutas</system:String>
   <system:String x:Key="singers.refresh">Refrescar</system:String>
   <system:String x:Key="singers.setencoding">Fijar Codificación</system:String>
+  <system:String x:Key="singers.subbanks.add">Agregar</system:String>
+  <system:String x:Key="singers.subbanks.caption">Editor de Etiquetas</system:String>
+  <system:String x:Key="singers.subbanks.dir">Directorio</system:String>
+  <system:String x:Key="singers.subbanks.prefix">Prefijo</system:String>
+  <system:String x:Key="singers.subbanks.remove">Quitar</system:String>
+  <system:String x:Key="singers.subbanks.reset">Reestablecer</system:String>
+  <system:String x:Key="singers.subbanks.save">Guardar</system:String>
+  <system:String x:Key="singers.subbanks.suffix">Sufijo</system:String>
+  <system:String x:Key="singers.subbanks.tags">Etiquetas</system:String>
+  <system:String x:Key="singers.subbanks.toneranges">Rangos Tonales</system:String>
 
   <system:String x:Key="tip.exps">
 Click Izquierdo + Arrastrar: Poner expresiones
@@ -167,7 +182,7 @@ Lapiz
     Click Derecho: Borra nota
     Click Derecho + Arrastrar: Borra multiples notas
 General
-    T: Mostrar/Esconder Consejos 
+    T: Mostrar/Esconder Consejos
     Arrastrar Nota: Mueve una Nota
     Arrastrar el Fin de una Nota: Ajusta el tamaño de la Nota
     Alt + Arrastrar el Fin de una Nota: Ajusta el tamaño de la Nota vecina
