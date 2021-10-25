@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
@@ -10,6 +10,9 @@ namespace OpenUtau.Plugin.Builtin {
     public class JapaneseCVVCPhonemizer : Phonemizer {
         static readonly string[] plainVowels = new string[] { "あ", "い", "う", "え", "お", "ん" };
 
+        //+Exception string -母音の文字列だが例外でCV発音のもの
+        static readonly string[] exception = new string[] { "いぃ", "いぇ", "うぃ", "うぅ", "うぇ", "うぉ" };
+
         static readonly string[] vowels = new string[] {
             "a=ぁ,あ,か,が,さ,ざ,た,だ,な,は,ば,ぱ,ま,ゃ,や,ら,わ,ァ,ア,カ,ガ,サ,ザ,タ,ダ,ナ,ハ,バ,パ,マ,ャ,ヤ,ラ,ワ",
             "e=ぇ,え,け,げ,せ,ぜ,て,で,ね,へ,べ,ぺ,め,れ,ゑ,ェ,エ,ケ,ゲ,セ,ゼ,テ,デ,ネ,ヘ,ベ,ペ,メ,レ,ヱ",
@@ -20,6 +23,7 @@ namespace OpenUtau.Plugin.Builtin {
             "N=ン",
         };
 
+        //+Added correspondence between consonants and vowels -子音と母音の対応を追加
         static readonly string[] consonants = new string[] {
             "ch=ch,ち,ちぇ,ちゃ,ちゅ,ちょ",
             "gy=gy,ぎ,ぎぇ,ぎゃ,ぎゅ,ぎょ",
@@ -28,29 +32,30 @@ namespace OpenUtau.Plugin.Builtin {
             "py=py,ぴ,ぴぇ,ぴゃ,ぴゅ,ぴょ",
             "ry=ry,り,りぇ,りゃ,りゅ,りょ",
             "ny=ny,に,にぇ,にゃ,にゅ,にょ",
-            "r=r,ら,る,れ,ろ",
+            "r=r,4,ら,る,るぃ,れ,ろ",
             "hy=hy,ひ,ひぇ,ひゃ,ひゅ,ひょ",
             "dy=dy,でぃ,でぇ,でゃ,でゅ,でょ",
             "by=by,び,びぇ,びゃ,びゅ,びょ",
-            "b=b,ば,ぶ,べ,ぼ",
-            "d=d,だ,で,ど,どぅ",
-            "g=g,が,ぐ,げ,ご",
+            "b=b,ば,ぶ,ぶぃ,べ,ぼ",
+            "d=d,だ,で,ど,どぃ,どぅ",
+            "g=g,が,ぐ,ぐぃ,げ,ご",
             "f=f,ふ,ふぁ,ふぃ,ふぇ,ふぉ",
-            "h=h,は,へ,ほ",
-            "k=k,か,く,け,こ",
+            "h=h,は,はぃ,へ,ほ,ほぅ",
+            "k=k,か,く,くぃ,け,こ",
             "j=j,じ,じぇ,じゃ,じゅ,じょ",
-            "m=m,ま,む,め,も",
-            "n=n,な,ぬ,ね,の",
-            "p=p,ぱ,ぷ,ぺ,ぽ",
+            "m=m,ま,む,むぃ,め,も",
+            "n=n,な,ぬ,ぬぃ,ね,の",
+            "p=p,ぱ,ぷ,ぷぃ,ぺ,ぽ",
             "s=s,さ,す,すぃ,せ,そ",
             "sh=sh,し,しぇ,しゃ,しゅ,しょ",
-            "t=t,た,て,と,とぅ",
-            "w=w,うぃ,うぅ,うぇ,うぉ,わ,を",
+            "t=t,た,て,と,とぃ,とぅ",
             "v=v,ヴ,ヴぁ,ヴぃ,ヴぅ,ヴぇ,ヴぉ",
-            "y=y,いぃ,いぇ,や,ゆ,よ,ゐ,ゑ",
             "ky=ky,き,きぇ,きゃ,きゅ,きょ",
+            "w=w,うぃ,うぅ,うぇ,うぉ,わ,ゐ,ゑ,を,ヰ,ヱ",
+            "y=y,いぃ,いぇ,や,ゆ,よ",
             "z=z,ざ,ず,ずぃ,ぜ,ぞ",
             "my=my,み,みぇ,みゃ,みゅ,みょ",
+            "ng=ng,ガ,ギ,グ,ゲ,ゴ",
             "R=R",
             "息=息",
             "吸=吸",
@@ -100,32 +105,77 @@ namespace OpenUtau.Plugin.Builtin {
             }
 
             if (nextNeighbour != null) {
+
                 var nextUnicode = ToUnicodeElements(nextNeighbour?.lyric);
                 var nextLyric = string.Join("", nextUnicode);
+                int Fvcou = 0;
 
                 // Check if next note is a vowel and does not require VC
-                if (plainVowels.Contains(nextUnicode.FirstOrDefault() ?? string.Empty)) {
-                    return new Result {
-                        phonemes = new Phoneme[] {
-                            new Phoneme() {
-                                phoneme = currentLyric,
+                //+Exception detection by avoiding suffix and prefix -surfixとprefixを回避しながら後続母音を決定、母音系統発音の例外も検出
+                
+                for (Fvcou = 0; Fvcou < nextLyric.Length; Fvcou++) {
+                    if (exception.Any(nextLyric.Contains)) {
+                        break;
+                    }
+                    var searchFVF = Convert.ToString(nextLyric.ElementAtOrDefault(Fvcou));
+                    if (searchFVF != string.Empty) {
+                        if (System.Text.RegularExpressions.Regex.IsMatch(searchFVF, @"[\p{IsHiragana}\p{IsKatakana}\p{Ll}\p{Nd}]+")) {
+                            if (plainVowels.Contains(searchFVF)) {
+                                return new Result {
+                                    phonemes = new Phoneme[] {
+                                        new Phoneme() {
+                                            phoneme = currentLyric,
+                                        }
+                                    },
+                                };
                             }
-                        },
-                    };
+                        }
+                    }
                 }
-
+                
                 // Insert VC before next neighbor
                 // Get vowel from current note
+
                 var vowel = "";
-                if (vowelLookup.TryGetValue(currentUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
+                var vowpre = "";
+                int vcou = 0;
+
+                //+Exclusion extraction of surfix and detail search -surfixを回避しながら本来の母音を検索 
+
+                for (vcou = currentLyric.Length-1; vcou < currentLyric.Length; vcou--) {
+                    var searchvF = Convert.ToString(currentLyric.ElementAtOrDefault(vcou));
+                    if (searchvF != string.Empty) {
+                        if (System.Text.RegularExpressions.Regex.IsMatch(searchvF, @"[\p{IsHiragana}\p{IsKatakana}\p{Ll}\p{Nd}]+")) {
+                            vowpre = string.Concat(vowpre, currentLyric.ElementAtOrDefault(vcou));
+                            break;
+                        }
+                    }
+                }
+
+                if (vowelLookup.TryGetValue(vowpre ?? string.Empty, out var vow)) {
                     vowel = vow;
                 }
 
                 // Get consonant from next note
                 var consonant = "";
-                if (consonantLookup.TryGetValue(nextUnicode.FirstOrDefault() ?? string.Empty, out var con)) {
-                    consonant = con;
+                var conpre = "";
+                int cou = 0;
+
+                //Exclusion extraction of prefix and detail search -prefixを回避しながら本来の後続子音を検索
+
+                for (cou = 0; cou < nextLyric.Length; cou++) {
+                    var searchF = Convert.ToString(nextLyric.ElementAtOrDefault(cou));
+                    if (searchF != string.Empty) {
+                        if (System.Text.RegularExpressions.Regex.IsMatch(searchF, @"[\p{IsHiragana}\p{IsKatakana}\p{Ll}\p{Nd}]+")){
+                              conpre = string.Concat(conpre, nextLyric.ElementAtOrDefault(cou));
+                        }
+                    }
                 }
+
+                if (consonantLookup.TryGetValue(conpre ?? string.Empty, out var conmas)){
+                    consonant = conmas;
+                }
+
 
                 if (consonant == "") {
                     return new Result {
@@ -179,3 +229,6 @@ namespace OpenUtau.Plugin.Builtin {
         }
     }
 }
+
+// JPN_localize_program_arrange_001_@raigeki_denka
+// JPN_localize_program_arrange_002_???
