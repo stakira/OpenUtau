@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
@@ -10,9 +10,6 @@ namespace OpenUtau.Plugin.Builtin {
     public class JapaneseCVVCPhonemizer : Phonemizer {
         static readonly string[] plainVowels = new string[] { "あ", "い", "う", "え", "お", "ん" };
 
-        //+Exception string -母音の文字列だが例外でCV発音のもの
-        static readonly string[] exception = new string[] { "いぃ", "いぇ", "うぃ", "うぅ", "うぇ", "うぉ" };
-
         static readonly string[] vowels = new string[] {
             "a=ぁ,あ,か,が,さ,ざ,た,だ,な,は,ば,ぱ,ま,ゃ,や,ら,わ,ァ,ア,カ,ガ,サ,ザ,タ,ダ,ナ,ハ,バ,パ,マ,ャ,ヤ,ラ,ワ",
             "e=ぇ,え,け,げ,せ,ぜ,て,で,ね,へ,べ,ぺ,め,れ,ゑ,ェ,エ,ケ,ゲ,セ,ゼ,テ,デ,ネ,ヘ,ベ,ペ,メ,レ,ヱ",
@@ -23,7 +20,6 @@ namespace OpenUtau.Plugin.Builtin {
             "N=ン",
         };
 
-        //+Added correspondence between consonants and vowels -子音と母音の対応を追加
         static readonly string[] consonants = new string[] {
             "ch=ch,ち,ちぇ,ちゃ,ちゅ,ちょ",
             "gy=gy,ぎ,ぎぇ,ぎゃ,ぎゅ,ぎょ",
@@ -109,7 +105,7 @@ namespace OpenUtau.Plugin.Builtin {
                 var nextLyric = string.Join("", nextUnicode);
 
                 // Check if next note is a vowel and does not require VC
-                if (plainVowels.Contains(nextUnicode.FirstOrDefault() ?? string.Empty)) {
+                if (nextUnicode.Count < 2 && plainVowels.Contains(nextUnicode.FirstOrDefault() ?? string.Empty)) {
                     return new Result {
                         phonemes = new Phoneme[] {
                             new Phoneme() {
@@ -129,7 +125,8 @@ namespace OpenUtau.Plugin.Builtin {
 
                 // Get consonant from next note
                 var consonant = "";
-                if (consonantLookup.TryGetValue(nextUnicode.FirstOrDefault() ?? string.Empty, out var con)) {
+                if (consonantLookup.TryGetValue(nextUnicode.FirstOrDefault() ?? string.Empty, out var con)
+                    || nextUnicode.Count >= 2 && consonantLookup.TryGetValue(string.Join("", nextUnicode.Take(2)), out con)) {
                     consonant = con;
                 }
 
