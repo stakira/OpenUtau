@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
@@ -10,6 +10,9 @@ namespace OpenUtau.Plugin.Builtin {
     public class JapaneseCVVCPhonemizer : Phonemizer {
         static readonly string[] plainVowels = new string[] { "あ", "い", "う", "え", "お", "ん" };
 
+        //+Exception string -母音の文字列だが例外でCV発音のもの
+        static readonly string[] exception = new string[] { "いぃ", "いぇ", "うぃ", "うぅ", "うぇ", "うぉ" };
+
         static readonly string[] vowels = new string[] {
             "a=ぁ,あ,か,が,さ,ざ,た,だ,な,は,ば,ぱ,ま,ゃ,や,ら,わ,ァ,ア,カ,ガ,サ,ザ,タ,ダ,ナ,ハ,バ,パ,マ,ャ,ヤ,ラ,ワ",
             "e=ぇ,え,け,げ,せ,ぜ,て,で,ね,へ,べ,ぺ,め,れ,ゑ,ェ,エ,ケ,ゲ,セ,ゼ,テ,デ,ネ,ヘ,ベ,ペ,メ,レ,ヱ",
@@ -20,6 +23,7 @@ namespace OpenUtau.Plugin.Builtin {
             "N=ン",
         };
 
+        //+Added correspondence between consonants and vowels -子音と母音の対応を追加
         static readonly string[] consonants = new string[] {
             "ch=ch,ち,ちぇ,ちゃ,ちゅ,ちょ",
             "gy=gy,ぎ,ぎぇ,ぎゃ,ぎゅ,ぎょ",
@@ -28,29 +32,30 @@ namespace OpenUtau.Plugin.Builtin {
             "py=py,ぴ,ぴぇ,ぴゃ,ぴゅ,ぴょ",
             "ry=ry,り,りぇ,りゃ,りゅ,りょ",
             "ny=ny,に,にぇ,にゃ,にゅ,にょ",
-            "r=r,ら,る,れ,ろ",
+            "r=r,4,ら,る,るぃ,れ,ろ",
             "hy=hy,ひ,ひぇ,ひゃ,ひゅ,ひょ",
             "dy=dy,でぃ,でぇ,でゃ,でゅ,でょ",
             "by=by,び,びぇ,びゃ,びゅ,びょ",
-            "b=b,ば,ぶ,べ,ぼ",
-            "d=d,だ,で,ど,どぅ",
-            "g=g,が,ぐ,げ,ご",
+            "b=b,ば,ぶ,ぶぃ,べ,ぼ",
+            "d=d,だ,で,ど,どぃ,どぅ",
+            "g=g,が,ぐ,ぐぃ,げ,ご",
             "f=f,ふ,ふぁ,ふぃ,ふぇ,ふぉ",
-            "h=h,は,へ,ほ",
-            "k=k,か,く,け,こ",
+            "h=h,は,はぃ,へ,ほ,ほぅ",
+            "k=k,か,く,くぃ,け,こ",
             "j=j,じ,じぇ,じゃ,じゅ,じょ",
-            "m=m,ま,む,め,も",
-            "n=n,な,ぬ,ね,の",
-            "p=p,ぱ,ぷ,ぺ,ぽ",
+            "m=m,ま,む,むぃ,め,も",
+            "n=n,な,ぬ,ぬぃ,ね,の",
+            "p=p,ぱ,ぷ,ぷぃ,ぺ,ぽ",
             "s=s,さ,す,すぃ,せ,そ",
             "sh=sh,し,しぇ,しゃ,しゅ,しょ",
-            "t=t,た,て,と,とぅ",
-            "w=w,うぃ,うぅ,うぇ,うぉ,わ,を",
+            "t=t,た,て,と,とぃ,とぅ",
             "v=v,ヴ,ヴぁ,ヴぃ,ヴぅ,ヴぇ,ヴぉ",
-            "y=y,いぃ,いぇ,や,ゆ,よ,ゐ,ゑ",
             "ky=ky,き,きぇ,きゃ,きゅ,きょ",
+            "w=w,うぃ,うぅ,うぇ,うぉ,わ,ゐ,ゑ,を,ヰ,ヱ",
+            "y=y,いぃ,いぇ,や,ゆ,よ",
             "z=z,ざ,ず,ずぃ,ぜ,ぞ",
             "my=my,み,みぇ,みゃ,みゅ,みょ",
+            "ng=ng,ガ,ギ,グ,ゲ,ゴ",
             "R=R",
             "息=息",
             "吸=吸",
@@ -92,7 +97,6 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             } else if (plainVowels.Contains(currentLyric)) {
                 var prevUnicode = ToUnicodeElements(prevNeighbour?.lyric);
-
                 // Current note is VV
                 if (vowelLookup.TryGetValue(prevUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
                     currentLyric = $"{vow} {currentLyric}";
@@ -100,6 +104,7 @@ namespace OpenUtau.Plugin.Builtin {
             }
 
             if (nextNeighbour != null) {
+
                 var nextUnicode = ToUnicodeElements(nextNeighbour?.lyric);
                 var nextLyric = string.Join("", nextUnicode);
 
@@ -116,6 +121,7 @@ namespace OpenUtau.Plugin.Builtin {
 
                 // Insert VC before next neighbor
                 // Get vowel from current note
+
                 var vowel = "";
                 if (vowelLookup.TryGetValue(currentUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
                     vowel = vow;
@@ -126,6 +132,7 @@ namespace OpenUtau.Plugin.Builtin {
                 if (consonantLookup.TryGetValue(nextUnicode.FirstOrDefault() ?? string.Empty, out var con)) {
                     consonant = con;
                 }
+
 
                 if (consonant == "") {
                     return new Result {
