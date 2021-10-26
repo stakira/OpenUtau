@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-
+using OpenUtau.Classic;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core.Formats {
@@ -63,6 +63,8 @@ namespace OpenUtau.Core.Formats {
             if (files.Length < 1) {
                 return;
             }
+            int initialTracks = project.tracks.Count;
+            int initialParts = project.parts.Count;
             foreach (string file in files) {
                 ProjectFormats format = DetectProjectFormat(file);
                 UProject loaded;
@@ -98,7 +100,13 @@ namespace OpenUtau.Core.Formats {
                 project.beatUnit = loaded.beatUnit;
                 project.bpm = loaded.bpm;
             }
-            project.AfterLoad();
+            for (int i = initialTracks; i < project.tracks.Count; i++) {
+                project.tracks[i].AfterLoad(project);
+            }
+            for (int i = initialParts; i < project.parts.Count; i++) {
+                var part = project.parts[i];
+                part.AfterLoad(project, project.tracks[part.trackNo]);
+            }
             project.Validate();
             DocManager.Inst.ExecuteCmd(new LoadProjectNotification(project));
         }

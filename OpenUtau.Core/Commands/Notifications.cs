@@ -21,9 +21,11 @@ namespace OpenUtau.Core {
     }
 
     public class LoadPartNotification : UNotification {
-        public LoadPartNotification(UPart part, UProject project) {
+        public readonly int tick;
+        public LoadPartNotification(UPart part, UProject project, int tick) {
             this.part = part;
             this.project = project;
+            this.tick = tick;
         }
         public override string ToString() => "Load part";
     }

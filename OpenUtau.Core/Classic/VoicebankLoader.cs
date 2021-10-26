@@ -4,10 +4,15 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using OpenUtau.Core;
 using Serilog;
 
 namespace OpenUtau.Classic {
     public class VoicebankLoader {
+        public const string kCharTxt = "character.txt";
+        public const string kCharYaml = "character.yaml";
+        public const string kOtoIni = "oto.ini";
+
         class FileLoc {
             public string file;
             public int lineNumber;
@@ -29,89 +34,109 @@ namespace OpenUtau.Classic {
             if (!Directory.Exists(basePath)) {
                 return result;
             }
-            var banks = Directory.EnumerateFiles(basePath, "character.txt", SearchOption.AllDirectories)
-                .Select(filePath => ParseCharacterTxt(filePath, basePath))
+            var banks = Directory.EnumerateFiles(basePath, kCharTxt, SearchOption.AllDirectories)
+                .Select(filePath => LoadVoicebank(filePath, basePath))
                 .OfType<Voicebank>()
-                .OrderByDescending(bank => bank.File.Length)
                 .ToArray();
-            var otoFiles = Directory.EnumerateFiles(basePath, "oto.ini", SearchOption.AllDirectories)
-                .ToArray();
-            var bankDirs = banks
-                .Select(bank => Path.GetDirectoryName(bank.File))
-                .ToArray();
-            foreach (var otoFile in otoFiles) {
-                var dir = Path.GetDirectoryName(otoFile);
-                for (int i = 0; i < bankDirs.Length; ++i) {
-                    if (dir.StartsWith(bankDirs[i])) {
-                        var otoSet = ParseOtoSet(otoFile, banks[i].TextFileEncoding);
-                        otoSet.Name = Path.GetRelativePath(bankDirs[i], Path.GetDirectoryName(otoFile));
-                        if (otoSet.Name == ".") {
-                            otoSet.Name = string.Empty;
-                        }
-                        banks[i].OtoSets.Add(otoSet);
-                        break;
-                    }
-                }
-            }
-            foreach (var bank in banks) {
-                var dir = Path.GetDirectoryName(bank.File);
-                var file = Path.Combine(dir, "character.yaml");
-                file = Path.Combine(dir, "prefix.map");
-                if (File.Exists(file)) {
-                    bank.PrefixMap = ParsePrefixMap(file, bank.TextFileEncoding);
-                }
-            }
             foreach (var bank in banks) {
                 result.Add(bank.Id, bank);
             }
             return result;
         }
 
-        public static Voicebank ParseCharacterTxt(string filePath, string basePath) {
+        public static Voicebank LoadVoicebank(string filePath, string basePath) {
             try {
-                var dir = Path.GetDirectoryName(filePath);
-                var yamlFile = Path.Combine(dir, "character.yaml");
-                VoicebankConfig bankConfig = null;
-                if (File.Exists(yamlFile)) {
-                    using (var stream = File.OpenRead(yamlFile)) {
-                        bankConfig = VoicebankConfig.Load(stream);
-                    }
-                }
-                Encoding encoding = Encoding.UTF8;
-                if (!string.IsNullOrEmpty(bankConfig?.TextFileEncoding)) {
-                    encoding = Encoding.GetEncoding(bankConfig.TextFileEncoding);
-                }
-                Voicebank bank = null;
-                using (var stream = File.OpenRead(filePath)) {
-                    bank = ParseCharacterTxt(stream, filePath, basePath, encoding);
-                }
-                if (bank != null && bankConfig != null) {
-                    ApplyConfig(bank, bankConfig);
-                }
-                return bank;
+                var voicebank = new Voicebank();
+                ParseCharacterTxt(voicebank, filePath, basePath);
+                LoadOtoSets(voicebank, Path.GetDirectoryName(voicebank.File));
+                return voicebank;
             } catch (Exception e) {
                 Log.Error(e, $"Failed to load {filePath}");
             }
             return null;
         }
 
-        public static Voicebank ParseCharacterTxt(Stream stream, string filePath, string basePath, Encoding encoding) {
+        public static void ReloadVoicebank(Voicebank voicebank) {
+            var filePath = voicebank.File;
+            var basePath = voicebank.BasePath;
+            voicebank.Reset();
+            ParseCharacterTxt(voicebank, filePath, basePath);
+            LoadOtoSets(voicebank, Path.GetDirectoryName(voicebank.File));
+        }
+
+        public static void LoadOtoSets(Voicebank voicebank, string dirPath) {
+            var otoFile = Path.Combine(dirPath, kOtoIni);
+            if (File.Exists(otoFile)) {
+                var otoSet = ParseOtoSet(otoFile, voicebank.TextFileEncoding);
+                var voicebankDir = Path.GetDirectoryName(voicebank.File);
+                otoSet.Name = Path.GetRelativePath(voicebankDir, dirPath);
+                if (otoSet.Name == ".") {
+                    otoSet.Name = string.Empty;
+                }
+                voicebank.OtoSets.Add(otoSet);
+            }
+            var dirs = Directory.GetDirectories(dirPath);
+            foreach (var dir in dirs) {
+                var charTxt = Path.Combine(dir, kCharTxt);
+                if (File.Exists(charTxt)) {
+                    continue;
+                }
+                LoadOtoSets(voicebank, dir);
+            }
+        }
+
+        public static void ParseCharacterTxt(Voicebank voicebank, string filePath, string basePath) {
+            var dir = Path.GetDirectoryName(filePath);
+            var yamlFile = Path.Combine(dir, kCharYaml);
+            VoicebankConfig bankConfig = null;
+            if (File.Exists(yamlFile)) {
+                try {
+                    using (var stream = File.OpenRead(yamlFile)) {
+                        bankConfig = VoicebankConfig.Load(stream);
+                    }
+                } catch (Exception e) {
+                    Log.Error(e, $"Failed to load yaml {yamlFile}");
+                }
+            }
+            Encoding encoding = Encoding.GetEncoding("shift_jis");
+            if (!string.IsNullOrEmpty(bankConfig?.TextFileEncoding)) {
+                encoding = Encoding.GetEncoding(bankConfig.TextFileEncoding);
+            }
+            using (var stream = File.OpenRead(filePath)) {
+                ParseCharacterTxt(voicebank, stream, filePath, basePath, encoding);
+            }
+            if (bankConfig != null) {
+                ApplyConfig(voicebank, bankConfig);
+            }
+            if (voicebank.Subbanks.Count == 0) {
+                LoadPrefixMap(voicebank);
+            }
+            if (voicebank.Subbanks.Count == 0) {
+                voicebank.Subbanks.Add(new Subbank());
+            }
+        }
+
+        public static void ParseCharacterTxt(Voicebank voicebank, Stream stream, string filePath, string basePath, Encoding encoding) {
             using (var reader = new StreamReader(stream, encoding)) {
-                var voicebank = new Voicebank() {
-                    File = filePath,
-                    TextFileEncoding = encoding,
-                };
+                voicebank.BasePath = basePath;
+                voicebank.File = filePath;
+                voicebank.TextFileEncoding = encoding;
                 var otherLines = new List<string>();
                 while (!reader.EndOfStream) {
                     string line = reader.ReadLine().Trim();
                     var s = line.Split(new char[] { '=' });
-                    if (s.Length != 2) {
+                    if (s.Length < 2) {
                         s = line.Split(new char[] { ':' });
+                    }
+                    if (s.Length < 2) {
+                        s = line.Split(new char[] { '：' });
                     }
                     Array.ForEach(s, temp => temp.Trim());
                     if (s.Length == 2) {
                         s[0] = s[0].ToLowerInvariant();
                         if (s[0] == "name") {
+                            voicebank.Name = s[1];
+                        } else if (s[0] == "名前" && string.IsNullOrEmpty(voicebank.Name)) {
                             voicebank.Name = s[1];
                         } else if (s[0] == "image") {
                             voicebank.Image = s[1];
@@ -132,7 +157,6 @@ namespace OpenUtau.Classic {
                 if (string.IsNullOrEmpty(voicebank.Name)) {
                     voicebank.Name = $"No Name ({voicebank.Id})";
                 }
-                return voicebank;
             }
         }
 
@@ -153,60 +177,71 @@ namespace OpenUtau.Classic {
             if (!string.IsNullOrWhiteSpace(bankConfig.Web)) {
                 bank.Web = bankConfig.Web;
             }
-            foreach (var otoSet in bank.OtoSets) {
-                var subbank = bankConfig?.Subbanks?.FirstOrDefault(b => b.Dir == otoSet.Name);
-                if (subbank != null) {
-                    otoSet.Prefix = subbank.Prefix;
-                    otoSet.Suffix = subbank.Suffix;
-                    otoSet.Flavor = subbank.Flavor;
-                    if (!string.IsNullOrEmpty(subbank.Prefix)) {
-                        foreach (var oto in otoSet.Otos) {
-                            string phonetic = oto.Alias;
-                            if (phonetic.StartsWith(subbank.Prefix)) {
-                                phonetic = phonetic.Substring(subbank.Prefix.Length);
-                            }
-                            oto.Phonetic = phonetic;
-                        }
-                    }
-                    if (!string.IsNullOrEmpty(subbank.Suffix)) {
-                        foreach (var oto in otoSet.Otos) {
-                            string phonetic = oto.Phonetic ?? oto.Alias;
-                            if (phonetic.EndsWith(subbank.Suffix)) {
-                                phonetic = phonetic.Substring(0, phonetic.Length - subbank.Suffix.Length);
-                            }
-                            oto.Phonetic = phonetic;
-                        }
-                    }
+            if (bankConfig.Subbanks != null && bankConfig.Subbanks.Length > 0) {
+                foreach (var subbank in bankConfig.Subbanks) {
+                    subbank.Prefix ??= string.Empty;
+                    subbank.Suffix ??= string.Empty;
                 }
+                bank.Subbanks.AddRange(bankConfig.Subbanks);
             }
         }
 
-        public static PrefixMap ParsePrefixMap(string filePath, Encoding encoding) {
+        public static void LoadPrefixMap(Voicebank voicebank) {
+            var dir = Path.GetDirectoryName(voicebank.File);
+            var filePath = Path.Combine(dir, "prefix.map");
             try {
                 using (var stream = File.OpenRead(filePath)) {
-                    return ParsePrefixMap(stream, filePath, encoding);
+                    var map = ParsePrefixMap(stream, voicebank.TextFileEncoding);
+                    foreach (var kv in map) {
+                        var subbank = new Subbank() {
+                            Prefix = kv.Key.Item1,
+                            Suffix = kv.Key.Item2,
+                        };
+                        var toneRanges = new List<string>();
+                        int? rangeStart = null;
+                        int? rangeEnd = null;
+                        for (int i = 24; i <= 108; i++) {
+                            if (kv.Value.Contains(i) && i < 108) {
+                                if (rangeStart == null) {
+                                    rangeStart = i;
+                                } else {
+                                    rangeEnd = i;
+                                }
+                            } else if (rangeStart != null) {
+                                if (rangeEnd != null) {
+                                    toneRanges.Add($"{MusicMath.GetToneName(rangeStart.Value)}-{MusicMath.GetToneName(rangeEnd.Value)}");
+                                } else {
+                                    toneRanges.Add($"{MusicMath.GetToneName(rangeStart.Value)}");
+                                }
+                                rangeStart = null;
+                                rangeEnd = null;
+                            }
+                        }
+                        subbank.ToneRanges = toneRanges.ToArray();
+                        voicebank.Subbanks.Add(subbank);
+                    }
                 }
             } catch (Exception e) {
                 Log.Error(e, $"Failed to load {filePath}");
             }
-            return null;
         }
 
-        public static PrefixMap ParsePrefixMap(Stream stream, string filePath, Encoding encoding) {
+        public static Dictionary<Tuple<string, string>, SortedSet<int>> ParsePrefixMap(Stream stream, Encoding encoding) {
             using (var reader = new StreamReader(stream, encoding)) {
-                var prefixMap = new PrefixMap {
-                    File = filePath,
-                };
+                var result = new Dictionary<Tuple<string, string>, SortedSet<int>>();
                 while (!reader.EndOfStream) {
                     var s = reader.ReadLine().Split('\t');
                     if (s.Length == 3) {
-                        string source = s[0];
-                        string prefix = s[1];
-                        string suffix = s[2];
-                        prefixMap.Map[source] = new Tuple<string, string>(prefix, suffix);
+                        int tone = MusicMath.NameToTone(s[0]);
+                        var key = Tuple.Create(s[1], s[2]);
+                        if (!result.TryGetValue(key, out var tones)) {
+                            tones = new SortedSet<int>();
+                            result[key] = tones;
+                        }
+                        tones.Add(tone);
                     }
                 }
-                return prefixMap;
+                return result;
             }
         }
 

@@ -2,6 +2,14 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+  <!--<system:String x:Key="context.pitch.easein">Ease in</system:String>-->
+  <!--<system:String x:Key="context.pitch.easeinout">Ease in/out</system:String>-->
+  <!--<system:String x:Key="context.pitch.easeout">Ease out</system:String>-->
+  <!--<system:String x:Key="context.pitch.linear">Linear</system:String>-->
+  <!--<system:String x:Key="context.pitch.pointadd">Add point</system:String>-->
+  <!--<system:String x:Key="context.pitch.pointdel">Delete point</system:String>-->
+  <!--<system:String x:Key="context.pitch.pointsnapprev">Snap to previous note</system:String>-->
+
   <system:String x:Key="dialogs.about.caption">O OpenUTAU</system:String>
   <system:String x:Key="dialogs.about.message">
         OpenUtau ma na celu być otwartoźródłowym środowiskiem do edytowania dla społeczności UTAU, z nowoczesnym UI/UX i inteligentym wsparciem fonologicznym. Odwiedź nas na Github.
@@ -50,11 +58,13 @@
   <system:String x:Key="menu.file.importmidi">Importuj Midi...</system:String>
   <!--<system:String x:Key="menu.file.importtracks">Import Tracks...</system:String>-->
   <system:String x:Key="menu.file.new">Nowy</system:String>
+  <!--<system:String x:Key="menu.file.newfromtemplate">New From Template</system:String>-->
   <system:String x:Key="menu.file.open">Otwórz...</system:String>
   <system:String x:Key="menu.file.openas">Otwórz Jako</system:String>
   <system:String x:Key="menu.file.openrecent">Ostatnie Pliki</system:String>
   <system:String x:Key="menu.file.save">Zapisz</system:String>
   <system:String x:Key="menu.file.saveas">Zapisz Jako</system:String>
+  <!--<system:String x:Key="menu.file.savetemplate">Save Template...</system:String>-->
   <system:String x:Key="menu.help">Pomoc</system:String>
   <system:String x:Key="menu.help.about">O OpenUTAU</system:String>
   <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
@@ -72,14 +82,6 @@
   <system:String x:Key="menu.tools.singer.installadv">Zainstaluj Piosenkarza (Zaawansowane)...</system:String>
   <system:String x:Key="menu.tools.singers">Piosenkarze...</system:String>
 
-  <!--<system:String x:Key="menu2.lyrics">Lyrics</system:String>-->
-  <!--<system:String x:Key="menu2.notes">Notes</system:String>-->
-  <!--<system:String x:Key="menu2.notes.addtaildash">Add tail "-"</system:String>-->
-  <!--<system:String x:Key="menu2.notes.quantize15">Quantize to 1/128</system:String>-->
-  <!--<system:String x:Key="menu2.notes.quantize30">Quantize to 1/64</system:String>-->
-  <!--<system:String x:Key="menu2.part">Part</system:String>-->
-  <!--<system:String x:Key="menu2.part.rename">Rename</system:String>-->
-
   <!--<system:String x:Key="oto.alias">Alias</system:String>-->
   <!--<system:String x:Key="oto.consonant">Consonant</system:String>-->
   <!--<system:String x:Key="oto.cutoff">Cutoff</system:String>-->
@@ -92,6 +94,26 @@
   <!--<system:String x:Key="oto.preutter">Preutter</system:String>-->
   <!--<system:String x:Key="oto.set">Set</system:String>-->
   <!--<system:String x:Key="oto.suffix">Suffix</system:String>-->
+
+  <!--<system:String x:Key="pianoroll.menu.lyrics">Lyrics</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes">Notes</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.addtaildash">Add tail "-"</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.quantize15">Quantize to 1/128</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.quantize30">Quantize to 1/64</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.part">Part</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.part.rename">Rename</system:String>-->
+  <!--<system:String x:Key="pianoroll.toggle.phoneme">View Phonemes (O)</system:String>-->
+  <!--<system:String x:Key="pianoroll.toggle.pitch">View Pitch Bend (I)</system:String>-->
+  <!--<system:String x:Key="pianoroll.toggle.snap">Toggle Snap (P)</system:String>-->
+  <!--<system:String x:Key="pianoroll.toggle.tips">View Tips (T)</system:String>-->
+  <!--<system:String x:Key="pianoroll.toggle.tone">Toggle Note Tone (Y)</system:String>-->
+  <!--<system:String x:Key="pianoroll.toggle.vibrato">View Vibrato (U)</system:String>-->
+  <!--<system:String x:Key="pianoroll.tool.eraser">Eraser Tool (3)</system:String>-->
+  <!--<system:String x:Key="pianoroll.tool.pen">Pen Tool (2)
+    Left click to draw
+Right click to delete</system:String>-->
+  <!--<system:String x:Key="pianoroll.tool.selection">Selection Tool (1)
+Hold Ctrl to select more</system:String>-->
 
   <!--<system:String x:Key="prefs.advanced">Advanced</system:String>-->
   <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
@@ -126,35 +148,32 @@
 
   <!--<system:String x:Key="singers.caption">Singers</system:String>-->
   <!--<system:String x:Key="singers.location">Location</system:String>-->
+  <!--<system:String x:Key="singers.refresh">Refresh</system:String>-->
+  <!--<system:String x:Key="singers.setencoding">Set Encoding</system:String>-->
 
-  <system:String x:Key="tip.exps.actions">Ustaw Parametry Ekspresyjne
-Resetuj Parametry Ekspresyjne</system:String>
-  <system:String x:Key="tip.exps.keys">Przytrzymaj Lewy Przycisk Myszy:
-Przytrzymaj Prawy Przycisk Myszy:</system:String>
+  <!--<system:String x:Key="tip.exps">
+    Left Button Draw: Set expressions
+    Right Button Draw: Reset expressions
+  </system:String>-->
   <system:String x:Key="tip.lyricbox.next">Tabulator: Następna Nuta</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tabulator: Ostatnia Nuta</system:String>
-  <system:String x:Key="tip.notes.basics.actions">Włącz wskazówki
-Dodaj Nutę
-Usuń Nutę
-Usuń Wiele Nut
-Przesuń Nutę
-Zmień długość nuty
-Zmień długość sąsiadujących nut
-Zaznaczy Nuty
-Transponuj zaznaczone nuty
-Transponuj zaznaczone nuty o oktawę
-Odtwórz</system:String>
-  <system:String x:Key="tip.notes.basics.keys">T:
-Lewy Przycisk Myszy:
-Prawy Przycisk Myszy:
-Przytrzymanie Prawego Przycisku Myszy:
-Przesunięcie Nuty:
-Przesunięcie Końca Nuty:
-Alt + Przesunięcie Końca Nuty:
-Ctrl + Zaznaczenie Pola:
-Strzałka w Górę/Dół:
-Ctrl + Strzałka w Górę/Dół:
-Spacja:</system:String>
+  <!--<system:String x:Key="tip.notes.basics">
+    Selection Tool
+    Box Select: Select notes
+    Ctrl + Box Select: Select more notes
+    Up/Down: Transpose selected notes
+    Ctrl + Up/Down: Transpose selected notes by octave
+    Pen Tool
+    Left Button Draw: Add note
+    Right Click: Remove note
+    Right Button Draw: Remove multiple notes
+    General
+    T: Toggle tips
+    Drag Note: Move note
+    Drag End of Note: Resize note
+    Alt + Drag End of Note: Resize neighbouring notes
+    Space: Play
+  </system:String>-->
   <system:String x:Key="tip.notes.zoomx">◀ Przewijaj tutaj kółkiem przewijania by przybliżyć poziomo ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">Przewijaj tutaj kółkiem przewijania by przybliżyć pionowo ▶</system:String>
 

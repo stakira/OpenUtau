@@ -13,6 +13,7 @@ using OpenUtau.UI.Controls;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using Serilog;
+using OpenUtau.Classic;
 
 namespace OpenUtau.UI {
     /// <summary>
@@ -178,7 +179,7 @@ namespace OpenUtau.UI {
                             midiWindow = new MidiWindow();
                             midiWindow.mainWindow = this;
                         }
-                        DocManager.Inst.ExecuteCmd(new LoadPartNotification(partEl.Part, trackVM.Project));
+                        DocManager.Inst.ExecuteCmd(new LoadPartNotification(partEl.Part, trackVM.Project, 0));
                         midiWindow.Show();
                         midiWindow.Focus();
                     }
@@ -364,7 +365,7 @@ namespace OpenUtau.UI {
                     var part = project.parts[i];
                     if (part is UVoicePart voicePart) {
                         var savePath = PathManager.Inst.GetPartSavePath(project.FilePath, i);
-                        Core.Formats.Ust.SavePart(project, voicePart, savePath);
+                        Ust.SavePart(project, voicePart, savePath);
                     }
                 }
             }

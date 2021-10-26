@@ -5,11 +5,11 @@
   <system:String x:Key="context.pitch.easein">Curva dentro</system:String>
   <system:String x:Key="context.pitch.easeinout">Curva dentro/fora</system:String>
   <system:String x:Key="context.pitch.easeout">Curva fora</system:String>
-  <system:String x:Key="context.pitch.linear">Linear</system:String>
-  <system:String x:Key="context.pitch.pointsnapprev">Ajustar à nota anterior </system:String>
-  <system:String x:Key="context.pitch.pointdel">Remover ponto</system:String>
+  <!--<system:String x:Key="context.pitch.linear">Linear</system:String>-->
   <system:String x:Key="context.pitch.pointadd">Adicionar ponto</system:String>
-  
+  <system:String x:Key="context.pitch.pointdel">Remover ponto</system:String>
+  <system:String x:Key="context.pitch.pointsnapprev">Conectar à nota anterior </system:String>
+
   <system:String x:Key="dialogs.about.caption">Sobre OpenUTAU</system:String>
   <system:String x:Key="dialogs.about.message">
         O OpenUtau é um ambiente de edição de código aberto para a comunidade UTAU, com uma experiência de usuário moderna e suporte fonológico inteligente. Visite-nos no Github.
@@ -20,7 +20,7 @@
   <system:String x:Key="dialogs.export.savefirst">Salve o arquivo de projeto antes de exportar</system:String>
   <system:String x:Key="dialogs.messagebox.cancel">Cancelar</system:String>
   <system:String x:Key="dialogs.messagebox.no">Não</system:String>
-  <system:String x:Key="dialogs.messagebox.ok">Ok</system:String>
+  <!--<system:String x:Key="dialogs.messagebox.ok">Ok</system:String>-->
   <system:String x:Key="dialogs.messagebox.yes">Sim</system:String>
   <system:String x:Key="dialogs.noresampler.caption">Sem resampler</system:String>
   <system:String x:Key="dialogs.noresampler.message">Sem resampler! Coloque o .exe ou .dll do seu resampler favorito na pasta Resampler e selecione-o em Preferências!</system:String>
@@ -58,11 +58,13 @@
   <system:String x:Key="menu.file.importmidi">Importar Midi...</system:String>
   <system:String x:Key="menu.file.importtracks">Importar Faixas...</system:String>
   <system:String x:Key="menu.file.new">Novo</system:String>
+  <system:String x:Key="menu.file.newfromtemplate">Novo por Modelo</system:String>
   <system:String x:Key="menu.file.open">Abrir...</system:String>
   <system:String x:Key="menu.file.openas">Abrir como</system:String>
   <system:String x:Key="menu.file.openrecent">Abrir Recente</system:String>
   <system:String x:Key="menu.file.save">Salvar</system:String>
   <system:String x:Key="menu.file.saveas">Salvar como...</system:String>
+  <system:String x:Key="menu.file.savetemplate">Salvar Modelo...</system:String>
   <system:String x:Key="menu.help">Ajuda</system:String>
   <system:String x:Key="menu.help.about">Sobre OpenUTAU</system:String>
   <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
@@ -80,19 +82,10 @@
   <system:String x:Key="menu.tools.singer.installadv">Instalar Vozes (Avançado)...</system:String>
   <system:String x:Key="menu.tools.singers">Vozes...</system:String>
 
-  <system:String x:Key="menu2.lyrics">Lírica</system:String>
-  <system:String x:Key="menu2.notes">Nota</system:String>
-  <!--<system:String x:Key="menu2.notes.addtaildash">Add tail "-"</system:String>-->
-  <!--<system:String x:Key="menu2.notes.quantize15">Quantize to 1/128</system:String>-->
-  <!--<system:String x:Key="menu2.notes.quantize30">Quantize to 1/64</system:String>-->
-  <system:String x:Key="menu2.part">Parte</system:String>
-  <system:String x:Key="menu2.part.rename">Renomear</system:String>
-
   <!--<system:String x:Key="oto.alias">Alias</system:String>-->
   <!--<system:String x:Key="oto.consonant">Consonant</system:String>-->
   <!--<system:String x:Key="oto.cutoff">Cutoff</system:String>-->
   <system:String x:Key="oto.file">Arquivo</system:String>
-  <!--<system:String x:Key="oto.flavor">Flavor</system:String>-->
   <!--<system:String x:Key="oto.offset">Offset</system:String>-->
   <!--<system:String x:Key="oto.overlap">Overlap</system:String>-->
   <system:String x:Key="oto.phonetic">Fonética</system:String>
@@ -100,7 +93,32 @@
   <!--<system:String x:Key="oto.preutter">Preutter</system:String>-->
   <system:String x:Key="oto.set">Pasta</system:String>
   <system:String x:Key="oto.suffix">Sufixo</system:String>
+  <system:String x:Key="oto.tags">Tags</system:String>
 
+  <system:String x:Key="pianoroll.menu.lyrics">Lírica</system:String>
+  <system:String x:Key="pianoroll.menu.notes">Nota</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notes.addtaildash">Add tail "-"</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.quantize15">Quantize to 1/128</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.quantize30">Quantize to 1/64</system:String>-->
+  <system:String x:Key="pianoroll.menu.part">Parte</system:String>
+  <system:String x:Key="pianoroll.menu.part.rename">Renomear</system:String>
+  <system:String x:Key="pianoroll.toggle.phoneme">Ver Fonemas (O)</system:String>
+  <system:String x:Key="pianoroll.toggle.pitch">Ver Pitch Bend (I)</system:String>
+  <system:String x:Key="pianoroll.toggle.snap">Ativar Ajuste (P)</system:String>
+  <system:String x:Key="pianoroll.toggle.tips">Ver Dicas (T)</system:String>
+  <system:String x:Key="pianoroll.toggle.tone">Ativar Tom de Nota (Y)</system:String>
+  <system:String x:Key="pianoroll.toggle.vibrato">Ver Vibrato (U)</system:String>
+  <system:String x:Key="pianoroll.tool.eraser">Ferramenta Borracha (3)</system:String>
+  <system:String x:Key="pianoroll.tool.pen">Ferramenta Caneta (2)
+Botão esquerdo para desenhar
+Botão direito para apagar</system:String>
+  <system:String x:Key="pianoroll.tool.selection">Ferramenta Seleção  (1)
+Segure Ctrl para selecionar mais notas</system:String>
+  <system:String x:Key="pianoroll.tool.tagger">Ferramenta Tag (4)
+Botão esquerdo para desenhar
+Botão direito para apagar</system:String>
+  <system:String x:Key="pianoroll.tool.tagger.setup">Setup Tags</system:String>
+  
   <system:String x:Key="prefs.advanced">Avançado</system:String>
   <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
   <system:String x:Key="prefs.advanced.stable">Estável</system:String>
@@ -133,36 +151,43 @@
   </system:String>
 
   <system:String x:Key="singers.caption">Vozes</system:String>
-  <system:String x:Key="singers.location">Localização</system:String>
+  <system:String x:Key="singers.location">Pasta</system:String>
+  <system:String x:Key="singers.refresh">Atualizar</system:String>
+  <system:String x:Key="singers.setencoding">Definir Codificação</system:String>
+  <system:String x:Key="singers.subbanks.add">Adicionar</system:String>
+  <system:String x:Key="singers.subbanks.caption">Editor Tag</system:String>
+  <system:String x:Key="singers.subbanks.dir">Pasta</system:String>
+  <system:String x:Key="singers.subbanks.prefix">Prefixo</system:String>
+  <system:String x:Key="singers.subbanks.remove">Remover</system:String>
+  <system:String x:Key="singers.subbanks.reset">Redefinir</system:String>
+  <system:String x:Key="singers.subbanks.save">Salvar</system:String>
+  <system:String x:Key="singers.subbanks.suffix">Sufixo</system:String>
+  <system:String x:Key="singers.subbanks.tags">Tags</system:String>
+  <system:String x:Key="singers.subbanks.toneranges">Alcance</system:String>
 
-  <system:String x:Key="tip.exps.actions">Define expressões
-Redefine expressões</system:String>
-  <system:String x:Key="tip.exps.keys">Segurar o Clique Esquerdo:
-Segurar o Clique Direito:</system:String>
+  <system:String x:Key="tip.exps">
+Desenhar com o Botão Esquerdo: Definir expressões
+Desenhar com o Botão Direito: Redefinir expressões
+  </system:String>
   <system:String x:Key="tip.lyricbox.next">Tab: Próxima Nota</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: Nota Anterior</system:String>
-  <system:String x:Key="tip.notes.basics.actions">Ativar ajuda
-Adiciona nota
-Remove nota
-Remove várias notas
-Move nota
-Redimensiona nota
-Redimensiona nota vizinha
-Seleciona notas
-Transpõe notas selecionadas
-Transpõe notas selecionadas por uma oitava
-Tocar</system:String>
-  <system:String x:Key="tip.notes.basics.keys">T:
-Clique Esquerdo:
-Clique Direito:
-Segurar o Clique Direito:
-Arrastar Nota:
-Arrastar o Fim da Nota:
-Alt + Arrastar o Fim da Nota:
-Ctrl + Selecionar Caixa:
-Cima/Baixo:
-Ctrl + Cima/Baixo:
-Espaço:</system:String>
+  <system:String x:Key="tip.notes.basics">
+Ferramenta Seleção
+     Seleção em caixa: Selecione notas
+     Ctrl + Seleção em caixa: Selecione mais notas
+     Cima/Baixo: Transpõe as notas selecionadas
+     Ctrl + Cima/Baixo: Transpõe as notas selecionadas em uma oitava
+Ferramenta Caneta
+     Desenhar com o Botão Esquerdo: Adicionar nota
+     Clique com o Botão Direito: Remover nota
+     Desenhar com o Botão Direito: Remover várias notas
+Geral
+     T: Ativar dicas
+     Arrastar Nota: Mover nota
+     Arrastar Fim da Nota: Redimensionar nota
+     Alt + Arrastar Fim da Nota: Redimensionar notas vizinhas
+     Espaço: Tocar
+  </system:String>
   <system:String x:Key="tip.notes.zoomx">◀ Role aqui para aumentar o zoom horizontalmente  ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">Role aqui para aumentar o zoom verticalmente ▶</system:String>
 

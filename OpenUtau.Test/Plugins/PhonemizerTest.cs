@@ -10,6 +10,7 @@ namespace OpenUtau.Plugins {
     public abstract class PhonemizerTest<T> where T : Phonemizer {
         USinger GetDummySinger() {
             var voicebank = new Voicebank {
+                BasePath = "null",
                 File = "null",
                 Name = "Dummy",
             };
@@ -20,9 +21,10 @@ namespace OpenUtau.Plugins {
             otoSet.Otos.Add(new Oto {
                 Alias = "a",
                 Wav = "a.wav",
+                Phonetic = "a",
             });
             voicebank.OtoSets.Add(otoSet);
-            return new USinger(voicebank, "null");
+            return new USinger(voicebank);
         }
 
         [Fact]

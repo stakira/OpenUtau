@@ -56,12 +56,18 @@ namespace OpenUtau.Core {
         public override string ToString() => "Configure expressions";
         public override void Execute() {
             project.expressions = newDescriptors.ToDictionary(descriptor => descriptor.abbr);
-            project.AfterLoad();
+            project.parts
+                .Where(part => part is UVoicePart)
+                .ToList()
+                .ForEach(part => part.AfterLoad(project, project.tracks[part.trackNo]));
             project.Validate();
         }
         public override void Unexecute() {
             project.expressions = oldDescriptors.ToDictionary(descriptor => descriptor.abbr);
-            project.AfterLoad();
+            project.parts
+                .Where(part => part is UVoicePart)
+                .ToList()
+                .ForEach(part => part.AfterLoad(project, project.tracks[part.trackNo]));
             project.Validate();
         }
     }

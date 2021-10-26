@@ -6,10 +6,10 @@
   <system:String x:Key="context.pitch.easeinout">Ease in/out</system:String>
   <system:String x:Key="context.pitch.easeout">Ease out</system:String>
   <system:String x:Key="context.pitch.linear">Linear</system:String>
-  <system:String x:Key="context.pitch.pointsnapprev">Snap to previous note</system:String>
-  <system:String x:Key="context.pitch.pointdel">Delete point</system:String>
   <system:String x:Key="context.pitch.pointadd">Add point</system:String>
-  
+  <system:String x:Key="context.pitch.pointdel">Delete point</system:String>
+  <system:String x:Key="context.pitch.pointsnapprev">Snap to previous note</system:String>
+
   <system:String x:Key="dialogs.about.caption">About OpenUTAU</system:String>
   <system:String x:Key="dialogs.about.message">
     OpenUtau aims to be an open source editing environment for UTAU community, with a modern user experience and intelligent phonological support. Visit us on Github.
@@ -58,11 +58,13 @@
   <system:String x:Key="menu.file.importmidi">Import Midi...</system:String>
   <system:String x:Key="menu.file.importtracks">Import Tracks...</system:String>
   <system:String x:Key="menu.file.new">New</system:String>
+  <system:String x:Key="menu.file.newfromtemplate">New From Template</system:String>
   <system:String x:Key="menu.file.open">Open...</system:String>
   <system:String x:Key="menu.file.openas">Open As</system:String>
   <system:String x:Key="menu.file.openrecent">Open Recent</system:String>
   <system:String x:Key="menu.file.save">Save</system:String>
   <system:String x:Key="menu.file.saveas">Save As...</system:String>
+  <system:String x:Key="menu.file.savetemplate">Save Template...</system:String>
   <system:String x:Key="menu.help">Help</system:String>
   <system:String x:Key="menu.help.about">About OpenUtau</system:String>
   <system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>
@@ -80,19 +82,10 @@
   <system:String x:Key="menu.tools.singer.installadv">Install Singer (Advanced)...</system:String>
   <system:String x:Key="menu.tools.singers">Singers...</system:String>
 
-  <system:String x:Key="menu2.lyrics">Lyrics</system:String>
-  <system:String x:Key="menu2.notes">Notes</system:String>
-  <system:String x:Key="menu2.notes.addtaildash">Add tail "-"</system:String>
-  <system:String x:Key="menu2.notes.quantize15">Quantize to 1/128</system:String>
-  <system:String x:Key="menu2.notes.quantize30">Quantize to 1/64</system:String>
-  <system:String x:Key="menu2.part">Part</system:String>
-  <system:String x:Key="menu2.part.rename">Rename</system:String>
-
   <system:String x:Key="oto.alias">Alias</system:String>
   <system:String x:Key="oto.consonant">Consonant</system:String>
   <system:String x:Key="oto.cutoff">Cutoff</system:String>
   <system:String x:Key="oto.file">File</system:String>
-  <system:String x:Key="oto.flavor">Flavor</system:String>
   <system:String x:Key="oto.offset">Offset</system:String>
   <system:String x:Key="oto.overlap">Overlap</system:String>
   <system:String x:Key="oto.phonetic">Phonetic</system:String>
@@ -100,6 +93,31 @@
   <system:String x:Key="oto.preutter">Preutter</system:String>
   <system:String x:Key="oto.set">Set</system:String>
   <system:String x:Key="oto.suffix">Suffix</system:String>
+  <system:String x:Key="oto.tags">Tags</system:String>
+
+  <system:String x:Key="pianoroll.menu.lyrics">Lyrics</system:String>
+  <system:String x:Key="pianoroll.menu.notes">Notes</system:String>
+  <system:String x:Key="pianoroll.menu.notes.addtaildash">Add tail "-"</system:String>
+  <system:String x:Key="pianoroll.menu.notes.quantize15">Quantize to 1/128</system:String>
+  <system:String x:Key="pianoroll.menu.notes.quantize30">Quantize to 1/64</system:String>
+  <system:String x:Key="pianoroll.menu.part">Part</system:String>
+  <system:String x:Key="pianoroll.menu.part.rename">Rename</system:String>
+  <system:String x:Key="pianoroll.toggle.phoneme">View Phonemes (O)</system:String>
+  <system:String x:Key="pianoroll.toggle.pitch">View Pitch Bend (I)</system:String>
+  <system:String x:Key="pianoroll.toggle.snap">Toggle Snap (P)</system:String>
+  <system:String x:Key="pianoroll.toggle.tips">View Tips (T)</system:String>
+  <system:String x:Key="pianoroll.toggle.tone">Toggle Note Tone (Y)</system:String>
+  <system:String x:Key="pianoroll.toggle.vibrato">View Vibrato (U)</system:String>
+  <system:String x:Key="pianoroll.tool.eraser">Eraser Tool (3)</system:String>
+  <system:String x:Key="pianoroll.tool.pen">Pen Tool (2)
+Left click to draw
+Right click to delete</system:String>
+  <system:String x:Key="pianoroll.tool.selection">Selection Tool (1)
+Hold Ctrl to select more</system:String>
+  <system:String x:Key="pianoroll.tool.tagger">Tagger Tool (4)
+Left click to draw
+Right click to erase</system:String>
+  <system:String x:Key="pianoroll.tool.tagger.setup">Setup Tags</system:String>
 
   <system:String x:Key="prefs.advanced">Advanced</system:String>
   <system:String x:Key="prefs.advanced.beta">Beta</system:String>
@@ -134,41 +152,42 @@
 
   <system:String x:Key="singers.caption">Singers</system:String>
   <system:String x:Key="singers.location">Location</system:String>
-  <system:String x:Key="singers.reload">Reload</system:String>
+  <system:String x:Key="singers.refresh">Refresh</system:String>
   <system:String x:Key="singers.setencoding">Set Encoding</system:String>
+  <system:String x:Key="singers.subbanks.add">Add</system:String>
+  <system:String x:Key="singers.subbanks.caption">Tag Editor</system:String>
+  <system:String x:Key="singers.subbanks.dir">Directory</system:String>
+  <system:String x:Key="singers.subbanks.prefix">Prefix</system:String>
+  <system:String x:Key="singers.subbanks.remove">Remove</system:String>
+  <system:String x:Key="singers.subbanks.reset">Reset</system:String>
+  <system:String x:Key="singers.subbanks.save">Save</system:String>
+  <system:String x:Key="singers.subbanks.suffix">Suffix</system:String>
+  <system:String x:Key="singers.subbanks.tags">Tags</system:String>
+  <system:String x:Key="singers.subbanks.toneranges">Tone Ranges</system:String>
 
-  <system:String x:Key="tip.exps.actions">
-Set expressions
-Reset expressions
-  </system:String>
-  <system:String x:Key="tip.exps.keys">
-Hold Left Mouse Button:
-Hold Right Mouse Button:
+  <system:String x:Key="tip.exps">
+    Left Button Draw: Set expressions
+    Right Button Draw: Reset expressions
   </system:String>
   <system:String x:Key="tip.lyricbox.next">Tab: Next Note</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: Previous Note</system:String>
-  <system:String x:Key="tip.notes.basics.actions">Toggle tips
-Add note
-Remove note
-Remove multiple notes
-Move note
-Resize note
-Resize neighbouring notes
-Select notes
-Transpose selected notes
-Transpose selected notes by octave
-Play</system:String>
-  <system:String x:Key="tip.notes.basics.keys">T:
-Left Click:
-Right Click:
-Hold Right Mouse Button:
-Drag Note:
-Drag End of Note:
-Alt + Drag End of Note:
-Ctrl + Box Select:
-Up/Down:
-Ctrl + Up/Down:
-Space:</system:String>
+  <system:String x:Key="tip.notes.basics">
+    Selection Tool
+    Box Select: Select notes
+    Ctrl + Box Select: Select more notes
+    Up/Down: Transpose selected notes
+    Ctrl + Up/Down: Transpose selected notes by octave
+    Pen Tool
+    Left Button Draw: Add note
+    Right Click: Remove note
+    Right Button Draw: Remove multiple notes
+    General
+    T: Toggle tips
+    Drag Note: Move note
+    Drag End of Note: Resize note
+    Alt + Drag End of Note: Resize neighbouring notes
+    Space: Play
+  </system:String>
   <system:String x:Key="tip.notes.zoomx">◀ Scroll here to zoom horizontally ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">Scroll here to zoom vertically ▶</system:String>
 

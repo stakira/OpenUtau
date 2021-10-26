@@ -10,7 +10,7 @@ namespace OpenUtau.Core.Editing {
     }
 
     public class AddTailDash : NoteBatchEdit {
-        public string Name => "menu2.notes.addtaildash";
+        public string Name => "pianoroll.menu.notes.addtaildash";
         public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
             List<UNote> toAdd = new List<UNote>();
             var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
@@ -39,7 +39,7 @@ namespace OpenUtau.Core.Editing {
 
         public QuantizeNotes(int quantize) {
             this.quantize = quantize;
-            name = $"menu2.notes.quantize{quantize}";
+            name = $"pianoroll.menu.notes.quantize{quantize}";
         }
 
         public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {

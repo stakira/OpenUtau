@@ -2,16 +2,25 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+  <system:String x:Key="context.pitch.easein">Suavizar ataque</system:String>
+  <system:String x:Key="context.pitch.easeinout">Suavizar ataque/salida</system:String>
+  <system:String x:Key="context.pitch.easeout">Suavizar salida</system:String>
+  <system:String x:Key="context.pitch.linear">Lineal</system:String>
+  <system:String x:Key="context.pitch.pointadd">Agregar punto</system:String>
+  <system:String x:Key="context.pitch.pointdel">Borrar punto</system:String>
+  <system:String x:Key="context.pitch.pointsnapprev">Ajustar a la nota previa</system:String>
+
   <system:String x:Key="dialogs.about.caption">Sobre OpenUTAU</system:String>
   <system:String x:Key="dialogs.about.message">
-        OpenUTAU es un entorno de edición de código abierto para el programa de síntesis UTAU. Su objetivo es ofrecer una interfaz moderna, y soporte fonológico inteligente. ¡Visítanos en GitHub!</system:String>
+        OpenUTAU es un entorno de edición de código abierto para el programa de síntesis UTAU. Su objetivo es ofrecer una interfaz moderna, y soporte fonológico inteligente. ¡Visítanos en GitHub!
+        </system:String>
   <system:String x:Key="dialogs.exitsave.caption">Salir de OpenUTAU</system:String>
   <system:String x:Key="dialogs.exitsave.message">El projecto tiene cambios sin guardar. ¿Quieres guardar el archivo?</system:String>
   <system:String x:Key="dialogs.export.caption">Exportar</system:String>
   <system:String x:Key="dialogs.export.savefirst">Porfavor, guarda el archivo antes de exportarlo.</system:String>
   <system:String x:Key="dialogs.messagebox.cancel">Cancelar</system:String>
   <system:String x:Key="dialogs.messagebox.no">No</system:String>
-  <system:String x:Key="dialogs.messagebox.ok">Ok</system:String>
+  <system:String x:Key="dialogs.messagebox.ok">OK</system:String>
   <system:String x:Key="dialogs.messagebox.yes">Sí</system:String>
   <system:String x:Key="dialogs.noresampler.caption">Resampler no encontrado</system:String>
   <system:String x:Key="dialogs.noresampler.message">No se encontró un Resampler. Pone uno (sea .exe o .dll) en la carpeta Resamplers en la ruta de instalación de OpenUTAU.</system:String>
@@ -24,8 +33,8 @@
   <system:String x:Key="exps.defaultvalue">Valores Predeterminados</system:String>
   <system:String x:Key="exps.flag">Flags del Resampler</system:String>
   <system:String x:Key="exps.isflag">Es Flag del Resampler</system:String>
-  <system:String x:Key="exps.maxvalue">Max</system:String>
-  <system:String x:Key="exps.minvalue">Min</system:String>
+  <system:String x:Key="exps.maxvalue">Máx</system:String>
+  <system:String x:Key="exps.minvalue">Mín</system:String>
   <system:String x:Key="exps.name">Nombre</system:String>
   <system:String x:Key="exps.optionvalues">Opciones de los Valores</system:String>
   <system:String x:Key="exps.sepbycomma">Separar Valores por ','</system:String>
@@ -49,11 +58,13 @@
   <system:String x:Key="menu.file.importmidi">_Importar MIDI</system:String>
   <system:String x:Key="menu.file.importtracks">Importar Pistas...</system:String>
   <system:String x:Key="menu.file.new">_Nuevo</system:String>
+  <system:String x:Key="menu.file.newfromtemplate">Nuevo desde Plantilla</system:String>
   <system:String x:Key="menu.file.open">_Abrir</system:String>
   <system:String x:Key="menu.file.openas">A_brir como</system:String>
   <system:String x:Key="menu.file.openrecent">Abrir Archivo Reciente</system:String>
   <system:String x:Key="menu.file.save">_Guardar</system:String>
   <system:String x:Key="menu.file.saveas">Guardar _como</system:String>
+  <system:String x:Key="menu.file.savetemplate">Guardar Plantilla...</system:String>
   <system:String x:Key="menu.help">_Ayuda</system:String>
   <system:String x:Key="menu.help.about">Sobre OpenUTAU</system:String>
   <system:String x:Key="menu.help.wiki">Wiki de OpenUTAU</system:String>
@@ -71,14 +82,6 @@
   <system:String x:Key="menu.tools.singer.installadv">Instalar Voz (Avanzado)</system:String>
   <system:String x:Key="menu.tools.singers">Voces</system:String>
 
-  <system:String x:Key="menu2.lyrics">Letras</system:String>
-  <system:String x:Key="menu2.notes">Notas</system:String>
-  <system:String x:Key="menu2.notes.addtaildash">Añadir cola "-"</system:String>
-  <system:String x:Key="menu2.notes.quantize15">Cuantificar a 1/128</system:String>
-  <system:String x:Key="menu2.notes.quantize30">Cuantificar a 1/64</system:String>
-  <system:String x:Key="menu2.part">Partes</system:String>
-  <system:String x:Key="menu2.part.rename">Renombrar</system:String>
-
   <system:String x:Key="oto.alias">Alias</system:String>
   <system:String x:Key="oto.consonant">Consonante</system:String>
   <system:String x:Key="oto.cutoff">Silencio (Derecho)</system:String>
@@ -91,6 +94,30 @@
   <system:String x:Key="oto.preutter">Precedente</system:String>
   <system:String x:Key="oto.set">Aplicar</system:String>
   <system:String x:Key="oto.suffix">Sufijo</system:String>
+
+  <system:String x:Key="pianoroll.menu.lyrics">Letras</system:String>
+  <system:String x:Key="pianoroll.menu.notes">Notas</system:String>
+  <system:String x:Key="pianoroll.menu.notes.addtaildash">Añadir cola "-"</system:String>
+  <system:String x:Key="pianoroll.menu.notes.quantize15">Cuantificar a 1/128</system:String>
+  <system:String x:Key="pianoroll.menu.notes.quantize30">Cuantificar a 1/64</system:String>
+  <system:String x:Key="pianoroll.menu.part">Partes</system:String>
+  <system:String x:Key="pianoroll.menu.part.rename">Renombrar</system:String>
+  <system:String x:Key="pianoroll.toggle.phoneme">Ver Fonemas (O)</system:String>
+  <system:String x:Key="pianoroll.toggle.pitch">Ver Curvas del Tono (I)</system:String>
+  <system:String x:Key="pianoroll.toggle.snap">Activar/Desactivar Ajuste (P)</system:String>
+  <system:String x:Key="pianoroll.toggle.tips">Ver Consejos (T)</system:String>
+  <system:String x:Key="pianoroll.toggle.tone">Activar/Desactivar Tono de Nota (Y)</system:String>
+  <system:String x:Key="pianoroll.toggle.vibrato">Ver Vibratos (U)</system:String>
+  <system:String x:Key="pianoroll.tool.eraser">Goma (3)</system:String>
+  <system:String x:Key="pianoroll.tool.pen">Lápiz (2)
+Click izquierdo para dibujar
+Click derecho para borrar</system:String>
+  <system:String x:Key="pianoroll.tool.selection">Herramienta de Selección (1)
+Mantiene Ctrl para seleccionar más</system:String>
+  <system:String x:Key="pianoroll.tool.tagger">Herramienta de Etiquetas (4)
+Click izquierdo para dibujar
+Click derecho para borrar</system:String>
+  <system:String x:Key="pianoroll.tool.tagger.setup">Configurar Etiquetas</system:String>
 
   <system:String x:Key="prefs.advanced">Avanzado</system:String>
   <system:String x:Key="prefs.advanced.beta">Beta</system:String>
@@ -125,35 +152,42 @@
 
   <system:String x:Key="singers.caption">Voces</system:String>
   <system:String x:Key="singers.location">Rutas</system:String>
+  <system:String x:Key="singers.refresh">Refrescar</system:String>
+  <system:String x:Key="singers.setencoding">Fijar Codificación</system:String>
+  <system:String x:Key="singers.subbanks.add">Agregar</system:String>
+  <system:String x:Key="singers.subbanks.caption">Editor de Etiquetas</system:String>
+  <system:String x:Key="singers.subbanks.dir">Directorio</system:String>
+  <system:String x:Key="singers.subbanks.prefix">Prefijo</system:String>
+  <system:String x:Key="singers.subbanks.remove">Quitar</system:String>
+  <system:String x:Key="singers.subbanks.reset">Reestablecer</system:String>
+  <system:String x:Key="singers.subbanks.save">Guardar</system:String>
+  <system:String x:Key="singers.subbanks.suffix">Sufijo</system:String>
+  <system:String x:Key="singers.subbanks.tags">Etiquetas</system:String>
+  <system:String x:Key="singers.subbanks.toneranges">Rangos Tonales</system:String>
 
-  <system:String x:Key="tip.exps.actions">Ajustar expresiones
-Restablecer expresiones</system:String>
-  <system:String x:Key="tip.exps.keys">Mantén presionado el Click Izquierdo del mouse:
-Mantén presionado el Click Derecho del mouse:</system:String>
+  <system:String x:Key="tip.exps">
+Click Izquierdo + Arrastrar: Poner expresiones
+Click Derecho + Arrastrar: Reestablecer expresiones
+  </system:String>
   <system:String x:Key="tip.lyricbox.next">Tab: Siguiente Nota</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: Nota Previa</system:String>
-  <system:String x:Key="tip.notes.basics.actions"> Abre o Cierra los Consejos
-Agrega una nota
-Borra la nota
-Borra las notas que toquen el mouse
-Mueves la nota
-Cambia el tamaño de la nota
-Cambia el tamaño de la nota, y el de las notas vecinas
-Seleccionas una nota
-Transpone la(s) nota(s) seleccionada(s)
-Transpone la(s) nota(s) seleccionada(s) por una octava
-Reproducir</system:String>
-  <system:String x:Key="tip.notes.basics.keys">T:
-Click Izquierdo:
-Click Derecho (sobre una nota):
-Al sostener Click Derecho:
-Al arrastrar una nota:
-Al arrastrar el fin de una nota:
-Alt + Arrastrar el fin de una nota:
-Ctrl + Seleccionar una caja:
-Arriba/Abajo:
-Ctrl + Arriba/Abajo:
-Espacio:</system:String>
+  <system:String x:Key="tip.notes.basics">
+Herramienta de Selección
+    Seleccionar Caja: Selecciona una nota
+    Ctrl + Seleccionar Caja: Selecciona más notas
+    Arriba/Abajo: Transpone notas seleccionadas
+    Ctrl + Arriba/Abajo: Transpone notas seleccionadas por una octava
+Lapiz
+    Click Izquierdo + Arrastrar: Añade nota
+    Click Derecho: Borra nota
+    Click Derecho + Arrastrar: Borra multiples notas
+General
+    T: Mostrar/Esconder Consejos
+    Arrastrar Nota: Mueve una Nota
+    Arrastrar el Fin de una Nota: Ajusta el tamaño de la Nota
+    Alt + Arrastrar el Fin de una Nota: Ajusta el tamaño de la Nota vecina
+    Space: Reproducir
+  </system:String>
   <system:String x:Key="tip.notes.zoomx">Desliza acá para acercar horizontalmente</system:String>
   <system:String x:Key="tip.notes.zoomy">Desliza acá para acercar verticalmente</system:String>
 

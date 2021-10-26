@@ -25,11 +25,12 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys {
             return ret;
         }
         #endregion
-
         readonly Assembly asm = null;
         readonly MethodInfo DoResamplerMethod = null;
         readonly MethodInfo GetInformationMethod = null;
+        public string FilePath { get; }
         public SharpDriver(string DllPath) {
+            FilePath = DllPath;
             if (LoadTable.ContainsKey(DllPath)) {
                 asm = LoadTable[DllPath];
             } else {

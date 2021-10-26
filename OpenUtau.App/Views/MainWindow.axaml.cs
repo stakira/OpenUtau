@@ -15,7 +15,9 @@ using Avalonia.Threading;
 using Avalonia.VisualTree;
 using OpenUtau.App.Controls;
 using OpenUtau.App.ViewModels;
+using OpenUtau.Classic;
 using OpenUtau.Core;
+using OpenUtau.Core.Formats;
 using OpenUtau.Core.Ustx;
 using Serilog;
 using Point = Avalonia.Point;
@@ -40,11 +42,13 @@ namespace OpenUtau.App.Views {
 #if DEBUG
             this.AttachDevTools();
 #endif
-            viewModel.NewProject();
+            viewModel.InitProject();
             timer = new DispatcherTimer(DispatcherPriority.Normal);
             timer.Tick += (sender, args) => PlaybackManager.Inst.UpdatePlayPos();
             timer.Start();
             Program.AutoUpdate?.Invoke();
+
+            AddHandler(DragDrop.DropEvent, OnDrop);
 
             DocManager.Inst.AddSubscriber(this);
         }
@@ -110,6 +114,7 @@ namespace OpenUtau.App.Views {
 
         void OnMainMenuOpened(object sender, RoutedEventArgs args) {
             viewModel.RefreshOpenRecent();
+            viewModel.RefreshTemplates();
         }
 
         async void OnMenuSave(object sender, RoutedEventArgs args) => await Save();
@@ -134,6 +139,23 @@ namespace OpenUtau.App.Views {
                 Title = "Save As",
             };
             viewModel.SaveProject(await dialog.ShowAsync(this));
+        }
+
+        void OnMenuSaveTemplate(object sender, RoutedEventArgs args) {
+            var project = DocManager.Inst.Project;
+            var dialog = new TypeInDialog();
+            dialog.Title = ThemeManager.GetString("menu.file.savetemplate");
+            dialog.SetText("default");
+            dialog.onFinish = file => {
+                if (string.IsNullOrEmpty(file)) {
+                    return;
+                }
+                file = System.IO.Path.GetFileNameWithoutExtension(file);
+                file = $"{file}.ustx";
+                file = System.IO.Path.Combine(PathManager.Inst.TemplatesPath, file);
+                Ustx.Save(file, project.CloneAsTemplate());
+            };
+            dialog.ShowDialog(this);
         }
 
         async void OnMenuImportTracks(object sender, RoutedEventArgs args) {
@@ -224,7 +246,7 @@ namespace OpenUtau.App.Views {
                     var part = project.parts[i];
                     if (part is UVoicePart voicePart) {
                         var savePath = PathManager.Inst.GetPartSavePath(project.FilePath, i);
-                        Core.Formats.Ust.SavePart(project, voicePart, savePath);
+                        Ust.SavePart(project, voicePart, savePath);
                     }
                 }
             }
@@ -351,6 +373,50 @@ namespace OpenUtau.App.Views {
                 }
             }
             args.Handled = true;
+        }
+
+        async void OnDrop(object? sender, DragEventArgs args) {
+            if (!args.Data.Contains(DataFormats.FileNames)) {
+                return;
+            }
+            string file = args.Data.GetFileNames().FirstOrDefault();
+            if (string.IsNullOrEmpty(file)) {
+                return;
+            }
+            var ext = System.IO.Path.GetExtension(file);
+            if (ext == ".ustx" || ext == ".ust" || ext == ".vsqx") {
+                try {
+                    viewModel.OpenProject(new string[] { file });
+                } catch (Exception e) {
+                    Log.Error(e, $"Failed to open file {file}");
+                    _ = await MessageBox.Show(
+                         this,
+                         e.ToString(),
+                         ThemeManager.GetString("errors.caption"),
+                         MessageBox.MessageBoxButtons.Ok);
+                }
+            } else if (ext == ".zip" || ext == ".rar" || ext == ".uar") {
+                var setup = new SingerSetupDialog() {
+                    DataContext = new SingerSetupViewModel() {
+                        ArchiveFilePath = file,
+                    },
+                };
+                _ = setup.ShowDialog(this);
+                if (setup.Position.Y < 0) {
+                    setup.Position = setup.Position.WithY(0);
+                }
+            } else if (ext == ".mp3" || ext == ".wav" || ext == ".ogg" || ext == ".flac") {
+                try {
+                    viewModel.ImportAudio(file);
+                } catch (Exception e) {
+                    Log.Error(e, "Failed to import audio");
+                    _ = await MessageBox.Show(
+                         this,
+                         e.ToString(),
+                         ThemeManager.GetString("errors.caption"),
+                         MessageBox.MessageBoxButtons.Ok);
+                }
+            }
         }
 
         void OnPlayOrPause(object sender, RoutedEventArgs args) {
@@ -534,7 +600,7 @@ namespace OpenUtau.App.Views {
             }
             var e = (TappedEventArgs)args;
             var control = canvas.InputHitTest(e.GetPosition(canvas));
-            if (control is PartControl partControl) {
+            if (control is PartControl partControl && partControl.part is UVoicePart) {
                 if (pianoRollWindow == null) {
                     pianoRollWindow = new PianoRollWindow() {
                         MainWindow = this,
@@ -543,7 +609,8 @@ namespace OpenUtau.App.Views {
                 }
                 // Workaround for new window losing focus.
                 openPianoRollWindow = true;
-                DocManager.Inst.ExecuteCmd(new LoadPartNotification(partControl.part, DocManager.Inst.Project));
+                int tick = viewModel.TracksViewModel.PointToTick(e.GetPosition(canvas));
+                DocManager.Inst.ExecuteCmd(new LoadPartNotification(partControl.part, DocManager.Inst.Project, tick));
             }
         }
 

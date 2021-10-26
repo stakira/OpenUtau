@@ -34,6 +34,12 @@
   <Style Selector="MenuItem:disabled /template/ TextBlock#PART_InputGestureText">
     <Setter Property="Foreground" Value="{DynamicResource MenuFlyoutItemForegroundDisabled}"/>
   </Style>
+  <Style Selector="MenuItem > Separator, ContextMenu > Separator">
+    <Setter Property="Background" Value="{DynamicResource SystemControlHighlightBaseMediumHighBrush}" />
+    <Setter Property="HorizontalAlignment" Value="Stretch" />
+    <Setter Property="Margin" Value="2,0" />
+    <Setter Property="Height" Value="1" />
+  </Style>
 
   <Style Selector="ContextMenu MenuItem">
     <Setter Property="Background" Value="Transparent"/>
@@ -179,6 +185,9 @@
   <Style Selector="DataGridCell">
     <Setter Property="FontSize" Value="12" />
     <Setter Property="MinHeight" Value="20" />
+  </Style>
+  <Style Selector="DataGridCell > TextBox">
+    <Setter Property="Margin" Value="0"/>
   </Style>
 
   <Style Selector="ProgressBar">

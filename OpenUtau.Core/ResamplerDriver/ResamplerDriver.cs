@@ -5,6 +5,7 @@ using Serilog;
 
 namespace OpenUtau.Core.ResamplerDriver {
     public interface IResamplerDriver {
+        string FilePath { get; }
         byte[] DoResampler(DriverModels.EngineInput Args, ILogger logger);
         DriverModels.EngineInfo GetInfo();
     }
@@ -38,7 +39,9 @@ namespace OpenUtau.Core.ResamplerDriver {
 
         public static List<IResamplerDriver> Search(string path) {
             var resamplers = new List<IResamplerDriver>();
-            if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+            if (!Directory.Exists(path)) {
+                Directory.CreateDirectory(path);
+            }
             var files = Directory.EnumerateFiles(path, "*.*", new EnumerationOptions() {
                 RecurseSubdirectories = true
             });

@@ -42,7 +42,7 @@ namespace OpenUtau.Core.Render {
             this.startTick = startTick;
             resamplers = ResamplerDriver.ResamplerDriver
                 .Search(PathManager.Inst.GetEngineSearchPath())
-                .ToDictionary(resampler => resampler.GetInfo().Name, resampler => resampler);
+                .ToDictionary(resampler => resampler.FilePath, resampler => resampler);
         }
 
         public Tuple<MasterAdapter, List<Fader>, CancellationTokenSource, Task> RenderProject(int startTick) {
@@ -74,6 +74,7 @@ namespace OpenUtau.Core.Render {
                 items.AddRange(trackItems);
                 var fader = new Fader(trackMix);
                 fader.Scale = PlaybackManager.DecibelToVolume(track.Mute ? -24 : track.Volume);
+                fader.SetScaleToTarget();
                 faders.Add(fader);
             }
             items = items.OrderBy(item => item.PosMs).ToList();

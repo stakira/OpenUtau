@@ -2,6 +2,14 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+  <!--<system:String x:Key="context.pitch.easein">Ease in</system:String>-->
+  <!--<system:String x:Key="context.pitch.easeinout">Ease in/out</system:String>-->
+  <!--<system:String x:Key="context.pitch.easeout">Ease out</system:String>-->
+  <!--<system:String x:Key="context.pitch.linear">Linear</system:String>-->
+  <!--<system:String x:Key="context.pitch.pointadd">Add point</system:String>-->
+  <!--<system:String x:Key="context.pitch.pointdel">Delete point</system:String>-->
+  <!--<system:String x:Key="context.pitch.pointsnapprev">Snap to previous note</system:String>-->
+
   <!--<system:String x:Key="dialogs.about.caption">About OpenUTAU</system:String>-->
   <system:String x:Key="dialogs.about.message">
       OpenUtau는 현대적인 사용자 경험과 지능적인 음운 지원을 통해 UTAU 커뮤니티를 위한 오픈 소스 편집 환경을 목표로 합니다. Github의 우리 프로젝트에 방문하세요.
@@ -50,11 +58,13 @@
   <system:String x:Key="menu.file.importmidi">Midi 가져오기</system:String>
   <!--<system:String x:Key="menu.file.importtracks">Import Tracks...</system:String>-->
   <system:String x:Key="menu.file.new">새로 만들기</system:String>
+  <!--<system:String x:Key="menu.file.newfromtemplate">New From Template</system:String>-->
   <system:String x:Key="menu.file.open">열기</system:String>
   <system:String x:Key="menu.file.openas">O_pen As</system:String>
   <system:String x:Key="menu.file.openrecent">최근 파일 열기</system:String>
   <system:String x:Key="menu.file.save">저장</system:String>
   <system:String x:Key="menu.file.saveas">다른 이름으로 저장</system:String>
+  <!--<system:String x:Key="menu.file.savetemplate">Save Template...</system:String>-->
   <system:String x:Key="menu.help">도움말</system:String>
   <system:String x:Key="menu.help.about">OpenUTAU 정보</system:String>
   <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
@@ -72,14 +82,6 @@
   <system:String x:Key="menu.tools.singer.installadv">음원 설치(고급)</system:String>
   <system:String x:Key="menu.tools.singers">음원 설정</system:String>
 
-  <!--<system:String x:Key="menu2.lyrics">Lyrics</system:String>-->
-  <!--<system:String x:Key="menu2.notes">Notes</system:String>-->
-  <!--<system:String x:Key="menu2.notes.addtaildash">Add tail "-"</system:String>-->
-  <!--<system:String x:Key="menu2.notes.quantize15">Quantize to 1/128</system:String>-->
-  <!--<system:String x:Key="menu2.notes.quantize30">Quantize to 1/64</system:String>-->
-  <!--<system:String x:Key="menu2.part">Part</system:String>-->
-  <!--<system:String x:Key="menu2.part.rename">Rename</system:String>-->
-
   <!--<system:String x:Key="oto.alias">Alias</system:String>-->
   <!--<system:String x:Key="oto.consonant">Consonant</system:String>-->
   <!--<system:String x:Key="oto.cutoff">Cutoff</system:String>-->
@@ -92,6 +94,26 @@
   <!--<system:String x:Key="oto.preutter">Preutter</system:String>-->
   <!--<system:String x:Key="oto.set">Set</system:String>-->
   <!--<system:String x:Key="oto.suffix">Suffix</system:String>-->
+
+  <!--<system:String x:Key="pianoroll.menu.lyrics">Lyrics</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes">Notes</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.addtaildash">Add tail "-"</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.quantize15">Quantize to 1/128</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.quantize30">Quantize to 1/64</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.part">Part</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.part.rename">Rename</system:String>-->
+  <!--<system:String x:Key="pianoroll.toggle.phoneme">View Phonemes (O)</system:String>-->
+  <!--<system:String x:Key="pianoroll.toggle.pitch">View Pitch Bend (I)</system:String>-->
+  <!--<system:String x:Key="pianoroll.toggle.snap">Toggle Snap (P)</system:String>-->
+  <!--<system:String x:Key="pianoroll.toggle.tips">View Tips (T)</system:String>-->
+  <!--<system:String x:Key="pianoroll.toggle.tone">Toggle Note Tone (Y)</system:String>-->
+  <!--<system:String x:Key="pianoroll.toggle.vibrato">View Vibrato (U)</system:String>-->
+  <!--<system:String x:Key="pianoroll.tool.eraser">Eraser Tool (3)</system:String>-->
+  <!--<system:String x:Key="pianoroll.tool.pen">Pen Tool (2)
+    Left click to draw
+Right click to delete</system:String>-->
+  <!--<system:String x:Key="pianoroll.tool.selection">Selection Tool (1)
+Hold Ctrl to select more</system:String>-->
 
   <!--<system:String x:Key="prefs.advanced">Advanced</system:String>-->
   <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
@@ -126,35 +148,32 @@
 
   <!--<system:String x:Key="singers.caption">Singers</system:String>-->
   <!--<system:String x:Key="singers.location">Location</system:String>-->
+  <!--<system:String x:Key="singers.refresh">Refresh</system:String>-->
+  <!--<system:String x:Key="singers.setencoding">Set Encoding</system:String>-->
 
-  <system:String x:Key="tip.exps.actions">표현 설정
-표현 리셋</system:String>
-  <system:String x:Key="tip.exps.keys">왼쪽 클릭 유지:
-오른쪽 클릭 유지:</system:String>
+  <!--<system:String x:Key="tip.exps">
+    Left Button Draw: Set expressions
+    Right Button Draw: Reset expressions
+  </system:String>-->
   <system:String x:Key="tip.lyricbox.next">Tab: 다음 노트</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: 이전 노트</system:String>
-  <system:String x:Key="tip.notes.basics.actions">팁 전환
-노트 추가
-노트 제거
-여러 노트 제거
-노트 옮기기
-노트 길이 조절
-인접한 노트 길이 조절
-노트 선택
-선택한 노트 조옮김
-선택한 노트 옥타브 단위 조옮김
-재생</system:String>
-  <system:String x:Key="tip.notes.basics.keys">T:
-왼쪽 클릭:
-오른쪽 클릭:
-오른쪽 클릭 유지:
-드래그 노트:
-노트 끝 드래그:
-Alt + 노트 끝 드래그:
-Ctrl + 박스 선택:
-위/아래 방향키:
-Ctrl + 위/아래 방향키:
-스페이스 바:</system:String>
+  <!--<system:String x:Key="tip.notes.basics">
+    Selection Tool
+    Box Select: Select notes
+    Ctrl + Box Select: Select more notes
+    Up/Down: Transpose selected notes
+    Ctrl + Up/Down: Transpose selected notes by octave
+    Pen Tool
+    Left Button Draw: Add note
+    Right Click: Remove note
+    Right Button Draw: Remove multiple notes
+    General
+    T: Toggle tips
+    Drag Note: Move note
+    Drag End of Note: Resize note
+    Alt + Drag End of Note: Resize neighbouring notes
+    Space: Play
+  </system:String>-->
   <system:String x:Key="tip.notes.zoomx">◀ 수평으로 확대하려면 여기서 스크롤하세요 ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">수직으로 확대하려면 여기서 스크롤하세요 ▶</system:String>
 

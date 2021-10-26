@@ -56,8 +56,8 @@ namespace OpenUtau.Core.Ustx {
 
         public UNote CreateNote() {
             UNote note = UNote.Create();
-            note.pitch.AddPoint(new PitchPoint(-25, 0));
-            note.pitch.AddPoint(new PitchPoint(25, 0));
+            note.pitch.AddPoint(new PitchPoint(-40, 0));
+            note.pitch.AddPoint(new PitchPoint(40, 0));
             return note;
         }
 
@@ -97,6 +97,16 @@ namespace OpenUtau.Core.Ustx {
                 .OrderBy(part => part.trackNo)
                 .ThenBy(part => part.position)
                 .ToList();
+        }
+
+        public UProject CloneAsTemplate() {
+            var project = new UProject() {
+                ustxVersion = ustxVersion,
+            };
+            foreach (var kv in expressions) {
+                project.expressions.Add(kv.Key, kv.Value.Clone());
+            }
+            return project;
         }
 
         public void AfterSave() {

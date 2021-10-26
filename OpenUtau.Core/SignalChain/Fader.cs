@@ -16,6 +16,10 @@ namespace OpenUtau.Core.SignalChain {
             set => scaleTarget = value;
         }
 
+        public void SetScaleToTarget() {
+            scale = scaleTarget;
+        }
+
         public bool IsReady(int position, int count) {
             return source.IsReady(position, count);
         }

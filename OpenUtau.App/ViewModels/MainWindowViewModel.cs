@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Reactive;
 using DynamicData.Binding;
@@ -6,6 +7,7 @@ using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using Serilog;
 
 namespace OpenUtau.App.ViewModels {
     public class MainWindowViewModel : ViewModelBase, ICmdSubscriber {
@@ -13,7 +15,9 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public PlaybackViewModel PlaybackViewModel { get; set; }
         [Reactive] public TracksViewModel TracksViewModel { get; set; }
         [Reactive] public ReactiveCommand<string, Unit>? OpenRecentCommand { get; private set; }
+        [Reactive] public ReactiveCommand<string, Unit>? OpenTemplateCommand { get; private set; }
         public ObservableCollectionExtended<MenuItemViewModel> OpenRecent => openRecent;
+        public ObservableCollectionExtended<MenuItemViewModel> OpenTemplates => openTemplates;
 
         public bool ProjectSaved => !string.IsNullOrEmpty(DocManager.Inst.Project.FilePath) && DocManager.Inst.Project.Saved;
         public string AppVersion => $"OpenUtau v{System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version}";
@@ -30,11 +34,18 @@ namespace OpenUtau.App.ViewModels {
         private string progressText = string.Empty;
         private ObservableCollectionExtended<MenuItemViewModel> openRecent
             = new ObservableCollectionExtended<MenuItemViewModel>();
+        private ObservableCollectionExtended<MenuItemViewModel> openTemplates
+            = new ObservableCollectionExtended<MenuItemViewModel>();
 
         public MainWindowViewModel() {
             PlaybackViewModel = new PlaybackViewModel();
             TracksViewModel = new TracksViewModel();
             OpenRecentCommand = ReactiveCommand.Create<string>(file => OpenProject(new[] { file }));
+            OpenTemplateCommand = ReactiveCommand.Create<string>(file => {
+                OpenProject(new[] { file });
+                DocManager.Inst.Project.Saved = false;
+                DocManager.Inst.Project.FilePath = null;
+            });
             DocManager.Inst.AddSubscriber(this);
         }
 
@@ -43,6 +54,21 @@ namespace OpenUtau.App.ViewModels {
         }
         public void Redo() {
             DocManager.Inst.Redo();
+        }
+
+        public void InitProject() {
+            var defaultTemplate = Path.Combine(PathManager.Inst.TemplatesPath, "default.ustx");
+            if (File.Exists(defaultTemplate)) {
+                try {
+                    OpenProject(new[] { defaultTemplate });
+                    DocManager.Inst.Project.Saved = false;
+                    DocManager.Inst.Project.FilePath = null;
+                    return;
+                } catch (Exception e) {
+                    Log.Error(e, "failed to load default template");
+                }
+            }
+            DocManager.Inst.ExecuteCmd(new LoadProjectNotification(Core.Formats.Ustx.Create()));
         }
 
         public void NewProject() {
@@ -117,6 +143,17 @@ namespace OpenUtau.App.ViewModels {
             }));
         }
 
+        public void RefreshTemplates() {
+            Directory.CreateDirectory(PathManager.Inst.TemplatesPath);
+            var templates = Directory.GetFiles(PathManager.Inst.TemplatesPath, "*.ustx");
+            openTemplates.Clear();
+            openTemplates.AddRange(templates.Select(file => new MenuItemViewModel() {
+                Header = Path.GetRelativePath(PathManager.Inst.TemplatesPath, file),
+                Command = OpenTemplateCommand,
+                CommandParameter = file,
+            }));
+        }
+
         #region ICmdSubscriber
 
         public void OnNext(UCommand cmd, bool isUndo) {
@@ -124,17 +161,9 @@ namespace OpenUtau.App.ViewModels {
                 Progress = progressBarNotification.Progress;
                 ProgressText = progressBarNotification.Info;
             } else if (cmd is LoadProjectNotification loadProject) {
-                string filePath = loadProject.project.FilePath;
-                if (string.IsNullOrEmpty(filePath)) {
-                    return;
-                }
-                var recent = Core.Util.Preferences.Default.RecentFiles;
-                recent.RemoveAll(f => f == filePath || string.IsNullOrEmpty(f) || !File.Exists(f));
-                recent.Insert(0, filePath);
-                if (recent.Count > 16) {
-                    recent.RemoveRange(16, recent.Count - 16);
-                }
-                Core.Util.Preferences.Save();
+                Core.Util.Preferences.AddRecentFile(loadProject.project.FilePath);
+            } else if (cmd is SaveProjectNotification saveProject) {
+                Core.Util.Preferences.AddRecentFile(saveProject.Path);
             }
         }
 

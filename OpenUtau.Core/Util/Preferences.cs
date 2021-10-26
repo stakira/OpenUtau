@@ -38,6 +38,22 @@ namespace OpenUtau.Core.Util {
             Save();
         }
 
+        public static void AddRecentFile(string filePath) {
+            if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath)) {
+                return;
+            }
+            var recent = Default.RecentFiles;
+            recent.RemoveAll(f => f == filePath);
+            recent.Insert(0, filePath);
+            recent.RemoveAll(f => string.IsNullOrEmpty(f)
+                || !File.Exists(f)
+                || f.Contains(PathManager.Inst.TemplatesPath));
+            if (recent.Count > 16) {
+                recent.RemoveRange(16, recent.Count - 16);
+            }
+            Save();
+        }
+
         private static void Load() {
             try {
                 if (File.Exists(PathManager.Inst.PrefsFilePath)) {
@@ -71,7 +87,7 @@ namespace OpenUtau.Core.Util {
             public bool ShowTips = true;
             public int Theme;
             public int Beta = 0;
-            public int PrerenderThreads = 8;
+            public int PrerenderThreads = 2;
             public string Language = string.Empty;
             public List<string> RecentFiles = new List<string>();
         }

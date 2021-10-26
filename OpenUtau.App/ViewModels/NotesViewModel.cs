@@ -52,6 +52,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public bool CursorTool { get; set; }
         [Reactive] public bool PencilTool { get; set; }
         [Reactive] public bool EraserTool { get; set; }
+        [Reactive] public bool TaggerTool { get; set; }
         public ReactiveCommand<string, Unit> SelectToolCommand { get; }
         [Reactive] public bool ShowTips { get; set; }
         [Reactive] public bool PlayTone { get; set; }
@@ -132,10 +133,12 @@ namespace OpenUtau.App.ViewModels {
             CursorTool = false;
             PencilTool = true;
             EraserTool = false;
+            TaggerTool = false;
             SelectToolCommand = ReactiveCommand.Create<string>(index => {
                 CursorTool = index == "1";
                 PencilTool = index == "2";
                 EraserTool = index == "3";
+                TaggerTool = index == "4";
             });
 
             ShowTips = Core.Util.Preferences.Default.ShowTips;
@@ -275,7 +278,12 @@ namespace OpenUtau.App.ViewModels {
                         try {
                             Portrait?.Dispose();
                             using (var stream = File.OpenRead(singer.Portrait)) {
-                                Portrait = Bitmap.DecodeToHeight(stream, 500);
+                                var portrait = new Bitmap(stream);
+                                if (portrait.Size.Height > 800) {
+                                    stream.Seek(0, SeekOrigin.Begin);
+                                    portrait = Bitmap.DecodeToHeight(stream, 800);
+                                }
+                                Portrait = portrait;
                             }
                             portraitSource = singer.Portrait;
                         } catch (Exception e) {
@@ -434,6 +442,8 @@ namespace OpenUtau.App.ViewModels {
             if (cmd is UNotification) {
                 if (cmd is LoadPartNotification loadPart) {
                     LoadPart(loadPart.part, loadPart.project);
+                    double tickOffset = loadPart.tick - loadPart.part.position - Bounds.Width / TickWidth / 2;
+                    TickOffset = Math.Clamp(tickOffset, 0, HScrollBarMax);
                 } else if (cmd is LoadProjectNotification) {
                     UnloadPart();
                     LoadPortrait(null, null);
