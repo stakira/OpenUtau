@@ -48,6 +48,9 @@ namespace OpenUtau.Core.Render {
             ResamplerName = resamplerName;
             if (project.expressions.TryGetValue("eng", out var descriptor)) {
                 int index = (int)phoneme.GetExpression(project, "eng").Item1;
+                if (index < 0 || index >= descriptor.options.Length) {
+                    index = 0;
+                }
                 string resampler = descriptor.options[index];
                 if (!string.IsNullOrEmpty(resampler)) {
                     ResamplerName = resampler;

@@ -442,6 +442,8 @@ namespace OpenUtau.App.ViewModels {
             if (cmd is UNotification) {
                 if (cmd is LoadPartNotification loadPart) {
                     LoadPart(loadPart.part, loadPart.project);
+                    double tickOffset = loadPart.tick - loadPart.part.position - Bounds.Width / TickWidth / 2;
+                    TickOffset = Math.Clamp(tickOffset, 0, HScrollBarMax);
                 } else if (cmd is LoadProjectNotification) {
                     UnloadPart();
                     LoadPortrait(null, null);

@@ -600,7 +600,7 @@ namespace OpenUtau.App.Views {
             }
             var e = (TappedEventArgs)args;
             var control = canvas.InputHitTest(e.GetPosition(canvas));
-            if (control is PartControl partControl) {
+            if (control is PartControl partControl && partControl.part is UVoicePart) {
                 if (pianoRollWindow == null) {
                     pianoRollWindow = new PianoRollWindow() {
                         MainWindow = this,
@@ -609,7 +609,8 @@ namespace OpenUtau.App.Views {
                 }
                 // Workaround for new window losing focus.
                 openPianoRollWindow = true;
-                DocManager.Inst.ExecuteCmd(new LoadPartNotification(partControl.part, DocManager.Inst.Project));
+                int tick = viewModel.TracksViewModel.PointToTick(e.GetPosition(canvas));
+                DocManager.Inst.ExecuteCmd(new LoadPartNotification(partControl.part, DocManager.Inst.Project, tick));
             }
         }
 

@@ -35,6 +35,7 @@
             <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.rendering.resampler.warn}" FontWeight="Bold"
                        Foreground="Red" Margin="0,0,0,4" IsVisible="{Binding MoresamplerSelected}"/>
             <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.rendering.resampler.note}"/>
+            <Button HorizontalAlignment="Stretch" Content="{DynamicResource singers.location}" Command="{Binding OpenResamplerLocation}"/>
           </StackPanel>
         </HeaderedContentControl>
         <HeaderedContentControl Classes="groupbox" Header="{DynamicResource prefs.appearance}">

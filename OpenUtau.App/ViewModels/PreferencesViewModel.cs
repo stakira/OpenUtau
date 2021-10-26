@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Text.RegularExpressions;
@@ -155,6 +156,12 @@ namespace OpenUtau.App.ViewModels {
 
         public void TestAudioOutputDevice() {
             PlaybackManager.Inst.PlayTestSound();
+        }
+
+        public void OpenResamplerLocation() {
+            string path = PathManager.Inst.GetEngineSearchPath();
+            Directory.CreateDirectory(path);
+            OS.OpenFolder(path);
         }
     }
 }

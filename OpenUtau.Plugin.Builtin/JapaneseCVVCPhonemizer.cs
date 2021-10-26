@@ -28,29 +28,30 @@ namespace OpenUtau.Plugin.Builtin {
             "py=py,ぴ,ぴぇ,ぴゃ,ぴゅ,ぴょ",
             "ry=ry,り,りぇ,りゃ,りゅ,りょ",
             "ny=ny,に,にぇ,にゃ,にゅ,にょ",
-            "r=r,ら,る,れ,ろ",
+            "r=r,4,ら,る,るぃ,れ,ろ",
             "hy=hy,ひ,ひぇ,ひゃ,ひゅ,ひょ",
             "dy=dy,でぃ,でぇ,でゃ,でゅ,でょ",
             "by=by,び,びぇ,びゃ,びゅ,びょ",
-            "b=b,ば,ぶ,べ,ぼ",
-            "d=d,だ,で,ど,どぅ",
-            "g=g,が,ぐ,げ,ご",
+            "b=b,ば,ぶ,ぶぃ,べ,ぼ",
+            "d=d,だ,で,ど,どぃ,どぅ",
+            "g=g,が,ぐ,ぐぃ,げ,ご",
             "f=f,ふ,ふぁ,ふぃ,ふぇ,ふぉ",
-            "h=h,は,へ,ほ",
-            "k=k,か,く,け,こ",
+            "h=h,は,はぃ,へ,ほ,ほぅ",
+            "k=k,か,く,くぃ,け,こ",
             "j=j,じ,じぇ,じゃ,じゅ,じょ",
-            "m=m,ま,む,め,も",
-            "n=n,な,ぬ,ね,の",
-            "p=p,ぱ,ぷ,ぺ,ぽ",
+            "m=m,ま,む,むぃ,め,も",
+            "n=n,な,ぬ,ぬぃ,ね,の",
+            "p=p,ぱ,ぷ,ぷぃ,ぺ,ぽ",
             "s=s,さ,す,すぃ,せ,そ",
             "sh=sh,し,しぇ,しゃ,しゅ,しょ",
-            "t=t,た,て,と,とぅ",
-            "w=w,うぃ,うぅ,うぇ,うぉ,わ,を",
+            "t=t,た,て,と,とぃ,とぅ",
             "v=v,ヴ,ヴぁ,ヴぃ,ヴぅ,ヴぇ,ヴぉ",
-            "y=y,いぃ,いぇ,や,ゆ,よ,ゐ,ゑ",
             "ky=ky,き,きぇ,きゃ,きゅ,きょ",
+            "w=w,うぃ,うぅ,うぇ,うぉ,わ,ゐ,ゑ,を,ヰ,ヱ",
+            "y=y,いぃ,いぇ,や,ゆ,よ",
             "z=z,ざ,ず,ずぃ,ぜ,ぞ",
             "my=my,み,みぇ,みゃ,みゅ,みょ",
+            "ng=ng,ガ,ギ,グ,ゲ,ゴ",
             "R=R",
             "息=息",
             "吸=吸",
@@ -92,7 +93,6 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             } else if (plainVowels.Contains(currentLyric)) {
                 var prevUnicode = ToUnicodeElements(prevNeighbour?.lyric);
-
                 // Current note is VV
                 if (vowelLookup.TryGetValue(prevUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
                     currentLyric = $"{vow} {currentLyric}";
@@ -100,11 +100,12 @@ namespace OpenUtau.Plugin.Builtin {
             }
 
             if (nextNeighbour != null) {
+
                 var nextUnicode = ToUnicodeElements(nextNeighbour?.lyric);
                 var nextLyric = string.Join("", nextUnicode);
 
                 // Check if next note is a vowel and does not require VC
-                if (plainVowels.Contains(nextUnicode.FirstOrDefault() ?? string.Empty)) {
+                if (nextUnicode.Count < 2 && plainVowels.Contains(nextUnicode.FirstOrDefault() ?? string.Empty)) {
                     return new Result {
                         phonemes = new Phoneme[] {
                             new Phoneme() {
@@ -116,6 +117,7 @@ namespace OpenUtau.Plugin.Builtin {
 
                 // Insert VC before next neighbor
                 // Get vowel from current note
+
                 var vowel = "";
                 if (vowelLookup.TryGetValue(currentUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
                     vowel = vow;
@@ -123,9 +125,11 @@ namespace OpenUtau.Plugin.Builtin {
 
                 // Get consonant from next note
                 var consonant = "";
-                if (consonantLookup.TryGetValue(nextUnicode.FirstOrDefault() ?? string.Empty, out var con)) {
+                if (consonantLookup.TryGetValue(nextUnicode.FirstOrDefault() ?? string.Empty, out var con)
+                    || nextUnicode.Count >= 2 && consonantLookup.TryGetValue(string.Join("", nextUnicode.Take(2)), out con)) {
                     consonant = con;
                 }
+
 
                 if (consonant == "") {
                     return new Result {

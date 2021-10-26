@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using OpenUtau.Api;
 using OpenUtau.Classic;
 using OpenUtau.Core.Ustx;
@@ -16,7 +15,7 @@ namespace OpenUtau.Plugin.Builtin {
         private USinger singer;
 
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour) {
-            var phonemes = LyricToPhonemes(notes[0].lyric);
+            var phonemes = GetPhonemes(notes[0]);
             if (phonemes == null && notes[0].lyric != "-") {
                 return new Result {
                     phonemes = new Phoneme[] {
@@ -26,8 +25,8 @@ namespace OpenUtau.Plugin.Builtin {
                     },
                 };
             }
-            string before = prevNeighbour == null
-                ? "-" : LyricToPhonemes(prevNeighbour.Value.lyric).Last();
+            var prevPhonemes = prevNeighbour == null ? null : GetPhonemes(prevNeighbour.Value);
+            string before = prevPhonemes == null ? "-" : prevPhonemes.Last();
             int totalDuration = notes.Sum(n => n.duration);
             if (notes[0].lyric == "-") {
                 return new Result {
@@ -37,7 +36,8 @@ namespace OpenUtau.Plugin.Builtin {
                         },
                     },
                 };
-            } else if (phonemes.Length == 1 || before == "-") {
+            }
+            if (before == "-") {
                 return new Result {
                     phonemes = new Phoneme[] {
                         new Phoneme() {
@@ -45,29 +45,70 @@ namespace OpenUtau.Plugin.Builtin {
                         },
                     },
                 };
-            } else {
+            }
+            if (phonemes.Length == 1) {
+                if (singer.TryGetMappedOto($"{before} {notes[0].lyric}", notes[0].tone, out var _)) {
+                    return new Result {
+                        phonemes = new Phoneme[] {
+                            new Phoneme() {
+                                phoneme = $"{before} {notes[0].lyric}",
+                            },
+                        },
+                    };
+                }
+                if (singer.TryGetMappedOto($"{before} {phonemes[0]}", notes[0].tone, out var _)) {
+                    return new Result {
+                        phonemes = new Phoneme[] {
+                            new Phoneme() {
+                                phoneme = $"{before} {phonemes[0]}",
+                            },
+                        },
+                    };
+                }
                 return new Result {
                     phonemes = new Phoneme[] {
                         new Phoneme() {
-                            phoneme = $"{before} {phonemes[0]}",
-                            position = -120,
-                        },
-                        new Phoneme() {
-                            phoneme = $"{notes[0].lyric}",
+                            phoneme = notes[0].lyric,
                         },
                     },
                 };
             }
+            int vcLen = 120;
+            if (singer.TryGetMappedOto(notes[0].lyric, notes[0].tone, out var oto)) {
+                vcLen = MsToTick(oto.Preutter);
+                if (oto.Overlap == 0 && vcLen < 120) {
+                    vcLen = Math.Min(120, vcLen * 2); // explosive consonant with short preutter.
+                }
+            }
+            return new Result {
+                phonemes = new Phoneme[] {
+                    new Phoneme() {
+                        phoneme = $"{before} {phonemes[0]}",
+                        position = -vcLen,
+                    },
+                    new Phoneme() {
+                        phoneme = $"{notes[0].lyric}",
+                    },
+                },
+            };
         }
 
-        private string[] LyricToPhonemes(string lyric) {
-            if (vowels.TryGetValue(lyric, out var vowel) && lyric == vowel) {
+        private string[] GetPhonemes(Note note) {
+            if (!string.IsNullOrEmpty(note.phoneticHint)) {
+                return note.phoneticHint.Split();
+            }
+            if (vowels.TryGetValue(note.lyric, out var vowel)) {
+                if (note.lyric == vowel) {
+                    return new string[] { vowel };
+                }
+            } else {
+                return null;
+            }
+            if (consonants.TryGetValue(note.lyric, out var consonant)) {
+                return new string[] { consonant, vowel };
+            } else {
                 return new string[] { vowel };
             }
-            if (consonants.TryGetValue(lyric, out var consonant)) {
-                return new string[] { consonant, vowel };
-            }
-            return null;
         }
 
         public override void SetSinger(USinger singer) {

@@ -20,7 +20,7 @@
   <system:String x:Key="dialogs.export.savefirst">プロジェクトを保存してください。</system:String>
   <system:String x:Key="dialogs.messagebox.cancel">キャンセル</system:String>
   <system:String x:Key="dialogs.messagebox.no">いいえ</system:String>
-  <!--<system:String x:Key="dialogs.messagebox.ok">Ok</system:String>-->
+  <system:String x:Key="dialogs.messagebox.ok">Ok</system:String>
   <system:String x:Key="dialogs.messagebox.yes">はい</system:String>
   <system:String x:Key="dialogs.noresampler.caption">エンジンがありません</system:String>
   <system:String x:Key="dialogs.noresampler.message">エンジンが設定されていません！お好みのエンジンのEXEやDLLファイルをResamplerフォルダに入れて、環境設定でエンジンを選択してください！</system:String>
@@ -54,20 +54,20 @@
   <system:String x:Key="menu.file.exit">OpenUTAUを終了</system:String>
   <system:String x:Key="menu.file.exportall">すべてエクスポート</system:String>
   <system:String x:Key="menu.file.exportust">USTをエクスポート</system:String>
-  <system:String x:Key="menu.file.importaudio">音声インポート...</system:String>
-  <system:String x:Key="menu.file.importmidi">MIDIインポート...</system:String>
+  <system:String x:Key="menu.file.importaudio">音声をインポート...</system:String>
+  <system:String x:Key="menu.file.importmidi">MIDIをインポート...</system:String>
   <system:String x:Key="menu.file.importtracks">トラックをインポート...</system:String>
   <system:String x:Key="menu.file.new">新規作成</system:String>
-  <!--<system:String x:Key="menu.file.newfromtemplate">New From Template</system:String>-->
+  <system:String x:Key="menu.file.newfromtemplate">テンプレートから新規作成</system:String>
   <system:String x:Key="menu.file.open">開く...</system:String>
-  <!--<system:String x:Key="menu.file.openas">Open As</system:String>-->
+  <system:String x:Key="menu.file.openas">Open As</system:String>
   <system:String x:Key="menu.file.openrecent">最近開いたファイル</system:String>
   <system:String x:Key="menu.file.save">保存</system:String>
   <system:String x:Key="menu.file.saveas">別名で保存...</system:String>
-  <!--<system:String x:Key="menu.file.savetemplate">Save Template...</system:String>-->
+  <system:String x:Key="menu.file.savetemplate">テンプレートを保存...</system:String>
   <system:String x:Key="menu.help">ヘルプ</system:String>
   <system:String x:Key="menu.help.about">OpenUTAUについて</system:String>
-  <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
+  <system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>
   <system:String x:Key="menu.tools">ツール</system:String>
   <system:String x:Key="menu.tools.layout">レイアウト</system:String>
   <system:String x:Key="menu.tools.layout.hsplit11">横並び 1:1</system:String>
@@ -86,14 +86,14 @@
   <system:String x:Key="oto.consonant">子音部</system:String>
   <system:String x:Key="oto.cutoff">ブランク</system:String>
   <system:String x:Key="oto.file">ファイル</system:String>
-  <!--<system:String x:Key="oto.flavor">Flavor</system:String>-->
+  <system:String x:Key="oto.flavor">Flavor</system:String>
   <system:String x:Key="oto.offset">オフセット</system:String>
   <system:String x:Key="oto.overlap">オーバーラップ</system:String>
   <system:String x:Key="oto.phonetic">読み方</system:String>
-  <!--<system:String x:Key="oto.prefix">Prefix</system:String>-->
+  <system:String x:Key="oto.prefix">Prefix</system:String>
   <system:String x:Key="oto.preutter">先行発声</system:String>
   <system:String x:Key="oto.set">セット</system:String>
-  <!--<system:String x:Key="oto.suffix">Suffix</system:String>-->
+  <system:String x:Key="oto.suffix">Suffix</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">歌詞</system:String>
   <system:String x:Key="pianoroll.menu.notes">音符</system:String>
@@ -167,7 +167,7 @@ Ctrl長押しで複数選択</system:String>
     左クリック: 音符を追加
     右クリック: 音符を削除
     右クリック + ドラッグ: 重なった音符を削除
-General
+一般
     T: ヒントを表示
     音符をドラッグ: 音符を移動
     音符の末尾をドラッグ: 音符の長さを変更
