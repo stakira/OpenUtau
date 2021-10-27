@@ -17,11 +17,12 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys {
                 if (Path.GetExtension(ExePath).ToLower() == ".exe" ||
                     Path.GetExtension(ExePath).ToLower() == ".sh") {
                     this.ExePath = ExePath;
+                    FilePath = Path.GetRelativePath(PathManager.Inst.GetEngineSearchPath(), ExePath);
                     _isLegalPlugin = true;
                 }
             }
         }
-        public string FilePath => ExePath;
+        public string FilePath { get; }
         public bool isLegalPlugin {
             get {
                 return _isLegalPlugin;
