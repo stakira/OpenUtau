@@ -33,7 +33,6 @@ namespace OpenUtau.UI.Models {
         UVoicePart _part;
         public UVoicePart Part { get { return _part; } }
         public Classic.Plugin[] Plugins => DocManager.Inst.Plugins;
-        public TransformerFactory[] Transformers => DocManager.Inst.TransformerFactories;
 
         public Canvas TimelineCanvas;
         public Canvas MidiCanvas;
@@ -507,27 +506,6 @@ namespace OpenUtau.UI.Models {
             DocManager.Inst.StartUndoGroup();
             DocManager.Inst.ExecuteCmd(new ReplacePartCommand(project, Part, newPart));
             DocManager.Inst.EndUndoGroup();
-        }
-
-        private ICommand transformerCommand;
-        public ICommand TransformerCommand => transformerCommand ?? (transformerCommand = new RelayCommand<object>(OnTransformerSelected));
-        void OnTransformerSelected(object obj) {
-            var factory = (TransformerFactory)obj;
-            try {
-                var transformer = factory.Create();
-                DocManager.Inst.StartUndoGroup();
-                string[] newLyrics = new string[Part.notes.Count];
-                int i = 0;
-                foreach (var note in Part.notes) {
-                    newLyrics[i++] = transformer.Transform(note.lyric);
-                }
-                DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(Part, Part.notes.ToArray(), newLyrics));
-            } catch (Exception e) {
-                Log.Error(e, $"Failed to run transformer {factory.name}");
-                DocManager.Inst.ExecuteCmd(new UserMessageNotification(e.ToString()));
-            } finally {
-                DocManager.Inst.EndUndoGroup();
-            }
         }
 
         # region ICmdSubscriber

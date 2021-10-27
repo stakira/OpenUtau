@@ -12,15 +12,14 @@ using Serilog;
 
 namespace OpenUtau.App.ViewModels {
     public class PianoRollViewModel : ViewModelBase {
-        public static ReactiveCommand<TransformerFactory, Unit>? TransformerCommand { get; private set; }
 
         public bool ExtendToFrame => OS.IsMacOS();
         [Reactive] public NotesViewModel NotesViewModel { get; set; }
         [Reactive] public PlaybackViewModel? PlaybackViewModel { get; set; }
 
         public Classic.Plugin[] Plugins => DocManager.Inst.Plugins;
-        public TransformerFactory[] Transformers => DocManager.Inst.TransformerFactories;
         [Reactive] public List<MenuItemViewModel> NoteBatchEdits { get; set; }
+        [Reactive] public List<MenuItemViewModel> LyricBatchEdits { get; set; }
         public ReactiveCommand<PitchPointHitInfo, Unit> PitEaseInOutCommand { get; set; }
         public ReactiveCommand<PitchPointHitInfo, Unit> PitLinearCommand { get; set; }
         public ReactiveCommand<PitchPointHitInfo, Unit> PitEaseInCommand { get; set; }
@@ -29,34 +28,10 @@ namespace OpenUtau.App.ViewModels {
         public ReactiveCommand<PitchPointHitInfo, Unit> PitDelCommand { get; set; }
         public ReactiveCommand<PitchPointHitInfo, Unit> PitAddCommand { get; set; }
 
-        private ReactiveCommand<NoteBatchEdit, Unit> noteBatchEditCommand;
+        private ReactiveCommand<BatchEdit, Unit> noteBatchEditCommand;
 
         public PianoRollViewModel() {
             NotesViewModel = new NotesViewModel();
-            TransformerCommand = ReactiveCommand.Create<TransformerFactory>((factory) => {
-                var part = NotesViewModel.Part;
-                if (part == null) {
-                    return;
-                }
-                try {
-                    var transformer = factory.Create();
-                    DocManager.Inst.StartUndoGroup();
-                    var notes = NotesViewModel.SelectedNotes.Count > 0 ?
-                        NotesViewModel.SelectedNotes.ToArray() :
-                        part.notes.ToArray();
-                    string[] newLyrics = new string[notes.Length];
-                    int i = 0;
-                    foreach (var note in notes) {
-                        newLyrics[i++] = transformer.Transform(note.lyric);
-                    }
-                    DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(part, notes, newLyrics));
-                } catch (Exception e) {
-                    Log.Error(e, $"Failed to run transformer {factory.name}");
-                    DocManager.Inst.ExecuteCmd(new UserMessageNotification(e.ToString()));
-                } finally {
-                    DocManager.Inst.EndUndoGroup();
-                }
-            });
 
             PitEaseInOutCommand = ReactiveCommand.Create<PitchPointHitInfo>(info => {
                 DocManager.Inst.StartUndoGroup();
@@ -94,15 +69,26 @@ namespace OpenUtau.App.ViewModels {
                 DocManager.Inst.EndUndoGroup();
             });
 
-            noteBatchEditCommand = ReactiveCommand.Create<NoteBatchEdit>(edit => {
+            noteBatchEditCommand = ReactiveCommand.Create<BatchEdit>(edit => {
                 if (NotesViewModel.Part != null) {
                     edit.Run(NotesViewModel.Project, NotesViewModel.Part, NotesViewModel.SelectedNotes, DocManager.Inst);
                 }
             });
-            NoteBatchEdits = new List<NoteBatchEdit>() {
+            NoteBatchEdits = new List<BatchEdit>() {
                 new AddTailDash(),
                 new QuantizeNotes(15),
                 new QuantizeNotes(30),
+            }.Select(edit => new MenuItemViewModel() {
+                Header = ThemeManager.GetString(edit.Name),
+                Command = noteBatchEditCommand,
+                CommandParameter = edit,
+            }).ToList();
+            LyricBatchEdits = new List<BatchEdit>() {
+                new RomajiToHiragana(),
+                new HiraganaToRomaji(),
+                new JapaneseVCVtoCV(),
+                new RemoveToneSuffix(),
+                new RemoveLetterSuffix(),
             }.Select(edit => new MenuItemViewModel() {
                 Header = ThemeManager.GetString(edit.Name),
                 Command = noteBatchEditCommand,

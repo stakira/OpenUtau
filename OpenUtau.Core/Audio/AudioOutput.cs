@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Threading;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
@@ -31,7 +32,7 @@ namespace OpenUtau.Audio {
         private bool disposed;
 
         public AudioOutput() {
-            var path = Path.Combine(Environment.CurrentDirectory, "libs");
+            var path = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "libs");
             PaBinding.InitializeBindings(new LibraryLoader(path, "portaudio"));
             PaBinding.Pa_Initialize();
 
