@@ -270,7 +270,7 @@ namespace OpenUtau.App.ViewModels {
                     }
                     int p0Tick = phoneme.Parent.position + phoneme.position + project.MillisecondToTick(phoneme.envelope.data[0].X);
                     double p0x = viewModel.TickToneToPoint(p0Tick, 0).X;
-                    var point = new Point(p0x, 48 - phoneme.envelope.data[0].Y * 0.24 - 1);
+                    var point = new Point(p0x, 60 - phoneme.envelope.data[0].Y * 0.24 - 1);
                     if (WithIn(point, mousePos, 3)) {
                         result.phoneme = phoneme;
                         result.hit = true;
@@ -279,7 +279,7 @@ namespace OpenUtau.App.ViewModels {
                     }
                     int p1Tick = phoneme.Parent.position + phoneme.position + viewModel.Project.MillisecondToTick(phoneme.envelope.data[1].X);
                     double p1x = viewModel.TickToneToPoint(p1Tick, 0).X;
-                    point = new Point(p1x, 48 - phoneme.envelope.data[1].Y * 0.24);
+                    point = new Point(p1x, 60 - phoneme.envelope.data[1].Y * 0.24);
                     if (WithIn(point, mousePos, 3)) {
                         result.phoneme = phoneme;
                         result.hit = true;
