@@ -96,6 +96,11 @@
   <system:String x:Key="oto.suffix">Sufijo</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">Letras</system:String>
+   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana a Romaji</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">VCV a CV (Japonés)</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">Quitar Sufijo de Tono</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Quitar Sufijo de Letra</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Romaji a Hiragana</system:String>
   <system:String x:Key="pianoroll.menu.notes">Notas</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">Añadir cola "-"</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">Cuantificar a 1/128</system:String>
