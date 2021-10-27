@@ -26,7 +26,6 @@ namespace OpenUtau.Core {
         public List<USinger> SingersOrdered { get; private set; } = new List<USinger>();
         public Plugin[] Plugins { get; private set; }
         public PhonemizerFactory[] PhonemizerFactories { get; private set; }
-        public TransformerFactory[] TransformerFactories { get; private set; }
         public UProject Project { get; private set; }
         public bool HasOpenUndoGroup => undoGroup != null;
         public List<UNote> NotesClipboard { get; set; }
@@ -66,7 +65,6 @@ namespace OpenUtau.Core {
             var stopWatch = Stopwatch.StartNew();
             var phonemizerFactories = new List<PhonemizerFactory>();
             phonemizerFactories.Add(PhonemizerFactory.Get(typeof(DefaultPhonemizer)));
-            var transformerFactories = new List<TransformerFactory>();
             Directory.CreateDirectory(PathManager.Inst.PluginsPath);
             foreach (var file in Directory.EnumerateFiles(PathManager.Inst.PluginsPath, "*.dll", SearchOption.AllDirectories)) {
                 Assembly assembly;
@@ -76,9 +74,7 @@ namespace OpenUtau.Core {
                         if (type.IsAbstract) {
                             continue;
                         }
-                        if (type.IsSubclassOf(typeof(Transformer))) {
-                            transformerFactories.Add(TransformerFactory.Get(type));
-                        } else if (type.IsSubclassOf(typeof(Phonemizer))) {
+                        if (type.IsSubclassOf(typeof(Phonemizer))) {
                             phonemizerFactories.Add(PhonemizerFactory.Get(type));
                         }
                     }
@@ -88,7 +84,6 @@ namespace OpenUtau.Core {
                 }
             }
             PhonemizerFactories = phonemizerFactories.ToArray();
-            TransformerFactories = transformerFactories.ToArray();
             stopWatch.Stop();
             Log.Information($"Search all plugins: {stopWatch.Elapsed}");
         }

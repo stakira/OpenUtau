@@ -65,7 +65,6 @@ namespace OpenUtau.App.Views {
         public static double Lerp(Point p1, Point p2, double x) {
             double t = (x - p1.X) / (p2.X - p1.X);
             t = Math.Clamp(t, 0, 1);
-            Serilog.Log.Information($"p1 {p1} p2 {p2} x {x} t {t}");
             return p1.Y + t * (p2.Y - p1.Y);
         }
     }

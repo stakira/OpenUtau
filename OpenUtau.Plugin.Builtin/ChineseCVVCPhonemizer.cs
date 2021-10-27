@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using OpenUtau.Api;
 using OpenUtau.Classic;
 using OpenUtau.Core.Ustx;
@@ -16,41 +15,40 @@ namespace OpenUtau.Plugin.Builtin {
         private USinger singer;
 
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour) {
-            var phonemes = LyricToPhonemes(notes[0].lyric);
-            if (phonemes == null && notes[0].lyric != "-") {
+            string consonant = consonants.TryGetValue(notes[0].lyric, out consonant) ? consonant : notes[0].lyric;
+            string prevVowel = prevNeighbour != null && vowels.TryGetValue(prevNeighbour.Value.lyric, out prevVowel) ? prevVowel : "-";
+            if (notes[0].lyric == "-" || notes[0].lyric.ToLowerInvariant() == "r") {
                 return new Result {
                     phonemes = new Phoneme[] {
                         new Phoneme() {
-                            phoneme = notes[0].lyric,
+                            phoneme = $"{prevVowel} R",
                         },
                     },
                 };
             }
-            string before = prevNeighbour == null
-                ? "-" : LyricToPhonemes(prevNeighbour.Value.lyric).Last();
             int totalDuration = notes.Sum(n => n.duration);
-            if (notes[0].lyric == "-") {
+            if (singer.TryGetMappedOto($"{prevVowel} {notes[0].lyric}", notes[0].tone, out var _)) {
                 return new Result {
                     phonemes = new Phoneme[] {
                         new Phoneme() {
-                            phoneme = $"{before} R",
+                            phoneme = $"{prevVowel} {notes[0].lyric}",
                         },
                     },
                 };
-            } else if (phonemes.Length == 1 || before == "-") {
+            }
+            int vcLen = 120;
+            if (singer.TryGetMappedOto($"{notes[0].lyric}", notes[0].tone, out var oto)) {
+                vcLen = MsToTick(oto.Preutter);
+                if (oto.Overlap == 0 && vcLen < 120) {
+                    vcLen = Math.Min(120, vcLen * 2); // explosive consonant with short preutter.
+                }
+            }
+            if (singer.TryGetMappedOto($"{prevVowel} {consonant}", notes[0].tone, out var _)) {
                 return new Result {
                     phonemes = new Phoneme[] {
                         new Phoneme() {
-                            phoneme = $"{before} {notes[0].lyric}",
-                        },
-                    },
-                };
-            } else {
-                return new Result {
-                    phonemes = new Phoneme[] {
-                        new Phoneme() {
-                            phoneme = $"{before} {phonemes[0]}",
-                            position = -120,
+                            phoneme = $"{prevVowel} {consonant}",
+                            position = -vcLen,
                         },
                         new Phoneme() {
                             phoneme = $"{notes[0].lyric}",
@@ -58,16 +56,13 @@ namespace OpenUtau.Plugin.Builtin {
                     },
                 };
             }
-        }
-
-        private string[] LyricToPhonemes(string lyric) {
-            if (vowels.TryGetValue(lyric, out var vowel) && lyric == vowel) {
-                return new string[] { vowel };
-            }
-            if (consonants.TryGetValue(lyric, out var consonant)) {
-                return new string[] { consonant, vowel };
-            }
-            return null;
+            return new Result {
+                phonemes = new Phoneme[] {
+                    new Phoneme() {
+                        phoneme = notes[0].lyric,
+                    },
+                },
+            };
         }
 
         public override void SetSinger(USinger singer) {

@@ -40,32 +40,38 @@ namespace OpenUtau.App.Controls {
                         box.Text = item.Alias;
                     }
                     EndEdit(true);
+                    e.Handled = true;
                     break;
                 case Key.Escape:
                     EndEdit();
+                    e.Handled = true;
                     break;
                 case Key.Tab:
                     if (listBox.SelectedItem is LyricBoxViewModel.SuggestionItem item1) {
                         box.Text = item1.Alias;
                     }
                     OnTab(e.KeyModifiers);
+                    e.Handled = true;
                     break;
                 case Key.Up:
                     ListBoxSelect(listBox.SelectedIndex - 1);
+                    e.Handled = true;
                     break;
                 case Key.Down:
                     ListBoxSelect(listBox.SelectedIndex + 1);
+                    e.Handled = true;
                     break;
                 case Key.PageUp:
                     ListBoxSelect(listBox.SelectedIndex - 8);
+                    e.Handled = true;
                     break;
                 case Key.PageDown:
                     ListBoxSelect(listBox.SelectedIndex + 8);
+                    e.Handled = true;
                     break;
                 default:
                     break;
             }
-            e.Handled = true;
         }
 
         private void ListBoxSelect(int index) {
@@ -89,12 +95,15 @@ namespace OpenUtau.App.Controls {
             switch (e.Key) {
                 case Key.Enter:
                     EndEdit(true);
+                    e.Handled = true;
                     break;
                 case Key.Escape:
                     EndEdit();
+                    e.Handled = true;
                     break;
                 case Key.Tab:
                     OnTab(e.KeyModifiers);
+                    e.Handled = true;
                     break;
                 case Key.Up:
                 case Key.Down:
@@ -102,11 +111,11 @@ namespace OpenUtau.App.Controls {
                 case Key.PageDown:
                     listBox.Focus();
                     listBox.SelectedIndex = 0;
+                    e.Handled = true;
                     break;
                 default:
                     break;
             }
-            e.Handled = true;
         }
 
         private void OnTab(KeyModifiers keyModifiers) {

@@ -23,9 +23,13 @@ namespace OpenUtau {
                     Log.Error($"Error loading {attempt2}: {Marshal.GetLastWin32Error()}");
                 }
             } else if (OS.IsLinux()) {
-                _handle = dlopen(Path.Combine(path, "linux-x64", $"lib{library}.so"), RTLD_NOW);
+                string lib = Path.Combine(path, "linux-x64", $"lib{library}.so");
+                Log.Information($"Loading {lib}");
+                _handle = dlopen(lib, RTLD_NOW);
             } else if (OS.IsMacOS()) {
-                _handle = dlopen(Path.Combine(path, "osx-x64", $"lib{library}.dylib"), RTLD_NOW);
+                string lib = Path.Combine(path, "osx-x64", $"lib{library}.dylib");
+                Log.Information($"Loading {lib}");
+                _handle = dlopen(lib, RTLD_NOW);
             } else {
                 throw new NotSupportedException("Platform not supported.");
             }

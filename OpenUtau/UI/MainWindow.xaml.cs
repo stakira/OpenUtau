@@ -179,7 +179,7 @@ namespace OpenUtau.UI {
                             midiWindow = new MidiWindow();
                             midiWindow.mainWindow = this;
                         }
-                        DocManager.Inst.ExecuteCmd(new LoadPartNotification(partEl.Part, trackVM.Project));
+                        DocManager.Inst.ExecuteCmd(new LoadPartNotification(partEl.Part, trackVM.Project, 0));
                         midiWindow.Show();
                         midiWindow.Focus();
                     }
