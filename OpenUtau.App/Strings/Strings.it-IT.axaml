@@ -14,14 +14,14 @@
   <system:String x:Key="dialogs.about.message">
 		OpenUTAU punta ad essere un programma open source con un'esperienza utente moderna e supporto fonetico intelligente per la communità di UTAU. Visitaci su GitHub.
     </system:String>
-  <!--<system:String x:Key="dialogs.exitsave.caption">Exit OpenUtau</system:String>-->
-  <!--<system:String x:Key="dialogs.exitsave.message">The current project contains unsaved changes. Do you want to save it?</system:String>-->
+  <system:String x:Key="dialogs.exitsave.caption">Stai uscendo da OpenUtau</system:String>
+  <system:String x:Key="dialogs.exitsave.message">Il progetto attuale ha dei cambiamenti non salvati. Vuoi salvarli?</system:String>
   <system:String x:Key="dialogs.export.caption">Esporta</system:String>
   <system:String x:Key="dialogs.export.savefirst">Salva prima il progetto</system:String>
-  <!--<system:String x:Key="dialogs.messagebox.cancel">Cancel</system:String>-->
+  <system:String x:Key="dialogs.messagebox.cancel">Cancella</system:String>
   <!--<system:String x:Key="dialogs.messagebox.no">No</system:String>-->
   <!--<system:String x:Key="dialogs.messagebox.ok">Ok</system:String>-->
-  <!--<system:String x:Key="dialogs.messagebox.yes">Yes</system:String>-->
+  <system:String x:Key="dialogs.messagebox.yes">Si</system:String>
   <system:String x:Key="dialogs.noresampler.caption">Nessun resampler</system:String>
   <system:String x:Key="dialogs.noresampler.message">Nessun resampler! Aggiungi il file DLL o EXE del resampler nella cartella Resampler e scegli nelle Preferenze!</system:String>
 
@@ -82,6 +82,14 @@
   <system:String x:Key="menu.tools.singer.installadv">Installa cantante (Avanzato)...</system:String>
   <system:String x:Key="menu.tools.singers">Cantanti...</system:String>
 
+  <system:String x:Key="menu2.lyrics">Testo</system:String>
+  <system:String x:Key="menu2.notes">Note</system:String>
+  <system:String x:Key="menu2.notes.addtaildash">Aggiungi "-" in coda</system:String>
+  <system:String x:Key="menu2.notes.quantize15">Quantizzare a 1/128</system:String>
+  <system:String x:Key="menu2.notes.quantize30">Quantizzare a 1/64</system:String>
+  <system:String x:Key="menu2.part">Parte</system:String>
+  <system:String x:Key="menu2.part.rename">Rinomina</system:String>
+
   <system:String x:Key="oto.alias">Pseudonimo</system:String>
   <system:String x:Key="oto.consonant">Consonante</system:String>
   <system:String x:Key="oto.cutoff">Taglio</system:String>
@@ -95,36 +103,16 @@
   <system:String x:Key="oto.set">Gruppo</system:String>
   <system:String x:Key="oto.suffix">Suffisso</system:String>
 
-  <!--<system:String x:Key="pianoroll.menu.lyrics">Lyrics</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.notes">Notes</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.notes.addtaildash">Add tail "-"</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.notes.quantize15">Quantize to 1/128</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.notes.quantize30">Quantize to 1/64</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.part">Part</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.part.rename">Rename</system:String>-->
-  <!--<system:String x:Key="pianoroll.toggle.phoneme">View Phonemes (O)</system:String>-->
-  <!--<system:String x:Key="pianoroll.toggle.pitch">View Pitch Bend (I)</system:String>-->
-  <!--<system:String x:Key="pianoroll.toggle.snap">Toggle Snap (P)</system:String>-->
-  <!--<system:String x:Key="pianoroll.toggle.tips">View Tips (T)</system:String>-->
-  <!--<system:String x:Key="pianoroll.toggle.tone">Toggle Note Tone (Y)</system:String>-->
-  <!--<system:String x:Key="pianoroll.toggle.vibrato">View Vibrato (U)</system:String>-->
-  <!--<system:String x:Key="pianoroll.tool.eraser">Eraser Tool (3)</system:String>-->
-  <!--<system:String x:Key="pianoroll.tool.pen">Pen Tool (2)
-    Left click to draw
-Right click to delete</system:String>-->
-  <!--<system:String x:Key="pianoroll.tool.selection">Selection Tool (1)
-Hold Ctrl to select more</system:String>-->
-
-  <!--<system:String x:Key="prefs.advanced">Advanced</system:String>-->
+  <system:String x:Key="prefs.advanced">Avanzate</system:String>
   <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
-  <!--<system:String x:Key="prefs.advanced.stable">Stable</system:String>-->
+  <system:String x:Key="prefs.advanced.stable">Stabile</system:String>
   <system:String x:Key="prefs.appearance">Aspetto</system:String>
   <system:String x:Key="prefs.appearance.lang">Lingua</system:String>
   <system:String x:Key="prefs.appearance.theme">Tema</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">Scuro</system:String>
   <system:String x:Key="prefs.appearance.theme.light">Chiaro</system:String>
   <system:String x:Key="prefs.caption">Preferenze</system:String>
-  <!--<system:String x:Key="prefs.note.restart">Note: please restart OpenUtau after changing this item.</system:String>-->
+  <system:String x:Key="prefs.note.restart">Nota: riavvia OpenUtau dopo aver cambiato questo elemento.</system:String>
   <system:String x:Key="prefs.paths">Percorsi</system:String>
   <system:String x:Key="prefs.paths.add">Aggiungi</system:String>
   <system:String x:Key="prefs.paths.remove">Rimuovi</system:String>
