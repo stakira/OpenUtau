@@ -56,7 +56,7 @@
     <system:String x:Key="menu.file.exportust">Vie Ust-tiedostot</system:String>
     <system:String x:Key="menu.file.importaudio">Tuo audio...</system:String>
     <system:String x:Key="menu.file.importmidi">Tuo Midi-tiedosto...</system:String>
-    <system:String x:Key="menu.file.importtracks">Tuo ääniraidat...</system:String>
+    <system:String x:Key="menu.file.importtracks">Tuo raidat...</system:String>
     <system:String x:Key="menu.file.new">Uusi</system:String>
     <system:String x:Key="menu.file.newfromtemplate">Luo uusi mallista</system:String>
     <system:String x:Key="menu.file.open">Avaa...</system:String>
@@ -91,7 +91,7 @@
     <system:String x:Key="oto.phonetic">Foneemi</system:String>
     <system:String x:Key="oto.prefix">Etuliite</system:String>
     <system:String x:Key="oto.preutter">Esiääntö</system:String>
-    <system:String x:Key="oto.set">Asenna</system:String>
+    <system:String x:Key="oto.set">Ryhmä</system:String>
     <system:String x:Key="oto.suffix">Jälkiliite</system:String>
     <system:String x:Key="oto.tags">Tagit</system:String>
 
@@ -175,8 +175,8 @@
         Vasen hiiren klikkaus: Aseta äänen sävy
         Oikea hiiren klikkaus: Nollaa äänen sävy
     </system:String>
-    <system:String x:Key="tip.lyricbox.next">Tab: Next Note</system:String>
-    <system:String x:Key="tip.lyricbox.prev">Shift+Tab: Previous Note</system:String>
+    <system:String x:Key="tip.lyricbox.next">Tab: Seuraava nuotti</system:String>
+    <system:String x:Key="tip.lyricbox.prev">Shift+Tab: Edellinen nuotti</system:String>
     <system:String x:Key="tip.notes.basics">
         Valintatyökalu
         Maalaa: Valitse nuotteja
