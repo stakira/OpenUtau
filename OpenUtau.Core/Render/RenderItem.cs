@@ -138,7 +138,7 @@ namespace OpenUtau.Core.Render {
             foreach (var currNote in notes) {
                 double noteStartMs = project.TickToMillisecond(currNote.position - note.position);
                 double noteEndMs = project.TickToMillisecond(currNote.End - note.position);
-                double vibratoStartMs = noteStartMs + project.TickToMillisecond(note.duration * (1 - note.vibrato.length / 100.0));
+                double vibratoStartMs = noteStartMs + project.TickToMillisecond(currNote.duration * (1 - currNote.vibrato.length / 100.0));
                 double vibratoLengthMs = noteEndMs - vibratoStartMs;
                 while (currMs < noteStartMs && index < pitches.Length) {
                     currMs += intervalMs;
