@@ -11,6 +11,7 @@ namespace OpenUtau.App {
         public static bool IsDarkMode = false;
         public static IBrush ForegroundBrush = Brushes.Black;
         public static IBrush BackgroundBrush = Brushes.White;
+        public static IPen NeutralAccentPenSemi = new Pen(Brushes.Black);
         public static IBrush AccentBrush1 = Brushes.White;
         public static IPen AccentPen1 = new Pen(Brushes.White);
         public static IPen AccentPen1Thickness2 = new Pen(Brushes.White);
@@ -56,6 +57,9 @@ namespace OpenUtau.App {
             }
             if (resDict.TryGetResource("SystemControlBackgroundAltHighBrush", out outVar)) {
                 BackgroundBrush = (IBrush)outVar!;
+            }
+            if (resDict.TryGetResource("NeutralAccentBrushSemi", out outVar)) {
+                NeutralAccentPenSemi = new Pen((IBrush)outVar!, 1);
             }
             if (resDict.TryGetResource("AccentBrush1", out outVar)) {
                 AccentBrush1 = (IBrush)outVar!;

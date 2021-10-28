@@ -4,12 +4,7 @@ using System.Linq;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core.Editing {
-    public interface NoteBatchEdit {
-        string Name { get; }
-        void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager);
-    }
-
-    public class AddTailDash : NoteBatchEdit {
+    public class AddTailDash : BatchEdit {
         public string Name => "pianoroll.menu.notes.addtaildash";
         public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
             List<UNote> toAdd = new List<UNote>();
@@ -31,7 +26,7 @@ namespace OpenUtau.Core.Editing {
         }
     }
 
-    public class QuantizeNotes : NoteBatchEdit {
+    public class QuantizeNotes : BatchEdit {
         public virtual string Name => name;
 
         private int quantize;

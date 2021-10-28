@@ -2,23 +2,6 @@
 
 API for OpenUtau plugin development. They are also used in OpenUtau.Plugin.Builtin project. You can refer to them as example.
 
-## Transformer
-
-Experimental. Subject to change. Feedback welcomed.
-
-API documented in
-- [Transformer.cs](Transformer.cs)
-
-Heavily commented example implementations:
-- [BasicTransformers.cs](../../OpenUtau.Plugin.Builtin/BasicTransformers.cs)
-
-The main method to implement is:
-```
-public abstract string Transform(string lyric);
-```
-The principle is simple, one lyric in, one lyric out.
-Read the examples [BasicTransformers.cs](../../OpenUtau.Plugin.Builtin/BasicTransformers.cs).
-
 ## Phonemizer
 
 Experimental. Subject to change. Feedback welcomed.

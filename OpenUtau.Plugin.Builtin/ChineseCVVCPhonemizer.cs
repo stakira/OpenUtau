@@ -15,100 +15,54 @@ namespace OpenUtau.Plugin.Builtin {
         private USinger singer;
 
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour) {
-            var phonemes = GetPhonemes(notes[0]);
-            if (phonemes == null && notes[0].lyric != "-") {
+            string consonant = consonants.TryGetValue(notes[0].lyric, out consonant) ? consonant : notes[0].lyric;
+            string prevVowel = prevNeighbour != null && vowels.TryGetValue(prevNeighbour.Value.lyric, out prevVowel) ? prevVowel : "-";
+            if (notes[0].lyric == "-" || notes[0].lyric.ToLowerInvariant() == "r") {
                 return new Result {
                     phonemes = new Phoneme[] {
                         new Phoneme() {
-                            phoneme = notes[0].lyric,
+                            phoneme = $"{prevVowel} R",
                         },
                     },
                 };
             }
-            var prevPhonemes = prevNeighbour == null ? null : GetPhonemes(prevNeighbour.Value);
-            string before = prevPhonemes == null ? "-" : prevPhonemes.Last();
             int totalDuration = notes.Sum(n => n.duration);
-            if (notes[0].lyric == "-") {
+            if (singer.TryGetMappedOto($"{prevVowel} {notes[0].lyric}", notes[0].tone, out var _)) {
                 return new Result {
                     phonemes = new Phoneme[] {
                         new Phoneme() {
-                            phoneme = $"{before} R",
-                        },
-                    },
-                };
-            }
-            if (before == "-") {
-                return new Result {
-                    phonemes = new Phoneme[] {
-                        new Phoneme() {
-                            phoneme = $"{before} {notes[0].lyric}",
-                        },
-                    },
-                };
-            }
-            if (phonemes.Length == 1) {
-                if (singer.TryGetMappedOto($"{before} {notes[0].lyric}", notes[0].tone, out var _)) {
-                    return new Result {
-                        phonemes = new Phoneme[] {
-                            new Phoneme() {
-                                phoneme = $"{before} {notes[0].lyric}",
-                            },
-                        },
-                    };
-                }
-                if (singer.TryGetMappedOto($"{before} {phonemes[0]}", notes[0].tone, out var _)) {
-                    return new Result {
-                        phonemes = new Phoneme[] {
-                            new Phoneme() {
-                                phoneme = $"{before} {phonemes[0]}",
-                            },
-                        },
-                    };
-                }
-                return new Result {
-                    phonemes = new Phoneme[] {
-                        new Phoneme() {
-                            phoneme = notes[0].lyric,
+                            phoneme = $"{prevVowel} {notes[0].lyric}",
                         },
                     },
                 };
             }
             int vcLen = 120;
-            if (singer.TryGetMappedOto(notes[0].lyric, notes[0].tone, out var oto)) {
+            if (singer.TryGetMappedOto($"{notes[0].lyric}", notes[0].tone, out var oto)) {
                 vcLen = MsToTick(oto.Preutter);
                 if (oto.Overlap == 0 && vcLen < 120) {
                     vcLen = Math.Min(120, vcLen * 2); // explosive consonant with short preutter.
                 }
             }
+            if (singer.TryGetMappedOto($"{prevVowel} {consonant}", notes[0].tone, out var _)) {
+                return new Result {
+                    phonemes = new Phoneme[] {
+                        new Phoneme() {
+                            phoneme = $"{prevVowel} {consonant}",
+                            position = -vcLen,
+                        },
+                        new Phoneme() {
+                            phoneme = $"{notes[0].lyric}",
+                        },
+                    },
+                };
+            }
             return new Result {
                 phonemes = new Phoneme[] {
                     new Phoneme() {
-                        phoneme = $"{before} {phonemes[0]}",
-                        position = -vcLen,
-                    },
-                    new Phoneme() {
-                        phoneme = $"{notes[0].lyric}",
+                        phoneme = notes[0].lyric,
                     },
                 },
             };
-        }
-
-        private string[] GetPhonemes(Note note) {
-            if (!string.IsNullOrEmpty(note.phoneticHint)) {
-                return note.phoneticHint.Split();
-            }
-            if (vowels.TryGetValue(note.lyric, out var vowel)) {
-                if (note.lyric == vowel) {
-                    return new string[] { vowel };
-                }
-            } else {
-                return null;
-            }
-            if (consonants.TryGetValue(note.lyric, out var consonant)) {
-                return new string[] { consonant, vowel };
-            } else {
-                return new string[] { vowel };
-            }
         }
 
         public override void SetSinger(USinger singer) {

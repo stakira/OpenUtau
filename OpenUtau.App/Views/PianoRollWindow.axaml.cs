@@ -520,7 +520,10 @@ namespace OpenUtau.App.Views {
         }
 
         void OnKeyDown(object sender, KeyEventArgs args) {
-            lyricBox?.EndEdit();
+            if (lyricBox != null && lyricBox.IsVisible) {
+                args.Handled = false;
+                return;
+            }
             var notesVm = ViewModel.NotesViewModel;
             if (notesVm.Part == null) {
                 return;
@@ -529,19 +532,21 @@ namespace OpenUtau.App.Views {
                 switch (args.Key) {
                     case Key.Back:
                     case Key.Delete:
-                        notesVm.DeleteSelectedNotes(); break;
-                    case Key.D1: notesVm.SelectToolCommand?.Execute("1").Subscribe(); break;
-                    case Key.D2: notesVm.SelectToolCommand?.Execute("2").Subscribe(); break;
-                    case Key.D3: notesVm.SelectToolCommand?.Execute("3").Subscribe(); break;
-                    case Key.D4: notesVm.SelectToolCommand?.Execute("4").Subscribe(); break;
-                    case Key.T: notesVm.ShowTips = !notesVm.ShowTips; break;
-                    case Key.Y: notesVm.PlayTone = !notesVm.PlayTone; break;
-                    case Key.U: notesVm.ShowVibrato = !notesVm.ShowVibrato; break;
-                    case Key.I: notesVm.ShowPitch = !notesVm.ShowPitch; break;
-                    case Key.O: notesVm.ShowPhoneme = !notesVm.ShowPhoneme; break;
-                    case Key.P: notesVm.IsSnapOn = !notesVm.IsSnapOn; break;
-                    case Key.Up: notesVm.TransposeSelection(1); break;
-                    case Key.Down: notesVm.TransposeSelection(-1); break;
+                        notesVm.DeleteSelectedNotes();
+                        args.Handled = true;
+                        break;
+                    case Key.D1: notesVm.SelectToolCommand?.Execute("1").Subscribe(); args.Handled = true; break;
+                    case Key.D2: notesVm.SelectToolCommand?.Execute("2").Subscribe(); args.Handled = true; break;
+                    case Key.D3: notesVm.SelectToolCommand?.Execute("3").Subscribe(); args.Handled = true; break;
+                    case Key.D4: notesVm.SelectToolCommand?.Execute("4").Subscribe(); args.Handled = true; break;
+                    case Key.T: notesVm.ShowTips = !notesVm.ShowTips; args.Handled = true; break;
+                    case Key.Y: notesVm.PlayTone = !notesVm.PlayTone; args.Handled = true; break;
+                    case Key.U: notesVm.ShowVibrato = !notesVm.ShowVibrato; args.Handled = true; break;
+                    case Key.I: notesVm.ShowPitch = !notesVm.ShowPitch; args.Handled = true; break;
+                    case Key.O: notesVm.ShowPhoneme = !notesVm.ShowPhoneme; args.Handled = true; break;
+                    case Key.P: notesVm.IsSnapOn = !notesVm.IsSnapOn; args.Handled = true; break;
+                    case Key.Up: notesVm.TransposeSelection(1); args.Handled = true; break;
+                    case Key.Down: notesVm.TransposeSelection(-1); args.Handled = true; break;
                     case Key.Space:
                         if (ViewModel.PlaybackViewModel != null &&
                             !ViewModel.PlaybackViewModel.PlayOrPause()) {
@@ -551,26 +556,28 @@ namespace OpenUtau.App.Views {
                                ThemeManager.GetString("dialogs.noresampler.caption"),
                                MessageBox.MessageBoxButtons.Ok);
                         }
+                        args.Handled = true;
                         break;
                     default: break;
                 }
             } else if (args.KeyModifiers == cmdKey) {
                 switch (args.Key) {
-                    case Key.A: notesVm.SelectAllNotes(); break;
-                    case Key.S: _ = MainWindow?.Save(); break;
-                    case Key.Z: ViewModel.Undo(); break;
-                    case Key.Y: ViewModel.Redo(); break;
-                    case Key.C: notesVm.CopyNotes(); break;
-                    case Key.X: notesVm.CutNotes(); break;
-                    case Key.V: notesVm.PasteNotes(); break;
-                    case Key.Up: notesVm.TransposeSelection(12); break;
-                    case Key.Down: notesVm.TransposeSelection(-12); break;
+                    case Key.A: notesVm.SelectAllNotes(); args.Handled = true; break;
+                    case Key.S: _ = MainWindow?.Save(); args.Handled = true; break;
+                    case Key.Z: ViewModel.Undo(); args.Handled = true; break;
+                    case Key.Y: ViewModel.Redo(); args.Handled = true; break;
+                    case Key.C: notesVm.CopyNotes(); args.Handled = true; break;
+                    case Key.X: notesVm.CutNotes(); args.Handled = true; break;
+                    case Key.V: notesVm.PasteNotes(); args.Handled = true; break;
+                    case Key.Up: notesVm.TransposeSelection(12); args.Handled = true; break;
+                    case Key.Down: notesVm.TransposeSelection(-12); args.Handled = true; break;
                     default: break;
                 }
             } else if (args.KeyModifiers == KeyModifiers.Alt) {
                 switch (args.Key) {
                     case Key.F4:
                         Hide();
+                        args.Handled = true;
                         break;
                     default:
                         break;
