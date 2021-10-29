@@ -10,6 +10,7 @@
       <ResourceDictionary.MergedDictionaries>
         <ResourceInclude Source="/Strings/Strings.es-ES.axaml"/>
         <ResourceInclude Source="/Strings/Strings.es-MX.axaml"/>
+        <ResourceInclude Source="/Strings/Strings.fi-FI.axaml"/>
         <ResourceInclude Source="/Strings/Strings.fr-FR.axaml"/>
         <ResourceInclude Source="/Strings/Strings.it-IT.axaml"/>
         <ResourceInclude Source="/Strings/Strings.ja-JP.axaml"/>

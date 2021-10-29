@@ -40,7 +40,7 @@ namespace OpenUtau.Api {
             public string lyric;
 
             /// <summary>
-            /// Phonetic hint, 
+            /// Phonetic hint,
             /// Example: if lyric on note is "read". The hint is null.
             /// Example: if lyric on note is "read[r iy d]". The hint is "r iy d".
             /// </summary>
@@ -111,7 +111,7 @@ namespace OpenUtau.Api {
         /// a phonemizer can also use this method to load singer-specific resource,
         /// such as a custom dictionary file in the singer directory.
         /// Use singer.Location to access the singer directory.
-        /// 
+        ///
         /// Do not modify the singer.
         /// </summary>
         /// <param name="singer"></param>
