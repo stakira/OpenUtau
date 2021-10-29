@@ -14,6 +14,7 @@
   <ItemGroup>
     <PackageReference Include="Avalonia.Controls.DataGrid" Version="0.10.8" />
     <PackageReference Include="Avalonia.Direct2D1" Version="0.10.8" />
+    <PackageReference Include="NetSparkleUpdater.SparkleUpdater" Version="2.0.8" />
     <PackageReference Include="ReactiveUI.Fody" Version="13.2.10" />
     <PackageReference Include="System.IO.Packaging" Version="5.0.0" />
     <PackageReference Include="Avalonia" Version="0.10.8" />
@@ -31,5 +32,18 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\libs\**" CopyToOutputDirectory="PreserveNewest" LinkBase="libs\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Resources\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

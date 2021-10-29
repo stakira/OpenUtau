@@ -1,7 +1,7 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="using:OpenUtau.App"
-             x:Class="OpenUtau.App.App">
+             x:Class="OpenUtau.App.App" Name="OpenUtau">
   <Application.DataTemplates>
     <local:ViewLocator/>
   </Application.DataTemplates>
@@ -31,4 +31,7 @@
     <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/>
     <StyleInclude Source="/Styles/Styles.axaml"/>
   </Application.Styles>
+  <NativeMenu.Menu>
+    <NativeMenu/>
+  </NativeMenu.Menu>
 </Application>

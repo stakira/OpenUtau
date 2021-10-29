@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
@@ -13,12 +14,14 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
+using NetSparkleUpdater.Enums;
 using OpenUtau.App.Controls;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Classic;
 using OpenUtau.Core;
 using OpenUtau.Core.Formats;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 using Serilog;
 using Point = Avalonia.Point;
 
@@ -46,11 +49,15 @@ namespace OpenUtau.App.Views {
             timer = new DispatcherTimer(DispatcherPriority.Normal);
             timer.Tick += (sender, args) => PlaybackManager.Inst.UpdatePlayPos();
             timer.Start();
-            Program.AutoUpdate?.Invoke();
 
             AddHandler(DragDrop.DropEvent, OnDrop);
 
             DocManager.Inst.AddSubscriber(this);
+
+            UpdaterDialog.CheckForUpdate(
+                dialog => dialog.Show(this),
+                () => ((IControlledApplicationLifetime)Application.Current.ApplicationLifetime).Shutdown(),
+                TaskScheduler.FromCurrentSynchronizationContext());
         }
 
         private void InitializeComponent() {
@@ -324,7 +331,10 @@ namespace OpenUtau.App.Views {
         }
 
         void OnMenuVersion(object sender, RoutedEventArgs args) {
-            OS.OpenWeb("https://github.com/stakira/OpenUtau/wiki");
+            var dialog = new UpdaterDialog();
+            dialog.ViewModel.CloseApplication =
+                () => ((IControlledApplicationLifetime)Application.Current.ApplicationLifetime).Shutdown();
+            dialog.ShowDialog(this);
         }
 
         void OnMenuLayoutVSplit11(object sender, RoutedEventArgs args) => LayoutSplit(null, 1.0 / 2);

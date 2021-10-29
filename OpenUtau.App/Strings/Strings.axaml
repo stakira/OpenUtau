@@ -201,6 +201,14 @@ General
   <system:String x:Key="tracks.moveup">Move Up</system:String>
   <system:String x:Key="tracks.remove">Remove</system:String>
 
+  <system:String x:Key="updater.caption">Check for Update</system:String>
+  <system:String x:Key="updater.github">GitHub</system:String>
+  <system:String x:Key="updater.status.available">Update v{0} available!</system:String>
+  <system:String x:Key="updater.status.checking">Checking for updates...</system:String>
+  <system:String x:Key="updater.status.notavailable">Up to date</system:String>
+  <system:String x:Key="updater.status.unknown">Unable to check update</system:String>
+  <system:String x:Key="updater.update">Update</system:String>
+
   <system:String x:Key="warning">Warning</system:String>
   <system:String x:Key="warning.asciipath">Your OpenUtau home path "{0}" contains non-ASCII character. Exe resamplers may not work.</system:String>
 </ResourceDictionary>

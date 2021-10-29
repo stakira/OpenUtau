@@ -56,7 +56,5 @@ namespace OpenUtau.App {
         public static void InitAudio() {
             PlaybackManager.Inst.AudioOutput = new Audio.AudioOutput();
         }
-
-        public static Action? AutoUpdate { get; set; }
     }
 }

@@ -6,7 +6,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using AutoUpdaterDotNET;
 using Microsoft.Win32;
 using OpenUtau.UI.Models;
 using OpenUtau.UI.Controls;
@@ -52,7 +51,11 @@ namespace OpenUtau.UI {
             DocManager.Inst.AddSubscriber(trackVM);
 
             CmdNewFile();
-            AutoUpdater.Start("https://github.com/stakira/OpenUtau/releases/download/OpenUtau-Latest/release.xml");
+
+            App.Views.UpdaterDialog.CheckForUpdate(
+                dialog => ShowDialog(dialog),
+                () => Application.Current.Shutdown(),
+                TaskScheduler.FromCurrentSynchronizationContext());
 
             initialized = true;
         }
@@ -510,12 +513,9 @@ namespace OpenUtau.UI {
         }
 
         private void MenuAbout_Click(object sender, RoutedEventArgs e) {
-            var version = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
-            MessageBox.Show(
-                (string)FindResource("dialogs.about.message") + $"\n\n{version}",
-                (string)FindResource("dialogs.about.caption"),
-                MessageBoxButton.OK,
-                MessageBoxImage.None);
+            var dialog = new App.Views.UpdaterDialog();
+            dialog.ViewModel.CloseApplication = () => Application.Current.Shutdown();
+            ShowDialog(dialog);
         }
 
         private void MenuPrefs_Click(object sender, RoutedEventArgs e) {
