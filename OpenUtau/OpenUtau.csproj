@@ -11,11 +11,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Page Remove="MainApp.xaml" />
-    <Page Remove="WpfApp.xaml" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Autoupdater.NET.Official" Version="1.7.0" />
     <PackageReference Include="Microsoft.Toolkit.Mvvm" Version="7.1.0" />
     <PackageReference Include="NAudio" Version="2.0.1" />

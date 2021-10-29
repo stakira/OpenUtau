@@ -106,6 +106,7 @@
   <system:String x:Key="pianoroll.menu.notes.quantize15">Quantize to 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Quantize to 1/64</system:String>
   <system:String x:Key="pianoroll.menu.part">Part</system:String>
+  <system:String x:Key="pianoroll.menu.part.legacypluginexp">Legacy Plugin (Experimental)</system:String>
   <system:String x:Key="pianoroll.menu.part.rename">Rename</system:String>
   <system:String x:Key="pianoroll.toggle.phoneme">View Phonemes (O)</system:String>
   <system:String x:Key="pianoroll.toggle.pitch">View Pitch Bend (I)</system:String>
@@ -149,10 +150,10 @@ Right click to erase</system:String>
   </system:String>
   <system:String x:Key="prefs.rendering.resampler.preview">Resampler for preview</system:String>
   <system:String x:Key="prefs.rendering.resampler.warn">
-    Warning: moresampler is not supported yet. It will be extremely slow and cause high CPU usage. If you insist, please:
-    1. Turn on "resampler-compatibility" in moreconfig.txt.
-    2. Reduce pre-render threads to 1 or 2.
-    3. Patiently wait for prerender to finish before play.
+Warning: moresampler is not supported yet. It will be extremely slow and cause high CPU usage. If you insist, please:
+1. Turn on "resampler-compatibility" in moreconfig.txt.
+2. Reduce pre-render threads to 1 or 2.
+3. Patiently wait for prerender to finish before play.
   </system:String>
 
   <system:String x:Key="singers.caption">Singers</system:String>
@@ -171,22 +172,22 @@ Right click to erase</system:String>
   <system:String x:Key="singers.subbanks.toneranges">Tone Ranges</system:String>
 
   <system:String x:Key="tip.exps">
-    Left Button Draw: Set expressions
-    Right Button Draw: Reset expressions
+Left Button Draw: Set expressions
+Right Button Draw: Reset expressions
   </system:String>
   <system:String x:Key="tip.lyricbox.next">Tab: Next Note</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: Previous Note</system:String>
   <system:String x:Key="tip.notes.basics">
-    Selection Tool
+Selection Tool
     Box Select: Select notes
     Ctrl + Box Select: Select more notes
     Up/Down: Transpose selected notes
     Ctrl + Up/Down: Transpose selected notes by octave
-    Pen Tool
+Pen Tool
     Left Button Draw: Add note
     Right Click: Remove note
     Right Button Draw: Remove multiple notes
-    General
+General
     T: Toggle tips
     Drag Note: Move note
     Drag End of Note: Resize note

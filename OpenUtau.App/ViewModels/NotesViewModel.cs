@@ -460,9 +460,9 @@ namespace OpenUtau.App.ViewModels {
             } else if (cmd is PartCommand partCommand) {
                 if (cmd is ReplacePartCommand replacePart) {
                     if (!isUndo) {
-                        LoadPart(replacePart.part, replacePart.project);
-                    } else {
                         LoadPart(replacePart.newPart, replacePart.project);
+                    } else {
+                        LoadPart(replacePart.part, replacePart.project);
                     }
                 }
                 if (partCommand.part != Part) {

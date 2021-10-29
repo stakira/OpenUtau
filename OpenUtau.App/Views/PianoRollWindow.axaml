@@ -274,6 +274,13 @@
             <Menu CornerRadius="2" Height="20" Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
               <MenuItem Height="20" Header="{DynamicResource pianoroll.menu.part}">
                 <MenuItem Header="{DynamicResource pianoroll.menu.part.rename}" Click="OnMenuRenamePart"/>
+                <MenuItem Header="{DynamicResource pianoroll.menu.part.legacypluginexp}" Items="{Binding LegacyPlugins}">
+                  <MenuItem.DataTemplates>
+                    <DataTemplate DataType="vm:MenuItemViewModel">
+                      <MenuItem Header="{Binding Header}" Command="{Binding Command}" CommandParameter="{Binding CommandParameter}"/>
+                    </DataTemplate>
+                  </MenuItem.DataTemplates>
+                </MenuItem>
               </MenuItem>
               <MenuItem Height="20" Header="{DynamicResource pianoroll.menu.notes}" Items="{Binding NoteBatchEdits}">
                 <MenuItem.DataTemplates>
