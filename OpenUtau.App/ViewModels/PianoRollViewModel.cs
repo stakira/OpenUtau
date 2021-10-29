@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reactive;
-using OpenUtau.Api;
+using System.Security.Cryptography;
 using OpenUtau.Core;
 using OpenUtau.Core.Editing;
 using OpenUtau.Core.Ustx;
@@ -17,7 +18,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public NotesViewModel NotesViewModel { get; set; }
         [Reactive] public PlaybackViewModel? PlaybackViewModel { get; set; }
 
-        public Classic.Plugin[] Plugins => DocManager.Inst.Plugins;
+        [Reactive] public List<MenuItemViewModel> LegacyPlugins { get; set; }
         [Reactive] public List<MenuItemViewModel> NoteBatchEdits { get; set; }
         [Reactive] public List<MenuItemViewModel> LyricBatchEdits { get; set; }
         public ReactiveCommand<PitchPointHitInfo, Unit> PitEaseInOutCommand { get; set; }
@@ -28,6 +29,7 @@ namespace OpenUtau.App.ViewModels {
         public ReactiveCommand<PitchPointHitInfo, Unit> PitDelCommand { get; set; }
         public ReactiveCommand<PitchPointHitInfo, Unit> PitAddCommand { get; set; }
 
+        private ReactiveCommand<Classic.Plugin, Unit> legacyPluginCommand;
         private ReactiveCommand<BatchEdit, Unit> noteBatchEditCommand;
 
         public PianoRollViewModel() {
@@ -68,6 +70,49 @@ namespace OpenUtau.App.ViewModels {
                 DocManager.Inst.ExecuteCmd(new AddPitchPointCommand(info.Note, new PitchPoint(info.X, info.Y), info.Index + 1));
                 DocManager.Inst.EndUndoGroup();
             });
+
+            legacyPluginCommand = ReactiveCommand.Create<Classic.Plugin>(plugin => {
+                if (NotesViewModel.Part == null) {
+                    return;
+                }
+                try {
+                    var project = NotesViewModel.Project;
+                    var part = NotesViewModel.Part;
+                    var tempFile = System.IO.Path.Combine(PathManager.Inst.GetCachePath(), "temp.tmp");
+                    var newPart = (UVoicePart)part.Clone();
+                    var sequence = Classic.Ust.WritePart(project, newPart, newPart.notes, tempFile);
+                    byte[]? beforeHash = null;
+                    using (var md5 = MD5.Create()) {
+                        using (var stream = File.OpenRead(tempFile)) {
+                            beforeHash = md5.ComputeHash(stream);
+                        }
+                    }
+                    plugin.Run(tempFile);
+                    byte[]? afterHash = null;
+                    using (var md5 = MD5.Create()) {
+                        using (var stream = File.OpenRead(tempFile)) {
+                            afterHash = md5.ComputeHash(stream);
+                        }
+                    }
+                    if (beforeHash != null && afterHash != null && !Enumerable.SequenceEqual(beforeHash, afterHash)) {
+                        Log.Information("Legacy plugin temp file has changed.");
+                        Classic.Ust.ParseDiffs(project, newPart, sequence, tempFile);
+                        newPart.AfterLoad(project, project.tracks[part.trackNo]);
+                        DocManager.Inst.StartUndoGroup();
+                        DocManager.Inst.ExecuteCmd(new ReplacePartCommand(project, part, newPart));
+                        DocManager.Inst.EndUndoGroup();
+                    } else {
+                        Log.Information("Legacy plugin temp file has not changed.");
+                    }
+                } catch (Exception e) {
+                    DocManager.Inst.ExecuteCmd(new UserMessageNotification($"Failed to execute plugin {e}"));
+                }
+            });
+            LegacyPlugins = DocManager.Inst.Plugins.Select(plugin => new MenuItemViewModel() {
+                Header = plugin.Name,
+                Command = legacyPluginCommand,
+                CommandParameter = plugin,
+            }).ToList();
 
             noteBatchEditCommand = ReactiveCommand.Create<BatchEdit>(edit => {
                 if (NotesViewModel.Part != null) {

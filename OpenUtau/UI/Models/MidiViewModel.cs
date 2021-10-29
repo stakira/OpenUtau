@@ -499,7 +499,7 @@ namespace OpenUtau.UI.Models {
             var project = DocManager.Inst.Project;
             var tempFile = System.IO.Path.Combine(PathManager.Inst.GetCachePath(), "temp.ust");
             var newPart = (UVoicePart)Part.Clone();
-            var sequence = Ust.WriteNotes(project, newPart, newPart.notes, tempFile);
+            var sequence = Ust.WritePart(project, newPart, newPart.notes, tempFile);
             plugin.Run(tempFile);
             Ust.ParseDiffs(project, newPart, sequence, tempFile);
             newPart.AfterLoad(project, project.tracks[Part.trackNo]);

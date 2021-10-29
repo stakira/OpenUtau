@@ -376,10 +376,10 @@ namespace OpenUtau.Classic {
         }
 
         public static void SavePart(UProject project, UVoicePart part, string filePath) {
-            WriteNotes(project, part, part.notes, filePath);
+            WritePart(project, part, part.notes, filePath);
         }
 
-        public static List<UNote> WriteNotes(UProject project, UVoicePart part, IEnumerable<UNote> notes, string filePath) {
+        public static List<UNote> WritePart(UProject project, UVoicePart part, IEnumerable<UNote> notes, string filePath) {
             var sequence = new List<UNote>();
             using (var writer = new StreamWriter(filePath, false, ShiftJIS)) {
                 WriteHeader(project, part, writer);
@@ -409,11 +409,14 @@ namespace OpenUtau.Classic {
             writer.WriteLine("[#SETTING]");
             writer.WriteLine($"Tempo={project.bpm}");
             writer.WriteLine("Tracks=1");
+            if (project.Saved) {
+                writer.WriteLine($"Project={project.FilePath.Replace(".ustx", ".ust")}");
+            }
             var singer = project.tracks[part.trackNo].Singer;
             if (singer?.Id != null) {
-                writer.WriteLine($"VoiceDir=%VOICE%{singer.Id}");
+                writer.WriteLine($"VoiceDir={singer.Location}");
             }
-            writer.WriteLine($"CacheDir={project.cacheDir}");
+            writer.WriteLine($"CacheDir={PathManager.Inst.GetCachePath()}");
             writer.WriteLine("Mode2=True");
         }
 
