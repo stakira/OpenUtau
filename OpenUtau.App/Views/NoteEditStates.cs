@@ -342,19 +342,19 @@ namespace OpenUtau.App.Views {
             if (note.pitch.data.Count > 2) {
                 var notesVm = vm.NotesViewModel;
                 bool removed = false;
-                if (index > 0) {
+                if (index > 0 && index < note.pitch.data.Count - 1) {
                     var prev = note.pitch.data[index - 1];
-                    var size = notesVm.TickToneToSize(prev.X - pitchPoint.X, (prev.Y - pitchPoint.Y) * 0.1);
-                    if (size.Width * size.Width + size.Height * size.Height < 64) {
+                    var delta = notesVm.TickToneToSize(prev.X - pitchPoint.X, (prev.Y - pitchPoint.Y) * 0.1);
+                    if (delta.Width * delta.Width + delta.Height * delta.Height < 64) {
                         DocManager.Inst.ExecuteCmd(new DeletePitchPointCommand(notesVm.Part, note, index));
                         removed = true;
                     }
-                }
-                if (!removed && index < note.pitch.data.Count - 1) {
-                    var next = note.pitch.data[index + 1];
-                    var size = notesVm.TickToneToSize(next.X - pitchPoint.X, (next.Y - pitchPoint.Y) * 0.1);
-                    if (size.Width * size.Width + size.Height * size.Height < 64) {
-                        DocManager.Inst.ExecuteCmd(new DeletePitchPointCommand(notesVm.Part, note, index));
+                    if (!removed) {
+                        var next = note.pitch.data[index + 1];
+                        delta = notesVm.TickToneToSize(next.X - pitchPoint.X, (next.Y - pitchPoint.Y) * 0.1);
+                        if (delta.Width * delta.Width + delta.Height * delta.Height < 64) {
+                            DocManager.Inst.ExecuteCmd(new DeletePitchPointCommand(notesVm.Part, note, index));
+                        }
                     }
                 }
             }
@@ -372,8 +372,10 @@ namespace OpenUtau.App.Views {
             if (!isLast) {
                 deltaX = Math.Min(deltaX, note.pitch.data[index + 1].X - pitchPoint.X);
             }
-            double deltaY = 0;
-            if (!(isFirst && note.pitch.snapFirst) && !isLast) {
+            double deltaY;
+            if (isFirst && note.pitch.snapFirst || isLast) {
+                deltaY = -pitchPoint.Y;
+            } else {
                 deltaY = (notesVm.PointToToneDouble(point) - note.tone) * 10 - pitchPoint.Y;
             }
             if (deltaX == 0 && deltaY == 0) {

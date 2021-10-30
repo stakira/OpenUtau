@@ -200,6 +200,7 @@ General
   <system:String x:Key="tracks.movedown">Move Down</system:String>
   <system:String x:Key="tracks.moveup">Move Up</system:String>
   <system:String x:Key="tracks.remove">Remove</system:String>
+  <system:String x:Key="tracks.selectsinger">Select Singer</system:String>
 
   <system:String x:Key="updater.caption">Check for Update</system:String>
   <system:String x:Key="updater.github">GitHub</system:String>

@@ -26,6 +26,7 @@
                 HorizontalAlignment="Center" Spacing="20">
       <Button Width="120" Content="{DynamicResource updater.github}" Command="{Binding OnGithub}"/>
       <Button Width="120" Content="{DynamicResource updater.update}" Command="{Binding OnUpdate}"
+              IsEnabled="{Binding UpdateAvailable}"
               FontWeight="{Binding UpdateButtonFontWeight}"/>
     </StackPanel>
   </Grid>
