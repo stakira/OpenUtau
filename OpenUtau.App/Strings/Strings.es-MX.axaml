@@ -86,7 +86,6 @@
   <system:String x:Key="oto.consonant">Consonante</system:String>
   <system:String x:Key="oto.cutoff">Silencio (Derecho)</system:String>
   <system:String x:Key="oto.file">Archivo</system:String>
-  <system:String x:Key="oto.flavor">Sabor</system:String>
   <system:String x:Key="oto.offset">Silencio (Izquierdo)</system:String>
   <system:String x:Key="oto.overlap">Superposición</system:String>
   <system:String x:Key="oto.phonetic">Fonética</system:String>
@@ -94,6 +93,7 @@
   <system:String x:Key="oto.preutter">Precedente</system:String>
   <system:String x:Key="oto.set">Aplicar</system:String>
   <system:String x:Key="oto.suffix">Sufijo</system:String>
+  <system:String x:Key="oto.tags">Tags</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">Letras</system:String>
    <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana a Romaji</system:String>
