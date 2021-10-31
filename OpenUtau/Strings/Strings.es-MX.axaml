@@ -19,13 +19,13 @@
   <system:String x:Key="dialogs.export.caption">Exportar</system:String>
   <system:String x:Key="dialogs.export.savefirst">Porfavor, guarda el archivo antes de exportarlo.</system:String>
   <system:String x:Key="dialogs.messagebox.cancel">Cancelar</system:String>
-  <system:String x:Key="dialogs.messagebox.no">No</system:String>
+  <!--<system:String x:Key="dialogs.messagebox.no">No</system:String>-->
   <system:String x:Key="dialogs.messagebox.ok">OK</system:String>
   <system:String x:Key="dialogs.messagebox.yes">Sí</system:String>
   <system:String x:Key="dialogs.noresampler.caption">Resampler no encontrado</system:String>
   <system:String x:Key="dialogs.noresampler.message">No se encontró un Resampler. Pone uno (sea .exe o .dll) en la carpeta Resamplers en la ruta de instalación de OpenUTAU.</system:String>
 
-  <system:String x:Key="errors.caption">Error</system:String>
+  <!--<system:String x:Key="errors.caption">Error</system:String>-->
 
   <system:String x:Key="exps.abbr">Abreviación</system:String>
   <system:String x:Key="exps.apply">Aplicar</system:String>
@@ -69,7 +69,7 @@
   <system:String x:Key="menu.help.about">Sobre OpenUTAU</system:String>
   <system:String x:Key="menu.help.wiki">Wiki de OpenUTAU</system:String>
   <system:String x:Key="menu.tools">_Herramientas</system:String>
-  <system:String x:Key="menu.tools.layout">Layout</system:String>
+  <!--<system:String x:Key="menu.tools.layout">Layout</system:String>-->
   <system:String x:Key="menu.tools.layout.hsplit11">1:1 Horizontal</system:String>
   <system:String x:Key="menu.tools.layout.hsplit12">1:2 Horizontal</system:String>
   <system:String x:Key="menu.tools.layout.hsplit13">1:3 Horizontal</system:String>
@@ -82,7 +82,7 @@
   <system:String x:Key="menu.tools.singer.installadv">Instalar Voz (Avanzado)</system:String>
   <system:String x:Key="menu.tools.singers">Voces</system:String>
 
-  <system:String x:Key="oto.alias">Alias</system:String>
+  <!--<system:String x:Key="oto.alias">Alias</system:String>-->
   <system:String x:Key="oto.consonant">Consonante</system:String>
   <system:String x:Key="oto.cutoff">Silencio (Derecho)</system:String>
   <system:String x:Key="oto.file">Archivo</system:String>
@@ -93,13 +93,13 @@
   <system:String x:Key="oto.preutter">Precedente</system:String>
   <system:String x:Key="oto.set">Aplicar</system:String>
   <system:String x:Key="oto.suffix">Sufijo</system:String>
-  <system:String x:Key="oto.tags">Tags</system:String>
+  <!--<system:String x:Key="oto.tags">Tags</system:String>-->
 
   <system:String x:Key="pianoroll.menu.lyrics">Letras</system:String>
-   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana a Romaji</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana a Romaji</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">VCV a CV (Japonés)</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">Quitar Sufijo de Tono</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Quitar Sufijo de Letra</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">Quitar Sufijo de Tono</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Romaji a Hiragana</system:String>
   <system:String x:Key="pianoroll.menu.notes">Notas</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">Añadir cola "-"</system:String>
@@ -126,7 +126,7 @@ Click derecho para borrar</system:String>
   <system:String x:Key="pianoroll.tool.tagger.setup">Configurar Etiquetas</system:String>
 
   <system:String x:Key="prefs.advanced">Avanzado</system:String>
-  <system:String x:Key="prefs.advanced.beta">Beta</system:String>
+  <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
   <system:String x:Key="prefs.advanced.stable">Estable</system:String>
   <system:String x:Key="prefs.appearance">Apariencia</system:String>
   <system:String x:Key="prefs.appearance.lang">Lenguaje</system:String>
@@ -203,7 +203,7 @@ General
   <system:String x:Key="tracks.selectsinger">Seleccionar Voz</system:String>
 
   <system:String x:Key="updater.caption">Buscar Actualizaciones</system:String>
-  <system:String x:Key="updater.github">GitHub</system:String>
+  <!--<system:String x:Key="updater.github">GitHub</system:String>-->
   <system:String x:Key="updater.status.available">Actualización Disponible (v{0})</system:String>
   <system:String x:Key="updater.status.checking">Buscando Actualizaciones...</system:String>
   <system:String x:Key="updater.status.notavailable">OpenUTAU esta actualizado</system:String>

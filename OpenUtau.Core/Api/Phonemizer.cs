@@ -139,6 +139,8 @@ namespace OpenUtau.Api {
             this.resolution = resolution;
         }
 
+        public string PluginDir => PathManager.Inst.PluginsPath;
+
         /// <summary>
         /// Utility method to convert ticks to milliseconds.
         /// </summary>

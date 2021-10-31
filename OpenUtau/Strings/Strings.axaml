@@ -98,8 +98,8 @@
   <system:String x:Key="pianoroll.menu.lyrics">Lyrics</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana to Romaji</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">Japanese VCV to CV</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">Remove Tone Suffix</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Remove Letter Suffix</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">Remove Tone Suffix</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Romaji to Hiragana</system:String>
   <system:String x:Key="pianoroll.menu.notes">Notes</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">Add tail "-"</system:String>

@@ -12,8 +12,8 @@
 
   <system:String x:Key="dialogs.about.caption">Sobre OpenUTAU</system:String>
   <system:String x:Key="dialogs.about.message">
-        O OpenUtau é um ambiente de edição de código aberto para a comunidade UTAU, com uma experiência de usuário moderna e suporte fonológico inteligente. Visite-nos no Github.
-    </system:String>
+    O OpenUtau é um ambiente de edição de código aberto para a comunidade UTAU, com uma experiência de usuário moderna e suporte fonológico inteligente. Visite-nos no Github.
+  </system:String>
   <system:String x:Key="dialogs.exitsave.caption">Fechar OpenUtau</system:String>
   <system:String x:Key="dialogs.exitsave.message">O projeto atual contém alterações não salvas. Deseja salvar? </system:String>
   <system:String x:Key="dialogs.export.caption">Exportar</system:String>
@@ -93,14 +93,20 @@
   <!--<system:String x:Key="oto.preutter">Preutter</system:String>-->
   <system:String x:Key="oto.set">Pasta</system:String>
   <system:String x:Key="oto.suffix">Sufixo</system:String>
-  <system:String x:Key="oto.tags">Tags</system:String>
+  <!--<system:String x:Key="oto.tags">Tags</system:String>-->
 
   <system:String x:Key="pianoroll.menu.lyrics">Lírica</system:String>
+  <!--<system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana to Romaji</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.lyrics.javcvtocv">Japanese VCV to CV</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Remove Letter Suffix</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">Remove Tone Suffix</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Romaji to Hiragana</system:String>-->
   <system:String x:Key="pianoroll.menu.notes">Nota</system:String>
   <!--<system:String x:Key="pianoroll.menu.notes.addtaildash">Add tail "-"</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.notes.quantize15">Quantize to 1/128</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.notes.quantize30">Quantize to 1/64</system:String>-->
   <system:String x:Key="pianoroll.menu.part">Parte</system:String>
+  <!--<system:String x:Key="pianoroll.menu.part.legacypluginexp">Legacy Plugin (Experimental)</system:String>-->
   <system:String x:Key="pianoroll.menu.part.rename">Renomear</system:String>
   <system:String x:Key="pianoroll.toggle.phoneme">Ver Fonemas (O)</system:String>
   <system:String x:Key="pianoroll.toggle.pitch">Ver Pitch Bend (I)</system:String>
@@ -117,8 +123,8 @@ Segure Ctrl para selecionar mais notas</system:String>
   <system:String x:Key="pianoroll.tool.tagger">Ferramenta Tag (4)
 Botão esquerdo para desenhar
 Botão direito para apagar</system:String>
-  <system:String x:Key="pianoroll.tool.tagger.setup">Setup Tags</system:String>
-  
+  <!--<system:String x:Key="pianoroll.tool.tagger.setup">Setup Tags</system:String>-->
+
   <system:String x:Key="prefs.advanced">Avançado</system:String>
   <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
   <system:String x:Key="prefs.advanced.stable">Estável</system:String>
@@ -162,7 +168,7 @@ Botão direito para apagar</system:String>
   <system:String x:Key="singers.subbanks.reset">Redefinir</system:String>
   <system:String x:Key="singers.subbanks.save">Salvar</system:String>
   <system:String x:Key="singers.subbanks.suffix">Sufixo</system:String>
-  <system:String x:Key="singers.subbanks.tags">Tags</system:String>
+  <!--<system:String x:Key="singers.subbanks.tags">Tags</system:String>-->
   <system:String x:Key="singers.subbanks.toneranges">Alcance</system:String>
 
   <system:String x:Key="tip.exps">
@@ -194,6 +200,15 @@ Geral
   <system:String x:Key="tracks.movedown">Mover pra Baixo</system:String>
   <system:String x:Key="tracks.moveup">Mover pra Cima</system:String>
   <system:String x:Key="tracks.remove">Remover</system:String>
+  <!--<system:String x:Key="tracks.selectsinger">Select Singer</system:String>-->
+
+  <!--<system:String x:Key="updater.caption">Check for Update</system:String>-->
+  <!--<system:String x:Key="updater.github">GitHub</system:String>-->
+  <!--<system:String x:Key="updater.status.available">Update v{0} available!</system:String>-->
+  <!--<system:String x:Key="updater.status.checking">Checking for updates...</system:String>-->
+  <!--<system:String x:Key="updater.status.notavailable">Up to date</system:String>-->
+  <!--<system:String x:Key="updater.status.unknown">Unable to check update</system:String>-->
+  <!--<system:String x:Key="updater.update">Update</system:String>-->
 
   <system:String x:Key="warning">Atenção</system:String>
   <system:String x:Key="warning.asciipath">O caminho da pasta do OpenUtau "{0}" contém caracteres não ASCII. Resamplers .exe podem não funcionar.</system:String>

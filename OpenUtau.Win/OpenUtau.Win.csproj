@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OpenUtau.App\OpenUtau.App.csproj" />
+    <ProjectReference Include="..\OpenUtau\OpenUtau.csproj" />
     <ProjectReference Include="..\OpenUtau.Core\OpenUtau.Core.csproj" />
     <ProjectReference Include="..\OpenUtau.Plugin.Builtin\OpenUtau.Plugin.Builtin.csproj" />
   </ItemGroup>

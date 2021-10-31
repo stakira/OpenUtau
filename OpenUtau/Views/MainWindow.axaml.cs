@@ -327,7 +327,7 @@ namespace OpenUtau.App.Views {
         }
 
         void OnMenuWiki(object sender, RoutedEventArgs args) {
-            OS.OpenWeb("https://github.com/stakira/OpenUtau/wiki");
+            OS.OpenWeb("https://github.com/stakira/OpenUtau/wiki/Getting-Started");
         }
 
         void OnMenuVersion(object sender, RoutedEventArgs args) {

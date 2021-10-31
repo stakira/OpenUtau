@@ -86,7 +86,6 @@
   <!--<system:String x:Key="oto.consonant">Consonant</system:String>-->
   <!--<system:String x:Key="oto.cutoff">Cutoff</system:String>-->
   <!--<system:String x:Key="oto.file">File</system:String>-->
-  <!--<system:String x:Key="oto.flavor">Flavor</system:String>-->
   <!--<system:String x:Key="oto.offset">Offset</system:String>-->
   <!--<system:String x:Key="oto.overlap">Overlap</system:String>-->
   <!--<system:String x:Key="oto.phonetic">Phonetic</system:String>-->
@@ -94,13 +93,20 @@
   <!--<system:String x:Key="oto.preutter">Preutter</system:String>-->
   <!--<system:String x:Key="oto.set">Set</system:String>-->
   <!--<system:String x:Key="oto.suffix">Suffix</system:String>-->
+  <!--<system:String x:Key="oto.tags">Tags</system:String>-->
 
   <!--<system:String x:Key="pianoroll.menu.lyrics">Lyrics</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana to Romaji</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.lyrics.javcvtocv">Japanese VCV to CV</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Remove Letter Suffix</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">Remove Tone Suffix</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Romaji to Hiragana</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.notes">Notes</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.notes.addtaildash">Add tail "-"</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.notes.quantize15">Quantize to 1/128</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.notes.quantize30">Quantize to 1/64</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.part">Part</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.part.legacypluginexp">Legacy Plugin (Experimental)</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.part.rename">Rename</system:String>-->
   <!--<system:String x:Key="pianoroll.toggle.phoneme">View Phonemes (O)</system:String>-->
   <!--<system:String x:Key="pianoroll.toggle.pitch">View Pitch Bend (I)</system:String>-->
@@ -110,10 +116,14 @@
   <!--<system:String x:Key="pianoroll.toggle.vibrato">View Vibrato (U)</system:String>-->
   <!--<system:String x:Key="pianoroll.tool.eraser">Eraser Tool (3)</system:String>-->
   <!--<system:String x:Key="pianoroll.tool.pen">Pen Tool (2)
-    Left click to draw
+Left click to draw
 Right click to delete</system:String>-->
   <!--<system:String x:Key="pianoroll.tool.selection">Selection Tool (1)
 Hold Ctrl to select more</system:String>-->
+  <!--<system:String x:Key="pianoroll.tool.tagger">Tagger Tool (4)
+Left click to draw
+Right click to erase</system:String>-->
+  <!--<system:String x:Key="pianoroll.tool.tagger.setup">Setup Tags</system:String>-->
 
   <!--<system:String x:Key="prefs.advanced">Advanced</system:String>-->
   <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
@@ -140,34 +150,44 @@ Hold Ctrl to select more</system:String>-->
     </system:String>
   <system:String x:Key="prefs.rendering.resampler.preview">미리보기용 엔진</system:String>
   <!--<system:String x:Key="prefs.rendering.resampler.warn">
-    Warning: moresampler is not supported yet. It will be extremely slow and cause high CPU usage. If you insist, please:
-    1. Turn on "resampler-compatibility" in moreconfig.txt.
-    2. Reduce pre-render threads to 1 or 2.
-    3. Patiently wait for prerender to finish before play.
+Warning: moresampler is not supported yet. It will be extremely slow and cause high CPU usage. If you insist, please:
+1. Turn on "resampler-compatibility" in moreconfig.txt.
+2. Reduce pre-render threads to 1 or 2.
+3. Patiently wait for prerender to finish before play.
   </system:String>-->
 
   <!--<system:String x:Key="singers.caption">Singers</system:String>-->
   <!--<system:String x:Key="singers.location">Location</system:String>-->
   <!--<system:String x:Key="singers.refresh">Refresh</system:String>-->
   <!--<system:String x:Key="singers.setencoding">Set Encoding</system:String>-->
+  <!--<system:String x:Key="singers.subbanks.add">Add</system:String>-->
+  <!--<system:String x:Key="singers.subbanks.caption">Tag Editor</system:String>-->
+  <!--<system:String x:Key="singers.subbanks.dir">Directory</system:String>-->
+  <!--<system:String x:Key="singers.subbanks.prefix">Prefix</system:String>-->
+  <!--<system:String x:Key="singers.subbanks.remove">Remove</system:String>-->
+  <!--<system:String x:Key="singers.subbanks.reset">Reset</system:String>-->
+  <!--<system:String x:Key="singers.subbanks.save">Save</system:String>-->
+  <!--<system:String x:Key="singers.subbanks.suffix">Suffix</system:String>-->
+  <!--<system:String x:Key="singers.subbanks.tags">Tags</system:String>-->
+  <!--<system:String x:Key="singers.subbanks.toneranges">Tone Ranges</system:String>-->
 
   <!--<system:String x:Key="tip.exps">
-    Left Button Draw: Set expressions
-    Right Button Draw: Reset expressions
+Left Button Draw: Set expressions
+Right Button Draw: Reset expressions
   </system:String>-->
   <system:String x:Key="tip.lyricbox.next">Tab: 다음 노트</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: 이전 노트</system:String>
   <!--<system:String x:Key="tip.notes.basics">
-    Selection Tool
+Selection Tool
     Box Select: Select notes
     Ctrl + Box Select: Select more notes
     Up/Down: Transpose selected notes
     Ctrl + Up/Down: Transpose selected notes by octave
-    Pen Tool
+Pen Tool
     Left Button Draw: Add note
     Right Click: Remove note
     Right Button Draw: Remove multiple notes
-    General
+General
     T: Toggle tips
     Drag Note: Move note
     Drag End of Note: Resize note
@@ -180,6 +200,15 @@ Hold Ctrl to select more</system:String>-->
   <system:String x:Key="tracks.movedown">아래로 이동</system:String>
   <system:String x:Key="tracks.moveup">위로 이동</system:String>
   <system:String x:Key="tracks.remove">제거</system:String>
+  <!--<system:String x:Key="tracks.selectsinger">Select Singer</system:String>-->
+
+  <!--<system:String x:Key="updater.caption">Check for Update</system:String>-->
+  <!--<system:String x:Key="updater.github">GitHub</system:String>-->
+  <!--<system:String x:Key="updater.status.available">Update v{0} available!</system:String>-->
+  <!--<system:String x:Key="updater.status.checking">Checking for updates...</system:String>-->
+  <!--<system:String x:Key="updater.status.notavailable">Up to date</system:String>-->
+  <!--<system:String x:Key="updater.status.unknown">Unable to check update</system:String>-->
+  <!--<system:String x:Key="updater.update">Update</system:String>-->
 
   <system:String x:Key="warning">경고</system:String>
   <system:String x:Key="warning.asciipath">OpenUtau 홈 경로 "{0}"에 ASCII가 아닌 문자가 포함되어 있습니다. EXE 엔진이 작동하지 않을 수 있습니다.</system:String>

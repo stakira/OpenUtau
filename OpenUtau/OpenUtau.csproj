@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <OutputType>Library</OutputType>
+    <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <SatelliteResourceLanguages>none</SatelliteResourceLanguages>
     <Nullable>enable</Nullable>
@@ -29,6 +29,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OpenUtau.Core\OpenUtau.Core.csproj" />
+    <ProjectReference Include="..\OpenUtau.Plugin.Builtin\OpenUtau.Plugin.Builtin.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\libs\**" CopyToOutputDirectory="PreserveNewest" LinkBase="libs\" />
@@ -46,4 +47,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="(if not exist $(OutDir)Plugins mkdir $(OutDir)Plugins) &amp;&amp; (copy /y $(OutDir)OpenUtau.Plugin.Builtin.dll $(OutDir)Plugins\)" />
+  </Target>
 </Project>

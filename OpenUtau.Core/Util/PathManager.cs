@@ -39,7 +39,7 @@ namespace OpenUtau.Core {
         public string SingersPath => Path.Combine(HomePath, "Singers");
         public string PluginsPath => Path.Combine(HomePath, "Plugins");
         public string TemplatesPath => Path.Combine(HomePath, "Templates");
-        public string LogFilePath => Path.Combine(HomePath, "log.txt");
+        public string LogFilePath => Path.Combine(HomePath, "Logs", "log.txt");
         public string PrefsFilePath => Path.Combine(HomePath, "prefs.json");
 
         public string GetCachePath() {

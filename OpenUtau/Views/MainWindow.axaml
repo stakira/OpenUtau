@@ -7,7 +7,7 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="OpenUtau.App.Views.MainWindow"
         Icon="/Assets/open-utau.ico"
-        Title="OpenUtau (Beta)" MinWidth="300" MinHeight="200" KeyDown="OnKeyDown" Closing="WindowClosing"
+        Title="OpenUtau" MinWidth="300" MinHeight="200" KeyDown="OnKeyDown" Closing="WindowClosing"
         TransparencyLevelHint="None" Background="{DynamicResource MainWindowBackgroundBrush}"
         ExtendClientAreaToDecorationsHint="{Binding ExtendToFrame}">
   <Window.Styles>
