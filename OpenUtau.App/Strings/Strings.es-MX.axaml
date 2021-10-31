@@ -106,6 +106,7 @@
   <system:String x:Key="pianoroll.menu.notes.quantize15">Cuantificar a 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Cuantificar a 1/64</system:String>
   <system:String x:Key="pianoroll.menu.part">Partes</system:String>
+  <system:String x:Key="pianoroll.menu.part.legacypluginexp">Plug-ins Antiguos (Experimental)</system:String>
   <system:String x:Key="pianoroll.menu.part.rename">Renombrar</system:String>
   <system:String x:Key="pianoroll.toggle.phoneme">Ver Fonemas (O)</system:String>
   <system:String x:Key="pianoroll.toggle.pitch">Ver Curvas del Tono (I)</system:String>
@@ -199,6 +200,15 @@ General
   <system:String x:Key="tracks.movedown">Mover Abajo</system:String>
   <system:String x:Key="tracks.moveup">Mover Arriba</system:String>
   <system:String x:Key="tracks.remove">Borrar</system:String>
+  <system:String x:Key="tracks.selectsinger">Seleccionar Voz</system:String>
+
+  <system:String x:Key="updater.caption">Buscar Actualizaciones</system:String>
+  <system:String x:Key="updater.github">GitHub</system:String>
+  <system:String x:Key="updater.status.available">Actualización Disponible (v{0})</system:String>
+  <system:String x:Key="updater.status.checking">Buscando Actualizaciones...</system:String>
+  <system:String x:Key="updater.status.notavailable">OpenUTAU esta actualizado</system:String>
+  <system:String x:Key="updater.status.unknown">No se pueden buscar actualizaciones</system:String>
+  <system:String x:Key="updater.update">Actualizar</system:String>
 
   <system:String x:Key="warning">Alerta</system:String>
   <system:String x:Key="warning.asciipath">La ruta de OpenUTAU "{0}" contiene símbolos que no son ASCII. Puede que Resamplers en .exe no funcionen.</system:String>
