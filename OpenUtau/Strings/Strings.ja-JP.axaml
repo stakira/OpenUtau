@@ -151,9 +151,10 @@ Right click to erase</system:String>-->
   <system:String x:Key="prefs.rendering.resampler.preview">プレビュー用エンジン</system:String>
   <system:String x:Key="prefs.rendering.resampler.warn">
     警告: moresamplerはまだサポートされていません。CPU使用率が高くなり、動作が極端に遅くなります。それでも使用する場合:
-    1. moreconfig.txt内の"resampler-compatibility"をオンにしてください。
-    2. プリレンダースレッド数を1か2に設定してください。
-    3. 再生する前に、プリレンダーの処理が完了するのを辛抱強く待ってください。
+    1. moreconfig.txt内の "resampler-compatibility" を "on" に設定してください。
+    2. moreconfig.txt内の "auto-update-llsm-mrq" を "off" に設定してください。
+    3. プリレンダースレッド数を1か2に設定してください。
+    4. 再生する前に、プリレンダーの処理が完了するのを辛抱強く待ってください。
   </system:String>
 
   <system:String x:Key="singers.caption">シンガー</system:String>

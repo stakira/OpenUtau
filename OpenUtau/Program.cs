@@ -50,6 +50,7 @@ namespace OpenUtau.App {
         }
 
         public static void InitOpenUtau() {
+            Core.ResamplerDriver.ResamplerDrivers.Search();
             DocManager.Inst.Initialize();
         }
 

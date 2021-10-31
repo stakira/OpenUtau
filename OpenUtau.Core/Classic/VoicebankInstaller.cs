@@ -21,17 +21,6 @@ namespace OpenUtau.Classic {
         private readonly Encoding textEncoding;
 
         public VoicebankInstaller(string basePath, Action<double, string> progress, Encoding archiveEncoding, Encoding textEncoding) {
-            if (OS.IsWindows()) {
-                // Only Windows need to work with exe resamplers.
-                if (basePath.Length > 80) {
-                    throw new ArgumentException("Path too long. Try to move OpenUtau to a shorter path.");
-                }
-                foreach (char c in basePath) {
-                    if (c > 255) {
-                        throw new ArgumentException("Do not place OpenUtau in a non-ASCII path.");
-                    }
-                }
-            }
             Directory.CreateDirectory(basePath);
             this.basePath = basePath;
             this.progress = progress;

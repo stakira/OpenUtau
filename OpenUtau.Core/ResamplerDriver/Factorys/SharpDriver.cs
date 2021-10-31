@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using Serilog;
@@ -28,18 +29,20 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys {
         readonly Assembly asm = null;
         readonly MethodInfo DoResamplerMethod = null;
         readonly MethodInfo GetInformationMethod = null;
-        public string FilePath { get; }
-        public SharpDriver(string DllPath) {
-            FilePath = DllPath;
-            if (LoadTable.ContainsKey(DllPath)) {
-                asm = LoadTable[DllPath];
+        public string Name { get; private set; }
+        public string FilePath { get; private set; }
+        public SharpDriver(string filePath, string basePath) {
+            FilePath = filePath;
+            Name = Path.GetRelativePath(basePath, filePath);
+            if (LoadTable.ContainsKey(filePath)) {
+                asm = LoadTable[filePath];
             } else {
                 try {
-                    asm = Assembly.LoadFrom(DllPath);
+                    asm = Assembly.LoadFrom(filePath);
                 } catch {
 
                 }
-                LoadTable.Add(DllPath, asm);
+                LoadTable.Add(filePath, asm);
             }
             if (asm == null) _isLegalPlugin = false;
             else {

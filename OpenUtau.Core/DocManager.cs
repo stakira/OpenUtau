@@ -37,10 +37,10 @@ namespace OpenUtau.Core {
         }
 
         public void SearchAllSingers() {
+            Directory.CreateDirectory(PathManager.Inst.SingersPath);
             var stopWatch = Stopwatch.StartNew();
             Singers = Formats.UtauSoundbank.FindAllSingers();
             SingersOrdered = Singers.Values.OrderBy(singer => singer.Name).ToList();
-            Directory.CreateDirectory(PathManager.Inst.GetEngineSearchPath());
             stopWatch.Stop();
             Log.Information($"Search all singers: {stopWatch.Elapsed}");
         }

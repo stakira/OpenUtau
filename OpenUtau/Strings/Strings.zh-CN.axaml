@@ -150,10 +150,11 @@
   </system:String>
   <system:String x:Key="prefs.rendering.resampler.preview">预览用重采样器</system:String>
   <system:String x:Key="prefs.rendering.resampler.warn">
-警告: 暂不支持 moresampler。可能导致渲染极慢和高CPU使用率。如果您仍想使用，请:
+警告: 暂不完全支持 moresampler。可能导致渲染极慢和高CPU使用率。如果您仍想使用，请:
 1. 在 moreconfig.txt 中将 “resampler-compatibility” 设为 “on”
-2. 减少预渲染线程数至 1 或 2
-3. 预览前耐心等待预渲染完成
+2. 在 moreconfig.txt 中将 “auto-update-llsm-mrq” 设为 “off”
+3. 减少预渲染线程数至 1 或 2
+4. 预览前耐心等待预渲染完成
   </system:String>
 
   <system:String x:Key="singers.caption">歌手</system:String>

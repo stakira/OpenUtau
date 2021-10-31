@@ -185,7 +185,7 @@ namespace OpenUtau.Core.Ustx {
                 .OrderByDescending(subbank => subbank.Prefix.Length + subbank.Suffix.Length)
                 .Select(subbank => new USubbank(subbank))
                 .ToList();
-            var patterns = Subbanks.Select(subbank => new Regex($"{Regex.Escape(subbank.Prefix)}(.*){Regex.Escape(subbank.Suffix)}"))
+            var patterns = Subbanks.Select(subbank => new Regex($"^{Regex.Escape(subbank.Prefix)}(.*){Regex.Escape(subbank.Suffix)}$"))
                 .ToList();
 
             var dummy = new USubbank(new Subbank());

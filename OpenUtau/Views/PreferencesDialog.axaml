@@ -24,6 +24,19 @@
             <Button Content="{DynamicResource prefs.playback.test}" HorizontalAlignment="Stretch" Command="{Binding TestAudioOutputDevice}"/>
           </StackPanel>
         </HeaderedContentControl>
+        <HeaderedContentControl Classes="groupbox" Header="{DynamicResource prefs.paths}">
+          <StackPanel>
+            <TextBlock Text="{DynamicResource prefs.paths.addlsinger}"/>
+            <TextBlock HorizontalAlignment="Stretch" Margin="4"
+                       TextWrapping="Wrap" FontSize="11" Text="{Binding AdditionalSingersPath}"/>
+            <Grid HorizontalAlignment="Stretch" ColumnDefinitions="*,10,*">
+              <Button Grid.Column="0" Content="{DynamicResource prefs.paths.reset}"
+                      HorizontalAlignment="Stretch" Click="ResetAddlSingersPath"/>
+              <Button Grid.Column="2" Content="{DynamicResource prefs.paths.select}"
+                      HorizontalAlignment="Stretch" Click="SelectAddlSingersPath"/>
+            </Grid>
+          </StackPanel>
+        </HeaderedContentControl>
         <HeaderedContentControl Classes="groupbox" Header="{DynamicResource prefs.rendering}">
           <StackPanel>
             <TextBlock Text="{DynamicResource prefs.rendering.prerender.threads}" />
