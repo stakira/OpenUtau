@@ -1,0 +1,90 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:OpenUtau.App.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="120"
+             x:Class="OpenUtau.App.Controls.TrackHeader" Width="250" TrackNo="{Binding TrackNo}">
+  <Design.DataContext>
+    <vm:TrackHeaderViewModel/>
+  </Design.DataContext>
+  <UserControl.Styles>
+    <Style Selector="ToggleButton">
+      <Setter Property="Background" Value="Transparent"/>
+    </Style>
+  </UserControl.Styles>
+  <Border Margin="1,1,1,1" BorderThickness="1" BorderBrush="{DynamicResource NeutralAccentBrushSemi}" CornerRadius="2">
+    <Grid Background="Transparent" RowDefinitions="18,18,18,*" ColumnDefinitions="Auto,1,*,18" VerticalAlignment="Top" ClipToBounds="True">
+      <Grid Grid.Row="0" Grid.RowSpan="4" Grid.Column="0"  VerticalAlignment="Top">
+        <Border BorderThickness="0,0,1,1" Height="81" Width="81" VerticalAlignment="Top" CornerRadius="0,0,2,0"
+                BorderBrush="{DynamicResource NeutralAccentBrushSemi}" ClipToBounds="True">
+          <Image Source="{Binding Avatar}" Stretch="None" VerticalAlignment="Top"/>
+        </Border>
+        <Border Background="{DynamicResource NeutralAccentBrushSemi}" Height="16" Width="22" CornerRadius="1,0,2,0"
+                HorizontalAlignment="Left" VerticalAlignment="Top">
+          <TextBlock TextAlignment="Center" FontWeight="Bold"
+                     Text="{Binding TrackNo}" Foreground="White" VerticalAlignment="Center"/>
+        </Border>
+      </Grid>
+      <Button Classes="clear" Grid.Row="0" Grid.Column="2" Margin="1" Padding="2,1,0,0" Height="16"
+              HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Focusable="False"
+              Content="{Binding Singer, TargetNullValue={StaticResource tracks.selectsinger}}" Click="SingerButtonClicked" ContextRequested="SingerButtonContextRequested">
+        <Button.ContextMenu>
+          <ContextMenu Classes="context" Name="SingersMenu" PlacementMode="Bottom" HorizontalOffset="-3" Items="{Binding SingerMenuItems}">
+            <ContextMenu.Styles>
+              <Style Selector="MenuItem">
+                <Setter Property="Header" Value="{Binding Header}"/>
+                <Setter Property="Command" Value="{Binding Command}"/>
+                <Setter Property="CommandParameter" Value="{Binding CommandParameter}"/>
+              </Style>
+            </ContextMenu.Styles>
+          </ContextMenu>
+        </Button.ContextMenu>
+      </Button>
+      <Button Classes="clear" Grid.Row="1" Grid.Column="2" Margin="1" Padding="2,1,0,0" Height="16"
+              HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Focusable="False"
+              Content="{Binding PhonemizerTag}" Click="PhonemizerButtonClicked" ContextRequested="PhonemizerButtonContextRequested">
+        <Button.ContextMenu>
+          <ContextMenu Classes="context" Name="PhonemizersMenu" PlacementMode="Bottom" HorizontalOffset="-3" Items="{Binding PhonemizerMenuItems}">
+            <ContextMenu.Styles>
+              <Style Selector="MenuItem">
+                <Setter Property="Header" Value="{Binding Header}"/>
+                <Setter Property="Command" Value="{Binding Command}"/>
+                <Setter Property="CommandParameter" Value="{Binding CommandParameter}"/>
+              </Style>
+            </ContextMenu.Styles>
+          </ContextMenu>
+        </Button.ContextMenu>
+      </Button>
+      <ToggleButton Grid.Row="0" Grid.Column="3" Margin="1" Padding="0" Height="16"
+                    HorizontalAlignment="Stretch"
+                    IsChecked="{Binding Mute}">
+        <TextBlock Text="M" TextAlignment="Center"/>
+      </ToggleButton>
+      <ToggleButton Grid.Row="1" Grid.Column="3" Margin="1" Padding="0" Height="16"
+                    HorizontalAlignment="Stretch"
+                    IsChecked="{Binding Solo, Mode=OneWay}" Command="{Binding ToggleSolo}">
+        <TextBlock Text="S" TextAlignment="Center"/>
+      </ToggleButton>
+      <Grid Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2">
+        <Slider Classes="fader" Minimum="-24" Maximum="6" Value="{Binding Volume}" Margin="1,0,36,0"
+                Foreground="{DynamicResource AccentBrush1}" PointerPressed="FaderPointerPressed"
+                ContextRequested="FaderContextRequested"/>
+        <TextBlock FontSize="11" FontFamily="monospace" HorizontalAlignment="Right" Margin="0,0,5,0">
+          <TextBlock.Text>
+            <MultiBinding StringFormat="{}{0:+#00.0;-#00.0}">
+              <Binding Path="Volume"/>
+            </MultiBinding>
+          </TextBlock.Text>
+        </TextBlock>
+      </Grid>
+      <Grid.ContextMenu>
+        <ContextMenu>
+          <MenuItem Classes="context" Header="{StaticResource tracks.remove}" Command="{Binding Remove}"/>
+          <MenuItem Classes="context" Header="{StaticResource tracks.moveup}" Command="{Binding MoveUp}"/>
+          <MenuItem Classes="context" Header="{StaticResource tracks.movedown}" Command="{Binding MoveDown}"/>
+        </ContextMenu>
+      </Grid.ContextMenu>
+    </Grid>
+  </Border>
+</UserControl>

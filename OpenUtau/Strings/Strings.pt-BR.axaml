@@ -1,0 +1,215 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <system:String x:Key="context.pitch.easein">Curva dentro</system:String>
+  <system:String x:Key="context.pitch.easeinout">Curva dentro/fora</system:String>
+  <system:String x:Key="context.pitch.easeout">Curva fora</system:String>
+  <!--<system:String x:Key="context.pitch.linear">Linear</system:String>-->
+  <system:String x:Key="context.pitch.pointadd">Adicionar ponto</system:String>
+  <system:String x:Key="context.pitch.pointdel">Remover ponto</system:String>
+  <system:String x:Key="context.pitch.pointsnapprev">Conectar à nota anterior </system:String>
+
+  <system:String x:Key="dialogs.about.caption">Sobre OpenUTAU</system:String>
+  <system:String x:Key="dialogs.about.message">
+    O OpenUtau é um ambiente de edição de código aberto para a comunidade UTAU, com uma experiência de usuário moderna e suporte fonológico inteligente. Visite-nos no Github.
+  </system:String>
+  <system:String x:Key="dialogs.exitsave.caption">Fechar OpenUtau</system:String>
+  <system:String x:Key="dialogs.exitsave.message">O projeto atual contém alterações não salvas. Deseja salvar? </system:String>
+  <system:String x:Key="dialogs.export.caption">Exportar</system:String>
+  <system:String x:Key="dialogs.export.savefirst">Salve o arquivo de projeto antes de exportar</system:String>
+  <system:String x:Key="dialogs.messagebox.cancel">Cancelar</system:String>
+  <system:String x:Key="dialogs.messagebox.no">Não</system:String>
+  <!--<system:String x:Key="dialogs.messagebox.ok">Ok</system:String>-->
+  <system:String x:Key="dialogs.messagebox.yes">Sim</system:String>
+  <system:String x:Key="dialogs.noresampler.caption">Sem resampler</system:String>
+  <system:String x:Key="dialogs.noresampler.message">Sem resampler! Coloque o .exe ou .dll do seu resampler favorito na pasta Resampler e selecione-o em Preferências!</system:String>
+
+  <system:String x:Key="errors.caption">Erro</system:String>
+
+  <system:String x:Key="exps.abbr">Abreviação</system:String>
+  <system:String x:Key="exps.apply">Aplicar</system:String>
+  <system:String x:Key="exps.caption">Expressões</system:String>
+  <system:String x:Key="exps.defaultvalue">Padrão</system:String>
+  <system:String x:Key="exps.flag">Flag</system:String>
+  <system:String x:Key="exps.isflag">É uma Flag</system:String>
+  <!--<system:String x:Key="exps.maxvalue">Max</system:String>-->
+  <!--<system:String x:Key="exps.minvalue">Min</system:String>-->
+  <system:String x:Key="exps.name">Nome</system:String>
+  <system:String x:Key="exps.optionvalues">Valores</system:String>
+  <system:String x:Key="exps.sepbycomma">Separe os valores por ','</system:String>
+  <system:String x:Key="exps.type">Tipo</system:String>
+  <system:String x:Key="exps.type.numerical">Numérico</system:String>
+  <system:String x:Key="exps.type.options">Opções</system:String>
+
+  <system:String x:Key="menu.edit">Editar</system:String>
+  <system:String x:Key="menu.edit.copy">Copiar</system:String>
+  <system:String x:Key="menu.edit.cut">Cortar</system:String>
+  <system:String x:Key="menu.edit.delete">Deletar</system:String>
+  <system:String x:Key="menu.edit.paste">Colar</system:String>
+  <system:String x:Key="menu.edit.redo">Refazer</system:String>
+  <system:String x:Key="menu.edit.selectall">Selecionar Tudo</system:String>
+  <system:String x:Key="menu.edit.undo">Desfazer</system:String>
+  <system:String x:Key="menu.file">Arquivo</system:String>
+  <system:String x:Key="menu.file.exit">Fechar</system:String>
+  <system:String x:Key="menu.file.exportall">Exportar Tudo</system:String>
+  <system:String x:Key="menu.file.exportust">Exportar como Ust</system:String>
+  <system:String x:Key="menu.file.importaudio">Importar Audio...</system:String>
+  <system:String x:Key="menu.file.importmidi">Importar Midi...</system:String>
+  <system:String x:Key="menu.file.importtracks">Importar Faixas...</system:String>
+  <system:String x:Key="menu.file.new">Novo</system:String>
+  <system:String x:Key="menu.file.newfromtemplate">Novo por Modelo</system:String>
+  <system:String x:Key="menu.file.open">Abrir...</system:String>
+  <system:String x:Key="menu.file.openas">Abrir como</system:String>
+  <system:String x:Key="menu.file.openrecent">Abrir Recente</system:String>
+  <system:String x:Key="menu.file.save">Salvar</system:String>
+  <system:String x:Key="menu.file.saveas">Salvar como...</system:String>
+  <system:String x:Key="menu.file.savetemplate">Salvar Modelo...</system:String>
+  <system:String x:Key="menu.help">Ajuda</system:String>
+  <system:String x:Key="menu.help.about">Sobre OpenUTAU</system:String>
+  <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
+  <system:String x:Key="menu.tools">Ferramentas</system:String>
+  <!--<system:String x:Key="menu.tools.layout">Layout</system:String>-->
+  <!--<system:String x:Key="menu.tools.layout.hsplit11">Horizontal 1:1</system:String>-->
+  <!--<system:String x:Key="menu.tools.layout.hsplit12">Horizontal 1:2</system:String>-->
+  <!--<system:String x:Key="menu.tools.layout.hsplit13">Horizontal 1:3</system:String>-->
+  <!--<system:String x:Key="menu.tools.layout.vsplit11">Vertical 1:1</system:String>-->
+  <!--<system:String x:Key="menu.tools.layout.vsplit12">Vertical 1:2</system:String>-->
+  <!--<system:String x:Key="menu.tools.layout.vsplit13">Vertical 1:3</system:String>-->
+  <system:String x:Key="menu.tools.prefs">Preferências...</system:String>
+  <system:String x:Key="menu.tools.project.expressions">Expressões...</system:String>
+  <system:String x:Key="menu.tools.singer.install">Instalar Vozes...</system:String>
+  <system:String x:Key="menu.tools.singer.installadv">Instalar Vozes (Avançado)...</system:String>
+  <system:String x:Key="menu.tools.singers">Vozes...</system:String>
+
+  <!--<system:String x:Key="oto.alias">Alias</system:String>-->
+  <!--<system:String x:Key="oto.consonant">Consonant</system:String>-->
+  <!--<system:String x:Key="oto.cutoff">Cutoff</system:String>-->
+  <system:String x:Key="oto.file">Arquivo</system:String>
+  <!--<system:String x:Key="oto.offset">Offset</system:String>-->
+  <!--<system:String x:Key="oto.overlap">Overlap</system:String>-->
+  <system:String x:Key="oto.phonetic">Fonética</system:String>
+  <system:String x:Key="oto.prefix">Prefixo</system:String>
+  <!--<system:String x:Key="oto.preutter">Preutter</system:String>-->
+  <system:String x:Key="oto.set">Pasta</system:String>
+  <system:String x:Key="oto.suffix">Sufixo</system:String>
+  <!--<system:String x:Key="oto.tags">Tags</system:String>-->
+
+  <system:String x:Key="pianoroll.menu.lyrics">Lírica</system:String>
+  <!--<system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana to Romaji</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.lyrics.javcvtocv">Japanese VCV to CV</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Remove Letter Suffix</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">Remove Tone Suffix</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Romaji to Hiragana</system:String>-->
+  <system:String x:Key="pianoroll.menu.notes">Nota</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notes.addtaildash">Add tail "-"</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.quantize15">Quantize to 1/128</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.quantize30">Quantize to 1/64</system:String>-->
+  <system:String x:Key="pianoroll.menu.part">Parte</system:String>
+  <!--<system:String x:Key="pianoroll.menu.part.legacypluginexp">Legacy Plugin (Experimental)</system:String>-->
+  <system:String x:Key="pianoroll.menu.part.rename">Renomear</system:String>
+  <system:String x:Key="pianoroll.toggle.phoneme">Ver Fonemas (O)</system:String>
+  <system:String x:Key="pianoroll.toggle.pitch">Ver Pitch Bend (I)</system:String>
+  <system:String x:Key="pianoroll.toggle.snap">Ativar Ajuste (P)</system:String>
+  <system:String x:Key="pianoroll.toggle.tips">Ver Dicas (T)</system:String>
+  <system:String x:Key="pianoroll.toggle.tone">Ativar Tom de Nota (Y)</system:String>
+  <system:String x:Key="pianoroll.toggle.vibrato">Ver Vibrato (U)</system:String>
+  <system:String x:Key="pianoroll.tool.eraser">Ferramenta Borracha (3)</system:String>
+  <system:String x:Key="pianoroll.tool.pen">Ferramenta Caneta (2)
+Botão esquerdo para desenhar
+Botão direito para apagar</system:String>
+  <system:String x:Key="pianoroll.tool.selection">Ferramenta Seleção  (1)
+Segure Ctrl para selecionar mais notas</system:String>
+  <system:String x:Key="pianoroll.tool.tagger">Ferramenta Tag (4)
+Botão esquerdo para desenhar
+Botão direito para apagar</system:String>
+  <!--<system:String x:Key="pianoroll.tool.tagger.setup">Setup Tags</system:String>-->
+
+  <system:String x:Key="prefs.advanced">Avançado</system:String>
+  <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
+  <system:String x:Key="prefs.advanced.stable">Estável</system:String>
+  <system:String x:Key="prefs.appearance">Aparência</system:String>
+  <system:String x:Key="prefs.appearance.lang">Idioma</system:String>
+  <system:String x:Key="prefs.appearance.theme">Tema</system:String>
+  <system:String x:Key="prefs.appearance.theme.dark">Escuro</system:String>
+  <system:String x:Key="prefs.appearance.theme.light">Claro</system:String>
+  <system:String x:Key="prefs.caption">Preferências</system:String>
+  <system:String x:Key="prefs.note.restart">Nota: reinicie o OpenUtau após alterar este item.</system:String>
+  <system:String x:Key="prefs.paths">Diretório</system:String>
+  <system:String x:Key="prefs.paths.add">Adicionar</system:String>
+  <system:String x:Key="prefs.paths.remove">Remover</system:String>
+  <system:String x:Key="prefs.paths.singer">Diretório de vozes</system:String>
+  <system:String x:Key="prefs.playback">Reprodução</system:String>
+  <system:String x:Key="prefs.playback.device">Dispositivo de Reprodução</system:String>
+  <system:String x:Key="prefs.playback.test">Teste</system:String>
+  <system:String x:Key="prefs.rendering">Renderização</system:String>
+  <system:String x:Key="prefs.rendering.prerender.threads">Threads do Pre-render</system:String>
+  <system:String x:Key="prefs.rendering.resampler.export">Resampler para exportação</system:String>
+  <system:String x:Key="prefs.rendering.resampler.note">
+        Observação: para usar resamplers externos, adicione o arquivo .dll ou .exe do resampler na pasta Resamplers no caminho de instalação do OpenUtau e escolha-o em Preferências. 
+    </system:String>
+  <system:String x:Key="prefs.rendering.resampler.preview">Resampler para visualização</system:String>
+  <system:String x:Key="prefs.rendering.resampler.warn">
+    Aviso: ainda não há suporte para moresampler. Ele estará extremamente devegar e causará alto uso da CPU. Se deseja usar, por favor:
+    1. Em moreconfig.txt, edite "resampler-compatibility" de "off" para "on".
+    2. Reduza as threads do pre-render para 1 ou 2.
+    3. Pacientemente espere o pre-render finalizar antes de tocar.
+  </system:String>
+
+  <system:String x:Key="singers.caption">Vozes</system:String>
+  <system:String x:Key="singers.location">Pasta</system:String>
+  <system:String x:Key="singers.refresh">Atualizar</system:String>
+  <system:String x:Key="singers.setencoding">Definir Codificação</system:String>
+  <system:String x:Key="singers.subbanks.add">Adicionar</system:String>
+  <system:String x:Key="singers.subbanks.caption">Editor Tag</system:String>
+  <system:String x:Key="singers.subbanks.dir">Pasta</system:String>
+  <system:String x:Key="singers.subbanks.prefix">Prefixo</system:String>
+  <system:String x:Key="singers.subbanks.remove">Remover</system:String>
+  <system:String x:Key="singers.subbanks.reset">Redefinir</system:String>
+  <system:String x:Key="singers.subbanks.save">Salvar</system:String>
+  <system:String x:Key="singers.subbanks.suffix">Sufixo</system:String>
+  <!--<system:String x:Key="singers.subbanks.tags">Tags</system:String>-->
+  <system:String x:Key="singers.subbanks.toneranges">Alcance</system:String>
+
+  <system:String x:Key="tip.exps">
+Desenhar com o Botão Esquerdo: Definir expressões
+Desenhar com o Botão Direito: Redefinir expressões
+  </system:String>
+  <system:String x:Key="tip.lyricbox.next">Tab: Próxima Nota</system:String>
+  <system:String x:Key="tip.lyricbox.prev">Shift+Tab: Nota Anterior</system:String>
+  <system:String x:Key="tip.notes.basics">
+Ferramenta Seleção
+     Seleção em caixa: Selecione notas
+     Ctrl + Seleção em caixa: Selecione mais notas
+     Cima/Baixo: Transpõe as notas selecionadas
+     Ctrl + Cima/Baixo: Transpõe as notas selecionadas em uma oitava
+Ferramenta Caneta
+     Desenhar com o Botão Esquerdo: Adicionar nota
+     Clique com o Botão Direito: Remover nota
+     Desenhar com o Botão Direito: Remover várias notas
+Geral
+     T: Ativar dicas
+     Arrastar Nota: Mover nota
+     Arrastar Fim da Nota: Redimensionar nota
+     Alt + Arrastar Fim da Nota: Redimensionar notas vizinhas
+     Espaço: Tocar
+  </system:String>
+  <system:String x:Key="tip.notes.zoomx">◀ Role aqui para aumentar o zoom horizontalmente  ▶</system:String>
+  <system:String x:Key="tip.notes.zoomy">Role aqui para aumentar o zoom verticalmente ▶</system:String>
+
+  <system:String x:Key="tracks.movedown">Mover pra Baixo</system:String>
+  <system:String x:Key="tracks.moveup">Mover pra Cima</system:String>
+  <system:String x:Key="tracks.remove">Remover</system:String>
+  <!--<system:String x:Key="tracks.selectsinger">Select Singer</system:String>-->
+
+  <!--<system:String x:Key="updater.caption">Check for Update</system:String>-->
+  <!--<system:String x:Key="updater.github">GitHub</system:String>-->
+  <!--<system:String x:Key="updater.status.available">Update v{0} available!</system:String>-->
+  <!--<system:String x:Key="updater.status.checking">Checking for updates...</system:String>-->
+  <!--<system:String x:Key="updater.status.notavailable">Up to date</system:String>-->
+  <!--<system:String x:Key="updater.status.unknown">Unable to check update</system:String>-->
+  <!--<system:String x:Key="updater.update">Update</system:String>-->
+
+  <system:String x:Key="warning">Atenção</system:String>
+  <system:String x:Key="warning.asciipath">O caminho da pasta do OpenUtau "{0}" contém caracteres não ASCII. Resamplers .exe podem não funcionar.</system:String>
+</ResourceDictionary>

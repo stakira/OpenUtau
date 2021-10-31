@@ -45,7 +45,7 @@ namespace OpenUtau.Plugin.Builtin {
             // Load cmudict.
             cmudict = G2pDictionary.GetShared("cmudict");
             // Load g2p plugin dictionary.
-            string filepath = Path.Combine(Path.GetDirectoryName(typeof(ArpasingPhonemizer).Assembly.Location), "arpasing.yaml");
+            string filepath = Path.Combine(PluginDir, "arpasing.yaml");
             try {
                 CreateDefaultPluginDict(filepath);
                 if (File.Exists(filepath)) {

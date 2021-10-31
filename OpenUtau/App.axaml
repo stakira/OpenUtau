@@ -1,0 +1,37 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="using:OpenUtau.App"
+             x:Class="OpenUtau.App.App" Name="OpenUtau">
+  <Application.DataTemplates>
+    <local:ViewLocator/>
+  </Application.DataTemplates>
+  <Application.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="/Strings/Strings.es-ES.axaml"/>
+        <ResourceInclude Source="/Strings/Strings.es-MX.axaml"/>
+        <ResourceInclude Source="/Strings/Strings.fi-FI.axaml"/>
+        <ResourceInclude Source="/Strings/Strings.fr-FR.axaml"/>
+        <ResourceInclude Source="/Strings/Strings.it-IT.axaml"/>
+        <ResourceInclude Source="/Strings/Strings.ja-JP.axaml"/>
+        <ResourceInclude Source="/Strings/Strings.ko-KR.axaml"/>
+        <ResourceInclude Source="/Strings/Strings.nl-NL.axaml"/>
+        <ResourceInclude Source="/Strings/Strings.pl-PL.axaml"/>
+        <ResourceInclude Source="/Strings/Strings.pt-BR.axaml"/>
+        <ResourceInclude Source="/Strings/Strings.zh-CN.axaml"/>
+        <ResourceInclude Source="/Strings/Strings.axaml"/>
+        <ResourceInclude Source="/Colors/LightTheme.axaml"/>
+        <ResourceInclude Source="/Colors/DarkTheme.axaml"/>
+        <ResourceInclude Source="/Colors/Brushes.axaml"/>
+      </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
+  </Application.Resources>
+  <Application.Styles>
+    <StyleInclude Source="avares://Avalonia.Themes.Fluent/FluentLight.xaml"/>
+    <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/>
+    <StyleInclude Source="/Styles/Styles.axaml"/>
+  </Application.Styles>
+  <NativeMenu.Menu>
+    <NativeMenu/>
+  </NativeMenu.Menu>
+</Application>

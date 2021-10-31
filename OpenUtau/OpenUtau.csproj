@@ -1,39 +1,52 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
-
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <SatelliteResourceLanguages>none</SatelliteResourceLanguages>
-    <UseWPF>true</UseWPF>
-    <StartupObject>OpenUtau.Program</StartupObject>
-    <Version>0.0.0.0</Version>
-    <ApplicationIcon>open-utau.ico</ApplicationIcon>
+    <Nullable>enable</Nullable>
+    <Version>0.0.0</Version>
+    <ApplicationIcon>Assets\open-utau.ico</ApplicationIcon>
+    <StartupObject />
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="Autoupdater.NET.Official" Version="1.7.0" />
-    <PackageReference Include="Microsoft.Toolkit.Mvvm" Version="7.1.0" />
-    <PackageReference Include="NAudio" Version="2.0.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="ReactiveUI.WPF" Version="13.2.10" />
+    <AvaloniaResource Include="Assets\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="0.10.8" />
+    <PackageReference Include="Avalonia.Direct2D1" Version="0.10.8" />
+    <PackageReference Include="NetSparkleUpdater.SparkleUpdater" Version="2.0.8" />
+    <PackageReference Include="ReactiveUI.Fody" Version="13.2.10" />
+    <PackageReference Include="System.IO.Packaging" Version="5.0.0" />
+    <PackageReference Include="Avalonia" Version="0.10.8" />
+    <PackageReference Include="Avalonia.Desktop" Version="0.10.8" />
+    <PackageReference Include="Avalonia.Diagnostics" Version="0.10.8" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.8" />
     <PackageReference Include="Serilog" Version="2.10.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="4.0.0" />
+    <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-    <PackageReference Include="System.Windows.Interactivity.WPF" Version="2.0.20525" />
-    <PackageReference Include="WanaKana-net" Version="1.0.0" />
-    <PackageReference Include="WriteableBitmapEx" Version="1.6.8" />
+    <PackageReference Include="System.Security.Permissions" Version="5.0.0" />
   </ItemGroup>
-
   <ItemGroup>
-    <ProjectReference Include="..\OpenUtau.App\OpenUtau.App.csproj" />
     <ProjectReference Include="..\OpenUtau.Core\OpenUtau.Core.csproj" />
     <ProjectReference Include="..\OpenUtau.Plugin.Builtin\OpenUtau.Plugin.Builtin.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <None Include="..\libs\**" CopyToOutputDirectory="PreserveNewest" LinkBase="libs\" />
   </ItemGroup>
-
+  <ItemGroup>
+    <Compile Update="Resources\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="(if not exist $(OutDir)Plugins mkdir $(OutDir)Plugins) &amp;&amp; (copy /y $(OutDir)OpenUtau.Plugin.Builtin.dll $(OutDir)Plugins\)" />
   </Target>

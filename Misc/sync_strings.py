@@ -43,7 +43,7 @@ def dict_to_file(filename, dict, en_dict):
 
 if __name__ == "__main__":
     dir = os.path.dirname(os.path.abspath(__file__))
-    dir = os.path.join(dir, "../OpenUtau.App/Strings/")
+    dir = os.path.join(dir, "../OpenUtau/Strings/")
     lang_files = os.listdir(dir)
     src_file = next(filter(lambda f: f.endswith("Strings.axaml"), lang_files))
     src_file = os.path.join(dir, src_file)

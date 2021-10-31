@@ -306,16 +306,27 @@ namespace OpenUtau.Classic {
         private static void ParseVibrato(UNote note, string ust, IniLine ustLine) {
             try {
                 var args = ust.Split(',').Select(s => float.TryParse(s, out var v) ? v : 0).ToArray();
-                if (args.Length < 7) {
-                    throw new Exception();
+                if (args.Length >= 1) {
+                    note.vibrato.length = args[0];
                 }
-                note.vibrato.length = args[0];
-                note.vibrato.period = args[1];
-                note.vibrato.depth = args[2];
-                note.vibrato.@in = args[3];
-                note.vibrato.@out = args[4];
-                note.vibrato.shift = args[5];
-                note.vibrato.drift = args[6];
+                if (args.Length >= 2) {
+                    note.vibrato.period = args[1];
+                }
+                if (args.Length >= 3) {
+                    note.vibrato.depth = args[2];
+                }
+                if (args.Length >= 4) {
+                    note.vibrato.@in = args[3];
+                }
+                if (args.Length >= 5) {
+                    note.vibrato.@out = args[4];
+                }
+                if (args.Length >= 6) {
+                    note.vibrato.shift = args[5];
+                }
+                if (args.Length >= 7) {
+                    note.vibrato.drift = args[6];
+                }
             } catch {
                 throw new FileFormatException($"Invalid VBR\n{ustLine}");
             }

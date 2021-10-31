@@ -330,3 +330,5 @@ ASALocalRun/
 
 # Test usts
 OpenUtau.Test/Usts/*
+
+.DS_Store

@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31321.278
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenUtau", "OpenUtau\OpenUtau.csproj", "{D951492F-0901-4296-AE7F-831430C07FA9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenUtau.Win", "OpenUtau.Win\OpenUtau.Win.csproj", "{D951492F-0901-4296-AE7F-831430C07FA9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8CC070AB-64DC-4C02-89E7-D8E5EC91A492}"
 	ProjectSection(SolutionItems) = preProject
@@ -21,9 +21,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenUtau.Test", "OpenUtau.T
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenUtau.Core", "OpenUtau.Core\OpenUtau.Core.csproj", "{7793257C-054C-4935-A1EF-CAB345E9F6C5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenUtau.App", "OpenUtau.App\OpenUtau.App.csproj", "{9535E26C-4584-4126-B6F7-B91B41113196}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenUtau", "OpenUtau\OpenUtau.csproj", "{9535E26C-4584-4126-B6F7-B91B41113196}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D24740E1-CC43-4226-A573-59C013FE50A2} = {D24740E1-CC43-4226-A573-59C013FE50A2}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenUtau.Plugin.Builtin", "OpenUtau.Plugin.Builtin\OpenUtau.Plugin.Builtin.csproj", "{D24740E1-CC43-4226-A573-59C013FE50A2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Unzipper", "Unzipper\Unzipper.csproj", "{82B142C1-145B-4A9E-9B69-47EAB17CB6C0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +56,10 @@ Global
 		{D24740E1-CC43-4226-A573-59C013FE50A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D24740E1-CC43-4226-A573-59C013FE50A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D24740E1-CC43-4226-A573-59C013FE50A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82B142C1-145B-4A9E-9B69-47EAB17CB6C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82B142C1-145B-4A9E-9B69-47EAB17CB6C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82B142C1-145B-4A9E-9B69-47EAB17CB6C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82B142C1-145B-4A9E-9B69-47EAB17CB6C0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

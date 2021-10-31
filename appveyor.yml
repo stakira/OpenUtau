@@ -12,10 +12,11 @@ artifacts:
     name: OpenUtau
     type: zip
   - path: release.xml
+  - path: appcast.win.xml
   - path: changelog.txt
 deploy:
   release: OpenUtau-Latest
-  description: ''
+  description: '{version}'
   provider: GitHub
   auth_token:
     secure: VoTH2ml/pRgjLSGhfPO+NZfCoFzFcfrQjEIl/5+0UufeW6mEvccfwvef3gOaD2ke
