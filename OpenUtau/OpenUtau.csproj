@@ -40,6 +40,7 @@
     <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
     <PackageReference Include="System.Security.Permissions" Version="5.0.0" />
+    <PackageReference Include="System.Text.Json" Version="6.0.0-rc.2.21480.5" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OpenUtau.Core\OpenUtau.Core.csproj" />
