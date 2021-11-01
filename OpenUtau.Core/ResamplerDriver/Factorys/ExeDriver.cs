@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading;
 using OpenUtau.Core.Util;
 using Serilog;
@@ -15,12 +16,9 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys {
 
         public ExeDriver(string filePath, string basePath) {
             if (File.Exists(filePath)) {
-                if (Path.GetExtension(filePath).ToLower() == ".exe" ||
-                    Path.GetExtension(filePath).ToLower() == ".sh") {
-                    FilePath = filePath;
-                    Name = Path.GetRelativePath(basePath, filePath);
-                    _isLegalPlugin = true;
-                }
+                FilePath = filePath;
+                Name = Path.GetRelativePath(basePath, filePath);
+                _isLegalPlugin = true;
             }
         }
 
@@ -68,6 +66,17 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys {
                 File.Delete(tmpFile);
             }
             return data;
+        }
+
+        [DllImport("libc", SetLastError = true)]
+        private static extern int chmod(string pathname, int mode);
+
+        public void CheckPermissions() {
+            if (OS.IsWindows() || !File.Exists(FilePath)) {
+                return;
+            }
+            int mode = (7 << 6) | (5 << 3) | 5;
+            chmod(FilePath, mode);
         }
 
         public override string ToString() => Name;

@@ -10,6 +10,7 @@ namespace OpenUtau.Core.ResamplerDriver {
         string Name { get; }
         string FilePath { get; }
         byte[] DoResampler(DriverModels.EngineInput Args, ILogger logger);
+        void CheckPermissions();
     }
 
     public class ResamplerDrivers {
@@ -50,10 +51,18 @@ namespace OpenUtau.Core.ResamplerDriver {
         public static void Search() {
             var resamplers = new Dictionary<string, IResamplerDriver>();
             string basePath = PathManager.Inst.LibsPath;
-            if (OS.IsMacOS()) {
+            if (!OS.IsWindows()) {
                 var driver = Load(Path.Combine(basePath, "worldline"), basePath);
                 if (driver != null) {
                     resamplers.Add(driver.Name, driver);
+                    if (string.IsNullOrEmpty(Preferences.Default.ExternalPreviewEngine)) {
+                        Preferences.Default.ExternalPreviewEngine = driver.Name;
+                        Preferences.Save();
+                    }
+                    if (string.IsNullOrEmpty(Preferences.Default.ExternalExportEngine)) {
+                        Preferences.Default.ExternalExportEngine = driver.Name;
+                        Preferences.Save();
+                    }
                 }
             }
             basePath = PathManager.Inst.ResamplersPath;
@@ -96,9 +105,7 @@ namespace OpenUtau.Core.ResamplerDriver {
                 && File.Exists(resampler.FilePath)) {
                 return true;
             }
-            Preferences.Default.ExternalPreviewEngine = Resamplers.Keys.First();
-            Preferences.Save();
-            return true;
+            return false;
         }
     }
 }

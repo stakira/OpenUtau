@@ -121,14 +121,20 @@ namespace OpenUtau.App.ViewModels {
             this.WhenAnyValue(vm => vm.PreviewResampler)
                 .WhereNotNull()
                 .Subscribe(resampler => {
-                    Preferences.Default.ExternalPreviewEngine = resampler?.Name;
-                    Preferences.Save();
+                    if (resampler != null) {
+                        Preferences.Default.ExternalPreviewEngine = resampler!.Name;
+                        Preferences.Save();
+                        resampler!.CheckPermissions();
+                    }
                 });
             this.WhenAnyValue(vm => vm.ExportResampler)
                 .WhereNotNull()
                 .Subscribe(resampler => {
-                    Preferences.Default.ExternalExportEngine = resampler?.Name;
-                    Preferences.Save();
+                    if (resampler != null) {
+                        Preferences.Default.ExternalExportEngine = resampler!.Name;
+                        Preferences.Save();
+                        resampler!.CheckPermissions();
+                    }
                 });
             this.WhenAnyValue(vm => vm.PreviewResampler, vm => vm.ExportResampler)
                 .Select(engines =>

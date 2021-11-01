@@ -108,5 +108,6 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys {
             }
             return ret;
         }
+        public void CheckPermissions() { }
     }
 }

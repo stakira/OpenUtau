@@ -66,7 +66,13 @@ namespace OpenUtau.Core {
             var phonemizerFactories = new List<PhonemizerFactory>();
             phonemizerFactories.Add(PhonemizerFactory.Get(typeof(DefaultPhonemizer)));
             Directory.CreateDirectory(PathManager.Inst.PluginsPath);
-            foreach (var file in Directory.EnumerateFiles(PathManager.Inst.PluginsPath, "*.dll", SearchOption.AllDirectories)) {
+            var files = Directory.EnumerateFiles(PathManager.Inst.PluginsPath, "*.dll", SearchOption.AllDirectories).ToList();
+            if (!OS.IsWindows()) {
+                var path = Path.GetDirectoryName(GetType().Assembly.Location);
+                files.InsertRange(0, Directory.EnumerateFiles(
+                    path, "*Plugin.Builtin.dll", SearchOption.TopDirectoryOnly));
+            }
+            foreach (var file in files) {
                 Assembly assembly;
                 try {
                     assembly = Assembly.LoadFile(file);
