@@ -136,9 +136,10 @@ Botão direito para apagar</system:String>
   <system:String x:Key="prefs.caption">Preferências</system:String>
   <system:String x:Key="prefs.note.restart">Nota: reinicie o OpenUtau após alterar este item.</system:String>
   <system:String x:Key="prefs.paths">Diretório</system:String>
+  <system:String x:Key="prefs.paths.addlsinger">Caminho Adicional de Vozes</system:String>
+  <system:String x:Key="prefs.paths.reset">Redefinir</system:String>
+  <system:String x:Key="prefs.paths.select">Selecionar</system:String>
   <system:String x:Key="prefs.paths.add">Adicionar</system:String>
-  <system:String x:Key="prefs.paths.remove">Remover</system:String>
-  <system:String x:Key="prefs.paths.singer">Diretório de vozes</system:String>
   <system:String x:Key="prefs.playback">Reprodução</system:String>
   <system:String x:Key="prefs.playback.device">Dispositivo de Reprodução</system:String>
   <system:String x:Key="prefs.playback.test">Teste</system:String>
