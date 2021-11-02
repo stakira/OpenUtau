@@ -42,6 +42,15 @@
   <system:String x:Key="exps.type.numerical">Numerical</system:String>
   <system:String x:Key="exps.type.options">Options</system:String>
 
+  <system:String x:Key="lyrics.apply">Apply</system:String>
+  <system:String x:Key="lyrics.cancel">Cancel</system:String>
+  <system:String x:Key="lyrics.caption">Edit Lyrics</system:String>
+  <system:String x:Key="lyrics.max">Max</system:String>
+  <system:String x:Key="lyrics.selectnotes">Select some notes first!</system:String>
+  <system:String x:Key="lyrics.separator.comma">Comma</system:String>
+  <system:String x:Key="lyrics.separator.linebreak">Line Break</system:String>
+  <system:String x:Key="lyrics.separator.space">Space</system:String>
+
   <system:String x:Key="menu.edit">Edit</system:String>
   <system:String x:Key="menu.edit.copy">Copy</system:String>
   <system:String x:Key="menu.edit.cut">Cut</system:String>
@@ -97,6 +106,7 @@
 
   <system:String x:Key="pianoroll.menu.lyrics">Lyrics</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana to Romaji</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.edit">Edit Lyrics</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">Japanese VCV to CV</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Remove Letter Suffix</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">Remove Tone Suffix</system:String>

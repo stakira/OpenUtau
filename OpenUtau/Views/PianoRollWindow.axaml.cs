@@ -63,7 +63,22 @@ namespace OpenUtau.App.Views {
                     ViewModel.RenamePart(part, name);
                 }
             };
-            dialog.Show(this);
+            dialog.ShowDialog(this);
+        }
+
+        void OnMenuEditLyrics(object? sender, RoutedEventArgs e) {
+            if (ViewModel.NotesViewModel.SelectedNotes.Count == 0) {
+                _ = MessageBox.Show(
+                    this,
+                    ThemeManager.GetString("lyrics.selectnotes"),
+                    ThemeManager.GetString("lyrics.caption"),
+                    MessageBox.MessageBoxButtons.Ok);
+                return;
+            }
+            var dialog = new LyricsDialog() {
+                DataContext = ViewModel.NotesViewModel.PrepareInsertLyrics(),
+            };
+            dialog.ShowDialog(this);
         }
 
         public void KeyboardPointerWheelChanged(object sender, PointerWheelEventArgs args) {

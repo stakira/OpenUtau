@@ -134,7 +134,7 @@
       </c:NotesCanvas>
       <StackPanel Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top"
                   Margin="12,12,0,0" Orientation="Horizontal">
-        <Border CornerRadius="2" BoxShadow="0 0 5 1 #3f7F7F7F"
+        <Border CornerRadius="2" BoxShadow="0 0 5 1 #1F000000"
                 Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
           <Border CornerRadius="2" ClipToBounds="True">
             <StackPanel Orientation="Horizontal">
@@ -208,7 +208,7 @@
           </Border>
         </Border>
         <Border Width="12" Height="20"/>
-        <Border CornerRadius="2" BoxShadow="0 0 5 1 #3f7F7F7F"
+        <Border CornerRadius="2" BoxShadow="0 0 5 1 #1F000000"
                 Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
           <Border CornerRadius="2" ClipToBounds="True">
             <StackPanel Orientation="Horizontal">
@@ -269,10 +269,10 @@
           </Border>
         </Border>
         <Border Width="12" Height="20"/>
-        <Border CornerRadius="2" BoxShadow="0 0 5 1 #3f7F7F7F">
+        <Border CornerRadius="2" BoxShadow="0 0 5 1 #1F000000">
           <Border CornerRadius="2" ClipToBounds="True">
             <Menu CornerRadius="2" Height="20" Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
-              <MenuItem Height="20" Header="{DynamicResource pianoroll.menu.part}">
+              <MenuItem Height="20" Header="{DynamicResource pianoroll.menu.part}" CornerRadius="2,0,0,2">
                 <MenuItem Header="{DynamicResource pianoroll.menu.part.rename}" Click="OnMenuRenamePart"/>
                 <MenuItem Header="{DynamicResource pianoroll.menu.part.legacypluginexp}" Items="{Binding LegacyPlugins}">
                   <MenuItem.DataTemplates>
@@ -296,6 +296,7 @@
                   </DataTemplate>
                 </MenuItem.DataTemplates>
               </MenuItem>
+              <MenuItem Height="20" Header="{DynamicResource pianoroll.menu.lyrics.edit}" Click="OnMenuEditLyrics"/>
             </Menu>
           </Border>
         </Border>
@@ -351,33 +352,33 @@
         </Border>
       </c:ExpressionCanvas>
       <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-              BoxShadow="inset 0 0 5 1 #7f7F7F7F" ClipToBounds="True" IsHitTestVisible="False">
+              BoxShadow="inset 0 0 5 1 #3F000000" ClipToBounds="True" IsHitTestVisible="False">
         <Grid>
           <Border Classes="tips" HorizontalAlignment="Center" VerticalAlignment="Center"
-                IsVisible="{Binding NotesViewModel.ShowTips}" BoxShadow="0 0 5 1 #7f7F7F7F">
+                IsVisible="{Binding NotesViewModel.ShowTips}" BoxShadow="0 0 5 1 #3F000000">
             <TextBlock Classes="tips" Grid.Column="0" Margin="10,5"
                        Text="{DynamicResource tip.notes.basics}"/>
           </Border>
           <Border Classes="tips" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0" Padding="4,4,4,2"
-                   IsVisible="{Binding NotesViewModel.ShowTips}" BoxShadow="0 0 5 1 #7f7F7F7F">
+                   IsVisible="{Binding NotesViewModel.ShowTips}" BoxShadow="0 0 5 1 #3F000000">
             <TextBlock Classes="tips" Text="{DynamicResource tip.notes.zoomx}"/>
           </Border>
           <Border Classes="tips" HorizontalAlignment="Right" VerticalAlignment="Top" Padding="4,4,4,2"
-                   IsVisible="{Binding NotesViewModel.ShowTips}" BoxShadow="0 0 5 1 #7f7F7F7F">
+                   IsVisible="{Binding NotesViewModel.ShowTips}" BoxShadow="0 0 5 1 #3F000000">
             <TextBlock Classes="tips" Text="{DynamicResource tip.notes.zoomy}"/>
           </Border>
         </Grid>
       </Border>
       <Grid Grid.Row="2" Grid.Column="1" RowDefinitions="1*,1*">
         <Border Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Top"
-                BoxShadow="0 0 5 1 #7f7F7F7F">
+                BoxShadow="0 0 5 1 #3F000000">
           <c:LyricBox Name="LyricBox" Width="360"/>
         </Border>
       </Grid>
       <Border Grid.Row="4" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-              BoxShadow="inset 0 0 5 1 #7f7F7F7F" ClipToBounds="True" IsHitTestVisible="False">
+              BoxShadow="inset 0 0 5 1 #3F000000" ClipToBounds="True" IsHitTestVisible="False">
         <Border Classes="tips" HorizontalAlignment="Center" VerticalAlignment="Center"
-                IsVisible="{Binding NotesViewModel.ShowTips}" BoxShadow="0 0 5 1 #7f7F7F7F">
+                IsVisible="{Binding NotesViewModel.ShowTips}" BoxShadow="0 0 5 1 #3F000000">
           <TextBlock Classes="tips" Grid.Column="0" Margin="10,5"
                      Text="{DynamicResource tip.exps}"/>
         </Border>
