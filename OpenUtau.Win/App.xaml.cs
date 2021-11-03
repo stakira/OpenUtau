@@ -37,6 +37,8 @@ namespace OpenUtau {
                 .FirstOrDefault(d => d.Source.OriginalString == @"UI\Colors\LightTheme.xaml");
             var dark = Current.Resources.MergedDictionaries
                 .FirstOrDefault(d => d.Source.OriginalString == @"UI\Colors\DarkTheme.xaml");
+            var synthv = Current.Resources.MergedDictionaries
+                .FirstOrDefault(d => d.Source.OriginalString == @"UI\Colors\SynthesizerV.xaml");
             Current.Resources.MergedDictionaries.Remove(light);
             Current.Resources.MergedDictionaries.Remove(dark);
             if (Core.Util.Preferences.Default.Theme == 0) {
