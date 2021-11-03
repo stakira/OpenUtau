@@ -129,11 +129,11 @@ namespace OpenUtau.App.Controls {
                         var polyline = new PolylineGeometry(new Point[] { point0, point1, point2, point3, point4 }, true);
                         context.DrawGeometry(brush, pen, polyline);
 
-                        brush = phoneme.preutterScale.HasValue ? pen!.Brush : ThemeManager.BackgroundBrush;
+                        brush = phoneme.preutterDelta.HasValue || phoneme.preutterScale.HasValue ? pen!.Brush : ThemeManager.BackgroundBrush;
                         using (var state = context.PushPreTransform(Matrix.CreateTranslation(x0, y + y0 - 1))) {
                             context.DrawGeometry(brush, pen, pointGeometry);
                         }
-                        brush = phoneme.overlapScale.HasValue ? pen!.Brush : ThemeManager.BackgroundBrush;
+                        brush = phoneme.overlapDelta.HasValue || phoneme.overlapScale.HasValue ? pen!.Brush : ThemeManager.BackgroundBrush;
                         using (var state = context.PushPreTransform(Matrix.CreateTranslation(point1))) {
                             context.DrawGeometry(brush, pen, pointGeometry);
                         }

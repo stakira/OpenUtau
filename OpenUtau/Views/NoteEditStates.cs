@@ -531,7 +531,7 @@ namespace OpenUtau.App.Views {
         }
         public override void Update(IPointer pointer, Point point) {
             var notesVm = vm.NotesViewModel;
-            float tone = (float)notesVm.PointToToneDouble(point);
+            float tone = (float)notesVm.PointToToneDouble(point) - 0.5f;
             float newDepth = note.vibrato.ToneToDepth(note, tone);
             if (newDepth != note.vibrato.depth) {
                 DocManager.Inst.ExecuteCmd(new VibratoDepthCommand(notesVm.Part, note, newDepth));
@@ -616,8 +616,9 @@ namespace OpenUtau.App.Views {
             var notesVm = vm.NotesViewModel;
             var project = notesVm.Project;
             int preutterTicks = phoneme.Parent.position + phoneme.position - notesVm.PointToTick(point);
-            double preutterScale = Math.Max(0, project.TickToMillisecond(preutterTicks) / phoneme.oto.Preutter);
-            DocManager.Inst.ExecuteCmd(new PhonemePreutterCommand(notesVm.Part, leadingNote, index, (float)preutterScale));
+            double preutterDelta = project.TickToMillisecond(preutterTicks) - phoneme.oto.Preutter;
+            preutterDelta = Math.Max(-phoneme.oto.Preutter, preutterDelta);
+            DocManager.Inst.ExecuteCmd(new PhonemePreutterCommand(notesVm.Part, leadingNote, index, (float)preutterDelta));
         }
     }
 
@@ -636,8 +637,8 @@ namespace OpenUtau.App.Views {
             var project = notesVm.Project;
             float preutter = phoneme.preutter;
             double overlap = preutter - project.TickToMillisecond(phoneme.Parent.position + phoneme.position - notesVm.PointToTick(point));
-            double overlapScale = Math.Max(0, Math.Min(overlap / phoneme.oto.Overlap, preutter / phoneme.oto.Overlap));
-            DocManager.Inst.ExecuteCmd(new PhonemeOverlapCommand(notesVm.Part, leadingNote, index, (float)overlapScale));
+            double overlapDelta = overlap - phoneme.oto.Overlap;
+            DocManager.Inst.ExecuteCmd(new PhonemeOverlapCommand(notesVm.Part, leadingNote, index, (float)overlapDelta));
         }
     }
 
@@ -655,9 +656,9 @@ namespace OpenUtau.App.Views {
                 if (hitInfo.hitPosition) {
                     DocManager.Inst.ExecuteCmd(new PhonemeOffsetCommand(notesVm.Part, leadingNote, index, 0));
                 } else if (hitInfo.hitPreutter) {
-                    DocManager.Inst.ExecuteCmd(new PhonemePreutterCommand(notesVm.Part, leadingNote, index, 1));
+                    DocManager.Inst.ExecuteCmd(new PhonemePreutterCommand(notesVm.Part, leadingNote, index, 0));
                 } else if (hitInfo.hitOverlap) {
-                    DocManager.Inst.ExecuteCmd(new PhonemeOverlapCommand(notesVm.Part, leadingNote, index, 1));
+                    DocManager.Inst.ExecuteCmd(new PhonemeOverlapCommand(notesVm.Part, leadingNote, index, 0));
                 }
             }
         }
