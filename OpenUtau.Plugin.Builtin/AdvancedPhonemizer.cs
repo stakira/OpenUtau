@@ -78,7 +78,7 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         protected bool HasOto(string alias, Note note) {
-            return singer.TryGetMappedOto(alias, note.tone, out _);
+            return singer.TryGetMappedOto(ValidateAlias(alias), note.tone, out _);
         }
 
         private string[] GetRightConsonants(string[] symbols, bool withV) {
