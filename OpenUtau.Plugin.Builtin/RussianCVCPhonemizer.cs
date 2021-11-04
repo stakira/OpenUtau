@@ -32,7 +32,7 @@ namespace OpenUtau.Plugin.Builtin {
                 else {
                     basePhoneme = $"-{cc.Last()}{v}";
                 }
-                for (var i = 0; i < cc.Length - 2; i++) {
+                for (var i = 0; i < cc.Length - 1; i++) {
                     phonemes.Add($"-{cc[i]}");
                 }
             }
