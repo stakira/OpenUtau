@@ -153,14 +153,15 @@ namespace OpenUtau.Plugin.Builtin {
 
         protected int GetNoteLength(int phonemesCount, int containerLength = -1) {
             var noteLength = 120.0;
-            if (containerLength != -1) {
-                var minContainerLength = Math.Max(120.0, containerLength / 3.0);
-                var maxVCLength = containerLength - minContainerLength;
-                if (maxVCLength < noteLength * phonemesCount) {
-                    noteLength = maxVCLength / phonemesCount;
-                }
+            if (containerLength == -1) {
+                return MsToTick(noteLength) / 15 * 15;
             }
-            return MsToTick(noteLength) / 15 * 15;
+
+            var fullLength = noteLength * 1.5 + noteLength * phonemesCount;
+            if (fullLength <= containerLength) {
+                return MsToTick(noteLength) / 15 * 15;
+            }
+            return MsToTick(containerLength / fullLength * noteLength) / 15 * 15;
         }
 
         private Phoneme[] MakePhonemes(List<string> phonemeSymbols, Note note, Note? prevNeighbour, int basePhonemeI) {
@@ -177,7 +178,7 @@ namespace OpenUtau.Plugin.Builtin {
                 phonemes[basePhonemeI].position = 0;
             }
 
-            noteLengthTick = GetNoteLength(note.duration);
+            noteLengthTick = GetNoteLength(phonemeSymbols.Count - basePhonemeI - 1, note.duration);
             for (var i = basePhonemeI + 1; i < phonemeSymbols.Count; i++) {
                 var offset = phonemeSymbols.Count - basePhonemeI - 1;
                 phonemes[i].phoneme = MapPhoneme(ValidateAlias(phonemeSymbols[i]), note.tone, singer);
