@@ -16,15 +16,16 @@ namespace OpenUtau.Plugin.Builtin {
             var cv = GetCV(symbols);
             var prevLastConsonants = GetRightConsonants(prevNoteSymbols, true);
             (var prevV, var cc, var v) = Normalize(cv, prevLastConsonants);
-            var phonemes = TrySyllable(note, prevNeighbour, prevV, cc, v);
-            ValidatePositions(phonemes, note, prevNeighbour);
+            var phonemeSymbols = TrySyllable(note, prevV, cc, v);
+            var basePhonemeI = phonemeSymbols.Count - 1;
 
             if (!nextNeighbour.HasValue) {
                 var lastConsonants = GetRightConsonants(symbols, false);
-                TryEnding(phonemes, note, v, lastConsonants);
+                TryEnding(phonemeSymbols, note, v, lastConsonants);
             }
+            var phonemes = MakePhonemes(phonemeSymbols, note, prevNeighbour, basePhonemeI);
             return new Result() {
-                phonemes = phonemes.ToArray()
+                phonemes = phonemes
             };
         }
 
@@ -36,17 +37,48 @@ namespace OpenUtau.Plugin.Builtin {
         protected USinger singer;
         protected double shortNoteThreshold = 120;
 
+        /// <summary>
+        /// Returns list of vowels
+        /// </summary>
+        /// <returns></returns>
         protected abstract string[] GetVowels();
+
+        /// <summary>
+        /// returns phoneme symbols, like, VCV, or VC + CV, or -CV, etc
+        /// </summary>
+        /// <param name="note">current note</param>
+        /// <param name="prevV">the vowel of the previous note neighbour, may be empty string</param>
+        /// <param name="cc">array of consonants, may be empty</param>
+        /// <param name="v">base vowel</param>
+        /// <returns></returns>
+        protected abstract List<string> TrySyllable(Note note, string prevV, string[] cc, string v);
+
+        /// <summary>
+        /// phoneme symbols for ending, like, V-, or VC-, or VC+C
+        /// </summary>
+        /// <param name="phonemeSymbols">add new phonemes to this array</param>
+        /// <param name="note">current note</param>
+        /// <param name="v">base vowel</param>
+        /// <param name="cc">consonants after the base vowel, may be emtpy</param>
+        protected abstract void TryEnding(List<string> phonemeSymbols, Note note, string v, string[] cc);
+
         protected virtual Dictionary<string, string> GetAliasesFallback() { return null; }
         protected virtual void Init() { }
-        protected abstract List<Phoneme> TrySyllable(Note note, Note? prevNote, string prevV, string[] cc, string v);
-        protected abstract void TryEnding(List<Phoneme> phonemes, Note note, string v, string[] cc);
 
+        /// <summary>
+        /// extracts array of phoneme symbols from note. Override for procedural dictionary
+        /// </summary>
+        /// <param name="note"></param>
+        /// <returns></returns>
         protected virtual string[] GetSymbols(Note note) {
             // dictionary is not yet supported so just read all lyrics as phonetic input
             if (note.lyric == null) {
                 return new string[0];
             } else return note.lyric.Split(" ");
+        }
+
+        protected bool HasOto(string alias, Note note) {
+            return singer.TryGetMappedOto(alias, note.tone, out _);
         }
 
         private string[] GetRightConsonants(string[] symbols, bool withV) {
@@ -119,30 +151,39 @@ namespace OpenUtau.Plugin.Builtin {
             return aliasesFallback == null ? alias : aliasesFallback.ContainsKey(alias) ? aliasesFallback[alias] : alias;
         }
 
-        private void ValidatePositions(List<Phoneme> phonemes, Note note, Note? prevNeighbour) {
-            if (phonemes.Count <= 1) {
-                return;
-            }
-            var noteLengthTick = GetNoteLength(phonemes.Count - 1, prevNeighbour.HasValue ? prevNeighbour.Value.duration : -1);
-            for (var i = 0; i < phonemes.Count; i++) {
-                var phonemeI = phonemes.Count - 1 - i;
-                var phoneme = phonemes[phonemeI];
-                phonemes[phonemeI] = new Phoneme() {
-                    phoneme = phoneme.phoneme,
-                    position = -noteLengthTick * i
-                };
-            }
-        }
-
         protected int GetNoteLength(int phonemesCount, int containerLength = -1) {
             var noteLength = 120.0;
             if (containerLength != -1) {
-                var maxVCLength = containerLength - 30;
+                var minContainerLength = Math.Max(120.0, containerLength / 3.0);
+                var maxVCLength = containerLength - minContainerLength;
                 if (maxVCLength < noteLength * phonemesCount) {
                     noteLength = maxVCLength / phonemesCount;
                 }
             }
             return MsToTick(noteLength) / 15 * 15;
+        }
+
+        private Phoneme[] MakePhonemes(List<string> phonemeSymbols, Note note, Note? prevNeighbour, int basePhonemeI) {
+            var phonemes = new Phoneme[phonemeSymbols.Count];
+            var noteLengthTick = GetNoteLength(phonemeSymbols.Count - 1, prevNeighbour.HasValue ? prevNeighbour.Value.duration : -1);
+            var prevTone = prevNeighbour.HasValue ? prevNeighbour.Value.tone : note.tone;
+            for (var i = 0; i < basePhonemeI; i++) {
+                var offset = basePhonemeI - i;
+                phonemes[i].phoneme = MapPhoneme(ValidateAlias(phonemeSymbols[i]), prevTone, singer);
+                phonemes[i].position = -noteLengthTick * offset;
+            }
+            {
+                phonemes[basePhonemeI].phoneme = MapPhoneme(ValidateAlias(phonemeSymbols[basePhonemeI]), note.tone, singer);
+                phonemes[basePhonemeI].position = 0;
+            }
+
+            noteLengthTick = GetNoteLength(note.duration);
+            for (var i = basePhonemeI + 1; i < phonemeSymbols.Count; i++) {
+                var offset = phonemeSymbols.Count - basePhonemeI - 1;
+                phonemes[i].phoneme = MapPhoneme(ValidateAlias(phonemeSymbols[i]), note.tone, singer);
+                phonemes[i].position = note.duration - noteLengthTick * offset;
+            }
+            return phonemes;
         }
 
     }
