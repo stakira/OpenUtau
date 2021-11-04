@@ -1,6 +1,6 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
-                    xmlns:system="clr-namespace:System;assembly=mscorlib"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+					xmlns:system="clr-namespace:System;assembly=mscorlib"
+					xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
   <system:String x:Key="context.pitch.easein">Ease in</system:String>
   <system:String x:Key="context.pitch.easeinout">Ease in/out</system:String>
@@ -12,7 +12,7 @@
 
   <system:String x:Key="dialogs.about.caption">About OpenUTAU</system:String>
   <system:String x:Key="dialogs.about.message">
-    OpenUtau aims to be an open source editing environment for UTAU community, with a modern user experience and intelligent phonological support. Visit us on Github.
+	OpenUtau aims to be an open source editing environment for UTAU community, with a modern user experience and intelligent phonological support. Visit us on Github.
   </system:String>
   <system:String x:Key="dialogs.exitsave.caption">Exit OpenUtau</system:String>
   <system:String x:Key="dialogs.exitsave.message">The current project contains unsaved changes. Do you want to save it?</system:String>
@@ -145,6 +145,8 @@ Right click to erase</system:String>
   <system:String x:Key="prefs.appearance.theme.light">Light</system:String>
   <system:String x:Key="prefs.appearance.theme.synthv">Synthesizer V</system:String>
   <system:String x:Key="prefs.appearance.theme.midnight">Midnight</system:String>
+  <system:String x:Key="prefs.appearance.theme.defokolight">Defoko Light</system:String>
+  <system:String x:Key="prefs.appearance.theme.defokodark">Defoko Dark</system:String>
   <system:String x:Key="prefs.caption">Preferences</system:String>
   <system:String x:Key="prefs.note.restart">Note: please restart OpenUtau after changing this item.</system:String>
   <system:String x:Key="prefs.paths">Paths</system:String>
@@ -158,7 +160,7 @@ Right click to erase</system:String>
   <system:String x:Key="prefs.rendering.prerender.threads">Pre-render Threads</system:String>
   <system:String x:Key="prefs.rendering.resampler.export">Resampler for export</system:String>
   <system:String x:Key="prefs.rendering.resampler.note">
-    Note: to use external resamplers, please add the resampler DLL or EXE file in the Resamplers folder in the OpenUtau install path and choose it in Preferences.
+	Note: to use external resamplers, please add the resampler DLL or EXE file in the Resamplers folder in the OpenUtau install path and choose it in Preferences.
   </system:String>
   <system:String x:Key="prefs.rendering.resampler.preview">Resampler for preview</system:String>
   <system:String x:Key="prefs.rendering.resampler.warn">
@@ -192,20 +194,20 @@ Right Button Draw: Reset expressions
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: Previous Note</system:String>
   <system:String x:Key="tip.notes.basics">
 Selection Tool
-    Box Select: Select notes
-    Ctrl + Box Select: Select more notes
-    Up/Down: Transpose selected notes
-    Ctrl + Up/Down: Transpose selected notes by octave
+	Box Select: Select notes
+	Ctrl + Box Select: Select more notes
+	Up/Down: Transpose selected notes
+	Ctrl + Up/Down: Transpose selected notes by octave
 Pen Tool
-    Left Button Draw: Add note
-    Right Click: Remove note
-    Right Button Draw: Remove multiple notes
+	Left Button Draw: Add note
+	Right Click: Remove note
+	Right Button Draw: Remove multiple notes
 General
-    T: Toggle tips
-    Drag Note: Move note
-    Drag End of Note: Resize note
-    Alt + Drag End of Note: Resize neighbouring notes
-    Space: Play
+	T: Toggle tips
+	Drag Note: Move note
+	Drag End of Note: Resize note
+	Alt + Drag End of Note: Resize neighbouring notes
+	Space: Play
   </system:String>
   <system:String x:Key="tip.notes.zoomx">◀ Scroll here to zoom horizontally ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">Scroll here to zoom vertically ▶</system:String>

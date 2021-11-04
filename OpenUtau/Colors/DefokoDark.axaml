@@ -1,0 +1,43 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <system:Boolean x:Key="IsDarkMode">false</system:Boolean>
+  
+  <Color x:Key="MainWindowColor">#434343</Color>
+
+  <Color x:Key="BackgroundColor">#3E3E3E</Color>
+  <Color x:Key="BackgroundColorPointerOver">#545454</Color>
+  <Color x:Key="BackgroundColorPressed">#6C6C6C</Color>
+  <Color x:Key="BackgroundColorDisabled">#545454</Color>
+
+  <Color x:Key="ForegroundColor">#BBBBBB</Color>
+  <Color x:Key="ForegroundColorPointerOver">#D6D6D6</Color>
+  <Color x:Key="ForegroundColorPressed">#A0A0A0</Color>
+  <Color x:Key="ForegroundColorDisabled">#808080</Color>
+
+  <Color x:Key="BorderColor">#8470BB</Color>
+  <Color x:Key="BorderColorPointerOver">#9576D1</Color>
+
+  <Color x:Key="NeutralAccentColor">#7963B3</Color>
+  <Color x:Key="NeutralAccentColorPointerOver">#8E72C3</Color>
+  <Color x:Key="AccentColor1">#9373E7</Color>
+  <Color x:Key="AccentColor2">#B6A3FF</Color>
+  <Color x:Key="AccentColor3">#A38AFF</Color>
+  
+  <Color x:Key="TickLineColor">#67626A</Color>
+  <Color x:Key="BarNumberColor">#726C75</Color>
+  <Color x:Key="TrackBackgroundAltColor">#303030</Color>
+
+  <!--Keyboard Background-->
+  <Color x:Key="WhiteKeyColorLeft">Transparent</Color>
+  <Color x:Key="WhiteKeyColorRight">Transparent</Color>
+  <Color x:Key="WhiteKeyNameColor">#AF90FF</Color>
+
+  <Color x:Key="CenterKeyColorLeft">#E9DDFF</Color>
+  <Color x:Key="CenterKeyColorRight">#DCCEFF</Color>
+  <Color x:Key="CenterKeyNameColor">#916CDC</Color>
+
+  <Color x:Key="BlackKeyColorLeft">#6650BB</Color>
+  <Color x:Key="BlackKeyColorRight">#553FA8</Color>
+  <Color x:Key="BlackKeyNameColor">#FFFFFF</Color>
+</ResourceDictionary>
