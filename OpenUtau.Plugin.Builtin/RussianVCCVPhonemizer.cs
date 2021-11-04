@@ -53,7 +53,7 @@ namespace OpenUtau.Plugin.Builtin {
                 phonemes.Add($"{v} -");
             } else if (cc.Length == 1) {
                 // VC- or VC C-
-                var vcr = $"{ValidateAlias(v + cc[0])} -";
+                var vcr = $"{v}{cc[0]} -";
                 if (HasOto(vcr, note)) {
                     phonemes.Add(vcr);
                 } else {

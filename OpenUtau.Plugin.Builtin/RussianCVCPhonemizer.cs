@@ -13,6 +13,13 @@ namespace OpenUtau.Plugin.Builtin {
                 .Select(entry => entry.Split('='))
                 .ToDictionary(parts => parts[0], parts => parts[1]);
         private string[] burstConsonants = "t,t',k,k',p,p',4',c,b,b',g,g',d,d'".Split(",");
+        private Dictionary<string, string> dictionaryReplacements = ("a=a;aa=a;ay=a;b=b;bb=b';c=c;ch=4';d=d;dd=d';ee=e;f=f;ff=f';" +
+            "g=g;gg=g';h=h;hh=h';i=i;ii=i;j=~;ja=a;je=e;jo=o;ju=u;k=k;kk=k';l=l;ll=l';m=m;mm=m';n=n;nn=n';oo=o;p=p;pp=p';r=r;rr=r';" +
+            "s=s;sch=w';sh=w;ss=s';t=t;tt=t';u=u;uj=u;uu=u;v=v;vv=v';y=y;yy=y;z=z;zh=j;zz=z'").Split(';')
+                .Select(entry => entry.Split('='))
+                .Where(parts => parts.Length == 2)
+                .Where(parts => parts[0] != parts[1])
+                .ToDictionary(parts => parts[0], parts => parts[1]);
 
         protected override string[] GetVowels() {
             return vowels;
@@ -20,6 +27,14 @@ namespace OpenUtau.Plugin.Builtin {
 
         protected override Dictionary<string, string> GetAliasesFallback() {
             return aliasesFallback;
+        }
+
+        protected override string GetDictionaryPath() {
+            return "cmudict_ru";
+        }
+
+        protected override Dictionary<string, string> GetDictionaryPhonemesReplacement() {
+            return dictionaryReplacements;
         }
 
         protected override List<string> TrySyllable(Note note, string prevV, string[] cc, string v) {
