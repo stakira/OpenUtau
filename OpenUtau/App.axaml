@@ -29,6 +29,8 @@
         <ResourceInclude Source="/Colors/DarkTheme.axaml"/>
         <ResourceInclude Source="/Colors/SynthesizerV.axaml"/>
         <ResourceInclude Source="/Colors/Midnight.axaml"/>
+        <ResourceInclude Source="/Colors/DefokoLight.axaml"/>
+        <ResourceInclude Source="/Colors/DefokoDark.axaml"/>
         <ResourceInclude Source="/Colors/Brushes.axaml"/>
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>

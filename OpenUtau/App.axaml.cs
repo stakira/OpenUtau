@@ -86,6 +86,14 @@ namespace OpenUtau.App {
                 .Select(res => (ResourceInclude)res)
                 .FirstOrDefault(d => d.Source!.OriginalString.Contains("Midnight"));
 
+            var defokolight = Current.Resources.MergedDictionaries
+                .Select(res => (ResourceInclude)res)
+                .FirstOrDefault(d => d.Source!.OriginalString.Contains("DefokoLight"));
+
+            var defokodark = Current.Resources.MergedDictionaries
+                .Select(res => (ResourceInclude)res)
+                .FirstOrDefault(d => d.Source!.OriginalString.Contains("DefokoDark"));
+
 
             if (Core.Util.Preferences.Default.Theme == 0) {
                 Current.Resources.MergedDictionaries.Remove(light);
@@ -102,6 +110,14 @@ namespace OpenUtau.App {
             } else if (Core.Util.Preferences.Default.Theme == 3) {
                 Current.Resources.MergedDictionaries.Remove(midnight);
                 Current.Resources.MergedDictionaries.Add(midnight);
+
+            } else if (Core.Util.Preferences.Default.Theme == 4) {
+                Current.Resources.MergedDictionaries.Remove(defokolight);
+                Current.Resources.MergedDictionaries.Add(defokolight);
+
+            } else if (Core.Util.Preferences.Default.Theme == 5) {
+                Current.Resources.MergedDictionaries.Remove(defokodark);
+                Current.Resources.MergedDictionaries.Add(defokodark);
             }
 
             ThemeManager.LoadTheme();
