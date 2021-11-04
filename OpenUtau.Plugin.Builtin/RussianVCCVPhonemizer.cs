@@ -10,9 +10,24 @@ namespace OpenUtau.Plugin.Builtin {
 
         private readonly string[] vowels = "a,e,o,u,y,i,M,N,ex,ax,x".Split(",");
         private string[] burstConsonants = "t,t',k,k',p,p',ch,ts,b,b',g,g',d,d'".Split(",");
+        private Dictionary<string, string> dictionaryReplacements = ("a=ax;aa=a;ay=ax;b=b;bb=b';c=ts;ch=ch;d=d;dd=d';ee=e;ae=e;" +
+            "f=f;ff=f';g=g;gg=g';h=h;hh=h';i=x;ii=i;j=j;ja=a;je=e;jo=o;ju=u;k=k;kk=k';l=l;ll=l';m=m;mm=m';n=n;nn=n';oo=o;" +
+            "p=p;pp=p';r=r;rr=r';s=s;sch=sh';sh=sh;ss=s';t=t;tt=t';u=u;uj=u;uu=u;v=v;vv=v';y=ex;yy=y;z=z;zh=zh;zz=z'").Split(';')
+                .Select(entry => entry.Split('='))
+                .Where(parts => parts.Length == 2)
+                .Where(parts => parts[0] != parts[1])
+                .ToDictionary(parts => parts[0], parts => parts[1]);
 
         protected override string[] GetVowels() {
             return vowels;
+        }
+
+        protected override string GetDictionaryPath() {
+            return "Plugins/cmudict_ru.txt";
+        }
+
+        protected override Dictionary<string, string> GetDictionaryPhonemesReplacement() {
+            return dictionaryReplacements;
         }
 
         protected override List<string> TrySyllable(Note note, string prevV, string[] cc, string v) {

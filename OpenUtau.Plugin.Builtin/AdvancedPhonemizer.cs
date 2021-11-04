@@ -4,8 +4,13 @@ using System.Text;
 using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
 using System.Linq;
+using System.IO;
 
 namespace OpenUtau.Plugin.Builtin {
+    /// <summary>
+    /// Use this class as a base for easier phonemizer configuration
+    /// Works for vb styles like VCV, VCCV, CVC etc, supports dictionary. 
+    /// </summary>
     public abstract class AdvancedPhonemizer : Phonemizer {
 
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour) {
@@ -31,11 +36,20 @@ namespace OpenUtau.Plugin.Builtin {
 
         public override void SetSinger(USinger singer) {
             this.singer = singer;
+            if (!hasDictionary) {
+                ReadDictionary();
+            }
             Init();
         }
 
         protected USinger singer;
+        /// <summary>
+        /// may be used to apply shorter aliases
+        /// </summary>
         protected double shortNoteThreshold = 120;
+        private static Dictionary<Type, G2pDictionary> dictionaries = new Dictionary<Type, G2pDictionary>();
+        protected bool hasDictionary => dictionaries.ContainsKey(GetType());
+        protected G2pDictionary dictionary => dictionaries[GetType()];
 
         /// <summary>
         /// Returns list of vowels
@@ -62,23 +76,102 @@ namespace OpenUtau.Plugin.Builtin {
         /// <param name="cc">consonants after the base vowel, may be emtpy</param>
         protected abstract void TryEnding(List<string> phonemeSymbols, Note note, string v, string[] cc);
 
+        /// <summary>
+        /// simple alias to alias fallback
+        /// </summary>
+        /// <returns></returns>
         protected virtual Dictionary<string, string> GetAliasesFallback() { return null; }
+
+        /// <summary>
+        /// Use to some custom init, if needed
+        /// </summary>
         protected virtual void Init() { }
 
         /// <summary>
-        /// extracts array of phoneme symbols from note. Override for procedural dictionary
+        /// Override and provide the dictionary path, if available
+        /// A file in CMU Dict format. Save it in Core/Api/Resources
+        /// </summary>
+        /// <returns></returns>
+        protected virtual string GetDictionaryPath() { return null; }
+
+        /// <summary>
+        /// extracts array of phoneme symbols from note. Override for procedural dictionary or something
+        /// reads from dictionary if provided
         /// </summary>
         /// <param name="note"></param>
         /// <returns></returns>
         protected virtual string[] GetSymbols(Note note) {
-            // dictionary is not yet supported so just read all lyrics as phonetic input
-            if (note.lyric == null) {
-                return new string[0];
-            } else return note.lyric.Split(" ");
+            string[] getSymbolsRaw(string lyrics) {
+                if (lyrics == null) {
+                    return new string[0];
+                } else return lyrics.Split(" ");
+            }
+
+            if (hasDictionary) {
+                if (!string.IsNullOrEmpty(note.phoneticHint)) {
+                    return getSymbolsRaw(note.phoneticHint);
+                }
+                try {
+                    var result = dictionary.Query(note.lyric.Trim().ToLowerInvariant());
+                    return result != null ? result : new string[] { note.lyric };
+                } catch {
+                    return new string[] { note.lyric };
+                }
+            }
+            else {
+                return getSymbolsRaw(note.lyric);
+            }
         }
 
+        /// <summary>
+        /// Checks if mapped and validated alias exists in oto
+        /// </summary>
+        /// <param name="alias"></param>
+        /// <param name="note"></param>
+        /// <returns></returns>
         protected bool HasOto(string alias, Note note) {
             return singer.TryGetMappedOto(ValidateAlias(alias), note.tone, out _);
+        }
+
+        /// <summary>
+        /// Instead of changing symbols in cmudict itself for each reclist, 
+        /// you may leave it be and provide symbol replacements with this method.
+        /// </summary>
+        /// <returns></returns>
+        protected virtual Dictionary<string, string> GetDictionaryPhonemesReplacement() { return null; }
+
+        #region private
+
+        private void ReadDictionary() {
+            var dictPath = GetDictionaryPath();
+            if (dictPath == null || !File.Exists(dictPath))
+                return;
+            try {
+                var builder = G2pDictionary.NewBuilder();
+                var vowels = GetVowels();
+                foreach (var vowel in vowels) {
+                    builder.AddSymbol(vowel, true);
+                }
+                var replacements = GetDictionaryPhonemesReplacement();
+
+                File.ReadAllText(dictPath).Split('\n')
+                        .Where(line => !line.StartsWith(";;;"))
+                        .Select(line => line.Trim())
+                        .Select(line => line.Split(new string[] { "  " }, StringSplitOptions.None))
+                        .Where(parts => parts.Length == 2)
+                        .ToList()
+                        .ForEach(parts => builder.AddEntry(parts[0].ToLowerInvariant(), parts[1].Split(" ").Select(
+                            n => {
+                                var result = replacements != null && replacements.ContainsKey(n) ? replacements[n] : n;
+                                if (!vowels.Contains(result))
+                                    builder.AddSymbol(result, false);
+                                return result;
+                                }
+                            )));
+                var dict = builder.Build();
+                dictionaries[GetType()] = dict;
+            }
+            catch (Exception ex) { }
         }
 
         private string[] GetRightConsonants(string[] symbols, bool withV) {
@@ -146,12 +239,12 @@ namespace OpenUtau.Plugin.Builtin {
             return (prevV, cc.ToArray(), v);
         }
 
-        protected string ValidateAlias(string alias) {
+        private string ValidateAlias(string alias) {
             var aliasesFallback = GetAliasesFallback();
             return aliasesFallback == null ? alias : aliasesFallback.ContainsKey(alias) ? aliasesFallback[alias] : alias;
         }
 
-        protected int GetNoteLength(int phonemesCount, int containerLength = -1) {
+        private int GetNoteLength(int phonemesCount, int containerLength = -1) {
             var noteLength = 120.0;
             if (containerLength == -1) {
                 return MsToTick(noteLength) / 15 * 15;
@@ -187,5 +280,6 @@ namespace OpenUtau.Plugin.Builtin {
             return phonemes;
         }
 
+        #endregion
     }
 }
