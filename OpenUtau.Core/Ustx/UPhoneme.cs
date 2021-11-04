@@ -17,6 +17,8 @@ namespace OpenUtau.Core.Ustx {
         public UOto oto { get; private set; }
         public float preutter { get; private set; }
         public float overlap { get; private set; }
+        public float autoPreutter { get; private set; }
+        public float autoOverlap { get; private set; }
         public bool overlapped { get; private set; }
         public float tailIntrude { get; private set; }
         public float tailOverlap { get; private set; }
@@ -95,41 +97,43 @@ namespace OpenUtau.Core.Ustx {
             }
             float consonantStretch = (float)Math.Pow(2f, 1.0f - GetExpression(project, "vel").Item1 / 100f);
             if (overlapDelta != null) {
-                overlap = (float)(oto.Overlap + overlapDelta) * consonantStretch;
+                autoOverlap = (float)oto.Overlap * consonantStretch;
             } else {
-                overlap = (float)oto.Overlap * consonantStretch * (overlapScale ?? 1);
+                autoOverlap = (float)oto.Overlap * consonantStretch * (overlapScale ?? 1);
             }
             if (preutterDelta != null) {
-                preutter = (float)(oto.Preutter + preutterDelta) * consonantStretch;
+                autoPreutter = (float)oto.Preutter * consonantStretch;
             } else {
-                preutter = (float)oto.Preutter * consonantStretch * (preutterScale ?? 1);
+                autoPreutter = (float)oto.Preutter * consonantStretch * (preutterScale ?? 1);
             }
             overlapped = false;
             tailIntrude = 0;
             tailOverlap = 0;
 
-            if (Prev == null) {
-                return;
+            if (Prev != null) {
+                int gapTick = Parent.position + position - (Prev.Parent.position + Prev.End);
+                float gapMs = (float)project.TickToMillisecond(gapTick);
+                float maxPreutter = autoPreutter;
+                if (gapMs <= 0) {
+                    // Keep at least half of last phoneme.
+                    overlapped = true;
+                    maxPreutter = (float)project.TickToMillisecond(Prev.Duration) * 0.5f;
+                } else if (gapMs < autoPreutter) {
+                    maxPreutter = gapMs;
+                }
+                if (autoPreutter > maxPreutter) {
+                    float ratio = maxPreutter / autoPreutter;
+                    autoPreutter = maxPreutter;
+                    autoOverlap *= ratio;
+                }
             }
-            int gapTick = Parent.position + position - (Prev.Parent.position + Prev.End);
-            float gapMs = (float)project.TickToMillisecond(gapTick);
-            float maxPreutter = preutter;
-            if (gapMs <= 0) {
-                // Keep at least half of last phoneme, or 10% if preutterScale is set. 
-                overlapped = true;
-                maxPreutter = (float)project.TickToMillisecond(Prev.Duration) * (preutterDelta == null && preutterScale == null ? 0.5f : 0.9f);
-            } else if (gapMs < preutter) {
-                maxPreutter = gapMs;
+            preutter = Math.Max(0, autoPreutter + (preutterDelta ?? 0));
+            overlap = autoOverlap + (overlapDelta ?? 0);
+            if (Prev != null) {
+                Prev.tailIntrude = overlapped ? Math.Max(preutter, preutter - overlap) : 0;
+                Prev.tailOverlap = overlapped ? Math.Max(overlap, 0) : 0;
+                Prev.ValidateEnvelope(project, Prev.Parent);
             }
-            if (preutter > maxPreutter) {
-                float ratio = maxPreutter / preutter;
-                preutter = maxPreutter;
-                overlap *= ratio;
-            }
-            preutter = Math.Max(0, preutter);
-            Prev.tailIntrude = overlapped ? Math.Max(preutter, preutter - overlap) : 0;
-            Prev.tailOverlap = overlapped ? Math.Max(overlap, 0) : 0;
-            Prev.ValidateEnvelope(project, Prev.Parent);
         }
 
         void ValidateEnvelope(UProject project, UNote note) {

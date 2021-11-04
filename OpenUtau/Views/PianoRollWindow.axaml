@@ -345,11 +345,6 @@
                           PointerPressed="ExpCanvasPointerPressed"
                           PointerMoved="ExpCanvasPointerMoved"
                           PointerReleased="ExpCanvasPointerReleased">
-        <Border Name="ExpValueTip" IsVisible="{Binding NotesViewModel.ShowExpValueTip}" BorderThickness="1"
-                BorderBrush="{DynamicResource NeutralAccentBrush}"
-                Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
-          <TextBlock Margin="2" Text="{Binding NotesViewModel.ExpValueTipText}"/>
-        </Border>
       </c:ExpressionCanvas>
       <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
               BoxShadow="inset 0 0 5 1 #3F000000" ClipToBounds="True" IsHitTestVisible="False">
@@ -388,6 +383,13 @@
               PointerWheelChanged="ViewScalerPointerWheelChanged">
         <c:ViewScaler Name="VScaler" DataContext="{Binding NotesViewModel}" Value="{Binding TrackHeight}" Min="{Binding TrackHeightMin}" Max="{Binding TrackHeightMax}"/>
       </Border>
+      <Canvas Name="ValueTipCanvas" Grid.Column="1" Grid.Row="1" Grid.RowSpan="4" IsHitTestVisible="False">
+        <Border Name="ValueTip" BorderThickness="1"
+                BorderBrush="{DynamicResource NeutralAccentBrush}"
+                Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+          <TextBlock Name="ValueTipText" Margin="2"/>
+        </Border>
+      </Canvas>
     </Grid>
   </Grid>
 </Window>

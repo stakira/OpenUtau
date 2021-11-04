@@ -108,10 +108,6 @@ namespace OpenUtau.Core.Ustx {
                 phoneme.Parent = this;
                 phoneme.Index = i;
             }
-            foreach (var phoneme in phonemes) {
-                phoneme.Validate(project, track, part, this);
-                Error |= phoneme.Error;
-            }
             // Update has override bits.
             foreach (var phoneme in phonemes) {
                 phoneme.HasPhonemeOverride = false;
@@ -135,6 +131,10 @@ namespace OpenUtau.Core.Ustx {
                     phonemes[index].preutterDelta = o.preutterDelta;
                     phonemes[index].overlapDelta = o.overlapDelta;
                 }
+            }
+            foreach (var phoneme in phonemes) {
+                phoneme.Validate(project, track, part, this);
+                Error |= phoneme.Error;
             }
         }
 
@@ -330,7 +330,7 @@ namespace OpenUtau.Core.Ustx {
         float _drift;
 
         [JsonProperty] public float length { get => _length; set => _length = Math.Max(0, Math.Min(100, value)); }
-        [JsonProperty] public float period { get => _period; set => _period = Math.Max(20, Math.Min(500, value)); }
+        [JsonProperty] public float period { get => _period; set => _period = Math.Max(5, Math.Min(500, value)); }
         [JsonProperty] public float depth { get => _depth; set => _depth = Math.Max(5, Math.Min(200, value)); }
         [JsonProperty]
         public float @in {

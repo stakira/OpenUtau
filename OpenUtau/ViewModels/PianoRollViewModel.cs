@@ -18,7 +18,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public NotesViewModel NotesViewModel { get; set; }
         [Reactive] public PlaybackViewModel? PlaybackViewModel { get; set; }
 
-        [Reactive] public List<MenuItemViewModel> LegacyPlugins { get; set; }
+        [Reactive] public List<MenuItemViewModel>? LegacyPlugins { get; set; }
         [Reactive] public List<MenuItemViewModel> NoteBatchEdits { get; set; }
         [Reactive] public List<MenuItemViewModel> LyricBatchEdits { get; set; }
         public ReactiveCommand<PitchPointHitInfo, Unit> PitEaseInOutCommand { get; set; }
@@ -108,7 +108,7 @@ namespace OpenUtau.App.ViewModels {
                     DocManager.Inst.ExecuteCmd(new UserMessageNotification($"Failed to execute plugin {e}"));
                 }
             });
-            LegacyPlugins = DocManager.Inst.Plugins.Select(plugin => new MenuItemViewModel() {
+            LegacyPlugins = DocManager.Inst.Plugins?.Select(plugin => new MenuItemViewModel() {
                 Header = plugin.Name,
                 Command = legacyPluginCommand,
                 CommandParameter = plugin,

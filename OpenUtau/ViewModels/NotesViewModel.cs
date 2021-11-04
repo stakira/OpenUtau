@@ -62,8 +62,6 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public bool ShowPhoneme { get; set; }
         [Reactive] public bool IsSnapOn { get; set; }
         [Reactive] public string SnapUnitText { get; set; }
-        [Reactive] public bool ShowExpValueTip { get; set; }
-        [Reactive] public string ExpValueTipText { get; set; }
         [Reactive] public string PrimaryKey { get; set; }
         [Reactive] public string SecondaryKey { get; set; }
         [Reactive] public UVoicePart? Part { get; set; }
@@ -142,7 +140,7 @@ namespace OpenUtau.App.ViewModels {
                 TaggerTool = index == "4";
             });
 
-            ShowTips = Core.Util.Preferences.Default.ShowTips;
+            ShowTips = Preferences.Default.ShowTips;
             PlayTone = true;
             ShowVibrato = true;
             ShowPitch = true;
@@ -152,11 +150,10 @@ namespace OpenUtau.App.ViewModels {
 
             TickWidth = ViewConstants.PianoRollTickWidthDefault;
             TrackHeight = ViewConstants.NoteHeightDefault;
-            ExpValueTipText = string.Empty;
             TrackOffset = 4 * 12 + 6;
-            if (Core.Util.Preferences.Default.ShowTips) {
-                Core.Util.Preferences.Default.ShowTips = false;
-                Core.Util.Preferences.Save();
+            if (Preferences.Default.ShowTips) {
+                Preferences.Default.ShowTips = false;
+                Preferences.Save();
             }
             PrimaryKey = "vel";
             SecondaryKey = "vol";

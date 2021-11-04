@@ -188,10 +188,12 @@ namespace OpenUtau.Core {
             for (int i = group.Commands.Count - 1; i >= 0; i--) {
                 var cmd = group.Commands[i];
                 cmd.Unexecute();
+                if (i == 0) {
+                    Project.Validate();
+                }
                 Publish(cmd, true);
             }
             redoQueue.AddToBack(group);
-            Project.Validate();
             ExecuteCmd(new PreRenderNotification());
         }
 
@@ -200,12 +202,15 @@ namespace OpenUtau.Core {
                 return;
             }
             var group = redoQueue.RemoveFromBack();
-            foreach (var cmd in group.Commands) {
+            for (var i = 0; i < group.Commands.Count; i++) {
+                var cmd = group.Commands[i];
                 cmd.Execute();
+                if (i == group.Commands.Count - 1) {
+                    Project.Validate();
+                }
                 Publish(cmd);
             }
             undoQueue.AddToBack(group);
-            Project.Validate();
             ExecuteCmd(new PreRenderNotification());
         }
 
