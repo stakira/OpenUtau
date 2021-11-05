@@ -80,16 +80,16 @@ namespace OpenUtau.Plugin.Builtin {
                 if (HasOto(vcr, ending.tone)) {
                     phonemes.Add(vcr);
                 } else {
-                    phonemes.Add(v + cc[0]);
+                    phonemes.Add($"{v} {cc[0]}");
                     phonemes.Add($"{cc[0]} -");
                 }
             } else {
-                phonemes.Add(v + cc[0]);
-                if (burstConsonants.Contains(cc.Last())) {
-                    phonemes.Add($"{cc.Last()} -");
-                }
+                phonemes.Add($"{v} {cc[0]}");
                 for (var i = 0; i < cc.Length - 1; i++) {
                     phonemes.Add($"{cc[i]} {cc[i + 1]}");
+                }
+                if (burstConsonants.Contains(cc.Last())) {
+                    phonemes.Add($"{cc.Last()} -");
                 }
             }
             return phonemes;

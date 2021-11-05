@@ -256,11 +256,12 @@ namespace OpenUtau.Plugin.Builtin {
             // normal syllables after the first one
             var syllableI = 1;
             var ccs = new List<string>();
-            var position = mainNote.duration;
+            var position = 0;
             for (var i = firstVowelId + 1; i < symbols.Length & syllableI < notes.Length; i++) {
                 if (!vowelIds.Contains(i)) {
                     ccs.Add(symbols[i]);
                 } else {
+                    position += notes[syllableI - 1].duration;
                     word.syllables[syllableI] = new Syllable() {
                         prevV = word.syllables[syllableI - 1].v,
                         cc = ccs.ToArray(),
@@ -271,7 +272,6 @@ namespace OpenUtau.Plugin.Builtin {
                         vowelTone = notes[syllableI].tone
                     };
                     ccs = new List<string>();
-                    position += notes[syllableI].duration;
                     syllableI++;
                 }
             }
@@ -284,7 +284,7 @@ namespace OpenUtau.Plugin.Builtin {
                 cc = symbols.Skip(lastVowelI + 1).ToArray(),
                 tone = lastNote.tone,
                 duration = lastNote.duration,
-                position = position
+                position = position + lastNote.duration
             };
 
             return word;
@@ -296,7 +296,7 @@ namespace OpenUtau.Plugin.Builtin {
             return new Result {
                 phonemes = new Phoneme[] {
                     new Phoneme {
-                        phoneme = note.lyric.Skip(1).ToString()
+                        phoneme = note.lyric.Substring(1)
                     }
                 }
             };
@@ -367,13 +367,12 @@ namespace OpenUtau.Plugin.Builtin {
             var phonemes = new Phoneme[phonemeSymbols.Count];
             var noteLengthTick = GetNoteLength(phonemeSymbols.Count - 1, containerLength);
             for (var i = 0; i < phonemeSymbols.Count; i++) {
-                var offset = phonemeSymbols.Count - i;
-                if (!isEnding) {
-                    offset -= 1;
-                }
-                var currentTone = i == phonemeSymbols.Count - 1 ? lastTone : tone;
-                phonemes[i].phoneme = MapPhoneme(ValidateAlias(phonemeSymbols[i]), currentTone, singer);
-                phonemes[i].position = position - noteLengthTick * offset;
+                var offset = isEnding ? i + 1 : phonemeSymbols.Count - i - 1;
+                var phonemeI = isEnding ? phonemeSymbols.Count - i - 1 : i;
+
+                var currentTone = phonemeI == phonemeSymbols.Count - 1 ? lastTone : tone;
+                phonemes[phonemeI].phoneme = MapPhoneme(ValidateAlias(phonemeSymbols[phonemeI]), currentTone, singer);
+                phonemes[phonemeI].position = position - noteLengthTick * offset;
             }
             return phonemes;
         }
