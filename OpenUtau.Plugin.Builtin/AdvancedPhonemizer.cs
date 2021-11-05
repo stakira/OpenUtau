@@ -13,24 +13,95 @@ namespace OpenUtau.Plugin.Builtin {
     /// </summary>
     public abstract class AdvancedPhonemizer : Phonemizer {
 
+        /// <summary>
+        /// result of dictionary parsing. Phonemes from previous word are included to the first syllable
+        /// </summary>
+        protected struct Word {
+            public Syllable[] syllables;
+            public Ending ending;
+        }
+
+        /// <summary>
+        /// Syllable is [V] [C..] [V]
+        /// </summary>
+        protected struct Syllable {
+            /// <summary>
+            /// vowel from previous syllable for VC
+            /// </summary>
+            public string prevV;
+            /// <summary>
+            /// CCs, may be empty
+            /// </summary>
+            public string[] cc;
+            /// <summary>
+            /// "base" note. May not actually be vowel, if only consonants way provided
+            /// </summary>
+            public string v;
+            /// <summary>
+            /// Start position for vowel. All VC CC goes before this position
+            /// </summary>
+            public int position;
+            /// <summary>
+            /// previous note duration, i.e. this is container for VC and CC notes
+            /// </summary>
+            public int duration;
+            /// <summary>
+            /// Tone for VC and CC
+            /// </summary>
+            public int tone;
+            /// <summary>
+            /// tone for base "vowel" phoneme
+            /// </summary>
+            public int vowelTone;
+        }
+
+        protected struct Ending {
+            /// <summary>
+            /// vowel from the last syllable to make VC
+            /// </summary>
+            public string prevV;
+            /// <summary>
+            ///  actuall CC at the ending
+            /// </summary>
+            public string[] cc;
+            /// <summary>
+            /// last note position + duration, all phonemes must be less than this
+            /// </summary>
+            public int position;
+            /// <summary>
+            /// last syllable length, max container for all VC CC C-
+            /// </summary>
+            public int duration;
+            /// <summary>
+            /// the tone from last syllable, for all ending phonemes
+            /// </summary>
+            public int tone;
+        }
+
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour) {
-            var note = notes[0];
-
-            var symbols = GetSymbols(note);
-            var prevNoteSymbols = prevNeighbour.HasValue ? GetSymbols(prevNeighbour.Value) : new string[0];
-            var cv = GetCV(symbols);
-            var prevLastConsonants = GetRightConsonants(prevNoteSymbols, true);
-            (var prevV, var cc, var v) = Normalize(cv, prevLastConsonants);
-            var phonemeSymbols = TrySyllable(note, prevV, cc, v);
-            var basePhonemeI = phonemeSymbols.Count - 1;
-
-            if (!nextNeighbour.HasValue) {
-                var lastConsonants = GetRightConsonants(symbols, false);
-                TryEnding(phonemeSymbols, note, v, lastConsonants);
+            var mainNote = notes[0];
+            if (mainNote.lyric.StartsWith(FORCED_ALIAS_SYMBOL)) {
+                return MakeForcedAliasResult(mainNote);
             }
-            var phonemes = MakePhonemes(phonemeSymbols, note, prevNeighbour, basePhonemeI);
+
+            Word? prevWord = null;
+            if (prevNeighbour.HasValue && !prevNeighbour.Value.lyric.StartsWith(FORCED_ALIAS_SYMBOL)) {
+                prevWord = MakeWord(new Note[] { prevNeighbour.Value });
+            }
+            var word = MakeWord(notes, prevWord);
+
+            var phonemes = new List<Phoneme>();
+            foreach (var syllable in word.syllables) {
+                phonemes.AddRange(MakePhonemes(TrySyllable(syllable), syllable.duration, syllable.position,
+                    syllable.tone, syllable.vowelTone, false));
+            }
+            if (!nextNeighbour.HasValue) {
+                phonemes.AddRange(MakePhonemes(TryEnding(word.ending), word.ending.duration, word.ending.position, 
+                    word.ending.tone, word.ending.tone, true));
+            }
+
             return new Result() {
-                phonemes = phonemes
+                phonemes = phonemes.ToArray()
             };
         }
 
@@ -47,9 +118,11 @@ namespace OpenUtau.Plugin.Builtin {
         /// may be used to apply shorter aliases
         /// </summary>
         protected double shortNoteThreshold = 120;
-        private static Dictionary<Type, G2pDictionary> dictionaries = new Dictionary<Type, G2pDictionary>();
         protected bool hasDictionary => dictionaries.ContainsKey(GetType());
         protected G2pDictionary dictionary => dictionaries[GetType()];
+
+        private static Dictionary<Type, G2pDictionary> dictionaries = new Dictionary<Type, G2pDictionary>();
+        private const string FORCED_ALIAS_SYMBOL = "/";
 
         /// <summary>
         /// Returns list of vowels
@@ -60,21 +133,13 @@ namespace OpenUtau.Plugin.Builtin {
         /// <summary>
         /// returns phoneme symbols, like, VCV, or VC + CV, or -CV, etc
         /// </summary>
-        /// <param name="note">current note</param>
-        /// <param name="prevV">the vowel of the previous note neighbour, may be empty string</param>
-        /// <param name="cc">array of consonants, may be empty</param>
-        /// <param name="v">base vowel</param>
-        /// <returns></returns>
-        protected abstract List<string> TrySyllable(Note note, string prevV, string[] cc, string v);
+        /// <returns>List of phonemes</returns>
+        protected abstract List<string> TrySyllable(Syllable syllable);
 
         /// <summary>
         /// phoneme symbols for ending, like, V-, or VC-, or VC+C
         /// </summary>
-        /// <param name="phonemeSymbols">add new phonemes to this array</param>
-        /// <param name="note">current note</param>
-        /// <param name="v">base vowel</param>
-        /// <param name="cc">consonants after the base vowel, may be emtpy</param>
-        protected abstract void TryEnding(List<string> phonemeSymbols, Note note, string v, string[] cc);
+        protected abstract List<string> TryEnding(Ending ending);
 
         /// <summary>
         /// simple alias to alias fallback
@@ -129,8 +194,8 @@ namespace OpenUtau.Plugin.Builtin {
         /// <param name="alias"></param>
         /// <param name="note"></param>
         /// <returns></returns>
-        protected bool HasOto(string alias, Note note) {
-            return singer.TryGetMappedOto(ValidateAlias(alias), note.tone, out _);
+        protected bool HasOto(string alias, int tone) {
+            return singer.TryGetMappedOto(ValidateAlias(alias), tone, out _);
         }
 
         /// <summary>
@@ -140,7 +205,102 @@ namespace OpenUtau.Plugin.Builtin {
         /// <returns></returns>
         protected virtual Dictionary<string, string> GetDictionaryPhonemesReplacement() { return null; }
 
+        /// <summary>
+        /// separates symbols to syllables and ending.
+        /// Not sure you would like to override it, but, anyway.
+        /// </summary>
+        /// <param name="notes"></param>
+        /// <param name="prevWord"></param>
+        /// <returns></returns>
+        protected virtual Word MakeWord(Note[] notes, Word? prevWord = null) {
+            var mainNote = notes[0];
+            var symbols = GetSymbols(mainNote);
+            if (symbols.Length == 0) {
+                symbols = new string[] { "" };
+            }
+            List<int> vowelIds = ExtractVowels(symbols);
+            var firstVowelId = vowelIds[0];
+            Word word = new Word() {
+                syllables = new Syllable[Math.Min(notes.Length, vowelIds.Count)]
+            };
+
+            // Making the first syllable
+            if (prevWord.HasValue) {
+                var prevEnding = prevWord.Value.ending;
+                var beginningCc = prevEnding.cc.ToList();
+                beginningCc.AddRange(symbols.Take(firstVowelId));
+
+                // If we had a prev neighbour, let's take info from it
+                word.syllables[0] = new Syllable() {
+                    prevV = prevEnding.prevV,
+                    cc = beginningCc.ToArray(),
+                    v = symbols[firstVowelId],
+                    tone = prevEnding.tone,
+                    duration = prevEnding.duration,
+                    position = 0,
+                    vowelTone = mainNote.tone
+                };
+            } else {
+                // there is only empty space before us
+                word.syllables[0] = new Syllable() {
+                    prevV = "",
+                    cc = symbols.Take(firstVowelId).ToArray(),
+                    v = symbols[firstVowelId],
+                    tone = mainNote.tone,
+                    duration = -1,
+                    position = 0,
+                    vowelTone = mainNote.tone
+                };
+            }
+
+            // normal syllables after the first one
+            var syllableI = 1;
+            var ccs = new List<string>();
+            var position = mainNote.duration;
+            for (var i = firstVowelId + 1; i < symbols.Length & syllableI < notes.Length; i++) {
+                if (!vowelIds.Contains(i)) {
+                    ccs.Add(symbols[i]);
+                } else {
+                    word.syllables[syllableI] = new Syllable() {
+                        prevV = word.syllables[syllableI - 1].v,
+                        cc = ccs.ToArray(),
+                        v = symbols[i],
+                        tone = word.syllables[syllableI - 1].vowelTone,
+                        duration = notes[syllableI - 1].duration,
+                        position = position,
+                        vowelTone = notes[syllableI].tone
+                    };
+                    ccs = new List<string>();
+                    position += notes[syllableI].duration;
+                    syllableI++;
+                }
+            }
+
+            // making the ending
+            var lastVowelI = vowelIds.Last();
+            var lastNote = notes.Last();
+            word.ending = new Ending() {
+                prevV = word.syllables[syllableI - 1].v,
+                cc = symbols.Skip(lastVowelI + 1).ToArray(),
+                tone = lastNote.tone,
+                duration = lastNote.duration,
+                position = position
+            };
+
+            return word;
+        }
+
         #region private
+
+        private Result MakeForcedAliasResult(Note note) {
+            return new Result {
+                phonemes = new Phoneme[] {
+                    new Phoneme {
+                        phoneme = note.lyric.Skip(1).ToString()
+                    }
+                }
+            };
+        }
 
         private void ReadDictionary() {
             var dictPath = GetDictionaryPath();
@@ -174,69 +334,15 @@ namespace OpenUtau.Plugin.Builtin {
             catch (Exception ex) { }
         }
 
-        private string[] GetRightConsonants(string[] symbols, bool withV) {
+        private List<int> ExtractVowels(string[] symbols) {
+            var vowelIds = new List<int>();
             var vowels = GetVowels();
-            if (symbols.Length == 0)
-                return symbols;
-            var vowelIdx = -1;
-            for (var i = symbols.Length - 1; i >= 0; i--) {
-                var symbol = (string)symbols[i];
-                if (vowels.Contains(symbol)) {
-                    vowelIdx = i;
-                    break;
+            for (var i = 0; i < symbols.Length; i++) {
+                if (vowels.Contains(symbols[i])) {
+                    vowelIds.Add(i);
                 }
             }
-            if (vowelIdx == -1) {
-                return new string[0];
-            }
-            if (withV) {
-                return symbols.TakeLast(symbols.Length - vowelIdx).ToArray();
-            } else if (vowelIdx == 0 && symbols.Length == 1) {
-                return new string[0];
-            } else {
-                return symbols.TakeLast(symbols.Length - vowelIdx - 1).ToArray();
-            }
-        }
-
-        private string[] GetCV(string[] symbols) {
-            var vowels = GetVowels();
-            var vowelIdx = -1;
-            for (var i = symbols.Length - 1; i >= 0; i--) {
-                var symbol = (string)symbols[i];
-                if (vowels.Contains(symbol)) {
-                    vowelIdx = i;
-                    break;
-                }
-            }
-            if (vowelIdx == -1) {
-                return symbols;
-            }
-            return symbols.Take(vowelIdx + 1).ToArray();
-        }
-
-        private (string, string[], string) Normalize(string[] cv, string[] tail) {
-            var vowels = GetVowels();
-            var prevV = "";
-            var v = "";
-            var cc = new List<string>();
-            if (tail.Length > 0) {
-                var start = 0;
-                if (vowels.Contains(tail[0])) {
-                    prevV = tail[0];
-                    start = 1;
-                }
-                for (var i = start; i < tail.Length; i++) {
-                    cc.Add(tail[i]);
-                }
-            }
-            if (cv.Length > 0) {
-                v = cv.Last();
-            }
-            for (var i = 0; i < cv.Length - 1; i++) {
-                cc.Add(cv[i]);
-            }
-
-            return (prevV, cc.ToArray(), v);
+            return vowelIds;
         }
 
         private string ValidateAlias(string alias) {
@@ -257,25 +363,17 @@ namespace OpenUtau.Plugin.Builtin {
             return MsToTick(containerLength / fullLength * noteLength) / 15 * 15;
         }
 
-        private Phoneme[] MakePhonemes(List<string> phonemeSymbols, Note note, Note? prevNeighbour, int basePhonemeI) {
+        private Phoneme[] MakePhonemes(List<string> phonemeSymbols, int containerLength, int position, int tone, int lastTone, bool isEnding) {
             var phonemes = new Phoneme[phonemeSymbols.Count];
-            var noteLengthTick = GetNoteLength(phonemeSymbols.Count - 1, prevNeighbour.HasValue ? prevNeighbour.Value.duration : -1);
-            var prevTone = prevNeighbour.HasValue ? prevNeighbour.Value.tone : note.tone;
-            for (var i = 0; i < basePhonemeI; i++) {
-                var offset = basePhonemeI - i;
-                phonemes[i].phoneme = MapPhoneme(ValidateAlias(phonemeSymbols[i]), prevTone, singer);
-                phonemes[i].position = -noteLengthTick * offset;
-            }
-            {
-                phonemes[basePhonemeI].phoneme = MapPhoneme(ValidateAlias(phonemeSymbols[basePhonemeI]), note.tone, singer);
-                phonemes[basePhonemeI].position = 0;
-            }
-
-            noteLengthTick = GetNoteLength(phonemeSymbols.Count - basePhonemeI - 1, note.duration);
-            for (var i = basePhonemeI + 1; i < phonemeSymbols.Count; i++) {
-                var offset = phonemeSymbols.Count - basePhonemeI - 1;
-                phonemes[i].phoneme = MapPhoneme(ValidateAlias(phonemeSymbols[i]), note.tone, singer);
-                phonemes[i].position = note.duration - noteLengthTick * offset;
+            var noteLengthTick = GetNoteLength(phonemeSymbols.Count - 1, containerLength);
+            for (var i = 0; i < phonemeSymbols.Count; i++) {
+                var offset = phonemeSymbols.Count - i;
+                if (!isEnding) {
+                    offset -= 1;
+                }
+                var currentTone = i == phonemeSymbols.Count - 1 ? lastTone : tone;
+                phonemes[i].phoneme = MapPhoneme(ValidateAlias(phonemeSymbols[i]), currentTone, singer);
+                phonemes[i].position = position - noteLengthTick * offset;
             }
             return phonemes;
         }

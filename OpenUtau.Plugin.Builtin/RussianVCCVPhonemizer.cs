@@ -30,7 +30,11 @@ namespace OpenUtau.Plugin.Builtin {
             return dictionaryReplacements;
         }
 
-        protected override List<string> TrySyllable(Note note, string prevV, string[] cc, string v) {
+        protected override List<string> TrySyllable(Syllable syllable) {
+            string prevV = syllable.prevV;
+            string[] cc = syllable.cc;
+            string v = syllable.v;
+
             string basePhoneme;
             var phonemes = new List<string>();
             if (prevV == "") {
@@ -39,7 +43,7 @@ namespace OpenUtau.Plugin.Builtin {
                 } else if (cc.Length == 1) {
                     // -CV or -C CV
                     var rcv = $"- {cc[0]}{v}";
-                    if (HasOto(rcv, note)) {
+                    if (HasOto(rcv, syllable.tone)) {
                         basePhoneme = rcv;
                     }
                     else {
@@ -63,13 +67,17 @@ namespace OpenUtau.Plugin.Builtin {
             return phonemes;
         }
 
-        protected override void TryEnding(List<string> phonemes, Note note, string v, string[] cc) {
+        protected override List<string> TryEnding(Ending ending) {
+            string[] cc = ending.cc;
+            string v = ending.prevV;
+
+            var phonemes = new List<string>();
             if (cc.Length == 0) {
                 phonemes.Add($"{v} -");
             } else if (cc.Length == 1) {
                 // VC- or VC C-
                 var vcr = $"{v}{cc[0]} -";
-                if (HasOto(vcr, note)) {
+                if (HasOto(vcr, ending.tone)) {
                     phonemes.Add(vcr);
                 } else {
                     phonemes.Add(v + cc[0]);
@@ -84,6 +92,7 @@ namespace OpenUtau.Plugin.Builtin {
                     phonemes.Add($"{cc[i]} {cc[i + 1]}");
                 }
             }
+            return phonemes;
         }
     }
 }
