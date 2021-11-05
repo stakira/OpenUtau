@@ -219,6 +219,10 @@ namespace OpenUtau.Plugin.Builtin {
                 symbols = new string[] { "" };
             }
             List<int> vowelIds = ExtractVowels(symbols);
+            if (vowelIds.Count == 0) {
+                // no syllables or all consonants, the last phoneme will be interpreted as vowel
+                vowelIds.Add(symbols.Length - 1);
+            }
             var firstVowelId = vowelIds[0];
             Word word = new Word() {
                 syllables = new Syllable[Math.Min(notes.Length, vowelIds.Count)]
