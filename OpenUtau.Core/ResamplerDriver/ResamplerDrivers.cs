@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using OpenUtau.Core.ResamplerDriver.Factorys;
@@ -51,18 +52,17 @@ namespace OpenUtau.Core.ResamplerDriver {
         public static void Search() {
             var resamplers = new Dictionary<string, IResamplerDriver>();
             string basePath = PathManager.Inst.LibsPath;
-            if (!OS.IsWindows()) {
-                var driver = Load(Path.Combine(basePath, "worldline"), basePath);
-                if (driver != null) {
-                    resamplers.Add(driver.Name, driver);
-                    if (string.IsNullOrEmpty(Preferences.Default.ExternalPreviewEngine)) {
-                        Preferences.Default.ExternalPreviewEngine = driver.Name;
-                        Preferences.Save();
-                    }
-                    if (string.IsNullOrEmpty(Preferences.Default.ExternalExportEngine)) {
-                        Preferences.Default.ExternalExportEngine = driver.Name;
-                        Preferences.Save();
-                    }
+            string name = !OS.IsWindows() ? "worldline" : Environment.Is64BitProcess ? "worldline64.exe" : "worldline32.exe";
+            var driver = Load(Path.Combine(basePath, name), basePath);
+            if (driver != null) {
+                resamplers.Add(driver.Name, driver);
+                if (string.IsNullOrEmpty(Preferences.Default.ExternalPreviewEngine)) {
+                    Preferences.Default.ExternalPreviewEngine = driver.Name;
+                    Preferences.Save();
+                }
+                if (string.IsNullOrEmpty(Preferences.Default.ExternalExportEngine)) {
+                    Preferences.Default.ExternalExportEngine = driver.Name;
+                    Preferences.Save();
                 }
             }
             basePath = PathManager.Inst.ResamplersPath;
@@ -70,7 +70,7 @@ namespace OpenUtau.Core.ResamplerDriver {
             foreach (var file in Directory.EnumerateFiles(basePath, "*", new EnumerationOptions() {
                 RecurseSubdirectories = true
             })) {
-                var driver = Load(file, basePath);
+                driver = Load(file, basePath);
                 if (driver != null) {
                     resamplers.Add(driver.Name, driver);
                 }

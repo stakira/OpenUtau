@@ -57,11 +57,16 @@
                          PointerMoved="KeyboardPointerMoved"
                          PointerReleased="KeyboardPointerReleased"/>
       <Grid Grid.Column="0" Grid.Row="4">
-        <c:ExpSelector Name="expSelector1" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top" Index="0" Margin="0,0,0,0"/>
-        <c:ExpSelector Name="expSelector2" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top" Index="1" Margin="0,22,0,0"/>
-        <c:ExpSelector Name="expSelector3" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top" Index="2" Margin="0,44,0,0"/>
-        <c:ExpSelector Name="expSelector4" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top" Index="3" Margin="0,66,0,0"/>
-        <c:ExpSelector Name="expSelector5" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top" Index="4" Margin="0,88,0,0"/>
+        <c:ExpSelector Name="expSelector1" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
+                       Index="0" Margin="0,0,0,0" ToolTip.Tip="Alt + 1"/>
+        <c:ExpSelector Name="expSelector2" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
+                       Index="1" Margin="0,22,0,0" ToolTip.Tip="Alt + 2"/>
+        <c:ExpSelector Name="expSelector3" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
+                       Index="2" Margin="0,44,0,0" ToolTip.Tip="Alt + 3"/>
+        <c:ExpSelector Name="expSelector4" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
+                       Index="3" Margin="0,66,0,0" ToolTip.Tip="Alt + 4"/>
+        <c:ExpSelector Name="expSelector5" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top"
+                       Index="4" Margin="0,88,0,0" ToolTip.Tip="Alt + 5"/>
       </Grid>
       <Canvas Name="TimelineCanvas" Grid.Row="1" Grid.Column="1"
               Background="Transparent" ClipToBounds="True"
