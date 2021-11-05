@@ -39,5 +39,9 @@ namespace OpenUtau.App.Controls {
         private void TextBlockPointerPressed(object sender, PointerPressedEventArgs e) {
             ((ExpSelectorViewModel)DataContext!).OnSelected();
         }
+
+        public void SelectExp() {
+            ((ExpSelectorViewModel)DataContext!).OnSelected();
+        }
     }
 }

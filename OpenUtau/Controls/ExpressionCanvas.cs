@@ -57,10 +57,12 @@ namespace OpenUtau.App.Controls {
 
         private HashSet<UNote> selectedNotes = new HashSet<UNote>();
         private Geometry pointGeometry;
+        private Geometry circleGeometry;
 
         public ExpressionCanvas() {
             ClipToBounds = true;
             pointGeometry = new EllipseGeometry(new Rect(-2.5, -2.5, 5, 5));
+            circleGeometry = new EllipseGeometry(new Rect(-4.5, -4.5, 9, 9));
             MessageBus.Current.Listen<NotesRefreshEvent>()
                 .Subscribe(_ => InvalidateVisual());
             MessageBus.Current.Listen<NotesSelectionEvent>()
@@ -98,6 +100,9 @@ namespace OpenUtau.App.Controls {
             }
             double leftTick = TickOffset - 480;
             double rightTick = TickOffset + Bounds.Width / TickWidth + 480;
+            double optionHeight = descriptor.type == UExpressionType.Options
+                ? Bounds.Height / descriptor.options.Length
+                : 0;
             foreach (UNote note in Part.notes) {
                 if (note.LeftBound >= rightTick || note.RightBound <= leftTick) {
                     continue;
@@ -112,12 +117,45 @@ namespace OpenUtau.App.Controls {
                     var (value, overriden) = phoneme.GetExpression(project, Key);
                     double x1 = Math.Round(viewModel.TickToneToPoint(note.position + phoneme.position, 0).X);
                     double x2 = Math.Round(viewModel.TickToneToPoint(note.position + phoneme.End, 0).X);
-                    double valueHeight = Math.Round(Bounds.Height - Bounds.Height * (value - descriptor.min) / (descriptor.max - descriptor.min));
-                    double zeroHeight = Math.Round(Bounds.Height - Bounds.Height * (0f - descriptor.min) / (descriptor.max - descriptor.min));
-                    context.DrawLine(vPen, new Point(x1 + 0.5, zeroHeight + 0.5), new Point(x1 + 0.5, valueHeight + 3));
-                    context.DrawLine(hPen, new Point(x1 + 3, valueHeight), new Point(Math.Max(x1 + 3, x2 - 3), valueHeight));
-                    using (var state = context.PushPreTransform(Matrix.CreateTranslation(x1 + 0.5, valueHeight))) {
-                        context.DrawGeometry(overriden ? brush : ThemeManager.BackgroundBrush, hPen, pointGeometry);
+                    if (descriptor.type == UExpressionType.Numerical) {
+                        double valueHeight = Math.Round(Bounds.Height - Bounds.Height * (value - descriptor.min) / (descriptor.max - descriptor.min));
+                        double zeroHeight = Math.Round(Bounds.Height - Bounds.Height * (0f - descriptor.min) / (descriptor.max - descriptor.min));
+                        context.DrawLine(vPen, new Point(x1 + 0.5, zeroHeight + 0.5), new Point(x1 + 0.5, valueHeight + 3));
+                        context.DrawLine(hPen, new Point(x1 + 3, valueHeight), new Point(Math.Max(x1 + 3, x2 - 3), valueHeight));
+                        using (var state = context.PushPreTransform(Matrix.CreateTranslation(x1 + 0.5, valueHeight))) {
+                            context.DrawGeometry(overriden ? brush : ThemeManager.BackgroundBrush, vPen, pointGeometry);
+                        }
+                    } else if (descriptor.type == UExpressionType.Options) {
+                        for (int i = 0; i < descriptor.options.Length; ++i) {
+                            double y = optionHeight * (descriptor.options.Length - 1 - i + 0.5);
+                            using (var state = context.PushPreTransform(Matrix.CreateTranslation(x1 + 4.5, y))) {
+                                if ((int)value == i) {
+                                    context.DrawGeometry(brush, null, pointGeometry);
+                                    context.DrawGeometry(null, hPen, circleGeometry);
+                                } else {
+                                    context.DrawGeometry(null, ThemeManager.NeutralAccentPenSemi, circleGeometry);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (descriptor.type == UExpressionType.Options) {
+                for (int i = 0; i < descriptor.options.Length; ++i) {
+                    string option = descriptor.options[i];
+                    if (string.IsNullOrEmpty(option)) {
+                        option = "\"\"";
+                    }
+                    var textLayout = TextLayoutCache.Get(option, ThemeManager.ForegroundBrush, 12);
+                    double y = optionHeight * (descriptor.options.Length - 1 - i + 0.5) - textLayout.Size.Height * 0.5;
+                    y = Math.Round(y);
+                    var size = new Size(textLayout.Size.Width + 8, textLayout.Size.Height + 2);
+                    using (var state = context.PushPreTransform(Matrix.CreateTranslation(12, y))) {
+                        context.DrawRectangle(
+                            ThemeManager.BackgroundBrush,
+                            ThemeManager.NeutralAccentPenSemi,
+                            new Rect(new Point(-4, -0.5), size), 4, 4);
+                        textLayout.Draw(context);
                     }
                 }
             }

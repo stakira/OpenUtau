@@ -34,6 +34,11 @@ namespace OpenUtau.App.Views {
         private LyricBox? lyricBox;
         private ContextMenu? pitchContextMenu;
         private bool openingPitchContextMenu;
+        private ExpSelector? expSelector1;
+        private ExpSelector? expSelector2;
+        private ExpSelector? expSelector3;
+        private ExpSelector? expSelector4;
+        private ExpSelector? expSelector5;
 
         public PianoRollWindow() {
             InitializeComponent();
@@ -51,6 +56,11 @@ namespace OpenUtau.App.Views {
             valueTipText = this.FindControl<TextBlock>("ValueTipText");
             lyricBox = this.FindControl<LyricBox>("LyricBox");
             pitchContextMenu = this.FindControl<ContextMenu>("PitchContextMenu");
+            expSelector1 = this.FindControl<ExpSelector>("expSelector1");
+            expSelector2 = this.FindControl<ExpSelector>("expSelector2");
+            expSelector3 = this.FindControl<ExpSelector>("expSelector3");
+            expSelector4 = this.FindControl<ExpSelector>("expSelector4");
+            expSelector5 = this.FindControl<ExpSelector>("expSelector5");
         }
 
         public void WindowDeactivated(object sender, EventArgs args) {
@@ -643,6 +653,11 @@ namespace OpenUtau.App.Views {
                 }
             } else if (args.KeyModifiers == KeyModifiers.Alt) {
                 switch (args.Key) {
+                    case Key.D1: expSelector1?.SelectExp(); args.Handled = true; break;
+                    case Key.D2: expSelector2?.SelectExp(); args.Handled = true; break;
+                    case Key.D3: expSelector3?.SelectExp(); args.Handled = true; break;
+                    case Key.D4: expSelector4?.SelectExp(); args.Handled = true; break;
+                    case Key.D5: expSelector5?.SelectExp(); args.Handled = true; break;
                     case Key.F4:
                         Hide();
                         args.Handled = true;

@@ -57,10 +57,11 @@
                          PointerMoved="KeyboardPointerMoved"
                          PointerReleased="KeyboardPointerReleased"/>
       <Grid Grid.Column="0" Grid.Row="4">
-        <c:ExpSelector HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top" Index="0" Margin="0,0,0,0"/>
-        <c:ExpSelector HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top" Index="1" Margin="0,22,0,0"/>
-        <c:ExpSelector HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top" Index="2" Margin="0,44,0,0"/>
-        <c:ExpSelector HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top" Index="3" Margin="0,66,0,0"/>
+        <c:ExpSelector Name="expSelector1" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top" Index="0" Margin="0,0,0,0"/>
+        <c:ExpSelector Name="expSelector2" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top" Index="1" Margin="0,22,0,0"/>
+        <c:ExpSelector Name="expSelector3" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top" Index="2" Margin="0,44,0,0"/>
+        <c:ExpSelector Name="expSelector4" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top" Index="3" Margin="0,66,0,0"/>
+        <c:ExpSelector Name="expSelector5" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Top" Index="4" Margin="0,88,0,0"/>
       </Grid>
       <Canvas Name="TimelineCanvas" Grid.Row="1" Grid.Column="1"
               Background="Transparent" ClipToBounds="True"
@@ -321,7 +322,8 @@
       <GridSplitter Grid.Row="3" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                     Background="{DynamicResource SystemControlBackgroundAltHighBrush}" Focusable="False" Cursor="SizeNorthSouth"/>
       <c:TrackBackground Grid.Row="4" Grid.Column="1" IsHitTestVisible="False"
-                         Foreground="{DynamicResource TrackBackgroundAltBrush}"/>
+                         Foreground="{DynamicResource TrackBackgroundAltBrush}"
+                         TrackHeight="{Binding NotesViewModel.ExpTrackHeight}"/>
       <c:TickBackground Grid.Row="4"  Grid.Column="1" IsHitTestVisible="False"
                         Foreground="{DynamicResource TickLineBrush}"
                         Background="{DynamicResource TickLineBrushLow}"
@@ -332,12 +334,13 @@
                         TickOrigin="{Binding NotesViewModel.TickOrigin}"
                         TickOffset="{Binding NotesViewModel.TickOffset}"
                         SnapUnit="{Binding NotesViewModel.SnapUnit}" IsPianoRoll="True"/>
-      <c:ExpressionCanvas Grid.Row="4" Grid.Column="1" Opacity="0.3"
+      <c:ExpressionCanvas Grid.Row="4" Grid.Column="1" Opacity="{Binding NotesViewModel.ExpShadowOpacity}"
                           TickWidth="{Binding NotesViewModel.TickWidth}"
                           TickOffset="{Binding NotesViewModel.TickOffset}"
                           Part="{Binding NotesViewModel.Part}"
                           Key="{Binding NotesViewModel.SecondaryKey}"/>
       <c:ExpressionCanvas Grid.Row="4" Grid.Column="1" Background="Transparent"
+                          Bounds="{Binding NotesViewModel.ExpBounds, Mode=OneWayToSource}"
                           TickWidth="{Binding NotesViewModel.TickWidth}"
                           TickOffset="{Binding NotesViewModel.TickOffset}"
                           Part="{Binding NotesViewModel.Part}"

@@ -454,10 +454,11 @@ namespace OpenUtau.App.Views {
             string key = notesVm.PrimaryKey;
             var descriptor = notesVm.Project.expressions[key];
             var hits = notesVm.HitTest.HitTestExpRange(p1, p2);
+            double viewMax = descriptor.max + (descriptor.type == UExpressionType.Options ? 1 : 0);
             foreach (var hit in hits) {
                 var valuePoint = notesVm.TickToneToPoint(hit.note.position + hit.phoneme.position, 0);
                 double y = Lerp(p1, p2, valuePoint.X);
-                double newValue = descriptor.min + (descriptor.max - descriptor.min) * (1 - y / canvas.Bounds.Height);
+                double newValue = descriptor.min + (viewMax - descriptor.min) * (1 - y / canvas.Bounds.Height);
                 newValue = Math.Max(descriptor.min, Math.Min(descriptor.max, newValue));
                 float value = hit.phoneme.GetExpression(notesVm.Project, key).Item1;
                 if ((int)newValue != (int)value) {
@@ -465,7 +466,7 @@ namespace OpenUtau.App.Views {
                         notesVm.Project, hit.phoneme, key, (int)newValue));
                 }
             }
-            double displayValue = descriptor.min + (descriptor.max - descriptor.min) * (1 - point.Y / canvas.Bounds.Height);
+            double displayValue = descriptor.min + (viewMax - descriptor.min) * (1 - point.Y / canvas.Bounds.Height);
             displayValue = Math.Max(descriptor.min, Math.Min(descriptor.max, displayValue));
             string valueTipText = string.Empty;
             if (descriptor.type == UExpressionType.Numerical) {
