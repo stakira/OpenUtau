@@ -332,3 +332,5 @@ ASALocalRun/
 OpenUtau.Test/Usts/*
 
 .DS_Store
+*.dmg
+appcast.*.xml

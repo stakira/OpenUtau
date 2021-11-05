@@ -16,7 +16,7 @@ artifacts:
   - path: changelog.txt
 deploy:
   release: OpenUtau-Latest
-  description: ''
+  description: v$(APPVEYOR_BUILD_VERSION)
   provider: GitHub
   auth_token:
     secure: VoTH2ml/pRgjLSGhfPO+NZfCoFzFcfrQjEIl/5+0UufeW6mEvccfwvef3gOaD2ke

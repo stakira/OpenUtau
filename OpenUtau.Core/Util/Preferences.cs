@@ -91,6 +91,8 @@ namespace OpenUtau.Core.Util {
             public string Language = string.Empty;
             public List<string> RecentFiles = new List<string>();
             public string SkipUpdate = string.Empty;
+            public string AdditionalSingerPath = string.Empty;
+            public bool PreferCommaSeparator = false;
         }
     }
 }

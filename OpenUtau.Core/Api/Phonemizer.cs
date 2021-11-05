@@ -63,7 +63,22 @@ namespace OpenUtau.Api {
             /// </summary>
             public int duration;
 
+            /// <summary>
+            /// Default phoneme attributes.
+            /// </summary>
+            public PhonemeAttributes defaultPhonemeAttributes;
+
+            /// <summary>
+            /// Phoneme overrides.
+            /// </summary>
+            public PhonemeAttributes[] phonemeOverrides;
+
             public override string ToString() => $"\"{lyric}\" pos:{position}";
+        }
+
+        public struct PhonemeAttributes {
+            public int index;
+            public float? velocity;
         }
 
         /// <summary>
@@ -83,6 +98,11 @@ namespace OpenUtau.Api {
             /// Use TickToMs() and MsToTick() to convert between ticks and milliseconds .
             /// </summary>
             public int position;
+
+            /// <summary>
+            /// Suggested attributes. May or may not be used eventually.
+            /// </summary>
+            public PhonemeAttributes attributes;
 
             public override string ToString() => $"\"{phoneme}\" pos:{position}";
         }
@@ -138,6 +158,8 @@ namespace OpenUtau.Api {
             this.beatUnit = beatUnit;
             this.resolution = resolution;
         }
+
+        public string PluginDir => PathManager.Inst.PluginsPath;
 
         /// <summary>
         /// Utility method to convert ticks to milliseconds.

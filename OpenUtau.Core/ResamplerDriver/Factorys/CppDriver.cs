@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.InteropServices;
 using Serilog;
 
@@ -96,18 +97,20 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys {
 
         readonly string DllPath = string.Empty;
         bool _isLegalPlugin = false;
+        public string Name { get; private set; }
         public string FilePath { get; }
 
-        public CppDriver(string DllPath) {
-            FilePath = DllPath;
-            IntPtr hModule = LoadLibrary(DllPath);
+        public CppDriver(string filePath, string basePath) {
+            FilePath = filePath;
+            Name = Path.GetRelativePath(basePath, filePath);
+            IntPtr hModule = LoadLibrary(filePath);
             if (hModule == IntPtr.Zero) {
                 _isLegalPlugin = false;
             } else {
                 IntPtr Resp = GetProcAddress(hModule, "DoResampler");
                 IntPtr Infp = GetProcAddress(hModule, "GetInformation");
                 if (Resp != IntPtr.Zero && Infp != IntPtr.Zero) {
-                    this.DllPath = DllPath;
+                    this.DllPath = filePath;
                     _isLegalPlugin = true;
                 }
                 FreeLibrary(hModule);
@@ -161,5 +164,7 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys {
             } catch {; }
             return ret;
         }
+
+        public void CheckPermissions() { }
     }
 }

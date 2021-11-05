@@ -37,10 +37,10 @@ namespace OpenUtau.Core {
         }
 
         public void SearchAllSingers() {
+            Directory.CreateDirectory(PathManager.Inst.SingersPath);
             var stopWatch = Stopwatch.StartNew();
             Singers = Formats.UtauSoundbank.FindAllSingers();
             SingersOrdered = Singers.Values.OrderBy(singer => singer.Name).ToList();
-            Directory.CreateDirectory(PathManager.Inst.GetEngineSearchPath());
             stopWatch.Stop();
             Log.Information($"Search all singers: {stopWatch.Elapsed}");
         }
@@ -66,7 +66,13 @@ namespace OpenUtau.Core {
             var phonemizerFactories = new List<PhonemizerFactory>();
             phonemizerFactories.Add(PhonemizerFactory.Get(typeof(DefaultPhonemizer)));
             Directory.CreateDirectory(PathManager.Inst.PluginsPath);
-            foreach (var file in Directory.EnumerateFiles(PathManager.Inst.PluginsPath, "*.dll", SearchOption.AllDirectories)) {
+            var files = Directory.EnumerateFiles(PathManager.Inst.PluginsPath, "*.dll", SearchOption.AllDirectories).ToList();
+            if (!OS.IsWindows()) {
+                var path = Path.GetDirectoryName(GetType().Assembly.Location);
+                files.InsertRange(0, Directory.EnumerateFiles(
+                    path, "*Plugin.Builtin.dll", SearchOption.TopDirectoryOnly));
+            }
+            foreach (var file in files) {
                 Assembly assembly;
                 try {
                     assembly = Assembly.LoadFile(file);
@@ -182,10 +188,12 @@ namespace OpenUtau.Core {
             for (int i = group.Commands.Count - 1; i >= 0; i--) {
                 var cmd = group.Commands[i];
                 cmd.Unexecute();
+                if (i == 0) {
+                    Project.Validate();
+                }
                 Publish(cmd, true);
             }
             redoQueue.AddToBack(group);
-            Project.Validate();
             ExecuteCmd(new PreRenderNotification());
         }
 
@@ -194,12 +202,15 @@ namespace OpenUtau.Core {
                 return;
             }
             var group = redoQueue.RemoveFromBack();
-            foreach (var cmd in group.Commands) {
+            for (var i = 0; i < group.Commands.Count; i++) {
+                var cmd = group.Commands[i];
                 cmd.Execute();
+                if (i == group.Commands.Count - 1) {
+                    Project.Validate();
+                }
                 Publish(cmd);
             }
             undoQueue.AddToBack(group);
-            Project.Validate();
             ExecuteCmd(new PreRenderNotification());
         }
 

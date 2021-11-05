@@ -1,0 +1,215 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <system:String x:Key="context.pitch.easein">Lähennä</system:String>
+  <system:String x:Key="context.pitch.easeinout">Lähennä/loitonna</system:String>
+  <system:String x:Key="context.pitch.easeout">Loitonna</system:String>
+  <system:String x:Key="context.pitch.linear">Lineaarinen</system:String>
+  <system:String x:Key="context.pitch.pointadd">Lisää kontrollipiste</system:String>
+  <system:String x:Key="context.pitch.pointdel">Poista kontrollipiste</system:String>
+  <system:String x:Key="context.pitch.pointsnapprev">Liimaudu kiinni edelliseen nuottiin</system:String>
+
+  <system:String x:Key="dialogs.about.caption">OpenUtausta</system:String>
+  <system:String x:Key="dialogs.about.message">
+        OpenUtaun tavoitteena on olla avoimen lähdekoodin editointiympäristö UTAU-yhteisölle, jossa on moderni käyttökokemus ja älykäs foneettinen tuki. Vieraile Githubissa.
+    </system:String>
+  <system:String x:Key="dialogs.exitsave.caption">Lopeta OpenUtau</system:String>
+  <system:String x:Key="dialogs.exitsave.message">Tämänhetkinen projekti sisältää tallentamattomia muutoksia. Haluatko tallentaa muutokset?</system:String>
+  <system:String x:Key="dialogs.export.caption">Vie</system:String>
+  <system:String x:Key="dialogs.export.savefirst">Muistathan tallentaa</system:String>
+  <system:String x:Key="dialogs.messagebox.cancel">Kumoa</system:String>
+  <system:String x:Key="dialogs.messagebox.no">Ei</system:String>
+  <!--<system:String x:Key="dialogs.messagebox.ok">Ok</system:String>-->
+  <system:String x:Key="dialogs.messagebox.yes">Kyllä</system:String>
+  <system:String x:Key="dialogs.noresampler.caption">Ei valittua resampleria</system:String>
+  <system:String x:Key="dialogs.noresampler.message">Resampleria ei löydetty! Laita resampler.exe tai dll- tiedosto Resamplers -kansioon ja valitse se sitten asetuksista.</system:String>
+
+  <system:String x:Key="errors.caption">Virhe</system:String>
+
+  <system:String x:Key="exps.abbr">Parametrin nimi</system:String>
+  <system:String x:Key="exps.apply">Lisää</system:String>
+  <system:String x:Key="exps.caption">Äänen sävy</system:String>
+  <system:String x:Key="exps.defaultvalue">Oletus</system:String>
+  <system:String x:Key="exps.flag">Flag</system:String>
+  <system:String x:Key="exps.isflag">Resampler Flag</system:String>
+  <system:String x:Key="exps.maxvalue">Maksimi</system:String>
+  <system:String x:Key="exps.minvalue">Minimi</system:String>
+  <system:String x:Key="exps.name">Nimi</system:String>
+  <system:String x:Key="exps.optionvalues">Kustomoidut arvot</system:String>
+  <system:String x:Key="exps.sepbycomma">Erottele arvot pilkulla ','</system:String>
+  <system:String x:Key="exps.type">Tyyppi</system:String>
+  <system:String x:Key="exps.type.numerical">Numeraalinen</system:String>
+  <system:String x:Key="exps.type.options">Kustomoi</system:String>
+
+  <system:String x:Key="menu.edit">Muokkaa</system:String>
+  <system:String x:Key="menu.edit.copy">Kopioi</system:String>
+  <system:String x:Key="menu.edit.cut">Leikkaa</system:String>
+  <system:String x:Key="menu.edit.delete">Poista</system:String>
+  <system:String x:Key="menu.edit.paste">Liitä</system:String>
+  <system:String x:Key="menu.edit.redo">Toista</system:String>
+  <system:String x:Key="menu.edit.selectall">Valitse kaikki</system:String>
+  <system:String x:Key="menu.edit.undo">Kumoa</system:String>
+  <system:String x:Key="menu.file">Tiedosto</system:String>
+  <system:String x:Key="menu.file.exit">Lopeta OpenUtau</system:String>
+  <system:String x:Key="menu.file.exportall">Vie kaikki</system:String>
+  <system:String x:Key="menu.file.exportust">Vie Ust-tiedostot</system:String>
+  <system:String x:Key="menu.file.importaudio">Tuo audio...</system:String>
+  <system:String x:Key="menu.file.importmidi">Tuo Midi-tiedosto...</system:String>
+  <system:String x:Key="menu.file.importtracks">Tuo raidat...</system:String>
+  <system:String x:Key="menu.file.new">Uusi</system:String>
+  <system:String x:Key="menu.file.newfromtemplate">Luo uusi mallista</system:String>
+  <system:String x:Key="menu.file.open">Avaa...</system:String>
+  <system:String x:Key="menu.file.openas">Avaa nimellä</system:String>
+  <system:String x:Key="menu.file.openrecent">Avaa viimeisin</system:String>
+  <system:String x:Key="menu.file.save">Tallenna</system:String>
+  <system:String x:Key="menu.file.saveas">Tallenna nimellä...</system:String>
+  <system:String x:Key="menu.file.savetemplate">Tallenna malli...</system:String>
+  <system:String x:Key="menu.help">Apua</system:String>
+  <system:String x:Key="menu.help.about">Tietoa OpenUtausta</system:String>
+  <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
+  <system:String x:Key="menu.tools">Työkalut</system:String>
+  <system:String x:Key="menu.tools.layout">Asettelu</system:String>
+  <system:String x:Key="menu.tools.layout.hsplit11">Vaakasuora 1:1</system:String>
+  <system:String x:Key="menu.tools.layout.hsplit12">Vaakasuora 1:2</system:String>
+  <system:String x:Key="menu.tools.layout.hsplit13">Vaakasuora 1:3</system:String>
+  <system:String x:Key="menu.tools.layout.vsplit11">Pystysuora 1:1</system:String>
+  <system:String x:Key="menu.tools.layout.vsplit12">Pystysuora 1:2</system:String>
+  <system:String x:Key="menu.tools.layout.vsplit13">Pystysuora 1:3</system:String>
+  <system:String x:Key="menu.tools.prefs">Asetukset...</system:String>
+  <system:String x:Key="menu.tools.project.expressions">Äänen sävy...</system:String>
+  <system:String x:Key="menu.tools.singer.install">Asenna laulaja...</system:String>
+  <system:String x:Key="menu.tools.singer.installadv">Asenna laulaja (lisäasetukset)...</system:String>
+  <system:String x:Key="menu.tools.singers">Laulajat...</system:String>
+
+  <!--<system:String x:Key="oto.alias">Alias</system:String>-->
+  <system:String x:Key="oto.consonant">Konsonantti</system:String>
+  <system:String x:Key="oto.cutoff">Leikkaus</system:String>
+  <system:String x:Key="oto.file">Tiedosto</system:String>
+  <system:String x:Key="oto.offset">Aloitus</system:String>
+  <system:String x:Key="oto.overlap">Päällekäisyys</system:String>
+  <system:String x:Key="oto.phonetic">Foneemi</system:String>
+  <system:String x:Key="oto.prefix">Etuliite</system:String>
+  <system:String x:Key="oto.preutter">Esiääntö</system:String>
+  <system:String x:Key="oto.set">Ryhmä</system:String>
+  <system:String x:Key="oto.suffix">Jälkiliite</system:String>
+  <system:String x:Key="oto.tags">Tagit</system:String>
+
+  <system:String x:Key="pianoroll.menu.lyrics">Sanoitus</system:String>
+  <!--<system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana to Romaji</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.lyrics.javcvtocv">Japanese VCV to CV</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Remove Letter Suffix</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">Remove Tone Suffix</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Romaji to Hiragana</system:String>-->
+  <system:String x:Key="pianoroll.menu.notes">Nuotit</system:String>
+  <system:String x:Key="pianoroll.menu.notes.addtaildash">lisää loppuun "-"</system:String>
+  <system:String x:Key="pianoroll.menu.notes.quantize15">sovita 1/128</system:String>
+  <system:String x:Key="pianoroll.menu.notes.quantize30">sovita 1/64</system:String>
+  <system:String x:Key="pianoroll.menu.part">Osa</system:String>
+  <!--<system:String x:Key="pianoroll.menu.part.legacypluginexp">Legacy Plugin (Experimental)</system:String>-->
+  <system:String x:Key="pianoroll.menu.part.rename">Nimeä uudelleen</system:String>
+  <system:String x:Key="pianoroll.toggle.phoneme">Näytä foneemit (O)</system:String>
+  <system:String x:Key="pianoroll.toggle.pitch">Näytä pitch-käyrä (I)</system:String>
+  <system:String x:Key="pianoroll.toggle.snap">Aktivoi kohdistus (P)</system:String>
+  <system:String x:Key="pianoroll.toggle.tips">Näytä vihjeet (T)</system:String>
+  <system:String x:Key="pianoroll.toggle.tone">Aktivoi opasääni (Y)</system:String>
+  <system:String x:Key="pianoroll.toggle.vibrato">Näytä vibrato (U)</system:String>
+  <system:String x:Key="pianoroll.tool.eraser">Pyyhekumityökalu (3)</system:String>
+  <system:String x:Key="pianoroll.tool.pen">Kynätyökalu (2)
+Piirrä vasemmalla hiiren klikkauksella
+Poista oikealla hiiren klikkauksella</system:String>
+  <system:String x:Key="pianoroll.tool.selection">Valitse työkalu(1)
+Aktivoi monivalinta pitämällä Ctrl pohjassa</system:String>
+  <system:String x:Key="pianoroll.tool.tagger">Taggaaja (4)
+Piirrä vasemmalla hiiren klikkauksella
+Poista oikealla hiiren klikkauksella</system:String>
+  <system:String x:Key="pianoroll.tool.tagger.setup">Aseta tageja</system:String>
+
+  <system:String x:Key="prefs.advanced">Lisäasetukset</system:String>
+  <system:String x:Key="prefs.advanced.beta">Beta versio</system:String>
+  <system:String x:Key="prefs.advanced.stable">Vakaa versio</system:String>
+  <system:String x:Key="prefs.appearance">Ulkonäkö</system:String>
+  <system:String x:Key="prefs.appearance.lang">Kieli</system:String>
+  <system:String x:Key="prefs.appearance.theme">Teema</system:String>
+  <system:String x:Key="prefs.appearance.theme.dark">Tumma</system:String>
+  <system:String x:Key="prefs.appearance.theme.light">Vaalea</system:String>
+  <system:String x:Key="prefs.caption">Asetukset</system:String>
+  <system:String x:Key="prefs.note.restart">HUOM: Käynnistäthän OpenUtau uudelleen muutettuasi tätä asetusta.</system:String>
+  <system:String x:Key="prefs.paths">Tiedoston sijainti</system:String>
+  <system:String x:Key="prefs.paths.add">Lisää</system:String>
+  <system:String x:Key="prefs.paths.remove">Poista</system:String>
+  <system:String x:Key="prefs.paths.singer">Laulajan sijainti</system:String>
+  <system:String x:Key="prefs.playback">Äänentoisto</system:String>
+  <system:String x:Key="prefs.playback.device">Äänentoistolaite</system:String>
+  <system:String x:Key="prefs.playback.test">Testaa</system:String>
+  <system:String x:Key="prefs.rendering">Renderöi</system:String>
+  <system:String x:Key="prefs.rendering.prerender.threads">Esirenderöidyt säkeet</system:String>
+  <system:String x:Key="prefs.rendering.resampler.export">Resamplerin vienti</system:String>
+  <system:String x:Key="prefs.rendering.resampler.note">
+    HUOM: Jos haluat käyttää ulkoisia resamplereita, lisää resampler DLL tai EXE-tiedosto Resamplers-kansioon, joka sijaitsee OpenUtaun polulla ja valitse se asetuksista.
+  </system:String>
+  <system:String x:Key="prefs.rendering.resampler.preview">Resamplerin esikatselu</system:String>
+  <system:String x:Key="prefs.rendering.resampler.warn">
+Varoitus: Moresampleria ei tueta vielä. Se on hidas ja voi kuormittaa suoritinta. Jos haluat jatkaa, noudatathan näitä ohjeita:
+1. Ota käyttöön "resampler-compatibility" moreconfig.txt -tiedostosta.
+2. Vähennä "pre-render threads" määrä yhteen tai kahteen.
+3. Odota esirenderöinnin päättymistä ennen toistoa.
+  </system:String>
+
+  <system:String x:Key="singers.caption">Laulajat</system:String>
+  <system:String x:Key="singers.location">Sijainti</system:String>
+  <system:String x:Key="singers.refresh">Päivitä</system:String>
+  <system:String x:Key="singers.setencoding">Määritä käytettävää merkistöä</system:String>
+  <system:String x:Key="singers.subbanks.add">Lisää</system:String>
+  <system:String x:Key="singers.subbanks.caption">Tagieditori</system:String>
+  <system:String x:Key="singers.subbanks.dir">Hakemisto</system:String>
+  <system:String x:Key="singers.subbanks.prefix">Etuliite</system:String>
+  <system:String x:Key="singers.subbanks.remove">Poista</system:String>
+  <system:String x:Key="singers.subbanks.reset">Nollaa</system:String>
+  <system:String x:Key="singers.subbanks.save">Tallenna</system:String>
+  <system:String x:Key="singers.subbanks.suffix">Jälkiliite</system:String>
+  <system:String x:Key="singers.subbanks.tags">Tagit</system:String>
+  <system:String x:Key="singers.subbanks.toneranges">Ääniala</system:String>
+
+  <system:String x:Key="tip.exps">
+Vasen hiiren klikkaus: Aseta äänen sävy
+Oikea hiiren klikkaus: Nollaa äänen sävy
+  </system:String>
+  <system:String x:Key="tip.lyricbox.next">Tab: Seuraava nuotti</system:String>
+  <system:String x:Key="tip.lyricbox.prev">Shift+Tab: Edellinen nuotti</system:String>
+  <system:String x:Key="tip.notes.basics">
+Valintatyökalu
+    Maalaa: Valitse nuotteja
+    Ctrl + Maalaa: Nuottien monivalinta
+    Ylös/alas: Transponoi valitut nuotit
+    Ctrl + ylös/alas: Transponoi valitut nuotit oktaavilla
+Kynätyökalu
+    Vasen klikkaus: Lisää nuotti
+    Oikea klikkaus: Poista nuotti
+    Oikea klikkaus pohjassa vetäen: Poista monta nuottia
+Yleiset
+    T: Näytä vihjeet
+    Vedä nuottia: liikuta nuottia
+    Vedä nuotin oikeaa reunaa: muuta nuotin pituutta
+    Alt + vedä nuotin oikeaa reunaa: muunna viereisen nuotin pituutta
+    Välilyönti: Toista ääni
+  </system:String>
+  <system:String x:Key="tip.notes.zoomx">◀ Selaa tästä zoomataaksesi vaakatasossa ▶</system:String>
+  <system:String x:Key="tip.notes.zoomy">Selaa tästä zoomataaksesi pystytasossa ▶</system:String>
+
+  <system:String x:Key="tracks.movedown">Liikuta alas</system:String>
+  <system:String x:Key="tracks.moveup">Liikuta ylös</system:String>
+  <system:String x:Key="tracks.remove">Poista</system:String>
+  <!--<system:String x:Key="tracks.selectsinger">Select Singer</system:String>-->
+
+  <!--<system:String x:Key="updater.caption">Check for Update</system:String>-->
+  <!--<system:String x:Key="updater.github">GitHub</system:String>-->
+  <!--<system:String x:Key="updater.status.available">Update v{0} available!</system:String>-->
+  <!--<system:String x:Key="updater.status.checking">Checking for updates...</system:String>-->
+  <!--<system:String x:Key="updater.status.notavailable">Up to date</system:String>-->
+  <!--<system:String x:Key="updater.status.unknown">Unable to check update</system:String>-->
+  <!--<system:String x:Key="updater.update">Update</system:String>-->
+
+  <system:String x:Key="warning">Varoitus</system:String>
+  <system:String x:Key="warning.asciipath">OpenUtau -kotihakemistossasi "{0}" sisältää ei-ASCII merkkejä. Exe resampler ei välttämättä toimi.</system:String>
+</ResourceDictionary>
