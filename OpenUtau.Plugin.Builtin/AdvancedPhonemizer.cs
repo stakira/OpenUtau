@@ -136,6 +136,7 @@ namespace OpenUtau.Plugin.Builtin {
 
         private static Dictionary<Type, G2pDictionary> dictionaries = new Dictionary<Type, G2pDictionary>();
         private const string FORCED_ALIAS_SYMBOL = "/";
+        private const string EXTENSION_SYMBOL = "...*";
 
         /// <summary>
         /// Returns list of vowels
@@ -238,6 +239,7 @@ namespace OpenUtau.Plugin.Builtin {
             if (symbols.Length == 0) {
                 symbols = new string[] { "" };
             }
+            symbols = ApplyExtensions(symbols, notes);
             List<int> vowelIds = ExtractVowels(symbols);
             if (vowelIds.Count == 0) {
                 // no syllables or all consonants, the last phoneme will be interpreted as vowel
@@ -282,6 +284,7 @@ namespace OpenUtau.Plugin.Builtin {
 
             // normal syllables after the first one
             var syllableI = 1;
+            var noteI = 1;
             var ccs = new List<string>();
             var position = 0;
             var lastVowelI = firstVowelId + 1;
@@ -295,9 +298,9 @@ namespace OpenUtau.Plugin.Builtin {
                         cc = ccs.ToArray(),
                         v = symbols[lastVowelI],
                         tone = word.syllables[syllableI - 1].vowelTone,
-                        duration = notes[syllableI - 1].duration,
+                        duration = notes[noteI - 1].duration,
                         position = position,
-                        vowelTone = notes[syllableI].tone
+                        vowelTone = notes[noteI].tone
                     };
                     ccs = new List<string>();
                     syllableI++;
@@ -315,6 +318,35 @@ namespace OpenUtau.Plugin.Builtin {
             };
 
             return word;
+        }
+
+        private string[] ApplyExtensions(string[] symbols, Note[] notes) {
+            var newSymbols = new List<string>();
+            var vowelIds = ExtractVowels(symbols);
+            var lastVowelI = 0;
+            newSymbols.AddRange(symbols.Take(vowelIds[lastVowelI] + 1));
+            for (var i = 1; i < notes.Length && i < notes.Length; i++) {
+                if (!IsExtensionNote(notes[i])) {
+                    var prevVowel = vowelIds[lastVowelI];
+                    lastVowelI++;
+                    var vowel = vowelIds[lastVowelI];
+                    newSymbols.AddRange(symbols.Skip(prevVowel + 1).Take(vowel - prevVowel));
+                }
+                else {
+                    newSymbols.Add(symbols[vowelIds[lastVowelI]]);
+                }
+            }
+            newSymbols.AddRange(symbols.Skip(vowelIds[lastVowelI] + 1));
+            return newSymbols.ToArray();
+        }
+
+        /// <summary>
+        /// Does this note extend the previous syllable?
+        /// </summary>
+        /// <param name="note"></param>
+        /// <returns></returns>
+        protected bool IsExtensionNote(Note note) {
+            return note.lyric.StartsWith("...~") || note.lyric.StartsWith("...*");
         }
 
         protected bool IsShort(Syllable syllable) {
