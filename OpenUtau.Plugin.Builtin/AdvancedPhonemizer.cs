@@ -19,6 +19,10 @@ namespace OpenUtau.Plugin.Builtin {
         protected struct Word {
             public Syllable[] syllables;
             public Ending ending;
+
+            public override string ToString() {
+                return $"{(syllables != null ? string.Join(",", syllables.Select(n => n.ToString())) : "")} {ending}";
+            }
         }
 
         /// <summary>
@@ -53,6 +57,10 @@ namespace OpenUtau.Plugin.Builtin {
             /// tone for base "vowel" phoneme
             /// </summary>
             public int vowelTone;
+
+            public override string ToString() {
+                return $"({prevV}) {(cc != null ? string.Join(" ", cc) : "")} {v}";
+            }
         }
 
         protected struct Ending {
@@ -76,17 +84,22 @@ namespace OpenUtau.Plugin.Builtin {
             /// the tone from last syllable, for all ending phonemes
             /// </summary>
             public int tone;
+
+
+            public override string ToString() {
+                return $"({prevV}) {(cc != null ? string.Join(" ", cc) : "")}";
+            }
         }
 
-        public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour) {
+        public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
             var mainNote = notes[0];
             if (mainNote.lyric.StartsWith(FORCED_ALIAS_SYMBOL)) {
                 return MakeForcedAliasResult(mainNote);
             }
 
             Word? prevWord = null;
-            if (prevNeighbour.HasValue && !prevNeighbour.Value.lyric.StartsWith(FORCED_ALIAS_SYMBOL)) {
-                prevWord = MakeWord(new Note[] { prevNeighbour.Value });
+            if (prevNeighbours.Length > 0 && !prevNeighbours[0].lyric.StartsWith(FORCED_ALIAS_SYMBOL)) {
+                prevWord = MakeWord(prevNeighbours);
             }
             var word = MakeWord(notes, prevWord);
 
@@ -122,7 +135,7 @@ namespace OpenUtau.Plugin.Builtin {
         protected G2pDictionary dictionary => dictionaries[GetType()];
 
         private static Dictionary<Type, G2pDictionary> dictionaries = new Dictionary<Type, G2pDictionary>();
-        private const string FORCED_ALIAS_SYMBOL = ".";
+        private const string FORCED_ALIAS_SYMBOL = "/";
 
         /// <summary>
         /// Returns list of vowels
@@ -239,7 +252,10 @@ namespace OpenUtau.Plugin.Builtin {
             // Making the first syllable
             if (prevWord.HasValue) {
                 var prevEnding = prevWord.Value.ending;
-                var beginningCc = prevEnding.cc.ToList();
+                // prev word comes in one note, so all syllables except the first one are in ending
+                // so we need to separate the vowels manually
+                var prevEndingVowels = ExtractVowels(prevEnding.cc);
+                var beginningCc = prevEndingVowels.Count == 0 ? prevEnding.cc.ToList() : prevEnding.cc.Skip(prevEndingVowels.Last()).ToList();
                 beginningCc.AddRange(symbols.Take(firstVowelId));
 
                 // If we had a prev neighbour, let's take info from it
@@ -269,15 +285,16 @@ namespace OpenUtau.Plugin.Builtin {
             var syllableI = 1;
             var ccs = new List<string>();
             var position = 0;
-            for (var i = firstVowelId + 1; i < symbols.Length & syllableI < notes.Length; i++) {
-                if (!vowelIds.Contains(i)) {
-                    ccs.Add(symbols[i]);
+            var lastVowelI = firstVowelId + 1;
+            for (; lastVowelI < symbols.Length & syllableI < notes.Length; lastVowelI++) {
+                if (!vowelIds.Contains(lastVowelI)) {
+                    ccs.Add(symbols[lastVowelI]);
                 } else {
                     position += notes[syllableI - 1].duration;
                     word.syllables[syllableI] = new Syllable() {
                         prevV = word.syllables[syllableI - 1].v,
                         cc = ccs.ToArray(),
-                        v = symbols[i],
+                        v = symbols[lastVowelI],
                         tone = word.syllables[syllableI - 1].vowelTone,
                         duration = notes[syllableI - 1].duration,
                         position = position,
@@ -289,11 +306,10 @@ namespace OpenUtau.Plugin.Builtin {
             }
 
             // making the ending
-            var lastVowelI = vowelIds.Last();
             var lastNote = notes.Last();
             word.ending = new Ending() {
                 prevV = word.syllables[syllableI - 1].v,
-                cc = symbols.Skip(lastVowelI + 1).ToArray(),
+                cc = symbols.Skip(lastVowelI).ToArray(),
                 tone = lastNote.tone,
                 duration = lastNote.duration,
                 position = position + lastNote.duration

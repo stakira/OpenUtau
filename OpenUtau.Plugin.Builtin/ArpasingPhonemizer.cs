@@ -90,7 +90,7 @@ namespace OpenUtau.Plugin.Builtin {
             mergedG2p = new G2pFallbacks(new IG2p[] { pluginDict, singerDict, cmudict }.OfType<IG2p>().ToArray());
         }
 
-        public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour) {
+        public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
             var note = notes[0];
             // Get the symbols of previous note.
             var prevSymbols = prevNeighbour == null ? null : GetSymbols(prevNeighbour.Value);

@@ -14,7 +14,7 @@ namespace OpenUtau.Plugin.Builtin {
         private Dictionary<string, string> consonants = new Dictionary<string, string>();
         private USinger singer;
 
-        public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour) {
+        public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
             string consonant = consonants.TryGetValue(notes[0].lyric, out consonant) ? consonant : notes[0].lyric;
             string prevVowel = prevNeighbour != null && vowels.TryGetValue(prevNeighbour.Value.lyric, out prevVowel) ? prevVowel : "-";
             if (notes[0].lyric == "-" || notes[0].lyric.ToLowerInvariant() == "r") {
