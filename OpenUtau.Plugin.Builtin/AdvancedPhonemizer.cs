@@ -174,11 +174,10 @@ namespace OpenUtau.Plugin.Builtin {
         protected virtual void Init() { }
 
         /// <summary>
-        /// Override and provide the dictionary path, if available
-        /// A file in CMU Dict format. Save it in Core/Api/Resources
+        /// Dictionary content. Expected to be stored in resources
         /// </summary>
         /// <returns></returns>
-        protected virtual string GetDictionaryPath() { return null; }
+        protected virtual string GetDictionary() { return null; }
 
         /// <summary>
         /// extracts array of phoneme symbols from note. Override for procedural dictionary or something
@@ -339,8 +338,8 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         private void ReadDictionary() {
-            var dictPath = GetDictionaryPath();
-            if (dictPath == null || !File.Exists(dictPath))
+            var dictionary = GetDictionary();
+            if (dictionary == null)
                 return;
             try {
                 var builder = G2pDictionary.NewBuilder();
@@ -354,7 +353,7 @@ namespace OpenUtau.Plugin.Builtin {
                 }
                 var replacements = GetDictionaryPhonemesReplacement();
 
-                File.ReadAllText(dictPath).Split('\n')
+                dictionary.Split('\n')
                         .Where(line => !line.StartsWith(";;;"))
                         .Select(line => line.Trim())
                         .Select(line => line.Split(new string[] { "  " }, StringSplitOptions.None))
