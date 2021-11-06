@@ -117,18 +117,26 @@ namespace OpenUtau.Plugin.Builtin {
         /// <summary>
         /// may be used to apply shorter aliases
         /// </summary>
-        protected double shortNoteThreshold = 120;
+        protected double shortNoteThreshold = 240;
         protected bool hasDictionary => dictionaries.ContainsKey(GetType());
         protected G2pDictionary dictionary => dictionaries[GetType()];
 
         private static Dictionary<Type, G2pDictionary> dictionaries = new Dictionary<Type, G2pDictionary>();
-        private const string FORCED_ALIAS_SYMBOL = "/";
+        private const string FORCED_ALIAS_SYMBOL = ".";
 
         /// <summary>
         /// Returns list of vowels
         /// </summary>
         /// <returns></returns>
         protected abstract string[] GetVowels();
+
+        /// <summary>
+        /// Returns list of consonants. Only needed if there is a dictionary
+        /// </summary>
+        /// <returns></returns>
+        protected virtual string[] GetConsonants() {
+            throw new NotImplementedException();
+        }
 
         /// <summary>
         /// returns phoneme symbols, like, VCV, or VC + CV, or -CV, etc
@@ -294,6 +302,14 @@ namespace OpenUtau.Plugin.Builtin {
             return word;
         }
 
+        protected bool IsShort(Syllable syllable) {
+            return syllable.duration != -1 && TickToMs(syllable.duration) < shortNoteThreshold;
+        }
+
+        protected bool IsShort(Ending ending) {
+            return TickToMs(ending.duration) < shortNoteThreshold;
+        }
+
         #region private
 
         private Result MakeForcedAliasResult(Note note) {
@@ -316,6 +332,10 @@ namespace OpenUtau.Plugin.Builtin {
                 foreach (var vowel in vowels) {
                     builder.AddSymbol(vowel, true);
                 }
+                var consonants = GetConsonants();
+                foreach (var consonant in consonants) {
+                    builder.AddSymbol(consonant, false);
+                }
                 var replacements = GetDictionaryPhonemesReplacement();
 
                 File.ReadAllText(dictPath).Split('\n')
@@ -325,13 +345,7 @@ namespace OpenUtau.Plugin.Builtin {
                         .Where(parts => parts.Length == 2)
                         .ToList()
                         .ForEach(parts => builder.AddEntry(parts[0].ToLowerInvariant(), parts[1].Split(" ").Select(
-                            n => {
-                                var result = replacements != null && replacements.ContainsKey(n) ? replacements[n] : n;
-                                if (!vowels.Contains(result))
-                                    builder.AddSymbol(result, false);
-                                return result;
-                                }
-                            )));
+                            n =>  replacements != null && replacements.ContainsKey(n) ? replacements[n] : n)));
                 var dict = builder.Build();
                 dictionaries[GetType()] = dict;
             }
