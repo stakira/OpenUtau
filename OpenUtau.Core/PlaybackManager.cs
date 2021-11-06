@@ -220,7 +220,7 @@ namespace OpenUtau.Core {
                         }
                         var file = PathManager.Inst.GetExportPath(project.FilePath, i + 1);
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exporting to {file}."));
-                        WaveFileWriter.CreateWaveFile16(file, new ExportAdapter(trackMixes[i]));
+                        WaveFileWriter.CreateWaveFile16(file, new ExportAdapter(trackMixes[i]).ToMono(1, 0));
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exported to {file}."));
                     }
                 });
