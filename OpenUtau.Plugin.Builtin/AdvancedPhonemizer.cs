@@ -416,12 +416,12 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         private int GetNoteLength(int phonemesCount, int containerLength = -1) {
-            var noteLength = 120.0;
+            var noteLength = this.bpm < 140 ? 120.0 : this.bpm < 190 ? 90 : this.bpm < 230 ? 60 : 45.0;
             if (containerLength == -1) {
                 return MsToTick(noteLength) / 15 * 15;
             }
 
-            var fullLength = noteLength * 1.5 + noteLength * phonemesCount;
+            var fullLength = noteLength * 2.5 + noteLength * phonemesCount;
             if (fullLength <= containerLength) {
                 return MsToTick(noteLength) / 15 * 15;
             }

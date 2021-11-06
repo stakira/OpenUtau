@@ -120,7 +120,7 @@ namespace OpenUtau.Api {
         public string Name { get; set; }
         public string Tag { get; set; }
 
-        private double bpm;
+        protected double bpm;
         private int beatUnit;
         private int resolution;
 
