@@ -18,6 +18,7 @@ namespace OpenUtau.Plugin.Builtin {
                 .Where(parts => parts.Length == 2)
                 .Where(parts => parts[0] != parts[1])
                 .ToDictionary(parts => parts[0], parts => parts[1]);
+        private readonly string[] noStartConsonants = "t,t',k,k',p,p',ch,ts".Split(",");
 
         protected override string[] GetVowels() => vowels;
         protected override string[] GetConsonants() => consonants;
@@ -42,11 +43,15 @@ namespace OpenUtau.Plugin.Builtin {
                     }
                     else {
                         basePhoneme = $"{cc[0]}{v}";
-                        phonemes.Add($"- {cc[0]}");
+                        if (!noStartConsonants.Contains(cc[0])) {
+                            phonemes.Add($"- {cc[0]}");
+                        }
                     }
                 } else {
                     basePhoneme = $"{cc.Last()}{v}";
-                    phonemes.Add($"- {cc[0]}");
+                    if (!noStartConsonants.Contains(cc[0])) {
+                        phonemes.Add($"- {cc[0]}");
+                    }
                 }
             } else if (cc.Length == 0) {
                 basePhoneme = $"{prevV} {v}";
