@@ -198,8 +198,15 @@ namespace OpenUtau.Plugin.Builtin {
                     return getSymbolsRaw(note.phoneticHint);
                 }
                 try {
-                    var result = dictionary.Query(note.lyric.Trim().ToLowerInvariant());
-                    return result != null ? result : new string[] { note.lyric };
+                    var result = new List<string>();
+                    foreach (var subword in note.lyric.Trim().ToLowerInvariant().Split(new string[] { " ", "_" }, StringSplitOptions.RemoveEmptyEntries)) {
+                        var subResult = dictionary.Query(subword);
+                        if (subResult == null) {
+                            throw new Exception("word not found");
+                        }
+                        result.AddRange(subResult);
+                    }
+                    return result.ToArray();
                 } catch {
                     return new string[] { note.lyric };
                 }
