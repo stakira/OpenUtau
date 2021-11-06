@@ -24,7 +24,8 @@ namespace OpenUtau.Core.Formats {
             project.RegisterExpression(new UExpressionDescriptor("breath", "bre", 0, 100, 0, "B"));
             project.RegisterExpression(new UExpressionDescriptor("lowpass", "lpf", 0, 100, 0, "H"));
             project.RegisterExpression(new UExpressionDescriptor("modulation", "mod", 0, 100, 0));
-            project.RegisterExpression(new UExpressionDescriptor("resampler engine", "eng", false, new string[] { "", "resampler.exe" }));
+            project.RegisterExpression(new UExpressionDescriptor("resampler engine", "eng", false,
+                new string[] { "", OS.IsWindows() ? "worldline.exe" : "worldline" }));
         }
 
         public static UProject Create() {

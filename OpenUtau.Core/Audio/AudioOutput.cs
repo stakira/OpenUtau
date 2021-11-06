@@ -112,11 +112,15 @@ namespace OpenUtau.Audio {
                     var device = GetEligibleOutputDevice(deviceNumber);
                     if (device is AudioDevice dev) {
                         audioEngine?.Dispose();
+                        double latency = dev.DefaultHighOutputLatency;
+                        if (OS.IsWindows() && latency < 0.1) {
+                            latency = 0.1;
+                        }
                         audioEngine = new AudioEngine(
                             dev,
                             Channels,
                             dev.DefaultSampleRate,
-                            dev.DefaultHighOutputLatency);
+                            latency);
                         DeviceNumber = deviceNumber;
                         buffer = new float[dev.DefaultSampleRate * Channels * 10 / 1000]; // 10ms at 44.1kHz
                     }

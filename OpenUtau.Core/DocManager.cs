@@ -75,6 +75,10 @@ namespace OpenUtau.Core {
             foreach (var file in files) {
                 Assembly assembly;
                 try {
+                    if (!LibraryLoader.IsManagedAssembly(file)) {
+                        Log.Information($"Skipping {file}");
+                        continue;
+                    }
                     assembly = Assembly.LoadFile(file);
                     foreach (var type in assembly.GetExportedTypes()) {
                         if (type.IsAbstract) {

@@ -47,11 +47,8 @@ namespace OpenUtau.Core.Formats {
             if (provider.WaveFormat.SampleRate != 44100) {
                 provider = new WdlResamplingSampleProvider(provider, 44100);
             }
-            if (provider.WaveFormat.Channels > 1) {
-                provider = new StereoToMonoSampleProvider(provider) {
-                    LeftVolume = 1,
-                    RightVolume = 0,
-                };
+            if (provider.WaveFormat.Channels > 2) {
+                provider = provider.ToStereo();
             }
             List<float> samples = new List<float>();
             float[] buffer = new float[128 * 1024];
