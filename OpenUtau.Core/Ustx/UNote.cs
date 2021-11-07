@@ -192,6 +192,15 @@ namespace OpenUtau.Core.Ustx {
                     prevIsNeighbour ? prev : null,
                     nextIsNeighbour ? next : null,
                     processorPrevs);
+            } catch (PhonemizerException e) {
+                Log.Error(e, "phonemizer catched error");
+                phonemizerResult = new Phonemizer.Result() {
+                    phonemes = new Phonemizer.Phoneme[] {
+                        new Phonemizer.Phoneme {
+                            phoneme = e.Message
+                        }
+                    }
+                };
             } catch (Exception e) {
                 Log.Error(e, "phonemizer error");
                 phonemizerResult = new Phonemizer.Result() {

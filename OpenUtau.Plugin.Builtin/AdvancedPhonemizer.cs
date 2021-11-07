@@ -132,7 +132,6 @@ namespace OpenUtau.Plugin.Builtin {
 
         private static Dictionary<Type, G2pDictionary> dictionaries = new Dictionary<Type, G2pDictionary>();
         private const string FORCED_ALIAS_SYMBOL = "/";
-        private const string EXTENSION_SYMBOL = "...*";
 
         /// <summary>
         /// Returns list of vowels
@@ -193,19 +192,15 @@ namespace OpenUtau.Plugin.Builtin {
                 if (!string.IsNullOrEmpty(note.phoneticHint)) {
                     return getSymbolsRaw(note.phoneticHint);
                 }
-                try {
-                    var result = new List<string>();
-                    foreach (var subword in note.lyric.Trim().ToLowerInvariant().Split(new string[] { " ", "_" }, StringSplitOptions.RemoveEmptyEntries)) {
-                        var subResult = dictionary.Query(subword);
-                        if (subResult == null) {
-                            throw new Exception("word not found");
-                        }
-                        result.AddRange(subResult);
+                var result = new List<string>();
+                foreach (var subword in note.lyric.Trim().ToLowerInvariant().Split(new string[] { " ", "_" }, StringSplitOptions.RemoveEmptyEntries)) {
+                    var subResult = dictionary.Query(subword);
+                    if (subResult == null) {
+                        throw new PhonemizerException("word not found");
                     }
-                    return result.ToArray();
-                } catch {
-                    return new string[] { note.lyric };
+                    result.AddRange(subResult);
                 }
+                return result.ToArray();
             }
             else {
                 return getSymbolsRaw(note.lyric);
@@ -249,8 +244,11 @@ namespace OpenUtau.Plugin.Builtin {
                 vowelIds.Add(symbols.Length - 1);
             }
             var firstVowelId = vowelIds[0];
+            if (notes.Length < vowelIds.Count) {
+                throw new PhonemizerException($"Not enough extension notes, {vowelIds.Count - notes.Length} more expected");
+            }
             Word word = new Word() {
-                syllables = new Syllable[Math.Min(notes.Length, vowelIds.Count)]
+                syllables = new Syllable[vowelIds.Count]
             };
 
             // Making the first syllable
@@ -328,7 +326,7 @@ namespace OpenUtau.Plugin.Builtin {
         /// </summary>
         /// <param name="note"></param>
         /// <returns></returns>
-        protected bool IsExtensionNote(Note note) {
+        protected bool IsSyllableExtensionNote(Note note) {
             return note.lyric.StartsWith("...~") || note.lyric.StartsWith("...*");
         }
 
@@ -397,6 +395,7 @@ namespace OpenUtau.Plugin.Builtin {
                     builder.AddSymbol(consonant, false);
                 }
                 var replacements = GetDictionaryPhonemesReplacement();
+                builder.AddEntry("a", new string[] { "a" });
 
                 dictionary.Split('\n')
                         .Where(line => !line.StartsWith(";;;"))
@@ -415,10 +414,14 @@ namespace OpenUtau.Plugin.Builtin {
         private string[] ApplyExtensions(string[] symbols, Note[] notes) {
             var newSymbols = new List<string>();
             var vowelIds = ExtractVowels(symbols);
+            if (vowelIds.Count == 0) {
+                // no syllables or all consonants, the last phoneme will be interpreted as vowel
+                vowelIds.Add(symbols.Length - 1);
+            }
             var lastVowelI = 0;
             newSymbols.AddRange(symbols.Take(vowelIds[lastVowelI] + 1));
-            for (var i = 1; i < notes.Length && i < notes.Length; i++) {
-                if (!IsExtensionNote(notes[i])) {
+            for (var i = 1; i < notes.Length && i < notes.Length && lastVowelI + 1 < vowelIds.Count; i++) {
+                if (!IsSyllableExtensionNote(notes[i])) {
                     var prevVowel = vowelIds[lastVowelI];
                     lastVowelI++;
                     var vowel = vowelIds[lastVowelI];

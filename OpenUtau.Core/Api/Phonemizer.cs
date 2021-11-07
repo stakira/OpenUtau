@@ -25,6 +25,15 @@ namespace OpenUtau.Api {
     }
 
     /// <summary>
+    /// Use for wrong user input. The message will be shown under the note
+    /// </summary>
+    public class PhonemizerException : Exception {
+
+        public PhonemizerException(string message) : base(message) { }
+
+    }
+
+    /// <summary>
     /// Phonemizer plugin interface.
     /// </summary>
     public abstract class Phonemizer {
