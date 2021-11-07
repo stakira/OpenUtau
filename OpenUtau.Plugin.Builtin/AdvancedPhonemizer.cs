@@ -362,6 +362,14 @@ namespace OpenUtau.Plugin.Builtin {
             return alias;
         }
 
+        /// <summary>
+        /// multiply if some transitions are supposed to be longer or shorter
+        /// </summary>
+        /// <returns></returns>
+        protected virtual double GetTransitionBasicLength(string alias = "") {
+            return this.bpm < 190 ? 105 : this.bpm < 250 ? 90 : this.bpm < 300 ? 75 : 60;
+        }
+
         #region private
 
         private Result MakeForcedAliasResult(Note note) {
@@ -434,8 +442,8 @@ namespace OpenUtau.Plugin.Builtin {
             return vowelIds;
         }
 
-        private int GetNoteLength(int phonemesCount, int containerLength = -1) {
-            var noteLength = GetTransitionBasicLength();
+        private int GetNoteLength(string alias, int phonemesCount, int containerLength = -1) {
+            var noteLength = GetTransitionBasicLength(alias);
             if (containerLength == -1) {
                 return (int)(noteLength / 5 * 5);
             }
@@ -447,20 +455,22 @@ namespace OpenUtau.Plugin.Builtin {
             return (int)(containerLength / fullLength * noteLength) / 5 * 5;
         }
 
-        private double GetTransitionBasicLength() {
-            return this.bpm < 140 ? 120 : this.bpm < 190 ? 105 : this.bpm < 250 ? 90 : this.bpm < 300 ? 75 : 60;
-        }
-
         private Phoneme[] MakePhonemes(List<string> phonemeSymbols, int containerLength, int position, int tone, int lastTone, bool isEnding) {
             var phonemes = new Phoneme[phonemeSymbols.Count];
-            var noteLengthTick = GetNoteLength(phonemeSymbols.Count - 1, containerLength);
+            var offset = 0;
             for (var i = 0; i < phonemeSymbols.Count; i++) {
-                var offset = isEnding ? i + 1 : phonemeSymbols.Count - i - 1;
-                var phonemeI = isEnding ? phonemeSymbols.Count - i - 1 : i;
+                var phonemeI = phonemeSymbols.Count - i - 1;
+                var validatedAlias = ValidateAlias(phonemeSymbols[phonemeI]);
+
+                var noteLengthTick = GetNoteLength(validatedAlias, isEnding ? phonemeSymbols.Count : phonemeSymbols.Count - 1, containerLength);
+                if (!isEnding && i == 0) {
+                    noteLengthTick = 0;
+                }
 
                 var currentTone = phonemeI == phonemeSymbols.Count - 1 ? lastTone : tone;
-                phonemes[phonemeI].phoneme = MapPhoneme(ValidateAlias(phonemeSymbols[phonemeI]), currentTone, singer);
-                phonemes[phonemeI].position = position - noteLengthTick * offset;
+                phonemes[phonemeI].phoneme = MapPhoneme(validatedAlias, currentTone, singer);
+                phonemes[phonemeI].position = position - noteLengthTick - offset;
+                offset += noteLengthTick;
             }
             return phonemes;
         }
