@@ -308,6 +308,8 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             }
 
+            position += notes.Skip(vowelIds.Count).Sum(n => n.duration);
+
             // making the ending
             var lastNote = notes.Last();
             word.ending = new Ending() {
