@@ -51,9 +51,9 @@ namespace OpenUtau.Plugins {
                     lyric = "a",
                     duration = 480,
                     position = 240,
-                    tone = 60,
+                    tone = 60
                 }
-            }, null, null, null, null);
+            }, null, null, null, null, new Phonemizer.Note[0]);
         }
     }
 
