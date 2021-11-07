@@ -48,7 +48,7 @@ namespace OpenUtau.Plugin.Builtin {
                     basePhoneme = $"-{cc.Last()}{v}";
                 }
                 for (var i = 0; i < cc.Length - 1; i++) {
-                    phonemes.Add($"-{cc[0]}");
+                    phonemes.Add($"-{cc[i]}");
                 }
             }
             else if (cc.Length == 0) {
