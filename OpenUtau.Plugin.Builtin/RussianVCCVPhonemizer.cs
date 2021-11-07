@@ -101,5 +101,24 @@ namespace OpenUtau.Plugin.Builtin {
             }
             return phonemes;
         }
+
+        // russian specific replacements
+        protected override string[] GetDictionaryWordPhonemes(string phonemesString) {
+            return base.GetDictionaryWordPhonemes(phonemesString.Replace("' ay", "' aa").Replace("ch ay", "ch aa").Replace("j ay", "j aa"));
+        }
+
+        protected override string ValidateAlias(string alias) {
+            foreach (var consonant in new[] { "'", "ch", "j" }) {
+                foreach (var vowel in new[] { "ax", "ex" }) {
+                    alias = alias.Replace(consonant + vowel, consonant + "x");
+                }
+                alias = alias.Replace(consonant + "y", consonant + "i");
+            }
+            foreach (var consonant in "b,v,g,d,z,k,l,m,n,p,r,s,t,f,h,w,j,ts".Split(",")) {
+                alias = alias.Replace(consonant + "i", consonant + "y");
+
+            }
+            return alias;
+        }
     }
 }

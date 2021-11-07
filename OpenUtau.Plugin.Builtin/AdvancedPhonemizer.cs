@@ -127,10 +127,6 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         protected USinger singer;
-        /// <summary>
-        /// may be used to apply shorter aliases
-        /// </summary>
-        protected double shortNoteThreshold = 240;
         protected bool hasDictionary => dictionaries.ContainsKey(GetType());
         protected G2pDictionary dictionary => dictionaries[GetType()];
 
@@ -327,26 +323,6 @@ namespace OpenUtau.Plugin.Builtin {
             return word;
         }
 
-        private string[] ApplyExtensions(string[] symbols, Note[] notes) {
-            var newSymbols = new List<string>();
-            var vowelIds = ExtractVowels(symbols);
-            var lastVowelI = 0;
-            newSymbols.AddRange(symbols.Take(vowelIds[lastVowelI] + 1));
-            for (var i = 1; i < notes.Length && i < notes.Length; i++) {
-                if (!IsExtensionNote(notes[i])) {
-                    var prevVowel = vowelIds[lastVowelI];
-                    lastVowelI++;
-                    var vowel = vowelIds[lastVowelI];
-                    newSymbols.AddRange(symbols.Skip(prevVowel + 1).Take(vowel - prevVowel));
-                }
-                else {
-                    newSymbols.Add(symbols[vowelIds[lastVowelI]]);
-                }
-            }
-            newSymbols.AddRange(symbols.Skip(vowelIds[lastVowelI] + 1));
-            return newSymbols.ToArray();
-        }
-
         /// <summary>
         /// Does this note extend the previous syllable?
         /// </summary>
@@ -356,12 +332,34 @@ namespace OpenUtau.Plugin.Builtin {
             return note.lyric.StartsWith("...~") || note.lyric.StartsWith("...*");
         }
 
+        /// <summary>
+        /// May be used if you have different logic for short and long notes
+        /// </summary>
+        /// <param name="syllable"></param>
+        /// <returns></returns>
         protected bool IsShort(Syllable syllable) {
-            return syllable.duration != -1 && TickToMs(syllable.duration) < shortNoteThreshold;
+            return syllable.duration != -1 && TickToMs(syllable.duration) < GetTransitionBasicLength() * 2;
+        }
+        protected bool IsShort(Ending ending) {
+            return TickToMs(ending.duration) < GetTransitionBasicLength() * 2;
         }
 
-        protected bool IsShort(Ending ending) {
-            return TickToMs(ending.duration) < shortNoteThreshold;
+        /// <summary>
+        /// Used to extract phonemes from CMU Dict word. Override if you need some extra logic
+        /// </summary>
+        /// <param name="phonemesString"></param>
+        /// <returns></returns>
+        protected virtual string[] GetDictionaryWordPhonemes(string phonemesString) {
+            return phonemesString.Split(' ');
+        }
+
+        /// <summary>
+        /// use to validate alias
+        /// </summary>
+        /// <param name="alias"></param>
+        /// <returns></returns>
+        protected virtual string ValidateAlias(string alias) {
+            return alias;
         }
 
         #region private
@@ -398,12 +396,31 @@ namespace OpenUtau.Plugin.Builtin {
                         .Select(line => line.Split(new string[] { "  " }, StringSplitOptions.None))
                         .Where(parts => parts.Length == 2)
                         .ToList()
-                        .ForEach(parts => builder.AddEntry(parts[0].ToLowerInvariant(), parts[1].Split(" ").Select(
+                        .ForEach(parts => builder.AddEntry(parts[0].ToLowerInvariant(), GetDictionaryWordPhonemes(parts[1]).Select(
                             n =>  replacements != null && replacements.ContainsKey(n) ? replacements[n] : n)));
                 var dict = builder.Build();
                 dictionaries[GetType()] = dict;
             }
             catch (Exception ex) { }
+        }
+
+        private string[] ApplyExtensions(string[] symbols, Note[] notes) {
+            var newSymbols = new List<string>();
+            var vowelIds = ExtractVowels(symbols);
+            var lastVowelI = 0;
+            newSymbols.AddRange(symbols.Take(vowelIds[lastVowelI] + 1));
+            for (var i = 1; i < notes.Length && i < notes.Length; i++) {
+                if (!IsExtensionNote(notes[i])) {
+                    var prevVowel = vowelIds[lastVowelI];
+                    lastVowelI++;
+                    var vowel = vowelIds[lastVowelI];
+                    newSymbols.AddRange(symbols.Skip(prevVowel + 1).Take(vowel - prevVowel));
+                } else {
+                    newSymbols.Add(symbols[vowelIds[lastVowelI]]);
+                }
+            }
+            newSymbols.AddRange(symbols.Skip(vowelIds[lastVowelI] + 1));
+            return newSymbols.ToArray();
         }
 
         private List<int> ExtractVowels(string[] symbols) {
@@ -417,22 +434,21 @@ namespace OpenUtau.Plugin.Builtin {
             return vowelIds;
         }
 
-        private string ValidateAlias(string alias) {
-            var aliasesFallback = GetAliasesFallback();
-            return aliasesFallback == null ? alias : aliasesFallback.ContainsKey(alias) ? aliasesFallback[alias] : alias;
-        }
-
         private int GetNoteLength(int phonemesCount, int containerLength = -1) {
-            var noteLength = this.bpm < 140 ? 120.0 : this.bpm < 190 ? 90 : this.bpm < 230 ? 60 : 45.0;
+            var noteLength = GetTransitionBasicLength();
             if (containerLength == -1) {
-                return MsToTick(noteLength) / 15 * 15;
+                return (int)(noteLength / 5 * 5);
             }
 
             var fullLength = noteLength * 2.5 + noteLength * phonemesCount;
             if (fullLength <= containerLength) {
-                return MsToTick(noteLength) / 15 * 15;
+                return (int)(noteLength / 5 * 5);
             }
-            return MsToTick(containerLength / fullLength * noteLength) / 15 * 15;
+            return (int)(containerLength / fullLength * noteLength) / 5 * 5;
+        }
+
+        private double GetTransitionBasicLength() {
+            return this.bpm < 140 ? 120 : this.bpm < 190 ? 105 : this.bpm < 250 ? 90 : this.bpm < 300 ? 75 : 60;
         }
 
         private Phoneme[] MakePhonemes(List<string> phonemeSymbols, int containerLength, int position, int tone, int lastTone, bool isEnding) {

@@ -59,7 +59,8 @@ namespace OpenUtau.Plugin.Builtin {
                 phonemes.Add($"{prevV}{cc[0]}"); ;
                 var offset = burstConsonants.Contains(cc[0]) ? 0 : 1;
                 for (var i = offset; i < cc.Length - 1; i++) {
-                    phonemes.Add(cc[i]);
+                    var cr = $"{cc[i]}-";
+                    phonemes.Add(HasOto(cr, syllable.tone) ? cr : cc[i]);
                 }
             }
             phonemes.Add(basePhoneme);
@@ -77,11 +78,23 @@ namespace OpenUtau.Plugin.Builtin {
             else {
                 phonemes.Add($"{v}{cc[0]}-");
                 for (var i = 1; i < cc.Length; i++) {
-                    phonemes.Add(cc[i]);
+                    var cr = $"{cc[i]}-";
+                    phonemes.Add(HasOto(cr, ending.tone) ? cr : cc[i]);
                 }
             }
 
             return phonemes;
+        }
+
+        // russian specific replacements
+        protected override string ValidateAlias(string alias) {
+            foreach (var consonant in new[] { "'", "~" }) {
+                alias = alias.Replace(consonant + "y", consonant + "i");
+            }
+            foreach (var consonant in "b,v,g,d,z,k,l,m,n,p,r,s,t,f,h,w,~,c".Split(",")) {
+                alias = alias.Replace(consonant + "i", consonant + "y");
+            }
+            return aliasesFallback.ContainsKey(alias) ? aliasesFallback[alias] : alias;
         }
 
     }
