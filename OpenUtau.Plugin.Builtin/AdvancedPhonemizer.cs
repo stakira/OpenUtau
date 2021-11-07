@@ -92,6 +92,7 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
+            error = "";
             var mainNote = notes[0];
             if (mainNote.lyric.StartsWith(FORCED_ALIAS_SYMBOL)) {
                 return MakeForcedAliasResult(mainNote);
@@ -101,7 +102,11 @@ namespace OpenUtau.Plugin.Builtin {
             if (prevNeighbours.Length > 0 && !prevNeighbours[0].lyric.StartsWith(FORCED_ALIAS_SYMBOL)) {
                 prevWord = MakeWord(prevNeighbours);
             }
-            var word = MakeWord(notes, prevWord);
+            var tryWord = MakeWord(notes, prevWord);
+            if (!tryWord.HasValue) {
+                return HandleError();
+            }
+            var word = tryWord.Value;
 
             var phonemes = new List<Phoneme>();
             foreach (var syllable in word.syllables) {
@@ -115,6 +120,16 @@ namespace OpenUtau.Plugin.Builtin {
 
             return new Result() {
                 phonemes = phonemes.ToArray()
+            };
+        }
+
+        private Result HandleError() {
+            return new Result {
+                phonemes = new Phoneme[] {
+                    new Phoneme() {
+                        phoneme = error
+                    }
+                }
             };
         }
 
@@ -132,6 +147,7 @@ namespace OpenUtau.Plugin.Builtin {
 
         private static Dictionary<Type, G2pDictionary> dictionaries = new Dictionary<Type, G2pDictionary>();
         private const string FORCED_ALIAS_SYMBOL = "/";
+        private string error = "";
 
         /// <summary>
         /// Returns list of vowels
@@ -196,7 +212,8 @@ namespace OpenUtau.Plugin.Builtin {
                 foreach (var subword in note.lyric.Trim().ToLowerInvariant().Split(new string[] { " ", "_" }, StringSplitOptions.RemoveEmptyEntries)) {
                     var subResult = dictionary.Query(subword);
                     if (subResult == null) {
-                        throw new PhonemizerException("word not found");
+                        error = "word not found";
+                        return null;
                     }
                     result.AddRange(subResult);
                 }
@@ -231,9 +248,12 @@ namespace OpenUtau.Plugin.Builtin {
         /// <param name="notes"></param>
         /// <param name="prevWord"></param>
         /// <returns></returns>
-        protected virtual Word MakeWord(Note[] notes, Word? prevWord = null) {
+        protected virtual Word? MakeWord(Note[] notes, Word? prevWord = null) {
             var mainNote = notes[0];
             var symbols = GetSymbols(mainNote);
+            if (symbols == null) {
+                return null;
+            }
             if (symbols.Length == 0) {
                 symbols = new string[] { "" };
             }
@@ -245,7 +265,8 @@ namespace OpenUtau.Plugin.Builtin {
             }
             var firstVowelId = vowelIds[0];
             if (notes.Length < vowelIds.Count) {
-                throw new PhonemizerException($"Not enough extension notes, {vowelIds.Count - notes.Length} more expected");
+                error = $"Not enough extension notes, {vowelIds.Count - notes.Length} more expected";
+                return null;
             }
             Word word = new Word() {
                 syllables = new Syllable[vowelIds.Count]
