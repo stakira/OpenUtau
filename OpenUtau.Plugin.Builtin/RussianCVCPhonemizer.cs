@@ -10,7 +10,7 @@ namespace OpenUtau.Plugin.Builtin {
 
         private readonly string[] vowels = "a,e,o,u,y,i,M,N".Split(",");
         private readonly string[] consonants = "b',b,v',v,g',g,d',d,z',z,k',k,l',l,m',m,n',n,p',p,r',r,s',s,t',t,f',f,h',h,w',w,j,~,c,4',".Split(",");
-        private readonly Dictionary<string, string> aliasesFallback = "ic=yc;y4'=y4;ij=yj;ic-=yc-;y4'-=y4-;ij-=yj-".Split(';')
+        private readonly Dictionary<string, string> aliasesFallback = "ic=yc;y4'=i4';ij=yj;ic-=yc-;y4'-=i4'-;ij-=yj-".Split(';')
                 .Select(entry => entry.Split('='))
                 .ToDictionary(parts => parts[0], parts => parts[1]);
         private readonly string[] burstConsonants = "t,t',k,k',p,p',4',c,b,b',g,g',d,d'".Split(",");
