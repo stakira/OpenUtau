@@ -8,7 +8,7 @@ using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("Chinese CVVC Phonemizer (WIP)", "ZH CVVC")]
+    [Phonemizer("Chinese CVVC Phonemizer", "ZH CVVC")]
     public class ChineseCVVCPhonemizer : Phonemizer {
         private Dictionary<string, string> vowels = new Dictionary<string, string>();
         private Dictionary<string, string> consonants = new Dictionary<string, string>();

@@ -48,7 +48,7 @@ namespace OpenUtau.Core.Render {
             foreach (var track in project.tracks) {
                 var trackItems = PrepareTrack(track, project, startTick).ToArray();
                 var sources = trackItems.Select(item => {
-                    var waveSource = new WaveSource(item.PosMs, item.DurMs, item.Envelope, item.SkipOver);
+                    var waveSource = new WaveSource(item.PosMs, item.DurMs, item.Envelope, item.SkipOver, 1);
                     item.OnComplete = data => waveSource.SetWaveData(data);
                     return waveSource;
                 }).ToList();
@@ -60,9 +60,11 @@ namespace OpenUtau.Core.Render {
                             project.TickToMillisecond(part.position),
                             project.TickToMillisecond(part.Duration),
                             null,
-                            part.skipMs);
+                            part.skipMs, part.channels);
                         if (part.Samples != null) {
                             waveSource.SetSamples(part.Samples);
+                        } else {
+                            waveSource.SetSamples(new float[0]);
                         }
                         return waveSource;
                     }));
@@ -91,7 +93,7 @@ namespace OpenUtau.Core.Render {
                 progress.Clear();
             });
             var master = new MasterAdapter(new WaveMix(faders));
-            master.SetPosition((int)(project.TickToMillisecond(startTick) * 44100 / 1000));
+            master.SetPosition((int)(project.TickToMillisecond(startTick) * 44100 / 1000) * 2);
             return Tuple.Create(master, faders, source, task);
         }
 
@@ -101,7 +103,7 @@ namespace OpenUtau.Core.Render {
                 var items = PrepareTrack(track, project, 0);
                 var progress = new Progress(items.Count());
                 var mix = new WaveMix(items.Select(item => {
-                    var waveSource = new WaveSource(item.PosMs, item.DurMs, item.Envelope, item.SkipOver);
+                    var waveSource = new WaveSource(item.PosMs, item.DurMs, item.Envelope, item.SkipOver, 1);
                     item.progress = progress;
                     item.OnComplete = data => waveSource.SetWaveData(data);
                     Resample(item);
