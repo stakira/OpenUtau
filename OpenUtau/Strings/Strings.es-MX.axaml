@@ -105,6 +105,7 @@
   <!--<system:String x:Key="oto.tags">Tags</system:String>-->
 
   <system:String x:Key="pianoroll.menu.lyrics">Letras</system:String>
+  <!--<system:String x:Key="pianoroll.menu.lyrics.edit">Edit Lyrics</system:String>-->
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana a Romaji</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">VCV a CV (Japonés)</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Quitar Sufijo de Letra</system:String>
@@ -145,9 +146,9 @@ Click derecho para borrar</system:String>
   <system:String x:Key="prefs.caption">Ajustes</system:String>
   <system:String x:Key="prefs.note.restart">Nota: Por favor, reinicia OpenUTAU después de cambiar esta opción.</system:String>
   <system:String x:Key="prefs.paths">Rutas</system:String>
-  <system:String x:Key="prefs.paths.add">Añadir</system:String>
-  <system:String x:Key="prefs.paths.remove">Borrar</system:String>
-  <system:String x:Key="prefs.paths.singer">Rutas de Voz</system:String>
+  <!--<system:String x:Key="prefs.paths.addlsinger">Additional Singer Path</system:String>-->
+  <!--<system:String x:Key="prefs.paths.reset">Reset</system:String>-->
+  <!--<system:String x:Key="prefs.paths.select">Select</system:String>-->
   <system:String x:Key="prefs.playback">Reproducción</system:String>
   <system:String x:Key="prefs.playback.device">Dispositivo de Reproducción</system:String>
   <system:String x:Key="prefs.playback.test">Probar</system:String>
@@ -164,6 +165,8 @@ Click derecho para borrar</system:String>
     2. Reduzca los hilos de pre-renderización a 1 o 2.
     3. Espere pacientemente a la pre-renderización antes de reproducir.
   </system:String>
+
+  <!--<system:String x:Key="progress.saved">Project saved. {0}</system:String>-->
 
   <system:String x:Key="singers.caption">Voces</system:String>
   <system:String x:Key="singers.location">Rutas</system:String>

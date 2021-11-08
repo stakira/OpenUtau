@@ -42,6 +42,15 @@
   <system:String x:Key="exps.type.numerical">数值</system:String>
   <system:String x:Key="exps.type.options">选项</system:String>
 
+  <system:String x:Key="lyrics.apply">应用</system:String>
+  <system:String x:Key="lyrics.cancel">取消</system:String>
+  <system:String x:Key="lyrics.caption">编辑歌词</system:String>
+  <system:String x:Key="lyrics.max">最多</system:String>
+  <system:String x:Key="lyrics.selectnotes">请先选择一些音符!</system:String>
+  <system:String x:Key="lyrics.separator.comma">逗号</system:String>
+  <system:String x:Key="lyrics.separator.linebreak">换行</system:String>
+  <system:String x:Key="lyrics.separator.space">空格</system:String>
+
   <system:String x:Key="menu.edit">编辑</system:String>
   <system:String x:Key="menu.edit.copy">复制</system:String>
   <system:String x:Key="menu.edit.cut">剪切</system:String>
@@ -96,6 +105,7 @@
   <system:String x:Key="oto.tags">标签</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">歌词</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.edit">编辑歌词</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">平假名转罗马音</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">日语 VCV 转 CV</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">去除字母后缀</system:String>
@@ -123,7 +133,7 @@
   <system:String x:Key="pianoroll.tool.tagger">标签工具 (4)
 鼠标左键绘制
 鼠标右键擦除</system:String>
-  <system:String x:Key="pianoroll.tool.tagger.setup">Setup Tags</system:String>
+  <!--<system:String x:Key="pianoroll.tool.tagger.setup">Setup Tags</system:String>-->
 
   <system:String x:Key="prefs.advanced">高级</system:String>
   <system:String x:Key="prefs.advanced.beta">Beta测试版</system:String>
@@ -136,9 +146,9 @@
   <system:String x:Key="prefs.caption">使用偏好</system:String>
   <system:String x:Key="prefs.note.restart">注意: 修改本项后请重启OpenUtau</system:String>
   <system:String x:Key="prefs.paths">路径</system:String>
-  <system:String x:Key="prefs.paths.add">添加</system:String>
-  <system:String x:Key="prefs.paths.remove">移除</system:String>
-  <system:String x:Key="prefs.paths.singer">歌手路径</system:String>
+  <system:String x:Key="prefs.paths.addlsinger">额外歌手搜索路径</system:String>
+  <system:String x:Key="prefs.paths.reset">清除</system:String>
+  <system:String x:Key="prefs.paths.select">选择</system:String>
   <system:String x:Key="prefs.playback">回放</system:String>
   <system:String x:Key="prefs.playback.device">回放设备</system:String>
   <system:String x:Key="prefs.playback.test">测试</system:String>
@@ -156,6 +166,8 @@
 3. 减少预渲染线程数至 1 或 2
 4. 预览前耐心等待预渲染完成
   </system:String>
+
+  <system:String x:Key="progress.saved">工程已保存 {0}</system:String>
 
   <system:String x:Key="singers.caption">歌手</system:String>
   <system:String x:Key="singers.location">位置</system:String>
@@ -204,7 +216,7 @@
   <system:String x:Key="tracks.selectsinger">选择歌手</system:String>
 
   <system:String x:Key="updater.caption">检查更新</system:String>
-  <system:String x:Key="updater.github">GitHub</system:String>
+  <!--<system:String x:Key="updater.github">GitHub</system:String>-->
   <system:String x:Key="updater.status.available">有新更新 v{0} !</system:String>
   <system:String x:Key="updater.status.checking">检查更新中...</system:String>
   <system:String x:Key="updater.status.notavailable">已更新至最新</system:String>

@@ -189,7 +189,7 @@
       <Border Grid.Row="1" Grid.Column="2" Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0" Height="24" PointerWheelChanged="ViewScalerPointerWheelChanged">
         <c:ViewScaler Name="VScaler" DataContext="{Binding TracksViewModel}" Value="{Binding TrackHeight}" Min="{Binding TrackHeightMin}" Max="{Binding TrackHeightMax}"/>
       </Border>
-      <TextBlock Grid.Row="3" Grid.ColumnSpan="3" VerticalAlignment="Center" HorizontalAlignment="Stretch" Height="20" Text="{Binding ProgressText}"/>
+      <TextBlock Grid.Row="3" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Height="20" Margin="4,4,4,0" Text="{Binding ProgressText}"/>
       <ProgressBar Grid.Row="4" Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Value="{Binding Progress}"/>
     </Grid>
   </Grid>

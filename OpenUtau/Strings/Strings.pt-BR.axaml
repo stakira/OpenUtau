@@ -45,7 +45,7 @@
   <system:String x:Key="lyrics.apply">Aplicar</system:String>
   <system:String x:Key="lyrics.cancel">Cancelar</system:String>
   <system:String x:Key="lyrics.caption">Editar Lírica</system:String>
-  <system:String x:Key="lyrics.max">Max</system:String>
+  <!--<system:String x:Key="lyrics.max">Max</system:String>-->
   <system:String x:Key="lyrics.selectnotes">Selecione as notas primeiro!</system:String>
   <system:String x:Key="lyrics.separator.comma">Vírgula</system:String>
   <system:String x:Key="lyrics.separator.linebreak">Quebra de linha</system:String>
@@ -105,8 +105,8 @@
   <!--<system:String x:Key="oto.tags">Tags</system:String>-->
 
   <system:String x:Key="pianoroll.menu.lyrics">Lírica</system:String>
-  <!--<system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana to Romaji</system:String>-->
   <system:String x:Key="pianoroll.menu.lyrics.edit">Editar Lírica</system:String>
+  <!--<system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana to Romaji</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.lyrics.javcvtocv">Japanese VCV to CV</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Remove Letter Suffix</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">Remove Tone Suffix</system:String>-->
@@ -149,7 +149,6 @@ Botão direito para apagar</system:String>
   <system:String x:Key="prefs.paths.addlsinger">Caminho Adicional de Vozes</system:String>
   <system:String x:Key="prefs.paths.reset">Redefinir</system:String>
   <system:String x:Key="prefs.paths.select">Selecionar</system:String>
-  <system:String x:Key="prefs.paths.add">Adicionar</system:String>
   <system:String x:Key="prefs.playback">Reprodução</system:String>
   <system:String x:Key="prefs.playback.device">Dispositivo de Reprodução</system:String>
   <system:String x:Key="prefs.playback.test">Teste</system:String>
@@ -166,6 +165,8 @@ Botão direito para apagar</system:String>
     2. Reduza as threads do pre-render para 1 ou 2.
     3. Pacientemente espere o pre-render finalizar antes de tocar.
   </system:String>
+
+  <!--<system:String x:Key="progress.saved">Project saved. {0}</system:String>-->
 
   <system:String x:Key="singers.caption">Vozes</system:String>
   <system:String x:Key="singers.location">Pasta</system:String>
