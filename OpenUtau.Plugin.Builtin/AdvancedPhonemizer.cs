@@ -309,22 +309,24 @@ namespace OpenUtau.Plugin.Builtin {
             var noteI = 1;
             var ccs = new List<string>();
             var position = 0;
-            var lastVowelI = firstVowelId + 1;
-            for (; lastVowelI < symbols.Length & syllableI < notes.Length; lastVowelI++) {
-                if (!vowelIds.Contains(lastVowelI)) {
-                    ccs.Add(symbols[lastVowelI]);
+            var lastSymbolI = firstVowelId + 1;
+            var lastVowelI = vowelIds[0];
+            for (; lastSymbolI < symbols.Length & syllableI < notes.Length; lastSymbolI++) {
+                if (!vowelIds.Contains(lastSymbolI)) {
+                    ccs.Add(symbols[lastSymbolI]);
                 } else {
                     position += notes[syllableI - 1].duration;
                     word.syllables[syllableI] = new Syllable() {
                         prevV = word.syllables[syllableI - 1].v,
                         cc = ccs.ToArray(),
-                        v = symbols[lastVowelI],
+                        v = symbols[lastSymbolI],
                         tone = word.syllables[syllableI - 1].vowelTone,
                         duration = notes[noteI - 1].duration,
                         position = position,
                         vowelTone = notes[noteI].tone
                     };
                     ccs = new List<string>();
+                    lastVowelI = lastSymbolI;
                     syllableI++;
                 }
             }
@@ -335,7 +337,7 @@ namespace OpenUtau.Plugin.Builtin {
             var lastNote = notes.Last();
             word.ending = new Ending() {
                 prevV = word.syllables[syllableI - 1].v,
-                cc = symbols.Skip(lastVowelI).ToArray(),
+                cc = symbols.Skip(lastVowelI + 1).ToArray(),
                 tone = lastNote.tone,
                 duration = lastNote.duration,
                 position = position + lastNote.duration
