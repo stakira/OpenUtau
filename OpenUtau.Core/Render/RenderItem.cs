@@ -5,6 +5,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using K4os.Hash.xxHash;
+using OpenUtau.Core.ResamplerDriver;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 
@@ -53,7 +54,8 @@ namespace OpenUtau.Core.Render {
                 }
                 string resampler = descriptor.options[index];
                 if (!string.IsNullOrEmpty(resampler)) {
-                    ResamplerName = resampler;
+                    var driver = ResamplerDrivers.GetResampler(resampler);
+                    ResamplerName = driver?.Name ?? resamplerName;
                 }
             }
             string ext = Path.GetExtension(SourceFile);

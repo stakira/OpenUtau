@@ -103,6 +103,16 @@ namespace OpenUtau.App.Views {
             dialog.ShowDialog(this);
         }
 
+        public void OnExpButtonClick(object sender, RoutedEventArgs args) {
+            var dialog = new ExpressionsDialog() {
+                DataContext = new ExpressionsViewModel(),
+            };
+            dialog.ShowDialog(this);
+            if (dialog.Position.Y < 0) {
+                dialog.Position = dialog.Position.WithY(0);
+            }
+        }
+
         public void KeyboardPointerWheelChanged(object sender, PointerWheelEventArgs args) {
             lyricBox?.EndEdit();
             var scrollbar = this.FindControl<ScrollBar>("VScrollBar");

@@ -186,7 +186,10 @@ namespace OpenUtau.Core.Render {
                 data = cache.Get(hash);
                 if (data == null) {
                     CopySourceTemp(item);
-                    var driver = ResamplerDrivers.GetResampler(item.ResamplerName) ?? this.driver;
+                    var driver = ResamplerDrivers.GetResampler(item.ResamplerName);
+                    if (driver == null) {
+                        throw new Exception($"Resampler {item.ResamplerName} not found.");
+                    }
                     data = driver.DoResampler(DriverModels.CreateInputModel(item, 0), Log.Logger);
                     if (data == null || data.Length == 0) {
                         throw new Exception("Empty render result.");
