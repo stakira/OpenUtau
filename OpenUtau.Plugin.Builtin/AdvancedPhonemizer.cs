@@ -212,8 +212,10 @@ namespace OpenUtau.Plugin.Builtin {
                 foreach (var subword in note.lyric.Trim().ToLowerInvariant().Split(new string[] { " ", "_" }, StringSplitOptions.RemoveEmptyEntries)) {
                     var subResult = dictionary.Query(subword);
                     if (subResult == null) {
-                        error = "word not found";
-                        return null;
+                        subResult = HandleWordNotFound(subword);
+                        if (subword == null) {
+                            return null;
+                        }
                     }
                     result.AddRange(subResult);
                 }
@@ -344,6 +346,16 @@ namespace OpenUtau.Plugin.Builtin {
             };
 
             return word;
+        }
+
+        /// <summary>
+        /// Override this method, if you want to implement some machine converting from a word to phonemes
+        /// </summary>
+        /// <param name="word"></param>
+        /// <returns></returns>
+        protected virtual string[] HandleWordNotFound(string word) {
+            error = "word not found";
+            return null;
         }
 
         /// <summary>
