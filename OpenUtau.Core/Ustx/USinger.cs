@@ -151,16 +151,22 @@ namespace OpenUtau.Core.Ustx {
             Location = Path.GetDirectoryName(voicebank.File);
             if (!string.IsNullOrEmpty(voicebank.Image)) {
                 Avatar = Path.Combine(Location, voicebank.Image);
-                try {
-                    using (var stream = new FileStream(Avatar, FileMode.Open)) {
-                        using (var memoryStream = new MemoryStream()) {
-                            stream.CopyTo(memoryStream);
-                            AvatarData = memoryStream.ToArray();
+                if (File.Exists(Avatar)) {
+                    try {
+                        using (var stream = new FileStream(Avatar, FileMode.Open)) {
+                            using (var memoryStream = new MemoryStream()) {
+                                stream.CopyTo(memoryStream);
+                                AvatarData = memoryStream.ToArray();
+                            }
                         }
+                    } catch (Exception e) {
+                        AvatarData = null;
+                        Log.Error(e, "Failed to load avatar data.");
                     }
-                } catch (Exception e) {
+                }
+                else {
                     AvatarData = null;
-                    Log.Error(e, "Failed to load avatar data.");
+                    Log.Error("Avatar can't be found");
                 }
             }
             if (!string.IsNullOrEmpty(voicebank.Portrait)) {
