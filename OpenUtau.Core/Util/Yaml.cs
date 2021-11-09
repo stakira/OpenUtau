@@ -1,4 +1,5 @@
-﻿using OpenUtau.Core.Ustx;
+﻿using OpenUtau.Classic;
+using OpenUtau.Core.Ustx;
 using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
 using YamlDotNet.Serialization;

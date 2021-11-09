@@ -102,7 +102,7 @@
   <system:String x:Key="oto.preutter">Preutter</system:String>
   <system:String x:Key="oto.set">Set</system:String>
   <system:String x:Key="oto.suffix">Suffix</system:String>
-  <system:String x:Key="oto.tags">Tags</system:String>
+  <system:String x:Key="oto.color">Color</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">Lyrics</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">Edit Lyrics</system:String>
@@ -176,12 +176,13 @@ Warning: moresampler is not fully supported. It may be slow and cause high CPU u
   <system:String x:Key="singers.subbanks.add">Add</system:String>
   <system:String x:Key="singers.subbanks.caption">Tag Editor</system:String>
   <system:String x:Key="singers.subbanks.dir">Directory</system:String>
+  <system:String x:Key="singers.subbanks.edit">Edit Subbanks</system:String>
   <system:String x:Key="singers.subbanks.prefix">Prefix</system:String>
   <system:String x:Key="singers.subbanks.remove">Remove</system:String>
   <system:String x:Key="singers.subbanks.reset">Reset</system:String>
   <system:String x:Key="singers.subbanks.save">Save</system:String>
   <system:String x:Key="singers.subbanks.suffix">Suffix</system:String>
-  <system:String x:Key="singers.subbanks.tags">Tags</system:String>
+  <system:String x:Key="singers.subbanks.color">Color</system:String>
   <system:String x:Key="singers.subbanks.toneranges">Tone Ranges</system:String>
 
   <system:String x:Key="tip.exps">

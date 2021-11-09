@@ -661,6 +661,11 @@ namespace OpenUtau.App.Views {
                     case Key.Down: notesVm.TransposeSelection(-12); args.Handled = true; break;
                     default: break;
                 }
+            } else if (args.KeyModifiers == (cmdKey | KeyModifiers.Shift)) {
+                switch (args.Key) {
+                    case Key.Z: ViewModel.Redo(); args.Handled = true; break;
+                    default: break;
+                }
             } else if (args.KeyModifiers == KeyModifiers.Alt) {
                 switch (args.Key) {
                     case Key.D1: expSelector1?.SelectExp(); args.Handled = true; break;

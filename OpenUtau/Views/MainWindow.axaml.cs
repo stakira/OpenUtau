@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
@@ -14,14 +13,12 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
-using NetSparkleUpdater.Enums;
 using OpenUtau.App.Controls;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Classic;
 using OpenUtau.Core;
 using OpenUtau.Core.Formats;
 using OpenUtau.Core.Ustx;
-using OpenUtau.Core.Util;
 using Serilog;
 using Point = Avalonia.Point;
 
@@ -382,6 +379,11 @@ namespace OpenUtau.App.Views {
                     case Key.S: _ = Save(); break;
                     case Key.Z: viewModel.Undo(); break;
                     case Key.Y: viewModel.Redo(); break;
+                    default: break;
+                }
+            } else if (args.KeyModifiers == (cmdKey | KeyModifiers.Shift)) {
+                switch (args.Key) {
+                    case Key.Z: viewModel.Redo(); break;
                     default: break;
                 }
             }

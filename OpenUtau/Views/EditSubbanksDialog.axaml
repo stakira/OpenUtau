@@ -1,0 +1,51 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:OpenUtau.App.ViewModels"
+        mc:Ignorable="d"
+        x:Class="OpenUtau.App.Views.EditSubbanksDialog"
+        Title="{DynamicResource singers.subbanks.edit}"
+        WindowStartupLocation="CenterScreen"
+        MinWidth="500" MinHeight="600" Width="500" Height="600"
+        ExtendClientAreaToDecorationsHint="False">
+  <Grid ColumnDefinitions="*,10,160" Margin="10">
+    <DataGrid Name="SuffixGrid" Grid.Column="0" SelectionMode="Extended" IsReadOnly="True"
+              CanUserReorderColumns="False" CanUserSortColumns="False"
+              Items="{Binding Rows}" AutoGenerateColumns="False">
+      <DataGrid.Columns>
+        <DataGridTextColumn Header="Tone" Width="*" Binding="{Binding Tone}"/>
+        <DataGridTextColumn Header="Prefix" Width="*" Binding="{Binding Prefix}"/>
+        <DataGridTextColumn Header="Suffix" Width="*" Binding="{Binding Suffix}">
+        </DataGridTextColumn>
+      </DataGrid.Columns>
+    </DataGrid>
+    <Grid Grid.Column="2">
+      <Grid RowDefinitions="Auto,*,Auto,*,Auto">
+        <StackPanel VerticalAlignment="Top" Grid.Row="0">
+          <ComboBox HorizontalAlignment="Stretch" Margin="0,0,0,4"
+                    Items="{Binding Colors}" SelectedItem="{Binding SelectedColor}"/>
+          <Button Content="Add Color" HorizontalAlignment="Stretch" Click="OnAdd"/>
+          <Button Content="Remove Color" HorizontalAlignment="Stretch" Click="OnRemove"
+                  IsEnabled="{Binding IsEditableColor}"/>
+          <Button Content="Rename" HorizontalAlignment="Stretch" Click="OnRename"
+                  IsEnabled="{Binding IsEditableColor}"/>
+        </StackPanel>
+        <StackPanel VerticalAlignment="Top" Grid.Row="2">
+          <Button Content="Select All" HorizontalAlignment="Stretch" Click="OnSelectAll"/>
+          <TextBlock Text="Prefix"/>
+          <TextBox Margin="0,4" Text="{Binding Prefix}"/>
+          <TextBlock Text="Suffix"/>
+          <TextBox Margin="0,4" Text="{Binding Suffix}"/>
+          <Button Content="Set" HorizontalAlignment="Stretch" Click="OnSet"/>
+          <Button Content="Clear" HorizontalAlignment="Stretch" Click="OnClear"/>
+        </StackPanel>
+        <StackPanel VerticalAlignment="Bottom" Grid.Row="4">
+          <Button Content="Reset" HorizontalAlignment="Stretch" Command="{Binding LoadSubbanks}"/>
+          <Button Content="Save" HorizontalAlignment="Stretch" Click="OnSave"/>
+          <Button Content="Cancel" Margin="0,4,0,0" HorizontalAlignment="Stretch" Click="OnCancel"/>
+        </StackPanel>
+      </Grid>
+    </Grid>
+  </Grid>
+</Window>
