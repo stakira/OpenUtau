@@ -538,37 +538,44 @@ namespace OpenUtau.Plugin.Builtin {
             return vowelIds;
         }
 
-        private int GetTransitionLengthTick(string alias, int tone, int phonemesCount, int containerLengthTick = -1) {
-            var basicLengthMs = GetTransitionBasicLengthMs(alias, tone);
-            if (containerLengthTick == -1) {
-                return MsToTick(basicLengthMs / 5 * 5);
-            }
-
-            var containerLengthMs = TickToMs(containerLengthTick);
-            var fullLengthMs = basicLengthMs * 2.5 + basicLengthMs * phonemesCount;
-            if (fullLengthMs <= containerLengthMs) {
-                return MsToTick(basicLengthMs / 5 * 5);
-            }
-            return MsToTick(containerLengthMs / fullLengthMs * basicLengthMs) / 5 * 5;
-        }
-
         private Phoneme[] MakePhonemes(List<string> phonemeSymbols, int containerLength, int position, int tone, int lastTone, bool isEnding) {
             var phonemes = new Phoneme[phonemeSymbols.Count];
-            var offset = 0;
             for (var i = 0; i < phonemeSymbols.Count; i++) {
                 var phonemeI = phonemeSymbols.Count - i - 1;
                 var validatedAlias = ValidateAlias(phonemeSymbols[phonemeI]);
 
-                var transitionLengthTick = GetTransitionLengthTick(validatedAlias, isEnding ? phonemeSymbols.Count : phonemeSymbols.Count - 1, containerLength);
+                var transitionLengthTick = MsToTick(GetTransitionBasicLengthMs(validatedAlias, tone));
                 if (!isEnding && i == 0) {
                     transitionLengthTick = 0;
                 }
 
                 var currentTone = phonemeI == phonemeSymbols.Count - 1 ? lastTone : tone;
                 phonemes[phonemeI].phoneme = MapPhoneme(validatedAlias, currentTone, singer);
-                phonemes[phonemeI].position = position - transitionLengthTick - offset;
-                offset += transitionLengthTick;
+                // yet it actually a length; will became position in ScalePhonemes
+                phonemes[phonemeI].position = transitionLengthTick;
             }
+            
+            return ScalePhonemes(phonemes, position, isEnding ? phonemeSymbols.Count : phonemeSymbols.Count - 1, containerLength);
+        }
+
+        private Phoneme[] ScalePhonemes(Phoneme[] phonemes, int startPosition, int phonemesCount, int containerLengthTick = -1) {
+            var offset = 0;
+            // reserved length for prev vowel, double length of a transition;
+            var containerSafeLengthTick = MsToTick(GetTransitionBasicLengthMsByConstant() * 2); 
+            var lengthModifier = 1.0;
+            if (containerLengthTick > 0) {
+                var allTransitionsLengthTick = phonemes.Sum(n => n.position);
+                if (allTransitionsLengthTick + containerSafeLengthTick > containerLengthTick) {
+                    lengthModifier = (double)containerLengthTick / (allTransitionsLengthTick + containerSafeLengthTick);
+                }
+            }
+
+            for (var i = phonemes.Length - 1; i >= 0; i--) {
+                var finalLengthTick = (int)(phonemes[i].position * lengthModifier) / 5 * 5;
+                phonemes[i].position = startPosition - finalLengthTick - offset;
+                offset += finalLengthTick;
+            }
+
             return phonemes;
         }
 
