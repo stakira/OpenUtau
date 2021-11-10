@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace OpenUtau.Plugin.Builtin {
     [Phonemizer("Russian CVC Phonemizer", "RU CVC", "Heiden.BZR")]
-    public class RussianCVCPhonemizer : AdvancedPhonemizer {
+    public class RussianCVCPhonemizer : SyllableBasedPhonemizer {
 
         private readonly string[] vowels = "a,e,o,u,y,i,M,N".Split(",");
         private readonly string[] consonants = "b',b,v',v,g',g,d',d,z',z,k',k,l',l,m',m,n',n,p',p,r',r,s',s,t',t,f',f,h',h,w',w,j,~,c,4',".Split(",");

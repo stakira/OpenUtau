@@ -10,7 +10,7 @@ namespace OpenUtau.Plugin.Builtin {
     /// Reclist by haku
     /// </summary>
     [Phonemizer("Polish CVC Phonemizer", "PL CVC", "Heiden.BZR")]
-    public class PolishCVCPhonemizer : AdvancedPhonemizer {
+    public class PolishCVCPhonemizer : SyllableBasedPhonemizer {
 
         private readonly string[] vowels = "a A e E i o u y".Split(" ");
         protected override string[] GetVowels() => vowels;
