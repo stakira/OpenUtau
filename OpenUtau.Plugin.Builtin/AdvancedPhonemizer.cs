@@ -8,8 +8,24 @@ using System.IO;
 
 namespace OpenUtau.Plugin.Builtin {
     /// <summary>
-    /// Use this class as a base for easier phonemizer configuration
-    /// Works for vb styles like VCV, VCCV, CVC etc, supports dictionary. 
+    /// Use this class as a base for easier phonemizer configuration. Works for vb styles like VCV, VCCV, CVC etc;
+    /// 
+    /// - Supports dictionary;
+    /// - Automatically align phonemes to notes;
+    /// - Supports syllable extension;
+    /// - Automatically calculates transition phonemes length, with constants by default,
+    /// but there is a pre-created function to use Oto value;
+    /// - The transition length is scaled based on Tempo and note length.
+    /// 
+    /// Note that here "Vowel" means "stretchable phoneme" and "Consonant" means "non-stretchable phoneme".
+    /// 
+    /// So if a diphthong is represented with several phonemes, like English "byke" -> [b a y k], 
+    /// then [a] as a stretchable phoneme would be a "Vowel", and [y] would be a "Consonant".
+    /// 
+    /// Some reclists have consonants that also may behave as vowels, like long "M" and "N". They are "Vowels".
+    /// 
+    /// If your oto hase same symbols for them, like "n" for stretchable "n" from a long note and "n" from CV,
+    /// then you can use a vitrual symbol [N], and then replace it with [n] in ValidateAlias().
     /// </summary>
     public abstract class AdvancedPhonemizer : Phonemizer {
 
@@ -144,10 +160,12 @@ namespace OpenUtau.Plugin.Builtin {
         protected USinger singer;
         protected bool hasDictionary => dictionaries.ContainsKey(GetType());
         protected G2pDictionary dictionary => dictionaries[GetType()];
+        protected double TransitionBasicLengthMs => 60;
 
         private static Dictionary<Type, G2pDictionary> dictionaries = new Dictionary<Type, G2pDictionary>();
-        private const string FORCED_ALIAS_SYMBOL = "/";
+        private const string FORCED_ALIAS_SYMBOL = "?";
         private string error = "";
+        private readonly string[] wordSeparators = new[] { " ", "_" };
 
         /// <summary>
         /// Returns list of vowels
@@ -209,7 +227,7 @@ namespace OpenUtau.Plugin.Builtin {
                     return getSymbolsRaw(note.phoneticHint);
                 }
                 var result = new List<string>();
-                foreach (var subword in note.lyric.Trim().ToLowerInvariant().Split(new string[] { " ", "_" }, StringSplitOptions.RemoveEmptyEntries)) {
+                foreach (var subword in note.lyric.Trim().ToLowerInvariant().Split(wordSeparators, StringSplitOptions.RemoveEmptyEntries)) {
                     var subResult = dictionary.Query(subword);
                     if (subResult == null) {
                         subResult = HandleWordNotFound(subword);
@@ -224,16 +242,6 @@ namespace OpenUtau.Plugin.Builtin {
             else {
                 return getSymbolsRaw(note.lyric);
             }
-        }
-
-        /// <summary>
-        /// Checks if mapped and validated alias exists in oto
-        /// </summary>
-        /// <param name="alias"></param>
-        /// <param name="note"></param>
-        /// <returns></returns>
-        protected bool HasOto(string alias, int tone) {
-            return singer.TryGetMappedOto(ValidateAlias(alias), tone, out _);
         }
 
         /// <summary>
@@ -363,20 +371,8 @@ namespace OpenUtau.Plugin.Builtin {
         /// </summary>
         /// <param name="note"></param>
         /// <returns></returns>
-        protected bool IsSyllableExtensionNote(Note note) {
+        protected bool IsSyllableVowelExtensionNote(Note note) {
             return note.lyric.StartsWith("...~") || note.lyric.StartsWith("...*");
-        }
-
-        /// <summary>
-        /// May be used if you have different logic for short and long notes
-        /// </summary>
-        /// <param name="syllable"></param>
-        /// <returns></returns>
-        protected bool IsShort(Syllable syllable) {
-            return syllable.duration != -1 && TickToMs(syllable.duration) < GetTransitionBasicLength() * 2;
-        }
-        protected bool IsShort(Ending ending) {
-            return TickToMs(ending.duration) < GetTransitionBasicLength() * 2;
         }
 
         /// <summary>
@@ -398,12 +394,81 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         /// <summary>
-        /// multiply if some transitions are supposed to be longer or shorter
+        /// Defines basic transition length before scaling it according to tempo and note length
+        /// Use GetTransitionBasicLengthMsByConstant, GetTransitionBasicLengthMsByOto or your own implementation
         /// </summary>
         /// <returns></returns>
-        protected virtual double GetTransitionBasicLength(string alias = "") {
-            return this.bpm < 190 ? 105 : this.bpm < 250 ? 90 : this.bpm < 300 ? 75 : 60;
+        protected virtual double GetTransitionBasicLengthMs(string alias = "", int tone = 64) {
+            return GetTransitionBasicLengthMsByConstant();
         }
+
+        protected double GetTransitionBasicLengthMsByOto(string alias, int tone) {
+            if (alias != null && alias.Length > 0 && singer.TryGetMappedOto(alias, tone, out var oto)) {
+                return oto.Preutter * GetTempoNoteLengthFactor();
+            } else {
+                return GetTransitionBasicLengthMsByConstant();
+            }
+        }
+
+        protected double GetTransitionBasicLengthMsByConstant() {
+            return TransitionBasicLengthMs * GetTempoNoteLengthFactor();
+        }
+
+        /// <summary>
+        /// a note length modifier, from 1 to 0.5. Used to make transition notes shorter on high tempo
+        /// </summary>
+        /// <returns></returns>
+        protected double GetTempoNoteLengthFactor() {
+            var result = (300 - Math.Clamp(bpm, 180, 300)) / (300 - 180) / 2 + 0.5;
+            if (result < 0.5 || result > 1)
+                return 1;
+            return result;
+        }
+
+        /// <summary>
+        /// Parses CMU dictionary, when phonemes are separated by spaces, and word vs phonemes are separated with two spaces,
+        /// and replaces phonemes with replacement table
+        /// </summary>
+        /// <param name="dictionaryText"></param>
+        /// <param name="builder"></param>
+        protected virtual void ParseDictionary(string dictionaryText, G2pDictionary.Builder builder) {
+            var replacements = GetDictionaryPhonemesReplacement();
+
+            dictionaryText.Split('\n')
+                    .Where(line => !line.StartsWith(";;;"))
+                    .Select(line => line.Trim())
+                    .Select(line => line.Split(new string[] { "  " }, StringSplitOptions.None))
+                    .Where(parts => parts.Length == 2)
+                    .ToList()
+                    .ForEach(parts => builder.AddEntry(parts[0].ToLowerInvariant(), GetDictionaryWordPhonemes(parts[1]).Select(
+                        n => replacements != null && replacements.ContainsKey(n) ? replacements[n] : n)));
+        }
+
+        #region helpers
+
+        /// <summary>
+        /// May be used if you have different logic for short and long notes
+        /// </summary>
+        /// <param name="syllable"></param>
+        /// <returns></returns>
+        protected bool IsShort(Syllable syllable) {
+            return syllable.duration != -1 && TickToMs(syllable.duration) < GetTransitionBasicLengthMs() * 2;
+        }
+        protected bool IsShort(Ending ending) {
+            return TickToMs(ending.duration) < GetTransitionBasicLengthMs() * 2;
+        }
+
+        /// <summary>
+        /// Checks if mapped and validated alias exists in oto
+        /// </summary>
+        /// <param name="alias"></param>
+        /// <param name="note"></param>
+        /// <returns></returns>
+        protected bool HasOto(string alias, int tone) {
+            return singer.TryGetMappedOto(ValidateAlias(alias), tone, out _);
+        }
+
+        #endregion
 
         #region private
 
@@ -418,8 +483,8 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         private void ReadDictionary() {
-            var dictionary = GetDictionary();
-            if (dictionary == null)
+            var dictionaryText = GetDictionary();
+            if (dictionaryText == null)
                 return;
             try {
                 var builder = G2pDictionary.NewBuilder();
@@ -431,17 +496,8 @@ namespace OpenUtau.Plugin.Builtin {
                 foreach (var consonant in consonants) {
                     builder.AddSymbol(consonant, false);
                 }
-                var replacements = GetDictionaryPhonemesReplacement();
                 builder.AddEntry("a", new string[] { "a" });
-
-                dictionary.Split('\n')
-                        .Where(line => !line.StartsWith(";;;"))
-                        .Select(line => line.Trim())
-                        .Select(line => line.Split(new string[] { "  " }, StringSplitOptions.None))
-                        .Where(parts => parts.Length == 2)
-                        .ToList()
-                        .ForEach(parts => builder.AddEntry(parts[0].ToLowerInvariant(), GetDictionaryWordPhonemes(parts[1]).Select(
-                            n =>  replacements != null && replacements.ContainsKey(n) ? replacements[n] : n)));
+                ParseDictionary(dictionaryText, builder);
                 var dict = builder.Build();
                 dictionaries[GetType()] = dict;
             }
@@ -457,8 +513,8 @@ namespace OpenUtau.Plugin.Builtin {
             }
             var lastVowelI = 0;
             newSymbols.AddRange(symbols.Take(vowelIds[lastVowelI] + 1));
-            for (var i = 1; i < notes.Length && i < notes.Length && lastVowelI + 1 < vowelIds.Count; i++) {
-                if (!IsSyllableExtensionNote(notes[i])) {
+            for (var i = 1; i < notes.Length && lastVowelI + 1 < vowelIds.Count; i++) {
+                if (!IsSyllableVowelExtensionNote(notes[i])) {
                     var prevVowel = vowelIds[lastVowelI];
                     lastVowelI++;
                     var vowel = vowelIds[lastVowelI];
@@ -482,17 +538,18 @@ namespace OpenUtau.Plugin.Builtin {
             return vowelIds;
         }
 
-        private int GetNoteLength(string alias, int phonemesCount, int containerLength = -1) {
-            var noteLength = GetTransitionBasicLength(alias);
-            if (containerLength == -1) {
-                return (int)(noteLength / 5 * 5);
+        private int GetTransitionLengthTick(string alias, int tone, int phonemesCount, int containerLengthTick = -1) {
+            var basicLengthMs = GetTransitionBasicLengthMs(alias, tone);
+            if (containerLengthTick == -1) {
+                return MsToTick(basicLengthMs / 5 * 5);
             }
 
-            var fullLength = noteLength * 2.5 + noteLength * phonemesCount;
-            if (fullLength <= containerLength) {
-                return (int)(noteLength / 5 * 5);
+            var containerLengthMs = TickToMs(containerLengthTick);
+            var fullLengthMs = basicLengthMs * 2.5 + basicLengthMs * phonemesCount;
+            if (fullLengthMs <= containerLengthMs) {
+                return MsToTick(basicLengthMs / 5 * 5);
             }
-            return (int)(containerLength / fullLength * noteLength) / 5 * 5;
+            return MsToTick(containerLengthMs / fullLengthMs * basicLengthMs) / 5 * 5;
         }
 
         private Phoneme[] MakePhonemes(List<string> phonemeSymbols, int containerLength, int position, int tone, int lastTone, bool isEnding) {
@@ -502,15 +559,15 @@ namespace OpenUtau.Plugin.Builtin {
                 var phonemeI = phonemeSymbols.Count - i - 1;
                 var validatedAlias = ValidateAlias(phonemeSymbols[phonemeI]);
 
-                var noteLengthTick = GetNoteLength(validatedAlias, isEnding ? phonemeSymbols.Count : phonemeSymbols.Count - 1, containerLength);
+                var transitionLengthTick = GetTransitionLengthTick(validatedAlias, isEnding ? phonemeSymbols.Count : phonemeSymbols.Count - 1, containerLength);
                 if (!isEnding && i == 0) {
-                    noteLengthTick = 0;
+                    transitionLengthTick = 0;
                 }
 
                 var currentTone = phonemeI == phonemeSymbols.Count - 1 ? lastTone : tone;
                 phonemes[phonemeI].phoneme = MapPhoneme(validatedAlias, currentTone, singer);
-                phonemes[phonemeI].position = position - noteLengthTick - offset;
-                offset += noteLengthTick;
+                phonemes[phonemeI].position = position - transitionLengthTick - offset;
+                offset += transitionLengthTick;
             }
             return phonemes;
         }

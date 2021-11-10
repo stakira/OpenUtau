@@ -120,18 +120,18 @@ namespace OpenUtau.Plugin.Builtin {
             return alias;
         }
 
-        protected override double GetTransitionBasicLength(string alias = "") {
+        protected override double GetTransitionBasicLengthMs(string alias = "", int tone = 64) {
             foreach (var c in shortConsonants) {
                 if (alias.EndsWith(c)) {
-                    return base.GetTransitionBasicLength() * 0.75;
+                    return base.GetTransitionBasicLengthMs() * 0.75;
                 }
             }
             foreach (var c in longConsonants) {
                 if (alias.EndsWith(c)) {
-                    return base.GetTransitionBasicLength() * 1.5;
+                    return base.GetTransitionBasicLengthMs() * 1.5;
                 }
             }
-            return base.GetTransitionBasicLength();
+            return base.GetTransitionBasicLengthMs();
         }
     }
 }
