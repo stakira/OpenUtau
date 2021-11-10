@@ -148,7 +148,7 @@ namespace OpenUtau.Plugin.Builtin {
         protected USinger singer;
         protected bool hasDictionary => dictionaries.ContainsKey(GetType());
         protected G2pDictionary dictionary => dictionaries[GetType()];
-        protected double TransitionBasicLengthMs => 60;
+        protected double TransitionBasicLengthMs => 100;
 
         private static Dictionary<Type, G2pDictionary> dictionaries = new Dictionary<Type, G2pDictionary>();
         private const string FORCED_ALIAS_SYMBOL = "?";
@@ -450,11 +450,11 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         /// <summary>
-        /// a note length modifier, from 1 to 0.5. Used to make transition notes shorter on high tempo
+        /// a note length modifier, from 1 to 0.3. Used to make transition notes shorter on high tempo
         /// </summary>
         /// <returns></returns>
         protected double GetTempoNoteLengthFactor() {
-            return (300 - Math.Clamp(bpm, 180, 300)) / (300 - 180) / 2 + 0.5;
+            return (300 - Math.Clamp(bpm, 90, 300)) / (300 - 90) / 3 + 0.33;
         }
 
         /// <summary>
