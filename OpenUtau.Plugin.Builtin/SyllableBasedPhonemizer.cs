@@ -419,10 +419,7 @@ namespace OpenUtau.Plugin.Builtin {
         /// </summary>
         /// <returns></returns>
         protected double GetTempoNoteLengthFactor() {
-            var result = (300 - Math.Clamp(bpm, 180, 300)) / (300 - 180) / 2 + 0.5;
-            if (result < 0.5 || result > 1)
-                return 1;
-            return result;
+            return (300 - Math.Clamp(bpm, 180, 300)) / (300 - 180) / 2 + 0.5;
         }
 
         /// <summary>
