@@ -243,12 +243,12 @@ namespace OpenUtau.Plugin.Builtin {
         /// <summary>
         /// separates symbols to syllables, without an ending.
         /// </summary>
-        /// <param name="notes"></param>
+        /// <param name="inputNotes"></param>
         /// <param name="prevWord"></param>
         /// <returns></returns>
-        protected virtual Syllable[] MakeSyllables(Note[] notes, Ending? prevEnding) {
-            (var symbols, var vowelIds) = GetSymbolsAndVowels(notes);
-            if (symbols == null || vowelIds == null) {
+        protected virtual Syllable[] MakeSyllables(Note[] inputNotes, Ending? prevEnding) {
+            (var symbols, var vowelIds, var notes) = GetSymbolsAndVowels(inputNotes);
+            if (symbols == null || vowelIds == null || notes == null) {
                 return null;
             }
             var firstVowelId = vowelIds[0];
@@ -294,7 +294,6 @@ namespace OpenUtau.Plugin.Builtin {
             var ccs = new List<string>();
             var position = 0;
             var lastSymbolI = firstVowelId + 1;
-            var lastVowelI = vowelIds[0];
             for (; lastSymbolI < symbols.Length & syllableI < notes.Length; lastSymbolI++) {
                 if (!vowelIds.Contains(lastSymbolI)) {
                     ccs.Add(symbols[lastSymbolI]);
@@ -310,7 +309,6 @@ namespace OpenUtau.Plugin.Builtin {
                         vowelTone = notes[noteI].tone
                     };
                     ccs = new List<string>();
-                    lastVowelI = lastSymbolI;
                     syllableI++;
                 }
             }
@@ -321,15 +319,15 @@ namespace OpenUtau.Plugin.Builtin {
         /// <summary>
         /// extracts word ending
         /// </summary>
-        /// <param name="notes"></param>
+        /// <param inputNotes="notes"></param>
         /// <returns></returns>
-        protected Ending? MakeEnding(Note[] notes) {
-            if (notes.Length == 0 || notes[0].lyric.StartsWith(FORCED_ALIAS_SYMBOL)) {
+        protected Ending? MakeEnding(Note[] inputNotes) {
+            if (inputNotes.Length == 0 || inputNotes[0].lyric.StartsWith(FORCED_ALIAS_SYMBOL)) {
                 return null;
             }
 
-            (var symbols, var vowelIds) = GetSymbolsAndVowels(notes);
-            if (symbols == null || vowelIds == null) {
+            (var symbols, var vowelIds, var notes) = GetSymbolsAndVowels(inputNotes);
+            if (symbols == null || vowelIds == null || notes == null) {
                 return null;
             }
 
@@ -347,11 +345,11 @@ namespace OpenUtau.Plugin.Builtin {
         /// </summary>
         /// <param name="notes"></param>
         /// <returns></returns>
-        private (string[], int[]) GetSymbolsAndVowels(Note[] notes) {
+        private (string[], int[], Note[]) GetSymbolsAndVowels(Note[] notes) {
             var mainNote = notes[0];
             var symbols = GetSymbols(mainNote);
             if (symbols == null) {
-                return (null, null);
+                return (null, null, null);
             }
             if (symbols.Length == 0) {
                 symbols = new string[] { "" };
@@ -362,7 +360,35 @@ namespace OpenUtau.Plugin.Builtin {
                 // no syllables or all consonants, the last phoneme will be interpreted as vowel
                 vowelIds.Add(symbols.Length - 1);
             }
-            return (symbols, vowelIds.ToArray());
+            if (notes.Length < vowelIds.Count) {
+                notes = HandleNotEnoughNotes(notes, vowelIds);
+            }
+            return (symbols, vowelIds.ToArray(), notes);
+        }
+
+        /// <summary>
+        /// When there are more syllables than notes, recombines notes to match syllables count
+        /// </summary>
+        /// <param name="notes"></param>
+        /// <param name="vowelIds"></param>
+        /// <returns></returns>
+        protected virtual Note[] HandleNotEnoughNotes(Note[] notes, List<int> vowelIds) {
+            var newNotes = new List<Note>();
+            newNotes.AddRange(notes.SkipLast(1));
+            var lastNote = notes.Last();
+            var position = lastNote.position;
+            var notesToSplit = vowelIds.Count - newNotes.Count;
+            var duration = lastNote.duration / notesToSplit / 15 * 15;
+            for (var i = 0; i < notesToSplit; i++) {
+                var durationFinal = i != notesToSplit - 1 ? duration : lastNote.duration - duration * (notesToSplit - 1);
+                newNotes.Add(new Note() {
+                    position = position,
+                    duration = durationFinal
+                });
+                position += durationFinal;
+            }
+
+            return newNotes.ToArray();
         }
 
         /// <summary>
@@ -565,7 +591,7 @@ namespace OpenUtau.Plugin.Builtin {
 
                 var currentTone = phonemeI == phonemeSymbols.Count - 1 ? lastTone : tone;
                 phonemes[phonemeI].phoneme = MapPhoneme(validatedAlias, currentTone, singer);
-                // yet it actually a length; will became position in ScalePhonemes
+                // yet it's actually a length; will became position in ScalePhonemes
                 phonemes[phonemeI].position = transitionLengthTick;
             }
             
