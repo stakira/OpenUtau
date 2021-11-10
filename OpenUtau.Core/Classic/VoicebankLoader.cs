@@ -315,7 +315,12 @@ namespace OpenUtau.Classic {
             };
             if (string.IsNullOrEmpty(result.Alias)) {
                 var ext = Path.GetExtension(wav);
-                result.Alias = wav.Replace(ext, "");
+                if (!string.IsNullOrEmpty(ext)) {
+                    result.Alias = wav.Replace(ext, "");
+                }
+                else {
+                    result.Alias = wav;
+                }
             }
             result.Phonetic = result.Alias;
             if (!ParseDouble(parts.Length < 2 ? null : parts[1], out result.Offset)) {

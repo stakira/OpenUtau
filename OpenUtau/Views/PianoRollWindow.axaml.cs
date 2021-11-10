@@ -103,6 +103,16 @@ namespace OpenUtau.App.Views {
             dialog.ShowDialog(this);
         }
 
+        public void OnExpButtonClick(object sender, RoutedEventArgs args) {
+            var dialog = new ExpressionsDialog() {
+                DataContext = new ExpressionsViewModel(),
+            };
+            dialog.ShowDialog(this);
+            if (dialog.Position.Y < 0) {
+                dialog.Position = dialog.Position.WithY(0);
+            }
+        }
+
         public void KeyboardPointerWheelChanged(object sender, PointerWheelEventArgs args) {
             lyricBox?.EndEdit();
             var scrollbar = this.FindControl<ScrollBar>("VScrollBar");
@@ -649,6 +659,11 @@ namespace OpenUtau.App.Views {
                     case Key.V: notesVm.PasteNotes(); args.Handled = true; break;
                     case Key.Up: notesVm.TransposeSelection(12); args.Handled = true; break;
                     case Key.Down: notesVm.TransposeSelection(-12); args.Handled = true; break;
+                    default: break;
+                }
+            } else if (args.KeyModifiers == (cmdKey | KeyModifiers.Shift)) {
+                switch (args.Key) {
+                    case Key.Z: ViewModel.Redo(); args.Handled = true; break;
                     default: break;
                 }
             } else if (args.KeyModifiers == KeyModifiers.Alt) {

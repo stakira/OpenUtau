@@ -102,9 +102,10 @@
   <system:String x:Key="oto.preutter">Precedente</system:String>
   <system:String x:Key="oto.set">Aplicar</system:String>
   <system:String x:Key="oto.suffix">Sufijo</system:String>
-  <!--<system:String x:Key="oto.tags">Tags</system:String>-->
+  <system:String x:Key="oto.color">Color</system:String>
 
-  <system:String x:Key="pianoroll.menu.lyrics">Letras</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics">Letra</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.edit">Editar Letra</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana a Romaji</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">VCV a CV (Japonés)</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Quitar Sufijo de Letra</system:String>
@@ -145,9 +146,9 @@ Click derecho para borrar</system:String>
   <system:String x:Key="prefs.caption">Ajustes</system:String>
   <system:String x:Key="prefs.note.restart">Nota: Por favor, reinicia OpenUTAU después de cambiar esta opción.</system:String>
   <system:String x:Key="prefs.paths">Rutas</system:String>
-  <system:String x:Key="prefs.paths.add">Añadir</system:String>
-  <system:String x:Key="prefs.paths.remove">Borrar</system:String>
-  <system:String x:Key="prefs.paths.singer">Rutas de Voz</system:String>
+  <system:String x:Key="prefs.paths.addlsinger">Ruta de Voces Adicional</system:String>
+  <system:String x:Key="prefs.paths.reset">Restablecer</system:String>
+  <system:String x:Key="prefs.paths.select">Seleccionar</system:String>
   <system:String x:Key="prefs.playback">Reproducción</system:String>
   <system:String x:Key="prefs.playback.device">Dispositivo de Reproducción</system:String>
   <system:String x:Key="prefs.playback.test">Probar</system:String>
@@ -161,9 +162,12 @@ Click derecho para borrar</system:String>
   <system:String x:Key="prefs.rendering.resampler.warn">
     Alerta: Moresampler no es compatible (por ahora). Este será muy lento, y causará un alto uso de la CPU. Si usted insiste en usarlo, por favor:
     1. Ponga "resampler-compatibility" como "on" en moreconfig.txt.
-    2. Reduzca los hilos de pre-renderización a 1 o 2.
-    3. Espere pacientemente a la pre-renderización antes de reproducir.
+    2. Ponga "auto-update-llsm-mrq" como "off" en moreconfig.txt.
+    3. Reduzca los hilos de pre-renderización a 1 o 2.
+    4. Espere pacientemente a la pre-renderización antes de reproducir.
   </system:String>
+
+  <system:String x:Key="progress.saved">Proyecto guardado. {0}</system:String>
 
   <system:String x:Key="singers.caption">Voces</system:String>
   <system:String x:Key="singers.location">Rutas</system:String>
@@ -172,12 +176,13 @@ Click derecho para borrar</system:String>
   <system:String x:Key="singers.subbanks.add">Agregar</system:String>
   <system:String x:Key="singers.subbanks.caption">Editor de Etiquetas</system:String>
   <system:String x:Key="singers.subbanks.dir">Directorio</system:String>
+  <system:String x:Key="singers.subbanks.edit">Editar Sub-bancos de Voz</system:String>
   <system:String x:Key="singers.subbanks.prefix">Prefijo</system:String>
   <system:String x:Key="singers.subbanks.remove">Quitar</system:String>
   <system:String x:Key="singers.subbanks.reset">Reestablecer</system:String>
   <system:String x:Key="singers.subbanks.save">Guardar</system:String>
   <system:String x:Key="singers.subbanks.suffix">Sufijo</system:String>
-  <system:String x:Key="singers.subbanks.tags">Etiquetas</system:String>
+  <system:String x:Key="singers.subbanks.color">Color</system:String>
   <system:String x:Key="singers.subbanks.toneranges">Rangos Tonales</system:String>
 
   <system:String x:Key="tip.exps">
@@ -212,7 +217,7 @@ General
   <system:String x:Key="tracks.selectsinger">Seleccionar Voz</system:String>
 
   <system:String x:Key="updater.caption">Buscar Actualizaciones</system:String>
-  <!--<system:String x:Key="updater.github">GitHub</system:String>-->
+  <system:String x:Key="updater.github">Abrir GitHub</system:String>
   <system:String x:Key="updater.status.available">Actualización Disponible (v{0})</system:String>
   <system:String x:Key="updater.status.checking">Buscando Actualizaciones...</system:String>
   <system:String x:Key="updater.status.notavailable">OpenUTAU esta actualizado</system:String>

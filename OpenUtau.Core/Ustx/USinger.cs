@@ -14,11 +14,10 @@ namespace OpenUtau.Core.Ustx {
         public string Alias => oto.Alias;
         public string Phonetic => oto.Phonetic;
         public string Set => set.Name;
+        public string Color => subbank.Color;
         public string Prefix => subbank.Prefix;
         public string Suffix => subbank.Suffix;
         public SortedSet<int> ToneSet => subbank.toneSet;
-        public string[] Tags => subbank.Tags;
-        public string TagsString => subbank.TagsString;
         public string File => Path.Combine(set.Location, oto.Wav);
         public string DisplayFile => oto.Wav;
         public double Offset => oto.Offset;
@@ -57,6 +56,10 @@ namespace OpenUtau.Core.Ustx {
     }
 
     public class USubbank {
+        public string Color {
+            get => subbank.Color;
+            set => subbank.Color = value;
+        }
         public string Prefix {
             get => subbank.Prefix;
             set => subbank.Prefix = value;
@@ -72,20 +75,11 @@ namespace OpenUtau.Core.Ustx {
                 toneRangesString = value;
             }
         }
-        public string TagsString {
-            get => tagsString;
-            set {
-                subbank.Tags = value.Split(',', StringSplitOptions.RemoveEmptyEntries);
-                tagsString = value;
-            }
-        }
-        public string[] Tags => subbank.Tags;
 
         public readonly SortedSet<int> toneSet;
         public readonly Subbank subbank;
 
         private string toneRangesString;
-        private string tagsString;
 
         public USubbank(Subbank subbank) {
             this.subbank = subbank;
@@ -97,11 +91,6 @@ namespace OpenUtau.Core.Ustx {
                 }
             } else {
                 toneRangesString = string.Empty;
-            }
-            if (subbank.Tags != null) {
-                tagsString = string.Join(',', subbank.Tags);
-            } else {
-                tagsString = string.Empty;
             }
         }
 
@@ -162,16 +151,22 @@ namespace OpenUtau.Core.Ustx {
             Location = Path.GetDirectoryName(voicebank.File);
             if (!string.IsNullOrEmpty(voicebank.Image)) {
                 Avatar = Path.Combine(Location, voicebank.Image);
-                try {
-                    using (var stream = new FileStream(Avatar, FileMode.Open)) {
-                        using (var memoryStream = new MemoryStream()) {
-                            stream.CopyTo(memoryStream);
-                            AvatarData = memoryStream.ToArray();
+                if (File.Exists(Avatar)) {
+                    try {
+                        using (var stream = new FileStream(Avatar, FileMode.Open)) {
+                            using (var memoryStream = new MemoryStream()) {
+                                stream.CopyTo(memoryStream);
+                                AvatarData = memoryStream.ToArray();
+                            }
                         }
+                    } catch (Exception e) {
+                        AvatarData = null;
+                        Log.Error(e, "Failed to load avatar data.");
                     }
-                } catch (Exception e) {
+                }
+                else {
                     AvatarData = null;
-                    Log.Error(e, "Failed to load avatar data.");
+                    Log.Error("Avatar can't be found");
                 }
             }
             if (!string.IsNullOrEmpty(voicebank.Portrait)) {
@@ -234,14 +229,14 @@ namespace OpenUtau.Core.Ustx {
         public bool TryGetMappedOto(string phoneme, int tone, out UOto oto) {
             if (Phonetics.TryGetValue(phoneme, out var list)) {
                 foreach (var o in list) {
-                    if (o.ToneSet.Contains(tone) && (o.Tags == null || o.Tags.Length == 0)) {
+                    if (o.ToneSet.Contains(tone) && string.IsNullOrEmpty(o.Color)) {
                         oto = o;
                         return true;
                     }
                 }
             }
             foreach (var subbank in Subbanks) {
-                if (subbank.toneSet.Contains(tone) && (subbank.Tags == null || subbank.Tags.Length == 0)) {
+                if (subbank.toneSet.Contains(tone) && string.IsNullOrEmpty(subbank.Color)) {
                     if (Otos.TryGetValue(subbank.Prefix + phoneme + subbank.Suffix, out oto)) {
                         return true;
                     }

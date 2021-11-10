@@ -42,6 +42,15 @@
   <!--<system:String x:Key="exps.type.numerical">Numerical</system:String>-->
   <!--<system:String x:Key="exps.type.options">Options</system:String>-->
 
+  <!--<system:String x:Key="lyrics.apply">Apply</system:String>-->
+  <!--<system:String x:Key="lyrics.cancel">Cancel</system:String>-->
+  <!--<system:String x:Key="lyrics.caption">Edit Lyrics</system:String>-->
+  <!--<system:String x:Key="lyrics.max">Max</system:String>-->
+  <!--<system:String x:Key="lyrics.selectnotes">Select some notes first!</system:String>-->
+  <!--<system:String x:Key="lyrics.separator.comma">Comma</system:String>-->
+  <!--<system:String x:Key="lyrics.separator.linebreak">Line Break</system:String>-->
+  <!--<system:String x:Key="lyrics.separator.space">Space</system:String>-->
+
   <system:String x:Key="menu.edit">편집</system:String>
   <system:String x:Key="menu.edit.copy">복사</system:String>
   <system:String x:Key="menu.edit.cut">자르기</system:String>
@@ -96,6 +105,7 @@
   <!--<system:String x:Key="oto.tags">Tags</system:String>-->
 
   <!--<system:String x:Key="pianoroll.menu.lyrics">Lyrics</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.lyrics.edit">Edit Lyrics</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana to Romaji</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.lyrics.javcvtocv">Japanese VCV to CV</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Remove Letter Suffix</system:String>-->
@@ -136,9 +146,9 @@ Right click to erase</system:String>-->
   <system:String x:Key="prefs.caption">환경설정</system:String>
   <!--<system:String x:Key="prefs.note.restart">Note: please restart OpenUtau after changing this item.</system:String>-->
   <system:String x:Key="prefs.paths">위치</system:String>
-  <system:String x:Key="prefs.paths.add">추가</system:String>
-  <system:String x:Key="prefs.paths.remove">제거</system:String>
-  <system:String x:Key="prefs.paths.singer">음원 위치</system:String>
+  <!--<system:String x:Key="prefs.paths.addlsinger">Additional Singer Path</system:String>-->
+  <!--<system:String x:Key="prefs.paths.reset">Reset</system:String>-->
+  <!--<system:String x:Key="prefs.paths.select">Select</system:String>-->
   <system:String x:Key="prefs.playback">재생</system:String>
   <system:String x:Key="prefs.playback.device">재생 장치</system:String>
   <system:String x:Key="prefs.playback.test">테스트</system:String>
@@ -150,11 +160,14 @@ Right click to erase</system:String>-->
     </system:String>
   <system:String x:Key="prefs.rendering.resampler.preview">미리보기용 엔진</system:String>
   <!--<system:String x:Key="prefs.rendering.resampler.warn">
-Warning: moresampler is not supported yet. It will be extremely slow and cause high CPU usage. If you insist, please:
-1. Turn on "resampler-compatibility" in moreconfig.txt.
-2. Reduce pre-render threads to 1 or 2.
-3. Patiently wait for prerender to finish before play.
+Warning: moresampler is not fully supported. It may be slow and cause high CPU usage. If you insist, please:
+1. Set "resampler-compatibility" to "on" in moreconfig.txt.
+2. Set "auto-update-llsm-mrq" to "off" in moreconfig.txt.
+3. Reduce pre-render threads to 1 or 2.
+4. Patiently wait for prerender to finish before play.
   </system:String>-->
+
+  <!--<system:String x:Key="progress.saved">Project saved. {0}</system:String>-->
 
   <!--<system:String x:Key="singers.caption">Singers</system:String>-->
   <!--<system:String x:Key="singers.location">Location</system:String>-->

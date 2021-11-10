@@ -55,6 +55,7 @@ namespace OpenUtau.Core.Render {
                 sources.AddRange(project.parts
                     .Where(part => part is UWavePart && part.trackNo == track.TrackNo)
                     .Select(part => part as UWavePart)
+                    .Where(part => part.Samples != null)
                     .Select(part => {
                         var waveSource = new WaveSource(
                             project.TickToMillisecond(part.position),
@@ -186,7 +187,10 @@ namespace OpenUtau.Core.Render {
                 data = cache.Get(hash);
                 if (data == null) {
                     CopySourceTemp(item);
-                    var driver = ResamplerDrivers.GetResampler(item.ResamplerName) ?? this.driver;
+                    var driver = ResamplerDrivers.GetResampler(item.ResamplerName);
+                    if (driver == null) {
+                        throw new Exception($"Resampler {item.ResamplerName} not found.");
+                    }
                     data = driver.DoResampler(DriverModels.CreateInputModel(item, 0), Log.Logger);
                     if (data == null || data.Length == 0) {
                         throw new Exception("Empty render result.");

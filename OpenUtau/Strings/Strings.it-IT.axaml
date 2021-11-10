@@ -42,6 +42,15 @@
   <system:String x:Key="exps.type.numerical">Numerico</system:String>
   <system:String x:Key="exps.type.options">Opzioni</system:String>
 
+  <!--<system:String x:Key="lyrics.apply">Apply</system:String>-->
+  <!--<system:String x:Key="lyrics.cancel">Cancel</system:String>-->
+  <!--<system:String x:Key="lyrics.caption">Edit Lyrics</system:String>-->
+  <!--<system:String x:Key="lyrics.max">Max</system:String>-->
+  <!--<system:String x:Key="lyrics.selectnotes">Select some notes first!</system:String>-->
+  <!--<system:String x:Key="lyrics.separator.comma">Comma</system:String>-->
+  <!--<system:String x:Key="lyrics.separator.linebreak">Line Break</system:String>-->
+  <!--<system:String x:Key="lyrics.separator.space">Space</system:String>-->
+
   <system:String x:Key="menu.edit">Modifica</system:String>
   <system:String x:Key="menu.edit.copy">Copia</system:String>
   <system:String x:Key="menu.edit.cut">Taglia</system:String>
@@ -96,6 +105,7 @@
   <!--<system:String x:Key="oto.tags">Tags</system:String>-->
 
   <!--<system:String x:Key="pianoroll.menu.lyrics">Lyrics</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.lyrics.edit">Edit Lyrics</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana to Romaji</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.lyrics.javcvtocv">Japanese VCV to CV</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Remove Letter Suffix</system:String>-->
@@ -136,9 +146,9 @@ Right click to erase</system:String>-->
   <system:String x:Key="prefs.caption">Preferenze</system:String>
   <system:String x:Key="prefs.note.restart">Nota: riavvia OpenUtau dopo aver cambiato questo elemento.</system:String>
   <system:String x:Key="prefs.paths">Percorsi</system:String>
-  <system:String x:Key="prefs.paths.add">Aggiungi</system:String>
-  <system:String x:Key="prefs.paths.remove">Rimuovi</system:String>
-  <system:String x:Key="prefs.paths.singer">Percorsi cantanti</system:String>
+  <!--<system:String x:Key="prefs.paths.addlsinger">Additional Singer Path</system:String>-->
+  <!--<system:String x:Key="prefs.paths.reset">Reset</system:String>-->
+  <!--<system:String x:Key="prefs.paths.select">Select</system:String>-->
   <system:String x:Key="prefs.playback">Audio</system:String>
   <system:String x:Key="prefs.playback.device">Dispositivo audio</system:String>
   <!--<system:String x:Key="prefs.playback.test">Test</system:String>-->
@@ -155,6 +165,8 @@ Right click to erase</system:String>-->
     2. Riduci i threads della pre-renderizzazione ad 1 o 2.
     3. Aspetta pazientemente la fine della pre-renderizzazione prima di riprodurre.
   </system:String>
+
+  <!--<system:String x:Key="progress.saved">Project saved. {0}</system:String>-->
 
   <system:String x:Key="singers.caption">Cantanti</system:String>
   <system:String x:Key="singers.location">Posizione</system:String>
