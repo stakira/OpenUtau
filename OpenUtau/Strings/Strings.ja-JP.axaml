@@ -24,6 +24,7 @@
   <system:String x:Key="dialogs.messagebox.yes">はい</system:String>
   <system:String x:Key="dialogs.noresampler.caption">エンジンがありません</system:String>
   <system:String x:Key="dialogs.noresampler.message">エンジンが設定されていません！お好みのエンジンのEXEやDLLファイルをResamplerフォルダに入れて、環境設定でエンジンを選択してください！</system:String>
+  <!--<system:String x:Key="dialogs.timesig.caption">Time Signature</system:String>-->
 
   <system:String x:Key="errors.caption">エラー</system:String>
 
@@ -92,6 +93,7 @@
   <system:String x:Key="menu.tools.singers">シンガー...</system:String>
 
   <system:String x:Key="oto.alias">エイリアス</system:String>
+  <!--<system:String x:Key="oto.color">Color</system:String>-->
   <system:String x:Key="oto.consonant">子音部</system:String>
   <system:String x:Key="oto.cutoff">ブランク</system:String>
   <system:String x:Key="oto.file">ファイル</system:String>
@@ -102,7 +104,6 @@
   <system:String x:Key="oto.preutter">先行発声</system:String>
   <system:String x:Key="oto.set">セット</system:String>
   <!--<system:String x:Key="oto.suffix">Suffix</system:String>-->
-  <system:String x:Key="oto.tags">タグ</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">歌詞</system:String>
   <!--<system:String x:Key="pianoroll.menu.lyrics.edit">Edit Lyrics</system:String>-->
@@ -130,10 +131,6 @@
 右クリックで削除</system:String>
   <system:String x:Key="pianoroll.tool.selection">選択ツール (1)
 Ctrl長押しで複数選択</system:String>
-  <system:String x:Key="pianoroll.tool.tagger">タグ ツール (4)
-左クリックで描画
-右クリックで削除</system:String>
-  <!--<system:String x:Key="pianoroll.tool.tagger.setup">Setup Tags</system:String>-->
 
   <system:String x:Key="prefs.advanced">高度な設定</system:String>
   <system:String x:Key="prefs.advanced.beta">ベータ版</system:String>
@@ -173,15 +170,18 @@ Ctrl長押しで複数選択</system:String>
   <system:String x:Key="singers.location">ファイルの場所</system:String>
   <system:String x:Key="singers.refresh">更新</system:String>
   <system:String x:Key="singers.setencoding">文字コード設定</system:String>
-  <system:String x:Key="singers.subbanks.add">追加</system:String>
-  <system:String x:Key="singers.subbanks.caption">タグ エディタ</system:String>
-  <!--<system:String x:Key="singers.subbanks.dir">Directory</system:String>-->
-  <!--<system:String x:Key="singers.subbanks.prefix">Prefix</system:String>-->
-  <system:String x:Key="singers.subbanks.remove">削除</system:String>
+  <!--<system:String x:Key="singers.subbanks.cancel">Cancel</system:String>-->
+  <!--<system:String x:Key="singers.subbanks.clear">Clear</system:String>-->
+  <!--<system:String x:Key="singers.subbanks.color">Color</system:String>-->
+  <!--<system:String x:Key="singers.subbanks.color.add">Add Color</system:String>-->
+  <!--<system:String x:Key="singers.subbanks.color.remove">Remove Color</system:String>-->
+  <!--<system:String x:Key="singers.subbanks.color.rename">Rename</system:String>-->
+  <!--<system:String x:Key="singers.subbanks.edit">Edit Subbanks</system:String>-->
   <system:String x:Key="singers.subbanks.reset">リセット</system:String>
   <system:String x:Key="singers.subbanks.save">保存</system:String>
-  <!--<system:String x:Key="singers.subbanks.suffix">Suffix</system:String>-->
-  <system:String x:Key="singers.subbanks.tags">タグ</system:String>
+  <!--<system:String x:Key="singers.subbanks.selectall">Select All</system:String>-->
+  <!--<system:String x:Key="singers.subbanks.set">Set</system:String>-->
+  <!--<system:String x:Key="singers.subbanks.tone">Tone</system:String>-->
   <!--<system:String x:Key="singers.subbanks.toneranges">Tone Ranges</system:String>-->
 
   <system:String x:Key="tip.exps">

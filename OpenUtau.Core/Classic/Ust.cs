@@ -392,6 +392,7 @@ namespace OpenUtau.Classic {
 
         public static List<UNote> WritePart(UProject project, UVoicePart part, IEnumerable<UNote> notes, string filePath) {
             var sequence = new List<UNote>();
+            var track = project.tracks[part.trackNo];
             using (var writer = new StreamWriter(filePath, false, ShiftJIS)) {
                 WriteHeader(project, part, writer);
                 var position = 0;
@@ -404,10 +405,10 @@ namespace OpenUtau.Classic {
                         spacer.lyric = "R";
                         spacer.tone = 60;
                         sequence.Add(spacer);
-                        WriteNoteBody(project, spacer, writer);
+                        WriteNoteBody(project, track, spacer, writer);
                     }
                     writer.WriteLine($"[#{sequence.Count:D4}]");
-                    WriteNoteBody(project, note, writer);
+                    WriteNoteBody(project, track, note, writer);
                     position = note.End;
                     sequence.Add(note);
                 }
@@ -435,18 +436,18 @@ namespace OpenUtau.Classic {
             writer.WriteLine("[#TRACKEND]");
         }
 
-        static void WriteNoteBody(UProject project, UNote note, StreamWriter writer) {
+        static void WriteNoteBody(UProject project, UTrack track, UNote note, StreamWriter writer) {
             writer.WriteLine($"Length={note.duration}");
             writer.WriteLine($"Lyric={note.lyric}");
             writer.WriteLine($"NoteNum={note.tone}");
             writer.WriteLine("PreUtterance=");
             //writer.WriteLine("VoiceOverlap=");
             if (note.phonemes.Count > 0) {
-                var vel = note.phonemes[0].GetExpression(project, "vel").Item1;
+                var vel = note.phonemes[0].GetExpression(project, track, "vel").Item1;
                 writer.WriteLine($"Velocity={(int)vel}");
-                var vol = note.phonemes[0].GetExpression(project, "vol").Item1;
+                var vol = note.phonemes[0].GetExpression(project, track, "vol").Item1;
                 writer.WriteLine($"Intensity={(int)vol}");
-                var mod = note.phonemes[0].GetExpression(project, "mod").Item1;
+                var mod = note.phonemes[0].GetExpression(project, track, "mod").Item1;
                 writer.WriteLine($"Moduration={(int)mod}");
             }
             WriteEnvelope(note, writer);

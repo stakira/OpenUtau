@@ -132,6 +132,9 @@ namespace OpenUtau.Core.Ustx {
         }
 
         public void Validate() {
+            foreach (var track in tracks) {
+                track.Validate(this);
+            }
             foreach (var part in parts) {
                 part.Validate(this, tracks[part.trackNo]);
             }

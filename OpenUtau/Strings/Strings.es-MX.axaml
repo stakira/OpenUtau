@@ -24,6 +24,7 @@
   <system:String x:Key="dialogs.messagebox.yes">Sí</system:String>
   <system:String x:Key="dialogs.noresampler.caption">Resampler no encontrado</system:String>
   <system:String x:Key="dialogs.noresampler.message">No se encontró un Resampler. Pone uno (sea .exe o .dll) en la carpeta Resamplers en la ruta de instalación de OpenUTAU.</system:String>
+  <!--<system:String x:Key="dialogs.timesig.caption">Time Signature</system:String>-->
 
   <!--<system:String x:Key="errors.caption">Error</system:String>-->
 
@@ -92,6 +93,7 @@
   <system:String x:Key="menu.tools.singers">Voces</system:String>
 
   <!--<system:String x:Key="oto.alias">Alias</system:String>-->
+  <!--<system:String x:Key="oto.color">Color</system:String>-->
   <system:String x:Key="oto.consonant">Consonante</system:String>
   <system:String x:Key="oto.cutoff">Silencio (Derecho)</system:String>
   <system:String x:Key="oto.file">Archivo</system:String>
@@ -102,7 +104,6 @@
   <system:String x:Key="oto.preutter">Precedente</system:String>
   <system:String x:Key="oto.set">Aplicar</system:String>
   <system:String x:Key="oto.suffix">Sufijo</system:String>
-  <system:String x:Key="oto.color">Color</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">Letra</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">Editar Letra</system:String>
@@ -130,10 +131,6 @@ Click izquierdo para dibujar
 Click derecho para borrar</system:String>
   <system:String x:Key="pianoroll.tool.selection">Herramienta de Selección (1)
 Mantiene Ctrl para seleccionar más</system:String>
-  <system:String x:Key="pianoroll.tool.tagger">Herramienta de Etiquetas (4)
-Click izquierdo para dibujar
-Click derecho para borrar</system:String>
-  <system:String x:Key="pianoroll.tool.tagger.setup">Configurar Etiquetas</system:String>
 
   <system:String x:Key="prefs.advanced">Avanzado</system:String>
   <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
@@ -173,16 +170,18 @@ Click derecho para borrar</system:String>
   <system:String x:Key="singers.location">Rutas</system:String>
   <system:String x:Key="singers.refresh">Refrescar</system:String>
   <system:String x:Key="singers.setencoding">Fijar Codificación</system:String>
-  <system:String x:Key="singers.subbanks.add">Agregar</system:String>
-  <system:String x:Key="singers.subbanks.caption">Editor de Etiquetas</system:String>
-  <system:String x:Key="singers.subbanks.dir">Directorio</system:String>
+  <!--<system:String x:Key="singers.subbanks.cancel">Cancel</system:String>-->
+  <!--<system:String x:Key="singers.subbanks.clear">Clear</system:String>-->
+  <!--<system:String x:Key="singers.subbanks.color">Color</system:String>-->
+  <!--<system:String x:Key="singers.subbanks.color.add">Add Color</system:String>-->
+  <!--<system:String x:Key="singers.subbanks.color.remove">Remove Color</system:String>-->
+  <!--<system:String x:Key="singers.subbanks.color.rename">Rename</system:String>-->
   <system:String x:Key="singers.subbanks.edit">Editar Sub-bancos de Voz</system:String>
-  <system:String x:Key="singers.subbanks.prefix">Prefijo</system:String>
-  <system:String x:Key="singers.subbanks.remove">Quitar</system:String>
   <system:String x:Key="singers.subbanks.reset">Reestablecer</system:String>
   <system:String x:Key="singers.subbanks.save">Guardar</system:String>
-  <system:String x:Key="singers.subbanks.suffix">Sufijo</system:String>
-  <system:String x:Key="singers.subbanks.color">Color</system:String>
+  <!--<system:String x:Key="singers.subbanks.selectall">Select All</system:String>-->
+  <!--<system:String x:Key="singers.subbanks.set">Set</system:String>-->
+  <!--<system:String x:Key="singers.subbanks.tone">Tone</system:String>-->
   <system:String x:Key="singers.subbanks.toneranges">Rangos Tonales</system:String>
 
   <system:String x:Key="tip.exps">

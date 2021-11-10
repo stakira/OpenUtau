@@ -626,7 +626,6 @@ namespace OpenUtau.App.Views {
                     case Key.D1: notesVm.SelectToolCommand?.Execute("1").Subscribe(); args.Handled = true; break;
                     case Key.D2: notesVm.SelectToolCommand?.Execute("2").Subscribe(); args.Handled = true; break;
                     case Key.D3: notesVm.SelectToolCommand?.Execute("3").Subscribe(); args.Handled = true; break;
-                    case Key.D4: notesVm.SelectToolCommand?.Execute("4").Subscribe(); args.Handled = true; break;
                     case Key.T: notesVm.ShowTips = !notesVm.ShowTips; args.Handled = true; break;
                     case Key.Y: notesVm.PlayTone = !notesVm.PlayTone; args.Handled = true; break;
                     case Key.U: notesVm.ShowVibrato = !notesVm.ShowVibrato; args.Handled = true; break;

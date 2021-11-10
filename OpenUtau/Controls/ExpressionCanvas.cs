@@ -92,12 +92,13 @@ namespace OpenUtau.App.Controls {
                 return;
             }
             var project = DocManager.Inst.Project;
-            if (!project.expressions.TryGetValue(key, out var descriptor)) {
+            if (!project.tracks[Part.trackNo].TryGetExpression(project, key, out var descriptor)) {
                 return;
             }
             if (descriptor.max <= descriptor.min) {
                 return;
             }
+            var track = project.tracks[Part.trackNo];
             double leftTick = TickOffset - 480;
             double rightTick = TickOffset + Bounds.Width / TickWidth + 480;
             double optionHeight = descriptor.type == UExpressionType.Options
@@ -114,7 +115,7 @@ namespace OpenUtau.App.Controls {
                     if (phoneme.Error) {
                         continue;
                     }
-                    var (value, overriden) = phoneme.GetExpression(project, Key);
+                    var (value, overriden) = phoneme.GetExpression(project, track, Key);
                     double x1 = Math.Round(viewModel.TickToneToPoint(note.position + phoneme.position, 0).X);
                     double x2 = Math.Round(viewModel.TickToneToPoint(note.position + phoneme.End, 0).X);
                     if (descriptor.type == UExpressionType.Numerical) {

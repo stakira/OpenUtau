@@ -4,7 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         x:Class="OpenUtau.App.Views.TypeInDialog"
-        Title="TypeInDialog" Height="120" Width="320"
+        Title="TypeInDialog" Height="120" Width="320" WindowStartupLocation="CenterOwner"
         ExtendClientAreaToDecorationsHint="False">
   <StackPanel VerticalAlignment="Center" Margin="{Binding $parent.WindowDecorationMargin}">
     <TextBox Name="TextBox" Margin="4"/>

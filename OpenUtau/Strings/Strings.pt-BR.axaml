@@ -24,6 +24,7 @@
   <system:String x:Key="dialogs.messagebox.yes">Sim</system:String>
   <system:String x:Key="dialogs.noresampler.caption">Sem resampler</system:String>
   <system:String x:Key="dialogs.noresampler.message">Sem resampler! Coloque o .exe ou .dll do seu resampler favorito na pasta Resampler e selecione-o em Preferências!</system:String>
+  <!--<system:String x:Key="dialogs.timesig.caption">Time Signature</system:String>-->
 
   <system:String x:Key="errors.caption">Erro</system:String>
 
@@ -92,6 +93,7 @@
   <system:String x:Key="menu.tools.singers">Vozes...</system:String>
 
   <!--<system:String x:Key="oto.alias">Alias</system:String>-->
+  <!--<system:String x:Key="oto.color">Color</system:String>-->
   <!--<system:String x:Key="oto.consonant">Consonant</system:String>-->
   <!--<system:String x:Key="oto.cutoff">Cutoff</system:String>-->
   <system:String x:Key="oto.file">Arquivo</system:String>
@@ -102,7 +104,6 @@
   <!--<system:String x:Key="oto.preutter">Preutter</system:String>-->
   <system:String x:Key="oto.set">Pasta</system:String>
   <system:String x:Key="oto.suffix">Sufixo</system:String>
-  <!--<system:String x:Key="oto.tags">Tags</system:String>-->
 
   <system:String x:Key="pianoroll.menu.lyrics">Lírica</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">Editar Lírica</system:String>
@@ -130,10 +131,6 @@ Botão esquerdo para desenhar
 Botão direito para apagar</system:String>
   <system:String x:Key="pianoroll.tool.selection">Ferramenta Seleção  (1)
 Segure Ctrl para selecionar mais notas</system:String>
-  <system:String x:Key="pianoroll.tool.tagger">Ferramenta Tag (4)
-Botão esquerdo para desenhar
-Botão direito para apagar</system:String>
-  <!--<system:String x:Key="pianoroll.tool.tagger.setup">Setup Tags</system:String>-->
 
   <system:String x:Key="prefs.advanced">Avançado</system:String>
   <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
@@ -172,15 +169,18 @@ Botão direito para apagar</system:String>
   <system:String x:Key="singers.location">Pasta</system:String>
   <system:String x:Key="singers.refresh">Atualizar</system:String>
   <system:String x:Key="singers.setencoding">Definir Codificação</system:String>
-  <system:String x:Key="singers.subbanks.add">Adicionar</system:String>
-  <system:String x:Key="singers.subbanks.caption">Editor Tag</system:String>
-  <system:String x:Key="singers.subbanks.dir">Pasta</system:String>
-  <system:String x:Key="singers.subbanks.prefix">Prefixo</system:String>
-  <system:String x:Key="singers.subbanks.remove">Remover</system:String>
+  <!--<system:String x:Key="singers.subbanks.cancel">Cancel</system:String>-->
+  <!--<system:String x:Key="singers.subbanks.clear">Clear</system:String>-->
+  <!--<system:String x:Key="singers.subbanks.color">Color</system:String>-->
+  <!--<system:String x:Key="singers.subbanks.color.add">Add Color</system:String>-->
+  <!--<system:String x:Key="singers.subbanks.color.remove">Remove Color</system:String>-->
+  <!--<system:String x:Key="singers.subbanks.color.rename">Rename</system:String>-->
+  <!--<system:String x:Key="singers.subbanks.edit">Edit Subbanks</system:String>-->
   <system:String x:Key="singers.subbanks.reset">Redefinir</system:String>
   <system:String x:Key="singers.subbanks.save">Salvar</system:String>
-  <system:String x:Key="singers.subbanks.suffix">Sufixo</system:String>
-  <!--<system:String x:Key="singers.subbanks.tags">Tags</system:String>-->
+  <!--<system:String x:Key="singers.subbanks.selectall">Select All</system:String>-->
+  <!--<system:String x:Key="singers.subbanks.set">Set</system:String>-->
+  <!--<system:String x:Key="singers.subbanks.tone">Tone</system:String>-->
   <system:String x:Key="singers.subbanks.toneranges">Alcance</system:String>
 
   <system:String x:Key="tip.exps">

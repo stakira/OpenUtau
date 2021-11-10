@@ -24,6 +24,7 @@
   <system:String x:Key="dialogs.messagebox.yes">是</system:String>
   <system:String x:Key="dialogs.noresampler.caption">无重采样器</system:String>
   <system:String x:Key="dialogs.noresampler.message">无重采样器! 将你选择的重采样器 exe 或者 dll 文件放入 Resamplers 文件夹中并在使用偏好中选择它!</system:String>
+  <system:String x:Key="dialogs.timesig.caption">拍号</system:String>
 
   <system:String x:Key="errors.caption">错误</system:String>
 
@@ -92,6 +93,7 @@
   <system:String x:Key="menu.tools.singers">歌手...</system:String>
 
   <system:String x:Key="oto.alias">别名</system:String>
+  <system:String x:Key="oto.color">色彩</system:String>
   <system:String x:Key="oto.consonant">辅音速度</system:String>
   <system:String x:Key="oto.cutoff">结束</system:String>
   <system:String x:Key="oto.file">文件</system:String>
@@ -102,7 +104,6 @@
   <system:String x:Key="oto.preutter">先行发音</system:String>
   <system:String x:Key="oto.set">子集</system:String>
   <system:String x:Key="oto.suffix">后缀</system:String>
-  <system:String x:Key="oto.tags">标签</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">歌词</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">编辑歌词</system:String>
@@ -130,10 +131,6 @@
 鼠标右键擦除音符</system:String>
   <system:String x:Key="pianoroll.tool.selection">选择工具 (1)
 按住Ctrl选择更多</system:String>
-  <system:String x:Key="pianoroll.tool.tagger">标签工具 (4)
-鼠标左键绘制
-鼠标右键擦除</system:String>
-  <!--<system:String x:Key="pianoroll.tool.tagger.setup">Setup Tags</system:String>-->
 
   <system:String x:Key="prefs.advanced">高级</system:String>
   <system:String x:Key="prefs.advanced.beta">Beta测试版</system:String>
@@ -173,15 +170,18 @@
   <system:String x:Key="singers.location">位置</system:String>
   <system:String x:Key="singers.refresh">刷新</system:String>
   <system:String x:Key="singers.setencoding">选择编码</system:String>
-  <system:String x:Key="singers.subbanks.add">添加</system:String>
-  <system:String x:Key="singers.subbanks.caption">标签编辑器</system:String>
-  <system:String x:Key="singers.subbanks.dir">文件夹</system:String>
-  <system:String x:Key="singers.subbanks.prefix">前缀</system:String>
-  <system:String x:Key="singers.subbanks.remove">删除</system:String>
+  <system:String x:Key="singers.subbanks.cancel">取消</system:String>
+  <system:String x:Key="singers.subbanks.clear">清空</system:String>
+  <system:String x:Key="singers.subbanks.color">色彩</system:String>
+  <system:String x:Key="singers.subbanks.color.add">添加色彩</system:String>
+  <system:String x:Key="singers.subbanks.color.remove">删除色彩</system:String>
+  <system:String x:Key="singers.subbanks.color.rename">重命名</system:String>
+  <system:String x:Key="singers.subbanks.edit">编辑子声库</system:String>
   <system:String x:Key="singers.subbanks.reset">重置</system:String>
   <system:String x:Key="singers.subbanks.save">保存</system:String>
-  <system:String x:Key="singers.subbanks.suffix">后缀</system:String>
-  <system:String x:Key="singers.subbanks.tags">标签</system:String>
+  <system:String x:Key="singers.subbanks.selectall">全选</system:String>
+  <system:String x:Key="singers.subbanks.set">设定</system:String>
+  <system:String x:Key="singers.subbanks.tone">音调</system:String>
   <system:String x:Key="singers.subbanks.toneranges">音调范围</system:String>
 
   <system:String x:Key="tip.exps">

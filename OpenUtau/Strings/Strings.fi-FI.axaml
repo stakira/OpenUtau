@@ -24,6 +24,7 @@
   <system:String x:Key="dialogs.messagebox.yes">Kyllä</system:String>
   <system:String x:Key="dialogs.noresampler.caption">Ei valittua resampleria</system:String>
   <system:String x:Key="dialogs.noresampler.message">Resampleria ei löydetty! Laita resampler.exe tai dll- tiedosto Resamplers -kansioon ja valitse se sitten asetuksista.</system:String>
+  <!--<system:String x:Key="dialogs.timesig.caption">Time Signature</system:String>-->
 
   <system:String x:Key="errors.caption">Virhe</system:String>
 
@@ -92,6 +93,7 @@
   <system:String x:Key="menu.tools.singers">Laulajat...</system:String>
 
   <!--<system:String x:Key="oto.alias">Alias</system:String>-->
+  <!--<system:String x:Key="oto.color">Color</system:String>-->
   <system:String x:Key="oto.consonant">Konsonantti</system:String>
   <system:String x:Key="oto.cutoff">Leikkaus</system:String>
   <system:String x:Key="oto.file">Tiedosto</system:String>
@@ -102,7 +104,6 @@
   <system:String x:Key="oto.preutter">Esiääntö</system:String>
   <system:String x:Key="oto.set">Ryhmä</system:String>
   <system:String x:Key="oto.suffix">Jälkiliite</system:String>
-  <system:String x:Key="oto.tags">Tagit</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">Sanoitus</system:String>
   <!--<system:String x:Key="pianoroll.menu.lyrics.edit">Edit Lyrics</system:String>-->
@@ -130,10 +131,6 @@ Piirrä vasemmalla hiiren klikkauksella
 Poista oikealla hiiren klikkauksella</system:String>
   <system:String x:Key="pianoroll.tool.selection">Valitse työkalu(1)
 Aktivoi monivalinta pitämällä Ctrl pohjassa</system:String>
-  <system:String x:Key="pianoroll.tool.tagger">Taggaaja (4)
-Piirrä vasemmalla hiiren klikkauksella
-Poista oikealla hiiren klikkauksella</system:String>
-  <system:String x:Key="pianoroll.tool.tagger.setup">Aseta tageja</system:String>
 
   <system:String x:Key="prefs.advanced">Lisäasetukset</system:String>
   <system:String x:Key="prefs.advanced.beta">Beta versio</system:String>
@@ -172,15 +169,18 @@ Varoitus: Moresampleria ei tueta vielä. Se on hidas ja voi kuormittaa suoritint
   <system:String x:Key="singers.location">Sijainti</system:String>
   <system:String x:Key="singers.refresh">Päivitä</system:String>
   <system:String x:Key="singers.setencoding">Määritä käytettävää merkistöä</system:String>
-  <system:String x:Key="singers.subbanks.add">Lisää</system:String>
-  <system:String x:Key="singers.subbanks.caption">Tagieditori</system:String>
-  <system:String x:Key="singers.subbanks.dir">Hakemisto</system:String>
-  <system:String x:Key="singers.subbanks.prefix">Etuliite</system:String>
-  <system:String x:Key="singers.subbanks.remove">Poista</system:String>
+  <!--<system:String x:Key="singers.subbanks.cancel">Cancel</system:String>-->
+  <!--<system:String x:Key="singers.subbanks.clear">Clear</system:String>-->
+  <!--<system:String x:Key="singers.subbanks.color">Color</system:String>-->
+  <!--<system:String x:Key="singers.subbanks.color.add">Add Color</system:String>-->
+  <!--<system:String x:Key="singers.subbanks.color.remove">Remove Color</system:String>-->
+  <!--<system:String x:Key="singers.subbanks.color.rename">Rename</system:String>-->
+  <!--<system:String x:Key="singers.subbanks.edit">Edit Subbanks</system:String>-->
   <system:String x:Key="singers.subbanks.reset">Nollaa</system:String>
   <system:String x:Key="singers.subbanks.save">Tallenna</system:String>
-  <system:String x:Key="singers.subbanks.suffix">Jälkiliite</system:String>
-  <system:String x:Key="singers.subbanks.tags">Tagit</system:String>
+  <!--<system:String x:Key="singers.subbanks.selectall">Select All</system:String>-->
+  <!--<system:String x:Key="singers.subbanks.set">Set</system:String>-->
+  <!--<system:String x:Key="singers.subbanks.tone">Tone</system:String>-->
   <system:String x:Key="singers.subbanks.toneranges">Ääniala</system:String>
 
   <system:String x:Key="tip.exps">

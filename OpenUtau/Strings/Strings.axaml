@@ -24,6 +24,7 @@
   <system:String x:Key="dialogs.messagebox.yes">Yes</system:String>
   <system:String x:Key="dialogs.noresampler.caption">No resampler</system:String>
   <system:String x:Key="dialogs.noresampler.message">No resampler! Put your favourite resampler exe or dll in the Resamplers folder and choose it in Preferences!</system:String>
+  <system:String x:Key="dialogs.timesig.caption">Time Signature</system:String>
 
   <system:String x:Key="errors.caption">Error</system:String>
 
@@ -92,6 +93,7 @@
   <system:String x:Key="menu.tools.singers">Singers...</system:String>
 
   <system:String x:Key="oto.alias">Alias</system:String>
+  <system:String x:Key="oto.color">Color</system:String>
   <system:String x:Key="oto.consonant">Consonant</system:String>
   <system:String x:Key="oto.cutoff">Cutoff</system:String>
   <system:String x:Key="oto.file">File</system:String>
@@ -102,7 +104,6 @@
   <system:String x:Key="oto.preutter">Preutter</system:String>
   <system:String x:Key="oto.set">Set</system:String>
   <system:String x:Key="oto.suffix">Suffix</system:String>
-  <system:String x:Key="oto.color">Color</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">Lyrics</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">Edit Lyrics</system:String>
@@ -130,10 +131,6 @@ Left click to draw
 Right click to delete</system:String>
   <system:String x:Key="pianoroll.tool.selection">Selection Tool (1)
 Hold Ctrl to select more</system:String>
-  <system:String x:Key="pianoroll.tool.tagger">Tagger Tool (4)
-Left click to draw
-Right click to erase</system:String>
-  <system:String x:Key="pianoroll.tool.tagger.setup">Setup Tags</system:String>
 
   <system:String x:Key="prefs.advanced">Advanced</system:String>
   <system:String x:Key="prefs.advanced.beta">Beta</system:String>
@@ -173,16 +170,18 @@ Warning: moresampler is not fully supported. It may be slow and cause high CPU u
   <system:String x:Key="singers.location">Location</system:String>
   <system:String x:Key="singers.refresh">Refresh</system:String>
   <system:String x:Key="singers.setencoding">Set Encoding</system:String>
-  <system:String x:Key="singers.subbanks.add">Add</system:String>
-  <system:String x:Key="singers.subbanks.caption">Tag Editor</system:String>
-  <system:String x:Key="singers.subbanks.dir">Directory</system:String>
+  <system:String x:Key="singers.subbanks.cancel">Cancel</system:String>
+  <system:String x:Key="singers.subbanks.clear">Clear</system:String>
+  <system:String x:Key="singers.subbanks.color">Color</system:String>
+  <system:String x:Key="singers.subbanks.color.add">Add Color</system:String>
+  <system:String x:Key="singers.subbanks.color.remove">Remove Color</system:String>
+  <system:String x:Key="singers.subbanks.color.rename">Rename</system:String>
   <system:String x:Key="singers.subbanks.edit">Edit Subbanks</system:String>
-  <system:String x:Key="singers.subbanks.prefix">Prefix</system:String>
-  <system:String x:Key="singers.subbanks.remove">Remove</system:String>
   <system:String x:Key="singers.subbanks.reset">Reset</system:String>
   <system:String x:Key="singers.subbanks.save">Save</system:String>
-  <system:String x:Key="singers.subbanks.suffix">Suffix</system:String>
-  <system:String x:Key="singers.subbanks.color">Color</system:String>
+  <system:String x:Key="singers.subbanks.selectall">Select All</system:String>
+  <system:String x:Key="singers.subbanks.set">Set</system:String>
+  <system:String x:Key="singers.subbanks.tone">Tone</system:String>
   <system:String x:Key="singers.subbanks.toneranges">Tone Ranges</system:String>
 
   <system:String x:Key="tip.exps">

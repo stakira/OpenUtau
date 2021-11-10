@@ -112,8 +112,6 @@ namespace OpenUtau.Core.Ustx {
             foreach (var phoneme in phonemes) {
                 phoneme.HasPhonemeOverride = false;
                 phoneme.HasOffsetOverride = false;
-                phoneme.preutterScale = null;
-                phoneme.overlapScale = null;
                 phoneme.preutterDelta = null;
                 phoneme.overlapDelta = null;
             }
@@ -126,8 +124,6 @@ namespace OpenUtau.Core.Ustx {
                     if (o.offset != null) {
                         phonemes[index].HasOffsetOverride = true;
                     }
-                    phonemes[index].preutterScale = o.preutterScale;
-                    phonemes[index].overlapScale = o.overlapScale;
                     phonemes[index].preutterDelta = o.preutterDelta;
                     phonemes[index].overlapDelta = o.overlapDelta;
                 }

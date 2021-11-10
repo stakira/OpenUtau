@@ -42,6 +42,7 @@ namespace OpenUtau.App.Views {
                 return;
             }
             var dialog = new TypeInDialog() {
+                Title = ThemeManager.GetString("singers.subbanks.color.add"),
                 onFinish = name => ViewModel.RenameSubbank(name),
             };
             dialog.ShowDialog(this);

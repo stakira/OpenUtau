@@ -48,7 +48,7 @@ namespace OpenUtau.Core.Render {
             SourceFile = phoneme.oto.File;
             ResamplerName = resamplerName;
             if (project.expressions.TryGetValue("eng", out var descriptor)) {
-                int index = (int)phoneme.GetExpression(project, "eng").Item1;
+                int index = (int)phoneme.GetExpression(project, track, "eng").Item1;
                 if (index < 0 || index >= descriptor.options.Length) {
                     index = 0;
                 }
@@ -62,16 +62,16 @@ namespace OpenUtau.Core.Render {
             SourceTemp = Path.Combine(PathManager.Inst.GetCachePath(),
                 $"{HashHex(track.Singer.Id)}-{HashHex(phoneme.oto.Set)}-{HashHex(SourceFile)}{ext}");
 
-            Velocity = (int)phoneme.GetExpression(project, "vel").Item1;
-            Volume = (int)phoneme.GetExpression(project, "vol").Item1;
-            Modulation = (int)phoneme.GetExpression(project, "mod").Item1;
+            Velocity = (int)phoneme.GetExpression(project, track, "vel").Item1;
+            Volume = (int)phoneme.GetExpression(project, track, "vol").Item1;
+            Modulation = (int)phoneme.GetExpression(project, track, "mod").Item1;
             var strechRatio = Math.Pow(2, 1.0 - Velocity / 100.0);
             var length = phoneme.oto.Preutter * strechRatio + phoneme.envelope.data[4].X;
             var requiredLength = Math.Ceiling(length / 50 + 1) * 50;
             var lengthAdjustment = phoneme.tailIntrude == 0 ? phoneme.preutter : phoneme.preutter - phoneme.tailIntrude + phoneme.tailOverlap;
 
             NoteNum = phoneme.Parent.tone;
-            StrFlags = phoneme.GetResamplerFlags(project);
+            StrFlags = phoneme.GetResamplerFlags(project, track);
             PitchData = BuildPitchData(phoneme, part, project);
             RequiredLength = (int)requiredLength;
             Oto = phoneme.oto;

@@ -432,10 +432,21 @@ namespace OpenUtau.App.Views {
 
     class ExpSetValueState : NoteEditState {
         private Point lastPoint;
+        private UExpressionDescriptor? descriptor;
+        private UTrack track;
         public ExpSetValueState(
             Canvas canvas,
             PianoRollViewModel vm,
             IValueTip valueTip) : base(canvas, vm, valueTip) {
+            var notesVm = vm.NotesViewModel;
+            var project = notesVm.Project;
+            var part = notesVm.Part;
+            track = project.tracks[part!.trackNo];
+            if (project == null || part == null ||
+                !track.TryGetExpression(
+                    project, notesVm.PrimaryKey, out descriptor)) {
+                descriptor = null;
+            }
         }
         public override void Begin(IPointer pointer, Point point) {
             base.Begin(pointer, point);
@@ -445,6 +456,9 @@ namespace OpenUtau.App.Views {
             base.End(pointer, point);
         }
         public override void Update(IPointer pointer, Point point) {
+            if (descriptor == null) {
+                return;
+            }
             var notesVm = vm.NotesViewModel;
             var p1 = lastPoint;
             var p2 = point;
@@ -452,7 +466,6 @@ namespace OpenUtau.App.Views {
                 Swap(ref p1, ref p2);
             }
             string key = notesVm.PrimaryKey;
-            var descriptor = notesVm.Project.expressions[key];
             var hits = notesVm.HitTest.HitTestExpRange(p1, p2);
             double viewMax = descriptor.max + (descriptor.type == UExpressionType.Options ? 1 : 0);
             foreach (var hit in hits) {
@@ -460,10 +473,10 @@ namespace OpenUtau.App.Views {
                 double y = Lerp(p1, p2, valuePoint.X);
                 double newValue = descriptor.min + (viewMax - descriptor.min) * (1 - y / canvas.Bounds.Height);
                 newValue = Math.Max(descriptor.min, Math.Min(descriptor.max, newValue));
-                float value = hit.phoneme.GetExpression(notesVm.Project, key).Item1;
+                float value = hit.phoneme.GetExpression(notesVm.Project, track, key).Item1;
                 if ((int)newValue != (int)value) {
                     DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(
-                        notesVm.Project, hit.phoneme, key, (int)newValue));
+                        notesVm.Project, track, hit.phoneme, key, (int)newValue));
                 }
             }
             double displayValue = descriptor.min + (viewMax - descriptor.min) * (1 - point.Y / canvas.Bounds.Height);
@@ -489,16 +502,31 @@ namespace OpenUtau.App.Views {
 
     class ExpResetValueState : NoteEditState {
         private Point lastPoint;
+        private UExpressionDescriptor? descriptor;
+        private UTrack track;
         public override MouseButton MouseButton => MouseButton.Right;
         public ExpResetValueState(
             Canvas canvas,
             PianoRollViewModel vm,
-            IValueTip valueTip) : base(canvas, vm, valueTip) { }
+            IValueTip valueTip) : base(canvas, vm, valueTip) {
+            var notesVm = vm.NotesViewModel;
+            var project = notesVm.Project;
+            var part = notesVm.Part;
+            track = project.tracks[part!.trackNo];
+            if (project == null || part == null ||
+                !track.TryGetExpression(
+                    project, notesVm.PrimaryKey, out descriptor)) {
+                descriptor = null;
+            }
+        }
         public override void Begin(IPointer pointer, Point point) {
             base.Begin(pointer, point);
             lastPoint = point;
         }
         public override void Update(IPointer pointer, Point point) {
+            if (descriptor == null) {
+                return;
+            }
             var notesVm = vm.NotesViewModel;
             var p1 = lastPoint;
             var p2 = point;
@@ -506,13 +534,12 @@ namespace OpenUtau.App.Views {
                 Swap(ref p1, ref p2);
             }
             string key = notesVm.PrimaryKey;
-            var descriptor = notesVm.Project.expressions[key];
             var hits = notesVm.HitTest.HitTestExpRange(p1, p2);
             foreach (var hit in hits) {
-                float value = hit.phoneme.GetExpression(notesVm.Project, key).Item1;
+                float value = hit.phoneme.GetExpression(notesVm.Project, track, key).Item1;
                 if (value != descriptor.defaultValue) {
                     DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(
-                        notesVm.Project, hit.phoneme, key, descriptor.defaultValue));
+                        notesVm.Project, track, hit.phoneme, key, descriptor.defaultValue));
                 }
             }
             valueTip.UpdateValueTip(descriptor.defaultValue.ToString());

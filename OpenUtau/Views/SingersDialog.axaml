@@ -47,8 +47,8 @@
               BorderBrush="{DynamicResource SystemControlHighlightBaseMediumHighBrush}"
               Items="{Binding Subbanks}" IsReadOnly="True">
       <DataGrid.Columns>
-        <DataGridTextColumn Header="{StaticResource singers.subbanks.prefix}" Binding="{Binding Prefix}"/>
-        <DataGridTextColumn Header="{StaticResource singers.subbanks.suffix}" Binding="{Binding Suffix}"/>
+        <DataGridTextColumn Header="{StaticResource oto.prefix}" Binding="{Binding Prefix}"/>
+        <DataGridTextColumn Header="{StaticResource oto.suffix}" Binding="{Binding Suffix}"/>
         <DataGridTextColumn Header="{StaticResource singers.subbanks.toneranges}" Binding="{Binding ToneRangesString}"/>
         <DataGridTextColumn Header="{StaticResource singers.subbanks.color}" Binding="{Binding Color}"/>
       </DataGrid.Columns>

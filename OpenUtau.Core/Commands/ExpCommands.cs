@@ -30,19 +30,21 @@ namespace OpenUtau.Core {
 
     public class SetPhonemeExpressionCommand : ExpCommand {
         public readonly UProject project;
+        public readonly UTrack track;
         public readonly UPhoneme phoneme;
         public readonly float newValue;
         public readonly float oldValue;
-        public SetPhonemeExpressionCommand(UProject project, UPhoneme phoneme, string abbr, float value) {
+        public SetPhonemeExpressionCommand(UProject project, UTrack track, UPhoneme phoneme, string abbr, float value) {
             this.project = project;
+            this.track = track;
             this.phoneme = phoneme;
             Key = abbr;
             newValue = value;
-            oldValue = phoneme.GetExpression(project, abbr).Item1;
+            oldValue = phoneme.GetExpression(project, track, abbr).Item1;
         }
         public override string ToString() => $"Set phoneme expression {Key}";
-        public override void Execute() => phoneme.SetExpression(project, Key, newValue);
-        public override void Unexecute() => phoneme.SetExpression(project, Key, oldValue);
+        public override void Execute() => phoneme.SetExpression(project, track, Key, newValue);
+        public override void Unexecute() => phoneme.SetExpression(project, track, Key, oldValue);
     }
 
     public abstract class PitchExpCommand : ExpCommand { }

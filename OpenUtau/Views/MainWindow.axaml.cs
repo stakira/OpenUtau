@@ -64,7 +64,7 @@ namespace OpenUtau.App.Views {
         void OnEditTimeSignature(object sender, PointerPressedEventArgs args) {
             var project = DocManager.Inst.Project;
             var dialog = new TypeInDialog();
-            dialog.Title = "Time Signature";
+            dialog.Title = ThemeManager.GetString("dialogs.timesig.caption");
             dialog.SetText($"{project.beatPerBar}/{project.beatUnit}");
             dialog.onFinish = s => {
                 var parts = s.Split('/');

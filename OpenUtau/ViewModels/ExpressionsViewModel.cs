@@ -11,7 +11,7 @@ using ReactiveUI.Fody.Helpers;
 
 namespace OpenUtau.App.ViewModels {
     public class ExpressionBuilder : ReactiveObject {
-        private static readonly string[] required = { "vel", "vol", "atk", "dec" };
+        private static readonly string[] required = { "vel", "vol", "atk", "dec", "eng", "clr" };
 
         [Reactive] public string Name { get; set; }
         [Reactive] public string Abbr { get; set; }

@@ -79,6 +79,7 @@ namespace OpenUtau.Api {
         public struct PhonemeAttributes {
             public int index;
             public float? velocity;
+            public string color;
         }
 
         /// <summary>
