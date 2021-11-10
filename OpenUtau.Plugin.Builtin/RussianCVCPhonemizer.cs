@@ -33,7 +33,7 @@ namespace OpenUtau.Plugin.Builtin {
         protected override Dictionary<string, string> GetAliasesFallback() => aliasesFallback;
         protected override Dictionary<string, string> GetDictionaryPhonemesReplacement() => dictionaryReplacements;
 
-        protected override List<string> TrySyllable(Syllable syllable) {
+        protected override List<string> ProcessSyllable(Syllable syllable) {
             string prevV = syllable.prevV;
             string[] cc = syllable.cc;
             string v = syllable.v;
@@ -72,7 +72,7 @@ namespace OpenUtau.Plugin.Builtin {
             return phonemes;
         }
 
-        protected override List<string> TryEnding(Ending ending) {
+        protected override List<string> ProcessEnding(Ending ending) {
             string[] cc = ending.cc;
             string v = ending.prevV;
 
