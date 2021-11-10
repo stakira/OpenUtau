@@ -585,8 +585,13 @@ namespace OpenUtau.Plugin.Builtin {
                 var validatedAlias = ValidateAlias(phonemeSymbols[phonemeI]);
 
                 var transitionLengthTick = MsToTick(GetTransitionBasicLengthMs(validatedAlias, tone));
-                if (!isEnding && i == 0) {
-                    transitionLengthTick = 0;
+                if (i == 0) {
+                    if (!isEnding) {
+                        transitionLengthTick = 0;
+                    }
+                    else {
+                        transitionLengthTick *= 2;
+                    }
                 }
 
                 var currentTone = phonemeI == phonemeSymbols.Count - 1 ? lastTone : tone;
