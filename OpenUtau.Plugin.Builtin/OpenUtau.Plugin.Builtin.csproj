@@ -13,19 +13,4 @@
     <ProjectReference Include="..\OpenUtau.Core\OpenUtau.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="Dictionaries.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Dictionaries.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Dictionaries.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Dictionaries.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-
 </Project>

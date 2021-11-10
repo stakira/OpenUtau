@@ -26,7 +26,7 @@ namespace OpenUtau.Plugin.Builtin {
 
         protected override string[] GetVowels() => vowels;
         protected override string[] GetConsonants() => consonants;
-        protected override string GetDictionary() => Dictionaries.cmudict_ru;
+        protected override string GetDictionaryName() => "cmudict_ru.txt";
         protected override Dictionary<string, string> GetDictionaryPhonemesReplacement() => dictionaryReplacements;
 
         protected override List<string> TrySyllable(Syllable syllable) {

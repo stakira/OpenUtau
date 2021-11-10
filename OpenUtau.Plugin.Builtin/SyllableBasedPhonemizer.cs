@@ -5,6 +5,7 @@ using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
 using System.Linq;
 using System.IO;
+using Serilog;
 
 namespace OpenUtau.Plugin.Builtin {
     /// <summary>
@@ -204,10 +205,11 @@ namespace OpenUtau.Plugin.Builtin {
         protected virtual void Init() { }
 
         /// <summary>
-        /// Dictionary content. Expected to be stored in resources
+        /// Dictionary name. Must be stored in Dictionaries folder.
+        /// If missing or can't be read, phonetic input is used
         /// </summary>
         /// <returns></returns>
-        protected virtual string GetDictionary() { return null; }
+        protected virtual string GetDictionaryName() { return null; }
 
         /// <summary>
         /// extracts array of phoneme symbols from note. Override for procedural dictionary or something
@@ -480,10 +482,16 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         private void ReadDictionary() {
-            var dictionaryText = GetDictionary();
-            if (dictionaryText == null)
+            var dictionaryName = GetDictionaryName();
+            if (dictionaryName == null)
                 return;
+            var filename = Path.Combine("Dictionaries", dictionaryName);
+            if (!File.Exists(filename)) {
+                Log.Error("Dictionary not found");
+                return;
+            }
             try {
+                var dictionaryText = File.ReadAllText(filename);
                 var builder = G2pDictionary.NewBuilder();
                 var vowels = GetVowels();
                 foreach (var vowel in vowels) {
@@ -498,7 +506,9 @@ namespace OpenUtau.Plugin.Builtin {
                 var dict = builder.Build();
                 dictionaries[GetType()] = dict;
             }
-            catch (Exception ex) { }
+            catch (Exception ex) {
+                Log.Error(ex, "Failed to read dictionary");
+            }
         }
 
         private string[] ApplyExtensions(string[] symbols, Note[] notes) {
