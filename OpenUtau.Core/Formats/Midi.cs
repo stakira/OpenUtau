@@ -23,6 +23,9 @@ namespace OpenUtau.Core.Formats
                     if (e is NoteOnEvent)
                     {
                         var _e = e as NoteOnEvent;
+                        if (_e.OffEvent == null) {
+                            continue;
+                        }
                         if (!parts.ContainsKey(_e.Channel)) parts.Add(_e.Channel, new UVoicePart());
                         var note = project.CreateNote(
                             _e.NoteNumber,
