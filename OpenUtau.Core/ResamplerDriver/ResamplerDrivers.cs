@@ -52,7 +52,7 @@ namespace OpenUtau.Core.ResamplerDriver {
         public static void Search() {
             var resamplers = new Dictionary<string, IResamplerDriver>();
             string basePath = PathManager.Inst.LibsPath;
-            string name = !OS.IsWindows() ? "worldline" : Environment.Is64BitProcess ? "worldline64.exe" : "worldline32.exe";
+            string name = GetDefaultResamplerName();
             var driver = Load(Path.Combine(basePath, name), basePath);
             if (driver != null) {
                 resamplers.Add(driver.Name, driver);
@@ -78,6 +78,16 @@ namespace OpenUtau.Core.ResamplerDriver {
             lock (lockObj) {
                 Resamplers = resamplers;
             }
+        }
+
+        public static string GetDefaultResamplerName() {
+            if (!OS.IsWindows()) {
+                return "worldline64";
+            }
+            if (Environment.Is64BitProcess) {
+                return "worldline64.exe";
+            }
+            return "worldline32.exe";
         }
 
         public static List<IResamplerDriver> GetResamplers() {
