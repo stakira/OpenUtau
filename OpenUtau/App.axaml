@@ -19,6 +19,7 @@
         <ResourceInclude Source="/Strings/Strings.pl-PL.axaml"/>
         <ResourceInclude Source="/Strings/Strings.pt-BR.axaml"/>
         <ResourceInclude Source="/Strings/Strings.zh-CN.axaml"/>
+        <ResourceInclude Source="/Strings/Strings.id-ID.axaml"/>
         <ResourceInclude Source="/Strings/Strings.axaml"/>
         <ResourceInclude Source="/Colors/LightTheme.axaml"/>
         <ResourceInclude Source="/Colors/DarkTheme.axaml"/>

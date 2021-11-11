@@ -34,7 +34,7 @@ namespace OpenUtau.Plugin.Builtin {
         // Simply stores the singer in a field.
         public override void SetSinger(USinger singer) => this.singer = singer;
 
-        public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour) {
+        public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
             // The overall logic is:
             // 1. Remove consonant: "duang" -> "uang".
             // 2. Lookup the trailing sound in vowel table: "uang" -> "_ang".

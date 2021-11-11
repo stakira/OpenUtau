@@ -165,6 +165,15 @@ namespace OpenUtau.Core.Ustx {
                 phoneme.duration = Prev.ExtendedDuration;
                 prev = phoneme;
             }
+            var prevs = new List<UNote>();
+            if (prevIsNeighbour) {
+                prevs.Add(Prev);
+                while (prevs.Last().Prev != null && prevs.Last().Extends != null && prevs.Last().Prev.End >= prevs.Last().position) {
+                    prevs.Add(prevs.Last().Prev);
+                }
+                prevs.Reverse();
+            }
+            var processorPrevs = prevs.Select(n => n.ToProcessorNote()).ToArray();
             bool nextIsNeighbour = notes.Last().End >= notes.Last().Next?.position;
             track.Phonemizer.SetTiming(project.bpm, project.beatUnit, project.resolution);
             var phonemizerNotes = notes.Select(note => note.ToProcessorNote()).ToArray();
@@ -181,7 +190,8 @@ namespace OpenUtau.Core.Ustx {
                     prev,
                     next,
                     prevIsNeighbour ? prev : null,
-                    nextIsNeighbour ? next : null);
+                    nextIsNeighbour ? next : null,
+                    processorPrevs);
             } catch (Exception e) {
                 Log.Error(e, "phonemizer error");
                 phonemizerResult = new Phonemizer.Result() {

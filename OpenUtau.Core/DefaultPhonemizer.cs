@@ -8,7 +8,7 @@ namespace OpenUtau.Core {
     [Phonemizer("Default Phonemizer", "DEFAULT")]
     public class DefaultPhonemizer : Phonemizer {
         public override void SetSinger(USinger singer) { }
-        public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour) {
+        public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
             // Note that even when input has multiple notes, only the leading note is used to produce phoneme.
             // This is because the 2nd+ notes will always be extender notes, i.e., with lyric "..." or "...<number>".
             // For this simple phonemizer, all these notes maps to a single phoneme.

@@ -191,7 +191,7 @@ namespace OpenUtau.Core.Render {
                     if (driver == null) {
                         throw new Exception($"Resampler {item.ResamplerName} not found.");
                     }
-                    data = driver.DoResampler(DriverModels.CreateInputModel(item, 0), Log.Logger);
+                    data = driver.DoResampler(DriverModels.CreateInputModel(item), Log.Logger);
                     if (data == null || data.Length == 0) {
                         throw new Exception("Empty render result.");
                     }

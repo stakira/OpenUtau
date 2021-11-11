@@ -23,7 +23,7 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys {
         }
 
         public byte[] DoResampler(EngineInput Args, ILogger logger) {
-            const bool debugResampler = true;
+            const bool debugResampler = false;
             byte[] data = new byte[0];
             if (!_isLegalPlugin) {
                 return data;
