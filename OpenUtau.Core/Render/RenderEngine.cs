@@ -39,8 +39,6 @@ namespace OpenUtau.Core.Render {
             this.driver = driver;
             this.cache = cache;
             this.startTick = startTick;
-
-            DeleteExpiredCache();
         }
 
         public Tuple<MasterAdapter, List<Fader>, CancellationTokenSource, Task> RenderProject(int startTick) {
@@ -247,18 +245,6 @@ namespace OpenUtau.Core.Render {
                     File.Copy(source, dest);
                 }
             }
-        }
-
-        void DeleteExpiredCache() {
-            var expire = DateTime.Now - TimeSpan.FromDays(7);
-            string path = PathManager.Inst.GetCachePath();
-            Log.Information($"ReleaseSourceTemp {path}");
-            Directory.EnumerateFiles(path, "*.*", SearchOption.TopDirectoryOnly)
-                .Where(file =>
-                    !File.GetAttributes(file).HasFlag(FileAttributes.Directory)
-                        && File.GetCreationTime(file) < expire)
-                .ToList()
-                .ForEach(file => File.Delete(file));
         }
     }
 }
