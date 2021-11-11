@@ -112,6 +112,10 @@ namespace OpenUtau.Api {
                 phonemeSymbols[symbol] = type == "vowel";
                 return this;
             }
+            public Builder AddSymbol(string symbol, bool isVowel) {
+                phonemeSymbols[symbol] = isVowel;
+                return this;
+            }
 
             /// <summary>
             /// Must finish adding symbols before adding entries, otherwise symbols get ignored.

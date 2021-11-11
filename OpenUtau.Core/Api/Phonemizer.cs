@@ -120,7 +120,7 @@ namespace OpenUtau.Api {
         public string Name { get; set; }
         public string Tag { get; set; }
 
-        private double bpm;
+        protected double bpm;
         private int beatUnit;
         private int resolution;
 
@@ -145,7 +145,8 @@ namespace OpenUtau.Api {
         /// <param name="next">The note after the last extender note, if exists.</param>
         /// <param name="prevNeighbour">Same as prev if is immediate neighbour, otherwise null.</param>
         /// <param name="nextNeighbour">Same as next if is immediate neighbour, otherwise null.</param>
-        public abstract Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour);
+        /// <param name="prevs">Prev note neighbour with all extended notes. May be emtpy, not null</param>
+        public abstract Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevs);
 
         public override string ToString() => $"[{Tag}] {Name}";
 

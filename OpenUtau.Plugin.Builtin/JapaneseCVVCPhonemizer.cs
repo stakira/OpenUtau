@@ -80,7 +80,7 @@ namespace OpenUtau.Plugin.Builtin {
         private USinger singer;
         public override void SetSinger(USinger singer) => this.singer = singer;
 
-        public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour) {
+        public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
             var note = notes[0];
             var currentUnicode = ToUnicodeElements(note.lyric);
             var currentLyric = note.lyric;
