@@ -39,6 +39,8 @@ namespace OpenUtau.Core.Render {
             this.driver = driver;
             this.cache = cache;
             this.startTick = startTick;
+
+            DeleteExpiredCache();
         }
 
         public Tuple<MasterAdapter, List<Fader>, CancellationTokenSource, Task> RenderProject(int startTick) {
@@ -90,7 +92,6 @@ namespace OpenUtau.Core.Render {
                     item.progress = progress;
                     Resample(item);
                 });
-                ReleaseSourceTemp();
                 progress.Clear();
             });
             var master = new MasterAdapter(new WaveMix(faders));
@@ -141,7 +142,6 @@ namespace OpenUtau.Core.Render {
                         item.progress = progress;
                         Resample(item);
                     });
-                    ReleaseSourceTemp();
                     progress.Clear();
                 } catch (Exception e) {
                     if (!source.IsCancellationRequested) {
@@ -249,7 +249,7 @@ namespace OpenUtau.Core.Render {
             }
         }
 
-        void ReleaseSourceTemp() {
+        void DeleteExpiredCache() {
             var expire = DateTime.Now - TimeSpan.FromDays(7);
             string path = PathManager.Inst.GetCachePath();
             Log.Information($"ReleaseSourceTemp {path}");
