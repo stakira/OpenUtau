@@ -36,34 +36,32 @@ namespace OpenUtau.Plugin.Builtin {
 
             string basePhoneme;
             var phonemes = new List<string>();
-            if (prevV == "") {
-                if (cc.Length == 0) {
-                    basePhoneme = $"- {v}";
-                } else if (cc.Length == 1) {
-                    // -CV or -C CV
-                    var rcv = $"- {cc[0]}{v}";
-                    if (HasOto(rcv, syllable.tone)) {
-                        basePhoneme = rcv;
-                    }
-                    else {
-                        basePhoneme = $"{cc[0]}{v}";
-                        if (!noStartConsonants.Contains(cc[0])) {
-                            phonemes.Add($"- {cc[0]}");
-                        }
-                    }
+            if (syllable.IsRV) {
+                basePhoneme = $"- {v}";
+            } else if (syllable.IsVV) {
+                basePhoneme = $"{prevV} {v}";
+            } else if (syllable.IsRC1V) {
+                // TODO: move to config -CV or -C CV
+                var rcv = $"- {cc[0]}{v}";
+                if (HasOto(rcv, syllable.tone)) {
+                    basePhoneme = rcv;
                 } else {
-                    basePhoneme = $"{cc.Last()}{v}";
+                    basePhoneme = $"{cc[0]}{v}";
                     if (!noStartConsonants.Contains(cc[0])) {
                         phonemes.Add($"- {cc[0]}");
                     }
                 }
-            } else if (cc.Length == 0) {
-                basePhoneme = $"{prevV} {v}";
-            } else {
+            } else if (syllable.IsRCmV) {
+                basePhoneme = $"{cc.Last()}{v}";
+                if (!noStartConsonants.Contains(cc[0])) {
+                    phonemes.Add($"- {cc[0]}");
+                }
+            } else { // VCV
                 basePhoneme = $"{cc.Last()}{v}";
                 phonemes.Add($"{prevV} {cc[0]}");
             }
             for (var i = 0; i < cc.Length - 1; i++) {
+                // same for any transition
                 var currentCc = $"{cc[i]} {cc[i + 1]}";
                 if (!HasOto(currentCc, syllable.tone)) {
                     continue;
@@ -79,10 +77,10 @@ namespace OpenUtau.Plugin.Builtin {
             string v = ending.prevV;
 
             var phonemes = new List<string>();
-            if (cc.Length == 0) {
+            if (ending.IsVR) {
                 phonemes.Add($"{v} -");
-            } else if (cc.Length == 1) {
-                // VC- or VC C-
+            } else if (ending.IsVC1R) {
+                // TODO: move to config VC- or VC C-
                 var vcr = $"{v}{cc[0]} -";
                 if (HasOto(vcr, ending.tone)) {
                     phonemes.Add(vcr);
@@ -90,7 +88,7 @@ namespace OpenUtau.Plugin.Builtin {
                     phonemes.Add($"{v} {cc[0]}");
                     phonemes.Add($"{cc[0]} -");
                 }
-            } else {
+            } else { // VCmR
                 phonemes.Add($"{v} {cc[0]}");
                 for (var i = 0; i < cc.Length - 1; i++) {
                     var currentCc = $"{cc[i]} {cc[i + 1]}";

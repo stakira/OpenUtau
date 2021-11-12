@@ -22,18 +22,18 @@ namespace OpenUtau.Plugin.Builtin {
 
             string basePhoneme;
             var phonemes = new List<string>();
-            if (prevV == "") {
-                if (cc.Length == 0) {
-                    basePhoneme = $"- {v}";
-                } else {
-                    basePhoneme = $"- {cc.Last()}{v}";
-                }
+            if (syllable.IsRV) {
+                basePhoneme = $"- {v}";
+            }
+            else if (syllable.IsRCV) {
+                basePhoneme = $"- {cc.Last()}{v}";
                 for (var i = 0; i < cc.Length - 1; i++) {
                     phonemes.Add($"- {cc[i]}");
                 }
-            } else if (cc.Length == 0) {
+            }
+            else if (syllable.IsVV) {
                 basePhoneme = v;
-            } else {
+            } else { // VCV
                 basePhoneme = $"{cc.Last()}{v}";
                 phonemes.Add($"{prevV} {cc[0]}"); ;
                 for (var i = 0; i < cc.Length - 1; i++) {
@@ -49,7 +49,7 @@ namespace OpenUtau.Plugin.Builtin {
             string v = ending.prevV;
 
             var phonemes = new List<string>();
-            if (cc.Length == 0) {
+            if (ending.IsVR) {
                 phonemes.Add($"{v} -");
             } else {
                 phonemes.Add($"{v} {cc[0]}-");
