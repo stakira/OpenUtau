@@ -28,7 +28,7 @@ namespace OpenUtau.Core.Formats {
             project.RegisterExpression(new UExpressionDescriptor("breath", "bre", 0, 100, 0, "B"));
             project.RegisterExpression(new UExpressionDescriptor("lowpass", "lpf", 0, 100, 0, "H"));
             project.RegisterExpression(new UExpressionDescriptor("modulation", "mod", 0, 100, 0));
-            project.RegisterExpression(new UExpressionDescriptor("phoneme selection", "psel", 0, 16, 0));
+            project.RegisterExpression(new UExpressionDescriptor("alternate", "alt", 0, 16, 0));
         }
 
         public static UProject Create() {

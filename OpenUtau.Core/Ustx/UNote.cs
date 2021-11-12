@@ -238,7 +238,7 @@ namespace OpenUtau.Core.Ustx {
             });
             attributesBuffer.Clear();
             foreach (var exp in phonemeExpressions) {
-                if (exp.abbr != "vel" && exp.abbr != "psel" && exp.abbr != "clr") {
+                if (exp.abbr != "vel" && exp.abbr != "alt" && exp.abbr != "clr") {
                     continue;
                 }
                 var posInBuffer = attributesBuffer.FindIndex(attr => attr.index == exp.index);
@@ -247,10 +247,11 @@ namespace OpenUtau.Core.Ustx {
                     attributesBuffer.Add(new Phonemizer.PhonemeAttributes());
                 }
                 Phonemizer.PhonemeAttributes attr = attributesBuffer[posInBuffer];
+                attr.index = exp.index.Value;
                 if (exp.abbr == "vel") {
                     attr.consonantStretchRatio = Math.Pow(2, 1.0 - exp.value / 100.0);
-                } else if (exp.abbr == "psel") {
-                    attr.phonemeSelection = (int)exp.value;
+                } else if (exp.abbr == "alt") {
+                    attr.alternate = (int)exp.value;
                 } else if (exp.abbr == "clr" && track.VoiceColorExp != null) {
                     int optionIdx = (int)exp.value;
                     if (optionIdx < track.VoiceColorExp.options.Length && optionIdx >= 0) {

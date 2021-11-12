@@ -123,23 +123,6 @@ namespace OpenUtau.Plugin.Builtin {
             // so we need to find the first vowel.
             int firstVowel = Array.IndexOf(isVowel, true);
             var phonemes = new Phoneme[symbols.Length];
-            // Creates the first diphone using info of the previous note.
-            string prevSymbol = prevSymbols == null ? "-" : prevSymbols.Last();
-            string phoneme = $"{prevSymbol} {symbols[0]}";
-            if (!singer.TryGetMappedOto(phoneme, note.tone, out var _)) {
-                // Arpasing voicebanks are often incomplete. If the voicebank doesn't have this diphone, fallback to use a more likely to exist one.
-                phoneme = $"- {symbols[0]}";
-            }
-            phonemes[0] = new Phoneme {
-                phoneme = phoneme,
-            };
-            // The 2nd+ diphones.
-            for (int i = 1; i < symbols.Length; i++) {
-                // The logic is very similar to creating the first diphone.
-                phonemes[i] = new Phoneme {
-                    phoneme = GetPhonemeOrFallback(symbols[i - 1], symbols[i], note.tone),
-                };
-            }
 
             // Alignments
             // Alignment is where a user use "+n" (n is a number) to align n-th phoneme with an extender note.
@@ -187,7 +170,22 @@ namespace OpenUtau.Plugin.Builtin {
             }
             alignments.Clear();
 
-            MapPhonemes(notes, phonemes, singer);
+            // Select aliases.
+            int noteIndex = 0;
+            string prevSymbol = prevSymbols == null ? "-" : prevSymbols.Last();
+            for (int i = 0; i < symbols.Length; i++) {
+                var attr = note.phonemeAttributes.FirstOrDefault(attr => attr.index == i);
+                string alt = attr.alternate?.ToString() ?? string.Empty;
+                string color = attr.voiceColor;
+                var phoneme = phonemes[i];
+                while (noteIndex < notes.Length - 1 && notes[noteIndex].position - note.position < phoneme.position) {
+                    noteIndex++;
+                }
+                phoneme.phoneme = GetPhonemeOrFallback(prevSymbol, symbols[i], notes[noteIndex].tone, color, alt);
+                phonemes[i] = phoneme;
+                prevSymbol = symbols[i];
+            }
+
             return new Result {
                 phonemes = phonemes,
             };
@@ -204,16 +202,17 @@ namespace OpenUtau.Plugin.Builtin {
                 .ToArray();
         }
 
-        string GetPhonemeOrFallback(string prevSymbol, string symbol, int tone) {
-            string phoneme = $"{prevSymbol} {symbol}";
-            if (singer.TryGetMappedOto(phoneme, tone, out var _)) {
-                return phoneme;
+        string GetPhonemeOrFallback(string prevSymbol, string symbol, int tone, string color, string alt) {
+            if (!string.IsNullOrEmpty(alt) && singer.TryGetMappedOto($"{prevSymbol} {symbol}{alt}", tone, color, out var oto)) {
+                return oto.Alias;
+            }
+            if (singer.TryGetMappedOto($"{prevSymbol} {symbol}", tone, color, out var oto1)) {
+                return oto1.Alias;
             }
             if (vowelFallback.TryGetValue(symbol, out string[] fallbacks)) {
                 foreach (var fallback in fallbacks) {
-                    phoneme = $"{prevSymbol} {fallback}";
-                    if (singer.TryGetMappedOto(phoneme, tone, out var _)) {
-                        return phoneme;
+                    if (singer.TryGetMappedOto($"{prevSymbol} {fallback}", tone, color, out var oto2)) {
+                        return oto2.Alias;
                     }
                 }
             }

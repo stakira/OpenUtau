@@ -80,7 +80,13 @@ namespace OpenUtau.Api {
             /// Consonant stretch ratio computed from velocity.
             /// </summary>
             public double? consonantStretchRatio;
-            public int? phonemeSelection;
+            /// <summary>
+            /// Alternate index. The number suffix of duplicate aliases.
+            /// </summary>
+            public int? alternate;
+            /// <summary>
+            /// Voice color.
+            /// </summary>
             public string voiceColor;
         }
 
