@@ -61,8 +61,15 @@ namespace OpenUtau.Plugin.Builtin {
                     phoneme = $"{vow} {note.lyric}";
                 }
             }
-            // Check if this singer acutally contains this alias, if not, fallback to the lyric itself.
-            if (!singer.TryGetMappedOto(phoneme, note.tone, out var _)) {
+            // Get color
+            string color = string.Empty;
+            if (note.phonemeAttributes != null) {
+                var attr = note.phonemeAttributes.FirstOrDefault(attr => attr.index == 0);
+                color = attr.voiceColor;
+            }
+            if (singer.TryGetMappedOto(phoneme, note.tone, color, out var oto)) {
+                phoneme = oto.Alias;
+            } else {
                 phoneme = note.lyric;
             }
             return new Result {

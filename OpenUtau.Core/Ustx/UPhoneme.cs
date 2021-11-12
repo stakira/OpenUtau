@@ -136,7 +136,7 @@ namespace OpenUtau.Core.Ustx {
 
             Vector2 p0, p1, p2, p3, p4;
             p0.X = -preutter;
-            p1.X = p0.X + Math.Max(overlap, 5f);
+            p1.X = p0.X + (!overlapped && overlapDelta == null ? 5f : Math.Max(overlap, 5f));
             p2.X = Math.Max(0f, p1.X);
             p3.X = (float)project.TickToMillisecond(Duration) - (float)tailIntrude;
             p4.X = p3.X + (float)tailOverlap;
@@ -232,8 +232,6 @@ namespace OpenUtau.Core.Ustx {
         [JsonProperty] public int index;
         [JsonProperty] public string phoneme;
         [JsonProperty] public int? offset;
-        [JsonProperty] [Obsolete] public float? preutterScale; // TODO: cleanup
-        [JsonProperty] [Obsolete] public float? overlapScale; // TODO: cleanup
         public float? preutterDelta;
         public float? overlapDelta;
 

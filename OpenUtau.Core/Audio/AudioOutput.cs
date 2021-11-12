@@ -52,8 +52,8 @@ namespace OpenUtau.Audio {
                 Log.Error(e, "Failed to initialize audio device");
             }
 
-            pullThread = new Thread(Pull) { IsBackground = true };
-            pushThread = new Thread(Push) { IsBackground = true };
+            pullThread = new Thread(Pull) { IsBackground = true, Priority = ThreadPriority.Highest };
+            pushThread = new Thread(Push) { IsBackground = true, Priority = ThreadPriority.Highest };
             pullThread.Start();
             pushThread.Start();
         }

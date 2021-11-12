@@ -152,11 +152,11 @@ namespace OpenUtau.Core.Ustx {
                 endOffset = Math.Min(0, notes.Last().Next.position - notes.Last().End + notes.Last().Next.phonemes[0].position);
             }
 
-            var prev = Prev?.ToProcessorNote();
-            var next = notes.Last().Next?.ToProcessorNote();
+            var prev = Prev?.ToPhonemizerNote(track);
+            var next = notes.Last().Next?.ToPhonemizerNote(track);
             bool prevIsNeighbour = Prev?.End >= position;
             if (Prev?.Extends != null) {
-                prev = Prev.Extends.ToProcessorNote();
+                prev = Prev.Extends.ToPhonemizerNote(track);
                 var phoneme = prev.Value;
                 phoneme.duration = Prev.ExtendedDuration;
                 prev = phoneme;
@@ -169,10 +169,10 @@ namespace OpenUtau.Core.Ustx {
                 }
                 prevs.Reverse();
             }
-            var processorPrevs = prevs.Select(n => n.ToProcessorNote()).ToArray();
+            var phonemizerPrevs = prevs.Select(n => n.ToPhonemizerNote(track)).ToArray();
             bool nextIsNeighbour = notes.Last().End >= notes.Last().Next?.position;
             track.Phonemizer.SetTiming(project.bpm, project.beatUnit, project.resolution);
-            var phonemizerNotes = notes.Select(note => note.ToProcessorNote()).ToArray();
+            var phonemizerNotes = notes.Select(note => note.ToPhonemizerNote(track)).ToArray();
             phonemizerNotes[phonemizerNotes.Length - 1].duration += endOffset;
             if (string.IsNullOrEmpty(phonemizerNotes[0].lyric) &&
                 string.IsNullOrEmpty(phonemizerNotes[0].phoneticHint)) {
@@ -187,7 +187,7 @@ namespace OpenUtau.Core.Ustx {
                     next,
                     prevIsNeighbour ? prev : null,
                     nextIsNeighbour ? next : null,
-                    processorPrevs);
+                    phonemizerPrevs);
             } catch (Exception e) {
                 Log.Error(e, "phonemizer error");
                 phonemizerResult = new Phonemizer.Result() {
@@ -228,19 +228,46 @@ namespace OpenUtau.Core.Ustx {
             DistributePhonemes(notes, newPhonemes);
         }
 
-        private Phonemizer.Note ToProcessorNote() {
+        static List<Phonemizer.PhonemeAttributes> attributesBuffer = new List<Phonemizer.PhonemeAttributes>();
+        private Phonemizer.Note ToPhonemizerNote(UTrack track) {
             string lrc = lyric;
             string phoneticHint = null;
             lrc = phoneticHintPattern.Replace(lrc, match => {
                 phoneticHint = match.Groups[1].Value;
                 return "";
             });
+            attributesBuffer.Clear();
+            foreach (var exp in phonemeExpressions) {
+                if (exp.abbr != "vel" && exp.abbr != "psel" && exp.abbr != "clr") {
+                    continue;
+                }
+                var posInBuffer = attributesBuffer.FindIndex(attr => attr.index == exp.index);
+                if (posInBuffer < 0) {
+                    posInBuffer = attributesBuffer.Count;
+                    attributesBuffer.Add(new Phonemizer.PhonemeAttributes());
+                }
+                Phonemizer.PhonemeAttributes attr = attributesBuffer[posInBuffer];
+                if (exp.abbr == "vel") {
+                    attr.consonantStretchRatio = Math.Pow(2, 1.0 - exp.value / 100.0);
+                } else if (exp.abbr == "psel") {
+                    attr.phonemeSelection = (int)exp.value;
+                } else if (exp.abbr == "clr" && track.VoiceColorExp != null) {
+                    int optionIdx = (int)exp.value;
+                    if (optionIdx < track.VoiceColorExp.options.Length && optionIdx >= 0) {
+                        attr.voiceColor = track.VoiceColorExp.options[optionIdx];
+                    }
+                }
+                attributesBuffer[posInBuffer] = attr;
+            }
+            var attributes = attributesBuffer.ToArray();
+            attributesBuffer.Clear();
             return new Phonemizer.Note() {
                 lyric = lrc.Trim(),
                 phoneticHint = phoneticHint?.Trim(),
                 tone = tone,
                 position = position,
                 duration = duration,
+                phonemeAttributes = attributes,
             };
         }
 

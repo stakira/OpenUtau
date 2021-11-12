@@ -342,12 +342,10 @@ namespace OpenUtau.Core {
         public override void Execute() {
             var o = note.GetPhonemeOverride(index);
             o.preutterDelta = newDelta == 0 ? null : (float?)newDelta;
-            o.preutterScale = null;
         }
         public override void Unexecute() {
             var o = note.GetPhonemeOverride(index);
             o.preutterDelta = oldDelta == 0 ? null : (float?)oldDelta;
-            o.preutterScale = null;
         }
         public override string ToString() => "Set phoneme preutter";
     }
@@ -367,12 +365,10 @@ namespace OpenUtau.Core {
         public override void Execute() {
             var o = note.GetPhonemeOverride(index);
             o.overlapDelta = newDelta == 0 ? null : (float?)newDelta;
-            o.overlapScale = null;
         }
         public override void Unexecute() {
             var o = note.GetPhonemeOverride(index);
             o.overlapDelta = oldDelta == 0 ? null : (float?)oldDelta;
-            o.overlapScale = null;
         }
         public override string ToString() => "Set phoneme overlap";
     }

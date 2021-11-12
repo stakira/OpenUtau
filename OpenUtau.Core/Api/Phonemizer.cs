@@ -64,22 +64,24 @@ namespace OpenUtau.Api {
             public int duration;
 
             /// <summary>
-            /// Default phoneme attributes.
+            /// Phoneme overrides. Not guaranteed to exist or be ordered.
             /// </summary>
-            public PhonemeAttributes defaultPhonemeAttributes;
-
-            /// <summary>
-            /// Phoneme overrides.
-            /// </summary>
-            public PhonemeAttributes[] phonemeOverrides;
+            public PhonemeAttributes[] phonemeAttributes;
 
             public override string ToString() => $"\"{lyric}\" pos:{position}";
         }
 
         public struct PhonemeAttributes {
+            /// <summary>
+            /// Index of phoneme.
+            /// </summary>
             public int index;
-            public float? velocity;
-            public string color;
+            /// <summary>
+            /// Consonant stretch ratio computed from velocity.
+            /// </summary>
+            public double? consonantStretchRatio;
+            public int? phonemeSelection;
+            public string voiceColor;
         }
 
         /// <summary>

@@ -82,6 +82,7 @@ namespace OpenUtau.UI.Controls {
 
         public override void Redraw(DrawingContext cxt) {
             var project = DocManager.Inst.Project;
+            var track = project.tracks[Part.trackNo];
             if (Part != null) {
                 foreach (UNote note in Part.notes) {
                     if (!midiVM.NoteIsInView(note)) {
@@ -91,7 +92,7 @@ namespace OpenUtau.UI.Controls {
                         if (phoneme.Error) {
                             continue;
                         }
-                        var (value, overriden) = phoneme.GetExpression(project, Key);
+                        var (value, overriden) = phoneme.GetExpression(project, track, Key);
                         var descriptor = project.expressions[Key];
                         double x1 = Math.Round(ScaleX * (note.position + phoneme.position));
                         double x2 = Math.Round(ScaleX * (note.position + phoneme.End));

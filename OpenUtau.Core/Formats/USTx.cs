@@ -10,7 +10,7 @@ using Serilog;
 
 namespace OpenUtau.Core.Formats {
     public class Ustx {
-        public static readonly Version kUstxVersion = new Version(0, 4);
+        public static readonly Version kUstxVersion = new Version(0, 5);
 
         public static void AddBuiltInExpressions(UProject project) {
             project.RegisterExpression(new UExpressionDescriptor("velocity", "vel", 0, 200, 100));
@@ -28,6 +28,7 @@ namespace OpenUtau.Core.Formats {
             project.RegisterExpression(new UExpressionDescriptor("breath", "bre", 0, 100, 0, "B"));
             project.RegisterExpression(new UExpressionDescriptor("lowpass", "lpf", 0, 100, 0, "H"));
             project.RegisterExpression(new UExpressionDescriptor("modulation", "mod", 0, 100, 0));
+            project.RegisterExpression(new UExpressionDescriptor("phoneme selection", "psel", 0, 16, 0));
         }
 
         public static UProject Create() {
@@ -74,6 +75,16 @@ namespace OpenUtau.Core.Formats {
                         .ForEach(exp => exp.abbr = "atk");
                     project.Validate();
                 }
+            }
+            if (project.ustxVersion < new Version(0, 5)) {
+                project.parts
+                    .Where(part => part is UVoicePart)
+                    .Select(part => part as UVoicePart)
+                    .SelectMany(part => part.notes)
+                    .Where(note => note.lyric.StartsWith("..."))
+                    .ToList()
+                    .ForEach(note => note.lyric = note.lyric.Replace("...", "+"));
+                project.Validate();
             }
             project.ustxVersion = kUstxVersion;
             return project;

@@ -407,7 +407,7 @@ namespace OpenUtau.Plugin.Builtin {
         /// <param name="note"></param>
         /// <returns></returns>
         protected bool IsSyllableVowelExtensionNote(Note note) {
-            return note.lyric.StartsWith("...~") || note.lyric.StartsWith("...*");
+            return note.lyric.StartsWith("+~") || note.lyric.StartsWith("+*");
         }
 
         /// <summary>

@@ -163,8 +163,7 @@ namespace OpenUtau.Core.Ustx {
                         AvatarData = null;
                         Log.Error(e, "Failed to load avatar data.");
                     }
-                }
-                else {
+                } else {
                     AvatarData = null;
                     Log.Error("Avatar can't be found");
                 }
@@ -227,25 +226,22 @@ namespace OpenUtau.Core.Ustx {
         }
 
         public bool TryGetMappedOto(string phoneme, int tone, out UOto oto) {
-            if (Phonetics.TryGetValue(phoneme, out var list)) {
-                foreach (var o in list) {
-                    if (o.ToneSet.Contains(tone) && string.IsNullOrEmpty(o.Color)) {
-                        oto = o;
-                        return true;
-                    }
-                }
-            }
-            foreach (var subbank in Subbanks) {
-                if (subbank.toneSet.Contains(tone) && string.IsNullOrEmpty(subbank.Color)) {
-                    if (Otos.TryGetValue(subbank.Prefix + phoneme + subbank.Suffix, out oto)) {
-                        return true;
-                    }
-                }
+            var subbank = Subbanks.Find(subbank => subbank.toneSet.Contains(tone) && string.IsNullOrEmpty(subbank.Color));
+            if (subbank != null && Otos.TryGetValue($"{subbank.Prefix}{phoneme}{subbank.Suffix}", out oto)) {
+                return true;
             }
             if (Otos.TryGetValue(phoneme, out oto)) {
                 return true;
             }
             return false;
+        }
+
+        public bool TryGetMappedOto(string phoneme, int tone, string color, out UOto oto) {
+            var subbank = Subbanks.Find(subbank => subbank.toneSet.Contains(tone) && color == subbank.Color);
+            if (subbank != null && Otos.TryGetValue($"{subbank.Prefix}{phoneme}{subbank.Suffix}", out oto)) {
+                return true;
+            }
+            return TryGetMappedOto(phoneme, tone, out oto);
         }
 
         public void GetSuggestions(string text, Action<UOto> provide) {

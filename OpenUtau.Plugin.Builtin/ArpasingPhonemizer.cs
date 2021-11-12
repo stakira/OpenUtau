@@ -142,7 +142,7 @@ namespace OpenUtau.Plugin.Builtin {
             }
 
             // Alignments
-            // Alignment is where a user use "...n" (n is a number) to align n-th phoneme with an extender note.
+            // Alignment is where a user use "+n" (n is a number) to align n-th phoneme with an extender note.
             // We build the aligment points first, these are the phonemes must be aligned to a certain position,
             // phonemes that are not aligment points are distributed in-between.
             alignments.Clear();
@@ -155,13 +155,13 @@ namespace OpenUtau.Plugin.Builtin {
             int position = 0;
             for (int i = 0; i < notes.Length; ++i) {
                 string alignmentHint = notes[i].lyric;
-                if (alignmentHint.StartsWith("...")) {
-                    alignmentHint = alignmentHint.Substring(3);
+                if (alignmentHint.StartsWith("+")) {
+                    alignmentHint = alignmentHint.Substring(1);
                 } else {
                     position += notes[i].duration;
                     continue;
                 }
-                // Parse the number n in "...n".
+                // Parse the number n in "+n".
                 if (int.TryParse(alignmentHint, out int index)) {
                     index--; // Convert from 1-based index to 0-based index.
                     if (index > 0 && (alignments.Count == 0 || alignments.Last().Item1 < index) && index < phonemes.Length) {
