@@ -174,7 +174,7 @@ namespace OpenUtau.Plugin.Builtin {
             int noteIndex = 0;
             string prevSymbol = prevSymbols == null ? "-" : prevSymbols.Last();
             for (int i = 0; i < symbols.Length; i++) {
-                var attr = note.phonemeAttributes.FirstOrDefault(attr => attr.index == i);
+                var attr = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == i) ?? default;
                 string alt = attr.alternate?.ToString() ?? string.Empty;
                 string color = attr.voiceColor;
                 var phoneme = phonemes[i];

@@ -246,5 +246,17 @@ namespace OpenUtau.Core.Render {
                 }
             }
         }
+
+        public static void ReleaseSourceTemp() {
+            var expire = DateTime.Now - TimeSpan.FromDays(7);
+            string path = PathManager.Inst.GetCachePath();
+            Log.Information($"ReleaseSourceTemp {path}");
+            Directory.EnumerateFiles(path, "*.*", SearchOption.TopDirectoryOnly)
+                .Where(file =>
+                    !File.GetAttributes(file).HasFlag(FileAttributes.Directory)
+                        && File.GetCreationTime(file) < expire)
+                .ToList()
+                .ForEach(file => File.Delete(file));
+        }
     }
 }

@@ -82,7 +82,7 @@ namespace OpenUtau.Core {
     public class PlaybackManager : ICmdSubscriber {
         private PlaybackManager() {
             DocManager.Inst.AddSubscriber(this);
-            DeleteExpiredCache();
+            RenderEngine.ReleaseSourceTemp();
         }
 
         private static PlaybackManager _s;
@@ -254,18 +254,6 @@ namespace OpenUtau.Core {
             if (source != null) {
                 source.Cancel();
             }
-        }
-
-        void DeleteExpiredCache() {
-            var expire = DateTime.Now - TimeSpan.FromDays(7);
-            string path = PathManager.Inst.GetCachePath();
-            Log.Information($"ReleaseSourceTemp {path}");
-            Directory.EnumerateFiles(path, "*.*", SearchOption.TopDirectoryOnly)
-                .Where(file =>
-                    !File.GetAttributes(file).HasFlag(FileAttributes.Directory)
-                        && File.GetCreationTime(file) < expire)
-                .ToList()
-                .ForEach(file => File.Delete(file));
         }
 
         #region ICmdSubscriber
