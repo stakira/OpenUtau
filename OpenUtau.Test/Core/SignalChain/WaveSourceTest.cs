@@ -86,13 +86,14 @@ namespace OpenUtau.Core.SignalChain {
                 new Vector2(50, 1),
             }, 0, 1);
             Assert.True(source.IsReady(0, 100));
-            Assert.True(source.IsReady(44100 * 50 / 1000 - 100, 100));
-            Assert.False(source.IsReady(44100 * 50 / 1000 - 100 + 1, 100));
-            Assert.True(source.IsReady(44100 * 100 / 1000, 100));
-            Assert.False(source.IsReady(44100 * 100 / 1000 - 1, 100));
+            int len = 44100 * 50 / 1000 * 2;
+            Assert.True(source.IsReady(len - 100, 100));
+            Assert.False(source.IsReady(len - 100 + 1, 100));
+            Assert.True(source.IsReady(len * 2, 100));
+            Assert.False(source.IsReady(len * 2 - 1, 100));
             source.SetWaveData(GetWavBytes());
-            Assert.True(source.IsReady(44100 * 50 / 1000 - 100 + 1, 100));
-            Assert.True(source.IsReady(44100 * 100 / 1000 - 1, 100));
+            Assert.True(source.IsReady(len - 100 + 1, 100));
+            Assert.True(source.IsReady(len * 2 - 1, 100));
         }
     }
 }

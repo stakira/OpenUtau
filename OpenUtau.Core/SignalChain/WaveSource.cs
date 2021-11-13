@@ -85,8 +85,9 @@ namespace OpenUtau.Core.SignalChain {
         }
 
         public bool IsReady(int position, int count) {
-            return position + count <= offset
-                || offset + estimatedLength <= position
+            int copies = 2 / channels;
+            return position + count <= offset * copies
+                || offset * copies + estimatedLength * copies <= position
                 || data != null;
         }
 

@@ -63,6 +63,28 @@ namespace OpenUtau.Plugin.Builtin {
             /// </summary>
             public int vowelTone;
 
+            /// <summary>
+            /// 0 if no consonants are taken from previous word;
+            /// 1 means first one is taken from previous word, etc.
+            /// </summary>
+            public int prevWordConsonantsCount;
+
+            // helpers
+            public bool IsStartingV => prevV == "" && cc.Length == 0;
+            public bool IsVV => prevV != "" && cc.Length == 0;
+
+            public bool IsStartingCV => prevV == "" && cc.Length > 0;
+            public bool IsVCV => prevV != "" && cc.Length > 0;
+
+            public bool IsStartingCVWithOneConsonant => prevV == "" && cc.Length == 1;
+            public bool IsVCVWithOneConsonant => prevV != "" && cc.Length == 1;
+
+            public bool IsStartingCVWithMoreThanOneConsonant => prevV == "" && cc.Length > 1;
+            public bool IsVCVWithMoreThanOneConsonant => prevV != "" && cc.Length > 1;
+
+            public string[] PreviousWordCc => cc.Take(prevWordConsonantsCount).ToArray();
+            public string[] CurrentWordCc => cc.Skip(prevWordConsonantsCount).ToArray();
+
             public override string ToString() {
                 return $"({prevV}) {(cc != null ? string.Join(" ", cc) : "")} {v}";
             }
@@ -89,6 +111,12 @@ namespace OpenUtau.Plugin.Builtin {
             /// the tone from last syllable, for all ending phonemes
             /// </summary>
             public int tone;
+
+            // helpers
+            public bool IsEndingV => cc.Length == 0;
+            public bool IsEndingVC => cc.Length > 0;
+            public bool IsEndingVCWithOneConsonant => cc.Length == 1;
+            public bool IsEndingVCWithMoreThanOneConsonant => cc.Length > 1;
 
             public override string ToString() {
                 return $"({prevV}) {(cc != null ? string.Join(" ", cc) : "")}";
@@ -272,7 +300,8 @@ namespace OpenUtau.Plugin.Builtin {
                     tone = prevEndingValue.tone,
                     duration = prevEndingValue.duration,
                     position = 0,
-                    vowelTone = notes[0].tone
+                    vowelTone = notes[0].tone,
+                    prevWordConsonantsCount = prevEndingValue.cc.Count()
                 };
             } else {
                 // there is only empty space before us
@@ -495,10 +524,27 @@ namespace OpenUtau.Plugin.Builtin {
         /// Checks if mapped and validated alias exists in oto
         /// </summary>
         /// <param name="alias"></param>
-        /// <param name="note"></param>
+        /// <param name="tone"></param>
         /// <returns></returns>
         protected bool HasOto(string alias, int tone) {
             return singer.TryGetMappedOto(ValidateAlias(alias), tone, out _);
+        }
+
+        /// <summary>
+        /// Can be used for different variants, like exhales [v R], [v -] etc
+        /// </summary>
+        /// <param name="sourcePhonemes">phonemes container to add to</param>
+        /// <param name="tone">to map alias</param>
+        /// <param name="targetPhonemes">target phoneme variants</param>
+        /// <returns>returns true if added any</returns>
+        protected bool TryAddPhoneme(List<string> sourcePhonemes, int tone, params string[] targetPhonemes) {
+            foreach (var phoneme in targetPhonemes) {
+                if (HasOto(phoneme, tone)) {
+                    sourcePhonemes.Add(phoneme);
+                    return true;
+                }
+            }
+            return false;
         }
 
         #endregion
