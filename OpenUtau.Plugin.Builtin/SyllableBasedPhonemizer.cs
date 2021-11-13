@@ -318,27 +318,26 @@ namespace OpenUtau.Plugin.Builtin {
             }
 
             // normal syllables after the first one
-            var syllableI = 1;
             var noteI = 1;
             var ccs = new List<string>();
             var position = 0;
             var lastSymbolI = firstVowelId + 1;
-            for (; lastSymbolI < symbols.Length & syllableI < notes.Length; lastSymbolI++) {
+            for (; lastSymbolI < symbols.Length & noteI < notes.Length; lastSymbolI++) {
                 if (!vowelIds.Contains(lastSymbolI)) {
                     ccs.Add(symbols[lastSymbolI]);
                 } else {
-                    position += notes[syllableI - 1].duration;
-                    syllables[syllableI] = new Syllable() {
-                        prevV = syllables[syllableI - 1].v,
+                    position += notes[noteI - 1].duration;
+                    syllables[noteI] = new Syllable() {
+                        prevV = syllables[noteI - 1].v,
                         cc = ccs.ToArray(),
                         v = symbols[lastSymbolI],
-                        tone = syllables[syllableI - 1].vowelTone,
+                        tone = syllables[noteI - 1].vowelTone,
                         duration = notes[noteI - 1].duration,
                         position = position,
                         vowelTone = notes[noteI].tone
                     };
                     ccs = new List<string>();
-                    syllableI++;
+                    noteI++;
                 }
             }
 
