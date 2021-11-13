@@ -219,7 +219,7 @@ namespace OpenUtau.Plugin.Builtin {
                     var subResult = dictionary.Query(subword);
                     if (subResult == null) {
                         subResult = HandleWordNotFound(subword);
-                        if (subword == null) {
+                        if (subResult == null) {
                             return null;
                         }
                     }
@@ -521,7 +521,7 @@ namespace OpenUtau.Plugin.Builtin {
                 return;
             var filename = Path.Combine("Dictionaries", dictionaryName);
             if (!File.Exists(filename)) {
-                Log.Error("Dictionary not found");
+                Log.Error($"Dictionary not found in path: {Path.GetFullPath(filename)}");
                 return;
             }
             try {
@@ -541,7 +541,7 @@ namespace OpenUtau.Plugin.Builtin {
                 dictionaries[GetType()] = dict;
             }
             catch (Exception ex) {
-                Log.Error(ex, "Failed to read dictionary");
+                Log.Error(ex, $"Failed to read dictionary {dictionaryName}");
             }
         }
 
