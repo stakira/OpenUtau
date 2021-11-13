@@ -6,6 +6,7 @@ using OpenUtau.Core.Ustx;
 using System.Linq;
 using System.IO;
 using Serilog;
+using System.Threading.Tasks;
 
 namespace OpenUtau.Plugin.Builtin {
     /// <summary>
@@ -167,9 +168,11 @@ namespace OpenUtau.Plugin.Builtin {
         public override void SetSinger(USinger singer) {
             this.singer = singer;
             if (!hasDictionary) {
-                ReadDictionary();
+                Task.Run(() => ReadDictionary()).ContinueWith((task) => Init());
             }
-            Init();
+            else {
+                Init();
+            }
         }
 
         protected USinger singer;
@@ -181,6 +184,7 @@ namespace OpenUtau.Plugin.Builtin {
         private const string FORCED_ALIAS_SYMBOL = "?";
         private string error = "";
         private readonly string[] wordSeparators = new[] { " ", "_" };
+        private readonly string[] wordSeparator = new[] { "  " };
 
         /// <summary>
         /// Returns list of vowels
@@ -496,15 +500,22 @@ namespace OpenUtau.Plugin.Builtin {
         /// <param name="builder"></param>
         protected virtual void ParseDictionary(string dictionaryText, G2pDictionary.Builder builder) {
             var replacements = GetDictionaryPhonemesReplacement();
-
-            dictionaryText.Split('\n')
-                    .Where(line => !line.StartsWith(";;;"))
-                    .Select(line => line.Trim())
-                    .Select(line => line.Split(new string[] { "  " }, StringSplitOptions.None))
-                    .Where(parts => parts.Length == 2)
-                    .ToList()
-                    .ForEach(parts => builder.AddEntry(parts[0].ToLowerInvariant(), GetDictionaryWordPhonemes(parts[1]).Select(
-                        n => replacements != null && replacements.ContainsKey(n) ? replacements[n] : n)));
+            Action<string> action = line => {
+                if (line.StartsWith(";;;")) {
+                    return;
+                }
+                var parts = line.Trim().Split(wordSeparator, StringSplitOptions.None);
+                if (parts.Length != 2) {
+                    return;
+                }
+                string key = parts[0].ToLowerInvariant();
+                var values = GetDictionaryWordPhonemes(parts[1]).Select(
+                        n => replacements != null && replacements.ContainsKey(n) ? replacements[n] : n);
+                lock (builder) {
+                    builder.AddEntry(key, values);
+                };
+            };
+            dictionaryText.Split('\n').AsParallel().ForAll(action);
         }
 
         #region helpers
