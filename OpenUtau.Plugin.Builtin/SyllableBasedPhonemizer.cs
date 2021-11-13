@@ -70,17 +70,17 @@ namespace OpenUtau.Plugin.Builtin {
             public int prevWordConsonantsCount;
 
             // helpers
-            public bool IsRV => prevV == "" && cc.Length == 0;
+            public bool IsStartingV => prevV == "" && cc.Length == 0;
             public bool IsVV => prevV != "" && cc.Length == 0;
 
-            public bool IsRCV => prevV == "" && cc.Length > 0;
+            public bool IsStartingCV => prevV == "" && cc.Length > 0;
             public bool IsVCV => prevV != "" && cc.Length > 0;
 
-            public bool IsRC1V => prevV == "" && cc.Length == 1;
-            public bool IsVC1V => prevV != "" && cc.Length == 1;
+            public bool IsStartingCVWithOneConsonant => prevV == "" && cc.Length == 1;
+            public bool IsVCVWithOneConsonant => prevV != "" && cc.Length == 1;
 
-            public bool IsRCmV => prevV == "" && cc.Length > 1;
-            public bool IsVCmV => prevV != "" && cc.Length > 1;
+            public bool IsStartingCVWithMoreThanOneConsonant => prevV == "" && cc.Length > 1;
+            public bool IsVCVWithMoreThanOneConsonant => prevV != "" && cc.Length > 1;
 
             public string[] PreviousWordCc => cc.Take(prevWordConsonantsCount).ToArray();
             public string[] CurrentWordCc => cc.Skip(prevWordConsonantsCount).ToArray();
@@ -113,10 +113,10 @@ namespace OpenUtau.Plugin.Builtin {
             public int tone;
 
             // helpers
-            public bool IsVR => cc.Length == 0;
-            public bool IsVCR => cc.Length > 0;
-            public bool IsVC1R => cc.Length == 1;
-            public bool IsVCmR => cc.Length > 1;
+            public bool IsEndingV => cc.Length == 0;
+            public bool IsEndingVC => cc.Length > 0;
+            public bool IsEndingVCWithOneConsonant => cc.Length == 1;
+            public bool IsEndingVCWithMoreThanOneConsonant => cc.Length > 1;
 
             public override string ToString() {
                 return $"({prevV}) {(cc != null ? string.Join(" ", cc) : "")}";

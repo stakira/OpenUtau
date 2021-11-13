@@ -40,13 +40,13 @@ namespace OpenUtau.Plugin.Builtin {
 
             string basePhoneme;
             var phonemes = new List<string>();
-            if (syllable.IsRV) {
+            if (syllable.IsStartingV) {
                 basePhoneme = $"-{v}";
             }
             else if (syllable.IsVV) {
                 basePhoneme = v;
             }
-            else if (syllable.IsRCV) {
+            else if (syllable.IsStartingCV) {
                 basePhoneme = $"-{cc.Last()}{v}";
                 for (var i = 0; i < cc.Length - 1; i++) {
                     phonemes.Add($"-{cc[i]}");
@@ -74,7 +74,7 @@ namespace OpenUtau.Plugin.Builtin {
             string v = ending.prevV;
 
             var phonemes = new List<string>();
-            if (ending.IsVR) {
+            if (ending.IsEndingV) {
                 phonemes.Add($"{v}-");
             }
             else {
