@@ -137,14 +137,14 @@ namespace OpenUtau.Plugin.Builtin {
 
             var phonemes = new List<Phoneme>();
             foreach (var syllable in syllables) {
-                phonemes.AddRange(MakePhonemes(ProcessSyllable(syllable), syllable.duration, syllable.position,
+                phonemes.AddRange(MakePhonemes(ProcessSyllable(syllable), mainNote.phonemeAttributes, phonemes.Count, syllable.duration, syllable.position,
                     syllable.tone, syllable.vowelTone, false));
             }
             if (!nextNeighbour.HasValue) {
                 var tryEnding = MakeEnding(notes);
                 if (tryEnding.HasValue) {
                     var ending = tryEnding.Value;
-                    phonemes.AddRange(MakePhonemes(ProcessEnding(ending), ending.duration, ending.position,
+                    phonemes.AddRange(MakePhonemes(ProcessEnding(ending), mainNote.phonemeAttributes, phonemes.Count, ending.duration, ending.position,
                         ending.tone, ending.tone, true));
                 }
             }
@@ -411,7 +411,8 @@ namespace OpenUtau.Plugin.Builtin {
                 var durationFinal = i != notesToSplit - 1 ? duration : lastNote.duration - duration * (notesToSplit - 1);
                 newNotes.Add(new Note() {
                     position = position,
-                    duration = durationFinal
+                    duration = durationFinal,
+                    phonemeAttributes = lastNote.phonemeAttributes
                 });
                 position += durationFinal;
             }
@@ -460,13 +461,14 @@ namespace OpenUtau.Plugin.Builtin {
         /// Defines basic transition length before scaling it according to tempo and note length
         /// Use GetTransitionBasicLengthMsByConstant, GetTransitionBasicLengthMsByOto or your own implementation
         /// </summary>
+        /// <param name="alias">Mapped alias</param>
         /// <returns></returns>
-        protected virtual double GetTransitionBasicLengthMs(string alias = "", int tone = 64) {
+        protected virtual double GetTransitionBasicLengthMs(string alias = "") {
             return GetTransitionBasicLengthMsByConstant();
         }
 
-        protected double GetTransitionBasicLengthMsByOto(string alias, int tone) {
-            if (alias != null && alias.Length > 0 && singer.TryGetMappedOto(alias, tone, out var oto)) {
+        protected double GetTransitionBasicLengthMsByOto(string alias) {
+            if (alias != null && alias.Length > 0 && singer.Otos.TryGetValue(alias, out var oto)) {
                 return oto.Preutter * GetTempoNoteLengthFactor();
             } else {
                 return GetTransitionBasicLengthMsByConstant();
@@ -623,13 +625,18 @@ namespace OpenUtau.Plugin.Builtin {
             return vowelIds;
         }
 
-        private Phoneme[] MakePhonemes(List<string> phonemeSymbols, int containerLength, int position, int tone, int lastTone, bool isEnding) {
+        private Phoneme[] MakePhonemes(List<string> phonemeSymbols, PhonemeAttributes[] phonemeAttributes, int phonemesOffset,
+            int containerLength, int position, int tone, int lastTone, bool isEnding) {
+
             var phonemes = new Phoneme[phonemeSymbols.Count];
             for (var i = 0; i < phonemeSymbols.Count; i++) {
                 var phonemeI = phonemeSymbols.Count - i - 1;
                 var validatedAlias = ValidateAlias(phonemeSymbols[phonemeI]);
+                var attr = phonemeAttributes?.FirstOrDefault(attr => attr.index == phonemesOffset + phonemeI) ?? default;
+                var currentTone = phonemeI == phonemeSymbols.Count - 1 ? lastTone : tone;
+                phonemes[phonemeI].phoneme = MapPhoneme(validatedAlias, currentTone, attr.voiceColor, attr.alternate?.ToString() ?? string.Empty, singer);
 
-                var transitionLengthTick = MsToTick(GetTransitionBasicLengthMs(validatedAlias, tone));
+                var transitionLengthTick = MsToTick(GetTransitionBasicLengthMs(phonemes[phonemeI].phoneme));
                 if (i == 0) {
                     if (!isEnding) {
                         transitionLengthTick = 0;
@@ -638,9 +645,6 @@ namespace OpenUtau.Plugin.Builtin {
                         transitionLengthTick *= 2;
                     }
                 }
-
-                var currentTone = phonemeI == phonemeSymbols.Count - 1 ? lastTone : tone;
-                phonemes[phonemeI].phoneme = MapPhoneme(validatedAlias, currentTone, singer);
                 // yet it's actually a length; will became position in ScalePhonemes
                 phonemes[phonemeI].position = transitionLengthTick;
             }

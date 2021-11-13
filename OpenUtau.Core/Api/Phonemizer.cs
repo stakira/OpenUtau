@@ -227,5 +227,20 @@ namespace OpenUtau.Api {
             }
             return phoneme;
         }
+        public static string MapPhoneme(string phoneme, int tone, string color, USinger singer) {
+            if (singer.TryGetMappedOto(phoneme, tone, color, out var oto)) {
+                phoneme = oto.Alias;
+            }
+            return phoneme;
+        }
+        public static string MapPhoneme(string phoneme, int tone, string color, string alt, USinger singer) {
+            if (singer.TryGetMappedOto(phoneme + alt, tone, color, out var otoAlt)) {
+                return otoAlt.Alias;
+            }
+            if (singer.TryGetMappedOto(phoneme, tone, color, out var oto)) {
+                return oto.Alias;
+            }
+            return phoneme;
+        }
     }
 }

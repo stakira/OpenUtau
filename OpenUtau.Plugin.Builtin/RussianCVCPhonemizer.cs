@@ -99,7 +99,7 @@ namespace OpenUtau.Plugin.Builtin {
             return aliasesFallback.ContainsKey(alias) ? aliasesFallback[alias] : alias;
         }
 
-        protected override double GetTransitionBasicLengthMs(string alias = "", int tone = 64) {
+        protected override double GetTransitionBasicLengthMs(string alias = "") {
             foreach (var c in shortConsonants) {
                 if (alias.EndsWith(c)) {
                     return base.GetTransitionBasicLengthMs() * 0.75;
