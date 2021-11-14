@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using OpenUtau.Api;
+using Serilog;
 
 namespace OpenUtau.Plugin.Builtin {
     [Phonemizer("English CVVC Phonemizer", "EN CVVC", "nago")]
@@ -52,18 +53,21 @@ namespace OpenUtau.Plugin.Builtin {
                 if (consonants.Contains(cc[0])) {
                     phonemes.Add($"- {cc[0]}");
                 }
+            } else if (syllable.IsStartingCV) {
+                basePhoneme = $"";
             } else { // VCV
                 basePhoneme = $"{cc.Last()}{v}";
                 phonemes.Add($"{prevV} {cc[0]}");
             }
             for (var i = 0; i < cc.Length - 1; i++) {
                 // same for any transition
-                var currentCc = $"{cc[i]} {cc[i + 1]}";
+                var currentCc = $"{cc[i]}{cc[i + 1]}";
                 if (!HasOto(currentCc, syllable.tone)) {
                     continue;
                 }
                 phonemes.Add(currentCc);
             }
+
             phonemes.Add(basePhoneme);
             return phonemes;
         }
@@ -88,5 +92,16 @@ namespace OpenUtau.Plugin.Builtin {
             }
             return phonemes;
         }
+
+        protected override string ValidateAlias(string alias) {
+            foreach (var consonant in new[] { "h", "s" }) {
+                foreach (var vowel in new[] { "3", "aI" }) {
+                    alias = alias.Replace($"{vowel} {consonant}", $"{vowel} -");
+                    alias = alias.Replace($"bV", $"bA");
+                }
+                alias = alias.Replace($"{consonant}{consonant}", $"{consonant} -");
+            }
+            return alias;
+        } 
     }  
 }
