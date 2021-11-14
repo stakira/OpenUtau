@@ -32,7 +32,12 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             }
             else if (syllable.IsVV) {
-                basePhoneme = v;
+                if (v != prevV || !AreTonesFromTheSameSubbank(syllable.tone, syllable.vowelTone)) {
+                    basePhoneme = v;
+                } else {
+                    // the previous alias will be extended
+                    basePhoneme = null;
+                }
             } else { // VCV
                 basePhoneme = $"{cc.Last()}{v}";
                 phonemes.Add($"{prevV} {cc[0]}"); ;
