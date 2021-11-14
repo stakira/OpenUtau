@@ -163,7 +163,8 @@ namespace OpenUtau.Plugin.Builtin {
 
                 int totalDuration = notes.Sum(n => n.duration);
                 int vcLength = 120;
-                if (singer.TryGetMappedOto(nextLyric, note.tone, out var oto)) { // No color yet.
+                var nextAttr = nextNeighbour.Value.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
+                if (singer.TryGetMappedOto(nextLyric, nextNeighbour.Value.tone, nextAttr.voiceColor, out var oto)) {
                     vcLength = MsToTick(oto.Preutter);
                 }
                 vcLength = Math.Min(totalDuration / 2, vcLength);
