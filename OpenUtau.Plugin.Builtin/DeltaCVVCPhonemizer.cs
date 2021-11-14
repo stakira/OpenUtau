@@ -37,6 +37,7 @@ namespace OpenUtau.Plugin.Builtin {
             } else if (syllable.IsVV) {
                 basePhoneme = $"{prevV} {v}";
             } else if (syllable.IsStartingCVWithOneConsonant) {
+                // TODO: move to config -CV or -C CV
                 var rcv = $"- {cc[0]}{v}";
                 if (HasOto(rcv, syllable.tone)) {
                     basePhoneme = rcv;
@@ -49,9 +50,9 @@ namespace OpenUtau.Plugin.Builtin {
             } else if (syllable.IsStartingCVWithMoreThanOneConsonant) {
                 basePhoneme = $"{cc.Last()}{v}";
                 if (consonants.Contains(cc[0])) {
-                    phonemes.Add($"- {cc[0]} ");
+                    phonemes.Add($"- {cc[0]}");
                 }
-            } else {
+            } else { // VCV
                 basePhoneme = $"{cc.Last()}{v}";
                 phonemes.Add($"{prevV} {cc[0]}");
             }
@@ -79,7 +80,7 @@ namespace OpenUtau.Plugin.Builtin {
                 if (HasOto(vcr, ending.tone)) {
                     phonemes.Add(vcr);
                 } else {
-                    phonemes.Add($"{v} {cc[0]}-");
+                    phonemes.Add($"{v} {cc[0]}");
                 }
             } else if (ending.IsEndingVCWithMoreThanOneConsonant) {
                 phonemes.Add($"{v} {cc[0]}");
