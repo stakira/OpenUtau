@@ -84,11 +84,6 @@ namespace OpenUtau.App.ViewModels {
                 if (DefaultValue < Min || DefaultValue > Max) {
                     return "Default value must be between min and max.";
                 }
-            } else {
-                var options = OptionValues.Split(',');
-                if (options.Length < 2) {
-                    return "No options specified.";
-                }
             }
             return null;
         }

@@ -84,19 +84,26 @@ namespace OpenUtau.Plugin.Builtin {
             var note = notes[0];
             var currentUnicode = ToUnicodeElements(note.lyric);
             var currentLyric = note.lyric;
+            var attr0 = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
+            var attr1 = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 1) ?? default;
 
             if (prevNeighbour == null) {
                 // Use "- V" or "- CV" if present in voicebank
                 var initial = $"- {currentLyric}";
-                if (singer.TryGetMappedOto(initial, note.tone, out var _)) {
-                    currentLyric = initial;
+                if (singer.TryGetMappedOto(initial, note.tone, attr0.voiceColor, out var oto)) {
+                    currentLyric = oto.Alias;
                 }
             } else if (plainVowels.Contains(currentLyric)) {
                 var prevUnicode = ToUnicodeElements(prevNeighbour?.lyric);
                 // Current note is VV
                 if (vowelLookup.TryGetValue(prevUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
                     currentLyric = $"{vow} {currentLyric}";
+                    if (singer.TryGetMappedOto(currentLyric, note.tone, attr0.voiceColor, out var oto)) {
+                        currentLyric = oto.Alias;
+                    }
                 }
+            } else if (singer.TryGetMappedOto(currentLyric, note.tone, attr0.voiceColor, out var oto)) {
+                currentLyric = oto.Alias;
             }
 
             if (nextNeighbour != null) {
@@ -142,7 +149,9 @@ namespace OpenUtau.Plugin.Builtin {
                 }
 
                 var vcPhoneme = $"{vowel} {consonant}";
-                if (!singer.TryGetMappedOto(vcPhoneme, note.tone, out var _)) {
+                if (singer.TryGetMappedOto(vcPhoneme, note.tone, attr1.voiceColor, out var oto1)) {
+                    vcPhoneme = oto1.Alias;
+                } else {
                     return new Result {
                         phonemes = new Phoneme[] {
                             new Phoneme() {
@@ -154,7 +163,8 @@ namespace OpenUtau.Plugin.Builtin {
 
                 int totalDuration = notes.Sum(n => n.duration);
                 int vcLength = 120;
-                if (singer.TryGetMappedOto(nextLyric, note.tone, out var oto)) {
+                var nextAttr = nextNeighbour.Value.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
+                if (singer.TryGetMappedOto(nextLyric, nextNeighbour.Value.tone, nextAttr.voiceColor, out var oto)) {
                     vcLength = MsToTick(oto.Preutter);
                 }
                 vcLength = Math.Min(totalDuration / 2, vcLength);
