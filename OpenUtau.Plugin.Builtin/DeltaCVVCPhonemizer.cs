@@ -87,10 +87,6 @@ namespace OpenUtau.Plugin.Builtin {
             } else {
                 phonemes.Add($"{v} {cc[0]}");
                 phonemes.Add($"{cc[0]} {cc[1]}-");
-/*                if (consonants.Contains(cc.Last())) {
-                    phonemes.Add($"{cc.Last()} -");
-                }
-*/
             }
             return phonemes;
         }
