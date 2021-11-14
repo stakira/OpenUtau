@@ -78,19 +78,20 @@ namespace OpenUtau.Core.Render {
             }
             items = items.OrderBy(item => item.PosMs).ToList();
             int threads = Util.Preferences.Default.PrerenderThreads;
-            var progress = new Progress(items.Count);
             var task = Task.Run(() => {
-                var progress = new Progress(items.Count);
-                Parallel.ForEach(source: items, parallelOptions: new ParallelOptions() {
-                    MaxDegreeOfParallelism = threads
-                }, body: item => {
-                    if (source.Token.IsCancellationRequested) {
-                        return;
-                    }
-                    item.progress = progress;
-                    Resample(item);
-                });
-                progress.Clear();
+                if (items.Count > 0) { 
+                    var progress = new Progress(items.Count);
+                    Parallel.ForEach(source: items, parallelOptions: new ParallelOptions() {
+                        MaxDegreeOfParallelism = threads
+                    }, body: item => {
+                        if (source.Token.IsCancellationRequested) {
+                            return;
+                        }
+                        item.progress = progress;
+                        Resample(item);
+                    });
+                    progress.Clear();
+                }
             });
             var master = new MasterAdapter(new WaveMix(faders));
             master.SetPosition((int)(project.TickToMillisecond(startTick) * 44100 / 1000) * 2);
@@ -131,16 +132,18 @@ namespace OpenUtau.Core.Render {
                             .ToArray();
                     }
                     var progress = new Progress(items.Length);
-                    Parallel.ForEach(source: items, parallelOptions: new ParallelOptions() {
-                        MaxDegreeOfParallelism = threads
-                    }, body: item => {
-                        if (source.Token.IsCancellationRequested) {
-                            return;
-                        }
-                        item.progress = progress;
-                        Resample(item);
-                    });
-                    progress.Clear();
+                    if (items.Length > 0) {
+                        Parallel.ForEach(source: items, parallelOptions: new ParallelOptions() {
+                            MaxDegreeOfParallelism = threads
+                        }, body: item => {
+                            if (source.Token.IsCancellationRequested) {
+                                return;
+                            }
+                            item.progress = progress;
+                            Resample(item);
+                        });
+                        progress.Clear();
+                    }
                 } catch (Exception e) {
                     if (!source.IsCancellationRequested) {
                         Log.Error(e, "Failed to pre-render.");
