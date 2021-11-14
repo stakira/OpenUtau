@@ -78,19 +78,22 @@ namespace OpenUtau.Plugin.Builtin {
             if (ending.IsEndingV) {
                 phonemes.Add($"{v} -");
             } else if (ending.IsEndingVCWithOneConsonant) {
-                var vcr = $"{v}{cc[0]} -";
+                var vcr = $"{v} {cc[0]}-";
                 if (HasOto(vcr, ending.tone)) {
                     phonemes.Add(vcr);
                 } else {
                     phonemes.Add($"{v} {cc[0]}");
                 }
-            } else if (ending.IsEndingVCWithMoreThanOneConsonant) {
+            } else {
                 phonemes.Add($"{v} {cc[0]}");
                 phonemes.Add($"{cc[0]} {cc[1]}-");
+/*                if (consonants.Contains(cc.Last())) {
+                    phonemes.Add($"{cc.Last()} -");
+                }
+*/
             }
             return phonemes;
         }
-
         protected override string ValidateAlias(string alias) {
             foreach (var consonant in new[] { "h", "s" }) {
                 foreach (var vowel in new[] { "3", "aI" }) {
