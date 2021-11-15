@@ -69,6 +69,13 @@ namespace OpenUtau.Plugin.Builtin {
             /// </summary>
             public int prevWordConsonantsCount;
 
+            /// <summary>
+            /// If true, you may use alias extension instead of VV, by putting the phoneme as null if vowels match. 
+            /// If you do this when canAliasBeExtended == false, the note will produce no phoneme and there will be a break.
+            /// Use CanMakeAliasExtension() to pass all checks if alias extension is possible
+            /// </summary>
+            public bool canAliasBeExtended;
+
             // helpers
             public bool IsStartingV => prevV == "" && cc.Length == 0;
             public bool IsVV => prevV != "" && cc.Length == 0;
@@ -334,7 +341,8 @@ namespace OpenUtau.Plugin.Builtin {
                         tone = notes[noteI - 1].tone,
                         duration = notes[noteI - 1].duration,
                         position = position,
-                        vowelTone = notes[noteI].tone
+                        vowelTone = notes[noteI].tone,
+                        canAliasBeExtended = true // for all not-first notes is allowed
                     };
                     ccs = new List<string>();
                     noteI++;
@@ -545,6 +553,16 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             }
             return false;
+        }
+
+        /// <summary>
+        /// if true, you can put phoneme as null so the previous alias will be extended
+        /// </summary>
+        /// <param name="syllable"></param>
+        /// <returns></returns>
+        protected bool CanMakeAliasExtension(Syllable syllable) {
+            return syllable.canAliasBeExtended && syllable.prevV == syllable.v && syllable.cc.Length == 0
+                && AreTonesFromTheSameSubbank(syllable.tone, syllable.vowelTone);
         }
 
         /// <summary>
