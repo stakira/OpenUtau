@@ -246,8 +246,9 @@ namespace OpenUtau.Plugin.Builtin {
                 foreach (var subword in note.lyric.Trim().ToLowerInvariant().Split(wordSeparators, StringSplitOptions.RemoveEmptyEntries)) {
                     var subResult = dictionary.Query(subword);
                     if (subResult == null) {
+                        Log.Warning($"Subword '{subword}' from word '{note.lyric}' can't be found in the dictionary");
                         subResult = HandleWordNotFound(subword);
-                        if (subword == null) {
+                        if (subResult == null) {
                             return null;
                         }
                     }
@@ -317,27 +318,26 @@ namespace OpenUtau.Plugin.Builtin {
             }
 
             // normal syllables after the first one
-            var syllableI = 1;
             var noteI = 1;
             var ccs = new List<string>();
             var position = 0;
             var lastSymbolI = firstVowelId + 1;
-            for (; lastSymbolI < symbols.Length & syllableI < notes.Length; lastSymbolI++) {
+            for (; lastSymbolI < symbols.Length & noteI < notes.Length; lastSymbolI++) {
                 if (!vowelIds.Contains(lastSymbolI)) {
                     ccs.Add(symbols[lastSymbolI]);
                 } else {
-                    position += notes[syllableI - 1].duration;
-                    syllables[syllableI] = new Syllable() {
-                        prevV = syllables[syllableI - 1].v,
+                    position += notes[noteI - 1].duration;
+                    syllables[noteI] = new Syllable() {
+                        prevV = syllables[noteI - 1].v,
                         cc = ccs.ToArray(),
                         v = symbols[lastSymbolI],
-                        tone = syllables[syllableI - 1].vowelTone,
+                        tone = notes[noteI - 1].tone,
                         duration = notes[noteI - 1].duration,
                         position = position,
                         vowelTone = notes[noteI].tone
                     };
                     ccs = new List<string>();
-                    syllableI++;
+                    noteI++;
                 }
             }
 
@@ -547,6 +547,32 @@ namespace OpenUtau.Plugin.Builtin {
             return false;
         }
 
+        /// <summary>
+        /// if current syllable is VV and previous one is from the same pitch,
+        /// you may wan't to just extend the previous alias. Put the phoneme as null fot that
+        /// </summary>
+        /// <param name="tone1"></param>
+        /// <param name="tone2"></param>
+        /// <returns></returns>
+        protected bool AreTonesFromTheSameSubbank(int tone1, int tone2) {
+            if (singer.Subbanks.Count == 1) {
+                return true;
+            }
+            if (tone1 == tone2) {
+                return true;
+            }
+            var toneSets = singer.Subbanks.Select(n => n.toneSet);
+            foreach (var toneSet in toneSets) {
+                if (toneSet.Contains(tone1) && toneSet.Contains(tone2)) {
+                    return true;
+                }
+                if (toneSet.Contains(tone1) != toneSet.Contains(tone2)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         #endregion
 
         #region private
@@ -567,7 +593,7 @@ namespace OpenUtau.Plugin.Builtin {
                 return;
             var filename = Path.Combine("Dictionaries", dictionaryName);
             if (!File.Exists(filename)) {
-                Log.Error("Dictionary not found");
+                Log.Error($"Dictionary not found in path: {Path.GetFullPath(filename)}");
                 return;
             }
             try {
@@ -587,7 +613,7 @@ namespace OpenUtau.Plugin.Builtin {
                 dictionaries[GetType()] = dict;
             }
             catch (Exception ex) {
-                Log.Error(ex, "Failed to read dictionary");
+                Log.Error(ex, $"Failed to read dictionary {dictionaryName}");
             }
         }
 
@@ -631,22 +657,31 @@ namespace OpenUtau.Plugin.Builtin {
             var phonemes = new Phoneme[phonemeSymbols.Count];
             for (var i = 0; i < phonemeSymbols.Count; i++) {
                 var phonemeI = phonemeSymbols.Count - i - 1;
-                var validatedAlias = ValidateAlias(phonemeSymbols[phonemeI]);
                 var attr = phonemeAttributes?.FirstOrDefault(attr => attr.index == phonemesOffset + phonemeI) ?? default;
                 var currentTone = phonemeI == phonemeSymbols.Count - 1 ? lastTone : tone;
-                phonemes[phonemeI].phoneme = MapPhoneme(validatedAlias, currentTone, attr.voiceColor, attr.alternate?.ToString() ?? string.Empty, singer);
 
-                var transitionLengthTick = MsToTick(GetTransitionBasicLengthMs(phonemes[phonemeI].phoneme));
-                if (i == 0) {
-                    if (!isEnding) {
-                        transitionLengthTick = 0;
+                var validatedAlias = phonemeSymbols[phonemeI];
+                if (validatedAlias != null) {
+                    validatedAlias = ValidateAlias(validatedAlias);
+                    validatedAlias = MapPhoneme(validatedAlias, currentTone, attr.voiceColor, attr.alternate?.ToString() ?? string.Empty, singer);
+
+                    phonemes[phonemeI].phoneme = validatedAlias;
+                    var transitionLengthTick = MsToTick(GetTransitionBasicLengthMs(phonemes[phonemeI].phoneme));
+                    if (i == 0) {
+                        if (!isEnding) {
+                            transitionLengthTick = 0;
+                        } else {
+                            transitionLengthTick *= 2;
+                        }
                     }
-                    else {
-                        transitionLengthTick *= 2;
-                    }
+                    // yet it's actually a length; will became position in ScalePhonemes
+                    phonemes[phonemeI].position = transitionLengthTick;
                 }
-                // yet it's actually a length; will became position in ScalePhonemes
-                phonemes[phonemeI].position = transitionLengthTick;
+                else {
+                    phonemes[phonemeI].phoneme = null;
+                    phonemes[phonemeI].position = 0;
+                    phonemesOffset -= 1;
+                }
             }
             
             return ScalePhonemes(phonemes, position, isEnding ? phonemeSymbols.Count : phonemeSymbols.Count - 1, containerLength);
@@ -670,7 +705,7 @@ namespace OpenUtau.Plugin.Builtin {
                 offset += finalLengthTick;
             }
 
-            return phonemes;
+            return phonemes.Where(n => n.phoneme != null).ToArray();
         }
 
         #endregion
