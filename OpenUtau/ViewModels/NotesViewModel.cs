@@ -510,7 +510,6 @@ namespace OpenUtau.App.ViewModels {
                         FocusNote(focusNote.note);
                     }
                 } else if (cmd is ValidateProjectNotification) {
-                    Project.Validate();
                     OnPartModified();
                     MessageBus.Current.SendMessage(new NotesRefreshEvent());
                 }

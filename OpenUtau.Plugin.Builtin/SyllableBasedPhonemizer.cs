@@ -505,7 +505,7 @@ namespace OpenUtau.Plugin.Builtin {
         /// <param name="builder"></param>
         protected virtual void ParseDictionary(string dictionaryText, G2pDictionary.Builder builder) {
             var replacements = GetDictionaryPhonemesReplacement();
-            Action<string> action = line => {
+            foreach (var line in dictionaryText.Split('\n')) { 
                 if (line.StartsWith(";;;")) {
                     return;
                 }
@@ -520,7 +520,6 @@ namespace OpenUtau.Plugin.Builtin {
                     builder.AddEntry(key, values);
                 };
             };
-            dictionaryText.Split('\n').AsParallel().ForAll(action);
         }
 
         #region helpers

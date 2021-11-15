@@ -30,20 +30,13 @@ namespace OpenUtau.Api {
                         .Where(parts => parts.Length == 2)
                         .ToList()
                         .ForEach(parts => builder.AddSymbol(parts[0], parts[1]));
-                    Core.Api.Resources.cmudict_0_7b.Split('\n').AsParallel().ForAll(line => {
-                        if (line.StartsWith(";;;")) {
-                            return;
-                        }
-                        line = line.Trim().ToLowerInvariant();
-                        var parts = line.Split(new string[] { "  " }, StringSplitOptions.None);
-                        if (parts.Length != 2) {
-                            return;
-                        }
-                        var values = parts[1].Split().Select(symbol => RemoveTailDigits(symbol));
-                        lock (builder) {
-                            builder.AddEntry(parts[0], values);
-                        }
-                    });
+                    Core.Api.Resources.cmudict_0_7b.Split('\n')
+                        .Where(line => !line.StartsWith(";;;"))
+                        .Select(line => line.Trim().ToLowerInvariant())
+                        .Select(line => line.Split(new string[] { "  " }, StringSplitOptions.None))
+                        .Where(parts => parts.Length == 2)
+                        .ToList()
+                        .ForEach(parts => builder.AddEntry(parts[0], parts[1].Split().Select(symbol => RemoveTailDigits(symbol))));
                     dict = builder.Build();
                     lock (locker) {
                         shared[key] = dict;
