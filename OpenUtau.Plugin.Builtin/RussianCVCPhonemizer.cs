@@ -44,7 +44,12 @@ namespace OpenUtau.Plugin.Builtin {
                 basePhoneme = $"-{v}";
             }
             else if (syllable.IsVV) {
-                basePhoneme = v;
+                if (v != prevV || !AreTonesFromTheSameSubbank(syllable.tone, syllable.vowelTone)) {
+                    basePhoneme = v;
+                } else {
+                    // the previous alias will be extended
+                    basePhoneme = null;
+                }
             }
             else if (syllable.IsStartingCV) {
                 basePhoneme = $"-{cc.Last()}{v}";
