@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -87,18 +87,17 @@ namespace OpenUtau.Plugin.Builtin {
             } else {
                 phonemes.Add($"{v} {cc[0]}");
                 phonemes.Add($"{cc[0]} {cc[1]}-");
-/*                if (consonants.Contains(cc.Last())) {
-                    phonemes.Add($"{cc.Last()} -");
-                }
-*/
             }
             return phonemes;
         }
         protected override string ValidateAlias(string alias) {
             foreach (var consonant in new[] { "h", "s" }) {
-                foreach (var vowel in new[] { "3", "aI" }) {
-                    alias = alias.Replace($"{vowel} {consonant}", $"{vowel} -");
+                foreach (var vowel in new[] { "a", "A", "3", "aI", "V", "i", "u" }) {
+                //    alias = alias.Replace($"{vowel} {consonant}", $"{vowel} -");
+                    alias = alias.Replace($"{vowel} h", $"{vowel} -");
                     alias = alias.Replace($"bV", $"bA");
+                    alias = alias.Replace($"V b", $"A b");
+                    alias = alias.Replace($"r t-", $"r t");
                 }
                 alias = alias.Replace($"{consonant}{consonant}", $"{consonant} -");
             }
