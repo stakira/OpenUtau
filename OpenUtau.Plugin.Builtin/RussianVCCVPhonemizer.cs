@@ -39,7 +39,7 @@ namespace OpenUtau.Plugin.Builtin {
             if (syllable.IsStartingV) {
                 basePhoneme = $"- {v}";
             } else if (syllable.IsVV) {
-                if (v != prevV || !AreTonesFromTheSameSubbank(syllable.tone, syllable.vowelTone)) {
+                if (!CanMakeAliasExtension(syllable)) {
                     basePhoneme = $"{prevV} {v}";
                 } else {
                     // the previous alias will be extended
