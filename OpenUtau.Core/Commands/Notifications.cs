@@ -45,6 +45,10 @@ namespace OpenUtau.Core {
         public override string ToString() => "Save project";
     }
 
+    public class ValidateProjectNotification : UNotification {
+        public override string ToString() => "Validate Project";
+    }
+
     public class RedrawNotesNotification : UNotification {
         public override string ToString() => "Redraw Notes";
     }

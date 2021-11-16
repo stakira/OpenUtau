@@ -136,6 +136,8 @@ namespace OpenUtau.Core {
                     playPosTick = _cmd.playPosTick;
                 } else if (cmd is SingersChangedNotification) {
                     SearchAllSingers();
+                } else if (cmd is ValidateProjectNotification) {
+                    Project.Validate();
                 }
                 Publish(cmd);
                 if (!cmd.Silent) {

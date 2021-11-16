@@ -212,6 +212,24 @@ namespace OpenUtau.Api {
                 }
             }
         }
+        protected void OnAsyncInitStarted() {
+            DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, "Initializing phonemizer..."));
+        }
+
+        protected void OnAsyncInitFinished() {
+            DocManager.Inst.ExecuteCmd(new ValidateProjectNotification());
+            DocManager.Inst.ExecuteCmd(new PreRenderNotification());
+        }
+
+        protected Result MakeSimpleResult(string phoneme) {
+            return new Result() {
+                phonemes = new Phoneme[] {
+                    new Phoneme() {
+                        phoneme = phoneme
+                    }
+                }
+            };
+        }
 
         /// <summary>
         /// Utility method to map a phoneme alias to proper pitch using prefixmap.

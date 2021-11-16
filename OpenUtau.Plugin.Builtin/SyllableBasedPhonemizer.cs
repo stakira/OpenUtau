@@ -6,6 +6,7 @@ using OpenUtau.Core.Ustx;
 using System.Linq;
 using System.IO;
 using Serilog;
+using System.Threading.Tasks;
 
 namespace OpenUtau.Plugin.Builtin {
     /// <summary>
@@ -136,6 +137,9 @@ namespace OpenUtau.Plugin.Builtin {
             if (mainNote.lyric.StartsWith(FORCED_ALIAS_SYMBOL)) {
                 return MakeForcedAliasResult(mainNote);
             }
+            if (hasDictionary && isDictionaryLoading) {
+                return MakeSimpleResult("");
+            }
 
             var syllables = MakeSyllables(notes, MakeEnding(prevNeighbours));
             if (syllables == null) {
@@ -174,20 +178,24 @@ namespace OpenUtau.Plugin.Builtin {
         public override void SetSinger(USinger singer) {
             this.singer = singer;
             if (!hasDictionary) {
-                ReadDictionary();
+                ReadDictionaryAndInit();
             }
-            Init();
+            else {
+                Init();
+            }
         }
 
         protected USinger singer;
         protected bool hasDictionary => dictionaries.ContainsKey(GetType());
         protected G2pDictionary dictionary => dictionaries[GetType()];
+        protected bool isDictionaryLoading => dictionaries[GetType()] == null;
         protected double TransitionBasicLengthMs => 100;
 
         private static Dictionary<Type, G2pDictionary> dictionaries = new Dictionary<Type, G2pDictionary>();
         private const string FORCED_ALIAS_SYMBOL = "?";
         private string error = "";
         private readonly string[] wordSeparators = new[] { " ", "_" };
+        private readonly string[] wordSeparator = new[] { "  " };
 
         /// <summary>
         /// Returns list of vowels
@@ -498,20 +506,27 @@ namespace OpenUtau.Plugin.Builtin {
         /// <summary>
         /// Parses CMU dictionary, when phonemes are separated by spaces, and word vs phonemes are separated with two spaces,
         /// and replaces phonemes with replacement table
+        /// Is Running Async!
         /// </summary>
         /// <param name="dictionaryText"></param>
         /// <param name="builder"></param>
         protected virtual void ParseDictionary(string dictionaryText, G2pDictionary.Builder builder) {
             var replacements = GetDictionaryPhonemesReplacement();
-
-            dictionaryText.Split('\n')
-                    .Where(line => !line.StartsWith(";;;"))
-                    .Select(line => line.Trim())
-                    .Select(line => line.Split(new string[] { "  " }, StringSplitOptions.None))
-                    .Where(parts => parts.Length == 2)
-                    .ToList()
-                    .ForEach(parts => builder.AddEntry(parts[0].ToLowerInvariant(), GetDictionaryWordPhonemes(parts[1]).Select(
-                        n => replacements != null && replacements.ContainsKey(n) ? replacements[n] : n)));
+            foreach (var line in dictionaryText.Split('\n')) { 
+                if (line.StartsWith(";;;")) {
+                    return;
+                }
+                var parts = line.Trim().Split(wordSeparator, StringSplitOptions.None);
+                if (parts.Length != 2) {
+                    return;
+                }
+                string key = parts[0].ToLowerInvariant();
+                var values = GetDictionaryWordPhonemes(parts[1]).Select(
+                        n => replacements != null && replacements.ContainsKey(n) ? replacements[n] : n);
+                lock (builder) {
+                    builder.AddEntry(key, values);
+                };
+            };
         }
 
         #region helpers
@@ -596,16 +611,10 @@ namespace OpenUtau.Plugin.Builtin {
         #region private
 
         private Result MakeForcedAliasResult(Note note) {
-            return new Result {
-                phonemes = new Phoneme[] {
-                    new Phoneme {
-                        phoneme = note.lyric.Substring(1)
-                    }
-                }
-            };
+            return MakeSimpleResult(note.lyric.Substring(1));
         }
 
-        private void ReadDictionary() {
+        private void ReadDictionaryAndInit() {
             var dictionaryName = GetDictionaryName();
             if (dictionaryName == null)
                 return;
@@ -614,25 +623,28 @@ namespace OpenUtau.Plugin.Builtin {
                 Log.Error($"Dictionary not found in path: {Path.GetFullPath(filename)}");
                 return;
             }
-            try {
-                var dictionaryText = File.ReadAllText(filename);
-                var builder = G2pDictionary.NewBuilder();
-                var vowels = GetVowels();
-                foreach (var vowel in vowels) {
-                    builder.AddSymbol(vowel, true);
+            dictionaries[GetType()] = null;
+            OnAsyncInitStarted();
+            Task.Run(() => {
+                try {
+                    var dictionaryText = File.ReadAllText(filename);
+                    var builder = G2pDictionary.NewBuilder();
+                    var vowels = GetVowels();
+                    foreach (var vowel in vowels) {
+                        builder.AddSymbol(vowel, true);
+                    }
+                    var consonants = GetConsonants();
+                    foreach (var consonant in consonants) {
+                        builder.AddSymbol(consonant, false);
+                    }
+                    builder.AddEntry("a", new string[] { "a" });
+                    ParseDictionary(dictionaryText, builder);
+                    var dict = builder.Build();
+                    dictionaries[GetType()] = dict;
+                } catch (Exception ex) {
+                    Log.Error(ex, $"Failed to read dictionary {dictionaryName}");
                 }
-                var consonants = GetConsonants();
-                foreach (var consonant in consonants) {
-                    builder.AddSymbol(consonant, false);
-                }
-                builder.AddEntry("a", new string[] { "a" });
-                ParseDictionary(dictionaryText, builder);
-                var dict = builder.Build();
-                dictionaries[GetType()] = dict;
-            }
-            catch (Exception ex) {
-                Log.Error(ex, $"Failed to read dictionary {dictionaryName}");
-            }
+            }).ContinueWith((task) => { Init(); OnAsyncInitFinished(); });
         }
 
         private string[] ApplyExtensions(string[] symbols, Note[] notes) {

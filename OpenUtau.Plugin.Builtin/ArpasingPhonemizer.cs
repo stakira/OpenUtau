@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
 using Serilog;
@@ -22,6 +23,7 @@ namespace OpenUtau.Plugin.Builtin {
         private IG2p pluginDict;
         private IG2p singerDict;
         private IG2p mergedG2p;
+        private bool isDictionaryLoading;
 
         private readonly List<Tuple<int, int>> alignments = new List<Tuple<int, int>>();
 
@@ -42,25 +44,30 @@ namespace OpenUtau.Plugin.Builtin {
         /// Initializes the CMUdict.
         /// </summary>
         private void Initialize() {
-            // Load cmudict.
-            cmudict = G2pDictionary.GetShared("cmudict");
-            // Load g2p plugin dictionary.
-            string filepath = Path.Combine(PluginDir, "arpasing.yaml");
-            try {
-                CreateDefaultPluginDict(filepath);
-                if (File.Exists(filepath)) {
-                    pluginDict = G2pDictionary.NewBuilder().Load(File.ReadAllText(filepath)).Build();
+            isDictionaryLoading = true;
+            OnAsyncInitStarted();
+            System.Threading.Tasks.Task.Run(() => {
+                // Load cmudict.
+                cmudict = G2pDictionary.GetShared("cmudict");
+                // Load g2p plugin dictionary.
+                string filepath = Path.Combine(PluginDir, "arpasing.yaml");
+                try {
+                    CreateDefaultPluginDict(filepath);
+                    if (File.Exists(filepath)) {
+                        pluginDict = G2pDictionary.NewBuilder().Load(File.ReadAllText(filepath)).Build();
+                    }
+                } catch (Exception e) {
+                    Log.Error(e, $"Failed to load {filepath}");
                 }
-            } catch (Exception e) {
-                Log.Error(e, $"Failed to load {filepath}");
-            }
-            // Load g2p singer dictionary.
-            LoadSingerDict();
-            mergedG2p = new G2pFallbacks(new IG2p[] { pluginDict, singerDict, cmudict }.OfType<IG2p>().ToArray());
-            // Arpasing voicebanks are often incomplete. A fallback table is used to slightly improve the situation.
-            vowelFallback = "aa=ah,ae;ae=ah,aa;ah=aa,ae;ao=ow;ow=ao;eh=ae;ih=iy;iy=ih;uh=uw;uw=uh;aw=ao".Split(';')
-                .Select(entry => entry.Split('='))
-                .ToDictionary(parts => parts[0], parts => parts[1].Split(','));
+
+                // Load g2p singer dictionary.
+                LoadSingerDict();
+                mergedG2p = new G2pFallbacks(new IG2p[] { pluginDict, singerDict, cmudict }.OfType<IG2p>().ToArray());
+                // Arpasing voicebanks are often incomplete. A fallback table is used to slightly improve the situation.
+                vowelFallback = "aa=ah,ae;ae=ah,aa;ah=aa,ae;ao=ow;ow=ao;eh=ae;ih=iy;iy=ih;uh=uw;uw=uh;aw=ao".Split(';')
+                    .Select(entry => entry.Split('='))
+                    .ToDictionary(parts => parts[0], parts => parts[1].Split(','));
+            }).ContinueWith((task) => { isDictionaryLoading = false; OnAsyncInitFinished(); });
         }
 
         private void CreateDefaultPluginDict(string filepath) {
@@ -91,6 +98,9 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
+            if (isDictionaryLoading) {
+                return MakeSimpleResult("");
+            }
             var note = notes[0];
             // Get the symbols of previous note.
             var prevSymbols = prevNeighbour == null ? null : GetSymbols(prevNeighbour.Value);

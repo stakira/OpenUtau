@@ -509,6 +509,9 @@ namespace OpenUtau.App.ViewModels {
                     if (focusNote.part == Part) {
                         FocusNote(focusNote.note);
                     }
+                } else if (cmd is ValidateProjectNotification) {
+                    OnPartModified();
+                    MessageBus.Current.SendMessage(new NotesRefreshEvent());
                 }
             } else if (cmd is PartCommand partCommand) {
                 if (cmd is ReplacePartCommand replacePart) {
