@@ -136,6 +136,8 @@ namespace OpenUtau.Core {
                     playPosTick = _cmd.playPosTick;
                 } else if (cmd is SingersChangedNotification) {
                     SearchAllSingers();
+                } else if (cmd is ValidateProjectNotification) {
+                    Project.Validate();
                 }
                 Publish(cmd);
                 if (!cmd.Silent) {
@@ -182,6 +184,22 @@ namespace OpenUtau.Core {
             undoGroup = null;
             Log.Information("undoGroup ended");
             ExecuteCmd(new PreRenderNotification());
+        }
+
+        public void RollBackUndoGroup() {
+            if (undoGroup == null) {
+                Log.Error("No active undoGroup to rollback.");
+                return;
+            }
+            for (int i = undoGroup.Commands.Count - 1; i >= 0; i--) {
+                var cmd = undoGroup.Commands[i];
+                cmd.Unexecute();
+                if (i == 0) {
+                    Project.Validate();
+                }
+                Publish(cmd, true);
+            }
+            undoGroup.Commands.Clear();
         }
 
         public void Undo() {

@@ -57,6 +57,11 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void InitProject() {
+            var args = Environment.GetCommandLineArgs();
+            if (args.Length == 2 && File.Exists(args[1])) {
+                Core.Formats.Formats.LoadProject(new string[] { args[1] });
+                return;
+            }
             var defaultTemplate = Path.Combine(PathManager.Inst.TemplatesPath, "default.ustx");
             if (File.Exists(defaultTemplate)) {
                 try {

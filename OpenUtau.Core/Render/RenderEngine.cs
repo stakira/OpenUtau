@@ -78,8 +78,10 @@ namespace OpenUtau.Core.Render {
             }
             items = items.OrderBy(item => item.PosMs).ToList();
             int threads = Util.Preferences.Default.PrerenderThreads;
-            var progress = new Progress(items.Count);
             var task = Task.Run(() => {
+                if (items.Count == 0) {
+                    return;
+                }
                 var progress = new Progress(items.Count);
                 Parallel.ForEach(source: items, parallelOptions: new ParallelOptions() {
                     MaxDegreeOfParallelism = threads
@@ -131,6 +133,9 @@ namespace OpenUtau.Core.Render {
                             .ToArray();
                     }
                     var progress = new Progress(items.Length);
+                    if (items.Length == 0) {
+                        return;
+                    }
                     Parallel.ForEach(source: items, parallelOptions: new ParallelOptions() {
                         MaxDegreeOfParallelism = threads
                     }, body: item => {

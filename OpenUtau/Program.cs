@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Text;
 using Avalonia;
 using Avalonia.Controls;
@@ -15,6 +16,13 @@ namespace OpenUtau.App {
         public static void Main(string[] args) {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             InitLogging();
+            var exists = System.Diagnostics.Process.GetProcessesByName(
+                System.IO.Path.GetFileNameWithoutExtension(
+                    System.Reflection.Assembly.GetEntryAssembly().Location)).Count() > 1;
+            if (exists) {
+                Log.Information("OpenUtau already open. Exiting.");
+                return;
+            }
             InitOpenUtau();
             InitAudio();
             Run(args);

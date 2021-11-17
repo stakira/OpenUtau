@@ -114,6 +114,7 @@
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Romaji a Hiragana</system:String>
   <system:String x:Key="pianoroll.menu.notes">Notas</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">Añadir cola "-"</system:String>
+  <system:String x:Key="pianoroll.menu.notes.addtailrest">Añadir cola "R"</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">Cuantificar a 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Cuantificar a 1/64</system:String>
   <system:String x:Key="pianoroll.menu.part">Partes</system:String>

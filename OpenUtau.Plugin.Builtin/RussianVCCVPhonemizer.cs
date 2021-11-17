@@ -39,7 +39,12 @@ namespace OpenUtau.Plugin.Builtin {
             if (syllable.IsStartingV) {
                 basePhoneme = $"- {v}";
             } else if (syllable.IsVV) {
-                basePhoneme = $"{prevV} {v}";
+                if (!CanMakeAliasExtension(syllable)) {
+                    basePhoneme = $"{prevV} {v}";
+                } else {
+                    // the previous alias will be extended
+                    basePhoneme = null;
+                }
             } else if (syllable.IsStartingCVWithOneConsonant) {
                 // TODO: move to config -CV or -C CV
                 var rcv = $"- {cc[0]}{v}";

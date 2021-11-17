@@ -5,32 +5,31 @@ using OpenUtau.Api;
 using System.Linq;
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("Russian CVC Phonemizer", "RU CVC", "Heiden.BZR")]
-    public class RussianCVCPhonemizer : SyllableBasedPhonemizer {
+    [Phonemizer("Brazilian Portuguese CVC Phonemizer", "PT-BR CVC", "HAI-D")]
+    public class BrazilianPortugueseCVCPhonemizer : SyllableBasedPhonemizer {
 
-        private readonly string[] vowels = "a,e,o,u,y,i,M,N".Split(",");
-        private readonly string[] consonants = "b',b,v',v,g',g,d',d,z',z,k',k,l',l,m',m,n',n,p',p,r',r,s',s,t',t,f',f,h',h,w',w,j,~,c,4',".Split(",");
-        private readonly Dictionary<string, string> aliasesFallback = "ic=yc;y4'=i4';ij=yj;ic-=yc-;y4'-=i4'-;ij-=yj-".Split(';')
-                .Select(entry => entry.Split('='))
-                .ToDictionary(parts => parts[0], parts => parts[1]);
-        private readonly string[] burstConsonants = "t,t',k,k',p,p',4',c,b,b',g,g',d,d'".Split(",");
-        private readonly Dictionary<string, string> dictionaryReplacements = ("a=a;aa=a;ay=a;b=b;bb=b';c=c;ch=4';d=d;dd=d';ee=e;f=f;ff=f';" +
-            "g=g;gg=g';h=h;hh=h';i=i;ii=i;j=~;ja=a;je=e;jo=o;ju=u;k=k;kk=k';l=l;ll=l';m=m;mm=m';n=n;nn=n';oo=o;p=p;pp=p';r=r;rr=r';ae=e;" +
-            "s=s;sch=w';sh=w;ss=s';t=t;tt=t';u=u;uj=u;uu=u;v=v;vv=v';y=y;yy=y;z=z;zh=j;zz=z'").Split(';')
+        /// <summary>
+        /// Brazilian Portuguese CVC Phonemizer by HAI-D
+        /// Utilizing Xiao's reclist connotation
+        /// Alias: -C, -V, C-, V-, -CV, VC-, CV, VC, V
+        /// </summary>
+
+        private readonly string[] vowels = "a,e,i,o,u,X,V,@,7,1,0,Q".Split(",");
+        private readonly string[] consonants = "b,ch,d,D',f,g,h,j,k,l,lh,m,n,nh,p,r,rh,s,sh,t,v,w,y,z".Split(",");
+        private readonly string[] burstConsonants = "b,ch,d,D',g,k,p,t".Split(",");
+        private readonly Dictionary<string, string> dictionaryReplacements = ("a=a;e=e;i=i;o=o;u=u;E=X;O=V;a~=@;e~=7;i~=1;o~=0;u~=Q;" +
+                "b=b;tS=ch;d=d;dZ=D';f=f;g=g;h=h;X=h;R=h;Z=j;k=k;l=l;L=lh;m=m;n=n;J=nh;p=p;r=r;s=s;S=sh;t=t;v=v;w=w;w~=w;j=y;j~=y;z=z").Split(';')
                 .Select(entry => entry.Split('='))
                 .Where(parts => parts.Length == 2)
                 .Where(parts => parts[0] != parts[1])
                 .ToDictionary(parts => parts[0], parts => parts[1]);
 
-
-        private string[] hardConsonants = "b,v,g,d,z,k,l,m,n,p,r,s,t,f,h,w,c".Split(",");
-        private string[] shortConsonants = "r,r'".Split(",");
-        private string[] longConsonants = "w,w',4',ts,t'".Split(",");
+        private string[] shortConsonants = "r".Split(",");
+        private string[] longConsonants = "s,sh".Split(",");
 
         protected override string[] GetVowels() => vowels;
         protected override string[] GetConsonants() => consonants;
-        protected override string GetDictionaryName() => "cmudict_ru.txt";
-        protected override Dictionary<string, string> GetAliasesFallback() => aliasesFallback;
+        protected override string GetDictionaryName() => "cmudict_ptbr.txt";
         protected override Dictionary<string, string> GetDictionaryPhonemesReplacement() => dictionaryReplacements;
 
         protected override List<string> ProcessSyllable(Syllable syllable) {
@@ -91,17 +90,6 @@ namespace OpenUtau.Plugin.Builtin {
             }
 
             return phonemes;
-        }
-
-        // russian specific replacements
-        protected override string ValidateAlias(string alias) {
-            foreach (var consonant in new[] { "'", "~" }) {
-                alias = alias.Replace(consonant + "y", consonant + "i");
-            }
-            foreach (var consonant in hardConsonants) {
-                alias = alias.Replace(consonant + "i", consonant + "y");
-            }
-            return aliasesFallback.ContainsKey(alias) ? aliasesFallback[alias] : alias;
         }
 
         protected override double GetTransitionBasicLengthMs(string alias = "") {
