@@ -7,7 +7,7 @@ using Serilog;
 
 namespace OpenUtau.Plugin.Builtin {
     [Phonemizer("English CVVC Phonemizer", "EN CVVC", "nago")]
-    public class DeltaCVVCPhonemizer : SyllableBasedPhonemizer {
+    public class DeltaCVVCPhonemizerOLD : SyllableBasedPhonemizer {
 
         private readonly string[] vowels = "a,A,@,{,V,O,aU,aI,E,3,eI,I,i,oU,OI,U,u".Split(",");
         private readonly string[] consonants = "b,tS,d,D,f,g,h,dZ,k,l,m,n,N,p,r,s,S,t,T,v,w,j,z,Z".Split(",");
