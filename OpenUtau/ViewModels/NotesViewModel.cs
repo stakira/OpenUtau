@@ -449,9 +449,10 @@ namespace OpenUtau.App.ViewModels {
             TrackOffset = Math.Clamp(ViewConstants.MaxTone - note.tone + 2 - ViewportTracks * 0.5, 0, VScrollBarMax);
         }
 
-        internal LyricsViewModel PrepareInsertLyrics() {
-            var first = SelectedNotes.First();
-            var last = SelectedNotes.Last();
+        internal (UNote[], string[]) PrepareInsertLyrics() {
+            var ordered = SelectedNotes.OrderBy(n => n.position);
+            var first = ordered.First();
+            var last = ordered.Last();
             List<UNote> notes = new List<UNote>();
             var note = first;
             while (note != last) {
@@ -459,36 +460,12 @@ namespace OpenUtau.App.ViewModels {
                 note = note.Next;
             }
             notes.Add(note);
-            int count = notes.Count;
-            int maxCount = count;
+            var lyrics = notes.Select(n => n.lyric).ToArray();
             while (note.Next != null) {
-                maxCount++;
                 note = note.Next;
+                notes.Add(note);
             }
-            return new LyricsViewModel() {
-                TotalCount = count,
-                MaxCount = maxCount,
-                Separator = notes.Any(note => note.lyric.Contains(' ')) ?
-                    (Preferences.Default.PreferCommaSeparator ? 1 : 2) : 0,
-                Lyrics = notes.Select(note => note.lyric).ToArray(),
-                OnApply = lyrics => {
-                    if (lyrics == null || lyrics.Length == 0) {
-                        return;
-                    }
-                    if (lyrics.Length < notes.Count) {
-                        notes = notes.Take(lyrics.Length).ToList();
-                    }
-                    if (lyrics.Length > notes.Count) {
-                        lyrics = lyrics.Take(notes.Count).ToArray();
-                    }
-                    if (lyrics.Zip(notes).All(t => t.First == t.Second.lyric)) {
-                        return;
-                    }
-                    DocManager.Inst.StartUndoGroup();
-                    DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(Part, notes.ToArray(), lyrics));
-                    DocManager.Inst.EndUndoGroup();
-                },
-            };
+            return (notes.ToArray(), lyrics);
         }
 
         public void OnNext(UCommand cmd, bool isUndo) {

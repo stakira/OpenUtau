@@ -186,6 +186,22 @@ namespace OpenUtau.Core {
             ExecuteCmd(new PreRenderNotification());
         }
 
+        public void RollBackUndoGroup() {
+            if (undoGroup == null) {
+                Log.Error("No active undoGroup to rollback.");
+                return;
+            }
+            for (int i = undoGroup.Commands.Count - 1; i >= 0; i--) {
+                var cmd = undoGroup.Commands[i];
+                cmd.Unexecute();
+                if (i == 0) {
+                    Project.Validate();
+                }
+                Publish(cmd, true);
+            }
+            undoGroup.Commands.Clear();
+        }
+
         public void Undo() {
             if (undoQueue.Count == 0) {
                 return;

@@ -140,6 +140,10 @@
     <Setter Property="VerticalContentAlignment" Value="Center"/>
   </Style>
 
+  <Style Selector="ToggleSwitch /template/ Border#SwitchKnobBounds">
+    <Setter Property="Background" Value="{DynamicResource AccentBrush1}"/>
+  </Style>
+
   <Style Selector="ComboBox">
     <Setter Property="FontSize" Value="12"/>
     <Setter Property="Height" Value="20"/>

@@ -97,8 +97,11 @@ namespace OpenUtau.App.Views {
                     MessageBox.MessageBoxButtons.Ok);
                 return;
             }
+            var vm = new LyricsViewModel();
+            var (notes, lyrics) = ViewModel.NotesViewModel.PrepareInsertLyrics();
+            vm.Start(ViewModel.NotesViewModel.Part, notes, lyrics);
             var dialog = new LyricsDialog() {
-                DataContext = ViewModel.NotesViewModel.PrepareInsertLyrics(),
+                DataContext = vm,
             };
             dialog.ShowDialog(this);
         }

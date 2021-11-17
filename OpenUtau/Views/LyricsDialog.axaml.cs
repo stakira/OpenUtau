@@ -17,12 +17,17 @@ namespace OpenUtau.App.Views {
             AvaloniaXamlLoader.Load(this);
         }
 
+        void OnReset(object? sender, RoutedEventArgs e) {
+            (DataContext as LyricsViewModel)!.Reset();
+        }
+
         void OnCancel(object? sender, RoutedEventArgs e) {
+            (DataContext as LyricsViewModel)!.Cancel();
             Close();
         }
 
-        void OnApply(object? sender, RoutedEventArgs e) {
-            (DataContext as LyricsViewModel)!.Apply();
+        void OnFinish(object? sender, RoutedEventArgs e) {
+            (DataContext as LyricsViewModel)!.Finish();
             Close();
         }
     }
