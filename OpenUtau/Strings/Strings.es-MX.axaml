@@ -46,11 +46,11 @@
   <system:String x:Key="lyrics.apply">Aplicar</system:String>
   <system:String x:Key="lyrics.cancel">Cancelar</system:String>
   <system:String x:Key="lyrics.caption">Editar Letras</system:String>
+  <system:String x:Key="lyrics.livepreview">Previsualizar</system:String>
   <system:String x:Key="lyrics.max">Máx</system:String>
+  <system:String x:Key="lyrics.reset">Restablecer</system:String>
   <system:String x:Key="lyrics.selectnotes">Por favor, selecciona un grupo de notas.</system:String>
-  <system:String x:Key="lyrics.separator.comma">Coma</system:String>
-  <system:String x:Key="lyrics.separator.linebreak">Salto de Línea</system:String>
-  <system:String x:Key="lyrics.separator.space">Espacio</system:String>
+  <system:String x:Key="lyrics.separators">Separadores</system:String>
 
   <system:String x:Key="menu.edit">_Editar</system:String>
   <system:String x:Key="menu.edit.copy">_Copiar</system:String>
