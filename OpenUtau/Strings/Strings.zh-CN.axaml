@@ -46,11 +46,11 @@
   <system:String x:Key="lyrics.apply">应用</system:String>
   <system:String x:Key="lyrics.cancel">取消</system:String>
   <system:String x:Key="lyrics.caption">编辑歌词</system:String>
+  <system:String x:Key="lyrics.livepreview">即时预览</system:String>
   <system:String x:Key="lyrics.max">最多</system:String>
+  <system:String x:Key="lyrics.reset">重置</system:String>
   <system:String x:Key="lyrics.selectnotes">请先选择一些音符!</system:String>
-  <system:String x:Key="lyrics.separator.comma">逗号</system:String>
-  <system:String x:Key="lyrics.separator.linebreak">换行</system:String>
-  <system:String x:Key="lyrics.separator.space">空格</system:String>
+  <system:String x:Key="lyrics.separators">分隔符</system:String>
 
   <system:String x:Key="menu.edit">编辑</system:String>
   <system:String x:Key="menu.edit.copy">复制</system:String>
@@ -114,6 +114,7 @@
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">罗马音转平假名</system:String>
   <system:String x:Key="pianoroll.menu.notes">音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">添加尾部"-"音符</system:String>
+  <system:String x:Key="pianoroll.menu.notes.addtailrest">添加尾部"R"音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">量化至1/128音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">量化至1/64音符</system:String>
   <system:String x:Key="pianoroll.menu.part">片段</system:String>

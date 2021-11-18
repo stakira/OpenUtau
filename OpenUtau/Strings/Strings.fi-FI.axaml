@@ -46,11 +46,11 @@
   <!--<system:String x:Key="lyrics.apply">Apply</system:String>-->
   <!--<system:String x:Key="lyrics.cancel">Cancel</system:String>-->
   <!--<system:String x:Key="lyrics.caption">Edit Lyrics</system:String>-->
+  <!--<system:String x:Key="lyrics.livepreview">Live preview</system:String>-->
   <!--<system:String x:Key="lyrics.max">Max</system:String>-->
+  <!--<system:String x:Key="lyrics.reset">Reset</system:String>-->
   <!--<system:String x:Key="lyrics.selectnotes">Select some notes first!</system:String>-->
-  <!--<system:String x:Key="lyrics.separator.comma">Comma</system:String>-->
-  <!--<system:String x:Key="lyrics.separator.linebreak">Line Break</system:String>-->
-  <!--<system:String x:Key="lyrics.separator.space">Space</system:String>-->
+  <!--<system:String x:Key="lyrics.separators">Separators</system:String>-->
 
   <system:String x:Key="menu.edit">Muokkaa</system:String>
   <system:String x:Key="menu.edit.copy">Kopioi</system:String>
@@ -114,6 +114,7 @@
   <!--<system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Romaji to Hiragana</system:String>-->
   <system:String x:Key="pianoroll.menu.notes">Nuotit</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">lisää loppuun "-"</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notes.addtailrest">Add tail "R"</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.quantize15">sovita 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">sovita 1/64</system:String>
   <system:String x:Key="pianoroll.menu.part">Osa</system:String>

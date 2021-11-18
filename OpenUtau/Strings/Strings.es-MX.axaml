@@ -173,7 +173,7 @@ Mantiene Ctrl para seleccionar más</system:String>
   <system:String x:Key="singers.setencoding">Fijar Codificación</system:String>
   <system:String x:Key="singers.subbanks.cancel">Cancelar</system:String>
   <system:String x:Key="singers.subbanks.clear">Borrar</system:String>
-  <system:String x:Key="singers.subbanks.color">Color</system:String>
+  <!--<system:String x:Key="singers.subbanks.color">Color</system:String>-->
   <system:String x:Key="singers.subbanks.color.add">Agregar Color</system:String>
   <system:String x:Key="singers.subbanks.color.remove">Borrar Color</system:String>
   <system:String x:Key="singers.subbanks.color.rename">Renombrar</system:String>

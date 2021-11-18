@@ -2,13 +2,13 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-  <system:String x:Key="context.pitch.easein">Ease in</system:String>
-  <system:String x:Key="context.pitch.easeinout">Ease in/out</system:String>
-  <system:String x:Key="context.pitch.easeout">Ease out</system:String>
+  <!--<system:String x:Key="context.pitch.easein">Ease in</system:String>-->
+  <!--<system:String x:Key="context.pitch.easeinout">Ease in/out</system:String>-->
+  <!--<system:String x:Key="context.pitch.easeout">Ease out</system:String>-->
   <system:String x:Key="context.pitch.linear">Linier</system:String>
   <system:String x:Key="context.pitch.pointadd">Tambahkan titik</system:String>
   <system:String x:Key="context.pitch.pointdel">Hapus titik</system:String>
-  <system:String x:Key="context.pitch.pointsnapprev">Snap to previous note</system:String>
+  <!--<system:String x:Key="context.pitch.pointsnapprev">Snap to previous note</system:String>-->
 
   <system:String x:Key="dialogs.about.caption">Tentang OpenUTAU</system:String>
   <system:String x:Key="dialogs.about.message">
@@ -26,14 +26,14 @@
   <system:String x:Key="dialogs.noresampler.message">Tidak ada resampler! Letakkan resampler exe atau dll favorit Anda di folder Resamplers dan pilih di Preferensi!</system:String>
   <system:String x:Key="dialogs.timesig.caption">Tanda Waktu</system:String>
 
-  <system:String x:Key="errors.caption">Error</system:String>
+  <!--<system:String x:Key="errors.caption">Error</system:String>-->
 
   <system:String x:Key="exps.abbr">Singkatan</system:String>
   <system:String x:Key="exps.apply">Terapkan</system:String>
   <system:String x:Key="exps.caption">Ekspresi</system:String>
   <system:String x:Key="exps.defaultvalue">Bawaan</system:String>
-  <system:String x:Key="exps.flag">Resampler Flag</system:String>
-  <system:String x:Key="exps.isflag">Is Resampler Flag</system:String>
+  <!--<system:String x:Key="exps.flag">Resampler Flag</system:String>-->
+  <!--<system:String x:Key="exps.isflag">Is Resampler Flag</system:String>-->
   <system:String x:Key="exps.maxvalue">Maksimal</system:String>
   <system:String x:Key="exps.minvalue">Minimal</system:String>
   <system:String x:Key="exps.name">Nama</system:String>
@@ -46,11 +46,11 @@
   <system:String x:Key="lyrics.apply">Terapkan</system:String>
   <system:String x:Key="lyrics.cancel">Batalkan</system:String>
   <system:String x:Key="lyrics.caption">Sunting Lirik</system:String>
+  <!--<system:String x:Key="lyrics.livepreview">Live preview</system:String>-->
   <system:String x:Key="lyrics.max">Maksimal</system:String>
+  <!--<system:String x:Key="lyrics.reset">Reset</system:String>-->
   <system:String x:Key="lyrics.selectnotes">Pilih beberapa not terlebih dahulu!</system:String>
-  <system:String x:Key="lyrics.separator.comma">Koma</system:String>
-  <system:String x:Key="lyrics.separator.linebreak">Jeda Baris</system:String>
-  <system:String x:Key="lyrics.separator.space">Spasi</system:String>
+  <!--<system:String x:Key="lyrics.separators">Separators</system:String>-->
 
   <system:String x:Key="menu.edit">Sunting</system:String>
   <system:String x:Key="menu.edit.copy">Salin</system:String>
@@ -58,7 +58,7 @@
   <system:String x:Key="menu.edit.delete">Hapus</system:String>
   <system:String x:Key="menu.edit.paste">Tempel</system:String>
   <system:String x:Key="menu.edit.redo">Kembalikan</system:String>
-  <system:String x:Key="menu.edit.selectall">Select All</system:String>
+  <!--<system:String x:Key="menu.edit.selectall">Select All</system:String>-->
   <system:String x:Key="menu.edit.undo">Batalkan</system:String>
   <system:String x:Key="menu.file">Berkas</system:String>
   <system:String x:Key="menu.file.exit">Keluar</system:String>
@@ -77,7 +77,7 @@
   <system:String x:Key="menu.file.savetemplate">Simpan Templat...</system:String>
   <system:String x:Key="menu.help">Bantuan</system:String>
   <system:String x:Key="menu.help.about">Tentang OpenUtau</system:String>
-  <system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>
+  <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
   <system:String x:Key="menu.tools">Peralatan</system:String>
   <system:String x:Key="menu.tools.layout">Tata Letak</system:String>
   <system:String x:Key="menu.tools.layout.hsplit11">Horisontal 1:1</system:String>
@@ -92,7 +92,8 @@
   <system:String x:Key="menu.tools.singer.installadv">Instal Penyanyi (Lanjutan)...</system:String>
   <system:String x:Key="menu.tools.singers">Penyanyi...</system:String>
 
-  <system:String x:Key="oto.alias">Alias</system:String>
+  <!--<system:String x:Key="oto.alias">Alias</system:String>-->
+  <system:String x:Key="oto.color">Warna</system:String>
   <system:String x:Key="oto.consonant">Konsonan</system:String>
   <system:String x:Key="oto.cutoff">Batas</system:String>
   <system:String x:Key="oto.file">Berkas</system:String>
@@ -100,10 +101,9 @@
   <system:String x:Key="oto.overlap">Tumpang Tindih</system:String>
   <system:String x:Key="oto.phonetic">Fonetik</system:String>
   <system:String x:Key="oto.prefix">Awalan</system:String>
-  <system:String x:Key="oto.preutter">Preutter</system:String>
+  <!--<system:String x:Key="oto.preutter">Preutter</system:String>-->
   <system:String x:Key="oto.set">Setel</system:String>
   <system:String x:Key="oto.suffix">Akhiran</system:String>
-  <system:String x:Key="oto.color">Warna</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">Lirik</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">Sunting Lirik</system:String>
@@ -114,6 +114,7 @@
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Romaji ke Hiragana</system:String>
   <system:String x:Key="pianoroll.menu.notes">Not</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">Tambahkan bagian akhir "-"</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notes.addtailrest">Add tail "R"</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.quantize15">Kuantisasi hingga 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Kuantisasi hingga 1/64</system:String>
   <system:String x:Key="pianoroll.menu.part">Bagian</system:String>
@@ -133,7 +134,7 @@ Klik kanan untuk menghapus</system:String>
 Tahan Ctrl untuk memilih lainnya</system:String>
 
   <system:String x:Key="prefs.advanced">Canggih</system:String>
-  <system:String x:Key="prefs.advanced.beta">Beta</system:String>
+  <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
   <system:String x:Key="prefs.advanced.stable">Stabil</system:String>
   <system:String x:Key="prefs.appearance">Penampilan</system:String>
   <system:String x:Key="prefs.appearance.lang">Bahasa</system:String>
@@ -216,7 +217,7 @@ Umum
   <system:String x:Key="tracks.selectsinger">Pilih Penyanyi</system:String>
 
   <system:String x:Key="updater.caption">Memeriksa Pembaruan</system:String>
-  <system:String x:Key="updater.github">GitHub</system:String>
+  <!--<system:String x:Key="updater.github">GitHub</system:String>-->
   <system:String x:Key="updater.status.available">Pembaruan v{0} tersedia!</system:String>
   <system:String x:Key="updater.status.checking">Memeriksa pembaruan...</system:String>
   <system:String x:Key="updater.status.notavailable">Terkini</system:String>
