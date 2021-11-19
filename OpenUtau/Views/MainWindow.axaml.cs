@@ -43,8 +43,10 @@ namespace OpenUtau.App.Views {
             this.AttachDevTools();
 #endif
             viewModel.InitProject();
-            timer = new DispatcherTimer(DispatcherPriority.Normal);
-            timer.Tick += (sender, args) => PlaybackManager.Inst.UpdatePlayPos();
+            timer = new DispatcherTimer(
+                TimeSpan.FromMilliseconds(15),
+                DispatcherPriority.Normal,
+                (sender, args) => PlaybackManager.Inst.UpdatePlayPos());
             timer.Start();
 
             AddHandler(DragDrop.DropEvent, OnDrop);
