@@ -349,8 +349,11 @@ namespace OpenUtau.App.Views {
         private void LayoutSplit(double? x, double? y) {
             var wa = Screens.Primary.WorkingArea;
             WindowState = WindowState.Normal;
-            double borderThickness = (FrameSize!.Value.Width - ClientSize.Width) / 2;
-            double titleBarHeight = FrameSize!.Value.Height - ClientSize.Height - borderThickness;
+            double titleBarHeight = 20;
+            if (FrameSize != null) {
+                double borderThickness = (FrameSize!.Value.Width - ClientSize.Width) / 2;
+                titleBarHeight = FrameSize!.Value.Height - ClientSize.Height - borderThickness;
+            }
             Position = new PixelPoint(0, 0);
             Width = x != null ? wa.Size.Width * x.Value : wa.Size.Width;
             Height = (y != null ? wa.Size.Height * y.Value : wa.Size.Height) - titleBarHeight;

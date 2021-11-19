@@ -11,7 +11,7 @@ namespace OpenUtau {
         public static void OpenFolder(string path) {
             if (Directory.Exists(path)) {
                 Process.Start(new ProcessStartInfo {
-                    FileName = IsWindows() ? "explorer.exe" : IsMacOS() ? "open" : "mimeopen",
+                    FileName = IsWindows() ? "explorer.exe" : IsMacOS() ? "open" : "xdg-open",
                     Arguments = path,
                 });
             }
@@ -19,7 +19,7 @@ namespace OpenUtau {
 
         public static void OpenWeb(string url) {
             Process.Start(new ProcessStartInfo {
-                FileName = IsWindows() ? "explorer.exe" : IsMacOS() ? "open" : "mimeopen",
+                FileName = IsWindows() ? "explorer.exe" : IsMacOS() ? "open" : "xdg-open",
                 Arguments = url,
             });
         }
