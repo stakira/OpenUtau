@@ -469,6 +469,9 @@ namespace OpenUtau.Plugin.Builtin {
         /// </summary>
         /// <param name="alias"></param>
         /// <returns></returns>
+        protected virtual string ValidateAlias(string alias, int tone) {
+            return ValidateAlias(alias);
+        }
         protected virtual string ValidateAlias(string alias) {
             return alias;
         }
@@ -550,7 +553,7 @@ namespace OpenUtau.Plugin.Builtin {
         /// <param name="tone"></param>
         /// <returns></returns>
         protected bool HasOto(string alias, int tone) {
-            return singer.TryGetMappedOto(ValidateAlias(alias), tone, out _);
+            return singer.TryGetMappedOto(ValidateAlias(alias, tone), tone, out _);
         }
 
         /// <summary>
@@ -692,7 +695,7 @@ namespace OpenUtau.Plugin.Builtin {
 
                 var validatedAlias = phonemeSymbols[phonemeI];
                 if (validatedAlias != null) {
-                    validatedAlias = ValidateAlias(validatedAlias);
+                    validatedAlias = ValidateAlias(validatedAlias, tone);
                     validatedAlias = MapPhoneme(validatedAlias, currentTone, attr.voiceColor, attr.alternate?.ToString() ?? string.Empty, singer);
 
                     phonemes[phonemeI].phoneme = validatedAlias;
