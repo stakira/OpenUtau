@@ -91,16 +91,12 @@ namespace OpenUtau.Plugin.Builtin {
             return phonemes;
         }
         protected override string ValidateAlias(string alias) {
-            foreach (var consonant in new[] { "h", "s" }) {
-                foreach (var vowel in new[] { "a", "A", "3", "aI", "V", "i", "u" }) {
-                //    alias = alias.Replace($"{vowel} {consonant}", $"{vowel} -");
-                    alias = alias.Replace($"{vowel} h", $"{vowel} -");
-                    alias = alias.Replace($"bV", $"bA");
-                    alias = alias.Replace($"V b", $"A b");
-                    alias = alias.Replace($"r t-", $"r t");
-                }
-                alias = alias.Replace($"{consonant}{consonant}", $"{consonant} -");
+            foreach (var vowel in new[] { "a", "A", "3", "aI", "V", "i", "u" }) {
+                alias = alias.Replace($"{vowel} h", $"{vowel} -");
             }
+            alias = alias.Replace($"bV", $"bA");
+            alias = alias.Replace($"V b", $"A b");
+            alias = alias.Replace($"r t-", $"r t");
             return alias;
         } 
     }  
