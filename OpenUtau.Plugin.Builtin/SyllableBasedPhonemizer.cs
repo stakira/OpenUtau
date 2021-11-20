@@ -512,13 +512,13 @@ namespace OpenUtau.Plugin.Builtin {
         /// <param name="builder"></param>
         protected virtual void ParseDictionary(string dictionaryText, G2pDictionary.Builder builder) {
             var replacements = GetDictionaryPhonemesReplacement();
-            foreach (var line in dictionaryText.Split('\n')) { 
+            foreach (var line in dictionaryText.Split(new[] { "\n", "\r\n" }, StringSplitOptions.RemoveEmptyEntries)) { 
                 if (line.StartsWith(";;;")) {
-                    return;
+                    continue;
                 }
                 var parts = line.Trim().Split(wordSeparator, StringSplitOptions.None);
                 if (parts.Length != 2) {
-                    return;
+                    continue;
                 }
                 string key = parts[0].ToLowerInvariant();
                 var values = GetDictionaryWordPhonemes(parts[1]).Select(
