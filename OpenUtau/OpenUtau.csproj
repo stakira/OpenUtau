@@ -62,7 +62,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(OS)'=='Windows_NT'">
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(OS)|$(Platform)'=='Windows_NT|AnyCPU'">
     <Exec Command="(if not exist $(OutDir)Plugins mkdir $(OutDir)Plugins) &amp;&amp; (copy /y $(OutDir)OpenUtau.Plugin.Builtin.dll $(OutDir)Plugins\) &amp;&amp; (if not exist $(OutDir)Dictionaries mkdir $(OutDir)Dictionaries)" />
   </Target>
 </Project>
