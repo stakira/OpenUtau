@@ -11,6 +11,8 @@ OpenUtau is an open source editing environment for UTAU community with modern us
 
 [![Download](https://img.shields.io/static/v1?style=for-the-badge&logo=github&label=download&message=windows&labelColor=FF347C&color=4ea6ea)](https://github.com/stakira/OpenUtau/releases/download/OpenUtau-Latest/OpenUtau.zip)
 [![Download](https://img.shields.io/static/v1?style=for-the-badge&logo=github&label=download&message=macos&labelColor=FF347C&color=4ea6ea)](https://github.com/stakira/OpenUtau/releases/download/OpenUtau-Latest/OpenUtau.dmg)
+[![Download](https://img.shields.io/static/v1?style=for-the-badge&logo=github&label=download&message=linux&labelColor=FF347C&color=4ea6ea)](https://github.com/stakira/OpenUtau/releases/download/OpenUtau-Latest/OpenUtau-prerelease-x86_64.AppImage)
+[![Download](https://img.shields.io/static/v1?style=for-the-badge&logo=archlinux&label=install%20from%20the&message=aur&labelColor=FF347C&color=4ea6ea)](https://aur.archlinux.org/packages/openutau/)
 
 It is **strongly recommend** to go through a few Wiki pages before use:
 - [Getting-Started](https://github.com/stakira/OpenUtau/wiki/Getting-Started)
