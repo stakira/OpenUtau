@@ -75,6 +75,8 @@ namespace OpenUtau.App.Views {
                 viewModel.PlaybackViewModel.SetTimeSignature(beatPerBar, beatUnit);
             };
             dialog.ShowDialog(this);
+            // Workaround for https://github.com/AvaloniaUI/Avalonia/issues/3986
+            args.Pointer.Capture(null);
         }
 
         void OnEditBpm(object sender, PointerPressedEventArgs args) {
@@ -88,6 +90,8 @@ namespace OpenUtau.App.Views {
                 }
             };
             dialog.ShowDialog(this);
+            // Workaround for https://github.com/AvaloniaUI/Avalonia/issues/3986
+            args.Pointer.Capture(null);
         }
 
         void OnMenuNew(object sender, RoutedEventArgs args) {
