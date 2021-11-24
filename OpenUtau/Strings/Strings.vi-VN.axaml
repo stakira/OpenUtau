@@ -197,13 +197,13 @@ Right Button Draw: Reset expressions
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: Previous Note</system:String>
   <system:String x:Key="tip.notes.basics">
 Selection Tool
-    Box Select: Select notes
-    Ctrl + Box Select: Select more notes
+    Box Select: Chọn các Nốt nhạc
+    Ctrl + Box Select: CHọn thêm nhiều Nốt nhạc
     Up/Down: Transpose selected notes
     Ctrl + Up/Down: Transpose selected notes by octave
 Pen Tool
-    Left Button Draw: Add note
-    Right Click: Remove note
+    Left Button Draw: Thêm nốt nhạc
+    Right Click: Xoá nốt nhạc
     Right Button Draw: Remove multiple notes
 General
     T: Toggle tips
@@ -212,22 +212,22 @@ General
     Alt + Drag End of Note: Resize neighbouring notes
     Space: Play
   </system:String>
-  <system:String x:Key="tip.notes.zoomx">◀ Scroll here to zoom horizontally ▶</system:String>
-  <system:String x:Key="tip.notes.zoomy">Scroll here to zoom vertically ▶</system:String>
+  <system:String x:Key="tip.notes.zoomx">◀ Cuộn ở đây để phóng to theo chiều ngang ▶</system:String>
+  <system:String x:Key="tip.notes.zoomy">Cuộn ở đây để phóng to theo chiều dọc ▶</system:String>
 
-  <system:String x:Key="tracks.movedown">Move Down</system:String>
-  <system:String x:Key="tracks.moveup">Move Up</system:String>
-  <system:String x:Key="tracks.remove">Remove</system:String>
-  <system:String x:Key="tracks.selectsinger">Select Singer</system:String>
+  <system:String x:Key="tracks.movedown">Di chuyển Xuống</system:String>
+  <system:String x:Key="tracks.moveup">Di chuyển Lên</system:String>
+  <system:String x:Key="tracks.remove">Xoá bỏ</system:String>
+  <system:String x:Key="tracks.selectsinger">Lựa chọn Ca sĩ</system:String>
 
-  <system:String x:Key="updater.caption">Check for Update</system:String>
+  <system:String x:Key="updater.caption">Kiểm tra Cập nhật</system:String>
   <system:String x:Key="updater.github">GitHub</system:String>
-  <system:String x:Key="updater.status.available">Update v{0} available!</system:String>
-  <system:String x:Key="updater.status.checking">Checking for updates...</system:String>
-  <system:String x:Key="updater.status.notavailable">Up to date</system:String>
-  <system:String x:Key="updater.status.unknown">Unable to check update</system:String>
-  <system:String x:Key="updater.update">Update</system:String>
+  <system:String x:Key="updater.status.available">Đã có bản cập nhật v{0} mới!</system:String>
+  <system:String x:Key="updater.status.checking">Đang kiểm tra cập nhật...</system:String>
+  <system:String x:Key="updater.status.notavailable">Bản mới nhất</system:String>
+  <system:String x:Key="updater.status.unknown">Không thể kiểm tra cập nhật</system:String>
+  <system:String x:Key="updater.update">Cập nhật</system:String>
 
-  <system:String x:Key="warning">Warning</system:String>
-  <system:String x:Key="warning.asciipath">Your OpenUtau home path "{0}" contains non-ASCII character. Exe resamplers may not work.</system:String>
+  <system:String x:Key="warning">Cảnh báo</system:String>
+  <system:String x:Key="warning.asciipath">Đường dẫn OpenUTAU của bạn "{0}" có chứa kí tự không thuộc ASCII. Resampler định dạng exe có thể không hoạt động.</system:String>
 </ResourceDictionary>
