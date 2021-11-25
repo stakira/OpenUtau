@@ -77,10 +77,6 @@ namespace OpenUtau.Classic {
             }
             var dirs = Directory.GetDirectories(dirPath);
             foreach (var dir in dirs) {
-                var charTxt = Path.Combine(dir, kCharTxt);
-                if (File.Exists(charTxt)) {
-                    continue;
-                }
                 LoadOtoSets(voicebank, dir);
             }
         }
@@ -317,8 +313,7 @@ namespace OpenUtau.Classic {
                 var ext = Path.GetExtension(wav);
                 if (!string.IsNullOrEmpty(ext)) {
                     result.Alias = wav.Replace(ext, "");
-                }
-                else {
+                } else {
                     result.Alias = wav;
                 }
             }
