@@ -135,6 +135,8 @@
 
   <system:String x:Key="prefs.advanced">高级</system:String>
   <system:String x:Key="prefs.advanced.beta">Beta测试版</system:String>
+  <system:String x:Key="prefs.advanced.resamplerlogging">重采样器日志</system:String>
+  <system:String x:Key="prefs.advanced.resamplerlogging.warn">在日志文件中保存重采样器输出。这个选项会使UI和渲染性能下降。</system:String>
   <system:String x:Key="prefs.advanced.stable">稳定版</system:String>
   <system:String x:Key="prefs.appearance">外观</system:String>
   <system:String x:Key="prefs.appearance.lang">语言</system:String>
@@ -143,6 +145,8 @@
   <system:String x:Key="prefs.appearance.theme.light">亮</system:String>
   <system:String x:Key="prefs.caption">使用偏好</system:String>
   <system:String x:Key="prefs.note.restart">注意: 修改本项后请重启OpenUtau</system:String>
+  <system:String x:Key="prefs.off">关</system:String>
+  <system:String x:Key="prefs.on">开</system:String>
   <system:String x:Key="prefs.paths">路径</system:String>
   <system:String x:Key="prefs.paths.addlsinger">额外歌手搜索路径</system:String>
   <system:String x:Key="prefs.paths.reset">清除</system:String>
@@ -161,7 +165,7 @@
 警告: 暂不完全支持 moresampler。可能导致渲染极慢和高CPU使用率。如果您仍想使用，请:
 1. 在 moreconfig.txt 中将 “resampler-compatibility” 设为 “on”
 2. 在 moreconfig.txt 中将 “auto-update-llsm-mrq” 设为 “off”
-3. 减少预渲染线程数至 1 或 2
+3. 在 moreconfig.txt 中将 “multithread-synthesis” 设为 “off”，或减少“预渲染线程数”至 1 或 2
 4. 预览前耐心等待预渲染完成
   </system:String>
 
