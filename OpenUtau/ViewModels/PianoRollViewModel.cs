@@ -12,7 +12,7 @@ using ReactiveUI.Fody.Helpers;
 using Serilog;
 
 namespace OpenUtau.App.ViewModels {
-    public class PianoRollViewModel : ViewModelBase {
+    public class PianoRollViewModel : ViewModelBase, ICmdSubscriber {
 
         public bool ExtendToFrame => OS.IsMacOS();
         [Reactive] public NotesViewModel NotesViewModel { get; set; }
@@ -21,6 +21,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public List<MenuItemViewModel>? LegacyPlugins { get; set; }
         [Reactive] public List<MenuItemViewModel> NoteBatchEdits { get; set; }
         [Reactive] public List<MenuItemViewModel> LyricBatchEdits { get; set; }
+        [Reactive] public double Progress { get; set; }
         public ReactiveCommand<PitchPointHitInfo, Unit> PitEaseInOutCommand { get; set; }
         public ReactiveCommand<PitchPointHitInfo, Unit> PitLinearCommand { get; set; }
         public ReactiveCommand<PitchPointHitInfo, Unit> PitEaseInCommand { get; set; }
@@ -72,38 +73,37 @@ namespace OpenUtau.App.ViewModels {
             });
 
             legacyPluginCommand = ReactiveCommand.Create<Classic.Plugin>(plugin => {
-                if (NotesViewModel.Part == null) {
+                if (NotesViewModel.Part == null || NotesViewModel.Part.notes.Count == 0) {
                     return;
                 }
                 try {
                     var project = NotesViewModel.Project;
                     var part = NotesViewModel.Part;
-                    var tempFile = System.IO.Path.Combine(PathManager.Inst.GetCachePath(), "temp.tmp");
-                    var newPart = (UVoicePart)part.Clone();
-                    var sequence = Classic.Ust.WritePart(project, newPart, newPart.notes, tempFile);
-                    byte[]? beforeHash = null;
-                    using (var md5 = MD5.Create()) {
-                        using (var stream = File.OpenRead(tempFile)) {
-                            beforeHash = md5.ComputeHash(stream);
-                        }
-                    }
-                    plugin.Run(tempFile);
-                    byte[]? afterHash = null;
-                    using (var md5 = MD5.Create()) {
-                        using (var stream = File.OpenRead(tempFile)) {
-                            afterHash = md5.ComputeHash(stream);
-                        }
-                    }
-                    if (beforeHash != null && afterHash != null && !Enumerable.SequenceEqual(beforeHash, afterHash)) {
-                        Log.Information("Legacy plugin temp file has changed.");
-                        Classic.Ust.ParseDiffs(project, newPart, sequence, tempFile);
-                        newPart.AfterLoad(project, project.tracks[part.trackNo]);
-                        DocManager.Inst.StartUndoGroup();
-                        DocManager.Inst.ExecuteCmd(new ReplacePartCommand(project, part, newPart));
-                        DocManager.Inst.EndUndoGroup();
+                    var tempFile = Path.Combine(PathManager.Inst.GetCachePath(), "temp.tmp");
+                    UNote? first = null;
+                    UNote? last = null;
+                    if (NotesViewModel.SelectedNotes.Count == 0) {
+                        first = part.notes.First();
+                        last = part.notes.Last();
                     } else {
-                        Log.Information("Legacy plugin temp file has not changed.");
+                        var ordered = NotesViewModel.SelectedNotes.OrderBy(n => n.position);
+                        first = ordered.First();
+                        last = ordered.Last();
                     }
+                    var sequence = Classic.Ust.WritePlugin(project, part, first, last, tempFile);
+                    byte[]? beforeHash = HashFile(tempFile);
+                    plugin.Run(tempFile);
+                    byte[]? afterHash = HashFile(tempFile);
+                    if (beforeHash == null || afterHash == null || Enumerable.SequenceEqual(beforeHash, afterHash)) {
+                        Log.Information("Legacy plugin temp file has not changed.");
+                        return;
+                    }
+                    Log.Information("Legacy plugin temp file has changed.");
+                    var (toRemove, toAdd) = Classic.Ust.ParsePlugin(project, part, first, last, sequence, tempFile);
+                    DocManager.Inst.StartUndoGroup();
+                    DocManager.Inst.ExecuteCmd(new RemoveNoteCommand(part, toRemove));
+                    DocManager.Inst.ExecuteCmd(new AddNoteCommand(part, toAdd));
+                    DocManager.Inst.EndUndoGroup();
                 } catch (Exception e) {
                     DocManager.Inst.ExecuteCmd(new UserMessageNotification($"Failed to execute plugin {e}"));
                 }
@@ -140,6 +140,7 @@ namespace OpenUtau.App.ViewModels {
                 Command = noteBatchEditCommand,
                 CommandParameter = edit,
             }).ToList();
+            DocManager.Inst.AddSubscriber(this);
         }
 
         public void Undo() => DocManager.Inst.Undo();
@@ -152,5 +153,23 @@ namespace OpenUtau.App.ViewModels {
                 DocManager.Inst.EndUndoGroup();
             }
         }
+
+        private byte[]? HashFile(string filePath) {
+            using (var md5 = MD5.Create()) {
+                using (var stream = File.OpenRead(filePath)) {
+                    return md5.ComputeHash(stream);
+                }
+            }
+        }
+
+        #region ICmdSubscriber
+
+        public void OnNext(UCommand cmd, bool isUndo) {
+            if (cmd is ProgressBarNotification progressBarNotification) {
+                Progress = progressBarNotification.Progress;
+            }
+        }
+
+        #endregion
     }
 }
