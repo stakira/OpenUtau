@@ -94,12 +94,19 @@ namespace OpenUtau.App.Views {
             args.Pointer.Capture(null);
         }
 
-        void OnMenuNew(object sender, RoutedEventArgs args) {
+        void OnMenuNew(object sender, RoutedEventArgs args) => NewProject();
+        async void NewProject() {
+            if (!DocManager.Inst.ChangesSaved && !await AskIfSaveAndContinue()) {
+                return;
+            }
             viewModel.NewProject();
         }
 
         void OnMenuOpen(object sender, RoutedEventArgs args) => Open();
         async void Open() {
+            if (!DocManager.Inst.ChangesSaved && !await AskIfSaveAndContinue()) {
+                return;
+            }
             var dialog = new OpenFileDialog() {
                 Filters = new List<FileDialogFilter>() {
                     new FileDialogFilter() {
@@ -383,7 +390,7 @@ namespace OpenUtau.App.Views {
             } else if (args.KeyModifiers == cmdKey) {
                 switch (args.Key) {
                     case Key.A: viewModel.TracksViewModel.SelectAllParts(); break;
-                    case Key.N: viewModel.NewProject(); break;
+                    case Key.N: NewProject(); break;
                     case Key.O: Open(); break;
                     case Key.S: _ = Save(); break;
                     case Key.Z: viewModel.Undo(); break;
@@ -664,25 +671,32 @@ namespace OpenUtau.App.Views {
         }
 
         public async void WindowClosing(object? sender, CancelEventArgs e) {
-            if (!forceClose && !DocManager.Inst.ChangesSaved) {
-                e.Cancel = true;
-                var result = await MessageBox.Show(
-                    this,
-                    ThemeManager.GetString("dialogs.exitsave.message"),
-                    ThemeManager.GetString("dialogs.exitsave.caption"),
-                    MessageBox.MessageBoxButtons.YesNoCancel);
-                switch (result) {
-                    case MessageBox.MessageBoxResult.Yes:
-                        await Save();
-                        goto case MessageBox.MessageBoxResult.No;
-                    case MessageBox.MessageBoxResult.No:
-                        pianoRollWindow?.Close();
-                        forceClose = true;
-                        Close();
-                        break;
-                    default:
-                        break;
-                }
+            if (forceClose || DocManager.Inst.ChangesSaved) {
+                return;
+            }
+            e.Cancel = true;
+            if (!await AskIfSaveAndContinue()) {
+                return;
+            }
+            pianoRollWindow?.Close();
+            forceClose = true;
+            Close();
+        }
+
+        private async Task<bool> AskIfSaveAndContinue() {
+            var result = await MessageBox.Show(
+                this,
+                ThemeManager.GetString("dialogs.exitsave.message"),
+                ThemeManager.GetString("dialogs.exitsave.caption"),
+                MessageBox.MessageBoxButtons.YesNoCancel);
+            switch (result) {
+                case MessageBox.MessageBoxResult.Yes:
+                    await Save();
+                    goto case MessageBox.MessageBoxResult.No;
+                case MessageBox.MessageBoxResult.No:
+                    return true; // Continue.
+                default:
+                    return false; // Cancel.
             }
         }
 
