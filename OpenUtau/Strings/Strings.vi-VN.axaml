@@ -185,7 +185,7 @@ Cảnh báo: moresampler chưa được hỗ trợ hoàn toàn. Việc sử dụ
   <system:String x:Key="singers.subbanks.reset">Đặt lại</system:String>
   <system:String x:Key="singers.subbanks.save">Lưu</system:String>
   <system:String x:Key="singers.subbanks.selectall">Chọn tất cả</system:String>
-  <system:String x:Key="singers.subbanks.set">Tập hợp</system:String>
+  <system:String x:Key="singers.subbanks.set">Áp dụng</system:String>
   <system:String x:Key="singers.subbanks.tone">Chất giọng</system:String>
   <system:String x:Key="singers.subbanks.toneranges">Giới hạn chất giọng</system:String>
 
