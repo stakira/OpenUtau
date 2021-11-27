@@ -471,7 +471,7 @@ namespace OpenUtau.Classic {
                         WriteNoteBody(project, track, spacer, writer);
                     }
                     writer.WriteLine($"[#{sequence.Count:D4}]");
-                    WriteNoteBody(project, track, note, writer);
+                    WriteNoteBody(project, track, note, writer, forPlugin: true);
                     position = note.End;
                     sequence.Add(note);
                     note = note.Next;
@@ -503,19 +503,24 @@ namespace OpenUtau.Classic {
             writer.WriteLine("[#TRACKEND]");
         }
 
-        static void WriteNoteBody(UProject project, UTrack track, UNote note, StreamWriter writer) {
+        static void WriteNoteBody(UProject project, UTrack track, UNote note, StreamWriter writer, bool forPlugin = false) {
             writer.WriteLine($"Length={note.duration}");
             writer.WriteLine($"Lyric={note.lyric}");
             writer.WriteLine($"NoteNum={note.tone}");
             writer.WriteLine("PreUtterance=");
             //writer.WriteLine("VoiceOverlap=");
             if (note.phonemes.Count > 0) {
-                var vel = note.phonemes[0].GetExpression(project, track, "vel").Item1;
+                var phoneme = note.phonemes[0];
+                var vel = phoneme.GetExpression(project, track, "vel").Item1;
                 writer.WriteLine($"Velocity={(int)vel}");
-                var vol = note.phonemes[0].GetExpression(project, track, "vol").Item1;
+                var vol = phoneme.GetExpression(project, track, "vol").Item1;
                 writer.WriteLine($"Intensity={(int)vol}");
-                var mod = note.phonemes[0].GetExpression(project, track, "mod").Item1;
+                var mod = phoneme.GetExpression(project, track, "mod").Item1;
                 writer.WriteLine($"Moduration={(int)mod}");
+                if (forPlugin && !string.IsNullOrEmpty(phoneme.oto.DisplayFile)) {
+                    writer.WriteLine($"@filename={phoneme.oto.DisplayFile}");
+                    writer.WriteLine($"@alias={phoneme.oto.Alias}");
+                }
             }
             WriteEnvelope(note, writer);
             WritePitch(note, writer);
