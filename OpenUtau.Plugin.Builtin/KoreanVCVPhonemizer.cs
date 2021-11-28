@@ -37,29 +37,6 @@ namespace OpenUtau.Plugin.Builtin
 		/// Extra English-based sounds for phonetic hint input + alternate romanizations for tense plosives (ㄲ, ㄸ, ㅃ)
 		/// </summary>
 		static readonly string[] extras = { "f", "v", "th", "dh", "z", "kk", "pp", "tt" };
-        
-        /// <summary>
-        /// Gets the last sound of a note override.
-        /// </summary>
-        /// <param name="lyric">The lyric to get the last sound of.</param>
-        /// <returns>The last sound of the passed lyric</returns>
-        public string GetConnectorFromOverride(string lyric) {
-            string lastSound = lyric.Split(' ')[^1];
-            Regex symbolRemove = new Regex(@"\W");
-            MatchCollection symbolMatches = symbolRemove.Matches(lastSound);
-
-            foreach (Match symbolMatch in symbolMatches) {
-                lastSound = lastSound.Replace(symbolMatch.Value, string.Empty);
-            }
-
-            if (Array.IndexOf(finals, lastSound) == -1) {
-                foreach (string i in initials) {
-                    if (!string.IsNullOrEmpty(i)) lastSound = lastSound.Replace(i, string.Empty);
-                }
-            }
-
-            return lastSound;
-        }
 
 		/// <summary>
 		/// Gets the romanized initial, medial, and final components of the passed Hangul syllable.
@@ -102,9 +79,32 @@ namespace OpenUtau.Plugin.Builtin
 			string[] ret = { i, m, f };
 
 			return ret;
-		}
+        }
 
-		private USinger singer;
+        /// <summary>
+        /// Gets the last sound of an alias.
+        /// </summary>
+        /// <param name="lyric">The alias to get the last sound of.</param>
+        /// <returns>The last sound of the alias</returns>
+        public string GetLastSoundOfAlias(string lyric) {
+            string lastSound = lyric.Split(' ')[^1];
+            Regex symbolRemove = new Regex(@"\W");
+            MatchCollection symbolMatches = symbolRemove.Matches(lastSound);
+
+            foreach (Match symbolMatch in symbolMatches) {
+                lastSound = lastSound.Replace(symbolMatch.Value, string.Empty);
+            }
+
+            if (Array.IndexOf(finals, lastSound) == -1) {
+                foreach (string i in initials) {
+                    if (!string.IsNullOrEmpty(i)) lastSound = lastSound.Replace(i, string.Empty);
+                }
+            }
+
+            return lastSound;
+        }
+
+        private USinger singer;
 
 		// Store singer
 		public override void SetSinger(USinger singer) => this.singer = singer;
@@ -165,7 +165,7 @@ namespace OpenUtau.Plugin.Builtin
 			}
 
             // Adjust current phoneme based on previous neighbor
-            if (prevNeighbour != null && singer.TryGetMappedOto(prevNeighbour?.lyric, note.tone, out _)) currPhoneme = $"{GetConnectorFromOverride(prevNeighbour?.lyric)} {currPhoneme}";
+            if (prevNeighbour != null && singer.TryGetMappedOto(prevNeighbour?.lyric, note.tone, out _)) currPhoneme = $"{GetLastSoundOfAlias(prevNeighbour?.lyric)} {currPhoneme}";
             else {
                 string[] prevIMF;
 
