@@ -63,11 +63,13 @@ namespace OpenUtau.Plugin.Builtin {
             }
             // Get color
             string color = string.Empty;
+            int toneShift = 0;
             if (note.phonemeAttributes != null) {
                 var attr = note.phonemeAttributes.FirstOrDefault(attr => attr.index == 0);
                 color = attr.voiceColor;
+                toneShift = attr.toneShift;
             }
-            if (singer.TryGetMappedOto(phoneme, note.tone, color, out var oto)) {
+            if (singer.TryGetMappedOto(phoneme, note.tone + toneShift, color, out var oto)) {
                 phoneme = oto.Alias;
             } else {
                 phoneme = note.lyric;

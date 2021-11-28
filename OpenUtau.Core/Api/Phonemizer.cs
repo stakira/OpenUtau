@@ -81,6 +81,10 @@ namespace OpenUtau.Api {
             /// </summary>
             public double? consonantStretchRatio;
             /// <summary>
+            /// Tone shift. Shifts the note tone used for oto lookup.
+            /// </summary>
+            public int toneShift;
+            /// <summary>
             /// Alternate index. The number suffix of duplicate aliases.
             /// </summary>
             public int? alternate;
@@ -197,21 +201,6 @@ namespace OpenUtau.Api {
             return result;
         }
 
-        /// <summary>
-        /// Utility method to tone-map phonemes.
-        /// Uses phoneme positions to find the most overlapped note, and tone-map based on it.
-        /// </summary>
-        public static void MapPhonemes(Note[] notes, Phoneme[] phonemes, USinger singer) {
-            int endPosition = 0;
-            int index = 0;
-            foreach (var note in notes) {
-                endPosition += note.duration;
-                while (index < phonemes.Length && phonemes[index].position < endPosition) {
-                    phonemes[index].phoneme = MapPhoneme(phonemes[index].phoneme, note.tone, singer);
-                    index++;
-                }
-            }
-        }
         protected void OnAsyncInitStarted() {
             DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, "Initializing phonemizer..."));
         }
@@ -239,18 +228,6 @@ namespace OpenUtau.Api {
         /// <param name="tone">Music tone of note. C4 = 60.</param>
         /// <param name="singer">The singer.</param>
         /// <returns>Mapped alias.</returns>
-        public static string MapPhoneme(string phoneme, int tone, USinger singer) {
-            if (singer.TryGetMappedOto(phoneme, tone, out var oto)) {
-                phoneme = oto.Alias;
-            }
-            return phoneme;
-        }
-        public static string MapPhoneme(string phoneme, int tone, string color, USinger singer) {
-            if (singer.TryGetMappedOto(phoneme, tone, color, out var oto)) {
-                phoneme = oto.Alias;
-            }
-            return phoneme;
-        }
         public static string MapPhoneme(string phoneme, int tone, string color, string alt, USinger singer) {
             if (singer.TryGetMappedOto(phoneme + alt, tone, color, out var otoAlt)) {
                 return otoAlt.Alias;
