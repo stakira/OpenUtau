@@ -188,29 +188,29 @@ Hold Ctrl to select more</system:String>-->
   <!--<system:String x:Key="singers.subbanks.tone">Tone</system:String>-->
   <!--<system:String x:Key="singers.subbanks.toneranges">Tone Ranges</system:String>-->
 
-  <!--<system:String x:Key="tip.exps">
-Left Button Draw: Set expressions
-Right Button Draw: Reset expressions
-  </system:String>-->
+  <system:String x:Key="tip.exps">
+Tieni premuto Mouse Sinistro: Imposta espressioni
+Tieni premuto Mouse destro: Resetta espressioni
+  </system:String>
   <system:String x:Key="tip.lyricbox.next">Tab: Nota successiva</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: Nota precedente</system:String>
-  <!--<system:String x:Key="tip.notes.basics">
-Selection Tool
-    Box Select: Select notes
-    Ctrl + Box Select: Select more notes
-    Up/Down: Transpose selected notes
-    Ctrl + Up/Down: Transpose selected notes by octave
-Pen Tool
-    Left Button Draw: Add note
-    Right Click: Remove note
-    Right Button Draw: Remove multiple notes
-General
-    T: Toggle tips
-    Drag Note: Move note
-    Drag End of Note: Resize note
-    Alt + Drag End of Note: Resize neighbouring notes
-    Space: Play
-  </system:String>-->
+  <system:String x:Key="tip.notes.basics">
+      Strumenti Selezione
+      Selezione: Seleziona note
+      Ctrl + Selezione: Seleziona più note
+      Su/Giù: Trasponi note selezionate
+      Ctrl + Su/Giù: Trasponi note selezionate per ottava
+      Strumento penna
+      Click sinistro: Aggiungi nota
+      Click destro: Elimina nota
+      Tieni premuto mouse destro: Elimina più note
+      Generali
+      T: Attiva/Disattiva Suggerimenti
+      Trascina nota: Muovi nota
+      Trascina fine della nota: Ridimensiona nota
+      Alt + Trascina fine della nota: Ridimensiona note vicine
+      Spazio: Riproduci
+  </system:String>
   <system:String x:Key="tip.notes.zoomx">◀ Scorri qui per zoomare orizzontalmente ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">Scorri qui per zoomare verticalmente ▶</system:String>
 
