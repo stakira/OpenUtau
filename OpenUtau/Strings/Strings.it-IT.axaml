@@ -135,8 +135,8 @@ Mantieni click su control per selezionare più cose</system:String>
 
   <system:String x:Key="prefs.advanced">Avanzate</system:String>
   <system:String x:Key="prefs.advanced.beta">Beta</system:String>
-  <system:String x:Key="prefs.advanced.resamplerlogging">Resampler Logging</system:String>-->
-  <system:String x:Key="prefs.advanced.resamplerlogging.warn">Mette i log del resampler in un file. Questa operazione può rallentare la UI e il resampling.</system:String>-->
+  <system:String x:Key="prefs.advanced.resamplerlogging">Resampler Logging</system:String>
+  <system:String x:Key="prefs.advanced.resamplerlogging.warn">Mette i log del resampler in un file. Questa operazione può rallentare la UI e il resampling.</system:String>
   <system:String x:Key="prefs.advanced.stable">Stabile</system:String>
   <system:String x:Key="prefs.appearance">Aspetto</system:String>
   <system:String x:Key="prefs.appearance.lang">Lingua</system:String>
@@ -168,25 +168,25 @@ Mantieni click su control per selezionare più cose</system:String>
     3. Aspetta pazientemente la fine della pre-renderizzazione prima di riprodurre.
   </system:String>
 
-  <system:String x:Key="progress.saved">Progetto salvato. {0}</system:String>-->
+  <system:String x:Key="progress.saved">Progetto salvato. {0}</system:String>
 
   <system:String x:Key="singers.caption">Cantanti</system:String>
   <system:String x:Key="singers.location">Posizione</system:String>
   <system:String x:Key="singers.refresh">Aggiorna</system:String>
-  <system:String x:Key="singers.setencoding">Imposta Encoding</system:String>-->
-  <system:String x:Key="singers.subbanks.cancel">Cancella</system:String>-->
-  <system:String x:Key="singers.subbanks.clear">Pulisci</system:String>-->
-  <system:String x:Key="singers.subbanks.color">Colore</system:String>-->
-  <system:String x:Key="singers.subbanks.color.add">Aggiungi Colore</system:String>-->
-  <system:String x:Key="singers.subbanks.color.remove">Rimuovi Colore</system:String>-->
-  <system:String x:Key="singers.subbanks.color.rename">Rinomina</system:String>-->
-  <system:String x:Key="singers.subbanks.edit">Aggiorna Subbanks</system:String>-->
-  <system:String x:Key="singers.subbanks.reset">Riavvia</system:String>-->
-  <system:String x:Key="singers.subbanks.save">Salva</system:String>-->
-  <system:String x:Key="singers.subbanks.selectall">Seleziona tutto</system:String>-->
-  <system:String x:Key="singers.subbanks.set">Imposta</system:String>-->
-  <system:String x:Key="singers.subbanks.tone">Tono</system:String>-->
-  <system:String x:Key="singers.subbanks.toneranges">Range tonale</system:String>-->
+  <system:String x:Key="singers.setencoding">Imposta Encoding</system:String>
+  <system:String x:Key="singers.subbanks.cancel">Cancella</system:String>
+  <system:String x:Key="singers.subbanks.clear">Pulisci</system:String>
+  <system:String x:Key="singers.subbanks.color">Colore</system:String>
+  <system:String x:Key="singers.subbanks.color.add">Aggiungi Colore</system:String>
+  <system:String x:Key="singers.subbanks.color.remove">Rimuovi Colore</system:String>
+  <system:String x:Key="singers.subbanks.color.rename">Rinomina</system:String>
+  <system:String x:Key="singers.subbanks.edit">Aggiorna Subbanks</system:String>
+  <system:String x:Key="singers.subbanks.reset">Riavvia</system:String>
+  <system:String x:Key="singers.subbanks.save">Salva</system:String>
+  <system:String x:Key="singers.subbanks.selectall">Seleziona tutto</system:String>
+  <system:String x:Key="singers.subbanks.set">Imposta</system:String>
+  <system:String x:Key="singers.subbanks.tone">Tono</system:String>
+  <system:String x:Key="singers.subbanks.toneranges">Range tonale</system:String>
 
   <system:String x:Key="tip.exps">
 Tieni premuto Mouse Sinistro: Imposta espressioni
@@ -217,15 +217,15 @@ Tieni premuto Mouse destro: Resetta espressioni
   <system:String x:Key="tracks.movedown">Sposta giù</system:String>
   <system:String x:Key="tracks.moveup">Sposta su</system:String>
   <system:String x:Key="tracks.remove">Elimina</system:String>
-  <system:String x:Key="tracks.selectsinger">Seleziona Cantante</system:String>-->
+  <system:String x:Key="tracks.selectsinger">Seleziona Cantante</system:String>
 
-  <system:String x:Key="updater.caption">Controlla aggiornamenti</system:String>-->
-  <system:String x:Key="updater.github">GitHub</system:String>-->
-  <system:String x:Key="updater.status.available">aggiornamento v{0} disponibile!</system:String>-->
-  <system:String x:Key="updater.status.checking">Controllo aggiornamenti...</system:String>-->
-  <system:String x:Key="updater.status.notavailable">Aggiornato</system:String>-->
-  <system:String x:Key="updater.status.unknown">Impossibile eseguire il controllo della versione</system:String>-->
-  <system:String x:Key="updater.update">Aggiorna</system:String>-->
+  <system:String x:Key="updater.caption">Controlla aggiornamenti</system:String>
+  <system:String x:Key="updater.github">GitHub</system:String>
+  <system:String x:Key="updater.status.available">aggiornamento v{0} disponibile!</system:String>
+  <system:String x:Key="updater.status.checking">Controllo aggiornamenti...</system:String>
+  <system:String x:Key="updater.status.notavailable">Aggiornato</system:String>
+  <system:String x:Key="updater.status.unknown">Impossibile eseguire il controllo della versione</system:String>
+  <system:String x:Key="updater.update">Aggiorna</system:String>
 
   <system:String x:Key="warning">Avviso</system:String>
   <system:String x:Key="warning.asciipath">"{0}" Questo percorso contiene caratteri inesistenti nel codice ASCII. I resampler protrebbero non funzionare.</system:String>
