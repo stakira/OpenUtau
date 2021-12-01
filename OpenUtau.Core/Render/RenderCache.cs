@@ -61,6 +61,13 @@ namespace OpenUtau.Core.Render {
             }
         }
 
+        public void Clear() {
+            size = 0;
+            dummyHead.next = dummyTail;
+            dummyTail.prev = dummyHead;
+            dict.Clear();
+        }
+
         private void Remove(Node node) {
             node.next.prev = node.prev;
             node.prev.next = node.next;

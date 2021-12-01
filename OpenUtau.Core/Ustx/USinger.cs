@@ -19,7 +19,7 @@ namespace OpenUtau.Core.Ustx {
         public string Suffix => subbank.Suffix;
         public SortedSet<int> ToneSet => subbank.toneSet;
         public string File => Path.Combine(set.Location, oto.Wav);
-        public string DisplayFile => oto.Wav;
+        public string DisplayFile => oto?.Wav;
         public double Offset => oto.Offset;
         public double Consonant => oto.Consonant;
         public double Cutoff => oto.Cutoff;

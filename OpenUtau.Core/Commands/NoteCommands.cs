@@ -372,5 +372,4 @@ namespace OpenUtau.Core {
         }
         public override string ToString() => "Set phoneme overlap";
     }
-
 }
