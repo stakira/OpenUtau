@@ -135,8 +135,8 @@ Segure Ctrl para selecionar mais notas</system:String>
 
   <system:String x:Key="prefs.advanced">Avançado</system:String>
   <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
-  <!--<system:String x:Key="prefs.advanced.resamplerlogging">Resampler Logging</system:String>-->
-  <!--<system:String x:Key="prefs.advanced.resamplerlogging.warn">Stores resampler output in log files. This option slows down UI and rendering.</system:String>-->
+  <system:String x:Key="prefs.advanced.resamplerlogging">Resampler Log</system:String>
+  <system:String x:Key="prefs.advanced.resamplerlogging.warn">Armazena a saída do resampler em arquivos de log. Esta opção atrasa a UI e a renderização.</system:String>
   <system:String x:Key="prefs.advanced.stable">Estável</system:String>
   <system:String x:Key="prefs.appearance">Aparência</system:String>
   <system:String x:Key="prefs.appearance.lang">Idioma</system:String>
@@ -165,7 +165,7 @@ Segure Ctrl para selecionar mais notas</system:String>
     Aviso: ainda não há suporte para moresampler. Ele estará extremamente devegar e causará alto uso da CPU. Se deseja usar, por favor:
     1. Em moreconfig.txt, edite "resampler-compatibility" de "off" para "on".
     2. Em moreconfig.txt, edite "auto-update-llsm-mrq" para "off".
-    3. Reduza as threads do pre-render para 1 ou 2.
+    3. Altere "multithread-synthesis" para "off" em moreconfig.txt ou reduza as threads do pre-render para 1 ou 2.
     4. Pacientemente espere o pre-render finalizar antes de tocar.
   </system:String>
 
