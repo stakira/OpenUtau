@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
 
@@ -78,9 +79,32 @@ namespace OpenUtau.Plugin.Builtin
 			string[] ret = { i, m, f };
 
 			return ret;
-		}
+        }
 
-		private USinger singer;
+        /// <summary>
+        /// Gets the last sound of an alias.
+        /// </summary>
+        /// <param name="lyric">The alias to get the last sound of.</param>
+        /// <returns>The last sound of the alias</returns>
+        public string GetLastSoundOfAlias(string lyric) {
+            string lastSound = lyric.Split(' ')[^1];
+            Regex symbolRemove = new Regex(@"\W");
+            MatchCollection symbolMatches = symbolRemove.Matches(lastSound);
+
+            foreach (Match symbolMatch in symbolMatches) {
+                lastSound = lastSound.Replace(symbolMatch.Value, string.Empty);
+            }
+
+            if (Array.IndexOf(finals, lastSound) == -1) {
+                foreach (string i in initials) {
+                    if (!string.IsNullOrEmpty(i)) lastSound = lastSound.Replace(i, string.Empty);
+                }
+            }
+
+            return lastSound;
+        }
+
+        private USinger singer;
 
 		// Store singer
 		public override void SetSinger(USinger singer) => this.singer = singer;
@@ -140,37 +164,40 @@ namespace OpenUtau.Plugin.Builtin
 				if (!singer.TryGetMappedOto("- eui", note.tone, out _)) currPhoneme = $"{currIMF[0]}ui";
 			}
 
-			// Adjust current phoneme based on previous neighbor
-			string[] prevIMF;
+            // Adjust current phoneme based on previous neighbor
+            if (prevNeighbour != null && singer.TryGetMappedOto(prevNeighbour?.lyric, note.tone, out _)) currPhoneme = $"{GetLastSoundOfAlias(prevNeighbour?.lyric)} {currPhoneme}";
+            else {
+                string[] prevIMF;
 
-			if (prevNeighbour == null || prevNeighbour?.lyric == "R" || prevNeighbour?.lyric == "-") currPhoneme = $"- {currPhoneme}";
-			else {
-				if (string.IsNullOrEmpty(prevNeighbour?.phoneticHint)) {
-					byte[] bytes = Encoding.Unicode.GetBytes($"{prevNeighbour?.lyric[0]}");
-					int numval = Convert.ToInt16(bytes[0]) + Convert.ToInt16(bytes[1]) * (16 * 16);
-					if (prevNeighbour?.lyric.Length == 1 && numval >= 44032 && numval <= 55215) prevIMF = GetIMF(prevNeighbour?.lyric);
-					else return new Result {
-						phonemes = new Phoneme[] {
-							new Phoneme { phoneme = note.lyric }
-						}
-					};
-				} else prevIMF = GetIMFFromHint(prevNeighbour?.phoneticHint);
+                if (prevNeighbour == null || prevNeighbour?.lyric == "R" || prevNeighbour?.lyric == "-") currPhoneme = $"- {currPhoneme}";
+                else {
+                    if (string.IsNullOrEmpty(prevNeighbour?.phoneticHint)) {
+                        byte[] bytes = Encoding.Unicode.GetBytes($"{prevNeighbour?.lyric[0]}");
+                        int numval = Convert.ToInt16(bytes[0]) + Convert.ToInt16(bytes[1]) * (16 * 16);
+                        if (prevNeighbour?.lyric.Length == 1 && numval >= 44032 && numval <= 55215) prevIMF = GetIMF(prevNeighbour?.lyric);
+                        else return new Result {
+                            phonemes = new Phoneme[] {
+                                new Phoneme { phoneme = note.lyric }
+                            }
+                        };
+                    } else prevIMF = GetIMFFromHint(prevNeighbour?.phoneticHint);
 
-				string prevConnect;
+                    string prevConnect;
 
-				if (!string.IsNullOrEmpty(prevIMF[2])) {
-					if (Array.IndexOf(sonorants, prevIMF[2]) > -1) {
-						if (singer.TryGetMappedOto($"{prevIMF[2]} {currPhoneme}", note.tone, out _)) prevConnect = prevIMF[2];
-						else prevConnect = prevIMF[2].ToUpper();
-					} else prevConnect = "-";
-				} else {
-					if (prevIMF[1][0] == 'w' || prevIMF[1][0] == 'y' || prevIMF[1] == "oe") prevConnect = prevIMF[1].Remove(0, 1);
-					else if (prevIMF[1] == "eui") prevConnect = "i";
-					else prevConnect = prevIMF[1];
-				}
+                    if (!string.IsNullOrEmpty(prevIMF[2])) {
+                        if (Array.IndexOf(sonorants, prevIMF[2]) > -1) {
+                            if (singer.TryGetMappedOto($"{prevIMF[2]} {currPhoneme}", note.tone, out _)) prevConnect = prevIMF[2];
+                            else prevConnect = prevIMF[2].ToUpper();
+                        } else prevConnect = "-";
+                    } else {
+                        if (prevIMF[1][0] == 'w' || prevIMF[1][0] == 'y' || prevIMF[1] == "oe") prevConnect = prevIMF[1].Remove(0, 1);
+                        else if (prevIMF[1] == "eui") prevConnect = "i";
+                        else prevConnect = prevIMF[1];
+                    }
 
-				currPhoneme = $"{prevConnect} {currPhoneme}";
-			}
+                    currPhoneme = $"{prevConnect} {currPhoneme}";
+                }
+            }
 
 			// Return Result now if note has no batchim
 			if (string.IsNullOrEmpty(currIMF[2])) {
