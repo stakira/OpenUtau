@@ -57,6 +57,7 @@
             <MenuItem Header="{DynamicResource menu.tools.layout.hsplit12}" Click="OnMenuLayoutHSplit12"/>
             <MenuItem Header="{DynamicResource menu.tools.layout.hsplit13}" Click="OnMenuLayoutHSplit13"/>
           </MenuItem>
+          <MenuItem Header="{DynamicResource menu.tools.clearrendercache}" Click="OnMenuClearRenderCache"/>
           <MenuItem Header="{DynamicResource menu.tools.project.expressions}" Click="OnMenuExpressionss"/>
           <MenuItem Header="{DynamicResource menu.tools.singers}" Click="OnMenuSingers"/>
           <MenuItem Header="{DynamicResource menu.tools.singer.install}" Click="OnMenuInstallSinger"/>
