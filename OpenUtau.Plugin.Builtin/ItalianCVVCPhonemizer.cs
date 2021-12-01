@@ -9,10 +9,10 @@ namespace OpenUtau.Plugin.Builtin {
     [Phonemizer("Italian CVVC Phonemizer", "IT CVVC", "DJ-001")]
     public class ItalianCVVCPhonemizer : Phonemizer {
 
-        // <summary>
-        // Italian CVVC Phonemizer by DJ-001
-        // Utilizing Makku's reclist connotation, based on TUBS's Japanese CVVC Phonemizer
-        // </summary>
+        /// <summary>
+        /// Italian CVVC Phonemizer by DJ-001
+        /// Utilizing Makku's reclist connotation, based on TUBS's Japanese CVVC Phonemizer
+        /// </summary>
 
         static readonly string[] plainVowels = new string[] { "a", "e", "i", "o", "u", "3", "0" };
 
