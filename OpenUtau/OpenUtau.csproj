@@ -46,20 +46,8 @@
     <ProjectReference Include="..\OpenUtau.Core\OpenUtau.Core.csproj" />
     <ProjectReference Include="..\OpenUtau.Plugin.Builtin\OpenUtau.Plugin.Builtin.csproj" />
   </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)'=='DEBUG'">
+  <ItemGroup>
     <None Include="..\libs\**" CopyToOutputDirectory="PreserveNewest" LinkBase="libs\" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(RuntimeIdentifier)' == 'win-x64'">
-    <None Include="..\libs\win-x64\**" CopyToOutputDirectory="PreserveNewest" LinkBase="libs\win-x64\" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(RuntimeIdentifier)' == 'win-x86'">
-    <None Include="..\libs\win-x86\**" CopyToOutputDirectory="PreserveNewest" LinkBase="libs\win-x86\" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(RuntimeIdentifier)' == 'osx-x64'">
-    <None Include="..\libs\osx-x64\**" CopyToOutputDirectory="PreserveNewest" LinkBase="libs\osx-x64\" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(RuntimeIdentifier)' == 'linux-x64'">
-    <None Include="..\libs\linux-x64\**" CopyToOutputDirectory="PreserveNewest" LinkBase="libs\linux-x64\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Resources\Resources.Designer.cs">
@@ -74,4 +62,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(OS)'=='Windows_NT'">
+    <Exec Command="(if not exist $(OutDir)Plugins mkdir $(OutDir)Plugins) &amp;&amp; (copy /y $(OutDir)OpenUtau.Plugin.Builtin.dll $(OutDir)Plugins\) &amp;&amp; (if not exist $(OutDir)Dictionaries mkdir $(OutDir)Dictionaries)" />
+  </Target>
 </Project>

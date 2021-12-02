@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
@@ -16,12 +15,10 @@ namespace OpenUtau.Core {
                 HomePath = Path.Combine(Environment.GetFolderPath(
                     Environment.SpecialFolder.Personal), "Library", "OpenUtau");
                 HomePathIsAscii = true;
-            } else if (OS.IsLinux()) {
-                HomePath = Path.Combine(Environment.GetFolderPath(
-                    Environment.SpecialFolder.Personal), "OpenUtau");
-                HomePathIsAscii = true;
             } else {
-                HomePath = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
+                var assemblyPath = Assembly.GetExecutingAssembly().Location;
+                Log.Logger.Information($"Assembly path = {assemblyPath}");
+                HomePath = Directory.GetParent(assemblyPath).ToString();
                 HomePathIsAscii = true;
                 var etor = StringInfo.GetTextElementEnumerator(HomePath);
                 while (etor.MoveNext()) {

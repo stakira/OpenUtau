@@ -23,7 +23,7 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys {
         }
 
         public byte[] DoResampler(EngineInput Args, ILogger logger) {
-            bool resamplerLogging = Preferences.Default.ResamplerLogging;
+            const bool debugResampler = false;
             byte[] data = new byte[0];
             if (!_isLegalPlugin) {
                 return data;
@@ -36,19 +36,21 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys {
             using (var proc = new Process()) {
                 proc.StartInfo = new ProcessStartInfo(FilePath, ArgParam) {
                     UseShellExecute = false,
-                    RedirectStandardOutput = resamplerLogging,
-                    RedirectStandardError = resamplerLogging,
+                    RedirectStandardOutput = debugResampler,
+                    RedirectStandardError = debugResampler,
                     CreateNoWindow = true,
                 };
-                if (resamplerLogging) {
+#pragma warning disable CS0162 // Unreachable code detected
+                if (debugResampler) {
                     proc.OutputDataReceived += (o, e) => logger.Information($" >>> [thread-{threadId}] {e.Data}");
                     proc.ErrorDataReceived += (o, e) => logger.Error($" >>> [thread-{threadId}] {e.Data}");
                 }
                 proc.Start();
-                if (resamplerLogging) {
+                if (debugResampler) {
                     proc.BeginOutputReadLine();
                     proc.BeginErrorReadLine();
                 }
+#pragma warning restore CS0162 // Unreachable code detected
                 if (!proc.WaitForExit(60000)) {
                     logger.Warning($"[thread-{threadId}] Timeout, killing...");
                     try {

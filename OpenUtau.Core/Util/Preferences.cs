@@ -86,13 +86,13 @@ namespace OpenUtau.Core.Util {
             public bool ShowPrefs = true;
             public bool ShowTips = true;
             public int Theme;
+            public int Beta = 0;
             public int PrerenderThreads = 2;
             public string Language = string.Empty;
             public List<string> RecentFiles = new List<string>();
             public string SkipUpdate = string.Empty;
             public string AdditionalSingerPath = string.Empty;
             public bool PreferCommaSeparator = false;
-            public bool ResamplerLogging = false;
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
@@ -148,10 +147,8 @@ namespace OpenUtau.App.Controls {
             viewModel.Text = text;
             viewModel.IsVisible = true;
             box.SelectAll();
-            focusTimer = new DispatcherTimer(
-                TimeSpan.FromMilliseconds(15),
-                DispatcherPriority.Normal,
-                FocusTimer_Tick);
+            focusTimer = new DispatcherTimer();
+            focusTimer.Tick += FocusTimer_Tick;
             focusTimer.Start();
         }
 
