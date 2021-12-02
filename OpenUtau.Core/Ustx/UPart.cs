@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using YamlDotNet.Serialization;
 using Serilog;
+using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
 
 namespace OpenUtau.Core.Ustx {
     [JsonObject(MemberSerialization.OptIn)]
@@ -36,6 +38,8 @@ namespace OpenUtau.Core.Ustx {
         [JsonProperty]
         [YamlMember(Order = 100)]
         public SortedSet<UNote> notes = new SortedSet<UNote>();
+        [YamlMember(Order = 101)]
+        public SortedSet<UTag> tags = new SortedSet<UTag>();
 
         public override string DisplayName => name;
 
@@ -104,10 +108,6 @@ namespace OpenUtau.Core.Ustx {
 
         public override UPart Clone() {
             return new UVoicePart() {
-                name = name,
-                comment = comment,
-                trackNo = trackNo,
-                position = position,
                 notes = new SortedSet<UNote>(notes.Select(note => note.Clone())),
             };
         }

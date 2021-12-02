@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Threading;
 using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
 using Serilog;
@@ -25,7 +25,7 @@ namespace OpenUtau.Plugin.Builtin {
         private IG2p mergedG2p;
         private bool isDictionaryLoading;
 
-        private readonly List<Tuple<int, int, bool>> alignments = new List<Tuple<int, int, bool>>();
+        private readonly List<Tuple<int, int>> alignments = new List<Tuple<int, int>>();
 
         /// <summary>
         /// This property will later be exposed in UI for user adjustment.
@@ -46,7 +46,7 @@ namespace OpenUtau.Plugin.Builtin {
         private void Initialize() {
             isDictionaryLoading = true;
             OnAsyncInitStarted();
-            Task.Run(() => {
+            System.Threading.Tasks.Task.Run(() => {
                 // Load cmudict.
                 cmudict = G2pDictionary.GetShared("cmudict");
                 // Load g2p plugin dictionary.
@@ -131,44 +131,46 @@ namespace OpenUtau.Plugin.Builtin {
             var isVowel = symbols.Select(s => mergedG2p.IsVowel(s)).ToArray();
             // Arpasing aligns the first vowel at 0 and shifts leading consonants to negative positions,
             // so we need to find the first vowel.
+            int firstVowel = Array.IndexOf(isVowel, true);
             var phonemes = new Phoneme[symbols.Length];
 
             // Alignments
-            // - Tries to align every note to one syllable.
-            // - "+n" manually aligns to n-th phoneme.
+            // Alignment is where a user use "+n" (n is a number) to align n-th phoneme with an extender note.
+            // We build the aligment points first, these are the phonemes must be aligned to a certain position,
+            // phonemes that are not aligment points are distributed in-between.
             alignments.Clear();
-            int position = 0;
-            for (int i = 0; i < symbols.Length; i++) {
-                if (isVowel[i] && alignments.Count < notes.Length) {
-                    alignments.Add(Tuple.Create(i, position, false));
-                    position += notes[alignments.Count - 1].duration;
-                }
+            if (firstVowel > 0) {
+                // If there are leading consonants, add the first vowel as an align point.
+                alignments.Add(Tuple.Create(firstVowel, 0));
+            } else {
+                firstVowel = 0;
             }
-            position = notes[0].duration;
-            for (int i = 1; i < notes.Length; ++i) {
-                if (int.TryParse(notes[i].lyric.Substring(1), out var idx)) {
-                    alignments.Add(Tuple.Create(idx - 1, position, true));
+            int position = 0;
+            for (int i = 0; i < notes.Length; ++i) {
+                string alignmentHint = notes[i].lyric;
+                if (alignmentHint.StartsWith("+")) {
+                    alignmentHint = alignmentHint.Substring(1);
+                } else {
+                    position += notes[i].duration;
+                    continue;
+                }
+                // Parse the number n in "+n".
+                if (int.TryParse(alignmentHint, out int index)) {
+                    index--; // Convert from 1-based index to 0-based index.
+                    if (index > 0 && (alignments.Count == 0 || alignments.Last().Item1 < index) && index < phonemes.Length) {
+                        // Adds a alignment point.
+                        // Some details in the if condition:
+                        // 1. The first phoneme cannot be user-aligned.
+                        // 2. The index must be incrementing, otherwise ignored.
+                        // 3. The index must be within range.
+                        alignments.Add(Tuple.Create(index, position));
+                    }
                 }
                 position += notes[i].duration;
             }
-            alignments.Add(Tuple.Create(phonemes.Length, position, true));
-            alignments.Sort((a, b) => a.Item1.CompareTo(b.Item1));
-            for (int i = 0; i < alignments.Count; ++i) {
-                if (alignments[i].Item3) {
-                    while (i > 0 && (alignments[i - 1].Item2 >= alignments[i].Item2 ||
-                        alignments[i - 1].Item1 == alignments[i].Item1)) {
-                        alignments.RemoveAt(i - 1);
-                        i--;
-                    }
-                    while (i < alignments.Count - 1 && (alignments[i + 1].Item2 <= alignments[i].Item2 ||
-                        alignments[i + 1].Item1 == alignments[i].Item1)) {
-                        alignments.RemoveAt(i + 1);
-                    }
-                }
-            }
+            alignments.Add(Tuple.Create(phonemes.Length, position));
 
             int startIndex = 0;
-            int firstVowel = Array.IndexOf(isVowel, true);
             int startTick = -ConsonantLength * firstVowel;
             foreach (var alignment in alignments) {
                 // Distributes phonemes between two aligment points.
@@ -229,9 +231,6 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         void DistributeDuration(bool[] isVowel, Phoneme[] phonemes, int startIndex, int endIndex, int startTick, int endTick) {
-            if (startIndex == endIndex) {
-                return;
-            }
             // First count number of vowels and consonants.
             int consonants = 0;
             int vowels = 0;

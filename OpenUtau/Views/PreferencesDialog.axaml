@@ -70,14 +70,14 @@
             <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.note.restart}"/>
           </StackPanel>
         </HeaderedContentControl>
-        <HeaderedContentControl Classes="groupbox" Header="{DynamicResource prefs.advanced}">
+        <HeaderedContentControl Classes="groupbox" Header="{DynamicResource prefs.advanced}" IsVisible="False">
           <StackPanel>
-            <TextBlock Text="{DynamicResource prefs.advanced.resamplerlogging}"/>
-            <ComboBox HorizontalAlignment="Stretch" SelectedIndex="{Binding ResamplerLogging}">
-              <ComboBoxItem Content="{DynamicResource prefs.off}"/>
-              <ComboBoxItem Content="{DynamicResource prefs.on}"/>
+            <TextBlock Text="{DynamicResource prefs.advanced.beta}" />
+            <ComboBox HorizontalAlignment="Stretch" SelectedIndex="{Binding Beta}">
+              <ComboBoxItem Content="{DynamicResource prefs.advanced.stable}"/>
+              <ComboBoxItem Content="{DynamicResource prefs.advanced.beta}"/>
             </ComboBox>
-            <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.advanced.resamplerlogging.warn}"/>
+            <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.note.restart}"/>
           </StackPanel>
         </HeaderedContentControl>
       </StackPanel>
