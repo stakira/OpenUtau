@@ -79,6 +79,7 @@
   <system:String x:Key="menu.help.about">About OpenUtau</system:String>
   <system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>
   <system:String x:Key="menu.tools">Tools</system:String>
+  <system:String x:Key="menu.tools.clearrendercache">Clear Render Cache</system:String>
   <system:String x:Key="menu.tools.layout">Layout</system:String>
   <system:String x:Key="menu.tools.layout.hsplit11">Horizontal 1:1</system:String>
   <system:String x:Key="menu.tools.layout.hsplit12">Horizontal 1:2</system:String>
@@ -117,6 +118,8 @@
   <system:String x:Key="pianoroll.menu.notes.addtailrest">Add tail "R"</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">Quantize to 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Quantize to 1/64</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.exps">Reset all expressions</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">Reset pitch bends</system:String>
   <system:String x:Key="pianoroll.menu.part">Part</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">Legacy Plugin (Experimental)</system:String>
   <system:String x:Key="pianoroll.menu.part.rename">Rename</system:String>

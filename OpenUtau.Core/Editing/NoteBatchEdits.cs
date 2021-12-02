@@ -64,4 +64,42 @@ namespace OpenUtau.Core.Editing {
             docManager.EndUndoGroup();
         }
     }
+
+    public class ResetPitchBends : BatchEdit {
+        public virtual string Name => name;
+
+        private string name;
+
+        public ResetPitchBends() {
+            name = "pianoroll.menu.notes.reset.pitchbends";
+        }
+
+        public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
+            var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
+            docManager.StartUndoGroup();
+            foreach (var note in notes) {
+                docManager.ExecuteCmd(new ResetPitchPointsCommand(note));
+            }
+            docManager.EndUndoGroup();
+        }
+    }
+
+    public class ResetAllExpressions : BatchEdit {
+        public virtual string Name => name;
+
+        private string name;
+
+        public ResetAllExpressions() {
+            name = "pianoroll.menu.notes.reset.exps";
+        }
+
+        public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
+            var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
+            docManager.StartUndoGroup();
+            foreach (var note in notes) {
+                docManager.ExecuteCmd(new ResetExpressionsCommand(note));
+            }
+            docManager.EndUndoGroup();
+        }
+    }
 }
