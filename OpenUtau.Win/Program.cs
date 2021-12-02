@@ -11,12 +11,20 @@ namespace OpenUtau {
             App.Program.InitOpenUtau();
             InitAudio();
 
-            App.Program.InitInterop();
-            new WpfApp().Run(new UI.MainWindow());
+            if (Core.Util.Preferences.Default.Beta == 0) {
+                App.Program.InitInterop();
+                new WpfApp().Run(new UI.MainWindow());
+            } else {
+                App.Program.Run(args);
+            }
         }
 
         private static void InitAudio() {
-            Core.PlaybackManager.Inst.AudioOutput = new Audio.WaveOutAudioOutput();
+            if (OS.IsWindows() && Core.Util.Preferences.Default.Beta == 0) {
+                Core.PlaybackManager.Inst.AudioOutput = new Audio.WaveOutAudioOutput();
+            } else {
+                Core.PlaybackManager.Inst.AudioOutput = new Audio.AudioOutput();
+            }
             Core.Formats.Wave.OverrideMp3Reader = filepath => new NAudio.Wave.AudioFileReader(filepath);
         }
     }

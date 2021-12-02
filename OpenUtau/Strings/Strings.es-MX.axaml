@@ -46,11 +46,11 @@
   <system:String x:Key="lyrics.apply">Aplicar</system:String>
   <system:String x:Key="lyrics.cancel">Cancelar</system:String>
   <system:String x:Key="lyrics.caption">Editar Letras</system:String>
-  <system:String x:Key="lyrics.livepreview">Previsualizar</system:String>
   <system:String x:Key="lyrics.max">Máx</system:String>
-  <system:String x:Key="lyrics.reset">Restablecer</system:String>
   <system:String x:Key="lyrics.selectnotes">Por favor, selecciona un grupo de notas.</system:String>
-  <system:String x:Key="lyrics.separators">Separadores</system:String>
+  <system:String x:Key="lyrics.separator.comma">Coma</system:String>
+  <system:String x:Key="lyrics.separator.linebreak">Salto de Línea</system:String>
+  <system:String x:Key="lyrics.separator.space">Espacio</system:String>
 
   <system:String x:Key="menu.edit">_Editar</system:String>
   <system:String x:Key="menu.edit.copy">_Copiar</system:String>
@@ -138,8 +138,6 @@ Mantiene Ctrl para seleccionar más</system:String>
 
   <system:String x:Key="prefs.advanced">Avanzado</system:String>
   <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
-  <system:String x:Key="prefs.advanced.resamplerlogging">Registrar Resamplers</system:String>
-  <system:String x:Key="prefs.advanced.resamplerlogging.warn">Guardar la producción del resampler en archivos de registro. Esta opción causará peor rendimiento y ralentización en la UI.</system:String>
   <system:String x:Key="prefs.advanced.stable">Estable</system:String>
   <system:String x:Key="prefs.appearance">Apariencia</system:String>
   <system:String x:Key="prefs.appearance.lang">Lenguaje</system:String>
@@ -148,8 +146,6 @@ Mantiene Ctrl para seleccionar más</system:String>
   <system:String x:Key="prefs.appearance.theme.light">Claro</system:String>
   <system:String x:Key="prefs.caption">Ajustes</system:String>
   <system:String x:Key="prefs.note.restart">Nota: Por favor, reinicia OpenUTAU después de cambiar esta opción.</system:String>
-  <system:String x:Key="prefs.off">Apagado</system:String>
-  <system:String x:Key="prefs.on">Encendido</system:String>
   <system:String x:Key="prefs.paths">Rutas</system:String>
   <system:String x:Key="prefs.paths.addlsinger">Ruta de Voces Adicional</system:String>
   <system:String x:Key="prefs.paths.reset">Restablecer</system:String>
@@ -180,7 +176,7 @@ Mantiene Ctrl para seleccionar más</system:String>
   <system:String x:Key="singers.setencoding">Fijar Codificación</system:String>
   <system:String x:Key="singers.subbanks.cancel">Cancelar</system:String>
   <system:String x:Key="singers.subbanks.clear">Borrar</system:String>
-  <!--<system:String x:Key="singers.subbanks.color">Color</system:String>-->
+  <system:String x:Key="singers.subbanks.color">Color</system:String>
   <system:String x:Key="singers.subbanks.color.add">Agregar Color</system:String>
   <system:String x:Key="singers.subbanks.color.remove">Borrar Color</system:String>
   <system:String x:Key="singers.subbanks.color.rename">Renombrar</system:String>
