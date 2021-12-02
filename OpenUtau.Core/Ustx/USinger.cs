@@ -19,7 +19,7 @@ namespace OpenUtau.Core.Ustx {
         public string Suffix => subbank.Suffix;
         public SortedSet<int> ToneSet => subbank.toneSet;
         public string File => Path.Combine(set.Location, oto.Wav);
-        public string DisplayFile => oto.Wav;
+        public string DisplayFile => oto?.Wav;
         public double Offset => oto.Offset;
         public double Consonant => oto.Consonant;
         public double Cutoff => oto.Cutoff;
@@ -225,7 +225,9 @@ namespace OpenUtau.Core.Ustx {
             });
         }
 
+        [Obsolete("Use the overload with color instead.")]
         public bool TryGetMappedOto(string phoneme, int tone, out UOto oto) {
+            oto = default;
             var subbank = Subbanks.Find(subbank => subbank.toneSet.Contains(tone) && string.IsNullOrEmpty(subbank.Color));
             if (subbank != null && Otos.TryGetValue($"{subbank.Prefix}{phoneme}{subbank.Suffix}", out oto)) {
                 return true;
@@ -237,6 +239,7 @@ namespace OpenUtau.Core.Ustx {
         }
 
         public bool TryGetMappedOto(string phoneme, int tone, string color, out UOto oto) {
+            oto = default;
             var subbank = Subbanks.Find(subbank => subbank.toneSet.Contains(tone) && color == subbank.Color);
             if (subbank != null && Otos.TryGetValue($"{subbank.Prefix}{phoneme}{subbank.Suffix}", out oto)) {
                 return true;

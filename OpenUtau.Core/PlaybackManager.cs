@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -88,7 +87,7 @@ namespace OpenUtau.Core {
         private static PlaybackManager _s;
         public static PlaybackManager Inst { get { if (_s == null) { _s = new PlaybackManager(); } return _s; } }
 
-        readonly RenderCache cache = new RenderCache(2048);
+        readonly RenderCache cache = new RenderCache(4096);
         List<Fader> faders;
         MasterAdapter masterMix;
         double startMs;
@@ -254,6 +253,10 @@ namespace OpenUtau.Core {
             if (source != null) {
                 source.Cancel();
             }
+        }
+
+        public void ClearRenderCache() {
+            cache.Clear();
         }
 
         #region ICmdSubscriber

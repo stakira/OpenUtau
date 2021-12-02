@@ -124,6 +124,8 @@ namespace OpenUtau.App.ViewModels {
                 new AddTailNote("R", "pianoroll.menu.notes.addtailrest"),
                 new QuantizeNotes(15),
                 new QuantizeNotes(30),
+                new ResetPitchBends(),
+                new ResetAllExpressions(),
             }.Select(edit => new MenuItemViewModel() {
                 Header = ThemeManager.GetString(edit.Name),
                 Command = noteBatchEditCommand,

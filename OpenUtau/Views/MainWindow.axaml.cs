@@ -326,6 +326,10 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        void OnMenuClearRenderCache(object sender, RoutedEventArgs args) {
+            PlaybackManager.Inst.ClearRenderCache();
+        }
+
         void OnMenuWiki(object sender, RoutedEventArgs args) {
             OS.OpenWeb("https://github.com/stakira/OpenUtau/wiki/Getting-Started");
         }

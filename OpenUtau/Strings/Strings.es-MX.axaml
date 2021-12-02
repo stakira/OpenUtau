@@ -79,6 +79,7 @@
   <system:String x:Key="menu.help.about">Sobre OpenUTAU</system:String>
   <system:String x:Key="menu.help.wiki">Wiki de OpenUTAU</system:String>
   <system:String x:Key="menu.tools">_Herramientas</system:String>
+  <system:String x:Key="menu.tools.clearrendercache">Limpiar Caché de Renderización</system:String>
   <!--<system:String x:Key="menu.tools.layout">Layout</system:String>-->
   <system:String x:Key="menu.tools.layout.hsplit11">1:1 Horizontal</system:String>
   <system:String x:Key="menu.tools.layout.hsplit12">1:2 Horizontal</system:String>
@@ -118,6 +119,8 @@
   <system:String x:Key="pianoroll.menu.notes.quantize15">Cuantificar a 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Cuantificar a 1/64</system:String>
   <system:String x:Key="pianoroll.menu.part">Partes</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.exps">Restablecer expresiones</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">Reestablecer curvas del tono</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">Plug-ins Antiguos (Experimental)</system:String>
   <system:String x:Key="pianoroll.menu.part.rename">Renombrar</system:String>
   <system:String x:Key="pianoroll.toggle.phoneme">Ver Fonemas (O)</system:String>
@@ -168,7 +171,7 @@ Mantiene Ctrl para seleccionar más</system:String>
   <system:String x:Key="progress.saved">Proyecto guardado. {0}</system:String>
 
   <system:String x:Key="singers.caption">Voces</system:String>
-  <system:String x:Key="singers.location">Rutas</system:String>
+  <system:String x:Key="singers.location">Mostrar Archivos</system:String>
   <system:String x:Key="singers.refresh">Refrescar</system:String>
   <system:String x:Key="singers.setencoding">Fijar Codificación</system:String>
   <system:String x:Key="singers.subbanks.cancel">Cancelar</system:String>
