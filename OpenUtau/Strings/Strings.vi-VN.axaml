@@ -17,7 +17,7 @@
   <system:String x:Key="dialogs.exitsave.caption">Thoát OpenUtau</system:String>
   <system:String x:Key="dialogs.exitsave.message">Dự án hiện tại chứa một vài thay đổi chưa được lưu. Bạn có muốn lưu không?</system:String>
   <system:String x:Key="dialogs.export.caption">Xuất ra</system:String>
-  <system:String x:Key="dialogs.export.savefirst">Lưu tệp dự án trước đã</system:String>
+  <system:String x:Key="dialogs.export.savefirst">Lưu tệp dự án trước đã!</system:String>
   <system:String x:Key="dialogs.messagebox.cancel">Huỷ bỏ</system:String>
   <system:String x:Key="dialogs.messagebox.no">Không</system:String>
   <system:String x:Key="dialogs.messagebox.ok">Ok</system:String>
@@ -79,6 +79,7 @@
   <system:String x:Key="menu.help.about">Thông tin về OpenUtau</system:String>
   <system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>
   <system:String x:Key="menu.tools">Công cụ</system:String>
+  <system:String x:Key="menu.tools.clearrendercache">Xoá bỏ bộ nhớ render trước tạm thời</system:String>
   <system:String x:Key="menu.tools.layout">Bố cục</system:String>
   <system:String x:Key="menu.tools.layout.hsplit11">Ngang 1:1</system:String>
   <system:String x:Key="menu.tools.layout.hsplit12">Ngang 1:2</system:String>
@@ -86,7 +87,7 @@
   <system:String x:Key="menu.tools.layout.vsplit11">Dọc 1:1</system:String>
   <system:String x:Key="menu.tools.layout.vsplit12">Dọc 1:2</system:String>
   <system:String x:Key="menu.tools.layout.vsplit13">Dọc 1:3</system:String>
-  <system:String x:Key="menu.tools.prefs">Tuỳ chọn...</system:String>
+  <system:String x:Key="menu.tools.prefs">Tuỳ chỉnh...</system:String>
   <system:String x:Key="menu.tools.project.expressions">Biểu cảm...</system:String>
   <system:String x:Key="menu.tools.singer.install">Cài đặt ca sĩ...</system:String>
   <system:String x:Key="menu.tools.singer.installadv">Cài đặt ca sĩ (Nâng cao)...</system:String>
@@ -117,6 +118,8 @@
   <system:String x:Key="pianoroll.menu.notes.addtailrest">Thêm đuôi "R"</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">Chia thành quãng 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Chia thành quãng 1/64</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.exps">Xoá bỏ tất cả các biểu cảm</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">Xoá bỏ các đường luyến giọng</system:String>
   <system:String x:Key="pianoroll.menu.part">Phần</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">Sử dụng Plugin của UTAU (Thử nghiệm)</system:String>
   <system:String x:Key="pianoroll.menu.part.rename">Đặt tên lại</system:String>
@@ -134,7 +137,7 @@ Nhấn chuột phải để xoá nốt</system:String>
 Nhấn giữ Ctrl để chọn đồng loạt nhiều nốt</system:String>
 
   <system:String x:Key="prefs.advanced">Nâng cao</system:String>
-  <system:String x:Key="prefs.advanced.beta">Rhử nghiệm</system:String>
+  <system:String x:Key="prefs.advanced.beta">Thử nghiệm</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging">Resampler Logging</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging.warn">Lưu trữ kết quả đầu ra của resampler trong tệp log. Tuỳ chọn này sẽ làm cho giao diện và việc render chậm lại.</system:String>
   <system:String x:Key="prefs.advanced.stable">Ổn định</system:String>
@@ -152,7 +155,7 @@ Nhấn giữ Ctrl để chọn đồng loạt nhiều nốt</system:String>
   <system:String x:Key="prefs.paths.reset">Đặt lại</system:String>
   <system:String x:Key="prefs.paths.select">Lựa chọn</system:String>
   <system:String x:Key="prefs.playback">Phát lại</system:String>
-  <system:String x:Key="prefs.playback.device">Thiết bị Phát lại</system:String>
+  <system:String x:Key="prefs.playback.device">Thiết bị phát lại</system:String>
   <system:String x:Key="prefs.playback.test">Nghe thử</system:String>
   <system:String x:Key="prefs.rendering">Render</system:String>
   <system:String x:Key="prefs.rendering.prerender.threads">Luồng cho phép render trước</system:String>
@@ -165,11 +168,11 @@ Nhấn giữ Ctrl để chọn đồng loạt nhiều nốt</system:String>
 Cảnh báo: moresampler chưa được hỗ trợ hoàn toàn. Việc sử dụng có thể làm chậm và gây quá tải CPU. Nếu cần thiết, xin làm theo chỉ dẫn sau đây:
 1. Chỉnh "resampler-compatibility" thành "on" trong moreconfig.txt.
 2. Chỉnh "auto-update-llsm-mrq" thành "off" trong moreconfig.txt.
-3. Hạ thấp luồng render trước thành 1 hoặc 2.
+3. Hạ thấp luồng cho phép render trước thành 1 hoặc 2.
 4. Kiên nhẫn đợi việc hoàn thành render trước khi chơi.
   </system:String>
 
-  <system:String x:Key="progress.saved">Dự án lưu hoàn tất. {0}</system:String>
+  <system:String x:Key="progress.saved">Hoàn tất việc lưu dự án. {0}</system:String>
 
   <system:String x:Key="singers.caption">Ca sĩ</system:String>
   <system:String x:Key="singers.location">Đường dẫn</system:String>
