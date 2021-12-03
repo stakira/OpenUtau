@@ -209,12 +209,5 @@ namespace OpenUtau.Plugin.Builtin {
             }
             return phonemes;
         }
-        protected override string ValidateAlias(string alias, int tone) {
-            if (singer.Otos.ContainsKey(alias)) {
-                return alias;
-            }
-            alias = alias.Replace("bV", "bA");
-            return alias;
-        }
     }
 }
