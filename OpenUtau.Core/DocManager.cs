@@ -62,16 +62,17 @@ namespace OpenUtau.Core {
         }
 
         public void SearchAllPlugins() {
+            const string kBuiltin = "OpenUtau.Plugin.Builtin.dll";
             var stopWatch = Stopwatch.StartNew();
             var phonemizerFactories = new List<PhonemizerFactory>();
             phonemizerFactories.Add(PhonemizerFactory.Get(typeof(DefaultPhonemizer)));
             Directory.CreateDirectory(PathManager.Inst.PluginsPath);
-            var files = Directory.EnumerateFiles(PathManager.Inst.PluginsPath, "*.dll", SearchOption.AllDirectories).ToList();
-            if (!OS.IsWindows()) {
-                var path = Path.GetDirectoryName(GetType().Assembly.Location);
-                files.InsertRange(0, Directory.EnumerateFiles(
-                    path, "*Plugin.Builtin.dll", SearchOption.TopDirectoryOnly));
+            string oldBuiltin = Path.Combine(PathManager.Inst.PluginsPath, kBuiltin);
+            if (File.Exists(oldBuiltin)) {
+                File.Delete(oldBuiltin);
             }
+            var files = Directory.EnumerateFiles(PathManager.Inst.PluginsPath, "*.dll", SearchOption.AllDirectories).ToList();
+            files.Insert(0, Path.Combine(Path.GetDirectoryName(GetType().Assembly.Location), kBuiltin));
             foreach (var file in files) {
                 Assembly assembly;
                 try {
