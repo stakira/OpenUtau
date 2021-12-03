@@ -24,7 +24,7 @@
   <system:String x:Key="dialogs.messagebox.yes">はい</system:String>
   <system:String x:Key="dialogs.noresampler.caption">エンジンがありません</system:String>
   <system:String x:Key="dialogs.noresampler.message">エンジンが設定されていません！お好みのエンジンのEXEやDLLファイルをResamplerフォルダに入れて、環境設定でエンジンを選択してください！</system:String>
-  <!--<system:String x:Key="dialogs.timesig.caption">Time Signature</system:String>-->
+  <system:String x:Key="dialogs.timesig.caption">拍子</system:String>
 
   <system:String x:Key="errors.caption">エラー</system:String>
 
@@ -43,14 +43,14 @@
   <system:String x:Key="exps.type.numerical">数値</system:String>
   <system:String x:Key="exps.type.options">カスタム</system:String>
 
-  <!--<system:String x:Key="lyrics.apply">Apply</system:String>-->
-  <!--<system:String x:Key="lyrics.cancel">Cancel</system:String>-->
-  <!--<system:String x:Key="lyrics.caption">Edit Lyrics</system:String>-->
+  <system:String x:Key="lyrics.apply">適用</system:String>
+  <system:String x:Key="lyrics.cancel">キャンセル</system:String>
+  <system:String x:Key="lyrics.caption">歌詞を編集</system:String>
+  <system:String x:Key="lyrics.livepreview">リアルタイム プレビュー</system:String>
   <!--<system:String x:Key="lyrics.max">Max</system:String>-->
-  <!--<system:String x:Key="lyrics.selectnotes">Select some notes first!</system:String>-->
-  <!--<system:String x:Key="lyrics.separator.comma">Comma</system:String>-->
-  <!--<system:String x:Key="lyrics.separator.linebreak">Line Break</system:String>-->
-  <!--<system:String x:Key="lyrics.separator.space">Space</system:String>-->
+  <system:String x:Key="lyrics.reset">リセット</system:String>
+  <system:String x:Key="lyrics.selectnotes">音符を選択してください！</system:String>
+  <system:String x:Key="lyrics.separators">セパレータ</system:String>
 
   <system:String x:Key="menu.edit">編集</system:String>
   <system:String x:Key="menu.edit.copy">コピー</system:String>
@@ -106,7 +106,7 @@
   <!--<system:String x:Key="oto.suffix">Suffix</system:String>-->
 
   <system:String x:Key="pianoroll.menu.lyrics">歌詞</system:String>
-  <!--<system:String x:Key="pianoroll.menu.lyrics.edit">Edit Lyrics</system:String>-->
+  <system:String x:Key="pianoroll.menu.lyrics.edit">歌詞を編集</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">ひらがな→ローマ字</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">連続音→単独音（日本語）</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">文字のSuffixを削除</system:String>
@@ -114,6 +114,7 @@
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">ローマ字→ひらがな</system:String>
   <system:String x:Key="pianoroll.menu.notes">音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">末尾に"-"を追加</system:String>
+  <system:String x:Key="pianoroll.menu.notes.addtailrest">末尾に"R"を追加</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">1/128にクオンタイズ</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">1/64にクオンタイズ</system:String>
   <system:String x:Key="pianoroll.menu.part">パート</system:String>
@@ -134,6 +135,8 @@ Ctrl長押しで複数選択</system:String>
 
   <system:String x:Key="prefs.advanced">高度な設定</system:String>
   <system:String x:Key="prefs.advanced.beta">ベータ版</system:String>
+  <!--<system:String x:Key="prefs.advanced.resamplerlogging">Resampler Logging</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.resamplerlogging.warn">Stores resampler output in log files. This option slows down UI and rendering.</system:String>-->
   <system:String x:Key="prefs.advanced.stable">安定版</system:String>
   <system:String x:Key="prefs.appearance">外観</system:String>
   <system:String x:Key="prefs.appearance.lang">言語</system:String>
@@ -142,10 +145,12 @@ Ctrl長押しで複数選択</system:String>
   <system:String x:Key="prefs.appearance.theme.light">ライト</system:String>
   <system:String x:Key="prefs.caption">環境設定</system:String>
   <system:String x:Key="prefs.note.restart">Note: この設定を変更した後は、OpenUtauを再起動してください。</system:String>
+  <!--<system:String x:Key="prefs.off">Off</system:String>-->
+  <!--<system:String x:Key="prefs.on">On</system:String>-->
   <system:String x:Key="prefs.paths">ファイルの場所</system:String>
-  <!--<system:String x:Key="prefs.paths.addlsinger">Additional Singer Path</system:String>-->
-  <!--<system:String x:Key="prefs.paths.reset">Reset</system:String>-->
-  <!--<system:String x:Key="prefs.paths.select">Select</system:String>-->
+  <system:String x:Key="prefs.paths.addlsinger">シンガーの場所（追加）</system:String>
+  <system:String x:Key="prefs.paths.reset">リセット</system:String>
+  <system:String x:Key="prefs.paths.select">選択</system:String>
   <system:String x:Key="prefs.playback">再生</system:String>
   <system:String x:Key="prefs.playback.device">再生デバイス</system:String>
   <system:String x:Key="prefs.playback.test">再生テスト</system:String>
@@ -164,25 +169,25 @@ Ctrl長押しで複数選択</system:String>
     4. 再生する前に、プリレンダーの処理が完了するのを辛抱強く待ってください。
   </system:String>
 
-  <!--<system:String x:Key="progress.saved">Project saved. {0}</system:String>-->
+  <system:String x:Key="progress.saved">プロジェクトが保存されました。 {0}</system:String>
 
   <system:String x:Key="singers.caption">シンガー</system:String>
   <system:String x:Key="singers.location">ファイルの場所</system:String>
   <system:String x:Key="singers.refresh">更新</system:String>
   <system:String x:Key="singers.setencoding">文字コード設定</system:String>
-  <!--<system:String x:Key="singers.subbanks.cancel">Cancel</system:String>-->
-  <!--<system:String x:Key="singers.subbanks.clear">Clear</system:String>-->
+  <system:String x:Key="singers.subbanks.cancel">キャンセル</system:String>
+  <system:String x:Key="singers.subbanks.clear">クリア</system:String>
   <!--<system:String x:Key="singers.subbanks.color">Color</system:String>-->
-  <!--<system:String x:Key="singers.subbanks.color.add">Add Color</system:String>-->
-  <!--<system:String x:Key="singers.subbanks.color.remove">Remove Color</system:String>-->
-  <!--<system:String x:Key="singers.subbanks.color.rename">Rename</system:String>-->
-  <!--<system:String x:Key="singers.subbanks.edit">Edit Subbanks</system:String>-->
+  <system:String x:Key="singers.subbanks.color.add">Colorを追加</system:String>
+  <system:String x:Key="singers.subbanks.color.remove">Colorを削除</system:String>
+  <system:String x:Key="singers.subbanks.color.rename">名前を変更</system:String>
+  <system:String x:Key="singers.subbanks.edit">サブバンクを編集</system:String>
   <system:String x:Key="singers.subbanks.reset">リセット</system:String>
   <system:String x:Key="singers.subbanks.save">保存</system:String>
-  <!--<system:String x:Key="singers.subbanks.selectall">Select All</system:String>-->
-  <!--<system:String x:Key="singers.subbanks.set">Set</system:String>-->
-  <!--<system:String x:Key="singers.subbanks.tone">Tone</system:String>-->
-  <!--<system:String x:Key="singers.subbanks.toneranges">Tone Ranges</system:String>-->
+  <system:String x:Key="singers.subbanks.selectall">すべて選択</system:String>
+  <system:String x:Key="singers.subbanks.set">セット</system:String>
+  <system:String x:Key="singers.subbanks.tone">音程</system:String>
+  <system:String x:Key="singers.subbanks.toneranges">音域</system:String>
 
   <system:String x:Key="tip.exps">
 左クリック: 表情を設定

@@ -46,11 +46,11 @@
   <!--<system:String x:Key="lyrics.apply">Apply</system:String>-->
   <!--<system:String x:Key="lyrics.cancel">Cancel</system:String>-->
   <!--<system:String x:Key="lyrics.caption">Edit Lyrics</system:String>-->
+  <!--<system:String x:Key="lyrics.livepreview">Live preview</system:String>-->
   <!--<system:String x:Key="lyrics.max">Max</system:String>-->
+  <!--<system:String x:Key="lyrics.reset">Reset</system:String>-->
   <!--<system:String x:Key="lyrics.selectnotes">Select some notes first!</system:String>-->
-  <!--<system:String x:Key="lyrics.separator.comma">Comma</system:String>-->
-  <!--<system:String x:Key="lyrics.separator.linebreak">Line Break</system:String>-->
-  <!--<system:String x:Key="lyrics.separator.space">Space</system:String>-->
+  <!--<system:String x:Key="lyrics.separators">Separators</system:String>-->
 
   <system:String x:Key="menu.edit">Muokkaa</system:String>
   <system:String x:Key="menu.edit.copy">Kopioi</system:String>
@@ -114,6 +114,7 @@
   <!--<system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Romaji to Hiragana</system:String>-->
   <system:String x:Key="pianoroll.menu.notes">Nuotit</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">lisää loppuun "-"</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notes.addtailrest">Add tail "R"</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.quantize15">sovita 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">sovita 1/64</system:String>
   <system:String x:Key="pianoroll.menu.part">Osa</system:String>
@@ -134,6 +135,8 @@ Aktivoi monivalinta pitämällä Ctrl pohjassa</system:String>
 
   <system:String x:Key="prefs.advanced">Lisäasetukset</system:String>
   <system:String x:Key="prefs.advanced.beta">Beta versio</system:String>
+  <!--<system:String x:Key="prefs.advanced.resamplerlogging">Resampler Logging</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.resamplerlogging.warn">Stores resampler output in log files. This option slows down UI and rendering.</system:String>-->
   <system:String x:Key="prefs.advanced.stable">Vakaa versio</system:String>
   <system:String x:Key="prefs.appearance">Ulkonäkö</system:String>
   <system:String x:Key="prefs.appearance.lang">Kieli</system:String>
@@ -142,6 +145,8 @@ Aktivoi monivalinta pitämällä Ctrl pohjassa</system:String>
   <system:String x:Key="prefs.appearance.theme.light">Vaalea</system:String>
   <system:String x:Key="prefs.caption">Asetukset</system:String>
   <system:String x:Key="prefs.note.restart">HUOM: Käynnistäthän OpenUtau uudelleen muutettuasi tätä asetusta.</system:String>
+  <!--<system:String x:Key="prefs.off">Off</system:String>-->
+  <!--<system:String x:Key="prefs.on">On</system:String>-->
   <system:String x:Key="prefs.paths">Tiedoston sijainti</system:String>
   <!--<system:String x:Key="prefs.paths.addlsinger">Additional Singer Path</system:String>-->
   <!--<system:String x:Key="prefs.paths.reset">Reset</system:String>-->

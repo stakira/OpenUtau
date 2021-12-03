@@ -137,6 +137,7 @@ namespace OpenUtau.Core {
     public class MovePitchPointCommand : PitchExpCommand {
         public PitchPoint Point;
         public float DeltaX, DeltaY;
+        public override bool DeferValidate => true;
         public MovePitchPointCommand(PitchPoint point, float deltaX, float deltaY) {
             this.Point = point;
             this.DeltaX = deltaX;

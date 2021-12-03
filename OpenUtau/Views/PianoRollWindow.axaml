@@ -24,6 +24,7 @@
         <RowDefinition Height="*" MinHeight="200"/>
         <RowDefinition Height="10"/>
         <RowDefinition Height="150" MinHeight="132" MaxHeight="450"/>
+        <RowDefinition Height="4"/>
       </Grid.RowDefinitions>
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="60"/>
@@ -392,6 +393,7 @@
           <TextBlock Name="ValueTipText" Margin="2"/>
         </Border>
       </Canvas>
+      <ProgressBar Grid.Row="5" Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Value="{Binding Progress}"/>
     </Grid>
   </Grid>
 </Window>

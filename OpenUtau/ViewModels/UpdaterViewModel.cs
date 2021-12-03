@@ -32,8 +32,9 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public static SparkleUpdater NewUpdater() {
-            string os = OS.IsWindows() ? "win" : OS.IsMacOS() ? "macos" : "linux";
-            string url = $"https://github.com/stakira/OpenUtau/releases/download/OpenUtau-Latest/appcast.{os}.xml";
+            string rid = OS.GetUpdaterRid();
+            string url = $"https://github.com/stakira/OpenUtau/releases/download/OpenUtau-Latest/appcast.{rid}.xml";
+            Log.Information($"Checking update at: {url}");
             return new ZipUpdater(url, new Ed25519Checker(SecurityMode.Unsafe)) {
                 UIFactory = null,
                 CheckServerFileName = false,
