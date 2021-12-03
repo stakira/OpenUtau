@@ -417,8 +417,11 @@ namespace OpenUtau.App.Views {
                 deltaX = Math.Min(deltaX, note.pitch.data[index + 1].X - pitchPoint.X);
             }
             double deltaY;
-            if (isFirst && note.pitch.snapFirst || isLast) {
+            if (isLast) {
                 deltaY = -pitchPoint.Y;
+            } else if (isFirst && note.pitch.snapFirst) {
+                var snapTo = note.Prev == null ? note : note.Prev.End == note.position ? note.Prev : note;
+                deltaY = (snapTo.tone - note.tone) * 10 - pitchPoint.Y;
             } else {
                 deltaY = (notesVm.PointToToneDouble(point) - note.tone) * 10 - pitchPoint.Y;
             }

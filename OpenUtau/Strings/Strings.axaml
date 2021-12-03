@@ -51,7 +51,7 @@
   <system:String x:Key="lyrics.reset">Reset</system:String>
   <system:String x:Key="lyrics.selectnotes">Select some notes first!</system:String>
   <system:String x:Key="lyrics.separators">Separators</system:String>
-  
+
   <system:String x:Key="menu.edit">Edit</system:String>
   <system:String x:Key="menu.edit.copy">Copy</system:String>
   <system:String x:Key="menu.edit.cut">Cut</system:String>
@@ -138,6 +138,8 @@ Hold Ctrl to select more</system:String>
 
   <system:String x:Key="prefs.advanced">Advanced</system:String>
   <system:String x:Key="prefs.advanced.beta">Beta</system:String>
+  <system:String x:Key="prefs.advanced.resamplerlogging">Resampler Logging</system:String>
+  <system:String x:Key="prefs.advanced.resamplerlogging.warn">Stores resampler output in log files. This option slows down UI and rendering.</system:String>
   <system:String x:Key="prefs.advanced.stable">Stable</system:String>
   <system:String x:Key="prefs.appearance">Appearance</system:String>
   <system:String x:Key="prefs.appearance.lang">Language</system:String>
@@ -146,6 +148,8 @@ Hold Ctrl to select more</system:String>
   <system:String x:Key="prefs.appearance.theme.light">Light</system:String>
   <system:String x:Key="prefs.caption">Preferences</system:String>
   <system:String x:Key="prefs.note.restart">Note: please restart OpenUtau after changing this item.</system:String>
+  <system:String x:Key="prefs.off">Off</system:String>
+  <system:String x:Key="prefs.on">On</system:String>
   <system:String x:Key="prefs.paths">Paths</system:String>
   <system:String x:Key="prefs.paths.addlsinger">Additional Singer Path</system:String>
   <system:String x:Key="prefs.paths.reset">Reset</system:String>
@@ -164,7 +168,7 @@ Hold Ctrl to select more</system:String>
 Warning: moresampler is not fully supported. It may be slow and cause high CPU usage. If you insist, please:
 1. Set "resampler-compatibility" to "on" in moreconfig.txt.
 2. Set "auto-update-llsm-mrq" to "off" in moreconfig.txt.
-3. Reduce pre-render threads to 1 or 2.
+3. Set "multithread-synthesis" to "off" in moreconfig.txt. Or reduce pre-render threads to 1 or 2.
 4. Patiently wait for prerender to finish before play.
   </system:String>
 

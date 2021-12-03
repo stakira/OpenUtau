@@ -6,7 +6,7 @@ using OpenUtau.Api;
 using Serilog;
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("English Delta Phonemizer", "EN DELTA", "nago")]
+    [Phonemizer("English Delta Phonemizer", "EN DELTA", "nago & Heiden.BZR")]
     public class EnglishDeltaPhonemizer : SyllableBasedPhonemizer {
 
         private readonly string[] vowels = "a,A,@,{,V,O,aU,aI,E,3,eI,I,i,oU,OI,U,u".Split(",");
@@ -208,13 +208,6 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             }
             return phonemes;
-        }
-        protected override string ValidateAlias(string alias, int tone) {
-            if (singer.Otos.ContainsKey(alias)) {
-                return alias;
-            }
-            alias = alias.Replace("bV", "bA");
-            return alias;
         }
     }
 }

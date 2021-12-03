@@ -46,11 +46,11 @@
   <system:String x:Key="lyrics.apply">应用</system:String>
   <system:String x:Key="lyrics.cancel">取消</system:String>
   <system:String x:Key="lyrics.caption">编辑歌词</system:String>
+  <system:String x:Key="lyrics.livepreview">即时预览</system:String>
   <system:String x:Key="lyrics.max">最多</system:String>
+  <system:String x:Key="lyrics.reset">重置</system:String>
   <system:String x:Key="lyrics.selectnotes">请先选择一些音符!</system:String>
-  <system:String x:Key="lyrics.separator.comma">逗号</system:String>
-  <system:String x:Key="lyrics.separator.linebreak">换行</system:String>
-  <system:String x:Key="lyrics.separator.space">空格</system:String>
+  <system:String x:Key="lyrics.separators">分隔符</system:String>
 
   <system:String x:Key="menu.edit">编辑</system:String>
   <system:String x:Key="menu.edit.copy">复制</system:String>
@@ -114,6 +114,7 @@
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">罗马音转平假名</system:String>
   <system:String x:Key="pianoroll.menu.notes">音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">添加尾部"-"音符</system:String>
+  <system:String x:Key="pianoroll.menu.notes.addtailrest">添加尾部"R"音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">量化至1/128音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">量化至1/64音符</system:String>
   <system:String x:Key="pianoroll.menu.part">片段</system:String>
@@ -134,6 +135,8 @@
 
   <system:String x:Key="prefs.advanced">高级</system:String>
   <system:String x:Key="prefs.advanced.beta">Beta测试版</system:String>
+  <system:String x:Key="prefs.advanced.resamplerlogging">重采样器日志</system:String>
+  <system:String x:Key="prefs.advanced.resamplerlogging.warn">在日志文件中保存重采样器输出。这个选项会使UI和渲染性能下降。</system:String>
   <system:String x:Key="prefs.advanced.stable">稳定版</system:String>
   <system:String x:Key="prefs.appearance">外观</system:String>
   <system:String x:Key="prefs.appearance.lang">语言</system:String>
@@ -142,6 +145,8 @@
   <system:String x:Key="prefs.appearance.theme.light">亮</system:String>
   <system:String x:Key="prefs.caption">使用偏好</system:String>
   <system:String x:Key="prefs.note.restart">注意: 修改本项后请重启OpenUtau</system:String>
+  <system:String x:Key="prefs.off">关</system:String>
+  <system:String x:Key="prefs.on">开</system:String>
   <system:String x:Key="prefs.paths">路径</system:String>
   <system:String x:Key="prefs.paths.addlsinger">额外歌手搜索路径</system:String>
   <system:String x:Key="prefs.paths.reset">清除</system:String>
@@ -160,7 +165,7 @@
 警告: 暂不完全支持 moresampler。可能导致渲染极慢和高CPU使用率。如果您仍想使用，请:
 1. 在 moreconfig.txt 中将 “resampler-compatibility” 设为 “on”
 2. 在 moreconfig.txt 中将 “auto-update-llsm-mrq” 设为 “off”
-3. 减少预渲染线程数至 1 或 2
+3. 在 moreconfig.txt 中将 “multithread-synthesis” 设为 “off”，或减少“预渲染线程数”至 1 或 2
 4. 预览前耐心等待预渲染完成
   </system:String>
 

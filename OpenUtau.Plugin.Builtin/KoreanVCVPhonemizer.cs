@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -119,15 +119,15 @@ namespace OpenUtau.Plugin.Builtin
 		public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours)
 		{
 			Note note = notes[0];
-            string color = string.Empty;
-            int shift = 0;
+      string color = string.Empty;
+      int shift = 0;
 
-            PhonemeAttributes attr = note.phonemeAttributes.FirstOrDefault(a => a.index == 0);
-            color = attr.voiceColor;
-            shift = attr.toneShift;
+      PhonemeAttributes attr = note.phonemeAttributes.FirstOrDefault(a => a.index == 0);
+      color = attr.voiceColor;
+      shift = attr.toneShift;
 
-            // Check if lyric is R or - and return appropriate Result; otherwise, move to next steps
-            if (note.lyric == "R" || note.lyric == "-")
+      // Check if lyric is R or - and return appropriate Result; otherwise, move to next steps
+      if (note.lyric == "R" || note.lyric == "-")
 			{
 				if (prevNeighbour == null)
 				{
