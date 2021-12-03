@@ -26,6 +26,10 @@ namespace OpenUtau.Plugin.Builtin {
         protected override string GetDictionaryName() => "cmudict-0_7b.txt";
         protected override Dictionary<string, string> GetDictionaryPhonemesReplacement() => dictionaryReplacements;
 
+        protected override string ReadDictionary(string filename) {
+            return Core.Api.Resources.cmudict_0_7b;
+        }
+
         protected override List<string> ProcessSyllable(Syllable syllable) {
             string prevV = syllable.prevV;
             string[] cc = syllable.cc;
@@ -59,8 +63,7 @@ namespace OpenUtau.Plugin.Builtin {
                 var rvvc = $"- {string.Join("", cc)}{v}";
                 if (HasOto(rvvc, syllable.vowelTone)) {
                     basePhoneme = rvvc;
-                }
-                else {
+                } else {
                     basePhoneme = $"{cc.Last()}{v}";
                     // try RCC
                     for (var i = cc.Length; i > 1; i--) {
@@ -119,7 +122,7 @@ namespace OpenUtau.Plugin.Builtin {
                 // we could use -CC so firstC is used
                 var cc1 = $"{cc[i]} {cc[i + 1]}";
                 if (!HasOto(cc1, syllable.tone)) {
-                     cc1 = $"{cc[i]}{cc[i + 1]}";
+                    cc1 = $"{cc[i]}{cc[i + 1]}";
                 }
                 if (i + 1 < lastC) {
                     var cc2 = $"{cc[i + 1]} {cc[i + 2]}";
@@ -138,8 +141,7 @@ namespace OpenUtau.Plugin.Builtin {
                         // like [V C1] [C1] [C2 ..]
                         TryAddPhoneme(phonemes, syllable.tone, cc[i], $"{cc[i]} -");
                     }
-                }
-                else {
+                } else {
                     // like [V C1] [C1 C2]  [C2 ..] or like [V C1] [C1 -] [C3 ..]
                     TryAddPhoneme(phonemes, syllable.tone, cc1, cc[i], $"{cc[i]} -");
                 }
@@ -175,8 +177,7 @@ namespace OpenUtau.Plugin.Builtin {
                         if (HasOto(cc1, ending.tone) && HasOto(cc2, ending.tone)) {
                             // like [C1 C2][C2 ...]
                             phonemes.Add(cc1);
-                        }
-                        else if (TryAddPhoneme(phonemes, ending.tone, $"{cc[i + 1]}{cc[i + 2]}")) {
+                        } else if (TryAddPhoneme(phonemes, ending.tone, $"{cc[i + 1]}{cc[i + 2]}")) {
                             // like [C1C2][C2 ...]
                         } else if (TryAddPhoneme(phonemes, ending.tone, $"{cc[i + 1]} {cc[i + 2]}-")) {
                             // like [C1 C2-][C3 ...]
@@ -185,8 +186,7 @@ namespace OpenUtau.Plugin.Builtin {
                             // like [C1][C2 ...]
                             TryAddPhoneme(phonemes, ending.tone, cc[i], $"{cc[i]} -");
                         }
-                    }
-                    else {
+                    } else {
                         if (TryAddPhoneme(phonemes, ending.tone, $"{cc[i]} {cc[i + 1]}-")) {
                             // like [C1 C2-]
                             i++;

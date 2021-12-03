@@ -501,6 +501,10 @@ namespace OpenUtau.Plugin.Builtin {
             return (300 - Math.Clamp(bpm, 90, 300)) / (300 - 90) / 3 + 0.33;
         }
 
+        protected virtual string ReadDictionary(string filename) {
+            return File.ReadAllText(filename);
+        }
+
         /// <summary>
         /// Parses CMU dictionary, when phonemes are separated by spaces, and word vs phonemes are separated with two spaces,
         /// and replaces phonemes with replacement table
@@ -617,15 +621,11 @@ namespace OpenUtau.Plugin.Builtin {
             if (dictionaryName == null)
                 return;
             var filename = Path.Combine("Dictionaries", dictionaryName);
-            if (!File.Exists(filename)) {
-                Log.Error($"Dictionary not found in path: {Path.GetFullPath(filename)}");
-                return;
-            }
             dictionaries[GetType()] = null;
             OnAsyncInitStarted();
             Task.Run(() => {
                 try {
-                    var dictionaryText = File.ReadAllText(filename);
+                    var dictionaryText = ReadDictionary(filename);
                     var builder = G2pDictionary.NewBuilder();
                     var vowels = GetVowels();
                     foreach (var vowel in vowels) {
