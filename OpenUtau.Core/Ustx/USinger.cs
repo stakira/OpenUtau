@@ -175,7 +175,6 @@ namespace OpenUtau.Core.Ustx {
             TextFileEncoding = voicebank.TextFileEncoding;
 
             Subbanks = new List<Subbank>(voicebank.Subbanks)
-                .Where(subbank => subbank.Prefix.Length + subbank.Suffix.Length > 0)
                 .OrderByDescending(subbank => subbank.Prefix.Length + subbank.Suffix.Length)
                 .Select(subbank => new USubbank(subbank))
                 .ToList();

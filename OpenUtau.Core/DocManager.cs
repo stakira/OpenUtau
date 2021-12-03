@@ -158,7 +158,9 @@ namespace OpenUtau.Core {
                 Log.Information($"ExecuteCmd {cmd}");
             }
             Publish(cmd);
-            Project.Validate();
+            if (!cmd.DeferValidate) {
+                Project.Validate();
+            }
         }
 
         public void StartUndoGroup() {
@@ -181,6 +183,9 @@ namespace OpenUtau.Core {
             }
             while (undoQueue.Count > Util.Preferences.Default.UndoLimit) {
                 undoQueue.RemoveFromFront();
+            }
+            if (undoGroup.Commands.Any(cmd => cmd.DeferValidate)) {
+                Project.Validate();
             }
             undoGroup = null;
             Log.Information("undoGroup ended");
