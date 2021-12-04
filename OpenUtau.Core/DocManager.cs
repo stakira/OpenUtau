@@ -139,6 +139,11 @@ namespace OpenUtau.Core {
                     SearchAllSingers();
                 } else if (cmd is ValidateProjectNotification) {
                     Project.Validate();
+                } else if (cmd is SingersRefreshedNotification) {
+                    foreach (var track in Project.tracks) {
+                        track.OnSingerRefreshed();
+                    }
+                    Project.Validate();
                 }
                 Publish(cmd);
                 if (!cmd.Silent) {

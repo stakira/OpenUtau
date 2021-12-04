@@ -114,79 +114,96 @@ namespace OpenUtau.Core.Ustx {
     }
 
     public class USinger {
+        public string Id => Voicebank.Id;
+        public string Name => Voicebank.Name;
         public string BasePath => Voicebank.BasePath;
-        public readonly string Name;
-        public readonly string Location;
-        public readonly string Author;
-        public readonly string Web;
-        public readonly string OtherInfo;
-        public readonly string Avatar;
-        public readonly byte[] AvatarData;
-        public readonly string Portrait;
-        public readonly float PortraitOpacity;
-        public readonly Encoding TextFileEncoding;
-        public readonly List<UOtoSet> OtoSets;
-        public readonly string Id;
-        public readonly bool Loaded;
-        public readonly Voicebank Voicebank;
-        public readonly Dictionary<string, UOto> Otos;
-        public readonly Dictionary<string, List<UOto>> Phonetics;
-        public readonly List<string> Errors;
-        public readonly List<USubbank> Subbanks;
+        public string Author => Voicebank.Author;
+        public string Location => Path.GetDirectoryName(Voicebank.File);
+        public string Web => Voicebank.Web;
+        public string OtherInfo => Voicebank.OtherInfo;
+        public string Avatar => Voicebank.Image == null ? null : Path.Combine(Location, Voicebank.Image);
+        public string Portrait => Voicebank.Portrait == null ? null : Path.Combine(Location, Voicebank.Portrait);
+        public float PortraitOpacity => Voicebank.PortraitOpacity;
+        public Encoding TextFileEncoding => Voicebank.TextFileEncoding;
+        public byte[] AvatarData;
+        public List<UOtoSet> OtoSets = new List<UOtoSet>();
+        public bool Found;
+        public bool Loaded;
+        public Voicebank Voicebank;
+        public Dictionary<string, UOto> Otos = new Dictionary<string, UOto>();
+        public Dictionary<string, List<UOto>> Phonetics;
+        public List<string> Errors = new List<string>();
+        public List<USubbank> Subbanks = new List<USubbank>();
 
-        public string DisplayName { get { return Loaded ? Name : $"[Missing] {Name}"; } }
+        public string DisplayName { get { return Found ? Name : $"[Missing] {Name}"; } }
 
         public USinger(string name) {
-            Name = name;
-            Loaded = false;
+            Voicebank = new Voicebank() { Name = name };
+            Found = false;
         }
 
         public USinger(Voicebank voicebank) {
             Voicebank = voicebank;
-            Id = voicebank.Id;
-            Name = voicebank.Name;
-            Author = voicebank.Author;
-            Web = voicebank.Web;
-            OtherInfo = voicebank.OtherInfo;
-            Location = Path.GetDirectoryName(voicebank.File);
-            if (!string.IsNullOrEmpty(voicebank.Image)) {
-                Avatar = Path.Combine(Location, voicebank.Image);
-                if (File.Exists(Avatar)) {
-                    try {
-                        using (var stream = new FileStream(Avatar, FileMode.Open)) {
-                            using (var memoryStream = new MemoryStream()) {
-                                stream.CopyTo(memoryStream);
-                                AvatarData = memoryStream.ToArray();
-                            }
-                        }
-                    } catch (Exception e) {
-                        AvatarData = null;
-                        Log.Error(e, "Failed to load avatar data.");
-                    }
-                } else {
-                    AvatarData = null;
-                    Log.Error("Avatar can't be found");
-                }
-            }
-            if (!string.IsNullOrEmpty(voicebank.Portrait)) {
-                Portrait = Path.Combine(Location, voicebank.Portrait);
-                PortraitOpacity = voicebank.PortraitOpacity;
-            }
-            TextFileEncoding = voicebank.TextFileEncoding;
+            Found = true;
+        }
 
-            Subbanks = new List<Subbank>(voicebank.Subbanks)
+        public void EnsureLoaded() {
+            if (!Found || Loaded) {
+                return;
+            }
+            try {
+                Voicebank.Reload();
+                Load();
+                Loaded = true;
+            } catch (Exception e) {
+                Log.Error(e, $"Failed to load {Voicebank.File}");
+            }
+        }
+
+        public void Reload() {
+            if (!Found) {
+                return;
+            }
+            try {
+                Voicebank.Reload();
+                Load();
+                Loaded = true;
+            } catch (Exception e) {
+                Log.Error(e, $"Failed to load {Voicebank.File}");
+            }
+        }
+
+        public void Load() {
+            if (Avatar != null && File.Exists(Avatar)) {
+                try {
+                    using (var stream = new FileStream(Avatar, FileMode.Open)) {
+                        using (var memoryStream = new MemoryStream()) {
+                            stream.CopyTo(memoryStream);
+                            AvatarData = memoryStream.ToArray();
+                        }
+                    }
+                } catch (Exception e) {
+                    AvatarData = null;
+                    Log.Error(e, "Failed to load avatar data.");
+                }
+            } else {
+                AvatarData = null;
+                Log.Error("Avatar can't be found");
+            }
+
+            Subbanks.Clear();
+            Subbanks.AddRange(Voicebank.Subbanks
                 .OrderByDescending(subbank => subbank.Prefix.Length + subbank.Suffix.Length)
-                .Select(subbank => new USubbank(subbank))
-                .ToList();
+                .Select(subbank => new USubbank(subbank)));
             var patterns = Subbanks.Select(subbank => new Regex($"^{Regex.Escape(subbank.Prefix)}(.*){Regex.Escape(subbank.Suffix)}$"))
                 .ToList();
 
             var dummy = new USubbank(new Subbank());
-            OtoSets = new List<UOtoSet>();
-            Otos = new Dictionary<string, UOto>();
-            Errors = new List<string>();
-            foreach (var otoSet in voicebank.OtoSets) {
-                var uSet = new UOtoSet(otoSet, voicebank.BasePath);
+            OtoSets.Clear();
+            Otos.Clear();
+            Errors.Clear();
+            foreach (var otoSet in Voicebank.OtoSets) {
+                var uSet = new UOtoSet(otoSet, Voicebank.BasePath);
                 OtoSets.Add(uSet);
                 foreach (var oto in otoSet.Otos) {
                     UOto? uOto = null;
@@ -212,7 +229,6 @@ namespace OpenUtau.Core.Ustx {
             Phonetics = Otos.Values
                 .GroupBy(oto => oto.Phonetic, oto => oto)
                 .ToDictionary(g => g.Key, g => g.OrderByDescending(oto => oto.Prefix.Length + oto.Suffix.Length).ToList());
-            Loaded = true;
 
             Task.Run(() => {
                 Otos.Values

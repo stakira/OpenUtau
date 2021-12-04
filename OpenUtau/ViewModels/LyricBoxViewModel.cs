@@ -38,7 +38,7 @@ namespace OpenUtau.App.ViewModels {
             }
             Suggestions.Clear();
             var singer = DocManager.Inst.Project.tracks[Part.trackNo].Singer;
-            if (singer == null || !singer.Loaded) {
+            if (singer == null || !singer.Found || !singer.Loaded) {
                 Suggestions.Add(new SuggestionItem() {
                     Alias = "No Singer",
                 });

@@ -36,6 +36,7 @@ namespace OpenUtau.App.ViewModels {
             this.WhenAnyValue(vm => vm.Singer)
                 .WhereNotNull()
                 .Subscribe(singer => {
+                    singer.Reload();
                     Avatar = LoadAvatar(singer);
                     Otos = singer.Otos.Values.ToList();
                     Info = $"Author: {singer.Author}\nWeb: {singer.Web}\n{singer.OtherInfo}\n\n{string.Join("\n", singer.Errors)}";
@@ -103,6 +104,7 @@ namespace OpenUtau.App.ViewModels {
             } else {
                 Singer = Singers.FirstOrDefault();
             }
+            DocManager.Inst.ExecuteCmd(new SingersRefreshedNotification());
         }
 
         Bitmap? LoadAvatar(USinger singer) {
@@ -136,6 +138,12 @@ namespace OpenUtau.App.ViewModels {
                 DocManager.Inst.ExecuteCmd(new UserMessageNotification(
                     $"Failed to load subbanks\n\n" + e.ToString()));
             }
+        }
+
+        public void RefreshSinger() {
+            Singer?.Reload();
+            LoadSubbanks();
+            DocManager.Inst.ExecuteCmd(new SingersRefreshedNotification());
         }
     }
 }

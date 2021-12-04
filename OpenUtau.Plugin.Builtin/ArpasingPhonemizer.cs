@@ -78,7 +78,7 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         private void LoadSingerDict() {
-            if (singer != null && singer.Loaded) {
+            if (singer != null && singer.Found && singer.Loaded) {
                 string file = Path.Combine(singer.Location, "arpasing.yaml");
                 if (File.Exists(file)) {
                     try {

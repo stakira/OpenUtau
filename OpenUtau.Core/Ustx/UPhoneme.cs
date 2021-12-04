@@ -73,7 +73,7 @@ namespace OpenUtau.Core.Ustx {
             if (Error) {
                 return;
             }
-            if (track.Singer == null || !track.Singer.Loaded) {
+            if (track.Singer == null || !track.Singer.Found || !track.Singer.Loaded) {
                 Error = true;
                 return;
             }
