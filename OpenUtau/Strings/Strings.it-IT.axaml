@@ -68,13 +68,13 @@
   <system:String x:Key="menu.file.importmidi">Importa MIDI...</system:String>
   <system:String x:Key="menu.file.importtracks">Importa Tracce...</system:String>
   <system:String x:Key="menu.file.new">Nuovo</system:String>
-  <system:String x:Key="menu.file.newfromtemplate">Nuovo da Modello</system:String>
+  <system:String x:Key="menu.file.newfromtemplate">Nuovo da Template</system:String>
   <system:String x:Key="menu.file.open">Apri...</system:String>
   <system:String x:Key="menu.file.openas">Apri come</system:String>
   <system:String x:Key="menu.file.openrecent">Apri recente</system:String>
   <system:String x:Key="menu.file.save">Salva</system:String>
   <system:String x:Key="menu.file.saveas">Salva come</system:String>
-  <system:String x:Key="menu.file.savetemplate">Salva Modello...</system:String>
+  <system:String x:Key="menu.file.savetemplate">Salva Template...</system:String>
   <system:String x:Key="menu.help">Aiuto</system:String>
   <system:String x:Key="menu.help.about">Informazioni su OpenUTAU</system:String>
   <system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>
@@ -92,23 +92,23 @@
   <system:String x:Key="menu.tools.singer.installadv">Installa cantante (Avanzato)...</system:String>
   <system:String x:Key="menu.tools.singers">Cantanti...</system:String>
 
-  <system:String x:Key="oto.alias">Pseudonimo</system:String>
+  <system:String x:Key="oto.alias">Alias</system:String>
   <system:String x:Key="oto.color">Colore</system:String>
   <system:String x:Key="oto.consonant">Consonante</system:String>
   <system:String x:Key="oto.cutoff">Taglio</system:String>
   <system:String x:Key="oto.file">File</system:String>
   <system:String x:Key="oto.offset">Offset</system:String>
-  <system:String x:Key="oto.overlap">Ciclo</system:String>
-  <system:String x:Key="oto.phonetic">Fonetico</system:String>
+  <system:String x:Key="oto.overlap">Coincidenza</system:String>
+  <system:String x:Key="oto.phonetic">Fonemi</system:String>
   <system:String x:Key="oto.prefix">Prefisso</system:String>
-  <system:String x:Key="oto.preutter">Pre-Espressione</system:String>
+  <system:String x:Key="oto.preutter">Pre-Utteranza</system:String>
   <system:String x:Key="oto.set">Gruppo</system:String>
   <system:String x:Key="oto.suffix">Suffisso</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">Testo</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">Modifica Testo</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Da Hiragana a Romaji</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">Da Giapponese VCV a CV</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">Da VCV a CV (Giapponese)</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Rimuovi lettere Suffisso</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">Rimuovi tono Suffisso</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Da Romaji a Hiragana</system:String>
@@ -131,7 +131,7 @@
 Click sinistro per disegnare
 Click destro per eliminare</system:String>
   <system:String x:Key="pianoroll.tool.selection">Strumento Selezione (1)
-Mantieni click su control per selezionare più cose</system:String>
+Mantieni click su control per selezionare più note</system:String>
 
   <system:String x:Key="prefs.advanced">Avanzate</system:String>
   <system:String x:Key="prefs.advanced.beta">Beta</system:String>
@@ -148,7 +148,7 @@ Mantieni click su control per selezionare più cose</system:String>
   <system:String x:Key="prefs.off">Off</system:String>
   <system:String x:Key="prefs.on">On</system:String>
   <system:String x:Key="prefs.paths">Percorsi</system:String>
-  <system:String x:Key="prefs.paths.addlsinger">Percorso cantanti alternativo</system:String>
+  <system:String x:Key="prefs.paths.addlsinger">Percorso alternativo per i cantanti</system:String>
   <system:String x:Key="prefs.paths.reset">Reset</system:String>
   <system:String x:Key="prefs.paths.select">Seleziona</system:String>
   <system:String x:Key="prefs.playback">Audio</system:String>
@@ -171,11 +171,11 @@ Mantieni click su control per selezionare più cose</system:String>
   <system:String x:Key="progress.saved">Progetto salvato. {0}</system:String>
 
   <system:String x:Key="singers.caption">Cantanti</system:String>
-  <system:String x:Key="singers.location">Posizione</system:String>
+  <system:String x:Key="singers.location">Percorso</system:String>
   <system:String x:Key="singers.refresh">Aggiorna</system:String>
   <system:String x:Key="singers.setencoding">Imposta Encoding</system:String>
   <system:String x:Key="singers.subbanks.cancel">Cancella</system:String>
-  <system:String x:Key="singers.subbanks.clear">Pulisci</system:String>
+  <system:String x:Key="singers.subbanks.clear">Elimina</system:String>
   <system:String x:Key="singers.subbanks.color">Colore</system:String>
   <system:String x:Key="singers.subbanks.color.add">Aggiungi Colore</system:String>
   <system:String x:Key="singers.subbanks.color.remove">Rimuovi Colore</system:String>

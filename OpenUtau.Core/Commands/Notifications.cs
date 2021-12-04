@@ -134,6 +134,11 @@ namespace OpenUtau.Core {
         public override string ToString() => "Singers changed.";
     }
 
+    public class SingersRefreshedNotification : UNotification {
+        public SingersRefreshedNotification() { }
+        public override string ToString() => "Singers refreshed.";
+    }
+
     public class WillRemoveTrackNotification : UNotification {
         public int TrackNo;
         public WillRemoveTrackNotification(int trackNo) {

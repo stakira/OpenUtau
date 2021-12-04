@@ -8,7 +8,7 @@
   <system:String x:Key="context.pitch.linear">Đường thẳng</system:String>
   <system:String x:Key="context.pitch.pointadd">Thêm điểm</system:String>
   <system:String x:Key="context.pitch.pointdel">Xoá điểm</system:String>
-  <system:String x:Key="context.pitch.pointsnapprev">Gắn vào nốt trước</system:String>
+  <system:String x:Key="context.pitch.pointsnapprev">Gán vào nốt trước</system:String>
 
   <system:String x:Key="dialogs.about.caption">Thông tin về OpenUTAU</system:String>
   <system:String x:Key="dialogs.about.message">
@@ -79,7 +79,7 @@
   <system:String x:Key="menu.help.about">Thông tin về OpenUtau</system:String>
   <system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>
   <system:String x:Key="menu.tools">Công cụ</system:String>
-  <system:String x:Key="menu.tools.clearrendercache">Xoá bỏ bộ nhớ render trước tạm thời</system:String>
+  <system:String x:Key="menu.tools.clearrendercache">Xoá bỏ render tạm thời</system:String>
   <system:String x:Key="menu.tools.layout">Bố cục</system:String>
   <system:String x:Key="menu.tools.layout.hsplit11">Ngang 1:1</system:String>
   <system:String x:Key="menu.tools.layout.hsplit12">Ngang 1:2</system:String>
@@ -118,15 +118,15 @@
   <system:String x:Key="pianoroll.menu.notes.addtailrest">Thêm đuôi "R"</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">Chia thành quãng 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Chia thành quãng 1/64</system:String>
-  <system:String x:Key="pianoroll.menu.notes.reset.exps">Xoá bỏ tất cả các biểu cảm</system:String>
-  <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">Xoá bỏ các đường luyến giọng</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.exps">Đặt lại các biểu cảm</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">Đặt lại các đường luyến giọng</system:String>
   <system:String x:Key="pianoroll.menu.part">Phần</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">Sử dụng Plugin của UTAU (Thử nghiệm)</system:String>
   <system:String x:Key="pianoroll.menu.part.rename">Đặt tên lại</system:String>
   <system:String x:Key="pianoroll.toggle.phoneme">Hiện Phiên âm (O)</system:String>
   <system:String x:Key="pianoroll.toggle.pitch">Hiện Đường luyến giọng (I)</system:String>
   <system:String x:Key="pianoroll.toggle.snap">Bật tắt Gán (P)</system:String>
-  <system:String x:Key="pianoroll.toggle.tips">Hiện Chỉ Dẫn (T)</system:String>
+  <system:String x:Key="pianoroll.toggle.tips">Hiện Chỉ dẫn (T)</system:String>
   <system:String x:Key="pianoroll.toggle.tone">Hiện Chất giọng trên nốt (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">Hiện Rung giọng (U)</system:String>
   <system:String x:Key="pianoroll.tool.eraser">Công cụ Xoá nốt (3)</system:String>
@@ -190,7 +190,7 @@ Cảnh báo: moresampler chưa được hỗ trợ hoàn toàn. Việc sử dụ
   <system:String x:Key="singers.subbanks.selectall">Chọn tất cả</system:String>
   <system:String x:Key="singers.subbanks.set">Áp dụng</system:String>
   <system:String x:Key="singers.subbanks.tone">Chất giọng</system:String>
-  <system:String x:Key="singers.subbanks.toneranges">Giới hạn chất giọng</system:String>
+  <system:String x:Key="singers.subbanks.toneranges">Độ cao chất giọng</system:String>
 
   <system:String x:Key="tip.exps">
 Left Button Draw: Thiết lập biểu cảm
@@ -221,7 +221,7 @@ Tổng quát
   <system:String x:Key="tracks.movedown">Di chuyển xuống</system:String>
   <system:String x:Key="tracks.moveup">Di chuyển lên</system:String>
   <system:String x:Key="tracks.remove">Xoá bỏ</system:String>
-  <system:String x:Key="tracks.selectsinger">Lựa chọn Ca sĩ</system:String>
+  <system:String x:Key="tracks.selectsinger">Lựa chọn ca sĩ</system:String>
 
   <system:String x:Key="updater.caption">Kiểm tra cập nhật</system:String>
   <system:String x:Key="updater.github">GitHub</system:String>

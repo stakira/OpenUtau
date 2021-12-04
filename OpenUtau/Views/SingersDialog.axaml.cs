@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using OpenUtau.App.ViewModels;
+using OpenUtau.Core;
 
 namespace OpenUtau.App.Views {
     public partial class SingersDialog : Window {
@@ -30,10 +31,7 @@ namespace OpenUtau.App.Views {
             }
             var dialog = new EditSubbanksDialog();
             dialog.ViewModel.SetSinger(viewModel.Singer!);
-            dialog.RefreshSinger = () => {
-                viewModel.Refresh();
-                viewModel.LoadSubbanks();
-            };
+            dialog.RefreshSinger = () => viewModel.RefreshSinger();
             await dialog.ShowDialog(this);
 
         }

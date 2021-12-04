@@ -93,7 +93,7 @@ namespace OpenUtau.Core.Ustx {
             }
             Error = false;
             OverlapError = false;
-            if (track.Singer == null || !track.Singer.Loaded) {
+            if (track.Singer == null || !track.Singer.Found || !track.Singer.Loaded) {
                 Error |= true;
             }
             if (pitch.snapFirst) {
@@ -135,7 +135,7 @@ namespace OpenUtau.Core.Ustx {
         }
 
         public void Phonemize(UProject project, UTrack track) {
-            if (track.Singer == null || !track.Singer.Loaded) {
+            if (track.Singer == null || !track.Singer.Found || !track.Singer.Loaded) {
                 return;
             }
             if (Extends != null) {
