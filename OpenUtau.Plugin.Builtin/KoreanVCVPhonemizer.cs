@@ -47,7 +47,7 @@ namespace OpenUtau.Plugin.Builtin
 		public string[] GetIMF(string syllable)
 		{
 			byte[] bytes = Encoding.Unicode.GetBytes(syllable);
-			int numval = Convert.ToInt16(bytes[0]) + Convert.ToInt16(bytes[1]) * (16 * 16);
+			int numval = Convert.ToInt32(bytes[0]) + Convert.ToInt32(bytes[1]) * (16 * 16);
 			numval -= 44032;
 			int i = numval / 588;
 			numval -= i * 588;
@@ -119,57 +119,67 @@ namespace OpenUtau.Plugin.Builtin
 		public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours)
 		{
 			Note note = notes[0];
-      string color = string.Empty;
-      int shift = 0;
+			string color = string.Empty;
+			int shift = 0;
 
-      PhonemeAttributes attr = note.phonemeAttributes.FirstOrDefault(a => a.index == 0);
-      color = attr.voiceColor;
-      shift = attr.toneShift;
+			PhonemeAttributes attr = note.phonemeAttributes.FirstOrDefault(a => a.index == 0);
+			color = attr.voiceColor;
+			shift = attr.toneShift;
 
-      // Check if lyric is R or - and return appropriate Result; otherwise, move to next steps
-      if (note.lyric == "R" || note.lyric == "-")
+			string[] currIMF;
+			string currPhoneme;
+			string[] prevIMF;
+
+			// Check if lyric is R or - and return appropriate Result; otherwise, move to next steps
+			if (note.lyric == "R" || note.lyric == "-")
 			{
+				currPhoneme = note.lyric;
+
 				if (prevNeighbour == null)
 				{
 					return new Result
 					{
 						phonemes = new Phoneme[] {
-							new Phoneme { phoneme = note.lyric }
+							new Phoneme { phoneme = currPhoneme }
 						}
 					};
 				}
 				else
 				{
-					string RPhoneme = note.lyric;
-					string[] RprevIMF = (string.IsNullOrEmpty(prevNeighbour?.phoneticHint)) ? GetIMF(prevNeighbour?.lyric) : GetIMFFromHint(prevNeighbour?.phoneticHint);
-
-					if (string.IsNullOrEmpty(RprevIMF[2])) RPhoneme = $"{((RprevIMF[1][0] == 'w' || RprevIMF[1][0] == 'y' || RprevIMF[1] == "oi") ? RprevIMF[1].Remove(0, 1) : ((RprevIMF[1] == "eui" || RprevIMF[1] == "ui") ? "i" : RprevIMF[1]))} {RPhoneme}";
-					else
-					{
-						if (Array.IndexOf(sonorants, RprevIMF[2]) > -1)
-						{
-							if (singer.TryGetMappedOto($"{RprevIMF[2]} {RPhoneme}", note.tone + shift, color, out _)) RPhoneme = $"{RprevIMF[2]} {RPhoneme}";
-							else RPhoneme = $"{RprevIMF[2].ToUpper()} {RPhoneme}";
-						}
-						else RPhoneme = "- " + RPhoneme;
+					if (singer.TryGetMappedOto(prevNeighbour?.lyric, note.tone, color, out _)) {
+						string lastSound = GetLastSoundOfAlias(prevNeighbour?.lyric);
+						currPhoneme = $"{(!singer.TryGetMappedOto($"{lastSound} {currPhoneme}", note.tone, color, out _) ? lastSound.ToUpper() : lastSound)} {currPhoneme}";
 					}
 
-					return new Result
-					{
+					else {
+						if (string.IsNullOrEmpty(prevNeighbour?.phoneticHint)) {
+							byte[] bytes = Encoding.Unicode.GetBytes($"{prevNeighbour?.lyric[0]}");
+							int numval = Convert.ToInt32(bytes[0]) + Convert.ToInt32(bytes[1]) * (16 * 16);
+							if (prevNeighbour?.lyric.Length == 1 && numval >= 44032 && numval <= 55215) prevIMF = GetIMF(prevNeighbour?.lyric);
+							else return new Result {
+								phonemes = new Phoneme[] {
+									new Phoneme { phoneme = currPhoneme }
+								}
+							};
+						} else prevIMF = GetIMFFromHint(prevNeighbour?.phoneticHint);
+
+						if (string.IsNullOrEmpty(prevIMF[2])) currPhoneme = $"{((prevIMF[1][0] == 'w' || prevIMF[1][0] == 'y' || prevIMF[1] == "oi") ? prevIMF[1].Remove(0, 1) : ((prevIMF[1] == "eui" || prevIMF[1] == "ui") ? "i" : prevIMF[1]))} {currPhoneme}";
+						else currPhoneme = $"{(!singer.TryGetMappedOto($"{prevIMF[2]} {currPhoneme}", note.tone, color, out _) ? prevIMF[2].ToUpper() : prevIMF[2])} {currPhoneme}";
+					}
+					
+					return new Result {
 						phonemes = new Phoneme[] {
-							new Phoneme { phoneme = RPhoneme }
+							new Phoneme { phoneme = currPhoneme }
 						}
 					};
 				}
 			}
 
 			// Get IMF of current note if valid, otherwise return the lyric as is
-			string[] currIMF;
-
 			if (string.IsNullOrEmpty(note.phoneticHint))
 			{
 				byte[] bytes = Encoding.Unicode.GetBytes($"{note.lyric[0]}");
-				int numval = Convert.ToInt16(bytes[0]) + Convert.ToInt16(bytes[1]) * (16 * 16);
+				int numval = Convert.ToInt32(bytes[0]) + Convert.ToInt32(bytes[1]) * (16 * 16);
 				if (note.lyric.Length == 1 && numval >= 44032 && numval <= 55215) currIMF = GetIMF(note.lyric);
 				else return new Result
 				{
@@ -181,7 +191,7 @@ namespace OpenUtau.Plugin.Builtin
 			else currIMF = GetIMFFromHint(note.phoneticHint);
 
 			// Convert current note to phoneme
-			string currPhoneme = $"{currIMF[0]}{currIMF[1]}";
+			currPhoneme = $"{currIMF[0]}{currIMF[1]}";
 
 			if (currIMF[0] == "gg" || currIMF[0] == "dd" || currIMF[0] == "bb")
 			{
@@ -196,15 +206,13 @@ namespace OpenUtau.Plugin.Builtin
 			if (prevNeighbour != null && singer.TryGetMappedOto(prevNeighbour?.lyric, note.tone + shift, color, out _)) currPhoneme = $"{GetLastSoundOfAlias(prevNeighbour?.lyric)} {currPhoneme}";
 			else
 			{
-				string[] prevIMF;
-
 				if (prevNeighbour == null || prevNeighbour?.lyric == "R" || prevNeighbour?.lyric == "-") currPhoneme = $"- {currPhoneme}";
 				else
 				{
 					if (string.IsNullOrEmpty(prevNeighbour?.phoneticHint))
 					{
 						byte[] bytes = Encoding.Unicode.GetBytes($"{prevNeighbour?.lyric[0]}");
-						int numval = Convert.ToInt16(bytes[0]) + Convert.ToInt16(bytes[1]) * (16 * 16);
+						int numval = Convert.ToInt32(bytes[0]) + Convert.ToInt32(bytes[1]) * (16 * 16);
 						if (prevNeighbour?.lyric.Length == 1 && numval >= 44032 && numval <= 55215) prevIMF = GetIMF(prevNeighbour?.lyric);
 						else return new Result
 						{
