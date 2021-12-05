@@ -3,19 +3,19 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
   <system:String x:Key="context.pitch.easein">Rilascio</system:String>
-  <system:String x:Key="context.pitch.easeinout">Rilascio/Attacco</system:String>
+  <system:String x:Key="context.pitch.easeinout">Attacco/Rilascio/Attacco</system:String>
   <system:String x:Key="context.pitch.easeout">Attacco</system:String>
   <system:String x:Key="context.pitch.linear">Lineare</system:String>
   <system:String x:Key="context.pitch.pointadd">Aggiungi punto</system:String>
   <system:String x:Key="context.pitch.pointdel">Elimina punto</system:String>
-  <system:String x:Key="context.pitch.pointsnapprev">Passa alla nota precedente</system:String>
+  <system:String x:Key="context.pitch.pointsnapprev">Aggancia alla nota precedente</system:String>
 
   <system:String x:Key="dialogs.about.caption">Informazioni su OpenUTAU</system:String>
   <system:String x:Key="dialogs.about.message">
 		OpenUTAU punta ad essere un programma open source con un'esperienza utente moderna e supporto fonetico intelligente per la communità di UTAU. Visitaci su GitHub.
     </system:String>
   <system:String x:Key="dialogs.exitsave.caption">Stai uscendo da OpenUtau</system:String>
-  <system:String x:Key="dialogs.exitsave.message">Il progetto attuale ha dei cambiamenti non salvati. Vuoi salvarli?</system:String>
+  <system:String x:Key="dialogs.exitsave.message">Questo progetto attuale ha dei cambiamenti non salvati. Vuoi salvare?</system:String>
   <system:String x:Key="dialogs.export.caption">Esporta</system:String>
   <system:String x:Key="dialogs.export.savefirst">Salva prima il progetto</system:String>
   <system:String x:Key="dialogs.messagebox.cancel">Cancella</system:String>
@@ -24,7 +24,7 @@
   <system:String x:Key="dialogs.messagebox.yes">Si</system:String>
   <system:String x:Key="dialogs.noresampler.caption">Nessun resampler</system:String>
   <system:String x:Key="dialogs.noresampler.message">Nessun resampler! Aggiungi il file DLL o EXE del resampler nella cartella Resampler e scegli nelle Preferenze!</system:String>
-  <system:String x:Key="dialogs.timesig.caption">Tempo</system:String>
+  <system:String x:Key="dialogs.timesig.caption">Indicazione di tempo</system:String>
 
   <system:String x:Key="errors.caption">Errore</system:String>
 
@@ -32,13 +32,13 @@
   <system:String x:Key="exps.apply">Applica</system:String>
   <system:String x:Key="exps.caption">Espressioni</system:String>
   <system:String x:Key="exps.defaultvalue">Predefinito</system:String>
-  <system:String x:Key="exps.flag">Insegna Resampler</system:String>
-  <system:String x:Key="exps.isflag">È Insegna Resampler</system:String>
+  <system:String x:Key="exps.flag">Flag Resampler</system:String>
+  <system:String x:Key="exps.isflag">È Flag Resampler</system:String>
   <system:String x:Key="exps.maxvalue">Max</system:String>
   <system:String x:Key="exps.minvalue">Min</system:String>
   <system:String x:Key="exps.name">Nome</system:String>
   <system:String x:Key="exps.optionvalues">Opzione Valori</system:String>
-  <system:String x:Key="exps.sepbycomma">Separa i valori con ','</system:String>
+  <system:String x:Key="exps.sepbycomma">Separa valori con ','</system:String>
   <system:String x:Key="exps.type">Tipo</system:String>
   <system:String x:Key="exps.type.numerical">Numerico</system:String>
   <system:String x:Key="exps.type.options">Opzioni</system:String>
@@ -49,7 +49,7 @@
   <system:String x:Key="lyrics.livepreview">Anteprima in tempo reale</system:String>
   <system:String x:Key="lyrics.max">Max</system:String>
   <system:String x:Key="lyrics.reset">Reset</system:String>
-  <system:String x:Key="lyrics.selectnotes">Seleziona qualche nota prima!</system:String>
+  <system:String x:Key="lyrics.selectnotes">Seleziona prima qualche nota!</system:String>
   <system:String x:Key="lyrics.separators">Separatori</system:String>
 
   <system:String x:Key="menu.edit">Modifica</system:String>
@@ -77,7 +77,7 @@
   <system:String x:Key="menu.file.savetemplate">Salva Template...</system:String>
   <system:String x:Key="menu.help">Aiuto</system:String>
   <system:String x:Key="menu.help.about">Informazioni su OpenUTAU</system:String>
-  <system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>
+  <system:String x:Key="menu.help.wiki">OpenUTAU Wiki</system:String>
   <system:String x:Key="menu.tools">Strumenti</system:String>
   <system:String x:Key="menu.tools.layout">Disposizione</system:String>
   <system:String x:Key="menu.tools.layout.hsplit11">Orizzontale 1:1</system:String>
@@ -101,7 +101,7 @@
   <system:String x:Key="oto.overlap">Coincidenza</system:String>
   <system:String x:Key="oto.phonetic">Fonemi</system:String>
   <system:String x:Key="oto.prefix">Prefisso</system:String>
-  <system:String x:Key="oto.preutter">Pre-Utteranza</system:String>
+  <system:String x:Key="oto.preutter">Pre-utteranza</system:String>
   <system:String x:Key="oto.set">Gruppo</system:String>
   <system:String x:Key="oto.suffix">Suffisso</system:String>
 
@@ -127,16 +127,16 @@
   <system:String x:Key="pianoroll.toggle.tone">Attiva/Disattiva tono note (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">Vedi Vibrato (U)</system:String>
   <system:String x:Key="pianoroll.tool.eraser">Strumento Gommma (3)</system:String>
-  <system:String x:Key="pianoroll.tool.pen">Strumento penna (2)
+  <system:String x:Key="pianoroll.tool.pen">Strumento Penna (2)
 Click sinistro per disegnare
 Click destro per eliminare</system:String>
   <system:String x:Key="pianoroll.tool.selection">Strumento Selezione (1)
-Mantieni click su control per selezionare più note</system:String>
+Tieni premuto click sinistro + Ctrl per selezionare più note</system:String>
 
-  <system:String x:Key="prefs.advanced">Avanzate</system:String>
+  <system:String x:Key="prefs.advanced">Avanzato</system:String>
   <system:String x:Key="prefs.advanced.beta">Beta</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging">Resampler Logging</system:String>
-  <system:String x:Key="prefs.advanced.resamplerlogging.warn">Mette i log del resampler in un file. Questa operazione può rallentare la UI e il resampling.</system:String>
+  <system:String x:Key="prefs.advanced.resamplerlogging.warn">Memorizza l'output del resampler in un file log. Questa operazione può rallentare la UI e il resampler.</system:String>
   <system:String x:Key="prefs.advanced.stable">Stabile</system:String>
   <system:String x:Key="prefs.appearance">Aspetto</system:String>
   <system:String x:Key="prefs.appearance.lang">Lingua</system:String>
@@ -155,17 +155,17 @@ Mantieni click su control per selezionare più note</system:String>
   <system:String x:Key="prefs.playback.device">Dispositivo audio</system:String>
   <system:String x:Key="prefs.playback.test">Test</system:String>
   <system:String x:Key="prefs.rendering">Renderizzazione</system:String>
-  <system:String x:Key="prefs.rendering.prerender.threads">Threads Pre-Renderizzazione</system:String>
+  <system:String x:Key="prefs.rendering.prerender.threads">Threads Pre-renderizzazione</system:String>
   <system:String x:Key="prefs.rendering.resampler.export">Resampler per esportazione</system:String>
   <system:String x:Key="prefs.rendering.resampler.note">
 		Se vuoi utilizzare resampler esterni, aggiungi il file DLL o EXE del resampler nella cartella Resampler all'interno del percorso d'installazione.
     </system:String>
   <system:String x:Key="prefs.rendering.resampler.preview">Resampler per l'anteprima</system:String>
   <system:String x:Key="prefs.rendering.resampler.warn">
-    Attenzione: moresampler non è ancora supportato. Sarà molto lento e causerà un alto utilizzo della CPU. Se proprio vuoi utilizzarlo:
+    Attenzione: moresampler non è ancora supportato del tutto. Sarà molto lento e causerà un utilizzo elevato della CPU. Se vuoi utilizzarlo:
     1. Abilita "resampler-compatibility" nel file moreconfig.txt.
     2. Riduci i threads della pre-renderizzazione ad 1 o 2.
-    3. Aspetta pazientemente la fine della pre-renderizzazione prima di riprodurre.
+    3. Aspetta la fine della pre-renderizzazione prima della riproduzione.
   </system:String>
 
   <system:String x:Key="progress.saved">Progetto salvato. {0}</system:String>
@@ -189,8 +189,8 @@ Mantieni click su control per selezionare più note</system:String>
   <system:String x:Key="singers.subbanks.toneranges">Range tonale</system:String>
 
   <system:String x:Key="tip.exps">
-Tieni premuto Mouse Sinistro: Imposta espressioni
-Tieni premuto Mouse destro: Resetta espressioni
+Tieni premuto click sinistro: Imposta espressioni
+Tieni premuto click destro: Resetta espressioni
   </system:String>
   <system:String x:Key="tip.lyricbox.next">Tab: Nota successiva</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: Nota precedente</system:String>
@@ -208,7 +208,7 @@ Tieni premuto Mouse destro: Resetta espressioni
       T: Attiva/Disattiva Suggerimenti
       Trascina nota: Muovi nota
       Trascina fine della nota: Ridimensiona nota
-      Alt + Trascina fine della nota: Ridimensiona note vicine
+      Alt + Trascina fine della nota: Ridimensiona note confinanti
       Spazio: Riproduci
   </system:String>
   <system:String x:Key="tip.notes.zoomx">◀ Scorri qui per zoomare orizzontalmente ▶</system:String>
@@ -221,7 +221,7 @@ Tieni premuto Mouse destro: Resetta espressioni
 
   <system:String x:Key="updater.caption">Controlla aggiornamenti</system:String>
   <system:String x:Key="updater.github">GitHub</system:String>
-  <system:String x:Key="updater.status.available">aggiornamento v{0} disponibile!</system:String>
+  <system:String x:Key="updater.status.available">Aggiornamento v{0} disponibile!</system:String>
   <system:String x:Key="updater.status.checking">Controllo aggiornamenti...</system:String>
   <system:String x:Key="updater.status.notavailable">Aggiornato</system:String>
   <system:String x:Key="updater.status.unknown">Impossibile eseguire il controllo della versione</system:String>
