@@ -94,7 +94,7 @@ namespace OpenUtau.Core {
                     continue;
                 }
             }
-            PhonemizerFactories = phonemizerFactories.ToArray();
+            PhonemizerFactories = phonemizerFactories.OrderBy(factory => factory.tag).ToArray();
             stopWatch.Stop();
             Log.Information($"Search all plugins: {stopWatch.Elapsed}");
         }

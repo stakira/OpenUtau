@@ -93,6 +93,7 @@ namespace OpenUtau.Core.Util {
             public string AdditionalSingerPath = string.Empty;
             public bool PreferCommaSeparator = false;
             public bool ResamplerLogging = false;
+            public Dictionary<string, string> SingerPhonemizers = new Dictionary<string, string>();
         }
     }
 }

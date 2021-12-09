@@ -8,6 +8,7 @@ using Avalonia.Media.Imaging;
 using OpenUtau.Api;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
@@ -46,6 +47,17 @@ namespace OpenUtau.App.ViewModels {
                 if (track.Singer != singer) {
                     DocManager.Inst.StartUndoGroup();
                     DocManager.Inst.ExecuteCmd(new TrackChangeSingerCommand(DocManager.Inst.Project, track, singer));
+                    if (!string.IsNullOrEmpty(singer?.Id) && Preferences.Default.SingerPhonemizers.TryGetValue(Singer.Id, out var phonemizerName)) {
+                        try {
+                            var factory = DocManager.Inst.PhonemizerFactories.FirstOrDefault(factory => factory.type.FullName == phonemizerName);
+                            var phonemizer = factory?.Create();
+                            if (phonemizer != null) {
+                                DocManager.Inst.ExecuteCmd(new TrackChangePhonemizerCommand(DocManager.Inst.Project, track, phonemizer));
+                            }
+                        } catch (Exception e) {
+                            Log.Error(e, $"Failed to load phonemizer {phonemizerName}");
+                        }
+                    }
                     DocManager.Inst.EndUndoGroup();
                 }
                 this.RaisePropertyChanged(nameof(Singer));
@@ -54,8 +66,13 @@ namespace OpenUtau.App.ViewModels {
             SelectPhonemizerCommand = ReactiveCommand.Create<PhonemizerFactory>(factory => {
                 if (track.Phonemizer.GetType() != factory.type) {
                     DocManager.Inst.StartUndoGroup();
-                    DocManager.Inst.ExecuteCmd(new TrackChangePhonemizerCommand(DocManager.Inst.Project, track, factory.Create()));
+                    var phonemizer = factory.Create();
+                    DocManager.Inst.ExecuteCmd(new TrackChangePhonemizerCommand(DocManager.Inst.Project, track, phonemizer));
                     DocManager.Inst.EndUndoGroup();
+                    if (!string.IsNullOrEmpty(Singer?.Id) && phonemizer != null) {
+                        Preferences.Default.SingerPhonemizers[Singer.Id] = phonemizer!.GetType().FullName;
+                        Preferences.Save();
+                    }
                 }
                 this.RaisePropertyChanged(nameof(Phonemizer));
                 this.RaisePropertyChanged(nameof(PhonemizerTag));
