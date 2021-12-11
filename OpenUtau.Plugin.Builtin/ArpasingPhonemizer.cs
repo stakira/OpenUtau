@@ -78,7 +78,7 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         private void LoadSingerDict() {
-            if (singer != null && singer.Loaded) {
+            if (singer != null && singer.Found && singer.Loaded) {
                 string file = Path.Combine(singer.Location, "arpasing.yaml");
                 if (File.Exists(file)) {
                     try {
@@ -185,11 +185,12 @@ namespace OpenUtau.Plugin.Builtin {
                 var attr = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == i) ?? default;
                 string alt = attr.alternate?.ToString() ?? string.Empty;
                 string color = attr.voiceColor;
+                int toneShift = attr.toneShift;
                 var phoneme = phonemes[i];
                 while (noteIndex < notes.Length - 1 && notes[noteIndex].position - note.position < phoneme.position) {
                     noteIndex++;
                 }
-                phoneme.phoneme = GetPhonemeOrFallback(prevSymbol, symbols[i], notes[noteIndex].tone, color, alt);
+                phoneme.phoneme = GetPhonemeOrFallback(prevSymbol, symbols[i], notes[noteIndex].tone + toneShift, color, alt);
                 phonemes[i] = phoneme;
                 prevSymbol = symbols[i];
             }

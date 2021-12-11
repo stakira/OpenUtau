@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 using OpenUtau.Core.Ustx;
 
@@ -45,6 +46,25 @@ namespace OpenUtau.Core {
         public override string ToString() => $"Set phoneme expression {Key}";
         public override void Execute() => phoneme.SetExpression(project, track, Key, newValue);
         public override void Unexecute() => phoneme.SetExpression(project, track, Key, oldValue);
+    }
+
+    public class ResetExpressionsCommand : ExpCommand {
+        List<UExpression> noteExpressions;
+        List<UExpression> phonemeExpressions;
+        public ResetExpressionsCommand(UNote note) {
+            Note = note;
+            noteExpressions = note.noteExpressions;
+            phonemeExpressions = note.phonemeExpressions;
+        }
+        public override string ToString() => "Reset expressions.";
+        public override void Execute() {
+            Note.noteExpressions = new List<UExpression>();
+            Note.phonemeExpressions = new List<UExpression>();
+        }
+        public override void Unexecute() {
+            Note.noteExpressions = noteExpressions;
+            Note.phonemeExpressions = phonemeExpressions;
+        }
     }
 
     public abstract class PitchExpCommand : ExpCommand { }
@@ -117,6 +137,7 @@ namespace OpenUtau.Core {
     public class MovePitchPointCommand : PitchExpCommand {
         public PitchPoint Point;
         public float DeltaX, DeltaY;
+        public override bool DeferValidate => true;
         public MovePitchPointCommand(PitchPoint point, float deltaX, float deltaY) {
             this.Point = point;
             this.DeltaX = deltaX;
@@ -125,5 +146,20 @@ namespace OpenUtau.Core {
         public override string ToString() { return "Move pitch point"; }
         public override void Execute() { Point.X += DeltaX; Point.Y += DeltaY; }
         public override void Unexecute() { Point.X -= DeltaX; Point.Y -= DeltaY; }
+    }
+
+    public class ResetPitchPointsCommand : PitchExpCommand {
+        UPitch oldPitch;
+        UPitch newPitch;
+        public ResetPitchPointsCommand(UNote note) {
+            Note = note;
+            oldPitch = note.pitch;
+            newPitch = new UPitch();
+            newPitch.AddPoint(new PitchPoint(-40, 0));
+            newPitch.AddPoint(new PitchPoint(40, 0));
+        }
+        public override string ToString() => "Reset pitch points";
+        public override void Execute() => Note.pitch = newPitch;
+        public override void Unexecute() => Note.pitch = oldPitch;
     }
 }

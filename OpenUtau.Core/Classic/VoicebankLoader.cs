@@ -29,13 +29,22 @@ namespace OpenUtau.Classic {
             this.basePath = basePath;
         }
 
-        public Dictionary<string, Voicebank> LoadAll() {
+        public Dictionary<string, Voicebank> SearchAll() {
             Dictionary<string, Voicebank> result = new Dictionary<string, Voicebank>();
             if (!Directory.Exists(basePath)) {
                 return result;
             }
             var banks = Directory.EnumerateFiles(basePath, kCharTxt, SearchOption.AllDirectories)
-                .Select(filePath => LoadVoicebank(filePath, basePath))
+                .Select(filePath => {
+                    try {
+                        var voicebank = new Voicebank();
+                        LoadInfo(voicebank, filePath, basePath);
+                        return voicebank;
+                    } catch (Exception e) {
+                        Log.Error(e, $"Failed to load {filePath} info.");
+                        return null;
+                    }
+                })
                 .OfType<Voicebank>()
                 .ToArray();
             foreach (var bank in banks) {
@@ -44,23 +53,8 @@ namespace OpenUtau.Classic {
             return result;
         }
 
-        public static Voicebank LoadVoicebank(string filePath, string basePath) {
-            try {
-                var voicebank = new Voicebank();
-                ParseCharacterTxt(voicebank, filePath, basePath);
-                LoadOtoSets(voicebank, Path.GetDirectoryName(voicebank.File));
-                return voicebank;
-            } catch (Exception e) {
-                Log.Error(e, $"Failed to load {filePath}");
-            }
-            return null;
-        }
-
-        public static void ReloadVoicebank(Voicebank voicebank) {
-            var filePath = voicebank.File;
-            var basePath = voicebank.BasePath;
-            voicebank.Reset();
-            ParseCharacterTxt(voicebank, filePath, basePath);
+        public static void LoadVoicebank(Voicebank voicebank) {
+            LoadInfo(voicebank, voicebank.File, voicebank.BasePath);
             LoadOtoSets(voicebank, Path.GetDirectoryName(voicebank.File));
         }
 
@@ -77,15 +71,11 @@ namespace OpenUtau.Classic {
             }
             var dirs = Directory.GetDirectories(dirPath);
             foreach (var dir in dirs) {
-                var charTxt = Path.Combine(dir, kCharTxt);
-                if (File.Exists(charTxt)) {
-                    continue;
-                }
                 LoadOtoSets(voicebank, dir);
             }
         }
 
-        public static void ParseCharacterTxt(Voicebank voicebank, string filePath, string basePath) {
+        public static void LoadInfo(Voicebank voicebank, string filePath, string basePath) {
             var dir = Path.GetDirectoryName(filePath);
             var yamlFile = Path.Combine(dir, kCharYaml);
             VoicebankConfig bankConfig = null;
@@ -317,8 +307,7 @@ namespace OpenUtau.Classic {
                 var ext = Path.GetExtension(wav);
                 if (!string.IsNullOrEmpty(ext)) {
                     result.Alias = wav.Replace(ext, "");
-                }
-                else {
+                } else {
                     result.Alias = wav;
                 }
             }

@@ -47,9 +47,20 @@ namespace OpenUtau.Core.Ustx {
             return true;
         }
 
+        public void OnSingerRefreshed() {
+            if (Singer != null && Singer.Loaded && !DocManager.Inst.Singers.ContainsKey(Singer.Id)) {
+                Singer.Found = false;
+                Singer.Loaded = false;
+            }
+            VoiceColorExp = null;
+        }
+
         public void Validate(UProject project) {
+            if (Singer != null && Singer.Found) {
+                Singer.EnsureLoaded();
+            }
             if (project.expressions.TryGetValue("clr", out var descriptor)) {
-                if (VoiceColorExp == null && Singer != null && Singer.Loaded) {
+                if (VoiceColorExp == null && Singer != null && Singer.Found && Singer.Loaded) {
                     VoiceColorExp = descriptor.Clone();
                     var colors = Singer.Subbanks.Select(subbank => subbank.Color).ToHashSet();
                     VoiceColorExp.options = colors.OrderBy(c => c).ToArray();

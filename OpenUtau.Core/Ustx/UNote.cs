@@ -93,7 +93,7 @@ namespace OpenUtau.Core.Ustx {
             }
             Error = false;
             OverlapError = false;
-            if (track.Singer == null || !track.Singer.Loaded) {
+            if (track.Singer == null || !track.Singer.Found || !track.Singer.Loaded) {
                 Error |= true;
             }
             if (pitch.snapFirst) {
@@ -135,7 +135,7 @@ namespace OpenUtau.Core.Ustx {
         }
 
         public void Phonemize(UProject project, UTrack track) {
-            if (track.Singer == null || !track.Singer.Loaded) {
+            if (track.Singer == null || !track.Singer.Found || !track.Singer.Loaded) {
                 return;
             }
             if (Extends != null) {
@@ -238,7 +238,7 @@ namespace OpenUtau.Core.Ustx {
             });
             attributesBuffer.Clear();
             foreach (var exp in phonemeExpressions) {
-                if (exp.abbr != "vel" && exp.abbr != "alt" && exp.abbr != "clr") {
+                if (exp.abbr != "vel" && exp.abbr != "alt" && exp.abbr != "clr" && exp.abbr != "shft") {
                     continue;
                 }
                 var posInBuffer = attributesBuffer.FindIndex(attr => attr.index == exp.index);
@@ -257,6 +257,8 @@ namespace OpenUtau.Core.Ustx {
                     if (optionIdx < track.VoiceColorExp.options.Length && optionIdx >= 0) {
                         attr.voiceColor = track.VoiceColorExp.options[optionIdx];
                     }
+                } else if (exp.abbr == "shft") {
+                    attr.toneShift = (int)exp.value;
                 }
                 attributesBuffer[posInBuffer] = attr;
             }

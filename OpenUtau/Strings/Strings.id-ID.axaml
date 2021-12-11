@@ -2,13 +2,13 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-  <!--<system:String x:Key="context.pitch.easein">Mereda kedalam</system:String>-->
-  <!--<system:String x:Key="context.pitch.easeinout">Mereda kedalam/luar</system:String>-->
-  <!--<system:String x:Key="context.pitch.easeout">Mereda keluar</system:String>-->
+  <system:String x:Key="context.pitch.easein">Mereda kedalam</system:String>
+  <system:String x:Key="context.pitch.easeinout">Mereda kedalam/luar</system:String>
+  <system:String x:Key="context.pitch.easeout">Mereda keluar</system:String>
   <system:String x:Key="context.pitch.linear">Linier</system:String>
   <system:String x:Key="context.pitch.pointadd">Tambahkan titik</system:String>
   <system:String x:Key="context.pitch.pointdel">Hapus titik</system:String>
-  <!--<system:String x:Key="context.pitch.pointsnapprev">Snap ke not sebelumnya</system:String>-->
+  <system:String x:Key="context.pitch.pointsnapprev">Snap ke not sebelumnya</system:String>
 
   <system:String x:Key="dialogs.about.caption">Tentang OpenUTAU</system:String>
   <system:String x:Key="dialogs.about.message">
@@ -46,11 +46,11 @@
   <system:String x:Key="lyrics.apply">Terapkan</system:String>
   <system:String x:Key="lyrics.cancel">Batalkan</system:String>
   <system:String x:Key="lyrics.caption">Sunting Lirik</system:String>
-  <!--<system:String x:Key="lyrics.livepreview">Pratinjau Langsung</system:String>-->
+  <system:String x:Key="lyrics.livepreview">Pratinjau Langsung</system:String>
   <system:String x:Key="lyrics.max">Maksimal</system:String>
-  <!--<system:String x:Key="lyrics.reset">Setel Ulang</system:String>-->
+  <system:String x:Key="lyrics.reset">Setel Ulang</system:String>
   <system:String x:Key="lyrics.selectnotes">Pilih beberapa not terlebih dahulu!</system:String>
-  <!--<system:String x:Key="lyrics.separators">Pemisah</system:String>-->
+  <system:String x:Key="lyrics.separators">Pemisah</system:String>
 
   <system:String x:Key="menu.edit">Sunting</system:String>
   <system:String x:Key="menu.edit.copy">Salin</system:String>
@@ -58,7 +58,7 @@
   <system:String x:Key="menu.edit.delete">Hapus</system:String>
   <system:String x:Key="menu.edit.paste">Tempel</system:String>
   <system:String x:Key="menu.edit.redo">Kembalikan</system:String>
-  <!--<system:String x:Key="menu.edit.selectall">Pilih Semua</system:String>-->
+  <system:String x:Key="menu.edit.selectall">Pilih Semua</system:String>
   <system:String x:Key="menu.edit.undo">Batalkan</system:String>
   <system:String x:Key="menu.file">Berkas</system:String>
   <system:String x:Key="menu.file.exit">Keluar</system:String>
@@ -114,7 +114,7 @@
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Romaji ke Hiragana</system:String>
   <system:String x:Key="pianoroll.menu.notes">Not</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">Tambahkan bagian akhir "-"</system:String>
-  <!--<system:String x:Key="pianoroll.menu.notes.addtailrest">Tambahkan bagian akhir "R"</system:String>-->
+  <system:String x:Key="pianoroll.menu.notes.addtailrest">Tambahkan bagian akhir "R"</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">Kuantisasi hingga 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Kuantisasi hingga 1/64</system:String>
   <system:String x:Key="pianoroll.menu.part">Bagian</system:String>
@@ -135,6 +135,8 @@ Tahan Ctrl untuk memilih lainnya</system:String>
 
   <system:String x:Key="prefs.advanced">Canggih</system:String>
   <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.resamplerlogging">Resampler Logging</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.resamplerlogging.warn">Stores resampler output in log files. This option slows down UI and rendering.</system:String>-->
   <system:String x:Key="prefs.advanced.stable">Stabil</system:String>
   <system:String x:Key="prefs.appearance">Penampilan</system:String>
   <system:String x:Key="prefs.appearance.lang">Bahasa</system:String>
@@ -143,6 +145,8 @@ Tahan Ctrl untuk memilih lainnya</system:String>
   <system:String x:Key="prefs.appearance.theme.light">Terang</system:String>
   <system:String x:Key="prefs.caption">Preferensi</system:String>
   <system:String x:Key="prefs.note.restart">Catatan: silakan restart OpenUtau setelah mengubah item ini.</system:String>
+  <!--<system:String x:Key="prefs.off">Off</system:String>-->
+  <!--<system:String x:Key="prefs.on">On</system:String>-->
   <system:String x:Key="prefs.paths">Jalur</system:String>
   <system:String x:Key="prefs.paths.addlsinger">Jalur Penyanyi Tambahan</system:String>
   <system:String x:Key="prefs.paths.reset">Setel Ulang</system:String>

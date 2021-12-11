@@ -135,6 +135,8 @@ Aktivoi monivalinta pitämällä Ctrl pohjassa</system:String>
 
   <system:String x:Key="prefs.advanced">Lisäasetukset</system:String>
   <system:String x:Key="prefs.advanced.beta">Beta versio</system:String>
+  <!--<system:String x:Key="prefs.advanced.resamplerlogging">Resampler Logging</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.resamplerlogging.warn">Stores resampler output in log files. This option slows down UI and rendering.</system:String>-->
   <system:String x:Key="prefs.advanced.stable">Vakaa versio</system:String>
   <system:String x:Key="prefs.appearance">Ulkonäkö</system:String>
   <system:String x:Key="prefs.appearance.lang">Kieli</system:String>
@@ -143,6 +145,8 @@ Aktivoi monivalinta pitämällä Ctrl pohjassa</system:String>
   <system:String x:Key="prefs.appearance.theme.light">Vaalea</system:String>
   <system:String x:Key="prefs.caption">Asetukset</system:String>
   <system:String x:Key="prefs.note.restart">HUOM: Käynnistäthän OpenUtau uudelleen muutettuasi tätä asetusta.</system:String>
+  <!--<system:String x:Key="prefs.off">Off</system:String>-->
+  <!--<system:String x:Key="prefs.on">On</system:String>-->
   <system:String x:Key="prefs.paths">Tiedoston sijainti</system:String>
   <!--<system:String x:Key="prefs.paths.addlsinger">Additional Singer Path</system:String>-->
   <!--<system:String x:Key="prefs.paths.reset">Reset</system:String>-->

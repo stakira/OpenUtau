@@ -12,7 +12,7 @@ namespace OpenUtau.Core.Formats {
                 PathManager.Inst.AdditionalSingersPath,
             }) {
                 var loader = new VoicebankLoader(path);
-                var voicebanks = loader.LoadAll();
+                var voicebanks = loader.SearchAll();
                 foreach (var pair in voicebanks) {
                     singers[pair.Key] = new USinger(pair.Value);
                 }
