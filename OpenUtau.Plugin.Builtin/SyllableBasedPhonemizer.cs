@@ -426,6 +426,7 @@ namespace OpenUtau.Plugin.Builtin {
                 newNotes.Add(new Note() {
                     position = position,
                     duration = durationFinal,
+                    tone = lastNote.tone,
                     phonemeAttributes = lastNote.phonemeAttributes
                 });
                 position += durationFinal;
@@ -552,7 +553,7 @@ namespace OpenUtau.Plugin.Builtin {
         /// <param name="tone"></param>
         /// <returns></returns>
         protected bool HasOto(string alias, int tone) {
-            return singer.TryGetMappedOto(ValidateAlias(alias), tone, out _);
+            return singer.TryGetMappedOto(alias, tone, out _);
         }
 
         /// <summary>
@@ -690,7 +691,7 @@ namespace OpenUtau.Plugin.Builtin {
 
                 var validatedAlias = phonemeSymbols[phonemeI];
                 if (validatedAlias != null) {
-                    validatedAlias = ValidateAlias(validatedAlias);
+                    validatedAlias = ValidateAliasIfNeeded(validatedAlias, currentTone + attr.toneShift);
                     validatedAlias = MapPhoneme(validatedAlias, currentTone + attr.toneShift, attr.voiceColor, attr.alternate?.ToString() ?? string.Empty, singer);
 
                     phonemes[phonemeI].phoneme = validatedAlias;
@@ -712,6 +713,13 @@ namespace OpenUtau.Plugin.Builtin {
             }
 
             return ScalePhonemes(phonemes, position, isEnding ? phonemeSymbols.Count : phonemeSymbols.Count - 1, containerLength);
+        }
+
+        private string ValidateAliasIfNeeded(string alias, int tone) {
+            if (HasOto(alias, tone)) {
+                return alias;
+            }
+            return ValidateAlias(alias);
         }
 
         private Phoneme[] ScalePhonemes(Phoneme[] phonemes, int startPosition, int phonemesCount, int containerLengthTick = -1) {
