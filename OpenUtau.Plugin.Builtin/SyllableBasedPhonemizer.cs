@@ -426,6 +426,7 @@ namespace OpenUtau.Plugin.Builtin {
                 newNotes.Add(new Note() {
                     position = position,
                     duration = durationFinal,
+                    tone = lastNote.tone,
                     phonemeAttributes = lastNote.phonemeAttributes
                 });
                 position += durationFinal;
