@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -276,7 +276,10 @@ namespace OpenUtau.Plugin.Builtin
 					else secondPhoneme += $" {currIMF[2].ToUpper()}";
 				}
 
-				int secondPosition = Math.Max(note.duration - (nextNeighbour == null ? 120 : 180), note.duration / 2);
+				int noteLength = 0;
+				for (int i = 0; i < notes.Length; i++) noteLength += notes[i].duration;
+
+				int secondPosition = Math.Max(noteLength - (nextNeighbour == null ? 120 : 180), noteLength / 2);
 
 				// Return Result
 				return new Result
