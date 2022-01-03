@@ -102,9 +102,8 @@ namespace OpenUtau.Core.Render {
         private List<int> BuildPitchData(UPhoneme phoneme, UVoicePart part, UProject project) {
             const int intervalTick = 5;
             double intervalMs = project.TickToMillisecond(intervalTick);
-            double startMs = project.TickToMillisecond(phoneme.position) - phoneme.oto.Preutter;
+            double startMs = project.TickToMillisecond(phoneme.position) - phoneme.preutter;
             double endMs = project.TickToMillisecond(phoneme.End) - phoneme.tailIntrude + phoneme.tailOverlap;
-            double correction = phoneme.oto.Preutter * (Math.Pow(2, 1.0 - Velocity / 100.0) - 1);
             var pitches = new double[(int)((endMs - startMs) / intervalMs)];
             Array.Clear(pitches, 0, pitches.Length);
             var basePitches = new double[pitches.Length];
@@ -162,7 +161,7 @@ namespace OpenUtau.Core.Render {
                 PitchPoint lastPoint = null;
                 foreach (var pp in currNote.pitch.data) {
                     var point = pp.Clone();
-                    point.X += (float)(noteStartMs + correction);
+                    point.X += (float)noteStartMs;
                     point.Y = point.Y * 10 + (currNote.tone - note.tone) * 100;
                     if (lastPoint == null && point.X > noteStartMs) {
                         lastPoint = new PitchPoint((float)(noteStartMs - intervalMs), point.Y);
