@@ -65,19 +65,19 @@ namespace OpenUtau.Core.Render {
             Velocity = (int)phoneme.GetExpression(project, track, "vel").Item1;
             Volume = (int)phoneme.GetExpression(project, track, "vol").Item1;
             Modulation = (int)phoneme.GetExpression(project, track, "mod").Item1;
-            var strechRatio = Math.Pow(2, 1.0 - Velocity / 100.0);
-            var length = phoneme.oto.Preutter * strechRatio + phoneme.envelope.data[4].X;
+            var stretchRatio = Math.Pow(2, 1.0 - Velocity / 100.0);
+            var length = phoneme.oto.Preutter * stretchRatio + phoneme.envelope.data[4].X;
             var requiredLength = Math.Ceiling(length / 50 + 1) * 50;
             var lengthAdjustment = phoneme.tailIntrude == 0 ? phoneme.preutter : phoneme.preutter - phoneme.tailIntrude + phoneme.tailOverlap;
 
             NoteNum = phoneme.Parent.tone;
             StrFlags = phoneme.GetResamplerFlags(project, track);
-            PitchData = BuildPitchData(phoneme, part, project);
             RequiredLength = (int)requiredLength;
             Oto = phoneme.oto;
             Tempo = project.bpm;
 
-            SkipOver = phoneme.oto.Preutter * strechRatio - phoneme.preutter;
+            SkipOver = phoneme.oto.Preutter * stretchRatio - phoneme.preutter;
+            PitchData = BuildPitchData(phoneme, part, project, stretchRatio);
             PosMs = project.TickToMillisecond(part.position + phoneme.Parent.position + phoneme.position) - phoneme.preutter;
             DurMs = project.TickToMillisecond(phoneme.Duration) + lengthAdjustment;
             Envelope = phoneme.envelope.data;
@@ -99,10 +99,10 @@ namespace OpenUtau.Core.Render {
             return FormattableString.Invariant($"{MusicMath.GetToneName(NoteNum)} {Velocity:D} \"{StrFlags}\" {Oto.Offset} {RequiredLength:D} {Oto.Consonant} {Oto.Cutoff} {Volume:D} {Modulation:D} T{Tempo} {Base64.Base64EncodeInt12(PitchData.ToArray())}");
         }
 
-        private List<int> BuildPitchData(UPhoneme phoneme, UVoicePart part, UProject project) {
+        private List<int> BuildPitchData(UPhoneme phoneme, UVoicePart part, UProject project, double stretchRatio) {
             const int intervalTick = 5;
             double intervalMs = project.TickToMillisecond(intervalTick);
-            double startMs = project.TickToMillisecond(phoneme.position) - phoneme.preutter;
+            double startMs = project.TickToMillisecond(phoneme.position) - phoneme.oto.Preutter * stretchRatio;
             double endMs = project.TickToMillisecond(phoneme.End) - phoneme.tailIntrude + phoneme.tailOverlap;
             var pitches = new double[(int)((endMs - startMs) / intervalMs)];
             Array.Clear(pitches, 0, pitches.Length);
@@ -189,7 +189,7 @@ namespace OpenUtau.Core.Render {
                     index++;
                 }
             }
-            return pitches.Select(p => (int)p).ToList();
+            return pitches.Select(p => (int)Math.Round(p)).ToList();
         }
 
         private double InterpolateVibrato(UVibrato vibrato, double posMs, double lengthMs, UProject project) {
