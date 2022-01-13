@@ -52,8 +52,8 @@ namespace OpenUtau.Audio {
                 Log.Error(e, "Failed to initialize audio device");
             }
 
-            pullThread = new Thread(Pull) { IsBackground = true };
-            pushThread = new Thread(Push) { IsBackground = true };
+            pullThread = new Thread(Pull) { IsBackground = true, Priority = ThreadPriority.Highest };
+            pushThread = new Thread(Push) { IsBackground = true, Priority = ThreadPriority.Highest };
             pullThread.Start();
             pushThread.Start();
         }
@@ -112,11 +112,15 @@ namespace OpenUtau.Audio {
                     var device = GetEligibleOutputDevice(deviceNumber);
                     if (device is AudioDevice dev) {
                         audioEngine?.Dispose();
+                        double latency = dev.DefaultHighOutputLatency;
+                        if (OS.IsWindows() && latency < 0.1) {
+                            latency = 0.1;
+                        }
                         audioEngine = new AudioEngine(
                             dev,
                             Channels,
                             dev.DefaultSampleRate,
-                            dev.DefaultHighOutputLatency);
+                            latency);
                         DeviceNumber = deviceNumber;
                         buffer = new float[dev.DefaultSampleRate * Channels * 10 / 1000]; // 10ms at 44.1kHz
                     }

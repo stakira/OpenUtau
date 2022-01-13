@@ -14,13 +14,12 @@ namespace OpenUtau.Core.Ustx {
         public string Alias => oto.Alias;
         public string Phonetic => oto.Phonetic;
         public string Set => set.Name;
+        public string Color => subbank.Color;
         public string Prefix => subbank.Prefix;
         public string Suffix => subbank.Suffix;
         public SortedSet<int> ToneSet => subbank.toneSet;
-        public string[] Tags => subbank.Tags;
-        public string TagsString => subbank.TagsString;
         public string File => Path.Combine(set.Location, oto.Wav);
-        public string DisplayFile => oto.Wav;
+        public string DisplayFile => oto?.Wav;
         public double Offset => oto.Offset;
         public double Consonant => oto.Consonant;
         public double Cutoff => oto.Cutoff;
@@ -57,6 +56,10 @@ namespace OpenUtau.Core.Ustx {
     }
 
     public class USubbank {
+        public string Color {
+            get => subbank.Color;
+            set => subbank.Color = value;
+        }
         public string Prefix {
             get => subbank.Prefix;
             set => subbank.Prefix = value;
@@ -72,20 +75,11 @@ namespace OpenUtau.Core.Ustx {
                 toneRangesString = value;
             }
         }
-        public string TagsString {
-            get => tagsString;
-            set {
-                subbank.Tags = value.Split(',', StringSplitOptions.RemoveEmptyEntries);
-                tagsString = value;
-            }
-        }
-        public string[] Tags => subbank.Tags;
 
         public readonly SortedSet<int> toneSet;
         public readonly Subbank subbank;
 
         private string toneRangesString;
-        private string tagsString;
 
         public USubbank(Subbank subbank) {
             this.subbank = subbank;
@@ -97,11 +91,6 @@ namespace OpenUtau.Core.Ustx {
                 }
             } else {
                 toneRangesString = string.Empty;
-            }
-            if (subbank.Tags != null) {
-                tagsString = string.Join(',', subbank.Tags);
-            } else {
-                tagsString = string.Empty;
             }
         }
 
@@ -125,43 +114,67 @@ namespace OpenUtau.Core.Ustx {
     }
 
     public class USinger {
+        public string Id => Voicebank.Id;
+        public string Name => Voicebank.Name;
         public string BasePath => Voicebank.BasePath;
-        public readonly string Name;
-        public readonly string Location;
-        public readonly string Author;
-        public readonly string Web;
-        public readonly string OtherInfo;
-        public readonly string Avatar;
-        public readonly byte[] AvatarData;
-        public readonly string Portrait;
-        public readonly float PortraitOpacity;
-        public readonly Encoding TextFileEncoding;
-        public readonly List<UOtoSet> OtoSets;
-        public readonly string Id;
-        public readonly bool Loaded;
-        public readonly Voicebank Voicebank;
-        public readonly Dictionary<string, UOto> Otos;
-        public readonly Dictionary<string, List<UOto>> Phonetics;
-        public readonly List<string> Errors;
-        public readonly List<USubbank> Subbanks;
+        public string Author => Voicebank.Author;
+        public string Location => Path.GetDirectoryName(Voicebank.File);
+        public string Web => Voicebank.Web;
+        public string OtherInfo => Voicebank.OtherInfo;
+        public string Avatar => Voicebank.Image == null ? null : Path.Combine(Location, Voicebank.Image);
+        public string Portrait => Voicebank.Portrait == null ? null : Path.Combine(Location, Voicebank.Portrait);
+        public float PortraitOpacity => Voicebank.PortraitOpacity;
+        public Encoding TextFileEncoding => Voicebank.TextFileEncoding;
+        public byte[] AvatarData;
+        public List<UOtoSet> OtoSets = new List<UOtoSet>();
+        public bool Found;
+        public bool Loaded;
+        public Voicebank Voicebank;
+        public Dictionary<string, UOto> Otos = new Dictionary<string, UOto>();
+        public Dictionary<string, List<UOto>> Phonetics;
+        public List<string> Errors = new List<string>();
+        public List<USubbank> Subbanks = new List<USubbank>();
 
-        public string DisplayName { get { return Loaded ? Name : $"[Missing] {Name}"; } }
+        public string DisplayName { get { return Found ? Name : $"[Missing] {Name}"; } }
 
         public USinger(string name) {
-            Name = name;
-            Loaded = false;
+            Voicebank = new Voicebank() { Name = name };
+            Found = false;
         }
 
         public USinger(Voicebank voicebank) {
             Voicebank = voicebank;
-            Id = voicebank.Id;
-            Name = voicebank.Name;
-            Author = voicebank.Author;
-            Web = voicebank.Web;
-            OtherInfo = voicebank.OtherInfo;
-            Location = Path.GetDirectoryName(voicebank.File);
-            if (!string.IsNullOrEmpty(voicebank.Image)) {
-                Avatar = Path.Combine(Location, voicebank.Image);
+            Found = true;
+        }
+
+        public void EnsureLoaded() {
+            if (!Found || Loaded) {
+                return;
+            }
+            try {
+                Voicebank.Reload();
+                Load();
+                Loaded = true;
+            } catch (Exception e) {
+                Log.Error(e, $"Failed to load {Voicebank.File}");
+            }
+        }
+
+        public void Reload() {
+            if (!Found) {
+                return;
+            }
+            try {
+                Voicebank.Reload();
+                Load();
+                Loaded = true;
+            } catch (Exception e) {
+                Log.Error(e, $"Failed to load {Voicebank.File}");
+            }
+        }
+
+        public void Load() {
+            if (Avatar != null && File.Exists(Avatar)) {
                 try {
                     using (var stream = new FileStream(Avatar, FileMode.Open)) {
                         using (var memoryStream = new MemoryStream()) {
@@ -173,27 +186,24 @@ namespace OpenUtau.Core.Ustx {
                     AvatarData = null;
                     Log.Error(e, "Failed to load avatar data.");
                 }
+            } else {
+                AvatarData = null;
+                Log.Error("Avatar can't be found");
             }
-            if (!string.IsNullOrEmpty(voicebank.Portrait)) {
-                Portrait = Path.Combine(Location, voicebank.Portrait);
-                PortraitOpacity = voicebank.PortraitOpacity;
-            }
-            TextFileEncoding = voicebank.TextFileEncoding;
 
-            Subbanks = new List<Subbank>(voicebank.Subbanks)
-                .Where(subbank => subbank.Prefix.Length + subbank.Suffix.Length > 0)
+            Subbanks.Clear();
+            Subbanks.AddRange(Voicebank.Subbanks
                 .OrderByDescending(subbank => subbank.Prefix.Length + subbank.Suffix.Length)
-                .Select(subbank => new USubbank(subbank))
-                .ToList();
-            var patterns = Subbanks.Select(subbank => new Regex($"{Regex.Escape(subbank.Prefix)}(.*){Regex.Escape(subbank.Suffix)}"))
+                .Select(subbank => new USubbank(subbank)));
+            var patterns = Subbanks.Select(subbank => new Regex($"^{Regex.Escape(subbank.Prefix)}(.*){Regex.Escape(subbank.Suffix)}$"))
                 .ToList();
 
             var dummy = new USubbank(new Subbank());
-            OtoSets = new List<UOtoSet>();
-            Otos = new Dictionary<string, UOto>();
-            Errors = new List<string>();
-            foreach (var otoSet in voicebank.OtoSets) {
-                var uSet = new UOtoSet(otoSet, voicebank.BasePath);
+            OtoSets.Clear();
+            Otos.Clear();
+            Errors.Clear();
+            foreach (var otoSet in Voicebank.OtoSets) {
+                var uSet = new UOtoSet(otoSet, Voicebank.BasePath);
                 OtoSets.Add(uSet);
                 foreach (var oto in otoSet.Otos) {
                     UOto? uOto = null;
@@ -219,7 +229,6 @@ namespace OpenUtau.Core.Ustx {
             Phonetics = Otos.Values
                 .GroupBy(oto => oto.Phonetic, oto => oto)
                 .ToDictionary(g => g.Key, g => g.OrderByDescending(oto => oto.Prefix.Length + oto.Suffix.Length).ToList());
-            Loaded = true;
 
             Task.Run(() => {
                 Otos.Values
@@ -231,26 +240,26 @@ namespace OpenUtau.Core.Ustx {
             });
         }
 
+        [Obsolete("Use the overload with color instead.")]
         public bool TryGetMappedOto(string phoneme, int tone, out UOto oto) {
-            if (Phonetics.TryGetValue(phoneme, out var list)) {
-                foreach (var o in list) {
-                    if (o.ToneSet.Contains(tone) && (o.Tags == null || o.Tags.Length == 0)) {
-                        oto = o;
-                        return true;
-                    }
-                }
-            }
-            foreach (var subbank in Subbanks) {
-                if (subbank.toneSet.Contains(tone) && (subbank.Tags == null || subbank.Tags.Length == 0)) {
-                    if (Otos.TryGetValue(subbank.Prefix + phoneme + subbank.Suffix, out oto)) {
-                        return true;
-                    }
-                }
+            oto = default;
+            var subbank = Subbanks.Find(subbank => subbank.toneSet.Contains(tone) && string.IsNullOrEmpty(subbank.Color));
+            if (subbank != null && Otos.TryGetValue($"{subbank.Prefix}{phoneme}{subbank.Suffix}", out oto)) {
+                return true;
             }
             if (Otos.TryGetValue(phoneme, out oto)) {
                 return true;
             }
             return false;
+        }
+
+        public bool TryGetMappedOto(string phoneme, int tone, string color, out UOto oto) {
+            oto = default;
+            var subbank = Subbanks.Find(subbank => subbank.toneSet.Contains(tone) && color == subbank.Color);
+            if (subbank != null && Otos.TryGetValue($"{subbank.Prefix}{phoneme}{subbank.Suffix}", out oto)) {
+                return true;
+            }
+            return TryGetMappedOto(phoneme, tone, out oto);
         }
 
         public void GetSuggestions(string text, Action<UOto> provide) {

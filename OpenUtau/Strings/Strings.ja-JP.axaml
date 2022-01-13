@@ -24,6 +24,7 @@
   <system:String x:Key="dialogs.messagebox.yes">はい</system:String>
   <system:String x:Key="dialogs.noresampler.caption">エンジンがありません</system:String>
   <system:String x:Key="dialogs.noresampler.message">エンジンが設定されていません！お好みのエンジンのEXEやDLLファイルをResamplerフォルダに入れて、環境設定でエンジンを選択してください！</system:String>
+  <system:String x:Key="dialogs.timesig.caption">拍子</system:String>
 
   <system:String x:Key="errors.caption">エラー</system:String>
 
@@ -41,6 +42,15 @@
   <system:String x:Key="exps.type">タイプ</system:String>
   <system:String x:Key="exps.type.numerical">数値</system:String>
   <system:String x:Key="exps.type.options">カスタム</system:String>
+
+  <system:String x:Key="lyrics.apply">適用</system:String>
+  <system:String x:Key="lyrics.cancel">キャンセル</system:String>
+  <system:String x:Key="lyrics.caption">歌詞を編集</system:String>
+  <system:String x:Key="lyrics.livepreview">リアルタイム プレビュー</system:String>
+  <!--<system:String x:Key="lyrics.max">Max</system:String>-->
+  <system:String x:Key="lyrics.reset">リセット</system:String>
+  <system:String x:Key="lyrics.selectnotes">音符を選択してください！</system:String>
+  <system:String x:Key="lyrics.separators">セパレータ</system:String>
 
   <system:String x:Key="menu.edit">編集</system:String>
   <system:String x:Key="menu.edit.copy">コピー</system:String>
@@ -83,6 +93,7 @@
   <system:String x:Key="menu.tools.singers">シンガー...</system:String>
 
   <system:String x:Key="oto.alias">エイリアス</system:String>
+  <!--<system:String x:Key="oto.color">Color</system:String>-->
   <system:String x:Key="oto.consonant">子音部</system:String>
   <system:String x:Key="oto.cutoff">ブランク</system:String>
   <system:String x:Key="oto.file">ファイル</system:String>
@@ -93,20 +104,21 @@
   <system:String x:Key="oto.preutter">先行発声</system:String>
   <system:String x:Key="oto.set">セット</system:String>
   <!--<system:String x:Key="oto.suffix">Suffix</system:String>-->
-  <!--<system:String x:Key="oto.tags">Tags</system:String>-->
 
   <system:String x:Key="pianoroll.menu.lyrics">歌詞</system:String>
-  <!--<system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana to Romaji</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.lyrics.javcvtocv">Japanese VCV to CV</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Remove Letter Suffix</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">Remove Tone Suffix</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Romaji to Hiragana</system:String>-->
+  <system:String x:Key="pianoroll.menu.lyrics.edit">歌詞を編集</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">ひらがな→ローマ字</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">連続音→単独音（日本語）</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">文字のSuffixを削除</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">音程のSuffixを削除</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">ローマ字→ひらがな</system:String>
   <system:String x:Key="pianoroll.menu.notes">音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">末尾に"-"を追加</system:String>
+  <system:String x:Key="pianoroll.menu.notes.addtailrest">末尾に"R"を追加</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">1/128にクオンタイズ</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">1/64にクオンタイズ</system:String>
   <system:String x:Key="pianoroll.menu.part">パート</system:String>
-  <!--<system:String x:Key="pianoroll.menu.part.legacypluginexp">Legacy Plugin (Experimental)</system:String>-->
+  <system:String x:Key="pianoroll.menu.part.legacypluginexp">継承プラグイン (実験的)</system:String>
   <system:String x:Key="pianoroll.menu.part.rename">名前を変更</system:String>
   <system:String x:Key="pianoroll.toggle.phoneme">音素を表示 (O)</system:String>
   <system:String x:Key="pianoroll.toggle.pitch">ピッチ曲線を表示 (I)</system:String>
@@ -120,13 +132,11 @@
 右クリックで削除</system:String>
   <system:String x:Key="pianoroll.tool.selection">選択ツール (1)
 Ctrl長押しで複数選択</system:String>
-  <!--<system:String x:Key="pianoroll.tool.tagger">Tagger Tool (4)
-Left click to draw
-Right click to erase</system:String>-->
-  <!--<system:String x:Key="pianoroll.tool.tagger.setup">Setup Tags</system:String>-->
 
   <system:String x:Key="prefs.advanced">高度な設定</system:String>
   <system:String x:Key="prefs.advanced.beta">ベータ版</system:String>
+  <!--<system:String x:Key="prefs.advanced.resamplerlogging">Resampler Logging</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.resamplerlogging.warn">Stores resampler output in log files. This option slows down UI and rendering.</system:String>-->
   <system:String x:Key="prefs.advanced.stable">安定版</system:String>
   <system:String x:Key="prefs.appearance">外観</system:String>
   <system:String x:Key="prefs.appearance.lang">言語</system:String>
@@ -135,10 +145,12 @@ Right click to erase</system:String>-->
   <system:String x:Key="prefs.appearance.theme.light">ライト</system:String>
   <system:String x:Key="prefs.caption">環境設定</system:String>
   <system:String x:Key="prefs.note.restart">Note: この設定を変更した後は、OpenUtauを再起動してください。</system:String>
+  <!--<system:String x:Key="prefs.off">Off</system:String>-->
+  <!--<system:String x:Key="prefs.on">On</system:String>-->
   <system:String x:Key="prefs.paths">ファイルの場所</system:String>
-  <system:String x:Key="prefs.paths.add">追加</system:String>
-  <system:String x:Key="prefs.paths.remove">削除</system:String>
-  <system:String x:Key="prefs.paths.singer">シンガーの場所</system:String>
+  <system:String x:Key="prefs.paths.addlsinger">シンガーの場所（追加）</system:String>
+  <system:String x:Key="prefs.paths.reset">リセット</system:String>
+  <system:String x:Key="prefs.paths.select">選択</system:String>
   <system:String x:Key="prefs.playback">再生</system:String>
   <system:String x:Key="prefs.playback.device">再生デバイス</system:String>
   <system:String x:Key="prefs.playback.test">再生テスト</system:String>
@@ -151,25 +163,31 @@ Right click to erase</system:String>-->
   <system:String x:Key="prefs.rendering.resampler.preview">プレビュー用エンジン</system:String>
   <system:String x:Key="prefs.rendering.resampler.warn">
     警告: moresamplerはまだサポートされていません。CPU使用率が高くなり、動作が極端に遅くなります。それでも使用する場合:
-    1. moreconfig.txt内の"resampler-compatibility"をオンにしてください。
-    2. プリレンダースレッド数を1か2に設定してください。
-    3. 再生する前に、プリレンダーの処理が完了するのを辛抱強く待ってください。
+    1. moreconfig.txt内の "resampler-compatibility" を "on" に設定してください。
+    2. moreconfig.txt内の "auto-update-llsm-mrq" を "off" に設定してください。
+    3. プリレンダースレッド数を1か2に設定してください。
+    4. 再生する前に、プリレンダーの処理が完了するのを辛抱強く待ってください。
   </system:String>
+
+  <system:String x:Key="progress.saved">プロジェクトが保存されました。 {0}</system:String>
 
   <system:String x:Key="singers.caption">シンガー</system:String>
   <system:String x:Key="singers.location">ファイルの場所</system:String>
   <system:String x:Key="singers.refresh">更新</system:String>
   <system:String x:Key="singers.setencoding">文字コード設定</system:String>
-  <!--<system:String x:Key="singers.subbanks.add">Add</system:String>-->
-  <!--<system:String x:Key="singers.subbanks.caption">Tag Editor</system:String>-->
-  <!--<system:String x:Key="singers.subbanks.dir">Directory</system:String>-->
-  <!--<system:String x:Key="singers.subbanks.prefix">Prefix</system:String>-->
-  <!--<system:String x:Key="singers.subbanks.remove">Remove</system:String>-->
-  <!--<system:String x:Key="singers.subbanks.reset">Reset</system:String>-->
-  <!--<system:String x:Key="singers.subbanks.save">Save</system:String>-->
-  <!--<system:String x:Key="singers.subbanks.suffix">Suffix</system:String>-->
-  <!--<system:String x:Key="singers.subbanks.tags">Tags</system:String>-->
-  <!--<system:String x:Key="singers.subbanks.toneranges">Tone Ranges</system:String>-->
+  <system:String x:Key="singers.subbanks.cancel">キャンセル</system:String>
+  <system:String x:Key="singers.subbanks.clear">クリア</system:String>
+  <!--<system:String x:Key="singers.subbanks.color">Color</system:String>-->
+  <system:String x:Key="singers.subbanks.color.add">Colorを追加</system:String>
+  <system:String x:Key="singers.subbanks.color.remove">Colorを削除</system:String>
+  <system:String x:Key="singers.subbanks.color.rename">名前を変更</system:String>
+  <system:String x:Key="singers.subbanks.edit">サブバンクを編集</system:String>
+  <system:String x:Key="singers.subbanks.reset">リセット</system:String>
+  <system:String x:Key="singers.subbanks.save">保存</system:String>
+  <system:String x:Key="singers.subbanks.selectall">すべて選択</system:String>
+  <system:String x:Key="singers.subbanks.set">セット</system:String>
+  <system:String x:Key="singers.subbanks.tone">音程</system:String>
+  <system:String x:Key="singers.subbanks.toneranges">音域</system:String>
 
   <system:String x:Key="tip.exps">
 左クリック: 表情を設定
@@ -200,15 +218,15 @@ Right click to erase</system:String>-->
   <system:String x:Key="tracks.movedown">下へ</system:String>
   <system:String x:Key="tracks.moveup">上へ</system:String>
   <system:String x:Key="tracks.remove">削除</system:String>
-  <!--<system:String x:Key="tracks.selectsinger">Select Singer</system:String>-->
+  <system:String x:Key="tracks.selectsinger">シンガーを選択</system:String>
 
-  <!--<system:String x:Key="updater.caption">Check for Update</system:String>-->
+  <system:String x:Key="updater.caption">アップデートの確認</system:String>
   <!--<system:String x:Key="updater.github">GitHub</system:String>-->
-  <!--<system:String x:Key="updater.status.available">Update v{0} available!</system:String>-->
-  <!--<system:String x:Key="updater.status.checking">Checking for updates...</system:String>-->
-  <!--<system:String x:Key="updater.status.notavailable">Up to date</system:String>-->
-  <!--<system:String x:Key="updater.status.unknown">Unable to check update</system:String>-->
-  <!--<system:String x:Key="updater.update">Update</system:String>-->
+  <system:String x:Key="updater.status.available">アップデート v{0} が利用できます!</system:String>
+  <system:String x:Key="updater.status.checking">アップデートを確認しています...</system:String>
+  <system:String x:Key="updater.status.notavailable">最新</system:String>
+  <system:String x:Key="updater.status.unknown">更新の確認ができません</system:String>
+  <system:String x:Key="updater.update">アップデート</system:String>
 
   <system:String x:Key="warning">警告</system:String>
   <system:String x:Key="warning.asciipath">OpenUtauのファイルパス "{0}" に非ASCII文字が含まれています。 EXE形式のエンジンが動作しない可能性があります。</system:String>

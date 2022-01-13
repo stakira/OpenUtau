@@ -45,6 +45,10 @@ namespace OpenUtau.Core {
         public override string ToString() => "Save project";
     }
 
+    public class ValidateProjectNotification : UNotification {
+        public override string ToString() => "Validate Project";
+    }
+
     public class RedrawNotesNotification : UNotification {
         public override string ToString() => "Redraw Notes";
     }
@@ -128,6 +132,11 @@ namespace OpenUtau.Core {
     public class SingersChangedNotification : UNotification {
         public SingersChangedNotification() { }
         public override string ToString() => "Singers changed.";
+    }
+
+    public class SingersRefreshedNotification : UNotification {
+        public SingersRefreshedNotification() { }
+        public override string ToString() => "Singers refreshed.";
     }
 
     public class WillRemoveTrackNotification : UNotification {

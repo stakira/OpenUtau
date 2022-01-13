@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using Avalonia;
 using Avalonia.Markup.Xaml.MarkupExtensions;
 using OpenUtau.Core;
+using OpenUtau.Core.ResamplerDriver;
 using OpenUtau.Core.Util;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -23,22 +24,23 @@ namespace OpenUtau.App.ViewModels {
             get => audioOutputDevice;
             set => this.RaiseAndSetIfChanged(ref audioOutputDevice, value);
         }
+        public string AdditionalSingersPath => PathManager.Inst.AdditionalSingersPath;
         public List<int> PrerenderThreadsItems { get; }
         public int PrerenderThreads {
             get => prerenderThreads;
             set => this.RaiseAndSetIfChanged(ref prerenderThreads, value);
         }
-        public List<EngineInfo>? Resamplers { get; }
-        public EngineInfo? PreviewResampler {
+        public List<IResamplerDriver>? Resamplers { get; }
+        public IResamplerDriver? PreviewResampler {
             get => previewResampler;
             set => this.RaiseAndSetIfChanged(ref previewResampler, value);
         }
-        public EngineInfo? ExportResampler {
+        public IResamplerDriver? ExportResampler {
             get => exportResampler;
             set => this.RaiseAndSetIfChanged(ref exportResampler, value);
         }
         [Reactive] public int Theme { get; set; }
-        [Reactive] public int Beta { get; set; }
+        [Reactive] public int ResamplerLogging { get; set; }
         public List<CultureInfo?>? Languages { get; }
         public CultureInfo? Language {
             get => language;
@@ -49,8 +51,8 @@ namespace OpenUtau.App.ViewModels {
         private List<AudioOutputDevice>? audioOutputDevices;
         private AudioOutputDevice? audioOutputDevice;
         private int prerenderThreads;
-        private EngineInfo? previewResampler;
-        private EngineInfo? exportResampler;
+        private IResamplerDriver? previewResampler;
+        private IResamplerDriver? exportResampler;
         private CultureInfo? language;
         private readonly ObservableAsPropertyHelper<bool> moresamplerSelected;
 
@@ -66,10 +68,8 @@ namespace OpenUtau.App.ViewModels {
             }
             PrerenderThreadsItems = Enumerable.Range(1, 16).ToList();
             PrerenderThreads = Preferences.Default.PrerenderThreads;
-            Resamplers = Core.ResamplerDriver.ResamplerDriver
-                .Search(PathManager.Inst.GetEngineSearchPath())
-                .Select(resampler => resampler.GetInfo())
-                .ToList();
+            ResamplerDrivers.Search();
+            Resamplers = ResamplerDrivers.GetResamplers();
             if (Resamplers.Count > 0) {
                 int index = Resamplers.FindIndex(resampler => resampler.Name == Preferences.Default.ExternalPreviewEngine);
                 if (index >= 0) {
@@ -99,7 +99,7 @@ namespace OpenUtau.App.ViewModels {
                 ? null
                 : CultureInfo.GetCultureInfo(Preferences.Default.Language);
             Theme = Preferences.Default.Theme;
-            Beta = Preferences.Default.Beta;
+            ResamplerLogging = Preferences.Default.ResamplerLogging ? 1 : 0;
 
             this.WhenAnyValue(vm => vm.AudioOutputDevice)
                 .WhereNotNull()
@@ -121,14 +121,20 @@ namespace OpenUtau.App.ViewModels {
             this.WhenAnyValue(vm => vm.PreviewResampler)
                 .WhereNotNull()
                 .Subscribe(resampler => {
-                    Preferences.Default.ExternalPreviewEngine = resampler?.Name;
-                    Preferences.Save();
+                    if (resampler != null) {
+                        Preferences.Default.ExternalPreviewEngine = resampler!.Name;
+                        Preferences.Save();
+                        resampler!.CheckPermissions();
+                    }
                 });
             this.WhenAnyValue(vm => vm.ExportResampler)
                 .WhereNotNull()
                 .Subscribe(resampler => {
-                    Preferences.Default.ExternalExportEngine = resampler?.Name;
-                    Preferences.Save();
+                    if (resampler != null) {
+                        Preferences.Default.ExternalExportEngine = resampler!.Name;
+                        Preferences.Save();
+                        resampler!.CheckPermissions();
+                    }
                 });
             this.WhenAnyValue(vm => vm.PreviewResampler, vm => vm.ExportResampler)
                 .Select(engines =>
@@ -147,9 +153,9 @@ namespace OpenUtau.App.ViewModels {
                     Preferences.Save();
                     App.SetTheme();
                 });
-            this.WhenAnyValue(vm => vm.Beta)
-                .Subscribe(beta => {
-                    Preferences.Default.Beta = beta;
+            this.WhenAnyValue(vm => vm.ResamplerLogging)
+                .Subscribe(v => {
+                    Preferences.Default.ResamplerLogging = v != 0;
                     Preferences.Save();
                 });
         }
@@ -159,9 +165,15 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void OpenResamplerLocation() {
-            string path = PathManager.Inst.GetEngineSearchPath();
+            string path = PathManager.Inst.ResamplersPath;
             Directory.CreateDirectory(path);
             OS.OpenFolder(path);
+        }
+
+        public void SetAddlSingersPath(string path) {
+            Preferences.Default.AdditionalSingerPath = path;
+            Preferences.Save();
+            this.RaisePropertyChanged(nameof(AdditionalSingersPath));
         }
     }
 }

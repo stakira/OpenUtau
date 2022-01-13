@@ -1,0 +1,236 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <system:String x:Key="context.pitch.easein">Mereda kedalam</system:String>
+  <system:String x:Key="context.pitch.easeinout">Mereda kedalam/luar</system:String>
+  <system:String x:Key="context.pitch.easeout">Mereda keluar</system:String>
+  <system:String x:Key="context.pitch.linear">Linier</system:String>
+  <system:String x:Key="context.pitch.pointadd">Tambahkan titik</system:String>
+  <system:String x:Key="context.pitch.pointdel">Hapus titik</system:String>
+  <system:String x:Key="context.pitch.pointsnapprev">Snap ke not sebelumnya</system:String>
+
+  <system:String x:Key="dialogs.about.caption">Tentang OpenUTAU</system:String>
+  <system:String x:Key="dialogs.about.message">
+    OpenUtau bertujuan untuk menjadi lingkungan pengeditan sumber terbuka untuk komunitas UTAU, dengan pengalaman pengguna modern dan dukungan fonologis yang cerdas. Kunjungi kami di Github.
+  </system:String>
+  <system:String x:Key="dialogs.exitsave.caption">Keluar dari OpenUtau</system:String>
+  <system:String x:Key="dialogs.exitsave.message">Proyek saat ini berisi perubahan yang belum disimpan. Apakah Anda ingin menyimpannya?</system:String>
+  <system:String x:Key="dialogs.export.caption">Ekspor</system:String>
+  <system:String x:Key="dialogs.export.savefirst">Simpan berkas proyek terlebih dahulu</system:String>
+  <system:String x:Key="dialogs.messagebox.cancel">Batal</system:String>
+  <system:String x:Key="dialogs.messagebox.no">Tidak</system:String>
+  <system:String x:Key="dialogs.messagebox.ok">Oke</system:String>
+  <system:String x:Key="dialogs.messagebox.yes">Ya</system:String>
+  <system:String x:Key="dialogs.noresampler.caption">Tidak ada resampler</system:String>
+  <system:String x:Key="dialogs.noresampler.message">Tidak ada resampler! Letakkan resampler exe atau dll favorit Anda di folder Resamplers dan pilih di Preferensi!</system:String>
+  <system:String x:Key="dialogs.timesig.caption">Tanda Waktu</system:String>
+
+  <!--<system:String x:Key="errors.caption">Error</system:String>-->
+
+  <system:String x:Key="exps.abbr">Singkatan</system:String>
+  <system:String x:Key="exps.apply">Terapkan</system:String>
+  <system:String x:Key="exps.caption">Ekspresi</system:String>
+  <system:String x:Key="exps.defaultvalue">Bawaan</system:String>
+  <!--<system:String x:Key="exps.flag">Resampler Flag</system:String>-->
+  <!--<system:String x:Key="exps.isflag">Is Resampler Flag</system:String>-->
+  <system:String x:Key="exps.maxvalue">Maksimal</system:String>
+  <system:String x:Key="exps.minvalue">Minimal</system:String>
+  <system:String x:Key="exps.name">Nama</system:String>
+  <system:String x:Key="exps.optionvalues">Nilai opsi</system:String>
+  <system:String x:Key="exps.sepbycomma">Pisahkan nilai dengan ','</system:String>
+  <system:String x:Key="exps.type">Jenis</system:String>
+  <system:String x:Key="exps.type.numerical">Numerik</system:String>
+  <system:String x:Key="exps.type.options">Opsi</system:String>
+
+  <system:String x:Key="lyrics.apply">Terapkan</system:String>
+  <system:String x:Key="lyrics.cancel">Batalkan</system:String>
+  <system:String x:Key="lyrics.caption">Sunting Lirik</system:String>
+  <system:String x:Key="lyrics.livepreview">Pratinjau Langsung</system:String>
+  <system:String x:Key="lyrics.max">Maksimal</system:String>
+  <system:String x:Key="lyrics.reset">Setel Ulang</system:String>
+  <system:String x:Key="lyrics.selectnotes">Pilih beberapa not terlebih dahulu!</system:String>
+  <system:String x:Key="lyrics.separators">Pemisah</system:String>
+
+  <system:String x:Key="menu.edit">Sunting</system:String>
+  <system:String x:Key="menu.edit.copy">Salin</system:String>
+  <system:String x:Key="menu.edit.cut">Potong</system:String>
+  <system:String x:Key="menu.edit.delete">Hapus</system:String>
+  <system:String x:Key="menu.edit.paste">Tempel</system:String>
+  <system:String x:Key="menu.edit.redo">Kembalikan</system:String>
+  <system:String x:Key="menu.edit.selectall">Pilih Semua</system:String>
+  <system:String x:Key="menu.edit.undo">Batalkan</system:String>
+  <system:String x:Key="menu.file">Berkas</system:String>
+  <system:String x:Key="menu.file.exit">Keluar</system:String>
+  <system:String x:Key="menu.file.exportall">Ekspor Semua</system:String>
+  <system:String x:Key="menu.file.exportust">Ekspor Berkas UST</system:String>
+  <system:String x:Key="menu.file.importaudio">Impor Audio...</system:String>
+  <system:String x:Key="menu.file.importmidi">Impor Midi...</system:String>
+  <system:String x:Key="menu.file.importtracks">Impor Trek...</system:String>
+  <system:String x:Key="menu.file.new">Baru</system:String>
+  <system:String x:Key="menu.file.newfromtemplate">Baru Dari Templat</system:String>
+  <system:String x:Key="menu.file.open">Buka...</system:String>
+  <system:String x:Key="menu.file.openas">Buka Sebagai</system:String>
+  <system:String x:Key="menu.file.openrecent">Buka Terbaru</system:String>
+  <system:String x:Key="menu.file.save">Simpan</system:String>
+  <system:String x:Key="menu.file.saveas">Simpan Sebagai...</system:String>
+  <system:String x:Key="menu.file.savetemplate">Simpan Templat...</system:String>
+  <system:String x:Key="menu.help">Bantuan</system:String>
+  <system:String x:Key="menu.help.about">Tentang OpenUtau</system:String>
+  <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
+  <system:String x:Key="menu.tools">Peralatan</system:String>
+  <system:String x:Key="menu.tools.clearrendercache">Hapus Render Chache</system:String>
+  <system:String x:Key="menu.tools.layout">Tata Letak</system:String>
+  <system:String x:Key="menu.tools.layout.hsplit11">Horisontal 1:1</system:String>
+  <system:String x:Key="menu.tools.layout.hsplit12">Horisontal 1:2</system:String>
+  <system:String x:Key="menu.tools.layout.hsplit13">Horisontal 1:3</system:String>
+  <system:String x:Key="menu.tools.layout.vsplit11">Vertikal 1:1</system:String>
+  <system:String x:Key="menu.tools.layout.vsplit12">Vertikal 1:2</system:String>
+  <system:String x:Key="menu.tools.layout.vsplit13">Vertikal 1:3</system:String>
+  <system:String x:Key="menu.tools.prefs">Preferensi...</system:String>
+  <system:String x:Key="menu.tools.project.expressions">Ekspresi...</system:String>
+  <system:String x:Key="menu.tools.singer.install">Instal Penyanyi...</system:String>
+  <system:String x:Key="menu.tools.singer.installadv">Instal Penyanyi (Lanjutan)...</system:String>
+  <system:String x:Key="menu.tools.singers">Penyanyi...</system:String>
+
+  <!--<system:String x:Key="oto.alias">Alias</system:String>-->
+  <system:String x:Key="oto.color">Warna</system:String>
+  <system:String x:Key="oto.consonant">Konsonan</system:String>
+  <system:String x:Key="oto.cutoff">Batas</system:String>
+  <system:String x:Key="oto.file">Berkas</system:String>
+  <system:String x:Key="oto.offset">Mengimbangi</system:String>
+  <system:String x:Key="oto.overlap">Tumpang Tindih</system:String>
+  <system:String x:Key="oto.phonetic">Fonetik</system:String>
+  <system:String x:Key="oto.prefix">Awalan</system:String>
+  <!--<system:String x:Key="oto.preutter">Preutter</system:String>-->
+  <system:String x:Key="oto.set">Setel</system:String>
+  <system:String x:Key="oto.suffix">Akhiran</system:String>
+
+  <system:String x:Key="pianoroll.menu.lyrics">Lirik</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.edit">Sunting Lirik</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana ke Romaji</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">VCV Jepang ke CV</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Hapus Akhiran Huruf</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">Hapus Akhiran Nada</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Romaji ke Hiragana</system:String>
+  <system:String x:Key="pianoroll.menu.notes">Not</system:String>
+  <system:String x:Key="pianoroll.menu.notes.addtaildash">Tambahkan bagian akhir "-"</system:String>
+  <system:String x:Key="pianoroll.menu.notes.addtailrest">Tambahkan bagian akhir "R"</system:String>
+  <system:String x:Key="pianoroll.menu.notes.quantize15">Kuantisasi hingga 1/128</system:String>
+  <system:String x:Key="pianoroll.menu.notes.quantize30">Kuantisasi hingga 1/64</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.exps">Setel ulang semua ekspresi</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">Setel ulang tikungan nada</system:String>
+  <system:String x:Key="pianoroll.menu.part">Bagian</system:String>
+  <system:String x:Key="pianoroll.menu.part.legacypluginexp">Plugin Lama (Eksperimental)</system:String>
+  <system:String x:Key="pianoroll.menu.part.rename">Ganti Nama</system:String>
+  <system:String x:Key="pianoroll.toggle.phoneme">Perlihatkan Fonem (O)</system:String>
+  <system:String x:Key="pianoroll.toggle.pitch">Perlihatkan Pitch Bend(I)</system:String>
+  <system:String x:Key="pianoroll.toggle.snap">Alihkan Snap (P)</system:String>
+  <system:String x:Key="pianoroll.toggle.tips">Perlihatkan Tips (T)</system:String>
+  <system:String x:Key="pianoroll.toggle.tone">Alihkan Not Nada (Y)</system:String>
+  <system:String x:Key="pianoroll.toggle.vibrato">Perlihatkan Vibrato (U)</system:String>
+  <system:String x:Key="pianoroll.tool.eraser">Alat Penghapus (3)</system:String>
+  <system:String x:Key="pianoroll.tool.pen">Alat Pena (2)
+Klik kiri untuk menarik
+Klik kanan untuk menghapus</system:String>
+  <system:String x:Key="pianoroll.tool.selection">Alat Seleksi (1)
+Tahan Ctrl untuk memilih lainnya</system:String>
+
+  <system:String x:Key="prefs.advanced">Canggih</system:String>
+  <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.resamplerlogging">Resampler Logging</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.resamplerlogging.warn">Stores resampler output in log files. This option slows down UI and rendering.</system:String>-->
+  <system:String x:Key="prefs.advanced.stable">Stabil</system:String>
+  <system:String x:Key="prefs.appearance">Penampilan</system:String>
+  <system:String x:Key="prefs.appearance.lang">Bahasa</system:String>
+  <system:String x:Key="prefs.appearance.theme">Tema</system:String>
+  <system:String x:Key="prefs.appearance.theme.dark">Gelap</system:String>
+  <system:String x:Key="prefs.appearance.theme.light">Terang</system:String>
+  <system:String x:Key="prefs.caption">Preferensi</system:String>
+  <system:String x:Key="prefs.note.restart">Catatan: silakan restart OpenUtau setelah mengubah item ini.</system:String>
+  <!--<system:String x:Key="prefs.off">Mati</system:String>-->
+  <!--<system:String x:Key="prefs.on">Nyala</system:String>-->
+  <system:String x:Key="prefs.paths">Jalur</system:String>
+  <system:String x:Key="prefs.paths.addlsinger">Jalur Penyanyi Tambahan</system:String>
+  <system:String x:Key="prefs.paths.reset">Setel Ulang</system:String>
+  <system:String x:Key="prefs.paths.select">Pilih</system:String>
+  <system:String x:Key="prefs.playback">Pemutaran</system:String>
+  <system:String x:Key="prefs.playback.device">Perangkat Pemutaran</system:String>
+  <system:String x:Key="prefs.playback.test">Tes</system:String>
+  <system:String x:Key="prefs.rendering">Merender</system:String>
+  <system:String x:Key="prefs.rendering.prerender.threads">Utas Pra-perenderan</system:String>
+  <system:String x:Key="prefs.rendering.resampler.export">Resampler untuk ekspor</system:String>
+  <system:String x:Key="prefs.rendering.resampler.note">
+    Catatan: untuk menggunakan resampler eksternal, silakan tambahkan berkas resampler DLL atau EXE di folder Resamplers di jalur instal OpenUtau dan pilih di Preferensi.
+  </system:String>
+  <system:String x:Key="prefs.rendering.resampler.preview">Resampler untuk pratinjau</system:String>
+  <system:String x:Key="prefs.rendering.resampler.warn">
+Peringatan: moresampler tidak sepenuhnya didukung. Ini mungkin lambat dan menyebabkan penggunaan CPU yang tinggi. Jika Anda bersikeras, silakan:
+1. Setel "resampler-compatibility" ke "on" di moreconfig.txt.
+2. Atur "auto-update-llsm-mrq" ke "off" di moreconfig.txt.
+3. Kurangi utas pra-render menjadi 1 atau 2.
+4. Sabar menunggu prarender selesai sebelum bermain.
+  </system:String>
+
+  <system:String x:Key="progress.saved">Proyek tersimpan. {0}</system:String>
+
+  <system:String x:Key="singers.caption">Penyanyi</system:String>
+  <system:String x:Key="singers.location">Lokasi</system:String>
+  <system:String x:Key="singers.refresh">Segarkan</system:String>
+  <system:String x:Key="singers.setencoding">Setel Pengkodean</system:String>
+  <system:String x:Key="singers.subbanks.cancel">Batal</system:String>
+  <system:String x:Key="singers.subbanks.clear">Jelas</system:String>
+  <system:String x:Key="singers.subbanks.color">Warna</system:String>
+  <system:String x:Key="singers.subbanks.color.add">Tambah Warna</system:String>
+  <system:String x:Key="singers.subbanks.color.remove">Hapus Warna</system:String>
+  <system:String x:Key="singers.subbanks.color.rename">Ganti Nama</system:String>
+  <system:String x:Key="singers.subbanks.edit">Sunting Subbank</system:String>
+  <system:String x:Key="singers.subbanks.reset">Setel Ulang</system:String>
+  <system:String x:Key="singers.subbanks.save">Simpan</system:String>
+  <system:String x:Key="singers.subbanks.selectall">Pilih Semua</system:String>
+  <system:String x:Key="singers.subbanks.set">Setel</system:String>
+  <system:String x:Key="singers.subbanks.tone">Nada</system:String>
+  <system:String x:Key="singers.subbanks.toneranges">Rentang Nada</system:String>
+
+  <system:String x:Key="tip.exps">
+Tombol Kiri Tarik: Setel ekspresi
+Tombol Kanan Tarik: Setel ulang ekspresi
+  </system:String>
+  <system:String x:Key="tip.lyricbox.next">Tab: Not Berikutnya</system:String>
+  <system:String x:Key="tip.lyricbox.prev">Shift+Tab: Not Sebelumnya</system:String>
+  <system:String x:Key="tip.notes.basics">
+Alat Seleksi
+    Kotak Pilih: Pilih not
+    Ctrl + Kotak Pilih: Select more notes
+    Atas/Bawah: Transpose selected notes
+    Ctrl + Atas/Bawah: Transpose selected notes by octave
+Alat Pena
+    Tombol Kiri Tarik: Menambahkan not
+    Klik Kanan: Menghapus not
+    Tombol Kanan Tarik: Menghapus beberapa not
+Umum
+    T: Alihkan Tips
+    Seret Not: Memindahkan not
+    Seret Ujung Not: Mengubah ukuran not
+    Alt + Seret Ujung Not: Mengubah ukuran nada yang bersebelahan
+    Spasi: Memainkan
+  </system:String>
+  <system:String x:Key="tip.notes.zoomx">◀ Gulir ke sini untuk memperbesar secara horizontal ▶</system:String>
+  <system:String x:Key="tip.notes.zoomy">Gulir ke sini untuk memperbesar secara vertikal ▶</system:String>
+
+  <system:String x:Key="tracks.movedown">Turunkan</system:String>
+  <system:String x:Key="tracks.moveup">Naikkan</system:String>
+  <system:String x:Key="tracks.remove">Hapus</system:String>
+  <system:String x:Key="tracks.selectsinger">Pilih Penyanyi</system:String>
+
+  <system:String x:Key="updater.caption">Memeriksa Pembaruan</system:String>
+  <!--<system:String x:Key="updater.github">GitHub</system:String>-->
+  <system:String x:Key="updater.status.available">Pembaruan v{0} tersedia!</system:String>
+  <system:String x:Key="updater.status.checking">Memeriksa pembaruan...</system:String>
+  <system:String x:Key="updater.status.notavailable">Terkini</system:String>
+  <system:String x:Key="updater.status.unknown">Tidak dapat memeriksa pembaruan</system:String>
+  <system:String x:Key="updater.update">Perbarui</system:String>
+
+  <system:String x:Key="warning">Peringatan</system:String>
+  <system:String x:Key="warning.asciipath">Jalur beranda OpenUtau Anda "{0}" berisi karakter non-ASCII. Resampler exe mungkin tidak berfungsi.</system:String>
+</ResourceDictionary>

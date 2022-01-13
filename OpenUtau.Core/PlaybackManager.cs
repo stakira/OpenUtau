@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using NAudio.Wave;
@@ -9,6 +9,7 @@ using OpenUtau.Core.Render;
 using OpenUtau.Core.ResamplerDriver;
 using OpenUtau.Core.SignalChain;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 using Serilog;
 
 namespace OpenUtau.Core {
@@ -80,12 +81,13 @@ namespace OpenUtau.Core {
     public class PlaybackManager : ICmdSubscriber {
         private PlaybackManager() {
             DocManager.Inst.AddSubscriber(this);
+            RenderEngine.ReleaseSourceTemp();
         }
 
         private static PlaybackManager _s;
         public static PlaybackManager Inst { get { if (_s == null) { _s = new PlaybackManager(); } return _s; } }
 
-        readonly RenderCache cache = new RenderCache(2048);
+        readonly RenderCache cache = new RenderCache(4096);
         List<Fader> faders;
         MasterAdapter masterMix;
         double startMs;
@@ -99,11 +101,7 @@ namespace OpenUtau.Core {
         public IAudioOutput AudioOutput { get; set; } = new DummyAudioOutput();
         public bool Playing => AudioOutput.PlaybackState == PlaybackState.Playing;
 
-        public bool CheckResampler() {
-            var path = PathManager.Inst.GetPreviewEnginePath();
-            Directory.CreateDirectory(PathManager.Inst.GetEngineSearchPath());
-            return File.Exists(path);
-        }
+        public bool CheckResampler() => ResamplerDrivers.CheckPreviewResampler();
 
         public void PlayTestSound() {
             masterMix = null;
@@ -128,7 +126,7 @@ namespace OpenUtau.Core {
                 PausePlayback();
                 return true;
             }
-            if (!CheckResampler()) {
+            if (!ResamplerDrivers.CheckPreviewResampler()) {
                 return false;
             }
             Play(DocManager.Inst.Project, DocManager.Inst.playPosTick);
@@ -162,21 +160,11 @@ namespace OpenUtau.Core {
             AudioOutput.Play();
         }
 
-        private IResamplerDriver GetPreviewDriver() {
-            lock (previewDriverLockObj) {
-                var resamplerPath = PathManager.Inst.GetPreviewEnginePath();
-                if (resamplerPath == resamplerSelected) {
-                    return previewDriver;
-                }
-                FileInfo resamplerFile = new FileInfo(resamplerPath);
-                previewDriver = ResamplerDriver.ResamplerDriver.Load(resamplerFile.FullName);
-                resamplerSelected = resamplerPath;
-                return previewDriver;
-            }
-        }
-
         private void Render(UProject project, int tick) {
-            IResamplerDriver driver = GetPreviewDriver();
+            if (!ResamplerDrivers.CheckPreviewResampler()) {
+                return;
+            }
+            var driver = ResamplerDrivers.GetResampler(Preferences.Default.ExternalPreviewEngine);
             if (driver == null) {
                 return;
             }
@@ -195,7 +183,7 @@ namespace OpenUtau.Core {
                 StartPlayback(project.TickToMillisecond(tick), result.Item1);
             }).ContinueWith((task) => {
                 if (task.IsFaulted) {
-                    Log.Information($"{task.Exception}");
+                    Log.Error(task.Exception, "Failed to render.");
                     DocManager.Inst.ExecuteCmd(new UserMessageNotification(task.Exception.ToString()));
                     throw task.Exception;
                 }
@@ -204,7 +192,7 @@ namespace OpenUtau.Core {
 
         public void UpdatePlayPos() {
             if (AudioOutput != null && AudioOutput.PlaybackState == PlaybackState.Playing && masterMix != null) {
-                double ms = (AudioOutput.GetPosition() / sizeof(float) - masterMix.Paused) * 1000.0 / 44100;
+                double ms = (AudioOutput.GetPosition() / sizeof(float) - masterMix.Paused / 2) * 1000.0 / 44100;
                 int tick = DocManager.Inst.Project.MillisecondToTick(startMs + ms);
                 DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(tick));
             }
@@ -215,8 +203,7 @@ namespace OpenUtau.Core {
         }
 
         public void RenderToFiles(UProject project) {
-            FileInfo ResamplerFile = new FileInfo(PathManager.Inst.GetExportEnginePath());
-            IResamplerDriver driver = ResamplerDriver.ResamplerDriver.Load(ResamplerFile.FullName);
+            var driver = ResamplerDrivers.GetResampler(Preferences.Default.ExternalExportEngine);
             if (driver == null) {
                 return;
             }
@@ -233,7 +220,7 @@ namespace OpenUtau.Core {
                         }
                         var file = PathManager.Inst.GetExportPath(project.FilePath, i + 1);
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exporting to {file}."));
-                        WaveFileWriter.CreateWaveFile16(file, new ExportAdapter(trackMixes[i]));
+                        WaveFileWriter.CreateWaveFile16(file, new ExportAdapter(trackMixes[i]).ToMono(1, 0));
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exported to {file}."));
                     }
                 });
@@ -248,7 +235,7 @@ namespace OpenUtau.Core {
         }
 
         void SchedulePreRender() {
-            var driver = GetPreviewDriver();
+            var driver = ResamplerDrivers.GetResampler(Preferences.Default.ExternalPreviewEngine);
             if (driver == null) {
                 return;
             }
@@ -266,6 +253,10 @@ namespace OpenUtau.Core {
             if (source != null) {
                 source.Cancel();
             }
+        }
+
+        public void ClearRenderCache() {
+            cache.Clear();
         }
 
         #region ICmdSubscriber

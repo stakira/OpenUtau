@@ -92,8 +92,8 @@ namespace OpenUtau.UI.Controls {
                         gcxt.Close();
                     }
                     cxt.DrawGeometry(brush, pen, g);
-                    cxt.DrawEllipse(phoneme.preutterScale.HasValue ? pen.Brush : ThemeManager.UIBackgroundBrushNormal, pen, new Point(x0, y + y0 - 1), 2.5, 2.5);
-                    cxt.DrawEllipse(phoneme.overlapScale.HasValue ? pen.Brush : ThemeManager.UIBackgroundBrushNormal, pen, point1, 2.5, 2.5);
+                    cxt.DrawEllipse(phoneme.preutterDelta.HasValue ? pen.Brush : ThemeManager.UIBackgroundBrushNormal, pen, new Point(x0, y + y0 - 1), 2.5, 2.5);
+                    cxt.DrawEllipse(phoneme.overlapDelta.HasValue ? pen.Brush : ThemeManager.UIBackgroundBrushNormal, pen, point1, 2.5, 2.5);
                 }
 
                 var penPos = penEnvSel;

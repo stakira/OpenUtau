@@ -1,22 +1,51 @@
 version: 0.0.{build}
-image: Visual Studio 2019
+image:
+  - Visual Studio 2019
+  - macOS
+pull_requests:
+  do_not_increment_build_number: true
 configuration:
   - Release
 platform: Any CPU
+dotnet_csproj:
+  patch: true
+  file: 'OpenUtau\OpenUtau.csproj'
+  version: "{version}"
 before_build:
   - cmd: nuget restore
 after_build:
-  - ps: ./Misc/after_build.ps1
+  - cmd: python appveyor.py
 artifacts:
   - path: OpenUtau\bin\Release\netcoreapp3.1
     name: OpenUtau
     type: zip
+  - path: bin\win-x86
+    name: OpenUtau-win-x86
+    type: zip
+  - path: bin\win-x64
+    name: OpenUtau-win-x64
+    type: zip
+  - path: bin\linux-x64
+    name: OpenUtau-linux-x64
+    type: zip
+  - path: OpenUtau-osx-x64.dmg
   - path: release.xml
   - path: appcast.win.xml
+  - path: appcast.win-x86.xml
+  - path: appcast.win-x64.xml
+  - path: appcast.linux-x64.xml
+  - path: appcast.osx-x64.xml
   - path: changelog.txt
+for:
+-
+  matrix:
+    only:
+      - image: macOS
+  build_script:
+    - python appveyor.py
 deploy:
   release: OpenUtau-Latest
-  description: '{version}'
+  description: v$(APPVEYOR_BUILD_VERSION)
   provider: GitHub
   auth_token:
     secure: VoTH2ml/pRgjLSGhfPO+NZfCoFzFcfrQjEIl/5+0UufeW6mEvccfwvef3gOaD2ke
@@ -26,10 +55,6 @@ deploy:
   on:
     branch: master
     APPVEYOR_REPO_TAG: false
-dotnet_csproj:
-  patch: true
-  file: 'OpenUtau\OpenUtau.csproj'
-  version: '{version}'
 on_success:
   - ps: Invoke-RestMethod https://raw.githubusercontent.com/DiscordHooks/appveyor-discord-webhook/master/send.ps1 -o send.ps1
   - ps: ./send.ps1 success $env:discord_webhook

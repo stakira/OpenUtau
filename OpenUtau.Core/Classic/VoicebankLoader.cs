@@ -29,13 +29,22 @@ namespace OpenUtau.Classic {
             this.basePath = basePath;
         }
 
-        public Dictionary<string, Voicebank> LoadAll() {
+        public Dictionary<string, Voicebank> SearchAll() {
             Dictionary<string, Voicebank> result = new Dictionary<string, Voicebank>();
             if (!Directory.Exists(basePath)) {
                 return result;
             }
             var banks = Directory.EnumerateFiles(basePath, kCharTxt, SearchOption.AllDirectories)
-                .Select(filePath => LoadVoicebank(filePath, basePath))
+                .Select(filePath => {
+                    try {
+                        var voicebank = new Voicebank();
+                        LoadInfo(voicebank, filePath, basePath);
+                        return voicebank;
+                    } catch (Exception e) {
+                        Log.Error(e, $"Failed to load {filePath} info.");
+                        return null;
+                    }
+                })
                 .OfType<Voicebank>()
                 .ToArray();
             foreach (var bank in banks) {
@@ -44,23 +53,8 @@ namespace OpenUtau.Classic {
             return result;
         }
 
-        public static Voicebank LoadVoicebank(string filePath, string basePath) {
-            try {
-                var voicebank = new Voicebank();
-                ParseCharacterTxt(voicebank, filePath, basePath);
-                LoadOtoSets(voicebank, Path.GetDirectoryName(voicebank.File));
-                return voicebank;
-            } catch (Exception e) {
-                Log.Error(e, $"Failed to load {filePath}");
-            }
-            return null;
-        }
-
-        public static void ReloadVoicebank(Voicebank voicebank) {
-            var filePath = voicebank.File;
-            var basePath = voicebank.BasePath;
-            voicebank.Reset();
-            ParseCharacterTxt(voicebank, filePath, basePath);
+        public static void LoadVoicebank(Voicebank voicebank) {
+            LoadInfo(voicebank, voicebank.File, voicebank.BasePath);
             LoadOtoSets(voicebank, Path.GetDirectoryName(voicebank.File));
         }
 
@@ -77,15 +71,11 @@ namespace OpenUtau.Classic {
             }
             var dirs = Directory.GetDirectories(dirPath);
             foreach (var dir in dirs) {
-                var charTxt = Path.Combine(dir, kCharTxt);
-                if (File.Exists(charTxt)) {
-                    continue;
-                }
                 LoadOtoSets(voicebank, dir);
             }
         }
 
-        public static void ParseCharacterTxt(Voicebank voicebank, string filePath, string basePath) {
+        public static void LoadInfo(Voicebank voicebank, string filePath, string basePath) {
             var dir = Path.GetDirectoryName(filePath);
             var yamlFile = Path.Combine(dir, kCharYaml);
             VoicebankConfig bankConfig = null;
@@ -304,36 +294,37 @@ namespace OpenUtau.Classic {
                 return null;
             }
             var parts = line.Split('=');
-            if (parts.Length != 2) {
+            if (parts.Length < 2) {
                 throw new FileFormatException($"Line does not match format {format}.");
             }
             var wav = parts[0].Trim();
             parts = parts[1].Split(',');
-            if (parts.Length != 6) {
-                throw new FileFormatException($"Line does not match format {format}.");
-            }
-            var ext = Path.GetExtension(wav);
             var result = new Oto {
                 Wav = wav,
                 Alias = parts[0].Trim()
             };
             if (string.IsNullOrEmpty(result.Alias)) {
-                result.Alias = wav.Replace(ext, "");
+                var ext = Path.GetExtension(wav);
+                if (!string.IsNullOrEmpty(ext)) {
+                    result.Alias = wav.Replace(ext, "");
+                } else {
+                    result.Alias = wav;
+                }
             }
             result.Phonetic = result.Alias;
-            if (!ParseDouble(parts[1], out result.Offset)) {
+            if (!ParseDouble(parts.Length < 2 ? null : parts[1], out result.Offset)) {
                 throw new FileFormatException($"Failed to parse offset. Format is {format}.");
             }
-            if (!ParseDouble(parts[2], out result.Consonant)) {
+            if (!ParseDouble(parts.Length < 3 ? null : parts[2], out result.Consonant)) {
                 throw new FileFormatException($"Failed to parse consonant. Format is {format}.");
             }
-            if (!ParseDouble(parts[3], out result.Cutoff)) {
+            if (!ParseDouble(parts.Length < 4 ? null : parts[3], out result.Cutoff)) {
                 throw new FileFormatException($"Failed to parse cutoff. Format is {format}.");
             }
-            if (!ParseDouble(parts[4], out result.Preutter)) {
+            if (!ParseDouble(parts.Length < 5 ? null : parts[4], out result.Preutter)) {
                 throw new FileFormatException($"Failed to parse preutter. Format is {format}.");
             }
-            if (!ParseDouble(parts[5], out result.Overlap)) {
+            if (!ParseDouble(parts.Length < 6 ? null : parts[5], out result.Overlap)) {
                 throw new FileFormatException($"Failed to parse overlap. Format is {format}.");
             }
             return result;

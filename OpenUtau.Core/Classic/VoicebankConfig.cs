@@ -17,6 +17,11 @@ namespace OpenUtau.Classic {
 
     public class Subbank {
         /// <summary>
+        /// Voice color, e.g., "power", "whisper". Leave unspecified for the main bank.
+        /// </summary>
+        public string Color { get; set; }
+
+        /// <summary>
         /// Subbank prefix. Leave unspecified if none.
         /// </summary>
         public string Prefix { get; set; } = string.Empty;
@@ -30,11 +35,6 @@ namespace OpenUtau.Classic {
         /// Tone ranges. Each range specified as "C1-C4" or "C4".
         /// </summary>
         public string[] ToneRanges { get; set; }
-
-        /// <summary>
-        /// Tags of subbank, e.g., "power", "whisper". Leave unspecified for the main bank.
-        /// </summary>
-        public string[] Tags { get; set; }
     }
 
     public class VoicebankConfig {

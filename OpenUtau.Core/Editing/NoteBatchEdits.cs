@@ -4,13 +4,22 @@ using System.Linq;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core.Editing {
-    public class AddTailDash : BatchEdit {
-        public string Name => "pianoroll.menu.notes.addtaildash";
+    public class AddTailNote : BatchEdit {
+        public string Name => name;
+
+        private string lyric;
+        private string name;
+
+        public AddTailNote(string lyric, string name) {
+            this.lyric = lyric;
+            this.name = name;
+        }
+
         public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
             List<UNote> toAdd = new List<UNote>();
             var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
             foreach (var note in notes) {
-                if (note.lyric != "-" && (note.Next == null || note.Next.position > note.End + 120)) {
+                if (note.lyric != lyric && (note.Next == null || note.Next.position > note.End + 120)) {
                     toAdd.Add(project.CreateNote(note.tone, note.End, 120));
                 }
             }
@@ -19,7 +28,7 @@ namespace OpenUtau.Core.Editing {
             }
             docManager.StartUndoGroup();
             foreach (var note in toAdd) {
-                note.lyric = "-";
+                note.lyric = lyric;
                 docManager.ExecuteCmd(new AddNoteCommand(part, note));
             }
             docManager.EndUndoGroup();
@@ -51,6 +60,44 @@ namespace OpenUtau.Core.Editing {
                 } else if (newEnd != end) {
                     docManager.ExecuteCmd(new ResizeNoteCommand(part, note, newEnd - newPos - note.duration));
                 }
+            }
+            docManager.EndUndoGroup();
+        }
+    }
+
+    public class ResetPitchBends : BatchEdit {
+        public virtual string Name => name;
+
+        private string name;
+
+        public ResetPitchBends() {
+            name = "pianoroll.menu.notes.reset.pitchbends";
+        }
+
+        public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
+            var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
+            docManager.StartUndoGroup();
+            foreach (var note in notes) {
+                docManager.ExecuteCmd(new ResetPitchPointsCommand(note));
+            }
+            docManager.EndUndoGroup();
+        }
+    }
+
+    public class ResetAllExpressions : BatchEdit {
+        public virtual string Name => name;
+
+        private string name;
+
+        public ResetAllExpressions() {
+            name = "pianoroll.menu.notes.reset.exps";
+        }
+
+        public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
+            var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
+            docManager.StartUndoGroup();
+            foreach (var note in notes) {
+                docManager.ExecuteCmd(new ResetExpressionsCommand(note));
             }
             docManager.EndUndoGroup();
         }

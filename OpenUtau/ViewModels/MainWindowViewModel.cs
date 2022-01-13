@@ -21,17 +21,9 @@ namespace OpenUtau.App.ViewModels {
 
         public bool ProjectSaved => !string.IsNullOrEmpty(DocManager.Inst.Project.FilePath) && DocManager.Inst.Project.Saved;
         public string AppVersion => $"OpenUtau v{System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version}";
-        public double Progress {
-            get => progress;
-            set => this.RaiseAndSetIfChanged(ref progress, value);
-        }
-        public string ProgressText {
-            get => progressText;
-            set => this.RaiseAndSetIfChanged(ref progressText, value);
-        }
+        [Reactive] public double Progress { get; set; }
+        [Reactive] public string ProgressText { get; set; }
 
-        private double progress;
-        private string progressText = string.Empty;
         private ObservableCollectionExtended<MenuItemViewModel> openRecent
             = new ObservableCollectionExtended<MenuItemViewModel>();
         private ObservableCollectionExtended<MenuItemViewModel> openTemplates
@@ -40,6 +32,7 @@ namespace OpenUtau.App.ViewModels {
         public MainWindowViewModel() {
             PlaybackViewModel = new PlaybackViewModel();
             TracksViewModel = new TracksViewModel();
+            ProgressText = string.Empty;
             OpenRecentCommand = ReactiveCommand.Create<string>(file => OpenProject(new[] { file }));
             OpenTemplateCommand = ReactiveCommand.Create<string>(file => {
                 OpenProject(new[] { file });
@@ -57,6 +50,11 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void InitProject() {
+            var args = Environment.GetCommandLineArgs();
+            if (args.Length == 2 && File.Exists(args[1])) {
+                Core.Formats.Formats.LoadProject(new string[] { args[1] });
+                return;
+            }
             var defaultTemplate = Path.Combine(PathManager.Inst.TemplatesPath, "default.ustx");
             if (File.Exists(defaultTemplate)) {
                 try {

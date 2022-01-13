@@ -11,6 +11,7 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
@@ -52,7 +53,6 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public bool CursorTool { get; set; }
         [Reactive] public bool PencilTool { get; set; }
         [Reactive] public bool EraserTool { get; set; }
-        [Reactive] public bool TaggerTool { get; set; }
         public ReactiveCommand<string, Unit> SelectToolCommand { get; }
         [Reactive] public bool ShowTips { get; set; }
         [Reactive] public bool PlayTone { get; set; }
@@ -61,10 +61,11 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public bool ShowPhoneme { get; set; }
         [Reactive] public bool IsSnapOn { get; set; }
         [Reactive] public string SnapUnitText { get; set; }
-        [Reactive] public bool ShowExpValueTip { get; set; }
-        [Reactive] public string ExpValueTipText { get; set; }
+        [Reactive] public Rect ExpBounds { get; set; }
         [Reactive] public string PrimaryKey { get; set; }
         [Reactive] public string SecondaryKey { get; set; }
+        [Reactive] public double ExpTrackHeight { get; set; }
+        [Reactive] public double ExpShadowOpacity { get; set; }
         [Reactive] public UVoicePart? Part { get; set; }
         [Reactive] public Bitmap? Portrait { get; set; }
         [Reactive] public IBrush? PortraitMask { get; set; }
@@ -129,19 +130,30 @@ namespace OpenUtau.App.ViewModels {
                 .Subscribe(tickOffset => {
                     SetPlayPos(DocManager.Inst.playPosTick, true);
                 });
+            this.WhenAnyValue(x => x.ExpBounds, x => x.PrimaryKey)
+                .Subscribe(t => {
+                    if (t.Item2 != null &&
+                        Project.expressions.TryGetValue(t.Item2, out var descriptor) &&
+                        descriptor.type == UExpressionType.Options &&
+                        descriptor.options.Length > 0) {
+                        ExpTrackHeight = t.Item1.Height / descriptor.options.Length;
+                        ExpShadowOpacity = 0;
+                    } else {
+                        ExpTrackHeight = 0;
+                        ExpShadowOpacity = 0.3;
+                    }
+                });
 
             CursorTool = false;
             PencilTool = true;
             EraserTool = false;
-            TaggerTool = false;
             SelectToolCommand = ReactiveCommand.Create<string>(index => {
                 CursorTool = index == "1";
                 PencilTool = index == "2";
                 EraserTool = index == "3";
-                TaggerTool = index == "4";
             });
 
-            ShowTips = Core.Util.Preferences.Default.ShowTips;
+            ShowTips = Preferences.Default.ShowTips;
             PlayTone = true;
             ShowVibrato = true;
             ShowPitch = true;
@@ -151,11 +163,10 @@ namespace OpenUtau.App.ViewModels {
 
             TickWidth = ViewConstants.PianoRollTickWidthDefault;
             TrackHeight = ViewConstants.NoteHeightDefault;
-            ExpValueTipText = string.Empty;
             TrackOffset = 4 * 12 + 6;
-            if (Core.Util.Preferences.Default.ShowTips) {
-                Core.Util.Preferences.Default.ShowTips = false;
-                Core.Util.Preferences.Save();
+            if (Preferences.Default.ShowTips) {
+                Preferences.Default.ShowTips = false;
+                Preferences.Save();
             }
             PrimaryKey = "vel";
             SecondaryKey = "vol";
@@ -438,6 +449,25 @@ namespace OpenUtau.App.ViewModels {
             TrackOffset = Math.Clamp(ViewConstants.MaxTone - note.tone + 2 - ViewportTracks * 0.5, 0, VScrollBarMax);
         }
 
+        internal (UNote[], string[]) PrepareInsertLyrics() {
+            var ordered = SelectedNotes.OrderBy(n => n.position);
+            var first = ordered.First();
+            var last = ordered.Last();
+            List<UNote> notes = new List<UNote>();
+            var note = first;
+            while (note != last) {
+                notes.Add(note);
+                note = note.Next;
+            }
+            notes.Add(note);
+            var lyrics = notes.Select(n => n.lyric).ToArray();
+            while (note.Next != null) {
+                note = note.Next;
+                notes.Add(note);
+            }
+            return (notes.ToArray(), lyrics);
+        }
+
         public void OnNext(UCommand cmd, bool isUndo) {
             if (cmd is UNotification) {
                 if (cmd is LoadPartNotification loadPart) {
@@ -456,6 +486,9 @@ namespace OpenUtau.App.ViewModels {
                     if (focusNote.part == Part) {
                         FocusNote(focusNote.note);
                     }
+                } else if (cmd is ValidateProjectNotification || cmd is SingersRefreshedNotification) {
+                    OnPartModified();
+                    MessageBus.Current.SendMessage(new NotesRefreshEvent());
                 }
             } else if (cmd is PartCommand partCommand) {
                 if (cmd is ReplacePartCommand replacePart) {

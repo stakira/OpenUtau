@@ -330,30 +330,22 @@ namespace OpenUtau.Core {
     public class PhonemePreutterCommand : NoteCommand {
         readonly UNote note;
         readonly int index;
-        readonly float oldScale;
-        readonly float newScale;
-        public PhonemePreutterCommand(UVoicePart part, UNote note, int index, float scale) : base(part, note) {
+        readonly float oldDelta;
+        readonly float newDelta;
+        public PhonemePreutterCommand(UVoicePart part, UNote note, int index, float delta) : base(part, note) {
             this.note = note;
             this.index = index;
             var o = this.note.GetPhonemeOverride(index);
-            oldScale = o.preutterScale ?? 1;
-            newScale = scale;
+            oldDelta = o.preutterDelta ?? 0;
+            newDelta = delta;
         }
         public override void Execute() {
             var o = note.GetPhonemeOverride(index);
-            if (newScale == 1) {
-                o.preutterScale = null;
-            } else {
-                o.preutterScale = newScale;
-            }
+            o.preutterDelta = newDelta == 0 ? null : (float?)newDelta;
         }
         public override void Unexecute() {
             var o = note.GetPhonemeOverride(index);
-            if (oldScale == 1) {
-                o.preutterScale = null;
-            } else {
-                o.preutterScale = oldScale;
-            }
+            o.preutterDelta = oldDelta == 0 ? null : (float?)oldDelta;
         }
         public override string ToString() => "Set phoneme preutter";
     }
@@ -361,32 +353,23 @@ namespace OpenUtau.Core {
     public class PhonemeOverlapCommand : NoteCommand {
         readonly UNote note;
         readonly int index;
-        readonly float oldScale;
-        readonly float newScale;
-        public PhonemeOverlapCommand(UVoicePart part, UNote note, int index, float scale) : base(part, note) {
+        readonly float oldDelta;
+        readonly float newDelta;
+        public PhonemeOverlapCommand(UVoicePart part, UNote note, int index, float delta) : base(part, note) {
             this.note = note;
             this.index = index;
             var o = this.note.GetPhonemeOverride(index);
-            oldScale = o.overlapScale ?? 1;
-            newScale = scale;
+            oldDelta = o.overlapDelta ?? 0;
+            newDelta = delta;
         }
         public override void Execute() {
             var o = note.GetPhonemeOverride(index);
-            if (newScale == 1) {
-                o.overlapScale = null;
-            } else {
-                o.overlapScale = newScale;
-            }
+            o.overlapDelta = newDelta == 0 ? null : (float?)newDelta;
         }
         public override void Unexecute() {
             var o = note.GetPhonemeOverride(index);
-            if (oldScale == 1) {
-                o.overlapScale = null;
-            } else {
-                o.overlapScale = oldScale;
-            }
+            o.overlapDelta = oldDelta == 0 ? null : (float?)oldDelta;
         }
         public override string ToString() => "Set phoneme overlap";
     }
-
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
 using Serilog;
@@ -22,8 +23,9 @@ namespace OpenUtau.Plugin.Builtin {
         private IG2p pluginDict;
         private IG2p singerDict;
         private IG2p mergedG2p;
+        private bool isDictionaryLoading;
 
-        private readonly List<Tuple<int, int>> alignments = new List<Tuple<int, int>>();
+        private readonly List<Tuple<int, int, bool>> alignments = new List<Tuple<int, int, bool>>();
 
         /// <summary>
         /// This property will later be exposed in UI for user adjustment.
@@ -42,25 +44,30 @@ namespace OpenUtau.Plugin.Builtin {
         /// Initializes the CMUdict.
         /// </summary>
         private void Initialize() {
-            // Load cmudict.
-            cmudict = G2pDictionary.GetShared("cmudict");
-            // Load g2p plugin dictionary.
-            string filepath = Path.Combine(PluginDir, "arpasing.yaml");
-            try {
-                CreateDefaultPluginDict(filepath);
-                if (File.Exists(filepath)) {
-                    pluginDict = G2pDictionary.NewBuilder().Load(File.ReadAllText(filepath)).Build();
+            isDictionaryLoading = true;
+            OnAsyncInitStarted();
+            Task.Run(() => {
+                // Load cmudict.
+                cmudict = G2pDictionary.GetShared("cmudict");
+                // Load g2p plugin dictionary.
+                string filepath = Path.Combine(PluginDir, "arpasing.yaml");
+                try {
+                    CreateDefaultPluginDict(filepath);
+                    if (File.Exists(filepath)) {
+                        pluginDict = G2pDictionary.NewBuilder().Load(File.ReadAllText(filepath)).Build();
+                    }
+                } catch (Exception e) {
+                    Log.Error(e, $"Failed to load {filepath}");
                 }
-            } catch (Exception e) {
-                Log.Error(e, $"Failed to load {filepath}");
-            }
-            // Load g2p singer dictionary.
-            LoadSingerDict();
-            mergedG2p = new G2pFallbacks(new IG2p[] { pluginDict, singerDict, cmudict }.OfType<IG2p>().ToArray());
-            // Arpasing voicebanks are often incomplete. A fallback table is used to slightly improve the situation.
-            vowelFallback = "aa=ah,ae;ae=ah,aa;ah=aa,ae;ao=ow;ow=ao;eh=ae;ih=iy;iy=ih;uh=uw;uw=uh;aw=ao".Split(';')
-                .Select(entry => entry.Split('='))
-                .ToDictionary(parts => parts[0], parts => parts[1].Split(','));
+
+                // Load g2p singer dictionary.
+                LoadSingerDict();
+                mergedG2p = new G2pFallbacks(new IG2p[] { pluginDict, singerDict, cmudict }.OfType<IG2p>().ToArray());
+                // Arpasing voicebanks are often incomplete. A fallback table is used to slightly improve the situation.
+                vowelFallback = "aa=ah,ae;ae=ah,aa;ah=aa,ae;ao=ow;ow=ao;eh=ae;ih=iy;iy=ih;uh=uw;uw=uh;aw=ao".Split(';')
+                    .Select(entry => entry.Split('='))
+                    .ToDictionary(parts => parts[0], parts => parts[1].Split(','));
+            }).ContinueWith((task) => { isDictionaryLoading = false; OnAsyncInitFinished(); });
         }
 
         private void CreateDefaultPluginDict(string filepath) {
@@ -71,7 +78,7 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         private void LoadSingerDict() {
-            if (singer != null && singer.Loaded) {
+            if (singer != null && singer.Found && singer.Loaded) {
                 string file = Path.Combine(singer.Location, "arpasing.yaml");
                 if (File.Exists(file)) {
                     try {
@@ -90,7 +97,10 @@ namespace OpenUtau.Plugin.Builtin {
             mergedG2p = new G2pFallbacks(new IG2p[] { pluginDict, singerDict, cmudict }.OfType<IG2p>().ToArray());
         }
 
-        public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour) {
+        public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
+            if (isDictionaryLoading) {
+                return MakeSimpleResult("");
+            }
             var note = notes[0];
             // Get the symbols of previous note.
             var prevSymbols = prevNeighbour == null ? null : GetSymbols(prevNeighbour.Value);
@@ -121,63 +131,44 @@ namespace OpenUtau.Plugin.Builtin {
             var isVowel = symbols.Select(s => mergedG2p.IsVowel(s)).ToArray();
             // Arpasing aligns the first vowel at 0 and shifts leading consonants to negative positions,
             // so we need to find the first vowel.
-            int firstVowel = Array.IndexOf(isVowel, true);
             var phonemes = new Phoneme[symbols.Length];
-            // Creates the first diphone using info of the previous note.
-            string prevSymbol = prevSymbols == null ? "-" : prevSymbols.Last();
-            string phoneme = $"{prevSymbol} {symbols[0]}";
-            if (!singer.TryGetMappedOto(phoneme, note.tone, out var _)) {
-                // Arpasing voicebanks are often incomplete. If the voicebank doesn't have this diphone, fallback to use a more likely to exist one.
-                phoneme = $"- {symbols[0]}";
-            }
-            phonemes[0] = new Phoneme {
-                phoneme = phoneme,
-            };
-            // The 2nd+ diphones.
-            for (int i = 1; i < symbols.Length; i++) {
-                // The logic is very similar to creating the first diphone.
-                phonemes[i] = new Phoneme {
-                    phoneme = GetPhonemeOrFallback(symbols[i - 1], symbols[i], note.tone),
-                };
-            }
 
             // Alignments
-            // Alignment is where a user use "...n" (n is a number) to align n-th phoneme with an extender note.
-            // We build the aligment points first, these are the phonemes must be aligned to a certain position,
-            // phonemes that are not aligment points are distributed in-between.
+            // - Tries to align every note to one syllable.
+            // - "+n" manually aligns to n-th phoneme.
             alignments.Clear();
-            if (firstVowel > 0) {
-                // If there are leading consonants, add the first vowel as an align point.
-                alignments.Add(Tuple.Create(firstVowel, 0));
-            } else {
-                firstVowel = 0;
-            }
             int position = 0;
-            for (int i = 0; i < notes.Length; ++i) {
-                string alignmentHint = notes[i].lyric;
-                if (alignmentHint.StartsWith("...")) {
-                    alignmentHint = alignmentHint.Substring(3);
-                } else {
-                    position += notes[i].duration;
-                    continue;
+            for (int i = 0; i < symbols.Length; i++) {
+                if (isVowel[i] && alignments.Count < notes.Length) {
+                    alignments.Add(Tuple.Create(i, position, false));
+                    position += notes[alignments.Count - 1].duration;
                 }
-                // Parse the number n in "...n".
-                if (int.TryParse(alignmentHint, out int index)) {
-                    index--; // Convert from 1-based index to 0-based index.
-                    if (index > 0 && (alignments.Count == 0 || alignments.Last().Item1 < index) && index < phonemes.Length) {
-                        // Adds a alignment point.
-                        // Some details in the if condition:
-                        // 1. The first phoneme cannot be user-aligned.
-                        // 2. The index must be incrementing, otherwise ignored.
-                        // 3. The index must be within range.
-                        alignments.Add(Tuple.Create(index, position));
-                    }
+            }
+            position = notes[0].duration;
+            for (int i = 1; i < notes.Length; ++i) {
+                if (int.TryParse(notes[i].lyric.Substring(1), out var idx)) {
+                    alignments.Add(Tuple.Create(idx - 1, position, true));
                 }
                 position += notes[i].duration;
             }
-            alignments.Add(Tuple.Create(phonemes.Length, position));
+            alignments.Add(Tuple.Create(phonemes.Length, position, true));
+            alignments.Sort((a, b) => a.Item1.CompareTo(b.Item1));
+            for (int i = 0; i < alignments.Count; ++i) {
+                if (alignments[i].Item3) {
+                    while (i > 0 && (alignments[i - 1].Item2 >= alignments[i].Item2 ||
+                        alignments[i - 1].Item1 == alignments[i].Item1)) {
+                        alignments.RemoveAt(i - 1);
+                        i--;
+                    }
+                    while (i < alignments.Count - 1 && (alignments[i + 1].Item2 <= alignments[i].Item2 ||
+                        alignments[i + 1].Item1 == alignments[i].Item1)) {
+                        alignments.RemoveAt(i + 1);
+                    }
+                }
+            }
 
             int startIndex = 0;
+            int firstVowel = Array.IndexOf(isVowel, true);
             int startTick = -ConsonantLength * firstVowel;
             foreach (var alignment in alignments) {
                 // Distributes phonemes between two aligment points.
@@ -187,7 +178,23 @@ namespace OpenUtau.Plugin.Builtin {
             }
             alignments.Clear();
 
-            MapPhonemes(notes, phonemes, singer);
+            // Select aliases.
+            int noteIndex = 0;
+            string prevSymbol = prevSymbols == null ? "-" : prevSymbols.Last();
+            for (int i = 0; i < symbols.Length; i++) {
+                var attr = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == i) ?? default;
+                string alt = attr.alternate?.ToString() ?? string.Empty;
+                string color = attr.voiceColor;
+                int toneShift = attr.toneShift;
+                var phoneme = phonemes[i];
+                while (noteIndex < notes.Length - 1 && notes[noteIndex].position - note.position < phoneme.position) {
+                    noteIndex++;
+                }
+                phoneme.phoneme = GetPhonemeOrFallback(prevSymbol, symbols[i], notes[noteIndex].tone + toneShift, color, alt);
+                phonemes[i] = phoneme;
+                prevSymbol = symbols[i];
+            }
+
             return new Result {
                 phonemes = phonemes,
             };
@@ -204,16 +211,17 @@ namespace OpenUtau.Plugin.Builtin {
                 .ToArray();
         }
 
-        string GetPhonemeOrFallback(string prevSymbol, string symbol, int tone) {
-            string phoneme = $"{prevSymbol} {symbol}";
-            if (singer.TryGetMappedOto(phoneme, tone, out var _)) {
-                return phoneme;
+        string GetPhonemeOrFallback(string prevSymbol, string symbol, int tone, string color, string alt) {
+            if (!string.IsNullOrEmpty(alt) && singer.TryGetMappedOto($"{prevSymbol} {symbol}{alt}", tone, color, out var oto)) {
+                return oto.Alias;
+            }
+            if (singer.TryGetMappedOto($"{prevSymbol} {symbol}", tone, color, out var oto1)) {
+                return oto1.Alias;
             }
             if (vowelFallback.TryGetValue(symbol, out string[] fallbacks)) {
                 foreach (var fallback in fallbacks) {
-                    phoneme = $"{prevSymbol} {fallback}";
-                    if (singer.TryGetMappedOto(phoneme, tone, out var _)) {
-                        return phoneme;
+                    if (singer.TryGetMappedOto($"{prevSymbol} {fallback}", tone, color, out var oto2)) {
+                        return oto2.Alias;
                     }
                 }
             }
@@ -221,6 +229,9 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         void DistributeDuration(bool[] isVowel, Phoneme[] phonemes, int startIndex, int endIndex, int startTick, int endTick) {
+            if (startIndex == endIndex) {
+                return;
+            }
             // First count number of vowels and consonants.
             int consonants = 0;
             int vowels = 0;

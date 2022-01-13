@@ -148,7 +148,7 @@ namespace OpenUtau.Core.ResamplerDriver
         /// 从RenderItem初始化过程
         /// </summary>
         /// <returns></returns>
-        internal static EngineInput CreateInputModel(RenderItem renderItem,double Modulation)
+        internal static EngineInput CreateInputModel(RenderItem renderItem)
         {
             EngineInput Ret = new EngineInput
             {
@@ -161,7 +161,7 @@ namespace OpenUtau.Core.ResamplerDriver
                 Consonant = renderItem.Oto.Consonant,
                 Cutoff = renderItem.Oto.Cutoff,
                 Volume = renderItem.Volume,
-                Modulation = Modulation,
+                Modulation = renderItem.Modulation,
                 pitchBend = renderItem.PitchData.ToArray(),
                 nPitchBend = renderItem.PitchData.Count,
                 Tempo = renderItem.Tempo

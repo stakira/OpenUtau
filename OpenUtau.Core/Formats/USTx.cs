@@ -4,18 +4,22 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using OpenUtau.Core.ResamplerDriver;
 using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Core.Formats {
     public class Ustx {
-        public static readonly Version kUstxVersion = new Version(0, 4);
+        public static readonly Version kUstxVersion = new Version(0, 5);
 
         public static void AddBuiltInExpressions(UProject project) {
             project.RegisterExpression(new UExpressionDescriptor("velocity", "vel", 0, 200, 100));
             project.RegisterExpression(new UExpressionDescriptor("volume", "vol", 0, 200, 100));
             project.RegisterExpression(new UExpressionDescriptor("attack", "atk", 0, 200, 100));
             project.RegisterExpression(new UExpressionDescriptor("decay", "dec", 0, 100, 0));
+            project.RegisterExpression(new UExpressionDescriptor("voice color", "clr", false, new string[0]));
+            project.RegisterExpression(new UExpressionDescriptor("resampler engine", "eng", false,
+                new string[] { "", ResamplerDrivers.GetDefaultResamplerName() }));
         }
 
         public static void AddDefaultExpressions(UProject project) {
@@ -24,7 +28,8 @@ namespace OpenUtau.Core.Formats {
             project.RegisterExpression(new UExpressionDescriptor("breath", "bre", 0, 100, 0, "B"));
             project.RegisterExpression(new UExpressionDescriptor("lowpass", "lpf", 0, 100, 0, "H"));
             project.RegisterExpression(new UExpressionDescriptor("modulation", "mod", 0, 100, 0));
-            project.RegisterExpression(new UExpressionDescriptor("resampler engine", "eng", false, new string[] { "", "resampler.exe" }));
+            project.RegisterExpression(new UExpressionDescriptor("alternate", "alt", 0, 16, 0));
+            project.RegisterExpression(new UExpressionDescriptor("tone shift", "shft", -36, 36, 0));
         }
 
         public static UProject Create() {
@@ -55,23 +60,6 @@ namespace OpenUtau.Core.Formats {
             if (project.ustxVersion < kUstxVersion) {
                 Log.Information($"Upgrading project from {project.ustxVersion} to {kUstxVersion}");
             }
-            if (project.ustxVersion == new Version(0, 1)) {
-                project.parts
-                    .Where(part => part is UVoicePart)
-                    .Select(part => part as UVoicePart)
-                    .SelectMany(part => part.notes)
-                    .ToList()
-                    .ForEach(note => {
-                        foreach (var kv in note.expressions) {
-                            if (kv.Value != null) {
-                                foreach (var phoneme in note.phonemes) {
-                                    phoneme.SetExpression(project, kv.Key, (float)kv.Value.Value);
-                                }
-                            }
-                        }
-                        note.expressions = null;
-                    });
-            }
             if (project.ustxVersion < new Version(0, 4)) {
                 if (project.expressions.TryGetValue("acc", out var exp) && exp.name == "accent") {
                     project.expressions.Remove("acc");
@@ -88,6 +76,16 @@ namespace OpenUtau.Core.Formats {
                         .ForEach(exp => exp.abbr = "atk");
                     project.Validate();
                 }
+            }
+            if (project.ustxVersion < new Version(0, 5)) {
+                project.parts
+                    .Where(part => part is UVoicePart)
+                    .Select(part => part as UVoicePart)
+                    .SelectMany(part => part.notes)
+                    .Where(note => note.lyric.StartsWith("..."))
+                    .ToList()
+                    .ForEach(note => note.lyric = note.lyric.Replace("...", "+"));
+                project.Validate();
             }
             project.ustxVersion = kUstxVersion;
             return project;

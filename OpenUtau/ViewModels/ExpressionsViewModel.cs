@@ -11,7 +11,7 @@ using ReactiveUI.Fody.Helpers;
 
 namespace OpenUtau.App.ViewModels {
     public class ExpressionBuilder : ReactiveObject {
-        private static readonly string[] required = { "vel", "vol", "atk", "dec" };
+        private static readonly string[] required = { "vel", "vol", "atk", "dec", "eng", "clr" };
 
         [Reactive] public string Name { get; set; }
         [Reactive] public string Abbr { get; set; }
@@ -83,11 +83,6 @@ namespace OpenUtau.App.ViewModels {
                 }
                 if (DefaultValue < Min || DefaultValue > Max) {
                     return "Default value must be between min and max.";
-                }
-            } else {
-                var options = OptionValues.Split(',');
-                if (options.Length < 2) {
-                    return "No options specified.";
                 }
             }
             return null;

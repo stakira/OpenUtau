@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
@@ -14,14 +13,12 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
-using NetSparkleUpdater.Enums;
 using OpenUtau.App.Controls;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Classic;
 using OpenUtau.Core;
 using OpenUtau.Core.Formats;
 using OpenUtau.Core.Ustx;
-using OpenUtau.Core.Util;
 using Serilog;
 using Point = Avalonia.Point;
 
@@ -46,8 +43,10 @@ namespace OpenUtau.App.Views {
             this.AttachDevTools();
 #endif
             viewModel.InitProject();
-            timer = new DispatcherTimer(DispatcherPriority.Normal);
-            timer.Tick += (sender, args) => PlaybackManager.Inst.UpdatePlayPos();
+            timer = new DispatcherTimer(
+                TimeSpan.FromMilliseconds(15),
+                DispatcherPriority.Normal,
+                (sender, args) => PlaybackManager.Inst.UpdatePlayPos());
             timer.Start();
 
             AddHandler(DragDrop.DropEvent, OnDrop);
@@ -67,7 +66,7 @@ namespace OpenUtau.App.Views {
         void OnEditTimeSignature(object sender, PointerPressedEventArgs args) {
             var project = DocManager.Inst.Project;
             var dialog = new TypeInDialog();
-            dialog.Title = "Time Signature";
+            dialog.Title = ThemeManager.GetString("dialogs.timesig.caption");
             dialog.SetText($"{project.beatPerBar}/{project.beatUnit}");
             dialog.onFinish = s => {
                 var parts = s.Split('/');
@@ -76,6 +75,8 @@ namespace OpenUtau.App.Views {
                 viewModel.PlaybackViewModel.SetTimeSignature(beatPerBar, beatUnit);
             };
             dialog.ShowDialog(this);
+            // Workaround for https://github.com/AvaloniaUI/Avalonia/issues/3986
+            args.Pointer.Capture(null);
         }
 
         void OnEditBpm(object sender, PointerPressedEventArgs args) {
@@ -89,14 +90,23 @@ namespace OpenUtau.App.Views {
                 }
             };
             dialog.ShowDialog(this);
+            // Workaround for https://github.com/AvaloniaUI/Avalonia/issues/3986
+            args.Pointer.Capture(null);
         }
 
-        void OnMenuNew(object sender, RoutedEventArgs args) {
+        void OnMenuNew(object sender, RoutedEventArgs args) => NewProject();
+        async void NewProject() {
+            if (!DocManager.Inst.ChangesSaved && !await AskIfSaveAndContinue()) {
+                return;
+            }
             viewModel.NewProject();
         }
 
         void OnMenuOpen(object sender, RoutedEventArgs args) => Open();
         async void Open() {
+            if (!DocManager.Inst.ChangesSaved && !await AskIfSaveAndContinue()) {
+                return;
+            }
             var dialog = new OpenFileDialog() {
                 Filters = new List<FileDialogFilter>() {
                     new FileDialogFilter() {
@@ -130,6 +140,9 @@ namespace OpenUtau.App.Views {
                 await SaveAs();
             } else {
                 viewModel.SaveProject();
+                string message = ThemeManager.GetString("progress.saved");
+                message = string.Format(message, DateTime.Now);
+                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, message));
             }
         }
 
@@ -326,6 +339,10 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        void OnMenuClearRenderCache(object sender, RoutedEventArgs args) {
+            PlaybackManager.Inst.ClearRenderCache();
+        }
+
         void OnMenuWiki(object sender, RoutedEventArgs args) {
             OS.OpenWeb("https://github.com/stakira/OpenUtau/wiki/Getting-Started");
         }
@@ -347,8 +364,11 @@ namespace OpenUtau.App.Views {
         private void LayoutSplit(double? x, double? y) {
             var wa = Screens.Primary.WorkingArea;
             WindowState = WindowState.Normal;
-            double borderThickness = (FrameSize!.Value.Width - ClientSize.Width) / 2;
-            double titleBarHeight = FrameSize!.Value.Height - ClientSize.Height - borderThickness;
+            double titleBarHeight = 20;
+            if (FrameSize != null) {
+                double borderThickness = (FrameSize!.Value.Width - ClientSize.Width) / 2;
+                titleBarHeight = FrameSize!.Value.Height - ClientSize.Height - borderThickness;
+            }
             Position = new PixelPoint(0, 0);
             Width = x != null ? wa.Size.Width * x.Value : wa.Size.Width;
             Height = (y != null ? wa.Size.Height * y.Value : wa.Size.Height) - titleBarHeight;
@@ -374,11 +394,16 @@ namespace OpenUtau.App.Views {
             } else if (args.KeyModifiers == cmdKey) {
                 switch (args.Key) {
                     case Key.A: viewModel.TracksViewModel.SelectAllParts(); break;
-                    case Key.N: viewModel.NewProject(); break;
+                    case Key.N: NewProject(); break;
                     case Key.O: Open(); break;
                     case Key.S: _ = Save(); break;
                     case Key.Z: viewModel.Undo(); break;
                     case Key.Y: viewModel.Redo(); break;
+                    default: break;
+                }
+            } else if (args.KeyModifiers == (cmdKey | KeyModifiers.Shift)) {
+                switch (args.Key) {
+                    case Key.Z: viewModel.Redo(); break;
                     default: break;
                 }
             }
@@ -650,25 +675,32 @@ namespace OpenUtau.App.Views {
         }
 
         public async void WindowClosing(object? sender, CancelEventArgs e) {
-            if (!forceClose && !DocManager.Inst.ChangesSaved) {
-                e.Cancel = true;
-                var result = await MessageBox.Show(
-                    this,
-                    ThemeManager.GetString("dialogs.exitsave.message"),
-                    ThemeManager.GetString("dialogs.exitsave.caption"),
-                    MessageBox.MessageBoxButtons.YesNoCancel);
-                switch (result) {
-                    case MessageBox.MessageBoxResult.Yes:
-                        await Save();
-                        goto case MessageBox.MessageBoxResult.No;
-                    case MessageBox.MessageBoxResult.No:
-                        pianoRollWindow?.Close();
-                        forceClose = true;
-                        Close();
-                        break;
-                    default:
-                        break;
-                }
+            if (forceClose || DocManager.Inst.ChangesSaved) {
+                return;
+            }
+            e.Cancel = true;
+            if (!await AskIfSaveAndContinue()) {
+                return;
+            }
+            pianoRollWindow?.Close();
+            forceClose = true;
+            Close();
+        }
+
+        private async Task<bool> AskIfSaveAndContinue() {
+            var result = await MessageBox.Show(
+                this,
+                ThemeManager.GetString("dialogs.exitsave.message"),
+                ThemeManager.GetString("dialogs.exitsave.caption"),
+                MessageBox.MessageBoxButtons.YesNoCancel);
+            switch (result) {
+                case MessageBox.MessageBoxResult.Yes:
+                    await Save();
+                    goto case MessageBox.MessageBoxResult.No;
+                case MessageBox.MessageBoxResult.No:
+                    return true; // Continue.
+                default:
+                    return false; // Cancel.
             }
         }
 

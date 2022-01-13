@@ -37,10 +37,10 @@ namespace OpenUtau.Core {
         }
 
         public void SearchAllSingers() {
+            Directory.CreateDirectory(PathManager.Inst.SingersPath);
             var stopWatch = Stopwatch.StartNew();
             Singers = Formats.UtauSoundbank.FindAllSingers();
             SingersOrdered = Singers.Values.OrderBy(singer => singer.Name).ToList();
-            Directory.CreateDirectory(PathManager.Inst.GetEngineSearchPath());
             stopWatch.Stop();
             Log.Information($"Search all singers: {stopWatch.Elapsed}");
         }
@@ -62,13 +62,24 @@ namespace OpenUtau.Core {
         }
 
         public void SearchAllPlugins() {
+            const string kBuiltin = "OpenUtau.Plugin.Builtin.dll";
             var stopWatch = Stopwatch.StartNew();
             var phonemizerFactories = new List<PhonemizerFactory>();
             phonemizerFactories.Add(PhonemizerFactory.Get(typeof(DefaultPhonemizer)));
             Directory.CreateDirectory(PathManager.Inst.PluginsPath);
-            foreach (var file in Directory.EnumerateFiles(PathManager.Inst.PluginsPath, "*.dll", SearchOption.AllDirectories)) {
+            string oldBuiltin = Path.Combine(PathManager.Inst.PluginsPath, kBuiltin);
+            if (File.Exists(oldBuiltin)) {
+                File.Delete(oldBuiltin);
+            }
+            var files = Directory.EnumerateFiles(PathManager.Inst.PluginsPath, "*.dll", SearchOption.AllDirectories).ToList();
+            files.Insert(0, Path.Combine(Path.GetDirectoryName(GetType().Assembly.Location), kBuiltin));
+            foreach (var file in files) {
                 Assembly assembly;
                 try {
+                    if (!LibraryLoader.IsManagedAssembly(file)) {
+                        Log.Information($"Skipping {file}");
+                        continue;
+                    }
                     assembly = Assembly.LoadFile(file);
                     foreach (var type in assembly.GetExportedTypes()) {
                         if (type.IsAbstract) {
@@ -83,7 +94,7 @@ namespace OpenUtau.Core {
                     continue;
                 }
             }
-            PhonemizerFactories = phonemizerFactories.ToArray();
+            PhonemizerFactories = phonemizerFactories.OrderBy(factory => factory.tag).ToArray();
             stopWatch.Stop();
             Log.Information($"Search all plugins: {stopWatch.Elapsed}");
         }
@@ -126,6 +137,13 @@ namespace OpenUtau.Core {
                     playPosTick = _cmd.playPosTick;
                 } else if (cmd is SingersChangedNotification) {
                     SearchAllSingers();
+                } else if (cmd is ValidateProjectNotification) {
+                    Project.Validate();
+                } else if (cmd is SingersRefreshedNotification) {
+                    foreach (var track in Project.tracks) {
+                        track.OnSingerRefreshed();
+                    }
+                    Project.Validate();
                 }
                 Publish(cmd);
                 if (!cmd.Silent) {
@@ -145,7 +163,9 @@ namespace OpenUtau.Core {
                 Log.Information($"ExecuteCmd {cmd}");
             }
             Publish(cmd);
-            Project.Validate();
+            if (!cmd.DeferValidate) {
+                Project.Validate();
+            }
         }
 
         public void StartUndoGroup() {
@@ -169,9 +189,28 @@ namespace OpenUtau.Core {
             while (undoQueue.Count > Util.Preferences.Default.UndoLimit) {
                 undoQueue.RemoveFromFront();
             }
+            if (undoGroup.Commands.Any(cmd => cmd.DeferValidate)) {
+                Project.Validate();
+            }
             undoGroup = null;
             Log.Information("undoGroup ended");
             ExecuteCmd(new PreRenderNotification());
+        }
+
+        public void RollBackUndoGroup() {
+            if (undoGroup == null) {
+                Log.Error("No active undoGroup to rollback.");
+                return;
+            }
+            for (int i = undoGroup.Commands.Count - 1; i >= 0; i--) {
+                var cmd = undoGroup.Commands[i];
+                cmd.Unexecute();
+                if (i == 0) {
+                    Project.Validate();
+                }
+                Publish(cmd, true);
+            }
+            undoGroup.Commands.Clear();
         }
 
         public void Undo() {
@@ -182,10 +221,12 @@ namespace OpenUtau.Core {
             for (int i = group.Commands.Count - 1; i >= 0; i--) {
                 var cmd = group.Commands[i];
                 cmd.Unexecute();
+                if (i == 0) {
+                    Project.Validate();
+                }
                 Publish(cmd, true);
             }
             redoQueue.AddToBack(group);
-            Project.Validate();
             ExecuteCmd(new PreRenderNotification());
         }
 
@@ -194,12 +235,15 @@ namespace OpenUtau.Core {
                 return;
             }
             var group = redoQueue.RemoveFromBack();
-            foreach (var cmd in group.Commands) {
+            for (var i = 0; i < group.Commands.Count; i++) {
+                var cmd = group.Commands[i];
                 cmd.Execute();
+                if (i == group.Commands.Count - 1) {
+                    Project.Validate();
+                }
                 Publish(cmd);
             }
             undoQueue.AddToBack(group);
-            Project.Validate();
             ExecuteCmd(new PreRenderNotification());
         }
 

@@ -93,7 +93,7 @@ namespace OpenUtau.Core.Ustx {
             }
             Error = false;
             OverlapError = false;
-            if (track.Singer == null || !track.Singer.Loaded) {
+            if (track.Singer == null || !track.Singer.Found || !track.Singer.Loaded) {
                 Error |= true;
             }
             if (pitch.snapFirst) {
@@ -108,16 +108,12 @@ namespace OpenUtau.Core.Ustx {
                 phoneme.Parent = this;
                 phoneme.Index = i;
             }
-            foreach (var phoneme in phonemes) {
-                phoneme.Validate(project, track, part, this);
-                Error |= phoneme.Error;
-            }
             // Update has override bits.
             foreach (var phoneme in phonemes) {
                 phoneme.HasPhonemeOverride = false;
                 phoneme.HasOffsetOverride = false;
-                phoneme.preutterScale = null;
-                phoneme.overlapScale = null;
+                phoneme.preutterDelta = null;
+                phoneme.overlapDelta = null;
             }
             foreach (var o in (Extends ?? this).phonemeOverrides) {
                 int index = o.index - PhonemeOffset;
@@ -128,14 +124,18 @@ namespace OpenUtau.Core.Ustx {
                     if (o.offset != null) {
                         phonemes[index].HasOffsetOverride = true;
                     }
-                    phonemes[index].preutterScale = o.preutterScale;
-                    phonemes[index].overlapScale = o.overlapScale;
+                    phonemes[index].preutterDelta = o.preutterDelta;
+                    phonemes[index].overlapDelta = o.overlapDelta;
                 }
+            }
+            foreach (var phoneme in phonemes) {
+                phoneme.Validate(project, track, part, this);
+                Error |= phoneme.Error;
             }
         }
 
         public void Phonemize(UProject project, UTrack track) {
-            if (track.Singer == null || !track.Singer.Loaded) {
+            if (track.Singer == null || !track.Singer.Found || !track.Singer.Loaded) {
                 return;
             }
             if (Extends != null) {
@@ -152,18 +152,27 @@ namespace OpenUtau.Core.Ustx {
                 endOffset = Math.Min(0, notes.Last().Next.position - notes.Last().End + notes.Last().Next.phonemes[0].position);
             }
 
-            var prev = Prev?.ToProcessorNote();
-            var next = notes.Last().Next?.ToProcessorNote();
+            var prev = Prev?.ToPhonemizerNote(track);
+            var next = notes.Last().Next?.ToPhonemizerNote(track);
             bool prevIsNeighbour = Prev?.End >= position;
             if (Prev?.Extends != null) {
-                prev = Prev.Extends.ToProcessorNote();
+                prev = Prev.Extends.ToPhonemizerNote(track);
                 var phoneme = prev.Value;
                 phoneme.duration = Prev.ExtendedDuration;
                 prev = phoneme;
             }
+            var prevs = new List<UNote>();
+            if (prevIsNeighbour) {
+                prevs.Add(Prev);
+                while (prevs.Last().Prev != null && prevs.Last().Extends != null && prevs.Last().Prev.End >= prevs.Last().position) {
+                    prevs.Add(prevs.Last().Prev);
+                }
+                prevs.Reverse();
+            }
+            var phonemizerPrevs = prevs.Select(n => n.ToPhonemizerNote(track)).ToArray();
             bool nextIsNeighbour = notes.Last().End >= notes.Last().Next?.position;
             track.Phonemizer.SetTiming(project.bpm, project.beatUnit, project.resolution);
-            var phonemizerNotes = notes.Select(note => note.ToProcessorNote()).ToArray();
+            var phonemizerNotes = notes.Select(note => note.ToPhonemizerNote(track)).ToArray();
             phonemizerNotes[phonemizerNotes.Length - 1].duration += endOffset;
             if (string.IsNullOrEmpty(phonemizerNotes[0].lyric) &&
                 string.IsNullOrEmpty(phonemizerNotes[0].phoneticHint)) {
@@ -177,7 +186,8 @@ namespace OpenUtau.Core.Ustx {
                     prev,
                     next,
                     prevIsNeighbour ? prev : null,
-                    nextIsNeighbour ? next : null);
+                    nextIsNeighbour ? next : null,
+                    phonemizerPrevs);
             } catch (Exception e) {
                 Log.Error(e, "phonemizer error");
                 phonemizerResult = new Phonemizer.Result() {
@@ -218,19 +228,49 @@ namespace OpenUtau.Core.Ustx {
             DistributePhonemes(notes, newPhonemes);
         }
 
-        private Phonemizer.Note ToProcessorNote() {
+        static List<Phonemizer.PhonemeAttributes> attributesBuffer = new List<Phonemizer.PhonemeAttributes>();
+        private Phonemizer.Note ToPhonemizerNote(UTrack track) {
             string lrc = lyric;
             string phoneticHint = null;
             lrc = phoneticHintPattern.Replace(lrc, match => {
                 phoneticHint = match.Groups[1].Value;
                 return "";
             });
+            attributesBuffer.Clear();
+            foreach (var exp in phonemeExpressions) {
+                if (exp.abbr != "vel" && exp.abbr != "alt" && exp.abbr != "clr" && exp.abbr != "shft") {
+                    continue;
+                }
+                var posInBuffer = attributesBuffer.FindIndex(attr => attr.index == exp.index);
+                if (posInBuffer < 0) {
+                    posInBuffer = attributesBuffer.Count;
+                    attributesBuffer.Add(new Phonemizer.PhonemeAttributes());
+                }
+                Phonemizer.PhonemeAttributes attr = attributesBuffer[posInBuffer];
+                attr.index = exp.index.Value;
+                if (exp.abbr == "vel") {
+                    attr.consonantStretchRatio = Math.Pow(2, 1.0 - exp.value / 100.0);
+                } else if (exp.abbr == "alt") {
+                    attr.alternate = (int)exp.value;
+                } else if (exp.abbr == "clr" && track.VoiceColorExp != null) {
+                    int optionIdx = (int)exp.value;
+                    if (optionIdx < track.VoiceColorExp.options.Length && optionIdx >= 0) {
+                        attr.voiceColor = track.VoiceColorExp.options[optionIdx];
+                    }
+                } else if (exp.abbr == "shft") {
+                    attr.toneShift = (int)exp.value;
+                }
+                attributesBuffer[posInBuffer] = attr;
+            }
+            var attributes = attributesBuffer.ToArray();
+            attributesBuffer.Clear();
             return new Phonemizer.Note() {
                 lyric = lrc.Trim(),
                 phoneticHint = phoneticHint?.Trim(),
                 tone = tone,
                 position = position,
                 duration = duration,
+                phonemeAttributes = attributes,
             };
         }
 
@@ -326,7 +366,7 @@ namespace OpenUtau.Core.Ustx {
         float _drift;
 
         [JsonProperty] public float length { get => _length; set => _length = Math.Max(0, Math.Min(100, value)); }
-        [JsonProperty] public float period { get => _period; set => _period = Math.Max(20, Math.Min(500, value)); }
+        [JsonProperty] public float period { get => _period; set => _period = Math.Max(5, Math.Min(500, value)); }
         [JsonProperty] public float depth { get => _depth; set => _depth = Math.Max(5, Math.Min(200, value)); }
         [JsonProperty]
         public float @in {

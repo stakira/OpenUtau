@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Text;
 using Avalonia;
 using Avalonia.Controls;
@@ -11,9 +12,17 @@ namespace OpenUtau.App {
         // Initialization code. Don't use any Avalonia, third-party APIs or any
         // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
         // yet and stuff might break.
+        [STAThread]
         public static void Main(string[] args) {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             InitLogging();
+            var exists = System.Diagnostics.Process.GetProcessesByName(
+                System.IO.Path.GetFileNameWithoutExtension(
+                    System.Reflection.Assembly.GetEntryAssembly().Location)).Count() > 1;
+            if (exists) {
+                Log.Information("OpenUtau already open. Exiting.");
+                return;
+            }
             InitOpenUtau();
             InitAudio();
             Run(args);
@@ -50,6 +59,7 @@ namespace OpenUtau.App {
         }
 
         public static void InitOpenUtau() {
+            Core.ResamplerDriver.ResamplerDrivers.Search();
             DocManager.Inst.Initialize();
         }
 

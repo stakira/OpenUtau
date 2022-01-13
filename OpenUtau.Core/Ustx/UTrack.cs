@@ -20,6 +20,7 @@ namespace OpenUtau.Core.Ustx {
                 if (singer_ != value) {
                     singer_ = value;
                     Phonemizer.SetSinger(value);
+                    VoiceColorExp = null;
                 }
             }
         }
@@ -34,6 +35,39 @@ namespace OpenUtau.Core.Ustx {
         public bool Solo { set; get; }
         public double Volume { set; get; }
         [YamlIgnore] public double Pan { set; get; }
+        [YamlIgnore] public UExpressionDescriptor VoiceColorExp { set; get; }
+
+        public bool TryGetExpression(UProject project, string key, out UExpressionDescriptor descriptor) {
+            if (!project.expressions.TryGetValue(key, out descriptor)) {
+                return false;
+            }
+            if (key == "clr" && VoiceColorExp != null) {
+                descriptor = VoiceColorExp;
+            }
+            return true;
+        }
+
+        public void OnSingerRefreshed() {
+            if (Singer != null && Singer.Loaded && !DocManager.Inst.Singers.ContainsKey(Singer.Id)) {
+                Singer.Found = false;
+                Singer.Loaded = false;
+            }
+            VoiceColorExp = null;
+        }
+
+        public void Validate(UProject project) {
+            if (Singer != null && Singer.Found) {
+                Singer.EnsureLoaded();
+            }
+            if (project.expressions.TryGetValue("clr", out var descriptor)) {
+                if (VoiceColorExp == null && Singer != null && Singer.Found && Singer.Loaded) {
+                    VoiceColorExp = descriptor.Clone();
+                    var colors = Singer.Subbanks.Select(subbank => subbank.Color).ToHashSet();
+                    VoiceColorExp.options = colors.OrderBy(c => c).ToArray();
+                    VoiceColorExp.max = VoiceColorExp.options.Length - 1;
+                }
+            }
+        }
 
         public void BeforeSave() {
             singer = Singer?.Id;

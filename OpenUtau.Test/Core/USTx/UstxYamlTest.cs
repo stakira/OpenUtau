@@ -41,28 +41,14 @@ tone: 42
 lyric: あ
 pitch:
   data:
-  - x: -5
-    y: 0
-    shape: io
-  - x: 5
-    y: 0
-    shape: io
+  - {x: -5, y: 0, shape: io}
+  - {x: 5, y: 0, shape: io}
   snap_first: true
-vibrato:
-  length: 0
-  period: 175
-  depth: 25
-  in: 10
-  out: 10
-  shift: 0
-  drift: 0
+vibrato: {length: 0, period: 175, depth: 25, in: 10, out: 10, shift: 0, drift: 0}
 note_expressions:
-- abbr: vel
-  value: 99
+- {abbr: vel, value: 99}
 phoneme_expressions:
-- index: 0
-  abbr: vel
-  value: 123
+- {index: 0, abbr: vel, value: 123}
 phoneme_overrides: []
 ";
 

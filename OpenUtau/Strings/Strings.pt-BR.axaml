@@ -24,6 +24,7 @@
   <system:String x:Key="dialogs.messagebox.yes">Sim</system:String>
   <system:String x:Key="dialogs.noresampler.caption">Sem resampler</system:String>
   <system:String x:Key="dialogs.noresampler.message">Sem resampler! Coloque o .exe ou .dll do seu resampler favorito na pasta Resampler e selecione-o em Preferências!</system:String>
+  <!--<system:String x:Key="dialogs.timesig.caption">Time Signature</system:String>-->
 
   <system:String x:Key="errors.caption">Erro</system:String>
 
@@ -41,6 +42,15 @@
   <system:String x:Key="exps.type">Tipo</system:String>
   <system:String x:Key="exps.type.numerical">Numérico</system:String>
   <system:String x:Key="exps.type.options">Opções</system:String>
+
+  <system:String x:Key="lyrics.apply">Aplicar</system:String>
+  <system:String x:Key="lyrics.cancel">Cancelar</system:String>
+  <system:String x:Key="lyrics.caption">Editar Lírica</system:String>
+  <!--<system:String x:Key="lyrics.livepreview">Live preview</system:String>-->
+  <!--<system:String x:Key="lyrics.max">Max</system:String>-->
+  <!--<system:String x:Key="lyrics.reset">Reset</system:String>-->
+  <system:String x:Key="lyrics.selectnotes">Selecione as notas primeiro!</system:String>
+  <system:String x:Key="lyrics.separators">Separadores</system:String>
 
   <system:String x:Key="menu.edit">Editar</system:String>
   <system:String x:Key="menu.edit.copy">Copiar</system:String>
@@ -83,6 +93,7 @@
   <system:String x:Key="menu.tools.singers">Vozes...</system:String>
 
   <!--<system:String x:Key="oto.alias">Alias</system:String>-->
+  <system:String x:Key="oto.color">Cor</system:String>
   <!--<system:String x:Key="oto.consonant">Consonant</system:String>-->
   <!--<system:String x:Key="oto.cutoff">Cutoff</system:String>-->
   <system:String x:Key="oto.file">Arquivo</system:String>
@@ -93,20 +104,21 @@
   <!--<system:String x:Key="oto.preutter">Preutter</system:String>-->
   <system:String x:Key="oto.set">Pasta</system:String>
   <system:String x:Key="oto.suffix">Sufixo</system:String>
-  <!--<system:String x:Key="oto.tags">Tags</system:String>-->
 
   <system:String x:Key="pianoroll.menu.lyrics">Lírica</system:String>
-  <!--<system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana to Romaji</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.lyrics.javcvtocv">Japanese VCV to CV</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Remove Letter Suffix</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">Remove Tone Suffix</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Romaji to Hiragana</system:String>-->
+  <system:String x:Key="pianoroll.menu.lyrics.edit">Editar Lírica</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana para Romaji</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">(Japonês) VCV para CV</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Remover Letra de Suffixo</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">Remover Sufixo de Tom</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Romaji para Hiragana</system:String>
   <system:String x:Key="pianoroll.menu.notes">Nota</system:String>
-  <!--<system:String x:Key="pianoroll.menu.notes.addtaildash">Add tail "-"</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.notes.quantize15">Quantize to 1/128</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.notes.quantize30">Quantize to 1/64</system:String>-->
+  <system:String x:Key="pianoroll.menu.notes.addtaildash">Adicionar final "-"</system:String>
+  <system:String x:Key="pianoroll.menu.notes.addtailrest">Adicionar final "R"</system:String>
+  <system:String x:Key="pianoroll.menu.notes.quantize15">Quantizar para 1/128</system:String>
+  <system:String x:Key="pianoroll.menu.notes.quantize30">Quantizar para 1/64</system:String>
   <system:String x:Key="pianoroll.menu.part">Parte</system:String>
-  <!--<system:String x:Key="pianoroll.menu.part.legacypluginexp">Legacy Plugin (Experimental)</system:String>-->
+  <system:String x:Key="pianoroll.menu.part.legacypluginexp">Plugin Legado(Experimental)</system:String>
   <system:String x:Key="pianoroll.menu.part.rename">Renomear</system:String>
   <system:String x:Key="pianoroll.toggle.phoneme">Ver Fonemas (O)</system:String>
   <system:String x:Key="pianoroll.toggle.pitch">Ver Pitch Bend (I)</system:String>
@@ -120,13 +132,11 @@ Botão esquerdo para desenhar
 Botão direito para apagar</system:String>
   <system:String x:Key="pianoroll.tool.selection">Ferramenta Seleção  (1)
 Segure Ctrl para selecionar mais notas</system:String>
-  <system:String x:Key="pianoroll.tool.tagger">Ferramenta Tag (4)
-Botão esquerdo para desenhar
-Botão direito para apagar</system:String>
-  <!--<system:String x:Key="pianoroll.tool.tagger.setup">Setup Tags</system:String>-->
 
   <system:String x:Key="prefs.advanced">Avançado</system:String>
   <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
+  <system:String x:Key="prefs.advanced.resamplerlogging">Resampler Log</system:String>
+  <system:String x:Key="prefs.advanced.resamplerlogging.warn">Armazena a saída do resampler em arquivos de log. Esta opção atrasa a UI e a renderização.</system:String>
   <system:String x:Key="prefs.advanced.stable">Estável</system:String>
   <system:String x:Key="prefs.appearance">Aparência</system:String>
   <system:String x:Key="prefs.appearance.lang">Idioma</system:String>
@@ -135,10 +145,12 @@ Botão direito para apagar</system:String>
   <system:String x:Key="prefs.appearance.theme.light">Claro</system:String>
   <system:String x:Key="prefs.caption">Preferências</system:String>
   <system:String x:Key="prefs.note.restart">Nota: reinicie o OpenUtau após alterar este item.</system:String>
+  <!--<system:String x:Key="prefs.off">Off</system:String>-->
+  <!--<system:String x:Key="prefs.on">On</system:String>-->
   <system:String x:Key="prefs.paths">Diretório</system:String>
-  <system:String x:Key="prefs.paths.add">Adicionar</system:String>
-  <system:String x:Key="prefs.paths.remove">Remover</system:String>
-  <system:String x:Key="prefs.paths.singer">Diretório de vozes</system:String>
+  <system:String x:Key="prefs.paths.addlsinger">Caminho Adicional de Vozes</system:String>
+  <system:String x:Key="prefs.paths.reset">Redefinir</system:String>
+  <system:String x:Key="prefs.paths.select">Selecionar</system:String>
   <system:String x:Key="prefs.playback">Reprodução</system:String>
   <system:String x:Key="prefs.playback.device">Dispositivo de Reprodução</system:String>
   <system:String x:Key="prefs.playback.test">Teste</system:String>
@@ -152,23 +164,29 @@ Botão direito para apagar</system:String>
   <system:String x:Key="prefs.rendering.resampler.warn">
     Aviso: ainda não há suporte para moresampler. Ele estará extremamente devegar e causará alto uso da CPU. Se deseja usar, por favor:
     1. Em moreconfig.txt, edite "resampler-compatibility" de "off" para "on".
-    2. Reduza as threads do pre-render para 1 ou 2.
-    3. Pacientemente espere o pre-render finalizar antes de tocar.
+    2. Em moreconfig.txt, edite "auto-update-llsm-mrq" para "off".
+    3. Altere "multithread-synthesis" para "off" em moreconfig.txt ou reduza as threads do pre-render para 1 ou 2.
+    4. Pacientemente espere o pre-render finalizar antes de tocar.
   </system:String>
+
+  <system:String x:Key="progress.saved">Projeto salvo. {0}</system:String>
 
   <system:String x:Key="singers.caption">Vozes</system:String>
   <system:String x:Key="singers.location">Pasta</system:String>
   <system:String x:Key="singers.refresh">Atualizar</system:String>
   <system:String x:Key="singers.setencoding">Definir Codificação</system:String>
-  <system:String x:Key="singers.subbanks.add">Adicionar</system:String>
-  <system:String x:Key="singers.subbanks.caption">Editor Tag</system:String>
-  <system:String x:Key="singers.subbanks.dir">Pasta</system:String>
-  <system:String x:Key="singers.subbanks.prefix">Prefixo</system:String>
-  <system:String x:Key="singers.subbanks.remove">Remover</system:String>
+  <system:String x:Key="singers.subbanks.cancel">Cancelar</system:String>
+  <system:String x:Key="singers.subbanks.clear">Limpar</system:String>
+  <system:String x:Key="singers.subbanks.color">Cor</system:String>
+  <system:String x:Key="singers.subbanks.color.add">Adicionar Cor</system:String>
+  <system:String x:Key="singers.subbanks.color.remove">Remover Cor</system:String>
+  <system:String x:Key="singers.subbanks.color.rename">Renomear</system:String>
+  <system:String x:Key="singers.subbanks.edit">Editar Sub Bancos</system:String>
   <system:String x:Key="singers.subbanks.reset">Redefinir</system:String>
   <system:String x:Key="singers.subbanks.save">Salvar</system:String>
-  <system:String x:Key="singers.subbanks.suffix">Sufixo</system:String>
-  <!--<system:String x:Key="singers.subbanks.tags">Tags</system:String>-->
+  <system:String x:Key="singers.subbanks.selectall">Selecionar Tudo</system:String>
+  <system:String x:Key="singers.subbanks.set">Aplicar</system:String>
+  <system:String x:Key="singers.subbanks.tone">Tom</system:String>
   <system:String x:Key="singers.subbanks.toneranges">Alcance</system:String>
 
   <system:String x:Key="tip.exps">
@@ -200,14 +218,14 @@ Geral
   <system:String x:Key="tracks.movedown">Mover pra Baixo</system:String>
   <system:String x:Key="tracks.moveup">Mover pra Cima</system:String>
   <system:String x:Key="tracks.remove">Remover</system:String>
-  <!--<system:String x:Key="tracks.selectsinger">Select Singer</system:String>-->
+  <system:String x:Key="tracks.selectsinger">Selecione a Voz</system:String>
 
-  <!--<system:String x:Key="updater.caption">Check for Update</system:String>-->
+  <system:String x:Key="updater.caption">Procurar Updates</system:String>
   <!--<system:String x:Key="updater.github">GitHub</system:String>-->
-  <!--<system:String x:Key="updater.status.available">Update v{0} available!</system:String>-->
-  <!--<system:String x:Key="updater.status.checking">Checking for updates...</system:String>-->
-  <!--<system:String x:Key="updater.status.notavailable">Up to date</system:String>-->
-  <!--<system:String x:Key="updater.status.unknown">Unable to check update</system:String>-->
+  <system:String x:Key="updater.status.available">Update v{0} disponível!</system:String>
+  <system:String x:Key="updater.status.checking">Procurando updates...</system:String>
+  <system:String x:Key="updater.status.notavailable">Atualizado</system:String>
+  <system:String x:Key="updater.status.unknown">Não foi possivel procurar updates</system:String>
   <!--<system:String x:Key="updater.update">Update</system:String>-->
 
   <system:String x:Key="warning">Atenção</system:String>

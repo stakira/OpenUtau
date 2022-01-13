@@ -10,15 +10,17 @@ namespace OpenUtau.Core.SignalChain {
     public class WaveSource : ISignalSource {
         public readonly int offset;
         public readonly int estimatedLength;
+        public readonly int channels;
 
         private readonly object lockObj = new object();
         private readonly List<Vector2> envelope;
         private float[] data;
 
-        public WaveSource(double offsetMs, double estimatedLengthMs, List<Vector2> envelope, double skipOverMs) {
-            offset = (int)((offsetMs - skipOverMs) * 44100 / 1000);
-            estimatedLength = (int)(estimatedLengthMs * 44100 / 1000);
-            int skipSamples = (int)(skipOverMs * 44100 / 1000);
+        public WaveSource(double offsetMs, double estimatedLengthMs, List<Vector2> envelope, double skipOverMs, int channels) {
+            this.channels = channels;
+            offset = (int)((offsetMs - skipOverMs) * 44100 / 1000) * channels;
+            estimatedLength = (int)(estimatedLengthMs * 44100 / 1000) * channels;
+            int skipSamples = (int)(skipOverMs * 44100 / 1000) * channels;
             if (envelope == null) {
                 envelope = new List<Vector2>() {
                     new Vector2(0, 1),
@@ -83,8 +85,9 @@ namespace OpenUtau.Core.SignalChain {
         }
 
         public bool IsReady(int position, int count) {
-            return position + count <= offset
-                || offset + estimatedLength <= position
+            int copies = 2 / channels;
+            return position + count <= offset * copies
+                || offset * copies + estimatedLength * copies <= position
                 || data != null;
         }
 
@@ -92,10 +95,11 @@ namespace OpenUtau.Core.SignalChain {
             if (data == null) {
                 return 0;
             }
-            int start = Math.Max(position, offset);
-            int end = Math.Min(position + count, offset + data.Length);
+            int copies = 2 / channels;
+            int start = Math.Max(position, offset * copies);
+            int end = Math.Min(position + count, offset * copies + data.Length * copies);
             for (int i = start; i < end; ++i) {
-                buffer[index + i - position] += data[i - offset];
+                buffer[index + i - position] += data[i / copies - offset];
             }
             return end;
         }

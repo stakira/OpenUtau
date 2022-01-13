@@ -43,18 +43,27 @@ namespace OpenUtau.App.Views {
         public readonly Canvas canvas;
         public readonly PianoRollViewModel vm;
         public Point startPoint;
-        public NoteEditState(Canvas canvas, PianoRollViewModel vm) {
+        public IValueTip valueTip;
+        protected virtual bool ShowValueTip => true;
+        public NoteEditState(Canvas canvas, PianoRollViewModel vm, IValueTip valueTip) {
             this.canvas = canvas;
             this.vm = vm;
+            this.valueTip = valueTip;
         }
         public virtual void Begin(IPointer pointer, Point point) {
             pointer.Capture(canvas);
             startPoint = point;
             DocManager.Inst.StartUndoGroup();
+            if (ShowValueTip) {
+                valueTip.ShowValueTip();
+            }
         }
         public virtual void End(IPointer pointer, Point point) {
             pointer.Capture(null);
             DocManager.Inst.EndUndoGroup();
+            if (ShowValueTip) {
+                valueTip.HideValueTip();
+            }
         }
         public virtual void Update(IPointer pointer, Point point) { }
         public static void Swap<T>(ref T a, ref T b) {
@@ -71,7 +80,12 @@ namespace OpenUtau.App.Views {
 
     class NoteSelectionEditState : NoteEditState {
         public readonly Rectangle selectionBox;
-        public NoteSelectionEditState(Canvas canvas, PianoRollViewModel vm, Rectangle selectionBox) : base(canvas, vm) {
+        protected override bool ShowValueTip => false;
+        public NoteSelectionEditState(
+            Canvas canvas,
+            PianoRollViewModel vm,
+            IValueTip valueTip,
+            Rectangle selectionBox) : base(canvas, vm, valueTip) {
             this.selectionBox = selectionBox;
         }
         public override void Begin(IPointer pointer, Point point) {
@@ -112,7 +126,12 @@ namespace OpenUtau.App.Views {
     class NoteMoveEditState : NoteEditState {
         public readonly UNote note;
         private double xOffset;
-        public NoteMoveEditState(Canvas canvas, PianoRollViewModel vm, UNote note) : base(canvas, vm) {
+        protected override bool ShowValueTip => false;
+        public NoteMoveEditState(
+            Canvas canvas,
+            PianoRollViewModel vm,
+            IValueTip valueTip,
+            UNote note) : base(canvas, vm, valueTip) {
             this.note = note;
             var notesVm = vm.NotesViewModel;
             if (!notesVm.SelectedNotes.Contains(note)) {
@@ -178,7 +197,11 @@ namespace OpenUtau.App.Views {
         private UNote? note;
         private SineGen? sineGen;
         private bool playTone;
-        public NoteDrawEditState(Canvas canvas, PianoRollViewModel vm, bool playTone) : base(canvas, vm) {
+        public NoteDrawEditState(
+            Canvas canvas,
+            PianoRollViewModel vm,
+            IValueTip valueTip,
+            bool playTone) : base(canvas, vm, valueTip) {
             this.playTone = playTone;
         }
         public override void Begin(IPointer pointer, Point point) {
@@ -219,6 +242,7 @@ namespace OpenUtau.App.Views {
             if (deltaDuration != 0) {
                 DocManager.Inst.ExecuteCmd(new ResizeNoteCommand(notesVm.Part, note, deltaDuration));
             }
+            valueTip.UpdateValueTip(note.duration.ToString());
         }
         public override void End(IPointer pointer, Point point) {
             base.End(pointer, point);
@@ -232,7 +256,12 @@ namespace OpenUtau.App.Views {
         public readonly UNote note;
         public readonly UNote? nextNote;
         public readonly bool resizeNext;
-        public NoteResizeEditState(Canvas canvas, PianoRollViewModel vm, UNote note, bool resizeNext) : base(canvas, vm) {
+        public NoteResizeEditState(
+            Canvas canvas,
+            PianoRollViewModel vm,
+            IValueTip valueTip,
+            UNote note,
+            bool resizeNext) : base(canvas, vm, valueTip) {
             this.note = note;
             var notesVm = vm.NotesViewModel;
             if (!notesVm.SelectedNotes.Contains(note)) {
@@ -264,6 +293,7 @@ namespace OpenUtau.App.Views {
                 deltaDuration = Math.Min(deltaDuration, maxDelta);
             }
             if (deltaDuration == 0) {
+                valueTip.UpdateValueTip(note.duration.ToString());
                 return;
             }
             if (notesVm.SelectedNotes.Count == 0) {
@@ -272,16 +302,23 @@ namespace OpenUtau.App.Views {
                     DocManager.Inst.ExecuteCmd(new ResizeNoteCommand(notesVm.Part, nextNote, -deltaDuration));
                 }
                 DocManager.Inst.ExecuteCmd(new ResizeNoteCommand(notesVm.Part, note, deltaDuration));
+                valueTip.UpdateValueTip(note.duration.ToString());
                 return;
             }
             DocManager.Inst.ExecuteCmd(new ResizeNoteCommand(notesVm.Part, new List<UNote>(notesVm.SelectedNotes), deltaDuration));
+            valueTip.UpdateValueTip(note.duration.ToString());
         }
     }
 
     class NoteEraseEditState : NoteEditState {
         public override MouseButton MouseButton => mouseButton;
         private MouseButton mouseButton;
-        public NoteEraseEditState(Canvas canvas, PianoRollViewModel vm, MouseButton mouseButton) : base(canvas, vm) {
+        protected override bool ShowValueTip => false;
+        public NoteEraseEditState(
+            Canvas canvas,
+            PianoRollViewModel vm,
+            IValueTip valueTip,
+            MouseButton mouseButton) : base(canvas, vm, valueTip) {
             this.mouseButton = mouseButton;
         }
         public override void Update(IPointer pointer, Point point) {
@@ -295,7 +332,11 @@ namespace OpenUtau.App.Views {
 
     class NotePanningState : NoteEditState {
         public override MouseButton MouseButton => MouseButton.Middle;
-        public NotePanningState(Canvas canvas, PianoRollViewModel vm) : base(canvas, vm) { }
+        protected override bool ShowValueTip => false;
+        public NotePanningState(
+            Canvas canvas,
+            PianoRollViewModel vm,
+            IValueTip valueTip) : base(canvas, vm, valueTip) { }
         public override void Begin(IPointer pointer, Point point) {
             pointer.Capture(canvas);
             startPoint = point;
@@ -321,8 +362,11 @@ namespace OpenUtau.App.Views {
         private int index;
         private PitchPoint pitchPoint;
         public PitchPointEditState(
-            Canvas canvas, PianoRollViewModel vm, UNote note,
-            int index, bool onPoint, float x, float y) : base(canvas, vm) {
+            Canvas canvas,
+            PianoRollViewModel vm,
+            IValueTip valueTip,
+            UNote note,
+            int index, bool onPoint, float x, float y) : base(canvas, vm, valueTip) {
             this.note = note;
             this.index = index;
             this.onPoint = onPoint;
@@ -373,8 +417,11 @@ namespace OpenUtau.App.Views {
                 deltaX = Math.Min(deltaX, note.pitch.data[index + 1].X - pitchPoint.X);
             }
             double deltaY;
-            if (isFirst && note.pitch.snapFirst || isLast) {
+            if (isLast) {
                 deltaY = -pitchPoint.Y;
+            } else if (isFirst && note.pitch.snapFirst) {
+                var snapTo = note.Prev == null ? note : note.Prev.End == note.position ? note.Prev : note;
+                deltaY = (snapTo.tone - note.tone) * 10 - pitchPoint.Y;
             } else {
                 deltaY = (notesVm.PointToToneDouble(point) - note.tone) * 10 - pitchPoint.Y;
             }
@@ -382,27 +429,39 @@ namespace OpenUtau.App.Views {
                 return;
             }
             DocManager.Inst.ExecuteCmd(new MovePitchPointCommand(pitchPoint, (float)deltaX, (float)deltaY));
+            valueTip.UpdateValueTip($"{pitchPoint.X:0.0}ms, {pitchPoint.Y * 10:0}cent");
         }
     }
 
     class ExpSetValueState : NoteEditState {
-        private Border tip;
         private Point lastPoint;
-        public ExpSetValueState(Canvas canvas, PianoRollViewModel vm, Border tip) : base(canvas, vm) {
-            this.tip = tip;
+        private UExpressionDescriptor? descriptor;
+        private UTrack track;
+        public ExpSetValueState(
+            Canvas canvas,
+            PianoRollViewModel vm,
+            IValueTip valueTip) : base(canvas, vm, valueTip) {
+            var notesVm = vm.NotesViewModel;
+            var project = notesVm.Project;
+            var part = notesVm.Part;
+            track = project.tracks[part!.trackNo];
+            if (project == null || part == null ||
+                !track.TryGetExpression(
+                    project, notesVm.PrimaryKey, out descriptor)) {
+                descriptor = null;
+            }
         }
         public override void Begin(IPointer pointer, Point point) {
             base.Begin(pointer, point);
-            var notesVm = vm.NotesViewModel;
-            notesVm.ShowExpValueTip = true;
             lastPoint = point;
         }
         public override void End(IPointer pointer, Point point) {
             base.End(pointer, point);
-            var notesVm = vm.NotesViewModel;
-            notesVm.ShowExpValueTip = false;
         }
         public override void Update(IPointer pointer, Point point) {
+            if (descriptor == null) {
+                return;
+            }
             var notesVm = vm.NotesViewModel;
             var p1 = lastPoint;
             var p2 = point;
@@ -410,53 +469,67 @@ namespace OpenUtau.App.Views {
                 Swap(ref p1, ref p2);
             }
             string key = notesVm.PrimaryKey;
-            var descriptor = notesVm.Project.expressions[key];
             var hits = notesVm.HitTest.HitTestExpRange(p1, p2);
+            double viewMax = descriptor.max + (descriptor.type == UExpressionType.Options ? 1 : 0);
             foreach (var hit in hits) {
                 var valuePoint = notesVm.TickToneToPoint(hit.note.position + hit.phoneme.position, 0);
                 double y = Lerp(p1, p2, valuePoint.X);
-                double newValue = descriptor.min + (descriptor.max - descriptor.min) * (1 - y / canvas.Bounds.Height);
+                double newValue = descriptor.min + (viewMax - descriptor.min) * (1 - y / canvas.Bounds.Height);
                 newValue = Math.Max(descriptor.min, Math.Min(descriptor.max, newValue));
-                float value = hit.phoneme.GetExpression(notesVm.Project, key).Item1;
+                float value = hit.phoneme.GetExpression(notesVm.Project, track, key).Item1;
                 if ((int)newValue != (int)value) {
                     DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(
-                        notesVm.Project, hit.phoneme, key, (int)newValue));
+                        notesVm.Project, track, hit.phoneme, key, (int)newValue));
                 }
             }
-            double displayValue = descriptor.min + (descriptor.max - descriptor.min) * (1 - point.Y / canvas.Bounds.Height);
+            double displayValue = descriptor.min + (viewMax - descriptor.min) * (1 - point.Y / canvas.Bounds.Height);
             displayValue = Math.Max(descriptor.min, Math.Min(descriptor.max, displayValue));
+            string valueTipText = string.Empty;
             if (descriptor.type == UExpressionType.Numerical) {
-                notesVm.ExpValueTipText = ((int)displayValue).ToString();
+                valueTipText = ((int)displayValue).ToString();
             } else if (descriptor.type == UExpressionType.Options) {
                 int index = (int)displayValue;
                 if (index >= 0 && index < descriptor.options.Length) {
-                    notesVm.ExpValueTipText = descriptor.options[index];
+                    valueTipText = descriptor.options[index];
                 } else {
-                    notesVm.ExpValueTipText = "Error: out of range";
+                    valueTipText = "Error: out of range";
                 }
-                if (string.IsNullOrEmpty(notesVm.ExpValueTipText)) {
-                    notesVm.ExpValueTipText = "\"\"";
+                if (string.IsNullOrEmpty(valueTipText)) {
+                    valueTipText = "\"\"";
                 }
             }
-            Canvas.SetLeft(tip, point.X);
-            double tipY = point.Y - 21;
-            if (tipY < 0) {
-                tipY = Math.Max(1, tipY + 42);
-            }
-            Canvas.SetTop(tip, tipY);
+            valueTip.UpdateValueTip(valueTipText);
             lastPoint = point;
         }
     }
 
     class ExpResetValueState : NoteEditState {
         private Point lastPoint;
+        private UExpressionDescriptor? descriptor;
+        private UTrack track;
         public override MouseButton MouseButton => MouseButton.Right;
-        public ExpResetValueState(Canvas canvas, PianoRollViewModel vm) : base(canvas, vm) { }
+        public ExpResetValueState(
+            Canvas canvas,
+            PianoRollViewModel vm,
+            IValueTip valueTip) : base(canvas, vm, valueTip) {
+            var notesVm = vm.NotesViewModel;
+            var project = notesVm.Project;
+            var part = notesVm.Part;
+            track = project.tracks[part!.trackNo];
+            if (project == null || part == null ||
+                !track.TryGetExpression(
+                    project, notesVm.PrimaryKey, out descriptor)) {
+                descriptor = null;
+            }
+        }
         public override void Begin(IPointer pointer, Point point) {
             base.Begin(pointer, point);
             lastPoint = point;
         }
         public override void Update(IPointer pointer, Point point) {
+            if (descriptor == null) {
+                return;
+            }
             var notesVm = vm.NotesViewModel;
             var p1 = lastPoint;
             var p2 = point;
@@ -464,21 +537,25 @@ namespace OpenUtau.App.Views {
                 Swap(ref p1, ref p2);
             }
             string key = notesVm.PrimaryKey;
-            var descriptor = notesVm.Project.expressions[key];
             var hits = notesVm.HitTest.HitTestExpRange(p1, p2);
             foreach (var hit in hits) {
-                float value = hit.phoneme.GetExpression(notesVm.Project, key).Item1;
+                float value = hit.phoneme.GetExpression(notesVm.Project, track, key).Item1;
                 if (value != descriptor.defaultValue) {
                     DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(
-                        notesVm.Project, hit.phoneme, key, descriptor.defaultValue));
+                        notesVm.Project, track, hit.phoneme, key, descriptor.defaultValue));
                 }
             }
+            valueTip.UpdateValueTip(descriptor.defaultValue.ToString());
         }
     }
 
     class VibratoChangeStartState : NoteEditState {
         public readonly UNote note;
-        public VibratoChangeStartState(Canvas canvas, PianoRollViewModel vm, UNote note) : base(canvas, vm) {
+        public VibratoChangeStartState(
+            Canvas canvas,
+            PianoRollViewModel vm,
+            IValueTip valueTip,
+            UNote note) : base(canvas, vm, valueTip) {
             this.note = note;
         }
         public override void Update(IPointer pointer, Point point) {
@@ -488,12 +565,17 @@ namespace OpenUtau.App.Views {
             if (newLength != note.vibrato.length) {
                 DocManager.Inst.ExecuteCmd(new VibratoLengthCommand(notesVm.Part, note, newLength));
             }
+            valueTip.UpdateValueTip($"{note.vibrato.length:0}%");
         }
     }
 
     class VibratoChangeInState : NoteEditState {
         public readonly UNote note;
-        public VibratoChangeInState(Canvas canvas, PianoRollViewModel vm, UNote note) : base(canvas, vm) {
+        public VibratoChangeInState(
+            Canvas canvas,
+            PianoRollViewModel vm,
+            IValueTip valueTip,
+            UNote note) : base(canvas, vm, valueTip) {
             this.note = note;
         }
         public override void Update(IPointer pointer, Point point) {
@@ -505,12 +587,17 @@ namespace OpenUtau.App.Views {
             if (newIn != note.vibrato.@in) {
                 DocManager.Inst.ExecuteCmd(new VibratoFadeInCommand(notesVm.Part, note, newIn));
             }
+            valueTip.UpdateValueTip($"{note.vibrato.@in:0}%");
         }
     }
 
     class VibratoChangeOutState : NoteEditState {
         public readonly UNote note;
-        public VibratoChangeOutState(Canvas canvas, PianoRollViewModel vm, UNote note) : base(canvas, vm) {
+        public VibratoChangeOutState(
+            Canvas canvas,
+            PianoRollViewModel vm,
+            IValueTip valueTip,
+            UNote note) : base(canvas, vm, valueTip) {
             this.note = note;
         }
         public override void Update(IPointer pointer, Point point) {
@@ -521,27 +608,37 @@ namespace OpenUtau.App.Views {
             if (newOut != note.vibrato.@out) {
                 DocManager.Inst.ExecuteCmd(new VibratoFadeOutCommand(notesVm.Part, note, newOut));
             }
+            valueTip.UpdateValueTip($"{note.vibrato.@out:0}%");
         }
     }
 
     class VibratoChangeDepthState : NoteEditState {
         public readonly UNote note;
-        public VibratoChangeDepthState(Canvas canvas, PianoRollViewModel vm, UNote note) : base(canvas, vm) {
+        public VibratoChangeDepthState(
+            Canvas canvas,
+            PianoRollViewModel vm,
+            IValueTip valueTip,
+            UNote note) : base(canvas, vm, valueTip) {
             this.note = note;
         }
         public override void Update(IPointer pointer, Point point) {
             var notesVm = vm.NotesViewModel;
-            float tone = (float)notesVm.PointToToneDouble(point);
+            float tone = (float)notesVm.PointToToneDouble(point) - 0.5f;
             float newDepth = note.vibrato.ToneToDepth(note, tone);
             if (newDepth != note.vibrato.depth) {
                 DocManager.Inst.ExecuteCmd(new VibratoDepthCommand(notesVm.Part, note, newDepth));
             }
+            valueTip.UpdateValueTip($"{note.vibrato.depth:0.0}");
         }
     }
 
     class VibratoChangePeriodState : NoteEditState {
         public readonly UNote note;
-        public VibratoChangePeriodState(Canvas canvas, PianoRollViewModel vm, UNote note) : base(canvas, vm) {
+        public VibratoChangePeriodState(
+            Canvas canvas,
+            PianoRollViewModel vm,
+            IValueTip valueTip,
+            UNote note) : base(canvas, vm, valueTip) {
             this.note = note;
         }
         public override void Update(IPointer pointer, Point point) {
@@ -556,6 +653,7 @@ namespace OpenUtau.App.Views {
             if (newPeriod != note.vibrato.period) {
                 DocManager.Inst.ExecuteCmd(new VibratoPeriodCommand(notesVm.Part, note, newPeriod));
             }
+            valueTip.UpdateValueTip($"{note.vibrato.period:0.0}ms");
         }
     }
 
@@ -563,7 +661,13 @@ namespace OpenUtau.App.Views {
         public readonly UNote note;
         public readonly Point hitPoint;
         public readonly float initialShift;
-        public VibratoChangeShiftState(Canvas canvas, PianoRollViewModel vm, UNote note, Point hitPoint, float initialShift) : base(canvas, vm) {
+        public VibratoChangeShiftState(
+            Canvas canvas,
+            PianoRollViewModel vm,
+            IValueTip valueTip,
+            UNote note,
+            Point hitPoint,
+            float initialShift) : base(canvas, vm, valueTip) {
             this.note = note;
             this.hitPoint = hitPoint;
             this.initialShift = initialShift;
@@ -578,6 +682,7 @@ namespace OpenUtau.App.Views {
             if (newShift != note.vibrato.shift) {
                 DocManager.Inst.ExecuteCmd(new VibratoShiftCommand(notesVm.Part, note, newShift));
             }
+            valueTip.UpdateValueTip($"{note.vibrato.shift:0}%");
         }
     }
 
@@ -585,8 +690,12 @@ namespace OpenUtau.App.Views {
         public readonly UNote leadingNote;
         public readonly int index;
         public int startOffset;
-        public PhonemeMoveState(Canvas canvas, PianoRollViewModel vm,
-            UNote leadingNote, int index) : base(canvas, vm) {
+        public PhonemeMoveState(
+            Canvas canvas,
+            PianoRollViewModel vm,
+            IValueTip valueTip,
+            UNote leadingNote,
+            int index) : base(canvas, vm, valueTip) {
             this.leadingNote = leadingNote;
             this.index = index;
         }
@@ -599,6 +708,8 @@ namespace OpenUtau.App.Views {
             int offset = startOffset + notesVm.PointToTick(point) - notesVm.PointToTick(startPoint);
             DocManager.Inst.ExecuteCmd(new PhonemeOffsetCommand(
                 notesVm.Part, leadingNote, index, offset));
+            var project = notesVm.Project;
+            valueTip.UpdateValueTip($"{project.TickToMillisecond(offset):0.0}ms");
         }
     }
 
@@ -606,8 +717,13 @@ namespace OpenUtau.App.Views {
         public readonly UNote leadingNote;
         public readonly UPhoneme phoneme;
         public readonly int index;
-        public PhonemeChangePreutterState(Canvas canvas, PianoRollViewModel vm,
-            UNote leadingNote, UPhoneme phoneme, int index) : base(canvas, vm) {
+        public PhonemeChangePreutterState(
+            Canvas canvas,
+            PianoRollViewModel vm,
+            IValueTip valueTip,
+            UNote leadingNote,
+            UPhoneme phoneme,
+            int index) : base(canvas, vm, valueTip) {
             this.leadingNote = leadingNote;
             this.phoneme = phoneme;
             this.index = index;
@@ -616,8 +732,10 @@ namespace OpenUtau.App.Views {
             var notesVm = vm.NotesViewModel;
             var project = notesVm.Project;
             int preutterTicks = phoneme.Parent.position + phoneme.position - notesVm.PointToTick(point);
-            double preutterScale = Math.Max(0, project.TickToMillisecond(preutterTicks) / phoneme.oto.Preutter);
-            DocManager.Inst.ExecuteCmd(new PhonemePreutterCommand(notesVm.Part, leadingNote, index, (float)preutterScale));
+            double preutterDelta = project.TickToMillisecond(preutterTicks) - phoneme.autoPreutter;
+            preutterDelta = Math.Max(-phoneme.oto.Preutter, preutterDelta);
+            DocManager.Inst.ExecuteCmd(new PhonemePreutterCommand(notesVm.Part, leadingNote, index, (float)preutterDelta));
+            valueTip.UpdateValueTip($"{phoneme.preutter:0.0}ms ({preutterDelta:+0.0;-0.0;0}ms)");
         }
     }
 
@@ -625,8 +743,13 @@ namespace OpenUtau.App.Views {
         public readonly UNote leadingNote;
         public readonly UPhoneme phoneme;
         public readonly int index;
-        public PhonemeChangeOverlapState(Canvas canvas, PianoRollViewModel vm,
-            UNote leadingNote, UPhoneme phoneme, int index) : base(canvas, vm) {
+        public PhonemeChangeOverlapState(
+            Canvas canvas,
+            PianoRollViewModel vm,
+            IValueTip valueTip,
+            UNote leadingNote,
+            UPhoneme phoneme,
+            int index) : base(canvas, vm, valueTip) {
             this.leadingNote = leadingNote;
             this.phoneme = phoneme;
             this.index = index;
@@ -636,14 +759,19 @@ namespace OpenUtau.App.Views {
             var project = notesVm.Project;
             float preutter = phoneme.preutter;
             double overlap = preutter - project.TickToMillisecond(phoneme.Parent.position + phoneme.position - notesVm.PointToTick(point));
-            double overlapScale = Math.Max(0, Math.Min(overlap / phoneme.oto.Overlap, preutter / phoneme.oto.Overlap));
-            DocManager.Inst.ExecuteCmd(new PhonemeOverlapCommand(notesVm.Part, leadingNote, index, (float)overlapScale));
+            double overlapDelta = overlap - phoneme.autoOverlap;
+            DocManager.Inst.ExecuteCmd(new PhonemeOverlapCommand(notesVm.Part, leadingNote, index, (float)overlapDelta));
+            valueTip.UpdateValueTip($"{phoneme.overlap:0.0}ms ({overlapDelta:+0.0;-0.0;0}ms)");
         }
     }
 
     class PhonemeResetState : NoteEditState {
         public override MouseButton MouseButton => MouseButton.Right;
-        public PhonemeResetState(Canvas canvas, PianoRollViewModel vm) : base(canvas, vm) { }
+        protected override bool ShowValueTip => false;
+        public PhonemeResetState(
+            Canvas canvas,
+            PianoRollViewModel vm,
+            IValueTip valueTip) : base(canvas, vm, valueTip) { }
         public override void Update(IPointer pointer, Point point) {
             var notesVm = vm.NotesViewModel;
             var hitInfo = notesVm.HitTest.HitTestPhoneme(point);
@@ -655,9 +783,9 @@ namespace OpenUtau.App.Views {
                 if (hitInfo.hitPosition) {
                     DocManager.Inst.ExecuteCmd(new PhonemeOffsetCommand(notesVm.Part, leadingNote, index, 0));
                 } else if (hitInfo.hitPreutter) {
-                    DocManager.Inst.ExecuteCmd(new PhonemePreutterCommand(notesVm.Part, leadingNote, index, 1));
+                    DocManager.Inst.ExecuteCmd(new PhonemePreutterCommand(notesVm.Part, leadingNote, index, 0));
                 } else if (hitInfo.hitOverlap) {
-                    DocManager.Inst.ExecuteCmd(new PhonemeOverlapCommand(notesVm.Part, leadingNote, index, 1));
+                    DocManager.Inst.ExecuteCmd(new PhonemeOverlapCommand(notesVm.Part, leadingNote, index, 0));
                 }
             }
         }

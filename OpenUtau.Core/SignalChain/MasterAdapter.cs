@@ -11,7 +11,7 @@ namespace OpenUtau.Core.SignalChain {
         public int Paused { get; private set; }
 
         public MasterAdapter(ISignalSource source) {
-            waveFormat = WaveFormat.CreateIeeeFloatWaveFormat(44100, 1);
+            waveFormat = WaveFormat.CreateIeeeFloatWaveFormat(44100, 2);
             this.source = source;
         }
 

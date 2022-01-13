@@ -63,7 +63,35 @@ namespace OpenUtau.Api {
             /// </summary>
             public int duration;
 
+            /// <summary>
+            /// Phoneme overrides. Not guaranteed to exist or be ordered.
+            /// </summary>
+            public PhonemeAttributes[] phonemeAttributes;
+
             public override string ToString() => $"\"{lyric}\" pos:{position}";
+        }
+
+        public struct PhonemeAttributes {
+            /// <summary>
+            /// Index of phoneme.
+            /// </summary>
+            public int index;
+            /// <summary>
+            /// Consonant stretch ratio computed from velocity.
+            /// </summary>
+            public double? consonantStretchRatio;
+            /// <summary>
+            /// Tone shift. Shifts the note tone used for oto lookup.
+            /// </summary>
+            public int toneShift;
+            /// <summary>
+            /// Alternate index. The number suffix of duplicate aliases.
+            /// </summary>
+            public int? alternate;
+            /// <summary>
+            /// Voice color.
+            /// </summary>
+            public string voiceColor;
         }
 
         /// <summary>
@@ -84,6 +112,11 @@ namespace OpenUtau.Api {
             /// </summary>
             public int position;
 
+            /// <summary>
+            /// Suggested attributes. May or may not be used eventually.
+            /// </summary>
+            public PhonemeAttributes attributes;
+
             public override string ToString() => $"\"{phoneme}\" pos:{position}";
         }
 
@@ -100,7 +133,7 @@ namespace OpenUtau.Api {
         public string Name { get; set; }
         public string Tag { get; set; }
 
-        private double bpm;
+        protected double bpm;
         private int beatUnit;
         private int resolution;
 
@@ -125,7 +158,8 @@ namespace OpenUtau.Api {
         /// <param name="next">The note after the last extender note, if exists.</param>
         /// <param name="prevNeighbour">Same as prev if is immediate neighbour, otherwise null.</param>
         /// <param name="nextNeighbour">Same as next if is immediate neighbour, otherwise null.</param>
-        public abstract Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour);
+        /// <param name="prevs">Prev note neighbour with all extended notes. May be emtpy, not null</param>
+        public abstract Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevs);
 
         public override string ToString() => $"[{Tag}] {Name}";
 
@@ -167,20 +201,23 @@ namespace OpenUtau.Api {
             return result;
         }
 
-        /// <summary>
-        /// Utility method to tone-map phonemes.
-        /// Uses phoneme positions to find the most overlapped note, and tone-map based on it.
-        /// </summary>
-        public static void MapPhonemes(Note[] notes, Phoneme[] phonemes, USinger singer) {
-            int endPosition = 0;
-            int index = 0;
-            foreach (var note in notes) {
-                endPosition += note.duration;
-                while (index < phonemes.Length && phonemes[index].position < endPosition) {
-                    phonemes[index].phoneme = MapPhoneme(phonemes[index].phoneme, note.tone, singer);
-                    index++;
+        protected void OnAsyncInitStarted() {
+            DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, "Initializing phonemizer..."));
+        }
+
+        protected void OnAsyncInitFinished() {
+            DocManager.Inst.ExecuteCmd(new ValidateProjectNotification());
+            DocManager.Inst.ExecuteCmd(new PreRenderNotification());
+        }
+
+        protected Result MakeSimpleResult(string phoneme) {
+            return new Result() {
+                phonemes = new Phoneme[] {
+                    new Phoneme() {
+                        phoneme = phoneme
+                    }
                 }
-            }
+            };
         }
 
         /// <summary>
@@ -191,9 +228,12 @@ namespace OpenUtau.Api {
         /// <param name="tone">Music tone of note. C4 = 60.</param>
         /// <param name="singer">The singer.</param>
         /// <returns>Mapped alias.</returns>
-        public static string MapPhoneme(string phoneme, int tone, USinger singer) {
-            if (singer.TryGetMappedOto(phoneme, tone, out var oto)) {
-                phoneme = oto.Alias;
+        public static string MapPhoneme(string phoneme, int tone, string color, string alt, USinger singer) {
+            if (singer.TryGetMappedOto(phoneme + alt, tone, color, out var otoAlt)) {
+                return otoAlt.Alias;
+            }
+            if (singer.TryGetMappedOto(phoneme, tone, color, out var oto)) {
+                return oto.Alias;
             }
             return phoneme;
         }

@@ -36,7 +36,7 @@ namespace OpenUtau.Plugin.Builtin {
         // Simply stores the singer in a field.
         public override void SetSinger(USinger singer) => this.singer = singer;
 
-        public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour) {
+        public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
             var note = notes[0];
             if (!string.IsNullOrEmpty(note.phoneticHint)) {
                 // If a hint is present, returns the hint.
@@ -61,8 +61,17 @@ namespace OpenUtau.Plugin.Builtin {
                     phoneme = $"{vow} {note.lyric}";
                 }
             }
-            // Check if this singer acutally contains this alias, if not, fallback to the lyric itself.
-            if (!singer.TryGetMappedOto(phoneme, note.tone, out var _)) {
+            // Get color
+            string color = string.Empty;
+            int toneShift = 0;
+            if (note.phonemeAttributes != null) {
+                var attr = note.phonemeAttributes.FirstOrDefault(attr => attr.index == 0);
+                color = attr.voiceColor;
+                toneShift = attr.toneShift;
+            }
+            if (singer.TryGetMappedOto(phoneme, note.tone + toneShift, color, out var oto)) {
+                phoneme = oto.Alias;
+            } else {
                 phoneme = note.lyric;
             }
             return new Result {

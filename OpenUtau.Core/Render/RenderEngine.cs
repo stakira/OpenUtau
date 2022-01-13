@@ -33,16 +33,12 @@ namespace OpenUtau.Core.Render {
         readonly IResamplerDriver driver;
         readonly RenderCache cache;
         readonly int startTick;
-        readonly Dictionary<string, IResamplerDriver> resamplers;
 
         public RenderEngine(UProject project, IResamplerDriver driver, RenderCache cache, int startTick = 0) {
             this.project = project;
             this.driver = driver;
             this.cache = cache;
             this.startTick = startTick;
-            resamplers = ResamplerDriver.ResamplerDriver
-                .Search(PathManager.Inst.GetEngineSearchPath())
-                .ToDictionary(resampler => resampler.FilePath, resampler => resampler);
         }
 
         public Tuple<MasterAdapter, List<Fader>, CancellationTokenSource, Task> RenderProject(int startTick) {
@@ -52,21 +48,24 @@ namespace OpenUtau.Core.Render {
             foreach (var track in project.tracks) {
                 var trackItems = PrepareTrack(track, project, startTick).ToArray();
                 var sources = trackItems.Select(item => {
-                    var waveSource = new WaveSource(item.PosMs, item.DurMs, item.Envelope, item.SkipOver);
+                    var waveSource = new WaveSource(item.PosMs, item.DurMs, item.Envelope, item.SkipOver, 1);
                     item.OnComplete = data => waveSource.SetWaveData(data);
                     return waveSource;
                 }).ToList();
                 sources.AddRange(project.parts
                     .Where(part => part is UWavePart && part.trackNo == track.TrackNo)
                     .Select(part => part as UWavePart)
+                    .Where(part => part.Samples != null)
                     .Select(part => {
                         var waveSource = new WaveSource(
                             project.TickToMillisecond(part.position),
                             project.TickToMillisecond(part.Duration),
                             null,
-                            part.skipMs);
+                            part.skipMs, part.channels);
                         if (part.Samples != null) {
                             waveSource.SetSamples(part.Samples);
+                        } else {
+                            waveSource.SetSamples(new float[0]);
                         }
                         return waveSource;
                     }));
@@ -79,8 +78,10 @@ namespace OpenUtau.Core.Render {
             }
             items = items.OrderBy(item => item.PosMs).ToList();
             int threads = Util.Preferences.Default.PrerenderThreads;
-            var progress = new Progress(items.Count);
             var task = Task.Run(() => {
+                if (items.Count == 0) {
+                    return;
+                }
                 var progress = new Progress(items.Count);
                 Parallel.ForEach(source: items, parallelOptions: new ParallelOptions() {
                     MaxDegreeOfParallelism = threads
@@ -91,11 +92,10 @@ namespace OpenUtau.Core.Render {
                     item.progress = progress;
                     Resample(item);
                 });
-                ReleaseSourceTemp();
                 progress.Clear();
             });
             var master = new MasterAdapter(new WaveMix(faders));
-            master.SetPosition((int)(project.TickToMillisecond(startTick) * 44100 / 1000));
+            master.SetPosition((int)(project.TickToMillisecond(startTick) * 44100 / 1000) * 2);
             return Tuple.Create(master, faders, source, task);
         }
 
@@ -105,7 +105,7 @@ namespace OpenUtau.Core.Render {
                 var items = PrepareTrack(track, project, 0);
                 var progress = new Progress(items.Count());
                 var mix = new WaveMix(items.Select(item => {
-                    var waveSource = new WaveSource(item.PosMs, item.DurMs, item.Envelope, item.SkipOver);
+                    var waveSource = new WaveSource(item.PosMs, item.DurMs, item.Envelope, item.SkipOver, 1);
                     item.progress = progress;
                     item.OnComplete = data => waveSource.SetWaveData(data);
                     Resample(item);
@@ -133,6 +133,9 @@ namespace OpenUtau.Core.Render {
                             .ToArray();
                     }
                     var progress = new Progress(items.Length);
+                    if (items.Length == 0) {
+                        return;
+                    }
                     Parallel.ForEach(source: items, parallelOptions: new ParallelOptions() {
                         MaxDegreeOfParallelism = threads
                     }, body: item => {
@@ -142,7 +145,6 @@ namespace OpenUtau.Core.Render {
                         item.progress = progress;
                         Resample(item);
                     });
-                    ReleaseSourceTemp();
                     progress.Clear();
                 } catch (Exception e) {
                     if (!source.IsCancellationRequested) {
@@ -172,7 +174,7 @@ namespace OpenUtau.Core.Render {
                 .SelectMany(note => note.phonemes)
                 .Where(phoneme => !phoneme.Error)
                 .Where(phoneme => part.position + phoneme.Parent.position + phoneme.End > startTick)
-                .Select(phoneme => new RenderItem(phoneme, part, track, project, driver.GetInfo().Name));
+                .Select(phoneme => new RenderItem(phoneme, part, track, project, driver.Name));
         }
 
         RenderItem ResampleItem(object state) {
@@ -188,10 +190,11 @@ namespace OpenUtau.Core.Render {
                 data = cache.Get(hash);
                 if (data == null) {
                     CopySourceTemp(item);
-                    if (!resamplers.TryGetValue(item.ResamplerName, out var driver)) {
-                        driver = this.driver;
+                    var driver = ResamplerDrivers.GetResampler(item.ResamplerName);
+                    if (driver == null) {
+                        throw new Exception($"Resampler {item.ResamplerName} not found.");
                     }
-                    data = driver.DoResampler(DriverModels.CreateInputModel(item, 0), Log.Logger);
+                    data = driver.DoResampler(DriverModels.CreateInputModel(item), Log.Logger);
                     if (data == null || data.Length == 0) {
                         throw new Exception("Empty render result.");
                     }
@@ -249,7 +252,7 @@ namespace OpenUtau.Core.Render {
             }
         }
 
-        void ReleaseSourceTemp() {
+        public static void ReleaseSourceTemp() {
             var expire = DateTime.Now - TimeSpan.FromDays(7);
             string path = PathManager.Inst.GetCachePath();
             Log.Information($"ReleaseSourceTemp {path}");

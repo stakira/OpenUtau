@@ -795,7 +795,8 @@ namespace OpenUtau.UI {
             }
             if (midiVM.SelectedNotes.Count == 0 || midiVM.SelectedNotes.Contains(hit.note)) {
                 //if (!descriptor.isNoteExpression) {
-                DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(DocManager.Inst.Project, hit.phoneme, midiVM.visibleExpElement.Key, newValue));
+                var project = DocManager.Inst.Project;
+                DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(project, project.tracks[midiVM.Part.trackNo], hit.phoneme, midiVM.visibleExpElement.Key, newValue));
                 //} else {
                 //    DocManager.Inst.ExecuteCmd(new SetNoteExpressionCommand(DocManager.Inst.Project, hit.note, midiVM.visibleExpElement.Key, newValue));
                 //}

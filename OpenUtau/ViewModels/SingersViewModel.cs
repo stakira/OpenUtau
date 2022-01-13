@@ -20,7 +20,6 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public Bitmap? Avatar { get; set; }
         [Reactive] public string? Info { get; set; }
         [Reactive] public ObservableCollectionExtended<USubbank> Subbanks { get; set; }
-        [Reactive] public USubbank? SelectedSubbank { get; set; }
         [Reactive] public List<UOto>? Otos { get; set; }
         [Reactive] public List<MenuItemViewModel> SetEncodingMenuItems { get; set; }
 
@@ -37,6 +36,7 @@ namespace OpenUtau.App.ViewModels {
             this.WhenAnyValue(vm => vm.Singer)
                 .WhereNotNull()
                 .Subscribe(singer => {
+                    singer.Reload();
                     Avatar = LoadAvatar(singer);
                     Otos = singer.Otos.Values.ToList();
                     Info = $"Author: {singer.Author}\nWeb: {singer.Web}\n{singer.OtherInfo}\n\n{string.Join("\n", singer.Errors)}";
@@ -92,7 +92,7 @@ namespace OpenUtau.App.ViewModels {
             }
         }
 
-        private void Refresh() {
+        public void Refresh() {
             if (Singer == null) {
                 return;
             }
@@ -104,6 +104,7 @@ namespace OpenUtau.App.ViewModels {
             } else {
                 Singer = Singers.FirstOrDefault();
             }
+            DocManager.Inst.ExecuteCmd(new SingersRefreshedNotification());
         }
 
         Bitmap? LoadAvatar(USinger singer) {
@@ -139,45 +140,10 @@ namespace OpenUtau.App.ViewModels {
             }
         }
 
-        public void AddSubbank() {
-            var subbank = new USubbank(new Subbank());
-            Subbanks.Add(subbank);
-        }
-
-        public void RemoveSubbank() {
-            if (SelectedSubbank != null) {
-                Subbanks.Remove(SelectedSubbank);
-            }
-        }
-
-        public void SaveSubbanks() {
-            if (Singer == null) {
-                return;
-            }
-            var yamlFile = Path.Combine(Singer.Location, "character.yaml");
-            VoicebankConfig? bankConfig = null;
-            try {
-                // Load from character.yaml
-                if (File.Exists(yamlFile)) {
-                    using (var stream = File.OpenRead(yamlFile)) {
-                        bankConfig = VoicebankConfig.Load(stream);
-                    }
-                }
-            } catch {
-            }
-            if (bankConfig == null) {
-                bankConfig = new VoicebankConfig();
-            }
-            bankConfig.Subbanks = Subbanks.Select(subbank => subbank.subbank).ToArray();
-            try {
-                using (var stream = File.Open(yamlFile, FileMode.Create)) {
-                    bankConfig.Save(stream);
-                }
-            } catch (Exception e) {
-                DocManager.Inst.ExecuteCmd(new UserMessageNotification(
-                    $"Failed to save subbanks\n\n" + e.ToString()));
-            }
+        public void RefreshSinger() {
+            Singer?.Reload();
             LoadSubbanks();
+            DocManager.Inst.ExecuteCmd(new SingersRefreshedNotification());
         }
     }
 }

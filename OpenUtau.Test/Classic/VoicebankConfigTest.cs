@@ -33,12 +33,12 @@ namespace OpenUtau.Classic {
                     },
                     new Subbank() {
                         Suffix = "C5P",
-                        Tags = new [] { "power" },
+                        Color = "power" ,
                         ToneRanges = new [] { "B4-B7" },
                     },
                     new Subbank() {
                         Suffix = "C5S",
-                        Tags = new [] { "shout" },
+                        Color = "shout" ,
                         ToneRanges = new [] { "B4-B7" },
                     },
                 }
@@ -72,18 +72,16 @@ subbanks:
   suffix: C5
   tone_ranges:
   - B4-B7
-- prefix: ''
+- color: power
+  prefix: ''
   suffix: C5P
   tone_ranges:
   - B4-B7
-  tags:
-  - power
-- prefix: ''
+- color: shout
+  prefix: ''
   suffix: C5S
   tone_ranges:
   - B4-B7
-  tags:
-  - shout
 ".Replace("\r\n", "\n"), yaml.Replace("\r\n", "\n"));
         }
 

@@ -57,6 +57,7 @@
             <MenuItem Header="{DynamicResource menu.tools.layout.hsplit12}" Click="OnMenuLayoutHSplit12"/>
             <MenuItem Header="{DynamicResource menu.tools.layout.hsplit13}" Click="OnMenuLayoutHSplit13"/>
           </MenuItem>
+          <MenuItem Header="{DynamicResource menu.tools.clearrendercache}" Click="OnMenuClearRenderCache"/>
           <MenuItem Header="{DynamicResource menu.tools.project.expressions}" Click="OnMenuExpressionss"/>
           <MenuItem Header="{DynamicResource menu.tools.singers}" Click="OnMenuSingers"/>
           <MenuItem Header="{DynamicResource menu.tools.singer.install}" Click="OnMenuInstallSinger"/>
@@ -184,12 +185,12 @@
                    IsHitTestVisible="False"/>
       </c:PartsCanvas>
       <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent"
-              BoxShadow="inset 0 0 5 1 #7f7F7F7F" ClipToBounds="True" IsHitTestVisible="False">
+              BoxShadow="inset 0 0 5 1 #3F000000" ClipToBounds="True" IsHitTestVisible="False">
       </Border>
       <Border Grid.Row="1" Grid.Column="2" Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0" Height="24" PointerWheelChanged="ViewScalerPointerWheelChanged">
         <c:ViewScaler Name="VScaler" DataContext="{Binding TracksViewModel}" Value="{Binding TrackHeight}" Min="{Binding TrackHeightMin}" Max="{Binding TrackHeightMax}"/>
       </Border>
-      <TextBlock Grid.Row="3" Grid.ColumnSpan="3" VerticalAlignment="Center" HorizontalAlignment="Stretch" Height="20" Text="{Binding ProgressText}"/>
+      <TextBlock Grid.Row="3" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" Height="20" Margin="4,4,4,0" Text="{Binding ProgressText}"/>
       <ProgressBar Grid.Row="4" Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Value="{Binding Progress}"/>
     </Grid>
   </Grid>
