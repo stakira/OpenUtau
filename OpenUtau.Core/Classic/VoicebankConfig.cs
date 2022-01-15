@@ -45,6 +45,7 @@ namespace OpenUtau.Classic {
         public float PortraitOpacity = 0.67f;
         public string Author;
         public string Web;
+        public string Version;
         public SymbolSet SymbolSet { get; set; }
         public Subbank[] Subbanks { get; set; }
 

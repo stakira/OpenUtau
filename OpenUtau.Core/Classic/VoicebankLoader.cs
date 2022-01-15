@@ -135,6 +135,8 @@ namespace OpenUtau.Classic {
                         } else if (s[0] == "sample") {
                         } else if (s[0] == "web") {
                             voicebank.Web = s[1];
+                        } else if (s[0] == "version") {
+                            voicebank.Version = s[1];
                         } else {
                             otherLines.Add(line);
                         }
@@ -166,6 +168,9 @@ namespace OpenUtau.Classic {
             }
             if (!string.IsNullOrWhiteSpace(bankConfig.Web)) {
                 bank.Web = bankConfig.Web;
+            }
+            if (!string.IsNullOrWhiteSpace(bankConfig.Version)) {
+                bank.Version = bankConfig.Version;
             }
             if (bankConfig.Subbanks != null && bankConfig.Subbanks.Length > 0) {
                 foreach (var subbank in bankConfig.Subbanks) {

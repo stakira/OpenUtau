@@ -120,6 +120,7 @@ namespace OpenUtau.Core.Ustx {
         public string Author => Voicebank.Author;
         public string Location => Path.GetDirectoryName(Voicebank.File);
         public string Web => Voicebank.Web;
+        public string Version => Voicebank.Version;
         public string OtherInfo => Voicebank.OtherInfo;
         public string Avatar => Voicebank.Image == null ? null : Path.Combine(Location, Voicebank.Image);
         public string Portrait => Voicebank.Portrait == null ? null : Path.Combine(Location, Voicebank.Portrait);

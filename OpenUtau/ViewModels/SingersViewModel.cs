@@ -39,7 +39,7 @@ namespace OpenUtau.App.ViewModels {
                     singer.Reload();
                     Avatar = LoadAvatar(singer);
                     Otos = singer.Otos.Values.ToList();
-                    Info = $"Author: {singer.Author}\nWeb: {singer.Web}\n{singer.OtherInfo}\n\n{string.Join("\n", singer.Errors)}";
+                    Info = $"Author: {singer.Author}\nWeb: {singer.Web}\nVersion: {singer.Version}\n{singer.OtherInfo}\n\n{string.Join("\n", singer.Errors)}";
                     LoadSubbanks();
                 });
 
