@@ -74,11 +74,8 @@ namespace OpenUtau.Core.Editing {
     public class RemoveLetterSuffix : SingleNoteLyricEdit {
         public override string Name => "pianoroll.menu.lyrics.removelettersuffix";
         protected override string Transform(string lyric) {
-            if (lyric.Length <= 2) {
-                return lyric;
-            }
             int pos = lyric.Length - 1;
-            while (ShouldRemove(lyric[pos])) {
+            while (pos >= 0 && ShouldRemove(lyric[pos])) {
                 pos--;
             }
             return lyric.Substring(0, pos + 1);

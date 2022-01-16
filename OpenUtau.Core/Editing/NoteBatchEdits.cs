@@ -97,7 +97,58 @@ namespace OpenUtau.Core.Editing {
             var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
             docManager.StartUndoGroup();
             foreach (var note in notes) {
-                docManager.ExecuteCmd(new ResetExpressionsCommand(note));
+                if (note.phonemeExpressions.Count > 0 || note.noteExpressions.Count > 0) {
+                    docManager.ExecuteCmd(new ResetExpressionsCommand(note));
+                }
+            }
+            docManager.EndUndoGroup();
+        }
+    }
+
+    public class ClearVibratos : BatchEdit {
+        public virtual string Name => name;
+
+        private string name;
+
+        public ClearVibratos() {
+            name = "pianoroll.menu.notes.reset.vibratos";
+        }
+
+        public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
+            var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
+            docManager.StartUndoGroup();
+            foreach (var note in notes) {
+                if (note.vibrato.length > 0) {
+                    docManager.ExecuteCmd(new VibratoLengthCommand(part, note, 0));
+                }
+            }
+            docManager.EndUndoGroup();
+        }
+    }
+
+    public class ClearTimings : BatchEdit {
+        public virtual string Name => name;
+
+        private string name;
+
+        public ClearTimings() {
+            name = "pianoroll.menu.notes.reset.phonemetimings";
+        }
+
+        public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
+            var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
+            docManager.StartUndoGroup();
+            foreach (var note in notes) {
+                bool shouldClear = false;
+                foreach (var o in note.phonemeOverrides) {
+                    if (o.offset != null || o.preutterDelta != null || o.overlapDelta != null) {
+                        shouldClear = true;
+                        break;
+                    }
+                }
+                if (shouldClear) {
+                    docManager.ExecuteCmd(new ClearPhonemeTimingCommand(part, note));
+                }
             }
             docManager.EndUndoGroup();
         }

@@ -57,13 +57,14 @@ namespace OpenUtau.Core.Ustx {
             if (Error) {
                 return;
             }
-            if (Parent.Extends != null) {
-                Duration = Parent.Extends.ExtendedEnd - Parent.position - position;
-            } else {
-                Duration = Parent.ExtendedDuration - position;
-            }
+            var leadingNote = Parent.Extends ?? Parent;
+            int pos = Parent.position + position;
+            Duration = leadingNote.ExtendedEnd - pos;
             if (Next != null) {
-                Duration = Math.Min(Duration, Next.Parent.position + Next.position - (Parent.position + position));
+                if (Next.Parent == Parent.Next && Parent.End == Next.Parent.position) {
+                    Duration = int.MaxValue;
+                }
+                Duration = Math.Min(Duration, Next.Parent.position + Next.position - pos);
             }
             Error = Duration <= 0;
         }
@@ -103,11 +104,13 @@ namespace OpenUtau.Core.Ustx {
             if (Prev != null) {
                 int gapTick = Parent.position + position - (Prev.Parent.position + Prev.End);
                 float gapMs = (float)project.TickToMillisecond(gapTick);
+                float prevDur = (float)project.TickToMillisecond(Prev.Duration);
                 float maxPreutter = autoPreutter;
                 if (gapMs <= 0) {
-                    // Keep at least half of last phoneme.
                     overlapped = true;
-                    maxPreutter = (float)project.TickToMillisecond(Prev.Duration) * 0.5f;
+                    if (autoPreutter - autoOverlap > prevDur * 0.5f) {
+                        maxPreutter = prevDur * 0.5f / (autoPreutter - autoOverlap) * autoPreutter;
+                    }
                 } else if (gapMs < autoPreutter) {
                     maxPreutter = gapMs;
                 }
@@ -115,6 +118,11 @@ namespace OpenUtau.Core.Ustx {
                     float ratio = maxPreutter / autoPreutter;
                     autoPreutter = maxPreutter;
                     autoOverlap *= ratio;
+                }
+                if (autoPreutter > prevDur * 0.9f) {
+                    float delta = autoPreutter - prevDur * 0.9f;
+                    autoPreutter -= delta;
+                    autoOverlap -= delta;
                 }
             }
             preutter = Math.Max(0, autoPreutter + (preutterDelta ?? 0));

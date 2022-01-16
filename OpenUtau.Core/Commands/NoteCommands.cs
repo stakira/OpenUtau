@@ -372,4 +372,32 @@ namespace OpenUtau.Core {
         }
         public override string ToString() => "Set phoneme overlap";
     }
+
+    public class ClearPhonemeTimingCommand : NoteCommand {
+        readonly UNote note;
+        readonly Tuple<int, int?, float?, float?>[] oldValues;
+        public ClearPhonemeTimingCommand(UVoicePart part, UNote note) : base(part, note) {
+            this.note = note;
+            oldValues = note.phonemeOverrides
+                .Select(o => Tuple.Create(o.index, o.offset, o.preutterDelta, o.overlapDelta))
+                .ToArray();
+        }
+
+        public override void Execute() {
+            foreach (var o in note.phonemeOverrides) {
+                o.offset = null;
+                o.preutterDelta = null;
+                o.overlapDelta = null;
+            }
+        }
+        public override void Unexecute() {
+            foreach (var t in oldValues) {
+                var o = note.GetPhonemeOverride(t.Item1);
+                o.offset = t.Item2;
+                o.preutterDelta = t.Item3;
+                o.overlapDelta = t.Item4;
+            }
+        }
+        public override string ToString() => "Clear phoneme timing";
+    }
 }

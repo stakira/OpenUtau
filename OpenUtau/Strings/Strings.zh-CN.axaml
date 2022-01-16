@@ -117,6 +117,10 @@
   <system:String x:Key="pianoroll.menu.notes.addtailrest">添加尾部"R"音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">量化至1/128音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">量化至1/64音符</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.exps">重置表情</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">重置滑音</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">重置音素时机</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.vibratos">重置颤音</system:String>
   <system:String x:Key="pianoroll.menu.part">片段</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">传统插件 (实验性)</system:String>
   <system:String x:Key="pianoroll.menu.part.rename">重命名</system:String>

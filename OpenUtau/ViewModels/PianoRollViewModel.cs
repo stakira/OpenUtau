@@ -126,6 +126,8 @@ namespace OpenUtau.App.ViewModels {
                 new QuantizeNotes(30),
                 new ResetPitchBends(),
                 new ResetAllExpressions(),
+                new ClearVibratos(),
+                new ClearTimings(),
             }.Select(edit => new MenuItemViewModel() {
                 Header = ThemeManager.GetString(edit.Name),
                 Command = noteBatchEditCommand,

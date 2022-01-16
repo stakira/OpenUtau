@@ -120,6 +120,8 @@
   <system:String x:Key="pianoroll.menu.notes.quantize30">Quantize to 1/64</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">Reset all expressions</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">Reset pitch bends</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">Reset phoneme timings</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.vibratos">Reset vibratos</system:String>
   <system:String x:Key="pianoroll.menu.part">Part</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">Legacy Plugin (Experimental)</system:String>
   <system:String x:Key="pianoroll.menu.part.rename">Rename</system:String>
