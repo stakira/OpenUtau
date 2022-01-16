@@ -89,8 +89,8 @@
   <system:String x:Key="menu.tools.layout.vsplit13">Dọc 1:3</system:String>
   <system:String x:Key="menu.tools.prefs">Tuỳ chỉnh...</system:String>
   <system:String x:Key="menu.tools.project.expressions">Biểu cảm...</system:String>
-  <system:String x:Key="menu.tools.singer.install">Cài đặt ca sĩ...</system:String>
-  <system:String x:Key="menu.tools.singer.installadv">Cài đặt ca sĩ (Nâng cao)...</system:String>
+  <system:String x:Key="menu.tools.singer.install">Cài đặt ca sĩ vào...</system:String>
+  <system:String x:Key="menu.tools.singer.installadv">Cài đặt ca sĩ vào(Nâng cao)...</system:String>
   <system:String x:Key="menu.tools.singers">Danh sách ca sĩ...</system:String>
 
   <system:String x:Key="oto.alias">Alias</system:String>
@@ -120,13 +120,15 @@
   <system:String x:Key="pianoroll.menu.notes.quantize30">Chia thành quãng 1/64</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">Đặt lại các biểu cảm</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">Đặt lại các đường luyến giọng</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">Đặt lại chỉnh sửa thời gian âm vị</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.vibratos">Đặt lại rung giọng</system:String>
   <system:String x:Key="pianoroll.menu.part">Phần</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">Sử dụng Plugin của UTAU (Thử nghiệm)</system:String>
   <system:String x:Key="pianoroll.menu.part.rename">Đặt tên lại</system:String>
   <system:String x:Key="pianoroll.toggle.phoneme">Hiện Phiên âm (O)</system:String>
   <system:String x:Key="pianoroll.toggle.pitch">Hiện Đường luyến giọng (I)</system:String>
   <system:String x:Key="pianoroll.toggle.snap">Bật tắt Gán (P)</system:String>
-  <system:String x:Key="pianoroll.toggle.tips">Hiện Chỉ dẫn (T)</system:String>
+  <system:String x:Key="pianoroll.toggle.tips">Hiện Hướng dẫn (T)</system:String>
   <system:String x:Key="pianoroll.toggle.tone">Hiện Chất giọng trên nốt (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">Hiện Rung giọng (U)</system:String>
   <system:String x:Key="pianoroll.tool.eraser">Công cụ Xoá nốt (3)</system:String>
@@ -163,16 +165,16 @@ Nhấn giữ Ctrl để chọn đồng loạt nhiều nốt</system:String>
   <system:String x:Key="prefs.rendering.resampler.note">
     Ghi chú: để sử dụng resampler bên ngoài, thêm tệp resampler định dạng EXE hoặc DLL vào trong thư mục Resamplers nằm trong đường dẫn cài đặt của OpenUTAU và chọn trong Tuỳ chọn.
   </system:String>
-  <system:String x:Key="prefs.rendering.resampler.preview">Resampler cho việc nghe trước</system:String>
+  <system:String x:Key="prefs.rendering.resampler.preview">Resampler cho việc nghe thử trước</system:String>
   <system:String x:Key="prefs.rendering.resampler.warn">
 Cảnh báo: moresampler chưa được hỗ trợ hoàn toàn. Việc sử dụng có thể làm chậm và gây quá tải CPU. Nếu cần thiết, xin làm theo chỉ dẫn sau đây:
 1. Chỉnh "resampler-compatibility" thành "on" trong moreconfig.txt.
 2. Chỉnh "auto-update-llsm-mrq" thành "off" trong moreconfig.txt.
 3. Hạ thấp luồng cho phép render trước thành 1 hoặc 2.
-4. Kiên nhẫn đợi việc hoàn thành render trước khi chơi.
+4. Kiên nhẫn chờ đợi hoàn tất việc render trước khi phát.
   </system:String>
 
-  <system:String x:Key="progress.saved">Hoàn tất việc lưu dự án. {0}</system:String>
+  <system:String x:Key="progress.saved">Hoàn thành lưu dự án. {0}</system:String>
 
   <system:String x:Key="singers.caption">Ca sĩ</system:String>
   <system:String x:Key="singers.location">Đường dẫn</system:String>
@@ -193,30 +195,30 @@ Cảnh báo: moresampler chưa được hỗ trợ hoàn toàn. Việc sử dụ
   <system:String x:Key="singers.subbanks.toneranges">Độ cao chất giọng</system:String>
 
   <system:String x:Key="tip.exps">
-Left Button Draw: Thiết lập biểu cảm
-Right Button Draw: Đặt lại biểu cảm
+Nhấn giữ và kéo trái chuột: Thiết lập biểu cảm
+Nhấn giữ và kéo phải: Đặt lại biểu cảm
   </system:String>
   <system:String x:Key="tip.lyricbox.next">Tab: Nốt tiếp theo</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: Nốt trước</system:String>
   <system:String x:Key="tip.notes.basics">
 Công cụ Lựa chọn
-    Box Select: Chọn các nốt nhạc
-    Ctrl + Box Select: Chọn thêm nhiều nốt nhạc
+    Nhấn giữ và kéo chuột: Chọn các nốt nhạc
+    Ctrl + Nhấn giữ và kéo chuột: Chọn thêm các nốt nhạc
     Up/Down: Điều chỉnh cao độ các nốt nhạc
     Ctrl + Up/Down: Điều chỉnh cao độ các nốt nhạc theo quãng tám
 Công cụ Điền nốt
-    Left Button Draw: Thêm nốt nhạc
-    Right Click: Xoá nốt nhạc
-    Right Button Draw: Xoá nhiều nốt nhạc
+    Nhấn giữ và kéo trái chuột: Điền nốt nhạc
+    Nhấn phải chuột: Xoá nốt nhạc
+    Nhấn giữ và kéo phải chuột: Xoá nhiều nốt nhạc
 Tổng quát
-    T: Bật tắt chỉ dẫn
-    Kéo các Nốt nhạc: Di chuyển nốt nhạc
-    Két Đuôi Nốt nhạc: Chỉnh sửa độ dài nốt nhạc
-    Alt + Kéo Đuôi Nốt nhạc: Chỉnh sửa độ dài nốt tiếp theo
+    T: Bật tắt hướng dẫn
+    Nhấn giữ và kéo các nốt nhạc: Di chuyển nốt nhạc
+    Két đuôi nốt nhạc: Chỉnh sửa độ dài nốt nhạc
+    Alt + Kéo đuôi bốt nhạc: Chỉnh sửa độ dài nốt tiếp theo
     Space: Chơi nhạc
   </system:String>
-  <system:String x:Key="tip.notes.zoomx">◀ Cuộn ở đây để phóng to theo chiều ngang ▶</system:String>
-  <system:String x:Key="tip.notes.zoomy">Cuộn ở đây để phóng to theo chiều dọc ▶</system:String>
+  <system:String x:Key="tip.notes.zoomx">◀ Cuộn chỗ này để phóng to theo chiều ngang ▶</system:String>
+  <system:String x:Key="tip.notes.zoomy">Cuộn chỗ này để phóng to theo chiều dọc ▶</system:String>
 
   <system:String x:Key="tracks.movedown">Di chuyển xuống</system:String>
   <system:String x:Key="tracks.moveup">Di chuyển lên</system:String>
@@ -225,7 +227,7 @@ Tổng quát
 
   <system:String x:Key="updater.caption">Kiểm tra cập nhật</system:String>
   <system:String x:Key="updater.github">GitHub</system:String>
-  <system:String x:Key="updater.status.available">Đã có bản cập nhật v{0} mới!</system:String>
+  <system:String x:Key="updater.status.available">Có bản cập nhật v{0} mới!</system:String>
   <system:String x:Key="updater.status.checking">Đang kiểm tra cập nhật...</system:String>
   <system:String x:Key="updater.status.notavailable">Bản mới nhất</system:String>
   <system:String x:Key="updater.status.unknown">Không thể kiểm tra cập nhật</system:String>
