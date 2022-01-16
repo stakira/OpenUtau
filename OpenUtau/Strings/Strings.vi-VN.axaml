@@ -120,7 +120,7 @@
   <system:String x:Key="pianoroll.menu.notes.quantize30">Chia thành quãng 1/64</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">Đặt lại các biểu cảm</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">Đặt lại các đường luyến giọng</system:String>
-  <system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">Đặt lại chỉnh sửa thời gian âm vị</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">Đặt lại thời gian âm vị</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.vibratos">Đặt lại rung giọng</system:String>
   <system:String x:Key="pianoroll.menu.part">Phần</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">Sử dụng Plugin của UTAU (Thử nghiệm)</system:String>
