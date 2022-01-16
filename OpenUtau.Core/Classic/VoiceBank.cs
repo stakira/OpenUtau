@@ -15,6 +15,7 @@ namespace OpenUtau.Classic {
         public float PortraitOpacity;
         public string Author;
         public string Web;
+        public string Version;
         public string OtherInfo;
         public Encoding TextFileEncoding;
         public VoicebankType VoicebankType;
@@ -29,6 +30,7 @@ namespace OpenUtau.Classic {
             PortraitOpacity = 0;
             Author = null;
             Web = null;
+            Version = null;
             OtherInfo = null;
             TextFileEncoding = null;
             VoicebankType = VoicebankType.Classic;
