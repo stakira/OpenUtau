@@ -208,12 +208,12 @@ namespace OpenUtau.Plugin.Builtin {
         protected Dictionary<string, string> AltCv => new Dictionary<string, string> {
             {"yi", "i" },
             {"wu", "u" },
-            {"wo", "ulo" }, //use うぉ instead of を
+            {"wo", "wo" },
             {"rra", "wa" },
             {"rri", "wi" },
             {"rru", "ru" },
             {"rre", "we" },
-            {"rro", "wo" }, //use うぉ instead of を
+            {"rro", "wo" },
         };
         protected Dictionary<string, string[]> ExtraCv => new Dictionary<string, string[]> {
             {"si", new [] { "se", "i" } },
@@ -237,6 +237,7 @@ namespace OpenUtau.Plugin.Builtin {
             {"ye", new [] { "i", "e" } },
             {"wi", new [] { "u", "i" } },
             {"we", new [] { "u", "e" } },
+            {"wo", new [] { "u", "o" } },
         };
 
         protected List<string> ConvertPhoneme(string consonant, string vowel) {
@@ -247,9 +248,7 @@ namespace OpenUtau.Plugin.Builtin {
             }
 
             var cv = $"{consonant}{vowel}";
-            if (AltCv.ContainsKey(cv)) {
-                cv = AltCv[cv];
-            }
+            cv = AltCv.ContainsKey(cv) ? AltCv[cv] : cv;
             if (ExtraCv.ContainsKey(cv)) {
                 romaji.AddRange(ExtraCv[cv]);
             } else {
