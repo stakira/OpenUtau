@@ -195,6 +195,11 @@ namespace OpenUtau.Plugin.Builtin {
             var v = syllable.v;
             var phonemes = new List<string>();
 
+            if (CanMakeAliasExtension(syllable)) {
+                phonemes.Add(null);
+                return phonemes;
+            }
+
             if (prevV.Length == 2) {
                 var newCC = new List<string>();
                 newCC.Add(prevV[1].ToString());
@@ -221,7 +226,7 @@ namespace OpenUtau.Plugin.Builtin {
             var phonemesVcv = new List<string>();
             foreach (var phoneme in phonemes) {
                 var vcv = $"{prevV} {phoneme}";
-                if (HasOto(vcv, syllable.tone)) {
+                if (HasOto(vcv, syllable.vowelTone)) {
                     phonemesVcv.Add(vcv);
                 } else {
                     phonemesVcv.Add(phoneme);
