@@ -168,12 +168,25 @@ namespace OpenUtau.Plugin.Builtin {
                 newCC.Add(prevV[1].ToString());
                 newCC.AddRange(cc);
                 cc = newCC.ToArray();
+                prevV = prevV[0].ToString();
             }
 
             foreach (var symbol in cc) {
                 phonemes.Add(SoloConsonant[symbol]);
             }
-            return phonemes;
+
+            var phonemesVcv = new List<string>();
+            foreach (var phoneme in phonemes) {
+                var vcv = $"{prevV} {phoneme}";
+                if (HasOto(vcv, ending.tone)) {
+                    phonemesVcv.Add(vcv);
+                } else {
+                    phonemesVcv.Add(phoneme);
+                }
+                prevV = WanaKana.ToRomaji(phoneme).Last<char>().ToString();
+            }
+
+            return phonemesVcv;
         }
 
         protected override List<string> ProcessSyllable(Syllable syllable) {
@@ -187,6 +200,9 @@ namespace OpenUtau.Plugin.Builtin {
                 newCC.Add(prevV[1].ToString());
                 newCC.AddRange(cc);
                 cc = newCC.ToArray();
+                prevV = prevV[0].ToString();
+            } else if (prevV.Length == 0) {
+                prevV = "-";
             }
             
             if (cc.Length > 0) {
@@ -202,7 +218,18 @@ namespace OpenUtau.Plugin.Builtin {
                 phonemes.AddRange(ConvertPhoneme("",v));
             }
 
-            return phonemes;
+            var phonemesVcv = new List<string>();
+            foreach (var phoneme in phonemes) {
+                var vcv = $"{prevV} {phoneme}";
+                if (HasOto(vcv, syllable.tone)) {
+                    phonemesVcv.Add(vcv);
+                } else {
+                    phonemesVcv.Add(phoneme);
+                }
+                prevV = WanaKana.ToRomaji(phoneme).Last<char>().ToString();
+            }
+
+            return phonemesVcv;
         }
 
         protected Dictionary<string, string> AltCv => new Dictionary<string, string> {
