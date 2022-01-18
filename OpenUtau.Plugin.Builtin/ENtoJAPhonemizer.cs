@@ -273,6 +273,11 @@ namespace OpenUtau.Plugin.Builtin {
                 if (i == cc.Length - 1) {
                     adjustedCC.Add(cc[i]);
                 } else {
+                    if (cc[i] == cc[i+1]) {
+                        adjustedCC.Add(cc[i]);
+                        i++;
+                        continue;
+                    }
                     var diphone = $"{cc[i]}{cc[i + 1]}";
                     if (SpecialClusters.Contains(diphone)) {
                         adjustedCC.Add(diphone);
@@ -358,6 +363,11 @@ namespace OpenUtau.Plugin.Builtin {
                 if (i == cc.Length - 1) {
                     adjustedCC.Add(cc[i]);
                 } else {
+                    if (cc[i] == cc[i + 1]) {
+                        adjustedCC.Add(cc[i]);
+                        i++;
+                        continue;
+                    }
                     var diphone = $"{cc[i]}{cc[i + 1]}";
                     if (SpecialClusters.Contains(diphone)) {
                         adjustedCC.Add(diphone);
@@ -386,12 +396,16 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
-            Result result =  base.Process(notes, prev, next, prevNeighbour, nextNeighbour, prevNeighbours);
-            var lastIndex = result.phonemes.Length - 1;
-            var lastPhoneme = result.phonemes[lastIndex].phoneme;
-            var cons = SoloConsonant.Values.ToArray<string>();
-            if (cons.Any(lastPhoneme.Contains)) {
-                result.phonemes[lastIndex].position = notes.Last<Note>().duration;
+            Result result = base.Process(notes, prev, next, prevNeighbour, nextNeighbour, prevNeighbours);
+            
+            if (nextNeighbour == null && result.phonemes.Length > 1) {
+                var lastIndex = result.phonemes.Length - 1;
+                var lastPhoneme = result.phonemes[lastIndex].phoneme;
+                var cons = SoloConsonant.Values.ToArray<string>();
+                var vow = "あ い う え お ん".Split();
+                if (cons.Any(lastPhoneme.Contains) && !vow.Any(lastPhoneme.Contains)) {
+                    result.phonemes[lastIndex].position = notes.Sum(note => note.duration);
+                }
             }
             return result;
         }
