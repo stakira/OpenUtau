@@ -336,9 +336,11 @@ namespace OpenUtau.Plugin.Builtin {
             if (split && ExtraCv.ContainsKey(cv)) {
                 var splitCv = ExtraCv[cv];
                 for (var i = 0; i < splitCv.Length; i++) {
-                    var converted = WanaKana.ToHiragana(splitCv[i]);
-                    phonemes.Add(TryVcv(prevV, converted, syllable.vowelTone));
-                    prevV = splitCv[i].Last<char>().ToString();
+                    if (splitCv[i] != prevV) {
+                        var converted = WanaKana.ToHiragana(splitCv[i]);
+                        phonemes.Add(TryVcv(prevV, converted, syllable.vowelTone));
+                        prevV = splitCv[i].Last<char>().ToString();
+                    }
                 }
             }
 
