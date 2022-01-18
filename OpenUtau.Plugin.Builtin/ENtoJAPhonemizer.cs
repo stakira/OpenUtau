@@ -10,8 +10,8 @@ namespace OpenUtau.Plugin.Builtin {
     public class ENtoJAPhonemizer : SyllableBasedPhonemizer {
         protected override string[] GetVowels() => "a i u e o ay ey oy ow aw".Split();
 
-        protected override string[] GetConsonants() => 
-            "b ch d dh f g h j k l m n ng p r s sh t th v w y z zh".Split();
+        protected override string[] GetConsonants() =>
+            "b by ch d dh f g gy h hy j k ky l ly m my n ny ng p py r ry s sh t ts th v w y z zh".Split();
         protected override string GetDictionaryName() => "cmudict-0_7b.txt";
         protected override Dictionary<string, string> GetDictionaryPhonemesReplacement() => new Dictionary<string, string> {
             { "AA", "a" },
@@ -107,23 +107,33 @@ namespace OpenUtau.Plugin.Builtin {
         private Dictionary<string, string> StartingConsonant => new Dictionary<string, string> {
             { "", "" },
             { "b", "b" },
+            { "by", "by" },
             { "ch", "ch" },
             { "d", "d" },
             { "dh", "d" },
             { "f", "f" },
             { "g", "g" },
+            { "gy", "gy" },
             { "h", "h" },
+            { "hy", "hy" },
             { "j", "j" },
             { "k", "k" },
+            { "ky", "ky" },
             { "l", "r" },
+            { "ly", "ry" },
             { "m", "m" },
+            { "my", "my" },
             { "n", "n" },
+            { "ny", "ny" },
             { "ng", "n" },
             { "p", "p" },
+            { "py", "py" },
             { "r", "rr" },
+            { "ry", "ry" },
             { "s", "s" },
             { "sh", "sh" },
             { "t", "t" },
+            { "ts", "ts" },
             { "th", "s" },
             { "v", "f" },
             { "w", "w" },
@@ -134,23 +144,33 @@ namespace OpenUtau.Plugin.Builtin {
 
         private Dictionary<string, string> SoloConsonant => new Dictionary<string, string> {
             { "b", "ぶ" },
+            { "by", "び" },
             { "ch", "ちゅ" },
             { "d", "ど" },
             { "dh", "ず" },
             { "f", "ふ" },
             { "g", "ぐ" },
+            { "gy", "ぎ" },
             { "h", "ほ" },
+            { "hy", "ひ" },
             { "j", "じゅ" },
             { "k", "く" },
+            { "ky", "き" },
             { "l", "う" },
+            { "ly", "り" },
             { "m", "む" },
+            { "my", "み" },
             { "n", "ん" },
+            { "ny", "に" },
             { "ng", "ん" },
             { "p", "ぷ" },
+            { "py", "ぴ" },
             { "r", "う" },
+            { "ry", "り" },
             { "s", "す" },
             { "sh", "しゅ" },
             { "t", "と" },
+            { "ts", "つ" },
             { "th", "す" },
             { "v", "ふ" },
             { "w", "う" },
@@ -158,6 +178,8 @@ namespace OpenUtau.Plugin.Builtin {
             { "z", "ず" },
             { "zh", "しゅ" },
         };
+
+        private string[] SpecialClusters = "ky gy ts ny hy by py my ry ly".Split();
 
         private Dictionary<string, string> AltCv => new Dictionary<string, string> {
             {"yi", "i" },
@@ -219,6 +241,23 @@ namespace OpenUtau.Plugin.Builtin {
             if (v.Length == 2) {
                 v = v[0].ToString();
             }
+
+            // Check CCs for special clusters
+            var adjustedCC = new List<string>();
+            for (var i = 0; i < cc.Length; i++) {
+                if (i == cc.Length - 1) {
+                    adjustedCC.Add(cc[i]);
+                } else {
+                    var diphone = $"{cc[i]}{cc[i + 1]}";
+                    if (SpecialClusters.Contains(diphone)) {
+                        adjustedCC.Add(diphone);
+                        i++;
+                    } else {
+                        adjustedCC.Add(cc[i]);
+                    }
+                }
+            }
+            cc = adjustedCC.ToArray();
 
             // Separate CCs and main CV
             var finalCons = "";
