@@ -191,11 +191,12 @@ namespace OpenUtau.Plugin.Builtin {
             {"hu", "holu" },
             {"yi", "i" },
             {"wu", "u" },
+            {"wo", "ulo" },
             {"rra", "wa" },
             {"rri", "wi" },
             {"rru", "ru" },
             {"rre", "we" },
-            {"rro", "wo" },
+            {"rro", "ulo" },
         };
 
         private Dictionary<string, string[]> ExtraCv => new Dictionary<string, string[]> {
@@ -228,7 +229,7 @@ namespace OpenUtau.Plugin.Builtin {
             {"rye", new [] { "ri", "e" } },
             {"wi", new [] { "u", "i" } },
             {"we", new [] { "u", "e" } },
-            {"wo", new [] { "u", "o" } },
+            {"ulo", new [] { "u", "o" } },
         };
 
         protected override List<string> ProcessEnding(Ending ending) {
@@ -320,9 +321,8 @@ namespace OpenUtau.Plugin.Builtin {
             var split = false;
             if (HasOto(hiragana, syllable.vowelTone)) {
                 phonemes.Add(hiragana);
-            } else if (cv == "wo") {
-                hiragana = "うぉ";
-                hiragana = TryVcv(prevV, hiragana, syllable.vowelTone);
+            } else if (cv == "ulo") {
+                hiragana = TryVcv(prevV, "を", syllable.vowelTone);
                 if (HasOto(hiragana, syllable.vowelTone)) {
                     phonemes.Add(hiragana);
                 } else {
