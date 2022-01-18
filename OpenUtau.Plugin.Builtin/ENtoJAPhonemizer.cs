@@ -389,10 +389,8 @@ namespace OpenUtau.Plugin.Builtin {
             Result result =  base.Process(notes, prev, next, prevNeighbour, nextNeighbour, prevNeighbours);
             var lastIndex = result.phonemes.Length - 1;
             var lastPhoneme = result.phonemes[lastIndex].phoneme;
-            if (lastPhoneme.Contains(" ")) {
-                lastPhoneme = lastPhoneme.Substring(lastPhoneme.IndexOf(" ") + 1);
-            }
-            if (SoloConsonant.ContainsValue(lastPhoneme)) {
+            var cons = SoloConsonant.Values.ToArray<string>();
+            if (cons.Any(lastPhoneme.Contains)) {
                 result.phonemes[lastIndex].position = notes.Last<Note>().duration;
             }
             return result;
