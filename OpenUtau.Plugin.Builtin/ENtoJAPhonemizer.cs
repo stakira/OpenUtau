@@ -182,6 +182,13 @@ namespace OpenUtau.Plugin.Builtin {
         private string[] SpecialClusters = "ky gy ts ny hy by py my ry ly".Split();
 
         private Dictionary<string, string> AltCv => new Dictionary<string, string> {
+            {"si", "suli" },
+            {"zi", "zuli" },
+            {"ti", "teli" },
+            {"tu", "tolu" },
+            {"di", "deli" },
+            {"du", "dolu" },
+            {"hu", "holu" },
             {"yi", "i" },
             {"wu", "u" },
             {"rra", "wa" },
@@ -189,6 +196,39 @@ namespace OpenUtau.Plugin.Builtin {
             {"rru", "ru" },
             {"rre", "we" },
             {"rro", "wo" },
+        };
+
+        private Dictionary<string, string[]> ExtraCv => new Dictionary<string, string[]> {
+            {"kye", new [] { "ki", "e" } },
+            {"gye", new [] { "gi", "e" } },
+            {"suli", new [] { "se", "i" } },
+            {"she", new [] { "si", "e" } },
+            {"zuli", new [] { "ze", "i" } },
+            {"je", new [] { "ji", "e" } },
+            {"teli", new [] { "te", "i" } },
+            {"tolu", new [] { "to", "u" } },
+            {"che", new [] { "chi", "e" } },
+            {"tsa", new [] { "tsu", "a" } },
+            {"tsi", new [] { "tsu", "i" } },
+            {"tse", new [] { "tsu", "e" } },
+            {"tso", new [] { "tsu", "o" } },
+            {"deli", new [] { "de", "i" } },
+            {"dolu", new [] { "do", "u" } },
+            {"nye", new [] { "ni", "e" } },
+            {"hye", new [] { "hi", "e" } },
+            {"holu", new [] { "ho", "u" } },
+            {"fa", new [] { "fu", "a" } },
+            {"fi", new [] { "fu", "i" } },
+            {"fe", new [] { "fu", "e" } },
+            {"fo", new [] { "fu", "o" } },
+            {"bye", new [] { "bi", "e" } },
+            {"pye", new [] { "pi", "e" } },
+            {"mye", new [] { "mi", "e" } },
+            {"ye", new [] { "i", "e" } },
+            {"rye", new [] { "ri", "e" } },
+            {"wi", new [] { "u", "i" } },
+            {"we", new [] { "u", "e" } },
+            {"wo", new [] { "u", "o" } },
         };
 
         protected override List<string> ProcessEnding(Ending ending) {
@@ -274,35 +314,36 @@ namespace OpenUtau.Plugin.Builtin {
             var cv = $"{StartingConsonant[finalCons]}{v}";
             cv = AltCv.ContainsKey(cv) ? AltCv[cv] : cv;
             var hiragana = WanaKana.ToHiragana(cv);
-            phonemes.Add(TryVcv(prevV, hiragana, syllable.vowelTone));
+            hiragana = TryVcv(prevV, hiragana, syllable.vowelTone);
+
+            // Check for nonstandard CV
+            var split = false;
+            if (HasOto(hiragana, syllable.vowelTone)) {
+                phonemes.Add(hiragana);
+            } else if (cv == "wo") {
+                hiragana = "うぉ";
+                hiragana = TryVcv(prevV, hiragana, syllable.vowelTone);
+                if (HasOto(hiragana, syllable.vowelTone)) {
+                    phonemes.Add(hiragana);
+                } else {
+                    split = true;
+                }
+            } else {
+                split = true;
+            }
+            
+            // Handle nonstandard CV
+            if (split && ExtraCv.ContainsKey(cv)) {
+                var splitCv = ExtraCv[cv];
+                for (var i = 0; i < splitCv.Length; i++) {
+                    var converted = WanaKana.ToHiragana(splitCv[i]);
+                    phonemes.Add(TryVcv(prevV, converted, syllable.vowelTone));
+                    prevV = splitCv[i].Last<char>().ToString();
+                }
+            }
 
             return phonemes;
         }
-
-        private Dictionary<string, string[]> ExtraCv => new Dictionary<string, string[]> {
-            {"si", new [] { "se", "i" } },
-            {"she", new [] { "si", "e" } },
-            {"zi", new [] { "ze", "i" } },
-            {"je", new [] { "ji", "e" } },
-            {"ti", new [] { "te", "i" } },
-            {"tu", new [] { "to", "u" } },
-            {"che", new [] { "chi", "e" } },
-            {"tsa", new [] { "tsu", "a" } },
-            {"tsi", new [] { "tsu", "i" } },
-            {"tse", new [] { "tsu", "e" } },
-            {"tso", new [] { "tsu", "o" } },
-            {"di", new [] { "de", "i" } },
-            {"du", new [] { "do", "u" } },
-            {"hu", new [] { "ho", "u" } },
-            {"fa", new [] { "fu", "a" } },
-            {"fi", new [] { "fu", "i" } },
-            {"fe", new [] { "fu", "e" } },
-            {"fo", new [] { "fu", "o" } },
-            {"ye", new [] { "i", "e" } },
-            {"wi", new [] { "u", "i" } },
-            {"we", new [] { "u", "e" } },
-            {"wo", new [] { "u", "o" } },
-        };
 
         private string TryVcv(string vowel, string cv, int tone) {
             var vcv = $"{vowel} {cv}";
