@@ -135,7 +135,7 @@ namespace OpenUtau.Plugin.Builtin {
             { "t", "t" },
             { "ts", "ts" },
             { "th", "s" },
-            { "v", "f" },
+            { "v", "v" },
             { "w", "w" },
             { "y", "y" },
             { "z", "z" },
@@ -172,7 +172,7 @@ namespace OpenUtau.Plugin.Builtin {
             { "t", "と" },
             { "ts", "つ" },
             { "th", "す" },
-            { "v", "ふ" },
+            { "v", "ヴ" },
             { "w", "う" },
             { "y", "い" },
             { "z", "ず" },
@@ -197,6 +197,16 @@ namespace OpenUtau.Plugin.Builtin {
             {"rru", "ru" },
             {"rre", "we" },
             {"rro", "ulo" },
+        };
+
+        private Dictionary<string, string> ConditionalAlt => new Dictionary<string, string> {
+            {"ulo", "wo"},
+            {"va", "fa"},
+            {"vi", "fi"},
+            {"vu", "fu"},
+            {"ヴ", "ふ"},
+            {"ve", "fe"},
+            {"vo", "fo"},
         };
 
         private Dictionary<string, string[]> ExtraCv => new Dictionary<string, string[]> {
@@ -237,6 +247,7 @@ namespace OpenUtau.Plugin.Builtin {
             var cc = ending.cc;
             var phonemes = new List<string>();
 
+            // Handle diphthongs
             if (prevV.Length == 2) {
                 var newCC = new List<string>();
                 newCC.Add(prevV[1].ToString());
@@ -245,17 +256,37 @@ namespace OpenUtau.Plugin.Builtin {
                 prevV = prevV[0].ToString();
             }
 
+            // Check CCs for special clusters
+            var adjustedCC = new List<string>();
+            for (var i = 0; i < cc.Length; i++) {
+                if (i == cc.Length - 1) {
+                    adjustedCC.Add(cc[i]);
+                } else {
+                    var diphone = $"{cc[i]}{cc[i + 1]}";
+                    if (SpecialClusters.Contains(diphone)) {
+                        adjustedCC.Add(diphone);
+                        i++;
+                    } else {
+                        adjustedCC.Add(cc[i]);
+                    }
+                }
+            }
+            cc = adjustedCC.ToArray();
+
+            // Convert to hiragana
             foreach (var symbol in cc) {
-                phonemes.Add(SoloConsonant[symbol]);
+                var solo = SoloConsonant[symbol];
+                solo = TryVcv(prevV, solo, ending.tone);
+                if (HasOto(solo, ending.tone)) {
+                    phonemes.Add(solo);
+                } else if (ConditionalAlt.ContainsKey(solo)) {
+                    solo = ConditionalAlt[solo];
+                    phonemes.Add(TryVcv(prevV, solo, ending.tone));
+                }
+                prevV = WanaKana.ToRomaji(solo).Last<char>().ToString();
             }
 
-            var phonemesVcv = new List<string>();
-            foreach (var phoneme in phonemes) {
-                phonemesVcv.Add(TryVcv(prevV, phoneme, ending.tone));
-                prevV = WanaKana.ToRomaji(phoneme).Last<char>().ToString();
-            }
-
-            return phonemesVcv;
+            return phonemes;
         }
 
         protected override List<string> ProcessSyllable(Syllable syllable) {
@@ -306,7 +337,13 @@ namespace OpenUtau.Plugin.Builtin {
                 finalCons = cc[cc.Length - 1];
                 for (var i = 0; i < cc.Length - 1; i++) {
                     var cons = SoloConsonant[cc[i]];
-                    phonemes.Add(TryVcv(prevV, cons, syllable.tone));
+                    cons = TryVcv(prevV, cons, syllable.tone);
+                    if (HasOto(cons, syllable.tone)) {
+                        phonemes.Add(cons);
+                    } else if (ConditionalAlt.ContainsKey(cons)) {
+                        cons = ConditionalAlt[cons];
+                        phonemes.Add(TryVcv(prevV, cons, syllable.tone));
+                    }
                     prevV = WanaKana.ToRomaji(cons).Last<char>().ToString();
                 }
             }
@@ -314,15 +351,16 @@ namespace OpenUtau.Plugin.Builtin {
             // Convert to hiragana
             var cv = $"{StartingConsonant[finalCons]}{v}";
             cv = AltCv.ContainsKey(cv) ? AltCv[cv] : cv;
-            var hiragana = WanaKana.ToHiragana(cv);
+            var hiragana = ToHiragana(cv);
             hiragana = TryVcv(prevV, hiragana, syllable.vowelTone);
 
             // Check for nonstandard CV
             var split = false;
             if (HasOto(hiragana, syllable.vowelTone)) {
                 phonemes.Add(hiragana);
-            } else if (cv == "ulo") {
-                hiragana = TryVcv(prevV, "を", syllable.vowelTone);
+            } else if (ConditionalAlt.ContainsKey(cv)) {
+                cv = ConditionalAlt[cv];
+                hiragana = TryVcv(prevV, ToHiragana(cv), syllable.vowelTone);
                 if (HasOto(hiragana, syllable.vowelTone)) {
                     phonemes.Add(hiragana);
                 } else {
@@ -337,7 +375,7 @@ namespace OpenUtau.Plugin.Builtin {
                 var splitCv = ExtraCv[cv];
                 for (var i = 0; i < splitCv.Length; i++) {
                     if (splitCv[i] != prevV) {
-                        var converted = WanaKana.ToHiragana(splitCv[i]);
+                        var converted = ToHiragana(splitCv[i]);
                         phonemes.Add(TryVcv(prevV, converted, syllable.vowelTone));
                         prevV = splitCv[i].Last<char>().ToString();
                     }
@@ -350,6 +388,12 @@ namespace OpenUtau.Plugin.Builtin {
         private string TryVcv(string vowel, string cv, int tone) {
             var vcv = $"{vowel} {cv}";
             return HasOto(vcv, tone) ? vcv : cv;
+        }
+
+        private string ToHiragana(string romaji) {
+            var hiragana = WanaKana.ToHiragana(romaji);
+            hiragana = hiragana.Replace("ゔ", "ヴ");
+            return hiragana;
         }
     }
 }
