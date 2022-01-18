@@ -388,7 +388,11 @@ namespace OpenUtau.Plugin.Builtin {
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
             Result result =  base.Process(notes, prev, next, prevNeighbour, nextNeighbour, prevNeighbours);
             var lastIndex = result.phonemes.Length - 1;
-            if (SoloConsonant.ContainsValue(result.phonemes[lastIndex].phoneme)) {
+            var lastPhoneme = result.phonemes[lastIndex].phoneme;
+            if (lastPhoneme.Contains(" ")) {
+                lastPhoneme = lastPhoneme.Substring(lastPhoneme.IndexOf(" ") + 1);
+            }
+            if (SoloConsonant.ContainsValue(lastPhoneme)) {
                 result.phonemes[lastIndex].position = notes.Last<Note>().duration;
             }
             return result;
