@@ -100,7 +100,12 @@ namespace OpenUtau.Plugin.Builtin {
             { "ZH", "zh" },
         };
 
-        protected Dictionary<string, string> StartingConsonant => new Dictionary<string, string> {
+        protected override string ReadDictionary(string filename) {
+            return Core.Api.Resources.cmudict_0_7b;
+        }
+
+        private Dictionary<string, string> StartingConsonant => new Dictionary<string, string> {
+            { "", "" },
             { "b", "b" },
             { "ch", "ch" },
             { "d", "d" },
@@ -127,7 +132,7 @@ namespace OpenUtau.Plugin.Builtin {
             { "zh", "sh" },
         };
 
-        protected Dictionary<string, string> SoloConsonant => new Dictionary<string, string> {
+        private Dictionary<string, string> SoloConsonant => new Dictionary<string, string> {
             { "b", "ぶ" },
             { "ch", "ちゅ" },
             { "d", "ど" },
@@ -154,9 +159,15 @@ namespace OpenUtau.Plugin.Builtin {
             { "zh", "しゅ" },
         };
 
-        protected override string ReadDictionary(string filename) {
-            return Core.Api.Resources.cmudict_0_7b;
-        }
+        private Dictionary<string, string> AltCv => new Dictionary<string, string> {
+            {"yi", "i" },
+            {"wu", "u" },
+            {"rra", "wa" },
+            {"rri", "wi" },
+            {"rru", "ru" },
+            {"rre", "we" },
+            {"rro", "wo" },
+        };
 
         protected override List<string> ProcessEnding(Ending ending) {
             var prevV = ending.prevV;
@@ -177,12 +188,7 @@ namespace OpenUtau.Plugin.Builtin {
 
             var phonemesVcv = new List<string>();
             foreach (var phoneme in phonemes) {
-                var vcv = $"{prevV} {phoneme}";
-                if (HasOto(vcv, ending.tone)) {
-                    phonemesVcv.Add(vcv);
-                } else {
-                    phonemesVcv.Add(phoneme);
-                }
+                phonemesVcv.Add(TryVcv(prevV, phoneme, ending.tone));
                 prevV = WanaKana.ToRomaji(phoneme).Last<char>().ToString();
             }
 
@@ -190,16 +196,17 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         protected override List<string> ProcessSyllable(Syllable syllable) {
+            // Skip processing if this note extends the prevous syllable
+            if (CanMakeAliasExtension(syllable)) {
+                return new List<string> { null };
+            }
+
             var prevV = syllable.prevV;
             var cc = syllable.cc;
             var v = syllable.v;
             var phonemes = new List<string>();
 
-            if (CanMakeAliasExtension(syllable)) {
-                phonemes.Add(null);
-                return phonemes;
-            }
-
+            // Handle diphthongs
             if (prevV.Length == 2) {
                 var newCC = new List<string>();
                 newCC.Add(prevV[1].ToString());
@@ -209,45 +216,31 @@ namespace OpenUtau.Plugin.Builtin {
             } else if (prevV.Length == 0) {
                 prevV = "-";
             }
-            
+            if (v.Length == 2) {
+                v = v[0].ToString();
+            }
+
+            // Separate CCs and main CV
+            var finalCons = "";
             if (cc.Length > 0) {
-                var finalCons = cc[cc.Length - 1];
-                if (cc.Length > 1) {
-                    for (var i = 0; i < cc.Length - 1; i++) {
-                        phonemes.Add(SoloConsonant[cc[i]]);
-                    }
+                finalCons = cc[cc.Length - 1];
+                for (var i = 0; i < cc.Length - 1; i++) {
+                    var cons = SoloConsonant[cc[i]];
+                    phonemes.Add(TryVcv(prevV, cons, syllable.tone));
+                    prevV = WanaKana.ToRomaji(cons).Last<char>().ToString();
                 }
-                phonemes.AddRange(ConvertPhoneme(StartingConsonant[finalCons], v));
-            }
-            else {
-                phonemes.AddRange(ConvertPhoneme("",v));
             }
 
-            var phonemesVcv = new List<string>();
-            foreach (var phoneme in phonemes) {
-                var vcv = $"{prevV} {phoneme}";
-                if (HasOto(vcv, syllable.vowelTone)) {
-                    phonemesVcv.Add(vcv);
-                } else {
-                    phonemesVcv.Add(phoneme);
-                }
-                prevV = WanaKana.ToRomaji(phoneme).Last<char>().ToString();
-            }
+            // Convert to hiragana
+            var cv = $"{StartingConsonant[finalCons]}{v}";
+            cv = AltCv.ContainsKey(cv) ? AltCv[cv] : cv;
+            var hiragana = WanaKana.ToHiragana(cv);
+            phonemes.Add(TryVcv(prevV, hiragana, syllable.vowelTone));
 
-            return phonemesVcv;
+            return phonemes;
         }
 
-        protected Dictionary<string, string> AltCv => new Dictionary<string, string> {
-            {"yi", "i" },
-            {"wu", "u" },
-            {"wo", "wo" },
-            {"rra", "wa" },
-            {"rri", "wi" },
-            {"rru", "ru" },
-            {"rre", "we" },
-            {"rro", "wo" },
-        };
-        protected Dictionary<string, string[]> ExtraCv => new Dictionary<string, string[]> {
+        private Dictionary<string, string[]> ExtraCv => new Dictionary<string, string[]> {
             {"si", new [] { "se", "i" } },
             {"she", new [] { "si", "e" } },
             {"zi", new [] { "ze", "i" } },
@@ -272,27 +265,9 @@ namespace OpenUtau.Plugin.Builtin {
             {"wo", new [] { "u", "o" } },
         };
 
-        protected List<string> ConvertPhoneme(string consonant, string vowel) {
-            var romaji = new List<string>();
-
-            if (vowel.Length == 2) {
-                vowel = vowel[0].ToString();
-            }
-
-            var cv = $"{consonant}{vowel}";
-            cv = AltCv.ContainsKey(cv) ? AltCv[cv] : cv;
-            if (ExtraCv.ContainsKey(cv)) {
-                romaji.AddRange(ExtraCv[cv]);
-            } else {
-                romaji.Add(cv);
-            }
-
-            var hiragana = new List<string>();
-            foreach (var item in romaji) {
-                hiragana.Add(WanaKana.ToHiragana(item));
-            }
-
-            return hiragana;
+        private string TryVcv(string vowel, string cv, int tone) {
+            var vcv = $"{vowel} {cv}";
+            return HasOto(vcv, tone) ? vcv : cv;
         }
     }
 }
