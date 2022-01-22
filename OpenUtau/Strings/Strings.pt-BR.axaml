@@ -79,6 +79,7 @@
   <system:String x:Key="menu.help.about">Sobre OpenUTAU</system:String>
   <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
   <system:String x:Key="menu.tools">Ferramentas</system:String>
+  <!--<system:String x:Key="menu.tools.clearrendercache">Clear Render Cache</system:String>-->
   <!--<system:String x:Key="menu.tools.layout">Layout</system:String>-->
   <!--<system:String x:Key="menu.tools.layout.hsplit11">Horizontal 1:1</system:String>-->
   <!--<system:String x:Key="menu.tools.layout.hsplit12">Horizontal 1:2</system:String>-->
@@ -117,6 +118,10 @@
   <system:String x:Key="pianoroll.menu.notes.addtailrest">Adicionar final "R"</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">Quantizar para 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Quantizar para 1/64</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notes.reset.exps">Reset all expressions</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">Reset phoneme timings</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.reset.pitchbends">Reset pitch bends</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.reset.vibratos">Reset vibratos</system:String>-->
   <system:String x:Key="pianoroll.menu.part">Parte</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">Plugin Legado(Experimental)</system:String>
   <system:String x:Key="pianoroll.menu.part.rename">Renomear</system:String>
@@ -152,6 +157,9 @@ Segure Ctrl para selecionar mais notas</system:String>
   <system:String x:Key="prefs.paths.reset">Redefinir</system:String>
   <system:String x:Key="prefs.paths.select">Selecionar</system:String>
   <system:String x:Key="prefs.playback">Reprodução</system:String>
+  <!--<system:String x:Key="prefs.playback.backend">Audio Backend</system:String>-->
+  <!--<system:String x:Key="prefs.playback.backend.auto">Automatic</system:String>-->
+  <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
   <system:String x:Key="prefs.playback.device">Dispositivo de Reprodução</system:String>
   <system:String x:Key="prefs.playback.test">Teste</system:String>
   <system:String x:Key="prefs.rendering">Renderização</system:String>

@@ -22,6 +22,12 @@
             <TextBlock Text="{DynamicResource prefs.playback.device}"/>
             <ComboBox HorizontalAlignment="Stretch" Items="{Binding AudioOutputDevices}" SelectedItem="{Binding AudioOutputDevice}"/>
             <Button Content="{DynamicResource prefs.playback.test}" HorizontalAlignment="Stretch" Command="{Binding TestAudioOutputDevice}"/>
+            <TextBlock Text="{DynamicResource prefs.playback.backend}"/>
+            <ComboBox HorizontalAlignment="Stretch" SelectedIndex="{Binding PreferPortAudio}">
+              <ComboBoxItem Content="{DynamicResource prefs.playback.backend.auto}"/>
+              <ComboBoxItem Content="{DynamicResource prefs.playback.backend.port}"/>
+            </ComboBox>
+            <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.note.restart}"/>
           </StackPanel>
         </HeaderedContentControl>
         <HeaderedContentControl Classes="groupbox" Header="{DynamicResource prefs.paths}">

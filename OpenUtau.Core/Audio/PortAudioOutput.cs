@@ -7,13 +7,12 @@ using System.Threading;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using OpenUtau.Audio.Bindings;
-using OpenUtau.Core;
 using OpenUtau.Core.Util;
 using Serilog;
 
 namespace OpenUtau.Audio {
-    public class AudioOutput : IAudioOutput, IDisposable {
-        public const int Channels = 2;
+    public class PortAudioOutput : IAudioOutput, IDisposable {
+        const int Channels = 2;
 
         public PlaybackState PlaybackState { get; private set; }
         public int DeviceNumber { get; private set; }
@@ -31,7 +30,7 @@ namespace OpenUtau.Audio {
         private bool shutdown;
         private bool disposed;
 
-        public AudioOutput() {
+        public PortAudioOutput() {
             var path = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "libs");
             PaBinding.InitializeBindings(new LibraryLoader(path, "portaudio"));
             PaBinding.Pa_Initialize();

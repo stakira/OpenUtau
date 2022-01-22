@@ -20,7 +20,7 @@
   <system:String x:Key="dialogs.export.savefirst">Lưu tệp dự án trước đã!</system:String>
   <system:String x:Key="dialogs.messagebox.cancel">Huỷ bỏ</system:String>
   <system:String x:Key="dialogs.messagebox.no">Không</system:String>
-  <system:String x:Key="dialogs.messagebox.ok">Ok</system:String>
+  <!--<system:String x:Key="dialogs.messagebox.ok">Ok</system:String>-->
   <system:String x:Key="dialogs.messagebox.yes">Có</system:String>
   <system:String x:Key="dialogs.noresampler.caption">Chưa có resampler</system:String>
   <system:String x:Key="dialogs.noresampler.message">Chưa có resampler nào cả! Thêm resampler yêu thích của bạn với định dạng exe hoặc dll vào trong thư mục Resamplers và chọn ở trong mục Tuỳ chọn!</system:String>
@@ -32,7 +32,7 @@
   <system:String x:Key="exps.apply">Áp dụng</system:String>
   <system:String x:Key="exps.caption">Biểu cảm</system:String>
   <system:String x:Key="exps.defaultvalue">Mặc định</system:String>
-  <system:String x:Key="exps.flag">Resampler Flag</system:String>
+  <!--<system:String x:Key="exps.flag">Resampler Flag</system:String>-->
   <system:String x:Key="exps.isflag">Là Resampler Flag</system:String>
   <system:String x:Key="exps.maxvalue">Cao nhất</system:String>
   <system:String x:Key="exps.minvalue">Thấp nhất</system:String>
@@ -57,9 +57,9 @@
   <system:String x:Key="menu.edit.cut">Cắt</system:String>
   <system:String x:Key="menu.edit.delete">Xoá bỏ</system:String>
   <system:String x:Key="menu.edit.paste">Dán</system:String>
-  <system:String x:Key="menu.edit.redo">Redo</system:String>
+  <!--<system:String x:Key="menu.edit.redo">Redo</system:String>-->
   <system:String x:Key="menu.edit.selectall">Chọn tất Cả</system:String>
-  <system:String x:Key="menu.edit.undo">Undo</system:String>
+  <!--<system:String x:Key="menu.edit.undo">Undo</system:String>-->
   <system:String x:Key="menu.file">Tệp</system:String>
   <system:String x:Key="menu.file.exit">Thoát ra</system:String>
   <system:String x:Key="menu.file.exportall">Xuất ra tất cả</system:String>
@@ -77,7 +77,7 @@
   <system:String x:Key="menu.file.savetemplate">Lưu thành Mẫu...</system:String>
   <system:String x:Key="menu.help">Hướng dẫn</system:String>
   <system:String x:Key="menu.help.about">Thông tin về OpenUtau</system:String>
-  <system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>
+  <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
   <system:String x:Key="menu.tools">Công cụ</system:String>
   <system:String x:Key="menu.tools.clearrendercache">Xoá bỏ render tạm thời</system:String>
   <system:String x:Key="menu.tools.layout">Bố cục</system:String>
@@ -93,16 +93,16 @@
   <system:String x:Key="menu.tools.singer.installadv">Cài đặt ca sĩ vào(Nâng cao)...</system:String>
   <system:String x:Key="menu.tools.singers">Danh sách ca sĩ...</system:String>
 
-  <system:String x:Key="oto.alias">Alias</system:String>
+  <!--<system:String x:Key="oto.alias">Alias</system:String>-->
   <system:String x:Key="oto.color">Sắc thái</system:String>
   <system:String x:Key="oto.consonant">Phụ âm</system:String>
-  <system:String x:Key="oto.cutoff">Cutoff</system:String>
+  <!--<system:String x:Key="oto.cutoff">Cutoff</system:String>-->
   <system:String x:Key="oto.file">Tên tệp</system:String>
-  <system:String x:Key="oto.offset">Offset</system:String>
-  <system:String x:Key="oto.overlap">Overlap</system:String>
+  <!--<system:String x:Key="oto.offset">Offset</system:String>-->
+  <!--<system:String x:Key="oto.overlap">Overlap</system:String>-->
   <system:String x:Key="oto.phonetic">Âm vị</system:String>
   <system:String x:Key="oto.prefix">Tiền tố</system:String>
-  <system:String x:Key="oto.preutter">Preutter</system:String>
+  <!--<system:String x:Key="oto.preutter">Preutter</system:String>-->
   <system:String x:Key="oto.set">Tập hợp</system:String>
   <system:String x:Key="oto.suffix">Hậu tố</system:String>
 
@@ -119,8 +119,8 @@
   <system:String x:Key="pianoroll.menu.notes.quantize15">Chia thành quãng 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Chia thành quãng 1/64</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">Đặt lại các biểu cảm</system:String>
-  <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">Đặt lại các đường luyến giọng</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">Đặt lại thời gian âm vị</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">Đặt lại các đường luyến giọng</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.vibratos">Đặt lại rung giọng</system:String>
   <system:String x:Key="pianoroll.menu.part">Phần</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">Sử dụng Plugin của UTAU (Thử nghiệm)</system:String>
@@ -140,7 +140,7 @@ Nhấn giữ Ctrl để chọn đồng loạt nhiều nốt</system:String>
 
   <system:String x:Key="prefs.advanced">Nâng cao</system:String>
   <system:String x:Key="prefs.advanced.beta">Thử nghiệm</system:String>
-  <system:String x:Key="prefs.advanced.resamplerlogging">Resampler Logging</system:String>
+  <!--<system:String x:Key="prefs.advanced.resamplerlogging">Resampler Logging</system:String>-->
   <system:String x:Key="prefs.advanced.resamplerlogging.warn">Lưu trữ kết quả đầu ra của resampler trong tệp log. Tuỳ chọn này sẽ làm cho giao diện và việc render chậm lại.</system:String>
   <system:String x:Key="prefs.advanced.stable">Ổn định</system:String>
   <system:String x:Key="prefs.appearance">Diện mạo</system:String>
@@ -157,6 +157,9 @@ Nhấn giữ Ctrl để chọn đồng loạt nhiều nốt</system:String>
   <system:String x:Key="prefs.paths.reset">Đặt lại</system:String>
   <system:String x:Key="prefs.paths.select">Lựa chọn</system:String>
   <system:String x:Key="prefs.playback">Phát lại</system:String>
+  <!--<system:String x:Key="prefs.playback.backend">Audio Backend</system:String>-->
+  <!--<system:String x:Key="prefs.playback.backend.auto">Automatic</system:String>-->
+  <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
   <system:String x:Key="prefs.playback.device">Thiết bị phát lại</system:String>
   <system:String x:Key="prefs.playback.test">Nghe thử</system:String>
   <system:String x:Key="prefs.rendering">Render</system:String>
@@ -226,7 +229,7 @@ Tổng quát
   <system:String x:Key="tracks.selectsinger">Lựa chọn ca sĩ</system:String>
 
   <system:String x:Key="updater.caption">Kiểm tra cập nhật</system:String>
-  <system:String x:Key="updater.github">GitHub</system:String>
+  <!--<system:String x:Key="updater.github">GitHub</system:String>-->
   <system:String x:Key="updater.status.available">Có bản cập nhật v{0} mới!</system:String>
   <system:String x:Key="updater.status.checking">Đang kiểm tra cập nhật...</system:String>
   <system:String x:Key="updater.status.notavailable">Bản mới nhất</system:String>

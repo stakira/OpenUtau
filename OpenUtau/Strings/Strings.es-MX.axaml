@@ -118,11 +118,11 @@
   <system:String x:Key="pianoroll.menu.notes.addtailrest">Añadir cola "R"</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">Cuantificar a 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Cuantificar a 1/64</system:String>
-  <system:String x:Key="pianoroll.menu.part">Partes</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">Restablecer expresiones</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">Restablecer duración fonética</system:String>
-  <system:String x:Key="pianoroll.menu.notes.reset.vibratos">Restablecer vibratos</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">Reestablecer curvas del tono</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.vibratos">Restablecer vibratos</system:String>
+  <system:String x:Key="pianoroll.menu.part">Partes</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">Plug-ins Antiguos (Experimental)</system:String>
   <system:String x:Key="pianoroll.menu.part.rename">Renombrar</system:String>
   <system:String x:Key="pianoroll.toggle.phoneme">Ver Fonemas (O)</system:String>
@@ -157,6 +157,9 @@ Mantiene Ctrl para seleccionar más</system:String>
   <system:String x:Key="prefs.paths.reset">Restablecer</system:String>
   <system:String x:Key="prefs.paths.select">Seleccionar</system:String>
   <system:String x:Key="prefs.playback">Reproducción</system:String>
+  <!--<system:String x:Key="prefs.playback.backend">Audio Backend</system:String>-->
+  <!--<system:String x:Key="prefs.playback.backend.auto">Automatic</system:String>-->
+  <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
   <system:String x:Key="prefs.playback.device">Dispositivo de Reproducción</system:String>
   <system:String x:Key="prefs.playback.test">Probar</system:String>
   <system:String x:Key="prefs.rendering">Renderización</system:String>

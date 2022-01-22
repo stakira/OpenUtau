@@ -1,11 +1,14 @@
 ﻿using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Avalonia.Markup.Xaml.MarkupExtensions;
+using System;
 using System.Globalization;
 using System.Threading;
-using OpenUtau.App.Views;
-using Avalonia.Markup.Xaml.MarkupExtensions;
 using System.Linq;
+using OpenUtau.App.Views;
+using OpenUtau.Core;
+using Serilog;
 
 namespace OpenUtau.App {
     public class App : Application {
@@ -13,6 +16,8 @@ namespace OpenUtau.App {
             AvaloniaXamlLoader.Load(this);
             InitializeCulture();
             InitializeTheme();
+            InitOpenUtau();
+            InitAudio();
         }
 
         public override void OnFrameworkInitializationCompleted() {
@@ -70,6 +75,27 @@ namespace OpenUtau.App {
                 Current.Resources.MergedDictionaries.Add(dark);
             }
             ThemeManager.LoadTheme();
+        }
+
+        public static void InitOpenUtau() {
+            Core.ResamplerDriver.ResamplerDrivers.Search();
+            DocManager.Inst.Initialize();
+        }
+
+        public static void InitAudio() {
+            if (!OS.IsWindows() || Core.Util.Preferences.Default.PreferPortAudio) {
+                try {
+                    PlaybackManager.Inst.AudioOutput = new Audio.PortAudioOutput();
+                } catch (Exception e1) {
+                    Log.Error(e1, "Failed to init PortAudio");
+                }
+            } else {
+                try {
+                    PlaybackManager.Inst.AudioOutput = new Audio.NAudioOutput();
+                } catch (Exception e2) {
+                    Log.Error(e2, "Failed to init NAudio");
+                }
+            }
         }
     }
 }

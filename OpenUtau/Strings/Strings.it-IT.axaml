@@ -19,8 +19,8 @@
   <system:String x:Key="dialogs.export.caption">Esporta</system:String>
   <system:String x:Key="dialogs.export.savefirst">Salva prima il progetto</system:String>
   <system:String x:Key="dialogs.messagebox.cancel">Cancella</system:String>
-  <system:String x:Key="dialogs.messagebox.no">No</system:String>
-  <system:String x:Key="dialogs.messagebox.ok">Ok</system:String>
+  <!--<system:String x:Key="dialogs.messagebox.no">No</system:String>-->
+  <!--<system:String x:Key="dialogs.messagebox.ok">Ok</system:String>-->
   <system:String x:Key="dialogs.messagebox.yes">Si</system:String>
   <system:String x:Key="dialogs.noresampler.caption">Nessun resampler</system:String>
   <system:String x:Key="dialogs.noresampler.message">Nessun resampler! Aggiungi il file DLL o EXE del resampler nella cartella Resampler e scegli nelle Preferenze!</system:String>
@@ -34,8 +34,8 @@
   <system:String x:Key="exps.defaultvalue">Predefinito</system:String>
   <system:String x:Key="exps.flag">Flag Resampler</system:String>
   <system:String x:Key="exps.isflag">È Flag Resampler</system:String>
-  <system:String x:Key="exps.maxvalue">Max</system:String>
-  <system:String x:Key="exps.minvalue">Min</system:String>
+  <!--<system:String x:Key="exps.maxvalue">Max</system:String>-->
+  <!--<system:String x:Key="exps.minvalue">Min</system:String>-->
   <system:String x:Key="exps.name">Nome</system:String>
   <system:String x:Key="exps.optionvalues">Opzione Valori</system:String>
   <system:String x:Key="exps.sepbycomma">Separa valori con ','</system:String>
@@ -47,8 +47,8 @@
   <system:String x:Key="lyrics.cancel">Cancella</system:String>
   <system:String x:Key="lyrics.caption">Modifica Testo</system:String>
   <system:String x:Key="lyrics.livepreview">Anteprima in tempo reale</system:String>
-  <system:String x:Key="lyrics.max">Max</system:String>
-  <system:String x:Key="lyrics.reset">Reset</system:String>
+  <!--<system:String x:Key="lyrics.max">Max</system:String>-->
+  <!--<system:String x:Key="lyrics.reset">Reset</system:String>-->
   <system:String x:Key="lyrics.selectnotes">Seleziona prima qualche nota!</system:String>
   <system:String x:Key="lyrics.separators">Separatori</system:String>
 
@@ -60,7 +60,7 @@
   <system:String x:Key="menu.edit.redo">Ripristina</system:String>
   <system:String x:Key="menu.edit.selectall">Seleziona tutto</system:String>
   <system:String x:Key="menu.edit.undo">Annulla</system:String>
-  <system:String x:Key="menu.file">File</system:String>
+  <!--<system:String x:Key="menu.file">File</system:String>-->
   <system:String x:Key="menu.file.exit">Esci</system:String>
   <system:String x:Key="menu.file.exportall">Esporta tutto</system:String>
   <system:String x:Key="menu.file.exportust">Esporta File Ust</system:String>
@@ -79,6 +79,7 @@
   <system:String x:Key="menu.help.about">Informazioni su OpenUTAU</system:String>
   <system:String x:Key="menu.help.wiki">OpenUTAU Wiki</system:String>
   <system:String x:Key="menu.tools">Strumenti</system:String>
+  <!--<system:String x:Key="menu.tools.clearrendercache">Clear Render Cache</system:String>-->
   <system:String x:Key="menu.tools.layout">Disposizione</system:String>
   <system:String x:Key="menu.tools.layout.hsplit11">Orizzontale 1:1</system:String>
   <system:String x:Key="menu.tools.layout.hsplit12">Orizzontale 1:2</system:String>
@@ -92,12 +93,12 @@
   <system:String x:Key="menu.tools.singer.installadv">Installa cantante (Avanzato)...</system:String>
   <system:String x:Key="menu.tools.singers">Cantanti...</system:String>
 
-  <system:String x:Key="oto.alias">Alias</system:String>
+  <!--<system:String x:Key="oto.alias">Alias</system:String>-->
   <system:String x:Key="oto.color">Colore</system:String>
   <system:String x:Key="oto.consonant">Consonante</system:String>
   <system:String x:Key="oto.cutoff">Taglio</system:String>
-  <system:String x:Key="oto.file">File</system:String>
-  <system:String x:Key="oto.offset">Offset</system:String>
+  <!--<system:String x:Key="oto.file">File</system:String>-->
+  <!--<system:String x:Key="oto.offset">Offset</system:String>-->
   <system:String x:Key="oto.overlap">Coincidenza</system:String>
   <system:String x:Key="oto.phonetic">Fonemi</system:String>
   <system:String x:Key="oto.prefix">Prefisso</system:String>
@@ -117,6 +118,10 @@
   <system:String x:Key="pianoroll.menu.notes.addtailrest">Aggiungi "R" in coda</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">Quantizza a 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Quantizza a 1/64</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notes.reset.exps">Reset all expressions</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">Reset phoneme timings</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.reset.pitchbends">Reset pitch bends</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.reset.vibratos">Reset vibratos</system:String>-->
   <system:String x:Key="pianoroll.menu.part">Parte</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">Legacy Plugin (Sperimentale)</system:String>
   <system:String x:Key="pianoroll.menu.part.rename">Rinomina</system:String>
@@ -134,8 +139,8 @@ Click destro per eliminare</system:String>
 Tieni premuto click sinistro + Ctrl per selezionare più note</system:String>
 
   <system:String x:Key="prefs.advanced">Avanzato</system:String>
-  <system:String x:Key="prefs.advanced.beta">Beta</system:String>
-  <system:String x:Key="prefs.advanced.resamplerlogging">Resampler Logging</system:String>
+  <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.resamplerlogging">Resampler Logging</system:String>-->
   <system:String x:Key="prefs.advanced.resamplerlogging.warn">Memorizza l'output del resampler in un file log. Questa operazione può rallentare la UI e il resampler.</system:String>
   <system:String x:Key="prefs.advanced.stable">Stabile</system:String>
   <system:String x:Key="prefs.appearance">Aspetto</system:String>
@@ -145,15 +150,18 @@ Tieni premuto click sinistro + Ctrl per selezionare più note</system:String>
   <system:String x:Key="prefs.appearance.theme.light">Chiaro</system:String>
   <system:String x:Key="prefs.caption">Preferenze</system:String>
   <system:String x:Key="prefs.note.restart">Nota: riavvia OpenUtau dopo aver cambiato questo elemento.</system:String>
-  <system:String x:Key="prefs.off">Off</system:String>
-  <system:String x:Key="prefs.on">On</system:String>
+  <!--<system:String x:Key="prefs.off">Off</system:String>-->
+  <!--<system:String x:Key="prefs.on">On</system:String>-->
   <system:String x:Key="prefs.paths">Percorsi</system:String>
   <system:String x:Key="prefs.paths.addlsinger">Percorso alternativo per i cantanti</system:String>
-  <system:String x:Key="prefs.paths.reset">Reset</system:String>
+  <!--<system:String x:Key="prefs.paths.reset">Reset</system:String>-->
   <system:String x:Key="prefs.paths.select">Seleziona</system:String>
   <system:String x:Key="prefs.playback">Audio</system:String>
+  <!--<system:String x:Key="prefs.playback.backend">Audio Backend</system:String>-->
+  <!--<system:String x:Key="prefs.playback.backend.auto">Automatic</system:String>-->
+  <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
   <system:String x:Key="prefs.playback.device">Dispositivo audio</system:String>
-  <system:String x:Key="prefs.playback.test">Test</system:String>
+  <!--<system:String x:Key="prefs.playback.test">Test</system:String>-->
   <system:String x:Key="prefs.rendering">Renderizzazione</system:String>
   <system:String x:Key="prefs.rendering.prerender.threads">Threads Pre-renderizzazione</system:String>
   <system:String x:Key="prefs.rendering.resampler.export">Resampler per esportazione</system:String>
@@ -220,7 +228,7 @@ Tieni premuto click destro: Resetta espressioni
   <system:String x:Key="tracks.selectsinger">Seleziona Cantante</system:String>
 
   <system:String x:Key="updater.caption">Controlla aggiornamenti</system:String>
-  <system:String x:Key="updater.github">GitHub</system:String>
+  <!--<system:String x:Key="updater.github">GitHub</system:String>-->
   <system:String x:Key="updater.status.available">Aggiornamento v{0} disponibile!</system:String>
   <system:String x:Key="updater.status.checking">Controllo aggiornamenti...</system:String>
   <system:String x:Key="updater.status.notavailable">Aggiornato</system:String>
