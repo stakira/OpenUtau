@@ -160,6 +160,7 @@ Tahan Ctrl untuk memilih lainnya</system:String>
   <!--<system:String x:Key="prefs.playback.backend">Latar Belakang Audio</system:String>-->
   <!--<system:String x:Key="prefs.playback.backend.auto">Otomatis</system:String>-->
   <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
+  <!--<system:String x:Key="prefs.playback.cursorposition">Cursor Position</system:String>-->
   <system:String x:Key="prefs.playback.device">Perangkat Pemutaran</system:String>
   <system:String x:Key="prefs.playback.test">Tes</system:String>
   <system:String x:Key="prefs.rendering">Merender</system:String>

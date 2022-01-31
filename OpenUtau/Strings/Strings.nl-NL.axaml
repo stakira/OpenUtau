@@ -160,6 +160,7 @@ Hold Ctrl to select more</system:String>-->
   <!--<system:String x:Key="prefs.playback.backend">Audio Backend</system:String>-->
   <!--<system:String x:Key="prefs.playback.backend.auto">Automatic</system:String>-->
   <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
+  <!--<system:String x:Key="prefs.playback.cursorposition">Cursor Position</system:String>-->
   <system:String x:Key="prefs.playback.device">Afspeelapparaat</system:String>
   <!--<system:String x:Key="prefs.playback.test">Test</system:String>-->
   <system:String x:Key="prefs.rendering">Renderen</system:String>

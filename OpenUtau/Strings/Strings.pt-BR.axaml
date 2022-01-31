@@ -160,6 +160,7 @@ Segure Ctrl para selecionar mais notas</system:String>
   <!--<system:String x:Key="prefs.playback.backend">Audio Backend</system:String>-->
   <!--<system:String x:Key="prefs.playback.backend.auto">Automatic</system:String>-->
   <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
+  <system:String x:Key="prefs.playback.cursorposition">Posição do Cursor</system:String>
   <system:String x:Key="prefs.playback.device">Dispositivo de Reprodução</system:String>
   <system:String x:Key="prefs.playback.test">Teste</system:String>
   <system:String x:Key="prefs.rendering">Renderização</system:String>

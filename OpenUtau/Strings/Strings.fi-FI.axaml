@@ -160,6 +160,7 @@ Aktivoi monivalinta pitämällä Ctrl pohjassa</system:String>
   <!--<system:String x:Key="prefs.playback.backend">Audio Backend</system:String>-->
   <!--<system:String x:Key="prefs.playback.backend.auto">Automatic</system:String>-->
   <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
+  <!--<system:String x:Key="prefs.playback.cursorposition">Cursor Position</system:String>-->
   <system:String x:Key="prefs.playback.device">Äänentoistolaite</system:String>
   <system:String x:Key="prefs.playback.test">Testaa</system:String>
   <system:String x:Key="prefs.rendering">Renderöi</system:String>

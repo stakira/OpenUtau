@@ -433,7 +433,7 @@ namespace OpenUtau.App.ViewModels {
             double playPosX = TickToneToPoint(tick, 0).X;
             double scroll = 0;
             if (!noScroll && playPosX > PlayPosX) {
-                double margin = ViewConstants.PlayPosMarkerMargin * Bounds.Width;
+                double margin = Preferences.Default.PlayPosMarkerMargin * Bounds.Width;
                 if (playPosX > margin) {
                     scroll = playPosX - margin;
                 }

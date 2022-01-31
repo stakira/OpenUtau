@@ -160,6 +160,7 @@ Tieni premuto click sinistro + Ctrl per selezionare più note</system:String>
   <!--<system:String x:Key="prefs.playback.backend">Audio Backend</system:String>-->
   <!--<system:String x:Key="prefs.playback.backend.auto">Automatic</system:String>-->
   <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
+  <system:String x:Key="prefs.playback.cursorposition">Posizione del cursore</system:String>
   <system:String x:Key="prefs.playback.device">Dispositivo audio</system:String>
   <!--<system:String x:Key="prefs.playback.test">Test</system:String>-->
   <system:String x:Key="prefs.rendering">Renderizzazione</system:String>

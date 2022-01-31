@@ -160,6 +160,7 @@
   <system:String x:Key="prefs.playback.backend">音频后端</system:String>
   <system:String x:Key="prefs.playback.backend.auto">自动</system:String>
   <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
+  <!--<system:String x:Key="prefs.playback.cursorposition">Cursor Position</system:String>-->
   <system:String x:Key="prefs.playback.device">回放设备</system:String>
   <system:String x:Key="prefs.playback.test">测试</system:String>
   <system:String x:Key="prefs.rendering">渲染</system:String>

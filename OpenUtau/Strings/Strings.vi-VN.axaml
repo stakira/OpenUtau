@@ -160,6 +160,7 @@ Nhấn giữ Ctrl để chọn đồng loạt nhiều nốt</system:String>
   <!--<system:String x:Key="prefs.playback.backend">Audio Backend</system:String>-->
   <!--<system:String x:Key="prefs.playback.backend.auto">Automatic</system:String>-->
   <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
+  <!--<system:String x:Key="prefs.playback.cursorposition">Cursor Position</system:String>-->
   <system:String x:Key="prefs.playback.device">Thiết bị phát lại</system:String>
   <system:String x:Key="prefs.playback.test">Nghe thử</system:String>
   <system:String x:Key="prefs.rendering">Render</system:String>
