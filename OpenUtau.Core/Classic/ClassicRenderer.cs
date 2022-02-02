@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using K4os.Hash.xxHash;
@@ -12,13 +13,14 @@ using OpenUtau.Core.Render;
 using OpenUtau.Core.ResamplerDriver;
 
 namespace OpenUtau.Classic {
-    class ClassicRenderer : IRenderer {
+    public class ClassicRenderer : IRenderer {
         class ResamplerItem {
             public RenderPhrase phrase;
             public RenderPhone phone;
 
             public IResamplerDriver resampler;
             public string inputFile;
+            public string inputTemp;
             public string outputFile;
             public string tone;
 
@@ -36,14 +38,18 @@ namespace OpenUtau.Classic {
             public double tempo;
             public int[] pitches;
 
-            public uint hash;
+            public ulong hash;
 
             public ResamplerItem(RenderPhrase phrase, RenderPhone phone) {
                 this.phrase = phrase;
                 this.phone = phone;
 
-                resampler = ResamplerDrivers.GetResampler(phone.resampler);
+                resampler = ResamplerDrivers.GetResampler(
+                    string.IsNullOrEmpty(phone.resampler)
+                        ? ResamplerDrivers.GetDefaultResamplerName()
+                        : phone.resampler);
                 inputFile = phone.oto.File;
+                inputTemp = VoicebankFiles.GetSourceTempPath(phrase.singerId, phone.oto);
                 tone = MusicMath.GetToneName(phone.tone);
 
                 flags = phone.flags;
@@ -69,9 +75,11 @@ namespace OpenUtau.Classic {
                     .ToArray();
 
                 hash = Hash();
+                outputFile = Path.Join(PathManager.Inst.CachePath,
+                    $"res-{XXH32.DigestOf(Encoding.UTF8.GetBytes(phrase.singerId)):x8}-{hash:x16}.wav");
             }
 
-            uint Hash() {
+            ulong Hash() {
                 using (var stream = new MemoryStream()) {
                     using (var writer = new BinaryWriter(stream)) {
                         writer.Write(resampler.Name);
@@ -93,7 +101,7 @@ namespace OpenUtau.Classic {
                         foreach (int pitch in pitches) {
                             writer.Write(pitch);
                         }
-                        return XXH32.DigestOf(stream.ToArray());
+                        return XXH64.DigestOf(stream.ToArray());
                     }
                 }
             }
@@ -112,7 +120,8 @@ namespace OpenUtau.Classic {
                         return;
                     }
                     var engineInput = new DriverModels.EngineInput() {
-                        inputWaveFile = item.inputFile,
+                        inputWaveFile = item.inputTemp,
+                        outputWaveFile = item.outputFile,
                         NoteString = item.tone,
                         Velocity = item.velocity,
                         StrFlags = item.flags,
@@ -126,12 +135,12 @@ namespace OpenUtau.Classic {
                         nPitchBend = item.pitches.Length,
                         Tempo = item.tempo,
                     };
-                    item.outputFile = item.resampler.DoResamplerReturnsFile(engineInput, Serilog.Log.Logger);
+                    item.resampler.DoResamplerReturnsFile(engineInput, Serilog.Log.Logger);
                 });
                 var samples = Concatenate(resamplerItems, cancellation);
                 foreach (var item in resamplerItems) {
                     if (File.Exists(item.outputFile)) {
-                        File.Delete(item.outputFile);
+                        //File.Delete(item.outputFile);
                     }
                 }
                 return samples;
@@ -152,7 +161,7 @@ namespace OpenUtau.Classic {
                 //    };
                 //}
             }
-            float[] samples = Core.Formats.Wave.GetSamples(tmpFile);
+            float[] samples = new float[0]; // Core.Formats.Wave.GetSamples(tmpFile);
             //File.Delete(tmpFile);
             return samples;
         }

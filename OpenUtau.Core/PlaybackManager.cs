@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -45,6 +46,7 @@ namespace OpenUtau.Core {
     public class PlaybackManager : ICmdSubscriber {
         private PlaybackManager() {
             DocManager.Inst.AddSubscriber(this);
+            Directory.CreateDirectory(PathManager.Inst.CachePath);
             RenderEngine.ReleaseSourceTemp();
         }
 

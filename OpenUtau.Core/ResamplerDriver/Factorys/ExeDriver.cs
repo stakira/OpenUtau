@@ -38,7 +38,7 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys {
                 return null;
             }
             var threadId = Thread.CurrentThread.ManagedThreadId;
-            string tmpFile = Path.GetTempFileName();
+            string tmpFile = Args.outputWaveFile;
             string ArgParam = FormattableString.Invariant(
                 $"\"{Args.inputWaveFile}\" \"{tmpFile}\" {Args.NoteString} {Args.Velocity} \"{Args.StrFlags}\" {Args.Offset} {Args.RequiredLength} {Args.Consonant} {Args.Cutoff} {Args.Volume} {Args.Modulation} !{Args.Tempo} {Base64.Base64EncodeInt12(Args.pitchBend)}");
             logger.Information($" > [thread-{threadId}] {FilePath} {ArgParam}");

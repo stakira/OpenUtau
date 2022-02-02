@@ -11,7 +11,6 @@ using Serilog;
 
 namespace OpenUtau.Core.Render {
     class RenderEngine {
-
         public class Progress {
             readonly int total;
             int completed = 0;
@@ -189,7 +188,7 @@ namespace OpenUtau.Core.Render {
                 uint hash = item.HashParameters();
                 data = cache.Get(hash);
                 if (data == null) {
-                    CopySourceTemp(item);
+                    Classic.VoicebankFiles.CopySourceTemp(item.SourceFile, item.SourceTemp);
                     var driver = ResamplerDrivers.GetResampler(item.ResamplerName);
                     if (driver == null) {
                         throw new Exception($"Resampler {item.ResamplerName} not found.");
@@ -200,7 +199,7 @@ namespace OpenUtau.Core.Render {
                     }
                     cache.Put(hash, data);
                     Log.Information($"Sound {hash:x} {item.Oto.Alias} {item.GetResamplerExeArgs()} resampled.");
-                    CopyBackMetaFiles(item);
+                    Classic.VoicebankFiles.CopyBackMetaFiles(item.SourceFile, item.SourceTemp);
                 }
             } catch (Exception e) {
                 Log.Error(e, $"Failed to render item {item.SourceFile} {item.Oto.Alias} {item.GetResamplerExeArgs()}.");
@@ -211,57 +210,8 @@ namespace OpenUtau.Core.Render {
             }
         }
 
-        void CopySourceTemp(RenderItem item) {
-            string sourceTemp = item.SourceTemp;
-            CopyOrStamp(item.SourceFile, sourceTemp);
-            var metaFiles = GetMetaFiles(item.SourceFile, item.SourceTemp);
-            metaFiles.ForEach(t => CopyOrStamp(t.Item1, t.Item2));
-        }
-
-        void CopyBackMetaFiles(RenderItem item) {
-            string sourceTemp = item.SourceTemp;
-            var metaFiles = GetMetaFiles(item.SourceFile, item.SourceTemp);
-            metaFiles.ForEach(t => CopyOrStamp(t.Item2, t.Item1));
-        }
-
-        List<Tuple<string, string>> GetMetaFiles(string source, string sourceTemp) {
-            string ext = Path.GetExtension(source);
-            string frqExt = ext.Replace('.', '_') + ".frq";
-            string noExt = source.Substring(0, source.Length - ext.Length);
-            string tempNoExt = sourceTemp.Substring(0, sourceTemp.Length - ext.Length);
-            return new List<Tuple<string, string>>() {
-                Tuple.Create(noExt + frqExt, tempNoExt + frqExt),
-                Tuple.Create(source + ".llsm", sourceTemp + ".llsm"),
-                Tuple.Create(source + ".uspec", sourceTemp + ".uspec"),
-                Tuple.Create(source + ".dio", sourceTemp + ".dio"),
-                Tuple.Create(source + ".star", sourceTemp + ".star"),
-                Tuple.Create(source + ".platinum", sourceTemp + ".platinum"),
-                Tuple.Create(source + ".frc", sourceTemp + ".frc"),
-                Tuple.Create(source + ".pmk", sourceTemp + ".pmk"),
-                Tuple.Create(source + ".vs4ufrq", sourceTemp + ".vs4ufrq"),
-            };
-        }
-
-        object fileAccessLock = new object();
-        void CopyOrStamp(string source, string dest) {
-            lock (fileAccessLock) {
-                if (File.Exists(source) && !File.Exists(dest)) {
-                    Log.Information($"Copy temp {source} {dest}");
-                    File.Copy(source, dest);
-                }
-            }
-        }
-
         public static void ReleaseSourceTemp() {
-            var expire = DateTime.Now - TimeSpan.FromDays(7);
-            string path = PathManager.Inst.GetCachePath();
-            Log.Information($"ReleaseSourceTemp {path}");
-            Directory.EnumerateFiles(path, "*.*", SearchOption.TopDirectoryOnly)
-                .Where(file =>
-                    !File.GetAttributes(file).HasFlag(FileAttributes.Directory)
-                        && File.GetCreationTime(file) < expire)
-                .ToList()
-                .ForEach(file => File.Delete(file));
+            Classic.VoicebankFiles.ReleaseSourceTemp();
         }
     }
 }

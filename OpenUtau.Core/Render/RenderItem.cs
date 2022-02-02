@@ -16,6 +16,7 @@ namespace OpenUtau.Core.Render {
         // For resampler
         public readonly string SourceFile;
         public readonly string SourceTemp;
+        public readonly string OutputFile;
         public readonly string ResamplerName;
 
         public readonly int NoteNum;
@@ -58,9 +59,7 @@ namespace OpenUtau.Core.Render {
                     ResamplerName = driver?.Name ?? resamplerName;
                 }
             }
-            string ext = Path.GetExtension(SourceFile);
-            SourceTemp = Path.Combine(PathManager.Inst.GetCachePath(),
-                $"{HashHex(track.Singer.Id)}-{HashHex(phoneme.oto.Set)}-{HashHex(SourceFile)}{ext}");
+            SourceTemp = Classic.VoicebankFiles.GetSourceTempPath(track.Singer.Id, phoneme.oto);
 
             Velocity = (int)phoneme.GetExpression(project, track, "vel").Item1;
             Volume = (int)phoneme.GetExpression(project, track, "vol").Item1;
@@ -83,9 +82,12 @@ namespace OpenUtau.Core.Render {
             Envelope = phoneme.envelope.data;
 
             phonemeName = phoneme.phoneme;
+
+            OutputFile = Path.Join(PathManager.Inst.CachePath, 
+                $"res-{HashHex(track.Singer.Id)}-{HashParameters():x8}.wav");
         }
 
-        string HashHex(string s) {
+        private static string HashHex(string s) {
             return $"{XXH32.DigestOf(Encoding.UTF8.GetBytes(s)):x8}";
         }
 

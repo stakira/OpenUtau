@@ -495,7 +495,7 @@ namespace OpenUtau.Classic {
             if (singer?.Id != null) {
                 writer.WriteLine($"VoiceDir={singer.Location}");
             }
-            writer.WriteLine($"CacheDir={PathManager.Inst.GetCachePath()}");
+            writer.WriteLine($"CacheDir={PathManager.Inst.CachePath}");
             writer.WriteLine("Mode2=True");
         }
 

@@ -497,7 +497,7 @@ namespace OpenUtau.UI.Models {
         void OnPluginSelected(object obj) {
             var plugin = (Classic.Plugin)obj;
             var project = DocManager.Inst.Project;
-            var tempFile = System.IO.Path.Combine(PathManager.Inst.GetCachePath(), "temp.ust");
+            var tempFile = System.IO.Path.Combine(PathManager.Inst.CachePath, "temp.ust");
             var newPart = (UVoicePart)Part.Clone();
             var sequence = Ust.WritePart(project, newPart, newPart.notes, tempFile);
             plugin.Run(tempFile);

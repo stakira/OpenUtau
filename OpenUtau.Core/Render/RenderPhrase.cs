@@ -70,6 +70,7 @@ namespace OpenUtau.Core.Render {
     }
 
     public class RenderPhrase {
+        public readonly string singerId;
         public readonly int position;
         public readonly double tempo;
         public readonly double tickToMs;
@@ -85,6 +86,7 @@ namespace OpenUtau.Core.Render {
             }
             notes.Add(last);
 
+            singerId = track.Singer.Id;
             position = part.position;
             tempo = project.bpm;
             tickToMs = 60000.0 / project.bpm * project.beatUnit / 4 / project.resolution;

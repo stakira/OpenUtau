@@ -107,6 +107,7 @@ namespace OpenUtau.Core.ResamplerDriver
         public struct EngineInput
         {
             public string inputWaveFile;//1
+            public string outputWaveFile;//2
             public string NoteString;//noteID;//3
             public double Velocity;//fixSpeed;//4
             public string StrFlags;//5
@@ -129,6 +130,7 @@ namespace OpenUtau.Core.ResamplerDriver
             EngineInput Input = new EngineInput
             {
                 inputWaveFile = string.Empty,
+                outputWaveFile = string.Empty,
                 NoteString = string.Empty,
                 Velocity = 100,
                 StrFlags = string.Empty,
@@ -153,6 +155,7 @@ namespace OpenUtau.Core.ResamplerDriver
             EngineInput Ret = new EngineInput
             {
                 inputWaveFile = renderItem.SourceTemp,
+                outputWaveFile = renderItem.OutputFile,
                 NoteString = MusicMath.GetToneName(renderItem.NoteNum),
                 Velocity = renderItem.Velocity,
                 StrFlags = renderItem.StrFlags,
