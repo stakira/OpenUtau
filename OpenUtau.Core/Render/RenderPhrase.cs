@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using K4os.Hash.xxHash;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core.Render {
-    public class RenderPhoneme {
+    public class RenderPhone {
         public readonly int position;
         public readonly int duration;
         public readonly int leading;
@@ -15,15 +16,17 @@ namespace OpenUtau.Core.Render {
 
         // classic args
         public readonly string resampler;
-        public readonly string infile;
         public readonly string flags;
         public readonly float volume;
         public readonly float velocity;
         public readonly float modulation;
+        public readonly float preutterMs;
+        public readonly Vector2[] envelope;
 
+        public readonly UOto oto;
         public readonly uint hash;
 
-        internal RenderPhoneme(UProject project, UTrack track, UVoicePart part, UNote note, UPhoneme phoneme) {
+        internal RenderPhone(UProject project, UTrack track, UVoicePart part, UNote note, UPhoneme phoneme) {
             position = note.position;
             duration = phoneme.Duration;
             leading = (int)Math.Ceiling(project.MillisecondToTick(phoneme.preutter) / 5.0) * 5; // TODO
@@ -37,12 +40,14 @@ namespace OpenUtau.Core.Render {
                 }
                 resampler = descriptor.options[eng]; // TODO: hash default resampler
             }
-            //infile = phoneme.oto.File;
             flags = phoneme.GetResamplerFlags(project, track);
             volume = phoneme.GetExpression(project, track, "vol").Item1 * 0.01f;
             velocity = phoneme.GetExpression(project, track, "vel").Item1 * 0.01f;
             modulation = phoneme.GetExpression(project, track, "mod").Item1 * 0.01f;
+            preutterMs = phoneme.preutter;
+            envelope = phoneme.envelope.data.ToArray();
 
+            oto = phoneme.oto;
             hash = Hash();
         }
 
@@ -54,7 +59,6 @@ namespace OpenUtau.Core.Render {
                     writer.Write(tone);
 
                     writer.Write(resampler ?? "");
-                    writer.Write(infile ?? "");
                     writer.Write(flags ?? "");
                     writer.Write(volume);
                     writer.Write(velocity);
@@ -68,7 +72,8 @@ namespace OpenUtau.Core.Render {
     public class RenderPhrase {
         public readonly int position;
         public readonly double tempo;
-        public readonly RenderPhoneme[] phones;
+        public readonly double tickToMs;
+        public readonly RenderPhone[] phones;
         public readonly float[] pitches;
 
         internal RenderPhrase(UProject project, UTrack track, UVoicePart part, UNote first, UNote last) {
@@ -82,10 +87,11 @@ namespace OpenUtau.Core.Render {
 
             position = part.position;
             tempo = project.bpm;
-            var phones = new List<RenderPhoneme>();
+            tickToMs = 60000.0 / project.bpm * project.beatUnit / 4 / project.resolution;
+            var phones = new List<RenderPhone>();
             foreach (var note in notes) {
                 foreach (var phoneme in note.phonemes) {
-                    phones.Add(new RenderPhoneme(project, track, part, note, phoneme));
+                    phones.Add(new RenderPhone(project, track, part, note, phoneme));
                 }
             }
             this.phones = phones.ToArray();

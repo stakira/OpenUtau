@@ -59,6 +59,12 @@ namespace OpenUtau.Core.Formats {
             return samples.ToArray();
         }
 
+        public static float[] GetSamples(string filepath) {
+            using (var waveStream = OpenFile(filepath)) {
+                return GetSamples(waveStream);
+            }
+        }
+
         public static float[] BuildPeaks(WaveStream stream, IProgress<int> progress) {
             const double peaksRate = 4000;
             float[] peaks;

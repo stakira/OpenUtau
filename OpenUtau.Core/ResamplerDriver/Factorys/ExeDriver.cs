@@ -23,10 +23,19 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys {
         }
 
         public byte[] DoResampler(EngineInput Args, ILogger logger) {
-            bool resamplerLogging = Preferences.Default.ResamplerLogging;
+            string tmpFile = DoResamplerReturnsFile(Args, logger);
             byte[] data = new byte[0];
+            if (string.IsNullOrEmpty(tmpFile) || File.Exists(tmpFile)) {
+                data = File.ReadAllBytes(tmpFile);
+                File.Delete(tmpFile);
+            }
+            return data;
+        }
+
+        public string DoResamplerReturnsFile(EngineInput Args, ILogger logger) {
+            bool resamplerLogging = Preferences.Default.ResamplerLogging;
             if (!_isLegalPlugin) {
-                return data;
+                return null;
             }
             var threadId = Thread.CurrentThread.ManagedThreadId;
             string tmpFile = Path.GetTempFileName();
@@ -59,11 +68,7 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys {
                     }
                 }
             }
-            if (File.Exists(tmpFile)) {
-                data = File.ReadAllBytes(tmpFile);
-                File.Delete(tmpFile);
-            }
-            return data;
+            return tmpFile;
         }
 
         [DllImport("libc", SetLastError = true)]

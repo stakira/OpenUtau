@@ -11,6 +11,7 @@ namespace OpenUtau.Core.ResamplerDriver {
         string Name { get; }
         string FilePath { get; }
         byte[] DoResampler(DriverModels.EngineInput Args, ILogger logger);
+        string DoResamplerReturnsFile(DriverModels.EngineInput Args, ILogger logger);
         void CheckPermissions();
     }
 
