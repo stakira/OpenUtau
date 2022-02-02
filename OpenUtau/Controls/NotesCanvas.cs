@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
@@ -137,6 +138,7 @@ namespace OpenUtau.App.Controls {
                     }
                 }
             }
+            // RenderRenderPhrase(leftTick, rightTick, viewModel, context);
         }
 
         private void RenderNoteBody(UNote note, NotesViewModel viewModel, DrawingContext context) {
@@ -222,11 +224,11 @@ namespace OpenUtau.App.Controls {
             float nPeriod = (float)viewModel.Project.MillisecondToTick(vibrato.period) / note.duration;
             float nPos = vibrato.NormalizedStart;
             var point = vibrato.Evaluate(nPos, nPeriod, note);
-            Point p0 = viewModel.TickToneToPoint(point.X, point.Y);
+            Point p0 = viewModel.TickToneToPoint(point.X, point.Y - 0.5);
             while (nPos < 1) {
                 nPos = Math.Min(1, nPos + nPeriod / 16);
                 point = vibrato.Evaluate(nPos, nPeriod, note);
-                var p1 = viewModel.TickToneToPoint(point.X, point.Y);
+                var p1 = viewModel.TickToneToPoint(point.X, point.Y - 0.5);
                 context.DrawLine(pen, p0, p1);
                 p0 = p1;
             }
@@ -274,6 +276,29 @@ namespace OpenUtau.App.Controls {
             periodEnd = periodEnd.WithX(periodEnd.X - 2).WithY(periodEnd.Y - height / 2 - 0.5f);
             context.DrawRectangle(null, pen, new Rect(periodStart, new Size(width, height)), 1, 1);
             context.DrawLine(pen, periodEnd, periodEnd + new Vector(0, height));
+        }
+
+        // TODO: optimize
+        private void RenderRenderPhrase(double leftTick, double rightTick, NotesViewModel viewModel, DrawingContext context) {
+            var pen = ThemeManager.BarNumberPen!;
+            var phrases = Core.Render.RenderPhrase.FromPart(viewModel.Project, viewModel.Project.tracks[Part.trackNo], Part);
+            foreach (var phrase in phrases) {
+                if (phrase.position - phrase.phones[0].leading > rightTick ||
+                    phrase.phones.Last().position + phrase.phones.Last().duration < leftTick) {
+                    continue;
+                }
+                Point lastPoint = new Point(-1, 0);
+                var pitchStart = phrase.phones[0].position - phrase.phones[0].leading;
+                for (int i = 0; i < phrase.pitches.Length; i++) {
+                    float x = pitchStart + i * 5;
+                    float y = phrase.pitches[i];
+                    Point point = viewModel.TickToneToPoint(x, y / 100 - 0.5);
+                    if (lastPoint.X > 0) {
+                        context.DrawLine(pen, lastPoint, point);
+                    }
+                    lastPoint = point;
+                }
+            }
         }
     }
 }
