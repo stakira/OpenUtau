@@ -179,9 +179,13 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void OpenResamplerLocation() {
-            string path = PathManager.Inst.ResamplersPath;
-            Directory.CreateDirectory(path);
-            OS.OpenFolder(path);
+            try {
+                string path = PathManager.Inst.ResamplersPath;
+                Directory.CreateDirectory(path);
+                OS.OpenFolder(path);
+            } catch (Exception e) {
+                DocManager.Inst.ExecuteCmd(new UserMessageNotification(e.ToString()));
+            }
         }
 
         public void SetAddlSingersPath(string path) {

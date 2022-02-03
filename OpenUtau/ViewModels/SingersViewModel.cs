@@ -122,8 +122,12 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void OpenLocation() {
-            if (Singer != null) {
-                OS.OpenFolder(Singer.Location);
+            try {
+                if (Singer != null) {
+                    OS.OpenFolder(Singer.Location);
+                }
+            } catch (Exception e) {
+                DocManager.Inst.ExecuteCmd(new UserMessageNotification(e.ToString()));
             }
         }
 

@@ -9,6 +9,7 @@ using Serilog;
 using OpenUtau.Core.Util;
 using Avalonia.Media;
 using System;
+using OpenUtau.Core;
 
 namespace OpenUtau.App.ViewModels {
     public class UpdaterViewModel : ViewModelBase {
@@ -65,7 +66,11 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void OnGithub() {
-            OS.OpenWeb("https://github.com/stakira/OpenUtau/wiki");
+            try {
+                OS.OpenWeb("https://github.com/stakira/OpenUtau/wiki");
+            } catch (Exception e) {
+                DocManager.Inst.ExecuteCmd(new UserMessageNotification(e.ToString()));
+            }
         }
 
         public async void OnUpdate() {
