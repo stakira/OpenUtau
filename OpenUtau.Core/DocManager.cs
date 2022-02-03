@@ -37,12 +37,17 @@ namespace OpenUtau.Core {
         }
 
         public void SearchAllSingers() {
-            Directory.CreateDirectory(PathManager.Inst.SingersPath);
-            var stopWatch = Stopwatch.StartNew();
-            Singers = Formats.UtauSoundbank.FindAllSingers();
-            SingersOrdered = Singers.Values.OrderBy(singer => singer.Name).ToList();
-            stopWatch.Stop();
-            Log.Information($"Search all singers: {stopWatch.Elapsed}");
+            try {
+                Directory.CreateDirectory(PathManager.Inst.SingersPath);
+                var stopWatch = Stopwatch.StartNew();
+                Singers = Formats.UtauSoundbank.FindAllSingers();
+                SingersOrdered = Singers.Values.OrderBy(singer => singer.Name).ToList();
+                stopWatch.Stop();
+                Log.Information($"Search all singers: {stopWatch.Elapsed}");
+            } catch (Exception e) {
+                Log.Error(e, "Failed to search singers.");
+                Singers = new Dictionary<string, USinger>();
+            }
         }
 
         public USinger GetSinger(string name) {
@@ -55,10 +60,15 @@ namespace OpenUtau.Core {
         }
 
         public void SearchAllLegacyPlugins() {
-            var stopWatch = Stopwatch.StartNew();
-            Plugins = PluginLoader.LoadAll(PathManager.Inst.PluginsPath);
-            stopWatch.Stop();
-            Log.Information($"Search all legacy plugins: {stopWatch.Elapsed}");
+            try {
+                var stopWatch = Stopwatch.StartNew();
+                Plugins = PluginLoader.LoadAll(PathManager.Inst.PluginsPath);
+                stopWatch.Stop();
+                Log.Information($"Search all legacy plugins: {stopWatch.Elapsed}");
+            } catch (Exception e) {
+                Log.Error(e, "Failed to search legacy plugins.");
+                Plugins = new Plugin[0];
+            }
         }
 
         public void SearchAllPlugins() {
@@ -66,13 +76,18 @@ namespace OpenUtau.Core {
             var stopWatch = Stopwatch.StartNew();
             var phonemizerFactories = new List<PhonemizerFactory>();
             phonemizerFactories.Add(PhonemizerFactory.Get(typeof(DefaultPhonemizer)));
-            Directory.CreateDirectory(PathManager.Inst.PluginsPath);
-            string oldBuiltin = Path.Combine(PathManager.Inst.PluginsPath, kBuiltin);
-            if (File.Exists(oldBuiltin)) {
-                File.Delete(oldBuiltin);
+            var files = new List<string>();
+            try {
+                files.Add(Path.Combine(Path.GetDirectoryName(GetType().Assembly.Location), kBuiltin));
+                Directory.CreateDirectory(PathManager.Inst.PluginsPath);
+                string oldBuiltin = Path.Combine(PathManager.Inst.PluginsPath, kBuiltin);
+                if (File.Exists(oldBuiltin)) {
+                    File.Delete(oldBuiltin);
+                }
+                files.AddRange(Directory.EnumerateFiles(PathManager.Inst.PluginsPath, "*.dll", SearchOption.AllDirectories));
+            } catch (Exception e) {
+                Log.Error(e, "Failed to search plugins.");
             }
-            var files = Directory.EnumerateFiles(PathManager.Inst.PluginsPath, "*.dll", SearchOption.AllDirectories).ToList();
-            files.Insert(0, Path.Combine(Path.GetDirectoryName(GetType().Assembly.Location), kBuiltin));
             foreach (var file in files) {
                 Assembly assembly;
                 try {

@@ -80,6 +80,7 @@ namespace OpenUtau.Core.Util {
             public List<string> SingerSearchPaths = new List<string>();
             public string ExternalPreviewEngine = string.Empty;
             public string ExternalExportEngine = string.Empty;
+            public string Wavtool = string.Empty;
             public string PlaybackDevice = string.Empty;
             public int PlaybackDeviceNumber;
             public int? PlaybackDeviceIndex;

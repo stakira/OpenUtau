@@ -67,17 +67,22 @@ namespace OpenUtau.Core.ResamplerDriver {
                 }
             }
             basePath = PathManager.Inst.ResamplersPath;
-            Directory.CreateDirectory(basePath);
-            foreach (var file in Directory.EnumerateFiles(basePath, "*", new EnumerationOptions() {
-                RecurseSubdirectories = true
-            })) {
-                driver = Load(file, basePath);
-                if (driver != null) {
-                    resamplers.Add(driver.Name, driver);
+            try {
+                Directory.CreateDirectory(basePath);
+                foreach (var file in Directory.EnumerateFiles(basePath, "*", new EnumerationOptions() {
+                    RecurseSubdirectories = true
+                })) {
+                    driver = Load(file, basePath);
+                    if (driver != null) {
+                        resamplers.Add(driver.Name, driver);
+                    }
                 }
-            }
-            lock (lockObj) {
-                Resamplers = resamplers;
+                lock (lockObj) {
+                    Resamplers = resamplers;
+                }
+            } catch (Exception e) {
+                Log.Error(e, "Failed to search resamplers.");
+                Resamplers = new Dictionary<string, IResamplerDriver>();
             }
         }
 

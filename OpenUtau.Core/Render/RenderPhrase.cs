@@ -29,7 +29,7 @@ namespace OpenUtau.Core.Render {
         internal RenderPhone(UProject project, UTrack track, UVoicePart part, UNote note, UPhoneme phoneme) {
             position = note.position;
             duration = phoneme.Duration;
-            leading = (int)Math.Ceiling(project.MillisecondToTick(phoneme.preutter) / 5.0) * 5; // TODO
+            leading = (int)Math.Round(project.MillisecondToTick(phoneme.preutter) / 5.0) * 5; // TODO
             this.phoneme = phoneme.phoneme;
             tone = note.tone;
 

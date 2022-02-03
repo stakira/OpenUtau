@@ -13,10 +13,10 @@ namespace OpenUtau.Core.SignalChain {
         public readonly int channels;
 
         private readonly object lockObj = new object();
-        private readonly List<Vector2> envelope;
+        private readonly IList<Vector2> envelope;
         private float[] data;
 
-        public WaveSource(double offsetMs, double estimatedLengthMs, List<Vector2> envelope, double skipOverMs, int channels) {
+        public WaveSource(double offsetMs, double estimatedLengthMs, IList<Vector2> envelope, double skipOverMs, int channels) {
             this.channels = channels;
             offset = (int)((offsetMs - skipOverMs) * 44100 / 1000) * channels;
             estimatedLength = (int)(estimatedLengthMs * 44100 / 1000) * channels;
@@ -104,7 +104,7 @@ namespace OpenUtau.Core.SignalChain {
             return end;
         }
 
-        private static void ApplyEnvelope(float[] data, List<Vector2> envelope) {
+        private static void ApplyEnvelope(float[] data, IList<Vector2> envelope) {
             int nextPoint = 0;
             for (int i = 0; i < data.Length; ++i) {
                 while (nextPoint < envelope.Count && i > envelope[nextPoint].X) {
@@ -128,7 +128,7 @@ namespace OpenUtau.Core.SignalChain {
             }
         }
 
-        private static List<Vector2> EnvelopeMsToSamples(List<Vector2> envelope, int skipOverSamples) {
+        private static IList<Vector2> EnvelopeMsToSamples(IList<Vector2> envelope, int skipOverSamples) {
             envelope = new List<Vector2>(envelope);
             double shift = -envelope[0].X;
             for (var i = 0; i < envelope.Count; i++) {

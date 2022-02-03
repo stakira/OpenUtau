@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Threading;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
@@ -86,6 +87,16 @@ namespace OpenUtau.App.Views {
                 }
             };
             dialog.ShowDialog(this);
+
+            var project = ViewModel.NotesViewModel.Project;
+            var phrases = Core.Render.RenderPhrase.FromPart(project, project.tracks[part.trackNo], part);
+            var cancellation = new CancellationTokenSource();
+            foreach (var phrase in phrases) {
+                var renderer = new Classic.ClassicRenderer();
+                var task = renderer.Render(phrase, cancellation);
+                task.Wait();
+                var samples = task.Result;
+            }
         }
 
         void OnMenuEditLyrics(object? sender, RoutedEventArgs e) {
