@@ -55,6 +55,10 @@ namespace OpenUtau.App.ViewModels {
                 Core.Formats.Formats.LoadProject(new string[] { args[1] });
                 return;
             }
+            NewProject();
+        }
+
+        public void NewProject() {
             var defaultTemplate = Path.Combine(PathManager.Inst.TemplatesPath, "default.ustx");
             if (File.Exists(defaultTemplate)) {
                 try {
@@ -66,10 +70,6 @@ namespace OpenUtau.App.ViewModels {
                     Log.Error(e, "failed to load default template");
                 }
             }
-            DocManager.Inst.ExecuteCmd(new LoadProjectNotification(Core.Formats.Ustx.Create()));
-        }
-
-        public void NewProject() {
             DocManager.Inst.ExecuteCmd(new LoadProjectNotification(Core.Formats.Ustx.Create()));
         }
 
