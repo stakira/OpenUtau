@@ -306,7 +306,7 @@ namespace OpenUtau.Plugin.Builtin {
                 finalCons = cc[cc.Length - 1];
 
                 var start = 0;
-                (var hasVc, var vcPhonemes) = HasVc(prevV, cc[0], syllable.tone);
+                (var hasVc, var vcPhonemes) = HasVc(prevV, cc[0], syllable.tone, cc.Length);
                 usingVC = hasVc;
                 phonemes.AddRange(vcPhonemes);
 
@@ -405,7 +405,7 @@ namespace OpenUtau.Plugin.Builtin {
                 var symbol = cc[i];
 
                 if (i == 0) {
-                    (var hasVc, var vcPhonemes) = HasVc(prevV, symbol, ending.tone);
+                    (var hasVc, var vcPhonemes) = HasVc(prevV, symbol, ending.tone, cc.Length+1);
                     usingVC = hasVc;
                     phonemes.AddRange(vcPhonemes);
                     if (usingVC) {
@@ -438,7 +438,11 @@ namespace OpenUtau.Plugin.Builtin {
             return phonemes;
         }
         
-        private (bool, string[]) HasVc(string vowel, string cons, int tone) {
+        private (bool, string[]) HasVc(string vowel, string cons, int tone, int cc) {
+            if (vowel == "" || vowel == "-") {
+                return (false, new string[0]);
+            }
+
             var phonemes = new List<string>();
             if (cons == "r") {
                 cons = "w";
@@ -457,7 +461,7 @@ namespace OpenUtau.Plugin.Builtin {
                 phonemes.Add(altVc);
             }
 
-            if (affricates.Contains(cons)) {
+            if (affricates.Contains(cons) && cc > 1) {
                 phonemes.Add(FixCv(SoloConsonant[cons], tone));
             }
 
