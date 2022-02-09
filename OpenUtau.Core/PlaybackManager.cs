@@ -13,42 +13,6 @@ using OpenUtau.Core.Util;
 using Serilog;
 
 namespace OpenUtau.Core {
-    public class AudioOutputDevice {
-        public string name;
-        public string api;
-        public int deviceNumber;
-        public Guid guid;
-        public object data;
-
-        public override string ToString() => $"[{api}] {name}";
-    }
-
-    public interface IAudioOutput {
-        PlaybackState PlaybackState { get; }
-        int DeviceNumber { get; }
-
-        void SelectDevice(Guid guid, int deviceNumber);
-        void Init(ISampleProvider sampleProvider);
-        void Pause();
-        void Play();
-        void Stop();
-        long GetPosition();
-
-        List<AudioOutputDevice> GetOutputDevices();
-    }
-
-    class DummyAudioOutput : IAudioOutput {
-        public PlaybackState PlaybackState => PlaybackState.Stopped;
-        public int DeviceNumber => 0;
-        public List<AudioOutputDevice> GetOutputDevices() => new List<AudioOutputDevice>();
-        public long GetPosition() => 0;
-        public void Init(ISampleProvider sampleProvider) { }
-        public void Pause() { }
-        public void Play() { }
-        public void SelectDevice(Guid guid, int deviceNumber) { }
-        public void Stop() { }
-    }
-
     public class SineGen : ISampleProvider {
         public WaveFormat WaveFormat => waveFormat;
         public double Freq { get; set; }
@@ -98,7 +62,7 @@ namespace OpenUtau.Core {
         IResamplerDriver previewDriver;
         CancellationTokenSource previewCancellationTokenSource;
 
-        public IAudioOutput AudioOutput { get; set; } = new DummyAudioOutput();
+        public Audio.IAudioOutput AudioOutput { get; set; } = new Audio.DummyAudioOutput();
         public bool Playing => AudioOutput.PlaybackState == PlaybackState.Playing;
 
         public bool CheckResampler() => ResamplerDrivers.CheckPreviewResampler();

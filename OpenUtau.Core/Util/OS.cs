@@ -12,7 +12,7 @@ namespace OpenUtau {
         public static void OpenFolder(string path) {
             if (Directory.Exists(path)) {
                 Process.Start(new ProcessStartInfo {
-                    FileName = IsWindows() ? "explorer.exe" : IsMacOS() ? "open" : "xdg-open",
+                    FileName = GetOpener(),
                     Arguments = path,
                 });
             }
@@ -20,7 +20,7 @@ namespace OpenUtau {
 
         public static void OpenWeb(string url) {
             Process.Start(new ProcessStartInfo {
-                FileName = IsWindows() ? "explorer.exe" : IsMacOS() ? "open" : "xdg-open",
+                FileName = GetOpener(),
                 Arguments = url,
             });
         }
@@ -37,6 +37,37 @@ namespace OpenUtau {
                 return "linux-x64";
             }
             throw new NotSupportedException();
+        }
+
+        public static string WhereIs(string filename) {
+            if (File.Exists(filename)) {
+                return Path.GetFullPath(filename);
+            }
+            var values = Environment.GetEnvironmentVariable("PATH");
+            foreach (var path in values.Split(Path.PathSeparator)) {
+                var fullPath = Path.Combine(path, filename);
+                if (File.Exists(fullPath)) {
+                    return fullPath;
+                }
+            }
+            return null;
+        }
+
+        private static readonly string[] linuxOpeners = { "xdg-open", "mimeopen", "gnome-open", "open" };
+        private static string GetOpener() {
+            if (IsWindows()) {
+                return "explorer.exe";
+            }
+            if (IsMacOS()) {
+                return "open";
+            }
+            foreach (var opener in linuxOpeners) {
+                string fullPath = WhereIs(opener);
+                if (!string.IsNullOrEmpty(fullPath)) {
+                    return fullPath;
+                }
+            }
+            throw new IOException($"None of {string.Join(", ", linuxOpeners)} found.");
         }
     }
 }

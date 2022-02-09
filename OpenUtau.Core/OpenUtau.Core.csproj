@@ -22,6 +22,13 @@
     <PackageReference Include="YamlDotNet" Version="11.2.1" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">
+    <PackageReference Include="NAudio" Version="2.0.1" />
+  </ItemGroup>
+  <PropertyGroup Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">
+    <DefineConstants>WINDOWS</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Remove="Api\cmudict-0_7b.txt" />
     <None Remove="Api\cmudict-0_7b_phones.txt" />

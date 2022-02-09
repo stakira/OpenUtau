@@ -22,6 +22,24 @@
             <TextBlock Text="{DynamicResource prefs.playback.device}"/>
             <ComboBox HorizontalAlignment="Stretch" Items="{Binding AudioOutputDevices}" SelectedItem="{Binding AudioOutputDevice}"/>
             <Button Content="{DynamicResource prefs.playback.test}" HorizontalAlignment="Stretch" Command="{Binding TestAudioOutputDevice}"/>
+            <TextBlock Text="{DynamicResource prefs.playback.backend}"/>
+            <ComboBox HorizontalAlignment="Stretch" SelectedIndex="{Binding PreferPortAudio}">
+              <ComboBoxItem Content="{DynamicResource prefs.playback.backend.auto}"/>
+              <ComboBoxItem Content="{DynamicResource prefs.playback.backend.port}"/>
+            </ComboBox>
+            <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.note.restart}"/>
+            <Grid ColumnDefinitions="Auto,8,20,8,*" Margin="0,4,0,0">
+              <TextBlock Grid.Column="0" Text="{DynamicResource prefs.playback.cursorposition}"/>
+              <TextBlock Grid.Column="2">
+                <TextBlock.Text>
+                  <MultiBinding StringFormat="{}{0:#0.0}">
+                    <Binding Path="PlayPosMarkerMargin"/>
+                  </MultiBinding>
+                </TextBlock.Text>
+              </TextBlock>
+              <Slider Grid.Column="4" Classes="fader" Value="{Binding PlayPosMarkerMargin}" Minimum="0" Maximum="1"
+                      TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="true"/>
+            </Grid>
           </StackPanel>
         </HeaderedContentControl>
         <HeaderedContentControl Classes="groupbox" Header="{DynamicResource prefs.paths}">

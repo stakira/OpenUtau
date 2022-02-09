@@ -119,7 +119,9 @@
   <system:String x:Key="pianoroll.menu.notes.quantize15">Kuantisasi hingga 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Kuantisasi hingga 1/64</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">Setel ulang semua ekspresi</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">Reset phoneme timings</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">Setel ulang tikungan nada</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notes.reset.vibratos">Reset vibratos</system:String>-->
   <system:String x:Key="pianoroll.menu.part">Bagian</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">Plugin Lama (Eksperimental)</system:String>
   <system:String x:Key="pianoroll.menu.part.rename">Ganti Nama</system:String>
@@ -139,7 +141,7 @@ Tahan Ctrl untuk memilih lainnya</system:String>
   <system:String x:Key="prefs.advanced">Canggih</system:String>
   <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
   <!--<system:String x:Key="prefs.advanced.resamplerlogging">Resampler Logging</system:String>-->
-  <!--<system:String x:Key="prefs.advanced.resamplerlogging.warn">Stores resampler output in log files. This option slows down UI and rendering.</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.resamplerlogging.warn">Menyimpan output resampler dalam file log. Opsi ini akan memperlambat UI dan rendering.</system:String>-->
   <system:String x:Key="prefs.advanced.stable">Stabil</system:String>
   <system:String x:Key="prefs.appearance">Penampilan</system:String>
   <system:String x:Key="prefs.appearance.lang">Bahasa</system:String>
@@ -149,12 +151,16 @@ Tahan Ctrl untuk memilih lainnya</system:String>
   <system:String x:Key="prefs.caption">Preferensi</system:String>
   <system:String x:Key="prefs.note.restart">Catatan: silakan restart OpenUtau setelah mengubah item ini.</system:String>
   <!--<system:String x:Key="prefs.off">Mati</system:String>-->
-  <!--<system:String x:Key="prefs.on">Nyala</system:String>-->
+  <!--<system:String x:Key="prefs.on">Hidup</system:String>-->
   <system:String x:Key="prefs.paths">Jalur</system:String>
   <system:String x:Key="prefs.paths.addlsinger">Jalur Penyanyi Tambahan</system:String>
   <system:String x:Key="prefs.paths.reset">Setel Ulang</system:String>
   <system:String x:Key="prefs.paths.select">Pilih</system:String>
   <system:String x:Key="prefs.playback">Pemutaran</system:String>
+  <!--<system:String x:Key="prefs.playback.backend">Latar Belakang Audio</system:String>-->
+  <!--<system:String x:Key="prefs.playback.backend.auto">Otomatis</system:String>-->
+  <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
+  <!--<system:String x:Key="prefs.playback.cursorposition">Cursor Position</system:String>-->
   <system:String x:Key="prefs.playback.device">Perangkat Pemutaran</system:String>
   <system:String x:Key="prefs.playback.test">Tes</system:String>
   <system:String x:Key="prefs.rendering">Merender</system:String>

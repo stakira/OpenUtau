@@ -119,8 +119,8 @@
   <system:String x:Key="pianoroll.menu.notes.quantize15">Quantize to 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Quantize to 1/64</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">Reset all expressions</system:String>
-  <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">Reset pitch bends</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">Reset phoneme timings</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">Reset pitch bends</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.vibratos">Reset vibratos</system:String>
   <system:String x:Key="pianoroll.menu.part">Part</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">Legacy Plugin (Experimental)</system:String>
@@ -157,6 +157,10 @@ Hold Ctrl to select more</system:String>
   <system:String x:Key="prefs.paths.reset">Reset</system:String>
   <system:String x:Key="prefs.paths.select">Select</system:String>
   <system:String x:Key="prefs.playback">Playback</system:String>
+  <system:String x:Key="prefs.playback.backend">Audio Backend</system:String>
+  <system:String x:Key="prefs.playback.backend.auto">Automatic</system:String>
+  <system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>
+  <system:String x:Key="prefs.playback.cursorposition">Cursor Position</system:String>
   <system:String x:Key="prefs.playback.device">Playback Device</system:String>
   <system:String x:Key="prefs.playback.test">Test</system:String>
   <system:String x:Key="prefs.rendering">Rendering</system:String>

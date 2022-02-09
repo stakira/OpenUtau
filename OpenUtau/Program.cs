@@ -23,8 +23,6 @@ namespace OpenUtau.App {
                 Log.Information("OpenUtau already open. Exiting.");
                 return;
             }
-            InitOpenUtau();
-            InitAudio();
             Run(args);
         }
 
@@ -56,15 +54,6 @@ namespace OpenUtau.App {
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler((sender, args) => {
                 Log.Error((Exception)args.ExceptionObject, "Unhandled exception");
             });
-        }
-
-        public static void InitOpenUtau() {
-            Core.ResamplerDriver.ResamplerDrivers.Search();
-            DocManager.Inst.Initialize();
-        }
-
-        public static void InitAudio() {
-            PlaybackManager.Inst.AudioOutput = new Audio.AudioOutput();
         }
     }
 }

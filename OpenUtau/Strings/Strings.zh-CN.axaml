@@ -79,6 +79,7 @@
   <system:String x:Key="menu.help.about">关于 OpenUTAU</system:String>
   <system:String x:Key="menu.help.wiki">OpenUtau 维基</system:String>
   <system:String x:Key="menu.tools">工具</system:String>
+  <system:String x:Key="menu.tools.clearrendercache">清空渲染缓存</system:String>
   <system:String x:Key="menu.tools.layout">界面布局</system:String>
   <system:String x:Key="menu.tools.layout.hsplit11">水平分布 1:1</system:String>
   <system:String x:Key="menu.tools.layout.hsplit12">水平分布 1:2</system:String>
@@ -118,8 +119,8 @@
   <system:String x:Key="pianoroll.menu.notes.quantize15">量化至1/128音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">量化至1/64音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">重置表情</system:String>
-  <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">重置滑音</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">重置音素时机</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">重置滑音</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.vibratos">重置颤音</system:String>
   <system:String x:Key="pianoroll.menu.part">片段</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">传统插件 (实验性)</system:String>
@@ -156,6 +157,10 @@
   <system:String x:Key="prefs.paths.reset">清除</system:String>
   <system:String x:Key="prefs.paths.select">选择</system:String>
   <system:String x:Key="prefs.playback">回放</system:String>
+  <system:String x:Key="prefs.playback.backend">音频后端</system:String>
+  <system:String x:Key="prefs.playback.backend.auto">自动</system:String>
+  <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
+  <!--<system:String x:Key="prefs.playback.cursorposition">Cursor Position</system:String>-->
   <system:String x:Key="prefs.playback.device">回放设备</system:String>
   <system:String x:Key="prefs.playback.test">测试</system:String>
   <system:String x:Key="prefs.rendering">渲染</system:String>

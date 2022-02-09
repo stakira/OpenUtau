@@ -7,12 +7,12 @@ using System.Reactive.Linq;
 using System.Text.RegularExpressions;
 using Avalonia;
 using Avalonia.Markup.Xaml.MarkupExtensions;
+using OpenUtau.Audio;
 using OpenUtau.Core;
 using OpenUtau.Core.ResamplerDriver;
 using OpenUtau.Core.Util;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using static OpenUtau.Core.ResamplerDriver.DriverModels;
 
 namespace OpenUtau.App.ViewModels {
     public class PreferencesViewModel : ViewModelBase {
@@ -24,6 +24,8 @@ namespace OpenUtau.App.ViewModels {
             get => audioOutputDevice;
             set => this.RaiseAndSetIfChanged(ref audioOutputDevice, value);
         }
+        [Reactive] public int PreferPortAudio { get; set; }
+        [Reactive] public double PlayPosMarkerMargin { get; set; }
         public string AdditionalSingersPath => PathManager.Inst.AdditionalSingersPath;
         public List<int> PrerenderThreadsItems { get; }
         public int PrerenderThreads {
@@ -66,6 +68,8 @@ namespace OpenUtau.App.ViewModels {
                     AudioOutputDevice = device;
                 }
             }
+            PreferPortAudio = Preferences.Default.PreferPortAudio ? 1 : 0;
+            PlayPosMarkerMargin = Preferences.Default.PlayPosMarkerMargin;
             PrerenderThreadsItems = Enumerable.Range(1, 16).ToList();
             PrerenderThreads = Preferences.Default.PrerenderThreads;
             ResamplerDrivers.Search();
@@ -112,6 +116,16 @@ namespace OpenUtau.App.ViewModels {
                             DocManager.Inst.ExecuteCmd(new UserMessageNotification($"Failed to select device {device.name}\n{e}"));
                         }
                     }
+                });
+            this.WhenAnyValue(vm => vm.PreferPortAudio)
+                .Subscribe(index => {
+                    Preferences.Default.PreferPortAudio = index > 0;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.PlayPosMarkerMargin)
+                .Subscribe(playPosMarkerMargin => {
+                    Preferences.Default.PlayPosMarkerMargin = playPosMarkerMargin;
+                    Preferences.Save();
                 });
             this.WhenAnyValue(vm => vm.PrerenderThreads)
                 .Subscribe(threads => {
@@ -165,9 +179,13 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void OpenResamplerLocation() {
-            string path = PathManager.Inst.ResamplersPath;
-            Directory.CreateDirectory(path);
-            OS.OpenFolder(path);
+            try {
+                string path = PathManager.Inst.ResamplersPath;
+                Directory.CreateDirectory(path);
+                OS.OpenFolder(path);
+            } catch (Exception e) {
+                DocManager.Inst.ExecuteCmd(new UserMessageNotification(e.ToString()));
+            }
         }
 
         public void SetAddlSingersPath(string path) {

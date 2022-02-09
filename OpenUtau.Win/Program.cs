@@ -8,7 +8,7 @@ namespace OpenUtau {
         private static void Main(string[] args) {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             App.Program.InitLogging();
-            App.Program.InitOpenUtau();
+            App.App.InitOpenUtau();
             InitAudio();
 
             App.Program.InitInterop();
