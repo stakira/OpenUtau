@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using OpenUtau.Api;
 using WanaKanaNet;
 
@@ -242,6 +243,25 @@ namespace OpenUtau.Plugin.Builtin {
             {"ulo", new [] { "u", "o" } },
         };
 
+        private string [] affricates = "ts ch j".Split();
+
+        protected override string[] GetSymbols(Note note) {
+            string[] original = base.GetSymbols(note);
+            if (original == null) {
+                return null;
+            }
+            List<string> modified = new List<string>();
+            string[] diphthongs = new[] { "ay", "ey", "oy", "ow", "aw" };
+            foreach (string s in original) {
+                if (diphthongs.Contains(s)) {
+                    modified.AddRange(new string[] { s[0].ToString(), s[1].ToString()});
+                } else {        
+                    modified.Add(s);
+                }
+            }               
+            return modified.ToArray();
+        }
+
         protected override List<string> ProcessSyllable(Syllable syllable) {
             // Skip processing if this note extends the prevous syllable
             if (CanMakeAliasExtension(syllable)) {
@@ -252,19 +272,10 @@ namespace OpenUtau.Plugin.Builtin {
             var cc = syllable.cc;
             var v = syllable.v;
             var phonemes = new List<string>();
+            var usingVC = false;
 
-            // Handle diphthongs
-            if (prevV.Length == 2) {
-                var newCC = new List<string>();
-                newCC.Add(prevV[1].ToString());
-                newCC.AddRange(cc);
-                cc = newCC.ToArray();
-                prevV = prevV[0].ToString();
-            } else if (prevV.Length == 0) {
+            if (prevV.Length == 0) {
                 prevV = "-";
-            }
-            if (v.Length == 2) {
-                v = v[0].ToString();
             }
 
             // Check CCs for special clusters
@@ -293,9 +304,23 @@ namespace OpenUtau.Plugin.Builtin {
             var finalCons = "";
             if (cc.Length > 0) {
                 finalCons = cc[cc.Length - 1];
-                for (var i = 0; i < cc.Length - 1; i++) {
+
+                var start = 0;
+                (var hasVc, var vcPhonemes) = HasVc(prevV, cc[0], syllable.tone);
+                usingVC = hasVc;
+                phonemes.AddRange(vcPhonemes);
+
+                if (usingVC) {
+                    start = 1;
+                }
+
+                for (var i = start;  i < cc.Length - 1; i++) {
                     var cons = SoloConsonant[cc[i]];
-                    cons = TryVcv(prevV, cons, syllable.tone);
+                    if (!usingVC) {
+                        cons = TryVcv(prevV, cons, syllable.tone);
+                    } else {
+                        usingVC = false;
+                    }
                     if (HasOto(cons, syllable.tone)) {
                         phonemes.Add(cons);
                     } else if (ConditionalAlt.ContainsKey(cons)) {
@@ -310,7 +335,11 @@ namespace OpenUtau.Plugin.Builtin {
             var cv = $"{StartingConsonant[finalCons]}{v}";
             cv = AltCv.ContainsKey(cv) ? AltCv[cv] : cv;
             var hiragana = ToHiragana(cv);
-            hiragana = TryVcv(prevV, hiragana, syllable.vowelTone);
+            if (!usingVC) {
+                hiragana = TryVcv(prevV, hiragana, syllable.vowelTone);
+            } else {
+                hiragana = FixCv(hiragana, syllable.vowelTone);
+            }
 
             // Check for nonstandard CV
             var split = false;
@@ -348,15 +377,6 @@ namespace OpenUtau.Plugin.Builtin {
             var cc = ending.cc;
             var phonemes = new List<string>();
 
-            // Handle diphthongs
-            if (prevV.Length == 2) {
-                var newCC = new List<string>();
-                newCC.Add(prevV[1].ToString());
-                newCC.AddRange(cc);
-                cc = newCC.ToArray();
-                prevV = prevV[0].ToString();
-            }
-
             // Check CCs for special clusters
             var adjustedCC = new List<string>();
             for (var i = 0; i < cc.Length; i++) {
@@ -379,40 +399,79 @@ namespace OpenUtau.Plugin.Builtin {
             }
             cc = adjustedCC.ToArray();
 
+            var usingVC = false;
             // Convert to hiragana
-            foreach (var symbol in cc) {
+            for (var i = 0; i < cc.Length; i++) {
+                var symbol = cc[i];
+
+                if (i == 0) {
+                    (var hasVc, var vcPhonemes) = HasVc(prevV, symbol, ending.tone);
+                    usingVC = hasVc;
+                    phonemes.AddRange(vcPhonemes);
+                    if (usingVC) {
+                        continue;
+                    }
+                }
+
                 var solo = SoloConsonant[symbol];
-                solo = TryVcv(prevV, solo, ending.tone);
+                if (!usingVC) {
+                    solo = TryVcv(prevV, solo, ending.tone);
+                } else {
+                    usingVC = false;
+                    solo = FixCv(solo, ending.tone);
+                }
+                
                 if (HasOto(solo, ending.tone)) {
                     phonemes.Add(solo);
                 } else if (ConditionalAlt.ContainsKey(solo)) {
                     solo = ConditionalAlt[solo];
-                    phonemes.Add(TryVcv(prevV, solo, ending.tone));
+                    if (!usingVC) {
+                        solo = TryVcv(prevV, solo, ending.tone);
+                    } else {
+                        solo = FixCv(solo, ending.tone);
+                    }
+                    phonemes.Add(solo);
                 }
                 prevV = WanaKana.ToRomaji(solo).Last<char>().ToString();
             }
 
             return phonemes;
         }
-
-        public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
-            Result result = base.Process(notes, prev, next, prevNeighbour, nextNeighbour, prevNeighbours);
-            
-            if (nextNeighbour == null && result.phonemes.Length > 1) {
-                var lastIndex = result.phonemes.Length - 1;
-                var lastPhoneme = result.phonemes[lastIndex].phoneme;
-                var cons = SoloConsonant.Values.ToArray<string>();
-                var vow = "あ い う え お ん".Split();
-                if (cons.Any(lastPhoneme.Contains) && !vow.Any(lastPhoneme.Contains)) {
-                    result.phonemes[lastIndex].position = notes.Sum(note => note.duration);
-                }
+        
+        private (bool, string[]) HasVc(string vowel, string cons, int tone) {
+            var phonemes = new List<string>();
+            if (cons == "r") {
+                cons = "w";
+            } else if (cons == "l") {
+                cons = "r";
+            } else if (cons == "ly") {
+                cons = "ry";
             }
-            return result;
+
+            var vc = $"{vowel} {cons}";
+            var altVc = $"{vowel} {cons[0]}";
+
+            if (HasOto(vc, tone)) {
+                phonemes.Add(vc);
+            } else if (HasOto(altVc, tone)) {
+                phonemes.Add(altVc);
+            }
+
+            if (affricates.Contains(cons)) {
+                phonemes.Add(FixCv(SoloConsonant[cons], tone));
+            }
+
+            return (phonemes.Count > 0, phonemes.ToArray());
         }
 
         private string TryVcv(string vowel, string cv, int tone) {
             var vcv = $"{vowel} {cv}";
-            return HasOto(vcv, tone) ? vcv : cv;
+            return HasOto(vcv, tone) ? vcv : FixCv(cv, tone);
+        }
+
+        private string FixCv(string cv, int tone) {
+            var alt = $"- {cv}";
+            return HasOto(cv, tone) ? cv : HasOto(alt, tone) ? alt : cv;
         }
 
         private string ToHiragana(string romaji) {
