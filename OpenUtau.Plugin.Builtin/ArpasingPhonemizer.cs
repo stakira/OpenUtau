@@ -102,6 +102,12 @@ namespace OpenUtau.Plugin.Builtin {
                 return MakeSimpleResult("");
             }
             var note = notes[0];
+
+            // Force alias using ? prefix
+            if (!string.IsNullOrEmpty(note.lyric) && note.lyric[0] == '?') {
+                return MakeSimpleResult(note.lyric.Substring(1));
+            }
+
             // Get the symbols of previous note.
             var prevSymbols = prevNeighbour == null ? null : GetSymbols(prevNeighbour.Value);
             // Get the symbols of current note.
