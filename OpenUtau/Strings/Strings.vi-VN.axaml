@@ -89,13 +89,13 @@
   <system:String x:Key="menu.tools.layout.vsplit13">Dọc 1:3</system:String>
   <system:String x:Key="menu.tools.prefs">Tuỳ chỉnh...</system:String>
   <system:String x:Key="menu.tools.project.expressions">Biểu cảm...</system:String>
-  <system:String x:Key="menu.tools.singer.install">Cài đặt ca sĩ vào...</system:String>
+  <system:String x:Key="menu.tools.singer.install">Cài đặt ca sĩ vào máy...</system:String>
   <system:String x:Key="menu.tools.singer.installadv">Cài đặt ca sĩ vào(Nâng cao)...</system:String>
   <system:String x:Key="menu.tools.singers">Danh sách ca sĩ...</system:String>
 
   <!--<system:String x:Key="oto.alias">Alias</system:String>-->
   <system:String x:Key="oto.color">Sắc thái</system:String>
-  <system:String x:Key="oto.consonant">Phụ âm</system:String>
+  <system:String x:Key="oto.consonant">Consonant</system:String>
   <!--<system:String x:Key="oto.cutoff">Cutoff</system:String>-->
   <system:String x:Key="oto.file">Tên tệp</system:String>
   <!--<system:String x:Key="oto.offset">Offset</system:String>-->
@@ -157,14 +157,14 @@ Nhấn giữ Ctrl để chọn đồng loạt nhiều nốt</system:String>
   <system:String x:Key="prefs.paths.reset">Đặt lại</system:String>
   <system:String x:Key="prefs.paths.select">Lựa chọn</system:String>
   <system:String x:Key="prefs.playback">Phát lại</system:String>
-  <!--<system:String x:Key="prefs.playback.backend">Audio Backend</system:String>-->
-  <!--<system:String x:Key="prefs.playback.backend.auto">Automatic</system:String>-->
+  <!--<system:String x:Key="prefs.playback.backend">Backend âm thanh</system:String>-->
+  <!--<system:String x:Key="prefs.playback.backend.auto">Tự động</system:String>-->
   <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
-  <!--<system:String x:Key="prefs.playback.cursorposition">Cursor Position</system:String>-->
+  <!--<system:String x:Key="prefs.playback.cursorposition">Vị trí đường phát lại</system:String>-->
   <system:String x:Key="prefs.playback.device">Thiết bị phát lại</system:String>
   <system:String x:Key="prefs.playback.test">Nghe thử</system:String>
   <system:String x:Key="prefs.rendering">Render</system:String>
-  <system:String x:Key="prefs.rendering.prerender.threads">Luồng cho phép render trước</system:String>
+  <system:String x:Key="prefs.rendering.prerender.threads">Luồng cho phép nghe thử trước</system:String>
   <system:String x:Key="prefs.rendering.resampler.export">Resampler cho việc xuất ra</system:String>
   <system:String x:Key="prefs.rendering.resampler.note">
     Ghi chú: để sử dụng resampler bên ngoài, thêm tệp resampler định dạng EXE hoặc DLL vào trong thư mục Resamplers nằm trong đường dẫn cài đặt của OpenUTAU và chọn trong Tuỳ chọn.
@@ -178,7 +178,7 @@ Cảnh báo: moresampler chưa được hỗ trợ hoàn toàn. Việc sử dụ
 4. Kiên nhẫn chờ đợi hoàn tất việc render trước khi phát.
   </system:String>
 
-  <system:String x:Key="progress.saved">Hoàn thành lưu dự án. {0}</system:String>
+  <system:String x:Key="progress.saved">Hoàn tất lưu dự án. {0}</system:String>
 
   <system:String x:Key="singers.caption">Ca sĩ</system:String>
   <system:String x:Key="singers.location">Đường dẫn</system:String>
