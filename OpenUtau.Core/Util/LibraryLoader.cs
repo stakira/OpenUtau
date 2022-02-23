@@ -12,8 +12,8 @@ namespace OpenUtau {
         public LibraryLoader(string path, string library) {
             Log.Information($"Is64BitOperatingSystem {Environment.Is64BitOperatingSystem} Is64BitProcess {Environment.Is64BitProcess}");
             if (OS.IsWindows()) {
-                string attempt1 = Environment.Is64BitProcess ? "win-x64" : "win-x86";
-                string attempt2 = Environment.Is64BitProcess ? "win-x86" : "win-x64";
+                string attempt1 = OS.IsIntel64 ? "win-x64" : "win-x86";
+                string attempt2 = OS.IsIntel64 ? "win-x86" : "win-x64";
                 _handle = LoadLibrary(Path.Combine(path, attempt1, $"{library}.dll"));
                 if (_handle == IntPtr.Zero) {
                     Log.Error($"Error loading {attempt1}: {Marshal.GetLastWin32Error()}");
@@ -23,11 +23,36 @@ namespace OpenUtau {
                     Log.Error($"Error loading {attempt2}: {Marshal.GetLastWin32Error()}");
                 }
             } else if (OS.IsLinux()) {
-                string lib = Path.Combine(path, "linux-x64", $"lib{library}.so");
+		string lib = "";
+		if(OS.IsArm64)
+		{
+		    lib = Path.Combine(path, "linux-arm64", $"lib{library}.so");
+		}
+		//else if(OS.IsArm32)
+		//{
+		//    lib = Path.Combine(path, "linux-armhf", $"lib{library}.so");
+		//}else
+		{
+	            lib = Path.Combine(path, "linux-x64", $"lib{library}.so");
+		}
+		string[] FindLib = OS.WhereIsLib($"lib{library}.so.2");
+		if(FindLib.Length>1){lib = FindLib[1];}
+		else
+		{
+		    FindLib = OS.WhereIsLib($"lib{library}.so");
+   		    if(FindLib.Length>1){lib = FindLib[1];}
+        	}
                 Log.Information($"Loading {lib}");
-                _handle = dlopen(lib, RTLD_NOW);
+                _handle = dlopenL(lib, RTLD_NOW);
             } else if (OS.IsMacOS()) {
-                string lib = Path.Combine(path, "osx-x64", $"lib{library}.dylib");
+		string lib = "";
+		//if(OS.IsArm64)
+		//{
+		//    lib = Path.Combine(path, "osx-arm64", $"lib{library}.so");
+		//}else
+		{
+                    lib = Path.Combine(path, "osx-x64", $"lib{library}.dylib");
+		}
                 Log.Information($"Loading {lib}");
                 _handle = dlopen(lib, RTLD_NOW);
             } else {
@@ -42,7 +67,9 @@ namespace OpenUtau {
             IntPtr ptr = IntPtr.Zero;
             if (OS.IsWindows()) {
                 ptr = GetProcAddress(_handle, name);
-            } else if (OS.IsLinux() || OS.IsMacOS()) {
+            } else if (OS.IsLinux()) {
+                ptr = dlsymL(_handle, name);
+            } else if (OS.IsMacOS()) {
                 ptr = dlsym(_handle, name);
             }
             if (_handle == IntPtr.Zero) {
@@ -57,6 +84,8 @@ namespace OpenUtau {
             }
             if (OS.IsWindows()) {
                 FreeLibrary(_handle);
+            } else if (OS.IsLinux()) {
+                dlcloseL(_handle);
             } else {
                 dlclose(_handle);
             }
@@ -69,6 +98,9 @@ namespace OpenUtau {
         [DllImport("libdl")] static extern IntPtr dlopen(string fileName, int flags);
         [DllImport("libdl")] static extern IntPtr dlsym(IntPtr handle, string symbol);
         [DllImport("libdl")] static extern int dlclose(IntPtr handle);
+        [DllImport("libdl.so.2",EntryPoint="dlopen")] static extern IntPtr dlopenL(string fileName, int flags);
+        [DllImport("libdl.so.2",EntryPoint="dlsym")] static extern IntPtr dlsymL(IntPtr handle, string symbol);
+        [DllImport("libdl.so.2",EntryPoint="dlclose")] static extern int dlcloseL(IntPtr handle);
 
         // https://stackoverflow.com/a/15608028
         public static bool IsManagedAssembly(string fileName) {

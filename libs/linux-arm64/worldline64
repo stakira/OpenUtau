@@ -1,0 +1,4 @@
+#!/bin/bash
+DIR="$( cd "$( dirname "$0"  )" && pwd  )"
+BOX64_NOBANNER=1 BOX64_LOG=0 BOX64_LD_LIBRARY_PATH=$DIR/:./:./lib64/:lib/:lib64/:x86_64/:bin64/:libs64/:/lib/x86_64-linux-gnu/:/usr/x86_64-linux-gnu/lib/:/usr/i686-linux-gnu/lib64/:/usr/x86_64-linux-gnux32/lib64/:/opt/exagear/images/ubuntu-2004-x86_64/usr/lib/x86_64-linux-gnu/ "$DIR/box64" "$DIR/worldline_amd64" $@
+#THIS IS A EXAMPLE FOR HOW TO RUN AMD64 RESAMPLER(Linux Version) in ARM64

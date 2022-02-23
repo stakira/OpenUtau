@@ -28,12 +28,16 @@ artifacts:
   - path: bin\linux-x64
     name: OpenUtau-linux-x64
     type: zip
+  - path: bin\linux-arm64
+    name: OpenUtau-linux-arm64
+    type: zip
   - path: OpenUtau-osx-x64.dmg
   - path: release.xml
   - path: appcast.win.xml
   - path: appcast.win-x86.xml
   - path: appcast.win-x64.xml
   - path: appcast.linux-x64.xml
+  - path: appcast.linux-arm64.xml
   - path: appcast.osx-x64.xml
   - path: changelog.txt
 for:

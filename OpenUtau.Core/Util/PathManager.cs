@@ -76,7 +76,12 @@ namespace OpenUtau.Core {
                 } else if (OS.IsMacOS()) {
                     path = Path.Combine(path, "osx-x64");
                 } else if (OS.IsLinux()) {
-                    path = Path.Combine(path, "linux-x64");
+		    if(OS.IsArm64)
+		    {
+			path = Path.Combine(path, "linux-arm64");
+		    }else{
+			path = Path.Combine(path, "linux-x64");
+		    }
                 }
                 return path;
             }

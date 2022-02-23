@@ -61,6 +61,9 @@
   <ItemGroup Condition="'$(RuntimeIdentifier)' == 'linux-x64'">
     <None Include="..\libs\linux-x64\**" CopyToOutputDirectory="PreserveNewest" LinkBase="libs\linux-x64\" />
   </ItemGroup>
+  <ItemGroup Condition="'$(RuntimeIdentifier)' == 'linux-arm64'">
+    <None Include="..\libs\linux-arm64\**" CopyToOutputDirectory="PreserveNewest" LinkBase="libs\linux-arm64\" />
+  </ItemGroup>
   <ItemGroup>
     <Compile Update="Resources\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
