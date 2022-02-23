@@ -32,6 +32,7 @@ namespace OpenUtau {
 		//{
 		//    lib = Path.Combine(path, "linux-armhf", $"lib{library}.so");
 		//}else
+		else
 		{
 	            lib = Path.Combine(path, "linux-x64", $"lib{library}.so");
 		}
@@ -50,9 +51,9 @@ namespace OpenUtau {
 		//{
 		//    lib = Path.Combine(path, "osx-arm64", $"lib{library}.so");
 		//}else
-		{
+		//{
                     lib = Path.Combine(path, "osx-x64", $"lib{library}.dylib");
-		}
+		//}
                 Log.Information($"Loading {lib}");
                 _handle = dlopen(lib, RTLD_NOW);
             } else {
