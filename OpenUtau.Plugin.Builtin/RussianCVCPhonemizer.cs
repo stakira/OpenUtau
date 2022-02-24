@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using OpenUtau.Api;
 using System.Linq;
 
@@ -30,6 +29,7 @@ namespace OpenUtau.Plugin.Builtin {
         protected override string[] GetVowels() => vowels;
         protected override string[] GetConsonants() => consonants;
         protected override string GetDictionaryName() => "cmudict_ru.txt";
+        protected override IG2p LoadBaseDictionary() => new RussianG2p();
         protected override Dictionary<string, string> GetAliasesFallback() => aliasesFallback;
         protected override Dictionary<string, string> GetDictionaryPhonemesReplacement() => dictionaryReplacements;
 

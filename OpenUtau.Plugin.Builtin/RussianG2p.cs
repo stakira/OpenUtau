@@ -32,7 +32,9 @@ namespace OpenUtau.Plugin.Builtin {
                     .Skip(4)
                     .Select((g, i) => Tuple.Create(g, i))
                     .ToDictionary(t => t.Item1, t => t.Item2 + 4);
-                (dict, session) = LoadPack(Data.Resources.g2p_ru);
+                var (d, s) = LoadPack(Data.Resources.g2p_ru);
+                dict = d;
+                session = s;
             }
             GraphemeIndexes = graphemeIndexes;
             Phonemes = phonemes;

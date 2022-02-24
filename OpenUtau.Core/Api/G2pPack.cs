@@ -83,6 +83,9 @@ namespace OpenUtau.Api {
         }
 
         public string[] Query(string grapheme) {
+            if (grapheme == "-") {
+                return new string[] { "-" };
+            }
             var phonemes = Dict.Query(grapheme);
             if (phonemes == null && !PredCache.TryGetValue(grapheme, out phonemes)) {
                 phonemes = Predict(grapheme);
