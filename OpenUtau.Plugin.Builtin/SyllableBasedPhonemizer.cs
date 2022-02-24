@@ -186,11 +186,11 @@ namespace OpenUtau.Plugin.Builtin {
 
         protected USinger singer;
         protected bool hasDictionary => dictionaries.ContainsKey(GetType());
-        protected G2pDictionary dictionary => dictionaries[GetType()];
+        protected IG2p dictionary => dictionaries[GetType()];
         protected bool isDictionaryLoading => dictionaries[GetType()] == null;
         protected double TransitionBasicLengthMs => 100;
 
-        private static Dictionary<Type, G2pDictionary> dictionaries = new Dictionary<Type, G2pDictionary>();
+        private static Dictionary<Type, IG2p> dictionaries = new Dictionary<Type, IG2p>();
         private const string FORCED_ALIAS_SYMBOL = "?";
         private string error = "";
         private readonly string[] wordSeparators = new[] { " ", "_" };

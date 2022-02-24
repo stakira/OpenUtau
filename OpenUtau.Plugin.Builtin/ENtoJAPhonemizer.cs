@@ -102,7 +102,7 @@ namespace OpenUtau.Plugin.Builtin {
         };
 
         protected override string ReadDictionary(string filename) {
-            return Core.Api.Resources.cmudict_0_7b;
+            return G2pPack.ExtractText(Data.Resources.g2p_arpabet, "dict.txt");
         }
 
         private Dictionary<string, string> StartingConsonant => new Dictionary<string, string> {
@@ -243,7 +243,7 @@ namespace OpenUtau.Plugin.Builtin {
             {"ulo", new [] { "u", "o" } },
         };
 
-        private string [] affricates = "ts ch j".Split();
+        private string[] affricates = "ts ch j".Split();
 
         protected override string[] GetSymbols(Note note) {
             string[] original = base.GetSymbols(note);
@@ -254,11 +254,11 @@ namespace OpenUtau.Plugin.Builtin {
             string[] diphthongs = new[] { "ay", "ey", "oy", "ow", "aw" };
             foreach (string s in original) {
                 if (diphthongs.Contains(s)) {
-                    modified.AddRange(new string[] { s[0].ToString(), s[1].ToString()});
-                } else {        
+                    modified.AddRange(new string[] { s[0].ToString(), s[1].ToString() });
+                } else {
                     modified.Add(s);
                 }
-            }               
+            }
             return modified.ToArray();
         }
 
@@ -284,7 +284,7 @@ namespace OpenUtau.Plugin.Builtin {
                 if (i == cc.Length - 1) {
                     adjustedCC.Add(cc[i]);
                 } else {
-                    if (cc[i] == cc[i+1]) {
+                    if (cc[i] == cc[i + 1]) {
                         adjustedCC.Add(cc[i]);
                         i++;
                         continue;
@@ -314,7 +314,7 @@ namespace OpenUtau.Plugin.Builtin {
                     start = 1;
                 }
 
-                for (var i = start;  i < cc.Length - 1; i++) {
+                for (var i = start; i < cc.Length - 1; i++) {
                     var cons = SoloConsonant[cc[i]];
                     if (!usingVC) {
                         cons = TryVcv(prevV, cons, syllable.tone);
@@ -405,7 +405,7 @@ namespace OpenUtau.Plugin.Builtin {
                 var symbol = cc[i];
 
                 if (i == 0) {
-                    (var hasVc, var vcPhonemes) = HasVc(prevV, symbol, ending.tone, cc.Length+1);
+                    (var hasVc, var vcPhonemes) = HasVc(prevV, symbol, ending.tone, cc.Length + 1);
                     usingVC = hasVc;
                     phonemes.AddRange(vcPhonemes);
                     if (usingVC) {
@@ -420,7 +420,7 @@ namespace OpenUtau.Plugin.Builtin {
                     usingVC = false;
                     solo = FixCv(solo, ending.tone);
                 }
-                
+
                 if (HasOto(solo, ending.tone)) {
                     phonemes.Add(solo);
                 } else if (ConditionalAlt.ContainsKey(solo)) {
@@ -437,7 +437,7 @@ namespace OpenUtau.Plugin.Builtin {
 
             return phonemes;
         }
-        
+
         private (bool, string[]) HasVc(string vowel, string cons, int tone, int cc) {
             if (vowel == "" || vowel == "-") {
                 return (false, new string[0]);

@@ -121,13 +121,10 @@
   <data name="arpasing_template" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>arpasing.template.yaml;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="cmudict_0_7b" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>cmudict-0_7b.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  <data name="g2p_arpabet" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>g2p-arpabet.zip;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="cmudict_0_7b_phones" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>cmudict-0_7b_phones.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
-  <data name="cmudict_0_7b_symbols" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>cmudict-0_7b_symbols.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  <data name="g2p_ru" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>g2p-ru.zip;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

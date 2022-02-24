@@ -27,7 +27,7 @@ namespace OpenUtau.Plugin.Builtin {
         protected override Dictionary<string, string> GetDictionaryPhonemesReplacement() => dictionaryReplacements;
 
         protected override string ReadDictionary(string filename) {
-            return Core.Api.Resources.cmudict_0_7b;
+            return G2pPack.ExtractText(Data.Resources.g2p_arpabet, "dict.txt");
         }
 
         protected override List<string> ProcessSyllable(Syllable syllable) {

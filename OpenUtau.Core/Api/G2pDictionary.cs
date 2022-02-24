@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -12,52 +11,6 @@ namespace OpenUtau.Api {
         class TrieNode {
             public Dictionary<char, TrieNode> children = new Dictionary<char, TrieNode>();
             public string[] symbols;
-        }
-
-        static object locker = new object();
-        static Dictionary<string, G2pDictionary> shared = new Dictionary<string, G2pDictionary>();
-
-        public static G2pDictionary GetShared(string key) {
-            lock (locker) {
-                if (shared.TryGetValue(key, out var dict)) {
-                    return dict;
-                }
-                if (key == "cmudict") {
-                    var builder = NewBuilder();
-                    Core.Api.Resources.cmudict_0_7b_phones.Split('\n')
-                        .Select(line => line.Trim().ToLowerInvariant())
-                        .Select(line => line.Split())
-                        .Where(parts => parts.Length == 2)
-                        .ToList()
-                        .ForEach(parts => builder.AddSymbol(parts[0], parts[1]));
-                    Core.Api.Resources.cmudict_0_7b.Split('\n')
-                        .Where(line => !line.StartsWith(";;;"))
-                        .Select(line => line.Trim().ToLowerInvariant())
-                        .Select(line => line.Split(new string[] { "  " }, StringSplitOptions.None))
-                        .Where(parts => parts.Length == 2)
-                        .ToList()
-                        .ForEach(parts => builder.AddEntry(parts[0], parts[1].Split().Select(symbol => RemoveTailDigits(symbol))));
-                    dict = builder.Build();
-                    lock (locker) {
-                        shared[key] = dict;
-                    }
-                    return dict;
-                }
-                return null;
-            }
-        }
-
-        public static void PutShared(string key, G2pDictionary dict) {
-            lock (locker) {
-                shared[key] = dict;
-            }
-        }
-
-        static string RemoveTailDigits(string s) {
-            while (char.IsDigit(s.Last())) {
-                s = s.Substring(0, s.Length - 1);
-            }
-            return s;
         }
 
         TrieNode root;
