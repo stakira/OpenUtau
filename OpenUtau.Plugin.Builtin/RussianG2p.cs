@@ -21,20 +21,23 @@ namespace OpenUtau.Plugin.Builtin {
             "t", "tt", "u", "uj", "uu", "v", "vv", "y", "yy", "z", "zh", "zz"
         };
 
+        private static object lockObj = new object();
         private static Dictionary<string, int> graphemeIndexes;
         private static IG2p dict;
         private static InferenceSession session;
         private static Dictionary<string, string[]> predCache = new Dictionary<string, string[]>();
 
         public RussianG2p() {
-            if (graphemeIndexes == null) {
-                graphemeIndexes = graphemes
+            lock (lockObj) {
+                if (graphemeIndexes == null) {
+                    graphemeIndexes = graphemes
                     .Skip(4)
                     .Select((g, i) => Tuple.Create(g, i))
                     .ToDictionary(t => t.Item1, t => t.Item2 + 4);
-                var (d, s) = LoadPack(Data.Resources.g2p_ru);
-                dict = d;
-                session = s;
+                    var tuple = LoadPack(Data.Resources.g2p_ru);
+                    dict = tuple.Item1;
+                    session = tuple.Item2;
+                }
             }
             GraphemeIndexes = graphemeIndexes;
             Phonemes = phonemes;

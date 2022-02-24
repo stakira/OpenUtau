@@ -44,31 +44,38 @@ namespace OpenUtau.Api {
             return null;
         }
 
-        protected (IG2p, InferenceSession) LoadPack(byte[] data) {
+        protected Tuple<IG2p, InferenceSession> LoadPack(
+            byte[] data,
+            Func<string, string> prepGrapheme = null,
+            Func<string, string> prepPhoneme = null) {
+            prepGrapheme = prepGrapheme ?? ((string s) => s);
+            prepPhoneme = prepPhoneme ?? ((string s) => s);
             string dictTxt = ExtractText(data, "dict.txt");
             string phonesTxt = ExtractText(data, "phones.txt");
             byte[] g2pData = ExtractBinary(data, "g2p.onnx");
             var builder = G2pDictionary.NewBuilder();
             phonesTxt.Split('\n')
-                .Select(line => line.Trim().ToLowerInvariant())
+                .Select(line => prepPhoneme(line.Trim()))
                 .Select(line => line.Split())
                 .Where(parts => parts.Length == 2)
                 .ToList()
                 .ForEach(parts => builder.AddSymbol(parts[0], parts[1]));
             dictTxt.Split('\n')
                 .Where(line => !line.StartsWith(";;;"))
-                .Select(line => line.Trim().ToLowerInvariant())
+                .Select(line => line.Trim())
                 .Select(line => line.Split(new string[] { "  " }, StringSplitOptions.None))
                 .Where(parts => parts.Length == 2)
                 .ToList()
-                .ForEach(parts => builder.AddEntry(parts[0], parts[1].Split().Select(symbol => RemoveTailDigits(symbol))));
+                .ForEach(parts => builder.AddEntry(
+                    prepGrapheme(parts[0]),
+                    parts[1].Split().Select(symbol => prepPhoneme(symbol))));
             var dict = builder.Build();
             var session = new InferenceSession(g2pData);
-            return (dict, session);
+            return Tuple.Create((IG2p)dict, session);
         }
 
-        protected string RemoveTailDigits(string s) {
-            while (char.IsDigit(s.Last())) {
+        public static string RemoveTailDigits(string s) {
+            while (s.Length > 0 && char.IsDigit(s.Last())) {
                 s = s.Substring(0, s.Length - 1);
             }
             return s;

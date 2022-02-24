@@ -31,5 +31,15 @@ namespace OpenUtau.Plugins {
             Assert.Equal("nn i nn i nn i nn i", string.Join(' ', g2p.Query("нененене")));
             Assert.Equal("d ay d ay d a d aa", string.Join(' ', g2p.Query("дададада")));
         }
+
+        [Fact]
+        public void PortugueseG2pTest() {
+            var g2p = new PortugueseG2p();
+            Assert.Equal("", string.Join(' ', g2p.Query("")));
+            Assert.Equal("", string.Join(' ', g2p.Query(",")));
+            Assert.Equal("i~ v e R n e s", string.Join(' ', g2p.Query("inverness")));
+            Assert.Equal("i~ v e R n e s", string.Join(' ', g2p.Query("inve  rn,.ess")));
+            Assert.Equal("p i r i m i tS i", string.Join(' ', g2p.Query("pírímítí")));
+        }
     }
 }
