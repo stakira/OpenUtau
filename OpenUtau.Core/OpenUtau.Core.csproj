@@ -8,6 +8,7 @@
   <ItemGroup>
     <PackageReference Include="BunLabs.NAudio.Flac" Version="2.0.1" />
     <PackageReference Include="K4os.Hash.xxHash" Version="1.0.6" />
+    <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.10.0" />
     <PackageReference Include="NAudio.Core" Version="2.0.0" />
     <PackageReference Include="NAudio.Midi" Version="2.0.1" />
     <PackageReference Include="NAudio.Vorbis" Version="1.5.0" />
@@ -28,28 +29,4 @@
   <PropertyGroup Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">
     <DefineConstants>WINDOWS</DefineConstants>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="Api\cmudict-0_7b.txt" />
-    <None Remove="Api\cmudict-0_7b_phones.txt" />
-    <None Remove="Api\cmudict-0_7b_symbols.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Api\cmudict-0_7b.txt" />
-    <Content Include="Api\cmudict-0_7b_phones.txt" />
-    <Content Include="Api\cmudict-0_7b_symbols.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Update="Api\Resources.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Update="Api\Resources.Designer.cs">
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-  </ItemGroup>
 </Project>

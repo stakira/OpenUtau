@@ -19,7 +19,6 @@ namespace OpenUtau.Plugin.Builtin {
     public class ArpasingPhonemizer : Phonemizer {
         private Dictionary<string, string[]> vowelFallback;
         private USinger singer;
-        private IG2p cmudict;
         private IG2p pluginDict;
         private IG2p singerDict;
         private IG2p mergedG2p;
@@ -48,7 +47,6 @@ namespace OpenUtau.Plugin.Builtin {
             OnAsyncInitStarted();
             Task.Run(() => {
                 // Load cmudict.
-                cmudict = G2pDictionary.GetShared("cmudict");
                 // Load g2p plugin dictionary.
                 string filepath = Path.Combine(PluginDir, "arpasing.yaml");
                 try {
@@ -62,7 +60,7 @@ namespace OpenUtau.Plugin.Builtin {
 
                 // Load g2p singer dictionary.
                 LoadSingerDict();
-                mergedG2p = new G2pFallbacks(new IG2p[] { pluginDict, singerDict, cmudict }.OfType<IG2p>().ToArray());
+                mergedG2p = new G2pFallbacks(new IG2p[] { pluginDict, singerDict, new ArpabetG2p() }.OfType<IG2p>().ToArray());
                 // Arpasing voicebanks are often incomplete. A fallback table is used to slightly improve the situation.
                 vowelFallback = "aa=ah,ae;ae=ah,aa;ah=aa,ae;ao=ow;ow=ao;eh=ae;ih=iy;iy=ih;uh=uw;uw=uh;aw=ao".Split(';')
                     .Select(entry => entry.Split('='))
@@ -74,7 +72,7 @@ namespace OpenUtau.Plugin.Builtin {
             if (File.Exists(filepath)) {
                 return;
             }
-            File.WriteAllBytes(filepath, Core.Api.Resources.arpasing_template);
+            File.WriteAllBytes(filepath, Data.Resources.arpasing_template);
         }
 
         private void LoadSingerDict() {
@@ -94,7 +92,7 @@ namespace OpenUtau.Plugin.Builtin {
         public override void SetSinger(USinger singer) {
             this.singer = singer;
             LoadSingerDict();
-            mergedG2p = new G2pFallbacks(new IG2p[] { pluginDict, singerDict, cmudict }.OfType<IG2p>().ToArray());
+            mergedG2p = new G2pFallbacks(new IG2p[] { pluginDict, singerDict, new ArpabetG2p() }.OfType<IG2p>().ToArray());
         }
 
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
