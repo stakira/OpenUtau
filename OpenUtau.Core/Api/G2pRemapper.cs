@@ -26,7 +26,7 @@ namespace OpenUtau.Api {
         public string[] Query(string grapheme) {
             var phonemes = mapped.Query(grapheme);
             if (phonemes == null) {
-                return phonemes;
+                return null;
             }
             phonemes = phonemes.Clone() as string[];
             for (int i = 0; i < phonemes.Length; ++i) {

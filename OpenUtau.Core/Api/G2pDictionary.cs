@@ -42,6 +42,9 @@ namespace OpenUtau.Api {
 
         string[] QueryTrie(TrieNode node, string word, int index) {
             if (index == word.Length) {
+                if (node.symbols == null) {
+                    return null;
+                }
                 return node.symbols.Clone() as string[];
             }
             if (node.children.TryGetValue(word[index], out var child)) {
