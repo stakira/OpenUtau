@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using SharpCompress.Archives;
 using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
 
 namespace OpenUtau.Api {
     public abstract class G2pPack : IG2p {
+        protected readonly static Regex kAllPunct = new Regex(@"^[\p{P}]$");
+
         protected Dictionary<string, int> GraphemeIndexes { get; set; }
         protected string[] Phonemes { get; set; }
         protected IG2p Dict { get; set; }
@@ -90,15 +93,18 @@ namespace OpenUtau.Api {
         }
 
         public string[] Query(string grapheme) {
-            if (grapheme == "-") {
-                return new string[] { "-" };
+            if (grapheme.Length == 0 || kAllPunct.IsMatch(grapheme)) {
+                return null;
             }
             var phonemes = Dict.Query(grapheme);
             if (phonemes == null && !PredCache.TryGetValue(grapheme, out phonemes)) {
                 phonemes = Predict(grapheme);
+                if (phonemes.Length == 0) {
+                    return null;
+                }
                 PredCache.Add(grapheme, phonemes);
             }
-            return phonemes;
+            return phonemes.Clone() as string[];
         }
 
         public string[] UnpackHint(string hint, char separator = ' ') {

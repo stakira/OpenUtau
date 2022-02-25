@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -41,7 +42,7 @@ namespace OpenUtau.Api {
 
         string[] QueryTrie(TrieNode node, string word, int index) {
             if (index == word.Length) {
-                return node.symbols;
+                return node.symbols.Clone() as string[];
             }
             if (node.children.TryGetValue(word[index], out var child)) {
                 return QueryTrie(child, word, index + 1);
