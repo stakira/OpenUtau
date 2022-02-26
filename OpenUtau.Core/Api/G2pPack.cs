@@ -73,10 +73,7 @@ namespace OpenUtau.Api {
                     prepGrapheme(parts[0]),
                     parts[1].Split().Select(symbol => prepPhoneme(symbol))));
             var dict = builder.Build();
-            InferenceSession session = null;
-            if (!OS.IsMacOS()) {
-                session = new InferenceSession(g2pData);
-            }
+            var session = new InferenceSession(g2pData);
             return Tuple.Create((IG2p)dict, session);
         }
 
