@@ -10,7 +10,7 @@
   <system:String x:Key="context.pitch.pointdel">Hapus titik</system:String>
   <system:String x:Key="context.pitch.pointsnapprev">Snap ke not sebelumnya</system:String>
 
-  <system:String x:Key="dialogs.about.caption">Tentang OpenUTAU</system:String>
+  <system:String x:Key="dialogs.about.caption">Tentang OpenUtau</system:String>
   <system:String x:Key="dialogs.about.message">
     OpenUtau bertujuan untuk menjadi lingkungan pengeditan sumber terbuka untuk komunitas UTAU, dengan pengalaman pengguna modern dan dukungan fonologis yang cerdas. Kunjungi kami di Github.
   </system:String>
@@ -26,7 +26,7 @@
   <system:String x:Key="dialogs.noresampler.message">Tidak ada resampler! Letakkan resampler exe atau dll favorit Anda di folder Resamplers dan pilih di Preferensi!</system:String>
   <system:String x:Key="dialogs.timesig.caption">Tanda Waktu</system:String>
 
-  <!--<system:String x:Key="errors.caption">Error</system:String>-->
+  <!--<system:String x:Key="errors.caption">Kesalahan</system:String>-->
 
   <system:String x:Key="exps.abbr">Singkatan</system:String>
   <system:String x:Key="exps.apply">Terapkan</system:String>
@@ -119,9 +119,9 @@
   <system:String x:Key="pianoroll.menu.notes.quantize15">Kuantisasi hingga 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Kuantisasi hingga 1/64</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">Setel ulang semua ekspresi</system:String>
-  <!--<system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">Reset phoneme timings</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">Setel ulang pengaturan waktu fonem</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">Setel ulang tikungan nada</system:String>
-  <!--<system:String x:Key="pianoroll.menu.notes.reset.vibratos">Reset vibratos</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.reset.vibratos">Setel ulang vibrato</system:String>-->
   <system:String x:Key="pianoroll.menu.part">Bagian</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">Plugin Lama (Eksperimental)</system:String>
   <system:String x:Key="pianoroll.menu.part.rename">Ganti Nama</system:String>
@@ -140,7 +140,7 @@ Tahan Ctrl untuk memilih lainnya</system:String>
 
   <system:String x:Key="prefs.advanced">Canggih</system:String>
   <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
-  <!--<system:String x:Key="prefs.advanced.resamplerlogging">Resampler Logging</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.resamplerlogging">Pencatatan Resampler</system:String>-->
   <!--<system:String x:Key="prefs.advanced.resamplerlogging.warn">Menyimpan output resampler dalam file log. Opsi ini akan memperlambat UI dan rendering.</system:String>-->
   <system:String x:Key="prefs.advanced.stable">Stabil</system:String>
   <system:String x:Key="prefs.appearance">Penampilan</system:String>
@@ -160,7 +160,7 @@ Tahan Ctrl untuk memilih lainnya</system:String>
   <!--<system:String x:Key="prefs.playback.backend">Latar Belakang Audio</system:String>-->
   <!--<system:String x:Key="prefs.playback.backend.auto">Otomatis</system:String>-->
   <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
-  <!--<system:String x:Key="prefs.playback.cursorposition">Cursor Position</system:String>-->
+  <!--<system:String x:Key="prefs.playback.cursorposition">Posisi Kursor</system:String>-->
   <system:String x:Key="prefs.playback.device">Perangkat Pemutaran</system:String>
   <system:String x:Key="prefs.playback.test">Tes</system:String>
   <system:String x:Key="prefs.rendering">Merender</system:String>
@@ -172,10 +172,10 @@ Tahan Ctrl untuk memilih lainnya</system:String>
   <system:String x:Key="prefs.rendering.resampler.preview">Resampler untuk pratinjau</system:String>
   <system:String x:Key="prefs.rendering.resampler.warn">
 Peringatan: moresampler tidak sepenuhnya didukung. Ini mungkin lambat dan menyebabkan penggunaan CPU yang tinggi. Jika Anda bersikeras, silakan:
-1. Setel "resampler-compatibility" ke "on" di moreconfig.txt.
-2. Atur "auto-update-llsm-mrq" ke "off" di moreconfig.txt.
+1. Setel "resampler-compatibility" ke "hidup" di moreconfig.txt.
+2. Atur "auto-update-llsm-mrq" ke "mati" di moreconfig.txt.
 3. Kurangi utas pra-render menjadi 1 atau 2.
-4. Sabar menunggu prarender selesai sebelum bermain.
+4. Sabar menunggu pra-render selesai sebelum bermain.
   </system:String>
 
   <system:String x:Key="progress.saved">Proyek tersimpan. {0}</system:String>
@@ -207,9 +207,9 @@ Tombol Kanan Tarik: Setel ulang ekspresi
   <system:String x:Key="tip.notes.basics">
 Alat Seleksi
     Kotak Pilih: Pilih not
-    Ctrl + Kotak Pilih: Select more notes
-    Atas/Bawah: Transpose selected notes
-    Ctrl + Atas/Bawah: Transpose selected notes by octave
+    Ctrl + Kotak Pilih: Pilih lebih banyak not
+    Atas/Bawah: Transpos not yang dipilih
+    Ctrl + Atas/Bawah: Transpos nada yang dipilih berdasarkan oktaf
 Alat Pena
     Tombol Kiri Tarik: Menambahkan not
     Klik Kanan: Menghapus not
