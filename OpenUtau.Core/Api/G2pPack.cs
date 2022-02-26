@@ -73,7 +73,10 @@ namespace OpenUtau.Api {
                     prepGrapheme(parts[0]),
                     parts[1].Split().Select(symbol => prepPhoneme(symbol))));
             var dict = builder.Build();
-            var session = new InferenceSession(g2pData);
+            InferenceSession session = null;
+            if (!OS.IsMacOS()) {
+                session = new InferenceSession(g2pData);
+            }
             return Tuple.Create((IG2p)dict, session);
         }
 
@@ -113,7 +116,7 @@ namespace OpenUtau.Api {
 
         protected string[] Predict(string grapheme) {
             Tensor<int> src = EncodeWord(grapheme);
-            if (src.Length == 0) {
+            if (src.Length == 0 || Session == null) {
                 return new string[0];
             }
             Tensor<int> tgt = new int[,] { { 2 } }.ToTensor();
