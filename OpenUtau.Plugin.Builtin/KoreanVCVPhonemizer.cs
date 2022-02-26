@@ -77,7 +77,6 @@ namespace OpenUtau.Plugin.Builtin
 
 			if (m == "oe" || m == "oi") m = "we";
 			if (m == "ui") m = "eui";
-            if (m == "ui" || m == "eui") m = m.Replace("ui", "i");
 			if (m == "ae" || m == "wae" || m == "yae") m = m.Replace("ae", "e");
 
 			string[] ret = { i, m, f };
