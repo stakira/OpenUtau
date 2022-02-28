@@ -2,20 +2,20 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-  <!--<system:String x:Key="context.pitch.easein">Ease in</system:String>-->
-  <!--<system:String x:Key="context.pitch.easeinout">Ease in/out</system:String>-->
-  <!--<system:String x:Key="context.pitch.easeout">Ease out</system:String>-->
-  <!--<system:String x:Key="context.pitch.linear">Linear</system:String>-->
-  <!--<system:String x:Key="context.pitch.pointadd">Add point</system:String>-->
-  <!--<system:String x:Key="context.pitch.pointdel">Delete point</system:String>-->
-  <!--<system:String x:Key="context.pitch.pointsnapprev">Snap to previous note</system:String>-->
+  <system:String x:Key="context.pitch.easein">Zak in</system:String>
+  <system:String x:Key="context.pitch.easeinout">Zak in/uit</system:String>
+  <system:String x:Key="context.pitch.easeout">Zak uit</system:String>
+  <system:String x:Key="context.pitch.linear">Linear</system:String>
+  <system:String x:Key="context.pitch.pointadd">Punt toevoegen</system:String>
+  <system:String x:Key="context.pitch.pointdel">Punt wissen</system:String>
+  <system:String x:Key="context.pitch.pointsnapprev">Snap terug naar vorige noot</system:String>
 
   <system:String x:Key="dialogs.about.caption">Over OpenUTAU</system:String>
   <system:String x:Key="dialogs.about.message">
         OpenUtau wil een open-source bewerkingsomgeving zijn voor de UTAU-gemeenschap, met een moderne gebruikerservaring en intelligente fonologische ondersteuning. Bezoek ons op Github. (in engels)
     </system:String>
-  <!--<system:String x:Key="dialogs.exitsave.caption">Exit OpenUtau</system:String>-->
-  <!--<system:String x:Key="dialogs.exitsave.message">The current project contains unsaved changes. Do you want to save it?</system:String>-->
+  <system:String x:Key="dialogs.exitsave.caption">OpenUtau afsluiten</system:String>
+  <system:String x:Key="dialogs.exitsave.message">Het huidige project bevat niet-opgeslagen wijzigingen. Wilt u het opslaan?</system:String>
   <system:String x:Key="dialogs.export.caption">Exporteren</system:String>
   <system:String x:Key="dialogs.export.savefirst">Eerst projectbestand opslaan</system:String>
   <!--<system:String x:Key="dialogs.messagebox.cancel">Cancel</system:String>-->
