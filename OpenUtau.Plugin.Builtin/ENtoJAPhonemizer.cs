@@ -1,111 +1,66 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using OpenUtau.Api;
 using WanaKanaNet;
 
 namespace OpenUtau.Plugin.Builtin {
     [Phonemizer("English to Japanese Phonemizer", "EN to JA", "TUBS")]
     public class ENtoJAPhonemizer : SyllableBasedPhonemizer {
-        protected override string[] GetVowels() => "a i u e o ay ey oy ow aw".Split();
-
-        protected override string[] GetConsonants() =>
+        protected override string[] GetVowels() => vowels;
+        private static readonly string[] vowels =
+            "a i u e o ay ey oy ow aw".Split();
+        protected override string[] GetConsonants() => consonants;
+        private static readonly string[] consonants =
             "b by ch d dh f g gy h hy j k ky l ly m my n ny ng p py r ry s sh t ts th v w y z zh".Split();
         protected override string GetDictionaryName() => "cmudict-0_7b.txt";
-        protected override Dictionary<string, string> GetDictionaryPhonemesReplacement() => new Dictionary<string, string> {
-            { "AA", "a" },
-            { "AA0", "a" },
-            { "AA1", "a" },
-            { "AA2", "a" },
-            { "AE", "e" },
-            { "AE0", "e" },
-            { "AE1", "e" },
-            { "AE2", "e" },
-            { "AH", "a" },
-            { "AH0", "a" },
-            { "AH1", "a" },
-            { "AH2", "a" },
-            { "AO", "o" },
-            { "AO0", "o" },
-            { "AO1", "o" },
-            { "AO2", "o" },
-            { "AW", "aw" },
-            { "AW0", "aw" },
-            { "AW1", "aw" },
-            { "AW2", "aw" },
-            { "AY", "ay" },
-            { "AY0", "ay" },
-            { "AY1", "ay" },
-            { "AY2", "ay" },
-            { "B", "b" },
-            { "CH", "ch" },
-            { "D", "d" },
-            { "DH", "dh" },
-            { "EH", "e" },
-            { "EH0", "e" },
-            { "EH1", "e" },
-            { "EH2", "e" },
-            { "ER", "o" },
-            { "ER0", "o" },
-            { "ER1", "o" },
-            { "ER2", "o" },
-            { "EY", "ey" },
-            { "EY0", "ey" },
-            { "EY1", "ey" },
-            { "EY2", "ey" },
-            { "F", "f" },
-            { "G", "g" },
-            { "HH", "h" },
-            { "IH", "e" },
-            { "IH0", "e" },
-            { "IH1", "e" },
-            { "IH2", "e" },
-            { "IY", "i" },
-            { "IY0", "i" },
-            { "IY1", "i" },
-            { "IY2", "i" },
-            { "JH", "j" },
-            { "K", "k" },
-            { "L", "l" },
-            { "M", "m" },
-            { "N", "n" },
-            { "NG", "ng" },
-            { "OW", "ow" },
-            { "OW0", "ow" },
-            { "OW1", "ow" },
-            { "OW2", "ow" },
-            { "OY", "oy" },
-            { "OY0", "oy" },
-            { "OY1", "oy" },
-            { "OY2", "oy" },
-            { "P", "p" },
-            { "R", "r" },
-            { "S", "s" },
-            { "SH", "sh" },
-            { "T", "t" },
-            { "TH", "th" },
-            { "UH", "o" },
-            { "UH0", "o" },
-            { "UH1", "o" },
-            { "UH2", "o" },
-            { "UW", "u" },
-            { "UW0", "u" },
-            { "UW1", "u" },
-            { "UW2", "u" },
-            { "V", "v" },
-            { "W", "w" },
-            { "Y", "y" },
-            { "Z", "z" },
-            { "ZH", "zh" },
+        protected override Dictionary<string, string> GetDictionaryPhonemesReplacement() => dictionaryPhonemesReplacement;
+        private static readonly Dictionary<string, string> dictionaryPhonemesReplacement = new Dictionary<string, string> {
+            { "aa", "a" },
+            { "ae", "e" },
+            { "ah", "a" },
+            { "ao", "o" },
+            { "aw", "aw" },
+            { "ay", "ay" },
+            { "b", "b" },
+            { "ch", "ch" },
+            { "d", "d" },
+            { "dh", "dh" },
+            { "eh", "e" },
+            { "er", "o" },
+            { "ey", "ey" },
+            { "f", "f" },
+            { "g", "g" },
+            { "hh", "h" },
+            { "ih", "e" },
+            { "iy", "i" },
+            { "jh", "j" },
+            { "k", "k" },
+            { "l", "l" },
+            { "m", "m" },
+            { "n", "n" },
+            { "ng", "ng" },
+            { "ow", "ow" },
+            { "oy", "oy" },
+            { "p", "p" },
+            { "r", "r" },
+            { "s", "s" },
+            { "sh", "sh" },
+            { "t", "t" },
+            { "th", "th" },
+            { "uh", "o" },
+            { "uw", "u" },
+            { "v", "v" },
+            { "w", "w" },
+            { "y", "y" },
+            { "z", "z" },
+            { "zh", "zh" },
         };
 
-        protected override string ReadDictionary(string filename) {
-            return Core.Api.Resources.cmudict_0_7b;
-        }
+        protected override IG2p LoadBaseDictionary() => new ArpabetG2p();
 
-        private Dictionary<string, string> StartingConsonant => new Dictionary<string, string> {
+        private Dictionary<string, string> StartingConsonant => startingConsonant;
+        private static readonly Dictionary<string, string> startingConsonant = new Dictionary<string, string> {
             { "", "" },
             { "b", "b" },
             { "by", "by" },
@@ -143,7 +98,8 @@ namespace OpenUtau.Plugin.Builtin {
             { "zh", "sh" },
         };
 
-        private Dictionary<string, string> SoloConsonant => new Dictionary<string, string> {
+        private Dictionary<string, string> SoloConsonant => soloConsonant;
+        private static readonly Dictionary<string, string> soloConsonant = new Dictionary<string, string> {
             { "b", "ぶ" },
             { "by", "び" },
             { "ch", "ちゅ" },
@@ -182,7 +138,8 @@ namespace OpenUtau.Plugin.Builtin {
 
         private string[] SpecialClusters = "ky gy ts ny hy by py my ry ly".Split();
 
-        private Dictionary<string, string> AltCv => new Dictionary<string, string> {
+        private Dictionary<string, string> AltCv => altCv;
+        private static readonly Dictionary<string, string> altCv = new Dictionary<string, string> {
             {"si", "suli" },
             {"zi", "zuli" },
             {"ti", "teli" },
@@ -200,7 +157,8 @@ namespace OpenUtau.Plugin.Builtin {
             {"rro", "ulo" },
         };
 
-        private Dictionary<string, string> ConditionalAlt => new Dictionary<string, string> {
+        private Dictionary<string, string> ConditionalAlt => conditionalAlt;
+        private static readonly Dictionary<string, string> conditionalAlt = new Dictionary<string, string> {
             {"ulo", "wo"},
             {"va", "fa"},
             {"vi", "fi"},
@@ -210,7 +168,8 @@ namespace OpenUtau.Plugin.Builtin {
             {"vo", "fo"},
         };
 
-        private Dictionary<string, string[]> ExtraCv => new Dictionary<string, string[]> {
+        private Dictionary<string, string[]> ExtraCv => extraCv;
+        private static readonly Dictionary<string, string[]> extraCv = new Dictionary<string, string[]> {
             {"kye", new [] { "ki", "e" } },
             {"gye", new [] { "gi", "e" } },
             {"suli", new [] { "se", "i" } },
@@ -243,7 +202,7 @@ namespace OpenUtau.Plugin.Builtin {
             {"ulo", new [] { "u", "o" } },
         };
 
-        private string [] affricates = "ts ch j".Split();
+        private string[] affricates = "ts ch j".Split();
 
         protected override string[] GetSymbols(Note note) {
             string[] original = base.GetSymbols(note);
@@ -254,11 +213,11 @@ namespace OpenUtau.Plugin.Builtin {
             string[] diphthongs = new[] { "ay", "ey", "oy", "ow", "aw" };
             foreach (string s in original) {
                 if (diphthongs.Contains(s)) {
-                    modified.AddRange(new string[] { s[0].ToString(), s[1].ToString()});
-                } else {        
+                    modified.AddRange(new string[] { s[0].ToString(), s[1].ToString() });
+                } else {
                     modified.Add(s);
                 }
-            }               
+            }
             return modified.ToArray();
         }
 
@@ -284,7 +243,7 @@ namespace OpenUtau.Plugin.Builtin {
                 if (i == cc.Length - 1) {
                     adjustedCC.Add(cc[i]);
                 } else {
-                    if (cc[i] == cc[i+1]) {
+                    if (cc[i] == cc[i + 1]) {
                         adjustedCC.Add(cc[i]);
                         i++;
                         continue;
@@ -314,7 +273,7 @@ namespace OpenUtau.Plugin.Builtin {
                     start = 1;
                 }
 
-                for (var i = start;  i < cc.Length - 1; i++) {
+                for (var i = start; i < cc.Length - 1; i++) {
                     var cons = SoloConsonant[cc[i]];
                     if (!usingVC) {
                         cons = TryVcv(prevV, cons, syllable.tone);
@@ -405,7 +364,7 @@ namespace OpenUtau.Plugin.Builtin {
                 var symbol = cc[i];
 
                 if (i == 0) {
-                    (var hasVc, var vcPhonemes) = HasVc(prevV, symbol, ending.tone, cc.Length+1);
+                    (var hasVc, var vcPhonemes) = HasVc(prevV, symbol, ending.tone, cc.Length + 1);
                     usingVC = hasVc;
                     phonemes.AddRange(vcPhonemes);
                     if (usingVC) {
@@ -420,7 +379,7 @@ namespace OpenUtau.Plugin.Builtin {
                     usingVC = false;
                     solo = FixCv(solo, ending.tone);
                 }
-                
+
                 if (HasOto(solo, ending.tone)) {
                     phonemes.Add(solo);
                 } else if (ConditionalAlt.ContainsKey(solo)) {
@@ -437,7 +396,7 @@ namespace OpenUtau.Plugin.Builtin {
 
             return phonemes;
         }
-        
+
         private (bool, string[]) HasVc(string vowel, string cons, int tone, int cc) {
             if (vowel == "" || vowel == "-") {
                 return (false, new string[0]);
