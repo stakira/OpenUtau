@@ -3,413 +3,77 @@ using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
+using Serilog;
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("Korean CVVC Phonemizer", "KO CVVC", "RYUUSEI")]
-    public class KoreanCVVCStandardPronunciationPhonemizer : Phonemizer {
-        static readonly string initialConsonantsTable = "ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ";
-        static readonly string vowelsTable = "ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ";
-        static readonly string lastConsonantsTable = "　ㄱㄲㄳㄴㄵㄶㄷㄹㄺㄻㄼㄽㄾㄿㅀㅁㅂㅄㅅㅆㅇㅈㅊㅋㅌㅍㅎ";
-        static readonly ushort unicodeKoreanBase = 0xAC00;
-        static readonly ushort unicodeKoreanLast = 0xD79F;
+    [Phonemizer("Japanese CVVC Phonemizer", "JA CVVC", "TUBS")]
+    public class JapaneseCVVCPhonemizer : Phonemizer {
+        static readonly string[] plainVowels = new string[] { "あ", "い", "う", "え", "お", "ん" };
 
-        private char[] SeparateHangul(char letter) {
-            if (letter == 0) return new char[] { '　', '　', '　' };
-            var u16 = Convert.ToUInt16(letter);
-
-            if (u16 < unicodeKoreanBase || u16 > unicodeKoreanLast)
-                return new char[] { letter };
-
-            u16 -= unicodeKoreanBase;
-
-            var i = u16 / (21 * 28);
-            u16 %= 21 * 28;
-            var v = u16 / 28;
-            u16 %= 28;
-            var l = u16;
-
-            return new char[] { initialConsonantsTable[i], vowelsTable[v], lastConsonantsTable[l] };
-        }
-
-        // 초성
-        static readonly string[] initialConsonants = new string[] {
-            "g=ㄱ",
-            "kk=ㄲ",
-            "k=ㅋ",
-            "n=ㄴ",
-            "d=ㄷ",
-            "tt=ㄸ",
-            "t=ㅌ",
-            "r=ㄹ",
-            "m=ㅁ",
-            "b=ㅂ",
-            "pp=ㅃ",
-            "s=ㅅ",
-            "ss=ㅆ",
-            "=ㅇ,　",
-            "j=ㅈ",
-            "jj=ㅉ",
-            "ch=ㅊ",
-            "p=ㅍ",
-            "h=ㅎ",
-        };
-
-        // 일반 모음
         static readonly string[] vowels = new string[] {
-            "a=ㅏ",
-            "ya=ㅑ",
-            "eo=ㅓ",
-            "yeo=ㅕ",
-            "o=ㅗ",
-            "yo=ㅛ",
-            "u=ㅜ",
-            "yu=ㅠ",
-            "eu=ㅡ",
-            "i=ㅣ",
-            "e=ㅔ",
-            "ye=ㅖ",
-            "ae=ㅐ",
-            "yae=ㅒ",
-            "eui=ㅢ",
-            "we=ㅞ,ㅙ,ㅚ",
-            "weo=ㅝ",
-            "wa=ㅘ",
-            "wi=ㅟ",
+            "a=ぁ,あ,か,が,さ,ざ,た,だ,な,は,ば,ぱ,ま,ゃ,や,ら,わ,ァ,ア,カ,ガ,サ,ザ,タ,ダ,ナ,ハ,バ,パ,マ,ャ,ヤ,ラ,ワ",
+            "e=ぇ,え,け,げ,せ,ぜ,て,で,ね,へ,べ,ぺ,め,れ,ゑ,ェ,エ,ケ,ゲ,セ,ゼ,テ,デ,ネ,ヘ,ベ,ペ,メ,レ,ヱ",
+            "i=ぃ,い,き,ぎ,し,じ,ち,ぢ,に,ひ,び,ぴ,み,り,ゐ,ィ,イ,キ,ギ,シ,ジ,チ,ヂ,ニ,ヒ,ビ,ピ,ミ,リ,ヰ",
+            "o=ぉ,お,こ,ご,そ,ぞ,と,ど,の,ほ,ぼ,ぽ,も,ょ,よ,ろ,を,ォ,オ,コ,ゴ,ソ,ゾ,ト,ド,ノ,ホ,ボ,ポ,モ,ョ,ヨ,ロ,ヲ",
+            "n=ん",
+            "u=ぅ,う,く,ぐ,す,ず,つ,づ,ぬ,ふ,ぶ,ぷ,む,ゅ,ゆ,る,ゥ,ウ,ク,グ,ス,ズ,ツ,ヅ,ヌ,フ,ブ,プ,ム,ュ,ユ,ル,ヴ",
+            "N=ン",
         };
 
-        // V-V의 경우 이전 모음으로 대체
-        static readonly string[] subsequentVowels = new string[] {
-            "a=ㅏ,ㅑ,ㅘ",
-            "eo=ㅓ,ㅕ,ㅝ",
-            "o=ㅗ,ㅛ",
-            "u=ㅜ,ㅠ",
-            "eu=ㅡ",
-            "e=ㅔ,ㅐ,ㅞ,ㅙ",
-            "i=ㅣ,ㅢ,ㅟ",
+        static readonly string[] consonants = new string[] {
+            "ch=ch,ち,ちぇ,ちゃ,ちゅ,ちょ",
+            "gy=gy,ぎ,ぎぇ,ぎゃ,ぎゅ,ぎょ",
+            "ts=ts,つ,つぁ,つぃ,つぇ,つぉ",
+            "ty=ty,てぃ,てぇ,てゃ,てゅ,てょ",
+            "py=py,ぴ,ぴぇ,ぴゃ,ぴゅ,ぴょ",
+            "ry=ry,り,りぇ,りゃ,りゅ,りょ",
+            "ny=ny,に,にぇ,にゃ,にゅ,にょ",
+            "r=r,4,ら,る,るぃ,れ,ろ",
+            "hy=hy,ひ,ひぇ,ひゃ,ひゅ,ひょ",
+            "dy=dy,でぃ,でぇ,でゃ,でゅ,でょ",
+            "by=by,び,びぇ,びゃ,びゅ,びょ",
+            "b=b,ば,ぶ,ぶぃ,べ,ぼ",
+            "d=d,だ,で,ど,どぃ,どぅ",
+            "g=g,が,ぐ,ぐぃ,げ,ご",
+            "f=f,ふ,ふぁ,ふぃ,ふぇ,ふぉ",
+            "h=h,は,はぃ,へ,ほ,ほぅ",
+            "k=k,か,く,くぃ,け,こ",
+            "j=j,じ,じぇ,じゃ,じゅ,じょ",
+            "m=m,ま,む,むぃ,め,も",
+            "n=n,な,ぬ,ぬぃ,ね,の",
+            "p=p,ぱ,ぷ,ぷぃ,ぺ,ぽ",
+            "s=s,さ,す,すぃ,せ,そ",
+            "sh=sh,し,しぇ,しゃ,しゅ,しょ",
+            "t=t,た,て,と,とぃ,とぅ",
+            "v=v,ヴ,ヴぁ,ヴぃ,ヴぅ,ヴぇ,ヴぉ",
+            "ky=ky,き,きぇ,きゃ,きゅ,きょ",
+            "w=w,うぃ,うぅ,うぇ,うぉ,わ,ゐ,ゑ,を,ヰ,ヱ",
+            "y=y,いぃ,いぇ,や,ゆ,よ",
+            "z=z,ざ,ず,ずぃ,ぜ,ぞ",
+            "my=my,み,みぇ,みゃ,みゅ,みょ",
+            "ng=ng,ガ,ギ,グ,ゲ,ゴ",
+            "R=R",
+            "息=息",
+            "吸=吸",
+            "-=-"
         };
 
-        // 끝소리일 경우에만 동작
-        static readonly string[] lastConsonants = new string[] {
-            "K=ㄱ,ㅋ,ㄲ,ㄳ,ㄺ",
-            "N=ㄴ,ㄵ,ㄶ",
-            "T=ㄷ,ㅅ,ㅈ,ㅊ,ㅌ,ㅆ,ㅎ",
-            "L=ㄹ,ㄼ,ㄽ,ㄾ,ㄿ,ㅀ",
-            "M=ㅁ,ㄻ",
-            "P=ㅂ,ㅍ,ㅄ",
-            "NG=ㅇ",
-        };
-
-        // 표준발음법 적용
-        static readonly string[] ruleOfConsonants = new string[] {
-            // 자음동화: (비음화, 유음화)
-            "ㅇㄴ=ㅇㄴ,ㄱㄴ,ㄱㄹ,ㅇㄹ",
-            "ㅇㄱ=ㅇㄱ,ㄱㅁ",
-            "ㄴㄴ=ㄴㄴ,ㄷㄴ,ㄵㄴ",
-            "ㄴㅁ=ㄴㅁ,ㄷㅁ,ㄵㅁ",
-            "ㅁㄴ=ㅁㄴ,ㅂㄴ,ㅂㄹ,ㅁㄹ",
-            "ㅁㅁ=ㅁㅁ,ㅂㅁ",
-            "ㄹㄹ=ㄹㄹ,ㄴㄹ,ㄵㄹ",
-
-            // 구개음화
-            "　ㅈㅣ=ㄷㅇㅣ",
-            "　ㅈㅓ=ㄷㅇㅓ",
-            "　ㅈㅓ=ㄷㅇㅕ",
-            "　ㅊㅣ=ㄷㅎㅣ",
-            "　ㅊㅓ=ㄷㅎㅓ",
-            "　ㅊㅓ=ㄷㅎㅕ",
-            "　ㅊㅣ=ㅌㅇㅣ",
-            "　ㅊㅓ=ㅌㅇㅓ",
-            "　ㅊㅓ=ㅌㅇㅕ",
-            "　ㅊㅣ=ㅌㅎㅣ",
-            "　ㅊㅓ=ㅌㅎㅓ",
-            "　ㅊㅓ=ㅌㅎㅕ",
-            "ㄹㅊㅣ=ㄾㅇㅣ",
-            "ㄹㅊㅓ=ㄾㅇㅓ",
-            "ㄹㅊㅓ=ㄾㅇㅕ",
-            "ㄹㅊㅣ=ㄾㅎㅣ",
-            "ㄹㅊㅓ=ㄾㅎㅓ",
-            "ㄹㅊㅓ=ㄾㅎㅕ",
-
-            // 경음화
-            "ㄱㄲ=ㄱㄲ,ㄱㄱ,ㄲㄱ",
-            "ㄱㄸ=ㄱㄸ,ㄱㄷ,ㄺㄷ,ㄺㅌ,ㄺㄸ",
-            "ㄱㅃ=ㄱㅃ,ㄱㅂ",
-            "ㄱㅆ=ㄱㅆ,ㄱㅅ",
-            "ㄱㅉ=ㄱㅉ,ㄱㅈ",
-            "ㄴㄸ=ㄴㄸ,ㄵㄷ,ㄵㄸ,ㄶㅌ,ㄶㄸ",
-            "ㄷㄲ=ㄷㄲ,ㄷㄱ",
-            "ㄷㄸ=ㄷㄸ,ㄷㄷ",
-            "ㄷㅃ=ㄷㅃ,ㄷㅂ",
-            "ㄷㅆ=ㄷㅆ,ㄷㅅ",
-            "ㄷㅉ=ㄷㅉ",
-            "ㅁㄸ=ㅁㄸ,ㄻㄷ,ㄻㅌ,ㄻㄸ",
-            "ㅂㄲ=ㅂㄲ,ㅂㄱ,ㅄㄲ,ㅄㄱ,ㄼㄱ,ㄼㅋ,ㄼㄲ",
-            "ㅂㄸ=ㅂㄸ,ㅂㄷ,ㅄㄸ,ㅄㄷ",
-            "ㅂㅃ=ㅂㅃ,ㅂㅂ,ㅄㅃ,ㅄㅂ",
-            "ㅂㅆ=ㅂㅆ,ㄼㅅ,ㄼㅆ,ㅂㅅ,ㅄㅆ,ㅄㅅ",
-            "ㅂㅉ=ㅂㅉ,ㅂㅈ,ㅄㅉ,ㅄㅈ",
-            "ㅅㄲ=ㅅㄲ,ㅅㄱ,ㅆㄲ,ㅆㄱ",
-            "ㅅㄸ=ㅅㄸ,ㅅㄷ,ㅆㄸ,ㅆㄷ",
-            "ㅅㅃ=ㅅㅃ,ㅅㅂ,ㅆㅃ,ㅆㅂ",
-            "ㅅㅆ=ㅅㅆ,ㅅㅅ,ㅆㅆ,ㅆㅅ",
-            "ㅅㅉ=ㅅㅉ,ㅅㅈ,ㅆㅉ,ㅆㅈ",
-            "ㅈㄲ=ㅈㄲ,ㅈㄱ",
-            "ㅈㄸ=ㅈㄸ,ㅈㄷ",
-            "ㅈㅃ=ㅈㅃ,ㅈㅂ",
-            "ㅈㅉ=ㅈㅉ,ㅈㅈ",
-            "ㅈㅆ=ㅈㅆ,ㅈㅅ",
-
-            // 자음 축약
-            "　ㅋ=ㄱㅎ",
-            "　ㅌ=ㄷㅎ",
-            "　ㅍ=ㅂㅎ",
-            "　ㅊ=ㅈㅎ",
-            "ㄴㅊ=ㄴㅊ,ㄵㅎ",
-
-            // 탈락
-            "ㄴㅌ=ㄴㅌ,ㄶㄷ",
-            "　ㄴ=ㄶㅇ",
-            "ㄹㅌ=ㄹㅌ,ㄼㄷ,ㄼㅌ,ㄽㄷ,ㄾㅌ,ㄾㄷ,ㄽㅌ,ㄿㄷ,ㄿㅌ,ㅀㄷ,ㄾㅇ",
-            "ㄹㄸ=ㄹㄸ,ㅀㅌ,ㅀㄸ",
-            "　ㄹ=ㅀㅇ",
-
-            // 연음
-            "　ㄱ=ㄱㅇ",
-            "　ㄲ=ㄲㅇ",
-            "ㄱㅅ=ㄳㅇ",
-            "　ㄴ=ㄴㅇ",
-            "ㄴㅈ=ㄴㅈ,ㄵㅇ",
-            "　ㄹ=ㄹㅇ",
-            "ㄹㄱ=ㄹㄱ,ㄺㅇ",
-            "ㄹㅁ=ㄹㅁ,ㄻㅇ",
-            "ㄹㅂ=ㄹㅂ,ㄼㅇ",
-            "ㄹㅅ=ㄹㅅ,ㄽㅇ",
-            "ㄹㅍ=ㄹㅍ,ㄿㅇ,ㄺㅂ,ㄻㅂ,ㄼㅂ,ㄽㅂ,ㄾㅂ,ㄿㅂ,ㅀㅂ",
-            "　ㅁ=ㅁㅇ",
-            "　ㅂ=ㅂㅇ",
-            "ㅂㅅ=ㅄㅇ",
-            "　ㅅ=ㅅㅇ",
-            "　ㅈ=ㅈㅇ",
-            "　ㅊ=ㅊㅇ",
-            "　ㅋ=ㅋㅇ",
-            "　ㅌ=ㅌㅇ",
-            "　ㅍ=ㅍㅇ",
-            "　ㅎ=ㅎㅇ",
-
-            // 이 외
-            "ㄱㅋ=ㄱㅋ",
-            "ㄱㅌ=ㄱㅌ",
-            "ㄱㅊ=ㄱㅊ",
-            "ㄱㅍ=ㄱㅍ",
-            "ㄲㅂ=ㄲㅂ",
-            "ㄲㅃ=ㄲㅃ",
-            "ㄲㅈ=ㄲㅈ",
-            "ㄲㅉ=ㄲㅉ",
-            "ㄲㅅ=ㄲㅅ",
-            "ㄲㅆ=ㄲㅆ",
-            "ㄲㅁ=ㄲㅁ",
-            "ㄲㄴ=ㄲㄴ",
-            "ㄲㄹ=ㄲㄹ",
-            "ㄲㅋ=ㄲㅋ",
-            "ㄲㅌ=ㄲㅌ",
-            "ㄲㅊ=ㄲㅊ",
-            "ㄲㅍ=ㄲㅍ",
-            "ㄴㅂ=ㄴㅂ,ㄵㅂ,ㄶㅂ",
-            "ㄴㅃ=ㄴㅃ,ㄵㅃ,ㄶㅃ",
-            "ㄴㄷ=ㄴㄷ",
-            "ㄴㄱ=ㄴㄱ,ㄵㄱ,ㄶㄱ",
-            "ㄴㄲ=ㄴㄲ,ㄵㄲ,ㄶㄲ",
-            "ㄴㅅ=ㄴㅅ,ㄵㅅ,ㄶㅅ",
-            "ㄴㅆ=ㄴㅆ,ㄵㅆ,ㄶㅆ",
-            "ㄴㅎ=ㄴㅎ,ㄶㅎ",
-            "ㄴㅋ=ㄴㅋ,ㄵㅋ,ㄶㅋ",
-            "ㄴㅍ=ㄴㅍ,ㄵㅍ,ㄶㅍ",
-            "ㄷㄹ=ㄷㄹ",
-            "ㄷㅋ=ㄷㅋ",
-            "ㄷㅌ=ㄷㅌ",
-            "ㄷㅊ=ㄷㅊ",
-            "ㄷㅍ=ㄷㅍ",
-            "ㄹㅃ=ㄹㅃ,ㄺㅃ,ㄻㅃ,ㄼㅃ,ㄽㅃ,ㄾㅃ,ㄿㅃ,ㅀㅃ",
-            "ㄹㅈ=ㄹㅈ,ㄺㅈ,ㄻㅈ,ㄼㅈ,ㄽㅈ,ㄾㅈ,ㄿㅈ,ㅀㅈ",
-            "ㄹㅉ=ㄹㅉ,ㄺㅉ,ㄻㅉ,ㄼㅉ,ㄽㅉ,ㄾㅉ,ㄿㅉ,ㅀㅉ",
-            "ㄹㄷ=ㄹㄷ",
-            "ㄹㄲ=ㄹㄲ,ㄺㄲ,ㄻㄲ,ㄽㄲ,ㄾㄲ,ㄿㄲ,ㅀㄲ",
-            "ㄹㄴ=ㄹㄴ,ㄺㄴ,ㄻㄴ,ㄼㄴ,ㄽㄴ,ㄾㄴ,ㄿㄴ,ㅀㄴ",
-            "ㄹㅎ=ㄹㅎ,ㄺㅎ,ㄻㅎ,ㄼㅎ,ㄽㅎ,ㄾㅎ,ㄿㅎ,ㅀㅎ",
-            "ㄹㅋ=ㄹㅋ,ㄺㅋ,ㄻㅋ,ㄽㅋ,ㄾㅋ,ㄿㅋ,ㅀㅋ",
-            "ㄹㅊ=ㄹㅊ,ㄺㅊ,ㄻㅊ,ㄼㅊ,ㄽㅊ,ㄾㅊ,ㄿㅊ,ㅀㅊ",
-            "ㅁㅂ=ㅁㅂ",
-            "ㅁㅃ=ㅁㅃ",
-            "ㅁㅈ=ㅁㅈ",
-            "ㅁㅉ=ㅁㅉ",
-            "ㅁㄷ=ㅁㄷ",
-            "ㅁㅅ=ㅁㅅ",
-            "ㅁㅆ=ㅁㅆ",
-            "ㅁㅋ=ㅁㅋ",
-            "ㅁㅌ=ㅁㅌ",
-            "ㅁㅊ=ㅁㅊ",
-            "ㅁㅍ=ㅁㅍ",
-            "ㅂㅋ=ㅂㅋ,ㅄㅋ",
-            "ㅂㅌ=ㅂㅌ,ㅄㅌ",
-            "ㅂㅊ=ㅂㅊ,ㅄㅊ",
-            "ㅂㅍ=ㅂㅍ,ㅄㅍ",
-            "ㅅㅁ=ㅅㅁ,ㅆㅁ",
-            "ㅅㄴ=ㅅㄴ,ㅆㄴ",
-            "ㅅㄹ=ㅅㄹ,ㅆㄹ",
-            "ㅅㅋ=ㅅㅋ,ㅆㅋ",
-            "ㅅㅌ=ㅅㅌ,ㅆㅌ",
-            "ㅅㅊ=ㅅㅊ,ㅆㅊ",
-            "ㅅㅍ=ㅅㅍ,ㅆㅍ",
-            "ㅅㅎ=ㅅㅎ,ㅆㅎ",
-            "ㅇㅂ=ㅇㅂ",
-            "ㅇㅃ=ㅇㅃ",
-            "ㅇㅈ=ㅇㅈ",
-            "ㅇㅉ=ㅇㅉ",
-            "ㅇㄷ=ㅇㄷ",
-            "ㅇㄸ=ㅇㄸ",
-            "ㅇㄲ=ㅇㄲ",
-            "ㅇㅅ=ㅇㅅ",
-            "ㅇㅆ=ㅇㅆ",
-            "ㅇㅁ=ㅇㅁ",
-            "ㅇㅇ=ㅇㅇ",
-            "ㅇㅎ=ㅇㅎ",
-            "ㅇㅋ=ㅇㅋ",
-            "ㅇㅌ=ㅇㅌ",
-            "ㅇㅊ=ㅇㅊ",
-            "ㅇㅍ=ㅇㅍ",
-            "ㅈㅁ=ㅈㅁ",
-            "ㅈㄴ=ㅈㄴ",
-            "ㅈㄹ=ㅈㄹ",
-            "ㅈㅋ=ㅈㅋ",
-            "ㅈㅌ=ㅈㅌ",
-            "ㅈㅊ=ㅈㅊ",
-            "ㅈㅍ=ㅈㅍ",
-            "ㅊㅃ=ㅊㅃ",
-            "ㅊㅂ=ㅊㅂ",
-            "ㅊㅉ=ㅊㅉ",
-            "ㅊㅈ=ㅊㅈ",
-            "ㅊㄸ=ㅊㄸ",
-            "ㅊㄷ=ㅊㄷ",
-            "ㅊㄲ=ㅊㄲ",
-            "ㅊㄱ=ㅊㄱ",
-            "ㅊㅆ=ㅊㅆ",
-            "ㅊㅅ=ㅊㅅ",
-            "ㅊㅁ=ㅊㅁ",
-            "ㅊㄴ=ㅊㄴ",
-            "ㅊㄹ=ㅊㄹ",
-            "ㅊㅋ=ㅊㅋ",
-            "ㅊㅌ=ㅊㅌ",
-            "ㅊㅊ=ㅊㅊ",
-            "ㅊㅍ=ㅊㅍ",
-            "ㅋㅃ=ㅋㅃ",
-            "ㅋㅂ=ㅋㅂ",
-            "ㅋㅉ=ㅋㅉ",
-            "ㅋㅈ=ㅋㅈ",
-            "ㅋㄸ=ㅋㄸ",
-            "ㅋㄷ=ㅋㄷ",
-            "ㅋㄲ=ㅋㄲ",
-            "ㅋㄱ=ㅋㄱ",
-            "ㅋㅁ=ㅋㅁ",
-            "ㅋㄴ=ㅋㄴ",
-            "ㅋㄹ=ㅋㄹ",
-            "ㅋㅋ=ㅋㅋ",
-            "ㅋㅌ=ㅋㅌ",
-            "ㅋㅊ=ㅋㅊ",
-            "ㅋㅍ=ㅋㅍ",
-            "ㅌㅃ=ㅌㅃ",
-            "ㅌㅂ=ㅌㅂ",
-            "ㅌㅉ=ㅌㅉ",
-            "ㅌㅈ=ㅌㅈ",
-            "ㅌㄸ=ㅌㄸ",
-            "ㅌㄷ=ㅌㄷ",
-            "ㅌㄲ=ㅌㄲ",
-            "ㅌㄱ=ㅌㄱ",
-            "ㅌㅆ=ㅌㅆ",
-            "ㅌㅅ=ㅌㅅ",
-            "ㅌㅁ=ㅌㅁ",
-            "ㅌㄴ=ㅌㄴ",
-            "ㅌㄹ=ㅌㄹ",
-            "ㅌㅋ=ㅌㅋ",
-            "ㅌㅌ=ㅌㅌ",
-            "ㅌㅊ=ㅌㅊ",
-            "ㅌㅍ=ㅌㅍ",
-            "ㅍㅃ=ㅍㅃ",
-            "ㅍㅂ=ㅍㅂ",
-            "ㅍㅉ=ㅍㅉ",
-            "ㅍㅈ=ㅍㅈ",
-            "ㅍㄸ=ㅍㄸ",
-            "ㅍㄷ=ㅍㄷ",
-            "ㅍㄲ=ㅍㄲ",
-            "ㅍㄱ=ㅍㄱ",
-            "ㅍㅆ=ㅍㅆ",
-            "ㅍㅅ=ㅍㅅ",
-            "ㅍㅁ=ㅍㅁ",
-            "ㅍㄴ=ㅍㄴ",
-            "ㅍㄹ=ㅍㄹ",
-            "ㅍㅋ=ㅍㅋ",
-            "ㅍㅌ=ㅍㅌ",
-            "ㅍㅊ=ㅍㅊ",
-            "ㅍㅍ=ㅍㅍ",
-            "ㅎㅃ=ㅎㅃ",
-            "ㅎㅂ=ㅎㅂ",
-            "ㅎㅉ=ㅎㅉ",
-            "ㅎㅈ=ㅎㅈ",
-            "ㅎㄸ=ㅎㄸ",
-            "ㅎㄷ=ㅎㄷ",
-            "ㅎㄲ=ㅎㄲ",
-            "ㅎㄱ=ㅎㄱ",
-            "ㅎㅆ=ㅎㅆ",
-            "ㅎㅅ=ㅎㅅ",
-            "ㅎㅁ=ㅎㅁ",
-            "ㅎㄴ=ㅎㄴ",
-            "ㅎㄹ=ㅎㄹ",
-            "ㅎㅎ=ㅎㅎ",
-            "ㅎㅋ=ㅎㅋ",
-            "ㅎㅌ=ㅎㅌ",
-            "ㅎㅊ=ㅎㅊ",
-            "ㅎㅍ=ㅎㅍ",
-        };
-
-
-        static readonly Dictionary<string, string> initialConsonantLookup;
         static readonly Dictionary<string, string> vowelLookup;
-        static readonly Dictionary<string, string> subsequentVowelsLookup;
-        static readonly Dictionary<string, string> lastConsonantsLookup;
-        static readonly Dictionary<string, string> ruleOfConsonantsLookup;
+        static readonly Dictionary<string, string> consonantLookup;
 
-
-        static KoreanCVVCStandardPronunciationPhonemizer() {
-            initialConsonantLookup = initialConsonants.ToList()
-                .SelectMany(line => {
-                    var parts = line.Split('=');
-                    return parts[1].Split(',').Select(cv => (cv, parts[0]));
-                })
-                .ToDictionary(t => t.Item1, t => t.Item2);
+        static JapaneseCVVCPhonemizer() {
             vowelLookup = vowels.ToList()
                 .SelectMany(line => {
                     var parts = line.Split('=');
                     return parts[1].Split(',').Select(cv => (cv, parts[0]));
                 })
                 .ToDictionary(t => t.Item1, t => t.Item2);
-            subsequentVowelsLookup = subsequentVowels.ToList()
+            consonantLookup = consonants.ToList()
                 .SelectMany(line => {
                     var parts = line.Split('=');
                     return parts[1].Split(',').Select(cv => (cv, parts[0]));
                 })
                 .ToDictionary(t => t.Item1, t => t.Item2);
-            lastConsonantsLookup = lastConsonants.ToList()
-                .SelectMany(line => {
-                    var parts = line.Split('=');
-                    return parts[1].Split(',').Select(cv => (cv, parts[0]));
-                })
-                .ToDictionary(t => t.Item1, t => t.Item2);
-            ruleOfConsonantsLookup = ruleOfConsonants.ToList()
-                .SelectMany(line => {
-                    var parts = line.Split('=');
-                    return parts[1].Split(',').Select(cv => (cv, parts[0]));
-                })
-                .ToDictionary(t => t.Item1, t => t.Item2);
-
         }
 
         // Store singer in field, will try reading presamp.ini later
@@ -417,32 +81,11 @@ namespace OpenUtau.Plugin.Builtin {
         public override void SetSinger(USinger singer) => this.singer = singer;
 
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
-            var prevLyric = prevNeighbour?.lyric;
-            char[] prevKoreanLyrics = { '　', '　', '　' };
-            bool isPrevEndV = true;
-            if (prevLyric != null && prevLyric[0] >= '가' && prevLyric[0] <= '힣') {
-                prevKoreanLyrics = SeparateHangul(prevLyric != null ? prevLyric[0] : '\0');
-                isPrevEndV = prevKoreanLyrics[2] == '　' && prevKoreanLyrics[0] != '　';
-            }
-
-            var currentLyric = notes[0].lyric;
-            if (!(currentLyric[0] >= '가' && currentLyric[0] <= '힣')) {
-                return new Result {
-                    phonemes = new Phoneme[] {
-                        new Phoneme {
-                            phoneme = $"{currentLyric}",
-                        }
-                    },
-                };
-            }
-            var currentKoreanLyrics = SeparateHangul(currentLyric[0]);
-            var isCurrentEndV = currentKoreanLyrics[2] == '　' && currentKoreanLyrics[0] != '　';
-
-            var nextLyric = nextNeighbour?.lyric;
-            char[] nextKoreanLyrics = { '　', '　', '　' };
-            if (nextLyric != null && nextLyric[0] >= '가' && nextLyric[0] <= '힣') {
-                nextKoreanLyrics = SeparateHangul(nextLyric != null ? nextLyric[0] : '\0');
-            }
+            var note = notes[0];
+            var currentUnicode = ToUnicodeElements(note.lyric);
+            var currentLyric = note.lyric;
+            var attr0 = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
+            var attr1 = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 1) ?? default;
 
             if (prevNeighbour == null) {
                 // Use "- V" or "- CV" if present in voicebank
@@ -450,7 +93,7 @@ namespace OpenUtau.Plugin.Builtin {
                 if (singer.TryGetMappedOto(initial, note.tone + attr0.toneShift, attr0.voiceColor, out var oto)) {
                     currentLyric = oto.Alias;
                 }
-            } else if (vowelsTable.Contains(currentLyric)) {
+            } else if (plainVowels.Contains(currentLyric)) {
                 var prevUnicode = ToUnicodeElements(prevNeighbour?.lyric);
                 // Current note is VV
                 if (vowelLookup.TryGetValue(prevUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
@@ -463,247 +106,88 @@ namespace OpenUtau.Plugin.Builtin {
                 currentLyric = oto.Alias;
             }
 
-            int totalDuration = notes.Sum(n => n.duration);
-            int vcLength = 60;
+            if (nextNeighbour != null) {
 
-            string CV = "";
-            if (prevNeighbour != null) {
-                // 앞문자 존재
-                if (!isPrevEndV) {
-                    // 앞문자 종결이 C
-                    ruleOfConsonantsLookup.TryGetValue(prevKoreanLyrics[2].ToString() + currentKoreanLyrics[0].ToString(), out var CCConsonants);
-                    vowelLookup.TryGetValue(currentKoreanLyrics[1].ToString(), out var currentVowel);
-                    initialConsonantLookup.TryGetValue(CCConsonants == null ? currentKoreanLyrics[0].ToString() : CCConsonants[1].ToString(), out var changedCurrentConsonants);
-                    CV = $"{changedCurrentConsonants}{currentVowel}";
+                var nextUnicode = ToUnicodeElements(nextNeighbour?.lyric);
+                var nextLyric = string.Join("", nextUnicode);
 
-                } else {
-                    // 앞문자 종결이 V
-                    initialConsonantLookup.TryGetValue(currentKoreanLyrics[0].ToString(), out var currentInitialConsonants);
-                    vowelLookup.TryGetValue(currentKoreanLyrics[1].ToString(), out var currentVowel);
-
-                    CV = $"{currentInitialConsonants}{currentVowel}";
+                // Check if next note is a vowel and does not require VC
+                if (nextUnicode.Count < 2 && plainVowels.Contains(nextUnicode.FirstOrDefault() ?? string.Empty)) {
+                    return new Result {
+                        phonemes = new Phoneme[] {
+                            new Phoneme() {
+                                phoneme = currentLyric,
+                            }
+                        },
+                    };
                 }
-            } else {
-                // 앞문자 없음
-                initialConsonantLookup.TryGetValue(currentKoreanLyrics[0].ToString(), out var currentInitialConsonants);
-                vowelLookup.TryGetValue(currentKoreanLyrics[1].ToString(), out var currentVowel);
 
-                CV = $"{currentInitialConsonants}{currentVowel}";
-            }
-            //System.Diagnostics.Debug.WriteLine(CV);
+                // Insert VC before next neighbor
+                // Get vowel from current note
 
-
-            string VC = "";
-            if (isCurrentEndV) {
-                // 이번 문자 종결이 CV
-                if (nextLyric == null || !(nextLyric[0] >= '가' && nextLyric[0] <= '힣')) {
-                    // 다음 문자가 없는 경우
-                } else {
-                    // 다음 문자가 있는 경우(V + C or V)
-                    subsequentVowelsLookup.TryGetValue(currentKoreanLyrics[1].ToString(), out var currentVowel);
-                    initialConsonantLookup.TryGetValue(nextKoreanLyrics[0].ToString(), out var nextInitialConsonants);
-                    if (nextInitialConsonants == "") {
-                        // VV인 경우
-                        vowelLookup.TryGetValue(nextKoreanLyrics[1].ToString(), out var nextVowel);
-                        // VC = $"{currentVowel} {nextVowel}";
-                    } else {
-                        // VC인 경우
-                        VC = $"{currentVowel} {nextInitialConsonants}";
-                    }
+                var vowel = "";
+                if (vowelLookup.TryGetValue(currentUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
+                    vowel = vow;
                 }
-            } else {
-                // 이번 문자 종결이 CVC
 
-                subsequentVowelsLookup.TryGetValue(currentKoreanLyrics[1].ToString(), out var currentVowels);
-                if (nextLyric == null || !(nextLyric[0] >= '가' && nextLyric[0] <= '힣')) {
-                    // 다음 문자가 없는 경우
-                    lastConsonantsLookup.TryGetValue(currentKoreanLyrics[2].ToString(), out var lastConsonants);
-                    VC = $"{currentVowels} {lastConsonants}";
-                } else {
-                    // 다음 문자가 있는 경우(C + C or V)
-                    ruleOfConsonantsLookup.TryGetValue(currentKoreanLyrics[2].ToString() + nextKoreanLyrics[0].ToString(), out var ruleVC);
-                    if (ruleVC[0] == '　') {
-                        // 현재 노트가 CVC에서 CV로 바뀌는 경우
-                        subsequentVowelsLookup.TryGetValue(currentKoreanLyrics[1].ToString(), out var currentVowel);
-                        initialConsonantLookup.TryGetValue(ruleVC[1].ToString(), out var nextInitialConsonants);
-                        VC = $"{currentVowel} {nextInitialConsonants}";
-                    } else {
-                        // 현재 노트가 CVC가 유지되는 경우
-                        lastConsonantsLookup.TryGetValue(ruleVC[0].ToString(), out var lastConsonants);
-                        VC = $"{currentVowels} {lastConsonants}";
-                    }
+                // Get consonant from next note
+                var consonant = "";
+                if (consonantLookup.TryGetValue(nextUnicode.FirstOrDefault() ?? string.Empty, out var con)
+                    || nextUnicode.Count >= 2 && consonantLookup.TryGetValue(string.Join("", nextUnicode.Take(2)), out con)) {
+                    consonant = con;
                 }
-            }
 
-            // Check if lyric is R or - and return appropriate Result; otherwise, move to next steps
-			if (note.lyric == "R" || note.lyric == "-")
-			{
-				currPhoneme = note.lyric;
 
-				if (prevNeighbour == null)
-				{
-					return new Result
-					{
-						phonemes = new Phoneme[] {
-							new Phoneme { phoneme = currPhoneme }
-						}
-					};
-				}
-				else
-				{
-					if (singer.TryGetMappedOto(prevNeighbour?.lyric, note.tone, color, out _)) {
-						string lastSound = GetLastSoundOfAlias(prevNeighbour?.lyric);
-						currPhoneme = $"{(!singer.TryGetMappedOto($"{lastSound} {currPhoneme}", note.tone, color, out _) ? lastSound.ToUpper() : lastSound)} {currPhoneme}";
-					}
+                if (consonant == "") {
+                    return new Result {
+                        phonemes = new Phoneme[] {
+                            new Phoneme() {
+                                phoneme = currentLyric,
+                            }
+                        },
+                    };
+                }
 
-					else {
-						if (string.IsNullOrEmpty(prevNeighbour?.phoneticHint)) {
-							byte[] bytes = Encoding.Unicode.GetBytes($"{prevNeighbour?.lyric[0]}");
-							int numval = Convert.ToInt32(bytes[0]) + Convert.ToInt32(bytes[1]) * (16 * 16);
-							if (prevNeighbour?.lyric.Length == 1 && numval >= 44032 && numval <= 55215) prevIMF = GetIMF(prevNeighbour?.lyric);
-							else return new Result {
-								phonemes = new Phoneme[] {
-									new Phoneme { phoneme = currPhoneme }
-								}
-							};
-						} else prevIMF = GetIMFFromHint(prevNeighbour?.phoneticHint);
+                var vcPhoneme = $"{vowel} {consonant}";
+                if (singer.TryGetMappedOto(vcPhoneme, note.tone + attr1.toneShift, attr1.voiceColor, out var oto1)) {
+                    vcPhoneme = oto1.Alias;
+                } else {
+                    return new Result {
+                        phonemes = new Phoneme[] {
+                            new Phoneme() {
+                                phoneme = currentLyric,
+                            }
+                        },
+                    };
+                }
 
-						if (string.IsNullOrEmpty(prevIMF[2])) currPhoneme = $"{((prevIMF[1][0] == 'w' || prevIMF[1][0] == 'y' || prevIMF[1] == "oi") ? prevIMF[1].Remove(0, 1) : ((prevIMF[1] == "eui" || prevIMF[1] == "ui") ? "i" : prevIMF[1]))} {currPhoneme}";
-						else currPhoneme = $"{(!singer.TryGetMappedOto($"{prevIMF[2]} {currPhoneme}", note.tone, color, out _) ? prevIMF[2].ToUpper() : prevIMF[2])} {currPhoneme}";
-					}
-					
-					return new Result {
-						phonemes = new Phoneme[] {
-							new Phoneme { phoneme = currPhoneme }
-						}
-					};
-				}
-			}
+                int totalDuration = notes.Sum(n => n.duration);
+                int vcLength = 120;
+                var nextAttr = nextNeighbour.Value.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
+                if (singer.TryGetMappedOto(nextLyric, nextNeighbour.Value.tone + nextAttr.toneShift, nextAttr.voiceColor, out var oto)) {
+                    vcLength = MsToTick(oto.Preutter);
+                }
+                vcLength = Math.Min(totalDuration / 2, vcLength);
 
-			// Get IMF of current note if valid, otherwise return the lyric as is
-			if (string.IsNullOrEmpty(note.phoneticHint))
-			{
-				byte[] bytes = Encoding.Unicode.GetBytes($"{note.lyric[0]}");
-				int numval = Convert.ToInt32(bytes[0]) + Convert.ToInt32(bytes[1]) * (16 * 16);
-				if (note.lyric.Length == 1 && numval >= 44032 && numval <= 55215) currIMF = GetIMF(note.lyric);
-				else return new Result
-				{
-					phonemes = new Phoneme[] {
-						new Phoneme { phoneme = note.lyric }
-					}
-				};
-			}
-			else currIMF = GetIMFFromHint(note.phoneticHint);
-
-			// Convert current note to phoneme
-			currPhoneme = $"{currIMF[0]}{currIMF[1]}";
-
-			if (currIMF[0] == "gg" || currIMF[0] == "dd" || currIMF[0] == "bb")
-			{
-				if (!singer.TryGetMappedOto($"- {currIMF[0]}{currIMF[1]}", note.tone + shift, color, out _)) currPhoneme = $"{currIMF[0].Replace('g', 'k').Replace('d', 't').Replace('b', 'p')}{currIMF[1]}";
-			}
-			if (currIMF[1] == "eui")
-			{
-				if (!singer.TryGetMappedOto("- eui", note.tone + shift, color, out _)) currPhoneme = $"{currIMF[0]}ui";
-			}
-
-			// Adjust current phoneme based on previous neighbor
-			if (prevNeighbour != null && singer.TryGetMappedOto(prevNeighbour?.lyric, note.tone + shift, color, out _)) currPhoneme = $"{GetLastSoundOfAlias(prevNeighbour?.lyric)} {currPhoneme}";
-			else
-			{
-				if (prevNeighbour == null || prevNeighbour?.lyric == "R" || prevNeighbour?.lyric == "-") currPhoneme = $"- {currPhoneme}";
-				else
-				{
-					if (string.IsNullOrEmpty(prevNeighbour?.phoneticHint))
-					{
-						byte[] bytes = Encoding.Unicode.GetBytes($"{prevNeighbour?.lyric[0]}");
-						int numval = Convert.ToInt32(bytes[0]) + Convert.ToInt32(bytes[1]) * (16 * 16);
-						if (prevNeighbour?.lyric.Length == 1 && numval >= 44032 && numval <= 55215) prevIMF = GetIMF(prevNeighbour?.lyric);
-						else return new Result
-						{
-							phonemes = new Phoneme[] {
-								new Phoneme { phoneme = note.lyric }
-							}
-						};
-					}
-					else prevIMF = GetIMFFromHint(prevNeighbour?.phoneticHint);
-
-					string prevConnect;
-
-					if (!string.IsNullOrEmpty(prevIMF[2]))
-					{
-						if (Array.IndexOf(sonorants, prevIMF[2]) > -1)
-						{
-							if (singer.TryGetMappedOto($"{prevIMF[2]} {currPhoneme}", note.tone + shift, color, out _)) prevConnect = prevIMF[2];
-							else prevConnect = prevIMF[2].ToUpper();
-						}
-						else prevConnect = "-";
-					}
-					else
-					{
-						if (prevIMF[1][0] == 'w' || prevIMF[1][0] == 'y' || prevIMF[1] == "oe") prevConnect = prevIMF[1].Remove(0, 1);
-						else if (prevIMF[1] == "eui") prevConnect = "i";
-						else prevConnect = prevIMF[1];
-					}
-
-					currPhoneme = $"{prevConnect} {currPhoneme}";
-				}
-			}
-
-			// Return Result now if note has no batchim
-			if (string.IsNullOrEmpty(currIMF[2]))
-			{
-				return new Result
-				{
-					phonemes = new Phoneme[] {
-						new Phoneme { phoneme = currPhoneme }
-					}
-				};
-			}
-
-			// Adjust Result if note has batchim
-			else
-			{
-				string secondPhoneme = (currIMF[1][0] == 'w' || currIMF[1][0] == 'y' || currIMF[1] == "oe" || currIMF[1] == "ui") ? currIMF[1].Remove(0, 1) : currIMF[1];
-
-				if (nextNeighbour == null)
-				{
-					if (string.IsNullOrEmpty(currIMF[2])) secondPhoneme += " R";
-					else
-					{
-						if (singer.TryGetMappedOto($"{secondPhoneme} {currIMF[2]}", note.tone + shift, color, out _)) secondPhoneme += $" {currIMF[2]}";
-						else secondPhoneme += $" {currIMF[2].ToUpper()}";
-					}
-				}
-				else if (!string.IsNullOrEmpty(currIMF[2]))
-				{
-					if (singer.TryGetMappedOto($"{secondPhoneme} {currIMF[2]}", note.tone + shift, color, out _)) secondPhoneme += $" {currIMF[2]}";
-					else secondPhoneme += $" {currIMF[2].ToUpper()}";
-				}
-
-				int noteLength = 0;
-				for (int i = 0; i < notes.Length; i++) noteLength += notes[i].duration;
-
-				int secondPosition = Math.Max(noteLength - (nextNeighbour == null ? 120 : 180), noteLength / 2);
-
-            if (VC == "") {
                 return new Result {
                     phonemes = new Phoneme[] {
-                        new Phoneme {
-                            phoneme = CV,
+                        new Phoneme() {
+                            phoneme = currentLyric,
                         },
+                        new Phoneme() {
+                            phoneme = vcPhoneme,
+                            position = totalDuration - vcLength,
+                        }
                     },
                 };
             }
+
+            // No next neighbor
             return new Result {
                 phonemes = new Phoneme[] {
                     new Phoneme {
-                        phoneme = CV,
-                    },
-                    new Phoneme {
-                        phoneme = VC,
-                        position = totalDuration - vcLength,
-                    },
+                        phoneme = currentLyric,
+                    }
                 },
             };
         }
