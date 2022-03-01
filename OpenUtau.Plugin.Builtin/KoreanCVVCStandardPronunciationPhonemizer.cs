@@ -90,13 +90,13 @@ namespace OpenUtau.Plugin.Builtin {
 
         // 끝소리일 경우에만 동작
         static readonly string[] lastConsonants = new string[] {
-            "k=ㄱ,ㅋ,ㄲ,ㄳ,ㄺ",
-            "n=ㄴ,ㄵ,ㄶ",
-            "t=ㄷ,ㅅ,ㅈ,ㅊ,ㅌ,ㅆ,ㅎ",
-            "l=ㄹ,ㄼ,ㄽ,ㄾ,ㄿ,ㅀ",
-            "m=ㅁ,ㄻ",
-            "p=ㅂ,ㅍ,ㅄ",
-            "ng=ㅇ",
+            "K=ㄱ,ㅋ,ㄲ,ㄳ,ㄺ",
+            "N=ㄴ,ㄵ,ㄶ",
+            "T=ㄷ,ㅅ,ㅈ,ㅊ,ㅌ,ㅆ,ㅎ",
+            "L=ㄹ,ㄼ,ㄽ,ㄾ,ㄿ,ㅀ",
+            "M=ㅁ,ㄻ",
+            "P=ㅂ,ㅍ,ㅄ",
+            "NG=ㅇ",
         };
 
         // 표준발음법 적용
@@ -444,6 +444,25 @@ namespace OpenUtau.Plugin.Builtin {
                 nextKoreanLyrics = SeparateHangul(nextLyric != null ? nextLyric[0] : '\0');
             }
 
+            if (prevNeighbour == null) {
+                // Use "- V" or "- CV" if present in voicebank
+                var initial = $"- {currentLyric}";
+                if (singer.TryGetMappedOto(initial, note.tone + attr0.toneShift, attr0.voiceColor, out var oto)) {
+                    currentLyric = oto.Alias;
+                }
+            } else if (vowelsTable.Contains(currentLyric)) {
+                var prevUnicode = ToUnicodeElements(prevNeighbour?.lyric);
+                // Current note is VV
+                if (vowelLookup.TryGetValue(prevUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
+                    currentLyric = $"{vow} {currentLyric}";
+                    if (singer.TryGetMappedOto(currentLyric, note.tone + attr0.toneShift, attr0.voiceColor, out var oto)) {
+                        currentLyric = oto.Alias;
+                    }
+                }
+            } else if (singer.TryGetMappedOto(currentLyric, note.tone + attr0.toneShift, attr0.voiceColor, out var oto)) {
+                currentLyric = oto.Alias;
+            }
+
             int totalDuration = notes.Sum(n => n.duration);
             int vcLength = 60;
 
@@ -541,16 +560,16 @@ namespace OpenUtau.Plugin.Builtin {
 						if (string.IsNullOrEmpty(prevNeighbour?.phoneticHint)) {
 							byte[] bytes = Encoding.Unicode.GetBytes($"{prevNeighbour?.lyric[0]}");
 							int numval = Convert.ToInt32(bytes[0]) + Convert.ToInt32(bytes[1]) * (16 * 16);
-							if (prevNeighbour?.lyric.Length == 1 && numval >= 44032 && numval <= 55215) pprevLyric = GetLyric(prevNeighbour?.lyric);
+							if (prevNeighbour?.lyric.Length == 1 && numval >= 44032 && numval <= 55215) prevIMF = GetIMF(prevNeighbour?.lyric);
 							else return new Result {
 								phonemes = new Phoneme[] {
 									new Phoneme { phoneme = currPhoneme }
 								}
 							};
-						} else prevLyric = GetLyricFromHint(prevNeighbour?.phoneticHint);
+						} else prevIMF = GetIMFFromHint(prevNeighbour?.phoneticHint);
 
-						if (string.IsNullOrEmpty(prevLyric[2])) currPhoneme = $"{((prevLyric[1][0] == 'w' || prevLyric[1][0] == 'y' || prevLyric[1] == "oi") ? prevLyric[1].Remove(0, 1) : ((prevLyric[1] == "eui" || prevLyric[1] == "ui") ? "i" : prevLyric[1]))} {currPhoneme}";
-						else currPhoneme = $"{(!singer.TryGetMappedOto($"{prevLyric[2]} {currPhoneme}", note.tone, color, out _) ? prevLyric[2].ToUpper() : prevLyric[2])} {currPhoneme}";
+						if (string.IsNullOrEmpty(prevIMF[2])) currPhoneme = $"{((prevIMF[1][0] == 'w' || prevIMF[1][0] == 'y' || prevIMF[1] == "oi") ? prevIMF[1].Remove(0, 1) : ((prevIMF[1] == "eui" || prevIMF[1] == "ui") ? "i" : prevIMF[1]))} {currPhoneme}";
+						else currPhoneme = $"{(!singer.TryGetMappedOto($"{prevIMF[2]} {currPhoneme}", note.tone, color, out _) ? prevIMF[2].ToUpper() : prevIMF[2])} {currPhoneme}";
 					}
 					
 					return new Result {
@@ -560,6 +579,112 @@ namespace OpenUtau.Plugin.Builtin {
 					};
 				}
 			}
+
+			// Get IMF of current note if valid, otherwise return the lyric as is
+			if (string.IsNullOrEmpty(note.phoneticHint))
+			{
+				byte[] bytes = Encoding.Unicode.GetBytes($"{note.lyric[0]}");
+				int numval = Convert.ToInt32(bytes[0]) + Convert.ToInt32(bytes[1]) * (16 * 16);
+				if (note.lyric.Length == 1 && numval >= 44032 && numval <= 55215) currIMF = GetIMF(note.lyric);
+				else return new Result
+				{
+					phonemes = new Phoneme[] {
+						new Phoneme { phoneme = note.lyric }
+					}
+				};
+			}
+			else currIMF = GetIMFFromHint(note.phoneticHint);
+
+			// Convert current note to phoneme
+			currPhoneme = $"{currIMF[0]}{currIMF[1]}";
+
+			if (currIMF[0] == "gg" || currIMF[0] == "dd" || currIMF[0] == "bb")
+			{
+				if (!singer.TryGetMappedOto($"- {currIMF[0]}{currIMF[1]}", note.tone + shift, color, out _)) currPhoneme = $"{currIMF[0].Replace('g', 'k').Replace('d', 't').Replace('b', 'p')}{currIMF[1]}";
+			}
+			if (currIMF[1] == "eui")
+			{
+				if (!singer.TryGetMappedOto("- eui", note.tone + shift, color, out _)) currPhoneme = $"{currIMF[0]}ui";
+			}
+
+			// Adjust current phoneme based on previous neighbor
+			if (prevNeighbour != null && singer.TryGetMappedOto(prevNeighbour?.lyric, note.tone + shift, color, out _)) currPhoneme = $"{GetLastSoundOfAlias(prevNeighbour?.lyric)} {currPhoneme}";
+			else
+			{
+				if (prevNeighbour == null || prevNeighbour?.lyric == "R" || prevNeighbour?.lyric == "-") currPhoneme = $"- {currPhoneme}";
+				else
+				{
+					if (string.IsNullOrEmpty(prevNeighbour?.phoneticHint))
+					{
+						byte[] bytes = Encoding.Unicode.GetBytes($"{prevNeighbour?.lyric[0]}");
+						int numval = Convert.ToInt32(bytes[0]) + Convert.ToInt32(bytes[1]) * (16 * 16);
+						if (prevNeighbour?.lyric.Length == 1 && numval >= 44032 && numval <= 55215) prevIMF = GetIMF(prevNeighbour?.lyric);
+						else return new Result
+						{
+							phonemes = new Phoneme[] {
+								new Phoneme { phoneme = note.lyric }
+							}
+						};
+					}
+					else prevIMF = GetIMFFromHint(prevNeighbour?.phoneticHint);
+
+					string prevConnect;
+
+					if (!string.IsNullOrEmpty(prevIMF[2]))
+					{
+						if (Array.IndexOf(sonorants, prevIMF[2]) > -1)
+						{
+							if (singer.TryGetMappedOto($"{prevIMF[2]} {currPhoneme}", note.tone + shift, color, out _)) prevConnect = prevIMF[2];
+							else prevConnect = prevIMF[2].ToUpper();
+						}
+						else prevConnect = "-";
+					}
+					else
+					{
+						if (prevIMF[1][0] == 'w' || prevIMF[1][0] == 'y' || prevIMF[1] == "oe") prevConnect = prevIMF[1].Remove(0, 1);
+						else if (prevIMF[1] == "eui") prevConnect = "i";
+						else prevConnect = prevIMF[1];
+					}
+
+					currPhoneme = $"{prevConnect} {currPhoneme}";
+				}
+			}
+
+			// Return Result now if note has no batchim
+			if (string.IsNullOrEmpty(currIMF[2]))
+			{
+				return new Result
+				{
+					phonemes = new Phoneme[] {
+						new Phoneme { phoneme = currPhoneme }
+					}
+				};
+			}
+
+			// Adjust Result if note has batchim
+			else
+			{
+				string secondPhoneme = (currIMF[1][0] == 'w' || currIMF[1][0] == 'y' || currIMF[1] == "oe" || currIMF[1] == "ui") ? currIMF[1].Remove(0, 1) : currIMF[1];
+
+				if (nextNeighbour == null)
+				{
+					if (string.IsNullOrEmpty(currIMF[2])) secondPhoneme += " R";
+					else
+					{
+						if (singer.TryGetMappedOto($"{secondPhoneme} {currIMF[2]}", note.tone + shift, color, out _)) secondPhoneme += $" {currIMF[2]}";
+						else secondPhoneme += $" {currIMF[2].ToUpper()}";
+					}
+				}
+				else if (!string.IsNullOrEmpty(currIMF[2]))
+				{
+					if (singer.TryGetMappedOto($"{secondPhoneme} {currIMF[2]}", note.tone + shift, color, out _)) secondPhoneme += $" {currIMF[2]}";
+					else secondPhoneme += $" {currIMF[2].ToUpper()}";
+				}
+
+				int noteLength = 0;
+				for (int i = 0; i < notes.Length; i++) noteLength += notes[i].duration;
+
+				int secondPosition = Math.Max(noteLength - (nextNeighbour == null ? 120 : 180), noteLength / 2);
 
             if (VC == "") {
                 return new Result {
