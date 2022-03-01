@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
@@ -515,6 +515,51 @@ namespace OpenUtau.Plugin.Builtin {
                     }
                 }
             }
+
+            // Check if lyric is R or - and return appropriate Result; otherwise, move to next steps
+			if (note.lyric == "R" || note.lyric == "-")
+			{
+				currPhoneme = note.lyric;
+
+				if (prevNeighbour == null)
+				{
+					return new Result
+					{
+						phonemes = new Phoneme[] {
+							new Phoneme { phoneme = currPhoneme }
+						}
+					};
+				}
+				else
+				{
+					if (singer.TryGetMappedOto(prevNeighbour?.lyric, note.tone, color, out _)) {
+						string lastSound = GetLastSoundOfAlias(prevNeighbour?.lyric);
+						currPhoneme = $"{(!singer.TryGetMappedOto($"{lastSound} {currPhoneme}", note.tone, color, out _) ? lastSound.ToUpper() : lastSound)} {currPhoneme}";
+					}
+
+					else {
+						if (string.IsNullOrEmpty(prevNeighbour?.phoneticHint)) {
+							byte[] bytes = Encoding.Unicode.GetBytes($"{prevNeighbour?.lyric[0]}");
+							int numval = Convert.ToInt32(bytes[0]) + Convert.ToInt32(bytes[1]) * (16 * 16);
+							if (prevNeighbour?.lyric.Length == 1 && numval >= 44032 && numval <= 55215) pprevLyric = GetLyric(prevNeighbour?.lyric);
+							else return new Result {
+								phonemes = new Phoneme[] {
+									new Phoneme { phoneme = currPhoneme }
+								}
+							};
+						} else prevLyric = GetLyricFromHint(prevNeighbour?.phoneticHint);
+
+						if (string.IsNullOrEmpty(prevLyric[2])) currPhoneme = $"{((prevLyric[1][0] == 'w' || prevLyric[1][0] == 'y' || prevLyric[1] == "oi") ? prevLyric[1].Remove(0, 1) : ((prevLyric[1] == "eui" || prevLyric[1] == "ui") ? "i" : prevLyric[1]))} {currPhoneme}";
+						else currPhoneme = $"{(!singer.TryGetMappedOto($"{prevLyric[2]} {currPhoneme}", note.tone, color, out _) ? prevLyric[2].ToUpper() : prevLyric[2])} {currPhoneme}";
+					}
+					
+					return new Result {
+						phonemes = new Phoneme[] {
+							new Phoneme { phoneme = currPhoneme }
+						}
+					};
+				}
+			}
 
             if (VC == "") {
                 return new Result {
