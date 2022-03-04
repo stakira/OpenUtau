@@ -77,32 +77,20 @@ namespace OpenUtau.Core.Render {
         public readonly RenderPhone[] phones;
         public readonly float[] pitches;
 
-        internal RenderPhrase(UProject project, UTrack track, UVoicePart part, UNote first, UNote last) {
+        internal RenderPhrase(UProject project, UTrack track, UVoicePart part, IEnumerable<UPhoneme> phonemes) {
             var notes = new List<UNote>();
-            var n = first;
-            while (n != last) {
-                notes.Add(n);
-                n = n.Next;
+            notes.Add(phonemes.First().Parent);
+            while (notes.Last() != phonemes.Last().Parent) {
+                notes.Add(notes.Last().Next);
             }
-            notes.Add(last);
+            phones = phonemes
+                .Select(p => new RenderPhone(project, track, part, p.Parent, p))
+                .ToArray();
 
             singerId = track.Singer.Id;
             position = part.position;
             tempo = project.bpm;
             tickToMs = 60000.0 / project.bpm * project.beatUnit / 4 / project.resolution;
-            var phones = new List<RenderPhone>();
-            foreach (var note in notes) {
-                if (note.OverlapError) {
-                    continue;
-                }
-                foreach (var phoneme in note.phonemes) {
-                    if (phoneme.Error) {
-                        continue;
-                    }
-                    phones.Add(new RenderPhone(project, track, part, note, phoneme));
-                }
-            }
-            this.phones = phones.ToArray();
 
             const int pitchInterval = 5;
             int pitchStart = phones[0].position - phones[0].leading;
@@ -155,7 +143,9 @@ namespace OpenUtau.Core.Render {
                     int x;
                     while ((x = pitchStart + index * pitchInterval) < point.X && index < pitches.Length) {
                         float pitch = (float)MusicMath.InterpolateShape(lastPoint.X, point.X, lastPoint.Y, point.Y, x, lastPoint.shape);
-                        float basePitch = x >= note.position ? note.tone * 100 : (note == first ? note : note.Prev).tone * 100;
+                        float basePitch = x >= note.position
+                            ? note.tone * 100
+                            : (note == notes.First() ? note : note.Prev).tone * 100;
                         pitches[index] += pitch - basePitch;
                         index++;
                     }
@@ -165,20 +155,27 @@ namespace OpenUtau.Core.Render {
         }
 
         public static List<RenderPhrase> FromPart(UProject project, UTrack track, UVoicePart part) {
-            var result = new List<RenderPhrase>();
-            if (part.notes.Count == 0) {
-                return result;
+            var phrases = new List<RenderPhrase>();
+            var phonemes = part.notes
+                .Where(note => !note.OverlapError)
+                .SelectMany(note => note.phonemes.Where(phoneme => !phoneme.Error))
+                .ToList();
+            if (phonemes.Count == 0) {
+                return phrases;
             }
-            var first = part.notes.First();
-            while (first != null) {
-                var last = first;
-                while (last.Next != null && last.Next.position == last.End) {
-                    last = last.Next;
+            var phrasePhonemes = new List<UPhoneme>() { phonemes[0] };
+            for (int i = 1; i < phonemes.Count; ++i) {
+                if (phonemes[i - 1].Parent.position + phonemes[i - 1].End != phonemes[i].Parent.position + phonemes[i].position) {
+                    phrases.Add(new RenderPhrase(project, track, part, phrasePhonemes));
+                    phrasePhonemes.Clear();
                 }
-                result.Add(new RenderPhrase(project, track, part, first, last));
-                first = last.Next;
+                phrasePhonemes.Add(phonemes[i]);
             }
-            return result;
+            if (phrasePhonemes.Count > 0) {
+                phrases.Add(new RenderPhrase(project, track, part, phrasePhonemes));
+                phrasePhonemes.Clear();
+            }
+            return phrases;
         }
     }
 }

@@ -146,31 +146,6 @@ namespace OpenUtau.Core.ResamplerDriver
             };
             return Input;
         }
-        /// <summary>
-        /// 从RenderItem初始化过程
-        /// </summary>
-        /// <returns></returns>
-        internal static EngineInput CreateInputModel(RenderItem renderItem)
-        {
-            EngineInput Ret = new EngineInput
-            {
-                inputWaveFile = renderItem.SourceTemp,
-                outputWaveFile = renderItem.OutputFile,
-                NoteString = MusicMath.GetToneName(renderItem.NoteNum),
-                Velocity = renderItem.Velocity,
-                StrFlags = renderItem.StrFlags,
-                Offset = renderItem.Oto.Offset,
-                RequiredLength = renderItem.RequiredLength,
-                Consonant = renderItem.Oto.Consonant,
-                Cutoff = renderItem.Oto.Cutoff,
-                Volume = renderItem.Volume,
-                Modulation = renderItem.Modulation,
-                pitchBend = renderItem.PitchData.ToArray(),
-                nPitchBend = renderItem.PitchData.Count,
-                Tempo = renderItem.Tempo
-            };
-            return Ret;
-        }
         #endregion
 
         #region 输出模型

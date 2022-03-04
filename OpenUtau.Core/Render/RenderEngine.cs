@@ -149,40 +149,6 @@ namespace OpenUtau.Core.Render {
                 .SelectMany(part => RenderPhrase.FromPart(project, project.tracks[part.trackNo], part));
         }
 
-        RenderItem ResampleItem(object state) {
-            var item = state as RenderItem;
-            Resample(item);
-            return item;
-        }
-
-        void Resample(RenderItem item) {
-            byte[] data = null;
-            try {
-                uint hash = item.HashParameters();
-                data = cache.Get(hash);
-                if (data == null) {
-                    Classic.VoicebankFiles.CopySourceTemp(item.SourceFile, item.SourceTemp);
-                    var driver = ResamplerDrivers.GetResampler(item.ResamplerName);
-                    if (driver == null) {
-                        throw new Exception($"Resampler {item.ResamplerName} not found.");
-                    }
-                    data = driver.DoResampler(DriverModels.CreateInputModel(item), Log.Logger);
-                    if (data == null || data.Length == 0) {
-                        throw new Exception("Empty render result.");
-                    }
-                    cache.Put(hash, data);
-                    Log.Information($"Sound {hash:x} {item.Oto.Alias} {item.GetResamplerExeArgs()} resampled.");
-                    Classic.VoicebankFiles.CopyBackMetaFiles(item.SourceFile, item.SourceTemp);
-                }
-            } catch (Exception e) {
-                Log.Error(e, $"Failed to render item {item.SourceFile} {item.Oto.Alias} {item.GetResamplerExeArgs()}.");
-            } finally {
-                item.Data = data ?? new byte[0];
-                item.OnComplete?.Invoke(item.Data);
-                item.progress?.CompleteOne($"Resampling \"{item.phonemeName}\"");
-            }
-        }
-
         public static void ReleaseSourceTemp() {
             Classic.VoicebankFiles.ReleaseSourceTemp();
         }
