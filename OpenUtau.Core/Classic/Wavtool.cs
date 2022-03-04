@@ -20,7 +20,7 @@ namespace OpenUtau.Classic {
                 return null;
             }
             var mix = new WaveMix(resamplerItems.Select(item => {
-                var posMs = item.phone.position * item.phrase.tickToMs - item.phone.preutterMs;
+                var posMs = (item.phrase.position + item.phone.position) * item.phrase.tickToMs - item.phone.preutterMs;
                 var source = new WaveSource(posMs, item.requiredLength, item.phone.envelope, item.skipOver, 1);
                 if (File.Exists(item.outputFile)) {
                     source.SetWaveData(File.ReadAllBytes(item.outputFile));

@@ -29,14 +29,10 @@ namespace OpenUtau.Core.Render {
         }
 
         readonly UProject project;
-        readonly IResamplerDriver driver;
-        readonly RenderCache cache;
         readonly int startTick;
 
-        public RenderEngine(UProject project, IResamplerDriver driver, RenderCache cache, int startTick = 0) {
+        public RenderEngine(UProject project, int startTick = 0) {
             this.project = project;
-            this.driver = driver;
-            this.cache = cache;
             this.startTick = startTick;
         }
 

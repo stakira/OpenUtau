@@ -53,15 +53,10 @@ namespace OpenUtau.Core {
         private static PlaybackManager _s;
         public static PlaybackManager Inst { get { if (_s == null) { _s = new PlaybackManager(); } return _s; } }
 
-        readonly RenderCache cache = new RenderCache(4096);
         List<Fader> faders;
         MasterAdapter masterMix;
         double startMs;
         CancellationTokenSource playbakCancellationTokenSource;
-
-        object previewDriverLockObj = new object();
-        string resamplerSelected;
-        IResamplerDriver previewDriver;
         CancellationTokenSource previewCancellationTokenSource;
 
         public Audio.IAudioOutput AudioOutput { get; set; } = new Audio.DummyAudioOutput();
@@ -130,14 +125,10 @@ namespace OpenUtau.Core {
             if (!ResamplerDrivers.CheckPreviewResampler()) {
                 return;
             }
-            var driver = ResamplerDrivers.GetResampler(Preferences.Default.ExternalPreviewEngine);
-            if (driver == null) {
-                return;
-            }
             StopPreRender();
             var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
             Task.Run(() => {
-                RenderEngine engine = new RenderEngine(project, driver, cache, tick);
+                RenderEngine engine = new RenderEngine(project, tick);
                 var result = engine.RenderProject(tick);
                 faders = result.Item2;
                 var source = result.Item3;
@@ -169,14 +160,10 @@ namespace OpenUtau.Core {
         }
 
         public void RenderToFiles(UProject project) {
-            var driver = ResamplerDrivers.GetResampler(Preferences.Default.ExternalExportEngine);
-            if (driver == null) {
-                return;
-            }
             StopPreRender();
             Task.Run(() => {
                 var task = Task.Run(() => {
-                    RenderEngine engine = new RenderEngine(project, driver, cache);
+                    RenderEngine engine = new RenderEngine(project);
                     var trackMixes = engine.RenderTracks();
                     for (int i = 0; i < trackMixes.Count; ++i) {
                         if (project.tracks.Count > i) {
@@ -201,12 +188,8 @@ namespace OpenUtau.Core {
         }
 
         void SchedulePreRender() {
-            var driver = ResamplerDrivers.GetResampler(Preferences.Default.ExternalPreviewEngine);
-            if (driver == null) {
-                return;
-            }
             Log.Information("SchedulePreRender");
-            var engine = new RenderEngine(DocManager.Inst.Project, driver, cache);
+            var engine = new RenderEngine(DocManager.Inst.Project);
             var source = engine.PreRenderProject();
             source = Interlocked.Exchange(ref previewCancellationTokenSource, source);
             if (source != null) {
@@ -222,7 +205,14 @@ namespace OpenUtau.Core {
         }
 
         public void ClearRenderCache() {
-            cache.Clear();
+            var files = Directory.GetFiles(PathManager.Inst.CachePath, "*.*");
+            foreach (var file in files) {
+                try {
+                    File.Delete(file);
+                } catch (Exception e) {
+                    Log.Error(e, $"Failed to delete {file}");
+                }
+            }
         }
 
         #region ICmdSubscriber
