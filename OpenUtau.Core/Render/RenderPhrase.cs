@@ -92,7 +92,13 @@ namespace OpenUtau.Core.Render {
             tickToMs = 60000.0 / project.bpm * project.beatUnit / 4 / project.resolution;
             var phones = new List<RenderPhone>();
             foreach (var note in notes) {
+                if (note.OverlapError) {
+                    continue;
+                }
                 foreach (var phoneme in note.phonemes) {
+                    if (phoneme.Error) {
+                        continue;
+                    }
                     phones.Add(new RenderPhone(project, track, part, note, phoneme));
                 }
             }
@@ -103,7 +109,7 @@ namespace OpenUtau.Core.Render {
             pitches = new float[(phones.Last().position + phones.Last().duration - pitchStart) / pitchInterval + 1];
             int index = 0;
             foreach (var note in notes) {
-                while (pitchStart + index * pitchInterval < note.End) {
+                while (pitchStart + index * pitchInterval < note.End && index < pitches.Length) {
                     pitches[index] = note.tone * 100;
                     index++;
                 }

@@ -40,75 +40,57 @@ namespace OpenUtau.Core.Render {
             this.startTick = startTick;
         }
 
-        public Tuple<MasterAdapter, List<Fader>, CancellationTokenSource, Task> RenderProject(int startTick) {
-            var source = new CancellationTokenSource();
-            var items = new List<RenderItem>();
+        public Tuple<MasterAdapter, List<Fader>, CancellationTokenSource> RenderProject(int startTick) {
+            var cancellation = new CancellationTokenSource();
             var faders = new List<Fader>();
+            var renderer = new Classic.ClassicRenderer();
             foreach (var track in project.tracks) {
-                var trackItems = PrepareTrack(track, project, startTick).ToArray();
-                var sources = trackItems.Select(item => {
-                    var waveSource = new WaveSource(item.PosMs, item.DurMs, item.Envelope, item.SkipOver, 1);
-                    item.OnComplete = data => waveSource.SetWaveData(data);
-                    return waveSource;
-                }).ToList();
-                sources.AddRange(project.parts
-                    .Where(part => part is UWavePart && part.trackNo == track.TrackNo)
-                    .Select(part => part as UWavePart)
-                    .Where(part => part.Samples != null)
-                    .Select(part => {
-                        var waveSource = new WaveSource(
-                            project.TickToMillisecond(part.position),
-                            project.TickToMillisecond(part.Duration),
-                            null,
-                            part.skipMs, part.channels);
-                        if (part.Samples != null) {
-                            waveSource.SetSamples(part.Samples);
-                        } else {
-                            waveSource.SetSamples(new float[0]);
-                        }
-                        return waveSource;
-                    }));
-                var trackMix = new WaveMix(sources);
-                items.AddRange(trackItems);
-                var fader = new Fader(trackMix);
+                var phrases = PrepareTrack(track, project);
+                var progress = new Progress(phrases.Sum(phrase => phrase.phones.Length + 1));
+                var vocal = new WaveMix(phrases.Select(phrase => {
+                    var task = renderer.Render(phrase, cancellation);
+                    task.Wait();
+                    return task.Result;
+                }));
+                var sources = project.parts
+                     .Where(part => part is UWavePart && part.trackNo == track.TrackNo)
+                     .Select(part => part as UWavePart)
+                     .Where(part => part.Samples != null)
+                     .Select(part => {
+                         var waveSource = new WaveSource(
+                             project.TickToMillisecond(part.position),
+                             project.TickToMillisecond(part.Duration),
+                             null,
+                             part.skipMs, part.channels);
+                         if (part.Samples != null) {
+                             waveSource.SetSamples(part.Samples);
+                         } else {
+                             waveSource.SetSamples(new float[0]);
+                         }
+                         return (ISignalSource)waveSource;
+                     }).ToList();
+                sources.Insert(0, vocal);
+                var fader = new Fader(new WaveMix(sources));
                 fader.Scale = PlaybackManager.DecibelToVolume(track.Mute ? -24 : track.Volume);
                 fader.SetScaleToTarget();
                 faders.Add(fader);
             }
-            items = items.OrderBy(item => item.PosMs).ToList();
-            int threads = Util.Preferences.Default.PrerenderThreads;
-            var task = Task.Run(() => {
-                if (items.Count == 0) {
-                    return;
-                }
-                var progress = new Progress(items.Count);
-                Parallel.ForEach(source: items, parallelOptions: new ParallelOptions() {
-                    MaxDegreeOfParallelism = threads
-                }, body: item => {
-                    if (source.Token.IsCancellationRequested) {
-                        return;
-                    }
-                    item.progress = progress;
-                    Resample(item);
-                });
-                progress.Clear();
-            });
             var master = new MasterAdapter(new WaveMix(faders));
             master.SetPosition((int)(project.TickToMillisecond(startTick) * 44100 / 1000) * 2);
-            return Tuple.Create(master, faders, source, task);
+            return Tuple.Create(master, faders, cancellation);
         }
 
         public List<WaveMix> RenderTracks() {
-            List<WaveMix> result = new List<WaveMix>();
+            var cancellation = new CancellationTokenSource();
+            var result = new List<WaveMix>();
+            var renderer = new Classic.ClassicRenderer();
             foreach (var track in project.tracks) {
-                var items = PrepareTrack(track, project, 0);
-                var progress = new Progress(items.Count());
-                var mix = new WaveMix(items.Select(item => {
-                    var waveSource = new WaveSource(item.PosMs, item.DurMs, item.Envelope, item.SkipOver, 1);
-                    item.progress = progress;
-                    item.OnComplete = data => waveSource.SetWaveData(data);
-                    Resample(item);
-                    return waveSource;
+                var phrases = PrepareTrack(track, project);
+                var progress = new Progress(phrases.Sum(phrase => phrase.phones.Length + 1));
+                var mix = new WaveMix(phrases.Select(phrase => {
+                    var task = renderer.Render(phrase, cancellation);
+                    task.Wait();
+                    return task.Result;
                 }));
                 progress.Clear();
                 result.Add(mix);
@@ -118,62 +100,53 @@ namespace OpenUtau.Core.Render {
 
         public CancellationTokenSource PreRenderProject() {
             int threads = Util.Preferences.Default.PrerenderThreads;
-            var source = new CancellationTokenSource();
+            var cancellation = new CancellationTokenSource();
             Task.Run(() => {
                 try {
                     Thread.Sleep(200);
-                    if (source.Token.IsCancellationRequested) {
+                    if (cancellation.Token.IsCancellationRequested) {
                         return;
                     }
-                    RenderItem[] items;
+                    RenderPhrase[] phrases;
                     lock (project) {
-                        items = PrepareProject(project, startTick)
-                            .OrderBy(item => item.PosMs)
-                            .ToArray();
+                        phrases = PrepareProject(project).ToArray();
                     }
-                    var progress = new Progress(items.Length);
-                    if (items.Length == 0) {
+                    phrases = phrases.Where(phrase => {
+                        var last = phrase.phones.Last();
+                        var endPos = phrase.position + last.position + last.duration;
+                        return startTick < endPos;
+                    }).ToArray();
+                    if (phrases.Length == 0) {
                         return;
                     }
-                    Parallel.ForEach(source: items, parallelOptions: new ParallelOptions() {
-                        MaxDegreeOfParallelism = threads
-                    }, body: item => {
-                        if (source.Token.IsCancellationRequested) {
-                            return;
-                        }
-                        item.progress = progress;
-                        Resample(item);
-                    });
+                    var progress = new Progress(phrases.Sum(phrase => phrase.phones.Length) + phrases.Length);
+                    var renderer = new Classic.ClassicRenderer();
+                    foreach (var phrase in phrases) {
+                        var task = renderer.Render(phrase, cancellation);
+                        task.Wait();
+                        var samples = task.Result;
+                    }
                     progress.Clear();
                 } catch (Exception e) {
-                    if (!source.IsCancellationRequested) {
+                    if (!cancellation.IsCancellationRequested) {
                         Log.Error(e, "Failed to pre-render.");
                     }
                 }
             });
-            return source;
+            return cancellation;
         }
 
-        IEnumerable<RenderItem> PrepareProject(UProject project, int startTick) {
+        IEnumerable<RenderPhrase> PrepareProject(UProject project) {
             return project.tracks
-                .SelectMany(track => PrepareTrack(track, project, startTick));
+                .SelectMany(track => PrepareTrack(track, project));
         }
 
-        IEnumerable<RenderItem> PrepareTrack(UTrack track, UProject project, int startTick) {
+        IEnumerable<RenderPhrase> PrepareTrack(UTrack track, UProject project) {
             return project.parts
                 .Where(part => part.trackNo == track.TrackNo)
                 .Where(part => part is UVoicePart)
                 .Select(part => part as UVoicePart)
-                .SelectMany(part => PreparePart(part, track, project, startTick));
-        }
-
-        IEnumerable<RenderItem> PreparePart(UVoicePart part, UTrack track, UProject project, int startTick) {
-            return part.notes
-                .Where(note => !note.OverlapError)
-                .SelectMany(note => note.phonemes)
-                .Where(phoneme => !phoneme.Error)
-                .Where(phoneme => part.position + phoneme.Parent.position + phoneme.End > startTick)
-                .Select(phoneme => new RenderItem(phoneme, part, track, project, driver.Name));
+                .SelectMany(part => RenderPhrase.FromPart(project, project.tracks[part.trackNo], part));
         }
 
         RenderItem ResampleItem(object state) {
