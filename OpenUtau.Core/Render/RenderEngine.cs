@@ -1,33 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using OpenUtau.Core.ResamplerDriver;
 using OpenUtau.Core.SignalChain;
 using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Core.Render {
-    class RenderEngine {
-        public class Progress {
-            readonly int total;
-            int completed = 0;
-            public Progress(int total) {
-                this.total = total;
-            }
-
-            public void CompleteOne(string info) {
-                completed++;
-                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(completed * 100.0 / total, info));
-            }
-
-            public void Clear() {
-                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, string.Empty));
-            }
+    public class Progress {
+        readonly int total;
+        int completed = 0;
+        public Progress(int total) {
+            this.total = total;
         }
 
+        public void CompleteOne(string info) {
+            Interlocked.Increment(ref completed);
+            DocManager.Inst.ExecuteCmd(new ProgressBarNotification(completed * 100.0 / total, info));
+        }
+
+        public void Clear() {
+            DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, string.Empty));
+        }
+    }
+
+    class RenderEngine {
         readonly UProject project;
         readonly int startTick;
 
@@ -42,12 +40,13 @@ namespace OpenUtau.Core.Render {
             var renderer = new Classic.ClassicRenderer();
             foreach (var track in project.tracks) {
                 var phrases = PrepareTrack(track, project);
-                var progress = new Progress(phrases.Sum(phrase => phrase.phones.Length + 1));
+                var progress = new Progress(phrases.Sum(phrase => phrase.phones.Length));
                 var vocal = new WaveMix(phrases.Select(phrase => {
-                    var task = renderer.Render(phrase, cancellation);
+                    var task = renderer.Render(phrase, progress, cancellation);
                     task.Wait();
                     return task.Result;
                 }));
+                progress.Clear();
                 var sources = project.parts
                      .Where(part => part is UWavePart && part.trackNo == track.TrackNo)
                      .Select(part => part as UWavePart)
@@ -82,9 +81,9 @@ namespace OpenUtau.Core.Render {
             var renderer = new Classic.ClassicRenderer();
             foreach (var track in project.tracks) {
                 var phrases = PrepareTrack(track, project);
-                var progress = new Progress(phrases.Sum(phrase => phrase.phones.Length + 1));
+                var progress = new Progress(phrases.Sum(phrase => phrase.phones.Length));
                 var mix = new WaveMix(phrases.Select(phrase => {
-                    var task = renderer.Render(phrase, cancellation);
+                    var task = renderer.Render(phrase, progress, cancellation);
                     task.Wait();
                     return task.Result;
                 }));
@@ -115,10 +114,10 @@ namespace OpenUtau.Core.Render {
                     if (phrases.Length == 0) {
                         return;
                     }
-                    var progress = new Progress(phrases.Sum(phrase => phrase.phones.Length) + phrases.Length);
+                    var progress = new Progress(phrases.Sum(phrase => phrase.phones.Length));
                     var renderer = new Classic.ClassicRenderer();
                     foreach (var phrase in phrases) {
-                        var task = renderer.Render(phrase, cancellation);
+                        var task = renderer.Render(phrase, progress, cancellation);
                         task.Wait();
                         var samples = task.Result;
                     }

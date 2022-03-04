@@ -4,6 +4,6 @@ using OpenUtau.Core.SignalChain;
 
 namespace OpenUtau.Core.Render {
     interface IRenderer {
-        Task<ISignalSource> Render(RenderPhrase phrase, CancellationTokenSource cancellation);
+        Task<ISignalSource> Render(RenderPhrase phrase, Progress progress, CancellationTokenSource cancellation);
     }
 }
