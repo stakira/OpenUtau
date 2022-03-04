@@ -41,6 +41,7 @@ for:
   matrix:
     only:
       - image: macOS
+      - image: Ubuntu
   build_script:
     - python appveyor.py
 deploy:
