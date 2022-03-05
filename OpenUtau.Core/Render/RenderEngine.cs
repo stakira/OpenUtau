@@ -51,7 +51,7 @@ namespace OpenUtau.Core.Render {
                         if (posMs + durMs < startTick * phrase.tickToMs) {
                             return null;
                         }
-                        var source = new WaveSource(posMs, durMs, null, 0, 1);
+                        var source = new WaveSource(posMs, durMs, 0, 1);
                         renderTasks.Add(Tuple.Create(phrase, source));
                         totalProgress += phrase.phones.Length;
                         return source;
@@ -66,7 +66,6 @@ namespace OpenUtau.Core.Render {
                          var waveSource = new WaveSource(
                              project.TickToMillisecond(part.position),
                              project.TickToMillisecond(part.Duration),
-                             null,
                              part.skipMs, part.channels);
                          if (part.Samples != null) {
                              waveSource.SetSamples(part.Samples);
@@ -109,7 +108,7 @@ namespace OpenUtau.Core.Render {
                     var task = renderer.Render(phrase, progress, cancellation);
                     task.Wait();
                     float durMs = task.Result.samples.Length * 1000f / 44100f;
-                    var source = new WaveSource(task.Result.positionMs - task.Result.leadingMs, durMs, null, 0, 1);
+                    var source = new WaveSource(task.Result.positionMs - task.Result.leadingMs, durMs, 0, 1);
                     source.SetSamples(task.Result.samples);
                     return source;
                 }));
