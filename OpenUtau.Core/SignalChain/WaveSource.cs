@@ -90,10 +90,13 @@ namespace OpenUtau.Core.SignalChain {
         }
 
         public int Mix(int position, float[] buffer, int index, int count) {
-            if (data == null) {
-                return 0;
-            }
             int copies = 2 / channels;
+            if (data == null) {
+                if (position + count <= offset * copies) {
+                    return position + count;
+                }
+                return position;
+            }
             int start = Math.Max(position, offset * copies);
             int end = Math.Min(position + count, offset * copies + data.Length * copies);
             for (int i = start; i < end; ++i) {

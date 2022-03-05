@@ -27,7 +27,7 @@ namespace OpenUtau.Core.Render {
         public readonly uint hash;
 
         internal RenderPhone(UProject project, UTrack track, UVoicePart part, UNote note, UPhoneme phoneme) {
-            position = note.position;
+            position = note.position + phoneme.position;
             duration = phoneme.Duration;
             leading = (int)Math.Round(project.MillisecondToTick(phoneme.preutter) / 5.0) * 5; // TODO
             this.phoneme = phoneme.phoneme;
@@ -63,6 +63,7 @@ namespace OpenUtau.Core.Render {
                     writer.Write(volume);
                     writer.Write(velocity);
                     writer.Write(modulation);
+                    writer.Write(preutterMs);
                     return XXH32.DigestOf(stream.ToArray());
                 }
             }
@@ -82,6 +83,12 @@ namespace OpenUtau.Core.Render {
             notes.Add(phonemes.First().Parent);
             while (notes.Last() != phonemes.Last().Parent) {
                 notes.Add(notes.Last().Next);
+            }
+            var tail = notes.Last();
+            var next = tail.Next;
+            while (next != null && next.Extends == tail) {
+                notes.Add(next);
+                next = next.Next;
             }
             phones = phonemes
                 .Select(p => new RenderPhone(project, track, part, p.Parent, p))

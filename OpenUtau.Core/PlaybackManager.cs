@@ -55,8 +55,7 @@ namespace OpenUtau.Core {
         List<Fader> faders;
         MasterAdapter masterMix;
         double startMs;
-        CancellationTokenSource playbakCancellationTokenSource;
-        CancellationTokenSource previewCancellationTokenSource;
+        CancellationTokenSource renderCancellation;
 
         public Audio.IAudioOutput AudioOutput { get; set; } = new Audio.DummyAudioOutput();
         public bool Playing => AudioOutput.PlaybackState == PlaybackState.Playing;
@@ -124,18 +123,13 @@ namespace OpenUtau.Core {
             if (!ResamplerDrivers.CheckPreviewResampler()) {
                 return;
             }
-            StopPreRender();
             var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
             Task.Run(() => {
                 RenderEngine engine = new RenderEngine(project, tick);
                 var result = engine.RenderProject(tick);
                 faders = result.Item2;
-                var source = result.Item3;
-                source = Interlocked.Exchange(ref playbakCancellationTokenSource, source);
-                if (source != null) {
-                    source.Cancel();
-                    Log.Information("Cancelling previous render");
-                }
+                var cancellation = result.Item3;
+                CancelRendering(cancellation);
                 StartPlayback(project.TickToMillisecond(tick), result.Item1);
             }).ContinueWith((task) => {
                 if (task.IsFaulted) {
@@ -159,7 +153,7 @@ namespace OpenUtau.Core {
         }
 
         public void RenderToFiles(UProject project) {
-            StopPreRender();
+            CancelRendering(null);
             Task.Run(() => {
                 var task = Task.Run(() => {
                     RenderEngine engine = new RenderEngine(project);
@@ -189,17 +183,15 @@ namespace OpenUtau.Core {
         void SchedulePreRender() {
             Log.Information("SchedulePreRender");
             var engine = new RenderEngine(DocManager.Inst.Project);
-            var source = engine.PreRenderProject();
-            source = Interlocked.Exchange(ref previewCancellationTokenSource, source);
-            if (source != null) {
-                source.Cancel();
-            }
+            var cancellation = engine.PreRenderProject();
+            CancelRendering(cancellation);
         }
 
-        void StopPreRender() {
-            var source = Interlocked.Exchange(ref previewCancellationTokenSource, null);
-            if (source != null) {
-                source.Cancel();
+        void CancelRendering(CancellationTokenSource cancellation) {
+            cancellation = Interlocked.Exchange(ref renderCancellation, cancellation);
+            if (cancellation != null) {
+                Log.Information("Cancelling rendering");
+                cancellation.Cancel();
             }
         }
 

@@ -42,20 +42,23 @@ namespace OpenUtau.Core.Render {
             int totalProgress = 0;
             foreach (var track in project.tracks) {
                 var phrases = PrepareTrack(track, project);
-                var vocal = new WaveMix(phrases.Select(phrase => {
-                    var firstPhone = phrase.phones.First();
-                    var lastPhone = phrase.phones.Last();
-                    double posMs = (phrase.position + firstPhone.position) * phrase.tickToMs - firstPhone.preutterMs;
-                    double durMs = (lastPhone.duration + lastPhone.position - firstPhone.position) * phrase.tickToMs;
-                    if (posMs + durMs < startTick * phrase.tickToMs) {
-                        return null;
-                    }
-                    var source = new WaveSource(posMs, durMs, null, 0, 1);
-                    renderTasks.Add(Tuple.Create(phrase, source));
-                    totalProgress += phrase.phones.Length;
-                    return source;
-                }).OfType<WaveSource>());
-                var sources = project.parts
+                var sources = phrases
+                    .Select(phrase => {
+                        var firstPhone = phrase.phones.First();
+                        var lastPhone = phrase.phones.Last();
+                        double posMs = (phrase.position + firstPhone.position) * phrase.tickToMs - firstPhone.preutterMs;
+                        double durMs = (lastPhone.duration + lastPhone.position - firstPhone.position) * phrase.tickToMs;
+                        if (posMs + durMs < startTick * phrase.tickToMs) {
+                            return null;
+                        }
+                        var source = new WaveSource(posMs, durMs, null, 0, 1);
+                        renderTasks.Add(Tuple.Create(phrase, source));
+                        totalProgress += phrase.phones.Length;
+                        return source;
+                    })
+                    .OfType<ISignalSource>()
+                    .ToList();
+                sources.AddRange(project.parts
                      .Where(part => part is UWavePart && part.trackNo == track.TrackNo)
                      .Select(part => part as UWavePart)
                      .Where(part => part.Samples != null)
@@ -71,8 +74,7 @@ namespace OpenUtau.Core.Render {
                              waveSource.SetSamples(new float[0]);
                          }
                          return (ISignalSource)waveSource;
-                     }).ToList();
-                sources.Insert(0, vocal);
+                     }));
                 var fader = new Fader(new WaveMix(sources));
                 fader.Scale = PlaybackManager.DecibelToVolume(track.Mute ? -24 : track.Volume);
                 fader.SetScaleToTarget();
@@ -82,7 +84,8 @@ namespace OpenUtau.Core.Render {
             master.SetPosition((int)(project.TickToMillisecond(startTick) * 44100 / 1000) * 2);
             var task = Task.Run(() => {
                 var progress = new Progress(totalProgress);
-                foreach (var renderTask in renderTasks) {
+                foreach (var renderTask in renderTasks.OrderBy(
+                    task => task.Item1.position + task.Item1.phones.First().position)) {
                     if (cancellation.IsCancellationRequested) {
                         break;
                     }
