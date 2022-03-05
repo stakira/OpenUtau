@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using NAudio.Wave;
 using OpenUtau.Core;
 using OpenUtau.Core.SignalChain;
 
@@ -11,16 +12,18 @@ namespace OpenUtau.Classic {
     interface IWavtool {
         // <output file> <input file> <STP> <note length>
         // [<p1> <p2> <p3> <v1> <v2> <v3> [<v4> <overlap> <p4> [<p5> <v5>]]]
-        ISignalSource Concatenate(List<ResamplerItem> resamplerItems, CancellationTokenSource cancellation);
+        float[] Concatenate(List<ResamplerItem> resamplerItems, CancellationTokenSource cancellation);
     }
 
     class SharpWavtool : IWavtool {
-        public ISignalSource Concatenate(List<ResamplerItem> resamplerItems, CancellationTokenSource cancellation) {
+        public float[] Concatenate(List<ResamplerItem> resamplerItems, CancellationTokenSource cancellation) {
             if (cancellation.IsCancellationRequested) {
                 return null;
             }
+            var phrase = resamplerItems[0].phrase;
+            double posOffset = resamplerItems[0].phone.position * phrase.tickToMs - resamplerItems[0].phone.preutterMs;
             var mix = new WaveMix(resamplerItems.Select(item => {
-                var posMs = (item.phrase.position + item.phone.position) * item.phrase.tickToMs - item.phone.preutterMs;
+                double posMs = item.phone.position * item.phrase.tickToMs - item.phone.preutterMs - posOffset;
                 var source = new WaveSource(posMs, item.requiredLength, item.phone.envelope, item.skipOver, 1);
                 if (File.Exists(item.outputFile)) {
                     source.SetWaveData(File.ReadAllBytes(item.outputFile));
@@ -29,7 +32,14 @@ namespace OpenUtau.Classic {
                 }
                 return source;
             }));
-            return mix;
+            var export = new ExportAdapter(mix).ToMono(1, 0);
+            var samples = new List<float>();
+            var buffer = new float[44100];
+            int n;
+            while ((n = export.Read(buffer, 0, buffer.Length)) > 0) {
+                samples.AddRange(buffer.Take(n));
+            }
+            return samples.ToArray();
         }
     }
 }

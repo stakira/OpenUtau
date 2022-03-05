@@ -38,15 +38,23 @@ namespace OpenUtau.Core.Render {
             var cancellation = new CancellationTokenSource();
             var faders = new List<Fader>();
             var renderer = new Classic.ClassicRenderer();
+            var renderTasks = new List<Tuple<RenderPhrase, WaveSource>>();
+            int totalProgress = 0;
             foreach (var track in project.tracks) {
                 var phrases = PrepareTrack(track, project);
-                var progress = new Progress(phrases.Sum(phrase => phrase.phones.Length));
                 var vocal = new WaveMix(phrases.Select(phrase => {
-                    var task = renderer.Render(phrase, progress, cancellation);
-                    task.Wait();
-                    return task.Result;
-                }));
-                progress.Clear();
+                    var firstPhone = phrase.phones.First();
+                    var lastPhone = phrase.phones.Last();
+                    double posMs = (phrase.position + firstPhone.position) * phrase.tickToMs - firstPhone.preutterMs;
+                    double durMs = (lastPhone.duration + lastPhone.position - firstPhone.position) * phrase.tickToMs;
+                    if (posMs + durMs < startTick * phrase.tickToMs) {
+                        return null;
+                    }
+                    var source = new WaveSource(posMs, durMs, null, 0, 1);
+                    renderTasks.Add(Tuple.Create(phrase, source));
+                    totalProgress += phrase.phones.Length;
+                    return source;
+                }).OfType<WaveSource>());
                 var sources = project.parts
                      .Where(part => part is UWavePart && part.trackNo == track.TrackNo)
                      .Select(part => part as UWavePart)
@@ -72,6 +80,18 @@ namespace OpenUtau.Core.Render {
             }
             var master = new MasterAdapter(new WaveMix(faders));
             master.SetPosition((int)(project.TickToMillisecond(startTick) * 44100 / 1000) * 2);
+            var task = Task.Run(() => {
+                var progress = new Progress(totalProgress);
+                foreach (var renderTask in renderTasks) {
+                    if (cancellation.IsCancellationRequested) {
+                        break;
+                    }
+                    var task = renderer.Render(renderTask.Item1, progress, cancellation);
+                    task.Wait();
+                    renderTask.Item2.SetSamples(task.Result.samples);
+                }
+                progress.Clear();
+            });
             return Tuple.Create(master, faders, cancellation);
         }
 
@@ -85,7 +105,10 @@ namespace OpenUtau.Core.Render {
                 var mix = new WaveMix(phrases.Select(phrase => {
                     var task = renderer.Render(phrase, progress, cancellation);
                     task.Wait();
-                    return task.Result;
+                    float durMs = task.Result.samples.Length * 1000f / 44100f;
+                    var source = new WaveSource(task.Result.positionMs - task.Result.leadingMs, durMs, null, 0, 1);
+                    source.SetSamples(task.Result.samples);
+                    return source;
                 }));
                 progress.Clear();
                 result.Add(mix);

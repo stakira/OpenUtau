@@ -21,13 +21,9 @@ namespace OpenUtau.Core.SignalChain {
             offset = (int)((offsetMs - skipOverMs) * 44100 / 1000) * channels;
             estimatedLength = (int)(estimatedLengthMs * 44100 / 1000) * channels;
             int skipSamples = (int)(skipOverMs * 44100 / 1000) * channels;
-            if (envelope == null) {
-                envelope = new List<Vector2>() {
-                    new Vector2(0, 1),
-                    new Vector2((float)estimatedLengthMs, 1),
-                };
+            if (envelope != null) {
+                this.envelope = EnvelopeMsToSamples(envelope, skipSamples);
             }
-            this.envelope = EnvelopeMsToSamples(envelope, skipSamples);
         }
 
         public void SetWaveData(byte[] data) {
@@ -74,7 +70,9 @@ namespace OpenUtau.Core.SignalChain {
             }
             lock (lockObj) {
                 this.data = samples.ToArray();
-                ApplyEnvelope(this.data, envelope);
+                if (envelope != null) {
+                    ApplyEnvelope(this.data, envelope);
+                }
             }
         }
 

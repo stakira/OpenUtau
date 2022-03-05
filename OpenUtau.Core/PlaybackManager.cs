@@ -10,7 +10,6 @@ using OpenUtau.Core.Render;
 using OpenUtau.Core.ResamplerDriver;
 using OpenUtau.Core.SignalChain;
 using OpenUtau.Core.Ustx;
-using OpenUtau.Core.Util;
 using Serilog;
 
 namespace OpenUtau.Core {

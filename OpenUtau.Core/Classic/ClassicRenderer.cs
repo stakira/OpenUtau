@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using OpenUtau.Core.Render;
 using OpenUtau.Core.ResamplerDriver;
-using OpenUtau.Core.SignalChain;
 
 namespace OpenUtau.Classic {
-    public class ClassicRenderer : IRenderer {
-        public Task<ISignalSource> Render(RenderPhrase phrase, Progress progress, CancellationTokenSource cancellation) {
+    class ClassicRenderer : IRenderer {
+        public Task<RenderResult> Render(RenderPhrase phrase, Progress progress, CancellationTokenSource cancellation) {
             var resamplerItems = new List<ResamplerItem>();
             foreach (var phone in phrase.phones) {
                 resamplerItems.Add(new ResamplerItem(phrase, phone));
@@ -40,12 +40,18 @@ namespace OpenUtau.Classic {
                     }
                     progress.CompleteOne($"Resampling \"{item.phone.phoneme}\"");
                 });
-                return Concatenate(resamplerItems, cancellation);
+                var samples = Concatenate(resamplerItems, cancellation);
+                var firstPhone = phrase.phones.First();
+                return new RenderResult() {
+                    samples = samples,
+                    leadingMs = firstPhone.preutterMs,
+                    positionMs = (phrase.position + firstPhone.position) * phrase.tickToMs,
+                };
             });
             return task;
         }
 
-        ISignalSource Concatenate(List<ResamplerItem> resamplerItems, CancellationTokenSource cancellation) {
+        float[] Concatenate(List<ResamplerItem> resamplerItems, CancellationTokenSource cancellation) {
             var wavtool = new SharpWavtool();
             return wavtool.Concatenate(resamplerItems, cancellation);
         }
