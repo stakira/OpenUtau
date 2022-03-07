@@ -41,6 +41,11 @@ for:
   matrix:
     only:
       - image: macOS
+  build_script:
+    - python appveyor.py
+-
+  matrix:
+    only:
       - image: Ubuntu
   build_script:
     - python appveyor.py
