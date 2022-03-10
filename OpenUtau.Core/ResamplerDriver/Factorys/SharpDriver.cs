@@ -85,6 +85,9 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys {
             }
             return data;
         }
+        public string DoResamplerReturnsFile(EngineInput Args, ILogger logger) {
+            throw new NotImplementedException();
+        }
         public EngineInfo GetInfo() {
             EngineInfo ret = new EngineInfo {
                 Version = "Error"

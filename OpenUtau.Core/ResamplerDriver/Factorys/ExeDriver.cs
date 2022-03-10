@@ -23,13 +23,22 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys {
         }
 
         public byte[] DoResampler(EngineInput Args, ILogger logger) {
-            bool resamplerLogging = Preferences.Default.ResamplerLogging;
+            string tmpFile = DoResamplerReturnsFile(Args, logger);
             byte[] data = new byte[0];
+            if (string.IsNullOrEmpty(tmpFile) || File.Exists(tmpFile)) {
+                data = File.ReadAllBytes(tmpFile);
+                File.Delete(tmpFile);
+            }
+            return data;
+        }
+
+        public string DoResamplerReturnsFile(EngineInput Args, ILogger logger) {
+            bool resamplerLogging = Preferences.Default.ResamplerLogging;
             if (!_isLegalPlugin) {
-                return data;
+                return null;
             }
             var threadId = Thread.CurrentThread.ManagedThreadId;
-            string tmpFile = Path.GetTempFileName();
+            string tmpFile = Args.outputWaveFile;
             string ArgParam = FormattableString.Invariant(
                 $"\"{Args.inputWaveFile}\" \"{tmpFile}\" {Args.NoteString} {Args.Velocity} \"{Args.StrFlags}\" {Args.Offset} {Args.RequiredLength} {Args.Consonant} {Args.Cutoff} {Args.Volume} {Args.Modulation} !{Args.Tempo} {Base64.Base64EncodeInt12(Args.pitchBend)}");
             logger.Information($" > [thread-{threadId}] {FilePath} {ArgParam}");
@@ -59,11 +68,7 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys {
                     }
                 }
             }
-            if (File.Exists(tmpFile)) {
-                data = File.ReadAllBytes(tmpFile);
-                File.Delete(tmpFile);
-            }
-            return data;
+            return tmpFile;
         }
 
         [DllImport("libc", SetLastError = true)]

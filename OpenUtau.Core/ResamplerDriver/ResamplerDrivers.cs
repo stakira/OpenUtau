@@ -11,6 +11,7 @@ namespace OpenUtau.Core.ResamplerDriver {
         string Name { get; }
         string FilePath { get; }
         byte[] DoResampler(DriverModels.EngineInput Args, ILogger logger);
+        string DoResamplerReturnsFile(DriverModels.EngineInput Args, ILogger logger);
         void CheckPermissions();
     }
 
@@ -56,27 +57,28 @@ namespace OpenUtau.Core.ResamplerDriver {
             var driver = Load(Path.Combine(basePath, name), basePath);
             if (driver != null) {
                 resamplers.Add(driver.Name, driver);
-                if (string.IsNullOrEmpty(Preferences.Default.ExternalPreviewEngine)) {
-                    Preferences.Default.ExternalPreviewEngine = driver.Name;
-                    Preferences.Save();
-                }
                 if (string.IsNullOrEmpty(Preferences.Default.ExternalExportEngine)) {
                     Preferences.Default.ExternalExportEngine = driver.Name;
                     Preferences.Save();
                 }
             }
             basePath = PathManager.Inst.ResamplersPath;
-            Directory.CreateDirectory(basePath);
-            foreach (var file in Directory.EnumerateFiles(basePath, "*", new EnumerationOptions() {
-                RecurseSubdirectories = true
-            })) {
-                driver = Load(file, basePath);
-                if (driver != null) {
-                    resamplers.Add(driver.Name, driver);
+            try {
+                Directory.CreateDirectory(basePath);
+                foreach (var file in Directory.EnumerateFiles(basePath, "*", new EnumerationOptions() {
+                    RecurseSubdirectories = true
+                })) {
+                    driver = Load(file, basePath);
+                    if (driver != null) {
+                        resamplers.Add(driver.Name, driver);
+                    }
                 }
-            }
-            lock (lockObj) {
-                Resamplers = resamplers;
+                lock (lockObj) {
+                    Resamplers = resamplers;
+                }
+            } catch (Exception e) {
+                Log.Error(e, "Failed to search resamplers.");
+                Resamplers = new Dictionary<string, IResamplerDriver>();
             }
         }
 
@@ -105,13 +107,13 @@ namespace OpenUtau.Core.ResamplerDriver {
             return null;
         }
 
-        public static bool CheckPreviewResampler() {
+        public static bool CheckResampler() {
             Search();
             if (Resamplers.Count == 0) {
                 return false;
             }
             if (Resamplers.TryGetValue(
-                Preferences.Default.ExternalPreviewEngine, out var resampler)
+                Preferences.Default.ExternalExportEngine, out var resampler)
                 && File.Exists(resampler.FilePath)) {
                 return true;
             }

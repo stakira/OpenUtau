@@ -427,7 +427,7 @@ namespace OpenUtau.Core.Ustx {
             } else if (nPos > nOutPos) {
                 y *= (1f - nPos) / nOut;
             }
-            return new Vector2(note.position + note.duration * nPos, note.tone - 0.5f + y / 100f);
+            return new Vector2(note.position + note.duration * nPos, note.tone + y / 100f);
         }
 
         public Vector2 GetEnvelopeStart(UNote note) {

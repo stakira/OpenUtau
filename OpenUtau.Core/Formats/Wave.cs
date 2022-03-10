@@ -42,7 +42,7 @@ namespace OpenUtau.Core.Formats {
             throw new Exception("Unsupported audio file format.");
         }
 
-        public static float[] GetSamples(WaveStream waveStream) {
+        public static float[] GetStereoSamples(WaveStream waveStream) {
             ISampleProvider provider = waveStream.ToSampleProvider();
             if (provider.WaveFormat.SampleRate != 44100) {
                 provider = new WdlResamplingSampleProvider(provider, 44100);
@@ -50,10 +50,14 @@ namespace OpenUtau.Core.Formats {
             if (provider.WaveFormat.Channels > 2) {
                 provider = provider.ToStereo();
             }
+            return GetSamples(provider);
+        }
+
+        public static float[] GetSamples(ISampleProvider sampleProvider) {
             List<float> samples = new List<float>();
-            float[] buffer = new float[128 * 1024];
+            float[] buffer = new float[44100];
             int n;
-            while ((n = provider.Read(buffer, 0, buffer.Length)) > 0) {
+            while ((n = sampleProvider.Read(buffer, 0, buffer.Length)) > 0) {
                 samples.AddRange(buffer.Take(n));
             }
             return samples.ToArray();

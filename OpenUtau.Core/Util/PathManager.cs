@@ -45,12 +45,7 @@ namespace OpenUtau.Core {
         public string TemplatesPath => Path.Combine(HomePath, "Templates");
         public string LogFilePath => Path.Combine(HomePath, "Logs", "log.txt");
         public string PrefsFilePath => Path.Combine(HomePath, "prefs.json");
-
-        public string GetCachePath() {
-            string cachepath = Path.Combine(HomePath, "Cache");
-            Directory.CreateDirectory(cachepath);
-            return cachepath;
-        }
+        public string CachePath => Path.Combine(HomePath, "Cache");
 
         public string GetPartSavePath(string projectPath, int partNo) {
             var dir = Path.GetDirectoryName(projectPath);

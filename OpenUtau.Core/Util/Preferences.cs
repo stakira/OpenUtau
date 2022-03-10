@@ -78,15 +78,15 @@ namespace OpenUtau.Core.Util {
             public bool MidiMaximized;
             public int UndoLimit = 100;
             public List<string> SingerSearchPaths = new List<string>();
-            public string ExternalPreviewEngine = string.Empty;
             public string ExternalExportEngine = string.Empty;
+            public string Wavtool = string.Empty;
             public string PlaybackDevice = string.Empty;
             public int PlaybackDeviceNumber;
             public int? PlaybackDeviceIndex;
             public bool ShowPrefs = true;
             public bool ShowTips = true;
             public int Theme;
-            public int PrerenderThreads = 2;
+            public int PhaseCompensation = 1;
             public string Language = string.Empty;
             public List<string> RecentFiles = new List<string>();
             public string SkipUpdate = string.Empty;

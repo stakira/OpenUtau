@@ -107,6 +107,7 @@ namespace OpenUtau.Core.ResamplerDriver
         public struct EngineInput
         {
             public string inputWaveFile;//1
+            public string outputWaveFile;//2
             public string NoteString;//noteID;//3
             public double Velocity;//fixSpeed;//4
             public string StrFlags;//5
@@ -129,6 +130,7 @@ namespace OpenUtau.Core.ResamplerDriver
             EngineInput Input = new EngineInput
             {
                 inputWaveFile = string.Empty,
+                outputWaveFile = string.Empty,
                 NoteString = string.Empty,
                 Velocity = 100,
                 StrFlags = string.Empty,
@@ -143,30 +145,6 @@ namespace OpenUtau.Core.ResamplerDriver
                 pitchBend = new int[0]
             };
             return Input;
-        }
-        /// <summary>
-        /// 从RenderItem初始化过程
-        /// </summary>
-        /// <returns></returns>
-        internal static EngineInput CreateInputModel(RenderItem renderItem)
-        {
-            EngineInput Ret = new EngineInput
-            {
-                inputWaveFile = renderItem.SourceTemp,
-                NoteString = MusicMath.GetToneName(renderItem.NoteNum),
-                Velocity = renderItem.Velocity,
-                StrFlags = renderItem.StrFlags,
-                Offset = renderItem.Oto.Offset,
-                RequiredLength = renderItem.RequiredLength,
-                Consonant = renderItem.Oto.Consonant,
-                Cutoff = renderItem.Oto.Cutoff,
-                Volume = renderItem.Volume,
-                Modulation = renderItem.Modulation,
-                pitchBend = renderItem.PitchData.ToArray(),
-                nPitchBend = renderItem.PitchData.Count,
-                Tempo = renderItem.Tempo
-            };
-            return Ret;
         }
         #endregion
 
