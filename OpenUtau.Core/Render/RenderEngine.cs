@@ -119,7 +119,6 @@ namespace OpenUtau.Core.Render {
         }
 
         public CancellationTokenSource PreRenderProject() {
-            int threads = Util.Preferences.Default.PrerenderThreads;
             var cancellation = new CancellationTokenSource();
             Task.Run(() => {
                 try {

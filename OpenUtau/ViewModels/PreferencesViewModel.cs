@@ -27,20 +27,12 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public int PreferPortAudio { get; set; }
         [Reactive] public double PlayPosMarkerMargin { get; set; }
         public string AdditionalSingersPath => PathManager.Inst.AdditionalSingersPath;
-        public List<int> PrerenderThreadsItems { get; }
-        public int PrerenderThreads {
-            get => prerenderThreads;
-            set => this.RaiseAndSetIfChanged(ref prerenderThreads, value);
-        }
         public List<IResamplerDriver>? Resamplers { get; }
-        public IResamplerDriver? PreviewResampler {
-            get => previewResampler;
-            set => this.RaiseAndSetIfChanged(ref previewResampler, value);
-        }
         public IResamplerDriver? ExportResampler {
             get => exportResampler;
             set => this.RaiseAndSetIfChanged(ref exportResampler, value);
         }
+        [Reactive] public int PhaseCompensation { get; set; }
         [Reactive] public int Theme { get; set; }
         [Reactive] public int ResamplerLogging { get; set; }
         public List<CultureInfo?>? Languages { get; }
@@ -52,8 +44,6 @@ namespace OpenUtau.App.ViewModels {
 
         private List<AudioOutputDevice>? audioOutputDevices;
         private AudioOutputDevice? audioOutputDevice;
-        private int prerenderThreads;
-        private IResamplerDriver? previewResampler;
         private IResamplerDriver? exportResampler;
         private CultureInfo? language;
         private readonly ObservableAsPropertyHelper<bool> moresamplerSelected;
@@ -70,18 +60,10 @@ namespace OpenUtau.App.ViewModels {
             }
             PreferPortAudio = Preferences.Default.PreferPortAudio ? 1 : 0;
             PlayPosMarkerMargin = Preferences.Default.PlayPosMarkerMargin;
-            PrerenderThreadsItems = Enumerable.Range(1, 16).ToList();
-            PrerenderThreads = Preferences.Default.PrerenderThreads;
             ResamplerDrivers.Search();
             Resamplers = ResamplerDrivers.GetResamplers();
             if (Resamplers.Count > 0) {
-                int index = Resamplers.FindIndex(resampler => resampler.Name == Preferences.Default.ExternalPreviewEngine);
-                if (index >= 0) {
-                    previewResampler = Resamplers[index];
-                } else {
-                    previewResampler = null;
-                }
-                index = Resamplers.FindIndex(resampler => resampler.Name == Preferences.Default.ExternalExportEngine);
+                int index = Resamplers.FindIndex(resampler => resampler.Name == Preferences.Default.ExternalExportEngine);
                 if (index >= 0) {
                     exportResampler = Resamplers[index];
                 } else {
@@ -102,6 +84,7 @@ namespace OpenUtau.App.ViewModels {
             Language = string.IsNullOrEmpty(Preferences.Default.Language)
                 ? null
                 : CultureInfo.GetCultureInfo(Preferences.Default.Language);
+            PhaseCompensation = Preferences.Default.PhaseCompensation;
             Theme = Preferences.Default.Theme;
             ResamplerLogging = Preferences.Default.ResamplerLogging ? 1 : 0;
 
@@ -127,20 +110,6 @@ namespace OpenUtau.App.ViewModels {
                     Preferences.Default.PlayPosMarkerMargin = playPosMarkerMargin;
                     Preferences.Save();
                 });
-            this.WhenAnyValue(vm => vm.PrerenderThreads)
-                .Subscribe(threads => {
-                    Preferences.Default.PrerenderThreads = threads;
-                    Preferences.Save();
-                });
-            this.WhenAnyValue(vm => vm.PreviewResampler)
-                .WhereNotNull()
-                .Subscribe(resampler => {
-                    if (resampler != null) {
-                        Preferences.Default.ExternalPreviewEngine = resampler!.Name;
-                        Preferences.Save();
-                        resampler!.CheckPermissions();
-                    }
-                });
             this.WhenAnyValue(vm => vm.ExportResampler)
                 .WhereNotNull()
                 .Subscribe(resampler => {
@@ -150,11 +119,15 @@ namespace OpenUtau.App.ViewModels {
                         resampler!.CheckPermissions();
                     }
                 });
-            this.WhenAnyValue(vm => vm.PreviewResampler, vm => vm.ExportResampler)
-                .Select(engines =>
-                    (engines.Item1?.Name?.Contains("moresampler", StringComparison.InvariantCultureIgnoreCase) ?? false) ||
-                    (engines.Item2?.Name?.Contains("moresampler", StringComparison.InvariantCultureIgnoreCase) ?? false))
+            this.WhenAnyValue(vm => vm.ExportResampler)
+                .Select(engine =>
+                    (engine?.Name?.Contains("moresampler", StringComparison.InvariantCultureIgnoreCase) ?? false))
                 .ToProperty(this, x => x.MoresamplerSelected, out moresamplerSelected);
+            this.WhenAnyValue(vm => vm.PhaseCompensation)
+                .Subscribe(phaseComp => {
+                    Preferences.Default.PhaseCompensation = phaseComp;
+                    Preferences.Save();
+                });
             this.WhenAnyValue(vm => vm.Language)
                 .Subscribe(lang => {
                     Preferences.Default.Language = lang?.Name ?? string.Empty;

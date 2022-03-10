@@ -60,7 +60,7 @@ namespace OpenUtau.Core {
         public Audio.IAudioOutput AudioOutput { get; set; } = new Audio.DummyAudioOutput();
         public bool Playing => AudioOutput.PlaybackState == PlaybackState.Playing;
 
-        public bool CheckResampler() => ResamplerDrivers.CheckPreviewResampler();
+        public bool CheckResampler() => ResamplerDrivers.CheckResampler();
 
         public void PlayTestSound() {
             masterMix = null;
@@ -85,7 +85,7 @@ namespace OpenUtau.Core {
                 PausePlayback();
                 return true;
             }
-            if (!ResamplerDrivers.CheckPreviewResampler()) {
+            if (!ResamplerDrivers.CheckResampler()) {
                 return false;
             }
             Play(DocManager.Inst.Project, DocManager.Inst.playPosTick);
@@ -120,7 +120,7 @@ namespace OpenUtau.Core {
         }
 
         private void Render(UProject project, int tick) {
-            if (!ResamplerDrivers.CheckPreviewResampler()) {
+            if (!ResamplerDrivers.CheckResampler()) {
                 return;
             }
             var scheduler = TaskScheduler.FromCurrentSynchronizationContext();

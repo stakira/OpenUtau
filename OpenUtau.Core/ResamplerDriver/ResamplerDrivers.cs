@@ -57,10 +57,6 @@ namespace OpenUtau.Core.ResamplerDriver {
             var driver = Load(Path.Combine(basePath, name), basePath);
             if (driver != null) {
                 resamplers.Add(driver.Name, driver);
-                if (string.IsNullOrEmpty(Preferences.Default.ExternalPreviewEngine)) {
-                    Preferences.Default.ExternalPreviewEngine = driver.Name;
-                    Preferences.Save();
-                }
                 if (string.IsNullOrEmpty(Preferences.Default.ExternalExportEngine)) {
                     Preferences.Default.ExternalExportEngine = driver.Name;
                     Preferences.Save();
@@ -111,13 +107,13 @@ namespace OpenUtau.Core.ResamplerDriver {
             return null;
         }
 
-        public static bool CheckPreviewResampler() {
+        public static bool CheckResampler() {
             Search();
             if (Resamplers.Count == 0) {
                 return false;
             }
             if (Resamplers.TryGetValue(
-                Preferences.Default.ExternalPreviewEngine, out var resampler)
+                Preferences.Default.ExternalExportEngine, out var resampler)
                 && File.Exists(resampler.FilePath)) {
                 return true;
             }

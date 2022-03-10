@@ -52,7 +52,7 @@ namespace OpenUtau.Classic {
         }
 
         float[] Concatenate(List<ResamplerItem> resamplerItems, CancellationTokenSource cancellation) {
-            var wavtool = new SharpWavtool();
+            var wavtool = new SharpWavtool(Core.Util.Preferences.Default.PhaseCompensation == 1);
             return wavtool.Concatenate(resamplerItems, cancellation);
         }
     }

@@ -38,7 +38,13 @@ namespace OpenUtau.Core.Render {
                 if (eng < 0 || eng >= descriptor.options.Length) {
                     eng = 0;
                 }
-                resampler = descriptor.options[eng]; // TODO: hash default resampler
+                resampler = descriptor.options[eng];
+                if (string.IsNullOrEmpty(resampler)) {
+                    resampler = Util.Preferences.Default.ExternalExportEngine;
+                }
+                if (ResamplerDriver.ResamplerDrivers.GetResampler(resampler) == null) {
+                    resampler = ResamplerDriver.ResamplerDrivers.GetDefaultResamplerName();
+                }
             }
             flags = phoneme.GetResamplerFlags(project, track);
             volume = phoneme.GetExpression(project, track, "vol").Item1 * 0.01f;

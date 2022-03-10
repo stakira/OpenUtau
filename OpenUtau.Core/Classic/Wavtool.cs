@@ -35,6 +35,12 @@ namespace OpenUtau.Classic {
             public double? tailPhase;
         }
 
+        private bool phaseComp;
+
+        public SharpWavtool(bool phaseComp = false) {
+            this.phaseComp = phaseComp;
+        }
+
         public float[] Concatenate(List<ResamplerItem> resamplerItems, CancellationTokenSource cancellation) {
             if (cancellation.IsCancellationRequested) {
                 return null;
@@ -57,6 +63,10 @@ namespace OpenUtau.Classic {
                 segment.skipSamples = (int)Math.Round(item.skipOver * 44100 / 1000);
                 segment.envelope = EnvelopeMsToSamples(item.phone.envelope, segment.skipSamples);
 
+                if (!phaseComp) {
+                    continue;
+                }
+
                 var headWindow = GetHeadWindow(segment.samples, segment.envelope, out segment.headWindowStart);
                 segment.headWindowF0 = GetF0AtSample(phrase,
                     segment.posSamples - segment.skipSamples + segment.headWindowStart + headWindow.Length / 2);
@@ -70,24 +80,26 @@ namespace OpenUtau.Classic {
                     segment.posSamples - segment.skipSamples + segment.tailWindowStart, 44100, segment.tailWindowF0);
             }
 
-            for (int i = 1; i < segments.Count; ++i) {
-                double? tailPhase = segments[i - 1].tailPhase;
-                double? headPhase = segments[i].headPhase;
-                if (!tailPhase.HasValue || !headPhase.HasValue) {
-                    continue;
+            if (phaseComp) {
+                for (int i = 1; i < segments.Count; ++i) {
+                    double? tailPhase = segments[i - 1].tailPhase;
+                    double? headPhase = segments[i].headPhase;
+                    if (!tailPhase.HasValue || !headPhase.HasValue) {
+                        continue;
+                    }
+                    double lastCorrAngle = segments[i - 1].correction * 2.0 * Math.PI / 44100.0 * segments[i].headWindowF0;
+                    double diff = headPhase.Value - (tailPhase.Value - lastCorrAngle);
+                    while (diff < 0) {
+                        diff += 2 * Math.PI;
+                    }
+                    while (diff >= 2 * Math.PI) {
+                        diff -= 2 * Math.PI;
+                    }
+                    if (Math.Abs(diff - 2 * Math.PI) < diff) {
+                        diff -= 2 * Math.PI;
+                    }
+                    segments[i].correction = (int)(diff / 2 / Math.PI * 44100 / segments[i].headWindowF0);
                 }
-                double lastCorrAngle = segments[i - 1].correction * 2.0 * Math.PI / 44100.0 * segments[i].headWindowF0;
-                double diff = headPhase.Value - (tailPhase.Value - lastCorrAngle);
-                while (diff < 0) {
-                    diff += 2 * Math.PI;
-                }
-                while (diff >= 2 * Math.PI) {
-                    diff -= 2 * Math.PI;
-                }
-                if (Math.Abs(diff - 2 * Math.PI) < diff) {
-                    diff -= 2 * Math.PI;
-                }
-                segments[i].correction = (int)(diff / 2 / Math.PI * 44100 / segments[i].headWindowF0);
             }
 
             var phraseSamples = new float[0];
