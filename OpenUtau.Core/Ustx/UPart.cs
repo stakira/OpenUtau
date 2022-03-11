@@ -109,6 +109,7 @@ namespace OpenUtau.Core.Ustx {
                 trackNo = trackNo,
                 position = position,
                 notes = new SortedSet<UNote>(notes.Select(note => note.Clone())),
+                Duration = Duration,
             };
         }
     }

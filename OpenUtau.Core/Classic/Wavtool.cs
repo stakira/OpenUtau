@@ -104,9 +104,9 @@ namespace OpenUtau.Classic {
 
             var phraseSamples = new float[0];
             foreach (var segment in segments) {
-                Array.Resize(ref phraseSamples, segment.posSamples + segment.correction + segment.samples.Length);
+                Array.Resize(ref phraseSamples, segment.posSamples + segment.correction + segment.samples.Length - segment.skipSamples);
                 ApplyEnvelope(segment.samples, segment.envelope);
-                for (int i = 0; i < segment.samples.Length - segment.skipSamples; i++) {
+                for (int i = Math.Max(0, -segment.skipSamples); i < segment.samples.Length - segment.skipSamples; i++) {
                     phraseSamples[segment.posSamples + segment.correction + i] += segment.samples[segment.skipSamples + i];
                 }
             }

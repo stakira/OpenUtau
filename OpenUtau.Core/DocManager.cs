@@ -28,6 +28,7 @@ namespace OpenUtau.Core {
         public PhonemizerFactory[] PhonemizerFactories { get; private set; }
         public UProject Project { get; private set; }
         public bool HasOpenUndoGroup => undoGroup != null;
+        public List<UPart> PartsClipboard { get; set; }
         public List<UNote> NotesClipboard { get; set; }
 
         public void Initialize() {

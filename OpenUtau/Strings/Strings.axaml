@@ -62,7 +62,7 @@
   <system:String x:Key="menu.edit.undo">Undo</system:String>
   <system:String x:Key="menu.file">File</system:String>
   <system:String x:Key="menu.file.exit">Exit</system:String>
-  <system:String x:Key="menu.file.exportall">Export All</system:String>
+  <system:String x:Key="menu.file.exportwav">Export Wav Files</system:String>
   <system:String x:Key="menu.file.exportust">Export Ust Files</system:String>
   <system:String x:Key="menu.file.importaudio">Import Audio...</system:String>
   <system:String x:Key="menu.file.importmidi">Import Midi...</system:String>

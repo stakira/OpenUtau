@@ -41,23 +41,25 @@ namespace OpenUtau.Core.Render {
             var renderTasks = new List<Tuple<RenderPhrase, WaveSource>>();
             int totalProgress = 0;
             foreach (var track in project.tracks) {
-                var phrases = PrepareTrack(track, project);
-                var sources = phrases
-                    .Select(phrase => {
-                        var firstPhone = phrase.phones.First();
-                        var lastPhone = phrase.phones.Last();
-                        double posMs = (phrase.position + firstPhone.position) * phrase.tickToMs - firstPhone.preutterMs;
-                        double durMs = (lastPhone.duration + lastPhone.position - firstPhone.position) * phrase.tickToMs;
-                        if (posMs + durMs < startTick * phrase.tickToMs) {
-                            return null;
-                        }
-                        var source = new WaveSource(posMs, durMs, 0, 1);
-                        renderTasks.Add(Tuple.Create(phrase, source));
-                        totalProgress += phrase.phones.Length;
-                        return source;
-                    })
-                    .OfType<ISignalSource>()
-                    .ToList();
+                RenderPhrase[] phrases;
+                lock (project) {
+                    phrases = PrepareTrack(track, project).ToArray();
+                }
+                var sources = phrases.Select(phrase => {
+                    var firstPhone = phrase.phones.First();
+                    var lastPhone = phrase.phones.Last();
+                    double posMs = (phrase.position + firstPhone.position) * phrase.tickToMs - firstPhone.preutterMs;
+                    double durMs = (lastPhone.duration + lastPhone.position - firstPhone.position) * phrase.tickToMs;
+                    if (posMs + durMs < startTick * phrase.tickToMs) {
+                        return null;
+                    }
+                    var source = new WaveSource(posMs, durMs, 0, 1);
+                    renderTasks.Add(Tuple.Create(phrase, source));
+                    totalProgress += phrase.phones.Length;
+                    return source;
+                })
+                .OfType<ISignalSource>()
+                .ToList();
                 sources.AddRange(project.parts
                      .Where(part => part is UWavePart && part.trackNo == track.TrackNo)
                      .Select(part => part as UWavePart)
@@ -102,7 +104,10 @@ namespace OpenUtau.Core.Render {
             var result = new List<WaveMix>();
             var renderer = new Classic.ClassicRenderer();
             foreach (var track in project.tracks) {
-                var phrases = PrepareTrack(track, project);
+                RenderPhrase[] phrases;
+                lock (project) {
+                    phrases = PrepareTrack(track, project).ToArray();
+                }
                 var progress = new Progress(phrases.Sum(phrase => phrase.phones.Length));
                 var mix = new WaveMix(phrases.Select(phrase => {
                     var task = renderer.Render(phrase, progress, cancellation);

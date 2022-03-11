@@ -136,6 +136,7 @@ namespace OpenUtau.App.Views {
             var notesVm = vm.NotesViewModel;
             if (!notesVm.SelectedNotes.Contains(note)) {
                 notesVm.DeselectNotes();
+                notesVm.SelectNote(note);
             }
         }
         public override void Begin(IPointer pointer, Point point) {
