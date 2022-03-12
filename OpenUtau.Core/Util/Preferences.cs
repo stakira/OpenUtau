@@ -78,7 +78,7 @@ namespace OpenUtau.Core.Util {
             public bool MidiMaximized;
             public int UndoLimit = 100;
             public List<string> SingerSearchPaths = new List<string>();
-            public string ExternalExportEngine = string.Empty;
+            public string Resampler = string.Empty;
             public string Wavtool = string.Empty;
             public string PlaybackDevice = string.Empty;
             public int PlaybackDeviceNumber;

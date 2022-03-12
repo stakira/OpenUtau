@@ -17,9 +17,6 @@ before_build:
 after_build:
   - cmd: python appveyor.py
 artifacts:
-  - path: OpenUtau\bin\Release\netcoreapp3.1
-    name: OpenUtau
-    type: zip
   - path: bin\win-x86
     name: OpenUtau-win-x86
     type: zip
@@ -30,8 +27,6 @@ artifacts:
     name: OpenUtau-linux-x64
     type: zip
   - path: OpenUtau-osx-x64.dmg
-  - path: release.xml
-  - path: appcast.win.xml
   - path: appcast.win-x86.xml
   - path: appcast.win-x64.xml
   - path: appcast.linux-x64.xml

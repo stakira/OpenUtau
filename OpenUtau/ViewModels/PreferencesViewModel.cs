@@ -63,7 +63,7 @@ namespace OpenUtau.App.ViewModels {
             ResamplerDrivers.Search();
             Resamplers = ResamplerDrivers.GetResamplers();
             if (Resamplers.Count > 0) {
-                int index = Resamplers.FindIndex(resampler => resampler.Name == Preferences.Default.ExternalExportEngine);
+                int index = Resamplers.FindIndex(resampler => resampler.Name == Preferences.Default.Resampler);
                 if (index >= 0) {
                     exportResampler = Resamplers[index];
                 } else {
@@ -114,7 +114,7 @@ namespace OpenUtau.App.ViewModels {
                 .WhereNotNull()
                 .Subscribe(resampler => {
                     if (resampler != null) {
-                        Preferences.Default.ExternalExportEngine = resampler!.Name;
+                        Preferences.Default.Resampler = resampler!.Name;
                         Preferences.Save();
                         resampler!.CheckPermissions();
                     }

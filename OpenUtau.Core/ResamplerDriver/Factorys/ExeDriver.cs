@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
+using NAudio.Wave;
 using OpenUtau.Core.Util;
 using Serilog;
 
@@ -22,25 +23,25 @@ namespace OpenUtau.Core.ResamplerDriver.Factorys {
             }
         }
 
-        public byte[] DoResampler(EngineInput Args, ILogger logger) {
-            string tmpFile = DoResamplerReturnsFile(Args, logger);
-            byte[] data = new byte[0];
+        public float[] DoResampler(EngineInput args, ILogger logger) {
+            string tmpFile = DoResamplerReturnsFile(args, logger);
             if (string.IsNullOrEmpty(tmpFile) || File.Exists(tmpFile)) {
-                data = File.ReadAllBytes(tmpFile);
-                File.Delete(tmpFile);
+                using (var waveStream = Formats.Wave.OpenFile(tmpFile)) {
+                    return Formats.Wave.GetSamples(waveStream.ToSampleProvider().ToMono(1, 0));
+                }
             }
-            return data;
+            return new float[0];
         }
 
-        public string DoResamplerReturnsFile(EngineInput Args, ILogger logger) {
+        public string DoResamplerReturnsFile(EngineInput args, ILogger logger) {
             bool resamplerLogging = Preferences.Default.ResamplerLogging;
             if (!_isLegalPlugin) {
                 return null;
             }
             var threadId = Thread.CurrentThread.ManagedThreadId;
-            string tmpFile = Args.outputWaveFile;
+            string tmpFile = args.outputWaveFile;
             string ArgParam = FormattableString.Invariant(
-                $"\"{Args.inputWaveFile}\" \"{tmpFile}\" {Args.NoteString} {Args.Velocity} \"{Args.StrFlags}\" {Args.Offset} {Args.RequiredLength} {Args.Consonant} {Args.Cutoff} {Args.Volume} {Args.Modulation} !{Args.Tempo} {Base64.Base64EncodeInt12(Args.pitchBend)}");
+                $"\"{args.inputWaveFile}\" \"{tmpFile}\" {args.NoteString} {args.Velocity} \"{args.StrFlags}\" {args.Offset} {args.RequiredLength} {args.Consonant} {args.Cutoff} {args.Volume} {args.Modulation} !{args.Tempo} {Base64.Base64EncodeInt12(args.pitchBend)}");
             logger.Information($" > [thread-{threadId}] {FilePath} {ArgParam}");
             using (var proc = new Process()) {
                 proc.StartInfo = new ProcessStartInfo(FilePath, ArgParam) {

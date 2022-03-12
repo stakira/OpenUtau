@@ -12,6 +12,7 @@ namespace OpenUtau.Core {
         private static PathManager _inst;
 
         public PathManager() {
+            RootPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
             if (OS.IsMacOS()) {
                 HomePath = Path.Combine(Environment.GetFolderPath(
                     Environment.SpecialFolder.Personal), "Library", "OpenUtau");
@@ -36,11 +37,13 @@ namespace OpenUtau.Core {
         }
 
         public static PathManager Inst { get { if (_inst == null) { _inst = new PathManager(); } return _inst; } }
+        public string RootPath { get; private set; }
         public string HomePath { get; private set; }
         public bool HomePathIsAscii { get; private set; }
         public string SingersPathOld => Path.Combine(HomePath, "Content", "Singers");
         public string SingersPath => Path.Combine(HomePath, "Singers");
         public string AdditionalSingersPath => Preferences.Default.AdditionalSingerPath;
+        public string ResamplersPath => Path.Combine(HomePath, "Resamplers");
         public string PluginsPath => Path.Combine(HomePath, "Plugins");
         public string TemplatesPath => Path.Combine(HomePath, "Templates");
         public string LogFilePath => Path.Combine(HomePath, "Logs", "log.txt");
@@ -58,23 +61,6 @@ namespace OpenUtau.Core {
             Directory.CreateDirectory(dir);
             var filename = Path.GetFileNameWithoutExtension(projectPath);
             return Path.Combine(dir, $"{filename}-{trackNo:D2}.wav");
-        }
-
-        public string ResamplersPath => Path.Combine(HomePath, "Resamplers");
-
-        public string LibsPath {
-            get {
-                var path = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-                path = Path.Combine(path, "libs");
-                if (OS.IsWindows()) {
-                    path = Path.Combine(path, Environment.Is64BitProcess ? "win-x64" : "win-x86");
-                } else if (OS.IsMacOS()) {
-                    path = Path.Combine(path, "osx-x64");
-                } else if (OS.IsLinux()) {
-                    path = Path.Combine(path, "linux-x64");
-                }
-                return path;
-            }
         }
     }
 }

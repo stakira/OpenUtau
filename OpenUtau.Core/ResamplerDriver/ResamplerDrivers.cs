@@ -10,8 +10,8 @@ namespace OpenUtau.Core.ResamplerDriver {
     public interface IResamplerDriver {
         string Name { get; }
         string FilePath { get; }
-        byte[] DoResampler(DriverModels.EngineInput Args, ILogger logger);
-        string DoResamplerReturnsFile(DriverModels.EngineInput Args, ILogger logger);
+        float[] DoResampler(DriverModels.EngineInput args, ILogger logger);
+        string DoResamplerReturnsFile(DriverModels.EngineInput args, ILogger logger);
         void CheckPermissions();
     }
 
@@ -33,42 +33,20 @@ namespace OpenUtau.Core.ResamplerDriver {
                     return new ExeDriver(filePath, basePath);
                 }
             }
-            if (ext == ".dll") {
-                SharpDriver csDriver = new SharpDriver(filePath, basePath);
-                if (csDriver.isLegalPlugin) {
-                    return csDriver;
-                }
-            }
-            if (OS.IsWindows() && ext == ".dll" ||
-                OS.IsMacOS() && ext == ".dylib" ||
-                OS.IsLinux() && ext == ".so") {
-                CppDriver cppDriver = new CppDriver(filePath, basePath);
-                if (cppDriver.isLegalPlugin) {
-                    return cppDriver;
-                }
-            }
             return null;
         }
 
         public static void Search() {
             var resamplers = new Dictionary<string, IResamplerDriver>();
-            string basePath = PathManager.Inst.LibsPath;
-            string name = GetDefaultResamplerName();
-            var driver = Load(Path.Combine(basePath, name), basePath);
-            if (driver != null) {
-                resamplers.Add(driver.Name, driver);
-                if (string.IsNullOrEmpty(Preferences.Default.ExternalExportEngine)) {
-                    Preferences.Default.ExternalExportEngine = driver.Name;
-                    Preferences.Save();
-                }
-            }
-            basePath = PathManager.Inst.ResamplersPath;
+            IResamplerDriver defaultDriver = new WorldlineDriver();
+            resamplers.Add(defaultDriver.Name, defaultDriver);
+            string basePath = PathManager.Inst.ResamplersPath;
             try {
                 Directory.CreateDirectory(basePath);
                 foreach (var file in Directory.EnumerateFiles(basePath, "*", new EnumerationOptions() {
                     RecurseSubdirectories = true
                 })) {
-                    driver = Load(file, basePath);
+                    var driver = Load(file, basePath);
                     if (driver != null) {
                         resamplers.Add(driver.Name, driver);
                     }
@@ -80,17 +58,14 @@ namespace OpenUtau.Core.ResamplerDriver {
                 Log.Error(e, "Failed to search resamplers.");
                 Resamplers = new Dictionary<string, IResamplerDriver>();
             }
+            if (string.IsNullOrEmpty(Preferences.Default.Resampler) ||
+                !Resamplers.TryGetValue(Preferences.Default.Resampler, out var _)) {
+                Preferences.Default.Resampler = defaultDriver.Name;
+                Preferences.Save();
+            }
         }
 
-        public static string GetDefaultResamplerName() {
-            if (!OS.IsWindows()) {
-                return "worldline64";
-            }
-            if (Environment.Is64BitProcess) {
-                return "worldline64.exe";
-            }
-            return "worldline32.exe";
-        }
+        public static string GetDefaultResamplerName() => "worldline";
 
         public static List<IResamplerDriver> GetResamplers() {
             lock (lockObj) {
@@ -99,6 +74,9 @@ namespace OpenUtau.Core.ResamplerDriver {
         }
 
         public static IResamplerDriver GetResampler(string name) {
+            if (name.StartsWith("worldline")) {
+                name = "worldline";
+            }
             lock (lockObj) {
                 if (Resamplers.TryGetValue(name, out var driver)) {
                     return driver;
@@ -112,9 +90,7 @@ namespace OpenUtau.Core.ResamplerDriver {
             if (Resamplers.Count == 0) {
                 return false;
             }
-            if (Resamplers.TryGetValue(
-                Preferences.Default.ExternalExportEngine, out var resampler)
-                && File.Exists(resampler.FilePath)) {
+            if (Resamplers.TryGetValue(Preferences.Default.Resampler, out var _)) {
                 return true;
             }
             return false;

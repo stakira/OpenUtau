@@ -40,7 +40,7 @@ namespace OpenUtau.Core.Render {
                 }
                 resampler = descriptor.options[eng];
                 if (string.IsNullOrEmpty(resampler)) {
-                    resampler = Util.Preferences.Default.ExternalExportEngine;
+                    resampler = Util.Preferences.Default.Resampler;
                 }
                 if (ResamplerDriver.ResamplerDrivers.GetResampler(resampler) == null) {
                     resampler = ResamplerDriver.ResamplerDrivers.GetDefaultResamplerName();

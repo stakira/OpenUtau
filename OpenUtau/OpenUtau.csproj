@@ -46,19 +46,19 @@
     <ProjectReference Include="..\OpenUtau.Plugin.Builtin\OpenUtau.Plugin.Builtin.csproj" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)'=='DEBUG'">
-    <None Include="..\libs\**" CopyToOutputDirectory="PreserveNewest" LinkBase="libs\" />
+    <None Include="..\runtimes\**" CopyToOutputDirectory="PreserveNewest" LinkBase="runtimes\" />
   </ItemGroup>
   <ItemGroup Condition="'$(RuntimeIdentifier)' == 'win-x64'">
-    <None Include="..\libs\win-x64\**" CopyToOutputDirectory="PreserveNewest" LinkBase="libs\win-x64\" />
+    <None Include="..\runtimes\win-x64\native\**" CopyToOutputDirectory="PreserveNewest" LinkBase="." />
   </ItemGroup>
   <ItemGroup Condition="'$(RuntimeIdentifier)' == 'win-x86'">
-    <None Include="..\libs\win-x86\**" CopyToOutputDirectory="PreserveNewest" LinkBase="libs\win-x86\" />
+    <None Include="..\runtimes\win-x86\native\**" CopyToOutputDirectory="PreserveNewest" LinkBase="." />
   </ItemGroup>
   <ItemGroup Condition="'$(RuntimeIdentifier)' == 'osx.10.14-x64'">
-    <None Include="..\libs\osx-x64\**" CopyToOutputDirectory="PreserveNewest" LinkBase="libs\osx-x64\" />
+    <None Include="..\runtimes\osx-x64\native\**" CopyToOutputDirectory="PreserveNewest" LinkBase="." />
   </ItemGroup>
   <ItemGroup Condition="'$(RuntimeIdentifier)' == 'linux-x64'">
-    <None Include="..\libs\linux-x64\**" CopyToOutputDirectory="PreserveNewest" LinkBase="libs\linux-x64\" />
+    <None Include="..\runtimes\linux-x64\native\**" CopyToOutputDirectory="PreserveNewest" LinkBase="." />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Resources\Resources.Designer.cs">

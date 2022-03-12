@@ -40,12 +40,8 @@ def write_appcast(appcast_os, appcast_rid, appcast_file):
         f.write(xml)
 
 
-os.system("rm *.dmg")
-os.system("rm *.xml")
-
 if sys.platform == 'win32':
-    write_legacy("windows", "win", "OpenUtau.zip")
-    write_appcast("windows", "win", "OpenUtau.zip")
+    os.system("del *.xml")
 
     os.system("dotnet restore OpenUtau -r win-x86")
     os.system(
@@ -58,6 +54,9 @@ if sys.platform == 'win32':
     write_appcast("windows", "win-x64", "OpenUtau-win-x64.zip")
 
 elif sys.platform == 'darwin':
+    os.system("rm *.dmg")
+    os.system("rm *.xml")
+
     os.system("git checkout OpenUtau/OpenUtau.csproj")
     os.system("rm LICENSE.txt")
     os.system(
@@ -75,6 +74,8 @@ elif sys.platform == 'darwin':
     write_appcast("macos", "osx-x64", "OpenUtau-osx-x64.dmg")
 
 else:
+    os.system("rm *.xml")
+
     os.system("dotnet restore OpenUtau -r linux-x64")
     os.system(
         "dotnet publish OpenUtau -c Release -r linux-x64 --self-contained true -o bin/linux-x64")

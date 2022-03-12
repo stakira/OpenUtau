@@ -3,23 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace OpenUtau.Audio.Bindings {
     internal static partial class PaBinding {
-        private static Initialize _initialize;
-        private static Terminate _terminate;
-        private static GetVersionInfo _getVersionInfo;
-        private static GetErrorText _getErrorText;
-        private static GetDefaultOutputDevice _getDefaultOutputDevice;
-        private static GetDeviceInfo _getDeviceInfo;
-        private static GetDeviceCount _getDeviceCount;
-        private static GetDefaultHostApi _getDefaultHostApi;
-        private static GetHostApiInfo _getHostApiInfo;
-        private static GetHostApiCount _getHostApiCount;
-        private static IsFormatSupported _isFormatSupported;
-        private static OpenStream _openStream;
-        private static StartStream _startStream;
-        private static WriteStream _writeStream;
-        private static ReadStream _readStream;
-        private static AbortStream _abortStream;
-        private static CloseStream _closeStream;
+        private const string dllName = "portaudio";
 
         public delegate PaStreamCallbackResult PaStreamCallback(
             IntPtr input,
@@ -30,44 +14,25 @@ namespace OpenUtau.Audio.Bindings {
             IntPtr userData
         );
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private delegate int Initialize();
+        [DllImport(dllName)] public static extern int Pa_Initialize();
+        [DllImport(dllName)] public static extern int Pa_Terminate();
+        [DllImport(dllName)] public static extern IntPtr Pa_GetVersionInfo();
+        [DllImport(dllName)] public static extern IntPtr Pa_GetErrorText(int code);
+        [DllImport(dllName)] public static extern int Pa_GetDefaultOutputDevice();
+        [DllImport(dllName)] public static extern IntPtr Pa_GetDeviceInfo(int device);
+        [DllImport(dllName)] public static extern int Pa_GetDeviceCount();
+        [DllImport(dllName)] public static extern int Pa_GetDefaultHostApi();
+        [DllImport(dllName)] public static extern IntPtr Pa_GetHostApiInfo(int device);
+        [DllImport(dllName)] public static extern int Pa_GetHostApiCount();
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private delegate int Terminate();
-
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private delegate IntPtr GetVersionInfo();
-
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private delegate IntPtr GetErrorText(int code);
-
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private delegate int GetDefaultOutputDevice();
-
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private delegate IntPtr GetDeviceInfo(int device);
-
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private delegate int GetDeviceCount();
-
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private delegate int GetDefaultHostApi();
-
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private delegate IntPtr GetHostApiInfo(int device);
-
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private delegate int GetHostApiCount();
-
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private delegate int IsFormatSupported(
+        [DllImport(dllName)]
+        public static extern int Pa_IsFormatSupported(
             IntPtr inputParameters,
             IntPtr outputParameters,
             double sampleRate);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private delegate int OpenStream(
+        [DllImport(dllName)]
+        public static extern int Pa_OpenStream(
             IntPtr stream,
             IntPtr inputParameters,
             IntPtr outputParameters,
@@ -77,19 +42,10 @@ namespace OpenUtau.Audio.Bindings {
             PaStreamCallback streamCallback,
             IntPtr userData);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private delegate int StartStream(IntPtr stream);
-
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private delegate int WriteStream(IntPtr stream, IntPtr buffer, long frames);
-
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private delegate int ReadStream(IntPtr stream, IntPtr buffer, long frames);
-
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private delegate int AbortStream(IntPtr stream);
-
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private delegate int CloseStream(IntPtr stream);
+        [DllImport(dllName)] public static extern int Pa_StartStream(IntPtr stream);
+        [DllImport(dllName)] public static extern int Pa_WriteStream(IntPtr stream, IntPtr buffer, long frames);
+        [DllImport(dllName)] public static extern int Pa_ReadStream(IntPtr stream, IntPtr buffer, long frames);
+        [DllImport(dllName)] public static extern int Pa_AbortStream(IntPtr stream);
+        [DllImport(dllName)] public static extern int Pa_CloseStream(IntPtr stream);
     }
 }
