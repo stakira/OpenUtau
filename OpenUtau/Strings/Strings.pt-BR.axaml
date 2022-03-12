@@ -24,7 +24,7 @@
   <system:String x:Key="dialogs.messagebox.yes">Sim</system:String>
   <system:String x:Key="dialogs.noresampler.caption">Sem resampler</system:String>
   <system:String x:Key="dialogs.noresampler.message">Sem resampler! Coloque o .exe ou .dll do seu resampler favorito na pasta Resampler e selecione-o em Preferências!</system:String>
-  <!--<system:String x:Key="dialogs.timesig.caption">Time Signature</system:String>-->
+  <system:String x:Key="dialogs.timesig.caption">Assinatura de Tempo</system:String>
 
   <system:String x:Key="errors.caption">Erro</system:String>
 
@@ -79,7 +79,7 @@
   <system:String x:Key="menu.help.about">Sobre OpenUTAU</system:String>
   <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
   <system:String x:Key="menu.tools">Ferramentas</system:String>
-  <!--<system:String x:Key="menu.tools.clearrendercache">Clear Render Cache</system:String>-->
+  <system:String x:Key="menu.tools.clearrendercache">Limpar Cache do Render</system:String>
   <!--<system:String x:Key="menu.tools.layout">Layout</system:String>-->
   <!--<system:String x:Key="menu.tools.layout.hsplit11">Horizontal 1:1</system:String>-->
   <!--<system:String x:Key="menu.tools.layout.hsplit12">Horizontal 1:2</system:String>-->
@@ -118,10 +118,10 @@
   <system:String x:Key="pianoroll.menu.notes.addtailrest">Adicionar final "R"</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">Quantizar para 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Quantizar para 1/64</system:String>
-  <!--<system:String x:Key="pianoroll.menu.notes.reset.exps">Reset all expressions</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">Reset phoneme timings</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.notes.reset.pitchbends">Reset pitch bends</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.notes.reset.vibratos">Reset vibratos</system:String>-->
+  <system:String x:Key="pianoroll.menu.notes.reset.exps">Redefinir todas expressões</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">Redefinir tempos de fonemas</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">Redefinir curvas de afinação</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.vibratos">Redefinir vibratos</system:String>
   <system:String x:Key="pianoroll.menu.part">Parte</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">Plugin Legado(Experimental)</system:String>
   <system:String x:Key="pianoroll.menu.part.rename">Renomear</system:String>
@@ -157,8 +157,8 @@ Segure Ctrl para selecionar mais notas</system:String>
   <system:String x:Key="prefs.paths.reset">Redefinir</system:String>
   <system:String x:Key="prefs.paths.select">Selecionar</system:String>
   <system:String x:Key="prefs.playback">Reprodução</system:String>
-  <!--<system:String x:Key="prefs.playback.backend">Audio Backend</system:String>-->
-  <!--<system:String x:Key="prefs.playback.backend.auto">Automatic</system:String>-->
+  <system:String x:Key="prefs.playback.backend">Back-end de áudio</system:String>
+  <system:String x:Key="prefs.playback.backend.auto">Automático</system:String>
   <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">Posição do Cursor</system:String>
   <system:String x:Key="prefs.playback.device">Dispositivo de Reprodução</system:String>
@@ -174,8 +174,7 @@ Segure Ctrl para selecionar mais notas</system:String>
     Aviso: ainda não há suporte para moresampler. Ele estará extremamente devegar e causará alto uso da CPU. Se deseja usar, por favor:
     1. Em moreconfig.txt, edite "resampler-compatibility" de "off" para "on".
     2. Em moreconfig.txt, edite "auto-update-llsm-mrq" para "off".
-    3. Altere "multithread-synthesis" para "off" em moreconfig.txt ou reduza as threads do pre-render para 1 ou 2.
-    4. Pacientemente espere o pre-render finalizar antes de tocar.
+    3. Pacientemente espere o pre-render finalizar antes de tocar.
   </system:String>
 
   <system:String x:Key="progress.saved">Projeto salvo. {0}</system:String>
