@@ -62,8 +62,8 @@
   <!--<system:String x:Key="menu.edit.undo">Undo</system:String>-->
   <system:String x:Key="menu.file">Tệp</system:String>
   <system:String x:Key="menu.file.exit">Thoát ra</system:String>
-  <system:String x:Key="menu.file.exportall">Xuất ra tất cả</system:String>
-  <system:String x:Key="menu.file.exportust">Xuất thành tệp UST</system:String>
+  <system:String x:Key="menu.file.exportwav">Xuất ra tệp WAV</system:String>
+  <system:String x:Key="menu.file.exportust">Xuất ra tệp UST</system:String>
   <system:String x:Key="menu.file.importaudio">Nhập vào Âm thanh...</system:String>
   <system:String x:Key="menu.file.importmidi">Nhập vào Midi...</system:String>
   <system:String x:Key="menu.file.importtracks">Nhập vào UST/VSQX...</system:String>
@@ -161,13 +161,14 @@ Nhấn giữ Ctrl để chọn đồng loạt nhiều nốt</system:String>
   <!--<system:String x:Key="prefs.playback.backend.auto">Tự động</system:String>-->
   <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
   <!--<system:String x:Key="prefs.playback.cursorposition">Vị trí đường phát lại</system:String>-->
+  <system:String x:Key="prefs.playback.cursorposition">Vị trí đường phát lại</system:String>
   <system:String x:Key="prefs.playback.device">Thiết bị phát lại</system:String>
   <system:String x:Key="prefs.playback.test">Nghe thử</system:String>
   <system:String x:Key="prefs.rendering">Render</system:String>
   <system:String x:Key="prefs.rendering.prerender.threads">Luồng cho phép nghe thử trước</system:String>
   <system:String x:Key="prefs.rendering.resampler.export">Resampler cho việc xuất ra</system:String>
   <system:String x:Key="prefs.rendering.resampler.note">
-    Ghi chú: để sử dụng resampler bên ngoài, thêm tệp resampler định dạng EXE hoặc DLL vào trong thư mục Resamplers nằm trong đường dẫn cài đặt của OpenUTAU và chọn trong Tuỳ chọn.
+    Ghi chú: để sử dụng resampler bên ngoài, hãy thêm resampler định dạng EXE hoặc DLL vào trong thư mục Resamplers của OpenUTAU và lựa chọn trong Tuỳ chỉnh.
   </system:String>
   <system:String x:Key="prefs.rendering.resampler.preview">Resampler cho việc nghe thử trước</system:String>
   <system:String x:Key="prefs.rendering.resampler.warn">
