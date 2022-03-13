@@ -141,7 +141,7 @@ Mantiene Ctrl para seleccionar más</system:String>
   <system:String x:Key="prefs.advanced">Avanzado</system:String>
   <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
   <system:String x:Key="prefs.advanced.resamplerlogging">Registrar Resamplers</system:String>
-  <system:String x:Key="prefs.advanced.resamplerlogging.warn">Guardar la producción del resampler en archivos de registro. Esta opción causará peor rendimiento y ralentización en la UI.</system:String>
+  <system:String x:Key="prefs.advanced.resamplerlogging.warn">Esta opción guarda la producción del resampler en archivos de registro. Esta opción causará peor rendimiento y ralentización en la UI.</system:String>
   <system:String x:Key="prefs.advanced.stable">Estable</system:String>
   <system:String x:Key="prefs.appearance">Apariencia</system:String>
   <system:String x:Key="prefs.appearance.lang">Lenguaje</system:String>
@@ -164,6 +164,7 @@ Mantiene Ctrl para seleccionar más</system:String>
   <system:String x:Key="prefs.playback.device">Dispositivo de Reproducción</system:String>
   <system:String x:Key="prefs.playback.test">Probar</system:String>
   <system:String x:Key="prefs.rendering">Renderización</system:String>
+  <system:String x:Key="prefs.rendering.phasecomp">Compensación de Fase</system:String>
   <system:String x:Key="prefs.rendering.prerender.threads">Hilos de Pre-Renderización</system:String>
   <system:String x:Key="prefs.rendering.resampler.export">Resampler para Exportar</system:String>
   <system:String x:Key="prefs.rendering.resampler.note">
@@ -194,7 +195,7 @@ Mantiene Ctrl para seleccionar más</system:String>
   <system:String x:Key="singers.subbanks.reset">Reestablecer</system:String>
   <system:String x:Key="singers.subbanks.save">Guardar</system:String>
   <system:String x:Key="singers.subbanks.selectall">Seleccionar Todo</system:String>
-  <system:String x:Key="singers.subbanks.set">Poner</system:String>
+  <system:String x:Key="singers.subbanks.set">Carpeta</system:String>
   <system:String x:Key="singers.subbanks.tone">Tono</system:String>
   <system:String x:Key="singers.subbanks.toneranges">Rangos Tonales</system:String>
 
