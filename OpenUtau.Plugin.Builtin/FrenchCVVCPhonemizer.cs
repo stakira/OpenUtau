@@ -26,6 +26,8 @@ namespace OpenUtau.Plugin.Builtin {
 
         private string[] shortConsonants = "r".Split(",");
         private string[] longConsonants = "t,k,g,p,s,sh,j".Split(",");
+        private readonly string[] burstConsonants = "t,k,p,b,g,d".Split(",");
+
         protected override string[] GetVowels() => vowels;
         protected override string[] GetConsonants() => consonants;
         protected override string GetDictionaryName() => "cmudict_fr.txt";
@@ -81,7 +83,7 @@ namespace OpenUtau.Plugin.Builtin {
 
                     //try -C + CV
                     var sc = $"-{cc[0]}";
-                    if (HasOto(sc, syllable.vowelTone)) {
+                    if (HasOto(sc, syllable.vowelTone) && !burstConsonants.Contains(cc[0])) {
                         if (consonants.Contains(cc[0])) {
                             phonemes.Add(sc);
                         }
@@ -115,12 +117,13 @@ namespace OpenUtau.Plugin.Builtin {
 
                     if (phonemes.Count == 0) {
                         // add -C
-                        if (!TryAddPhoneme(phonemes, syllable.tone, $"-{cc[0]}")) {
+                        if (!burstConsonants.Contains(cc[0])) {
+                            TryAddPhoneme(phonemes, syllable.tone, $"-{cc[0]}");
+                        }
                             // add -Coe
-                            if (!TryAddPhoneme(phonemes, syllable.tone, $"-{cc[0]}oe")) {
-                                //add Coe
-                                phonemes.Add($"{cc[0]}oe");
-                            }
+                            else if (!TryAddPhoneme(phonemes, syllable.tone, $"-{cc[0]}oe")) {
+                            //add Coe
+                            phonemes.Add($"{cc[0]}oe");
                         }
                         for(var i = 1; i < cc.Length - 1; i++) {
                             phonemes.Add($"{cc[i]}oe");
@@ -252,7 +255,8 @@ namespace OpenUtau.Plugin.Builtin {
                     if (!hasEnding) {
                         // add V C
                         phonemes.Add($"{v}{cc[0]}");
-                            return phonemes;
+                        TryAddPhoneme(phonemes, ending.tone, $"{cc[0]}-");
+                        return phonemes;
                     }
                 } else {
 
@@ -291,12 +295,11 @@ namespace OpenUtau.Plugin.Builtin {
 
                     }
                 } else if (!HasOto($"{v}{cc[0]}-", ending.tone)) {
-                    hasEnding = TryAddPhoneme(phonemes, ending.tone, $"{cc.Last()}-");
+                    hasEnding = TryAddPhoneme(phonemes, ending.tone, $"{cc[0]}-");
 
                 }
 
             }
-            
 
             //TODO: cleanup the whole CC conflict
             if (!hasEnding && cc.Length > 1) {
@@ -309,11 +312,12 @@ namespace OpenUtau.Plugin.Builtin {
             return phonemes;
         }
 
-        // russian specific replacements
+        
         protected override string ValidateAlias(string alias) {
             if (alias == "gn")
                 alias = "n" + "y";
-            return alias;
+            return alias; 
+
         }
 
         protected override double GetTransitionBasicLengthMs(string alias = "") {
