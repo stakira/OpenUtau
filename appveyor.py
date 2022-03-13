@@ -79,4 +79,6 @@ else:
     os.system("dotnet restore OpenUtau -r linux-x64")
     os.system(
         "dotnet publish OpenUtau -c Release -r linux-x64 --self-contained true -o bin/linux-x64")
-    write_appcast("linux", "linux-x64", "OpenUtau-linux-x64.zip")
+    os.system("chmod +x bin/linux-x64/OpenUtau")
+    os.system("tar -C bin/linux-x64 -czvf OpenUtau-linux-x64.tar.gz .")
+    write_appcast("linux", "linux-x64", "OpenUtau-linux-x64.tar.gz")

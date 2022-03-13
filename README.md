@@ -9,9 +9,10 @@ OpenUtau is an open source editing environment for UTAU community with modern us
 
 ## Getting Started
 
-[![Download](https://img.shields.io/static/v1?style=for-the-badge&logo=github&label=download&message=windows-64bit&labelColor=FF347C&color=4ea6ea)](https://github.com/stakira/OpenUtau/releases/download/OpenUtau-Latest/OpenUtau-win-x64.zip)</br>
-[![Download](https://img.shields.io/static/v1?style=for-the-badge&logo=github&label=download&message=windows-32bit&labelColor=FF347C&color=4ea6ea)](https://github.com/stakira/OpenUtau/releases/download/OpenUtau-Latest/OpenUtau-win-x86.zip)</br>
-[![Download](https://img.shields.io/static/v1?style=for-the-badge&logo=github&label=download&message=macos-64bit&labelColor=FF347C&color=4ea6ea)](https://github.com/stakira/OpenUtau/releases/download/OpenUtau-Latest/OpenUtau-osx-x64.dmg)
+[![Download](https://img.shields.io/static/v1?style=for-the-badge&logo=github&label=download&message=windows-x64&labelColor=FF347C&color=4ea6ea)](https://github.com/stakira/OpenUtau/releases/download/OpenUtau-Latest/OpenUtau-win-x64.zip)</br>
+[![Download](https://img.shields.io/static/v1?style=for-the-badge&logo=github&label=download&message=windows-x86&labelColor=FF347C&color=4ea6ea)](https://github.com/stakira/OpenUtau/releases/download/OpenUtau-Latest/OpenUtau-win-x86.zip)</br>
+[![Download](https://img.shields.io/static/v1?style=for-the-badge&logo=github&label=download&message=macos-x64&labelColor=FF347C&color=4ea6ea)](https://github.com/stakira/OpenUtau/releases/download/OpenUtau-Latest/OpenUtau-osx-x64.dmg)</br>
+[![Download](https://img.shields.io/static/v1?style=for-the-badge&logo=github&label=download&message=linux-x64&labelColor=FF347C&color=4ea6ea)](https://github.com/stakira/OpenUtau/releases/download/OpenUtau-Latest/OpenUtau-linux-x64.tar.gz)
 
 It is **strongly recommend** to go through a few Wiki pages before use:
 - [Getting-Started](https://github.com/stakira/OpenUtau/wiki/Getting-Started)
