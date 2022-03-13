@@ -172,7 +172,7 @@ Segure Ctrl para selecionar mais notas</system:String>
     Aviso: ainda não há suporte completo para moresampler. Ele poderá estar devegar e causar alto uso da CPU. Se deseja usar, por favor:
     1. Em moreconfig.txt, edite "resampler-compatibility" de "off" para "on".
     2. Em moreconfig.txt, edite "auto-update-llsm-mrq" para "off".
-    4. Pacientemente espere pelo moresampler gerar os arquivos llsm que faltam.
+    3. Pacientemente espere pelo moresampler gerar os arquivos llsm que faltam.
   </system:String>
   <system:String x:Key="prefs.rendering.resampler.note">
         Observação: para usar resamplers externos, adicione o arquivo .dll ou .exe do resampler na pasta Resamplers no caminho de instalação do OpenUtau e escolha-o em Preferências. 
