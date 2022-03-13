@@ -79,7 +79,7 @@
   <system:String x:Key="menu.help.about">Sobre OpenUTAU</system:String>
   <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
   <system:String x:Key="menu.tools">Ferramentas</system:String>
-  <!--<system:String x:Key="menu.tools.clearcache">Clear Cache</system:String>-->
+  <system:String x:Key="menu.tools.clearcache">Limpar Cache</system:String>
   <!--<system:String x:Key="menu.tools.layout">Layout</system:String>-->
   <!--<system:String x:Key="menu.tools.layout.hsplit11">Horizontal 1:1</system:String>-->
   <!--<system:String x:Key="menu.tools.layout.hsplit12">Horizontal 1:2</system:String>-->
@@ -154,7 +154,7 @@ Segure Ctrl para selecionar mais notas</system:String>
   <!--<system:String x:Key="prefs.on">On</system:String>-->
   <system:String x:Key="prefs.paths">Diretório</system:String>
   <system:String x:Key="prefs.paths.addlsinger">Caminho Adicional de Vozes</system:String>
-  <!--<system:String x:Key="prefs.paths.addlsinger.install">Install to Additional Singer Path</system:String>-->
+  <system:String x:Key="prefs.paths.addlsinger.install">Instalar no Caminho Adicional de Vozes</system:String>
   <system:String x:Key="prefs.paths.reset">Redefinir</system:String>
   <system:String x:Key="prefs.paths.select">Selecionar</system:String>
   <system:String x:Key="prefs.playback">Reprodução</system:String>
