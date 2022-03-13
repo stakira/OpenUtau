@@ -62,8 +62,8 @@
   <system:String x:Key="menu.edit.undo">Desfazer</system:String>
   <system:String x:Key="menu.file">Arquivo</system:String>
   <system:String x:Key="menu.file.exit">Fechar</system:String>
-  <system:String x:Key="menu.file.exportust">Exportar como Ust</system:String>
-  <!--<system:String x:Key="menu.file.exportwav">Export Wav Files</system:String>-->
+  <system:String x:Key="menu.file.exportust">Exportar Como Ust</system:String>
+  <system:String x:Key="menu.file.exportwav">Exportar Arquivos Wav</system:String>
   <system:String x:Key="menu.file.importaudio">Importar Audio...</system:String>
   <system:String x:Key="menu.file.importmidi">Importar Midi...</system:String>
   <system:String x:Key="menu.file.importtracks">Importar Faixas...</system:String>
@@ -165,15 +165,16 @@ Segure Ctrl para selecionar mais notas</system:String>
   <system:String x:Key="prefs.playback.device">Dispositivo de Reprodução</system:String>
   <system:String x:Key="prefs.playback.test">Teste</system:String>
   <system:String x:Key="prefs.rendering">Renderização</system:String>
-  <!--<system:String x:Key="prefs.rendering.phasecomp">Phase Compensation</system:String>-->
+  <system:String x:Key="prefs.rendering.phasecomp">Compensação de Fase</system:String>
   <system:String x:Key="prefs.rendering.prerender.threads">Threads do Pre-render</system:String>
   <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
-  <!--<system:String x:Key="prefs.rendering.resampler.morewarn">
-Warning: moresampler is not fully supported. It may be slow and cause high CPU usage. If you insist, please:
-1. Set "resampler-compatibility" to "on" in moreconfig.txt.
-2. Set "auto-update-llsm-mrq" to "off" in moreconfig.txt.
-3. Patiently wait for moresampler to generate missing llsm files.
-  </system:String>-->
+  <system:String x:Key="prefs.rendering.resampler.morewarn">
+    Aviso: ainda não há suporte completo para moresampler. Ele poderá estar devegar e causar alto uso da CPU. Se deseja usar, por favor:
+    1. Em moreconfig.txt, edite "resampler-compatibility" de "off" para "on".
+    2. Em moreconfig.txt, edite "auto-update-llsm-mrq" para "off".
+    3. Altere "multithread-synthesis" para "off" em moreconfig.txt ou reduza as threads do pre-render para 1 ou 2.
+    4. Pacientemente espere pelo moresampler gerar os arquivos llsm que faltam.
+  </system:String>
   <system:String x:Key="prefs.rendering.resampler.note">
         Observação: para usar resamplers externos, adicione o arquivo .dll ou .exe do resampler na pasta Resamplers no caminho de instalação do OpenUtau e escolha-o em Preferências. 
     </system:String>
