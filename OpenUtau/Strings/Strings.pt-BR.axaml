@@ -172,7 +172,6 @@ Segure Ctrl para selecionar mais notas</system:String>
     Aviso: ainda não há suporte completo para moresampler. Ele poderá estar devegar e causar alto uso da CPU. Se deseja usar, por favor:
     1. Em moreconfig.txt, edite "resampler-compatibility" de "off" para "on".
     2. Em moreconfig.txt, edite "auto-update-llsm-mrq" para "off".
-    3. Altere "multithread-synthesis" para "off" em moreconfig.txt ou reduza as threads do pre-render para 1 ou 2.
     4. Pacientemente espere pelo moresampler gerar os arquivos llsm que faltam.
   </system:String>
   <system:String x:Key="prefs.rendering.resampler.note">
