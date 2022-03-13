@@ -79,7 +79,7 @@
   <system:String x:Key="menu.help.about">Sobre OpenUTAU</system:String>
   <system:String x:Key="menu.help.wiki">Wiki de OpenUTAU</system:String>
   <system:String x:Key="menu.tools">_Herramientas</system:String>
-  <system:String x:Key="menu.tools.clearcache">Limpiar Cache</system:String>
+  <system:String x:Key="menu.tools.clearcache">Limpiar Caché</system:String>
   <!--<system:String x:Key="menu.tools.layout">Layout</system:String>-->
   <system:String x:Key="menu.tools.layout.hsplit11">1:1 Horizontal</system:String>
   <system:String x:Key="menu.tools.layout.hsplit12">1:2 Horizontal</system:String>
