@@ -62,8 +62,8 @@
   <system:String x:Key="menu.edit.undo">Kumoa</system:String>
   <system:String x:Key="menu.file">Tiedosto</system:String>
   <system:String x:Key="menu.file.exit">Lopeta OpenUtau</system:String>
-  <system:String x:Key="menu.file.exportall">Vie kaikki</system:String>
   <system:String x:Key="menu.file.exportust">Vie Ust-tiedostot</system:String>
+  <!--<system:String x:Key="menu.file.exportwav">Export Wav Files</system:String>-->
   <system:String x:Key="menu.file.importaudio">Tuo audio...</system:String>
   <system:String x:Key="menu.file.importmidi">Tuo Midi-tiedosto...</system:String>
   <system:String x:Key="menu.file.importtracks">Tuo raidat...</system:String>
@@ -79,7 +79,7 @@
   <system:String x:Key="menu.help.about">Tietoa OpenUtausta</system:String>
   <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
   <system:String x:Key="menu.tools">Työkalut</system:String>
-  <!--<system:String x:Key="menu.tools.clearrendercache">Clear Render Cache</system:String>-->
+  <!--<system:String x:Key="menu.tools.clearcache">Clear Cache</system:String>-->
   <system:String x:Key="menu.tools.layout">Asettelu</system:String>
   <system:String x:Key="menu.tools.layout.hsplit11">Vaakasuora 1:1</system:String>
   <system:String x:Key="menu.tools.layout.hsplit12">Vaakasuora 1:2</system:String>
@@ -154,6 +154,7 @@ Aktivoi monivalinta pitämällä Ctrl pohjassa</system:String>
   <!--<system:String x:Key="prefs.on">On</system:String>-->
   <system:String x:Key="prefs.paths">Tiedoston sijainti</system:String>
   <!--<system:String x:Key="prefs.paths.addlsinger">Additional Singer Path</system:String>-->
+  <!--<system:String x:Key="prefs.paths.addlsinger.install">Install to Additional Singer Path</system:String>-->
   <!--<system:String x:Key="prefs.paths.reset">Reset</system:String>-->
   <!--<system:String x:Key="prefs.paths.select">Select</system:String>-->
   <system:String x:Key="prefs.playback">Äänentoisto</system:String>
@@ -164,17 +165,17 @@ Aktivoi monivalinta pitämällä Ctrl pohjassa</system:String>
   <system:String x:Key="prefs.playback.device">Äänentoistolaite</system:String>
   <system:String x:Key="prefs.playback.test">Testaa</system:String>
   <system:String x:Key="prefs.rendering">Renderöi</system:String>
+  <!--<system:String x:Key="prefs.rendering.phasecomp">Phase Compensation</system:String>-->
   <system:String x:Key="prefs.rendering.prerender.threads">Esirenderöidyt säkeet</system:String>
-  <system:String x:Key="prefs.rendering.resampler.export">Resamplerin vienti</system:String>
+  <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.resampler.morewarn">
+Warning: moresampler is not fully supported. It may be slow and cause high CPU usage. If you insist, please:
+1. Set "resampler-compatibility" to "on" in moreconfig.txt.
+2. Set "auto-update-llsm-mrq" to "off" in moreconfig.txt.
+3. Patiently wait for moresampler to generate missing llsm files.
+  </system:String>-->
   <system:String x:Key="prefs.rendering.resampler.note">
     HUOM: Jos haluat käyttää ulkoisia resamplereita, lisää resampler DLL tai EXE-tiedosto Resamplers-kansioon, joka sijaitsee OpenUtaun polulla ja valitse se asetuksista.
-  </system:String>
-  <system:String x:Key="prefs.rendering.resampler.preview">Resamplerin esikatselu</system:String>
-  <system:String x:Key="prefs.rendering.resampler.warn">
-Varoitus: Moresampleria ei tueta vielä. Se on hidas ja voi kuormittaa suoritinta. Jos haluat jatkaa, noudatathan näitä ohjeita:
-1. Ota käyttöön "resampler-compatibility" moreconfig.txt -tiedostosta.
-2. Vähennä "pre-render threads" määrä yhteen tai kahteen.
-3. Odota esirenderöinnin päättymistä ennen toistoa.
   </system:String>
 
   <!--<system:String x:Key="progress.saved">Project saved. {0}</system:String>-->

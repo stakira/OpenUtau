@@ -62,8 +62,8 @@
   <!--<system:String x:Key="menu.edit.undo">Undo</system:String>-->
   <system:String x:Key="menu.file">Tệp</system:String>
   <system:String x:Key="menu.file.exit">Thoát ra</system:String>
-  <system:String x:Key="menu.file.exportwav">Xuất ra tệp WAV</system:String>
   <system:String x:Key="menu.file.exportust">Xuất ra tệp UST</system:String>
+  <system:String x:Key="menu.file.exportwav">Xuất ra tệp WAV</system:String>
   <system:String x:Key="menu.file.importaudio">Nhập vào Âm thanh...</system:String>
   <system:String x:Key="menu.file.importmidi">Nhập vào Midi...</system:String>
   <system:String x:Key="menu.file.importtracks">Nhập vào UST/VSQX...</system:String>
@@ -79,7 +79,7 @@
   <system:String x:Key="menu.help.about">Thông tin về OpenUtau</system:String>
   <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
   <system:String x:Key="menu.tools">Công cụ</system:String>
-  <system:String x:Key="menu.tools.clearrendercache">Xoá bỏ render tạm thời</system:String>
+  <!--<system:String x:Key="menu.tools.clearcache">Clear Cache</system:String>-->
   <system:String x:Key="menu.tools.layout">Bố cục</system:String>
   <system:String x:Key="menu.tools.layout.hsplit11">Ngang 1:1</system:String>
   <system:String x:Key="menu.tools.layout.hsplit12">Ngang 1:2</system:String>
@@ -95,7 +95,7 @@
 
   <!--<system:String x:Key="oto.alias">Alias</system:String>-->
   <system:String x:Key="oto.color">Sắc thái</system:String>
-  <system:String x:Key="oto.consonant">Consonant</system:String>
+  <!--<system:String x:Key="oto.consonant">Consonant</system:String>-->
   <!--<system:String x:Key="oto.cutoff">Cutoff</system:String>-->
   <system:String x:Key="oto.file">Tên tệp</system:String>
   <!--<system:String x:Key="oto.offset">Offset</system:String>-->
@@ -154,29 +154,28 @@ Nhấn giữ Ctrl để chọn đồng loạt nhiều nốt</system:String>
   <system:String x:Key="prefs.on">Mở</system:String>
   <system:String x:Key="prefs.paths">Đường dẫn</system:String>
   <system:String x:Key="prefs.paths.addlsinger">Đường dẫn phụ chứa ca sĩ </system:String>
+  <!--<system:String x:Key="prefs.paths.addlsinger.install">Install to Additional Singer Path</system:String>-->
   <system:String x:Key="prefs.paths.reset">Đặt lại</system:String>
   <system:String x:Key="prefs.paths.select">Lựa chọn</system:String>
   <system:String x:Key="prefs.playback">Phát lại</system:String>
-  <!--<system:String x:Key="prefs.playback.backend">Backend âm thanh</system:String>-->
-  <!--<system:String x:Key="prefs.playback.backend.auto">Tự động</system:String>-->
+  <!--<system:String x:Key="prefs.playback.backend">Audio Backend</system:String>-->
+  <!--<system:String x:Key="prefs.playback.backend.auto">Automatic</system:String>-->
   <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
-  <!--<system:String x:Key="prefs.playback.cursorposition">Vị trí đường phát lại</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">Vị trí đường phát lại</system:String>
   <system:String x:Key="prefs.playback.device">Thiết bị phát lại</system:String>
   <system:String x:Key="prefs.playback.test">Nghe thử</system:String>
   <system:String x:Key="prefs.rendering">Render</system:String>
+  <!--<system:String x:Key="prefs.rendering.phasecomp">Phase Compensation</system:String>-->
   <system:String x:Key="prefs.rendering.prerender.threads">Luồng cho phép nghe thử trước</system:String>
-  <system:String x:Key="prefs.rendering.resampler.export">Resampler cho việc xuất ra</system:String>
+  <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.resampler.morewarn">
+Warning: moresampler is not fully supported. It may be slow and cause high CPU usage. If you insist, please:
+1. Set "resampler-compatibility" to "on" in moreconfig.txt.
+2. Set "auto-update-llsm-mrq" to "off" in moreconfig.txt.
+3. Patiently wait for moresampler to generate missing llsm files.
+  </system:String>-->
   <system:String x:Key="prefs.rendering.resampler.note">
     Ghi chú: để sử dụng resampler bên ngoài, hãy thêm resampler định dạng EXE hoặc DLL vào trong thư mục Resamplers của OpenUTAU và lựa chọn trong Tuỳ chỉnh.
-  </system:String>
-  <system:String x:Key="prefs.rendering.resampler.preview">Resampler cho việc nghe thử trước</system:String>
-  <system:String x:Key="prefs.rendering.resampler.warn">
-Cảnh báo: moresampler chưa được hỗ trợ hoàn toàn. Việc sử dụng có thể làm chậm và gây quá tải CPU. Nếu cần thiết, xin làm theo chỉ dẫn sau đây:
-1. Chỉnh "resampler-compatibility" thành "on" trong moreconfig.txt.
-2. Chỉnh "auto-update-llsm-mrq" thành "off" trong moreconfig.txt.
-3. Hạ thấp luồng cho phép render trước thành 1 hoặc 2.
-4. Kiên nhẫn chờ đợi hoàn tất việc render trước khi phát.
   </system:String>
 
   <system:String x:Key="progress.saved">Hoàn tất lưu dự án. {0}</system:String>

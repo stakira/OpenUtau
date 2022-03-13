@@ -62,8 +62,8 @@
   <system:String x:Key="menu.edit.undo">元に戻る</system:String>
   <system:String x:Key="menu.file">ファイル</system:String>
   <system:String x:Key="menu.file.exit">OpenUTAUを終了</system:String>
-  <system:String x:Key="menu.file.exportall">すべてエクスポート</system:String>
   <system:String x:Key="menu.file.exportust">USTをエクスポート</system:String>
+  <!--<system:String x:Key="menu.file.exportwav">Export Wav Files</system:String>-->
   <system:String x:Key="menu.file.importaudio">音声をインポート...</system:String>
   <system:String x:Key="menu.file.importmidi">MIDIをインポート...</system:String>
   <system:String x:Key="menu.file.importtracks">トラックをインポート...</system:String>
@@ -79,7 +79,7 @@
   <system:String x:Key="menu.help.about">OpenUTAUについて</system:String>
   <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
   <system:String x:Key="menu.tools">ツール</system:String>
-  <!--<system:String x:Key="menu.tools.clearrendercache">Clear Render Cache</system:String>-->
+  <!--<system:String x:Key="menu.tools.clearcache">Clear Cache</system:String>-->
   <system:String x:Key="menu.tools.layout">レイアウト</system:String>
   <system:String x:Key="menu.tools.layout.hsplit11">横並び 1:1</system:String>
   <system:String x:Key="menu.tools.layout.hsplit12">横並び 1:2</system:String>
@@ -154,6 +154,7 @@ Ctrl長押しで複数選択</system:String>
   <!--<system:String x:Key="prefs.on">On</system:String>-->
   <system:String x:Key="prefs.paths">ファイルの場所</system:String>
   <system:String x:Key="prefs.paths.addlsinger">シンガーの場所（追加）</system:String>
+  <!--<system:String x:Key="prefs.paths.addlsinger.install">Install to Additional Singer Path</system:String>-->
   <system:String x:Key="prefs.paths.reset">リセット</system:String>
   <system:String x:Key="prefs.paths.select">選択</system:String>
   <system:String x:Key="prefs.playback">再生</system:String>
@@ -164,18 +165,17 @@ Ctrl長押しで複数選択</system:String>
   <system:String x:Key="prefs.playback.device">再生デバイス</system:String>
   <system:String x:Key="prefs.playback.test">再生テスト</system:String>
   <system:String x:Key="prefs.rendering">レンダリング</system:String>
+  <!--<system:String x:Key="prefs.rendering.phasecomp">Phase Compensation</system:String>-->
   <system:String x:Key="prefs.rendering.prerender.threads">プリレンダースレッド数</system:String>
-  <system:String x:Key="prefs.rendering.resampler.export">エクスポート用エンジン</system:String>
+  <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.resampler.morewarn">
+Warning: moresampler is not fully supported. It may be slow and cause high CPU usage. If you insist, please:
+1. Set "resampler-compatibility" to "on" in moreconfig.txt.
+2. Set "auto-update-llsm-mrq" to "off" in moreconfig.txt.
+3. Patiently wait for moresampler to generate missing llsm files.
+  </system:String>-->
   <system:String x:Key="prefs.rendering.resampler.note">
     Note: エンジンを使用するには、使用したいエンジンのDLLまたはEXEファイルをOpenUTAUフォルダ内のResamplersフォルダに追加し、選択してください。
-  </system:String>
-  <system:String x:Key="prefs.rendering.resampler.preview">プレビュー用エンジン</system:String>
-  <system:String x:Key="prefs.rendering.resampler.warn">
-    警告: moresamplerはまだサポートされていません。CPU使用率が高くなり、動作が極端に遅くなります。それでも使用する場合:
-    1. moreconfig.txt内の "resampler-compatibility" を "on" に設定してください。
-    2. moreconfig.txt内の "auto-update-llsm-mrq" を "off" に設定してください。
-    3. プリレンダースレッド数を1か2に設定してください。
-    4. 再生する前に、プリレンダーの処理が完了するのを辛抱強く待ってください。
   </system:String>
 
   <system:String x:Key="progress.saved">プロジェクトが保存されました。 {0}</system:String>

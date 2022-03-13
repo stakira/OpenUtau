@@ -2,9 +2,9 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-  <system:String x:Key="context.pitch.easein">Ease in</system:String>
-  <system:String x:Key="context.pitch.easeinout">Ease in/out</system:String>
-  <system:String x:Key="context.pitch.easeout">Ease out</system:String>
+  <!--<system:String x:Key="context.pitch.easein">Ease in</system:String>-->
+  <!--<system:String x:Key="context.pitch.easeinout">Ease in/out</system:String>-->
+  <!--<system:String x:Key="context.pitch.easeout">Ease out</system:String>-->
   <system:String x:Key="context.pitch.linear">Linéaire</system:String>
   <system:String x:Key="context.pitch.pointadd">Ajouter un point</system:String>
   <system:String x:Key="context.pitch.pointdel">Supprimer un point</system:String>
@@ -20,7 +20,7 @@
   <system:String x:Key="dialogs.export.savefirst">Sauvegardez le fichier d'abord</system:String>
   <system:String x:Key="dialogs.messagebox.cancel">Annuler</system:String>
   <system:String x:Key="dialogs.messagebox.no">Non</system:String>
-  <system:String x:Key="dialogs.messagebox.ok">Ok</system:String>
+  <!--<system:String x:Key="dialogs.messagebox.ok">Ok</system:String>-->
   <system:String x:Key="dialogs.messagebox.yes">Oui</system:String>
   <system:String x:Key="dialogs.noresampler.caption">Aucun resampler</system:String>
   <system:String x:Key="dialogs.noresampler.message">Aucun resampler ! Ajoutez le fichier .exe ou .dll du resampler dans le dossier "Resamplers" de OpenUTAU, puis choisissez-le dans Préférences.</system:String>
@@ -30,24 +30,24 @@
 
   <system:String x:Key="exps.abbr">Abréviation</system:String>
   <system:String x:Key="exps.apply">Appliquer</system:String>
-  <system:String x:Key="exps.caption">Expressions</system:String>
+  <!--<system:String x:Key="exps.caption">Expressions</system:String>-->
   <system:String x:Key="exps.defaultvalue">Valeur par défaut</system:String>
-  <system:String x:Key="exps.flag">Resampler Flag</system:String>
+  <!--<system:String x:Key="exps.flag">Resampler Flag</system:String>-->
   <system:String x:Key="exps.isflag">Est un Resampler Flag</system:String>
-  <system:String x:Key="exps.maxvalue">Max</system:String>
-  <system:String x:Key="exps.minvalue">Min</system:String>
+  <!--<system:String x:Key="exps.maxvalue">Max</system:String>-->
+  <!--<system:String x:Key="exps.minvalue">Min</system:String>-->
   <system:String x:Key="exps.name">Nom</system:String>
   <system:String x:Key="exps.optionvalues">Valeurs du type</system:String>
   <system:String x:Key="exps.sepbycomma">Séparer les valeurs par une virgule (,)</system:String>
-  <system:String x:Key="exps.type">Type</system:String>
+  <!--<system:String x:Key="exps.type">Type</system:String>-->
   <system:String x:Key="exps.type.numerical">Numérique</system:String>
-  <system:String x:Key="exps.type.options">Options</system:String>
+  <!--<system:String x:Key="exps.type.options">Options</system:String>-->
 
   <system:String x:Key="lyrics.apply">Appliquer</system:String>
   <system:String x:Key="lyrics.cancel">Annuler</system:String>
   <system:String x:Key="lyrics.caption">Modifier les paroles</system:String>
   <system:String x:Key="lyrics.livepreview">Prévisualiser</system:String>
-  <system:String x:Key="lyrics.max">Max</system:String>
+  <!--<system:String x:Key="lyrics.max">Max</system:String>-->
   <system:String x:Key="lyrics.reset">Réinitialiser</system:String>
   <system:String x:Key="lyrics.selectnotes">Aucune note sélectionnée !</system:String>
   <system:String x:Key="lyrics.separators">Séparé par</system:String>
@@ -62,8 +62,8 @@
   <system:String x:Key="menu.edit.undo">Annuler</system:String>
   <system:String x:Key="menu.file">Fichier</system:String>
   <system:String x:Key="menu.file.exit">Quitter</system:String>
-  <system:String x:Key="menu.file.exportall">Exporter les pistes</system:String>
   <system:String x:Key="menu.file.exportust">Export les pistes en UST</system:String>
+  <!--<system:String x:Key="menu.file.exportwav">Export Wav Files</system:String>-->
   <system:String x:Key="menu.file.importaudio">Importer un fichier audio</system:String>
   <system:String x:Key="menu.file.importmidi">Importer un MIDI</system:String>
   <system:String x:Key="menu.file.importtracks">Importer une piste</system:String>
@@ -77,33 +77,33 @@
   <system:String x:Key="menu.file.savetemplate">Enregistrer le modèle...</system:String>
   <system:String x:Key="menu.help">Aide</system:String>
   <system:String x:Key="menu.help.about">À propos de OpenUTAU</system:String>
-  <system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>
+  <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
   <system:String x:Key="menu.tools">Outils</system:String>
-  <system:String x:Key="menu.tools.clearrendercache">Effacer le cache de rendu</system:String>
+  <!--<system:String x:Key="menu.tools.clearcache">Clear Cache</system:String>-->
   <system:String x:Key="menu.tools.layout">Disposition des fenêtres</system:String>
-  <system:String x:Key="menu.tools.layout.hsplit11">Horizontal 1:1</system:String>
-  <system:String x:Key="menu.tools.layout.hsplit12">Horizontal 1:2</system:String>
-  <system:String x:Key="menu.tools.layout.hsplit13">Horizontal 1:3</system:String>
-  <system:String x:Key="menu.tools.layout.vsplit11">Vertical 1:1</system:String>
-  <system:String x:Key="menu.tools.layout.vsplit12">Vertical 1:2</system:String>
-  <system:String x:Key="menu.tools.layout.vsplit13">Vertical 1:3</system:String>
+  <!--<system:String x:Key="menu.tools.layout.hsplit11">Horizontal 1:1</system:String>-->
+  <!--<system:String x:Key="menu.tools.layout.hsplit12">Horizontal 1:2</system:String>-->
+  <!--<system:String x:Key="menu.tools.layout.hsplit13">Horizontal 1:3</system:String>-->
+  <!--<system:String x:Key="menu.tools.layout.vsplit11">Vertical 1:1</system:String>-->
+  <!--<system:String x:Key="menu.tools.layout.vsplit12">Vertical 1:2</system:String>-->
+  <!--<system:String x:Key="menu.tools.layout.vsplit13">Vertical 1:3</system:String>-->
   <system:String x:Key="menu.tools.prefs">Préférences...</system:String>
-  <system:String x:Key="menu.tools.project.expressions">Expressions...</system:String>
+  <!--<system:String x:Key="menu.tools.project.expressions">Expressions...</system:String>-->
   <system:String x:Key="menu.tools.singer.install">Installer une voicebank</system:String>
   <system:String x:Key="menu.tools.singer.installadv">Installer une voicebank (paramètres avancés)</system:String>
   <system:String x:Key="menu.tools.singers">Voicebank</system:String>
 
-  <system:String x:Key="oto.alias">Alias</system:String>
-  <system:String x:Key="oto.color">Color</system:String>
-  <system:String x:Key="oto.consonant">Consonant</system:String>
+  <!--<system:String x:Key="oto.alias">Alias</system:String>-->
+  <!--<system:String x:Key="oto.color">Color</system:String>-->
+  <!--<system:String x:Key="oto.consonant">Consonant</system:String>-->
   <system:String x:Key="oto.cutoff">Fin</system:String>
   <system:String x:Key="oto.file">Fichier</system:String>
   <system:String x:Key="oto.offset">Début</system:String>
-  <system:String x:Key="oto.overlap">Overlap</system:String>
+  <!--<system:String x:Key="oto.overlap">Overlap</system:String>-->
   <system:String x:Key="oto.phonetic">Phonétique</system:String>
   <system:String x:Key="oto.prefix">Préfixe</system:String>
-  <system:String x:Key="oto.preutter">Preutter</system:String>
-  <system:String x:Key="oto.set">Set</system:String>
+  <!--<system:String x:Key="oto.preutter">Preutter</system:String>-->
+  <!--<system:String x:Key="oto.set">Set</system:String>-->
   <system:String x:Key="oto.suffix">Suffixe</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">Paroles</system:String>
@@ -113,7 +113,7 @@
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Enlever un suffixe (lettres)</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">Enlever un suffixe (tonalité)</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Romaji -> Hiragana</system:String>
-  <system:String x:Key="pianoroll.menu.notes">Notes</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notes">Notes</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.addtaildash">Ajouter un "-" final</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">Ajouter un "R" final</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">Quantizer en 1/128</system:String>
@@ -122,7 +122,7 @@
   <system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">Réinitialiser les timings des phonèmes</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">Réinitialiser les pitch bends</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.vibratos">Réinitialiser les vibratos</system:String>
-  <system:String x:Key="pianoroll.menu.part">Part</system:String>
+  <!--<system:String x:Key="pianoroll.menu.part">Part</system:String>-->
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">Plugin antérieur (Expérimental)</system:String>
   <system:String x:Key="pianoroll.menu.part.rename">Renommer</system:String>
   <system:String x:Key="pianoroll.toggle.phoneme">Voir les Phonèmes (O)</system:String>
@@ -139,10 +139,10 @@ Clic droit pour gommer</system:String>
 Maintenir Ctrl pour ajouter à la sélection</system:String>
 
   <system:String x:Key="prefs.advanced">Paramètres avancés</system:String>
-  <system:String x:Key="prefs.advanced.beta">Beta</system:String>
-  <system:String x:Key="prefs.advanced.resamplerlogging">Resampler Logging</system:String>
+  <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.resamplerlogging">Resampler Logging</system:String>-->
   <system:String x:Key="prefs.advanced.resamplerlogging.warn">Écrit la sortie du resampler dans les logs. Cette option ralentit l'UI et le rendu.</system:String>
-  <system:String x:Key="prefs.advanced.stable">Stable</system:String>
+  <!--<system:String x:Key="prefs.advanced.stable">Stable</system:String>-->
   <system:String x:Key="prefs.appearance">Apparence</system:String>
   <system:String x:Key="prefs.appearance.lang">Langue</system:String>
   <system:String x:Key="prefs.appearance.theme">Thème</system:String>
@@ -150,43 +150,43 @@ Maintenir Ctrl pour ajouter à la sélection</system:String>
   <system:String x:Key="prefs.appearance.theme.light">Jour</system:String>
   <system:String x:Key="prefs.caption">Préférences</system:String>
   <system:String x:Key="prefs.note.restart">Note: veuillez redémarrer OpenUtau après avoir changé cette option.</system:String>
-  <system:String x:Key="prefs.off">Off</system:String>
-  <system:String x:Key="prefs.on">On</system:String>
+  <!--<system:String x:Key="prefs.off">Off</system:String>-->
+  <!--<system:String x:Key="prefs.on">On</system:String>-->
   <system:String x:Key="prefs.paths">Chemins</system:String>
   <system:String x:Key="prefs.paths.addlsinger">Chemin(s) de voicebank additionel(s)</system:String>
+  <!--<system:String x:Key="prefs.paths.addlsinger.install">Install to Additional Singer Path</system:String>-->
   <system:String x:Key="prefs.paths.reset">Réinitialiser</system:String>
   <system:String x:Key="prefs.paths.select">Sélectionner</system:String>
   <system:String x:Key="prefs.playback">Audio</system:String>
-  <system:String x:Key="prefs.playback.backend">Audio Backend</system:String>
+  <!--<system:String x:Key="prefs.playback.backend">Audio Backend</system:String>-->
   <system:String x:Key="prefs.playback.backend.auto">Automatique</system:String>
-  <system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>
+  <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">Position du curseur</system:String>
   <system:String x:Key="prefs.playback.device">Audio de sortie</system:String>
-  <system:String x:Key="prefs.playback.test">Test</system:String>
+  <!--<system:String x:Key="prefs.playback.test">Test</system:String>-->
   <system:String x:Key="prefs.rendering">Rendu</system:String>
-  <system:String x:Key="prefs.rendering.prerender.threads">Pre-render Threads</system:String>
-  <system:String x:Key="prefs.rendering.resampler.export">Resampler d'export</system:String>
+  <!--<system:String x:Key="prefs.rendering.phasecomp">Phase Compensation</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.prerender.threads">Pre-render Threads</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.resampler.morewarn">
+Warning: moresampler is not fully supported. It may be slow and cause high CPU usage. If you insist, please:
+1. Set "resampler-compatibility" to "on" in moreconfig.txt.
+2. Set "auto-update-llsm-mrq" to "off" in moreconfig.txt.
+3. Patiently wait for moresampler to generate missing llsm files.
+  </system:String>-->
   <system:String x:Key="prefs.rendering.resampler.note">
         Note: pour utiliser des resamplers externes, ajoutez le fichier .exe ou .dll du resampler dans le dossier "Resamplers" de OpenUTAU, puis choisissez-le dans Préférences.
     </system:String>
-  <system:String x:Key="prefs.rendering.resampler.preview">Resampler de prévisualisation</system:String>
-  <system:String x:Key="prefs.rendering.resampler.warn">
-Attention: moresampler n'est pas complètement compatible et peut être lent et causer une grosse utilisation du CPU. Si vous souhaitez tout de même l'utiliser, veuillez:
-1. Mettre "on" pour "resampler-compatibility" dans moreconfig.txt
-2. Mettre "off" pour "auto-update-llsm-mrq" dans moreconfig.txt
-3. Metter "off" pour "multithread-synthesis" dans moreconfig.txt ou réduisez les "Pre-render Threads" à 1 ou 2.
-4. Attendre patiemment la fin du pré-rendu avant de jouer la piste.
-  </system:String>
 
   <system:String x:Key="progress.saved">Projet enregistré. {0}</system:String>
 
   <system:String x:Key="singers.caption">Voicebanks</system:String>
-  <system:String x:Key="singers.location">Location</system:String>
+  <!--<system:String x:Key="singers.location">Location</system:String>-->
   <system:String x:Key="singers.refresh">Rafraîchir</system:String>
   <system:String x:Key="singers.setencoding">Configurer l'encodage</system:String>
   <system:String x:Key="singers.subbanks.cancel">Annuler</system:String>
   <system:String x:Key="singers.subbanks.clear">Effacer</system:String>
-  <system:String x:Key="singers.subbanks.color">Color</system:String>
+  <!--<system:String x:Key="singers.subbanks.color">Color</system:String>-->
   <system:String x:Key="singers.subbanks.color.add">Ajouter une Color</system:String>
   <system:String x:Key="singers.subbanks.color.remove">Enlever une Color</system:String>
   <system:String x:Key="singers.subbanks.color.rename">Renommer</system:String>
@@ -194,7 +194,7 @@ Attention: moresampler n'est pas complètement compatible et peut être lent et 
   <system:String x:Key="singers.subbanks.reset">Réinitialiser</system:String>
   <system:String x:Key="singers.subbanks.save">Enregistrer</system:String>
   <system:String x:Key="singers.subbanks.selectall">Tout sélectionner</system:String>
-  <system:String x:Key="singers.subbanks.set">Set</system:String>
+  <!--<system:String x:Key="singers.subbanks.set">Set</system:String>-->
   <system:String x:Key="singers.subbanks.tone">Tonalité</system:String>
   <system:String x:Key="singers.subbanks.toneranges">Registre</system:String>
 
@@ -230,7 +230,7 @@ Général
   <system:String x:Key="tracks.selectsinger">Sélectionner une Voicebank</system:String>
 
   <system:String x:Key="updater.caption">Vérifier les mises à jour</system:String>
-  <system:String x:Key="updater.github">GitHub</system:String>
+  <!--<system:String x:Key="updater.github">GitHub</system:String>-->
   <system:String x:Key="updater.status.available">Mise à jour v{0} disponible !</system:String>
   <system:String x:Key="updater.status.checking">Recherche de mises à jour...</system:String>
   <system:String x:Key="updater.status.notavailable">À jour !</system:String>
