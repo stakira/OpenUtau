@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using OpenUtau.Core.Util;
 using Serilog;
@@ -61,6 +62,29 @@ namespace OpenUtau.Core {
             Directory.CreateDirectory(dir);
             var filename = Path.GetFileNameWithoutExtension(projectPath);
             return Path.Combine(dir, $"{filename}-{trackNo:D2}.wav");
+        }
+
+        public void ClearCache() {
+            var files = Directory.GetFiles(CachePath, "*.*");
+            foreach (var file in files) {
+                try {
+                    File.Delete(file);
+                } catch (Exception e) {
+                    Log.Error(e, $"Failed to delete {file}");
+                }
+            }
+        }
+
+        readonly static string[] sizes = { "B", "KB", "MB", "GB", "TB", "PB", "EB" };
+        public string GetCacheSize() {
+            var dir = new DirectoryInfo(CachePath);
+            double size = dir.GetFiles("*", SearchOption.AllDirectories).Sum(f => f.Length);
+            int order = 0;
+            while (size >= 1024 && order < sizes.Length - 1) {
+                order++;
+                size = size / 1024;
+            }
+            return $"{size:0.##}{sizes[order]}";
         }
     }
 }

@@ -45,8 +45,12 @@ namespace OpenUtau.Core {
     public class PlaybackManager : ICmdSubscriber {
         private PlaybackManager() {
             DocManager.Inst.AddSubscriber(this);
-            Directory.CreateDirectory(PathManager.Inst.CachePath);
-            RenderEngine.ReleaseSourceTemp();
+            try {
+                Directory.CreateDirectory(PathManager.Inst.CachePath);
+                RenderEngine.ReleaseSourceTemp();
+            } catch (Exception e) {
+                Log.Error(e, "Failed to release source temp.");
+            }
         }
 
         private static PlaybackManager _s;
@@ -192,17 +196,6 @@ namespace OpenUtau.Core {
             if (cancellation != null) {
                 Log.Information("Cancelling rendering");
                 cancellation.Cancel();
-            }
-        }
-
-        public void ClearRenderCache() {
-            var files = Directory.GetFiles(PathManager.Inst.CachePath, "*.*");
-            foreach (var file in files) {
-                try {
-                    File.Delete(file);
-                } catch (Exception e) {
-                    Log.Error(e, $"Failed to delete {file}");
-                }
             }
         }
 

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DynamicData.Binding;
 using OpenUtau.Core;
+using OpenUtau.Core.Util;
 using ReactiveUI;
 using SharpCompress.Archives;
 using SharpCompress.Common;
@@ -235,7 +236,11 @@ namespace OpenUtau.App.ViewModels {
             var textEncoding = TextEncoding;
             return Task.Run(() => {
                 try {
-                    var installer = new Classic.VoicebankInstaller(PathManager.Inst.SingersPath, (progress, info) => {
+                    var basePath = Preferences.Default.InstallToAdditionalSingersPath
+                        && !string.IsNullOrEmpty(Preferences.Default.AdditionalSingerPath)
+                            ? PathManager.Inst.AdditionalSingersPath
+                            : PathManager.Inst.SingersPath;
+                    var installer = new Classic.VoicebankInstaller(basePath, (progress, info) => {
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(progress, info));
                     }, archiveEncoding, textEncoding);
                     installer.LoadArchive(archiveFilePath);

@@ -53,6 +53,11 @@
               <Button Grid.Column="2" Content="{DynamicResource prefs.paths.select}"
                       HorizontalAlignment="Stretch" Click="SelectAddlSingersPath"/>
             </Grid>
+            <TextBlock Text="{DynamicResource prefs.paths.addlsinger.install}"/>
+            <ComboBox HorizontalAlignment="Stretch"  SelectedIndex="{Binding InstallToAdditionalSingersPath}">
+              <ComboBoxItem Content="{DynamicResource prefs.off}"/>
+              <ComboBoxItem Content="{DynamicResource prefs.on}"/>
+            </ComboBox>
           </StackPanel>
         </HeaderedContentControl>
         <HeaderedContentControl Classes="groupbox" Header="{DynamicResource prefs.rendering}">

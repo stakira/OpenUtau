@@ -79,7 +79,7 @@
   <system:String x:Key="menu.help.about">About OpenUtau</system:String>
   <system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>
   <system:String x:Key="menu.tools">Tools</system:String>
-  <system:String x:Key="menu.tools.clearrendercache">Clear Render Cache</system:String>
+  <system:String x:Key="menu.tools.clearcache">Clear Cache</system:String>
   <system:String x:Key="menu.tools.layout">Layout</system:String>
   <system:String x:Key="menu.tools.layout.hsplit11">Horizontal 1:1</system:String>
   <system:String x:Key="menu.tools.layout.hsplit12">Horizontal 1:2</system:String>
@@ -154,6 +154,7 @@ Hold Ctrl to select more</system:String>
   <system:String x:Key="prefs.on">On</system:String>
   <system:String x:Key="prefs.paths">Paths</system:String>
   <system:String x:Key="prefs.paths.addlsinger">Additional Singer Path</system:String>
+  <system:String x:Key="prefs.paths.addlsinger.install">Install to Additional Singer Path</system:String>
   <system:String x:Key="prefs.paths.reset">Reset</system:String>
   <system:String x:Key="prefs.paths.select">Select</system:String>
   <system:String x:Key="prefs.playback">Playback</system:String>

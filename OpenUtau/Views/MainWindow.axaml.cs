@@ -132,6 +132,7 @@ namespace OpenUtau.App.Views {
         void OnMainMenuOpened(object sender, RoutedEventArgs args) {
             viewModel.RefreshOpenRecent();
             viewModel.RefreshTemplates();
+            viewModel.RefreshCacheSize();
         }
 
         async void OnMenuSave(object sender, RoutedEventArgs args) => await Save();
@@ -339,8 +340,8 @@ namespace OpenUtau.App.Views {
             }
         }
 
-        void OnMenuClearRenderCache(object sender, RoutedEventArgs args) {
-            PlaybackManager.Inst.ClearRenderCache();
+        void OnMenuClearCache(object sender, RoutedEventArgs args) {
+            PathManager.Inst.ClearCache();
         }
 
         void OnMenuWiki(object sender, RoutedEventArgs args) {

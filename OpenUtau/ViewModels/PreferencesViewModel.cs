@@ -27,6 +27,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public int PreferPortAudio { get; set; }
         [Reactive] public double PlayPosMarkerMargin { get; set; }
         public string AdditionalSingersPath => PathManager.Inst.AdditionalSingersPath;
+        [Reactive] public int InstallToAdditionalSingersPath { get; set; }
         public List<IResamplerDriver>? Resamplers { get; }
         public IResamplerDriver? ExportResampler {
             get => exportResampler;
@@ -60,6 +61,7 @@ namespace OpenUtau.App.ViewModels {
             }
             PreferPortAudio = Preferences.Default.PreferPortAudio ? 1 : 0;
             PlayPosMarkerMargin = Preferences.Default.PlayPosMarkerMargin;
+            InstallToAdditionalSingersPath = Preferences.Default.InstallToAdditionalSingersPath ? 1 : 0;
             ResamplerDrivers.Search();
             Resamplers = ResamplerDrivers.GetResamplers();
             if (Resamplers.Count > 0) {
@@ -108,6 +110,11 @@ namespace OpenUtau.App.ViewModels {
             this.WhenAnyValue(vm => vm.PlayPosMarkerMargin)
                 .Subscribe(playPosMarkerMargin => {
                     Preferences.Default.PlayPosMarkerMargin = playPosMarkerMargin;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.InstallToAdditionalSingersPath)
+                .Subscribe(index => {
+                    Preferences.Default.InstallToAdditionalSingersPath = index > 0;
                     Preferences.Save();
                 });
             this.WhenAnyValue(vm => vm.ExportResampler)
