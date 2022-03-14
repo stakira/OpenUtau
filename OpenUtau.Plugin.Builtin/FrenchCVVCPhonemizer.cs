@@ -6,11 +6,10 @@ using System.Linq;
 
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("French CVVC Phonemizer", "FR CVVC", "")]
-    // Contributed by Mim with heavy use of Heiden.BZR & nago's phonemizers
-    //I removed the credits from the title because it felt too messy in the software, please feel free to put them back
+    [Phonemizer("French CVVC Phonemizer", "FR CVVC", "Mim")]
+    // Contributed by Mim with the help of Heiden.BZR & nago's phonemizers
 
-    //This is a first implementation and I'm already working on remaking the phonemizer from scratch to optimize it 
+    //This is a first implementation and I'm already working on optimization 
     public class FrenchCVVCPhonemizer : SyllableBasedPhonemizer {
 
         private readonly string[] vowels = "ah,ae,eh,ee,oe,ih,oh,oo,ou,uh,en,in,on,oi,ui".Split(",");
