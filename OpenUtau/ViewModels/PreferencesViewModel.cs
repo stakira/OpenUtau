@@ -8,8 +8,8 @@ using System.Text.RegularExpressions;
 using Avalonia;
 using Avalonia.Markup.Xaml.MarkupExtensions;
 using OpenUtau.Audio;
+using OpenUtau.Classic;
 using OpenUtau.Core;
-using OpenUtau.Core.ResamplerDriver;
 using OpenUtau.Core.Util;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -28,8 +28,8 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public double PlayPosMarkerMargin { get; set; }
         public string AdditionalSingersPath => PathManager.Inst.AdditionalSingersPath;
         [Reactive] public int InstallToAdditionalSingersPath { get; set; }
-        public List<IResamplerDriver>? Resamplers { get; }
-        public IResamplerDriver? ExportResampler {
+        public List<IResampler>? Resamplers { get; }
+        public IResampler? ExportResampler {
             get => exportResampler;
             set => this.RaiseAndSetIfChanged(ref exportResampler, value);
         }
@@ -45,7 +45,7 @@ namespace OpenUtau.App.ViewModels {
 
         private List<AudioOutputDevice>? audioOutputDevices;
         private AudioOutputDevice? audioOutputDevice;
-        private IResamplerDriver? exportResampler;
+        private IResampler? exportResampler;
         private CultureInfo? language;
         private readonly ObservableAsPropertyHelper<bool> moresamplerSelected;
 
@@ -62,8 +62,8 @@ namespace OpenUtau.App.ViewModels {
             PreferPortAudio = Preferences.Default.PreferPortAudio ? 1 : 0;
             PlayPosMarkerMargin = Preferences.Default.PlayPosMarkerMargin;
             InstallToAdditionalSingersPath = Preferences.Default.InstallToAdditionalSingersPath ? 1 : 0;
-            ResamplerDrivers.Search();
-            Resamplers = ResamplerDrivers.GetResamplers();
+            Classic.Resamplers.Search();
+            Resamplers = Classic.Resamplers.GetResamplers();
             if (Resamplers.Count > 0) {
                 int index = Resamplers.FindIndex(resampler => resampler.Name == Preferences.Default.Resampler);
                 if (index >= 0) {

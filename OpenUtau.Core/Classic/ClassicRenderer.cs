@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using OpenUtau.Core.Render;
-using OpenUtau.Core.ResamplerDriver;
 
 namespace OpenUtau.Classic {
     class ClassicRenderer : IRenderer {
@@ -19,23 +18,7 @@ namespace OpenUtau.Classic {
                 }, body: item => {
                     if (!cancellation.IsCancellationRequested && !File.Exists(item.outputFile)) {
                         VoicebankFiles.CopySourceTemp(item.inputFile, item.inputTemp);
-                        var engineInput = new DriverModels.EngineInput() {
-                            inputWaveFile = item.inputTemp,
-                            outputWaveFile = item.outputFile,
-                            NoteString = item.tone,
-                            Velocity = item.velocity,
-                            StrFlags = item.flags,
-                            Offset = item.offset,
-                            RequiredLength = item.requiredLength,
-                            Consonant = item.consonant,
-                            Cutoff = item.cutoff,
-                            Volume = item.volume,
-                            Modulation = item.modulation,
-                            pitchBend = item.pitches,
-                            nPitchBend = item.pitches.Length,
-                            Tempo = item.tempo,
-                        };
-                        item.resampler.DoResamplerReturnsFile(engineInput, Serilog.Log.Logger);
+                        item.resampler.DoResamplerReturnsFile(item, Serilog.Log.Logger);
                         VoicebankFiles.CopyBackMetaFiles(item.inputFile, item.inputTemp);
                     }
                     progress.CompleteOne($"Resampling \"{item.phone.phoneme}\"");

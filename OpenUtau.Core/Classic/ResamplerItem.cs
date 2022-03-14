@@ -6,20 +6,19 @@ using K4os.Hash.xxHash;
 using NAudio.Wave;
 using OpenUtau.Core;
 using OpenUtau.Core.Render;
-using OpenUtau.Core.ResamplerDriver;
 
 namespace OpenUtau.Classic {
-    class ResamplerItem {
+    public class ResamplerItem {
         public RenderPhrase phrase;
         public RenderPhone phone;
 
-        public IResamplerDriver resampler;
+        public IResampler resampler;
         public string inputFile;
         public string inputTemp;
         public string outputFile;
-        public string tone;
+        public int tone;
 
-        public string flags;
+        public Tuple<string, int?>[] flags;
         public int velocity;
         public int volume;
         public int modulation;
@@ -39,13 +38,14 @@ namespace OpenUtau.Classic {
             this.phrase = phrase;
             this.phone = phone;
 
-            resampler = ResamplerDrivers.GetResampler(
+            resampler = Resamplers.GetResampler(
                 string.IsNullOrEmpty(phone.resampler)
-                    ? ResamplerDrivers.GetDefaultResamplerName()
-                    : phone.resampler);
+                    ? WorldlineResampler.name
+                    : phone.resampler)
+                ?? Resamplers.GetResampler(WorldlineResampler.name);
             inputFile = phone.oto.File;
             inputTemp = VoicebankFiles.GetSourceTempPath(phrase.singerId, phone.oto);
-            tone = MusicMath.GetToneName(phone.tone);
+            tone = phone.tone;
 
             flags = phone.flags;
             velocity = (int)(phone.velocity * 100);
@@ -82,7 +82,12 @@ namespace OpenUtau.Classic {
                     writer.Write(inputFile);
                     writer.Write(tone);
 
-                    writer.Write(flags);
+                    foreach (var flag in flags) {
+                        writer.Write(flag.Item1);
+                        if (flag.Item2.HasValue) {
+                            writer.Write(flag.Item2.Value);
+                        }
+                    }
                     writer.Write(velocity);
                     writer.Write(volume);
                     writer.Write(modulation);

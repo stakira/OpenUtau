@@ -6,8 +6,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
+using OpenUtau.Classic;
 using OpenUtau.Core.Render;
-using OpenUtau.Core.ResamplerDriver;
 using OpenUtau.Core.SignalChain;
 using OpenUtau.Core.Ustx;
 using Serilog;
@@ -64,7 +64,7 @@ namespace OpenUtau.Core {
         public Audio.IAudioOutput AudioOutput { get; set; } = new Audio.DummyAudioOutput();
         public bool Playing => AudioOutput.PlaybackState == PlaybackState.Playing;
 
-        public bool CheckResampler() => ResamplerDrivers.CheckResampler();
+        public bool CheckResampler() => Resamplers.CheckResampler();
 
         public void PlayTestSound() {
             masterMix = null;
@@ -89,7 +89,7 @@ namespace OpenUtau.Core {
                 PausePlayback();
                 return true;
             }
-            if (!ResamplerDrivers.CheckResampler()) {
+            if (!Resamplers.CheckResampler()) {
                 return false;
             }
             Play(DocManager.Inst.Project, DocManager.Inst.playPosTick);
@@ -124,7 +124,7 @@ namespace OpenUtau.Core {
         }
 
         private void Render(UProject project, int tick) {
-            if (!ResamplerDrivers.CheckResampler()) {
+            if (!Resamplers.CheckResampler()) {
                 return;
             }
             var scheduler = TaskScheduler.FromCurrentSynchronizationContext();

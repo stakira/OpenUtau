@@ -2,9 +2,11 @@
 using System.Linq;
 using System.Runtime.InteropServices;
 using NAudio.Wave;
+using OpenUtau.Classic;
+using OpenUtau.Core.Formats;
 using Serilog;
 
-namespace OpenUtau.Core.ResamplerDriver {
+namespace OpenUtau.Core.Render {
     static class Worldline {
         [StructLayout(LayoutKind.Sequential)]
         public struct SynthRequest {
@@ -41,37 +43,49 @@ namespace OpenUtau.Core.ResamplerDriver {
         [DllImport("worldline")]
         static extern int Resample(IntPtr request, ref IntPtr y);
 
-        public static float[] Resample(DriverModels.EngineInput args, ILogger logger) {
+        public static float[] Resample(ResamplerItem item, ILogger logger) {
             int fs;
             double[] sample;
-            using (var waveStream = Formats.Wave.OpenFile(args.inputWaveFile)) {
+            using (var waveStream = Wave.OpenFile(item.inputTemp)) {
                 fs = waveStream.WaveFormat.SampleRate;
-                sample = Formats.Wave.GetSamples(waveStream.ToSampleProvider().ToMono(1, 0))
+                sample = Wave.GetSamples(waveStream.ToSampleProvider().ToMono(1, 0))
                     .Select(f => (double)f).ToArray();
             }
 
             var pinnedSample = GCHandle.Alloc(sample, GCHandleType.Pinned);
-            var pinnedPitchBend = GCHandle.Alloc(args.pitchBend, GCHandleType.Pinned);
+            var pinnedPitchBend = GCHandle.Alloc(item.pitches, GCHandleType.Pinned);
             var request = new SynthRequest {
                 sample_fs = fs,
                 sample_length = sample.Length,
                 sample = pinnedSample.AddrOfPinnedObject(),
-                tone = MusicMath.NameToTone(args.NoteString),
-                con_vel = args.Velocity,
-                offset = args.Offset,
-                required_length = args.RequiredLength,
-                consonant = args.Consonant,
-                cut_off = args.Cutoff,
-                volume = args.Volume,
-                modulation = args.Modulation,
-                tempo = args.Tempo,
-                pitch_bend_length = args.nPitchBend,
+                tone = item.tone,
+                con_vel = item.velocity,
+                offset = item.offset,
+                required_length = item.requiredLength,
+                consonant = item.consonant,
+                cut_off = item.cutoff,
+                volume = item.volume,
+                modulation = item.modulation,
+                tempo = item.tempo,
+                pitch_bend_length = item.pitches.Length,
                 pitch_bend = pinnedPitchBend.AddrOfPinnedObject(),
                 flag_g = 0,
                 flag_Mt = 0,
                 flag_O = 0,
                 flag_P = 86,
             };
+            var flag = item.flags.FirstOrDefault(f => f.Item1 == "g");
+            if (flag != null && flag.Item2.HasValue) {
+                request.flag_g = flag.Item2.Value;
+            }
+            flag = item.flags.FirstOrDefault(f => f.Item1 == "O");
+            if (flag != null && flag.Item2.HasValue) {
+                request.flag_O = flag.Item2.Value;
+            }
+            flag = item.flags.FirstOrDefault(f => f.Item1 == "P");
+            if (flag != null && flag.Item2.HasValue) {
+                request.flag_P = flag.Item2.Value;
+            }
 
             try {
                 unsafe {

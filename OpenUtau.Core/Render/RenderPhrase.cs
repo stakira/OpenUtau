@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Numerics;
-using K4os.Hash.xxHash;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core.Render {
@@ -16,7 +14,7 @@ namespace OpenUtau.Core.Render {
 
         // classic args
         public readonly string resampler;
-        public readonly string flags;
+        public readonly Tuple<string, int?>[] flags;
         public readonly float volume;
         public readonly float velocity;
         public readonly float modulation;
@@ -24,7 +22,6 @@ namespace OpenUtau.Core.Render {
         public readonly Vector2[] envelope;
 
         public readonly UOto oto;
-        public readonly uint hash;
 
         internal RenderPhone(UProject project, UTrack track, UVoicePart part, UNote note, UPhoneme phoneme) {
             position = note.position + phoneme.position;
@@ -42,9 +39,6 @@ namespace OpenUtau.Core.Render {
                 if (string.IsNullOrEmpty(resampler)) {
                     resampler = Util.Preferences.Default.Resampler;
                 }
-                if (ResamplerDriver.ResamplerDrivers.GetResampler(resampler) == null) {
-                    resampler = ResamplerDriver.ResamplerDrivers.GetDefaultResamplerName();
-                }
             }
             flags = phoneme.GetResamplerFlags(project, track);
             volume = phoneme.GetExpression(project, track, "vol").Item1 * 0.01f;
@@ -54,25 +48,6 @@ namespace OpenUtau.Core.Render {
             envelope = phoneme.envelope.data.ToArray();
 
             oto = phoneme.oto;
-            hash = Hash();
-        }
-
-        public uint Hash() {
-            using (var stream = new MemoryStream()) {
-                using (var writer = new BinaryWriter(stream)) {
-                    writer.Write(duration);
-                    writer.Write(phoneme ?? "");
-                    writer.Write(tone);
-
-                    writer.Write(resampler ?? "");
-                    writer.Write(flags ?? "");
-                    writer.Write(volume);
-                    writer.Write(velocity);
-                    writer.Write(modulation);
-                    writer.Write(preutterMs);
-                    return XXH32.DigestOf(stream.ToArray());
-                }
-            }
         }
     }
 
