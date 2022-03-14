@@ -63,7 +63,7 @@
   <system:String x:Key="menu.file">_Archivo</system:String>
   <system:String x:Key="menu.file.exit">_Salir</system:String>
   <system:String x:Key="menu.file.exportust">Exportar como archivos UST</system:String>
-  <system:String x:Key="menu.file.exportwav">Exportar como archivos WAV/system:String>
+  <system:String x:Key="menu.file.exportwav">Exportar como archivos WAV</system:String>
   <system:String x:Key="menu.file.importaudio">_Importar Audio</system:String>
   <system:String x:Key="menu.file.importmidi">_Importar MIDI</system:String>
   <system:String x:Key="menu.file.importtracks">Importar Pistas...</system:String>
