@@ -80,6 +80,7 @@
   <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
   <system:String x:Key="menu.tools">Công cụ</system:String>
   <!--<system:String x:Key="menu.tools.clearcache">Clear Cache</system:String>-->
+  <system:String x:Key="menu.tools.clearcache">Xoá bộ nhớ đệm</system:String>
   <system:String x:Key="menu.tools.layout">Bố cục</system:String>
   <system:String x:Key="menu.tools.layout.hsplit11">Ngang 1:1</system:String>
   <system:String x:Key="menu.tools.layout.hsplit12">Ngang 1:2</system:String>
@@ -152,12 +153,15 @@ Nhấn giữ Ctrl để chọn đồng loạt nhiều nốt</system:String>
   <system:String x:Key="prefs.note.restart">Lưu ý: khởi động lại OpenUTAU sau khi chỉnh sửa tuỳ chọn này.</system:String>
   <system:String x:Key="prefs.off">Tắt</system:String>
   <system:String x:Key="prefs.on">Mở</system:String>
-  <system:String x:Key="prefs.paths">Đường dẫn</system:String>
+  <system:String x:Key="prefs.paths">Mở thư mục Resamplers</system:String>
   <system:String x:Key="prefs.paths.addlsinger">Đường dẫn phụ chứa ca sĩ </system:String>
   <!--<system:String x:Key="prefs.paths.addlsinger.install">Install to Additional Singer Path</system:String>-->
+  <system:String x:Key="prefs.paths.addlsinger.install">Cài đặt vào đường dẫn phụ chứa ca sĩ</system:String>
   <system:String x:Key="prefs.paths.reset">Đặt lại</system:String>
   <system:String x:Key="prefs.paths.select">Lựa chọn</system:String>
   <system:String x:Key="prefs.playback">Phát lại</system:String>
+  <system:String x:Key="prefs.playback.backend">Backend âm thanh</system:String>
+  <system:String x:Key="prefs.playback.backend.auto">Tự động</system:String>
   <!--<system:String x:Key="prefs.playback.backend">Audio Backend</system:String>-->
   <!--<system:String x:Key="prefs.playback.backend.auto">Automatic</system:String>-->
   <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
@@ -221,8 +225,8 @@ Tổng quát
     Alt + Kéo đuôi bốt nhạc: Chỉnh sửa độ dài nốt tiếp theo
     Space: Chơi nhạc
   </system:String>
-  <system:String x:Key="tip.notes.zoomx">◀ Cuộn chỗ này để phóng to theo chiều ngang ▶</system:String>
-  <system:String x:Key="tip.notes.zoomy">Cuộn chỗ này để phóng to theo chiều dọc ▶</system:String>
+  <system:String x:Key="tip.notes.zoomx">◀ Lăn chuột chỗ này để phóng to theo chiều ngang ▶</system:String>
+  <system:String x:Key="tip.notes.zoomy">Lăn chuột chỗ này để phóng to theo chiều dọc ▶</system:String>
 
   <system:String x:Key="tracks.movedown">Di chuyển xuống</system:String>
   <system:String x:Key="tracks.moveup">Di chuyển lên</system:String>
