@@ -328,6 +328,17 @@ namespace OpenUtau.App.ViewModels {
                     SelectedNotes.ToArray(), TempSelectedNotes.ToArray()));
         }
 
+        public void SelectNote(UNote note) {
+            TempSelectedNotes.Clear();
+            if (Part == null) {
+                return;
+            }
+            SelectedNotes.Add(note);
+            MessageBus.Current.SendMessage(
+                new NotesSelectionEvent(
+                    SelectedNotes.ToArray(), TempSelectedNotes.ToArray()));
+        }
+
         public void SelectAllNotes() {
             DeselectNotes();
             if (Part == null) {

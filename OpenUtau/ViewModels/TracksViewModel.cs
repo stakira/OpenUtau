@@ -208,6 +208,14 @@ namespace OpenUtau.App.ViewModels {
                     SelectedParts.ToArray(), TempSelectedParts.ToArray()));
         }
 
+        public void SelectPart(UPart part) {
+            TempSelectedParts.Clear();
+            SelectedParts.Add(part);
+            MessageBus.Current.SendMessage(
+                new PartsSelectionEvent(
+                    SelectedParts.ToArray(), TempSelectedParts.ToArray()));
+        }
+
         public void SelectAllParts() {
             var project = DocManager.Inst.Project;
             DeselectParts();
@@ -251,6 +259,55 @@ namespace OpenUtau.App.ViewModels {
             DocManager.Inst.EndUndoGroup();
             DeselectParts();
         }
+
+        public void CopyParts() {
+            if (SelectedParts.Count > 0) {
+                DocManager.Inst.PartsClipboard = SelectedParts.Select(part => part.Clone()).ToList();
+            }
+        }
+
+        public void CutParts() {
+            if (SelectedParts.Count > 0) {
+                DocManager.Inst.PartsClipboard = SelectedParts.Select(part => part.Clone()).ToList();
+                DocManager.Inst.StartUndoGroup();
+                foreach (var part in SelectedParts) {
+                    DocManager.Inst.ExecuteCmd(new RemovePartCommand(Project, part));
+                }
+                SelectedParts.Clear();
+                DocManager.Inst.EndUndoGroup();
+            }
+        }
+
+        public void PasteParts() {
+            var parts = DocManager.Inst.PartsClipboard
+                .Select(part => part.Clone())
+                .OrderBy(part => part.trackNo).ToList();
+            int newTrackNo = Project.parts.Max(part => part.trackNo);
+            int oldTrackNo = -1;
+            foreach (var part in parts) {
+                if (part.trackNo > oldTrackNo) {
+                    oldTrackNo = part.trackNo;
+                    newTrackNo++;
+                }
+                part.trackNo = newTrackNo;
+            }
+            DocManager.Inst.StartUndoGroup();
+            while (Project.tracks.Count <= newTrackNo) {
+                DocManager.Inst.ExecuteCmd(new AddTrackCommand(Project, new UTrack() {
+                    TrackNo = Project.tracks.Count,
+                }));
+            }
+            foreach (var part in parts) {
+                DocManager.Inst.ExecuteCmd(new AddPartCommand(Project, part));
+            }
+            DocManager.Inst.EndUndoGroup();
+            DeselectParts();
+            SelectedParts.AddRange(parts);
+            MessageBus.Current.SendMessage(
+                new PartsSelectionEvent(
+                    SelectedParts.ToArray(), TempSelectedParts.ToArray()));
+        }
+
 
         private void SetPlayPos(int tick, bool noScroll = false) {
             double playPosX = TickTrackToPoint(tick, 0).X;

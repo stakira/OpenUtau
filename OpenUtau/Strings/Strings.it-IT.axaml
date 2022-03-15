@@ -62,8 +62,8 @@
   <system:String x:Key="menu.edit.undo">Annulla</system:String>
   <!--<system:String x:Key="menu.file">File</system:String>-->
   <system:String x:Key="menu.file.exit">Esci</system:String>
-  <system:String x:Key="menu.file.exportall">Esporta tutto</system:String>
   <system:String x:Key="menu.file.exportust">Esporta File Ust</system:String>
+  <!--<system:String x:Key="menu.file.exportwav">Export Wav Files</system:String>-->
   <system:String x:Key="menu.file.importaudio">Importa Audio...</system:String>
   <system:String x:Key="menu.file.importmidi">Importa MIDI...</system:String>
   <system:String x:Key="menu.file.importtracks">Importa Tracce...</system:String>
@@ -79,7 +79,7 @@
   <system:String x:Key="menu.help.about">Informazioni su OpenUTAU</system:String>
   <system:String x:Key="menu.help.wiki">OpenUTAU Wiki</system:String>
   <system:String x:Key="menu.tools">Strumenti</system:String>
-  <!--<system:String x:Key="menu.tools.clearrendercache">Clear Render Cache</system:String>-->
+  <!--<system:String x:Key="menu.tools.clearcache">Clear Cache</system:String>-->
   <system:String x:Key="menu.tools.layout">Disposizione</system:String>
   <system:String x:Key="menu.tools.layout.hsplit11">Orizzontale 1:1</system:String>
   <system:String x:Key="menu.tools.layout.hsplit12">Orizzontale 1:2</system:String>
@@ -154,6 +154,7 @@ Tieni premuto click sinistro + Ctrl per selezionare più note</system:String>
   <!--<system:String x:Key="prefs.on">On</system:String>-->
   <system:String x:Key="prefs.paths">Percorsi</system:String>
   <system:String x:Key="prefs.paths.addlsinger">Percorso alternativo per i cantanti</system:String>
+  <!--<system:String x:Key="prefs.paths.addlsinger.install">Install to Additional Singer Path</system:String>-->
   <!--<system:String x:Key="prefs.paths.reset">Reset</system:String>-->
   <system:String x:Key="prefs.paths.select">Seleziona</system:String>
   <system:String x:Key="prefs.playback">Audio</system:String>
@@ -164,18 +165,18 @@ Tieni premuto click sinistro + Ctrl per selezionare più note</system:String>
   <system:String x:Key="prefs.playback.device">Dispositivo audio</system:String>
   <!--<system:String x:Key="prefs.playback.test">Test</system:String>-->
   <system:String x:Key="prefs.rendering">Renderizzazione</system:String>
+  <!--<system:String x:Key="prefs.rendering.phasecomp">Phase Compensation</system:String>-->
   <system:String x:Key="prefs.rendering.prerender.threads">Threads Pre-renderizzazione</system:String>
-  <system:String x:Key="prefs.rendering.resampler.export">Resampler per esportazione</system:String>
+  <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.resampler.morewarn">
+Warning: moresampler is not fully supported. It may be slow and cause high CPU usage. If you insist, please:
+1. Set "resampler-compatibility" to "on" in moreconfig.txt.
+2. Set "auto-update-llsm-mrq" to "off" in moreconfig.txt.
+3. Patiently wait for moresampler to generate missing llsm files.
+  </system:String>-->
   <system:String x:Key="prefs.rendering.resampler.note">
 		Se vuoi utilizzare resampler esterni, aggiungi il file DLL o EXE del resampler nella cartella Resampler all'interno del percorso d'installazione.
     </system:String>
-  <system:String x:Key="prefs.rendering.resampler.preview">Resampler per l'anteprima</system:String>
-  <system:String x:Key="prefs.rendering.resampler.warn">
-    Attenzione: moresampler non è ancora supportato del tutto. Sarà molto lento e causerà un utilizzo elevato della CPU. Se vuoi utilizzarlo:
-    1. Abilita "resampler-compatibility" nel file moreconfig.txt.
-    2. Riduci i threads della pre-renderizzazione ad 1 o 2.
-    3. Aspetta la fine della pre-renderizzazione prima della riproduzione.
-  </system:String>
 
   <system:String x:Key="progress.saved">Progetto salvato. {0}</system:String>
 

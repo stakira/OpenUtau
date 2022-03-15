@@ -152,10 +152,10 @@ namespace OpenUtau.UI.Controls {
 
             float nPeriod = (float)DocManager.Inst.Project.MillisecondToTick(vibrato.period) / note.duration;
             float nPos = vibrato.NormalizedStart;
-            Point p0 = PosToPoint(vibrato.Evaluate(nPos, nPeriod, note));
+            Point p0 = PosToPoint(vibrato.Evaluate(nPos, nPeriod, note) - new Vector2(0, 0.5f));
             while (nPos < 1) {
                 nPos = Math.Min(1, nPos + nPeriod / 16);
-                var p1 = PosToPoint(vibrato.Evaluate(nPos, nPeriod, note));
+                var p1 = PosToPoint(vibrato.Evaluate(nPos, nPeriod, note) - new Vector2(0, 0.5f));
                 cxt.DrawLine(penPit, p0, p1);
                 p0 = p1;
             }

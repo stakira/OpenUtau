@@ -1,12 +1,13 @@
-﻿using Avalonia;
+﻿using System;
+using System.Globalization;
+using System.Linq;
+using System.Threading;
+using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Markup.Xaml.MarkupExtensions;
-using System;
-using System.Globalization;
-using System.Threading;
-using System.Linq;
 using OpenUtau.App.Views;
+using OpenUtau.Classic;
 using OpenUtau.Core;
 using Serilog;
 
@@ -78,7 +79,7 @@ namespace OpenUtau.App {
         }
 
         public static void InitOpenUtau() {
-            Core.ResamplerDriver.ResamplerDrivers.Search();
+            Resamplers.Search();
             DocManager.Inst.Initialize();
         }
 

@@ -46,12 +46,12 @@ namespace OpenUtau.Audio {
                     IntPtr.Zero
                 );
 
-                PaBinding.Pa_MaybeThrow(code);
+                PaBinding.MaybeThrow(code);
             }
 
             this.stream = stream;
 
-            PaBinding.Pa_MaybeThrow(PaBinding.Pa_StartStream(stream));
+            PaBinding.MaybeThrow(PaBinding.Pa_StartStream(stream));
         }
 
         public void Send(Span<float> samples) {

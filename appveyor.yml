@@ -2,6 +2,7 @@ version: 0.0.{build}
 image:
   - Visual Studio 2019
   - macOS
+  - Ubuntu
 pull_requests:
   do_not_increment_build_number: true
 configuration:
@@ -16,21 +17,14 @@ before_build:
 after_build:
   - cmd: python appveyor.py
 artifacts:
-  - path: OpenUtau\bin\Release\netcoreapp3.1
-    name: OpenUtau
-    type: zip
   - path: bin\win-x86
     name: OpenUtau-win-x86
     type: zip
   - path: bin\win-x64
     name: OpenUtau-win-x64
     type: zip
-  - path: bin\linux-x64
-    name: OpenUtau-linux-x64
-    type: zip
   - path: OpenUtau-osx-x64.dmg
-  - path: release.xml
-  - path: appcast.win.xml
+  - path: OpenUtau-linux-x64.tar.gz
   - path: appcast.win-x86.xml
   - path: appcast.win-x64.xml
   - path: appcast.linux-x64.xml
@@ -41,6 +35,12 @@ for:
   matrix:
     only:
       - image: macOS
+  build_script:
+    - python appveyor.py
+-
+  matrix:
+    only:
+      - image: Ubuntu
   build_script:
     - python appveyor.py
 deploy:

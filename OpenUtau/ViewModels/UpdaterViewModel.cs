@@ -40,6 +40,7 @@ namespace OpenUtau.App.ViewModels {
                 UIFactory = null,
                 CheckServerFileName = false,
                 RelaunchAfterUpdate = true,
+                RelaunchAfterUpdateCommandPrefix = OS.IsLinux() ? "./" : string.Empty,
             };
         }
 
@@ -128,7 +129,6 @@ namespace OpenUtau.App.ViewModels {
                 var unzipperPath = Path.Combine(Path.GetDirectoryName(downloadFilePath) ?? Path.GetTempPath(), "Unzipper.exe");
                 File.WriteAllBytes(unzipperPath, Resources.Resources.Unzipper);
                 return string.Format($"{unzipperPath} \"{downloadFilePath}\" \"{RestartExecutablePath.TrimEnd('\\', '/')}\"");
-                //return string.Format("tar -x -f {0} -C \"{1}\"", downloadFilePath, RestartExecutablePath.TrimEnd('\\'));
             }
             return downloadFilePath;
         }

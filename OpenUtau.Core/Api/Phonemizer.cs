@@ -206,6 +206,7 @@ namespace OpenUtau.Api {
         }
 
         protected void OnAsyncInitFinished() {
+            DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, ""));
             DocManager.Inst.ExecuteCmd(new ValidateProjectNotification());
             DocManager.Inst.ExecuteCmd(new PreRenderNotification());
         }

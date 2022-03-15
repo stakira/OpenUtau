@@ -13,6 +13,7 @@ namespace OpenUtau.Classic {
 
     public class VoicebankInstaller {
         const string kCharacterTxt = "character.txt";
+        const string kCharacterYaml = "character.yaml";
         const string kInstallTxt = "install.txt";
 
         private string basePath;
@@ -44,12 +45,13 @@ namespace OpenUtau.Classic {
                 AdjustBasePath(archive, path, touches);
                 int total = archive.Entries.Count();
                 int count = 0;
+                bool hasCharacterYaml = archive.Entries.Any(e => e.Key.EndsWith(kCharacterYaml));
                 foreach (var entry in archive.Entries) {
                     var filePath = Path.Combine(basePath, entry.Key);
                     Directory.CreateDirectory(Path.GetDirectoryName(filePath));
                     if (!entry.IsDirectory && entry.Key != kInstallTxt) {
                         entry.WriteToFile(Path.Combine(basePath, entry.Key), extractionOptions);
-                        if (filePath.Contains(kCharacterTxt)) {
+                        if (!hasCharacterYaml && filePath.EndsWith(kCharacterTxt)) {
                             var config = new VoicebankConfig() {
                                 TextFileEncoding = textEncoding.WebName,
                             };

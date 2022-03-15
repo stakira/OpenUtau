@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
-using System.Text;
 using Newtonsoft.Json;
 using YamlDotNet.Serialization;
 
@@ -202,24 +200,23 @@ namespace OpenUtau.Core.Ustx {
             }
         }
 
-        public string GetResamplerFlags(UProject project, UTrack track) {
-            StringBuilder builder = new StringBuilder();
+        public Tuple<string, int?>[] GetResamplerFlags(UProject project, UTrack track) {
+            var flags = new List<Tuple<string, int?>>();
             foreach (var descriptor in project.expressions.Values) {
                 if (descriptor.type == UExpressionType.Numerical) {
                     if (!string.IsNullOrEmpty(descriptor.flag)) {
-                        builder.Append(descriptor.flag);
                         int value = (int)GetExpression(project, track, descriptor.abbr).Item1;
-                        builder.Append(value);
+                        flags.Add(Tuple.Create<string, int?>(descriptor.flag, value));
                     }
                 }
                 if (descriptor.type == UExpressionType.Options) {
                     if (descriptor.isFlag) {
                         int value = (int)GetExpression(project, track, descriptor.abbr).Item1;
-                        builder.Append(descriptor.options[value]);
+                        flags.Add(Tuple.Create<string, int?>(descriptor.options[value], null));
                     }
                 }
             }
-            return builder.ToString();
+            return flags.ToArray();
         }
     }
 

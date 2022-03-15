@@ -109,6 +109,7 @@ namespace OpenUtau.Core.Ustx {
                 trackNo = trackNo,
                 position = position,
                 notes = new SortedSet<UNote>(notes.Select(note => note.Clone())),
+                Duration = Duration,
             };
         }
     }
@@ -183,7 +184,7 @@ namespace OpenUtau.Core.Ustx {
             }
             Task.Run(() => {
                 using (var waveStream = Formats.Wave.OpenFile(FilePath)) {
-                    var samples = Formats.Wave.GetSamples(waveStream);
+                    var samples = Formats.Wave.GetStereoSamples(waveStream);
                     lock (loadLockObj) {
                         Samples = samples;
                     }

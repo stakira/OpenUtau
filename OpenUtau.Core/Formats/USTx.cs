@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using OpenUtau.Core.ResamplerDriver;
+using OpenUtau.Classic;
 using OpenUtau.Core.Ustx;
 using Serilog;
 
@@ -19,7 +19,7 @@ namespace OpenUtau.Core.Formats {
             project.RegisterExpression(new UExpressionDescriptor("decay", "dec", 0, 100, 0));
             project.RegisterExpression(new UExpressionDescriptor("voice color", "clr", false, new string[0]));
             project.RegisterExpression(new UExpressionDescriptor("resampler engine", "eng", false,
-                new string[] { "", ResamplerDrivers.GetDefaultResamplerName() }));
+                new string[] { "", WorldlineResampler.name }));
         }
 
         public static void AddDefaultExpressions(UProject project) {
