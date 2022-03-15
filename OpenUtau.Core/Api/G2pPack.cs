@@ -18,14 +18,18 @@ namespace OpenUtau.Api {
         protected InferenceSession Session { get; set; }
         protected Dictionary<string, string[]> PredCache { get; set; }
 
-        public static string ExtractText(byte[] data, string key) {
+        public static string[] ExtractText(byte[] data, string key) {
             using (var stream = new MemoryStream(data)) {
                 using var archive = ArchiveFactory.Open(stream);
                 foreach (var entry in archive.Entries) {
                     if (entry.Key == key) {
                         using var entryStream = entry.OpenEntryStream();
                         using var reader = new StreamReader(entryStream, Encoding.UTF8);
-                        return reader.ReadToEnd();
+                        var lines = new List<string>();
+                        while (!reader.EndOfStream) {
+                            lines.Add(reader.ReadLine());
+                        }
+                        return lines.ToArray();
                     }
                 }
             }
@@ -53,18 +57,16 @@ namespace OpenUtau.Api {
             Func<string, string> prepPhoneme = null) {
             prepGrapheme = prepGrapheme ?? ((string s) => s);
             prepPhoneme = prepPhoneme ?? ((string s) => s);
-            string dictTxt = ExtractText(data, "dict.txt");
-            string phonesTxt = ExtractText(data, "phones.txt");
+            string[] dictTxt = ExtractText(data, "dict.txt");
+            string[] phonesTxt = ExtractText(data, "phones.txt");
             byte[] g2pData = ExtractBinary(data, "g2p.onnx");
             var builder = G2pDictionary.NewBuilder();
-            phonesTxt.Split('\n')
-                .Select(line => prepPhoneme(line.Trim()))
+            phonesTxt.Select(line => line.Trim())
                 .Select(line => line.Split())
                 .Where(parts => parts.Length == 2)
                 .ToList()
-                .ForEach(parts => builder.AddSymbol(parts[0], parts[1]));
-            dictTxt.Split('\n')
-                .Where(line => !line.StartsWith(";;;"))
+                .ForEach(parts => builder.AddSymbol(prepPhoneme(parts[0]), parts[1]));
+            dictTxt.Where(line => !line.StartsWith(";;;"))
                 .Select(line => line.Trim())
                 .Select(line => line.Split(new string[] { "  " }, StringSplitOptions.None))
                 .Where(parts => parts.Length == 2)

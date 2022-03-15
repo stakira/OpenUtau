@@ -189,7 +189,7 @@ namespace OpenUtau.Core.Ustx {
                     nextIsNeighbour ? next : null,
                     phonemizerPrevs);
             } catch (Exception e) {
-                Log.Error(e, "phonemizer error");
+                Log.Error(e, $"phonemizer error {notes[0].lyric}");
                 phonemizerResult = new Phonemizer.Result() {
                     phonemes = new Phonemizer.Phoneme[] {
                         new Phonemizer.Phoneme {
