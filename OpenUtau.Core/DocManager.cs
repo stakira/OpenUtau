@@ -208,6 +208,7 @@ namespace OpenUtau.Core {
             if (undoGroup.Commands.Any(cmd => cmd.DeferValidate)) {
                 Project.Validate();
             }
+            undoGroup.Merge();
             undoGroup = null;
             Log.Information("undoGroup ended");
             ExecuteCmd(new PreRenderNotification());

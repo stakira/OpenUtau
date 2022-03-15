@@ -463,6 +463,32 @@ namespace OpenUtau.App.Views {
             if (descriptor == null) {
                 return;
             }
+            if (descriptor.type != UExpressionType.Curve) {
+                UpdatePhonemeExp(pointer, point);
+            } else {
+                UpdateCurveExp(pointer, point);
+            }
+            double viewMax = descriptor.max + (descriptor.type == UExpressionType.Options ? 1 : 0);
+            double displayValue = descriptor.min + (viewMax - descriptor.min) * (1 - point.Y / canvas.Bounds.Height);
+            displayValue = Math.Max(descriptor.min, Math.Min(descriptor.max, displayValue));
+            string valueTipText;
+            if (descriptor.type == UExpressionType.Options) {
+                int index = (int)displayValue;
+                if (index >= 0 && index < descriptor.options.Length) {
+                    valueTipText = descriptor.options[index];
+                } else {
+                    valueTipText = "Error: out of range";
+                }
+                if (string.IsNullOrEmpty(valueTipText)) {
+                    valueTipText = "\"\"";
+                }
+            } else {
+                valueTipText = ((int)displayValue).ToString();
+            }
+            valueTip.UpdateValueTip(valueTipText);
+            lastPoint = point;
+        }
+        private void UpdatePhonemeExp(IPointer pointer, Point point) {
             var notesVm = vm.NotesViewModel;
             var p1 = lastPoint;
             var p2 = point;
@@ -483,24 +509,14 @@ namespace OpenUtau.App.Views {
                         notesVm.Project, track, hit.phoneme, key, (int)newValue));
                 }
             }
-            double displayValue = descriptor.min + (viewMax - descriptor.min) * (1 - point.Y / canvas.Bounds.Height);
-            displayValue = Math.Max(descriptor.min, Math.Min(descriptor.max, displayValue));
-            string valueTipText = string.Empty;
-            if (descriptor.type == UExpressionType.Numerical) {
-                valueTipText = ((int)displayValue).ToString();
-            } else if (descriptor.type == UExpressionType.Options) {
-                int index = (int)displayValue;
-                if (index >= 0 && index < descriptor.options.Length) {
-                    valueTipText = descriptor.options[index];
-                } else {
-                    valueTipText = "Error: out of range";
-                }
-                if (string.IsNullOrEmpty(valueTipText)) {
-                    valueTipText = "\"\"";
-                }
-            }
-            valueTip.UpdateValueTip(valueTipText);
-            lastPoint = point;
+        }
+        private void UpdateCurveExp(IPointer pointer, Point point) {
+            var notesVm = vm.NotesViewModel;
+            int lastX = notesVm.PointToTick(lastPoint);
+            int x = notesVm.PointToTick(point);
+            int lastY = (int)Math.Round(descriptor.min + (descriptor.max - descriptor.min) * (1 - lastPoint.Y / canvas.Bounds.Height));
+            int y = (int)Math.Round(descriptor.min + (descriptor.max - descriptor.min) * (1 - point.Y / canvas.Bounds.Height));
+            DocManager.Inst.ExecuteCmd(new SetCurveCommand(notesVm.Project, notesVm.Part, notesVm.PrimaryKey, x, y, lastX, lastY));
         }
     }
 
@@ -531,6 +547,14 @@ namespace OpenUtau.App.Views {
             if (descriptor == null) {
                 return;
             }
+            if (descriptor.type != UExpressionType.Curve) {
+                ResetPhonemeExp(pointer, point);
+            } else {
+                ResetCurveExp(pointer, point);
+            }
+            valueTip.UpdateValueTip(descriptor.defaultValue.ToString());
+        }
+        private void ResetPhonemeExp(IPointer pointer, Point point) {
             var notesVm = vm.NotesViewModel;
             var p1 = lastPoint;
             var p2 = point;
@@ -546,7 +570,14 @@ namespace OpenUtau.App.Views {
                         notesVm.Project, track, hit.phoneme, key, descriptor.defaultValue));
                 }
             }
-            valueTip.UpdateValueTip(descriptor.defaultValue.ToString());
+        }
+        private void ResetCurveExp(IPointer pointer, Point point) {
+            var notesVm = vm.NotesViewModel;
+            int lastX = notesVm.PointToTick(lastPoint);
+            int x = notesVm.PointToTick(point);
+            DocManager.Inst.ExecuteCmd(new SetCurveCommand(
+                notesVm.Project, notesVm.Part, notesVm.PrimaryKey,
+                x, (int)descriptor.defaultValue, lastX, (int)descriptor.defaultValue));
         }
     }
 

@@ -7,6 +7,7 @@ namespace OpenUtau.Core.Ustx {
     public enum UExpressionType : int {
         Numerical = 0,
         Options = 1,
+        Curve = 2,
     }
 
     [JsonObject(MemberSerialization.OptIn)]

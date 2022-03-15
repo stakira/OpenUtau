@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
@@ -104,6 +105,46 @@ namespace OpenUtau.App.Controls {
             double optionHeight = descriptor.type == UExpressionType.Options
                 ? Bounds.Height / descriptor.options.Length
                 : 0;
+            if (descriptor.type == UExpressionType.Curve) {
+                var curve = Part.curves.FirstOrDefault(c => c.descriptor == descriptor);
+                double defaultHeight = Math.Round(Bounds.Height - Bounds.Height * (descriptor.defaultValue - descriptor.min) / (descriptor.max - descriptor.min));
+                var lPen = ThemeManager.AccentPen1;
+                var lPen2 = ThemeManager.AccentPen1Thickness2;
+                var brush = ThemeManager.AccentBrush1;
+                if (curve == null) {
+                    double x1 = Math.Round(viewModel.TickToneToPoint(leftTick, 0).X);
+                    double x2 = Math.Round(viewModel.TickToneToPoint(rightTick, 0).X);
+                    context.DrawLine(lPen, new Point(x1, defaultHeight), new Point(x2, defaultHeight));
+                    return;
+                }
+                int lTick = (int)Math.Floor(leftTick / 5) * 5;
+                int rTick = (int)Math.Ceiling(rightTick / 5) * 5;
+                int index = curve.xs.BinarySearch(lTick);
+                if (index < 0) {
+                    index = -index - 1;
+                }
+                index = Math.Max(0, index) - 1;
+                while (index < curve.xs.Count) {
+                    float tick1 = index < 0 ? lTick : curve.xs[index];
+                    float value1 = index < 0 ? descriptor.defaultValue : curve.ys[index];
+                    double x1 = viewModel.TickToneToPoint(tick1, 0).X;
+                    double y1 = defaultHeight - Bounds.Height * (value1 - descriptor.defaultValue) / (descriptor.max - descriptor.min);
+                    float tick2 = index == curve.xs.Count - 1 ? rTick : curve.xs[index + 1];
+                    float value2 = index == curve.xs.Count - 1 ? descriptor.defaultValue : curve.ys[index + 1];
+                    double x2 = viewModel.TickToneToPoint(tick2, 0).X;
+                    double y2 = defaultHeight - Bounds.Height * (value2 - descriptor.defaultValue) / (descriptor.max - descriptor.min);
+                    var pen = value1 == descriptor.defaultValue && value2 == descriptor.defaultValue ? lPen : lPen2;
+                    context.DrawLine(pen, new Point(x1, y1), new Point(x2, y2));
+                    //using (var state = context.PushPreTransform(Matrix.CreateTranslation(x1, y1))) {
+                    //    context.DrawGeometry(brush, null, pointGeometry);
+                    //}
+                    index++;
+                    if (tick2 >= rTick) {
+                        break;
+                    }
+                }
+                return;
+            }
             foreach (UNote note in Part.notes) {
                 if (note.LeftBound >= rightTick || note.RightBound <= leftTick) {
                     continue;

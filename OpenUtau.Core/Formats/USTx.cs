@@ -13,13 +13,14 @@ namespace OpenUtau.Core.Formats {
         public static readonly Version kUstxVersion = new Version(0, 5);
 
         public static void AddBuiltInExpressions(UProject project) {
+            project.RegisterExpression(new UExpressionDescriptor("dynamics", "dyn", 0, 200, 100) { type = UExpressionType.Curve });
+            project.RegisterExpression(new UExpressionDescriptor("pitch deviation", "pit", -300, 300, 0) { type = UExpressionType.Curve });
+            project.RegisterExpression(new UExpressionDescriptor("voice color", "clr", false, new string[0]));
+            project.RegisterExpression(new UExpressionDescriptor("resampler engine", "eng", false, new string[] { "", WorldlineResampler.name }));
             project.RegisterExpression(new UExpressionDescriptor("velocity", "vel", 0, 200, 100));
             project.RegisterExpression(new UExpressionDescriptor("volume", "vol", 0, 200, 100));
             project.RegisterExpression(new UExpressionDescriptor("attack", "atk", 0, 200, 100));
             project.RegisterExpression(new UExpressionDescriptor("decay", "dec", 0, 100, 0));
-            project.RegisterExpression(new UExpressionDescriptor("voice color", "clr", false, new string[0]));
-            project.RegisterExpression(new UExpressionDescriptor("resampler engine", "eng", false,
-                new string[] { "", WorldlineResampler.name }));
         }
 
         public static void AddDefaultExpressions(UProject project) {

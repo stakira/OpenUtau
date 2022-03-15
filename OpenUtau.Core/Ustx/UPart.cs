@@ -36,6 +36,8 @@ namespace OpenUtau.Core.Ustx {
         [JsonProperty]
         [YamlMember(Order = 100)]
         public SortedSet<UNote> notes = new SortedSet<UNote>();
+        [YamlMember(Order = 101)]
+        public List<UCurve> curves = new List<UCurve>();
 
         public override string DisplayName => name;
 
@@ -61,6 +63,9 @@ namespace OpenUtau.Core.Ustx {
                 note.AfterLoad(project, track, this);
             }
             Duration = GetBarDurTick(project);
+            foreach (var curve in curves) {
+                curve.descriptor = project.expressions[curve.abbr];
+            }
         }
 
         public override void Validate(UProject project, UTrack track) {
@@ -109,6 +114,7 @@ namespace OpenUtau.Core.Ustx {
                 trackNo = trackNo,
                 position = position,
                 notes = new SortedSet<UNote>(notes.Select(note => note.Clone())),
+                curves = curves.Select(c => c.Clone()).ToList(),
                 Duration = Duration,
             };
         }
