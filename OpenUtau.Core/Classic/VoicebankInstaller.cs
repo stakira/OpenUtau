@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using K4os.Hash.xxHash;
-using Newtonsoft.Json;
 using SharpCompress.Archives;
 using SharpCompress.Common;
 using SharpCompress.Readers;
@@ -36,9 +35,6 @@ namespace OpenUtau.Classic {
             };
             var extractionOptions = new ExtractionOptions {
                 Overwrite = true,
-            };
-            var jsonSeriSettings = new JsonSerializerSettings {
-                NullValueHandling = NullValueHandling.Ignore
             };
             using (var archive = ArchiveFactory.Open(path, readerOptions)) {
                 var touches = new List<string>();

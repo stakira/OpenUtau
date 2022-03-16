@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using Newtonsoft.Json;
 using YamlDotNet.Serialization;
 
 namespace OpenUtau.Core.Ustx {
@@ -10,18 +9,16 @@ namespace OpenUtau.Core.Ustx {
         Curve = 2,
     }
 
-    [JsonObject(MemberSerialization.OptIn)]
     public class UExpressionDescriptor {
-        [JsonProperty] public string name;
-        [JsonProperty] public string abbr;
-        [JsonProperty] public UExpressionType type;
-        [JsonProperty] public float min;
-        [JsonProperty] public float max;
-        [JsonProperty] public float defaultValue;
-        [JsonProperty] public bool isFlag;
-        [JsonProperty] public string flag;
-        [JsonProperty] public string[] options;
-
+        public string name;
+        public string abbr;
+        public UExpressionType type;
+        public float min;
+        public float max;
+        public float defaultValue;
+        public bool isFlag;
+        public string flag;
+        public string[] options;
 
         /// <summary>
         /// Constructor for Yaml deserialization
@@ -71,17 +68,13 @@ namespace OpenUtau.Core.Ustx {
         public override string ToString() => name;
     }
 
-    [JsonObject(MemberSerialization.OptIn)]
     public class UExpression {
         [YamlIgnore] public UExpressionDescriptor descriptor;
 
         private float _value;
 
-        [JsonProperty]
         public int? index;
-        [JsonProperty]
         public string abbr;
-        [JsonProperty]
         public float value {
             get => _value;
             set => _value = descriptor == null

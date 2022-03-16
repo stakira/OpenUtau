@@ -48,6 +48,7 @@
                   SelectionChanged="OnExpressionTypeChanged">
           <ComboBoxItem Content="{DynamicResource exps.type.numerical}"/>
           <ComboBoxItem Content="{DynamicResource exps.type.options}"/>
+          <ComboBoxItem Content="{DynamicResource exps.type.curve}"/>
         </ComboBox>
       </Grid>
       <Grid IsVisible="{Binding Expression.IsOptions}">
@@ -58,15 +59,15 @@
         <Label Content="{DynamicResource exps.flag}" Width="130" HorizontalAlignment="Left"/>
         <TextBox Margin="140,0,0,4" IsEnabled="{Binding Expression.IsCustom}" Text="{Binding Expression.Flag}"/>
       </Grid>
-      <Grid IsVisible="{Binding Expression.IsNumerical}">
+      <Grid IsVisible="{Binding Expression.ShowNumbers}">
         <Label Content="{DynamicResource exps.minvalue}" Width="130" HorizontalAlignment="Left"/>
         <TextBox Margin="140,0,0,4" IsEnabled="{Binding Expression.IsCustom}" Text="{Binding Expression.Min}"/>
       </Grid>
-      <Grid IsVisible="{Binding Expression.IsNumerical}">
+      <Grid IsVisible="{Binding Expression.ShowNumbers}">
         <Label Content="{DynamicResource exps.maxvalue}" Width="130" HorizontalAlignment="Left"/>
         <TextBox Margin="140,0,0,4" IsEnabled="{Binding Expression.IsCustom}" Text="{Binding Expression.Max}"/>
       </Grid>
-      <Grid IsVisible="{Binding Expression.IsNumerical}">
+      <Grid IsVisible="{Binding Expression.ShowNumbers}">
         <Label Content="{DynamicResource exps.defaultvalue}" Width="130" HorizontalAlignment="Left"/>
         <TextBox Margin="140,0,0,4" Text="{Binding Expression.DefaultValue}"/>
       </Grid>

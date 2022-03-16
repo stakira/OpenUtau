@@ -17,7 +17,7 @@ namespace OpenUtau {
 
         private static void InitAudio() {
             Core.PlaybackManager.Inst.AudioOutput = new Audio.WaveOutAudioOutput();
-            Core.Formats.Wave.OverrideMp3Reader = filepath => new NAudio.Wave.AudioFileReader(filepath);
+            Core.Format.Wave.OverrideMp3Reader = filepath => new NAudio.Wave.AudioFileReader(filepath);
         }
     }
 }

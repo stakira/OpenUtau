@@ -15,8 +15,8 @@ namespace OpenUtau.Core.SignalChain {
         float[] GetSamples() {
             var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             var file = Path.Join(dir, "Files", "sine.wav");
-            using (var waveStream = Formats.Wave.OpenFile(file)) {
-                return Formats.Wave.GetSamples(waveStream.ToSampleProvider().ToMono(1, 0));
+            using (var waveStream = Format.Wave.OpenFile(file)) {
+                return Format.Wave.GetSamples(waveStream.ToSampleProvider().ToMono(1, 0));
             }
         }
 

@@ -32,6 +32,8 @@ namespace OpenUtau.App {
         public static IBrush TickLineBrushLow = Brushes.Black;
         public static IBrush BarNumberBrush = Brushes.Black;
         public static IPen BarNumberPen = new Pen(Brushes.White);
+        public static IBrush FinalPitchBrush = Brushes.Gray;
+        public static IPen FinalPitchPen = new Pen(Brushes.Gray);
         public static IBrush WhiteKeyBrush = Brushes.White;
         public static IBrush WhiteKeyNameBrush = Brushes.Black;
         public static IBrush CenterKeyBrush = Brushes.White;
@@ -100,6 +102,10 @@ namespace OpenUtau.App {
             if (resDict.TryGetResource("BarNumberBrush", out outVar)) {
                 BarNumberBrush = (IBrush)outVar!;
                 BarNumberPen = new Pen(BarNumberBrush, 1);
+            }
+            if (resDict.TryGetResource("FinalPitchBrush", out outVar)) {
+                FinalPitchBrush = (IBrush)outVar!;
+                FinalPitchPen = new Pen(FinalPitchBrush, 1);
             }
             if (resDict.TryGetResource("WhiteKeyBrush", out outVar)) {
                 WhiteKeyBrush = (IBrush)outVar!;

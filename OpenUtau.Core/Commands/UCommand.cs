@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core {
     public abstract class UCommand {
         public virtual bool Silent => false;
-        public virtual bool DeferValidate => false;
+        public virtual UPart ValidatePart => null;
         public abstract void Execute();
         public abstract void Unexecute();
         public virtual bool Mergeable => false;

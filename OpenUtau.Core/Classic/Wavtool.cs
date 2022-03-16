@@ -9,7 +9,7 @@ using NWaves.Filters.Base;
 using NWaves.Filters.Fda;
 using NWaves.Signals;
 using OpenUtau.Core;
-using OpenUtau.Core.Formats;
+using OpenUtau.Core.Format;
 using OpenUtau.Core.Render;
 
 namespace OpenUtau.Classic {

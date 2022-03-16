@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using OpenUtau.Core;
-using OpenUtau.Core.Formats;
+using OpenUtau.Core.Format;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Classic {
@@ -201,15 +201,15 @@ namespace OpenUtau.Classic {
                         break;
                     case "Velocity":
                         error |= !isFloat;
-                        SetExpression(note, "vel", 0, floatValue);
+                        SetExpression(note, Ustx.VEL, 0, floatValue);
                         break;
                     case "Intensity":
                         error |= !isFloat;
-                        SetExpression(note, "vol", 0, floatValue);
+                        SetExpression(note, Ustx.VOL, 0, floatValue);
                         break;
                     case "Moduration":
                         error |= !isFloat;
-                        SetExpression(note, "mod", 0, floatValue);
+                        SetExpression(note, Ustx.MOD, 0, floatValue);
                         break;
                     case "VoiceOverlap":
                         error |= !isFloat;
@@ -298,7 +298,7 @@ namespace OpenUtau.Classic {
                 if (parts.Length == 11) {
                     float p4 = parts[8], p5 = parts[9], v5 = parts[10];
                 }
-                note.phonemeExpressions.Add(new UExpression("dec") {
+                note.phonemeExpressions.Add(new UExpression(Ustx.DEC) {
                     index = 0,
                     value = 100f - v3,
                 });
@@ -511,11 +511,11 @@ namespace OpenUtau.Classic {
             //writer.WriteLine("VoiceOverlap=");
             if (note.phonemes.Count > 0) {
                 var phoneme = note.phonemes[0];
-                var vel = phoneme.GetExpression(project, track, "vel").Item1;
+                var vel = phoneme.GetExpression(project, track, Ustx.VEL).Item1;
                 writer.WriteLine($"Velocity={(int)vel}");
-                var vol = phoneme.GetExpression(project, track, "vol").Item1;
+                var vol = phoneme.GetExpression(project, track, Ustx.VOL).Item1;
                 writer.WriteLine($"Intensity={(int)vol}");
-                var mod = phoneme.GetExpression(project, track, "mod").Item1;
+                var mod = phoneme.GetExpression(project, track, Ustx.MOD).Item1;
                 writer.WriteLine($"Moduration={(int)mod}");
                 if (forPlugin && !string.IsNullOrEmpty(phoneme.oto.DisplayFile)) {
                     writer.WriteLine($"@filename={phoneme.oto.DisplayFile}");

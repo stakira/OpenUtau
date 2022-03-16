@@ -376,7 +376,7 @@ namespace OpenUtau.UI {
                     (midiVM.CanvasToPitch(mousePos.Y) - _noteHit.tone) * 10 - _pitHit.Y;
                 if (_noteHit.pitch.data.First() == _pitHit && _noteHit.pitch.snapFirst || _noteHit.pitch.data.Last() == _pitHit) deltaY = 0;
                 if (deltaX != 0 || deltaY != 0)
-                    DocManager.Inst.ExecuteCmd(new MovePitchPointCommand(_pitHit, (float)deltaX, (float)deltaY));
+                    DocManager.Inst.ExecuteCmd(new MovePitchPointCommand(midiVM.Part, _pitHit, (float)deltaX, (float)deltaY));
             } else if (_inVibratoEdit) {
                 var project = DocManager.Inst.Project;
                 var note = _vibratoHit.note;

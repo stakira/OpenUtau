@@ -24,6 +24,9 @@ namespace OpenUtau.Classic {
                     progress.CompleteOne($"Resampling \"{item.phone.phoneme}\"");
                 });
                 var samples = Concatenate(resamplerItems, cancellation);
+                if (samples != null) {
+                    ApplyDynamics(phrase, samples);
+                }
                 var firstPhone = phrase.phones.First();
                 return new RenderResult() {
                     samples = samples,
@@ -37,6 +40,23 @@ namespace OpenUtau.Classic {
         float[] Concatenate(List<ResamplerItem> resamplerItems, CancellationTokenSource cancellation) {
             var wavtool = new SharpWavtool(Core.Util.Preferences.Default.PhaseCompensation == 1);
             return wavtool.Concatenate(resamplerItems, cancellation);
+        }
+
+        void ApplyDynamics(RenderPhrase phrase, float[] samples) {
+            const int interval = 5;
+            if (phrase.dynamics == null) {
+                return;
+            }
+            int pos = 0;
+            for (int i = 0; i < phrase.dynamics.Length; ++i) {
+                int endPos = (int)((i + 1) * interval * phrase.tickToMs / 1000 * 44100);
+                float a = phrase.dynamics[i];
+                float b = (i + 1) == phrase.dynamics.Length ? phrase.dynamics[i] : phrase.dynamics[i + 1];
+                for (int j = pos; j < endPos; ++j) {
+                    samples[j] *= a + (b - a) * (j - pos) / (endPos - pos);
+                }
+                pos = endPos;
+            }
         }
     }
 }

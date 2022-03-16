@@ -136,17 +136,20 @@ namespace OpenUtau.Core {
     }
 
     public class MovePitchPointCommand : PitchExpCommand {
-        public PitchPoint Point;
-        public float DeltaX, DeltaY;
-        public override bool DeferValidate => true;
-        public MovePitchPointCommand(PitchPoint point, float deltaX, float deltaY) {
-            this.Point = point;
-            this.DeltaX = deltaX;
-            this.DeltaY = deltaY;
+        readonly UVoicePart part;
+        readonly PitchPoint point;
+        readonly float deltaX;
+        readonly float deltaY;
+        public override UPart ValidatePart => part;
+        public MovePitchPointCommand(UVoicePart part, PitchPoint point, float deltaX, float deltaY) {
+            this.part = part;
+            this.point = point;
+            this.deltaX = deltaX;
+            this.deltaY = deltaY;
         }
         public override string ToString() { return "Move pitch point"; }
-        public override void Execute() { Point.X += DeltaX; Point.Y += DeltaY; }
-        public override void Unexecute() { Point.X -= DeltaX; Point.Y -= DeltaY; }
+        public override void Execute() { point.X += deltaX; point.Y += deltaY; }
+        public override void Unexecute() { point.X -= deltaX; point.Y -= deltaY; }
     }
 
     public class ResetPitchPointsCommand : PitchExpCommand {
@@ -174,7 +177,7 @@ namespace OpenUtau.Core {
         readonly int lastY;
         int[] oldXs;
         int[] oldYs;
-        public override bool DeferValidate => true;
+        public override UPart ValidatePart => part;
         public SetCurveCommand(UProject project, UVoicePart part, string abbr, int x, int y, int lastX, int lastY) {
             this.project = project;
             this.part = part;
@@ -234,7 +237,6 @@ namespace OpenUtau.Core {
         readonly int[] oldYs;
         readonly int[] newXs;
         readonly int[] newYs;
-        public override bool DeferValidate => true;
         public MergedSetCurveCommand(UProject project, UVoicePart part,
             string abbr, int[] oldXs, int[] oldYs, int[] newXs, int[] newYs) {
             this.project = project;

@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading;
 using NAudio.Wave;
 using OpenUtau.Core;
-using OpenUtau.Core.Formats;
+using OpenUtau.Core.Format;
 using OpenUtau.Core.Util;
 using Serilog;
 

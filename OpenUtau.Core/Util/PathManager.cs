@@ -77,6 +77,9 @@ namespace OpenUtau.Core {
 
         readonly static string[] sizes = { "B", "KB", "MB", "GB", "TB", "PB", "EB" };
         public string GetCacheSize() {
+            if (!Directory.Exists(CachePath)) {
+                return "0B";
+            }
             var dir = new DirectoryInfo(CachePath);
             double size = dir.GetFiles("*", SearchOption.AllDirectories).Sum(f => f.Length);
             int order = 0;

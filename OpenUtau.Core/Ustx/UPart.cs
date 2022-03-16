@@ -3,17 +3,16 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using YamlDotNet.Serialization;
 using Serilog;
+using OpenUtau.Core.Render;
 
 namespace OpenUtau.Core.Ustx {
-    [JsonObject(MemberSerialization.OptIn)]
     public abstract class UPart {
-        [JsonProperty] public string name = "New Part";
-        [JsonProperty] public string comment = string.Empty;
-        [JsonProperty] public int trackNo;
-        [JsonProperty] public int position = 0;
+        public string name = "New Part";
+        public string comment = string.Empty;
+        public int trackNo;
+        public int position = 0;
 
         [YamlIgnore] public virtual string DisplayName { get; }
         [YamlIgnore] public virtual int Duration { set; get; }
@@ -31,13 +30,13 @@ namespace OpenUtau.Core.Ustx {
         public abstract UPart Clone();
     }
 
-    [JsonObject(MemberSerialization.OptIn)]
     public class UVoicePart : UPart {
-        [JsonProperty]
         [YamlMember(Order = 100)]
         public SortedSet<UNote> notes = new SortedSet<UNote>();
         [YamlMember(Order = 101)]
         public List<UCurve> curves = new List<UCurve>();
+
+        [YamlIgnore] public List<RenderPhrase> renderPhrases = new List<RenderPhrase>();
 
         public override string DisplayName => name;
 
@@ -105,6 +104,8 @@ namespace OpenUtau.Core.Ustx {
             foreach (UNote note in notes) {
                 note.Validate(project, track, this);
             }
+            renderPhrases.Clear();
+            renderPhrases.AddRange(RenderPhrase.FromPart(project, track, this));
         }
 
         public override UPart Clone() {
@@ -120,11 +121,9 @@ namespace OpenUtau.Core.Ustx {
         }
     }
 
-    [JsonObject(MemberSerialization.OptIn)]
     public class UWavePart : UPart {
         string _filePath;
 
-        [JsonProperty]
         [YamlIgnore]
         public string FilePath {
             set {
@@ -169,7 +168,7 @@ namespace OpenUtau.Core.Ustx {
         private readonly object loadLockObj = new object();
         public void Load(UProject project) {
             try {
-                using (var waveStream = Formats.Wave.OpenFile(FilePath)) {
+                using (var waveStream = Format.Wave.OpenFile(FilePath)) {
                     duration = waveStream.TotalTime;
                     fileDurationMs = duration.TotalMilliseconds;
                     channels = waveStream.WaveFormat.Channels;
@@ -189,8 +188,8 @@ namespace OpenUtau.Core.Ustx {
                 }
             }
             Task.Run(() => {
-                using (var waveStream = Formats.Wave.OpenFile(FilePath)) {
-                    var samples = Formats.Wave.GetStereoSamples(waveStream);
+                using (var waveStream = Format.Wave.OpenFile(FilePath)) {
+                    var samples = Format.Wave.GetStereoSamples(waveStream);
                     lock (loadLockObj) {
                         Samples = samples;
                     }
@@ -199,8 +198,8 @@ namespace OpenUtau.Core.Ustx {
         }
 
         public void BuildPeaks(IProgress<int> progress) {
-            using (var waveStream = Formats.Wave.OpenFile(FilePath)) {
-                var peaks = Formats.Wave.BuildPeaks(waveStream, progress);
+            using (var waveStream = Format.Wave.OpenFile(FilePath)) {
+                var peaks = Format.Wave.BuildPeaks(waveStream, progress);
                 lock (loadLockObj) {
                     Peaks = peaks;
                 }

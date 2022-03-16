@@ -102,7 +102,7 @@ namespace OpenUtau.Core.Ustx {
             int first = 0;
             int last = xs.Count - 1;
             var toKeep = new List<int>() { first, last };
-            double tolerance = (descriptor.max - descriptor.min) * 0.01;
+            double tolerance = Math.Min(5, (descriptor.max - descriptor.min) * 0.005);
             Simplify(first, last, tolerance, toKeep);
             toKeep.Sort();
             var newXs = new List<int>();

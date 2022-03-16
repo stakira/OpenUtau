@@ -1,31 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text.RegularExpressions;
-using Newtonsoft.Json;
 using OpenUtau.Api;
 using Serilog;
 using YamlDotNet.Serialization;
 
 namespace OpenUtau.Core.Ustx {
-    [JsonObject(MemberSerialization.OptIn)]
     public class UNote : IComparable {
         static readonly Regex phoneticHintPattern = new Regex(@"\[(.*)\]");
 
-        [JsonProperty("pos")] public int position;
-        [JsonProperty("dur")] public int duration;
-        [JsonProperty("num")] public int tone;
-        [JsonProperty("lrc")] public string lyric = "a";
-        [JsonProperty("pit")] public UPitch pitch;
-        [JsonProperty("vbr")] public UVibrato vibrato;
-        [JsonProperty("exp")]
+        public int position;
+        public int duration;
+        public int tone;
+        public string lyric = "a";
+        public UPitch pitch;
+        public UVibrato vibrato;
+
         [Obsolete("Only used for upgrading ustx v0.1")]
         public Dictionary<string, double?> expressions;
-        [JsonProperty("nex")] public List<UExpression> noteExpressions = new List<UExpression>();
-        [JsonProperty("pex")] public List<UExpression> phonemeExpressions = new List<UExpression>();
-        [JsonProperty("phm")] public List<UPhonemeOverride> phonemeOverrides = new List<UPhonemeOverride>();
+        public List<UExpression> noteExpressions = new List<UExpression>();
+        public List<UExpression> phonemeExpressions = new List<UExpression>();
+        public List<UPhonemeOverride> phonemeOverrides = new List<UPhonemeOverride>();
 
         [YamlIgnore] public List<UPhoneme> phonemes = new List<UPhoneme>();
         [YamlIgnore] public int End => position + duration;
@@ -238,7 +235,10 @@ namespace OpenUtau.Core.Ustx {
             });
             attributesBuffer.Clear();
             foreach (var exp in phonemeExpressions) {
-                if (exp.abbr != "vel" && exp.abbr != "alt" && exp.abbr != "clr" && exp.abbr != "shft") {
+                if (exp.abbr != Format.Ustx.VEL &&
+                    exp.abbr != Format.Ustx.ALT &&
+                    exp.abbr != Format.Ustx.CLR &&
+                    exp.abbr != Format.Ustx.SHFT) {
                     continue;
                 }
                 var posInBuffer = attributesBuffer.FindIndex(attr => attr.index == exp.index);
@@ -248,16 +248,16 @@ namespace OpenUtau.Core.Ustx {
                 }
                 Phonemizer.PhonemeAttributes attr = attributesBuffer[posInBuffer];
                 attr.index = exp.index.Value;
-                if (exp.abbr == "vel") {
+                if (exp.abbr == Format.Ustx.VEL) {
                     attr.consonantStretchRatio = Math.Pow(2, 1.0 - exp.value / 100.0);
-                } else if (exp.abbr == "alt") {
+                } else if (exp.abbr == Format.Ustx.ALT) {
                     attr.alternate = (int)exp.value;
-                } else if (exp.abbr == "clr" && track.VoiceColorExp != null) {
+                } else if (exp.abbr == Format.Ustx.CLR && track.VoiceColorExp != null) {
                     int optionIdx = (int)exp.value;
                     if (optionIdx < track.VoiceColorExp.options.Length && optionIdx >= 0) {
                         attr.voiceColor = track.VoiceColorExp.options[optionIdx];
                     }
-                } else if (exp.abbr == "shft") {
+                } else if (exp.abbr == Format.Ustx.SHFT) {
                     attr.toneShift = (int)exp.value;
                 }
                 attributesBuffer[posInBuffer] = attr;
@@ -349,7 +349,6 @@ namespace OpenUtau.Core.Ustx {
         }
     }
 
-    [JsonObject(MemberSerialization.OptIn)]
     public class UVibrato {
         // Vibrato percentage of note length.
         float _length;
@@ -365,10 +364,10 @@ namespace OpenUtau.Core.Ustx {
         float _shift;
         float _drift;
 
-        [JsonProperty] public float length { get => _length; set => _length = Math.Max(0, Math.Min(100, value)); }
-        [JsonProperty] public float period { get => _period; set => _period = Math.Max(5, Math.Min(500, value)); }
-        [JsonProperty] public float depth { get => _depth; set => _depth = Math.Max(5, Math.Min(200, value)); }
-        [JsonProperty]
+        public float length { get => _length; set => _length = Math.Max(0, Math.Min(100, value)); }
+        public float period { get => _period; set => _period = Math.Max(5, Math.Min(500, value)); }
+        public float depth { get => _depth; set => _depth = Math.Max(5, Math.Min(200, value)); }
+
         public float @in {
             get => _in;
             set {
@@ -376,7 +375,7 @@ namespace OpenUtau.Core.Ustx {
                 _out = Math.Min(_out, 100 - _in);
             }
         }
-        [JsonProperty]
+
         public float @out {
             get => _out;
             set {
@@ -384,8 +383,8 @@ namespace OpenUtau.Core.Ustx {
                 _in = Math.Min(_in, 100 - _out);
             }
         }
-        [JsonProperty] public float shift { get => _shift; set => _shift = Math.Max(0, Math.Min(100, value)); }
-        [JsonProperty] public float drift { get => _drift; set => _drift = Math.Max(-100, Math.Min(100, value)); }
+        public float shift { get => _shift; set => _shift = Math.Max(0, Math.Min(100, value)); }
+        public float drift { get => _drift; set => _drift = Math.Max(-100, Math.Min(100, value)); }
 
         [YamlIgnore] public float NormalizedStart => 1f - length / 100f;
 
@@ -493,11 +492,10 @@ namespace OpenUtau.Core.Ustx {
         o
     };
 
-    [JsonObject(MemberSerialization.OptIn)]
     public class PitchPoint : IComparable<PitchPoint> {
-        [JsonProperty] public float X;
-        [JsonProperty] public float Y;
-        [JsonProperty] public PitchPointShape shape;
+        public float X;
+        public float Y;
+        public PitchPointShape shape;
 
         public PitchPoint() { }
 
@@ -514,10 +512,9 @@ namespace OpenUtau.Core.Ustx {
         public int CompareTo(PitchPoint other) { return X.CompareTo(other.X); }
     }
 
-    [JsonObject(MemberSerialization.OptIn)]
     public class UPitch {
-        [JsonProperty] public List<PitchPoint> data = new List<PitchPoint>();
-        [JsonProperty] public bool snapFirst = true;
+        public List<PitchPoint> data = new List<PitchPoint>();
+        public bool snapFirst = true;
 
         public void AddPoint(PitchPoint p) {
             data.Add(p);
@@ -536,16 +533,28 @@ namespace OpenUtau.Core.Ustx {
             return result;
         }
 
-        public UPitch Split(int offset) {
-            var result = new UPitch() {
-                snapFirst = true,
-            };
-            while (data.Count > 0 && data.Last().X >= offset) {
-                result.data.Add(data.Last());
-                data.Remove(data.Last());
+        public double? Sample(UProject project, UNote note, double tick) {
+            for (int i = 0; i < note.pitch.data.Count - 1; i++) {
+                var p1 = note.pitch.data[i];
+                int t1 = note.position + project.MillisecondToTick(p1.X);
+                var p2 = note.pitch.data[i + 1];
+                int t2 = note.position + project.MillisecondToTick(p2.X);
+                if (t1 <= tick && tick <= t2) {
+                    return MusicMath.InterpolateShape(
+                        t1, t2, p1.Y, p2.Y, tick, p1.shape) * 10;
+                }
             }
-            result.data.Reverse();
-            return result;
+            var pFirst = note.pitch.data.First();
+            var tFirst = note.position + project.MillisecondToTick(pFirst.X);
+            if (tick < tFirst) {
+                return pFirst.Y * 10;
+            }
+            var pLast = note.pitch.data.Last();
+            var tLast = note.position + project.MillisecondToTick(pLast.X);
+            if (tick > tLast) {
+                return pLast.Y * 10;
+            }
+            return null;
         }
     }
 }

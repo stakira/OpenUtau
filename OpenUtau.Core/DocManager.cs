@@ -41,7 +41,7 @@ namespace OpenUtau.Core {
             try {
                 Directory.CreateDirectory(PathManager.Inst.SingersPath);
                 var stopWatch = Stopwatch.StartNew();
-                Singers = Formats.UtauSoundbank.FindAllSingers();
+                Singers = Format.UtauSoundbank.FindAllSingers();
                 SingersOrdered = Singers.Values.OrderBy(singer => singer.Name).ToList();
                 stopWatch.Stop();
                 Log.Information($"Search all singers: {stopWatch.Elapsed}");
@@ -137,9 +137,9 @@ namespace OpenUtau.Core {
                         savedPoint = undoQueue.Last();
                     }
                     if (string.IsNullOrEmpty(_cmd.Path)) {
-                        Formats.Ustx.Save(Project.FilePath, Project);
+                        Format.Ustx.Save(Project.FilePath, Project);
                     } else {
-                        Formats.Ustx.Save(_cmd.Path, Project);
+                        Format.Ustx.Save(_cmd.Path, Project);
                     }
                 } else if (cmd is LoadProjectNotification notification) {
                     undoQueue.Clear();
@@ -179,8 +179,10 @@ namespace OpenUtau.Core {
                 Log.Information($"ExecuteCmd {cmd}");
             }
             Publish(cmd);
-            if (!cmd.DeferValidate) {
+            if (cmd.ValidatePart == null) {
                 Project.Validate();
+            } else {
+                cmd.ValidatePart.Validate(Project, Project.tracks[cmd.ValidatePart.trackNo]);
             }
         }
 
@@ -204,9 +206,6 @@ namespace OpenUtau.Core {
             }
             while (undoQueue.Count > Util.Preferences.Default.UndoLimit) {
                 undoQueue.RemoveFromFront();
-            }
-            if (undoGroup.Commands.Any(cmd => cmd.DeferValidate)) {
-                Project.Validate();
             }
             undoGroup.Merge();
             undoGroup = null;

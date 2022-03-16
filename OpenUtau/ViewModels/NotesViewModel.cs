@@ -53,11 +53,13 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public bool CursorTool { get; set; }
         [Reactive] public bool PencilTool { get; set; }
         [Reactive] public bool EraserTool { get; set; }
+        [Reactive] public bool DrawPitchTool { get; set; }
         public ReactiveCommand<string, Unit> SelectToolCommand { get; }
         [Reactive] public bool ShowTips { get; set; }
         [Reactive] public bool PlayTone { get; set; }
         [Reactive] public bool ShowVibrato { get; set; }
         [Reactive] public bool ShowPitch { get; set; }
+        [Reactive] public bool ShowFinalPitch { get; set; }
         [Reactive] public bool ShowPhoneme { get; set; }
         [Reactive] public bool IsSnapOn { get; set; }
         [Reactive] public string SnapUnitText { get; set; }
@@ -147,16 +149,19 @@ namespace OpenUtau.App.ViewModels {
             CursorTool = false;
             PencilTool = true;
             EraserTool = false;
+            DrawPitchTool = false;
             SelectToolCommand = ReactiveCommand.Create<string>(index => {
                 CursorTool = index == "1";
                 PencilTool = index == "2";
                 EraserTool = index == "3";
+                DrawPitchTool = index == "4";
             });
 
             ShowTips = Preferences.Default.ShowTips;
             PlayTone = true;
             ShowVibrato = true;
             ShowPitch = true;
+            ShowFinalPitch = true;
             ShowPhoneme = true;
             IsSnapOn = true;
             SnapUnitText = string.Empty;
@@ -168,8 +173,8 @@ namespace OpenUtau.App.ViewModels {
                 Preferences.Default.ShowTips = false;
                 Preferences.Save();
             }
-            PrimaryKey = "vel";
-            SecondaryKey = "vol";
+            PrimaryKey = Core.Format.Ustx.VEL;
+            SecondaryKey = Core.Format.Ustx.VOL;
 
             HitTest = new NotesViewModelHitTest(this);
             DocManager.Inst.AddSubscriber(this);

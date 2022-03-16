@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using Newtonsoft.Json;
 using YamlDotNet.Serialization;
 
 namespace OpenUtau.Core.Ustx {
@@ -92,7 +91,7 @@ namespace OpenUtau.Core.Ustx {
             if (Error) {
                 return;
             }
-            float consonantStretch = (float)Math.Pow(2f, 1.0f - GetExpression(project, track, "vel").Item1 / 100f);
+            float consonantStretch = (float)Math.Pow(2f, 1.0f - GetExpression(project, track, Format.Ustx.VEL).Item1 / 100f);
             autoOverlap = (float)oto.Overlap * consonantStretch;
             autoPreutter = (float)oto.Preutter * consonantStretch;
             overlapped = false;
@@ -136,9 +135,9 @@ namespace OpenUtau.Core.Ustx {
             if (Error) {
                 return;
             }
-            var vol = GetExpression(project, track, "vol").Item1;
-            var atk = GetExpression(project, track, "atk").Item1;
-            var dec = GetExpression(project, track, "dec").Item1;
+            var vol = GetExpression(project, track, Format.Ustx.VOL).Item1;
+            var atk = GetExpression(project, track, Format.Ustx.ATK).Item1;
+            var dec = GetExpression(project, track, Format.Ustx.DEC).Item1;
 
             Vector2 p0, p1, p2, p3, p4;
             p0.X = -preutter;
@@ -232,11 +231,10 @@ namespace OpenUtau.Core.Ustx {
         }
     }
 
-    [JsonObject(MemberSerialization.OptIn)]
     public class UPhonemeOverride {
-        [JsonProperty] public int index;
-        [JsonProperty] public string phoneme;
-        [JsonProperty] public int? offset;
+        public int index;
+        public string phoneme;
+        public int? offset;
         public float? preutterDelta;
         public float? overlapDelta;
 

@@ -429,7 +429,7 @@ namespace OpenUtau.App.Views {
             if (deltaX == 0 && deltaY == 0) {
                 return;
             }
-            DocManager.Inst.ExecuteCmd(new MovePitchPointCommand(pitchPoint, (float)deltaX, (float)deltaY));
+            DocManager.Inst.ExecuteCmd(new MovePitchPointCommand(notesVm.Part, pitchPoint, (float)deltaX, (float)deltaY));
             valueTip.UpdateValueTip($"{pitchPoint.X:0.0}ms, {pitchPoint.Y * 10:0}cent");
         }
     }
@@ -820,6 +820,66 @@ namespace OpenUtau.App.Views {
                     DocManager.Inst.ExecuteCmd(new PhonemeOverlapCommand(notesVm.Part, leadingNote, index, 0));
                 }
             }
+        }
+    }
+
+    class DrawPitchState : NoteEditState {
+        protected override bool ShowValueTip => false;
+        double? lastPitch;
+        Point lastPoint;
+        public DrawPitchState(
+            Canvas canvas,
+            PianoRollViewModel vm,
+            IValueTip valueTip) : base(canvas, vm, valueTip) { }
+        public override void Begin(IPointer pointer, Point point) {
+            base.Begin(pointer, point);
+            lastPoint = point;
+        }
+        public override void Update(IPointer pointer, Point point) {
+            int tick = vm.NotesViewModel.PointToTick(point);
+            var samplePoint = vm.NotesViewModel.TickToneToPoint(
+                (int)Math.Round(tick / 5.0) * 5,
+                vm.NotesViewModel.PointToToneDouble(point));
+            double? pitch = vm.NotesViewModel.HitTest.SamplePitch(samplePoint);
+            if (pitch == null) {
+                return;
+            }
+            double tone = vm.NotesViewModel.PointToToneDouble(point);
+            DocManager.Inst.ExecuteCmd(new SetCurveCommand(
+                vm.NotesViewModel.Project,
+                vm.NotesViewModel.Part,
+                Core.Format.Ustx.PITD,
+                vm.NotesViewModel.PointToTick(point),
+                (int)Math.Round(tone * 100 - pitch.Value),
+                vm.NotesViewModel.PointToTick(lastPitch == null ? point : lastPoint),
+                (int)Math.Round(tone * 100 - (lastPitch ?? pitch.Value))));
+            lastPitch = pitch;
+            lastPoint = point;
+        }
+    }
+
+    class ResetPitchState : NoteEditState {
+        public override MouseButton MouseButton => MouseButton.Right;
+        protected override bool ShowValueTip => false;
+        Point lastPoint;
+        public ResetPitchState(
+            Canvas canvas,
+            PianoRollViewModel vm,
+            IValueTip valueTip) : base(canvas, vm, valueTip) { }
+        public override void Begin(IPointer pointer, Point point) {
+            base.Begin(pointer, point);
+            lastPoint = point;
+        }
+        public override void Update(IPointer pointer, Point point) {
+            DocManager.Inst.ExecuteCmd(new SetCurveCommand(
+                vm.NotesViewModel.Project,
+                vm.NotesViewModel.Part,
+                Core.Format.Ustx.PITD,
+                vm.NotesViewModel.PointToTick(point),
+                0,
+                vm.NotesViewModel.PointToTick(lastPoint),
+                0));
+            lastPoint = point;
         }
     }
 }

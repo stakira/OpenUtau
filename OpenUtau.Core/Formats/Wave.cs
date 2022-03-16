@@ -8,7 +8,7 @@ using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using NLayer.NAudioSupport;
 
-namespace OpenUtau.Core.Formats {
+namespace OpenUtau.Core.Format {
     public static class Wave {
         public static Func<string, WaveStream> OverrideMp3Reader;
 

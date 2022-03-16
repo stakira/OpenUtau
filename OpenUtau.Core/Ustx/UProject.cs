@@ -1,28 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
 using YamlDotNet.Serialization;
 
 namespace OpenUtau.Core.Ustx {
-    [JsonObject(MemberSerialization.OptIn)]
     public class UProject {
-        [JsonProperty] public string name = "New Project";
-        [JsonProperty] public string comment = string.Empty;
-        [JsonProperty] public string outputDir = "Vocal";
-        [JsonProperty] public string cacheDir = "UCache";
-        [JsonProperty]
+        public string name = "New Project";
+        public string comment = string.Empty;
+        public string outputDir = "Vocal";
+        public string cacheDir = "UCache";
         [YamlMember(SerializeAs = typeof(string))]
         public Version ustxVersion;
 
-        [JsonProperty] public double bpm = 120;
-        [JsonProperty] public int beatPerBar = 4;
-        [JsonProperty] public int beatUnit = 4;
-        [JsonProperty] public int resolution = 480;
+        public double bpm = 120;
+        public int beatPerBar = 4;
+        public int beatUnit = 4;
+        public int resolution = 480;
 
-        [JsonProperty] public Dictionary<string, UExpressionDescriptor> expressions = new Dictionary<string, UExpressionDescriptor>();
-        [JsonProperty] public List<UTrack> tracks = new List<UTrack>();
-        [JsonProperty] [YamlIgnore] public List<UPart> parts = new List<UPart>();
+        public Dictionary<string, UExpressionDescriptor> expressions = new Dictionary<string, UExpressionDescriptor>();
+        public List<UTrack> tracks = new List<UTrack>();
+        [YamlIgnore] public List<UPart> parts = new List<UPart>();
 
         /// <summary>
         /// Transient field used for serialization.

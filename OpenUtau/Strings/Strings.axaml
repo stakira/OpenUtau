@@ -40,6 +40,7 @@
   <system:String x:Key="exps.optionvalues">Option Values</system:String>
   <system:String x:Key="exps.sepbycomma">Separate values by ','</system:String>
   <system:String x:Key="exps.type">Type</system:String>
+  <system:String x:Key="exps.type.curve">Curve</system:String>
   <system:String x:Key="exps.type.numerical">Numerical</system:String>
   <system:String x:Key="exps.type.options">Options</system:String>
 
@@ -125,6 +126,7 @@
   <system:String x:Key="pianoroll.menu.part">Part</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">Legacy Plugin (Experimental)</system:String>
   <system:String x:Key="pianoroll.menu.part.rename">Rename</system:String>
+  <system:String x:Key="pianoroll.toggle.finalpitch">View Final Pitch to Render (R)</system:String>
   <system:String x:Key="pianoroll.toggle.phoneme">View Phonemes (O)</system:String>
   <system:String x:Key="pianoroll.toggle.pitch">View Pitch Bend (I)</system:String>
   <system:String x:Key="pianoroll.toggle.snap">Toggle Snap (P)</system:String>
@@ -135,6 +137,7 @@
   <system:String x:Key="pianoroll.tool.pen">Pen Tool (2)
 Left click to draw
 Right click to delete</system:String>
+  <system:String x:Key="pianoroll.tool.drawpitch">Draw Pitch Tool (4)</system:String>
   <system:String x:Key="pianoroll.tool.selection">Selection Tool (1)
 Hold Ctrl to select more</system:String>
 

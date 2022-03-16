@@ -3,7 +3,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using NAudio.Wave;
 using OpenUtau.Classic;
-using OpenUtau.Core.Formats;
+using OpenUtau.Core.Format;
 using Serilog;
 
 namespace OpenUtau.Core.Render {

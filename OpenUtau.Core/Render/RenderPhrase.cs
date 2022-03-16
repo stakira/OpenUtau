@@ -30,8 +30,8 @@ namespace OpenUtau.Core.Render {
             this.phoneme = phoneme.phoneme;
             tone = note.tone;
 
-            int eng = (int)phoneme.GetExpression(project, track, "eng").Item1;
-            if (project.expressions.TryGetValue("eng", out var descriptor)) {
+            int eng = (int)phoneme.GetExpression(project, track, Format.Ustx.ENG).Item1;
+            if (project.expressions.TryGetValue(Format.Ustx.ENG, out var descriptor)) {
                 if (eng < 0 || eng >= descriptor.options.Length) {
                     eng = 0;
                 }
@@ -41,9 +41,9 @@ namespace OpenUtau.Core.Render {
                 }
             }
             flags = phoneme.GetResamplerFlags(project, track);
-            volume = phoneme.GetExpression(project, track, "vol").Item1 * 0.01f;
-            velocity = phoneme.GetExpression(project, track, "vel").Item1 * 0.01f;
-            modulation = phoneme.GetExpression(project, track, "mod").Item1 * 0.01f;
+            volume = phoneme.GetExpression(project, track, Format.Ustx.VOL).Item1 * 0.01f;
+            velocity = phoneme.GetExpression(project, track, Format.Ustx.VEL).Item1 * 0.01f;
+            modulation = phoneme.GetExpression(project, track, Format.Ustx.MOD).Item1 * 0.01f;
             preutterMs = phoneme.preutter;
             envelope = phoneme.envelope.data.ToArray();
 
@@ -58,6 +58,7 @@ namespace OpenUtau.Core.Render {
         public readonly double tickToMs;
         public readonly RenderPhone[] phones;
         public readonly float[] pitches;
+        public readonly float[] dynamics;
 
         internal RenderPhrase(UProject project, UTrack track, UVoicePart part, IEnumerable<UPhoneme> phonemes) {
             var notes = new List<UNote>();
@@ -138,6 +139,24 @@ namespace OpenUtau.Core.Render {
                         index++;
                     }
                     lastPoint = point;
+                }
+            }
+
+            var curve = part.curves.FirstOrDefault(c => c.abbr == Format.Ustx.PITD);
+            if (curve != null) {
+                for (int i = 0; i < pitches.Length; ++i) {
+                    pitches[i] += curve.Sample(pitchStart + i * pitchInterval);
+                }
+            }
+
+            curve = part.curves.FirstOrDefault(c => c.abbr == Format.Ustx.DYN);
+            if (curve != null) {
+                dynamics = new float[pitches.Length];
+                for (int i = 0; i < dynamics.Length; ++i) {
+                    int dyn = curve.Sample(pitchStart + i * pitchInterval);
+                    dynamics[i] = dyn == curve.descriptor.min
+                        ? 0
+                        : (float)MusicMath.DecibelToLinear(dyn * 0.1);
                 }
             }
         }

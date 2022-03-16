@@ -224,6 +224,11 @@ namespace OpenUtau.App.Views {
         }
 
         private void NotesCanvasLeftPointerPressed(Canvas canvas, PointerPoint point, PointerPressedEventArgs args) {
+            if (ViewModel.NotesViewModel.DrawPitchTool) {
+                ViewModel.NotesViewModel.DeselectNotes();
+                editState = new DrawPitchState(canvas, ViewModel, this);
+                return;
+            }
             if (ViewModel.NotesViewModel.EraserTool) {
                 ViewModel.NotesViewModel.DeselectNotes();
                 editState = new NoteEraseEditState(canvas, ViewModel, this, MouseButton.Left);
@@ -304,8 +309,11 @@ namespace OpenUtau.App.Views {
         }
 
         private void NotesCanvasRightPointerPressed(Canvas canvas, PointerPoint point, PointerPressedEventArgs args) {
-            Serilog.Log.Information("NotesCanvasRightPointerPressed");
             ViewModel.NotesViewModel.DeselectNotes();
+            if (ViewModel.NotesViewModel.DrawPitchTool) {
+                editState = new ResetPitchState(canvas, ViewModel, this);
+                return;
+            }
             if (ViewModel.NotesViewModel.ShowPitch) {
                 var pitHitInfo = ViewModel.NotesViewModel.HitTest.HitTestPitchPoint(point.Position);
                 if (pitHitInfo.Note != null && pitchContextMenu != null) {
@@ -629,6 +637,8 @@ namespace OpenUtau.App.Views {
                     case Key.D1: notesVm.SelectToolCommand?.Execute("1").Subscribe(); args.Handled = true; break;
                     case Key.D2: notesVm.SelectToolCommand?.Execute("2").Subscribe(); args.Handled = true; break;
                     case Key.D3: notesVm.SelectToolCommand?.Execute("3").Subscribe(); args.Handled = true; break;
+                    case Key.D4: notesVm.SelectToolCommand?.Execute("4").Subscribe(); args.Handled = true; break;
+                    case Key.R: notesVm.ShowFinalPitch = !notesVm.ShowFinalPitch; args.Handled = true; break;
                     case Key.T: notesVm.ShowTips = !notesVm.ShowTips; args.Handled = true; break;
                     case Key.Y: notesVm.PlayTone = !notesVm.PlayTone; args.Handled = true; break;
                     case Key.U: notesVm.ShowVibrato = !notesVm.ShowVibrato; args.Handled = true; break;

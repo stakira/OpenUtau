@@ -377,7 +377,7 @@ namespace OpenUtau.UI {
 
         private void MenuImportAudio_Click(object sender, RoutedEventArgs e) {
             OpenFileDialog openFileDialog = new OpenFileDialog() {
-                Filter = $"Audio Files|{Core.Formats.Wave.kFileFilter}",
+                Filter = $"Audio Files|{Core.Format.Wave.kFileFilter}",
                 Multiselect = false,
                 CheckFileExists = true
             };
@@ -394,7 +394,7 @@ namespace OpenUtau.UI {
             };
             if (openFileDialog.ShowDialog() == true) {
                 var project = DocManager.Inst.Project;
-                var parts = Core.Formats.Midi.Load(openFileDialog.FileName, project);
+                var parts = Core.Format.Midi.Load(openFileDialog.FileName, project);
 
                 DocManager.Inst.StartUndoGroup();
                 foreach (var part in parts) {
@@ -570,7 +570,7 @@ namespace OpenUtau.UI {
         #region application commmands
 
         private void CmdNewFile() {
-            DocManager.Inst.ExecuteCmd(new LoadProjectNotification(OpenUtau.Core.Formats.Ustx.Create()));
+            DocManager.Inst.ExecuteCmd(new LoadProjectNotification(OpenUtau.Core.Format.Ustx.Create()));
         }
 
         private void OpenFileDialog() {
@@ -586,7 +586,7 @@ namespace OpenUtau.UI {
 
         private void OpenFiles(string[] files) {
             try {
-                Core.Formats.Formats.LoadProject(files);
+                Core.Format.Formats.LoadProject(files);
             } catch (Exception e) {
                 Log.Error(e, $"Failed to open files {string.Join("\n", files)}");
                 MessageBox.Show(e.ToString());
@@ -606,7 +606,7 @@ namespace OpenUtau.UI {
 
         private void ImportFiles(string[] files) {
             try {
-                Core.Formats.Formats.ImportTracks(DocManager.Inst.Project, files);
+                Core.Format.Formats.ImportTracks(DocManager.Inst.Project, files);
             } catch (Exception e) {
                 MessageBox.Show(e.ToString());
             }

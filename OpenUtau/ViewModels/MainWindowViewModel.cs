@@ -56,7 +56,7 @@ namespace OpenUtau.App.ViewModels {
         public void InitProject() {
             var args = Environment.GetCommandLineArgs();
             if (args.Length == 2 && File.Exists(args[1])) {
-                Core.Formats.Formats.LoadProject(new string[] { args[1] });
+                Core.Format.Formats.LoadProject(new string[] { args[1] });
                 return;
             }
             NewProject();
@@ -74,14 +74,14 @@ namespace OpenUtau.App.ViewModels {
                     Log.Error(e, "failed to load default template");
                 }
             }
-            DocManager.Inst.ExecuteCmd(new LoadProjectNotification(Core.Formats.Ustx.Create()));
+            DocManager.Inst.ExecuteCmd(new LoadProjectNotification(Core.Format.Ustx.Create()));
         }
 
         public void OpenProject(string[] files) {
             if (files == null) {
                 return;
             }
-            Core.Formats.Formats.LoadProject(files);
+            Core.Format.Formats.LoadProject(files);
         }
 
         public void SaveProject(string file = "") {
@@ -95,7 +95,7 @@ namespace OpenUtau.App.ViewModels {
             if (files == null) {
                 return;
             }
-            Core.Formats.Formats.ImportTracks(DocManager.Inst.Project, files);
+            Core.Format.Formats.ImportTracks(DocManager.Inst.Project, files);
         }
 
         public void ImportAudio(string file) {
@@ -123,7 +123,7 @@ namespace OpenUtau.App.ViewModels {
                 return;
             }
             var project = DocManager.Inst.Project;
-            var parts = Core.Formats.Midi.Load(file, project);
+            var parts = Core.Format.Midi.Load(file, project);
             DocManager.Inst.StartUndoGroup();
             foreach (var part in parts) {
                 var track = new UTrack();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reactive;
 using System.Text;
 using Avalonia;
@@ -190,6 +191,29 @@ namespace OpenUtau.App.ViewModels {
                 }
             }
             return default;
+        }
+
+        public double? SamplePitch(Point point) {
+            if (viewModel.Part == null) {
+                return null;
+            }
+            double tick = viewModel.PointToTick(point);
+            var note = viewModel.Part.notes.FirstOrDefault(n => n.End >= tick);
+            if (note == null && viewModel.Part.notes.Count > 0) {
+                note = viewModel.Part.notes.Last();
+            }
+            if (note == null) {
+                return null;
+            }
+            double pitch = note.tone * 100;
+            pitch += note.pitch.Sample(viewModel.Project, note, tick) ?? 0;
+            if (note.Next != null && note.Next.position == note.End) {
+                double? delta = note.Next.pitch.Sample(viewModel.Project, note.Next, tick);
+                if (delta != null) {
+                    pitch += delta.Value + note.Next.tone * 100 - note.tone * 100;
+                }
+            }
+            return pitch;
         }
 
         public VibratoHitInfo HitTestVibrato(Point mousePos) {

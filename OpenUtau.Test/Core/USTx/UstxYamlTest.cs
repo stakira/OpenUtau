@@ -1,8 +1,5 @@
 ﻿using Xunit;
 using Xunit.Abstractions;
-using Newtonsoft.Json;
-using YamlDotNet.Serialization;
-using YamlDotNet.Serialization.NamingConventions;
 
 namespace OpenUtau.Core.Ustx {
     public class UstxYamlTest {
@@ -12,7 +9,7 @@ namespace OpenUtau.Core.Ustx {
 
         public UstxYamlTest(ITestOutputHelper output) {
             this.output = output;
-            descriptor = new UExpressionDescriptor("velocity", "vel", 0, 200, 100);
+            descriptor = new UExpressionDescriptor("velocity", Format.Ustx.VEL, 0, 200, 100);
 
             note = UNote.Create();
             note.position = 120;
