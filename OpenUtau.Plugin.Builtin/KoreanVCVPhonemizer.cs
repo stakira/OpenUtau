@@ -130,7 +130,7 @@ namespace OpenUtau.Plugin.Builtin
 			string currPhoneme;
 			string[] prevIMF;
 
-			// Check if lyric is R or - and return appropriate Result; otherwise, move to next steps
+			// Check if lyric is R, - or an end breath and return appropriate Result; otherwise, move to next steps
 			if (note.lyric == "R" || note.lyric == "-" || note.lyric == "H" || note.lyric == "B" || note.lyric == "bre")
 			{
 				currPhoneme = note.lyric;
