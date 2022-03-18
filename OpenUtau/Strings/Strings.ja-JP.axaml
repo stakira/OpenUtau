@@ -20,7 +20,7 @@
   <system:String x:Key="dialogs.export.savefirst">プロジェクトを保存してください。</system:String>
   <system:String x:Key="dialogs.messagebox.cancel">キャンセル</system:String>
   <system:String x:Key="dialogs.messagebox.no">いいえ</system:String>
-  <!--<system:String x:Key="dialogs.messagebox.ok">Ok</system:String>-->
+  <system:String x:Key="dialogs.messagebox.ok">Ok</system:String>
   <system:String x:Key="dialogs.messagebox.yes">はい</system:String>
   <system:String x:Key="dialogs.noresampler.caption">エンジンがありません</system:String>
   <system:String x:Key="dialogs.noresampler.message">エンジンが設定されていません！お好みのエンジンのEXEやDLLファイルをResamplerフォルダに入れて、環境設定でエンジンを選択してください！</system:String>
@@ -47,7 +47,7 @@
   <system:String x:Key="lyrics.cancel">キャンセル</system:String>
   <system:String x:Key="lyrics.caption">歌詞を編集</system:String>
   <system:String x:Key="lyrics.livepreview">リアルタイム プレビュー</system:String>
-  <!--<system:String x:Key="lyrics.max">Max</system:String>-->
+  <system:String x:Key="lyrics.max">Max</system:String>
   <system:String x:Key="lyrics.reset">リセット</system:String>
   <system:String x:Key="lyrics.selectnotes">音符を選択してください！</system:String>
   <system:String x:Key="lyrics.separators">セパレータ</system:String>
@@ -63,23 +63,23 @@
   <system:String x:Key="menu.file">ファイル</system:String>
   <system:String x:Key="menu.file.exit">OpenUTAUを終了</system:String>
   <system:String x:Key="menu.file.exportust">USTをエクスポート</system:String>
-  <!--<system:String x:Key="menu.file.exportwav">Export Wav Files</system:String>-->
+  <system:String x:Key="menu.file.exportwav">Wavファイルを出力</system:String>
   <system:String x:Key="menu.file.importaudio">音声をインポート...</system:String>
   <system:String x:Key="menu.file.importmidi">MIDIをインポート...</system:String>
   <system:String x:Key="menu.file.importtracks">トラックをインポート...</system:String>
   <system:String x:Key="menu.file.new">新規作成</system:String>
   <system:String x:Key="menu.file.newfromtemplate">テンプレートから新規作成</system:String>
   <system:String x:Key="menu.file.open">開く...</system:String>
-  <!--<system:String x:Key="menu.file.openas">Open As</system:String>-->
+  <system:String x:Key="menu.file.openas">Open As</system:String>
   <system:String x:Key="menu.file.openrecent">最近開いたファイル</system:String>
   <system:String x:Key="menu.file.save">保存</system:String>
   <system:String x:Key="menu.file.saveas">別名で保存...</system:String>
   <system:String x:Key="menu.file.savetemplate">テンプレートを保存...</system:String>
   <system:String x:Key="menu.help">ヘルプ</system:String>
   <system:String x:Key="menu.help.about">OpenUTAUについて</system:String>
-  <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
+  <system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>
   <system:String x:Key="menu.tools">ツール</system:String>
-  <!--<system:String x:Key="menu.tools.clearcache">Clear Cache</system:String>-->
+  <system:String x:Key="menu.tools.clearcache">キャッシュクリア</system:String>
   <system:String x:Key="menu.tools.layout">レイアウト</system:String>
   <system:String x:Key="menu.tools.layout.hsplit11">横並び 1:1</system:String>
   <system:String x:Key="menu.tools.layout.hsplit12">横並び 1:2</system:String>
@@ -94,17 +94,17 @@
   <system:String x:Key="menu.tools.singers">シンガー...</system:String>
 
   <system:String x:Key="oto.alias">エイリアス</system:String>
-  <!--<system:String x:Key="oto.color">Color</system:String>-->
+  <system:String x:Key="oto.color">Color</system:String>
   <system:String x:Key="oto.consonant">子音部</system:String>
   <system:String x:Key="oto.cutoff">ブランク</system:String>
   <system:String x:Key="oto.file">ファイル</system:String>
   <system:String x:Key="oto.offset">オフセット</system:String>
   <system:String x:Key="oto.overlap">オーバーラップ</system:String>
   <system:String x:Key="oto.phonetic">読み方</system:String>
-  <!--<system:String x:Key="oto.prefix">Prefix</system:String>-->
+  <system:String x:Key="oto.prefix">Prefix</system:String>
   <system:String x:Key="oto.preutter">先行発声</system:String>
   <system:String x:Key="oto.set">セット</system:String>
-  <!--<system:String x:Key="oto.suffix">Suffix</system:String>-->
+  <system:String x:Key="oto.suffix">Suffix</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">歌詞</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">歌詞を編集</system:String>
@@ -118,10 +118,10 @@
   <system:String x:Key="pianoroll.menu.notes.addtailrest">末尾に"R"を追加</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">1/128にクオンタイズ</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">1/64にクオンタイズ</system:String>
-  <!--<system:String x:Key="pianoroll.menu.notes.reset.exps">Reset all expressions</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">Reset phoneme timings</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.notes.reset.pitchbends">Reset pitch bends</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.notes.reset.vibratos">Reset vibratos</system:String>-->
+  <system:String x:Key="pianoroll.menu.notes.reset.exps">全ての表情をリセット</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">音素のタイミングをリセット</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">ピッチベンドをリセット</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.vibratos">ビブラートをリセット</system:String>
   <system:String x:Key="pianoroll.menu.part">パート</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">継承プラグイン (実験的)</system:String>
   <system:String x:Key="pianoroll.menu.part.rename">名前を変更</system:String>
@@ -140,8 +140,8 @@ Ctrl長押しで複数選択</system:String>
 
   <system:String x:Key="prefs.advanced">高度な設定</system:String>
   <system:String x:Key="prefs.advanced.beta">ベータ版</system:String>
-  <!--<system:String x:Key="prefs.advanced.resamplerlogging">Resampler Logging</system:String>-->
-  <!--<system:String x:Key="prefs.advanced.resamplerlogging.warn">Stores resampler output in log files. This option slows down UI and rendering.</system:String>-->
+  <system:String x:Key="prefs.advanced.resamplerlogging">Resamplerロギング</system:String>
+  <system:String x:Key="prefs.advanced.resamplerlogging.warn">Resamplerの出力をログファイルに格納します。この設定はUIやレンダリングが遅くなります。</system:String>
   <system:String x:Key="prefs.advanced.stable">安定版</system:String>
   <system:String x:Key="prefs.appearance">外観</system:String>
   <system:String x:Key="prefs.appearance.lang">言語</system:String>
@@ -150,30 +150,30 @@ Ctrl長押しで複数選択</system:String>
   <system:String x:Key="prefs.appearance.theme.light">ライト</system:String>
   <system:String x:Key="prefs.caption">環境設定</system:String>
   <system:String x:Key="prefs.note.restart">Note: この設定を変更した後は、OpenUtauを再起動してください。</system:String>
-  <!--<system:String x:Key="prefs.off">Off</system:String>-->
-  <!--<system:String x:Key="prefs.on">On</system:String>-->
+  <system:String x:Key="prefs.off">オフ</system:String>
+  <system:String x:Key="prefs.on">オン</system:String>
   <system:String x:Key="prefs.paths">ファイルの場所</system:String>
   <system:String x:Key="prefs.paths.addlsinger">シンガーの場所（追加）</system:String>
-  <!--<system:String x:Key="prefs.paths.addlsinger.install">Install to Additional Singer Path</system:String>-->
+  <system:String x:Key="prefs.paths.addlsinger.install">シンガーの場所(追加)にインストール</system:String>
   <system:String x:Key="prefs.paths.reset">リセット</system:String>
   <system:String x:Key="prefs.paths.select">選択</system:String>
   <system:String x:Key="prefs.playback">再生</system:String>
-  <!--<system:String x:Key="prefs.playback.backend">Audio Backend</system:String>-->
-  <!--<system:String x:Key="prefs.playback.backend.auto">Automatic</system:String>-->
-  <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
-  <!--<system:String x:Key="prefs.playback.cursorposition">Cursor Position</system:String>-->
+  <system:String x:Key="prefs.playback.backend">オーディオバックエンド</system:String>
+  <system:String x:Key="prefs.playback.backend.auto">自動</system:String>
+  <system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>
+  <system:String x:Key="prefs.playback.cursorposition">カーソルの場所</system:String>
   <system:String x:Key="prefs.playback.device">再生デバイス</system:String>
   <system:String x:Key="prefs.playback.test">再生テスト</system:String>
   <system:String x:Key="prefs.rendering">レンダリング</system:String>
-  <!--<system:String x:Key="prefs.rendering.phasecomp">Phase Compensation</system:String>-->
+  <system:String x:Key="prefs.rendering.phasecomp">位相補正</system:String>
   <system:String x:Key="prefs.rendering.prerender.threads">プリレンダースレッド数</system:String>
-  <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
-  <!--<system:String x:Key="prefs.rendering.resampler.morewarn">
-Warning: moresampler is not fully supported. It may be slow and cause high CPU usage. If you insist, please:
-1. Set "resampler-compatibility" to "on" in moreconfig.txt.
-2. Set "auto-update-llsm-mrq" to "off" in moreconfig.txt.
-3. Patiently wait for moresampler to generate missing llsm files.
-  </system:String>-->
+  <system:String x:Key="prefs.rendering.resampler">Resampler</system:String>
+  <system:String x:Key="prefs.rendering.resampler.morewarn">
+警告: moresamplerは完全にはサポートされていません。速度が遅くなり、CPU使用率が高くなる可能性があります。それでも使用する場合:
+1. moreconfig.txt内の "resampler-compatibility" を"on" に設定
+2. moreconfig.txt内の"auto-update-llsm-mrq" を "off" に設定
+3. moresamplerが不足しているllsmファイルを生成するのを辛抱強く待ってください。
+  </system:String>
   <system:String x:Key="prefs.rendering.resampler.note">
     Note: エンジンを使用するには、使用したいエンジンのDLLまたはEXEファイルをOpenUTAUフォルダ内のResamplersフォルダに追加し、選択してください。
   </system:String>
@@ -186,7 +186,7 @@ Warning: moresampler is not fully supported. It may be slow and cause high CPU u
   <system:String x:Key="singers.setencoding">文字コード設定</system:String>
   <system:String x:Key="singers.subbanks.cancel">キャンセル</system:String>
   <system:String x:Key="singers.subbanks.clear">クリア</system:String>
-  <!--<system:String x:Key="singers.subbanks.color">Color</system:String>-->
+  <system:String x:Key="singers.subbanks.color">Color</system:String>
   <system:String x:Key="singers.subbanks.color.add">Colorを追加</system:String>
   <system:String x:Key="singers.subbanks.color.remove">Colorを削除</system:String>
   <system:String x:Key="singers.subbanks.color.rename">名前を変更</system:String>
@@ -230,7 +230,7 @@ Warning: moresampler is not fully supported. It may be slow and cause high CPU u
   <system:String x:Key="tracks.selectsinger">シンガーを選択</system:String>
 
   <system:String x:Key="updater.caption">アップデートの確認</system:String>
-  <!--<system:String x:Key="updater.github">GitHub</system:String>-->
+  <system:String x:Key="updater.github">GitHub</system:String>
   <system:String x:Key="updater.status.available">アップデート v{0} が利用できます!</system:String>
   <system:String x:Key="updater.status.checking">アップデートを確認しています...</system:String>
   <system:String x:Key="updater.status.notavailable">最新</system:String>
