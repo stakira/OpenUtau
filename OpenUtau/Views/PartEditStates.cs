@@ -86,6 +86,7 @@ namespace OpenUtau.App.Views {
             var tracksVm = vm.TracksViewModel;
             if (!tracksVm.SelectedParts.Contains(part)) {
                 tracksVm.DeselectParts();
+                tracksVm.SelectPart(part);
             }
         }
         public override void Begin(IPointer pointer, Point point) {
@@ -94,6 +95,10 @@ namespace OpenUtau.App.Views {
             xOffset = point.X - tracksVm.TickTrackToPoint(part.position, 0).X;
         }
         public override void Update(IPointer pointer, Point point) {
+            var delta = point - startPoint;
+            if (Math.Abs(delta.X) + Math.Abs(delta.Y) < 4) {
+                return;
+            }
             var project = DocManager.Inst.Project;
             var tracksVm = vm.TracksViewModel;
 

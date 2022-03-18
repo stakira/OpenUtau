@@ -7,6 +7,7 @@ using System.Threading;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using OpenUtau.Audio.Bindings;
+using OpenUtau.Core;
 using OpenUtau.Core.Util;
 using Serilog;
 
@@ -31,8 +32,6 @@ namespace OpenUtau.Audio {
         private bool disposed;
 
         public PortAudioOutput() {
-            var path = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "libs");
-            PaBinding.InitializeBindings(new LibraryLoader(path, "portaudio"));
             PaBinding.Pa_Initialize();
 
             buffer = new float[0];
@@ -60,7 +59,7 @@ namespace OpenUtau.Audio {
         public List<AudioOutputDevice> GetOutputDevices() {
             List<AudioOutputDevice> devices = new List<AudioOutputDevice>();
             int count = PaBinding.Pa_GetDeviceCount();
-            PaBinding.Pa_MaybeThrow(count);
+            PaBinding.MaybeThrow(count);
             for (int i = 0; i < count; ++i) {
                 var device = GetEligibleOutputDevice(i);
                 if (device is AudioDevice dev) {
@@ -130,7 +129,7 @@ namespace OpenUtau.Audio {
         }
 
         private AudioDevice? GetEligibleOutputDevice(int index) {
-            var device = new AudioDevice(PaBinding.Pa_GetDeviceInfo(index), index);
+            var device = new AudioDevice(PaBinding.GetDeviceInfo(index), index);
             if (device.MaxOutputChannels < Channels) {
                 return null;
             }

@@ -40,14 +40,23 @@ namespace OpenUtau.Plugin.Builtin {
             // 2. Lookup the trailing sound in vowel table: "uang" -> "_ang".
             // 3. Split the total duration and returns "duang" and "_ang".
             var note = notes[0];
+            string consonant = string.Empty;
             string vowel = string.Empty;
             if (note.lyric.Length > 2 && cSet.Contains(note.lyric.Substring(0, 2))) {
                 // First try to find consonant "zh", "ch" or "sh", and extract vowel.
+                consonant = note.lyric.Substring(0, 2);
                 vowel = note.lyric.Substring(2);
             } else if (note.lyric.Length > 1 && cSet.Contains(note.lyric.Substring(0, 1))) {
                 // Then try to find single character consonants, and extract vowel.
+                consonant = note.lyric.Substring(0, 1);
                 vowel = note.lyric.Substring(1);
-            } // Otherwise we don't need the vowel.
+            } else {
+                // Otherwise the lyric is a vowel.
+                vowel = note.lyric;
+            }
+            if ((vowel == "un" || vowel == "uan") && (consonant == "j" || consonant == "q" || consonant == "x" || consonant == "y")) {
+                vowel = "v" + vowel.Substring(1);
+            }
             string phoneme0 = note.lyric;
             // We will need to split the total duration for phonemes, so we compute it here.
             int totalDuration = notes.Sum(n => n.duration);

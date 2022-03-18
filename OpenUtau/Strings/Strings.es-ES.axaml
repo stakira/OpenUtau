@@ -62,8 +62,8 @@
   <system:String x:Key="menu.edit.undo">Deshacer</system:String>
   <system:String x:Key="menu.file">Archivo</system:String>
   <system:String x:Key="menu.file.exit">Salir</system:String>
-  <system:String x:Key="menu.file.exportall">Exportar Audio</system:String>
   <!--<system:String x:Key="menu.file.exportust">Export Ust Files</system:String>-->
+  <!--<system:String x:Key="menu.file.exportwav">Export Wav Files</system:String>-->
   <system:String x:Key="menu.file.importaudio">Importar Audio...</system:String>
   <system:String x:Key="menu.file.importmidi">Importar Midi...</system:String>
   <!--<system:String x:Key="menu.file.importtracks">Import Tracks...</system:String>-->
@@ -79,7 +79,7 @@
   <system:String x:Key="menu.help.about">Acerca de OpenUTAU</system:String>
   <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
   <system:String x:Key="menu.tools">Herramientas</system:String>
-  <!--<system:String x:Key="menu.tools.clearrendercache">Clear Render Cache</system:String>-->
+  <!--<system:String x:Key="menu.tools.clearcache">Clear Cache</system:String>-->
   <!--<system:String x:Key="menu.tools.layout">Layout</system:String>-->
   <!--<system:String x:Key="menu.tools.layout.hsplit11">Horizontal 1:1</system:String>-->
   <!--<system:String x:Key="menu.tools.layout.hsplit12">Horizontal 1:2</system:String>-->
@@ -154,6 +154,7 @@ Hold Ctrl to select more</system:String>-->
   <!--<system:String x:Key="prefs.on">On</system:String>-->
   <system:String x:Key="prefs.paths">Rutas</system:String>
   <!--<system:String x:Key="prefs.paths.addlsinger">Additional Singer Path</system:String>-->
+  <!--<system:String x:Key="prefs.paths.addlsinger.install">Install to Additional Singer Path</system:String>-->
   <!--<system:String x:Key="prefs.paths.reset">Reset</system:String>-->
   <!--<system:String x:Key="prefs.paths.select">Select</system:String>-->
   <system:String x:Key="prefs.playback">Reproducción</system:String>
@@ -164,19 +165,18 @@ Hold Ctrl to select more</system:String>-->
   <system:String x:Key="prefs.playback.device">Dispositivo de reproducción</system:String>
   <system:String x:Key="prefs.playback.test">Probar</system:String>
   <!--<system:String x:Key="prefs.rendering">Rendering</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.phasecomp">Phase Compensation</system:String>-->
   <!--<system:String x:Key="prefs.rendering.prerender.threads">Pre-render Threads</system:String>-->
-  <system:String x:Key="prefs.rendering.resampler.export">Resampler para el exportado</system:String>
-  <system:String x:Key="prefs.rendering.resampler.note">
-        Nota: Para usar resamplers externos, por favor, añada el archivo DLL o EXE en la carpeta "Resamplers" dentro de la ruta de instalación de OpenUTAU y selecciónelo en preferencias.
-    </system:String>
-  <system:String x:Key="prefs.rendering.resampler.preview">Resampler para la previsualización</system:String>
-  <!--<system:String x:Key="prefs.rendering.resampler.warn">
+  <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.resampler.morewarn">
 Warning: moresampler is not fully supported. It may be slow and cause high CPU usage. If you insist, please:
 1. Set "resampler-compatibility" to "on" in moreconfig.txt.
 2. Set "auto-update-llsm-mrq" to "off" in moreconfig.txt.
-3. Set "multithread-synthesis" to "off" in moreconfig.txt. Or reduce pre-render threads to 1 or 2.
-4. Patiently wait for prerender to finish before play.
+3. Patiently wait for moresampler to generate missing llsm files.
   </system:String>-->
+  <system:String x:Key="prefs.rendering.resampler.note">
+        Nota: Para usar resamplers externos, por favor, añada el archivo DLL o EXE en la carpeta "Resamplers" dentro de la ruta de instalación de OpenUTAU y selecciónelo en preferencias.
+    </system:String>
 
   <!--<system:String x:Key="progress.saved">Project saved. {0}</system:String>-->
 

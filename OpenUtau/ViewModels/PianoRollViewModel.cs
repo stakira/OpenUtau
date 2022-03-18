@@ -79,7 +79,7 @@ namespace OpenUtau.App.ViewModels {
                 try {
                     var project = NotesViewModel.Project;
                     var part = NotesViewModel.Part;
-                    var tempFile = Path.Combine(PathManager.Inst.GetCachePath(), "temp.tmp");
+                    var tempFile = Path.Combine(PathManager.Inst.CachePath, "temp.tmp");
                     UNote? first = null;
                     UNote? last = null;
                     if (NotesViewModel.SelectedNotes.Count == 0) {

@@ -3,7 +3,7 @@ using System.IO;
 using OpenUtau.Classic;
 using OpenUtau.Core.Ustx;
 
-namespace OpenUtau.Core.Formats {
+namespace OpenUtau.Core.Format {
     public enum ProjectFormats { Unknown, Vsq3, Vsq4, Ust, Ustx };
 
     public static class Formats {

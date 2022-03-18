@@ -11,8 +11,6 @@ using ReactiveUI.Fody.Helpers;
 
 namespace OpenUtau.App.ViewModels {
     public class ExpressionBuilder : ReactiveObject {
-        private static readonly string[] required = { "vel", "vol", "atk", "dec", "eng", "clr" };
-
         [Reactive] public string Name { get; set; }
         [Reactive] public string Abbr { get; set; }
         [Reactive] public UExpressionType ExpressionType { get; set; }
@@ -25,11 +23,13 @@ namespace OpenUtau.App.ViewModels {
 
         public bool IsCustom => isCustom.Value;
         public bool IsNumerical => isNumerical.Value;
+        public bool ShowNumbers => showNumbers.Value;
         public bool IsOptions => isOptions.Value;
         public int SelectedType => selectedType.Value;
 
         private ObservableAsPropertyHelper<bool> isCustom;
         private ObservableAsPropertyHelper<bool> isNumerical;
+        private ObservableAsPropertyHelper<bool> showNumbers;
         private ObservableAsPropertyHelper<bool> isOptions;
         private ObservableAsPropertyHelper<int> selectedType;
 
@@ -54,11 +54,14 @@ namespace OpenUtau.App.ViewModels {
             OptionValues = optionValues;
 
             this.WhenAnyValue(x => x.Abbr)
-                .Select(abbr => !required.Contains(abbr))
+                .Select(abbr => !Core.Format.Ustx.required.Contains(abbr))
                 .ToProperty(this, x => x.IsCustom, out isCustom);
             this.WhenAnyValue(x => x.ExpressionType)
                 .Select(type => type == UExpressionType.Numerical)
                 .ToProperty(this, x => x.IsNumerical, out isNumerical);
+            this.WhenAnyValue(x => x.ExpressionType)
+                .Select(type => type == UExpressionType.Numerical || type == UExpressionType.Curve)
+                .ToProperty(this, x => x.ShowNumbers, out showNumbers);
             this.WhenAnyValue(x => x.ExpressionType)
                 .Select(type => type == UExpressionType.Options)
                 .ToProperty(this, x => x.IsOptions, out isOptions);
@@ -89,11 +92,17 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public UExpressionDescriptor Build() {
-            return ExpressionType == UExpressionType.Numerical
-            ? new UExpressionDescriptor(
-                Name.Trim(), Abbr.Trim().ToLower(), Min, Max, DefaultValue, Flag)
-            : new UExpressionDescriptor(
-                Name.Trim(), Abbr.Trim().ToLower(), IsFlag, OptionValues.Split(','));
+            switch (ExpressionType) {
+                case UExpressionType.Numerical:
+                    return new UExpressionDescriptor(Name.Trim(), Abbr.Trim().ToLower(), Min, Max, DefaultValue, Flag);
+                case UExpressionType.Options:
+                    return new UExpressionDescriptor(Name.Trim(), Abbr.Trim().ToLower(), IsFlag, OptionValues.Split(','));
+                case UExpressionType.Curve:
+                    return new UExpressionDescriptor(Name.Trim(), Abbr.Trim().ToLower(), Min, Max, DefaultValue) {
+                        type = UExpressionType.Curve,
+                    };
+            }
+            throw new Exception("Unexpected expression type");
         }
 
         public override string ToString() => Name;

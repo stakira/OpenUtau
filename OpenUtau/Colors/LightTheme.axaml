@@ -26,6 +26,7 @@
   
   <Color x:Key="TickLineColor">#AFA3B5</Color>
   <Color x:Key="BarNumberColor">#AFA3B5</Color>
+  <Color x:Key="FinalPitchColor">#C0C0C0</Color>
   <Color x:Key="TrackBackgroundAltColor">#F0F0F0</Color>
 
   <!--Keyboard Background-->

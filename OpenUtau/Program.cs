@@ -23,6 +23,7 @@ namespace OpenUtau.App {
                 Log.Information("OpenUtau already open. Exiting.");
                 return;
             }
+            Log.Information($"OpenUtau v{System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version}");
             Run(args);
         }
 

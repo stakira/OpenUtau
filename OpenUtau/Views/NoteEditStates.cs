@@ -136,6 +136,7 @@ namespace OpenUtau.App.Views {
             var notesVm = vm.NotesViewModel;
             if (!notesVm.SelectedNotes.Contains(note)) {
                 notesVm.DeselectNotes();
+                notesVm.SelectNote(note);
             }
         }
         public override void Begin(IPointer pointer, Point point) {
@@ -428,7 +429,7 @@ namespace OpenUtau.App.Views {
             if (deltaX == 0 && deltaY == 0) {
                 return;
             }
-            DocManager.Inst.ExecuteCmd(new MovePitchPointCommand(pitchPoint, (float)deltaX, (float)deltaY));
+            DocManager.Inst.ExecuteCmd(new MovePitchPointCommand(notesVm.Part, pitchPoint, (float)deltaX, (float)deltaY));
             valueTip.UpdateValueTip($"{pitchPoint.X:0.0}ms, {pitchPoint.Y * 10:0}cent");
         }
     }
@@ -462,6 +463,32 @@ namespace OpenUtau.App.Views {
             if (descriptor == null) {
                 return;
             }
+            if (descriptor.type != UExpressionType.Curve) {
+                UpdatePhonemeExp(pointer, point);
+            } else {
+                UpdateCurveExp(pointer, point);
+            }
+            double viewMax = descriptor.max + (descriptor.type == UExpressionType.Options ? 1 : 0);
+            double displayValue = descriptor.min + (viewMax - descriptor.min) * (1 - point.Y / canvas.Bounds.Height);
+            displayValue = Math.Max(descriptor.min, Math.Min(descriptor.max, displayValue));
+            string valueTipText;
+            if (descriptor.type == UExpressionType.Options) {
+                int index = (int)displayValue;
+                if (index >= 0 && index < descriptor.options.Length) {
+                    valueTipText = descriptor.options[index];
+                } else {
+                    valueTipText = "Error: out of range";
+                }
+                if (string.IsNullOrEmpty(valueTipText)) {
+                    valueTipText = "\"\"";
+                }
+            } else {
+                valueTipText = ((int)displayValue).ToString();
+            }
+            valueTip.UpdateValueTip(valueTipText);
+            lastPoint = point;
+        }
+        private void UpdatePhonemeExp(IPointer pointer, Point point) {
             var notesVm = vm.NotesViewModel;
             var p1 = lastPoint;
             var p2 = point;
@@ -482,24 +509,14 @@ namespace OpenUtau.App.Views {
                         notesVm.Project, track, hit.phoneme, key, (int)newValue));
                 }
             }
-            double displayValue = descriptor.min + (viewMax - descriptor.min) * (1 - point.Y / canvas.Bounds.Height);
-            displayValue = Math.Max(descriptor.min, Math.Min(descriptor.max, displayValue));
-            string valueTipText = string.Empty;
-            if (descriptor.type == UExpressionType.Numerical) {
-                valueTipText = ((int)displayValue).ToString();
-            } else if (descriptor.type == UExpressionType.Options) {
-                int index = (int)displayValue;
-                if (index >= 0 && index < descriptor.options.Length) {
-                    valueTipText = descriptor.options[index];
-                } else {
-                    valueTipText = "Error: out of range";
-                }
-                if (string.IsNullOrEmpty(valueTipText)) {
-                    valueTipText = "\"\"";
-                }
-            }
-            valueTip.UpdateValueTip(valueTipText);
-            lastPoint = point;
+        }
+        private void UpdateCurveExp(IPointer pointer, Point point) {
+            var notesVm = vm.NotesViewModel;
+            int lastX = notesVm.PointToTick(lastPoint);
+            int x = notesVm.PointToTick(point);
+            int lastY = (int)Math.Round(descriptor.min + (descriptor.max - descriptor.min) * (1 - lastPoint.Y / canvas.Bounds.Height));
+            int y = (int)Math.Round(descriptor.min + (descriptor.max - descriptor.min) * (1 - point.Y / canvas.Bounds.Height));
+            DocManager.Inst.ExecuteCmd(new SetCurveCommand(notesVm.Project, notesVm.Part, notesVm.PrimaryKey, x, y, lastX, lastY));
         }
     }
 
@@ -530,6 +547,14 @@ namespace OpenUtau.App.Views {
             if (descriptor == null) {
                 return;
             }
+            if (descriptor.type != UExpressionType.Curve) {
+                ResetPhonemeExp(pointer, point);
+            } else {
+                ResetCurveExp(pointer, point);
+            }
+            valueTip.UpdateValueTip(descriptor.defaultValue.ToString());
+        }
+        private void ResetPhonemeExp(IPointer pointer, Point point) {
             var notesVm = vm.NotesViewModel;
             var p1 = lastPoint;
             var p2 = point;
@@ -545,7 +570,14 @@ namespace OpenUtau.App.Views {
                         notesVm.Project, track, hit.phoneme, key, descriptor.defaultValue));
                 }
             }
-            valueTip.UpdateValueTip(descriptor.defaultValue.ToString());
+        }
+        private void ResetCurveExp(IPointer pointer, Point point) {
+            var notesVm = vm.NotesViewModel;
+            int lastX = notesVm.PointToTick(lastPoint);
+            int x = notesVm.PointToTick(point);
+            DocManager.Inst.ExecuteCmd(new SetCurveCommand(
+                notesVm.Project, notesVm.Part, notesVm.PrimaryKey,
+                x, (int)descriptor.defaultValue, lastX, (int)descriptor.defaultValue));
         }
     }
 
@@ -788,6 +820,66 @@ namespace OpenUtau.App.Views {
                     DocManager.Inst.ExecuteCmd(new PhonemeOverlapCommand(notesVm.Part, leadingNote, index, 0));
                 }
             }
+        }
+    }
+
+    class DrawPitchState : NoteEditState {
+        protected override bool ShowValueTip => false;
+        double? lastPitch;
+        Point lastPoint;
+        public DrawPitchState(
+            Canvas canvas,
+            PianoRollViewModel vm,
+            IValueTip valueTip) : base(canvas, vm, valueTip) { }
+        public override void Begin(IPointer pointer, Point point) {
+            base.Begin(pointer, point);
+            lastPoint = point;
+        }
+        public override void Update(IPointer pointer, Point point) {
+            int tick = vm.NotesViewModel.PointToTick(point);
+            var samplePoint = vm.NotesViewModel.TickToneToPoint(
+                (int)Math.Round(tick / 5.0) * 5,
+                vm.NotesViewModel.PointToToneDouble(point));
+            double? pitch = vm.NotesViewModel.HitTest.SamplePitch(samplePoint);
+            if (pitch == null) {
+                return;
+            }
+            double tone = vm.NotesViewModel.PointToToneDouble(point);
+            DocManager.Inst.ExecuteCmd(new SetCurveCommand(
+                vm.NotesViewModel.Project,
+                vm.NotesViewModel.Part,
+                Core.Format.Ustx.PITD,
+                vm.NotesViewModel.PointToTick(point),
+                (int)Math.Round(tone * 100 - pitch.Value),
+                vm.NotesViewModel.PointToTick(lastPitch == null ? point : lastPoint),
+                (int)Math.Round(tone * 100 - (lastPitch ?? pitch.Value))));
+            lastPitch = pitch;
+            lastPoint = point;
+        }
+    }
+
+    class ResetPitchState : NoteEditState {
+        public override MouseButton MouseButton => MouseButton.Right;
+        protected override bool ShowValueTip => false;
+        Point lastPoint;
+        public ResetPitchState(
+            Canvas canvas,
+            PianoRollViewModel vm,
+            IValueTip valueTip) : base(canvas, vm, valueTip) { }
+        public override void Begin(IPointer pointer, Point point) {
+            base.Begin(pointer, point);
+            lastPoint = point;
+        }
+        public override void Update(IPointer pointer, Point point) {
+            DocManager.Inst.ExecuteCmd(new SetCurveCommand(
+                vm.NotesViewModel.Project,
+                vm.NotesViewModel.Part,
+                Core.Format.Ustx.PITD,
+                vm.NotesViewModel.PointToTick(point),
+                0,
+                vm.NotesViewModel.PointToTick(lastPoint),
+                0));
+            lastPoint = point;
         }
     }
 }

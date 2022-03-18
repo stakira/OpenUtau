@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
@@ -40,6 +41,11 @@ namespace OpenUtau.App.Controls {
                 nameof(ShowPitch),
                 o => o.ShowPitch,
                 (o, v) => o.ShowPitch = v);
+        public static readonly DirectProperty<NotesCanvas, bool> ShowFinalPitchProperty =
+            AvaloniaProperty.RegisterDirect<NotesCanvas, bool>(
+                nameof(ShowFinalPitch),
+                o => o.ShowFinalPitch,
+                (o, v) => o.ShowFinalPitch = v);
         public static readonly DirectProperty<NotesCanvas, bool> ShowVibratoProperty =
             AvaloniaProperty.RegisterDirect<NotesCanvas, bool>(
                 nameof(ShowVibrato),
@@ -70,6 +76,10 @@ namespace OpenUtau.App.Controls {
             get => showPitch;
             private set => SetAndRaise(ShowPitchProperty, ref showPitch, value);
         }
+        public bool ShowFinalPitch {
+            get => showFinalPitch;
+            private set => SetAndRaise(ShowFinalPitchProperty, ref showFinalPitch, value);
+        }
         public bool ShowVibrato {
             get => showVibrato;
             private set => SetAndRaise(ShowVibratoProperty, ref showVibrato, value);
@@ -81,7 +91,10 @@ namespace OpenUtau.App.Controls {
         private double trackOffset;
         private UVoicePart? part;
         private bool showPitch = true;
+        private bool showFinalPitch = true;
         private bool showVibrato = true;
+        private PolylineGeometry polylineGeometry = new PolylineGeometry();
+        private Points points = new Points();
 
         private HashSet<UNote> selectedNotes = new HashSet<UNote>();
         private Geometry pointGeometry;
@@ -119,22 +132,29 @@ namespace OpenUtau.App.Controls {
             }
             double leftTick = TickOffset - 480;
             double rightTick = TickOffset + Bounds.Width / TickWidth + 480;
+            bool hidePitch = viewModel.TickWidth <= ViewConstants.PianoRollTickWidthShowDetails * 0.5;
             foreach (var note in Part.notes) {
                 if (note.LeftBound >= rightTick || note.RightBound <= leftTick) {
                     continue;
                 }
                 RenderNoteBody(note, viewModel, context);
-                if (!note.Error) {
-                    if (ShowPitch) {
-                        RenderPitchBend(note, viewModel, context);
-                    }
-                    if (ShowPitch || ShowVibrato) {
-                        RenderVibrato(note, viewModel, context);
-                    }
-                    if (ShowVibrato) {
-                        RenderVibratoToggle(note, viewModel, context);
-                        RenderVibratoControl(note, viewModel, context);
-                    }
+            }
+            if (ShowFinalPitch && !hidePitch) {
+                RenderFinalPitch(leftTick, rightTick, viewModel, context);
+            }
+            foreach (var note in Part.notes) {
+                if (note.LeftBound >= rightTick || note.RightBound <= leftTick) {
+                    continue;
+                }
+                if (ShowPitch && !hidePitch) {
+                    RenderPitchBend(note, viewModel, context);
+                }
+                if ((ShowPitch || ShowVibrato) && !hidePitch) {
+                    RenderVibrato(note, viewModel, context);
+                }
+                if (ShowVibrato && !note.Error && !hidePitch) {
+                    RenderVibratoToggle(note, viewModel, context);
+                    RenderVibratoControl(note, viewModel, context);
                 }
             }
         }
@@ -177,6 +197,8 @@ namespace OpenUtau.App.Controls {
             double p0Tick = note.position + project.MillisecondToTick(pts[0].X);
             double p0Tone = note.tone + pts[0].Y / 10.0;
             Point p0 = viewModel.TickToneToPoint(p0Tick, p0Tone - 0.5);
+            points.Clear();
+            points.Add(p0);
 
             var brush = note.pitch.snapFirst ? ThemeManager.AccentBrush3 : null;
             var pen = ThemeManager.AccentPen3;
@@ -195,12 +217,13 @@ namespace OpenUtau.App.Controls {
                 double x1 = p0.X;
                 double y1 = p0.Y;
                 if (p1.X - p0.X < 5) {
-                    context.DrawLine(pen, p0, p1);
+                    points.Add(p1);
                 } else {
+                    points.Add(new Point(x0, y0));
                     while (x0 < p1.X) {
                         x1 = Math.Min(x1 + 4, p1.X);
                         y1 = MusicMath.InterpolateShape(p0.X, p1.X, p0.Y, p1.Y, x1, pts[i - 1].shape);
-                        context.DrawLine(pen, new Point(x0, y0), new Point(x1, y1));
+                        points.Add(new Point(x1, y1));
                         x0 = x1;
                         y0 = y1;
                     }
@@ -210,6 +233,8 @@ namespace OpenUtau.App.Controls {
                     context.DrawGeometry(null, pen, pointGeometry);
                 }
             }
+            polylineGeometry.Points = points;
+            context.DrawGeometry(null, pen, polylineGeometry);
         }
 
         private void RenderVibrato(UNote note, NotesViewModel viewModel, DrawingContext context) {
@@ -222,14 +247,15 @@ namespace OpenUtau.App.Controls {
             float nPeriod = (float)viewModel.Project.MillisecondToTick(vibrato.period) / note.duration;
             float nPos = vibrato.NormalizedStart;
             var point = vibrato.Evaluate(nPos, nPeriod, note);
-            Point p0 = viewModel.TickToneToPoint(point.X, point.Y);
+            points.Clear();
+            points.Add(viewModel.TickToneToPoint(point.X, point.Y - 0.5));
             while (nPos < 1) {
                 nPos = Math.Min(1, nPos + nPeriod / 16);
                 point = vibrato.Evaluate(nPos, nPeriod, note);
-                var p1 = viewModel.TickToneToPoint(point.X, point.Y);
-                context.DrawLine(pen, p0, p1);
-                p0 = p1;
+                points.Add(viewModel.TickToneToPoint(point.X, point.Y - 0.5));
             }
+            polylineGeometry.Points = points;
+            context.DrawGeometry(null, pen, polylineGeometry);
         }
 
         private readonly Geometry vibratoIcon = Geometry.Parse("M-6.5 1 L-6 1.5 L-4.5 0 L-2 2.5 L0.5 0 L3 2.5 L6.5 -1 L6 -1.5 L4.5 0 L2 -2.5 L-0.5 0 L-3 -2.5 Z");
@@ -274,6 +300,29 @@ namespace OpenUtau.App.Controls {
             periodEnd = periodEnd.WithX(periodEnd.X - 2).WithY(periodEnd.Y - height / 2 - 0.5f);
             context.DrawRectangle(null, pen, new Rect(periodStart, new Size(width, height)), 1, 1);
             context.DrawLine(pen, periodEnd, periodEnd + new Vector(0, height));
+        }
+
+        private void RenderFinalPitch(double leftTick, double rightTick, NotesViewModel viewModel, DrawingContext context) {
+            var pen = ThemeManager.FinalPitchPen!;
+            lock (Part!) {
+                foreach (var phrase in Part!.renderPhrases) {
+                    if (phrase.phones.First().position > rightTick ||
+                        phrase.phones.Last().position + phrase.phones.Last().duration < leftTick) {
+                        continue;
+                    }
+                    int pitchStart = phrase.phones[0].position - phrase.phones[0].leading;
+                    int startIdx = (int)Math.Max(0, (leftTick - pitchStart) / 5);
+                    int endIdx = (int)Math.Min(phrase.pitches.Length, (rightTick - pitchStart) / 5 + 1);
+                    points.Clear();
+                    for (int i = startIdx; i < endIdx; ++i) {
+                        int t = pitchStart + i * 5;
+                        float p = phrase.pitches[i];
+                        points.Add(viewModel.TickToneToPoint(t, p / 100 - 0.5));
+                    }
+                    polylineGeometry.Points = points;
+                    context.DrawGeometry(null, pen, polylineGeometry);
+                }
+            }
         }
     }
 }

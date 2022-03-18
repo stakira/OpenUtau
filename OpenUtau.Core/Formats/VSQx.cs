@@ -4,7 +4,7 @@ using System.Xml;
 
 using OpenUtau.Core.Ustx;
 
-namespace OpenUtau.Core.Formats {
+namespace OpenUtau.Core.Format {
     public static class VSQx {
         public const string vsq3NameSpace = @"http://www.yamaha.co.jp/vocaloid/schema/vsq3/";
         public const string vsq4NameSpace = @"http://www.yamaha.co.jp/vocaloid/schema/vsq4/";
@@ -102,23 +102,18 @@ namespace OpenUtau.Core.Formats {
                             unote.lyric = "+";
                         }
 
-                        unote.phonemeExpressions.Add(new UExpression("vel") {
+                        unote.phonemeExpressions.Add(new UExpression(Ustx.VEL) {
                             index = 0,
                             value = int.Parse(note.SelectSingleNode(velocityPath, nsmanager).InnerText) * 100 / 64,
                         });
                         foreach (XmlNode notestyle in note.SelectNodes(notestyleattrPath, nsmanager)) {
-                            if (notestyle.Attributes["id"].Value == "opening") {
-                                unote.phonemeExpressions.Add(new UExpression("ope") {
-                                    index = 0,
-                                    value = int.Parse(notestyle.InnerText) * 100 / 127,
-                                });
-                            } else if (notestyle.Attributes["id"].Value == "accent") {
-                                unote.phonemeExpressions.Add(new UExpression("atk") {
+                            if (notestyle.Attributes["id"].Value == "accent") {
+                                unote.phonemeExpressions.Add(new UExpression(Ustx.ATK) {
                                     index = 0,
                                     value = int.Parse(notestyle.InnerText) * 2,
                                 });
                             } else if (notestyle.Attributes["id"].Value == "decay") {
-                                unote.phonemeExpressions.Add(new UExpression("dec") {
+                                unote.phonemeExpressions.Add(new UExpression(Ustx.DEC) {
                                     index = 0,
                                     // V4 default is 50. Translate it to no effect in OU. V4 dec 100 roughly maps to OU 50.
                                     value = Math.Max(0, int.Parse(notestyle.InnerText) - 50),

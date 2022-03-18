@@ -82,6 +82,8 @@
                    Color="{DynamicResource TickLineColor}" Opacity="0.5"/>
   <SolidColorBrush x:Key="BarNumberBrush"
                    Color="{DynamicResource BarNumberColor}" />
+  <SolidColorBrush x:Key="FinalPitchBrush"
+                   Color="{DynamicResource FinalPitchColor}" />
   <SolidColorBrush x:Key="TrackBackgroundAltBrush"
                    Color="{DynamicResource TrackBackgroundAltColor}"/>
   <SolidColorBrush x:Key="NeutralAccentBrush"

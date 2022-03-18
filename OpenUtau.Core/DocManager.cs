@@ -28,6 +28,7 @@ namespace OpenUtau.Core {
         public PhonemizerFactory[] PhonemizerFactories { get; private set; }
         public UProject Project { get; private set; }
         public bool HasOpenUndoGroup => undoGroup != null;
+        public List<UPart> PartsClipboard { get; set; }
         public List<UNote> NotesClipboard { get; set; }
 
         public void Initialize() {
@@ -37,12 +38,17 @@ namespace OpenUtau.Core {
         }
 
         public void SearchAllSingers() {
-            Directory.CreateDirectory(PathManager.Inst.SingersPath);
-            var stopWatch = Stopwatch.StartNew();
-            Singers = Formats.UtauSoundbank.FindAllSingers();
-            SingersOrdered = Singers.Values.OrderBy(singer => singer.Name).ToList();
-            stopWatch.Stop();
-            Log.Information($"Search all singers: {stopWatch.Elapsed}");
+            try {
+                Directory.CreateDirectory(PathManager.Inst.SingersPath);
+                var stopWatch = Stopwatch.StartNew();
+                Singers = Format.UtauSoundbank.FindAllSingers();
+                SingersOrdered = Singers.Values.OrderBy(singer => singer.Name).ToList();
+                stopWatch.Stop();
+                Log.Information($"Search all singers: {stopWatch.Elapsed}");
+            } catch (Exception e) {
+                Log.Error(e, "Failed to search singers.");
+                Singers = new Dictionary<string, USinger>();
+            }
         }
 
         public USinger GetSinger(string name) {
@@ -55,10 +61,15 @@ namespace OpenUtau.Core {
         }
 
         public void SearchAllLegacyPlugins() {
-            var stopWatch = Stopwatch.StartNew();
-            Plugins = PluginLoader.LoadAll(PathManager.Inst.PluginsPath);
-            stopWatch.Stop();
-            Log.Information($"Search all legacy plugins: {stopWatch.Elapsed}");
+            try {
+                var stopWatch = Stopwatch.StartNew();
+                Plugins = PluginLoader.LoadAll(PathManager.Inst.PluginsPath);
+                stopWatch.Stop();
+                Log.Information($"Search all legacy plugins: {stopWatch.Elapsed}");
+            } catch (Exception e) {
+                Log.Error(e, "Failed to search legacy plugins.");
+                Plugins = new Plugin[0];
+            }
         }
 
         public void SearchAllPlugins() {
@@ -66,13 +77,18 @@ namespace OpenUtau.Core {
             var stopWatch = Stopwatch.StartNew();
             var phonemizerFactories = new List<PhonemizerFactory>();
             phonemizerFactories.Add(PhonemizerFactory.Get(typeof(DefaultPhonemizer)));
-            Directory.CreateDirectory(PathManager.Inst.PluginsPath);
-            string oldBuiltin = Path.Combine(PathManager.Inst.PluginsPath, kBuiltin);
-            if (File.Exists(oldBuiltin)) {
-                File.Delete(oldBuiltin);
+            var files = new List<string>();
+            try {
+                files.Add(Path.Combine(Path.GetDirectoryName(GetType().Assembly.Location), kBuiltin));
+                Directory.CreateDirectory(PathManager.Inst.PluginsPath);
+                string oldBuiltin = Path.Combine(PathManager.Inst.PluginsPath, kBuiltin);
+                if (File.Exists(oldBuiltin)) {
+                    File.Delete(oldBuiltin);
+                }
+                files.AddRange(Directory.EnumerateFiles(PathManager.Inst.PluginsPath, "*.dll", SearchOption.AllDirectories));
+            } catch (Exception e) {
+                Log.Error(e, "Failed to search plugins.");
             }
-            var files = Directory.EnumerateFiles(PathManager.Inst.PluginsPath, "*.dll", SearchOption.AllDirectories).ToList();
-            files.Insert(0, Path.Combine(Path.GetDirectoryName(GetType().Assembly.Location), kBuiltin));
             foreach (var file in files) {
                 Assembly assembly;
                 try {
@@ -121,9 +137,9 @@ namespace OpenUtau.Core {
                         savedPoint = undoQueue.Last();
                     }
                     if (string.IsNullOrEmpty(_cmd.Path)) {
-                        Formats.Ustx.Save(Project.FilePath, Project);
+                        Format.Ustx.Save(Project.FilePath, Project);
                     } else {
-                        Formats.Ustx.Save(_cmd.Path, Project);
+                        Format.Ustx.Save(_cmd.Path, Project);
                     }
                 } else if (cmd is LoadProjectNotification notification) {
                     undoQueue.Clear();
@@ -163,8 +179,10 @@ namespace OpenUtau.Core {
                 Log.Information($"ExecuteCmd {cmd}");
             }
             Publish(cmd);
-            if (!cmd.DeferValidate) {
+            if (cmd.ValidatePart == null) {
                 Project.Validate();
+            } else {
+                cmd.ValidatePart.Validate(Project, Project.tracks[cmd.ValidatePart.trackNo]);
             }
         }
 
@@ -189,9 +207,7 @@ namespace OpenUtau.Core {
             while (undoQueue.Count > Util.Preferences.Default.UndoLimit) {
                 undoQueue.RemoveFromFront();
             }
-            if (undoGroup.Commands.Any(cmd => cmd.DeferValidate)) {
-                Project.Validate();
-            }
+            undoGroup.Merge();
             undoGroup = null;
             Log.Information("undoGroup ended");
             ExecuteCmd(new PreRenderNotification());

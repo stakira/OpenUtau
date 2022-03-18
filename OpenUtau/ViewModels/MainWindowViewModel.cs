@@ -2,6 +2,8 @@
 using System.IO;
 using System.Linq;
 using System.Reactive;
+using System.Threading.Tasks;
+using Avalonia.Threading;
 using DynamicData.Binding;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
@@ -19,6 +21,7 @@ namespace OpenUtau.App.ViewModels {
         public ObservableCollectionExtended<MenuItemViewModel> OpenRecent => openRecent;
         public ObservableCollectionExtended<MenuItemViewModel> OpenTemplates => openTemplates;
 
+        [Reactive] public string ClearCacheHeader { get; set; }
         public bool ProjectSaved => !string.IsNullOrEmpty(DocManager.Inst.Project.FilePath) && DocManager.Inst.Project.Saved;
         public string AppVersion => $"OpenUtau v{System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version}";
         [Reactive] public double Progress { get; set; }
@@ -32,6 +35,7 @@ namespace OpenUtau.App.ViewModels {
         public MainWindowViewModel() {
             PlaybackViewModel = new PlaybackViewModel();
             TracksViewModel = new TracksViewModel();
+            ClearCacheHeader = string.Empty;
             ProgressText = string.Empty;
             OpenRecentCommand = ReactiveCommand.Create<string>(file => OpenProject(new[] { file }));
             OpenTemplateCommand = ReactiveCommand.Create<string>(file => {
@@ -52,7 +56,7 @@ namespace OpenUtau.App.ViewModels {
         public void InitProject() {
             var args = Environment.GetCommandLineArgs();
             if (args.Length == 2 && File.Exists(args[1])) {
-                Core.Formats.Formats.LoadProject(new string[] { args[1] });
+                Core.Format.Formats.LoadProject(new string[] { args[1] });
                 return;
             }
             NewProject();
@@ -70,14 +74,14 @@ namespace OpenUtau.App.ViewModels {
                     Log.Error(e, "failed to load default template");
                 }
             }
-            DocManager.Inst.ExecuteCmd(new LoadProjectNotification(Core.Formats.Ustx.Create()));
+            DocManager.Inst.ExecuteCmd(new LoadProjectNotification(Core.Format.Ustx.Create()));
         }
 
         public void OpenProject(string[] files) {
             if (files == null) {
                 return;
             }
-            Core.Formats.Formats.LoadProject(files);
+            Core.Format.Formats.LoadProject(files);
         }
 
         public void SaveProject(string file = "") {
@@ -91,7 +95,7 @@ namespace OpenUtau.App.ViewModels {
             if (files == null) {
                 return;
             }
-            Core.Formats.Formats.ImportTracks(DocManager.Inst.Project, files);
+            Core.Format.Formats.ImportTracks(DocManager.Inst.Project, files);
         }
 
         public void ImportAudio(string file) {
@@ -119,7 +123,7 @@ namespace OpenUtau.App.ViewModels {
                 return;
             }
             var project = DocManager.Inst.Project;
-            var parts = Core.Formats.Midi.Load(file, project);
+            var parts = Core.Format.Midi.Load(file, project);
             DocManager.Inst.StartUndoGroup();
             foreach (var part in parts) {
                 var track = new UTrack();
@@ -150,6 +154,17 @@ namespace OpenUtau.App.ViewModels {
                 Command = OpenTemplateCommand,
                 CommandParameter = file,
             }));
+        }
+
+        public void RefreshCacheSize() {
+            string header = ThemeManager.GetString("menu.tools.clearcache") ?? "";
+            ClearCacheHeader = header;
+            Task.Run(async () => {
+                var cacheSize = PathManager.Inst.GetCacheSize();
+                await Dispatcher.UIThread.InvokeAsync(() => {
+                    ClearCacheHeader = $"{header} ({cacheSize})";
+                });
+            });
         }
 
         #region ICmdSubscriber

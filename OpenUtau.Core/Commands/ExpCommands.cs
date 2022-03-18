@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using OpenUtau.Core.Ustx;
@@ -135,17 +136,20 @@ namespace OpenUtau.Core {
     }
 
     public class MovePitchPointCommand : PitchExpCommand {
-        public PitchPoint Point;
-        public float DeltaX, DeltaY;
-        public override bool DeferValidate => true;
-        public MovePitchPointCommand(PitchPoint point, float deltaX, float deltaY) {
-            this.Point = point;
-            this.DeltaX = deltaX;
-            this.DeltaY = deltaY;
+        readonly UVoicePart part;
+        readonly PitchPoint point;
+        readonly float deltaX;
+        readonly float deltaY;
+        public override UPart ValidatePart => part;
+        public MovePitchPointCommand(UVoicePart part, PitchPoint point, float deltaX, float deltaY) {
+            this.part = part;
+            this.point = point;
+            this.deltaX = deltaX;
+            this.deltaY = deltaY;
         }
         public override string ToString() { return "Move pitch point"; }
-        public override void Execute() { Point.X += DeltaX; Point.Y += DeltaY; }
-        public override void Unexecute() { Point.X -= DeltaX; Point.Y -= DeltaY; }
+        public override void Execute() { point.X += deltaX; point.Y += deltaY; }
+        public override void Unexecute() { point.X -= deltaX; point.Y -= deltaY; }
     }
 
     public class ResetPitchPointsCommand : PitchExpCommand {
@@ -161,5 +165,114 @@ namespace OpenUtau.Core {
         public override string ToString() => "Reset pitch points";
         public override void Execute() => Note.pitch = newPitch;
         public override void Unexecute() => Note.pitch = oldPitch;
+    }
+
+    public class SetCurveCommand : ExpCommand {
+        readonly UProject project;
+        readonly UVoicePart part;
+        readonly string abbr;
+        readonly int x;
+        readonly int y;
+        readonly int lastX;
+        readonly int lastY;
+        int[] oldXs;
+        int[] oldYs;
+        public override UPart ValidatePart => part;
+        public SetCurveCommand(UProject project, UVoicePart part, string abbr, int x, int y, int lastX, int lastY) {
+            this.project = project;
+            this.part = part;
+            this.abbr = abbr;
+            this.x = x;
+            this.y = y;
+            this.lastX = lastX;
+            this.lastY = lastY;
+            var curve = part.curves.FirstOrDefault(c => c.abbr == abbr);
+            oldXs = curve?.xs.ToArray();
+            oldYs = curve?.ys.ToArray();
+        }
+        public override string ToString() => "Edit Curve";
+        public override void Execute() {
+            var curve = part.curves.FirstOrDefault(c => c.abbr == abbr);
+            if (project.expressions.TryGetValue(abbr, out var descriptor)) {
+                if (curve == null) {
+                    curve = new UCurve(descriptor);
+                    part.curves.Add(curve);
+                }
+                int y1 = (int)Math.Clamp(y, descriptor.min, descriptor.max);
+                int lastY1 = (int)Math.Clamp(lastY, descriptor.min, descriptor.max);
+                curve.Set(x, y1, lastX, lastY1);
+            }
+        }
+        public override void Unexecute() {
+            var curve = part.curves.FirstOrDefault(c => c.abbr == abbr);
+            if (curve == null) {
+                return;
+            }
+            curve.xs.Clear();
+            curve.ys.Clear();
+            if (oldXs != null && oldYs != null) {
+                curve.xs.AddRange(oldXs);
+                curve.ys.AddRange(oldYs);
+            }
+        }
+        public override bool Mergeable => true;
+        public override UCommand Merge(IList<UCommand> commands) {
+            var first = commands.First() as SetCurveCommand;
+            var last = commands.Last() as SetCurveCommand;
+            var curve = part.curves.FirstOrDefault(c => c.abbr == abbr);
+            curve.Simplify();
+            int[] newXs = curve?.xs.ToArray();
+            int[] newYs = curve?.ys.ToArray();
+            return new MergedSetCurveCommand(
+                last.project, last.part, last.abbr,
+                first.oldXs, first.oldYs, newXs, newYs);
+        }
+    }
+
+    public class MergedSetCurveCommand : ExpCommand {
+        readonly UProject project;
+        readonly UVoicePart part;
+        readonly string abbr;
+        readonly int[] oldXs;
+        readonly int[] oldYs;
+        readonly int[] newXs;
+        readonly int[] newYs;
+        public MergedSetCurveCommand(UProject project, UVoicePart part,
+            string abbr, int[] oldXs, int[] oldYs, int[] newXs, int[] newYs) {
+            this.project = project;
+            this.part = part;
+            this.abbr = abbr;
+            this.oldXs = oldXs;
+            this.oldYs = oldYs;
+            this.newXs = newXs;
+            this.newYs = newYs;
+        }
+        public override string ToString() => "Edit Curve";
+        public override void Execute() {
+            var curve = part.curves.FirstOrDefault(c => c.abbr == abbr);
+            if (curve == null && project.expressions.TryGetValue(abbr, out var descriptor)) {
+                curve = new UCurve(descriptor);
+                part.curves.Add(curve);
+            }
+            curve.xs.Clear();
+            curve.ys.Clear();
+            if (newXs != null && newYs != null) {
+                curve.xs.AddRange(newXs);
+                curve.ys.AddRange(newYs);
+            }
+        }
+        public override void Unexecute() {
+            var curve = part.curves.FirstOrDefault(c => c.abbr == abbr);
+            if (curve == null && project.expressions.TryGetValue(abbr, out var descriptor)) {
+                curve = new UCurve(descriptor);
+                part.curves.Add(curve);
+            }
+            curve.xs.Clear();
+            curve.ys.Clear();
+            if (oldXs != null && oldYs != null) {
+                curve.xs.AddRange(oldXs);
+                curve.ys.AddRange(oldYs);
+            }
+        }
     }
 }

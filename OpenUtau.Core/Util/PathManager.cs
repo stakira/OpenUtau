@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using OpenUtau.Core.Util;
 using Serilog;
@@ -12,6 +13,7 @@ namespace OpenUtau.Core {
         private static PathManager _inst;
 
         public PathManager() {
+            RootPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
             if (OS.IsMacOS()) {
                 HomePath = Path.Combine(Environment.GetFolderPath(
                     Environment.SpecialFolder.Personal), "Library", "OpenUtau");
@@ -36,21 +38,18 @@ namespace OpenUtau.Core {
         }
 
         public static PathManager Inst { get { if (_inst == null) { _inst = new PathManager(); } return _inst; } }
+        public string RootPath { get; private set; }
         public string HomePath { get; private set; }
         public bool HomePathIsAscii { get; private set; }
         public string SingersPathOld => Path.Combine(HomePath, "Content", "Singers");
         public string SingersPath => Path.Combine(HomePath, "Singers");
         public string AdditionalSingersPath => Preferences.Default.AdditionalSingerPath;
+        public string ResamplersPath => Path.Combine(HomePath, "Resamplers");
         public string PluginsPath => Path.Combine(HomePath, "Plugins");
         public string TemplatesPath => Path.Combine(HomePath, "Templates");
         public string LogFilePath => Path.Combine(HomePath, "Logs", "log.txt");
         public string PrefsFilePath => Path.Combine(HomePath, "prefs.json");
-
-        public string GetCachePath() {
-            string cachepath = Path.Combine(HomePath, "Cache");
-            Directory.CreateDirectory(cachepath);
-            return cachepath;
-        }
+        public string CachePath => Path.Combine(HomePath, "Cache");
 
         public string GetPartSavePath(string projectPath, int partNo) {
             var dir = Path.GetDirectoryName(projectPath);
@@ -65,21 +64,30 @@ namespace OpenUtau.Core {
             return Path.Combine(dir, $"{filename}-{trackNo:D2}.wav");
         }
 
-        public string ResamplersPath => Path.Combine(HomePath, "Resamplers");
-
-        public string LibsPath {
-            get {
-                var path = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-                path = Path.Combine(path, "libs");
-                if (OS.IsWindows()) {
-                    path = Path.Combine(path, Environment.Is64BitProcess ? "win-x64" : "win-x86");
-                } else if (OS.IsMacOS()) {
-                    path = Path.Combine(path, "osx-x64");
-                } else if (OS.IsLinux()) {
-                    path = Path.Combine(path, "linux-x64");
+        public void ClearCache() {
+            var files = Directory.GetFiles(CachePath, "*.*");
+            foreach (var file in files) {
+                try {
+                    File.Delete(file);
+                } catch (Exception e) {
+                    Log.Error(e, $"Failed to delete {file}");
                 }
-                return path;
             }
+        }
+
+        readonly static string[] sizes = { "B", "KB", "MB", "GB", "TB", "PB", "EB" };
+        public string GetCacheSize() {
+            if (!Directory.Exists(CachePath)) {
+                return "0B";
+            }
+            var dir = new DirectoryInfo(CachePath);
+            double size = dir.GetFiles("*", SearchOption.AllDirectories).Sum(f => f.Length);
+            int order = 0;
+            while (size >= 1024 && order < sizes.Length - 1) {
+                order++;
+                size = size / 1024;
+            }
+            return $"{size:0.##}{sizes[order]}";
         }
     }
 }

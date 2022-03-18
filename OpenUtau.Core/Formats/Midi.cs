@@ -8,7 +8,7 @@ using NAudio.Midi;
 
 using OpenUtau.Core.Ustx;
 
-namespace OpenUtau.Core.Formats
+namespace OpenUtau.Core.Format
 {
     public static class Midi
     {

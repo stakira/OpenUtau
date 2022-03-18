@@ -62,8 +62,8 @@
   <system:String x:Key="menu.edit.undo">실행 취소</system:String>
   <system:String x:Key="menu.file">파일</system:String>
   <system:String x:Key="menu.file.exit">나가기</system:String>
-  <system:String x:Key="menu.file.exportall">전부 내보내기</system:String>
   <!--<system:String x:Key="menu.file.exportust">Export Ust Files</system:String>-->
+  <!--<system:String x:Key="menu.file.exportwav">Export Wav Files</system:String>-->
   <system:String x:Key="menu.file.importaudio">오디오 가져오기</system:String>
   <system:String x:Key="menu.file.importmidi">Midi 가져오기</system:String>
   <!--<system:String x:Key="menu.file.importtracks">Import Tracks...</system:String>-->
@@ -79,7 +79,7 @@
   <system:String x:Key="menu.help.about">OpenUTAU 정보</system:String>
   <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
   <system:String x:Key="menu.tools">도구</system:String>
-  <!--<system:String x:Key="menu.tools.clearrendercache">Clear Render Cache</system:String>-->
+  <!--<system:String x:Key="menu.tools.clearcache">Clear Cache</system:String>-->
   <!--<system:String x:Key="menu.tools.layout">Layout</system:String>-->
   <!--<system:String x:Key="menu.tools.layout.hsplit11">Horizontal 1:1</system:String>-->
   <!--<system:String x:Key="menu.tools.layout.hsplit12">Horizontal 1:2</system:String>-->
@@ -154,6 +154,7 @@ Hold Ctrl to select more</system:String>-->
   <!--<system:String x:Key="prefs.on">On</system:String>-->
   <system:String x:Key="prefs.paths">위치</system:String>
   <!--<system:String x:Key="prefs.paths.addlsinger">Additional Singer Path</system:String>-->
+  <!--<system:String x:Key="prefs.paths.addlsinger.install">Install to Additional Singer Path</system:String>-->
   <!--<system:String x:Key="prefs.paths.reset">Reset</system:String>-->
   <!--<system:String x:Key="prefs.paths.select">Select</system:String>-->
   <system:String x:Key="prefs.playback">재생</system:String>
@@ -164,19 +165,18 @@ Hold Ctrl to select more</system:String>-->
   <system:String x:Key="prefs.playback.device">재생 장치</system:String>
   <system:String x:Key="prefs.playback.test">테스트</system:String>
   <system:String x:Key="prefs.rendering">렌더링</system:String>
+  <!--<system:String x:Key="prefs.rendering.phasecomp">Phase Compensation</system:String>-->
   <!--<system:String x:Key="prefs.rendering.prerender.threads">Pre-render Threads</system:String>-->
-  <system:String x:Key="prefs.rendering.resampler.export">내보내기용 엔진</system:String>
-  <system:String x:Key="prefs.rendering.resampler.note">
-        참고 : 외부 엔진을 사용하려면, OpenUtau 설치 경로의 Resamplers 폴더에 엔진 DLL 또는 EXE 파일을 추가하고 환경 설정에서 선택하세요.
-    </system:String>
-  <system:String x:Key="prefs.rendering.resampler.preview">미리보기용 엔진</system:String>
-  <!--<system:String x:Key="prefs.rendering.resampler.warn">
+  <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.resampler.morewarn">
 Warning: moresampler is not fully supported. It may be slow and cause high CPU usage. If you insist, please:
 1. Set "resampler-compatibility" to "on" in moreconfig.txt.
 2. Set "auto-update-llsm-mrq" to "off" in moreconfig.txt.
-3. Set "multithread-synthesis" to "off" in moreconfig.txt. Or reduce pre-render threads to 1 or 2.
-4. Patiently wait for prerender to finish before play.
+3. Patiently wait for moresampler to generate missing llsm files.
   </system:String>-->
+  <system:String x:Key="prefs.rendering.resampler.note">
+        참고 : 외부 엔진을 사용하려면, OpenUtau 설치 경로의 Resamplers 폴더에 엔진 DLL 또는 EXE 파일을 추가하고 환경 설정에서 선택하세요.
+    </system:String>
 
   <!--<system:String x:Key="progress.saved">Project saved. {0}</system:String>-->
 

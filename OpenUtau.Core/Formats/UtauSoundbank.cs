@@ -2,7 +2,7 @@
 using OpenUtau.Classic;
 using OpenUtau.Core.Ustx;
 
-namespace OpenUtau.Core.Formats {
+namespace OpenUtau.Core.Format {
     public static class UtauSoundbank {
         public static Dictionary<string, USinger> FindAllSingers() {
             Dictionary<string, USinger> singers = new Dictionary<string, USinger>();

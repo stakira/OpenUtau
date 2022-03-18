@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Linq;
-using Newtonsoft.Json;
 using OpenUtau.Api;
 using Serilog;
 using YamlDotNet.Serialization;
 
 namespace OpenUtau.Core.Ustx {
-    [JsonObject(MemberSerialization.OptIn)]
     public class UTrack {
-        [JsonProperty] public string singer;
-        [JsonProperty] public string phonemizer;
+        public string singer;
+        public string phonemizer;
 
         private USinger singer_;
 
@@ -41,7 +39,7 @@ namespace OpenUtau.Core.Ustx {
             if (!project.expressions.TryGetValue(key, out descriptor)) {
                 return false;
             }
-            if (key == "clr" && VoiceColorExp != null) {
+            if (key == Format.Ustx.CLR && VoiceColorExp != null) {
                 descriptor = VoiceColorExp;
             }
             return true;
@@ -59,7 +57,7 @@ namespace OpenUtau.Core.Ustx {
             if (Singer != null && Singer.Found) {
                 Singer.EnsureLoaded();
             }
-            if (project.expressions.TryGetValue("clr", out var descriptor)) {
+            if (project.expressions.TryGetValue(Format.Ustx.CLR, out var descriptor)) {
                 if (VoiceColorExp == null && Singer != null && Singer.Found && Singer.Loaded) {
                     VoiceColorExp = descriptor.Clone();
                     var colors = Singer.Subbanks.Select(subbank => subbank.Color).ToHashSet();

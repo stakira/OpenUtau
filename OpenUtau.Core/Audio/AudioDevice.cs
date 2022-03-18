@@ -13,7 +13,7 @@ namespace OpenUtau.Audio {
         public double DefaultHighOutputLatency { get; }
         public int DefaultSampleRate { get; }
         public AudioDevice(PaBinding.PaDeviceInfo device, int deviceIndex) {
-            var hostApi = PaBinding.Pa_GetHostApiInfo(device.hostApi);
+            var hostApi = PaBinding.GetHostApiInfo(device.hostApi);
             DeviceIndex = deviceIndex;
             Name = device.name;
             HostApi = hostApi.name;

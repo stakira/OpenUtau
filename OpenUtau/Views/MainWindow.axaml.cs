@@ -17,7 +17,7 @@ using OpenUtau.App.Controls;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Classic;
 using OpenUtau.Core;
-using OpenUtau.Core.Formats;
+using OpenUtau.Core.Format;
 using OpenUtau.Core.Ustx;
 using Serilog;
 using Point = Avalonia.Point;
@@ -132,6 +132,7 @@ namespace OpenUtau.App.Views {
         void OnMainMenuOpened(object sender, RoutedEventArgs args) {
             viewModel.RefreshOpenRecent();
             viewModel.RefreshTemplates();
+            viewModel.RefreshCacheSize();
         }
 
         async void OnMenuSave(object sender, RoutedEventArgs args) => await Save();
@@ -252,7 +253,7 @@ namespace OpenUtau.App.Views {
             }
         }
 
-        async void OnMenuExportAll(object sender, RoutedEventArgs args) {
+        async void OnMenuExportWav(object sender, RoutedEventArgs args) {
             var project = DocManager.Inst.Project;
             if (await WarnToSave(project)) {
                 PlaybackManager.Inst.RenderToFiles(project);
@@ -339,8 +340,8 @@ namespace OpenUtau.App.Views {
             }
         }
 
-        void OnMenuClearRenderCache(object sender, RoutedEventArgs args) {
-            PlaybackManager.Inst.ClearRenderCache();
+        void OnMenuClearCache(object sender, RoutedEventArgs args) {
+            PathManager.Inst.ClearCache();
         }
 
         void OnMenuWiki(object sender, RoutedEventArgs args) {
@@ -384,6 +385,7 @@ namespace OpenUtau.App.Views {
         }
 
         void OnKeyDown(object sender, KeyEventArgs args) {
+            var tracksVm = viewModel.TracksViewModel;
             if (args.KeyModifiers == KeyModifiers.None) {
                 switch (args.Key) {
                     case Key.Delete: viewModel.TracksViewModel.DeleteSelectedParts(); break;
@@ -403,6 +405,9 @@ namespace OpenUtau.App.Views {
                     case Key.S: _ = Save(); break;
                     case Key.Z: viewModel.Undo(); break;
                     case Key.Y: viewModel.Redo(); break;
+                    case Key.C: tracksVm.CopyParts(); break;
+                    case Key.X: tracksVm.CutParts(); break;
+                    case Key.V: tracksVm.PasteParts(); break;
                     default: break;
                 }
             } else if (args.KeyModifiers == (cmdKey | KeyModifiers.Shift)) {
@@ -424,6 +429,9 @@ namespace OpenUtau.App.Views {
             }
             var ext = System.IO.Path.GetExtension(file);
             if (ext == ".ustx" || ext == ".ust" || ext == ".vsqx") {
+                if (!DocManager.Inst.ChangesSaved && !await AskIfSaveAndContinue()) {
+                    return;
+                }
                 try {
                     viewModel.OpenProject(new string[] { file });
                 } catch (Exception e) {
