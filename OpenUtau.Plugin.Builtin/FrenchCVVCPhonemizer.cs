@@ -21,7 +21,10 @@ namespace OpenUtau.Plugin.Builtin {
                 .Where(parts => parts.Length == 2)
                 .Where(parts => parts[0] != parts[1])
                 .ToDictionary(parts => parts[0], parts => parts[1]);
-
+        // X-Sampa input support
+        private readonly Dictionary<string, string> aliasesFallback = "i=ih;e=eh;E=ae;9=oe;2=ee;y=uh;u=ou;o=oh;O=oo;a=ah;A~=en;O~=on;E~=in;S=sh;R=r;H=ui;".Split(';')
+                .Select(entry => entry.Split('='))
+                .ToDictionary(parts => parts[0], parts => parts[1]);
 
         private string[] shortConsonants = "r".Split(",");
         private string[] longConsonants = "t,k,g,p,s,sh,j".Split(",");
@@ -31,7 +34,7 @@ namespace OpenUtau.Plugin.Builtin {
         protected override string[] GetConsonants() => consonants;
         protected override string GetDictionaryName() => "cmudict_fr.txt";
         protected override Dictionary<string, string> GetDictionaryPhonemesReplacement() => dictionaryReplacements;
-
+        protected override Dictionary<string, string> GetAliasesFallback() => aliasesFallback;
         protected override List<string> ProcessSyllable(Syllable syllable) {
             string prevV = syllable.prevV;
             string[] cc = syllable.cc;
@@ -315,7 +318,7 @@ namespace OpenUtau.Plugin.Builtin {
         protected override string ValidateAlias(string alias) {
             if (alias == "gn")
                 alias = "n" + "y";
-            return alias; 
+            return aliasesFallback.ContainsKey(alias) ? aliasesFallback[alias] : alias;
 
         }
 
