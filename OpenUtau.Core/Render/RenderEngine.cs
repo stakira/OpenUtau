@@ -37,7 +37,6 @@ namespace OpenUtau.Core.Render {
         public Tuple<MasterAdapter, List<Fader>, CancellationTokenSource> RenderProject(int startTick) {
             var cancellation = new CancellationTokenSource();
             var faders = new List<Fader>();
-            var renderer = new Classic.ClassicRenderer();
             var renderTasks = new List<Tuple<RenderPhrase, WaveSource>>();
             int totalProgress = 0;
             foreach (var track in project.tracks) {
@@ -48,8 +47,9 @@ namespace OpenUtau.Core.Render {
                 var sources = phrases.Select(phrase => {
                     var firstPhone = phrase.phones.First();
                     var lastPhone = phrase.phones.Last();
-                    double posMs = (phrase.position + firstPhone.position) * phrase.tickToMs - firstPhone.preutterMs;
-                    double durMs = (lastPhone.duration + lastPhone.position - firstPhone.position) * phrase.tickToMs;
+                    var layout = GetRenderer(phrase).Layout(phrase);
+                    double posMs = layout.positionMs - layout.leadingMs;
+                    double durMs = layout.estimatedLengthMs;
                     if (posMs + durMs < startTick * phrase.tickToMs) {
                         return null;
                     }
@@ -90,7 +90,7 @@ namespace OpenUtau.Core.Render {
                     if (cancellation.IsCancellationRequested) {
                         break;
                     }
-                    var task = renderer.Render(renderTask.Item1, progress, cancellation);
+                    var task = GetRenderer(renderTask.Item1).Render(renderTask.Item1, progress, cancellation);
                     task.Wait();
                     renderTask.Item2.SetSamples(task.Result.samples);
                 }
@@ -102,7 +102,6 @@ namespace OpenUtau.Core.Render {
         public List<WaveMix> RenderTracks() {
             var cancellation = new CancellationTokenSource();
             var result = new List<WaveMix>();
-            var renderer = new Classic.ClassicRenderer();
             foreach (var track in project.tracks) {
                 RenderPhrase[] phrases;
                 lock (project) {
@@ -110,7 +109,7 @@ namespace OpenUtau.Core.Render {
                 }
                 var progress = new Progress(phrases.Sum(phrase => phrase.phones.Length));
                 var mix = new WaveMix(phrases.Select(phrase => {
-                    var task = renderer.Render(phrase, progress, cancellation);
+                    var task = GetRenderer(phrase).Render(phrase, progress, cancellation);
                     task.Wait();
                     float durMs = task.Result.samples.Length * 1000f / 44100f;
                     var source = new WaveSource(task.Result.positionMs - task.Result.leadingMs, durMs, 0, 1);
@@ -144,9 +143,8 @@ namespace OpenUtau.Core.Render {
                         return;
                     }
                     var progress = new Progress(phrases.Sum(phrase => phrase.phones.Length));
-                    var renderer = new Classic.ClassicRenderer();
                     foreach (var phrase in phrases) {
-                        var task = renderer.Render(phrase, progress, cancellation);
+                        var task = GetRenderer(phrase).Render(phrase, progress, cancellation, true);
                         task.Wait();
                         var samples = task.Result;
                     }
@@ -171,6 +169,16 @@ namespace OpenUtau.Core.Render {
                 .Where(part => part is UVoicePart)
                 .Select(part => part as UVoicePart)
                 .SelectMany(part => RenderPhrase.FromPart(project, project.tracks[part.trackNo], part));
+        }
+
+        IRenderer GetRenderer(RenderPhrase phrase) {
+            var singer = DocManager.Inst.GetSinger(phrase.singerId);
+            switch (singer.Voicebank.VoicebankType) {
+                case Classic.VoicebankType.Enunu:
+                    return new EnunuRenderer();
+                default:
+                    return new Classic.ClassicRenderer();
+            }
         }
 
         public static void ReleaseSourceTemp() {

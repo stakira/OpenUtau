@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Numerics;
+using K4os.Hash.xxHash;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core.Render {
@@ -22,6 +24,7 @@ namespace OpenUtau.Core.Render {
         public readonly Vector2[] envelope;
 
         public readonly UOto oto;
+        public readonly uint hash;
 
         internal RenderPhone(UProject project, UTrack track, UVoicePart part, UNote note, UPhoneme phoneme) {
             position = note.position + phoneme.position;
@@ -48,6 +51,30 @@ namespace OpenUtau.Core.Render {
             envelope = phoneme.envelope.data.ToArray();
 
             oto = phoneme.oto;
+            hash = Hash();
+        }
+
+        private uint Hash() {
+            using (var stream = new MemoryStream()) {
+                using (var writer = new BinaryWriter(stream)) {
+                    writer.Write(duration);
+                    writer.Write(phoneme ?? "");
+                    writer.Write(tone);
+
+                    writer.Write(resampler ?? "");
+                    foreach (var flag in flags) {
+                        writer.Write(flag.Item1);
+                        if (flag.Item2.HasValue) {
+                            writer.Write(flag.Item2.Value);
+                        }
+                    }
+                    writer.Write(volume);
+                    writer.Write(velocity);
+                    writer.Write(modulation);
+                    writer.Write(preutterMs);
+                    return XXH32.DigestOf(stream.ToArray());
+                }
+            }
         }
     }
 
@@ -59,6 +86,7 @@ namespace OpenUtau.Core.Render {
         public readonly RenderPhone[] phones;
         public readonly float[] pitches;
         public readonly float[] dynamics;
+        public readonly uint hash;
 
         internal RenderPhrase(UProject project, UTrack track, UVoicePart part, IEnumerable<UPhoneme> phonemes) {
             var notes = new List<UNote>();
@@ -157,6 +185,25 @@ namespace OpenUtau.Core.Render {
                     dynamics[i] = dyn == curve.descriptor.min
                         ? 0
                         : (float)MusicMath.DecibelToLinear(dyn * 0.1);
+                }
+            }
+
+            hash = Hash();
+        }
+
+        private uint Hash() {
+            using (var stream = new MemoryStream()) {
+                using (var writer = new BinaryWriter(stream)) {
+                    writer.Write(singerId);
+                    writer.Write(tempo);
+                    writer.Write(tickToMs);
+                    foreach (var phone in phones) {
+                        writer.Write(phone.hash);
+                    }
+                    foreach (var pitch in pitches) {
+                        writer.Write(pitch);
+                    }
+                    return XXH32.DigestOf(stream.ToArray());
                 }
             }
         }

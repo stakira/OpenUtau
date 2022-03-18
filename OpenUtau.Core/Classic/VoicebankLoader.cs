@@ -11,6 +11,7 @@ namespace OpenUtau.Classic {
     public class VoicebankLoader {
         public const string kCharTxt = "character.txt";
         public const string kCharYaml = "character.yaml";
+        public const string kEnuconfigYaml = "enuconfig.yaml";
         public const string kOtoIni = "oto.ini";
 
         class FileLoc {
@@ -87,6 +88,10 @@ namespace OpenUtau.Classic {
                 } catch (Exception e) {
                     Log.Error(e, $"Failed to load yaml {yamlFile}");
                 }
+            }
+            var enuconfigFile = Path.Combine(dir, kEnuconfigYaml);
+            if (File.Exists(enuconfigFile)) {
+                voicebank.VoicebankType = VoicebankType.Enunu;
             }
             Encoding encoding = Encoding.GetEncoding("shift_jis");
             if (!string.IsNullOrEmpty(bankConfig?.TextFileEncoding)) {

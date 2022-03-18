@@ -17,12 +17,18 @@ namespace OpenUtau.Core.Render {
         /// Start position of non-leading samples.
         /// </summary>
         public double positionMs;
+
+        /// <summary>
+        /// Length estimated before actual render.
+        /// </summary>
+        public double estimatedLengthMs;
     }
 
     /// <summary>
     /// Interface of phrase-based renderer.
     /// </summary>
     interface IRenderer {
-        Task<RenderResult> Render(RenderPhrase phrase, Progress progress, CancellationTokenSource cancellation);
+        RenderResult Layout(RenderPhrase phrase);
+        Task<RenderResult> Render(RenderPhrase phrase, Progress progress, CancellationTokenSource cancellation, bool isPreRender = false);
     }
 }

@@ -7,7 +7,17 @@ using OpenUtau.Core.Render;
 
 namespace OpenUtau.Classic {
     class ClassicRenderer : IRenderer {
-        public Task<RenderResult> Render(RenderPhrase phrase, Progress progress, CancellationTokenSource cancellation) {
+        public RenderResult Layout(RenderPhrase phrase) {
+            var firstPhone = phrase.phones.First();
+            var lastPhone = phrase.phones.Last();
+            return new RenderResult() {
+                leadingMs = firstPhone.preutterMs,
+                positionMs = (phrase.position + firstPhone.position) * phrase.tickToMs,
+                estimatedLengthMs = (lastPhone.duration + lastPhone.position - firstPhone.position) * phrase.tickToMs + firstPhone.preutterMs,
+            };
+        }
+
+        public Task<RenderResult> Render(RenderPhrase phrase, Progress progress, CancellationTokenSource cancellation, bool isPreRender) {
             var resamplerItems = new List<ResamplerItem>();
             foreach (var phone in phrase.phones) {
                 resamplerItems.Add(new ResamplerItem(phrase, phone));
@@ -23,16 +33,13 @@ namespace OpenUtau.Classic {
                     }
                     progress.CompleteOne($"Resampling \"{item.phone.phoneme}\"");
                 });
-                var samples = Concatenate(resamplerItems, cancellation);
-                if (samples != null) {
-                    ApplyDynamics(phrase, samples);
-                }
                 var firstPhone = phrase.phones.First();
-                return new RenderResult() {
-                    samples = samples,
-                    leadingMs = firstPhone.preutterMs,
-                    positionMs = (phrase.position + firstPhone.position) * phrase.tickToMs,
-                };
+                var result = Layout(phrase);
+                result.samples = Concatenate(resamplerItems, cancellation);
+                if (result.samples != null) {
+                    ApplyDynamics(phrase, result.samples);
+                }
+                return result;
             });
             return task;
         }
