@@ -45,7 +45,9 @@ namespace OpenUtau.Core {
                 SingersOrdered.AddRange(ClassicSingerLoader.FindAllSingers());
                 SingersOrdered.AddRange(Vogen.VogenSingerLoader.FindAllSingers());
                 SingersOrdered = SingersOrdered.OrderBy(singer => singer.Name).ToList();
-                Singers = SingersOrdered.ToDictionary(s => s.Id);
+                Singers = SingersOrdered
+                    .ToLookup(s => s.Id)
+                    .ToDictionary(g => g.Key, g => g.First());
                 stopWatch.Stop();
                 Log.Information($"Search all singers: {stopWatch.Elapsed}");
             } catch (Exception e) {
