@@ -69,7 +69,7 @@ namespace OpenUtau.Core.Format {
             int preMeasure = int.Parse(root.SelectSingleNode(premeasurePath, nsmanager).InnerText);
             int partPosTickShift = -preMeasure * uproject.resolution * uproject.beatPerBar * 4 / uproject.beatUnit;
 
-            USinger usinger = new USinger("");
+            USinger usinger = USinger.CreateMissing("");
 
             foreach (XmlNode track in root.SelectNodes(trackPath, nsmanager)) // track
             {

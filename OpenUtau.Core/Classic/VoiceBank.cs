@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
-using Serilog;
+using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Classic {
-    public enum VoicebankType { Classic, Enunu }
-
     public class Voicebank {
         public string BasePath;
         public string File;
@@ -18,7 +15,7 @@ namespace OpenUtau.Classic {
         public string Version;
         public string OtherInfo;
         public Encoding TextFileEncoding;
-        public VoicebankType VoicebankType;
+        public USingerType SingerType;
         public List<OtoSet> OtoSets = new List<OtoSet>();
         public List<Subbank> Subbanks = new List<Subbank>();
         public string Id;
@@ -33,7 +30,7 @@ namespace OpenUtau.Classic {
             Version = null;
             OtherInfo = null;
             TextFileEncoding = null;
-            VoicebankType = VoicebankType.Classic;
+            SingerType = USingerType.Classic;
             OtoSets.Clear();
             Subbanks.Clear();
             Id = null;

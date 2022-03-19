@@ -105,8 +105,7 @@ namespace OpenUtau.Core.Render {
                 writer.WriteLine("[#SETTING]");
                 writer.WriteLine($"Tempo={phrase.tempo}");
                 writer.WriteLine("Tracks=1");
-                var singer = DocManager.Inst.GetSinger(phrase.singerId);
-                writer.WriteLine($"VoiceDir={singer.Location}");
+                writer.WriteLine($"VoiceDir={phrase.singer.Location}");
                 writer.WriteLine($"CacheDir={PathManager.Inst.CachePath}");
                 writer.WriteLine("Mode2=True");
                 for (int i = 0; i < notes.Count; ++i) {

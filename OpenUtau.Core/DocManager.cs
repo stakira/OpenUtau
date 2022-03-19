@@ -41,8 +41,11 @@ namespace OpenUtau.Core {
             try {
                 Directory.CreateDirectory(PathManager.Inst.SingersPath);
                 var stopWatch = Stopwatch.StartNew();
-                Singers = Format.UtauSoundbank.FindAllSingers();
-                SingersOrdered = Singers.Values.OrderBy(singer => singer.Name).ToList();
+                SingersOrdered.Clear();
+                SingersOrdered.AddRange(ClassicSingerLoader.FindAllSingers());
+                SingersOrdered.AddRange(Vogen.VogenSingerLoader.FindAllSingers());
+                SingersOrdered = SingersOrdered.OrderBy(singer => singer.Name).ToList();
+                Singers = SingersOrdered.ToDictionary(s => s.Id);
                 stopWatch.Stop();
                 Log.Information($"Search all singers: {stopWatch.Elapsed}");
             } catch (Exception e) {
@@ -98,16 +101,18 @@ namespace OpenUtau.Core {
                     }
                     assembly = Assembly.LoadFile(file);
                     foreach (var type in assembly.GetExportedTypes()) {
-                        if (type.IsAbstract) {
-                            continue;
-                        }
-                        if (type.IsSubclassOf(typeof(Phonemizer))) {
+                        if (!type.IsAbstract && type.IsSubclassOf(typeof(Phonemizer))) {
                             phonemizerFactories.Add(PhonemizerFactory.Get(type));
                         }
                     }
                 } catch (Exception e) {
                     Log.Warning(e, $"Failed to load {file}.");
                     continue;
+                }
+            }
+            foreach (var type in GetType().Assembly.GetExportedTypes()) {
+                if (!type.IsAbstract && type.IsSubclassOf(typeof(Phonemizer))) {
+                    phonemizerFactories.Add(PhonemizerFactory.Get(type));
                 }
             }
             PhonemizerFactories = phonemizerFactories.OrderBy(factory => factory.tag).ToArray();

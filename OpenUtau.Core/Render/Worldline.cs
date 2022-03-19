@@ -30,15 +30,34 @@ namespace OpenUtau.Core.Render {
             public int flag_P;
         };
 
-        /*
-        [DllImport("worldline")]
+        [DllImport("worldline", CallingConvention = CallingConvention.Cdecl)]
         static extern int DecodeAndSynthesis(
             double[] f0, int f0Length,
             double[,] mgc, int mgcSize,
             double[,] bap, int fftSize,
-            double framePeriod, int fs,
-            int yLength, ref double[] y);
-        */
+            double frameMs, int fs, ref IntPtr y);
+
+        public static float[] DecodeAndSynthesis(
+            double[] f0, double[,] mgc, double[,] bap,
+            int fftSize, double frameMs, int fs) {
+            try {
+                unsafe {
+                    IntPtr buffer = IntPtr.Zero;
+                    int size = DecodeAndSynthesis(
+                        f0, f0.Length,
+                        mgc, mgc.GetLength(1),
+                        bap, fftSize,
+                        frameMs, fs, ref buffer);
+                    var data = new double[size];
+                    Marshal.Copy(buffer, data, 0, size);
+                    Marshal.FreeCoTaskMem(buffer);
+                    return data.Select(s => (float)s).ToArray();
+                }
+            } catch (Exception e) {
+                Log.Error(e, "Failed to render.");
+                return null;
+            }
+        }
 
         [DllImport("worldline")]
         static extern int Resample(IntPtr request, ref IntPtr y);

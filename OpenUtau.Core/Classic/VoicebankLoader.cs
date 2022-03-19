@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using OpenUtau.Core;
+using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Classic {
@@ -30,12 +31,12 @@ namespace OpenUtau.Classic {
             this.basePath = basePath;
         }
 
-        public Dictionary<string, Voicebank> SearchAll() {
-            Dictionary<string, Voicebank> result = new Dictionary<string, Voicebank>();
+        public IEnumerable<Voicebank> SearchAll() {
+            List<Voicebank> result = new List<Voicebank>();
             if (!Directory.Exists(basePath)) {
                 return result;
             }
-            var banks = Directory.EnumerateFiles(basePath, kCharTxt, SearchOption.AllDirectories)
+            result.AddRange(Directory.EnumerateFiles(basePath, kCharTxt, SearchOption.AllDirectories)
                 .Select(filePath => {
                     try {
                         var voicebank = new Voicebank();
@@ -46,11 +47,7 @@ namespace OpenUtau.Classic {
                         return null;
                     }
                 })
-                .OfType<Voicebank>()
-                .ToArray();
-            foreach (var bank in banks) {
-                result.Add(bank.Id, bank);
-            }
+                .OfType<Voicebank>());
             return result;
         }
 
@@ -91,7 +88,7 @@ namespace OpenUtau.Classic {
             }
             var enuconfigFile = Path.Combine(dir, kEnuconfigYaml);
             if (File.Exists(enuconfigFile)) {
-                voicebank.VoicebankType = VoicebankType.Enunu;
+                voicebank.SingerType = USingerType.Enunu;
             }
             Encoding encoding = Encoding.GetEncoding("shift_jis");
             if (!string.IsNullOrEmpty(bankConfig?.TextFileEncoding)) {

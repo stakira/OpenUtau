@@ -86,9 +86,20 @@ namespace OpenUtau.Core.Ustx {
                     note.Extends = null;
                 }
             }
+            track.Phonemizer.SetTiming(project.bpm, project.beatUnit, project.resolution);
+            track.Phonemizer.SetUp(notes
+                .Where(n => !n.OverlapError)
+                .Where(n => n.Extends == null)
+                .Select(n => new Api.Phonemizer.Note {
+                    lyric = n.lyric.Trim(),
+                    tone = n.tone,
+                    position = n.position,
+                    duration = n.ExtendedDuration,
+                }).ToArray());
             foreach (UNote note in notes.Reverse()) {
                 note.Phonemize(project, track);
             }
+            track.Phonemizer.CleanUp();
             UPhoneme lastPhoneme = null;
             foreach (UNote note in notes) {
                 foreach (var phoneme in note.phonemes) {

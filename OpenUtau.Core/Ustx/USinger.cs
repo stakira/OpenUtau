@@ -1,40 +1,43 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using OpenUtau.Classic;
-using Serilog;
-using WanaKanaNet;
 
 namespace OpenUtau.Core.Ustx {
     public struct UOto {
-        public string Alias => oto.Alias;
-        public string Phonetic => oto.Phonetic;
-        public string Set => set.Name;
-        public string Color => subbank.Color;
-        public string Prefix => subbank.Prefix;
-        public string Suffix => subbank.Suffix;
-        public SortedSet<int> ToneSet => subbank.toneSet;
-        public string File => Path.Combine(set.Location, oto.Wav);
-        public string DisplayFile => oto?.Wav;
-        public double Offset => oto.Offset;
-        public double Consonant => oto.Consonant;
-        public double Cutoff => oto.Cutoff;
-        public double Preutter => oto.Preutter;
-        public double Overlap => oto.Overlap;
+        public string Alias;
+        public string Phonetic;
+        public string Set;
+        public string Color;
+        public string Prefix;
+        public string Suffix;
+        public SortedSet<int> ToneSet;
+        public string File;
+        public string DisplayFile;
+        public double Offset;
+        public double Consonant;
+        public double Cutoff;
+        public double Preutter;
+        public double Overlap;
         public List<string> SearchTerms { private set; get; }
 
-        private readonly Oto oto;
-        private readonly UOtoSet set;
-        private readonly USubbank subbank;
-
         public UOto(Oto oto, UOtoSet set, USubbank subbank) {
-            this.oto = oto;
-            this.set = set;
-            this.subbank = subbank;
+            Alias = oto.Alias;
+            Phonetic = oto.Phonetic;
+            Set = set.Name;
+            Color = subbank?.Color;
+            Prefix = subbank?.Prefix;
+            Suffix = subbank?.Suffix;
+            ToneSet = subbank?.toneSet;
+            File = Path.Combine(set.Location, oto.Wav);
+            DisplayFile = oto?.Wav;
+            Offset = oto.Offset;
+            Consonant = oto.Consonant;
+            Cutoff = oto.Cutoff;
+            Preutter = oto.Preutter;
+            Overlap = oto.Overlap;
+
             SearchTerms = new List<string>();
         }
 
@@ -113,167 +116,56 @@ namespace OpenUtau.Core.Ustx {
         }
     }
 
+    public enum USingerType { Classic, Enunu, Vogen }
+
     public class USinger {
-        public string Id => Voicebank.Id;
-        public string Name => Voicebank.Name;
-        public string BasePath => Voicebank.BasePath;
-        public string Author => Voicebank.Author;
-        public string Location => Path.GetDirectoryName(Voicebank.File);
-        public string Web => Voicebank.Web;
-        public string Version => Voicebank.Version;
-        public string OtherInfo => Voicebank.OtherInfo;
-        public string Avatar => Voicebank.Image == null ? null : Path.Combine(Location, Voicebank.Image);
-        public string Portrait => Voicebank.Portrait == null ? null : Path.Combine(Location, Voicebank.Portrait);
-        public float PortraitOpacity => Voicebank.PortraitOpacity;
-        public Encoding TextFileEncoding => Voicebank.TextFileEncoding;
-        public byte[] AvatarData;
-        public List<UOtoSet> OtoSets = new List<UOtoSet>();
-        public bool Found;
-        public bool Loaded;
-        public Voicebank Voicebank;
-        public Dictionary<string, UOto> Otos = new Dictionary<string, UOto>();
-        public Dictionary<string, List<UOto>> Phonetics;
-        public List<string> Errors = new List<string>();
-        public List<USubbank> Subbanks = new List<USubbank>();
+        public virtual string Id { get; }
+        public virtual string Name => name;
+        public virtual USingerType SingerType { get; }
+        public virtual string BasePath { get; }
+        public virtual string Author { get; }
+        public virtual string Location { get; }
+        public virtual string Web { get; }
+        public virtual string Version { get; }
+        public virtual string OtherInfo { get; }
+        public virtual IList<string> Errors { get; }
+        public virtual string Avatar { get; }
+        public virtual byte[] AvatarData { get; }
+        public virtual string Portrait { get; }
+        public virtual float PortraitOpacity { get; }
+        public virtual Encoding TextFileEncoding => Encoding.UTF8;
+        public virtual IList<USubbank> Subbanks { get; }
+        public virtual Dictionary<string, UOto> Otos { get; }
 
-        public string DisplayName { get { return Found ? Name : $"[Missing] {Name}"; } }
+        public bool Found => found;
+        public bool Loaded => found && loaded;
 
-        public USinger(string name) {
-            Voicebank = new Voicebank() { Name = name };
-            Found = false;
-        }
+        protected bool found;
+        protected bool loaded;
 
-        public USinger(Voicebank voicebank) {
-            Voicebank = voicebank;
-            Found = true;
-        }
+        private string name;
 
-        public void EnsureLoaded() {
-            if (!Found || Loaded) {
-                return;
-            }
-            try {
-                Voicebank.Reload();
-                Load();
-                Loaded = true;
-            } catch (Exception e) {
-                Log.Error(e, $"Failed to load {Voicebank.File}");
-            }
-        }
+        public string DisplayName { get { return Found ? name : $"[Missing] {name}"; } }
 
-        public void Reload() {
-            if (!Found) {
-                return;
-            }
-            try {
-                Voicebank.Reload();
-                Load();
-                Loaded = true;
-            } catch (Exception e) {
-                Log.Error(e, $"Failed to load {Voicebank.File}");
-            }
-        }
-
-        public void Load() {
-            if (Avatar != null && File.Exists(Avatar)) {
-                try {
-                    using (var stream = new FileStream(Avatar, FileMode.Open)) {
-                        using (var memoryStream = new MemoryStream()) {
-                            stream.CopyTo(memoryStream);
-                            AvatarData = memoryStream.ToArray();
-                        }
-                    }
-                } catch (Exception e) {
-                    AvatarData = null;
-                    Log.Error(e, "Failed to load avatar data.");
-                }
-            } else {
-                AvatarData = null;
-                Log.Error("Avatar can't be found");
-            }
-
-            Subbanks.Clear();
-            Subbanks.AddRange(Voicebank.Subbanks
-                .OrderByDescending(subbank => subbank.Prefix.Length + subbank.Suffix.Length)
-                .Select(subbank => new USubbank(subbank)));
-            var patterns = Subbanks.Select(subbank => new Regex($"^{Regex.Escape(subbank.Prefix)}(.*){Regex.Escape(subbank.Suffix)}$"))
-                .ToList();
-
-            var dummy = new USubbank(new Subbank());
-            OtoSets.Clear();
-            Otos.Clear();
-            Errors.Clear();
-            foreach (var otoSet in Voicebank.OtoSets) {
-                var uSet = new UOtoSet(otoSet, Voicebank.BasePath);
-                OtoSets.Add(uSet);
-                foreach (var oto in otoSet.Otos) {
-                    UOto? uOto = null;
-                    for (var i = 0; i < patterns.Count; i++) {
-                        var m = patterns[i].Match(oto.Alias);
-                        if (m.Success) {
-                            oto.Phonetic = m.Groups[1].Value;
-                            uOto = new UOto(oto, uSet, Subbanks[i]);
-                            break;
-                        }
-                    }
-                    if (uOto == null) {
-                        uOto = new UOto(oto, uSet, dummy);
-                    }
-                    if (!Otos.ContainsKey(oto.Alias)) {
-                        Otos.Add(oto.Alias, uOto.Value);
-                    } else {
-                        //Errors.Add($"oto conflict {Otos[oto.Alias].Set}/{oto.Alias} and {otoSet.Name}/{oto.Alias}");
-                    }
-                }
-                Errors.AddRange(otoSet.Errors);
-            }
-            Phonetics = Otos.Values
-                .GroupBy(oto => oto.Phonetic, oto => oto)
-                .ToDictionary(g => g.Key, g => g.OrderByDescending(oto => oto.Prefix.Length + oto.Suffix.Length).ToList());
-
-            Task.Run(() => {
-                Otos.Values
-                    .ToList()
-                    .ForEach(oto => {
-                        oto.SearchTerms.Add(oto.Alias.ToLowerInvariant().Replace(" ", ""));
-                        oto.SearchTerms.Add(WanaKana.ToRomaji(oto.Alias).ToLowerInvariant().Replace(" ", ""));
-                    });
-            });
-        }
-
-        [Obsolete("Use the overload with color instead.")]
-        public bool TryGetMappedOto(string phoneme, int tone, out UOto oto) {
+        public virtual void EnsureLoaded() { }
+        public virtual void Reload() { }
+        public virtual bool TryGetMappedOto(string phoneme, int tone, out UOto oto) {
             oto = default;
-            var subbank = Subbanks.Find(subbank => subbank.toneSet.Contains(tone) && string.IsNullOrEmpty(subbank.Color));
-            if (subbank != null && Otos.TryGetValue($"{subbank.Prefix}{phoneme}{subbank.Suffix}", out oto)) {
-                return true;
-            }
-            if (Otos.TryGetValue(phoneme, out oto)) {
-                return true;
-            }
             return false;
         }
-
-        public bool TryGetMappedOto(string phoneme, int tone, string color, out UOto oto) {
+        public virtual bool TryGetMappedOto(string phoneme, int tone, string color, out UOto oto) {
             oto = default;
-            var subbank = Subbanks.Find(subbank => subbank.toneSet.Contains(tone) && color == subbank.Color);
-            if (subbank != null && Otos.TryGetValue($"{subbank.Prefix}{phoneme}{subbank.Suffix}", out oto)) {
-                return true;
-            }
-            return TryGetMappedOto(phoneme, tone, out oto);
+            return false;
         }
-
-        public void GetSuggestions(string text, Action<UOto> provide) {
-            if (text != null) {
-                text = text.ToLowerInvariant().Replace(" ", "");
-            }
-            bool all = string.IsNullOrEmpty(text);
-            Otos.Values
-                .Where(oto => all || oto.SearchTerms.Exists(term => term.Contains(text)))
-                .ToList()
-                .ForEach(oto => provide(oto));
-        }
-
+        public virtual void GetSuggestions(string text, Action<UOto> provide) { }
         public override string ToString() => Name;
+
+        public static USinger CreateMissing(string name) {
+            return new USinger() {
+                found = false,
+                loaded = false,
+                name = name,
+            };
+        }
     }
 }

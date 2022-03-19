@@ -44,7 +44,7 @@ namespace OpenUtau.Classic {
                     : phone.resampler)
                 ?? Resamplers.GetResampler(WorldlineResampler.name);
             inputFile = phone.oto.File;
-            inputTemp = VoicebankFiles.GetSourceTempPath(phrase.singerId, phone.oto);
+            inputTemp = VoicebankFiles.GetSourceTempPath(phrase.singer.Id, phone.oto);
             tone = phone.tone;
 
             flags = phone.flags;
@@ -72,7 +72,7 @@ namespace OpenUtau.Classic {
 
             hash = Hash();
             outputFile = Path.Join(PathManager.Inst.CachePath,
-                $"res-{XXH32.DigestOf(Encoding.UTF8.GetBytes(phrase.singerId)):x8}-{hash:x16}.wav");
+                $"res-{XXH32.DigestOf(Encoding.UTF8.GetBytes(phrase.singer.Id)):x8}-{hash:x16}.wav");
         }
 
         ulong Hash() {

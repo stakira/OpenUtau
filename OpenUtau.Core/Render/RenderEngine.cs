@@ -47,7 +47,7 @@ namespace OpenUtau.Core.Render {
                 var sources = phrases.Select(phrase => {
                     var firstPhone = phrase.phones.First();
                     var lastPhone = phrase.phones.Last();
-                    var layout = GetRenderer(phrase).Layout(phrase);
+                    var layout = phrase.renderer.Layout(phrase);
                     double posMs = layout.positionMs - layout.leadingMs;
                     double durMs = layout.estimatedLengthMs;
                     if (posMs + durMs < startTick * phrase.tickToMs) {
@@ -90,7 +90,7 @@ namespace OpenUtau.Core.Render {
                     if (cancellation.IsCancellationRequested) {
                         break;
                     }
-                    var task = GetRenderer(renderTask.Item1).Render(renderTask.Item1, progress, cancellation);
+                    var task = renderTask.Item1.renderer.Render(renderTask.Item1, progress, cancellation);
                     task.Wait();
                     renderTask.Item2.SetSamples(task.Result.samples);
                 }
@@ -109,7 +109,7 @@ namespace OpenUtau.Core.Render {
                 }
                 var progress = new Progress(phrases.Sum(phrase => phrase.phones.Length));
                 var mix = new WaveMix(phrases.Select(phrase => {
-                    var task = GetRenderer(phrase).Render(phrase, progress, cancellation);
+                    var task = phrase.renderer.Render(phrase, progress, cancellation);
                     task.Wait();
                     float durMs = task.Result.samples.Length * 1000f / 44100f;
                     var source = new WaveSource(task.Result.positionMs - task.Result.leadingMs, durMs, 0, 1);
@@ -144,7 +144,7 @@ namespace OpenUtau.Core.Render {
                     }
                     var progress = new Progress(phrases.Sum(phrase => phrase.phones.Length));
                     foreach (var phrase in phrases) {
-                        var task = GetRenderer(phrase).Render(phrase, progress, cancellation, true);
+                        var task = phrase.renderer.Render(phrase, progress, cancellation, true);
                         task.Wait();
                         var samples = task.Result;
                     }
@@ -169,16 +169,6 @@ namespace OpenUtau.Core.Render {
                 .Where(part => part is UVoicePart)
                 .Select(part => part as UVoicePart)
                 .SelectMany(part => RenderPhrase.FromPart(project, project.tracks[part.trackNo], part));
-        }
-
-        IRenderer GetRenderer(RenderPhrase phrase) {
-            var singer = DocManager.Inst.GetSinger(phrase.singerId);
-            switch (singer.Voicebank.VoicebankType) {
-                case Classic.VoicebankType.Enunu:
-                    return new EnunuRenderer();
-                default:
-                    return new Classic.ClassicRenderer();
-            }
         }
 
         public static void ReleaseSourceTemp() {

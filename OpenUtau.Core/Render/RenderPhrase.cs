@@ -80,6 +80,7 @@ namespace OpenUtau.Core.Render {
 
     public class RenderPhrase {
         public readonly string singerId;
+        public readonly USinger singer;
         public readonly int position;
         public readonly double tempo;
         public readonly double tickToMs;
@@ -87,6 +88,8 @@ namespace OpenUtau.Core.Render {
         public readonly float[] pitches;
         public readonly float[] dynamics;
         public readonly uint hash;
+
+        internal readonly IRenderer renderer;
 
         internal RenderPhrase(UProject project, UTrack track, UVoicePart part, IEnumerable<UPhoneme> phonemes) {
             var notes = new List<UNote>();
@@ -105,6 +108,8 @@ namespace OpenUtau.Core.Render {
                 .ToArray();
 
             singerId = track.Singer.Id;
+            singer = track.Singer;
+            renderer = track.Renderer;
             position = part.position;
             tempo = project.bpm;
             tickToMs = 60000.0 / project.bpm * project.beatUnit / 4 / project.resolution;
