@@ -310,13 +310,17 @@ namespace OpenUtau.App.Views {
                 Filters = new List<FileDialogFilter>() {
                     new FileDialogFilter() {
                         Name = "Archive File",
-                        Extensions = new List<string>(){ "zip", "rar", "uar" },
+                        Extensions = new List<string>(){ "zip", "rar", "uar", "vogeon" },
                     },
                 },
                 AllowMultiple = false,
             };
             var files = await dialog.ShowAsync(this);
             if (files == null || files.Length != 1) {
+                return;
+            }
+            if (files[0].EndsWith(Core.Vogen.VogenSingerInstaller.FileExt)) {
+                Core.Vogen.VogenSingerInstaller.Install(files[0]);
                 return;
             }
             var setup = new SingerSetupDialog() {
@@ -452,6 +456,8 @@ namespace OpenUtau.App.Views {
                 if (setup.Position.Y < 0) {
                     setup.Position = setup.Position.WithY(0);
                 }
+            } else if (ext == Core.Vogen.VogenSingerInstaller.FileExt) {
+                Core.Vogen.VogenSingerInstaller.Install(file);
             } else if (ext == ".mp3" || ext == ".wav" || ext == ".ogg" || ext == ".flac") {
                 try {
                     viewModel.ImportAudio(file);

@@ -70,7 +70,7 @@ namespace OpenUtau.Core.Format {
             project.FilePath = filePath;
             project.Saved = true;
             project.AfterLoad();
-            project.Validate();
+            project.ValidateFull();
             if (project.ustxVersion < kUstxVersion) {
                 Log.Information($"Upgrading project from {project.ustxVersion} to {kUstxVersion}");
             }
@@ -88,7 +88,7 @@ namespace OpenUtau.Core.Format {
                         .Where(exp => exp.abbr == "acc")
                         .ToList()
                         .ForEach(exp => exp.abbr = ATK);
-                    project.Validate();
+                    project.ValidateFull();
                 }
             }
             if (project.ustxVersion < new Version(0, 5)) {
@@ -99,7 +99,7 @@ namespace OpenUtau.Core.Format {
                     .Where(note => note.lyric.StartsWith("..."))
                     .ToList()
                     .ForEach(note => note.lyric = note.lyric.Replace("...", "+"));
-                project.Validate();
+                project.ValidateFull();
             }
             project.ustxVersion = kUstxVersion;
             return project;

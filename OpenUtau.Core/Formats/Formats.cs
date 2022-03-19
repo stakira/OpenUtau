@@ -107,7 +107,7 @@ namespace OpenUtau.Core.Format {
                 var part = project.parts[i];
                 part.AfterLoad(project, project.tracks[part.trackNo]);
             }
-            project.Validate();
+            project.ValidateFull();
             DocManager.Inst.ExecuteCmd(new LoadProjectNotification(project));
         }
     }

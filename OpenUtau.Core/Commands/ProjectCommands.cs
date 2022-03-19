@@ -60,7 +60,7 @@ namespace OpenUtau.Core {
                 .Where(part => part is UVoicePart)
                 .ToList()
                 .ForEach(part => part.AfterLoad(project, project.tracks[part.trackNo]));
-            project.Validate();
+            project.ValidateFull();
         }
         public override void Unexecute() {
             project.expressions = oldDescriptors.ToDictionary(descriptor => descriptor.abbr);
@@ -68,7 +68,7 @@ namespace OpenUtau.Core {
                 .Where(part => part is UVoicePart)
                 .ToList()
                 .ForEach(part => part.AfterLoad(project, project.tracks[part.trackNo]));
-            project.Validate();
+            project.ValidateFull();
         }
     }
 }

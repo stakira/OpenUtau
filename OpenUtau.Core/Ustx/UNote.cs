@@ -81,7 +81,7 @@ namespace OpenUtau.Core.Ustx {
                 .ToList();
         }
 
-        public void Validate(UProject project, UTrack track, UVoicePart part) {
+        public void Validate(ValidateOptions options, UProject project, UTrack track, UVoicePart part) {
             duration = Math.Max(10, duration);
             if (Prev != null && Prev.End > position) {
                 Error = true;
@@ -100,34 +100,36 @@ namespace OpenUtau.Core.Ustx {
                     pitch.data[0].Y = 0;
                 }
             }
-            for (var i = 0; i < phonemes.Count; i++) {
-                var phoneme = phonemes[i];
-                phoneme.Parent = this;
-                phoneme.Index = i;
-            }
-            // Update has override bits.
-            foreach (var phoneme in phonemes) {
-                phoneme.HasPhonemeOverride = false;
-                phoneme.HasOffsetOverride = false;
-                phoneme.preutterDelta = null;
-                phoneme.overlapDelta = null;
-            }
-            foreach (var o in (Extends ?? this).phonemeOverrides) {
-                int index = o.index - PhonemeOffset;
-                if (index >= 0 && index < phonemes.Count) {
-                    if (o.phoneme != null) {
-                        phonemes[index].HasPhonemeOverride = true;
-                    }
-                    if (o.offset != null) {
-                        phonemes[index].HasOffsetOverride = true;
-                    }
-                    phonemes[index].preutterDelta = o.preutterDelta;
-                    phonemes[index].overlapDelta = o.overlapDelta;
+            if (!options.SkipPhoneme) {
+                for (var i = 0; i < phonemes.Count; i++) {
+                    var phoneme = phonemes[i];
+                    phoneme.Parent = this;
+                    phoneme.Index = i;
                 }
-            }
-            foreach (var phoneme in phonemes) {
-                phoneme.Validate(project, track, part, this);
-                Error |= phoneme.Error;
+                // Update has override bits.
+                foreach (var phoneme in phonemes) {
+                    phoneme.HasPhonemeOverride = false;
+                    phoneme.HasOffsetOverride = false;
+                    phoneme.preutterDelta = null;
+                    phoneme.overlapDelta = null;
+                }
+                foreach (var o in (Extends ?? this).phonemeOverrides) {
+                    int index = o.index - PhonemeOffset;
+                    if (index >= 0 && index < phonemes.Count) {
+                        if (o.phoneme != null) {
+                            phonemes[index].HasPhonemeOverride = true;
+                        }
+                        if (o.offset != null) {
+                            phonemes[index].HasOffsetOverride = true;
+                        }
+                        phonemes[index].preutterDelta = o.preutterDelta;
+                        phonemes[index].overlapDelta = o.overlapDelta;
+                    }
+                }
+                foreach (var phoneme in phonemes) {
+                    phoneme.Validate(options, project, track, part, this);
+                    Error |= phoneme.Error;
+                }
             }
         }
 

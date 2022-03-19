@@ -42,7 +42,7 @@ namespace OpenUtau.Core.Ustx {
             };
         }
 
-        public void Validate(UProject project, UTrack track, UVoicePart part, UNote note) {
+        public void Validate(ValidateOptions options, UProject project, UTrack track, UVoicePart part, UNote note) {
             Error = note.Error;
             ValidateDuration(note);
             ValidateOto(track, note);

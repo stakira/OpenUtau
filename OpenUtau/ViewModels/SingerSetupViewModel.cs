@@ -236,10 +236,7 @@ namespace OpenUtau.App.ViewModels {
             var textEncoding = TextEncoding;
             return Task.Run(() => {
                 try {
-                    var basePath = Preferences.Default.InstallToAdditionalSingersPath
-                        && !string.IsNullOrEmpty(Preferences.Default.AdditionalSingerPath)
-                            ? PathManager.Inst.AdditionalSingersPath
-                            : PathManager.Inst.SingersPath;
+                    var basePath = PathManager.Inst.SingersInstallPath;
                     var installer = new Classic.VoicebankInstaller(basePath, (progress, info) => {
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(progress, info));
                     }, archiveEncoding, textEncoding);

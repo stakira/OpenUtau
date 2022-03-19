@@ -43,7 +43,7 @@ namespace OpenUtau.Classic {
                 project.parts.Add(part);
             }
             project.AfterLoad();
-            project.Validate();
+            project.ValidateFull();
             return project;
         }
 

@@ -6,20 +6,20 @@ using OpenUtau.Classic;
 
 namespace OpenUtau.Core.Ustx {
     public struct UOto {
-        public string Alias;
-        public string Phonetic;
-        public string Set;
-        public string Color;
-        public string Prefix;
-        public string Suffix;
-        public SortedSet<int> ToneSet;
-        public string File;
-        public string DisplayFile;
-        public double Offset;
-        public double Consonant;
-        public double Cutoff;
-        public double Preutter;
-        public double Overlap;
+        public string Alias { get; set; }
+        public string Phonetic { get; set; }
+        public string Set { get; set; }
+        public string Color { get; set; }
+        public string Prefix { get; set; }
+        public string Suffix { get; set; }
+        public SortedSet<int> ToneSet { get; set; }
+        public string File { get; set; }
+        public string DisplayFile { get; set; }
+        public double Offset { get; set; }
+        public double Consonant { get; set; }
+        public double Cutoff { get; set; }
+        public double Preutter { get; set; }
+        public double Overlap { get; set; }
         public List<string> SearchTerms { private set; get; }
 
         public UOto(Oto oto, UOtoSet set, USubbank subbank) {
