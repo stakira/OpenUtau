@@ -35,6 +35,10 @@ namespace OpenUtau.Core {
     */
 
     public class SetPhonemeExpressionCommand : ExpCommand {
+        static readonly HashSet<string> needsPhonemizer = new HashSet<string> {
+            Format.Ustx.ALT, Format.Ustx.CLR, Format.Ustx.SHFT,
+        };
+
         public readonly UProject project;
         public readonly UTrack track;
         public readonly UPhoneme phoneme;
@@ -42,7 +46,7 @@ namespace OpenUtau.Core {
         public readonly float oldValue;
         public override ValidateOptions ValidateOptions
             => new ValidateOptions {
-                SkipPhonemizer = "abbr" != Format.Ustx.ALT,
+                SkipPhonemizer = !needsPhonemizer.Contains(Key),
             };
         public SetPhonemeExpressionCommand(UProject project, UTrack track, UPhoneme phoneme, string abbr, float value) {
             this.project = project;
