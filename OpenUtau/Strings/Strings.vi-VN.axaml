@@ -115,19 +115,19 @@
   <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">Xoá hậu tố Giọng</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Chuyển Romaji sang Hiragana</system:String>
   <system:String x:Key="pianoroll.menu.notes">Nốt nhạc</system:String>
-  <system:String x:Key="pianoroll.menu.notes.addtaildash">Thêm đuôi "-"</system:String>
-  <system:String x:Key="pianoroll.menu.notes.addtailrest">Thêm đuôi "R"</system:String>
+  <system:String x:Key="pianoroll.menu.notes.addtaildash">Thêm nốt "-"</system:String>
+  <system:String x:Key="pianoroll.menu.notes.addtailrest">Thêm nốt "R"</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">Chia thành quãng 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Chia thành quãng 1/64</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">Đặt lại các biểu cảm</system:String>
-  <system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">Đặt lại thời gian âm vị</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">Đặt lại thời gian các âm</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">Đặt lại các đường luyến giọng</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.vibratos">Đặt lại các đường rung giọng</system:String>
   <system:String x:Key="pianoroll.menu.part">Phần</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">Sử dụng Plugin của UTAU (Thử nghiệm)</system:String>
-  <system:String x:Key="pianoroll.menu.part.rename">Đặt tên lại</system:String>
+  <system:String x:Key="pianoroll.menu.part.rename">Đặt tên của phần</system:String>
   <system:String x:Key="pianoroll.toggle.finalpitch">Hiện Đường luyến giọng tự do (R)</system:String>
-  <system:String x:Key="pianoroll.toggle.phoneme">Hiện Thời gian âm vị (O)</system:String>
+  <system:String x:Key="pianoroll.toggle.phoneme">Hiện Thời gian các âm (O)</system:String>
   <system:String x:Key="pianoroll.toggle.pitch">Hiện Đường luyến giọng nối bằng các điểm (I)</system:String>
   <system:String x:Key="pianoroll.toggle.snap">Bật tắt Gán nốt (P)</system:String>
   <system:String x:Key="pianoroll.toggle.tips">Hiện Hướng dẫn (T)</system:String>
@@ -135,9 +135,9 @@
   <system:String x:Key="pianoroll.toggle.vibrato">Hiện Đường rung giọng (U)</system:String>
   <system:String x:Key="pianoroll.tool.eraser">Xoá nốt (3)</system:String>
   <system:String x:Key="pianoroll.tool.pen">Viết nốt (2)
-Nhấn chuột trái để điền nốt
+Nhấn chuột trái để viết nốt
 Nhấn chuột phải để xoá nốt</system:String>
-  <system:String x:Key="pianoroll.tool.drawpitch">Vẽ tự do Đường luyến giọng(4)</system:String>
+  <system:String x:Key="pianoroll.tool.drawpitch">Vẽ tự do đường luyến giọng(4)</system:String>
   <system:String x:Key="pianoroll.tool.selection">Lựa chọn (1)
 Nhấn giữ Ctrl để chọn đồng loạt nhiều nốt</system:String>
 
