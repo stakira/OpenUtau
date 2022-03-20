@@ -137,7 +137,7 @@
   <system:String x:Key="pianoroll.tool.pen">Viết nốt (2)
 Nhấn chuột trái để viết nốt
 Nhấn chuột phải để xoá nốt</system:String>
-  <system:String x:Key="pianoroll.tool.drawpitch">Vẽ tự do đường luyến giọng(4)</system:String>
+  <system:String x:Key="pianoroll.tool.drawpitch">Vẽ tự do đường luyến giọng (4)</system:String>
   <system:String x:Key="pianoroll.tool.selection">Lựa chọn (1)
 Nhấn giữ Ctrl để chọn đồng loạt nhiều nốt</system:String>
 
