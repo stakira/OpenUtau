@@ -94,7 +94,11 @@ namespace OpenUtau.Core.Render {
         internal RenderPhrase(UProject project, UTrack track, UVoicePart part, IEnumerable<UPhoneme> phonemes) {
             var notes = new List<UNote>();
             notes.Add(phonemes.First().Parent);
-            while (notes.Last() != phonemes.Last().Parent) {
+            var endNote = phonemes.Last().Parent;
+            while (endNote.Next != null && endNote.Next.Extends != null) {
+                endNote = endNote.Next;
+            }
+            while (notes.Last() != endNote) {
                 notes.Add(notes.Last().Next);
             }
             var tail = notes.Last();
@@ -132,7 +136,7 @@ namespace OpenUtau.Core.Render {
                 if (note.vibrato.length <= 0) {
                     continue;
                 }
-                int startIndex = Math.Max(0, (note.position - pitchStart) / pitchInterval);
+                int startIndex = Math.Max(0, (int)Math.Ceiling((float)(note.position - pitchStart) / pitchInterval));
                 int endIndex = Math.Min(pitches.Length, (note.End - pitchStart) / pitchInterval);
                 for (int i = startIndex; i < endIndex; ++i) {
                     float nPos = (float)(pitchStart + i * pitchInterval - note.position) / note.duration;
@@ -145,7 +149,8 @@ namespace OpenUtau.Core.Render {
                 var pitchPoints = note.pitch.data
                     .Select(point => new PitchPoint(
                         project.MillisecondToTick(point.X) + note.position,
-                        point.Y * 10 + note.tone * 100))
+                        point.Y * 10 + note.tone * 100,
+                        point.shape))
                     .ToList();
                 if (pitchPoints.Count == 0) {
                     pitchPoints.Add(new PitchPoint(note.position, note.tone * 100));
@@ -160,16 +165,17 @@ namespace OpenUtau.Core.Render {
                     pitchPoints.Add(new PitchPoint(note.End, pitchPoints.Last().Y));
                 }
                 PitchPoint lastPoint = pitchPoints[0];
-                index = Math.Max(0, (int)Math.Ceiling((lastPoint.X - pitchStart) / pitchInterval));
+                index = Math.Max(0, (int)((lastPoint.X - pitchStart) / pitchInterval));
                 foreach (var point in pitchPoints.Skip(1)) {
-                    int x;
-                    while ((x = pitchStart + index * pitchInterval) < point.X && index < pitches.Length) {
+                    int x = pitchStart + index * pitchInterval;
+                    while (x < point.X && index < pitches.Length) {
                         float pitch = (float)MusicMath.InterpolateShape(lastPoint.X, point.X, lastPoint.Y, point.Y, x, lastPoint.shape);
-                        float basePitch = x >= note.position
-                            ? note.tone * 100
-                            : (note == notes.First() ? note : note.Prev).tone * 100;
+                        float basePitch = note.Prev != null && x < note.Prev.End
+                            ? note.Prev.tone * 100
+                            : note.tone * 100;
                         pitches[index] += pitch - basePitch;
                         index++;
+                        x += pitchInterval;
                     }
                     lastPoint = point;
                 }
