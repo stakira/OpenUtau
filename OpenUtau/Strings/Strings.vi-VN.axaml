@@ -109,11 +109,11 @@
 
   <system:String x:Key="pianoroll.menu.lyrics">Lời bài hát</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">Chỉnh sửa lời bài hát</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana sang Romaji</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">Tiếng Nhật VCV sang CV</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Xoá bỏ hậu tố Từ</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">Xoá bỏ hậu tố Giọng</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Romaji sang Hiragana</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Chuyển Hiragana sang Romaji</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">Chuyển VCV Tiếng Nhật sang CV</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Xoá hậu tố Từ</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">Xoá hậu tố Giọng</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Chuyển Romaji sang Hiragana</system:String>
   <system:String x:Key="pianoroll.menu.notes">Nốt nhạc</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">Thêm đuôi "-"</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">Thêm đuôi "R"</system:String>
@@ -122,21 +122,23 @@
   <system:String x:Key="pianoroll.menu.notes.reset.exps">Đặt lại các biểu cảm</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">Đặt lại thời gian âm vị</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">Đặt lại các đường luyến giọng</system:String>
-  <system:String x:Key="pianoroll.menu.notes.reset.vibratos">Đặt lại rung giọng</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.vibratos">Đặt lại các đường rung giọng</system:String>
   <system:String x:Key="pianoroll.menu.part">Phần</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">Sử dụng Plugin của UTAU (Thử nghiệm)</system:String>
   <system:String x:Key="pianoroll.menu.part.rename">Đặt tên lại</system:String>
-  <system:String x:Key="pianoroll.toggle.phoneme">Hiện Phiên âm (O)</system:String>
-  <system:String x:Key="pianoroll.toggle.pitch">Hiện Đường luyến giọng (I)</system:String>
-  <system:String x:Key="pianoroll.toggle.snap">Bật tắt Gán (P)</system:String>
+  <system:String x:Key="pianoroll.toggle.finalpitch">Hiện Đường luyến giọng tự do (R)</system:String>
+  <system:String x:Key="pianoroll.toggle.phoneme">Hiện Thời gian âm vị (O)</system:String>
+  <system:String x:Key="pianoroll.toggle.pitch">Hiện Đường luyến giọng nối bằng các điểm (I)</system:String>
+  <system:String x:Key="pianoroll.toggle.snap">Bật tắt Gán nốt (P)</system:String>
   <system:String x:Key="pianoroll.toggle.tips">Hiện Hướng dẫn (T)</system:String>
   <system:String x:Key="pianoroll.toggle.tone">Hiện Chất giọng trên nốt (Y)</system:String>
-  <system:String x:Key="pianoroll.toggle.vibrato">Hiện Rung giọng (U)</system:String>
-  <system:String x:Key="pianoroll.tool.eraser">Công cụ Xoá nốt (3)</system:String>
-  <system:String x:Key="pianoroll.tool.pen">Công cụ Điền Nốt (2)
+  <system:String x:Key="pianoroll.toggle.vibrato">Hiện Đường rung giọng (U)</system:String>
+  <system:String x:Key="pianoroll.tool.eraser">Xoá nốt (3)</system:String>
+  <system:String x:Key="pianoroll.tool.pen">Viết nốt (2)
 Nhấn chuột trái để điền nốt
 Nhấn chuột phải để xoá nốt</system:String>
-  <system:String x:Key="pianoroll.tool.selection">Công cụ Lựa chọn (1)
+  <system:String x:Key="pianoroll.tool.drawpitch">Vẽ tự do Đường luyến giọng(4)</system:String>
+  <system:String x:Key="pianoroll.tool.selection">Lựa chọn (1)
 Nhấn giữ Ctrl để chọn đồng loạt nhiều nốt</system:String>
 
   <system:String x:Key="prefs.advanced">Nâng cao</system:String>
@@ -166,7 +168,7 @@ Nhấn giữ Ctrl để chọn đồng loạt nhiều nốt</system:String>
   <!--<system:String x:Key="prefs.playback.backend.auto">Automatic</system:String>-->
   <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">Vị trí đường phát lại</system:String>
-  <system:String x:Key="prefs.playback.device">Thiết bị phát lại</system:String>
+  <system:String x:Key="prefs.playback.device">Thiết bị phát nhạc</system:String>
   <system:String x:Key="prefs.playback.test">Nghe thử</system:String>
   <system:String x:Key="prefs.rendering">Render</system:String>
   <!--<system:String x:Key="prefs.rendering.phasecomp">Phase Compensation</system:String>-->
