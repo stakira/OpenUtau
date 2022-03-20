@@ -25,7 +25,7 @@ namespace OpenUtau.Core.Ustx {
         public virtual void BeforeSave(UProject project, UTrack track) { }
         public virtual void AfterLoad(UProject project, UTrack track) { }
 
-        public virtual void Validate(UProject project, UTrack track) { }
+        public virtual void Validate(ValidateOptions options, UProject project, UTrack track) { }
 
         public abstract UPart Clone();
     }
@@ -67,7 +67,7 @@ namespace OpenUtau.Core.Ustx {
             }
         }
 
-        public override void Validate(UProject project, UTrack track) {
+        public override void Validate(ValidateOptions options, UProject project, UTrack track) {
             UNote lastNote = null;
             foreach (UNote note in notes) {
                 note.Prev = lastNote;
@@ -86,34 +86,36 @@ namespace OpenUtau.Core.Ustx {
                     note.Extends = null;
                 }
             }
-            track.Phonemizer.SetTiming(project.bpm, project.beatUnit, project.resolution);
-            track.Phonemizer.SetUp(notes
-                .Where(n => !n.OverlapError)
-                .Where(n => n.Extends == null)
-                .Select(n => new Api.Phonemizer.Note {
-                    lyric = n.lyric.Trim(),
-                    tone = n.tone,
-                    position = n.position,
-                    duration = n.ExtendedDuration,
-                }).ToArray());
-            foreach (UNote note in notes.Reverse()) {
-                note.Phonemize(project, track);
-            }
-            track.Phonemizer.CleanUp();
-            UPhoneme lastPhoneme = null;
-            foreach (UNote note in notes) {
-                foreach (var phoneme in note.phonemes) {
-                    phoneme.Parent = note;
-                    phoneme.Prev = lastPhoneme;
-                    phoneme.Next = null;
-                    if (lastPhoneme != null) {
-                        lastPhoneme.Next = phoneme;
+            if (!options.SkipPhonemizer) {
+                track.Phonemizer.SetTiming(project.bpm, project.beatUnit, project.resolution);
+                track.Phonemizer.SetUp(notes
+                    .Where(n => !n.OverlapError)
+                    .Where(n => n.Extends == null)
+                    .Select(n => new Api.Phonemizer.Note {
+                        lyric = n.lyric.Trim(),
+                        tone = n.tone,
+                        position = n.position,
+                        duration = n.ExtendedDuration,
+                    }).ToArray());
+                foreach (UNote note in notes.Reverse()) {
+                    note.Phonemize(project, track);
+                }
+                track.Phonemizer.CleanUp();
+                UPhoneme lastPhoneme = null;
+                foreach (UNote note in notes) {
+                    foreach (var phoneme in note.phonemes) {
+                        phoneme.Parent = note;
+                        phoneme.Prev = lastPhoneme;
+                        phoneme.Next = null;
+                        if (lastPhoneme != null) {
+                            lastPhoneme.Next = phoneme;
+                        }
+                        lastPhoneme = phoneme;
                     }
-                    lastPhoneme = phoneme;
                 }
             }
             foreach (UNote note in notes) {
-                note.Validate(project, track, this);
+                note.Validate(options, project, track, this);
             }
             renderPhrases.Clear();
             renderPhrases.AddRange(RenderPhrase.FromPart(project, track, this));
@@ -217,7 +219,7 @@ namespace OpenUtau.Core.Ustx {
             }
         }
 
-        public override void Validate(UProject project, UTrack track) {
+        public override void Validate(ValidateOptions options, UProject project, UTrack track) {
             fileDurTick = project.MillisecondToTick(duration.TotalMilliseconds);
         }
 

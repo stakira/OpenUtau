@@ -2,6 +2,7 @@
 using System.Linq;
 using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
+using TinyPinyin;
 
 namespace OpenUtau.Plugin.Builtin {
     /// <summary>
@@ -39,25 +40,28 @@ namespace OpenUtau.Plugin.Builtin {
             // 1. Remove consonant: "duang" -> "uang".
             // 2. Lookup the trailing sound in vowel table: "uang" -> "_ang".
             // 3. Split the total duration and returns "duang" and "_ang".
-            var note = notes[0];
+            var lyric = notes[0].lyric;
+            if (lyric.Length > 0 && PinyinHelper.IsChinese(lyric[0])) {
+                lyric = PinyinHelper.GetPinyin(lyric).ToLowerInvariant();
+            }
             string consonant = string.Empty;
             string vowel = string.Empty;
-            if (note.lyric.Length > 2 && cSet.Contains(note.lyric.Substring(0, 2))) {
+            if (lyric.Length > 2 && cSet.Contains(lyric.Substring(0, 2))) {
                 // First try to find consonant "zh", "ch" or "sh", and extract vowel.
-                consonant = note.lyric.Substring(0, 2);
-                vowel = note.lyric.Substring(2);
-            } else if (note.lyric.Length > 1 && cSet.Contains(note.lyric.Substring(0, 1))) {
+                consonant = lyric.Substring(0, 2);
+                vowel = lyric.Substring(2);
+            } else if (lyric.Length > 1 && cSet.Contains(lyric.Substring(0, 1))) {
                 // Then try to find single character consonants, and extract vowel.
-                consonant = note.lyric.Substring(0, 1);
-                vowel = note.lyric.Substring(1);
+                consonant = lyric.Substring(0, 1);
+                vowel = lyric.Substring(1);
             } else {
                 // Otherwise the lyric is a vowel.
-                vowel = note.lyric;
+                vowel = lyric;
             }
             if ((vowel == "un" || vowel == "uan") && (consonant == "j" || consonant == "q" || consonant == "x" || consonant == "y")) {
                 vowel = "v" + vowel.Substring(1);
             }
-            string phoneme0 = note.lyric;
+            string phoneme0 = lyric;
             // We will need to split the total duration for phonemes, so we compute it here.
             int totalDuration = notes.Sum(n => n.duration);
             // Lookup the vowel split table. For example, "uang" will match "_ang".

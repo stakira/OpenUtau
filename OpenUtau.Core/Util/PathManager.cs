@@ -44,6 +44,10 @@ namespace OpenUtau.Core {
         public string SingersPathOld => Path.Combine(HomePath, "Content", "Singers");
         public string SingersPath => Path.Combine(HomePath, "Singers");
         public string AdditionalSingersPath => Preferences.Default.AdditionalSingerPath;
+        public string SingersInstallPath => Preferences.Default.InstallToAdditionalSingersPath 
+            && !string.IsNullOrEmpty(Preferences.Default.AdditionalSingerPath)
+                ? AdditionalSingersPath
+                : SingersPath;
         public string ResamplersPath => Path.Combine(HomePath, "Resamplers");
         public string PluginsPath => Path.Combine(HomePath, "Plugins");
         public string TemplatesPath => Path.Combine(HomePath, "Templates");

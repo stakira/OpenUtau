@@ -70,7 +70,7 @@ namespace OpenUtau.Core.Ustx {
             VoiceColorExp = null;
         }
 
-        public void Validate(UProject project) {
+        public void Validate(ValidateOptions options, UProject project) {
             if (Singer != null && Singer.Found) {
                 Singer.EnsureLoaded();
             }

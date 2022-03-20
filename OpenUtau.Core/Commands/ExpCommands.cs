@@ -9,6 +9,10 @@ namespace OpenUtau.Core {
         public UVoicePart Part;
         public UNote Note;
         public string Key;
+        public override ValidateOptions ValidateOptions
+            => new ValidateOptions {
+                SkipPhonemizer = true,
+            };
     }
 
     /*
@@ -36,6 +40,10 @@ namespace OpenUtau.Core {
         public readonly UPhoneme phoneme;
         public readonly float newValue;
         public readonly float oldValue;
+        public override ValidateOptions ValidateOptions
+            => new ValidateOptions {
+                SkipPhonemizer = "abbr" != Format.Ustx.ALT,
+            };
         public SetPhonemeExpressionCommand(UProject project, UTrack track, UPhoneme phoneme, string abbr, float value) {
             this.project = project;
             this.track = track;
@@ -140,7 +148,12 @@ namespace OpenUtau.Core {
         readonly PitchPoint point;
         readonly float deltaX;
         readonly float deltaY;
-        public override UPart ValidatePart => part;
+        public override ValidateOptions ValidateOptions
+            => new ValidateOptions {
+                part = part,
+                SkipPhonemizer = true,
+                SkipPhoneme = true,
+            };
         public MovePitchPointCommand(UVoicePart part, PitchPoint point, float deltaX, float deltaY) {
             this.part = part;
             this.point = point;
@@ -177,7 +190,12 @@ namespace OpenUtau.Core {
         readonly int lastY;
         int[] oldXs;
         int[] oldYs;
-        public override UPart ValidatePart => part;
+        public override ValidateOptions ValidateOptions
+            => new ValidateOptions {
+                part = part,
+                SkipPhonemizer = true,
+                SkipPhoneme = true,
+            };
         public SetCurveCommand(UProject project, UVoicePart part, string abbr, int x, int y, int lastX, int lastY) {
             this.project = project;
             this.part = part;

@@ -128,13 +128,21 @@ namespace OpenUtau.Core.Ustx {
             }
         }
 
-        public void Validate() {
-            foreach (var track in tracks) {
-                track.Validate(this);
+        public void Validate(ValidateOptions options) {
+            if (options.part == null) {
+                foreach (var track in tracks) {
+                    track.Validate(options, this);
+                }
             }
             foreach (var part in parts) {
-                part.Validate(this, tracks[part.trackNo]);
+                if (options.part == null || options.part == part) {
+                    part.Validate(options, this, tracks[part.trackNo]);
+                }
             }
+        }
+
+        public void ValidateFull() {
+            Validate(new ValidateOptions());
         }
     }
 }

@@ -129,7 +129,7 @@ namespace OpenUtau.Core.Format {
             }
 
             uproject.AfterLoad();
-            uproject.Validate();
+            uproject.ValidateFull();
             return uproject;
         }
     }

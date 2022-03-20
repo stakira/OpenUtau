@@ -11,6 +11,12 @@ using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Core {
+    public struct ValidateOptions {
+        public UPart part;
+        public bool SkipPhonemizer;
+        public bool SkipPhoneme;
+    }
+
     public class DocManager {
         DocManager() {
             Project = new UProject();
@@ -81,7 +87,6 @@ namespace OpenUtau.Core {
             const string kBuiltin = "OpenUtau.Plugin.Builtin.dll";
             var stopWatch = Stopwatch.StartNew();
             var phonemizerFactories = new List<PhonemizerFactory>();
-            phonemizerFactories.Add(PhonemizerFactory.Get(typeof(DefaultPhonemizer)));
             var files = new List<string>();
             try {
                 files.Add(Path.Combine(Path.GetDirectoryName(GetType().Assembly.Location), kBuiltin));
@@ -161,12 +166,12 @@ namespace OpenUtau.Core {
                 } else if (cmd is SingersChangedNotification) {
                     SearchAllSingers();
                 } else if (cmd is ValidateProjectNotification) {
-                    Project.Validate();
+                    Project.ValidateFull();
                 } else if (cmd is SingersRefreshedNotification) {
                     foreach (var track in Project.tracks) {
                         track.OnSingerRefreshed();
                     }
-                    Project.Validate();
+                    Project.ValidateFull();
                 }
                 Publish(cmd);
                 if (!cmd.Silent) {
@@ -186,11 +191,7 @@ namespace OpenUtau.Core {
                 Log.Information($"ExecuteCmd {cmd}");
             }
             Publish(cmd);
-            if (cmd.ValidatePart == null) {
-                Project.Validate();
-            } else {
-                cmd.ValidatePart.Validate(Project, Project.tracks[cmd.ValidatePart.trackNo]);
-            }
+            Project.Validate(cmd.ValidateOptions);
         }
 
         public void StartUndoGroup() {
@@ -229,7 +230,7 @@ namespace OpenUtau.Core {
                 var cmd = undoGroup.Commands[i];
                 cmd.Unexecute();
                 if (i == 0) {
-                    Project.Validate();
+                    Project.ValidateFull();
                 }
                 Publish(cmd, true);
             }
@@ -245,7 +246,7 @@ namespace OpenUtau.Core {
                 var cmd = group.Commands[i];
                 cmd.Unexecute();
                 if (i == 0) {
-                    Project.Validate();
+                    Project.ValidateFull();
                 }
                 Publish(cmd, true);
             }
@@ -262,7 +263,7 @@ namespace OpenUtau.Core {
                 var cmd = group.Commands[i];
                 cmd.Execute();
                 if (i == group.Commands.Count - 1) {
-                    Project.Validate();
+                    Project.ValidateFull();
                 }
                 Publish(cmd);
             }
