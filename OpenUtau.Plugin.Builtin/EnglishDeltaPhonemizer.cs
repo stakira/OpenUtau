@@ -83,7 +83,7 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             } else { // VCV
                 var vcv = $"{prevV} h{v}";
-                if (cc[0] == "h" && HasOto(vcv, syllable.vowelTone)) {
+                if (cc[0] == "h" && HasOto(vcv, syllable.vowelTone) && (syllable.IsVCVWithOneConsonant)) {
                     basePhoneme = vcv;
                 } else {
                     // try vcc
