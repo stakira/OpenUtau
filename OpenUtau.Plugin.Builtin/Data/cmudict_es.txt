@@ -2846,7 +2846,7 @@ bisi  b i s i
 bisima  b i s i m a
 blackman  b l a k k m a n
 blair  b l a i r
-blake b l a k e
+blake  b l a k e
 blanca  b l a n k a
 blancas  b l a n k a s
 blanche  b l a n ch e
@@ -2989,7 +2989,7 @@ boza  b o z a
 bra  b r a
 brad  b r a d
 brale  b r a l e
-branitzki b r a n i t z k i
+branitzki  b r a n i t z k i
 braseros  b r a s e r o s
 brasil  b r a s i l
 brasileña  b r a s i l e gn a 
@@ -3016,7 +3016,7 @@ brian  b r i a n
 brigada  b r i g a d a
 brigadas  b r i g a d a s
 brigadier  b r i g a d y e r
-brike b r i k e
+brike  b r i k e
 brilla  b r i ll a
 brillante  b r i ll a n t e
 brillantes  b r i ll a n t e s
@@ -3047,7 +3047,7 @@ bromeando  b r o m e a n d o
 bromeas  b r o m e a s
 bromeó  b r o m e o 
 bronx  b r o n k s
-brooke b r o o k e
+brooke  b r o o k e
 brote  b r o t e
 brotes  b r o t e s
 brown b r o u n
@@ -7705,7 +7705,7 @@ douglas  d o u g l a s
 dow d o u
 doy  d o i
 doña  d o gn a 
-drake d r a k e
+drake  d r a k e
 drama  d r a m a
 dramática  d r a m a t i k a 
 dramáticamente  d r a m a t i k a m e n t e 
@@ -7748,7 +7748,7 @@ dueña  d w e gn a
 dueño  d w e gn o 
 dueños  d w e gn o s 
 duilio  d w i l y o
-duke d u k e
+duke  d u k e
 dulce  d u l z e
 dulces  d u l z e s
 dulcineas  d u l z i n e a s
@@ -8115,7 +8115,7 @@ embarcarte  e m b a r k a r t e
 embargo  e m b a r g o
 embarque  e m b a r k e
 embarques  e m b a r k e s
-embeki e m b e k i
+embeki  e m b e k i
 embestida  e m b e s t i d a
 embestido  e m b e s t i d o
 emblema  e m b l e m a
@@ -10258,9 +10258,9 @@ fugó  f u g o
 fui  f w i
 fuimos  f w i m o s
 fujimori  f u h i m o r i
-fujisaki f u h i s a k i
+fujisaki  f u h i s a k i
 fukia  f u k y a
-fukuoka f u k w o k a
+fukuoka  f u k w o k a
 fulgencio  f u l h e n z y o
 fulminante  f u l m i n a n t e
 fuma  f u m a
@@ -10572,7 +10572,7 @@ gina  h i n a
 ginebra  h i n e b r a
 ginecólogos  h i n e k o l o g o s 
 gingrich  h i n g r i ch
-ginseki h i n s e k i
+ginseki  h i n s e k i
 giovanni  h y o b a n n i
 gira  h i r a
 giraldo  h i r a l d o
@@ -10983,7 +10983,7 @@ haitiano  a i t y a n o
 haitianos  a i t y a n o s
 haití  a i t i 
 hakaam a k a a m
-hake a k e
+hake  a k e
 hal  a l
 halagüeñas  a l a g w e gn a s 
 halcones  a l k o n e s
@@ -11082,7 +11082,7 @@ helicópteros  e l i k o p t e r o s
 helms  e l m s
 helmsburton  e l m s b u r t o n
 helmut  e l m u t
-helsinki e l s i n k i
+helsinki  e l s i n k i
 helvético  e l b e t i k o 
 hemiciclo  e m i z i k l o
 hemisferio  e m i s f e r y o
@@ -12582,7 +12582,7 @@ izquierdista  i z k y e r d i s t a
 izquierdistas  i z k y e r d i s t a s
 izquierdo  i z k y e r d o
 iztapalapa  i z t a p a l a p a
-iñaki i gn a k i
+iñaki  i gn a k i
 j j
 ja  h a
 jabonerías  h a b o n e r i a s 
@@ -12602,7 +12602,7 @@ jacumba  h a k u m b a
 jagmetti  h a g m e t t i
 jaime  h a i m e
 jakarta  h a k a r t a
-jake h a k e
+jake  h a k e
 jalapa  h a l a p a
 jalisciense  h a l i s z y e n s e
 jalisco  h a l i s k o
@@ -12857,14 +12857,14 @@ jürgen  h r h e n
 kabila  k a b i l a
 kabul  k a b u l
 kabun  k a b u n
-kaczynski k a k z i n s k i
+kaczynski  k a k z i n s k i
 kadafi  k a d a f i
 kahama  k a a m a
 kahijama  k a i h a m a
 kai  k a i
 kajiyama  k a h i y a m a
 kalkilia  k a l k i l y a
-kamtchaka k a m t ch a k a
+kamtchaka  k a m t ch a k a
 kangafui  k a n g a f w i
 kansas  k a n s a s
 kansi  k a n s i
@@ -13281,7 +13281,7 @@ ligera  l i h e r a
 ligeramente  l i h e r a m e n t e
 ligeras  l i h e r a s
 ligero  l i h e r o
-like l i k e
+like  l i k e
 likud  l i k u d
 lili  l i l i
 lily  l i l i
@@ -13590,7 +13590,7 @@ lujo  l u h o
 lujos  l u h o s
 lujosa  l u h o s a
 lujoso  l u h o s o
-luke l u k e
+luke  l u k e
 lukin  l u k i n
 lulac  l u l a k
 lumbre  l u m b r e
@@ -13605,7 +13605,7 @@ lunático  l u n a t i k o
 lupa  l u p a
 lupescu  l u p e s k u
 lupita  l u p i t a
-lusaka l u s a k a
+lusaka  l u s a k a
 lustros  l u s t r o s
 luther  l u t e r
 luz  l u z
@@ -14200,7 +14200,7 @@ mejoría  m e h o r i a
 mejorías  m e h o r i a s 
 mejía  m e h i a 
 mejías  m e h i a s 
-meki m e k i
+meki  m e k i
 melbourne  m e l b o u r n e
 melchor  m e l ch o r
 melero  m e l e r o
@@ -14388,7 +14388,7 @@ migratorios  m i g r a t o r y o s
 miguel  m i g e l
 miguelito  m i g e l i t o
 mijail  m i h a i l
-mike m i k e
+mike  m i k e
 mikey  m i k e i
 mikhail  m i k a i l
 mil  m i l
@@ -14797,7 +14797,7 @@ mueven  m w e b e n
 mugen  m u h e n
 mujer  m u h e r
 mujeres  m u h e r e s
-mukuoko m u k w o k o
+mukuoko  m u k w o k o
 muleta  m u l e t a
 muletear  m u l e t e a r
 muller  m u ll e r
@@ -14968,7 +14968,7 @@ nadando  n a d a n d o
 nadar  n a d a r
 nadie  n a d y e
 nadó  n a d o 
-nagasaki n a g a s a k i
+nagasaki  n a g a s a k i
 nagoya  n a g o y a
 namba  n a m b a
 nancy  n a n z i
@@ -15172,7 +15172,7 @@ nieve  n y e b e
 nieves  n y e b e s
 nig  n i g
 nigeria  n i h e r y a
-nikki n i k k i
+nikki  n i k k i
 nilda  n i l d a
 nilo  n i l o
 ningu  n i n g u
@@ -15842,7 +15842,7 @@ orígenes  o r i h e n e s
 orín  o r i n 
 os  o s
 osa  o s a
-osaka o s a k a
+osaka  o s a k a
 osamenta  o s a m e n t a
 oscar  o s k a r
 oscila  o s z i l a
@@ -16224,7 +16224,7 @@ pasarín  p a s a r i n
 pasas  p a s a s
 pasatiempos  p a s a t y e m p o s
 pascal  p a s k a l
-paschenko p a s ch e n k o
+paschenko  p a s ch e n k o
 pasco  p a s k o
 pascua  p a s k w a
 pase  p a s e
@@ -16258,7 +16258,7 @@ pat  p a t
 pata  p a t a
 patada  p a t a d a
 patagonia  p a t a g o n y a
-pataki p a t a k i
+pataki  p a t a k i
 patatas  p a t a t a s
 patear  p a t e a r
 patente  p a t e n t e
@@ -16501,7 +16501,7 @@ peregrinaciones  p e r e g r i n a z y o n e s
 peregrinos  p e r e g r i n o s
 perera  p e r e r a
 peres  p e r e s
-perestroika p e r e s t r o i k a
+perestroika  p e r e s t r o i k a
 perez  p e r e z
 pereza  p e r e z a
 perfeccionado  p e r f e k z y o n a d o
@@ -16702,7 +16702,7 @@ petroleras  p e t r o l e r a s
 petrolero  p e t r o l e r o
 petroleros  p e t r o l e r o s
 petrosani  p e t r o s a n i
-petroski p e t r o s k i
+petroski  p e t r o s k i
 petrólea  p e t r o l e a 
 petróleo  p e t r o l e o 
 petróleos  p e t r o l e o s 
@@ -17048,7 +17048,7 @@ ponga  p o n g a
 pongan  p o n g a n
 pongas  p o n g a s
 pongo  p o n g o
-poniatowska p o n y a t o u s k a
+poniatowska  p o n y a t o u s k a
 poniendo  p o n y e n d o
 ponlo  p o n l o
 ponte  p o n t e
@@ -19807,7 +19807,7 @@ rubia  rr u b y a
 rubias  rr u b y a s
 rubiel  rr u b y e l
 rubin  rr u b i n
-rubinski rr u b i n s k i
+rubinski  rr u b i n s k i
 rubio  rr u b y o
 rubios  rr u b y o s
 rublos  rr u b l o s
@@ -20241,11 +20241,11 @@ seguídamente  s e g i d a m e n t e
 según  s e g u n 
 seicientos  s e i z y e n t o s
 seinfeld  s e i n f e l d
-seiroku s e i r o k u
+seiroku  s e i r o k u
 seis  s e i s
 seiscientas  s e i s z y e n t a s
 seiscientos  s e i s z y e n t o s
-seko s e k o
+seko  s e k o
 selad  s e l a d
 sele  s e l e
 seleccionados  s e l e k z y o n a d o s
@@ -20653,7 +20653,7 @@ sirvienta  s i r b y e n t a
 sirviera  s i r b y e r a
 sirvió  s i r b y o 
 sisita  s i s i t a
-sisko s i s k o
+sisko  s i s k o
 sismo  s i s m o
 sismológico  s i s m o l o h i k o 
 sismos  s i s m o s
@@ -20941,7 +20941,7 @@ speed  s p e e d
 spektr s p e k t r
 spencer  s p e n z e r
 spicer  s p i z e r
-spike s p i k e
+spike  s p i k e
 spiritus  s p i r i t u s
 spokane  s p o k a n e
 sporting  s p o r t i n g
@@ -21168,7 +21168,7 @@ sujetar  s u h e t a r
 sujetas  s u h e t a s
 sujeto  s u h e t o
 sujetos  s u h e t o s
-suko s u k o
+suko  s u k o
 sula  s u l a
 suleiman  s u l e i m a n
 suleyman  s u l e i m a n
@@ -23124,7 +23124,7 @@ vocero  b o z e r o
 voceros  b o z e r o s
 voces  b o z e s
 você b o k
-vodka b o d k a
+vodka  b o d k a
 volando  b o l a n d o
 volante  b o l a n t e
 volantes  b o l a n t e s
