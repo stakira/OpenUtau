@@ -137,7 +137,7 @@ namespace OpenUtau.Plugin.Builtin {
                         // like [V C1] [C1] [C2 ..]
                         TryAddPhoneme(phonemes, syllable.tone, cc[i], $"{cc[i]} -");
                     }
-                } else {
+                } else if (!syllable.IsStartingCVWithMoreThanOneConsonant){
                     // like [V C1] [C1 C2]  [C2 ..] or like [V C1] [C1 -] [C3 ..]
                     TryAddPhoneme(phonemes, syllable.tone, cc1, cc[i], $"{cc[i]} -");
                 }
