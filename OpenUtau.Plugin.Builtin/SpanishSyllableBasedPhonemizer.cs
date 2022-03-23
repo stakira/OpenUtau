@@ -1,9 +1,12 @@
+using System;
 using System.Collections.Generic;
+using System.Text;
+using OpenUtau.Api;
 using System.Linq;
-using OpenUtau.Plugin.Builtin;
+using Serilog;
 
-namespace OpenUtau.Api
-{ [Phonemizer("Spanish Syllable-Based Phonemizer", "ES SYL", "Lotte V")]
+namespace OpenUtau.Plugin.Builtin {
+  [Phonemizer("Spanish Syllable-Based Phonemizer", "ES SYL", "Lotte V")]
     public class SpanishSyllableBasedPhonemizer : SyllableBasedPhonemizer {
 
         /// <summary>
