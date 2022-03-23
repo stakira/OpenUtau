@@ -58,8 +58,7 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void OnNext(UCommand cmd, bool isUndo) {
-            if (cmd is ChangeExpressionListNotification ||
-                cmd is LoadProjectNotification ||
+            if (cmd is LoadProjectNotification ||
                 cmd is LoadPartNotification ||
                 cmd is ConfigureExpressionsCommand) {
                 OnListChange();

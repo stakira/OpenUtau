@@ -62,7 +62,7 @@ namespace OpenUtau.Core.Render {
         [DllImport("worldline")]
         static extern int Resample(IntPtr request, ref IntPtr y);
 
-        public static float[] Resample(ResamplerItem item, ILogger logger) {
+        public static float[] Resample(ResamplerItem item) {
             int fs;
             double[] sample;
             using (var waveStream = Wave.OpenFile(item.inputTemp)) {

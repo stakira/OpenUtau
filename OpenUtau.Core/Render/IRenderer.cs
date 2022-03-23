@@ -1,11 +1,12 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core.Render {
     /// <summary>
     /// Render result of a phrase.
     /// </summary>
-    class RenderResult {
+    public class RenderResult {
         public float[] samples;
 
         /// <summary>
@@ -27,7 +28,8 @@ namespace OpenUtau.Core.Render {
     /// <summary>
     /// Interface of phrase-based renderer.
     /// </summary>
-    interface IRenderer {
+    public interface IRenderer {
+        bool SupportsExpression(UExpressionDescriptor descriptor);
         RenderResult Layout(RenderPhrase phrase);
         Task<RenderResult> Render(RenderPhrase phrase, Progress progress, CancellationTokenSource cancellation, bool isPreRender = false);
     }

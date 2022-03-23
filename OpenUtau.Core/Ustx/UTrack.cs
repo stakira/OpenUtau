@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
 using OpenUtau.Core.Render;
@@ -20,7 +21,7 @@ namespace OpenUtau.Core.Ustx {
                     singer_ = value;
                     Phonemizer.SetSinger(value);
                     VoiceColorExp = null;
-                    if (singer_ == null) {
+                    if (singer_ == null || !singer_.Found) {
                         Renderer = null;
                     } else {
                         switch (value.SingerType) {
@@ -42,7 +43,7 @@ namespace OpenUtau.Core.Ustx {
         }
         [YamlIgnore] public Phonemizer Phonemizer { get; set; } = PhonemizerFactory.Get(typeof(DefaultPhonemizer)).Create();
         [YamlIgnore] public string PhonemizerTag => Phonemizer.Tag;
-        [YamlIgnore] internal IRenderer Renderer { get; set; }
+        [YamlIgnore] public IRenderer Renderer { get; set; }
 
         [YamlIgnore] public string SingerName => Singer != null ? Singer.DisplayName : "[No Singer]";
         [YamlIgnore] public int TrackNo { set; get; }

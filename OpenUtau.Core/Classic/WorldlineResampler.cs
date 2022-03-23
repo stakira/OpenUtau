@@ -17,7 +17,7 @@ namespace OpenUtau.Classic {
         }
 
         public float[] DoResampler(ResamplerItem item, ILogger logger) {
-            return Worldline.Resample(item, logger);
+            return Worldline.Resample(item);
         }
 
         public string DoResamplerReturnsFile(ResamplerItem item, ILogger logger) {

@@ -7,12 +7,27 @@ using K4os.Hash.xxHash;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core.Render {
+    public class RenderNote {
+        public readonly string lyric;
+        public readonly int position;
+        public readonly int duration;
+        public readonly int tone;
+
+        public RenderNote(UNote note) {
+            lyric = note.lyric;
+            position = note.position;
+            duration = note.duration;
+            tone = note.tone;
+        }
+    }
+
     public class RenderPhone {
         public readonly int position;
         public readonly int duration;
         public readonly int leading;
         public readonly string phoneme;
         public readonly int tone;
+        public readonly int noteIndex;
 
         // classic args
         public readonly string resampler;
@@ -84,29 +99,34 @@ namespace OpenUtau.Core.Render {
         public readonly int position;
         public readonly double tempo;
         public readonly double tickToMs;
+        public readonly RenderNote[] notes;
         public readonly RenderPhone[] phones;
         public readonly float[] pitches;
         public readonly float[] dynamics;
+        public readonly float[] toneShift;
         public readonly uint hash;
 
         internal readonly IRenderer renderer;
 
         internal RenderPhrase(UProject project, UTrack track, UVoicePart part, IEnumerable<UPhoneme> phonemes) {
-            var notes = new List<UNote>();
-            notes.Add(phonemes.First().Parent);
+            var uNotes = new List<UNote>();
+            uNotes.Add(phonemes.First().Parent);
             var endNote = phonemes.Last().Parent;
             while (endNote.Next != null && endNote.Next.Extends != null) {
                 endNote = endNote.Next;
             }
-            while (notes.Last() != endNote) {
-                notes.Add(notes.Last().Next);
+            while (uNotes.Last() != endNote) {
+                uNotes.Add(uNotes.Last().Next);
             }
-            var tail = notes.Last();
+            var tail = uNotes.Last();
             var next = tail.Next;
             while (next != null && next.Extends == tail) {
-                notes.Add(next);
+                uNotes.Add(next);
                 next = next.Next;
             }
+            notes = uNotes
+                .Select(n => new RenderNote(n))
+                .ToArray();
             phones = phonemes
                 .Select(p => new RenderPhone(project, track, part, p.Parent, p))
                 .ToArray();
@@ -122,7 +142,7 @@ namespace OpenUtau.Core.Render {
             int pitchStart = phones[0].position - phones[0].leading;
             pitches = new float[(phones.Last().position + phones.Last().duration - pitchStart) / pitchInterval + 1];
             int index = 0;
-            foreach (var note in notes) {
+            foreach (var note in uNotes) {
                 while (pitchStart + index * pitchInterval < note.End && index < pitches.Length) {
                     pitches[index] = note.tone * 100;
                     index++;
@@ -132,7 +152,7 @@ namespace OpenUtau.Core.Render {
                 pitches[index] = pitches[index - 1];
                 index++;
             }
-            foreach (var note in notes) {
+            foreach (var note in uNotes) {
                 if (note.vibrato.length <= 0) {
                     continue;
                 }
@@ -145,7 +165,7 @@ namespace OpenUtau.Core.Render {
                     pitches[i] = point.Y * 100;
                 }
             }
-            foreach (var note in notes) {
+            foreach (var note in uNotes) {
                 var pitchPoints = note.pitch.data
                     .Select(point => new PitchPoint(
                         project.MillisecondToTick(point.X) + note.position,
@@ -156,7 +176,7 @@ namespace OpenUtau.Core.Render {
                     pitchPoints.Add(new PitchPoint(note.position, note.tone * 100));
                     pitchPoints.Add(new PitchPoint(note.End, note.tone * 100));
                 }
-                if (note == notes.First() && pitchPoints[0].X > pitchStart) {
+                if (note == uNotes.First() && pitchPoints[0].X > pitchStart) {
                     pitchPoints.Insert(0, new PitchPoint(pitchStart, pitchPoints[0].Y));
                 } else if (pitchPoints[0].X > note.position) {
                     pitchPoints.Insert(0, new PitchPoint(note.position, pitchPoints[0].Y));
@@ -199,6 +219,14 @@ namespace OpenUtau.Core.Render {
                 }
             }
 
+            curve = part.curves.FirstOrDefault(c => c.abbr == Format.Ustx.SHFC);
+            if (curve != null) {
+                toneShift = new float[pitches.Length];
+                for (int i = 0; i < toneShift.Length; ++i) {
+                    toneShift[i] = curve.Sample(pitchStart + i * pitchInterval);
+                }
+            }
+
             hash = Hash();
         }
 
@@ -213,6 +241,16 @@ namespace OpenUtau.Core.Render {
                     }
                     foreach (var pitch in pitches) {
                         writer.Write(pitch);
+                    }
+                    if (dynamics != null) {
+                        foreach (var dynamic in dynamics) {
+                            writer.Write(dynamic);
+                        }
+                    }
+                    if (toneShift != null) {
+                        foreach (var shift in toneShift) {
+                            writer.Write(shift);
+                        }
                     }
                     return XXH32.DigestOf(stream.ToArray());
                 }

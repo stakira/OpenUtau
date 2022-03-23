@@ -45,7 +45,7 @@ for:
     - python appveyor.py
 deploy:
   release: OpenUtau-Latest
-  description: v$(APPVEYOR_BUILD_VERSION)
+  description: v$(APPVEYOR_BUILD_VERSION) $(APPVEYOR_REPO_COMMIT_TIMESTAMP)
   provider: GitHub
   auth_token:
     secure: VoTH2ml/pRgjLSGhfPO+NZfCoFzFcfrQjEIl/5+0UufeW6mEvccfwvef3gOaD2ke

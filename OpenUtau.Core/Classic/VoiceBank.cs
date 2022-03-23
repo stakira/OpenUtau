@@ -15,7 +15,7 @@ namespace OpenUtau.Classic {
         public string Version;
         public string OtherInfo;
         public Encoding TextFileEncoding;
-        public USingerType SingerType;
+        public USingerType SingerType = USingerType.Classic;
         public List<OtoSet> OtoSets = new List<OtoSet>();
         public List<Subbank> Subbanks = new List<Subbank>();
         public string Id;

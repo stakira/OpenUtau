@@ -32,17 +32,7 @@ namespace OpenUtau.Core.Ustx {
 
         [YamlIgnore] public string FilePath { get; set; }
         [YamlIgnore] public bool Saved { get; set; } = false;
-
-        [YamlIgnore]
-        public int EndTick {
-            get {
-                int lastTick = 0;
-                foreach (var part in parts) {
-                    lastTick = Math.Max(lastTick, part.EndTick);
-                }
-                return lastTick;
-            }
-        }
+        [YamlIgnore] public int EndTick => parts.Count == 0 ? 0 : parts.Max(p => p.EndTick);
         [YamlIgnore] public int BarTicks => resolution * 4 * beatPerBar / beatUnit;
 
         public void RegisterExpression(UExpressionDescriptor descriptor) {
@@ -63,7 +53,6 @@ namespace OpenUtau.Core.Ustx {
             note.tone = noteNum;
             note.position = posTick;
             note.duration = durTick;
-            note.pitch.data[1].X = (float)Math.Min(25, DocManager.Inst.Project.TickToMillisecond(note.duration) / 2);
             return note;
         }
 

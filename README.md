@@ -1,4 +1,4 @@
-
+﻿
 # OpenUtau
 
 OpenUtau is an open source editing environment for UTAU community with modern user experience.
@@ -19,6 +19,8 @@ It is **strongly recommend** to go through a few Wiki pages before use:
 - [Resamplers](https://github.com/stakira/OpenUtau/wiki/Resamplers)
 - [Phonemizers](https://github.com/stakira/OpenUtau/wiki/Phonemizers)
 - [FAQ](https://github.com/stakira/OpenUtau/wiki/FAQ)
+
+- [中文使用说明](https://opensynth.miraheze.org/wiki/OpenUTAU/%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95)
 
 ## How to Contribute
 
