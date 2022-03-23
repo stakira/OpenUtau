@@ -89,6 +89,8 @@ namespace OpenUtau.Classic {
             var enuconfigFile = Path.Combine(dir, kEnuconfigYaml);
             if (File.Exists(enuconfigFile)) {
                 voicebank.SingerType = USingerType.Enunu;
+            } else {
+                voicebank.SingerType = USingerType.Classic;
             }
             Encoding encoding = Encoding.GetEncoding("shift_jis");
             if (!string.IsNullOrEmpty(bankConfig?.TextFileEncoding)) {

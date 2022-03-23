@@ -8,10 +8,20 @@ using System.Threading;
 using System.Threading.Tasks;
 using NAudio.Wave;
 using OpenUtau.Core.Format;
+using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Core.Render {
     class EnunuRenderer : IRenderer {
+        static readonly HashSet<string> supportedExp = new HashSet<string>(){
+            Format.Ustx.DYN,
+            Format.Ustx.PITD,
+        };
+
+        public bool SupportsExpression(UExpressionDescriptor descriptor) {
+            return supportedExp.Contains(descriptor.abbr);
+        }
+
         static readonly Encoding ShiftJIS = Encoding.GetEncoding("shift_jis");
         static readonly object lockObj = new object();
 

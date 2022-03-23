@@ -53,10 +53,6 @@ namespace OpenUtau.Core {
         public override string ToString() => "Redraw Notes";
     }
 
-    public class ChangeExpressionListNotification : UNotification {
-        public override string ToString() => "Change expression list";
-    }
-
     public class SelectExpressionNotification : UNotification {
         public string ExpKey;
         public bool UpdateShadow;

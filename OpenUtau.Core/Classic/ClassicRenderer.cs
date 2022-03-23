@@ -4,9 +4,28 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using OpenUtau.Core.Render;
+using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Classic {
     class ClassicRenderer : IRenderer {
+        static readonly HashSet<string> supportedExp = new HashSet<string>(){
+            Core.Format.Ustx.DYN,
+            Core.Format.Ustx.PITD,
+            Core.Format.Ustx.CLR,
+            Core.Format.Ustx.SHFT,
+            Core.Format.Ustx.ENG,
+            Core.Format.Ustx.VEL,
+            Core.Format.Ustx.VOL,
+            Core.Format.Ustx.ATK,
+            Core.Format.Ustx.DEC,
+            Core.Format.Ustx.MOD,
+            Core.Format.Ustx.ALT,
+        };
+
+        public bool SupportsExpression(UExpressionDescriptor descriptor) {
+            return descriptor.isFlag || supportedExp.Contains(descriptor.abbr);
+        }
+
         public RenderResult Layout(RenderPhrase phrase) {
             var firstPhone = phrase.phones.First();
             var lastPhone = phrase.phones.Last();
