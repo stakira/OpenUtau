@@ -13,6 +13,7 @@ namespace OpenUtau.Api
         /// Supports both CVVC and VCV if the voicebank has it.
         /// In the future, I will add ValidateAlias configuration for wider voicebank support. Please be patient!
         /// For now, typing ex. [n i n y o] (in the brackets) after the lyric "niño" should work.
+        /// Same with typing [s] instead of [z] for voicebanks with "seseo" (Latin-American) accents.
         ///</summary>
 
         private readonly string[] vowels = "a,e,i,o,u".Split(',');
