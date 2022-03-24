@@ -49,6 +49,7 @@ namespace OpenUtau.Classic {
                 Tuple.Create(source + ".frc", sourceTemp + ".frc"),
                 Tuple.Create(source + ".pmk", sourceTemp + ".pmk"),
                 Tuple.Create(source + ".vs4ufrq", sourceTemp + ".vs4ufrq"),
+                Tuple.Create(noExt + ".rudb", tempNoExt + ".rudb"),
             };
         }
 
