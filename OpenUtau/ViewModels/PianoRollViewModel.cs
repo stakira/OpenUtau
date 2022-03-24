@@ -38,27 +38,27 @@ namespace OpenUtau.App.ViewModels {
 
             PitEaseInOutCommand = ReactiveCommand.Create<PitchPointHitInfo>(info => {
                 DocManager.Inst.StartUndoGroup();
-                DocManager.Inst.ExecuteCmd(new ChangePitchPointShapeCommand(info.Note.pitch.data[info.Index], PitchPointShape.io));
+                DocManager.Inst.ExecuteCmd(new ChangePitchPointShapeCommand(NotesViewModel.Part, info.Note.pitch.data[info.Index], PitchPointShape.io));
                 DocManager.Inst.EndUndoGroup();
             });
             PitLinearCommand = ReactiveCommand.Create<PitchPointHitInfo>(info => {
                 DocManager.Inst.StartUndoGroup();
-                DocManager.Inst.ExecuteCmd(new ChangePitchPointShapeCommand(info.Note.pitch.data[info.Index], PitchPointShape.l));
+                DocManager.Inst.ExecuteCmd(new ChangePitchPointShapeCommand(NotesViewModel.Part, info.Note.pitch.data[info.Index], PitchPointShape.l));
                 DocManager.Inst.EndUndoGroup();
             });
             PitEaseInCommand = ReactiveCommand.Create<PitchPointHitInfo>(info => {
                 DocManager.Inst.StartUndoGroup();
-                DocManager.Inst.ExecuteCmd(new ChangePitchPointShapeCommand(info.Note.pitch.data[info.Index], PitchPointShape.i));
+                DocManager.Inst.ExecuteCmd(new ChangePitchPointShapeCommand(NotesViewModel.Part, info.Note.pitch.data[info.Index], PitchPointShape.i));
                 DocManager.Inst.EndUndoGroup();
             });
             PitEaseOutCommand = ReactiveCommand.Create<PitchPointHitInfo>(info => {
                 DocManager.Inst.StartUndoGroup();
-                DocManager.Inst.ExecuteCmd(new ChangePitchPointShapeCommand(info.Note.pitch.data[info.Index], PitchPointShape.o));
+                DocManager.Inst.ExecuteCmd(new ChangePitchPointShapeCommand(NotesViewModel.Part, info.Note.pitch.data[info.Index], PitchPointShape.o));
                 DocManager.Inst.EndUndoGroup();
             });
             PitSnapCommand = ReactiveCommand.Create<PitchPointHitInfo>(info => {
                 DocManager.Inst.StartUndoGroup();
-                DocManager.Inst.ExecuteCmd(new SnapPitchPointCommand(info.Note));
+                DocManager.Inst.ExecuteCmd(new SnapPitchPointCommand(NotesViewModel.Part, info.Note));
                 DocManager.Inst.EndUndoGroup();
             });
             PitDelCommand = ReactiveCommand.Create<PitchPointHitInfo>(info => {
@@ -68,7 +68,7 @@ namespace OpenUtau.App.ViewModels {
             });
             PitAddCommand = ReactiveCommand.Create<PitchPointHitInfo>(info => {
                 DocManager.Inst.StartUndoGroup();
-                DocManager.Inst.ExecuteCmd(new AddPitchPointCommand(info.Note, new PitchPoint(info.X, info.Y), info.Index + 1));
+                DocManager.Inst.ExecuteCmd(new AddPitchPointCommand(NotesViewModel.Part, info.Note, new PitchPoint(info.X, info.Y), info.Index + 1));
                 DocManager.Inst.EndUndoGroup();
             });
 

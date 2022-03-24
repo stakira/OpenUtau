@@ -13,7 +13,7 @@ namespace OpenUtau.Core.Editing {
                 return;
             }
             var lyrics = notes.Select(note => Transform(note.lyric)).ToArray();
-            docManager.StartUndoGroup();
+            docManager.StartUndoGroup(true);
             docManager.ExecuteCmd(new ChangeNoteLyricCommand(part, notes, lyrics));
             docManager.EndUndoGroup();
         }

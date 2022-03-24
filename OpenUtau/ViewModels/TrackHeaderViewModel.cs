@@ -138,8 +138,8 @@ namespace OpenUtau.App.ViewModels {
                 return;
             }
             try {
-                using (var memoryStream = new MemoryStream(singer.AvatarData)) {
-                    Avatar = Bitmap.DecodeToWidth(memoryStream, 80);
+                using (var stream = new MemoryStream(singer.AvatarData)) {
+                    Avatar = new Bitmap(stream);
                 }
             } catch (Exception e) {
                 Avatar = null;

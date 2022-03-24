@@ -12,7 +12,7 @@ using Serilog;
 
 namespace OpenUtau.Core {
     public struct ValidateOptions {
-        public UPart part;
+        public UPart Part;
         public bool SkipPhonemizer;
         public bool SkipPhoneme;
     }
@@ -191,15 +191,17 @@ namespace OpenUtau.Core {
                 Log.Information($"ExecuteCmd {cmd}");
             }
             Publish(cmd);
-            Project.Validate(cmd.ValidateOptions);
+            if (!undoGroup.DeferValidate) {
+                Project.Validate(cmd.ValidateOptions);
+            }
         }
 
-        public void StartUndoGroup() {
+        public void StartUndoGroup(bool deferValidate = false) {
             if (undoGroup != null) {
                 Log.Error("undoGroup already started");
                 EndUndoGroup();
             }
-            undoGroup = new UCommandGroup();
+            undoGroup = new UCommandGroup(deferValidate);
             Log.Information("undoGroup started");
         }
 
@@ -214,6 +216,9 @@ namespace OpenUtau.Core {
             }
             while (undoQueue.Count > Util.Preferences.Default.UndoLimit) {
                 undoQueue.RemoveFromFront();
+            }
+            if (undoGroup.DeferValidate) {
+                Project.ValidateFull();
             }
             undoGroup.Merge();
             undoGroup = null;

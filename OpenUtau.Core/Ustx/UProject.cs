@@ -43,8 +43,8 @@ namespace OpenUtau.Core.Ustx {
 
         public UNote CreateNote() {
             UNote note = UNote.Create();
-            note.pitch.AddPoint(new PitchPoint(-40, 0));
-            note.pitch.AddPoint(new PitchPoint(40, 0));
+            note.pitch.AddPoint(new PitchPoint(-60, 0));
+            note.pitch.AddPoint(new PitchPoint(60, 0));
             return note;
         }
 
@@ -118,13 +118,13 @@ namespace OpenUtau.Core.Ustx {
         }
 
         public void Validate(ValidateOptions options) {
-            if (options.part == null) {
+            if (options.Part == null) {
                 foreach (var track in tracks) {
                     track.Validate(options, this);
                 }
             }
             foreach (var part in parts) {
-                if (options.part == null || options.part == part) {
+                if (options.Part == null || options.Part == part) {
                     part.Validate(options, this, tracks[part.trackNo]);
                 }
             }

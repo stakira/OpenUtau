@@ -380,7 +380,8 @@ namespace OpenUtau.App.Views {
             if (!onPoint) {
                 pitchPoint = new PitchPoint(x, y);
                 index++;
-                DocManager.Inst.ExecuteCmd(new AddPitchPointCommand(note, pitchPoint, index));
+                DocManager.Inst.ExecuteCmd(new AddPitchPointCommand(
+                    vm.NotesViewModel.Part, note, pitchPoint, index));
             }
         }
         public override void End(IPointer pointer, Point point) {
@@ -506,7 +507,7 @@ namespace OpenUtau.App.Views {
                 float value = hit.phoneme.GetExpression(notesVm.Project, track, key).Item1;
                 if ((int)newValue != (int)value) {
                     DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(
-                        notesVm.Project, track, hit.phoneme, key, (int)newValue));
+                        notesVm.Project, track, notesVm.Part, hit.phoneme, key, (int)newValue));
                 }
             }
         }
@@ -567,7 +568,7 @@ namespace OpenUtau.App.Views {
                 float value = hit.phoneme.GetExpression(notesVm.Project, track, key).Item1;
                 if (value != descriptor.defaultValue) {
                     DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(
-                        notesVm.Project, track, hit.phoneme, key, descriptor.defaultValue));
+                        notesVm.Project, track, notesVm.Part, hit.phoneme, key, descriptor.defaultValue));
                 }
             }
         }

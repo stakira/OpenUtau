@@ -279,6 +279,9 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void PasteParts() {
+            if (DocManager.Inst.PartsClipboard == null || DocManager.Inst.PartsClipboard.Count == 0) {
+                return;
+            }
             var parts = DocManager.Inst.PartsClipboard
                 .Select(part => part.Clone())
                 .OrderBy(part => part.trackNo).ToList();

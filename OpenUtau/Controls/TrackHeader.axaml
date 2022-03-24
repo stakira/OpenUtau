@@ -14,11 +14,11 @@
     </Style>
   </UserControl.Styles>
   <Border Margin="1,1,1,1" BorderThickness="1" BorderBrush="{DynamicResource NeutralAccentBrushSemi}" CornerRadius="2">
-    <Grid Background="Transparent" RowDefinitions="18,18,18,*" ColumnDefinitions="Auto,1,*,18" VerticalAlignment="Top" ClipToBounds="True">
+    <Grid Background="Transparent" RowDefinitions="20,20,20,*" ColumnDefinitions="Auto,1,*,20" VerticalAlignment="Top" ClipToBounds="True">
       <Grid Grid.Row="0" Grid.RowSpan="4" Grid.Column="0"  VerticalAlignment="Top">
-        <Border BorderThickness="0,0,1,1" Height="81" Width="81" VerticalAlignment="Top" CornerRadius="0,0,2,0"
+        <Border BorderThickness="0,0,1,1" Height="61" Width="61" VerticalAlignment="Top" CornerRadius="0,0,2,0"
                 BorderBrush="{DynamicResource NeutralAccentBrushSemi}" ClipToBounds="True">
-          <Image Source="{Binding Avatar}" Stretch="None" VerticalAlignment="Top" ToolTip.Tip="{Binding Singer}"/>
+          <Image Source="{Binding Avatar}" Stretch="UniformToFill" VerticalAlignment="Top" ToolTip.Tip="{Binding Singer}"/>
         </Border>
         <Border Background="{DynamicResource NeutralAccentBrushSemi}" Height="16" Width="22" CornerRadius="1,0,2,0"
                 HorizontalAlignment="Left" VerticalAlignment="Top">
@@ -26,7 +26,7 @@
                      Text="{Binding TrackNo}" Foreground="White" VerticalAlignment="Center"/>
         </Border>
       </Grid>
-      <Button Classes="clear" Grid.Row="0" Grid.Column="2" Margin="1" Padding="2,1,0,0" Height="16"
+      <Button Classes="clear" Grid.Row="0" Grid.Column="2" Margin="1" Padding="2,1,0,0" Height="18"
               HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Focusable="False"
               Content="{Binding Singer, TargetNullValue={StaticResource tracks.selectsinger}}" Click="SingerButtonClicked" ContextRequested="SingerButtonContextRequested"
               ToolTip.Tip="{Binding Singer}">
@@ -42,7 +42,7 @@
           </ContextMenu>
         </Button.ContextMenu>
       </Button>
-      <Button Classes="clear" Grid.Row="1" Grid.Column="2" Margin="1" Padding="2,1,0,0" Height="16"
+      <Button Classes="clear" Grid.Row="1" Grid.Column="2" Margin="1" Padding="2,1,0,0" Height="18"
               HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Focusable="False"
               Content="{Binding PhonemizerTag}" Click="PhonemizerButtonClicked" ContextRequested="PhonemizerButtonContextRequested"
               ToolTip.Tip="{Binding Phonemizer}">
@@ -58,12 +58,12 @@
           </ContextMenu>
         </Button.ContextMenu>
       </Button>
-      <ToggleButton Grid.Row="0" Grid.Column="3" Margin="1" Padding="0" Height="16"
+      <ToggleButton Grid.Row="0" Grid.Column="3" Margin="1" Padding="0" Height="18"
                     HorizontalAlignment="Stretch"
                     IsChecked="{Binding Mute}">
         <TextBlock Text="M" TextAlignment="Center"/>
       </ToggleButton>
-      <ToggleButton Grid.Row="1" Grid.Column="3" Margin="1" Padding="0" Height="16"
+      <ToggleButton Grid.Row="1" Grid.Column="3" Margin="1" Padding="0" Height="18"
                     HorizontalAlignment="Stretch"
                     IsChecked="{Binding Solo, Mode=OneWay}" Command="{Binding ToggleSolo}">
         <TextBlock Text="S" TextAlignment="Center"/>
