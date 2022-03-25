@@ -173,7 +173,8 @@ namespace OpenUtau.Plugin.Builtin {
                 if (i + 1 < lastC)
                 {
                     var cc2 = $"{cc[i + 1]} {cc[i + 2]}";
-                    if (!HasOto(cc2, syllable.tone)) {
+                    if (!HasOto(cc2, syllable.tone))
+                    {
                         cc2 = $"{cc[i + 1]}{cc[i + 2]}";
                     }
                     if (HasOto(cc1, syllable.tone) && HasOto(cc2, syllable.tone))
