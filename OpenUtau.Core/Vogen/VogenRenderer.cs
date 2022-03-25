@@ -186,11 +186,11 @@ namespace OpenUtau.Core.Vogen {
                 var voicing = DownSampleCurve(phrase.voicing, 1.0, totalFrames, headFrames, tailFrames, phrase.tickToMs, x => x);
                 var gender = DownSampleCurve(phrase.gender, 0.5, totalFrames, headFrames, tailFrames, phrase.tickToMs, x => x);
                 var samples = new double[1 + (int)((f0.Length - 1) * frameMs / 1000.0 * fs)];
-                //World.Synthesis(
-                //    vocoder, out samples,
-                //    sp, ap, fs, fftSize, f0,
-                //    tension, breathiness, voicing, gender);
-                //return samples.Select(f => (float)f).ToArray();
+                World.Synthesis(
+                    vocoder, out samples,
+                    sp, ap, fs, fftSize, f0,
+                    tension, breathiness, voicing, gender);
+                return samples.Select(f => (float)f).ToArray();
                 return Worldline.DecodeAndSynthesis(
                     f0, mgcDouble, bapDouble,
                     fftSize, frameMs, fs);
