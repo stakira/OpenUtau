@@ -21,11 +21,14 @@ namespace OpenUtau.Core.Format {
         public const string GEN = "gen";
         public const string GENC = "genc";
         public const string BRE = "bre";
+        public const string BREC = "brec";
         public const string LPF = "lpf";
         public const string MOD = "mod";
         public const string ALT = "alt";
         public const string SHFT = "shft";
         public const string SHFC = "shfc";
+        public const string TENC = "tenc";
+        public const string VOIC = "voic";
 
         public static readonly string[] required = { DYN, PITD, CLR, ENG, VEL, VOL, ATK, DEC, };
 
@@ -41,11 +44,14 @@ namespace OpenUtau.Core.Format {
             project.RegisterExpression(new UExpressionDescriptor("gender", GEN, -100, 100, 0, "g"));
             project.RegisterExpression(new UExpressionDescriptor("gender (curve)", GENC, -100, 100, 0) { type = UExpressionType.Curve });
             project.RegisterExpression(new UExpressionDescriptor("breath", BRE, 0, 100, 0, "B"));
+            project.RegisterExpression(new UExpressionDescriptor("breathiness (curve)", BREC, -100, 100, 0) { type = UExpressionType.Curve });
             project.RegisterExpression(new UExpressionDescriptor("lowpass", LPF, 0, 100, 0, "H"));
             project.RegisterExpression(new UExpressionDescriptor("modulation", MOD, 0, 100, 0));
             project.RegisterExpression(new UExpressionDescriptor("alternate", ALT, 0, 16, 0));
             project.RegisterExpression(new UExpressionDescriptor("tone shift", SHFT, -36, 36, 0));
             project.RegisterExpression(new UExpressionDescriptor("tone shift (curve)", SHFC, -1200, 1200, 0) { type = UExpressionType.Curve });
+            project.RegisterExpression(new UExpressionDescriptor("tension (curve)", TENC, -100, 100, 0) { type = UExpressionType.Curve });
+            project.RegisterExpression(new UExpressionDescriptor("voicing (curve)", VOIC, 0, 100, 100) { type = UExpressionType.Curve });
         }
 
         public static UProject Create() {

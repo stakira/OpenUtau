@@ -48,6 +48,9 @@ namespace OpenUtau.Classic {
                     if (!cancellation.IsCancellationRequested && !File.Exists(item.outputFile)) {
                         VoicebankFiles.CopySourceTemp(item.inputFile, item.inputTemp);
                         item.resampler.DoResamplerReturnsFile(item, Serilog.Log.Logger);
+                        if (!File.Exists(item.outputFile)) {
+                            throw new InvalidDataException($"{item.resampler.Name} failed to resample \"{item.phone.phoneme}\"");
+                        }
                         VoicebankFiles.CopyBackMetaFiles(item.inputFile, item.inputTemp);
                     }
                     progress.CompleteOne($"Resampling \"{item.phone.phoneme}\"");

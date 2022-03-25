@@ -27,7 +27,10 @@ namespace OpenUtau.Core.Vogen {
             Format.Ustx.DYN,
             Format.Ustx.PITD,
             Format.Ustx.GENC,
+            Format.Ustx.BREC,
             Format.Ustx.SHFC,
+            Format.Ustx.TENC,
+            Format.Ustx.VOIC,
         };
 
         public bool SupportsExpression(UExpressionDescriptor descriptor) {

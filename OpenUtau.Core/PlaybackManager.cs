@@ -130,7 +130,7 @@ namespace OpenUtau.Core {
             var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
             Task.Run(() => {
                 RenderEngine engine = new RenderEngine(project, tick);
-                var result = engine.RenderProject(tick);
+                var result = engine.RenderProject(tick, scheduler);
                 faders = result.Item2;
                 var cancellation = result.Item3;
                 CancelRendering(cancellation);
@@ -138,7 +138,7 @@ namespace OpenUtau.Core {
             }).ContinueWith((task) => {
                 if (task.IsFaulted) {
                     Log.Error(task.Exception, "Failed to render.");
-                    DocManager.Inst.ExecuteCmd(new UserMessageNotification(task.Exception.ToString()));
+                    DocManager.Inst.ExecuteCmd(new UserMessageNotification(task.Exception.Flatten().ToString()));
                     throw task.Exception;
                 }
             }, CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted, scheduler);

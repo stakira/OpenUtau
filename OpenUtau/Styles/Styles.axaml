@@ -63,7 +63,7 @@
     <Setter Property="Padding" Value="4,1"/>
     <Setter Property="Margin" Value="0,0,0,4"/>
     <Setter Property="FontSize" Value="12"/>
-    <Setter Property="FontFamily" Value="{DynamicResource ui.fontfamily}"/>
+    <Setter Property="FontFamily" Value="{DynamicResource ui.textbox.fontfamily}"/>
     <Setter Property="VerticalAlignment" Value="Top"/>
   </Style>
   <Style Selector="TextBox:disabled">

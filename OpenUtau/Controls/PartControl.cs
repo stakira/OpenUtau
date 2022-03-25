@@ -260,11 +260,15 @@ namespace OpenUtau.App.Controls {
                         rmin = Math.Min(right, rmin);
                     }
                     if (i > position) {
+                        lmax = Math.Clamp(lmax, -1, 1);
+                        lmin = Math.Clamp(lmin, -1, 1);
                         if (channels > 1) {
+                            rmax = Math.Clamp(rmax, -1, 1);
+                            rmin = Math.Clamp(rmin, -1, 1);
                             DrawPeak(
                                 bitmapData, frameBuffer.Size.Width, x,
-                                (int)(stereoChnlAmp * (1 + lmin)) + 1,
-                                (int)(stereoChnlAmp * (1 + lmax)) + 1);
+                                (int)(stereoChnlAmp * (1 + lmin)) + 2,
+                                (int)(stereoChnlAmp * (1 + lmax)) + 2);
                             DrawPeak(
                                 bitmapData, frameBuffer.Size.Width, x,
                                 (int)(stereoChnlAmp * (1 + rmin) + monoChnlAmp) + 2,
