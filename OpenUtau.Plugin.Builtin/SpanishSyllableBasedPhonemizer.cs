@@ -121,7 +121,15 @@ namespace OpenUtau.Plugin.Builtin {
                     for (var i = lastC + 1; i >= 0; i--)
                     {
                         var vcc = $"{prevV} {string.Join("", cc.Take(i))}";
-                        if (HasOto(vcc, syllable.tone))
+                        if (HasOto(vcc, syllable.tone)
+                            && (string.Join("", cc.Take(i)) != "ch")
+                            && (string.Join("", cc.Take(i)) != "dz")
+                            && (string.Join("", cc.Take(i)) != "hh")
+                            && (string.Join("", cc.Take(i)) != "ll")
+                            && (string.Join("", cc.Take(i)) != "nh")
+                            && (string.Join("", cc.Take(i)) != "sh")
+                            && (string.Join("", cc.Take(i)) != "zh")
+                            && (string.Join("", cc.Take(i)) != "zz"))
                         {
                             phonemes.Add(vcc);
                             firstC = i - 1;
@@ -135,7 +143,15 @@ namespace OpenUtau.Plugin.Builtin {
                         for (var i = firstC; i < cc.Length; i++)
                         {
                             var ccv = $"{string.Join("", cc.Skip(i))}{v}";
-                            if (HasOto(ccv, syllable.vowelTone))
+                            if (HasOto(ccv, syllable.vowelTone)
+                            && (string.Join("", cc.Skip(i)) != "ch")
+                            && (string.Join("", cc.Skip(i)) != "dz")
+                            && (string.Join("", cc.Skip(i)) != "hh")
+                            && (string.Join("", cc.Skip(i)) != "ll")
+                            && (string.Join("", cc.Skip(i)) != "nh")
+                            && (string.Join("", cc.Skip(i)) != "sh")
+                            && (string.Join("", cc.Skip(i)) != "zh")
+                            && (string.Join("", cc.Skip(i)) != "zz"))
                             {
                                 lastC = i;
                                 basePhoneme = ccv;
@@ -157,10 +173,6 @@ namespace OpenUtau.Plugin.Builtin {
                 if (i + 1 < lastC)
                 {
                     var cc2 = $"{cc[i + 1]} {cc[i + 2]}";
-                    if (!HasOto(cc2, syllable.tone))
-                    {
-                        cc2 = $"{cc[i + 1]}{cc[i + 2]}";
-                    }
                     if (HasOto(cc1, syllable.tone) && HasOto(cc2, syllable.tone))
                     {
                         // like [V C1] [C1 C2] [C2 C3] [C3 ..]
