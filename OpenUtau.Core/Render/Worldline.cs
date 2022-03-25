@@ -22,7 +22,7 @@ namespace OpenUtau.Core.Render {
                     Marshal.Copy(buffer, data, 0, data.Length);
                     Marshal.FreeCoTaskMem(buffer);
                     var output = new double[f0Length, size];
-                    Buffer.BlockCopy(data, 0, output, 0, data.Length);
+                    Buffer.BlockCopy(data, 0, output, 0, data.Length * sizeof(double));
                     return output;
                 }
             } catch (Exception e) {
@@ -45,7 +45,7 @@ namespace OpenUtau.Core.Render {
                     Marshal.Copy(buffer, data, 0, data.Length);
                     Marshal.FreeCoTaskMem(buffer);
                     var output = new double[f0Length, size];
-                    Buffer.BlockCopy(data, 0, output, 0, data.Length);
+                    Buffer.BlockCopy(data, 0, output, 0, data.Length * sizeof(double));
                     return output;
                 }
             } catch (Exception e) {
