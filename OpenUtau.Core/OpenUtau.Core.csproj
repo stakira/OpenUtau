@@ -30,9 +30,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="VSVocoder">
-      <HintPath>..\lib\netstandard2.0\VSVocoder.dll</HintPath>
-    </Reference>
+    <None Remove="VocalShaper\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="VocalShaper\" />
   </ItemGroup>
   <PropertyGroup Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">
     <DefineConstants>WINDOWS</DefineConstants>
