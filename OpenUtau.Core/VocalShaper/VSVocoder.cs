@@ -50,7 +50,7 @@ namespace VocalShaper
             sin = new double[samplesPerSec];
             for (int i = 0; i < samplesPerSec; i++)
             {
-                sin[i] = Math.Sin(2 * Math.PI * i / samplesPerSec);
+                sin[i] = 0.25 * Math.Sin(2 * Math.PI * i / samplesPerSec);
             }
 
             //初始化旋转因子
@@ -70,11 +70,11 @@ namespace VocalShaper
             Blackman2FrameTriangleWin = new double[frameSize];
             for (int i = 0; i < hopSize; i++)
             {
-                Blackman2FrameTriangleWin[i] = BlackmanWindow[i + ifftOffset] * i / hopSize;
+                Blackman2FrameTriangleWin[i] = i / hopSize / BlackmanWindow[i + ifftOffset];
             }
             for (int i = hopSize; i < frameSize; i++)
             {
-                Blackman2FrameTriangleWin[i] = BlackmanWindow[i + ifftOffset] * (frameSize - i) / hopSize;
+                Blackman2FrameTriangleWin[i] = (frameSize - i) / hopSize / BlackmanWindow[i + ifftOffset];
             }
 
             //初始化噪声
@@ -134,85 +134,71 @@ namespace VocalShaper
                 int offset = i * hopSize;
 
                 double f = f0[i + 1];
-                if (f == 0) continue;
-
-                //计算参数值
-                double[] ten = Tension(tension[i], f);
-                double bre = Breathiness(breathiness[i]);
-                double voc = Voicing(voicing[i]);
-                double[] gen = Gender(gender[i], f, ten.Length);
-
-                double[] g = new double[ten.Length];
-                
-                for (int h = 0; h < ten.Length; h++)
-                {
-                    g[h] = HarmonicEnvelope(i, gen[h]) * ten[h];
-                }
-
-                double fn;
-
-                //合成前半段谐波
-                lastf = f0[i];
-                nextf = f0[i + 1];
-                if (lastf == 0)
-                {
-                    lastf = nextf;
-                }
-                for (int j = 0; j < hopSize; j++)
-                {
-                    f = VSMath.LineLerp(lastf, nextf, (double)j / hopSize);
-                    fn = 0;
-                    double y = 0;
-                    while (phase >= samplesPerSec)
+                if (f != 0)//合成谐波
                     {
-                        phase -= samplesPerSec;
-                    }
-                    for (int h = 0; h < ten.Length; h++)
-                    {
-                        fn += f;
-                        y += g[h] * Sin(fn * phase);
-                    }
-                    phase += f;
-                    result[offset + j] += y * voc * j / hopSize;
-                }
+                    //计算参数值
+                    double[] ten = Tension(tension[i], f);
+                    double voc = Voicing(voicing[i]);
+                    double[] gen = Gender(gender[i], f, ten.Length);
 
-                double nextPhase = phase;
+                    double[] g = new double[ten.Length];
 
-                //合成后半段谐波
-                lastf = f0[i + 1];
-                nextf = f0[i + 2];
-                if (nextf == 0)
-                {
-                    nextf = lastf;
-                }
-                for (int j = hopSize; j < frameSize; j++)
-                {
-                    f = VSMath.LineLerp(lastf, nextf, (double)j / hopSize);
-                    fn = 0;
-                    double y = 0;
-                    while (phase >= samplesPerSec)
-                    {
-                        phase -= samplesPerSec;
+                    for (int h = 0; h < ten.Length; h++) {
+                        g[h] = HarmonicEnvelope(i, gen[h]) * ten[h];
                     }
-                    for (int h = 0; h < ten.Length; h++)
-                    {
-                        fn += f;
-                        y += g[h] * Sin(fn * phase);
-                    }
-                    phase += f;
-                    result[offset + j] += y * voc * (frameSize - j) / hopSize;
-                }
 
-                phase = nextPhase;
+                    //合成前半段谐波
+                    lastf = f0[i];
+                    nextf = f0[i + 1];
+                    if (lastf == 0) {
+                        lastf = nextf;
+                    }
+                    for (int j = 0; j < hopSize; j++) {
+                        f = VSMath.LineLerp(lastf, nextf, (double)j / hopSize);
+                        double y = 0;
+                        while (phase >= samplesPerSec) {
+                            phase -= samplesPerSec;
+                        }
+                        for (int h = 0; h < ten.Length; h++) {
+                            y += g[h] * Sin((h + 1) * phase);
+                        }
+                        phase += f;
+                        result[offset + j] += y * voc * j / hopSize;
+                    }
+
+                    double nextPhase = phase;
+
+                    //合成后半段谐波
+                    lastf = f0[i + 1];
+                    nextf = f0[i + 2];
+                    if (nextf == 0) {
+                        nextf = lastf;
+                    }
+                    for (int j = hopSize; j < frameSize; j++) {
+                        f = VSMath.LineLerp(lastf, nextf, (double)j / hopSize - 1);
+                        double y = 0;
+                        while (phase >= samplesPerSec) {
+                            phase -= samplesPerSec;
+                        }
+                        for (int h = 0; h < ten.Length; h++) {
+                            y += g[h] * Sin((h + 1) * phase);
+                        }
+                        phase += f;
+                        result[offset + j] += y * voc * (frameSize - j) / hopSize;
+                    }
+
+                    phase = nextPhase;
+                }
 
                 //合成噪声
-                gen = Gender(gender[i], unitFrequency, halfWinLen);
+                double bre = Breathiness(breathiness[i]);
+                double[] genN = Gender(gender[i], unitFrequency, halfWinLen);
                 Complex[] noise = new Complex[winLen];
                 while (noiseIndex >= Noises.Length) noiseIndex -= Noises.Length;
                 noise[0] = Noises[noiseIndex][0];
                 for (int h = 1; h < halfWinLen; h++)
                 {
-                    double y = NoiseEnvelope(i, gen[h - 1]);
+                    double y = NoiseEnvelope(i, genN[h - 1]);
                     int mirrorIndex = winLen - 1 - h;
                     noise[h] = Noises[noiseIndex][h] * y;
                     noise[mirrorIndex] = Noises[noiseIndex][mirrorIndex] * y;
