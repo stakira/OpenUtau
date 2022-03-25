@@ -276,6 +276,13 @@ namespace OpenUtau.App.Views {
             }
             var noteHitInfo = ViewModel.NotesViewModel.HitTest.HitTestNote(point.Position);
             if (noteHitInfo.hitBody) {
+                if (ViewModel.NotesViewModel.KnifeTool) {
+                    ViewModel.NotesViewModel.DeselectNotes();
+                    editState = new NoteSplitEditState(
+                            canvas, ViewModel, this, noteHitInfo.note);
+                    Cursor = ViewConstants.cursorNo;
+                    return;
+                }
                 if (noteHitInfo.hitResizeArea) {
                     editState = new NoteResizeEditState(
                         canvas, ViewModel, this, noteHitInfo.note,
