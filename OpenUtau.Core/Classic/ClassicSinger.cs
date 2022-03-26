@@ -16,6 +16,7 @@ namespace OpenUtau.Classic {
         public override USingerType SingerType => voicebank.SingerType;
         public override string BasePath => voicebank.BasePath;
         public override string Author => voicebank.Author;
+        public override string Voice => voicebank.Voice;
         public override string Location => Path.GetDirectoryName(voicebank.File);
         public override string Web => voicebank.Web;
         public override string Version => voicebank.Version;
@@ -163,6 +164,12 @@ namespace OpenUtau.Classic {
             bool all = string.IsNullOrEmpty(text);
             return otos.Values
                 .Where(oto => all || oto.SearchTerms.Exists(term => term.Contains(text)));
+        }
+
+        public override byte[] LoadPortrait() {
+            return string.IsNullOrEmpty(Portrait)
+                ? null
+                : File.ReadAllBytes(Portrait);
         }
     }
 }

@@ -124,6 +124,7 @@ namespace OpenUtau.Core.Ustx {
         public virtual USingerType SingerType { get; }
         public virtual string BasePath { get; }
         public virtual string Author { get; }
+        public virtual string Voice { get; }
         public virtual string Location { get; }
         public virtual string Web { get; }
         public virtual string Version { get; }
@@ -160,6 +161,7 @@ namespace OpenUtau.Core.Ustx {
 
         private static readonly List<UOto> emptyOtos = new List<UOto>();
         public virtual IEnumerable<UOto> GetSuggestions(string text) { return emptyOtos; }
+        public virtual byte[] LoadPortrait() => null;
         public override string ToString() => Name;
 
         public static USinger CreateMissing(string name) {

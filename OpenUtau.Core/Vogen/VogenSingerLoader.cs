@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 using Serilog;
 using SharpCompress.Archives;
 
@@ -16,6 +17,11 @@ namespace OpenUtau.Core.Vogen {
         public string version;
         public string builtBy;
         public string voiceBy;
+        public string avatar;
+        public string portrait;
+        public float portraitOpacity = 0.67f;
+        public string web;
+        public string misc;
     }
 
     class VogenSingerLoader {
@@ -59,6 +65,7 @@ namespace OpenUtau.Core.Vogen {
         public USinger LoadSinger(string filePath) {
             VogenMeta meta;
             byte[] model;
+            byte[] avatar = null;
             using (var archive = ArchiveFactory.Open(filePath)) {
                 var metaEntry = archive.Entries.First(e => e.Key == "meta.json");
                 if (metaEntry == null) {
@@ -69,17 +76,15 @@ namespace OpenUtau.Core.Vogen {
                     JsonSerializer serializer = new JsonSerializer();
                     meta = (VogenMeta)serializer.Deserialize(reader, typeof(VogenMeta));
                 }
-                var modelEntry = archive.Entries.FirstOrDefault(e => e.Key == "model.onnx");
-                if (metaEntry == null) {
+                model = Zip.ExtractBytes(archive, "model.onnx");
+                if (model == null) {
                     throw new ArgumentException("missing model.onnx");
                 }
-                using (var stream = modelEntry.OpenEntryStream()) {
-                    using var mem = new MemoryStream();
-                    stream.CopyTo(mem);
-                    model = mem.ToArray();
+                if (!string.IsNullOrEmpty(meta.avatar)) {
+                    avatar = Zip.ExtractBytes(archive, meta.avatar);
                 }
             }
-            return new VogenSinger(filePath, meta, model);
+            return new VogenSinger(filePath, meta, model, avatar);
         }
     }
 }

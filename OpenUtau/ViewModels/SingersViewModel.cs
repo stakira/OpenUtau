@@ -39,7 +39,7 @@ namespace OpenUtau.App.ViewModels {
                     singer.Reload();
                     Avatar = LoadAvatar(singer);
                     Otos = singer.Otos.Values.ToList();
-                    Info = $"Author: {singer.Author}\nWeb: {singer.Web}\nVersion: {singer.Version}\n{singer.OtherInfo}\n\n{string.Join("\n", singer.Errors)}";
+                    Info = $"Author: {singer.Author}\nVoice: {singer.Voice}\nWeb: {singer.Web}\nVersion: {singer.Version}\n{singer.OtherInfo}\n\n{string.Join("\n", singer.Errors)}";
                     LoadSubbanks();
                 });
 
@@ -108,11 +108,11 @@ namespace OpenUtau.App.ViewModels {
         }
 
         Bitmap? LoadAvatar(USinger singer) {
-            if (string.IsNullOrWhiteSpace(singer.Avatar)) {
+            if (singer.AvatarData == null) {
                 return null;
             }
             try {
-                using (var stream = File.OpenRead(singer.Avatar)) {
+                using (var stream = new MemoryStream(singer.AvatarData)) {
                     return new Bitmap(stream);
                 }
             } catch (Exception e) {

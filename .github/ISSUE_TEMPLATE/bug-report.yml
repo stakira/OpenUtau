@@ -34,7 +34,9 @@ body:
         3. See error '...'
         4. Voicebank is '...'
         5. Attach ustx
-  - type: textarea
+    validations:
+      required: true
+  - type: input
     attributes:
       label: OS & Version
       description: >
@@ -53,4 +55,4 @@ body:
   - type: markdown
     attributes:
       value: >
-        Thanks for contributing.
+        Thanks for contributing!

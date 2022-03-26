@@ -213,19 +213,19 @@ namespace OpenUtau.Core.Render {
             }
 
             dynamics = SampleCurve(part, Format.Ustx.DYN, pitchStart, pitches.Length,
-                dyn => dyn == curve.descriptor.min
+                (x, c) => x == c.descriptor.min
                     ? 0
-                    : (float)MusicMath.DecibelToLinear(dyn * 0.1));
-            gender = SampleCurve(part, Format.Ustx.GENC, pitchStart, pitches.Length, x => 0.005f * x + 0.5f);
-            breathiness = SampleCurve(part, Format.Ustx.BREC, pitchStart, pitches.Length, x => 0.005f * x + 0.5f);
-            toneShift = SampleCurve(part, Format.Ustx.SHFC, pitchStart, pitches.Length, x => x);
-            tension = SampleCurve(part, Format.Ustx.TENC, pitchStart, pitches.Length, x => 0.005f * x + 0.5f);
-            voicing = SampleCurve(part, Format.Ustx.VOIC, pitchStart, pitches.Length, x => 0.01f * x);
+                    : (float)MusicMath.DecibelToLinear(x * 0.1));
+            gender = SampleCurve(part, Format.Ustx.GENC, pitchStart, pitches.Length, (x, _) => 0.005f * x + 0.5f);
+            breathiness = SampleCurve(part, Format.Ustx.BREC, pitchStart, pitches.Length, (x, _) => 0.005f * x + 0.5f);
+            toneShift = SampleCurve(part, Format.Ustx.SHFC, pitchStart, pitches.Length, (x, _) => x);
+            tension = SampleCurve(part, Format.Ustx.TENC, pitchStart, pitches.Length, (x, _) => 0.005f * x + 0.5f);
+            voicing = SampleCurve(part, Format.Ustx.VOIC, pitchStart, pitches.Length, (x, _) => 0.01f * x);
 
             hash = Hash();
         }
 
-        private static float[] SampleCurve(UVoicePart part, string abbr, int start, int length, Func<float, float> convert) {
+        private static float[] SampleCurve(UVoicePart part, string abbr, int start, int length, Func<float, UCurve, float> convert) {
             const int interval = 5;
             var curve = part.curves.FirstOrDefault(c => c.abbr == abbr);
             if (curve == null || curve.IsEmptyBetween(
@@ -234,7 +234,7 @@ namespace OpenUtau.Core.Render {
             }
             var result = new float[length];
             for (int i = 0; i < length; ++i) {
-                result[i] = convert(curve.Sample(start + i * interval));
+                result[i] = convert(curve.Sample(start + i * interval), curve);
             }
             return result;
         }

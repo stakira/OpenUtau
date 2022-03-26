@@ -11,6 +11,7 @@ namespace OpenUtau.Classic {
         public string Portrait;
         public float PortraitOpacity;
         public string Author;
+        public string Voice;
         public string Web;
         public string Version;
         public string OtherInfo;
@@ -26,6 +27,7 @@ namespace OpenUtau.Classic {
             Portrait = null;
             PortraitOpacity = 0;
             Author = null;
+            Voice = null;
             Web = null;
             Version = null;
             OtherInfo = null;

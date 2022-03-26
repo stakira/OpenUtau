@@ -294,15 +294,21 @@ namespace OpenUtau.App.ViewModels {
                     lock (portraitLock) {
                         try {
                             Portrait?.Dispose();
-                            using (var stream = File.OpenRead(singer.Portrait)) {
-                                var portrait = new Bitmap(stream);
-                                if (portrait.Size.Height > 800) {
-                                    int width = (int)Math.Round(800 * portrait.Size.Width / portrait.Size.Height);
-                                    portrait = portrait.CreateScaledBitmap(new PixelSize(width, 800));
+                            var data = singer.LoadPortrait();
+                            if (data == null) {
+                                Portrait = null;
+                                portraitSource = null;
+                            } else {
+                                using (var stream = new MemoryStream(data)) {
+                                    var portrait = new Bitmap(stream);
+                                    if (portrait.Size.Height > 800) {
+                                        int width = (int)Math.Round(800 * portrait.Size.Width / portrait.Size.Height);
+                                        portrait = portrait.CreateScaledBitmap(new PixelSize(width, 800));
+                                    }
+                                    Portrait = portrait;
+                                    portraitSource = singer.Portrait;
                                 }
-                                Portrait = portrait;
                             }
-                            portraitSource = singer.Portrait;
                         } catch (Exception e) {
                             Portrait?.Dispose();
                             Portrait = null;

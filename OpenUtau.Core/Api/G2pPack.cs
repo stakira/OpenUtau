@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using SharpCompress.Archives;
 using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
+using OpenUtau.Core.Util;
 
 namespace OpenUtau.Api {
     public abstract class G2pPack : IG2p {
@@ -18,48 +19,15 @@ namespace OpenUtau.Api {
         protected InferenceSession Session { get; set; }
         protected Dictionary<string, string[]> PredCache { get; set; }
 
-        public static string[] ExtractText(byte[] data, string key) {
-            using (var stream = new MemoryStream(data)) {
-                using var archive = ArchiveFactory.Open(stream);
-                foreach (var entry in archive.Entries) {
-                    if (entry.Key == key) {
-                        using var entryStream = entry.OpenEntryStream();
-                        using var reader = new StreamReader(entryStream, Encoding.UTF8);
-                        var lines = new List<string>();
-                        while (!reader.EndOfStream) {
-                            lines.Add(reader.ReadLine());
-                        }
-                        return lines.ToArray();
-                    }
-                }
-            }
-            return null;
-        }
-
-        public static byte[] ExtractBinary(byte[] data, string key) {
-            using (var stream = new MemoryStream(data)) {
-                using var archive = ArchiveFactory.Open(stream);
-                foreach (var entry in archive.Entries) {
-                    if (entry.Key == key) {
-                        using var entryStream = entry.OpenEntryStream();
-                        using var memStream = new MemoryStream();
-                        entryStream.CopyTo(memStream);
-                        return memStream.ToArray();
-                    }
-                }
-            }
-            return null;
-        }
-
         protected Tuple<IG2p, InferenceSession> LoadPack(
             byte[] data,
             Func<string, string> prepGrapheme = null,
             Func<string, string> prepPhoneme = null) {
             prepGrapheme = prepGrapheme ?? ((string s) => s);
             prepPhoneme = prepPhoneme ?? ((string s) => s);
-            string[] dictTxt = ExtractText(data, "dict.txt");
-            string[] phonesTxt = ExtractText(data, "phones.txt");
-            byte[] g2pData = ExtractBinary(data, "g2p.onnx");
+            string[] dictTxt = Zip.ExtractText(data, "dict.txt");
+            string[] phonesTxt = Zip.ExtractText(data, "phones.txt");
+            byte[] g2pData = Zip.ExtractBytes(data, "g2p.onnx");
             var builder = G2pDictionary.NewBuilder();
             phonesTxt.Select(line => line.Trim())
                 .Select(line => line.Split())

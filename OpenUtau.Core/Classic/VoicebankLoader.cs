@@ -118,12 +118,12 @@ namespace OpenUtau.Classic {
                 var otherLines = new List<string>();
                 while (!reader.EndOfStream) {
                     string line = reader.ReadLine().Trim();
-                    var s = line.Split(new char[] { '=' });
+                    var s = line.Split('=', 2);
                     if (s.Length < 2) {
-                        s = line.Split(new char[] { ':' });
+                        s = line.Split(':', 2);
                     }
                     if (s.Length < 2) {
-                        s = line.Split(new char[] { '：' });
+                        s = line.Split('：', 2);
                     }
                     Array.ForEach(s, temp => temp.Trim());
                     if (s.Length == 2) {
@@ -136,6 +136,8 @@ namespace OpenUtau.Classic {
                             voicebank.Image = s[1];
                         } else if (s[0] == "author" || s[0] == "created by") {
                             voicebank.Author = s[1];
+                        } else if (s[0].StartsWith("voice") || s[0] == "cv") {
+                            voicebank.Voice = s[1];
                         } else if (s[0] == "sample") {
                         } else if (s[0] == "web") {
                             voicebank.Web = s[1];
@@ -169,6 +171,9 @@ namespace OpenUtau.Classic {
             }
             if (!string.IsNullOrWhiteSpace(bankConfig.Author)) {
                 bank.Author = bankConfig.Author;
+            }
+            if (!string.IsNullOrWhiteSpace(bankConfig.Voice)) {
+                bank.Voice = bankConfig.Voice;
             }
             if (!string.IsNullOrWhiteSpace(bankConfig.Web)) {
                 bank.Web = bankConfig.Web;

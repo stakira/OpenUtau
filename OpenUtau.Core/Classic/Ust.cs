@@ -517,6 +517,7 @@ namespace OpenUtau.Classic {
                 writer.WriteLine($"Intensity={(int)vol}");
                 var mod = phoneme.GetExpression(project, track, Ustx.MOD).Item1;
                 writer.WriteLine($"Moduration={(int)mod}");
+                writer.WriteLine($"Flags={FlagsToString(phoneme.GetResamplerFlags(project, track))}");
                 if (forPlugin && !string.IsNullOrEmpty(phoneme.oto.DisplayFile)) {
                     writer.WriteLine($"@filename={phoneme.oto.DisplayFile}");
                     writer.WriteLine($"@alias={phoneme.oto.Alias}");
@@ -574,6 +575,17 @@ namespace OpenUtau.Classic {
             if (vbr != null && vbr.length > 0) {
                 writer.WriteLine($"VBR={vbr.length},{vbr.period},{vbr.depth},{vbr.@in},{vbr.@out},{vbr.shift},{vbr.drift}");
             }
+        }
+
+        static string FlagsToString(Tuple<string, int?>[] flags) {
+            var builder = new StringBuilder();
+            foreach (var flag in flags) {
+                builder.Append(flag.Item1);
+                if (flag.Item2.HasValue) {
+                    builder.Append(flag.Item2.Value);
+                }
+            }
+            return builder.ToString();
         }
 
         public static (List<UNote>, List<UNote>) ParsePlugin(

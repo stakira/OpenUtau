@@ -44,6 +44,7 @@ namespace OpenUtau.Classic {
         public string Portrait;
         public float PortraitOpacity = 0.67f;
         public string Author;
+        public string Voice;
         public string Web;
         public string Version;
         public SymbolSet SymbolSet { get; set; }

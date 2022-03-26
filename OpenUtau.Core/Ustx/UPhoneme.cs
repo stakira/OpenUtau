@@ -203,7 +203,7 @@ namespace OpenUtau.Core.Ustx {
             var flags = new List<Tuple<string, int?>>();
             foreach (var descriptor in project.expressions.Values) {
                 if (descriptor.type == UExpressionType.Numerical) {
-                    if (!string.IsNullOrEmpty(descriptor.flag)) {
+                    if (descriptor.isFlag && !string.IsNullOrEmpty(descriptor.flag)) {
                         int value = (int)GetExpression(project, track, descriptor.abbr).Item1;
                         flags.Add(Tuple.Create<string, int?>(descriptor.flag, value));
                     }
