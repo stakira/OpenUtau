@@ -75,10 +75,12 @@ namespace OpenUtau.Core {
 
     // Notification for UI to move PlayPosMarker
     public class SetPlayPosTickNotification : UNotification {
-        public int playPosTick;
+        public readonly int playPosTick;
+        public readonly bool waitingRendering;
         public override bool Silent => true;
-        public SetPlayPosTickNotification(int tick) {
+        public SetPlayPosTickNotification(int tick, bool waitingRendering = false) {
             playPosTick = tick;
+            this.waitingRendering = waitingRendering;
         }
         public override string ToString() => $"Set play position to tick {playPosTick}";
     }

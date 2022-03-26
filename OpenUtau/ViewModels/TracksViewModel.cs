@@ -52,6 +52,7 @@ namespace OpenUtau.App.ViewModels {
         public double SnapUnitWidth => snapUnitWidth.Value;
         [Reactive] public double PlayPosX { get; set; }
         [Reactive] public double PlayPosHighlightX { get; set; }
+        [Reactive] public bool PlayPosWaitingRendering { get; set; }
         public double ViewportTicks => viewportTicks.Value;
         public double ViewportTracks => viewportTracks.Value;
         public double SmallChangeX => smallChangeX.Value;
@@ -108,7 +109,7 @@ namespace OpenUtau.App.ViewModels {
                 });
             this.WhenAnyValue(x => x.TickOffset)
                 .Subscribe(tickOffset => {
-                    SetPlayPos(DocManager.Inst.playPosTick, true);
+                    SetPlayPos(DocManager.Inst.playPosTick, false, true);
                 });
 
             TickWidth = ViewConstants.TickWidthDefault;
@@ -312,7 +313,11 @@ namespace OpenUtau.App.ViewModels {
         }
 
 
-        private void SetPlayPos(int tick, bool noScroll = false) {
+        private void SetPlayPos(int tick, bool waitingRendering, bool noScroll = false) {
+            PlayPosWaitingRendering = waitingRendering;
+            if (waitingRendering) {
+                return;
+            }
             double playPosX = TickTrackToPoint(tick, 0).X;
             double scroll = 0;
             if (!noScroll && playPosX > PlayPosX) {
@@ -378,7 +383,7 @@ namespace OpenUtau.App.ViewModels {
                     Tracks.AddRange(loadProjectNotif.project.tracks);
                     MessageBus.Current.SendMessage(new TracksRefreshEvent());
                 } else if (cmd is SetPlayPosTickNotification setPlayPosTick) {
-                    SetPlayPos(setPlayPosTick.playPosTick);
+                    SetPlayPos(setPlayPosTick.playPosTick, setPlayPosTick.waitingRendering);
                 }
                 Notify();
             }

@@ -157,7 +157,9 @@ namespace OpenUtau.Core.Ustx {
             oto = default;
             return false;
         }
-        public virtual void GetSuggestions(string text, Action<UOto> provide) { }
+
+        private static readonly List<UOto> emptyOtos = new List<UOto>();
+        public virtual IEnumerable<UOto> GetSuggestions(string text) { return emptyOtos; }
         public override string ToString() => Name;
 
         public static USinger CreateMissing(string name) {

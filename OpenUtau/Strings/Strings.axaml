@@ -185,6 +185,7 @@ Warning: moresampler is not fully supported. It may be slow and cause high CPU u
   </system:String>
 
   <system:String x:Key="progress.saved">Project saved. {0}</system:String>
+  <system:String x:Key="progress.waitingrendering">Waiting Rendering</system:String>
 
   <system:String x:Key="singers.caption">Singers</system:String>
   <system:String x:Key="singers.location">Location</system:String>

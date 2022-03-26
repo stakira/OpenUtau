@@ -156,15 +156,13 @@ namespace OpenUtau.Classic {
             return TryGetMappedOto(phoneme, tone, out oto);
         }
 
-        public override void GetSuggestions(string text, Action<UOto> provide) {
+        public override IEnumerable<UOto> GetSuggestions(string text) {
             if (text != null) {
                 text = text.ToLowerInvariant().Replace(" ", "");
             }
             bool all = string.IsNullOrEmpty(text);
-            otos.Values
-                .Where(oto => all || oto.SearchTerms.Exists(term => term.Contains(text)))
-                .ToList()
-                .ForEach(oto => provide(oto));
+            return otos.Values
+                .Where(oto => all || oto.SearchTerms.Exists(term => term.Contains(text)));
         }
     }
 }
