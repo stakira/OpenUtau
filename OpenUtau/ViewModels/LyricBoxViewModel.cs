@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using DynamicData.Binding;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
@@ -36,24 +38,30 @@ namespace OpenUtau.App.ViewModels {
                 Suggestions.Clear();
                 return;
             }
-            Suggestions.Clear();
             var singer = DocManager.Inst.Project.tracks[Part.trackNo].Singer;
             if (singer == null || !singer.Found || !singer.Loaded) {
+                Suggestions.Clear();
                 Suggestions.Add(new SuggestionItem() {
                     Alias = "No Singer",
                 });
                 return;
             }
-            if (!string.IsNullOrEmpty(Text)) {
-                Suggestions.Add(new SuggestionItem() {
-                    Alias = WanaKana.ToHiragana(Text),
-                    Source = "a->あ",
-                });
-            }
-            singer.GetSuggestions(Text, oto => Suggestions.Add(new SuggestionItem() {
+            var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
+            Task.Run(() => singer.GetSuggestions(Text).Select(oto => new SuggestionItem() {
                 Alias = oto.Alias,
                 Source = string.IsNullOrEmpty(oto.Set) ? singer.Id : $"{singer.Id} / {oto.Set}",
-            }));
+            }).Take(32).ToList()).ContinueWith(task => {
+                Suggestions.Clear();
+                if (!string.IsNullOrEmpty(Text)) {
+                    Suggestions.Add(new SuggestionItem() {
+                        Alias = WanaKana.ToHiragana(Text),
+                        Source = "a->あ",
+                    });
+                }
+                if (!task.IsFaulted) {
+                    Suggestions.AddRange(task.Result);
+                }
+            }, scheduler);
         }
 
         public void Commit() {

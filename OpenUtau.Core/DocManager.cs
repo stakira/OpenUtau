@@ -41,6 +41,9 @@ namespace OpenUtau.Core {
             SearchAllSingers();
             SearchAllPlugins();
             SearchAllLegacyPlugins();
+            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler((sender, args) => {
+                CrashSave();
+            });
         }
 
         public void SearchAllSingers() {
@@ -138,6 +141,22 @@ namespace OpenUtau.Core {
             get {
                 return (Project.Saved || Project.tracks.Count == 0) &&
                     (undoQueue.Count > 0 && savedPoint == undoQueue.Last() || undoQueue.Count == 0 && savedPoint == null);
+            }
+        }
+
+        private void CrashSave() {
+            if (Project == null || string.IsNullOrEmpty(Project.FilePath)) {
+                return;
+            }
+            try {
+                string dir = Path.GetDirectoryName(Project.FilePath);
+                string filename = Path.GetFileNameWithoutExtension(Project.FilePath);
+                string backup = Path.Join(dir, filename + "-backup.ustx");
+                Log.Information($"Saving backup {backup}.");
+                Format.Ustx.Save(backup, Project);
+                Log.Information($"Saved backup {backup}.");
+            } catch (Exception e) {
+                Log.Error(e, "Save backup failed.");
             }
         }
 

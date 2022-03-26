@@ -50,6 +50,7 @@ namespace OpenUtau.App.ViewModels {
         public double SnapUnitWidth => snapUnitWidth.Value;
         [Reactive] public double PlayPosX { get; set; }
         [Reactive] public double PlayPosHighlightX { get; set; }
+        [Reactive] public bool PlayPosWaitingRendering { get; set; }
         [Reactive] public bool CursorTool { get; set; }
         [Reactive] public bool PencilTool { get; set; }
         [Reactive] public bool EraserTool { get; set; }
@@ -130,7 +131,7 @@ namespace OpenUtau.App.ViewModels {
                 });
             this.WhenAnyValue(x => x.TickOffset)
                 .Subscribe(tickOffset => {
-                    SetPlayPos(DocManager.Inst.playPosTick, true);
+                    SetPlayPos(DocManager.Inst.playPosTick, false, true);
                 });
             this.WhenAnyValue(x => x.ExpBounds, x => x.PrimaryKey)
                 .Subscribe(t => {
@@ -444,7 +445,11 @@ namespace OpenUtau.App.ViewModels {
             DocManager.Inst.EndUndoGroup();
         }
 
-        private void SetPlayPos(int tick, bool noScroll = false) {
+        private void SetPlayPos(int tick, bool waitingRendering, bool noScroll = false) {
+            PlayPosWaitingRendering = waitingRendering;
+            if (waitingRendering) {
+                return;
+            }
             tick = tick - Part?.position ?? 0;
             double playPosX = TickToneToPoint(tick, 0).X;
             double scroll = 0;
@@ -497,7 +502,7 @@ namespace OpenUtau.App.ViewModels {
                     SecondaryKey = PrimaryKey;
                     PrimaryKey = selectExp.ExpKey;
                 } else if (cmd is SetPlayPosTickNotification setPlayPosTick) {
-                    SetPlayPos(setPlayPosTick.playPosTick);
+                    SetPlayPos(setPlayPosTick.playPosTick, setPlayPosTick.waitingRendering);
                 } else if (cmd is FocusNoteNotification focusNote) {
                     if (focusNote.part == Part) {
                         FocusNote(focusNote.note);

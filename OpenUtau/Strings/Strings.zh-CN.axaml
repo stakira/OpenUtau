@@ -181,6 +181,7 @@
   </system:String>
 
   <system:String x:Key="progress.saved">工程已保存 {0}</system:String>
+  <system:String x:Key="progress.waitingrendering">等待渲染</system:String>
 
   <system:String x:Key="singers.caption">歌手</system:String>
   <system:String x:Key="singers.location">位置</system:String>
