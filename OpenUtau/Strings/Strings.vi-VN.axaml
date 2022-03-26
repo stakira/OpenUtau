@@ -66,7 +66,7 @@
   <system:String x:Key="menu.file.exportwav">Xuất ra tệp WAV</system:String>
   <system:String x:Key="menu.file.importaudio">Nhập vào tệp Nhạc...</system:String>
   <system:String x:Key="menu.file.importmidi">Nhập vào Midi...</system:String>
-  <system:String x:Key="menu.file.importtracks">Nhập vào UST / VSQX...</system:String>
+  <system:String x:Key="menu.file.importtracks">Nhập vào UST/VSQX...</system:String>
   <system:String x:Key="menu.file.new">Mới</system:String>
   <system:String x:Key="menu.file.newfromtemplate">Mới từ các Mẫu</system:String>
   <system:String x:Key="menu.file.open">Mở...</system:String>
@@ -131,7 +131,7 @@
   <system:String x:Key="pianoroll.toggle.pitch">Hiện Đường luyến giọng nối bằng các điểm (I)</system:String>
   <system:String x:Key="pianoroll.toggle.snap">Bật tắt Gán nốt (P)</system:String>
   <system:String x:Key="pianoroll.toggle.tips">Hiện Hướng dẫn (T)</system:String>
-  <system:String x:Key="pianoroll.toggle.tone">Bật tắt Nghe trước cao độ của nốt (Y)</system:String>
+  <system:String x:Key="pianoroll.toggle.tone">Bật tắt Nghe trước cao độ khi viết nốt(Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">Hiện Đường rung giọng (U)</system:String>
   <system:String x:Key="pianoroll.tool.eraser">Xoá nốt (3)</system:String>
   <system:String x:Key="pianoroll.tool.pen">Viết nốt (2)
