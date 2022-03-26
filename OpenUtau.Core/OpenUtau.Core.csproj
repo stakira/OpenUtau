@@ -28,6 +28,11 @@
   <ItemGroup Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">
     <PackageReference Include="NAudio" Version="2.0.1" />
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="VSVocoder">
+      <HintPath>..\lib\netstandard2.0\VSVocoder.dll</HintPath>
+    </Reference>
+  </ItemGroup>
   <PropertyGroup Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">
     <DefineConstants>WINDOWS</DefineConstants>
   </PropertyGroup>

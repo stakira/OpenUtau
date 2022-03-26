@@ -12,6 +12,8 @@ using OpenUtau.Core.Render;
 using OpenUtau.Core.SignalChain;
 using OpenUtau.Core.Ustx;
 using Serilog;
+using VocalShaper;
+using VocalShaper.World;
 
 namespace OpenUtau.Core.Vogen {
     class VogenRenderer : IRenderer {
@@ -32,6 +34,8 @@ namespace OpenUtau.Core.Vogen {
             Format.Ustx.TENC,
             Format.Ustx.VOIC,
         };
+
+        static readonly VSVocoder vocoder = new VSVocoder(fs, frameMs);
 
         public bool SupportsExpression(UExpressionDescriptor descriptor) {
             return supportedExp.Contains(descriptor.abbr);
@@ -175,6 +179,18 @@ namespace OpenUtau.Core.Vogen {
                         bapDouble[i, j] = bap[0, i, j];
                     }
                 }
+                var sp = Worldline.DecodeMgc(mgcDouble, fftSize, fs);
+                var ap = Worldline.DecodeBap(bapDouble, fftSize, fs);
+                var tension = DownSampleCurve(phrase.tension, 0.5, totalFrames, headFrames, tailFrames, phrase.tickToMs, x => x);
+                var breathiness = DownSampleCurve(phrase.breathiness, 0.5, totalFrames, headFrames, tailFrames, phrase.tickToMs, x => x);
+                var voicing = DownSampleCurve(phrase.voicing, 1.0, totalFrames, headFrames, tailFrames, phrase.tickToMs, x => x);
+                var gender = DownSampleCurve(phrase.gender, 0.5, totalFrames, headFrames, tailFrames, phrase.tickToMs, x => x);
+                var samples = new double[1 + (int)((f0.Length - 1) * frameMs / 1000.0 * fs)];
+                //World.Synthesis(
+                //    vocoder, out samples,
+                //    sp, ap, fs, fftSize, f0,
+                //    tension, breathiness, voicing, gender);
+                //return samples.Select(f => (float)f).ToArray();
                 return Worldline.DecodeAndSynthesis(
                     f0, mgcDouble, bapDouble,
                     fftSize, frameMs, fs);
