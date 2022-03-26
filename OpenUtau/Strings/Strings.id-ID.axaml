@@ -63,7 +63,7 @@
   <system:String x:Key="menu.file">Berkas</system:String>
   <system:String x:Key="menu.file.exit">Keluar</system:String>
   <system:String x:Key="menu.file.exportust">Ekspor Berkas UST</system:String>
-  <!--<system:String x:Key="menu.file.exportwav">Export Wav Files</system:String>-->
+  <!--<system:String x:Key="menu.file.exportwav">Ekspor Berkas Wav</system:String>-->
   <system:String x:Key="menu.file.importaudio">Impor Audio...</system:String>
   <system:String x:Key="menu.file.importmidi">Impor Midi...</system:String>
   <system:String x:Key="menu.file.importtracks">Impor Trek...</system:String>
@@ -79,7 +79,7 @@
   <system:String x:Key="menu.help.about">Tentang OpenUtau</system:String>
   <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
   <system:String x:Key="menu.tools">Peralatan</system:String>
-  <!--<system:String x:Key="menu.tools.clearcache">Clear Cache</system:String>-->
+  <!--<system:String x:Key="menu.tools.clearcache">Bersihkan Cache</system:String>-->
   <system:String x:Key="menu.tools.layout">Tata Letak</system:String>
   <system:String x:Key="menu.tools.layout.hsplit11">Horisontal 1:1</system:String>
   <system:String x:Key="menu.tools.layout.hsplit12">Horisontal 1:2</system:String>
@@ -154,7 +154,7 @@ Tahan Ctrl untuk memilih lainnya</system:String>
   <system:String x:Key="prefs.on">Hidup</system:String>
   <system:String x:Key="prefs.paths">Jalur</system:String>
   <system:String x:Key="prefs.paths.addlsinger">Jalur Penyanyi Tambahan</system:String>
-  <!--<system:String x:Key="prefs.paths.addlsinger.install">Install to Additional Singer Path</system:String>-->
+  <!--<system:String x:Key="prefs.paths.addlsinger.install">Instal ke Jalur Penyanyi Tambahan</system:String>-->
   <system:String x:Key="prefs.paths.reset">Setel Ulang</system:String>
   <system:String x:Key="prefs.paths.select">Pilih</system:String>
   <system:String x:Key="prefs.playback">Pemutaran</system:String>
@@ -165,14 +165,14 @@ Tahan Ctrl untuk memilih lainnya</system:String>
   <system:String x:Key="prefs.playback.device">Perangkat Pemutaran</system:String>
   <system:String x:Key="prefs.playback.test">Tes</system:String>
   <system:String x:Key="prefs.rendering">Merender</system:String>
-  <!--<system:String x:Key="prefs.rendering.phasecomp">Phase Compensation</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.phasecomp">Kompensasi Fase</system:String>-->
   <system:String x:Key="prefs.rendering.prerender.threads">Utas Pra-perenderan</system:String>
   <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
   <!--<system:String x:Key="prefs.rendering.resampler.morewarn">
-Warning: moresampler is not fully supported. It may be slow and cause high CPU usage. If you insist, please:
-1. Set "resampler-compatibility" to "on" in moreconfig.txt.
-2. Set "auto-update-llsm-mrq" to "off" in moreconfig.txt.
-3. Patiently wait for moresampler to generate missing llsm files.
+Peringatan: moresampler tidak sepenuhnya didukung. Ini mungkin lambat dan menyebabkan penggunaan CPU yang tinggi. Jika Anda bersikeras, silakan:
+1. Setel "resampler-compatibility" ke "on" di moreconfig.txt.
+2. Atur "auto-update-llsm-mrq" ke "off" di moreconfig.txt.
+3. Sabar menunggu moresampler untuk menghasilkan file llsm yang hilang.
   </system:String>-->
   <system:String x:Key="prefs.rendering.resampler.note">
     Catatan: untuk menggunakan resampler eksternal, silakan tambahkan berkas resampler DLL atau EXE di folder Resamplers di jalur instal OpenUtau dan pilih di Preferensi.

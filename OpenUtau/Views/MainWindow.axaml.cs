@@ -310,13 +310,17 @@ namespace OpenUtau.App.Views {
                 Filters = new List<FileDialogFilter>() {
                     new FileDialogFilter() {
                         Name = "Archive File",
-                        Extensions = new List<string>(){ "zip", "rar", "uar" },
+                        Extensions = new List<string>(){ "zip", "rar", "uar", "vogeon" },
                     },
                 },
                 AllowMultiple = false,
             };
             var files = await dialog.ShowAsync(this);
             if (files == null || files.Length != 1) {
+                return;
+            }
+            if (files[0].EndsWith(Core.Vogen.VogenSingerInstaller.FileExt)) {
+                Core.Vogen.VogenSingerInstaller.Install(files[0]);
                 return;
             }
             var setup = new SingerSetupDialog() {
@@ -452,6 +456,8 @@ namespace OpenUtau.App.Views {
                 if (setup.Position.Y < 0) {
                     setup.Position = setup.Position.WithY(0);
                 }
+            } else if (ext == Core.Vogen.VogenSingerInstaller.FileExt) {
+                Core.Vogen.VogenSingerInstaller.Install(file);
             } else if (ext == ".mp3" || ext == ".wav" || ext == ".ogg" || ext == ".flac") {
                 try {
                     viewModel.ImportAudio(file);
@@ -664,9 +670,6 @@ namespace OpenUtau.App.Views {
         public void PartsCanvasPointerWheelChanged(object sender, PointerWheelEventArgs args) {
             var delta = args.Delta;
             if (args.KeyModifiers == KeyModifiers.None || args.KeyModifiers == KeyModifiers.Shift) {
-                if (args.KeyModifiers.HasFlag(KeyModifiers.Shift)) {
-                    delta = new Vector(delta.Y, delta.X);
-                }
                 if (delta.X != 0) {
                     var scrollbar = this.FindControl<ScrollBar>("HScrollBar");
                     scrollbar.Value = Math.Max(scrollbar.Minimum,

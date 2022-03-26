@@ -9,6 +9,9 @@
       <Thickness x:Key="ComboBoxDropdownContentMargin">0</Thickness>
     </Style.Resources>
   </Style>
+  <Style Selector="Window">
+    <Setter Property="FontFamily" Value="{DynamicResource ui.fontfamily}"/>
+  </Style>
   <Style Selector="Menu">
     <Setter Property="Height" Value="24"/>
   </Style>
@@ -60,7 +63,7 @@
     <Setter Property="Padding" Value="4,1"/>
     <Setter Property="Margin" Value="0,0,0,4"/>
     <Setter Property="FontSize" Value="12"/>
-    <Setter Property="FontFamily" Value="Microsoft YaHei,Simsun,苹方-简,宋体-简"/>
+    <Setter Property="FontFamily" Value="{DynamicResource ui.textbox.fontfamily}"/>
     <Setter Property="VerticalAlignment" Value="Top"/>
   </Style>
   <Style Selector="TextBox:disabled">

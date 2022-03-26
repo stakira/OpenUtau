@@ -1,7 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
+  <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
+    <TargetFramework>net5.0-windows</TargetFramework>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(OS)' != 'Windows_NT' ">
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
     <SatelliteResourceLanguages>none</SatelliteResourceLanguages>
     <IsPackable>false</IsPackable>
   </PropertyGroup>

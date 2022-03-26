@@ -150,6 +150,8 @@ namespace OpenUtau.Api {
         /// <param name="singer"></param>
         public abstract void SetSinger(USinger singer);
 
+        public virtual void SetUp(Note[] notes) { }
+
         /// <summary>
         /// Phonemize a consecutive sequence of notes. This is the main logic of a phonemizer.
         /// </summary>
@@ -160,6 +162,8 @@ namespace OpenUtau.Api {
         /// <param name="nextNeighbour">Same as next if is immediate neighbour, otherwise null.</param>
         /// <param name="prevs">Prev note neighbour with all extended notes. May be emtpy, not null</param>
         public abstract Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevs);
+
+        public virtual void CleanUp() { }
 
         public override string ToString() => $"[{Tag}] {Name}";
 

@@ -83,7 +83,7 @@ namespace OpenUtau.Classic {
                 .ToArray();
             if (rootFiles.Count() > 0) {
                 // Need to create root folder.
-                basePath = Path.Combine(basePath, Path.GetFileNameWithoutExtension(archivePath));
+                basePath = Path.Combine(basePath, Path.GetFileNameWithoutExtension(archivePath).Trim());
                 if (rootFiles.Where(e => e.Key == kCharacterTxt).Count() == 0) {
                     // Need to create character.txt.
                     touches.Add(Path.Combine(basePath, kCharacterTxt));

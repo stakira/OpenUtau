@@ -11,6 +11,12 @@ using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Core {
+    public struct ValidateOptions {
+        public UPart Part;
+        public bool SkipPhonemizer;
+        public bool SkipPhoneme;
+    }
+
     public class DocManager {
         DocManager() {
             Project = new UProject();
@@ -41,8 +47,13 @@ namespace OpenUtau.Core {
             try {
                 Directory.CreateDirectory(PathManager.Inst.SingersPath);
                 var stopWatch = Stopwatch.StartNew();
-                Singers = Format.UtauSoundbank.FindAllSingers();
-                SingersOrdered = Singers.Values.OrderBy(singer => singer.Name).ToList();
+                SingersOrdered.Clear();
+                SingersOrdered.AddRange(ClassicSingerLoader.FindAllSingers());
+                SingersOrdered.AddRange(Vogen.VogenSingerLoader.FindAllSingers());
+                SingersOrdered = SingersOrdered.OrderBy(singer => singer.Name).ToList();
+                Singers = SingersOrdered
+                    .ToLookup(s => s.Id)
+                    .ToDictionary(g => g.Key, g => g.First());
                 stopWatch.Stop();
                 Log.Information($"Search all singers: {stopWatch.Elapsed}");
             } catch (Exception e) {
@@ -76,7 +87,6 @@ namespace OpenUtau.Core {
             const string kBuiltin = "OpenUtau.Plugin.Builtin.dll";
             var stopWatch = Stopwatch.StartNew();
             var phonemizerFactories = new List<PhonemizerFactory>();
-            phonemizerFactories.Add(PhonemizerFactory.Get(typeof(DefaultPhonemizer)));
             var files = new List<string>();
             try {
                 files.Add(Path.Combine(Path.GetDirectoryName(GetType().Assembly.Location), kBuiltin));
@@ -98,16 +108,18 @@ namespace OpenUtau.Core {
                     }
                     assembly = Assembly.LoadFile(file);
                     foreach (var type in assembly.GetExportedTypes()) {
-                        if (type.IsAbstract) {
-                            continue;
-                        }
-                        if (type.IsSubclassOf(typeof(Phonemizer))) {
+                        if (!type.IsAbstract && type.IsSubclassOf(typeof(Phonemizer))) {
                             phonemizerFactories.Add(PhonemizerFactory.Get(type));
                         }
                     }
                 } catch (Exception e) {
                     Log.Warning(e, $"Failed to load {file}.");
                     continue;
+                }
+            }
+            foreach (var type in GetType().Assembly.GetExportedTypes()) {
+                if (!type.IsAbstract && type.IsSubclassOf(typeof(Phonemizer))) {
+                    phonemizerFactories.Add(PhonemizerFactory.Get(type));
                 }
             }
             PhonemizerFactories = phonemizerFactories.OrderBy(factory => factory.tag).ToArray();
@@ -154,12 +166,12 @@ namespace OpenUtau.Core {
                 } else if (cmd is SingersChangedNotification) {
                     SearchAllSingers();
                 } else if (cmd is ValidateProjectNotification) {
-                    Project.Validate();
+                    Project.ValidateFull();
                 } else if (cmd is SingersRefreshedNotification) {
                     foreach (var track in Project.tracks) {
                         track.OnSingerRefreshed();
                     }
-                    Project.Validate();
+                    Project.ValidateFull();
                 }
                 Publish(cmd);
                 if (!cmd.Silent) {
@@ -179,19 +191,17 @@ namespace OpenUtau.Core {
                 Log.Information($"ExecuteCmd {cmd}");
             }
             Publish(cmd);
-            if (cmd.ValidatePart == null) {
-                Project.Validate();
-            } else {
-                cmd.ValidatePart.Validate(Project, Project.tracks[cmd.ValidatePart.trackNo]);
+            if (!undoGroup.DeferValidate) {
+                Project.Validate(cmd.ValidateOptions);
             }
         }
 
-        public void StartUndoGroup() {
+        public void StartUndoGroup(bool deferValidate = false) {
             if (undoGroup != null) {
                 Log.Error("undoGroup already started");
                 EndUndoGroup();
             }
-            undoGroup = new UCommandGroup();
+            undoGroup = new UCommandGroup(deferValidate);
             Log.Information("undoGroup started");
         }
 
@@ -206,6 +216,9 @@ namespace OpenUtau.Core {
             }
             while (undoQueue.Count > Util.Preferences.Default.UndoLimit) {
                 undoQueue.RemoveFromFront();
+            }
+            if (undoGroup.DeferValidate) {
+                Project.ValidateFull();
             }
             undoGroup.Merge();
             undoGroup = null;
@@ -222,7 +235,7 @@ namespace OpenUtau.Core {
                 var cmd = undoGroup.Commands[i];
                 cmd.Unexecute();
                 if (i == 0) {
-                    Project.Validate();
+                    Project.ValidateFull();
                 }
                 Publish(cmd, true);
             }
@@ -238,7 +251,7 @@ namespace OpenUtau.Core {
                 var cmd = group.Commands[i];
                 cmd.Unexecute();
                 if (i == 0) {
-                    Project.Validate();
+                    Project.ValidateFull();
                 }
                 Publish(cmd, true);
             }
@@ -255,7 +268,7 @@ namespace OpenUtau.Core {
                 var cmd = group.Commands[i];
                 cmd.Execute();
                 if (i == group.Commands.Count - 1) {
-                    Project.Validate();
+                    Project.ValidateFull();
                 }
                 Publish(cmd);
             }

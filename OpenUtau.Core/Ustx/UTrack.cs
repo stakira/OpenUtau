@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
+using OpenUtau.Core.Render;
 using Serilog;
 using YamlDotNet.Serialization;
 
@@ -19,12 +21,29 @@ namespace OpenUtau.Core.Ustx {
                     singer_ = value;
                     Phonemizer.SetSinger(value);
                     VoiceColorExp = null;
+                    if (singer_ == null || !singer_.Found) {
+                        Renderer = null;
+                    } else {
+                        switch (value.SingerType) {
+                            case USingerType.Classic:
+                                Renderer = new Classic.ClassicRenderer();
+                                break;
+                            case USingerType.Enunu:
+                                Renderer = new EnunuRenderer();
+                                break;
+                            case USingerType.Vogen:
+                                Renderer = new Vogen.VogenRenderer();
+                                break;
+                            default:
+                                throw new NotImplementedException();
+                        }
+                    }
                 }
             }
         }
-
         [YamlIgnore] public Phonemizer Phonemizer { get; set; } = PhonemizerFactory.Get(typeof(DefaultPhonemizer)).Create();
         [YamlIgnore] public string PhonemizerTag => Phonemizer.Tag;
+        [YamlIgnore] public IRenderer Renderer { get; set; }
 
         [YamlIgnore] public string SingerName => Singer != null ? Singer.DisplayName : "[No Singer]";
         [YamlIgnore] public int TrackNo { set; get; }
@@ -47,13 +66,12 @@ namespace OpenUtau.Core.Ustx {
 
         public void OnSingerRefreshed() {
             if (Singer != null && Singer.Loaded && !DocManager.Inst.Singers.ContainsKey(Singer.Id)) {
-                Singer.Found = false;
-                Singer.Loaded = false;
+                Singer = USinger.CreateMissing(Singer.Name);
             }
             VoiceColorExp = null;
         }
 
-        public void Validate(UProject project) {
+        public void Validate(ValidateOptions options, UProject project) {
             if (Singer != null && Singer.Found) {
                 Singer.EnsureLoaded();
             }
@@ -88,7 +106,7 @@ namespace OpenUtau.Core.Ustx {
             if (Singer == null && !string.IsNullOrEmpty(singer)) {
                 Singer = DocManager.Inst.GetSinger(singer);
                 if (Singer == null) {
-                    Singer = new USinger(singer);
+                    Singer = USinger.CreateMissing(singer);
                 }
             }
             Phonemizer.SetSinger(Singer);

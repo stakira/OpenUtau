@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core {
     public abstract class UCommand {
         public virtual bool Silent => false;
-        public virtual UPart ValidatePart => null;
+        public virtual ValidateOptions ValidateOptions => default;
         public abstract void Execute();
         public abstract void Unexecute();
         public virtual bool Mergeable => false;
@@ -14,8 +13,12 @@ namespace OpenUtau.Core {
     }
 
     public class UCommandGroup {
+        public bool DeferValidate;
         public List<UCommand> Commands;
-        public UCommandGroup() { Commands = new List<UCommand>(); }
+        public UCommandGroup(bool deferValidate) {
+            DeferValidate = deferValidate;
+            Commands = new List<UCommand>();
+        }
         public void Merge() {
             if (Commands.Count > 0 && Commands.Last().Mergeable) {
                 var merged = Commands.Last().Merge(Commands);

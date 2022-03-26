@@ -433,9 +433,6 @@ namespace OpenUtau.App.Views {
             var size = canvas.Bounds.Size;
             var delta = args.Delta;
             if (args.KeyModifiers == KeyModifiers.None || args.KeyModifiers == KeyModifiers.Shift) {
-                if (args.KeyModifiers.HasFlag(KeyModifiers.Shift)) {
-                    delta = new Vector(delta.Y, delta.X);
-                }
                 if (delta.X != 0) {
                     var scrollbar = this.FindControl<ScrollBar>("HScrollBar");
                     scrollbar.Value = Math.Max(scrollbar.Minimum,

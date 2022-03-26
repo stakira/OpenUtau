@@ -35,7 +35,7 @@ namespace OpenUtau.Classic {
                         using (var reader = new StreamReader(entry.OpenEntryStream(), encoding)) {
                             var project = Ust.Load(reader, entry.Key);
                             project.AfterLoad();
-                            project.Validate();
+                            project.ValidateFull();
                             Assert.Single(project.parts);
                             var part = project.parts[0] as UVoicePart;
                             Assert.True(part.notes.Count > 0);

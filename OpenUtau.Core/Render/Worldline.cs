@@ -8,6 +8,81 @@ using Serilog;
 
 namespace OpenUtau.Core.Render {
     static class Worldline {
+        [DllImport("worldline", CallingConvention = CallingConvention.Cdecl)]
+        static extern int DecodeMgc(
+            int f0Length, double[,] mgc, int mgcSize,
+            int fftSize, int fs, ref IntPtr spectrogram);
+
+        public static double[,] DecodeMgc(int f0Length, double[,] mgc, int mgcSize, int fftSize, int fs) {
+            try {
+                unsafe {
+                    IntPtr buffer = IntPtr.Zero;
+                    int size = DecodeMgc(f0Length, mgc, mgc.GetLength(1), fftSize, fs, ref buffer);
+                    var data = new double[f0Length * size];
+                    Marshal.Copy(buffer, data, 0, data.Length);
+                    Marshal.FreeCoTaskMem(buffer);
+                    var output = new double[f0Length, size];
+                    Buffer.BlockCopy(data, 0, output, 0, data.Length * sizeof(double));
+                    return output;
+                }
+            } catch (Exception e) {
+                Log.Error(e, "Failed to decode.");
+                return null;
+            }
+        }
+
+        [DllImport("worldline", CallingConvention = CallingConvention.Cdecl)]
+        static extern int DecodeBap(
+            int f0Length, double[,] bap,
+            int fftSize, int fs, ref IntPtr aperiodicity);
+
+        public static double[,] DecodeBap(int f0Length, double[,] bap, int fftSize, int fs) {
+            try {
+                unsafe {
+                    IntPtr buffer = IntPtr.Zero;
+                    int size = DecodeBap(f0Length, bap, fftSize, fs, ref buffer);
+                    var data = new double[f0Length * size];
+                    Marshal.Copy(buffer, data, 0, data.Length);
+                    Marshal.FreeCoTaskMem(buffer);
+                    var output = new double[f0Length, size];
+                    Buffer.BlockCopy(data, 0, output, 0, data.Length * sizeof(double));
+                    return output;
+                }
+            } catch (Exception e) {
+                Log.Error(e, "Failed to decode.");
+                return null;
+            }
+        }
+
+        [DllImport("worldline", CallingConvention = CallingConvention.Cdecl)]
+        static extern int DecodeAndSynthesis(
+            double[] f0, int f0Length,
+            double[,] mgc, int mgcSize,
+            double[,] bap, int fftSize,
+            double frameMs, int fs, ref IntPtr y);
+
+        public static float[] DecodeAndSynthesis(
+            double[] f0, double[,] mgc, double[,] bap,
+            int fftSize, double frameMs, int fs) {
+            try {
+                unsafe {
+                    IntPtr buffer = IntPtr.Zero;
+                    int size = DecodeAndSynthesis(
+                        f0, f0.Length,
+                        mgc, mgc.GetLength(1),
+                        bap, fftSize,
+                        frameMs, fs, ref buffer);
+                    var data = new double[size];
+                    Marshal.Copy(buffer, data, 0, size);
+                    Marshal.FreeCoTaskMem(buffer);
+                    return data.Select(s => (float)s).ToArray();
+                }
+            } catch (Exception e) {
+                Log.Error(e, "Failed to render.");
+                return null;
+            }
+        }
+
         [StructLayout(LayoutKind.Sequential)]
         public struct SynthRequest {
             public int sample_fs;
@@ -30,20 +105,10 @@ namespace OpenUtau.Core.Render {
             public int flag_P;
         };
 
-        /*
-        [DllImport("worldline")]
-        static extern int DecodeAndSynthesis(
-            double[] f0, int f0Length,
-            double[,] mgc, int mgcSize,
-            double[,] bap, int fftSize,
-            double framePeriod, int fs,
-            int yLength, ref double[] y);
-        */
-
         [DllImport("worldline")]
         static extern int Resample(IntPtr request, ref IntPtr y);
 
-        public static float[] Resample(ResamplerItem item, ILogger logger) {
+        public static float[] Resample(ResamplerItem item) {
             int fs;
             double[] sample;
             using (var waveStream = Wave.OpenFile(item.inputTemp)) {

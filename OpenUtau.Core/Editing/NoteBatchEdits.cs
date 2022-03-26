@@ -26,7 +26,7 @@ namespace OpenUtau.Core.Editing {
             if (toAdd.Count == 0) {
                 return;
             }
-            docManager.StartUndoGroup();
+            docManager.StartUndoGroup(true);
             foreach (var note in toAdd) {
                 note.lyric = lyric;
                 docManager.ExecuteCmd(new AddNoteCommand(part, note));
@@ -48,7 +48,7 @@ namespace OpenUtau.Core.Editing {
 
         public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
             var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
-            docManager.StartUndoGroup();
+            docManager.StartUndoGroup(true);
             foreach (var note in notes) {
                 int pos = note.position;
                 int end = note.End;
@@ -76,9 +76,9 @@ namespace OpenUtau.Core.Editing {
 
         public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
             var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
-            docManager.StartUndoGroup();
+            docManager.StartUndoGroup(true);
             foreach (var note in notes) {
-                docManager.ExecuteCmd(new ResetPitchPointsCommand(note));
+                docManager.ExecuteCmd(new ResetPitchPointsCommand(part, note));
             }
             docManager.EndUndoGroup();
         }
@@ -95,11 +95,15 @@ namespace OpenUtau.Core.Editing {
 
         public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
             var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
-            docManager.StartUndoGroup();
+            docManager.StartUndoGroup(true);
             foreach (var note in notes) {
                 if (note.phonemeExpressions.Count > 0 || note.noteExpressions.Count > 0) {
-                    docManager.ExecuteCmd(new ResetExpressionsCommand(note));
+                    docManager.ExecuteCmd(new ResetExpressionsCommand(part, note));
                 }
+            }
+            var curveAbbrs = part.curves.Select(c => c.abbr).ToArray();
+            foreach (var abbr in curveAbbrs) {
+                docManager.ExecuteCmd(new ClearCurveCommand(part, abbr));
             }
             docManager.EndUndoGroup();
         }
@@ -116,7 +120,7 @@ namespace OpenUtau.Core.Editing {
 
         public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
             var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
-            docManager.StartUndoGroup();
+            docManager.StartUndoGroup(true);
             foreach (var note in notes) {
                 if (note.vibrato.length > 0) {
                     docManager.ExecuteCmd(new VibratoLengthCommand(part, note, 0));
@@ -137,7 +141,7 @@ namespace OpenUtau.Core.Editing {
 
         public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
             var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
-            docManager.StartUndoGroup();
+            docManager.StartUndoGroup(true);
             foreach (var note in notes) {
                 bool shouldClear = false;
                 foreach (var o in note.phonemeOverrides) {

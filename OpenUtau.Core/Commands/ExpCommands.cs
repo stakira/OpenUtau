@@ -9,6 +9,14 @@ namespace OpenUtau.Core {
         public UVoicePart Part;
         public UNote Note;
         public string Key;
+        public override ValidateOptions ValidateOptions
+            => new ValidateOptions {
+                Part = Part,
+                SkipPhonemizer = true,
+            };
+        public ExpCommand(UVoicePart part) {
+            Part = part;
+        }
     }
 
     /*
@@ -31,12 +39,21 @@ namespace OpenUtau.Core {
     */
 
     public class SetPhonemeExpressionCommand : ExpCommand {
+        static readonly HashSet<string> needsPhonemizer = new HashSet<string> {
+            Format.Ustx.ALT, Format.Ustx.CLR, Format.Ustx.SHFT,
+        };
+
         public readonly UProject project;
         public readonly UTrack track;
         public readonly UPhoneme phoneme;
         public readonly float newValue;
         public readonly float oldValue;
-        public SetPhonemeExpressionCommand(UProject project, UTrack track, UPhoneme phoneme, string abbr, float value) {
+        public override ValidateOptions ValidateOptions
+            => new ValidateOptions {
+                Part = Part,
+                SkipPhonemizer = !needsPhonemizer.Contains(Key),
+            };
+        public SetPhonemeExpressionCommand(UProject project, UTrack track, UVoicePart part, UPhoneme phoneme, string abbr, float value) : base(part) {
             this.project = project;
             this.track = track;
             this.phoneme = phoneme;
@@ -52,7 +69,7 @@ namespace OpenUtau.Core {
     public class ResetExpressionsCommand : ExpCommand {
         List<UExpression> noteExpressions;
         List<UExpression> phonemeExpressions;
-        public ResetExpressionsCommand(UNote note) {
+        public ResetExpressionsCommand(UVoicePart part, UNote note) : base(part) {
             Note = note;
             noteExpressions = note.noteExpressions;
             phonemeExpressions = note.phonemeExpressions;
@@ -68,13 +85,19 @@ namespace OpenUtau.Core {
         }
     }
 
-    public abstract class PitchExpCommand : ExpCommand { }
+    public abstract class PitchExpCommand : ExpCommand {
+        public PitchExpCommand(UVoicePart part) : base(part) { }
+        public override ValidateOptions ValidateOptions => new ValidateOptions {
+            Part = Part,
+            SkipPhonemizer = true,
+            SkipPhoneme = true,
+        };
+    }
 
     public class DeletePitchPointCommand : PitchExpCommand {
         public int Index;
         public PitchPoint Point;
-        public DeletePitchPointCommand(UVoicePart part, UNote note, int index) {
-            this.Part = part;
+        public DeletePitchPointCommand(UVoicePart part, UNote note, int index) : base(part) {
             this.Note = note;
             this.Index = index;
             this.Point = Note.pitch.data[Index];
@@ -88,7 +111,7 @@ namespace OpenUtau.Core {
         public PitchPoint Point;
         public PitchPointShape NewShape;
         public PitchPointShape OldShape;
-        public ChangePitchPointShapeCommand(PitchPoint point, PitchPointShape shape) {
+        public ChangePitchPointShapeCommand(UVoicePart part, PitchPoint point, PitchPointShape shape) : base(part) {
             this.Point = point;
             this.NewShape = shape;
             this.OldShape = point.shape;
@@ -100,7 +123,7 @@ namespace OpenUtau.Core {
 
     public class SnapPitchPointCommand : PitchExpCommand {
         readonly float X, Y;
-        public SnapPitchPointCommand(UNote note) {
+        public SnapPitchPointCommand(UVoicePart part, UNote note) : base(part) {
             Note = note;
             X = Note.pitch.data.First().X;
             Y = Note.pitch.data.First().Y;
@@ -125,7 +148,7 @@ namespace OpenUtau.Core {
     public class AddPitchPointCommand : PitchExpCommand {
         public int Index;
         public PitchPoint Point;
-        public AddPitchPointCommand(UNote note, PitchPoint point, int index) {
+        public AddPitchPointCommand(UVoicePart part, UNote note, PitchPoint point, int index) : base(part) {
             this.Note = note;
             this.Index = index;
             this.Point = point;
@@ -136,13 +159,10 @@ namespace OpenUtau.Core {
     }
 
     public class MovePitchPointCommand : PitchExpCommand {
-        readonly UVoicePart part;
         readonly PitchPoint point;
         readonly float deltaX;
         readonly float deltaY;
-        public override UPart ValidatePart => part;
-        public MovePitchPointCommand(UVoicePart part, PitchPoint point, float deltaX, float deltaY) {
-            this.part = part;
+        public MovePitchPointCommand(UVoicePart part, PitchPoint point, float deltaX, float deltaY) : base(part) {
             this.point = point;
             this.deltaX = deltaX;
             this.deltaY = deltaY;
@@ -155,12 +175,12 @@ namespace OpenUtau.Core {
     public class ResetPitchPointsCommand : PitchExpCommand {
         UPitch oldPitch;
         UPitch newPitch;
-        public ResetPitchPointsCommand(UNote note) {
+        public ResetPitchPointsCommand(UVoicePart part, UNote note) : base(part) {
             Note = note;
             oldPitch = note.pitch;
             newPitch = new UPitch();
-            newPitch.AddPoint(new PitchPoint(-40, 0));
-            newPitch.AddPoint(new PitchPoint(40, 0));
+            newPitch.AddPoint(new PitchPoint(-60, 0));
+            newPitch.AddPoint(new PitchPoint(60, 0));
         }
         public override string ToString() => "Reset pitch points";
         public override void Execute() => Note.pitch = newPitch;
@@ -169,7 +189,6 @@ namespace OpenUtau.Core {
 
     public class SetCurveCommand : ExpCommand {
         readonly UProject project;
-        readonly UVoicePart part;
         readonly string abbr;
         readonly int x;
         readonly int y;
@@ -177,10 +196,14 @@ namespace OpenUtau.Core {
         readonly int lastY;
         int[] oldXs;
         int[] oldYs;
-        public override UPart ValidatePart => part;
-        public SetCurveCommand(UProject project, UVoicePart part, string abbr, int x, int y, int lastX, int lastY) {
+        public override ValidateOptions ValidateOptions
+            => new ValidateOptions {
+                Part = Part,
+                SkipPhonemizer = true,
+                SkipPhoneme = true,
+            };
+        public SetCurveCommand(UProject project, UVoicePart part, string abbr, int x, int y, int lastX, int lastY) : base(part) {
             this.project = project;
-            this.part = part;
             this.abbr = abbr;
             this.x = x;
             this.y = y;
@@ -192,11 +215,11 @@ namespace OpenUtau.Core {
         }
         public override string ToString() => "Edit Curve";
         public override void Execute() {
-            var curve = part.curves.FirstOrDefault(c => c.abbr == abbr);
+            var curve = Part.curves.FirstOrDefault(c => c.abbr == abbr);
             if (project.expressions.TryGetValue(abbr, out var descriptor)) {
                 if (curve == null) {
                     curve = new UCurve(descriptor);
-                    part.curves.Add(curve);
+                    Part.curves.Add(curve);
                 }
                 int y1 = (int)Math.Clamp(y, descriptor.min, descriptor.max);
                 int lastY1 = (int)Math.Clamp(lastY, descriptor.min, descriptor.max);
@@ -204,7 +227,7 @@ namespace OpenUtau.Core {
             }
         }
         public override void Unexecute() {
-            var curve = part.curves.FirstOrDefault(c => c.abbr == abbr);
+            var curve = Part.curves.FirstOrDefault(c => c.abbr == abbr);
             if (curve == null) {
                 return;
             }
@@ -219,28 +242,26 @@ namespace OpenUtau.Core {
         public override UCommand Merge(IList<UCommand> commands) {
             var first = commands.First() as SetCurveCommand;
             var last = commands.Last() as SetCurveCommand;
-            var curve = part.curves.FirstOrDefault(c => c.abbr == abbr);
+            var curve = Part.curves.FirstOrDefault(c => c.abbr == abbr);
             curve.Simplify();
             int[] newXs = curve?.xs.ToArray();
             int[] newYs = curve?.ys.ToArray();
             return new MergedSetCurveCommand(
-                last.project, last.part, last.abbr,
+                last.project, last.Part, last.abbr,
                 first.oldXs, first.oldYs, newXs, newYs);
         }
     }
 
     public class MergedSetCurveCommand : ExpCommand {
         readonly UProject project;
-        readonly UVoicePart part;
         readonly string abbr;
         readonly int[] oldXs;
         readonly int[] oldYs;
         readonly int[] newXs;
         readonly int[] newYs;
         public MergedSetCurveCommand(UProject project, UVoicePart part,
-            string abbr, int[] oldXs, int[] oldYs, int[] newXs, int[] newYs) {
+            string abbr, int[] oldXs, int[] oldYs, int[] newXs, int[] newYs) : base(part) {
             this.project = project;
-            this.part = part;
             this.abbr = abbr;
             this.oldXs = oldXs;
             this.oldYs = oldYs;
@@ -249,10 +270,10 @@ namespace OpenUtau.Core {
         }
         public override string ToString() => "Edit Curve";
         public override void Execute() {
-            var curve = part.curves.FirstOrDefault(c => c.abbr == abbr);
+            var curve = Part.curves.FirstOrDefault(c => c.abbr == abbr);
             if (curve == null && project.expressions.TryGetValue(abbr, out var descriptor)) {
                 curve = new UCurve(descriptor);
-                part.curves.Add(curve);
+                Part.curves.Add(curve);
             }
             curve.xs.Clear();
             curve.ys.Clear();
@@ -262,15 +283,46 @@ namespace OpenUtau.Core {
             }
         }
         public override void Unexecute() {
-            var curve = part.curves.FirstOrDefault(c => c.abbr == abbr);
+            var curve = Part.curves.FirstOrDefault(c => c.abbr == abbr);
             if (curve == null && project.expressions.TryGetValue(abbr, out var descriptor)) {
                 curve = new UCurve(descriptor);
-                part.curves.Add(curve);
+                Part.curves.Add(curve);
             }
             curve.xs.Clear();
             curve.ys.Clear();
             if (oldXs != null && oldYs != null) {
                 curve.xs.AddRange(oldXs);
+                curve.ys.AddRange(oldYs);
+            }
+        }
+    }
+
+    public class ClearCurveCommand : ExpCommand {
+        readonly string abbr;
+        readonly int[] oldXs;
+        readonly int[] oldYs;
+        public ClearCurveCommand(UVoicePart part, string abbr) : base(part) {
+            this.abbr = abbr;
+            var curve = Part.curves.FirstOrDefault(curve => curve.abbr == abbr);
+            if (curve != null) {
+                oldXs = curve.xs.ToArray();
+                oldYs = curve.ys.ToArray();
+            }
+        }
+        public override string ToString() => "Clear Curve";
+        public override void Execute() {
+            var curve = Part.curves.FirstOrDefault(curve => curve.abbr == abbr);
+            if (curve != null) {
+                curve.xs.Clear();
+                curve.ys.Clear();
+            }
+        }
+        public override void Unexecute() {
+            var curve = Part.curves.FirstOrDefault(curve => curve.abbr == abbr);
+            if (curve != null && oldXs != null && oldYs != null) {
+                curve.xs.Clear();
+                curve.xs.AddRange(oldXs);
+                curve.ys.Clear();
                 curve.ys.AddRange(oldYs);
             }
         }

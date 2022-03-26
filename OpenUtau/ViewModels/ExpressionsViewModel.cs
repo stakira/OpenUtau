@@ -92,11 +92,17 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public UExpressionDescriptor Build() {
-            return ExpressionType == UExpressionType.Numerical
-            ? new UExpressionDescriptor(
-                Name.Trim(), Abbr.Trim().ToLower(), Min, Max, DefaultValue, Flag)
-            : new UExpressionDescriptor(
-                Name.Trim(), Abbr.Trim().ToLower(), IsFlag, OptionValues.Split(','));
+            switch (ExpressionType) {
+                case UExpressionType.Numerical:
+                    return new UExpressionDescriptor(Name.Trim(), Abbr.Trim().ToLower(), Min, Max, DefaultValue, Flag);
+                case UExpressionType.Options:
+                    return new UExpressionDescriptor(Name.Trim(), Abbr.Trim().ToLower(), IsFlag, OptionValues.Split(','));
+                case UExpressionType.Curve:
+                    return new UExpressionDescriptor(Name.Trim(), Abbr.Trim().ToLower(), Min, Max, DefaultValue) {
+                        type = UExpressionType.Curve,
+                    };
+            }
+            throw new Exception("Unexpected expression type");
         }
 
         public override string ToString() => Name;

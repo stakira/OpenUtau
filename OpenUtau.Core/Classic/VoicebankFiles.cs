@@ -24,14 +24,14 @@ namespace OpenUtau.Classic {
         }
 
         public static void CopySourceTemp(string source, string temp) {
-            CopyOrStamp(source, temp);
+            CopyOrStamp(source, temp, true);
             var metaFiles = GetMetaFiles(source, temp);
-            metaFiles.ForEach(t => CopyOrStamp(t.Item1, t.Item2));
+            metaFiles.ForEach(t => CopyOrStamp(t.Item1, t.Item2, false));
         }
 
         public static void CopyBackMetaFiles(string source, string temp) {
             var metaFiles = GetMetaFiles(source, temp);
-            metaFiles.ForEach(t => CopyOrStamp(t.Item2, t.Item1));
+            metaFiles.ForEach(t => CopyOrStamp(t.Item2, t.Item1, false));
         }
 
         private static List<Tuple<string, string>> GetMetaFiles(string source, string sourceTemp) {
@@ -49,12 +49,18 @@ namespace OpenUtau.Classic {
                 Tuple.Create(source + ".frc", sourceTemp + ".frc"),
                 Tuple.Create(source + ".pmk", sourceTemp + ".pmk"),
                 Tuple.Create(source + ".vs4ufrq", sourceTemp + ".vs4ufrq"),
+                Tuple.Create(noExt + ".rudb", tempNoExt + ".rudb"),
             };
         }
 
-        private static void CopyOrStamp(string source, string dest) {
+        private static void CopyOrStamp(string source, string dest, bool required) {
             lock (fileAccessLock) {
-                if (File.Exists(source) && !File.Exists(dest)) {
+                if (!File.Exists(source)) {
+                    if (required) {
+                        Log.Error($"Source file {source} not found");
+                        throw new FileNotFoundException($"Source file {source} not found");
+                    }
+                } else if (!File.Exists(dest)) {
                     Log.Information($"Copy temp {source} {dest}");
                     File.Copy(source, dest);
                 }

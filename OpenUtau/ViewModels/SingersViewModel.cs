@@ -113,7 +113,7 @@ namespace OpenUtau.App.ViewModels {
             }
             try {
                 using (var stream = File.OpenRead(singer.Avatar)) {
-                    return Bitmap.DecodeToWidth(stream, 120);
+                    return new Bitmap(stream);
                 }
             } catch (Exception e) {
                 Log.Error(e, "Failed to load avatar.");

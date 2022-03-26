@@ -5,12 +5,14 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using OpenUtau.Core;
+using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Classic {
     public class VoicebankLoader {
         public const string kCharTxt = "character.txt";
         public const string kCharYaml = "character.yaml";
+        public const string kEnuconfigYaml = "enuconfig.yaml";
         public const string kOtoIni = "oto.ini";
 
         class FileLoc {
@@ -29,12 +31,12 @@ namespace OpenUtau.Classic {
             this.basePath = basePath;
         }
 
-        public Dictionary<string, Voicebank> SearchAll() {
-            Dictionary<string, Voicebank> result = new Dictionary<string, Voicebank>();
+        public IEnumerable<Voicebank> SearchAll() {
+            List<Voicebank> result = new List<Voicebank>();
             if (!Directory.Exists(basePath)) {
                 return result;
             }
-            var banks = Directory.EnumerateFiles(basePath, kCharTxt, SearchOption.AllDirectories)
+            result.AddRange(Directory.EnumerateFiles(basePath, kCharTxt, SearchOption.AllDirectories)
                 .Select(filePath => {
                     try {
                         var voicebank = new Voicebank();
@@ -45,11 +47,7 @@ namespace OpenUtau.Classic {
                         return null;
                     }
                 })
-                .OfType<Voicebank>()
-                .ToArray();
-            foreach (var bank in banks) {
-                result.Add(bank.Id, bank);
-            }
+                .OfType<Voicebank>());
             return result;
         }
 
@@ -87,6 +85,12 @@ namespace OpenUtau.Classic {
                 } catch (Exception e) {
                     Log.Error(e, $"Failed to load yaml {yamlFile}");
                 }
+            }
+            var enuconfigFile = Path.Combine(dir, kEnuconfigYaml);
+            if (File.Exists(enuconfigFile)) {
+                voicebank.SingerType = USingerType.Enunu;
+            } else {
+                voicebank.SingerType = USingerType.Classic;
             }
             Encoding encoding = Encoding.GetEncoding("shift_jis");
             if (!string.IsNullOrEmpty(bankConfig?.TextFileEncoding)) {

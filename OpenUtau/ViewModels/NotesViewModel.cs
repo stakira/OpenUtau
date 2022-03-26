@@ -296,8 +296,8 @@ namespace OpenUtau.App.ViewModels {
                             using (var stream = File.OpenRead(singer.Portrait)) {
                                 var portrait = new Bitmap(stream);
                                 if (portrait.Size.Height > 800) {
-                                    stream.Seek(0, SeekOrigin.Begin);
-                                    portrait = Bitmap.DecodeToHeight(stream, 800);
+                                    int width = (int)Math.Round(800 * portrait.Size.Width / portrait.Size.Height);
+                                    portrait = portrait.CreateScaledBitmap(new PixelSize(width, 800));
                                 }
                                 Portrait = portrait;
                             }

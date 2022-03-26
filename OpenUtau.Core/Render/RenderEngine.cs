@@ -34,10 +34,9 @@ namespace OpenUtau.Core.Render {
             this.startTick = startTick;
         }
 
-        public Tuple<MasterAdapter, List<Fader>, CancellationTokenSource> RenderProject(int startTick) {
+        public Tuple<MasterAdapter, List<Fader>, CancellationTokenSource> RenderProject(int startTick, TaskScheduler uiScheduler) {
             var cancellation = new CancellationTokenSource();
             var faders = new List<Fader>();
-            var renderer = new Classic.ClassicRenderer();
             var renderTasks = new List<Tuple<RenderPhrase, WaveSource>>();
             int totalProgress = 0;
             foreach (var track in project.tracks) {
@@ -48,8 +47,9 @@ namespace OpenUtau.Core.Render {
                 var sources = phrases.Select(phrase => {
                     var firstPhone = phrase.phones.First();
                     var lastPhone = phrase.phones.Last();
-                    double posMs = (phrase.position + firstPhone.position) * phrase.tickToMs - firstPhone.preutterMs;
-                    double durMs = (lastPhone.duration + lastPhone.position - firstPhone.position) * phrase.tickToMs;
+                    var layout = phrase.renderer.Layout(phrase);
+                    double posMs = layout.positionMs - layout.leadingMs;
+                    double durMs = layout.estimatedLengthMs;
                     if (posMs + durMs < startTick * phrase.tickToMs) {
                         return null;
                     }
@@ -83,26 +83,31 @@ namespace OpenUtau.Core.Render {
             }
             var master = new MasterAdapter(new WaveMix(faders));
             master.SetPosition((int)(project.TickToMillisecond(startTick) * 44100 / 1000) * 2);
-            var task = Task.Run(() => {
+            Task.Run(() => {
                 var progress = new Progress(totalProgress);
                 foreach (var renderTask in renderTasks.OrderBy(
                     task => task.Item1.position + task.Item1.phones.First().position)) {
                     if (cancellation.IsCancellationRequested) {
                         break;
                     }
-                    var task = renderer.Render(renderTask.Item1, progress, cancellation);
+                    var task = renderTask.Item1.renderer.Render(renderTask.Item1, progress, cancellation);
                     task.Wait();
                     renderTask.Item2.SetSamples(task.Result.samples);
                 }
                 progress.Clear();
-            });
+            }).ContinueWith(task => {
+                if (task.IsFaulted) {
+                    Log.Error(task.Exception, "Failed to render.");
+                    DocManager.Inst.ExecuteCmd(new UserMessageNotification(task.Exception.Flatten().Message));
+                    throw task.Exception;
+                }
+            }, CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted, uiScheduler);
             return Tuple.Create(master, faders, cancellation);
         }
 
         public List<WaveMix> RenderTracks() {
             var cancellation = new CancellationTokenSource();
             var result = new List<WaveMix>();
-            var renderer = new Classic.ClassicRenderer();
             foreach (var track in project.tracks) {
                 RenderPhrase[] phrases;
                 lock (project) {
@@ -110,7 +115,7 @@ namespace OpenUtau.Core.Render {
                 }
                 var progress = new Progress(phrases.Sum(phrase => phrase.phones.Length));
                 var mix = new WaveMix(phrases.Select(phrase => {
-                    var task = renderer.Render(phrase, progress, cancellation);
+                    var task = phrase.renderer.Render(phrase, progress, cancellation);
                     task.Wait();
                     float durMs = task.Result.samples.Length * 1000f / 44100f;
                     var source = new WaveSource(task.Result.positionMs - task.Result.leadingMs, durMs, 0, 1);
@@ -144,9 +149,8 @@ namespace OpenUtau.Core.Render {
                         return;
                     }
                     var progress = new Progress(phrases.Sum(phrase => phrase.phones.Length));
-                    var renderer = new Classic.ClassicRenderer();
                     foreach (var phrase in phrases) {
-                        var task = renderer.Render(phrase, progress, cancellation);
+                        var task = phrase.renderer.Render(phrase, progress, cancellation, true);
                         task.Wait();
                         var samples = task.Result;
                     }
