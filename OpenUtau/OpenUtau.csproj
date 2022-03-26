@@ -66,11 +66,6 @@
     <None Include="..\runtimes\linux-x64\native\**" CopyToOutputDirectory="PreserveNewest" LinkBase="." />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="VSVocoder">
-      <HintPath>..\lib\netstandard2.0\VSVocoder.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Update="Resources\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>

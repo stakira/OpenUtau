@@ -24,16 +24,8 @@
     <PackageReference Include="WanaKana-net" Version="1.0.0" />
     <PackageReference Include="YamlDotNet" Version="11.2.1" />
   </ItemGroup>
-
   <ItemGroup Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">
     <PackageReference Include="NAudio" Version="2.0.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="VocalShaper\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="VocalShaper\" />
   </ItemGroup>
   <PropertyGroup Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">
     <DefineConstants>WINDOWS</DefineConstants>

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -191,9 +191,6 @@ namespace OpenUtau.Core.Vogen {
                     sp, ap, fs, fftSize, f0,
                     tension, breathiness, voicing, gender);
                 return samples.Select(f => (float)f).ToArray();
-                return Worldline.DecodeAndSynthesis(
-                    f0, mgcDouble, bapDouble,
-                    fftSize, frameMs, fs);
             }
         }
 
