@@ -13,8 +13,10 @@ namespace OpenUtau.Core.Render {
             int f0Length, double[,] mgc, int mgcSize,
             int fftSize, int fs, ref IntPtr spectrogram);
 
-        public static double[,] DecodeMgc(int f0Length, double[,] mgc, int mgcSize, int fftSize, int fs) {
+        public static double[,] DecodeMgc(double[,] mgc, int fftSize, int fs) {
             try {
+                int f0Length = mgc.GetLength(0);
+                int mgcSize = mgc.GetLength(1);
                 unsafe {
                     IntPtr buffer = IntPtr.Zero;
                     int size = DecodeMgc(f0Length, mgc, mgc.GetLength(1), fftSize, fs, ref buffer);
@@ -36,8 +38,9 @@ namespace OpenUtau.Core.Render {
             int f0Length, double[,] bap,
             int fftSize, int fs, ref IntPtr aperiodicity);
 
-        public static double[,] DecodeBap(int f0Length, double[,] bap, int fftSize, int fs) {
+        public static double[,] DecodeBap(double[,] bap, int fftSize, int fs) {
             try {
+                int f0Length = bap.GetLength(0);
                 unsafe {
                     IntPtr buffer = IntPtr.Zero;
                     int size = DecodeBap(f0Length, bap, fftSize, fs, ref buffer);

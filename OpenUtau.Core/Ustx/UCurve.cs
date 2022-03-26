@@ -13,6 +13,8 @@ namespace OpenUtau.Core.Ustx {
         public List<int> ys = new List<int>();
         public string abbr;
 
+        [YamlIgnore] public bool IsEmpty => xs.Count == 0 || ys.All(y => y == 0);
+
         public UCurve(UExpressionDescriptor descriptor) {
             Trace.Assert(descriptor != null);
             this.descriptor = descriptor;
@@ -30,6 +32,23 @@ namespace OpenUtau.Core.Ustx {
                 xs = xs.ToList(),
                 ys = ys.ToList(),
             };
+        }
+
+        public bool IsEmptyBetween(int x0, int x1, int defaultValue) {
+            if (Sample(x0) != defaultValue || Sample(x1) != defaultValue) {
+                return false;
+            }
+            int idx = xs.BinarySearch(x0);
+            if (idx < 0) {
+                idx = ~idx;
+            }
+            while (idx < xs.Count && xs[idx] <= x1) {
+                if (ys[idx] != defaultValue) {
+                    return false;
+                }
+                idx++;
+            }
+            return true;
         }
 
         public int Sample(int x) {

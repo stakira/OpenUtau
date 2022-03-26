@@ -116,14 +116,9 @@ namespace OpenUtau.Core.Vogen {
                 lastEndMs = endMs;
             }
             phDurs.Add(tailFrames);
-            var f0 = new float[phDurs.Sum()];
-            for (int i = 0; i < f0.Length - headFrames - tailFrames; i++) {
-                int index = (int)(i * frameMs / phrase.tickToMs / pitchInterval);
-                if (index < phrase.pitches.Length) {
-                    f0[i + headFrames] = (float)MusicMath.ToneToFreq(phrase.pitches[index] * 0.01);
-                }
-            }
-            var f0Shifted = (float[])f0.Clone();
+            var totalFrames = (int)phDurs.Sum();
+            var f0 = DownSampleCurve(phrase.pitches, 0, totalFrames, headFrames, tailFrames, phrase.tickToMs, x => MusicMath.ToneToFreq(x * 0.01));
+            float[] f0Shifted = f0.Select(f => (float)f).ToArray();
             if (phrase.toneShift != null) {
                 for (int i = 0; i < f0.Length - headFrames - tailFrames; i++) {
                     int index = (int)(i * frameMs / phrase.tickToMs / pitchInterval);
@@ -181,10 +176,27 @@ namespace OpenUtau.Core.Vogen {
                     }
                 }
                 return Worldline.DecodeAndSynthesis(
-                    f0.Select(f => (double)f).ToArray(),
-                    mgcDouble, bapDouble,
+                    f0, mgcDouble, bapDouble,
                     fftSize, frameMs, fs);
             }
+        }
+
+        double[] DownSampleCurve(float[] curve, double defaultValue, int length, int headFrames, int tailFrames, double tickToMs, Func<double, double> convert) {
+            const int interval = 5;
+            var result = new double[length];
+            if (curve == null) {
+                Array.Fill(result, defaultValue);
+                return result;
+            }
+            for (int i = 0; i < length - headFrames - tailFrames; i++) {
+                int index = (int)(i * frameMs / tickToMs / interval);
+                if (index < curve.Length) {
+                    result[i + headFrames] = convert(curve[index]);
+                }
+            }
+            Array.Fill(result, defaultValue, 0, headFrames);
+            Array.Fill(result, defaultValue, length - tailFrames, tailFrames);
+            return result;
         }
 
         void ApplyDynamics(RenderPhrase phrase, float[] samples) {

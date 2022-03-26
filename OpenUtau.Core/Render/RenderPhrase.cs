@@ -103,7 +103,11 @@ namespace OpenUtau.Core.Render {
         public readonly RenderPhone[] phones;
         public readonly float[] pitches;
         public readonly float[] dynamics;
+        public readonly float[] gender;
+        public readonly float[] breathiness;
         public readonly float[] toneShift;
+        public readonly float[] tension;
+        public readonly float[] voicing;
         public readonly uint hash;
 
         internal readonly IRenderer renderer;
@@ -202,32 +206,37 @@ namespace OpenUtau.Core.Render {
             }
 
             var curve = part.curves.FirstOrDefault(c => c.abbr == Format.Ustx.PITD);
-            if (curve != null) {
+            if (curve != null && !curve.IsEmpty) {
                 for (int i = 0; i < pitches.Length; ++i) {
                     pitches[i] += curve.Sample(pitchStart + i * pitchInterval);
                 }
             }
 
-            curve = part.curves.FirstOrDefault(c => c.abbr == Format.Ustx.DYN);
-            if (curve != null) {
-                dynamics = new float[pitches.Length];
-                for (int i = 0; i < dynamics.Length; ++i) {
-                    int dyn = curve.Sample(pitchStart + i * pitchInterval);
-                    dynamics[i] = dyn == curve.descriptor.min
-                        ? 0
-                        : (float)MusicMath.DecibelToLinear(dyn * 0.1);
-                }
-            }
-
-            curve = part.curves.FirstOrDefault(c => c.abbr == Format.Ustx.SHFC);
-            if (curve != null) {
-                toneShift = new float[pitches.Length];
-                for (int i = 0; i < toneShift.Length; ++i) {
-                    toneShift[i] = curve.Sample(pitchStart + i * pitchInterval);
-                }
-            }
+            dynamics = SampleCurve(part, Format.Ustx.DYN, pitchStart, pitches.Length,
+                dyn => dyn == curve.descriptor.min
+                    ? 0
+                    : (float)MusicMath.DecibelToLinear(dyn * 0.1));
+            gender = SampleCurve(part, Format.Ustx.GENC, pitchStart, pitches.Length, x => 0.005f * x + 0.5f);
+            breathiness = SampleCurve(part, Format.Ustx.BREC, pitchStart, pitches.Length, x => 0.005f * x + 0.5f);
+            toneShift = SampleCurve(part, Format.Ustx.SHFC, pitchStart, pitches.Length, x => x);
+            tension = SampleCurve(part, Format.Ustx.TENC, pitchStart, pitches.Length, x => 0.005f * x + 0.5f);
+            voicing = SampleCurve(part, Format.Ustx.VOIC, pitchStart, pitches.Length, x => 0.01f * x);
 
             hash = Hash();
+        }
+
+        private static float[] SampleCurve(UVoicePart part, string abbr, int start, int length, Func<float, float> convert) {
+            const int interval = 5;
+            var curve = part.curves.FirstOrDefault(c => c.abbr == abbr);
+            if (curve == null || curve.IsEmptyBetween(
+                start, start + (length - 1) * interval, (int)curve.descriptor.defaultValue)) {
+                return null;
+            }
+            var result = new float[length];
+            for (int i = 0; i < length; ++i) {
+                result[i] = convert(curve.Sample(start + i * interval));
+            }
+            return result;
         }
 
         private uint Hash() {
@@ -239,17 +248,13 @@ namespace OpenUtau.Core.Render {
                     foreach (var phone in phones) {
                         writer.Write(phone.hash);
                     }
-                    foreach (var pitch in pitches) {
-                        writer.Write(pitch);
-                    }
-                    if (dynamics != null) {
-                        foreach (var dynamic in dynamics) {
-                            writer.Write(dynamic);
-                        }
-                    }
-                    if (toneShift != null) {
-                        foreach (var shift in toneShift) {
-                            writer.Write(shift);
+                    foreach (var array in new float[][] { pitches, dynamics, gender, breathiness, toneShift, tension, voicing }) {
+                        if (array == null) {
+                            writer.Write("null");
+                        } else {
+                            foreach (var v in array) {
+                                writer.Write(v);
+                            }
                         }
                     }
                     return XXH32.DigestOf(stream.ToArray());
