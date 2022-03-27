@@ -20,9 +20,9 @@ namespace OpenUtau.Plugin.Builtin {
         ///</summary>
 
         private readonly string[] vowels = "a,e,i,o,u".Split(',');
-        private readonly string[] consonants = "b,ch,d,f,g,h,j,k,l,ll,m,n,nh,p,r,rr,s,t,v,w,x,y,z".Split(',');
+        private readonly string[] consonants = "b,ch,d,f,g,h,j,k,l,ll,m,n,nh,p,r,rr,s,t,w,y,z".Split(',');
         private readonly Dictionary<string, string> dictionaryReplacements = ("a=a;e=e;i=i;o=o;u=u;" +
-                "b=b;ch=ch;d=d;f=f;g=g;gn=nh;h=h;k=k;l=l;ll=j;m=m;n=n;p=p;r=r;rr=rr;s=s;t=t;v=v;w=w;x=x;y=y;z=z").Split(';')
+                "b=b;ch=ch;d=d;f=f;g=g;gn=nh;h=h;k=k;l=l;ll=j;m=m;n=n;p=p;r=r;rr=rr;s=s;t=t;w=w;y=y;z=z").Split(';')
                 .Select(entry => entry.Split('='))
                 .Where(parts => parts.Length == 2)
                 .Where(parts => parts[0] != parts[1])
