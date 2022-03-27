@@ -33,14 +33,15 @@
   <system:String x:Key="exps.caption">Biểu cảm</system:String>
   <system:String x:Key="exps.defaultvalue">Mặc định</system:String>
   <!--<system:String x:Key="exps.flag">Resampler Flag</system:String>-->
-  <system:String x:Key="exps.isflag">Là Resampler Flag</system:String>
+  <system:String x:Key="exps.isflag">Là Flag của Resampler</system:String>
   <system:String x:Key="exps.maxvalue">Cao nhất</system:String>
   <system:String x:Key="exps.minvalue">Thấp nhất</system:String>
   <system:String x:Key="exps.name">Tên</system:String>
-  <system:String x:Key="exps.optionvalues">Giá trị của tuỳ chọn</system:String>
-  <system:String x:Key="exps.sepbycomma">Ngăn cách các giá trị bằng ','</system:String>
+  <system:String x:Key="exps.optionvalues">Các giá trị tuỳ chọn</system:String>
+  <system:String x:Key="exps.sepbycomma">Ngăn cách các giá trị bằng dấu ','</system:String>
   <system:String x:Key="exps.type">Thể loại</system:String>
-  <system:String x:Key="exps.type.numerical">Giá trị bằng số</system:String>
+  <system:String x:Key="exps.type.curve">Vẽ tự do</system:String>
+  <system:String x:Key="exps.type.numerical">Giá trị số</system:String>
   <system:String x:Key="exps.type.options">Lựa chọn các giá trị</system:String>
 
   <system:String x:Key="lyrics.apply">Áp dụng</system:String>
@@ -49,7 +50,7 @@
   <system:String x:Key="lyrics.livepreview">Xem trước</system:String>
   <system:String x:Key="lyrics.max">nhiều nhất</system:String>
   <system:String x:Key="lyrics.reset">Đặt lại</system:String>
-  <system:String x:Key="lyrics.selectnotes">Chọn một vài nốt trước đã!</system:String>
+  <system:String x:Key="lyrics.selectnotes">Chọn một số nốt trước đã!</system:String>
   <system:String x:Key="lyrics.separators">Ngăn cách</system:String>
 
   <system:String x:Key="menu.edit">Chỉnh sửa</system:String>
@@ -64,17 +65,17 @@
   <system:String x:Key="menu.file.exit">Thoát ra</system:String>
   <system:String x:Key="menu.file.exportust">Xuất ra tệp UST</system:String>
   <system:String x:Key="menu.file.exportwav">Xuất ra tệp WAV</system:String>
-  <system:String x:Key="menu.file.importaudio">Nhập vào tệp Nhạc...</system:String>
+  <system:String x:Key="menu.file.importaudio">Nhập vào tệp Âm thanh...</system:String>
   <system:String x:Key="menu.file.importmidi">Nhập vào Midi...</system:String>
   <system:String x:Key="menu.file.importtracks">Nhập vào UST/VSQX...</system:String>
-  <system:String x:Key="menu.file.new">Mới</system:String>
-  <system:String x:Key="menu.file.newfromtemplate">Mới từ các Mẫu</system:String>
-  <system:String x:Key="menu.file.open">Mở...</system:String>
+  <system:String x:Key="menu.file.new">Dự án mới</system:String>
+  <system:String x:Key="menu.file.newfromtemplate">Dự án mới từ các mẫu</system:String>
+  <system:String x:Key="menu.file.open">Mở tệp...</system:String>
   <system:String x:Key="menu.file.openas">Mở dưới dạng</system:String>
   <system:String x:Key="menu.file.openrecent">Mở tệp gần đây</system:String>
   <system:String x:Key="menu.file.save">Lưu</system:String>
   <system:String x:Key="menu.file.saveas">Lưu dưới dạng...</system:String>
-  <system:String x:Key="menu.file.savetemplate">Lưu thành Mẫu...</system:String>
+  <system:String x:Key="menu.file.savetemplate">Lưu thành mẫu...</system:String>
   <system:String x:Key="menu.help">Hướng dẫn</system:String>
   <system:String x:Key="menu.help.about">Thông tin về OpenUtau</system:String>
   <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
@@ -92,23 +93,24 @@
   <system:String x:Key="menu.tools.project.expressions">Biểu cảm...</system:String>
   <system:String x:Key="menu.tools.singer.install">Cài đặt ca sĩ vào máy...</system:String>
   <system:String x:Key="menu.tools.singer.installadv">Cài đặt ca sĩ vào(Nâng cao)...</system:String>
-  <system:String x:Key="menu.tools.singers">Danh sách ca sĩ...</system:String>
+  <system:String x:Key="menu.tools.singers">Danh sách các ca sĩ...</system:String>
 
   <!--<system:String x:Key="oto.alias">Alias</system:String>-->
+  <system:String x:Key="oto.alias">Tên đặt trong Oto</system:String>
   <system:String x:Key="oto.color">Sắc thái</system:String>
   <!--<system:String x:Key="oto.consonant">Consonant</system:String>-->
   <!--<system:String x:Key="oto.cutoff">Cutoff</system:String>-->
-  <system:String x:Key="oto.file">Tên tệp</system:String>
+  <system:String x:Key="oto.file">Tệp âm thanh</system:String>
   <!--<system:String x:Key="oto.offset">Offset</system:String>-->
   <!--<system:String x:Key="oto.overlap">Overlap</system:String>-->
   <system:String x:Key="oto.phonetic">Âm vị</system:String>
   <system:String x:Key="oto.prefix">Tiền tố</system:String>
   <!--<system:String x:Key="oto.preutter">Preutter</system:String>-->
-  <system:String x:Key="oto.set">Tập hợp</system:String>
+  <system:String x:Key="oto.set">Thư mục</system:String>
   <system:String x:Key="oto.suffix">Hậu tố</system:String>
 
-  <system:String x:Key="pianoroll.menu.lyrics">Lời bài hát</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.edit">Chỉnh sửa lời bài hát</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics">Lời nhạc</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.edit">Chỉnh sửa lời nhạc</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Chuyển Hiragana sang Romaji</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">Chuyển VCV Tiếng Nhật sang CV</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Xoá hậu tố Từ</system:String>
@@ -155,10 +157,10 @@ Nhấn giữ Ctrl để chọn đồng loạt nhiều nốt</system:String>
   <system:String x:Key="prefs.note.restart">Lưu ý: khởi động lại OpenUTAU sau khi chỉnh sửa tuỳ chọn này.</system:String>
   <system:String x:Key="prefs.off">Tắt</system:String>
   <system:String x:Key="prefs.on">Mở</system:String>
-  <system:String x:Key="prefs.paths">Mở thư mục Resamplers</system:String>
-  <system:String x:Key="prefs.paths.addlsinger">Đường dẫn phụ chứa ca sĩ </system:String>
+  <system:String x:Key="prefs.paths">Đường dẫn</system:String>
+  <system:String x:Key="prefs.paths.addlsinger">Thư mục phụ chứa các ca sĩ </system:String>
   <!--<system:String x:Key="prefs.paths.addlsinger.install">Install to Additional Singer Path</system:String>-->
-  <system:String x:Key="prefs.paths.addlsinger.install">Cài đặt vào đường dẫn phụ chứa ca sĩ</system:String>
+  <system:String x:Key="prefs.paths.addlsinger.install">Cài đặt vào thư mục phụ chứa các ca sĩ</system:String>
   <system:String x:Key="prefs.paths.reset">Đặt lại</system:String>
   <system:String x:Key="prefs.paths.select">Lựa chọn</system:String>
   <system:String x:Key="prefs.playback">Phát lại</system:String>
@@ -185,24 +187,26 @@ Warning: moresampler is not fully supported. It may be slow and cause high CPU u
   </system:String>
 
   <system:String x:Key="progress.saved">Hoàn tất lưu dự án. {0}</system:String>
+  <system:String x:Key="progress.waitingrendering">Đang chờ việc render</system:String>
+
 
   <system:String x:Key="singers.caption">Ca sĩ</system:String>
   <system:String x:Key="singers.location">Đường dẫn</system:String>
   <system:String x:Key="singers.refresh">Làm mới</system:String>
-  <system:String x:Key="singers.setencoding">Chỉnh sửa mã hoá</system:String>
+  <system:String x:Key="singers.setencoding">Sửa đổi mã hoá</system:String>
   <system:String x:Key="singers.subbanks.cancel">Huỷ bỏ</system:String>
   <system:String x:Key="singers.subbanks.clear">Xoá bỏ</system:String>
-  <system:String x:Key="singers.subbanks.color">Màu sắc</system:String>
-  <system:String x:Key="singers.subbanks.color.add">Thêm Sắc thái</system:String>
-  <system:String x:Key="singers.subbanks.color.remove">Xoá bỏ Sắc thái</system:String>
+  <system:String x:Key="singers.subbanks.color">Sắc thái</system:String>
+  <system:String x:Key="singers.subbanks.color.add">Thêm sắc thái</system:String>
+  <system:String x:Key="singers.subbanks.color.remove">Xoá sắc thái</system:String>
   <system:String x:Key="singers.subbanks.color.rename">Đổi tên</system:String>
-  <system:String x:Key="singers.subbanks.edit">Chỉnh sửa Bank phụ</system:String>
+  <system:String x:Key="singers.subbanks.edit">Sửa đổi sắc thái</system:String>
   <system:String x:Key="singers.subbanks.reset">Đặt lại</system:String>
   <system:String x:Key="singers.subbanks.save">Lưu</system:String>
   <system:String x:Key="singers.subbanks.selectall">Chọn tất cả</system:String>
   <system:String x:Key="singers.subbanks.set">Áp dụng</system:String>
-  <system:String x:Key="singers.subbanks.tone">Chất giọng</system:String>
-  <system:String x:Key="singers.subbanks.toneranges">Độ cao chất giọng</system:String>
+  <system:String x:Key="singers.subbanks.tone">Cao độ</system:String>
+  <system:String x:Key="singers.subbanks.toneranges">Cao độ</system:String>
 
   <system:String x:Key="tip.exps">
 Nhấn giữ và kéo trái chuột: Thiết lập biểu cảm
@@ -233,7 +237,7 @@ Tổng quát
   <system:String x:Key="tracks.movedown">Di chuyển xuống</system:String>
   <system:String x:Key="tracks.moveup">Di chuyển lên</system:String>
   <system:String x:Key="tracks.remove">Xoá bỏ</system:String>
-  <system:String x:Key="tracks.selectsinger">Lựa chọn ca sĩ</system:String>
+  <system:String x:Key="tracks.selectsinger">Chọn ca sĩ</system:String>
 
   <system:String x:Key="updater.caption">Kiểm tra cập nhật</system:String>
   <!--<system:String x:Key="updater.github">GitHub</system:String>-->
