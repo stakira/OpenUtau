@@ -345,7 +345,23 @@ namespace OpenUtau.App.Views {
         }
 
         void OnMenuClearCache(object sender, RoutedEventArgs args) {
-            PathManager.Inst.ClearCache();
+            Task.Run(() => {
+                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, "Clearing cache..."));
+                PathManager.Inst.ClearCache();
+                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, "Cache cleared."));
+            });
+        }
+
+        void OnMenuDebugWindow(object sender, RoutedEventArgs args) {
+            var desktop = Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
+            if (desktop == null) {
+                return;
+            }
+            var window = desktop.Windows.FirstOrDefault(w => w is DebugWindow);
+            if (window == null) {
+                window = new DebugWindow();
+            }
+            window.Show();
         }
 
         void OnMenuWiki(object sender, RoutedEventArgs args) {

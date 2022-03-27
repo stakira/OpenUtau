@@ -8,10 +8,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using NAudio.Wave;
 using OpenUtau.Core.Format;
+using OpenUtau.Core.Render;
 using OpenUtau.Core.Ustx;
 using Serilog;
 
-namespace OpenUtau.Core.Render {
+namespace OpenUtau.Core.Enunu {
     class EnunuRenderer : IRenderer {
         static readonly HashSet<string> supportedExp = new HashSet<string>(){
             Format.Ustx.DYN,
@@ -129,10 +130,11 @@ namespace OpenUtau.Core.Render {
         }
 
         private void InvokeEnunu(RenderPhrase phrase, string ustPath, string wavPath, bool createNoWindow) {
+            Log.Information($"Starting enunu to render \"{wavPath}\"");
             WriteUst(phrase, ustPath);
             var startInfo = new ProcessStartInfo() {
                 FileName = python,
-                Arguments = $"{script} {ustPath} {wavPath}",
+                Arguments = $"{script} \"{ustPath}\" \"{wavPath}\"",
                 WorkingDirectory = workDir,
                 CreateNoWindow = !Util.Preferences.Default.ResamplerLogging,
             };

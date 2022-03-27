@@ -130,10 +130,8 @@ namespace OpenUtau.Core {
             var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
             Task.Run(() => {
                 RenderEngine engine = new RenderEngine(project, tick);
-                var result = engine.RenderProject(tick, scheduler);
+                var result = engine.RenderProject(tick, scheduler, ref renderCancellation);
                 faders = result.Item2;
-                var cancellation = result.Item3;
-                CancelRendering(cancellation);
                 StartPlayback(project.TickToMillisecond(tick), result.Item1);
             }).ContinueWith((task) => {
                 if (task.IsFaulted) {
@@ -157,11 +155,10 @@ namespace OpenUtau.Core {
         }
 
         public void RenderToFiles(UProject project) {
-            CancelRendering(null);
             Task.Run(() => {
                 var task = Task.Run(() => {
                     RenderEngine engine = new RenderEngine(project);
-                    var trackMixes = engine.RenderTracks();
+                    var trackMixes = engine.RenderTracks(ref renderCancellation);
                     for (int i = 0; i < trackMixes.Count; ++i) {
                         if (project.tracks.Count > i) {
                             if (project.tracks[i].Mute) {
@@ -187,16 +184,7 @@ namespace OpenUtau.Core {
         void SchedulePreRender() {
             Log.Information("SchedulePreRender");
             var engine = new RenderEngine(DocManager.Inst.Project);
-            var cancellation = engine.PreRenderProject();
-            CancelRendering(cancellation);
-        }
-
-        void CancelRendering(CancellationTokenSource cancellation) {
-            cancellation = Interlocked.Exchange(ref renderCancellation, cancellation);
-            if (cancellation != null) {
-                Log.Information("Cancelling rendering");
-                cancellation.Cancel();
-            }
+            engine.PreRenderProject(ref renderCancellation);
         }
 
         #region ICmdSubscriber

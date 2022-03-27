@@ -163,35 +163,25 @@ namespace OpenUtau.Core.Vogen {
                 new DenseTensor<float>(f0Shifted, new int[] { 1, f0.Length })));
             inputs.Add(NamedOnnxValue.CreateFromTensor("breAmp",
                 new DenseTensor<float>(breAmp, new int[] { 1, f0.Length })));
+            double[,] sp;
+            double[,] ap;
             using (var session = new InferenceSession(singer.model)) {
                 using var outputs = session.Run(inputs);
-                var mgc = outputs.First().AsTensor<float>();
-                var mgcDouble = new double[mgc.Dimensions[1], mgc.Dimensions[2]];
-                for (int i = 0; i < mgc.Dimensions[1]; ++i) {
-                    for (int j = 0; j < mgc.Dimensions[2]; ++j) {
-                        mgcDouble[i, j] = mgc[0, i, j];
-                    }
-                }
-                var bap = outputs.Last().AsTensor<float>();
-                var bapDouble = new double[bap.Dimensions[1], bap.Dimensions[2]];
-                for (int i = 0; i < bap.Dimensions[1]; ++i) {
-                    for (int j = 0; j < bap.Dimensions[2]; ++j) {
-                        bapDouble[i, j] = bap[0, i, j];
-                    }
-                }
-                var sp = Worldline.DecodeMgc(mgcDouble, fftSize, fs);
-                var ap = Worldline.DecodeBap(bapDouble, fftSize, fs);
-                var tension = DownSampleCurve(phrase.tension, 0.5, totalFrames, headFrames, tailFrames, phrase.tickToMs, x => x);
-                var breathiness = DownSampleCurve(phrase.breathiness, 0.5, totalFrames, headFrames, tailFrames, phrase.tickToMs, x => x);
-                var voicing = DownSampleCurve(phrase.voicing, 1.0, totalFrames, headFrames, tailFrames, phrase.tickToMs, x => x);
-                var gender = DownSampleCurve(phrase.gender, 0.5, totalFrames, headFrames, tailFrames, phrase.tickToMs, x => x);
-                var samples = new double[1 + (int)((f0.Length - 1) * frameMs / 1000.0 * fs)];
-                World.Synthesis(
-                    vocoder, out samples,
-                    sp, ap, fs, fftSize, f0,
-                    tension, breathiness, voicing, gender);
-                return samples.Select(f => (float)f).ToArray();
+                var mgc = outputs.First().AsTensor<float>().Select(f => (double)f).ToArray();
+                var bap = outputs.Last().AsTensor<float>().Select(f => (double)f).ToArray();
+                sp = Worldline.DecodeMgc(f0.Length, mgc, fftSize, fs);
+                ap = Worldline.DecodeBap(f0.Length, bap, fftSize, fs);
             }
+            var tension = DownSampleCurve(phrase.tension, 0.5, totalFrames, headFrames, tailFrames, phrase.tickToMs, x => x);
+            var breathiness = DownSampleCurve(phrase.breathiness, 0.5, totalFrames, headFrames, tailFrames, phrase.tickToMs, x => x);
+            var voicing = DownSampleCurve(phrase.voicing, 1.0, totalFrames, headFrames, tailFrames, phrase.tickToMs, x => x);
+            var gender = DownSampleCurve(phrase.gender, 0.5, totalFrames, headFrames, tailFrames, phrase.tickToMs, x => x);
+            var samples = new double[1 + (int)((f0.Length - 1) * frameMs / 1000.0 * fs)];
+            World.Synthesis(
+                vocoder, out samples,
+                sp, ap, fs, fftSize, f0,
+                tension, breathiness, voicing, gender);
+            return samples.Select(f => (float)f).ToArray();
         }
 
         double[] DownSampleCurve(float[] curve, double defaultValue, int length, int headFrames, int tailFrames, double tickToMs, Func<double, double> convert) {

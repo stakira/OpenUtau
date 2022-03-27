@@ -4,6 +4,7 @@ using System.Text;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
+using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
 using Serilog;
 
@@ -51,6 +52,7 @@ namespace OpenUtau.App {
                 .MinimumLevel.Information()
                 .WriteTo.Debug()
                 .WriteTo.File(PathManager.Inst.LogFilePath, rollingInterval: RollingInterval.Day, encoding: Encoding.UTF8)
+                .WriteTo.DebugWindow()
                 .CreateLogger();
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler((sender, args) => {
                 Log.Error((Exception)args.ExceptionObject, "Unhandled exception");

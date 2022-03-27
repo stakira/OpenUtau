@@ -34,8 +34,13 @@ namespace OpenUtau.Core.Render {
             this.startTick = startTick;
         }
 
-        public Tuple<MasterAdapter, List<Fader>, CancellationTokenSource> RenderProject(int startTick, TaskScheduler uiScheduler) {
-            var cancellation = new CancellationTokenSource();
+        public Tuple<MasterAdapter, List<Fader>> RenderProject(int startTick, TaskScheduler uiScheduler, ref CancellationTokenSource cancellation) {
+            var newCancellation = new CancellationTokenSource();
+            var oldCancellation = Interlocked.Exchange(ref cancellation, newCancellation);
+            if (oldCancellation != null) {
+                oldCancellation.Cancel();
+                oldCancellation.Dispose();
+            }
             var faders = new List<Fader>();
             var renderTasks = new List<Tuple<RenderPhrase, WaveSource>>();
             int totalProgress = 0;
@@ -87,10 +92,10 @@ namespace OpenUtau.Core.Render {
                 var progress = new Progress(totalProgress);
                 foreach (var renderTask in renderTasks.OrderBy(
                     task => task.Item1.position + task.Item1.phones.First().position)) {
-                    if (cancellation.IsCancellationRequested) {
+                    if (newCancellation.IsCancellationRequested) {
                         break;
                     }
-                    var task = renderTask.Item1.renderer.Render(renderTask.Item1, progress, cancellation);
+                    var task = renderTask.Item1.renderer.Render(renderTask.Item1, progress, newCancellation);
                     task.Wait();
                     renderTask.Item2.SetSamples(task.Result.samples);
                 }
@@ -102,11 +107,16 @@ namespace OpenUtau.Core.Render {
                     throw task.Exception;
                 }
             }, CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted, uiScheduler);
-            return Tuple.Create(master, faders, cancellation);
+            return Tuple.Create(master, faders);
         }
 
-        public List<WaveMix> RenderTracks() {
-            var cancellation = new CancellationTokenSource();
+        public List<WaveMix> RenderTracks(ref CancellationTokenSource cancellation) {
+            var newCancellation = new CancellationTokenSource();
+            var oldCancellation = Interlocked.Exchange(ref cancellation, newCancellation);
+            if (oldCancellation != null) {
+                oldCancellation.Cancel();
+                oldCancellation.Dispose();
+            }
             var result = new List<WaveMix>();
             foreach (var track in project.tracks) {
                 RenderPhrase[] phrases;
@@ -115,7 +125,7 @@ namespace OpenUtau.Core.Render {
                 }
                 var progress = new Progress(phrases.Sum(phrase => phrase.phones.Length));
                 var mix = new WaveMix(phrases.Select(phrase => {
-                    var task = phrase.renderer.Render(phrase, progress, cancellation);
+                    var task = phrase.renderer.Render(phrase, progress, newCancellation);
                     task.Wait();
                     float durMs = task.Result.samples.Length * 1000f / 44100f;
                     var source = new WaveSource(task.Result.positionMs - task.Result.leadingMs, durMs, 0, 1);
@@ -128,12 +138,17 @@ namespace OpenUtau.Core.Render {
             return result;
         }
 
-        public CancellationTokenSource PreRenderProject() {
-            var cancellation = new CancellationTokenSource();
+        public void PreRenderProject(ref CancellationTokenSource cancellation) {
+            var newCancellation = new CancellationTokenSource();
+            var oldCancellation = Interlocked.Exchange(ref cancellation, newCancellation);
+            if (oldCancellation != null) {
+                oldCancellation.Cancel();
+                oldCancellation.Dispose();
+            }
             Task.Run(() => {
                 try {
                     Thread.Sleep(200);
-                    if (cancellation.Token.IsCancellationRequested) {
+                    if (newCancellation.Token.IsCancellationRequested) {
                         return;
                     }
                     RenderPhrase[] phrases;
@@ -150,18 +165,17 @@ namespace OpenUtau.Core.Render {
                     }
                     var progress = new Progress(phrases.Sum(phrase => phrase.phones.Length));
                     foreach (var phrase in phrases) {
-                        var task = phrase.renderer.Render(phrase, progress, cancellation, true);
+                        var task = phrase.renderer.Render(phrase, progress, newCancellation, true);
                         task.Wait();
                         var samples = task.Result;
                     }
                     progress.Clear();
                 } catch (Exception e) {
-                    if (!cancellation.IsCancellationRequested) {
+                    if (!newCancellation.IsCancellationRequested) {
                         Log.Error(e, "Failed to pre-render.");
                     }
                 }
             });
-            return cancellation;
         }
 
         IEnumerable<RenderPhrase> PrepareProject(UProject project) {

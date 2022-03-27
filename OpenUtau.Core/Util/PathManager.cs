@@ -44,7 +44,7 @@ namespace OpenUtau.Core {
         public string SingersPathOld => Path.Combine(HomePath, "Content", "Singers");
         public string SingersPath => Path.Combine(HomePath, "Singers");
         public string AdditionalSingersPath => Preferences.Default.AdditionalSingerPath;
-        public string SingersInstallPath => Preferences.Default.InstallToAdditionalSingersPath 
+        public string SingersInstallPath => Preferences.Default.InstallToAdditionalSingersPath
             && !string.IsNullOrEmpty(Preferences.Default.AdditionalSingerPath)
                 ? AdditionalSingersPath
                 : SingersPath;
@@ -69,12 +69,20 @@ namespace OpenUtau.Core {
         }
 
         public void ClearCache() {
-            var files = Directory.GetFiles(CachePath, "*.*");
+            var files = Directory.GetFiles(CachePath);
             foreach (var file in files) {
                 try {
                     File.Delete(file);
                 } catch (Exception e) {
-                    Log.Error(e, $"Failed to delete {file}");
+                    Log.Error(e, $"Failed to delete file {file}");
+                }
+            }
+            var dirs = Directory.GetDirectories(CachePath);
+            foreach (var dir in dirs) {
+                try {
+                    Directory.Delete(dir, true);
+                } catch (Exception e) {
+                    Log.Error(e, $"Failed to delete dir {dir}");
                 }
             }
         }

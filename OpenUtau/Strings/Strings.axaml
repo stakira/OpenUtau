@@ -13,6 +13,8 @@
   <system:String x:Key="context.pitch.pointdel">Delete point</system:String>
   <system:String x:Key="context.pitch.pointsnapprev">Snap to previous note</system:String>
 
+  <system:String x:Key="debug.clear">Clear</system:String>
+
   <system:String x:Key="dialogs.about.caption">About OpenUTAU</system:String>
   <system:String x:Key="dialogs.about.message">
     OpenUtau aims to be an open source editing environment for UTAU community, with a modern user experience and intelligent phonological support. Visit us on Github.
@@ -84,6 +86,7 @@
   <system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>
   <system:String x:Key="menu.tools">Tools</system:String>
   <system:String x:Key="menu.tools.clearcache">Clear Cache</system:String>
+  <system:String x:Key="menu.tools.debugwindow">Debug Window</system:String>
   <system:String x:Key="menu.tools.layout">Layout</system:String>
   <system:String x:Key="menu.tools.layout.hsplit11">Horizontal 1:1</system:String>
   <system:String x:Key="menu.tools.layout.hsplit12">Horizontal 1:2</system:String>

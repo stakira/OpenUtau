@@ -29,7 +29,7 @@ namespace OpenUtau.Core.Ustx {
                                 Renderer = new Classic.ClassicRenderer();
                                 break;
                             case USingerType.Enunu:
-                                Renderer = new EnunuRenderer();
+                                Renderer = new Enunu.EnunuRenderer();
                                 break;
                             case USingerType.Vogen:
                                 Renderer = new Vogen.VogenRenderer();
