@@ -311,6 +311,100 @@ namespace OpenUtau.App.Views {
         }
     }
 
+    class NoteSplitEditState : NoteEditState {
+        public readonly UNote note;
+        private UNote? newNote;
+        private int oldDur;
+        private float oldVibLength;
+        private float oldVibFadeIn;
+        private float oldVibFadeOut;
+        private float oldVibShift;
+        private float oldVibLengthTicks => oldVibLength * oldDur / 100;
+        private float oldVibFadeInTicks => oldVibFadeIn * oldVibLengthTicks / 100;
+        private float oldVibFadeOutTicks => oldVibFadeOut * oldVibLengthTicks / 100;
+        private float vibPeriod => note.vibrato.period;
+        public NoteSplitEditState(
+            Canvas canvas,
+            PianoRollViewModel vm,
+            IValueTip valueTip,
+            UNote note) : base(canvas, vm, valueTip) {
+            this.note = note;
+            var notesVm = vm.NotesViewModel;
+            if (!notesVm.SelectedNotes.Contains(note)) {
+                notesVm.DeselectNotes();
+            }
+            oldDur = note.duration;
+            oldVibLength = note.vibrato.length;
+            oldVibFadeIn = note.vibrato.@in;
+            oldVibFadeOut = note.vibrato.@out;
+            oldVibShift = note.vibrato.shift;
+        }
+
+        public override void Begin(IPointer pointer, Point point) {
+            var notesVm = vm.NotesViewModel;
+            base.Begin(pointer, point);
+            newNote = notesVm.MaybeAddNote(point, false);
+            DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(notesVm.Part, newNote, "+~"));
+        }
+
+        public override void Update(IPointer pointer, Point point) {
+            var project = DocManager.Inst.Project;
+            var notesVm = vm.NotesViewModel;
+            int deltaDuration = notesVm.IsSnapOn
+                ? notesVm.PointToSnappedTick(point) + notesVm.SnapUnit - note.End
+                : notesVm.PointToTick(point) - note.End;
+            int minNoteTicks = notesVm.IsSnapOn ? notesVm.SnapUnit : 15;
+
+            int maxNegDelta = note.duration - minNoteTicks;
+            if (notesVm.IsSnapOn && notesVm.SnapUnit > 0) {
+                maxNegDelta = (int)Math.Floor((double)maxNegDelta / notesVm.SnapUnit) * notesVm.SnapUnit;
+            }
+            deltaDuration = Math.Max(deltaDuration, -maxNegDelta);
+
+            if (deltaDuration == 0) {
+                valueTip.UpdateValueTip(note.duration.ToString());
+                return;
+            }
+            if (note.duration + deltaDuration < oldDur) {
+                DocManager.Inst.ExecuteCmd(new ResizeNoteCommand(notesVm.Part, newNote, -deltaDuration));
+                DocManager.Inst.ExecuteCmd(new ResizeNoteCommand(notesVm.Part, note, deltaDuration));
+                if (note.duration > oldDur - 10) DocManager.Inst.ExecuteCmd(new ResizeNoteCommand(notesVm.Part, note, oldDur - note.duration - 10));
+                if (note.duration + newNote.duration > oldDur) DocManager.Inst.ExecuteCmd(new ResizeNoteCommand(notesVm.Part, newNote, -(note.duration + newNote.duration - oldDur)));;
+                DocManager.Inst.ExecuteCmd(new MoveNoteCommand(notesVm.Part, newNote, note.End - newNote.position, 0));
+            }
+
+            if (oldVibLength > 0) {
+                DocManager.Inst.ExecuteCmd(new VibratoDepthCommand(notesVm.Part, newNote, note.vibrato.depth));
+                DocManager.Inst.ExecuteCmd(new VibratoPeriodCommand(notesVm.Part, newNote, note.vibrato.period));
+
+                if (oldVibLengthTicks > newNote.duration) {
+                    float newVibLengthTicks = oldVibLengthTicks - newNote.duration;
+                    //length correction
+                    DocManager.Inst.ExecuteCmd(new VibratoLengthCommand(notesVm.Part, newNote, 100));
+                    DocManager.Inst.ExecuteCmd(new VibratoLengthCommand(notesVm.Part, note, newVibLengthTicks * 100 / note.duration));
+                    //fade in/out correction
+                    DocManager.Inst.ExecuteCmd(new VibratoFadeInCommand(notesVm.Part, note, oldVibFadeInTicks * 100 / newVibLengthTicks));
+                    DocManager.Inst.ExecuteCmd(new VibratoFadeOutCommand(notesVm.Part, note, 0));
+                    DocManager.Inst.ExecuteCmd(new VibratoFadeInCommand(notesVm.Part, newNote, 0));
+                    DocManager.Inst.ExecuteCmd(new VibratoFadeOutCommand(notesVm.Part, newNote, oldVibFadeOutTicks * 100 / newNote.duration));
+                    //phase correction
+                    double newVibLengthMs = project.TickToMillisecond(newVibLengthTicks);
+                    float newVibShift = (float)(100 * (newVibLengthMs % vibPeriod / vibPeriod)) + oldVibShift;
+                    if (newVibShift > 100) newVibShift -= 100;
+                    DocManager.Inst.ExecuteCmd(new VibratoShiftCommand(notesVm.Part, newNote, newVibShift));
+                } else {
+                    DocManager.Inst.ExecuteCmd(new VibratoLengthCommand(notesVm.Part, note, 0));
+                    DocManager.Inst.ExecuteCmd(new VibratoLengthCommand(notesVm.Part, newNote, oldVibLengthTicks * 100 / newNote.duration));
+                    DocManager.Inst.ExecuteCmd(new VibratoFadeInCommand(notesVm.Part, newNote, oldVibFadeIn));
+                    DocManager.Inst.ExecuteCmd(new VibratoFadeOutCommand(notesVm.Part, newNote, oldVibFadeOut));
+                    DocManager.Inst.ExecuteCmd(new VibratoShiftCommand(notesVm.Part, newNote, oldVibShift));
+                }
+            }
+
+            valueTip.UpdateValueTip(note.duration.ToString());
+        }
+    }
+
     class NoteEraseEditState : NoteEditState {
         public override MouseButton MouseButton => mouseButton;
         private MouseButton mouseButton;
