@@ -280,7 +280,6 @@ namespace OpenUtau.App.Views {
                     ViewModel.NotesViewModel.DeselectNotes();
                     editState = new NoteSplitEditState(
                             canvas, ViewModel, this, noteHitInfo.note);
-                    Cursor = ViewConstants.cursorNo;
                     return;
                 }
                 if (noteHitInfo.hitResizeArea) {
@@ -642,6 +641,7 @@ namespace OpenUtau.App.Views {
                     case Key.D2: notesVm.SelectToolCommand?.Execute("2").Subscribe(); args.Handled = true; break;
                     case Key.D3: notesVm.SelectToolCommand?.Execute("3").Subscribe(); args.Handled = true; break;
                     case Key.D4: notesVm.SelectToolCommand?.Execute("4").Subscribe(); args.Handled = true; break;
+                    case Key.D5: notesVm.SelectToolCommand?.Execute("5").Subscribe(); args.Handled = true; break;
                     case Key.R: notesVm.ShowFinalPitch = !notesVm.ShowFinalPitch; args.Handled = true; break;
                     case Key.T: notesVm.ShowTips = !notesVm.ShowTips; args.Handled = true; break;
                     case Key.Y: notesVm.PlayTone = !notesVm.PlayTone; args.Handled = true; break;
