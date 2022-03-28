@@ -344,14 +344,14 @@ namespace OpenUtau.App.Views {
             var notesVm = vm.NotesViewModel;
             base.Begin(pointer, point);
             newNote = notesVm.MaybeAddNote(point, false);
-            DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(notesVm.Part, newNote, "+~"));
+            DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(notesVm.Part, newNote, "+"));
         }
 
         public override void Update(IPointer pointer, Point point) {
             var project = DocManager.Inst.Project;
             var notesVm = vm.NotesViewModel;
             int deltaDuration = notesVm.IsSnapOn
-                ? notesVm.PointToSnappedTick(point) + notesVm.SnapUnit - note.End
+                ? notesVm.PointToRoundedSnappedTick(point) - note.End
                 : notesVm.PointToTick(point) - note.End;
             int minNoteTicks = notesVm.IsSnapOn ? notesVm.SnapUnit : 15;
 
@@ -369,7 +369,7 @@ namespace OpenUtau.App.Views {
                 DocManager.Inst.ExecuteCmd(new ResizeNoteCommand(notesVm.Part, newNote, -deltaDuration));
                 DocManager.Inst.ExecuteCmd(new ResizeNoteCommand(notesVm.Part, note, deltaDuration));
                 if (note.duration > oldDur - 10) DocManager.Inst.ExecuteCmd(new ResizeNoteCommand(notesVm.Part, note, oldDur - note.duration - 10));
-                if (note.duration + newNote.duration > oldDur) DocManager.Inst.ExecuteCmd(new ResizeNoteCommand(notesVm.Part, newNote, -(note.duration + newNote.duration - oldDur)));;
+                if (note.duration + newNote.duration > oldDur) DocManager.Inst.ExecuteCmd(new ResizeNoteCommand(notesVm.Part, newNote, -(note.duration + newNote.duration - oldDur))); ;
                 DocManager.Inst.ExecuteCmd(new MoveNoteCommand(notesVm.Part, newNote, note.End - newNote.position, 0));
             }
 

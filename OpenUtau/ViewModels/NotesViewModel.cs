@@ -228,6 +228,10 @@ namespace OpenUtau.App.ViewModels {
             int tick = (int)(point.X / TickWidth + TickOffset);
             return (int)((double)tick / SnapUnit) * SnapUnit;
         }
+        public int PointToRoundedSnappedTick(Point point) {
+            double tick = point.X / TickWidth + TickOffset;
+            return (int)Math.Round(tick / SnapUnit) * SnapUnit;
+        }
         public int PointToTone(Point point) {
             return ViewConstants.MaxTone - 1 - (int)(point.Y / TrackHeight + TrackOffset);
         }
