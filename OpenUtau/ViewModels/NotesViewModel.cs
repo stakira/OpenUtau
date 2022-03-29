@@ -515,7 +515,8 @@ namespace OpenUtau.App.ViewModels {
                     SecondaryKey = PrimaryKey;
                     PrimaryKey = selectExp.ExpKey;
                 } else if (cmd is SetPlayPosTickNotification setPlayPosTick) {
-                    SetPlayPos(setPlayPosTick.playPosTick, setPlayPosTick.waitingRendering);
+                    bool autoScroll = Convert.ToBoolean(Preferences.Default.PlaybackAutoScroll);
+                    SetPlayPos(setPlayPosTick.playPosTick, setPlayPosTick.waitingRendering, !autoScroll);
                 } else if (cmd is FocusNoteNotification focusNote) {
                     if (focusNote.part == Part) {
                         FocusNote(focusNote.note);

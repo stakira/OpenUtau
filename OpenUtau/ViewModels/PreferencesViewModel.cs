@@ -25,6 +25,7 @@ namespace OpenUtau.App.ViewModels {
             set => this.RaiseAndSetIfChanged(ref audioOutputDevice, value);
         }
         [Reactive] public int PreferPortAudio { get; set; }
+        [Reactive] public int PlaybackAutoScroll { get; set; }
         [Reactive] public double PlayPosMarkerMargin { get; set; }
         public string AdditionalSingersPath => PathManager.Inst.AdditionalSingersPath;
         [Reactive] public int InstallToAdditionalSingersPath { get; set; }
@@ -60,6 +61,7 @@ namespace OpenUtau.App.ViewModels {
                 }
             }
             PreferPortAudio = Preferences.Default.PreferPortAudio ? 1 : 0;
+            PlaybackAutoScroll = Preferences.Default.PlaybackAutoScroll;
             PlayPosMarkerMargin = Preferences.Default.PlayPosMarkerMargin;
             InstallToAdditionalSingersPath = Preferences.Default.InstallToAdditionalSingersPath ? 1 : 0;
             Classic.Resamplers.Search();
@@ -105,6 +107,11 @@ namespace OpenUtau.App.ViewModels {
             this.WhenAnyValue(vm => vm.PreferPortAudio)
                 .Subscribe(index => {
                     Preferences.Default.PreferPortAudio = index > 0;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.PlaybackAutoScroll)
+                .Subscribe(autoScroll => {
+                    Preferences.Default.PlaybackAutoScroll = autoScroll;
                     Preferences.Save();
                 });
             this.WhenAnyValue(vm => vm.PlayPosMarkerMargin)

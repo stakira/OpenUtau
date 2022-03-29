@@ -383,7 +383,8 @@ namespace OpenUtau.App.ViewModels {
                     Tracks.AddRange(loadProjectNotif.project.tracks);
                     MessageBus.Current.SendMessage(new TracksRefreshEvent());
                 } else if (cmd is SetPlayPosTickNotification setPlayPosTick) {
-                    SetPlayPos(setPlayPosTick.playPosTick, setPlayPosTick.waitingRendering);
+                    bool autoScroll = Convert.ToBoolean(Preferences.Default.PlaybackAutoScroll);
+                    SetPlayPos(setPlayPosTick.playPosTick, setPlayPosTick.waitingRendering, !autoScroll);
                 }
                 Notify();
             }
