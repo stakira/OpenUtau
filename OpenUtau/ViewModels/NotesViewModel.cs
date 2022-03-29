@@ -466,9 +466,9 @@ namespace OpenUtau.App.ViewModels {
             tick = tick - Part?.position ?? 0;
             double playPosX = TickToneToPoint(tick, 0).X;
             double scroll = 0;
-            if (!noScroll && playPosX > PlayPosX) {
+            if (!noScroll) {
                 double margin = Preferences.Default.PlayPosMarkerMargin * Bounds.Width;
-                if (playPosX > margin) {
+                if (playPosX > margin || playPosX < 0) {
                     scroll = playPosX - margin;
                 }
                 TickOffset = Math.Clamp(TickOffset + scroll, 0, HScrollBarMax);
