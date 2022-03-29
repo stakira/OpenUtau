@@ -179,8 +179,8 @@ namespace OpenUtau.Core {
             Note = note;
             oldPitch = note.pitch;
             newPitch = new UPitch();
-            newPitch.AddPoint(new PitchPoint(-60, 0));
-            newPitch.AddPoint(new PitchPoint(60, 0));
+            newPitch.AddPoint(new PitchPoint(-40, 0));
+            newPitch.AddPoint(new PitchPoint(40, 0));
         }
         public override string ToString() => "Reset pitch points";
         public override void Execute() => Note.pitch = newPitch;

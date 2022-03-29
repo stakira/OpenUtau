@@ -293,7 +293,8 @@ namespace OpenUtau.App.Views {
                 }
                 return;
             }
-            if (ViewModel.NotesViewModel.CursorTool) {
+            if (ViewModel.NotesViewModel.CursorTool ||
+                ViewModel.NotesViewModel.PencilTool && args.KeyModifiers == cmdKey) {
                 if (args.KeyModifiers == KeyModifiers.None) {
                     // New selection.
                     ViewModel.NotesViewModel.DeselectNotes();

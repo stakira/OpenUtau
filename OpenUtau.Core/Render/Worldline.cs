@@ -101,9 +101,11 @@ namespace OpenUtau.Core.Render {
             public int pitch_bend_length;
             public IntPtr pitch_bend;
             public int flag_g;
-            public int flag_Mt;
             public int flag_O;
             public int flag_P;
+            public int flag_Mt;
+            public int flag_Mb;
+            public int flag_Mv;
         };
 
         [DllImport("worldline")]
@@ -136,9 +138,11 @@ namespace OpenUtau.Core.Render {
                 pitch_bend_length = item.pitches.Length,
                 pitch_bend = pinnedPitchBend.AddrOfPinnedObject(),
                 flag_g = 0,
-                flag_Mt = 0,
                 flag_O = 0,
                 flag_P = 86,
+                flag_Mt = 0,
+                flag_Mb = 0,
+                flag_Mv = 100,
             };
             var flag = item.flags.FirstOrDefault(f => f.Item1 == "g");
             if (flag != null && flag.Item2.HasValue) {
@@ -151,6 +155,18 @@ namespace OpenUtau.Core.Render {
             flag = item.flags.FirstOrDefault(f => f.Item1 == "P");
             if (flag != null && flag.Item2.HasValue) {
                 request.flag_P = flag.Item2.Value;
+            }
+            flag = item.flags.FirstOrDefault(f => f.Item1 == "Mt");
+            if (flag != null && flag.Item2.HasValue) {
+                request.flag_Mt = flag.Item2.Value;
+            }
+            flag = item.flags.FirstOrDefault(f => f.Item1 == "Mb");
+            if (flag != null && flag.Item2.HasValue) {
+                request.flag_Mb = flag.Item2.Value;
+            }
+            flag = item.flags.FirstOrDefault(f => f.Item1 == "Mv");
+            if (flag != null && flag.Item2.HasValue) {
+                request.flag_Mv = flag.Item2.Value;
             }
 
             try {
