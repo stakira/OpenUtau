@@ -82,6 +82,7 @@
   <system:String x:Key="menu.tools">Công cụ</system:String>
   <!--<system:String x:Key="menu.tools.clearcache">Clear Cache</system:String>-->
   <system:String x:Key="menu.tools.clearcache">Xoá bộ nhớ đệm</system:String>
+  <system:String x:Key="menu.tools.debugwindow">Mở cửa sổ Debug</system:String>
   <system:String x:Key="menu.tools.layout">Bố cục</system:String>
   <system:String x:Key="menu.tools.layout.hsplit11">Ngang 1:1</system:String>
   <system:String x:Key="menu.tools.layout.hsplit12">Ngang 1:2</system:String>
@@ -140,6 +141,7 @@
 Nhấn chuột trái để viết nốt
 Nhấn chuột phải để xoá nốt</system:String>
   <system:String x:Key="pianoroll.tool.drawpitch">Vẽ tự do đường luyến giọng (4)</system:String>
+  <system:String x:Key="pianoroll.tool.knife">Cắt nốt (5)</system:String>
   <system:String x:Key="pianoroll.tool.selection">Lựa chọn (1)
 Nhấn giữ Ctrl để chọn đồng loạt nhiều nốt</system:String>
 
