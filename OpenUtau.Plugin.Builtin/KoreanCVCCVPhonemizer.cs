@@ -430,8 +430,8 @@ namespace OpenUtau.Plugin.Builtin {
         // Store singer in field, will try reading presamp.ini later
         private USinger singer;
         public override void SetSinger(USinger singer) => this.singer = singer;
-
-        public override Phoneme[] Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour) {
+        
+        public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevs) {
             var prevLyric = prevNeighbour?.lyric;
             char[] prevKoreanLyrics = { '　', '　', '　' };
             bool isPrevEndV = true;
@@ -441,10 +441,13 @@ namespace OpenUtau.Plugin.Builtin {
 
             var currentLyric = notes[0].lyric;
             if (!(currentLyric[0] >= '가' && currentLyric[0] <= '힣')) {
-                return new Phoneme[] {
-                    new Phoneme {
-                        phoneme = $"{currentLyric}",
-                    }};
+                return new Result {
+                    phonemes = new Phoneme[] {
+                        new Phoneme {
+                            phoneme = $"{currentLyric}",
+                        }
+                    },
+                };
             }
             var currentKoreanLyrics = SeparateHangul(currentLyric[0]);
 
@@ -510,34 +513,40 @@ namespace OpenUtau.Plugin.Builtin {
 
             if (VC == "") {
                 if (suffix == "") {
-                    return new Phoneme[] {
-                        new Phoneme {
-                            phoneme = CV,
-                        },
+                    return new Result {
+                        phonemes = new Phoneme[] {
+                            new Phoneme {
+                                phoneme = CV,
+                            },
+                        }
                     };
                 } else {
-                    return new Phoneme[] {
-                        new Phoneme {
-                            phoneme = CV,
-                        },
-                        new Phoneme {
-                            phoneme = suffix,
-                            position = totalDuration - vcLength,
-                        },
-
+                    return new Result {
+                        phonemes = new Phoneme[] {
+                            new Phoneme {
+                                phoneme = CV,
+                            },
+                            new Phoneme {
+                                phoneme = suffix,
+                                position = totalDuration - vcLength,
+                            },
+                        }
                     };
                 }
             }
 
-            return new Phoneme[] {
-                new Phoneme {
-                    phoneme = CV,
-                },
-                new Phoneme {
-                    phoneme = VC,
-                    position = totalDuration - vcLength,
-                },
+            return new Result {
+                phonemes = new Phoneme[] {
+                    new Phoneme {
+                        phoneme = CV,
+                    },
+                    new Phoneme {
+                        phoneme = VC,
+                        position = totalDuration - vcLength,
+                    },
+                }
             };
         }
+
     }
 }
