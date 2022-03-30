@@ -320,9 +320,9 @@ namespace OpenUtau.App.ViewModels {
             }
             double playPosX = TickTrackToPoint(tick, 0).X;
             double scroll = 0;
-            if (!noScroll && playPosX > PlayPosX) {
+            if (!noScroll) {
                 double margin = Preferences.Default.PlayPosMarkerMargin * Bounds.Width;
-                if (playPosX > margin) {
+                if (playPosX > margin || playPosX < 0) {
                     scroll = playPosX - margin;
                 }
                 TickOffset = Math.Clamp(TickOffset + scroll, 0, HScrollBarMax);
@@ -383,7 +383,8 @@ namespace OpenUtau.App.ViewModels {
                     Tracks.AddRange(loadProjectNotif.project.tracks);
                     MessageBus.Current.SendMessage(new TracksRefreshEvent());
                 } else if (cmd is SetPlayPosTickNotification setPlayPosTick) {
-                    SetPlayPos(setPlayPosTick.playPosTick, setPlayPosTick.waitingRendering);
+                    bool autoScroll = Convert.ToBoolean(Preferences.Default.PlaybackAutoScroll);
+                    SetPlayPos(setPlayPosTick.playPosTick, setPlayPosTick.waitingRendering, !autoScroll);
                 }
                 Notify();
             }

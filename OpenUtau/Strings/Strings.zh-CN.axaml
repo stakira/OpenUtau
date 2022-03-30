@@ -160,6 +160,7 @@
   <system:String x:Key="prefs.paths.reset">清除</system:String>
   <system:String x:Key="prefs.paths.select">选择</system:String>
   <system:String x:Key="prefs.playback">回放</system:String>
+  <system:String x:Key="prefs.playback.autoscroll">自动滚动</system:String>
   <system:String x:Key="prefs.playback.backend">音频后端</system:String>
   <system:String x:Key="prefs.playback.backend.auto">自动</system:String>
   <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->

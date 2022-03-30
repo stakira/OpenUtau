@@ -28,6 +28,11 @@
               <ComboBoxItem Content="{DynamicResource prefs.playback.backend.port}"/>
             </ComboBox>
             <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.note.restart}" FontSize="11"/>
+            <TextBlock Text="{DynamicResource prefs.playback.autoscroll}"/>
+            <ComboBox HorizontalAlignment="Stretch"  SelectedIndex="{Binding PlaybackAutoScroll}">
+                <ComboBoxItem Content="{DynamicResource prefs.off}"/>
+                <ComboBoxItem Content="{DynamicResource prefs.on}"/>
+            </ComboBox>
             <Grid ColumnDefinitions="Auto,8,20,8,*" Margin="0,4,0,0">
               <TextBlock Grid.Column="0" Text="{DynamicResource prefs.playback.cursorposition}"/>
               <TextBlock Grid.Column="2">
