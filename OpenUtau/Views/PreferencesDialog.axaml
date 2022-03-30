@@ -33,6 +33,11 @@
                 <ComboBoxItem Content="{DynamicResource prefs.off}"/>
                 <ComboBoxItem Content="{DynamicResource prefs.on}"/>
             </ComboBox>
+            <TextBlock Text="{DynamicResource prefs.playback.lockstarttime}"/>
+            <ComboBox HorizontalAlignment="Stretch" SelectedIndex="{Binding LockStartTime}">
+                <ComboBoxItem Content="{DynamicResource prefs.playback.lockstarttime.off}"/>
+                <ComboBoxItem Content="{DynamicResource prefs.playback.lockstarttime.on}"/>
+            </ComboBox>
             <Grid ColumnDefinitions="Auto,8,20,8,*" Margin="0,4,0,0">
               <TextBlock Grid.Column="0" Text="{DynamicResource prefs.playback.cursorposition}"/>
               <TextBlock Grid.Column="2">

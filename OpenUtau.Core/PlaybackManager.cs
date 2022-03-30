@@ -59,6 +59,7 @@ namespace OpenUtau.Core {
         List<Fader> faders;
         MasterAdapter masterMix;
         double startMs;
+        public int StartTick => DocManager.Inst.Project.MillisecondToTick(startMs);
         CancellationTokenSource renderCancellation;
 
         public Audio.IAudioOutput AudioOutput { get; set; } = new Audio.DummyAudioOutput();
