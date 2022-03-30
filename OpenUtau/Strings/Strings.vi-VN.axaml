@@ -166,6 +166,7 @@ Nhấn giữ Ctrl để chọn đồng loạt nhiều nốt</system:String>
   <system:String x:Key="prefs.paths.reset">Đặt lại</system:String>
   <system:String x:Key="prefs.paths.select">Lựa chọn</system:String>
   <system:String x:Key="prefs.playback">Phát lại</system:String>
+  <system:String x:Key="prefs.playback.autoscroll">Tự động cuốn đường phát lại</system:String>
   <system:String x:Key="prefs.playback.backend">Backend âm thanh</system:String>
   <system:String x:Key="prefs.playback.backend.auto">Tự động</system:String>
   <!--<system:String x:Key="prefs.playback.backend">Audio Backend</system:String>-->
