@@ -16,6 +16,10 @@ namespace OpenUtau.Core.SignalChain {
             set => scaleTarget = value;
         }
 
+        public void SetScaleToTarget() {
+            scale = scaleTarget;
+        }
+
         public bool IsReady(int position, int count) {
             return source.IsReady(position, count);
         }
@@ -30,9 +34,9 @@ namespace OpenUtau.Core.SignalChain {
             int ret = source.Mix(position, scaleBuffer, 0, count);
             for (int i = 0; i < count; ++i) {
                 if (scaleTarget > scale) {
-                    scale = Math.Min(scaleTarget, scale + 0.001f);
+                    scale = Math.Min(scaleTarget, scale + 0.0005f);
                 } else if (scaleTarget < scale) {
-                    scale = Math.Max(scaleTarget, scale - 0.001f);
+                    scale = Math.Max(scaleTarget, scale - 0.0005f);
                 }
                 buffer[index + i] += scaleBuffer[i] * scale;
             }

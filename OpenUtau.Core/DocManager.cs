@@ -11,6 +11,12 @@ using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Core {
+    public struct ValidateOptions {
+        public UPart Part;
+        public bool SkipPhonemizer;
+        public bool SkipPhoneme;
+    }
+
     public class DocManager {
         DocManager() {
             Project = new UProject();
@@ -26,29 +32,42 @@ namespace OpenUtau.Core {
         public List<USinger> SingersOrdered { get; private set; } = new List<USinger>();
         public Plugin[] Plugins { get; private set; }
         public PhonemizerFactory[] PhonemizerFactories { get; private set; }
-        public TransformerFactory[] TransformerFactories { get; private set; }
         public UProject Project { get; private set; }
         public bool HasOpenUndoGroup => undoGroup != null;
+        public List<UPart> PartsClipboard { get; set; }
         public List<UNote> NotesClipboard { get; set; }
 
         public void Initialize() {
             SearchAllSingers();
             SearchAllPlugins();
             SearchAllLegacyPlugins();
+            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler((sender, args) => {
+                CrashSave();
+            });
         }
 
         public void SearchAllSingers() {
-            var stopWatch = Stopwatch.StartNew();
-            Singers = Formats.UtauSoundbank.FindAllSingers();
-            SingersOrdered = Singers.Values.OrderBy(singer => singer.Name).ToList();
-            Directory.CreateDirectory(PathManager.Inst.GetEngineSearchPath());
-            stopWatch.Stop();
-            Log.Information($"Search all singers: {stopWatch.Elapsed}");
+            try {
+                Directory.CreateDirectory(PathManager.Inst.SingersPath);
+                var stopWatch = Stopwatch.StartNew();
+                SingersOrdered.Clear();
+                SingersOrdered.AddRange(ClassicSingerLoader.FindAllSingers());
+                SingersOrdered.AddRange(Vogen.VogenSingerLoader.FindAllSingers());
+                SingersOrdered = SingersOrdered.OrderBy(singer => singer.Name).ToList();
+                Singers = SingersOrdered
+                    .ToLookup(s => s.Id)
+                    .ToDictionary(g => g.Key, g => g.First());
+                stopWatch.Stop();
+                Log.Information($"Search all singers: {stopWatch.Elapsed}");
+            } catch (Exception e) {
+                Log.Error(e, "Failed to search singers.");
+                Singers = new Dictionary<string, USinger>();
+            }
         }
 
         public USinger GetSinger(string name) {
             Log.Information(name);
-            name = name.Replace(PathManager.UtauVoicePath, "");
+            name = name.Replace("%VOICE%", "");
             if (Singers.ContainsKey(name)) {
                 return Singers[name];
             }
@@ -56,38 +75,57 @@ namespace OpenUtau.Core {
         }
 
         public void SearchAllLegacyPlugins() {
-            var stopWatch = Stopwatch.StartNew();
-            Plugins = PluginLoader.LoadAll(PathManager.Inst.PluginsPath);
-            stopWatch.Stop();
-            Log.Information($"Search all legacy plugins: {stopWatch.Elapsed}");
+            try {
+                var stopWatch = Stopwatch.StartNew();
+                Plugins = PluginLoader.LoadAll(PathManager.Inst.PluginsPath);
+                stopWatch.Stop();
+                Log.Information($"Search all legacy plugins: {stopWatch.Elapsed}");
+            } catch (Exception e) {
+                Log.Error(e, "Failed to search legacy plugins.");
+                Plugins = new Plugin[0];
+            }
         }
 
         public void SearchAllPlugins() {
+            const string kBuiltin = "OpenUtau.Plugin.Builtin.dll";
             var stopWatch = Stopwatch.StartNew();
             var phonemizerFactories = new List<PhonemizerFactory>();
-            phonemizerFactories.Add(PhonemizerFactory.Get(typeof(DefaultPhonemizer)));
-            var transformerFactories = new List<TransformerFactory>();
-            foreach (var file in Directory.EnumerateFiles(PathManager.Inst.PluginsPath, "*.dll", SearchOption.AllDirectories)) {
+            var files = new List<string>();
+            try {
+                files.Add(Path.Combine(Path.GetDirectoryName(GetType().Assembly.Location), kBuiltin));
+                Directory.CreateDirectory(PathManager.Inst.PluginsPath);
+                string oldBuiltin = Path.Combine(PathManager.Inst.PluginsPath, kBuiltin);
+                if (File.Exists(oldBuiltin)) {
+                    File.Delete(oldBuiltin);
+                }
+                files.AddRange(Directory.EnumerateFiles(PathManager.Inst.PluginsPath, "*.dll", SearchOption.AllDirectories));
+            } catch (Exception e) {
+                Log.Error(e, "Failed to search plugins.");
+            }
+            foreach (var file in files) {
                 Assembly assembly;
                 try {
+                    if (!LibraryLoader.IsManagedAssembly(file)) {
+                        Log.Information($"Skipping {file}");
+                        continue;
+                    }
                     assembly = Assembly.LoadFile(file);
+                    foreach (var type in assembly.GetExportedTypes()) {
+                        if (!type.IsAbstract && type.IsSubclassOf(typeof(Phonemizer))) {
+                            phonemizerFactories.Add(PhonemizerFactory.Get(type));
+                        }
+                    }
                 } catch (Exception e) {
                     Log.Warning(e, $"Failed to load {file}.");
                     continue;
                 }
-                foreach (var type in assembly.GetExportedTypes()) {
-                    if (type.IsAbstract) {
-                        continue;
-                    }
-                    if (type.IsSubclassOf(typeof(Transformer))) {
-                        transformerFactories.Add(TransformerFactory.Get(type));
-                    } else if (type.IsSubclassOf(typeof(Phonemizer))) {
-                        phonemizerFactories.Add(PhonemizerFactory.Get(type));
-                    }
+            }
+            foreach (var type in GetType().Assembly.GetExportedTypes()) {
+                if (!type.IsAbstract && type.IsSubclassOf(typeof(Phonemizer))) {
+                    phonemizerFactories.Add(PhonemizerFactory.Get(type));
                 }
             }
-            PhonemizerFactories = phonemizerFactories.ToArray();
-            TransformerFactories = transformerFactories.ToArray();
+            PhonemizerFactories = phonemizerFactories.OrderBy(factory => factory.tag).ToArray();
             stopWatch.Stop();
             Log.Information($"Search all plugins: {stopWatch.Elapsed}");
         }
@@ -101,7 +139,24 @@ namespace OpenUtau.Core {
 
         public bool ChangesSaved {
             get {
-                return Project.Saved && (undoQueue.Count > 0 && savedPoint == undoQueue.Last() || undoQueue.Count == 0 && savedPoint == null);
+                return (Project.Saved || Project.tracks.Count == 0) &&
+                    (undoQueue.Count > 0 && savedPoint == undoQueue.Last() || undoQueue.Count == 0 && savedPoint == null);
+            }
+        }
+
+        private void CrashSave() {
+            if (Project == null || string.IsNullOrEmpty(Project.FilePath)) {
+                return;
+            }
+            try {
+                string dir = Path.GetDirectoryName(Project.FilePath);
+                string filename = Path.GetFileNameWithoutExtension(Project.FilePath);
+                string backup = Path.Join(dir, filename + "-backup.ustx");
+                Log.Information($"Saving backup {backup}.");
+                Format.Ustx.Save(backup, Project);
+                Log.Information($"Saved backup {backup}.");
+            } catch (Exception e) {
+                Log.Error(e, "Save backup failed.");
             }
         }
 
@@ -113,9 +168,9 @@ namespace OpenUtau.Core {
                         savedPoint = undoQueue.Last();
                     }
                     if (string.IsNullOrEmpty(_cmd.Path)) {
-                        Formats.Ustx.Save(Project.FilePath, Project);
+                        Format.Ustx.Save(Project.FilePath, Project);
                     } else {
-                        Formats.Ustx.Save(_cmd.Path, Project);
+                        Format.Ustx.Save(_cmd.Path, Project);
                     }
                 } else if (cmd is LoadProjectNotification notification) {
                     undoQueue.Clear();
@@ -129,6 +184,13 @@ namespace OpenUtau.Core {
                     playPosTick = _cmd.playPosTick;
                 } else if (cmd is SingersChangedNotification) {
                     SearchAllSingers();
+                } else if (cmd is ValidateProjectNotification) {
+                    Project.ValidateFull();
+                } else if (cmd is SingersRefreshedNotification) {
+                    foreach (var track in Project.tracks) {
+                        track.OnSingerRefreshed();
+                    }
+                    Project.ValidateFull();
                 }
                 Publish(cmd);
                 if (!cmd.Silent) {
@@ -148,15 +210,17 @@ namespace OpenUtau.Core {
                 Log.Information($"ExecuteCmd {cmd}");
             }
             Publish(cmd);
-            Project.Validate();
+            if (!undoGroup.DeferValidate) {
+                Project.Validate(cmd.ValidateOptions);
+            }
         }
 
-        public void StartUndoGroup() {
+        public void StartUndoGroup(bool deferValidate = false) {
             if (undoGroup != null) {
                 Log.Error("undoGroup already started");
                 EndUndoGroup();
             }
-            undoGroup = new UCommandGroup();
+            undoGroup = new UCommandGroup(deferValidate);
             Log.Information("undoGroup started");
         }
 
@@ -172,8 +236,29 @@ namespace OpenUtau.Core {
             while (undoQueue.Count > Util.Preferences.Default.UndoLimit) {
                 undoQueue.RemoveFromFront();
             }
+            if (undoGroup.DeferValidate) {
+                Project.ValidateFull();
+            }
+            undoGroup.Merge();
             undoGroup = null;
             Log.Information("undoGroup ended");
+            ExecuteCmd(new PreRenderNotification());
+        }
+
+        public void RollBackUndoGroup() {
+            if (undoGroup == null) {
+                Log.Error("No active undoGroup to rollback.");
+                return;
+            }
+            for (int i = undoGroup.Commands.Count - 1; i >= 0; i--) {
+                var cmd = undoGroup.Commands[i];
+                cmd.Unexecute();
+                if (i == 0) {
+                    Project.ValidateFull();
+                }
+                Publish(cmd, true);
+            }
+            undoGroup.Commands.Clear();
         }
 
         public void Undo() {
@@ -184,10 +269,13 @@ namespace OpenUtau.Core {
             for (int i = group.Commands.Count - 1; i >= 0; i--) {
                 var cmd = group.Commands[i];
                 cmd.Unexecute();
+                if (i == 0) {
+                    Project.ValidateFull();
+                }
                 Publish(cmd, true);
             }
             redoQueue.AddToBack(group);
-            Project.Validate();
+            ExecuteCmd(new PreRenderNotification());
         }
 
         public void Redo() {
@@ -195,35 +283,46 @@ namespace OpenUtau.Core {
                 return;
             }
             var group = redoQueue.RemoveFromBack();
-            foreach (var cmd in group.Commands) {
+            for (var i = 0; i < group.Commands.Count; i++) {
+                var cmd = group.Commands[i];
                 cmd.Execute();
+                if (i == group.Commands.Count - 1) {
+                    Project.ValidateFull();
+                }
                 Publish(cmd);
             }
             undoQueue.AddToBack(group);
-            Project.Validate();
+            ExecuteCmd(new PreRenderNotification());
         }
 
         # endregion
 
         # region Command Subscribers
 
+        private readonly object lockObj = new object();
         private readonly List<ICmdSubscriber> subscribers = new List<ICmdSubscriber>();
 
         public void AddSubscriber(ICmdSubscriber sub) {
-            if (!subscribers.Contains(sub)) {
-                subscribers.Add(sub);
+            lock (lockObj) {
+                if (!subscribers.Contains(sub)) {
+                    subscribers.Add(sub);
+                }
             }
         }
 
         public void RemoveSubscriber(ICmdSubscriber sub) {
-            if (subscribers.Contains(sub)) {
-                subscribers.Remove(sub);
+            lock (lockObj) {
+                if (subscribers.Contains(sub)) {
+                    subscribers.Remove(sub);
+                }
             }
         }
 
         private void Publish(UCommand cmd, bool isUndo = false) {
-            foreach (var sub in subscribers) {
-                sub.OnNext(cmd, isUndo);
+            lock (lockObj) {
+                foreach (var sub in subscribers) {
+                    sub.OnNext(cmd, isUndo);
+                }
             }
         }
 

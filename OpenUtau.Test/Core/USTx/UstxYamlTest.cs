@@ -1,8 +1,5 @@
 ﻿using Xunit;
 using Xunit.Abstractions;
-using Newtonsoft.Json;
-using YamlDotNet.Serialization;
-using YamlDotNet.Serialization.NamingConventions;
 
 namespace OpenUtau.Core.Ustx {
     public class UstxYamlTest {
@@ -12,7 +9,7 @@ namespace OpenUtau.Core.Ustx {
 
         public UstxYamlTest(ITestOutputHelper output) {
             this.output = output;
-            descriptor = new UExpressionDescriptor("velocity", "vel", 0, 200, 100);
+            descriptor = new UExpressionDescriptor("velocity", Format.Ustx.VEL, 0, 200, 100);
 
             note = UNote.Create();
             note.position = 120;
@@ -41,28 +38,14 @@ tone: 42
 lyric: あ
 pitch:
   data:
-  - x: -5
-    y: 0
-    shape: io
-  - x: 5
-    y: 0
-    shape: io
+  - {x: -5, y: 0, shape: io}
+  - {x: 5, y: 0, shape: io}
   snap_first: true
-vibrato:
-  length: 0
-  period: 175
-  depth: 25
-  in: 10
-  out: 10
-  shift: 0
-  drift: 0
+vibrato: {length: 0, period: 175, depth: 25, in: 10, out: 10, shift: 0, drift: 0}
 note_expressions:
-- abbr: vel
-  value: 99
+- {abbr: vel, value: 99}
 phoneme_expressions:
-- index: 0
-  abbr: vel
-  value: 123
+- {index: 0, abbr: vel, value: 123}
 phoneme_overrides: []
 ";
 

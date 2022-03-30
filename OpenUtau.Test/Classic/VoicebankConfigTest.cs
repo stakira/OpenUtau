@@ -17,40 +17,29 @@ namespace OpenUtau.Classic {
                 },
                 Subbanks = new Subbank[] {
                     new Subbank() {
-                        ToneStart = "C1",
-                        ToneEnd = "C4",
+                        ToneRanges = new [] { "C1-C4" },
                     },
                     new Subbank() {
-                        Dir = "D4",
                         Suffix = "D4",
-                        ToneStart = "C#4",
-                        ToneEnd = "F4",
+                        ToneRanges = new [] { "C#4-F4" },
                     },
                     new Subbank() {
-                        Dir = "G4",
                         Suffix = "G4",
-                        ToneStart = "F#4",
-                        ToneEnd = "A#4",
+                        ToneRanges = new [] { "F#4-A#4" },
                     },
                     new Subbank() {
-                        Dir = "C5",
                         Suffix = "C5",
-                        ToneStart = "B4",
-                        ToneEnd = "B7",
+                        ToneRanges = new [] { "B4-B7" },
                     },
                     new Subbank() {
-                        Dir = "C5power",
                         Suffix = "C5P",
-                        Flavor = "power",
-                        ToneStart = "B4",
-                        ToneEnd = "B7",
+                        Color = "power" ,
+                        ToneRanges = new [] { "B4-B7" },
                     },
                     new Subbank() {
-                        Dir = "C5shout",
                         Suffix = "C5S",
-                        Flavor = "shout",
-                        ToneStart = "B4",
-                        ToneEnd = "B7",
+                        Color = "shout" ,
+                        ToneRanges = new [] { "B4-B7" },
                     },
                 }
             };
@@ -61,35 +50,38 @@ namespace OpenUtau.Classic {
             var yaml = Yaml.DefaultSerializer.Serialize(CreateConfig());
             output.WriteLine(yaml);
 
-            Assert.Equal(@"symbol_set:
+            Assert.Equal(@"portrait_opacity: 0.67000001668930054
+symbol_set:
   preset: hiragana
   head: '-'
   tail: R
 subbanks:
-- tone_start: C1
-  tone_end: C4
-- dir: D4
+- prefix: ''
+  suffix: ''
+  tone_ranges:
+  - C1-C4
+- prefix: ''
   suffix: D4
-  tone_start: C#4
-  tone_end: F4
-- dir: G4
+  tone_ranges:
+  - C#4-F4
+- prefix: ''
   suffix: G4
-  tone_start: F#4
-  tone_end: A#4
-- dir: C5
+  tone_ranges:
+  - F#4-A#4
+- prefix: ''
   suffix: C5
-  tone_start: B4
-  tone_end: B7
-- dir: C5power
+  tone_ranges:
+  - B4-B7
+- color: power
+  prefix: ''
   suffix: C5P
-  flavor: power
-  tone_start: B4
-  tone_end: B7
-- dir: C5shout
+  tone_ranges:
+  - B4-B7
+- color: shout
+  prefix: ''
   suffix: C5S
-  flavor: shout
-  tone_start: B4
-  tone_end: B7
+  tone_ranges:
+  - B4-B7
 ".Replace("\r\n", "\n"), yaml.Replace("\r\n", "\n"));
         }
 

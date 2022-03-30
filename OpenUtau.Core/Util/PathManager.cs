@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using OpenUtau.Core.Util;
 using Serilog;
@@ -8,51 +10,50 @@ using Serilog;
 namespace OpenUtau.Core {
 
     public class PathManager {
-        public const string UtauVoicePath = "%VOICE%";
-        public const string DefaultSingerPath = "Singers";
-        public const string DefaultCachePath = "Cache";
-        public const string kExportPath = "Export";
-        public const string kPluginPath = "Plugins";
-
         private static PathManager _inst;
 
         public PathManager() {
-            var assemblyPath = Assembly.GetExecutingAssembly().Location;
-            Log.Logger.Information($"Assembly path = {assemblyPath}");
-            HomePath = Directory.GetParent(assemblyPath).ToString();
-            HomePathIsAscii = true;
-            var etor = StringInfo.GetTextElementEnumerator(HomePath);
-            while (etor.MoveNext()) {
-                string s = etor.GetTextElement();
-                if (s.Length != 1 || s[0] >= 128) {
-                    HomePathIsAscii = false;
-                    break;
+            RootPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            if (OS.IsMacOS()) {
+                HomePath = Path.Combine(Environment.GetFolderPath(
+                    Environment.SpecialFolder.Personal), "Library", "OpenUtau");
+                HomePathIsAscii = true;
+            } else if (OS.IsLinux()) {
+                HomePath = Path.Combine(Environment.GetFolderPath(
+                    Environment.SpecialFolder.Personal), "OpenUtau");
+                HomePathIsAscii = true;
+            } else {
+                HomePath = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
+                HomePathIsAscii = true;
+                var etor = StringInfo.GetTextElementEnumerator(HomePath);
+                while (etor.MoveNext()) {
+                    string s = etor.GetTextElement();
+                    if (s.Length != 1 || s[0] >= 128) {
+                        HomePathIsAscii = false;
+                        break;
+                    }
                 }
             }
             Log.Logger.Information($"Home path = {HomePath}");
         }
 
         public static PathManager Inst { get { if (_inst == null) { _inst = new PathManager(); } return _inst; } }
+        public string RootPath { get; private set; }
         public string HomePath { get; private set; }
         public bool HomePathIsAscii { get; private set; }
-        public string InstalledSingersPath => Path.Combine(HomePath, "Content", "Singers");
-        public string PluginsPath => Path.Combine(HomePath, kPluginPath);
-
-
-        public string GetCachePath(string projectPath) {
-            string cachepath;
-            if (string.IsNullOrEmpty(projectPath)) {
-                cachepath = Path.Combine(HomePath, DefaultCachePath);
-            } else {
-                cachepath = Path.Combine(Path.GetDirectoryName(projectPath), DefaultCachePath);
-            }
-
-            if (!Directory.Exists(cachepath)) {
-                Directory.CreateDirectory(cachepath);
-            }
-
-            return cachepath;
-        }
+        public string SingersPathOld => Path.Combine(HomePath, "Content", "Singers");
+        public string SingersPath => Path.Combine(HomePath, "Singers");
+        public string AdditionalSingersPath => Preferences.Default.AdditionalSingerPath;
+        public string SingersInstallPath => Preferences.Default.InstallToAdditionalSingersPath
+            && !string.IsNullOrEmpty(Preferences.Default.AdditionalSingerPath)
+                ? AdditionalSingersPath
+                : SingersPath;
+        public string ResamplersPath => Path.Combine(HomePath, "Resamplers");
+        public string PluginsPath => Path.Combine(HomePath, "Plugins");
+        public string TemplatesPath => Path.Combine(HomePath, "Templates");
+        public string LogFilePath => Path.Combine(HomePath, "Logs", "log.txt");
+        public string PrefsFilePath => Path.Combine(HomePath, "prefs.json");
+        public string CachePath => Path.Combine(HomePath, "Cache");
 
         public string GetPartSavePath(string projectPath, int partNo) {
             var dir = Path.GetDirectoryName(projectPath);
@@ -61,22 +62,44 @@ namespace OpenUtau.Core {
         }
 
         public string GetExportPath(string projectPath, int trackNo) {
-            var dir = Path.Combine(Path.GetDirectoryName(projectPath), kExportPath);
+            var dir = Path.Combine(Path.GetDirectoryName(projectPath), "Export");
             Directory.CreateDirectory(dir);
             var filename = Path.GetFileNameWithoutExtension(projectPath);
             return Path.Combine(dir, $"{filename}-{trackNo:D2}.wav");
         }
 
-        public string GetEngineSearchPath() {
-            return Path.Combine(HomePath, "Resamplers");
+        public void ClearCache() {
+            var files = Directory.GetFiles(CachePath);
+            foreach (var file in files) {
+                try {
+                    File.Delete(file);
+                } catch (Exception e) {
+                    Log.Error(e, $"Failed to delete file {file}");
+                }
+            }
+            var dirs = Directory.GetDirectories(CachePath);
+            foreach (var dir in dirs) {
+                try {
+                    Directory.Delete(dir, true);
+                } catch (Exception e) {
+                    Log.Error(e, $"Failed to delete dir {dir}");
+                }
+            }
         }
 
-        public string GetPreviewEnginePath() {
-            return Path.Combine(GetEngineSearchPath(), Util.Preferences.Default.ExternalPreviewEngine);
-        }
-
-        public string GetExportEnginePath() {
-            return Path.Combine(GetEngineSearchPath(), Util.Preferences.Default.ExternalExportEngine);
+        readonly static string[] sizes = { "B", "KB", "MB", "GB", "TB", "PB", "EB" };
+        public string GetCacheSize() {
+            if (!Directory.Exists(CachePath)) {
+                return "0B";
+            }
+            var dir = new DirectoryInfo(CachePath);
+            double size = dir.GetFiles("*", SearchOption.AllDirectories).Sum(f => f.Length);
+            int order = 0;
+            while (size >= 1024 && order < sizes.Length - 1) {
+                order++;
+                size = size / 1024;
+            }
+            return $"{size:0.##}{sizes[order]}";
         }
     }
 }

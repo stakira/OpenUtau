@@ -1,17 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Text;
+using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Classic {
     public class Voicebank {
+        public string BasePath;
         public string File;
         public string Name;
         public string Image;
+        public string Portrait;
+        public float PortraitOpacity;
         public string Author;
+        public string Voice;
         public string Web;
+        public string Version;
         public string OtherInfo;
+        public Encoding TextFileEncoding;
+        public USingerType SingerType = USingerType.Classic;
         public List<OtoSet> OtoSets = new List<OtoSet>();
-        public PrefixMap PrefixMap;
+        public List<Subbank> Subbanks = new List<Subbank>();
         public string Id;
+
+        public void Reload() {
+            Name = null;
+            Image = null;
+            Portrait = null;
+            PortraitOpacity = 0;
+            Author = null;
+            Voice = null;
+            Web = null;
+            Version = null;
+            OtherInfo = null;
+            TextFileEncoding = null;
+            SingerType = USingerType.Classic;
+            OtoSets.Clear();
+            Subbanks.Clear();
+            Id = null;
+            VoicebankLoader.LoadVoicebank(this);
+        }
 
         public override string ToString() {
             return Name;
@@ -21,9 +47,6 @@ namespace OpenUtau.Classic {
     public class OtoSet {
         public string File;
         public string Name;
-        public string Prefix;
-        public string Suffix;
-        public string Flavor;
         public List<Oto> Otos = new List<Oto>();
         public List<string> Errors = new List<string>();
 
@@ -61,10 +84,5 @@ namespace OpenUtau.Classic {
         public override string ToString() {
             return Alias;
         }
-    }
-
-    public class PrefixMap {
-        public string File;
-        public Dictionary<string, Tuple<string, string>> Map = new Dictionary<string, Tuple<string, string>>();
     }
 }

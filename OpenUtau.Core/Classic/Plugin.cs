@@ -12,7 +12,7 @@ namespace OpenUtau.Classic {
             var startInfo = UseShell
                  ? new ProcessStartInfo() {
                      FileName = "cmd.exe",
-                     Arguments = $"/K {Executable} {tempFile}",
+                     Arguments = $"/K \"{Executable}\" \"{tempFile}\"",
                      UseShellExecute = true,
                  }
                  : new ProcessStartInfo() {

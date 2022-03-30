@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using K4os.Hash.xxHash;
-using Newtonsoft.Json;
 using SharpCompress.Archives;
 using SharpCompress.Common;
 using SharpCompress.Readers;
@@ -13,6 +12,7 @@ namespace OpenUtau.Classic {
 
     public class VoicebankInstaller {
         const string kCharacterTxt = "character.txt";
+        const string kCharacterYaml = "character.yaml";
         const string kInstallTxt = "install.txt";
 
         private string basePath;
@@ -20,18 +20,7 @@ namespace OpenUtau.Classic {
         private readonly Encoding archiveEncoding;
         private readonly Encoding textEncoding;
 
-        public VoicebankInstaller(string basePath, Action<double, string> progress, Encoding archiveEncoding = null, Encoding textEncoding = null) {
-            if (OS.IsWindows()) {
-                // Only Windows need to work with exe resamplers.
-                if (basePath.Length > 80) {
-                    throw new ArgumentException("Path too long. Try to move OpenUtau to a shorter path.");
-                }
-                foreach (char c in basePath) {
-                    if (c > 255) {
-                        throw new ArgumentException("Do not place OpenUtau in a non-ASCII path.");
-                    }
-                }
-            }
+        public VoicebankInstaller(string basePath, Action<double, string> progress, Encoding archiveEncoding, Encoding textEncoding) {
             Directory.CreateDirectory(basePath);
             this.basePath = basePath;
             this.progress = progress;
@@ -47,32 +36,36 @@ namespace OpenUtau.Classic {
             var extractionOptions = new ExtractionOptions {
                 Overwrite = true,
             };
-            var jsonSeriSettings = new JsonSerializerSettings {
-                NullValueHandling = NullValueHandling.Ignore
-            };
-            string[] textFiles = { ".txt", ".ini", ".map" };
             using (var archive = ArchiveFactory.Open(path, readerOptions)) {
                 var touches = new List<string>();
                 AdjustBasePath(archive, path, touches);
                 int total = archive.Entries.Count();
                 int count = 0;
+                bool hasCharacterYaml = archive.Entries.Any(e => e.Key.EndsWith(kCharacterYaml));
                 foreach (var entry in archive.Entries) {
                     var filePath = Path.Combine(basePath, entry.Key);
                     Directory.CreateDirectory(Path.GetDirectoryName(filePath));
-                    if (entry.IsDirectory || entry.Key == kInstallTxt) {
-                    } else if (textFiles.Contains(Path.GetExtension(entry.Key))) {
-                        using (var stream = entry.OpenEntryStream()) {
-                            using (var reader = new StreamReader(stream, textEncoding)) {
-                                File.WriteAllText(Path.Combine(basePath, entry.Key), reader.ReadToEnd(), Encoding.UTF8);
+                    if (!entry.IsDirectory && entry.Key != kInstallTxt) {
+                        entry.WriteToFile(Path.Combine(basePath, entry.Key), extractionOptions);
+                        if (!hasCharacterYaml && filePath.EndsWith(kCharacterTxt)) {
+                            var config = new VoicebankConfig() {
+                                TextFileEncoding = textEncoding.WebName,
+                            };
+                            using (var stream = File.Open(filePath.Replace(".txt", ".yaml"), FileMode.Create)) {
+                                config.Save(stream);
                             }
                         }
-                    } else {
-                        entry.WriteToFile(Path.Combine(basePath, entry.Key), extractionOptions);
                     }
                     progress.Invoke(100.0 * ++count / total, entry.Key);
                 }
                 foreach (var touch in touches) {
                     File.WriteAllText(touch, "\n");
+                    var config = new VoicebankConfig() {
+                        TextFileEncoding = textEncoding.WebName,
+                    };
+                    using (var stream = File.Open(touch.Replace(".txt", ".yaml"), FileMode.Create)) {
+                        config.Save(stream);
+                    }
                 }
             }
         }
@@ -90,7 +83,7 @@ namespace OpenUtau.Classic {
                 .ToArray();
             if (rootFiles.Count() > 0) {
                 // Need to create root folder.
-                basePath = Path.Combine(basePath, Path.GetFileNameWithoutExtension(archivePath));
+                basePath = Path.Combine(basePath, Path.GetFileNameWithoutExtension(archivePath).Trim());
                 if (rootFiles.Where(e => e.Key == kCharacterTxt).Count() == 0) {
                     // Need to create character.txt.
                     touches.Add(Path.Combine(basePath, kCharacterTxt));

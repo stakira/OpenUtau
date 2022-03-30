@@ -4,16 +4,28 @@ using System.Linq;
 namespace OpenUtau.Core {
     public abstract class UCommand {
         public virtual bool Silent => false;
-
+        public virtual ValidateOptions ValidateOptions => default;
         public abstract void Execute();
         public abstract void Unexecute();
-
+        public virtual bool Mergeable => false;
+        public virtual UCommand Merge(IList<UCommand> commands) => null;
         public abstract override string ToString();
     }
 
     public class UCommandGroup {
+        public bool DeferValidate;
         public List<UCommand> Commands;
-        public UCommandGroup() { Commands = new List<UCommand>(); }
+        public UCommandGroup(bool deferValidate) {
+            DeferValidate = deferValidate;
+            Commands = new List<UCommand>();
+        }
+        public void Merge() {
+            if (Commands.Count > 0 && Commands.Last().Mergeable) {
+                var merged = Commands.Last().Merge(Commands);
+                Commands.Clear();
+                Commands.Add(merged);
+            }
+        }
         public override string ToString() { return Commands.Count == 0 ? "No op" : Commands.First().ToString(); }
     }
 

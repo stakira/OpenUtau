@@ -21,9 +21,11 @@ namespace OpenUtau.Core {
     }
 
     public class LoadPartNotification : UNotification {
-        public LoadPartNotification(UPart part, UProject project) {
+        public readonly int tick;
+        public LoadPartNotification(UPart part, UProject project, int tick) {
             this.part = part;
             this.project = project;
+            this.tick = tick;
         }
         public override string ToString() => "Load part";
     }
@@ -43,12 +45,12 @@ namespace OpenUtau.Core {
         public override string ToString() => "Save project";
     }
 
-    public class RedrawNotesNotification : UNotification {
-        public override string ToString() => "Redraw Notes";
+    public class ValidateProjectNotification : UNotification {
+        public override string ToString() => "Validate Project";
     }
 
-    public class ChangeExpressionListNotification : UNotification {
-        public override string ToString() => "Change expression list";
+    public class RedrawNotesNotification : UNotification {
+        public override string ToString() => "Redraw Notes";
     }
 
     public class SelectExpressionNotification : UNotification {
@@ -73,10 +75,12 @@ namespace OpenUtau.Core {
 
     // Notification for UI to move PlayPosMarker
     public class SetPlayPosTickNotification : UNotification {
-        public int playPosTick;
+        public readonly int playPosTick;
+        public readonly bool waitingRendering;
         public override bool Silent => true;
-        public SetPlayPosTickNotification(int tick) {
+        public SetPlayPosTickNotification(int tick, bool waitingRendering = false) {
             playPosTick = tick;
+            this.waitingRendering = waitingRendering;
         }
         public override string ToString() => $"Set play position to tick {playPosTick}";
     }
@@ -105,6 +109,7 @@ namespace OpenUtau.Core {
     public class VolumeChangeNotification : UNotification {
         public double Volume;
         public int TrackNo;
+        public override bool Silent => true;
         public VolumeChangeNotification(int trackNo, double volume) {
             TrackNo = trackNo;
             Volume = volume;
@@ -112,9 +117,24 @@ namespace OpenUtau.Core {
         public override string ToString() => $"Set track {TrackNo} volume to {Volume}";
     }
 
+    public class SoloTrackNotification : UNotification {
+        public readonly int trackNo;
+        public readonly bool solo;
+        public SoloTrackNotification(int trackNo, bool solo) {
+            this.trackNo = trackNo;
+            this.solo = solo;
+        }
+        public override string ToString() => $"Solo track {solo}";
+    }
+
     public class SingersChangedNotification : UNotification {
         public SingersChangedNotification() { }
         public override string ToString() => "Singers changed.";
+    }
+
+    public class SingersRefreshedNotification : UNotification {
+        public SingersRefreshedNotification() { }
+        public override string ToString() => "Singers refreshed.";
     }
 
     public class WillRemoveTrackNotification : UNotification {
@@ -132,5 +152,9 @@ namespace OpenUtau.Core {
             this.note = note;
         }
         public override string ToString() => $"Focus note {note.lyric} at {note.position}.";
+    }
+
+    public class PreRenderNotification : UNotification {
+        public override string ToString() => $"Pre-render notification.";
     }
 }

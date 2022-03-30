@@ -1,0 +1,31 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="24" d:DesignHeight="24"
+             x:Class="OpenUtau.App.Controls.ViewScaler">
+  <UserControl.Styles>
+    <Style Selector="Button">
+      <Setter Property="Foreground" Value="{DynamicResource NeutralAccentBrushSemi}"/>
+    </Style>
+    <Style Selector="Button:pointerover">
+      <Setter Property="Foreground" Value="{DynamicResource NeutralAccentBrush}"/>
+    </Style>
+    <Style Selector="Button:pressed">
+      <Setter Property="Foreground" Value="{DynamicResource NeutralAccentBrush}"/>
+    </Style>
+    <Style Selector="Button /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="Transparent"/>
+    </Style>
+    <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="Transparent"/>
+    </Style>
+    <Style Selector="Button:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="Transparent"/>
+    </Style>
+  </UserControl.Styles>
+  <Button Margin="0" Padding="0" Width="24" Height="24" Background="Transparent" Focusable="False">
+    <Path Name="Path" Width="16" Height="16" Stroke="{Binding $parent.Foreground}"
+          StrokeThickness="1.75" StrokeLineCap="Flat" StrokeJoin="Miter"/>
+  </Button>
+</UserControl>

@@ -2,6 +2,7 @@
 using System.Linq;
 using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
+using TinyPinyin;
 
 namespace OpenUtau.Plugin.Builtin {
     /// <summary>
@@ -34,21 +35,33 @@ namespace OpenUtau.Plugin.Builtin {
         // Simply stores the singer in a field.
         public override void SetSinger(USinger singer) => this.singer = singer;
 
-        public override Phoneme[] Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour) {
+        public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
             // The overall logic is:
             // 1. Remove consonant: "duang" -> "uang".
             // 2. Lookup the trailing sound in vowel table: "uang" -> "_ang".
             // 3. Split the total duration and returns "duang" and "_ang".
-            var note = notes[0];
+            var lyric = notes[0].lyric;
+            if (lyric.Length > 0 && PinyinHelper.IsChinese(lyric[0])) {
+                lyric = PinyinHelper.GetPinyin(lyric).ToLowerInvariant();
+            }
+            string consonant = string.Empty;
             string vowel = string.Empty;
-            if (note.lyric.Length > 2 && cSet.Contains(note.lyric.Substring(0, 2))) {
+            if (lyric.Length > 2 && cSet.Contains(lyric.Substring(0, 2))) {
                 // First try to find consonant "zh", "ch" or "sh", and extract vowel.
-                vowel = note.lyric.Substring(2);
-            } else if (note.lyric.Length > 1 && cSet.Contains(note.lyric.Substring(0, 1))) {
+                consonant = lyric.Substring(0, 2);
+                vowel = lyric.Substring(2);
+            } else if (lyric.Length > 1 && cSet.Contains(lyric.Substring(0, 1))) {
                 // Then try to find single character consonants, and extract vowel.
-                vowel = note.lyric.Substring(1);
-            } // Otherwise we don't need the vowel.
-            string phoneme0 = note.lyric;
+                consonant = lyric.Substring(0, 1);
+                vowel = lyric.Substring(1);
+            } else {
+                // Otherwise the lyric is a vowel.
+                vowel = lyric;
+            }
+            if ((vowel == "un" || vowel == "uan") && (consonant == "j" || consonant == "q" || consonant == "x" || consonant == "y")) {
+                vowel = "v" + vowel.Substring(1);
+            }
+            string phoneme0 = lyric;
             // We will need to split the total duration for phonemes, so we compute it here.
             int totalDuration = notes.Sum(n => n.duration);
             // Lookup the vowel split table. For example, "uang" will match "_ang".
@@ -59,21 +72,25 @@ namespace OpenUtau.Plugin.Builtin {
                 if (length1 > totalDuration / 2) {
                     length1 = totalDuration / 2;
                 }
-                return new Phoneme[] {
-                    new Phoneme() {
-                        phoneme = phoneme0,
+                return new Result {
+                    phonemes = new Phoneme[] {
+                        new Phoneme() {
+                            phoneme = phoneme0,
+                        },
+                        new Phoneme() {
+                            phoneme = phoneme1,
+                            position = totalDuration - length1,
+                        }
                     },
-                    new Phoneme() {
-                        phoneme = phoneme1,
-                        position = totalDuration - length1,
-                    }
                 };
             }
             // Not spliting is needed. Return as is.
-            return new Phoneme[] {
-                new Phoneme() {
-                    phoneme = phoneme0,
-                }
+            return new Result {
+                phonemes = new Phoneme[] {
+                    new Phoneme() {
+                        phoneme = phoneme0,
+                    }
+                },
             };
         }
     }

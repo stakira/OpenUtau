@@ -1,0 +1,242 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <system:String x:Key="context.pitch.easein">Zak in</system:String>
+  <system:String x:Key="context.pitch.easeinout">Zak in/uit</system:String>
+  <system:String x:Key="context.pitch.easeout">Zak uit</system:String>
+  <!--<system:String x:Key="context.pitch.linear">Linear</system:String>-->
+  <system:String x:Key="context.pitch.pointadd">Punt toevoegen</system:String>
+  <system:String x:Key="context.pitch.pointdel">Punt wissen</system:String>
+  <system:String x:Key="context.pitch.pointsnapprev">Snap terug naar vorige noot</system:String>
+
+  <system:String x:Key="dialogs.about.caption">Over OpenUTAU</system:String>
+  <system:String x:Key="dialogs.about.message">
+        OpenUtau wil een open-source bewerkingsomgeving zijn voor de UTAU-gemeenschap, met een moderne gebruikerservaring en intelligente fonologische ondersteuning. Bezoek ons op Github. (in engels)
+    </system:String>
+  <system:String x:Key="dialogs.exitsave.caption">OpenUtau afsluiten</system:String>
+  <system:String x:Key="dialogs.exitsave.message">Het huidige project bevat niet-opgeslagen wijzigingen. Wilt u het opslaan?</system:String>
+  <system:String x:Key="dialogs.export.caption">Exporteren</system:String>
+  <system:String x:Key="dialogs.export.savefirst">Eerst projectbestand opslaan</system:String>
+  <system:String x:Key="dialogs.messagebox.cancel">Annuleren</system:String>
+  <system:String x:Key="dialogs.messagebox.no">Nee</system:String>
+  <!--<system:String x:Key="dialogs.messagebox.ok">Ok</system:String>-->
+  <system:String x:Key="dialogs.messagebox.yes">Ja</system:String>
+  <system:String x:Key="dialogs.noresampler.caption">Geen resampler</system:String>
+  <system:String x:Key="dialogs.noresampler.message">Geen resampler! Zet je favoriete resampler exe of dll in de Resamplers map en kies het in Voorkeuren!</system:String>
+  <system:String x:Key="dialogs.timesig.caption">Tijd Signatuur</system:String>
+
+  <!--<system:String x:Key="errors.caption">Error</system:String>-->
+
+  <system:String x:Key="exps.abbr">Afkorting</system:String>
+  <system:String x:Key="exps.apply">Toepassen</system:String>
+  <system:String x:Key="exps.caption">Expressies</system:String>
+  <system:String x:Key="exps.defaultvalue">Standaard</system:String>
+  <system:String x:Key="exps.flag">Resampler Vlag</system:String>
+  <system:String x:Key="exps.isflag">Is Resampler Vlag</system:String>
+  <!--<system:String x:Key="exps.maxvalue">Max</system:String>-->
+  <!--<system:String x:Key="exps.minvalue">Min</system:String>-->
+  <system:String x:Key="exps.name">Naam</system:String>
+  <system:String x:Key="exps.optionvalues">Optiewaarden</system:String>
+  <system:String x:Key="exps.sepbycomma">Scheid waarden door ','</system:String>
+  <!--<system:String x:Key="exps.type">Type</system:String>-->
+  <system:String x:Key="exps.type.numerical">Numeriek</system:String>
+  <system:String x:Key="exps.type.options">Opties</system:String>
+
+  <system:String x:Key="lyrics.apply">Toepassen</system:String>
+  <system:String x:Key="lyrics.cancel">Annuleer</system:String>
+  <system:String x:Key="lyrics.caption">Bewerk Tekst</system:String>
+  <system:String x:Key="lyrics.livepreview">Live voorbeeld</system:String>
+  <!--<system:String x:Key="lyrics.max">Max</system:String>-->
+  <!--<system:String x:Key="lyrics.reset">Reset</system:String>-->
+  <system:String x:Key="lyrics.selectnotes">Kies eerst wat noten!</system:String>
+  <system:String x:Key="lyrics.separators">Scheiders</system:String>
+
+  <system:String x:Key="menu.edit">_Bewerken</system:String>
+  <system:String x:Key="menu.edit.copy">_Kopiëren</system:String>
+  <system:String x:Key="menu.edit.cut">Knip_pen</system:String>
+  <system:String x:Key="menu.edit.delete">_Verwijderen</system:String>
+  <system:String x:Key="menu.edit.paste">_Plakken</system:String>
+  <system:String x:Key="menu.edit.redo">_Herhaal</system:String>
+  <system:String x:Key="menu.edit.selectall">Selecteer _Alles</system:String>
+  <system:String x:Key="menu.edit.undo">_Ongedaan maken</system:String>
+  <system:String x:Key="menu.file">_Bestand</system:String>
+  <system:String x:Key="menu.file.exit">_Afsluiten</system:String>
+  <system:String x:Key="menu.file.exportust">Export Ust-bestanden</system:String>
+  <!--<system:String x:Key="menu.file.exportwav">Export Wav Files</system:String>-->
+  <system:String x:Key="menu.file.importaudio">_Audio importeren...</system:String>
+  <system:String x:Key="menu.file.importmidi">_Midi importeren...</system:String>
+  <system:String x:Key="menu.file.importtracks">Tracks importeren...</system:String>
+  <system:String x:Key="menu.file.new">Nieuw bestand</system:String>
+  <system:String x:Key="menu.file.newfromtemplate">Nieuw vanaf sjabloon</system:String>
+  <system:String x:Key="menu.file.open">_Open...</system:String>
+  <system:String x:Key="menu.file.openas">Open als</system:String>
+  <system:String x:Key="menu.file.openrecent">Recent openen</system:String>
+  <system:String x:Key="menu.file.save">_Opslaan</system:String>
+  <system:String x:Key="menu.file.saveas">Opslaan _als...</system:String>
+  <system:String x:Key="menu.file.savetemplate">Sjabloon opslaan...</system:String>
+  <system:String x:Key="menu.help">_Help</system:String>
+  <system:String x:Key="menu.help.about">Over OpenUTAU</system:String>
+  <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
+  <system:String x:Key="menu.tools">_Tools</system:String>
+  <!--<system:String x:Key="menu.tools.clearcache">Clear Cache</system:String>-->
+  <system:String x:Key="menu.tools.layout">Indeling</system:String>
+  <system:String x:Key="menu.tools.layout.hsplit11">Horizontaal 1:1</system:String>
+  <system:String x:Key="menu.tools.layout.hsplit12">Horizontaal 1:2</system:String>
+  <system:String x:Key="menu.tools.layout.hsplit13">Horizontaal 1:3</system:String>
+  <system:String x:Key="menu.tools.layout.vsplit11">Verticaal 1:1</system:String>
+  <system:String x:Key="menu.tools.layout.vsplit12">Verticaal 1:2</system:String>
+  <system:String x:Key="menu.tools.layout.vsplit13">Verticaal 1:3</system:String>
+  <system:String x:Key="menu.tools.prefs">Voorkeuren...</system:String>
+  <system:String x:Key="menu.tools.project.expressions">Uitdrukkingen...</system:String>
+  <system:String x:Key="menu.tools.singer.install">installeer Singer...</system:String>
+  <system:String x:Key="menu.tools.singer.installadv">installeer Singer (Geavanceerd)...</system:String>
+  <system:String x:Key="menu.tools.singers">Singer...</system:String>
+
+  <!--<system:String x:Key="oto.alias">Alias</system:String>-->
+  <system:String x:Key="oto.color">Kleur</system:String>
+  <system:String x:Key="oto.consonant">Medeklinker</system:String>
+  <system:String x:Key="oto.cutoff">Afsnij</system:String>
+  <system:String x:Key="oto.file">Bestand</system:String>
+  <!--<system:String x:Key="oto.offset">Offset</system:String>-->
+  <!--<system:String x:Key="oto.overlap">Overlap</system:String>-->
+  <system:String x:Key="oto.phonetic">Fonetisch</system:String>
+  <system:String x:Key="oto.prefix">Voorvoegsel</system:String>
+  <system:String x:Key="oto.preutter">preutterantie</system:String>
+  <!--<system:String x:Key="oto.set">Set</system:String>-->
+  <system:String x:Key="oto.suffix">Achtervoegsel</system:String>
+
+  <!--<system:String x:Key="pianoroll.menu.lyrics">Lyrics</system:String>-->
+  <system:String x:Key="pianoroll.menu.lyrics.edit">Bewerk Lyrics</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana naar Romaji</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">Japanese VCV naar CV</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Letter achtervoegsel verwijderen</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">Toon achtervoegsel verwijderen</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Romaji naar Hiragana</system:String>
+  <system:String x:Key="pianoroll.menu.notes">Noten</system:String>
+  <system:String x:Key="pianoroll.menu.notes.addtaildash">Voeg staart "-" toe</system:String>
+  <system:String x:Key="pianoroll.menu.notes.addtailrest">Voeg staart "R" toe</system:String>
+  <system:String x:Key="pianoroll.menu.notes.quantize15">Kwantiseren tot 1/128</system:String>
+  <system:String x:Key="pianoroll.menu.notes.quantize30">Kwantiseren tot 1/64</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.exps">Reset alle expressies</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">Reset foneem timings</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">Pitch Bend resetten</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.vibratos">Reset vibrato's</system:String>
+  <system:String x:Key="pianoroll.menu.part">Deel</system:String>
+  <system:String x:Key="pianoroll.menu.part.legacypluginexp">Legacy Plugin (Experimenteel)</system:String>
+  <system:String x:Key="pianoroll.menu.part.rename">Naam wijzigen</system:String>
+  <system:String x:Key="pianoroll.toggle.phoneme">Toon fonemen (O)</system:String>
+  <system:String x:Key="pianoroll.toggle.pitch">Toon Pitch Bend (I)</system:String>
+  <system:String x:Key="pianoroll.toggle.snap">Schakel Snap (P)</system:String>
+  <system:String x:Key="pianoroll.toggle.tips">Bekijk tips (T)</system:String>
+  <!--<system:String x:Key="pianoroll.toggle.tone">Toggle Note Tone (Y)</system:String>-->
+  <system:String x:Key="pianoroll.toggle.vibrato">Vibrato weergeven (U)</system:String>
+  <system:String x:Key="pianoroll.tool.eraser">Gummetje (3)</system:String>
+  <system:String x:Key="pianoroll.tool.pen">Pen (2)
+Links klikken om te tekenen
+Rechts klikken om te wissen</system:String>
+  <system:String x:Key="pianoroll.tool.selection">Selectie (1)
+Houd Ctrl ingedrukt om meer te selecteren</system:String>
+
+  <system:String x:Key="prefs.advanced">Geavanceerd</system:String>
+  <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.resamplerlogging">Resampler Logging</system:String>-->
+  <system:String x:Key="prefs.advanced.resamplerlogging.warn">Slaat de uitvoer van de resampler op in logbestanden. Deze optie vertraagt de UI en rendering.</system:String>
+  <system:String x:Key="prefs.advanced.stable">Stabiel</system:String>
+  <system:String x:Key="prefs.appearance">Uiterlijk</system:String>
+  <system:String x:Key="prefs.appearance.lang">Taal</system:String>
+  <system:String x:Key="prefs.appearance.theme">Thema</system:String>
+  <system:String x:Key="prefs.appearance.theme.dark">Donker</system:String>
+  <system:String x:Key="prefs.appearance.theme.light">Licht</system:String>
+  <system:String x:Key="prefs.caption">Voorkeuren</system:String>
+  <system:String x:Key="prefs.note.restart">*herstart OpenUtau a.u.b. na het wijzigen van dit item.*</system:String>
+  <system:String x:Key="prefs.off">Uit</system:String>
+  <system:String x:Key="prefs.on">Aan</system:String>
+  <system:String x:Key="prefs.paths">Paden</system:String>
+  <system:String x:Key="prefs.paths.addlsinger">Extra Zangerspad</system:String>
+  <!--<system:String x:Key="prefs.paths.addlsinger.install">Install to Additional Singer Path</system:String>-->
+  <!--<system:String x:Key="prefs.paths.reset">Reset</system:String>-->
+  <system:String x:Key="prefs.paths.select">Selecteer</system:String>
+  <system:String x:Key="prefs.playback">Afspelen</system:String>
+  <!--<system:String x:Key="prefs.playback.backend">Audio Backend</system:String>-->
+  <system:String x:Key="prefs.playback.backend.auto">Automatisch</system:String>
+  <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
+  <system:String x:Key="prefs.playback.cursorposition">Cursorpositie</system:String>
+  <system:String x:Key="prefs.playback.device">Afspeelapparaat</system:String>
+  <!--<system:String x:Key="prefs.playback.test">Test</system:String>-->
+  <system:String x:Key="prefs.rendering">Renderen</system:String>
+  <!--<system:String x:Key="prefs.rendering.phasecomp">Phase Compensation</system:String>-->
+  <system:String x:Key="prefs.rendering.prerender.threads">Pre-render Draden</system:String>
+  <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.resampler.morewarn">
+Warning: moresampler is not fully supported. It may be slow and cause high CPU usage. If you insist, please:
+1. Set "resampler-compatibility" to "on" in moreconfig.txt.
+2. Set "auto-update-llsm-mrq" to "off" in moreconfig.txt.
+3. Patiently wait for moresampler to generate missing llsm files.
+  </system:String>-->
+  <system:String x:Key="prefs.rendering.resampler.note">
+        Note: Om externe resamplers te gebruiken, voeg de resampler DLL of EXE bestand toe in de Resamplers map in het OpenUtau installatie pad en kies het in Voorkeuren.
+    </system:String>
+
+  <system:String x:Key="progress.saved">Project opgeslagen.{0}</system:String>
+
+  <system:String x:Key="singers.caption">Zangers</system:String>
+  <system:String x:Key="singers.location">Plaats</system:String>
+  <system:String x:Key="singers.refresh">Vernieuwen</system:String>
+  <!--<system:String x:Key="singers.setencoding">Set Encoding</system:String>-->
+  <system:String x:Key="singers.subbanks.cancel">Annuleer</system:String>
+  <system:String x:Key="singers.subbanks.clear">verwijderen</system:String>
+  <system:String x:Key="singers.subbanks.color">Kleur</system:String>
+  <system:String x:Key="singers.subbanks.color.add">Kleur toevoegen</system:String>
+  <system:String x:Key="singers.subbanks.color.remove">Kleur verwijderen</system:String>
+  <system:String x:Key="singers.subbanks.color.rename">Naam wijzigen</system:String>
+  <system:String x:Key="singers.subbanks.edit">Bewerk Subbanken</system:String>
+  <!--<system:String x:Key="singers.subbanks.reset">Reset</system:String>-->
+  <system:String x:Key="singers.subbanks.save">Opslaan</system:String>
+  <system:String x:Key="singers.subbanks.selectall">Selecteer alles</system:String>
+  <!--<system:String x:Key="singers.subbanks.set">Set</system:String>-->
+  <system:String x:Key="singers.subbanks.tone">Toon</system:String>
+  <system:String x:Key="singers.subbanks.toneranges">Toonbereiken</system:String>
+
+  <system:String x:Key="tip.exps">
+Linker knop tekenen: Stel Expressies in
+Rechter knop tekenen: Expressiesn resetten
+  </system:String>
+  <system:String x:Key="tip.lyricbox.next">Tab: Volgende noot</system:String>
+  <system:String x:Key="tip.lyricbox.prev">Shift+Tab: Vorige Noot</system:String>
+  <system:String x:Key="tip.notes.basics">
+Selectiegereedschap
+    Kader selecteren: noten selecteren
+    Ctrl + Kader selecteren: Meer noten selecteren
+    Omhoog/Omlaag: Geselecteerde noten transponeren
+    Ctrl + Omhoog/Omlaag: Geselecteerde noten per octaaf transponeren
+Pen gereedschap
+    Linker knop Tekenen: Noot toevoegen
+    Rechts klikken: Noot verwijderen
+    Rechter knop tekenen: Meerdere note verwijderen
+Algemeen
+    T: Schakel tips
+    Slepen noot: noot verplaatsen
+    Slepen Einde noot: Formaat noot wijzigen
+    Alt + Sleep einde van notitie: Wijzig de grootte van aangrenzende notities
+    Spatie: Speel
+  </system:String>
+  <system:String x:Key="tip.notes.zoomx">◀ Scroll hier om horizontaal in te zoomen ▶</system:String>
+  <system:String x:Key="tip.notes.zoomy">Scroll hier om verticaal in te zoomen ▶</system:String>
+
+  <system:String x:Key="tracks.movedown">Naar beneden</system:String>
+  <system:String x:Key="tracks.moveup">Naar boven</system:String>
+  <system:String x:Key="tracks.remove">Verwijder</system:String>
+  <system:String x:Key="tracks.selectsinger">Zanger kiezen</system:String>
+
+  <system:String x:Key="updater.caption">Controleren op updates</system:String>
+  <!--<system:String x:Key="updater.github">GitHub</system:String>-->
+  <system:String x:Key="updater.status.available">Update v{0} beschikbaar!</system:String>
+  <system:String x:Key="updater.status.checking">Controleren op updates...</system:String>
+  <!--<system:String x:Key="updater.status.notavailable">Up to date</system:String>-->
+  <system:String x:Key="updater.status.unknown">Kan update niet checken</system:String>
+  <!--<system:String x:Key="updater.update">Update</system:String>-->
+
+  <system:String x:Key="warning">Waarschuwing</system:String>
+  <system:String x:Key="warning.asciipath">Uw OpenUtau home path "{0}" bevat niet-ASCII tekens. Exe resamplers werken mogelijk niet.</system:String>
+</ResourceDictionary>
