@@ -110,5 +110,18 @@ namespace OpenUtau.Core.Format {
             }
             return peaks;
         }
+
+        public static void CorrectSampleScale(float[] samples) {
+            float max = samples.Max();
+            float scale = 1;
+            if (max > Math.Pow(2, 23)) {
+                scale = (float)Math.Pow(0.5, 31); // 32 bit
+            } else if (max > 8) {
+                scale = (float)Math.Pow(0.5, 15); // 16 bit
+            }
+            for (int i = 0; i < samples.Length; i++) {
+                samples[i] *= scale;
+            }
+        }
     }
 }

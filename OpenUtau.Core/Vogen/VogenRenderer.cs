@@ -58,7 +58,7 @@ namespace OpenUtau.Core.Vogen {
                         return new RenderResult();
                     }
                     var result = Layout(phrase);
-                    var wavPath = Path.Join(PathManager.Inst.CachePath, $"vog-{phrase.hash}.wav");
+                    var wavPath = Path.Join(PathManager.Inst.CachePath, $"vog-{phrase.hash:x16}.wav");
                     if (File.Exists(wavPath)) {
                         try {
                             using (var waveStream = Wave.OpenFile(wavPath)) {
@@ -172,10 +172,10 @@ namespace OpenUtau.Core.Vogen {
                 sp = Worldline.DecodeMgc(f0.Length, mgc, fftSize, fs);
                 ap = Worldline.DecodeBap(f0.Length, bap, fftSize, fs);
             }
-            var tension = DownSampleCurve(phrase.tension, 0.5, totalFrames, headFrames, tailFrames, phrase.tickToMs, x => x);
-            var breathiness = DownSampleCurve(phrase.breathiness, 0.5, totalFrames, headFrames, tailFrames, phrase.tickToMs, x => x);
-            var voicing = DownSampleCurve(phrase.voicing, 1.0, totalFrames, headFrames, tailFrames, phrase.tickToMs, x => x);
-            var gender = DownSampleCurve(phrase.gender, 0.5, totalFrames, headFrames, tailFrames, phrase.tickToMs, x => x);
+            var gender = DownSampleCurve(phrase.gender, 0.5, totalFrames, headFrames, tailFrames, phrase.tickToMs, x => 0.5 + 0.005 * x);
+            var tension = DownSampleCurve(phrase.tension, 0.5, totalFrames, headFrames, tailFrames, phrase.tickToMs, x => 0.5 + 0.005 * x);
+            var breathiness = DownSampleCurve(phrase.breathiness, 0.5, totalFrames, headFrames, tailFrames, phrase.tickToMs, x => 0.5 + 0.005 * x);
+            var voicing = DownSampleCurve(phrase.voicing, 1.0, totalFrames, headFrames, tailFrames, phrase.tickToMs, x => 0.01 * x);
             var samples = new double[1 + (int)((f0.Length - 1) * frameMs / 1000.0 * fs)];
             World.Synthesis(
                 vocoder, out samples,

@@ -45,36 +45,7 @@ namespace OpenUtau.Classic {
             string ArgParam = FormattableString.Invariant(
                 $"\"{args.inputTemp}\" \"{tmpFile}\" {MusicMath.GetToneName(args.tone)} {args.velocity} \"{BuildFlagsStr(args.flags)}\" {args.offset} {args.requiredLength} {args.consonant} {args.cutoff} {args.volume} {args.modulation} !{args.tempo} {Base64.Base64EncodeInt12(args.pitches)}");
             logger.Information($" > [thread-{threadId}] {FilePath} {ArgParam}");
-            using (var proc = new Process()) {
-                proc.StartInfo = new ProcessStartInfo(FilePath, ArgParam) {
-                    UseShellExecute = false,
-                    RedirectStandardOutput = DebugSwitches.DebugRendering,
-                    RedirectStandardError = DebugSwitches.DebugRendering,
-                    CreateNoWindow = true,
-                };
-                if (DebugSwitches.DebugRendering) {
-                    proc.OutputDataReceived += (o, e) => logger.Information($" >>> [thread-{threadId}] {e.Data}");
-                    proc.ErrorDataReceived += (o, e) => {
-                        if (!string.IsNullOrEmpty(e.Data)) {
-                            logger.Error($" >>> [thread-{threadId}] {e.Data}");
-                        }
-                    };
-                }
-                proc.Start();
-                if (DebugSwitches.DebugRendering) {
-                    proc.BeginOutputReadLine();
-                    proc.BeginErrorReadLine();
-                }
-                if (!proc.WaitForExit(60000)) {
-                    logger.Warning($"[thread-{threadId}] Timeout, killing...");
-                    try {
-                        proc.Kill();
-                        logger.Warning($"[thread-{threadId}] Killed.");
-                    } catch (Exception e) {
-                        logger.Error(e, $"[thread-{threadId}] Failed to kill");
-                    }
-                }
-            }
+            ProcessRunner.Run(FilePath, ArgParam, logger);
             return tmpFile;
         }
 

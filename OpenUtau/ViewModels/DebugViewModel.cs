@@ -55,12 +55,12 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void Attach() {
-            Core.Util.DebugSwitches.DebugRendering = true;
+            Core.Util.ProcessRunner.DebugSwitch = true;
             Sink.Inst.LevelSwitch.MinimumLevel = LogEventLevel.Verbose;
         }
 
         public void Detach() {
-            Core.Util.DebugSwitches.DebugRendering = false;
+            Core.Util.ProcessRunner.DebugSwitch = false;
             Sink.Inst.LevelSwitch.MinimumLevel = LogEventLevel.Error;
         }
     }

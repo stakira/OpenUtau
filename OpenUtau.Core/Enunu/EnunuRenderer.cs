@@ -6,22 +6,28 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using K4os.Hash.xxHash;
 using NAudio.Wave;
+using NumSharp;
 using OpenUtau.Core.Format;
 using OpenUtau.Core.Render;
+using OpenUtau.Core.SignalChain;
 using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Core.Enunu {
     class EnunuRenderer : IRenderer {
+        const int headTicks = 240;
+        const int tailTicks = 240;
+
         static readonly HashSet<string> supportedExp = new HashSet<string>(){
             Format.Ustx.DYN,
             Format.Ustx.PITD,
+            Format.Ustx.GENC,
+            Format.Ustx.BREC,
+            Format.Ustx.TENC,
+            Format.Ustx.VOIC,
         };
-
-        public bool SupportsExpression(UExpressionDescriptor descriptor) {
-            return supportedExp.Contains(descriptor.abbr);
-        }
 
         static readonly Encoding ShiftJIS = Encoding.GetEncoding("shift_jis");
         static readonly object lockObj = new object();
@@ -41,8 +47,12 @@ namespace OpenUtau.Core.Enunu {
                 var parts = line.Split();
                 workDir = Path.GetDirectoryName(plugin.Executable);
                 python = Path.Join(workDir, parts[0]);
-                script = parts[1];
+                script = Path.Join(workDir, "enunu-openutau.py");
             }
+        }
+
+        public bool SupportsExpression(UExpressionDescriptor descriptor) {
+            return supportedExp.Contains(descriptor.abbr);
         }
 
         struct EnunuNote {
@@ -51,13 +61,18 @@ namespace OpenUtau.Core.Enunu {
             public int noteNum;
         }
 
+        class EnuConfig {
+            public int sampleRate;
+            public double framePeriod;
+        }
+
         public RenderResult Layout(RenderPhrase phrase) {
             var firstPhone = phrase.phones.First();
             var lastPhone = phrase.phones.Last();
             return new RenderResult() {
-                leadingMs = 240 * phrase.tickToMs,
+                leadingMs = headTicks * phrase.tickToMs,
                 positionMs = (phrase.position + firstPhone.position) * phrase.tickToMs,
-                estimatedLengthMs = (lastPhone.duration + lastPhone.position - firstPhone.position + 480) * phrase.tickToMs,
+                estimatedLengthMs = (lastPhone.duration + lastPhone.position - firstPhone.position + headTicks + tailTicks) * phrase.tickToMs,
             };
         }
 
@@ -68,15 +83,56 @@ namespace OpenUtau.Core.Enunu {
                         return new RenderResult();
                     }
                     Init();
-                    var ustPath = Path.Join(PathManager.Inst.CachePath, $"enu-{phrase.hash}.tmp");
-                    var wavPath = ustPath.Substring(0, ustPath.Length - 4) + ".wav";
+                    ulong preEffectHash = PreEffectsHash(phrase);
+                    var tmpPath = Path.Join(PathManager.Inst.CachePath, $"enu-{preEffectHash:x16}");
+                    var ustPath = tmpPath + ".tmp";
+                    var wavPath = Path.Join(PathManager.Inst.CachePath, $"enu-{phrase.hash}.wav");
+                    var result = Layout(phrase);
                     if (!File.Exists(wavPath)) {
-                        InvokeEnunu(phrase, ustPath, wavPath);
+                        var f0Path = Path.Join(tmpPath, "acoustic-f0.npy");
+                        var spPath = Path.Join(tmpPath, "acoustic-sp.npy");
+                        var apPath = Path.Join(tmpPath, "acoustic-ap.npy");
+                        if (!File.Exists(f0Path) || !File.Exists(spPath) || !File.Exists(apPath)) {
+                            InvokeEnunu(phrase, "all", ustPath);
+                        }
+                        if (cancellation.IsCancellationRequested) {
+                            return new RenderResult();
+                        }
+                        var configPath = Path.Join(phrase.singer.Location, "enuconfig.yaml");
+                        var configTxt = File.ReadAllText(configPath);
+                        var config = Yaml.DefaultDeserializer.Deserialize<EnuConfig>(configTxt);
+                        var f0 = np.Load<double[]>(f0Path);
+                        var sp = np.Load<double[,]>(spPath);
+                        var ap = np.Load<double[,]>(apPath);
+                        int totalFrames = f0.Length;
+                        int headFrames = (int)Math.Round(headTicks * phrase.tickToMs / config.framePeriod);
+                        int tailFrames = (int)Math.Round(tailTicks * phrase.tickToMs / config.framePeriod);
+                        var editorF0 = DownSampleCurve(phrase.pitches, 0, config.framePeriod, totalFrames, headFrames, tailFrames, phrase.tickToMs, x => MusicMath.ToneToFreq(x * 0.01));
+                        var gender = DownSampleCurve(phrase.gender, 0.5, config.framePeriod, totalFrames, headFrames, tailFrames, phrase.tickToMs, x => 0.5 + 0.005 * x);
+                        var tension = DownSampleCurve(phrase.tension, 0.5, config.framePeriod, totalFrames, headFrames, tailFrames, phrase.tickToMs, x => 0.5 + 0.005 * x);
+                        var breathiness = DownSampleCurve(phrase.breathiness, 0.5, config.framePeriod, totalFrames, headFrames, tailFrames, phrase.tickToMs, x => 0.5 + 0.005 * x);
+                        var voicing = DownSampleCurve(phrase.voicing, 1.0, config.framePeriod, totalFrames, headFrames, tailFrames, phrase.tickToMs, x => 0.01 * x);
+                        int fftSize = (sp.GetLength(1) - 1) * 2;
+                        for (int i = 0; i < f0.Length; i++) {
+                            if (f0[i] < 50) {
+                                editorF0[i] = 0;
+                            }
+                        }
+                        var samples = Worldline.WorldSynthesis(
+                            editorF0,
+                            sp, false, sp.GetLength(1),
+                            ap, false, fftSize,
+                            config.framePeriod, config.sampleRate,
+                            gender, tension, breathiness, voicing);
+                        result.samples = samples.Select(d => (float)d).ToArray();
+                        Wave.CorrectSampleScale(result.samples);
+                        var source = new WaveSource(0, 0, 0, 1);
+                        source.SetSamples(result.samples);
+                        WaveFileWriter.CreateWaveFile16(wavPath, new ExportAdapter(source).ToMono(1, 0));
                     }
                     foreach (var phone in phrase.phones) {
                         progress.CompleteOne(phone.phoneme);
                     }
-                    var result = Layout(phrase);
                     if (File.Exists(wavPath)) {
                         using (var waveStream = Wave.OpenFile(wavPath)) {
                             result.samples = Wave.GetSamples(waveStream.ToSampleProvider().ToMono(1, 0));
@@ -93,11 +149,25 @@ namespace OpenUtau.Core.Enunu {
             return task;
         }
 
+        private ulong PreEffectsHash(RenderPhrase phrase) {
+            using (var stream = new MemoryStream()) {
+                using (var writer = new BinaryWriter(stream)) {
+                    writer.Write(phrase.singerId);
+                    writer.Write(phrase.tempo);
+                    writer.Write(phrase.tickToMs);
+                    foreach (var phone in phrase.phones) {
+                        writer.Write(phone.hash);
+                    }
+                    return XXH64.DigestOf(stream.ToArray());
+                }
+            }
+        }
+
         private void WriteUst(RenderPhrase phrase, string ustPath) {
             var notes = new List<EnunuNote>();
             notes.Add(new EnunuNote {
                 lyric = "R",
-                length = 240,
+                length = headTicks,
                 noteNum = 60,
             });
             foreach (var phone in phrase.phones) {
@@ -109,7 +179,7 @@ namespace OpenUtau.Core.Enunu {
             }
             notes.Add(new EnunuNote {
                 lyric = "R",
-                length = 240,
+                length = tailTicks,
                 noteNum = 60,
             });
             using (var writer = new StreamWriter(ustPath, false, ShiftJIS)) {
@@ -129,22 +199,29 @@ namespace OpenUtau.Core.Enunu {
             }
         }
 
-        private void InvokeEnunu(RenderPhrase phrase, string ustPath, string wavPath) {
-            Log.Information($"Starting enunu to render \"{wavPath}\"");
+        private void InvokeEnunu(RenderPhrase phrase, string phase, string ustPath) {
+            Log.Information($"Starting enunu {phase} \"{ustPath}\"");
             WriteUst(phrase, ustPath);
-            var startInfo = new ProcessStartInfo() {
-                FileName = python,
-                Arguments = $"{script} \"{ustPath}\" \"{wavPath}\"",
-                WorkingDirectory = workDir,
-                CreateNoWindow = !Util.DebugSwitches.DebugRendering,
-            };
-            try {
-                using (var process = Process.Start(startInfo)) {
-                    process.WaitForExit();
-                }
-            } catch (Exception e) {
-                Log.Error(e, "Failed to run Enunu");
+            string args = $"{script} {phase} \"{ustPath}\"";
+            Util.ProcessRunner.Run(python, args, Log.Logger, workDir: workDir, timeoutMs: 0);
+        }
+
+        double[] DownSampleCurve(float[] curve, double defaultValue, double frameMs, int length, int headFrames, int tailFrames, double tickToMs, Func<double, double> convert) {
+            const int interval = 5;
+            var result = new double[length];
+            if (curve == null) {
+                Array.Fill(result, defaultValue);
+                return result;
             }
+            for (int i = 0; i < length - headFrames - tailFrames; i++) {
+                int index = (int)(i * frameMs / tickToMs / interval);
+                if (index < curve.Length) {
+                    result[i + headFrames] = convert(curve[index]);
+                }
+            }
+            Array.Fill(result, defaultValue, 0, headFrames);
+            Array.Fill(result, defaultValue, length - tailFrames, tailFrames);
+            return result;
         }
 
         void ApplyDynamics(RenderPhrase phrase, float[] samples) {

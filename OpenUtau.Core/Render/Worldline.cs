@@ -56,31 +56,64 @@ namespace OpenUtau.Core.Render {
         }
 
         [DllImport("worldline", CallingConvention = CallingConvention.Cdecl)]
-        static extern int DecodeAndSynthesis(
+        static extern int WorldSynthesis(
             double[] f0, int f0Length,
-            double[,] mgc, int mgcSize,
-            double[,] bap, int fftSize,
-            double frameMs, int fs, ref IntPtr y);
+            double[,] mgcOrSp, bool isMgc, int mgcSize,
+            double[,] bapOrAp, bool isBap, int fftSize,
+            double framePeriod, int fs, ref IntPtr y,
+            double[] gender, double[] tension,
+            double[] breathiness, double[] voicing);
 
-        public static float[] DecodeAndSynthesis(
-            double[] f0, double[,] mgc, double[,] bap,
-            int fftSize, double frameMs, int fs) {
-            try {
-                unsafe {
-                    IntPtr buffer = IntPtr.Zero;
-                    int size = DecodeAndSynthesis(
-                        f0, f0.Length,
-                        mgc, mgc.GetLength(1),
-                        bap, fftSize,
-                        frameMs, fs, ref buffer);
-                    var data = new double[size];
-                    Marshal.Copy(buffer, data, 0, size);
-                    Marshal.FreeCoTaskMem(buffer);
-                    return data.Select(s => (float)s).ToArray();
-                }
-            } catch (Exception e) {
-                Log.Error(e, "Failed to render.");
-                return null;
+        public static double[] WorldSynthesis(
+            double[] f0,
+            double[,] mgcOrSp, bool isMgc, int mgcSize,
+            double[,] bapOrAp, bool isBap, int fftSize,
+            double framePeriod, int fs,
+            double[] gender, double[] tension,
+            double[] breathiness, double[] voicing) {
+            unsafe {
+                IntPtr buffer = IntPtr.Zero;
+                int size = WorldSynthesis(
+                    f0, f0.Length,
+                    mgcOrSp, isMgc, mgcSize,
+                    bapOrAp, isBap, fftSize,
+                    framePeriod, fs, ref buffer,
+                    gender, tension, breathiness, voicing);
+                var data = new double[size];
+                Marshal.Copy(buffer, data, 0, size);
+                Marshal.FreeCoTaskMem(buffer);
+                return data;
+            }
+        }
+
+        [DllImport("worldline", CallingConvention = CallingConvention.Cdecl)]
+        static extern int WorldSynthesis(
+            double[] f0, int f0Length,
+            double[] mgcOrSp, bool isMgc, int mgcSize,
+            double[] bapOrAp, bool isBap, int fftSize,
+            double framePeriod, int fs, ref IntPtr y,
+            double[] gender, double[] tension,
+            double[] breathiness, double[] voicing);
+
+        public static double[] WorldSynthesis(
+            double[] f0,
+            double[] mgcOrSp, bool isMgc, int mgcSize,
+            double[] bapOrAp, bool isBap, int fftSize,
+            double framePeriod, int fs,
+            double[] gender, double[] tension,
+            double[] breathiness, double[] voicing) {
+            unsafe {
+                IntPtr buffer = IntPtr.Zero;
+                int size = WorldSynthesis(
+                    f0, f0.Length,
+                    mgcOrSp, isMgc, mgcSize,
+                    bapOrAp, isBap, fftSize,
+                    framePeriod, fs, ref buffer,
+                    gender, tension, breathiness, voicing);
+                var data = new double[size];
+                Marshal.Copy(buffer, data, 0, size);
+                Marshal.FreeCoTaskMem(buffer);
+                return data;
             }
         }
 

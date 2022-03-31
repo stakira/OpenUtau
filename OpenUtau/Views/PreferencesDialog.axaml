@@ -106,14 +106,6 @@
           </StackPanel>
         </HeaderedContentControl>
         <HeaderedContentControl Classes="groupbox" Header="{DynamicResource prefs.advanced}">
-          <StackPanel>
-            <TextBlock Text="{DynamicResource prefs.advanced.resamplerlogging}"/>
-            <ComboBox HorizontalAlignment="Stretch" SelectedIndex="{Binding ResamplerLogging}">
-              <ComboBoxItem Content="{DynamicResource prefs.off}"/>
-              <ComboBoxItem Content="{DynamicResource prefs.on}"/>
-            </ComboBox>
-            <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.advanced.resamplerlogging.warn}" FontSize="11"/>
-          </StackPanel>
         </HeaderedContentControl>
       </StackPanel>
     </ScrollViewer>
