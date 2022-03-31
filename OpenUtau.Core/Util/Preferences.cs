@@ -97,6 +97,7 @@ namespace OpenUtau.Core.Util {
             public Dictionary<string, string> SingerPhonemizers = new Dictionary<string, string>();
             public bool PreferPortAudio = false;
             public double PlayPosMarkerMargin = 0.9;
+            public int LockStartTime = 0;
             public int PlaybackAutoScroll = 1;
         }
     }
