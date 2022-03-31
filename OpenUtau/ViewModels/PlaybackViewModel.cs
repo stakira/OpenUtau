@@ -1,6 +1,7 @@
 ﻿using System;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 using ReactiveUI;
 
 namespace OpenUtau.App.ViewModels {
@@ -26,7 +27,12 @@ namespace OpenUtau.App.ViewModels {
             DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(Project.EndTick));
         }
         public bool PlayOrPause() {
-            return PlaybackManager.Inst.PlayOrPause();
+            var ret = PlaybackManager.Inst.PlayOrPause();
+            var lockStartTime = Convert.ToBoolean(Preferences.Default.LockStartTime);
+            if (!PlaybackManager.Inst.Playing && lockStartTime) {
+                DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(PlaybackManager.Inst.StartTick));
+            }
+            return ret;
         }
         public void Pause() {
             PlaybackManager.Inst.PausePlayback();
