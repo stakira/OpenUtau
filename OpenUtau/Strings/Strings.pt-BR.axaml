@@ -127,7 +127,7 @@
   <system:String x:Key="pianoroll.menu.notes.quantize30">Quantizar para 1/64</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">Redefinir todas expressões</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">Redefinir tempos de fonemas</system:String>
-  <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">Redefinir curvas de afinação</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">Redefinir curvas de tom</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.vibratos">Redefinir vibratos</system:String>
   <system:String x:Key="pianoroll.menu.part">Parte</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">Plugin Legado (Experimental)</system:String>
