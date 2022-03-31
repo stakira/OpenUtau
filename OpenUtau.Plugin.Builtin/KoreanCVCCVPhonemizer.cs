@@ -10,6 +10,8 @@ namespace OpenUtau.Plugin.Builtin {
         static readonly string initialConsonantsTable = "ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ";
         static readonly string vowelsTable = "ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ";
         static readonly string lastConsonantsTable = "　ㄱㄲㄳㄴㄵㄶㄷㄹㄺㄻㄼㄽㄾㄿㅀㅁㅂㅄㅅㅆㅇㅈㅊㅋㅌㅍㅎ";
+        static readonly string[] specialConsonantsTable = { "gg", "dd", "bb", "ss", "jj", "t", "k", "ch", "p" };
+        static readonly string[] makeVowelconsonantsTable = { "g", "d", "b", "n", "s", "h", "m", "r" };
         static readonly ushort unicodeKoreanBase = 0xAC00;
         static readonly ushort unicodeKoreanLast = 0xD79F;
 
@@ -29,6 +31,14 @@ namespace OpenUtau.Plugin.Builtin {
             var l = u16;
 
             return new char[] { initialConsonantsTable[i], vowelsTable[v], lastConsonantsTable[l] };
+        }
+
+        private bool CheckSpecialCC(string consonants) {
+            return specialConsonantsTable.Contains(consonants);
+        }
+
+        private bool CheckMakeVowelCC(string consonants) {
+            return makeVowelconsonantsTable.Contains(consonants);
         }
 
         // 초성
@@ -89,13 +99,14 @@ namespace OpenUtau.Plugin.Builtin {
 
         // 끝소리일 경우에만 동작
         static readonly string[] lastConsonants = new string[] {
-            "K=ㄱ,ㅋ,ㄲ,ㄳ,ㄺ",
+            "k=ㄱ,ㅋ,ㄲ,ㄳ,ㄺ",
             "n=ㄴ,ㄵ,ㄶ",
-            "T=ㄷ,ㅅ,ㅈ,ㅊ,ㅌ,ㅆ,ㅎ",
+            "t=ㄷ,ㅈ,ㅊ,ㅌ,ㅎ,ㄸ,ㅅ",
+            "s=ㅆ",
             "l=ㄹ,ㄼ,l",
             "rl=ㄽ,ㄾ,ㄿ,ㅀ,0",
             "m=ㅁ,ㄻ",
-            "P=ㅂ,ㅍ,ㅄ",
+            "p=ㅂ,ㅍ,ㅄ,ㅃ",
             "ng=ㅇ",
         };
 
@@ -142,7 +153,7 @@ namespace OpenUtau.Plugin.Builtin {
             "ㄱㄲ=ㄱㄲ,ㄱㄱ,ㄲㄱ",
             "ㄱㄸ=ㄱㄸ,ㄱㄷ,ㄺㄷ,ㄺㅌ,ㄺㄸ",
             "ㄱㅃ=ㄱㅃ,ㄱㅂ",
-            "ㄱㅆ=ㄱㅆ,ㄱㅅ",
+            "ㄱㅆ=ㄱㅆ,ㄱㅅ,ㄳㅇ",
             "ㄱㅉ=ㄱㅉ,ㄱㅈ",
             "ㄴㄷ=ㄴㄸ,ㄵㄷ,ㄵㄸ,ㄶㅌ,ㄶㄸ",
             "ㄷㄲ=ㄷㄲ,ㄷㄱ",
@@ -154,18 +165,18 @@ namespace OpenUtau.Plugin.Builtin {
             "ㅂㄲ=ㅂㄲ,ㅂㄱ,ㅄㄲ,ㅄㄱ,ㄼㄱ,ㄼㅋ,ㄼㄲ",
             "ㅂㄸ=ㅂㄸ,ㅂㄷ,ㅄㄸ,ㅄㄷ",
             "ㅂㅃ=ㅂㅃ,ㅂㅂ,ㅄㅃ,ㅄㅂ",
-            "ㅂㅆ=ㅂㅆ,ㄼㅅ,ㄼㅆ,ㅂㅅ,ㅄㅆ,ㅄㅅ",
+            "ㅂㅆ=ㅂㅆ,ㄼㅅ,ㄼㅆ,ㅂㅅ,ㅄㅆ,ㅄㅅ,ㅄㅇ",
             "ㅂㅉ=ㅂㅉ,ㅂㅈ,ㅄㅉ,ㅄㅈ",
             "ㅅㄲ=ㅅㄲ,ㅅㄱ,ㅆㄲ,ㅆㄱ",
             "ㅅㄸ=ㅅㄸ,ㅅㄷ,ㅆㄸ,ㅆㄷ",
             "ㅅㅃ=ㅅㅃ,ㅅㅂ,ㅆㅃ,ㅆㅂ",
-            "ㅅㅅ=ㅅㅆ,ㅅㅅ,ㅆㅆ,ㅆㅅ,ㅆㅇ",
+            "ㅅㅆ=ㅅㅆ,ㅅㅅ,ㅆㅆ,ㅆㅅ,ㅆㅇ",
             "ㅅㅉ=ㅅㅉ,ㅅㅈ,ㅆㅉ,ㅆㅈ",
             "ㅈㄲ=ㅈㄲ,ㅈㄱ",
             "ㅈㄸ=ㅈㄸ,ㅈㄷ",
             "ㅈㅃ=ㅈㅃ,ㅈㅂ",
             "ㅈㅉ=ㅈㅉ,ㅈㅈ",
-            "ㅈㅆ=ㅈㅆ,ㅈㅅ",
+            "ㅈㅅ=ㅈㅆ,ㅈㅅ",
 
             // 자음 축약
             "　ㅋ=ㄱㅎ",
@@ -184,18 +195,16 @@ namespace OpenUtau.Plugin.Builtin {
             // 연음
             "　ㄱ=ㄱㅇ",
             "　ㄲ=ㄲㅇ",
-            "ㄱㅅ=ㄳㅇ",
             "　ㄴ=ㄴㅇ",
             "ㄴㅈ=ㄴㅈ,ㄵㅇ",
             "　ㄹ=ㄹㅇ",
             "ㄹㄱ=ㄹㄱ,ㄺㅇ",
             "ㄹㅁ=ㄹㅁ,ㄻㅇ",
             "ㄹㅂ=ㄹㅂ,ㄼㅇ",
-            "ㄹㅅ=ㄹㅅ,ㄽㅇ",
-            "ㄹㅍ=ㄹㅍ,ㄿㅇ,ㄺㅂ,ㄻㅂ,ㄼㅂ,ㄽㅂ,ㄾㅂ,ㄿㅂ,ㅀㅂ",
+            "ㄹㅆ=ㄹㅅ,ㄽㅇ,ㄹㅆ",
+            "ㄹㅍ=ㄹㅍ,ㄿㅇ,ㄺㅂ,ㄻㅂ,ㄼㅂ,ㄽㅂ,ㄾㅂ,ㄿㅂ,ㅀㅂ,ㄹㅃ,ㄺㅃ,ㄻㅃ,ㄼㅃ,ㄽㅃ,ㄾㅃ,ㄿㅃ,ㅀㅃ",
             "　ㅁ=ㅁㅇ",
             "　ㅂ=ㅂㅇ",
-            "ㅂㅅ=ㅄㅇ",
             "　ㅅ=ㅅㅇ",
             "　ㅈ=ㅈㅇ",
             "　ㅊ=ㅊㅇ",
@@ -210,53 +219,47 @@ namespace OpenUtau.Plugin.Builtin {
             "ㄱㅊ=ㄱㅊ",
             "ㄱㅍ=ㄱㅍ",
             "ㄲㅂ=ㄲㅂ",
-            "ㄲㅃ=ㄲㅃ",
             "ㄲㅈ=ㄲㅈ",
             "ㄲㅉ=ㄲㅉ",
-            "ㄲㅅ=ㄲㅅ",
-            "ㄲㅆ=ㄲㅆ",
+            "ㄲㅅ=ㄲㅅ,ㄲㅆ",
             "ㄲㅁ=ㄲㅁ",
             "ㄲㄴ=ㄲㄴ",
             "ㄲㄹ=ㄲㄹ",
             "ㄲㅋ=ㄲㅋ",
             "ㄲㅌ=ㄲㅌ",
             "ㄲㅊ=ㄲㅊ",
-            "ㄲㅍ=ㄲㅍ",
+            "ㄲㅍ=ㄲㅍ,ㄲㅃ",
             "ㄴㅂ=ㄴㅂ,ㄵㅂ,ㄶㅂ",
-            "ㄴㅃ=ㄴㅃ,ㄵㅃ,ㄶㅃ",
             "ㄴㄷ=ㄴㄷ",
             "ㄴㄱ=ㄴㄱ,ㄵㄱ,ㄶㄱ",
-            "ㄴㄲ=ㄴㄲ,ㄵㄲ,ㄶㄲ",
-            "ㄴㅅ=ㄴㅅ,ㄵㅅ,ㄶㅅ",
             "ㄴㅆ=ㄴㅆ,ㄵㅆ,ㄶㅆ",
+            "ㄴㅅ=ㄴㅅ,ㄵㅅ,ㄶㅅ",
             "ㄴㅎ=ㄴㅎ,ㄶㅎ",
-            "ㄴㅋ=ㄴㅋ,ㄵㅋ,ㄶㅋ",
-            "ㄴㅍ=ㄴㅍ,ㄵㅍ,ㄶㅍ",
+            "ㄴㅋ=ㄴㅋ,ㄵㅋ,ㄶㅋ,ㄴㄲ,ㄵㄲ,ㄶㄲ",
+            "ㄴㅃ=ㄴㅃ,ㄵㅃ,ㄶㅃ",
+            "ㄴㅍ=ㄴㅍ,ㄵㅍ,ㄶㅍ,",
             "ㄷㄹ=ㄷㄹ",
             "ㄷㅋ=ㄷㅋ",
             "ㄷㅌ=ㄷㅌ",
             "ㄷㅊ=ㄷㅊ",
             "ㄷㅍ=ㄷㅍ",
-            "ㄹㅃ=ㄹㅃ,ㄺㅃ,ㄻㅃ,ㄼㅃ,ㄽㅃ,ㄾㅃ,ㄿㅃ,ㅀㅃ",
             "ㄹㅈ=ㄹㅈ,ㄺㅈ,ㄻㅈ,ㄼㅈ,ㄽㅈ,ㄾㅈ,ㄿㅈ,ㅀㅈ",
             "ㄹㅉ=ㄹㅉ,ㄺㅉ,ㄻㅉ,ㄼㅉ,ㄽㅉ,ㄾㅉ,ㄿㅉ,ㅀㅉ",
             "ㄹㄷ=ㄹㄷ",
-            "ㄹㄲ=ㄹㄲ,ㄺㄲ,ㄻㄲ,ㄽㄲ,ㄾㄲ,ㄿㄲ,ㅀㄲ",
             "ㄹㄴ=ㄹㄴ,ㄺㄴ,ㄻㄴ,ㄼㄴ,ㄽㄴ,ㄾㄴ,ㄿㄴ,ㅀㄴ",
             "ㄹㅎ=ㄹㅎ,ㄺㅎ,ㄻㅎ,ㄼㅎ,ㄽㅎ,ㄾㅎ,ㄿㅎ,ㅀㅎ",
-            "ㄹㅋ=ㄹㅋ,ㄺㅋ,ㄻㅋ,ㄽㅋ,ㄾㅋ,ㄿㅋ,ㅀㅋ",
+            "ㄹㅋ=ㄹㅋ,ㄺㅋ,ㄻㅋ,ㄽㅋ,ㄾㅋ,ㄿㅋ,ㅀㅋ,ㄹㄲ,ㄺㄲ,ㄻㄲ,ㄽㄲ,ㄾㄲ,ㄿㄲ,ㅀㄲ",
             "ㄹㅊ=ㄹㅊ,ㄺㅊ,ㄻㅊ,ㄼㅊ,ㄽㅊ,ㄾㅊ,ㄿㅊ,ㅀㅊ",
+            "ㅁㄱ=ㅁㄱ",
             "ㅁㅂ=ㅁㅂ",
-            "ㅁㅃ=ㅁㅃ",
             "ㅁㅈ=ㅁㅈ",
             "ㅁㅉ=ㅁㅉ",
             "ㅁㄷ=ㅁㄷ",
-            "ㅁㅅ=ㅁㅅ",
-            "ㅁㅆ=ㅁㅆ",
+            "ㅁㅅ=ㅁㅅ,ㅁㅆ",
             "ㅁㅋ=ㅁㅋ",
             "ㅁㅌ=ㅁㅌ",
             "ㅁㅊ=ㅁㅊ",
-            "ㅁㅍ=ㅁㅍ",
+            "ㅁㅍ=ㅁㅍ,ㅁㅃ",
             "ㅂㅋ=ㅂㅋ,ㅄㅋ",
             "ㅂㅌ=ㅂㅌ,ㅄㅌ",
             "ㅂㅊ=ㅂㅊ,ㅄㅊ",
@@ -270,20 +273,18 @@ namespace OpenUtau.Plugin.Builtin {
             "ㅅㅍ=ㅅㅍ,ㅆㅍ",
             "ㅅㅎ=ㅅㅎ,ㅆㅎ",
             "ㅇㅂ=ㅇㅂ",
-            "ㅇㅃ=ㅇㅃ",
             "ㅇㅈ=ㅇㅈ",
             "ㅇㅉ=ㅇㅉ",
             "ㅇㄷ=ㅇㄷ",
-            "ㅇㄸ=ㅇㄸ",
-            "ㅇㄲ=ㅇㄲ",
-            "ㅇㅅ=ㅇㅅ",
-            "ㅇㅆ=ㅇㅆ",
+            "ㅇㅅ=ㅇㅅ,ㅇㅆ",
             "ㅇㅁ=ㅇㅁ",
             "ㅇ1=ㅇㅇ",
             "ㅇㅎ=ㅇㅎ",
+            "ㅇㄲ=ㅇㄲ",
             "ㅇㅋ=ㅇㅋ",
-            "ㅇㅌ=ㅇㅌ",
+            "ㅇㅌ=ㅇㅌ,ㅇㄸ",
             "ㅇㅊ=ㅇㅊ",
+            "ㅇㅃ=ㅇㅃ",
             "ㅇㅍ=ㅇㅍ",
             "ㅈㅁ=ㅈㅁ",
             "ㅈㄴ=ㅈㄴ",
@@ -292,90 +293,71 @@ namespace OpenUtau.Plugin.Builtin {
             "ㅈㅌ=ㅈㅌ",
             "ㅈㅊ=ㅈㅊ",
             "ㅈㅍ=ㅈㅍ",
-            "ㅊㅃ=ㅊㅃ",
             "ㅊㅂ=ㅊㅂ",
             "ㅊㅉ=ㅊㅉ",
             "ㅊㅈ=ㅊㅈ",
-            "ㅊㄸ=ㅊㄸ",
             "ㅊㄷ=ㅊㄷ",
-            "ㅊㄲ=ㅊㄲ",
             "ㅊㄱ=ㅊㄱ",
-            "ㅊㅆ=ㅊㅆ",
-            "ㅊㅅ=ㅊㅅ",
+            "ㅊㅅ=ㅊㅅ,ㅊㅆ",
             "ㅊㅁ=ㅊㅁ",
             "ㅊㄴ=ㅊㄴ",
             "ㅊㄹ=ㅊㄹ",
-            "ㅊㅋ=ㅊㅋ",
-            "ㅊㅌ=ㅊㅌ",
+            "ㅊㅋ=ㅊㅋ,ㅊㄲ",
+            "ㅊㅌ=ㅊㅌ,ㅊㄸ",
             "ㅊㅊ=ㅊㅊ",
-            "ㅊㅍ=ㅊㅍ",
-            "ㅋㅃ=ㅋㅃ",
+            "ㅊㅍ=ㅊㅍ,ㅊㅃ",
             "ㅋㅂ=ㅋㅂ",
             "ㅋㅉ=ㅋㅉ",
             "ㅋㅈ=ㅋㅈ",
-            "ㅋㄸ=ㅋㄸ",
             "ㅋㄷ=ㅋㄷ",
-            "ㅋㄲ=ㅋㄲ",
             "ㅋㄱ=ㅋㄱ",
             "ㅋㅁ=ㅋㅁ",
             "ㅋㄴ=ㅋㄴ",
             "ㅋㄹ=ㅋㄹ",
-            "ㅋㅋ=ㅋㅋ",
-            "ㅋㅌ=ㅋㅌ",
+            "ㅋㅋ=ㅋㅋ,ㅋㄲ",
+            "ㅋㅌ=ㅋㅌ,ㅋㄸ",
             "ㅋㅊ=ㅋㅊ",
-            "ㅋㅍ=ㅋㅍ",
-            "ㅌㅃ=ㅌㅃ",
+            "ㅋㅍ=ㅋㅍ,ㅋㅃ",
             "ㅌㅂ=ㅌㅂ",
             "ㅌㅉ=ㅌㅉ",
             "ㅌㅈ=ㅌㅈ",
-            "ㅌㄸ=ㅌㄸ",
             "ㅌㄷ=ㅌㄷ",
-            "ㅌㄲ=ㅌㄲ",
             "ㅌㄱ=ㅌㄱ",
-            "ㅌㅆ=ㅌㅆ",
-            "ㅌㅅ=ㅌㅅ",
+            "ㅌㅅ=ㅌㅅ,ㅌㅆ",
             "ㅌㅁ=ㅌㅁ",
             "ㅌㄴ=ㅌㄴ",
             "ㅌㄹ=ㅌㄹ",
-            "ㅌㅋ=ㅌㅋ",
-            "ㅌㅌ=ㅌㅌ",
+            "ㅌㅋ=ㅌㅋ,ㅌㄲ",
+            "ㅌㅌ=ㅌㅌ,ㅌㄸ",
             "ㅌㅊ=ㅌㅊ",
-            "ㅌㅍ=ㅌㅍ",
-            "ㅍㅃ=ㅍㅃ",
+            "ㅌㅍ=ㅌㅍ,ㅌㅃ",
             "ㅍㅂ=ㅍㅂ",
             "ㅍㅉ=ㅍㅉ",
             "ㅍㅈ=ㅍㅈ",
-            "ㅍㄸ=ㅍㄸ",
             "ㅍㄷ=ㅍㄷ",
-            "ㅍㄲ=ㅍㄲ",
             "ㅍㄱ=ㅍㄱ",
-            "ㅍㅆ=ㅍㅆ",
-            "ㅍㅅ=ㅍㅅ",
+            "ㅍㅅ=ㅍㅅ,ㅍㅆ",
             "ㅍㅁ=ㅍㅁ",
             "ㅍㄴ=ㅍㄴ",
             "ㅍㄹ=ㅍㄹ",
-            "ㅍㅋ=ㅍㅋ",
-            "ㅍㅌ=ㅍㅌ",
+            "ㅍㅋ=ㅍㅋ,ㅍㄲ",
+            "ㅍㅌ=ㅍㅌ,ㅍㄸ",
             "ㅍㅊ=ㅍㅊ",
-            "ㅍㅍ=ㅍㅍ",
-            "ㅎㅃ=ㅎㅃ",
+            "ㅍㅍ=ㅍㅍ,ㅍㅃ",
             "ㅎㅂ=ㅎㅂ",
             "ㅎㅉ=ㅎㅉ",
             "ㅎㅈ=ㅎㅈ",
-            "ㅎㄸ=ㅎㄸ",
             "ㅎㄷ=ㅎㄷ",
-            "ㅎㄲ=ㅎㄲ",
             "ㅎㄱ=ㅎㄱ",
-            "ㅎㅆ=ㅎㅆ",
-            "ㅎㅅ=ㅎㅅ",
+            "ㅎㅅ=ㅎㅅ,ㅎㅆ",
             "ㅎㅁ=ㅎㅁ",
             "ㅎㄴ=ㅎㄴ",
             "ㅎㄹ=ㅎㄹ",
             "ㅎㅎ=ㅎㅎ",
-            "ㅎㅋ=ㅎㅋ",
-            "ㅎㅌ=ㅎㅌ",
+            "ㅎㅋ=ㅎㅋ,ㅎㄲ",
+            "ㅎㅌ=ㅎㅌ,ㅎㄸ",
             "ㅎㅊ=ㅎㅊ",
-            "ㅎㅍ=ㅎㅍ",
+            "ㅎㅍ=ㅎㅍ,ㅎㅃ",
         };
 
 
@@ -477,14 +459,23 @@ namespace OpenUtau.Plugin.Builtin {
                     if (prevCCConsonants == null) {
                         CV = $"- {changedCurrentConsonants}{currentVowel}";
                     } else {
-                        CV = $"{changedPrevConsonants} {changedCurrentConsonants}{currentVowel}";
+                        if (CheckSpecialCC(changedCurrentConsonants)) {
+                            CV = $"{changedCurrentConsonants}{currentVowel}";
+                        } else {
+                            CV = $"{changedPrevConsonants} {changedCurrentConsonants}{currentVowel}";
+                        }
+                            
                     }
                 } else {
                     // 앞문자 종결이 V
                     subsequentVowelsLookup.TryGetValue(prevKoreanLyrics[1].ToString(), out var prevVowel);
                     initialConsonantLookup.TryGetValue(prevCCConsonants == null ? currentKoreanLyrics[0].ToString() : prevCCConsonants[1].ToString(), out var currentInitialConsonants);
-                    
-                    CV = $"{prevVowel} {currentInitialConsonants}{currentVowel}";
+
+                    if (CheckSpecialCC(currentInitialConsonants)) {
+                        CV = $"- {currentInitialConsonants}{currentVowel}";
+                    } else {
+                        CV = $"{prevVowel} {currentInitialConsonants}{currentVowel}";
+                    }
                 }
             } else {
                 // 앞문자 없음
@@ -494,14 +485,39 @@ namespace OpenUtau.Plugin.Builtin {
             }
 
             string VC = "";
+            subsequentVowelsLookup.TryGetValue(currentKoreanLyrics[1].ToString(), out var currentsubVowel);
+            lastConsonantsLookup.TryGetValue(nextCCConsonants == null ? currentKoreanLyrics[2].ToString() : nextCCConsonants[0].ToString(), out var changedNextConsonants);
+            lastConsonantsLookup.TryGetValue(nextCCConsonants == null ? nextKoreanLyrics[0].ToString() : nextCCConsonants[1].ToString(), out var nextInitialConsonants);
             if (!isCurrentEndV) {
-                subsequentVowelsLookup.TryGetValue(currentKoreanLyrics[1].ToString(), out var currentsubVowel);
-                lastConsonantsLookup.TryGetValue(nextCCConsonants == null ? currentKoreanLyrics[2].ToString() : nextCCConsonants[0].ToString(), out var changedCurrentConsonants);
-
-                if (nextLyric == null) {
-                    VC = $"{currentsubVowel} {changedCurrentConsonants}";
+                if (currentLyric.Length == 2) {
+                    if (nextLyric == null) {
+                        VC = $"{currentsubVowel}{changedNextConsonants} {currentLyric[1]}";
+                    } else {
+                        VC = $"{currentsubVowel}{changedNextConsonants} {currentLyric[1]}";
+                    }
                 } else {
-                    VC = $"{currentsubVowel} {changedCurrentConsonants}";
+                    if (CheckSpecialCC(nextInitialConsonants) || nextInitialConsonants == null) {
+                        if (CheckSpecialCC(changedNextConsonants) || nextInitialConsonants == null) {
+                            VC = $"{currentsubVowel} {changedNextConsonants}";
+                        } else {
+                            VC = $"{currentsubVowel}{changedNextConsonants} {nextInitialConsonants}";
+                        }
+                    } else {
+                        VC = $"{currentsubVowel} {changedNextConsonants}";
+                    }
+                }
+                
+            } else {
+                if (nextInitialConsonants == null) {
+                    if (currentLyric.Length == 2) {
+                        VC = $"{currentsubVowel} {currentLyric[1]}";
+                    } else {
+                        VC = $"{currentsubVowel} -";
+                    }
+                } else {
+                    if (CheckMakeVowelCC(nextInitialConsonants)) {
+                        VC = $"{currentsubVowel} {nextInitialConsonants}";
+                    }
                 }
             }
 
