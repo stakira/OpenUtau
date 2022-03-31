@@ -61,7 +61,7 @@ namespace OpenUtau.Classic {
                         throw new FileNotFoundException($"Source file {source} not found");
                     }
                 } else if (!File.Exists(dest)) {
-                    Log.Information($"Copy temp {source} {dest}");
+                    Log.Verbose($"Copy {source} to {dest}");
                     File.Copy(source, dest);
                 }
             }

@@ -71,7 +71,7 @@ namespace OpenUtau.Core.Enunu {
                     var ustPath = Path.Join(PathManager.Inst.CachePath, $"enu-{phrase.hash}.tmp");
                     var wavPath = ustPath.Substring(0, ustPath.Length - 4) + ".wav";
                     if (!File.Exists(wavPath)) {
-                        InvokeEnunu(phrase, ustPath, wavPath, isPreRender);
+                        InvokeEnunu(phrase, ustPath, wavPath);
                     }
                     foreach (var phone in phrase.phones) {
                         progress.CompleteOne(phone.phoneme);
@@ -129,14 +129,14 @@ namespace OpenUtau.Core.Enunu {
             }
         }
 
-        private void InvokeEnunu(RenderPhrase phrase, string ustPath, string wavPath, bool createNoWindow) {
+        private void InvokeEnunu(RenderPhrase phrase, string ustPath, string wavPath) {
             Log.Information($"Starting enunu to render \"{wavPath}\"");
             WriteUst(phrase, ustPath);
             var startInfo = new ProcessStartInfo() {
                 FileName = python,
                 Arguments = $"{script} \"{ustPath}\" \"{wavPath}\"",
                 WorkingDirectory = workDir,
-                CreateNoWindow = !Util.Preferences.Default.ResamplerLogging,
+                CreateNoWindow = !Util.DebugSwitches.DebugRendering,
             };
             try {
                 using (var process = Process.Start(startInfo)) {

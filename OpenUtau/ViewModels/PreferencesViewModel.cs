@@ -37,7 +37,6 @@ namespace OpenUtau.App.ViewModels {
         }
         [Reactive] public int PhaseCompensation { get; set; }
         [Reactive] public int Theme { get; set; }
-        [Reactive] public int ResamplerLogging { get; set; }
         public List<CultureInfo?>? Languages { get; }
         public CultureInfo? Language {
             get => language;
@@ -92,7 +91,6 @@ namespace OpenUtau.App.ViewModels {
                 : CultureInfo.GetCultureInfo(Preferences.Default.Language);
             PhaseCompensation = Preferences.Default.PhaseCompensation;
             Theme = Preferences.Default.Theme;
-            ResamplerLogging = Preferences.Default.ResamplerLogging ? 1 : 0;
 
             this.WhenAnyValue(vm => vm.AudioOutputDevice)
                 .WhereNotNull()
@@ -160,11 +158,6 @@ namespace OpenUtau.App.ViewModels {
                     Preferences.Default.Theme = theme;
                     Preferences.Save();
                     App.SetTheme();
-                });
-            this.WhenAnyValue(vm => vm.ResamplerLogging)
-                .Subscribe(v => {
-                    Preferences.Default.ResamplerLogging = v != 0;
-                    Preferences.Save();
                 });
         }
 

@@ -37,7 +37,6 @@ namespace OpenUtau.Classic {
         }
 
         public string DoResamplerReturnsFile(ResamplerItem args, ILogger logger) {
-            bool resamplerLogging = Preferences.Default.ResamplerLogging;
             if (!_isLegalPlugin) {
                 return null;
             }
@@ -49,16 +48,20 @@ namespace OpenUtau.Classic {
             using (var proc = new Process()) {
                 proc.StartInfo = new ProcessStartInfo(FilePath, ArgParam) {
                     UseShellExecute = false,
-                    RedirectStandardOutput = resamplerLogging,
-                    RedirectStandardError = resamplerLogging,
+                    RedirectStandardOutput = DebugSwitches.DebugRendering,
+                    RedirectStandardError = DebugSwitches.DebugRendering,
                     CreateNoWindow = true,
                 };
-                if (resamplerLogging) {
+                if (DebugSwitches.DebugRendering) {
                     proc.OutputDataReceived += (o, e) => logger.Information($" >>> [thread-{threadId}] {e.Data}");
-                    proc.ErrorDataReceived += (o, e) => logger.Error($" >>> [thread-{threadId}] {e.Data}");
+                    proc.ErrorDataReceived += (o, e) => {
+                        if (!string.IsNullOrEmpty(e.Data)) {
+                            logger.Error($" >>> [thread-{threadId}] {e.Data}");
+                        }
+                    };
                 }
                 proc.Start();
-                if (resamplerLogging) {
+                if (DebugSwitches.DebugRendering) {
                     proc.BeginOutputReadLine();
                     proc.BeginErrorReadLine();
                 }

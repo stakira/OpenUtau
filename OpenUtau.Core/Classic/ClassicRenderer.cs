@@ -23,7 +23,9 @@ namespace OpenUtau.Classic {
         };
 
         public bool SupportsExpression(UExpressionDescriptor descriptor) {
-            return descriptor.isFlag || supportedExp.Contains(descriptor.abbr);
+            return descriptor.isFlag
+                || !string.IsNullOrEmpty(descriptor.flag)
+                || supportedExp.Contains(descriptor.abbr);
         }
 
         public RenderResult Layout(RenderPhrase phrase) {

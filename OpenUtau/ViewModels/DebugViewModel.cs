@@ -1,71 +1,67 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DynamicData.Binding;
-using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using Serilog;
-using Serilog.Configuration;
 using Serilog.Core;
 using Serilog.Events;
 using Serilog.Formatting;
 using Serilog.Formatting.Display;
+using Avalonia.Data.Converters;
+using System.Globalization;
 
 namespace OpenUtau.App.ViewModels {
-    public static class DebugWindowExtension {
-        public static LoggerConfiguration DebugWindow(
-                  this LoggerSinkConfiguration loggerConfiguration,
-                  IFormatProvider formatProvider = null) {
-            return loggerConfiguration.Sink(DebugViewModel.Sink.Inst);
+    public class LogEventConverter : IValueConverter {
+        private ITextFormatter formater;
+        private StringWriter stringWriter;
+        public LogEventConverter() {
+            const string template = "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}";
+            formater = new MessageTemplateTextFormatter(template);
+            stringWriter = new StringWriter();
         }
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
+            if (value is LogEvent logEvent) {
+                formater.Format(logEvent, stringWriter);
+                string message = stringWriter.GetStringBuilder().ToString();
+                stringWriter.GetStringBuilder().Clear();
+                return message;
+            }
+            return string.Empty;
+        }
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotImplementedException();
     }
 
     public class DebugViewModel : ViewModelBase {
+
         public class Sink : ILogEventSink {
             static Sink sink = new Sink();
             public static Sink Inst => sink;
 
-            public DebugViewModel? debugViewModel { get; set; }
+            public LoggingLevelSwitch LevelSwitch =
+                new LoggingLevelSwitch(LogEventLevel.Error);
+            public ObservableCollectionExtended<LogEvent> LogEvents =
+                new ObservableCollectionExtended<LogEvent>();
+
             public void Emit(LogEvent logEvent) {
-                if (debugViewModel != null) {
-                    debugViewModel.Emit(logEvent);
-                }
+                LogEvents.Add(logEvent);
             }
         }
 
-        public ObservableCollection<string> TextItems => textItems;
-        private ObservableCollectionExtended<string> textItems;
-
-        private ITextFormatter formater;
-        private StringWriter stringWriter;
-
-        public DebugViewModel() {
-            const string template = "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}";
-            textItems = new ObservableCollectionExtended<string>();
-            formater = new MessageTemplateTextFormatter(template);
-            stringWriter = new StringWriter();
-        }
+        [Reactive] public LogEventLevel LogEventLevel { get; set; }
+        public ObservableCollection<LogEvent> LogEvents => Sink.Inst.LogEvents;
 
         public void Clear() {
-            textItems.Clear();
+            Sink.Inst.LogEvents.Clear();
         }
 
         public void Attach() {
-            Sink.Inst.debugViewModel = this;
+            Core.Util.DebugSwitches.DebugRendering = true;
+            Sink.Inst.LevelSwitch.MinimumLevel = LogEventLevel.Verbose;
         }
 
         public void Detach() {
-            Sink.Inst.debugViewModel = null;
-        }
-
-        public void Emit(LogEvent logEvent) {
-            formater.Format(logEvent, stringWriter);
-            textItems.Add(stringWriter.GetStringBuilder().ToString());
-            stringWriter.GetStringBuilder().Clear();
+            Core.Util.DebugSwitches.DebugRendering = false;
+            Sink.Inst.LevelSwitch.MinimumLevel = LogEventLevel.Error;
         }
     }
 }
