@@ -10,7 +10,7 @@ namespace OpenUtau.Plugin.Builtin {
         static readonly string initialConsonantsTable = "ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ";
         static readonly string vowelsTable = "ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ";
         static readonly string lastConsonantsTable = "　ㄱㄲㄳㄴㄵㄶㄷㄹㄺㄻㄼㄽㄾㄿㅀㅁㅂㅄㅅㅆㅇㅈㅊㅋㅌㅍㅎ";
-        static readonly string[] specialConsonantsTable = { "gg", "dd", "bb", "ss", "jj", "t", "k", "ch", "p" };
+        static readonly string[] specialConsonantsTable = { "gg", "dd", "bb", "ss", "jj", "t", "k", "ch", "p", "j" };
         static readonly string[] makeVowelconsonantsTable = { "g", "d", "b", "n", "s", "h", "m", "r" };
         static readonly ushort unicodeKoreanBase = 0xAC00;
         static readonly ushort unicodeKoreanLast = 0xD79F;
@@ -487,8 +487,9 @@ namespace OpenUtau.Plugin.Builtin {
             string VC = "";
             subsequentVowelsLookup.TryGetValue(currentKoreanLyrics[1].ToString(), out var currentsubVowel);
             lastConsonantsLookup.TryGetValue(nextCCConsonants == null ? currentKoreanLyrics[2].ToString() : nextCCConsonants[0].ToString(), out var changedNextConsonants);
-            lastConsonantsLookup.TryGetValue(nextCCConsonants == null ? nextKoreanLyrics[0].ToString() : nextCCConsonants[1].ToString(), out var nextInitialConsonants);
             if (!isCurrentEndV) {
+                lastConsonantsLookup.TryGetValue(nextCCConsonants == null ? nextKoreanLyrics[0].ToString() : nextCCConsonants[1].ToString(), out var nextInitialConsonants);
+
                 if (currentLyric.Length == 2) {
                     if (nextLyric == null) {
                         VC = $"{currentsubVowel}{changedNextConsonants} {currentLyric[1]}";
@@ -508,15 +509,19 @@ namespace OpenUtau.Plugin.Builtin {
                 }
                 
             } else {
-                if (nextInitialConsonants == null) {
+                initialConsonantLookup.TryGetValue(nextCCConsonants == null ? nextKoreanLyrics[0].ToString() : nextCCConsonants[1].ToString(), out var nextInitialConsonants);
+
+                if (nextInitialConsonants == null || nextInitialConsonants == "") {
                     if (currentLyric.Length == 2) {
                         VC = $"{currentsubVowel} {currentLyric[1]}";
-                    } else {
-                        VC = $"{currentsubVowel} -";
                     }
                 } else {
-                    if (CheckMakeVowelCC(nextInitialConsonants)) {
-                        VC = $"{currentsubVowel} {nextInitialConsonants}";
+                    if (!CheckMakeVowelCC(nextInitialConsonants)) {
+                        if (CheckSpecialCC(nextInitialConsonants)) {
+                            VC = $"{currentsubVowel} -";
+                        } else {
+                            VC = $"{currentsubVowel} {nextInitialConsonants}";
+                        }
                     }
                 }
             }
