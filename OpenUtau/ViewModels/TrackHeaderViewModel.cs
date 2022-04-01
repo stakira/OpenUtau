@@ -69,10 +69,16 @@ namespace OpenUtau.App.ViewModels {
                     var phonemizer = factory.Create();
                     DocManager.Inst.ExecuteCmd(new TrackChangePhonemizerCommand(DocManager.Inst.Project, track, phonemizer));
                     DocManager.Inst.EndUndoGroup();
+                    var name = phonemizer!.GetType().FullName;
                     if (!string.IsNullOrEmpty(Singer?.Id) && phonemizer != null) {
-                        Preferences.Default.SingerPhonemizers[Singer.Id] = phonemizer!.GetType().FullName;
-                        Preferences.Save();
+                        Preferences.Default.SingerPhonemizers[Singer.Id] = name;
                     }
+                    Preferences.Default.RecentPhonemizers.Remove(name);
+                    Preferences.Default.RecentPhonemizers.Insert(0, name);
+                    while (Preferences.Default.RecentPhonemizers.Count > 6) {
+                        Preferences.Default.RecentPhonemizers.RemoveAt(Preferences.Default.RecentPhonemizers.Count - 1);
+                    }
+                    Preferences.Save();
                 }
                 this.RaisePropertyChanged(nameof(Phonemizer));
                 this.RaisePropertyChanged(nameof(PhonemizerTag));
@@ -123,11 +129,24 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void RefreshPhonemizers() {
-            PhonemizerMenuItems = DocManager.Inst.PhonemizerFactories.Select(factory => new MenuItemViewModel() {
+            var items = new List<MenuItemViewModel>();
+            items.AddRange(Preferences.Default.RecentPhonemizers
+                .Select(name => DocManager.Inst.PhonemizerFactories.FirstOrDefault(factory => factory.type.FullName == name))
+                .OfType<PhonemizerFactory>()
+                .Select(factory => new MenuItemViewModel() {
+                    Header = factory.ToString(),
+                    Command = SelectPhonemizerCommand,
+                    CommandParameter = factory,
+                }));
+            items.Add(new MenuItemViewModel() {
+                Header = $"------ {ThemeManager.GetString("tracks.more")} ------",
+            });
+            items.AddRange(DocManager.Inst.PhonemizerFactories.Select(factory => new MenuItemViewModel() {
                 Header = factory.ToString(),
                 Command = SelectPhonemizerCommand,
                 CommandParameter = factory,
-            }).ToArray();
+            }));
+            PhonemizerMenuItems = items.ToArray();
             this.RaisePropertyChanged(nameof(PhonemizerMenuItems));
         }
 
