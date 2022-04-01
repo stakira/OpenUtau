@@ -10,6 +10,8 @@
   <system:String x:Key="context.pitch.pointdel">Remover ponto</system:String>
   <system:String x:Key="context.pitch.pointsnapprev">Conectar à nota anterior </system:String>
 
+  <system:String x:Key="debug.clear">Limpar</system:String>
+
   <system:String x:Key="dialogs.about.caption">Sobre OpenUTAU</system:String>
   <system:String x:Key="dialogs.about.message">
     O OpenUtau é um ambiente de edição de código aberto para a comunidade UTAU, com uma experiência de usuário moderna e suporte fonológico inteligente. Visite-nos no Github.
@@ -40,6 +42,7 @@
   <system:String x:Key="exps.optionvalues">Valores</system:String>
   <system:String x:Key="exps.sepbycomma">Separe os valores por ','</system:String>
   <system:String x:Key="exps.type">Tipo</system:String>
+  <system:String x:Key="exps.type.curve">Curva</system:String>
   <system:String x:Key="exps.type.numerical">Numérico</system:String>
   <system:String x:Key="exps.type.options">Opções</system:String>
 
@@ -80,6 +83,7 @@
   <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
   <system:String x:Key="menu.tools">Ferramentas</system:String>
   <system:String x:Key="menu.tools.clearcache">Limpar Cache</system:String>
+  <system:String x:Key="menu.tools.debugwindow">Janela de Debug</system:String>
   <!--<system:String x:Key="menu.tools.layout">Layout</system:String>-->
   <!--<system:String x:Key="menu.tools.layout.hsplit11">Horizontal 1:1</system:String>-->
   <!--<system:String x:Key="menu.tools.layout.hsplit12">Horizontal 1:2</system:String>-->
@@ -120,22 +124,25 @@
   <system:String x:Key="pianoroll.menu.notes.quantize30">Quantizar para 1/64</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">Redefinir todas expressões</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">Redefinir tempos de fonemas</system:String>
-  <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">Redefinir curvas de afinação</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">Redefinir curvas de tom</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.vibratos">Redefinir vibratos</system:String>
   <system:String x:Key="pianoroll.menu.part">Parte</system:String>
-  <system:String x:Key="pianoroll.menu.part.legacypluginexp">Plugin Legado(Experimental)</system:String>
+  <system:String x:Key="pianoroll.menu.part.legacypluginexp">Plugin Legado (Experimental)</system:String>
   <system:String x:Key="pianoroll.menu.part.rename">Renomear</system:String>
+  <system:String x:Key="pianoroll.toggle.finalpitch">Ver Tom Final para Renderizar (R)</system:String>
   <system:String x:Key="pianoroll.toggle.phoneme">Ver Fonemas (O)</system:String>
-  <system:String x:Key="pianoroll.toggle.pitch">Ver Pitch Bend (I)</system:String>
+  <system:String x:Key="pianoroll.toggle.pitch">Ver Curva de Tom (I)</system:String>
   <system:String x:Key="pianoroll.toggle.snap">Ativar Ajuste (P)</system:String>
   <system:String x:Key="pianoroll.toggle.tips">Ver Dicas (T)</system:String>
   <system:String x:Key="pianoroll.toggle.tone">Ativar Tom de Nota (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">Ver Vibrato (U)</system:String>
+  <system:String x:Key="pianoroll.tool.drawpitch">Ferramenta Desenhar Tom (4)</system:String>
   <system:String x:Key="pianoroll.tool.eraser">Ferramenta Borracha (3)</system:String>
+  <system:String x:Key="pianoroll.tool.knife">Ferramenta Faca (5)</system:String>
   <system:String x:Key="pianoroll.tool.pen">Ferramenta Caneta (2)
 Botão esquerdo para desenhar
 Botão direito para apagar</system:String>
-  <system:String x:Key="pianoroll.tool.selection">Ferramenta Seleção  (1)
+  <system:String x:Key="pianoroll.tool.selection">Ferramenta Seleção (1)
 Segure Ctrl para selecionar mais notas</system:String>
 
   <system:String x:Key="prefs.advanced">Avançado</system:String>
@@ -158,11 +165,15 @@ Segure Ctrl para selecionar mais notas</system:String>
   <system:String x:Key="prefs.paths.reset">Redefinir</system:String>
   <system:String x:Key="prefs.paths.select">Selecionar</system:String>
   <system:String x:Key="prefs.playback">Reprodução</system:String>
+  <system:String x:Key="prefs.playback.autoscroll">Auto Rolagem</system:String>
   <system:String x:Key="prefs.playback.backend">Back-end de áudio</system:String>
   <system:String x:Key="prefs.playback.backend.auto">Automático</system:String>
   <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">Posição do Cursor</system:String>
   <system:String x:Key="prefs.playback.device">Dispositivo de Reprodução</system:String>
+  <system:String x:Key="prefs.playback.lockstarttime">Quando Parar</system:String>
+  <system:String x:Key="prefs.playback.lockstarttime.off">Fazer nada</system:String>
+  <system:String x:Key="prefs.playback.lockstarttime.on">Mover o cursor para onde começou a tocar</system:String>
   <system:String x:Key="prefs.playback.test">Teste</system:String>
   <system:String x:Key="prefs.rendering">Renderização</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">Compensação de Fase</system:String>
@@ -179,6 +190,7 @@ Segure Ctrl para selecionar mais notas</system:String>
     </system:String>
 
   <system:String x:Key="progress.saved">Projeto salvo. {0}</system:String>
+  <system:String x:Key="progress.waitingrendering">Esperando Renderização</system:String>
 
   <system:String x:Key="singers.caption">Vozes</system:String>
   <system:String x:Key="singers.location">Pasta</system:String>
@@ -224,10 +236,14 @@ Geral
   <system:String x:Key="tip.notes.zoomx">◀ Role aqui para aumentar o zoom horizontalmente  ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">Role aqui para aumentar o zoom verticalmente ▶</system:String>
 
+  <!--<system:String x:Key="tracks.more">More</system:String>-->
   <system:String x:Key="tracks.movedown">Mover pra Baixo</system:String>
   <system:String x:Key="tracks.moveup">Mover pra Cima</system:String>
   <system:String x:Key="tracks.remove">Remover</system:String>
   <system:String x:Key="tracks.selectsinger">Selecione a Voz</system:String>
+
+  <!--<FontFamily x:Key="ui.fontfamily">Segoe UI,San Francisco,Helvetica Neue</FontFamily>-->
+  <!--<FontFamily x:Key="ui.textbox.fontfamily">Microsoft YaHei,Simsun,苹方-简,宋体-简</FontFamily>-->
 
   <system:String x:Key="updater.caption">Procurar Updates</system:String>
   <!--<system:String x:Key="updater.github">GitHub</system:String>-->

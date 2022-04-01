@@ -1,4 +1,5 @@
 import os
+import re
 import xml.etree.ElementTree as ET
 import xml.dom.minidom as MD
 
@@ -11,9 +12,14 @@ def register_all_namespaces(filename):
 
 
 def file_to_dict(filename):
+    tag_class = re.compile(r"\{.*\}")
     with open(filename, "r", encoding='utf8') as f:
         src_etree = ET.parse(f)
-    return {child.get('{http://schemas.microsoft.com/winfx/2006/xaml}Key'): child.text for child in src_etree.getroot()[:]}
+    return {
+        child.get('{http://schemas.microsoft.com/winfx/2006/xaml}Key'):
+        (tag_class.sub('', child.tag), child.text)
+        for child in src_etree.getroot()[:]
+    }
 
 
 def dict_to_file(filename, dict, en_dict):
@@ -32,9 +38,13 @@ def dict_to_file(filename, dict, en_dict):
             if last_section != section:
                 f.write('\n')
             last_section = section
-            line = '<system:String x:Key="%s">%s</system:String>' % (
-                key, dict[key])
-            if en_dict and dict[key] == en_dict[key]:
+            tag = dict[key][0]
+            if tag == 'String':
+                tag = 'system:String'
+            text = dict[key][1]
+            line = '<%s x:Key="%s">%s</%s>' % (
+                tag, key, text, tag)
+            if en_dict and text == en_dict[key][1]:
                 line = '<!--%s-->' % line
             line = '  %s\n' % line
             f.write(line)

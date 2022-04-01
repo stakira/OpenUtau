@@ -2,9 +2,6 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-  <FontFamily x:Key="ui.fontfamily">Segoe UI,San Francisco,Helvetica Neue</FontFamily>
-  <FontFamily x:Key="ui.textbox.fontfamily">Microsoft YaHei,Simsun,苹方-简,宋体-简</FontFamily>
-
   <system:String x:Key="context.pitch.easein">Ease in</system:String>
   <system:String x:Key="context.pitch.easeinout">Ease in/out</system:String>
   <system:String x:Key="context.pitch.easeout">Ease out</system:String>
@@ -139,12 +136,12 @@
   <system:String x:Key="pianoroll.toggle.tips">View Tips (T)</system:String>
   <system:String x:Key="pianoroll.toggle.tone">Toggle Note Tone (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">View Vibrato (U)</system:String>
+  <system:String x:Key="pianoroll.tool.drawpitch">Draw Pitch Tool (4)</system:String>
   <system:String x:Key="pianoroll.tool.eraser">Eraser Tool (3)</system:String>
+  <system:String x:Key="pianoroll.tool.knife">Knife Tool (5)</system:String>
   <system:String x:Key="pianoroll.tool.pen">Pen Tool (2)
 Left click to draw
 Right click to delete</system:String>
-  <system:String x:Key="pianoroll.tool.drawpitch">Draw Pitch Tool (4)</system:String>
-  <system:String x:Key="pianoroll.tool.knife">Knife Tool (5)</system:String>
   <system:String x:Key="pianoroll.tool.selection">Selection Tool (1)
 Hold Ctrl to select more</system:String>
 
@@ -174,6 +171,9 @@ Hold Ctrl to select more</system:String>
   <system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>
   <system:String x:Key="prefs.playback.cursorposition">Cursor Position</system:String>
   <system:String x:Key="prefs.playback.device">Playback Device</system:String>
+  <system:String x:Key="prefs.playback.lockstarttime">On Pausing</system:String>
+  <system:String x:Key="prefs.playback.lockstarttime.off">Do nothing</system:String>
+  <system:String x:Key="prefs.playback.lockstarttime.on">Move cursor back to where you started playing</system:String>
   <system:String x:Key="prefs.playback.test">Test</system:String>
   <system:String x:Key="prefs.rendering">Rendering</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">Phase Compensation</system:String>
@@ -236,10 +236,14 @@ General
   <system:String x:Key="tip.notes.zoomx">◀ Scroll here to zoom horizontally ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">Scroll here to zoom vertically ▶</system:String>
 
+  <system:String x:Key="tracks.more">More</system:String>
   <system:String x:Key="tracks.movedown">Move Down</system:String>
   <system:String x:Key="tracks.moveup">Move Up</system:String>
   <system:String x:Key="tracks.remove">Remove</system:String>
   <system:String x:Key="tracks.selectsinger">Select Singer</system:String>
+
+  <FontFamily x:Key="ui.fontfamily">Segoe UI,San Francisco,Helvetica Neue</FontFamily>
+  <FontFamily x:Key="ui.textbox.fontfamily">Microsoft YaHei,Simsun,苹方-简,宋体-简</FontFamily>
 
   <system:String x:Key="updater.caption">Check for Update</system:String>
   <system:String x:Key="updater.github">GitHub</system:String>

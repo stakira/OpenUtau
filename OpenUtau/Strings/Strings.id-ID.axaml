@@ -10,6 +10,8 @@
   <system:String x:Key="context.pitch.pointdel">Hapus titik</system:String>
   <system:String x:Key="context.pitch.pointsnapprev">Snap ke not sebelumnya</system:String>
 
+  <!--<system:String x:Key="debug.clear">Clear</system:String>-->
+
   <system:String x:Key="dialogs.about.caption">Tentang OpenUtau</system:String>
   <system:String x:Key="dialogs.about.message">
     OpenUtau bertujuan untuk menjadi lingkungan pengeditan sumber terbuka untuk komunitas UTAU, dengan pengalaman pengguna modern dan dukungan fonologis yang cerdas. Kunjungi kami di Github.
@@ -40,6 +42,7 @@
   <system:String x:Key="exps.optionvalues">Nilai opsi</system:String>
   <system:String x:Key="exps.sepbycomma">Pisahkan nilai dengan ','</system:String>
   <system:String x:Key="exps.type">Jenis</system:String>
+  <!--<system:String x:Key="exps.type.curve">Curve</system:String>-->
   <system:String x:Key="exps.type.numerical">Numerik</system:String>
   <system:String x:Key="exps.type.options">Opsi</system:String>
 
@@ -63,7 +66,7 @@
   <system:String x:Key="menu.file">Berkas</system:String>
   <system:String x:Key="menu.file.exit">Keluar</system:String>
   <system:String x:Key="menu.file.exportust">Ekspor Berkas UST</system:String>
-  <!--<system:String x:Key="menu.file.exportwav">Ekspor Berkas Wav</system:String>-->
+  <!--<system:String x:Key="menu.file.exportwav">Export Wav Files</system:String>-->
   <system:String x:Key="menu.file.importaudio">Impor Audio...</system:String>
   <system:String x:Key="menu.file.importmidi">Impor Midi...</system:String>
   <system:String x:Key="menu.file.importtracks">Impor Trek...</system:String>
@@ -79,7 +82,8 @@
   <system:String x:Key="menu.help.about">Tentang OpenUtau</system:String>
   <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
   <system:String x:Key="menu.tools">Peralatan</system:String>
-  <!--<system:String x:Key="menu.tools.clearcache">Bersihkan Cache</system:String>-->
+  <!--<system:String x:Key="menu.tools.clearcache">Clear Cache</system:String>-->
+  <!--<system:String x:Key="menu.tools.debugwindow">Debug Window</system:String>-->
   <system:String x:Key="menu.tools.layout">Tata Letak</system:String>
   <system:String x:Key="menu.tools.layout.hsplit11">Horisontal 1:1</system:String>
   <system:String x:Key="menu.tools.layout.hsplit12">Horisontal 1:2</system:String>
@@ -125,13 +129,16 @@
   <system:String x:Key="pianoroll.menu.part">Bagian</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">Plugin Lama (Eksperimental)</system:String>
   <system:String x:Key="pianoroll.menu.part.rename">Ganti Nama</system:String>
+  <!--<system:String x:Key="pianoroll.toggle.finalpitch">View Final Pitch to Render (R)</system:String>-->
   <system:String x:Key="pianoroll.toggle.phoneme">Perlihatkan Fonem (O)</system:String>
   <system:String x:Key="pianoroll.toggle.pitch">Perlihatkan Pitch Bend(I)</system:String>
   <system:String x:Key="pianoroll.toggle.snap">Alihkan Snap (P)</system:String>
   <system:String x:Key="pianoroll.toggle.tips">Perlihatkan Tips (T)</system:String>
   <system:String x:Key="pianoroll.toggle.tone">Alihkan Not Nada (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">Perlihatkan Vibrato (U)</system:String>
+  <!--<system:String x:Key="pianoroll.tool.drawpitch">Draw Pitch Tool (4)</system:String>-->
   <system:String x:Key="pianoroll.tool.eraser">Alat Penghapus (3)</system:String>
+  <!--<system:String x:Key="pianoroll.tool.knife">Knife Tool (5)</system:String>-->
   <system:String x:Key="pianoroll.tool.pen">Alat Pena (2)
 Klik kiri untuk menarik
 Klik kanan untuk menghapus</system:String>
@@ -154,31 +161,36 @@ Tahan Ctrl untuk memilih lainnya</system:String>
   <system:String x:Key="prefs.on">Hidup</system:String>
   <system:String x:Key="prefs.paths">Jalur</system:String>
   <system:String x:Key="prefs.paths.addlsinger">Jalur Penyanyi Tambahan</system:String>
-  <!--<system:String x:Key="prefs.paths.addlsinger.install">Instal ke Jalur Penyanyi Tambahan</system:String>-->
+  <!--<system:String x:Key="prefs.paths.addlsinger.install">Install to Additional Singer Path</system:String>-->
   <system:String x:Key="prefs.paths.reset">Setel Ulang</system:String>
   <system:String x:Key="prefs.paths.select">Pilih</system:String>
   <system:String x:Key="prefs.playback">Pemutaran</system:String>
+  <!--<system:String x:Key="prefs.playback.autoscroll">Auto-Scroll</system:String>-->
   <system:String x:Key="prefs.playback.backend">Latar Belakang Audio</system:String>
   <system:String x:Key="prefs.playback.backend.auto">Otomatis</system:String>
   <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">Posisi Kursor</system:String>
   <system:String x:Key="prefs.playback.device">Perangkat Pemutaran</system:String>
+  <!--<system:String x:Key="prefs.playback.lockstarttime">On Pausing</system:String>-->
+  <!--<system:String x:Key="prefs.playback.lockstarttime.off">Do nothing</system:String>-->
+  <!--<system:String x:Key="prefs.playback.lockstarttime.on">Move cursor back to where you started playing</system:String>-->
   <system:String x:Key="prefs.playback.test">Tes</system:String>
   <system:String x:Key="prefs.rendering">Merender</system:String>
-  <!--<system:String x:Key="prefs.rendering.phasecomp">Kompensasi Fase</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.phasecomp">Phase Compensation</system:String>-->
   <system:String x:Key="prefs.rendering.prerender.threads">Utas Pra-perenderan</system:String>
   <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
   <!--<system:String x:Key="prefs.rendering.resampler.morewarn">
-Peringatan: moresampler tidak sepenuhnya didukung. Ini mungkin lambat dan menyebabkan penggunaan CPU yang tinggi. Jika Anda bersikeras, silakan:
-1. Setel "resampler-compatibility" ke "on" di moreconfig.txt.
-2. Atur "auto-update-llsm-mrq" ke "off" di moreconfig.txt.
-3. Sabar menunggu moresampler untuk menghasilkan file llsm yang hilang.
+Warning: moresampler is not fully supported. It may be slow and cause high CPU usage. If you insist, please:
+1. Set "resampler-compatibility" to "on" in moreconfig.txt.
+2. Set "auto-update-llsm-mrq" to "off" in moreconfig.txt.
+3. Patiently wait for moresampler to generate missing llsm files.
   </system:String>-->
   <system:String x:Key="prefs.rendering.resampler.note">
     Catatan: untuk menggunakan resampler eksternal, silakan tambahkan berkas resampler DLL atau EXE di folder Resamplers di jalur instal OpenUtau dan pilih di Preferensi.
   </system:String>
 
   <system:String x:Key="progress.saved">Proyek tersimpan. {0}</system:String>
+  <!--<system:String x:Key="progress.waitingrendering">Waiting Rendering</system:String>-->
 
   <system:String x:Key="singers.caption">Penyanyi</system:String>
   <system:String x:Key="singers.location">Lokasi</system:String>
@@ -224,10 +236,14 @@ Umum
   <system:String x:Key="tip.notes.zoomx">◀ Gulir ke sini untuk memperbesar secara horizontal ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">Gulir ke sini untuk memperbesar secara vertikal ▶</system:String>
 
+  <!--<system:String x:Key="tracks.more">More</system:String>-->
   <system:String x:Key="tracks.movedown">Turunkan</system:String>
   <system:String x:Key="tracks.moveup">Naikkan</system:String>
   <system:String x:Key="tracks.remove">Hapus</system:String>
   <system:String x:Key="tracks.selectsinger">Pilih Penyanyi</system:String>
+
+  <!--<FontFamily x:Key="ui.fontfamily">Segoe UI,San Francisco,Helvetica Neue</FontFamily>-->
+  <!--<FontFamily x:Key="ui.textbox.fontfamily">Microsoft YaHei,Simsun,苹方-简,宋体-简</FontFamily>-->
 
   <system:String x:Key="updater.caption">Memeriksa Pembaruan</system:String>
   <!--<system:String x:Key="updater.github">GitHub</system:String>-->

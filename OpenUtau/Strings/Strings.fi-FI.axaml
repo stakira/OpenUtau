@@ -10,6 +10,8 @@
   <system:String x:Key="context.pitch.pointdel">Poista kontrollipiste</system:String>
   <system:String x:Key="context.pitch.pointsnapprev">Liimaudu kiinni edelliseen nuottiin</system:String>
 
+  <!--<system:String x:Key="debug.clear">Clear</system:String>-->
+
   <system:String x:Key="dialogs.about.caption">OpenUtausta</system:String>
   <system:String x:Key="dialogs.about.message">
         OpenUtaun tavoitteena on olla avoimen lähdekoodin editointiympäristö UTAU-yhteisölle, jossa on moderni käyttökokemus ja älykäs foneettinen tuki. Vieraile Githubissa.
@@ -40,6 +42,7 @@
   <system:String x:Key="exps.optionvalues">Kustomoidut arvot</system:String>
   <system:String x:Key="exps.sepbycomma">Erottele arvot pilkulla ','</system:String>
   <system:String x:Key="exps.type">Tyyppi</system:String>
+  <!--<system:String x:Key="exps.type.curve">Curve</system:String>-->
   <system:String x:Key="exps.type.numerical">Numeraalinen</system:String>
   <system:String x:Key="exps.type.options">Kustomoi</system:String>
 
@@ -80,6 +83,7 @@
   <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
   <system:String x:Key="menu.tools">Työkalut</system:String>
   <!--<system:String x:Key="menu.tools.clearcache">Clear Cache</system:String>-->
+  <!--<system:String x:Key="menu.tools.debugwindow">Debug Window</system:String>-->
   <system:String x:Key="menu.tools.layout">Asettelu</system:String>
   <system:String x:Key="menu.tools.layout.hsplit11">Vaakasuora 1:1</system:String>
   <system:String x:Key="menu.tools.layout.hsplit12">Vaakasuora 1:2</system:String>
@@ -125,13 +129,16 @@
   <system:String x:Key="pianoroll.menu.part">Osa</system:String>
   <!--<system:String x:Key="pianoroll.menu.part.legacypluginexp">Legacy Plugin (Experimental)</system:String>-->
   <system:String x:Key="pianoroll.menu.part.rename">Nimeä uudelleen</system:String>
+  <!--<system:String x:Key="pianoroll.toggle.finalpitch">View Final Pitch to Render (R)</system:String>-->
   <system:String x:Key="pianoroll.toggle.phoneme">Näytä foneemit (O)</system:String>
   <system:String x:Key="pianoroll.toggle.pitch">Näytä pitch-käyrä (I)</system:String>
   <system:String x:Key="pianoroll.toggle.snap">Aktivoi kohdistus (P)</system:String>
   <system:String x:Key="pianoroll.toggle.tips">Näytä vihjeet (T)</system:String>
   <system:String x:Key="pianoroll.toggle.tone">Aktivoi opasääni (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">Näytä vibrato (U)</system:String>
+  <!--<system:String x:Key="pianoroll.tool.drawpitch">Draw Pitch Tool (4)</system:String>-->
   <system:String x:Key="pianoroll.tool.eraser">Pyyhekumityökalu (3)</system:String>
+  <!--<system:String x:Key="pianoroll.tool.knife">Knife Tool (5)</system:String>-->
   <system:String x:Key="pianoroll.tool.pen">Kynätyökalu (2)
 Piirrä vasemmalla hiiren klikkauksella
 Poista oikealla hiiren klikkauksella</system:String>
@@ -158,11 +165,15 @@ Aktivoi monivalinta pitämällä Ctrl pohjassa</system:String>
   <!--<system:String x:Key="prefs.paths.reset">Reset</system:String>-->
   <!--<system:String x:Key="prefs.paths.select">Select</system:String>-->
   <system:String x:Key="prefs.playback">Äänentoisto</system:String>
+  <!--<system:String x:Key="prefs.playback.autoscroll">Auto-Scroll</system:String>-->
   <!--<system:String x:Key="prefs.playback.backend">Audio Backend</system:String>-->
   <!--<system:String x:Key="prefs.playback.backend.auto">Automatic</system:String>-->
   <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
   <!--<system:String x:Key="prefs.playback.cursorposition">Cursor Position</system:String>-->
   <system:String x:Key="prefs.playback.device">Äänentoistolaite</system:String>
+  <!--<system:String x:Key="prefs.playback.lockstarttime">On Pausing</system:String>-->
+  <!--<system:String x:Key="prefs.playback.lockstarttime.off">Do nothing</system:String>-->
+  <!--<system:String x:Key="prefs.playback.lockstarttime.on">Move cursor back to where you started playing</system:String>-->
   <system:String x:Key="prefs.playback.test">Testaa</system:String>
   <system:String x:Key="prefs.rendering">Renderöi</system:String>
   <!--<system:String x:Key="prefs.rendering.phasecomp">Phase Compensation</system:String>-->
@@ -179,6 +190,7 @@ Warning: moresampler is not fully supported. It may be slow and cause high CPU u
   </system:String>
 
   <!--<system:String x:Key="progress.saved">Project saved. {0}</system:String>-->
+  <!--<system:String x:Key="progress.waitingrendering">Waiting Rendering</system:String>-->
 
   <system:String x:Key="singers.caption">Laulajat</system:String>
   <system:String x:Key="singers.location">Sijainti</system:String>
@@ -224,10 +236,14 @@ Yleiset
   <system:String x:Key="tip.notes.zoomx">◀ Selaa tästä zoomataaksesi vaakatasossa ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">Selaa tästä zoomataaksesi pystytasossa ▶</system:String>
 
+  <!--<system:String x:Key="tracks.more">More</system:String>-->
   <system:String x:Key="tracks.movedown">Liikuta alas</system:String>
   <system:String x:Key="tracks.moveup">Liikuta ylös</system:String>
   <system:String x:Key="tracks.remove">Poista</system:String>
   <!--<system:String x:Key="tracks.selectsinger">Select Singer</system:String>-->
+
+  <!--<FontFamily x:Key="ui.fontfamily">Segoe UI,San Francisco,Helvetica Neue</FontFamily>-->
+  <!--<FontFamily x:Key="ui.textbox.fontfamily">Microsoft YaHei,Simsun,苹方-简,宋体-简</FontFamily>-->
 
   <!--<system:String x:Key="updater.caption">Check for Update</system:String>-->
   <!--<system:String x:Key="updater.github">GitHub</system:String>-->

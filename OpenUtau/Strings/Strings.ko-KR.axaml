@@ -2,9 +2,6 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-  <FontFamily x:Key="ui.fontfamily">Malgun Gothic,Apple SD Gothic Neo,Segoe UI,San Francisco,Helvetica Neue</FontFamily>
-  <FontFamily x:Key="ui.textbox.fontfamily">Malgun Gothic,Apple SD Gothic Neo,Segoe UI,San Francisco,Helvetica Neue</FontFamily>
-
   <!--<system:String x:Key="context.pitch.easein">Ease in</system:String>-->
   <!--<system:String x:Key="context.pitch.easeinout">Ease in/out</system:String>-->
   <!--<system:String x:Key="context.pitch.easeout">Ease out</system:String>-->
@@ -12,6 +9,8 @@
   <system:String x:Key="context.pitch.pointadd">포인트 추가</system:String>
   <system:String x:Key="context.pitch.pointdel">포인트 제거</system:String>
   <system:String x:Key="context.pitch.pointsnapprev">이전 노트 스냅</system:String>
+
+  <!--<system:String x:Key="debug.clear">Clear</system:String>-->
 
   <system:String x:Key="dialogs.about.caption">OpenUTAU에 대하여</system:String>
   <system:String x:Key="dialogs.about.message">
@@ -43,6 +42,7 @@
   <system:String x:Key="exps.optionvalues">옵션 값</system:String>
   <system:String x:Key="exps.sepbycomma">','를 구분자 값으로</system:String>
   <system:String x:Key="exps.type">타입</system:String>
+  <!--<system:String x:Key="exps.type.curve">Curve</system:String>-->
   <system:String x:Key="exps.type.numerical">수치</system:String>
   <system:String x:Key="exps.type.options">옵션</system:String>
 
@@ -83,6 +83,7 @@
   <system:String x:Key="menu.help.wiki">OpenUtau 위키</system:String>
   <system:String x:Key="menu.tools">도구</system:String>
   <system:String x:Key="menu.tools.clearcache">캐시 초기화</system:String>
+  <!--<system:String x:Key="menu.tools.debugwindow">Debug Window</system:String>-->
   <system:String x:Key="menu.tools.layout">레이아웃</system:String>
   <system:String x:Key="menu.tools.layout.hsplit11">수평 1:1</system:String>
   <system:String x:Key="menu.tools.layout.hsplit12">수평 1:2</system:String>
@@ -128,13 +129,16 @@
   <system:String x:Key="pianoroll.menu.part">파트</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">레거시 플러그인 (실험)</system:String>
   <system:String x:Key="pianoroll.menu.part.rename">이름 변경</system:String>
+  <!--<system:String x:Key="pianoroll.toggle.finalpitch">View Final Pitch to Render (R)</system:String>-->
   <system:String x:Key="pianoroll.toggle.phoneme">음소 보기 (O)</system:String>
   <system:String x:Key="pianoroll.toggle.pitch">피치벤드 보기 (I)</system:String>
   <system:String x:Key="pianoroll.toggle.snap">스냅 켜고 끄기 (P)</system:String>
   <system:String x:Key="pianoroll.toggle.tips">팁 보기 (T)</system:String>
   <system:String x:Key="pianoroll.toggle.tone">노트 톤 켜고 끄기 (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">비브라토 보기 (U)</system:String>
+  <!--<system:String x:Key="pianoroll.tool.drawpitch">Draw Pitch Tool (4)</system:String>-->
   <system:String x:Key="pianoroll.tool.eraser">삭제 툴 (3)</system:String>
+  <!--<system:String x:Key="pianoroll.tool.knife">Knife Tool (5)</system:String>-->
   <system:String x:Key="pianoroll.tool.pen">펜 툴 (2)
  왼쪽 마우스로 그리기
 오른쪽 마우스로 삭제</system:String>
@@ -161,11 +165,15 @@
   <system:String x:Key="prefs.paths.reset">초기화</system:String>
   <system:String x:Key="prefs.paths.select">선택</system:String>
   <system:String x:Key="prefs.playback">재생</system:String>
+  <!--<system:String x:Key="prefs.playback.autoscroll">Auto-Scroll</system:String>-->
   <!--<system:String x:Key="prefs.playback.backend">Audio Backend</system:String>-->
   <system:String x:Key="prefs.playback.backend.auto">자동</system:String>
   <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">커서 위치</system:String>
   <system:String x:Key="prefs.playback.device">재생 장치</system:String>
+  <!--<system:String x:Key="prefs.playback.lockstarttime">On Pausing</system:String>-->
+  <!--<system:String x:Key="prefs.playback.lockstarttime.off">Do nothing</system:String>-->
+  <!--<system:String x:Key="prefs.playback.lockstarttime.on">Move cursor back to where you started playing</system:String>-->
   <system:String x:Key="prefs.playback.test">테스트</system:String>
   <system:String x:Key="prefs.rendering">렌더링</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">위상 보정</system:String>
@@ -182,6 +190,7 @@
     </system:String>
 
   <system:String x:Key="progress.saved">프로젝트 저장됨. {0}</system:String>
+  <!--<system:String x:Key="progress.waitingrendering">Waiting Rendering</system:String>-->
 
   <system:String x:Key="singers.caption">가수</system:String>
   <system:String x:Key="singers.location">위치</system:String>
@@ -227,10 +236,14 @@
   <system:String x:Key="tip.notes.zoomx">◀ 수평으로 확대하려면 여기서 스크롤하세요 ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">수직으로 확대하려면 여기서 스크롤하세요 ▶</system:String>
 
+  <!--<system:String x:Key="tracks.more">More</system:String>-->
   <system:String x:Key="tracks.movedown">아래로 이동</system:String>
   <system:String x:Key="tracks.moveup">위로 이동</system:String>
   <system:String x:Key="tracks.remove">제거</system:String>
   <system:String x:Key="tracks.selectsinger">가수 선택</system:String>
+
+  <FontFamily x:Key="ui.fontfamily">Malgun Gothic,Apple SD Gothic Neo,Segoe UI,San Francisco,Helvetica Neue</FontFamily>
+  <FontFamily x:Key="ui.textbox.fontfamily">Malgun Gothic,Apple SD Gothic Neo,Segoe UI,San Francisco,Helvetica Neue</FontFamily>
 
   <system:String x:Key="updater.caption">업데이트 확인</system:String>
   <system:String x:Key="updater.github">깃허브</system:String>
