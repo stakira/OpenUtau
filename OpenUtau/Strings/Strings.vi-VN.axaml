@@ -10,6 +10,8 @@
   <system:String x:Key="context.pitch.pointdel">Xoá điểm</system:String>
   <system:String x:Key="context.pitch.pointsnapprev">Gán vào nốt trước</system:String>
 
+  <!--<system:String x:Key="debug.clear">Clear</system:String>-->
+
   <system:String x:Key="dialogs.about.caption">Thông tin về OpenUTAU</system:String>
   <system:String x:Key="dialogs.about.message">
     OpenUTAU nhắm đến việc tạo nên một môi trường chỉnh sửa mã nguồn mở cho cộng đồng UTAU, với một giao diện hiện đại và hỗ trợ âm vị thông minh. Thông tin chi tiết trên Github.
@@ -80,7 +82,6 @@
   <system:String x:Key="menu.help.about">Thông tin về OpenUtau</system:String>
   <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
   <system:String x:Key="menu.tools">Công cụ</system:String>
-  <!--<system:String x:Key="menu.tools.clearcache">Clear Cache</system:String>-->
   <system:String x:Key="menu.tools.clearcache">Xoá bộ nhớ đệm</system:String>
   <system:String x:Key="menu.tools.debugwindow">Mở cửa sổ Debug</system:String>
   <system:String x:Key="menu.tools.layout">Bố cục</system:String>
@@ -96,7 +97,6 @@
   <system:String x:Key="menu.tools.singer.installadv">Cài đặt ca sĩ vào(Nâng cao)...</system:String>
   <system:String x:Key="menu.tools.singers">Danh sách các ca sĩ...</system:String>
 
-  <!--<system:String x:Key="oto.alias">Alias</system:String>-->
   <system:String x:Key="oto.alias">Tên đặt trong Oto</system:String>
   <system:String x:Key="oto.color">Sắc thái</system:String>
   <!--<system:String x:Key="oto.consonant">Consonant</system:String>-->
@@ -136,12 +136,12 @@
   <system:String x:Key="pianoroll.toggle.tips">Hiện Hướng dẫn (T)</system:String>
   <system:String x:Key="pianoroll.toggle.tone">Bật tắt Nghe trước cao độ khi viết nốt(Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">Hiện Đường rung giọng (U)</system:String>
+  <system:String x:Key="pianoroll.tool.drawpitch">Vẽ tự do đường luyến giọng (4)</system:String>
   <system:String x:Key="pianoroll.tool.eraser">Xoá nốt (3)</system:String>
+  <system:String x:Key="pianoroll.tool.knife">Cắt nốt (5)</system:String>
   <system:String x:Key="pianoroll.tool.pen">Viết nốt (2)
 Nhấn chuột trái để viết nốt
 Nhấn chuột phải để xoá nốt</system:String>
-  <system:String x:Key="pianoroll.tool.drawpitch">Vẽ tự do đường luyến giọng (4)</system:String>
-  <system:String x:Key="pianoroll.tool.knife">Cắt nốt (5)</system:String>
   <system:String x:Key="pianoroll.tool.selection">Lựa chọn (1)
 Nhấn giữ Ctrl để chọn đồng loạt nhiều nốt</system:String>
 
@@ -161,7 +161,6 @@ Nhấn giữ Ctrl để chọn đồng loạt nhiều nốt</system:String>
   <system:String x:Key="prefs.on">Mở</system:String>
   <system:String x:Key="prefs.paths">Đường dẫn</system:String>
   <system:String x:Key="prefs.paths.addlsinger">Thư mục phụ chứa các ca sĩ </system:String>
-  <!--<system:String x:Key="prefs.paths.addlsinger.install">Install to Additional Singer Path</system:String>-->
   <system:String x:Key="prefs.paths.addlsinger.install">Cài đặt vào thư mục phụ chứa các ca sĩ</system:String>
   <system:String x:Key="prefs.paths.reset">Đặt lại</system:String>
   <system:String x:Key="prefs.paths.select">Lựa chọn</system:String>
@@ -169,8 +168,6 @@ Nhấn giữ Ctrl để chọn đồng loạt nhiều nốt</system:String>
   <system:String x:Key="prefs.playback.autoscroll">Tự động cuốn đường phát nhạc</system:String>
   <system:String x:Key="prefs.playback.backend">Backend âm thanh</system:String>
   <system:String x:Key="prefs.playback.backend.auto">Tự động</system:String>
-  <!--<system:String x:Key="prefs.playback.backend">Audio Backend</system:String>-->
-  <!--<system:String x:Key="prefs.playback.backend.auto">Automatic</system:String>-->
   <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">Vị trí đường phát nhạc</system:String>
   <system:String x:Key="prefs.playback.device">Thiết bị phát nhạc</system:String>
@@ -194,7 +191,6 @@ Warning: moresampler is not fully supported. It may be slow and cause high CPU u
 
   <system:String x:Key="progress.saved">Hoàn tất lưu dự án. {0}</system:String>
   <system:String x:Key="progress.waitingrendering">Đang chờ việc render</system:String>
-
 
   <system:String x:Key="singers.caption">Ca sĩ</system:String>
   <system:String x:Key="singers.location">Đường dẫn</system:String>
@@ -240,10 +236,14 @@ Tổng quát
   <system:String x:Key="tip.notes.zoomx">◀ Lăn chuột chỗ này để phóng to theo chiều ngang ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">Lăn chuột chỗ này để phóng to theo chiều dọc ▶</system:String>
 
+  <!--<system:String x:Key="tracks.more">More</system:String>-->
   <system:String x:Key="tracks.movedown">Di chuyển xuống</system:String>
   <system:String x:Key="tracks.moveup">Di chuyển lên</system:String>
   <system:String x:Key="tracks.remove">Xoá bỏ</system:String>
   <system:String x:Key="tracks.selectsinger">Chọn ca sĩ</system:String>
+
+  <!--<FontFamily x:Key="ui.fontfamily">Segoe UI,San Francisco,Helvetica Neue</FontFamily>-->
+  <!--<FontFamily x:Key="ui.textbox.fontfamily">Microsoft YaHei,Simsun,苹方-简,宋体-简</FontFamily>-->
 
   <system:String x:Key="updater.caption">Kiểm tra cập nhật</system:String>
   <!--<system:String x:Key="updater.github">GitHub</system:String>-->

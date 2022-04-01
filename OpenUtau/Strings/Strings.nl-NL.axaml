@@ -10,6 +10,8 @@
   <system:String x:Key="context.pitch.pointdel">Punt wissen</system:String>
   <system:String x:Key="context.pitch.pointsnapprev">Snap terug naar vorige noot</system:String>
 
+  <!--<system:String x:Key="debug.clear">Clear</system:String>-->
+
   <system:String x:Key="dialogs.about.caption">Over OpenUTAU</system:String>
   <system:String x:Key="dialogs.about.message">
         OpenUtau wil een open-source bewerkingsomgeving zijn voor de UTAU-gemeenschap, met een moderne gebruikerservaring en intelligente fonologische ondersteuning. Bezoek ons op Github. (in engels)
@@ -40,6 +42,7 @@
   <system:String x:Key="exps.optionvalues">Optiewaarden</system:String>
   <system:String x:Key="exps.sepbycomma">Scheid waarden door ','</system:String>
   <!--<system:String x:Key="exps.type">Type</system:String>-->
+  <!--<system:String x:Key="exps.type.curve">Curve</system:String>-->
   <system:String x:Key="exps.type.numerical">Numeriek</system:String>
   <system:String x:Key="exps.type.options">Opties</system:String>
 
@@ -80,6 +83,7 @@
   <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
   <system:String x:Key="menu.tools">_Tools</system:String>
   <!--<system:String x:Key="menu.tools.clearcache">Clear Cache</system:String>-->
+  <!--<system:String x:Key="menu.tools.debugwindow">Debug Window</system:String>-->
   <system:String x:Key="menu.tools.layout">Indeling</system:String>
   <system:String x:Key="menu.tools.layout.hsplit11">Horizontaal 1:1</system:String>
   <system:String x:Key="menu.tools.layout.hsplit12">Horizontaal 1:2</system:String>
@@ -125,13 +129,16 @@
   <system:String x:Key="pianoroll.menu.part">Deel</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">Legacy Plugin (Experimenteel)</system:String>
   <system:String x:Key="pianoroll.menu.part.rename">Naam wijzigen</system:String>
+  <!--<system:String x:Key="pianoroll.toggle.finalpitch">View Final Pitch to Render (R)</system:String>-->
   <system:String x:Key="pianoroll.toggle.phoneme">Toon fonemen (O)</system:String>
   <system:String x:Key="pianoroll.toggle.pitch">Toon Pitch Bend (I)</system:String>
   <system:String x:Key="pianoroll.toggle.snap">Schakel Snap (P)</system:String>
   <system:String x:Key="pianoroll.toggle.tips">Bekijk tips (T)</system:String>
   <!--<system:String x:Key="pianoroll.toggle.tone">Toggle Note Tone (Y)</system:String>-->
   <system:String x:Key="pianoroll.toggle.vibrato">Vibrato weergeven (U)</system:String>
+  <!--<system:String x:Key="pianoroll.tool.drawpitch">Draw Pitch Tool (4)</system:String>-->
   <system:String x:Key="pianoroll.tool.eraser">Gummetje (3)</system:String>
+  <!--<system:String x:Key="pianoroll.tool.knife">Knife Tool (5)</system:String>-->
   <system:String x:Key="pianoroll.tool.pen">Pen (2)
 Links klikken om te tekenen
 Rechts klikken om te wissen</system:String>
@@ -158,11 +165,15 @@ Houd Ctrl ingedrukt om meer te selecteren</system:String>
   <!--<system:String x:Key="prefs.paths.reset">Reset</system:String>-->
   <system:String x:Key="prefs.paths.select">Selecteer</system:String>
   <system:String x:Key="prefs.playback">Afspelen</system:String>
+  <!--<system:String x:Key="prefs.playback.autoscroll">Auto-Scroll</system:String>-->
   <!--<system:String x:Key="prefs.playback.backend">Audio Backend</system:String>-->
   <system:String x:Key="prefs.playback.backend.auto">Automatisch</system:String>
   <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">Cursorpositie</system:String>
   <system:String x:Key="prefs.playback.device">Afspeelapparaat</system:String>
+  <!--<system:String x:Key="prefs.playback.lockstarttime">On Pausing</system:String>-->
+  <!--<system:String x:Key="prefs.playback.lockstarttime.off">Do nothing</system:String>-->
+  <!--<system:String x:Key="prefs.playback.lockstarttime.on">Move cursor back to where you started playing</system:String>-->
   <!--<system:String x:Key="prefs.playback.test">Test</system:String>-->
   <system:String x:Key="prefs.rendering">Renderen</system:String>
   <!--<system:String x:Key="prefs.rendering.phasecomp">Phase Compensation</system:String>-->
@@ -179,6 +190,7 @@ Warning: moresampler is not fully supported. It may be slow and cause high CPU u
     </system:String>
 
   <system:String x:Key="progress.saved">Project opgeslagen.{0}</system:String>
+  <!--<system:String x:Key="progress.waitingrendering">Waiting Rendering</system:String>-->
 
   <system:String x:Key="singers.caption">Zangers</system:String>
   <system:String x:Key="singers.location">Plaats</system:String>
@@ -224,10 +236,14 @@ Algemeen
   <system:String x:Key="tip.notes.zoomx">◀ Scroll hier om horizontaal in te zoomen ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">Scroll hier om verticaal in te zoomen ▶</system:String>
 
+  <!--<system:String x:Key="tracks.more">More</system:String>-->
   <system:String x:Key="tracks.movedown">Naar beneden</system:String>
   <system:String x:Key="tracks.moveup">Naar boven</system:String>
   <system:String x:Key="tracks.remove">Verwijder</system:String>
   <system:String x:Key="tracks.selectsinger">Zanger kiezen</system:String>
+
+  <!--<FontFamily x:Key="ui.fontfamily">Segoe UI,San Francisco,Helvetica Neue</FontFamily>-->
+  <!--<FontFamily x:Key="ui.textbox.fontfamily">Microsoft YaHei,Simsun,苹方-简,宋体-简</FontFamily>-->
 
   <system:String x:Key="updater.caption">Controleren op updates</system:String>
   <!--<system:String x:Key="updater.github">GitHub</system:String>-->

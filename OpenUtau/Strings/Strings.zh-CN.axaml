@@ -2,8 +2,6 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-  <FontFamily x:Key="ui.fontfamily">Microsoft YaHei UI,PingFang SC,Segoe UI,San Francisco,Helvetica Neue</FontFamily>
-
   <system:String x:Key="context.pitch.easein">缓入</system:String>
   <system:String x:Key="context.pitch.easeinout">缓入缓出</system:String>
   <system:String x:Key="context.pitch.easeout">缓出</system:String>
@@ -11,6 +9,8 @@
   <system:String x:Key="context.pitch.pointadd">添加控制点</system:String>
   <system:String x:Key="context.pitch.pointdel">删除控制点</system:String>
   <system:String x:Key="context.pitch.pointsnapprev">吸附到上一个音符</system:String>
+
+  <system:String x:Key="debug.clear">清空</system:String>
 
   <system:String x:Key="dialogs.about.caption">关于 OpenUTAU</system:String>
   <system:String x:Key="dialogs.about.message">
@@ -42,6 +42,7 @@
   <system:String x:Key="exps.optionvalues">选项值</system:String>
   <system:String x:Key="exps.sepbycomma">用','分隔多项值</system:String>
   <system:String x:Key="exps.type">类型</system:String>
+  <system:String x:Key="exps.type.curve">曲线</system:String>
   <system:String x:Key="exps.type.numerical">数值</system:String>
   <system:String x:Key="exps.type.options">选项</system:String>
 
@@ -82,6 +83,7 @@
   <system:String x:Key="menu.help.wiki">OpenUtau 维基</system:String>
   <system:String x:Key="menu.tools">工具</system:String>
   <system:String x:Key="menu.tools.clearcache">清空缓存</system:String>
+  <system:String x:Key="menu.tools.debugwindow">调试窗口</system:String>
   <system:String x:Key="menu.tools.layout">界面布局</system:String>
   <system:String x:Key="menu.tools.layout.hsplit11">水平分布 1:1</system:String>
   <system:String x:Key="menu.tools.layout.hsplit12">水平分布 1:2</system:String>
@@ -127,13 +129,16 @@
   <system:String x:Key="pianoroll.menu.part">片段</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">传统插件 (实验性)</system:String>
   <system:String x:Key="pianoroll.menu.part.rename">重命名</system:String>
+  <system:String x:Key="pianoroll.toggle.finalpitch">显示最终音高线 (R)</system:String>
   <system:String x:Key="pianoroll.toggle.phoneme">显示音素 (O)</system:String>
   <system:String x:Key="pianoroll.toggle.pitch">显示弯音 (I)</system:String>
   <system:String x:Key="pianoroll.toggle.snap">开关吸附 (P)</system:String>
   <system:String x:Key="pianoroll.toggle.tips">显示提示 (T)</system:String>
   <system:String x:Key="pianoroll.toggle.tone">开关音符音 (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">显示颤音 (U)</system:String>
+  <system:String x:Key="pianoroll.tool.drawpitch">绘制音高线工具 (4)</system:String>
   <system:String x:Key="pianoroll.tool.eraser">橡皮工具 (3)</system:String>
+  <system:String x:Key="pianoroll.tool.knife">分割工具 (5)</system:String>
   <system:String x:Key="pianoroll.tool.pen">笔工具 (2)
 鼠标左键绘制音符
 鼠标右键擦除音符</system:String>
@@ -231,10 +236,14 @@
   <system:String x:Key="tip.notes.zoomx">◀ 鼠标滚轮横向缩放 ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">鼠标滚轮纵向缩放 ▶</system:String>
 
+  <system:String x:Key="tracks.more">更多</system:String>
   <system:String x:Key="tracks.movedown">下移</system:String>
   <system:String x:Key="tracks.moveup">上移</system:String>
   <system:String x:Key="tracks.remove">移除</system:String>
   <system:String x:Key="tracks.selectsinger">选择歌手</system:String>
+
+  <FontFamily x:Key="ui.fontfamily">Microsoft YaHei UI,PingFang SC,Segoe UI,San Francisco,Helvetica Neue</FontFamily>
+  <!--<FontFamily x:Key="ui.textbox.fontfamily">Microsoft YaHei,Simsun,苹方-简,宋体-简</FontFamily>-->
 
   <system:String x:Key="updater.caption">检查更新</system:String>
   <!--<system:String x:Key="updater.github">GitHub</system:String>-->
