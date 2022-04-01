@@ -29,6 +29,11 @@
     <PackageReference Include="NAudio" Version="2.0.1" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="Enunu\Data\EnunuRes.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>EnunuRes.resx</DependentUpon>
+    </Compile>
     <Compile Update="Vogen\Data\VogenRes.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -36,6 +41,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Update="Enunu\Data\EnunuRes.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>EnunuRes.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Update="Vogen\Data\VogenRes.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>VogenRes.Designer.cs</LastGenOutput>

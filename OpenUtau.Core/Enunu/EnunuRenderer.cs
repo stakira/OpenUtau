@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -32,25 +31,6 @@ namespace OpenUtau.Core.Enunu {
         static readonly Encoding ShiftJIS = Encoding.GetEncoding("shift_jis");
         static readonly object lockObj = new object();
 
-        static string workDir = null;
-        static string python = null;
-        static string script = null;
-
-        static void Init() {
-            if (string.IsNullOrEmpty(python) || string.IsNullOrEmpty(script)) {
-                var plugin = DocManager.Inst.Plugins.First(plugin => plugin.Name.ToLowerInvariant().Contains("enunu"));
-                if (!File.Exists(plugin.Executable)) {
-                    return;
-                }
-                var lines = File.ReadAllLines(plugin.Executable);
-                var line = lines.First(line => line.Contains("python"));
-                var parts = line.Split();
-                workDir = Path.GetDirectoryName(plugin.Executable);
-                python = Path.Join(workDir, parts[0]);
-                script = Path.Join(workDir, "enunu-openutau.py");
-            }
-        }
-
         public bool SupportsExpression(UExpressionDescriptor descriptor) {
             return supportedExp.Contains(descriptor.abbr);
         }
@@ -59,11 +39,6 @@ namespace OpenUtau.Core.Enunu {
             public string lyric;
             public int length;
             public int noteNum;
-        }
-
-        class EnuConfig {
-            public int sampleRate;
-            public double framePeriod;
         }
 
         public RenderResult Layout(RenderPhrase phrase) {
@@ -82,7 +57,7 @@ namespace OpenUtau.Core.Enunu {
                     if (cancellation.IsCancellationRequested) {
                         return new RenderResult();
                     }
-                    Init();
+                    EnunuInit.Init();
                     ulong preEffectHash = PreEffectsHash(phrase);
                     var tmpPath = Path.Join(PathManager.Inst.CachePath, $"enu-{preEffectHash:x16}");
                     var ustPath = tmpPath + ".tmp";
@@ -98,9 +73,7 @@ namespace OpenUtau.Core.Enunu {
                         if (cancellation.IsCancellationRequested) {
                             return new RenderResult();
                         }
-                        var configPath = Path.Join(phrase.singer.Location, "enuconfig.yaml");
-                        var configTxt = File.ReadAllText(configPath);
-                        var config = Yaml.DefaultDeserializer.Deserialize<EnuConfig>(configTxt);
+                        var config = EnunuConfig.Load(phrase.singer);
                         var f0 = np.Load<double[]>(f0Path);
                         var sp = np.Load<double[,]>(spPath);
                         var ap = np.Load<double[,]>(apPath);
@@ -202,8 +175,8 @@ namespace OpenUtau.Core.Enunu {
         private void InvokeEnunu(RenderPhrase phrase, string phase, string ustPath) {
             Log.Information($"Starting enunu {phase} \"{ustPath}\"");
             WriteUst(phrase, ustPath);
-            string args = $"{script} {phase} \"{ustPath}\"";
-            Util.ProcessRunner.Run(python, args, Log.Logger, workDir: workDir, timeoutMs: 0);
+            string args = $"{EnunuInit.Script} {phase} \"{ustPath}\"";
+            Util.ProcessRunner.Run(EnunuInit.Python, args, Log.Logger, workDir: EnunuInit.WorkDir, timeoutMs: 0);
         }
 
         double[] DownSampleCurve(float[] curve, double defaultValue, double frameMs, int length, int headFrames, int tailFrames, double tickToMs, Func<double, double> convert) {
