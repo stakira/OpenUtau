@@ -15,7 +15,7 @@ using Serilog;
 
 namespace OpenUtau.App.ViewModels {
     public class SingersViewModel : ViewModelBase {
-        public IEnumerable<USinger> Singers => DocManager.Inst.SingersOrdered;
+        public IEnumerable<USinger> Singers => DocManager.Inst.SingerGroups.Values.SelectMany(l => l);
         [Reactive] public USinger? Singer { get; set; }
         [Reactive] public Bitmap? Avatar { get; set; }
         [Reactive] public string? Info { get; set; }

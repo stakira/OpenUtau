@@ -37,6 +37,7 @@
                 <Setter Property="Header" Value="{Binding Header}"/>
                 <Setter Property="Command" Value="{Binding Command}"/>
                 <Setter Property="CommandParameter" Value="{Binding CommandParameter}"/>
+                <Setter Property="Items" Value="{Binding Items}"/>
               </Style>
             </ContextMenu.Styles>
           </ContextMenu>
@@ -53,6 +54,7 @@
                 <Setter Property="Header" Value="{Binding Header}"/>
                 <Setter Property="Command" Value="{Binding Command}"/>
                 <Setter Property="CommandParameter" Value="{Binding CommandParameter}"/>
+                <Setter Property="Items" Value="{Binding Items}"/>
               </Style>
             </ContextMenu.Styles>
           </ContextMenu>

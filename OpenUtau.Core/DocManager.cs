@@ -29,7 +29,7 @@ namespace OpenUtau.Core {
         public int playPosTick = 0;
 
         public Dictionary<string, USinger> Singers { get; private set; } = new Dictionary<string, USinger>();
-        public List<USinger> SingersOrdered { get; private set; } = new List<USinger>();
+        public Dictionary<USingerType, List<USinger>> SingerGroups { get; private set; } = new Dictionary<USingerType, List<USinger>>();
         public Plugin[] Plugins { get; private set; }
         public PhonemizerFactory[] PhonemizerFactories { get; private set; }
         public UProject Project { get; private set; }
@@ -50,13 +50,14 @@ namespace OpenUtau.Core {
             try {
                 Directory.CreateDirectory(PathManager.Inst.SingersPath);
                 var stopWatch = Stopwatch.StartNew();
-                SingersOrdered.Clear();
-                SingersOrdered.AddRange(ClassicSingerLoader.FindAllSingers());
-                SingersOrdered.AddRange(Vogen.VogenSingerLoader.FindAllSingers());
-                SingersOrdered = SingersOrdered.OrderBy(singer => singer.Name).ToList();
-                Singers = SingersOrdered
+                var singers = ClassicSingerLoader.FindAllSingers()
+                    .Concat(Vogen.VogenSingerLoader.FindAllSingers());
+                Singers = singers
                     .ToLookup(s => s.Id)
                     .ToDictionary(g => g.Key, g => g.First());
+                SingerGroups = singers
+                    .GroupBy(s => s.SingerType)
+                    .ToDictionary(s => s.Key, s => s.OrderBy(singer => singer.Name).ToList());
                 stopWatch.Stop();
                 Log.Information($"Search all singers: {stopWatch.Elapsed}");
             } catch (Exception e) {

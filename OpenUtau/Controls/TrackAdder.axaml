@@ -8,7 +8,8 @@
   <Border>
     <Button Classes="clear" VerticalAlignment="Center" HorizontalAlignment="Center"
             Width="60" Height="30" CornerRadius="4" Click="ButtonClicked">
-      <TextBlock Foreground="{DynamicResource NeutralAccentBrushSemi}" FontSize="24">+</TextBlock>
+      <TextBlock Foreground="{DynamicResource NeutralAccentBrushSemi}"
+                 Margin="0" Padding="0" FontSize="24" VerticalAlignment="Center">+</TextBlock>
     </Button>
   </Border>
 </UserControl>
