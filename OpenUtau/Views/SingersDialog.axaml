@@ -4,9 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="using:OpenUtau.App.ViewModels"
-        mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
+        xmlns:ScottPlot="clr-namespace:ScottPlot.Avalonia;assembly=ScottPlot.Avalonia"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="800"
         x:Class="OpenUtau.App.Views.SingersDialog"
-        Title="{DynamicResource singers.caption}" Width="500" Height="600" MinWidth="500" MinHeight="600"
+        Title="{DynamicResource singers.caption}" Width="800" MinWidth="800" MinHeight="800"
         WindowStartupLocation="CenterScreen"
         ExtendClientAreaToDecorationsHint="False">
   <Design.DataContext>
@@ -14,15 +15,20 @@
   </Design.DataContext>
   <Grid Margin="{Binding $parent.WindowDecorationMargin}">
     <Grid.RowDefinitions>
-      <RowDefinition Height="170"/>
       <RowDefinition Height="160" MinHeight="160"/>
       <RowDefinition Height="10"/>
-      <RowDefinition Height="*" MinHeight="180"/>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="240"/>
     </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="1*"/>
+      <ColumnDefinition Width="10"/>
+      <ColumnDefinition Width="1*"/>
+    </Grid.ColumnDefinitions>
     <Image Grid.Row="0" Width="120" Height="120" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0" Source="{Binding Avatar}"/>
-    <Button Grid.Row="0" Margin="10" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="20" Width="90" Content="{DynamicResource singers.location}"
+    <Button Grid.Row="0" Margin="10,140,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Height="20" Width="90" Content="{DynamicResource singers.location}"
             IsEnabled="{Binding Singer, Converter={x:Static ObjectConverters.IsNotNull}}" Command="{Binding OpenLocation}"/>
-    <Button Grid.Row="0" Margin="110,10,10,10" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="20" Width="20" Content="..."
+    <Button Grid.Row="0" Margin="110,140,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Height="20" Width="20" Content="..."
             IsEnabled="{Binding Singer, Converter={x:Static ObjectConverters.IsNotNull}}"
             Click="OnSingerMenuButton">
       <Button.ContextMenu>
@@ -38,12 +44,14 @@
         </ContextMenu>
       </Button.ContextMenu>
     </Button>
-    <ComboBox Grid.Row="0" x:Name="name" HorizontalAlignment="Stretch" Margin="140,10,10,10" VerticalAlignment="Top"
+    <ComboBox Grid.Row="0" x:Name="name" HorizontalAlignment="Stretch" Margin="140,10,0,0" VerticalAlignment="Top"
               Items="{Binding Singers}" SelectedItem="{Binding Singer}"/>
-    <ScrollViewer Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="140,10,10,10" Height="118">
-      <TextBlock x:Name="info" TextWrapping="Wrap" Text="{Binding Info}"/>
-    </ScrollViewer>
-    <DataGrid Grid.Row="1" Margin="10,0,10,30" CanUserSortColumns="False" BorderThickness="1"
+    <Border Grid.Row="0" Margin="140,40,0,0">
+      <ScrollViewer>
+        <TextBlock x:Name="info" TextWrapping="Wrap" Text="{Binding Info}"/>
+      </ScrollViewer>
+    </Border>
+    <DataGrid Grid.Row="0" Grid.Column="2" Margin="0,10,10,30" CanUserSortColumns="False" BorderThickness="1"
               BorderBrush="{DynamicResource SystemControlHighlightBaseMediumHighBrush}"
               Items="{Binding Subbanks}" IsReadOnly="True">
       <DataGrid.Columns>
@@ -53,15 +61,16 @@
         <DataGridTextColumn Header="{StaticResource singers.subbanks.color}" Binding="{Binding Color}"/>
       </DataGrid.Columns>
     </DataGrid>
-    <StackPanel Grid.Row="1" Spacing="10" Margin="10,0"
+    <StackPanel Grid.Row="0" Grid.Column="2" Spacing="10" Margin="10,0"
                 Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
       <Button Margin="0" Content="{DynamicResource singers.subbanks.edit}" Click="OnEditSubbanksButton"
               IsEnabled="{Binding Singer, Converter={x:Static ObjectConverters.IsNotNull}}"/>
     </StackPanel>
-    <GridSplitter Grid.Row="2" Height="10"/>
-    <DataGrid Grid.Row="3" Margin="10,0,10,10" CanUserResizeColumns="True" BorderThickness="1"
+    <GridSplitter Grid.Row="1" Grid.ColumnSpan="3" Height="10"
+                  Background="{DynamicResource SystemControlBackgroundAltHighBrush}"/>
+    <DataGrid Grid.Row="2" Grid.ColumnSpan="3" Margin="10,0,10,0" CanUserResizeColumns="True" BorderThickness="1"
               BorderBrush="{DynamicResource SystemControlHighlightBaseMediumHighBrush}"
-              Items="{Binding Otos}" IsReadOnly="True">
+              Items="{Binding Otos}" IsReadOnly="True" SelectionChanged="OnSelectionChanged">
       <DataGrid.Columns>
         <DataGridTextColumn Header="{StaticResource oto.alias}" Binding="{Binding Alias}"/>
         <DataGridTextColumn Header="{StaticResource oto.set}" Binding="{Binding Set}"/>
@@ -77,5 +86,8 @@
         <DataGridTextColumn Header="{StaticResource oto.overlap}" Binding="{Binding Overlap}"/>
       </DataGrid.Columns>
     </DataGrid>
+    <Border Grid.Row="3" Grid.ColumnSpan="3" Margin="10">
+      <ScottPlot:AvaPlot Name="OtoPlot"/>
+    </Border>
   </Grid>
 </Window>

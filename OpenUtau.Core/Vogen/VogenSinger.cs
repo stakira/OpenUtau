@@ -7,7 +7,7 @@ using OpenUtau.Core.Util;
 namespace OpenUtau.Core.Vogen {
     class VogenSinger : USinger {
         public override string Id => meta.id;
-        public override string Name => $"[Vogen] {meta.name}";
+        public override string Name => meta.name;
         public override USingerType SingerType => USingerType.Vogen;
         public override string BasePath => basePath;
         public override string Author => meta.builtBy;

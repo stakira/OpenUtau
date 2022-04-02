@@ -47,7 +47,6 @@
   <Style Selector="ContextMenu MenuItem">
     <Setter Property="Background" Value="Transparent"/>
     <Setter Property="FontSize" Value="12"/>
-    <Setter Property="Height" Value="20"/>
     <Setter Property="Padding" Value="4,2,4,2"/>
   </Style>
 

@@ -94,6 +94,7 @@ namespace OpenUtau.Core.Util {
             public bool InstallToAdditionalSingersPath = false;
             public bool PreferCommaSeparator = false;
             public bool ResamplerLogging = false;
+            public List<string> RecentSingers = new List<string>();
             public Dictionary<string, string> SingerPhonemizers = new Dictionary<string, string>();
             public List<string> RecentPhonemizers = new List<string>();
             public bool PreferPortAudio = false;
