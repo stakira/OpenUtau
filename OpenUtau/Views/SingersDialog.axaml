@@ -18,8 +18,7 @@
       <RowDefinition Height="160" MinHeight="160"/>
       <RowDefinition Height="10"/>
       <RowDefinition Height="*"/>
-      <RowDefinition Height="80"/>
-      <RowDefinition Height="160"/>
+      <RowDefinition Height="240"/>
     </Grid.RowDefinitions>
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="1*"/>
@@ -87,11 +86,8 @@
         <DataGridTextColumn Header="{StaticResource oto.overlap}" Binding="{Binding Overlap}"/>
       </DataGrid.Columns>
     </DataGrid>
-    <Border Grid.Row="3" Grid.ColumnSpan="3" Margin="10,10,10,0">
-      <ScottPlot:AvaPlot Name="WavePlot"/>
-    </Border>
-    <Border Grid.Row="4" Grid.ColumnSpan="3" Margin="10,0,10,10">
-      <ScottPlot:AvaPlot Name="SpecPlot"/>
+    <Border Grid.Row="3" Grid.ColumnSpan="3" Margin="10">
+      <ScottPlot:AvaPlot Name="OtoPlot"/>
     </Border>
   </Grid>
 </Window>
