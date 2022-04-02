@@ -236,7 +236,7 @@ Tổng quát
   <system:String x:Key="tip.notes.zoomx">◀ Lăn chuột chỗ này để phóng to theo chiều ngang ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">Lăn chuột chỗ này để phóng to theo chiều dọc ▶</system:String>
 
-  <system:String x:Key="tracks.more">Đường ngăn cách</system:String>
+  <system:String x:Key="tracks.more">Còn nữa</system:String>
   <system:String x:Key="tracks.movedown">Di chuyển xuống</system:String>
   <system:String x:Key="tracks.moveup">Di chuyển lên</system:String>
   <system:String x:Key="tracks.remove">Xoá bỏ</system:String>
