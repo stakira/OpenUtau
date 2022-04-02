@@ -115,7 +115,7 @@ namespace OpenUtau.Classic {
                         uOto = new UOto(oto, uSet, dummy);
                     }
                     if (!otos.ContainsKey(oto.Alias)) {
-                        otos.Add(oto.Alias, uOto.Value);
+                        otos.Add(oto.Alias, uOto);
                     } else {
                         //Errors.Add($"oto conflict {Otos[oto.Alias].Set}/{oto.Alias} and {otoSet.Name}/{oto.Alias}");
                     }

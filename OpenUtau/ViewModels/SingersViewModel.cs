@@ -21,6 +21,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public string? Info { get; set; }
         [Reactive] public ObservableCollectionExtended<USubbank> Subbanks { get; set; }
         [Reactive] public List<UOto>? Otos { get; set; }
+        [Reactive] public UOto SelectedOto { get; set; }
         [Reactive] public List<MenuItemViewModel> SetEncodingMenuItems { get; set; }
 
         private ReactiveCommand<Encoding, Unit> setEncodingCommand;
@@ -148,6 +149,45 @@ namespace OpenUtau.App.ViewModels {
             Singer?.Reload();
             LoadSubbanks();
             DocManager.Inst.ExecuteCmd(new SingersRefreshedNotification());
+        }
+
+        public void SetOffset(double value) {
+            if (SelectedOto != null) {
+                var delta = value - SelectedOto.Offset;
+                SelectedOto.Offset += delta;
+                SelectedOto.Consonant -= delta;
+                SelectedOto.Preutter -= delta;
+                SelectedOto.Overlap -= delta;
+            }
+            this.RaisePropertyChanged(nameof(SelectedOto));
+        }
+
+        public void SetOverlap(double value) {
+            if (SelectedOto != null) {
+                SelectedOto.Overlap = value - SelectedOto.Offset;
+            }
+        }
+
+        public void SetPreutter(double value) {
+            if (SelectedOto != null) {
+                var delta = value - SelectedOto.Offset - SelectedOto.Preutter;
+                if (SelectedOto.Cutoff < 0) {
+                    SelectedOto.Cutoff += delta;
+                }
+                SelectedOto.Preutter += delta;
+            }
+        }
+
+        public void SetFixed(double value) {
+            if (SelectedOto != null) {
+                SelectedOto.Consonant = value - SelectedOto.Offset;
+            }
+        }
+
+        public void SetCutoff(double value) {
+            if (SelectedOto != null) {
+                SelectedOto.Cutoff = -(value - SelectedOto.Offset - SelectedOto.Preutter);
+            }
         }
     }
 }

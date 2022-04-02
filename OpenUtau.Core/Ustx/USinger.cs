@@ -5,7 +5,7 @@ using System.Text;
 using OpenUtau.Classic;
 
 namespace OpenUtau.Core.Ustx {
-    public struct UOto {
+    public class UOto {
         public string Alias { get; set; }
         public string Phonetic { get; set; }
         public string Set { get; set; }
@@ -21,6 +21,8 @@ namespace OpenUtau.Core.Ustx {
         public double Preutter { get; set; }
         public double Overlap { get; set; }
         public List<string> SearchTerms { private set; get; }
+
+        public UOto() { }
 
         public UOto(Oto oto, UOtoSet set, USubbank subbank) {
             Alias = oto.Alias;

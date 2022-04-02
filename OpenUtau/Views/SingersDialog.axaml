@@ -4,9 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="using:OpenUtau.App.ViewModels"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="800"
+        xmlns:ScottPlot="clr-namespace:ScottPlot.Avalonia;assembly=ScottPlot.Avalonia"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
         x:Class="OpenUtau.App.Views.SingersDialog"
-        Title="{DynamicResource singers.caption}" Width="800" MinWidth="800" MinHeight="800"
+        Title="{DynamicResource singers.caption}" Width="800" MinWidth="800" MinHeight="600"
         WindowStartupLocation="CenterScreen"
         ExtendClientAreaToDecorationsHint="False">
   <Design.DataContext>
@@ -16,7 +17,9 @@
     <Grid.RowDefinitions>
       <RowDefinition Height="160" MinHeight="160"/>
       <RowDefinition Height="10"/>
-      <RowDefinition Height="*"/>
+      <RowDefinition Height="*" MinHeight="160"/>
+      <RowDefinition Height="10"/>
+      <RowDefinition Height="240" MinHeight="240"/>
     </Grid.RowDefinitions>
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="1*"/>
@@ -66,9 +69,10 @@
     </StackPanel>
     <GridSplitter Grid.Row="1" Grid.ColumnSpan="3" Height="10"
                   Background="{DynamicResource SystemControlBackgroundAltHighBrush}"/>
-    <DataGrid Grid.Row="2" Grid.ColumnSpan="3" Margin="10,0,10,10" CanUserResizeColumns="True" BorderThickness="1"
+    <DataGrid Grid.Row="2" Grid.ColumnSpan="3" Margin="10,0,10,0" CanUserResizeColumns="True" BorderThickness="1"
               BorderBrush="{DynamicResource SystemControlHighlightBaseMediumHighBrush}"
-              Items="{Binding Otos}" IsReadOnly="True" SelectionChanged="OnSelectionChanged">
+              Items="{Binding Otos}" SelectedItem="{Binding SelectedOto}"
+              IsReadOnly="True" SelectionChanged="OnSelectionChanged">
       <DataGrid.Columns>
         <DataGridTextColumn Header="{StaticResource oto.alias}" Binding="{Binding Alias}"/>
         <DataGridTextColumn Header="{StaticResource oto.set}" Binding="{Binding Set}"/>
@@ -84,5 +88,13 @@
         <DataGridTextColumn Header="{StaticResource oto.overlap}" Binding="{Binding Overlap}"/>
       </DataGrid.Columns>
     </DataGrid>
+    <GridSplitter Grid.Row="3" Grid.ColumnSpan="3" Height="10"
+                  Background="{DynamicResource SystemControlBackgroundAltHighBrush}"/>
+    <Border Grid.Row="4" Grid.ColumnSpan="3" Margin="10,0,10,10">
+      <TextBlock Text="libgdiplus missing" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+    </Border>
+    <Border Grid.Row="4" Grid.ColumnSpan="3" Margin="10,0,10,10">
+      <ScottPlot:AvaPlot Name="OtoPlot" PointerMoved="OtoPlot_OnPointerMoved" KeyDown="OtoPlot_OnKeyDown"/>
+    </Border>
   </Grid>
 </Window>
