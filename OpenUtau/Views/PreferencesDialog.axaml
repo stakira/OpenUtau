@@ -33,6 +33,11 @@
                 <ComboBoxItem Content="{DynamicResource prefs.off}"/>
                 <ComboBoxItem Content="{DynamicResource prefs.on}"/>
             </ComboBox>
+            <TextBlock Text="{DynamicResource prefs.playback.autoscrollmode}"/>
+            <ComboBox HorizontalAlignment="Stretch"  SelectedIndex="{Binding PlaybackPageScroll}">
+              <ComboBoxItem Content="{DynamicResource prefs.playback.autoscrollmode.stationarycursor}"/>
+              <ComboBoxItem Content="{DynamicResource prefs.playback.autoscrollmode.pagescroll}"/>
+            </ComboBox>
             <TextBlock Text="{DynamicResource prefs.playback.lockstarttime}"/>
             <ComboBox HorizontalAlignment="Stretch" SelectedIndex="{Binding LockStartTime}">
                 <ComboBoxItem Content="{DynamicResource prefs.playback.lockstarttime.off}"/>

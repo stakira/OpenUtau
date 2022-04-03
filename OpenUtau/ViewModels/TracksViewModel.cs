@@ -62,6 +62,19 @@ namespace OpenUtau.App.ViewModels {
         public ObservableCollectionExtended<UPart> Parts { get; } = new ObservableCollectionExtended<UPart>();
         public ObservableCollectionExtended<UTrack> Tracks { get; } = new ObservableCollectionExtended<UTrack>();
 
+        // There are two kinds of values here. Let's call them PlayPosX values and TickOffset values.
+        // Bounds.Width (which binds to the TrackBackground control) belongs to the former, and
+        // ViewportTicks (which binds to the horizontal scroll bar) belongs to the latter. Remember
+        // these two categories, and when you're reading the auto-scroll-related code, try to figure
+        // out which category each value falls into. If you do so, you will find reading that part of
+        // the code easier.
+        //
+        // ViewportTicks and Bounds.Width are chosen here to calculate the ratio between these two
+        // kinds of values.
+        //
+        // These values could be better named so as to make the code more readable.
+        private double playPosXToTickOffset => ViewportTicks / Bounds.Width;
+
         private readonly ObservableAsPropertyHelper<double> snapUnitWidth;
         private readonly ObservableAsPropertyHelper<double> viewportTicks;
         private readonly ObservableAsPropertyHelper<double> viewportTracks;
@@ -109,7 +122,7 @@ namespace OpenUtau.App.ViewModels {
                 });
             this.WhenAnyValue(x => x.TickOffset)
                 .Subscribe(tickOffset => {
-                    SetPlayPos(DocManager.Inst.playPosTick, false, true);
+                    SetPlayPos(DocManager.Inst.playPosTick, false);
                 });
 
             TickWidth = ViewConstants.TickWidthDefault;
@@ -313,21 +326,12 @@ namespace OpenUtau.App.ViewModels {
         }
 
 
-        private void SetPlayPos(int tick, bool waitingRendering, bool noScroll = false) {
+        private void SetPlayPos(int tick, bool waitingRendering) {
             PlayPosWaitingRendering = waitingRendering;
             if (waitingRendering) {
                 return;
             }
-            double playPosX = TickTrackToPoint(tick, 0).X;
-            double scroll = 0;
-            if (!noScroll) {
-                double margin = Preferences.Default.PlayPosMarkerMargin * Bounds.Width;
-                if (playPosX > margin || playPosX < 0) {
-                    scroll = playPosX - margin;
-                }
-                TickOffset = Math.Clamp(TickOffset + scroll, 0, HScrollBarMax);
-            }
-            PlayPosX = playPosX;
+            PlayPosX = TickTrackToPoint(tick, 0).X;
             int highlightTick = (int)Math.Floor((double)tick / SnapUnit) * SnapUnit;
             PlayPosHighlightX = TickTrackToPoint(highlightTick, 0).X;
         }
@@ -383,11 +387,49 @@ namespace OpenUtau.App.ViewModels {
                     Tracks.AddRange(loadProjectNotif.project.tracks);
                     MessageBus.Current.SendMessage(new TracksRefreshEvent());
                 } else if (cmd is SetPlayPosTickNotification setPlayPosTick) {
-                    bool autoScroll = Convert.ToBoolean(Preferences.Default.PlaybackAutoScroll);
-                    SetPlayPos(setPlayPosTick.playPosTick, setPlayPosTick.waitingRendering, !autoScroll);
+                    SetPlayPos(setPlayPosTick.playPosTick, setPlayPosTick.waitingRendering);
+                    MaybeAutoScroll();
                 }
                 Notify();
             }
+        }
+
+        private void MaybeAutoScroll() {
+            var autoScrollPreference = Convert.ToBoolean(Preferences.Default.PlaybackAutoScroll);
+            if (autoScrollPreference) {
+                AutoScroll();
+            }
+        }
+
+        private void AutoScroll() {
+            double scrollDelta = GetScrollValueDelta();
+            TickOffset = Math.Clamp(TickOffset + scrollDelta, 0, HScrollBarMax);
+        }
+
+        private double GetScrollValueDelta() {
+            var pageScroll = Convert.ToBoolean(Preferences.Default.PlaybackPageScroll);
+            if (pageScroll) {
+                return GetPageScrollScrollValueDelta();
+            }
+            return GetStationaryCursorScrollValueDelta();
+        }
+
+        private double GetStationaryCursorScrollValueDelta() {
+            double margin = Preferences.Default.PlayPosMarkerMargin * Bounds.Width;
+            if (PlayPosX > margin) {
+                return (PlayPosX - margin) * playPosXToTickOffset;
+            } else if (PlayPosX < 0) {
+                return PlayPosX * playPosXToTickOffset;
+            }
+            return 0;
+        }
+
+        private double GetPageScrollScrollValueDelta() {
+            double margin = Preferences.Default.PlayPosMarkerMargin * Bounds.Width;
+            if (PlayPosX > margin || PlayPosX < 0) {
+                return PlayPosX * playPosXToTickOffset;
+            }
+            return 0;
         }
     }
 }
