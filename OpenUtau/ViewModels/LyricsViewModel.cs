@@ -33,9 +33,7 @@ namespace OpenUtau.App.ViewModels {
                 x => x.SeparateByComma,
                 x => x.SeparateByQuote)
                 .Subscribe(t => {
-                    if (t.Item1) {
-                        Preview();
-                    }
+                    Preview(t.Item1);
                 });
         }
 
@@ -53,16 +51,18 @@ namespace OpenUtau.App.ViewModels {
             DocManager.Inst.StartUndoGroup();
         }
 
-        public void Preview() {
+        public void Preview(bool update) {
             if (startLyrics == null || notes == null || part == null) {
                 return;
             }
             DocManager.Inst.RollBackUndoGroup();
             var lyrics = Split(Text);
             CurrentCount = lyrics.Count;
-            for (int i = 0; i < lyrics.Count && i < notes.Length; ++i) {
-                if (notes[i].lyric != lyrics[i]) {
-                    DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(part, notes[i], lyrics[i]));
+            if (update) {
+                for (int i = 0; i < lyrics.Count && i < notes.Length; ++i) {
+                    if (notes[i].lyric != lyrics[i]) {
+                        DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(part, notes[i], lyrics[i]));
+                    }
                 }
             }
         }
@@ -82,7 +82,7 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void Finish() {
-            Preview();
+            Preview(true);
             DocManager.Inst.EndUndoGroup();
         }
 
