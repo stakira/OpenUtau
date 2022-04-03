@@ -576,9 +576,9 @@ namespace OpenUtau.App.ViewModels {
         }
 
         private double GetStationaryCursorScrollValueDelta() {
-            double margin = Preferences.Default.PlayPosMarkerMargin * Bounds.Width;
-            if (PlayPosX > margin) {
-                return (PlayPosX - margin) * playPosXToTickOffset;
+            double rightMargin = Preferences.Default.PlayPosMarkerMargin * Bounds.Width;
+            if (PlayPosX > rightMargin) {
+                return (PlayPosX - rightMargin) * playPosXToTickOffset;
             } else if (PlayPosX < 0) {
                 return PlayPosX * playPosXToTickOffset;
             }
@@ -586,9 +586,11 @@ namespace OpenUtau.App.ViewModels {
         }
 
         private double GetPageScrollScrollValueDelta() {
-            double margin = Preferences.Default.PlayPosMarkerMargin * Bounds.Width;
-            if (PlayPosX > margin || PlayPosX < 0) {
-                return PlayPosX * playPosXToTickOffset;
+            double leftMargin = (1 - Preferences.Default.PlayPosMarkerMargin) * Bounds.Width;
+            if (PlayPosX > Bounds.Width) {
+                return (Bounds.Width - leftMargin) * playPosXToTickOffset;
+            } else if (PlayPosX < 0) {
+                return (PlayPosX - leftMargin) * playPosXToTickOffset;
             }
             return 0;
         }
