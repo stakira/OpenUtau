@@ -30,11 +30,7 @@
             <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.note.restart}" FontSize="11"/>
             <TextBlock Text="{DynamicResource prefs.playback.autoscroll}"/>
             <ComboBox HorizontalAlignment="Stretch"  SelectedIndex="{Binding PlaybackAutoScroll}">
-                <ComboBoxItem Content="{DynamicResource prefs.off}"/>
-                <ComboBoxItem Content="{DynamicResource prefs.on}"/>
-            </ComboBox>
-            <TextBlock Text="{DynamicResource prefs.playback.autoscrollmode}"/>
-            <ComboBox HorizontalAlignment="Stretch"  SelectedIndex="{Binding PlaybackPageScroll}">
+              <ComboBoxItem Content="{DynamicResource prefs.off}"/>
               <ComboBoxItem Content="{DynamicResource prefs.playback.autoscrollmode.stationarycursor}"/>
               <ComboBoxItem Content="{DynamicResource prefs.playback.autoscrollmode.pagescroll}"/>
             </ComboBox>

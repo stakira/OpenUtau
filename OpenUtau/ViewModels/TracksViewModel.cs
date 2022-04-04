@@ -407,7 +407,7 @@ namespace OpenUtau.App.ViewModels {
         }
 
         private double GetScrollValueDelta() {
-            var pageScroll = Convert.ToBoolean(Preferences.Default.PlaybackPageScroll);
+            var pageScroll = Preferences.Default.PlaybackAutoScroll == 2;
             if (pageScroll) {
                 return GetPageScrollScrollValueDelta();
             }

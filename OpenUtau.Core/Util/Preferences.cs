@@ -101,7 +101,6 @@ namespace OpenUtau.Core.Util {
             public double PlayPosMarkerMargin = 0.9;
             public int LockStartTime = 0;
             public int PlaybackAutoScroll = 1;
-            public int PlaybackPageScroll = 0;
         }
     }
 }
