@@ -173,7 +173,7 @@ Nhấn giữ Ctrl để chọn đồng loạt nhiều nốt</system:String>
   <system:String x:Key="prefs.playback.device">Thiết bị phát nhạc</system:String>
   <system:String x:Key="prefs.playback.lockstarttime">Khi dừng phát nhạc</system:String>
   <system:String x:Key="prefs.playback.lockstarttime.off">Không làm gì cả</system:String>
-  <system:String x:Key="prefs.playback.lockstarttime.on">Di chuyển đường phát nhạc quay lại nơi bắt đầu phát nhạc</system:String>
+  <system:String x:Key="prefs.playback.lockstarttime.on">Quay lại nơi bắt đầu phát nhạc</system:String>
   <system:String x:Key="prefs.playback.test">Nghe thử</system:String>
   <system:String x:Key="prefs.rendering">Render</system:String>
   <!--<system:String x:Key="prefs.rendering.phasecomp">Phase Compensation</system:String>-->
@@ -236,7 +236,7 @@ Tổng quát
   <system:String x:Key="tip.notes.zoomx">◀ Lăn chuột chỗ này để phóng to theo chiều ngang ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">Lăn chuột chỗ này để phóng to theo chiều dọc ▶</system:String>
 
-  <!--<system:String x:Key="tracks.more">More</system:String>-->
+  <system:String x:Key="tracks.more">Còn nữa</system:String>
   <system:String x:Key="tracks.movedown">Di chuyển xuống</system:String>
   <system:String x:Key="tracks.moveup">Di chuyển lên</system:String>
   <system:String x:Key="tracks.remove">Xoá bỏ</system:String>
