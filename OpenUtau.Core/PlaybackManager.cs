@@ -64,6 +64,7 @@ namespace OpenUtau.Core {
 
         public Audio.IAudioOutput AudioOutput { get; set; } = new Audio.DummyAudioOutput();
         public bool Playing => AudioOutput.PlaybackState == PlaybackState.Playing;
+        public bool StartingToPlay { get; private set; }
 
         public bool CheckResampler() => Resamplers.CheckResampler();
 
@@ -104,6 +105,7 @@ namespace OpenUtau.Core {
             }
             AudioOutput.Stop();
             Render(project, tick);
+            StartingToPlay = true;
         }
 
         public void StopPlayback() {
@@ -133,6 +135,7 @@ namespace OpenUtau.Core {
                 RenderEngine engine = new RenderEngine(project, tick);
                 var result = engine.RenderProject(tick, scheduler, ref renderCancellation);
                 faders = result.Item2;
+                StartingToPlay = false;
                 StartPlayback(project.TickToMillisecond(tick), result.Item1);
             }).ContinueWith((task) => {
                 if (task.IsFaulted) {

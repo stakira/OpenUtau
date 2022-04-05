@@ -166,10 +166,13 @@
   <system:String x:Key="prefs.paths.select">选择</system:String>
   <system:String x:Key="prefs.playback">回放</system:String>
   <system:String x:Key="prefs.playback.autoscroll">自动滚动</system:String>
+  <system:String x:Key="prefs.playback.autoscrollmode">自动滚动模式</system:String>
+  <system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">固定播放标记</system:String>
+  <system:String x:Key="prefs.playback.autoscrollmode.pagescroll">整页滚动</system:String>
   <system:String x:Key="prefs.playback.backend">音频后端</system:String>
   <system:String x:Key="prefs.playback.backend.auto">自动</system:String>
   <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
-  <system:String x:Key="prefs.playback.cursorposition">播放标记位置</system:String>
+  <system:String x:Key="prefs.playback.cursorposition">自动滚动边界</system:String>
   <system:String x:Key="prefs.playback.device">回放设备</system:String>
   <system:String x:Key="prefs.playback.lockstarttime">暂停时</system:String>
   <system:String x:Key="prefs.playback.lockstarttime.off">什么都不做</system:String>

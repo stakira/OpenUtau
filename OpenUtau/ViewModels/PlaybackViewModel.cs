@@ -29,7 +29,7 @@ namespace OpenUtau.App.ViewModels {
         public bool PlayOrPause() {
             var ret = PlaybackManager.Inst.PlayOrPause();
             var lockStartTime = Convert.ToBoolean(Preferences.Default.LockStartTime);
-            if (!PlaybackManager.Inst.Playing && lockStartTime) {
+            if (!PlaybackManager.Inst.Playing && !PlaybackManager.Inst.StartingToPlay && lockStartTime) {
                 DocManager.Inst.ExecuteCmd(new SeekPlayPosTickNotification(PlaybackManager.Inst.StartTick));
             }
             return ret;

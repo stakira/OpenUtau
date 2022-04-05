@@ -28,15 +28,16 @@
               <ComboBoxItem Content="{DynamicResource prefs.playback.backend.port}"/>
             </ComboBox>
             <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.note.restart}" FontSize="11"/>
-            <TextBlock Text="{DynamicResource prefs.playback.autoscroll}"/>
-            <ComboBox HorizontalAlignment="Stretch"  SelectedIndex="{Binding PlaybackAutoScroll}">
-                <ComboBoxItem Content="{DynamicResource prefs.off}"/>
-                <ComboBoxItem Content="{DynamicResource prefs.on}"/>
-            </ComboBox>
             <TextBlock Text="{DynamicResource prefs.playback.lockstarttime}"/>
             <ComboBox HorizontalAlignment="Stretch" SelectedIndex="{Binding LockStartTime}">
                 <ComboBoxItem Content="{DynamicResource prefs.playback.lockstarttime.off}"/>
                 <ComboBoxItem Content="{DynamicResource prefs.playback.lockstarttime.on}"/>
+            </ComboBox>
+            <TextBlock Text="{DynamicResource prefs.playback.autoscroll}"/>
+            <ComboBox HorizontalAlignment="Stretch"  SelectedIndex="{Binding PlaybackAutoScroll}">
+              <ComboBoxItem Content="{DynamicResource prefs.off}"/>
+              <ComboBoxItem Content="{DynamicResource prefs.playback.autoscrollmode.stationarycursor}"/>
+              <ComboBoxItem Content="{DynamicResource prefs.playback.autoscrollmode.pagescroll}"/>
             </ComboBox>
             <Grid ColumnDefinitions="Auto,8,20,8,*" Margin="0,4,0,0">
               <TextBlock Grid.Column="0" Text="{DynamicResource prefs.playback.cursorposition}"/>
