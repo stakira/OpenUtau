@@ -63,10 +63,14 @@ namespace OpenUtau.Core.Ustx {
 
         public void AfterLoad(UProject project, UTrack track, UVoicePart part) {
             foreach (var exp in noteExpressions) {
-                exp.descriptor = project.expressions[exp.abbr];
+                if (project.expressions.TryGetValue(exp.abbr, out var descriptor)) {
+                    exp.descriptor = descriptor;
+                }
             }
             foreach (var exp in phonemeExpressions) {
-                exp.descriptor = project.expressions[exp.abbr];
+                if (project.expressions.TryGetValue(exp.abbr, out var descriptor)) {
+                    exp.descriptor = descriptor;
+                }
             }
         }
 

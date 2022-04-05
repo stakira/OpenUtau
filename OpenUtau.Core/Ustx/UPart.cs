@@ -63,7 +63,9 @@ namespace OpenUtau.Core.Ustx {
             }
             Duration = GetBarDurTick(project);
             foreach (var curve in curves) {
-                curve.descriptor = project.expressions[curve.abbr];
+                if (project.expressions.TryGetValue(curve.abbr, out var descriptor)) {
+                    curve.descriptor = descriptor;
+                }
             }
         }
 
