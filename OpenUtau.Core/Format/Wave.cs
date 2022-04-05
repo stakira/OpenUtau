@@ -54,6 +54,9 @@ namespace OpenUtau.Core.Format {
         }
 
         public static float[] GetSamples(ISampleProvider sampleProvider) {
+            if (sampleProvider.WaveFormat.SampleRate != 44100) {
+                sampleProvider = new WdlResamplingSampleProvider(sampleProvider, 44100);
+            }
             List<float> samples = new List<float>();
             float[] buffer = new float[44100];
             int n;

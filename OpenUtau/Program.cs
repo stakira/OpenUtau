@@ -35,13 +35,6 @@ namespace OpenUtau.App {
                 .LogToTrace()
                 .UseReactiveUI();
 
-        public static void InitInterop()
-            => AppBuilder.Configure<App>()
-                .UsePlatformDetect()
-                .LogToTrace()
-                .UseReactiveUI()
-                .SetupWithoutStarting();
-
         public static void Run(string[] args)
             => BuildAvaloniaApp()
                 .StartWithClassicDesktopLifetime(
