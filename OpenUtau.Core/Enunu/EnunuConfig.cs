@@ -4,6 +4,7 @@ using OpenUtau.Core.Ustx;
 namespace OpenUtau.Core.Enunu {
     class EnunuConfig {
         public string tablePath;
+        public string questionPath;
         public int sampleRate;
         public double framePeriod;
 

@@ -14,7 +14,9 @@ namespace OpenUtau.Classic {
             }) {
                 var loader = new VoicebankLoader(path);
                 singers.AddRange(loader.SearchAll()
-                    .Select(v => new ClassicSinger(v)));
+                    .Select(v => v.SingerType == USingerType.Enunu
+                        ? new Core.Enunu.EnunuSinger(v) as USinger
+                        : new ClassicSinger(v) as USinger));
             }
             return singers;
         }
