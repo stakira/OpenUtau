@@ -2,9 +2,9 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-  <system:String x:Key="context.pitch.easein">Curva dentro</system:String>
-  <system:String x:Key="context.pitch.easeinout">Curva dentro/fora</system:String>
-  <system:String x:Key="context.pitch.easeout">Curva fora</system:String>
+  <system:String x:Key="context.pitch.easein">Curva J</system:String>
+  <system:String x:Key="context.pitch.easeinout">Curva S</system:String>
+  <system:String x:Key="context.pitch.easeout">Curva R</system:String>
   <!--<system:String x:Key="context.pitch.linear">Linear</system:String>-->
   <system:String x:Key="context.pitch.pointadd">Adicionar ponto</system:String>
   <system:String x:Key="context.pitch.pointdel">Remover ponto</system:String>
