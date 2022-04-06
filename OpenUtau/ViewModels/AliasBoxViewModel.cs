@@ -69,7 +69,7 @@ namespace OpenUtau.App.ViewModels {
                 return;
             }
             DocManager.Inst.StartUndoGroup();
-            // TODO: Execute change alias command
+            DocManager.Inst.ExecuteCmd(new ChangePhonemeAliasCommand(Part, Phoneme.Parent, Phoneme.Index, Text));
             DocManager.Inst.EndUndoGroup();
         }
     }
