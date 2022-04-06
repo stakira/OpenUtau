@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reactive;
 using System.Text;
 using Avalonia;
+using OpenUtau.App.Controls;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using ReactiveUI;
@@ -55,6 +56,12 @@ namespace OpenUtau.App.ViewModels {
         public bool hitPosition;
         public bool hitPreutter;
         public bool hitOverlap;
+        public Point point;
+    }
+
+    public struct AliasHitInfo {
+        public UPhoneme phoneme;
+        public bool hit;
         public Point point;
     }
 
@@ -317,6 +324,57 @@ namespace OpenUtau.App.ViewModels {
                         result.hitPosition = true;
                         return result;
                     }
+                }
+            }
+            return result;
+        }
+
+        public AliasHitInfo HitTestAlias(Point mousePos) {
+            if (viewModel.Part == null || !viewModel.ShowPhoneme) {
+                return default;
+            }
+            AliasHitInfo result = default;
+            result.point = mousePos;
+            double lastTextEndX = double.NegativeInfinity;
+            bool raiseText = false;
+            double leftTick = viewModel.TickOffset - 480;
+            double rightTick = leftTick + viewModel.ViewportTicks + 480;
+            // TODO: Rewrite with a faster searching algorithm, such as binary search.
+            foreach (var note in viewModel.Part.notes) {
+                if (note.LeftBound >= rightTick || note.RightBound <= leftTick || note.Error) {
+                    continue;
+                }
+                if (note.OverlapError) {
+                    continue;
+                }
+                foreach (var phoneme in note.phonemes) {
+                    if (phoneme.Error) {
+                        continue;
+                    }
+                    // Mimicking the rendering logic of `PhonemeCanvas`. Might have a better solution.
+                    if (viewModel.TickWidth <= ViewConstants.PianoRollTickWidthShowDetails) {
+                        continue;
+                    }
+                    string phonemeText = !string.IsNullOrEmpty(phoneme.phonemeMapped) ? phoneme.phonemeMapped : phoneme.phoneme;
+                    if (string.IsNullOrEmpty(phonemeText)) {
+                        continue;
+                    }
+                    var x = viewModel.TickToneToPoint(phoneme.Parent.position + phoneme.position, 0).X;
+                    var textLayout = TextLayoutCache.Get(phonemeText, ThemeManager.ForegroundBrush!, 12);
+                    if (x < lastTextEndX) {
+                        raiseText = !raiseText;
+                    } else {
+                        raiseText = false;
+                    }
+                    double textY = raiseText ? 2 : 18;
+                    var size = new Size(textLayout.Size.Width + 4, textLayout.Size.Height - 2);
+                    var rect = new Rect(new Point(x - 2, textY + 1.5), size);
+                    if (rect.Contains(mousePos)) {
+                        result.phoneme = phoneme;
+                        result.hit = true;
+                        return result;
+                    }
+                    lastTextEndX = x + size.Width;
                 }
             }
             return result;

@@ -10,6 +10,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.VisualTree;
 using OpenUtau.App.Controls;
 using OpenUtau.App.ViewModels;
+using Serilog;
 
 namespace OpenUtau.App.Views {
     interface IValueTip {
@@ -515,6 +516,28 @@ namespace OpenUtau.App.Views {
             editState.End(point.Pointer, point.Position);
             editState = null;
             Cursor = null;
+        }
+
+        public void PhonemeCanvasDoubleTapped(object sender, RoutedEventArgs args) {
+            if (ViewModel?.NotesViewModel?.Part == null) {
+                return;
+            }
+            if (sender is not Canvas canvas) {
+                return;
+            }
+            var e = (TappedEventArgs)args;
+            var point = e.GetPosition(canvas);
+            if (editState != null) {
+                editState.End(e.Pointer, point);
+                editState = null;
+                Cursor = null;
+            }
+            var hitInfo = ViewModel.NotesViewModel.HitTest.HitTestAlias(point);
+            Log.Debug($"PhonemeCanvasDoubleTapped, hit = {hitInfo.hit}, point = {{{hitInfo.point}}}, phoneme = {hitInfo.phoneme?.phoneme}");
+            if (!hitInfo.hit) {
+                return;
+            }
+            // TODO: Open alias dialog
         }
 
         public void PhonemeCanvasPointerPressed(object sender, PointerPressedEventArgs args) {

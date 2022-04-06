@@ -145,6 +145,7 @@ namespace OpenUtau.App.Controls {
                     }
                     context.DrawLine(penPos, new Point(x, y), new Point(x, y + height));
 
+                    // FIXME: Changing code below may break `HitTestAlias`.
                     if (viewModel.TickWidth > ViewConstants.PianoRollTickWidthShowDetails) {
                         string phonemeText = !string.IsNullOrEmpty(phoneme.phonemeMapped) ? phoneme.phonemeMapped : phoneme.phoneme;
                         if (!string.IsNullOrEmpty(phonemeText)) {
