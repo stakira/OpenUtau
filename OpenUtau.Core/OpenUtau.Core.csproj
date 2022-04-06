@@ -14,6 +14,7 @@
     <PackageReference Include="NAudio.Vorbis" Version="1.5.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="NLayer.NAudioSupport" Version="1.3.0" />
+    <PackageReference Include="NumSharp" Version="0.30.0" />
     <PackageReference Include="NWaves" Version="0.9.6" />
     <PackageReference Include="Serilog" Version="2.10.0" />
     <PackageReference Include="SharpCompress" Version="0.30.1" />
@@ -28,6 +29,11 @@
     <PackageReference Include="NAudio" Version="2.0.1" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="Enunu\Data\EnunuRes.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>EnunuRes.resx</DependentUpon>
+    </Compile>
     <Compile Update="Vogen\Data\VogenRes.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -35,6 +41,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Update="Enunu\Data\EnunuRes.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>EnunuRes.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Update="Vogen\Data\VogenRes.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>VogenRes.Designer.cs</LastGenOutput>

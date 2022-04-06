@@ -6,12 +6,29 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="OpenUtau.App.Views.DebugWindow"
         Title="Debug" Closed="OnClosed">
+  <Window.Resources>
+    <vm:LogEventConverter x:Key="logEventConverter"/>
+  </Window.Resources>
   <Design.DataContext>
     <vm:DebugViewModel/>
   </Design.DataContext>
   <Grid Margin="10" RowDefinitions="*,10,20">
-    <ListBox Grid.Row="0" Focusable="False" Items="{Binding TextItems}"/>
-    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+    <ListBox Grid.Row="0" Focusable="False" Items="{Binding LogEvents}" Background="#404040">
+      <ListBox.ItemTemplate>
+        <DataTemplate>
+          <TextBlock Text="{Binding Converter={StaticResource logEventConverter}}" Foreground="White"/>
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListBox>
+    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
+      <ComboBox Margin="0" SelectedIndex="{Binding LogEventLevel}" IsVisible="False">
+        <ComboBoxItem Content="Verbose"/>
+        <ComboBoxItem Content="Debug"/>
+        <ComboBoxItem Content="Information"/>
+        <ComboBoxItem Content="Warning"/>
+        <ComboBoxItem Content="Error"/>
+        <ComboBoxItem Content="Fatal"/>
+      </ComboBox>
       <Button Margin="0" Command="{Binding Clear}" Content="{DynamicResource debug.clear}"/>
     </StackPanel>
   </Grid>

@@ -518,7 +518,7 @@ namespace OpenUtau.Classic {
                 var mod = phoneme.GetExpression(project, track, Ustx.MOD).Item1;
                 writer.WriteLine($"Moduration={(int)mod}");
                 writer.WriteLine($"Flags={FlagsToString(phoneme.GetResamplerFlags(project, track))}");
-                if (forPlugin && !string.IsNullOrEmpty(phoneme.oto.DisplayFile)) {
+                if (forPlugin && phoneme.oto != null) {
                     writer.WriteLine($"@filename={phoneme.oto.DisplayFile}");
                     writer.WriteLine($"@alias={phoneme.oto.Alias}");
                 }
