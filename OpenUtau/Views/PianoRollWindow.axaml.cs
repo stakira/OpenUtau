@@ -33,6 +33,7 @@ namespace OpenUtau.App.Views {
         private TextBlock? valueTipText;
         private Point valueTipPointerPosition;
         private LyricBox? lyricBox;
+        private AliasBox? aliasBox;
         private ContextMenu? pitchContextMenu;
         private bool openingPitchContextMenu;
         private ExpSelector? expSelector1;
@@ -56,6 +57,7 @@ namespace OpenUtau.App.Views {
             valueTip.IsVisible = false;
             valueTipText = this.FindControl<TextBlock>("ValueTipText");
             lyricBox = this.FindControl<LyricBox>("LyricBox");
+            aliasBox = this.FindControl<AliasBox>("AliasBox");
             pitchContextMenu = this.FindControl<ContextMenu>("PitchContextMenu");
             expSelector1 = this.FindControl<ExpSelector>("expSelector1");
             expSelector2 = this.FindControl<ExpSelector>("expSelector2");
@@ -533,11 +535,12 @@ namespace OpenUtau.App.Views {
                 Cursor = null;
             }
             var hitInfo = ViewModel.NotesViewModel.HitTest.HitTestAlias(point);
-            Log.Debug($"PhonemeCanvasDoubleTapped, hit = {hitInfo.hit}, point = {{{hitInfo.point}}}, phoneme = {hitInfo.phoneme?.phoneme}");
+            var phoneme = hitInfo.phoneme;
+            Log.Debug($"PhonemeCanvasDoubleTapped, hit = {hitInfo.hit}, point = {{{hitInfo.point}}}, phoneme = {phoneme?.phoneme}");
             if (!hitInfo.hit) {
                 return;
             }
-            // TODO: Open alias dialog
+            aliasBox?.Show(ViewModel.NotesViewModel.Part, phoneme!, phoneme!.phoneme);
         }
 
         public void PhonemeCanvasPointerPressed(object sender, PointerPressedEventArgs args) {

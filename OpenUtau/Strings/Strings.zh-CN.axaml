@@ -213,6 +213,7 @@
   <system:String x:Key="singers.subbanks.tone">音调</system:String>
   <system:String x:Key="singers.subbanks.toneranges">音调范围</system:String>
 
+  <system:String x:Key="tip.aliasbox">手动选择别名</system:String>
   <system:String x:Key="tip.exps">
 鼠标左键绘制: 设定表情
 鼠标右键绘制: 重置表情
