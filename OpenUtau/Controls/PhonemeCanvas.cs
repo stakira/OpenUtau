@@ -157,7 +157,8 @@ namespace OpenUtau.App.Controls {
                     if (viewModel.TickWidth > ViewConstants.PianoRollTickWidthShowDetails) {
                         string phonemeText = !string.IsNullOrEmpty(phoneme.phonemeMapped) ? phoneme.phonemeMapped : phoneme.phoneme;
                         if (!string.IsNullOrEmpty(phonemeText)) {
-                            var textLayout = TextLayoutCache.Get(phonemeText, ThemeManager.ForegroundBrush!, 12);
+                            var bold = phoneme.HasPhonemeOverride;
+                            var textLayout = TextLayoutCache.Get(phonemeText, ThemeManager.ForegroundBrush!, 12, bold);
                             if (x < lastTextEndX) {
                                 raiseText = !raiseText;
                             } else {

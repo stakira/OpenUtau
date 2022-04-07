@@ -360,7 +360,8 @@ namespace OpenUtau.App.ViewModels {
                         continue;
                     }
                     var x = viewModel.TickToneToPoint(phoneme.Parent.position + phoneme.position, 0).X;
-                    var textLayout = TextLayoutCache.Get(phonemeText, ThemeManager.ForegroundBrush!, 12);
+                    var bold = phoneme.HasPhonemeOverride;
+                    var textLayout = TextLayoutCache.Get(phonemeText, ThemeManager.ForegroundBrush!, 12, bold);
                     if (x < lastTextEndX) {
                         raiseText = !raiseText;
                     } else {
