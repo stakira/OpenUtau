@@ -596,9 +596,17 @@ namespace OpenUtau.App.Views {
             var hitInfo = ViewModel.NotesViewModel.HitTest.HitTestPhoneme(point.Position);
             if (hitInfo.hit) {
                 Cursor = ViewConstants.cursorSizeWE;
-            } else {
-                Cursor = null;
+                ViewModel.MouseoverPhoneme(null);
+                return;
             }
+            var aliasHitInfo = ViewModel.NotesViewModel.HitTest.HitTestAlias(point.Position);
+            if (aliasHitInfo.hit) {
+                ViewModel.MouseoverPhoneme(aliasHitInfo.phoneme);
+                Cursor = null;
+                return;
+            }
+            ViewModel.MouseoverPhoneme(null);
+            Cursor = null;
         }
 
         public void PhonemeCanvasPointerReleased(object sender, PointerReleasedEventArgs args) {

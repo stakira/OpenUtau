@@ -12,6 +12,13 @@ using ReactiveUI.Fody.Helpers;
 using Serilog;
 
 namespace OpenUtau.App.ViewModels {
+    public class PhonemeMouseoverEvent {
+        public readonly UPhoneme? mouseoverPhoneme;
+        public PhonemeMouseoverEvent(UPhoneme? mouseoverPhoneme) {
+            this.mouseoverPhoneme = mouseoverPhoneme;
+        }
+    }
+
     public class PianoRollViewModel : ViewModelBase, ICmdSubscriber {
 
         public bool ExtendToFrame => OS.IsMacOS();
@@ -156,6 +163,10 @@ namespace OpenUtau.App.ViewModels {
                 DocManager.Inst.ExecuteCmd(new RenamePartCommand(DocManager.Inst.Project, part, name));
                 DocManager.Inst.EndUndoGroup();
             }
+        }
+
+        public void MouseoverPhoneme(UPhoneme? phoneme) {
+            MessageBus.Current.SendMessage(new PhonemeMouseoverEvent(phoneme));
         }
 
         private byte[]? HashFile(string filePath) {

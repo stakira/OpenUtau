@@ -54,6 +54,7 @@ namespace OpenUtau.App.Controls {
 
         private HashSet<UNote> selectedNotes = new HashSet<UNote>();
         private Geometry pointGeometry;
+        private UPhoneme? mouseoverPhoneme;
 
         public PhonemeCanvas() {
             ClipToBounds = true;
@@ -66,6 +67,13 @@ namespace OpenUtau.App.Controls {
                     selectedNotes.UnionWith(e.selectedNotes);
                     selectedNotes.UnionWith(e.tempSelectedNotes);
                     InvalidateVisual();
+                });
+            MessageBus.Current.Listen<PhonemeMouseoverEvent>()
+                .Subscribe(e => {
+                    if (mouseoverPhoneme != e.mouseoverPhoneme) {
+                        mouseoverPhoneme = e.mouseoverPhoneme;
+                        InvalidateVisual();
+                    }
                 });
         }
 
@@ -158,7 +166,8 @@ namespace OpenUtau.App.Controls {
                             double textY = raiseText ? 2 : 18;
                             var size = new Size(textLayout.Size.Width + 4, textLayout.Size.Height - 2);
                             using (var state = context.PushPreTransform(Matrix.CreateTranslation(x + 2, textY))) {
-                                context.DrawRectangle(ThemeManager.BackgroundBrush, ThemeManager.NeutralAccentPenSemi, new Rect(new Point(-2, 1.5), size), 4, 4);
+                                var pen = mouseoverPhoneme == phoneme ? ThemeManager.AccentPen1Thickness2 : ThemeManager.NeutralAccentPenSemi;
+                                context.DrawRectangle(ThemeManager.BackgroundBrush, pen, new Rect(new Point(-2, 1.5), size), 4, 4);
                                 textLayout.Draw(context);
                             }
                             lastTextEndX = x + size.Width;
