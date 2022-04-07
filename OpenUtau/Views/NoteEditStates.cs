@@ -914,6 +914,12 @@ namespace OpenUtau.App.Views {
                 } else if (hitInfo.hitOverlap) {
                     DocManager.Inst.ExecuteCmd(new PhonemeOverlapCommand(notesVm.Part, leadingNote, index, 0));
                 }
+                return;
+            }
+            var aliasHitInfo = notesVm.HitTest.HitTestAlias(point);
+            if (aliasHitInfo.hit) {
+                var phoneme = aliasHitInfo.phoneme;
+                DocManager.Inst.ExecuteCmd(new ChangePhonemeAliasCommand(notesVm.Part, phoneme.Parent, phoneme.Index, null));
             }
         }
     }
