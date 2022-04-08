@@ -414,10 +414,6 @@
                 BoxShadow="0 0 5 1 #3F000000">
           <c:LyricBox Name="LyricBox" Width="360"/>
         </Border>
-        <Border Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Top"
-                BoxShadow="0 0 5 1 #3F000000">
-          <c:AliasBox Name="AliasBox" Width="360"/>
-        </Border>
       </Grid>
       <Border Grid.Row="4" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
               BoxShadow="inset 0 0 5 1 #3F000000" ClipToBounds="True" IsHitTestVisible="False">
