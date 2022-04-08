@@ -430,7 +430,7 @@ namespace OpenUtau.App.Views {
             var noteHitInfo = ViewModel.NotesViewModel.HitTest.HitTestNote(point);
             if (noteHitInfo.hitBody && ViewModel?.NotesViewModel?.Part != null) {
                 var note = noteHitInfo.note;
-                lyricBox?.Show(ViewModel.NotesViewModel.Part, note, note.lyric);
+                lyricBox?.Show(ViewModel.NotesViewModel.Part, new LyricBoxNote(note), note.lyric);
             }
         }
 
@@ -538,7 +538,7 @@ namespace OpenUtau.App.Views {
             if (!hitInfo.hit) {
                 return;
             }
-            // TODO: Open alias dialog
+            lyricBox?.Show(ViewModel.NotesViewModel.Part, new LyricBoxPhoneme(phoneme!), phoneme!.phoneme);
         }
 
         public void PhonemeCanvasPointerPressed(object sender, PointerPressedEventArgs args) {

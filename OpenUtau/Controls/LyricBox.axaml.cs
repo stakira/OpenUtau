@@ -48,10 +48,12 @@ namespace OpenUtau.App.Controls {
                     e.Handled = true;
                     break;
                 case Key.Tab:
-                    if (listBox.SelectedItem is LyricBoxViewModel.SuggestionItem item1) {
-                        box.Text = item1.Alias;
+                    if (!viewModel.IsAliasBox) {
+                        if (listBox.SelectedItem is LyricBoxViewModel.SuggestionItem item1) {
+                            box.Text = item1.Alias;
+                        }
+                        OnTab(e.KeyModifiers);
                     }
-                    OnTab(e.KeyModifiers);
                     e.Handled = true;
                     break;
                 case Key.Up:
@@ -103,7 +105,9 @@ namespace OpenUtau.App.Controls {
                     e.Handled = true;
                     break;
                 case Key.Tab:
-                    OnTab(e.KeyModifiers);
+                    if (!viewModel.IsAliasBox) {
+                        OnTab(e.KeyModifiers);
+                    }
                     e.Handled = true;
                     break;
                 case Key.Up:
@@ -122,15 +126,16 @@ namespace OpenUtau.App.Controls {
         private void OnTab(KeyModifiers keyModifiers) {
             UVoicePart? part = viewModel.Part;
             UNote? tabTo = null;
+            var tabFrom = viewModel.NoteOrPhoneme as LyricBoxNote;
             if (keyModifiers == KeyModifiers.None) {
-                tabTo = viewModel.Note?.Next;
+                tabTo = tabFrom?.Unwrap().Next;
             } else if (keyModifiers == KeyModifiers.Shift) {
-                tabTo = viewModel.Note?.Prev;
+                tabTo = tabFrom?.Unwrap().Prev;
             }
             EndEdit(true);
             if (tabTo != null && part != null) {
                 DocManager.Inst.ExecuteCmd(new FocusNoteNotification(part, tabTo));
-                Show(part, tabTo, tabTo.lyric);
+                Show(part, new LyricBoxNote(tabTo), tabTo.lyric);
             }
         }
 
@@ -142,9 +147,9 @@ namespace OpenUtau.App.Controls {
             EndEdit(true);
         }
 
-        public void Show(UVoicePart part, UNote note, string text) {
+        public void Show(UVoicePart part, LyricBoxNoteOrPhoneme noteOrPhoneme, string text) {
             viewModel.Part = part;
-            viewModel.Note = note;
+            viewModel.NoteOrPhoneme = noteOrPhoneme;
             viewModel.Text = text;
             viewModel.IsVisible = true;
             box.SelectAll();
@@ -169,7 +174,7 @@ namespace OpenUtau.App.Controls {
                 viewModel.Commit();
             }
             viewModel.Part = null;
-            viewModel.Note = null;
+            viewModel.NoteOrPhoneme = null;
             viewModel.IsVisible = false;
             viewModel.Text = string.Empty;
             KeyboardDevice.Instance.SetFocusedElement(null, NavigationMethod.Unspecified, KeyModifiers.None);
