@@ -120,6 +120,7 @@
   <system:String x:Key="pianoroll.menu.notes">Nốt nhạc</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">Thêm nốt "-"</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">Thêm nốt "R"</system:String>
+  <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Tự động điều chỉnh đường luyến giọng (đối với ca sĩ NNSVS/ENUNU/VOGEN)</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">Chia thành quãng 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Chia thành quãng 1/64</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">Đặt lại các biểu cảm</system:String>
