@@ -427,4 +427,31 @@ namespace OpenUtau.Core {
         }
         public override string ToString() => "Clear phoneme timing";
     }
+
+    public class ChangePhonemeAliasCommand : NoteCommand {
+        readonly UNote note;
+        readonly int index;
+        readonly string oldAlias;
+        readonly string newAlias;
+        public override ValidateOptions ValidateOptions => new ValidateOptions {
+            Part = Part,
+        };
+        public ChangePhonemeAliasCommand(UVoicePart part, UNote note, int index, string alias) : base(part, note) {
+            this.note = note;
+            this.index = index;
+            var o = this.note.GetPhonemeOverride(index);
+            oldAlias = o.phoneme;
+            newAlias = alias;
+        }
+
+        public override void Execute() {
+            var o = note.GetPhonemeOverride(index);
+            o.phoneme = string.IsNullOrWhiteSpace(newAlias) ? null : newAlias;
+        }
+        public override void Unexecute() {
+            var o = note.GetPhonemeOverride(index);
+            o.phoneme = string.IsNullOrWhiteSpace(oldAlias) ? null : oldAlias;
+        }
+        public override string ToString() => "Change phoneme alias";
+    }
 }

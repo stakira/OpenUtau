@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using DynamicData.Binding;
 using OpenUtau.Core;
@@ -16,11 +17,14 @@ namespace OpenUtau.App.ViewModels {
         }
 
         [Reactive] public UVoicePart? Part { get; set; }
-        [Reactive] public UNote? Note { get; set; }
+        [Reactive] public LyricBoxNoteOrPhoneme? NoteOrPhoneme { get; set; }
         [Reactive] public bool IsVisible { get; set; }
         [Reactive] public string Text { get; set; }
         [Reactive] public SuggestionItem? SelectedSuggestion { get; set; }
         [Reactive] public ObservableCollectionExtended<SuggestionItem> Suggestions { get; set; }
+
+        public bool IsAliasBox => isAliasBox.Value;
+        private readonly ObservableAsPropertyHelper<bool> isAliasBox;
 
         public LyricBoxViewModel() {
             Text = string.Empty;
@@ -31,10 +35,14 @@ namespace OpenUtau.App.ViewModels {
             this.WhenAnyValue(x => x.SelectedSuggestion)
                 .WhereNotNull()
                 .Subscribe(ss => Serilog.Log.Information(ss.Alias));
+
+            isAliasBox = this.WhenAnyValue(x => x.NoteOrPhoneme)
+                .Select(v => v is LyricBoxPhoneme)
+                .ToProperty(this, x => x.IsAliasBox);
         }
 
         private void UpdateSuggestion() {
-            if (Part == null || Note == null) {
+            if (Part == null || NoteOrPhoneme == null) {
                 Suggestions.Clear();
                 return;
             }
@@ -65,12 +73,40 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void Commit() {
-            if (Part == null || Note == null || Text == Note.lyric) {
+            if (Part == null || NoteOrPhoneme == null) {
                 return;
             }
+            if (!IsAliasBox) {
+                var note = NoteOrPhoneme as LyricBoxNote;
+                if (Text == note!.Unwrap().lyric) {
+                    return;
+                }
+            } else {
+                var phoneme = NoteOrPhoneme as LyricBoxPhoneme;
+                if (Text == phoneme!.Unwrap().phoneme) {
+                    return;
+                }
+            }
             DocManager.Inst.StartUndoGroup();
-            DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(Part, Note, Text));
+            if (IsAliasBox) {
+                var phoneme = (NoteOrPhoneme as LyricBoxPhoneme)!.Unwrap();
+                DocManager.Inst.ExecuteCmd(new ChangePhonemeAliasCommand(Part, phoneme.Parent, phoneme.Index, Text));
+            } else {
+                DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(Part, (NoteOrPhoneme as LyricBoxNote)!.Unwrap(), Text));
+            }
             DocManager.Inst.EndUndoGroup();
         }
+    }
+
+    public abstract class LyricBoxNoteOrPhoneme { }
+    public class LyricBoxNote : LyricBoxNoteOrPhoneme {
+        public UNote note;
+        public LyricBoxNote(UNote note) { this.note = note; }
+        public UNote Unwrap() => note;
+    }
+    public class LyricBoxPhoneme : LyricBoxNoteOrPhoneme {
+        public UPhoneme phoneme;
+        public LyricBoxPhoneme(UPhoneme phoneme) { this.phoneme = phoneme; }
+        public UPhoneme Unwrap() => phoneme;
     }
 }

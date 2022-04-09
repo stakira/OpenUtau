@@ -353,6 +353,7 @@
                        TickWidth="{Binding NotesViewModel.TickWidth}"
                        TickOffset="{Binding NotesViewModel.TickOffset}"
                        Part="{Binding NotesViewModel.Part}" IsVisible="{Binding NotesViewModel.ShowPhoneme}"
+                       DoubleTapped="PhonemeCanvasDoubleTapped"
                        PointerPressed="PhonemeCanvasPointerPressed"
                        PointerMoved="PhonemeCanvasPointerMoved"
                        PointerReleased="PhonemeCanvasPointerReleased"/>
