@@ -119,5 +119,51 @@ namespace OpenUtau.Core.Vogen.Data {
                 return ((byte[])(obj));
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ch,yue,yue-nn,yue-wz
+        ///㐀,jau,jau,jau
+        ///㐁,dou,du,dou
+        ///㐂,cat,cat,cat
+        ///㐃,zim,zim,zim
+        ///㐄,kwaa,kwaa,kwaa
+        ///㐅,ng,ng,ng
+        ///㐆,ji,ji,ji
+        ///㐇,gau,gau,gau
+        ///㐈,jap,jap,jap
+        ///㐉,ding,ding,ding
+        ///㐊,si,si,si
+        ///㐋,tou,tu,tou
+        ///㐌,ji,taa,taa
+        ///㐍,zaau,zaau,zaau
+        ///㐎,man,man,man
+        ///㐏,ng,ng,ng
+        ///㐐,nou,nu,nou
+        ///㐑,dung,dung,dung
+        ///㐒,ziu,ziu,ziu
+        ///㐓,ho,ho,ho
+        ///㐔,hang,hang,hang
+        ///㐕,jau,jau,jau
+        ///㐖,kit,jit,jit
+        ///㐗,lou,lu,lou
+        ///㐘,mai,mai,mai
+        ///㐙,dau,dau,dau
+        ///㐚,ng,ng,ng
+        ///㐛,jau,jau,jau
+        ///㐜,sau,cau,cau
+        ///㐝,keoi,kyu,kyu
+        ///㐞,kei,ki,ki
+        ///㐟,fei,fi,fi
+        ///㐠,jyu,jyu,jyu
+        ///㐡,no,no,no
+        ///㐢,fau,fau,fau
+        ///㐣,fu,fu,fu
+        ///㐤,da [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string yue {
+            get {
+                return ResourceManager.GetString("yue", resourceCulture);
+            }
+        }
     }
 }

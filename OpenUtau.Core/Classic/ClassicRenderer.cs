@@ -22,8 +22,12 @@ namespace OpenUtau.Classic {
             Core.Format.Ustx.ALT,
         };
 
+        public bool SupportsRenderPitch => false;
+
         public bool SupportsExpression(UExpressionDescriptor descriptor) {
-            return descriptor.isFlag || supportedExp.Contains(descriptor.abbr);
+            return descriptor.isFlag
+                || !string.IsNullOrEmpty(descriptor.flag)
+                || supportedExp.Contains(descriptor.abbr);
         }
 
         public RenderResult Layout(RenderPhrase phrase) {
@@ -86,6 +90,10 @@ namespace OpenUtau.Classic {
                 }
                 pos = endPos;
             }
+        }
+
+        public RenderPitchResult LoadRenderedPitch(RenderPhrase phrase) {
+            return null;
         }
     }
 }

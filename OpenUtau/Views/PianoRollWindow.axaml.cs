@@ -10,6 +10,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.VisualTree;
 using OpenUtau.App.Controls;
 using OpenUtau.App.ViewModels;
+using Serilog;
 
 namespace OpenUtau.App.Views {
     interface IValueTip {
@@ -429,7 +430,7 @@ namespace OpenUtau.App.Views {
             var noteHitInfo = ViewModel.NotesViewModel.HitTest.HitTestNote(point);
             if (noteHitInfo.hitBody && ViewModel?.NotesViewModel?.Part != null) {
                 var note = noteHitInfo.note;
-                lyricBox?.Show(ViewModel.NotesViewModel.Part, note, note.lyric);
+                lyricBox?.Show(ViewModel.NotesViewModel.Part, new LyricBoxNote(note), note.lyric);
             }
         }
 
@@ -517,6 +518,29 @@ namespace OpenUtau.App.Views {
             Cursor = null;
         }
 
+        public void PhonemeCanvasDoubleTapped(object sender, RoutedEventArgs args) {
+            if (ViewModel?.NotesViewModel?.Part == null) {
+                return;
+            }
+            if (sender is not Canvas canvas) {
+                return;
+            }
+            var e = (TappedEventArgs)args;
+            var point = e.GetPosition(canvas);
+            if (editState != null) {
+                editState.End(e.Pointer, point);
+                editState = null;
+                Cursor = null;
+            }
+            var hitInfo = ViewModel.NotesViewModel.HitTest.HitTestAlias(point);
+            var phoneme = hitInfo.phoneme;
+            Log.Debug($"PhonemeCanvasDoubleTapped, hit = {hitInfo.hit}, point = {{{hitInfo.point}}}, phoneme = {phoneme?.phoneme}");
+            if (!hitInfo.hit) {
+                return;
+            }
+            lyricBox?.Show(ViewModel.NotesViewModel.Part, new LyricBoxPhoneme(phoneme!), phoneme!.phoneme);
+        }
+
         public void PhonemeCanvasPointerPressed(object sender, PointerPressedEventArgs args) {
             lyricBox?.EndEdit();
             if (ViewModel?.NotesViewModel?.Part == null) {
@@ -570,9 +594,17 @@ namespace OpenUtau.App.Views {
             var hitInfo = ViewModel.NotesViewModel.HitTest.HitTestPhoneme(point.Position);
             if (hitInfo.hit) {
                 Cursor = ViewConstants.cursorSizeWE;
-            } else {
-                Cursor = null;
+                ViewModel.MouseoverPhoneme(null);
+                return;
             }
+            var aliasHitInfo = ViewModel.NotesViewModel.HitTest.HitTestAlias(point.Position);
+            if (aliasHitInfo.hit) {
+                ViewModel.MouseoverPhoneme(aliasHitInfo.phoneme);
+                Cursor = null;
+                return;
+            }
+            ViewModel.MouseoverPhoneme(null);
+            Cursor = null;
         }
 
         public void PhonemeCanvasPointerReleased(object sender, PointerReleasedEventArgs args) {

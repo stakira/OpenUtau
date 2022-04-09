@@ -9,6 +9,9 @@ namespace OpenUtau.Classic {
         public bool UseShell;
 
         public void Run(string tempFile) {
+            if (!File.Exists(Executable)) {
+                throw new FileNotFoundException($"Executable {Executable} not found.");
+            }
             var startInfo = UseShell
                  ? new ProcessStartInfo() {
                      FileName = "cmd.exe",

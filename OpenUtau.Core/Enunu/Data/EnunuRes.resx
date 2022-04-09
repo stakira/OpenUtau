@@ -118,25 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="f0_man" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>f0.man.onnx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="f0_yue" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>f0.yue.onnx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="g2p_man" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>g2p.man.onnx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="g2p_yue" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>g2p.yue.onnx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="po_man" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>po.man.onnx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="po_yue" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>po.yue.onnx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="yue" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>yue.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  <data name="enunu_openutau" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>enunu-openutau.py;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
 </root>

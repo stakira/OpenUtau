@@ -120,6 +120,7 @@
   <system:String x:Key="pianoroll.menu.notes">Notes</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">Add tail "-"</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">Add tail "R"</system:String>
+  <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Load Rendered Pitch</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">Quantize to 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Quantize to 1/64</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">Reset all expressions</system:String>
@@ -213,6 +214,7 @@ Warning: moresampler is not fully supported. It may be slow and cause high CPU u
   <system:String x:Key="singers.subbanks.tone">Tone</system:String>
   <system:String x:Key="singers.subbanks.toneranges">Tone Ranges</system:String>
 
+  <system:String x:Key="tip.aliasbox">Override Alias</system:String>
   <system:String x:Key="tip.exps">
 Left Button Draw: Set expressions
 Right Button Draw: Reset expressions

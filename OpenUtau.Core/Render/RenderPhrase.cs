@@ -39,7 +39,7 @@ namespace OpenUtau.Core.Render {
         public readonly Vector2[] envelope;
 
         public readonly UOto oto;
-        public readonly uint hash;
+        public readonly ulong hash;
 
         internal RenderPhone(UProject project, UTrack track, UVoicePart part, UNote note, UPhoneme phoneme) {
             position = note.position + phoneme.position;
@@ -69,7 +69,7 @@ namespace OpenUtau.Core.Render {
             hash = Hash();
         }
 
-        private uint Hash() {
+        private ulong Hash() {
             using (var stream = new MemoryStream()) {
                 using (var writer = new BinaryWriter(stream)) {
                     writer.Write(duration);
@@ -87,7 +87,7 @@ namespace OpenUtau.Core.Render {
                     writer.Write(velocity);
                     writer.Write(modulation);
                     writer.Write(preutterMs);
-                    return XXH32.DigestOf(stream.ToArray());
+                    return XXH64.DigestOf(stream.ToArray());
                 }
             }
         }
@@ -101,14 +101,16 @@ namespace OpenUtau.Core.Render {
         public readonly double tickToMs;
         public readonly RenderNote[] notes;
         public readonly RenderPhone[] phones;
+        public readonly int pitchStart;
         public readonly float[] pitches;
+        public readonly float[] pitchesBeforeDeviation;
         public readonly float[] dynamics;
         public readonly float[] gender;
         public readonly float[] breathiness;
         public readonly float[] toneShift;
         public readonly float[] tension;
         public readonly float[] voicing;
-        public readonly uint hash;
+        public readonly ulong hash;
 
         internal readonly IRenderer renderer;
 
@@ -143,7 +145,7 @@ namespace OpenUtau.Core.Render {
             tickToMs = 60000.0 / project.bpm * project.beatUnit / 4 / project.resolution;
 
             const int pitchInterval = 5;
-            int pitchStart = phones[0].position - phones[0].leading;
+            pitchStart = phones[0].position - phones[0].leading;
             pitches = new float[(phones.Last().position + phones.Last().duration - pitchStart) / pitchInterval + 1];
             int index = 0;
             foreach (var note in uNotes) {
@@ -205,6 +207,7 @@ namespace OpenUtau.Core.Render {
                 }
             }
 
+            pitchesBeforeDeviation = pitches.ToArray();
             var curve = part.curves.FirstOrDefault(c => c.abbr == Format.Ustx.PITD);
             if (curve != null && !curve.IsEmpty) {
                 for (int i = 0; i < pitches.Length; ++i) {
@@ -216,11 +219,11 @@ namespace OpenUtau.Core.Render {
                 (x, c) => x == c.descriptor.min
                     ? 0
                     : (float)MusicMath.DecibelToLinear(x * 0.1));
-            gender = SampleCurve(part, Format.Ustx.GENC, pitchStart, pitches.Length, (x, _) => 0.005f * x + 0.5f);
-            breathiness = SampleCurve(part, Format.Ustx.BREC, pitchStart, pitches.Length, (x, _) => 0.005f * x + 0.5f);
             toneShift = SampleCurve(part, Format.Ustx.SHFC, pitchStart, pitches.Length, (x, _) => x);
-            tension = SampleCurve(part, Format.Ustx.TENC, pitchStart, pitches.Length, (x, _) => 0.005f * x + 0.5f);
-            voicing = SampleCurve(part, Format.Ustx.VOIC, pitchStart, pitches.Length, (x, _) => 0.01f * x);
+            gender = SampleCurve(part, Format.Ustx.GENC, pitchStart, pitches.Length, (x, _) => x);
+            tension = SampleCurve(part, Format.Ustx.TENC, pitchStart, pitches.Length, (x, _) => x);
+            breathiness = SampleCurve(part, Format.Ustx.BREC, pitchStart, pitches.Length, (x, _) => x);
+            voicing = SampleCurve(part, Format.Ustx.VOIC, pitchStart, pitches.Length, (x, _) => x);
 
             hash = Hash();
         }
@@ -239,7 +242,7 @@ namespace OpenUtau.Core.Render {
             return result;
         }
 
-        private uint Hash() {
+        private ulong Hash() {
             using (var stream = new MemoryStream()) {
                 using (var writer = new BinaryWriter(stream)) {
                     writer.Write(singerId);
@@ -257,7 +260,7 @@ namespace OpenUtau.Core.Render {
                             }
                         }
                     }
-                    return XXH32.DigestOf(stream.ToArray());
+                    return XXH64.DigestOf(stream.ToArray());
                 }
             }
         }

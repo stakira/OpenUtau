@@ -1,5 +1,8 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using Avalonia;
 using Avalonia.Controls;
@@ -18,13 +21,18 @@ namespace OpenUtau.App {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             InitLogging();
             var exists = System.Diagnostics.Process.GetProcessesByName(
-                System.IO.Path.GetFileNameWithoutExtension(
-                    System.Reflection.Assembly.GetEntryAssembly().Location)).Count() > 1;
+                Path.GetFileNameWithoutExtension(
+                    Assembly.GetEntryAssembly()?.Location)).Count() > 1;
             if (exists) {
                 Log.Information("OpenUtau already open. Exiting.");
                 return;
             }
-            Log.Information($"OpenUtau v{System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version}");
+            Log.Information($"{Environment.OSVersion}");
+            Log.Information($"{RuntimeInformation.OSDescription} " +
+                $"{RuntimeInformation.OSArchitecture} " +
+                $"{RuntimeInformation.ProcessArchitecture}");
+            Log.Information($"OpenUtau v{Assembly.GetEntryAssembly()?.GetName().Version} " +
+                $"{RuntimeInformation.RuntimeIdentifier}");
             Run(args);
         }
 
@@ -42,10 +50,14 @@ namespace OpenUtau.App {
 
         public static void InitLogging() {
             Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Information()
+                .MinimumLevel.Verbose()
                 .WriteTo.Debug()
-                .WriteTo.File(PathManager.Inst.LogFilePath, rollingInterval: RollingInterval.Day, encoding: Encoding.UTF8)
-                .WriteTo.DebugWindow()
+                .WriteTo.Logger(lc => lc
+                    .MinimumLevel.Information()
+                    .WriteTo.File(PathManager.Inst.LogFilePath, rollingInterval: RollingInterval.Day, encoding: Encoding.UTF8))
+                .WriteTo.Logger(lc => lc
+                    .MinimumLevel.ControlledBy(DebugViewModel.Sink.Inst.LevelSwitch)
+                    .WriteTo.Sink(DebugViewModel.Sink.Inst))
                 .CreateLogger();
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler((sender, args) => {
                 Log.Error((Exception)args.ExceptionObject, "Unhandled exception");

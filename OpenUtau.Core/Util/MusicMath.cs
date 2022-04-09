@@ -161,5 +161,9 @@ namespace OpenUtau.Core {
         public static double ToneToFreq(double tone) {
             return 440.0 * Math.Pow(a, tone - 69);
         }
+
+        public static double FreqToTone(double freq) {
+            return Math.Log(freq / 440.0, a) + 69;
+        }
     }
 }

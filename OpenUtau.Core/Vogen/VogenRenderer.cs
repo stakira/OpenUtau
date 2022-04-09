@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
 using NAudio.Wave;
+using NumSharp;
 using OpenUtau.Core.Format;
 using OpenUtau.Core.Render;
 using OpenUtau.Core.SignalChain;
@@ -37,6 +38,8 @@ namespace OpenUtau.Core.Vogen {
 
         static readonly VSVocoder vocoder = new VSVocoder(fs, frameMs);
 
+        public bool SupportsRenderPitch => true;
+
         public bool SupportsExpression(UExpressionDescriptor descriptor) {
             return supportedExp.Contains(descriptor.abbr);
         }
@@ -58,7 +61,7 @@ namespace OpenUtau.Core.Vogen {
                         return new RenderResult();
                     }
                     var result = Layout(phrase);
-                    var wavPath = Path.Join(PathManager.Inst.CachePath, $"vog-{phrase.hash}.wav");
+                    var wavPath = Path.Join(PathManager.Inst.CachePath, $"vog-{phrase.hash:x16}.wav");
                     if (File.Exists(wavPath)) {
                         try {
                             using (var waveStream = Wave.OpenFile(wavPath)) {
@@ -148,11 +151,15 @@ namespace OpenUtau.Core.Vogen {
             using (var session = new InferenceSession(Data.VogenRes.f0_man)) {
                 using var outputs = session.Run(inputs);
                 var f0Out = outputs.First().AsTensor<float>();
+                var f0Path = Path.Join(PathManager.Inst.CachePath, $"vog-{phrase.hash:x16}-f0.npy");
+                var f0Array = new float[f0.Length];
                 for (int i = 0; i < f0.Length; ++i) {
+                    f0Array[i] = f0Out[i];
                     if (f0Out[i] < float.Epsilon) {
                         f0[i] = 0;
                     }
                 }
+                np.Save(f0Array, f0Path);
             }
             inputs.Clear();
             inputs.Add(NamedOnnxValue.CreateFromTensor("phs",
@@ -172,10 +179,10 @@ namespace OpenUtau.Core.Vogen {
                 sp = Worldline.DecodeMgc(f0.Length, mgc, fftSize, fs);
                 ap = Worldline.DecodeBap(f0.Length, bap, fftSize, fs);
             }
-            var tension = DownSampleCurve(phrase.tension, 0.5, totalFrames, headFrames, tailFrames, phrase.tickToMs, x => x);
-            var breathiness = DownSampleCurve(phrase.breathiness, 0.5, totalFrames, headFrames, tailFrames, phrase.tickToMs, x => x);
-            var voicing = DownSampleCurve(phrase.voicing, 1.0, totalFrames, headFrames, tailFrames, phrase.tickToMs, x => x);
-            var gender = DownSampleCurve(phrase.gender, 0.5, totalFrames, headFrames, tailFrames, phrase.tickToMs, x => x);
+            var gender = DownSampleCurve(phrase.gender, 0.5, totalFrames, headFrames, tailFrames, phrase.tickToMs, x => 0.5 + 0.005 * x);
+            var tension = DownSampleCurve(phrase.tension, 0.5, totalFrames, headFrames, tailFrames, phrase.tickToMs, x => 0.5 + 0.005 * x);
+            var breathiness = DownSampleCurve(phrase.breathiness, 0.5, totalFrames, headFrames, tailFrames, phrase.tickToMs, x => 0.5 + 0.005 * x);
+            var voicing = DownSampleCurve(phrase.voicing, 1.0, totalFrames, headFrames, tailFrames, phrase.tickToMs, x => 0.01 * x);
             var samples = new double[1 + (int)((f0.Length - 1) * frameMs / 1000.0 * fs)];
             World.Synthesis(
                 vocoder, out samples,
@@ -218,6 +225,24 @@ namespace OpenUtau.Core.Vogen {
                 }
                 pos = endPos;
             }
+        }
+
+        public RenderPitchResult LoadRenderedPitch(RenderPhrase phrase) {
+            var f0Path = Path.Join(PathManager.Inst.CachePath, $"vog-{phrase.hash:x16}-f0.npy");
+            if (!File.Exists(f0Path)) {
+                return null;
+            }
+            var result = new RenderPitchResult() {
+                tones = np.Load<float[]>(f0Path).Select(f => (float)MusicMath.FreqToTone(f)).ToArray(),
+            };
+            result.ticks = new float[result.tones.Length];
+            var layout = Layout(phrase);
+            var t = layout.positionMs - layout.leadingMs;
+            for (int i = 0; i < result.tones.Length; i++) {
+                t += frameMs;
+                result.ticks[i] = (float)(t / phrase.tickToMs) - phrase.position;
+            }
+            return result;
         }
     }
 }
