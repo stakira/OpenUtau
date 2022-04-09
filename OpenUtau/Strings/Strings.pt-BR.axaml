@@ -2,9 +2,9 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-  <system:String x:Key="context.pitch.easein">Curva dentro</system:String>
-  <system:String x:Key="context.pitch.easeinout">Curva dentro/fora</system:String>
-  <system:String x:Key="context.pitch.easeout">Curva fora</system:String>
+  <system:String x:Key="context.pitch.easein">Curva J</system:String>
+  <system:String x:Key="context.pitch.easeinout">Curva S</system:String>
+  <system:String x:Key="context.pitch.easeout">Curva R</system:String>
   <!--<system:String x:Key="context.pitch.linear">Linear</system:String>-->
   <system:String x:Key="context.pitch.pointadd">Adicionar ponto</system:String>
   <system:String x:Key="context.pitch.pointdel">Remover ponto</system:String>
@@ -65,7 +65,7 @@
   <system:String x:Key="menu.edit.undo">Desfazer</system:String>
   <system:String x:Key="menu.file">Arquivo</system:String>
   <system:String x:Key="menu.file.exit">Fechar</system:String>
-  <system:String x:Key="menu.file.exportust">Exportar Como Ust</system:String>
+  <system:String x:Key="menu.file.exportust">Exportar como Ust</system:String>
   <system:String x:Key="menu.file.exportwav">Exportar Arquivos Wav</system:String>
   <system:String x:Key="menu.file.importaudio">Importar Audio...</system:String>
   <system:String x:Key="menu.file.importmidi">Importar Midi...</system:String>
@@ -166,6 +166,9 @@ Segure Ctrl para selecionar mais notas</system:String>
   <system:String x:Key="prefs.paths.select">Selecionar</system:String>
   <system:String x:Key="prefs.playback">Reprodução</system:String>
   <system:String x:Key="prefs.playback.autoscroll">Auto Rolagem</system:String>
+  <system:String x:Key="prefs.playback.autoscrollmode">Modo de Rolagem</system:String>
+  <system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">Cursor Estacionário</system:String>
+  <system:String x:Key="prefs.playback.autoscrollmode.pagescroll">Rolagem de Página</system:String>
   <system:String x:Key="prefs.playback.backend">Back-end de áudio</system:String>
   <system:String x:Key="prefs.playback.backend.auto">Automático</system:String>
   <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
@@ -173,7 +176,7 @@ Segure Ctrl para selecionar mais notas</system:String>
   <system:String x:Key="prefs.playback.device">Dispositivo de Reprodução</system:String>
   <system:String x:Key="prefs.playback.lockstarttime">Quando Parar</system:String>
   <system:String x:Key="prefs.playback.lockstarttime.off">Fazer nada</system:String>
-  <system:String x:Key="prefs.playback.lockstarttime.on">Mover o cursor para onde começou a tocar</system:String>
+  <system:String x:Key="prefs.playback.lockstarttime.on">Voltar a posição inicial</system:String>
   <system:String x:Key="prefs.playback.test">Teste</system:String>
   <system:String x:Key="prefs.rendering">Renderização</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">Compensação de Fase</system:String>
