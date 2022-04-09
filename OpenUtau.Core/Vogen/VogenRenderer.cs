@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
 using NAudio.Wave;
+using NumSharp;
 using OpenUtau.Core.Format;
 using OpenUtau.Core.Render;
 using OpenUtau.Core.SignalChain;
@@ -37,7 +38,7 @@ namespace OpenUtau.Core.Vogen {
 
         static readonly VSVocoder vocoder = new VSVocoder(fs, frameMs);
 
-        public bool SupportsRenderPitch => false;
+        public bool SupportsRenderPitch => true;
 
         public bool SupportsExpression(UExpressionDescriptor descriptor) {
             return supportedExp.Contains(descriptor.abbr);
@@ -150,11 +151,15 @@ namespace OpenUtau.Core.Vogen {
             using (var session = new InferenceSession(Data.VogenRes.f0_man)) {
                 using var outputs = session.Run(inputs);
                 var f0Out = outputs.First().AsTensor<float>();
+                var f0Path = Path.Join(PathManager.Inst.CachePath, $"vog-{phrase.hash:x16}-f0.npy");
+                var f0Array = new float[f0.Length];
                 for (int i = 0; i < f0.Length; ++i) {
+                    f0Array[i] = f0Out[i];
                     if (f0Out[i] < float.Epsilon) {
                         f0[i] = 0;
                     }
                 }
+                np.Save(f0Array, f0Path);
             }
             inputs.Clear();
             inputs.Add(NamedOnnxValue.CreateFromTensor("phs",
@@ -223,7 +228,21 @@ namespace OpenUtau.Core.Vogen {
         }
 
         public RenderPitchResult LoadRenderedPitch(RenderPhrase phrase) {
-            return null;
+            var f0Path = Path.Join(PathManager.Inst.CachePath, $"vog-{phrase.hash:x16}-f0.npy");
+            if (!File.Exists(f0Path)) {
+                return null;
+            }
+            var result = new RenderPitchResult() {
+                tones = np.Load<float[]>(f0Path).Select(f => (float)MusicMath.FreqToTone(f)).ToArray(),
+            };
+            result.ticks = new float[result.tones.Length];
+            var layout = Layout(phrase);
+            var t = layout.positionMs - layout.leadingMs;
+            for (int i = 0; i < result.tones.Length; i++) {
+                t += frameMs;
+                result.ticks[i] = (float)(t / phrase.tickToMs) - phrase.position;
+            }
+            return result;
         }
     }
 }

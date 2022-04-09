@@ -129,8 +129,6 @@ namespace OpenUtau.Core.Enunu {
             EnunuInit.Init();
             ulong preEffectHash = PreEffectsHash(phrase);
             var tmpPath = Path.Join(PathManager.Inst.CachePath, $"enu-{preEffectHash:x16}");
-            var ustPath = tmpPath + ".tmp";
-            var wavPath = Path.Join(PathManager.Inst.CachePath, $"enu-{phrase.hash:x16}.wav");
             var f0Path = Path.Join(tmpPath, "acoustic-f0.npy");
             var layout = Layout(phrase);
             if (!File.Exists(f0Path)) {
