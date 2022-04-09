@@ -31,6 +31,8 @@ namespace OpenUtau.Core.Enunu {
         static readonly Encoding ShiftJIS = Encoding.GetEncoding("shift_jis");
         static readonly object lockObj = new object();
 
+        public bool SupportsRenderPitch => true;
+
         public bool SupportsExpression(UExpressionDescriptor descriptor) {
             return supportedExp.Contains(descriptor.abbr);
         }
@@ -61,7 +63,7 @@ namespace OpenUtau.Core.Enunu {
                     ulong preEffectHash = PreEffectsHash(phrase);
                     var tmpPath = Path.Join(PathManager.Inst.CachePath, $"enu-{preEffectHash:x16}");
                     var ustPath = tmpPath + ".tmp";
-                    var wavPath = Path.Join(PathManager.Inst.CachePath, $"enu-{phrase.hash}.wav");
+                    var wavPath = Path.Join(PathManager.Inst.CachePath, $"enu-{phrase.hash:x16}.wav");
                     var result = Layout(phrase);
                     if (!File.Exists(wavPath)) {
                         var f0Path = Path.Join(tmpPath, "acoustic-f0.npy");
@@ -103,8 +105,9 @@ namespace OpenUtau.Core.Enunu {
                         source.SetSamples(result.samples);
                         WaveFileWriter.CreateWaveFile16(wavPath, new ExportAdapter(source).ToMono(1, 0));
                     }
+                    string joined = string.Join(" ", phrase.phones.Select(p => p.phoneme));
                     foreach (var phone in phrase.phones) {
-                        progress.CompleteOne(phone.phoneme);
+                        progress.CompleteOne(joined);
                     }
                     if (File.Exists(wavPath)) {
                         using (var waveStream = Wave.OpenFile(wavPath)) {
@@ -120,6 +123,31 @@ namespace OpenUtau.Core.Enunu {
                 }
             });
             return task;
+        }
+
+        public RenderPitchResult LoadRenderedPitch(RenderPhrase phrase) {
+            EnunuInit.Init();
+            ulong preEffectHash = PreEffectsHash(phrase);
+            var tmpPath = Path.Join(PathManager.Inst.CachePath, $"enu-{preEffectHash:x16}");
+            var ustPath = tmpPath + ".tmp";
+            var wavPath = Path.Join(PathManager.Inst.CachePath, $"enu-{phrase.hash:x16}.wav");
+            var f0Path = Path.Join(tmpPath, "acoustic-f0.npy");
+            var layout = Layout(phrase);
+            if (!File.Exists(f0Path)) {
+                return null;
+            }
+            var config = EnunuConfig.Load(phrase.singer);
+            var f0 = np.Load<double[]>(f0Path);
+            var result = new RenderPitchResult() {
+                tones = f0.Select(f => (float)MusicMath.FreqToTone(f)).ToArray(),
+            };
+            result.ticks = new float[result.tones.Length];
+            var t = layout.positionMs - layout.leadingMs;
+            for (int i = 0; i < result.tones.Length; i++) {
+                t += config.framePeriod;
+                result.ticks[i] = (float)(t / phrase.tickToMs) - phrase.position;
+            }
+            return result;
         }
 
         private ulong PreEffectsHash(RenderPhrase phrase) {

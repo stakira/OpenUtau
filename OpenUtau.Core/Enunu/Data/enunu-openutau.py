@@ -11,6 +11,7 @@ except ModuleNotFoundError:
     pip_install_torch(os.path.join('.', 'python-3.8.10-embed-amd64', 'python.exe'))
     print('installed pytorch')
 
+import traceback
 import numpy as np
 import pysptk
 import pyworld
@@ -81,14 +82,12 @@ def phonemize(path_ust):
         path_full_score,
         strict_sinsy_style=False
     )
-    enulib.common.full2mono(path_full_score, path_mono_score)
     # timelag
     enulib.timelag.score2timelag(
         config,
         path_full_score,
         path_full_timelag
     )
-    enulib.common.full2mono(path_full_timelag, path_mono_timelag)
     # duration
     enulib.duration.score2duration(
         config,
@@ -96,7 +95,6 @@ def phonemize(path_ust):
         path_full_timelag,
         path_full_duration
     )
-    enulib.common.full2mono(path_full_duration, path_mono_duration)
     # timing
     enulib.timing.generate_timing_label(
         path_full_score,
@@ -104,7 +102,6 @@ def phonemize(path_ust):
         path_full_duration,
         path_full_timing
     )
-    enulib.common.full2mono(path_full_timing, path_mono_timing)
 
 
 def gen_world_params(
@@ -197,6 +194,32 @@ def gen_world_params(
     return f0, spectrogram, aperiodicity
 
 
+def timing_to_acoustic_with_retry(
+        config, path_full_timing, path_acoustic, attempts=8):
+    shift_frames = 0
+    while attempts > 0:
+        try:
+            enulib.acoustic.timing2acoustic(
+                config, path_full_timing, path_acoustic)
+            acoustic_features = np.loadtxt(
+                path_acoustic, delimiter=',', dtype=np.float32
+            )
+            return acoustic_features, shift_frames
+        except np.linalg.LinAlgError:
+            print(traceback.format_exc())
+            print('retrying, {} attempts left'.format(attempts))
+            attempts -= 1
+            shift_frames += 1
+            timing_labels = hts.load(path_full_timing)
+            for i in range(1, len(timing_labels.start_times)):
+                timing_labels.start_times[i] += config.frame_period * 10000
+            for i in range(0, len(timing_labels.end_times)):
+                timing_labels.end_times[i] += config.frame_period * 10000
+            print('retry with timing: ', timing_labels)
+            with open(path_full_timing, 'w', encoding='utf-8') as f:
+                f.write(str(timing_labels))
+
+
 def acoustic(path_ust):
     plugin = utaupy.utauplugin.load(path_ust)
     voice_dir = plugin.setting['VoiceDir']
@@ -213,12 +236,8 @@ def acoustic(path_ust):
         path_full_timing, path_mono_timing, \
         path_acoustic, path_f0, path_sp, path_ap = get_paths(path_ust)
 
-    enulib.acoustic.timing2acoustic(
+    acoustic_features, shift_frames = timing_to_acoustic_with_retry(
         config, path_full_timing, path_acoustic)
-
-    acoustic_features = np.loadtxt(
-        path_acoustic, delimiter=',', dtype=np.float32
-    )
 
     duration_modified_labels = hts.load(path_full_timing).round_()
     question_path = to_absolute_path(config.question_path)
@@ -243,9 +262,9 @@ def acoustic(path_ust):
         frame_period=config.frame_period,
         relative_f0=config.acoustic.relative_f0
     )
-    np.save(path_f0, f0)
-    np.save(path_sp, sp)
-    np.save(path_ap, ap)
+    np.save(path_f0, f0[shift_frames:])
+    np.save(path_sp, sp[shift_frames:])
+    np.save(path_ap, ap[shift_frames:])
 
 
 if __name__ == '__main__':

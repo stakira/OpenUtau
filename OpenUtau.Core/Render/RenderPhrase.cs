@@ -101,7 +101,9 @@ namespace OpenUtau.Core.Render {
         public readonly double tickToMs;
         public readonly RenderNote[] notes;
         public readonly RenderPhone[] phones;
+        public readonly int pitchStart;
         public readonly float[] pitches;
+        public readonly float[] pitchesBeforeDeviation;
         public readonly float[] dynamics;
         public readonly float[] gender;
         public readonly float[] breathiness;
@@ -143,7 +145,7 @@ namespace OpenUtau.Core.Render {
             tickToMs = 60000.0 / project.bpm * project.beatUnit / 4 / project.resolution;
 
             const int pitchInterval = 5;
-            int pitchStart = phones[0].position - phones[0].leading;
+            pitchStart = phones[0].position - phones[0].leading;
             pitches = new float[(phones.Last().position + phones.Last().duration - pitchStart) / pitchInterval + 1];
             int index = 0;
             foreach (var note in uNotes) {
@@ -205,6 +207,7 @@ namespace OpenUtau.Core.Render {
                 }
             }
 
+            pitchesBeforeDeviation = pitches.ToArray();
             var curve = part.curves.FirstOrDefault(c => c.abbr == Format.Ustx.PITD);
             if (curve != null && !curve.IsEmpty) {
                 for (int i = 0; i < pitches.Length; ++i) {

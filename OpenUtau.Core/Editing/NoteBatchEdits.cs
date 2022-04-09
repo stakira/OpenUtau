@@ -157,4 +157,57 @@ namespace OpenUtau.Core.Editing {
             docManager.EndUndoGroup();
         }
     }
+
+    public class LoadRenderedPitch : BatchEdit {
+        public virtual string Name => name;
+
+        private string name;
+
+        public LoadRenderedPitch() {
+            name = "pianoroll.menu.notes.loadrenderedpitch";
+        }
+
+        public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
+            var renderer = project.tracks[part.trackNo].Renderer;
+            if (renderer == null || !renderer.SupportsRenderPitch) {
+                docManager.ExecuteCmd(new UserMessageNotification("Not supported"));
+                return;
+            }
+            var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
+            var positions = notes.Select(n => n.position).ToHashSet();
+            var phrases = part.renderPhrases.Where(phrase => phrase.notes.Any(n => positions.Contains(n.position)));
+            docManager.StartUndoGroup(true);
+            float minPitD = -1200;
+            if (project.expressions.TryGetValue(Format.Ustx.PITD, out var descriptor)) {
+                minPitD = descriptor.min;
+            }
+            foreach (var phrase in phrases) {
+                var result = renderer.LoadRenderedPitch(phrase);
+                if (result == null) {
+                    continue;
+                }
+                int? lastX = null;
+                int? lastY = null;
+                // TODO: Optimize interpolation and command.
+                for (int i = 0; i < result.tones.Length; i++) {
+                    if (result.tones[i] < 0) {
+                        continue;
+                    }
+                    int x = (int)result.ticks[i];
+                    int pitchIndex = Math.Clamp((x - phrase.pitchStart) / 5, 0, phrase.pitches.Length - 1);
+                    float basePitch = phrase.pitchesBeforeDeviation[pitchIndex];
+                    int y = (int)(result.tones[i] * 100 - basePitch);
+                    lastX ??= x;
+                    lastY ??= y;
+                    if (y > minPitD) {
+                        docManager.ExecuteCmd(new SetCurveCommand(
+                            project, part, Format.Ustx.PITD, x, y, lastX.Value, lastY.Value));
+                    }
+                    lastX = x;
+                    lastY = y;
+                }
+            }
+            docManager.EndUndoGroup();
+        }
+    }
 }

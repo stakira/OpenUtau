@@ -127,6 +127,7 @@ namespace OpenUtau.App.ViewModels {
                 }
             });
             NoteBatchEdits = new List<BatchEdit>() {
+                new LoadRenderedPitch(),
                 new AddTailNote("-", "pianoroll.menu.notes.addtaildash"),
                 new AddTailNote("R", "pianoroll.menu.notes.addtailrest"),
                 new QuantizeNotes(15),

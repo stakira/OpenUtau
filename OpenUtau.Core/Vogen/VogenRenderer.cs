@@ -37,6 +37,8 @@ namespace OpenUtau.Core.Vogen {
 
         static readonly VSVocoder vocoder = new VSVocoder(fs, frameMs);
 
+        public bool SupportsRenderPitch => false;
+
         public bool SupportsExpression(UExpressionDescriptor descriptor) {
             return supportedExp.Contains(descriptor.abbr);
         }
@@ -218,6 +220,10 @@ namespace OpenUtau.Core.Vogen {
                 }
                 pos = endPos;
             }
+        }
+
+        public RenderPitchResult LoadRenderedPitch(RenderPhrase phrase) {
+            return null;
         }
     }
 }

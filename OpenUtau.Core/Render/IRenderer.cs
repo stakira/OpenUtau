@@ -25,12 +25,19 @@ namespace OpenUtau.Core.Render {
         public double estimatedLengthMs;
     }
 
+    public class RenderPitchResult {
+        public float[] ticks;
+        public float[] tones;
+    }
+
     /// <summary>
     /// Interface of phrase-based renderer.
     /// </summary>
     public interface IRenderer {
+        bool SupportsRenderPitch { get; }
         bool SupportsExpression(UExpressionDescriptor descriptor);
         RenderResult Layout(RenderPhrase phrase);
         Task<RenderResult> Render(RenderPhrase phrase, Progress progress, CancellationTokenSource cancellation, bool isPreRender = false);
+        RenderPitchResult LoadRenderedPitch(RenderPhrase phrase);
     }
 }
