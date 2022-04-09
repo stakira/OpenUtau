@@ -341,16 +341,13 @@ namespace OpenUtau.App.ViewModels {
             double rightTick = leftTick + viewModel.ViewportTicks + 480;
             // TODO: Rewrite with a faster searching algorithm, such as binary search.
             foreach (var note in viewModel.Part.notes) {
-                if (note.LeftBound >= rightTick || note.RightBound <= leftTick || note.Error) {
+                if (note.LeftBound >= rightTick || note.RightBound <= leftTick) {
                     continue;
                 }
                 if (note.OverlapError) {
                     continue;
                 }
                 foreach (var phoneme in note.phonemes) {
-                    if (phoneme.Error) {
-                        continue;
-                    }
                     // Mimicking the rendering logic of `PhonemeCanvas`. Might have a better solution.
                     if (viewModel.TickWidth <= ViewConstants.PianoRollTickWidthShowDetails) {
                         continue;
