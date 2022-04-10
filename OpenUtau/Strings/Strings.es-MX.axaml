@@ -65,8 +65,10 @@
   <system:String x:Key="menu.edit.undo">_Deshacer</system:String>
   <system:String x:Key="menu.file">_Archivo</system:String>
   <system:String x:Key="menu.file.exit">_Salir</system:String>
-  <system:String x:Key="menu.file.exportust">Exportar como archivos UST</system:String>
-  <system:String x:Key="menu.file.exportwav">Exportar como archivos WAV</system:String>
+  <system:String x:Key="menu.file.exportust">Exportar como Archivos UST</system:String>
+  <system:String x:Key="menu.file.exportustto">Exportar Archivos UST a...</system:String>
+  <system:String x:Key="menu.file.exportwav">Exportar como Archivos WAV</system:String>
+  <system:String x:Key="menu.file.exportwavto">Exportar Archivos WAV a...</system:String>
   <system:String x:Key="menu.file.importaudio">_Importar Audio</system:String>
   <system:String x:Key="menu.file.importmidi">_Importar MIDI</system:String>
   <system:String x:Key="menu.file.importtracks">Importar Pistas...</system:String>
@@ -120,6 +122,7 @@
   <system:String x:Key="pianoroll.menu.notes">Notas</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">Añadir cola "-"</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">Añadir cola "R"</system:String>
+  <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Cargar Tono Renderizado</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">Cuantificar a 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Cuantificar a 1/64</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">Restablecer expresiones</system:String>
@@ -166,6 +169,9 @@ Mantiene Ctrl para seleccionar más</system:String>
   <system:String x:Key="prefs.paths.select">Seleccionar</system:String>
   <system:String x:Key="prefs.playback">Reproducción</system:String>
   <system:String x:Key="prefs.playback.autoscroll">Desplazamiento Automático</system:String>
+  <system:String x:Key="prefs.playback.autoscrollmode">Modo de Desplazamiento</system:String>
+  <system:String x:Key="prefs.playback.autoscrollmode.pagescroll">Desplazar Página</system:String>
+  <system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">Cursor Fijo</system:String>
   <system:String x:Key="prefs.playback.backend">Backend de Audio</system:String>
   <system:String x:Key="prefs.playback.backend.auto">Escoger Automáticamente</system:String>
   <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
@@ -210,6 +216,7 @@ Advertencia: Moresampler no es totalmente compatible por ahora. Este puede ser l
   <system:String x:Key="singers.subbanks.tone">Tono</system:String>
   <system:String x:Key="singers.subbanks.toneranges">Rangos Tonales</system:String>
 
+  <system:String x:Key="tip.aliasbox">Cambiar Alias</system:String>
   <system:String x:Key="tip.exps">
 Click Izquierdo + Arrastrar: Poner expresiones
 Click Derecho + Arrastrar: Reestablecer expresiones
@@ -246,6 +253,7 @@ General
   <FontFamily x:Key="ui.textbox.fontfamily">Microsoft YaHei,Simsun,苹方-简,宋体-简</FontFamily>
 
   <system:String x:Key="updater.caption">Buscar Actualizaciones</system:String>
+  <system:String x:Key="updater.description">La Plataforma de Síntesis de Canto de Código Abierto/system:String>
   <system:String x:Key="updater.github">Abrir GitHub</system:String>
   <system:String x:Key="updater.status.available">Actualización Disponible (v{0})</system:String>
   <system:String x:Key="updater.status.checking">Buscando Actualizaciones...</system:String>

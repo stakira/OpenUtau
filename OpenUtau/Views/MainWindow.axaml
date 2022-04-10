@@ -46,7 +46,9 @@
           <MenuItem Header="{DynamicResource menu.file.importmidi}" Click="OnMenuImportMidi"/>
           <MenuItem Header="-" Height="1"/>
           <MenuItem Header="{DynamicResource menu.file.exportwav}" Click="OnMenuExportWav"/>
+          <MenuItem Header="{DynamicResource menu.file.exportwavto}" Click="OnMenuExportWavTo"/>
           <MenuItem Header="{DynamicResource menu.file.exportust}" Click="OnMenuExportUst"/>
+          <MenuItem Header="{DynamicResource menu.file.exportustto}" Click="OnMenuExportUstTo"/>
         </MenuItem>
         <MenuItem Header="{DynamicResource menu.tools}">
           <MenuItem Header="{DynamicResource menu.tools.layout}">

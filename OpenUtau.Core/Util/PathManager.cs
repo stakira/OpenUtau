@@ -56,16 +56,17 @@ namespace OpenUtau.Core {
         public string CachePath => Path.Combine(HomePath, "Cache");
 
         public string GetPartSavePath(string projectPath, int partNo) {
+            var name = Path.GetFileNameWithoutExtension(projectPath);
             var dir = Path.GetDirectoryName(projectPath);
-            var filename = Path.GetFileNameWithoutExtension(projectPath);
-            return Path.Combine(dir, $"{filename}-{partNo:D2}.ust");
+            Directory.CreateDirectory(dir);
+            return Path.Combine(dir, $"{name}-{partNo:D2}.ust");
         }
 
-        public string GetExportPath(string projectPath, int trackNo) {
-            var dir = Path.Combine(Path.GetDirectoryName(projectPath), "Export");
+        public string GetExportPath(string exportPath, int trackNo) {
+            var name = Path.GetFileNameWithoutExtension(exportPath);
+            var dir = Path.GetDirectoryName(exportPath);
             Directory.CreateDirectory(dir);
-            var filename = Path.GetFileNameWithoutExtension(projectPath);
-            return Path.Combine(dir, $"{filename}-{trackNo:D2}.wav");
+            return Path.Combine(dir, $"{name}-{trackNo:D2}.wav");
         }
 
         public void ClearCache() {

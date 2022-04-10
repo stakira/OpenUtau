@@ -66,7 +66,9 @@
   <system:String x:Key="menu.file">파일</system:String>
   <system:String x:Key="menu.file.exit">나가기</system:String>
   <system:String x:Key="menu.file.exportust">Ust 파일로 내보내기</system:String>
+  <!--<system:String x:Key="menu.file.exportustto">Export Ust Files To...</system:String>-->
   <system:String x:Key="menu.file.exportwav">Wav 파일로 내보내기</system:String>
+  <!--<system:String x:Key="menu.file.exportwavto">Export Wav Files To...</system:String>-->
   <system:String x:Key="menu.file.importaudio">오디오 가져오기</system:String>
   <system:String x:Key="menu.file.importmidi">Midi 가져오기</system:String>
   <system:String x:Key="menu.file.importtracks">트랙 삽입하기...</system:String>
@@ -120,6 +122,7 @@
   <system:String x:Key="pianoroll.menu.notes">노트</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">"-" 꼬리 추가</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">"R" 꼬리 추가</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Load Rendered Pitch</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.quantize15">1/128로 양자화</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">1/64로 양자화</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">모든 표현 초기화</system:String>
@@ -166,6 +169,9 @@
   <system:String x:Key="prefs.paths.select">선택</system:String>
   <system:String x:Key="prefs.playback">재생</system:String>
   <system:String x:Key="prefs.playback.autoscroll">자동 스크롤</system:String>
+  <!--<system:String x:Key="prefs.playback.autoscrollmode">Auto-Scroll Mode</system:String>-->
+  <!--<system:String x:Key="prefs.playback.autoscrollmode.pagescroll">Page Scroll</system:String>-->
+  <!--<system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">Stationary Cursor</system:String>-->
   <system:String x:Key="prefs.playback.backend">오디오 Backend</system:String>
   <system:String x:Key="prefs.playback.backend.auto">자동</system:String>
   <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
@@ -210,6 +216,7 @@
   <system:String x:Key="singers.subbanks.tone">톤</system:String>
   <system:String x:Key="singers.subbanks.toneranges">톤 범위</system:String>
 
+  <!--<system:String x:Key="tip.aliasbox">Override Alias</system:String>-->
   <system:String x:Key="tip.exps">
 왼쪽 마우스: 표현 설정
 오른쪽 마우스: 표현 초기화
@@ -246,6 +253,7 @@
   <FontFamily x:Key="ui.textbox.fontfamily">Malgun Gothic,Apple SD Gothic Neo,Segoe UI,San Francisco,Helvetica Neue</FontFamily>
 
   <system:String x:Key="updater.caption">업데이트 확인</system:String>
+  <!--<system:String x:Key="updater.description">Open singing synthesis platform</system:String>-->
   <system:String x:Key="updater.github">깃허브</system:String>
   <system:String x:Key="updater.status.available">v{0} 업데이트가 존재합니다!</system:String>
   <system:String x:Key="updater.status.checking">업데이트를 확인하고 있습니다...</system:String>

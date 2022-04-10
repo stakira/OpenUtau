@@ -66,7 +66,9 @@
   <system:String x:Key="menu.file">Tiedosto</system:String>
   <system:String x:Key="menu.file.exit">Lopeta OpenUtau</system:String>
   <system:String x:Key="menu.file.exportust">Vie Ust-tiedostot</system:String>
+  <!--<system:String x:Key="menu.file.exportustto">Export Ust Files To...</system:String>-->
   <!--<system:String x:Key="menu.file.exportwav">Export Wav Files</system:String>-->
+  <!--<system:String x:Key="menu.file.exportwavto">Export Wav Files To...</system:String>-->
   <system:String x:Key="menu.file.importaudio">Tuo audio...</system:String>
   <system:String x:Key="menu.file.importmidi">Tuo Midi-tiedosto...</system:String>
   <system:String x:Key="menu.file.importtracks">Tuo raidat...</system:String>
@@ -120,6 +122,7 @@
   <system:String x:Key="pianoroll.menu.notes">Nuotit</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">lisää loppuun "-"</system:String>
   <!--<system:String x:Key="pianoroll.menu.notes.addtailrest">Add tail "R"</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Load Rendered Pitch</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.quantize15">sovita 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">sovita 1/64</system:String>
   <!--<system:String x:Key="pianoroll.menu.notes.reset.exps">Reset all expressions</system:String>-->
@@ -166,10 +169,13 @@ Aktivoi monivalinta pitämällä Ctrl pohjassa</system:String>
   <!--<system:String x:Key="prefs.paths.select">Select</system:String>-->
   <system:String x:Key="prefs.playback">Äänentoisto</system:String>
   <!--<system:String x:Key="prefs.playback.autoscroll">Auto-Scroll</system:String>-->
+  <!--<system:String x:Key="prefs.playback.autoscrollmode">Auto-Scroll Mode</system:String>-->
+  <!--<system:String x:Key="prefs.playback.autoscrollmode.pagescroll">Page Scroll</system:String>-->
+  <!--<system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">Stationary Cursor</system:String>-->
   <!--<system:String x:Key="prefs.playback.backend">Audio Backend</system:String>-->
   <!--<system:String x:Key="prefs.playback.backend.auto">Automatic</system:String>-->
   <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
-  <!--<system:String x:Key="prefs.playback.cursorposition">Cursor Position</system:String>-->
+  <!--<system:String x:Key="prefs.playback.cursorposition">Auto-Scroll Margin</system:String>-->
   <system:String x:Key="prefs.playback.device">Äänentoistolaite</system:String>
   <!--<system:String x:Key="prefs.playback.lockstarttime">On Pausing</system:String>-->
   <!--<system:String x:Key="prefs.playback.lockstarttime.off">Do nothing</system:String>-->
@@ -210,6 +216,7 @@ Warning: moresampler is not fully supported. It may be slow and cause high CPU u
   <!--<system:String x:Key="singers.subbanks.tone">Tone</system:String>-->
   <system:String x:Key="singers.subbanks.toneranges">Ääniala</system:String>
 
+  <!--<system:String x:Key="tip.aliasbox">Override Alias</system:String>-->
   <system:String x:Key="tip.exps">
 Vasen hiiren klikkaus: Aseta äänen sävy
 Oikea hiiren klikkaus: Nollaa äänen sävy
@@ -246,6 +253,7 @@ Yleiset
   <!--<FontFamily x:Key="ui.textbox.fontfamily">Microsoft YaHei,Simsun,苹方-简,宋体-简</FontFamily>-->
 
   <!--<system:String x:Key="updater.caption">Check for Update</system:String>-->
+  <!--<system:String x:Key="updater.description">Open singing synthesis platform</system:String>-->
   <!--<system:String x:Key="updater.github">GitHub</system:String>-->
   <!--<system:String x:Key="updater.status.available">Update v{0} available!</system:String>-->
   <!--<system:String x:Key="updater.status.checking">Checking for updates...</system:String>-->

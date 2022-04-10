@@ -66,7 +66,9 @@
   <!--<system:String x:Key="menu.file">File</system:String>-->
   <system:String x:Key="menu.file.exit">Esci</system:String>
   <system:String x:Key="menu.file.exportust">Esporta File Ust</system:String>
+  <!--<system:String x:Key="menu.file.exportustto">Export Ust Files To...</system:String>-->
   <!--<system:String x:Key="menu.file.exportwav">Export Wav Files</system:String>-->
+  <!--<system:String x:Key="menu.file.exportwavto">Export Wav Files To...</system:String>-->
   <system:String x:Key="menu.file.importaudio">Importa Audio...</system:String>
   <system:String x:Key="menu.file.importmidi">Importa MIDI...</system:String>
   <system:String x:Key="menu.file.importtracks">Importa Tracce...</system:String>
@@ -120,6 +122,7 @@
   <system:String x:Key="pianoroll.menu.notes">Note</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">Aggiungi "-" in coda</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">Aggiungi "R" in coda</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Load Rendered Pitch</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.quantize15">Quantizza a 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Quantizza a 1/64</system:String>
   <!--<system:String x:Key="pianoroll.menu.notes.reset.exps">Reset all expressions</system:String>-->
@@ -166,6 +169,9 @@ Tieni premuto click sinistro + Ctrl per selezionare più note</system:String>
   <system:String x:Key="prefs.paths.select">Seleziona</system:String>
   <system:String x:Key="prefs.playback">Audio</system:String>
   <!--<system:String x:Key="prefs.playback.autoscroll">Auto-Scroll</system:String>-->
+  <!--<system:String x:Key="prefs.playback.autoscrollmode">Auto-Scroll Mode</system:String>-->
+  <!--<system:String x:Key="prefs.playback.autoscrollmode.pagescroll">Page Scroll</system:String>-->
+  <!--<system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">Stationary Cursor</system:String>-->
   <!--<system:String x:Key="prefs.playback.backend">Audio Backend</system:String>-->
   <!--<system:String x:Key="prefs.playback.backend.auto">Automatic</system:String>-->
   <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
@@ -210,6 +216,7 @@ Warning: moresampler is not fully supported. It may be slow and cause high CPU u
   <system:String x:Key="singers.subbanks.tone">Tono</system:String>
   <system:String x:Key="singers.subbanks.toneranges">Range tonale</system:String>
 
+  <!--<system:String x:Key="tip.aliasbox">Override Alias</system:String>-->
   <system:String x:Key="tip.exps">
 Tieni premuto click sinistro: Imposta espressioni
 Tieni premuto click destro: Resetta espressioni
@@ -246,6 +253,7 @@ Tieni premuto click destro: Resetta espressioni
   <!--<FontFamily x:Key="ui.textbox.fontfamily">Microsoft YaHei,Simsun,苹方-简,宋体-简</FontFamily>-->
 
   <system:String x:Key="updater.caption">Controlla aggiornamenti</system:String>
+  <!--<system:String x:Key="updater.description">Open singing synthesis platform</system:String>-->
   <!--<system:String x:Key="updater.github">GitHub</system:String>-->
   <system:String x:Key="updater.status.available">Aggiornamento v{0} disponibile!</system:String>
   <system:String x:Key="updater.status.checking">Controllo aggiornamenti...</system:String>

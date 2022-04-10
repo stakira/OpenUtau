@@ -66,7 +66,9 @@
   <system:String x:Key="menu.file">File</system:String>
   <system:String x:Key="menu.file.exit">Exit</system:String>
   <system:String x:Key="menu.file.exportust">Export Ust Files</system:String>
+  <system:String x:Key="menu.file.exportustto">Export Ust Files To...</system:String>
   <system:String x:Key="menu.file.exportwav">Export Wav Files</system:String>
+  <system:String x:Key="menu.file.exportwavto">Export Wav Files To...</system:String>
   <system:String x:Key="menu.file.importaudio">Import Audio...</system:String>
   <system:String x:Key="menu.file.importmidi">Import Midi...</system:String>
   <system:String x:Key="menu.file.importtracks">Import Tracks...</system:String>
@@ -168,8 +170,8 @@ Hold Ctrl to select more</system:String>
   <system:String x:Key="prefs.playback">Playback</system:String>
   <system:String x:Key="prefs.playback.autoscroll">Auto-Scroll</system:String>
   <system:String x:Key="prefs.playback.autoscrollmode">Auto-Scroll Mode</system:String>
-  <system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">Stationary Cursor</system:String>
   <system:String x:Key="prefs.playback.autoscrollmode.pagescroll">Page Scroll</system:String>
+  <system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">Stationary Cursor</system:String>
   <system:String x:Key="prefs.playback.backend">Audio Backend</system:String>
   <system:String x:Key="prefs.playback.backend.auto">Automatic</system:String>
   <system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>
@@ -251,6 +253,7 @@ General
   <FontFamily x:Key="ui.textbox.fontfamily">Microsoft YaHei,Simsun,苹方-简,宋体-简</FontFamily>
 
   <system:String x:Key="updater.caption">Check for Update</system:String>
+  <system:String x:Key="updater.description">Open singing synthesis platform</system:String>
   <system:String x:Key="updater.github">GitHub</system:String>
   <system:String x:Key="updater.status.available">Update v{0} available!</system:String>
   <system:String x:Key="updater.status.checking">Checking for updates...</system:String>

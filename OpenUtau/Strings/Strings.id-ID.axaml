@@ -66,7 +66,9 @@
   <system:String x:Key="menu.file">Berkas</system:String>
   <system:String x:Key="menu.file.exit">Keluar</system:String>
   <system:String x:Key="menu.file.exportust">Ekspor Berkas UST</system:String>
+  <!--<system:String x:Key="menu.file.exportustto">Export Ust Files To...</system:String>-->
   <!--<system:String x:Key="menu.file.exportwav">Export Wav Files</system:String>-->
+  <!--<system:String x:Key="menu.file.exportwavto">Export Wav Files To...</system:String>-->
   <system:String x:Key="menu.file.importaudio">Impor Audio...</system:String>
   <system:String x:Key="menu.file.importmidi">Impor Midi...</system:String>
   <system:String x:Key="menu.file.importtracks">Impor Trek...</system:String>
@@ -120,6 +122,7 @@
   <system:String x:Key="pianoroll.menu.notes">Not</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">Tambahkan bagian akhir "-"</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">Tambahkan bagian akhir "R"</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Load Rendered Pitch</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.quantize15">Kuantisasi hingga 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Kuantisasi hingga 1/64</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">Setel ulang semua ekspresi</system:String>
@@ -166,6 +169,9 @@ Tahan Ctrl untuk memilih lainnya</system:String>
   <system:String x:Key="prefs.paths.select">Pilih</system:String>
   <system:String x:Key="prefs.playback">Pemutaran</system:String>
   <!--<system:String x:Key="prefs.playback.autoscroll">Auto-Scroll</system:String>-->
+  <!--<system:String x:Key="prefs.playback.autoscrollmode">Auto-Scroll Mode</system:String>-->
+  <!--<system:String x:Key="prefs.playback.autoscrollmode.pagescroll">Page Scroll</system:String>-->
+  <!--<system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">Stationary Cursor</system:String>-->
   <system:String x:Key="prefs.playback.backend">Latar Belakang Audio</system:String>
   <system:String x:Key="prefs.playback.backend.auto">Otomatis</system:String>
   <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
@@ -210,6 +216,7 @@ Warning: moresampler is not fully supported. It may be slow and cause high CPU u
   <system:String x:Key="singers.subbanks.tone">Nada</system:String>
   <system:String x:Key="singers.subbanks.toneranges">Rentang Nada</system:String>
 
+  <!--<system:String x:Key="tip.aliasbox">Override Alias</system:String>-->
   <system:String x:Key="tip.exps">
 Tombol Kiri Tarik: Setel ekspresi
 Tombol Kanan Tarik: Setel ulang ekspresi
@@ -246,6 +253,7 @@ Umum
   <!--<FontFamily x:Key="ui.textbox.fontfamily">Microsoft YaHei,Simsun,苹方-简,宋体-简</FontFamily>-->
 
   <system:String x:Key="updater.caption">Memeriksa Pembaruan</system:String>
+  <!--<system:String x:Key="updater.description">Open singing synthesis platform</system:String>-->
   <!--<system:String x:Key="updater.github">GitHub</system:String>-->
   <system:String x:Key="updater.status.available">Pembaruan v{0} tersedia!</system:String>
   <system:String x:Key="updater.status.checking">Memeriksa pembaruan...</system:String>

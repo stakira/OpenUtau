@@ -256,18 +256,66 @@ namespace OpenUtau.App.Views {
         async void OnMenuExportWav(object sender, RoutedEventArgs args) {
             var project = DocManager.Inst.Project;
             if (await WarnToSave(project)) {
-                PlaybackManager.Inst.RenderToFiles(project);
+                var name = System.IO.Path.GetFileNameWithoutExtension(project.FilePath);
+                var path = System.IO.Path.GetDirectoryName(project.FilePath);
+                path = System.IO.Path.Combine(path!, "Export");
+                path = System.IO.Path.Combine(path!, $"{name}.wav");
+                PlaybackManager.Inst.RenderToFiles(project, path);
+            }
+        }
+
+        async void OnMenuExportWavTo(object sender, RoutedEventArgs args) {
+            var project = DocManager.Inst.Project;
+            var dialog = new SaveFileDialog() {
+                DefaultExtension = "wav",
+                Filters = new List<FileDialogFilter>() {
+                    new FileDialogFilter() {
+                        Extensions = new List<string>(){ "wav" },
+                    },
+                },
+            };
+            var file = await dialog.ShowAsync(this);
+            if (!string.IsNullOrEmpty(file)) {
+                PlaybackManager.Inst.RenderToFiles(project, file);
             }
         }
 
         async void OnMenuExportUst(object sender, RoutedEventArgs e) {
             var project = DocManager.Inst.Project;
             if (await WarnToSave(project)) {
+                var name = System.IO.Path.GetFileNameWithoutExtension(project.FilePath);
+                var path = System.IO.Path.GetDirectoryName(project.FilePath);
+                path = System.IO.Path.Combine(path!, "Export");
+                path = System.IO.Path.Combine(path!, $"{name}.ust");
                 for (var i = 0; i < project.parts.Count; i++) {
                     var part = project.parts[i];
                     if (part is UVoicePart voicePart) {
-                        var savePath = PathManager.Inst.GetPartSavePath(project.FilePath, i);
+                        var savePath = PathManager.Inst.GetPartSavePath(path, i);
                         Ust.SavePart(project, voicePart, savePath);
+                        DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"{savePath}."));
+                    }
+                }
+            }
+        }
+
+        async void OnMenuExportUstTo(object sender, RoutedEventArgs e) {
+            var project = DocManager.Inst.Project;
+            var dialog = new SaveFileDialog() {
+                DefaultExtension = "ust",
+                Filters = new List<FileDialogFilter>() {
+                    new FileDialogFilter() {
+                        Extensions = new List<string>(){ "ust" },
+                    },
+                },
+            };
+            var file = await dialog.ShowAsync(this);
+            if (!string.IsNullOrEmpty(file)) {
+                for (var i = 0; i < project.parts.Count; i++) {
+                    var part = project.parts[i];
+                    if (part is UVoicePart voicePart) {
+                        var savePath = PathManager.Inst.GetPartSavePath(file, i);
+                        Ust.SavePart(project, voicePart, savePath);
+                        DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"{savePath}."));
                     }
                 }
             }
