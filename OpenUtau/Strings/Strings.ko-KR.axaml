@@ -2,9 +2,9 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-  <!--<system:String x:Key="context.pitch.easein">Ease in</system:String>-->
-  <!--<system:String x:Key="context.pitch.easeinout">Ease in/out</system:String>-->
-  <!--<system:String x:Key="context.pitch.easeout">Ease out</system:String>-->
+  <system:String x:Key="context.pitch.easein">시작 감속 곡선</system:String>
+  <system:String x:Key="context.pitch.easeinout">시작/끝 감속 곡선</system:String>
+  <system:String x:Key="context.pitch.easeout">끝 감속 곡선</system:String>
   <system:String x:Key="context.pitch.linear">선형</system:String>
   <system:String x:Key="context.pitch.pointadd">포인트 추가</system:String>
   <system:String x:Key="context.pitch.pointdel">포인트 제거</system:String>
@@ -120,8 +120,8 @@
   <system:String x:Key="pianoroll.menu.notes">노트</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">"-" 꼬리 추가</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">"R" 꼬리 추가</system:String>
-  <!--<system:String x:Key="pianoroll.menu.notes.quantize15">Quantize to 1/128</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.notes.quantize30">Quantize to 1/64</system:String>-->
+  <system:String x:Key="pianoroll.menu.notes.quantize15">1/128로 양자화</system:String>
+  <system:String x:Key="pianoroll.menu.notes.quantize30">1/64로 양자화</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">모든 표현 초기화</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">음소 타이밍 초기화</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">피치 벤드 초기화</system:String>
@@ -136,7 +136,7 @@
   <system:String x:Key="pianoroll.toggle.tips">팁 보기 (T)</system:String>
   <system:String x:Key="pianoroll.toggle.tone">노트 톤 켜고 끄기 (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">비브라토 보기 (U)</system:String>
-  <system:String x:Key="pianoroll.tool.drawpitch">피치 툴 그리기 (4)</system:String>
+  <system:String x:Key="pianoroll.tool.drawpitch">피치 그리기 툴 (4)</system:String>
   <system:String x:Key="pianoroll.tool.eraser">삭제 툴 (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">잘라내기 툴 (5)</system:String>
   <system:String x:Key="pianoroll.tool.pen">펜 툴 (2)
@@ -165,13 +165,13 @@
   <system:String x:Key="prefs.paths.reset">초기화</system:String>
   <system:String x:Key="prefs.paths.select">선택</system:String>
   <system:String x:Key="prefs.playback">재생</system:String>
-  <!--<system:String x:Key="prefs.playback.autoscroll">Auto-Scroll</system:String>-->
-  <!--<system:String x:Key="prefs.playback.backend">Audio Backend</system:String>-->
+  <system:String x:Key="prefs.playback.autoscroll">자동 스크롤</system:String>
+  <system:String x:Key="prefs.playback.backend">오디오 Backend</system:String>
   <system:String x:Key="prefs.playback.backend.auto">자동</system:String>
   <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">커서 위치</system:String>
   <system:String x:Key="prefs.playback.device">재생 장치</system:String>
-  <system:String x:Key="prefs.playback.lockstarttime">일시 중지 시</system:String>
+  <system:String x:Key="prefs.playback.lockstarttime">일시 중지 시 동작</system:String>
   <system:String x:Key="prefs.playback.lockstarttime.off">아무것도 하지 않음</system:String>
   <system:String x:Key="prefs.playback.lockstarttime.on">재생을 시작한 위치로 커서를 다시 이동</system:String>
   <system:String x:Key="prefs.playback.test">테스트</system:String>
