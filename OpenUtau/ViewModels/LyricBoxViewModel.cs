@@ -90,7 +90,9 @@ namespace OpenUtau.App.ViewModels {
             DocManager.Inst.StartUndoGroup();
             if (IsAliasBox) {
                 var phoneme = (NoteOrPhoneme as LyricBoxPhoneme)!.Unwrap();
-                DocManager.Inst.ExecuteCmd(new ChangePhonemeAliasCommand(Part, phoneme.Parent, phoneme.Index, Text));
+                var note = phoneme.Parent;
+                int index = note.PhonemeOffset + note.phonemes.IndexOf(phoneme);
+                DocManager.Inst.ExecuteCmd(new ChangePhonemeAliasCommand(Part, note.Extends ?? note, index, Text));
             } else {
                 DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(Part, (NoteOrPhoneme as LyricBoxNote)!.Unwrap(), Text));
             }

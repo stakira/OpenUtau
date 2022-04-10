@@ -919,7 +919,13 @@ namespace OpenUtau.App.Views {
             var aliasHitInfo = notesVm.HitTest.HitTestAlias(point);
             if (aliasHitInfo.hit) {
                 var phoneme = aliasHitInfo.phoneme;
-                DocManager.Inst.ExecuteCmd(new ChangePhonemeAliasCommand(notesVm.Part, phoneme.Parent, phoneme.Index, null));
+                if (phoneme.HasPhonemeOverride) {
+                    var note = phoneme.Parent;
+                    int index = note.PhonemeOffset + note.phonemes.IndexOf(phoneme);
+                    DocManager.Inst.ExecuteCmd(
+                        new ChangePhonemeAliasCommand(
+                            notesVm.Part, note.Extends ?? note, index, null));
+                }
             }
         }
     }
