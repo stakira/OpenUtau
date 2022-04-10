@@ -10,7 +10,7 @@
   <system:String x:Key="context.pitch.pointdel">Borrar punto</system:String>
   <system:String x:Key="context.pitch.pointsnapprev">Ajustar a la nota previa</system:String>
 
-  <!--<system:String x:Key="debug.clear">Clear</system:String>-->
+  <system:String x:Key="debug.clear">Limpiar</system:String>
 
   <system:String x:Key="dialogs.about.caption">Sobre OpenUTAU</system:String>
   <system:String x:Key="dialogs.about.message">
@@ -42,7 +42,7 @@
   <system:String x:Key="exps.optionvalues">Opciones de los Valores</system:String>
   <system:String x:Key="exps.sepbycomma">Separar Valores por ','</system:String>
   <system:String x:Key="exps.type">Tipo</system:String>
-  <!--<system:String x:Key="exps.type.curve">Curve</system:String>-->
+  <system:String x:Key="exps.type.curve">Curva</system:String>
   <system:String x:Key="exps.type.numerical">Numérico</system:String>
   <system:String x:Key="exps.type.options">Opciones</system:String>
 
@@ -65,10 +65,10 @@
   <system:String x:Key="menu.edit.undo">_Deshacer</system:String>
   <system:String x:Key="menu.file">_Archivo</system:String>
   <system:String x:Key="menu.file.exit">_Salir</system:String>
-  <system:String x:Key="menu.file.exportust">Exportar como archivos UST</system:String>
-  <!--<system:String x:Key="menu.file.exportustto">Export Ust Files To...</system:String>-->
-  <system:String x:Key="menu.file.exportwav">Exportar como archivos WAV</system:String>
-  <!--<system:String x:Key="menu.file.exportwavto">Export Wav Files To...</system:String>-->
+  <system:String x:Key="menu.file.exportust">Exportar como Archivos UST</system:String>
+  <system:String x:Key="menu.file.exportustto">Exportar Archivos UST a...</system:String>
+  <system:String x:Key="menu.file.exportwav">Exportar como Archivos WAV</system:String>
+  <system:String x:Key="menu.file.exportwavto">Exportar Archivos WAV a...</system:String>
   <system:String x:Key="menu.file.importaudio">_Importar Audio</system:String>
   <system:String x:Key="menu.file.importmidi">_Importar MIDI</system:String>
   <system:String x:Key="menu.file.importtracks">Importar Pistas...</system:String>
@@ -85,7 +85,7 @@
   <system:String x:Key="menu.help.wiki">Wiki de OpenUTAU</system:String>
   <system:String x:Key="menu.tools">_Herramientas</system:String>
   <system:String x:Key="menu.tools.clearcache">Limpiar Caché</system:String>
-  <!--<system:String x:Key="menu.tools.debugwindow">Debug Window</system:String>-->
+  <system:String x:Key="menu.tools.debugwindow">Ventana de Depuración</system:String>
   <!--<system:String x:Key="menu.tools.layout">Layout</system:String>-->
   <system:String x:Key="menu.tools.layout.hsplit11">1:1 Horizontal</system:String>
   <system:String x:Key="menu.tools.layout.hsplit12">1:2 Horizontal</system:String>
@@ -122,7 +122,7 @@
   <system:String x:Key="pianoroll.menu.notes">Notas</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">Añadir cola "-"</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">Añadir cola "R"</system:String>
-  <!--<system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Load Rendered Pitch</system:String>-->
+  <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Cargar Tono Renderizado</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">Cuantificar a 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Cuantificar a 1/64</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">Restablecer expresiones</system:String>
@@ -132,16 +132,16 @@
   <system:String x:Key="pianoroll.menu.part">Partes</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">Plug-ins Antiguos (Experimental)</system:String>
   <system:String x:Key="pianoroll.menu.part.rename">Renombrar</system:String>
-  <!--<system:String x:Key="pianoroll.toggle.finalpitch">View Final Pitch to Render (R)</system:String>-->
+  <system:String x:Key="pianoroll.toggle.finalpitch">Ver Tono Final para Renderizar (R)</system:String>
   <system:String x:Key="pianoroll.toggle.phoneme">Ver Fonemas (O)</system:String>
   <system:String x:Key="pianoroll.toggle.pitch">Ver Curvas del Tono (I)</system:String>
   <system:String x:Key="pianoroll.toggle.snap">Activar/Desactivar Ajuste (P)</system:String>
   <system:String x:Key="pianoroll.toggle.tips">Ver Consejos (T)</system:String>
   <system:String x:Key="pianoroll.toggle.tone">Activar/Desactivar Tono de Nota (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">Ver Vibratos (U)</system:String>
-  <!--<system:String x:Key="pianoroll.tool.drawpitch">Draw Pitch Tool (4)</system:String>-->
+  <system:String x:Key="pianoroll.tool.drawpitch">Dibujar Tono (4)</system:String>
   <system:String x:Key="pianoroll.tool.eraser">Goma (3)</system:String>
-  <!--<system:String x:Key="pianoroll.tool.knife">Knife Tool (5)</system:String>-->
+  <system:String x:Key="pianoroll.tool.knife">Cuchillo (5)</system:String>
   <system:String x:Key="pianoroll.tool.pen">Lápiz (2)
 Click izquierdo para dibujar
 Click derecho para borrar</system:String>
@@ -168,18 +168,18 @@ Mantiene Ctrl para seleccionar más</system:String>
   <system:String x:Key="prefs.paths.reset">Restablecer</system:String>
   <system:String x:Key="prefs.paths.select">Seleccionar</system:String>
   <system:String x:Key="prefs.playback">Reproducción</system:String>
-  <!--<system:String x:Key="prefs.playback.autoscroll">Auto-Scroll</system:String>-->
-  <!--<system:String x:Key="prefs.playback.autoscrollmode">Auto-Scroll Mode</system:String>-->
-  <!--<system:String x:Key="prefs.playback.autoscrollmode.pagescroll">Page Scroll</system:String>-->
-  <!--<system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">Stationary Cursor</system:String>-->
+  <system:String x:Key="prefs.playback.autoscroll">Desplazamiento Automático</system:String>
+  <system:String x:Key="prefs.playback.autoscrollmode">Modo de Desplazamiento</system:String>
+  <system:String x:Key="prefs.playback.autoscrollmode.pagescroll">Desplazar Página</system:String>
+  <system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">Cursor Fijo</system:String>
   <system:String x:Key="prefs.playback.backend">Backend de Audio</system:String>
   <system:String x:Key="prefs.playback.backend.auto">Escoger Automáticamente</system:String>
   <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">Posición del Cursor</system:String>
   <system:String x:Key="prefs.playback.device">Dispositivo de Reproducción</system:String>
-  <!--<system:String x:Key="prefs.playback.lockstarttime">On Pausing</system:String>-->
-  <!--<system:String x:Key="prefs.playback.lockstarttime.off">Do nothing</system:String>-->
-  <!--<system:String x:Key="prefs.playback.lockstarttime.on">Move cursor back to where you started playing</system:String>-->
+  <system:String x:Key="prefs.playback.lockstarttime">Cuando se Pausa...</system:String>
+  <system:String x:Key="prefs.playback.lockstarttime.off">Hacer nada</system:String>
+  <system:String x:Key="prefs.playback.lockstarttime.on">Mover cursor a donde se empezó a reproducir</system:String>
   <system:String x:Key="prefs.playback.test">Probar</system:String>
   <system:String x:Key="prefs.rendering">Renderización</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">Compensación de Fase</system:String>
@@ -196,7 +196,7 @@ Advertencia: Moresampler no es totalmente compatible por ahora. Este puede ser l
     </system:String>
 
   <system:String x:Key="progress.saved">Proyecto guardado. {0}</system:String>
-  <!--<system:String x:Key="progress.waitingrendering">Waiting Rendering</system:String>-->
+  <system:String x:Key="progress.waitingrendering">Esperando al Renderizado...</system:String>
 
   <system:String x:Key="singers.caption">Voces</system:String>
   <system:String x:Key="singers.location">Mostrar Archivos</system:String>
@@ -216,7 +216,7 @@ Advertencia: Moresampler no es totalmente compatible por ahora. Este puede ser l
   <system:String x:Key="singers.subbanks.tone">Tono</system:String>
   <system:String x:Key="singers.subbanks.toneranges">Rangos Tonales</system:String>
 
-  <!--<system:String x:Key="tip.aliasbox">Override Alias</system:String>-->
+  <system:String x:Key="tip.aliasbox">Cambiar Alias</system:String>
   <system:String x:Key="tip.exps">
 Click Izquierdo + Arrastrar: Poner expresiones
 Click Derecho + Arrastrar: Reestablecer expresiones
@@ -243,17 +243,17 @@ General
   <system:String x:Key="tip.notes.zoomx">Desliza acá para acercar horizontalmente</system:String>
   <system:String x:Key="tip.notes.zoomy">Desliza acá para acercar verticalmente</system:String>
 
-  <!--<system:String x:Key="tracks.more">More</system:String>-->
+  <system:String x:Key="tracks.more">Más</system:String>
   <system:String x:Key="tracks.movedown">Mover Abajo</system:String>
   <system:String x:Key="tracks.moveup">Mover Arriba</system:String>
   <system:String x:Key="tracks.remove">Borrar</system:String>
   <system:String x:Key="tracks.selectsinger">Seleccionar Voz</system:String>
 
-  <!--<FontFamily x:Key="ui.fontfamily">Segoe UI,San Francisco,Helvetica Neue</FontFamily>-->
-  <!--<FontFamily x:Key="ui.textbox.fontfamily">Microsoft YaHei,Simsun,苹方-简,宋体-简</FontFamily>-->
+  <FontFamily x:Key="ui.fontfamily">Segoe UI,San Francisco,Helvetica Neue</FontFamily>
+  <FontFamily x:Key="ui.textbox.fontfamily">Microsoft YaHei,Simsun,苹方-简,宋体-简</FontFamily>
 
   <system:String x:Key="updater.caption">Buscar Actualizaciones</system:String>
-  <!--<system:String x:Key="updater.description">Open singing synthesis platform</system:String>-->
+  <system:String x:Key="updater.description">La Plataforma de Síntesis de Canto de Código Abierto</system:String>
   <system:String x:Key="updater.github">Abrir GitHub</system:String>
   <system:String x:Key="updater.status.available">Actualización Disponible (v{0})</system:String>
   <system:String x:Key="updater.status.checking">Buscando Actualizaciones...</system:String>
