@@ -158,7 +158,7 @@ namespace OpenUtau.Core {
             return (db <= -24) ? 0 : (float)MusicMath.DecibelToLinear((db < -16) ? db * 2 + 16 : db);
         }
 
-        public void RenderToFiles(UProject project) {
+        public void RenderToFiles(UProject project, string exportPath) {
             Task.Run(() => {
                 var task = Task.Run(() => {
                     RenderEngine engine = new RenderEngine(project);
@@ -169,7 +169,7 @@ namespace OpenUtau.Core {
                                 continue;
                             }
                         }
-                        var file = PathManager.Inst.GetExportPath(project.FilePath, i + 1);
+                        var file = PathManager.Inst.GetExportPath(exportPath, i + 1);
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exporting to {file}."));
                         WaveFileWriter.CreateWaveFile16(file, new ExportAdapter(trackMixes[i]).ToMono(1, 0));
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exported to {file}."));

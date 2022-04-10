@@ -19,7 +19,7 @@
     <TextBlock Grid.Row="1" Margin="40,0" TextAlignment="Center"
                Text="{Binding AppVersion}"/>
     <TextBlock Grid.Row="2" Margin="40,0" TextAlignment="Center"
-               Text="Open singing synthesis platform"/>
+               Text="{DynamicResource updater.description}"/>
     <TextBlock Grid.Row="3" Margin="40,0" TextAlignment="Center" VerticalAlignment="Bottom"
                Text="{Binding UpdaterStatus}" FontWeight="Bold"/>
     <StackPanel Grid.Row="4" Orientation="Horizontal" Margin="0,20,0,20"

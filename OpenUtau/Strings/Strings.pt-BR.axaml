@@ -66,7 +66,9 @@
   <system:String x:Key="menu.file">Arquivo</system:String>
   <system:String x:Key="menu.file.exit">Fechar</system:String>
   <system:String x:Key="menu.file.exportust">Exportar como Ust</system:String>
+  <!--<system:String x:Key="menu.file.exportustto">Export Ust Files To...</system:String>-->
   <system:String x:Key="menu.file.exportwav">Exportar Arquivos Wav</system:String>
+  <!--<system:String x:Key="menu.file.exportwavto">Export Wav Files To...</system:String>-->
   <system:String x:Key="menu.file.importaudio">Importar Audio...</system:String>
   <system:String x:Key="menu.file.importmidi">Importar Midi...</system:String>
   <system:String x:Key="menu.file.importtracks">Importar Faixas...</system:String>
@@ -120,6 +122,7 @@
   <system:String x:Key="pianoroll.menu.notes">Nota</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">Adicionar final "-"</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">Adicionar final "R"</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Load Rendered Pitch</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.quantize15">Quantizar para 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Quantizar para 1/64</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">Redefinir todas expressões</system:String>
@@ -167,8 +170,8 @@ Segure Ctrl para selecionar mais notas</system:String>
   <system:String x:Key="prefs.playback">Reprodução</system:String>
   <system:String x:Key="prefs.playback.autoscroll">Auto Rolagem</system:String>
   <system:String x:Key="prefs.playback.autoscrollmode">Modo de Rolagem</system:String>
-  <system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">Cursor Estacionário</system:String>
   <system:String x:Key="prefs.playback.autoscrollmode.pagescroll">Rolagem de Página</system:String>
+  <system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">Cursor Estacionário</system:String>
   <system:String x:Key="prefs.playback.backend">Back-end de áudio</system:String>
   <system:String x:Key="prefs.playback.backend.auto">Automático</system:String>
   <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
@@ -213,6 +216,7 @@ Segure Ctrl para selecionar mais notas</system:String>
   <system:String x:Key="singers.subbanks.tone">Tom</system:String>
   <system:String x:Key="singers.subbanks.toneranges">Alcance</system:String>
 
+  <!--<system:String x:Key="tip.aliasbox">Override Alias</system:String>-->
   <system:String x:Key="tip.exps">
 Desenhar com o Botão Esquerdo: Definir expressões
 Desenhar com o Botão Direito: Redefinir expressões
@@ -249,6 +253,7 @@ Geral
   <!--<FontFamily x:Key="ui.textbox.fontfamily">Microsoft YaHei,Simsun,苹方-简,宋体-简</FontFamily>-->
 
   <system:String x:Key="updater.caption">Procurar Updates</system:String>
+  <!--<system:String x:Key="updater.description">Open singing synthesis platform</system:String>-->
   <!--<system:String x:Key="updater.github">GitHub</system:String>-->
   <system:String x:Key="updater.status.available">Update v{0} disponível!</system:String>
   <system:String x:Key="updater.status.checking">Procurando updates...</system:String>

@@ -66,7 +66,9 @@
   <system:String x:Key="menu.file">文件</system:String>
   <system:String x:Key="menu.file.exit">退出</system:String>
   <system:String x:Key="menu.file.exportust">导出Ust文件</system:String>
+  <system:String x:Key="menu.file.exportustto">导出Ust文件至...</system:String>
   <system:String x:Key="menu.file.exportwav">导出Wav文件</system:String>
+  <system:String x:Key="menu.file.exportwavto">导出Wav文件至...</system:String>
   <system:String x:Key="menu.file.importaudio">导入音频...</system:String>
   <system:String x:Key="menu.file.importmidi">导入Midi...</system:String>
   <system:String x:Key="menu.file.importtracks">导入轨道...</system:String>
@@ -120,6 +122,7 @@
   <system:String x:Key="pianoroll.menu.notes">音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">添加尾部"-"音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">添加尾部"R"音符</system:String>
+  <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">加载音高渲染结果</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">量化至1/128音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">量化至1/64音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">重置表情</system:String>
@@ -167,8 +170,8 @@
   <system:String x:Key="prefs.playback">回放</system:String>
   <system:String x:Key="prefs.playback.autoscroll">自动滚动</system:String>
   <system:String x:Key="prefs.playback.autoscrollmode">自动滚动模式</system:String>
-  <system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">固定播放标记</system:String>
   <system:String x:Key="prefs.playback.autoscrollmode.pagescroll">整页滚动</system:String>
+  <system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">固定播放标记</system:String>
   <system:String x:Key="prefs.playback.backend">音频后端</system:String>
   <system:String x:Key="prefs.playback.backend.auto">自动</system:String>
   <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
@@ -250,6 +253,7 @@
   <!--<FontFamily x:Key="ui.textbox.fontfamily">Microsoft YaHei,Simsun,苹方-简,宋体-简</FontFamily>-->
 
   <system:String x:Key="updater.caption">检查更新</system:String>
+  <system:String x:Key="updater.description">开放歌声合成平台</system:String>
   <!--<system:String x:Key="updater.github">GitHub</system:String>-->
   <system:String x:Key="updater.status.available">有新更新 v{0} !</system:String>
   <system:String x:Key="updater.status.checking">检查更新中...</system:String>

@@ -66,7 +66,9 @@
   <system:String x:Key="menu.file">Tệp</system:String>
   <system:String x:Key="menu.file.exit">Thoát ra</system:String>
   <system:String x:Key="menu.file.exportust">Xuất ra tệp UST</system:String>
+  <!--<system:String x:Key="menu.file.exportustto">Export Ust Files To...</system:String>-->
   <system:String x:Key="menu.file.exportwav">Xuất ra tệp WAV</system:String>
+  <!--<system:String x:Key="menu.file.exportwavto">Export Wav Files To...</system:String>-->
   <system:String x:Key="menu.file.importaudio">Nhập vào tệp Âm thanh...</system:String>
   <system:String x:Key="menu.file.importmidi">Nhập vào Midi...</system:String>
   <system:String x:Key="menu.file.importtracks">Nhập vào UST/VSQX...</system:String>
@@ -167,8 +169,9 @@ Nhấn giữ Ctrl để chọn đồng loạt nhiều nốt</system:String>
   <system:String x:Key="prefs.paths.select">Lựa chọn</system:String>
   <system:String x:Key="prefs.playback">Phát lại</system:String>
   <system:String x:Key="prefs.playback.autoscroll">Tự động cuốn đường phát nhạc</system:String>
-  <system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">Đường phát nhạc đứng ở một chỗ</system:String>
+  <!--<system:String x:Key="prefs.playback.autoscrollmode">Auto-Scroll Mode</system:String>-->
   <system:String x:Key="prefs.playback.autoscrollmode.pagescroll">Tự động chuyển sang khung hình tiếp theo</system:String>
+  <system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">Đường phát nhạc đứng ở một chỗ</system:String>
   <system:String x:Key="prefs.playback.backend">Backend âm thanh</system:String>
   <system:String x:Key="prefs.playback.backend.auto">Tự động</system:String>
   <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
@@ -213,6 +216,7 @@ Warning: moresampler is not fully supported. It may be slow and cause high CPU u
   <system:String x:Key="singers.subbanks.tone">Cao độ</system:String>
   <system:String x:Key="singers.subbanks.toneranges">Cao độ</system:String>
 
+  <!--<system:String x:Key="tip.aliasbox">Override Alias</system:String>-->
   <system:String x:Key="tip.exps">
 Nhấn giữ và kéo trái chuột: Thiết lập biểu cảm
 Nhấn giữ và kéo phải: Đặt lại biểu cảm
@@ -249,6 +253,7 @@ Tổng quát
   <!--<FontFamily x:Key="ui.textbox.fontfamily">Microsoft YaHei,Simsun,苹方-简,宋体-简</FontFamily>-->
 
   <system:String x:Key="updater.caption">Kiểm tra cập nhật</system:String>
+  <!--<system:String x:Key="updater.description">Open singing synthesis platform</system:String>-->
   <!--<system:String x:Key="updater.github">GitHub</system:String>-->
   <system:String x:Key="updater.status.available">Có bản cập nhật v{0} mới!</system:String>
   <system:String x:Key="updater.status.checking">Đang kiểm tra cập nhật...</system:String>
