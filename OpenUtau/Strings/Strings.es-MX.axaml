@@ -253,7 +253,7 @@ General
   <FontFamily x:Key="ui.textbox.fontfamily">Microsoft YaHei,Simsun,苹方-简,宋体-简</FontFamily>
 
   <system:String x:Key="updater.caption">Buscar Actualizaciones</system:String>
-  <system:String x:Key="updater.description">La Plataforma de Síntesis de Canto de Código Abierto/system:String>
+  <system:String x:Key="updater.description">La Plataforma de Síntesis de Canto de Código Abierto</system:String>
   <system:String x:Key="updater.github">Abrir GitHub</system:String>
   <system:String x:Key="updater.status.available">Actualización Disponible (v{0})</system:String>
   <system:String x:Key="updater.status.checking">Buscando Actualizaciones...</system:String>
