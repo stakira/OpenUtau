@@ -191,6 +191,10 @@ namespace OpenUtau.Core {
             engine.PreRenderProject(ref renderCancellation);
         }
 
+        public List<Audio.AudioOutputDevice> GetOutputDevices() {
+            return AudioOutput.GetOutputDevices();
+        }
+
         #region ICmdSubscriber
 
         public void OnNext(UCommand cmd, bool isUndo) {
