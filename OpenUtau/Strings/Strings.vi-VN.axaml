@@ -177,6 +177,7 @@ Nhấn giữ Ctrl để chọn đồng loạt nhiều nốt</system:String>
   <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">Vị trí đường phát nhạc</system:String>
   <system:String x:Key="prefs.playback.device">Thiết bị phát nhạc</system:String>
+  <!-- <system:String x:Key="prefs.playback.audiodevicerefresh">Refresh Audio Devices</system:String> -->
   <system:String x:Key="prefs.playback.lockstarttime">Khi dừng phát nhạc</system:String>
   <system:String x:Key="prefs.playback.lockstarttime.off">Không làm gì cả</system:String>
   <system:String x:Key="prefs.playback.lockstarttime.on">Quay lại nơi bắt đầu phát nhạc</system:String>

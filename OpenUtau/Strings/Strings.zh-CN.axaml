@@ -177,6 +177,7 @@
   <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">自动滚动边界</system:String>
   <system:String x:Key="prefs.playback.device">回放设备</system:String>
+  <!-- <system:String x:Key="prefs.playback.audiodevicerefresh">Refresh Audio Devices</system:String> -->
   <system:String x:Key="prefs.playback.lockstarttime">暂停时</system:String>
   <system:String x:Key="prefs.playback.lockstarttime.off">什么都不做</system:String>
   <system:String x:Key="prefs.playback.lockstarttime.on">将播放标记移回开始播放处</system:String>

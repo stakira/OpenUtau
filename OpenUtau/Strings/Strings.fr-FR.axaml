@@ -177,6 +177,7 @@ Maintenir Ctrl pour ajouter à la sélection</system:String>
   <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">Position du curseur</system:String>
   <system:String x:Key="prefs.playback.device">Audio de sortie</system:String>
+  <!-- <system:String x:Key="prefs.playback.audiodevicerefresh">Refresh Audio Devices</system:String> -->
   <!--<system:String x:Key="prefs.playback.lockstarttime">On Pausing</system:String>-->
   <!--<system:String x:Key="prefs.playback.lockstarttime.off">Do nothing</system:String>-->
   <!--<system:String x:Key="prefs.playback.lockstarttime.on">Move cursor back to where you started playing</system:String>-->

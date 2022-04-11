@@ -20,7 +20,11 @@
         <HeaderedContentControl Classes="groupbox" Header="{DynamicResource prefs.playback}">
           <StackPanel>
             <TextBlock Text="{DynamicResource prefs.playback.device}"/>
-            <ComboBox HorizontalAlignment="Stretch" Items="{Binding AudioOutputDevices}" SelectedItem="{Binding AudioOutputDevice}"/>
+            <Grid HorizontalAlignment="Stretch" ColumnDefinitions="*,10,*">
+                <ComboBox Grid.Column="0" HorizontalAlignment="Stretch" Items="{Binding AudioOutputDevices}" SelectedItem="{Binding AudioOutputDevice}"/>
+                <Button Grid.Column="2" Content="{DynamicResource prefs.playback.audiodevicerefresh}"
+                        HorizontalAlignment="Stretch" Click="RefreshAudioDevices"/>
+            </Grid>
             <Button Content="{DynamicResource prefs.playback.test}" HorizontalAlignment="Stretch" Command="{Binding TestAudioOutputDevice}"/>
             <TextBlock Text="{DynamicResource prefs.playback.backend}"/>
             <ComboBox HorizontalAlignment="Stretch" SelectedIndex="{Binding PreferPortAudio}">

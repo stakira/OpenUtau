@@ -177,6 +177,7 @@ Tahan Ctrl untuk memilih lainnya</system:String>
   <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">Posisi Kursor</system:String>
   <system:String x:Key="prefs.playback.device">Perangkat Pemutaran</system:String>
+  <!-- <system:String x:Key="prefs.playback.audiodevicerefresh">Refresh Audio Devices</system:String> -->
   <!--<system:String x:Key="prefs.playback.lockstarttime">On Pausing</system:String>-->
   <!--<system:String x:Key="prefs.playback.lockstarttime.off">Do nothing</system:String>-->
   <!--<system:String x:Key="prefs.playback.lockstarttime.on">Move cursor back to where you started playing</system:String>-->

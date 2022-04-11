@@ -177,6 +177,7 @@ Segure Ctrl para selecionar mais notas</system:String>
   <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">Posição do Cursor</system:String>
   <system:String x:Key="prefs.playback.device">Dispositivo de Reprodução</system:String>
+  <!-- <system:String x:Key="prefs.playback.audiodevicerefresh">Refresh Audio Devices</system:String> -->
   <system:String x:Key="prefs.playback.lockstarttime">Quando Parar</system:String>
   <system:String x:Key="prefs.playback.lockstarttime.off">Fazer nada</system:String>
   <system:String x:Key="prefs.playback.lockstarttime.on">Voltar a posição inicial</system:String>

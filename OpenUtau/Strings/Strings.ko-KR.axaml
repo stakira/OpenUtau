@@ -177,6 +177,7 @@
   <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">커서 위치</system:String>
   <system:String x:Key="prefs.playback.device">재생 장치</system:String>
+  <system:String x:Key="prefs.playback.audiodevicerefresh">장치 목록 새로고침</system:String>
   <system:String x:Key="prefs.playback.lockstarttime">일시 중지 시 동작</system:String>
   <system:String x:Key="prefs.playback.lockstarttime.off">아무것도 하지 않음</system:String>
   <system:String x:Key="prefs.playback.lockstarttime.on">재생을 시작한 위치로 커서를 다시 이동</system:String>

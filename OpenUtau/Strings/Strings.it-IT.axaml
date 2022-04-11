@@ -177,6 +177,7 @@ Tieni premuto click sinistro + Ctrl per selezionare più note</system:String>
   <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">Posizione del cursore</system:String>
   <system:String x:Key="prefs.playback.device">Dispositivo audio</system:String>
+  <!-- <system:String x:Key="prefs.playback.audiodevicerefresh">Refresh Audio Devices</system:String> -->
   <!--<system:String x:Key="prefs.playback.lockstarttime">On Pausing</system:String>-->
   <!--<system:String x:Key="prefs.playback.lockstarttime.off">Do nothing</system:String>-->
   <!--<system:String x:Key="prefs.playback.lockstarttime.on">Move cursor back to where you started playing</system:String>-->

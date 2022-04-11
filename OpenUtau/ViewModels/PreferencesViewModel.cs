@@ -180,5 +180,20 @@ namespace OpenUtau.App.ViewModels {
             Preferences.Save();
             this.RaisePropertyChanged(nameof(AdditionalSingersPath));
         }
+
+        public void RefreshAudioDevices() {
+            var audioOutput = PlaybackManager.Inst.AudioOutput;
+            var newAudio = new Audio.DummyAudioOutput().GetOutputDevices();
+            Console.WriteLine(newAudio.Count);
+            if (audioOutput != null) {
+                AudioOutputDevices = audioOutput.GetOutputDevices();
+                Console.WriteLine(AudioOutputDevices.Count);
+                int deviceNumber = audioOutput.DeviceNumber;
+                var device = AudioOutputDevices.FirstOrDefault(d => d.deviceNumber == deviceNumber);
+                if (device != null) {
+                    AudioOutputDevice = device;
+                }
+            }
+        }
     }
 }

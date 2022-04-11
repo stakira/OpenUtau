@@ -32,5 +32,9 @@ namespace OpenUtau.App.Views {
                 ((PreferencesViewModel)DataContext!).SetAddlSingersPath(path);
             }
         }
+
+        async void RefreshAudioDevices(object sender, RoutedEventArgs e) {
+            ((PreferencesViewModel)DataContext!).RefreshAudioDevices();
+        }
     }
 }
