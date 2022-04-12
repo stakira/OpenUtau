@@ -59,7 +59,6 @@ namespace OpenUtau.Classic {
                     }
                     progress.CompleteOne($"Resampling \"{item.phone.phoneme}\"");
                 });
-                var firstPhone = phrase.phones.First();
                 var result = Layout(phrase);
                 result.samples = Concatenate(resamplerItems, cancellation);
                 if (result.samples != null) {

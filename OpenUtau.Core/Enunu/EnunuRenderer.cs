@@ -101,6 +101,11 @@ namespace OpenUtau.Core.Enunu {
                             gender, tension, breathiness, voicing);
                         result.samples = samples.Select(d => (float)d).ToArray();
                         Wave.CorrectSampleScale(result.samples);
+                        if (config.sampleRate != 44100) {
+                            var signal = new NWaves.Signals.DiscreteSignal(config.sampleRate, result.samples);
+                            signal = NWaves.Operations.Operation.Resample(signal, 44100);
+                            result.samples = signal.Samples;
+                        }
                         var source = new WaveSource(0, 0, 0, 1);
                         source.SetSamples(result.samples);
                         WaveFileWriter.CreateWaveFile16(wavPath, new ExportAdapter(source).ToMono(1, 0));

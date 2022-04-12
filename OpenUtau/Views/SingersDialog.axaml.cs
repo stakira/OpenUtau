@@ -110,7 +110,7 @@ namespace OpenUtau.App.Views {
             var xs = Enumerable.Range(0, samples.Length).Select(i => i * 1.0 / hopSize).ToArray();
             double cutoff = oto.Cutoff > 0
                 ? (wav.Signals[0].Duration * 1000.0 - oto.Cutoff)
-                : oto.Offset + oto.Preutter - oto.Cutoff;
+                : oto.Offset - oto.Cutoff;
             double offsetX = oto.Offset * msToCoord;
             double consonantX = (oto.Offset + oto.Consonant) * msToCoord;
             double preutterX = (oto.Offset + oto.Preutter) * msToCoord;
