@@ -66,9 +66,9 @@
   <system:String x:Key="menu.file">Tệp</system:String>
   <system:String x:Key="menu.file.exit">Thoát ra</system:String>
   <system:String x:Key="menu.file.exportust">Xuất ra tệp UST</system:String>
-  <!--<system:String x:Key="menu.file.exportustto">Export Ust Files To...</system:String>-->
+  <system:String x:Key="menu.file.exportustto">Xuất tệp UST vào...</system:String>
   <system:String x:Key="menu.file.exportwav">Xuất ra tệp WAV</system:String>
-  <!--<system:String x:Key="menu.file.exportwavto">Export Wav Files To...</system:String>-->
+  <system:String x:Key="menu.file.exportwavto">Xuất tệp WAV vào...</system:String>
   <system:String x:Key="menu.file.importaudio">Nhập vào tệp Âm thanh...</system:String>
   <system:String x:Key="menu.file.importmidi">Nhập vào Midi...</system:String>
   <system:String x:Key="menu.file.importtracks">Nhập vào UST/VSQX...</system:String>
@@ -122,7 +122,7 @@
   <system:String x:Key="pianoroll.menu.notes">Nốt nhạc</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">Thêm nốt "-"</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">Thêm nốt "R"</system:String>
-  <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Tự động điều chỉnh đường luyến giọng (đối với ca sĩ NNSVS/ENUNU/VOGEN)</system:String>
+  <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Sử dụng luyến giọng tự nhiên</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">Chia thành quãng 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Chia thành quãng 1/64</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">Đặt lại các biểu cảm</system:String>

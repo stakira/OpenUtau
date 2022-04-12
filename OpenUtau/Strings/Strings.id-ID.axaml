@@ -10,7 +10,7 @@
   <system:String x:Key="context.pitch.pointdel">Hapus titik</system:String>
   <system:String x:Key="context.pitch.pointsnapprev">Snap ke not sebelumnya</system:String>
 
-  <!--<system:String x:Key="debug.clear">Clear</system:String>-->
+  <!--<system:String x:Key="debug.clear">Bersihkan</system:String>-->
 
   <system:String x:Key="dialogs.about.caption">Tentang OpenUtau</system:String>
   <system:String x:Key="dialogs.about.message">
@@ -42,7 +42,7 @@
   <system:String x:Key="exps.optionvalues">Nilai opsi</system:String>
   <system:String x:Key="exps.sepbycomma">Pisahkan nilai dengan ','</system:String>
   <system:String x:Key="exps.type">Jenis</system:String>
-  <!--<system:String x:Key="exps.type.curve">Curve</system:String>-->
+  <!--<system:String x:Key="exps.type.curve">Kurva</system:String>-->
   <system:String x:Key="exps.type.numerical">Numerik</system:String>
   <system:String x:Key="exps.type.options">Opsi</system:String>
 
@@ -66,9 +66,9 @@
   <system:String x:Key="menu.file">Berkas</system:String>
   <system:String x:Key="menu.file.exit">Keluar</system:String>
   <system:String x:Key="menu.file.exportust">Ekspor Berkas UST</system:String>
-  <!--<system:String x:Key="menu.file.exportustto">Export Ust Files To...</system:String>-->
-  <!--<system:String x:Key="menu.file.exportwav">Export Wav Files</system:String>-->
-  <!--<system:String x:Key="menu.file.exportwavto">Export Wav Files To...</system:String>-->
+  <!--<system:String x:Key="menu.file.exportustto">Ekspor Berkas UST Ke...</system:String>-->
+  <!--<system:String x:Key="menu.file.exportwav">Ekspor Berkas Wav</system:String>-->
+  <!--<system:String x:Key="menu.file.exportwavto">Ekspor Berkas Wav Ke...</system:String>-->
   <system:String x:Key="menu.file.importaudio">Impor Audio...</system:String>
   <system:String x:Key="menu.file.importmidi">Impor Midi...</system:String>
   <system:String x:Key="menu.file.importtracks">Impor Trek...</system:String>
@@ -84,7 +84,7 @@
   <system:String x:Key="menu.help.about">Tentang OpenUtau</system:String>
   <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
   <system:String x:Key="menu.tools">Peralatan</system:String>
-  <!--<system:String x:Key="menu.tools.clearcache">Clear Cache</system:String>-->
+  <!--<system:String x:Key="menu.tools.clearcache">Bersihkan Cache</system:String>-->
   <!--<system:String x:Key="menu.tools.debugwindow">Debug Window</system:String>-->
   <system:String x:Key="menu.tools.layout">Tata Letak</system:String>
   <system:String x:Key="menu.tools.layout.hsplit11">Horisontal 1:1</system:String>
@@ -122,7 +122,7 @@
   <system:String x:Key="pianoroll.menu.notes">Not</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">Tambahkan bagian akhir "-"</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">Tambahkan bagian akhir "R"</system:String>
-  <!--<system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Load Rendered Pitch</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Memuat Nada yang Dirender</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.quantize15">Kuantisasi hingga 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Kuantisasi hingga 1/64</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">Setel ulang semua ekspresi</system:String>
@@ -132,16 +132,16 @@
   <system:String x:Key="pianoroll.menu.part">Bagian</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">Plugin Lama (Eksperimental)</system:String>
   <system:String x:Key="pianoroll.menu.part.rename">Ganti Nama</system:String>
-  <!--<system:String x:Key="pianoroll.toggle.finalpitch">View Final Pitch to Render (R)</system:String>-->
+  <!--<system:String x:Key="pianoroll.toggle.finalpitch">Lihat Nada Akhir untuk Dirender (R)</system:String>-->
   <system:String x:Key="pianoroll.toggle.phoneme">Perlihatkan Fonem (O)</system:String>
   <system:String x:Key="pianoroll.toggle.pitch">Perlihatkan Pitch Bend(I)</system:String>
   <system:String x:Key="pianoroll.toggle.snap">Alihkan Snap (P)</system:String>
   <system:String x:Key="pianoroll.toggle.tips">Perlihatkan Tips (T)</system:String>
   <system:String x:Key="pianoroll.toggle.tone">Alihkan Not Nada (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">Perlihatkan Vibrato (U)</system:String>
-  <!--<system:String x:Key="pianoroll.tool.drawpitch">Draw Pitch Tool (4)</system:String>-->
+  <!--<system:String x:Key="pianoroll.tool.drawpitch">Alat Menggambar Nada (4)</system:String>-->
   <system:String x:Key="pianoroll.tool.eraser">Alat Penghapus (3)</system:String>
-  <!--<system:String x:Key="pianoroll.tool.knife">Knife Tool (5)</system:String>-->
+  <!--<system:String x:Key="pianoroll.tool.knife">Alat Pemotong (5)</system:String>-->
   <system:String x:Key="pianoroll.tool.pen">Alat Pena (2)
 Klik kiri untuk menarik
 Klik kanan untuk menghapus</system:String>
@@ -164,23 +164,23 @@ Tahan Ctrl untuk memilih lainnya</system:String>
   <system:String x:Key="prefs.on">Hidup</system:String>
   <system:String x:Key="prefs.paths">Jalur</system:String>
   <system:String x:Key="prefs.paths.addlsinger">Jalur Penyanyi Tambahan</system:String>
-  <!--<system:String x:Key="prefs.paths.addlsinger.install">Install to Additional Singer Path</system:String>-->
+  <!--<system:String x:Key="prefs.paths.addlsinger.install">Instal ke Jalur Penyanyi Tambahan </system:String>-->
   <system:String x:Key="prefs.paths.reset">Setel Ulang</system:String>
   <system:String x:Key="prefs.paths.select">Pilih</system:String>
   <system:String x:Key="prefs.playback">Pemutaran</system:String>
-  <!--<system:String x:Key="prefs.playback.autoscroll">Auto-Scroll</system:String>-->
-  <!--<system:String x:Key="prefs.playback.autoscrollmode">Auto-Scroll Mode</system:String>-->
-  <!--<system:String x:Key="prefs.playback.autoscrollmode.pagescroll">Page Scroll</system:String>-->
-  <!--<system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">Stationary Cursor</system:String>-->
+  <!--<system:String x:Key="prefs.playback.autoscroll">Gulir Otomatis</system:String>-->
+  <!--<system:String x:Key="prefs.playback.autoscrollmode">Mode Gilir Otomatis</system:String>-->
+  <!--<system:String x:Key="prefs.playback.autoscrollmode.pagescroll">Gulir Halaman </system:String>-->
+  <!--<system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">Kursor Stasioner</system:String>-->
   <system:String x:Key="prefs.playback.backend">Latar Belakang Audio</system:String>
   <system:String x:Key="prefs.playback.backend.auto">Otomatis</system:String>
   <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">Posisi Kursor</system:String>
   <system:String x:Key="prefs.playback.device">Perangkat Pemutaran</system:String>
-  <!--<system:String x:Key="prefs.playback.lockstarttime">On Pausing</system:String>-->
-  <!--<system:String x:Key="prefs.playback.lockstarttime.off">Do nothing</system:String>-->
-  <!--<system:String x:Key="prefs.playback.lockstarttime.on">Move cursor back to where you started playing</system:String>-->
-  <system:String x:Key="prefs.playback.test">Tes</system:String>
+  <!--<system:String x:Key="prefs.playback.lockstarttime">Saat menjeda</system:String>-->
+  <!--<system:String x:Key="prefs.playback.lockstarttime.off">Tidak melakukan apapun </system:String>-->
+  <!--<system:String x:Key="prefs.playback.lockstarttime.on">Pindahkan kursor kembali ke tempat Anda memulai</system:String>-->
+  <system:String x:Key="prefs.playback.test">Uji</system:String>
   <system:String x:Key="prefs.rendering">Merender</system:String>
   <!--<system:String x:Key="prefs.rendering.phasecomp">Phase Compensation</system:String>-->
   <system:String x:Key="prefs.rendering.prerender.threads">Utas Pra-perenderan</system:String>
@@ -196,7 +196,7 @@ Warning: moresampler is not fully supported. It may be slow and cause high CPU u
   </system:String>
 
   <system:String x:Key="progress.saved">Proyek tersimpan. {0}</system:String>
-  <!--<system:String x:Key="progress.waitingrendering">Waiting Rendering</system:String>-->
+  <!--<system:String x:Key="progress.waitingrendering">Menunggu Rendering</system:String>-->
 
   <system:String x:Key="singers.caption">Penyanyi</system:String>
   <system:String x:Key="singers.location">Lokasi</system:String>
@@ -243,7 +243,7 @@ Umum
   <system:String x:Key="tip.notes.zoomx">◀ Gulir ke sini untuk memperbesar secara horizontal ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">Gulir ke sini untuk memperbesar secara vertikal ▶</system:String>
 
-  <!--<system:String x:Key="tracks.more">More</system:String>-->
+  <!--<system:String x:Key="tracks.more">Lebih</system:String>-->
   <system:String x:Key="tracks.movedown">Turunkan</system:String>
   <system:String x:Key="tracks.moveup">Naikkan</system:String>
   <system:String x:Key="tracks.remove">Hapus</system:String>
@@ -253,7 +253,7 @@ Umum
   <!--<FontFamily x:Key="ui.textbox.fontfamily">Microsoft YaHei,Simsun,苹方-简,宋体-简</FontFamily>-->
 
   <system:String x:Key="updater.caption">Memeriksa Pembaruan</system:String>
-  <!--<system:String x:Key="updater.description">Open singing synthesis platform</system:String>-->
+  <!--<system:String x:Key="updater.description">Open Singing Synthesis Platform</system:String>-->
   <!--<system:String x:Key="updater.github">GitHub</system:String>-->
   <system:String x:Key="updater.status.available">Pembaruan v{0} tersedia!</system:String>
   <system:String x:Key="updater.status.checking">Memeriksa pembaruan...</system:String>
