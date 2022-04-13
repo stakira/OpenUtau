@@ -226,7 +226,7 @@
   <system:String x:Key="tip.notes.basics">
 Инструмент выбора
   Выбор в поле: выбрать ноты
-  <!--Ctrl + Выбор в поле: выбрать дополнительные ноты--> <!--149 this functionality does not work, so there is no point in displaying it-->
+  Ctrl + Выбор в поле: выбрать дополнительные ноты
   ↑/↓: сместить выбранные ноты
   Ctrl + ↑/↓: перенос выбранных нот на октаву
 Инструмент карандаш
