@@ -26,7 +26,7 @@ namespace OpenUtau.Core.Ustx {
                     } else {
                         switch (value.SingerType) {
                             case USingerType.Classic:
-                                Renderer = new Classic.ClassicRenderer();
+                                Renderer = new Classic.WorldlineRenderer();
                                 break;
                             case USingerType.Enunu:
                                 Renderer = new Enunu.EnunuRenderer();
