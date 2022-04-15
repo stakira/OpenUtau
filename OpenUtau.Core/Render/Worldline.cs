@@ -118,7 +118,7 @@ namespace OpenUtau.Core.Render {
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct SynthRequest {
+        struct SynthRequest {
             public int sample_fs;
             public int sample_length;
             public IntPtr sample;
@@ -141,67 +141,92 @@ namespace OpenUtau.Core.Render {
             public int flag_Mv;
         };
 
+        class SynthRequestWrapper : IDisposable {
+            public SynthRequest request;
+            private bool disposedValue;
+            private GCHandle[] handles;
+
+            public SynthRequestWrapper(ResamplerItem item) {
+                int fs;
+                double[] sample;
+                using (var waveStream = Wave.OpenFile(item.inputFile)) {
+                    fs = waveStream.WaveFormat.SampleRate;
+                    sample = Wave.GetSamples(waveStream.ToSampleProvider().ToMono(1, 0))
+                        .Select(f => (double)f).ToArray();
+                }
+
+                var pinnedSample = GCHandle.Alloc(sample, GCHandleType.Pinned);
+                var pinnedPitchBend = GCHandle.Alloc(item.pitches, GCHandleType.Pinned);
+                handles = new[] { pinnedSample, pinnedPitchBend };
+                request = new SynthRequest {
+                    sample_fs = fs,
+                    sample_length = sample.Length,
+                    sample = pinnedSample.AddrOfPinnedObject(),
+                    tone = item.tone,
+                    con_vel = item.velocity,
+                    offset = item.offset,
+                    required_length = item.requiredLength,
+                    consonant = item.consonant,
+                    cut_off = item.cutoff,
+                    volume = item.volume,
+                    modulation = item.modulation,
+                    tempo = item.tempo,
+                    pitch_bend_length = item.pitches.Length,
+                    pitch_bend = pinnedPitchBend.AddrOfPinnedObject(),
+                    flag_g = 0,
+                    flag_O = 0,
+                    flag_P = 86,
+                    flag_Mt = 0,
+                    flag_Mb = 0,
+                    flag_Mv = 100,
+                };
+                var flag = item.flags.FirstOrDefault(f => f.Item1 == "g");
+                if (flag != null && flag.Item2.HasValue) {
+                    request.flag_g = flag.Item2.Value;
+                }
+                flag = item.flags.FirstOrDefault(f => f.Item1 == "O");
+                if (flag != null && flag.Item2.HasValue) {
+                    request.flag_O = flag.Item2.Value;
+                }
+                flag = item.flags.FirstOrDefault(f => f.Item1 == "P");
+                if (flag != null && flag.Item2.HasValue) {
+                    request.flag_P = flag.Item2.Value;
+                }
+                flag = item.flags.FirstOrDefault(f => f.Item1 == "Mt");
+                if (flag != null && flag.Item2.HasValue) {
+                    request.flag_Mt = flag.Item2.Value;
+                }
+                flag = item.flags.FirstOrDefault(f => f.Item1 == "Mb");
+                if (flag != null && flag.Item2.HasValue) {
+                    request.flag_Mb = flag.Item2.Value;
+                }
+                flag = item.flags.FirstOrDefault(f => f.Item1 == "Mv");
+                if (flag != null && flag.Item2.HasValue) {
+                    request.flag_Mv = flag.Item2.Value;
+                }
+            }
+
+            protected virtual void Dispose(bool disposing) {
+                if (!disposedValue) {
+                    foreach (var handle in handles) {
+                        handle.Free();
+                    }
+                    disposedValue = true;
+                }
+            }
+
+            public void Dispose() {
+                Dispose(disposing: true);
+                GC.SuppressFinalize(this);
+            }
+        }
+
         [DllImport("worldline")]
         static extern int Resample(IntPtr request, ref IntPtr y);
 
         public static float[] Resample(ResamplerItem item) {
-            int fs;
-            double[] sample;
-            using (var waveStream = Wave.OpenFile(item.inputTemp)) {
-                fs = waveStream.WaveFormat.SampleRate;
-                sample = Wave.GetSamples(waveStream.ToSampleProvider().ToMono(1, 0))
-                    .Select(f => (double)f).ToArray();
-            }
-
-            var pinnedSample = GCHandle.Alloc(sample, GCHandleType.Pinned);
-            var pinnedPitchBend = GCHandle.Alloc(item.pitches, GCHandleType.Pinned);
-            var request = new SynthRequest {
-                sample_fs = fs,
-                sample_length = sample.Length,
-                sample = pinnedSample.AddrOfPinnedObject(),
-                tone = item.tone,
-                con_vel = item.velocity,
-                offset = item.offset,
-                required_length = item.requiredLength,
-                consonant = item.consonant,
-                cut_off = item.cutoff,
-                volume = item.volume,
-                modulation = item.modulation,
-                tempo = item.tempo,
-                pitch_bend_length = item.pitches.Length,
-                pitch_bend = pinnedPitchBend.AddrOfPinnedObject(),
-                flag_g = 0,
-                flag_O = 0,
-                flag_P = 86,
-                flag_Mt = 0,
-                flag_Mb = 0,
-                flag_Mv = 100,
-            };
-            var flag = item.flags.FirstOrDefault(f => f.Item1 == "g");
-            if (flag != null && flag.Item2.HasValue) {
-                request.flag_g = flag.Item2.Value;
-            }
-            flag = item.flags.FirstOrDefault(f => f.Item1 == "O");
-            if (flag != null && flag.Item2.HasValue) {
-                request.flag_O = flag.Item2.Value;
-            }
-            flag = item.flags.FirstOrDefault(f => f.Item1 == "P");
-            if (flag != null && flag.Item2.HasValue) {
-                request.flag_P = flag.Item2.Value;
-            }
-            flag = item.flags.FirstOrDefault(f => f.Item1 == "Mt");
-            if (flag != null && flag.Item2.HasValue) {
-                request.flag_Mt = flag.Item2.Value;
-            }
-            flag = item.flags.FirstOrDefault(f => f.Item1 == "Mb");
-            if (flag != null && flag.Item2.HasValue) {
-                request.flag_Mb = flag.Item2.Value;
-            }
-            flag = item.flags.FirstOrDefault(f => f.Item1 == "Mv");
-            if (flag != null && flag.Item2.HasValue) {
-                request.flag_Mv = flag.Item2.Value;
-            }
-
+            var requestWrapper = new SynthRequestWrapper(item);
+            SynthRequest request = requestWrapper.request;
             try {
                 unsafe {
                     IntPtr buffer = IntPtr.Zero;
@@ -212,8 +237,88 @@ namespace OpenUtau.Core.Render {
                     return data;
                 }
             } finally {
-                pinnedSample.Free();
-                pinnedPitchBend.Free();
+                requestWrapper.Dispose();
+            }
+        }
+
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        delegate void LogCallback(string log);
+
+        [DllImport("worldline")]
+        static extern IntPtr PhraseSynthNew();
+
+        [DllImport("worldline")]
+        static extern void PhraseSynthDelete(IntPtr phrase_synth);
+
+        [DllImport("worldline")]
+        static extern void PhraseSynthAddRequest(
+            IntPtr phrase_synth, IntPtr request,
+            double posMs, double skipMs, double lengthMs, double fadeInMs, double fadeOutMs);
+
+        [DllImport("worldline")]
+        static extern void PhraseSynthSetCurves(
+            IntPtr phraseSynth, double[] f0,
+            double[] gender, double[] tension,
+            double[] breathiness, double[] voicing,
+            int length);
+
+        [DllImport("worldline")]
+        static extern int PhraseSynthSynth(
+            IntPtr phrase_synth,
+            ref IntPtr y);
+
+        public class PhraseSynth : IDisposable {
+            private IntPtr ptr;
+            private bool disposedValue;
+
+            public PhraseSynth() {
+                ptr = PhraseSynthNew();
+            }
+
+            protected virtual void Dispose(bool disposing) {
+                if (!disposedValue) {
+                    PhraseSynthDelete(ptr);
+                    disposedValue = true;
+                }
+            }
+
+            ~PhraseSynth() {
+                Dispose(disposing: false);
+            }
+
+            public void Dispose() {
+                Dispose(disposing: true);
+                GC.SuppressFinalize(this);
+            }
+
+            public void AddRequest(ResamplerItem item, double posMs, double skipMs, double lengthMs, double fadeInMs, double fadeOutMs) {
+                var requestWrapper = new SynthRequestWrapper(item);
+                SynthRequest request = requestWrapper.request;
+                try {
+                    unsafe {
+                        PhraseSynthAddRequest(
+                            ptr, new IntPtr(&request),
+                            posMs, skipMs, lengthMs, fadeInMs, fadeOutMs);
+                    }
+                } finally {
+                    requestWrapper.Dispose();
+                }
+            }
+
+            public void SetCurves(
+                double[] f0, double[] gender,
+                double[] tension, double[] breathiness,
+                double[] voicing) {
+                PhraseSynthSetCurves(ptr, f0, gender, tension, breathiness, voicing, f0.Length);
+            }
+
+            public float[] Synth() {
+                IntPtr buffer = IntPtr.Zero;
+                int size = PhraseSynthSynth(ptr, ref buffer);
+                var data = new float[size];
+                Marshal.Copy(buffer, data, 0, size);
+                Marshal.FreeCoTaskMem(buffer);
+                return data;
             }
         }
     }
