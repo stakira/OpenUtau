@@ -34,6 +34,7 @@ namespace OpenUtau.Core.Render {
     /// Interface of phrase-based renderer.
     /// </summary>
     public interface IRenderer {
+        USingerType SingerType { get; }
         bool SupportsRenderPitch { get; }
         bool SupportsExpression(UExpressionDescriptor descriptor);
         RenderResult Layout(RenderPhrase phrase);

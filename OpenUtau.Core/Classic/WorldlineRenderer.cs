@@ -13,7 +13,7 @@ using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Classic {
-    internal class WorldlineRenderer : IRenderer {
+    public class WorldlineRenderer : IRenderer {
         const float frameMs = 10;
 
         static readonly HashSet<string> supportedExp = new HashSet<string>(){
@@ -30,6 +30,8 @@ namespace OpenUtau.Classic {
             Ustx.TENC,
             Ustx.VOIC,
         };
+
+        public USingerType SingerType => USingerType.Classic;
 
         public bool SupportsRenderPitch => false;
 
@@ -139,5 +141,7 @@ namespace OpenUtau.Classic {
         public RenderPitchResult LoadRenderedPitch(RenderPhrase phrase) {
             return null;
         }
+
+        public override string ToString() => "WORLDLINER";
     }
 }

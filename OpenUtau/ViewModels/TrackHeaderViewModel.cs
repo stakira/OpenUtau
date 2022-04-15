@@ -19,10 +19,13 @@ namespace OpenUtau.App.ViewModels {
         public USinger Singer => track.Singer;
         public Phonemizer Phonemizer => track.Phonemizer;
         public string PhonemizerTag => track.Phonemizer.Tag;
+        public Core.Render.IRenderer Renderer => track.Renderer;
         public IReadOnlyList<MenuItemViewModel>? SingerMenuItems { get; set; }
         public ReactiveCommand<USinger, Unit> SelectSingerCommand { get; }
         public IReadOnlyList<MenuItemViewModel>? PhonemizerMenuItems { get; set; }
         public ReactiveCommand<PhonemizerFactory, Unit> SelectPhonemizerCommand { get; }
+        public IReadOnlyList<MenuItemViewModel>? RenderersMenuItems { get; set; }
+        public ReactiveCommand<string, Unit> SelectRendererCommand { get; }
         [Reactive] public double Volume { get; set; }
         [Reactive] public bool Mute { get; set; }
         [Reactive] public bool Solo { get; set; }
@@ -36,6 +39,7 @@ namespace OpenUtau.App.ViewModels {
 #if DEBUG
             SelectSingerCommand = ReactiveCommand.Create<USinger>(_ => { });
             SelectPhonemizerCommand = ReactiveCommand.Create<PhonemizerFactory>(_ => { });
+            SelectRendererCommand = ReactiveCommand.Create<string>(_ => { });
             Activator = new ViewModelActivator();
             track = new UTrack();
 #endif
@@ -58,6 +62,12 @@ namespace OpenUtau.App.ViewModels {
                             Log.Error(e, $"Failed to load phonemizer {phonemizerName}");
                         }
                     }
+                    if (singer == null || !singer.Found) {
+                        DocManager.Inst.ExecuteCmd(new TrackChangeRendererCommand(DocManager.Inst.Project, track, null));
+                    } else if (singer.SingerType != track.Renderer?.SingerType) {
+                        string? renderer = Core.Render.Renderers.GetDefaultRenderer(singer.SingerType);
+                        DocManager.Inst.ExecuteCmd(new TrackChangeRendererCommand(DocManager.Inst.Project, track, renderer));
+                    }
                     DocManager.Inst.EndUndoGroup();
                     if (!string.IsNullOrEmpty(singer?.Id) && singer.Found) {
                         Preferences.Default.RecentSingers.Remove(singer.Id);
@@ -70,6 +80,7 @@ namespace OpenUtau.App.ViewModels {
                     Preferences.Save();
                 }
                 this.RaisePropertyChanged(nameof(Singer));
+                this.RaisePropertyChanged(nameof(Renderer));
                 RefreshAvatar();
             });
             SelectPhonemizerCommand = ReactiveCommand.Create<PhonemizerFactory>(factory => {
@@ -92,6 +103,12 @@ namespace OpenUtau.App.ViewModels {
                 }
                 this.RaisePropertyChanged(nameof(Phonemizer));
                 this.RaisePropertyChanged(nameof(PhonemizerTag));
+            });
+            SelectRendererCommand = ReactiveCommand.Create<string>(name => {
+                DocManager.Inst.StartUndoGroup();
+                DocManager.Inst.ExecuteCmd(new TrackChangeRendererCommand(DocManager.Inst.Project, track, name));
+                DocManager.Inst.EndUndoGroup();
+                this.RaisePropertyChanged(nameof(Renderer));
             });
 
             Activator = new ViewModelActivator();
@@ -179,6 +196,20 @@ namespace OpenUtau.App.ViewModels {
             this.RaisePropertyChanged(nameof(PhonemizerMenuItems));
         }
 
+        public void RefreshRenderers() {
+            var items = new List<MenuItemViewModel>();
+            if (track != null && track.Singer != null && track.Singer.Found) {
+                items.AddRange(Core.Render.Renderers.GetSupportedRenderers(track.Singer.SingerType)
+                    .Select(name => new MenuItemViewModel() {
+                        Header = name,
+                        Command = SelectRendererCommand,
+                        CommandParameter = name,
+                    }));
+            }
+            RenderersMenuItems = items.ToArray();
+            this.RaisePropertyChanged(nameof(RenderersMenuItems));
+        }
+
         public void RefreshAvatar() {
             var singer = track?.Singer;
             if (singer == null || singer.AvatarData == null) {
@@ -200,6 +231,7 @@ namespace OpenUtau.App.ViewModels {
             this.RaisePropertyChanged(nameof(TrackNo));
             this.RaisePropertyChanged(nameof(Phonemizer));
             this.RaisePropertyChanged(nameof(PhonemizerTag));
+            this.RaisePropertyChanged(nameof(Renderer));
             this.RaisePropertyChanged(nameof(Mute));
             this.RaisePropertyChanged(nameof(Solo));
             this.RaisePropertyChanged(nameof(Volume));

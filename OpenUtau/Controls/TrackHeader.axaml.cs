@@ -112,6 +112,19 @@ namespace OpenUtau.App.Controls {
             args.Handled = true;
         }
 
+        void RendererButtonClicked(object sender, RoutedEventArgs args) {
+            var rendererMenu = this.FindControl<ContextMenu>("RenderersMenu");
+            ViewModel?.RefreshRenderers();
+            if (ViewModel?.RenderersMenuItems?.Count > 0) {
+                rendererMenu.Open();
+            }
+            args.Handled = true;
+        }
+
+        void RendererButtonContextRequested(object sender, ContextRequestedEventArgs args) {
+            args.Handled = true;
+        }
+
         void FaderPointerPressed(object sender, PointerPressedEventArgs args) {
             if (args.GetCurrentPoint((IVisual?)sender).Properties.IsRightButtonPressed && ViewModel != null) {
                 ViewModel.Volume = 0;

@@ -17,7 +17,7 @@ using VocalShaper;
 using VocalShaper.World;
 
 namespace OpenUtau.Core.Vogen {
-    class VogenRenderer : IRenderer {
+    public class VogenRenderer : IRenderer {
         const int fs = 44100;
         const int fftSize = 2048;
         const float headMs = 500;
@@ -37,6 +37,8 @@ namespace OpenUtau.Core.Vogen {
         };
 
         static readonly VSVocoder vocoder = new VSVocoder(fs, frameMs);
+
+        public USingerType SingerType => USingerType.Vogen;
 
         public bool SupportsRenderPitch => true;
 
@@ -244,5 +246,7 @@ namespace OpenUtau.Core.Vogen {
             }
             return result;
         }
+
+        public override string ToString() => "VOGEN";
     }
 }

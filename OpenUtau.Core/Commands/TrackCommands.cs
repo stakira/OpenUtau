@@ -115,4 +115,21 @@ namespace OpenUtau.Core {
             track.Phonemizer.SetSinger(track.Singer);
         }
     }
+
+    public class TrackChangeRendererCommand : TrackCommand {
+        readonly string newRenderer, oldRenderer;
+        public TrackChangeRendererCommand(UProject project, UTrack track, string newRenderer) {
+            this.project = project;
+            this.track = track;
+            this.newRenderer = newRenderer;
+            this.oldRenderer = track.Renderer?.ToString();
+        }
+        public override string ToString() { return "Change phonemizer"; }
+        public override void Execute() {
+            track.Renderer = Render.Renderers.CreateRenderer(newRenderer);
+        }
+        public override void Unexecute() {
+            track.Renderer = Render.Renderers.CreateRenderer(oldRenderer);
+        }
+    }
 }

@@ -15,7 +15,7 @@ using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Core.Enunu {
-    class EnunuRenderer : IRenderer {
+    public class EnunuRenderer : IRenderer {
         const int headTicks = 240;
         const int tailTicks = 240;
 
@@ -30,6 +30,8 @@ namespace OpenUtau.Core.Enunu {
 
         static readonly Encoding ShiftJIS = Encoding.GetEncoding("shift_jis");
         static readonly object lockObj = new object();
+
+        public USingerType SingerType => USingerType.Enunu;
 
         public bool SupportsRenderPitch => true;
 
@@ -245,5 +247,7 @@ namespace OpenUtau.Core.Enunu {
                 pos = endPos;
             }
         }
+
+        public override string ToString() => "ENUNU";
     }
 }
