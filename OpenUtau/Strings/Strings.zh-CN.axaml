@@ -221,6 +221,7 @@
 鼠标左键绘制: 设定表情
 鼠标右键绘制: 重置表情
   </system:String>
+  <system:String x:Key="tip.exps.notsupported">当前渲染器不支持此表情</system:String>
   <system:String x:Key="tip.lyricbox.next">Tab: 下一个</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: 上一个</system:String>
   <system:String x:Key="tip.notes.basics">
