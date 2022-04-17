@@ -65,23 +65,23 @@
   <system:String x:Key="menu.edit.undo">실행 취소</system:String>
   <system:String x:Key="menu.file">파일</system:String>
   <system:String x:Key="menu.file.exit">나가기</system:String>
-  <system:String x:Key="menu.file.exportust">Ust 파일로 내보내기</system:String>
-  <!--<system:String x:Key="menu.file.exportustto">Export Ust Files To...</system:String>-->
-  <system:String x:Key="menu.file.exportwav">Wav 파일로 내보내기</system:String>
-  <!--<system:String x:Key="menu.file.exportwavto">Export Wav Files To...</system:String>-->
+  <system:String x:Key="menu.file.exportust">Ust 파일 내보내기</system:String>
+  <system:String x:Key="menu.file.exportustto">다른 이름으로 Ust 파일 내보내기</system:String>
+  <system:String x:Key="menu.file.exportwav">Wav 파일 내보내기</system:String>
+  <system:String x:Key="menu.file.exportwavto">다른 이름으로 Wav 파일 내보내기</system:String>
   <system:String x:Key="menu.file.importaudio">오디오 가져오기</system:String>
   <system:String x:Key="menu.file.importmidi">Midi 가져오기</system:String>
   <system:String x:Key="menu.file.importtracks">트랙 삽입하기...</system:String>
   <system:String x:Key="menu.file.new">새로 만들기</system:String>
   <system:String x:Key="menu.file.newfromtemplate">템플릿 가져오기</system:String>
   <system:String x:Key="menu.file.open">열기</system:String>
-  <system:String x:Key="menu.file.openas">O_pen As</system:String>
+  <!--<system:String x:Key="menu.file.openas">O_pen As</system:String>-->
   <system:String x:Key="menu.file.openrecent">최근 파일 열기</system:String>
   <system:String x:Key="menu.file.save">저장</system:String>
   <system:String x:Key="menu.file.saveas">다른 이름으로 저장</system:String>
   <system:String x:Key="menu.file.savetemplate">템플릿 저장</system:String>
   <system:String x:Key="menu.help">도움말</system:String>
-  <system:String x:Key="menu.help.about">OpenUTAU 정보</system:String>
+  <system:String x:Key="menu.help.about">OpenUtau 정보</system:String>
   <system:String x:Key="menu.help.wiki">OpenUtau 위키</system:String>
   <system:String x:Key="menu.tools">도구</system:String>
   <system:String x:Key="menu.tools.clearcache">캐시 초기화</system:String>
@@ -122,7 +122,7 @@
   <system:String x:Key="pianoroll.menu.notes">노트</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">"-" 꼬리 추가</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">"R" 꼬리 추가</system:String>
-  <!--<system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Load Rendered Pitch</system:String>-->
+  <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">렌더링 된 피치 로드</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">1/128로 양자화</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">1/64로 양자화</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">모든 표현 초기화</system:String>
@@ -169,9 +169,9 @@
   <system:String x:Key="prefs.paths.select">선택</system:String>
   <system:String x:Key="prefs.playback">재생</system:String>
   <system:String x:Key="prefs.playback.autoscroll">자동 스크롤</system:String>
-  <!--<system:String x:Key="prefs.playback.autoscrollmode">Auto-Scroll Mode</system:String>-->
-  <!--<system:String x:Key="prefs.playback.autoscrollmode.pagescroll">Page Scroll</system:String>-->
-  <!--<system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">Stationary Cursor</system:String>-->
+  <system:String x:Key="prefs.playback.autoscrollmode">자동 스크롤 모드</system:String>
+  <system:String x:Key="prefs.playback.autoscrollmode.pagescroll">페이지 스크롤</system:String>
+  <system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">고정 커서</system:String>
   <system:String x:Key="prefs.playback.backend">오디오 Backend</system:String>
   <system:String x:Key="prefs.playback.backend.auto">자동</system:String>
   <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
@@ -216,7 +216,7 @@
   <system:String x:Key="singers.subbanks.tone">톤</system:String>
   <system:String x:Key="singers.subbanks.toneranges">톤 범위</system:String>
 
-  <!--<system:String x:Key="tip.aliasbox">Override Alias</system:String>-->
+  <system:String x:Key="tip.aliasbox">Alias 재정의</system:String>
   <system:String x:Key="tip.exps">
 왼쪽 마우스: 표현 설정
 오른쪽 마우스: 표현 초기화
@@ -253,7 +253,7 @@
   <FontFamily x:Key="ui.textbox.fontfamily">Malgun Gothic,Apple SD Gothic Neo,Segoe UI,San Francisco,Helvetica Neue</FontFamily>
 
   <system:String x:Key="updater.caption">업데이트 확인</system:String>
-  <!--<system:String x:Key="updater.description">Open singing synthesis platform</system:String>-->
+  <system:String x:Key="updater.description">오픈 가창 합성 플랫폼</system:String>
   <system:String x:Key="updater.github">깃허브</system:String>
   <system:String x:Key="updater.status.available">v{0} 업데이트가 존재합니다!</system:String>
   <system:String x:Key="updater.status.checking">업데이트를 확인하고 있습니다...</system:String>
