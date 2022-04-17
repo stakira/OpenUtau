@@ -62,6 +62,8 @@ namespace OpenUtau.Core.Enunu {
                         return new RenderResult();
                     }
                     EnunuInit.Init();
+                    string progressInfo = string.Join(" ", phrase.phones.Select(p => p.phoneme));
+                    progress.Complete(0, progressInfo);
                     ulong preEffectHash = PreEffectsHash(phrase);
                     var tmpPath = Path.Join(PathManager.Inst.CachePath, $"enu-{preEffectHash:x16}");
                     var ustPath = tmpPath + ".tmp";
@@ -112,10 +114,7 @@ namespace OpenUtau.Core.Enunu {
                         source.SetSamples(result.samples);
                         WaveFileWriter.CreateWaveFile16(wavPath, new ExportAdapter(source).ToMono(1, 0));
                     }
-                    string joined = string.Join(" ", phrase.phones.Select(p => p.phoneme));
-                    foreach (var phone in phrase.phones) {
-                        progress.CompleteOne(joined);
-                    }
+                    progress.Complete(phrase.phones.Length, progressInfo);
                     if (File.Exists(wavPath)) {
                         using (var waveStream = Wave.OpenFile(wavPath)) {
                             result.samples = Wave.GetSamples(waveStream.ToSampleProvider().ToMono(1, 0));

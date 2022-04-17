@@ -57,6 +57,8 @@ namespace OpenUtau.Classic {
             var task = Task.Run(() => {
                 var result = Layout(phrase);
                 var wavPath = Path.Join(PathManager.Inst.CachePath, $"vog-{phrase.hash:x16}.wav");
+                string progressInfo = string.Join(" ", phrase.phones.Select(p => p.phoneme));
+                progress.Complete(0, progressInfo);
                 if (File.Exists(wavPath)) {
                     try {
                         using (var waveStream = Wave.OpenFile(wavPath)) {
@@ -92,10 +94,7 @@ namespace OpenUtau.Classic {
                     source.SetSamples(result.samples);
                     WaveFileWriter.CreateWaveFile16(wavPath, new ExportAdapter(source).ToMono(1, 0));
                 }
-                string joined = string.Join(" ", phrase.phones.Select(p => p.phoneme));
-                foreach (var phone in phrase.phones) {
-                    progress.CompleteOne(joined);
-                }
+                progress.Complete(phrase.phones.Length, progressInfo);
                 if (result.samples != null) {
                     ApplyDynamics(phrase, result.samples);
                 }
