@@ -216,12 +216,13 @@ Warning: moresampler is not fully supported. It may be slow and cause high CPU u
   <system:String x:Key="singers.subbanks.tone">Cao độ</system:String>
   <system:String x:Key="singers.subbanks.toneranges">Cao độ</system:String>
 
-  <!--<system:String x:Key="tip.aliasbox">Override Alias</system:String>-->
+  <system:String x:Key="tip.aliasbox">Thay đổi âm vị</system:String>
   <system:String x:Key="tip.exps">
 Nhấn giữ và kéo trái chuột: Thiết lập biểu cảm
 Nhấn giữ và kéo phải: Đặt lại biểu cảm
   </system:String>
   <system:String x:Key="tip.lyricbox.next">Tab: Nốt tiếp theo</system:String>
+  <system:String x:Key="tip.exps.notsupported">Biểu cảm không được hỗ trợ bởi renderer này</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: Nốt trước</system:String>
   <system:String x:Key="tip.notes.basics">
 Công cụ Lựa chọn
@@ -247,6 +248,7 @@ Tổng quát
   <system:String x:Key="tracks.movedown">Di chuyển xuống</system:String>
   <system:String x:Key="tracks.moveup">Di chuyển lên</system:String>
   <system:String x:Key="tracks.remove">Xoá bỏ</system:String>
+  <system:String x:Key="tracks.selectrenderer">Chọn renderer</system:String>
   <system:String x:Key="tracks.selectsinger">Chọn ca sĩ</system:String>
 
   <!--<FontFamily x:Key="ui.fontfamily">Segoe UI,San Francisco,Helvetica Neue</FontFamily>-->
