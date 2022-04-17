@@ -67,6 +67,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public string SnapUnitText { get; set; }
         [Reactive] public Rect ExpBounds { get; set; }
         [Reactive] public string PrimaryKey { get; set; }
+        [Reactive] public bool PrimaryKeyNotSupported { get; set; }
         [Reactive] public string SecondaryKey { get; set; }
         [Reactive] public double ExpTrackHeight { get; set; }
         [Reactive] public double ExpShadowOpacity { get; set; }
@@ -496,18 +497,38 @@ namespace OpenUtau.App.ViewModels {
             return (notes.ToArray(), lyrics);
         }
 
+        bool IsExpSupported(string expKey) {
+            if (Project == null || Part == null) {
+                return true;
+            }
+            var track = Project.tracks[Part.trackNo];
+            if (track.Renderer == null) {
+                return true;
+            }
+            if (Project.expressions.TryGetValue(expKey, out var descriptor)) {
+                return track.Renderer.SupportsExpression(descriptor);
+            }
+            if (expKey == track.VoiceColorExp.abbr) {
+                return track.Renderer.SupportsExpression(track.VoiceColorExp);
+            }
+            return true;
+        }
+
         public void OnNext(UCommand cmd, bool isUndo) {
             if (cmd is UNotification) {
                 if (cmd is LoadPartNotification loadPart) {
                     LoadPart(loadPart.part, loadPart.project);
                     double tickOffset = loadPart.tick - loadPart.part.position - Bounds.Width / TickWidth / 2;
                     TickOffset = Math.Clamp(tickOffset, 0, HScrollBarMax);
+                    PrimaryKeyNotSupported = !IsExpSupported(PrimaryKey);
                 } else if (cmd is LoadProjectNotification) {
                     UnloadPart();
                     LoadPortrait(null, null);
+                    PrimaryKeyNotSupported = !IsExpSupported(PrimaryKey);
                 } else if (cmd is SelectExpressionNotification selectExp) {
                     SecondaryKey = PrimaryKey;
                     PrimaryKey = selectExp.ExpKey;
+                    PrimaryKeyNotSupported = !IsExpSupported(PrimaryKey);
                 } else if (cmd is SetPlayPosTickNotification setPlayPosTick) {
                     SetPlayPos(setPlayPosTick.playPosTick, setPlayPosTick.waitingRendering);
                     MaybeAutoScroll();
@@ -552,6 +573,7 @@ namespace OpenUtau.App.ViewModels {
                         LoadPortrait(Part, Project);
                     }
                 }
+                PrimaryKeyNotSupported = !IsExpSupported(PrimaryKey);
             }
         }
 

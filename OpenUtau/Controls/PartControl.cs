@@ -182,8 +182,8 @@ namespace OpenUtau.App.Controls {
                 // Notes
                 int maxTone = voicePart.notes.Max(note => note.tone);
                 int minTone = voicePart.notes.Min(note => note.tone);
-                if (maxTone - minTone < 36) {
-                    int additional = (36 - (maxTone - minTone)) / 2;
+                if (maxTone - minTone < 52) {
+                    int additional = (52 - (maxTone - minTone)) / 2;
                     minTone -= additional;
                     maxTone += additional;
                 }

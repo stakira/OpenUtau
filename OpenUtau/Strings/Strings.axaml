@@ -221,6 +221,7 @@ Warning: moresampler is not fully supported. It may be slow and cause high CPU u
 Left Button Draw: Set expressions
 Right Button Draw: Reset expressions
   </system:String>
+  <system:String x:Key="tip.exps.notsupported">Expression not supported by renderer</system:String>
   <system:String x:Key="tip.lyricbox.next">Tab: Next Note</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: Previous Note</system:String>
   <system:String x:Key="tip.notes.basics">
@@ -247,6 +248,7 @@ General
   <system:String x:Key="tracks.movedown">Move Down</system:String>
   <system:String x:Key="tracks.moveup">Move Up</system:String>
   <system:String x:Key="tracks.remove">Remove</system:String>
+  <system:String x:Key="tracks.selectrenderer">Select Renderer</system:String>
   <system:String x:Key="tracks.selectsinger">Select Singer</system:String>
 
   <FontFamily x:Key="ui.fontfamily">Segoe UI,San Francisco,Helvetica Neue</FontFamily>

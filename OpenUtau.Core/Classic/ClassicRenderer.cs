@@ -7,7 +7,7 @@ using OpenUtau.Core.Render;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Classic {
-    class ClassicRenderer : IRenderer {
+    public class ClassicRenderer : IRenderer {
         static readonly HashSet<string> supportedExp = new HashSet<string>(){
             Core.Format.Ustx.DYN,
             Core.Format.Ustx.PITD,
@@ -21,6 +21,8 @@ namespace OpenUtau.Classic {
             Core.Format.Ustx.MOD,
             Core.Format.Ustx.ALT,
         };
+
+        public USingerType SingerType => USingerType.Classic;
 
         public bool SupportsRenderPitch => false;
 
@@ -94,5 +96,7 @@ namespace OpenUtau.Classic {
         public RenderPitchResult LoadRenderedPitch(RenderPhrase phrase) {
             return null;
         }
+
+        public override string ToString() => "CLASSIC";
     }
 }

@@ -221,6 +221,7 @@
 鼠标左键绘制: 设定表情
 鼠标右键绘制: 重置表情
   </system:String>
+  <system:String x:Key="tip.exps.notsupported">当前渲染器不支持此表情</system:String>
   <system:String x:Key="tip.lyricbox.next">Tab: 下一个</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: 上一个</system:String>
   <system:String x:Key="tip.notes.basics">
@@ -247,6 +248,7 @@
   <system:String x:Key="tracks.movedown">下移</system:String>
   <system:String x:Key="tracks.moveup">上移</system:String>
   <system:String x:Key="tracks.remove">移除</system:String>
+  <system:String x:Key="tracks.selectrenderer">选择渲染器</system:String>
   <system:String x:Key="tracks.selectsinger">选择歌手</system:String>
 
   <FontFamily x:Key="ui.fontfamily">Microsoft YaHei UI,PingFang SC,Segoe UI,San Francisco,Helvetica Neue</FontFamily>

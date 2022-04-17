@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
 using OpenUtau.Core.Render;
@@ -10,6 +9,7 @@ namespace OpenUtau.Core.Ustx {
     public class UTrack {
         public string singer;
         public string phonemizer;
+        public string renderer;
 
         private USinger singer_;
 
@@ -21,23 +21,6 @@ namespace OpenUtau.Core.Ustx {
                     singer_ = value;
                     Phonemizer.SetSinger(value);
                     VoiceColorExp = null;
-                    if (singer_ == null || !singer_.Found) {
-                        Renderer = null;
-                    } else {
-                        switch (value.SingerType) {
-                            case USingerType.Classic:
-                                Renderer = new Classic.ClassicRenderer();
-                                break;
-                            case USingerType.Enunu:
-                                Renderer = new Enunu.EnunuRenderer();
-                                break;
-                            case USingerType.Vogen:
-                                Renderer = new Vogen.VogenRenderer();
-                                break;
-                            default:
-                                throw new NotImplementedException();
-                        }
-                    }
                 }
             }
         }
@@ -88,6 +71,7 @@ namespace OpenUtau.Core.Ustx {
         public void BeforeSave() {
             singer = Singer?.Id;
             phonemizer = Phonemizer.GetType().FullName;
+            renderer = Renderer?.ToString();
         }
 
         public void AfterLoad(UProject project) {
@@ -110,6 +94,13 @@ namespace OpenUtau.Core.Ustx {
                 }
             }
             Phonemizer.SetSinger(Singer);
+            if (Singer != null && Singer.Found) {
+                Renderer = Renderers.CreateRenderer(renderer);
+                if (Renderer == null) {
+                    renderer = Renderers.GetDefaultRenderer(Singer.SingerType);
+                    Renderer = Renderers.CreateRenderer(renderer);
+                }
+            }
             TrackNo = project.tracks.IndexOf(this);
         }
     }

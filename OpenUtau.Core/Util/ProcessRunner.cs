@@ -16,7 +16,7 @@ namespace OpenUtau.Core.Util {
                 proc.StartInfo = new ProcessStartInfo(file, args) {
                     UseShellExecute = false,
                     RedirectStandardOutput = DebugSwitch,
-                    RedirectStandardError = DebugSwitch,
+                    RedirectStandardError = true,
                     CreateNoWindow = true,
                     WorkingDirectory = workDir,
                 };
@@ -26,17 +26,17 @@ namespace OpenUtau.Core.Util {
                             logger.Information($" >>> [thread-{threadId}] {e.Data}");
                         }
                     };
-                    proc.ErrorDataReceived += (o, e) => {
-                        if (!string.IsNullOrEmpty(e.Data)) {
-                            logger.Error($" >>> [thread-{threadId}] {e.Data}");
-                        }
-                    };
                 }
+                proc.ErrorDataReceived += (o, e) => {
+                    if (!string.IsNullOrEmpty(e.Data)) {
+                        logger.Error($" >>> [thread-{threadId}] {e.Data}");
+                    }
+                };
                 proc.Start();
                 if (DebugSwitch) {
                     proc.BeginOutputReadLine();
-                    proc.BeginErrorReadLine();
                 }
+                proc.BeginErrorReadLine();
                 if (timeoutMs <= 0) {
                     proc.WaitForExit();
                 } else {
