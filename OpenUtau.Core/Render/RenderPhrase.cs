@@ -87,6 +87,10 @@ namespace OpenUtau.Core.Render {
                     writer.Write(velocity);
                     writer.Write(modulation);
                     writer.Write(preutterMs);
+                    foreach (var point in envelope) {
+                        writer.Write(point.X);
+                        writer.Write(point.Y);
+                    }
                     return XXH64.DigestOf(stream.ToArray());
                 }
             }

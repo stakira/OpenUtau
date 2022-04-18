@@ -56,7 +56,7 @@ namespace OpenUtau.Classic {
 
             offset = phone.oto.Offset;
             var stretchRatio = Math.Pow(2, 1.0 - velocity * 0.01);
-            double durMs = phone.oto.Preutter * stretchRatio + phone.duration * phrase.tickToMs;
+            double durMs = phone.oto.Preutter * stretchRatio + phone.envelope[4].X;
             requiredLength = Math.Ceiling(durMs / 50 + 1) * 50;
             consonant = phone.oto.Consonant;
             cutoff = phone.oto.Cutoff;
