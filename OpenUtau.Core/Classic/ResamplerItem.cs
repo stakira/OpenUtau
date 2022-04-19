@@ -63,10 +63,11 @@ namespace OpenUtau.Classic {
             skipOver = phone.oto.Preutter * stretchRatio - phone.preutterMs;
 
             int pitchLeading = (int)(phone.oto.Preutter * stretchRatio / phrase.tickToMs);
+            int pitchCount = (int)Math.Ceiling(durMs / phrase.tickToMs / 5);
             tempo = phrase.tempo;
             pitches = phrase.pitches
                 .Skip((phone.position - pitchLeading - pitchStart) / 5)
-                .Take((phone.duration + pitchLeading) / 5)
+                .Take(pitchCount)
                 .Select(pitch => (int)Math.Round(pitch - phone.tone * 100))
                 .ToArray();
 
