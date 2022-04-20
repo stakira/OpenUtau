@@ -98,9 +98,16 @@ namespace OpenUtau.Plugin.Builtin {
             } else { // VCV
                 var vcv = $"{prevV} {cc[0]}{v}";
                 var vccv = $"{prevV} {string.Join("", cc)}{v}";
-                if (HasOto(vcv, syllable.vowelTone) && (syllable.IsVCVWithOneConsonant)) {
+                if (HasOto(vcv, syllable.vowelTone)
+                    && (syllable.IsVCVWithOneConsonant)) {
                     basePhoneme = vcv;
-                } else if (HasOto(vccv, syllable.vowelTone) && (syllable.IsVCVWithMoreThanOneConsonant)) {
+                } else if (HasOto(vccv, syllable.vowelTone)
+                    && (syllable.IsVCVWithMoreThanOneConsonant)
+                    && string.Join("", cc) != "dz"
+                    && string.Join("", cc) != "nh"
+                    && string.Join("", cc) != "sh"
+                    && string.Join("", cc) != "zh"
+                    && string.Join("", cc) != "zz") {
                     basePhoneme = vccv;
                 } else {
                         // try vcc
@@ -114,7 +121,8 @@ namespace OpenUtau.Plugin.Builtin {
                             && string.Join("", cc.Take(i)) != "dz"
                             && string.Join("", cc.Take(i)) != "nh"
                             && string.Join("", cc.Take(i)) != "sh"
-                            && string.Join("", cc.Take(i)) != "zh") {
+                            && string.Join("", cc.Take(i)) != "zh"
+                            && string.Join("", cc.Take(i)) != "zz") {
                             phonemes.Add(vcc);
                             firstC = i - 1;
                             break;
@@ -130,7 +138,8 @@ namespace OpenUtau.Plugin.Builtin {
                                 && string.Join("", cc.Skip(i)) != "dz"
                                 && string.Join("", cc.Skip(i)) != "nh"
                                 && string.Join("", cc.Skip(i)) != "sh"
-                                && string.Join("", cc.Skip(i)) != "zh") {
+                                && string.Join("", cc.Skip(i)) != "zh"
+                                && string.Join("", cc.Skip(i)) != "zz") {
                                 lastC = i;
                                 basePhoneme = ccv;
                                 break;
