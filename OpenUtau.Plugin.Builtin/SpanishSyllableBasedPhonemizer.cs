@@ -18,6 +18,8 @@ namespace OpenUtau.Plugin.Builtin {
         /// For now, typing ex. [n i n y o] (in the brackets) after the lyric "niño" should work.
         /// (This currently does work automatically with ValidateAlias, but only for CVVC, not VCV.)
         /// Same with typing [s] instead of [z] for voicebanks with "seseo" (Latin-American) accents.
+        /// I also want to add using "u" instead of "w" and "i" instead of "y" depending on the voicebank.
+        /// Ex. "kua" instead of "kwa".
         ///</summary>
 
         private readonly string[] vowels = "a,e,i,o,u".Split(',');
@@ -48,17 +50,12 @@ namespace OpenUtau.Plugin.Builtin {
             var rcv = $"- {v}";
             if (syllable.IsStartingV) {
                 basePhoneme = rcv;
-                if (!HasOto(rcv, syllable.tone)) {
+                if (!HasOto(rcv, syllable.vowelTone)) {
                     basePhoneme = $"{v}";
                 }
             } else if (syllable.IsVV) {
-                var vv = $"{prevV} {v}";
-                if (!CanMakeAliasExtension(syllable)) {
-                    basePhoneme = vv;
-                    if (!HasOto(vv, syllable.tone)) {
-                        basePhoneme = $"{v}";
-                    }
-                } else {
+                basePhoneme = $"{prevV} {v}";
+                if (!HasOto(basePhoneme, syllable.vowelTone)) {
                     basePhoneme = $"{v}";
                 }
             } else if (syllable.IsStartingCVWithOneConsonant) {
@@ -79,15 +76,15 @@ namespace OpenUtau.Plugin.Builtin {
                 } else {
                     basePhoneme = $"{cc.Last()}{v}";
                     // try RCC
-                    for (var i = cc.Length; i > 1; i--) {
-                        if (TryAddPhoneme(phonemes, syllable.tone, $"- {string.Join("", cc.Take(i))}")) {
-                            firstC = i;
-                            break;
-                        }
-                    }
-                    if (phonemes.Count == 0) {
-                        TryAddPhoneme(phonemes, syllable.tone, $"- {cc[0]}");
-                    }
+                    // for (var i = cc.Length; i > 1; i--) {
+                    // if (TryAddPhoneme(phonemes, syllable.tone, $"- {string.Join("", cc.Take(i))}")) {
+                    // firstC = i;
+                    // break;
+                    // }
+                    // }
+                    // if (phonemes.Count == 0) {
+                    // TryAddPhoneme(phonemes, syllable.tone, $"- {cc[0]}");
+                    // }
                     // try CCV
                     for (var i = firstC; i < cc.Length - 1; i++) {
                         var ccv = string.Join("", cc.Skip(i)) + v;
@@ -287,6 +284,13 @@ namespace OpenUtau.Plugin.Builtin {
                 alias == "l nh" ||
                 alias == "m nh") {
                 return alias.Replace("nh", "n");
+            }
+            if (alias == "gwa" ||
+                alias == "gwe" ||
+                alias == "gwi" ||
+                alias == "gwo" )
+                {
+                return alias.Replace("w", "u");
             }
             foreach (var consonant in new[] { "z" }) {
                 foreach (var vowel in vowels) {
