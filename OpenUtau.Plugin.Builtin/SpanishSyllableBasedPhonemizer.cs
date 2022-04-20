@@ -29,7 +29,6 @@ namespace OpenUtau.Plugin.Builtin {
                 .Where(parts => parts[0] != parts[1])
                 .ToDictionary(parts => parts[0], parts => parts[1]);
 
-        // private readonly string[] shortConsonants = "r".Split(',');
         private readonly string[] longConsonants = "ch,dz,k,p,s,sh,t,ts,z,l,m,n".Split(',');
 
         protected override string[] GetVowels() => vowels;
