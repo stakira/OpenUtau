@@ -240,8 +240,7 @@ namespace OpenUtau.Plugin.Builtin {
                             {
                                 // like [C1 C2][C2 ...]
                                 phonemes.Add(cc1);
-                            }
-                            else if (TryAddPhoneme(phonemes, ending.tone, $"{cc[i + 1]} {cc[i + 2]}"))
+                            } else if (TryAddPhoneme(phonemes, ending.tone, $"{cc[i + 1]} {cc[i + 2]}"))
                             {
                                 // like [C1 C2][C2 ...]
                             }
@@ -304,26 +303,9 @@ namespace OpenUtau.Plugin.Builtin {
                 alias == "m nh") {
                 return alias.Replace("nh", "n");
             }
-            if (alias == "gwa" ||
-                alias == "gwe" ||
-                alias == "gwi" ||
-                alias == "gwo" )
-                {
-                return alias.Replace("w", "u");
-            }
             foreach (var consonant in new[] { "z" }) {
                 foreach (var vowel in vowels) {
                     alias = alias.Replace(consonant + vowel, "s" + vowel);
-                }
-            }
-            foreach (var consonant in new[] { "w" }) {
-                foreach (var vowel in vowels) {
-                    alias = alias.Replace(consonant + vowel, "u" + vowel);
-                }
-            }
-            foreach (var consonant in new[] { "y" }) {
-                foreach (var vowel in vowels) {
-                    alias = alias.Replace(consonant + vowel, "i" + vowel);
                 }
             }
             return alias;
