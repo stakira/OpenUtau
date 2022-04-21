@@ -31,7 +31,7 @@ namespace OpenUtau.Plugin.Builtin {
                 .Where(parts => parts[0] != parts[1])
                 .ToDictionary(parts => parts[0], parts => parts[1]);
 
-        private readonly string[] longConsonants = "ch,dz,sh,ts".Split(',');
+        private readonly string[] longConsonants = "ch,dz,sh,ts,l,m,n".Split(',');
 
         protected override string[] GetVowels() => vowels;
         protected override string[] GetConsonants() => consonants;
