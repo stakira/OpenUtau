@@ -32,6 +32,7 @@ namespace OpenUtau.Plugin.Builtin {
                 .ToDictionary(parts => parts[0], parts => parts[1]);
 
         private readonly string[] longConsonants = "ch,dz,s,sh,k,p,t,ts,z,l,m,n".Split(',');
+        private readonly string[] burstConsonants = "ch,dz,j,k,p,r,t,ts".Split(',');
 
         protected override string[] GetVowels() => vowels;
         protected override string[] GetConsonants() => consonants;
@@ -188,10 +189,13 @@ namespace OpenUtau.Plugin.Builtin {
                         // like [V C1] [C1] [C2 ..]
                         TryAddPhoneme(phonemes, syllable.tone, cc[i], $"{cc[i]} -");
                     }
-                } else if (!syllable.IsStartingCVWithMoreThanOneConsonant)
+                } else // if (!syllable.IsStartingCVWithMoreThanOneConsonant)
                     {
                     // like [V C1] [C1 C2]  [C2 ..] or like [V C1] [C1 -] [C3 ..]
-                    TryAddPhoneme(phonemes, syllable.tone, cc1, cc[i], $"{cc[i]} -");
+                    TryAddPhoneme(phonemes, syllable.tone, cc1);
+                    if (burstConsonants.Contains(cc[i]) && (!syllable.IsStartingCVWithMoreThanOneConsonant)) {
+                        TryAddPhoneme(phonemes, syllable.tone, cc[i], $"{cc[i]} -");
+                    }
                 }
             }
 
