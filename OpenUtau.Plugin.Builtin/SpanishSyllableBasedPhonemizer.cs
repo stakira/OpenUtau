@@ -31,7 +31,7 @@ namespace OpenUtau.Plugin.Builtin {
                 .Where(parts => parts[0] != parts[1])
                 .ToDictionary(parts => parts[0], parts => parts[1]);
 
-        private readonly string[] longConsonants = "ch,dz,k,p,s,sh,t,ts,z,l,m,n".Split(',');
+        private readonly string[] longConsonants = "ch,dz,sh,ts".Split(',');
 
         protected override string[] GetVowels() => vowels;
         protected override string[] GetConsonants() => consonants;
@@ -94,7 +94,7 @@ namespace OpenUtau.Plugin.Builtin {
                             break;
                         }
                     }
-                } 
+                }
             } else { // VCV
                 var vcv = $"{prevV} {cc[0]}{v}";
                 var vccv = $"{prevV} {string.Join("", cc)}{v}";
@@ -110,8 +110,8 @@ namespace OpenUtau.Plugin.Builtin {
                     && string.Join("", cc) != "zz") {
                     basePhoneme = vccv;
                 } else {
-                        // try vcc
-                        for (var i = lastC + 1; i >= 0; i--) {
+                    // try vcc
+                    for (var i = lastC + 1; i >= 0; i--) {
                         if (i == 0) {
                             phonemes.Add($"{prevV} {cc[0]}");
                             break;
@@ -144,8 +144,7 @@ namespace OpenUtau.Plugin.Builtin {
                                 lastC = i;
                                 basePhoneme = ccv;
                                 break;
-                            }
-                            else if (HasOto(ccv2, syllable.vowelTone)) {
+                            } else if (HasOto(ccv2, syllable.vowelTone)) {
                                 lastC = i;
                                 basePhoneme = ccv2;
                                 break;
@@ -180,18 +179,19 @@ namespace OpenUtau.Plugin.Builtin {
                     if (HasOto(cc1, syllable.tone) && HasOto(cc2, syllable.tone)) {
                         // like [V C1] [C1 C2] [C2 C3] [C3 ..]
                         phonemes.Add(cc1);
-                    } else if (TryAddPhoneme(phonemes, syllable.tone, $"{cc[i]}{cc[i + 1]}-")) {
+                    } else if (TryAddPhoneme(phonemes, syllable.tone, $"{cc[i]} {cc[i + 1]}-")) {
                         // like [V C1] [C1 C2-] [C3 ..]
                         i++;
                     } else if (TryAddPhoneme(phonemes, syllable.tone, cc1)) {
                         // like [V C1] [C1 C2] [C2 ..]
                     } else {
                         // like [V C1] [C1] [C2 ..]
-                        TryAddPhoneme(phonemes, syllable.tone, cc[i], $"{cc[i]}-");
+                        TryAddPhoneme(phonemes, syllable.tone, cc[i], $"{cc[i]} -");
                     }
-                } else if (!syllable.IsStartingCVWithMoreThanOneConsonant) {
+                } else if (!syllable.IsStartingCVWithMoreThanOneConsonant)
+                    {
                     // like [V C1] [C1 C2]  [C2 ..] or like [V C1] [C1 -] [C3 ..]
-                    TryAddPhoneme(phonemes, syllable.tone, cc1, cc[i], $"{cc[i]}-");
+                    TryAddPhoneme(phonemes, syllable.tone, cc1, cc[i], $"{cc[i]} -");
                 }
             }
 
@@ -346,7 +346,7 @@ namespace OpenUtau.Plugin.Builtin {
             {
                 if (alias.EndsWith(c))
                 {
-                    return base.GetTransitionBasicLengthMs() * 2.0;
+                    return base.GetTransitionBasicLengthMs() * 1.5;
                 }
             }
             return base.GetTransitionBasicLengthMs();
