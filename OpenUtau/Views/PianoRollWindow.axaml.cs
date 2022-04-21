@@ -556,7 +556,7 @@ namespace OpenUtau.App.Views {
                 if (hitInfo.hit) {
                     var phoneme = hitInfo.phoneme;
                     var note = phoneme.Parent;
-                    var index = note.PhonemeOffset + note.phonemes.IndexOf(phoneme);
+                    var index = phoneme.index;
                     if (hitInfo.hitPosition) {
                         editState = new PhonemeMoveState(
                             canvas, ViewModel, this, note.Extends ?? note, index);
@@ -591,16 +591,16 @@ namespace OpenUtau.App.Views {
                 editState.Update(point.Pointer, point.Position);
                 return;
             }
-            var hitInfo = ViewModel.NotesViewModel.HitTest.HitTestPhoneme(point.Position);
-            if (hitInfo.hit) {
-                Cursor = ViewConstants.cursorSizeWE;
-                ViewModel.MouseoverPhoneme(null);
-                return;
-            }
             var aliasHitInfo = ViewModel.NotesViewModel.HitTest.HitTestAlias(point.Position);
             if (aliasHitInfo.hit) {
                 ViewModel.MouseoverPhoneme(aliasHitInfo.phoneme);
                 Cursor = null;
+                return;
+            }
+            var hitInfo = ViewModel.NotesViewModel.HitTest.HitTestPhoneme(point.Position);
+            if (hitInfo.hit) {
+                Cursor = ViewConstants.cursorSizeWE;
+                ViewModel.MouseoverPhoneme(null);
                 return;
             }
             ViewModel.MouseoverPhoneme(null);

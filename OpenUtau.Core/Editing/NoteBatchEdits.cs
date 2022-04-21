@@ -97,7 +97,7 @@ namespace OpenUtau.Core.Editing {
             var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
             docManager.StartUndoGroup(true);
             foreach (var note in notes) {
-                if (note.phonemeExpressions.Count > 0 || note.noteExpressions.Count > 0) {
+                if (note.phonemeExpressions.Count > 0) {
                     docManager.ExecuteCmd(new ResetExpressionsCommand(part, note));
                 }
             }

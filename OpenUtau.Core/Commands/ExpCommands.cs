@@ -67,20 +67,16 @@ namespace OpenUtau.Core {
     }
 
     public class ResetExpressionsCommand : ExpCommand {
-        List<UExpression> noteExpressions;
         List<UExpression> phonemeExpressions;
         public ResetExpressionsCommand(UVoicePart part, UNote note) : base(part) {
             Note = note;
-            noteExpressions = note.noteExpressions;
             phonemeExpressions = note.phonemeExpressions;
         }
         public override string ToString() => "Reset expressions.";
         public override void Execute() {
-            Note.noteExpressions = new List<UExpression>();
             Note.phonemeExpressions = new List<UExpression>();
         }
         public override void Unexecute() {
-            Note.noteExpressions = noteExpressions;
             Note.phonemeExpressions = phonemeExpressions;
         }
     }

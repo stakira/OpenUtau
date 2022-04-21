@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using YamlDotNet.Serialization;
 using Serilog;
 using OpenUtau.Core.Render;
+using OpenUtau.Api;
 
 namespace OpenUtau.Core.Ustx {
     public abstract class UPart {
@@ -36,6 +37,7 @@ namespace OpenUtau.Core.Ustx {
         [YamlMember(Order = 101)]
         public List<UCurve> curves = new List<UCurve>();
 
+        [YamlIgnore] public List<UPhoneme> phonemes = new List<UPhoneme>();
         [YamlIgnore] public List<RenderPhrase> renderPhrases = new List<RenderPhrase>();
 
         public override string DisplayName => name;
@@ -88,39 +90,148 @@ namespace OpenUtau.Core.Ustx {
                     note.Extends = null;
                 }
             }
-            if (!options.SkipPhonemizer) {
-                track.Phonemizer.SetTiming(project.bpm, project.beatUnit, project.resolution);
-                track.Phonemizer.SetUp(notes
-                    .Where(n => !n.OverlapError)
-                    .Where(n => n.Extends == null)
-                    .Select(n => new Api.Phonemizer.Note {
-                        lyric = n.lyric.Trim(),
-                        tone = n.tone,
-                        position = n.position,
-                        duration = n.ExtendedDuration,
-                    }).ToArray());
-                foreach (UNote note in notes.Reverse()) {
-                    note.Phonemize(project, track);
-                }
-                track.Phonemizer.CleanUp();
-                UPhoneme lastPhoneme = null;
-                foreach (UNote note in notes) {
-                    foreach (var phoneme in note.phonemes) {
-                        phoneme.Parent = note;
-                        phoneme.Prev = lastPhoneme;
-                        phoneme.Next = null;
-                        if (lastPhoneme != null) {
-                            lastPhoneme.Next = phoneme;
-                        }
-                        lastPhoneme = phoneme;
-                    }
-                }
-            }
             foreach (UNote note in notes) {
                 note.Validate(options, project, track, this);
             }
+            if (!options.SkipPhonemizer) {
+                var noteIndexes = new List<int>();
+                var groups = new List<Phonemizer.Note[]>();
+                int noteIndex = 0;
+                foreach (var note in notes) {
+                    if (note.OverlapError || note.Extends != null) {
+                        noteIndex++;
+                        continue;
+                    }
+                    var group = new List<UNote>() { note };
+                    var next = note.Next;
+                    while (next != null && next.Extends == note) {
+                        group.Add(next);
+                        next = next.Next;
+                    }
+                    groups.Add(group.Select(e => e.ToPhonemizerNote(track)).ToArray());
+                    noteIndexes.Add(noteIndex);
+                    noteIndex++;
+                }
+                var output = Phonemize(groups.ToArray(), track.Phonemizer, project.bpm, project.beatUnit, project.resolution);
+                phonemes.Clear();
+                for (int i = 0; i < output.Count; ++i) {
+                    for (int j = 0; j < output[i].Length; ++j) {
+                        phonemes.Add(new UPhoneme() {
+                            rawPosition = output[i][j].position,
+                            rawPhoneme = output[i][j].phoneme,
+                            index = j,
+                            Parent = notes.ElementAtOrDefault(noteIndexes[i]),
+                        });
+                    }
+                }
+            }
+            if (!options.SkipPhoneme) {
+                UPhoneme lastPhoneme = null;
+                foreach (var phoneme in phonemes) {
+                    phoneme.Prev = lastPhoneme;
+                    phoneme.Next = null;
+                    if (lastPhoneme != null) {
+                        lastPhoneme.Next = phoneme;
+                    }
+                    lastPhoneme = phoneme;
+                }
+                foreach (var note in notes) {
+                    for (int i = note.phonemeOverrides.Count - 1; i >= 0; --i) {
+                        if (note.phonemeOverrides[i].IsEmpty) {
+                            note.phonemeOverrides.RemoveAt(i);
+                        }
+                    }
+                }
+                foreach (var phoneme in phonemes) {
+                    phoneme.position = phoneme.rawPosition;
+                    phoneme.phoneme = phoneme.rawPhoneme;
+                    phoneme.preutterDelta = null;
+                    phoneme.overlapDelta = null;
+                    var note = phoneme.Parent;
+                    if (note == null) {
+                        continue;
+                    }
+                    var o = note.phonemeOverrides.FirstOrDefault(o => o.index == phoneme.index);
+                    if (o != null) {
+                        phoneme.position += o.offset ?? 0;
+                        phoneme.phoneme = o.phoneme ?? phoneme.rawPhoneme;
+                        phoneme.preutterDelta = o.preutterDelta;
+                        phoneme.overlapDelta = o.overlapDelta;
+                    }
+                }
+                // Safety treatment after phonemizer output and phoneme overrides.
+                for (int i = phonemes.Count - 2; i >= 0; --i) {
+                    phonemes[i].position = Math.Min(phonemes[i].position, phonemes[i + 1].position - 10);
+                }
+                foreach (var phoneme in phonemes) {
+                    var note = phoneme.Parent;
+                    if (note == null) {
+                        continue;
+                    }
+                    phoneme.Validate(options, project, track, this, note);
+                }
+            }
             renderPhrases.Clear();
             renderPhrases.AddRange(RenderPhrase.FromPart(project, track, this));
+        }
+
+        static List<Phonemizer.Phoneme[]> Phonemize(
+            Phonemizer.Note[][] groups,
+            Phonemizer phonemizer,
+            double bpm, int beatUnit, int resolution) {
+            phonemizer.SetTiming(bpm, beatUnit, resolution);
+            phonemizer.SetUp(groups);
+
+            var result = new List<Phonemizer.Phoneme[]>();
+            for (int i = groups.Length - 1; i >= 0; i--) {
+                Phonemizer.Result phonemizerResult;
+                bool prevIsNeighbour = false;
+                bool nextIsNeighbour = false;
+                Phonemizer.Note[] prevs = null;
+                Phonemizer.Note? prev = null;
+                Phonemizer.Note? next = null;
+                if (i > 0) {
+                    prevs = groups[i - 1];
+                    prev = groups[i - 1][0];
+                    var prevLast = groups[i - 1].Last();
+                    prevIsNeighbour = prevLast.position + prevLast.duration >= groups[i][0].position;
+                }
+                if (i < groups.Length - 1) {
+                    next = groups[i + 1][0];
+                    var thisLast = groups[i].Last();
+                    nextIsNeighbour = thisLast.position + thisLast.duration >= next.Value.position;
+                }
+
+                if (next != null && result.Count > 0) {
+                    var end = groups[i].Last().position + groups[i].Last().duration;
+                    int endPushback = Math.Min(0, result[0][0].position - end);
+                    groups[i][groups[i].Length - 1].duration += endPushback;
+                }
+                try {
+                    phonemizerResult = phonemizer.Process(
+                        groups[i],
+                        prev,
+                        next,
+                        prevIsNeighbour ? prev : null,
+                        nextIsNeighbour ? next : null,
+                        prevs);
+                } catch (Exception e) {
+                    Log.Error(e, $"phonemizer error {groups[i][0].lyric}");
+                    phonemizerResult = new Phonemizer.Result() {
+                        phonemes = new Phonemizer.Phoneme[] {
+                            new Phonemizer.Phoneme {
+                                phoneme = "error"
+                            }
+                        }
+                    };
+                }
+                for (var j = 0; j < phonemizerResult.phonemes.Length; j++) {
+                    phonemizerResult.phonemes[j].position += groups[i][0].position;
+                }
+                result.Insert(0, phonemizerResult.phonemes);
+            }
+            phonemizer.CleanUp();
+            return result;
         }
 
         public override UPart Clone() {

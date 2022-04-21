@@ -858,7 +858,7 @@ namespace OpenUtau.App.Views {
         public override void Update(IPointer pointer, Point point) {
             var notesVm = vm.NotesViewModel;
             var project = notesVm.Project;
-            int preutterTicks = phoneme.Parent.position + phoneme.position - notesVm.PointToTick(point);
+            int preutterTicks = phoneme.position - notesVm.PointToTick(point);
             double preutterDelta = project.TickToMillisecond(preutterTicks) - phoneme.autoPreutter;
             preutterDelta = Math.Max(-phoneme.oto.Preutter, preutterDelta);
             DocManager.Inst.ExecuteCmd(new PhonemePreutterCommand(notesVm.Part, leadingNote, index, (float)preutterDelta));
@@ -885,7 +885,7 @@ namespace OpenUtau.App.Views {
             var notesVm = vm.NotesViewModel;
             var project = notesVm.Project;
             float preutter = phoneme.preutter;
-            double overlap = preutter - project.TickToMillisecond(phoneme.Parent.position + phoneme.position - notesVm.PointToTick(point));
+            double overlap = preutter - project.TickToMillisecond(phoneme.position - notesVm.PointToTick(point));
             double overlapDelta = overlap - phoneme.autoOverlap;
             DocManager.Inst.ExecuteCmd(new PhonemeOverlapCommand(notesVm.Part, leadingNote, index, (float)overlapDelta));
             valueTip.UpdateValueTip($"{phoneme.overlap:0.0}ms ({overlapDelta:+0.0;-0.0;0}ms)");
@@ -906,7 +906,7 @@ namespace OpenUtau.App.Views {
                 var phoneme = hitInfo.phoneme;
                 var parent = phoneme.Parent;
                 var leadingNote = parent.Extends ?? parent;
-                int index = parent.PhonemeOffset + phoneme.Index;
+                int index = phoneme.index;
                 if (hitInfo.hitPosition) {
                     DocManager.Inst.ExecuteCmd(new PhonemeOffsetCommand(notesVm.Part, leadingNote, index, 0));
                 } else if (hitInfo.hitPreutter) {
@@ -919,9 +919,9 @@ namespace OpenUtau.App.Views {
             var aliasHitInfo = notesVm.HitTest.HitTestAlias(point);
             if (aliasHitInfo.hit) {
                 var phoneme = aliasHitInfo.phoneme;
-                if (phoneme.HasPhonemeOverride) {
+                if (phoneme.rawPhoneme != phoneme.phoneme) {
                     var note = phoneme.Parent;
-                    int index = note.PhonemeOffset + note.phonemes.IndexOf(phoneme);
+                    int index = phoneme.index;
                     DocManager.Inst.ExecuteCmd(
                         new ChangePhonemeAliasCommand(
                             notesVm.Part, note.Extends ?? note, index, null));

@@ -100,20 +100,21 @@ namespace OpenUtau.App.ViewModels {
                 return default;
             }
             int tick = viewModel.PointToTick(point);
-            foreach (UNote note in viewModel.Part.notes) {
-                if (note.LeftBound > tick || note.RightBound < tick) {
+            foreach (var phoneme in viewModel.Part.phonemes) {
+                double leftBound = phoneme.position;
+                double rightBound = phoneme.End;
+                var note = phoneme.Parent;
+                if (leftBound > tick || rightBound < tick) {
                     continue;
                 }
-                foreach (var phoneme in note.phonemes) {
-                    int left = note.position + phoneme.position;
-                    int right = note.position + phoneme.position + phoneme.Duration;
-                    if (left <= tick && tick <= right) {
-                        return new NoteHitInfo {
-                            note = note,
-                            phoneme = phoneme,
-                            hitX = true,
-                        };
-                    }
+                int left = phoneme.position;
+                int right = phoneme.End;
+                if (left <= tick && tick <= right) {
+                    return new NoteHitInfo {
+                        note = note,
+                        phoneme = phoneme,
+                        hitX = true,
+                    };
                 }
             }
             return default;
@@ -126,20 +127,21 @@ namespace OpenUtau.App.ViewModels {
             }
             int tick1 = viewModel.PointToTick(point1);
             int tick2 = viewModel.PointToTick(point2);
-            foreach (UNote note in viewModel.Part.notes) {
-                if (note.LeftBound > tick2 || note.RightBound < tick1) {
+            foreach (var phoneme in viewModel.Part.phonemes) {
+                double leftBound = phoneme.position;
+                double rightBound = phoneme.End;
+                var note = phoneme.Parent;
+                if (leftBound > tick2 || rightBound < tick1) {
                     continue;
                 }
-                foreach (var phoneme in note.phonemes) {
-                    int left = note.position + phoneme.position;
-                    int right = note.position + phoneme.position + phoneme.Duration;
-                    if (left <= tick2 && tick1 <= right) {
-                        hits.Add(new NoteHitInfo {
-                            note = note,
-                            phoneme = phoneme,
-                            hitX = true,
-                        });
-                    }
+                int left = phoneme.position;
+                int right = phoneme.End;
+                if (left <= tick2 && tick1 <= right) {
+                    hits.Add(new NoteHitInfo {
+                        note = note,
+                        phoneme = phoneme,
+                        hitX = true,
+                    });
                 }
             }
             return hits;
@@ -288,42 +290,37 @@ namespace OpenUtau.App.ViewModels {
             result.point = mousePos;
             double leftTick = viewModel.TickOffset - 480;
             double rightTick = leftTick + viewModel.ViewportTicks + 480;
-            foreach (var note in viewModel.Part.notes) {
-                if (note.LeftBound >= rightTick || note.RightBound <= leftTick || note.Error) {
+            foreach (var phoneme in viewModel.Part.phonemes) {
+                double leftBound = phoneme.position - viewModel.Project.MillisecondToTick(phoneme.preutter);
+                double rightBound = phoneme.End;
+                var note = phoneme.Parent;
+                if (leftBound >= rightTick || rightBound <= leftTick || note.Error || note.OverlapError) {
                     continue;
                 }
-                if (note.OverlapError) {
-                    continue;
+                int p0Tick = phoneme.position + project.MillisecondToTick(phoneme.envelope.data[0].X);
+                double p0x = viewModel.TickToneToPoint(p0Tick, 0).X;
+                var point = new Point(p0x, 60 - phoneme.envelope.data[0].Y * 0.24 - 1);
+                if (WithIn(point, mousePos, 3)) {
+                    result.phoneme = phoneme;
+                    result.hit = true;
+                    result.hitPreutter = true;
+                    return result;
                 }
-                foreach (var phoneme in note.phonemes) {
-                    if (phoneme.Error) {
-                        continue;
-                    }
-                    int p0Tick = phoneme.Parent.position + phoneme.position + project.MillisecondToTick(phoneme.envelope.data[0].X);
-                    double p0x = viewModel.TickToneToPoint(p0Tick, 0).X;
-                    var point = new Point(p0x, 60 - phoneme.envelope.data[0].Y * 0.24 - 1);
-                    if (WithIn(point, mousePos, 3)) {
-                        result.phoneme = phoneme;
-                        result.hit = true;
-                        result.hitPreutter = true;
-                        return result;
-                    }
-                    int p1Tick = phoneme.Parent.position + phoneme.position + viewModel.Project.MillisecondToTick(phoneme.envelope.data[1].X);
-                    double p1x = viewModel.TickToneToPoint(p1Tick, 0).X;
-                    point = new Point(p1x, 60 - phoneme.envelope.data[1].Y * 0.24);
-                    if (WithIn(point, mousePos, 3)) {
-                        result.phoneme = phoneme;
-                        result.hit = true;
-                        result.hitOverlap = true;
-                        return result;
-                    }
-                    point = viewModel.TickToneToPoint(phoneme.Parent.position + phoneme.position, 0);
-                    if (Math.Abs(point.X - mousePos.X) < 3) {
-                        result.phoneme = phoneme;
-                        result.hit = true;
-                        result.hitPosition = true;
-                        return result;
-                    }
+                int p1Tick = phoneme.position + viewModel.Project.MillisecondToTick(phoneme.envelope.data[1].X);
+                double p1x = viewModel.TickToneToPoint(p1Tick, 0).X;
+                point = new Point(p1x, 60 - phoneme.envelope.data[1].Y * 0.24);
+                if (WithIn(point, mousePos, 3)) {
+                    result.phoneme = phoneme;
+                    result.hit = true;
+                    result.hitOverlap = true;
+                    return result;
+                }
+                point = viewModel.TickToneToPoint(phoneme.position, 0);
+                if (Math.Abs(point.X - mousePos.X) < 3) {
+                    result.phoneme = phoneme;
+                    result.hit = true;
+                    result.hitPosition = true;
+                    return result;
                 }
             }
             return result;
@@ -340,40 +337,41 @@ namespace OpenUtau.App.ViewModels {
             double leftTick = viewModel.TickOffset - 480;
             double rightTick = leftTick + viewModel.ViewportTicks + 480;
             // TODO: Rewrite with a faster searching algorithm, such as binary search.
-            foreach (var note in viewModel.Part.notes) {
-                if (note.LeftBound >= rightTick || note.RightBound <= leftTick) {
+            foreach (var phoneme in viewModel.Part.phonemes) {
+                double leftBound = phoneme.position - viewModel.Project.MillisecondToTick(phoneme.preutter);
+                double rightBound = phoneme.End;
+                var note = phoneme.Parent;
+                if (leftBound >= rightTick || rightBound <= leftTick) {
                     continue;
                 }
                 if (note.OverlapError) {
                     continue;
                 }
-                foreach (var phoneme in note.phonemes) {
-                    // Mimicking the rendering logic of `PhonemeCanvas`. Might have a better solution.
-                    if (viewModel.TickWidth <= ViewConstants.PianoRollTickWidthShowDetails) {
-                        continue;
-                    }
-                    string phonemeText = !string.IsNullOrEmpty(phoneme.phonemeMapped) ? phoneme.phonemeMapped : phoneme.phoneme;
-                    if (string.IsNullOrEmpty(phonemeText)) {
-                        continue;
-                    }
-                    var x = viewModel.TickToneToPoint(phoneme.Parent.position + phoneme.position, 0).X;
-                    var bold = phoneme.HasPhonemeOverride;
-                    var textLayout = TextLayoutCache.Get(phonemeText, ThemeManager.ForegroundBrush!, 12, bold);
-                    if (x < lastTextEndX) {
-                        raiseText = !raiseText;
-                    } else {
-                        raiseText = false;
-                    }
-                    double textY = raiseText ? 2 : 18;
-                    var size = new Size(textLayout.Size.Width + 4, textLayout.Size.Height - 2);
-                    var rect = new Rect(new Point(x - 2, textY + 1.5), size);
-                    if (rect.Contains(mousePos)) {
-                        result.phoneme = phoneme;
-                        result.hit = true;
-                        return result;
-                    }
-                    lastTextEndX = x + size.Width;
+                // Mimicking the rendering logic of `PhonemeCanvas`. Might have a better solution.
+                if (viewModel.TickWidth <= ViewConstants.PianoRollTickWidthShowDetails) {
+                    continue;
                 }
+                string phonemeText = !string.IsNullOrEmpty(phoneme.phonemeMapped) ? phoneme.phonemeMapped : phoneme.phoneme;
+                if (string.IsNullOrEmpty(phonemeText)) {
+                    continue;
+                }
+                var x = viewModel.TickToneToPoint(phoneme.position, 0).X;
+                var bold = phoneme.phoneme != phoneme.rawPhoneme;
+                var textLayout = TextLayoutCache.Get(phonemeText, ThemeManager.ForegroundBrush!, 12, bold);
+                if (x < lastTextEndX) {
+                    raiseText = !raiseText;
+                } else {
+                    raiseText = false;
+                }
+                double textY = raiseText ? 2 : 18;
+                var size = new Size(textLayout.Size.Width + 4, textLayout.Size.Height - 2);
+                var rect = new Rect(new Point(x - 2, textY + 1.5), size);
+                if (rect.Contains(mousePos)) {
+                    result.phoneme = phoneme;
+                    result.hit = true;
+                    return result;
+                }
+                lastTextEndX = x + size.Width;
             }
             return result;
         }

@@ -315,6 +315,7 @@ namespace OpenUtau.Core {
         readonly int newOffset;
         public override ValidateOptions ValidateOptions => new ValidateOptions {
             Part = Part,
+            SkipPhonemizer = true,
         };
         public PhonemeOffsetCommand(UVoicePart part, UNote note, int index, int offset) : base(part, note) {
             this.note = note;

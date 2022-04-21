@@ -42,7 +42,7 @@ namespace OpenUtau.Core.Render {
         public readonly ulong hash;
 
         internal RenderPhone(UProject project, UTrack track, UVoicePart part, UNote note, UPhoneme phoneme) {
-            position = note.position + phoneme.position;
+            position = phoneme.position;
             duration = phoneme.Duration;
             leading = (int)Math.Round(project.MillisecondToTick(phoneme.preutter) / 5.0) * 5; // TODO
             this.phoneme = phoneme.phoneme;
@@ -271,16 +271,15 @@ namespace OpenUtau.Core.Render {
 
         public static List<RenderPhrase> FromPart(UProject project, UTrack track, UVoicePart part) {
             var phrases = new List<RenderPhrase>();
-            var phonemes = part.notes
-                .Where(note => !note.OverlapError)
-                .SelectMany(note => note.phonemes.Where(phoneme => !phoneme.Error))
+            var phonemes = part.phonemes
+                .Where(phoneme => !phoneme.Error)
                 .ToList();
             if (phonemes.Count == 0) {
                 return phrases;
             }
             var phrasePhonemes = new List<UPhoneme>() { phonemes[0] };
             for (int i = 1; i < phonemes.Count; ++i) {
-                if (phonemes[i - 1].Parent.position + phonemes[i - 1].End != phonemes[i].Parent.position + phonemes[i].position) {
+                if (phonemes[i - 1].End != phonemes[i].position) {
                     phrases.Add(new RenderPhrase(project, track, part, phrasePhonemes));
                     phrasePhonemes.Clear();
                 }
