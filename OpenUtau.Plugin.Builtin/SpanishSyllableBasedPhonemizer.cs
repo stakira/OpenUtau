@@ -134,6 +134,7 @@ namespace OpenUtau.Plugin.Builtin {
                         for (var i = firstC; i < cc.Length; i++) {
                             var ccv = $"{string.Join("", cc.Skip(i))}{v}";
                             var ccv2 = $"{string.Join(" ", cc.Skip(i))}{v}";
+                            var ccv3 = $"{cc[0]} {string.Join("", cc.Skip(i))}{v}";
                             if (HasOto(ccv, syllable.vowelTone)
                                 && string.Join("", cc.Skip(i)) != "dz"
                                 && string.Join("", cc.Skip(i)) != "nh"
@@ -147,6 +148,15 @@ namespace OpenUtau.Plugin.Builtin {
                             else if (HasOto(ccv2, syllable.vowelTone)) {
                                 lastC = i;
                                 basePhoneme = ccv2;
+                                break;
+                            } else if (HasOto(ccv3, syllable.vowelTone)
+                                && string.Join("", cc.Skip(i)) != "dz"
+                                && string.Join("", cc.Skip(i)) != "nh"
+                                && string.Join("", cc.Skip(i)) != "sh"
+                                && string.Join("", cc.Skip(i)) != "zh"
+                                && string.Join("", cc.Skip(i)) != "zz") {
+                                lastC = i;
+                                basePhoneme = ccv3;
                                 break;
                             }
                         }
