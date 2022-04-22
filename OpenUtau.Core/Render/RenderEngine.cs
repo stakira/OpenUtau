@@ -201,7 +201,7 @@ namespace OpenUtau.Core.Render {
                 .Where(part => part.trackNo == track.TrackNo)
                 .Where(part => part is UVoicePart)
                 .Select(part => part as UVoicePart)
-                .SelectMany(part => RenderPhrase.FromPart(project, project.tracks[part.trackNo], part));
+                .SelectMany(part => part.renderPhrases);
         }
 
         public static void ReleaseSourceTemp() {

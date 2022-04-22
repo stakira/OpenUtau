@@ -41,16 +41,18 @@ namespace OpenUtau.Core {
         public bool HasOpenUndoGroup => undoGroup != null;
         public List<UPart> PartsClipboard { get; set; }
         public List<UNote> NotesClipboard { get; set; }
+        internal PhonemizerRunner PhonemizerRunner { get; private set; }
 
         public void Initialize() {
-            mainThread = Thread.CurrentThread;
-            mainScheduler = TaskScheduler.FromCurrentSynchronizationContext();
-            SearchAllSingers();
-            SearchAllPlugins();
-            SearchAllLegacyPlugins();
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler((sender, args) => {
                 CrashSave();
             });
+            SearchAllSingers();
+            SearchAllPlugins();
+            SearchAllLegacyPlugins();
+            mainThread = Thread.CurrentThread;
+            mainScheduler = TaskScheduler.FromCurrentSynchronizationContext();
+            PhonemizerRunner = new PhonemizerRunner(mainScheduler);
         }
 
         public void SearchAllSingers() {

@@ -38,7 +38,14 @@ namespace OpenUtau.Core.Ustx {
         public List<UCurve> curves = new List<UCurve>();
 
         [YamlIgnore] public List<UPhoneme> phonemes = new List<UPhoneme>();
+        [YamlIgnore] public int phonemesRevision = 0;
         [YamlIgnore] public List<RenderPhrase> renderPhrases = new List<RenderPhrase>();
+
+        [YamlIgnore] private PhonemizerResponse phonemizerResponse;
+        [YamlIgnore] private long notesTimestamp;
+        [YamlIgnore] private long phonemesTimestamp;
+
+        [YamlIgnore] public bool PhonemesUpToDate => notesTimestamp == phonemesTimestamp;
 
         public override string DisplayName => name;
 
@@ -112,17 +119,35 @@ namespace OpenUtau.Core.Ustx {
                     noteIndexes.Add(noteIndex);
                     noteIndex++;
                 }
-                var output = Phonemize(groups.ToArray(), track.Phonemizer, project.bpm, project.beatUnit, project.resolution);
-                phonemes.Clear();
-                for (int i = 0; i < output.Count; ++i) {
-                    for (int j = 0; j < output[i].Length; ++j) {
-                        phonemes.Add(new UPhoneme() {
-                            rawPosition = output[i][j].position,
-                            rawPhoneme = output[i][j].phoneme,
-                            index = j,
-                            Parent = notes.ElementAtOrDefault(noteIndexes[i]),
-                        });
+                var request = new PhonemizerRequest() {
+                    part = this,
+                    timestamp = DateTime.Now.ToFileTimeUtc(),
+                    noteIndexes = noteIndexes.ToArray(),
+                    notes = groups.ToArray(),
+                    phonemizer = track.Phonemizer,
+                    bpm = project.bpm,
+                    beatUnit = project.beatUnit,
+                    resolution = project.resolution,
+                };
+                notesTimestamp = request.timestamp;
+                DocManager.Inst.PhonemizerRunner.Push(request);
+            }
+            lock (this) {
+                if (phonemizerResponse != null) {
+                    var resp = phonemizerResponse;
+                    phonemes.Clear();
+                    for (int i = 0; i < resp.phonemes.Length; ++i) {
+                        for (int j = 0; j < resp.phonemes[i].Length; ++j) {
+                            phonemes.Add(new UPhoneme() {
+                                rawPosition = resp.phonemes[i][j].position,
+                                rawPhoneme = resp.phonemes[i][j].phoneme,
+                                index = j,
+                                Parent = notes.ElementAtOrDefault(resp.noteIndexes[i]),
+                            });
+                        }
                     }
+                    phonemesTimestamp = resp.timestamp;
+                    phonemizerResponse = null;
                 }
             }
             if (!options.SkipPhoneme) {
@@ -172,66 +197,15 @@ namespace OpenUtau.Core.Ustx {
                 }
             }
             renderPhrases.Clear();
-            renderPhrases.AddRange(RenderPhrase.FromPart(project, track, this));
+            if (PhonemesUpToDate) {
+                renderPhrases.AddRange(RenderPhrase.FromPart(project, track, this));
+            }
         }
 
-        static List<Phonemizer.Phoneme[]> Phonemize(
-            Phonemizer.Note[][] groups,
-            Phonemizer phonemizer,
-            double bpm, int beatUnit, int resolution) {
-            phonemizer.SetTiming(bpm, beatUnit, resolution);
-            phonemizer.SetUp(groups);
-
-            var result = new List<Phonemizer.Phoneme[]>();
-            for (int i = groups.Length - 1; i >= 0; i--) {
-                Phonemizer.Result phonemizerResult;
-                bool prevIsNeighbour = false;
-                bool nextIsNeighbour = false;
-                Phonemizer.Note[] prevs = null;
-                Phonemizer.Note? prev = null;
-                Phonemizer.Note? next = null;
-                if (i > 0) {
-                    prevs = groups[i - 1];
-                    prev = groups[i - 1][0];
-                    var prevLast = groups[i - 1].Last();
-                    prevIsNeighbour = prevLast.position + prevLast.duration >= groups[i][0].position;
-                }
-                if (i < groups.Length - 1) {
-                    next = groups[i + 1][0];
-                    var thisLast = groups[i].Last();
-                    nextIsNeighbour = thisLast.position + thisLast.duration >= next.Value.position;
-                }
-
-                if (next != null && result.Count > 0) {
-                    var end = groups[i].Last().position + groups[i].Last().duration;
-                    int endPushback = Math.Min(0, result[0][0].position - end);
-                    groups[i][groups[i].Length - 1].duration += endPushback;
-                }
-                try {
-                    phonemizerResult = phonemizer.Process(
-                        groups[i],
-                        prev,
-                        next,
-                        prevIsNeighbour ? prev : null,
-                        nextIsNeighbour ? next : null,
-                        prevs);
-                } catch (Exception e) {
-                    Log.Error(e, $"phonemizer error {groups[i][0].lyric}");
-                    phonemizerResult = new Phonemizer.Result() {
-                        phonemes = new Phonemizer.Phoneme[] {
-                            new Phonemizer.Phoneme {
-                                phoneme = "error"
-                            }
-                        }
-                    };
-                }
-                for (var j = 0; j < phonemizerResult.phonemes.Length; j++) {
-                    phonemizerResult.phonemes[j].position += groups[i][0].position;
-                }
-                result.Insert(0, phonemizerResult.phonemes);
+        internal void SetPhonemizerResponse(PhonemizerResponse response) {
+            lock (this) {
+                phonemizerResponse = response;
             }
-            phonemizer.CleanUp();
-            return result;
         }
 
         public override UPart Clone() {

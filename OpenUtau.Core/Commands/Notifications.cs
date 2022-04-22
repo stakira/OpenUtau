@@ -49,8 +49,8 @@ namespace OpenUtau.Core {
         public override string ToString() => "Validate Project";
     }
 
-    public class RedrawNotesNotification : UNotification {
-        public override string ToString() => "Redraw Notes";
+    public class PhonemizedNotification : UNotification {
+        public override string ToString() => "Phonemized";
     }
 
     public class SelectExpressionNotification : UNotification {
@@ -63,14 +63,6 @@ namespace OpenUtau.Core {
             UpdateShadow = updateShadow;
         }
         public override string ToString() => $"Select expression {ExpKey}";
-    }
-
-    public class ShowPitchExpNotification : UNotification {
-        public override string ToString() => "Show pitch expression list";
-    }
-
-    public class HidePitchExpNotification : UNotification {
-        public override string ToString() => "Hide pitch expression list";
     }
 
     // Notification for UI to move PlayPosMarker
