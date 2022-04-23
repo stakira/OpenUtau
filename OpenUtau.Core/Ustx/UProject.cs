@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using OpenUtau.Core.Util;
 using YamlDotNet.Serialization;
 
 namespace OpenUtau.Core.Ustx {
@@ -43,8 +44,10 @@ namespace OpenUtau.Core.Ustx {
 
         public UNote CreateNote() {
             UNote note = UNote.Create();
-            note.pitch.AddPoint(new PitchPoint(-40, 0));
-            note.pitch.AddPoint(new PitchPoint(40, 0));
+            int start = NotePresets.Default.DefaultPortamento.PortamentoStart;
+            int length = NotePresets.Default.DefaultPortamento.PortamentoLength;
+            note.pitch.AddPoint(new PitchPoint(start, 0));
+            note.pitch.AddPoint(new PitchPoint(start + length, 0));
             return note;
         }
 

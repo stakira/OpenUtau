@@ -135,6 +135,7 @@ namespace OpenUtau.App.ViewModels {
                 new ResetPitchBends(),
                 new ResetAllExpressions(),
                 new ClearVibratos(),
+                new ResetVibratos(),
                 new ClearTimings(),
             }.Select(edit => new MenuItemViewModel() {
                 Header = ThemeManager.GetString(edit.Name),

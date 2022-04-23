@@ -335,6 +335,7 @@
                 </MenuItem.DataTemplates>
               </MenuItem>
               <MenuItem Height="20" Header="{DynamicResource pianoroll.menu.lyrics.edit}" Click="OnMenuEditLyrics"/>
+              <MenuItem Height="20" Header="{DynamicResource pianoroll.menu.notedefaults}" Click="OnMenuNoteDefaults"/>
             </Menu>
           </Border>
         </Border>
