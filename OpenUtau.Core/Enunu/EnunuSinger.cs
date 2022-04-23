@@ -103,11 +103,16 @@ namespace OpenUtau.Core.Enunu {
         }
 
         public override bool TryGetMappedOto(string phoneme, int tone, out UOto oto) {
-            oto = new UOto() {
-                Alias = phoneme,
-                Phonetic = phoneme,
-            };
-            return true;
+            var parts = phoneme.Split();
+            if (parts.All(p => phonemes.Contains(p))) {
+                oto = new UOto() {
+                    Alias = phoneme,
+                    Phonetic = phoneme,
+                };
+                return true;
+            }
+            oto = null;
+            return false;
         }
 
         public override bool TryGetMappedOto(string phoneme, int tone, string color, out UOto oto) {

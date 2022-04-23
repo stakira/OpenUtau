@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using K4os.Hash.xxHash;
@@ -16,8 +15,8 @@ using Serilog;
 
 namespace OpenUtau.Core.Enunu {
     public class EnunuRenderer : IRenderer {
-        const int headTicks = 240;
-        const int tailTicks = 240;
+        public const int headTicks = 240;
+        public const int tailTicks = 240;
 
         static readonly HashSet<string> supportedExp = new HashSet<string>(){
             Format.Ustx.DYN,
@@ -28,7 +27,6 @@ namespace OpenUtau.Core.Enunu {
             Format.Ustx.VOIC,
         };
 
-        static readonly Encoding ShiftJIS = Encoding.GetEncoding("shift_jis");
         static readonly object lockObj = new object();
 
         public USingerType SingerType => USingerType.Enunu;
@@ -37,12 +35,6 @@ namespace OpenUtau.Core.Enunu {
 
         public bool SupportsExpression(UExpressionDescriptor descriptor) {
             return supportedExp.Contains(descriptor.abbr);
-        }
-
-        struct EnunuNote {
-            public string lyric;
-            public int length;
-            public int noteNum;
         }
 
         public RenderResult Layout(RenderPhrase phrase) {
@@ -61,7 +53,6 @@ namespace OpenUtau.Core.Enunu {
                     if (cancellation.IsCancellationRequested) {
                         return new RenderResult();
                     }
-                    EnunuInit.Init();
                     string progressInfo = string.Join(" ", phrase.phones.Select(p => p.phoneme));
                     progress.Complete(0, progressInfo);
                     ulong preEffectHash = PreEffectsHash(phrase);
@@ -74,7 +65,12 @@ namespace OpenUtau.Core.Enunu {
                         var spPath = Path.Join(tmpPath, "acoustic-sp.npy");
                         var apPath = Path.Join(tmpPath, "acoustic-ap.npy");
                         if (!File.Exists(f0Path) || !File.Exists(spPath) || !File.Exists(apPath)) {
-                            InvokeEnunu(phrase, "all", ustPath);
+                            EnunuInit.Init();
+                            Log.Information($"Starting enunu acoustic \"{ustPath}\"");
+                            var enunuNotes = PhraseToEnunuNotes(phrase);
+                            EnunuUtils.WriteUst(enunuNotes, phrase.tempo, phrase.singer, ustPath);
+                            string args = $"{EnunuInit.Script} \"acoustic\" \"{ustPath}\"";
+                            Util.ProcessRunner.Run(EnunuInit.Python, args, Log.Logger, workDir: EnunuInit.WorkDir, timeoutMs: 0);
                         }
                         if (cancellation.IsCancellationRequested) {
                             return new RenderResult();
@@ -168,7 +164,7 @@ namespace OpenUtau.Core.Enunu {
             }
         }
 
-        private void WriteUst(RenderPhrase phrase, string ustPath) {
+        static EnunuNote[] PhraseToEnunuNotes(RenderPhrase phrase) {
             var notes = new List<EnunuNote>();
             notes.Add(new EnunuNote {
                 lyric = "R",
@@ -187,28 +183,7 @@ namespace OpenUtau.Core.Enunu {
                 length = tailTicks,
                 noteNum = 60,
             });
-            using (var writer = new StreamWriter(ustPath, false, ShiftJIS)) {
-                writer.WriteLine("[#SETTING]");
-                writer.WriteLine($"Tempo={phrase.tempo}");
-                writer.WriteLine("Tracks=1");
-                writer.WriteLine($"VoiceDir={phrase.singer.Location}");
-                writer.WriteLine($"CacheDir={PathManager.Inst.CachePath}");
-                writer.WriteLine("Mode2=True");
-                for (int i = 0; i < notes.Count; ++i) {
-                    writer.WriteLine($"[#{i}]");
-                    writer.WriteLine($"Lyric={notes[i].lyric}");
-                    writer.WriteLine($"Length={notes[i].length}");
-                    writer.WriteLine($"NoteNum={notes[i].noteNum}");
-                }
-                writer.WriteLine("[#TRACKEND]");
-            }
-        }
-
-        private void InvokeEnunu(RenderPhrase phrase, string phase, string ustPath) {
-            Log.Information($"Starting enunu {phase} \"{ustPath}\"");
-            WriteUst(phrase, ustPath);
-            string args = $"{EnunuInit.Script} {phase} \"{ustPath}\"";
-            Util.ProcessRunner.Run(EnunuInit.Python, args, Log.Logger, workDir: EnunuInit.WorkDir, timeoutMs: 0);
+            return notes.ToArray();
         }
 
         double[] DownSampleCurve(float[] curve, double defaultValue, double frameMs, int length, int headFrames, int tailFrames, double tickToMs, Func<double, double> convert) {

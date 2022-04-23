@@ -82,6 +82,7 @@ def phonemize(path_ust):
         path_full_score,
         strict_sinsy_style=False
     )
+    enulib.common.full2mono(path_full_score, path_mono_score)
     # timelag
     enulib.timelag.score2timelag(
         config,
@@ -102,7 +103,7 @@ def phonemize(path_ust):
         path_full_duration,
         path_full_timing
     )
-
+    enulib.common.full2mono(path_full_timing, path_mono_timing)
 
 def gen_world_params(
     labels,
@@ -235,6 +236,16 @@ def acoustic(path_ust):
         path_full_duration, path_mono_duration, \
         path_full_timing, path_mono_timing, \
         path_acoustic, path_f0, path_sp, path_ap = get_paths(path_ust)
+
+    # timing
+    copy(path_ust, path_temp_ust)
+    copy(os.path.join(voice_dir, config.table_path), path_temp_table)
+    enulib.utauplugin2score.utauplugin2score(
+        path_temp_ust,
+        path_temp_table,
+        path_full_timing,
+        strict_sinsy_style=False
+    )
 
     acoustic_features, shift_frames = timing_to_acoustic_with_retry(
         config, path_full_timing, path_acoustic)
