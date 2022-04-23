@@ -124,7 +124,7 @@ namespace OpenUtau.Api {
                         next,
                         prevIsNeighbour ? prev : null,
                         nextIsNeighbour ? next : null,
-                        prevs);
+                        (prevIsNeighbour ? prevs : null) ?? new Phonemizer.Note[0]);
                 } catch (Exception e) {
                     Log.Error(e, $"phonemizer error {notes[i][0].lyric}");
                     phonemizerResult = new Phonemizer.Result() {
