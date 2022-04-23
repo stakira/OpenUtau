@@ -221,6 +221,7 @@ Advertencia: Moresampler no es totalmente compatible por ahora. Este puede ser l
 Click Izquierdo + Arrastrar: Poner expresiones
 Click Derecho + Arrastrar: Reestablecer expresiones
   </system:String>
+  <system:String x:Key="tip.exps.notsupported">Esta expresión no es soportada por el renderizador seleccionado.</system:String>
   <system:String x:Key="tip.lyricbox.next">Tab: Siguiente Nota</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: Nota Previa</system:String>
   <system:String x:Key="tip.notes.basics">
