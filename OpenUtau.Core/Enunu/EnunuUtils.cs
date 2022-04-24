@@ -22,6 +22,7 @@ namespace OpenUtau.Core.Enunu {
                 writer.WriteLine("[#SETTING]");
                 writer.WriteLine($"Tempo={tempo}");
                 writer.WriteLine("Tracks=1");
+                writer.WriteLine($"Project={ustPath}");
                 writer.WriteLine($"VoiceDir={singer.Location}");
                 writer.WriteLine($"CacheDir={PathManager.Inst.CachePath}");
                 writer.WriteLine("Mode2=True");

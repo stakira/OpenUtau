@@ -6,13 +6,22 @@ using System.Text;
 using K4os.Hash.xxHash;
 using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
-using Serilog;
 
 namespace OpenUtau.Core.Enunu {
     [Phonemizer("Enunu Phonemizer", "ENUNU")]
     public class EnunuPhonemizer : Phonemizer {
         EnunuSinger singer;
         Dictionary<Note[], Phoneme[]> partResult = new Dictionary<Note[], Phoneme[]>();
+
+        struct TimingResult {
+            public string path_full_timing;
+            public string path_mono_timing;
+        }
+
+        struct TimingResponse {
+            public string error;
+            public TimingResult result;
+        }
 
         public override void SetSinger(USinger singer) {
             this.singer = singer as EnunuSinger;
@@ -26,14 +35,16 @@ namespace OpenUtau.Core.Enunu {
             ulong hash = HashNoteGroups(notes);
             var tmpPath = Path.Join(PathManager.Inst.CachePath, $"lab-{hash:x16}");
             var ustPath = tmpPath + ".tmp";
-            var scorePath = Path.Join(tmpPath, $"score.lab");
-            var timingPath = Path.Join(tmpPath, $"timing.lab");
+            var enutmpPath = tmpPath + "_enutemp";
+            var scorePath = Path.Join(enutmpPath, $"score.lab");
+            var timingPath = Path.Join(enutmpPath, $"timing.lab");
             var enunuNotes = NoteGroupsToEnunu(notes);
             if (!File.Exists(scorePath) || !File.Exists(timingPath)) {
-                EnunuInit.Init();
                 EnunuUtils.WriteUst(enunuNotes, bpm, singer, ustPath);
-                string args = $"{EnunuInit.Script} \"phonemize\" \"{ustPath}\"";
-                Util.ProcessRunner.Run(EnunuInit.Python, args, Log.Logger, workDir: EnunuInit.WorkDir, timeoutMs: 0);
+                var response = EnunuClient.Inst.SendRequest<TimingResponse>(new string[] { "timing", ustPath });
+                if (response.error != null) {
+                    throw new Exception(response.error);
+                }
             }
             var noteIndexes = LabelToNoteIndex(scorePath, enunuNotes);
             var timing = ParseLabel(timingPath);

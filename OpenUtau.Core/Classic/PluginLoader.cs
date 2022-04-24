@@ -32,7 +32,11 @@ namespace OpenUtau.Classic {
                             if (s[0] == "name") {
                                 plugin.Name = s[1];
                             } else if (s[0] == "execute") {
-                                plugin.Executable = Path.Combine(Path.GetDirectoryName(filePath), s[1]);
+                                string execute = s[1];
+                                if (execute.StartsWith(".\\")) {
+                                    execute = execute.Substring(2);
+                                }
+                                plugin.Executable = Path.Combine(Path.GetDirectoryName(filePath), execute);
                             } else if (s[0] == "notes" && s[1] == "all") {
                                 plugin.AllNotes = true;
                             } else if (s[0] == "shell" && s[1] == "use") {

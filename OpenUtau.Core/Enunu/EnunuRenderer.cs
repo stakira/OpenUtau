@@ -27,6 +27,18 @@ namespace OpenUtau.Core.Enunu {
             Format.Ustx.VOIC,
         };
 
+        struct AcousticResult {
+            public string path_acoustic;
+            public string path_f0;
+            public string path_spectrogram;
+            public string path_aperiodicity;
+        }
+
+        struct AcousticResponse {
+            public string error;
+            public AcousticResult result;
+        }
+
         static readonly object lockObj = new object();
 
         public USingerType SingerType => USingerType.Enunu;
@@ -58,19 +70,21 @@ namespace OpenUtau.Core.Enunu {
                     ulong preEffectHash = PreEffectsHash(phrase);
                     var tmpPath = Path.Join(PathManager.Inst.CachePath, $"enu-{preEffectHash:x16}");
                     var ustPath = tmpPath + ".tmp";
+                    var enutmpPath = tmpPath + "_enutemp";
                     var wavPath = Path.Join(PathManager.Inst.CachePath, $"enu-{phrase.hash:x16}.wav");
                     var result = Layout(phrase);
                     if (!File.Exists(wavPath)) {
-                        var f0Path = Path.Join(tmpPath, "acoustic-f0.npy");
-                        var spPath = Path.Join(tmpPath, "acoustic-sp.npy");
-                        var apPath = Path.Join(tmpPath, "acoustic-ap.npy");
+                        var f0Path = Path.Join(enutmpPath, "f0.npy");
+                        var spPath = Path.Join(enutmpPath, "spectrogram.npy");
+                        var apPath = Path.Join(enutmpPath, "aperiodicity.npy");
                         if (!File.Exists(f0Path) || !File.Exists(spPath) || !File.Exists(apPath)) {
-                            EnunuInit.Init();
                             Log.Information($"Starting enunu acoustic \"{ustPath}\"");
                             var enunuNotes = PhraseToEnunuNotes(phrase);
                             EnunuUtils.WriteUst(enunuNotes, phrase.tempo, phrase.singer, ustPath);
-                            string args = $"{EnunuInit.Script} \"acoustic\" \"{ustPath}\"";
-                            Util.ProcessRunner.Run(EnunuInit.Python, args, Log.Logger, workDir: EnunuInit.WorkDir, timeoutMs: 0);
+                            var response = EnunuClient.Inst.SendRequest<AcousticResponse>(new string[] { "acoustic", ustPath });
+                            if (response.error != null) {
+                                throw new Exception(response.error);
+                            }
                         }
                         if (cancellation.IsCancellationRequested) {
                             return new RenderResult();
@@ -128,10 +142,10 @@ namespace OpenUtau.Core.Enunu {
         }
 
         public RenderPitchResult LoadRenderedPitch(RenderPhrase phrase) {
-            EnunuInit.Init();
             ulong preEffectHash = PreEffectsHash(phrase);
             var tmpPath = Path.Join(PathManager.Inst.CachePath, $"enu-{preEffectHash:x16}");
-            var f0Path = Path.Join(tmpPath, "acoustic-f0.npy");
+            var enutmpPath = tmpPath + "_enutemp";
+            var f0Path = Path.Join(enutmpPath, "f0.npy");
             var layout = Layout(phrase);
             if (!File.Exists(f0Path)) {
                 return null;
