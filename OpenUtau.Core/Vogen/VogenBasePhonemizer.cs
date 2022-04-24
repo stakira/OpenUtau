@@ -23,18 +23,18 @@ namespace OpenUtau.Core.Vogen {
 
         public override void SetSinger(USinger singer) { }
 
-        public override void SetUp(Note[] notes) {
-            if (notes.Length == 0) {
+        public override void SetUp(Note[][] groups) {
+            if (groups.Length == 0) {
                 return;
             }
-            var phrase = new List<Note>() { notes[0] };
-            for (int i = 1; i < notes.Length; ++i) {
-                if (notes[i - 1].position + notes[i - 1].duration == notes[i].position) {
-                    phrase.Add(notes[i]);
+            var phrase = new List<Note>() { groups[0][0] };
+            for (int i = 1; i < groups.Length; ++i) {
+                if (groups[i - 1][0].position + groups[i - 1][0].duration == groups[i][0].position) {
+                    phrase.Add(groups[i][0]);
                 } else {
                     ProcessPart(phrase);
                     phrase.Clear();
-                    phrase.Add(notes[i]);
+                    phrase.Add(groups[i][0]);
                 }
             }
             if (phrase.Count > 0) {

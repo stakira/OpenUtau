@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 
 namespace OpenUtau.Core.Editing {
     public class AddTailNote : BatchEdit {
@@ -97,7 +98,7 @@ namespace OpenUtau.Core.Editing {
             var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
             docManager.StartUndoGroup(true);
             foreach (var note in notes) {
-                if (note.phonemeExpressions.Count > 0 || note.noteExpressions.Count > 0) {
+                if (note.phonemeExpressions.Count > 0) {
                     docManager.ExecuteCmd(new ResetExpressionsCommand(part, note));
                 }
             }
@@ -115,7 +116,7 @@ namespace OpenUtau.Core.Editing {
         private string name;
 
         public ClearVibratos() {
-            name = "pianoroll.menu.notes.reset.vibratos";
+            name = "pianoroll.menu.notes.clear.vibratos";
         }
 
         public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
@@ -123,6 +124,34 @@ namespace OpenUtau.Core.Editing {
             docManager.StartUndoGroup(true);
             foreach (var note in notes) {
                 if (note.vibrato.length > 0) {
+                    docManager.ExecuteCmd(new VibratoLengthCommand(part, note, 0));
+                }
+            }
+            docManager.EndUndoGroup();
+        }
+    }
+
+    public class ResetVibratos : BatchEdit {
+        public virtual string Name => name;
+
+        private string name;
+
+        public ResetVibratos() {
+            name = "pianoroll.menu.notes.reset.vibratos";
+        }
+
+        public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
+            var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
+            docManager.StartUndoGroup(true);
+            foreach (var note in notes) {
+                docManager.ExecuteCmd(new VibratoPeriodCommand(part, note, NotePresets.Default.DefaultVibrato.VibratoPeriod));
+                docManager.ExecuteCmd(new VibratoDepthCommand(part, note, NotePresets.Default.DefaultVibrato.VibratoDepth));
+                docManager.ExecuteCmd(new VibratoFadeInCommand(part, note, NotePresets.Default.DefaultVibrato.VibratoIn));
+                docManager.ExecuteCmd(new VibratoFadeOutCommand(part, note, NotePresets.Default.DefaultVibrato.VibratoOut));
+                docManager.ExecuteCmd(new VibratoShiftCommand(part, note, NotePresets.Default.DefaultVibrato.VibratoShift));
+                if (NotePresets.Default.AutoVibratoToggle && note.duration >= NotePresets.Default.AutoVibratoNoteDuration) {
+                    docManager.ExecuteCmd(new VibratoLengthCommand(part, note, NotePresets.Default.DefaultVibrato.VibratoLength));
+                } else {
                     docManager.ExecuteCmd(new VibratoLengthCommand(part, note, 0));
                 }
             }

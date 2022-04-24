@@ -18,9 +18,6 @@ namespace OpenUtau.Core.Ustx {
             note.lyric = "あ";
             note.pitch.AddPoint(new PitchPoint(-5, 0));
             note.pitch.AddPoint(new PitchPoint(5, 0));
-            note.noteExpressions.Add(new UExpression(descriptor) {
-                value = 99,
-            });
             note.phonemeExpressions.Add(new UExpression(descriptor) {
                 index = 0,
                 value = 123,
@@ -42,8 +39,6 @@ pitch:
   - {x: 5, y: 0, shape: io}
   snap_first: true
 vibrato: {length: 0, period: 175, depth: 25, in: 10, out: 10, shift: 0, drift: 0}
-note_expressions:
-- {abbr: vel, value: 99}
 phoneme_expressions:
 - {index: 0, abbr: vel, value: 123}
 phoneme_overrides: []
@@ -61,7 +56,6 @@ phoneme_overrides: []
             Assert.Equal(60, actual.duration);
             Assert.Equal(42, actual.tone);
             Assert.Equal("あ", actual.lyric);
-            Assert.Empty(actual.phonemes);
             Assert.Single(actual.phonemeExpressions);
             var vel = actual.phonemeExpressions[0];
             Assert.NotNull(vel);

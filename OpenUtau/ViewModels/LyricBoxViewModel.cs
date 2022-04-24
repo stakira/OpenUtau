@@ -91,7 +91,7 @@ namespace OpenUtau.App.ViewModels {
             if (IsAliasBox) {
                 var phoneme = (NoteOrPhoneme as LyricBoxPhoneme)!.Unwrap();
                 var note = phoneme.Parent;
-                int index = note.PhonemeOffset + note.phonemes.IndexOf(phoneme);
+                int index = phoneme.index;
                 DocManager.Inst.ExecuteCmd(new ChangePhonemeAliasCommand(Part, note.Extends ?? note, index, Text));
             } else {
                 DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(Part, (NoteOrPhoneme as LyricBoxNote)!.Unwrap(), Text));

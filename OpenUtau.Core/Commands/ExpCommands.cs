@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 
 namespace OpenUtau.Core {
     public abstract class ExpCommand : UCommand {
@@ -67,20 +68,16 @@ namespace OpenUtau.Core {
     }
 
     public class ResetExpressionsCommand : ExpCommand {
-        List<UExpression> noteExpressions;
         List<UExpression> phonemeExpressions;
         public ResetExpressionsCommand(UVoicePart part, UNote note) : base(part) {
             Note = note;
-            noteExpressions = note.noteExpressions;
             phonemeExpressions = note.phonemeExpressions;
         }
         public override string ToString() => "Reset expressions.";
         public override void Execute() {
-            Note.noteExpressions = new List<UExpression>();
             Note.phonemeExpressions = new List<UExpression>();
         }
         public override void Unexecute() {
-            Note.noteExpressions = noteExpressions;
             Note.phonemeExpressions = phonemeExpressions;
         }
     }
@@ -179,8 +176,10 @@ namespace OpenUtau.Core {
             Note = note;
             oldPitch = note.pitch;
             newPitch = new UPitch();
-            newPitch.AddPoint(new PitchPoint(-40, 0));
-            newPitch.AddPoint(new PitchPoint(40, 0));
+            int start = NotePresets.Default.DefaultPortamento.PortamentoStart;
+            int length = NotePresets.Default.DefaultPortamento.PortamentoLength;
+            newPitch.AddPoint(new PitchPoint(start, 0));
+            newPitch.AddPoint(new PitchPoint(start + length, 0));
         }
         public override string ToString() => "Reset pitch points";
         public override void Execute() => Note.pitch = newPitch;

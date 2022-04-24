@@ -159,10 +159,11 @@ namespace OpenUtau.Core {
         }
 
         public void RenderToFiles(UProject project, string exportPath) {
+            var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
             Task.Run(() => {
                 var task = Task.Run(() => {
                     RenderEngine engine = new RenderEngine(project);
-                    var trackMixes = engine.RenderTracks(ref renderCancellation);
+                    var trackMixes = engine.RenderTracks(scheduler, ref renderCancellation);
                     for (int i = 0; i < trackMixes.Count; ++i) {
                         if (project.tracks.Count > i) {
                             if (project.tracks[i].Mute) {
@@ -186,9 +187,10 @@ namespace OpenUtau.Core {
         }
 
         void SchedulePreRender() {
+            var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
             Log.Information("SchedulePreRender");
             var engine = new RenderEngine(DocManager.Inst.Project);
-            engine.PreRenderProject(ref renderCancellation);
+            engine.PreRenderProject(scheduler, ref renderCancellation);
         }
 
         #region ICmdSubscriber

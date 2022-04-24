@@ -56,17 +56,18 @@ namespace OpenUtau.Classic {
 
             offset = phone.oto.Offset;
             var stretchRatio = Math.Pow(2, 1.0 - velocity * 0.01);
-            double durMs = phone.oto.Preutter * stretchRatio + phone.duration * phrase.tickToMs;
+            double durMs = phone.oto.Preutter * stretchRatio + phone.envelope[4].X;
             requiredLength = Math.Ceiling(durMs / 50 + 1) * 50;
             consonant = phone.oto.Consonant;
             cutoff = phone.oto.Cutoff;
             skipOver = phone.oto.Preutter * stretchRatio - phone.preutterMs;
 
             int pitchLeading = (int)(phone.oto.Preutter * stretchRatio / phrase.tickToMs);
+            int pitchCount = (int)Math.Ceiling(durMs / phrase.tickToMs / 5);
             tempo = phrase.tempo;
             pitches = phrase.pitches
                 .Skip((phone.position - pitchLeading - pitchStart) / 5)
-                .Take((phone.duration + pitchLeading) / 5)
+                .Take(pitchCount)
                 .Select(pitch => (int)Math.Round(pitch - phone.tone * 100))
                 .ToArray();
 

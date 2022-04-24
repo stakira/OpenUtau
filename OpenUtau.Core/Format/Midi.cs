@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using NAudio.Midi;
 
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 
 namespace OpenUtau.Core.Format
 {
@@ -31,6 +32,7 @@ namespace OpenUtau.Core.Format
                             _e.NoteNumber,
                             (int)_e.AbsoluteTime * project.resolution / midi.DeltaTicksPerQuarterNote,
                             _e.NoteLength * project.resolution / midi.DeltaTicksPerQuarterNote);
+                        if (NotePresets.Default.AutoVibratoToggle && note.duration >= NotePresets.Default.AutoVibratoNoteDuration) note.vibrato.length = NotePresets.Default.DefaultVibrato.VibratoLength;
                         parts[e.Channel].notes.Add(note);
                     }
                 foreach (var pair in parts)

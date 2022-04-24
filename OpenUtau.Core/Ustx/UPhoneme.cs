@@ -6,9 +6,12 @@ using YamlDotNet.Serialization;
 
 namespace OpenUtau.Core.Ustx {
     public class UPhoneme {
-        public int position;
-        public string phoneme = "a";
+        public int rawPosition;
+        public string rawPhoneme = "a";
+        public int index;
 
+        public int position { get; set; }
+        public string phoneme { get; set; }
         public string phonemeMapped { get; private set; }
         public UEnvelope envelope { get; private set; } = new UEnvelope();
         public UOto oto { get; private set; }
@@ -23,15 +26,11 @@ namespace OpenUtau.Core.Ustx {
         public float? overlapDelta { get; set; }
 
         public UNote Parent { get; set; }
-        public int Index { get; set; }
         public int Duration { get; private set; }
         public int End { get { return position + Duration; } }
         public UPhoneme Prev { get; set; }
         public UPhoneme Next { get; set; }
         public bool Error { get; set; } = false;
-
-        public bool HasPhonemeOverride { get; set; }
-        public bool HasOffsetOverride { get; set; }
 
         public override string ToString() => $"\"{phoneme}\" pos:{position}";
 
@@ -55,13 +54,12 @@ namespace OpenUtau.Core.Ustx {
                 return;
             }
             var leadingNote = Parent.Extends ?? Parent;
-            int pos = Parent.position + position;
-            Duration = leadingNote.ExtendedEnd - pos;
+            Duration = leadingNote.ExtendedEnd - position;
             if (Next != null) {
                 if (Next.Parent == Parent.Next && Parent.End == Next.Parent.position) {
                     Duration = int.MaxValue;
                 }
-                Duration = Math.Min(Duration, Next.Parent.position + Next.position - pos);
+                Duration = Math.Min(Duration, Next.position - position);
             }
             Error = Duration <= 0;
         }
@@ -99,7 +97,7 @@ namespace OpenUtau.Core.Ustx {
             tailOverlap = 0;
 
             if (Prev != null) {
-                int gapTick = Parent.position + position - (Prev.Parent.position + Prev.End);
+                int gapTick = position - Prev.End;
                 float gapMs = (float)project.TickToMillisecond(gapTick);
                 float prevDur = (float)project.TickToMillisecond(Prev.Duration);
                 float maxPreutter = autoPreutter;
@@ -166,7 +164,6 @@ namespace OpenUtau.Core.Ustx {
         public Tuple<float, bool> GetExpression(UProject project, UTrack track, string abbr) {
             track.TryGetExpression(project, abbr, out var descriptor);
             var note = Parent.Extends ?? Parent;
-            int index = Parent.PhonemeOffset + Index;
             var expression = note.phonemeExpressions.FirstOrDefault(
                 exp => exp.descriptor.abbr == descriptor.abbr && exp.index == index);
             if (expression != null) {
@@ -179,7 +176,6 @@ namespace OpenUtau.Core.Ustx {
         public void SetExpression(UProject project, UTrack track, string abbr, float value) {
             track.TryGetExpression(project, abbr, out var descriptor);
             var note = Parent.Extends ?? Parent;
-            int index = Parent.PhonemeOffset + Index;
             if (descriptor.defaultValue == value) {
                 note.phonemeExpressions.RemoveAll(
                     exp => exp.descriptor.abbr == descriptor.abbr && exp.index == index);

@@ -9,19 +9,32 @@ using Serilog;
 
 namespace OpenUtau.Core.Render {
     public class Progress {
+        readonly TaskScheduler uiScheduler;
         readonly int total;
         int completed = 0;
-        public Progress(int total) {
+        public Progress(TaskScheduler uiScheduler, int total) {
+            this.uiScheduler = uiScheduler;
             this.total = total;
+        }
+
+        public void Complete(int n, string info) {
+            Interlocked.Add(ref completed, n);
+            Notify(completed * 100.0 / total, info);
         }
 
         public void CompleteOne(string info) {
             Interlocked.Increment(ref completed);
-            DocManager.Inst.ExecuteCmd(new ProgressBarNotification(completed * 100.0 / total, info));
+            Notify(completed * 100.0 / total, info);
         }
 
         public void Clear() {
-            DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, string.Empty));
+            Notify(0, string.Empty);
+        }
+
+        private void Notify(double progress, string info) {
+            var notif = new ProgressBarNotification(progress, info);
+            var task = new Task(() => DocManager.Inst.ExecuteCmd(notif));
+            task.Start(uiScheduler);
         }
     }
 
@@ -89,7 +102,7 @@ namespace OpenUtau.Core.Render {
             var master = new MasterAdapter(new WaveMix(faders));
             master.SetPosition((int)(project.TickToMillisecond(startTick) * 44100 / 1000) * 2);
             Task.Run(() => {
-                var progress = new Progress(totalProgress);
+                var progress = new Progress(uiScheduler, totalProgress);
                 foreach (var renderTask in renderTasks.OrderBy(
                     task => task.Item1.position + task.Item1.phones.First().position)) {
                     if (newCancellation.IsCancellationRequested) {
@@ -110,7 +123,7 @@ namespace OpenUtau.Core.Render {
             return Tuple.Create(master, faders);
         }
 
-        public List<WaveMix> RenderTracks(ref CancellationTokenSource cancellation) {
+        public List<WaveMix> RenderTracks(TaskScheduler uiScheduler, ref CancellationTokenSource cancellation) {
             var newCancellation = new CancellationTokenSource();
             var oldCancellation = Interlocked.Exchange(ref cancellation, newCancellation);
             if (oldCancellation != null) {
@@ -123,7 +136,7 @@ namespace OpenUtau.Core.Render {
                 lock (project) {
                     phrases = PrepareTrack(track, project).ToArray();
                 }
-                var progress = new Progress(phrases.Sum(phrase => phrase.phones.Length));
+                var progress = new Progress(uiScheduler, phrases.Sum(phrase => phrase.phones.Length));
                 var mix = new WaveMix(phrases.Select(phrase => {
                     var task = phrase.renderer.Render(phrase, progress, newCancellation);
                     task.Wait();
@@ -138,7 +151,7 @@ namespace OpenUtau.Core.Render {
             return result;
         }
 
-        public void PreRenderProject(ref CancellationTokenSource cancellation) {
+        public void PreRenderProject(TaskScheduler uiScheduler, ref CancellationTokenSource cancellation) {
             var newCancellation = new CancellationTokenSource();
             var oldCancellation = Interlocked.Exchange(ref cancellation, newCancellation);
             if (oldCancellation != null) {
@@ -163,7 +176,7 @@ namespace OpenUtau.Core.Render {
                     if (phrases.Length == 0) {
                         return;
                     }
-                    var progress = new Progress(phrases.Sum(phrase => phrase.phones.Length));
+                    var progress = new Progress(uiScheduler, phrases.Sum(phrase => phrase.phones.Length));
                     foreach (var phrase in phrases) {
                         var task = phrase.renderer.Render(phrase, progress, newCancellation, true);
                         task.Wait();
@@ -188,7 +201,7 @@ namespace OpenUtau.Core.Render {
                 .Where(part => part.trackNo == track.TrackNo)
                 .Where(part => part is UVoicePart)
                 .Select(part => part as UVoicePart)
-                .SelectMany(part => RenderPhrase.FromPart(project, project.tracks[part.trackNo], part));
+                .SelectMany(part => part.renderPhrases);
         }
 
         public static void ReleaseSourceTemp() {

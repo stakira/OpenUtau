@@ -253,19 +253,20 @@ namespace OpenUtau.Core.Render {
         [DllImport("worldline")]
         static extern void PhraseSynthAddRequest(
             IntPtr phrase_synth, IntPtr request,
-            double posMs, double skipMs, double lengthMs, double fadeInMs, double fadeOutMs);
+            double posMs, double skipMs, double lengthMs,
+            double fadeInMs, double fadeOutMs, LogCallback logCallback);
 
         [DllImport("worldline")]
         static extern void PhraseSynthSetCurves(
             IntPtr phraseSynth, double[] f0,
             double[] gender, double[] tension,
             double[] breathiness, double[] voicing,
-            int length);
+            int length, LogCallback logCallback);
 
         [DllImport("worldline")]
         static extern int PhraseSynthSynth(
             IntPtr phrase_synth,
-            ref IntPtr y);
+            ref IntPtr y, LogCallback logCallback);
 
         public class PhraseSynth : IDisposable {
             private IntPtr ptr;
@@ -291,14 +292,17 @@ namespace OpenUtau.Core.Render {
                 GC.SuppressFinalize(this);
             }
 
-            public void AddRequest(ResamplerItem item, double posMs, double skipMs, double lengthMs, double fadeInMs, double fadeOutMs) {
+            public void AddRequest(
+                ResamplerItem item, double posMs, double skipMs,
+                double lengthMs, double fadeInMs, double fadeOutMs) {
                 var requestWrapper = new SynthRequestWrapper(item);
                 SynthRequest request = requestWrapper.request;
                 try {
                     unsafe {
                         PhraseSynthAddRequest(
                             ptr, new IntPtr(&request),
-                            posMs, skipMs, lengthMs, fadeInMs, fadeOutMs);
+                            posMs, skipMs, lengthMs,
+                            fadeInMs, fadeOutMs, Log.Information);
                     }
                 } finally {
                     requestWrapper.Dispose();
@@ -309,12 +313,15 @@ namespace OpenUtau.Core.Render {
                 double[] f0, double[] gender,
                 double[] tension, double[] breathiness,
                 double[] voicing) {
-                PhraseSynthSetCurves(ptr, f0, gender, tension, breathiness, voicing, f0.Length);
+                PhraseSynthSetCurves(
+                    ptr, f0,
+                    gender, tension, breathiness, voicing,
+                    f0.Length, Log.Information);
             }
 
             public float[] Synth() {
                 IntPtr buffer = IntPtr.Zero;
-                int size = PhraseSynthSynth(ptr, ref buffer);
+                int size = PhraseSynthSynth(ptr, ref buffer, Log.Information);
                 var data = new float[size];
                 Marshal.Copy(buffer, data, 0, size);
                 Marshal.FreeCoTaskMem(buffer);

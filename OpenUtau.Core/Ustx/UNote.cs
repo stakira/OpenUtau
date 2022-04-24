@@ -4,7 +4,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text.RegularExpressions;
 using OpenUtau.Api;
-using Serilog;
+using OpenUtau.Core.Util;
 using YamlDotNet.Serialization;
 
 namespace OpenUtau.Core.Ustx {
@@ -14,27 +14,24 @@ namespace OpenUtau.Core.Ustx {
         public int position;
         public int duration;
         public int tone;
-        public string lyric = "a";
+        public string lyric = NotePresets.Default.DefaultLyric;
         public UPitch pitch;
         public UVibrato vibrato;
 
         [Obsolete("Only used for upgrading ustx v0.1")]
         public Dictionary<string, double?> expressions;
-        public List<UExpression> noteExpressions = new List<UExpression>();
         public List<UExpression> phonemeExpressions = new List<UExpression>();
         public List<UPhonemeOverride> phonemeOverrides = new List<UPhonemeOverride>();
 
-        [YamlIgnore] public List<UPhoneme> phonemes = new List<UPhoneme>();
         [YamlIgnore] public int End => position + duration;
         [YamlIgnore] public bool Selected { get; set; } = false;
         [YamlIgnore] public UNote Prev { get; set; }
         [YamlIgnore] public UNote Next { get; set; }
         [YamlIgnore] public UNote Extends { get; set; }
-        [YamlIgnore] public int PhonemeOffset { get; set; }
         [YamlIgnore] public int ExtendedDuration { get; set; }
         [YamlIgnore] public int ExtendedEnd => position + ExtendedDuration;
-        [YamlIgnore] public int LeftBound => position + Math.Min(0, phonemes.Count > 0 ? phonemes.First().position : 0);
-        [YamlIgnore] public int RightBound => position + Math.Max(duration, phonemes.Count > 0 ? phonemes.Last().position + phonemes.Last().Duration : 0);
+        [YamlIgnore] public int LeftBound => position;
+        [YamlIgnore] public int RightBound => position + duration;
         [YamlIgnore] public bool Error { get; set; } = false;
         [YamlIgnore] public bool OverlapError { get; set; } = false;
 
@@ -62,11 +59,6 @@ namespace OpenUtau.Core.Ustx {
         }
 
         public void AfterLoad(UProject project, UTrack track, UVoicePart part) {
-            foreach (var exp in noteExpressions) {
-                if (project.expressions.TryGetValue(exp.abbr, out var descriptor)) {
-                    exp.descriptor = descriptor;
-                }
-            }
             foreach (var exp in phonemeExpressions) {
                 if (project.expressions.TryGetValue(exp.abbr, out var descriptor)) {
                     exp.descriptor = descriptor;
@@ -75,10 +67,6 @@ namespace OpenUtau.Core.Ustx {
         }
 
         public void BeforeSave(UProject project, UTrack track, UVoicePart part) {
-            noteExpressions.ForEach(exp => exp.index = null);
-            noteExpressions = noteExpressions
-                .OrderBy(exp => exp.abbr)
-                .ToList();
             phonemeExpressions = phonemeExpressions
                 .OrderBy(exp => exp.index)
                 .ThenBy(exp => exp.abbr)
@@ -104,135 +92,10 @@ namespace OpenUtau.Core.Ustx {
                     pitch.data[0].Y = 0;
                 }
             }
-            if (!options.SkipPhoneme) {
-                for (var i = 0; i < phonemes.Count; i++) {
-                    var phoneme = phonemes[i];
-                    phoneme.Parent = this;
-                    phoneme.Index = i;
-                }
-                // Update has override bits.
-                foreach (var phoneme in phonemes) {
-                    phoneme.HasPhonemeOverride = false;
-                    phoneme.HasOffsetOverride = false;
-                    phoneme.preutterDelta = null;
-                    phoneme.overlapDelta = null;
-                }
-                foreach (var o in (Extends ?? this).phonemeOverrides) {
-                    int index = o.index - PhonemeOffset;
-                    if (index >= 0 && index < phonemes.Count) {
-                        if (o.phoneme != null) {
-                            phonemes[index].HasPhonemeOverride = true;
-                        }
-                        if (o.offset != null) {
-                            phonemes[index].HasOffsetOverride = true;
-                        }
-                        phonemes[index].preutterDelta = o.preutterDelta;
-                        phonemes[index].overlapDelta = o.overlapDelta;
-                    }
-                }
-                foreach (var phoneme in phonemes) {
-                    phoneme.Validate(options, project, track, part, this);
-                    Error |= phoneme.Error;
-                }
-            }
-        }
-
-        public void Phonemize(UProject project, UTrack track) {
-            if (track.Singer == null || !track.Singer.Found || !track.Singer.Loaded) {
-                return;
-            }
-            if (Extends != null) {
-                return;
-            }
-
-            List<UNote> notes = new List<UNote> { this };
-            while (notes.Last().Next != null && notes.Last().Next.Extends == this) {
-                notes.Add(notes.Last().Next);
-            }
-
-            int endOffset = 0;
-            if (notes.Last().Next != null && notes.Last().Next.phonemes.Count > 0) {
-                endOffset = Math.Min(0, notes.Last().Next.position - notes.Last().End + notes.Last().Next.phonemes[0].position);
-            }
-
-            var prev = Prev?.ToPhonemizerNote(track);
-            var next = notes.Last().Next?.ToPhonemizerNote(track);
-            bool prevIsNeighbour = Prev?.End >= position;
-            if (Prev?.Extends != null) {
-                prev = Prev.Extends.ToPhonemizerNote(track);
-                var phoneme = prev.Value;
-                phoneme.duration = Prev.ExtendedDuration;
-                prev = phoneme;
-            }
-            var prevs = new List<UNote>();
-            if (prevIsNeighbour) {
-                prevs.Add(Prev);
-                while (prevs.Last().Prev != null && prevs.Last().Extends != null && prevs.Last().Prev.End >= prevs.Last().position) {
-                    prevs.Add(prevs.Last().Prev);
-                }
-                prevs.Reverse();
-            }
-            var phonemizerPrevs = prevs.Select(n => n.ToPhonemizerNote(track)).ToArray();
-            bool nextIsNeighbour = notes.Last().End >= notes.Last().Next?.position;
-            track.Phonemizer.SetTiming(project.bpm, project.beatUnit, project.resolution);
-            var phonemizerNotes = notes.Select(note => note.ToPhonemizerNote(track)).ToArray();
-            phonemizerNotes[phonemizerNotes.Length - 1].duration += endOffset;
-            if (string.IsNullOrEmpty(phonemizerNotes[0].lyric) &&
-                string.IsNullOrEmpty(phonemizerNotes[0].phoneticHint)) {
-                phonemes.Clear();
-                return;
-            }
-            Phonemizer.Result phonemizerResult;
-            try {
-                phonemizerResult = track.Phonemizer.Process(
-                    phonemizerNotes,
-                    prev,
-                    next,
-                    prevIsNeighbour ? prev : null,
-                    nextIsNeighbour ? next : null,
-                    phonemizerPrevs);
-            } catch (Exception e) {
-                Log.Error(e, $"phonemizer error {notes[0].lyric}");
-                phonemizerResult = new Phonemizer.Result() {
-                    phonemes = new Phonemizer.Phoneme[] {
-                        new Phonemizer.Phoneme {
-                            phoneme = "error"
-                        }
-                    }
-                };
-            }
-            var newPhonemes = phonemizerResult.phonemes;
-            // Apply overrides.
-            for (int i = phonemeOverrides.Count - 1; i >= 0; --i) {
-                if (phonemeOverrides[i].IsEmpty) {
-                    phonemeOverrides.RemoveAt(i);
-                }
-            }
-            foreach (var o in phonemeOverrides) {
-                if (o.index >= 0 && o.index < newPhonemes.Length) {
-                    var p = newPhonemes[o.index];
-                    if (o.phoneme != null) {
-                        p.phoneme = o.phoneme;
-                    }
-                    if (o.offset != null) {
-                        p.position += o.offset.Value;
-                    }
-                    newPhonemes[o.index] = p;
-                }
-            }
-            // Safety treatment after phonemizer output and phoneme overrides.
-            int maxPostion = notes.Last().End - notes.First().position + endOffset - 10;
-            for (int i = newPhonemes.Length - 1; i >= 0; --i) {
-                var p = newPhonemes[i];
-                p.position = Math.Min(p.position, maxPostion);
-                newPhonemes[i] = p;
-                maxPostion = p.position - 10;
-            }
-            DistributePhonemes(notes, newPhonemes);
         }
 
         static List<Phonemizer.PhonemeAttributes> attributesBuffer = new List<Phonemizer.PhonemeAttributes>();
-        private Phonemizer.Note ToPhonemizerNote(UTrack track) {
+        internal Phonemizer.Note ToPhonemizerNote(UTrack track) {
             string lrc = lyric;
             string phoneticHint = null;
             lrc = phoneticHintPattern.Replace(lrc, match => {
@@ -278,28 +141,6 @@ namespace OpenUtau.Core.Ustx {
                 duration = duration,
                 phonemeAttributes = attributes,
             };
-        }
-
-        private void DistributePhonemes(List<UNote> notes, Phonemizer.Phoneme[] phonemes) {
-            int endPosition = 0;
-            int index = 0;
-            foreach (var note in notes) {
-                note.PhonemeOffset = index;
-                endPosition += note.duration;
-                int indexInNote = 0;
-                while (index < phonemes.Length && phonemes[index].position < endPosition) {
-                    while (note.phonemes.Count - 1 < indexInNote) {
-                        note.phonemes.Add(new UPhoneme());
-                    }
-                    note.phonemes[indexInNote].phoneme = phonemes[index].phoneme;
-                    note.phonemes[indexInNote].position = phonemes[index].position - (note.position - notes[0].position);
-                    index++;
-                    indexInNote++;
-                }
-                while (note.phonemes.Count > indexInNote) {
-                    note.phonemes.RemoveAt(note.phonemes.Count - 1);
-                }
-            }
         }
 
         public UPhonemeOverride GetPhonemeOverride(int index) {
@@ -348,7 +189,6 @@ namespace OpenUtau.Core.Ustx {
                 lyric = lyric,
                 pitch = pitch.Clone(),
                 vibrato = vibrato.Clone(),
-                noteExpressions = noteExpressions.Select(exp => exp.Clone()).ToList(),
                 phonemeExpressions = phonemeExpressions.Select(exp => exp.Clone()).ToList(),
                 phonemeOverrides = phonemeOverrides.Select(o => o.Clone()).ToList(),
             };
@@ -359,15 +199,15 @@ namespace OpenUtau.Core.Ustx {
         // Vibrato percentage of note length.
         float _length;
         // Period in milliseconds.
-        float _period = 175f;
+        float _period = NotePresets.Default.DefaultVibrato.VibratoPeriod;
         // Depth in cents (1 semitone = 100 cents).
-        float _depth = 25f;
+        float _depth = NotePresets.Default.DefaultVibrato.VibratoDepth;
         // Fade-in percentage of vibrato length.
-        float _in = 10f;
+        float _in = NotePresets.Default.DefaultVibrato.VibratoIn;
         // Fade-out percentage of vibrato length.
-        float _out = 10f;
+        float _out = NotePresets.Default.DefaultVibrato.VibratoOut;
         // Shift percentage of period length.
-        float _shift;
+        float _shift = NotePresets.Default.DefaultVibrato.VibratoShift;
         float _drift;
 
         public float length { get => _length; set => _length = Math.Max(0, Math.Min(100, value)); }

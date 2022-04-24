@@ -145,38 +145,39 @@ namespace OpenUtau.App.Controls {
                 }
                 return;
             }
-            foreach (UNote note in Part.notes) {
-                if (note.LeftBound >= rightTick || note.RightBound <= leftTick) {
+            foreach (var phoneme in Part.phonemes) {
+                if (phoneme.Error || phoneme.Parent == null) {
                     continue;
                 }
+                double leftBound = phoneme.position;
+                double rightBound = phoneme.End;
+                if (leftBound >= rightTick || rightBound <= leftTick) {
+                    continue;
+                }
+                var note = phoneme.Parent;
                 var hPen = selectedNotes.Contains(note) ? ThemeManager.AccentPen2Thickness2 : ThemeManager.AccentPen1Thickness2;
                 var vPen = selectedNotes.Contains(note) ? ThemeManager.AccentPen2Thickness3 : ThemeManager.AccentPen1Thickness3;
                 var brush = selectedNotes.Contains(note) ? ThemeManager.AccentBrush2 : ThemeManager.AccentBrush1;
-                foreach (var phoneme in note.phonemes) {
-                    if (phoneme.Error) {
-                        continue;
+                var (value, overriden) = phoneme.GetExpression(project, track, Key);
+                double x1 = Math.Round(viewModel.TickToneToPoint(phoneme.position, 0).X);
+                double x2 = Math.Round(viewModel.TickToneToPoint(phoneme.End, 0).X);
+                if (descriptor.type == UExpressionType.Numerical) {
+                    double valueHeight = Math.Round(Bounds.Height - Bounds.Height * (value - descriptor.min) / (descriptor.max - descriptor.min));
+                    double zeroHeight = Math.Round(Bounds.Height - Bounds.Height * (0f - descriptor.min) / (descriptor.max - descriptor.min));
+                    context.DrawLine(vPen, new Point(x1 + 0.5, zeroHeight + 0.5), new Point(x1 + 0.5, valueHeight + 3));
+                    context.DrawLine(hPen, new Point(x1 + 3, valueHeight), new Point(Math.Max(x1 + 3, x2 - 3), valueHeight));
+                    using (var state = context.PushPreTransform(Matrix.CreateTranslation(x1 + 0.5, valueHeight))) {
+                        context.DrawGeometry(overriden ? brush : ThemeManager.BackgroundBrush, vPen, pointGeometry);
                     }
-                    var (value, overriden) = phoneme.GetExpression(project, track, Key);
-                    double x1 = Math.Round(viewModel.TickToneToPoint(note.position + phoneme.position, 0).X);
-                    double x2 = Math.Round(viewModel.TickToneToPoint(note.position + phoneme.End, 0).X);
-                    if (descriptor.type == UExpressionType.Numerical) {
-                        double valueHeight = Math.Round(Bounds.Height - Bounds.Height * (value - descriptor.min) / (descriptor.max - descriptor.min));
-                        double zeroHeight = Math.Round(Bounds.Height - Bounds.Height * (0f - descriptor.min) / (descriptor.max - descriptor.min));
-                        context.DrawLine(vPen, new Point(x1 + 0.5, zeroHeight + 0.5), new Point(x1 + 0.5, valueHeight + 3));
-                        context.DrawLine(hPen, new Point(x1 + 3, valueHeight), new Point(Math.Max(x1 + 3, x2 - 3), valueHeight));
-                        using (var state = context.PushPreTransform(Matrix.CreateTranslation(x1 + 0.5, valueHeight))) {
-                            context.DrawGeometry(overriden ? brush : ThemeManager.BackgroundBrush, vPen, pointGeometry);
-                        }
-                    } else if (descriptor.type == UExpressionType.Options) {
-                        for (int i = 0; i < descriptor.options.Length; ++i) {
-                            double y = optionHeight * (descriptor.options.Length - 1 - i + 0.5);
-                            using (var state = context.PushPreTransform(Matrix.CreateTranslation(x1 + 4.5, y))) {
-                                if ((int)value == i) {
-                                    context.DrawGeometry(brush, null, pointGeometry);
-                                    context.DrawGeometry(null, hPen, circleGeometry);
-                                } else {
-                                    context.DrawGeometry(null, ThemeManager.NeutralAccentPenSemi, circleGeometry);
-                                }
+                } else if (descriptor.type == UExpressionType.Options) {
+                    for (int i = 0; i < descriptor.options.Length; ++i) {
+                        double y = optionHeight * (descriptor.options.Length - 1 - i + 0.5);
+                        using (var state = context.PushPreTransform(Matrix.CreateTranslation(x1 + 4.5, y))) {
+                            if ((int)value == i) {
+                                context.DrawGeometry(brush, null, pointGeometry);
+                                context.DrawGeometry(null, hPen, circleGeometry);
+                            } else {
+                                context.DrawGeometry(null, ThemeManager.NeutralAccentPenSemi, circleGeometry);
                             }
                         }
                     }

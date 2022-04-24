@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 using OpenUtau.Api;
 using OpenUtau.Classic;
 using OpenUtau.Core.Lib;
@@ -26,6 +28,9 @@ namespace OpenUtau.Core {
         static DocManager GetInst() { if (_s == null) { _s = new DocManager(); } return _s; }
         public static DocManager Inst { get { return GetInst(); } }
 
+        private Thread mainThread;
+        private TaskScheduler mainScheduler;
+
         public int playPosTick = 0;
 
         public Dictionary<string, USinger> Singers { get; private set; } = new Dictionary<string, USinger>();
@@ -36,14 +41,18 @@ namespace OpenUtau.Core {
         public bool HasOpenUndoGroup => undoGroup != null;
         public List<UPart> PartsClipboard { get; set; }
         public List<UNote> NotesClipboard { get; set; }
+        internal PhonemizerRunner PhonemizerRunner { get; private set; }
 
         public void Initialize() {
-            SearchAllSingers();
-            SearchAllPlugins();
-            SearchAllLegacyPlugins();
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler((sender, args) => {
                 CrashSave();
             });
+            SearchAllSingers();
+            SearchAllPlugins();
+            SearchAllLegacyPlugins();
+            mainThread = Thread.CurrentThread;
+            mainScheduler = TaskScheduler.FromCurrentSynchronizationContext();
+            PhonemizerRunner = new PhonemizerRunner(mainScheduler);
         }
 
         public void SearchAllSingers() {
@@ -162,6 +171,9 @@ namespace OpenUtau.Core {
         }
 
         public void ExecuteCmd(UCommand cmd) {
+            if (mainThread != Thread.CurrentThread) {
+                Log.Error($"{cmd} not on main thread");
+            }
             if (cmd is UNotification) {
                 if (cmd is SaveProjectNotification) {
                     var _cmd = cmd as SaveProjectNotification;

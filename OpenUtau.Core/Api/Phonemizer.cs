@@ -150,7 +150,7 @@ namespace OpenUtau.Api {
         /// <param name="singer"></param>
         public abstract void SetSinger(USinger singer);
 
-        public virtual void SetUp(Note[] notes) { }
+        public virtual void SetUp(Note[][] notes) { }
 
         /// <summary>
         /// Phonemize a consecutive sequence of notes. This is the main logic of a phonemizer.

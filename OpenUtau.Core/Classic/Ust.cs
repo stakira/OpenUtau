@@ -411,10 +411,10 @@ namespace OpenUtau.Classic {
                         spacer.lyric = "R";
                         spacer.tone = 60;
                         sequence.Add(spacer);
-                        WriteNoteBody(project, track, spacer, writer);
+                        WriteNoteBody(project, track, part, spacer, writer);
                     }
                     writer.WriteLine($"[#{sequence.Count:D4}]");
-                    WriteNoteBody(project, track, note, writer);
+                    WriteNoteBody(project, track, part, note, writer);
                     position = note.End;
                     sequence.Add(note);
                 }
@@ -452,7 +452,7 @@ namespace OpenUtau.Classic {
                 var position = 0;
                 if (prev != null) {
                     writer.WriteLine($"[#PREV]");
-                    WriteNoteBody(project, track, prev, writer);
+                    WriteNoteBody(project, track, part, prev, writer);
                     position = prev.End;
                 }
                 var note = first;
@@ -468,17 +468,17 @@ namespace OpenUtau.Classic {
                         spacer.lyric = "R";
                         spacer.tone = 60;
                         sequence.Add(spacer);
-                        WriteNoteBody(project, track, spacer, writer);
+                        WriteNoteBody(project, track, part, spacer, writer);
                     }
                     writer.WriteLine($"[#{sequence.Count:D4}]");
-                    WriteNoteBody(project, track, note, writer, forPlugin: true);
+                    WriteNoteBody(project, track, part, note, writer, forPlugin: true);
                     position = note.End;
                     sequence.Add(note);
                     note = note.Next;
                 }
                 if (next != null) {
                     writer.WriteLine($"[#NEXT]");
-                    WriteNoteBody(project, track, next, writer);
+                    WriteNoteBody(project, track, part, next, writer);
                 }
             }
             return sequence;
@@ -503,14 +503,14 @@ namespace OpenUtau.Classic {
             writer.WriteLine("[#TRACKEND]");
         }
 
-        static void WriteNoteBody(UProject project, UTrack track, UNote note, StreamWriter writer, bool forPlugin = false) {
+        static void WriteNoteBody(UProject project, UTrack track, UVoicePart part, UNote note, StreamWriter writer, bool forPlugin = false) {
             writer.WriteLine($"Length={note.duration}");
             writer.WriteLine($"Lyric={note.lyric}");
             writer.WriteLine($"NoteNum={note.tone}");
             writer.WriteLine("PreUtterance=");
             //writer.WriteLine("VoiceOverlap=");
-            if (note.phonemes.Count > 0) {
-                var phoneme = note.phonemes[0];
+            var phoneme = part.phonemes.FirstOrDefault(p => p.Parent == note);
+            if (phoneme != null) {
                 var vel = phoneme.GetExpression(project, track, Ustx.VEL).Item1;
                 writer.WriteLine($"Velocity={(int)vel}");
                 var vol = phoneme.GetExpression(project, track, Ustx.VOL).Item1;
