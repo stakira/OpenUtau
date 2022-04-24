@@ -1,37 +1,27 @@
-## Welcome to GitHub Pages
+## OpenUtau
 
-You can use the [editor on GitHub](https://github.com/stakira/OpenUtau/edit/master/docs/index.md) to maintain and preview the content for your website in Markdown files.
+Open singing synthesis platform / Open source UTAU successor
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+### Download
+[![Download](https://img.shields.io/static/v1?style=for-the-badge&logo=github&label=download&message=windows-x64&labelColor=FF347C&color=4ea6ea)](https://github.com/stakira/OpenUtau/releases/download/OpenUtau-Latest/OpenUtau-win-x64.zip) [tips](https://github.com/stakira/OpenUtau/wiki/Getting-Started#windows)</br>
+[![Download](https://img.shields.io/static/v1?style=for-the-badge&logo=github&label=download&message=windows-x86&labelColor=FF347C&color=4ea6ea)](https://github.com/stakira/OpenUtau/releases/download/OpenUtau-Latest/OpenUtau-win-x86.zip) [tips](https://github.com/stakira/OpenUtau/wiki/Getting-Started#windows)</br>
+[![Download](https://img.shields.io/static/v1?style=for-the-badge&logo=github&label=download&message=macos-x64&labelColor=FF347C&color=4ea6ea)](https://github.com/stakira/OpenUtau/releases/download/OpenUtau-Latest/OpenUtau-osx-x64.dmg) [tips](https://github.com/stakira/OpenUtau/wiki/Getting-Started#macos)</br>
+[![Download](https://img.shields.io/static/v1?style=for-the-badge&logo=github&label=download&message=linux-x64&labelColor=FF347C&color=4ea6ea)](https://github.com/stakira/OpenUtau/releases/download/OpenUtau-Latest/OpenUtau-linux-x64.tar.gz) [tips](https://github.com/stakira/OpenUtau/wiki/Getting-Started#linux)</br>
 
-### Markdown
+### Getting Started
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+[Getting Started](./Getting-Started)
 
-```markdown
-Syntax highlighted code block
+[FAQ](./FAQ)
 
-# Header 1
-## Header 2
-### Header 3
+[中文使用说明](https://opensynth.miraheze.org/wiki/OpenUTAU/%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95)
 
-- Bulleted
-- List
+### Documentation
 
-1. Numbered
-2. List
+[Phonemizers](./Phonemizers)
 
-**Bold** and _Italic_ and `Code` text
+[Resamplers](./Resamplers)
 
-[Link](url) and ![Image](src)
-```
+[Legacy Plugins](./Legacy-Plugins)
 
-For more details see [Basic writing and formatting syntax](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/stakira/OpenUtau/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+[NNSVS](./Status-of-ENUNU-NNSVS-Support)
