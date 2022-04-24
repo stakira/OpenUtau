@@ -107,6 +107,14 @@ namespace OpenUtau.App.Views {
             dialog.ShowDialog(this);
         }
 
+        void OnMenuNoteDefaults(object sender, RoutedEventArgs args) {
+            var dialog = new NoteDefaultsDialog();
+            dialog.ShowDialog(this);
+            if (dialog.Position.Y < 0) {
+                dialog.Position = dialog.Position.WithY(0);
+            }
+        }
+
         public void OnExpButtonClick(object sender, RoutedEventArgs args) {
             var dialog = new ExpressionsDialog() {
                 DataContext = new ExpressionsViewModel(),

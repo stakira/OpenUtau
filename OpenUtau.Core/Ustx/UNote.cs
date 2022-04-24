@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text.RegularExpressions;
 using OpenUtau.Api;
+using OpenUtau.Core.Util;
 using YamlDotNet.Serialization;
 
 namespace OpenUtau.Core.Ustx {
@@ -13,7 +14,7 @@ namespace OpenUtau.Core.Ustx {
         public int position;
         public int duration;
         public int tone;
-        public string lyric = "a";
+        public string lyric = NotePresets.Default.DefaultLyric;
         public UPitch pitch;
         public UVibrato vibrato;
 
@@ -198,15 +199,15 @@ namespace OpenUtau.Core.Ustx {
         // Vibrato percentage of note length.
         float _length;
         // Period in milliseconds.
-        float _period = 175f;
+        float _period = NotePresets.Default.DefaultVibrato.VibratoPeriod;
         // Depth in cents (1 semitone = 100 cents).
-        float _depth = 25f;
+        float _depth = NotePresets.Default.DefaultVibrato.VibratoDepth;
         // Fade-in percentage of vibrato length.
-        float _in = 10f;
+        float _in = NotePresets.Default.DefaultVibrato.VibratoIn;
         // Fade-out percentage of vibrato length.
-        float _out = 10f;
+        float _out = NotePresets.Default.DefaultVibrato.VibratoOut;
         // Shift percentage of period length.
-        float _shift;
+        float _shift = NotePresets.Default.DefaultVibrato.VibratoShift;
         float _drift;
 
         public float length { get => _length; set => _length = Math.Max(0, Math.Min(100, value)); }

@@ -8,6 +8,7 @@ using Avalonia.Input;
 using OpenUtau.App.Controls;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
+using OpenUtau.Core.Util;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.App.Views {
@@ -242,6 +243,8 @@ namespace OpenUtau.App.Views {
             }
             if (deltaDuration != 0) {
                 DocManager.Inst.ExecuteCmd(new ResizeNoteCommand(notesVm.Part, note, deltaDuration));
+                if (NotePresets.Default.AutoVibratoToggle && note.duration >= NotePresets.Default.AutoVibratoNoteDuration) DocManager.Inst.ExecuteCmd(new VibratoLengthCommand(notesVm.Part, note, NotePresets.Default.DefaultVibrato.VibratoLength));
+                else DocManager.Inst.ExecuteCmd(new VibratoLengthCommand(notesVm.Part, note, 0));
             }
             valueTip.UpdateValueTip(note.duration.ToString());
         }
