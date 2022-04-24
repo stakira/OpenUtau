@@ -99,6 +99,30 @@
   <system:String x:Key="menu.tools.singer.installadv">Instalar Voz (Avanzado)</system:String>
   <system:String x:Key="menu.tools.singers">Voces</system:String>
 
+  <system:String x:Key="notedefaults.lyric">Letra</system:String>
+  <system:String x:Key="notedefaults.lyric.defaultlyric">Letra Predeterminada</system:String>
+  <system:String x:Key="notedefaults.portamento">Portamento</system:String>
+  <system:String x:Key="notedefaults.portamento.length">Duración</system:String>
+  <system:String x:Key="notedefaults.portamento.start">Inicio</system:String>
+  <system:String x:Key="notedefaults.preset">Base</system:String>
+  <system:String x:Key="notedefaults.preset.remove">Eliminar</system:String>
+  <system:String x:Key="notedefaults.preset.remove.tooltip">Elimina la ultima base aplicada.</system:String>
+  <system:String x:Key="notedefaults.preset.save">Guardar</system:String>
+  <system:String x:Key="notedefaults.preset.save.tooltip">Guarda los ajustes seleccionados a una base nueva.</system:String>
+  <system:String x:Key="notedefaults.preset.namenew">Nombrar Base Nueva...</system:String>
+  <system:String x:Key="notedefaults.reset">Reestablecer Ajustes</system:String>
+  <system:String x:Key="notedefaults.reset.tooltip">Reestablece todos los ajustes a sus valores predeterminados.
+Advertencia: Esta opción eliminará las bases personalizadas.</system:String>
+  <system:String x:Key="notedefaults.vibrato">Vibrato</system:String>
+  <system:String x:Key="notedefaults.vibrato.length">Duración</system:String>
+  <system:String x:Key="notedefaults.vibrato.period">Frecuencia</system:String>
+  <system:String x:Key="notedefaults.vibrato.depth">Profundidad</system:String>
+  <system:String x:Key="notedefaults.vibrato.in">Entrada</system:String>
+  <system:String x:Key="notedefaults.vibrato.out">Salida</system:String>
+  <system:String x:Key="notedefaults.vibrato.shift">Shift</system:String>
+  <system:String x:Key="notedefaults.vibrato.autotoggle">Vibrato Automatico por Largo de Nota</system:String>
+  <system:String x:Key="notedefaults.vibrato.autominlength">Largo Mínimo</system:String>
+  
   <!--<system:String x:Key="oto.alias">Alias</system:String>-->
   <!--<system:String x:Key="oto.color">Color</system:String>-->
   <system:String x:Key="oto.consonant">Consonante</system:String>
@@ -123,6 +147,7 @@
   <system:String x:Key="pianoroll.menu.notes.addtaildash">Añadir cola "-"</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">Añadir cola "R"</system:String>
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Cargar Tono Renderizado</system:String>
+  <system:String x:Key="pianoroll.menu.notes.clear.vibratos">Quitar vibratos</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">Cuantificar a 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Cuantificar a 1/64</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">Restablecer expresiones</system:String>
@@ -142,6 +167,7 @@
   <system:String x:Key="pianoroll.tool.drawpitch">Dibujar Tono (4)</system:String>
   <system:String x:Key="pianoroll.tool.eraser">Goma (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">Cuchillo (5)</system:String>
+  <system:String x:Key="pianoroll.menu.notedefaults">Ajustes de Notas</system:String>
   <system:String x:Key="pianoroll.tool.pen">Lápiz (2)
 Click izquierdo para dibujar
 Click derecho para borrar</system:String>
@@ -221,6 +247,7 @@ Advertencia: Moresampler no es totalmente compatible por ahora. Este puede ser l
 Click Izquierdo + Arrastrar: Poner expresiones
 Click Derecho + Arrastrar: Reestablecer expresiones
   </system:String>
+  <system:String x:Key="tip.exps.notsupported">Esta expresión no es soportada por el renderizador seleccionado.</system:String>
   <system:String x:Key="tip.lyricbox.next">Tab: Siguiente Nota</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: Nota Previa</system:String>
   <system:String x:Key="tip.notes.basics">
