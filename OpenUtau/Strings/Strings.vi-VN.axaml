@@ -10,7 +10,7 @@
   <system:String x:Key="context.pitch.pointdel">Xoá điểm</system:String>
   <system:String x:Key="context.pitch.pointsnapprev">Gán vào nốt trước</system:String>
 
-  <!--<system:String x:Key="debug.clear">Clear</system:String>-->
+  <system:String x:Key="debug.clear">Xoá</system:String>
 
   <system:String x:Key="dialogs.about.caption">Thông tin về OpenUTAU</system:String>
   <system:String x:Key="dialogs.about.message">
@@ -22,7 +22,7 @@
   <system:String x:Key="dialogs.export.savefirst">Lưu tệp dự án trước đã!</system:String>
   <system:String x:Key="dialogs.messagebox.cancel">Huỷ bỏ</system:String>
   <system:String x:Key="dialogs.messagebox.no">Không</system:String>
-  <!--<system:String x:Key="dialogs.messagebox.ok">Ok</system:String>-->
+  <system:String x:Key="dialogs.messagebox.ok">Đồng ý</system:String>
   <system:String x:Key="dialogs.messagebox.yes">Có</system:String>
   <system:String x:Key="dialogs.noresampler.caption">Chưa có resampler</system:String>
   <system:String x:Key="dialogs.noresampler.message">Chưa có resampler nào cả! Thêm resampler yêu thích của bạn với định dạng exe hoặc dll vào trong thư mục Resamplers và chọn ở trong mục Tuỳ chọn!</system:String>
@@ -99,7 +99,7 @@
   <system:String x:Key="menu.tools.singer.installadv">Cài đặt ca sĩ vào(Nâng cao)...</system:String>
   <system:String x:Key="menu.tools.singers">Danh sách các ca sĩ...</system:String>
 
-  <system:String x:Key="oto.alias">Tên đặt trong Oto</system:String>
+  <system:String x:Key="oto.alias">Tên trong oto</system:String>
   <system:String x:Key="oto.color">Sắc thái</system:String>
   <!--<system:String x:Key="oto.consonant">Consonant</system:String>-->
   <!--<system:String x:Key="oto.cutoff">Cutoff</system:String>-->
@@ -111,24 +111,50 @@
   <!--<system:String x:Key="oto.preutter">Preutter</system:String>-->
   <system:String x:Key="oto.set">Thư mục</system:String>
   <system:String x:Key="oto.suffix">Hậu tố</system:String>
+  
+  <system:String x:Key="notedefaults.lyric">Lời nhạc</system:String>
+  <system:String x:Key="notedefaults.lyric.defaultlyric">Lời mặc định</system:String>
+  <system:String x:Key="notedefaults.portamento">Luyến giọng</system:String>
+  <system:String x:Key="notedefaults.portamento.length">Độ dài</system:String>
+  <system:String x:Key="notedefaults.portamento.start">Bắt đầu</system:String>
+  <system:String x:Key="notedefaults.preset">Preset</system:String>
+  <system:String x:Key="notedefaults.preset.remove">Xoá</system:String>
+  <system:String x:Key="notedefaults.preset.remove.tooltip">Xoá preset được chọn.</system:String>
+  <system:String x:Key="notedefaults.preset.save">Lưu</system:String>
+  <system:String x:Key="notedefaults.preset.save.tooltip">Lưu cài đặt hiện tại thành preset mới.</system:String>
+  <system:String x:Key="notedefaults.preset.namenew">Đặt tên preset mới</system:String>
+  <system:String x:Key="notedefaults.reset">Đặt lại toàn bộ cài đặt</system:String>
+  <system:String x:Key="notedefaults.reset.tooltip">Đặt lại toàn bộ cài đặt về giá trị mặc định của nó.
+Lưu ý: tuỳ chọn này cũng sẽ xoá các preset của bạn.</system:String>
+  <system:String x:Key="notedefaults.vibrato">Rung giọng</system:String>
+  <system:String x:Key="notedefaults.vibrato.length">Độ dài</system:String>
+  <system:String x:Key="notedefaults.vibrato.period">Tần số</system:String>
+  <system:String x:Key="notedefaults.vibrato.depth">Độ sâu</system:String>
+  <system:String x:Key="notedefaults.vibrato.in">Tăng dần</system:String>
+  <system:String x:Key="notedefaults.vibrato.out">Giảm dần</system:String>
+  <system:String x:Key="notedefaults.vibrato.shift">Dịch chuyển</system:String>
+  <system:String x:Key="notedefaults.vibrato.autotoggle">Tự động quyết định độ dài dường rung giọng</system:String>
+  <system:String x:Key="notedefaults.vibrato.autominlength">Độ dài nhỏ nhất</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">Lời nhạc</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.edit">Chỉnh sửa lời nhạc</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.edit">Sửa lời nhạc</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Chuyển Hiragana sang Romaji</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">Chuyển VCV Tiếng Nhật sang CV</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Xoá hậu tố Từ</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">Xoá hậu tố Giọng</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Chuyển Romaji sang Hiragana</system:String>
+  <system:String x:Key="pianoroll.menu.notedefaults">Thông số các nốt</system:String>
   <system:String x:Key="pianoroll.menu.notes">Nốt nhạc</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">Thêm nốt "-"</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">Thêm nốt "R"</system:String>
-  <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Sử dụng luyến giọng tự nhiên</system:String>
+    <system:String x:Key="pianoroll.menu.notes.clear.vibratos">Xoá đường rung giọng</system:String>
+  <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Luyến giọng tự nhiên</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">Chia thành quãng 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Chia thành quãng 1/64</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">Đặt lại các biểu cảm</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">Đặt lại thời gian các âm</system:String>
-  <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">Đặt lại các đường luyến giọng</system:String>
-  <system:String x:Key="pianoroll.menu.notes.reset.vibratos">Đặt lại các đường rung giọng</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">Đặt lại đường luyến giọng</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.vibratos">Đặt lại đường rung giọng</system:String>
   <system:String x:Key="pianoroll.menu.part">Phần</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">Sử dụng Plugin của UTAU (Thử nghiệm)</system:String>
   <system:String x:Key="pianoroll.menu.part.rename">Đặt tên của phần</system:String>
@@ -216,12 +242,13 @@ Warning: moresampler is not fully supported. It may be slow and cause high CPU u
   <system:String x:Key="singers.subbanks.tone">Cao độ</system:String>
   <system:String x:Key="singers.subbanks.toneranges">Cao độ</system:String>
 
-  <!--<system:String x:Key="tip.aliasbox">Override Alias</system:String>-->
+  <system:String x:Key="tip.aliasbox">Thay đổi âm vị</system:String>
   <system:String x:Key="tip.exps">
 Nhấn giữ và kéo trái chuột: Thiết lập biểu cảm
 Nhấn giữ và kéo phải: Đặt lại biểu cảm
   </system:String>
   <system:String x:Key="tip.lyricbox.next">Tab: Nốt tiếp theo</system:String>
+  <system:String x:Key="tip.exps.notsupported">Biểu cảm không được hỗ trợ bởi renderer</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: Nốt trước</system:String>
   <system:String x:Key="tip.notes.basics">
 Công cụ Lựa chọn
@@ -247,6 +274,7 @@ Tổng quát
   <system:String x:Key="tracks.movedown">Di chuyển xuống</system:String>
   <system:String x:Key="tracks.moveup">Di chuyển lên</system:String>
   <system:String x:Key="tracks.remove">Xoá bỏ</system:String>
+  <system:String x:Key="tracks.selectrenderer">Chọn renderer</system:String>
   <system:String x:Key="tracks.selectsinger">Chọn ca sĩ</system:String>
 
   <!--<FontFamily x:Key="ui.fontfamily">Segoe UI,San Francisco,Helvetica Neue</FontFamily>-->
