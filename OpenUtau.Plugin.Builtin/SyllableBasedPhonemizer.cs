@@ -504,7 +504,7 @@ namespace OpenUtau.Plugin.Builtin {
 
         protected virtual IG2p LoadBaseDictionary() {
             var dictionaryName = GetDictionaryName();
-            var filename = Path.Combine("Dictionaries", dictionaryName);
+            var filename = Path.Combine(DictionariesPath, dictionaryName);
             var dictionaryText = File.ReadAllText(filename);
             var builder = G2pDictionary.NewBuilder();
             var vowels = GetVowels();

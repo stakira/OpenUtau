@@ -50,6 +50,7 @@ namespace OpenUtau.Core {
                 : SingersPath;
         public string ResamplersPath => Path.Combine(HomePath, "Resamplers");
         public string PluginsPath => Path.Combine(HomePath, "Plugins");
+        public string DictionariesPath => Path.Combine(HomePath, "Dictionaries");
         public string TemplatesPath => Path.Combine(HomePath, "Templates");
         public string LogFilePath => Path.Combine(HomePath, "Logs", "log.txt");
         public string PrefsFilePath => Path.Combine(HomePath, "prefs.json");

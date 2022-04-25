@@ -158,6 +158,7 @@ namespace OpenUtau.Core.Render {
                     index++;
                 }
             }
+            index = Math.Max(1, index);
             while (index < pitches.Length) {
                 pitches[index] = pitches[index - 1];
                 index++;

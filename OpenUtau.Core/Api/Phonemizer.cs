@@ -177,6 +177,7 @@ namespace OpenUtau.Api {
             this.resolution = resolution;
         }
 
+        public string DictionariesPath => PathManager.Inst.DictionariesPath;
         public string PluginDir => PathManager.Inst.PluginsPath;
 
         /// <summary>
