@@ -95,7 +95,8 @@ namespace OpenUtau.Core.Enunu {
                         noteNum = notes[index][0].tone,
                         noteIndex = index,
                     });
-                    position += notes[index++][0].duration;
+                    position += result.Last().length;
+                    index++;
                 }
             }
             return result.ToArray();

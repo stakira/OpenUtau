@@ -106,7 +106,9 @@ namespace OpenUtau.Classic {
                 LoadPrefixMap(voicebank);
             }
             if (voicebank.Subbanks.Count == 0) {
-                voicebank.Subbanks.Add(new Subbank());
+                voicebank.Subbanks.Add(new Subbank() {
+                    ToneRanges = new string[0],
+                });
             }
         }
 

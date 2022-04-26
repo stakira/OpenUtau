@@ -2,8 +2,6 @@
 using System.IO;
 using System.Linq;
 using System.Text;
-using OpenUtau.Api;
-using OpenUtau.Core.Render;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core.Enunu {
