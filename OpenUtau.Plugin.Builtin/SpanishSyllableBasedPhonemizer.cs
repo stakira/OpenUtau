@@ -151,9 +151,13 @@ namespace OpenUtau.Plugin.Builtin {
                 } else {
                     // try vc
                     for (var i = lastC + 1; i >= 0; i--) {
-                        var vc = $"{prevV} {cc[0]}";
-                        if (i == 0 && HasOto(vc, syllable.tone)) {
-                            phonemes.Add(vc);
+                        var vc1 = $"{prevV} {cc[0]}";
+                        var vc2 = $"{prevV}{cc[0]}";
+                        if (i == 0 && HasOto(vc1, syllable.tone)) {
+                            phonemes.Add(vc1);
+                            if (!HasOto(vc1, syllable.tone) && HasOto(vc1, syllable.tone)) {
+                                phonemes.Add(vc2);
+                            }
                             break;
                         }
                         // try vcc
@@ -267,10 +271,14 @@ namespace OpenUtau.Plugin.Builtin {
                 phonemes.Add(vr);
             } else if (ending.IsEndingVCWithOneConsonant) {   // ending VC
                 var vcr = $"{v} {cc[0]}-";
+                var vc1 = $"{v} {cc[0]}";
+                var vc2 = $"{v}{cc[0]}";
                 if (HasOto(vcr, ending.tone)) {   // applies ending VC
                     phonemes.Add(vcr);
-                } else {   // if no ending VC, then regular VC
-                    phonemes.Add($"{v} {cc[0]}");
+                } else if (!HasOto(vcr, ending.tone) && (HasOto(vc1, ending.tone))) {   // if no ending VC, then regular VC
+                    phonemes.Add(vc1);
+                } else if (!HasOto(vc1, ending.tone) && HasOto(vc2, ending.tone)) {
+                    phonemes.Add(vc2);
                 }
             } else if (ending.IsEndingVCWithMoreThanOneConsonant) {   // ending VCC (very rare, usually only occurs in words ending with "x")
                 var vccr = $"{v} {string.Join("", cc)}";
