@@ -11,8 +11,7 @@ namespace OpenUtau.Plugin.Builtin {
 
         /// <summary>
         /// Spanish syllable-based phonemizer.
-        /// Based on Teren000's reclist, but with some adjustments.
-        /// (To be precise, it's based on Hoshino Hanami "Mariposa" Spanish.)
+        /// I tried to make this phonemizer as compatible with many different methods as possible.
         /// Supports both CVVC and VCV if the voicebank has it.
         /// Supports seseo ("s" instead of "z" if the voicebank doesn't have the latter).
         /// It also substitutes "nh" for "ny" if the voicebank doesn't have the first.
