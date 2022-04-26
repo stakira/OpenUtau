@@ -49,15 +49,20 @@ namespace OpenUtau.Plugin.Builtin {
             var lastC = cc.Length - 1;
             var firstC = 0;
             var rcv = $"- {v}";
+            var vv1 = $"{prevV} {v}";
+            var vv2 = $"{prevV}{v}";
             if (syllable.IsStartingV) {
                 basePhoneme = rcv;
                 if (!HasOto(rcv, syllable.vowelTone)) {
                     basePhoneme = $"{v}";
                 }
             } else if (syllable.IsVV) {
-                basePhoneme = $"{prevV} {v}";
-                if (!HasOto(basePhoneme, syllable.vowelTone)) {
-                    basePhoneme = $"{v}";
+                basePhoneme = vv1;
+                if (!HasOto(vv1, syllable.vowelTone)) {
+                    basePhoneme = vv2;
+                    if (!HasOto(vv2, syllable.vowelTone)) {
+                        basePhoneme = $"{v}";
+                    }
                 }
             } else if (syllable.IsStartingCVWithOneConsonant) {
                 // TODO: move to config -CV or -C CV
