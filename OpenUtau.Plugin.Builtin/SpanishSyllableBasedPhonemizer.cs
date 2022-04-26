@@ -155,7 +155,7 @@ namespace OpenUtau.Plugin.Builtin {
                         var vc2 = $"{prevV}{cc[0]}";
                         if (i == 0 && HasOto(vc1, syllable.tone)) {
                             phonemes.Add(vc1);
-                            if (!HasOto(vc1, syllable.tone) && HasOto(vc1, syllable.tone)) {
+                            if (!HasOto(vc1, syllable.tone) && HasOto(vc2, syllable.tone)) {
                                 phonemes.Add(vc2);
                             }
                             break;
