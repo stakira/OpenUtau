@@ -70,6 +70,12 @@ namespace OpenUtau.Classic {
                 .Take(pitchCount)
                 .Select(pitch => (int)Math.Round(pitch - phone.tone * 100))
                 .ToArray();
+            int pitchPrepend = (int)Math.Round(Math.Max(0, skipOver / phrase.tickToMs / 5));
+            if (pitchPrepend > 0) {
+                pitches = Enumerable.Repeat(pitches[0], pitchPrepend)
+                    .Concat(pitches)
+                    .ToArray();
+            }
 
             hash = Hash();
             outputFile = Path.Join(PathManager.Inst.CachePath,
