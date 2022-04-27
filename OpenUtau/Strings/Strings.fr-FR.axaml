@@ -181,7 +181,7 @@ Maintenir Ctrl pour ajouter à la sélection</system:String>
   <system:String x:Key="prefs.playback.lockstarttime.off">Ne rien faire</system:String>
   <system:String x:Key="prefs.playback.lockstarttime.on">Déplacez le curseur vers l'endroit où vous avez commencé à jouer</system:String>
   <system:String x:Key="prefs.playback.test">Test</system:String>
-  <system:String x:Key="prefs.rendering">Rendu</system:String>
+  <system:String x:Key="prefs.rendering">Rendering</system:String>
   <!--<system:String x:Key="prefs.rendering.phasecomp">Phase Compensation</system:String>-->
   <!--<system:String x:Key="prefs.rendering.prerender.threads">Pre-render Threads</system:String>-->
   <system:String x:Key="prefs.rendering.resampler">Resampler</system:String>
@@ -196,7 +196,7 @@ Avertissement : moresampler n'est pas entièrement pris en charge. Il peut être
     </system:String>
 
   <system:String x:Key="progress.saved">Projet enregistré. {0}</system:String>
-  <system:String x:Key="progress.waitingrendering">Rendu d'attente</system:String>
+  <system:String x:Key="progress.waitingrendering">En attente du Rendu</system:String>
 
   <system:String x:Key="singers.caption">Voicebanks</system:String>
   <system:String x:Key="singers.location">Emplacement</system:String>
