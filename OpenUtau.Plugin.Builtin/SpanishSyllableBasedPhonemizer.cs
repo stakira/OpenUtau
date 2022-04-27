@@ -265,9 +265,14 @@ namespace OpenUtau.Plugin.Builtin {
                         && cc[i] == "s"
                         && !HasOto(vc1, syllable.tone)
                         && !HasOto(vc2, syllable.tone)
-                        && HasOto(cc[i], syllable.tone))
-                        {
+                        && HasOto(cc[i], syllable.tone)) {
                         phonemes.Add(cc[i]);
+                    }
+                    if (cc[i] == "r"
+                      && !HasOto(vc1, syllable.tone)
+                      && !HasOto(vc2, syllable.tone)
+                      && HasOto($"{prevV}rr", syllable.tone)) {
+                        phonemes.Add($"{prevV}rr");
                     } else if (burstConsonants.Contains(cc[i]) && !syllable.IsStartingCVWithMoreThanOneConsonant && !specialClusters.Contains(string.Join("", cc.Skip(i)))) {
                         TryAddPhoneme(phonemes, syllable.tone, cc[i], $"{cc[i]} -");
                     }
@@ -296,6 +301,8 @@ namespace OpenUtau.Plugin.Builtin {
                     phonemes.Add(vc1);
                 } else if (!HasOto(vc1, ending.tone) && HasOto(vc2, ending.tone)) {
                     phonemes.Add(vc2);
+                } else if (cc[0] == "r" && !HasOto(vc2, ending.tone) && !HasOto(vc2, ending.tone)) {
+                    phonemes.Add($"{v}rr");
                 }
             } else if (ending.IsEndingVCWithMoreThanOneConsonant) {   // ending VCC (very rare, usually only occurs in words ending with "x")
                 var vccr = $"{v} {string.Join("", cc)}";
