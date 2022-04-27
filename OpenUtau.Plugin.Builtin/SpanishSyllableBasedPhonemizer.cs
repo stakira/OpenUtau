@@ -223,15 +223,13 @@ namespace OpenUtau.Plugin.Builtin {
                 // we could use -CC so firstC is used
                 var cc1 = $"{cc[i]} {cc[i + 1]}";
                 var ncc1 = $"{cc[i]} n";
-                if (!HasOto(cc1, syllable.tone) && !specialClusters.Contains(string.Join("", cc.Skip(i))))
-                {
+                if (!HasOto(cc1, syllable.tone) && !specialClusters.Contains(string.Join("", cc.Skip(i)))) {
                     cc1 = $"{cc[i]}{cc[i + 1]}";
                 }
                 if (i + 1 < lastC) {
                     var cc2 = $"{cc[i + 1]} {cc[i + 2]}";
                     var ncc2 = $"{cc[i + 1]} n";
-                    if (!HasOto(cc2, syllable.tone) && !specialClusters.Contains(string.Join("", cc.Skip(i))))
-                    {
+                    if (!HasOto(cc2, syllable.tone) && !specialClusters.Contains(string.Join("", cc.Skip(i)))) {
                         cc2 = $"{cc[i + 1]}{cc[i + 2]}";
                     }
                     if (HasOto(cc1, syllable.tone) && HasOto(cc2, syllable.tone)) {
@@ -245,6 +243,12 @@ namespace OpenUtau.Plugin.Builtin {
                             TryAddPhoneme(phonemes, syllable.tone, ncc2); ;
                         }
                         // like [V C1] [C1 C2] [C2 ..]
+                    } else if (!HasOto(cc2, syllable.tone)
+                        && HasOto(cc[i], syllable.tone)
+                        && !syllable.IsStartingCVWithMoreThanOneConsonant
+                        && !burstConsonants.Contains(cc[i])
+                        && !specialClusters.Contains(string.Join("", cc.Skip(i)))) {
+                        phonemes.Add(cc[i]);
                     } else if (burstConsonants.Contains(cc[i]) && !specialClusters.Contains(string.Join("", cc.Skip(i)))) {
                         // like [V C1] [C1] [C2 ..]
                         TryAddPhoneme(phonemes, syllable.tone, cc[i], $"{cc[i]} -");
@@ -253,9 +257,15 @@ namespace OpenUtau.Plugin.Builtin {
                     // like [V C1] [C1 C2]  [C2 ..] or like [V C1] [C1 -] [C3 ..]
                     TryAddPhoneme(phonemes, syllable.tone, cc1);
                     if (cc[i + 1] == "nh" && !HasOto(cc[i + 1], syllable.tone)) {
-                        TryAddPhoneme(phonemes, syllable.tone, ncc1); ;
+                        TryAddPhoneme(phonemes, syllable.tone, ncc1);
                     }
-                    if (burstConsonants.Contains(cc[i]) && !syllable.IsStartingCVWithMoreThanOneConsonant && !specialClusters.Contains(string.Join("", cc.Skip(i)))) {
+                    if (!HasOto(cc1, syllable.tone)
+                        && HasOto(cc[i], syllable.tone)
+                        && !syllable.IsStartingCVWithMoreThanOneConsonant
+                        && !burstConsonants.Contains(cc[i])
+                        && !specialClusters.Contains(string.Join("", cc.Skip(i)))) {
+                        phonemes.Add(cc[i]);
+                    } else if (burstConsonants.Contains(cc[i]) && !syllable.IsStartingCVWithMoreThanOneConsonant && !specialClusters.Contains(string.Join("", cc.Skip(i)))) {
                         TryAddPhoneme(phonemes, syllable.tone, cc[i], $"{cc[i]} -");
                     }
                 }
@@ -365,7 +375,7 @@ namespace OpenUtau.Plugin.Builtin {
             foreach (var vowel in vowels) {
                 foreach (var consonant in new[] { " nh" }) {
                     return alias.Replace(vowel + consonant, vowel + " n");
-                }   
+                }
             }
             foreach (var consonant1 in consonants) {
                 foreach (var consonant2 in new[] { " nh" }) {
@@ -375,23 +385,19 @@ namespace OpenUtau.Plugin.Builtin {
             return alias;
         }
 
-        protected override double GetTransitionBasicLengthMs(string alias = "")
-        {
+        protected override double GetTransitionBasicLengthMs(string alias = "") {
             foreach (var c in new[] { "rr" }) {
                 if (alias.EndsWith(c)) {
                     return base.GetTransitionBasicLengthMs() * 1.0;
                 }
             }
             foreach (var c in new[] { "r" }) {
-                if (alias.EndsWith(c))
-                {
+                if (alias.EndsWith(c)) {
                     return base.GetTransitionBasicLengthMs() * 0.75;
                 }
             }
-            foreach (var c in longConsonants)
-            {
-                if (alias.EndsWith(c))
-                {
+            foreach (var c in longConsonants) {
+                if (alias.EndsWith(c)) {
                     return base.GetTransitionBasicLengthMs() * 1.5;
                 }
             }
