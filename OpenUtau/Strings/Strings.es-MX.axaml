@@ -222,7 +222,7 @@ Advertencia: Moresampler no es totalmente compatible por ahora. Este puede ser l
     </system:String>
 
   <system:String x:Key="progress.saved">Proyecto guardado. {0}</system:String>
-  <system:String x:Key="progress.waitingrendering">Esperando al Renderizado...</system:String>
+  <system:String x:Key="progress.waitingrendering">Esperando al Renderizador...</system:String>
 
   <system:String x:Key="singers.caption">Voces</system:String>
   <system:String x:Key="singers.location">Mostrar Archivos</system:String>
