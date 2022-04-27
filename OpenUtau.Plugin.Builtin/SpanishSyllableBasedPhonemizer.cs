@@ -246,7 +246,7 @@ namespace OpenUtau.Plugin.Builtin {
                         }
                         // like [V C1] [C1 C2] [C2 ..]
                     } else if (!HasOto(cc2, syllable.tone)
-                        && cc[i] == "s"
+                        // && cc[i] == "s"
                         // && !HasOto(vc1, syllable.tone)
                         // && !HasOto(vc2, syllable.tone)
                         && HasOto(cc[i], syllable.tone)) {
@@ -262,9 +262,21 @@ namespace OpenUtau.Plugin.Builtin {
                         TryAddPhoneme(phonemes, syllable.tone, ncc1);
                     }
                     if (!HasOto(cc1, syllable.tone)
-                        && cc[i] == "s"
+                        // && cc[i] == "s"
                         && !HasOto(vc1, syllable.tone)
                         && !HasOto(vc2, syllable.tone)
+                        && !burstConsonants.Contains(cc[i])
+                        //&& !vc1.Contains($"{prevV} s")
+                        //&& !vc2.Contains($"{prevV}s")
+                        && HasOto(cc[i], syllable.tone)) {
+                        phonemes.Add(cc[i]);
+                    }
+                    else if (!HasOto(cc1, syllable.tone)
+                        //&& cc[i] == "s"
+                        //&& !HasOto(vc1, syllable.tone)
+                        //&& !HasOto(vc2, syllable.tone)
+                        && !vc1.Contains($"{prevV} {cc[i]}")
+                        && !vc2.Contains($"{prevV}{cc[i]}")
                         && HasOto(cc[i], syllable.tone)) {
                         phonemes.Add(cc[i]);
                     }
@@ -299,31 +311,41 @@ namespace OpenUtau.Plugin.Builtin {
                     phonemes.Add(vcr);
                 } else if (!HasOto(vcr, ending.tone) && (HasOto(vc1, ending.tone))) {   // if no ending VC, then regular VC
                     phonemes.Add(vc1);
+                    if (burstConsonants.Contains(cc[0])) {
+                        TryAddPhoneme(phonemes, ending.tone, cc[0], $"{cc[0]} -");
+                    }
                 } else if (!HasOto(vc1, ending.tone) && HasOto(vc2, ending.tone)) {
                     phonemes.Add(vc2);
+                    if (burstConsonants.Contains(cc[0])) {
+                        TryAddPhoneme(phonemes, ending.tone, cc[0], $"{cc[0]} -");
+                    }
                 } else if (cc[0] == "r" && !HasOto(vc2, ending.tone) && !HasOto(vc2, ending.tone)) {
                     phonemes.Add($"{v}rr");
                 }
             } else if (ending.IsEndingVCWithMoreThanOneConsonant) {   // ending VCC (very rare, usually only occurs in words ending with "x")
                 var vccr = $"{v} {string.Join("", cc)}";
+                var vc1 = $"{v} {cc[0]}";
+                var vc2 = $"{v}{cc[0]}";
                 if (HasOto(vccr, ending.tone)) {   // applies ending VCC
                     phonemes.Add(vccr);
                 } else if (!HasOto(vccr, ending.tone)) {   // if no ending VCC, then CC transitions
-                    TryAddPhoneme(phonemes, ending.tone, $"{v} {cc[0]}");
-                    if (!HasOto($"{v} {cc[0]}", ending.tone) && HasOto($"{v}{cc[0]}", ending.tone)) {
-                        TryAddPhoneme(phonemes, ending.tone, $"{v}{cc[0]}");
+                    TryAddPhoneme(phonemes, ending.tone, vc1);
+                    if (!HasOto(vc1, ending.tone) && HasOto(vc2, ending.tone)) {
+                        TryAddPhoneme(phonemes, ending.tone, vc2);
                     }
                     // all CCs except the first one are /C1C2/, the last one is /C1 C2-/
                     // but if there is no /C1C2/, we try /C1 C2-/, vise versa for the last one
                     for (var i = 0; i < cc.Length - 1; i++) {
                         var cc1 = $"{cc[i]} {cc[i + 1]}";
-                        if (i < cc.Length - 2) {
+                        // var vc1 = $"{v} {cc[0]}";
+                        // var vc2 = $"{v}{cc[0]}";
+                            if (i < cc.Length - 2) {
                             var cc2 = $"{cc[i + 1]} {cc[i + 2]}";
                             if (HasOto(cc1, ending.tone) && HasOto(cc2, ending.tone)) {
                                 // like [C1 C2][C2 ...]
                                 phonemes.Add(cc1);
-                            } else if (TryAddPhoneme(phonemes, ending.tone, $"{cc[i + 1]} {cc[i + 2]}")) {
-                                // like [C1 C2][C2 ...]
+                            } else if (TryAddPhoneme(phonemes, ending.tone, $"{cc[i + 1]}{cc[i + 2]}")) {
+                                // like [C1C2][C2 ...]
                             } else if (TryAddPhoneme(phonemes, ending.tone, $"{cc[i + 1]} {cc[i + 2]}-")) {
                                 // like [C1 C2-][C3 ...]
                                 i++;
@@ -335,8 +357,8 @@ namespace OpenUtau.Plugin.Builtin {
                             if (TryAddPhoneme(phonemes, ending.tone, $"{cc[i]} {cc[i + 1]}-")) {
                                 // like [C1 C2-]
                                 i++;
-                            } else if (TryAddPhoneme(phonemes, ending.tone, $"{cc[i]} {cc[i + 1]}")) {
-                                // like [C1 C2][C2 -]
+                            } else if (TryAddPhoneme(phonemes, ending.tone, $"{cc[i]}{cc[i + 1]}")) {
+                                // like [C1C2][C2 -]
                                 TryAddPhoneme(phonemes, ending.tone, $"{cc[i + 1]} -", cc[i + 1]);
                                 i++;
                             } else if (TryAddPhoneme(phonemes, ending.tone, cc1)) {
