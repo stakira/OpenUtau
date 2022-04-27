@@ -28,8 +28,8 @@ namespace OpenUtau.Plugin.Builtin {
                 .Where(parts => parts[0] != parts[1])
                 .ToDictionary(parts => parts[0], parts => parts[1]);
 
-        private readonly string[] longConsonants = "ch,dz,s,sh,k,p,t,ts,z,l,m,n".Split(',');
-        private readonly string[] burstConsonants = "ch,dz,j,k,p,r,t,ts".Split(',');
+        private readonly string[] longConsonants = "b,ch,d,dz,g,h,s,sh,k,p,t,ts,z,l,m,n".Split(',');
+        private readonly string[] burstConsonants = "b,ch,d,dz,g,j,k,p,r,t,ts".Split(',');
         private readonly string[] notClusters = "dz,hh,ll,nh,sh,zz,zh".Split(',');
         private readonly string[] specialClusters = "by,dy,fy,gy,hy,jy,ky,ly,my,py,ry,rry,sy,ty,vy,zy,bw,chw,dw,fw,gw,hw,jw,kw,lw,llw,mw,nw,pw,rw,rrw,sw,tw,vw,zw,bl,fl,gl,kl,pl,br,dr,fr,gr,kr,pr,tr".Split(',');
 
