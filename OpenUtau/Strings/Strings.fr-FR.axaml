@@ -3,7 +3,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
   <system:String x:Key="context.pitch.easein">Courber vers le haut</system:String>
-  <system:String x:Key="context.pitch.easeinout">Ease in/out</system:String>
+  <system:String x:Key="context.pitch.easeinout">Courber vers le haut/bas</system:String>
   <system:String x:Key="context.pitch.easeout">Courber vers le bas</system:String>
   <system:String x:Key="context.pitch.linear">Linéaire</system:String>
   <system:String x:Key="context.pitch.pointadd">Ajouter un point</system:String>
