@@ -187,8 +187,8 @@ Maintenir Ctrl pour ajouter à la sélection</system:String>
   <system:String x:Key="prefs.rendering.resampler">Resampler</system:String>
   <system:String x:Key="prefs.rendering.resampler.morewarn">
 Avertissement : moresampler n'est pas entièrement pris en charge. Il peut être lent et entraîner une utilisation élevée du CPU. Si vous insistez, veuillez :
-1. Définissez "resampler-compatibility" sur "on" dans moreconfig.txt.
-2. Définissez "auto-update-llsm-mrq" sur "off" dans moreconfig.txt.
+1. Définir "resampler-compatibility" sur "on" dans moreconfig.txt.
+2. Définir "auto-update-llsm-mrq" sur "off" dans moreconfig.txt.
 3. Attendez patiemment que moresampler génère les fichiers llsm manquants.
   </system:String>
   <system:String x:Key="prefs.rendering.resampler.note">
