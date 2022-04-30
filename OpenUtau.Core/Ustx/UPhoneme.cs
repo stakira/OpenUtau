@@ -55,7 +55,7 @@ namespace OpenUtau.Core.Ustx {
             }
             var leadingNote = Parent.Extends ?? Parent;
             Duration = leadingNote.ExtendedEnd - position;
-            if (Next != null) {
+            if (Next != null && Parent != null) {
                 if (Next.Parent == Parent.Next && Parent.End == Next.Parent.position) {
                     Duration = int.MaxValue;
                 }
@@ -165,7 +165,7 @@ namespace OpenUtau.Core.Ustx {
             track.TryGetExpression(project, abbr, out var descriptor);
             var note = Parent.Extends ?? Parent;
             var expression = note.phonemeExpressions.FirstOrDefault(
-                exp => exp.descriptor.abbr == descriptor.abbr && exp.index == index);
+                exp => exp.descriptor?.abbr == descriptor.abbr && exp.index == index);
             if (expression != null) {
                 return Tuple.Create(expression.value, true);
             } else {
@@ -178,11 +178,11 @@ namespace OpenUtau.Core.Ustx {
             var note = Parent.Extends ?? Parent;
             if (descriptor.defaultValue == value) {
                 note.phonemeExpressions.RemoveAll(
-                    exp => exp.descriptor.abbr == descriptor.abbr && exp.index == index);
+                    exp => exp.descriptor?.abbr == descriptor.abbr && exp.index == index);
                 return;
             }
             var expression = note.phonemeExpressions.FirstOrDefault(
-                exp => exp.descriptor.abbr == descriptor.abbr && exp.index == index);
+                exp => exp.descriptor?.abbr == descriptor.abbr && exp.index == index);
             if (expression != null) {
                 expression.descriptor = descriptor;
                 expression.value = value;
