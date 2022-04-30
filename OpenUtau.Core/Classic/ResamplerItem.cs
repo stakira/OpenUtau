@@ -65,11 +65,17 @@ namespace OpenUtau.Classic {
             int pitchLeading = (int)(phone.oto.Preutter * stretchRatio / phrase.tickToMs);
             int pitchCount = (int)Math.Ceiling(durMs / phrase.tickToMs / 5);
             tempo = phrase.tempo;
+            int pitchSkips = (phone.position - pitchLeading - pitchStart) / 5;
             pitches = phrase.pitches
-                .Skip((phone.position - pitchLeading - pitchStart) / 5)
+                .Skip(pitchSkips)
                 .Take(pitchCount)
                 .Select(pitch => (int)Math.Round(pitch - phone.tone * 100))
                 .ToArray();
+            if (pitchSkips < 0) {
+                pitches = Enumerable.Repeat(pitches[0], -pitchSkips)
+                    .Concat(pitches)
+                    .ToArray();
+            }
 
             hash = Hash();
             outputFile = Path.Join(PathManager.Inst.CachePath,

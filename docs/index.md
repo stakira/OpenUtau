@@ -13,9 +13,9 @@ Open singing synthesis platform / Open source UTAU successor
 
 ### Getting Started
 
-[Getting Started](./Getting-Started)
+[Getting Started](https://github.com/stakira/OpenUtau/wiki/Getting-Started)
 
-[FAQ](./FAQ)
+[FAQ](https://github.com/stakira/OpenUtau/wiki/FAQ)
 
 [中文使用说明](https://opensynth.miraheze.org/wiki/OpenUTAU/%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95)
 
@@ -23,10 +23,10 @@ Open singing synthesis platform / Open source UTAU successor
 
 ### Documentation
 
-[Phonemizers](./Phonemizers)
+[Phonemizers](https://github.com/stakira/OpenUtau/wiki/Phonemizers)
 
-[Resamplers](./Resamplers)
+[Resamplers](https://github.com/stakira/OpenUtau/wiki/Resamplers)
 
-[Legacy Plugins](./Legacy-Plugins)
+[Legacy Plugins](https://github.com/stakira/OpenUtau/wiki/Legacy-Plugins)
 
-[NNSVS](./Status-of-ENUNU-NNSVS-Support)
+[NNSVS](https://github.com/stakira/OpenUtau/wiki/Status-of-ENUNU-NNSVS-Support)
