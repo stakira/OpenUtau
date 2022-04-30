@@ -268,7 +268,7 @@ namespace OpenUtau.Plugin.Builtin {
                         && !burstConsonants.Contains(cc[i])) {
                         TryAddPhoneme(phonemes, syllable.tone, cc[i], $"{cc[i]}{v}");
                     }
-                }
+
                     if (!HasOto(cc1, syllable.tone)
                         && !vc1.Contains($"{prevV} {cc[i]}")
                         && !vc2.Contains($"{prevV}{cc[i]}")
@@ -285,6 +285,7 @@ namespace OpenUtau.Plugin.Builtin {
                         phonemes.Add($"{prevV}rr");
                     }
                 }
+            }
 
             phonemes.Add(basePhoneme);
             return phonemes;
