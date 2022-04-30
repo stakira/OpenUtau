@@ -243,17 +243,19 @@ namespace OpenUtau.Plugin.Builtin {
                     } else if (!HasOto(cc2, syllable.tone)
                         && !HasOto(vcc, syllable.tone)
                         && !HasOto(vcc2, syllable.tone)
+                        && !cc.Last().Contains("y")
+                        && !cc.Last().Contains("w")
                         && !burstConsonants.Contains(cc[i])) {
                         TryAddPhoneme(phonemes, syllable.tone, cc[i], $"{cc[i]}{v}");
                     } else if (burstConsonants.Contains(cc[i])) {
                         // like [V C1] [C1] [C2 ..]
                         TryAddPhoneme(phonemes, syllable.tone, cc[i]);
                     }
-                    if (cc[i] == "r" && HasOto($"{prevV}rr", syllable.tone)) {
-                        phonemes.Remove(vc1);
-                        phonemes.Remove(vc2);
-                        phonemes.Add($"{prevV}rr");
-                    }
+                    //if (cc[i] == "r" && HasOto($"{prevV}rr", syllable.tone)) {
+                    //    phonemes.Remove(vc1);
+                    //    phonemes.Remove(vc2);
+                    //    phonemes.Add($"{prevV}rr");
+                    //}
                 } else {
                     // like [V C1] [C1 C2]  [C2 ..] or like [V C1] [C1 -] [C3 ..]
                     TryAddPhoneme(phonemes, syllable.tone, cc1);
@@ -266,11 +268,13 @@ namespace OpenUtau.Plugin.Builtin {
                         && !burstConsonants.Contains(cc[i])) {
                         TryAddPhoneme(phonemes, syllable.tone, cc[i], $"{cc[i]}{v}");
                     }
+                }
                     if (!HasOto(cc1, syllable.tone)
                         && !vc1.Contains($"{prevV} {cc[i]}")
                         && !vc2.Contains($"{prevV}{cc[i]}")
                         && !cc.Last().Contains("y")
-                        && !cc.Last().Contains("w")) {
+                        && !cc.Last().Contains("w")
+                        & !burstConsonants.Contains(cc[i])) {
                         TryAddPhoneme(phonemes, syllable.tone, cc[i], $"{cc[i]}{v}");
                     } else if (burstConsonants.Contains(cc[i]) && !syllable.IsStartingCVWithMoreThanOneConsonant && !specialClusters.Contains(string.Join("", cc.Skip(i)))) {
                         TryAddPhoneme(phonemes, syllable.tone, cc[i]);
@@ -281,7 +285,6 @@ namespace OpenUtau.Plugin.Builtin {
                         phonemes.Add($"{prevV}rr");
                     }
                 }
-            }
 
             phonemes.Add(basePhoneme);
             return phonemes;
