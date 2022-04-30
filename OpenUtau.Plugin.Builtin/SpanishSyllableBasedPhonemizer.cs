@@ -149,6 +149,8 @@ namespace OpenUtau.Plugin.Builtin {
                         } else if (!HasOto(vc1, syllable.tone) && HasOto(vc2, syllable.tone)) {
                             phonemes.Add(vc2);
                             break;
+                        } else if (!HasOto(vc1, syllable.tone) && !HasOto(vc2, syllable.tone)) {
+                            continue;
                         }
                         // try vcc
                         var vcc = $"{prevV} {string.Join("", cc.Take(i))}";
@@ -242,7 +244,7 @@ namespace OpenUtau.Plugin.Builtin {
                         && !HasOto(vcc, syllable.tone)
                         && !HasOto(vcc2, syllable.tone)
                         && !burstConsonants.Contains(cc[i])) {
-                        TryAddPhoneme(phonemes, syllable.tone, cc[i], $"{cc[i]}u");
+                        TryAddPhoneme(phonemes, syllable.tone, cc[i], $"{cc[i]}{v}");
                     } else if (burstConsonants.Contains(cc[i])) {
                         // like [V C1] [C1] [C2 ..]
                         TryAddPhoneme(phonemes, syllable.tone, cc[i]);
@@ -262,14 +264,14 @@ namespace OpenUtau.Plugin.Builtin {
                         && !HasOto(vc1, syllable.tone)
                         && !HasOto(vc2, syllable.tone)
                         && !burstConsonants.Contains(cc[i])) {
-                        TryAddPhoneme(phonemes, syllable.tone, cc[i], $"{cc[i]}u");
+                        TryAddPhoneme(phonemes, syllable.tone, cc[i], $"{cc[i]}{v}");
                     }
                     if (!HasOto(cc1, syllable.tone)
                         && !vc1.Contains($"{prevV} {cc[i]}")
                         && !vc2.Contains($"{prevV}{cc[i]}")
                         && !cc.Last().Contains("y")
                         && !cc.Last().Contains("w")) {
-                        TryAddPhoneme(phonemes, syllable.tone, cc[i], $"{cc[i]}u");
+                        TryAddPhoneme(phonemes, syllable.tone, cc[i], $"{cc[i]}{v}");
                     } else if (burstConsonants.Contains(cc[i]) && !syllable.IsStartingCVWithMoreThanOneConsonant && !specialClusters.Contains(string.Join("", cc.Skip(i)))) {
                         TryAddPhoneme(phonemes, syllable.tone, cc[i]);
                     }
