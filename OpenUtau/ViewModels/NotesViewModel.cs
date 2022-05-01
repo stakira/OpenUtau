@@ -333,6 +333,7 @@ namespace OpenUtau.App.ViewModels {
 
         private void UnloadPart() {
             Part = null;
+            LoadPortrait(null, null);
         }
 
         private void OnPartModified() {
@@ -569,6 +570,11 @@ namespace OpenUtau.App.ViewModels {
             } else if (cmd is ExpCommand) {
                 MessageBus.Current.SendMessage(new NotesRefreshEvent());
             } else if (cmd is TrackCommand) {
+                if (cmd is RemoveTrackCommand removeTrack) {
+                    if (removeTrack.removedParts.Contains(Part)) {
+                        UnloadPart();
+                    }
+                }
                 MessageBus.Current.SendMessage(new NotesRefreshEvent());
                 if (cmd is TrackChangeSingerCommand trackChangeSinger) {
                     if (Part != null && trackChangeSinger.track.TrackNo == Part.trackNo) {
