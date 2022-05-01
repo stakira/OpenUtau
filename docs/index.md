@@ -19,6 +19,8 @@ Open singing synthesis platform / Open source UTAU successor
 
 [中文使用说明](https://opensynth.miraheze.org/wiki/OpenUTAU/%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95)
 
+[ニコニコ大百科](https://dic.nicovideo.jp/t/a/openutau)
+
 ### Documentation
 
 [Phonemizers](https://github.com/stakira/OpenUtau/wiki/Phonemizers)
