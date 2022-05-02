@@ -40,6 +40,11 @@ namespace OpenUtau.Plugin.Builtin {
             var firstC = 0;
             bool usesVCV = false;
 
+            //"ui" glide fix for alt dictionaries
+            if (prevV == "ui") {
+                prevV = "ih";
+            }
+
             string basePhoneme;
             var phonemes = new List<string>();
             // --------------------------- STARTING V ------------------------------- //
@@ -272,10 +277,16 @@ namespace OpenUtau.Plugin.Builtin {
 
             var phonemes = new List<string>();
             bool hasEnding = false;
+            //"ui" glide fix for alt dictionaries
+            if (v == "ui") {
+                v = "ih";
+            }
             // --------------------------- ENDING V ------------------------------- //
             if (ending.IsEndingV) {
                 // try V- else no ending
+                
                 TryAddPhoneme(phonemes, ending.tone, $"{v}-");
+
 
             } else {
                 // --------------------------- ENDING VC ------------------------------- //
