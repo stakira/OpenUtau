@@ -141,6 +141,6 @@ namespace OpenUtau.Classic {
             return null;
         }
 
-        public override string ToString() => "WORLDLINER";
+        public override string ToString() => "WORLDLINE-R";
     }
 }
