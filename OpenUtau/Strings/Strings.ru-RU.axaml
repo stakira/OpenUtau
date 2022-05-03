@@ -76,13 +76,15 @@
   <system:String x:Key="menu.file.newfromtemplate">Создать из шаблона</system:String>
   <system:String x:Key="menu.file.open">Открыть...</system:String>
   <system:String x:Key="menu.file.openas">Открыть как</system:String>
+  <!--<system:String x:Key="menu.file.openexportlocation">Open Export Location</system:String>-->
+  <!--<system:String x:Key="menu.file.openprojectlocation">Open Project Location</system:String>-->
   <system:String x:Key="menu.file.openrecent">Открыть последнее</system:String>
   <system:String x:Key="menu.file.save">Сохранить</system:String>
   <system:String x:Key="menu.file.saveas">Сохранить как...</system:String>
   <system:String x:Key="menu.file.savetemplate">Сохранить шаблон...</system:String>
   <system:String x:Key="menu.help">Помощь</system:String>
   <system:String x:Key="menu.help.about">О OpenUtau</system:String>
-  <system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>
+  <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
   <system:String x:Key="menu.tools">Инструменты</system:String>
   <system:String x:Key="menu.tools.clearcache">Очистить кэш</system:String>
   <system:String x:Key="menu.tools.debugwindow">Окно отладки</system:String>
@@ -98,6 +100,30 @@
   <system:String x:Key="menu.tools.singer.install">Установить голосовой банк...</system:String>
   <system:String x:Key="menu.tools.singer.installadv">Установить голосовой банк (расширенный)...</system:String>
   <system:String x:Key="menu.tools.singers">Голосовые банки...</system:String>
+
+  <!--<system:String x:Key="notedefaults.lyric">Lyric</system:String>-->
+  <!--<system:String x:Key="notedefaults.lyric.defaultlyric">Default Lyric</system:String>-->
+  <!--<system:String x:Key="notedefaults.portamento">Portamento</system:String>-->
+  <!--<system:String x:Key="notedefaults.portamento.length">Length</system:String>-->
+  <!--<system:String x:Key="notedefaults.portamento.start">Start</system:String>-->
+  <!--<system:String x:Key="notedefaults.preset">Preset</system:String>-->
+  <!--<system:String x:Key="notedefaults.preset.namenew">New Preset Name</system:String>-->
+  <!--<system:String x:Key="notedefaults.preset.remove">Remove</system:String>-->
+  <!--<system:String x:Key="notedefaults.preset.remove.tooltip">Removes last applied preset.</system:String>-->
+  <!--<system:String x:Key="notedefaults.preset.save">Save</system:String>-->
+  <!--<system:String x:Key="notedefaults.preset.save.tooltip">Save current settings to a new preset.</system:String>-->
+  <!--<system:String x:Key="notedefaults.reset">Reset All Settings</system:String>-->
+  <!--<system:String x:Key="notedefaults.reset.tooltip">Reset every setting to default values.
+Warning: this option removes custom presets.</system:String>-->
+  <!--<system:String x:Key="notedefaults.vibrato">Vibrato</system:String>-->
+  <!--<system:String x:Key="notedefaults.vibrato.autominlength">Minimum Length</system:String>-->
+  <!--<system:String x:Key="notedefaults.vibrato.autotoggle">Automatic Vibrato by Length</system:String>-->
+  <!--<system:String x:Key="notedefaults.vibrato.depth">Depth</system:String>-->
+  <!--<system:String x:Key="notedefaults.vibrato.in">Fade In</system:String>-->
+  <!--<system:String x:Key="notedefaults.vibrato.length">Length</system:String>-->
+  <!--<system:String x:Key="notedefaults.vibrato.out">Fade Out</system:String>-->
+  <!--<system:String x:Key="notedefaults.vibrato.period">Period</system:String>-->
+  <!--<system:String x:Key="notedefaults.vibrato.shift">Shift</system:String>-->
 
   <system:String x:Key="oto.alias">Алиас</system:String>
   <system:String x:Key="oto.color">Оттенок</system:String>
@@ -119,9 +145,11 @@
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Удалить суффикс</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">Удалить суффикс тона</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Romaji в Hiragana</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notedefaults">Note Defaults</system:String>-->
   <system:String x:Key="pianoroll.menu.notes">Ноты</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">Добавить "-"</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">Добавить "R"</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notes.clear.vibratos">Clear vibratos</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Загрузить визуальный питч</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">Квантовать до 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Квантовать до 1/64</system:String>
@@ -146,7 +174,7 @@
 ЛКМ - рисовать
 ПКМ - удалить</system:String>
   <system:String x:Key="pianoroll.tool.selection">Инструмент выбора (1)
-<!--Удерживайте клавишу Ctrl, чтобы выбрать дополнительные ноты--></system:String> <!--229 this functionality does not work, so there is no point in displaying it-->
+</system:String>
 
   <system:String x:Key="prefs.advanced">Дополнительно</system:String>
   <system:String x:Key="prefs.advanced.beta">Бета</system:String>
@@ -174,7 +202,7 @@
   <system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">Неподвижный курсор</system:String>
   <system:String x:Key="prefs.playback.backend">Аудио движок</system:String>
   <system:String x:Key="prefs.playback.backend.auto">Автоматически</system:String>
-  <system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>
+  <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">Поле авто-прокрутки</system:String>
   <system:String x:Key="prefs.playback.device">Устройства воспроизведения</system:String>
   <system:String x:Key="prefs.playback.lockstarttime">При паузе</system:String>
@@ -221,6 +249,7 @@
 Рисование левой кнопкой мыши: набор выражений
 Рисование правой кнопкой мыши: сброс выражений
   </system:String>
+  <!--<system:String x:Key="tip.exps.notsupported">Expression not supported by renderer</system:String>-->
   <system:String x:Key="tip.lyricbox.next">Tab: следующая нота</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: предыдущая нота</system:String>
   <system:String x:Key="tip.notes.basics">
@@ -247,6 +276,7 @@
   <system:String x:Key="tracks.movedown">Сместить вниз</system:String>
   <system:String x:Key="tracks.moveup">Сместить вверх</system:String>
   <system:String x:Key="tracks.remove">Удалить</system:String>
+  <!--<system:String x:Key="tracks.selectrenderer">Select Renderer</system:String>-->
   <system:String x:Key="tracks.selectsinger">Выбрать голосовой банк</system:String>
 
   <!--<FontFamily x:Key="ui.fontfamily">Segoe UI,San Francisco,Helvetica Neue</FontFamily>-->

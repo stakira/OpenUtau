@@ -37,6 +37,7 @@
               </DataTemplate>
             </MenuItem.DataTemplates>
           </MenuItem>
+          <MenuItem Header="{DynamicResource menu.file.openprojectlocation}" Click="OnMenuOpenProjectLocation"/>
           <MenuItem Header="-" Height="1"/>
           <MenuItem Header="{DynamicResource menu.file.save}" InputGesture="Ctrl+S" Click="OnMenuSave"/>
           <MenuItem Header="{DynamicResource menu.file.saveas}" Click="OnMenuSaveAs"/>
@@ -49,6 +50,7 @@
           <MenuItem Header="{DynamicResource menu.file.exportwavto}" Click="OnMenuExportWavTo"/>
           <MenuItem Header="{DynamicResource menu.file.exportust}" Click="OnMenuExportUst"/>
           <MenuItem Header="{DynamicResource menu.file.exportustto}" Click="OnMenuExportUstTo"/>
+          <MenuItem Header="{DynamicResource menu.file.openexportlocation}" Click="OnMenuOpenProjectLocation"/>
         </MenuItem>
         <MenuItem Header="{DynamicResource menu.tools}">
           <MenuItem Header="{DynamicResource menu.tools.layout}">
