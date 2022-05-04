@@ -105,7 +105,7 @@
   <!--<system:String x:Key="notedefaults.lyric.defaultlyric">Parole par défaaut</system:String>-->
   <!--<system:String x:Key="notedefaults.portamento">Portamento</system:String>-->
   <!--<system:String x:Key="notedefaults.portamento.length">Longueur </system:String>-->
-  <!--<system:String x:Key="notedefaults.portamento.start">Départ</system:String>-->
+  <!--<system:String x:Key="notedefaults.portamento.start">Début</system:String>-->
   <!--<system:String x:Key="notedefaults.preset">Préréglage</system:String>-->
   <!--<system:String x:Key="notedefaults.preset.namenew">Nouveau nom du préréglage</system:String>-->
   <!--<system:String x:Key="notedefaults.preset.remove">Effacer</system:String>-->
@@ -118,7 +118,7 @@ Warning: this option removes custom presets.</system:String>-->
   <!--<system:String x:Key="notedefaults.vibrato">Vibrato</system:String>-->
   <!--<system:String x:Key="notedefaults.vibrato.autominlength">Minimum Length</system:String>-->
   <!--<system:String x:Key="notedefaults.vibrato.autotoggle">Vibrato automatique selon la longueur</system:String>-->
-  <!--<system:String x:Key="notedefaults.vibrato.depth">Profondeur</system:String>-->
+  <!--<system:String x:Key="notedefaults.vibrato.depth">Amplitude</system:String>-->
   <!--<system:String x:Key="notedefaults.vibrato.in">Fade In</system:String>-->
   <!--<system:String x:Key="notedefaults.vibrato.length">Longueur</system:String>-->
   <!--<system:String x:Key="notedefaults.vibrato.out">Fade Out</system:String>-->
@@ -126,7 +126,7 @@ Warning: this option removes custom presets.</system:String>-->
   <!--<system:String x:Key="notedefaults.vibrato.shift">Shift</system:String>-->
 
   <!--<system:String x:Key="oto.alias">Alias</system:String>-->
-  <system:String x:Key="oto.color">Couleur</system:String>
+  <system:String x:Key="oto.color">Color</system:String>
   <!--<system:String x:Key="oto.consonant">Consonne</system:String>-->
   <system:String x:Key="oto.cutoff">Fin</system:String>
   <system:String x:Key="oto.file">Fichier</system:String>
@@ -189,10 +189,10 @@ Maintenir Ctrl pour ajouter à la sélection</system:String>
   <system:String x:Key="prefs.caption">Préférences</system:String>
   <system:String x:Key="prefs.note.restart">Note: veuillez redémarrer OpenUtau après avoir changé cette option.</system:String>
   <!--<system:String x:Key="prefs.off">Désactivé</system:String>-->
-  <!--<system:String x:Key="prefs.on">Activer</system:String>-->
+  <!--<system:String x:Key="prefs.on">Activé</system:String>-->
   <system:String x:Key="prefs.paths">Chemins</system:String>
   <system:String x:Key="prefs.paths.addlsinger">Chemin(s) de voicebank additionel(s)</system:String>
-  <!--<system:String x:Key="prefs.paths.addlsinger.install">Ajouter un emplacement de voicebank</system:String>-->
+  <!--<system:String x:Key="prefs.paths.addlsinger.install">Installer vers l'emplacement de voicebank additionnel</system:String>-->
   <system:String x:Key="prefs.paths.reset">Réinitialiser</system:String>
   <system:String x:Key="prefs.paths.select">Sélectionner</system:String>
   <system:String x:Key="prefs.playback">Audio</system:String>
