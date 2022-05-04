@@ -117,7 +117,7 @@
 Lưu ý: tuỳ chọn này cũng sẽ xoá các preset của bạn.</system:String>
   <system:String x:Key="notedefaults.vibrato">Rung giọng</system:String>
   <system:String x:Key="notedefaults.vibrato.autominlength">Độ dài nhỏ nhất</system:String>
-  <system:String x:Key="notedefaults.vibrato.autotoggle">Tự động quyết định độ dài dường rung giọng</system:String>
+  <system:String x:Key="notedefaults.vibrato.autotoggle">Tự động quyết định độ dài</system:String>
   <system:String x:Key="notedefaults.vibrato.depth">Độ sâu</system:String>
   <system:String x:Key="notedefaults.vibrato.in">Tăng dần</system:String>
   <system:String x:Key="notedefaults.vibrato.length">Độ dài</system:String>
