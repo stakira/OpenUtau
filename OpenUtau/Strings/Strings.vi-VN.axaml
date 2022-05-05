@@ -76,8 +76,8 @@
   <system:String x:Key="menu.file.newfromtemplate">Dự án mới từ các mẫu</system:String>
   <system:String x:Key="menu.file.open">Mở tệp...</system:String>
   <system:String x:Key="menu.file.openas">Mở dưới dạng</system:String>
-  <!--<system:String x:Key="menu.file.openexportlocation">Open Export Location</system:String>-->
-  <!--<system:String x:Key="menu.file.openprojectlocation">Open Project Location</system:String>-->
+  <system:String x:Key="menu.file.openexportlocation">Mở thư mục xuất ra</system:String>
+  <system:String x:Key="menu.file.openprojectlocation">Mở thư mục chứa dự án</system:String>
   <system:String x:Key="menu.file.openrecent">Mở tệp gần đây</system:String>
   <system:String x:Key="menu.file.save">Lưu</system:String>
   <system:String x:Key="menu.file.saveas">Lưu dưới dạng...</system:String>
@@ -117,7 +117,7 @@
 Lưu ý: tuỳ chọn này cũng sẽ xoá các preset của bạn.</system:String>
   <system:String x:Key="notedefaults.vibrato">Rung giọng</system:String>
   <system:String x:Key="notedefaults.vibrato.autominlength">Độ dài nhỏ nhất</system:String>
-  <system:String x:Key="notedefaults.vibrato.autotoggle">Tự động quyết định độ dài dường rung giọng</system:String>
+  <system:String x:Key="notedefaults.vibrato.autotoggle">Tự động quyết định độ dài</system:String>
   <system:String x:Key="notedefaults.vibrato.depth">Độ sâu</system:String>
   <system:String x:Key="notedefaults.vibrato.in">Tăng dần</system:String>
   <system:String x:Key="notedefaults.vibrato.length">Độ dài</system:String>
