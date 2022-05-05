@@ -66,9 +66,9 @@
   <system:String x:Key="menu.file">Arquivo</system:String>
   <system:String x:Key="menu.file.exit">Fechar</system:String>
   <system:String x:Key="menu.file.exportust">Exportar como Ust</system:String>
-  <!--<system:String x:Key="menu.file.exportustto">Export Ust Files To...</system:String>-->
+  <system:String x:Key="menu.file.exportustto">Exportar Ust para...</system:String>
   <system:String x:Key="menu.file.exportwav">Exportar Arquivos Wav</system:String>
-  <!--<system:String x:Key="menu.file.exportwavto">Export Wav Files To...</system:String>-->
+  <system:String x:Key="menu.file.exportwavto">Exportar Wav para...</system:String>
   <system:String x:Key="menu.file.importaudio">Importar Audio...</system:String>
   <system:String x:Key="menu.file.importmidi">Importar Midi...</system:String>
   <system:String x:Key="menu.file.importtracks">Importar Faixas...</system:String>
@@ -76,8 +76,8 @@
   <system:String x:Key="menu.file.newfromtemplate">Novo por Modelo</system:String>
   <system:String x:Key="menu.file.open">Abrir...</system:String>
   <system:String x:Key="menu.file.openas">Abrir como</system:String>
-  <!--<system:String x:Key="menu.file.openexportlocation">Open Export Location</system:String>-->
-  <!--<system:String x:Key="menu.file.openprojectlocation">Open Project Location</system:String>-->
+  <system:String x:Key="menu.file.openexportlocation">Abrir Local de Exportação</system:String>
+  <system:String x:Key="menu.file.openprojectlocation">Abrir Local do Projeto</system:String>
   <system:String x:Key="menu.file.openrecent">Abrir Recente</system:String>
   <system:String x:Key="menu.file.save">Salvar</system:String>
   <system:String x:Key="menu.file.saveas">Salvar como...</system:String>
@@ -101,28 +101,28 @@
   <system:String x:Key="menu.tools.singer.installadv">Instalar Vozes (Avançado)...</system:String>
   <system:String x:Key="menu.tools.singers">Vozes...</system:String>
 
-  <!--<system:String x:Key="notedefaults.lyric">Lyric</system:String>-->
-  <!--<system:String x:Key="notedefaults.lyric.defaultlyric">Default Lyric</system:String>-->
+  <system:String x:Key="notedefaults.lyric">Lírica</system:String>
+  <system:String x:Key="notedefaults.lyric.defaultlyric">Lírica Padrão</system:String>
   <!--<system:String x:Key="notedefaults.portamento">Portamento</system:String>-->
-  <!--<system:String x:Key="notedefaults.portamento.length">Length</system:String>-->
-  <!--<system:String x:Key="notedefaults.portamento.start">Start</system:String>-->
-  <!--<system:String x:Key="notedefaults.preset">Preset</system:String>-->
-  <!--<system:String x:Key="notedefaults.preset.namenew">New Preset Name</system:String>-->
-  <!--<system:String x:Key="notedefaults.preset.remove">Remove</system:String>-->
-  <!--<system:String x:Key="notedefaults.preset.remove.tooltip">Removes last applied preset.</system:String>-->
-  <!--<system:String x:Key="notedefaults.preset.save">Save</system:String>-->
-  <!--<system:String x:Key="notedefaults.preset.save.tooltip">Save current settings to a new preset.</system:String>-->
-  <!--<system:String x:Key="notedefaults.reset">Reset All Settings</system:String>-->
-  <!--<system:String x:Key="notedefaults.reset.tooltip">Reset every setting to default values.
-Warning: this option removes custom presets.</system:String>-->
+  <system:String x:Key="notedefaults.portamento.length">Comprimento</system:String>
+  <system:String x:Key="notedefaults.portamento.start">Início</system:String>
+  <system:String x:Key="notedefaults.preset">Predefinição</system:String>
+  <system:String x:Key="notedefaults.preset.namenew">Novo Nome de Predefinição</system:String>
+  <system:String x:Key="notedefaults.preset.remove">Remover</system:String>
+  <system:String x:Key="notedefaults.preset.remove.tooltip">Remove a última predefinição aplicada.</system:String>
+  <system:String x:Key="notedefaults.preset.save">Salvar</system:String>
+  <system:String x:Key="notedefaults.preset.save.tooltip">Salva as configurações atuais em uma nova predefinição.</system:String>
+  <system:String x:Key="notedefaults.reset">Redefinir Tudo</system:String>
+  <system:String x:Key="notedefaults.reset.tooltip">Redefina todas as configurações para os valores padrão.
+Aviso: esta opção remove predefinições personalizadas.</system:String>
   <!--<system:String x:Key="notedefaults.vibrato">Vibrato</system:String>-->
-  <!--<system:String x:Key="notedefaults.vibrato.autominlength">Minimum Length</system:String>-->
-  <!--<system:String x:Key="notedefaults.vibrato.autotoggle">Automatic Vibrato by Length</system:String>-->
-  <!--<system:String x:Key="notedefaults.vibrato.depth">Depth</system:String>-->
+  <system:String x:Key="notedefaults.vibrato.autominlength">Comprimento Mínimo</system:String>
+  <system:String x:Key="notedefaults.vibrato.autotoggle">Vibrato Automático por Comprimento</system:String>
+  <system:String x:Key="notedefaults.vibrato.depth">Profundidade</system:String>
   <!--<system:String x:Key="notedefaults.vibrato.in">Fade In</system:String>-->
-  <!--<system:String x:Key="notedefaults.vibrato.length">Length</system:String>-->
+  <system:String x:Key="notedefaults.vibrato.length">Comprimento</system:String>
   <!--<system:String x:Key="notedefaults.vibrato.out">Fade Out</system:String>-->
-  <!--<system:String x:Key="notedefaults.vibrato.period">Period</system:String>-->
+  <system:String x:Key="notedefaults.vibrato.period">Período</system:String>
   <!--<system:String x:Key="notedefaults.vibrato.shift">Shift</system:String>-->
 
   <!--<system:String x:Key="oto.alias">Alias</system:String>-->
@@ -145,12 +145,12 @@ Warning: this option removes custom presets.</system:String>-->
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Remover Letra de Suffixo</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">Remover Sufixo de Tom</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Romaji para Hiragana</system:String>
-  <!--<system:String x:Key="pianoroll.menu.notedefaults">Note Defaults</system:String>-->
+  <system:String x:Key="pianoroll.menu.notedefaults">Padrões de Nota</system:String>
   <system:String x:Key="pianoroll.menu.notes">Nota</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">Adicionar final "-"</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">Adicionar final "R"</system:String>
-  <!--<system:String x:Key="pianoroll.menu.notes.clear.vibratos">Clear vibratos</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Load Rendered Pitch</system:String>-->
+  <system:String x:Key="pianoroll.menu.notes.clear.vibratos">Limpar Vibratos</system:String>
+  <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Carregar Tom Renderizado</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">Quantizar para 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Quantizar para 1/64</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">Redefinir todas expressões</system:String>
@@ -244,12 +244,12 @@ Segure Ctrl para selecionar mais notas</system:String>
   <system:String x:Key="singers.subbanks.tone">Tom</system:String>
   <system:String x:Key="singers.subbanks.toneranges">Alcance</system:String>
 
-  <!--<system:String x:Key="tip.aliasbox">Override Alias</system:String>-->
+  <system:String x:Key="tip.aliasbox">Substituir Alias</system:String>
   <system:String x:Key="tip.exps">
 Desenhar com o Botão Esquerdo: Definir expressões
 Desenhar com o Botão Direito: Redefinir expressões
   </system:String>
-  <!--<system:String x:Key="tip.exps.notsupported">Expression not supported by renderer</system:String>-->
+  <system:String x:Key="tip.exps.notsupported">Expressão não suportada pelo renderizador</system:String>
   <system:String x:Key="tip.lyricbox.next">Tab: Próxima Nota</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: Nota Anterior</system:String>
   <system:String x:Key="tip.notes.basics">
@@ -272,18 +272,18 @@ Geral
   <system:String x:Key="tip.notes.zoomx">◀ Role aqui para aumentar o zoom horizontalmente  ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">Role aqui para aumentar o zoom verticalmente ▶</system:String>
 
-  <!--<system:String x:Key="tracks.more">More</system:String>-->
+  <system:String x:Key="tracks.more">Mais</system:String>
   <system:String x:Key="tracks.movedown">Mover pra Baixo</system:String>
   <system:String x:Key="tracks.moveup">Mover pra Cima</system:String>
   <system:String x:Key="tracks.remove">Remover</system:String>
-  <!--<system:String x:Key="tracks.selectrenderer">Select Renderer</system:String>-->
+  <system:String x:Key="tracks.selectrenderer">Seleciona Renderizador</system:String>
   <system:String x:Key="tracks.selectsinger">Selecione a Voz</system:String>
 
   <!--<FontFamily x:Key="ui.fontfamily">Segoe UI,San Francisco,Helvetica Neue</FontFamily>-->
   <!--<FontFamily x:Key="ui.textbox.fontfamily">Microsoft YaHei,Simsun,苹方-简,宋体-简</FontFamily>-->
 
   <system:String x:Key="updater.caption">Procurar Updates</system:String>
-  <!--<system:String x:Key="updater.description">Open singing synthesis platform</system:String>-->
+  <system:String x:Key="updater.description">Plataforma de síntese de canto aberta</system:String>
   <!--<system:String x:Key="updater.github">GitHub</system:String>-->
   <system:String x:Key="updater.status.available">Update v{0} disponível!</system:String>
   <system:String x:Key="updater.status.checking">Procurando updates...</system:String>
