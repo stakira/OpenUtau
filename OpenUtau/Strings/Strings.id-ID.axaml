@@ -42,7 +42,7 @@
   <system:String x:Key="exps.optionvalues">Nilai opsi</system:String>
   <system:String x:Key="exps.sepbycomma">Pisahkan nilai dengan ','</system:String>
   <system:String x:Key="exps.type">Jenis</system:String>
-  <!--<system:String x:Key="exps.type.curve">Curve</system:String>-->
+  <!--<system:String x:Key="exps.type.curve">Kurva</system:String>-->
   <system:String x:Key="exps.type.numerical">Numerik</system:String>
   <system:String x:Key="exps.type.options">Opsi</system:String>
 
@@ -84,7 +84,7 @@
   <system:String x:Key="menu.file.savetemplate">Simpan Templat...</system:String>
   <system:String x:Key="menu.help">Bantuan</system:String>
   <system:String x:Key="menu.help.about">Tentang OpenUtau</system:String>
-  <!--<system:String x:Key="menu.help.wiki">Wili OpenUtau</system:String>-->
+  <!--<system:String x:Key="menu.help.wiki">Wiki OpenUtau</system:String>-->
   <system:String x:Key="menu.tools">Peralatan</system:String>
   <!--<system:String x:Key="menu.tools.clearcache">Bersihkan Cache</system:String>-->
   <!--<system:String x:Key="menu.tools.debugwindow">Jendela Debug</system:String>-->
@@ -104,24 +104,24 @@
   <!--<system:String x:Key="notedefaults.lyric">Lirik</system:String>-->
   <!--<system:String x:Key="notedefaults.lyric.defaultlyric">Lirik Bawaan</system:String>-->
   <!--<system:String x:Key="notedefaults.portamento">Portamento</system:String>-->
-  <!--<system:String x:Key="notedefaults.portamento.length">Length</system:String>-->
-  <!--<system:String x:Key="notedefaults.portamento.start">Start</system:String>-->
-  <!--<system:String x:Key="notedefaults.preset">Preset</system:String>-->
-  <!--<system:String x:Key="notedefaults.preset.namenew">New Preset Name</system:String>-->
-  <!--<system:String x:Key="notedefaults.preset.remove">Remove</system:String>-->
-  <!--<system:String x:Key="notedefaults.preset.remove.tooltip">Removes last applied preset.</system:String>-->
-  <!--<system:String x:Key="notedefaults.preset.save">Save</system:String>-->
-  <!--<system:String x:Key="notedefaults.preset.save.tooltip">Save current settings to a new preset.</system:String>-->
-  <!--<system:String x:Key="notedefaults.reset">Reset All Settings</system:String>-->
-  <!--<system:String x:Key="notedefaults.reset.tooltip">Reset every setting to default values.
-Warning: this option removes custom presets.</system:String>-->
+  <!--<system:String x:Key="notedefaults.portamento.length">Panjang</system:String>-->
+  <!--<system:String x:Key="notedefaults.portamento.start">Mulai</system:String>-->
+  <!--<system:String x:Key="notedefaults.preset">Prasetel</system:String>-->
+  <!--<system:String x:Key="notedefaults.preset.namenew">Nama Prasetel Baru</system:String>-->
+  <!--<system:String x:Key="notedefaults.preset.remove">Hapus</system:String>-->
+  <!--<system:String x:Key="notedefaults.preset.remove.tooltip">Menghapus prasetel yang terakhir diterapkan.</system:String>-->
+  <!--<system:String x:Key="notedefaults.preset.save">Simpan</system:String>-->
+  <!--<system:String x:Key="notedefaults.preset.save.tooltip">Simpan pengaturan saat ini ke preset baru.</system:String>-->
+  <!--<system:String x:Key="notedefaults.reset">Atur Ulang Semua Pengaturan</system:String>-->
+  <!--<system:String x:Key="notedefaults.reset.tooltip">Atur ulang setiap pengaturan ke nilai default.
+ Peringatan: opsi ini menghapus preset khusus.</system:String>-->
   <!--<system:String x:Key="notedefaults.vibrato">Vibrato</system:String>-->
-  <!--<system:String x:Key="notedefaults.vibrato.autominlength">Minimum Length</system:String>-->
-  <!--<system:String x:Key="notedefaults.vibrato.autotoggle">Automatic Vibrato by Length</system:String>-->
-  <!--<system:String x:Key="notedefaults.vibrato.depth">Depth</system:String>-->
-  <!--<system:String x:Key="notedefaults.vibrato.in">Fade In</system:String>-->
-  <!--<system:String x:Key="notedefaults.vibrato.length">Length</system:String>-->
-  <!--<system:String x:Key="notedefaults.vibrato.out">Fade Out</system:String>-->
+  <!--<system:String x:Key="notedefaults.vibrato.autominlength">Panjang Minimum</system:String>-->
+  <!--<system:String x:Key="notedefaults.vibrato.autotoggle">Vibrato Otomatis Berdasarkan Panjangnya</system:String>-->
+  <!--<system:String x:Key="notedefaults.vibrato.depth">Kedalaman</system:String>-->
+  <!--<system:String x:Key="notedefaults.vibrato.in">Memudar Masuk</system:String>-->
+  <!--<system:String x:Key="notedefaults.vibrato.length">Panjang</system:String>-->
+  <!--<system:String x:Key="notedefaults.vibrato.out">Memudar Keluar</system:String>-->
   <!--<system:String x:Key="notedefaults.vibrato.period">Period</system:String>-->
   <!--<system:String x:Key="notedefaults.vibrato.shift">Shift</system:String>-->
 
@@ -176,7 +176,7 @@ Klik kanan untuk menghapus</system:String>
   <system:String x:Key="pianoroll.tool.selection">Alat Seleksi (1)
 Tahan Ctrl untuk memilih lainnya</system:String>
 
-  <system:String x:Key="prefs.advanced">Canggih</system:String>
+  <system:String x:Key="prefs.advanced">Lanjutan</system:String>
   <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
   <system:String x:Key="prefs.advanced.resamplerlogging">Pencatatan Resampler</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging.warn">Menyimpan output resampler dalam file log. Opsi ini akan memperlambat UI dan rendering.</system:String>
@@ -196,13 +196,13 @@ Tahan Ctrl untuk memilih lainnya</system:String>
   <system:String x:Key="prefs.paths.reset">Setel Ulang</system:String>
   <system:String x:Key="prefs.paths.select">Pilih</system:String>
   <system:String x:Key="prefs.playback">Pemutaran</system:String>
-  <!--<system:String x:Key="prefs.playback.autoscroll">Auto-Scroll</system:String>-->
-  <!--<system:String x:Key="prefs.playback.autoscrollmode">Auto-Scroll Mode</system:String>-->
-  <!--<system:String x:Key="prefs.playback.autoscrollmode.pagescroll">Page Scroll</system:String>-->
-  <!--<system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">Stationary Cursor</system:String>-->
+  <!--<system:String x:Key="prefs.playback.autoscroll">Gulir Otomatis</system:String>-->
+  <!--<system:String x:Key="prefs.playback.autoscrollmode">Mode Gulir Otomatis</system:String>-->
+  <!--<system:String x:Key="prefs.playback.autoscrollmode.pagescroll">Gulir Halaman</system:String>-->
+  <!--<system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">Kursor Stasioner</system:String>-->
   <system:String x:Key="prefs.playback.backend">Latar Belakang Audio</system:String>
   <system:String x:Key="prefs.playback.backend.auto">Otomatis</system:String>
-  <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
+  <!--<system:String x:Key="prefs.playback.backend.port">Port Audio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">Posisi Kursor</system:String>
   <system:String x:Key="prefs.playback.device">Perangkat Pemutaran</system:String>
   <!--<system:String x:Key="prefs.playback.lockstarttime">Saat Berhenti</system:String>-->
@@ -210,7 +210,7 @@ Tahan Ctrl untuk memilih lainnya</system:String>
   <!--<system:String x:Key="prefs.playback.lockstarttime.on">Pindahkan kursor kembali ke tempat Anda mulai bermain</system:String>-->
   <system:String x:Key="prefs.playback.test">Uji</system:String>
   <system:String x:Key="prefs.rendering">Merender</system:String>
-  <!--<system:String x:Key="prefs.rendering.phasecomp">Phase Compensation</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.phasecomp">Kompensasi Fase</system:String>-->
   <system:String x:Key="prefs.rendering.prerender.threads">Utas Pra-perenderan</system:String>
   <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
   <!--<system:String x:Key="prefs.rendering.resampler.morewarn">
@@ -224,7 +224,7 @@ Peringatan: moresampler tidak sepenuhnya didukung.  Ini mungkin lambat dan menye
   </system:String>
 
   <system:String x:Key="progress.saved">Proyek tersimpan. {0}</system:String>
-  <!--<system:String x:Key="progress.waitingrendering">Waiting Rendering</system:String>-->
+  <!--<system:String x:Key="progress.waitingrendering">Menunggu Dirender</system:String>-->
 
   <system:String x:Key="singers.caption">Penyanyi</system:String>
   <system:String x:Key="singers.location">Lokasi</system:String>
@@ -244,12 +244,12 @@ Peringatan: moresampler tidak sepenuhnya didukung.  Ini mungkin lambat dan menye
   <system:String x:Key="singers.subbanks.tone">Nada</system:String>
   <system:String x:Key="singers.subbanks.toneranges">Rentang Nada</system:String>
 
-  <!--<system:String x:Key="tip.aliasbox">Override Alias</system:String>-->
+  <!--<system:String x:Key="tip.aliasbox">Ganti Alias</system:String>-->
   <system:String x:Key="tip.exps">
 Tombol Kiri Tarik: Setel ekspresi
 Tombol Kanan Tarik: Setel ulang ekspresi
   </system:String>
-  <!--<system:String x:Key="tip.exps.notsupported">Expression not supported by renderer</system:String>-->
+  <!--<system:String x:Key="tip.exps.notsupported">Ekspresi tidak didukung oleh perender</system:String>-->
   <system:String x:Key="tip.lyricbox.next">Tab: Not Berikutnya</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: Not Sebelumnya</system:String>
   <system:String x:Key="tip.notes.basics">
@@ -272,18 +272,18 @@ Umum
   <system:String x:Key="tip.notes.zoomx">◀ Gulir ke sini untuk memperbesar secara horizontal ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">Gulir ke sini untuk memperbesar secara vertikal ▶</system:String>
 
-  <!--<system:String x:Key="tracks.more">More</system:String>-->
+  <!--<system:String x:Key="tracks.more">Lebih</system:String>-->
   <system:String x:Key="tracks.movedown">Turunkan</system:String>
   <system:String x:Key="tracks.moveup">Naikkan</system:String>
   <system:String x:Key="tracks.remove">Hapus</system:String>
-  <!--<system:String x:Key="tracks.selectrenderer">Select Renderer</system:String>-->
+  <!--<system:String x:Key="tracks.selectrenderer">Pilih Perender</system:String>-->
   <system:String x:Key="tracks.selectsinger">Pilih Penyanyi</system:String>
 
   <!--<FontFamily x:Key="ui.fontfamily">Segoe UI,San Francisco,Helvetica Neue</FontFamily>-->
   <!--<FontFamily x:Key="ui.textbox.fontfamily">Microsoft YaHei,Simsun,苹方-简,宋体-简</FontFamily>-->
 
   <system:String x:Key="updater.caption">Memeriksa Pembaruan</system:String>
-  <!--<system:String x:Key="updater.description">Platform sintesis bernyanyi Terbuka</system:String>-->
+  <!--<system:String x:Key="updater.description">Platform sintesis bernyanyi terbuka</system:String>-->
   <!--<system:String x:Key="updater.github">GitHub</system:String>-->
   <system:String x:Key="updater.status.available">Pembaruan v{0} tersedia!</system:String>
   <system:String x:Key="updater.status.checking">Memeriksa pembaruan...</system:String>
