@@ -13,7 +13,7 @@ namespace OpenUtau.Plugin.Builtin {
     /// <summary>
     /// The simplest Phonemizer possible. Simply pass the lyric as phoneme.
     /// </summary>
-    [Phonemizer("Time Saver", "Multi", "MrCookies")]
+    [Phonemizer("Customise Phonemizer", "Multi", "MrCookies")]
     public class TimeSaverPort : Phonemizer {
 
         private USinger singer;
