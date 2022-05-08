@@ -245,14 +245,16 @@ namespace OpenUtau.Plugin.Builtin {
             }
 
 
-
-            if (!HasOto(basePhoneme, syllable.tone)) {
-                basePhoneme = $"-{v}";
-            }
-
             //remove _CV if C is the first consonant of the word
             if (cc.Length > 1 && cc.Length == syllable.prevWordConsonantsCount + 1) {
                 basePhoneme = $"{cc.Last()}{v}";
+            }
+
+            if (!HasOto(basePhoneme, syllable.tone)) {
+                // TODO: clean h/hh conflict
+                if ($"{cc.Last()}" == "h") {
+                    basePhoneme = $"hh{v}";
+                } else basePhoneme = $"-{v}";
             }
 
             phonemes.Add(basePhoneme);
@@ -271,17 +273,16 @@ namespace OpenUtau.Plugin.Builtin {
                 TryAddPhoneme(phonemes, ending.tone, $"{v}-");
 
             } else {
+                var vc = $"{v}{cc[0]}";
                 // --------------------------- ENDING VC ------------------------------- //
                 if (ending.IsEndingVCWithOneConsonant) {
-                    var vc = $"{v}{cc[0]}";
 
                     vc = CheckVCExceptions(vc);
                     vc += "-";
                     phonemes.Add(vc);
 
                 } else {
-                    var vc = $"{v} {cc[0]}";
-
+                    vc = $"{v} {cc[0]}";
                     vc = CheckVCExceptions(vc);
                     // "1nks" exception, start CC loop later
                     var startingC = 0;
@@ -333,6 +334,7 @@ namespace OpenUtau.Plugin.Builtin {
             return phonemes;
         }
 
+        // TODO: See if it can be implemented in a nice way but default sounds better for now.
         //protected override double GetTransitionBasicLengthMs(string alias = "") {
         //    return GetTransitionBasicLengthMsByOto(alias);
         //}
