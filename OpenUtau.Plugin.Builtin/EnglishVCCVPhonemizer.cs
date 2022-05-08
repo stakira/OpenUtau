@@ -69,7 +69,8 @@ namespace OpenUtau.Plugin.Builtin {
             // --------------------------- STARTING V ------------------------------- //
             if (syllable.IsStartingV) {
                 // if starting V -> -V
-                basePhoneme = $"-{v}";
+                basePhoneme = $"-{v}"; 
+                
 
                 // --------------------------- STARTING VV ------------------------------- //
             } else if (syllable.IsVV) {  // if VV
@@ -86,6 +87,9 @@ namespace OpenUtau.Plugin.Builtin {
                     if ($"{prevV}" == $"{v}") {
                         basePhoneme = $"{v}";
                     }
+                } else {
+                    // the previous alias will be extended
+                    basePhoneme = null;
                 }
                 // --------------------------- STARTING CV ------------------------------- //
             } else if (syllable.IsStartingCVWithOneConsonant) {
