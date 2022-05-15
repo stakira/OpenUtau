@@ -337,3 +337,7 @@ OpenUtau.Test/Usts/*
 *.dmg
 appcast.*.xml
 *.tar.gz
+OpenUtau.Plugin.Builtin/TimeSaverPort_beta.cs
+OpenUtau/OpenUtau.csproj
+OpenUtau.Plugin.Builtin/CustomisePhonemizer_beta.cs
+OpenUtau/OpenUtau.csproj

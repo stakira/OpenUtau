@@ -13,7 +13,7 @@ namespace OpenUtau.Plugin.Builtin {
     /// <summary>
     /// The simplest Phonemizer possible. Simply pass the lyric as phoneme.
     /// </summary>
-    [Phonemizer("Customise Phonemizer", "Multi", "MrCookies")]
+    [Phonemizer("Customise Phonemizer", "Custom", "MrCookies")]
     public class CustomisePhonemizer : Phonemizer {
 
         private USinger singer;
