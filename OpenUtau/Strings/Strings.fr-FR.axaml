@@ -114,7 +114,7 @@
   <system:String x:Key="notedefaults.preset.save.tooltip">Enregistrer les paramètres actuels en préréglage.</system:String>
   <system:String x:Key="notedefaults.reset">Réinitialiser tous les paramètres</system:String>
   <system:String x:Key="notedefaults.reset.tooltip">Réinitialiser tous les paramètres par défaut.
-Warning: this option removes custom presets.</system:String>-->
+  Attention: cela va effacer le préréglage.</system:String>
   <!--<system:String x:Key="notedefaults.vibrato">Vibrato</system:String>-->
   <!--<system:String x:Key="notedefaults.vibrato.autominlength">Minimum Length</system:String>-->
   <system:String x:Key="notedefaults.vibrato.autotoggle">Vibrato automatique selon la longueur</system:String>
