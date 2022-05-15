@@ -75,7 +75,9 @@
   <system:String x:Key="menu.file.new">새로 만들기</system:String>
   <system:String x:Key="menu.file.newfromtemplate">템플릿 가져오기</system:String>
   <system:String x:Key="menu.file.open">열기</system:String>
-  <!--<system:String x:Key="menu.file.openas">O_pen As</system:String>-->
+  <system:String x:Key="menu.file.openas">다른 이름으로 열기</system:String>
+  <system:String x:Key="menu.file.openexportlocation">내보내기 위치 열기</system:String>
+  <system:String x:Key="menu.file.openprojectlocation">프로젝트 위치 열기</system:String>
   <system:String x:Key="menu.file.openrecent">최근 파일 열기</system:String>
   <system:String x:Key="menu.file.save">저장</system:String>
   <system:String x:Key="menu.file.saveas">다른 이름으로 저장</system:String>
@@ -99,6 +101,30 @@
   <system:String x:Key="menu.tools.singer.installadv">음원 설치(고급)</system:String>
   <system:String x:Key="menu.tools.singers">음원 설정</system:String>
 
+  <system:String x:Key="notedefaults.lyric">가사</system:String>
+  <system:String x:Key="notedefaults.lyric.defaultlyric">기본 가사</system:String>
+  <system:String x:Key="notedefaults.portamento">포르타멘토</system:String>
+  <system:String x:Key="notedefaults.portamento.length">길이</system:String>
+  <system:String x:Key="notedefaults.portamento.start">시작</system:String>
+  <system:String x:Key="notedefaults.preset">프리셋</system:String>
+  <system:String x:Key="notedefaults.preset.namenew">새 프리셋 이름</system:String>
+  <system:String x:Key="notedefaults.preset.remove">제거</system:String>
+  <system:String x:Key="notedefaults.preset.remove.tooltip">마지막으로 적용된 프리셋을 제거합니다.</system:String>
+  <system:String x:Key="notedefaults.preset.save">저장</system:String>
+  <system:String x:Key="notedefaults.preset.save.tooltip">현재 설정을 새 프리셋으로 저장합니다.</system:String>
+  <system:String x:Key="notedefaults.reset">모든 설정 초기화</system:String>
+  <system:String x:Key="notedefaults.reset.tooltip">모든 프리셋을 기본값으로 재설정합니다.
+경고: 이 옵션은 사용자 지정 프리셋을 제거합니다.</system:String>
+  <system:String x:Key="notedefaults.vibrato">비브라토</system:String>
+  <system:String x:Key="notedefaults.vibrato.autominlength">최소 길이</system:String>
+  <system:String x:Key="notedefaults.vibrato.autotoggle">길이별 자동 비브라토</system:String>
+  <system:String x:Key="notedefaults.vibrato.depth">깊이</system:String>
+  <system:String x:Key="notedefaults.vibrato.in">페이드 인</system:String>
+  <system:String x:Key="notedefaults.vibrato.length">길이</system:String>
+  <system:String x:Key="notedefaults.vibrato.out">페이드 아웃</system:String>
+  <system:String x:Key="notedefaults.vibrato.period">주기</system:String>
+  <system:String x:Key="notedefaults.vibrato.shift">시프트</system:String>
+
   <system:String x:Key="oto.alias">앨리어스</system:String>
   <system:String x:Key="oto.color">색상</system:String>
   <system:String x:Key="oto.consonant">자음</system:String>
@@ -119,9 +145,11 @@
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">문자 접미사 제거</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">톤 접미사 제거</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">로마자를 히라가나로</system:String>
+  <system:String x:Key="pianoroll.menu.notedefaults">노트 기본값</system:String>
   <system:String x:Key="pianoroll.menu.notes">노트</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">"-" 꼬리 추가</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">"R" 꼬리 추가</system:String>
+  <system:String x:Key="pianoroll.menu.notes.clear.vibratos">비브라토 지우기</system:String>
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">렌더링 된 피치 로드</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">1/128로 양자화</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">1/64로 양자화</system:String>
@@ -221,6 +249,7 @@
 왼쪽 마우스: 표현 설정
 오른쪽 마우스: 표현 초기화
   </system:String>
+  <system:String x:Key="tip.exps.notsupported">렌더러가 지원하지 않는 표현입니다</system:String>
   <system:String x:Key="tip.lyricbox.next">Tab: 다음 노트</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: 이전 노트</system:String>
   <system:String x:Key="tip.notes.basics">
@@ -247,6 +276,7 @@
   <system:String x:Key="tracks.movedown">아래로 이동</system:String>
   <system:String x:Key="tracks.moveup">위로 이동</system:String>
   <system:String x:Key="tracks.remove">제거</system:String>
+  <system:String x:Key="tracks.selectrenderer">렌더러 선택</system:String>
   <system:String x:Key="tracks.selectsinger">가수 선택</system:String>
 
   <FontFamily x:Key="ui.fontfamily">Malgun Gothic,Apple SD Gothic Neo,Segoe UI,San Francisco,Helvetica Neue</FontFamily>

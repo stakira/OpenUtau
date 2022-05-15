@@ -135,6 +135,27 @@ namespace OpenUtau.App.Views {
             viewModel.RefreshCacheSize();
         }
 
+        void OnMenuOpenProjectLocation(object sender, RoutedEventArgs args) {
+            var project = DocManager.Inst.Project;
+            if (string.IsNullOrEmpty(project.FilePath) || !project.Saved) {
+                MessageBox.Show(
+                    this,
+                    ThemeManager.GetString("dialogs.export.savefirst"),
+                    ThemeManager.GetString("errors.caption"),
+                    MessageBox.MessageBoxButtons.Ok);
+            }
+            try {
+                OS.OpenFolder(System.IO.Path.GetDirectoryName(project.FilePath));
+            } catch (Exception e) {
+                Log.Error(e, "Failed to open project location.");
+                MessageBox.Show(
+                    this,
+                    e.ToString(),
+                    ThemeManager.GetString("errors.caption"),
+                    MessageBox.MessageBoxButtons.Ok);
+            }
+        }
+
         async void OnMenuSave(object sender, RoutedEventArgs args) => await Save();
         public async Task Save() {
             if (!viewModel.ProjectSaved) {

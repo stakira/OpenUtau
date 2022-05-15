@@ -76,6 +76,8 @@
   <!--<system:String x:Key="menu.file.newfromtemplate">New From Template</system:String>-->
   <system:String x:Key="menu.file.open">Otwórz...</system:String>
   <system:String x:Key="menu.file.openas">Otwórz Jako</system:String>
+  <!--<system:String x:Key="menu.file.openexportlocation">Open Export Location</system:String>-->
+  <!--<system:String x:Key="menu.file.openprojectlocation">Open Project Location</system:String>-->
   <system:String x:Key="menu.file.openrecent">Ostatnie Pliki</system:String>
   <system:String x:Key="menu.file.save">Zapisz</system:String>
   <system:String x:Key="menu.file.saveas">Zapisz Jako</system:String>
@@ -99,6 +101,30 @@
   <system:String x:Key="menu.tools.singer.installadv">Zainstaluj Piosenkarza (Zaawansowane)...</system:String>
   <system:String x:Key="menu.tools.singers">Piosenkarze...</system:String>
 
+  <!--<system:String x:Key="notedefaults.lyric">Lyric</system:String>-->
+  <!--<system:String x:Key="notedefaults.lyric.defaultlyric">Default Lyric</system:String>-->
+  <!--<system:String x:Key="notedefaults.portamento">Portamento</system:String>-->
+  <!--<system:String x:Key="notedefaults.portamento.length">Length</system:String>-->
+  <!--<system:String x:Key="notedefaults.portamento.start">Start</system:String>-->
+  <!--<system:String x:Key="notedefaults.preset">Preset</system:String>-->
+  <!--<system:String x:Key="notedefaults.preset.namenew">New Preset Name</system:String>-->
+  <!--<system:String x:Key="notedefaults.preset.remove">Remove</system:String>-->
+  <!--<system:String x:Key="notedefaults.preset.remove.tooltip">Removes last applied preset.</system:String>-->
+  <!--<system:String x:Key="notedefaults.preset.save">Save</system:String>-->
+  <!--<system:String x:Key="notedefaults.preset.save.tooltip">Save current settings to a new preset.</system:String>-->
+  <!--<system:String x:Key="notedefaults.reset">Reset All Settings</system:String>-->
+  <!--<system:String x:Key="notedefaults.reset.tooltip">Reset every setting to default values.
+Warning: this option removes custom presets.</system:String>-->
+  <!--<system:String x:Key="notedefaults.vibrato">Vibrato</system:String>-->
+  <!--<system:String x:Key="notedefaults.vibrato.autominlength">Minimum Length</system:String>-->
+  <!--<system:String x:Key="notedefaults.vibrato.autotoggle">Automatic Vibrato by Length</system:String>-->
+  <!--<system:String x:Key="notedefaults.vibrato.depth">Depth</system:String>-->
+  <!--<system:String x:Key="notedefaults.vibrato.in">Fade In</system:String>-->
+  <!--<system:String x:Key="notedefaults.vibrato.length">Length</system:String>-->
+  <!--<system:String x:Key="notedefaults.vibrato.out">Fade Out</system:String>-->
+  <!--<system:String x:Key="notedefaults.vibrato.period">Period</system:String>-->
+  <!--<system:String x:Key="notedefaults.vibrato.shift">Shift</system:String>-->
+
   <!--<system:String x:Key="oto.alias">Alias</system:String>-->
   <!--<system:String x:Key="oto.color">Color</system:String>-->
   <!--<system:String x:Key="oto.consonant">Consonant</system:String>-->
@@ -119,9 +145,11 @@
   <!--<system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Remove Letter Suffix</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">Remove Tone Suffix</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Romaji to Hiragana</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notedefaults">Note Defaults</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.notes">Notes</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.notes.addtaildash">Add tail "-"</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.notes.addtailrest">Add tail "R"</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.clear.vibratos">Clear vibratos</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Load Rendered Pitch</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.notes.quantize15">Quantize to 1/128</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.notes.quantize30">Quantize to 1/64</system:String>-->
@@ -221,6 +249,7 @@ Warning: moresampler is not fully supported. It may be slow and cause high CPU u
 Left Button Draw: Set expressions
 Right Button Draw: Reset expressions
   </system:String>-->
+  <!--<system:String x:Key="tip.exps.notsupported">Expression not supported by renderer</system:String>-->
   <system:String x:Key="tip.lyricbox.next">Tabulator: Następna Nuta</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tabulator: Ostatnia Nuta</system:String>
   <!--<system:String x:Key="tip.notes.basics">
@@ -247,6 +276,7 @@ General
   <system:String x:Key="tracks.movedown">Przenieś niżej</system:String>
   <system:String x:Key="tracks.moveup">Przenieś wyżej</system:String>
   <system:String x:Key="tracks.remove">Usuń</system:String>
+  <!--<system:String x:Key="tracks.selectrenderer">Select Renderer</system:String>-->
   <!--<system:String x:Key="tracks.selectsinger">Select Singer</system:String>-->
 
   <!--<FontFamily x:Key="ui.fontfamily">Segoe UI,San Francisco,Helvetica Neue</FontFamily>-->

@@ -6,7 +6,7 @@ using OpenUtau.Core.Ustx;
 namespace OpenUtau.Core.Render {
     public static class Renderers {
         public const string CLASSIC = "CLASSIC";
-        public const string WORLDLINER = "WORLDLINER";
+        public const string WORLDLINER = "WORLDLINE-R";
         public const string ENUNU = "ENUNU";
         public const string VOGEN = "VOGEN";
 
@@ -35,7 +35,7 @@ namespace OpenUtau.Core.Render {
         public static IRenderer CreateRenderer(string renderer) {
             if (renderer == CLASSIC) {
                 return new Classic.ClassicRenderer();
-            } else if (renderer == WORLDLINER) {
+            } else if (renderer == WORLDLINER || renderer == "WORLDLINER") {
                 return new Classic.WorldlineRenderer();
             } else if (renderer == ENUNU) {
                 return new Enunu.EnunuRenderer();

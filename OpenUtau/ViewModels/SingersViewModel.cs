@@ -171,9 +171,6 @@ namespace OpenUtau.App.ViewModels {
         public void SetPreutter(double value) {
             if (SelectedOto != null) {
                 var delta = value - SelectedOto.Offset - SelectedOto.Preutter;
-                if (SelectedOto.Cutoff < 0) {
-                    SelectedOto.Cutoff += delta;
-                }
                 SelectedOto.Preutter += delta;
             }
         }
@@ -186,7 +183,7 @@ namespace OpenUtau.App.ViewModels {
 
         public void SetCutoff(double value) {
             if (SelectedOto != null) {
-                SelectedOto.Cutoff = -(value - SelectedOto.Offset - SelectedOto.Preutter);
+                SelectedOto.Cutoff = -(value - SelectedOto.Offset);
             }
         }
     }
