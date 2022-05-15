@@ -76,8 +76,8 @@
   <system:String x:Key="menu.file.newfromtemplate">Nuevo desde Plantilla</system:String>
   <system:String x:Key="menu.file.open">_Abrir</system:String>
   <system:String x:Key="menu.file.openas">A_brir como</system:String>
-  <!--<system:String x:Key="menu.file.openexportlocation">Open Export Location</system:String>-->
-  <!--<system:String x:Key="menu.file.openprojectlocation">Open Project Location</system:String>-->
+  <system:String x:Key="menu.file.openexportlocation">Abrir Ubicación de Exportación</system:String>
+  <system:String x:Key="menu.file.openprojectlocation">Abrir Ubicación del Archivo</system:String>
   <system:String x:Key="menu.file.openrecent">Abrir Archivo Reciente</system:String>
   <system:String x:Key="menu.file.save">_Guardar</system:String>
   <system:String x:Key="menu.file.saveas">Guardar _como</system:String>
@@ -123,7 +123,7 @@ Advertencia: Esta opción eliminará las bases personalizadas.</system:String>
   <system:String x:Key="notedefaults.vibrato.length">Duración</system:String>
   <system:String x:Key="notedefaults.vibrato.out">Salida</system:String>
   <system:String x:Key="notedefaults.vibrato.period">Frecuencia</system:String>
-  <!--<system:String x:Key="notedefaults.vibrato.shift">Shift</system:String>-->
+  <system:String x:Key="notedefaults.vibrato.shift">Cambio de Onda</system:String>
 
   <!--<system:String x:Key="oto.alias">Alias</system:String>-->
   <!--<system:String x:Key="oto.color">Color</system:String>-->
@@ -276,7 +276,7 @@ General
   <system:String x:Key="tracks.movedown">Mover Abajo</system:String>
   <system:String x:Key="tracks.moveup">Mover Arriba</system:String>
   <system:String x:Key="tracks.remove">Borrar</system:String>
-  <!--<system:String x:Key="tracks.selectrenderer">Select Renderer</system:String>-->
+  <system:String x:Key="tracks.selectrenderer">Seleccionar Renderizador</system:String>
   <system:String x:Key="tracks.selectsinger">Seleccionar Voz</system:String>
 
   <!--<FontFamily x:Key="ui.fontfamily">Segoe UI,San Francisco,Helvetica Neue</FontFamily>-->
