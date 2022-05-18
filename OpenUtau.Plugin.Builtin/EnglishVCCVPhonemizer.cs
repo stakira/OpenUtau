@@ -184,7 +184,6 @@ namespace OpenUtau.Plugin.Builtin {
                     var vc = $"{prevV} {cc[0]}";
                     vc = CheckVCExceptions(vc);
 
-
                     // "1nks" exception, start CC loop later 
                     var startingC = 0;
                     var vcc = $"{prevV} {cc[0]}{cc[1]}";
@@ -223,7 +222,7 @@ namespace OpenUtau.Plugin.Builtin {
                         startingC = 1;
                     }
                     if (cc.Length > 2) {
-                        v_cc = $"{prevV} {cc[0]}{cc[1]}{cc[2]}"; 
+                        v_cc = $"{prevV} {cc[0]}{cc[1]}{cc[2]}";
                         if (HasOto(v_cc, syllable.tone)) {
                             vc = v_cc;
                             startingC = 2;
@@ -296,7 +295,7 @@ namespace OpenUtau.Plugin.Builtin {
                             }
 
                             if (i == lastC - 1) {
-                                ccv = $"{cc[i]}{cc[i]+1}{v}";
+                                ccv = $"{cc[i]}{cc[i] + 1}{v}";
 
                                 if (HasOto(ccv, syllable.tone)) {
                                     basePhoneme = ccv;
@@ -330,7 +329,7 @@ namespace OpenUtau.Plugin.Builtin {
                     } else basePhoneme = $"_{v}";
                 }
 
-                if (cc.Length >= 2) {
+                if (cc.Length == 2 && $"{cc[0]}" == "s") {
                     var ccv = $"{cc[0]}{cc[1]}{v}";
                     if (HasOto(ccv, syllable.tone)) {
                         basePhoneme = ccv;
