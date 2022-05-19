@@ -45,7 +45,7 @@ namespace OpenUtau.Plugin.Builtin {
             if (syllable.IsStartingV) {
 
                 // try -V, - V then defaults to V
-                basePhoneme = CheckAliasFormatting(v, "start", syllable.vowelTone, "");
+                basePhoneme = CheckAliasFormatting(v, "cv", syllable.vowelTone, "");
 
                 // --------------------------- STARTING VV ------------------------------- //
             } else if (syllable.IsVV) {  // if VV
@@ -59,10 +59,10 @@ namespace OpenUtau.Plugin.Builtin {
             } else if (syllable.IsStartingCVWithOneConsonant) {
 
                 var cv = $"{cc[0]}{v}";
-                basePhoneme = CheckAliasFormatting(cv, "rcv", syllable.tone, "");
+                basePhoneme = CheckAliasFormatting(cv, "cv", syllable.tone, "");
 
                 if (!cv.Contains("-")) {
-                    TryAddPhoneme(phonemes, syllable.tone, CheckAliasFormatting($"{cc[0]}", "start", syllable.tone, ""));
+                    TryAddPhoneme(phonemes, syllable.tone, CheckAliasFormatting($"{cc[0]}", "rcv", syllable.tone, ""));
                 }
 
                 // --------------------------- STARTING CCV ------------------------------- //
@@ -81,65 +81,92 @@ namespace OpenUtau.Plugin.Builtin {
                     } else { basePhoneme = $"{cc.Last()}{v}"; }
 
 
-                    int startingI = cc.Length;
-                    int startingI2 = 0;
+
+                    int max = cc.Length;
+                    int min = 0;
 
                     // try -CC of all lengths
-                    for (var i = cc.Length; i > 0; i--) {
+                    for (int i = 0; i < cc.Length; i++) {
+                        string rcc = "";
 
-                        var rcc = $"{string.Join("", cc.Take(i))}";
+                        for (int k = 0; k < max; k++) {
+                            rcc += $"{cc[k]}";
+                        }
                         rcc = CheckAliasFormatting(rcc, "rcv", syllable.tone, "");
                         if (HasOto(rcc, syllable.tone)) {
                             phonemes.Add(rcc);
-                            if (i != 1) {
-                                startingI -= i;
-                                startingI2 = i - 1;
-                            }
+                            min = i+1;
                             break;
                         }
-
+                        max--;
                     }
 
-                    ////try CCV of all lengths, if there's one, jump the CC of all lengths
-                    //for (var i = cc.Length; i > 0; i--) {
-                    //    rccv = $"{string.Join("", cc.Take(i))}{v}";
-                    //    if (HasOto(rccv, syllable.tone)) {
-                    //        basePhoneme = rccv;
-                    //        break;
-                    //    }
-                    //}
+                    bool hasBroken = false;
+                    //try CCV of all lengths, if there's one, jump the CC of all lengths
+                    for (var i = min; i < cc.Length; i++) {
+                        rccv = "";
 
-                    //if (phonemes.Count == 0) {
-                    //    var rcOe = $"{cc[0]}oe";
-                    //    TryAddPhoneme(phonemes, syllable.tone, CheckAliasFormatting(rcOe, "start", syllable.tone, ""));
-                    //}
+                        for (var k = min; k < cc.Length; k++) {
+                            rccv += $"{cc[k]}";
+                        }
 
+                        rccv += $"{v}";
 
-                    //then try CC of all lengths
-                    if (phonemes.Count <= 1) {
-                        for (var i = startingI; i > 1; i--) {
-                            var ccc = $"{string.Join("", cc.Take(i))}";
-                            if (HasOto(ccc, syllable.tone)) {
-                                phonemes.Add(ccc);
-                                startingI2 = i - 1;
+                        phonemes.Add(rccv);
+
+                        if (HasOto(rccv, syllable.vowelTone)) {
+                            basePhoneme = rccv;
+                            hasBroken = true;
+                            break;
+                        }
+                        min++;
+                    }
+
+                    // reset min if no CCV has been placed
+                    if (hasBroken) {
+                        min = cc.Length - 1 - min;
+                    } else min = cc.Length - 1;
+
+                    if (max <= 0) { max = 1; }
+                    var dec = cc.Length;
+
+                    // try CC of all lengths
+                    for (int i = max-1; i < cc.Length; i++) {
+                        string rcc = "";
+
+                        for (int k = max-1; k < dec; k++) {
+                            rcc += $"{cc[k]}";
+                        }
+                        // dec condition removes unique "s"
+
+                        if (HasOto(rcc, syllable.tone) && dec != 1) {
+                            phonemes.Add(rcc);
+                            break;
+                        }
+                        dec--;
+                    }
+                    
+                    var index = 0;
+
+                    for (int i = 0; i < phonemes.Count; i++) {
+                        index = 0;
+                        for (int k = 0; k < cc.Length; k++) {
+                            if (!phonemes[i].Contains($"{cc[k]}")) {
                                 break;
                             }
+                            index++;
                         }
+
                     }
 
+                    phonemes.Add($"{min}");
                     //add remaining CC
-                    for (int i = startingI2; i < cc.Length - 1; i++) {
-                        var ccc = $"{cc[i + 1]}";
-                        ccc = CheckAliasFormatting(ccc, "cc", syllable.tone, $"{cc[i]}");
+                    for (int i = index; i < min; i++) {
+                        var ccc = $"{cc[i]}";
+                        ccc = CheckAliasFormatting(ccc, "endccOe", syllable.tone, $"{cc[i + 1]}");
                         if (HasOto(ccc, syllable.tone)) {
                             phonemes.Add(ccc);
                             continue;
-                        } else {
-                            var cOe = $"{cc[i]}oe";
-                            if (HasOto(cOe, syllable.tone)) {
-                                phonemes.Add(cOe);
-                                continue;
-                            }
                         }
                     }
                 }
@@ -227,8 +254,8 @@ namespace OpenUtau.Plugin.Builtin {
                 //    }
 
 
-                    usedCC = true;
-                    //phonemes.Add(currentCc);
+                usedCC = true;
+                //phonemes.Add(currentCc);
                 //}
 
                 //try CCV
@@ -264,7 +291,7 @@ namespace OpenUtau.Plugin.Builtin {
                 if (ending.IsEndingVCWithOneConsonant) {
 
                     var vc = CheckAliasFormatting($"{v}{cc[0]}", "endVc", ending.tone, "");
-                    if (HasOto(vc,ending.tone)) {
+                    if (HasOto(vc, ending.tone)) {
                         phonemes.Add(vc);
                     } else {
                         vc = CheckAliasFormatting(cc[0], "vc", ending.tone, v);
@@ -272,7 +299,7 @@ namespace OpenUtau.Plugin.Builtin {
                     }
 
                     if (!vc.Contains("-")) {
-                        TryAddPhoneme(phonemes, ending.tone, CheckAliasFormatting($"{cc[0]}", "end", ending.tone,""));
+                        TryAddPhoneme(phonemes, ending.tone, CheckAliasFormatting($"{cc[0]}", "end", ending.tone, ""));
                     }
 
                     //hasEnding = TryAddPhoneme(phonemes, ending.tone, $"{v}{cc[0]}-");
@@ -351,7 +378,7 @@ namespace OpenUtau.Plugin.Builtin {
         private string CheckAliasFormatting(string alias, string type, int tone, string prevV) {
 
             var aliasFormat = "";
-            string[] aliasFormats = new string[] { "-", "- ", "", "-", " -", "", prevV, prevV + " ", "_", "" };
+            string[] aliasFormats = new string[] { "-", "- ", "", "-", " -", "", prevV, prevV + " ", "_", "", prevV, " " + prevV, "", "oe"};
             var startingI = 0;
             var endingI = aliasFormats.Length;
 
@@ -393,6 +420,12 @@ namespace OpenUtau.Plugin.Builtin {
             if (type == "cc") {
                 startingI = 6;
                 endingI = startingI + 1;
+            }
+
+
+            if (type == "endccOe") {
+                startingI = 10;
+                endingI = startingI + 3;
             }
 
             for (int i = startingI; i <= endingI; i++) {
