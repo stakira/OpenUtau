@@ -12,7 +12,7 @@ namespace OpenUtau.Plugin.Builtin {
     //This is a first implementation and I'm already working on optimization 
     public class FrenchCVVCPhonemizer : SyllableBasedPhonemizer {
 
-        private readonly string[] vowels = "ah,ae,eh,ee,oe,ih,oh,oo,ou,uh,en,in,on,oi,ui".Split(",");
+        private readonly string[] vowels = "ah,ae,eh,ee,oe,ih,oh,oo,ou,uh,en,in,on,oi,ui,a,ai,e,i,o,u,eu".Split(",");
         private readonly string[] consonants = "b,d,f,g,j,k,l,m,n,p,r,s,sh,t,v,w,y,z,gn".Split(",");
         private readonly Dictionary<string, string> dictionaryReplacements = (
             "aa=ah;ai=ae;ei=eh;eu=ee;ee=ee;oe=oe;ii=ih;au=oh;oo=oo;ou=ou;uu=uh;an=en;in=in;un=in;on=on;uy=ui;" +
@@ -27,6 +27,15 @@ namespace OpenUtau.Plugin.Builtin {
         private string[] longConsonants = "t,k,g,p,s,sh,j".Split(",");
         private readonly string[] burstConsonants = "t,k,p,b,g,d".Split(",");
 
+
+        private readonly Dictionary<string, string> fraloidsReplacement = (
+            "ah=a;ae=ai;ee=e;ih=i;oh=o;uh=u;oe=eu;").Split(';')
+                .Select(entry => entry.Split('='))
+                .Where(parts => parts.Length == 2)
+                .Where(parts => parts[0] != parts[1])
+                .ToDictionary(parts => parts[0], parts => parts[1]);
+
+        private bool usesFraloids = false;
         protected override string[] GetVowels() => vowels;
         protected override string[] GetConsonants() => consonants;
         protected override string GetDictionaryName() => "cmudict_fr.txt";
@@ -46,11 +55,20 @@ namespace OpenUtau.Plugin.Builtin {
                 prevV = "ih";
             }
 
+            // Convert to Fraloids
+            if (HasOto("a", syllable.tone)) {
+                usesFraloids = true;
+                v = ValidateAlias(v);
+                prevV = ValidateAlias(prevV);
+            }
+
             // --------------------------- STARTING V ------------------------------- //
             if (syllable.IsStartingV) {
 
                 // try -V, - V then defaults to V
                 basePhoneme = CheckAliasFormatting(v, "cv", syllable.vowelTone, "");
+
+
 
                 // --------------------------- STARTING VV ------------------------------- //
             } else if (syllable.IsVV) {  // if VV
@@ -58,10 +76,9 @@ namespace OpenUtau.Plugin.Builtin {
                     basePhoneme = CheckAliasFormatting(v, "vv", syllable.vowelTone, prevV);
                     if (basePhoneme == v) {
                         if (prevV == "ih") {
-                            if (HasOto($"{prevV}y",syllable.vowelTone)) {
+                            if (HasOto($"{prevV}y", syllable.vowelTone)) {
                                 phonemes.Add($"{prevV}y");
-                            }
-                            else {
+                            } else {
                                 phonemes.Add($"{prevV} y");
                             }
                             basePhoneme = $"y{v}";
@@ -99,7 +116,8 @@ namespace OpenUtau.Plugin.Builtin {
                 if (HasOto(rccv, syllable.vowelTone)) {
                     basePhoneme = rccv;
                 } else {
-                    //try _CV else add CV
+                    //TODO: this doesn't work right now
+                    //try _CV else add CV 
                     if (HasOto($"_{cc.Last()}{v}", syllable.vowelTone) && cc.Length == syllable.prevWordConsonantsCount + 1) {
                         basePhoneme = $"_{cc.Last()}{v}";
                     } else { basePhoneme = $"{cc.Last()}{v}"; }
@@ -141,6 +159,8 @@ namespace OpenUtau.Plugin.Builtin {
                             }
                             rccv += $"{v}";
 
+                            rccv = ValidateAlias(rccv);
+
                             if (HasOto(rccv, syllable.vowelTone)) {
                                 basePhoneme = rccv;
                                 break;
@@ -177,7 +197,7 @@ namespace OpenUtau.Plugin.Builtin {
                                 ccc = CheckAliasFormatting(ccc, "endccOe", syllable.tone, $"{cc[i]}");
 
                                 // exception of y sound
-                                if ($"{cc[i+1]}" == "y" && ccc.Contains("oe")) {
+                                if ($"{cc[i + 1]}" == "y" && ccc.Contains(CheckCoeEnding(ccc, syllable.tone))) {
                                     ccc = $"{cc[i]}ih";
                                 }
                                 phonemes.Add(ccc);
@@ -197,12 +217,28 @@ namespace OpenUtau.Plugin.Builtin {
                     basePhoneme = vcv;
                 } else {
                     var cv = $"{cc[0]}{v}";
+
+                    cv = ValidateAlias(cv);
+
                     basePhoneme = cv;
 
-                    var vc = CheckAliasFormatting(cc[0], "vc", syllable.tone, prevV);
-                    phonemes.Add(vc);
+                    // Fraloids "Vn"/"V n" conflict solve
+                    var vc = "";
+
+                    if (usesFraloids) {
+                        vc = $"{prevV} {cc[0]}";
+                        vc = ReplaceFraloidsConflict(vc, syllable.tone);
+                        if (HasOto(vc, syllable.tone)) {
+                            phonemes.Add(vc);
+                        }
+                    }
+                    if (phonemes.Count == 0) {
+                        vc = CheckAliasFormatting(cc[0], "vc", syllable.tone, prevV);
+                        phonemes.Add(vc);
+                    }
+
                 }
-            } else { 
+            } else {
                 // ------------- IS VCV WITH MORE THAN ONE CONSONANT --------------- //
                 //try _CV else add CV
                 if (HasOto($"_{cc.Last()}{v}", syllable.vowelTone) && cc.Length == syllable.prevWordConsonantsCount + 1) {
@@ -212,22 +248,35 @@ namespace OpenUtau.Plugin.Builtin {
                 var max = cc.Length;
                 var min = 0;
 
-                //try VCC of all lengths
-                var vcc = "";
-                for (var i = 0; i < cc.Length; i++) {
+                // Fraloids "Vn"/"V n" conflict solve
+                var vc = "";
 
-
-                    vcc = "";
-                    for (var k = 0; k < cc.Length - i; k++) {
-                        vcc += $"{cc[k]}";
+                if (usesFraloids) {
+                    vc = $"{prevV} {cc[0]}";
+                    vc = ReplaceFraloidsConflict(vc, syllable.tone);
+                    if (HasOto(vc, syllable.tone)) {
+                        phonemes.Add(vc);
                     }
+                }
 
-                    vcc = CheckAliasFormatting(vcc, "vc", syllable.tone, prevV);
+                if (phonemes.Count == 0) {
+                    //try VCC of all lengths
+                    var vcc = "";
+                    for (var i = 0; i < cc.Length; i++) {
 
-                    if (HasOto(vcc, syllable.tone)) {
-                        phonemes.Add(vcc);
-                        break;
-                    } 
+
+                        vcc = "";
+                        for (var k = 0; k < cc.Length - i; k++) {
+                            vcc += $"{cc[k]}";
+                        }
+
+                        vcc = CheckAliasFormatting(vcc, "vc", syllable.tone, prevV);
+
+                        if (HasOto(vcc, syllable.tone)) {
+                            phonemes.Add(vcc);
+                            break;
+                        }
+                    }
                 }
 
                 min = cc.Length - FindLastValidAlias(phonemes, cc);
@@ -241,6 +290,8 @@ namespace OpenUtau.Plugin.Builtin {
                         ccv += $"{cc[k]}";
                     }
                     ccv += $"{v}";
+
+                    ccv = ValidateAlias(ccv);
 
                     if (HasOto(ccv, syllable.vowelTone)) {
                         basePhoneme = ccv;
@@ -267,15 +318,14 @@ namespace OpenUtau.Plugin.Builtin {
 
                         ccc = CheckAliasFormatting(ccc, "endccOe", syllable.tone, $"{cc[i + 1]}");
 
-                        if (ccc.Contains("oe")  || ccc == $"{cc[i]}") {
-                            if ( i == 0 || i + 2 >= cc.Length) {
+                        if (ccc.Contains(CheckCoeEnding(ccc, syllable.tone)) || ccc == $"{cc[i]}") {
+                            if (i == 0 || i + 2 >= cc.Length) {
                                 break;
                             }
                         }
 
-
                         // exception of y sound
-                        if ($"{cc[i + 1]}" == "y" && ccc.Contains("oe")) {
+                        if ($"{cc[i + 1]}" == "y" && ccc.Contains(CheckCoeEnding(ccc, syllable.tone))) {
                             ccc = $"{cc[i]}ih";
                         }
 
@@ -284,7 +334,7 @@ namespace OpenUtau.Plugin.Builtin {
 
                     }
                 }
-                
+
 
 
             }
@@ -298,6 +348,11 @@ namespace OpenUtau.Plugin.Builtin {
 
             var phonemes = new List<string>();
             bool hasEnding = false;
+
+            // Convert to Fraloids
+            if (HasOto("a", ending.tone)) {
+                v = ValidateAlias(v);
+            }
             // --------------------------- ENDING V ------------------------------- //
             if (ending.IsEndingV) {
                 // try V- else no ending
@@ -305,12 +360,17 @@ namespace OpenUtau.Plugin.Builtin {
                 var endV = CheckAliasFormatting(v, "end", ending.tone, "");
                 TryAddPhoneme(phonemes, ending.tone, endV);
 
+                //TODO: clean exceptions
                 if (phonemes.Count == 0) {
                     endV = v + " R";
                     TryAddPhoneme(phonemes, ending.tone, endV);
                     if (phonemes.Count == 0) {
                         endV = v + " BR";
                         TryAddPhoneme(phonemes, ending.tone, endV);
+                        if (phonemes.Count == 0) {
+                            endV = v + "_hh";
+                            TryAddPhoneme(phonemes, ending.tone, endV);
+                        }
                     }
                 }
 
@@ -318,12 +378,25 @@ namespace OpenUtau.Plugin.Builtin {
                 // --------------------------- ENDING VC ------------------------------- //
                 if (ending.IsEndingVCWithOneConsonant) {
 
-                    var vc = CheckAliasFormatting($"{v}{cc[0]}", "endVc", ending.tone, "");
-                    if (HasOto(vc, ending.tone)) {
-                        phonemes.Add(vc);
-                    } else {
-                        vc = CheckAliasFormatting(cc[0], "vc", ending.tone, v);
-                        phonemes.Add(vc);
+                    var vc = "";
+
+                    // Fraloids "Vn"/"V n" conflict solve
+                    if (usesFraloids) {
+                        vc = $"{v} {cc[0]}";
+                        vc = ReplaceFraloidsConflict(vc, ending.tone);
+                        if (HasOto(vc, ending.tone)) {
+                            phonemes.Add(vc);
+                        }
+                    }
+                    if (phonemes.Count == 0) {
+
+                        vc = CheckAliasFormatting($"{v}{cc[0]}", "endVc", ending.tone, "");
+                        if (HasOto(vc, ending.tone)) {
+                            phonemes.Add(vc);
+                        } else {
+                            vc = CheckAliasFormatting(cc[0], "vc", ending.tone, v);
+                            phonemes.Add(vc);
+                        }
                     }
 
                     if (!vc.Contains("-")) {
@@ -336,36 +409,50 @@ namespace OpenUtau.Plugin.Builtin {
 
                     var max = cc.Length;
 
-                    //try VCC of all lengths
-                    var vcc = "";
-                    for (var i = 0; i < cc.Length; i++) {
+                    // Fraloids "Vn"/"V n" conflict solve
+                    var vc = "";
 
-                        string type = "endVc";
-                        if (i > 0) { type = "blank"; }
-
-                        vcc = "";
-                        for (var k = 0; k < cc.Length - i; k++) {
-                            vcc += $"{cc[k]}";
+                    if (usesFraloids) {
+                        vc = $"{v} {cc[0]}";
+                        vc = ReplaceFraloidsConflict(vc, ending.tone);
+                        if (HasOto(vc, ending.tone)) {
+                            phonemes.Add(vc);
                         }
-                        var temp = $"{v}{vcc}";
-                        temp = CheckAliasFormatting(temp, type, ending.tone, "");
+                    }
+                    if (phonemes.Count == 0) {
 
+                        //try VCC of all lengths
+                        var vcc = "";
+                        for (var i = 0; i < cc.Length; i++) {
 
-                        if (HasOto(temp, ending.tone)) {
-                            vcc = temp;
-                            phonemes.Add(vcc);
-                            break;
-                        } else {
-                            temp = $"{v} {vcc}";
+                            string type = "endVc";
+                            if (i > 0) { type = "blank"; }
+
+                            vcc = "";
+                            for (var k = 0; k < cc.Length - i; k++) {
+                                vcc += $"{cc[k]}";
+                            }
+                            var temp = $"{v}{vcc}";
                             temp = CheckAliasFormatting(temp, type, ending.tone, "");
+
+
                             if (HasOto(temp, ending.tone)) {
                                 vcc = temp;
                                 phonemes.Add(vcc);
                                 break;
+                            } else {
+                                temp = $"{v} {vcc}";
+                                temp = CheckAliasFormatting(temp, type, ending.tone, "");
+                                if (HasOto(temp, ending.tone)) {
+                                    vcc = temp;
+                                    phonemes.Add(vcc);
+                                    break;
+                                }
                             }
+                            max--;
                         }
-                        max--;
                     }
+
                     if (FindLastValidAlias(phonemes, cc) == cc.Length) {
 
                         var end = CheckAliasFormatting($"{cc.Last()}", "end", ending.tone, "");
@@ -380,7 +467,7 @@ namespace OpenUtau.Plugin.Builtin {
                             if (i + 1 >= cc.Length) {
                                 ccc = $"{cc[i]}";
                                 var end = CheckAliasFormatting(ccc, "end", ending.tone, "");
-                                if (!HasOto(end,ending.tone)) {
+                                if (!HasOto(end, ending.tone)) {
                                     end = CheckAliasFormatting(ccc, "endcOe", ending.tone, "");
                                 }
                                 ccc = end;
@@ -406,9 +493,54 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         //TODO: add "oi" exception
-        //protected override string ValidateAlias(string alias) {
-            
-        //    }
+        protected override string ValidateAlias(string alias) {
+
+            //fraloids conversion
+            if (usesFraloids) {
+                foreach (var syllable in fraloidsReplacement) {
+                    alias = alias.Replace(syllable.Key, syllable.Value);
+                }
+            }
+
+            foreach (var oi in new[] { "wah", "wa" }) {
+                alias = alias.Replace(oi, "oi");
+            }
+
+            return alias;
+        }
+
+
+        private string ReplaceFraloidsConflict(string vc, int tone) {
+            Dictionary<string, string> fraloidsVCs = new Dictionary<string, string> {
+                {"o n","on2"},
+                {"e n","en2"},
+                {"i n","in2"},
+                {"u n","un2"},
+            };
+
+            if (HasOto(vc, tone)) {
+                return vc;
+            }
+
+            foreach (var vcFr in fraloidsVCs) {
+                vc = vc.Replace(vcFr.Key, vcFr.Value);
+            }
+
+            return vc;
+        }
+
+        private string CheckCoeEnding(string cv, int tone) {
+            // TODO: Improve cOe check
+            if (HasOto(cv, tone) && cv.Contains("oe")) {
+                cv = "oe";
+                return cv;
+            } else if (cv.Contains("eu")) {
+                cv = "eu";
+                return cv;
+            }
+
+            return "no Coe Ending";
+        }
 
         protected override double GetTransitionBasicLengthMs(string alias = "") {
             foreach (var c in shortConsonants) {
@@ -427,7 +559,7 @@ namespace OpenUtau.Plugin.Builtin {
         private string CheckAliasFormatting(string alias, string type, int tone, string prevV) {
 
             var aliasFormat = "";
-            string[] aliasFormats = new string[] { "-", "- ", "", "-", " -", "", prevV, prevV + " ", "_", "", prevV, " " + prevV, "", "oe" };
+            string[] aliasFormats = new string[] { "-", "- ", "", "-", " -", "", prevV, prevV + " ", "_", "", prevV, " " + prevV, "", "oe", "eu" };
             var startingI = 0;
             var endingI = aliasFormats.Length;
 
@@ -470,18 +602,24 @@ namespace OpenUtau.Plugin.Builtin {
 
             if (type == "endccOe") {
                 startingI = 10;
-                endingI = startingI + 3;
+                endingI = startingI + 4;
             }
 
             if (type == "endcOe") {
                 startingI = 12;
-                endingI = startingI + 1;
+                endingI = startingI + 2;
             }
 
-            
+
             if (type == "blank") {
                 startingI = 2;
                 endingI = startingI;
+            }
+
+
+            if (type == "cv") {
+                startingI = 0;
+                endingI = startingI + 2;
             }
 
             // ---- TODO: CLEAN THIS ^^^^^^ //
