@@ -77,7 +77,7 @@
   <system:String x:Key="menu.file.open">_Open...</system:String>
   <system:String x:Key="menu.file.openas">Open als</system:String>
   <system:String x:Key="menu.file.openexportlocation">Open Export Locatie</system:String>
-  <system:String x:Key="menu.file.openprojectlocation">Open Project Locatie</system:String>-->
+  <system:String x:Key="menu.file.openprojectlocation">Open Project Locatie</system:String>
   <system:String x:Key="menu.file.openrecent">Recent openen</system:String>
   <system:String x:Key="menu.file.save">_Opslaan</system:String>
   <system:String x:Key="menu.file.saveas">Opslaan _als...</system:String>
