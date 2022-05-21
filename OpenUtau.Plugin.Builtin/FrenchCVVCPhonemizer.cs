@@ -13,7 +13,7 @@ namespace OpenUtau.Plugin.Builtin {
     public class FrenchCVVCPhonemizer : SyllableBasedPhonemizer {
 
         private readonly string[] vowels = "ah,ae,eh,ee,oe,ih,oh,oo,ou,uh,en,in,on,oi,ui,a,ai,e,i,o,u,eu".Split(",");
-        private readonly string[] consonants = "b,d,f,g,j,k,l,m,n,p,r,s,sh,t,v,w,y,z,gn".Split(",");
+        private readonly string[] consonants = "b,d,f,g,j,k,l,m,n,p,r,s,sh,t,v,w,y,z,gn,.,-,R,BR,_hh".Split(",");
         private readonly Dictionary<string, string> dictionaryReplacements = (
             "aa=ah;ai=ae;ei=eh;eu=ee;ee=ee;oe=oe;ii=ih;au=oh;oo=oo;ou=ou;uu=uh;an=en;in=in;un=in;on=on;uy=ui;" +
             "bb=b;dd=d;ff=f;gg=g;jj=j;kk=k;ll=l;mm=m;nn=n;pp=p;rr=r;ss=s;ch=sh;tt=t;vv=v;ww=w;yy=y;zz=z;gn=gn;").Split(';')
@@ -73,25 +73,36 @@ namespace OpenUtau.Plugin.Builtin {
                 // --------------------------- STARTING VV ------------------------------- //
             } else if (syllable.IsVV) {  // if VV
                 if (!CanMakeAliasExtension(syllable)) {
-                    basePhoneme = CheckAliasFormatting(v, "vv", syllable.vowelTone, prevV);
-                    if (basePhoneme == v) {
-                        if (prevV == "ih") {
-                            if (HasOto($"{prevV}y", syllable.vowelTone)) {
-                                phonemes.Add($"{prevV}y");
-                            } else {
-                                phonemes.Add($"{prevV} y");
+                    var vvCheck = prevV + v;
+                    //TODO clean exception of fraloids ai/a + i conflict
+                    if (usesFraloids && vvCheck == "ai") {
+                        basePhoneme = CheckAliasFormatting(v, "vvFr", syllable.vowelTone, prevV);
+                    } else {
+                        basePhoneme = CheckAliasFormatting(v, "vv", syllable.vowelTone, prevV);
+                        if (basePhoneme == v) {
+                            //TODO clean exception part below
+                            if (prevV == "ih" || prevV == "i") {
+                                if (HasOto($"{prevV}y", syllable.vowelTone)) {
+                                    phonemes.Add($"{prevV}y");
+                                } else if (HasOto($"{prevV} y", syllable.vowelTone)) {
+                                    phonemes.Add($"{prevV} y");
+                                }
+                                if (HasOto($"y{v}", syllable.vowelTone)) {
+                                    basePhoneme = $"y{v}";
+                                }
                             }
-                            basePhoneme = $"y{v}";
-                        }
-                        if (prevV == "ou") {
-                            if (HasOto($"{prevV}w", syllable.vowelTone)) {
-                                phonemes.Add($"{prevV}w");
-                            } else {
-                                phonemes.Add($"{prevV} w");
+                            if (prevV == "ou") {
+                                if (HasOto($"{prevV}w", syllable.vowelTone)) {
+                                    phonemes.Add($"{prevV}w");
+                                } else {
+                                    phonemes.Add($"{prevV} w");
+                                }
+                                basePhoneme = $"w{v}";
                             }
-                            basePhoneme = $"w{v}";
                         }
                     }
+
+                    
                 } else {
                     // the previous alias will be extended
                     basePhoneme = null;
@@ -159,7 +170,9 @@ namespace OpenUtau.Plugin.Builtin {
                             }
                             rccv += $"{v}";
 
-                            rccv = ValidateAlias(rccv);
+                            if (!HasOto(rccv,syllable.tone)) {
+                                rccv = ValidateAlias(rccv);
+                            }
 
                             if (HasOto(rccv, syllable.vowelTone)) {
                                 basePhoneme = rccv;
@@ -218,7 +231,6 @@ namespace OpenUtau.Plugin.Builtin {
                 } else {
                     var cv = $"{cc[0]}{v}";
 
-                    cv = ValidateAlias(cv);
 
                     basePhoneme = cv;
 
@@ -291,7 +303,9 @@ namespace OpenUtau.Plugin.Builtin {
                     }
                     ccv += $"{v}";
 
-                    ccv = ValidateAlias(ccv);
+                    if (!HasOto(ccv,syllable.tone)) {
+                        ccv = ValidateAlias(ccv);
+                    }
 
                     if (HasOto(ccv, syllable.vowelTone)) {
                         basePhoneme = ccv;
@@ -318,8 +332,15 @@ namespace OpenUtau.Plugin.Builtin {
 
                         ccc = CheckAliasFormatting(ccc, "endccOe", syllable.tone, $"{cc[i + 1]}");
 
+
                         if (ccc.Contains(CheckCoeEnding(ccc, syllable.tone)) || ccc == $"{cc[i]}") {
-                            if (i == 0 || i + 2 >= cc.Length) {
+                            if (i == 0) {
+                                continue;
+                            }
+                        }
+
+                        if (ccc == $"{cc[i]}") {
+                            if (i + 2 <= cc.Length) {
                                 break;
                             }
                         }
@@ -518,7 +539,7 @@ namespace OpenUtau.Plugin.Builtin {
                 {"u n","un2"},
             };
 
-            if (HasOto(vc, tone)) {
+            if (HasOto(vc, tone) || vc == "ai n") {
                 return vc;
             }
 
@@ -591,6 +612,10 @@ namespace OpenUtau.Plugin.Builtin {
 
             if (type == "vv") {
                 startingI = 6;
+                endingI = startingI + 3;
+            }
+            if (type == "vvFr") {
+                startingI = 7;
                 endingI = startingI + 3;
             }
 
