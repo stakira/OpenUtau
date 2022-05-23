@@ -14,7 +14,7 @@ namespace OpenUtau.Plugin.Builtin {
         static readonly ushort unicodeKoreanBase = 0xAC00;
         static readonly ushort unicodeKoreanLast = 0xD79F;
 
-        static readonly string continuousinitialConsonantsTable = "ㄱㄴㄷㄹㅁㅂㅅㅇㅈㅊㅎ";
+        static readonly string continuousinitialConsonantsTable = "ㄱㄴㄷㄹㅁㅂㅅㅇㅈㅎ";
 
         static readonly string cvvcInitialConsonantsTable = "ㅋㅌㅍㅊㄲㄸㅃㅉㅆ";
 
@@ -234,11 +234,10 @@ namespace OpenUtau.Plugin.Builtin {
                     if(lastConsonantsTable.Contains(prevKoreanLyrics[2]) && prevKoreanLyrics[2] != '　') {
                         // 이전 글자에서 받침이 있음
 
-                        if (vccLastConsonantsTable.Contains(prevKoreanLyrics[2])) {
-                            prevLastConsonantsExistsLookup.TryGetValue(prevKoreanLyrics[2].ToString(), out var prevLastConsonants);
+                        if (prevKoreanLyrics[2] == 'ㄹ' && currentKoreanLyrics[0] == 'ㄹ') {
                             phonemesArr.Add(
                                 new Phoneme {
-                                    phoneme = $"{prevLastConsonants} {currentInitialConsonants}{currentVowel}",
+                                    phoneme = $"{"l"} {"l"}{currentVowel}",
                                 }
                             );
                         } else if(vccSubInitialConsonantsTable.Contains(prevKoreanLyrics[2])) {
@@ -256,6 +255,13 @@ namespace OpenUtau.Plugin.Builtin {
                                     }
                                 );
                             }
+                        } else if (vccLastConsonantsTable.Contains(prevKoreanLyrics[2])) {
+                        prevLastConsonantsExistsLookup.TryGetValue(prevKoreanLyrics[2].ToString(), out var prevLastConsonants);
+                        phonemesArr.Add(
+                            new Phoneme {
+                                phoneme = $"{prevLastConsonants} {currentInitialConsonants}{currentVowel}",
+                            }
+                        ); 
                         } else {
                             phonemesArr.Add(
                                 new Phoneme {
