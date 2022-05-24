@@ -242,10 +242,18 @@ namespace OpenUtau.Plugin.Builtin {
                         if (HasOto(vc, syllable.tone)) {
                             phonemes.Add(vc);
                         }
+                        else {
+                            vc = $"{prevV}{cc[0]}";
+                            if (HasOto(vc, syllable.tone)) {
+                                phonemes.Add(vc);
+                            }
+                        }
                     }
                     if (phonemes.Count == 0) {
                         vc = CheckAliasFormatting(cc[0], "vc", syllable.tone, prevV);
-                        phonemes.Add(vc);
+                        if (HasOto(vc, syllable.tone)) {
+                            phonemes.Add(vc);
+                        }
                     }
 
                 }
