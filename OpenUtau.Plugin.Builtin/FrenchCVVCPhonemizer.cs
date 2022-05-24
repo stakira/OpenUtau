@@ -489,15 +489,15 @@ namespace OpenUtau.Plugin.Builtin {
 
                             var ccc = $"{cc[i]}";
 
-                            //// if last C & it has CC- then break the loop
-                            //if (i + 1 == cc.Length - 1) {
-                            //    ccc = $"{cc[i]}{cc[i + 1]}";
-                            //    ccc = CheckAliasFormatting(ccc, "end", ending.tone, "");
-                            //    if (HasOto(ccc, ending.tone)) {
-                            //        phonemes.Add(ccc);
-                            //        break;
-                            //    }
-                            //}
+                            // if last C & it has CC- then break the loop
+                            if (i + 1 == cc.Length - 1) {
+                                ccc = $"{cc[i]}{cc[i + 1]}";
+                                ccc = CheckAliasFormatting(ccc, "end", ending.tone, "");
+                                if (HasOto(ccc, ending.tone)) {
+                                    phonemes.Add(ccc);
+                                    break;
+                                }
+                            }
                             //else try CC
                             if (i + 1 < cc.Length) {
                                 ccc = CheckAliasFormatting(ccc, "endcc", ending.tone, $"{cc[i + 1]}");
