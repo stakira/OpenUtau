@@ -258,6 +258,23 @@ namespace OpenUtau.Plugin.Builtin {
                         }
 
 
+
+                        // try 'v cc' (for exemple 'u st')
+                        if (i + 1 <= max) {
+                            currentCc = $"{prevV} {cc[i]}{cc[i + 1]}";
+
+                            if (!CheckCCExceptions(currentCc)) {
+
+                                if (HasOto(currentCc, syllable.tone)) {
+                                    phonemes.RemoveAt(phonemes.Count - 1);
+                                    phonemes.Add(currentCc);
+                                    i++;
+                                    max -= 1;
+                                    continue;
+                                }
+                            }
+                        }
+
                         // try 'c cc' (for exemple 'l sp')
                         if (i + 2 <= max) {
                             currentCc = $"{cc[i]} {cc[i + 1]}{cc[i + 2]}";
@@ -273,6 +290,18 @@ namespace OpenUtau.Plugin.Builtin {
                             }
                         }
 
+                        bool wordEnd = cc.Length > i+1 && i>= lastCPrevWord ;
+
+                        // c c if word transition
+                        currentCc = $"{cc[i]} {cc[i + 1]}";
+                        if (i != lastC || wordEnd) {
+
+                            if (HasOto(currentCc, syllable.tone)) {
+                                phonemes.Add(currentCc);
+                                continue;
+                            }
+                        }
+
                         // cc if last CC or first CC of a word
                         currentCc = $"{cc[i]}{cc[i + 1]}";
 
@@ -280,19 +309,10 @@ namespace OpenUtau.Plugin.Builtin {
                         if (!CheckCCExceptions(currentCc)) {
 
                             if (HasOto(currentCc, syllable.tone)) {
-                                if (i == lastCPrevWord - 2 || i == lastCPrevWord) {
                                     phonemes.Add(currentCc);
                                     continue;
-                                }
                             }
 
-                        }
-
-                        // c c if word transition
-                        currentCc = $"{cc[i]} {cc[i + 1]}";
-                        if (HasOto(currentCc, syllable.tone)) {
-                            phonemes.Add(currentCc);
-                            continue;
                         }
 
 
@@ -303,9 +323,6 @@ namespace OpenUtau.Plugin.Builtin {
                         phonemes.Add(ccv);
                     }
 
-                    //if ($"{cc[lastC - 1]}{cc[lastC]}" == "ng") {
-                    //    basePhoneme = $"{cc[lastC]}{v}";
-                    //}
                 }
 
 
