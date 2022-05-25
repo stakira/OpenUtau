@@ -290,31 +290,30 @@ namespace OpenUtau.Plugin.Builtin {
                             }
                         }
 
-                        bool wordEnd = cc.Length > i+1 && i>= lastCPrevWord ;
-
-                        // c c if word transition
-                        currentCc = $"{cc[i]} {cc[i + 1]}";
-                        if (i != lastC || wordEnd) {
-
+                        if (i+1 == syllable.prevWordConsonantsCount - 1 && cc.Length > syllable.prevWordConsonantsCount) {
+                            currentCc = $"{cc[i]}{cc[i + 1]}";
                             if (HasOto(currentCc, syllable.tone)) {
                                 phonemes.Add(currentCc);
                                 continue;
-                            }
-                        }
-
-                        // cc if last CC or first CC of a word
-                        currentCc = $"{cc[i]}{cc[i + 1]}";
-
-
-                        if (!CheckCCExceptions(currentCc)) {
-
-                            if (HasOto(currentCc, syllable.tone)) {
+                            } else {
+                                currentCc = $"{cc[i]} {cc[i + 1]}";
+                                if (HasOto(currentCc, syllable.tone)) {
                                     phonemes.Add(currentCc);
                                     continue;
+                                }
                             }
-
                         }
 
+                        //fallback, uses C C by default
+                        currentCc = $"{cc[i]} {cc[i + 1]}";
+                        if (HasOto(currentCc, syllable.tone)) {
+                            phonemes.Add(currentCc);
+                        } else {
+                            currentCc = $"{cc[i]}{cc[i + 1]}";
+                            if (HasOto(currentCc, syllable.tone)) {
+                                phonemes.Add(currentCc);
+                            }
+                        }
 
                     }
 
