@@ -14,7 +14,7 @@ namespace OpenUtau.Plugin.Builtin {
         ///</summary>
         protected override string[] GetVowels() => vowels;
         private static readonly string[] vowels =
-            "a i u e o N".Split();
+            "a i u e o".Split();
         protected override string[] GetConsonants() => consonants;
         private static readonly string[] consonants =
             "b by ch d dy f g gy h hh hy j k ky l ly m my n ny p py r ry rr rry s sh t ty ts w y z".Split();
