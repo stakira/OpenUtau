@@ -113,7 +113,7 @@ namespace OpenUtau.Plugin.Builtin {
                 var cv = $"{cc[0]}{v}";
                 basePhoneme = CheckAliasFormatting(cv, "cv", syllable.tone, "");
 
-                if (!cv.Contains("-")) {
+                if (!basePhoneme.Contains("-")) {
                     TryAddPhoneme(phonemes, syllable.tone, CheckAliasFormatting($"{cc[0]}", "rcv", syllable.tone, ""));
                 }
 
