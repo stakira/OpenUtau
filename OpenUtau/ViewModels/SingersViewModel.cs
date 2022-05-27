@@ -21,10 +21,12 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public string? Info { get; set; }
         [Reactive] public ObservableCollectionExtended<USubbank> Subbanks { get; set; }
         [Reactive] public List<UOto>? Otos { get; set; }
-        [Reactive] public UOto SelectedOto { get; set; }
+        [Reactive] public UOto? SelectedOto { get; set; }
         [Reactive] public List<MenuItemViewModel> SetEncodingMenuItems { get; set; }
+        [Reactive] public List<MenuItemViewModel> SetDefaultPhonemizerMenuItems { get; set; }
 
         private ReactiveCommand<Encoding, Unit> setEncodingCommand;
+        private ReactiveCommand<Api.PhonemizerFactory, Unit> setDefaultPhonemizerCommand;
 
         public SingersViewModel() {
             Subbanks = new ObservableCollectionExtended<USubbank>();
@@ -47,7 +49,6 @@ namespace OpenUtau.App.ViewModels {
 
             setEncodingCommand = ReactiveCommand.Create<Encoding>(encoding => {
                 SetEncoding(encoding);
-                Refresh();
             });
             var encodings = new Encoding[] {
                 Encoding.GetEncoding("shift_jis"),
@@ -66,6 +67,15 @@ namespace OpenUtau.App.ViewModels {
                     CommandParameter = encoding,
                 }
             ).ToList();
+
+            setDefaultPhonemizerCommand = ReactiveCommand.Create<Api.PhonemizerFactory>(factory => {
+                SetDefaultPhonemizer(factory);
+            });
+            SetDefaultPhonemizerMenuItems = DocManager.Inst.PhonemizerFactories.Select(factory => new MenuItemViewModel() {
+                Header = factory.ToString(),
+                Command = setDefaultPhonemizerCommand,
+                CommandParameter = factory,
+            }).ToList();
         }
 
         private void SetEncoding(Encoding encoding) {
@@ -73,23 +83,54 @@ namespace OpenUtau.App.ViewModels {
                 return;
             }
             try {
-                var yamlFile = Path.Combine(Singer.Location, "character.yaml");
-                VoicebankConfig? bankConfig = null;
-                if (File.Exists(yamlFile)) {
-                    using (var stream = File.OpenRead(yamlFile)) {
-                        bankConfig = VoicebankConfig.Load(stream);
-                    }
-                }
-                if (bankConfig == null) {
-                    bankConfig = new VoicebankConfig();
-                }
-                bankConfig.TextFileEncoding = encoding.WebName;
-                using (var stream = File.Open(yamlFile, FileMode.Create)) {
-                    bankConfig.Save(stream);
-                }
+                ModifyConfig(Singer, config => config.TextFileEncoding = encoding.WebName);
             } catch (Exception e) {
                 DocManager.Inst.ExecuteCmd(new UserMessageNotification(
                     $"Failed to set encoding\n\n" + e.ToString()));
+            }
+            Refresh();
+        }
+
+        public void SetPortrait(string filepath) {
+            if (Singer == null) {
+                return;
+            }
+            try {
+                ModifyConfig(Singer, config => config.Portrait = filepath);
+            } catch (Exception e) {
+                DocManager.Inst.ExecuteCmd(new UserMessageNotification(
+                    $"Failed to set portrait\n\n" + e.ToString()));
+            }
+            Refresh();
+        }
+
+        private void SetDefaultPhonemizer(Api.PhonemizerFactory factory) {
+            if (Singer == null) {
+                return;
+            }
+            try {
+                ModifyConfig(Singer, config => config.DefaultPhonemizer = factory.type.FullName);
+            } catch (Exception e) {
+                DocManager.Inst.ExecuteCmd(new UserMessageNotification(
+                    $"Failed to set portrait\n\n" + e.ToString()));
+            }
+            Refresh();
+        }
+
+        private static void ModifyConfig(USinger singer, Action<VoicebankConfig> modify) {
+            var yamlFile = Path.Combine(singer.Location, "character.yaml");
+            VoicebankConfig? config = null;
+            if (File.Exists(yamlFile)) {
+                using (var stream = File.OpenRead(yamlFile)) {
+                    config = VoicebankConfig.Load(stream);
+                }
+            }
+            if (config == null) {
+                config = new VoicebankConfig();
+            }
+            modify(config);
+            using (var stream = File.Open(yamlFile, FileMode.Create)) {
+                config.Save(stream);
             }
         }
 

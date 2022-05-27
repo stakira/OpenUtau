@@ -81,6 +81,35 @@ namespace OpenUtau.App.Views {
             menu.Open();
         }
 
+        async void OnSetPortrait(object sender, RoutedEventArgs args) {
+            var viewModel = (DataContext as SingersViewModel)!;
+            if (viewModel.Singer == null) {
+                return;
+            }
+            var dialog = new OpenFileDialog() {
+                AllowMultiple = false,
+                Directory = viewModel.Singer.Location,
+            };
+            var files = await dialog.ShowAsync(this);
+            if (files == null || files.Length != 1) {
+                return;
+            }
+            try {
+                using (var stream = File.OpenRead(files[0])) {
+                    var portrait = new Bitmap(stream);
+                    portrait.Dispose();
+                }
+                viewModel.SetPortrait(Path.GetRelativePath(viewModel.Singer.Location, files[0]));
+            } catch (Exception e) {
+                Log.Error(e, "Failed to set portrait");
+                _ = await MessageBox.Show(
+                     this,
+                     e.ToString(),
+                     ThemeManager.GetString("errors.caption"),
+                     MessageBox.MessageBoxButtons.Ok);
+            }
+        }
+
         async void OnEditSubbanksButton(object sender, RoutedEventArgs args) {
             var viewModel = (DataContext as SingersViewModel)!;
             if (viewModel.Singer == null) {

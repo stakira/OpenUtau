@@ -51,16 +51,11 @@ namespace OpenUtau.App.ViewModels {
                 if (track.Singer != singer) {
                     DocManager.Inst.StartUndoGroup();
                     DocManager.Inst.ExecuteCmd(new TrackChangeSingerCommand(DocManager.Inst.Project, track, singer));
-                    if (!string.IsNullOrEmpty(singer?.Id) && Preferences.Default.SingerPhonemizers.TryGetValue(Singer.Id, out var phonemizerName)) {
-                        try {
-                            var factory = DocManager.Inst.PhonemizerFactories.FirstOrDefault(factory => factory.type.FullName == phonemizerName);
-                            var phonemizer = factory?.Create();
-                            if (phonemizer != null) {
-                                DocManager.Inst.ExecuteCmd(new TrackChangePhonemizerCommand(DocManager.Inst.Project, track, phonemizer));
-                            }
-                        } catch (Exception e) {
-                            Log.Error(e, $"Failed to load phonemizer {phonemizerName}");
-                        }
+                    if (!string.IsNullOrEmpty(singer?.Id) &&
+                        Preferences.Default.SingerPhonemizers.TryGetValue(Singer.Id, out var phonemizerName) &&
+                        TryChangePhonemizer(phonemizerName)) {
+                    } else if (!string.IsNullOrEmpty(singer?.DefaultPhonemizer)) {
+                        TryChangePhonemizer(singer.DefaultPhonemizer);
                     }
                     if (singer == null || !singer.Found) {
                         DocManager.Inst.ExecuteCmd(new TrackChangeRendererCommand(DocManager.Inst.Project, track, null));
@@ -144,6 +139,20 @@ namespace OpenUtau.App.ViewModels {
 
         public void ToggleSolo() {
             MessageBus.Current.SendMessage(new TracksSoloEvent(track.TrackNo, !track.Solo));
+        }
+
+        private bool TryChangePhonemizer(string phonemizerName) {
+            try {
+                var factory = DocManager.Inst.PhonemizerFactories.FirstOrDefault(factory => factory.type.FullName == phonemizerName);
+                var phonemizer = factory?.Create();
+                if (phonemizer != null) {
+                    DocManager.Inst.ExecuteCmd(new TrackChangePhonemizerCommand(DocManager.Inst.Project, track, phonemizer));
+                    return true;
+                }
+            } catch (Exception e) {
+                Log.Error(e, $"Failed to load phonemizer {phonemizerName}");
+            }
+            return false;
         }
 
         public void RefreshSingers() {

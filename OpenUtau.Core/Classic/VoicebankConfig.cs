@@ -47,6 +47,7 @@ namespace OpenUtau.Classic {
         public string Voice;
         public string Web;
         public string Version;
+        public string DefaultPhonemizer;
         public SymbolSet SymbolSet { get; set; }
         public Subbank[] Subbanks { get; set; }
 
