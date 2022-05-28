@@ -332,6 +332,7 @@ namespace OpenUtau.App.ViewModels {
         }
 
         private void UnloadPart() {
+            DeselectNotes();
             Part = null;
             LoadPortrait(null, null);
         }
