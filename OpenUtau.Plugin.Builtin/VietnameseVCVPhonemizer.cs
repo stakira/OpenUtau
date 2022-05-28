@@ -24,7 +24,7 @@ namespace OpenUtau.Plugin.Builtin {
             "n=n,N",
             "ng=g,G",
             "nh=h,H",
-            "-=c,C,t,T,-,p,P,R",
+            "-=c,C,t,T,-,p,P,R,1,2,3,4,5",
         };
 
         static readonly Dictionary<string, string> vowelLookup;
@@ -107,6 +107,7 @@ namespace OpenUtau.Plugin.Builtin {
                 kocoC = false;
             } else
                 kocoC = true;
+            bool BR = note.lyric.StartsWith("breaT");
             bool tontaiVV = (note.lyric.EndsWith("ai") || note.lyric.EndsWith("ơi") || note.lyric.EndsWith("oi") || note.lyric.EndsWith("ôi") || note.lyric.EndsWith("ui") || note.lyric.EndsWith("ưi")
                           || note.lyric.EndsWith("ao") || note.lyric.EndsWith("eo") || note.lyric.EndsWith("êu") || note.lyric.EndsWith("iu")
                           || note.lyric.EndsWith("an") || note.lyric.EndsWith("ơn") || note.lyric.EndsWith("in") || note.lyric.EndsWith("en") || note.lyric.EndsWith("ên") || note.lyric.EndsWith("on") || note.lyric.EndsWith("ôn") || note.lyric.EndsWith("un") || note.lyric.EndsWith("ưn")
@@ -444,6 +445,19 @@ namespace OpenUtau.Plugin.Builtin {
                     };
                 }
             }
+            if (BR) {
+                string num = note.lyric.Substring(5);
+                if (num == "") {
+                    num = "1";
+                }
+                if (prevNeighbour == null) {
+                    return new Result {
+                        phonemes = new Phoneme[] {
+                            new Phoneme { phoneme = $"breath{num}"  },
+                        }
+                    };
+                }
+            }
             phoneme = phoneme.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O")
                              .Replace("ư", "U").Replace("C", "ch").Replace("K", "kh").Replace("N", "ng").Replace("J", "nh")
                              .Replace("Z", "tr").Replace("T", "th");
@@ -488,6 +502,10 @@ namespace OpenUtau.Plugin.Builtin {
                     a = (PR.EndsWith("ung") || PR.EndsWith("ông") || PR.EndsWith("ong"));
                     if (a) {
                         vow = "m";
+                    }
+                    a = (PR.EndsWith("breaT"));
+                    if (a) {
+                        vow = "-";
                     }
                     // 1 kí tự 
                     if (dem == 1) {
@@ -751,6 +769,17 @@ namespace OpenUtau.Plugin.Builtin {
                             new Phoneme { phoneme = $"{vow} {C}{V1}"  },
                             new Phoneme { phoneme = $"{V1} {V2}", position = Long  },
                             new Phoneme { phoneme = $"{VVC}", position = ViTri  },
+                        }
+                            };
+                    }
+                    if (BR) {
+                        string num = note.lyric.Substring(5);
+                        if (num == "") {
+                            num = "1";
+                        }
+                            return new Result {
+                                phonemes = new Phoneme[] {
+                            new Phoneme { phoneme = $"breath{num}"  },
                         }
                             };
                     }
