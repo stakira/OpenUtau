@@ -486,11 +486,11 @@ namespace OpenUtau.Plugin.Builtin {
                     if (a) {
                         vow = "A";
                     }
-                    a = (PR.EndsWith("ung") || PR.EndsWith("ông") || PR.EndsWith("ong"));
+                    a = (PR.EndsWith("uN") || PR.EndsWith("ôN") || PR.EndsWith("oN"));
                     if (a) {
                         vow = "m";
                     }
-                    bool prevtontaiCcuoi = (PR.EndsWith("t") || PR.EndsWith("ch") || PR.EndsWith("p") || PR.EndsWith("c"));
+                    bool prevtontaiCcuoi = (PR.EndsWith("t") || PR.EndsWith("C") || PR.EndsWith("p") || PR.EndsWith("k"));
                     bool prevkocoCcuoi;
                     if (prevtontaiCcuoi == true) {
                         prevkocoCcuoi = false;
