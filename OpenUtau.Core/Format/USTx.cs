@@ -69,6 +69,13 @@ namespace OpenUtau.Core.Format {
             project.AfterSave();
         }
 
+        public static void AutoSave(string filePath, UProject project) {
+            project.ustxVersion = kUstxVersion;
+            project.BeforeSave();
+            File.WriteAllText(filePath, Yaml.DefaultSerializer.Serialize(project), Encoding.UTF8);
+            project.AfterSave();
+        }
+
         public static UProject Load(string filePath) {
             string text = File.ReadAllText(filePath, Encoding.UTF8);
             UProject project = Yaml.DefaultDeserializer.Deserialize<UProject>(text);

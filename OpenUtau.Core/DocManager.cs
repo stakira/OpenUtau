@@ -146,6 +146,7 @@ namespace OpenUtau.Core {
         readonly Deque<UCommandGroup> redoQueue = new Deque<UCommandGroup>();
         UCommandGroup undoGroup = null;
         UCommandGroup savedPoint = null;
+        UCommandGroup autosavedPoint = null;
 
         public bool ChangesSaved {
             get {
@@ -170,6 +171,27 @@ namespace OpenUtau.Core {
             }
         }
 
+        public void AutoSave() {
+            if (Project == null || string.IsNullOrEmpty(Project.FilePath) || !Project.Saved) {
+                return;
+            }
+            if (undoQueue.LastOrDefault() == autosavedPoint) {
+                Log.Information("Autosave skipped.");
+                return;
+            }
+            try {
+                string dir = Path.GetDirectoryName(Project.FilePath);
+                string filename = Path.GetFileNameWithoutExtension(Project.FilePath);
+                string backup = Path.Join(dir, filename + "-autosave.ustx");
+                Log.Information($"Autosave {backup}.");
+                Format.Ustx.AutoSave(backup, Project);
+                Log.Information($"Autosaved {backup}.");
+                autosavedPoint = undoQueue.LastOrDefault();
+            } catch (Exception e) {
+                Log.Error(e, "Autosave failed.");
+            }
+        }
+
         public void ExecuteCmd(UCommand cmd) {
             if (mainThread != Thread.CurrentThread) {
                 Log.Error($"{cmd} not on main thread");
@@ -190,6 +212,7 @@ namespace OpenUtau.Core {
                     redoQueue.Clear();
                     undoGroup = null;
                     savedPoint = null;
+                    autosavedPoint = null;
                     Project = notification.project;
                     playPosTick = 0;
                 } else if (cmd is SetPlayPosTickNotification) {

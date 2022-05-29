@@ -34,6 +34,7 @@ namespace OpenUtau.App.Views {
         private PartEditState? partEditState;
         private Rectangle? selectionBox;
         private DispatcherTimer timer;
+        private DispatcherTimer autosaveTimer;
         private bool forceClose;
 
         public MainWindow() {
@@ -48,6 +49,12 @@ namespace OpenUtau.App.Views {
                 DispatcherPriority.Normal,
                 (sender, args) => PlaybackManager.Inst.UpdatePlayPos());
             timer.Start();
+
+            autosaveTimer = new DispatcherTimer(
+                TimeSpan.FromSeconds(30),
+                DispatcherPriority.Normal,
+                (sender, args) => DocManager.Inst.AutoSave());
+            autosaveTimer.Start();
 
             AddHandler(DragDrop.DropEvent, OnDrop);
 

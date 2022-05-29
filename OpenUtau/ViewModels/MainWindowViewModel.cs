@@ -14,6 +14,9 @@ using Serilog;
 namespace OpenUtau.App.ViewModels {
     public class MainWindowViewModel : ViewModelBase, ICmdSubscriber {
         public bool ExtendToFrame => OS.IsMacOS();
+        public string Title => !ProjectSaved
+            ? "OpenUtau"
+            : $"OpenUtau [{DocManager.Inst.Project.FilePath}{(DocManager.Inst.ChangesSaved ? "" : "*")}]";
         [Reactive] public PlaybackViewModel PlaybackViewModel { get; set; }
         [Reactive] public TracksViewModel TracksViewModel { get; set; }
         [Reactive] public ReactiveCommand<string, Unit>? OpenRecentCommand { get; private set; }
@@ -82,6 +85,7 @@ namespace OpenUtau.App.ViewModels {
                 return;
             }
             Core.Format.Formats.LoadProject(files);
+            this.RaisePropertyChanged(nameof(Title));
         }
 
         public void SaveProject(string file = "") {
@@ -89,6 +93,7 @@ namespace OpenUtau.App.ViewModels {
                 return;
             }
             DocManager.Inst.ExecuteCmd(new SaveProjectNotification(file));
+            this.RaisePropertyChanged(nameof(Title));
         }
 
         public void ImportTracks(string[] files) {
@@ -178,6 +183,7 @@ namespace OpenUtau.App.ViewModels {
             } else if (cmd is SaveProjectNotification saveProject) {
                 Core.Util.Preferences.AddRecentFile(saveProject.Path);
             }
+            this.RaisePropertyChanged(nameof(Title));
         }
 
         #endregion
