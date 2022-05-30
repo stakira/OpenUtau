@@ -80,7 +80,7 @@ namespace OpenUtau.Plugin.Builtin {
             note.lyric = note.lyric.Replace("ch", "C").Replace("d", "z").Replace("đ", "d").Replace("ph", "f").Replace("ch", "C")
                 .Replace("gi", "z").Replace("gh", "g").Replace("c", "k").Replace("kh", "K").Replace("ng", "N")
                 .Replace("ngh", "N").Replace("nh", "J").Replace("x", "s").Replace("tr", "Z").Replace("th", "T")
-                .Replace("qu", "w");
+                .Replace("qu", "w").Replace("r", "z");
 
             bool tontaiVVC = (note.lyric.EndsWith("iên") || note.lyric.EndsWith("iêN") || note.lyric.EndsWith("iêm") || note.lyric.EndsWith("iêt") || note.lyric.EndsWith("iêk") || note.lyric.EndsWith("iêp") || note.lyric.EndsWith("iêu")
                            || note.lyric.EndsWith("yên") || note.lyric.EndsWith("yêN") || note.lyric.EndsWith("yêm") || note.lyric.EndsWith("yêt") || note.lyric.EndsWith("yêk") || note.lyric.EndsWith("yêp") || note.lyric.EndsWith("yêu")
