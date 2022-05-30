@@ -78,7 +78,7 @@ namespace OpenUtau.Plugin.Builtin {
             note.lyric = note.lyric.Replace('ồ', 'ô').Replace('ố', 'ô').Replace('ổ', 'ô').Replace('ỗ', 'ô').Replace('ộ', 'ô');
             note.lyric = note.lyric.Replace('ù', 'u').Replace('ú', 'u').Replace('ủ', 'u').Replace('ũ', 'u').Replace('ụ', 'u');
             note.lyric = note.lyric.Replace('ừ', 'ư').Replace('ứ', 'ư').Replace('ử', 'ư').Replace('ữ', 'ư').Replace('ự', 'ư');
-
+            if (note.lyric != "gi") {
                 loi = note.lyric.Replace('à', 'a').Replace('á', 'a').Replace('ả', 'a').Replace('ã', 'a').Replace('ạ', 'a');
                 loi = note.lyric.Replace('ằ', 'ă').Replace('ắ', 'ă').Replace('ẳ', 'ă').Replace('ẵ', 'ă').Replace('ặ', 'ă');
                 loi = note.lyric.Replace('ầ', 'â').Replace('ấ', 'â').Replace('ẩ', 'â').Replace('ẫ', 'â').Replace('ậ', 'â');
@@ -95,7 +95,7 @@ namespace OpenUtau.Plugin.Builtin {
                     .Replace("gi", "z").Replace("gh", "g").Replace("c", "k").Replace("kh", "K").Replace("ng", "N")
                     .Replace("ngh", "N").Replace("nh", "J").Replace("x", "s").Replace("tr", "Z").Replace("th", "T")
                     .Replace("q", "k").Replace("r", "z");
-
+            }
 
             bool tontaiVVC = (loi.EndsWith("iên") || loi.EndsWith("iêN") || loi.EndsWith("iêm") || loi.EndsWith("iêt") || loi.EndsWith("iêk") || loi.EndsWith("iêp") || loi.EndsWith("iêu")
                            || loi.EndsWith("yên") || loi.EndsWith("yêN") || loi.EndsWith("yêm") || loi.EndsWith("yêt") || loi.EndsWith("yêk") || loi.EndsWith("yêp") || loi.EndsWith("yêu")
@@ -123,7 +123,7 @@ namespace OpenUtau.Plugin.Builtin {
                 kocoC = false;
             } else
                 kocoC = true;
-            bool BR = note.lyric.StartsWith("breaT");
+            bool BR = note.lyric.StartsWith("breath");
             bool tontaiVV = (loi.EndsWith("ai") || loi.EndsWith("ơi") || loi.EndsWith("oi") || loi.EndsWith("ôi") || loi.EndsWith("ui") || loi.EndsWith("ưi")
                           || loi.EndsWith("ao") || loi.EndsWith("eo") || loi.EndsWith("êu") || loi.EndsWith("iu")
                           || loi.EndsWith("an") || loi.EndsWith("ơn") || loi.EndsWith("in") || loi.EndsWith("en") || loi.EndsWith("ên") || loi.EndsWith("on") || loi.EndsWith("ôn") || loi.EndsWith("un") || loi.EndsWith("ưn")
