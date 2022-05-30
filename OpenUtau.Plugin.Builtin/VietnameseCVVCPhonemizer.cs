@@ -469,11 +469,6 @@ namespace OpenUtau.Plugin.Builtin {
                 if (vowelLookup.TryGetValue(unicode.LastOrDefault() ?? string.Empty, out var vow)) {
                     bool qua;
                     string PR = prevNeighbour?.lyric;
-                    qua = prevNeighbour?.lyric == "qua";
-                    bool notqua;
-                    if (qua == true) {
-                        notqua = false;
-                    } else notqua = true;
                     if (PR != "R") {
                         PR = PR.ToLower();
                     }
@@ -496,7 +491,7 @@ namespace OpenUtau.Plugin.Builtin {
                         .Replace("gi", "z").Replace("gh", "g").Replace("c", "k").Replace("kh", "K").Replace("ng", "N")
                         .Replace("ngh", "N").Replace("nh", "J").Replace("x", "s").Replace("tr", "Z").Replace("th", "T")
                         .Replace("qu", "w");
-                    a = (PR.EndsWith("ua") || PR.EndsWith("ưa") || PR.EndsWith("ia") || PR.EndsWith("uya") && notqua);
+                    a = (PR.EndsWith("ua") || PR.EndsWith("ưa") || PR.EndsWith("ia") || PR.EndsWith("uya"));
                     if (a) {
                         vow = "A";
                     }
@@ -553,7 +548,7 @@ namespace OpenUtau.Plugin.Builtin {
                         V2 = V2.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O")
                                      .Replace("ư", "U").Replace("C", "ch").Replace("K", "kh").Replace("N", "ng").Replace("J", "nh")
                                      .Replace("Z", "tr").Replace("T", "th");
-                        a = (note.lyric.EndsWith("ia") || note.lyric.EndsWith("ua") || note.lyric.EndsWith("ưa") || note.lyric.EndsWith("uya"));
+                        a = (note.lyric.EndsWith("ia") || note.lyric.EndsWith("ua") || note.lyric.EndsWith("ưa"));
                         if (a) {
                             V2 = "A";
                         }
