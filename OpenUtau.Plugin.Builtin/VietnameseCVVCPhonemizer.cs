@@ -110,7 +110,7 @@ namespace OpenUtau.Plugin.Builtin {
                          || loi.StartsWith("l") || loi.StartsWith("m") || loi.StartsWith("n") || loi.StartsWith("N")
                          || loi.StartsWith("J") || loi.StartsWith("r") || loi.StartsWith("s") || loi.StartsWith("t")
                          || loi.StartsWith("T") || loi.StartsWith("Z") || loi.StartsWith("v") || loi.StartsWith("w")
-                         || loi.StartsWith("z"));
+                         || loi.StartsWith("z") || loi.StartsWith("p"));
             bool kocoC;
             if (tontaiC == true) {
                 kocoC = false;
