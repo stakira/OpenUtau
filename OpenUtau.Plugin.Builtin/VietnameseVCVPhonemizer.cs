@@ -531,14 +531,14 @@ namespace OpenUtau.Plugin.Builtin {
                                      .Replace("ư", "U").Replace("C", "ch").Replace("K", "kh").Replace("N", "ng").Replace("J", "nh")
                                      .Replace("Z", "tr").Replace("T", "th");
                     }
-                    // 2 kí tự VV, ví dụ: "oa"
+                    // 2 kí tự VV/VC, ví dụ: "oa" "an"
                     if ((dem == 2) && kocoC && kocoCcuoi) {
                         string V1 = loi.Substring(0, 1);
                         string V2 = loi.Substring(1, 1);
                         V1 = V1.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O")
                              .Replace("ư", "U");
                         V2 = V2.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O")
-                                     .Replace("ư", "U");
+                                     .Replace("ư", "U").Replace("N", "ng").Replace("J", "nh");
                         a = (loi.EndsWith("ia") || loi.EndsWith("ua") || loi.EndsWith("ưa"));
                         if (a) {
                             V2 = "A";
