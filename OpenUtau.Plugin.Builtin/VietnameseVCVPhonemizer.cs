@@ -193,11 +193,13 @@ namespace OpenUtau.Plugin.Builtin {
                 V1 = V1.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O")
                      .Replace("ư", "U");
                 V2 = V2.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O")
-                             .Replace("ư", "U").Replace("C", "ch").Replace("K", "kh").Replace("N", "ng").Replace("J", "nh")
-                             .Replace("Z", "tr").Replace("T", "th");
+                             .Replace("ư", "U").Replace("N", "ng").Replace("J", "nh");
                 a = (loi.EndsWith("ia") || loi.EndsWith("ua") || loi.EndsWith("ưa"));
                 if (a) {
                     V2 = "A";
+                }
+                if (note.lyric == "ao" || note.lyric == "eo") {
+                    V2 = "u";
                 }
                 if (prevNeighbour == null) {
                     return new Result {
@@ -212,16 +214,15 @@ namespace OpenUtau.Plugin.Builtin {
             // 2 kí tự VC, ví dụ "át"
             if ((dem == 2) && tontaiCcuoi) {
                 string V1 = loi.Substring(0, 1);
-                string V2 = loi.Substring(1, 1);
+                string C = loi.Substring(1, 1);
                 V1 = V1.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O")
                      .Replace("ư", "U");
-                V2 = V2.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O")
-                     .Replace("ư", "U");
+                C = C.Replace("C", "ch");
                 if (prevNeighbour == null) {
                     return new Result {
                         phonemes = new Phoneme[] {
                             new Phoneme { phoneme = $"- {V1}"  },
-                            new Phoneme { phoneme = $"{V1}{V2}", position = ViTri  },
+                            new Phoneme { phoneme = $"{V1}{C}", position = ViTri  },
 
                         }
                     };
@@ -237,8 +238,7 @@ namespace OpenUtau.Plugin.Builtin {
                 V2 = V2.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O")
                        .Replace("ư", "U");
                 VC = VC.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O")
-                       .Replace("ư", "U").Replace("C", "ch").Replace("K", "kh").Replace("N", "ng").Replace("J", "nh")
-                       .Replace("Z", "tr").Replace("T", "th");
+                       .Replace("ư", "U").Replace("C", "ch");
                 if (ViTriDai) {
                     ViTri = Medium;
                 }
@@ -265,8 +265,7 @@ namespace OpenUtau.Plugin.Builtin {
                 V2 = V2.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O")
                        .Replace("ư", "U");
                 V3 = V3.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O")
-                       .Replace("ư", "U").Replace("C", "ch").Replace("K", "kh").Replace("N", "ng").Replace("J", "nh")
-                       .Replace("Z", "tr").Replace("T", "th");
+                       .Replace("ư", "U").Replace("N", "ng").Replace("J", "nh");
                 if (ViTriNgan) {
                     ViTri = Short;
                 } else {
@@ -289,8 +288,7 @@ namespace OpenUtau.Plugin.Builtin {
                 V1 = V1.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O")
                        .Replace("ư", "U");
                 VVC = VVC.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O")
-                       .Replace("ư", "U").Replace("C", "ch").Replace("K", "kh").Replace("N", "ng").Replace("J", "nh")
-                       .Replace("Z", "tr").Replace("T", "th");
+                       .Replace("ư", "U").Replace("C", "ch").Replace("N", "ng").Replace("J", "nh");
                 if (prevNeighbour == null) {
                     return new Result {
                         phonemes = new Phoneme[] {
@@ -307,7 +305,7 @@ namespace OpenUtau.Plugin.Builtin {
                 string V2 = loi.Substring(2);
                 C = C.Replace("C", "ch").Replace("K", "kh").Replace("N", "ng").Replace("J", "nh").Replace("Z", "tr").Replace("T", "th");
                 V1 = V1.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O").Replace("ư", "U");
-                V2 = V2.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O").Replace("ư", "U");
+                V2 = V2.Replace("C", "ch");
                 if (prevNeighbour == null) {
                     return new Result {
                         phonemes = new Phoneme[] {
@@ -318,7 +316,7 @@ namespace OpenUtau.Plugin.Builtin {
                     };
                 }
             }
-            // 3 kí tự CVV, ví dụ: "hoa"
+            // 3 kí tự CVV/CVC, ví dụ: "hoa" "han"
             if (dem == 3 && tontaiC && kocoCcuoi) {
                 string C = loi.Substring(0, 1);
                 string V1 = loi.Substring(1, 1);
@@ -326,10 +324,13 @@ namespace OpenUtau.Plugin.Builtin {
                 C = C.Replace("C", "ch").Replace("K", "kh").Replace("N", "ng").Replace("J", "nh").Replace("Z", "tr").Replace("T", "th");
                 V1 = V1.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O").Replace("ư", "U");
                 V2 = V2.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O").Replace("ư", "U")
-                    .Replace("C", "ch").Replace("K", "kh").Replace("N", "ng").Replace("J", "nh").Replace("Z", "tr").Replace("T", "th"); ;
+                    .Replace("N", "ng").Replace("J", "nh");
                 a = (loi.EndsWith("ia") || loi.EndsWith("ua") || loi.EndsWith("ưa"));
                 if (a && (note.lyric != "qua")) {
                     V2 = "A";
+                }
+                if (note.lyric.EndsWith("ao") || note.lyric.EndsWith("eo")) {
+                    V2 = "u";
                 }
                 if (prevNeighbour == null) {
                     return new Result {
@@ -349,8 +350,7 @@ namespace OpenUtau.Plugin.Builtin {
                 V1 = V1.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O").Replace("ư", "U");
                 V2 = V2.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O").Replace("ư", "U");
                 VVC = VVC.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O")
-                             .Replace("ư", "U").Replace("C", "ch").Replace("K", "kh").Replace("N", "ng").Replace("J", "nh")
-                             .Replace("Z", "tr").Replace("T", "th");
+                             .Replace("ư", "U").Replace("C", "ch").Replace("N", "ng").Replace("J", "nh");
                 if (ViTriNgan) {
                     ViTri = Short;
                 } else {
@@ -374,8 +374,7 @@ namespace OpenUtau.Plugin.Builtin {
                 C = C.Replace("C", "ch").Replace("K", "kh").Replace("N", "ng").Replace("J", "nh").Replace("Z", "tr").Replace("T", "th");
                 V1 = V1.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O").Replace("ư", "U");
                 VVC = VVC.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O")
-                             .Replace("ư", "U").Replace("C", "ch").Replace("K", "kh").Replace("N", "ng").Replace("J", "nh")
-                             .Replace("Z", "tr").Replace("T", "th");
+                             .Replace("ư", "U").Replace("C", "ch").Replace("N", "ng").Replace("J", "nh");
                 if (prevNeighbour == null) {
                     return new Result {
                         phonemes = new Phoneme[] {
@@ -395,8 +394,7 @@ namespace OpenUtau.Plugin.Builtin {
                 V1 = V1.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O").Replace("ư", "U");
                 V2 = V2.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O").Replace("ư", "U");
                 VC = VC.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O")
-                             .Replace("ư", "U").Replace("C", "ch").Replace("K", "kh").Replace("N", "ng").Replace("J", "nh")
-                             .Replace("Z", "tr").Replace("T", "th");
+                             .Replace("ư", "U").Replace("C", "ch");
                 if (ViTriNgan) {
                     ViTri = Short;
                 } else {
@@ -424,7 +422,8 @@ namespace OpenUtau.Plugin.Builtin {
                 C = C.Replace("C", "ch").Replace("K", "kh").Replace("N", "ng").Replace("J", "nh").Replace("Z", "tr").Replace("T", "th");
                 V1 = V1.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O").Replace("ư", "U");
                 V2 = V2.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O").Replace("ư", "U");
-                V3 = V3.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O").Replace("ư", "U");
+                V3 = V3.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O").Replace("ư", "U")
+                    .Replace("N", "ng").Replace("J", "nh");
                 if (ViTriNgan) {
                     ViTri = Short;
                 } else {
@@ -450,8 +449,7 @@ namespace OpenUtau.Plugin.Builtin {
                 V1 = V1.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O").Replace("ư", "U");
                 V2 = V2.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O").Replace("ư", "U");
                 VVC = VVC.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O")
-                             .Replace("ư", "U").Replace("C", "ch").Replace("K", "kh").Replace("N", "ng").Replace("J", "nh")
-                             .Replace("Z", "tr").Replace("T", "th");
+                             .Replace("ư", "U").Replace("C", "ch").Replace("N", "ng").Replace("J", "nh");
                 if (ViTriNgan) {
                     ViTri = Short;
                 } else {
@@ -480,10 +478,6 @@ namespace OpenUtau.Plugin.Builtin {
                     };
                 }
             }
-            phoneme = phoneme.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O")
-                             .Replace("ư", "U").Replace("C", "ch").Replace("K", "kh").Replace("N", "ng").Replace("J", "nh")
-                             .Replace("Z", "tr").Replace("T", "th");
-
             if (prevNeighbour != null) {
                 var lyric = prevNeighbour?.phoneticHint ?? prevNeighbour?.lyric;
                 var unicode = ToUnicodeElements(lyric);
@@ -523,6 +517,9 @@ namespace OpenUtau.Plugin.Builtin {
                     if (a) {
                         vow = "-";
                     }
+                    if (PR.EndsWith("ao") || PR.EndsWith("eo")) {
+                        vow = "u";
+                    }
                     // 1 kí tự 
                     if (dem == 1) {
                         phoneme = $"{vow} {loi}";
@@ -544,11 +541,13 @@ namespace OpenUtau.Plugin.Builtin {
                         V1 = V1.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O")
                              .Replace("ư", "U");
                         V2 = V2.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O")
-                                     .Replace("ư", "U").Replace("C", "ch").Replace("K", "kh").Replace("N", "ng").Replace("J", "nh")
-                                     .Replace("Z", "tr").Replace("T", "th");
+                                     .Replace("ư", "U");
                         a = (loi.EndsWith("ia") || loi.EndsWith("ua") || loi.EndsWith("ưa"));
                         if (a) {
                             V2 = "A";
+                        }
+                        if (note.lyric == "ao" || note.lyric == "eo") {
+                            V2 = "u";
                         }
                         return new Result {
                             phonemes = new Phoneme[] {
@@ -564,8 +563,7 @@ namespace OpenUtau.Plugin.Builtin {
                         string V2 = loi.Substring(1, 1);
                         V1 = V1.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O")
                              .Replace("ư", "U");
-                        V2 = V2.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O")
-                             .Replace("ư", "U");
+                        V2 = V2.Replace("C", "ch");
                         return new Result {
                             phonemes = new Phoneme[] {
                             new Phoneme { phoneme = $"{vow} {V1}"  },
@@ -584,8 +582,7 @@ namespace OpenUtau.Plugin.Builtin {
                         V2 = V2.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O")
                                .Replace("ư", "U");
                         VC = VC.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O")
-                               .Replace("ư", "U").Replace("C", "ch").Replace("K", "kh").Replace("N", "ng").Replace("J", "nh")
-                               .Replace("Z", "tr").Replace("T", "th");
+                               .Replace("ư", "U").Replace("C", "ch");
                         if (ViTriDai) {
                             ViTri = Medium;
                         }
@@ -607,8 +604,7 @@ namespace OpenUtau.Plugin.Builtin {
                         V2 = V2.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O")
                                .Replace("ư", "U");
                         V3 = V3.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O")
-                               .Replace("ư", "U").Replace("C", "ch").Replace("K", "kh").Replace("N", "ng").Replace("J", "nh")
-                               .Replace("Z", "tr").Replace("T", "th");
+                               .Replace("ư", "U").Replace("N", "ng").Replace("J", "nh");
                         if (ViTriNgan) {
                             ViTri = Short;
                         } else {
@@ -629,8 +625,7 @@ namespace OpenUtau.Plugin.Builtin {
                         V1 = V1.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O")
                                .Replace("ư", "U");
                         VVC = VVC.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O")
-                               .Replace("ư", "U").Replace("C", "ch").Replace("K", "kh").Replace("N", "ng").Replace("J", "nh")
-                               .Replace("Z", "tr").Replace("T", "th");
+                               .Replace("ư", "U").Replace("C", "ch").Replace("N", "ng").Replace("J", "nh");
                         return new Result {
                             phonemes = new Phoneme[] {
                             new Phoneme { phoneme = $"{vow} {V1}"  },
@@ -645,7 +640,7 @@ namespace OpenUtau.Plugin.Builtin {
                         string V2 = loi.Substring(2);
                         C = C.Replace("C", "ch").Replace("K", "kh").Replace("N", "ng").Replace("J", "nh").Replace("Z", "tr").Replace("T", "th");
                         V1 = V1.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O").Replace("ư", "U");
-                        V2 = V2.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O").Replace("ư", "U");
+                        V2 = V2.Replace("C", "ch");
                         return new Result {
                             phonemes = new Phoneme[] {
                             new Phoneme { phoneme = $"{vow} {C}{V1}"  },
@@ -662,10 +657,13 @@ namespace OpenUtau.Plugin.Builtin {
                         C = C.Replace("C", "ch").Replace("K", "kh").Replace("N", "ng").Replace("J", "nh").Replace("Z", "tr").Replace("T", "th");
                         V1 = V1.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O").Replace("ư", "U");
                         V2 = V2.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O").Replace("ư", "U")
-                            .Replace("C", "ch").Replace("K", "kh").Replace("N", "ng").Replace("J", "nh").Replace("Z", "tr").Replace("T", "th"); ;
+                            .Replace("N", "ng").Replace("J", "nh"); ;
                         a = (loi.EndsWith("ia") || loi.EndsWith("ua") || loi.EndsWith("ưa"));
                         if (a && (note.lyric != "qua")) {
                             V2 = "A";
+                        }
+                        if (note.lyric.EndsWith("ao") || note.lyric.EndsWith("eo")) {
+                            V2 = "u";
                         }
                         return new Result {
                             phonemes = new Phoneme[] {
@@ -683,8 +681,7 @@ namespace OpenUtau.Plugin.Builtin {
                         V1 = V1.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O").Replace("ư", "U");
                         V2 = V2.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O").Replace("ư", "U");
                         VVC = VVC.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O")
-                                     .Replace("ư", "U").Replace("C", "ch").Replace("K", "kh").Replace("N", "ng").Replace("J", "nh")
-                                     .Replace("Z", "tr").Replace("T", "th");
+                                     .Replace("ư", "U").Replace("C", "ch").Replace("N", "ng").Replace("J", "nh");
                         if (ViTriNgan) {
                             ViTri = Short;
                         } else {
@@ -706,8 +703,7 @@ namespace OpenUtau.Plugin.Builtin {
                         C = C.Replace("C", "ch").Replace("K", "kh").Replace("N", "ng").Replace("J", "nh").Replace("Z", "tr").Replace("T", "th");
                         V1 = V1.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O").Replace("ư", "U");
                         VVC = VVC.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O")
-                                     .Replace("ư", "U").Replace("C", "ch").Replace("K", "kh").Replace("N", "ng").Replace("J", "nh")
-                                     .Replace("Z", "tr").Replace("T", "th");
+                                     .Replace("ư", "U").Replace("C", "ch").Replace("N", "ng").Replace("J", "nh");
                         return new Result {
                             phonemes = new Phoneme[] {
                             new Phoneme { phoneme = $"{vow} {C}{V1}"  },
@@ -725,8 +721,7 @@ namespace OpenUtau.Plugin.Builtin {
                         V1 = V1.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O").Replace("ư", "U");
                         V2 = V2.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O").Replace("ư", "U");
                         VC = VC.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O")
-                                     .Replace("ư", "U").Replace("C", "ch").Replace("K", "kh").Replace("N", "ng").Replace("J", "nh")
-                                     .Replace("Z", "tr").Replace("T", "th");
+                                     .Replace("ư", "U").Replace("C", "ch");
                         if (ViTriNgan) {
                             ViTri = Short;
                         } else {
@@ -755,7 +750,8 @@ namespace OpenUtau.Plugin.Builtin {
                         C = C.Replace("C", "ch").Replace("K", "kh").Replace("N", "ng").Replace("J", "nh").Replace("Z", "tr").Replace("T", "th");
                         V1 = V1.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O").Replace("ư", "U");
                         V2 = V2.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O").Replace("ư", "U");
-                        V3 = V3.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O").Replace("ư", "U");
+                        V3 = V3.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O").Replace("ư", "U")
+                                .Replace("N", "ng").Replace("J", "nh");
                         if (ViTriNgan) {
                             ViTri = Short;
                         } else {
@@ -779,8 +775,7 @@ namespace OpenUtau.Plugin.Builtin {
                         V1 = V1.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O").Replace("ư", "U");
                         V2 = V2.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O").Replace("ư", "U");
                         VVC = VVC.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O")
-                                     .Replace("ư", "U").Replace("C", "ch").Replace("K", "kh").Replace("N", "ng").Replace("J", "nh")
-                                     .Replace("Z", "tr").Replace("T", "th");
+                                     .Replace("ư", "U").Replace("C", "ch").Replace("N", "ng").Replace("J", "nh");
                         if (ViTriNgan) {
                             ViTri = Short;
                         } else {
@@ -805,9 +800,6 @@ namespace OpenUtau.Plugin.Builtin {
                         }
                         };
                     }
-                    phoneme = phoneme.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O")
-                                     .Replace("ư", "U").Replace("C", "ch").Replace("K", "kh").Replace("N", "ng").Replace("J", "nh")
-                                     .Replace("Z", "tr").Replace("T", "th");
                 }
             }
             // Get color
