@@ -93,7 +93,7 @@ namespace OpenUtau.Plugin.Builtin {
                     .Replace("gi", "z").Replace("gh", "g").Replace("c", "k").Replace("kh", "K").Replace("ng", "N")
                     .Replace("ngh", "N").Replace("nh", "J").Replace("x", "s").Replace("tr", "Z").Replace("th", "T")
                     .Replace("q", "k").Replace("r", "z");
-            } else 
+            } else
                 loi = "zi";
             bool tontaiVVC = (loi.EndsWith("iên") || loi.EndsWith("iêN") || loi.EndsWith("iêm") || loi.EndsWith("iêt") || loi.EndsWith("iêk") || loi.EndsWith("iêp") || loi.EndsWith("iêu")
                            || loi.EndsWith("yên") || loi.EndsWith("yêN") || loi.EndsWith("yêm") || loi.EndsWith("yêt") || loi.EndsWith("yêk") || loi.EndsWith("yêp") || loi.EndsWith("yêu")
@@ -141,27 +141,25 @@ namespace OpenUtau.Plugin.Builtin {
                   || loi.EndsWith("aC") || loi.EndsWith("iC") || loi.EndsWith("êC")
                   || loi.EndsWith("ak") || loi.EndsWith("ơk") || loi.EndsWith("ik") || loi.EndsWith("ek") || loi.EndsWith("êk") || loi.EndsWith("ok") || loi.EndsWith("ôk") || loi.EndsWith("uk") || loi.EndsWith("ưk")
                   || loi.EndsWith("ap") || loi.EndsWith("ơp") || loi.EndsWith("ip") || loi.EndsWith("ep") || loi.EndsWith("êp") || loi.EndsWith("op") || loi.EndsWith("ôp") || loi.EndsWith("up") || loi.EndsWith("ưp")
-                  || loi.EndsWith("ia") || loi.EndsWith("ua") || loi.EndsWith("ưa")
+                  || loi.EndsWith("ia") || loi.EndsWith("ua") || loi.EndsWith("ưa") || loi.EndsWith("ôN") || loi.EndsWith("uN") || loi.EndsWith("oN")
                   || loi.EndsWith("uya") && (note.lyric != "qua"));
             bool ViTriDai = (loi.EndsWith("ay") || loi.EndsWith("ây") || loi.EndsWith("uy")
                   || loi.EndsWith("au") || loi.EndsWith("âu")
                   || loi.EndsWith("oa") || loi.EndsWith("oe") || loi.EndsWith("uê") || note.lyric.EndsWith("qua"));
-            bool ViTriTB = (loi.EndsWith("ôN") || loi.EndsWith("uN") || loi.EndsWith("oN")
-                  || loi.EndsWith("ăt") || loi.EndsWith("ât")
+            bool ViTriTB = loi.EndsWith("ăt") || loi.EndsWith("ât")
                   || loi.EndsWith("ăk") || loi.EndsWith("âk")
                   || loi.EndsWith("ăp") || loi.EndsWith("âp")
                   || loi.EndsWith("ăn") || loi.EndsWith("ân")
                   || loi.EndsWith("ăN") || loi.EndsWith("âN")
-                  || loi.EndsWith("ăm") || loi.EndsWith("âm"));
-
+                  || loi.EndsWith("ăm") || loi.EndsWith("âm");
+            if (ViTriTB) {
+                ViTri = Medium;
+            }
             if (ViTriNgan) {
                 ViTri = Short;
             }
             if (ViTriDai) {
                 ViTri = Long;
-            }
-            if (ViTriTB) {
-                ViTri = Medium;
             }
             var dem = loi.Length;
             var phoneme = "";
@@ -183,6 +181,9 @@ namespace OpenUtau.Plugin.Builtin {
             if ((dem == 2) && kocoC) {
                 string V1 = loi.Substring(0, 1);
                 string V2 = loi.Substring(1, 1);
+                if (loi.EndsWith("oa") || loi.EndsWith("oe")) {
+                    V1 = "u";
+                }
                 V1 = V1.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O")
                      .Replace("ư", "U");
                 V2 = V2.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O").Replace("ư", "U")
@@ -209,6 +210,9 @@ namespace OpenUtau.Plugin.Builtin {
                 string V1 = loi.Substring(0, 1);
                 string V2 = loi.Substring(1, 1);
                 string VC = loi.Substring(1);
+                if (loi.StartsWith("oa") || loi.StartsWith("oe")) {
+                    V1 = "u";
+                }
                 V1 = V1.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O")
                        .Replace("ư", "U");
                 V2 = V2.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O")
@@ -250,6 +254,9 @@ namespace OpenUtau.Plugin.Builtin {
                 string C = loi.Substring(0, 1);
                 string V1 = loi.Substring(1, 1);
                 string V2 = loi.Substring(2);
+                if (loi.EndsWith("oa") || loi.EndsWith("oe")) {
+                    V1 = "u";
+                }
                 C = C.Replace("C", "ch").Replace("K", "kh").Replace("N", "ng").Replace("J", "nh").Replace("Z", "tr").Replace("T", "th");
                 V1 = V1.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O").Replace("ư", "U");
                 V2 = V2.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O").Replace("ư", "U")
@@ -313,12 +320,15 @@ namespace OpenUtau.Plugin.Builtin {
                     };
                 }
             }
-            // 4 kí tự CVVC, chia 3 nốt, ví dụ "thoát"
+            // 4 kí tự CVVC/CVVV, chia 3 nốt, ví dụ "thoát" "toan" "toại"
             if (dem == 4 && tontaiC) {
                 string C = loi.Substring(0, 1);
                 string V1 = loi.Substring(1, 1);
                 string V2 = loi.Substring(2, 1);
                 string VC = loi.Substring(2);
+                if (V1 + V2 == "oa" || V1 + V2 == "oe") {
+                    V1 = "u";
+                }
                 C = C.Replace("C", "ch").Replace("K", "kh").Replace("N", "ng").Replace("J", "nh").Replace("Z", "tr").Replace("T", "th");
                 V1 = V1.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O").Replace("ư", "U");
                 V2 = V2.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O").Replace("ư", "U");
@@ -410,7 +420,9 @@ namespace OpenUtau.Plugin.Builtin {
                         vow = "A";
                     }
                     a = (PR.EndsWith("uN") || PR.EndsWith("ôN") || PR.EndsWith("oN"));
-                    if (a) {
+                    if (PR.EndsWith("uôN")) {
+                        vow = "ng";
+                    } else if (a) {
                         vow = "m";
                     }
                     a = (PR.EndsWith("breaT"));
@@ -471,6 +483,9 @@ namespace OpenUtau.Plugin.Builtin {
                         if (a) {
                             V2 = "A";
                         }
+                        if (loi.EndsWith("oa") || loi.EndsWith("oe")) {
+                            V1 = "u";
+                        }
                         if (note.lyric == "ao" || note.lyric == "eo") {
                             V2 = "u";
                         }
@@ -497,6 +512,9 @@ namespace OpenUtau.Plugin.Builtin {
                         string V1 = loi.Substring(0, 1);
                         string V2 = loi.Substring(1, 1);
                         string VC = loi.Substring(1);
+                        if (loi.StartsWith("oa") || loi.StartsWith("oe")) {
+                            V1 = "u";
+                        }
                         V1 = V1.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O")
                                .Replace("ư", "U");
                         V2 = V2.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O")
@@ -558,6 +576,9 @@ namespace OpenUtau.Plugin.Builtin {
                         a = (loi.EndsWith("ia") || loi.EndsWith("ua") || loi.EndsWith("ưa"));
                         if (a) {
                             V2 = "A";
+                        }
+                        if (loi.EndsWith("oa") || loi.EndsWith("oe")) {
+                            V1 = "u";
                         }
                         if (note.lyric.EndsWith("ao") || note.lyric.EndsWith("eo")) {
                             V2 = "u";
@@ -643,6 +664,9 @@ namespace OpenUtau.Plugin.Builtin {
                         string V1 = loi.Substring(1, 1);
                         string V2 = loi.Substring(2, 1);
                         string VC = loi.Substring(2);
+                        if (V1 + V2 == "oa" || V1 + V2 == "oe") {
+                            V1 = "u";
+                        }
                         C = C.Replace("C", "ch").Replace("K", "kh").Replace("N", "ng").Replace("J", "nh").Replace("Z", "tr").Replace("T", "th");
                         V1 = V1.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O").Replace("ư", "U");
                         V2 = V2.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O").Replace("ư", "U");
