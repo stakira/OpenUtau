@@ -4,11 +4,10 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reactive;
-using Avalonia;
-using Avalonia.Controls;
+using System.Text;
 using Avalonia.Data.Converters;
-using Avalonia.Interactivity;
 using DynamicData.Binding;
+using OpenUtau.App.Views;
 using OpenUtau.Core.Util;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -26,7 +25,7 @@ namespace OpenUtau.App.ViewModels {
             formater = new MessageTemplateTextFormatter(template);
             stringWriter = new StringWriter();
         }
-        public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture) {
+        public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture) {
             if (value is LogEvent logEvent) {
                 formater.Format(logEvent, stringWriter);
                 string message = stringWriter.GetStringBuilder().ToString();
@@ -42,8 +41,17 @@ namespace OpenUtau.App.ViewModels {
 
     public class DebugViewModel : ViewModelBase {
 
+        private DebugWindow? window;
+
+        public void SetWindow(DebugWindow w) {
+            window = w;
+        }
+
         public DebugViewModel() {
             ReverseLogOrderCommand = ReactiveCommand.Create(() => { Sink.Inst.ReverseOrder(); });
+            CopyLogCommand = ReactiveCommand.Create(() => {
+                window?.CopyLogText();
+            });
         }
 
         public class Sink : ILogEventSink {
@@ -66,7 +74,7 @@ namespace OpenUtau.App.ViewModels {
                     reverseOrder();
                 }
             }
-            
+
             private void reverseOrder() {
                 var t = LogEvents;
                 var x = t.AsEnumerable().Reverse().ToArray();
@@ -99,11 +107,24 @@ namespace OpenUtau.App.ViewModels {
                     LogEvents.Add(logEvent);
                 }
             }
+
+            /// <summary>
+            /// make the debug string for copying to the clipboard
+            /// </summary>
+            public override string ToString() {
+                var sb = new StringBuilder();
+                foreach (var l in LogEvents) {
+                    sb.AppendLine($"{l.Timestamp} : {l.Level} : {l.MessageTemplate.Text}");
+                }
+
+                return sb.ToString();
+            }
         }
 
         [Reactive] public LogEventLevel LogEventLevel { get; set; }
         public ObservableCollection<LogEvent> LogEvents => Sink.Inst.LogEvents;
         public ReactiveCommand<Unit, Unit> ReverseLogOrderCommand { get; private set; }
+        public ReactiveCommand<Unit, Unit> CopyLogCommand { get; private set; }
 
         public void Clear() {
             Sink.Inst.LogEvents.Clear();

@@ -10,10 +10,19 @@ namespace OpenUtau.App.Views {
 
         public DebugWindow() {
             DataContext = viewModel = new DebugViewModel();
+            viewModel.SetWindow(this);
+
             InitializeComponent();
 #if DEBUG
             this.AttachDevTools();
 #endif
+        }
+        public void CopyLogText() {
+            var box = this.Find<TextBox>("CopyTextBox");
+            box.Text = DebugViewModel.Sink.Inst.ToString();
+            box.SelectAll();
+            box.Copy();
+            box.Clear();
         }
 
         private void InitializeComponent() {
