@@ -29,7 +29,7 @@
         <ComboBoxItem Content="Error"/>
         <ComboBoxItem Content="Fatal"/>
       </ComboBox>
-      <Button Margin="0" Command="{Binding CopyLogCommand}" Content="Copy Log" />
+      <Button Margin="0" Command="{Binding CopyLogCommand}" Content="{DynamicResource debug.copylog}" />
       <Button Margin="0" Command="{Binding ReverseLogOrderCommand}" Content="{DynamicResource debug.reverselogorder}" />
       <Button Margin="0" Command="{Binding Clear}" Content="{DynamicResource debug.clear}"/>
     </StackPanel>
