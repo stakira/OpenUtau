@@ -135,13 +135,12 @@ namespace OpenUtau.Plugin.Builtin {
                   || loi.EndsWith("ao") || loi.EndsWith("eo") || loi.EndsWith("êu") || loi.EndsWith("iu")
                   || loi.EndsWith("an") || loi.EndsWith("ơn") || loi.EndsWith("in") || loi.EndsWith("en") || loi.EndsWith("ên") || loi.EndsWith("on") || loi.EndsWith("ôn") || loi.EndsWith("un") || loi.EndsWith("ưn")
                   || loi.EndsWith("am") || loi.EndsWith("ơm") || loi.EndsWith("im") || loi.EndsWith("em") || loi.EndsWith("êm") || loi.EndsWith("om") || loi.EndsWith("ôm") || loi.EndsWith("um") || loi.EndsWith("ưm")
-                  || loi.EndsWith("aN") || loi.EndsWith("ơN") || loi.EndsWith("iN") || loi.EndsWith("eN") || loi.EndsWith("êN") || loi.EndsWith("oN") || loi.EndsWith("ôN") || loi.EndsWith("uN") || loi.EndsWith("ưN")
-                  || loi.EndsWith("aJ") || loi.EndsWith("iJ") || loi.EndsWith("êJ")
+                  || loi.EndsWith("aN") || loi.EndsWith("ơN") || loi.EndsWith("iN") || loi.EndsWith("eN") || loi.EndsWith("êN") || loi.EndsWith("ưN")
                   || loi.EndsWith("at") || loi.EndsWith("ơt") || loi.EndsWith("it") || loi.EndsWith("et") || loi.EndsWith("êt") || loi.EndsWith("ot") || loi.EndsWith("ôt") || loi.EndsWith("ut") || loi.EndsWith("ưt")
                   || loi.EndsWith("aC") || loi.EndsWith("iC") || loi.EndsWith("êC")
                   || loi.EndsWith("ak") || loi.EndsWith("ơk") || loi.EndsWith("ik") || loi.EndsWith("ek") || loi.EndsWith("êk") || loi.EndsWith("ok") || loi.EndsWith("ôk") || loi.EndsWith("uk") || loi.EndsWith("ưk")
                   || loi.EndsWith("ap") || loi.EndsWith("ơp") || loi.EndsWith("ip") || loi.EndsWith("ep") || loi.EndsWith("êp") || loi.EndsWith("op") || loi.EndsWith("ôp") || loi.EndsWith("up") || loi.EndsWith("ưp")
-                  || loi.EndsWith("ia") || loi.EndsWith("ua") || loi.EndsWith("ưa") || loi.EndsWith("ôN") || loi.EndsWith("uN") || loi.EndsWith("oN")
+                  || loi.EndsWith("ia") || loi.EndsWith("ua") || loi.EndsWith("ưa") || loi.EndsWith("uôN")
                   || loi.EndsWith("uya") && (note.lyric != "qua"));
             bool ViTriDai = (loi.EndsWith("ay") || loi.EndsWith("ây") || loi.EndsWith("uy")
                   || loi.EndsWith("au") || loi.EndsWith("âu")
@@ -151,7 +150,9 @@ namespace OpenUtau.Plugin.Builtin {
                   || loi.EndsWith("ăp") || loi.EndsWith("âp")
                   || loi.EndsWith("ăn") || loi.EndsWith("ân")
                   || loi.EndsWith("ăN") || loi.EndsWith("âN")
-                  || loi.EndsWith("ăm") || loi.EndsWith("âm");
+                  || loi.EndsWith("ăm") || loi.EndsWith("âm")
+                  || loi.EndsWith("aJ") || loi.EndsWith("iJ") || loi.EndsWith("êJ")
+                  || loi.EndsWith("ôN") || loi.EndsWith("uN") || loi.EndsWith("oN");
             if (ViTriTB) {
                 ViTri = Medium;
             }
