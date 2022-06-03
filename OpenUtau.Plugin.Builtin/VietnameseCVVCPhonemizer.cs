@@ -442,7 +442,7 @@ namespace OpenUtau.Plugin.Builtin {
                     // 1 kí tự 
                     if (dem == 1) {
                         phoneme = $"{vow}{loi}";
-                        if (Cvoiced) {
+                        if (Cvoiced && note.lyric != "-") {
                             phoneme = $"{vow} {loi}";
                         }
                         phoneme = phoneme.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O")
