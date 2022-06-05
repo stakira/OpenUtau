@@ -697,7 +697,7 @@ namespace OpenUtau.Plugin.Builtin {
                     } else if (a) {
                         vow = "m";
                     }
-                    a = (PR.EndsWith("breaT"));
+                    a = (PR.EndsWith("breaT") || PR.EndsWith("C"));
                     if (a) {
                         vow = "-";
                     }
