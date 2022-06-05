@@ -54,7 +54,7 @@ namespace OpenUtau.Plugin.Builtin {
                 };
             }
             int totalDuration = notes.Sum(n => n.duration);
-            int Short = totalDuration * 4 / 6;
+            int Short = totalDuration * 4 / 7;
             int Long = totalDuration / 6;
             int Medium = totalDuration / 3;
             int End = totalDuration - 30;
