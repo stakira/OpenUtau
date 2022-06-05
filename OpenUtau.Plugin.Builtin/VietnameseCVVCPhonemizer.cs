@@ -229,7 +229,16 @@ namespace OpenUtau.Plugin.Builtin {
                 if (V1 + V2 == "Ong" || V1 + V2 == "ung" || V1 + V2 == "ong") {
                     N = "m";
                 }
-                if (NoNext) {
+                if (NoNext && tontaiCcuoi) {
+                    if (prevNeighbour == null) {
+                        return new Result {
+                            phonemes = new Phoneme[] {
+                            new Phoneme { phoneme = $"-{V1}"  },
+                            new Phoneme { phoneme = $"{V1}{V2}", position = ViTri  },
+                            }
+                        };
+                    }
+                } else if (NoNext) {
                     if (prevNeighbour == null) {
                         return new Result {
                             phonemes = new Phoneme[] {
@@ -239,8 +248,7 @@ namespace OpenUtau.Plugin.Builtin {
                             }
                         };
                     }
-                } else
-                    if (prevNeighbour == null) {
+                } else if (prevNeighbour == null) {
                     return new Result {
                         phonemes = new Phoneme[] {
                             new Phoneme { phoneme = $"-{V1}"  },
@@ -320,12 +328,21 @@ namespace OpenUtau.Plugin.Builtin {
                             }
                         };
                     }
+                } else if (NoNext) {
+                    if (prevNeighbour == null) {
+                        return new Result {
+                            phonemes = new Phoneme[] {
+                            new Phoneme { phoneme = $"-{V1}"  },
+                            new Phoneme { phoneme = $"{VVC}", position = ViTri  },
+                            new Phoneme { phoneme = $"{C}-", position = End  },
+                            }
+                        };
+                    }
                 } else if (prevNeighbour == null) {
                     return new Result {
                         phonemes = new Phoneme[] {
                             new Phoneme { phoneme = $"-{V1}"  },
                             new Phoneme { phoneme = $"{VVC}", position = ViTri  },
-                            new Phoneme { phoneme = $"{C}-", position = End  },
                         }
                     };
                 }
@@ -755,7 +772,7 @@ namespace OpenUtau.Plugin.Builtin {
                                     new Phoneme { phoneme = $"{N}-", position = End  },
                                 }
                             };
-                        } else if (Cvoiced || tontaiCcuoi) {
+                        } else if (Cvoiced && tontaiCcuoi) {
                             return new Result {
                                 phonemes = new Phoneme[] {
                                     new Phoneme { phoneme = $"{vow} {V1}" },
@@ -814,6 +831,14 @@ namespace OpenUtau.Plugin.Builtin {
                             new Phoneme { phoneme = $"{N}-", position = End  },
                                 }
                             };
+                        } else if (Cvoiced && tontaiCcuoi) {
+                            return new Result {
+                                phonemes = new Phoneme[] {
+                            new Phoneme { phoneme = $"{vow} {V1}"  },
+                            new Phoneme { phoneme = $"{V1}{V2}", position = Long  },
+                            new Phoneme { phoneme = $"{VC}", position = ViTri  },
+                                }
+                            };
                         } else if (NoNext) {
                             return new Result {
                                 phonemes = new Phoneme[] {
@@ -860,6 +885,13 @@ namespace OpenUtau.Plugin.Builtin {
                             return new Result {
                                 phonemes = new Phoneme[] {
                             new Phoneme { phoneme = $"{vow}{V1}"  },
+                            new Phoneme { phoneme = $"{VVC}", position = ViTri  },
+                                }
+                            };
+                        } else if (Cvoiced && tontaiCcuoi) {
+                            return new Result {
+                                phonemes = new Phoneme[] {
+                            new Phoneme { phoneme = $"{vow} {V1}"  },
                             new Phoneme { phoneme = $"{VVC}", position = ViTri  },
                                 }
                             };
@@ -918,10 +950,25 @@ namespace OpenUtau.Plugin.Builtin {
                         } else if (NoNext && tontaiCcuoi) {
                             return new Result {
                                 phonemes = new Phoneme[] {
-                            new Phoneme { phoneme = $"{vow} {C}", position = VCP  },
                             new Phoneme { phoneme = $"{C}{V1}"  },
                             new Phoneme { phoneme = $"{V1}{V2}", position = ViTri  },
                             new Phoneme { phoneme = $"{N}-", position = End  },
+                                }
+                            };
+                        } else if (prevkocoCcuoi && tontaiCcuoi) {
+                            return new Result {
+                                phonemes = new Phoneme[] {
+                            new Phoneme { phoneme = $"{vow} {C}", position = VCP  },
+                            new Phoneme { phoneme = $"{C}{V1}"  },
+                            new Phoneme { phoneme = $"{V1}{V2}", position = ViTri  },
+                                }
+                            };
+                        } else if (prevkocoCcuoi) {
+                            return new Result {
+                                phonemes = new Phoneme[] {
+                            new Phoneme { phoneme = $"{vow} {C}", position = VCP  },
+                            new Phoneme { phoneme = $"{C}{V1}"  },
+                            new Phoneme { phoneme = $"{V1}{V2}", position = ViTri  },
                                 }
                             };
                         } else if (NoNext) {
@@ -932,18 +979,11 @@ namespace OpenUtau.Plugin.Builtin {
                             new Phoneme { phoneme = $"{N}-", position = End  },
                                 }
                             };
-                        } else if (prevkocoCcuoi && tontaiCcuoi) {
-                            return new Result {
-                                phonemes = new Phoneme[] {
-                            new Phoneme { phoneme = $"{C}{V1}"  },
-                            new Phoneme { phoneme = $"{V1}{V2}", position = ViTri  },
-                                }
-                            };
                         } else return new Result {
                             phonemes = new Phoneme[] {
                             new Phoneme { phoneme = $"{C}{V1}"  },
                             new Phoneme { phoneme = $"{V1}{V2}", position = ViTri  },
-                                }
+                            }
                         };
                     }
                     // 4 kí tự VVVC có VVC liền, chia 3 nốt, ví dụ "uyết" "uyên"
@@ -983,6 +1023,14 @@ namespace OpenUtau.Plugin.Builtin {
                             return new Result {
                                 phonemes = new Phoneme[] {
                             new Phoneme { phoneme = $"{vow}{V1}"  },
+                            new Phoneme { phoneme = $"{V1}{V2}", position = Long  },
+                            new Phoneme { phoneme = $"{VVC}", position = ViTri  },
+                                }
+                            };
+                        } else if (Cvoiced && tontaiCcuoi) {
+                            return new Result {
+                                phonemes = new Phoneme[] {
+                            new Phoneme { phoneme = $"{vow} {V1}"  },
                             new Phoneme { phoneme = $"{V1}{V2}", position = Long  },
                             new Phoneme { phoneme = $"{VVC}", position = ViTri  },
                                 }
@@ -1039,12 +1087,20 @@ namespace OpenUtau.Plugin.Builtin {
                                 new Phoneme { phoneme = $"{VVC}", position = ViTri  },
                                 }
                             };
-                        } else if (prevkocoCcuoi || tontaiCcuoi) {
+                        } else if (prevkocoCcuoi && tontaiCcuoi) {
                                 return new Result {
                                     phonemes = new Phoneme[] {
                                         new Phoneme { phoneme = $"{vow} {C}", position = VCP  },
                                         new Phoneme { phoneme = $"{C}{V1}" },
                                         new Phoneme { phoneme = $"{VVC}", position = ViTri  },
+                                }
+                            };
+                        } else if (prevkocoCcuoi) {
+                            return new Result {
+                                phonemes = new Phoneme[] {
+                            new Phoneme { phoneme = $"{vow} {C}", position = VCP  },
+                            new Phoneme { phoneme = $"{C}{V1}" },
+                            new Phoneme { phoneme = $"{VVC}", position = ViTri  },
                                 }
                             };
                         } else if (NoNext) {
@@ -1112,7 +1168,16 @@ namespace OpenUtau.Plugin.Builtin {
                             new Phoneme { phoneme = $"{VC}", position = ViTri  },
                                 }
                             };
-                        } else if (tontaiCcuoi || prevkocoCcuoi) {
+                        } else if (tontaiCcuoi && prevkocoCcuoi) {
+                            return new Result {
+                                phonemes = new Phoneme[] {
+                            new Phoneme { phoneme = $"{vow} {C}", position = VCP  },
+                            new Phoneme { phoneme = $"{C}{V1}"  },
+                            new Phoneme { phoneme = $"{V1}{V2}", position = Long  },
+                            new Phoneme { phoneme = $"{VC}", position = ViTri  },
+                                }
+                            };
+                        } else if (prevkocoCcuoi) {
                             return new Result {
                                 phonemes = new Phoneme[] {
                             new Phoneme { phoneme = $"{vow} {C}", position = VCP  },
@@ -1183,7 +1248,16 @@ namespace OpenUtau.Plugin.Builtin {
                             new Phoneme { phoneme = $"{VVC}", position = ViTri  },
                                 }
                             };
-                        } else if (prevkocoCcuoi || tontaiCcuoi) {
+                        } else if (prevkocoCcuoi && tontaiCcuoi) {
+                            return new Result {
+                                phonemes = new Phoneme[] {
+                            new Phoneme { phoneme = $"{vow} {C}", position = VCP  },
+                            new Phoneme { phoneme = $"{C}{V1}"  },
+                            new Phoneme { phoneme = $"{V1}{V2}", position = Long  },
+                            new Phoneme { phoneme = $"{VVC}", position = ViTri  },
+                                }
+                            };
+                        } else if (prevkocoCcuoi) {
                             return new Result {
                                 phonemes = new Phoneme[] {
                             new Phoneme { phoneme = $"{vow} {C}", position = VCP  },
