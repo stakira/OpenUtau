@@ -163,7 +163,7 @@ namespace OpenUtau.Plugin.Builtin {
             { "zw", "す" },
         };
 
-        private readonly string[] SpecialClusters = "ky kw gy gw sy sw jw ty tw chw dy dw ny nw hy hw by bw py pw my mw ry rw rry rrw ly lw".Split();
+        private readonly string[] SpecialClusters = "ky kw gy gw sy sw zy zw jw ty tw chw dy dw ny nw hy hw by bw py pw my mw ry rw rry rrw ly lw".Split();
 
         private Dictionary<string, string> AltCv => altCv;
         private static readonly Dictionary<string, string> altCv = new Dictionary<string, string> {
@@ -184,6 +184,15 @@ namespace OpenUtau.Plugin.Builtin {
             {"swi", "sui" },
             {"swe", "sule" },
             {"swo", "sulo" },
+            {"zi", "suli" },
+            {"zya", "sulya" },
+            {"zyu", "sulyu" },
+            {"zye", "sulile" },
+            {"zyo", "sulyo" },
+            {"zwa", "sula" },
+            {"zwi", "sui" },
+            {"zwe", "sule" },
+            {"zwo", "sulo" },
             {"ti", "teli" },
             {"tya", "telya" },
             {"tyu", "telyu" },
