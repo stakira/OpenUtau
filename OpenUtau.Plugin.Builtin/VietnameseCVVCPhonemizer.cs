@@ -952,7 +952,6 @@ namespace OpenUtau.Plugin.Builtin {
                                 phonemes = new Phoneme[] {
                             new Phoneme { phoneme = $"{C}{V1}"  },
                             new Phoneme { phoneme = $"{V1}{V2}", position = ViTri  },
-                            new Phoneme { phoneme = $"{N}-", position = End  },
                                 }
                             };
                         } else if (prevkocoCcuoi && tontaiCcuoi) {
