@@ -13,6 +13,8 @@
   <system:String x:Key="debug.clear">Clear</system:String>
     
   <system:String x:Key="debug.reverselogorder">Reverse Log Order</system:String>
+    
+  <system:String x:Key="debug.copylog">Copy Log</system:String>
 
   <system:String x:Key="dialogs.about.caption">About OpenUTAU</system:String>
   <system:String x:Key="dialogs.about.message">
