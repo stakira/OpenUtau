@@ -742,6 +742,9 @@ namespace OpenUtau.Plugin.Builtin {
                             V2 = "u";
                         }
                         string N = V2;
+                        if (V1 + V2 == "Ong" || V1 + V2 == "ung" || V1 + V2 == "ong") {
+                            N = "m";
+                        }
                         if (NoNext && Cvoiced && tontaiCcuoi) {
                             return new Result {
                                 phonemes = new Phoneme[] {
@@ -930,6 +933,9 @@ namespace OpenUtau.Plugin.Builtin {
                         V2 = V2.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O").Replace("ư", "U")
                                .Replace("C", "ch").Replace("N", "ng").Replace("J", "nh");
                         string N = V2;
+                        if (V1 + V2 == "Ong" || V1 + V2 == "ung" || V1 + V2 == "ong") {
+                            N = "m";
+                        }
                         if (NoNext && prevkocoCcuoi && tontaiCcuoi) {
                             return new Result {
                                 phonemes = new Phoneme[] {
