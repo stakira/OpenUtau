@@ -1129,10 +1129,17 @@ namespace OpenUtau.Plugin.Builtin {
                         if (num == "") {
                             num = "1";
                         }
-                        return new Result {
-                            phonemes = new Phoneme[] {
+                        if (vow == "-") {
+                            return new Result {
+                                phonemes = new Phoneme[] {
                             new Phoneme { phoneme = $"breath{num}"  },
-                        }
+                            }
+                            };
+                        } else return new Result {
+                            phonemes = new Phoneme[] {
+                            new Phoneme { phoneme = $"{vow} -", position = -60 },
+                            new Phoneme { phoneme = $"breath{num}"  },
+                            }
                         };
                     }
                 }
