@@ -12,7 +12,7 @@ namespace OpenUtau.Plugin.Builtin {
         static readonly string[] vowels = new string[] {
             "a=a,à,á,ả,ã,ạ,ă,ằ,ắ,ẳ,ẵ,ặ,A,À,Á,Ả,Ã,Ạ,Ă,Ằ,Ắ,Ẳ,Ẵ,Ặ",
             "A=â,ầ,ấ,ẩ,ẫ,ậ,Â,Ầ,Ấ,Ẩ,Ẫ,Ậ",
-            "@=ơ,ờ,ớ,ở,ỡ,ợ,Ơ,Ờ,Ớ,Ở,Ỡ,Ợ",
+            "@=ơ,ờ,ớ,ở,ỡ,ợ,Ơ,Ờ,Ớ,Ở,Ỡ,Ợ,@",
             "i=i,y,ì,í,ỉ,ĩ,ị,ỳ,ý,ỷ,ỹ,ỵ,I,Y,Ì,Í,Ỉ,Ĩ,Ị,Ỳ,Ý,Ỷ,Ỹ,Ỵ",
             "e=e,è,é,ẻ,ẽ,ẹ,E,È,É,Ẻ,Ẽ,Ẹ",
             "E=ê,ề,ế,ể,ễ,ệ,Ê,Ề,Ế,Ể,Ễ,Ệ",
@@ -611,6 +611,18 @@ namespace OpenUtau.Plugin.Builtin {
                 var unicode = ToUnicodeElements(lyric);
                 if (vowelLookup.TryGetValue(unicode.LastOrDefault() ?? string.Empty, out var vow)) {
                     string PR = prevNeighbour?.lyric;
+                    if (PR.StartsWith("?")) {
+                        vow = PR.Substring(PR.Length - 1, 1);
+                        if (PR.EndsWith("nh")) {
+                            vow = "nh";
+                        }
+                        if (PR.EndsWith("ng")) {
+                            vow = "ng";
+                        }
+                        if (PR.EndsWith("ch") || PR.EndsWith("t") || PR.EndsWith("k") || PR.EndsWith("p")) {
+                            vow = "-";
+                        }
+                    }
                     if (PR != "R") {
                         PR = PR.ToLower();
                     }
