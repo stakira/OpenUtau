@@ -366,7 +366,7 @@ namespace OpenUtau.Plugin.Builtin {
                     V2 = V2.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O").Replace("ư", "U")
                                 .Replace("C", "ch").Replace("N", "ng").Replace("J", "nh");
                     a = (loi.EndsWith("ia") || loi.EndsWith("ua") || loi.EndsWith("ưa"));
-                    if (a && (note.lyric != "qua")) {
+                    if (a && note.lyric != "qua") {
                         V2 = "A";
                     }
                     if (note.lyric.EndsWith("ao") || note.lyric.EndsWith("eo")) {
@@ -941,7 +941,7 @@ namespace OpenUtau.Plugin.Builtin {
                             string V1 = loi.Substring(1, 1);
                             string V2 = loi.Substring(2);
                             a = (loi.EndsWith("ia") || loi.EndsWith("ua") || loi.EndsWith("ưa"));
-                            if (a) {
+                            if (a && note.lyric != "qua") {
                                 V2 = "A";
                             }
                             if (loi.EndsWith("oa") || loi.EndsWith("oe")) {
