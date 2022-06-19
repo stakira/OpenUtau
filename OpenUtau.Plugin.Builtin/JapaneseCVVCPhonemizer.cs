@@ -83,6 +83,7 @@ namespace OpenUtau.Plugin.Builtin {
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
             var note = notes[0];
             var currentUnicode = ToUnicodeElements(note.lyric);
+            var vowLyric = note.lyric;
             var currentLyric = note.lyric;
             var attr0 = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
             var attr1 = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 1) ?? default;
@@ -97,8 +98,8 @@ namespace OpenUtau.Plugin.Builtin {
                 var prevUnicode = ToUnicodeElements(prevNeighbour?.lyric);
                 // Current note is VV
                 if (vowelLookup.TryGetValue(prevUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
-                    currentLyric = $"{vow} {currentLyric}";
-                    if (singer.TryGetMappedOto(currentLyric, note.tone + attr0.toneShift, attr0.voiceColor, out var oto)) {
+                    vowLyric = $"{vow} {currentLyric}";
+                    if (singer.TryGetMappedOto(vowLyric, note.tone + attr0.toneShift, attr0.voiceColor, out var oto)) {
                         currentLyric = oto.Alias;
                     }
                 }
