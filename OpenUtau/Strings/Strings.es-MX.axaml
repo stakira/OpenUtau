@@ -230,7 +230,7 @@ Advertencia: Moresampler no es totalmente compatible por ahora. Este puede ser l
   <system:String x:Key="singers.location">Mostrar Archivos</system:String>
   <system:String x:Key="singers.otoview.moveleft">Mover hacia Izquierda</system:String>
   <system:String x:Key="singers.otoview.moveright">Mover hacia Derecha</system:String>
-  n<system:String x:Key="singers.otoview.selectnext">Seleccionar Siguiente</system:String>
+  <system:String x:Key="singers.otoview.selectnext">Seleccionar Siguiente</system:String>
   <system:String x:Key="singers.otoview.selectprev">Seleccionar Anterior</system:String>
   <system:String x:Key="singers.otoview.showall">Mostrar Todo</system:String>
   <system:String x:Key="singers.otoview.zoomin">Acercar</system:String>
