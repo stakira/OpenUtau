@@ -542,6 +542,10 @@ namespace OpenUtau.Plugin.Builtin {
                     }
                     phonemes.Add(solo);
                 }
+
+                if (solo.Contains("ん")) {
+                    TryAddPhoneme(phonemes, ending.tone, $"n R", $"n -", $"n-");
+                }
                 prevV = WanaKana.ToRomaji(solo).Last<char>().ToString();
             }
 
