@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -83,8 +83,13 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             } else { // VCV
                 var vcv = $"{prevV} h{v}";
-                if (cc[0] == "h" && HasOto(vcv, syllable.vowelTone)) {
+                if (cc[0] == "h" && syllable.IsVCVWithOneConsonant && HasOto(vcv, syllable.vowelTone)) {
                     basePhoneme = vcv;
+                } else if (string.Join("", cc) == "hj" && prevV == "u" && syllable.IsVCVWithMoreThanOneConsonant && HasOto($"u hju", syllable.vowelTone)) {
+                    basePhoneme = $"u hju";
+                } else if (string.Join("", cc) == "hj" && prevV != "u") {
+                    basePhoneme = $"- hju";
+                    phonemes.Add($"{prevV} -");
                 } else {
                     // try vcc
                     for (var i = lastC + 1; i >= 0; i--) {
