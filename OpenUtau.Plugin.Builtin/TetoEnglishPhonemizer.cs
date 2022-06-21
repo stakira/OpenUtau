@@ -113,6 +113,10 @@ namespace OpenUtau.Plugin.Builtin {
                                 lastC = i;
                                 basePhoneme = ccv;
                                 break;
+                            } else if (string.Join("", cc.Skip(i)) == "hj") {
+                                lastC = i;
+                                basePhoneme = $"- hju";
+                                break;
                             }
                         }
                     }
