@@ -38,8 +38,13 @@ namespace OpenUtau.Plugin.Builtin {
             if (syllable.IsStartingV) {
                 basePhoneme = $"- {v}";
             } else if (syllable.IsVV) {
-                basePhoneme = $"{prevV} {v}";
-                if (!HasOto(basePhoneme, syllable.vowelTone)) {
+                if (!CanMakeAliasExtension(syllable)) {
+                    basePhoneme = $"{prevV} {v}";
+                } else {
+                    // the previous alias will be extended
+                    basePhoneme = null;
+                } 
+                if (!HasOto($"{prevV} {v}", syllable.vowelTone)) {
                     basePhoneme = $"- {v}";
                     phonemes.Add($"{prevV} -");
                 }
