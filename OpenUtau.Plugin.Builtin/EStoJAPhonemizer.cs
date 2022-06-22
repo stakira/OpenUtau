@@ -549,11 +549,11 @@ namespace OpenUtau.Plugin.Builtin {
                     } else if (ending.IsEndingVCWithMoreThanOneConsonant) {
                         if (cc[1].Contains("n") && cc[1].Contains(cc.Last())) {
                             TryAddPhoneme(phonemes, ending.tone, $"n R", $"n -", $"n-");
-                        } else if (cc[1].Contains("ng") && cc[1].Contains(cc.Last())) {
+                        } else if (cc[1].Contains("m") && cc[1].Contains(cc.Last())) {
                             TryAddPhoneme(phonemes, ending.tone, $"n R", $"n -", $"n-");
                         } else if (cc[2].Contains("n") && cc[2].Contains(cc.Last())) {
                             TryAddPhoneme(phonemes, ending.tone, $"n R", $"n -", $"n-");
-                        } else if (cc[2].Contains("ng") && cc[2].Contains(cc.Last())) {
+                        } else if (cc[2].Contains("m") && cc[2].Contains(cc.Last())) {
                             TryAddPhoneme(phonemes, ending.tone, $"n R", $"n -", $"n-");
                         }
                     }
