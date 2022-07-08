@@ -183,6 +183,9 @@ namespace OpenUtau.Classic {
             if (!string.IsNullOrWhiteSpace(bankConfig.Version)) {
                 bank.Version = bankConfig.Version;
             }
+            if (!string.IsNullOrWhiteSpace(bankConfig.DefaultPhonemizer)) {
+                bank.DefaultPhonemizer = bankConfig.DefaultPhonemizer;
+            }
             if (bankConfig.Subbanks != null && bankConfig.Subbanks.Length > 0) {
                 foreach (var subbank in bankConfig.Subbanks) {
                     subbank.Prefix ??= string.Empty;

@@ -228,8 +228,17 @@
 
   <system:String x:Key="singers.caption">歌手</system:String>
   <system:String x:Key="singers.location">位置</system:String>
+  <system:String x:Key="singers.otoview.moveleft">左移</system:String>
+  <system:String x:Key="singers.otoview.moveright">右移</system:String>
+  <system:String x:Key="singers.otoview.selectnext">下一个</system:String>
+  <system:String x:Key="singers.otoview.selectprev">上一个</system:String>
+  <system:String x:Key="singers.otoview.showall">显示全部</system:String>
+  <system:String x:Key="singers.otoview.zoomin">放大</system:String>
+  <system:String x:Key="singers.otoview.zoomout">缩小</system:String>
   <system:String x:Key="singers.refresh">刷新</system:String>
+  <system:String x:Key="singers.setdefaultphonemizer">选择默认音素器</system:String>
   <system:String x:Key="singers.setencoding">选择编码</system:String>
+  <system:String x:Key="singers.setportrait">选择立绘</system:String>
   <system:String x:Key="singers.subbanks.cancel">取消</system:String>
   <system:String x:Key="singers.subbanks.clear">清空</system:String>
   <system:String x:Key="singers.subbanks.color">色彩</system:String>

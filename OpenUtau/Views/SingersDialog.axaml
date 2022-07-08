@@ -37,7 +37,15 @@
             Click="OnSingerMenuButton">
       <Button.ContextMenu>
         <ContextMenu Name="SingerMenu" PlacementMode="Bottom">
+          <MenuItem Header="{DynamicResource singers.setportrait}" Click="OnSetPortrait"/>
           <MenuItem Header="{DynamicResource singers.setencoding}" Items="{Binding SetEncodingMenuItems}">
+            <MenuItem.DataTemplates>
+              <DataTemplate DataType="vm:MenuItemViewModel">
+                <MenuItem Header="{Binding Header}" Command="{Binding Command}" CommandParameter="{Binding CommandParameter}"/>
+              </DataTemplate>
+            </MenuItem.DataTemplates>
+          </MenuItem>
+          <MenuItem Header="{DynamicResource singers.setdefaultphonemizer}" Items="{Binding SetDefaultPhonemizerMenuItems}">
             <MenuItem.DataTemplates>
               <DataTemplate DataType="vm:MenuItemViewModel">
                 <MenuItem Header="{Binding Header}" Command="{Binding Command}" CommandParameter="{Binding CommandParameter}"/>

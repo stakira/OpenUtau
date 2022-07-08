@@ -15,6 +15,7 @@ namespace OpenUtau.Classic {
         public string Web;
         public string Version;
         public string OtherInfo;
+        public string DefaultPhonemizer;
         public Encoding TextFileEncoding;
         public USingerType SingerType = USingerType.Classic;
         public List<OtoSet> OtoSets = new List<OtoSet>();

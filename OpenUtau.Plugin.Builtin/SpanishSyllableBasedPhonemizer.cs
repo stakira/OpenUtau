@@ -31,12 +31,13 @@ namespace OpenUtau.Plugin.Builtin {
         private readonly string[] longConsonants = "b,ch,d,dz,g,h,s,sh,k,p,rr,t,ts,z,l,m,n".Split(',');
         private readonly string[] burstConsonants = "b,ch,d,dz,g,j,k,p,r,t,ts".Split(',');
         private readonly string[] notClusters = "dz,hh,ll,nh,sh,zz,zh".Split(',');
-        private readonly string[] specialClusters = "by,dy,fy,gy,hy,jy,ky,ly,my,py,ry,rry,sy,ty,vy,zy,bw,chw,dw,fw,gw,hw,jw,kw,lw,llw,mw,nw,pw,rw,rrw,sw,tw,vw,zw,bl,fl,gl,kl,pl,br,dr,fr,gr,kr,pr,tr,si".Split(',');
+        private readonly string[] specialClusters = "by,dy,fy,gy,hy,jy,ky,ly,my,py,ry,rry,sy,ty,vy,zy,bw,chw,dw,fw,gw,hw,jw,kw,lw,llw,mw,nw,pw,rw,rrw,sw,tw,vw,zw,bl,fl,gl,kl,pl,br,dr,fr,gr,kr,pr,tr".Split(',');
 
         protected override string[] GetVowels() => vowels;
         protected override string[] GetConsonants() => consonants;
         protected override string GetDictionaryName() => "cmudict_es.txt";
         protected override Dictionary<string, string> GetDictionaryPhonemesReplacement() => dictionaryReplacements;
+
         protected override List<string> ProcessSyllable(Syllable syllable){
             string prevV = syllable.prevV;
             string[] cc = syllable.cc;
@@ -296,27 +297,17 @@ namespace OpenUtau.Plugin.Builtin {
             string v = ending.prevV;
 
             var phonemes = new List<string>();
-            var vr = $"{v} -";
-            if (ending.IsEndingV && HasOto(vr, ending.tone)) {   // ending V
-                phonemes.Add(vr);
+            if (ending.IsEndingV) {   // ending V
+                TryAddPhoneme(phonemes, ending.tone, $"{v} R", $"{v} -", $"{v}-");
             } else if (ending.IsEndingVCWithOneConsonant) {   // ending VC
-                var vcr = $"{v} {cc[0]}-";
-                var vc1 = $"{v} {cc[0]}";
-                var vc2 = $"{v}{cc[0]}";
                 var vrr = $"{v}rr";
                 if (cc[0] == "r" && HasOto(vrr, ending.tone)) {
                     phonemes.Add(vrr);
-                } else if (HasOto(vcr, ending.tone)) {   // applies ending VC
-                    phonemes.Add(vcr);
-                } else if (!HasOto(vcr, ending.tone) && (HasOto(vc1, ending.tone))) {   // if no ending VC, then regular VC
-                    phonemes.Add(vc1);
+                } else {   // applies ending VC
+                    TryAddPhoneme(phonemes, ending.tone, $"{v} {cc[0]}-", $"{v}{cc[0]}-", $"{v} {cc[0]}", $"{v}{cc[0]}", $"{cc[0]}");
                     if (burstConsonants.Contains(cc[0])) {
                         TryAddPhoneme(phonemes, ending.tone, cc[0]);
                     }
-                } else if (!HasOto(vc1, ending.tone) && HasOto(vc2, ending.tone)) {
-                    phonemes.Add(vc2);
-                } else if (!HasOto(vc2, ending.tone) && !HasOto(vc2, ending.tone)) {
-                    phonemes.Add($"{cc[0]}");
                 }
             } else if (ending.IsEndingVCWithMoreThanOneConsonant) {   // ending VCC (very rare, usually only occurs in words ending with "x")
                 var vcc = $"{v} {string.Join("", cc)}";
@@ -325,12 +316,7 @@ namespace OpenUtau.Plugin.Builtin {
                 var vc2 = $"{v}{cc[0]}";
                 var cc1 = $"{cc[0]} {cc[1]}";
                 var cc2 = $"{cc[0]}{cc[1]}";
-                if (HasOto(vcc, ending.tone)) {   // applies ending VCC
-                    phonemes.Add(vcc);
-                }
-                if (!HasOto(vcc, ending.tone)) {   // if no ending VCC, then CC transitions
-                    TryAddPhoneme(phonemes, ending.tone, vcc2);
-                }
+                TryAddPhoneme(phonemes, ending.tone, vcc, vcc2);
                 if (!HasOto(vcc, ending.tone) && !HasOto(vcc2, ending.tone) && HasOto(vc, ending.tone)) {
                     phonemes.Add(vc);
                     TryAddPhoneme(phonemes, ending.tone, cc1);
