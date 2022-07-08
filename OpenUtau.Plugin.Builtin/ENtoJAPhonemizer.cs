@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
@@ -391,6 +391,23 @@ namespace OpenUtau.Plugin.Builtin {
                     }
                     phonemes.Add(solo);
                 }
+
+                if (solo.Contains("ん")) {
+                    if (ending.IsEndingVCWithOneConsonant) {
+                        TryAddPhoneme(phonemes, ending.tone, $"n R", $"n -", $"n-");
+                    } else if (ending.IsEndingVCWithMoreThanOneConsonant) {
+                        if (cc[1].Contains("n") && cc[1].Contains(cc.Last())) {
+                            TryAddPhoneme(phonemes, ending.tone, $"n R", $"n -", $"n-");
+                        } else if (cc[1].Contains("ng") && cc[1].Contains(cc.Last())) {
+                            TryAddPhoneme(phonemes, ending.tone, $"n R", $"n -", $"n-");
+                        } else if (cc[2].Contains("n") && cc[2].Contains(cc.Last())) {
+                            TryAddPhoneme(phonemes, ending.tone, $"n R", $"n -", $"n-");
+                        } else if (cc[2].Contains("ng") && cc[2].Contains(cc.Last())) {
+                            TryAddPhoneme(phonemes, ending.tone, $"n R", $"n -", $"n-");
+                        }
+                    }
+                }
+
                 prevV = WanaKana.ToRomaji(solo).Last<char>().ToString();
             }
             
