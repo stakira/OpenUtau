@@ -85,4 +85,15 @@ namespace OpenUtau.Core.Editing {
             return (c == '_' || c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z') && c != 'R' && c != 'r';
         }
     }
+
+    public class DashToPlus : SingleNoteLyricEdit {
+        public override string Name => "pianoroll.menu.lyrics.dashtoplus";
+        protected override string Transform(string lyric) {
+            if (lyric == "-") {
+                return lyric.Replace("-","+"); 
+        } else {
+            return lyric;
+            }
+        }
+    }
 }
