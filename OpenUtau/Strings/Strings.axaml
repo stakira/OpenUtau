@@ -11,6 +11,10 @@
   <system:String x:Key="context.pitch.pointsnapprev">Snap to previous note</system:String>
 
   <system:String x:Key="debug.clear">Clear</system:String>
+    
+  <system:String x:Key="debug.reverselogorder">Reverse Log Order</system:String>
+    
+  <system:String x:Key="debug.copylog">Copy Log</system:String>
 
   <system:String x:Key="dialogs.about.caption">About OpenUTAU</system:String>
   <system:String x:Key="dialogs.about.message">
@@ -145,6 +149,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Remove Letter Suffix</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">Remove Tone Suffix</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Romaji to Hiragana</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Replace "-" with "+"</system:String>
   <system:String x:Key="pianoroll.menu.notedefaults">Note Defaults</system:String>
   <system:String x:Key="pianoroll.menu.notes">Notes</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">Add tail "-"</system:String>
@@ -228,15 +233,17 @@ Warning: moresampler is not fully supported. It may be slow and cause high CPU u
 
   <system:String x:Key="singers.caption">Singers</system:String>
   <system:String x:Key="singers.location">Location</system:String>
-  <system:String x:Key="singers.otoview.zoomin">Zoom In</system:String>
-  <system:String x:Key="singers.otoview.zoomout">Zoom Out</system:String>
   <system:String x:Key="singers.otoview.moveleft">Move Left</system:String>
   <system:String x:Key="singers.otoview.moveright">Move Right</system:String>
-  <system:String x:Key="singers.otoview.selectprev">Select Prev</system:String>
   <system:String x:Key="singers.otoview.selectnext">Select Next</system:String>
+  <system:String x:Key="singers.otoview.selectprev">Select Prev</system:String>
   <system:String x:Key="singers.otoview.showall">Show All</system:String>
+  <system:String x:Key="singers.otoview.zoomin">Zoom In</system:String>
+  <system:String x:Key="singers.otoview.zoomout">Zoom Out</system:String>
   <system:String x:Key="singers.refresh">Refresh</system:String>
+  <system:String x:Key="singers.setdefaultphonemizer">Set Default Phonemizer</system:String>
   <system:String x:Key="singers.setencoding">Set Encoding</system:String>
+  <system:String x:Key="singers.setportrait">Set Portrait</system:String>
   <system:String x:Key="singers.subbanks.cancel">Cancel</system:String>
   <system:String x:Key="singers.subbanks.clear">Clear</system:String>
   <system:String x:Key="singers.subbanks.color">Color</system:String>
