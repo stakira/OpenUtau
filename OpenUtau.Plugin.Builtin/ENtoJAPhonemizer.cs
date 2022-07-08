@@ -393,6 +393,10 @@ namespace OpenUtau.Plugin.Builtin {
                 }
                 prevV = WanaKana.ToRomaji(solo).Last<char>().ToString();
             }
+            
+            if (ending.IsEndingV) {
+                TryAddPhoneme(phonemes, ending.tone, $"{prevV} R", $"{prevV} -", $"{prevV}-");
+            }
 
             return phonemes;
         }

@@ -228,15 +228,17 @@ Warning: moresampler is not fully supported. It may be slow and cause high CPU u
 
   <system:String x:Key="singers.caption">Ca sĩ</system:String>
   <system:String x:Key="singers.location">Đường dẫn</system:String>
-   <system:String x:Key="singers.otoview.zoomin">Phóng to</system:String>
-  <system:String x:Key="singers.otoview.zoomout">Thu nhỏ</system:String>
   <system:String x:Key="singers.otoview.moveleft">Sang trái</system:String>
   <system:String x:Key="singers.otoview.moveright">Sang phải</system:String>
-  <system:String x:Key="singers.otoview.selectprev">Trước đó</system:String>
   <system:String x:Key="singers.otoview.selectnext">Tiếp theo</system:String>
+  <system:String x:Key="singers.otoview.selectprev">Trước đó</system:String>
   <system:String x:Key="singers.otoview.showall">Xem hết</system:String>
+  <system:String x:Key="singers.otoview.zoomin">Phóng to</system:String>
+  <system:String x:Key="singers.otoview.zoomout">Thu nhỏ</system:String>
   <system:String x:Key="singers.refresh">Làm mới</system:String>
+  <!--<system:String x:Key="singers.setdefaultphonemizer">Set Default Phonemizer</system:String>-->
   <system:String x:Key="singers.setencoding">Sửa đổi mã hoá</system:String>
+  <!--<system:String x:Key="singers.setportrait">Set Portrait</system:String>-->
   <system:String x:Key="singers.subbanks.cancel">Huỷ bỏ</system:String>
   <system:String x:Key="singers.subbanks.clear">Xoá bỏ</system:String>
   <system:String x:Key="singers.subbanks.color">Sắc thái</system:String>

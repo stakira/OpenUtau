@@ -50,7 +50,7 @@ namespace VocalShaper
             sin = new double[samplesPerSec];
             for (int i = 0; i < samplesPerSec; i++)
             {
-                sin[i] = 0.125 * Math.Sin(2 * Math.PI * i / samplesPerSec);
+                sin[i] = 0.125 * Math.Sqrt(2) * Math.Sin(2 * Math.PI * i / samplesPerSec);
             }
 
             //初始化旋转因子
@@ -80,7 +80,7 @@ namespace VocalShaper
             //初始化噪声
             int noiseCount = (int)Math.Ceiling(noiseTimeSec * samplesPerSec / hopSize);
             int noiseLen = noiseCount * hopSize;
-            var noiseData = VSMath.Noise(2, noiseLen);
+            var noiseData = VSMath.Noise(Math.Sqrt(3), noiseLen);
             Noises = new Complex[noiseCount][];
             for (int i = 0; i < noiseCount; i++)
             {

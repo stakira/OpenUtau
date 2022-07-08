@@ -228,8 +228,17 @@
 
   <system:String x:Key="singers.caption">가수</system:String>
   <system:String x:Key="singers.location">위치</system:String>
+  <system:String x:Key="singers.otoview.moveleft">왼쪽으로 이동</system:String>
+  <system:String x:Key="singers.otoview.moveright">오른쪽으로 이동</system:String>
+  <system:String x:Key="singers.otoview.selectnext">다음으로</system:String>
+  <system:String x:Key="singers.otoview.selectprev">이전으로</system:String>
+  <system:String x:Key="singers.otoview.showall">모두 보기</system:String>
+  <system:String x:Key="singers.otoview.zoomin">확대</system:String>
+  <system:String x:Key="singers.otoview.zoomout">축소</system:String>
   <system:String x:Key="singers.refresh">새로고침</system:String>
+  <system:String x:Key="singers.setdefaultphonemizer">기본 음소화기 설정</system:String>
   <system:String x:Key="singers.setencoding">인코딩 설정</system:String>
+  <system:String x:Key="singers.setportrait">초상화 설정</system:String>
   <system:String x:Key="singers.subbanks.cancel">취소</system:String>
   <system:String x:Key="singers.subbanks.clear">초기화</system:String>
   <system:String x:Key="singers.subbanks.color">색상</system:String>
@@ -283,7 +292,7 @@
   <FontFamily x:Key="ui.textbox.fontfamily">Malgun Gothic,Apple SD Gothic Neo,Segoe UI,San Francisco,Helvetica Neue</FontFamily>
 
   <system:String x:Key="updater.caption">업데이트 확인</system:String>
-  <system:String x:Key="updater.description">오픈 가창 합성 플랫폼</system:String>
+  <system:String x:Key="updater.description">오픈형 가창 합성 플랫폼</system:String>
   <system:String x:Key="updater.github">깃허브</system:String>
   <system:String x:Key="updater.status.available">v{0} 업데이트가 존재합니다!</system:String>
   <system:String x:Key="updater.status.checking">업데이트를 확인하고 있습니다...</system:String>

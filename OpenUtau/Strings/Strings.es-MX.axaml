@@ -228,8 +228,17 @@ Advertencia: Moresampler no es totalmente compatible por ahora. Este puede ser l
 
   <system:String x:Key="singers.caption">Voces</system:String>
   <system:String x:Key="singers.location">Mostrar Archivos</system:String>
+  <!--<system:String x:Key="singers.otoview.moveleft">Move Left</system:String>-->
+  <!--<system:String x:Key="singers.otoview.moveright">Move Right</system:String>-->
+  <!--<system:String x:Key="singers.otoview.selectnext">Select Next</system:String>-->
+  <!--<system:String x:Key="singers.otoview.selectprev">Select Prev</system:String>-->
+  <!--<system:String x:Key="singers.otoview.showall">Show All</system:String>-->
+  <!--<system:String x:Key="singers.otoview.zoomin">Zoom In</system:String>-->
+  <!--<system:String x:Key="singers.otoview.zoomout">Zoom Out</system:String>-->
   <system:String x:Key="singers.refresh">Refrescar</system:String>
+  <!--<system:String x:Key="singers.setdefaultphonemizer">Set Default Phonemizer</system:String>-->
   <system:String x:Key="singers.setencoding">Fijar Codificación</system:String>
+  <!--<system:String x:Key="singers.setportrait">Set Portrait</system:String>-->
   <system:String x:Key="singers.subbanks.cancel">Cancelar</system:String>
   <system:String x:Key="singers.subbanks.clear">Borrar</system:String>
   <!--<system:String x:Key="singers.subbanks.color">Color</system:String>-->
