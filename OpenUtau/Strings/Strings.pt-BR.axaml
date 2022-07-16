@@ -12,6 +12,10 @@
 
   <system:String x:Key="debug.clear">Limpar</system:String>
 
+  <system:String x:Key="debug.reverselogorder">Inverter Ordem de Log</system:String>
+
+  <system:String x:Key="debug.copylog">Copiar Log</system:String>
+
   <system:String x:Key="dialogs.about.caption">Sobre OpenUTAU</system:String>
   <system:String x:Key="dialogs.about.message">
     O OpenUtau é um ambiente de edição de código aberto para a comunidade UTAU, com uma experiência de usuário moderna e suporte fonológico inteligente. Visite-nos no Github.
@@ -145,18 +149,19 @@ Aviso: esta opção remove predefinições personalizadas.</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Remover Letra de Suffixo</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">Remover Sufixo de Tom</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Romaji para Hiragana</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Trocar "-" por "+"</system:String>
   <system:String x:Key="pianoroll.menu.notedefaults">Padrões de Nota</system:String>
   <system:String x:Key="pianoroll.menu.notes">Nota</system:String>
-  <system:String x:Key="pianoroll.menu.notes.addtaildash">Adicionar final "-"</system:String>
-  <system:String x:Key="pianoroll.menu.notes.addtailrest">Adicionar final "R"</system:String>
+  <system:String x:Key="pianoroll.menu.notes.addtaildash">Adicionar Final "-"</system:String>
+  <system:String x:Key="pianoroll.menu.notes.addtailrest">Adicionar Final "R"</system:String>
   <system:String x:Key="pianoroll.menu.notes.clear.vibratos">Limpar Vibratos</system:String>
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Carregar Tom Renderizado</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">Quantizar para 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Quantizar para 1/64</system:String>
-  <system:String x:Key="pianoroll.menu.notes.reset.exps">Redefinir todas expressões</system:String>
-  <system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">Redefinir tempos de fonemas</system:String>
-  <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">Redefinir curvas de tom</system:String>
-  <system:String x:Key="pianoroll.menu.notes.reset.vibratos">Redefinir vibratos</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.exps">Redefinir Todas as Expressões</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">Redefinir Tempos de Fonemas</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">Redefinir Curvas de Tom</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.vibratos">Redefinir Vibratos</system:String>
   <system:String x:Key="pianoroll.menu.part">Parte</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">Plugin Legado (Experimental)</system:String>
   <system:String x:Key="pianoroll.menu.part.rename">Renomear</system:String>
@@ -228,17 +233,17 @@ Segure Ctrl para selecionar mais notas</system:String>
 
   <system:String x:Key="singers.caption">Vozes</system:String>
   <system:String x:Key="singers.location">Pasta</system:String>
-  <!--<system:String x:Key="singers.otoview.moveleft">Move Left</system:String>-->
-  <!--<system:String x:Key="singers.otoview.moveright">Move Right</system:String>-->
-  <!--<system:String x:Key="singers.otoview.selectnext">Select Next</system:String>-->
-  <!--<system:String x:Key="singers.otoview.selectprev">Select Prev</system:String>-->
-  <!--<system:String x:Key="singers.otoview.showall">Show All</system:String>-->
-  <!--<system:String x:Key="singers.otoview.zoomin">Zoom In</system:String>-->
-  <!--<system:String x:Key="singers.otoview.zoomout">Zoom Out</system:String>-->
+  <system:String x:Key="singers.otoview.moveleft">Mover para Esquerda</system:String>
+  <system:String x:Key="singers.otoview.moveright">Mover para Direita</system:String>
+  <system:String x:Key="singers.otoview.selectnext">Próximo</system:String>
+  <system:String x:Key="singers.otoview.selectprev">Anterior</system:String>
+  <system:String x:Key="singers.otoview.showall">Mostrar Tudo</system:String>
+  <system:String x:Key="singers.otoview.zoomin">Mais Zoom</system:String>
+  <system:String x:Key="singers.otoview.zoomout">Menos Zoom</system:String>
   <system:String x:Key="singers.refresh">Atualizar</system:String>
-  <!--<system:String x:Key="singers.setdefaultphonemizer">Set Default Phonemizer</system:String>-->
+  <system:String x:Key="singers.setdefaultphonemizer">Definir Phonemizer Padrão</system:String>
   <system:String x:Key="singers.setencoding">Definir Codificação</system:String>
-  <!--<system:String x:Key="singers.setportrait">Set Portrait</system:String>-->
+  <system:String x:Key="singers.setportrait">Definir Retrato</system:String>
   <system:String x:Key="singers.subbanks.cancel">Cancelar</system:String>
   <system:String x:Key="singers.subbanks.clear">Limpar</system:String>
   <system:String x:Key="singers.subbanks.color">Cor</system:String>
