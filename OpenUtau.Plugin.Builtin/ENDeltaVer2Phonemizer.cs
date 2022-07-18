@@ -80,20 +80,22 @@ namespace OpenUtau.Plugin.Builtin
                 // the previous alias will be extended
                 basePhoneme = null;
             }
-                if (prevV == "V" && !HasOto($"V {v}", syllable.vowelTone) && HasOto($"@ {v}", syllable.vowelTone)) {
-                    basePhoneme = $"@ {v}";
-                } else if (v == "V" && !HasOto($"{prevV} V", syllable.vowelTone) && HasOto($"{prevV} @", syllable.vowelTone)) {
-                    basePhoneme = $"{prevV} @";
-                } else if (prevV == "E" && !HasOto($"E {v}", syllable.vowelTone) && HasOto($"e {v}", syllable.vowelTone)) {
-                    basePhoneme = $"e {v}";
-                } else if (v == "E" && !HasOto($"{prevV} E", syllable.vowelTone) && HasOto($"{prevV} e", syllable.vowelTone)) {
-                    basePhoneme = $"{prevV} e";
-                } else if (prevV == "o" && !HasOto($"o {v}", syllable.vowelTone) && HasOto($"O {v}", syllable.vowelTone)) {
-                    basePhoneme = $"O {v}";
-                } else if (v == "o" && !HasOto($"{prevV} o", syllable.vowelTone) && HasOto($"{prevV} O", syllable.vowelTone)) {
-                    basePhoneme = $"{prevV} O";
-                } else if (!HasOto($"{prevV} {v}", syllable.vowelTone)) {
-                    basePhoneme = $"{v}";
+                if (!HasOto($"{prevV} {v}", syllable.vowelTone)) {
+                    if (prevV == "V" && !HasOto(prevV, syllable.vowelTone)) {
+                        syllable.prevV = "@";
+                    } else if (v == "V" && !HasOto(v, syllable.vowelTone)) {
+                        syllable.v = "@";
+                    } else if (prevV == "E" && !HasOto(prevV, syllable.vowelTone)) {
+                        syllable.prevV = "e";
+                    } else if (v == "E" && !HasOto(v, syllable.vowelTone)) {
+                        syllable.v = "e";
+                    } else if (prevV == "o" && !HasOto(prevV, syllable.vowelTone)) {
+                        syllable.prevV = "O";
+                    } else if (v == "o" && !HasOto(v, syllable.vowelTone)) {
+                        syllable.v = "O";
+                    } else {
+                        basePhoneme = $"{v}";
+                    }   
                 }
             } else if (syllable.IsStartingCVWithOneConsonant) {
                 // TODO: move to config -CV or -C CV
