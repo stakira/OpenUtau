@@ -71,119 +71,84 @@ namespace OpenUtau.Plugin.Builtin
             var phonemes = new List<string>();
             var lastC = cc.Length - 1;
             var firstC = 0;
-            if (syllable.IsStartingV)
-            {
+            if (syllable.IsStartingV) {
                 basePhoneme = $"- {v}";
-            }
-            else if (syllable.IsVV)
-            {
-                if (!CanMakeAliasExtension(syllable))
-                {
+            } else if (syllable.IsVV) {
+                if (!CanMakeAliasExtension(syllable)) {
                     basePhoneme = $"{prevV} {v}";
-                }
-                else
-                {
-                    // the previous alias will be extended
-                    basePhoneme = null;
-                }
-                if (!HasOto($"{prevV} {v}", syllable.vowelTone))
-                {
+            } else {
+                // the previous alias will be extended
+                basePhoneme = null;
+            }
+                if (prevV == "V" && !HasOto($"V {v}", syllable.vowelTone) && HasOto($"@ {v}", syllable.vowelTone)) {
+                    basePhoneme = $"@ {v}";
+                } else if (v == "V" && !HasOto($"{prevV} V", syllable.vowelTone) && HasOto($"{prevV} @", syllable.vowelTone)) {
+                    basePhoneme = $"{prevV} @";
+                } else if (!HasOto($"{prevV} {v}", syllable.vowelTone)) {
                     basePhoneme = $"{v}";
                 }
-            }
-            else if (syllable.IsStartingCVWithOneConsonant)
-            {
+            } else if (syllable.IsStartingCVWithOneConsonant) {
                 // TODO: move to config -CV or -C CV
                 var rcv = $"- {cc[0]}{v}";
-                if (HasOto(rcv, syllable.vowelTone))
-                {
+                if (HasOto(rcv, syllable.vowelTone)) {
                     basePhoneme = rcv;
-                }
-                else if (v == "V" && !HasOto(rcv, syllable.vowelTone) && HasOto($"- {cc[0]}@", syllable.vowelTone))
-                {
+                } else if (v == "V" && !HasOto(rcv, syllable.vowelTone) && HasOto($"- {cc[0]}@", syllable.vowelTone)) {
                     basePhoneme = $"- {cc[0]}@";
-                }
-                else
-                {
+                } else {
                     basePhoneme = $"{cc[0]}{v}";
-                    if (consonants.Contains(cc[0]))
-                    {
+                    if (consonants.Contains(cc[0])) {
                         TryAddPhoneme(phonemes, syllable.tone, $"- {cc[0]}");
                     }
                 }
-            }
-            else if (syllable.IsStartingCVWithMoreThanOneConsonant)
-            {
+            } else if (syllable.IsStartingCVWithMoreThanOneConsonant) {
                 // try RCCV
                 var rccv = $"- {string.Join("", cc)}{v}";
-                if (HasOto(rccv, syllable.vowelTone))
-                {
+                if (HasOto(rccv, syllable.vowelTone)) {
                     basePhoneme = rccv;
-                }
-                else
-                {
+                } else {
                     basePhoneme = $"{cc.Last()}{v}";
                     // try RCC
-                    for (var i = cc.Length; i > 1; i--)
-                    {
-                        if (TryAddPhoneme(phonemes, syllable.tone, $"- {string.Join("", cc.Take(i))}"))
-                        {
+                    for (var i = cc.Length; i > 1; i--) {
+                        if (TryAddPhoneme(phonemes, syllable.tone, $"- {string.Join("", cc.Take(i))}")) {
                             firstC = i;
                             break;
                         }
                     }
-                    if (phonemes.Count == 0)
-                    {
+                    if (phonemes.Count == 0) {
                         TryAddPhoneme(phonemes, syllable.tone, $"- {cc[0]}");
                     }
                     // try CCV
-                    for (var i = firstC; i < cc.Length - 1; i++)
-                    {
+                    for (var i = firstC; i < cc.Length - 1; i++) {
                         var ccv = string.Join("", cc.Skip(i)) + v;
-                        if (HasOto(ccv, syllable.tone))
-                        {
+                        if (HasOto(ccv, syllable.tone)) {
                             basePhoneme = ccv;
                             lastC = i;
                             break;
                         }
                     }
                 }
-            }
-            else
-            { // VCV
+            } else { // VCV
                 var vcv = $"{prevV} {cc[0]}{v}";
                 var vccv = $"{prevV} {string.Join("", cc)}{v}";
-                if (syllable.IsVCVWithOneConsonant && HasOto(vcv, syllable.vowelTone))
-                {
+                if (syllable.IsVCVWithOneConsonant && HasOto(vcv, syllable.vowelTone)) {
                     basePhoneme = vcv;
-                }
-                else if (syllable.IsVCVWithMoreThanOneConsonant && HasOto(vccv, syllable.vowelTone))
-                {
+                } else if (syllable.IsVCVWithMoreThanOneConsonant && HasOto(vccv, syllable.vowelTone)) {
                     basePhoneme = vccv;
-                }
-                else if (prevV == "V" && !HasOto($"V {cc[0]}", syllable.vowelTone) && !HasOto(vcv, syllable.vowelTone) && !HasOto(vccv, syllable.vowelTone) && HasOto($"@ {string.Join("", cc)}", syllable.vowelTone))
-                {
+                } else if (prevV == "V" && !HasOto($"V {cc[0]}", syllable.vowelTone) && !HasOto(vcv, syllable.vowelTone) && !HasOto(vccv, syllable.vowelTone) && HasOto($"@ {string.Join("", cc)}", syllable.vowelTone)) {
                     basePhoneme = $"{cc.Last()}{v}";
                     phonemes.Add($"@ {string.Join("", cc)}");
-                }
-                else
-                {
+                } else {
                     // try CCV
                     basePhoneme = cc.Last() + v;
-                    if (cc.Length - firstC > 1)
-                    {
-                        for (var i = firstC; i < cc.Length; i++)
-                        {
+                    if (cc.Length - firstC > 1) {
+                        for (var i = firstC; i < cc.Length; i++) {
                             var ccv = $"{string.Join("", cc.Skip(i))}{v}";
                             var rccv = $"- {string.Join("", cc.Skip(i))}{v}";
-                            if (HasOto(ccv, syllable.vowelTone))
-                            {
+                            if (HasOto(ccv, syllable.vowelTone)) {
                                 lastC = i;
                                 basePhoneme = ccv;
                                 break;
-                            }
-                            else if (HasOto(rccv, syllable.vowelTone) && (!HasOto(ccv, syllable.vowelTone)))
-                            {
+                            } else if (HasOto(rccv, syllable.vowelTone) && (!HasOto(ccv, syllable.vowelTone))) {
                                 lastC = i;
                                 basePhoneme = rccv;
                                 break;
@@ -191,16 +156,13 @@ namespace OpenUtau.Plugin.Builtin
                         }
                     }
                     // try vcc
-                    for (var i = lastC + 1; i >= 0; i--)
-                    {
-                        if (i == 0)
-                        {
+                    for (var i = lastC + 1; i >= 0; i--) {
+                        if (i == 0) {
                             phonemes.Add($"{prevV} -");
                             break;
                         }
                         var vcc = $"{prevV} {string.Join("", cc.Take(i))}";
-                        if (HasOto(vcc, syllable.tone))
-                        {
+                        if (HasOto(vcc, syllable.tone)) {
                             phonemes.Add(vcc);
                             firstC = i - 1;
                             break;
