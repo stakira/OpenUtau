@@ -67,12 +67,14 @@ namespace OpenUtau.Plugin.Builtin
                     // the previous alias will be extended
                     basePhoneme = null;
                 }
-                if (prevV == "V" && !HasOto($"V {v}", syllable.vowelTone) && HasOto($"@ {v}", syllable.vowelTone)) {
-                    basePhoneme = $"@ {v}";
-                } else if (v == "V" && !HasOto($"{prevV} V", syllable.vowelTone) && HasOto($"{prevV} @", syllable.vowelTone)) {
-                    basePhoneme = $"{prevV} @";
-                } else if (!HasOto($"{prevV} {v}", syllable.vowelTone)) {
-                    basePhoneme = $"{v}";
+                if (!HasOto($"{prevV} {v}", syllable.vowelTone)) {
+                    if (prevV == "V" && !HasOto(prevV, syllable.vowelTone)) {
+                        syllable.prevV = "@";
+                    } else if (v == "V" && !HasOto(v, syllable.vowelTone)) {
+                        syllable.v = "@";
+                    } else {
+                        basePhoneme = $"{v}";
+                    }
                 }
             }
             else if (syllable.IsStartingCVWithOneConsonant)
