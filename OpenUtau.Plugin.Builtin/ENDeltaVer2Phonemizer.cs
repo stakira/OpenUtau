@@ -84,6 +84,14 @@ namespace OpenUtau.Plugin.Builtin
                     basePhoneme = $"@ {v}";
                 } else if (v == "V" && !HasOto($"{prevV} V", syllable.vowelTone) && HasOto($"{prevV} @", syllable.vowelTone)) {
                     basePhoneme = $"{prevV} @";
+                } else if (prevV == "E" && !HasOto($"E {v}", syllable.vowelTone) && HasOto($"e {v}", syllable.vowelTone)) {
+                    basePhoneme = $"e {v}";
+                } else if (v == "E" && !HasOto($"{prevV} E", syllable.vowelTone) && HasOto($"{prevV} e", syllable.vowelTone)) {
+                    basePhoneme = $"{prevV} e";
+                } else if (prevV == "o" && !HasOto($"o {v}", syllable.vowelTone) && HasOto($"O {v}", syllable.vowelTone)) {
+                    basePhoneme = $"O {v}";
+                } else if (v == "o" && !HasOto($"{prevV} o", syllable.vowelTone) && HasOto($"{prevV} O", syllable.vowelTone)) {
+                    basePhoneme = $"{prevV} O";
                 } else if (!HasOto($"{prevV} {v}", syllable.vowelTone)) {
                     basePhoneme = $"{v}";
                 }
@@ -94,6 +102,10 @@ namespace OpenUtau.Plugin.Builtin
                     basePhoneme = rcv;
                 } else if (v == "V" && !HasOto(rcv, syllable.vowelTone) && HasOto($"- {cc[0]}@", syllable.vowelTone)) {
                     basePhoneme = $"- {cc[0]}@";
+                } else if (v == "E" && !HasOto(rcv, syllable.vowelTone) && HasOto($"- {cc[0]}e", syllable.vowelTone)) {
+                    basePhoneme = $"- {cc[0]}e";
+                } else if (v == "o" && !HasOto(rcv, syllable.vowelTone) && HasOto($"- {cc[0]}O", syllable.vowelTone)) {
+                    basePhoneme = $"- {cc[0]}O";
                 } else {
                     basePhoneme = $"{cc[0]}{v}";
                     if (consonants.Contains(cc[0])) {
@@ -137,6 +149,12 @@ namespace OpenUtau.Plugin.Builtin
                 } else if (prevV == "V" && !HasOto($"V {cc[0]}", syllable.vowelTone) && !HasOto(vcv, syllable.vowelTone) && !HasOto(vccv, syllable.vowelTone) && HasOto($"@ {string.Join("", cc)}", syllable.vowelTone)) {
                     basePhoneme = $"{cc.Last()}{v}";
                     phonemes.Add($"@ {string.Join("", cc)}");
+                } else if (prevV == "E" && !HasOto($"E {cc[0]}", syllable.vowelTone) && !HasOto(vcv, syllable.vowelTone) && !HasOto(vccv, syllable.vowelTone) && HasOto($"e {string.Join("", cc)}", syllable.vowelTone)) {
+                    basePhoneme = $"{cc.Last()}{v}";
+                    phonemes.Add($"e {string.Join("", cc)}");
+                } else if (prevV == "o" && !HasOto($"o {cc[0]}", syllable.vowelTone) && !HasOto(vcv, syllable.vowelTone) && !HasOto(vccv, syllable.vowelTone) && HasOto($"O {string.Join("", cc)}", syllable.vowelTone)) {
+                    basePhoneme = $"{cc.Last()}{v}";
+                    phonemes.Add($"O {string.Join("", cc)}");
                 } else {
                     // try CCV
                     basePhoneme = cc.Last() + v;
@@ -245,6 +263,10 @@ namespace OpenUtau.Plugin.Builtin
                     phonemes.Add(vcr);
                 } else if (v == "V" && !HasOto(vcr, ending.tone) && HasOto($"@ {cc[0]}-", ending.tone)) {
                     phonemes.Add($"@ {cc[0]}-");
+                } else if (v == "E" && !HasOto(vcr, ending.tone) && HasOto($"e {cc[0]}-", ending.tone)) {
+                    phonemes.Add($"e {cc[0]}-");
+                } else if (v == "o" && !HasOto(vcr, ending.tone) && HasOto($"O {cc[0]}-", ending.tone)) {
+                    phonemes.Add($"O {cc[0]}-");
                 } else {
                     phonemes.Add($"{v} {cc[0]}");
                     if (burstConsonants.Contains(cc[0])) {
@@ -307,6 +329,12 @@ namespace OpenUtau.Plugin.Builtin
             foreach (var vowel in new[] { "V" })
             {
                 alias = alias.Replace(vowel, "@");
+            }
+            foreach (var vowel in new[] { "E" }) {
+                alias = alias.Replace(vowel, "e");
+            }
+            foreach (var vowel in new[] { "o" }) {
+                alias = alias.Replace(vowel, "O");
             }
             return alias;
         }
