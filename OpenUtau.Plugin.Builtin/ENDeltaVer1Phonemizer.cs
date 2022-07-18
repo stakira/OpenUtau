@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -227,18 +227,10 @@ namespace OpenUtau.Plugin.Builtin
                         {
                             phonemes.Remove(cc[i]);
                             phonemes.Remove($"{cc[i]} -");
-                            //if ("tS" == cc.Last() || "tS" == cc[1])
-                            //{
-                            //    TryAddPhoneme(phonemes, syllable.tone, "tS", $"tS -");
-                            //}
-                            //else if ("dZ" == cc.Last() || "dZ" == cc[1])
-                            //{
-                            //    TryAddPhoneme(phonemes, syllable.tone, "dZ", $"dZ -");
-                            //}
                         }
                     }
                 }
-                else //if (burstConsonants.Contains(cc[i]) && !syllable.IsStartingCVWithMoreThanOneConsonant)
+                else
                 {
                     // like [V C1] [C1 C2]  [C2 ..] or like [V C1] [C1 -] [C3 ..]
                     TryAddPhoneme(phonemes, syllable.tone, cc1);
@@ -271,21 +263,16 @@ namespace OpenUtau.Plugin.Builtin
             else if (ending.IsEndingVCWithOneConsonant)
             {
                 var vcr = $"{v} {cc[0]}-";
-                if (HasOto(vcr, ending.tone))
-                {
+                if (HasOto(vcr, ending.tone)) {
                     phonemes.Add(vcr);
-                }
-                else if (v == "V" && !HasOto(vcr, ending.tone) && HasOto($"@ {cc[0]}-", ending.tone))
-                {
+                } else if (v == "V" && !HasOto(vcr, ending.tone) && HasOto($"@ {cc[0]}-", ending.tone)) {
                     phonemes.Add($"@ {cc[0]}-");
-                }
-                else
-                {
+                } else {
                     phonemes.Add($"{v} {cc[0]}");
-                    TryAddPhoneme(phonemes, ending.tone, $"{cc[0]} -");
-                    if (burstConsonants.Contains(cc[0]))
-                    {
+                    if (burstConsonants.Contains(cc[0])) {
                         TryAddPhoneme(phonemes, ending.tone, $"{cc[0]} -", cc[0]);
+                    } else {
+                        TryAddPhoneme(phonemes, ending.tone, $"{cc[0]} -");
                     }
                 }
             }
@@ -299,8 +286,7 @@ namespace OpenUtau.Plugin.Builtin
                     var cc1 = $"{cc[i]} {cc[i + 1]}";
                     if (i < cc.Length - 2)
                     {
-                        //var cc2 = $"{cc[i + 1]} {cc[i + 2]}";
-                        if (HasOto(cc1, ending.tone)) //&& HasOto(cc2, ending.tone))
+                        if (HasOto(cc1, ending.tone))
                         {
                             // like [C1 C2][C2 ...]
                             phonemes.Add(cc1);
@@ -327,19 +313,19 @@ namespace OpenUtau.Plugin.Builtin
                             // like [C1 C2-]
                             i++;
                         }
-                        else if (TryAddPhoneme(phonemes, ending.tone, $"{cc[i]}{cc[i + 1]}")) //&& !HasOto(cc1, ending.tone))
+                        else if (TryAddPhoneme(phonemes, ending.tone, $"{cc[i]}{cc[i + 1]}"))
                         {
                             // like [C1C2][C2 -]
                             TryAddPhoneme(phonemes, ending.tone, $"{cc[i + 1]} -", cc[i + 1]);
                             i++;
                         }
-                        else if (TryAddPhoneme(phonemes, ending.tone, cc1)) //&& !HasOto(cc1, ending.tone))
+                        else if (TryAddPhoneme(phonemes, ending.tone, cc1))
                         {
                             // like [C1 C2][C2 -]
                             TryAddPhoneme(phonemes, ending.tone, $"{cc[i + 1]} -", cc[i + 1]);
                             i++;
                         }
-                        else //if (!$"{v} {cc[0]}".Contains(cc[i]))
+                        else
                         {
                             // like [C1][C2 -]
                             TryAddPhoneme(phonemes, ending.tone, cc[i], $"{cc[i]} -");
