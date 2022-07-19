@@ -12,6 +12,10 @@
 
   <system:String x:Key="debug.clear">지우기</system:String>
 
+  <system:String x:Key="debug.reverselogorder">로그 순서 뒤집기</system:String>
+    
+  <system:String x:Key="debug.copylog">로그 복사</system:String>
+
   <system:String x:Key="dialogs.about.caption">OpenUTAU에 대하여</system:String>
   <system:String x:Key="dialogs.about.message">
       OpenUtau는 현대적인 사용자 경험과 지능적인 음운 지원을 통해 UTAU 커뮤니티를 위한 오픈 소스 편집 환경을 목표로 합니다. Github의 우리 프로젝트에 방문하세요.
@@ -145,6 +149,7 @@
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">문자 접미사 제거</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">톤 접미사 제거</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">로마자를 히라가나로</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">"-" 기호를 "+" 기호로 대체</system:String>
   <system:String x:Key="pianoroll.menu.notedefaults">노트 기본값</system:String>
   <system:String x:Key="pianoroll.menu.notes">노트</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">"-" 꼬리 추가</system:String>
@@ -171,7 +176,7 @@
   <system:String x:Key="pianoroll.tool.eraser">삭제 툴 (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">잘라내기 툴 (5)</system:String>
   <system:String x:Key="pianoroll.tool.pen">펜 툴 (2)
- 왼쪽 마우스로 그리기
+왼쪽 마우스로 그리기
 오른쪽 마우스로 삭제</system:String>
   <system:String x:Key="pianoroll.tool.selection">선택 툴 (1)
 컨트롤 누른 채로 선택</system:String>
