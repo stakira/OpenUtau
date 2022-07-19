@@ -269,6 +269,8 @@ namespace OpenUtau.Plugin.Builtin
                 var vcr = $"{v} {cc[0]}-";
                 if (HasOto(vcr, ending.tone)) {
                     phonemes.Add(vcr);
+                } else if (HasOto($"{v}{cc[0]} -", ending.tone)) {
+                    phonemes.Add($"{v}{cc[0]} -");
                 } else if (v == "V" && !HasOto(vcr, ending.tone) && HasOto($"@ {cc[0]}-", ending.tone)) {
                     phonemes.Add($"@ {cc[0]}-");
                 } else {
