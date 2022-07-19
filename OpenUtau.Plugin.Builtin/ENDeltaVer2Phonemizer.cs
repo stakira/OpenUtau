@@ -18,7 +18,7 @@ namespace OpenUtau.Plugin.Builtin
         /// But it still contains some support for North-American sounds.
         ///</summary>
 
-        private readonly string[] vowels = "a,A,@,{,V,O,aU,aI,E,3,eI,I,i,oU,OI,U,u,Q,{~,I~,e,o,l＝,m＝,n＝,N＝".Split(',');
+        private readonly string[] vowels = "a,A,@,{,V,O,aU,aI,E,3,eI,I,i,oU,OI,U,u,Q,{~,I~,e,o,l＝,m＝,n＝,N＝,_".Split(',');
         private readonly string[] consonants = "b,tS,d,D,4,f,g,h,dZ,k,l,m,n,N,p,r,s,S,t,T,v,w,j,z,Z,t_},・".Split(',');
         private readonly string[] burstConsonants = "b,tS,d,dZ,4,g,k,p,t".Split(',');
         private readonly string[] longConsonants = "tS,dZ,s,S,k,p,t,T,z,Z,l,m,n,N,t_}".Split(',');
@@ -121,6 +121,9 @@ namespace OpenUtau.Plugin.Builtin
                     basePhoneme = rccv;
                 } else {
                     basePhoneme = $"{cc.Last()}{v}";
+                    if (HasOto($"_{cc.Last()}{v}", syllable.vowelTone)) {
+                        basePhoneme = $"_{cc.Last()}{v}";
+                    }
                     // try RCC
                     for (var i = cc.Length; i > 1; i--) {
                         if (TryAddPhoneme(phonemes, syllable.tone, $"- {string.Join("", cc.Take(i))}")) {
@@ -195,42 +198,37 @@ namespace OpenUtau.Plugin.Builtin
                 // we could use some CCV, so lastC is used
                 // we could use -CC so firstC is used
                 var cc1 = $"{cc[i]} {cc[i + 1]}";
-                if (!HasOto(cc1, syllable.tone))
-                {
+                if (!HasOto(cc1, syllable.tone)) {
                     cc1 = $"{cc[i]}{cc[i + 1]}";
                 }
-                if (i + 1 < lastC)
-                {
+                if (HasOto($"_{cc.Last()}{v}", syllable.vowelTone) && HasOto(cc1, syllable.vowelTone)) {
+                    basePhoneme = $"_{cc.Last()}{v}";
+                }
+                if (i + 1 < lastC) {
                     var cc2 = $"{cc[i + 1]} {cc[i + 2]}";
-                    if (!HasOto(cc2, syllable.tone))
-                    {
+                    if (HasOto($"_{cc.Last()}{v}", syllable.vowelTone) && HasOto(cc2, syllable.vowelTone)) {
+                        basePhoneme = $"_{cc.Last()}{v}";
+                    }
+                    if (!HasOto(cc2, syllable.tone)) {
                         cc2 = $"{cc[i + 1]}{cc[i + 2]}";
                     }
-                    if (HasOto(cc1, syllable.tone) && HasOto(cc2, syllable.tone))
-                    {
+                    if (HasOto(cc1, syllable.tone) && HasOto(cc2, syllable.tone)) {
                         // like [V C1] [C1 C2] [C2 C3] [C3 ..]
                         phonemes.Add(cc1);
-                    }
-                    else if (TryAddPhoneme(phonemes, syllable.tone, cc1))
-                    {
+                    } else if (TryAddPhoneme(phonemes, syllable.tone, cc1)) {
                         // like [V C1] [C1 C2] [C2 ..]
-                    }
-                    else if (TryAddPhoneme(phonemes, syllable.tone, $"{cc[i]} {cc[i + 1]}-"))
-                    {
+                    } else if (TryAddPhoneme(phonemes, syllable.tone, $"{cc[i]} {cc[i + 1]}-")) {
                         // like [V C1] [C1 C2-] [C3 ..]
                         i++;
-                    }
-                    else if (burstConsonants.Contains(cc[i]) && !syllable.IsStartingCVWithMoreThanOneConsonant)
-                    {
+                    } else if (burstConsonants.Contains(cc[i]) && !syllable.IsStartingCVWithMoreThanOneConsonant) {
                         // like [V C1] [C1] [C2 ..]
                         TryAddPhoneme(phonemes, syllable.tone, cc[i], $"{cc[i]} -");
-                        if (cc[i] == cc.Last() && !affricates.Contains(cc[i]))
-                        {
+                        if (cc[i] == cc.Last() && !affricates.Contains(cc[i])) {
                             phonemes.Remove(cc[i]);
                             phonemes.Remove($"{cc[i]} -");
                         }
                     }
-                }
+                } 
                 else
                 {
                     // like [V C1] [C1 C2]  [C2 ..] or like [V C1] [C1 -] [C3 ..]
