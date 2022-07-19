@@ -22,7 +22,7 @@ namespace OpenUtau.Plugin.Builtin
         /// All of these sounds are optional and should be inserted manually/phonetically, if the voicebank supports them.
         ///</summary>
 
-        private readonly string[] vowels = "a,A,@,{,V,O,aU,aI,E,3,eI,I,i,oU,OI,U,u,Q,Ol,aU~,{~,eI~,I~,e,o,l＝,m＝,n＝,N＝".Split(',');
+        private readonly string[] vowels = "a,A,@,{,V,O,aU,aI,E,3,eI,I,i,oU,OI,U,u,Q,Ol,aU~,{~,eI~,I~,e,o,Ar,Er,Ir,Or,Ur,@l,@m,@n,@N,1,e@m,e@n,l＝,m＝,n＝,N＝,_".Split(',');
         private readonly string[] consonants = "b,tS,d,D,4,f,g,h,dZ,k,l,m,n,N,p,r,s,S,t,T,v,w,j,z,Z,t_},・".Split(',');
         private readonly string[] burstConsonants = "b,tS,d,dZ,4,g,k,p,t".Split(',');
         private readonly string[] longConsonants = "tS,dZ,s,S,k,p,t,T,z,Z,l,m,n,N,t_}".Split(',');
@@ -109,6 +109,9 @@ namespace OpenUtau.Plugin.Builtin
                 else
                 {
                     basePhoneme = $"{cc.Last()}{v}";
+                    if (HasOto($"_{cc.Last()}{v}", syllable.vowelTone)) {
+                        basePhoneme = $"_{cc.Last()}{v}";
+                    }
                     // try RCC
                     for (var i = cc.Length; i > 1; i--)
                     {
@@ -203,9 +206,15 @@ namespace OpenUtau.Plugin.Builtin
                 {
                     cc1 = $"{cc[i]}{cc[i + 1]}";
                 }
+                if (HasOto($"_{cc.Last()}{v}", syllable.vowelTone) && HasOto(cc1, syllable.vowelTone)) {
+                    basePhoneme = $"_{cc.Last()}{v}";
+                }
                 if (i + 1 < lastC)
                 {
                     var cc2 = $"{cc[i + 1]} {cc[i + 2]}";
+                    if (HasOto($"_{cc.Last()}{v}", syllable.vowelTone) && HasOto(cc2, syllable.vowelTone)) {
+                        basePhoneme = $"_{cc.Last()}{v}";
+                    }
                     if (!HasOto(cc2, syllable.tone))
                     {
                         cc2 = $"{cc[i + 1]}{cc[i + 2]}";
