@@ -20,6 +20,9 @@
     </TextBlock>
     <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="4">
       <TextBlock Text="{StaticResource lyrics.separators}" Margin="0,2"/>
+      <ToggleButton Content="{StaticResource lyrics.hanzimode}" Margin="0" BorderThickness="1" CornerRadius="5"
+                    BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                    IsChecked="{Binding SeparatePerChar}"/>
       <ToggleButton Content="⎵" Margin="0" BorderThickness="1" CornerRadius="5"
                     BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}"
                     IsChecked="{Binding SeparateBySpace}"/>

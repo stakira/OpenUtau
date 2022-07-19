@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using DynamicData;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
@@ -15,6 +16,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public int CurrentCount { get; set; }
         [Reactive] public int TotalCount { get; set; }
         [Reactive] public int MaxCount { get; set; }
+        [Reactive] public bool SeparatePerChar { get; set; }
         [Reactive] public bool SeparateBySpace { get; set; }
         [Reactive] public bool SeparateByComma { get; set; }
         [Reactive] public bool SeparateByQuote { get; set; }
@@ -31,7 +33,8 @@ namespace OpenUtau.App.ViewModels {
                 x => x.Text,
                 x => x.SeparateBySpace,
                 x => x.SeparateByComma,
-                x => x.SeparateByQuote)
+                x => x.SeparateByQuote,
+                x => x.SeparatePerChar)
                 .Subscribe(t => {
                     Preview(t.Item1);
                 });
@@ -45,6 +48,7 @@ namespace OpenUtau.App.ViewModels {
             SeparateBySpace = !lyrics.Any(l => l.Contains(' '));
             SeparateByComma = !lyrics.Any(l => l.Contains(','));
             SeparateByQuote = !lyrics.Any(l => l.Contains('"'));
+            SeparatePerChar = false;
             char sep = SeparateBySpace ? ' ' : SeparateByComma ? ',' : '\n';
             Text = string.Join(sep, lyrics);
             startLyrics = lyrics;
@@ -113,7 +117,11 @@ namespace OpenUtau.App.ViewModels {
                         }
                     }
                 } else {
-                    builder.Append(ele);
+                    if (SeparatePerChar) {
+                        lyrics.Add(ele);
+                    } else {
+                        builder.Append(ele);
+                    }
                 }
             }
             if (builder.Length > 0) {

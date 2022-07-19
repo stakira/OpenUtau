@@ -49,6 +49,7 @@
   <system:String x:Key="lyrics.apply">应用</system:String>
   <system:String x:Key="lyrics.cancel">取消</system:String>
   <system:String x:Key="lyrics.caption">编辑歌词</system:String>
+  <system:String x:Key="lyrics.hanzimode">汉字模式</system:String>
   <system:String x:Key="lyrics.livepreview">即时预览</system:String>
   <system:String x:Key="lyrics.max">最多</system:String>
   <system:String x:Key="lyrics.reset">重置</system:String>
