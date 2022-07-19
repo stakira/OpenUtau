@@ -25,8 +25,6 @@ namespace OpenUtau.Plugin.Builtin
         private readonly string[] vowels = "a,A,@,{,V,O,aU,aI,E,3,eI,I,i,oU,OI,U,u,Q,Ol,aU~,{~,eI~,I~,e,o,Ar,Er,Ir,Or,Ur,@l,@m,@n,@N,1,e@m,e@n,l＝,m＝,n＝,N＝,_".Split(',');
         private readonly string[] consonants = "b,tS,d,D,4,f,g,h,dZ,k,l,m,n,N,p,r,s,S,t,T,v,w,j,z,Z,t_},・".Split(',');
         private readonly string[] burstConsonants = "b,tS,d,dZ,4,g,k,p,t".Split(',');
-        private readonly string[] longConsonants = "tS,dZ,s,S,k,p,t,T,z,Z,l,m,n,N,t_}".Split(',');
-        private readonly string[] shortConsonants = "4".Split(',');
         private readonly string[] affricates = "tS,dZ".Split(',');
         private readonly Dictionary<string, string> dictionaryReplacements = ("aa=A;ae={;ah=V;ao=O;aw=aU;ax=@;ay=aI;" +
             "b=b;ch=tS;d=d;dh=D;dx=4;eh=E;em=m＝;en=n＝;eng=ng＝;er=3;ey=eI;f=f;g=g;hh=h;ih=I;iy=i;jh=dZ;k=k;l=l;m=m;n=n;ng=N;ow=oU;oy=OI;" +
@@ -121,8 +119,7 @@ namespace OpenUtau.Plugin.Builtin
                             break;
                         }
                     }
-                    if (phonemes.Count == 0)
-                    {
+                    if (phonemes.Count == 0) {
                         TryAddPhoneme(phonemes, syllable.tone, $"- {cc[0]}");
                     }
                     // try CCV
@@ -352,25 +349,6 @@ namespace OpenUtau.Plugin.Builtin
                 alias = alias.Replace(vowel, "@");
             }
             return alias;
-        }
-
-        protected override double GetTransitionBasicLengthMs(string alias = "")
-        {
-            foreach (var c in shortConsonants)
-            {
-                if (alias.EndsWith(c))
-                {
-                    return base.GetTransitionBasicLengthMs() * 0.50;
-                }
-            }
-            foreach (var c in longConsonants)
-            {
-                if (alias.EndsWith(c))
-                {
-                    return base.GetTransitionBasicLengthMs() * 2.0;
-                }
-            }
-            return base.GetTransitionBasicLengthMs();
         }
     }
 }
