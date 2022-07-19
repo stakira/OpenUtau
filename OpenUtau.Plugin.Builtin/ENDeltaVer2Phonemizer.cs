@@ -126,7 +126,7 @@ namespace OpenUtau.Plugin.Builtin
                     }
                     // try RCC
                     for (var i = cc.Length; i > 1; i--) {
-                        if (TryAddPhoneme(phonemes, syllable.tone, $"- {string.Join("", cc.Take(i))}")) {
+                        if (TryAddPhoneme(phonemes, syllable.tone, $"- {string.Join("", cc.Take(i))}", $"{string.Join("", cc.Take(i))}")) {
                             firstC = i;
                             break;
                         }
@@ -197,20 +197,20 @@ namespace OpenUtau.Plugin.Builtin
             {
                 // we could use some CCV, so lastC is used
                 // we could use -CC so firstC is used
-                var cc1 = $"{cc[i]} {cc[i + 1]}";
+                var cc1 = $"{cc[i]}{cc[i + 1]}";
                 if (!HasOto(cc1, syllable.tone)) {
-                    cc1 = $"{cc[i]}{cc[i + 1]}";
+                    cc1 = $"{cc[i]} {cc[i + 1]}";
                 }
                 if (HasOto($"_{cc.Last()}{v}", syllable.vowelTone) && HasOto(cc1, syllable.vowelTone)) {
                     basePhoneme = $"_{cc.Last()}{v}";
                 }
                 if (i + 1 < lastC) {
-                    var cc2 = $"{cc[i + 1]} {cc[i + 2]}";
+                    var cc2 = $"{cc[i + 1]}{cc[i + 2]}";
                     if (HasOto($"_{cc.Last()}{v}", syllable.vowelTone) && HasOto(cc2, syllable.vowelTone)) {
                         basePhoneme = $"_{cc.Last()}{v}";
                     }
                     if (!HasOto(cc2, syllable.tone)) {
-                        cc2 = $"{cc[i + 1]}{cc[i + 2]}";
+                        cc2 = $"{cc[i + 1]} {cc[i + 2]}";
                     }
                     if (HasOto(cc1, syllable.tone) && HasOto(cc2, syllable.tone)) {
                         // like [V C1] [C1 C2] [C2 C3] [C3 ..]
