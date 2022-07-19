@@ -197,67 +197,51 @@ namespace OpenUtau.Plugin.Builtin
                     }
                 }
             }
-            for (var i = firstC; i < lastC; i++)
-            {
+            for (var i = firstC; i < lastC; i++) {
                 // we could use some CCV, so lastC is used
                 // we could use -CC so firstC is used
-                var cc1 = $"{cc[i]} {cc[i + 1]}";
-                if (!HasOto(cc1, syllable.tone))
-                {
-                    cc1 = $"{cc[i]}{cc[i + 1]}";
+                var cc1 = $"{cc[i]}{cc[i + 1]}";
+                if (!HasOto(cc1, syllable.tone)) {
+                    cc1 = $"{cc[i]} {cc[i + 1]}";
                 }
                 if (HasOto($"_{cc.Last()}{v}", syllable.vowelTone) && HasOto(cc1, syllable.vowelTone)) {
                     basePhoneme = $"_{cc.Last()}{v}";
                 }
-                if (i + 1 < lastC)
-                {
-                    var cc2 = $"{cc[i + 1]} {cc[i + 2]}";
+                if (i + 1 < lastC) {
+                    var cc2 = $"{cc[i + 1]}{cc[i + 2]}";
                     if (HasOto($"_{cc.Last()}{v}", syllable.vowelTone) && HasOto(cc2, syllable.vowelTone)) {
                         basePhoneme = $"_{cc.Last()}{v}";
                     }
-                    if (!HasOto(cc2, syllable.tone))
-                    {
-                        cc2 = $"{cc[i + 1]}{cc[i + 2]}";
+                    if (!HasOto(cc2, syllable.tone)) {
+                        cc2 = $"{cc[i + 1]} {cc[i + 2]}";
                     }
-                    if (HasOto(cc1, syllable.tone) && HasOto(cc2, syllable.tone))
-                    {
+                    if (HasOto(cc1, syllable.tone) && HasOto(cc2, syllable.tone)) {
                         // like [V C1] [C1 C2] [C2 C3] [C3 ..]
                         phonemes.Add(cc1);
-                    }
-                    else if (TryAddPhoneme(phonemes, syllable.tone, cc1))
-                    {
+                    } else if (TryAddPhoneme(phonemes, syllable.tone, cc1)) {
                         // like [V C1] [C1 C2] [C2 ..]
-                    }
-                    else if (TryAddPhoneme(phonemes, syllable.tone, $"{cc[i]} {cc[i + 1]}-"))
-                    {
+                    } else if (TryAddPhoneme(phonemes, syllable.tone, $"{cc[i]} {cc[i + 1]}-")) {
                         // like [V C1] [C1 C2-] [C3 ..]
                         i++;
-                    }
-                    else if (burstConsonants.Contains(cc[i]) && !syllable.IsStartingCVWithMoreThanOneConsonant)
-                    {
+                    } else if (burstConsonants.Contains(cc[i]) && !syllable.IsStartingCVWithMoreThanOneConsonant) {
                         // like [V C1] [C1] [C2 ..]
                         TryAddPhoneme(phonemes, syllable.tone, cc[i], $"{cc[i]} -");
-                        if (cc[i] == cc.Last() && !affricates.Contains(cc[i]))
-                        {
+                        if (cc[i] == cc.Last() && !affricates.Contains(cc[i])) {
                             phonemes.Remove(cc[i]);
                             phonemes.Remove($"{cc[i]} -");
                         }
                     }
-                }
-                else
-                {
+                } else {
                     // like [V C1] [C1 C2]  [C2 ..] or like [V C1] [C1 -] [C3 ..]
                     TryAddPhoneme(phonemes, syllable.tone, cc1);
-                    if (!HasOto(cc1, syllable.tone) && burstConsonants.Contains(cc[i]) && !syllable.IsStartingCVWithMoreThanOneConsonant)
-                    {
+                    if (!HasOto(cc1, syllable.tone) && burstConsonants.Contains(cc[i]) && !syllable.IsStartingCVWithMoreThanOneConsonant) {
                         TryAddPhoneme(phonemes, syllable.tone, cc[i], $"{cc[i]} -");
                     }
-                    if (cc[i] == cc.Last() && !affricates.Contains(cc[i]))
-                    {
+                    if (cc[i] == cc.Last() && !affricates.Contains(cc[i])) {
                         phonemes.Remove(cc[i]);
                         phonemes.Remove($"{cc[i]} -");
                     }
-                } 
+                }
             }
 
             phonemes.Add(basePhoneme);
