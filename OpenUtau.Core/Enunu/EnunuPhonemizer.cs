@@ -6,6 +6,7 @@ using System.Text;
 using K4os.Hash.xxHash;
 using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
+using TinyPinyin;
 
 namespace OpenUtau.Core.Enunu {
     [Phonemizer("Enunu Phonemizer", "ENUNU")]
@@ -89,8 +90,12 @@ namespace OpenUtau.Core.Enunu {
                     });
                     position = notes[index][0].position;
                 } else {
+                    var lyric = notes[index][0].lyric;
+                    if (lyric.Length > 0 && PinyinHelper.IsChinese(lyric[0])) {
+                        lyric = PinyinHelper.GetPinyin(lyric).ToLowerInvariant();
+                    }
                     result.Add(new EnunuNote {
-                        lyric = notes[index][0].lyric,
+                        lyric = lyric,
                         length = notes[index].Sum(n => n.duration),
                         noteNum = notes[index][0].tone,
                         noteIndex = index,
