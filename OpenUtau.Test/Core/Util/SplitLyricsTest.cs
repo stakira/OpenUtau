@@ -10,13 +10,16 @@ namespace OpenUtau.Core.Util {
 
         [Fact]
         public void SplitTest() {
-            var result = SplitLyrics.Split("a word中文русскийひらがな \"がな\" \"\" \"two words\"");
+            var result = SplitLyrics.Split("a word中文русский가각갂ひらがな \"がな\" \"\" \"two words\"");
             Assert.Collection(result,
                 s => Assert.Equal("a", s),
                 s => Assert.Equal("word", s),
                 s => Assert.Equal("中", s),
                 s => Assert.Equal("文", s),
                 s => Assert.Equal("русский", s),
+                s => Assert.Equal("가", s),
+                s => Assert.Equal("각", s),
+                s => Assert.Equal("갂", s),
                 s => Assert.Equal("ひ", s),
                 s => Assert.Equal("ら", s),
                 s => Assert.Equal("が", s),
@@ -28,15 +31,15 @@ namespace OpenUtau.Core.Util {
 
         [Fact]
         public void JoinTest() {
-            string[] lyrics = new[] { "a", "word", "中", "文", "русский", "ひ", "ら", "が", "な", "がな", "", "two words" };
+            string[] lyrics = new[] { "a", "word", "中", "文", "русский", "가", "각", "갂", "ひ", "ら", "が", "な", "がな", "", "two words" };
             Assert.Equal(
-                "a word 中 文 русский ひ ら が な \"がな\" \"\" \"two words\"",
+                "a word 中 文 русский 가 각 갂 ひ ら が な \"がな\" \"\" \"two words\"",
                 SplitLyrics.Join(lyrics));
         }
 
         [Fact]
         public void RoundTripTest() {
-            string[] lyrics = new[] { "a", "word", "中", "文", "中文", " ", "    ", "-", "12 3# $%^", "中русский", "русский", "ひ", "ら", "が", "な", "がな", "two words" };
+            string[] lyrics = new[] { "a", "word", "中", "文", "中文", " ", "    ", "-", "12 3# $%^", "中русский", "русский", "ひ", "ら", "が", "な", "がな", "two words", "가", "각", "갂", "갃간" };
             Assert.Equal(lyrics, SplitLyrics.Split(SplitLyrics.Join(lyrics)));
         }
     }

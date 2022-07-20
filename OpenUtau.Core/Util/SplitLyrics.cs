@@ -7,7 +7,7 @@ namespace OpenUtau.Core.Util {
     public static class SplitLyrics {
         static Regex whitespace = new Regex(@"\s");
         static Regex standalone = new Regex(
-            @"\p{IsCJKUnifiedIdeographs}|\p{IsHiragana}|\p{IsKatakana}");
+            @"\p{IsCJKUnifiedIdeographs}|\p{IsHiragana}|\p{IsKatakana}|\p{IsHangulSyllables}");
 
         public static List<string> Split(string text) {
             var lyrics = new List<string>();
