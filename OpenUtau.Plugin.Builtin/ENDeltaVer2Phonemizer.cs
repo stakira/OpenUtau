@@ -283,36 +283,41 @@ namespace OpenUtau.Plugin.Builtin
                 // but if there is no /C1C2/, we try /C1 C2-/, vise versa for the last one
                 for (var i = 0; i < cc.Length - 1; i++) {
                     var cc1 = $"{cc[i]} {cc[i + 1]}";
+                    if (!HasOto(cc1, ending.tone)) {
+                        cc1 = $"{cc[i]}{cc[i + 1]}";
+                    }
+                    if (!HasOto(cc1, ending.tone) && !HasOto($"{cc[i]}{cc[i + 1]}", ending.tone)) {
+                        cc1 = $"{cc[i]} {cc[i + 1]}-";
+                    }
                     if (i < cc.Length - 2) {
-                        if (HasOto(cc1, ending.tone))
-                        {
+                        if (HasOto(cc1, ending.tone)) {
                             // like [C1 C2][C2 ...]
                             phonemes.Add(cc1);
-                        } else if (TryAddPhoneme(phonemes, ending.tone, $"{cc[i + 1]}{cc[i + 2]}")) {
-                            // like [C1C2][C2 ...]
                         } else if (TryAddPhoneme(phonemes, ending.tone, $"{cc[i + 1]} {cc[i + 2]}-")) {
-                            // like [C1 C2-][C3 ...]
+                            // like [C1 C2-][C2 ...]
                             i++;
+                        } else if (TryAddPhoneme(phonemes, ending.tone, $"{cc[i + 1]} {cc[i + 2]}")) {
+                            // like [C1 C2][C3 ...]
+                        } else if (TryAddPhoneme(phonemes, ending.tone, $"{cc[i + 1]}{cc[i + 2]}")) {
+                            // like [C1C2][C3 ...]
                         } else if (!cc.First().Contains(cc[i])) {
                             // like [C1][C2 ...]
                             TryAddPhoneme(phonemes, ending.tone, cc[i], $"{cc[i]} -");
+                            i++;
                         }
                     } else {
                         if (TryAddPhoneme(phonemes, ending.tone, $"{cc[i]} {cc[i + 1]}-")) {
                             // like [C1 C2-]
                             i++;
-                        } else if (TryAddPhoneme(phonemes, ending.tone, $"{cc[i]}{cc[i + 1]}"))
-                          {
+                        } else if (TryAddPhoneme(phonemes, ending.tone, $"{cc[i]}{cc[i + 1]}")) {
                             // like [C1C2][C2 -]
                             TryAddPhoneme(phonemes, ending.tone, $"{cc[i + 1]} -", cc[i + 1]);
                             i++;
-                        } else if (TryAddPhoneme(phonemes, ending.tone, cc1))
-                          {
+                        } else if (TryAddPhoneme(phonemes, ending.tone, cc1)) {
                             // like [C1 C2][C2 -]
                             TryAddPhoneme(phonemes, ending.tone, $"{cc[i + 1]} -", cc[i + 1]);
                             i++;
-                        } else
-                          {
+                        } else {
                             // like [C1][C2 -]
                             TryAddPhoneme(phonemes, ending.tone, cc[i], $"{cc[i]} -");
                             phonemes.Remove(cc[0]);
