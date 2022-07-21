@@ -325,7 +325,9 @@ namespace OpenUtau.Plugin.Builtin
                         } else {
                             // like [C1][C2 -]
                             TryAddPhoneme(phonemes, ending.tone, cc[i], $"{cc[i]} -");
-                            phonemes.Remove(cc[0]);
+                            if (!burstConsonants.Contains(cc[0])) {
+                                phonemes.Remove(cc[0]);
+                            }
                             TryAddPhoneme(phonemes, ending.tone, $"{cc[i + 1]} -", cc[i + 1]);
                             i++;
                         }
