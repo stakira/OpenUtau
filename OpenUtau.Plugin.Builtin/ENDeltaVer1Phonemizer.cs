@@ -281,8 +281,7 @@ namespace OpenUtau.Plugin.Builtin
                     }
                 }
             }
-            else
-            {
+            else {
                 phonemes.Add($"{v} {cc[0]}");
                 // all CCs except the first one are /C1C2/, the last one is /C1 C2-/
                 // but if there is no /C1C2/, we try /C1 C2-/, vise versa for the last one
