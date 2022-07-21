@@ -303,7 +303,7 @@ namespace OpenUtau.Plugin.Builtin
                             // like [C1][C2 ...]
                             //TryAddPhoneme(phonemes, ending.tone, cc[i], $"{cc[i]} -");
                             TryAddPhoneme(phonemes, ending.tone, cc[i + 1], $"{cc[i + 1]} -");
-                            TryAddPhoneme(phonemes, ending.tone, cc[i + 2], $"{cc[i + 2]} -");
+                            TryAddPhoneme(phonemes, ending.tone, $"{cc[i + 2]} -", cc[i + 2]);
                             i++;
                         } else if (!cc.First().Contains(cc[i])) {
                             // like [C1][C2 ...]
