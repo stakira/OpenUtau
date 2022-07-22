@@ -301,7 +301,9 @@ namespace OpenUtau.Plugin.Builtin
                             // like [C1C2][C3 ...]
                         } else if (!cc.First().Contains(cc[i + 1]) || !cc.First().Contains(cc[i + 2])) {
                             // like [C1][C2 ...]
-                            //TryAddPhoneme(phonemes, ending.tone, cc[i], $"{cc[i]} -");
+                            if (burstConsonants.Contains(cc[i])) {
+                                TryAddPhoneme(phonemes, ending.tone, cc[i], $"{cc[i]} -");
+                            }
                             TryAddPhoneme(phonemes, ending.tone, cc[i + 1], $"{cc[i + 1]} -");
                             TryAddPhoneme(phonemes, ending.tone, $"{cc[i + 2]} -", cc[i + 2]);
                             i++;
@@ -335,13 +337,10 @@ namespace OpenUtau.Plugin.Builtin
                                 phonemes.Remove(cc[0]);
                             }
                             TryAddPhoneme(phonemes, ending.tone, $"{cc[i + 1]} -", cc[i + 1]);
-                            if (!burstConsonants.Contains(cc[i])) {
-                                phonemes.Remove(cc[i]);
-                            }
                             i++;
                         }
                     }
-                }    
+                }  
             }
             return phonemes;
         }
