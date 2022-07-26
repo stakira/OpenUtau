@@ -22,6 +22,23 @@ namespace OpenUtau.Core.Format
     }
     public static class Midi
     {
+        static public UProject LoadProject(string file) {
+            UProject uproject = new UProject();
+            Ustx.AddDefaultExpressions(uproject);
+
+            uproject.tracks = new List<UTrack>();
+
+            var parts = Load(file, uproject);
+            foreach (var part in parts) {
+                var track = new UTrack();
+                track.TrackNo = uproject.tracks.Count;
+                part.trackNo = track.TrackNo;
+                part.AfterLoad(uproject, track);
+                uproject.tracks.Add(track);
+                uproject.parts.Add(part);
+            }
+            return uproject;
+        }
         static public List<UVoicePart> Load(string file, UProject project)
         {
             List<UVoicePart> resultParts = new List<UVoicePart>();
