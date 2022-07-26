@@ -103,6 +103,11 @@
               <ComboBoxItem Content="{DynamicResource prefs.appearance.theme.dark}"/>
             </ComboBox>
             <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.note.restart}" FontSize="11"/>
+            <TextBlock Margin="0,4,0,0" Text="{DynamicResource prefs.appearance.showportrait}" />
+            <ComboBox HorizontalAlignment="Stretch" SelectedIndex="{Binding ShowPortrait}">
+              <ComboBoxItem Content="{DynamicResource prefs.off}"/>
+              <ComboBoxItem Content="{DynamicResource prefs.on}"/>
+            </ComboBox>
           </StackPanel>
         </HeaderedContentControl>
         <HeaderedContentControl Classes="groupbox" Header="{DynamicResource prefs.advanced}">
