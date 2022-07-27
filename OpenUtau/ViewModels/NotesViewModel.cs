@@ -288,7 +288,7 @@ namespace OpenUtau.App.ViewModels {
                 return;
             }
             var singer = project.tracks[part.trackNo].Singer;
-            if (singer == null || string.IsNullOrEmpty(singer.Portrait)) {
+            if (singer == null || string.IsNullOrEmpty(singer.Portrait) || !Preferences.Default.ShowPortrait) {
                 lock (portraitLock) {
                     Portrait = null;
                     portraitSource = null;

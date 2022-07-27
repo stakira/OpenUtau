@@ -102,6 +102,7 @@ namespace OpenUtau.Core.Util {
             public int LockStartTime = 0;
             public int PlaybackAutoScroll = 1;
             public bool ReverseLogOrder = true;
+            public bool ShowPortrait = true;
         }
     }
 }
