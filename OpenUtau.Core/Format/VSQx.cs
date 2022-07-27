@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Xml;
+using System.Collections.Generic;
 
 using OpenUtau.Core.Ustx;
 
@@ -91,6 +93,67 @@ namespace OpenUtau.Core.Format {
                     upart.Duration = int.Parse(part.SelectSingleNode(playtimePath, nsmanager).InnerText);
                     upart.trackNo = utrack.TrackNo;
 
+                    var pitList = new List<Tuple<int, int>>();
+                    var pbsList = new List<Tuple<int, int>>();
+                    int? lastT = null;
+                    int? lastV = null;
+                    foreach (XmlNode ctrlPt in part.SelectNodes($"{nsPrefix}{(nsPrefix == "v3:" ? "mCtrl" : "cc")}", nsmanager)) {
+                        var t = int.Parse(ctrlPt.SelectSingleNode($"{nsPrefix}{(nsPrefix == "v3:" ? "posTick": "t")}", nsmanager).InnerText);
+                        var valNode = ctrlPt.SelectSingleNode($"{nsPrefix}{(nsPrefix == "v3:" ? "attr" : "v")}", nsmanager);
+                        // type of controller
+                        // D: DYN, [0,128), default: 64
+                        // S: PBS, [0,24], default: 2.
+                        // P: PIT, [-8192,8192), default: 0
+                        // Pitch curve is calculated by multiplying PIT with PBS, max/min PIT shifts pitch by {PBS} semitones.
+                        var type = valNode.Attributes["id"].Value;
+                        var v = int.Parse(valNode.InnerText);
+                        if (type == "DYN" || type == "D") {
+                            v -= 64;
+                            v = (int)(v < 0 ? v / 64.0 * 240 : v / 63.0 * 120);
+                            var curve = GetCurve(uproject, upart, Ustx.DYN);
+                            curve.Set(t, v, lastT ?? t, lastV ?? 0);
+                            lastT = t;
+                            lastV = v;
+                        } else if (type == "PBS" || type == "S") {
+                            pbsList.Add(new Tuple<int, int>(t, v));
+                        } else if (type == "PIT" || type == "P") {
+                            pitList.Add(new Tuple<int, int>(t, v));
+                        }
+                    }
+                    if (lastV.HasValue) {
+                        GetCurve(uproject, upart, Ustx.DYN).Set(upart.Duration, lastV ?? 0, lastT ?? 0, 0);
+                    }
+
+                    // Make sure that points are ordered by time
+                    const int pbsDefaultVal = 2;
+                    pbsList.Sort((tuple1, tuple2) => tuple1.Item1.CompareTo(tuple2.Item1));
+                    pitList.Sort((tuple1, tuple2) => tuple1.Item1.CompareTo(tuple2.Item1));
+
+                    lastT = null;
+                    lastV = null;
+                    foreach (var pt in pitList) {
+                        var t = pt.Item1;
+                        var v = pt.Item2 < 0 ? pt.Item2 / 8192f : pt.Item2 / 8191f;
+                        var semitone = pbsList.FindLast(tuple => tuple.Item1 <= t)?.Item2 ?? pbsDefaultVal;
+                        var pit = (int)Math.Round(v * semitone * 100);
+                        if(Math.Abs(pit) > 1200) {
+                            // Exceed OpenUTAU's limit. clip value
+                            pit = Math.Sign(pit) * 1200;
+                        }
+                        if(t > 0 && lastV.HasValue) {
+                            // Mimic Vsqx's Hold property
+                            GetCurve(uproject, upart, Ustx.PITD).Set(t - UCurve.interval, lastV.Value, lastT ?? t, 0);
+                            GetCurve(uproject, upart, Ustx.PITD).Set(t, pit, t - UCurve.interval, 0);
+                        } else {
+                            GetCurve(uproject, upart, Ustx.PITD).Set(t, pit, lastT ?? t, 0);
+                        }
+                        lastT = t;
+                        lastV = pit;
+                    }
+                    if(lastV.HasValue) {
+                        GetCurve(uproject, upart, Ustx.PITD).Set(upart.Duration, lastV ?? 0, lastT ?? 0, 0);
+                    }
+
                     foreach (XmlNode note in part.SelectNodes(notePath, nsmanager)) {
                         UNote unote = uproject.CreateNote();
 
@@ -131,6 +194,17 @@ namespace OpenUtau.Core.Format {
             uproject.AfterLoad();
             uproject.ValidateFull();
             return uproject;
+        }
+
+        private static UCurve GetCurve(UProject uproject, UVoicePart upart, string abbr) {
+            var curve = upart.curves.Find(c => c.abbr == abbr);
+            if(curve == null) {
+                if(uproject.expressions.TryGetValue(abbr, out var desc)) {
+                    curve = new UCurve(desc);
+                    upart.curves.Add(curve);
+                }
+            }
+            return curve;
         }
     }
 }
