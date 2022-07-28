@@ -210,7 +210,9 @@ namespace OpenUtau.Core {
                 DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(0));
             }
             if (cmd is PreRenderNotification || cmd is LoadProjectNotification) {
-                SchedulePreRender();
+                if (Util.Preferences.Default.PreRender) {
+                    SchedulePreRender();
+                }
             }
         }
 
