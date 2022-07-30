@@ -149,4 +149,11 @@ namespace OpenUtau.Core {
     public class PreRenderNotification : UNotification {
         public override string ToString() => $"Pre-render notification.";
     }
+
+    public class PartRenderedNotification : UNotification {
+        public PartRenderedNotification(UVoicePart part) {
+            this.part = part;
+        }
+        public override string ToString() => "Part rendered.";
+    }
 }

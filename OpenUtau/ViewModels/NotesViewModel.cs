@@ -26,14 +26,7 @@ namespace OpenUtau.App.ViewModels {
             this.tempSelectedNotes = tempSelectedNotes;
         }
     }
-    public class NoteResizeEvent {
-        public readonly UNote note;
-        public NoteResizeEvent(UNote note) { this.note = note; }
-    }
-    public class NoteMoveEvent {
-        public readonly UNote note;
-        public NoteMoveEvent(UNote note) { this.note = note; }
-    }
+    public class WaveformRefreshEvent { }
 
     public class NotesViewModel : ViewModelBase, ICmdSubscriber {
         [Reactive] public Rect Bounds { get; set; }
@@ -62,6 +55,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public bool ShowVibrato { get; set; }
         [Reactive] public bool ShowPitch { get; set; }
         [Reactive] public bool ShowFinalPitch { get; set; }
+        [Reactive] public bool ShowWaveform { get; set; }
         [Reactive] public bool ShowPhoneme { get; set; }
         [Reactive] public bool IsSnapOn { get; set; }
         [Reactive] public string SnapUnitText { get; set; }
@@ -170,6 +164,7 @@ namespace OpenUtau.App.ViewModels {
             ShowVibrato = true;
             ShowPitch = true;
             ShowFinalPitch = true;
+            ShowWaveform = true;
             ShowPhoneme = true;
             IsSnapOn = true;
             SnapUnitText = string.Empty;
@@ -517,7 +512,7 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void OnNext(UCommand cmd, bool isUndo) {
-            if (cmd is UNotification) {
+            if (cmd is UNotification notif) {
                 if (cmd is LoadPartNotification loadPart) {
                     LoadPart(loadPart.part, loadPart.project);
                     double tickOffset = loadPart.tick - loadPart.part.position - Bounds.Width / TickWidth / 2;
@@ -543,6 +538,8 @@ namespace OpenUtau.App.ViewModels {
                     || cmd is PhonemizedNotification) {
                     OnPartModified();
                     MessageBus.Current.SendMessage(new NotesRefreshEvent());
+                } else if (notif is PartRenderedNotification && notif.part == Part) {
+                    MessageBus.Current.SendMessage(new WaveformRefreshEvent());
                 }
             } else if (cmd is PartCommand partCommand) {
                 if (cmd is ReplacePartCommand replacePart) {

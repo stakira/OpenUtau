@@ -167,6 +167,7 @@
   <system:String x:Key="pianoroll.toggle.tips">显示提示 (T)</system:String>
   <system:String x:Key="pianoroll.toggle.tone">开关音符音 (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">显示颤音 (U)</system:String>
+  <system:String x:Key="pianoroll.toggle.waveform">显示波形 (W)</system:String>
   <system:String x:Key="pianoroll.tool.drawpitch">绘制音高线工具 (4)</system:String>
   <system:String x:Key="pianoroll.tool.eraser">橡皮工具 (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">分割工具 (5)</system:String>

@@ -165,10 +165,8 @@ namespace OpenUtau.Core {
                     RenderEngine engine = new RenderEngine(project);
                     var trackMixes = engine.RenderTracks(scheduler, ref renderCancellation);
                     for (int i = 0; i < trackMixes.Count; ++i) {
-                        if (project.tracks.Count > i) {
-                            if (project.tracks[i].Mute) {
-                                continue;
-                            }
+                        if (trackMixes[i] == null || i >= project.tracks.Count || project.tracks[i].Mute) {
+                            continue;
                         }
                         var file = PathManager.Inst.GetExportPath(exportPath, i + 1);
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exporting to {file}."));

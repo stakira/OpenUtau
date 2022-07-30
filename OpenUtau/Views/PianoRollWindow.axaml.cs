@@ -689,6 +689,7 @@ namespace OpenUtau.App.Views {
                     case Key.U: notesVm.ShowVibrato = !notesVm.ShowVibrato; args.Handled = true; break;
                     case Key.I: notesVm.ShowPitch = !notesVm.ShowPitch; args.Handled = true; break;
                     case Key.O: notesVm.ShowPhoneme = !notesVm.ShowPhoneme; args.Handled = true; break;
+                    case Key.W: notesVm.ShowWaveform = !notesVm.ShowWaveform; args.Handled = true; break;
                     case Key.P: notesVm.IsSnapOn = !notesVm.IsSnapOn; args.Handled = true; break;
                     case Key.Up: notesVm.TransposeSelection(1); args.Handled = true; break;
                     case Key.Down: notesVm.TransposeSelection(-1); args.Handled = true; break;
