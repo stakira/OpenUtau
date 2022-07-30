@@ -176,8 +176,10 @@ namespace OpenUtau.App.ViewModels {
 
         public void OnNext(UCommand cmd, bool isUndo) {
             if (cmd is ProgressBarNotification progressBarNotification) {
-                Progress = progressBarNotification.Progress;
-                ProgressText = progressBarNotification.Info;
+                Dispatcher.UIThread.InvokeAsync(() => {
+                    Progress = progressBarNotification.Progress;
+                    ProgressText = progressBarNotification.Info;
+                });
             } else if (cmd is LoadProjectNotification loadProject) {
                 Core.Util.Preferences.AddRecentFile(loadProject.project.FilePath);
             } else if (cmd is SaveProjectNotification saveProject) {

@@ -36,6 +36,7 @@ namespace OpenUtau.App.ViewModels {
             set => this.RaiseAndSetIfChanged(ref exportResampler, value);
         }
         [Reactive] public int PhaseCompensation { get; set; }
+        [Reactive] public int PreRender { get; set; }
         [Reactive] public int Theme { get; set; }
         [Reactive] public int ShowPortrait { get; set; }
         public List<CultureInfo?>? Languages { get; }
@@ -91,6 +92,7 @@ namespace OpenUtau.App.ViewModels {
                 ? null
                 : CultureInfo.GetCultureInfo(Preferences.Default.Language);
             PhaseCompensation = Preferences.Default.PhaseCompensation;
+            PreRender = Preferences.Default.PreRender ? 1 : 0;
             Theme = Preferences.Default.Theme;
             ShowPortrait = Preferences.Default.ShowPortrait ? 1 : 0;
 
@@ -147,6 +149,11 @@ namespace OpenUtau.App.ViewModels {
             this.WhenAnyValue(vm => vm.PhaseCompensation)
                 .Subscribe(phaseComp => {
                     Preferences.Default.PhaseCompensation = phaseComp;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.PreRender)
+                .Subscribe(preRender => {
+                    Preferences.Default.PreRender = preRender > 0;
                     Preferences.Save();
                 });
             this.WhenAnyValue(vm => vm.Language)

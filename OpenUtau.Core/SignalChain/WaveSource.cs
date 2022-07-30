@@ -2,14 +2,21 @@
 
 namespace OpenUtau.Core.SignalChain {
     public class WaveSource : ISignalSource {
+        public readonly double offsetMs;
+        public readonly double estimatedLengthMs;
         public readonly int offset;
         public readonly int estimatedLength;
         public readonly int channels;
+
+        public double EndMs => offsetMs + estimatedLengthMs;
+        public bool HasSamples => data != null;
 
         private readonly object lockObj = new object();
         private float[] data;
 
         public WaveSource(double offsetMs, double estimatedLengthMs, double skipOverMs, int channels) {
+            this.offsetMs = offsetMs;
+            this.estimatedLengthMs = estimatedLengthMs;
             this.channels = channels;
             offset = (int)((offsetMs - skipOverMs) * 44100 / 1000) * channels;
             estimatedLength = (int)(estimatedLengthMs * 44100 / 1000) * channels;

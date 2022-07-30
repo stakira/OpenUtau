@@ -7,6 +7,7 @@ using YamlDotNet.Serialization;
 using Serilog;
 using OpenUtau.Core.Render;
 using OpenUtau.Api;
+using OpenUtau.Core.SignalChain;
 
 namespace OpenUtau.Core.Ustx {
     public abstract class UPart {
@@ -45,7 +46,10 @@ namespace OpenUtau.Core.Ustx {
         [YamlIgnore] private long notesTimestamp;
         [YamlIgnore] private long phonemesTimestamp;
 
+        [YamlIgnore] private ISignalSource mix;
+
         [YamlIgnore] public bool PhonemesUpToDate => notesTimestamp == phonemesTimestamp;
+        [YamlIgnore] public ISignalSource Mix => mix;
 
         public override string DisplayName => name;
 
@@ -130,7 +134,7 @@ namespace OpenUtau.Core.Ustx {
                     resolution = project.resolution,
                 };
                 notesTimestamp = request.timestamp;
-                DocManager.Inst.PhonemizerRunner.Push(request);
+                DocManager.Inst.PhonemizerRunner?.Push(request);
             }
             lock (this) {
                 if (phonemizerResponse != null) {
@@ -205,6 +209,23 @@ namespace OpenUtau.Core.Ustx {
         internal void SetPhonemizerResponse(PhonemizerResponse response) {
             lock (this) {
                 phonemizerResponse = response;
+            }
+        }
+
+        internal RenderPartRequest GetRenderRequest() {
+            lock (this) {
+                return new RenderPartRequest() {
+                    part = this,
+                    timestamp = notesTimestamp,
+                    trackNo = trackNo,
+                    phrases = renderPhrases.ToArray(),
+                };
+            }
+        }
+
+        internal void SetMix(ISignalSource mix) {
+            lock (this) {
+                this.mix = mix;
             }
         }
 

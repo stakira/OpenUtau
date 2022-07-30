@@ -101,6 +101,7 @@ namespace OpenUtau.Core.Render {
         public readonly string singerId;
         public readonly USinger singer;
         public readonly int position;
+        public readonly int endPosition;
         public readonly double tempo;
         public readonly double tickToMs;
         public readonly RenderNote[] notes;
@@ -145,6 +146,7 @@ namespace OpenUtau.Core.Render {
             singer = track.Singer;
             renderer = track.Renderer;
             position = part.position;
+            endPosition = position + phones.Last().position + phones.Last().duration;
             tempo = project.bpm;
             tickToMs = 60000.0 / project.bpm * project.beatUnit / 4 / project.resolution;
 

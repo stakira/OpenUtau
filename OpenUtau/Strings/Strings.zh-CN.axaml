@@ -167,6 +167,7 @@
   <system:String x:Key="pianoroll.toggle.tips">显示提示 (T)</system:String>
   <system:String x:Key="pianoroll.toggle.tone">开关音符音 (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">显示颤音 (U)</system:String>
+  <system:String x:Key="pianoroll.toggle.waveform">显示波形 (W)</system:String>
   <system:String x:Key="pianoroll.tool.drawpitch">绘制音高线工具 (4)</system:String>
   <system:String x:Key="pianoroll.tool.eraser">橡皮工具 (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">分割工具 (5)</system:String>
@@ -211,6 +212,7 @@
   <system:String x:Key="prefs.playback.lockstarttime.on">将播放标记移回开始播放处</system:String>
   <system:String x:Key="prefs.playback.test">测试</system:String>
   <system:String x:Key="prefs.rendering">渲染</system:String>
+  <system:String x:Key="prefs.rendering.prerender">预渲染</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">相位修正</system:String>
   <system:String x:Key="prefs.rendering.prerender.threads">预渲染线程数</system:String>
   <system:String x:Key="prefs.rendering.resampler">重采样器</system:String>
