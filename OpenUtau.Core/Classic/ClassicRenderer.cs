@@ -59,7 +59,7 @@ namespace OpenUtau.Classic {
                         }
                         VoicebankFiles.CopyBackMetaFiles(item.inputFile, item.inputTemp);
                     }
-                    progress.CompleteOne($"Resampling \"{item.phone.phoneme}\"");
+                    progress.Complete(1, $"Resampling \"{item.phone.phoneme}\"");
                 });
                 var result = Layout(phrase);
                 result.samples = Concatenate(resamplerItems, cancellation);
