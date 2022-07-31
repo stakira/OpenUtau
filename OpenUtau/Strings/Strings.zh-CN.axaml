@@ -11,6 +11,8 @@
   <system:String x:Key="context.pitch.pointsnapprev">吸附到上一个音符</system:String>
 
   <system:String x:Key="debug.clear">清空</system:String>
+  <!--<system:String x:Key="debug.copylog">Copy Log</system:String>-->
+  <!--<system:String x:Key="debug.reverselogorder">Reverse Log Order</system:String>-->
 
   <system:String x:Key="dialogs.about.caption">关于 OpenUTAU</system:String>
   <system:String x:Key="dialogs.about.message">
@@ -139,6 +141,7 @@
   <system:String x:Key="oto.suffix">后缀</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">歌词</system:String>
+  <!--<system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Replace "-" with "+"</system:String>-->
   <system:String x:Key="pianoroll.menu.lyrics.edit">编辑歌词</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">平假名转罗马音</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">日语 VCV 转 CV</system:String>
@@ -212,8 +215,8 @@
   <system:String x:Key="prefs.playback.lockstarttime.on">将播放标记移回开始播放处</system:String>
   <system:String x:Key="prefs.playback.test">测试</system:String>
   <system:String x:Key="prefs.rendering">渲染</system:String>
-  <system:String x:Key="prefs.rendering.prerender">预渲染</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">相位修正</system:String>
+  <system:String x:Key="prefs.rendering.prerender">预渲染</system:String>
   <system:String x:Key="prefs.rendering.prerender.threads">预渲染线程数</system:String>
   <system:String x:Key="prefs.rendering.resampler">重采样器</system:String>
   <system:String x:Key="prefs.rendering.resampler.morewarn">

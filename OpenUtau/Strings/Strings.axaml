@@ -11,10 +11,8 @@
   <system:String x:Key="context.pitch.pointsnapprev">Snap to previous note</system:String>
 
   <system:String x:Key="debug.clear">Clear</system:String>
-    
-  <system:String x:Key="debug.reverselogorder">Reverse Log Order</system:String>
-    
   <system:String x:Key="debug.copylog">Copy Log</system:String>
+  <system:String x:Key="debug.reverselogorder">Reverse Log Order</system:String>
 
   <system:String x:Key="dialogs.about.caption">About OpenUTAU</system:String>
   <system:String x:Key="dialogs.about.message">
@@ -143,13 +141,13 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="oto.suffix">Suffix</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">Lyrics</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Replace "-" with "+"</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">Edit Lyrics</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana to Romaji</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">Japanese VCV to CV</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Remove Letter Suffix</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">Remove Tone Suffix</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Romaji to Hiragana</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Replace "-" with "+"</system:String>
   <system:String x:Key="pianoroll.menu.notedefaults">Note Defaults</system:String>
   <system:String x:Key="pianoroll.menu.notes">Notes</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">Add tail "-"</system:String>

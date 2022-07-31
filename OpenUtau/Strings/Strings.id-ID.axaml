@@ -11,6 +11,8 @@
   <system:String x:Key="context.pitch.pointsnapprev">Snap ke not sebelumnya</system:String>
 
   <!--<system:String x:Key="debug.clear">Clear</system:String>-->
+  <!--<system:String x:Key="debug.copylog">Copy Log</system:String>-->
+  <!--<system:String x:Key="debug.reverselogorder">Reverse Log Order</system:String>-->
 
   <system:String x:Key="dialogs.about.caption">Tentang OpenUtau</system:String>
   <system:String x:Key="dialogs.about.message">
@@ -139,6 +141,7 @@ Warning: this option removes custom presets.</system:String>-->
   <system:String x:Key="oto.suffix">Akhiran</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">Lirik</system:String>
+  <!--<system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Replace "-" with "+"</system:String>-->
   <system:String x:Key="pianoroll.menu.lyrics.edit">Sunting Lirik</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana ke Romaji</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">VCV Jepang ke CV</system:String>
@@ -167,6 +170,7 @@ Warning: this option removes custom presets.</system:String>-->
   <system:String x:Key="pianoroll.toggle.tips">Perlihatkan Tips (T)</system:String>
   <system:String x:Key="pianoroll.toggle.tone">Alihkan Not Nada (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">Perlihatkan Vibrato (U)</system:String>
+  <!--<system:String x:Key="pianoroll.toggle.waveform">View Waveform (W)</system:String>-->
   <!--<system:String x:Key="pianoroll.tool.drawpitch">Draw Pitch Tool (4)</system:String>-->
   <system:String x:Key="pianoroll.tool.eraser">Alat Penghapus (3)</system:String>
   <!--<system:String x:Key="pianoroll.tool.knife">Knife Tool (5)</system:String>-->
@@ -183,6 +187,7 @@ Tahan Ctrl untuk memilih lainnya</system:String>
   <system:String x:Key="prefs.advanced.stable">Stabil</system:String>
   <system:String x:Key="prefs.appearance">Penampilan</system:String>
   <system:String x:Key="prefs.appearance.lang">Bahasa</system:String>
+  <!--<system:String x:Key="prefs.appearance.showportrait">Show portrait on piano roll</system:String>-->
   <system:String x:Key="prefs.appearance.theme">Tema</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">Gelap</system:String>
   <system:String x:Key="prefs.appearance.theme.light">Terang</system:String>
@@ -211,6 +216,7 @@ Tahan Ctrl untuk memilih lainnya</system:String>
   <system:String x:Key="prefs.playback.test">Uji</system:String>
   <system:String x:Key="prefs.rendering">Merender</system:String>
   <!--<system:String x:Key="prefs.rendering.phasecomp">Phase Compensation</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.prerender">Pre-render</system:String>-->
   <system:String x:Key="prefs.rendering.prerender.threads">Utas Pra-perenderan</system:String>
   <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
   <!--<system:String x:Key="prefs.rendering.resampler.morewarn">

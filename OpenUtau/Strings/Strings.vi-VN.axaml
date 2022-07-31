@@ -11,6 +11,8 @@
   <system:String x:Key="context.pitch.pointsnapprev">Gán vào nốt trước</system:String>
 
   <system:String x:Key="debug.clear">Xoá</system:String>
+  <!--<system:String x:Key="debug.copylog">Copy Log</system:String>-->
+  <!--<system:String x:Key="debug.reverselogorder">Reverse Log Order</system:String>-->
 
   <system:String x:Key="dialogs.about.caption">Thông tin về OpenUTAU</system:String>
   <system:String x:Key="dialogs.about.message">
@@ -139,13 +141,13 @@ Lưu ý: tuỳ chọn này cũng sẽ xoá các preset của bạn.</system:Stri
   <system:String x:Key="oto.suffix">Hậu tố</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">Lời nhạc</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Thay thế "-" với "+"</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">Chỉnh lời nhạc</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Chuyển Hiragana sang Romaji</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">Chuyển VCV sang CV</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Xoá hậu tố là từ</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">Xoá hậu tố là cao độ</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Chuyển Romaji sang Hiragana</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Thay thế "-" với "+"</system:String>
   <system:String x:Key="pianoroll.menu.notedefaults">Thông số các nốt</system:String>
   <system:String x:Key="pianoroll.menu.notes">Nốt nhạc</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">Thêm nốt "-"</system:String>
@@ -214,6 +216,7 @@ Nhấn giữ Ctrl để chọn đồng loạt nhiều nốt</system:String>
   <system:String x:Key="prefs.playback.test">Nghe thử</system:String>
   <system:String x:Key="prefs.rendering">Render</system:String>
   <!--<system:String x:Key="prefs.rendering.phasecomp">Phase Compensation</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.prerender">Pre-render</system:String>-->
   <system:String x:Key="prefs.rendering.prerender.threads">Luồng cho phép nghe thử trước</system:String>
   <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
   <!--<system:String x:Key="prefs.rendering.resampler.morewarn">

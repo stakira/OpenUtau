@@ -11,6 +11,8 @@
   <system:String x:Key="context.pitch.pointsnapprev">Ajustar a la nota previa</system:String>
 
   <system:String x:Key="debug.clear">Limpiar</system:String>
+  <!--<system:String x:Key="debug.copylog">Copy Log</system:String>-->
+  <!--<system:String x:Key="debug.reverselogorder">Reverse Log Order</system:String>-->
 
   <system:String x:Key="dialogs.about.caption">Sobre OpenUTAU</system:String>
   <system:String x:Key="dialogs.about.message">
@@ -139,6 +141,7 @@ Advertencia: Esta opción eliminará las bases personalizadas.</system:String>
   <system:String x:Key="oto.suffix">Sufijo</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">Letra</system:String>
+  <!--<system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Replace "-" with "+"</system:String>-->
   <system:String x:Key="pianoroll.menu.lyrics.edit">Editar Letra</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana a Romaji</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">VCV a CV (Japonés)</system:String>
@@ -167,6 +170,7 @@ Advertencia: Esta opción eliminará las bases personalizadas.</system:String>
   <system:String x:Key="pianoroll.toggle.tips">Ver Consejos (T)</system:String>
   <system:String x:Key="pianoroll.toggle.tone">Activar/Desactivar Tono de Nota (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">Ver Vibratos (U)</system:String>
+  <!--<system:String x:Key="pianoroll.toggle.waveform">View Waveform (W)</system:String>-->
   <system:String x:Key="pianoroll.tool.drawpitch">Dibujar Tono (4)</system:String>
   <system:String x:Key="pianoroll.tool.eraser">Goma (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">Cuchillo (5)</system:String>
@@ -183,6 +187,7 @@ Mantiene Ctrl para seleccionar más</system:String>
   <system:String x:Key="prefs.advanced.stable">Estable</system:String>
   <system:String x:Key="prefs.appearance">Apariencia</system:String>
   <system:String x:Key="prefs.appearance.lang">Lenguaje</system:String>
+  <!--<system:String x:Key="prefs.appearance.showportrait">Show portrait on piano roll</system:String>-->
   <system:String x:Key="prefs.appearance.theme">Tema</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">Oscuro</system:String>
   <system:String x:Key="prefs.appearance.theme.light">Claro</system:String>
@@ -211,6 +216,7 @@ Mantiene Ctrl para seleccionar más</system:String>
   <system:String x:Key="prefs.playback.test">Probar</system:String>
   <system:String x:Key="prefs.rendering">Renderización</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">Compensación de Fase</system:String>
+  <!--<system:String x:Key="prefs.rendering.prerender">Pre-render</system:String>-->
   <system:String x:Key="prefs.rendering.prerender.threads">Hilos de Pre-Renderización</system:String>
   <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
   <system:String x:Key="prefs.rendering.resampler.morewarn">

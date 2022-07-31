@@ -11,6 +11,8 @@
   <system:String x:Key="context.pitch.pointsnapprev">Привязка к предыдущей ноте</system:String>
 
   <system:String x:Key="debug.clear">Очистить</system:String>
+  <!--<system:String x:Key="debug.copylog">Copy Log</system:String>-->
+  <!--<system:String x:Key="debug.reverselogorder">Reverse Log Order</system:String>-->
 
   <system:String x:Key="dialogs.about.caption">О OpenUTAU</system:String>
   <system:String x:Key="dialogs.about.message">
@@ -139,6 +141,7 @@ Warning: this option removes custom presets.</system:String>-->
   <system:String x:Key="oto.suffix">Суффикс</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">Текст</system:String>
+  <!--<system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Replace "-" with "+"</system:String>-->
   <system:String x:Key="pianoroll.menu.lyrics.edit">Редактировать текста</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana в Romaji</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">Японский VCV в CV</system:String>
@@ -167,6 +170,7 @@ Warning: this option removes custom presets.</system:String>-->
   <system:String x:Key="pianoroll.toggle.tips">Подсказки (T)</system:String>
   <system:String x:Key="pianoroll.toggle.tone">Прослушивание тона (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">Показать вибрато (U)</system:String>
+  <!--<system:String x:Key="pianoroll.toggle.waveform">View Waveform (W)</system:String>-->
   <system:String x:Key="pianoroll.tool.drawpitch">Инструмент рисовки питча (4)</system:String>
   <system:String x:Key="pianoroll.tool.eraser">Ластик (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">Инструмент нарезки (5)</system:String>
@@ -183,6 +187,7 @@ Warning: this option removes custom presets.</system:String>-->
   <system:String x:Key="prefs.advanced.stable">Стабильный</system:String>
   <system:String x:Key="prefs.appearance">Интерфейс</system:String>
   <system:String x:Key="prefs.appearance.lang">Язык</system:String>
+  <!--<system:String x:Key="prefs.appearance.showportrait">Show portrait on piano roll</system:String>-->
   <system:String x:Key="prefs.appearance.theme">Тема</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">Тёмная</system:String>
   <system:String x:Key="prefs.appearance.theme.light">Светлая</system:String>
@@ -211,6 +216,7 @@ Warning: this option removes custom presets.</system:String>-->
   <system:String x:Key="prefs.playback.test">Тест</system:String>
   <system:String x:Key="prefs.rendering">Рендер</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">Фазовая компенсация</system:String>
+  <!--<system:String x:Key="prefs.rendering.prerender">Pre-render</system:String>-->
   <system:String x:Key="prefs.rendering.prerender.threads">Потоки пререндера</system:String>
   <system:String x:Key="prefs.rendering.resampler">Ресемплер</system:String>
   <system:String x:Key="prefs.rendering.resampler.morewarn">

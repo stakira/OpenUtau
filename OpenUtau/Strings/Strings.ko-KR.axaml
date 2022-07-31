@@ -11,10 +11,8 @@
   <system:String x:Key="context.pitch.pointsnapprev">이전 노트 스냅</system:String>
 
   <system:String x:Key="debug.clear">지우기</system:String>
-
-  <system:String x:Key="debug.reverselogorder">로그 순서 뒤집기</system:String>
-    
   <system:String x:Key="debug.copylog">로그 복사</system:String>
+  <system:String x:Key="debug.reverselogorder">로그 순서 뒤집기</system:String>
 
   <system:String x:Key="dialogs.about.caption">OpenUTAU에 대하여</system:String>
   <system:String x:Key="dialogs.about.message">
@@ -143,13 +141,13 @@
   <system:String x:Key="oto.suffix">접미사</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">가사</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">"-" 기호를 "+" 기호로 대체</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">가사 편집</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">히라가나를 로마자로</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">일본어 VCV를 CV로</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">문자 접미사 제거</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">톤 접미사 제거</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">로마자를 히라가나로</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">"-" 기호를 "+" 기호로 대체</system:String>
   <system:String x:Key="pianoroll.menu.notedefaults">노트 기본값</system:String>
   <system:String x:Key="pianoroll.menu.notes">노트</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">"-" 꼬리 추가</system:String>
@@ -172,6 +170,7 @@
   <system:String x:Key="pianoroll.toggle.tips">팁 보기 (T)</system:String>
   <system:String x:Key="pianoroll.toggle.tone">노트 톤 켜고 끄기 (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">비브라토 보기 (U)</system:String>
+  <!--<system:String x:Key="pianoroll.toggle.waveform">View Waveform (W)</system:String>-->
   <system:String x:Key="pianoroll.tool.drawpitch">피치 그리기 툴 (4)</system:String>
   <system:String x:Key="pianoroll.tool.eraser">삭제 툴 (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">잘라내기 툴 (5)</system:String>
@@ -188,6 +187,7 @@
   <system:String x:Key="prefs.advanced.stable">안정된 버전</system:String>
   <system:String x:Key="prefs.appearance">외형</system:String>
   <system:String x:Key="prefs.appearance.lang">언어</system:String>
+  <!--<system:String x:Key="prefs.appearance.showportrait">Show portrait on piano roll</system:String>-->
   <system:String x:Key="prefs.appearance.theme">테마</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">다크</system:String>
   <system:String x:Key="prefs.appearance.theme.light">라이트</system:String>
@@ -216,6 +216,7 @@
   <system:String x:Key="prefs.playback.test">테스트</system:String>
   <system:String x:Key="prefs.rendering">렌더링</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">위상 보정</system:String>
+  <!--<system:String x:Key="prefs.rendering.prerender">Pre-render</system:String>-->
   <system:String x:Key="prefs.rendering.prerender.threads">스레드 사전 렌더링</system:String>
   <system:String x:Key="prefs.rendering.resampler">리샘플러</system:String>
   <system:String x:Key="prefs.rendering.resampler.morewarn">

@@ -11,10 +11,8 @@
   <system:String x:Key="context.pitch.pointsnapprev">Conectar à nota anterior </system:String>
 
   <system:String x:Key="debug.clear">Limpar</system:String>
-
-  <system:String x:Key="debug.reverselogorder">Inverter Ordem de Log</system:String>
-
   <system:String x:Key="debug.copylog">Copiar Log</system:String>
+  <system:String x:Key="debug.reverselogorder">Inverter Ordem de Log</system:String>
 
   <system:String x:Key="dialogs.about.caption">Sobre OpenUTAU</system:String>
   <system:String x:Key="dialogs.about.message">
@@ -143,13 +141,13 @@ Aviso: esta opção remove predefinições personalizadas.</system:String>
   <system:String x:Key="oto.suffix">Sufixo</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">Lírica</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Trocar "-" por "+"</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">Editar Lírica</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana para Romaji</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">(Japonês) VCV para CV</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Remover Letra de Suffixo</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">Remover Sufixo de Tom</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Romaji para Hiragana</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Trocar "-" por "+"</system:String>
   <system:String x:Key="pianoroll.menu.notedefaults">Padrões de Nota</system:String>
   <system:String x:Key="pianoroll.menu.notes">Nota</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">Adicionar Final "-"</system:String>
@@ -172,6 +170,7 @@ Aviso: esta opção remove predefinições personalizadas.</system:String>
   <system:String x:Key="pianoroll.toggle.tips">Ver Dicas (T)</system:String>
   <system:String x:Key="pianoroll.toggle.tone">Ativar Tom de Nota (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">Ver Vibrato (U)</system:String>
+  <!--<system:String x:Key="pianoroll.toggle.waveform">View Waveform (W)</system:String>-->
   <system:String x:Key="pianoroll.tool.drawpitch">Ferramenta Desenhar Tom (4)</system:String>
   <system:String x:Key="pianoroll.tool.eraser">Ferramenta Borracha (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">Ferramenta Faca (5)</system:String>
@@ -188,6 +187,7 @@ Segure Ctrl para selecionar mais notas</system:String>
   <system:String x:Key="prefs.advanced.stable">Estável</system:String>
   <system:String x:Key="prefs.appearance">Aparência</system:String>
   <system:String x:Key="prefs.appearance.lang">Idioma</system:String>
+  <!--<system:String x:Key="prefs.appearance.showportrait">Show portrait on piano roll</system:String>-->
   <system:String x:Key="prefs.appearance.theme">Tema</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">Escuro</system:String>
   <system:String x:Key="prefs.appearance.theme.light">Claro</system:String>
@@ -216,6 +216,7 @@ Segure Ctrl para selecionar mais notas</system:String>
   <system:String x:Key="prefs.playback.test">Teste</system:String>
   <system:String x:Key="prefs.rendering">Renderização</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">Compensação de Fase</system:String>
+  <!--<system:String x:Key="prefs.rendering.prerender">Pre-render</system:String>-->
   <system:String x:Key="prefs.rendering.prerender.threads">Threads do Pre-render</system:String>
   <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
   <system:String x:Key="prefs.rendering.resampler.morewarn">
