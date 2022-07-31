@@ -12,7 +12,7 @@
 
   <system:String x:Key="debug.clear">Limpiar</system:String>
   <system:String x:Key="debug.copylog">Copiar Registro</system:String>
-  system:String x:Key="debug.reverselogorder">Revertir Orden del Registro</system:String>
+  <system:String x:Key="debug.reverselogorder">Revertir Orden del Registro</system:String>
 
   <system:String x:Key="dialogs.about.caption">Sobre OpenUTAU</system:String>
   <system:String x:Key="dialogs.about.message">
