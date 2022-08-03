@@ -5,6 +5,7 @@
         xmlns:vm="using:OpenUtau.App.ViewModels"
         mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
         x:Class="OpenUtau.App.Views.PreferencesDialog"
+        Icon="/Assets/open-utau.ico"
         Title="{DynamicResource prefs.caption}"
         WindowStartupLocation="CenterScreen"
         MinWidth="500" MinHeight="600" Width="500" Height="600"

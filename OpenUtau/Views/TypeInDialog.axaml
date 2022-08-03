@@ -4,6 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         x:Class="OpenUtau.App.Views.TypeInDialog"
+        Icon="/Assets/open-utau.ico"
         Title="TypeInDialog" Height="120" Width="320" WindowStartupLocation="CenterOwner"
         ExtendClientAreaToDecorationsHint="False">
   <StackPanel VerticalAlignment="Center" Margin="{Binding $parent.WindowDecorationMargin}">
