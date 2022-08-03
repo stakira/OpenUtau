@@ -170,7 +170,7 @@ Aviso: esta opção remove predefinições personalizadas.</system:String>
   <system:String x:Key="pianoroll.toggle.tips">Ver Dicas (T)</system:String>
   <system:String x:Key="pianoroll.toggle.tone">Ativar Tom de Nota (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">Ver Vibrato (U)</system:String>
-  <!--<system:String x:Key="pianoroll.toggle.waveform">View Waveform (W)</system:String>-->
+  <system:String x:Key="pianoroll.toggle.waveform">Ver Waveform (W)</system:String>
   <system:String x:Key="pianoroll.tool.drawpitch">Ferramenta Desenhar Tom (4)</system:String>
   <system:String x:Key="pianoroll.tool.eraser">Ferramenta Borracha (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">Ferramenta Faca (5)</system:String>
@@ -187,7 +187,7 @@ Segure Ctrl para selecionar mais notas</system:String>
   <system:String x:Key="prefs.advanced.stable">Estável</system:String>
   <system:String x:Key="prefs.appearance">Aparência</system:String>
   <system:String x:Key="prefs.appearance.lang">Idioma</system:String>
-  <!--<system:String x:Key="prefs.appearance.showportrait">Show portrait on piano roll</system:String>-->
+  <system:String x:Key="prefs.appearance.showportrait">Mostrar retrato no piano roll</system:String>
   <system:String x:Key="prefs.appearance.theme">Tema</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">Escuro</system:String>
   <system:String x:Key="prefs.appearance.theme.light">Claro</system:String>
