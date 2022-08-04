@@ -96,10 +96,6 @@ namespace OpenUtau.Plugin.Builtin {
             "z=z,ざ,ず,ずぃ,ぜ,ぞ",
             "my=my,み,みぇ,みゃ,みゅ,みょ",
             "ng=ng,ガ,ギ,グ,ゲ,ゴ",
-            "R=R",
-            "息=息",
-            "吸=吸",
-            "-=-"
         };
 
         static readonly Dictionary<string, string> vowelLookup;
