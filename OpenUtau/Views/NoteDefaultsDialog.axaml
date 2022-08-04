@@ -5,6 +5,7 @@
         xmlns:vm="using:OpenUtau.App.ViewModels"
         mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="470"
         x:Class="OpenUtau.App.Views.NoteDefaultsDialog"
+        Icon="/Assets/open-utau.ico"
         Title="{DynamicResource notedefaults.caption}"
         WindowStartupLocation="CenterScreen"
         MinWidth="600" MinHeight="470" Width="600" Height="470"
