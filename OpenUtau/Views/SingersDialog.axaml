@@ -30,8 +30,8 @@
       <ColumnDefinition Width="1*"/>
     </Grid.ColumnDefinitions>
     <Image Grid.Row="0" Width="100" Height="100" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0" Source="{Binding Avatar}"/>
-      <Button Grid.Row="0" Margin="10,120,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Height="20" Width="70" Content="{DynamicResource singers.location}"
-              IsEnabled="{Binding Singer, Converter={x:Static ObjectConverters.IsNotNull}}" Command="{Binding OpenLocation}"/>
+    <Button Grid.Row="0" Margin="10,120,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Height="20" Width="70" Content="{DynamicResource singers.location}"
+            IsEnabled="{Binding Singer, Converter={x:Static ObjectConverters.IsNotNull}}" Command="{Binding OpenLocation}"/>
     <Button Grid.Row="0" Margin="90,120,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Height="20" Width="20" Content="..."
             IsEnabled="{Binding Singer, Converter={x:Static ObjectConverters.IsNotNull}}"
             Click="OnSingerMenuButton">
