@@ -30,8 +30,8 @@
       <ColumnDefinition Width="1*"/>
     </Grid.ColumnDefinitions>
     <Image Grid.Row="0" Width="100" Height="100" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0" Source="{Binding Avatar}"/>
-    <Button Grid.Row="0" Margin="10,120,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Height="20" Width="70" Content="{DynamicResource singers.location}"
-            IsEnabled="{Binding Singer, Converter={x:Static ObjectConverters.IsNotNull}}" Command="{Binding OpenLocation}"/>
+      <Button Grid.Row="0" Margin="10,120,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Height="20" Width="70" Content="{DynamicResource singers.location}"
+              IsEnabled="{Binding Singer, Converter={x:Static ObjectConverters.IsNotNull}}" Command="{Binding OpenLocation}"/>
     <Button Grid.Row="0" Margin="90,120,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Height="20" Width="20" Content="..."
             IsEnabled="{Binding Singer, Converter={x:Static ObjectConverters.IsNotNull}}"
             Click="OnSingerMenuButton">
@@ -78,25 +78,41 @@
       <Button Margin="0" Content="{DynamicResource singers.subbanks.edit}" Click="OnEditSubbanksButton"
               IsEnabled="{Binding Singer, Converter={x:Static ObjectConverters.IsNotNull}}"/>
     </StackPanel>
+      <Button
+        Grid.Row="0"
+        Margin="120,120,0,0"
+        HorizontalAlignment="Left"
+        VerticalAlignment="Top"
+        Height="20" Width="70"
+        Name="ExportOtoButton"
+        Content="{DynamicResource oto.exportoto}"
+        IsEnabled="True"
+        Click="ExportOtoButtonClick" />
     <GridSplitter Grid.Row="1" Grid.ColumnSpan="3" Height="10"
                   Background="{DynamicResource SystemControlBackgroundAltHighBrush}"/>
-    <DataGrid Name="OtoGrid" Grid.Row="2" Grid.ColumnSpan="3" Margin="10,0,10,0" CanUserResizeColumns="True" BorderThickness="1"
-              BorderBrush="{DynamicResource SystemControlHighlightBaseMediumHighBrush}"
-              Items="{Binding Otos}" SelectedItem="{Binding SelectedOto}"
-              IsReadOnly="True" SelectionChanged="OnSelectionChanged">
+    <DataGrid
+        Name="OtoGrid" Grid.Row="2"
+        Grid.ColumnSpan="3" Margin="10,0,10,0"
+        AutoGenerateColumns="False"
+        VerticalAlignment="Stretch" CanUserReorderColumns="True"
+        CanUserResizeColumns="True" CanUserSortColumns="True"
+        SelectionMode="Single" ClipboardCopyMode="ExcludeHeader"
+        BorderThickness="1"
+        BorderBrush="{DynamicResource SystemControlHighlightBaseMediumHighBrush}"
+        Items="{Binding Otos, Mode=TwoWay}" SelectedItem="{Binding SelectedOto}" SelectionChanged="OnSelectionChanged" BeginningEdit="OnBeginEdit">
       <DataGrid.Columns>
+        <DataGridTextColumn IsReadOnly="True" Header="{StaticResource oto.file}" Binding="{Binding DisplayFile}"/>
         <DataGridTextColumn Header="{StaticResource oto.alias}" Binding="{Binding Alias}"/>
         <DataGridTextColumn Header="{StaticResource oto.set}" Binding="{Binding Set}"/>
-        <DataGridTextColumn Header="{StaticResource oto.file}" Binding="{Binding DisplayFile}"/>
         <DataGridTextColumn Header="{StaticResource oto.phonetic}" Binding="{Binding Phonetic}"/>
         <DataGridTextColumn Header="{StaticResource oto.prefix}" Binding="{Binding Prefix}"/>
         <DataGridTextColumn Header="{StaticResource oto.suffix}" Binding="{Binding Suffix}"/>
-        <DataGridTextColumn Header="{StaticResource oto.color}" Binding="{Binding Color}"/>
         <DataGridTextColumn Header="{StaticResource oto.offset}" Binding="{Binding Offset}"/>
         <DataGridTextColumn Header="{StaticResource oto.consonant}" Binding="{Binding Consonant}"/>
         <DataGridTextColumn Header="{StaticResource oto.cutoff}" Binding="{Binding Cutoff}"/>
         <DataGridTextColumn Header="{StaticResource oto.preutter}" Binding="{Binding Preutter}"/>
         <DataGridTextColumn Header="{StaticResource oto.overlap}" Binding="{Binding Overlap}"/>
+        <DataGridTextColumn Header="{StaticResource oto.color}" Binding="{Binding Color}"/>
       </DataGrid.Columns>
     </DataGrid>
     <GridSplitter Grid.Row="3" Grid.ColumnSpan="3" Height="10"

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
@@ -14,6 +15,7 @@ using NWaves.FeatureExtractors;
 using NWaves.FeatureExtractors.Options;
 using NWaves.Filters.Fda;
 using OpenUtau.App.ViewModels;
+using OpenUtau.Core.Ustx;
 using ScottPlot;
 using ScottPlot.Avalonia;
 using ScottPlot.Plottable;
@@ -108,6 +110,65 @@ namespace OpenUtau.App.Views {
                      ThemeManager.GetString("errors.caption"),
                      MessageBox.MessageBoxButtons.Ok);
             }
+        }
+
+        private void ExportOtoButtonClick(object sender, RoutedEventArgs e) {
+            var viewModel = DataContext as SingersViewModel;
+            if (viewModel is not null && otoGrid is not null) {
+
+                // get whole grid data for that vb
+                var otoGridSingerViewModel = otoGrid.DataContext as SingersViewModel;
+                if (otoGridSingerViewModel is null) {
+                    return;
+                }
+
+                // get location to save otos
+                var p = viewModel.Singer?.Location;
+                var o = viewModel.Singer?.Otos;
+
+                List<UOto> otosToSave = new();
+                otosToSave.AddRange(otoGridSingerViewModel.Otos);
+
+                string savePath = Path.GetDirectoryName(otosToSave[0].File) ?? string.Empty;
+
+                // nothing to save, return early
+                if (!otosToSave.Any()) {
+                    return;
+                }
+
+                // make string from otosToSave
+                StringBuilder sb = new();
+                otosToSave.ForEach((x) => {
+                    sb.Append($"{GetOtoFilePath(p, x.File)},{x.Alias},{x.Offset},{x.Consonant},{x.Cutoff},{x.Preutter},{x.Overlap}\n");
+                });
+                var generatedOtoString = sb.ToString();
+
+                var sfd = new SaveFileDialog();
+                sfd.DefaultExtension = ".ini";
+                sfd.InitialFileName = "oto.ini";
+                sfd.Directory = savePath;
+                sfd.Title = "Export oto text";
+                var saveTask = Task.Run(async () => {
+                    string? wantSaveLocation = await sfd.ShowAsync(this);
+                    if (wantSaveLocation is not null) {
+                        await File.WriteAllTextAsync(wantSaveLocation, generatedOtoString);
+                    }
+                });
+                saveTask.Wait();
+
+                return;
+
+            } else {
+                throw new Exception("unable to find viewmodel when attempting to save otos!");
+            }
+        }
+
+        private string GetOtoFilePath(string basePath, string fullWavPath) {
+            if (string.IsNullOrEmpty(basePath) || string.IsNullOrEmpty(fullWavPath)) {
+                throw new ArgumentException("GetOtoFilePath called and either basePath or fullWavPath was null or empty");
+            }
+            // +1 to trim leading slash
+            return fullWavPath.Substring(basePath.Length + 1).Replace('\\', '/');
         }
 
         async void OnEditSubbanksButton(object sender, RoutedEventArgs args) {
