@@ -99,7 +99,7 @@
         SelectionMode="Single" ClipboardCopyMode="ExcludeHeader"
         BorderThickness="1"
         BorderBrush="{DynamicResource SystemControlHighlightBaseMediumHighBrush}"
-        Items="{Binding Otos, Mode=TwoWay}" SelectedItem="{Binding SelectedOto}" SelectionChanged="OnSelectionChanged" BeginningEdit="OnBeginEdit">
+        Items="{Binding Otos, Mode=TwoWay}" SelectedItem="{Binding SelectedOto}" SelectionChanged="OnSelectionChanged">
       <DataGrid.Columns>
         <DataGridTextColumn IsReadOnly="True" Header="{StaticResource oto.file}" Binding="{Binding DisplayFile}"/>
         <DataGridTextColumn Header="{StaticResource oto.alias}" Binding="{Binding Alias}"/>
