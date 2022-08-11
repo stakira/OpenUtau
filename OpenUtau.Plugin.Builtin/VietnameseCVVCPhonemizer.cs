@@ -807,6 +807,13 @@ namespace OpenUtau.Plugin.Builtin {
                                     new Phoneme { phoneme = $"{V1}{V2}", position = ViTri },
                                 }
                                 };
+                            } else if (Cvoiced) {
+                                return new Result {
+                                    phonemes = new Phoneme[] {
+                                    new Phoneme { phoneme = $"{vow} {V1}" },
+                                    new Phoneme { phoneme = $"{V1}{V2}", position = ViTri },
+                                }
+                                };
                             } else return new Result {
                                 phonemes = new Phoneme[] {
                                     new Phoneme { phoneme = $"{vow}{V1}" },
@@ -1021,7 +1028,7 @@ namespace OpenUtau.Plugin.Builtin {
                             string V1 = loi.Substring(0, 1);
                             string V2 = loi.Substring(1, 1);
                             string VVC = loi.Substring(1);
-                            string N = loi.Substring(1);
+                            string N = loi.Substring(3);
                             V1 = V1.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O").Replace("ư", "U");
                             V2 = V2.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O").Replace("ư", "U");
                             VVC = VVC.Replace("ă", "a").Replace("â", "A").Replace("ơ", "@").Replace("y", "i").Replace("ê", "E").Replace("ô", "O")
@@ -1072,6 +1079,14 @@ namespace OpenUtau.Plugin.Builtin {
                             new Phoneme { phoneme = $"{V1}{V2}", position = Long  },
                             new Phoneme { phoneme = $"{VVC}", position = ViTri  },
                             new Phoneme { phoneme = $"{N}-", position = End  },
+                                }
+                                };
+                            } else if (Cvoiced) {
+                                return new Result {
+                                    phonemes = new Phoneme[] {
+                            new Phoneme { phoneme = $"{vow} {V1}"  },
+                            new Phoneme { phoneme = $"{V1}{V2}", position = Long  },
+                            new Phoneme { phoneme = $"{VVC}", position = ViTri  },
                                 }
                                 };
                             } else return new Result {
