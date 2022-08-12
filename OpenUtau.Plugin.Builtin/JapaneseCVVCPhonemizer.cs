@@ -124,6 +124,7 @@ namespace OpenUtau.Plugin.Builtin {
             var note = notes[0];
             var currentUnicode = ToUnicodeElements(note.lyric);
             var vowLyric = note.lyric;
+            var cvLyric = note.lyric;
             var currentLyric = note.lyric;
             var attr0 = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
             var attr1 = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 1) ?? default;
@@ -143,8 +144,10 @@ namespace OpenUtau.Plugin.Builtin {
                         currentLyric = oto.Alias;
                     }
                 }
-            } else if (singer.TryGetMappedOto(currentLyric, note.tone + attr0.toneShift, attr0.voiceColor, out var oto)) {
-                currentLyric = oto.Alias;
+            } else if (cvLyric.Contains(currentLyric)) {
+                if (singer.TryGetMappedOto(cvLyric, note.tone + attr0.toneShift, attr0.voiceColor, out var oto)) {
+                    currentLyric = oto.Alias;
+                }
             }
 
             if (nextNeighbour != null) {
