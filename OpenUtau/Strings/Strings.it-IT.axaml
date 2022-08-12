@@ -141,7 +141,7 @@ Attenzione: questa opzione rimuove tutti i preset salvati.</system:String>
   <system:String x:Key="oto.suffix">Suffisso</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">Testo</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Rimpiazza "-" con "+"</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Sostituisci "-" con "+"</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">Modifica Testo</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Da Hiragana a Romaji</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">Da VCV a CV (Giapponese)</system:String>
