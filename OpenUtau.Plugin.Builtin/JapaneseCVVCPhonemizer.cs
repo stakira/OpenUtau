@@ -126,6 +126,7 @@ namespace OpenUtau.Plugin.Builtin {
             var vowLyric = note.lyric;
             var cvLyric = note.lyric;
             var currentLyric = note.lyric;
+            var cfLyric = $"* {currentLyric}";
             var attr0 = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
             var attr1 = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 1) ?? default;
 
@@ -134,6 +135,8 @@ namespace OpenUtau.Plugin.Builtin {
                 var initial = $"- {currentLyric}";
                 if (singer.TryGetMappedOto(initial, note.tone + attr0.toneShift, attr0.voiceColor, out var oto)) {
                     currentLyric = oto.Alias;
+                } else if (singer.TryGetMappedOto(cvLyric, note.tone + attr0.toneShift, attr0.voiceColor, out var oto2)) {
+                    currentLyric = oto2.Alias;
                 }
             } else if (plainVowels.Contains(currentLyric)) {
                 var prevUnicode = ToUnicodeElements(prevNeighbour?.lyric);
@@ -142,6 +145,10 @@ namespace OpenUtau.Plugin.Builtin {
                     vowLyric = $"{vow} {currentLyric}";
                     if (singer.TryGetMappedOto(vowLyric, note.tone + attr0.toneShift, attr0.voiceColor, out var oto)) {
                         currentLyric = oto.Alias;
+                    } else if (singer.TryGetMappedOto(cfLyric, note.tone + attr0.toneShift, attr0.voiceColor, out var oto2)) {
+                        currentLyric = oto2.Alias;
+                    } else if (singer.TryGetMappedOto(cvLyric, note.tone + attr0.toneShift, attr0.voiceColor, out var oto3)) {
+                        currentLyric = oto3.Alias;
                     }
                 }
             } else if (cvLyric.Contains(currentLyric)) {
