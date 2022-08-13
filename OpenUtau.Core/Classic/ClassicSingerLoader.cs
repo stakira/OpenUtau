@@ -5,6 +5,16 @@ using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Classic {
     public static class ClassicSingerLoader {
+        static USinger AdjustSingerType(Voicebank v) {
+            switch (v.SingerType) {
+                case USingerType.Enunu:
+                    return new Core.Enunu.EnunuSinger(v) as USinger;
+                case USingerType.DiffSinger:
+                    return new Core.DiffSinger.DiffSingerSinger(v) as USinger;
+                default:
+                    return new ClassicSinger(v) as USinger;
+            }
+        }
         public static IEnumerable<USinger> FindAllSingers() {
             List<USinger> singers = new List<USinger>();
             foreach (var path in new string[] {
@@ -14,9 +24,7 @@ namespace OpenUtau.Classic {
             }) {
                 var loader = new VoicebankLoader(path);
                 singers.AddRange(loader.SearchAll()
-                    .Select(v => v.SingerType == USingerType.Enunu
-                        ? new Core.Enunu.EnunuSinger(v) as USinger
-                        : new ClassicSinger(v) as USinger));
+                    .Select(AdjustSingerType));
             }
             return singers;
         }
