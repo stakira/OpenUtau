@@ -9,10 +9,12 @@ namespace OpenUtau.Core.Render {
         public const string WORLDLINER = "WORLDLINE-R";
         public const string ENUNU = "ENUNU";
         public const string VOGEN = "VOGEN";
+        public const string DIFFSINGER = "DIFFSINGER";
 
         static readonly string[] classicRenderers = new[] { CLASSIC, WORLDLINER };
         static readonly string[] enunuRenderers = new[] { ENUNU };
         static readonly string[] vogenRenderers = new[] { VOGEN };
+        static readonly string[] diffSingerRenderers = new[] { DIFFSINGER };
         static readonly string[] noRenderers = new string[0];
 
         public static string[] GetSupportedRenderers(USingerType singerType) {
@@ -23,6 +25,8 @@ namespace OpenUtau.Core.Render {
                     return enunuRenderers;
                 case USingerType.Vogen:
                     return vogenRenderers;
+                case USingerType.DiffSinger:
+                    return diffSingerRenderers;
                 default:
                     return noRenderers;
             }
@@ -41,6 +45,8 @@ namespace OpenUtau.Core.Render {
                 return new Enunu.EnunuRenderer();
             } else if (renderer == VOGEN) {
                 return new Vogen.VogenRenderer();
+            } else if (renderer == DIFFSINGER) {
+                return new DiffSinger.DiffSingerRenderer();
             }
             return null;
         }
