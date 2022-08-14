@@ -11,8 +11,8 @@
   <system:String x:Key="context.pitch.pointsnapprev">Aggancia alla nota precedente</system:String>
 
   <system:String x:Key="debug.clear">Ripristina</system:String>
-  <!--<system:String x:Key="debug.copylog">Copy Log</system:String>-->
-  <!--<system:String x:Key="debug.reverselogorder">Reverse Log Order</system:String>-->
+  <system:String x:Key="debug.copylog">Copia Log</system:String>
+  <system:String x:Key="debug.reverselogorder">Inverti l'ordine dei log</system:String>
 
   <system:String x:Key="dialogs.about.caption">Informazioni su OpenUTAU</system:String>
   <system:String x:Key="dialogs.about.message">
@@ -38,7 +38,7 @@
   <system:String x:Key="exps.defaultvalue">Predefinito</system:String>
   <system:String x:Key="exps.flag">Flag Resampler</system:String>
   <system:String x:Key="exps.isflag">È Flag Resampler</system:String>
-  <!--<system:String x:Key="exps.maxvalue">Max</system:String>-->
+  <!-- <system:String x:Key="exps.maxvalue">Max</system:String> -->
   <!--<system:String x:Key="exps.minvalue">Min</system:String>-->
   <system:String x:Key="exps.name">Nome</system:String>
   <system:String x:Key="exps.optionvalues">Opzione Valori</system:String>
@@ -141,7 +141,7 @@ Attenzione: questa opzione rimuove tutti i preset salvati.</system:String>
   <system:String x:Key="oto.suffix">Suffisso</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">Testo</system:String>
-  <!--<system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Replace "-" with "+"</system:String>-->
+  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Sostituisci "-" con "+"</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">Modifica Testo</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Da Hiragana a Romaji</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">Da VCV a CV (Giapponese)</system:String>
@@ -159,18 +159,18 @@ Attenzione: questa opzione rimuove tutti i preset salvati.</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">Resetta tutte le espressioni</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">Resetta tutti i tempi dei fonemi</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">Resetta tutti i pitch bends</system:String>
-  <system:String x:Key="pianoroll.menu.notes.reset.vibratos">Resettta tutti i vibrati</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.vibratos">Resetta tutti i vibrati</system:String>
   <system:String x:Key="pianoroll.menu.part">Parte</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">Legacy Plugin (Sperimentale)</system:String>
   <system:String x:Key="pianoroll.menu.part.rename">Rinomina</system:String>
-  <system:String x:Key="pianoroll.toggle.finalpitch">Vedi i Pitch Bend Finale Renderizzato (R)</system:String>
-  <system:String x:Key="pianoroll.toggle.phoneme">Vedi Fonemi (O)</system:String>
-  <system:String x:Key="pianoroll.toggle.pitch">Vedi Pitch Bend (I)</system:String>
+  <system:String x:Key="pianoroll.toggle.finalpitch">Mostra i Pitch Bend Finale Renderizzato (R)</system:String>
+  <system:String x:Key="pianoroll.toggle.phoneme">Mostra Fonemi (O)</system:String>
+  <system:String x:Key="pianoroll.toggle.pitch">Mostra Pitch Bend (I)</system:String>
   <system:String x:Key="pianoroll.toggle.snap">Attiva/Disattiva Snap (P)</system:String>
-  <system:String x:Key="pianoroll.toggle.tips">Vedi Suggerimenti (T)</system:String>
+  <system:String x:Key="pianoroll.toggle.tips">Mostra Suggerimenti (T)</system:String>
   <system:String x:Key="pianoroll.toggle.tone">Attiva/Disattiva tono note (Y)</system:String>
-  <system:String x:Key="pianoroll.toggle.vibrato">Vedi Vibrato (U)</system:String>
-  <!--<system:String x:Key="pianoroll.toggle.waveform">View Waveform (W)</system:String>-->
+  <system:String x:Key="pianoroll.toggle.vibrato">Mostra Vibrato (U)</system:String>
+  <system:String x:Key="pianoroll.toggle.waveform">Mostra Waveform (W)</system:String>
   <system:String x:Key="pianoroll.tool.drawpitch">Strumento Disegna Pitch (4)</system:String>
   <system:String x:Key="pianoroll.tool.eraser">Strumento Gommma (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">Strumento Coltello (5)</system:String>
@@ -187,7 +187,7 @@ Tieni premuto click sinistro + Ctrl per selezionare più note</system:String>
   <system:String x:Key="prefs.advanced.stable">Stabile</system:String>
   <system:String x:Key="prefs.appearance">Aspetto</system:String>
   <system:String x:Key="prefs.appearance.lang">Lingua</system:String>
-  <!--<system:String x:Key="prefs.appearance.showportrait">Show portrait on piano roll</system:String>-->
+  <system:String x:Key="prefs.appearance.showportrait">Mostra portrait sul piano roll</system:String>
   <system:String x:Key="prefs.appearance.theme">Tema</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">Scuro</system:String>
   <system:String x:Key="prefs.appearance.theme.light">Chiaro</system:String>
