@@ -15,7 +15,7 @@ using Serilog;
 
 namespace OpenUtau.App.ViewModels {
     public class SingersViewModel : ViewModelBase {
-        public IEnumerable<USinger> Singers => DocManager.Inst.SingerGroups.Values.SelectMany(l => l);
+        public IEnumerable<USinger> Singers => SingerManager.Inst.SingerGroups.Values.SelectMany(l => l);
         [Reactive] public USinger? Singer { get; set; }
         [Reactive] public Bitmap? Avatar { get; set; }
         [Reactive] public string? Info { get; set; }
@@ -139,9 +139,9 @@ namespace OpenUtau.App.ViewModels {
                 return;
             }
             var singerId = Singer.Id;
-            DocManager.Inst.SearchAllSingers();
+            SingerManager.Inst.SearchAllSingers();
             this.RaisePropertyChanged(nameof(Singers));
-            if (DocManager.Inst.Singers.TryGetValue(singerId, out var singer)) {
+            if (SingerManager.Inst.Singers.TryGetValue(singerId, out var singer)) {
                 Singer = singer;
             } else {
                 Singer = Singers.FirstOrDefault();

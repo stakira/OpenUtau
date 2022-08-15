@@ -158,7 +158,7 @@ namespace OpenUtau.App.ViewModels {
         public void RefreshSingers() {
             var items = new List<MenuItemViewModel>();
             items.AddRange(Preferences.Default.RecentSingers
-                .Select(id => DocManager.Inst.Singers.Values.FirstOrDefault(singer => singer.Id == id))
+                .Select(id => SingerManager.Inst.Singers.Values.FirstOrDefault(singer => singer.Id == id))
                 .OfType<USinger>()
                 .OrderBy(singer => singer.Name)
                 .Select(singer => new MenuItemViewModel() {
@@ -166,11 +166,11 @@ namespace OpenUtau.App.ViewModels {
                     Command = SelectSingerCommand,
                     CommandParameter = singer,
                 }));
-            var keys = DocManager.Inst.SingerGroups.Keys.OrderBy(k => k);
+            var keys = SingerManager.Inst.SingerGroups.Keys.OrderBy(k => k);
             foreach (var key in keys) {
                 items.Add(new MenuItemViewModel() {
                     Header = $"{key} ...",
-                    Items = DocManager.Inst.SingerGroups[key]
+                    Items = SingerManager.Inst.SingerGroups[key]
                         .Select(singer => new MenuItemViewModel() {
                             Header = singer.Name,
                             Command = SelectSingerCommand,

@@ -10,6 +10,7 @@ using OpenUtau.Api;
 using OpenUtau.Classic;
 using OpenUtau.Core.Lib;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 using Serilog;
 
 namespace OpenUtau.Core {
@@ -19,22 +20,16 @@ namespace OpenUtau.Core {
         public bool SkipPhoneme;
     }
 
-    public class DocManager {
+    public class DocManager : SingletonBase<DocManager> {
         DocManager() {
             Project = new UProject();
         }
-
-        static DocManager _s;
-        static DocManager GetInst() { if (_s == null) { _s = new DocManager(); } return _s; }
-        public static DocManager Inst { get { return GetInst(); } }
 
         private Thread mainThread;
         private TaskScheduler mainScheduler;
 
         public int playPosTick = 0;
 
-        public Dictionary<string, USinger> Singers { get; private set; } = new Dictionary<string, USinger>();
-        public Dictionary<USingerType, List<USinger>> SingerGroups { get; private set; } = new Dictionary<USingerType, List<USinger>>();
         public Plugin[] Plugins { get; private set; }
         public PhonemizerFactory[] PhonemizerFactories { get; private set; }
         public UProject Project { get; private set; }
@@ -47,41 +42,11 @@ namespace OpenUtau.Core {
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler((sender, args) => {
                 CrashSave();
             });
-            SearchAllSingers();
             SearchAllPlugins();
             SearchAllLegacyPlugins();
             mainThread = Thread.CurrentThread;
             mainScheduler = TaskScheduler.FromCurrentSynchronizationContext();
             PhonemizerRunner = new PhonemizerRunner(mainScheduler);
-        }
-
-        public void SearchAllSingers() {
-            try {
-                Directory.CreateDirectory(PathManager.Inst.SingersPath);
-                var stopWatch = Stopwatch.StartNew();
-                var singers = ClassicSingerLoader.FindAllSingers()
-                    .Concat(Vogen.VogenSingerLoader.FindAllSingers());
-                Singers = singers
-                    .ToLookup(s => s.Id)
-                    .ToDictionary(g => g.Key, g => g.First());
-                SingerGroups = singers
-                    .GroupBy(s => s.SingerType)
-                    .ToDictionary(s => s.Key, s => s.OrderBy(singer => singer.Name).ToList());
-                stopWatch.Stop();
-                Log.Information($"Search all singers: {stopWatch.Elapsed}");
-            } catch (Exception e) {
-                Log.Error(e, "Failed to search singers.");
-                Singers = new Dictionary<string, USinger>();
-            }
-        }
-
-        public USinger GetSinger(string name) {
-            Log.Information(name);
-            name = name.Replace("%VOICE%", "");
-            if (Singers.ContainsKey(name)) {
-                return Singers[name];
-            }
-            return null;
         }
 
         public void SearchAllLegacyPlugins() {
@@ -219,7 +184,7 @@ namespace OpenUtau.Core {
                     var _cmd = cmd as SetPlayPosTickNotification;
                     playPosTick = _cmd.playPosTick;
                 } else if (cmd is SingersChangedNotification) {
-                    SearchAllSingers();
+                    SingerManager.Inst.SearchAllSingers();
                 } else if (cmd is ValidateProjectNotification) {
                     Project.ValidateFull();
                 } else if (cmd is SingersRefreshedNotification) {
