@@ -38,6 +38,7 @@ namespace OpenUtau.Classic {
         Dictionary<string, UOto> otos = new Dictionary<string, UOto>();
         Dictionary<string, List<UOto>> phonetics;
         List<USubbank> subbanks = new List<USubbank>();
+        OtoWatcher otoWatcher;
 
         public ClassicSinger(Voicebank voicebank) {
             this.voicebank = voicebank;
@@ -45,16 +46,10 @@ namespace OpenUtau.Classic {
         }
 
         public override void EnsureLoaded() {
-            if (!Found || Loaded) {
+            if (Loaded) {
                 return;
             }
-            try {
-                voicebank.Reload();
-                Load();
-                loaded = true;
-            } catch (Exception e) {
-                Log.Error(e, $"Failed to load {voicebank.File}");
-            }
+            Reload();
         }
 
         public override void Reload() {
@@ -65,6 +60,9 @@ namespace OpenUtau.Classic {
                 voicebank.Reload();
                 Load();
                 loaded = true;
+                if (otoWatcher == null) {
+                    otoWatcher = new OtoWatcher(this, Location);
+                }
             } catch (Exception e) {
                 Log.Error(e, $"Failed to load {voicebank.File}");
             }
