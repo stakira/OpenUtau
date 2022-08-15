@@ -9,9 +9,7 @@ using Serilog;
 
 namespace OpenUtau.Core {
 
-    public class PathManager {
-        private static PathManager _inst;
-
+    public class PathManager : SingletonBase<PathManager> {
         public PathManager() {
             RootPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
             if (OS.IsMacOS()) {
@@ -37,7 +35,6 @@ namespace OpenUtau.Core {
             Log.Logger.Information($"Home path = {HomePath}");
         }
 
-        public static PathManager Inst { get { if (_inst == null) { _inst = new PathManager(); } return _inst; } }
         public string RootPath { get; private set; }
         public string HomePath { get; private set; }
         public bool HomePathIsAscii { get; private set; }
