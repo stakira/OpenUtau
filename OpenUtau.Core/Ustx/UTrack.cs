@@ -48,7 +48,7 @@ namespace OpenUtau.Core.Ustx {
         }
 
         public void OnSingerRefreshed() {
-            if (Singer != null && Singer.Loaded && !DocManager.Inst.Singers.ContainsKey(Singer.Id)) {
+            if (Singer != null && Singer.Loaded && !SingerManager.Inst.Singers.ContainsKey(Singer.Id)) {
                 Singer = USinger.CreateMissing(Singer.Name);
             }
             VoiceColorExp = null;
@@ -88,7 +88,7 @@ namespace OpenUtau.Core.Ustx {
                 Phonemizer = PhonemizerFactory.Get(typeof(DefaultPhonemizer)).Create();
             }
             if (Singer == null && !string.IsNullOrEmpty(singer)) {
-                Singer = DocManager.Inst.GetSinger(singer);
+                Singer = SingerManager.Inst.GetSinger(singer);
                 if (Singer == null) {
                     Singer = USinger.CreateMissing(singer);
                 }

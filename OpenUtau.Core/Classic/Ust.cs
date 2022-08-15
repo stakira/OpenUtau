@@ -153,7 +153,7 @@ namespace OpenUtau.Classic {
                         break;
                     case "VoiceDir":
                         var singerpath = parts[1].Trim();
-                        var singer = DocManager.Inst.GetSinger(singerpath);
+                        var singer = SingerManager.Inst.GetSinger(singerpath);
                         if (singer == null) {
                             singer = USinger.CreateMissing(Path.GetFileName(singerpath.Replace("%DATA%", "").Replace("%VOICE%", "")));
                         }

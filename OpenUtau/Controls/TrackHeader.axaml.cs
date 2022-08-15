@@ -88,7 +88,7 @@ namespace OpenUtau.App.Controls {
 
         void SingerButtonClicked(object sender, RoutedEventArgs args) {
             var singerMenu = this.FindControl<ContextMenu>("SingersMenu");
-            if (DocManager.Inst.Singers.Count > 0) {
+            if (SingerManager.Inst.Singers.Count > 0) {
                 ViewModel?.RefreshSingers();
                 singerMenu.Open();
             }
