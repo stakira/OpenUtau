@@ -15,8 +15,8 @@ using Serilog;
 
 namespace OpenUtau.Core.DiffSinger {
     public class DiffSingerRenderer : IRenderer {
-        public const int headTicks = 240;
-        public const int tailTicks = 240;
+        public const int headTicks = 0;
+        public const int tailTicks = 0;
 
         static readonly HashSet<string> supportedExp = new HashSet<string>(){
             /*Format.Ustx.DYN,
@@ -154,6 +154,7 @@ namespace OpenUtau.Core.DiffSinger {
         }
 
         //将OpenUTAU音素转化为diffsinger音符
+        //#TODO:连音符
         static DiffSingerNote[] PhraseToDiffSingerNotes(RenderPhrase phrase) {
             var notes = new List<DiffSingerNote>();
             notes.Add(new DiffSingerNote {
