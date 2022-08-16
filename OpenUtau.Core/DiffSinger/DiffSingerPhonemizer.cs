@@ -44,6 +44,7 @@ namespace OpenUtau.Core.DiffSinger {
             if (lyric.Length > 0 && PinyinHelper.IsChinese(lyric[0])) {
                 lyric = PinyinHelper.GetPinyin(lyric).ToLowerInvariant();
             }
+
             var phones = singer.phoneDict[lyric];
             if (phones.Item1 == "") {//仅韵母
                 return new Result {
