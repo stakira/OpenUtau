@@ -12,6 +12,7 @@ using OpenUtau.Core.Render;
 using OpenUtau.Core.SignalChain;
 using OpenUtau.Core.Ustx;
 using Serilog;
+using static OpenUtau.Api.Phonemizer;
 
 namespace OpenUtau.Core.DiffSinger {
     public class DiffSingerRenderer : IRenderer {
@@ -153,26 +154,57 @@ namespace OpenUtau.Core.DiffSinger {
             }
         }
 
+        static IEnumerable<RenderNote> GetSlurNote(RenderNote[] ounotes) {
+            foreach (var ounote in ounotes) {
+                if (ounote.lyric[0] == '+') {
+                    yield return ounote;
+                }
+            }
+        }
         //将OpenUTAU音素转化为diffsinger音符
         //#TODO:连音符
         static DiffSingerNote[] PhraseToDiffSingerNotes(RenderPhrase phrase) {
+            var slurNoteIterator = GetSlurNote(phrase.notes).GetEnumerator();
+            slurNoteIterator.MoveNext();
+            bool slurNoteContinue = true;//后面是否还有连音符
             var notes = new List<DiffSingerNote>();
-            notes.Add(new DiffSingerNote {
-                lyric = "R",
-                length = headTicks,
-                noteNum = 60,
-            });
+            string lyric = "";
+            int noteNum = 60;
+            int position = 0;
             foreach (var phone in phrase.phones) {
-                notes.Add(new DiffSingerNote {
-                    lyric = phone.phoneme,
-                    length = phone.duration,
-                    noteNum = phone.tone,
-                });
+                if (lyric != "") {
+                    notes.Add(new DiffSingerNote {
+                        lyric = lyric,
+                        length = phone.position-position,
+                        noteNum = noteNum,
+                    });
+                }
+                lyric = phone.phoneme;
+                position=phone.position;
+                noteNum = phone.tone;
+                RenderNote currentSlurNote = new RenderNote(new UNote());
+                if (slurNoteIterator.Current!=null) { //如果这一句中有连音符
+                    currentSlurNote = slurNoteIterator.Current;
+                } else {
+                    slurNoteContinue = false;
+                }
+                while (slurNoteContinue && currentSlurNote.position<phone.position+phone.duration) {
+                    notes.Add(new DiffSingerNote {
+                        lyric = lyric,
+                        length = slurNoteIterator.Current.position - position,
+                        noteNum = noteNum,
+                    });
+                    lyric = "-";
+                    position = slurNoteIterator.Current.position;
+                    noteNum = slurNoteIterator.Current.tone;
+                    slurNoteContinue=slurNoteIterator.MoveNext();
+                    currentSlurNote = slurNoteIterator.Current;
+                }
             }
             notes.Add(new DiffSingerNote {
-                lyric = "R",
-                length = tailTicks,
-                noteNum = 60,
+                lyric = lyric,
+                length = phrase.phones.Last().position + phrase.phones.Last().duration - position,
+                noteNum = noteNum,
             });
             return notes.ToArray();
         }
