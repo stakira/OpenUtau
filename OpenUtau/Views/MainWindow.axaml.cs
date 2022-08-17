@@ -372,10 +372,18 @@ namespace OpenUtau.App.Views {
         }
 
         void OnMenuSingers(object sender, RoutedEventArgs args) {
-            var dialog = new SingersDialog() {
-                DataContext = new SingersViewModel(),
-            };
-            dialog.ShowDialog(this);
+            var lifetime = Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
+            if (lifetime == null) {
+                return;
+            }
+            var dialog = lifetime.Windows.FirstOrDefault(w => w is SingersDialog);
+            if (dialog == null) {
+                dialog = new SingersDialog() {
+                    DataContext = new SingersViewModel(),
+                };
+                dialog.Show();
+            }
+            dialog.Activate();
             if (dialog.Position.Y < 0) {
                 dialog.Position = dialog.Position.WithY(0);
             }
@@ -538,7 +546,7 @@ namespace OpenUtau.App.Views {
                          ThemeManager.GetString("errors.caption"),
                          MessageBox.MessageBoxButtons.Ok);
                 }
-            }else if(ext==".mid") {
+            } else if (ext == ".mid") {
                 try {
                     viewModel.ImportMidi(file);
                 } catch (Exception e) {

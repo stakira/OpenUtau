@@ -20,8 +20,9 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public Bitmap? Avatar { get; set; }
         [Reactive] public string? Info { get; set; }
         [Reactive] public ObservableCollectionExtended<USubbank> Subbanks { get; set; }
-        [Reactive] public List<UOto>? Otos { get; set; }
+        [Reactive] public ObservableCollectionExtended<UOto> Otos { get; set; }
         [Reactive] public UOto? SelectedOto { get; set; }
+        [Reactive] public int SelectedIndex { get; set; }
         [Reactive] public List<MenuItemViewModel> SetEncodingMenuItems { get; set; }
         [Reactive] public List<MenuItemViewModel> SetDefaultPhonemizerMenuItems { get; set; }
 
@@ -30,6 +31,7 @@ namespace OpenUtau.App.ViewModels {
 
         public SingersViewModel() {
             Subbanks = new ObservableCollectionExtended<USubbank>();
+            Otos = new ObservableCollectionExtended<UOto>();
 #if DEBUG
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 #endif
@@ -41,9 +43,11 @@ namespace OpenUtau.App.ViewModels {
                 .Subscribe(singer => {
                     singer.Reload();
                     Avatar = LoadAvatar(singer);
-                    Otos = singer.Otos.Values.ToList();
+                    Otos.Clear();
+                    Otos.AddRange(singer.Otos.Values);
                     Info = $"Author: {singer.Author}\nVoice: {singer.Voice}\nWeb: {singer.Web}\nVersion: {singer.Version}\n{singer.OtherInfo}\n\n{string.Join("\n", singer.Errors)}";
                     LoadSubbanks();
+                    DocManager.Inst.ExecuteCmd(new OtoChangedNotification());
                 });
 
 
@@ -190,42 +194,58 @@ namespace OpenUtau.App.ViewModels {
             Singer?.Reload();
             LoadSubbanks();
             DocManager.Inst.ExecuteCmd(new SingersRefreshedNotification());
+            DocManager.Inst.ExecuteCmd(new OtoChangedNotification());
         }
 
         public void SetOffset(double value) {
-            if (SelectedOto != null) {
-                var delta = value - SelectedOto.Offset;
-                SelectedOto.Offset += delta;
-                SelectedOto.Consonant -= delta;
-                SelectedOto.Preutter -= delta;
-                SelectedOto.Overlap -= delta;
+            if (SelectedOto == null) {
+                return;
             }
-            this.RaisePropertyChanged(nameof(SelectedOto));
+            var delta = value - SelectedOto.Offset;
+            SelectedOto.Offset += delta;
+            SelectedOto.Consonant -= delta;
+            SelectedOto.Preutter -= delta;
+            SelectedOto.Overlap -= delta;
+            if (SelectedOto.Cutoff < 0) {
+                SelectedOto.Cutoff += delta;
+            }
+            DocManager.Inst.ExecuteCmd(new OtoChangedNotification());
         }
 
         public void SetOverlap(double value) {
-            if (SelectedOto != null) {
-                SelectedOto.Overlap = value - SelectedOto.Offset;
+            if (SelectedOto == null) {
+                return;
             }
+            SelectedOto.Overlap = value - SelectedOto.Offset;
+            DocManager.Inst.ExecuteCmd(new OtoChangedNotification());
         }
 
         public void SetPreutter(double value) {
-            if (SelectedOto != null) {
-                var delta = value - SelectedOto.Offset - SelectedOto.Preutter;
-                SelectedOto.Preutter += delta;
+            if (SelectedOto == null) {
+                return;
             }
+            var delta = value - SelectedOto.Offset - SelectedOto.Preutter;
+            SelectedOto.Preutter += delta;
+            DocManager.Inst.ExecuteCmd(new OtoChangedNotification());
         }
 
         public void SetFixed(double value) {
-            if (SelectedOto != null) {
-                SelectedOto.Consonant = value - SelectedOto.Offset;
+            if (SelectedOto == null) {
+                return;
             }
+            SelectedOto.Consonant = value - SelectedOto.Offset;
+            DocManager.Inst.ExecuteCmd(new OtoChangedNotification());
         }
 
         public void SetCutoff(double value) {
-            if (SelectedOto != null) {
-                SelectedOto.Cutoff = -(value - SelectedOto.Offset);
+            if (SelectedOto == null) {
+                return;
             }
+            if (value < SelectedOto.Offset) {
+                return;
+            }
+            SelectedOto.Cutoff = -(value - SelectedOto.Offset);
+            DocManager.Inst.ExecuteCmd(new OtoChangedNotification());
         }
     }
 }

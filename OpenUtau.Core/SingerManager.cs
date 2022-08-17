@@ -100,7 +100,7 @@ namespace OpenUtau.Core {
                 DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Reloaded {singer.Id}"));
             }
             if (singers.Count > 0) {
-                DocManager.Inst.ExecuteCmd(new SingersRefreshedNotification());
+                DocManager.Inst.ExecuteCmd(new OtoChangedNotification());
             }
         }
     }

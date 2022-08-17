@@ -5,10 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="using:OpenUtau.App.ViewModels"
         xmlns:ScottPlot="clr-namespace:ScottPlot.Avalonia;assembly=ScottPlot.Avalonia"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="640"
         x:Class="OpenUtau.App.Views.SingersDialog"
         Icon="/Assets/open-utau.ico"
-        Title="{DynamicResource singers.caption}" Width="800" MinWidth="800" MinHeight="600"
+        Title="{DynamicResource singers.caption}" Width="800" MinWidth="800" MinHeight="640"
         WindowStartupLocation="CenterScreen"
         ExtendClientAreaToDecorationsHint="False" KeyDown="OnKeyDown">
   <Design.DataContext>
@@ -22,6 +22,8 @@
       <RowDefinition Height="10"/>
       <RowDefinition Height="240" MinHeight="240"/>
       <RowDefinition Height="10"/>
+      <RowDefinition Height="18"/>
+      <RowDefinition Height="4"/>
       <RowDefinition Height="18"/>
       <RowDefinition Height="10"/>
     </Grid.RowDefinitions>
@@ -83,7 +85,8 @@
                   Background="{DynamicResource SystemControlBackgroundAltHighBrush}"/>
     <DataGrid Name="OtoGrid" Grid.Row="2" Grid.ColumnSpan="3" Margin="10,0,10,0" CanUserResizeColumns="True" BorderThickness="1"
               BorderBrush="{DynamicResource SystemControlHighlightBaseMediumHighBrush}"
-              Items="{Binding Otos}" SelectedItem="{Binding SelectedOto}"
+              Items="{Binding Otos}"
+              SelectedItem="{Binding SelectedOto}" SelectedIndex="{Binding SelectedIndex}"
               IsReadOnly="True" SelectionChanged="OnSelectionChanged">
       <DataGrid.Columns>
         <DataGridTextColumn Header="{StaticResource oto.alias}" Binding="{Binding Alias}"/>
@@ -138,6 +141,33 @@
         <TextBlock Margin="2,0">D</TextBlock>
       </Border>
       <TextBlock Margin="0,1,6,1" Text="{DynamicResource singers.otoview.moveright}"/>
+    </StackPanel>
+    <StackPanel Grid.Row="8" Grid.ColumnSpan="3" Margin="10,0" Orientation="Horizontal" Spacing="3">
+      <Border Margin="0" BorderThickness="1" CornerRadius="4"
+              BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}">
+        <TextBlock Margin="2,0">1</TextBlock>
+      </Border>
+      <TextBlock Margin="0,1,6,1" Text="{DynamicResource oto.edit.offset}"/>
+      <Border Margin="0" BorderThickness="1" CornerRadius="4"
+              BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}">
+        <TextBlock Margin="2,0">2</TextBlock>
+      </Border>
+      <TextBlock Margin="0,1,6,1" Text="{DynamicResource oto.edit.overlap}"/>
+      <Border Margin="0" BorderThickness="1" CornerRadius="4"
+              BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}">
+        <TextBlock Margin="2,0">3</TextBlock>
+      </Border>
+      <TextBlock Margin="0,1,6,1" Text="{DynamicResource oto.edit.preutter}"/>
+      <Border Margin="0" BorderThickness="1" CornerRadius="4"
+              BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}">
+        <TextBlock Margin="2,0">4</TextBlock>
+      </Border>
+      <TextBlock Margin="0,1,6,1" Text="{DynamicResource oto.edit.consonant}"/>
+      <Border Margin="0" BorderThickness="1" CornerRadius="4"
+              BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}">
+        <TextBlock Margin="2,0">5</TextBlock>
+      </Border>
+      <TextBlock Margin="0,1,6,1" Text="{DynamicResource oto.edit.cutoff}"/>
     </StackPanel>
     <Border Grid.Row="4" Grid.ColumnSpan="3" Margin="10,0">
       <TextBlock Text="libgdiplus missing" VerticalAlignment="Center" HorizontalAlignment="Center"/>

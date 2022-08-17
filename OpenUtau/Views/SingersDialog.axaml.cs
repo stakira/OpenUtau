@@ -133,8 +133,8 @@ namespace OpenUtau.App.Views {
             DrawOto(oto, true);
         }
 
-        void DrawOto(Core.Ustx.UOto oto, bool fit = false) {
-            if (otoPlot == null) {
+        void DrawOto(Core.Ustx.UOto? oto, bool fit = false) {
+            if (otoPlot == null || oto == null) {
                 return;
             }
             var limites = otoPlot.Plot.GetAxisLimits();

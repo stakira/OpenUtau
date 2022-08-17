@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Text;
 using OpenUtau.Classic;
 
 namespace OpenUtau.Core.Ustx {
-    public class UOto {
+    public class UOto : INotifyPropertyChanged {
         public string Alias { get; set; }
         public string Phonetic { get; set; }
         public string Set { get; set; }
@@ -15,12 +16,50 @@ namespace OpenUtau.Core.Ustx {
         public SortedSet<int> ToneSet { get; set; }
         public string File { get; set; }
         public string DisplayFile { get; set; }
-        public double Offset { get; set; }
-        public double Consonant { get; set; }
-        public double Cutoff { get; set; }
-        public double Preutter { get; set; }
-        public double Overlap { get; set; }
+        public double Offset {
+            get => offset;
+            set {
+                offset = Math.Round(value, 3);
+                NotifyPropertyChanged(nameof(Offset));
+            }
+        }
+        public double Consonant {
+            get => consonant;
+            set {
+                consonant = Math.Max(0, Math.Round(value, 3));
+                NotifyPropertyChanged(nameof(Consonant));
+            }
+        }
+        public double Cutoff {
+            get => cutoff;
+            set {
+                cutoff = Math.Round(value, 3);
+                NotifyPropertyChanged(nameof(Cutoff));
+            }
+        }
+        public double Preutter {
+            get => preutter;
+            set {
+                preutter = Math.Max(0, Math.Round(value, 3));
+                NotifyPropertyChanged(nameof(Preutter));
+            }
+        }
+        public double Overlap {
+            get => overlap;
+            set {
+                overlap = Math.Round(value, 3);
+                NotifyPropertyChanged(nameof(Overlap));
+            }
+        }
         public List<string> SearchTerms { private set; get; }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private double offset;
+        private double consonant;
+        private double cutoff;
+        private double preutter;
+        private double overlap;
 
         public UOto() { }
 
@@ -41,6 +80,10 @@ namespace OpenUtau.Core.Ustx {
             Overlap = oto.Overlap;
 
             SearchTerms = new List<string>();
+        }
+
+        private void NotifyPropertyChanged(string propertyName = "") {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         public override string ToString() => Alias;
