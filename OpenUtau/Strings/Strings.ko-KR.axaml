@@ -187,7 +187,7 @@
   <system:String x:Key="prefs.advanced.stable">안정된 버전</system:String>
   <system:String x:Key="prefs.appearance">외형</system:String>
   <system:String x:Key="prefs.appearance.lang">언어</system:String>
-  <system:String x:Key="prefs.appearance.showportrait">피아노 롤 위에 초상화 표시</system:String>
+  <system:String x:Key="prefs.appearance.showportrait">피아노 롤에 초상화 표시</system:String>
   <system:String x:Key="prefs.appearance.theme">테마</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">다크</system:String>
   <system:String x:Key="prefs.appearance.theme.light">라이트</system:String>
