@@ -9,11 +9,9 @@ using Serilog;
 
 namespace OpenUtau.Core.Render {
     public class Progress {
-        readonly TaskScheduler uiScheduler;
         readonly int total;
         int completed = 0;
-        public Progress(TaskScheduler uiScheduler, int total) {
-            this.uiScheduler = uiScheduler;
+        public Progress(int total) {
             this.total = total;
         }
 
@@ -29,7 +27,7 @@ namespace OpenUtau.Core.Render {
         private void Notify(double progress, string info) {
             var notif = new ProgressBarNotification(progress, info);
             var task = new Task(() => DocManager.Inst.ExecuteCmd(notif));
-            task.Start(uiScheduler);
+            task.Start(DocManager.Inst.MainScheduler);
         }
     }
 
@@ -198,7 +196,7 @@ namespace OpenUtau.Core.Render {
                     .ToArray();
                 tuples = orderedTuples;
             }
-            var progress = new Progress(uiScheduler, tuples.Sum(t => t.Item1.phones.Length));
+            var progress = new Progress(tuples.Sum(t => t.Item1.phones.Length));
             foreach (var tuple in tuples) {
                 var phrase = tuple.Item1;
                 var source = tuple.Item2;

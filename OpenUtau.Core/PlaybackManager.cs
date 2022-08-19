@@ -10,6 +10,7 @@ using OpenUtau.Classic;
 using OpenUtau.Core.Render;
 using OpenUtau.Core.SignalChain;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 using Serilog;
 
 namespace OpenUtau.Core {
@@ -42,7 +43,7 @@ namespace OpenUtau.Core {
         }
     }
 
-    public class PlaybackManager : ICmdSubscriber {
+    public class PlaybackManager : SingletonBase<PlaybackManager>, ICmdSubscriber {
         private PlaybackManager() {
             DocManager.Inst.AddSubscriber(this);
             try {
@@ -52,9 +53,6 @@ namespace OpenUtau.Core {
                 Log.Error(e, "Failed to release source temp.");
             }
         }
-
-        private static PlaybackManager _s;
-        public static PlaybackManager Inst { get { if (_s == null) { _s = new PlaybackManager(); } return _s; } }
 
         List<Fader> faders;
         MasterAdapter masterMix;
@@ -130,10 +128,9 @@ namespace OpenUtau.Core {
             if (!Resamplers.CheckResampler()) {
                 return;
             }
-            var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
             Task.Run(() => {
                 RenderEngine engine = new RenderEngine(project, tick);
-                var result = engine.RenderProject(tick, scheduler, ref renderCancellation);
+                var result = engine.RenderProject(tick, DocManager.Inst.MainScheduler, ref renderCancellation);
                 faders = result.Item2;
                 StartingToPlay = false;
                 StartPlayback(project.TickToMillisecond(tick), result.Item1);
@@ -143,7 +140,7 @@ namespace OpenUtau.Core {
                     DocManager.Inst.ExecuteCmd(new UserMessageNotification(task.Exception.Flatten().ToString()));
                     throw task.Exception;
                 }
-            }, CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted, scheduler);
+            }, CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted, DocManager.Inst.MainScheduler);
         }
 
         public void UpdatePlayPos() {
@@ -159,11 +156,10 @@ namespace OpenUtau.Core {
         }
 
         public void RenderToFiles(UProject project, string exportPath) {
-            var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
             Task.Run(() => {
                 var task = Task.Run(() => {
                     RenderEngine engine = new RenderEngine(project);
-                    var trackMixes = engine.RenderTracks(scheduler, ref renderCancellation);
+                    var trackMixes = engine.RenderTracks(DocManager.Inst.MainScheduler, ref renderCancellation);
                     for (int i = 0; i < trackMixes.Count; ++i) {
                         if (trackMixes[i] == null || i >= project.tracks.Count || project.tracks[i].Mute) {
                             continue;
@@ -185,7 +181,7 @@ namespace OpenUtau.Core {
         }
 
         void SchedulePreRender() {
-            var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
+            var scheduler = TaskScheduler.Default;
             Log.Information("SchedulePreRender");
             var engine = new RenderEngine(DocManager.Inst.Project);
             engine.PreRenderProject(scheduler, ref renderCancellation);

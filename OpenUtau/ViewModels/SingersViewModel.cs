@@ -41,10 +41,10 @@ namespace OpenUtau.App.ViewModels {
             this.WhenAnyValue(vm => vm.Singer)
                 .WhereNotNull()
                 .Subscribe(singer => {
-                    singer.Reload();
+                    singer.EnsureLoaded();
                     Avatar = LoadAvatar(singer);
                     Otos.Clear();
-                    Otos.AddRange(singer.Otos.Values);
+                    Otos.AddRange(singer.Otos);
                     Info = $"Author: {singer.Author}\nVoice: {singer.Voice}\nWeb: {singer.Web}\nVersion: {singer.Version}\n{singer.OtherInfo}\n\n{string.Join("\n", singer.Errors)}";
                     LoadSubbanks();
                     DocManager.Inst.ExecuteCmd(new OtoChangedNotification());
@@ -191,13 +191,26 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void RefreshSinger() {
-            Singer?.Reload();
+            if (Singer == null) {
+                return;
+            }
+            int index = SelectedIndex;
+
+            Singer.Reload();
+            Avatar = LoadAvatar(Singer);
+            Otos.Clear();
+            Otos.AddRange(Singer.Otos);
             LoadSubbanks();
+
             DocManager.Inst.ExecuteCmd(new SingersRefreshedNotification());
             DocManager.Inst.ExecuteCmd(new OtoChangedNotification());
+            if (Otos.Count > 0) {
+                index = Math.Clamp(index, 0, Otos.Count - 1);
+                SelectedIndex = index;
+            }
         }
 
-        public void SetOffset(double value) {
+        public void SetOffset(double value, double totalDur) {
             if (SelectedOto == null) {
                 return;
             }
@@ -209,43 +222,72 @@ namespace OpenUtau.App.ViewModels {
             if (SelectedOto.Cutoff < 0) {
                 SelectedOto.Cutoff += delta;
             }
-            DocManager.Inst.ExecuteCmd(new OtoChangedNotification());
+            FixCutoff(SelectedOto, totalDur);
+            NotifyOtoChanged();
         }
 
-        public void SetOverlap(double value) {
+        public void SetOverlap(double value, double totalDur) {
             if (SelectedOto == null) {
                 return;
             }
             SelectedOto.Overlap = value - SelectedOto.Offset;
-            DocManager.Inst.ExecuteCmd(new OtoChangedNotification());
+            FixCutoff(SelectedOto, totalDur);
+            NotifyOtoChanged();
         }
 
-        public void SetPreutter(double value) {
+        public void SetPreutter(double value, double totalDur) {
             if (SelectedOto == null) {
                 return;
             }
-            var delta = value - SelectedOto.Offset - SelectedOto.Preutter;
-            SelectedOto.Preutter += delta;
-            DocManager.Inst.ExecuteCmd(new OtoChangedNotification());
+            SelectedOto.Preutter = value - SelectedOto.Offset;
+            FixCutoff(SelectedOto, totalDur);
+            NotifyOtoChanged();
         }
 
-        public void SetFixed(double value) {
+        public void SetFixed(double value, double totalDur) {
             if (SelectedOto == null) {
                 return;
             }
             SelectedOto.Consonant = value - SelectedOto.Offset;
-            DocManager.Inst.ExecuteCmd(new OtoChangedNotification());
+            FixCutoff(SelectedOto, totalDur);
+            NotifyOtoChanged();
         }
 
-        public void SetCutoff(double value) {
-            if (SelectedOto == null) {
-                return;
-            }
-            if (value < SelectedOto.Offset) {
+        public void SetCutoff(double value, double totalDur) {
+            if (SelectedOto == null || value < SelectedOto.Offset) {
                 return;
             }
             SelectedOto.Cutoff = -(value - SelectedOto.Offset);
+            FixCutoff(SelectedOto, totalDur);
+            NotifyOtoChanged();
+        }
+
+        private static void FixCutoff(UOto oto, double totalDur) {
+            double cutoff = oto.Cutoff >= 0
+                ? totalDur - oto.Cutoff
+                : oto.Offset - oto.Cutoff;
+            double minCutoff = oto.Offset + Math.Max(Math.Max(oto.Overlap, oto.Preutter), oto.Consonant);
+            if (cutoff < minCutoff) {
+                oto.Cutoff = -(minCutoff - oto.Offset);
+            }
+        }
+
+        private void NotifyOtoChanged() {
+            if (Singer != null) {
+                Singer.OtoDirty = true;
+            }
             DocManager.Inst.ExecuteCmd(new OtoChangedNotification());
+        }
+
+        public void SaveOtos() {
+            if (Singer != null) {
+                try {
+                    Singer.Save();
+                } catch (Exception e) {
+                    DocManager.Inst.ExecuteCmd(new UserMessageNotification(e.ToString()));
+                }
+            }
+            RefreshSinger();
         }
     }
 }

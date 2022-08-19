@@ -130,7 +130,10 @@ namespace OpenUtau.Core {
     }
 
     public class OtoChangedNotification : UNotification {
-        public OtoChangedNotification() { }
+        public readonly bool external;
+        public OtoChangedNotification(bool external = false) {
+            this.external = external;
+        }
         public override string ToString() => "Oto changed.";
     }
 

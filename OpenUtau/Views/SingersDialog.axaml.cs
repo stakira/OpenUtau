@@ -14,13 +14,14 @@ using NWaves.FeatureExtractors;
 using NWaves.FeatureExtractors.Options;
 using NWaves.Filters.Fda;
 using OpenUtau.App.ViewModels;
+using OpenUtau.Core;
 using ScottPlot;
 using ScottPlot.Avalonia;
 using ScottPlot.Plottable;
 using Serilog;
 
 namespace OpenUtau.App.Views {
-    public partial class SingersDialog : Window {
+    public partial class SingersDialog : Window, ICmdSubscriber {
         const int fftSize = 1024;
         const int melSize = 80;
 
@@ -31,6 +32,7 @@ namespace OpenUtau.App.Views {
         DataGrid? otoGrid;
         AvaPlot? otoPlot;
         double coordToMs;
+        double totalDurMs;
         double lastPointerMs;
 
         WaveFile? wav;
@@ -66,6 +68,7 @@ namespace OpenUtau.App.Views {
             } catch (Exception e) {
                 Log.Error(e, "Failed to initialize component.");
             }
+            DocManager.Inst.AddSubscriber(this);
 #if DEBUG
             this.AttachDevTools();
 #endif
@@ -73,6 +76,11 @@ namespace OpenUtau.App.Views {
 
         private void InitializeComponent() {
             AvaloniaXamlLoader.Load(this);
+        }
+
+        protected override void OnClosed(EventArgs e) {
+            base.OnClosed(e);
+            DocManager.Inst.RemoveSubscriber(this);
         }
 
         void OnSingerMenuButton(object sender, RoutedEventArgs args) {
@@ -230,8 +238,9 @@ namespace OpenUtau.App.Views {
             int hopSize = GetHopSize(wav.WaveFmt.SamplingRate);
             var msToCoord = 0.001 * wav.WaveFmt.SamplingRate / hopSize;
             coordToMs = 1.0 / msToCoord;
-            double cutoff = oto.Cutoff > 0
-                ? (wav.Signals[0].Duration * 1000.0 - oto.Cutoff)
+            totalDurMs = wav.Signals[0].Duration * 1000.0;
+            double cutoff = oto.Cutoff >= 0
+                ? totalDurMs - oto.Cutoff
                 : oto.Offset - oto.Cutoff;
             double offsetX = oto.Offset * msToCoord;
             double consonantX = (oto.Offset + oto.Consonant) * msToCoord;
@@ -283,6 +292,7 @@ namespace OpenUtau.App.Views {
             }
             var point = args.GetCurrentPoint(otoPlot);
             lastPointerMs = otoPlot.Plot.GetCoordinateX((float)point.Position.X) * coordToMs;
+            lastPointerMs = Math.Clamp(lastPointerMs, 0, totalDurMs);
         }
 
         void OnKeyDown(object sender, KeyEventArgs args) {
@@ -296,24 +306,19 @@ namespace OpenUtau.App.Views {
             args.Handled = true;
             switch (args.Key) {
                 case Key.D1:
-                    viewModel.SetOffset(lastPointerMs);
-                    DrawOto(viewModel.SelectedOto);
+                    viewModel.SetOffset(lastPointerMs, totalDurMs);
                     break;
                 case Key.D2:
-                    viewModel.SetOverlap(lastPointerMs);
-                    DrawOto(viewModel.SelectedOto);
+                    viewModel.SetOverlap(lastPointerMs, totalDurMs);
                     break;
                 case Key.D3:
-                    viewModel.SetPreutter(lastPointerMs);
-                    DrawOto(viewModel.SelectedOto);
+                    viewModel.SetPreutter(lastPointerMs, totalDurMs);
                     break;
                 case Key.D4:
-                    viewModel.SetFixed(lastPointerMs);
-                    DrawOto(viewModel.SelectedOto);
+                    viewModel.SetFixed(lastPointerMs, totalDurMs);
                     break;
                 case Key.D5:
-                    viewModel.SetCutoff(lastPointerMs);
-                    DrawOto(viewModel.SelectedOto);
+                    viewModel.SetCutoff(lastPointerMs, totalDurMs);
                     break;
                 case Key.W: {
                         var limites = otoPlot.Plot.GetAxisLimits();
@@ -374,5 +379,22 @@ namespace OpenUtau.App.Views {
                     break;
             }
         }
+
+        #region ICmdSubscriber
+
+        public void OnNext(UCommand cmd, bool isUndo) {
+            if (cmd is OtoChangedNotification otoChanged) {
+                var viewModel = DataContext as SingersViewModel;
+                if (viewModel == null) {
+                    return;
+                }
+                if (otoChanged.external) {
+                    viewModel.RefreshSinger();
+                }
+                DrawOto(viewModel.SelectedOto);
+            }
+        }
+
+        #endregion
     }
 }

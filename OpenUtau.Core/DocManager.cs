@@ -30,6 +30,7 @@ namespace OpenUtau.Core {
 
         public int playPosTick = 0;
 
+        public TaskScheduler MainScheduler => mainScheduler;
         public Plugin[] Plugins { get; private set; }
         public PhonemizerFactory[] PhonemizerFactories { get; private set; }
         public UProject Project { get; private set; }

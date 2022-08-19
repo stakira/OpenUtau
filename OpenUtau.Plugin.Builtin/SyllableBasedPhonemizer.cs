@@ -482,14 +482,6 @@ namespace OpenUtau.Plugin.Builtin {
             return GetTransitionBasicLengthMsByConstant();
         }
 
-        protected double GetTransitionBasicLengthMsByOto(string alias) {
-            if (alias != null && alias.Length > 0 && singer.Otos.TryGetValue(alias, out var oto)) {
-                return oto.Preutter * GetTempoNoteLengthFactor();
-            } else {
-                return GetTransitionBasicLengthMsByConstant();
-            }
-        }
-
         protected double GetTransitionBasicLengthMsByConstant() {
             return TransitionBasicLengthMs * GetTempoNoteLengthFactor();
         }
