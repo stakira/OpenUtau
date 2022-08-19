@@ -230,7 +230,7 @@ Hold Ctrl to select</system:String>
   <system:String x:Key="prefs.note.restart">Note: please restart OpenUtau after changing this item.</system:String>
   <system:String x:Key="prefs.off">Off</system:String>
   <system:String x:Key="prefs.on">On</system:String>
-  <system:String x:Key="prefs.otoeditor">Oto Editor</system:String>
+  <system:String x:Key="prefs.otoeditor">Default Oto Editor</system:String>
   <system:String x:Key="prefs.otoeditor.select">Select Oto Editor</system:String>
   <system:String x:Key="prefs.paths">Paths</system:String>
   <system:String x:Key="prefs.paths.addlsinger">Additional Singer Path</system:String>
@@ -276,7 +276,7 @@ Hold Ctrl to select</system:String>
   <system:String x:Key="singers.editoto.gotosource">Goto Source File</system:String>
   <system:String x:Key="singers.editoto.reset">Reset Otos</system:String>
   <system:String x:Key="singers.editoto.save">Save Otos</system:String>
-  <system:String x:Key="singers.editoto.setvlabelerpath">Download vLabeler from https://github.com/sdercolin/vlabeler and set vLabeler path in Preferences first!</system:String>
+  <system:String x:Key="singers.editoto.setvlabelerpath">Download vLabeler (1.0.0-beta1 or higher) from https://github.com/sdercolin/vlabeler and set vLabeler path in Preferences first!</system:String>
   <system:String x:Key="singers.location">Location</system:String>
   <system:String x:Key="singers.otoview.moveleft">Move Left</system:String>
   <system:String x:Key="singers.otoview.moveright">Move Right</system:String>

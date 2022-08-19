@@ -194,14 +194,19 @@ namespace OpenUtau.App.Views {
             if (oto == null) {
                 return;
             }
-            Integrations.VLabelerClient.Inst.GotoOto(viewModel.Singer, oto);
+            if (viewModel.Singer != null) {
+                OpenInVLabeler(viewModel.Singer, oto);
+            }
         }
 
         void OnEditInVLabeler(object sender, RoutedEventArgs args) {
             var viewModel = (DataContext as SingersViewModel)!;
-            if (viewModel.Singer == null) {
-                return;
+            if (viewModel.Singer != null) {
+                OpenInVLabeler(viewModel.Singer, null);
             }
+        }
+
+        private void OpenInVLabeler(Core.Ustx.USinger singer, Core.Ustx.UOto? oto) {
             string path = Core.Util.Preferences.Default.VLabelerPath;
             if (string.IsNullOrEmpty(path) || !OS.AppExists(path)) {
                 MessageBox.Show(
@@ -212,7 +217,7 @@ namespace OpenUtau.App.Views {
                 return;
             }
             try {
-                Integrations.VLabelerClient.Inst.GotoOto(viewModel.Singer, null);
+                Integrations.VLabelerClient.Inst.GotoOto(singer, oto);
             } catch (Exception e) {
                 MessageBox.Show(
                     this,

@@ -81,11 +81,11 @@
     <StackPanel Grid.Row="0" Grid.Column="2" Spacing="10" Margin="0,0,10,0"
                 Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom">
       <Button Margin="0" Content="{DynamicResource singers.editoto.reset}" Command="{Binding RefreshSinger}"
-              IsEnabled="{Binding Singer.OtoDirty}"/>
+              IsVisible="{Binding IsClassic}" IsEnabled="{Binding Singer.OtoDirty}"/>
       <Button Margin="0" Content="{DynamicResource singers.editoto.save}" Command="{Binding SaveOtos}"
-              IsEnabled="{Binding Singer.OtoDirty}"/>
+              IsVisible="{Binding IsClassic}" IsEnabled="{Binding Singer.OtoDirty}"/>
       <Button Margin="0" Content="{DynamicResource singers.editoto.editinvlabeler}"
-              Click="OnEditInVLabeler"/>
+              IsVisible="{Binding IsClassic}" Click="OnEditInVLabeler"/>
     </StackPanel>
     <StackPanel Grid.Row="0" Grid.Column="2" Spacing="10" Margin="0,0,10,0"
                 Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
