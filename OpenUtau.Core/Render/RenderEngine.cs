@@ -209,7 +209,8 @@ namespace OpenUtau.Core.Render {
                 source.SetSamples(task.Result.samples);
                 if (request.sources.All(s => s.HasSamples)) {
                     request.part.SetMix(request.mix);
-                    DocManager.Inst.ExecuteCmd(new PartRenderedNotification(request.part));
+                    new Task(() => DocManager.Inst.ExecuteCmd(new PartRenderedNotification(request.part)))
+                        .Start(uiScheduler);
                 }
             }
             progress.Clear();

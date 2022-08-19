@@ -266,7 +266,8 @@ namespace OpenUtau.App.ViewModels {
             double cutoff = oto.Cutoff >= 0
                 ? totalDur - oto.Cutoff
                 : oto.Offset - oto.Cutoff;
-            double minCutoff = oto.Offset + Math.Max(Math.Max(oto.Overlap, oto.Preutter), oto.Consonant);
+            // 1ms is inserted between consonant and cutoff to avoid resample problem.
+            double minCutoff = oto.Offset + Math.Max(Math.Max(oto.Overlap, oto.Preutter), oto.Consonant + 1);
             if (cutoff < minCutoff) {
                 oto.Cutoff = -(minCutoff - oto.Offset);
             }
@@ -288,6 +289,15 @@ namespace OpenUtau.App.ViewModels {
                 }
             }
             RefreshSinger();
+        }
+
+        public void GotoOto(USinger singer, UOto oto) {
+            if (Singers.Contains(singer)) {
+                Singer = singer;
+                if (Singer.Otos.Contains(oto)) {
+                    SelectedOto = oto;
+                }
+            }
         }
     }
 }

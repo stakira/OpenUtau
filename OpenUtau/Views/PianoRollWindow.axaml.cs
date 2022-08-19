@@ -560,6 +560,15 @@ namespace OpenUtau.App.Views {
                 return;
             }
             if (point.Properties.IsLeftButtonPressed) {
+                if (args.KeyModifiers == cmdKey) {
+                    var hitAliasInfo = ViewModel.NotesViewModel.HitTest.HitTestAlias(args.GetPosition(canvas));
+                    if (hitAliasInfo.hit) {
+                        var singer = ViewModel.NotesViewModel.Project.tracks[ViewModel.NotesViewModel.Part.trackNo].Singer;
+                        MainWindow?.OpenSingersWindow();
+                        Core.DocManager.Inst.ExecuteCmd(new Core.GotoOtoNotification(singer, hitAliasInfo.phoneme.oto));
+                        return;
+                    }
+                }
                 var hitInfo = ViewModel.NotesViewModel.HitTest.HitTestPhoneme(point.Position);
                 if (hitInfo.hit) {
                     var phoneme = hitInfo.phoneme;

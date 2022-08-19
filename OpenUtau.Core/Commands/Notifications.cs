@@ -164,4 +164,14 @@ namespace OpenUtau.Core {
         }
         public override string ToString() => "Part rendered.";
     }
+
+    public class GotoOtoNotification : UNotification {
+        public readonly USinger singer;
+        public readonly UOto oto;
+        public GotoOtoNotification(USinger singer, UOto oto) {
+            this.singer = singer;
+            this.oto = oto;
+        }
+        public override string ToString() => "Goto oto.";
+    }
 }

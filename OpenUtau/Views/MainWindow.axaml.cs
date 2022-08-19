@@ -372,6 +372,10 @@ namespace OpenUtau.App.Views {
         }
 
         void OnMenuSingers(object sender, RoutedEventArgs args) {
+            OpenSingersWindow();
+        }
+
+        public void OpenSingersWindow() {
             var lifetime = Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
             if (lifetime == null) {
                 return;

@@ -60,7 +60,7 @@
       </Button.ContextMenu>
     </Button>
     <ComboBox Grid.Row="0" x:Name="name" HorizontalAlignment="Stretch" Margin="120,10,0,0" VerticalAlignment="Top"
-              Items="{Binding Singers}" SelectedItem="{Binding Singer}"/>
+              Items="{Binding Singers}" SelectedItem="{Binding Singer}" SelectionChanged="OnSelectedSingerChanged"/>
     <Border Grid.Row="0" Margin="120,40,0,0">
       <ScrollViewer>
         <TextBlock x:Name="info" TextWrapping="Wrap" Text="{Binding Info}"/>
@@ -94,7 +94,7 @@
               BorderBrush="{DynamicResource SystemControlHighlightBaseMediumHighBrush}"
               Items="{Binding Otos}"
               SelectedItem="{Binding SelectedOto}" SelectedIndex="{Binding SelectedIndex}"
-              IsReadOnly="True" SelectionChanged="OnSelectionChanged">
+              IsReadOnly="True" SelectionChanged="OnSelectedOtoChanged">
       <DataGrid.Columns>
         <DataGridTextColumn Header="{StaticResource oto.alias}" Binding="{Binding Alias}"/>
         <DataGridTextColumn Header="{StaticResource oto.set}" Binding="{Binding Set}"/>
