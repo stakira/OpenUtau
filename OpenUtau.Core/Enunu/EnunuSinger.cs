@@ -28,13 +28,11 @@ namespace OpenUtau.Core.Enunu {
         public override string DefaultPhonemizer => voicebank.DefaultPhonemizer;
         public override Encoding TextFileEncoding => voicebank.TextFileEncoding;
         public override IList<USubbank> Subbanks => subbanks;
-        public override Dictionary<string, UOto> Otos => otos;
 
         Voicebank voicebank;
         EnunuConfig enuconfig;
         List<string> errors = new List<string>();
         List<USubbank> subbanks = new List<USubbank>();
-        Dictionary<string, UOto> otos = new Dictionary<string, UOto>();
 
         HashSet<string> phonemes = new HashSet<string>();
         Dictionary<string, string[]> table = new Dictionary<string, string[]>();
@@ -106,10 +104,7 @@ namespace OpenUtau.Core.Enunu {
         public override bool TryGetMappedOto(string phoneme, int tone, out UOto oto) {
             var parts = phoneme.Split();
             if (parts.All(p => phonemes.Contains(p))) {
-                oto = new UOto() {
-                    Alias = phoneme,
-                    Phonetic = phoneme,
-                };
+                oto = UOto.OfDummy(phoneme);
                 return true;
             }
             oto = null;
@@ -127,10 +122,7 @@ namespace OpenUtau.Core.Enunu {
             bool all = string.IsNullOrEmpty(text);
             return table.Keys
                 .Where(key => all || key.Contains(text))
-                .Select(key => new UOto() {
-                    Alias = key,
-                    Phonetic = key,
-                });
+                .Select(key => UOto.OfDummy(key));
         }
 
         public override byte[] LoadPortrait() {

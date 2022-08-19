@@ -139,6 +139,11 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="oto.preutter">Preutter</system:String>
   <system:String x:Key="oto.set">Set</system:String>
   <system:String x:Key="oto.suffix">Suffix</system:String>
+  <system:String x:Key="oto.edit.consonant">Set Consonant</system:String>
+  <system:String x:Key="oto.edit.cutoff">Set Cutoff</system:String>
+  <system:String x:Key="oto.edit.offset">Set Offset</system:String>
+  <system:String x:Key="oto.edit.overlap">Set Overlap</system:String>
+  <system:String x:Key="oto.edit.preutter">Set Preutter</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">Lyrics</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Replace "-" with "+"</system:String>
@@ -233,6 +238,8 @@ Warning: moresampler is not fully supported. It may be slow and cause high CPU u
   <system:String x:Key="progress.waitingrendering">Waiting Rendering</system:String>
 
   <system:String x:Key="singers.caption">Singers</system:String>
+  <system:String x:Key="singers.editoto.reset">Reset Otos</system:String>
+  <system:String x:Key="singers.editoto.save">Save Otos</system:String>
   <system:String x:Key="singers.location">Location</system:String>
   <system:String x:Key="singers.otoview.moveleft">Move Left</system:String>
   <system:String x:Key="singers.otoview.moveright">Move Right</system:String>

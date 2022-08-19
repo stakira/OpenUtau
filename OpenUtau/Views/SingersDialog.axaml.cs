@@ -14,13 +14,14 @@ using NWaves.FeatureExtractors;
 using NWaves.FeatureExtractors.Options;
 using NWaves.Filters.Fda;
 using OpenUtau.App.ViewModels;
+using OpenUtau.Core;
 using ScottPlot;
 using ScottPlot.Avalonia;
 using ScottPlot.Plottable;
 using Serilog;
 
 namespace OpenUtau.App.Views {
-    public partial class SingersDialog : Window {
+    public partial class SingersDialog : Window, ICmdSubscriber {
         const int fftSize = 1024;
         const int melSize = 80;
 
@@ -31,6 +32,7 @@ namespace OpenUtau.App.Views {
         DataGrid? otoGrid;
         AvaPlot? otoPlot;
         double coordToMs;
+        double totalDurMs;
         double lastPointerMs;
 
         WaveFile? wav;
@@ -38,7 +40,7 @@ namespace OpenUtau.App.Views {
         IPlottable? waveform;
         IPlottable? spectrogram;
         List<IPlottable> timingMarks = new List<IPlottable>();
-        AxisLimits outerLimites;
+        AxisLimits outerLimits;
 
         public SingersDialog() {
             try {
@@ -66,6 +68,7 @@ namespace OpenUtau.App.Views {
             } catch (Exception e) {
                 Log.Error(e, "Failed to initialize component.");
             }
+            DocManager.Inst.AddSubscriber(this);
 #if DEBUG
             this.AttachDevTools();
 #endif
@@ -73,6 +76,11 @@ namespace OpenUtau.App.Views {
 
         private void InitializeComponent() {
             AvaloniaXamlLoader.Load(this);
+        }
+
+        protected override void OnClosed(EventArgs e) {
+            base.OnClosed(e);
+            DocManager.Inst.RemoveSubscriber(this);
         }
 
         void OnSingerMenuButton(object sender, RoutedEventArgs args) {
@@ -121,23 +129,31 @@ namespace OpenUtau.App.Views {
             await dialog.ShowDialog(this);
         }
 
-        void OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
+        void OnSelectedSingerChanged(object sender, SelectionChangedEventArgs e) {
+            otoPlot?.Plot.Clear();
+            otoPlot?.Refresh();
+        }
+
+        void OnSelectedOtoChanged(object sender, SelectionChangedEventArgs e) {
             var viewModel = (DataContext as SingersViewModel)!;
             if (viewModel.Singer == null || e.AddedItems.Count < 1) {
                 return;
             }
             var oto = (Core.Ustx.UOto?)e.AddedItems[0];
             if (oto == null || !File.Exists(oto.File)) {
+                otoPlot?.Plot.Clear();
+                otoPlot?.Refresh();
                 return;
             }
             DrawOto(oto, true);
         }
 
-        void DrawOto(Core.Ustx.UOto oto, bool fit = false) {
-            if (otoPlot == null) {
+        void DrawOto(Core.Ustx.UOto? oto, bool fit = false) {
+            if (otoPlot == null || oto == null) {
                 return;
             }
-            var limites = otoPlot.Plot.GetAxisLimits();
+            var limits = otoPlot.Plot.GetAxisLimits();
+            otoPlot.Plot.SetAxisLimitsY(0, 120);
             bool loadWav = wavPath != oto.File;
             if (loadWav) {
                 try {
@@ -146,12 +162,10 @@ namespace OpenUtau.App.Views {
                         wavPath = oto.File;
                     }
                     double hopSize = GetHopSize(wav.WaveFmt.SamplingRate);
-                    outerLimites = new AxisLimits(0, wav.Signals[0].Length / hopSize, 0, 120);
+                    outerLimits = new AxisLimits(0, wav.Signals[0].Length / hopSize, 0, 120);
                     otoPlot.Plot.SetOuterViewLimits(
-                        outerLimites.XMin, outerLimites.XMax,
-                        outerLimites.YMin, outerLimites.YMax);
-                    otoPlot.Plot.SetAxisLimitsY(
-                        outerLimites.YMin, outerLimites.YMax);
+                        outerLimits.XMin, outerLimits.XMax,
+                        outerLimits.YMin, outerLimits.YMax);
                 } catch (Exception e) {
                     Log.Error(e, "failed to load wav");
                     wav = null;
@@ -213,7 +227,7 @@ namespace OpenUtau.App.Views {
             if (loadWav) {
                 ZoomAll();
             } else {
-                otoPlot.Plot.SetAxisLimits(limites);
+                otoPlot.Plot.SetAxisLimitsX(limits.XMin, limits.XMax);
             }
             otoPlot.Refresh();
         }
@@ -230,15 +244,16 @@ namespace OpenUtau.App.Views {
             int hopSize = GetHopSize(wav.WaveFmt.SamplingRate);
             var msToCoord = 0.001 * wav.WaveFmt.SamplingRate / hopSize;
             coordToMs = 1.0 / msToCoord;
-            double cutoff = oto.Cutoff > 0
-                ? (wav.Signals[0].Duration * 1000.0 - oto.Cutoff)
+            totalDurMs = wav.Signals[0].Duration * 1000.0;
+            double cutoff = oto.Cutoff >= 0
+                ? totalDurMs - oto.Cutoff
                 : oto.Offset - oto.Cutoff;
             double offsetX = oto.Offset * msToCoord;
             double consonantX = (oto.Offset + oto.Consonant) * msToCoord;
             double preutterX = (oto.Offset + oto.Preutter) * msToCoord;
             double overlapX = (oto.Offset + oto.Overlap) * msToCoord;
             double cutoffX = cutoff * msToCoord;
-            double durX = outerLimites.XMax;
+            double durX = outerLimits.XMax;
 
             if (offsetX > 0) {
                 timingMarks.Add(otoPlot.Plot.AddPolygon(
@@ -270,7 +285,8 @@ namespace OpenUtau.App.Views {
             if (otoPlot == null || wav == null) {
                 return;
             }
-            otoPlot.Plot.SetAxisLimitsX(outerLimites.XMin, outerLimites.XMax);
+            otoPlot.Plot.SetAxisLimitsX(outerLimits.XMin, outerLimits.XMax);
+            otoPlot.Plot.SetAxisLimitsY(0, 120);
         }
 
         int GetHopSize(int sampleRate) {
@@ -283,6 +299,7 @@ namespace OpenUtau.App.Views {
             }
             var point = args.GetCurrentPoint(otoPlot);
             lastPointerMs = otoPlot.Plot.GetCoordinateX((float)point.Position.X) * coordToMs;
+            lastPointerMs = Math.Clamp(lastPointerMs, 0, totalDurMs);
         }
 
         void OnKeyDown(object sender, KeyEventArgs args) {
@@ -296,24 +313,19 @@ namespace OpenUtau.App.Views {
             args.Handled = true;
             switch (args.Key) {
                 case Key.D1:
-                    viewModel.SetOffset(lastPointerMs);
-                    DrawOto(viewModel.SelectedOto);
+                    viewModel.SetOffset(lastPointerMs, totalDurMs);
                     break;
                 case Key.D2:
-                    viewModel.SetOverlap(lastPointerMs);
-                    DrawOto(viewModel.SelectedOto);
+                    viewModel.SetOverlap(lastPointerMs, totalDurMs);
                     break;
                 case Key.D3:
-                    viewModel.SetPreutter(lastPointerMs);
-                    DrawOto(viewModel.SelectedOto);
+                    viewModel.SetPreutter(lastPointerMs, totalDurMs);
                     break;
                 case Key.D4:
-                    viewModel.SetFixed(lastPointerMs);
-                    DrawOto(viewModel.SelectedOto);
+                    viewModel.SetFixed(lastPointerMs, totalDurMs);
                     break;
                 case Key.D5:
-                    viewModel.SetCutoff(lastPointerMs);
-                    DrawOto(viewModel.SelectedOto);
+                    viewModel.SetCutoff(lastPointerMs, totalDurMs);
                     break;
                 case Key.W: {
                         var limites = otoPlot.Plot.GetAxisLimits();
@@ -354,14 +366,14 @@ namespace OpenUtau.App.Views {
                 case Key.Q: {
                         if (otoGrid != null) {
                             otoGrid.SelectedIndex = Math.Max(0, otoGrid.SelectedIndex - 1);
-                            otoGrid.ScrollIntoView(otoGrid.SelectedItem, otoGrid.Columns[0]);
+                            otoGrid.ScrollIntoView(otoGrid.SelectedItem, null);
                         }
                         break;
                     }
                 case Key.E: {
                         if (otoGrid != null) {
                             otoGrid.SelectedIndex++;
-                            otoGrid.ScrollIntoView(otoGrid.SelectedItem, otoGrid.Columns[0]);
+                            otoGrid.ScrollIntoView(otoGrid.SelectedItem, null);
                         }
                         break;
                     }
@@ -374,5 +386,30 @@ namespace OpenUtau.App.Views {
                     break;
             }
         }
+
+        #region ICmdSubscriber
+
+        public void OnNext(UCommand cmd, bool isUndo) {
+            if (cmd is OtoChangedNotification otoChanged) {
+                var viewModel = DataContext as SingersViewModel;
+                if (viewModel == null) {
+                    return;
+                }
+                if (otoChanged.external) {
+                    viewModel.RefreshSinger();
+                }
+                DrawOto(viewModel.SelectedOto);
+            } else if (cmd is GotoOtoNotification editOto) {
+                var viewModel = DataContext as SingersViewModel;
+                if (viewModel == null) {
+                    return;
+                }
+                viewModel.GotoOto(editOto.singer, editOto.oto);
+                otoGrid?.ScrollIntoView(otoGrid.SelectedItem, null);
+                Activate();
+            }
+        }
+
+        #endregion
     }
 }

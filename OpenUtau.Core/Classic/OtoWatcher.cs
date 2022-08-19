@@ -5,6 +5,8 @@ using Serilog;
 
 namespace OpenUtau.Classic {
     class OtoWatcher : IDisposable {
+        public bool Paused { get; set; }
+
         private ClassicSinger singer;
         private FileSystemWatcher watcher;
 
@@ -22,6 +24,9 @@ namespace OpenUtau.Classic {
         }
 
         private void OnFileChanged(object sender, FileSystemEventArgs e) {
+            if (Paused) {
+                return;
+            }
             Log.Information($"File \"{e.FullPath}\" {e.ChangeType}");
             SingerManager.Inst.ScheduleReload(singer);
         }

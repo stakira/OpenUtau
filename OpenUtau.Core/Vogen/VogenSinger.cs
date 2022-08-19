@@ -24,14 +24,12 @@ namespace OpenUtau.Core.Vogen {
         public override string DefaultPhonemizer => "OpenUtau.Core.Vogen.VogenMandarinPhonemizer";
         public override Encoding TextFileEncoding => Encoding.UTF8;
         public override IList<USubbank> Subbanks => subbanks;
-        public override Dictionary<string, UOto> Otos => otos;
 
         string basePath;
         string filePath;
         VogenMeta meta;
         List<string> errors = new List<string>();
         List<USubbank> subbanks = new List<USubbank>();
-        Dictionary<string, UOto> otos = new Dictionary<string, UOto>();
 
         public byte[] model;
         public byte[] avatarData;
@@ -47,18 +45,12 @@ namespace OpenUtau.Core.Vogen {
         }
 
         public override bool TryGetMappedOto(string phoneme, int tone, out UOto oto) {
-            oto = new UOto() {
-                Alias = phoneme,
-                Phonetic = phoneme,
-            };
+            oto = UOto.OfDummy(phoneme);
             return true;
         }
 
         public override bool TryGetMappedOto(string phoneme, int tone, string color, out UOto oto) {
-            oto = new UOto() {
-                Alias = phoneme,
-                Phonetic = phoneme,
-            };
+            oto = UOto.OfDummy(phoneme);
             return true;
         }
 

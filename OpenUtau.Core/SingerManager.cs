@@ -80,7 +80,9 @@ namespace OpenUtau.Core {
             }
             foreach (var singer in singers) {
                 Log.Information($"Reloading {singer.Id}");
-                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Reloading {singer.Id}"));
+                new Task(() => {
+                    DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Reloading {singer.Id}"));
+                }).Start(DocManager.Inst.MainScheduler);
                 int retries = 5;
                 while (retries > 0) {
                     retries--;
@@ -97,10 +99,10 @@ namespace OpenUtau.Core {
                     }
                 }
                 Log.Information($"Reloaded {singer.Id}");
-                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Reloaded {singer.Id}"));
-            }
-            if (singers.Count > 0) {
-                DocManager.Inst.ExecuteCmd(new SingersRefreshedNotification());
+                new Task(() => {
+                    DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Reloaded {singer.Id}"));
+                    DocManager.Inst.ExecuteCmd(new OtoChangedNotification(external: true));
+                }).Start(DocManager.Inst.MainScheduler);
             }
         }
     }

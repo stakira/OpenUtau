@@ -30,6 +30,7 @@ namespace OpenUtau.Core {
 
         public int playPosTick = 0;
 
+        public TaskScheduler MainScheduler => mainScheduler;
         public Plugin[] Plugins { get; private set; }
         public PhonemizerFactory[] PhonemizerFactories { get; private set; }
         public UProject Project { get; private set; }
@@ -187,11 +188,14 @@ namespace OpenUtau.Core {
                     SingerManager.Inst.SearchAllSingers();
                 } else if (cmd is ValidateProjectNotification) {
                     Project.ValidateFull();
-                } else if (cmd is SingersRefreshedNotification) {
+                } else if (cmd is SingersRefreshedNotification || cmd is OtoChangedNotification) {
                     foreach (var track in Project.tracks) {
                         track.OnSingerRefreshed();
                     }
                     Project.ValidateFull();
+                    if (cmd is OtoChangedNotification) {
+                        ExecuteCmd(new PreRenderNotification());
+                    }
                 }
                 Publish(cmd);
                 if (!cmd.Silent) {
