@@ -84,6 +84,8 @@
               IsEnabled="{Binding Singer.OtoDirty}"/>
       <Button Margin="0" Content="{DynamicResource singers.editoto.save}" Command="{Binding SaveOtos}"
               IsEnabled="{Binding Singer.OtoDirty}"/>
+      <Button Margin="0" Content="{DynamicResource singers.editoto.editinvlabeler}"
+              Click="OnEditInVLabeler"/>
     </StackPanel>
     <StackPanel Grid.Row="0" Grid.Column="2" Spacing="10" Margin="0,0,10,0"
                 Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
@@ -100,6 +102,7 @@
       <DataGrid.ContextMenu>
         <ContextMenu>
           <MenuItem Header="{DynamicResource singers.editoto.gotosource}" Click="GotoSourceFile"/>
+          <MenuItem Header="{DynamicResource singers.editoto.editinvlabeler}" Click="GotoVLabelerOto"/>
         </ContextMenu>
       </DataGrid.ContextMenu>
       <DataGrid.Columns>

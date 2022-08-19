@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
@@ -30,6 +31,29 @@ namespace OpenUtau.App.Views {
             }
             if (Directory.Exists(path)) {
                 ((PreferencesViewModel)DataContext!).SetAddlSingersPath(path);
+            }
+        }
+
+        void ResetVLabelerPath(object sender, RoutedEventArgs e) {
+            ((PreferencesViewModel)DataContext!).SetVLabelerPath(string.Empty);
+        }
+
+        async void SelectVLabelerPath(object sender, RoutedEventArgs e) {
+            var dialog = new OpenFileDialog() {
+                AllowMultiple = false,
+                Filters = new List<FileDialogFilter>() {
+                    new FileDialogFilter() {
+                         Name = "vLabeler",
+                         Extensions = new List<string>() { "exe" },
+                    }
+                }
+            };
+            var paths = await dialog.ShowAsync(this);
+            if (paths == null || paths.Length != 1 || string.IsNullOrEmpty(paths[0])) {
+                return;
+            }
+            if (File.Exists(paths[0])) {
+                ((PreferencesViewModel)DataContext!).SetVLabelerPath(paths[0]);
             }
         }
     }
