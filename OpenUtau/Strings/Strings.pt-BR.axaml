@@ -190,8 +190,7 @@ Botão direito na nota para apagar</system:String>
 Botão esquerdo para desenhar
 Botão direito e arraste para apagar
 Segure Ctrl para selecionar</system:String>
-  <system:String x:Key="pianoroll.tool.selection">Ferramenta Seleção (1)
-Segure Ctrl para selecionar mais notas</system:String>
+  <system:String x:Key="pianoroll.tool.selection">Ferramenta Seleção (1)</system:String>
 
   <system:String x:Key="prefs.advanced">Avançado</system:String>
   <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
