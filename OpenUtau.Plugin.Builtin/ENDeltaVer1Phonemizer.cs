@@ -237,12 +237,14 @@ namespace OpenUtau.Plugin.Builtin
                     } else {
                         // like [V C1] [C1 C2]  [C2 ..] or like [V C1] [C1 -] [C3 ..]
                         TryAddPhoneme(phonemes, syllable.tone, cc1);
-                        if (burstConsonants.Contains(cc[i])) {
-                            TryAddPhoneme(phonemes, syllable.tone, cc[i], $"{cc[i]} -");
+                        if (burstConsonants.Contains(cc.Last()))
+                        {
+                            TryAddPhoneme(phonemes, syllable.tone, cc.Last(), $"{cc.Last()} -");
                         }
-                        if (cc[i] == cc.Last() && !affricates.Contains(cc[i])) {
-                            phonemes.Remove(cc[i]);
-                            phonemes.Remove($"{cc[i]} -");
+                        if (!affricates.Contains(cc.Last()))
+                        {
+                            phonemes.Remove(cc.Last());
+                            phonemes.Remove($"{cc.Last()} -");
                         }
                     }
                 }
