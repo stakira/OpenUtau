@@ -141,21 +141,41 @@
                    Fill="{DynamicResource NeutralAccentBrushSemi2}"
                    IsHitTestVisible="False"/>
         <c:NotesCanvas.ContextMenu>
-          <ContextMenu Name="PitchContextMenu" ContextMenuOpening="PitchContextMenuOpening">
+          <ContextMenu Name="NotesContextMenu"
+                       ContextMenuOpening="NotesContextMenuOpening"
+                       ContextMenuClosing="NotesContextMenuClosing">
+            <MenuItem Header="{DynamicResource context.note.delete}"
+                      IsVisible="{Binding ForNote}"
+                      Command="{Binding NoteDeleteCommand}"
+                      CommandParameter="{Binding NoteHitInfo}"/>
             <MenuItem Header="{DynamicResource context.pitch.easeinout}"
-                      Command="{Binding EaseInOutCommand}" CommandParameter="{Binding}"/>
+                      IsVisible="{Binding ForPitchPoint}"
+                      Command="{Binding PitchPointEaseInOutCommand}"
+                      CommandParameter="{Binding PitchPointHitInfo}"/>
             <MenuItem Header="{DynamicResource context.pitch.linear}"
-                      Command="{Binding LinearCommand}" CommandParameter="{Binding}"/>
+                      IsVisible="{Binding ForPitchPoint}"
+                      Command="{Binding PitchPointLinearCommand}"
+                      CommandParameter="{Binding PitchPointHitInfo}"/>
             <MenuItem Header="{DynamicResource context.pitch.easein}"
-                      Command="{Binding EaseInCommand}" CommandParameter="{Binding}"/>
+                      IsVisible="{Binding ForPitchPoint}"
+                      Command="{Binding PitchPointEaseInCommand}"
+                      CommandParameter="{Binding PitchPointHitInfo}"/>
             <MenuItem Header="{DynamicResource context.pitch.easeout}"
-                      Command="{Binding EaseOutCommand}" CommandParameter="{Binding}"/>
-            <MenuItem Header="{DynamicResource context.pitch.pointsnapprev}" IsVisible="{Binding IsFirst}"
-                      Command="{Binding SnapCommand}" CommandParameter="{Binding}"/>
-            <MenuItem Header="{DynamicResource context.pitch.pointdel}" IsVisible="{Binding CanDel}"
-                      Command="{Binding DelCommand}" CommandParameter="{Binding}"/>
-            <MenuItem Header="{DynamicResource context.pitch.pointadd}" IsVisible="{Binding CanAdd}"
-                      Command="{Binding AddCommand}" CommandParameter="{Binding}"/>
+                      IsVisible="{Binding ForPitchPoint}"
+                      Command="{Binding PitchPointEaseOutCommand}"
+                      CommandParameter="{Binding PitchPointHitInfo}"/>
+            <MenuItem Header="{DynamicResource context.pitch.pointsnapprev}"
+                      IsVisible="{Binding PitchPointIsFirst}"
+                      Command="{Binding PitchPointSnapCommand}"
+                      CommandParameter="{Binding PitchPointHitInfo}"/>
+            <MenuItem Header="{DynamicResource context.pitch.pointdel}"
+                      IsVisible="{Binding PitchPointCanDel}"
+                      Command="{Binding PitchPointDelCommand}"
+                      CommandParameter="{Binding PitchPointHitInfo}"/>
+            <MenuItem Header="{DynamicResource context.pitch.pointadd}"
+                      IsVisible="{Binding PitchPointCanAdd}"
+                      Command="{Binding PitchPointAddCommand}"
+                      CommandParameter="{Binding PitchPointHitInfo}"/>
           </ContextMenu>
         </c:NotesCanvas.ContextMenu>
       </c:NotesCanvas>
@@ -181,7 +201,7 @@
                 </Grid>
               </ToggleButton>
               <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="20" Width="20"
-                            IsChecked="{Binding NotesViewModel.PencilTool, Mode=OneWay}"
+                            IsChecked="{Binding NotesViewModel.PenTool, Mode=OneWay}"
                             Command="{Binding NotesViewModel.SelectToolCommand}" CommandParameter="2"
                             ToolTip.Tip="{DynamicResource pianoroll.tool.pen}">
                 <Grid Width="18" Height="18">
@@ -195,9 +215,21 @@
                   </Path>
                 </Grid>
               </ToggleButton>
-              <Menu Height="20" IsVisible="False">
-                <MenuItem Header="..." IsVisible="{Binding NotesViewModel.PencilTool, Mode=OneWay}"/>
-              </Menu>
+              <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="20" Width="20"
+                            IsChecked="{Binding NotesViewModel.PenPlusTool, Mode=OneWay}"
+                            Command="{Binding NotesViewModel.SelectToolCommand}" CommandParameter="2+"
+                            ToolTip.Tip="{DynamicResource pianoroll.tool.penplus}">
+                <Grid Width="18" Height="18">
+                  <Path Fill="Black" Data="M14.1,9L15,9.9L5.9,19H5V18.1L14.1,9M17.7,3C17.5,3 17.2,3.1 17,3.3L15.2,5.1L18.9,8.9L20.7,7C21.1,6.6 21.1,6 20.7,5.6L18.4,3.3C18.2,3.1 17.9,3 17.7,3M14.1,6.2L3,17.2V21H6.8L17.8,9.9L14.1,6.2M7,2V5H10V7H7V10H5V7H2V5H5V2H7Z" >
+                    <Path.RenderTransform>
+                      <TransformGroup>
+                        <ScaleTransform ScaleX=".6" ScaleY=".6" />
+                        <TranslateTransform X="-1" Y="-2"/>
+                      </TransformGroup>
+                    </Path.RenderTransform>
+                  </Path>
+                </Grid>
+              </ToggleButton>
               <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="20" Width="20"
                             IsChecked="{Binding NotesViewModel.EraserTool, Mode=OneWay}"
                             Command="{Binding NotesViewModel.SelectToolCommand}" CommandParameter="3"

@@ -20,6 +20,25 @@ namespace OpenUtau.App.ViewModels {
         }
     }
 
+    public class NotesContextMenuArgs {
+        public bool ForNote { get; set; }
+        public NoteHitInfo NoteHitInfo { get; set; }
+        public ReactiveCommand<NoteHitInfo, Unit>? NoteDeleteCommand { get; set; }
+
+        public bool ForPitchPoint { get; set; }
+        public bool PitchPointIsFirst { get; set; }
+        public bool PitchPointCanDel { get; set; }
+        public bool PitchPointCanAdd { get; set; }
+        public PitchPointHitInfo PitchPointHitInfo { get; set; }
+        public ReactiveCommand<PitchPointHitInfo, Unit>? PitchPointEaseInOutCommand { get; set; }
+        public ReactiveCommand<PitchPointHitInfo, Unit>? PitchPointLinearCommand { get; set; }
+        public ReactiveCommand<PitchPointHitInfo, Unit>? PitchPointEaseInCommand { get; set; }
+        public ReactiveCommand<PitchPointHitInfo, Unit>? PitchPointEaseOutCommand { get; set; }
+        public ReactiveCommand<PitchPointHitInfo, Unit>? PitchPointSnapCommand { get; set; }
+        public ReactiveCommand<PitchPointHitInfo, Unit>? PitchPointDelCommand { get; set; }
+        public ReactiveCommand<PitchPointHitInfo, Unit>? PitchPointAddCommand { get; set; }
+    }
+
     public class PianoRollViewModel : ViewModelBase, ICmdSubscriber {
 
         public bool ExtendToFrame => OS.IsMacOS();
@@ -30,6 +49,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public List<MenuItemViewModel> NoteBatchEdits { get; set; }
         [Reactive] public List<MenuItemViewModel> LyricBatchEdits { get; set; }
         [Reactive] public double Progress { get; set; }
+        public ReactiveCommand<NoteHitInfo, Unit> NoteDeleteCommand { get; set; }
         public ReactiveCommand<PitchPointHitInfo, Unit> PitEaseInOutCommand { get; set; }
         public ReactiveCommand<PitchPointHitInfo, Unit> PitLinearCommand { get; set; }
         public ReactiveCommand<PitchPointHitInfo, Unit> PitEaseInCommand { get; set; }
@@ -44,6 +64,9 @@ namespace OpenUtau.App.ViewModels {
         public PianoRollViewModel() {
             NotesViewModel = new NotesViewModel();
 
+            NoteDeleteCommand = ReactiveCommand.Create<NoteHitInfo>(info => {
+                NotesViewModel.DeleteSelectedNotes();
+            });
             PitEaseInOutCommand = ReactiveCommand.Create<PitchPointHitInfo>(info => {
                 DocManager.Inst.StartUndoGroup();
                 DocManager.Inst.ExecuteCmd(new ChangePitchPointShapeCommand(NotesViewModel.Part, info.Note.pitch.data[info.Index], PitchPointShape.io));

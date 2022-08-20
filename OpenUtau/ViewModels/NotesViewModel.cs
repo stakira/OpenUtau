@@ -45,7 +45,8 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public double PlayPosHighlightX { get; set; }
         [Reactive] public bool PlayPosWaitingRendering { get; set; }
         [Reactive] public bool CursorTool { get; set; }
-        [Reactive] public bool PencilTool { get; set; }
+        [Reactive] public bool PenTool { get; set; }
+        [Reactive] public bool PenPlusTool { get; set; }
         [Reactive] public bool EraserTool { get; set; }
         [Reactive] public bool DrawPitchTool { get; set; }
         [Reactive] public bool KnifeTool { get; set; }
@@ -171,13 +172,15 @@ namespace OpenUtau.App.ViewModels {
                 });
 
             CursorTool = false;
-            PencilTool = true;
+            PenTool = true;
+            PenPlusTool = false;
             EraserTool = false;
             DrawPitchTool = false;
             KnifeTool = false;
             SelectToolCommand = ReactiveCommand.Create<string>(index => {
                 CursorTool = index == "1";
-                PencilTool = index == "2";
+                PenTool = index == "2";
+                PenPlusTool = index == "2+";
                 EraserTool = index == "3";
                 DrawPitchTool = index == "4";
                 KnifeTool = index == "5";

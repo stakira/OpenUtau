@@ -24,16 +24,6 @@ namespace OpenUtau.App.ViewModels {
         public bool OnPoint;
         public float X;
         public float Y;
-        public bool IsFirst { get; set; }
-        public bool CanDel { get; set; }
-        public bool CanAdd { get; set; }
-        public ReactiveCommand<PitchPointHitInfo, Unit> EaseInOutCommand { get; set; }
-        public ReactiveCommand<PitchPointHitInfo, Unit> LinearCommand { get; set; }
-        public ReactiveCommand<PitchPointHitInfo, Unit> EaseInCommand { get; set; }
-        public ReactiveCommand<PitchPointHitInfo, Unit> EaseOutCommand { get; set; }
-        public ReactiveCommand<PitchPointHitInfo, Unit> SnapCommand { get; set; }
-        public ReactiveCommand<PitchPointHitInfo, Unit> DelCommand { get; set; }
-        public ReactiveCommand<PitchPointHitInfo, Unit> AddCommand { get; set; }
     }
 
     public struct VibratoHitInfo {
