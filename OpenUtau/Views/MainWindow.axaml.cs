@@ -142,6 +142,10 @@ namespace OpenUtau.App.Views {
             viewModel.RefreshCacheSize();
         }
 
+        void OnMainMenuClosed(object sender, RoutedEventArgs args) {
+            this.Focus();
+        }
+
         void OnMenuOpenProjectLocation(object sender, RoutedEventArgs args) {
             var project = DocManager.Inst.Project;
             if (string.IsNullOrEmpty(project.FilePath) || !project.Saved) {
@@ -498,6 +502,13 @@ namespace OpenUtau.App.Views {
                 switch (args.Key) {
                     case Key.Delete: viewModel.TracksViewModel.DeleteSelectedParts(); break;
                     case Key.Space: PlayOrPause(); break;
+                    case Key.Home: viewModel.PlaybackViewModel.MovePlayPos(0); break;
+                    case Key.End:
+                        if (viewModel.TracksViewModel.Parts.Count > 0) {
+                            int endTick = viewModel.TracksViewModel.Parts.Max(part => part.EndTick);
+                            viewModel.PlaybackViewModel.MovePlayPos(endTick);
+                        }
+                        break;
                     default: break;
                 }
             } else if (args.KeyModifiers == KeyModifiers.Alt) {

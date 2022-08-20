@@ -748,6 +748,16 @@ namespace OpenUtau.App.Views {
                         }
                         args.Handled = true;
                         break;
+                    case Key.Home:
+                        if (ViewModel.NotesViewModel.Part != null) {
+                            ViewModel.PlaybackViewModel?.MovePlayPos(ViewModel.NotesViewModel.Part.position);
+                        }
+                        break;
+                    case Key.End:
+                        if (ViewModel.NotesViewModel.Part != null) {
+                            ViewModel.PlaybackViewModel?.MovePlayPos(ViewModel.NotesViewModel.Part.EndTick);
+                        }
+                        break;
                     default: break;
                 }
             } else if (args.KeyModifiers == cmdKey) {

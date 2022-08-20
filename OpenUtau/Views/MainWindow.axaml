@@ -17,7 +17,7 @@
   </Window.Styles>
   <Grid DragDrop.AllowDrop="True">
     <Grid RowDefinitions="24,24,1*,20,4" ColumnDefinitions="250,*,24" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="{Binding $parent[1].WindowDecorationMargin}">
-      <Menu Grid.Row="0" Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Left" MenuOpened="OnMainMenuOpened">
+      <Menu Grid.Row="0" Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Left" MenuOpened="OnMainMenuOpened" MenuClosed="OnMainMenuClosed">
         <MenuItem Header="{DynamicResource menu.file}">
           <MenuItem Header="{DynamicResource menu.file.new}" InputGesture="Ctrl+N" Click="OnMenuNew"/>
           <MenuItem Header="{DynamicResource menu.file.newfromtemplate}" Items="{Binding OpenTemplates}">
