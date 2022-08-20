@@ -267,7 +267,8 @@ namespace OpenUtau.App.ViewModels {
                 return;
             }
             DocManager.Inst.StartUndoGroup();
-            foreach (var part in SelectedParts) {
+            var selectedParts = SelectedParts.ToArray();
+            foreach (var part in selectedParts) {
                 DocManager.Inst.ExecuteCmd(new RemovePartCommand(Project, part));
             }
             DocManager.Inst.EndUndoGroup();
@@ -345,10 +346,12 @@ namespace OpenUtau.App.ViewModels {
                         Parts.Add(partCommand.part);
                     } else {
                         Parts.Remove(partCommand.part);
+                        SelectedParts.Remove(partCommand.part);
                     }
                 } else if (partCommand is RemovePartCommand) {
                     if (!isUndo) {
                         Parts.Remove(partCommand.part);
+                        SelectedParts.Remove(partCommand.part);
                     } else {
                         Parts.Add(partCommand.part);
                     }

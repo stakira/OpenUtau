@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reactive;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
@@ -19,6 +20,7 @@ using OpenUtau.Classic;
 using OpenUtau.Core;
 using OpenUtau.Core.Format;
 using OpenUtau.Core.Ustx;
+using ReactiveUI;
 using Serilog;
 using Point = Avalonia.Point;
 
@@ -37,9 +39,15 @@ namespace OpenUtau.App.Views {
         private DispatcherTimer autosaveTimer;
         private bool forceClose;
 
+        private ContextMenu? partsContextMenu;
+        private bool shouldOpenPartsContextMenu;
+
+        private readonly ReactiveCommand<UPart, Unit> PartRenameCommand;
+
         public MainWindow() {
             InitializeComponent();
             DataContext = viewModel = new MainWindowViewModel();
+            partsContextMenu = this.Find<ContextMenu>("PartsContextMenu");
 #if DEBUG
             this.AttachDevTools();
 #endif
@@ -55,6 +63,8 @@ namespace OpenUtau.App.Views {
                 DispatcherPriority.Normal,
                 (sender, args) => DocManager.Inst.AutoSave());
             autosaveTimer.Start();
+
+            PartRenameCommand = ReactiveCommand.Create<UPart>(part => RenamePart(part));
 
             AddHandler(DragDrop.DropEvent, OnDrop);
 
@@ -670,12 +680,6 @@ namespace OpenUtau.App.Views {
             }
             if (point.Properties.IsLeftButtonPressed) {
                 if (args.KeyModifiers == cmdKey) {
-                    // New selection.
-                    viewModel.TracksViewModel.DeselectParts();
-                    partEditState = new PartSelectionEditState(canvas, viewModel, GetSelectionBox(canvas));
-                    Cursor = ViewConstants.cursorCross;
-                } else if (args.KeyModifiers == (cmdKey | KeyModifiers.Shift)) {
-                    // Additional selection.
                     partEditState = new PartSelectionEditState(canvas, viewModel, GetSelectionBox(canvas));
                     Cursor = ViewConstants.cursorCross;
                 } else if (control == canvas) {
@@ -704,9 +708,22 @@ namespace OpenUtau.App.Views {
                     }
                 }
             } else if (point.Properties.IsRightButtonPressed) {
-                viewModel.TracksViewModel.DeselectParts();
-                partEditState = new PartEraseEditState(canvas, viewModel);
-                Cursor = ViewConstants.cursorNo;
+                if (control is PartControl partControl) {
+                    if (!viewModel.TracksViewModel.SelectedParts.Contains(partControl.part)) {
+                        viewModel.TracksViewModel.DeselectParts();
+                        viewModel.TracksViewModel.SelectPart(partControl.part);
+                    }
+                    if (partsContextMenu != null && viewModel.TracksViewModel.SelectedParts.Count > 0) {
+                        partsContextMenu.DataContext = new PartsContextMenuArgs {
+                            Part = partControl.part,
+                            PartDeleteCommand = viewModel.PartDeleteCommand,
+                            PartRenameCommand = PartRenameCommand,
+                        };
+                        shouldOpenPartsContextMenu = true;
+                    }
+                } else {
+                    viewModel.TracksViewModel.DeselectParts();
+                }
             } else if (point.Properties.IsMiddleButtonPressed) {
                 partEditState = new PartPanningState(canvas, viewModel);
                 Cursor = ViewConstants.cursorHand;
@@ -817,6 +834,36 @@ namespace OpenUtau.App.Views {
                 var timelineCanvas = this.FindControl<Canvas>("TimelineCanvas");
                 TimelinePointerWheelChanged(timelineCanvas, args);
             }
+        }
+
+        public void PartsContextMenuOpening(object sender, CancelEventArgs args) {
+            if (shouldOpenPartsContextMenu) {
+                shouldOpenPartsContextMenu = false;
+            } else {
+                args.Cancel = true;
+            }
+        }
+
+        public void PartsContextMenuClosing(object sender, CancelEventArgs args) {
+            if (partsContextMenu != null) {
+                partsContextMenu.DataContext = null;
+            }
+        }
+
+        void RenamePart(UPart part) {
+            var dialog = new TypeInDialog();
+            dialog.Title = ThemeManager.GetString("context.part.rename");
+            dialog.SetText(part.name);
+            dialog.onFinish = name => {
+                if (!string.IsNullOrWhiteSpace(name) && name != part.name) {
+                    if (!string.IsNullOrWhiteSpace(name) && name != part.name) {
+                        DocManager.Inst.StartUndoGroup();
+                        DocManager.Inst.ExecuteCmd(new RenamePartCommand(DocManager.Inst.Project, part, name));
+                        DocManager.Inst.EndUndoGroup();
+                    }
+                }
+            };
+            dialog.ShowDialog(this);
         }
 
         public async void WindowClosing(object? sender, CancelEventArgs e) {

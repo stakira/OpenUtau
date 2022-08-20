@@ -443,6 +443,14 @@ namespace OpenUtau.App.ViewModels {
                     SelectedNotes.ToArray(), TempSelectedNotes.ToArray()));
         }
 
+        public void CleanupSelectedNotes() {
+            if (Part == null) {
+                return;
+            }
+            var except = SelectedNotes.Except(Part.notes).ToHashSet();
+            SelectedNotes.RemoveAll(note => except.Contains(note));
+        }
+
         public void TransposeSelection(int deltaNoteNum) {
             if (SelectedNotes.Count <= 0) {
                 return;
@@ -604,12 +612,17 @@ namespace OpenUtau.App.ViewModels {
                     if (!isUndo) {
                         UnloadPart();
                     }
+                } else if (cmd is AddPartCommand addPart) {
+                    if (isUndo && addPart.part == Part) {
+                        UnloadPart();
+                    }
                 } else if (cmd is ResizePartCommand) {
                     OnPartModified();
                 } else if (cmd is MovePartCommand) {
                     OnPartModified();
                 }
             } else if (cmd is NoteCommand noteCommand) {
+                CleanupSelectedNotes();
                 if (noteCommand.Part == Part) {
                     MessageBus.Current.SendMessage(new NotesRefreshEvent());
                 }

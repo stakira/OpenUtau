@@ -82,22 +82,6 @@ namespace OpenUtau.App.Views {
             Focus(); // Force unfocus menu for key down events.
         }
 
-        void OnMenuRenamePart(object? sender, RoutedEventArgs e) {
-            var part = ViewModel.NotesViewModel.Part;
-            if (part == null) {
-                return;
-            }
-            var dialog = new TypeInDialog();
-            dialog.Title = "Rename";
-            dialog.SetText(part.name);
-            dialog.onFinish = name => {
-                if (!string.IsNullOrWhiteSpace(name) && name != part.name) {
-                    ViewModel.RenamePart(part, name);
-                }
-            };
-            dialog.ShowDialog(this);
-        }
-
         void OnMenuEditLyrics(object? sender, RoutedEventArgs e) {
             if (ViewModel.NotesViewModel.SelectedNotes.Count == 0) {
                 _ = MessageBox.Show(

@@ -184,14 +184,6 @@ namespace OpenUtau.App.ViewModels {
         public void Undo() => DocManager.Inst.Undo();
         public void Redo() => DocManager.Inst.Redo();
 
-        public void RenamePart(UVoicePart part, string name) {
-            if (!string.IsNullOrWhiteSpace(name) && name != part.name) {
-                DocManager.Inst.StartUndoGroup();
-                DocManager.Inst.ExecuteCmd(new RenamePartCommand(DocManager.Inst.Project, part, name));
-                DocManager.Inst.EndUndoGroup();
-            }
-        }
-
         public void MouseoverPhoneme(UPhoneme? phoneme) {
             MessageBus.Current.SendMessage(new PhonemeMouseoverEvent(phoneme));
         }
