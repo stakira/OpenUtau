@@ -372,7 +372,8 @@
         <Border Width="12" Height="20"/>
         <Border CornerRadius="2" BoxShadow="0 0 5 1 #1F000000">
           <Border CornerRadius="2" ClipToBounds="True">
-            <Menu CornerRadius="2" Height="20" Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
+            <Menu CornerRadius="2" Height="20" Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
+                  MenuClosed="OnMenuClosed" PointerLeave="OnMenuPointerLeave">
               <MenuItem Height="20" Header="{DynamicResource pianoroll.menu.part}" CornerRadius="2,0,0,2">
                 <MenuItem Header="{DynamicResource pianoroll.menu.part.rename}" Click="OnMenuRenamePart"/>
                 <MenuItem Header="{DynamicResource pianoroll.menu.part.legacypluginexp}" Items="{Binding LegacyPlugins}">

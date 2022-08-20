@@ -143,7 +143,11 @@ namespace OpenUtau.App.Views {
         }
 
         void OnMainMenuClosed(object sender, RoutedEventArgs args) {
-            this.Focus();
+            Focus(); // Force unfocus menu for key down events.
+        }
+
+        void OnMainMenuPointerLeave(object sender, PointerEventArgs args) {
+            Focus(); // Force unfocus menu for key down events.
         }
 
         void OnMenuOpenProjectLocation(object sender, RoutedEventArgs args) {

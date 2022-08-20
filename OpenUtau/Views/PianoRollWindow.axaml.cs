@@ -74,6 +74,14 @@ namespace OpenUtau.App.Views {
             e.Cancel = true;
         }
 
+        void OnMenuClosed(object sender, RoutedEventArgs args) {
+            Focus(); // Force unfocus menu for key down events.
+        }
+
+        void OnMenuPointerLeave(object sender, PointerEventArgs args) {
+            Focus(); // Force unfocus menu for key down events.
+        }
+
         void OnMenuRenamePart(object? sender, RoutedEventArgs e) {
             var part = ViewModel.NotesViewModel.Part;
             if (part == null) {
