@@ -139,6 +139,11 @@ Advertencia: Esta opción eliminará las bases personalizadas.</system:String>
   <system:String x:Key="oto.preutter">Precedente</system:String>
   <system:String x:Key="oto.set">Aplicar</system:String>
   <system:String x:Key="oto.suffix">Sufijo</system:String>
+  <system:String x:Key="oto.edit.consonant">Marcar Consonante</system:String>
+  <system:String x:Key="oto.edit.cutoff">Marcar Silencio (Derecho)</system:String>
+  <system:String x:Key="oto.edit.offset">Marcar Silencio (Izquierdo)</system:String>
+  <system:String x:Key="oto.edit.overlap">Marcar Superposición</system:String>
+  <system:String x:Key="oto.edit.preutter">Marcar Precedente</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">Letra</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Reemplazar "-" con "+"</system:String>
@@ -167,6 +172,8 @@ Advertencia: Esta opción eliminará las bases personalizadas.</system:String>
   <system:String x:Key="pianoroll.toggle.phoneme">Ver Fonemas (O)</system:String>
   <system:String x:Key="pianoroll.toggle.pitch">Ver Curvas del Tono (I)</system:String>
   <system:String x:Key="pianoroll.toggle.snap">Activar/Desactivar Ajuste (P)</system:String>
+  <system:String x:Key="pianoroll.toggle.snap.auto">Auto</system:String>
+  <system:String x:Key="pianoroll.toggle.snap.autotriplet">Auto (Tresillos)</system:String>
   <system:String x:Key="pianoroll.toggle.tips">Ver Consejos (T)</system:String>
   <system:String x:Key="pianoroll.toggle.tone">Activar/Desactivar Tono de Nota (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">Ver Vibratos (U)</system:String>
@@ -177,6 +184,10 @@ Advertencia: Esta opción eliminará las bases personalizadas.</system:String>
   <system:String x:Key="pianoroll.tool.pen">Lápiz (2)
 Click izquierdo para dibujar
 Click derecho para borrar</system:String>
+  <system:String x:Key="pianoroll.tool.penplus">Lápiz Plus (Ctrl + 2)
+Click izquierdo para dibujar to draw
+Click derecho para borrar
+Mantiene Ctrl para seleccionar</system:String>
   <system:String x:Key="pianoroll.tool.selection">Herramienta de Selección (1)
 Mantiene Ctrl para seleccionar más</system:String>
 
@@ -233,6 +244,8 @@ Advertencia: Moresampler no es totalmente compatible por ahora. Este puede ser l
   <system:String x:Key="progress.waitingrendering">Esperando al Renderizador...</system:String>
 
   <system:String x:Key="singers.caption">Voces</system:String>
+  <system:String x:Key="singers.editoto.reset">Restablecer OTO</system:String>
+  <system:String x:Key="singers.editoto.save">Guardar OTO</system:String>
   <system:String x:Key="singers.location">Mostrar Archivos</system:String>
   <system:String x:Key="singers.otoview.moveleft">Mover hacia Izquierda</system:String>
   <system:String x:Key="singers.otoview.moveright">Mover hacia Derecha</system:String>
