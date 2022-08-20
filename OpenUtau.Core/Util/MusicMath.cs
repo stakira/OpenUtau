@@ -165,5 +165,26 @@ namespace OpenUtau.Core {
         public static double FreqToTone(double freq) {
             return Math.Log(freq / 440.0, a) + 69;
         }
+
+        public static List<int> GetSnapUnitDivs(int resolution, int beatUnit) {
+            var result = new List<int>();
+            int div = beatUnit;
+            int ticks = resolution * 4 / beatUnit;
+            result.Add(div);
+            while (ticks % 2 == 0) {
+                ticks /= 2;
+                div *= 2;
+                result.Add(div);
+            }
+            div = beatUnit * 3;
+            ticks = resolution * 4 / beatUnit / 3;
+            result.Add(div);
+            while (ticks % 2 == 0) {
+                ticks /= 2;
+                div *= 2;
+                result.Add(div);
+            }
+            return result;
+        }
     }
 }

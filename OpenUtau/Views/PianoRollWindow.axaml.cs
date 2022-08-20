@@ -639,6 +639,12 @@ namespace OpenUtau.App.Views {
             Cursor = null;
         }
 
+        public void OnSnapUnitMenuButton(object sender, RoutedEventArgs args) {
+            var menu = this.FindControl<ContextMenu>("SnapUnitMenu");
+            menu.PlacementTarget = sender as Button;
+            menu.Open();
+        }
+
         #region value tip
 
         void IValueTip.ShowValueTip() {

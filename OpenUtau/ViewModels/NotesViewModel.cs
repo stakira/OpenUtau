@@ -75,6 +75,9 @@ namespace OpenUtau.App.ViewModels {
         public double HScrollBarMax => Math.Max(0, TickCount - ViewportTicks);
         public double VScrollBarMax => Math.Max(0, TrackCount - ViewportTracks);
         public UProject Project => DocManager.Inst.Project;
+        [Reactive] public List<MenuItemViewModel> SnapUnits { get; set; }
+
+        public ReactiveCommand<int, Unit> SetSnapUnitCommand { get; set; }
 
         // See the comments on TracksViewModel.playPosXToTickOffset
         private double playPosXToTickOffset => ViewportTicks / Bounds.Width;
@@ -92,8 +95,15 @@ namespace OpenUtau.App.ViewModels {
         private int _lastNoteLength = 480;
         private string? portraitSource;
         private readonly object portraitLock = new object();
+        private int snapUnitDiv = -2;
 
         public NotesViewModel() {
+            SnapUnits = new List<MenuItemViewModel>();
+            SetSnapUnitCommand = ReactiveCommand.Create<int>(div => {
+                snapUnitDiv = div;
+                UpdateSnapUnit();
+            });
+
             snapUnitWidth = this.WhenAnyValue(x => x.SnapUnit, x => x.TickWidth)
                 .Select(v => v.Item1 * v.Item2)
                 .ToProperty(this, v => v.SnapUnitWidth);
@@ -117,16 +127,7 @@ namespace OpenUtau.App.ViewModels {
 
             this.WhenAnyValue(x => x.TickWidth)
                 .Subscribe(tickWidth => {
-                    int div = Project.beatUnit;
-                    int ticks = Project.resolution * 4 / Project.beatUnit;
-                    double width = ticks * tickWidth;
-                    while (width / 2 >= ViewConstants.PianoRollMinTicklineWidth && ticks % 2 == 0) {
-                        width /= 2;
-                        ticks /= 2;
-                        div *= 2;
-                    }
-                    SnapUnit = ticks;
-                    SnapUnitText = $"1/{div}";
+                    UpdateSnapUnit();
                 });
             this.WhenAnyValue(x => x.TickOffset)
                 .Subscribe(tickOffset => {
@@ -144,6 +145,29 @@ namespace OpenUtau.App.ViewModels {
                         ExpTrackHeight = 0;
                         ExpShadowOpacity = 0.3;
                     }
+                });
+            this.WhenAnyValue(x => x.Project)
+                .Subscribe(project => {
+                    if (project == null) {
+                        return;
+                    }
+                    SnapUnits.Clear();
+                    SnapUnits.Add(new MenuItemViewModel {
+                        Header = ThemeManager.GetString("pianoroll.toggle.snap.auto"),
+                        Command = SetSnapUnitCommand,
+                        CommandParameter = -2,
+                    });
+                    SnapUnits.Add(new MenuItemViewModel {
+                        Header = ThemeManager.GetString("pianoroll.toggle.snap.autotriplet"),
+                        Command = SetSnapUnitCommand,
+                        CommandParameter = -3,
+                    });
+                    SnapUnits.AddRange(MusicMath.GetSnapUnitDivs(project.resolution, project.beatUnit)
+                        .Select(div => new MenuItemViewModel {
+                            Header = $"1/{div}",
+                            Command = SetSnapUnitCommand,
+                            CommandParameter = div,
+                        }));
                 });
 
             CursorTool = false;
@@ -181,6 +205,27 @@ namespace OpenUtau.App.ViewModels {
 
             HitTest = new NotesViewModelHitTest(this);
             DocManager.Inst.AddSubscriber(this);
+        }
+
+        private void UpdateSnapUnit() {
+            if (snapUnitDiv > 0) {
+                SnapUnit = Project.resolution * 4 / snapUnitDiv;
+                SnapUnitText = $"1/{snapUnitDiv}";
+                return;
+            }
+            int div = Project.beatUnit;
+            if (snapUnitDiv % 3 == 0) {
+                div *= 3;
+            }
+            int ticks = Project.resolution * 4 / div;
+            double width = ticks * TickWidth;
+            while (width / 2 >= ViewConstants.PianoRollMinTicklineWidth && ticks % 2 == 0) {
+                width /= 2;
+                ticks /= 2;
+                div *= 2;
+            }
+            SnapUnit = ticks;
+            SnapUnitText = $"(1/{div})";
         }
 
         public void OnXZoomed(Point position, double delta) {

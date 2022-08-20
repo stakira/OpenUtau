@@ -138,7 +138,8 @@ namespace OpenUtau.App.Controls {
                 change.Property == ResolutionProperty ||
                 change.Property == TickOriginProperty ||
                 change.Property == TickWidthProperty ||
-                change.Property == TickOffsetProperty) {
+                change.Property == TickOffsetProperty ||
+                change.Property == SnapUnitProperty) {
                 InvalidateVisual();
             }
         }
@@ -149,10 +150,15 @@ namespace OpenUtau.App.Controls {
             }
             int beatUnitTicks = Resolution * 4 / BeatUnit;
             int barTicks = beatUnitTicks * BeatPerBar;
-            int snapUnitIndex = (int)((TickOffset + TickOrigin) / SnapUnit);
+            int snapUnit = SnapUnit;
+            while (snapUnit * TickWidth < ViewConstants.MinTicklineWidth / 2) {
+                // Avoid drawing too dense.
+                snapUnit *= 2;
+            }
+            int snapUnitIndex = (int)((TickOffset + TickOrigin) / snapUnit);
             double pixelOffset = (TickOffset + TickOrigin) * TickWidth;
-            for (; snapUnitIndex * SnapUnit * TickWidth - pixelOffset < Bounds.Width; ++snapUnitIndex) {
-                int tick = snapUnitIndex * SnapUnit;
+            for (; snapUnitIndex * snapUnit * TickWidth - pixelOffset < Bounds.Width; ++snapUnitIndex) {
+                int tick = snapUnitIndex * snapUnit;
                 double x = Math.Round(tick * TickWidth - pixelOffset) + 0.5;
                 double y = ShowBarNumber ? 24.5 : -0.5;
                 var pen = penDanshed;
