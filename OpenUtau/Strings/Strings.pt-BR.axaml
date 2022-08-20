@@ -2,6 +2,9 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+  <system:String x:Key="context.note.delete">Remover nota</system:String>
+  <system:String x:Key="context.part.delete">Deletar parte</system:String>
+  <system:String x:Key="context.part.rename">Renomear parte</system:String>
   <system:String x:Key="context.pitch.easein">Curva J</system:String>
   <system:String x:Key="context.pitch.easeinout">Curva S</system:String>
   <system:String x:Key="context.pitch.easeout">Curva R</system:String>
@@ -139,6 +142,11 @@ Aviso: esta opção remove predefinições personalizadas.</system:String>
   <!--<system:String x:Key="oto.preutter">Preutter</system:String>-->
   <system:String x:Key="oto.set">Pasta</system:String>
   <system:String x:Key="oto.suffix">Sufixo</system:String>
+  <system:String x:Key="oto.edit.consonant">Definir Consonant</system:String>
+  <system:String x:Key="oto.edit.cutoff">Definir Cutoff</system:String>
+  <system:String x:Key="oto.edit.offset">Definir Offset</system:String>
+  <system:String x:Key="oto.edit.overlap">Definir Overlap</system:String>
+  <system:String x:Key="oto.edit.preutter">Definir Preutter</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">Lírica</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Trocar "-" por "+"</system:String>
@@ -162,11 +170,12 @@ Aviso: esta opção remove predefinições personalizadas.</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.vibratos">Redefinir Vibratos</system:String>
   <system:String x:Key="pianoroll.menu.part">Parte</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">Plugin Legado (Experimental)</system:String>
-  <system:String x:Key="pianoroll.menu.part.rename">Renomear</system:String>
   <system:String x:Key="pianoroll.toggle.finalpitch">Ver Tom Final para Renderizar (R)</system:String>
   <system:String x:Key="pianoroll.toggle.phoneme">Ver Fonemas (O)</system:String>
   <system:String x:Key="pianoroll.toggle.pitch">Ver Curva de Tom (I)</system:String>
   <system:String x:Key="pianoroll.toggle.snap">Ativar Ajuste (P)</system:String>
+  <system:String x:Key="pianoroll.toggle.snap.auto">Auto</system:String>
+  <system:String x:Key="pianoroll.toggle.snap.autotriplet">Auto (triplet)</system:String>
   <system:String x:Key="pianoroll.toggle.tips">Ver Dicas (T)</system:String>
   <system:String x:Key="pianoroll.toggle.tone">Ativar Tom de Nota (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">Ver Vibrato (U)</system:String>
@@ -176,9 +185,12 @@ Aviso: esta opção remove predefinições personalizadas.</system:String>
   <system:String x:Key="pianoroll.tool.knife">Ferramenta Faca (5)</system:String>
   <system:String x:Key="pianoroll.tool.pen">Ferramenta Caneta (2)
 Botão esquerdo para desenhar
-Botão direito para apagar</system:String>
-  <system:String x:Key="pianoroll.tool.selection">Ferramenta Seleção (1)
-Segure Ctrl para selecionar mais notas</system:String>
+Botão direito na nota para apagar</system:String>
+  <system:String x:Key="pianoroll.tool.penplus">Ferramenta Caneta+ (Ctrl + 2)
+Botão esquerdo para desenhar
+Botão direito e arraste para apagar
+Segure Ctrl para selecionar</system:String>
+  <system:String x:Key="pianoroll.tool.selection">Ferramenta Seleção (1)</system:String>
 
   <system:String x:Key="prefs.advanced">Avançado</system:String>
   <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
@@ -233,6 +245,8 @@ Segure Ctrl para selecionar mais notas</system:String>
   <system:String x:Key="progress.waitingrendering">Esperando Renderização</system:String>
 
   <system:String x:Key="singers.caption">Vozes</system:String>
+  <system:String x:Key="singers.editoto.reset">Redefinir Otos</system:String>
+  <system:String x:Key="singers.editoto.save">Salvar Otos</system:String>
   <system:String x:Key="singers.location">Pasta</system:String>
   <system:String x:Key="singers.otoview.moveleft">Mover para Esquerda</system:String>
   <system:String x:Key="singers.otoview.moveright">Mover para Direita</system:String>
