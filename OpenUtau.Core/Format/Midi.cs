@@ -41,7 +41,7 @@ namespace OpenUtau.Core.Format {
                 }
                 stream.Seek(0, SeekOrigin.Begin);
                 var detectionResult = CharsetDetector.DetectFromStream(stream);
-                if (detectionResult.Detected.Confidence > 0.5) {
+                if (detectionResult.Detected != null && detectionResult.Detected.Confidence > 0.5) {
                     lyricEncoding = detectionResult.Detected.Encoding;
                 }
             }
