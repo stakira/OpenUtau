@@ -12,6 +12,7 @@ namespace OpenUtau.Classic {
 
         static VoicebankConfig CreateConfig() {
             return new VoicebankConfig() {
+                PortraitOpacity = 0.75f,
                 SymbolSet = new SymbolSet() {
                     Preset = SymbolSetPreset.hiragana,
                 },
@@ -50,7 +51,7 @@ namespace OpenUtau.Classic {
             var yaml = Yaml.DefaultSerializer.Serialize(CreateConfig());
             output.WriteLine(yaml);
 
-            Assert.Equal(@"portrait_opacity: 0.67000001668930054
+            Assert.Equal(@"portrait_opacity: 0.75
 symbol_set:
   preset: hiragana
   head: '-'
