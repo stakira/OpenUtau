@@ -5,6 +5,7 @@ using OpenUtau.Core.Util;
 using ReactiveUI;
 
 namespace OpenUtau.App.ViewModels {
+    public class TimeAxisChangedEvent { }
     public class PlaybackViewModel : ViewModelBase, ICmdSubscriber {
         UProject Project => DocManager.Inst.Project;
         public int BeatPerBar => Project.timeSignatures[0].beatPerBar;
@@ -68,6 +69,7 @@ namespace OpenUtau.App.ViewModels {
                 this.RaisePropertyChanged(nameof(BeatPerBar));
                 this.RaisePropertyChanged(nameof(BeatUnit));
                 this.RaisePropertyChanged(nameof(Bpm));
+                MessageBus.Current.SendMessage(new TimeAxisChangedEvent());
                 DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(0));
             } else if (cmd is SeekPlayPosTickNotification ||
                 cmd is SetPlayPosTickNotification) {

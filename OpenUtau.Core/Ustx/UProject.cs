@@ -14,6 +14,7 @@ namespace OpenUtau.Core.Ustx {
             this.position = position;
             this.bpm = bpm;
         }
+        public override string ToString() => $"{bpm}@{position}";
     }
 
     public class UTimeSignature {
@@ -27,6 +28,7 @@ namespace OpenUtau.Core.Ustx {
             this.beatPerBar = beatPerBar;
             this.beatUnit = beatUnit;
         }
+        public override string ToString() => $"{beatPerBar}/{beatUnit}@bar{barPosition}";
     }
 
     public class UProject {
@@ -38,9 +40,9 @@ namespace OpenUtau.Core.Ustx {
         public Version ustxVersion;
         public int resolution = 480;
 
-        [Obsolete] public double bpm = 120;
-        [Obsolete] public int beatPerBar = 4;
-        [Obsolete] public int beatUnit = 4;
+        [Obsolete("Since ustx v0.6")] public double bpm = 120;
+        [Obsolete("Since ustx v0.6")] public int beatPerBar = 4;
+        [Obsolete("Since ustx v0.6")] public int beatUnit = 4;
 
         public Dictionary<string, UExpressionDescriptor> expressions = new Dictionary<string, UExpressionDescriptor>();
         public List<UTimeSignature> timeSignatures;

@@ -150,6 +150,16 @@ namespace OpenUtau.Core {
             return segment.tickPos + segment.ticksPerBar * (bar - segment.barPos) + segment.ticksPerBeat * beat;
         }
 
+        public void NextBarBeat(int bar, int beat, out int nextBar, out int nextBeat) {
+            nextBar = bar;
+            nextBeat = beat + 1;
+            var segment = timeSigSegments.First(seg => seg.barPos == bar || seg.barEnd > bar); // TODO: optimize
+            if (nextBeat >= segment.beatPerBar) {
+                nextBar++;
+                nextBeat = 0;
+            }
+        }
+
         public TimeAxis Clone() {
             var clone = new TimeAxis();
             // Shallow copy segments since they are unmodified after built.

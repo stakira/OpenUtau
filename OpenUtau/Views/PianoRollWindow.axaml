@@ -102,14 +102,12 @@
       <c:TickBackground Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" IsHitTestVisible="False"
                         Foreground="{DynamicResource TickLineBrush}"
                         Background="{DynamicResource TickLineBrushLow}"
-                        BeatPerBar="{Binding PlaybackViewModel.BeatPerBar}"
-                        BeatUnit="{Binding PlaybackViewModel.BeatUnit}"
                         Resolution="{Binding PlaybackViewModel.Resolution}"
                         TickWidth="{Binding NotesViewModel.TickWidth}"
                         TickOrigin="{Binding NotesViewModel.TickOrigin}"
                         TickOffset="{Binding NotesViewModel.TickOffset}"
                         SnapUnit="{Binding NotesViewModel.SnapUnit}"
-                        IsPianoRoll="True" ShowBarNumber="True"/>
+                        ShowBarNumber="True"/>
       <Image Grid.Row="2" Grid.RowSpan="3" Grid.Column="1" HorizontalAlignment="Right" Margin="0,0,100,0"
              Source="{Binding NotesViewModel.Portrait}" OpacityMask="{Binding NotesViewModel.PortraitMask}" Stretch="None"/>
       <Border Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
@@ -405,13 +403,11 @@
       <c:TickBackground Grid.Row="4"  Grid.Column="1" IsHitTestVisible="False"
                         Foreground="{DynamicResource TickLineBrush}"
                         Background="{DynamicResource TickLineBrushLow}"
-                        BeatPerBar="{Binding PlaybackViewModel.BeatPerBar}"
-                        BeatUnit="{Binding PlaybackViewModel.BeatUnit}"
                         Resolution="{Binding PlaybackViewModel.Resolution}"
                         TickWidth="{Binding NotesViewModel.TickWidth}"
                         TickOrigin="{Binding NotesViewModel.TickOrigin}"
                         TickOffset="{Binding NotesViewModel.TickOffset}"
-                        SnapUnit="{Binding NotesViewModel.SnapUnit}" IsPianoRoll="True"/>
+                        SnapUnit="{Binding NotesViewModel.SnapUnit}"/>
       <c:ExpressionCanvas Grid.Row="4" Grid.Column="1" Opacity="{Binding NotesViewModel.ExpShadowOpacity}"
                           TickWidth="{Binding NotesViewModel.TickWidth}"
                           TickOffset="{Binding NotesViewModel.TickOffset}"

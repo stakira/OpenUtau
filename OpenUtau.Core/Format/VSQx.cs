@@ -35,9 +35,8 @@ namespace OpenUtau.Core.Format {
             Ustx.AddDefaultExpressions(uproject);
             uproject.RegisterExpression(new UExpressionDescriptor("opening", "ope", 0, 100, 100));
 
-            string bpmPath = $"{nsPrefix}masterTrack/{nsPrefix}tempo/{nsPrefix}{(nsPrefix == "v3:" ? "bpm" : "v")}";
-            string beatperbarPath = $"{nsPrefix}masterTrack/{nsPrefix}timeSig/{nsPrefix}{(nsPrefix == "v3:" ? "nume" : "nu")}";
-            string beatunitPath = $"{nsPrefix}masterTrack/{nsPrefix}timeSig/{nsPrefix}{(nsPrefix == "v3:" ? "denomi" : "de")}";
+            string bpmPath = $"{nsPrefix}masterTrack/{nsPrefix}tempo";
+            string timeSigPath = $"{nsPrefix}masterTrack/{nsPrefix}timeSig";
             string premeasurePath = $"{nsPrefix}masterTrack/{nsPrefix}preMeasure";
             string resolutionPath = $"{nsPrefix}masterTrack/{nsPrefix}resolution";
             string projectnamePath = $"{nsPrefix}masterTrack/{nsPrefix}seqName";
@@ -60,16 +59,34 @@ namespace OpenUtau.Core.Format {
             string partstyleattrPath = $"{nsPrefix}{(nsPrefix == "v3:" ? "partStyle" : "pStyle")}/{nsPrefix}{(nsPrefix == "v3:" ? "attr" : "v")}";
             string notestyleattrPath = $"{nsPrefix}{(nsPrefix == "v3:" ? "noteStyle" : "nStyle")}/{nsPrefix}{(nsPrefix == "v3:" ? "attr" : "v")}";
 
-            uproject.bpm = Convert.ToDouble(root.SelectSingleNode(bpmPath, nsmanager).InnerText) / 100;
-            uproject.beatPerBar = int.Parse(root.SelectSingleNode(beatperbarPath, nsmanager).InnerText);
-            uproject.beatUnit = int.Parse(root.SelectSingleNode(beatunitPath, nsmanager).InnerText);
+            uproject.timeSignatures.Clear();
+            foreach (XmlNode node in root.SelectNodes(timeSigPath, nsmanager)) {
+                uproject.timeSignatures.Add(new UTimeSignature {
+                    barPosition = Convert.ToInt32(node[nsPrefix == "v3:" ? "posMes" : "m"].InnerText),
+                    beatPerBar = Convert.ToInt32(node[nsPrefix == "v3:" ? "nume" : "nu"].InnerText),
+                    beatUnit = Convert.ToInt32(node[nsPrefix == "v3:" ? "denomi" : "de"].InnerText),
+                });
+            }
+            uproject.timeSignatures.Sort((lhs, rhs) => lhs.barPosition.CompareTo(rhs.barPosition));
+            uproject.timeSignatures[0].barPosition = 0;
+
+            uproject.tempos.Clear();
+            foreach (XmlNode node in root.SelectNodes(bpmPath, nsmanager)) {
+                uproject.tempos.Add(new UTempo {
+                    position = Convert.ToInt32(node[nsPrefix == "v3:" ? "posTick" : "t"].InnerText),
+                    bpm = Convert.ToDouble(node[nsPrefix == "v3:" ? "bpm" : "v"].InnerText) / 100,
+                });
+            }
+            uproject.tempos.Sort((lhs, rhs) => lhs.position.CompareTo(rhs.position));
+            uproject.tempos[0].position = 0;
+
             uproject.resolution = int.Parse(root.SelectSingleNode(resolutionPath, nsmanager).InnerText);
             uproject.FilePath = file;
             uproject.name = root.SelectSingleNode(projectnamePath, nsmanager).InnerText;
             uproject.comment = root.SelectSingleNode(projectcommentPath, nsmanager).InnerText;
 
             int preMeasure = int.Parse(root.SelectSingleNode(premeasurePath, nsmanager).InnerText);
-            int partPosTickShift = -preMeasure * uproject.resolution * uproject.beatPerBar * 4 / uproject.beatUnit;
+            int partPosTickShift = -preMeasure * uproject.resolution * uproject.timeSignatures[0].beatPerBar * 4 / uproject.timeSignatures[0].beatUnit;
 
             USinger usinger = USinger.CreateMissing("");
 
@@ -98,7 +115,7 @@ namespace OpenUtau.Core.Format {
                     int? lastT = null;
                     int? lastV = null;
                     foreach (XmlNode ctrlPt in part.SelectNodes($"{nsPrefix}{(nsPrefix == "v3:" ? "mCtrl" : "cc")}", nsmanager)) {
-                        var t = int.Parse(ctrlPt.SelectSingleNode($"{nsPrefix}{(nsPrefix == "v3:" ? "posTick": "t")}", nsmanager).InnerText);
+                        var t = int.Parse(ctrlPt.SelectSingleNode($"{nsPrefix}{(nsPrefix == "v3:" ? "posTick" : "t")}", nsmanager).InnerText);
                         var valNode = ctrlPt.SelectSingleNode($"{nsPrefix}{(nsPrefix == "v3:" ? "attr" : "v")}", nsmanager);
                         // type of controller
                         // D: DYN, [0,128), default: 64
@@ -136,11 +153,11 @@ namespace OpenUtau.Core.Format {
                         var v = pt.Item2 < 0 ? pt.Item2 / 8192f : pt.Item2 / 8191f;
                         var semitone = pbsList.FindLast(tuple => tuple.Item1 <= t)?.Item2 ?? pbsDefaultVal;
                         var pit = (int)Math.Round(v * semitone * 100);
-                        if(Math.Abs(pit) > 1200) {
+                        if (Math.Abs(pit) > 1200) {
                             // Exceed OpenUTAU's limit. clip value
                             pit = Math.Sign(pit) * 1200;
                         }
-                        if(t > 0 && lastV.HasValue) {
+                        if (t > 0 && lastV.HasValue) {
                             // Mimic Vsqx's Hold property
                             GetCurve(uproject, upart, Ustx.PITD).Set(t - UCurve.interval, lastV.Value, lastT ?? t, 0);
                             GetCurve(uproject, upart, Ustx.PITD).Set(t, pit, t - UCurve.interval, 0);
@@ -150,7 +167,7 @@ namespace OpenUtau.Core.Format {
                         lastT = t;
                         lastV = pit;
                     }
-                    if(lastV.HasValue) {
+                    if (lastV.HasValue) {
                         GetCurve(uproject, upart, Ustx.PITD).Set(upart.Duration, lastV ?? 0, lastT ?? 0, 0);
                     }
 
@@ -200,8 +217,8 @@ namespace OpenUtau.Core.Format {
 
         private static UCurve GetCurve(UProject uproject, UVoicePart upart, string abbr) {
             var curve = upart.curves.Find(c => c.abbr == abbr);
-            if(curve == null) {
-                if(uproject.expressions.TryGetValue(abbr, out var desc)) {
+            if (curve == null) {
+                if (uproject.expressions.TryGetValue(abbr, out var desc)) {
                     curve = new UCurve(desc);
                     upart.curves.Add(curve);
                 }
