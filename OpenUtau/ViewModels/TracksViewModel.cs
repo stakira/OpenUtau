@@ -40,7 +40,7 @@ namespace OpenUtau.App.ViewModels {
     public class TracksViewModel : ViewModelBase, ICmdSubscriber {
         public UProject Project => DocManager.Inst.Project;
         [Reactive] public Rect Bounds { get; set; }
-        public int TickCount => Math.Max(Project.BarTicks * 32, Project.EndTick);
+        public int TickCount => Math.Max(Project.timeAxis.BarBeatToTickPos(32, 0), Project.EndTick);
         public int TrackCount => Math.Max(20, Project.tracks.Count + 1);
         [Reactive] public double TickWidth { get; set; }
         public double TrackHeightMin => ViewConstants.TrackHeightMin;
@@ -243,7 +243,7 @@ namespace OpenUtau.App.ViewModels {
             var project = DocManager.Inst.Project;
             TempSelectedParts.Clear();
             foreach (var part in project.parts) {
-                if (part.EndTick > x0 && part.position < x1 && part.trackNo >= y0 && part.trackNo < y1) {
+                if (part.End > x0 && part.position < x1 && part.trackNo >= y0 && part.trackNo < y1) {
                     TempSelectedParts.Add(part);
                 }
             }

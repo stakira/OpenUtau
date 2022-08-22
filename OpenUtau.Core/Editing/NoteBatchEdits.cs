@@ -223,7 +223,7 @@ namespace OpenUtau.Core.Editing {
                         continue;
                     }
                     int x = (int)result.ticks[i];
-                    int pitchIndex = Math.Clamp((x - phrase.pitchStart) / 5, 0, phrase.pitches.Length - 1);
+                    int pitchIndex = Math.Clamp((x - (phrase.position - phrase.leading)) / 5, 0, phrase.pitches.Length - 1);
                     float basePitch = phrase.pitchesBeforeDeviation[pitchIndex];
                     int y = (int)(result.tones[i] * 100 - basePitch);
                     lastX ??= x;

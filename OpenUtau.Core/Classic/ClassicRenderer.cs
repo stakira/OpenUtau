@@ -36,9 +36,9 @@ namespace OpenUtau.Classic {
             var firstPhone = phrase.phones.First();
             var lastPhone = phrase.phones.Last();
             return new RenderResult() {
-                leadingMs = firstPhone.preutterMs,
-                positionMs = (phrase.position + firstPhone.position) * phrase.tickToMs,
-                estimatedLengthMs = (lastPhone.duration + lastPhone.position - firstPhone.position) * phrase.tickToMs + firstPhone.preutterMs,
+                leadingMs = firstPhone.leadingMs,
+                positionMs = firstPhone.positionMs,
+                estimatedLengthMs = lastPhone.positionMs - firstPhone.positionMs + firstPhone.leadingMs,
             };
         }
 
@@ -70,7 +70,7 @@ namespace OpenUtau.Classic {
                 var result = Layout(phrase);
                 result.samples = Concatenate(resamplerItems, cancellation);
                 if (result.samples != null) {
-                    ApplyDynamics(phrase, result.samples);
+                    ApplyDynamics(phrase, result);
                 }
                 return result;
             });
@@ -82,20 +82,25 @@ namespace OpenUtau.Classic {
             return wavtool.Concatenate(resamplerItems, cancellation);
         }
 
-        void ApplyDynamics(RenderPhrase phrase, float[] samples) {
+        void ApplyDynamics(RenderPhrase phrase, RenderResult result) {
             const int interval = 5;
             if (phrase.dynamics == null) {
                 return;
             }
-            int pos = 0;
+            int startTick = phrase.position + phrase.phones.First().position - phrase.phones.First().leading;
+            double startMs = result.positionMs - result.leadingMs;
+            int startSample = 0;
             for (int i = 0; i < phrase.dynamics.Length; ++i) {
-                int endPos = (int)((i + 1) * interval * phrase.tickToMs / 1000 * 44100);
+                int endTick = startTick + interval;
+                double endMs = phrase.timeAxis.TickPosToMsPos(endTick);
+                int endSample = (int)((endMs - startMs) / 1000 * 44100);
                 float a = phrase.dynamics[i];
                 float b = (i + 1) == phrase.dynamics.Length ? phrase.dynamics[i] : phrase.dynamics[i + 1];
-                for (int j = pos; j < endPos; ++j) {
-                    samples[j] *= a + (b - a) * (j - pos) / (endPos - pos);
+                for (int j = startSample; j < endSample; ++j) {
+                    result.samples[j] *= a + (b - a) * (j - startSample) / (endSample - startSample);
                 }
-                pos = endPos;
+                startTick = endTick;
+                startSample = endSample;
             }
         }
 

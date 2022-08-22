@@ -134,8 +134,7 @@ namespace OpenUtau.Api {
         public string Tag { get; set; }
 
         protected double bpm;
-        private int beatUnit;
-        private int resolution;
+        protected TimeAxis timeAxis;
 
         /// <summary>
         /// Sets the current singer. Called by OpenUtau when user changes the singer.
@@ -171,27 +170,28 @@ namespace OpenUtau.Api {
         /// Used by OpenUtau to set timing info for TickToMs() and MsToTick().
         /// Not need to call this method from within a phonemizer.
         /// </summary>
-        public void SetTiming(double bpm, int beatUnit, int resolution) {
-            this.bpm = bpm;
-            this.beatUnit = beatUnit;
-            this.resolution = resolution;
+        public void SetTiming(TimeAxis timeAxis) {
+            this.timeAxis = timeAxis;
+            bpm = timeAxis.GetBpmAtTick(0);
         }
 
         public string DictionariesPath => PathManager.Inst.DictionariesPath;
         public string PluginDir => PathManager.Inst.PluginsPath;
 
         /// <summary>
-        /// Utility method to convert ticks to milliseconds.
+        /// Utility method to convert tick position to millisecond position.
         /// </summary>
+        [Obsolete] // TODO: update usages
         protected double TickToMs(int tick) {
-            return MusicMath.TickToMillisecond(tick, bpm, beatUnit, resolution);
+            return timeAxis.TickPosToMsPos(tick);
         }
 
         /// <summary>
-        /// Utility method to convert milliseconds to ticks.
+        /// Utility method to convert millisecond position to tick position.
         /// </summary>
+        [Obsolete] // TODO: update usages
         protected int MsToTick(double ms) {
-            return MusicMath.MillisecondToTick(ms, bpm, beatUnit, resolution);
+            return timeAxis.MsPosToTickPos(ms);
         }
 
         /// <summary>

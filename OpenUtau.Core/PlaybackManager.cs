@@ -57,7 +57,7 @@ namespace OpenUtau.Core {
         List<Fader> faders;
         MasterAdapter masterMix;
         double startMs;
-        public int StartTick => DocManager.Inst.Project.MillisecondToTick(startMs);
+        public int StartTick => DocManager.Inst.Project.timeAxis.MsPosToTickPos(startMs);
         CancellationTokenSource renderCancellation;
 
         public Audio.IAudioOutput AudioOutput { get; set; } = new Audio.DummyAudioOutput();
@@ -133,7 +133,7 @@ namespace OpenUtau.Core {
                 var result = engine.RenderProject(tick, DocManager.Inst.MainScheduler, ref renderCancellation);
                 faders = result.Item2;
                 StartingToPlay = false;
-                StartPlayback(project.TickToMillisecond(tick), result.Item1);
+                StartPlayback(project.timeAxis.TickPosToMsPos(tick), result.Item1);
             }).ContinueWith((task) => {
                 if (task.IsFaulted) {
                     Log.Error(task.Exception, "Failed to render.");
@@ -146,7 +146,7 @@ namespace OpenUtau.Core {
         public void UpdatePlayPos() {
             if (AudioOutput != null && AudioOutput.PlaybackState == PlaybackState.Playing && masterMix != null) {
                 double ms = (AudioOutput.GetPosition() / sizeof(float) - masterMix.Waited / 2) * 1000.0 / 44100;
-                int tick = DocManager.Inst.Project.MillisecondToTick(startMs + ms);
+                int tick = DocManager.Inst.Project.timeAxis.MsPosToTickPos(startMs + ms);
                 DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(tick, masterMix.IsWaiting));
             }
         }
@@ -181,6 +181,7 @@ namespace OpenUtau.Core {
         }
 
         void SchedulePreRender() {
+            return;
             var scheduler = TaskScheduler.Default;
             Log.Information("SchedulePreRender");
             var engine = new RenderEngine(DocManager.Inst.Project);

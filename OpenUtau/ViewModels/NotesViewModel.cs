@@ -496,8 +496,9 @@ namespace OpenUtau.App.ViewModels {
                 notes.ForEach(note => note.position += offset);
                 DocManager.Inst.StartUndoGroup();
                 DocManager.Inst.ExecuteCmd(new AddNoteCommand(Part, notes));
-                if (Part.Duration < Part.GetMinDurTick(Project)) {
-                    DocManager.Inst.ExecuteCmd(new ResizePartCommand(Project, Part, Part.GetBarDurTick(Project)));
+                int minDurTick = Part.GetMinDurTick(Project);
+                if (Part.Duration < minDurTick) {
+                    DocManager.Inst.ExecuteCmd(new ResizePartCommand(Project, Part, minDurTick));
                 }
                 DocManager.Inst.EndUndoGroup();
                 DeselectNotes();

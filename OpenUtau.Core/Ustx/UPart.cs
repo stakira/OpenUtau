@@ -18,7 +18,7 @@ namespace OpenUtau.Core.Ustx {
 
         [YamlIgnore] public virtual string DisplayName { get; }
         [YamlIgnore] public virtual int Duration { set; get; }
-        [YamlIgnore] public int EndTick { get { return position + Duration; } }
+        [YamlIgnore] public int End { get { return position + Duration; } }
 
         public UPart() { }
 
@@ -54,14 +54,12 @@ namespace OpenUtau.Core.Ustx {
         public override string DisplayName => name;
 
         public override int GetMinDurTick(UProject project) {
-            return notes.Count > 0
-                ? Math.Max(project.BarTicks, notes.Last().End)
-                : project.BarTicks;
-        }
-
-        public int GetBarDurTick(UProject project) {
-            int barTicks = project.BarTicks;
-            return (int)Math.Ceiling((double)GetMinDurTick(project) / barTicks) * barTicks;
+            int endTicks = position + (notes.LastOrDefault()?.End ?? 1);
+            project.timeAxis.TickPosToBarBeat(endTicks, out int bar, out int beat, out int remainingTicks);
+            if (remainingTicks > 0) {
+                beat++;
+            }
+            return project.timeAxis.BarBeatToTickPos(bar, beat) - position;
         }
 
         public override void BeforeSave(UProject project, UTrack track) {
@@ -74,7 +72,7 @@ namespace OpenUtau.Core.Ustx {
             foreach (var note in notes) {
                 note.AfterLoad(project, track, this);
             }
-            Duration = GetBarDurTick(project);
+            Duration = GetMinDurTick(project);
             foreach (var curve in curves) {
                 if (project.expressions.TryGetValue(curve.abbr, out var descriptor)) {
                     curve.descriptor = descriptor;
@@ -129,9 +127,7 @@ namespace OpenUtau.Core.Ustx {
                     noteIndexes = noteIndexes.ToArray(),
                     notes = groups.ToArray(),
                     phonemizer = track.Phonemizer,
-                    bpm = project.bpm,
-                    beatUnit = project.beatUnit,
-                    resolution = project.resolution,
+                    timeAxis = project.timeAxis.Clone(),
                 };
                 notesTimestamp = request.timestamp;
                 DocManager.Inst.PhonemizerRunner?.Push(request);
@@ -265,7 +261,7 @@ namespace OpenUtau.Core.Ustx {
         public override string DisplayName => Missing ? $"[Missing] {name}" : name;
         [YamlIgnore]
         public override int Duration {
-            get => fileDurTick;
+            get => duration;
             set { }
         }
         [YamlIgnore] bool Missing { get; set; }
@@ -273,18 +269,21 @@ namespace OpenUtau.Core.Ustx {
         [YamlIgnore] public float[] Samples { get; private set; }
 
         [YamlIgnore] public int channels;
-        [YamlIgnore] public int fileDurTick;
 
-        private TimeSpan duration;
+        private int duration;
 
-        public override int GetMinDurTick(UProject project) { return project.MillisecondToTick(duration.TotalMilliseconds); }
+        public override int GetMinDurTick(UProject project) {
+            double posMs = project.timeAxis.TickPosToMsPos(position);
+            int end = project.timeAxis.MsPosToTickPos(posMs + fileDurationMs);
+            return end - position;
+        }
 
         public override UPart Clone() {
             return new UWavePart() {
                 _filePath = _filePath,
                 Peaks = Peaks,
                 channels = channels,
-                fileDurTick = fileDurTick,
+                duration = duration,
             };
         }
 
@@ -292,8 +291,7 @@ namespace OpenUtau.Core.Ustx {
         public void Load(UProject project) {
             try {
                 using (var waveStream = Format.Wave.OpenFile(FilePath)) {
-                    duration = waveStream.TotalTime;
-                    fileDurationMs = duration.TotalMilliseconds;
+                    fileDurationMs = waveStream.TotalTime.TotalMilliseconds;
                     channels = waveStream.WaveFormat.Channels;
                 }
             } catch (Exception e) {
@@ -302,14 +300,13 @@ namespace OpenUtau.Core.Ustx {
                 if (fileDurationMs == 0) {
                     fileDurationMs = 10000;
                 }
-                duration = TimeSpan.FromMilliseconds(fileDurationMs);
             }
-            fileDurTick = project.MillisecondToTick(fileDurationMs);
             lock (loadLockObj) {
                 if (Samples != null || Missing) {
                     return;
                 }
             }
+            UpdateDuration(project);
             Task.Run(() => {
                 using (var waveStream = Format.Wave.OpenFile(FilePath)) {
                     var samples = Format.Wave.GetStereoSamples(waveStream);
@@ -330,7 +327,13 @@ namespace OpenUtau.Core.Ustx {
         }
 
         public override void Validate(ValidateOptions options, UProject project, UTrack track) {
-            fileDurTick = project.MillisecondToTick(duration.TotalMilliseconds);
+            UpdateDuration(project);
+        }
+
+        private void UpdateDuration(UProject project) {
+            double posMs = project.timeAxis.TickPosToMsPos(position);
+            int end = project.timeAxis.MsPosToTickPos(posMs + fileDurationMs);
+            duration = end - position;
         }
 
         public override void BeforeSave(UProject project, UTrack track) {

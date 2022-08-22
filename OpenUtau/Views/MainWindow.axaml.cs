@@ -100,7 +100,7 @@ namespace OpenUtau.App.Views {
             var project = DocManager.Inst.Project;
             var dialog = new TypeInDialog();
             dialog.Title = "BPM";
-            dialog.SetText(project.bpm.ToString());
+            dialog.SetText(project.tempos[0].bpm.ToString());
             dialog.onFinish = s => {
                 if (double.TryParse(s, out double bpm)) {
                     viewModel.PlaybackViewModel.SetBpm(bpm);
@@ -548,7 +548,7 @@ namespace OpenUtau.App.Views {
                     case Key.Home: viewModel.PlaybackViewModel.MovePlayPos(0); break;
                     case Key.End:
                         if (viewModel.TracksViewModel.Parts.Count > 0) {
-                            int endTick = viewModel.TracksViewModel.Parts.Max(part => part.EndTick);
+                            int endTick = viewModel.TracksViewModel.Parts.Max(part => part.End);
                             viewModel.PlaybackViewModel.MovePlayPos(endTick);
                         }
                         break;

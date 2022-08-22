@@ -4,6 +4,9 @@ namespace OpenUtau.Core {
     public abstract class PartCommand : UCommand {
         public readonly UProject project;
         public readonly UPart part;
+        public override ValidateOptions ValidateOptions => new ValidateOptions {
+            SkipTiming = true,
+        };
         public PartCommand(UProject project, UPart part) {
             this.project = project;
             this.part = part;

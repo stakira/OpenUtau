@@ -656,7 +656,7 @@ namespace OpenUtau.App.Views {
                     var index = phoneme.index;
                     if (hitInfo.hitPosition) {
                         editState = new PhonemeMoveState(
-                            canvas, ViewModel, this, note.Extends ?? note, index);
+                            canvas, ViewModel, this, note.Extends ?? note, phoneme, index);
                     } else if (hitInfo.hitPreutter) {
                         editState = new PhonemeChangePreutterState(
                             canvas, ViewModel, this, note.Extends ?? note, phoneme, index);
@@ -806,7 +806,7 @@ namespace OpenUtau.App.Views {
                         break;
                     case Key.End:
                         if (ViewModel.NotesViewModel.Part != null) {
-                            ViewModel.PlaybackViewModel?.MovePlayPos(ViewModel.NotesViewModel.Part.EndTick);
+                            ViewModel.PlaybackViewModel?.MovePlayPos(ViewModel.NotesViewModel.Part.End);
                         }
                         break;
                     default:

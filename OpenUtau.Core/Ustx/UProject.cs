@@ -5,6 +5,30 @@ using OpenUtau.Core.Util;
 using YamlDotNet.Serialization;
 
 namespace OpenUtau.Core.Ustx {
+    public class UTempo {
+        public int position;
+        public double bpm;
+
+        public UTempo() { }
+        public UTempo(int position, double bpm) {
+            this.position = position;
+            this.bpm = bpm;
+        }
+    }
+
+    public class UTimeSignature {
+        public int barPosition;
+        public int beatPerBar;
+        public int beatUnit;
+
+        public UTimeSignature() { }
+        public UTimeSignature(int barPosition, int beatPerBar, int beatUnit) {
+            this.barPosition = barPosition;
+            this.beatPerBar = beatPerBar;
+            this.beatUnit = beatUnit;
+        }
+    }
+
     public class UProject {
         public string name = "New Project";
         public string comment = string.Empty;
@@ -12,15 +36,17 @@ namespace OpenUtau.Core.Ustx {
         public string cacheDir = "UCache";
         [YamlMember(SerializeAs = typeof(string))]
         public Version ustxVersion;
-
-        public double bpm = 120;
-        public int beatPerBar = 4;
-        public int beatUnit = 4;
         public int resolution = 480;
 
+        [Obsolete] public double bpm = 120;
+        [Obsolete] public int beatPerBar = 4;
+        [Obsolete] public int beatUnit = 4;
+
         public Dictionary<string, UExpressionDescriptor> expressions = new Dictionary<string, UExpressionDescriptor>();
-        public List<UTrack> tracks = new List<UTrack>();
-        [YamlIgnore] public List<UPart> parts = new List<UPart>();
+        public List<UTimeSignature> timeSignatures;
+        public List<UTempo> tempos;
+        public List<UTrack> tracks;
+        [YamlIgnore] public List<UPart> parts;
 
         /// <summary>
         /// Transient field used for serialization.
@@ -33,8 +59,17 @@ namespace OpenUtau.Core.Ustx {
 
         [YamlIgnore] public string FilePath { get; set; }
         [YamlIgnore] public bool Saved { get; set; } = false;
-        [YamlIgnore] public int EndTick => parts.Count == 0 ? 0 : parts.Max(p => p.EndTick);
-        [YamlIgnore] public int BarTicks => resolution * 4 * beatPerBar / beatUnit;
+        [YamlIgnore] public int EndTick => parts.Count == 0 ? 0 : parts.Max(p => p.End);
+
+        [YamlIgnore] public readonly TimeAxis timeAxis = new TimeAxis();
+
+        public UProject() {
+            timeSignatures = new List<UTimeSignature> { new UTimeSignature(0, 4, 4) };
+            tempos = new List<UTempo> { new UTempo(0, 120) };
+            tracks = new List<UTrack>();
+            parts = new List<UPart>();
+            timeAxis.BuildSegments(this);
+        }
 
         public void RegisterExpression(UExpressionDescriptor descriptor) {
             if (!expressions.ContainsKey(descriptor.abbr)) {
@@ -57,14 +92,6 @@ namespace OpenUtau.Core.Ustx {
             note.position = posTick;
             note.duration = durTick;
             return note;
-        }
-
-        public int MillisecondToTick(double ms) {
-            return MusicMath.MillisecondToTick(ms, bpm, beatUnit, resolution);
-        }
-
-        public double TickToMillisecond(double tick) {
-            return MusicMath.TickToMillisecond(tick, bpm, beatUnit, resolution);
         }
 
         public void BeforeSave() {
@@ -121,6 +148,11 @@ namespace OpenUtau.Core.Ustx {
         }
 
         public void Validate(ValidateOptions options) {
+            if (!options.SkipTiming) {
+                timeSignatures.Sort((lhs, rhs) => lhs.barPosition.CompareTo(rhs.barPosition));
+                tempos.Sort((lhs, rhs) => lhs.position.CompareTo(rhs.position));
+                timeAxis.BuildSegments(this);
+            }
             if (options.Part == null) {
                 foreach (var track in tracks) {
                     track.Validate(options, this);

@@ -184,8 +184,10 @@ namespace OpenUtau.Core.Format {
                             }
                         }
 
-                        unote.pitch.data[0].X = -(float)uproject.TickToMillisecond(Math.Min(15, unote.duration / 3));
-                        unote.pitch.data[1].X = -unote.pitch.data[0].X;
+                        int start = Util.NotePresets.Default.DefaultPortamento.PortamentoStart;
+                        int length = Util.NotePresets.Default.DefaultPortamento.PortamentoLength;
+                        unote.pitch.data[0].X = start;
+                        unote.pitch.data[1].X = start + length;
                         upart.notes.Add(unote);
                     }
                 }

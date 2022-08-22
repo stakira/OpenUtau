@@ -46,8 +46,6 @@ namespace OpenUtau.Classic {
                 return null;
             }
             var phrase = resamplerItems[0].phrase;
-            double posOffset = resamplerItems[0].phone.position * phrase.tickToMs - resamplerItems[0].phone.preutterMs;
-
             var segments = new List<Segment>();
             foreach (var item in resamplerItems) {
                 if (!File.Exists(item.outputFile)) {
@@ -58,7 +56,7 @@ namespace OpenUtau.Classic {
                 using (var waveStream = Wave.OpenFile(item.outputFile)) {
                     segment.samples = Wave.GetSamples(waveStream.ToSampleProvider().ToMono(1, 0));
                 }
-                segment.posMs = item.phone.position * item.phrase.tickToMs - item.phone.preutterMs - posOffset;
+                segment.posMs = phrase.leadingMs + item.phone.positionMs - item.phone.leadingMs;
                 segment.posSamples = (int)Math.Round(segment.posMs * 44100 / 1000);
                 segment.skipSamples = (int)Math.Round(item.skipOver * 44100 / 1000);
                 segment.envelope = EnvelopeMsToSamples(item.phone.envelope, segment.skipSamples);

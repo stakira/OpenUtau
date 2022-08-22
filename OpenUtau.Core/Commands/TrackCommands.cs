@@ -8,6 +8,9 @@ namespace OpenUtau.Core {
     public abstract class TrackCommand : UCommand {
         public UProject project;
         public UTrack track;
+        public override ValidateOptions ValidateOptions => new ValidateOptions {
+            SkipTiming = true,
+        };
         public void UpdateTrackNo() {
             Dictionary<int, int> trackNoRemapTable = new Dictionary<int, int>();
             for (int i = 0; i < project.tracks.Count; i++) {

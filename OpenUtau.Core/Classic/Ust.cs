@@ -64,7 +64,7 @@ namespace OpenUtau.Classic {
         }
 
         public static UProject Load(StreamReader reader, string file) {
-            var project = new UProject() { resolution = 480, FilePath = file, Saved = false };
+            var project = new UProject() { FilePath = file, Saved = false };
             Ustx.AddDefaultExpressions(project);
 
             project.tracks.Add(new UTrack {

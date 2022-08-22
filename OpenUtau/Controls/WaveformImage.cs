@@ -78,8 +78,8 @@ namespace OpenUtau.App.Controls {
                     var project = viewModel.Project;
                     var part = viewModel.Part;
                     if (project != null && part != null && part.Mix != null) {
-                        double leftMs = project.TickToMillisecond(viewModel.TickOrigin + viewModel.TickOffset);
-                        double rightMs = project.TickToMillisecond(viewModel.TickOrigin + viewModel.TickOffset + viewModel.ViewportTicks);
+                        double leftMs = project.timeAxis.TickPosToMsPos(viewModel.TickOrigin + viewModel.TickOffset);
+                        double rightMs = project.timeAxis.TickPosToMsPos(viewModel.TickOrigin + viewModel.TickOffset + viewModel.ViewportTicks);
                         int samplePos = (int)(leftMs * 44100 / 1000) * 2;
                         sampleCount = (int)((rightMs - leftMs) * 44100 / 1000) * 2;
                         if (sampleData.Length < sampleCount) {

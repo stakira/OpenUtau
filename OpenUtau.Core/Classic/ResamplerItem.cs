@@ -38,11 +38,7 @@ namespace OpenUtau.Classic {
             this.phrase = phrase;
             this.phone = phone;
 
-            resampler = Resamplers.GetResampler(
-                string.IsNullOrEmpty(phone.resampler)
-                    ? WorldlineResampler.name
-                    : phone.resampler)
-                ?? Resamplers.GetResampler(WorldlineResampler.name);
+            resampler = Resamplers.GetResampler(phone.resampler);
             inputFile = phone.oto.File;
             inputTemp = VoicebankFiles.Inst.GetSourceTempPath(phrase.singer.Id, phone.oto, ".wav");
             tone = phone.tone;
@@ -52,20 +48,20 @@ namespace OpenUtau.Classic {
             volume = (int)(phone.volume * 100);
             modulation = (int)(phone.modulation * 100);
 
-            int pitchStart = phrase.phones[0].position - phrase.phones[0].leading;
-
             offset = phone.oto.Offset;
             var stretchRatio = Math.Pow(2, 1.0 - velocity * 0.01);
             double durMs = phone.oto.Preutter * stretchRatio + phone.envelope[4].X;
             requiredLength = Math.Ceiling(durMs / 50 + 1) * 50;
             consonant = phone.oto.Consonant;
             cutoff = phone.oto.Cutoff;
-            skipOver = phone.oto.Preutter * stretchRatio - phone.preutterMs;
+            skipOver = phone.oto.Preutter * stretchRatio - phone.leadingMs;
 
-            int pitchLeading = (int)(phone.oto.Preutter * stretchRatio / phrase.tickToMs);
-            int pitchCount = (int)Math.Ceiling(durMs / phrase.tickToMs / 5);
-            tempo = phrase.tempo;
-            int pitchSkips = (phone.position - pitchLeading - pitchStart) / 5;
+            int pitchCount = (int)Math.Ceiling(
+                (double)phrase.timeAxis.TicksBetweenMsPos(
+                    phone.positionMs - phone.oto.Preutter * stretchRatio,
+                    phone.positionMs + phone.envelope[4].X) / 5);
+            tempo = phone.tempo;
+            int pitchSkips = (phrase.leading + phone.position - phone.leading) / 5;
             pitches = phrase.pitches
                 .Skip(pitchSkips)
                 .Take(pitchCount)

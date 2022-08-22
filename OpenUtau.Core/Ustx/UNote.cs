@@ -18,12 +18,13 @@ namespace OpenUtau.Core.Ustx {
         public UPitch pitch;
         public UVibrato vibrato;
 
-        [Obsolete("Only used for upgrading ustx v0.1")]
-        public Dictionary<string, double?> expressions;
         public List<UExpression> phonemeExpressions = new List<UExpression>();
         public List<UPhonemeOverride> phonemeOverrides = new List<UPhonemeOverride>();
 
         [YamlIgnore] public int End => position + duration;
+        [YamlIgnore] public double PositionMs { get; set; }
+        [YamlIgnore] public double DurationMs => EndMs - PositionMs;
+        [YamlIgnore] public double EndMs { get; set; }
         [YamlIgnore] public bool Selected { get; set; } = false;
         [YamlIgnore] public UNote Prev { get; set; }
         [YamlIgnore] public UNote Next { get; set; }
@@ -75,6 +76,8 @@ namespace OpenUtau.Core.Ustx {
 
         public void Validate(ValidateOptions options, UProject project, UTrack track, UVoicePart part) {
             duration = Math.Max(10, duration);
+            PositionMs = project.timeAxis.TickPosToMsPos(part.position + position);
+            EndMs = project.timeAxis.TickPosToMsPos(part.position + End);
             if (Prev != null && Prev.End > position) {
                 Error = true;
                 OverlapError = true;
@@ -303,8 +306,8 @@ namespace OpenUtau.Core.Ustx {
             return new Vector2(note.position + note.duration, note.tone - 1.5f);
         }
 
-        public void GetPeriodStartEnd(UNote note, UProject project, out Vector2 start, out Vector2 end) {
-            float periodTick = project.MillisecondToTick(period);
+        public void GetPeriodStartEnd(UProject project, UNote note, out Vector2 start, out Vector2 end) {
+            float periodTick = project.timeAxis.TicksBetweenMsPos(note.PositionMs, note.PositionMs + period);
             float shiftTick = periodTick * shift / 100f;
             start = new Vector2(
                 note.position + note.duration * NormalizedStart + shiftTick,
@@ -379,24 +382,24 @@ namespace OpenUtau.Core.Ustx {
             return result;
         }
 
-        public double? Sample(UProject project, UNote note, double tick) {
+        public double? Sample(UProject project, UPart part, UNote note, double tick) {
             for (int i = 0; i < note.pitch.data.Count - 1; i++) {
                 var p1 = note.pitch.data[i];
-                int t1 = note.position + project.MillisecondToTick(p1.X);
+                int t1 = project.timeAxis.MsPosToTickPos(note.PositionMs + p1.X) - part.position;
                 var p2 = note.pitch.data[i + 1];
-                int t2 = note.position + project.MillisecondToTick(p2.X);
+                int t2 = project.timeAxis.MsPosToTickPos(note.PositionMs + p2.X) - part.position;
                 if (t1 <= tick && tick <= t2) {
                     return MusicMath.InterpolateShape(
                         t1, t2, p1.Y, p2.Y, tick, p1.shape) * 10;
                 }
             }
             var pFirst = note.pitch.data.First();
-            var tFirst = note.position + project.MillisecondToTick(pFirst.X);
+            var tFirst = project.timeAxis.MsPosToTickPos(note.PositionMs + pFirst.X) - part.position;
             if (tick < tFirst) {
                 return pFirst.Y * 10;
             }
             var pLast = note.pitch.data.Last();
-            var tLast = note.position + project.MillisecondToTick(pLast.X);
+            var tLast = project.timeAxis.MsPosToTickPos(note.PositionMs + pLast.X) - part.position;
             if (tick > tLast) {
                 return pLast.Y * 10;
             }

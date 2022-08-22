@@ -43,9 +43,9 @@ namespace OpenUtau.Classic {
             var firstPhone = phrase.phones.First();
             var lastPhone = phrase.phones.Last();
             return new RenderResult() {
-                leadingMs = firstPhone.preutterMs,
-                positionMs = (phrase.position + firstPhone.position) * phrase.tickToMs,
-                estimatedLengthMs = (lastPhone.duration + lastPhone.position - firstPhone.position) * phrase.tickToMs + firstPhone.preutterMs,
+                leadingMs = firstPhone.leadingMs,
+                positionMs = firstPhone.positionMs,
+                estimatedLengthMs = lastPhone.positionMs - firstPhone.positionMs + firstPhone.leadingMs,
             };
         }
 
@@ -70,12 +70,12 @@ namespace OpenUtau.Classic {
                 }
                 if (result.samples == null) {
                     using var phraseSynth = new Worldline.PhraseSynth();
-                    double posOffsetMs = resamplerItems[0].phone.position * phrase.tickToMs - resamplerItems[0].phone.preutterMs;
+                    double posOffsetMs = resamplerItems[0].phone.position * phrase.tickToMs - resamplerItems[0].phone.leadingMs;
                     foreach (var item in resamplerItems) {
                         if (cancellation.IsCancellationRequested) {
                             return result;
                         }
-                        double posMs = item.phone.position * item.phrase.tickToMs - item.phone.preutterMs - posOffsetMs;
+                        double posMs = item.phone.position * item.phrase.tickToMs - item.phone.leadingMs - posOffsetMs;
                         double skipMs = item.skipOver;
                         double lengthMs = item.phone.envelope[4].X - item.phone.envelope[0].X;
                         double fadeInMs = item.phone.envelope[1].X - item.phone.envelope[0].X;

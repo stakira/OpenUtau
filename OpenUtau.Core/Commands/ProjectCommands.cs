@@ -15,11 +15,11 @@ namespace OpenUtau.Core {
         public readonly double oldBpm;
         public BpmCommand(UProject project, double bpm) : base(project) {
             newBpm = Math.Clamp(bpm, 10, 1000);
-            oldBpm = project.bpm;
+            oldBpm = project.tempos[0].bpm;
         }
-        public override void Execute() => project.bpm = newBpm;
+        public override void Execute() => project.tempos[0].bpm = newBpm;
         public override string ToString() => $"Change BPM from {newBpm} to {oldBpm}";
-        public override void Unexecute() => project.bpm = oldBpm;
+        public override void Unexecute() => project.tempos[0].bpm = oldBpm;
     }
 
     public class TimeSignatureCommand : ProjectCommand {
@@ -28,25 +28,28 @@ namespace OpenUtau.Core {
         public readonly int newBeatPerBar;
         public readonly int newBeatUnit;
         public TimeSignatureCommand(UProject project, int beatPerBar, int beatUnit) : base(project) {
-            oldBeatPerBar = project.beatPerBar;
-            oldBeatUnit = project.beatUnit;
+            oldBeatPerBar = project.timeSignatures[0].beatPerBar;
+            oldBeatUnit = project.timeSignatures[0].beatUnit;
             newBeatPerBar = beatPerBar;
             newBeatUnit = beatUnit;
         }
         public override string ToString() => $"Change time signature for {oldBeatPerBar}/{oldBeatUnit} to {newBeatPerBar}/{newBeatUnit}";
         public override void Execute() {
-            project.beatPerBar = newBeatPerBar;
-            project.beatUnit = newBeatUnit;
+            project.timeSignatures[0].beatPerBar = newBeatPerBar;
+            project.timeSignatures[0].beatUnit = newBeatUnit;
         }
         public override void Unexecute() {
-            project.beatPerBar = oldBeatPerBar;
-            project.beatUnit = oldBeatUnit;
+            project.timeSignatures[0].beatPerBar = oldBeatPerBar;
+            project.timeSignatures[0].beatUnit = oldBeatUnit;
         }
     }
 
     public class ConfigureExpressionsCommand : ProjectCommand {
         readonly UExpressionDescriptor[] oldDescriptors;
         readonly UExpressionDescriptor[] newDescriptors;
+        public override ValidateOptions ValidateOptions => new ValidateOptions {
+            SkipTiming = true,
+        };
         public ConfigureExpressionsCommand(
             UProject project,
             UExpressionDescriptor[] descriptors) : base(project) {

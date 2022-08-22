@@ -12,6 +12,7 @@ namespace OpenUtau.Core {
         public string Key;
         public override ValidateOptions ValidateOptions
             => new ValidateOptions {
+                SkipTiming = true,
                 Part = Part,
                 SkipPhonemizer = true,
             };
@@ -51,6 +52,7 @@ namespace OpenUtau.Core {
         public readonly float oldValue;
         public override ValidateOptions ValidateOptions
             => new ValidateOptions {
+                SkipTiming = true,
                 Part = Part,
                 SkipPhonemizer = !needsPhonemizer.Contains(Key),
             };
@@ -85,6 +87,7 @@ namespace OpenUtau.Core {
     public abstract class PitchExpCommand : ExpCommand {
         public PitchExpCommand(UVoicePart part) : base(part) { }
         public override ValidateOptions ValidateOptions => new ValidateOptions {
+            SkipTiming = true,
             Part = Part,
             SkipPhonemizer = true,
             SkipPhoneme = true,
@@ -197,6 +200,7 @@ namespace OpenUtau.Core {
         int[] oldYs;
         public override ValidateOptions ValidateOptions
             => new ValidateOptions {
+                SkipTiming = true,
                 Part = Part,
                 SkipPhonemizer = true,
                 SkipPhoneme = true,

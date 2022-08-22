@@ -51,8 +51,8 @@ namespace OpenUtau.Core.Vogen {
             var lastPhone = phrase.phones.Last();
             return new RenderResult() {
                 leadingMs = headMs,
-                positionMs = (phrase.position + firstPhone.position) * phrase.tickToMs,
-                estimatedLengthMs = headMs + (lastPhone.duration + lastPhone.position - firstPhone.position) * phrase.tickToMs + tailMs,
+                positionMs = firstPhone.positionMs,
+                estimatedLengthMs = headMs + (lastPhone.positionMs - firstPhone.positionMs) + tailMs,
             };
         }
 

@@ -152,7 +152,7 @@ namespace OpenUtau.App.Views {
         public override void Update(IPointer pointer, Point point) {
             var project = DocManager.Inst.Project;
             var tracksVm = vm.TracksViewModel;
-            int deltaDuration = tracksVm.PointToSnappedTick(point) + tracksVm.SnapUnit - part.EndTick;
+            int deltaDuration = tracksVm.PointToSnappedTick(point) + tracksVm.SnapUnit - part.End;
             if (deltaDuration < 0) {
                 int maxDurReduction = part.Duration - part.GetMinDurTick(project);
                 if (tracksVm.SelectedParts.Count > 0) {

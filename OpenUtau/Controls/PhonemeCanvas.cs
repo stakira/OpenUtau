@@ -102,23 +102,24 @@ namespace OpenUtau.App.Controls {
             const double y = 35.5;
             const double height = 24;
             foreach (var phoneme in Part.phonemes) {
-                double leftBound = phoneme.position - viewModel.Project.MillisecondToTick(phoneme.preutter);
+                double leftBound = viewModel.Project.timeAxis.MsPosToTickPos(phoneme.PositionMs - phoneme.preutter) - Part.position;
                 double rightBound = phoneme.End;
                 if (leftBound > rightTick || rightBound < leftTick || phoneme.Parent.OverlapError) {
                     continue;
                 }
-                int position = phoneme.position;
-                double x = Math.Round(viewModel.TickToneToPoint(position, 0).X) + 0.5;
+                var timeAxis = viewModel.Project.timeAxis;
+                double x = Math.Round(viewModel.TickToneToPoint(phoneme.position, 0).X) + 0.5;
+                double posMs = phoneme.PositionMs;
                 if (!phoneme.Error) {
-                    double x0 = viewModel.TickToneToPoint(position + viewModel.Project.MillisecondToTick(phoneme.envelope.data[0].X), 0).X;
+                    double x0 = viewModel.TickToneToPoint(timeAxis.MsPosToTickPos(posMs + phoneme.envelope.data[0].X) - Part.position, 0).X;
                     double y0 = (1 - phoneme.envelope.data[0].Y / 100) * height;
-                    double x1 = viewModel.TickToneToPoint(position + viewModel.Project.MillisecondToTick(phoneme.envelope.data[1].X), 0).X;
+                    double x1 = viewModel.TickToneToPoint(timeAxis.MsPosToTickPos(posMs + phoneme.envelope.data[1].X) - Part.position, 0).X;
                     double y1 = (1 - phoneme.envelope.data[1].Y / 100) * height;
-                    double x2 = viewModel.TickToneToPoint(position + viewModel.Project.MillisecondToTick(phoneme.envelope.data[2].X), 0).X;
+                    double x2 = viewModel.TickToneToPoint(timeAxis.MsPosToTickPos(posMs + phoneme.envelope.data[2].X) - Part.position, 0).X;
                     double y2 = (1 - phoneme.envelope.data[2].Y / 100) * height;
-                    double x3 = viewModel.TickToneToPoint(position + viewModel.Project.MillisecondToTick(phoneme.envelope.data[3].X), 0).X;
+                    double x3 = viewModel.TickToneToPoint(timeAxis.MsPosToTickPos(posMs + phoneme.envelope.data[3].X) - Part.position, 0).X;
                     double y3 = (1 - phoneme.envelope.data[3].Y / 100) * height;
-                    double x4 = viewModel.TickToneToPoint(position + viewModel.Project.MillisecondToTick(phoneme.envelope.data[4].X), 0).X;
+                    double x4 = viewModel.TickToneToPoint(timeAxis.MsPosToTickPos(posMs + phoneme.envelope.data[4].X) - Part.position, 0).X;
                     double y4 = (1 - phoneme.envelope.data[4].Y / 100) * height;
 
                     var pen = selectedNotes.Contains(phoneme.Parent) ? ThemeManager.AccentPen2 : ThemeManager.AccentPen1;
