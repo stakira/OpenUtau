@@ -144,7 +144,6 @@ namespace OpenUtau.Core.Render {
         public readonly double endMs;
         public readonly double leadingMs;
 
-        [Obsolete] public readonly double tickToMs;
         public readonly RenderNote[] notes;
         public readonly RenderPhone[] phones;
 

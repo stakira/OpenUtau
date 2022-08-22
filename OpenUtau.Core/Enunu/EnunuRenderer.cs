@@ -50,14 +50,12 @@ namespace OpenUtau.Core.Enunu {
         }
 
         public RenderResult Layout(RenderPhrase phrase) {
-            var firstPhone = phrase.phones.First();
-            var lastPhone = phrase.phones.Last();
-            var headMs = firstPhone.positionMs - phrase.timeAxis.TickPosToMsPos(firstPhone.position - headTicks);
-            var tailMs = phrase.timeAxis.TickPosToMsPos(lastPhone.position + lastPhone.duration + tailTicks) - lastPhone.endMs;
+            var headMs = phrase.positionMs - phrase.timeAxis.TickPosToMsPos(phrase.position - headTicks);
+            var tailMs = phrase.timeAxis.TickPosToMsPos(phrase.end + tailTicks) - phrase.endMs;
             return new RenderResult() {
                 leadingMs = headMs,
-                positionMs = firstPhone.positionMs,
-                estimatedLengthMs = headMs + (lastPhone.positionMs - firstPhone.positionMs) + tailMs,
+                positionMs = phrase.positionMs,
+                estimatedLengthMs = headMs + phrase.durationMs + tailMs,
             };
         }
 
@@ -96,17 +94,15 @@ namespace OpenUtau.Core.Enunu {
                         var sp = np.Load<double[,]>(spPath);
                         var ap = np.Load<double[,]>(apPath);
                         int totalFrames = f0.Length;
-                        var firstPhone = phrase.phones.First();
-                        var lastPhone = phrase.phones.Last();
-                        var headMs = firstPhone.positionMs - phrase.timeAxis.TickPosToMsPos(firstPhone.position - headTicks);
-                        var tailMs = phrase.timeAxis.TickPosToMsPos(lastPhone.position + lastPhone.duration + tailTicks) - lastPhone.endMs;
+                        var headMs = phrase.positionMs - phrase.timeAxis.TickPosToMsPos(phrase.position - headTicks);
+                        var tailMs = phrase.timeAxis.TickPosToMsPos(phrase.end + tailTicks) - phrase.endMs;
                         int headFrames = (int)Math.Round(headMs / config.framePeriod);
                         int tailFrames = (int)Math.Round(tailMs / config.framePeriod);
-                        var editorF0 = DownSampleCurve(phrase.pitches, 0, config.framePeriod, totalFrames, headFrames, tailFrames, phrase.tickToMs, x => MusicMath.ToneToFreq(x * 0.01));
-                        var gender = DownSampleCurve(phrase.gender, 0.5, config.framePeriod, totalFrames, headFrames, tailFrames, phrase.tickToMs, x => 0.5 + 0.005 * x);
-                        var tension = DownSampleCurve(phrase.tension, 0.5, config.framePeriod, totalFrames, headFrames, tailFrames, phrase.tickToMs, x => 0.5 + 0.005 * x);
-                        var breathiness = DownSampleCurve(phrase.breathiness, 0.5, config.framePeriod, totalFrames, headFrames, tailFrames, phrase.tickToMs, x => 0.5 + 0.005 * x);
-                        var voicing = DownSampleCurve(phrase.voicing, 1.0, config.framePeriod, totalFrames, headFrames, tailFrames, phrase.tickToMs, x => 0.01 * x);
+                        var editorF0 = SampleCurve(phrase, phrase.pitches, 0, config.framePeriod, totalFrames, headFrames, tailFrames, x => MusicMath.ToneToFreq(x * 0.01));
+                        var gender = SampleCurve(phrase, phrase.gender, 0.5, config.framePeriod, totalFrames, headFrames, tailFrames, x => 0.5 + 0.005 * x);
+                        var tension = SampleCurve(phrase, phrase.tension, 0.5, config.framePeriod, totalFrames, headFrames, tailFrames, x => 0.5 + 0.005 * x);
+                        var breathiness = SampleCurve(phrase, phrase.breathiness, 0.5, config.framePeriod, totalFrames, headFrames, tailFrames, x => 0.5 + 0.005 * x);
+                        var voicing = SampleCurve(phrase, phrase.voicing, 1.0, config.framePeriod, totalFrames, headFrames, tailFrames, x => 0.01 * x);
                         int fftSize = (sp.GetLength(1) - 1) * 2;
                         for (int i = 0; i < f0.Length; i++) {
                             if (f0[i] < 50) {
@@ -136,7 +132,7 @@ namespace OpenUtau.Core.Enunu {
                             result.samples = Wave.GetSamples(waveStream.ToSampleProvider().ToMono(1, 0));
                         }
                         if (result.samples != null) {
-                            ApplyDynamics(phrase, result.samples);
+                            Renderers.ApplyDynamics(phrase, result);
                         }
                     } else {
                         result.samples = new float[0];
@@ -147,11 +143,30 @@ namespace OpenUtau.Core.Enunu {
             return task;
         }
 
+        double[] SampleCurve(RenderPhrase phrase, float[] curve, double defaultValue, double frameMs, int length, int headFrames, int tailFrames, Func<double, double> convert) {
+            const int interval = 5;
+            var result = new double[length];
+            if (curve == null) {
+                Array.Fill(result, defaultValue);
+                return result;
+            }
+            for (int i = 0; i < length - headFrames - tailFrames; i++) {
+                double posMs = phrase.positionMs - phrase.leadingMs + i * frameMs;
+                int ticks = phrase.timeAxis.MsPosToTickPos(posMs) - (phrase.position - phrase.leading);
+                int index = Math.Max(0, (int)((double)ticks / interval));
+                if (index < curve.Length) {
+                    result[i + headFrames] = convert(curve[index]);
+                }
+            }
+            Array.Fill(result, defaultValue, 0, headFrames);
+            Array.Fill(result, defaultValue, length - tailFrames, tailFrames);
+            return result;
+        }
+
         public RenderPitchResult LoadRenderedPitch(RenderPhrase phrase) {
             var tmpPath = Path.Join(PathManager.Inst.CachePath, $"enu-{phrase.preEffectHash:x16}");
             var enutmpPath = tmpPath + "_enutemp";
             var f0Path = Path.Join(enutmpPath, "f0.npy");
-            var layout = Layout(phrase);
             if (!File.Exists(f0Path)) {
                 return null;
             }
@@ -161,10 +176,11 @@ namespace OpenUtau.Core.Enunu {
                 tones = f0.Select(f => (float)MusicMath.FreqToTone(f)).ToArray(),
             };
             result.ticks = new float[result.tones.Length];
+            var layout = Layout(phrase);
             var t = layout.positionMs - layout.leadingMs;
             for (int i = 0; i < result.tones.Length; i++) {
                 t += config.framePeriod;
-                result.ticks[i] = (float)(t / phrase.tickToMs) - phrase.position;
+                result.ticks[i] = phrase.timeAxis.MsPosToTickPos(t) - phrase.position;
             }
             return result;
         }
@@ -190,42 +206,6 @@ namespace OpenUtau.Core.Enunu {
                 noteNum = 60,
             });
             return notes.ToArray();
-        }
-
-        double[] DownSampleCurve(float[] curve, double defaultValue, double frameMs, int length, int headFrames, int tailFrames, double tickToMs, Func<double, double> convert) {
-            const int interval = 5;
-            var result = new double[length];
-            if (curve == null) {
-                Array.Fill(result, defaultValue);
-                return result;
-            }
-            for (int i = 0; i < length - headFrames - tailFrames; i++) {
-                int index = (int)(i * frameMs / tickToMs / interval);
-                if (index < curve.Length) {
-                    result[i + headFrames] = convert(curve[index]);
-                }
-            }
-            Array.Fill(result, defaultValue, 0, headFrames);
-            Array.Fill(result, defaultValue, length - tailFrames, tailFrames);
-            return result;
-        }
-
-        void ApplyDynamics(RenderPhrase phrase, float[] samples) {
-            const int interval = 5;
-            if (phrase.dynamics == null) {
-                return;
-            }
-            int pos = 0;
-            int offset = (int)(240 * phrase.tickToMs / 1000 * 44100);
-            for (int i = 0; i < phrase.dynamics.Length; ++i) {
-                int endPos = (int)((i + 1) * interval * phrase.tickToMs / 1000 * 44100);
-                float a = phrase.dynamics[i];
-                float b = (i + 1) == phrase.dynamics.Length ? phrase.dynamics[i] : phrase.dynamics[i + 1];
-                for (int j = pos; j < endPos; ++j) {
-                    samples[offset + j] *= a + (b - a) * (j - pos) / (endPos - pos);
-                }
-                pos = endPos;
-            }
         }
 
         public override string ToString() => "ENUNU";

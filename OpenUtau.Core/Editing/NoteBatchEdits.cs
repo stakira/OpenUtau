@@ -203,8 +203,8 @@ namespace OpenUtau.Core.Editing {
                 return;
             }
             var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
-            var positions = notes.Select(n => n.position).ToHashSet();
-            var phrases = part.renderPhrases.Where(phrase => phrase.notes.Any(n => positions.Contains(n.position)));
+            var positions = notes.Select(n => n.position + part.position).ToHashSet();
+            var phrases = part.renderPhrases.Where(phrase => phrase.notes.Any(n => positions.Contains(phrase.position + n.position)));
             docManager.StartUndoGroup(true);
             float minPitD = -1200;
             if (project.expressions.TryGetValue(Format.Ustx.PITD, out var descriptor)) {
@@ -222,8 +222,8 @@ namespace OpenUtau.Core.Editing {
                     if (result.tones[i] < 0) {
                         continue;
                     }
-                    int x = (int)result.ticks[i];
-                    int pitchIndex = Math.Clamp((x - (phrase.position - phrase.leading)) / 5, 0, phrase.pitches.Length - 1);
+                    int x = phrase.position - part.position + (int)result.ticks[i];
+                    int pitchIndex = Math.Clamp((x - (phrase.position - part.position - phrase.leading)) / 5, 0, phrase.pitches.Length - 1);
                     float basePitch = phrase.pitchesBeforeDeviation[pitchIndex];
                     int y = (int)(result.tones[i] * 100 - basePitch);
                     lastX ??= x;
