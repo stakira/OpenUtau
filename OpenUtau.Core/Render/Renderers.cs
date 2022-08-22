@@ -52,5 +52,27 @@ namespace OpenUtau.Core.Render {
         public static object GetCacheLock(string key) {
             return cacheLockMap.GetOrAdd(key, _ => new object());
         }
+
+        public static void ApplyDynamics(RenderPhrase phrase, RenderResult result) {
+            const int interval = 5;
+            if (phrase.dynamics == null) {
+                return;
+            }
+            int startTick = phrase.position - phrase.leading;
+            double startMs = result.positionMs - result.leadingMs;
+            int startSample = 0;
+            for (int i = 0; i < phrase.dynamics.Length; ++i) {
+                int endTick = startTick + interval;
+                double endMs = phrase.timeAxis.TickPosToMsPos(endTick);
+                int endSample = (int)((endMs - startMs) / 1000 * 44100);
+                float a = phrase.dynamics[i];
+                float b = (i + 1) == phrase.dynamics.Length ? phrase.dynamics[i] : phrase.dynamics[i + 1];
+                for (int j = startSample; j < endSample; ++j) {
+                    result.samples[j] *= a + (b - a) * (j - startSample) / (endSample - startSample);
+                }
+                startTick = endTick;
+                startSample = endSample;
+            }
+        }
     }
 }

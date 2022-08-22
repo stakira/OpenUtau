@@ -50,25 +50,27 @@ namespace OpenUtau.Classic {
 
             offset = phone.oto.Offset;
             var stretchRatio = Math.Pow(2, 1.0 - velocity * 0.01);
-            double durMs = phone.oto.Preutter * stretchRatio + phone.envelope[4].X;
+            double pitchLeadingMs = phone.oto.Preutter * stretchRatio;
+            double durMs = pitchLeadingMs + phone.envelope[4].X;
             requiredLength = Math.Ceiling(durMs / 50 + 1) * 50;
             consonant = phone.oto.Consonant;
             cutoff = phone.oto.Cutoff;
             skipOver = phone.oto.Preutter * stretchRatio - phone.leadingMs;
 
+            int pitchLeading = phrase.timeAxis.TicksBetweenMsPos(phone.positionMs - pitchLeadingMs, phone.positionMs);
+            int pitchSkip = (phrase.leading + phone.position - pitchLeading) / 5;
             int pitchCount = (int)Math.Ceiling(
                 (double)phrase.timeAxis.TicksBetweenMsPos(
-                    phone.positionMs - phone.oto.Preutter * stretchRatio,
+                    phone.positionMs - pitchLeadingMs,
                     phone.positionMs + phone.envelope[4].X) / 5);
             tempo = phone.tempo;
-            int pitchSkips = (phrase.leading + phone.position - phone.leading) / 5;
             pitches = phrase.pitches
-                .Skip(pitchSkips)
+                .Skip(pitchSkip)
                 .Take(pitchCount)
                 .Select(pitch => (int)Math.Round(pitch - phone.tone * 100))
                 .ToArray();
-            if (pitchSkips < 0) {
-                pitches = Enumerable.Repeat(pitches[0], -pitchSkips)
+            if (pitchSkip < 0) {
+                pitches = Enumerable.Repeat(pitches[0], -pitchSkip)
                     .Concat(pitches)
                     .ToArray();
             }

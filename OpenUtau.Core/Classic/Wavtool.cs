@@ -56,7 +56,7 @@ namespace OpenUtau.Classic {
                 using (var waveStream = Wave.OpenFile(item.outputFile)) {
                     segment.samples = Wave.GetSamples(waveStream.ToSampleProvider().ToMono(1, 0));
                 }
-                segment.posMs = phrase.leadingMs + item.phone.positionMs - item.phone.leadingMs;
+                segment.posMs = item.phone.positionMs - item.phone.leadingMs - (phrase.positionMs - phrase.leadingMs);
                 segment.posSamples = (int)Math.Round(segment.posMs * 44100 / 1000);
                 segment.skipSamples = (int)Math.Round(item.skipOver * 44100 / 1000);
                 segment.envelope = EnvelopeMsToSamples(item.phone.envelope, segment.skipSamples);
@@ -162,7 +162,9 @@ namespace OpenUtau.Classic {
         }
 
         private double GetF0AtSample(RenderPhrase phrase, float sampleIndex) {
-            int pitchIndex = (int)Math.Round(sampleIndex / 44100 * 1000 / phrase.tickToMs / 5);
+            float sampleMs = sampleIndex / 44100f * 1000f;
+            int sampleTick = phrase.timeAxis.MsPosToTickPos(phrase.positionMs - phrase.leadingMs + sampleMs);
+            int pitchIndex = (int)Math.Round((double)(sampleTick - (phrase.position - phrase.leading)) / 5);
             pitchIndex = Math.Clamp(pitchIndex, 0, phrase.pitches.Length);
             return MusicMath.ToneToFreq(phrase.pitches[pitchIndex] / 100);
         }

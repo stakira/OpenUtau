@@ -75,7 +75,7 @@ namespace OpenUtau.Core.Render {
 
             this.phoneme = phoneme.phoneme;
             tone = note.tone;
-            project.timeAxis.GetBpmAtTick(part.position + phoneme.position);
+            tempo = project.timeAxis.GetBpmAtTick(part.position + phoneme.position);
 
             int eng = (int)phoneme.GetExpression(project, track, Format.Ustx.ENG).Item1;
             if (project.expressions.TryGetValue(Format.Ustx.ENG, out var descriptor)) {
@@ -221,9 +221,8 @@ namespace OpenUtau.Core.Render {
                 }
                 int startIndex = Math.Max(0, (int)Math.Ceiling((float)(note.position - pitchStart) / pitchInterval));
                 int endIndex = Math.Min(pitches.Length, (note.End - pitchStart) / pitchInterval);
-                double nodePosMs = timeAxis.TickPosToMsPos(part.position + note.position);
                 // Use tempo at note start to calculate vibrato period.
-                float nPeriod = timeAxis.MsPosToTickPos(nodePosMs + note.vibrato.period) - (part.position + note.position);
+                float nPeriod = (float)(note.vibrato.period / note.DurationMs);
                 for (int i = startIndex; i < endIndex; ++i) {
                     float nPos = (float)(pitchStart + i * pitchInterval - note.position) / note.duration;
                     var point = note.vibrato.Evaluate(nPos, nPeriod, note);
