@@ -10,6 +10,7 @@ namespace OpenUtau.Core.Enunu {
         public int length;
         public int noteNum;
         public int noteIndex;
+        public string timbre;
     }
 
     internal static class EnunuUtils {
@@ -29,6 +30,9 @@ namespace OpenUtau.Core.Enunu {
                     writer.WriteLine($"Lyric={notes[i].lyric}");
                     writer.WriteLine($"Length={notes[i].length}");
                     writer.WriteLine($"NoteNum={notes[i].noteNum}");
+                    if (!string.IsNullOrEmpty(notes[i].timbre)) {
+                        writer.WriteLine($"Flags={notes[i].timbre}");
+                    }
                 }
                 writer.WriteLine("[#TRACKEND]");
             }

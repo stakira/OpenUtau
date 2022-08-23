@@ -20,6 +20,7 @@ namespace OpenUtau.Core.Enunu {
 
         static readonly HashSet<string> supportedExp = new HashSet<string>(){
             Format.Ustx.DYN,
+            Format.Ustx.CLR,
             Format.Ustx.PITD,
             Format.Ustx.GENC,
             Format.Ustx.BREC,
@@ -190,6 +191,7 @@ namespace OpenUtau.Core.Enunu {
                     lyric = phone.phoneme,
                     length = phone.duration,
                     noteNum = phone.tone,
+                    timbre = phone.suffix,
                 });
             }
             notes.Add(new EnunuNote {

@@ -32,6 +32,7 @@ namespace OpenUtau.Core.Render {
         // classic args
         public readonly string resampler;
         public readonly Tuple<string, int?>[] flags;
+        public readonly string suffix;
         public readonly float volume;
         public readonly float velocity;
         public readonly float modulation;
@@ -59,6 +60,9 @@ namespace OpenUtau.Core.Render {
                 }
             }
             flags = phoneme.GetResamplerFlags(project, track);
+            string voiceColor = phoneme.GetVoiceColor(project, track);
+            suffix = track.Singer.Subbanks.FirstOrDefault(
+                subbank => subbank.Color == voiceColor)?.Suffix;
             volume = phoneme.GetExpression(project, track, Format.Ustx.VOL).Item1 * 0.01f;
             velocity = phoneme.GetExpression(project, track, Format.Ustx.VEL).Item1 * 0.01f;
             modulation = phoneme.GetExpression(project, track, Format.Ustx.MOD).Item1 * 0.01f;
@@ -73,16 +77,17 @@ namespace OpenUtau.Core.Render {
             using (var stream = new MemoryStream()) {
                 using (var writer = new BinaryWriter(stream)) {
                     writer.Write(duration);
-                    writer.Write(phoneme ?? "");
+                    writer.Write(phoneme ?? string.Empty);
                     writer.Write(tone);
 
-                    writer.Write(resampler ?? "");
+                    writer.Write(resampler ?? string.Empty);
                     foreach (var flag in flags) {
                         writer.Write(flag.Item1);
                         if (flag.Item2.HasValue) {
                             writer.Write(flag.Item2.Value);
                         }
                     }
+                    writer.Write(suffix ?? string.Empty);
                     writer.Write(volume);
                     writer.Write(velocity);
                     writer.Write(modulation);

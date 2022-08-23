@@ -129,11 +129,11 @@ namespace OpenUtau.Core.Enunu {
                     var line = reader.ReadLine();
                     var parts = line.Split();
                     if (parts.Length == 3 &&
-                        int.TryParse(parts[0], out var pos) &&
-                        int.TryParse(parts[1], out var end)) {
+                        long.TryParse(parts[0], out long pos) &&
+                        long.TryParse(parts[1], out long end)) {
                         phonemes.Add(new Phoneme {
                             phoneme = parts[2],
-                            position = pos,
+                            position = (int)(pos / 1000L),
                         });
                     }
                 }
@@ -145,7 +145,7 @@ namespace OpenUtau.Core.Enunu {
             if (partResult.TryGetValue(notes, out var phonemes)) {
                 return new Result {
                     phonemes = phonemes.Select(p => {
-                        double posMs = p.position * 0.0001;
+                        double posMs = p.position * 0.1;
                         p.position = MsToTick(posMs) - notes[0].position;
                         return p;
                     }).ToArray(),

@@ -23,7 +23,7 @@
         <RowDefinition Height="24"/>
         <RowDefinition Height="*" MinHeight="200"/>
         <RowDefinition Height="10"/>
-        <RowDefinition Height="150" MinHeight="132" MaxHeight="450"/>
+        <RowDefinition Height="150" MinHeight="132" MaxHeight="600"/>
         <RowDefinition Height="4"/>
       </Grid.RowDefinitions>
       <Grid.ColumnDefinitions>

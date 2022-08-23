@@ -213,6 +213,17 @@ namespace OpenUtau.Core.Ustx {
             }
             return flags.ToArray();
         }
+
+        public string GetVoiceColor(UProject project, UTrack track) {
+            if (track.VoiceColorExp == null) {
+                return null;
+            }
+            int index = (int)GetExpression(project, track, Format.Ustx.CLR).Item1;
+            if (index < 0 || index >= track.VoiceColorExp.options.Length) {
+                return null;
+            }
+            return track.VoiceColorExp.options[index];
+        }
     }
 
     public class UEnvelope {
