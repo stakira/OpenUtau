@@ -470,6 +470,18 @@ namespace OpenUtau.App.Views {
             window.Show();
         }
 
+        void OnMenuPhoneticAssistant(object sender, RoutedEventArgs args) {
+            var desktop = Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
+            if (desktop == null) {
+                return;
+            }
+            var window = desktop.Windows.FirstOrDefault(w => w is PhoneticAssistant);
+            if (window == null) {
+                window = new PhoneticAssistant();
+            }
+            window.Show();
+        }
+
         void OnMenuWiki(object sender, RoutedEventArgs args) {
             try {
                 OS.OpenWeb("https://github.com/stakira/OpenUtau/wiki/Getting-Started");
