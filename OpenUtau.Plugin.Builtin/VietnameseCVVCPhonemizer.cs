@@ -57,7 +57,7 @@ namespace OpenUtau.Plugin.Builtin {
             int Short = totalDuration * 4 / 6;
             int Long = totalDuration / 6;
             int Medium = totalDuration / 3;
-            int VCP = -60;
+            int VCP = -80;
             int End = totalDuration - 30;
             int ViTri = Short;
             bool a;
@@ -153,6 +153,8 @@ namespace OpenUtau.Plugin.Builtin {
                   || loi.EndsWith("uya") && (note.lyric != "qua"));
             bool ViTriDai = (loi.EndsWith("ay") || loi.EndsWith("ây") || loi.EndsWith("uy")
                   || loi.EndsWith("au") || loi.EndsWith("âu")
+                  || loi.EndsWith("ôN") || loi.EndsWith("uN") || loi.EndsWith("oN")
+                  || loi.EndsWith("aJ") || loi.EndsWith("iJ") || loi.EndsWith("êJ") || loi.EndsWith("yJ")
                   || loi.EndsWith("oa") || loi.EndsWith("oe") || loi.EndsWith("uê") || note.lyric.EndsWith("qua"));
             bool ViTriTB = loi.EndsWith("ăt") || loi.EndsWith("ât")
                   || loi.EndsWith("ăk") || loi.EndsWith("âk")
@@ -160,9 +162,7 @@ namespace OpenUtau.Plugin.Builtin {
                   || loi.EndsWith("ăn") || loi.EndsWith("ân")
                   || loi.EndsWith("ăN") || loi.EndsWith("âN")
                   || loi.EndsWith("ăm") || loi.EndsWith("âm")
-                  || loi.EndsWith("aJ") || loi.EndsWith("iJ") || loi.EndsWith("êJ") || loi.EndsWith("yJ")
-                  || loi.EndsWith("aC") || loi.EndsWith("iC") || loi.EndsWith("êC") || loi.EndsWith("yC")
-                  || loi.EndsWith("ôN") || loi.EndsWith("uN") || loi.EndsWith("oN");
+                  || loi.EndsWith("aC") || loi.EndsWith("iC") || loi.EndsWith("êC") || loi.EndsWith("yC");
             if (ViTriTB) {
                 ViTri = Medium;
             }
@@ -866,6 +866,15 @@ namespace OpenUtau.Plugin.Builtin {
                             new Phoneme { phoneme = $"{N}-", position = End  },
                                 }
                                 };
+                            } else if (NoNext) {
+                                return new Result {
+                                    phonemes = new Phoneme[] {
+                            new Phoneme { phoneme = $"{vow}{V1}"  },
+                            new Phoneme { phoneme = $"{V1}{V2}", position = Long  },
+                            new Phoneme { phoneme = $"{VC}", position = ViTri  },
+                            new Phoneme { phoneme = $"{N}-", position = End  },
+                                }
+                                };
                             } else if (Cvoiced && tontaiCcuoi) {
                                 return new Result {
                                     phonemes = new Phoneme[] {
@@ -874,13 +883,12 @@ namespace OpenUtau.Plugin.Builtin {
                             new Phoneme { phoneme = $"{VC}", position = ViTri  },
                                 }
                                 };
-                            } else if (NoNext) {
+                            } else if (Cvoiced) {
                                 return new Result {
                                     phonemes = new Phoneme[] {
-                            new Phoneme { phoneme = $"{vow}{V1}"  },
+                            new Phoneme { phoneme = $"{vow} {V1}"  },
                             new Phoneme { phoneme = $"{V1}{V2}", position = Long  },
                             new Phoneme { phoneme = $"{VC}", position = ViTri  },
-                            new Phoneme { phoneme = $"{N}-", position = End  },
                                 }
                                 };
                             } else return new Result {
@@ -908,6 +916,13 @@ namespace OpenUtau.Plugin.Builtin {
                             new Phoneme { phoneme = $"{VVC}", position = ViTri  },
                                 }
                                 };
+                            } else if (NoNext && tontaiCcuoi) {
+                                return new Result {
+                                    phonemes = new Phoneme[] {
+                            new Phoneme { phoneme = $"{vow}{V1}"  },
+                            new Phoneme { phoneme = $"{VVC}", position = ViTri  },
+                                }
+                                };
                             } else if (NoNext && Cvoiced) {
                                 return new Result {
                                     phonemes = new Phoneme[] {
@@ -916,11 +931,13 @@ namespace OpenUtau.Plugin.Builtin {
                             new Phoneme { phoneme = $"{N}-", position = End  },
                                 }
                                 };
-                            } else if (NoNext && tontaiCcuoi) {
+                            
+                            } else if (NoNext) {
                                 return new Result {
                                     phonemes = new Phoneme[] {
                             new Phoneme { phoneme = $"{vow}{V1}"  },
                             new Phoneme { phoneme = $"{VVC}", position = ViTri  },
+                            new Phoneme { phoneme = $"{N}-", position = End  },
                                 }
                                 };
                             } else if (Cvoiced && tontaiCcuoi) {
@@ -930,12 +947,11 @@ namespace OpenUtau.Plugin.Builtin {
                             new Phoneme { phoneme = $"{VVC}", position = ViTri  },
                                 }
                                 };
-                            } else if (NoNext) {
+                            } else if (Cvoiced) {
                                 return new Result {
                                     phonemes = new Phoneme[] {
-                            new Phoneme { phoneme = $"{vow}{V1}"  },
+                            new Phoneme { phoneme = $"{vow} {V1}"  },
                             new Phoneme { phoneme = $"{VVC}", position = ViTri  },
-                            new Phoneme { phoneme = $"{N}-", position = End  },
                                 }
                                 };
                             } else return new Result {
