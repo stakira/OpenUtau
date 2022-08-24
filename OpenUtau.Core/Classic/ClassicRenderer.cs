@@ -52,12 +52,12 @@ namespace OpenUtau.Classic {
                     MaxDegreeOfParallelism = 2
                 }, body: item => {
                     if (!cancellation.IsCancellationRequested && !File.Exists(item.outputFile)) {
-                        VoicebankFiles.CopySourceTemp(item.inputFile, item.inputTemp);
+                        VoicebankFiles.Inst.CopySourceTemp(item.inputFile, item.inputTemp);
                         item.resampler.DoResamplerReturnsFile(item, Serilog.Log.Logger);
                         if (!File.Exists(item.outputFile)) {
                             throw new InvalidDataException($"{item.resampler.Name} failed to resample \"{item.phone.phoneme}\"");
                         }
-                        VoicebankFiles.CopyBackMetaFiles(item.inputFile, item.inputTemp);
+                        VoicebankFiles.Inst.CopyBackMetaFiles(item.inputFile, item.inputTemp);
                     }
                     progress.Complete(1, $"Resampling \"{item.phone.phoneme}\"");
                 });

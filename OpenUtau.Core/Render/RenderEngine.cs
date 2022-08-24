@@ -217,7 +217,7 @@ namespace OpenUtau.Core.Render {
         }
 
         public static void ReleaseSourceTemp() {
-            Classic.VoicebankFiles.ReleaseSourceTemp();
+            Classic.VoicebankFiles.Inst.ReleaseSourceTemp();
         }
     }
 }

@@ -140,6 +140,7 @@ namespace OpenUtau.App.ViewModels {
                         Preferences.Default.Resampler = resampler!.Name;
                         Preferences.Save();
                         resampler!.CheckPermissions();
+                        DocManager.Inst.ExecuteCmd(new PreRenderNotification());
                     }
                 });
             this.WhenAnyValue(vm => vm.ExportResampler)

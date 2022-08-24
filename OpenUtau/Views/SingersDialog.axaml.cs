@@ -157,8 +157,12 @@ namespace OpenUtau.App.Views {
             bool loadWav = wavPath != oto.File;
             if (loadWav) {
                 try {
-                    using (var stream = File.OpenRead(oto.File)) {
-                        wav = new WaveFile(stream);
+                    using (var memStream = new MemoryStream()) {
+                        using (var waveStream = Core.Format.Wave.OpenFile(oto.File)) {
+                            NAudio.Wave.WaveFileWriter.WriteWavFileToStream(memStream, waveStream);
+                        }
+                        memStream.Seek(0, SeekOrigin.Begin);
+                        wav = new WaveFile(memStream);
                         wavPath = oto.File;
                     }
                     double hopSize = GetHopSize(wav.WaveFmt.SamplingRate);

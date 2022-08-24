@@ -44,7 +44,7 @@ namespace OpenUtau.Classic {
                     : phone.resampler)
                 ?? Resamplers.GetResampler(WorldlineResampler.name);
             inputFile = phone.oto.File;
-            inputTemp = VoicebankFiles.GetSourceTempPath(phrase.singer.Id, phone.oto);
+            inputTemp = VoicebankFiles.Inst.GetSourceTempPath(phrase.singer.Id, phone.oto, ".wav");
             tone = phone.tone;
 
             flags = phone.flags;
