@@ -450,7 +450,7 @@ namespace OpenUtau.Plugin.Builtin {
                 if (TCLfinal != "") { FC = TCLplainvowel + TCLfinal; }
 
 
-                if (lCL == 1) { CV = CV.Replace("r", "l"); }
+                if (lCL == 1 && TCLfinal != "") { CV = CV.Replace("r", "l"); }
 
 
                 // 만약 앞에 노트가 없다면
