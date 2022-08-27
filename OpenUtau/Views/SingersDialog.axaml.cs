@@ -143,6 +143,7 @@ namespace OpenUtau.App.Views {
             if (oto == null || !File.Exists(oto.File)) {
                 otoPlot?.Plot.Clear();
                 otoPlot?.Refresh();
+                wavPath = null;
                 return;
             }
             DrawOto(oto, true);
