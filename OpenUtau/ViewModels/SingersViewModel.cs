@@ -19,19 +19,23 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public USinger? Singer { get; set; }
         [Reactive] public Bitmap? Avatar { get; set; }
         [Reactive] public string? Info { get; set; }
-        [Reactive] public ObservableCollectionExtended<USubbank> Subbanks { get; set; }
-        [Reactive] public ObservableCollectionExtended<UOto> Otos { get; set; }
+        public ObservableCollectionExtended<USubbank> Subbanks => subbanks;
+        public ObservableCollectionExtended<UOto> Otos => otos;
         [Reactive] public UOto? SelectedOto { get; set; }
         [Reactive] public int SelectedIndex { get; set; }
-        [Reactive] public List<MenuItemViewModel> SetEncodingMenuItems { get; set; }
-        [Reactive] public List<MenuItemViewModel> SetDefaultPhonemizerMenuItems { get; set; }
+        public List<MenuItemViewModel> SetEncodingMenuItems => setEncodingMenuItems;
+        public List<MenuItemViewModel> SetDefaultPhonemizerMenuItems => setDefaultPhonemizerMenuItems;
 
-        private ReactiveCommand<Encoding, Unit> setEncodingCommand;
-        private ReactiveCommand<Api.PhonemizerFactory, Unit> setDefaultPhonemizerCommand;
+        private readonly ObservableCollectionExtended<USubbank> subbanks
+            = new ObservableCollectionExtended<USubbank>();
+        private readonly ObservableCollectionExtended<UOto> otos
+            = new ObservableCollectionExtended<UOto>();
+        private readonly ReactiveCommand<Encoding, Unit> setEncodingCommand;
+        private readonly List<MenuItemViewModel> setEncodingMenuItems;
+        private readonly ReactiveCommand<Api.PhonemizerFactory, Unit> setDefaultPhonemizerCommand;
+        private readonly List<MenuItemViewModel> setDefaultPhonemizerMenuItems;
 
         public SingersViewModel() {
-            Subbanks = new ObservableCollectionExtended<USubbank>();
-            Otos = new ObservableCollectionExtended<UOto>();
 #if DEBUG
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 #endif
@@ -50,7 +54,6 @@ namespace OpenUtau.App.ViewModels {
                     DocManager.Inst.ExecuteCmd(new OtoChangedNotification());
                 });
 
-
             setEncodingCommand = ReactiveCommand.Create<Encoding>(encoding => {
                 SetEncoding(encoding);
             });
@@ -64,7 +67,7 @@ namespace OpenUtau.App.ViewModels {
                 Encoding.GetEncoding("Windows-1252"),
                 Encoding.GetEncoding("macintosh"),
             };
-            SetEncodingMenuItems = encodings.Select(encoding =>
+            setEncodingMenuItems = encodings.Select(encoding =>
                 new MenuItemViewModel() {
                     Header = encoding.EncodingName,
                     Command = setEncodingCommand,
@@ -75,7 +78,7 @@ namespace OpenUtau.App.ViewModels {
             setDefaultPhonemizerCommand = ReactiveCommand.Create<Api.PhonemizerFactory>(factory => {
                 SetDefaultPhonemizer(factory);
             });
-            SetDefaultPhonemizerMenuItems = DocManager.Inst.PhonemizerFactories.Select(factory => new MenuItemViewModel() {
+            setDefaultPhonemizerMenuItems = DocManager.Inst.PhonemizerFactories.Select(factory => new MenuItemViewModel() {
                 Header = factory.ToString(),
                 Command = setDefaultPhonemizerCommand,
                 CommandParameter = factory,
@@ -273,7 +276,7 @@ namespace OpenUtau.App.ViewModels {
             }
         }
 
-        private void NotifyOtoChanged() {
+        public void NotifyOtoChanged() {
             if (Singer != null) {
                 Singer.OtoDirty = true;
             }

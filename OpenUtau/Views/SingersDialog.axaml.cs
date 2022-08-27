@@ -42,6 +42,8 @@ namespace OpenUtau.App.Views {
         List<IPlottable> timingMarks = new List<IPlottable>();
         AxisLimits outerLimits;
 
+        private bool editingCell = false;
+
         public SingersDialog() {
             try {
                 InitializeComponent();
@@ -147,6 +149,18 @@ namespace OpenUtau.App.Views {
                 return;
             }
             DrawOto(oto, true);
+        }
+
+        void OnBeginningEdit(object sender, DataGridBeginningEditEventArgs e) {
+            editingCell = true;
+        }
+
+        void OnCellEditEnded(object sender, DataGridCellEditEndedEventArgs e) {
+            var viewModel = (DataContext as SingersViewModel)!;
+            if (e.EditAction == DataGridEditAction.Commit) {
+                viewModel?.NotifyOtoChanged();
+            }
+            editingCell = false;
         }
 
         void DrawOto(Core.Ustx.UOto? oto, bool fit = false) {
@@ -308,11 +322,11 @@ namespace OpenUtau.App.Views {
         }
 
         void OnKeyDown(object sender, KeyEventArgs args) {
-            if (otoPlot == null) {
+            if (args.Handled || editingCell) {
                 return;
             }
             var viewModel = DataContext as SingersViewModel;
-            if (viewModel == null) {
+            if (viewModel == null || otoPlot == null) {
                 return;
             }
             args.Handled = true;

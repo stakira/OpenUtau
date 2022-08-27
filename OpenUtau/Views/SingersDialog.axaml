@@ -8,7 +8,7 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="640"
         x:Class="OpenUtau.App.Views.SingersDialog"
         Icon="/Assets/open-utau.ico"
-        Title="{DynamicResource singers.caption}" Width="800" MinWidth="800" MinHeight="640"
+        Title="{DynamicResource singers.caption}" Width="1000" MinWidth="800" MinHeight="640"
         WindowStartupLocation="CenterScreen"
         ExtendClientAreaToDecorationsHint="False" KeyDown="OnKeyDown">
   <Design.DataContext>
@@ -92,17 +92,19 @@
                   Background="{DynamicResource SystemControlBackgroundAltHighBrush}"/>
     <DataGrid Name="OtoGrid" Grid.Row="2" Grid.ColumnSpan="3" Margin="10,0,10,0" CanUserResizeColumns="True" BorderThickness="1"
               BorderBrush="{DynamicResource SystemControlHighlightBaseMediumHighBrush}"
-              Items="{Binding Otos}"
-              SelectedItem="{Binding SelectedOto}" SelectedIndex="{Binding SelectedIndex}"
-              IsReadOnly="True" SelectionChanged="OnSelectedOtoChanged">
+              Items="{Binding Otos}" SelectedItem="{Binding SelectedOto}" SelectedIndex="{Binding SelectedIndex}"
+              SelectionChanged="OnSelectedOtoChanged"
+              BeginningEdit="OnBeginningEdit" CellEditEnded="OnCellEditEnded">
+      <DataGrid.KeyBindings>
+      </DataGrid.KeyBindings>
       <DataGrid.Columns>
-        <DataGridTextColumn Header="{StaticResource oto.alias}" Binding="{Binding Alias}"/>
-        <DataGridTextColumn Header="{StaticResource oto.set}" Binding="{Binding Set}"/>
-        <DataGridTextColumn Header="{StaticResource oto.file}" Binding="{Binding DisplayFile}"/>
-        <DataGridTextColumn Header="{StaticResource oto.phonetic}" Binding="{Binding Phonetic}"/>
-        <DataGridTextColumn Header="{StaticResource oto.prefix}" Binding="{Binding Prefix}"/>
-        <DataGridTextColumn Header="{StaticResource oto.suffix}" Binding="{Binding Suffix}"/>
-        <DataGridTextColumn Header="{StaticResource oto.color}" Binding="{Binding Color}"/>
+        <DataGridTextColumn Header="{StaticResource oto.alias}" Binding="{Binding Alias}" IsReadOnly="True" />
+        <DataGridTextColumn Header="{StaticResource oto.set}" Binding="{Binding Set}" IsReadOnly="True"/>
+        <DataGridTextColumn Header="{StaticResource oto.file}" Binding="{Binding DisplayFile}" IsReadOnly="True"/>
+        <DataGridTextColumn Header="{StaticResource oto.phonetic}" Binding="{Binding Phonetic}" IsReadOnly="True"/>
+        <DataGridTextColumn Header="{StaticResource oto.prefix}" Binding="{Binding Prefix}" IsReadOnly="True"/>
+        <DataGridTextColumn Header="{StaticResource oto.suffix}" Binding="{Binding Suffix}" IsReadOnly="True"/>
+        <DataGridTextColumn Header="{StaticResource oto.color}" Binding="{Binding Color}" IsReadOnly="True"/>
         <DataGridTextColumn Header="{StaticResource oto.offset}" Binding="{Binding Offset}"/>
         <DataGridTextColumn Header="{StaticResource oto.consonant}" Binding="{Binding Consonant}"/>
         <DataGridTextColumn Header="{StaticResource oto.cutoff}" Binding="{Binding Cutoff}"/>
