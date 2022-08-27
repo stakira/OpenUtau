@@ -27,7 +27,7 @@ namespace OpenUtau.Core.Format {
         }
         static public List<UVoicePart> Load(string file, UProject project) {
             List<UVoicePart> resultParts = new List<UVoicePart>();
-            MidiFile midi = new MidiFile(file);
+            MidiFile midi = new MidiFile(file, false);
             string lyric = NotePresets.Default.DefaultLyric;
             // Detects lyric encoding
             Encoding lyricEncoding = Encoding.UTF8;
