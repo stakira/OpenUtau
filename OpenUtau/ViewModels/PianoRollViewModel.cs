@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reactive;
 using System.Security.Cryptography;
 using Avalonia.Threading;
+using DynamicData.Binding;
 using OpenUtau.Core;
 using OpenUtau.Core.Editing;
 using OpenUtau.Core.Ustx;
@@ -21,22 +22,16 @@ namespace OpenUtau.App.ViewModels {
     }
 
     public class NotesContextMenuArgs {
+        public PianoRollViewModel? ViewModel { get; set; }
+
         public bool ForNote { get; set; }
         public NoteHitInfo NoteHitInfo { get; set; }
-        public ReactiveCommand<NoteHitInfo, Unit>? NoteDeleteCommand { get; set; }
 
         public bool ForPitchPoint { get; set; }
         public bool PitchPointIsFirst { get; set; }
         public bool PitchPointCanDel { get; set; }
         public bool PitchPointCanAdd { get; set; }
         public PitchPointHitInfo PitchPointHitInfo { get; set; }
-        public ReactiveCommand<PitchPointHitInfo, Unit>? PitchPointEaseInOutCommand { get; set; }
-        public ReactiveCommand<PitchPointHitInfo, Unit>? PitchPointLinearCommand { get; set; }
-        public ReactiveCommand<PitchPointHitInfo, Unit>? PitchPointEaseInCommand { get; set; }
-        public ReactiveCommand<PitchPointHitInfo, Unit>? PitchPointEaseOutCommand { get; set; }
-        public ReactiveCommand<PitchPointHitInfo, Unit>? PitchPointSnapCommand { get; set; }
-        public ReactiveCommand<PitchPointHitInfo, Unit>? PitchPointDelCommand { get; set; }
-        public ReactiveCommand<PitchPointHitInfo, Unit>? PitchPointAddCommand { get; set; }
     }
 
     public class PianoRollViewModel : ViewModelBase, ICmdSubscriber {
@@ -45,9 +40,15 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public NotesViewModel NotesViewModel { get; set; }
         [Reactive] public PlaybackViewModel? PlaybackViewModel { get; set; }
 
-        [Reactive] public List<MenuItemViewModel>? LegacyPlugins { get; set; }
-        [Reactive] public List<MenuItemViewModel> NoteBatchEdits { get; set; }
-        [Reactive] public List<MenuItemViewModel> LyricBatchEdits { get; set; }
+        public ObservableCollectionExtended<MenuItemViewModel> LegacyPlugins { get; private set; }
+            = new ObservableCollectionExtended<MenuItemViewModel>();
+        public ObservableCollectionExtended<MenuItemViewModel> NoteBatchEdits { get; private set; }
+            = new ObservableCollectionExtended<MenuItemViewModel>();
+        public ObservableCollectionExtended<MenuItemViewModel> LyricBatchEdits { get; private set; }
+            = new ObservableCollectionExtended<MenuItemViewModel>();
+        public ObservableCollectionExtended<MenuItemViewModel> NotesContextMenuItems { get; private set; }
+            = new ObservableCollectionExtended<MenuItemViewModel>();
+
         [Reactive] public double Progress { get; set; }
         public ReactiveCommand<NoteHitInfo, Unit> NoteDeleteCommand { get; set; }
         public ReactiveCommand<PitchPointHitInfo, Unit> PitEaseInOutCommand { get; set; }
@@ -139,18 +140,18 @@ namespace OpenUtau.App.ViewModels {
                     DocManager.Inst.ExecuteCmd(new UserMessageNotification($"Failed to execute plugin {e}"));
                 }
             });
-            LegacyPlugins = DocManager.Inst.Plugins?.Select(plugin => new MenuItemViewModel() {
+            LegacyPlugins.AddRange(DocManager.Inst.Plugins.Select(plugin => new MenuItemViewModel() {
                 Header = plugin.Name,
                 Command = legacyPluginCommand,
                 CommandParameter = plugin,
-            }).ToList();
+            }));
 
             noteBatchEditCommand = ReactiveCommand.Create<BatchEdit>(edit => {
                 if (NotesViewModel.Part != null) {
                     edit.Run(NotesViewModel.Project, NotesViewModel.Part, NotesViewModel.SelectedNotes, DocManager.Inst);
                 }
             });
-            NoteBatchEdits = new List<BatchEdit>() {
+            NoteBatchEdits.AddRange(new List<BatchEdit>() {
                 new LoadRenderedPitch(),
                 new AddTailNote("-", "pianoroll.menu.notes.addtaildash"),
                 new AddTailNote("R", "pianoroll.menu.notes.addtailrest"),
@@ -165,11 +166,12 @@ namespace OpenUtau.App.ViewModels {
                 Header = ThemeManager.GetString(edit.Name),
                 Command = noteBatchEditCommand,
                 CommandParameter = edit,
-            }).ToList();
-            LyricBatchEdits = new List<BatchEdit>() {
+            }));
+            LyricBatchEdits.AddRange(new List<BatchEdit>() {
                 new RomajiToHiragana(),
                 new HiraganaToRomaji(),
                 new JapaneseVCVtoCV(),
+                new HanziToPinyin(),
                 new RemoveToneSuffix(),
                 new RemoveLetterSuffix(),
                 new DashToPlus(),
@@ -177,7 +179,7 @@ namespace OpenUtau.App.ViewModels {
                 Header = ThemeManager.GetString(edit.Name),
                 Command = noteBatchEditCommand,
                 CommandParameter = edit,
-            }).ToList();
+            }));
             DocManager.Inst.AddSubscriber(this);
         }
 

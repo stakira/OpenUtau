@@ -141,41 +141,17 @@
                    Fill="{DynamicResource NeutralAccentBrushSemi2}"
                    IsHitTestVisible="False"/>
         <c:NotesCanvas.ContextMenu>
-          <ContextMenu Name="NotesContextMenu"
+          <ContextMenu Items="{Binding NotesContextMenuItems}"
                        ContextMenuOpening="NotesContextMenuOpening"
                        ContextMenuClosing="NotesContextMenuClosing">
-            <MenuItem Header="{DynamicResource context.note.delete}"
-                      IsVisible="{Binding ForNote}"
-                      Command="{Binding NoteDeleteCommand}"
-                      CommandParameter="{Binding NoteHitInfo}"/>
-            <MenuItem Header="{DynamicResource context.pitch.easeinout}"
-                      IsVisible="{Binding ForPitchPoint}"
-                      Command="{Binding PitchPointEaseInOutCommand}"
-                      CommandParameter="{Binding PitchPointHitInfo}"/>
-            <MenuItem Header="{DynamicResource context.pitch.linear}"
-                      IsVisible="{Binding ForPitchPoint}"
-                      Command="{Binding PitchPointLinearCommand}"
-                      CommandParameter="{Binding PitchPointHitInfo}"/>
-            <MenuItem Header="{DynamicResource context.pitch.easein}"
-                      IsVisible="{Binding ForPitchPoint}"
-                      Command="{Binding PitchPointEaseInCommand}"
-                      CommandParameter="{Binding PitchPointHitInfo}"/>
-            <MenuItem Header="{DynamicResource context.pitch.easeout}"
-                      IsVisible="{Binding ForPitchPoint}"
-                      Command="{Binding PitchPointEaseOutCommand}"
-                      CommandParameter="{Binding PitchPointHitInfo}"/>
-            <MenuItem Header="{DynamicResource context.pitch.pointsnapprev}"
-                      IsVisible="{Binding PitchPointIsFirst}"
-                      Command="{Binding PitchPointSnapCommand}"
-                      CommandParameter="{Binding PitchPointHitInfo}"/>
-            <MenuItem Header="{DynamicResource context.pitch.pointdel}"
-                      IsVisible="{Binding PitchPointCanDel}"
-                      Command="{Binding PitchPointDelCommand}"
-                      CommandParameter="{Binding PitchPointHitInfo}"/>
-            <MenuItem Header="{DynamicResource context.pitch.pointadd}"
-                      IsVisible="{Binding PitchPointCanAdd}"
-                      Command="{Binding PitchPointAddCommand}"
-                      CommandParameter="{Binding PitchPointHitInfo}"/>
+            <ContextMenu.Styles>
+              <Style Selector="MenuItem">
+                <Setter Property="Header" Value="{Binding Header}"/>
+                <Setter Property="Command" Value="{Binding Command}"/>
+                <Setter Property="CommandParameter" Value="{Binding CommandParameter}"/>
+                <Setter Property="Items" Value="{Binding Items}"/>
+              </Style>
+            </ContextMenu.Styles>
           </ContextMenu>
         </c:NotesCanvas.ContextMenu>
       </c:NotesCanvas>

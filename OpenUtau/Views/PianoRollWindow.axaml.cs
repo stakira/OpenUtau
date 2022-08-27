@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
+using System.Reactive;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
@@ -11,6 +13,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.VisualTree;
 using OpenUtau.App.Controls;
 using OpenUtau.App.ViewModels;
+using ReactiveUI;
 using Serilog;
 
 namespace OpenUtau.App.Views {
@@ -34,7 +37,6 @@ namespace OpenUtau.App.Views {
         private TextBlock? valueTipText;
         private Point valueTipPointerPosition;
         private LyricBox? lyricBox;
-        private ContextMenu? notesContextMenu;
         private bool shouldOpenNotesContextMenu;
         private ExpSelector? expSelector1;
         private ExpSelector? expSelector2;
@@ -42,12 +44,22 @@ namespace OpenUtau.App.Views {
         private ExpSelector? expSelector4;
         private ExpSelector? expSelector5;
 
+        private ReactiveCommand<Unit, Unit> lyricsDialogCommand;
+        private ReactiveCommand<Unit, Unit> noteDefaultsCommand;
+
         public PianoRollWindow() {
             InitializeComponent();
 #if DEBUG
             this.AttachDevTools();
 #endif
             DataContext = ViewModel = new PianoRollViewModel();
+
+            lyricsDialogCommand = ReactiveCommand.Create(() => {
+                EditLyrics();
+            });
+            noteDefaultsCommand = ReactiveCommand.Create(() => {
+                EditNoteDefaults();
+            });
         }
 
         private void InitializeComponent() {
@@ -57,7 +69,6 @@ namespace OpenUtau.App.Views {
             valueTip.IsVisible = false;
             valueTipText = this.FindControl<TextBlock>("ValueTipText");
             lyricBox = this.FindControl<LyricBox>("LyricBox");
-            notesContextMenu = this.FindControl<ContextMenu>("NotesContextMenu");
             expSelector1 = this.FindControl<ExpSelector>("expSelector1");
             expSelector2 = this.FindControl<ExpSelector>("expSelector2");
             expSelector3 = this.FindControl<ExpSelector>("expSelector3");
@@ -83,6 +94,10 @@ namespace OpenUtau.App.Views {
         }
 
         void OnMenuEditLyrics(object? sender, RoutedEventArgs e) {
+            EditLyrics();
+        }
+
+        void EditLyrics() {
             if (ViewModel.NotesViewModel.SelectedNotes.Count == 0) {
                 _ = MessageBox.Show(
                     this,
@@ -101,6 +116,10 @@ namespace OpenUtau.App.Views {
         }
 
         void OnMenuNoteDefaults(object sender, RoutedEventArgs args) {
+            EditNoteDefaults();
+        }
+
+        void EditNoteDefaults() {
             var dialog = new NoteDefaultsDialog();
             dialog.ShowDialog(this);
             if (dialog.Position.Y < 0) {
@@ -328,22 +347,49 @@ namespace OpenUtau.App.Views {
             }
             if (ViewModel.NotesViewModel.ShowPitch) {
                 var pitHitInfo = ViewModel.NotesViewModel.HitTest.HitTestPitchPoint(point.Position);
-                if (pitHitInfo.Note != null && notesContextMenu != null) {
-                    notesContextMenu.DataContext = new NotesContextMenuArgs {
-                        ForPitchPoint = true,
-                        PitchPointIsFirst = pitHitInfo.OnPoint && pitHitInfo.Index == 0,
-                        PitchPointCanDel = pitHitInfo.OnPoint && pitHitInfo.Index != 0
-                            && pitHitInfo.Index != pitHitInfo.Note.pitch.data.Count - 1,
-                        PitchPointCanAdd = !pitHitInfo.OnPoint,
-                        PitchPointHitInfo = pitHitInfo,
-                        PitchPointEaseInOutCommand = ViewModel.PitEaseInOutCommand,
-                        PitchPointLinearCommand = ViewModel.PitLinearCommand,
-                        PitchPointEaseInCommand = ViewModel.PitEaseInCommand,
-                        PitchPointEaseOutCommand = ViewModel.PitEaseOutCommand,
-                        PitchPointSnapCommand = ViewModel.PitSnapCommand,
-                        PitchPointAddCommand = ViewModel.PitAddCommand,
-                        PitchPointDelCommand = ViewModel.PitDelCommand,
-                    };
+                if (pitHitInfo.Note != null) {
+                    ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
+                        Header = ThemeManager.GetString("context.pitch.easeinout"),
+                        Command = ViewModel.PitEaseInOutCommand,
+                        CommandParameter = pitHitInfo,
+                    });
+                    ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
+                        Header = ThemeManager.GetString("context.pitch.linear"),
+                        Command = ViewModel.PitLinearCommand,
+                        CommandParameter = pitHitInfo,
+                    });
+                    ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
+                        Header = ThemeManager.GetString("context.pitch.easein"),
+                        Command = ViewModel.PitEaseInCommand,
+                        CommandParameter = pitHitInfo,
+                    });
+                    ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
+                        Header = ThemeManager.GetString("context.pitch.easeout"),
+                        Command = ViewModel.PitEaseOutCommand,
+                        CommandParameter = pitHitInfo,
+                    });
+                    if (pitHitInfo.OnPoint && pitHitInfo.Index == 0) {
+                        ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
+                            Header = ThemeManager.GetString("context.pitch.pointsnapprev"),
+                            Command = ViewModel.PitSnapCommand,
+                            CommandParameter = pitHitInfo,
+                        });
+                    }
+                    if (pitHitInfo.OnPoint && pitHitInfo.Index != 0 &&
+                        pitHitInfo.Index != pitHitInfo.Note.pitch.data.Count - 1) {
+                        ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
+                            Header = ThemeManager.GetString("context.pitch.pointdel"),
+                            Command = ViewModel.PitDelCommand,
+                            CommandParameter = pitHitInfo,
+                        });
+                    }
+                    if (!pitHitInfo.OnPoint) {
+                        ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
+                            Header = ThemeManager.GetString("context.pitch.pointadd"),
+                            Command = ViewModel.PitAddCommand,
+                            CommandParameter = pitHitInfo,
+                        });
+                    }
                     shouldOpenNotesContextMenu = true;
                     return;
                 }
@@ -357,13 +403,28 @@ namespace OpenUtau.App.Views {
                     ViewModel.NotesViewModel.SelectNote(hitInfo.note);
                 }
                 if (ViewModel.NotesViewModel.SelectedNotes.Count > 0) {
-                    if (notesContextMenu != null) {
-                        notesContextMenu.DataContext = new NotesContextMenuArgs {
-                            ForNote = true,
-                            NoteDeleteCommand = ViewModel.NoteDeleteCommand,
-                        };
-                        shouldOpenNotesContextMenu = true;
-                    }
+                    ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
+                        Header = ThemeManager.GetString("context.note.delete"),
+                        Command = ViewModel.NoteDeleteCommand,
+                        CommandParameter = hitInfo,
+                    });
+                    ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
+                        Header = ThemeManager.GetString("pianoroll.menu.notes"),
+                        Items = ViewModel.NoteBatchEdits.ToArray(),
+                    });
+                    ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
+                        Header = ThemeManager.GetString("pianoroll.menu.lyrics"),
+                        Items = ViewModel.LyricBatchEdits.ToArray(),
+                    });
+                    ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
+                        Header = ThemeManager.GetString("pianoroll.menu.lyrics.edit"),
+                        Command = lyricsDialogCommand,
+                    });
+                    ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
+                        Header = ThemeManager.GetString("pianoroll.menu.notedefaults"),
+                        Command = noteDefaultsCommand,
+                    });
+                    shouldOpenNotesContextMenu = true;
                 }
             } else if (ViewModel.NotesViewModel.EraserTool || ViewModel.NotesViewModel.PenPlusTool) {
                 editState = new NoteEraseEditState(canvas, ViewModel, this, MouseButton.Right);
@@ -492,9 +553,7 @@ namespace OpenUtau.App.Views {
         }
 
         public void NotesContextMenuClosing(object sender, CancelEventArgs args) {
-            if (notesContextMenu != null) {
-                notesContextMenu.DataContext = null;
-            }
+            ViewModel.NotesContextMenuItems?.Clear();
         }
 
         public void ExpCanvasPointerPressed(object sender, PointerPressedEventArgs args) {
