@@ -2,6 +2,9 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+  <!--<system:String x:Key="context.note.delete">Delete note</system:String>-->
+  <!--<system:String x:Key="context.part.delete">Delete part</system:String>-->
+  <!--<system:String x:Key="context.part.rename">Rename part</system:String>-->
   <system:String x:Key="context.pitch.easein">Mereda kedalam</system:String>
   <system:String x:Key="context.pitch.easeinout">Mereda kedalam/luar</system:String>
   <system:String x:Key="context.pitch.easeout">Mereda keluar</system:String>
@@ -131,6 +134,11 @@ Warning: this option removes custom presets.</system:String>-->
   <system:String x:Key="oto.color">Warna</system:String>
   <system:String x:Key="oto.consonant">Konsonan</system:String>
   <system:String x:Key="oto.cutoff">Batas</system:String>
+  <!--<system:String x:Key="oto.edit.consonant">Set Consonant</system:String>-->
+  <!--<system:String x:Key="oto.edit.cutoff">Set Cutoff</system:String>-->
+  <!--<system:String x:Key="oto.edit.offset">Set Offset</system:String>-->
+  <!--<system:String x:Key="oto.edit.overlap">Set Overlap</system:String>-->
+  <!--<system:String x:Key="oto.edit.preutter">Set Preutter</system:String>-->
   <system:String x:Key="oto.file">Berkas</system:String>
   <system:String x:Key="oto.offset">Mengimbangi</system:String>
   <system:String x:Key="oto.overlap">Tumpang Tindih</system:String>
@@ -140,9 +148,13 @@ Warning: this option removes custom presets.</system:String>-->
   <system:String x:Key="oto.set">Setel</system:String>
   <system:String x:Key="oto.suffix">Akhiran</system:String>
 
+  <!--<system:String x:Key="phoneticassistant.caption">Phonetic Assistant</system:String>-->
+  <!--<system:String x:Key="phoneticassistant.copy">Copy</system:String>-->
+
   <system:String x:Key="pianoroll.menu.lyrics">Lirik</system:String>
   <!--<system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Replace "-" with "+"</system:String>-->
   <system:String x:Key="pianoroll.menu.lyrics.edit">Sunting Lirik</system:String>
+  <!--<system:String x:Key="pianoroll.menu.lyrics.hanzitopinyin">Hanzi to Pinyin</system:String>-->
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana ke Romaji</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">VCV Jepang ke CV</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Hapus Akhiran Huruf</system:String>
@@ -153,7 +165,7 @@ Warning: this option removes custom presets.</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.addtaildash">Tambahkan bagian akhir "-"</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">Tambahkan bagian akhir "R"</system:String>
   <!--<system:String x:Key="pianoroll.menu.notes.clear.vibratos">Clear vibratos</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Load Rendered Pitch</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Load rendered pitch</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.quantize15">Kuantisasi hingga 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Kuantisasi hingga 1/64</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">Setel ulang semua ekspresi</system:String>
@@ -162,11 +174,12 @@ Warning: this option removes custom presets.</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.reset.vibratos">Setel ulang vibrato</system:String>
   <system:String x:Key="pianoroll.menu.part">Bagian</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">Plugin Lama (Eksperimental)</system:String>
-  <system:String x:Key="pianoroll.menu.part.rename">Ganti Nama</system:String>
   <!--<system:String x:Key="pianoroll.toggle.finalpitch">View Final Pitch to Render (R)</system:String>-->
   <system:String x:Key="pianoroll.toggle.phoneme">Perlihatkan Fonem (O)</system:String>
   <system:String x:Key="pianoroll.toggle.pitch">Perlihatkan Pitch Bend(I)</system:String>
   <system:String x:Key="pianoroll.toggle.snap">Alihkan Snap (P)</system:String>
+  <!--<system:String x:Key="pianoroll.toggle.snap.auto">Auto</system:String>-->
+  <!--<system:String x:Key="pianoroll.toggle.snap.autotriplet">Auto (triplet)</system:String>-->
   <system:String x:Key="pianoroll.toggle.tips">Perlihatkan Tips (T)</system:String>
   <system:String x:Key="pianoroll.toggle.tone">Alihkan Not Nada (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">Perlihatkan Vibrato (U)</system:String>
@@ -174,11 +187,14 @@ Warning: this option removes custom presets.</system:String>-->
   <!--<system:String x:Key="pianoroll.tool.drawpitch">Draw Pitch Tool (4)</system:String>-->
   <system:String x:Key="pianoroll.tool.eraser">Alat Penghapus (3)</system:String>
   <!--<system:String x:Key="pianoroll.tool.knife">Knife Tool (5)</system:String>-->
-  <system:String x:Key="pianoroll.tool.pen">Alat Pena (2)
-Klik kiri untuk menarik
-Klik kanan untuk menghapus</system:String>
-  <system:String x:Key="pianoroll.tool.selection">Alat Seleksi (1)
-Tahan Ctrl untuk memilih lainnya</system:String>
+  <!--<system:String x:Key="pianoroll.tool.penplus">Pen Plus Tool (Ctrl + 2)
+Left click to draw
+Right click to delete
+Hold Ctrl to select</system:String>-->
+  <!--<system:String x:Key="pianoroll.tool.penv2">Pen Tool (2)
+Left click to draw
+Hold Ctrl to select</system:String>-->
+  <!--<system:String x:Key="pianoroll.tool.selectionv2">Selection Tool (1)</system:String>-->
 
   <system:String x:Key="prefs.advanced">Lanjutan</system:String>
   <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
@@ -233,6 +249,8 @@ Warning: moresampler is not fully supported. It may be slow and cause high CPU u
   <!--<system:String x:Key="progress.waitingrendering">Waiting Rendering</system:String>-->
 
   <system:String x:Key="singers.caption">Penyanyi</system:String>
+  <!--<system:String x:Key="singers.editoto.reset">Reset Otos</system:String>-->
+  <!--<system:String x:Key="singers.editoto.save">Save Otos</system:String>-->
   <system:String x:Key="singers.location">Lokasi</system:String>
   <!--<system:String x:Key="singers.otoview.moveleft">Move Left</system:String>-->
   <!--<system:String x:Key="singers.otoview.moveright">Move Right</system:String>-->

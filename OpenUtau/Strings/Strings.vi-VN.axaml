@@ -2,6 +2,9 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+  <!--<system:String x:Key="context.note.delete">Delete note</system:String>-->
+  <!--<system:String x:Key="context.part.delete">Delete part</system:String>-->
+  <!--<system:String x:Key="context.part.rename">Rename part</system:String>-->
   <system:String x:Key="context.pitch.easein">Cong xuống</system:String>
   <system:String x:Key="context.pitch.easeinout">Cong xuống/lên</system:String>
   <system:String x:Key="context.pitch.easeout">Cong lên</system:String>
@@ -53,7 +56,7 @@
   <system:String x:Key="lyrics.caption">Chỉnh sửa lời bài hát</system:String>
   <system:String x:Key="lyrics.livepreview">Xem trước</system:String>
   <system:String x:Key="lyrics.max">nhiều nhất</system:String>
-  <system:String x:Key="lyrics.reset">Reset</system:String>
+  <!--<system:String x:Key="lyrics.reset">Reset</system:String>-->
   <system:String x:Key="lyrics.selectnotes">Chọn một số nốt trước đã!</system:String>
   <system:String x:Key="lyrics.separators">Ngăn cách</system:String>
 
@@ -131,6 +134,11 @@ Lưu ý: tuỳ chọn này cũng sẽ xoá các preset của bạn.</system:Stri
   <system:String x:Key="oto.color">Sắc thái</system:String>
   <!--<system:String x:Key="oto.consonant">Consonant</system:String>-->
   <!--<system:String x:Key="oto.cutoff">Cutoff</system:String>-->
+  <!--<system:String x:Key="oto.edit.consonant">Set Consonant</system:String>-->
+  <!--<system:String x:Key="oto.edit.cutoff">Set Cutoff</system:String>-->
+  <!--<system:String x:Key="oto.edit.offset">Set Offset</system:String>-->
+  <!--<system:String x:Key="oto.edit.overlap">Set Overlap</system:String>-->
+  <!--<system:String x:Key="oto.edit.preutter">Set Preutter</system:String>-->
   <system:String x:Key="oto.file">Tệp âm thanh</system:String>
   <!--<system:String x:Key="oto.offset">Offset</system:String>-->
   <!--<system:String x:Key="oto.overlap">Overlap</system:String>-->
@@ -140,9 +148,13 @@ Lưu ý: tuỳ chọn này cũng sẽ xoá các preset của bạn.</system:Stri
   <system:String x:Key="oto.set">Thư mục</system:String>
   <system:String x:Key="oto.suffix">Hậu tố</system:String>
 
+  <!--<system:String x:Key="phoneticassistant.caption">Phonetic Assistant</system:String>-->
+  <!--<system:String x:Key="phoneticassistant.copy">Copy</system:String>-->
+
   <system:String x:Key="pianoroll.menu.lyrics">Lời nhạc</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Thay thế "-" với "+"</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">Chỉnh lời nhạc</system:String>
+  <!--<system:String x:Key="pianoroll.menu.lyrics.hanzitopinyin">Hanzi to Pinyin</system:String>-->
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Chuyển Hiragana sang Romaji</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">Chuyển VCV sang CV</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Xoá hậu tố là từ</system:String>
@@ -162,11 +174,12 @@ Lưu ý: tuỳ chọn này cũng sẽ xoá các preset của bạn.</system:Stri
   <system:String x:Key="pianoroll.menu.notes.reset.vibratos">Reset đường rung giọng</system:String>
   <system:String x:Key="pianoroll.menu.part">Phần</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">Sử dụng Plugin (Thử nghiệm)</system:String>
-  <system:String x:Key="pianoroll.menu.part.rename">Đặt tên phần</system:String>
   <system:String x:Key="pianoroll.toggle.finalpitch">Hiện đường luyến giọng vẽ tự do (R)</system:String>
   <system:String x:Key="pianoroll.toggle.phoneme">Hiện thời gian các âm (O)</system:String>
   <system:String x:Key="pianoroll.toggle.pitch">Hiện đường luyến giọng nối giữa các điểm (I)</system:String>
   <system:String x:Key="pianoroll.toggle.snap">Bật tắt gắn độ dài nốt (P)</system:String>
+  <!--<system:String x:Key="pianoroll.toggle.snap.auto">Auto</system:String>-->
+  <!--<system:String x:Key="pianoroll.toggle.snap.autotriplet">Auto (triplet)</system:String>-->
   <system:String x:Key="pianoroll.toggle.tips">Hiện hướng dẫn (T)</system:String>
   <system:String x:Key="pianoroll.toggle.tone">Bật tắt âm cao độ khi viết nốt(Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">Hiện đường rung giọng (U)</system:String>
@@ -174,11 +187,14 @@ Lưu ý: tuỳ chọn này cũng sẽ xoá các preset của bạn.</system:Stri
   <system:String x:Key="pianoroll.tool.drawpitch">Vẽ tự do đường luyến giọng (4)</system:String>
   <system:String x:Key="pianoroll.tool.eraser">Xoá nốt (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">Cắt nốt (5)</system:String>
-  <system:String x:Key="pianoroll.tool.pen">Viết nốt (2)
-Nhấn chuột trái để viết nốt
-Nhấn chuột phải để xoá nốt</system:String>
-  <system:String x:Key="pianoroll.tool.selection">Lựa chọn (1)
-Nhấn giữ Ctrl để chọn đồng loạt nhiều nốt</system:String>
+  <!--<system:String x:Key="pianoroll.tool.penplus">Pen Plus Tool (Ctrl + 2)
+Left click to draw
+Right click to delete
+Hold Ctrl to select</system:String>-->
+  <!--<system:String x:Key="pianoroll.tool.penv2">Pen Tool (2)
+Left click to draw
+Hold Ctrl to select</system:String>-->
+  <!--<system:String x:Key="pianoroll.tool.selectionv2">Selection Tool (1)</system:String>-->
 
   <system:String x:Key="prefs.advanced">Nâng cao</system:String>
   <system:String x:Key="prefs.advanced.beta">Thử nghiệm</system:String>
@@ -233,6 +249,8 @@ Warning: moresampler is not fully supported. It may be slow and cause high CPU u
   <system:String x:Key="progress.waitingrendering">Đang chờ việc render</system:String>
 
   <system:String x:Key="singers.caption">Voicebank</system:String>
+  <!--<system:String x:Key="singers.editoto.reset">Reset Otos</system:String>-->
+  <!--<system:String x:Key="singers.editoto.save">Save Otos</system:String>-->
   <system:String x:Key="singers.location">Đường dẫn</system:String>
   <system:String x:Key="singers.otoview.moveleft">Sang trái</system:String>
   <system:String x:Key="singers.otoview.moveright">Sang phải</system:String>
@@ -252,7 +270,7 @@ Warning: moresampler is not fully supported. It may be slow and cause high CPU u
   <system:String x:Key="singers.subbanks.color.remove">Xoá sắc thái</system:String>
   <system:String x:Key="singers.subbanks.color.rename">Đổi tên</system:String>
   <system:String x:Key="singers.subbanks.edit">Sửa đổi sắc thái</system:String>
-  <system:String x:Key="singers.subbanks.reset">Reset</system:String>
+  <!--<system:String x:Key="singers.subbanks.reset">Reset</system:String>-->
   <system:String x:Key="singers.subbanks.save">Lưu</system:String>
   <system:String x:Key="singers.subbanks.selectall">Chọn tất cả</system:String>
   <system:String x:Key="singers.subbanks.set">Áp dụng</system:String>

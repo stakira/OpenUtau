@@ -2,6 +2,9 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+  <!--<system:String x:Key="context.note.delete">Delete note</system:String>-->
+  <!--<system:String x:Key="context.part.delete">Delete part</system:String>-->
+  <!--<system:String x:Key="context.part.rename">Rename part</system:String>-->
   <system:String x:Key="context.pitch.easein">緩入</system:String>
   <system:String x:Key="context.pitch.easeinout">緩入並緩出</system:String>
   <system:String x:Key="context.pitch.easeout">緩出</system:String>
@@ -86,7 +89,7 @@
   <system:String x:Key="menu.file.savetemplate">另存為範本</system:String>
   <system:String x:Key="menu.help">說明</system:String>
   <system:String x:Key="menu.help.about">關於 OpenUtau</system:String>
-  <system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>
+  <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
   <system:String x:Key="menu.tools">工具</system:String>
   <system:String x:Key="menu.tools.clearcache">清除快取</system:String>
   <system:String x:Key="menu.tools.debugwindow">除錯視窗</system:String>
@@ -131,6 +134,11 @@
   <system:String x:Key="oto.color">色彩</system:String>
   <system:String x:Key="oto.consonant">子音</system:String>
   <system:String x:Key="oto.cutoff">後裁切</system:String>
+  <!--<system:String x:Key="oto.edit.consonant">Set Consonant</system:String>-->
+  <!--<system:String x:Key="oto.edit.cutoff">Set Cutoff</system:String>-->
+  <!--<system:String x:Key="oto.edit.offset">Set Offset</system:String>-->
+  <!--<system:String x:Key="oto.edit.overlap">Set Overlap</system:String>-->
+  <!--<system:String x:Key="oto.edit.preutter">Set Preutter</system:String>-->
   <system:String x:Key="oto.file">檔案</system:String>
   <system:String x:Key="oto.offset">前裁切</system:String>
   <system:String x:Key="oto.overlap">重疊</system:String>
@@ -140,9 +148,13 @@
   <system:String x:Key="oto.set">設定</system:String>
   <system:String x:Key="oto.suffix">後綴</system:String>
 
+  <!--<system:String x:Key="phoneticassistant.caption">Phonetic Assistant</system:String>-->
+  <!--<system:String x:Key="phoneticassistant.copy">Copy</system:String>-->
+
   <system:String x:Key="pianoroll.menu.lyrics">歌詞</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">使用 "+" 替換 "-"</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">編輯歌詞</system:String>
+  <!--<system:String x:Key="pianoroll.menu.lyrics.hanzitopinyin">Hanzi to Pinyin</system:String>-->
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">平假名轉羅馬拼音</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">日文 VCV 轉 CV</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">移除字母後綴</system:String>
@@ -162,11 +174,12 @@
   <system:String x:Key="pianoroll.menu.notes.reset.vibratos">重設顫音</system:String>
   <system:String x:Key="pianoroll.menu.part">段落</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">舊版插件 (實驗性)</system:String>
-  <system:String x:Key="pianoroll.menu.part.rename">重新命名段落</system:String>
   <system:String x:Key="pianoroll.toggle.finalpitch">顯示算繪音高曲線 (R)</system:String>
   <system:String x:Key="pianoroll.toggle.phoneme">顯示音標 (O)</system:String>
   <system:String x:Key="pianoroll.toggle.pitch">顯示手動音高曲線 (I)</system:String>
   <system:String x:Key="pianoroll.toggle.snap">啟用自動貼齊 (P)</system:String>
+  <!--<system:String x:Key="pianoroll.toggle.snap.auto">Auto</system:String>-->
+  <!--<system:String x:Key="pianoroll.toggle.snap.autotriplet">Auto (triplet)</system:String>-->
   <system:String x:Key="pianoroll.toggle.tips">顯示使用提示 (T)</system:String>
   <system:String x:Key="pianoroll.toggle.tone">啟用音調提示 (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">顯示顫音 (U)</system:String>
@@ -174,11 +187,14 @@
   <system:String x:Key="pianoroll.tool.drawpitch">音高繪製工具 (4)</system:String>
   <system:String x:Key="pianoroll.tool.eraser">橡皮擦工具 (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">剪刀工具 (5)</system:String>
-  <system:String x:Key="pianoroll.tool.pen">畫筆工具 (2)
-點擊左鍵以繪製
-點擊右鍵以刪除</system:String>
-  <system:String x:Key="pianoroll.tool.selection">選取工具 (1)
-按住 Ctrl 以新增選取範圍</system:String>
+  <!--<system:String x:Key="pianoroll.tool.penplus">Pen Plus Tool (Ctrl + 2)
+Left click to draw
+Right click to delete
+Hold Ctrl to select</system:String>-->
+  <!--<system:String x:Key="pianoroll.tool.penv2">Pen Tool (2)
+Left click to draw
+Hold Ctrl to select</system:String>-->
+  <!--<system:String x:Key="pianoroll.tool.selectionv2">Selection Tool (1)</system:String>-->
 
   <system:String x:Key="prefs.advanced">進階</system:String>
   <system:String x:Key="prefs.advanced.beta">測試版</system:String>
@@ -207,7 +223,7 @@
   <system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">固定游標位置</system:String>
   <system:String x:Key="prefs.playback.backend">音訊後端</system:String>
   <system:String x:Key="prefs.playback.backend.auto">自動</system:String>
-  <system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>
+  <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">開始捲動位置</system:String>
   <system:String x:Key="prefs.playback.device">播放裝置</system:String>
   <system:String x:Key="prefs.playback.lockstarttime">暫停時</system:String>
@@ -233,6 +249,8 @@
   <system:String x:Key="progress.waitingrendering">等待算繪</system:String>
 
   <system:String x:Key="singers.caption">歌手</system:String>
+  <!--<system:String x:Key="singers.editoto.reset">Reset Otos</system:String>-->
+  <!--<system:String x:Key="singers.editoto.save">Save Otos</system:String>-->
   <system:String x:Key="singers.location">位置</system:String>
   <system:String x:Key="singers.otoview.moveleft">左移</system:String>
   <system:String x:Key="singers.otoview.moveright">右移</system:String>
@@ -294,12 +312,12 @@
   <system:String x:Key="tracks.selectrenderer">選取算繪器</system:String>
   <system:String x:Key="tracks.selectsinger">選取歌手</system:String>
 
-  <FontFamily x:Key="ui.fontfamily">Segoe UI,San Francisco,Helvetica Neue</FontFamily>
-  <FontFamily x:Key="ui.textbox.fontfamily">Microsoft YaHei,Simsun,苹方-简,宋体-简</FontFamily>
+  <!--<FontFamily x:Key="ui.fontfamily">Segoe UI,San Francisco,Helvetica Neue</FontFamily>-->
+  <!--<FontFamily x:Key="ui.textbox.fontfamily">Microsoft YaHei,Simsun,苹方-简,宋体-简</FontFamily>-->
 
   <system:String x:Key="updater.caption">檢查更新</system:String>
   <system:String x:Key="updater.description">開放歌聲合成平台</system:String>
-  <system:String x:Key="updater.github">GitHub</system:String>
+  <!--<system:String x:Key="updater.github">GitHub</system:String>-->
   <system:String x:Key="updater.status.available">版本 v{0} 已可更新!</system:String>
   <system:String x:Key="updater.status.checking">檢查更新...</system:String>
   <system:String x:Key="updater.status.notavailable">已為最新版本</system:String>

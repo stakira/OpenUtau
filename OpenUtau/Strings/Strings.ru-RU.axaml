@@ -2,6 +2,9 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+  <!--<system:String x:Key="context.note.delete">Delete note</system:String>-->
+  <!--<system:String x:Key="context.part.delete">Delete part</system:String>-->
+  <!--<system:String x:Key="context.part.rename">Rename part</system:String>-->
   <!--<system:String x:Key="context.pitch.easein">Ease in</system:String>-->
   <!--<system:String x:Key="context.pitch.easeinout">Ease in/out</system:String>-->
   <!--<system:String x:Key="context.pitch.easeout">Ease out</system:String>-->
@@ -131,6 +134,11 @@ Warning: this option removes custom presets.</system:String>-->
   <system:String x:Key="oto.color">Оттенок</system:String>
   <system:String x:Key="oto.consonant">Согласная</system:String>
   <system:String x:Key="oto.cutoff">Конец</system:String>
+  <!--<system:String x:Key="oto.edit.consonant">Set Consonant</system:String>-->
+  <!--<system:String x:Key="oto.edit.cutoff">Set Cutoff</system:String>-->
+  <!--<system:String x:Key="oto.edit.offset">Set Offset</system:String>-->
+  <!--<system:String x:Key="oto.edit.overlap">Set Overlap</system:String>-->
+  <!--<system:String x:Key="oto.edit.preutter">Set Preutter</system:String>-->
   <system:String x:Key="oto.file">Файл</system:String>
   <system:String x:Key="oto.offset">Начало</system:String>
   <system:String x:Key="oto.overlap">Нахлёст</system:String>
@@ -140,9 +148,13 @@ Warning: this option removes custom presets.</system:String>-->
   <system:String x:Key="oto.set">Установить</system:String>
   <system:String x:Key="oto.suffix">Суффикс</system:String>
 
+  <!--<system:String x:Key="phoneticassistant.caption">Phonetic Assistant</system:String>-->
+  <!--<system:String x:Key="phoneticassistant.copy">Copy</system:String>-->
+
   <system:String x:Key="pianoroll.menu.lyrics">Текст</system:String>
   <!--<system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Replace "-" with "+"</system:String>-->
   <system:String x:Key="pianoroll.menu.lyrics.edit">Редактировать текста</system:String>
+  <!--<system:String x:Key="pianoroll.menu.lyrics.hanzitopinyin">Hanzi to Pinyin</system:String>-->
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana в Romaji</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">Японский VCV в CV</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Удалить суффикс</system:String>
@@ -162,11 +174,12 @@ Warning: this option removes custom presets.</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.reset.vibratos">Сбросить вибрато</system:String>
   <system:String x:Key="pianoroll.menu.part">Партия</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">Устаревшие плагины (экспериментальное)</system:String>
-  <system:String x:Key="pianoroll.menu.part.rename">Переименовать</system:String>
   <system:String x:Key="pianoroll.toggle.finalpitch">Показать срендеренный питч (R)</system:String>
   <system:String x:Key="pianoroll.toggle.phoneme">Отображение фонем (O)</system:String>
   <system:String x:Key="pianoroll.toggle.pitch">Показать кривую питча (I)</system:String>
   <system:String x:Key="pianoroll.toggle.snap">Привязка (P)</system:String>
+  <!--<system:String x:Key="pianoroll.toggle.snap.auto">Auto</system:String>-->
+  <!--<system:String x:Key="pianoroll.toggle.snap.autotriplet">Auto (triplet)</system:String>-->
   <system:String x:Key="pianoroll.toggle.tips">Подсказки (T)</system:String>
   <system:String x:Key="pianoroll.toggle.tone">Прослушивание тона (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">Показать вибрато (U)</system:String>
@@ -174,11 +187,14 @@ Warning: this option removes custom presets.</system:String>-->
   <system:String x:Key="pianoroll.tool.drawpitch">Инструмент рисовки питча (4)</system:String>
   <system:String x:Key="pianoroll.tool.eraser">Ластик (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">Инструмент нарезки (5)</system:String>
-  <system:String x:Key="pianoroll.tool.pen">Карандаш (2)
-ЛКМ - рисовать
-ПКМ - удалить</system:String>
-  <system:String x:Key="pianoroll.tool.selection">Инструмент выбора (1)
-</system:String>
+  <!--<system:String x:Key="pianoroll.tool.penplus">Pen Plus Tool (Ctrl + 2)
+Left click to draw
+Right click to delete
+Hold Ctrl to select</system:String>-->
+  <!--<system:String x:Key="pianoroll.tool.penv2">Pen Tool (2)
+Left click to draw
+Hold Ctrl to select</system:String>-->
+  <!--<system:String x:Key="pianoroll.tool.selectionv2">Selection Tool (1)</system:String>-->
 
   <system:String x:Key="prefs.advanced">Дополнительно</system:String>
   <system:String x:Key="prefs.advanced.beta">Бета</system:String>
@@ -233,6 +249,8 @@ Warning: this option removes custom presets.</system:String>-->
   <system:String x:Key="progress.waitingrendering">Рендер...</system:String>
 
   <system:String x:Key="singers.caption">Голосовые банки</system:String>
+  <!--<system:String x:Key="singers.editoto.reset">Reset Otos</system:String>-->
+  <!--<system:String x:Key="singers.editoto.save">Save Otos</system:String>-->
   <system:String x:Key="singers.location">Расположение</system:String>
   <!--<system:String x:Key="singers.otoview.moveleft">Move Left</system:String>-->
   <!--<system:String x:Key="singers.otoview.moveright">Move Right</system:String>-->

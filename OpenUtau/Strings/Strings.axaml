@@ -134,6 +134,11 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="oto.color">Color</system:String>
   <system:String x:Key="oto.consonant">Consonant</system:String>
   <system:String x:Key="oto.cutoff">Cutoff</system:String>
+  <system:String x:Key="oto.edit.consonant">Set Consonant</system:String>
+  <system:String x:Key="oto.edit.cutoff">Set Cutoff</system:String>
+  <system:String x:Key="oto.edit.offset">Set Offset</system:String>
+  <system:String x:Key="oto.edit.overlap">Set Overlap</system:String>
+  <system:String x:Key="oto.edit.preutter">Set Preutter</system:String>
   <system:String x:Key="oto.file">File</system:String>
   <system:String x:Key="oto.offset">Offset</system:String>
   <system:String x:Key="oto.overlap">Overlap</system:String>
@@ -142,15 +147,10 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="oto.preutter">Preutter</system:String>
   <system:String x:Key="oto.set">Set</system:String>
   <system:String x:Key="oto.suffix">Suffix</system:String>
-  <system:String x:Key="oto.edit.consonant">Set Consonant</system:String>
-  <system:String x:Key="oto.edit.cutoff">Set Cutoff</system:String>
-  <system:String x:Key="oto.edit.offset">Set Offset</system:String>
-  <system:String x:Key="oto.edit.overlap">Set Overlap</system:String>
-  <system:String x:Key="oto.edit.preutter">Set Preutter</system:String>
 
   <system:String x:Key="phoneticassistant.caption">Phonetic Assistant</system:String>
   <system:String x:Key="phoneticassistant.copy">Copy</system:String>
-  
+
   <system:String x:Key="pianoroll.menu.lyrics">Lyrics</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Replace "-" with "+"</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">Edit Lyrics</system:String>
@@ -187,15 +187,14 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="pianoroll.tool.drawpitch">Draw Pitch Tool (4)</system:String>
   <system:String x:Key="pianoroll.tool.eraser">Eraser Tool (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">Knife Tool (5)</system:String>
-  <system:String x:Key="pianoroll.tool.pen">Pen Tool (2)
-Left click to draw
-Hold Ctrl to select</system:String>
   <system:String x:Key="pianoroll.tool.penplus">Pen Plus Tool (Ctrl + 2)
 Left click to draw
 Right click to delete
 Hold Ctrl to select</system:String>
-  <system:String x:Key="pianoroll.tool.selection">Selection Tool (1)
-Hold Ctrl to select more</system:String>
+  <system:String x:Key="pianoroll.tool.penv2">Pen Tool (2)
+Left click to draw
+Hold Ctrl to select</system:String>
+  <system:String x:Key="pianoroll.tool.selectionv2">Selection Tool (1)</system:String>
 
   <system:String x:Key="prefs.advanced">Advanced</system:String>
   <system:String x:Key="prefs.advanced.beta">Beta</system:String>

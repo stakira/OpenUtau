@@ -2,6 +2,9 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+  <!--<system:String x:Key="context.note.delete">Delete note</system:String>-->
+  <!--<system:String x:Key="context.part.delete">Delete part</system:String>-->
+  <!--<system:String x:Key="context.part.rename">Rename part</system:String>-->
   <system:String x:Key="context.pitch.easein">Courber vers le haut</system:String>
   <system:String x:Key="context.pitch.easeinout">Courber vers le haut/bas</system:String>
   <system:String x:Key="context.pitch.easeout">Courber vers le bas</system:String>
@@ -131,6 +134,11 @@
   <!--<system:String x:Key="oto.color">Color</system:String>-->
   <system:String x:Key="oto.consonant">Consonne</system:String>
   <system:String x:Key="oto.cutoff">Fin</system:String>
+  <!--<system:String x:Key="oto.edit.consonant">Set Consonant</system:String>-->
+  <!--<system:String x:Key="oto.edit.cutoff">Set Cutoff</system:String>-->
+  <!--<system:String x:Key="oto.edit.offset">Set Offset</system:String>-->
+  <!--<system:String x:Key="oto.edit.overlap">Set Overlap</system:String>-->
+  <!--<system:String x:Key="oto.edit.preutter">Set Preutter</system:String>-->
   <system:String x:Key="oto.file">Fichier</system:String>
   <system:String x:Key="oto.offset">Début</system:String>
   <!--<system:String x:Key="oto.overlap">Overlap</system:String>-->
@@ -140,9 +148,13 @@
   <!--<system:String x:Key="oto.set">Set</system:String>-->
   <system:String x:Key="oto.suffix">Suffixe</system:String>
 
+  <!--<system:String x:Key="phoneticassistant.caption">Phonetic Assistant</system:String>-->
+  <!--<system:String x:Key="phoneticassistant.copy">Copy</system:String>-->
+
   <system:String x:Key="pianoroll.menu.lyrics">Paroles</system:String>
   <!--<system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Replace "-" with "+"</system:String>-->
   <system:String x:Key="pianoroll.menu.lyrics.edit">Modifier les paroles</system:String>
+  <!--<system:String x:Key="pianoroll.menu.lyrics.hanzitopinyin">Hanzi to Pinyin</system:String>-->
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana -> Romaji</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">Japanese VCV -> CV</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Enlever un suffixe (lettres)</system:String>
@@ -162,11 +174,12 @@
   <system:String x:Key="pianoroll.menu.notes.reset.vibratos">Réinitialiser les vibratos</system:String>
   <system:String x:Key="pianoroll.menu.part">Partie</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">Plugin antérieur (Expérimental)</system:String>
-  <system:String x:Key="pianoroll.menu.part.rename">Renommer</system:String>
   <!--<system:String x:Key="pianoroll.toggle.finalpitch">View Final Pitch to Render (R)</system:String>-->
   <system:String x:Key="pianoroll.toggle.phoneme">Voir les Phonèmes (O)</system:String>
   <system:String x:Key="pianoroll.toggle.pitch">Voir les Pitch Bends (I)</system:String>
   <system:String x:Key="pianoroll.toggle.snap">Aimant On/Off (P)</system:String>
+  <!--<system:String x:Key="pianoroll.toggle.snap.auto">Auto</system:String>-->
+  <!--<system:String x:Key="pianoroll.toggle.snap.autotriplet">Auto (triplet)</system:String>-->
   <system:String x:Key="pianoroll.toggle.tips">Voir les Astuces (T)</system:String>
   <system:String x:Key="pianoroll.toggle.tone">Tonalité de la Note On/Off (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">Voir les Vibratos (U)</system:String>
@@ -174,11 +187,14 @@
   <system:String x:Key="pianoroll.tool.drawpitch">Outil traçage du pitch (4)</system:String>
   <system:String x:Key="pianoroll.tool.eraser">Gomme (3)</system:String>
   <!--<system:String x:Key="pianoroll.tool.knife">Knife Tool (5)</system:String>-->
-  <system:String x:Key="pianoroll.tool.pen">Pinceau (2)
-Clic gauche pour dessiner
-Clic droit pour gommer</system:String>
-  <system:String x:Key="pianoroll.tool.selection">Outil de sélection (1)
-Maintenir Ctrl pour ajouter à la sélection</system:String>
+  <!--<system:String x:Key="pianoroll.tool.penplus">Pen Plus Tool (Ctrl + 2)
+Left click to draw
+Right click to delete
+Hold Ctrl to select</system:String>-->
+  <!--<system:String x:Key="pianoroll.tool.penv2">Pen Tool (2)
+Left click to draw
+Hold Ctrl to select</system:String>-->
+  <!--<system:String x:Key="pianoroll.tool.selectionv2">Selection Tool (1)</system:String>-->
 
   <system:String x:Key="prefs.advanced">Paramètres avancés</system:String>
   <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
@@ -233,6 +249,8 @@ Avertissement : moresampler n'est pas entièrement pris en charge. Il peut être
   <system:String x:Key="progress.waitingrendering">En attente du Rendu</system:String>
 
   <system:String x:Key="singers.caption">Voicebanks</system:String>
+  <!--<system:String x:Key="singers.editoto.reset">Reset Otos</system:String>-->
+  <!--<system:String x:Key="singers.editoto.save">Save Otos</system:String>-->
   <system:String x:Key="singers.location">Emplacement</system:String>
   <!--<system:String x:Key="singers.otoview.moveleft">Move Left</system:String>-->
   <!--<system:String x:Key="singers.otoview.moveright">Move Right</system:String>-->

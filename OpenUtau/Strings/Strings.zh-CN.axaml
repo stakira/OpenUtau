@@ -2,6 +2,9 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+  <system:String x:Key="context.note.delete">删除音符</system:String>
+  <system:String x:Key="context.part.delete">删除片段</system:String>
+  <system:String x:Key="context.part.rename">重命名片段</system:String>
   <system:String x:Key="context.pitch.easein">缓入</system:String>
   <system:String x:Key="context.pitch.easeinout">缓入缓出</system:String>
   <system:String x:Key="context.pitch.easeout">缓出</system:String>
@@ -11,8 +14,8 @@
   <system:String x:Key="context.pitch.pointsnapprev">吸附到上一个音符</system:String>
 
   <system:String x:Key="debug.clear">清空</system:String>
-  <!--<system:String x:Key="debug.copylog">Copy Log</system:String>-->
-  <!--<system:String x:Key="debug.reverselogorder">Reverse Log Order</system:String>-->
+  <system:String x:Key="debug.copylog">复制日志</system:String>
+  <system:String x:Key="debug.reverselogorder">反序</system:String>
 
   <system:String x:Key="dialogs.about.caption">关于 OpenUTAU</system:String>
   <system:String x:Key="dialogs.about.message">
@@ -129,20 +132,29 @@
 
   <system:String x:Key="oto.alias">别名</system:String>
   <system:String x:Key="oto.color">色彩</system:String>
-  <system:String x:Key="oto.consonant">辅音速度</system:String>
+  <system:String x:Key="oto.consonant">辅音</system:String>
   <system:String x:Key="oto.cutoff">结束</system:String>
+  <system:String x:Key="oto.edit.consonant">设置辅音</system:String>
+  <system:String x:Key="oto.edit.cutoff">设置结束</system:String>
+  <system:String x:Key="oto.edit.offset">设置开始</system:String>
+  <system:String x:Key="oto.edit.overlap">设置重叠</system:String>
+  <system:String x:Key="oto.edit.preutter">前发音</system:String>
   <system:String x:Key="oto.file">文件</system:String>
   <system:String x:Key="oto.offset">开始</system:String>
   <system:String x:Key="oto.overlap">重叠</system:String>
   <system:String x:Key="oto.phonetic">发音</system:String>
   <system:String x:Key="oto.prefix">前缀</system:String>
-  <system:String x:Key="oto.preutter">先行发音</system:String>
+  <system:String x:Key="oto.preutter">前发音</system:String>
   <system:String x:Key="oto.set">子集</system:String>
   <system:String x:Key="oto.suffix">后缀</system:String>
 
+  <system:String x:Key="phoneticassistant.caption">语音学助手</system:String>
+  <system:String x:Key="phoneticassistant.copy">复制</system:String>
+
   <system:String x:Key="pianoroll.menu.lyrics">歌词</system:String>
-  <!--<system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Replace "-" with "+"</system:String>-->
+  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">将 "-" 替换为 "+"</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">编辑歌词</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.hanzitopinyin">汉字转拼音</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">平假名转罗马音</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">日语 VCV 转 CV</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">去除字母后缀</system:String>
@@ -162,11 +174,12 @@
   <system:String x:Key="pianoroll.menu.notes.reset.vibratos">重置颤音</system:String>
   <system:String x:Key="pianoroll.menu.part">片段</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">传统插件 (实验性)</system:String>
-  <system:String x:Key="pianoroll.menu.part.rename">重命名</system:String>
   <system:String x:Key="pianoroll.toggle.finalpitch">显示最终音高线 (R)</system:String>
   <system:String x:Key="pianoroll.toggle.phoneme">显示音素 (O)</system:String>
   <system:String x:Key="pianoroll.toggle.pitch">显示弯音 (I)</system:String>
   <system:String x:Key="pianoroll.toggle.snap">开关吸附 (P)</system:String>
+  <system:String x:Key="pianoroll.toggle.snap.auto">自动</system:String>
+  <system:String x:Key="pianoroll.toggle.snap.autotriplet">自动 (三连音)</system:String>
   <system:String x:Key="pianoroll.toggle.tips">显示提示 (T)</system:String>
   <system:String x:Key="pianoroll.toggle.tone">开关音符音 (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">显示颤音 (U)</system:String>
@@ -174,11 +187,14 @@
   <system:String x:Key="pianoroll.tool.drawpitch">绘制音高线工具 (4)</system:String>
   <system:String x:Key="pianoroll.tool.eraser">橡皮工具 (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">分割工具 (5)</system:String>
-  <system:String x:Key="pianoroll.tool.pen">笔工具 (2)
+  <system:String x:Key="pianoroll.tool.penplus">笔(增强)工具 (Ctrl + 2)
 鼠标左键绘制音符
-鼠标右键擦除音符</system:String>
-  <system:String x:Key="pianoroll.tool.selection">选择工具 (1)
-按住Ctrl选择更多</system:String>
+鼠标右键擦除音符
+按住 Ctrl 选择音符</system:String>
+  <system:String x:Key="pianoroll.tool.penv2">笔工具 (2)
+鼠标左键绘制音符
+按住 Ctrl 选择音符</system:String>
+  <system:String x:Key="pianoroll.tool.selectionv2">选择工具 (1)</system:String>
 
   <system:String x:Key="prefs.advanced">高级</system:String>
   <system:String x:Key="prefs.advanced.beta">Beta测试版</system:String>
@@ -233,6 +249,8 @@
   <system:String x:Key="progress.waitingrendering">等待渲染</system:String>
 
   <system:String x:Key="singers.caption">歌手</system:String>
+  <system:String x:Key="singers.editoto.reset">重置 Oto 设置</system:String>
+  <system:String x:Key="singers.editoto.save">保存 Oto 设置</system:String>
   <system:String x:Key="singers.location">位置</system:String>
   <system:String x:Key="singers.otoview.moveleft">左移</system:String>
   <system:String x:Key="singers.otoview.moveright">右移</system:String>
