@@ -160,6 +160,24 @@ namespace OpenUtau.Core {
             }
         }
 
+        public UTimeSignature TimeSignatureAtTick(int tick) {
+            var segment = timeSigSegments.First(seg => seg.tickPos == tick || seg.tickEnd > tick); // TODO: optimize
+            return new UTimeSignature {
+                barPosition = segment.barPos,
+                beatPerBar = segment.beatPerBar,
+                beatUnit = segment.beatUnit,
+            };
+        }
+
+        public UTimeSignature TimeSignatureAtBar(int bar) {
+            var segment = timeSigSegments.First(seg => seg.barPos == bar || seg.barEnd > bar); // TODO: optimize
+            return new UTimeSignature {
+                barPosition = segment.barPos,
+                beatPerBar = segment.beatPerBar,
+                beatUnit = segment.beatUnit,
+            };
+        }
+
         public TimeAxis Clone() {
             var clone = new TimeAxis();
             // Shallow copy segments since they are unmodified after built.

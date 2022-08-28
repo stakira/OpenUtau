@@ -199,8 +199,8 @@ namespace OpenUtau.App.Views {
             var point = args.GetCurrentPoint(canvas);
             if (point.Properties.IsLeftButtonPressed) {
                 args.Pointer.Capture(canvas);
-                int tick = ViewModel.NotesViewModel.PointToSnappedTick(point.Position)
-                    + ViewModel.NotesViewModel.Part?.position ?? 0;
+                ViewModel.NotesViewModel.PointToLineTick(point.Position, out int left, out int right);
+                int tick = left + ViewModel.NotesViewModel.Part?.position ?? 0;
                 ViewModel.PlaybackViewModel?.MovePlayPos(tick);
             }
             lyricBox?.EndEdit();
@@ -210,8 +210,8 @@ namespace OpenUtau.App.Views {
             var canvas = (Canvas)sender;
             var point = args.GetCurrentPoint(canvas);
             if (point.Properties.IsLeftButtonPressed) {
-                int tick = ViewModel.NotesViewModel.PointToSnappedTick(point.Position)
-                    + ViewModel.NotesViewModel.Part?.position ?? 0;
+                ViewModel.NotesViewModel.PointToLineTick(point.Position, out int left, out int right);
+                int tick = left + ViewModel.NotesViewModel.Part?.position ?? 0;
                 ViewModel.PlaybackViewModel?.MovePlayPos(tick);
             }
         }
@@ -542,6 +542,10 @@ namespace OpenUtau.App.Views {
                 var timelineCanvas = this.FindControl<Canvas>("TimelineCanvas");
                 TimelinePointerWheelChanged(timelineCanvas, args);
             }
+            if (editState != null) {
+                var point = args.GetCurrentPoint(editState.canvas);
+                editState.Update(point.Pointer, point.Position);
+            }
         }
 
         public void NotesContextMenuOpening(object sender, CancelEventArgs args) {
@@ -719,8 +723,8 @@ namespace OpenUtau.App.Views {
             Cursor = null;
         }
 
-        public void OnSnapUnitMenuButton(object sender, RoutedEventArgs args) {
-            var menu = this.FindControl<ContextMenu>("SnapUnitMenu");
+        public void OnSnapDivMenuButton(object sender, RoutedEventArgs args) {
+            var menu = this.FindControl<ContextMenu>("SnapDivMenu");
             menu.PlacementTarget = sender as Button;
             menu.Open();
         }

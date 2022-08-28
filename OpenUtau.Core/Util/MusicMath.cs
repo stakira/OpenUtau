@@ -158,18 +158,18 @@ namespace OpenUtau.Core {
             return Math.Log(freq / 440.0, a) + 69;
         }
 
-        public static List<int> GetSnapUnitDivs(int resolution, int beatUnit) {
+        public static List<int> GetSnapDivs(int resolution) {
             var result = new List<int>();
-            int div = beatUnit;
-            int ticks = resolution * 4 / beatUnit;
+            int div = 4;
+            int ticks = resolution * 4 / div;
             result.Add(div);
             while (ticks % 2 == 0) {
                 ticks /= 2;
                 div *= 2;
                 result.Add(div);
             }
-            div = beatUnit * 3;
-            ticks = resolution * 4 / beatUnit / 3;
+            div = 6;
+            ticks = resolution * 4 / div;
             result.Add(div);
             while (ticks % 2 == 0) {
                 ticks /= 2;
@@ -177,6 +177,17 @@ namespace OpenUtau.Core {
                 result.Add(div);
             }
             return result;
+        }
+
+        public static void GetSnapUnit(
+            int resolution, double minTicks, bool triplet,
+            out int ticks, out int div) {
+            div = triplet ? 6 : 4;
+            ticks = resolution * 4 / div;
+            while (ticks % 2 == 0 && ticks / 2 >= minTicks) {
+                ticks /= 2;
+                div *= 2;
+            }
         }
     }
 }

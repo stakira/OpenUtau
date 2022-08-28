@@ -107,9 +107,9 @@ namespace OpenUtau.Classic {
                                 if (note.lyric.ToLower() != "r") {
                                     part.notes.Add(note);
                                 }
-                                if (noteTempo != null && (project.bpm <= 0 || project.bpm > 1000)) {
+                                if (noteTempo != null && (project.tempos[0].bpm <= 0 || project.tempos[0].bpm > 1000)) {
                                     // Fix tempo=500k error.
-                                    project.bpm = noteTempo.Value;
+                                    project.tempos[0].bpm = noteTempo.Value;
                                 }
                             } else {
                                 throw new FileFormatException($"Unexpected header\n{block.header}");
@@ -145,7 +145,7 @@ namespace OpenUtau.Classic {
                 switch (param) {
                     case "Tempo":
                         if (ParseFloat(parts[1], out var temp)) {
-                            project.bpm = temp;
+                            project.tempos[0].bpm = temp;
                         }
                         break;
                     case "ProjectName":
@@ -486,7 +486,7 @@ namespace OpenUtau.Classic {
 
         static void WriteHeader(UProject project, UVoicePart part, StreamWriter writer) {
             writer.WriteLine("[#SETTING]");
-            writer.WriteLine($"Tempo={project.bpm}");
+            writer.WriteLine($"Tempo={project.tempos[0].bpm}");
             writer.WriteLine("Tracks=1");
             if (project.Saved) {
                 writer.WriteLine($"Project={project.FilePath.Replace(".ustx", ".ust")}");

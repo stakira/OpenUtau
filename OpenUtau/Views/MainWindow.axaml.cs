@@ -72,7 +72,7 @@ namespace OpenUtau.App.Views {
 
             UpdaterDialog.CheckForUpdate(
                 dialog => dialog.Show(this),
-                () => ((IControlledApplicationLifetime)Application.Current.ApplicationLifetime).Shutdown(),
+                () => (Application.Current?.ApplicationLifetime as IControlledApplicationLifetime)?.Shutdown(),
                 TaskScheduler.FromCurrentSynchronizationContext());
         }
 
@@ -84,11 +84,12 @@ namespace OpenUtau.App.Views {
             var project = DocManager.Inst.Project;
             var dialog = new TypeInDialog();
             dialog.Title = ThemeManager.GetString("dialogs.timesig.caption");
-            dialog.SetText($"{project.beatPerBar}/{project.beatUnit}");
+            var mainTimeSig = project.timeSignatures[0];
+            dialog.SetText($"{mainTimeSig.beatPerBar}/{mainTimeSig.beatUnit}");
             dialog.onFinish = s => {
                 var parts = s.Split('/');
-                int beatPerBar = parts.Length > 0 && int.TryParse(parts[0], out beatPerBar) ? beatPerBar : project.beatPerBar;
-                int beatUnit = parts.Length > 1 && int.TryParse(parts[1], out beatUnit) ? beatUnit : project.beatUnit;
+                int beatPerBar = parts.Length > 0 && int.TryParse(parts[0], out beatPerBar) ? beatPerBar : mainTimeSig.beatPerBar;
+                int beatUnit = parts.Length > 1 && int.TryParse(parts[1], out beatUnit) ? beatUnit : mainTimeSig.beatUnit;
                 viewModel.PlaybackViewModel.SetTimeSignature(beatPerBar, beatUnit);
             };
             dialog.ShowDialog(this);
@@ -694,8 +695,8 @@ namespace OpenUtau.App.Views {
             var point = args.GetCurrentPoint(canvas);
             if (point.Properties.IsLeftButtonPressed) {
                 args.Pointer.Capture(canvas);
-                int tick = viewModel.TracksViewModel.PointToSnappedTick(point.Position);
-                viewModel.PlaybackViewModel.MovePlayPos(tick);
+                viewModel.TracksViewModel.PointToLineTick(point.Position, out int left, out int right);
+                viewModel.PlaybackViewModel.MovePlayPos(left);
             }
         }
 
@@ -703,8 +704,8 @@ namespace OpenUtau.App.Views {
             var canvas = (Canvas)sender;
             var point = args.GetCurrentPoint(canvas);
             if (point.Properties.IsLeftButtonPressed) {
-                int tick = viewModel.TracksViewModel.PointToSnappedTick(point.Position);
-                viewModel.PlaybackViewModel.MovePlayPos(tick);
+                viewModel.TracksViewModel.PointToLineTick(point.Position, out int left, out int right);
+                viewModel.PlaybackViewModel.MovePlayPos(left);
             }
         }
 
@@ -874,6 +875,10 @@ namespace OpenUtau.App.Views {
             } else if (args.KeyModifiers == cmdKey) {
                 var timelineCanvas = this.FindControl<Canvas>("TimelineCanvas");
                 TimelinePointerWheelChanged(timelineCanvas, args);
+            }
+            if (partEditState != null) {
+                var point = args.GetCurrentPoint(partEditState.canvas);
+                partEditState.Update(point.Pointer, point.Position);
             }
         }
 

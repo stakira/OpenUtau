@@ -37,6 +37,9 @@ namespace OpenUtau.App.Views {
     }
 
     class PartSelectionEditState : PartEditState {
+        private int startTick;
+        private int startTrack;
+
         public readonly Rectangle selectionBox;
         public PartSelectionEditState(Canvas canvas, MainWindowViewModel vm, Rectangle selectionBox) : base(canvas, vm) {
             this.selectionBox = selectionBox;
@@ -44,8 +47,10 @@ namespace OpenUtau.App.Views {
         public override void Begin(IPointer pointer, Point point) {
             base.Begin(pointer, point);
             selectionBox.IsVisible = true;
+            var tracksVm = vm.TracksViewModel;
+            startTick = tracksVm.PointToTick(point);
+            startTrack = tracksVm.PointToTrackNo(point);
         }
-
         public override void End(IPointer pointer, Point point) {
             base.End(pointer, point);
             selectionBox.IsVisible = false;
@@ -54,18 +59,17 @@ namespace OpenUtau.App.Views {
         }
         public override void Update(IPointer pointer, Point point) {
             var tracksVm = vm.TracksViewModel;
-            int x0 = tracksVm.PointToSnappedTick(point);
-            int x1 = tracksVm.PointToSnappedTick(startPoint);
-            int y0 = tracksVm.PointToTrackNo(point);
-            int y1 = tracksVm.PointToTrackNo(startPoint);
-            if (x0 > x1) {
-                Swap(ref x0, ref x1);
-            }
-            if (y0 > y1) {
-                Swap(ref y0, ref y1);
-            }
-            x1 += tracksVm.SnapUnit;
-            y1++;
+            int tick = tracksVm.PointToTick(point);
+            int track = tracksVm.PointToTrackNo(point);
+
+            int minTick = Math.Min(tick, startTick);
+            int maxTick = Math.Max(tick, startTick);
+            tracksVm.TickToLineTick(minTick, out int x0, out int _);
+            tracksVm.TickToLineTick(maxTick, out int _, out int x1);
+
+            int y0 = Math.Min(track, startTrack);
+            int y1 = Math.Max(track, startTrack) + 1;
+
             var leftTop = tracksVm.TickTrackToPoint(x0, y0);
             var Size = tracksVm.TickTrackToSize(x1 - x0, y1 - y0);
             Canvas.SetLeft(selectionBox, leftTop.X);
@@ -114,9 +118,14 @@ namespace OpenUtau.App.Views {
             }
             deltaTrack = Math.Clamp(deltaTrack, minDeltaTrack, maxDeltaTrack);
 
-            int deltaTick = isVoice
-                ? tracksVm.PointToSnappedTick(point - new Point(xOffset, 0)) - part.position
-                : tracksVm.PointToTick(point - new Point(xOffset, 0)) - part.position;
+            int newPos = 0;
+            if (!isVoice) {
+                newPos = tracksVm.PointToTick(point - new Point(xOffset, 0));
+            } else {
+                tracksVm.PointToLineTick(point - new Point(xOffset, 0), out int left, out int right);
+                newPos = left;
+            }
+            int deltaTick = newPos - part.position;
             int minDeltaTick;
             if (tracksVm.SelectedParts.Count > 0) {
                 minDeltaTick = -tracksVm.SelectedParts.Select(p => p.position).Min();
@@ -152,14 +161,12 @@ namespace OpenUtau.App.Views {
         public override void Update(IPointer pointer, Point point) {
             var project = DocManager.Inst.Project;
             var tracksVm = vm.TracksViewModel;
-            int deltaDuration = tracksVm.PointToSnappedTick(point) + tracksVm.SnapUnit - part.End;
+            tracksVm.PointToLineTick(point, out int left, out int right);
+            int deltaDuration = right - part.End;
             if (deltaDuration < 0) {
                 int maxDurReduction = part.Duration - part.GetMinDurTick(project);
                 if (tracksVm.SelectedParts.Count > 0) {
                     maxDurReduction = tracksVm.SelectedParts.Min(p => p.Duration - p.GetMinDurTick(project));
-                }
-                if (tracksVm.SnapUnit > 0) {
-                    maxDurReduction = (int)Math.Floor((double)maxDurReduction / tracksVm.SnapUnit) * tracksVm.SnapUnit;
                 }
                 deltaDuration = Math.Max(deltaDuration, -maxDurReduction);
             }

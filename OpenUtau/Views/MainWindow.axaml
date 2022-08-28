@@ -170,7 +170,9 @@
                         Resolution="{Binding PlaybackViewModel.Resolution}"
                         TickWidth="{Binding TracksViewModel.TickWidth}"
                         TickOffset="{Binding TracksViewModel.TickOffset}"
-                        SnapUnit="{Binding TracksViewModel.SnapUnit}" ShowBarNumber="True"/>
+                        SnapDiv="{Binding TracksViewModel.SnapDiv}"
+                        SnapTicks="{Binding TracksViewModel.SnapTicks}"
+                        ShowBarNumber="True"/>
       <c:PartsCanvas x:Name="partsCanvas" Grid.Row="2" Grid.Column="1" ClipToBounds="True" Background="Transparent"
                      DataContext="{Binding TracksViewModel}"
                      TickWidth="{Binding TickWidth}"
@@ -184,7 +186,7 @@
                      DoubleTapped="PartsCanvasDoubleTapped"
                      PointerWheelChanged="PartsCanvasPointerWheelChanged">
         <Rectangle Name="PlayPosHighlight"
-                   Width="{Binding SnapUnitWidth, Mode=OneWay}"
+                   Width="{Binding PlayPosHighlightWidth, Mode=OneWay}"
                    Height="{Binding $parent.Bounds.Height, Mode=OneWay}"
                    Canvas.Left="{Binding PlayPosHighlightX, Mode=OneWay}"
                    Canvas.Top="0"
