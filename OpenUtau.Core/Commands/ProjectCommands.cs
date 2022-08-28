@@ -22,6 +22,102 @@ namespace OpenUtau.Core {
         public override void Unexecute() => project.tempos[0].bpm = oldBpm;
     }
 
+    public class AddTempoChangeCommand : ProjectCommand {
+        protected int tick;
+        protected double bpm;
+        public AddTempoChangeCommand(UProject project, int tick, double bpm) : base(project) {
+            this.tick = tick;
+            this.bpm = bpm;
+        }
+        protected AddTempoChangeCommand(UProject project) : base(project) { }
+        public override void Execute() {
+            int index = project.tempos.FindIndex(timSig => timSig.position > tick);
+            var tempo = new UTempo {
+                position = tick,
+                bpm = bpm,
+            };
+            if (index >= 0) {
+                project.tempos.Insert(index - 1, tempo);
+            } else {
+                project.tempos.Add(tempo);
+            }
+        }
+        public override void Unexecute() {
+            int index = project.tempos.FindIndex(tempo => tempo.position == tick);
+            if (index >= 0) {
+                project.tempos.RemoveAt(index);
+            } else {
+                throw new Exception("Cannot remove non-exist tempo change.");
+            }
+        }
+        public override string ToString() => $"Add tempo change {bpm} at {tick}";
+    }
+
+    public class DelTempoChangeCommand : AddTempoChangeCommand {
+        public DelTempoChangeCommand(UProject project, int tick) : base(project) {
+            this.tick = tick;
+            var tempo = project.tempos.Find(tempo => tempo.position == tick);
+            bpm = tempo.bpm;
+        }
+        public override void Execute() {
+            base.Unexecute();
+        }
+        public override void Unexecute() {
+            base.Execute();
+        }
+        public override string ToString() => $"Del tempo change {bpm} at {tick}";
+    }
+
+    public class AddTimeSigCommand : ProjectCommand {
+        protected int bar;
+        protected int beatPerBar;
+        protected int beatUnit;
+        public AddTimeSigCommand(UProject project, int bar, int beatPerBar, int beatUnit) : base(project) {
+            this.bar = bar;
+            this.beatPerBar = beatPerBar;
+            this.beatUnit = beatUnit;
+        }
+        protected AddTimeSigCommand(UProject project) : base(project) { }
+        public override void Execute() {
+            int index = project.timeSignatures.FindIndex(timSig => timSig.barPosition > bar);
+            var timeSig = new UTimeSignature {
+                barPosition = bar,
+                beatPerBar = beatPerBar,
+                beatUnit = beatUnit,
+            };
+            if (index >= 0) {
+                project.timeSignatures.Insert(index - 1, timeSig);
+            } else {
+                project.timeSignatures.Add(timeSig);
+            }
+        }
+        public override void Unexecute() {
+            int index = project.timeSignatures.FindIndex(timSig => timSig.barPosition == bar);
+            if (index >= 0) {
+                project.timeSignatures.RemoveAt(index);
+            } else {
+                throw new Exception("Cannot remove non-exist time signature change");
+            }
+        }
+        public override string ToString() => $"Add time sig change {beatPerBar}/{beatUnit} at bar {bar}";
+    }
+
+    public class DelTimeSigCommand : AddTimeSigCommand {
+        public DelTimeSigCommand(UProject project, int bar) : base(project) {
+            this.bar = bar;
+            var timeSig = project.timeSignatures.Find(timSig => timSig.barPosition == bar);
+            beatPerBar = timeSig.beatPerBar;
+            beatUnit = timeSig.beatUnit;
+        }
+        public override void Execute() {
+            base.Unexecute();
+        }
+        public override void Unexecute() {
+            base.Execute();
+        }
+        public override string ToString() => $"Del time sig change {beatPerBar}/{beatUnit} at bar {bar}";
+    }
+
     public class TimeSignatureCommand : ProjectCommand {
         public readonly int oldBeatPerBar;
         public readonly int oldBeatUnit;

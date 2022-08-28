@@ -152,6 +152,18 @@
               Canvas.Top="0" ZIndex="100" IsHitTestVisible="False"
               Fill="{DynamicResource NeutralAccentBrushSemi}"
               Data="M -6.5 0 L 6.5 0 L 6.5 3 L 0 9 L -6.5 3 Z"/>
+        <Canvas.ContextMenu>
+          <ContextMenu Name="TimelineContextMenu" Items="{Binding TimelineContextMenuItems}">
+            <ContextMenu.Styles>
+              <Style Selector="MenuItem">
+                <Setter Property="Header" Value="{Binding Header}"/>
+                <Setter Property="Command" Value="{Binding Command}"/>
+                <Setter Property="CommandParameter" Value="{Binding CommandParameter}"/>
+                <Setter Property="Items" Value="{Binding Items}"/>
+              </Style>
+            </ContextMenu.Styles>
+          </ContextMenu>
+        </Canvas.ContextMenu>
       </Canvas>
       <c:TrackHeaderCanvas Grid.Row="2" Grid.Column="0" ClipToBounds="True" Background="Transparent"
                            DataContext="{Binding TracksViewModel}"

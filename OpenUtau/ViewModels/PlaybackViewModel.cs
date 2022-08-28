@@ -65,6 +65,10 @@ namespace OpenUtau.App.ViewModels {
         public void OnNext(UCommand cmd, bool isUndo) {
             if (cmd is BpmCommand ||
                 cmd is TimeSignatureCommand ||
+                cmd is AddTempoChangeCommand ||
+                cmd is DelTempoChangeCommand ||
+                cmd is AddTimeSigCommand ||
+                cmd is DelTimeSigCommand ||
                 cmd is LoadProjectNotification) {
                 this.RaisePropertyChanged(nameof(BeatPerBar));
                 this.RaisePropertyChanged(nameof(BeatUnit));

@@ -52,6 +52,11 @@ namespace OpenUtau.App.Views {
             this.AttachDevTools();
 #endif
             viewModel.InitProject();
+            viewModel.AddTempoChangeCmd = ReactiveCommand.Create<int>(tick => AddTempoChange(tick));
+            viewModel.DelTempoChangeCmd = ReactiveCommand.Create<int>(tick => DelTempoChange(tick));
+            viewModel.AddTimeSigChangeCmd = ReactiveCommand.Create<int>(bar => AddTimeSigChange(bar));
+            viewModel.DelTimeSigChangeCmd = ReactiveCommand.Create<int>(bar => DelTimeSigChange(bar));
+
             timer = new DispatcherTimer(
                 TimeSpan.FromMilliseconds(15),
                 DispatcherPriority.Normal,
@@ -82,14 +87,9 @@ namespace OpenUtau.App.Views {
 
         void OnEditTimeSignature(object sender, PointerPressedEventArgs args) {
             var project = DocManager.Inst.Project;
-            var dialog = new TypeInDialog();
-            dialog.Title = ThemeManager.GetString("dialogs.timesig.caption");
-            var mainTimeSig = project.timeSignatures[0];
-            dialog.SetText($"{mainTimeSig.beatPerBar}/{mainTimeSig.beatUnit}");
-            dialog.onFinish = s => {
-                var parts = s.Split('/');
-                int beatPerBar = parts.Length > 0 && int.TryParse(parts[0], out beatPerBar) ? beatPerBar : mainTimeSig.beatPerBar;
-                int beatUnit = parts.Length > 1 && int.TryParse(parts[1], out beatUnit) ? beatUnit : mainTimeSig.beatUnit;
+            var timeSig = project.timeSignatures[0];
+            var dialog = new TimeSignatureDialog(timeSig.beatPerBar, timeSig.beatUnit);
+            dialog.OnOk = (beatPerBar, beatUnit) => {
                 viewModel.PlaybackViewModel.SetTimeSignature(beatPerBar, beatUnit);
             };
             dialog.ShowDialog(this);
@@ -110,6 +110,49 @@ namespace OpenUtau.App.Views {
             dialog.ShowDialog(this);
             // Workaround for https://github.com/AvaloniaUI/Avalonia/issues/3986
             args.Pointer.Capture(null);
+        }
+
+        private void AddTempoChange(int tick) {
+            var project = DocManager.Inst.Project;
+            var dialog = new TypeInDialog();
+            dialog.Title = "BPM";
+            dialog.SetText(project.tempos[0].bpm.ToString());
+            dialog.onFinish = s => {
+                if (double.TryParse(s, out double bpm)) {
+                    DocManager.Inst.StartUndoGroup();
+                    DocManager.Inst.ExecuteCmd(new AddTempoChangeCommand(
+                        project, tick, bpm));
+                    DocManager.Inst.EndUndoGroup();
+                }
+            };
+            dialog.ShowDialog(this);
+        }
+
+        private void DelTempoChange(int tick) {
+            var project = DocManager.Inst.Project;
+            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.ExecuteCmd(new DelTempoChangeCommand(project, tick));
+            DocManager.Inst.EndUndoGroup();
+        }
+
+        private void AddTimeSigChange(int bar) {
+            var project = DocManager.Inst.Project;
+            var timeSig = project.timeAxis.TimeSignatureAtBar(bar);
+            var dialog = new TimeSignatureDialog(timeSig.beatPerBar, timeSig.beatUnit);
+            dialog.OnOk = (beatPerBar, beatUnit) => {
+                DocManager.Inst.StartUndoGroup();
+                DocManager.Inst.ExecuteCmd(new AddTimeSigCommand(
+                    project, bar, dialog.BeatPerBar, dialog.BeatUnit));
+                DocManager.Inst.EndUndoGroup();
+            };
+            dialog.ShowDialog(this);
+        }
+
+        private void DelTimeSigChange(int bar) {
+            var project = DocManager.Inst.Project;
+            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.ExecuteCmd(new DelTimeSigCommand(project, bar));
+            DocManager.Inst.EndUndoGroup();
         }
 
         void OnMenuNew(object sender, RoutedEventArgs args) => NewProject();
@@ -697,6 +740,9 @@ namespace OpenUtau.App.Views {
                 args.Pointer.Capture(canvas);
                 viewModel.TracksViewModel.PointToLineTick(point.Position, out int left, out int right);
                 viewModel.PlaybackViewModel.MovePlayPos(left);
+            } else if (point.Properties.IsRightButtonPressed) {
+                int tick = viewModel.TracksViewModel.PointToTick(point.Position);
+                viewModel.RefreshTimelineContextMenu(tick);
             }
         }
 
