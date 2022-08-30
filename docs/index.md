@@ -36,13 +36,13 @@ Open singing synthesis platform / Open source UTAU successor
 
 # Getting Started
 
-[Getting Started](https://github.com/stakira/OpenUtau/wiki/Getting-Started)
+[Getting Started](https://github.com/stakira/OpenUtau/wiki/Getting-Started) / [FAQ](https://github.com/stakira/OpenUtau/wiki/FAQ)
 
-[FAQ](https://github.com/stakira/OpenUtau/wiki/FAQ)
+[中文使用说明](https://opensynth.miraheze.org/wiki/OpenUTAU/%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95) / [常见问题](https://opensynth.miraheze.org/wiki/OpenUTAU/%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98)
 
-[中文使用说明](https://opensynth.miraheze.org/wiki/OpenUTAU/%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95)
+[日本語UTAUユーザーに向けたOpenUTAUの導入～使用](https://note.com/sanin0n/n/ne31954dae782) by [@sanin0n](https://twitter.com/sanin0n)
 
-[ニコニコ大百科](https://dic.nicovideo.jp/t/a/openutau)
+[OpenUTAUの非公式ユーザーガイド](https://twitter.com/96s_kM4osM/status/1456953442237247494) by [@96s_kM4osM](https://twitter.com/96s_kM4osM)
 
 ---
 
