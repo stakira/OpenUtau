@@ -525,6 +525,7 @@ namespace OpenUtau.App.Views {
         void OnKeyDown(object sender, KeyEventArgs args) {
             var tracksVm = viewModel.TracksViewModel;
             if (args.KeyModifiers == KeyModifiers.None) {
+                args.Handled = true;
                 switch (args.Key) {
                     case Key.Delete: viewModel.TracksViewModel.DeleteSelectedParts(); break;
                     case Key.Space: PlayOrPause(); break;
@@ -535,14 +536,22 @@ namespace OpenUtau.App.Views {
                             viewModel.PlaybackViewModel.MovePlayPos(endTick);
                         }
                         break;
-                    default: break;
+                    default:
+                        args.Handled = false;
+                        break;
                 }
             } else if (args.KeyModifiers == KeyModifiers.Alt) {
+                args.Handled = true;
                 switch (args.Key) {
-                    case Key.F4: ((IControlledApplicationLifetime)Application.Current.ApplicationLifetime).Shutdown(); break;
-                    default: break;
+                    case Key.F4:
+                        (Application.Current?.ApplicationLifetime as IControlledApplicationLifetime)?.Shutdown();
+                        break;
+                    default:
+                        args.Handled = false;
+                        break;
                 }
             } else if (args.KeyModifiers == cmdKey) {
+                args.Handled = true;
                 switch (args.Key) {
                     case Key.A: viewModel.TracksViewModel.SelectAllParts(); break;
                     case Key.N: NewProject(); break;
@@ -553,15 +562,19 @@ namespace OpenUtau.App.Views {
                     case Key.C: tracksVm.CopyParts(); break;
                     case Key.X: tracksVm.CutParts(); break;
                     case Key.V: tracksVm.PasteParts(); break;
-                    default: break;
+                    default:
+                        args.Handled = false;
+                        break;
                 }
             } else if (args.KeyModifiers == (cmdKey | KeyModifiers.Shift)) {
+                args.Handled = true;
                 switch (args.Key) {
                     case Key.Z: viewModel.Redo(); break;
-                    default: break;
+                    default:
+                        args.Handled = false;
+                        break;
                 }
             }
-            args.Handled = true;
         }
 
         async void OnDrop(object? sender, DragEventArgs args) {

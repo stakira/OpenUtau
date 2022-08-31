@@ -285,10 +285,11 @@ namespace OpenUtau.App.ViewModels {
             if (SelectedParts.Count > 0) {
                 DocManager.Inst.PartsClipboard = SelectedParts.Select(part => part.Clone()).ToList();
                 DocManager.Inst.StartUndoGroup();
-                foreach (var part in SelectedParts) {
+                var toRemove = new List<UPart>(SelectedParts);
+                SelectedParts.Clear();
+                foreach (var part in toRemove) {
                     DocManager.Inst.ExecuteCmd(new RemovePartCommand(Project, part));
                 }
-                SelectedParts.Clear();
                 DocManager.Inst.EndUndoGroup();
             }
         }
@@ -300,7 +301,7 @@ namespace OpenUtau.App.ViewModels {
             var parts = DocManager.Inst.PartsClipboard
                 .Select(part => part.Clone())
                 .OrderBy(part => part.trackNo).ToList();
-            int newTrackNo = Project.parts.Max(part => part.trackNo);
+            int newTrackNo = Project.parts.Count > 0 ? Project.parts.Max(part => part.trackNo) : -1;
             int oldTrackNo = -1;
             foreach (var part in parts) {
                 if (part.trackNo > oldTrackNo) {
