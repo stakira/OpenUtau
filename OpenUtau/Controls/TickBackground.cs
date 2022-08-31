@@ -183,6 +183,7 @@ namespace OpenUtau.App.Controls {
 
             foreach (var tempo in project.tempos) {
                 double x = Math.Round(tempo.position * TickWidth - pixelOffset) + 0.5;
+                context.DrawLine(penBeatUnit, new Point(x, 0), new Point(x, 12));
                 var textLayout = TextLayoutCache.Get(tempo.bpm.ToString("#0.00"), ThemeManager.BarNumberBrush, 10);
                 using (var state = context.PushPreTransform(Matrix.CreateTranslation(x + 3, 0))) {
                     textLayout.Draw(context);

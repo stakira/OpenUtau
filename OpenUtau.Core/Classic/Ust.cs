@@ -87,6 +87,7 @@ namespace OpenUtau.Classic {
         private static void ParsePart(UProject project, UVoicePart part, List<IniBlock> blocks) {
             var lastNotePos = 0;
             var lastNoteEnd = 0;
+            bool shouldFixTempo = project.tempos[0].bpm >= 0 && project.tempos[0].bpm < 1000; // Need to fix tempo=500k error or not.
             foreach (var block in blocks) {
                 var header = block.header;
                 try {
@@ -107,9 +108,13 @@ namespace OpenUtau.Classic {
                                 if (note.lyric.ToLower() != "r") {
                                     part.notes.Add(note);
                                 }
-                                if (noteTempo != null && (project.tempos[0].bpm <= 0 || project.tempos[0].bpm > 1000)) {
-                                    // Fix tempo=500k error.
-                                    project.tempos[0].bpm = noteTempo.Value;
+                                if (noteTempo != null) {
+                                    if (shouldFixTempo) {
+                                        project.tempos[0].bpm = noteTempo.Value;
+                                        shouldFixTempo = false;
+                                    } else {
+                                        project.tempos.Add(new UTempo(note.position, noteTempo.Value));
+                                    }
                                 }
                             } else {
                                 throw new FileFormatException($"Unexpected header\n{block.header}");
