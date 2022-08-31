@@ -163,6 +163,18 @@ namespace OpenUtau.App.Views {
             editingCell = false;
         }
 
+        void GotoSourceFile(object sender, RoutedEventArgs args) {
+            var oto = otoGrid?.SelectedItem as Core.Ustx.UOto;
+            if (oto == null) {
+                return;
+            }
+            try {
+                OS.GotoFile(oto.File);
+            } catch (Exception e) {
+                DocManager.Inst.ExecuteCmd(new UserMessageNotification(e.ToString()));
+            }
+        }
+
         void DrawOto(Core.Ustx.UOto? oto, bool fit = false) {
             if (otoPlot == null || oto == null) {
                 return;

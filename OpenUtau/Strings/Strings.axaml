@@ -251,6 +251,7 @@ Warning: moresampler is not fully supported. It may be slow and cause high CPU u
   <system:String x:Key="singers.caption">Singers</system:String>
   <system:String x:Key="singers.editoto.reset">Reset Otos</system:String>
   <system:String x:Key="singers.editoto.save">Save Otos</system:String>
+  <system:String x:Key="singers.editoto.gotosource">Goto Source File</system:String>
   <system:String x:Key="singers.location">Location</system:String>
   <system:String x:Key="singers.otoview.moveleft">Move Left</system:String>
   <system:String x:Key="singers.otoview.moveright">Move Right</system:String>

@@ -95,8 +95,11 @@
               Items="{Binding Otos}" SelectedItem="{Binding SelectedOto}" SelectedIndex="{Binding SelectedIndex}"
               SelectionChanged="OnSelectedOtoChanged"
               BeginningEdit="OnBeginningEdit" CellEditEnded="OnCellEditEnded">
-      <DataGrid.KeyBindings>
-      </DataGrid.KeyBindings>
+      <DataGrid.ContextMenu>
+        <ContextMenu>
+          <MenuItem Header="{DynamicResource singers.editoto.gotosource}" Click="GotoSourceFile"/>
+        </ContextMenu>
+      </DataGrid.ContextMenu>
       <DataGrid.Columns>
         <DataGridTextColumn Header="{StaticResource oto.alias}" Binding="{Binding Alias}" IsReadOnly="True" />
         <DataGridTextColumn Header="{StaticResource oto.set}" Binding="{Binding Set}" IsReadOnly="True"/>

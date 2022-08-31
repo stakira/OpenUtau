@@ -164,10 +164,25 @@ namespace OpenUtau.App.ViewModels {
 
         protected override string GetWindowsInstallerCommand(string downloadFilePath) {
             string installerExt = Path.GetExtension(downloadFilePath);
+            if (DoExtensionsMatch(installerExt, ".exe")) {
+                return $"\"{downloadFilePath}\"";
+            }
+            if (DoExtensionsMatch(installerExt, ".msi")) {
+                return $"msiexec /i \"{downloadFilePath}\"";
+            }
+            if (DoExtensionsMatch(installerExt, ".msp")) {
+                return $"msiexec /p \"{downloadFilePath}\"";
+            }
             if (DoExtensionsMatch(installerExt, ".zip")) {
+                string restart = RestartExecutablePath.TrimEnd('\\', '/');
+                if (Environment.OSVersion.Version.Major >= 10 && Environment.OSVersion.Version.Build >= 17063) {
+                    Log.Information("Starting update with tar.");
+                    return $"tar -x -f \"{downloadFilePath}\" -C \"{restart}\"";
+                }
                 var unzipperPath = Path.Combine(Path.GetDirectoryName(downloadFilePath) ?? Path.GetTempPath(), "Unzipper.exe");
                 File.WriteAllBytes(unzipperPath, Resources.Resources.Unzipper);
-                return string.Format($"{unzipperPath} \"{downloadFilePath}\" \"{RestartExecutablePath.TrimEnd('\\', '/')}\"");
+                Log.Information("Starting update with unzipper.");
+                return $"{unzipperPath} \"{downloadFilePath}\" \"{restart}\"";
             }
             return downloadFilePath;
         }

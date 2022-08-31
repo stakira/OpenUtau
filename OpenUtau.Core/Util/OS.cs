@@ -18,6 +18,24 @@ namespace OpenUtau {
             }
         }
 
+        public static void GotoFile(string path) {
+            if (File.Exists(path)) {
+                if (IsWindows()) {
+                    Process.Start(new ProcessStartInfo {
+                        FileName = GetOpener(),
+                        Arguments = $"/select, {path}",
+                    });
+                } else if (IsMacOS()) {
+                    Process.Start(new ProcessStartInfo {
+                        FileName = GetOpener(),
+                        Arguments = $" -R {path}",
+                    });
+                } else {
+                    OpenFolder(Path.GetDirectoryName(path));
+                }
+            }
+        }
+
         public static void OpenWeb(string url) {
             Process.Start(new ProcessStartInfo {
                 FileName = GetOpener(),

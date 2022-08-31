@@ -64,6 +64,7 @@
     <Setter Property="FontSize" Value="12"/>
     <Setter Property="FontFamily" Value="{DynamicResource ui.textbox.fontfamily}"/>
     <Setter Property="VerticalAlignment" Value="Top"/>
+    <Setter Property="SelectionForegroundBrush" Value="White"/>
   </Style>
   <Style Selector="TextBox:disabled">
     <Setter Property="Foreground" Value="{DynamicResource TextControlForegroundDisabled}" />
