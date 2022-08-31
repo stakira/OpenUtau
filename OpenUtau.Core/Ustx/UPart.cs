@@ -139,18 +139,20 @@ namespace OpenUtau.Core.Ustx {
             lock (this) {
                 if (phonemizerResponse != null) {
                     var resp = phonemizerResponse;
-                    phonemes.Clear();
-                    for (int i = 0; i < resp.phonemes.Length; ++i) {
-                        for (int j = 0; j < resp.phonemes[i].Length; ++j) {
-                            phonemes.Add(new UPhoneme() {
-                                rawPosition = resp.phonemes[i][j].position,
-                                rawPhoneme = resp.phonemes[i][j].phoneme,
-                                index = j,
-                                Parent = notes.ElementAtOrDefault(resp.noteIndexes[i]),
-                            });
+                    if (resp.timestamp == notesTimestamp) {
+                        phonemes.Clear();
+                        for (int i = 0; i < resp.phonemes.Length; ++i) {
+                            for (int j = 0; j < resp.phonemes[i].Length; ++j) {
+                                phonemes.Add(new UPhoneme() {
+                                    rawPosition = resp.phonemes[i][j].position,
+                                    rawPhoneme = resp.phonemes[i][j].phoneme,
+                                    index = j,
+                                    Parent = notes.ElementAtOrDefault(resp.noteIndexes[i]),
+                                });
+                            }
                         }
+                        phonemesTimestamp = resp.timestamp;
                     }
-                    phonemesTimestamp = resp.timestamp;
                     phonemizerResponse = null;
                 }
             }
