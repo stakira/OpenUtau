@@ -36,29 +36,39 @@ artifacts:
   - path: changelog.txt
 for:
 -
-  matrix:
+  branches:
     only:
-      - image: macOS
-  build_script:
-    - python appveyor.py
+      - master
+  configuration: Release
+  deploy:
+    release: OpenUtau-Latest
+    description: v$(APPVEYOR_BUILD_VERSION) $(APPVEYOR_REPO_COMMIT_TIMESTAMP)
+    provider: GitHub
+    auth_token:
+      secure: VoTH2ml/pRgjLSGhfPO+NZfCoFzFcfrQjEIl/5+0UufeW6mEvccfwvef3gOaD2ke
+    draft: false
+    prerelease: false
+    force_update: true
+    on:
+      branch: master
+      APPVEYOR_REPO_TAG: false
 -
-  matrix:
+  branches:
     only:
-      - image: Ubuntu
-  build_script:
-    - python appveyor.py
-deploy:
-  release: OpenUtau-Latest
-  description: v$(APPVEYOR_BUILD_VERSION) $(APPVEYOR_REPO_COMMIT_TIMESTAMP)
-  provider: GitHub
-  auth_token:
-    secure: VoTH2ml/pRgjLSGhfPO+NZfCoFzFcfrQjEIl/5+0UufeW6mEvccfwvef3gOaD2ke
-  draft: false
-  prerelease: false
-  force_update: true
-  on:
-    branch: master
-    APPVEYOR_REPO_TAG: false
+      - preview
+  configuration: Release
+  deploy:
+    release: OpenUtau-Preview
+    description: v$(APPVEYOR_BUILD_VERSION) $(APPVEYOR_REPO_COMMIT_TIMESTAMP)
+    provider: GitHub
+    auth_token:
+      secure: VoTH2ml/pRgjLSGhfPO+NZfCoFzFcfrQjEIl/5+0UufeW6mEvccfwvef3gOaD2ke
+    draft: false
+    prerelease: true
+    force_update: true
+    on:
+      branch: beta
+      APPVEYOR_REPO_TAG: false
 on_success:
   - ps: Invoke-RestMethod https://raw.githubusercontent.com/DiscordHooks/appveyor-discord-webhook/master/send.ps1 -o send.ps1
   - ps: ./send.ps1 success $env:discord_webhook
