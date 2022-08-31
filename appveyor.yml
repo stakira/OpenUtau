@@ -36,6 +36,18 @@ artifacts:
   - path: changelog.txt
 for:
 -
+  matrix:
+    only:
+      - image: macOS
+  build_script:
+    - python appveyor.py
+-
+  matrix:
+    only:
+      - image: Ubuntu
+  build_script:
+    - python appveyor.py
+-
   branches:
     only:
       - master
@@ -67,7 +79,7 @@ for:
     prerelease: true
     force_update: true
     on:
-      branch: beta
+      branch: preview
       APPVEYOR_REPO_TAG: false
 on_success:
   - ps: Invoke-RestMethod https://raw.githubusercontent.com/DiscordHooks/appveyor-discord-webhook/master/send.ps1 -o send.ps1
