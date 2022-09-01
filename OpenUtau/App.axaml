@@ -22,6 +22,7 @@
         <ResourceInclude Source="/Strings/Strings.vi-VN.axaml"/>
         <ResourceInclude Source="/Strings/Strings.zh-CN.axaml"/>
         <ResourceInclude Source="/Strings/Strings.zh-TW.axaml"/>
+        <ResourceInclude Source="/Strings/Strings.th-TH.axaml"/>
         <ResourceInclude Source="/Strings/Strings.axaml"/>
         <ResourceInclude Source="/Colors/LightTheme.axaml"/>
         <ResourceInclude Source="/Colors/DarkTheme.axaml"/>
