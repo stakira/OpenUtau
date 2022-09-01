@@ -216,7 +216,7 @@ namespace OpenUtau.Plugin.Builtin
                         if (!HasOto($"{cc[i + 1]}{cc[i + 2]}", syllable.tone) && !HasOto($"{string.Join("", cc.Skip(i))}", syllable.tone)) {
                             cc2 = $"{cc[i + 1]} {cc[i + 2]}";
                         }
-                        if (HasOto($"_{cc.Last()}{v}", syllable.vowelTone) && HasOto(cc2, syllable.vowelTone)) {
+                        if (HasOto($"_{cc.Last()}{v}", syllable.vowelTone) && HasOto(cc2, syllable.vowelTone) && !cc2.Contains($"{cc[i + 1]} {cc[i + 2]}")) {
                             basePhoneme = $"_{cc.Last()}{v}";
                         } if (HasOto(cc1, syllable.tone) && HasOto(cc2, syllable.tone) && !cc1.Contains($"{string.Join("", cc.Skip(i))}")) {
                             // like [V C1] [C1 C2] [C2 C3] [C3 ..]
@@ -226,7 +226,7 @@ namespace OpenUtau.Plugin.Builtin
                         } else if (TryAddPhoneme(phonemes, syllable.tone, $"{cc[i]} {cc[i + 1]}-")) {
                             // like [V C1] [C1 C2-] [C3 ..]
                             i++;
-                        } else if (burstConsonants.Contains(cc[i])) {
+                        } else if (burstConsonants.Contains(cc[i]) && !HasOto(cc2, syllable.tone)) {
                             // like [V C1] [C1] [C2 ..]
                             TryAddPhoneme(phonemes, syllable.tone, cc[i], $"{cc[i]} -");
                             if (cc[i] == cc.Last() && !affricates.Contains(cc[i])) {
@@ -237,14 +237,12 @@ namespace OpenUtau.Plugin.Builtin
                     } else {
                         // like [V C1] [C1 C2]  [C2 ..] or like [V C1] [C1 -] [C3 ..]
                         TryAddPhoneme(phonemes, syllable.tone, cc1);
-                        if (burstConsonants.Contains(cc.Last()))
-                        {
-                            TryAddPhoneme(phonemes, syllable.tone, cc.Last(), $"{cc.Last()} -");
-                        }
-                        if (!affricates.Contains(cc.Last()))
-                        {
-                            phonemes.Remove(cc.Last());
-                            phonemes.Remove($"{cc.Last()} -");
+                        if (burstConsonants.Contains(cc[i]) && !HasOto(cc1, syllable.tone)) {
+                            TryAddPhoneme(phonemes, syllable.tone, cc[i], $"{cc[i]} -");
+                            if (!affricates.Contains(cc[i]) && cc[i] == cc.Last()) {
+                                phonemes.Remove(cc[i]);
+                                phonemes.Remove($"{cc[i]} -");
+                            }
                         }
                     }
                 }
