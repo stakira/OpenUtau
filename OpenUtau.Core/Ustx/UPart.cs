@@ -8,6 +8,9 @@ using Serilog;
 using OpenUtau.Core.Render;
 using OpenUtau.Api;
 using OpenUtau.Core.SignalChain;
+using NWaves.Signals;
+using NWaves.Operations;
+using System.Diagnostics;
 
 namespace OpenUtau.Core.Ustx {
     public abstract class UPart {
@@ -255,7 +258,7 @@ namespace OpenUtau.Core.Ustx {
         [YamlMember(Order = 100)] public string relativePath;
         [YamlMember(Order = 101)] public double fileDurationMs;
         [YamlMember(Order = 102)] public double skipMs;
-        [YamlMember(Order = 103)] public double TrimMs;
+        [YamlMember(Order = 103)] public double trimMs;
 
         [YamlIgnore]
         public override string DisplayName => Missing ? $"[Missing] {name}" : name;
@@ -265,10 +268,12 @@ namespace OpenUtau.Core.Ustx {
             set { }
         }
         [YamlIgnore] bool Missing { get; set; }
-        [YamlIgnore] public float[] Peaks { get; set; }
         [YamlIgnore] public float[] Samples { get; private set; }
+        [YamlIgnore] public Task<DiscreteSignal[]> Peaks { get; set; }
 
         [YamlIgnore] public int channels;
+        [YamlIgnore] public int sampleRate;
+        [YamlIgnore] public int peaksSampleRate;
 
         private int duration;
 
@@ -279,12 +284,14 @@ namespace OpenUtau.Core.Ustx {
         }
 
         public override UPart Clone() {
-            return new UWavePart() {
+            var part = new UWavePart() {
                 _filePath = _filePath,
-                Peaks = Peaks,
-                channels = channels,
-                duration = duration,
+                relativePath = relativePath,
+                skipMs = skipMs,
+                trimMs = trimMs,
             };
+            part.Load(DocManager.Inst.Project);
+            return part;
         }
 
         private readonly object loadLockObj = new object();
@@ -293,6 +300,7 @@ namespace OpenUtau.Core.Ustx {
                 using (var waveStream = Format.Wave.OpenFile(FilePath)) {
                     fileDurationMs = waveStream.TotalTime.TotalMilliseconds;
                     channels = waveStream.WaveFormat.Channels;
+                    sampleRate = waveStream.WaveFormat.SampleRate;
                 }
             } catch (Exception e) {
                 Log.Error(e, $"Failed to load wave part {FilePath}");
@@ -307,23 +315,40 @@ namespace OpenUtau.Core.Ustx {
                 }
             }
             UpdateDuration(project);
-            Task.Run(() => {
+            Peaks = Task.Run(() => {
+                var stopwatch = Stopwatch.StartNew();
                 using (var waveStream = Format.Wave.OpenFile(FilePath)) {
                     var samples = Format.Wave.GetStereoSamples(waveStream);
                     lock (loadLockObj) {
                         Samples = samples;
                     }
                 }
-            });
-        }
+                stopwatch.Stop();
+                Log.Information($"Loaded {FilePath} {stopwatch.Elapsed}");
 
-        public void BuildPeaks(IProgress<int> progress) {
-            using (var waveStream = Format.Wave.OpenFile(FilePath)) {
-                var peaks = Format.Wave.BuildPeaks(waveStream, progress);
-                lock (loadLockObj) {
-                    Peaks = peaks;
+                stopwatch.Restart();
+                float[][] channelSamples = new float[channels][];
+                int length = Samples.Length / channels;
+                for (int i = 0; i < channels; ++i) {
+                    channelSamples[i] = new float[length];
                 }
-            }
+                int pos = 0;
+                for (int i = 0; i < length; ++i) {
+                    for (int j = 0; j < channels; ++j) {
+                        channelSamples[j][i] = Samples[pos++];
+                    }
+                }
+                DiscreteSignal[] peaks = new DiscreteSignal[channels];
+                var resampler = new Resampler();
+                for (int i = 0; i < channels; ++i) {
+                    peaks[i] = new DiscreteSignal(sampleRate, channelSamples[i], false);
+                    peaks[i] = resampler.Decimate(peaks[i], 10);
+                }
+                peaksSampleRate = sampleRate / 10;
+                stopwatch.Stop();
+                Log.Information($"Built peaks {FilePath} {stopwatch.Elapsed}");
+                return peaks;
+            });
         }
 
         public override void Validate(ValidateOptions options, UProject project, UTrack track) {
