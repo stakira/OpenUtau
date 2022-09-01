@@ -74,7 +74,9 @@ namespace OpenUtau.App.ViewModels {
                 this.RaisePropertyChanged(nameof(BeatUnit));
                 this.RaisePropertyChanged(nameof(Bpm));
                 MessageBus.Current.SendMessage(new TimeAxisChangedEvent());
-                DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(0));
+                if (cmd is LoadProjectNotification) {
+                    DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(0));
+                }
             } else if (cmd is SeekPlayPosTickNotification ||
                 cmd is SetPlayPosTickNotification) {
                 this.RaisePropertyChanged(nameof(PlayPosTick));

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 using Avalonia;
 using Avalonia.Controls;
@@ -88,19 +89,19 @@ namespace OpenUtau.App.Controls {
                         Array.Clear(sampleData, 0, sampleData.Length);
                         part.Mix.Mix(samplePos, sampleData, 0, sampleCount);
 
-                        double samplesPerPixel = (double)sampleCount / bitmap.PixelSize.Width;
                         int startSample = 0;
                         for (int i = 0; i < bitmap.PixelSize.Width; ++i) {
-                            int endSample = Math.Min(sampleCount, (int)(i * samplesPerPixel));
-                            float max = 0;
-                            float min = 0;
-                            for (int j = startSample; j < endSample; ++j) {
-                                max = Math.Max(max, sampleData[j]);
-                                min = Math.Min(min, sampleData[j]);
+                            int endTick = (int)(viewModel.TickOrigin + viewModel.TickOffset + (i + 1) / viewModel.TickWidth);
+                            double endMs = project.timeAxis.TickPosToMsPos(endTick);
+                            int endSample = Math.Clamp((int)((endMs - leftMs) * 44100 / 1000) * 2, 0, sampleCount);
+                            if (endSample > startSample) {
+                                var segment = new ArraySegment<float>(sampleData, startSample, endSample - startSample);
+                                float min = segment.Min();
+                                float max = segment.Max();
+                                float yMax = Math.Clamp(-max + 1f, 0, 2) * 0.5f * (bitmap.PixelSize.Height - 2) + 1;
+                                float yMin = Math.Clamp(-min + 1f, 0, 2) * 0.5f * (bitmap.PixelSize.Height - 2) + 1;
+                                DrawPeak(bitmapData, bitmap.PixelSize.Width, i, (int)yMax, (int)yMin);
                             }
-                            float yMax = Math.Clamp(-max + 1f, 0, 2) * 0.5f * (bitmap.PixelSize.Height - 2) + 1;
-                            float yMin = Math.Clamp(-min + 1f, 0, 2) * 0.5f * (bitmap.PixelSize.Height - 2) + 1;
-                            DrawPeak(bitmapData, bitmap.PixelSize.Width, i, (int)yMax, (int)yMin);
                             startSample = endSample;
                         }
                     }

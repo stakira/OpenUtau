@@ -238,35 +238,37 @@ namespace OpenUtau.App.Controls {
                 // Part starts in or to the right of view.
                 x = (int)(TickWidth * (wavePart.position - TickOffset));
             }
+            int posTick = (int)(TickOffset + x / TickWidth);
+            double posMs = timeAxis.TickPosToMsPos(posTick);
             double offsetMs = timeAxis.TickPosToMsPos(wavePart.position);
+            int sampleIndex = (int)(wavePart.peaksSampleRate * (posMs - offsetMs) * 0.001);
+            sampleIndex = Math.Clamp(sampleIndex, 0, peaks[0].Length);
             using (var frameBuffer = bitmap.Lock()) {
                 Array.Clear(bitmapData, 0, bitmapData.Length);
                 while (x < frameBuffer.Size.Width) {
-                    int posTick = (int)(TickOffset + x / TickWidth);
                     if (posTick >= wavePart.position + wavePart.Duration) {
                         break;
                     }
                     int nextPosTick = (int)(TickOffset + (x + 1) / TickWidth);
-                    double posMs = timeAxis.TickPosToMsPos(posTick);
                     double nexPosMs = timeAxis.TickPosToMsPos(nextPosTick);
-                    int sampleIndex = (int)(wavePart.peaksSampleRate * (posMs - offsetMs) * 0.001);
-                    sampleIndex = Math.Max(0, sampleIndex);
                     int nextSampleIndex = (int)(wavePart.peaksSampleRate * (nexPosMs - offsetMs) * 0.001);
-                    nextSampleIndex = Math.Min(peaks[0].Length, nextSampleIndex);
-                    if (nextSampleIndex <= sampleIndex) {
-                        continue;
-                    }
-                    for (int i = 0; i < peaks.Length; ++i) {
-                        var segment = new ArraySegment<float>(peaks[i].Samples, sampleIndex, nextSampleIndex - sampleIndex);
-                        float min = segment.Min();
-                        float max = segment.Max();
-                        double ySpan = peaks.Length == 1 ? monoChnlAmp : stereoChnlAmp;
-                        double yOffset = i == 1 ? monoChnlAmp : 0;
-                        DrawPeak(bitmapData, frameBuffer.Size.Width, x,
-                            (int)(ySpan * (1 + -min) + yOffset) + 2,
-                            (int)(ySpan * (1 + -max) + yOffset) + 2);
+                    nextSampleIndex = Math.Clamp(nextSampleIndex, 0, peaks[0].Length);
+                    if (nextSampleIndex > sampleIndex) {
+                        for (int i = 0; i < peaks.Length; ++i) {
+                            var segment = new ArraySegment<float>(peaks[i].Samples, sampleIndex, nextSampleIndex - sampleIndex);
+                            float min = segment.Min();
+                            float max = segment.Max();
+                            double ySpan = peaks.Length == 1 ? monoChnlAmp : stereoChnlAmp;
+                            double yOffset = i == 1 ? monoChnlAmp : 0;
+                            DrawPeak(bitmapData, frameBuffer.Size.Width, x,
+                                (int)(ySpan * (1 + -min) + yOffset) + 2,
+                                (int)(ySpan * (1 + -max) + yOffset) + 2);
+                        }
                     }
                     x++;
+                    posTick = nextPosTick;
+                    posMs = nexPosMs;
+                    sampleIndex = nextSampleIndex;
                 }
                 Marshal.Copy(bitmapData, 0, frameBuffer.Address, bitmapData.Length);
             }
