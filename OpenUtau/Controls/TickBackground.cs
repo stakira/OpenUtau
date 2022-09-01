@@ -138,7 +138,7 @@ namespace OpenUtau.App.Controls {
             double leftTick = TickOffset + TickOrigin;
             double rightTick = TickOffset + TickOrigin + Bounds.Width / TickWidth;
 
-            project.timeAxis.TickPosToBarBeat((int)leftTick, out int bar, out int beat, out int remainingTicks);
+            project.timeAxis.TickPosToBarBeat(TickOrigin, out int bar, out int beat, out int remainingTicks);
             if (bar > 0) {
                 bar--;
             }
@@ -168,13 +168,15 @@ namespace OpenUtau.App.Controls {
                         ticksPerLine = nextBarTick - barTick;
                     }
                 }
-                for (int tick = barTick + ticksPerLine; tick < nextBarTick; tick += ticksPerLine) {
-                    SnapTicks?.Add(tick);
-                    project.timeAxis.TickPosToBarBeat(tick, out int snapBar, out int snapBeat, out int snapRemainingTicks);
-                    var pen = snapRemainingTicks != 0 ? penDanshed : penBeatUnit;
-                    x = Math.Round(tick * TickWidth - pixelOffset) + 0.5;
-                    y = 24;
-                    context.DrawLine(pen, new Point(x, y), new Point(x, Bounds.Height + 0.5f));
+                if (nextBarTick > leftTick) {
+                    for (int tick = barTick + ticksPerLine; tick < nextBarTick; tick += ticksPerLine) {
+                        SnapTicks?.Add(tick);
+                        project.timeAxis.TickPosToBarBeat(tick, out int snapBar, out int snapBeat, out int snapRemainingTicks);
+                        var pen = snapRemainingTicks != 0 ? penDanshed : penBeatUnit;
+                        x = Math.Round(tick * TickWidth - pixelOffset) + 0.5;
+                        y = 24;
+                        context.DrawLine(pen, new Point(x, y), new Point(x, Bounds.Height + 0.5f));
+                    }
                 }
                 barTick = nextBarTick;
                 bar++;
