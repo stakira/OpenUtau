@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,19 +6,12 @@ using System.Text;
 using K4os.Hash.xxHash;
 using NAudio.Wave;
 using OpenUtau.Core;
+using OpenUtau.Core.Render;
 using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Classic {
     class VoicebankFiles : Core.Util.SingletonBase<VoicebankFiles> {
-
-        readonly ConcurrentDictionary<string, object> lockMap
-            = new ConcurrentDictionary<string, object>();
-
-        private object GetLock(string key) {
-            return lockMap.GetOrAdd(key, _ => new object());
-        }
-
         public string GetSourceTempPath(string singerId, UOto oto, string ext = null) {
             if (string.IsNullOrEmpty(ext)) {
                 ext = Path.GetExtension(oto.File);
@@ -33,7 +25,7 @@ namespace OpenUtau.Classic {
         }
 
         public void CopySourceTemp(string source, string temp) {
-            lock (GetLock(temp)) {
+            lock (Renderers.GetCacheLock(temp)) {
                 DecodeOrStamp(source, temp);
                 var metaFiles = GetMetaFiles(source, temp);
                 metaFiles.ForEach(t => CopyOrStamp(t.Item1, t.Item2, false));
@@ -41,7 +33,7 @@ namespace OpenUtau.Classic {
         }
 
         public void CopyBackMetaFiles(string source, string temp) {
-            lock (GetLock(temp)) {
+            lock (Renderers.GetCacheLock(temp)) {
                 var metaFiles = GetMetaFiles(source, temp);
                 metaFiles.ForEach(t => CopyOrStamp(t.Item2, t.Item1, false));
             }
@@ -111,7 +103,6 @@ namespace OpenUtau.Classic {
                         && File.GetCreationTime(file) < expire)
                 .ToList()
                 .ForEach(file => File.Delete(file));
-            lockMap.Clear();
         }
     }
 }

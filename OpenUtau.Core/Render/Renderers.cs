@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
 using OpenUtau.Core.Ustx;
@@ -43,6 +44,13 @@ namespace OpenUtau.Core.Render {
                 return new Vogen.VogenRenderer();
             }
             return null;
+        }
+
+        readonly static ConcurrentDictionary<string, object> cacheLockMap
+            = new ConcurrentDictionary<string, object>();
+
+        public static object GetCacheLock(string key) {
+            return cacheLockMap.GetOrAdd(key, _ => new object());
         }
     }
 }

@@ -22,8 +22,8 @@ namespace OpenUtau.App.ViewModels {
     public class MainWindowViewModel : ViewModelBase, ICmdSubscriber {
         public bool ExtendToFrame => OS.IsMacOS();
         public string Title => !ProjectSaved
-            ? "OpenUtau"
-            : $"OpenUtau [{DocManager.Inst.Project.FilePath}{(DocManager.Inst.ChangesSaved ? "" : "*")}]";
+            ? $"{AppVersion}"
+            : $"{AppVersion} [{DocManager.Inst.Project.FilePath}{(DocManager.Inst.ChangesSaved ? "" : "*")}]";
         [Reactive] public PlaybackViewModel PlaybackViewModel { get; set; }
         [Reactive] public TracksViewModel TracksViewModel { get; set; }
         [Reactive] public ReactiveCommand<string, Unit>? OpenRecentCommand { get; private set; }

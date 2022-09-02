@@ -24,7 +24,9 @@ namespace OpenUtau.Classic {
             var samples = DoResampler(item, logger);
             var source = new WaveSource(0, 0, 0, 1);
             source.SetSamples(samples);
-            WaveFileWriter.CreateWaveFile16(item.outputFile, new ExportAdapter(source).ToMono(1, 0));
+            lock (Renderers.GetCacheLock(item.outputFile)) {
+                WaveFileWriter.CreateWaveFile16(item.outputFile, new ExportAdapter(source).ToMono(1, 0));
+            }
             return item.outputFile;
         }
 
