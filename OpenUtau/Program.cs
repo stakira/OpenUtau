@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -20,11 +21,10 @@ namespace OpenUtau.App {
         public static void Main(string[] args) {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             InitLogging();
-            var exists = System.Diagnostics.Process.GetProcessesByName(
-                Path.GetFileNameWithoutExtension(
-                    Assembly.GetEntryAssembly()?.Location)).Count() > 1;
+            string processName = Process.GetCurrentProcess().ProcessName;
+            var exists = Process.GetProcessesByName(processName).Count() > 1;
             if (exists) {
-                Log.Information("OpenUtau already open. Exiting.");
+                Log.Information($"Process {processName} already open. Exiting.");
                 return;
             }
             Log.Information($"{Environment.OSVersion}");
