@@ -482,19 +482,35 @@ namespace OpenUtau.App.Views {
             window.Show();
         }
 
+        void OnMenuCheckUpdate(object sender, RoutedEventArgs args) {
+            var dialog = new UpdaterDialog();
+            dialog.ViewModel.CloseApplication =
+                () => (Application.Current?.ApplicationLifetime as IControlledApplicationLifetime)?.Shutdown();
+            dialog.ShowDialog(this);
+        }
+
+        void OnMenuLogsLocation(object sender, RoutedEventArgs args) {
+            try {
+                OS.OpenFolder(PathManager.Inst.LogsPath);
+            } catch (Exception e) {
+                DocManager.Inst.ExecuteCmd(new UserMessageNotification(e.ToString()));
+            }
+        }
+
+        void OnMenuReportIssue(object sender, RoutedEventArgs args) {
+            try {
+                OS.OpenWeb("https://github.com/stakira/OpenUtau/issues");
+            } catch (Exception e) {
+                DocManager.Inst.ExecuteCmd(new UserMessageNotification(e.ToString()));
+            }
+        }
+
         void OnMenuWiki(object sender, RoutedEventArgs args) {
             try {
                 OS.OpenWeb("https://github.com/stakira/OpenUtau/wiki/Getting-Started");
             } catch (Exception e) {
                 DocManager.Inst.ExecuteCmd(new UserMessageNotification(e.ToString()));
             }
-        }
-
-        void OnMenuVersion(object sender, RoutedEventArgs args) {
-            var dialog = new UpdaterDialog();
-            dialog.ViewModel.CloseApplication =
-                () => ((IControlledApplicationLifetime)Application.Current.ApplicationLifetime).Shutdown();
-            dialog.ShowDialog(this);
         }
 
         void OnMenuLayoutVSplit11(object sender, RoutedEventArgs args) => LayoutSplit(null, 1.0 / 2);

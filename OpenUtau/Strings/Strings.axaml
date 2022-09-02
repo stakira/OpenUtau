@@ -89,6 +89,9 @@
   <system:String x:Key="menu.file.savetemplate">Save Template...</system:String>
   <system:String x:Key="menu.help">Help</system:String>
   <system:String x:Key="menu.help.about">About OpenUtau</system:String>
+  <system:String x:Key="menu.help.checkupdate">Check Update</system:String>
+  <system:String x:Key="menu.help.reportissue">Report Issue</system:String>
+  <system:String x:Key="menu.help.logslocation">Open Logs Location</system:String>
   <system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>
   <system:String x:Key="menu.tools">Tools</system:String>
   <system:String x:Key="menu.tools.clearcache">Clear Cache</system:String>
