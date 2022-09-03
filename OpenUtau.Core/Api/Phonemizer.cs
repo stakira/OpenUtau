@@ -52,14 +52,14 @@ namespace OpenUtau.Api {
             public int tone;
 
             /// <summary>
-            /// Position of note in part. Measured in ticks.
-            /// Use TickToMs() and MsToTick() to convert between ticks and milliseconds .
+            /// Position of note in project, measured in ticks.
+            /// Use timeAxis to convert between ticks and milliseconds .
             /// </summary>
             public int position;
 
             /// <summary>
-            /// Duration of note in part. Measured in ticks.
-            /// Use TickToMs() and MsToTick() to convert between ticks and milliseconds .
+            /// Duration of note measured in ticks.
+            /// Use timeAxis to convert between ticks and milliseconds .
             /// </summary>
             public int duration;
 

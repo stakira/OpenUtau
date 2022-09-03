@@ -105,7 +105,7 @@ namespace OpenUtau.Classic {
                                 ParseNote(note, lastNotePos, lastNoteEnd, block.lines, out var noteTempo);
                                 lastNotePos = note.position;
                                 lastNoteEnd = note.End;
-                                if (note.lyric.ToLower() != "r") {
+                                if (note.lyric.ToLowerInvariant() != "r") {
                                     part.notes.Add(note);
                                 }
                                 if (noteTempo != null) {
@@ -254,17 +254,21 @@ namespace OpenUtau.Classic {
                 int pos = ustNote.position + part.position;
                 int end = ustNote.position + ustNote.duration + part.position;
                 var tempo = project.tempos[tempoIndex];
-                if (tempo.position == pos) {
-                    ustNote.tempo = tempo.bpm;
-                    tempoIndex++;
-                } else if (pos < tempo.position && tempo.position < end) {
-                    ustNote.duration = tempo.position - pos;
-                    var inserted = ustNote.Clone();
-                    inserted.position = tempo.position - part.position;
-                    inserted.duration = end - tempo.position;
-                    inserted.tempo = tempo.bpm;
-                    ustNotes.Insert(i + 1, inserted);
-                    tempoIndex++;
+                if (pos <= tempo.position && tempo.position < end) {
+                    if (pos == tempo.position || ustNote.lyric.ToLowerInvariant() != "r") {
+                        // Does not break up the note even if the tempo change is in the middle.
+                        ustNote.tempo = tempo.bpm;
+                        tempoIndex++;
+                    } else {
+                        // Break up rest note to insert tempo.
+                        ustNote.duration = tempo.position - pos;
+                        var inserted = ustNote.Clone();
+                        inserted.position = tempo.position - part.position;
+                        inserted.duration = end - tempo.position;
+                        inserted.tempo = tempo.bpm;
+                        ustNotes.Insert(i + 1, inserted);
+                        tempoIndex++;
+                    }
                 }
             }
             return ustNotes;

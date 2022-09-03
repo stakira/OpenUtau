@@ -120,7 +120,7 @@ namespace OpenUtau.Core.Ustx {
                         group.Add(next);
                         next = next.Next;
                     }
-                    groups.Add(group.Select(e => e.ToPhonemizerNote(track)).ToArray());
+                    groups.Add(group.Select(e => e.ToPhonemizerNote(track, this)).ToArray());
                     noteIndexes.Add(noteIndex);
                     noteIndex++;
                 }
@@ -143,7 +143,7 @@ namespace OpenUtau.Core.Ustx {
                         for (int i = 0; i < resp.phonemes.Length; ++i) {
                             for (int j = 0; j < resp.phonemes[i].Length; ++j) {
                                 phonemes.Add(new UPhoneme() {
-                                    rawPosition = resp.phonemes[i][j].position,
+                                    rawPosition = resp.phonemes[i][j].position - position,
                                     rawPhoneme = resp.phonemes[i][j].phoneme,
                                     index = j,
                                     Parent = notes.ElementAtOrDefault(resp.noteIndexes[i]),
