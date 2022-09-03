@@ -16,6 +16,7 @@ namespace OpenUtau.Plugin.Builtin {
             "お",
             "を",
             "ん",
+            "ン",
             "息",
             "吸",
             "R",
@@ -52,6 +53,7 @@ namespace OpenUtau.Plugin.Builtin {
             "w",
             "v",
             "ng",
+            "・",
         };
 
         static readonly string[] vowels = new string[] {
@@ -62,6 +64,7 @@ namespace OpenUtau.Plugin.Builtin {
             "n=ん",
             "u=ぅ,う,く,ぐ,す,ず,つ,づ,ぬ,ふ,ぶ,ぷ,む,ゅ,ゆ,る,ゥ,ウ,ク,グ,ス,ズ,ツ,ヅ,ヌ,フ,ブ,プ,ム,ュ,ユ,ル,ヴ",
             "N=ン",
+            "・=・",
         };
 
         static readonly string[] consonants = new string[] {
@@ -82,7 +85,7 @@ namespace OpenUtau.Plugin.Builtin {
             "f=f,ふ,ふぁ,ふぃ,ふぇ,ふぉ",
             "h=h,は,はぃ,へ,ほ,ほぅ",
             "k=k,か,く,くぃ,け,こ",
-            "j=j,じ,じぇ,じゃ,じゅ,じょ",
+            "j=j,じ,じぇ,じゃ,じゅ,じょ,ぢ,ぢぇ,ぢゃ,ぢゅ,ぢょ",
             "m=m,ま,む,むぃ,め,も",
             "n=n,な,ぬ,ぬぃ,ね,の",
             "p=p,ぱ,ぷ,ぷぃ,ぺ,ぽ",
@@ -93,9 +96,10 @@ namespace OpenUtau.Plugin.Builtin {
             "ky=ky,き,きぇ,きゃ,きゅ,きょ",
             "w=w,うぃ,うぅ,うぇ,うぉ,わ,ゐ,ゑ,を,ヰ,ヱ",
             "y=y,いぃ,いぇ,や,ゆ,よ",
-            "z=z,ざ,ず,ずぃ,ぜ,ぞ",
+            "z=z,ざ,ず,ずぃ,ぜ,ぞ,づ,づぃ",
             "my=my,み,みぇ,みゃ,みゅ,みょ",
-            "ng=ng,ガ,ギ,グ,ゲ,ゴ",
+            "ng=ng,ガ,ギ,グ,ゲ,ゴ,ギェ,ギャ,ギュ,ギョ,カ゜,キ゜,ク゜,ケ゜,コ゜,キ゜ェ,キ゜ャ,キ゜ュ,キ゜ョ",
+            "・=・,・あ,・い,・う,・え,・お,・ん,・を,・ン",
         };
 
         static readonly Dictionary<string, string> vowelLookup;
