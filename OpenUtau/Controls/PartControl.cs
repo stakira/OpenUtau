@@ -13,6 +13,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Serilog;
 using System.Threading;
+using NWaves.Signals;
 
 namespace OpenUtau.App.Controls {
     class PartControl : TemplatedControl, IDisposable, IProgress<int> {
@@ -119,9 +120,7 @@ namespace OpenUtau.App.Controls {
 
             if (part is UWavePart wavePart) {
                 var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
-                Task.Run(() => {
-                    wavePart.BuildPeaks(this);
-                }).ContinueWith((task) => {
+                wavePart.Peaks.ContinueWith((task) => {
                     if (task.IsFaulted) {
                         Log.Error(task.Exception, "Failed to build peaks");
                     } else {
@@ -195,9 +194,6 @@ namespace OpenUtau.App.Controls {
                 }
             } else if (part is UWavePart wavePart) {
                 // Waveform
-                if (wavePart.Peaks == null) {
-                    return;
-                }
                 try {
                     DrawWaveform(wavePart, GetBitmap(ViewWidth));
                 } catch (Exception e) {
@@ -226,66 +222,53 @@ namespace OpenUtau.App.Controls {
         }
 
         private void DrawWaveform(UWavePart wavePart, WriteableBitmap bitmap) {
-            double width = wavePart.Duration * TickWidth;
+            if (wavePart.Peaks == null ||
+                !wavePart.Peaks.IsCompletedSuccessfully ||
+                wavePart.Peaks.Result == null) {
+                return;
+            }
             double height = TrackHeight;
-            double offset = TickWidth * (TickOffset - wavePart.position);
+            double monoChnlAmp = (height - 4.0) / 2;
+            double stereoChnlAmp = (height - 6.0) / 4;
+
+            var timeAxis = Core.DocManager.Inst.Project.timeAxis;
+            DiscreteSignal[] peaks = wavePart.Peaks.Result;
+            int x = 0;
+            if (TickOffset <= wavePart.position) {
+                // Part starts in or to the right of view.
+                x = (int)(TickWidth * (wavePart.position - TickOffset));
+            }
+            int posTick = (int)(TickOffset + x / TickWidth);
+            double posMs = timeAxis.TickPosToMsPos(posTick);
+            double offsetMs = timeAxis.TickPosToMsPos(wavePart.position);
+            int sampleIndex = (int)(wavePart.peaksSampleRate * (posMs - offsetMs) * 0.001);
+            sampleIndex = Math.Clamp(sampleIndex, 0, peaks[0].Length);
             using (var frameBuffer = bitmap.Lock()) {
                 Array.Clear(bitmapData, 0, bitmapData.Length);
-
-                double monoChnlAmp = (height - 4.0) / 2;
-                double stereoChnlAmp = (height - 6.0) / 4;
-                float[] peaks = wavePart.Peaks;
-                double samplesPerPixel = peaks.Length / width;
-
-                int channels = wavePart.channels;
-                float left, right, lmax, lmin, rmax, rmin;
-                lmax = lmin = rmax = rmin = 0;
-                double position = (int)Math.Round(offset) * samplesPerPixel;
-                int x = 0;
-                if (offset < 0) {
-                    position = 0;
-                    x = (int)-offset;
-                } else {
-                    position = (int)Math.Round(offset) * samplesPerPixel;
-                    x = 0;
-                }
-
-                for (int i = (int)(position / channels) * channels; i < peaks.Length; i += channels) {
-                    left = peaks[i];
-                    right = channels > 1 ? peaks[i + 1] : left;
-                    lmax = Math.Max(left, lmax);
-                    lmin = Math.Min(left, lmin);
-                    if (channels > 1) {
-                        rmax = Math.Max(right, rmax);
-                        rmin = Math.Min(right, rmin);
+                while (x < frameBuffer.Size.Width) {
+                    if (posTick >= wavePart.position + wavePart.Duration) {
+                        break;
                     }
-                    if (i > position) {
-                        lmax = Math.Clamp(lmax, -1, 1);
-                        lmin = Math.Clamp(lmin, -1, 1);
-                        if (channels > 1) {
-                            rmax = Math.Clamp(rmax, -1, 1);
-                            rmin = Math.Clamp(rmin, -1, 1);
-                            DrawPeak(
-                                bitmapData, frameBuffer.Size.Width, x,
-                                (int)(stereoChnlAmp * (1 + lmin)) + 2,
-                                (int)(stereoChnlAmp * (1 + lmax)) + 2);
-                            DrawPeak(
-                                bitmapData, frameBuffer.Size.Width, x,
-                                (int)(stereoChnlAmp * (1 + rmin) + monoChnlAmp) + 2,
-                                (int)(stereoChnlAmp * (1 + rmax) + monoChnlAmp) + 2);
-                        } else {
-                            DrawPeak(
-                                bitmapData, frameBuffer.Size.Width, x,
-                                (int)(monoChnlAmp * (1 + lmin)) + 2,
-                                (int)(monoChnlAmp * (1 + lmax)) + 2);
-                        }
-                        lmax = lmin = rmax = rmin = 0;
-                        position += samplesPerPixel;
-                        x++;
-                        if (x >= bitmap.Size.Width) {
-                            break;
+                    int nextPosTick = (int)(TickOffset + (x + 1) / TickWidth);
+                    double nexPosMs = timeAxis.TickPosToMsPos(nextPosTick);
+                    int nextSampleIndex = (int)(wavePart.peaksSampleRate * (nexPosMs - offsetMs) * 0.001);
+                    nextSampleIndex = Math.Clamp(nextSampleIndex, 0, peaks[0].Length);
+                    if (nextSampleIndex > sampleIndex) {
+                        for (int i = 0; i < peaks.Length; ++i) {
+                            var segment = new ArraySegment<float>(peaks[i].Samples, sampleIndex, nextSampleIndex - sampleIndex);
+                            float min = segment.Min();
+                            float max = segment.Max();
+                            double ySpan = peaks.Length == 1 ? monoChnlAmp : stereoChnlAmp;
+                            double yOffset = i == 1 ? monoChnlAmp : 0;
+                            DrawPeak(bitmapData, frameBuffer.Size.Width, x,
+                                (int)(ySpan * (1 + -min) + yOffset) + 2,
+                                (int)(ySpan * (1 + -max) + yOffset) + 2);
                         }
                     }
+                    x++;
+                    posTick = nextPosTick;
+                    posMs = nexPosMs;
+                    sampleIndex = nextSampleIndex;
                 }
                 Marshal.Copy(bitmapData, 0, frameBuffer.Address, bitmapData.Length);
             }

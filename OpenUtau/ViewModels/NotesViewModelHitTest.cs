@@ -151,7 +151,7 @@ namespace OpenUtau.App.ViewModels {
                 PitchPointShape lastShape = PitchPointShape.l;
                 for (int i = 0; i < note.pitch.data.Count; i++) {
                     var pit = note.pitch.data[i];
-                    int posTick = note.position + viewModel.Project.MillisecondToTick(pit.X);
+                    int posTick = viewModel.Project.timeAxis.MsPosToTickPos(note.PositionMs + pit.X) - viewModel.Part.position;
                     double tone = note.tone + pit.Y / 10;
                     var pitPoint = viewModel.TickToneToPoint(posTick, tone);
                     double x = pitPoint.X;
@@ -173,7 +173,7 @@ namespace OpenUtau.App.ViewModels {
                         double castX = MusicMath.InterpolateShapeX(lastX, x, lastY, y, point.Y, lastShape) - point.X;
                         double dis = double.IsNaN(castX) ? Math.Abs(castY) : Math.Cos(Math.Atan2(Math.Abs(castY), Math.Abs(castX))) * Math.Abs(castY);
                         if (dis < 3) {
-                            double msX = viewModel.Project.TickToMillisecond(viewModel.PointToTick(point) - note.position);
+                            double msX = viewModel.Project.timeAxis.TickPosToMsPos(viewModel.PointToTick(point)) - note.PositionMs;
                             double decCentY = (viewModel.PointToToneDouble(point) - note.tone) * 10;
                             return new PitchPointHitInfo() {
                                 Note = note,
@@ -205,9 +205,9 @@ namespace OpenUtau.App.ViewModels {
                 return null;
             }
             double pitch = note.tone * 100;
-            pitch += note.pitch.Sample(viewModel.Project, note, tick) ?? 0;
+            pitch += note.pitch.Sample(viewModel.Project, viewModel.Part, note, tick) ?? 0;
             if (note.Next != null && note.Next.position == note.End) {
-                double? delta = note.Next.pitch.Sample(viewModel.Project, note.Next, tick);
+                double? delta = note.Next.pitch.Sample(viewModel.Project, viewModel.Part, note.Next, tick);
                 if (delta != null) {
                     pitch += delta.Value + note.Next.tone * 100 - note.tone * 100;
                 }
@@ -251,7 +251,7 @@ namespace OpenUtau.App.ViewModels {
                     result.hitDepth = true;
                 }
 
-                vibrato.GetPeriodStartEnd(note, DocManager.Inst.Project, out var periodStartPos, out var periodEndPos);
+                vibrato.GetPeriodStartEnd(DocManager.Inst.Project, note, out var periodStartPos, out var periodEndPos);
                 Point periodStart = viewModel.TickToneToPoint(periodStartPos);
                 Point periodEnd = viewModel.TickToneToPoint(periodEndPos);
                 if (Math.Abs(mousePos.Y - periodEnd.Y) < viewModel.TrackHeight / 6) {
@@ -275,19 +275,19 @@ namespace OpenUtau.App.ViewModels {
             if (viewModel.Part == null || !viewModel.ShowPhoneme) {
                 return default;
             }
-            var project = viewModel.Project;
+            var timeAxis = viewModel.Project.timeAxis;
             PhonemeHitInfo result = default;
             result.point = mousePos;
             double leftTick = viewModel.TickOffset - 480;
             double rightTick = leftTick + viewModel.ViewportTicks + 480;
             foreach (var phoneme in viewModel.Part.phonemes) {
-                double leftBound = phoneme.position - viewModel.Project.MillisecondToTick(phoneme.preutter);
+                double leftBound = timeAxis.MsPosToTickPos(phoneme.PositionMs - phoneme.preutter) - viewModel.Part.position;
                 double rightBound = phoneme.End;
                 var note = phoneme.Parent;
                 if (leftBound >= rightTick || rightBound <= leftTick || note.Error || note.OverlapError) {
                     continue;
                 }
-                int p0Tick = phoneme.position + project.MillisecondToTick(phoneme.envelope.data[0].X);
+                int p0Tick = timeAxis.MsPosToTickPos(phoneme.PositionMs + phoneme.envelope.data[0].X) - viewModel.Part.position;
                 double p0x = viewModel.TickToneToPoint(p0Tick, 0).X;
                 var point = new Point(p0x, 60 - phoneme.envelope.data[0].Y * 0.24 - 1);
                 if (WithIn(point, mousePos, 3)) {
@@ -296,7 +296,7 @@ namespace OpenUtau.App.ViewModels {
                     result.hitPreutter = true;
                     return result;
                 }
-                int p1Tick = phoneme.position + viewModel.Project.MillisecondToTick(phoneme.envelope.data[1].X);
+                int p1Tick = timeAxis.MsPosToTickPos(phoneme.PositionMs + phoneme.envelope.data[1].X) - viewModel.Part.position;
                 double p1x = viewModel.TickToneToPoint(p1Tick, 0).X;
                 point = new Point(p1x, 60 - phoneme.envelope.data[1].Y * 0.24);
                 if (WithIn(point, mousePos, 3)) {
@@ -328,7 +328,7 @@ namespace OpenUtau.App.ViewModels {
             double rightTick = leftTick + viewModel.ViewportTicks + 480;
             // TODO: Rewrite with a faster searching algorithm, such as binary search.
             foreach (var phoneme in viewModel.Part.phonemes) {
-                double leftBound = phoneme.position - viewModel.Project.MillisecondToTick(phoneme.preutter);
+                double leftBound = viewModel.Project.timeAxis.MsPosToTickPos(phoneme.PositionMs - phoneme.preutter) - viewModel.Part.position;
                 double rightBound = phoneme.End;
                 var note = phoneme.Parent;
                 if (leftBound >= rightTick || rightBound <= leftTick) {

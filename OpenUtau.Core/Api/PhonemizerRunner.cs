@@ -15,9 +15,7 @@ namespace OpenUtau.Api {
         public int[] noteIndexes;
         public Phonemizer.Note[][] notes;
         public Phonemizer phonemizer;
-        public double bpm;
-        public int beatUnit;
-        public int resolution;
+        public TimeAxis timeAxis;
     }
 
     internal class PhonemizerResponse {
@@ -75,6 +73,7 @@ namespace OpenUtau.Api {
                     response.part.SetPhonemizerResponse(response);
                 }
                 DocManager.Inst.Project.Validate(new ValidateOptions {
+                    SkipTiming = true,
                     Part = response.part,
                     SkipPhonemizer = true,
                 });
@@ -85,7 +84,7 @@ namespace OpenUtau.Api {
         static PhonemizerResponse Phonemize(PhonemizerRequest request) {
             var notes = request.notes;
             var phonemizer = request.phonemizer;
-            phonemizer.SetTiming(request.bpm, request.beatUnit, request.resolution);
+            phonemizer.SetTiming(request.timeAxis);
             try {
                 phonemizer.SetUp(notes);
             } catch (Exception e) {

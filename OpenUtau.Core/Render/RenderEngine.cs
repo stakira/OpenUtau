@@ -56,7 +56,7 @@ namespace OpenUtau.Core.Render {
                 oldCancellation.Cancel();
                 oldCancellation.Dispose();
             }
-            double startMs = project.TickToMillisecond(startTick);
+            double startMs = project.timeAxis.TickPosToMsPos(startTick);
             var faders = new List<Fader>();
             var requests = PrepareRequests()
                 .Where(request => request.sources.Length > 0 && request.sources.Max(s => s.EndMs) > startMs)
@@ -74,9 +74,11 @@ namespace OpenUtau.Core.Render {
                     .Select(part => part as UWavePart)
                     .Where(part => part.Samples != null)
                     .Select(part => {
+                        double offsetMs = project.timeAxis.TickPosToMsPos(part.position);
+                        double estimatedLengthMs = project.timeAxis.TickPosToMsPos(part.End) - offsetMs;
                         var waveSource = new WaveSource(
-                            project.TickToMillisecond(part.position),
-                            project.TickToMillisecond(part.Duration),
+                            offsetMs,
+                            estimatedLengthMs,
                             part.skipMs, part.channels);
                         waveSource.SetSamples(part.Samples);
                         return (ISignalSource)waveSource;
@@ -190,9 +192,9 @@ namespace OpenUtau.Core.Render {
                 .ToArray();
             if (playing) {
                 var orderedTuples = tuples
-                    .Where(tuple => tuple.Item1.endPosition > startTick)
-                    .OrderBy(tuple => tuple.Item1.endPosition)
-                    .Concat(tuples.Where(tuple => tuple.Item1.endPosition <= startTick))
+                    .Where(tuple => tuple.Item1.end > startTick)
+                    .OrderBy(tuple => tuple.Item1.end)
+                    .Concat(tuples.Where(tuple => tuple.Item1.end <= startTick))
                     .ToArray();
                 tuples = orderedTuples;
             }

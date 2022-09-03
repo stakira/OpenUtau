@@ -52,6 +52,11 @@ namespace OpenUtau.App.Views {
             this.AttachDevTools();
 #endif
             viewModel.InitProject();
+            viewModel.AddTempoChangeCmd = ReactiveCommand.Create<int>(tick => AddTempoChange(tick));
+            viewModel.DelTempoChangeCmd = ReactiveCommand.Create<int>(tick => DelTempoChange(tick));
+            viewModel.AddTimeSigChangeCmd = ReactiveCommand.Create<int>(bar => AddTimeSigChange(bar));
+            viewModel.DelTimeSigChangeCmd = ReactiveCommand.Create<int>(bar => DelTimeSigChange(bar));
+
             timer = new DispatcherTimer(
                 TimeSpan.FromMilliseconds(15),
                 DispatcherPriority.Normal,
@@ -72,7 +77,7 @@ namespace OpenUtau.App.Views {
 
             UpdaterDialog.CheckForUpdate(
                 dialog => dialog.Show(this),
-                () => ((IControlledApplicationLifetime)Application.Current.ApplicationLifetime).Shutdown(),
+                () => (Application.Current?.ApplicationLifetime as IControlledApplicationLifetime)?.Shutdown(),
                 TaskScheduler.FromCurrentSynchronizationContext());
         }
 
@@ -82,13 +87,9 @@ namespace OpenUtau.App.Views {
 
         void OnEditTimeSignature(object sender, PointerPressedEventArgs args) {
             var project = DocManager.Inst.Project;
-            var dialog = new TypeInDialog();
-            dialog.Title = ThemeManager.GetString("dialogs.timesig.caption");
-            dialog.SetText($"{project.beatPerBar}/{project.beatUnit}");
-            dialog.onFinish = s => {
-                var parts = s.Split('/');
-                int beatPerBar = parts.Length > 0 && int.TryParse(parts[0], out beatPerBar) ? beatPerBar : project.beatPerBar;
-                int beatUnit = parts.Length > 1 && int.TryParse(parts[1], out beatUnit) ? beatUnit : project.beatUnit;
+            var timeSig = project.timeSignatures[0];
+            var dialog = new TimeSignatureDialog(timeSig.beatPerBar, timeSig.beatUnit);
+            dialog.OnOk = (beatPerBar, beatUnit) => {
                 viewModel.PlaybackViewModel.SetTimeSignature(beatPerBar, beatUnit);
             };
             dialog.ShowDialog(this);
@@ -100,7 +101,7 @@ namespace OpenUtau.App.Views {
             var project = DocManager.Inst.Project;
             var dialog = new TypeInDialog();
             dialog.Title = "BPM";
-            dialog.SetText(project.bpm.ToString());
+            dialog.SetText(project.tempos[0].bpm.ToString());
             dialog.onFinish = s => {
                 if (double.TryParse(s, out double bpm)) {
                     viewModel.PlaybackViewModel.SetBpm(bpm);
@@ -109,6 +110,49 @@ namespace OpenUtau.App.Views {
             dialog.ShowDialog(this);
             // Workaround for https://github.com/AvaloniaUI/Avalonia/issues/3986
             args.Pointer.Capture(null);
+        }
+
+        private void AddTempoChange(int tick) {
+            var project = DocManager.Inst.Project;
+            var dialog = new TypeInDialog();
+            dialog.Title = "BPM";
+            dialog.SetText(project.tempos[0].bpm.ToString());
+            dialog.onFinish = s => {
+                if (double.TryParse(s, out double bpm)) {
+                    DocManager.Inst.StartUndoGroup();
+                    DocManager.Inst.ExecuteCmd(new AddTempoChangeCommand(
+                        project, tick, bpm));
+                    DocManager.Inst.EndUndoGroup();
+                }
+            };
+            dialog.ShowDialog(this);
+        }
+
+        private void DelTempoChange(int tick) {
+            var project = DocManager.Inst.Project;
+            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.ExecuteCmd(new DelTempoChangeCommand(project, tick));
+            DocManager.Inst.EndUndoGroup();
+        }
+
+        private void AddTimeSigChange(int bar) {
+            var project = DocManager.Inst.Project;
+            var timeSig = project.timeAxis.TimeSignatureAtBar(bar);
+            var dialog = new TimeSignatureDialog(timeSig.beatPerBar, timeSig.beatUnit);
+            dialog.OnOk = (beatPerBar, beatUnit) => {
+                DocManager.Inst.StartUndoGroup();
+                DocManager.Inst.ExecuteCmd(new AddTimeSigCommand(
+                    project, bar, dialog.BeatPerBar, dialog.BeatUnit));
+                DocManager.Inst.EndUndoGroup();
+            };
+            dialog.ShowDialog(this);
+        }
+
+        private void DelTimeSigChange(int bar) {
+            var project = DocManager.Inst.Project;
+            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.ExecuteCmd(new DelTimeSigCommand(project, bar));
+            DocManager.Inst.EndUndoGroup();
         }
 
         void OnMenuNew(object sender, RoutedEventArgs args) => NewProject();
@@ -548,7 +592,7 @@ namespace OpenUtau.App.Views {
                     case Key.Home: viewModel.PlaybackViewModel.MovePlayPos(0); break;
                     case Key.End:
                         if (viewModel.TracksViewModel.Parts.Count > 0) {
-                            int endTick = viewModel.TracksViewModel.Parts.Max(part => part.EndTick);
+                            int endTick = viewModel.TracksViewModel.Parts.Max(part => part.End);
                             viewModel.PlaybackViewModel.MovePlayPos(endTick);
                         }
                         break;
@@ -694,8 +738,11 @@ namespace OpenUtau.App.Views {
             var point = args.GetCurrentPoint(canvas);
             if (point.Properties.IsLeftButtonPressed) {
                 args.Pointer.Capture(canvas);
-                int tick = viewModel.TracksViewModel.PointToSnappedTick(point.Position);
-                viewModel.PlaybackViewModel.MovePlayPos(tick);
+                viewModel.TracksViewModel.PointToLineTick(point.Position, out int left, out int right);
+                viewModel.PlaybackViewModel.MovePlayPos(left);
+            } else if (point.Properties.IsRightButtonPressed) {
+                int tick = viewModel.TracksViewModel.PointToTick(point.Position);
+                viewModel.RefreshTimelineContextMenu(tick);
             }
         }
 
@@ -703,8 +750,8 @@ namespace OpenUtau.App.Views {
             var canvas = (Canvas)sender;
             var point = args.GetCurrentPoint(canvas);
             if (point.Properties.IsLeftButtonPressed) {
-                int tick = viewModel.TracksViewModel.PointToSnappedTick(point.Position);
-                viewModel.PlaybackViewModel.MovePlayPos(tick);
+                viewModel.TracksViewModel.PointToLineTick(point.Position, out int left, out int right);
+                viewModel.PlaybackViewModel.MovePlayPos(left);
             }
         }
 
@@ -874,6 +921,10 @@ namespace OpenUtau.App.Views {
             } else if (args.KeyModifiers == cmdKey) {
                 var timelineCanvas = this.FindControl<Canvas>("TimelineCanvas");
                 TimelinePointerWheelChanged(timelineCanvas, args);
+            }
+            if (partEditState != null) {
+                var point = args.GetCurrentPoint(partEditState.canvas);
+                partEditState.Update(point.Pointer, point.Position);
             }
         }
 

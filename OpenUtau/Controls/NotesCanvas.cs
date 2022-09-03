@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
@@ -191,10 +190,10 @@ namespace OpenUtau.App.Controls {
         private void RenderPitchBend(UNote note, NotesViewModel viewModel, DrawingContext context) {
             var pitchExp = note.pitch;
             var pts = pitchExp.data;
-            if (pts.Count < 2) return;
+            if (pts.Count < 2 || viewModel.Part == null) return;
 
             var project = viewModel.Project;
-            double p0Tick = note.position + project.MillisecondToTick(pts[0].X);
+            double p0Tick = project.timeAxis.MsPosToTickPos(note.PositionMs + pts[0].X) - viewModel.Part.position;
             double p0Tone = note.tone + pts[0].Y / 10.0;
             Point p0 = viewModel.TickToneToPoint(p0Tick, p0Tone - 0.5);
             points.Clear();
@@ -207,7 +206,7 @@ namespace OpenUtau.App.Controls {
             }
 
             for (int i = 1; i < pts.Count; i++) {
-                double p1Tick = note.position + project.MillisecondToTick(pts[i].X);
+                double p1Tick = project.timeAxis.MsPosToTickPos(note.PositionMs + pts[i].X) - viewModel.Part.position;
                 double p1Tone = note.tone + pts[i].Y / 10.0;
                 Point p1 = viewModel.TickToneToPoint(p1Tick, p1Tone - 0.5);
 
@@ -244,7 +243,7 @@ namespace OpenUtau.App.Controls {
             }
 
             var pen = ThemeManager.AccentPen3;
-            float nPeriod = (float)viewModel.Project.MillisecondToTick(vibrato.period) / note.duration;
+            float nPeriod = (float)viewModel.Project.timeAxis.TicksBetweenMsPos(note.PositionMs, note.PositionMs + vibrato.period) / note.duration;
             float nPos = vibrato.NormalizedStart;
             var point = vibrato.Evaluate(nPos, nPeriod, note);
             points.Clear();
@@ -291,7 +290,7 @@ namespace OpenUtau.App.Controls {
             using (var state = context.PushPreTransform(Matrix.CreateTranslation(fadeOut))) {
                 context.DrawGeometry(pen.Brush, pen, pointGeometry);
             }
-            vibrato.GetPeriodStartEnd(note, DocManager.Inst.Project, out var periodStartPos, out var periodEndPos);
+            vibrato.GetPeriodStartEnd(DocManager.Inst.Project, note, out var periodStartPos, out var periodEndPos);
             Point periodStart = viewModel.TickToneToPoint(periodStartPos);
             Point periodEnd = viewModel.TickToneToPoint(periodEndPos);
             float height = (float)TrackHeight / 3;
@@ -306,11 +305,10 @@ namespace OpenUtau.App.Controls {
             var pen = ThemeManager.FinalPitchPen!;
             lock (Part!) {
                 foreach (var phrase in Part!.renderPhrases) {
-                    if (phrase.phones.First().position > rightTick ||
-                        phrase.phones.Last().position + phrase.phones.Last().duration < leftTick) {
+                    if (phrase.position - Part.position > rightTick || phrase.end - Part.position < leftTick) {
                         continue;
                     }
-                    int pitchStart = phrase.phones[0].position - phrase.phones[0].leading;
+                    int pitchStart = phrase.position - phrase.leading - Part.position;
                     int startIdx = (int)Math.Max(0, (leftTick - pitchStart) / 5);
                     int endIdx = (int)Math.Min(phrase.pitches.Length, (rightTick - pitchStart) / 5 + 1);
                     points.Clear();

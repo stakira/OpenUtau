@@ -15,6 +15,7 @@ using Serilog;
 
 namespace OpenUtau.Core {
     public struct ValidateOptions {
+        public bool SkipTiming;
         public UPart Part;
         public bool SkipPhonemizer;
         public bool SkipPhoneme;

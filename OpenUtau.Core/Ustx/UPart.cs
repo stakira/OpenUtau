@@ -8,6 +8,9 @@ using Serilog;
 using OpenUtau.Core.Render;
 using OpenUtau.Api;
 using OpenUtau.Core.SignalChain;
+using NWaves.Signals;
+using NWaves.Operations;
+using System.Diagnostics;
 
 namespace OpenUtau.Core.Ustx {
     public abstract class UPart {
@@ -18,7 +21,7 @@ namespace OpenUtau.Core.Ustx {
 
         [YamlIgnore] public virtual string DisplayName { get; }
         [YamlIgnore] public virtual int Duration { set; get; }
-        [YamlIgnore] public int EndTick { get { return position + Duration; } }
+        [YamlIgnore] public int End { get { return position + Duration; } }
 
         public UPart() { }
 
@@ -54,14 +57,12 @@ namespace OpenUtau.Core.Ustx {
         public override string DisplayName => name;
 
         public override int GetMinDurTick(UProject project) {
-            return notes.Count > 0
-                ? Math.Max(project.BarTicks, notes.Last().End)
-                : project.BarTicks;
-        }
-
-        public int GetBarDurTick(UProject project) {
-            int barTicks = project.BarTicks;
-            return (int)Math.Ceiling((double)GetMinDurTick(project) / barTicks) * barTicks;
+            int endTicks = position + (notes.LastOrDefault()?.End ?? 1);
+            project.timeAxis.TickPosToBarBeat(endTicks, out int bar, out int beat, out int remainingTicks);
+            if (remainingTicks > 0) {
+                beat++;
+            }
+            return project.timeAxis.BarBeatToTickPos(bar, beat) - position;
         }
 
         public override void BeforeSave(UProject project, UTrack track) {
@@ -74,7 +75,7 @@ namespace OpenUtau.Core.Ustx {
             foreach (var note in notes) {
                 note.AfterLoad(project, track, this);
             }
-            Duration = GetBarDurTick(project);
+            Duration = GetMinDurTick(project);
             foreach (var curve in curves) {
                 if (project.expressions.TryGetValue(curve.abbr, out var descriptor)) {
                     curve.descriptor = descriptor;
@@ -119,7 +120,7 @@ namespace OpenUtau.Core.Ustx {
                         group.Add(next);
                         next = next.Next;
                     }
-                    groups.Add(group.Select(e => e.ToPhonemizerNote(track)).ToArray());
+                    groups.Add(group.Select(e => e.ToPhonemizerNote(track, this)).ToArray());
                     noteIndexes.Add(noteIndex);
                     noteIndex++;
                 }
@@ -129,9 +130,7 @@ namespace OpenUtau.Core.Ustx {
                     noteIndexes = noteIndexes.ToArray(),
                     notes = groups.ToArray(),
                     phonemizer = track.Phonemizer,
-                    bpm = project.bpm,
-                    beatUnit = project.beatUnit,
-                    resolution = project.resolution,
+                    timeAxis = project.timeAxis.Clone(),
                 };
                 notesTimestamp = request.timestamp;
                 DocManager.Inst.PhonemizerRunner?.Push(request);
@@ -144,7 +143,7 @@ namespace OpenUtau.Core.Ustx {
                         for (int i = 0; i < resp.phonemes.Length; ++i) {
                             for (int j = 0; j < resp.phonemes[i].Length; ++j) {
                                 phonemes.Add(new UPhoneme() {
-                                    rawPosition = resp.phonemes[i][j].position,
+                                    rawPosition = resp.phonemes[i][j].position - position,
                                     rawPhoneme = resp.phonemes[i][j].phoneme,
                                     index = j,
                                     Parent = notes.ElementAtOrDefault(resp.noteIndexes[i]),
@@ -259,42 +258,49 @@ namespace OpenUtau.Core.Ustx {
         [YamlMember(Order = 100)] public string relativePath;
         [YamlMember(Order = 101)] public double fileDurationMs;
         [YamlMember(Order = 102)] public double skipMs;
-        [YamlMember(Order = 103)] public double TrimMs;
+        [YamlMember(Order = 103)] public double trimMs;
 
         [YamlIgnore]
         public override string DisplayName => Missing ? $"[Missing] {name}" : name;
         [YamlIgnore]
         public override int Duration {
-            get => fileDurTick;
+            get => duration;
             set { }
         }
         [YamlIgnore] bool Missing { get; set; }
-        [YamlIgnore] public float[] Peaks { get; set; }
         [YamlIgnore] public float[] Samples { get; private set; }
+        [YamlIgnore] public Task<DiscreteSignal[]> Peaks { get; set; }
 
         [YamlIgnore] public int channels;
-        [YamlIgnore] public int fileDurTick;
+        [YamlIgnore] public int sampleRate;
+        [YamlIgnore] public int peaksSampleRate;
 
-        private TimeSpan duration;
+        private int duration;
 
-        public override int GetMinDurTick(UProject project) { return project.MillisecondToTick(duration.TotalMilliseconds); }
+        public override int GetMinDurTick(UProject project) {
+            double posMs = project.timeAxis.TickPosToMsPos(position);
+            int end = project.timeAxis.MsPosToTickPos(posMs + fileDurationMs);
+            return end - position;
+        }
 
         public override UPart Clone() {
-            return new UWavePart() {
+            var part = new UWavePart() {
                 _filePath = _filePath,
-                Peaks = Peaks,
-                channels = channels,
-                fileDurTick = fileDurTick,
+                relativePath = relativePath,
+                skipMs = skipMs,
+                trimMs = trimMs,
             };
+            part.Load(DocManager.Inst.Project);
+            return part;
         }
 
         private readonly object loadLockObj = new object();
         public void Load(UProject project) {
             try {
                 using (var waveStream = Format.Wave.OpenFile(FilePath)) {
-                    duration = waveStream.TotalTime;
-                    fileDurationMs = duration.TotalMilliseconds;
+                    fileDurationMs = waveStream.TotalTime.TotalMilliseconds;
                     channels = waveStream.WaveFormat.Channels;
+                    sampleRate = waveStream.WaveFormat.SampleRate;
                 }
             } catch (Exception e) {
                 Log.Error(e, $"Failed to load wave part {FilePath}");
@@ -302,35 +308,57 @@ namespace OpenUtau.Core.Ustx {
                 if (fileDurationMs == 0) {
                     fileDurationMs = 10000;
                 }
-                duration = TimeSpan.FromMilliseconds(fileDurationMs);
             }
-            fileDurTick = project.MillisecondToTick(fileDurationMs);
             lock (loadLockObj) {
                 if (Samples != null || Missing) {
                     return;
                 }
             }
-            Task.Run(() => {
+            UpdateDuration(project);
+            Peaks = Task.Run(() => {
+                var stopwatch = Stopwatch.StartNew();
                 using (var waveStream = Format.Wave.OpenFile(FilePath)) {
                     var samples = Format.Wave.GetStereoSamples(waveStream);
                     lock (loadLockObj) {
                         Samples = samples;
                     }
                 }
+                stopwatch.Stop();
+                Log.Information($"Loaded {FilePath} {stopwatch.Elapsed}");
+
+                stopwatch.Restart();
+                float[][] channelSamples = new float[channels][];
+                int length = Samples.Length / channels;
+                for (int i = 0; i < channels; ++i) {
+                    channelSamples[i] = new float[length];
+                }
+                int pos = 0;
+                for (int i = 0; i < length; ++i) {
+                    for (int j = 0; j < channels; ++j) {
+                        channelSamples[j][i] = Samples[pos++];
+                    }
+                }
+                DiscreteSignal[] peaks = new DiscreteSignal[channels];
+                var resampler = new Resampler();
+                for (int i = 0; i < channels; ++i) {
+                    peaks[i] = new DiscreteSignal(sampleRate, channelSamples[i], false);
+                    peaks[i] = resampler.Decimate(peaks[i], 10);
+                }
+                peaksSampleRate = sampleRate / 10;
+                stopwatch.Stop();
+                Log.Information($"Built peaks {FilePath} {stopwatch.Elapsed}");
+                return peaks;
             });
         }
 
-        public void BuildPeaks(IProgress<int> progress) {
-            using (var waveStream = Format.Wave.OpenFile(FilePath)) {
-                var peaks = Format.Wave.BuildPeaks(waveStream, progress);
-                lock (loadLockObj) {
-                    Peaks = peaks;
-                }
-            }
+        public override void Validate(ValidateOptions options, UProject project, UTrack track) {
+            UpdateDuration(project);
         }
 
-        public override void Validate(ValidateOptions options, UProject project, UTrack track) {
-            fileDurTick = project.MillisecondToTick(duration.TotalMilliseconds);
+        private void UpdateDuration(UProject project) {
+            double posMs = project.timeAxis.TickPosToMsPos(position);
+            int end = project.timeAxis.MsPosToTickPos(posMs + fileDurationMs);
+            duration = end - position;
         }
 
         public override void BeforeSave(UProject project, UTrack track) {

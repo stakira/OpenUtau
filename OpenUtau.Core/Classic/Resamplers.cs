@@ -30,8 +30,7 @@ namespace OpenUtau.Classic {
 
         public static void Search() {
             var resamplers = new Dictionary<string, IResampler>();
-            IResampler defaultDriver = new WorldlineResampler();
-            resamplers.Add(defaultDriver.Name, defaultDriver);
+            resamplers.Add(WorldlineResampler.name, new WorldlineResampler());
             string basePath = PathManager.Inst.ResamplersPath;
             try {
                 Directory.CreateDirectory(basePath);
@@ -52,7 +51,7 @@ namespace OpenUtau.Classic {
             }
             if (string.IsNullOrEmpty(Preferences.Default.Resampler) ||
                 !Resamplers.resamplers.TryGetValue(Preferences.Default.Resampler, out var _)) {
-                Preferences.Default.Resampler = defaultDriver.Name;
+                Preferences.Default.Resampler = WorldlineResampler.name;
                 Preferences.Save();
             }
         }
@@ -64,15 +63,16 @@ namespace OpenUtau.Classic {
         }
 
         public static IResampler GetResampler(string name) {
-            if (name.StartsWith("worldline")) {
-                name = "worldline";
+            if (string.IsNullOrEmpty(name) || name.StartsWith(WorldlineResampler.name)) {
+                name = WorldlineResampler.name;
             }
             lock (lockObj) {
-                if (resamplers.TryGetValue(name, out var driver)) {
-                    return driver;
+                if (resamplers.TryGetValue(name, out var resampler)) {
+                    return resampler;
+                } else {
+                    return resamplers[WorldlineResampler.name];
                 }
             }
-            return null;
         }
 
         public static bool CheckResampler() {

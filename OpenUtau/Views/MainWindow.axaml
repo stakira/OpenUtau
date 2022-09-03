@@ -152,6 +152,18 @@
               Canvas.Top="0" ZIndex="100" IsHitTestVisible="False"
               Fill="{DynamicResource NeutralAccentBrushSemi}"
               Data="M -6.5 0 L 6.5 0 L 6.5 3 L 0 9 L -6.5 3 Z"/>
+        <Canvas.ContextMenu>
+          <ContextMenu Name="TimelineContextMenu" Items="{Binding TimelineContextMenuItems}">
+            <ContextMenu.Styles>
+              <Style Selector="MenuItem">
+                <Setter Property="Header" Value="{Binding Header}"/>
+                <Setter Property="Command" Value="{Binding Command}"/>
+                <Setter Property="CommandParameter" Value="{Binding CommandParameter}"/>
+                <Setter Property="Items" Value="{Binding Items}"/>
+              </Style>
+            </ContextMenu.Styles>
+          </ContextMenu>
+        </Canvas.ContextMenu>
       </Canvas>
       <c:TrackHeaderCanvas Grid.Row="2" Grid.Column="0" ClipToBounds="True" Background="Transparent"
                            DataContext="{Binding TracksViewModel}"
@@ -167,12 +179,12 @@
       <c:TickBackground Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Margin="0" IsHitTestVisible="False"
                         Foreground="{DynamicResource TickLineBrush}"
                         Background="{DynamicResource TickLineBrushLow}"
-                        BeatPerBar="{Binding PlaybackViewModel.BeatPerBar}"
-                        BeatUnit="{Binding PlaybackViewModel.BeatUnit}"
                         Resolution="{Binding PlaybackViewModel.Resolution}"
                         TickWidth="{Binding TracksViewModel.TickWidth}"
                         TickOffset="{Binding TracksViewModel.TickOffset}"
-                        SnapUnit="{Binding TracksViewModel.SnapUnit}" ShowBarNumber="True"/>
+                        SnapDiv="{Binding TracksViewModel.SnapDiv}"
+                        SnapTicks="{Binding TracksViewModel.SnapTicks}"
+                        ShowBarNumber="True"/>
       <c:PartsCanvas x:Name="partsCanvas" Grid.Row="2" Grid.Column="1" ClipToBounds="True" Background="Transparent"
                      DataContext="{Binding TracksViewModel}"
                      TickWidth="{Binding TickWidth}"
@@ -186,7 +198,7 @@
                      DoubleTapped="PartsCanvasDoubleTapped"
                      PointerWheelChanged="PartsCanvasPointerWheelChanged">
         <Rectangle Name="PlayPosHighlight"
-                   Width="{Binding SnapUnitWidth, Mode=OneWay}"
+                   Width="{Binding PlayPosHighlightWidth, Mode=OneWay}"
                    Height="{Binding $parent.Bounds.Height, Mode=OneWay}"
                    Canvas.Left="{Binding PlayPosHighlightX, Mode=OneWay}"
                    Canvas.Top="0"

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,7 @@ using Serilog;
 
 namespace OpenUtau.Core.Format {
     public class Ustx {
-        public static readonly Version kUstxVersion = new Version(0, 5);
+        public static readonly Version kUstxVersion = new Version(0, 6);
 
         public const string DYN = "dyn";
         public const string PITD = "pitd";
@@ -84,6 +85,9 @@ namespace OpenUtau.Core.Format {
             project.Saved = true;
             project.AfterLoad();
             project.ValidateFull();
+            if (project.ustxVersion > kUstxVersion) {
+                throw new FileFormatException($"Project file is newer than software! Upgrade OpenUtau!");
+            }
             if (project.ustxVersion < kUstxVersion) {
                 Log.Information($"Upgrading project from {project.ustxVersion} to {kUstxVersion}");
             }
@@ -112,6 +116,13 @@ namespace OpenUtau.Core.Format {
                     .Where(note => note.lyric.StartsWith("..."))
                     .ToList()
                     .ForEach(note => note.lyric = note.lyric.Replace("...", "+"));
+                project.ValidateFull();
+            }
+            if (project.ustxVersion < new Version(0, 6)) {
+#pragma warning disable CS0612 // Type or member is obsolete
+                project.timeSignatures = new List<UTimeSignature> { new UTimeSignature(0, project.beatPerBar, project.beatUnit) };
+                project.tempos = new List<UTempo> { new UTempo(0, project.bpm) };
+#pragma warning restore CS0612 // Type or member is obsolete
                 project.ValidateFull();
             }
             project.ustxVersion = kUstxVersion;

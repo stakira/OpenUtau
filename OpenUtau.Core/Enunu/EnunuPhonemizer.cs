@@ -40,6 +40,7 @@ namespace OpenUtau.Core.Enunu {
             var scorePath = Path.Join(enutmpPath, $"score.lab");
             var timingPath = Path.Join(enutmpPath, $"timing.lab");
             var enunuNotes = NoteGroupsToEnunu(notes);
+            double bpm = timeAxis.GetBpmAtTick(notes[0][0].position);
             if (!File.Exists(scorePath) || !File.Exists(timingPath)) {
                 EnunuUtils.WriteUst(enunuNotes, bpm, singer, ustPath);
                 var response = EnunuClient.Inst.SendRequest<TimingResponse>(new string[] { "timing", ustPath });
