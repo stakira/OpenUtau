@@ -52,6 +52,9 @@ namespace OpenUtau.Core.Render {
         public readonly double tempo;
 
         // classic args
+        public readonly double preutterMs;
+        public readonly double overlapMs;
+        public readonly double durCorrectionMs;
         public readonly string resampler;
         public readonly Tuple<string, int?>[] flags;
         public readonly string suffix;
@@ -76,16 +79,16 @@ namespace OpenUtau.Core.Render {
             this.phoneme = phoneme.phoneme;
             tone = note.tone;
             tempo = project.timeAxis.GetBpmAtTick(part.position + phoneme.position);
+            preutterMs = phoneme.preutter;
+            overlapMs = phoneme.overlap;
+            durCorrectionMs = phoneme.preutter - phoneme.tailIntrude + phoneme.tailOverlap;
 
+            resampler = track.RendererSettings.resampler;
             int eng = (int)phoneme.GetExpression(project, track, Format.Ustx.ENG).Item1;
-            if (project.expressions.TryGetValue(Format.Ustx.ENG, out var descriptor)) {
-                if (eng < 0 || eng >= descriptor.options.Length) {
-                    eng = 0;
-                }
+            if (project.expressions.TryGetValue(Format.Ustx.ENG, out var descriptor)
+                && eng >= 0 && eng < descriptor.options.Length
+                && !string.IsNullOrEmpty(descriptor.options[eng])) {
                 resampler = descriptor.options[eng];
-                if (string.IsNullOrEmpty(resampler)) {
-                    resampler = Util.Preferences.Default.Resampler;
-                }
             }
             flags = phoneme.GetResamplerFlags(project, track);
             string voiceColor = phoneme.GetVoiceColor(project, track);
@@ -159,6 +162,7 @@ namespace OpenUtau.Core.Render {
         public readonly ulong hash;
 
         internal readonly IRenderer renderer;
+        public readonly string wavtool;
 
         internal RenderPhrase(UProject project, UTrack track, UVoicePart part, IEnumerable<UPhoneme> phonemes) {
             var uNotes = new List<UNote>();
@@ -178,7 +182,8 @@ namespace OpenUtau.Core.Render {
             }
 
             singer = track.Singer;
-            renderer = track.Renderer;
+            renderer = track.RendererSettings.Renderer;
+            wavtool = track.RendererSettings.wavtool;
             timeAxis = project.timeAxis.Clone();
 
             position = part.position + phonemes.First().position;
@@ -307,6 +312,8 @@ namespace OpenUtau.Core.Render {
             using (var stream = new MemoryStream()) {
                 using (var writer = new BinaryWriter(stream)) {
                     writer.Write(singer.Id);
+                    writer.Write(renderer?.ToString() ?? "");
+                    writer.Write(wavtool ?? "");
                     writer.Write(timeAxis.Timestamp);
                     foreach (var phone in phones) {
                         writer.Write(phone.hash);

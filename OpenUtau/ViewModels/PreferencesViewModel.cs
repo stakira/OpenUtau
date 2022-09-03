@@ -30,27 +30,18 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public int LockStartTime { get; set; }
         public string AdditionalSingersPath => PathManager.Inst.AdditionalSingersPath;
         [Reactive] public int InstallToAdditionalSingersPath { get; set; }
-        public List<IResampler>? Resamplers { get; }
-        public IResampler? ExportResampler {
-            get => exportResampler;
-            set => this.RaiseAndSetIfChanged(ref exportResampler, value);
-        }
-        [Reactive] public int PhaseCompensation { get; set; }
         [Reactive] public int PreRender { get; set; }
         [Reactive] public int Theme { get; set; }
         [Reactive] public int ShowPortrait { get; set; }
-        public List<CultureInfo?>? Languages { get; }
+        public List<CultureInfo>? Languages { get; }
         public CultureInfo? Language {
             get => language;
             set => this.RaiseAndSetIfChanged(ref language, value);
         }
-        public bool MoresamplerSelected => moresamplerSelected.Value;
 
         private List<AudioOutputDevice>? audioOutputDevices;
         private AudioOutputDevice? audioOutputDevice;
-        private IResampler? exportResampler;
         private CultureInfo? language;
-        private readonly ObservableAsPropertyHelper<bool> moresamplerSelected;
 
         public PreferencesViewModel() {
             var audioOutput = PlaybackManager.Inst.AudioOutput;
@@ -67,16 +58,7 @@ namespace OpenUtau.App.ViewModels {
             PlayPosMarkerMargin = Preferences.Default.PlayPosMarkerMargin;
             LockStartTime = Preferences.Default.LockStartTime;
             InstallToAdditionalSingersPath = Preferences.Default.InstallToAdditionalSingersPath ? 1 : 0;
-            Classic.Resamplers.Search();
-            Resamplers = Classic.Resamplers.GetResamplers();
-            if (Resamplers.Count > 0) {
-                int index = Resamplers.FindIndex(resampler => resampler.Name == Preferences.Default.Resampler);
-                if (index >= 0) {
-                    exportResampler = Resamplers[index];
-                } else {
-                    exportResampler = null;
-                }
-            }
+            ToolsManager.Inst.Initialize();
             var pattern = new Regex(@"Strings\.([\w-]+)\.axaml");
             Languages = Application.Current.Resources.MergedDictionaries
                 .Select(res => (ResourceInclude)res)
@@ -91,7 +73,6 @@ namespace OpenUtau.App.ViewModels {
             Language = string.IsNullOrEmpty(Preferences.Default.Language)
                 ? null
                 : CultureInfo.GetCultureInfo(Preferences.Default.Language);
-            PhaseCompensation = Preferences.Default.PhaseCompensation;
             PreRender = Preferences.Default.PreRender ? 1 : 0;
             Theme = Preferences.Default.Theme;
             ShowPortrait = Preferences.Default.ShowPortrait ? 1 : 0;
@@ -131,25 +112,6 @@ namespace OpenUtau.App.ViewModels {
             this.WhenAnyValue(vm => vm.InstallToAdditionalSingersPath)
                 .Subscribe(index => {
                     Preferences.Default.InstallToAdditionalSingersPath = index > 0;
-                    Preferences.Save();
-                });
-            this.WhenAnyValue(vm => vm.ExportResampler)
-                .WhereNotNull()
-                .Subscribe(resampler => {
-                    if (resampler != null) {
-                        Preferences.Default.Resampler = resampler!.Name;
-                        Preferences.Save();
-                        resampler!.CheckPermissions();
-                        DocManager.Inst.ExecuteCmd(new PreRenderNotification());
-                    }
-                });
-            this.WhenAnyValue(vm => vm.ExportResampler)
-                .Select(engine =>
-                    (engine?.Name?.Contains("moresampler", StringComparison.InvariantCultureIgnoreCase) ?? false))
-                .ToProperty(this, x => x.MoresamplerSelected, out moresamplerSelected);
-            this.WhenAnyValue(vm => vm.PhaseCompensation)
-                .Subscribe(phaseComp => {
-                    Preferences.Default.PhaseCompensation = phaseComp;
                     Preferences.Save();
                 });
             this.WhenAnyValue(vm => vm.PreRender)

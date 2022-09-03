@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
@@ -17,6 +19,19 @@ namespace OpenUtau.App.Views {
 
         private void InitializeComponent() {
             AvaloniaXamlLoader.Load(this);
+        }
+
+        public static Task<MessageBoxResult> ShowError(Window parent, AggregateException e) {
+            e = e.Flatten();
+            string text = $"{e.InnerExceptions.First().Message}\n\n{e}";
+            string title = ThemeManager.GetString("errors.caption");
+            return Show(parent, text, title, MessageBoxButtons.Ok);
+        }
+
+        public static Task<MessageBoxResult> ShowError(Window parent, Exception e) {
+            string text = $"{e.Message}\n\n{e}";
+            string title = ThemeManager.GetString("errors.caption");
+            return Show(parent, text, title, MessageBoxButtons.Ok);
         }
 
         public static Task<MessageBoxResult> Show(Window parent, string text, string title, MessageBoxButtons buttons) {

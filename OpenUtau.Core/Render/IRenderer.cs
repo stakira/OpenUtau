@@ -1,8 +1,12 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core.Render {
+    public class NoResamplerException : Exception { }
+    public class NoWavtoolException : Exception { }
+
     /// <summary>
     /// Render result of a phrase.
     /// </summary>

@@ -23,18 +23,8 @@ namespace OpenUtau.App.Views {
             try {
                 (DataContext as ExpressionsViewModel)?.Apply();
                 Close();
-            } catch (ArgumentException e) {
-                MessageBox.Show(
-                    this,
-                    e.Message,
-                    ThemeManager.GetString("errors.caption"),
-                    MessageBox.MessageBoxButtons.Ok);
             } catch (Exception e) {
-                MessageBox.Show(
-                    this,
-                    e.ToString(),
-                    ThemeManager.GetString("errors.caption"),
-                    MessageBox.MessageBoxButtons.Ok);
+                MessageBox.ShowError(this, e);
             }
         }
 

@@ -79,7 +79,7 @@ namespace OpenUtau.App {
         }
 
         public static void InitOpenUtau() {
-            Resamplers.Search();
+            ToolsManager.Inst.Initialize();
             SingerManager.Inst.Initialize();
             DocManager.Inst.Initialize();
         }

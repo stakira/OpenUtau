@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
@@ -137,6 +138,15 @@ namespace OpenUtau.App.Controls {
                 ViewModel.Volume = 0;
             }
             args.Handled = true;
+        }
+
+        void TrackSettingsButtonClicked(object sender, RoutedEventArgs args) {
+            if (track?.Singer != null && track.Singer.Found) {
+                var dialog = new Views.TrackSettingsDialog(track);
+                var window = (Application.Current?.ApplicationLifetime
+                    as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
+                dialog.ShowDialog(window);
+            }
         }
 
         public void Dispose() {

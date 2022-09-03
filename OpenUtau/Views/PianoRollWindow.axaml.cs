@@ -794,13 +794,12 @@ namespace OpenUtau.App.Views {
                     case Key.Up: notesVm.TransposeSelection(1); break;
                     case Key.Down: notesVm.TransposeSelection(-1); break;
                     case Key.Space:
-                        if (ViewModel.PlaybackViewModel != null &&
-                            !ViewModel.PlaybackViewModel.PlayOrPause()) {
-                            MessageBox.Show(
-                               this,
-                               ThemeManager.GetString("dialogs.noresampler.message"),
-                               ThemeManager.GetString("dialogs.noresampler.caption"),
-                               MessageBox.MessageBoxButtons.Ok);
+                        if (ViewModel.PlaybackViewModel != null) {
+                            try {
+                                ViewModel.PlaybackViewModel.PlayOrPause();
+                            } catch (Exception e) {
+                                MessageBox.ShowError(this, e);
+                            }
                         }
                         break;
                     case Key.Home:

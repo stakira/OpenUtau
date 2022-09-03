@@ -65,7 +65,7 @@ namespace OpenUtau.Core.Enunu {
                     if (cancellation.IsCancellationRequested) {
                         return new RenderResult();
                     }
-                    string progressInfo = string.Join(" ", phrase.phones.Select(p => p.phoneme));
+                    string progressInfo = $"{this} \"{string.Join(" ", phrase.phones.Select(p => p.phoneme))}\"";
                     progress.Complete(0, progressInfo);
                     var tmpPath = Path.Join(PathManager.Inst.CachePath, $"enu-{phrase.preEffectHash:x16}");
                     var ustPath = tmpPath + ".tmp";
@@ -208,6 +208,6 @@ namespace OpenUtau.Core.Enunu {
             return notes.ToArray();
         }
 
-        public override string ToString() => "ENUNU";
+        public override string ToString() => Renderers.ENUNU;
     }
 }

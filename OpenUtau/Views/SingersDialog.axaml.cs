@@ -112,11 +112,7 @@ namespace OpenUtau.App.Views {
                 viewModel.SetPortrait(Path.GetRelativePath(viewModel.Singer.Location, files[0]));
             } catch (Exception e) {
                 Log.Error(e, "Failed to set portrait");
-                _ = await MessageBox.Show(
-                     this,
-                     e.ToString(),
-                     ThemeManager.GetString("errors.caption"),
-                     MessageBox.MessageBoxButtons.Ok);
+                _ = await MessageBox.ShowError(this, e);
             }
         }
 
