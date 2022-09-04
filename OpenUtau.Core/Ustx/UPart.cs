@@ -311,6 +311,7 @@ namespace OpenUtau.Core.Ustx {
             }
             lock (loadLockObj) {
                 if (Samples != null || Missing) {
+                    Peaks = Task.FromResult<DiscreteSignal[]>(null);
                     return;
                 }
             }
