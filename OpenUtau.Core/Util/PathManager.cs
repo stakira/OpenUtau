@@ -13,17 +13,35 @@ namespace OpenUtau.Core {
         public PathManager() {
             RootPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
             if (OS.IsMacOS()) {
-                HomePath = Path.Combine(Environment.GetFolderPath(
-                    Environment.SpecialFolder.Personal), "Library", "OpenUtau");
+                string userHome = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+                DataPath = Path.Combine(userHome, "Library", "OpenUtau");
+                CachePath = Path.Combine(userHome, "Library", "Caches", "OpenUtau");
                 HomePathIsAscii = true;
+                try {
+                    // Deletes old cache.
+                    string oldCache = Path.Combine(DataPath, "Cache");
+                    if (Directory.Exists(oldCache)) {
+                        Directory.Delete(oldCache, true);
+                    }
+                } finally { }
             } else if (OS.IsLinux()) {
-                HomePath = Path.Combine(Environment.GetFolderPath(
-                    Environment.SpecialFolder.Personal), "OpenUtau");
+                string userHome = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+                string dataHome = Environment.GetEnvironmentVariable("XDG_DATA_HOME");
+                if (string.IsNullOrEmpty(dataHome)) {
+                    dataHome = Path.Combine(userHome, ".local", "share");
+                }
+                DataPath = Path.Combine(dataHome, "OpenUtau");
+                string cacheHome = Environment.GetEnvironmentVariable("XDG_CACHE_HOME");
+                if (string.IsNullOrEmpty(cacheHome)) {
+                    cacheHome = Path.Combine(userHome, ".cache");
+                }
+                CachePath = Path.Combine(cacheHome, "OpenUtau");
                 HomePathIsAscii = true;
             } else {
-                HomePath = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
+                DataPath = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
+                CachePath = Path.Combine(DataPath, "Cache");
                 HomePathIsAscii = true;
-                var etor = StringInfo.GetTextElementEnumerator(HomePath);
+                var etor = StringInfo.GetTextElementEnumerator(DataPath);
                 while (etor.MoveNext()) {
                     string s = etor.GetTextElement();
                     if (s.Length != 1 || s[0] >= 128) {
@@ -32,28 +50,29 @@ namespace OpenUtau.Core {
                     }
                 }
             }
-            Log.Logger.Information($"Home path = {HomePath}");
+            Log.Logger.Information($"Data path = {DataPath}");
+            Log.Logger.Information($"Cache path = {CachePath}");
         }
 
         public string RootPath { get; private set; }
-        public string HomePath { get; private set; }
+        public string DataPath { get; private set; }
+        public string CachePath { get; private set; }
         public bool HomePathIsAscii { get; private set; }
-        public string SingersPathOld => Path.Combine(HomePath, "Content", "Singers");
-        public string SingersPath => Path.Combine(HomePath, "Singers");
+        public string SingersPathOld => Path.Combine(DataPath, "Content", "Singers");
+        public string SingersPath => Path.Combine(DataPath, "Singers");
         public string AdditionalSingersPath => Preferences.Default.AdditionalSingerPath;
         public string SingersInstallPath => Preferences.Default.InstallToAdditionalSingersPath
             && !string.IsNullOrEmpty(Preferences.Default.AdditionalSingerPath)
                 ? AdditionalSingersPath
                 : SingersPath;
-        public string ResamplersPath => Path.Combine(HomePath, "Resamplers");
-        public string PluginsPath => Path.Combine(HomePath, "Plugins");
-        public string DictionariesPath => Path.Combine(HomePath, "Dictionaries");
-        public string TemplatesPath => Path.Combine(HomePath, "Templates");
-        public string LogsPath => Path.Combine(HomePath, "Logs");
-        public string LogFilePath => Path.Combine(HomePath, "Logs", "log.txt");
-        public string PrefsFilePath => Path.Combine(HomePath, "prefs.json");
-        public string NotePresetsFilePath => Path.Combine(HomePath, "notepresets.json");
-        public string CachePath => Path.Combine(HomePath, "Cache");
+        public string ResamplersPath => Path.Combine(DataPath, "Resamplers");
+        public string PluginsPath => Path.Combine(DataPath, "Plugins");
+        public string DictionariesPath => Path.Combine(DataPath, "Dictionaries");
+        public string TemplatesPath => Path.Combine(DataPath, "Templates");
+        public string LogsPath => Path.Combine(DataPath, "Logs");
+        public string LogFilePath => Path.Combine(DataPath, "Logs", "log.txt");
+        public string PrefsFilePath => Path.Combine(DataPath, "prefs.json");
+        public string NotePresetsFilePath => Path.Combine(DataPath, "notepresets.json");
 
         public string GetPartSavePath(string projectPath, int partNo) {
             var name = Path.GetFileNameWithoutExtension(projectPath);
