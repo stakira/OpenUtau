@@ -45,7 +45,9 @@ namespace OpenUtau.App.Views {
         private readonly ReactiveCommand<UPart, Unit> PartRenameCommand;
 
         public MainWindow() {
+            Log.Information("Creating main window.");
             InitializeComponent();
+            Log.Information("Initialized main window component.");
             DataContext = viewModel = new MainWindowViewModel();
             partsContextMenu = this.Find<ContextMenu>("PartsContextMenu");
 #if DEBUG
@@ -75,10 +77,12 @@ namespace OpenUtau.App.Views {
 
             DocManager.Inst.AddSubscriber(this);
 
+            Log.Information("Main window checking Update.");
             UpdaterDialog.CheckForUpdate(
                 dialog => dialog.Show(this),
                 () => (Application.Current?.ApplicationLifetime as IControlledApplicationLifetime)?.Shutdown(),
                 TaskScheduler.FromCurrentSynchronizationContext());
+            Log.Information("Created main window.");
         }
 
         private void InitializeComponent() {

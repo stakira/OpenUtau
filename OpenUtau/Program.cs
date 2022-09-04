@@ -66,6 +66,7 @@ namespace OpenUtau.App {
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler((sender, args) => {
                 Log.Error((Exception)args.ExceptionObject, "Unhandled exception");
             });
+            Log.Information("Logging initialized.");
         }
     }
 }
