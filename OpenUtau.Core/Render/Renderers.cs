@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Classic;
@@ -64,7 +65,7 @@ namespace OpenUtau.Core.Render {
             for (int i = 0; i < phrase.dynamics.Length; ++i) {
                 int endTick = startTick + interval;
                 double endMs = phrase.timeAxis.TickPosToMsPos(endTick);
-                int endSample = (int)((endMs - startMs) / 1000 * 44100);
+                int endSample = Math.Min((int)((endMs - startMs) / 1000 * 44100), result.samples.Length);
                 float a = phrase.dynamics[i];
                 float b = (i + 1) == phrase.dynamics.Length ? phrase.dynamics[i] : phrase.dynamics[i + 1];
                 for (int j = startSample; j < endSample; ++j) {
