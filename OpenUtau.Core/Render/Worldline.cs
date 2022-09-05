@@ -165,7 +165,7 @@ namespace OpenUtau.Core.Render {
                     tone = item.tone,
                     con_vel = item.velocity,
                     offset = item.offset,
-                    required_length = item.requiredLength,
+                    required_length = item.durRequired,
                     consonant = item.consonant,
                     cut_off = item.cutoff,
                     volume = item.volume,

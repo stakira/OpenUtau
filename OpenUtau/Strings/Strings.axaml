@@ -36,6 +36,10 @@
   <system:String x:Key="dialogs.noresampler.caption">No resampler</system:String>
   <system:String x:Key="dialogs.noresampler.message">No resampler! Put your favourite resampler exe or dll in the Resamplers folder and choose it in Preferences!</system:String>
   <system:String x:Key="dialogs.timesig.caption">Time Signature</system:String>
+  <system:String x:Key="dialogs.tracksettings.caption">Track Settings</system:String>
+  <system:String x:Key="dialogs.tracksettings.location">Location</system:String>
+  <system:String x:Key="dialogs.tracksettings.renderer">Renderer</system:String>
+  <system:String x:Key="dialogs.tracksettings.setasdefault">Set As Default</system:String>
 
   <system:String x:Key="errors.caption">Error</system:String>
 
@@ -251,6 +255,7 @@ Hold Ctrl to select</system:String>
   <system:String x:Key="prefs.rendering.resampler.note">
     Note: to use external resamplers, please add the resampler DLL or EXE file in the Resamplers folder in the OpenUtau install path and choose it in Preferences.
   </system:String>
+  <system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>
 
   <system:String x:Key="progress.saved">Project saved. {0}</system:String>
   <system:String x:Key="progress.waitingrendering">Waiting Rendering</system:String>

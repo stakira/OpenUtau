@@ -45,7 +45,9 @@ namespace OpenUtau.App.Views {
         private readonly ReactiveCommand<UPart, Unit> PartRenameCommand;
 
         public MainWindow() {
+            Log.Information("Creating main window.");
             InitializeComponent();
+            Log.Information("Initialized main window component.");
             DataContext = viewModel = new MainWindowViewModel();
             partsContextMenu = this.Find<ContextMenu>("PartsContextMenu");
 #if DEBUG
@@ -75,10 +77,12 @@ namespace OpenUtau.App.Views {
 
             DocManager.Inst.AddSubscriber(this);
 
+            Log.Information("Main window checking Update.");
             UpdaterDialog.CheckForUpdate(
                 dialog => dialog.Show(this),
                 () => (Application.Current?.ApplicationLifetime as IControlledApplicationLifetime)?.Shutdown(),
                 TaskScheduler.FromCurrentSynchronizationContext());
+            Log.Information("Created main window.");
         }
 
         private void InitializeComponent() {
@@ -182,11 +186,7 @@ namespace OpenUtau.App.Views {
                 viewModel.OpenProject(files);
             } catch (Exception e) {
                 Log.Error(e, $"Failed to open files {string.Join("\n", files)}");
-                _ = await MessageBox.Show(
-                     this,
-                     e.ToString(),
-                     ThemeManager.GetString("errors.caption"),
-                     MessageBox.MessageBoxButtons.Ok);
+                _ = await MessageBox.ShowError(this, e);
             }
         }
 
@@ -217,11 +217,7 @@ namespace OpenUtau.App.Views {
                 OS.OpenFolder(System.IO.Path.GetDirectoryName(project.FilePath));
             } catch (Exception e) {
                 Log.Error(e, "Failed to open project location.");
-                MessageBox.Show(
-                    this,
-                    e.ToString(),
-                    ThemeManager.GetString("errors.caption"),
-                    MessageBox.MessageBoxButtons.Ok);
+                MessageBox.ShowError(this, e);
             }
         }
 
@@ -283,11 +279,7 @@ namespace OpenUtau.App.Views {
                 viewModel.ImportTracks(await dialog.ShowAsync(this));
             } catch (Exception e) {
                 Log.Error(e, $"Failed to import files");
-                _ = await MessageBox.Show(
-                     this,
-                     e.ToString(),
-                     ThemeManager.GetString("errors.caption"),
-                     MessageBox.MessageBoxButtons.Ok);
+                _ = await MessageBox.ShowError(this, e);
             }
         }
 
@@ -309,11 +301,7 @@ namespace OpenUtau.App.Views {
                 viewModel.ImportAudio(files[0]);
             } catch (Exception e) {
                 Log.Error(e, "Failed to import audio");
-                _ = await MessageBox.Show(
-                     this,
-                     e.ToString(),
-                     ThemeManager.GetString("errors.caption"),
-                     MessageBox.MessageBoxButtons.Ok);
+                _ = await MessageBox.ShowError(this, e);
             }
         }
 
@@ -335,11 +323,7 @@ namespace OpenUtau.App.Views {
                 viewModel.ImportMidi(files[0]);
             } catch (Exception e) {
                 Log.Error(e, "Failed to import midi");
-                _ = await MessageBox.Show(
-                     this,
-                     e.ToString(),
-                     ThemeManager.GetString("errors.caption"),
-                     MessageBox.MessageBoxButtons.Ok);
+                _ = await MessageBox.ShowError(this, e);
             }
         }
 
@@ -654,22 +638,14 @@ namespace OpenUtau.App.Views {
                     viewModel.OpenProject(new string[] { file });
                 } catch (Exception e) {
                     Log.Error(e, $"Failed to open file {file}");
-                    _ = await MessageBox.Show(
-                         this,
-                         e.ToString(),
-                         ThemeManager.GetString("errors.caption"),
-                         MessageBox.MessageBoxButtons.Ok);
+                    _ = await MessageBox.ShowError(this, e);
                 }
             } else if (ext == ".mid") {
                 try {
                     viewModel.ImportMidi(file);
                 } catch (Exception e) {
                     Log.Error(e, "Failed to import midi");
-                    _ = await MessageBox.Show(
-                         this,
-                         e.ToString(),
-                         ThemeManager.GetString("errors.caption"),
-                         MessageBox.MessageBoxButtons.Ok);
+                    _ = await MessageBox.ShowError(this, e);
                 }
             } else if (ext == ".zip" || ext == ".rar" || ext == ".uar") {
                 var setup = new SingerSetupDialog() {
@@ -688,11 +664,7 @@ namespace OpenUtau.App.Views {
                     viewModel.ImportAudio(file);
                 } catch (Exception e) {
                     Log.Error(e, "Failed to import audio");
-                    _ = await MessageBox.Show(
-                         this,
-                         e.ToString(),
-                         ThemeManager.GetString("errors.caption"),
-                         MessageBox.MessageBoxButtons.Ok);
+                    _ = await MessageBox.ShowError(this, e);
                 }
             }
         }
@@ -702,12 +674,22 @@ namespace OpenUtau.App.Views {
         }
 
         void PlayOrPause() {
-            if (!viewModel.PlaybackViewModel.PlayOrPause()) {
+            try {
+                viewModel.PlaybackViewModel.PlayOrPause();
+            } catch (Core.Render.NoResamplerException _) {
                 MessageBox.Show(
                    this,
                    ThemeManager.GetString("dialogs.noresampler.message"),
                    ThemeManager.GetString("dialogs.noresampler.caption"),
                    MessageBox.MessageBoxButtons.Ok);
+            } catch (Core.Render.NoWavtoolException _) {
+                MessageBox.Show(
+                   this,
+                   ThemeManager.GetString("dialogs.noresampler.message"),
+                   ThemeManager.GetString("dialogs.noresampler.caption"),
+                   MessageBox.MessageBoxButtons.Ok);
+            } catch (Exception e) {
+                MessageBox.ShowError(this, e);
             }
         }
 

@@ -23,8 +23,11 @@ namespace OpenUtau.Classic {
         public int volume;
         public int modulation;
 
+        public float preutter;
+        public float overlap;
         public double offset;
-        public double requiredLength;
+        public double durRequired;
+        public double durCorrection;
         public double consonant;
         public double cutoff;
         public double skipOver;
@@ -38,7 +41,7 @@ namespace OpenUtau.Classic {
             this.phrase = phrase;
             this.phone = phone;
 
-            resampler = Resamplers.GetResampler(phone.resampler);
+            resampler = ToolsManager.Inst.GetResampler(phone.resampler);
             inputFile = phone.oto.File;
             inputTemp = VoicebankFiles.Inst.GetSourceTempPath(phrase.singer.Id, phone.oto, ".wav");
             tone = phone.tone;
@@ -48,14 +51,18 @@ namespace OpenUtau.Classic {
             volume = (int)(phone.volume * 100);
             modulation = (int)(phone.modulation * 100);
 
+            preutter = (float)phone.preutterMs;
+            overlap = (float)phone.overlapMs;
             offset = phone.oto.Offset;
             var stretchRatio = Math.Pow(2, 1.0 - velocity * 0.01);
             double pitchLeadingMs = phone.oto.Preutter * stretchRatio;
-            double durMs = pitchLeadingMs + phone.envelope[4].X;
-            requiredLength = Math.Ceiling(durMs / 50 + 1) * 50;
+            skipOver = phone.oto.Preutter * stretchRatio - phone.leadingMs;
+            durRequired = phone.endMs - phone.positionMs + phone.durCorrectionMs + skipOver;
+            durRequired = Math.Max(durRequired, phone.oto.Consonant);
+            durRequired = Math.Ceiling(durRequired / 50.0 + 0.5) * 50.0;
+            durCorrection = phone.durCorrectionMs;
             consonant = phone.oto.Consonant;
             cutoff = phone.oto.Cutoff;
-            skipOver = phone.oto.Preutter * stretchRatio - phone.leadingMs;
 
             int pitchLeading = phrase.timeAxis.TicksBetweenMsPos(phone.positionMs - pitchLeadingMs, phone.positionMs);
             int pitchSkip = (phrase.leading + phone.position - pitchLeading) / 5;
@@ -80,10 +87,21 @@ namespace OpenUtau.Classic {
                 $"res-{XXH32.DigestOf(Encoding.UTF8.GetBytes(phrase.singer.Id)):x8}-{hash:x16}.wav");
         }
 
+        public string GetFlagsString() {
+            var builder = new StringBuilder();
+            foreach (var flag in flags) {
+                builder.Append(flag.Item1);
+                if (flag.Item2.HasValue) {
+                    builder.Append(flag.Item2.Value);
+                }
+            }
+            return builder.ToString();
+        }
+
         ulong Hash() {
             using (var stream = new MemoryStream()) {
                 using (var writer = new BinaryWriter(stream)) {
-                    writer.Write(resampler.Name);
+                    writer.Write(resampler.ToString());
                     writer.Write(inputFile);
                     writer.Write(tone);
 
@@ -98,7 +116,7 @@ namespace OpenUtau.Classic {
                     writer.Write(modulation);
 
                     writer.Write(offset);
-                    writer.Write(requiredLength);
+                    writer.Write(durRequired);
                     writer.Write(consonant);
                     writer.Write(cutoff);
                     writer.Write(skipOver);

@@ -55,7 +55,7 @@ namespace OpenUtau.Classic {
             var task = Task.Run(() => {
                 var result = Layout(phrase);
                 var wavPath = Path.Join(PathManager.Inst.CachePath, $"wdl-{phrase.hash:x16}.wav");
-                string progressInfo = string.Join(" ", phrase.phones.Select(p => p.phoneme));
+                string progressInfo = $"{this} {string.Join(" ", phrase.phones.Select(p => p.phoneme))}";
                 progress.Complete(0, progressInfo);
                 if (File.Exists(wavPath)) {
                     try {
@@ -123,6 +123,6 @@ namespace OpenUtau.Classic {
             return null;
         }
 
-        public override string ToString() => "WORLDLINE-R";
+        public override string ToString() => Renderers.WORLDLINER;
     }
 }

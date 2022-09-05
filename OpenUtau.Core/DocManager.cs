@@ -69,7 +69,7 @@ namespace OpenUtau.Core {
             var phonemizerFactories = new List<PhonemizerFactory>();
             var files = new List<string>();
             try {
-                files.Add(Path.Combine(Path.GetDirectoryName(GetType().Assembly.Location), kBuiltin));
+                files.Add(Path.Combine(Path.GetDirectoryName(AppContext.BaseDirectory), kBuiltin));
                 Directory.CreateDirectory(PathManager.Inst.PluginsPath);
                 string oldBuiltin = Path.Combine(PathManager.Inst.PluginsPath, kBuiltin);
                 if (File.Exists(oldBuiltin)) {

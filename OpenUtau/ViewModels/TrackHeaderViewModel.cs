@@ -19,7 +19,7 @@ namespace OpenUtau.App.ViewModels {
         public USinger Singer => track.Singer;
         public Phonemizer Phonemizer => track.Phonemizer;
         public string PhonemizerTag => track.Phonemizer.Tag;
-        public Core.Render.IRenderer Renderer => track.Renderer;
+        public Core.Render.IRenderer Renderer => track.RendererSettings.Renderer;
         public IReadOnlyList<MenuItemViewModel>? SingerMenuItems { get; set; }
         public ReactiveCommand<USinger, Unit> SelectSingerCommand { get; }
         public IReadOnlyList<MenuItemViewModel>? PhonemizerMenuItems { get; set; }
@@ -58,10 +58,13 @@ namespace OpenUtau.App.ViewModels {
                         TryChangePhonemizer(singer.DefaultPhonemizer);
                     }
                     if (singer == null || !singer.Found) {
-                        DocManager.Inst.ExecuteCmd(new TrackChangeRendererCommand(DocManager.Inst.Project, track, null));
-                    } else if (singer.SingerType != track.Renderer?.SingerType) {
-                        string? renderer = Core.Render.Renderers.GetDefaultRenderer(singer.SingerType);
-                        DocManager.Inst.ExecuteCmd(new TrackChangeRendererCommand(DocManager.Inst.Project, track, renderer));
+                        var settings = new URenderSettings();
+                        DocManager.Inst.ExecuteCmd(new TrackChangeRenderSettingCommand(DocManager.Inst.Project, track, settings));
+                    } else if (singer.SingerType != track.RendererSettings.Renderer?.SingerType) {
+                        var settings = new URenderSettings {
+                            renderer = Core.Render.Renderers.GetDefaultRenderer(singer.SingerType),
+                        };
+                        DocManager.Inst.ExecuteCmd(new TrackChangeRenderSettingCommand(DocManager.Inst.Project, track, settings));
                     }
                     DocManager.Inst.EndUndoGroup();
                     if (!string.IsNullOrEmpty(singer?.Id) && singer.Found) {
@@ -100,8 +103,11 @@ namespace OpenUtau.App.ViewModels {
                 this.RaisePropertyChanged(nameof(PhonemizerTag));
             });
             SelectRendererCommand = ReactiveCommand.Create<string>(name => {
+                var settings = new URenderSettings {
+                    renderer = name,
+                };
                 DocManager.Inst.StartUndoGroup();
-                DocManager.Inst.ExecuteCmd(new TrackChangeRendererCommand(DocManager.Inst.Project, track, name));
+                DocManager.Inst.ExecuteCmd(new TrackChangeRenderSettingCommand(DocManager.Inst.Project, track, settings));
                 DocManager.Inst.EndUndoGroup();
                 this.RaisePropertyChanged(nameof(Renderer));
             });

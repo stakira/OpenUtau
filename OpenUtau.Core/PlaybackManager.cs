@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
-using OpenUtau.Classic;
 using OpenUtau.Core.Render;
 using OpenUtau.Core.SignalChain;
 using OpenUtau.Core.Ustx;
@@ -64,8 +63,6 @@ namespace OpenUtau.Core {
         public bool Playing => AudioOutput.PlaybackState == PlaybackState.Playing;
         public bool StartingToPlay { get; private set; }
 
-        public bool CheckResampler() => Resamplers.CheckResampler();
-
         public void PlayTestSound() {
             masterMix = null;
             AudioOutput.Stop();
@@ -84,16 +81,12 @@ namespace OpenUtau.Core {
             return sineGen;
         }
 
-        public bool PlayOrPause() {
+        public void PlayOrPause() {
             if (Playing) {
                 PausePlayback();
-                return true;
+            } else {
+                Play(DocManager.Inst.Project, DocManager.Inst.playPosTick);
             }
-            if (!Resamplers.CheckResampler()) {
-                return false;
-            }
-            Play(DocManager.Inst.Project, DocManager.Inst.playPosTick);
-            return true;
         }
 
         public void Play(UProject project, int tick) {
@@ -125,9 +118,6 @@ namespace OpenUtau.Core {
         }
 
         private void Render(UProject project, int tick) {
-            if (!Resamplers.CheckResampler()) {
-                return;
-            }
             Task.Run(() => {
                 RenderEngine engine = new RenderEngine(project, tick);
                 var result = engine.RenderProject(tick, DocManager.Inst.MainScheduler, ref renderCancellation);

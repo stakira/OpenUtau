@@ -148,7 +148,7 @@ namespace OpenUtau.Core.Ustx {
             p3.X = (float)(DurationMs - tailIntrude);
             p4.X = (float)(p3.X + tailOverlap);
             if (p3.X == p4.X) {
-                p3.X = Math.Max(p2.X, p3.X - 25f);
+                p3.X = Math.Max(p2.X, p3.X - 35f);
             }
 
             p0.Y = 0f;

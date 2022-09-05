@@ -62,7 +62,7 @@ namespace OpenUtau.Core.Vogen {
                     }
                     var result = Layout(phrase);
                     var wavPath = Path.Join(PathManager.Inst.CachePath, $"vog-{phrase.hash:x16}.wav");
-                    string progressInfo = string.Join(" ", phrase.phones.Select(p => p.phoneme));
+                    string progressInfo = $"{this} \"{string.Join(" ", phrase.phones.Select(p => p.phoneme))}\"";
                     progress.Complete(0, progressInfo);
                     if (File.Exists(wavPath)) {
                         try {
@@ -227,6 +227,6 @@ namespace OpenUtau.Core.Vogen {
             return result;
         }
 
-        public override string ToString() => "VOGEN";
+        public override string ToString() => Renderers.VOGEN;
     }
 }

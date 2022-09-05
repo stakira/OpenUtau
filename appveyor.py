@@ -46,11 +46,13 @@ if sys.platform == 'win32':
     os.system("dotnet restore OpenUtau -r win-x86")
     os.system(
         "dotnet publish OpenUtau -c Release -r win-x86 --self-contained true -o bin/win-x86")
+    os.system("copy /y OpenUtau.Plugin.Builtin\\bin\\Release\\netstandard2.1\\OpenUtau.Plugin.Builtin.dll bin\\win-x86")
     write_appcast("windows", "win-x86", "OpenUtau-win-x86.zip")
 
     os.system("dotnet restore OpenUtau -r win-x64")
     os.system(
         "dotnet publish OpenUtau -c Release -r win-x64 --self-contained true -o bin/win-x64")
+    os.system("copy /y OpenUtau.Plugin.Builtin\\bin\\Release\\netstandard2.1\\OpenUtau.Plugin.Builtin.dll bin\\win-x64")
     write_appcast("windows", "win-x64", "OpenUtau-win-x64.zip")
 
 elif sys.platform == 'darwin':
@@ -81,6 +83,7 @@ else:
     os.system("dotnet restore OpenUtau -r linux-x64")
     os.system(
         "dotnet publish OpenUtau -c Release -r linux-x64 --self-contained true -o bin/linux-x64")
+    os.system("cp OpenUtau.Plugin.Builtin/bin/Release/netstandard2.1/OpenUtau.Plugin.Builtin.dll bin/linux-x64")
     os.system("chmod +x bin/linux-x64/OpenUtau")
     os.system("tar -C bin/linux-x64 -czvf OpenUtau-linux-x64.tar.gz .")
     write_appcast("linux", "linux-x64", "OpenUtau-linux-x64.tar.gz")

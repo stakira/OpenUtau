@@ -74,17 +74,6 @@
         </HeaderedContentControl>
         <HeaderedContentControl Classes="groupbox" Header="{DynamicResource prefs.rendering}">
           <StackPanel>
-            <TextBlock Text="{DynamicResource prefs.rendering.resampler}" />
-            <ComboBox HorizontalAlignment="Stretch" Items="{Binding Resamplers}" SelectedItem="{Binding ExportResampler}"/>
-            <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.rendering.resampler.morewarn}" FontWeight="Bold"
-                       Foreground="Red" Margin="0,0,0,4" IsVisible="{Binding MoresamplerSelected}" FontSize="11"/>
-            <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.rendering.resampler.note}" FontSize="11"/>
-            <Button HorizontalAlignment="Stretch" Content="{DynamicResource singers.location}" Command="{Binding OpenResamplerLocation}"/>
-            <TextBlock Text="{DynamicResource prefs.rendering.phasecomp}" Margin="0,4,0,0"/>
-            <ComboBox HorizontalAlignment="Stretch"  SelectedIndex="{Binding PhaseCompensation}">
-              <ComboBoxItem Content="{DynamicResource prefs.off}"/>
-              <ComboBoxItem Content="{DynamicResource prefs.on}"/>
-            </ComboBox>
             <TextBlock Text="{DynamicResource prefs.rendering.prerender}" />
             <ComboBox HorizontalAlignment="Stretch"  SelectedIndex="{Binding PreRender}">
               <ComboBoxItem Content="{DynamicResource prefs.off}"/>

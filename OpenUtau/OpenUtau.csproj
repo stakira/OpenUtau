@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
-    <TargetFramework>net5.0-windows</TargetFramework>
+    <TargetFramework>net6.0-windows</TargetFramework>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(OS)' != 'Windows_NT' ">
     <TargetFramework>net6.0</TargetFramework>
@@ -11,6 +11,9 @@
     <Nullable>enable</Nullable>
     <Version>0.0.0</Version>
     <ApplicationIcon>Assets\open-utau.ico</ApplicationIcon>
+    <PublishReadyToRun>true</PublishReadyToRun>
+    <PublishSingleFile>true</PublishSingleFile>
+    <DebugType>embedded</DebugType>
     <StartupObject />
   </PropertyGroup>
   <PropertyGroup>
@@ -72,6 +75,9 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Views\TrackSettingsDialog.axaml.cs">
+      <DependentUpon>TrackSettingsDialog.axaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>

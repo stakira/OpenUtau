@@ -569,14 +569,14 @@ namespace OpenUtau.App.ViewModels {
                 return true;
             }
             var track = Project.tracks[Part.trackNo];
-            if (track.Renderer == null) {
+            if (track.RendererSettings.Renderer == null) {
                 return true;
             }
             if (Project.expressions.TryGetValue(expKey, out var descriptor)) {
-                return track.Renderer.SupportsExpression(descriptor);
+                return track.RendererSettings.Renderer.SupportsExpression(descriptor);
             }
             if (expKey == track.VoiceColorExp.abbr) {
-                return track.Renderer.SupportsExpression(track.VoiceColorExp);
+                return track.RendererSettings.Renderer.SupportsExpression(track.VoiceColorExp);
             }
             return true;
         }
