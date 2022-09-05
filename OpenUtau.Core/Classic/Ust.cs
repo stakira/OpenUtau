@@ -16,7 +16,7 @@ namespace OpenUtau.Classic {
         public static UProject Load(string[] files) {
             foreach (var file in files) {
                 if (Formats.DetectProjectFormat(file) != ProjectFormats.Ust) {
-                    DocManager.Inst.ExecuteCmd(new UserMessageNotification("Multiple files must be all Ust files"));
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Multiple files must be all Ust files"));
                     return null;
                 }
             }

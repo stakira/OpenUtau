@@ -167,7 +167,7 @@ namespace OpenUtau.App.Views {
             try {
                 OS.GotoFile(oto.File);
             } catch (Exception e) {
-                DocManager.Inst.ExecuteCmd(new UserMessageNotification(e.ToString()));
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
             }
         }
 

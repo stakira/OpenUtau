@@ -127,7 +127,7 @@ namespace OpenUtau.Core {
             }).ContinueWith((task) => {
                 if (task.IsFaulted) {
                     Log.Error(task.Exception, "Failed to render.");
-                    DocManager.Inst.ExecuteCmd(new UserMessageNotification(task.Exception.Flatten().ToString()));
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to render.", task.Exception));
                     throw task.Exception;
                 }
             }, CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted, DocManager.Inst.MainScheduler);

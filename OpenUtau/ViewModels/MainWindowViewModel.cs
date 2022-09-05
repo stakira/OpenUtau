@@ -54,11 +54,23 @@ namespace OpenUtau.App.ViewModels {
             TracksViewModel = new TracksViewModel();
             ClearCacheHeader = string.Empty;
             ProgressText = string.Empty;
-            OpenRecentCommand = ReactiveCommand.Create<string>(file => OpenProject(new[] { file }));
+            OpenRecentCommand = ReactiveCommand.Create<string>(file => {
+                try {
+                    OpenProject(new[] { file });
+                } catch (Exception e) {
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(
+                        "failed to open recent.", e));
+                }
+            });
             OpenTemplateCommand = ReactiveCommand.Create<string>(file => {
-                OpenProject(new[] { file });
-                DocManager.Inst.Project.Saved = false;
-                DocManager.Inst.Project.FilePath = null;
+                try {
+                    OpenProject(new[] { file });
+                    DocManager.Inst.Project.Saved = false;
+                    DocManager.Inst.Project.FilePath = null;
+                } catch (Exception e) {
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(
+                        "failed to open template.", e));
+                }
             });
             PartDeleteCommand = ReactiveCommand.Create<UPart>(part => {
                 TracksViewModel.DeleteSelectedParts();
@@ -91,7 +103,8 @@ namespace OpenUtau.App.ViewModels {
                     DocManager.Inst.Project.FilePath = null;
                     return;
                 } catch (Exception e) {
-                    Log.Error(e, "failed to load default template");
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(
+                        "failed to load default template.", e));
                 }
             }
             DocManager.Inst.ExecuteCmd(new LoadProjectNotification(Core.Format.Ustx.Create()));

@@ -109,8 +109,7 @@ namespace OpenUtau.App.ViewModels {
                 }
                 SelectedColor = Colors[0];
             } catch (Exception e) {
-                DocManager.Inst.ExecuteCmd(new UserMessageNotification(
-                    $"Failed to load subbanks\n\n" + e.ToString()));
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to load subbanks", e));
             }
         }
 
@@ -185,8 +184,7 @@ namespace OpenUtau.App.ViewModels {
                     bankConfig.Save(stream);
                 }
             } catch (Exception e) {
-                DocManager.Inst.ExecuteCmd(new UserMessageNotification(
-                    $"Failed to save subbanks\n\n" + e.ToString()));
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to save subbanks", e));
             }
             LoadSubbanks();
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
@@ -21,17 +22,29 @@ namespace OpenUtau.App.Views {
             AvaloniaXamlLoader.Load(this);
         }
 
-        public static Task<MessageBoxResult> ShowError(Window parent, AggregateException e) {
-            e = e.Flatten();
-            string text = $"{e.InnerExceptions.First().Message}\n\n{e}";
-            string title = ThemeManager.GetString("errors.caption");
-            return Show(parent, text, title, MessageBoxButtons.Ok);
+        public static Task<MessageBoxResult> ShowError(Window parent, Exception e) {
+            return ShowError(parent, string.Empty, e);
         }
 
-        public static Task<MessageBoxResult> ShowError(Window parent, Exception e) {
-            string text = $"{e.Message}\n\n{e}";
+        public static Task<MessageBoxResult> ShowError(Window parent, string message, Exception e) {
+            var builder = new StringBuilder();
+            if (string.IsNullOrEmpty(message)) {
+                builder.AppendLine(message);
+            }
+            if (e != null) {
+                if (e is AggregateException ae) {
+                    ae = ae.Flatten();
+                    builder.AppendLine(ae.InnerExceptions.First().Message);
+                    builder.AppendLine();
+                    builder.Append(ae.ToString());
+                } else {
+                    builder.AppendLine(e.Message);
+                    builder.AppendLine();
+                    builder.Append(e.ToString());
+                }
+            }
             string title = ThemeManager.GetString("errors.caption");
-            return Show(parent, text, title, MessageBoxButtons.Ok);
+            return Show(parent, builder.ToString(), title, MessageBoxButtons.Ok);
         }
 
         public static Task<MessageBoxResult> Show(Window parent, string text, string title, MessageBoxButtons buttons) {

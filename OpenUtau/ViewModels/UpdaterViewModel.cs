@@ -109,7 +109,7 @@ namespace OpenUtau.App.ViewModels {
             try {
                 OS.OpenWeb("https://github.com/stakira/OpenUtau/wiki");
             } catch (Exception e) {
-                DocManager.Inst.ExecuteCmd(new UserMessageNotification(e.ToString()));
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
             }
         }
 

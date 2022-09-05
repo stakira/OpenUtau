@@ -85,7 +85,7 @@ namespace OpenUtau.App.ViewModels {
                         try {
                             PlaybackManager.Inst.AudioOutput.SelectDevice(device.guid, device.deviceNumber);
                         } catch (Exception e) {
-                            DocManager.Inst.ExecuteCmd(new UserMessageNotification($"Failed to select device {device.name}\n{e}"));
+                            DocManager.Inst.ExecuteCmd(new ErrorMessageNotification($"Failed to select device {device.name}", e));
                         }
                     }
                 });
@@ -148,7 +148,7 @@ namespace OpenUtau.App.ViewModels {
                 Directory.CreateDirectory(path);
                 OS.OpenFolder(path);
             } catch (Exception e) {
-                DocManager.Inst.ExecuteCmd(new UserMessageNotification(e.ToString()));
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
             }
         }
 

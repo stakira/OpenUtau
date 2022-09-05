@@ -137,7 +137,7 @@ namespace OpenUtau.App.ViewModels {
                     DocManager.Inst.ExecuteCmd(new AddNoteCommand(part, toAdd));
                     DocManager.Inst.EndUndoGroup();
                 } catch (Exception e) {
-                    DocManager.Inst.ExecuteCmd(new UserMessageNotification($"Failed to execute plugin {e}"));
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to execute plugin", e));
                 }
             });
             LegacyPlugins.AddRange(DocManager.Inst.Plugins.Select(plugin => new MenuItemViewModel() {

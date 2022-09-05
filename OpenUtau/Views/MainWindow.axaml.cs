@@ -182,6 +182,9 @@ namespace OpenUtau.App.Views {
                 AllowMultiple = true,
             };
             var files = await dialog.ShowAsync(this);
+            if (files == null || files.Length == 0) {
+                return;
+            }
             try {
                 viewModel.OpenProject(files);
             } catch (Exception e) {
@@ -521,7 +524,7 @@ namespace OpenUtau.App.Views {
             try {
                 OS.OpenFolder(PathManager.Inst.LogsPath);
             } catch (Exception e) {
-                DocManager.Inst.ExecuteCmd(new UserMessageNotification(e.ToString()));
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
             }
         }
 
@@ -529,7 +532,7 @@ namespace OpenUtau.App.Views {
             try {
                 OS.OpenWeb("https://github.com/stakira/OpenUtau/issues");
             } catch (Exception e) {
-                DocManager.Inst.ExecuteCmd(new UserMessageNotification(e.ToString()));
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
             }
         }
 
@@ -537,7 +540,7 @@ namespace OpenUtau.App.Views {
             try {
                 OS.OpenWeb("https://github.com/stakira/OpenUtau/wiki/Getting-Started");
             } catch (Exception e) {
-                DocManager.Inst.ExecuteCmd(new UserMessageNotification(e.ToString()));
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
             }
         }
 
@@ -625,7 +628,7 @@ namespace OpenUtau.App.Views {
             if (!args.Data.Contains(DataFormats.FileNames)) {
                 return;
             }
-            string file = args.Data.GetFileNames().FirstOrDefault();
+            string file = args.Data.GetFileNames()?.FirstOrDefault() ?? string.Empty;
             if (string.IsNullOrEmpty(file)) {
                 return;
             }
@@ -971,12 +974,8 @@ namespace OpenUtau.App.Views {
         }
 
         public void OnNext(UCommand cmd, bool isUndo) {
-            if (cmd is UserMessageNotification userMessage) {
-                MessageBox.Show(
-                    this,
-                    userMessage.message,
-                    ThemeManager.GetString("errors.caption"),
-                    MessageBox.MessageBoxButtons.Ok);
+            if (cmd is ErrorMessageNotification notif) {
+                MessageBox.ShowError(this, notif.message, notif.e);
             }
         }
     }

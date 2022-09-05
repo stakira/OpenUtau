@@ -92,8 +92,7 @@ namespace OpenUtau.App.ViewModels {
             try {
                 ModifyConfig(Singer, config => config.TextFileEncoding = encoding.WebName);
             } catch (Exception e) {
-                DocManager.Inst.ExecuteCmd(new UserMessageNotification(
-                    $"Failed to set encoding\n\n" + e.ToString()));
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to set encoding", e));
             }
             Refresh();
         }
@@ -105,8 +104,7 @@ namespace OpenUtau.App.ViewModels {
             try {
                 ModifyConfig(Singer, config => config.Portrait = filepath);
             } catch (Exception e) {
-                DocManager.Inst.ExecuteCmd(new UserMessageNotification(
-                    $"Failed to set portrait\n\n" + e.ToString()));
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to set portrait", e));
             }
             Refresh();
         }
@@ -118,8 +116,7 @@ namespace OpenUtau.App.ViewModels {
             try {
                 ModifyConfig(Singer, config => config.DefaultPhonemizer = factory.type.FullName);
             } catch (Exception e) {
-                DocManager.Inst.ExecuteCmd(new UserMessageNotification(
-                    $"Failed to set portrait\n\n" + e.ToString()));
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to set portrait", e));
             }
             Refresh();
         }
@@ -176,7 +173,7 @@ namespace OpenUtau.App.ViewModels {
                     OS.OpenFolder(Singer.Location);
                 }
             } catch (Exception e) {
-                DocManager.Inst.ExecuteCmd(new UserMessageNotification(e.ToString()));
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
             }
         }
 
@@ -188,8 +185,7 @@ namespace OpenUtau.App.ViewModels {
             try {
                 Subbanks.AddRange(Singer.Subbanks);
             } catch (Exception e) {
-                DocManager.Inst.ExecuteCmd(new UserMessageNotification(
-                    $"Failed to load subbanks\n\n" + e.ToString()));
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to load subbanks", e));
             }
         }
 
@@ -288,7 +284,7 @@ namespace OpenUtau.App.ViewModels {
                 try {
                     Singer.Save();
                 } catch (Exception e) {
-                    DocManager.Inst.ExecuteCmd(new UserMessageNotification(e.ToString()));
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
                 }
             }
             RefreshSinger();

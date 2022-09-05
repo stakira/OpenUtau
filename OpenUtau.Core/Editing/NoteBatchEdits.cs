@@ -199,7 +199,7 @@ namespace OpenUtau.Core.Editing {
         public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
             var renderer = project.tracks[part.trackNo].RendererSettings.Renderer;
             if (renderer == null || !renderer.SupportsRenderPitch) {
-                docManager.ExecuteCmd(new UserMessageNotification("Not supported"));
+                docManager.ExecuteCmd(new ErrorMessageNotification("Not supported"));
                 return;
             }
             var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();

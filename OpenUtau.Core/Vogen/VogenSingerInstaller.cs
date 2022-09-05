@@ -7,7 +7,7 @@ namespace OpenUtau.Core.Vogen {
             string fileName = Path.GetFileName(filePath);
             string destName = Path.Combine(PathManager.Inst.SingersInstallPath, fileName);
             if (File.Exists(destName)) {
-                DocManager.Inst.ExecuteCmd(new UserMessageNotification($"{destName} already exist!"));
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification($"{destName} already exist!"));
                 return;
             }
             File.Copy(filePath, destName);
