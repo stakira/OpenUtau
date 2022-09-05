@@ -171,10 +171,9 @@ namespace OpenUtau.Core {
         }
 
         void SchedulePreRender() {
-            var scheduler = TaskScheduler.Default;
             Log.Information("SchedulePreRender");
             var engine = new RenderEngine(DocManager.Inst.Project);
-            engine.PreRenderProject(scheduler, ref renderCancellation);
+            engine.PreRenderProject(ref renderCancellation);
         }
 
         #region ICmdSubscriber

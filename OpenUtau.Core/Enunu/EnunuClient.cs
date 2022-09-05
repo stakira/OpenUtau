@@ -1,4 +1,5 @@
-﻿using NetMQ;
+﻿using System;
+using NetMQ;
 using NetMQ.Sockets;
 using Newtonsoft.Json;
 using Serilog;
@@ -29,7 +30,7 @@ namespace OpenUtau.Core.Enunu {
                 string request = JsonConvert.SerializeObject(args);
                 Log.Information($"EnunuProcess sending {request}");
                 client.SendFrame(request);
-                var message = client.ReceiveFrameString();
+                client.TryReceiveFrameString(TimeSpan.FromSeconds(300), out string message);
                 Log.Information($"EnunuProcess received {message}");
                 return JsonConvert.DeserializeObject<T>(message);
             }

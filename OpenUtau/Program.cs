@@ -35,9 +35,11 @@ namespace OpenUtau.App {
                 $"{RuntimeInformation.RuntimeIdentifier}");
             try {
                 Run(args);
+                Log.Information($"Exiting.");
             } finally {
-                NetMQ.NetMQConfig.Cleanup();
+                NetMQ.NetMQConfig.Cleanup(/*block=*/false);
             }
+            Log.Information($"Exited.");
         }
 
         // Avalonia configuration, don't remove; also used by visual designer.

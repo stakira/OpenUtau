@@ -90,7 +90,7 @@ namespace OpenUtau.Core.Render {
                 faders.Add(fader);
             }
             Task.Run(() => {
-                RenderRequests(requests, uiScheduler, newCancellation, playing: true);
+                RenderRequests(requests, newCancellation, playing: true);
             }).ContinueWith(task => {
                 if (task.IsFaulted) {
                     Log.Error(task.Exception, "Failed to render.");
@@ -122,7 +122,7 @@ namespace OpenUtau.Core.Render {
                     if (trackRequests.Length == 0) {
                         trackMixes.Add(null);
                     } else {
-                        RenderRequests(trackRequests, uiScheduler, newCancellation);
+                        RenderRequests(trackRequests, newCancellation);
                         var mix = new WaveMix(trackRequests.Select(req => req.mix).ToArray());
                         trackMixes.Add(mix);
                     }
@@ -130,7 +130,7 @@ namespace OpenUtau.Core.Render {
             return trackMixes;
         }
 
-        public void PreRenderProject(TaskScheduler uiScheduler, ref CancellationTokenSource cancellation) {
+        public void PreRenderProject(ref CancellationTokenSource cancellation) {
             var newCancellation = new CancellationTokenSource();
             var oldCancellation = Interlocked.Exchange(ref cancellation, newCancellation);
             if (oldCancellation != null) {
@@ -143,7 +143,7 @@ namespace OpenUtau.Core.Render {
                     if (newCancellation.Token.IsCancellationRequested) {
                         return;
                     }
-                    RenderRequests(PrepareRequests(), uiScheduler, newCancellation);
+                    RenderRequests(PrepareRequests(), newCancellation);
                 } catch (Exception e) {
                     if (!newCancellation.IsCancellationRequested) {
                         Log.Error(e, "Failed to pre-render.");
@@ -180,7 +180,6 @@ namespace OpenUtau.Core.Render {
 
         private void RenderRequests(
             RenderPartRequest[] requests,
-            TaskScheduler uiScheduler,
             CancellationTokenSource cancellation,
             bool playing = false) {
             if (requests.Length == 0 || cancellation.IsCancellationRequested) {
@@ -212,7 +211,7 @@ namespace OpenUtau.Core.Render {
                 if (request.sources.All(s => s.HasSamples)) {
                     request.part.SetMix(request.mix);
                     new Task(() => DocManager.Inst.ExecuteCmd(new PartRenderedNotification(request.part)))
-                        .Start(uiScheduler);
+                        .Start(DocManager.Inst.MainScheduler);
                 }
             }
             progress.Clear();

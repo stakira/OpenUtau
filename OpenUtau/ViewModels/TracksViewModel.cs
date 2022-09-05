@@ -180,8 +180,11 @@ namespace OpenUtau.App.ViewModels {
             if (index < 0) {
                 index = ~index - 1;
             }
-            index = Math.Min(index, SnapTicks.Count - 2);
-            index = Math.Max(index, 0);
+            if (0 >= SnapTicks.Count - 2) {
+                left = right = tick;
+                return;
+            }
+            index = Math.Clamp(index, 0, SnapTicks.Count - 2);
             left = SnapTicks[index];
             right = SnapTicks[index + 1];
         }
