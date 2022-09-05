@@ -220,9 +220,14 @@ namespace OpenUtau.Plugin.Builtin
                             phonemes.Add(cc1);
                         } else if (TryAddPhoneme(phonemes, syllable.tone, cc1)) {
                             // like [V C1] [C1 C2] [C2 ..]
+                            i++;
                         } else if (TryAddPhoneme(phonemes, syllable.tone, $"{cc[i]} {cc[i + 1]}-")) {
                             // like [V C1] [C1 C2-] [C3 ..]
-                            i++;
+                            if (burstConsonants.Contains(cc[i + 1])) {
+                                i++;
+                            } else {
+                                // continue as usual
+                            }
                         } else if (burstConsonants.Contains(cc[i]) && !HasOto(cc2, syllable.tone)) {
                             // like [V C1] [C1] [C2 ..]
                             TryAddPhoneme(phonemes, syllable.tone, cc[i], $"{cc[i]} -");
