@@ -221,11 +221,17 @@ namespace OpenUtau.Plugin.Builtin
                         } if (HasOto(cc1, syllable.tone) && HasOto(cc2, syllable.tone) && !cc1.Contains($"{string.Join("", cc.Skip(i))}")) {
                             // like [V C1] [C1 C2] [C2 C3] [C3 ..]
                             phonemes.Add(cc1);
+                            i++;
                         } else if (TryAddPhoneme(phonemes, syllable.tone, cc1)) {
                             // like [V C1] [C1 C2] [C2 ..]
+                            i++;
                         } else if (TryAddPhoneme(phonemes, syllable.tone, $"{cc[i]} {cc[i + 1]}-")) {
                             // like [V C1] [C1 C2-] [C3 ..]
-                            i++;
+                            if (burstConsonants.Contains(cc[i + 1])) {
+                                i++;
+                            } else {
+                                // continue as usual
+                            }
                         } else if (burstConsonants.Contains(cc[i]) && !HasOto(cc2, syllable.tone)) {
                             // like [V C1] [C1] [C2 ..]
                             TryAddPhoneme(phonemes, syllable.tone, cc[i], $"{cc[i]} -");
