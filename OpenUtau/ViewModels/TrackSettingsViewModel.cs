@@ -50,6 +50,7 @@ namespace OpenUtau.App.ViewModels {
             }
             this.WhenAnyValue(x => x.Resampler)
                 .Subscribe(resampler => {
+                    resampler?.CheckPermissions();
                     var wavtool = Wavtool;
                     wavtools.Clear();
                     wavtools.AddRange(Renderers.GetSupportedWavtools(resampler));
@@ -58,6 +59,10 @@ namespace OpenUtau.App.ViewModels {
                     } else {
                         Wavtool = wavtools.FirstOrDefault();
                     }
+                });
+            this.WhenAnyValue(x => x.Wavtool)
+                .Subscribe(wavtool => {
+                    wavtool?.CheckPermissions();
                 });
         }
 

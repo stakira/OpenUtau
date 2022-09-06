@@ -202,6 +202,8 @@ namespace OpenUtau.Classic {
             return 2 * Math.PI * (Math.Round(t) - t);
         }
 
+        public void CheckPermissions() { }
+
         public override string ToString() => phaseComp ? nameConvergence : nameSimple;
     }
 }

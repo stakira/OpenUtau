@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using NAudio.Wave;
@@ -136,6 +137,17 @@ namespace OpenUtau.Classic {
             writer.WriteLine("del \"%output%.whd\"");
             writer.WriteLine("del \"%output%.dat\"");
             writer.WriteLine(":E");
+        }
+
+        [DllImport("libc", SetLastError = true)]
+        private static extern int chmod(string pathname, int mode);
+
+        public void CheckPermissions() {
+            if (OS.IsWindows() || !File.Exists(filePath)) {
+                return;
+            }
+            int mode = (7 << 6) | (5 << 3) | 5;
+            chmod(filePath, mode);
         }
 
         public override string ToString() => name;
