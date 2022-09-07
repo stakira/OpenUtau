@@ -101,6 +101,7 @@ namespace OpenUtau.Core.Util {
             public int PlaybackAutoScroll = 1;
             public bool ReverseLogOrder = true;
             public bool ShowPortrait = true;
+            public bool ShowGhostNotes = true;
             public Dictionary<string, string> DefaultResamplers = new Dictionary<string, string>();
             public Dictionary<string, string> DefaultWavtools = new Dictionary<string, string>();
         }
