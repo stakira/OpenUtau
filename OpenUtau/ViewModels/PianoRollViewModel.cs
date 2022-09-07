@@ -114,13 +114,12 @@ namespace OpenUtau.App.ViewModels {
                     var tempFile = Path.Combine(PathManager.Inst.CachePath, "temp.tmp");
                     UNote? first = null;
                     UNote? last = null;
-                    if (NotesViewModel.SelectedNotes.Count == 0) {
+                    if (NotesViewModel.Selection.IsEmpty) {
                         first = part.notes.First();
                         last = part.notes.Last();
                     } else {
-                        var ordered = NotesViewModel.SelectedNotes.OrderBy(n => n.position);
-                        first = ordered.First();
-                        last = ordered.Last();
+                        first = NotesViewModel.Selection.First();
+                        last = NotesViewModel.Selection.Last();
                     }
                     var sequence = Classic.Ust.WritePlugin(project, part, first, last, tempFile);
                     byte[]? beforeHash = HashFile(tempFile);
@@ -148,7 +147,7 @@ namespace OpenUtau.App.ViewModels {
 
             noteBatchEditCommand = ReactiveCommand.Create<BatchEdit>(edit => {
                 if (NotesViewModel.Part != null) {
-                    edit.Run(NotesViewModel.Project, NotesViewModel.Part, NotesViewModel.SelectedNotes, DocManager.Inst);
+                    edit.Run(NotesViewModel.Project, NotesViewModel.Part, NotesViewModel.Selection.ToList(), DocManager.Inst);
                 }
             });
             NoteBatchEdits.AddRange(new List<BatchEdit>() {

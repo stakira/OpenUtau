@@ -139,7 +139,7 @@ namespace OpenUtau.App.Views {
             UNote note) : base(canvas, vm, valueTip) {
             this.note = note;
             var notesVm = vm.NotesViewModel;
-            if (!notesVm.SelectedNotes.Contains(note)) {
+            if (!notesVm.Selection.Contains(note)) {
                 notesVm.DeselectNotes();
                 notesVm.SelectNote(note);
             }
@@ -164,9 +164,10 @@ namespace OpenUtau.App.Views {
             int deltaTone = notesVm.PointToTone(point) - note.tone;
             int minDeltaTone;
             int maxDeltaTone;
-            if (notesVm.SelectedNotes.Count > 0) {
-                minDeltaTone = -notesVm.SelectedNotes.Select(p => p.tone).Min();
-                maxDeltaTone = ViewConstants.MaxTone - 1 - notesVm.SelectedNotes.Select(p => p.tone).Max();
+            var selectedNotes = notesVm.Selection.ToList();
+            if (selectedNotes.Count > 0) {
+                minDeltaTone = -selectedNotes.Select(p => p.tone).Min();
+                maxDeltaTone = ViewConstants.MaxTone - 1 - selectedNotes.Select(p => p.tone).Max();
             } else {
                 minDeltaTone = -note.tone;
                 maxDeltaTone = ViewConstants.MaxTone - 1 - note.tone;
@@ -181,9 +182,9 @@ namespace OpenUtau.App.Views {
             int deltaTick = newPos - note.position;
             int minDeltaTick;
             int maxDeltaTick;
-            if (notesVm.SelectedNotes.Count > 0) {
-                minDeltaTick = -notesVm.SelectedNotes.Select(n => n.position).Min();
-                maxDeltaTick = part.Duration - notesVm.SelectedNotes.Select(n => n.End).Max();
+            if (selectedNotes.Count > 0) {
+                minDeltaTick = -selectedNotes.Select(n => n.position).Min();
+                maxDeltaTick = part.Duration - selectedNotes.Select(n => n.End).Max();
             } else {
                 minDeltaTick = -note.position;
                 maxDeltaTick = part.Duration - note.End;
@@ -193,12 +194,12 @@ namespace OpenUtau.App.Views {
             if (deltaTone == 0 && deltaTick == 0) {
                 return;
             }
-            if (notesVm.SelectedNotes.Count == 0) {
+            if (selectedNotes.Count == 0) {
                 DocManager.Inst.ExecuteCmd(new MoveNoteCommand(
                     part, note, deltaTick, deltaTone));
             } else {
                 DocManager.Inst.ExecuteCmd(new MoveNoteCommand(
-                    part, new List<UNote>(notesVm.SelectedNotes), deltaTick, deltaTone));
+                    part, selectedNotes, deltaTick, deltaTone));
             }
         }
     }
@@ -241,8 +242,8 @@ namespace OpenUtau.App.Views {
             int minNoteTicks = notesVm.IsSnapOn ? snapUnit : 15;
             if (deltaDuration < 0) {
                 int maxNegDelta = note.duration - minNoteTicks;
-                if (notesVm.SelectedNotes.Count > 0) {
-                    maxNegDelta = notesVm.SelectedNotes.Min(n => n.duration - minNoteTicks);
+                if (notesVm.Selection.Count > 0) {
+                    maxNegDelta = notesVm.Selection.Notes.Min(n => n.duration - minNoteTicks);
                 }
                 if (notesVm.IsSnapOn && snapUnit > 0) {
                     maxNegDelta = (int)Math.Floor((double)maxNegDelta / snapUnit) * snapUnit;
@@ -282,10 +283,10 @@ namespace OpenUtau.App.Views {
             bool resizeNext) : base(canvas, vm, valueTip) {
             this.note = note;
             var notesVm = vm.NotesViewModel;
-            if (!notesVm.SelectedNotes.Contains(note)) {
+            if (!notesVm.Selection.Contains(note)) {
                 notesVm.DeselectNotes();
             }
-            this.resizeNext = notesVm.SelectedNotes.Count == 0 &&
+            this.resizeNext = notesVm.Selection.Count == 0 &&
                 resizeNext && note.Next != null && note.End == note.Next.position;
             nextNote = note.Next;
         }
@@ -301,8 +302,8 @@ namespace OpenUtau.App.Views {
             int minNoteTicks = notesVm.IsSnapOn ? snapUnit : 15;
             if (deltaDuration < 0) {
                 int maxNegDelta = note.duration - minNoteTicks;
-                if (notesVm.SelectedNotes.Count > 0) {
-                    maxNegDelta = notesVm.SelectedNotes.Min(n => n.duration - minNoteTicks);
+                if (notesVm.Selection.Count > 0) {
+                    maxNegDelta = notesVm.Selection.Notes.Min(n => n.duration - minNoteTicks);
                 }
                 if (notesVm.IsSnapOn && snapUnit > 0) {
                     maxNegDelta = (int)Math.Floor((double)maxNegDelta / snapUnit) * snapUnit;
@@ -317,7 +318,7 @@ namespace OpenUtau.App.Views {
                 valueTip.UpdateValueTip(note.duration.ToString());
                 return;
             }
-            if (notesVm.SelectedNotes.Count == 0) {
+            if (notesVm.Selection.Count == 0) {
                 if (resizeNext) {
                     DocManager.Inst.ExecuteCmd(new MoveNoteCommand(notesVm.Part, nextNote, deltaDuration, 0));
                     DocManager.Inst.ExecuteCmd(new ResizeNoteCommand(notesVm.Part, nextNote, -deltaDuration));
@@ -326,7 +327,7 @@ namespace OpenUtau.App.Views {
                 valueTip.UpdateValueTip(note.duration.ToString());
                 return;
             }
-            DocManager.Inst.ExecuteCmd(new ResizeNoteCommand(notesVm.Part, new List<UNote>(notesVm.SelectedNotes), deltaDuration));
+            DocManager.Inst.ExecuteCmd(new ResizeNoteCommand(notesVm.Part, notesVm.Selection.ToList(), deltaDuration));
             valueTip.UpdateValueTip(note.duration.ToString());
         }
     }
@@ -350,7 +351,7 @@ namespace OpenUtau.App.Views {
             UNote note) : base(canvas, vm, valueTip) {
             this.note = note;
             var notesVm = vm.NotesViewModel;
-            if (!notesVm.SelectedNotes.Contains(note)) {
+            if (!notesVm.Selection.Contains(note)) {
                 notesVm.DeselectNotes();
             }
             oldDur = note.duration;
