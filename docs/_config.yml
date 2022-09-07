@@ -2,3 +2,25 @@ remote_theme: just-the-docs/just-the-docs
 domain: www.openutau.com
 url: https://www.openutau.com
 color_scheme: openutau
+aux_links:
+  "GitHub":
+    - "https://github.com/stakira/OpenUtau"
+nav_external_links:
+  - title: Wiki / 维基 / ウィキ
+    url: https://github.com/stakira/OpenUtau/wiki
+    hide_icon: false
+  - title: Discussions / 讨论 / 議論
+    url: https://github.com/stakira/OpenUtau/discussions
+    hide_icon: false
+  - title: Report Bugs / 问题汇报 / 不具合報告
+    url: https://github.com/stakira/OpenUtau/issues
+    hide_icon: false
+  - title: Tutorials (English)
+    url: https://github.com/stakira/OpenUtau/wiki/Tutorials
+    hide_icon: false
+  - title: 教程汇总 (中文)
+    url: https://github.com/stakira/OpenUtau/wiki/%E6%95%99%E7%A8%8B%E6%B1%87%E6%80%BB-(%E4%B8%AD%E6%96%87)
+    hide_icon: false
+  - title: チュートリアル (日本語)
+    url: https://github.com/stakira/OpenUtau/wiki/%E3%83%81%E3%83%A5%E3%83%BC%E3%83%88%E3%83%AA%E3%82%A2%E3%83%AB-(%E6%97%A5%E6%9C%AC%E8%AA%9E)
+    hide_icon: false
