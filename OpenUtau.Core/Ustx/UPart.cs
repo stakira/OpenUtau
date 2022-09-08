@@ -344,6 +344,9 @@ namespace OpenUtau.Core.Ustx {
                 for (int i = 0; i < channels; ++i) {
                     peaks[i] = new DiscreteSignal(sampleRate, channelSamples[i], false);
                     peaks[i] = resampler.Decimate(peaks[i], 10);
+                    for (int j = 0; j < peaks[i].Samples.Length; ++j) {
+                        peaks[i].Samples[j] = Math.Clamp(peaks[i].Samples[j], -1, 1);
+                    }
                 }
                 peaksSampleRate = sampleRate / 10;
                 stopwatch.Stop();

@@ -736,6 +736,9 @@ namespace OpenUtau.App.Views {
             float startTick = note.position + note.duration - vibratoTick;
             float newIn = (tick - startTick) / vibratoTick * 100f;
             if (newIn != note.vibrato.@in) {
+                if (newIn + note.vibrato.@out > 100) {
+                    DocManager.Inst.ExecuteCmd(new VibratoFadeOutCommand(notesVm.Part, note, 100 - newIn));
+                }
                 DocManager.Inst.ExecuteCmd(new VibratoFadeInCommand(notesVm.Part, note, newIn));
             }
             valueTip.UpdateValueTip($"{note.vibrato.@in:0}%");
@@ -757,6 +760,9 @@ namespace OpenUtau.App.Views {
             float vibratoTick = note.vibrato.length / 100f * note.duration;
             float newOut = (note.position + note.duration - tick) / vibratoTick * 100f;
             if (newOut != note.vibrato.@out) {
+                if (newOut + note.vibrato.@in > 100) {
+                    DocManager.Inst.ExecuteCmd(new VibratoFadeInCommand(notesVm.Part, note, 100 - newOut));
+                }
                 DocManager.Inst.ExecuteCmd(new VibratoFadeOutCommand(notesVm.Part, note, newOut));
             }
             valueTip.UpdateValueTip($"{note.vibrato.@out:0}%");
