@@ -162,7 +162,7 @@ namespace OpenUtau.Classic {
             float sampleMs = sampleIndex / 44100f * 1000f;
             int sampleTick = phrase.timeAxis.MsPosToTickPos(phrase.positionMs - phrase.leadingMs + sampleMs);
             int pitchIndex = (int)Math.Round((double)(sampleTick - (phrase.position - phrase.leading)) / 5);
-            pitchIndex = Math.Clamp(pitchIndex, 0, phrase.pitches.Length);
+            pitchIndex = Math.Clamp(pitchIndex, 0, phrase.pitches.Length - 1);
             return MusicMath.ToneToFreq(phrase.pitches[pitchIndex] / 100);
         }
 
