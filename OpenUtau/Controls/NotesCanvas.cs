@@ -106,7 +106,7 @@ namespace OpenUtau.App.Controls {
         public NotesCanvas() {
             ClipToBounds = true;
             pointGeometry = new EllipseGeometry(new Rect(-2.5, -2.5, 5, 5));
-            showGhostNotes = Convert.ToBoolean(Preferences.Default.ShowGhostNotes);
+
             MessageBus.Current.Listen<NotesRefreshEvent>()
                 .Subscribe(_ => InvalidateVisual());
             MessageBus.Current.Listen<NotesSelectionEvent>()
@@ -116,17 +116,15 @@ namespace OpenUtau.App.Controls {
                     selectedNotes.UnionWith(e.tempSelectedNotes);
                     InvalidateVisual();
                 });
-            if (showGhostNotes) {
-                RefreshGhostNotes();
-                MessageBus.Current.Listen<PartRefreshEvent>()
-                    .Subscribe(_ => RefreshGhostNotes());
-                this.WhenAnyValue(x => x.Part)
-                    .Subscribe(_ => RefreshGhostNotes());
-            }
+            MessageBus.Current.Listen<PartRefreshEvent>()
+                .Subscribe(_ => RefreshGhostNotes());
+            this.WhenAnyValue(x => x.Part)
+                .Subscribe(_ => RefreshGhostNotes());
         }
 
         void RefreshGhostNotes() {
-            if (Part == null) {
+            showGhostNotes = Convert.ToBoolean(Preferences.Default.ShowGhostNotes);
+            if (Part == null || !showGhostNotes) {
                 return;
             }
             otherPartsInView = DocManager.Inst.Project.parts
