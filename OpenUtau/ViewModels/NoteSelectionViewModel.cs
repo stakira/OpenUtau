@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,85 +7,65 @@ using System.Threading.Tasks;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.App.ViewModels {
-    public class NoteSelectionViewModel {
-        public NoteSelectionViewModel() {
-            Notes = new SortedSet<UNote>();
-        }
-        public NoteSelectionViewModel(UVoicePart part) {
-            Notes = new SortedSet<UNote>(part.notes);
-            Head = Notes.LastOrDefault();
-        }
-        public NoteSelectionViewModel(IEnumerable<UNote> notes) {
-            this.Notes = new SortedSet<UNote>(notes);
-            // default to insert/change selection at end
-            Head = Notes.LastOrDefault();
-        }
-        public NoteSelectionViewModel(UNote note) {
-            this.Notes = new SortedSet<UNote>(new UNote[] { note });
-            Head = note;
-        }
+    public class NoteSelectionViewModel: IEnumerable<UNote> {
+        public NoteSelectionViewModel() {}
 
-        // REVIEW should this be private?
+
         /// <summary>
         /// Actual selected notes. Stored as sorted set to always have correct first/last
         /// </summary>
-        public SortedSet<UNote> Notes;
-        /// <summary>
-        /// The selection move/change point (either first/last of selection)
-        /// </summary>
-        public UNote? Head;
-        
-        public int Count => Notes.Count;
-        public bool IsEmpty => Notes.Count == 0;
-        private bool IsMultiple => Notes.Count > 1;
+        private readonly SortedSet<UNote> _notes = new SortedSet<UNote>();
         /// <summary>
         /// true if the range is being resized from left side of selection rather than right
         /// </summary>
-        private bool IsReversed => IsMultiple && Head == Notes.FirstOrDefault() ? true : false;
-        public UNote? First() { return Notes.FirstOrDefault(); }
-        public UNote? Last() { return Notes.LastOrDefault(); }
-        public bool Contains(UNote note) {
-            return Notes.Contains(note);
-        }
+        private bool IsReversed = false;
+
+        /// <summary>
+        /// Temporary set for in-progress range selection
+        /// </summary>
+        public readonly HashSet<UNote> TempSelectedNotes = new HashSet<UNote>();
+        /// <summary>
+        /// The selection move/change point (either first/last of selection)
+        /// </summary>
+        public UNote? Head => IsReversed ? FirstOrDefault() : LastOrDefault();
+        
+        public int Count => _notes.Count;
+        public bool IsEmpty => _notes.Count == 0;
+        private bool IsMultiple => _notes.Count > 1;
+        public UNote? FirstOrDefault() { return _notes.FirstOrDefault(); }
+        public UNote? LastOrDefault() { return _notes.LastOrDefault(); }
+        
         /// <summary>
         /// Add note to selection
         /// </summary>
         /// <param name="note"></param>
         /// <returns></returns>
         public bool Add(UNote note) {
-            var wasAdded = Notes.Add(note);
-            if (wasAdded) {
-                Head = note;
-            }
+            var wasAdded = _notes.Add(note);
             return wasAdded;
         }
         public bool Add(IEnumerable<UNote> notes) {
             bool wasChange = false;
-            lock (Notes) {
-                var initialLast = Notes.LastOrDefault();
+            lock (_notes) {
+                var initialFirst = _notes.FirstOrDefault();
                 foreach (var note in notes) {
-                    if (Notes.Add(note)) {
+                    if (_notes.Add(note)) {
                         wasChange = true;
                     }
                 }
                 if (wasChange) {
                     // check if added were put in the front or in the back
-                    // NOTE this relies on _notes being sortedlist
-                    Head = initialLast == Notes.LastOrDefault()
-                        ? Notes.FirstOrDefault()
-                        : Notes.LastOrDefault();
+                    // NOTE this relies on Notes being sortedlist
+                    IsReversed = initialFirst != FirstOrDefault();
                 }
             }
             return wasChange;
         }
         public bool Remove(UNote note) {
-            // if head is at beginning of selection or end
-            var isReversed = IsReversed;
-            var wasRemoved = Notes.Remove(note);
-            if (wasRemoved) {
-                // try to keep original add/remove direction.
-                // will set to null if empty
-                Head = isReversed ? Notes.FirstOrDefault() : Notes.LastOrDefault();
+            var wasRemoved = _notes.Remove(note);
+            // reset IsReversed if collapsed to single/empty
+            if (wasRemoved && Count <= 1) {
+                IsReversed = false;
             }
             return wasRemoved;
         }
@@ -92,15 +73,14 @@ namespace OpenUtau.App.ViewModels {
             // if head is at beginning of selection or end
             var isReversed = IsReversed;
             bool wasChange = false;
-            lock (Notes) {
+            lock (_notes) {
                 foreach (var note in notes) {
-                    wasChange |= Notes.Remove(note);
+                    wasChange |= _notes.Remove(note);
                 }
             }
-            if (wasChange) {
-                // try to keep original add/remove direction.
-                // will set to null if empty
-                Head = isReversed ? Notes.FirstOrDefault() : Notes.LastOrDefault();
+            // reset IsReversed if collapsed to single/empty
+            if (wasChange && Count <= 1) {
+                IsReversed = false;
             }
             return wasChange;
         }
@@ -109,66 +89,74 @@ namespace OpenUtau.App.ViewModels {
         /// </summary>
         /// <param name="note"></param>
         public bool Select(UNote? note) {
-            if (Notes.Count == 1 && Head == note) {
+            if (_notes.Count == 1 && Head == note) {
                 return false;
             }
-            Notes.Clear();
-            if (note != null) {
-                Notes.Add(note);
+            lock (_notes) {
+                SelectNone();
+                if (note != null) {
+                    _notes.Add(note);
+                }
             }
-            Head = note;
             return true;
         }
         public bool Select(UVoicePart part) {
             return Select(part.notes);
         }
         public bool Select(IEnumerable<UNote> notes) {
-            Notes = new SortedSet<UNote>(notes);
-            Head = Notes.LastOrDefault();
+            lock (_notes) {
+                SelectNone();
+                foreach (var note in notes) {
+                    _notes.Add(note);
+                }
+            }
             return true;
         }
         public bool SelectAll() {
-            int initialCount = Notes.Count;
-            lock (Notes) {
-                var cursor = Notes.FirstOrDefault();
+            int initialCount = _notes.Count;
+            IsReversed = false;
+            TempSelectedNotes.Clear();
+            lock (_notes) {
+                var cursor = _notes.FirstOrDefault();
                 while ((cursor = cursor?.Prev) != null) {
-                    Notes.Add(cursor);
+                    _notes.Add(cursor);
                 }
-                cursor = Notes.LastOrDefault();
+                cursor = _notes.LastOrDefault();
                 while ((cursor = cursor?.Next) != null) {
-                    Notes.Add(cursor);
+                    _notes.Add(cursor);
                 }
-                return Notes.Count != initialCount;
+                return _notes.Count != initialCount;
             }
         }
         public bool SelectNone() {
             var ret = IsEmpty ? false : true;
-            Notes.Clear();
-            Head = null;
+            TempSelectedNotes.Clear();
+            _notes.Clear();
+            IsReversed = false;
             return ret;
         }
         public bool SelectToStart() {
+            TempSelectedNotes.Clear();
+            // always moves head to front
+            IsReversed = true;
             bool wasChange = false;
-            lock (Notes) {
-                var cursor = Notes.FirstOrDefault();
+            lock (_notes) {
+                var cursor = _notes.FirstOrDefault();
                 while ((cursor = cursor?.Prev) != null) {
-                    wasChange |= Notes.Add(cursor);
-                }
-                if (wasChange) {
-                    Head = Notes.FirstOrDefault();
+                    wasChange |= _notes.Add(cursor);
                 }
             }
             return wasChange;
         }
         public bool SelectToEnd() {
+            TempSelectedNotes.Clear();
+            // always moves head to back
+            IsReversed = false;
             bool wasChange = false;
-            lock (Notes) {
-                var cursor = Notes.LastOrDefault();
+            lock (_notes) {
+                var cursor = _notes.LastOrDefault();
                 while ((cursor = cursor?.Next) != null) {
-                    wasChange |= Notes.Add(cursor);
-                }
-                if (wasChange) {
-                    Head = Notes.LastOrDefault();
+                    wasChange |= _notes.Add(cursor);
                 }
             }
             return wasChange;
@@ -182,24 +170,29 @@ namespace OpenUtau.App.ViewModels {
             if (IsEmpty) {
                 return false;
             }
-            var isReversed = IsReversed;
             int movesRemaining = Math.Abs(delta);
+            bool isForwardMove = delta > 0;
             bool wasChange = false;
-            UNote? cursor = Head;
-            while (
-                // reduce # of moves, check if done
-                movesRemaining-- > 0 &&
-                // move to next/prev node and make sure can keep going
-                (cursor = isReversed ? cursor?.Prev : cursor?.Next) != null
-            ) {
-                Head = cursor;
-                wasChange = true;
+            // if multiple selection then collapse to first/last item (unless delta is > 1)
+            if (IsMultiple) {
+                movesRemaining--;
             }
+            lock (_notes) {
+                UNote? cursor = IsReversed ? _notes.First() : _notes.Last();
+                while (
+                    // reduce # of moves, check if done
+                    movesRemaining-- > 0 &&
+                    // move to next/prev node and make sure can keep going
+                    (cursor = isForwardMove ? cursor?.Next : cursor?.Prev) != null
+                ) {
+                    wasChange = true;
+                }
 
-            // clear out current selection and select head (collapses multiple selection)
-            if (wasChange || IsMultiple) {
-                Select(Head!);
-                return true;
+                // clear out current selection and select head (collapses multiple selection)
+                if (wasChange) {
+                    Select(cursor);
+                    return true;
+                }
             }
             return false;
         }
@@ -212,37 +205,36 @@ namespace OpenUtau.App.ViewModels {
             if (IsEmpty || delta == 0) {
                 return false;
             }
-            // doubt this guard is necessary, as head should always be set if !isempty
-            if (Head == null) {
-                Head = Notes.Last();
-            }
-
             int movesRemaining = Math.Abs(delta);
             bool isForwardMove = delta > 0;
             bool wasChange = false;
 
-            lock (Notes) {
-                UNote? cursor = Head;
+            lock (_notes) {
+                UNote head = IsReversed ? _notes.First() : _notes.Last();
+                UNote? cursor = head;
                 while (
                     // reduce # of moves, check if done
                     movesRemaining-- > 0 &&
                     // move to next/prev node and make sure can keep going
                     (cursor = isForwardMove ? cursor?.Next : cursor?.Prev) != null
                 ) {
-                    // check if delta will make smaller
-                    // note single selection = false - alway expand rather than shrink
-                    bool isShrink = IsMultiple && (IsReversed ? isForwardMove : !isForwardMove);
+                    // if single selection then update direction based on delta
+                    if (_notes.Count == 1) {
+                        IsReversed = !isForwardMove;
+                    }
+                    
+                    // shrink selection if move is towards center
+                    bool isShrink = IsReversed ? isForwardMove : !isForwardMove;
 
                     if (isShrink) {
-                        wasChange |= Notes.Remove(Head);
+                        wasChange |= _notes.Remove(head);
                     } else {
-                        wasChange |= Notes.Add(cursor);
+                        wasChange |= _notes.Add(cursor);
                     }
-                    Head = cursor;
+                    head = cursor;
                 }
             }
 
-            // COMBAK this will always be true, right?
             return wasChange;
         }
         public bool MovePrev() {
@@ -255,7 +247,7 @@ namespace OpenUtau.App.ViewModels {
             return Resize(IsReversed ? -delta : delta);
         }
         public bool Shrink(int delta = 1) {
-            if (Notes.Count - delta <= 0) {
+            if (_notes.Count - delta <= 0) {
                 return Select(Head);
             }
             return Resize(IsReversed ? delta : -delta);
@@ -265,23 +257,44 @@ namespace OpenUtau.App.ViewModels {
         /// </summary>
         /// <returns></returns>
         public bool Cancel() {
-            switch (Notes.Count) {
+            switch (_notes.Count) {
                 case 0:
                     return false;
                 case 1:
                     SelectNone();
                     return true;
                 default:
-                    var singleNote = Head ?? Notes.First();
-                    Select(singleNote);
+                    lock (_notes) {
+                        var singleNote = Head ?? _notes.First();
+                        Select(singleNote);
+                    }
                     return true;
             }
         }
+        public void SetTemporarySelection(IEnumerable<UNote> notes) {
+            TempSelectedNotes.Clear();
+            lock (TempSelectedNotes) {
+                foreach (var note in notes) {
+                    TempSelectedNotes.Add(note);
+                }
+            }
+        }
+        public void CommitTemporarySelection() {
+            Add(TempSelectedNotes);
+            TempSelectedNotes.Clear();
+        }
         public List<UNote> ToList() {
-            return Notes.ToList();
+            return _notes.ToList();
         }
         public UNote[] ToArray() {
-            return Notes.ToArray();
+            return _notes.ToArray();
+        }
+        public IEnumerator<UNote> GetEnumerator() {
+            return _notes.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() {
+            return ((IEnumerable)_notes).GetEnumerator();
         }
     }
 }

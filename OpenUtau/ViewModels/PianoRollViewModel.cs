@@ -118,8 +118,8 @@ namespace OpenUtau.App.ViewModels {
                         first = part.notes.First();
                         last = part.notes.Last();
                     } else {
-                        first = NotesViewModel.Selection.First();
-                        last = NotesViewModel.Selection.Last();
+                        first = NotesViewModel.Selection.FirstOrDefault();
+                        last = NotesViewModel.Selection.LastOrDefault();
                     }
                     var sequence = Classic.Ust.WritePlugin(project, part, first, last, tempFile);
                     byte[]? beforeHash = HashFile(tempFile);

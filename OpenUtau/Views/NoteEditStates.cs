@@ -243,7 +243,7 @@ namespace OpenUtau.App.Views {
             if (deltaDuration < 0) {
                 int maxNegDelta = note.duration - minNoteTicks;
                 if (notesVm.Selection.Count > 0) {
-                    maxNegDelta = notesVm.Selection.Notes.Min(n => n.duration - minNoteTicks);
+                    maxNegDelta = notesVm.Selection.Min(n => n.duration - minNoteTicks);
                 }
                 if (notesVm.IsSnapOn && snapUnit > 0) {
                     maxNegDelta = (int)Math.Floor((double)maxNegDelta / snapUnit) * snapUnit;
@@ -303,7 +303,7 @@ namespace OpenUtau.App.Views {
             if (deltaDuration < 0) {
                 int maxNegDelta = note.duration - minNoteTicks;
                 if (notesVm.Selection.Count > 0) {
-                    maxNegDelta = notesVm.Selection.Notes.Min(n => n.duration - minNoteTicks);
+                    maxNegDelta = notesVm.Selection.Min(n => n.duration - minNoteTicks);
                 }
                 if (notesVm.IsSnapOn && snapUnit > 0) {
                     maxNegDelta = (int)Math.Floor((double)maxNegDelta / snapUnit) * snapUnit;

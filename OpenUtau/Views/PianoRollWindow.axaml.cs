@@ -397,10 +397,10 @@ namespace OpenUtau.App.Views {
             if (ViewModel.NotesViewModel.CursorTool || ViewModel.NotesViewModel.PenTool) {
                 var hitInfo = ViewModel.NotesViewModel.HitTest.HitTestNote(point.Position);
                 if (hitInfo.hitBody) {
+                    // if note in question was already in selection before clearing
                     if (selectedNotes.Contains(hitInfo.note)) {
-                        ViewModel.NotesViewModel.Selection.Add(selectedNotes);
+                        ViewModel.NotesViewModel.SelectNote(hitInfo.note);
                     }
-                    ViewModel.NotesViewModel.SelectNote(hitInfo.note);
                 }
                 if (ViewModel.NotesViewModel.Selection.Count > 0) {
                     ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {

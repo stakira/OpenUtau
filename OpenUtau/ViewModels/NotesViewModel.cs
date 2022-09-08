@@ -23,9 +23,9 @@ namespace OpenUtau.App.ViewModels {
     public class NotesSelectionEvent {
         public readonly UNote[] selectedNotes;
         public readonly UNote[] tempSelectedNotes;
-        public NotesSelectionEvent(UNote[] selectedNotes, UNote[] tempSelectedNotes) {
-            this.selectedNotes = selectedNotes;
-            this.tempSelectedNotes = tempSelectedNotes;
+        public NotesSelectionEvent(NoteSelectionViewModel selection) {
+            selectedNotes = selection.ToArray();
+            tempSelectedNotes = selection.TempSelectedNotes.ToArray();
         }
     }
     public class WaveformRefreshEvent { }
@@ -92,7 +92,6 @@ namespace OpenUtau.App.ViewModels {
         private readonly ObservableAsPropertyHelper<double> smallChangeY;
 
         public readonly NoteSelectionViewModel Selection = new NoteSelectionViewModel();
-        private readonly HashSet<UNote> TempSelectedNotes = new HashSet<UNote>();
 
         internal NotesViewModelHitTest HitTest;
         private int _lastNoteLength = 480;
@@ -405,62 +404,47 @@ namespace OpenUtau.App.ViewModels {
 
         public void DeselectNotes() {
             Selection.SelectNone();
-            TempSelectedNotes.Clear();
-            MessageBus.Current.SendMessage(
-                new NotesSelectionEvent(
-                    Selection.ToArray(), TempSelectedNotes.ToArray()));
+            MessageBus.Current.SendMessage(new NotesSelectionEvent(Selection));
         }
 
         public void SelectNote(UNote note) {
-            TempSelectedNotes.Clear();
             if (Part == null) {
                 return;
             }
             Selection.Add(note);
-            MessageBus.Current.SendMessage(
-                new NotesSelectionEvent(
-                    Selection.ToArray(), TempSelectedNotes.ToArray()));
+            MessageBus.Current.SendMessage(new NotesSelectionEvent(Selection));
+        }
         }
 
         public void SelectAllNotes() {
-            DeselectNotes();
             if (Part == null) {
                 return;
             }
             Selection.Select(Part);
-            MessageBus.Current.SendMessage(
-                new NotesSelectionEvent(
-                    Selection.ToArray(), TempSelectedNotes.ToArray()));
+            MessageBus.Current.SendMessage(new NotesSelectionEvent(Selection));
         }
 
         public void TempSelectNotes(int x0, int x1, int y0, int y1) {
-            TempSelectedNotes.Clear();
             if (Part == null) {
                 return;
             }
-            foreach (var note in Part.notes) {
-                if (note.End > x0 && note.position < x1 && note.tone > y0 && note.tone <= y1) {
-                    TempSelectedNotes.Add(note);
-                }
-            }
-            MessageBus.Current.SendMessage(
-                new NotesSelectionEvent(
-                    Selection.ToArray(), TempSelectedNotes.ToArray()));
+            var tempNotes = Part.notes
+                .Where(note => note.End > x0 && note.position < x1 && note.tone > y0 && note.tone <= y1);
+
+            Selection.SetTemporarySelection(tempNotes);
+            MessageBus.Current.SendMessage(new NotesSelectionEvent(Selection));
         }
 
         public void CommitTempSelectNotes() {
-            Selection.Add(TempSelectedNotes);
-            TempSelectedNotes.Clear();
-            MessageBus.Current.SendMessage(
-                new NotesSelectionEvent(
-                    Selection.ToArray(), TempSelectedNotes.ToArray()));
+            Selection.CommitTemporarySelection();
+            MessageBus.Current.SendMessage(new NotesSelectionEvent(Selection));
         }
 
         public void CleanupSelectedNotes() {
             if (Part == null) {
                 return;
             }
-            var toCleanup = Selection.ToList().Except(Part.notes);
+            var toCleanup = Selection.Except(Part.notes);
             Selection.Remove(toCleanup);
         }
 
@@ -518,9 +502,7 @@ namespace OpenUtau.App.ViewModels {
                 }
                 DocManager.Inst.EndUndoGroup();
                 Selection.Select(notes);
-                MessageBus.Current.SendMessage(
-                    new NotesSelectionEvent(
-                        Selection.ToArray(), TempSelectedNotes.ToArray()));
+                MessageBus.Current.SendMessage(new NotesSelectionEvent(Selection));
             }
         }
 
@@ -549,8 +531,8 @@ namespace OpenUtau.App.ViewModels {
         }
 
         internal (UNote[], string[]) PrepareInsertLyrics() {
-            var first = Selection.First();
-            var last = Selection.Last();
+            var first = Selection.FirstOrDefault();
+            var last = Selection.LastOrDefault();
             List<UNote> notes = new List<UNote>();
             var note = first;
             while (note != last) {
