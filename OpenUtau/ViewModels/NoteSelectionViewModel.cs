@@ -70,8 +70,6 @@ namespace OpenUtau.App.ViewModels {
             return wasRemoved;
         }
         public bool Remove(IEnumerable<UNote> notes) {
-            // if head is at beginning of selection or end
-            var isReversed = IsReversed;
             bool wasChange = false;
             lock (_notes) {
                 foreach (var note in notes) {

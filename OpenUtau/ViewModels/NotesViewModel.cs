@@ -428,7 +428,8 @@ namespace OpenUtau.App.ViewModels {
                 return;
             }
             var tempNotes = Part.notes
-                .Where(note => note.End > x0 && note.position < x1 && note.tone > y0 && note.tone <= y1);
+                .Where(note => note.End > x0 && note.position < x1 && note.tone > y0 && note.tone <= y1)
+                .ToList();
 
             Selection.SetTemporarySelection(tempNotes);
             MessageBus.Current.SendMessage(new NotesSelectionEvent(Selection));
@@ -443,7 +444,7 @@ namespace OpenUtau.App.ViewModels {
             if (Part == null) {
                 return;
             }
-            var toCleanup = Selection.Except(Part.notes);
+            var toCleanup = Selection.Except(Part.notes).ToList();
             Selection.Remove(toCleanup);
         }
 
