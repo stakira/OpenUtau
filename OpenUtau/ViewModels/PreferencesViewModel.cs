@@ -33,6 +33,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public int PreRender { get; set; }
         [Reactive] public int Theme { get; set; }
         [Reactive] public int ShowPortrait { get; set; }
+        [Reactive] public int ShowGhostNotes { get; set; }
         public List<CultureInfo>? Languages { get; }
         public CultureInfo? Language {
             get => language;
@@ -76,6 +77,7 @@ namespace OpenUtau.App.ViewModels {
             PreRender = Preferences.Default.PreRender ? 1 : 0;
             Theme = Preferences.Default.Theme;
             ShowPortrait = Preferences.Default.ShowPortrait ? 1 : 0;
+            ShowGhostNotes = Preferences.Default.ShowGhostNotes ? 1 : 0;
 
             this.WhenAnyValue(vm => vm.AudioOutputDevice)
                 .WhereNotNull()
@@ -134,6 +136,11 @@ namespace OpenUtau.App.ViewModels {
             this.WhenAnyValue(vm => vm.ShowPortrait)
                 .Subscribe(index => {
                     Preferences.Default.ShowPortrait = index > 0;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.ShowGhostNotes)
+                .Subscribe(index => {
+                    Preferences.Default.ShowGhostNotes = index > 0;
                     Preferences.Save();
                 });
         }

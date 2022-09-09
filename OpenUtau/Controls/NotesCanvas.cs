@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 using ReactiveUI;
 
 namespace OpenUtau.App.Controls {
@@ -98,9 +100,13 @@ namespace OpenUtau.App.Controls {
         private HashSet<UNote> selectedNotes = new HashSet<UNote>();
         private Geometry pointGeometry;
 
+        private bool showGhostNotes = true;
+        private List<UPart> otherPartsInView = new List<UPart>();
+
         public NotesCanvas() {
             ClipToBounds = true;
             pointGeometry = new EllipseGeometry(new Rect(-2.5, -2.5, 5, 5));
+
             MessageBus.Current.Listen<NotesRefreshEvent>()
                 .Subscribe(_ => InvalidateVisual());
             MessageBus.Current.Listen<NotesSelectionEvent>()
@@ -110,6 +116,22 @@ namespace OpenUtau.App.Controls {
                     selectedNotes.UnionWith(e.tempSelectedNotes);
                     InvalidateVisual();
                 });
+            MessageBus.Current.Listen<PartRefreshEvent>()
+                .Subscribe(_ => RefreshGhostNotes());
+            this.WhenAnyValue(x => x.Part)
+                .Subscribe(_ => RefreshGhostNotes());
+        }
+
+        void RefreshGhostNotes() {
+            showGhostNotes = Convert.ToBoolean(Preferences.Default.ShowGhostNotes);
+            if (Part == null || !showGhostNotes) {
+                return;
+            }
+            otherPartsInView = DocManager.Inst.Project.parts
+                .Where(other => other.trackNo != Part.trackNo &&
+                    other.position < Part.End &&
+                    Part.position < other.End)
+                .ToList();
         }
 
         protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change) {
@@ -132,6 +154,20 @@ namespace OpenUtau.App.Controls {
             double leftTick = TickOffset - 480;
             double rightTick = TickOffset + Bounds.Width / TickWidth + 480;
             bool hidePitch = viewModel.TickWidth <= ViewConstants.PianoRollTickWidthShowDetails * 0.5;
+
+            if (showGhostNotes) {
+                foreach (UVoicePart otherPart in otherPartsInView) {
+                    var xOffset = otherPart.position - Part.position;
+                    foreach (var note in otherPart.notes) {
+                        if (note.LeftBound >= rightTick || note.RightBound <= leftTick) {
+                            continue;
+                        }
+                        RenderGhostNote(note, viewModel, context, xOffset);
+                    }
+
+                }
+            }
+
             foreach (var note in Part.notes) {
                 if (note.LeftBound >= rightTick || note.RightBound <= leftTick) {
                     continue;
@@ -185,6 +221,24 @@ namespace OpenUtau.App.Controls {
             using (var state = context.PushPreTransform(Matrix.CreateTranslation(textPosition.X, textPosition.Y))) {
                 textLayout.Draw(context);
             }
+        }
+
+        private void RenderGhostNote(UNote note, NotesViewModel viewModel, DrawingContext context, int partOffset) {
+            // REVIEW should ghost note be smaller?
+            double relativeSize = 0.5d;
+            double height = TrackHeight * relativeSize;
+            double yOffset = Math.Floor(height * 0.5f);
+            Point leftTop = viewModel.TickToneToPoint(partOffset + note.position, note.tone);
+            leftTop = leftTop.WithX(leftTop.X + 1).WithY(Math.Round(leftTop.Y + 1 + yOffset));
+
+            Size size = viewModel.TickToneToSize(note.duration, relativeSize);
+            size = size.WithWidth(size.Width - 1).WithHeight(Math.Floor(size.Height - 2));
+
+            Point rightBottom = new Point(leftTop.X + size.Width, leftTop.Y + size.Height);
+
+            // REVIEW Using existing color to avoid problems with theming. Not sure if ideal color.
+            var brush = ThemeManager.NeutralAccentBrushSemi;
+            context.DrawRectangle(brush, null, new Rect(leftTop, rightBottom), 2, 2);
         }
 
         private void RenderPitchBend(UNote note, NotesViewModel viewModel, DrawingContext context) {
