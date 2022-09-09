@@ -12,16 +12,16 @@ namespace OpenUtau.Core.Format {
     public static class Wave {
         public static Func<string, WaveStream> OverrideMp3Reader;
 
-        public readonly static string kFileFilter = "*.wav;*.mp3;*.ogg;*.flac";
+        public readonly static List<string> FileExtensions = new List<string>() { "wav", "mp3", "ogg", "opus", "flac" };
 
         public static WaveStream OpenFile(string filepath) {
             var ext = Path.GetExtension(filepath);
-            byte[] buffer = new byte[4];
+            byte[] buffer = new byte[128];
             string tag = "";
             using (var stream = File.Open(filepath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
                 if (stream.CanSeek) {
-                    stream.Read(buffer, 0, 4);
-                    tag = System.Text.Encoding.UTF8.GetString(buffer);
+                    stream.Read(buffer, 0, 128);
+                    tag = System.Text.Encoding.UTF8.GetString(buffer.AsSpan(0, 4));
                 }
             }
             if (tag == "RIFF") {
@@ -34,7 +34,13 @@ namespace OpenUtau.Core.Format {
                 return new Mp3FileReaderBase(filepath, wf => new Mp3FrameDecompressor(wf));
             }
             if (tag == "OggS") {
-                return new VorbisWaveReader(filepath);
+                string text = System.Text.Encoding.ASCII.GetString(buffer);
+                if (text.Contains("vorbis")) {
+                    return new VorbisWaveReader(filepath);
+                }
+                if (text.Contains("OpusHead")) {
+                    return new OpusOggWaveReader(filepath);
+                }
             }
             if (tag == "fLaC") {
                 return new FlacReader(filepath);

@@ -300,7 +300,6 @@ namespace OpenUtau.Core.Ustx {
                 using (var waveStream = Format.Wave.OpenFile(FilePath)) {
                     fileDurationMs = waveStream.TotalTime.TotalMilliseconds;
                     channels = waveStream.WaveFormat.Channels;
-                    sampleRate = waveStream.WaveFormat.SampleRate;
                 }
             } catch (Exception e) {
                 Log.Error(e, $"Failed to load wave part {FilePath}");
@@ -321,6 +320,7 @@ namespace OpenUtau.Core.Ustx {
                 using (var waveStream = Format.Wave.OpenFile(FilePath)) {
                     var samples = Format.Wave.GetStereoSamples(waveStream);
                     lock (loadLockObj) {
+                        sampleRate = 44100; // GetStereoSamples resamples waveStream.
                         Samples = samples;
                     }
                 }
