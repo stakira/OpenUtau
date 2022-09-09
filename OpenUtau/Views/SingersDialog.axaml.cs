@@ -13,6 +13,7 @@ using NWaves.Audio;
 using NWaves.FeatureExtractors;
 using NWaves.FeatureExtractors.Options;
 using NWaves.Filters.Fda;
+using NWaves.Utils;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
 using ScottPlot;
@@ -39,6 +40,7 @@ namespace OpenUtau.App.Views {
         string? wavPath;
         IPlottable? waveform;
         IPlottable? spectrogram;
+        IPlottable? freq;
         List<IPlottable> timingMarks = new List<IPlottable>();
         AxisLimits outerLimits;
 
@@ -144,7 +146,7 @@ namespace OpenUtau.App.Views {
                 wavPath = null;
                 return;
             }
-            DrawOto(oto, true);
+            DrawOto(oto);
         }
 
         void OnBeginningEdit(object sender, DataGridBeginningEditEventArgs e) {
@@ -171,7 +173,7 @@ namespace OpenUtau.App.Views {
             }
         }
 
-        void DrawOto(Core.Ustx.UOto? oto, bool fit = false) {
+        void DrawOto(Core.Ustx.UOto? oto) {
             if (otoPlot == null || oto == null) {
                 return;
             }
@@ -216,35 +218,26 @@ namespace OpenUtau.App.Views {
 
                 var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
                 Task.Run(() => {
-                    var bands = FilterBanks.MelBands(melSize, wav.WaveFmt.SamplingRate);
-                    var extractor = new FilterbankExtractor(
-                       new FilterbankOptions {
-                           SamplingRate = wav.WaveFmt.SamplingRate,
-                           FrameSize = fftSize,
-                           FftSize = fftSize,
-                           HopSize = GetHopSize(wav.WaveFmt.SamplingRate),
-                           Window = NWaves.Windows.WindowType.Hann,
-                           FilterBank = FilterBanks.Triangular(
-                               fftSize, wav.WaveFmt.SamplingRate, bands),
-                       });
-                    var padded = new float[fftSize / 2].Concat(wav.Signals[0].Samples).Concat(new float[fftSize / 2]).ToArray();
-                    var mel = extractor.ComputeFrom(padded);
-                    var heatmap = new double[mel[0].Length, mel.Count];
-                    for (int i = 0; i < mel.Count; i++) {
-                        for (int j = 0; j < mel[i].Length; j++) {
-                            heatmap[melSize - 1 - j, i] = Math.Log(Math.Max(mel[i][j], 1e-4));
-                        }
-                    }
-                    return heatmap;
-                }).ContinueWith(heatmap => {
+                    return Tuple.Create(LoadMel(wav), LoadF0(wav, oto.File));
+                }).ContinueWith(task => {
                     if (spectrogram != null) {
                         otoPlot.Plot.Remove(spectrogram);
                         spectrogram = null;
                     }
-                    if (heatmap.IsFaulted) {
+                    if (freq != null) {
+                        otoPlot.Plot.Remove(freq);
+                        freq = null;
+                    }
+                    if (task.IsFaulted) {
                         return;
                     }
-                    spectrogram = otoPlot.Plot.AddHeatmap(heatmap.Result, lockScales: false);
+                    var mel = task.Result.Item1;
+                    spectrogram = otoPlot.Plot.AddHeatmap(mel, lockScales: false);
+                    if (task.Result.Item2 != null) {
+                        var frqX = task.Result.Item2.Item1;
+                        var frqY = task.Result.Item2.Item2;
+                        freq = otoPlot.Plot.AddSignalXY(frqX, frqY, color: Color.White);
+                    }
                     DrawTiming(oto);
                     otoPlot.Refresh();
                 }, scheduler);
@@ -257,6 +250,55 @@ namespace OpenUtau.App.Views {
                 otoPlot.Plot.SetAxisLimitsX(limits.XMin, limits.XMax);
             }
             otoPlot.Refresh();
+        }
+
+        double[,] LoadMel(WaveFile wav) {
+            var bands = FilterBanks.MelBands(melSize, wav.WaveFmt.SamplingRate);
+            var extractor = new FilterbankExtractor(
+               new FilterbankOptions {
+                   SamplingRate = wav.WaveFmt.SamplingRate,
+                   FrameSize = fftSize,
+                   FftSize = fftSize,
+                   HopSize = GetHopSize(wav.WaveFmt.SamplingRate),
+                   Window = NWaves.Windows.WindowType.Hann,
+                   FilterBank = FilterBanks.Triangular(
+                       fftSize, wav.WaveFmt.SamplingRate, bands),
+               });
+            var padded = new float[fftSize / 2].Concat(wav.Signals[0].Samples).Concat(new float[fftSize / 2]).ToArray();
+            var mel = extractor.ComputeFrom(padded);
+            var heatmap = new double[mel[0].Length, mel.Count];
+            for (int i = 0; i < mel.Count; i++) {
+                for (int j = 0; j < mel[i].Length; j++) {
+                    heatmap[melSize - 1 - j, i] = Math.Log(Math.Max(mel[i][j], 1e-4));
+                }
+            }
+            return heatmap;
+        }
+
+        Tuple<double[], double[]>? LoadF0(WaveFile wav, string filepath) {
+            double[]? frqX = null;
+            double[]? frqY = null;
+            string frqFile = GetFrqFile(filepath);
+            if (File.Exists(frqFile)) {
+                var frq = new Classic.Frq();
+                using (var fileStream = File.OpenRead(frqFile)) {
+                    frq.Load(fileStream);
+                }
+                frqX = Enumerable.Range(0, frq.f0.Length)
+                    .Select(v => (double)v * frq.hopSize / wav.WaveFmt.SamplingRate * 400).ToArray();
+                double high = Scale.HerzToMel(wav.WaveFmt.SamplingRate / 2);
+                double low = Scale.HerzToMel(0);
+                double resolution = (high - low) / (melSize + 1);
+                frqY = frq.f0.Select(v => Scale.HerzToMel(v) / resolution).ToArray();
+            }
+            return frqX == null || frqY == null ? null : Tuple.Create(frqX, frqY);
+        }
+
+        static string GetFrqFile(string source) {
+            string ext = Path.GetExtension(source);
+            string noExt = source.Substring(0, source.Length - ext.Length);
+            string frqExt = ext.Replace('.', '_') + ".frq";
+            return noExt + frqExt;
         }
 
         void DrawTiming(Core.Ustx.UOto oto) {
