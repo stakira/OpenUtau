@@ -156,15 +156,16 @@ namespace OpenUtau.App.Controls {
             bool hidePitch = viewModel.TickWidth <= ViewConstants.PianoRollTickWidthShowDetails * 0.5;
 
             if (showGhostNotes) {
-                foreach (UVoicePart otherPart in otherPartsInView) {
-                    var xOffset = otherPart.position - Part.position;
-                    foreach (var note in otherPart.notes) {
-                        if (note.LeftBound >= rightTick || note.RightBound <= leftTick) {
-                            continue;
+                foreach (UPart otherPart in otherPartsInView) {
+                    if (otherPart is UVoicePart otherVoicePart) {
+                        var xOffset = otherVoicePart.position - Part.position;
+                        foreach (var note in otherVoicePart.notes) {
+                            if (note.LeftBound >= rightTick || note.RightBound <= leftTick) {
+                                continue;
+                            }
+                            RenderGhostNote(note, viewModel, context, xOffset);
                         }
-                        RenderGhostNote(note, viewModel, context, xOffset);
                     }
-
                 }
             }
 
