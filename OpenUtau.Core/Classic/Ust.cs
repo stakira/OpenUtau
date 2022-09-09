@@ -142,7 +142,7 @@ namespace OpenUtau.Classic {
             const string format = "<param>=<value>";
             foreach (var iniLine in lines) {
                 var line = iniLine.line;
-                var parts = line.Split('=');
+                var parts = line.Split('=', 2);
                 if (parts.Length != 2) {
                     throw new FileFormatException($"Line does not match format {format}.\n{iniLine}");
                 }

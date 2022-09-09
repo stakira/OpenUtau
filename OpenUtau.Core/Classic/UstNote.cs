@@ -161,7 +161,7 @@ namespace OpenUtau.Classic {
             int? length = null;
             foreach (var iniLine in iniLines) {
                 var line = iniLine.line;
-                var parts = line.Split('=');
+                var parts = line.Split('=', 2);
                 if (parts.Length != 2) {
                     throw new FileFormatException($"Line does not match format {format}.\n{iniLine}");
                 }
