@@ -414,7 +414,6 @@ namespace OpenUtau.App.ViewModels {
             Selection.Add(note);
             MessageBus.Current.SendMessage(new NotesSelectionEvent(Selection));
         }
-        }
 
         public void SelectAllNotes() {
             if (Part == null) {
