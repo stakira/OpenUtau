@@ -372,10 +372,9 @@ namespace OpenUtau.Plugin.Builtin
                             } else {
                                 // like [C1][C2 -]
                                 if (!HasOto(vcc4, ending.tone)) {
-                                    if (burstConsonants.Contains(cc[i])) {
-                                        TryAddPhoneme(phonemes, ending.tone, $"{cc[i]} -", cc[i]);
-                                    } else {
-                                        TryAddPhoneme(phonemes, ending.tone, $"{cc[i]} -");
+                                    TryAddPhoneme(phonemes, ending.tone, cc[i], $"{cc[i]} -");
+                                    if (!burstConsonants.Contains(cc[0])) {
+                                        phonemes.Remove(cc[0]);
                                     }
                                     TryAddPhoneme(phonemes, ending.tone, $"{cc[i + 1]} -", cc[i + 1]);
                                     i++;
