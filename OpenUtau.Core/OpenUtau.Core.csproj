@@ -33,11 +33,6 @@
     <PackageReference Include="NAudio" Version="2.0.1" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="Data\Resources.Designer.cs">
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
     <Compile Update="Vogen\Data\VogenRes.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -45,10 +40,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Update="Data\Resources.resx">
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <Generator>ResXFileCodeGenerator</Generator>
-    </EmbeddedResource>
     <EmbeddedResource Update="Vogen\Data\VogenRes.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>VogenRes.Designer.cs</LastGenOutput>

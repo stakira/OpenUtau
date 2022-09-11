@@ -5,7 +5,7 @@ using System.Text;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core.Enunu {
-    public struct EnunuNote {
+    struct EnunuNote {
         public string lyric;
         public int length;
         public int noteNum;
