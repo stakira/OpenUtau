@@ -9,7 +9,7 @@ using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Core.Enunu {
-    class EnunuSinger : USinger {
+    public class EnunuSinger : USinger {
         public override string Id => voicebank.Id;
         public override string Name => voicebank.Name;
         public override USingerType SingerType => voicebank.SingerType;
