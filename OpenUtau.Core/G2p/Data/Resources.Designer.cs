@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace OpenUtau.Plugin.Builtin.Data {
+namespace OpenUtau.Core.G2p.Data {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace OpenUtau.Plugin.Builtin.Data {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("OpenUtau.Plugin.Builtin.Data.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("OpenUtau.Core.G2p.Data.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -63,9 +63,39 @@ namespace OpenUtau.Plugin.Builtin.Data {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] arpasing_template {
+        internal static byte[] g2p_arpabet {
             get {
-                object obj = ResourceManager.GetObject("arpasing_template", resourceCulture);
+                object obj = ResourceManager.GetObject("g2p-arpabet", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] g2p_fr {
+            get {
+                object obj = ResourceManager.GetObject("g2p-fr", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] g2p_pt {
+            get {
+                object obj = ResourceManager.GetObject("g2p-pt", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] g2p_ru {
+            get {
+                object obj = ResourceManager.GetObject("g2p-ru", resourceCulture);
                 return ((byte[])(obj));
             }
         }

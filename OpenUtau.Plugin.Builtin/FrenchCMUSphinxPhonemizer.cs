@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using OpenUtau.Api;
+using OpenUtau.Core.G2p;
 using Serilog;
 
 namespace OpenUtau.Plugin.Builtin {

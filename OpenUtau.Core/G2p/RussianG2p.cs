@@ -4,7 +4,7 @@ using System.Linq;
 using Microsoft.ML.OnnxRuntime;
 using OpenUtau.Api;
 
-namespace OpenUtau.Plugin.Builtin {
+namespace OpenUtau.Core.G2p {
     // Dictionary from https://sourceforge.net/projects/cmusphinx/files/Acoustic%20and%20Language%20Models/Russian/zero_ru_cont_8k_v3.tar.gz
     public class RussianG2p : G2pPack {
         private static readonly string[] graphemes = new string[] {

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using OpenUtau.Api;
 using System.Linq;
+using OpenUtau.Api;
+using OpenUtau.Core.G2p;
 
 namespace OpenUtau.Plugin.Builtin {
     [Phonemizer("Brazilian Portuguese CVC Phonemizer", "PT-BR CVC", "HAI-D")]

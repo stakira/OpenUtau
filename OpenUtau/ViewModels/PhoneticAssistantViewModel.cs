@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
+using OpenUtau.Core.G2p;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -22,10 +23,10 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public string Phonemes { get; set; }
 
         private readonly List<G2pOption> g2ps = new List<G2pOption>() {
-            new G2pOption(typeof(Plugin.Builtin.ArpabetG2p)),
-            new G2pOption(typeof(Plugin.Builtin.FrenchG2p)),
-            new G2pOption(typeof(Plugin.Builtin.PortugueseG2p)),
-            new G2pOption(typeof(Plugin.Builtin.RussianG2p)),
+            new G2pOption(typeof(ArpabetG2p)),
+            new G2pOption(typeof(FrenchG2p)),
+            new G2pOption(typeof(PortugueseG2p)),
+            new G2pOption(typeof(RussianG2p)),
         };
 
         private Api.G2pPack? g2p;
