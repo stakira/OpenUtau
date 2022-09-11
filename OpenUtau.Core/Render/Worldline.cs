@@ -7,7 +7,26 @@ using OpenUtau.Core.Format;
 using Serilog;
 
 namespace OpenUtau.Core.Render {
-    static class Worldline {
+    public static class Worldline {
+        [DllImport("worldline", CallingConvention = CallingConvention.Cdecl)]
+        static extern int F0(
+            float[] samples, int length, int fs, double framePeriod, int method, ref IntPtr f0);
+
+        public static double[] F0(float[] samples, int fs, double framePeriod, int method) {
+            try {
+                unsafe {
+                    IntPtr buffer = IntPtr.Zero;
+                    int size = F0(samples, samples.Length, fs, framePeriod, method, ref buffer);
+                    var data = new double[size];
+                    Marshal.Copy(buffer, data, 0, size);
+                    return data;
+                }
+            } catch (Exception e) {
+                Log.Error(e, "Failed to calculate f0.");
+                return null;
+            }
+        }
+
         [DllImport("worldline", CallingConvention = CallingConvention.Cdecl)]
         static extern int DecodeMgc(
             int f0Length, double[] mgc, int mgcSize,
