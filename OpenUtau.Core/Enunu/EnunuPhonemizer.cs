@@ -11,7 +11,7 @@ using TinyPinyin;
 namespace OpenUtau.Core.Enunu {
     [Phonemizer("Enunu Phonemizer", "ENUNU")]
     public class EnunuPhonemizer : Phonemizer {
-        EnunuSinger singer;
+        protected EnunuSinger singer;
         Dictionary<Note[], Phoneme[]> partResult = new Dictionary<Note[], Phoneme[]>();
 
         struct TimingResult {
@@ -77,7 +77,7 @@ namespace OpenUtau.Core.Enunu {
             }
         }
 
-        static EnunuNote[] NoteGroupsToEnunu(Note[][] notes) {
+        protected virtual EnunuNote[] NoteGroupsToEnunu(Note[][] notes) {
             var result = new List<EnunuNote>();
             int position = 0;
             int index = 0;
