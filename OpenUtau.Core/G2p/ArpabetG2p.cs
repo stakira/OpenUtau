@@ -4,20 +4,19 @@ using System.Linq;
 using Microsoft.ML.OnnxRuntime;
 using OpenUtau.Api;
 
-namespace OpenUtau.Plugin.Builtin {
-    public class PortugueseG2p : G2pPack {
+namespace OpenUtau.Core.G2p {
+    public class ArpabetG2p : G2pPack {
         private static readonly string[] graphemes = new string[] {
-            "", "", "", "", "-", "a", "b", "c", "d", "e", "f", "g", "h",
-            "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t",
-            "u", "v", "w", "x", "y", "z", "à", "á", "â", "ã", "ç",
-            "è", "é", "ê", "í", "î", "ó", "ô", "õ", "ú", "û", "ü",
+            "", "", "", "", "\'", "-", "a", "b", "c", "d", "e",
+            "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p",
+            "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
         };
 
         private static readonly string[] phonemes = new string[] {
-            "", "", "", "", "E", "J", "L", "O", "R", "S", "X", "Z",
-            "a", "a~", "b", "d", "dZ", "e", "e~", "f", "g",
-            "i", "i~", "j", "j~", "k", "l", "m", "n", "o", "o~",
-            "p", "r", "s", "t", "tS", "u", "u~", "v", "w", "w~", "z",
+            "", "", "", "", "aa", "ae", "ah", "ao", "aw", "ay", "b", "ch",
+            "d", "dh", "eh", "er", "ey", "f", "g", "hh", "ih", "iy", "jh",
+            "k", "l", "m", "n", "ng", "ow", "oy", "p", "r", "s", "sh", "t",
+            "th", "uh", "uw", "v", "w", "y", "z", "zh",
         };
 
         private static object lockObj = new object();
@@ -26,14 +25,17 @@ namespace OpenUtau.Plugin.Builtin {
         private static InferenceSession session;
         private static Dictionary<string, string[]> predCache = new Dictionary<string, string[]>();
 
-        public PortugueseG2p() {
+        public ArpabetG2p() {
             lock (lockObj) {
                 if (graphemeIndexes == null) {
                     graphemeIndexes = graphemes
-                    .Skip(4)
-                    .Select((g, i) => Tuple.Create(g, i))
-                    .ToDictionary(t => t.Item1, t => t.Item2 + 4);
-                    var tuple = LoadPack(Data.Resources.g2p_pt);
+                        .Skip(4)
+                        .Select((g, i) => Tuple.Create(g, i))
+                        .ToDictionary(t => t.Item1, t => t.Item2 + 4);
+                    var tuple = LoadPack(
+                        Data.Resources.g2p_arpabet,
+                        s => s.ToLowerInvariant(),
+                        s => RemoveTailDigits(s.ToLowerInvariant()));
                     dict = tuple.Item1;
                     session = tuple.Item2;
                 }

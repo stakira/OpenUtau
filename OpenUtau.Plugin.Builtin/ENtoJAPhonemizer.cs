@@ -1,7 +1,8 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
+using OpenUtau.Core.G2p;
 using WanaKanaNet;
 
 namespace OpenUtau.Plugin.Builtin {

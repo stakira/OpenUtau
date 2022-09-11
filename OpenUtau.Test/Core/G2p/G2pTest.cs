@@ -1,8 +1,7 @@
 ﻿using Xunit;
 using Xunit.Abstractions;
-using OpenUtau.Plugin.Builtin;
 
-namespace OpenUtau.Plugins {
+namespace OpenUtau.Core.G2p {
     public class G2pTest {
         readonly ITestOutputHelper output;
 
