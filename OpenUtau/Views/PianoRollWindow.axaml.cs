@@ -98,7 +98,7 @@ namespace OpenUtau.App.Views {
         }
 
         void EditLyrics() {
-            if (ViewModel.NotesViewModel.SelectedNotes.Count == 0) {
+            if (ViewModel.NotesViewModel.Selection.IsEmpty) {
                 _ = MessageBox.Show(
                     this,
                     ThemeManager.GetString("lyrics.selectnotes"),
@@ -339,7 +339,7 @@ namespace OpenUtau.App.Views {
         }
 
         private void NotesCanvasRightPointerPressed(Canvas canvas, PointerPoint point, PointerPressedEventArgs args) {
-            var selectedNotes = new List<Core.Ustx.UNote>(ViewModel.NotesViewModel.SelectedNotes);
+            var selectedNotes = ViewModel.NotesViewModel.Selection.ToList();
             ViewModel.NotesViewModel.DeselectNotes();
             if (ViewModel.NotesViewModel.DrawPitchTool) {
                 editState = new ResetPitchState(canvas, ViewModel, this);
@@ -397,12 +397,12 @@ namespace OpenUtau.App.Views {
             if (ViewModel.NotesViewModel.CursorTool || ViewModel.NotesViewModel.PenTool) {
                 var hitInfo = ViewModel.NotesViewModel.HitTest.HitTestNote(point.Position);
                 if (hitInfo.hitBody) {
+                    // if note in question was already in selection before clearing
                     if (selectedNotes.Contains(hitInfo.note)) {
-                        ViewModel.NotesViewModel.SelectedNotes.AddRange(selectedNotes);
+                        ViewModel.NotesViewModel.SelectNote(hitInfo.note);
                     }
-                    ViewModel.NotesViewModel.SelectNote(hitInfo.note);
                 }
-                if (ViewModel.NotesViewModel.SelectedNotes.Count > 0) {
+                if (ViewModel.NotesViewModel.Selection.Count > 0) {
                     ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
                         Header = ThemeManager.GetString("context.note.delete"),
                         Command = ViewModel.NoteDeleteCommand,
