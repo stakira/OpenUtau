@@ -40,6 +40,7 @@
             Click="OnSingerMenuButton">
       <Button.ContextMenu>
         <ContextMenu Name="SingerMenu" PlacementMode="Bottom">
+          <MenuItem Header="{DynamicResource singers.visitwebsite}" Click="OnVisitWebsite" IsEnabled="{Binding HasWebsite}"/>
           <MenuItem Header="{DynamicResource singers.setportrait}" Click="OnSetPortrait"/>
           <MenuItem Header="{DynamicResource singers.setencoding}" Items="{Binding SetEncodingMenuItems}">
             <MenuItem.DataTemplates>
