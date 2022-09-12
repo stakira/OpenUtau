@@ -93,6 +93,18 @@ namespace OpenUtau.App.Views {
             menu.Open();
         }
 
+        void OnVisitWebsite(object sender, RoutedEventArgs args) {
+            var viewModel = (DataContext as SingersViewModel)!;
+            if (viewModel.Singer == null) {
+                return;
+            }
+            try {
+                OS.OpenWeb(viewModel.Singer.Web);
+            } catch (Exception e) {
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
+            }
+        }
+
         async void OnSetPortrait(object sender, RoutedEventArgs args) {
             var viewModel = (DataContext as SingersViewModel)!;
             if (viewModel.Singer == null) {

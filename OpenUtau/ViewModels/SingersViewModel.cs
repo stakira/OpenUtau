@@ -19,6 +19,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public USinger? Singer { get; set; }
         [Reactive] public Bitmap? Avatar { get; set; }
         [Reactive] public string? Info { get; set; }
+        [Reactive] public bool HasWebsite { get; set; }
         public ObservableCollectionExtended<USubbank> Subbanks => subbanks;
         public ObservableCollectionExtended<UOto> Otos => otos;
         [Reactive] public UOto? SelectedOto { get; set; }
@@ -50,6 +51,7 @@ namespace OpenUtau.App.ViewModels {
                     Otos.Clear();
                     Otos.AddRange(singer.Otos);
                     Info = $"Author: {singer.Author}\nVoice: {singer.Voice}\nWeb: {singer.Web}\nVersion: {singer.Version}\n{singer.OtherInfo}\n\n{string.Join("\n", singer.Errors)}";
+                    HasWebsite = !string.IsNullOrEmpty(singer.Web);
                     LoadSubbanks();
                     DocManager.Inst.ExecuteCmd(new OtoChangedNotification());
                 });
