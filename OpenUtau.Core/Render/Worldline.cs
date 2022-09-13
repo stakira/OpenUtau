@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using NAudio.Wave;
@@ -141,6 +142,8 @@ namespace OpenUtau.Core.Render {
             public int sample_fs;
             public int sample_length;
             public IntPtr sample;
+            public int frq_length;
+            public IntPtr frq;
             public int tone;
             public double con_vel;
             public double offset;
@@ -173,14 +176,30 @@ namespace OpenUtau.Core.Render {
                     sample = Wave.GetSamples(waveStream.ToSampleProvider().ToMono(1, 0))
                         .Select(f => (double)f).ToArray();
                 }
+                string frqFile = VoicebankFiles.GetFrqFile(item.inputFile);
+                GCHandle? pinnedFrq = null;
+                byte[] frq = null;
+                if (File.Exists(frqFile)) {
+                    using (var frqStream = File.OpenRead(frqFile)) {
+                        using (var memStream = new MemoryStream()) {
+                            frqStream.CopyTo(memStream);
+                            frq = memStream.ToArray();
+                            pinnedFrq = GCHandle.Alloc(frq, GCHandleType.Pinned);
+                        }
+                    }
+                }
 
                 var pinnedSample = GCHandle.Alloc(sample, GCHandleType.Pinned);
                 var pinnedPitchBend = GCHandle.Alloc(item.pitches, GCHandleType.Pinned);
-                handles = new[] { pinnedSample, pinnedPitchBend };
+                handles = pinnedFrq == null
+                    ? new[] { pinnedSample, pinnedPitchBend }
+                    : new[] { pinnedSample, pinnedPitchBend, pinnedFrq.Value };
                 request = new SynthRequest {
                     sample_fs = fs,
                     sample_length = sample.Length,
                     sample = pinnedSample.AddrOfPinnedObject(),
+                    frq_length = frq?.Length ?? 0,
+                    frq = pinnedFrq?.AddrOfPinnedObject() ?? IntPtr.Zero,
                     tone = item.tone,
                     con_vel = item.velocity,
                     offset = item.offset,

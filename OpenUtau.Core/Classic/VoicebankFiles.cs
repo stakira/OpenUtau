@@ -11,7 +11,7 @@ using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Classic {
-    class VoicebankFiles : Core.Util.SingletonBase<VoicebankFiles> {
+    public class VoicebankFiles : Core.Util.SingletonBase<VoicebankFiles> {
         public string GetSourceTempPath(string singerId, UOto oto, string ext = null) {
             if (string.IsNullOrEmpty(ext)) {
                 ext = Path.GetExtension(oto.File);
@@ -103,6 +103,13 @@ namespace OpenUtau.Classic {
                         && File.GetCreationTime(file) < expire)
                 .ToList()
                 .ForEach(file => File.Delete(file));
+        }
+
+        public static string GetFrqFile(string source) {
+            string ext = Path.GetExtension(source);
+            string noExt = source.Substring(0, source.Length - ext.Length);
+            string frqExt = ext.Replace('.', '_') + ".frq";
+            return noExt + frqExt;
         }
     }
 }

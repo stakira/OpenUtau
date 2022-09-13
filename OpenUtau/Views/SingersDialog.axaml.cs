@@ -290,7 +290,7 @@ namespace OpenUtau.App.Views {
         Tuple<double[], double[]>? LoadF0(WaveFile wav, string filepath) {
             double[]? frqX = null;
             double[]? frqY = null;
-            string frqFile = GetFrqFile(filepath);
+            string frqFile = Classic.VoicebankFiles.GetFrqFile(filepath);
             if (File.Exists(frqFile)) {
                 var frq = new Classic.Frq();
                 using (var fileStream = File.OpenRead(frqFile)) {
@@ -304,13 +304,6 @@ namespace OpenUtau.App.Views {
                 frqY = frq.f0.Select(v => Scale.HerzToMel(v) / resolution).ToArray();
             }
             return frqX == null || frqY == null ? null : Tuple.Create(frqX, frqY);
-        }
-
-        static string GetFrqFile(string source) {
-            string ext = Path.GetExtension(source);
-            string noExt = source.Substring(0, source.Length - ext.Length);
-            string frqExt = ext.Replace('.', '_') + ".frq";
-            return noExt + frqExt;
         }
 
         void DrawTiming(Core.Ustx.UOto oto) {
