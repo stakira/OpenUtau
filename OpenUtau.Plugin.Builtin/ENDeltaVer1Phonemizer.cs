@@ -178,16 +178,15 @@ namespace OpenUtau.Plugin.Builtin
                     // try vcc
                     for (var i = lastC + 1; i >= 0; i--)
                     {
-                        if (i == 0)
-                        {
+                        var vcc = $"{prevV}{string.Join(" ", cc.Take(i))}";
+                        if (i == 0) {
                             phonemes.Add($"{prevV} -");
-                            break;
-                        }
-                        var vcc = $"{prevV} {string.Join("", cc.Take(i))}";
-                        if (HasOto(vcc, syllable.tone))
-                        {
+                        } else if (HasOto(vcc, syllable.tone)) {
                             phonemes.Add(vcc);
                             firstC = i - 1;
+                            break;
+                        } else {
+                            phonemes.Add($"{prevV} {cc[0]}");
                             break;
                         }
                     }
