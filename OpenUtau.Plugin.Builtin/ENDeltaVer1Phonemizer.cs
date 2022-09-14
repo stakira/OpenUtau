@@ -22,7 +22,7 @@ namespace OpenUtau.Plugin.Builtin
         ///</summary>
 
         private readonly string[] vowels = "a,A,@,{,V,O,aU,aI,E,3,eI,I,i,oU,OI,U,u,Q,Ol,aUn,e@,eN,IN,e,o,Ar,Er,Ir,Or,Ur,ir,ur,@l,@m,@n,@N,1,e@m,e@n".Split(',');
-        private readonly string[] consonants = "b,tS,d,D,4,f,g,h,dZ,k,l,m,n,N,p,r,s,S,t,T,v,w,j,z,Z,t_},・,_".Split(',');
+        private readonly string[] consonants = "b,tS,d,D,4,f,g,h,dZ,k,l,m,n,N,p,r,s,S,t,T,v,w,W,j,z,Z,t_},・,_".Split(',');
         private readonly string[] burstConsonants = "b,tS,d,dZ,4,g,k,p,t".Split(',');
         private readonly string[] affricates = "tS,dZ".Split(',');
         private readonly Dictionary<string, string> dictionaryReplacements = ("aa=A;ae={;ah=V;ao=O;aw=aU;ax=@;ay=aI;" +
