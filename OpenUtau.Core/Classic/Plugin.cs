@@ -12,17 +12,12 @@ namespace OpenUtau.Classic {
             if (!File.Exists(Executable)) {
                 throw new FileNotFoundException($"Executable {Executable} not found.");
             }
-            var startInfo = UseShell
-                 ? new ProcessStartInfo() {
-                     FileName = "cmd.exe",
-                     Arguments = $"/K \"{Executable}\" \"{tempFile}\"",
-                     UseShellExecute = true,
-                 }
-                 : new ProcessStartInfo() {
-                     FileName = Executable,
-                     Arguments = tempFile,
-                     WorkingDirectory = Path.GetDirectoryName(Executable),
-                 };
+            var startInfo = new ProcessStartInfo() {
+                    FileName = Executable,
+                    Arguments = tempFile,
+                    WorkingDirectory = Path.GetDirectoryName(Executable),
+                    UseShellExecute = UseShell,
+                };
             using (var process = Process.Start(startInfo)) {
                 process.WaitForExit();
             }
