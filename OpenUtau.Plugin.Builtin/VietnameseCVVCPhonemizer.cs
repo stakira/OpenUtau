@@ -174,6 +174,9 @@ namespace OpenUtau.Plugin.Builtin {
             if (ViTriDai) {
                 ViTri = Long;
             }
+            if (loi.EndsWith("uôN")) {
+                ViTri = Short;
+            }
             var dem = loi.Length;
             var phoneme = "";
             // 1 kí tự 
