@@ -31,8 +31,8 @@
             <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.note.restart}" FontSize="11"/>
             <TextBlock Text="{DynamicResource prefs.playback.lockstarttime}"/>
             <ComboBox HorizontalAlignment="Stretch" SelectedIndex="{Binding LockStartTime}">
-                <ComboBoxItem Content="{DynamicResource prefs.playback.lockstarttime.off}"/>
-                <ComboBoxItem Content="{DynamicResource prefs.playback.lockstarttime.on}"/>
+              <ComboBoxItem Content="{DynamicResource prefs.playback.lockstarttime.off}"/>
+              <ComboBoxItem Content="{DynamicResource prefs.playback.lockstarttime.on}"/>
             </ComboBox>
             <TextBlock Text="{DynamicResource prefs.playback.autoscroll}"/>
             <ComboBox HorizontalAlignment="Stretch"  SelectedIndex="{Binding PlaybackAutoScroll}">
@@ -105,12 +105,21 @@
             </ComboBox>
             <TextBlock Margin="0,4,0,0" Text="{DynamicResource prefs.appearance.showghostnotes}" />
             <ComboBox HorizontalAlignment="Stretch" SelectedIndex="{Binding ShowGhostNotes}">
-                <ComboBoxItem Content="{DynamicResource prefs.off}"/>
-                <ComboBoxItem Content="{DynamicResource prefs.on}"/>
-            </ComboBox>  
+              <ComboBoxItem Content="{DynamicResource prefs.off}"/>
+              <ComboBoxItem Content="{DynamicResource prefs.on}"/>
+            </ComboBox>
           </StackPanel>
         </HeaderedContentControl>
         <HeaderedContentControl Classes="groupbox" Header="{DynamicResource prefs.advanced}">
+          <StackPanel>
+            <TextBlock Text="{DynamicResource prefs.advanced.lyricshelper}" />
+            <ComboBox HorizontalAlignment="Stretch" Items="{Binding LyricsHelpers}" SelectedItem="{Binding LyricsHelper}"/>
+            <TextBlock Text="{DynamicResource prefs.advanced.lyricshelper.brackets}" />
+            <ComboBox HorizontalAlignment="Stretch" SelectedIndex="{Binding LyricsHelperBrackets}">
+              <ComboBoxItem Content="{DynamicResource prefs.off}"/>
+              <ComboBoxItem Content="{DynamicResource prefs.on}"/>
+            </ComboBox>
+          </StackPanel>
         </HeaderedContentControl>
       </StackPanel>
     </ScrollViewer>

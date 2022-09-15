@@ -12,6 +12,10 @@
   <system:String x:Key="context.pitch.pointadd">Tambahkan titik</system:String>
   <system:String x:Key="context.pitch.pointdel">Hapus titik</system:String>
   <system:String x:Key="context.pitch.pointsnapprev">Snap ke not sebelumnya</system:String>
+  <!--<system:String x:Key="context.timeline.addtempo">Add tempo change at {0}</system:String>-->
+  <!--<system:String x:Key="context.timeline.addtimesig">Add time signature change</system:String>-->
+  <!--<system:String x:Key="context.timeline.deltempo">Delete tempo change at {0}</system:String>-->
+  <!--<system:String x:Key="context.timeline.deltimesig">Delete time signature change</system:String>-->
 
   <!--<system:String x:Key="debug.clear">Clear</system:String>-->
   <!--<system:String x:Key="debug.copylog">Copy Log</system:String>-->
@@ -32,6 +36,10 @@
   <system:String x:Key="dialogs.noresampler.caption">Tidak ada resampler</system:String>
   <system:String x:Key="dialogs.noresampler.message">Tidak ada resampler! Letakkan resampler exe atau dll favorit Anda di folder Resamplers dan pilih di Preferensi!</system:String>
   <system:String x:Key="dialogs.timesig.caption">Tanda Waktu</system:String>
+  <!--<system:String x:Key="dialogs.tracksettings.caption">Track Settings</system:String>-->
+  <!--<system:String x:Key="dialogs.tracksettings.location">Location</system:String>-->
+  <!--<system:String x:Key="dialogs.tracksettings.renderer">Renderer</system:String>-->
+  <!--<system:String x:Key="dialogs.tracksettings.setasdefault">Set As Default</system:String>-->
 
   <system:String x:Key="errors.caption">Kesalahan</system:String>
 
@@ -89,6 +97,9 @@
   <system:String x:Key="menu.file.savetemplate">Simpan Templat...</system:String>
   <system:String x:Key="menu.help">Bantuan</system:String>
   <system:String x:Key="menu.help.about">Tentang OpenUtau</system:String>
+  <!--<system:String x:Key="menu.help.checkupdate">Check Update</system:String>-->
+  <!--<system:String x:Key="menu.help.logslocation">Open Logs Location</system:String>-->
+  <!--<system:String x:Key="menu.help.reportissue">Report Issue</system:String>-->
   <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
   <system:String x:Key="menu.tools">Peralatan</system:String>
   <!--<system:String x:Key="menu.tools.clearcache">Clear Cache</system:String>-->
@@ -188,21 +199,24 @@ Warning: this option removes custom presets.</system:String>-->
   <system:String x:Key="pianoroll.tool.eraser">Alat Penghapus (3)</system:String>
   <!--<system:String x:Key="pianoroll.tool.knife">Knife Tool (5)</system:String>-->
   <!--<system:String x:Key="pianoroll.tool.penplus">Pen Plus Tool (Ctrl + 2)
-Left click to draw
-Right click to delete
+    Left click to draw
+    Right click to delete
 Hold Ctrl to select</system:String>-->
   <!--<system:String x:Key="pianoroll.tool.penv2">Pen Tool (2)
-Left click to draw
+    Left click to draw
 Hold Ctrl to select</system:String>-->
   <!--<system:String x:Key="pianoroll.tool.selectionv2">Selection Tool (1)</system:String>-->
 
   <system:String x:Key="prefs.advanced">Lanjutan</system:String>
   <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.lyricshelper">Lyrics Helper</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.lyricshelper.brackets">Lyrics Helper Adds Brackets</system:String>-->
   <system:String x:Key="prefs.advanced.resamplerlogging">Pencatatan Resampler</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging.warn">Menyimpan output resampler dalam file log. Opsi ini akan memperlambat UI dan rendering.</system:String>
   <system:String x:Key="prefs.advanced.stable">Stabil</system:String>
   <system:String x:Key="prefs.appearance">Penampilan</system:String>
   <system:String x:Key="prefs.appearance.lang">Bahasa</system:String>
+  <!--<system:String x:Key="prefs.appearance.showghostnotes">Show other tracks' notes on piano roll</system:String>-->
   <!--<system:String x:Key="prefs.appearance.showportrait">Show portrait on piano roll</system:String>-->
   <system:String x:Key="prefs.appearance.theme">Tema</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">Gelap</system:String>
@@ -236,19 +250,21 @@ Hold Ctrl to select</system:String>-->
   <system:String x:Key="prefs.rendering.prerender.threads">Utas Pra-perenderan</system:String>
   <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
   <!--<system:String x:Key="prefs.rendering.resampler.morewarn">
-Warning: moresampler is not fully supported. It may be slow and cause high CPU usage. If you insist, please:
-1. Set "resampler-compatibility" to "on" in moreconfig.txt.
-2. Set "auto-update-llsm-mrq" to "off" in moreconfig.txt.
-3. Patiently wait for moresampler to generate missing llsm files.
+    Warning: moresampler is not fully supported. It may be slow and cause high CPU usage. If you insist, please:
+    1. Set "resampler-compatibility" to "on" in moreconfig.txt.
+    2. Set "auto-update-llsm-mrq" to "off" in moreconfig.txt.
+    3. Patiently wait for moresampler to generate missing llsm files.
   </system:String>-->
   <system:String x:Key="prefs.rendering.resampler.note">
     Catatan: untuk menggunakan resampler eksternal, silakan tambahkan berkas resampler DLL atau EXE di folder Resamplers di jalur instal OpenUtau dan pilih di Preferensi.
   </system:String>
+  <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
 
   <system:String x:Key="progress.saved">Proyek tersimpan. {0}</system:String>
   <!--<system:String x:Key="progress.waitingrendering">Waiting Rendering</system:String>-->
 
   <system:String x:Key="singers.caption">Penyanyi</system:String>
+  <!--<system:String x:Key="singers.editoto.gotosource">Goto Source File</system:String>-->
   <!--<system:String x:Key="singers.editoto.reset">Reset Otos</system:String>-->
   <!--<system:String x:Key="singers.editoto.save">Save Otos</system:String>-->
   <system:String x:Key="singers.location">Lokasi</system:String>
@@ -276,6 +292,7 @@ Warning: moresampler is not fully supported. It may be slow and cause high CPU u
   <system:String x:Key="singers.subbanks.set">Setel</system:String>
   <system:String x:Key="singers.subbanks.tone">Nada</system:String>
   <system:String x:Key="singers.subbanks.toneranges">Rentang Nada</system:String>
+  <!--<system:String x:Key="singers.visitwebsite">Visit Website</system:String>-->
 
   <!--<system:String x:Key="tip.aliasbox">Override Alias</system:String>-->
   <system:String x:Key="tip.exps">

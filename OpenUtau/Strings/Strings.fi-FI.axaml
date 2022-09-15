@@ -12,6 +12,10 @@
   <system:String x:Key="context.pitch.pointadd">Lisää kontrollipiste</system:String>
   <system:String x:Key="context.pitch.pointdel">Poista kontrollipiste</system:String>
   <system:String x:Key="context.pitch.pointsnapprev">Liimaudu kiinni edelliseen nuottiin</system:String>
+  <!--<system:String x:Key="context.timeline.addtempo">Add tempo change at {0}</system:String>-->
+  <!--<system:String x:Key="context.timeline.addtimesig">Add time signature change</system:String>-->
+  <!--<system:String x:Key="context.timeline.deltempo">Delete tempo change at {0}</system:String>-->
+  <!--<system:String x:Key="context.timeline.deltimesig">Delete time signature change</system:String>-->
 
   <!--<system:String x:Key="debug.clear">Clear</system:String>-->
   <!--<system:String x:Key="debug.copylog">Copy Log</system:String>-->
@@ -32,6 +36,10 @@
   <system:String x:Key="dialogs.noresampler.caption">Ei valittua resampleria</system:String>
   <system:String x:Key="dialogs.noresampler.message">Resampleria ei löydetty! Laita resampler.exe tai dll- tiedosto Resamplers -kansioon ja valitse se sitten asetuksista.</system:String>
   <!--<system:String x:Key="dialogs.timesig.caption">Time Signature</system:String>-->
+  <!--<system:String x:Key="dialogs.tracksettings.caption">Track Settings</system:String>-->
+  <!--<system:String x:Key="dialogs.tracksettings.location">Location</system:String>-->
+  <!--<system:String x:Key="dialogs.tracksettings.renderer">Renderer</system:String>-->
+  <!--<system:String x:Key="dialogs.tracksettings.setasdefault">Set As Default</system:String>-->
 
   <system:String x:Key="errors.caption">Virhe</system:String>
 
@@ -89,6 +97,9 @@
   <system:String x:Key="menu.file.savetemplate">Tallenna malli...</system:String>
   <system:String x:Key="menu.help">Apua</system:String>
   <system:String x:Key="menu.help.about">Tietoa OpenUtausta</system:String>
+  <!--<system:String x:Key="menu.help.checkupdate">Check Update</system:String>-->
+  <!--<system:String x:Key="menu.help.logslocation">Open Logs Location</system:String>-->
+  <!--<system:String x:Key="menu.help.reportissue">Report Issue</system:String>-->
   <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
   <system:String x:Key="menu.tools">Työkalut</system:String>
   <!--<system:String x:Key="menu.tools.clearcache">Clear Cache</system:String>-->
@@ -188,21 +199,24 @@ Warning: this option removes custom presets.</system:String>-->
   <system:String x:Key="pianoroll.tool.eraser">Pyyhekumityökalu (3)</system:String>
   <!--<system:String x:Key="pianoroll.tool.knife">Knife Tool (5)</system:String>-->
   <!--<system:String x:Key="pianoroll.tool.penplus">Pen Plus Tool (Ctrl + 2)
-Left click to draw
-Right click to delete
+    Left click to draw
+    Right click to delete
 Hold Ctrl to select</system:String>-->
   <!--<system:String x:Key="pianoroll.tool.penv2">Pen Tool (2)
-Left click to draw
+    Left click to draw
 Hold Ctrl to select</system:String>-->
   <!--<system:String x:Key="pianoroll.tool.selectionv2">Selection Tool (1)</system:String>-->
 
   <system:String x:Key="prefs.advanced">Lisäasetukset</system:String>
   <system:String x:Key="prefs.advanced.beta">Beta versio</system:String>
+  <!--<system:String x:Key="prefs.advanced.lyricshelper">Lyrics Helper</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.lyricshelper.brackets">Lyrics Helper Adds Brackets</system:String>-->
   <!--<system:String x:Key="prefs.advanced.resamplerlogging">Resampler Logging</system:String>-->
   <!--<system:String x:Key="prefs.advanced.resamplerlogging.warn">Stores resampler output in log files. This option slows down UI and rendering.</system:String>-->
   <system:String x:Key="prefs.advanced.stable">Vakaa versio</system:String>
   <system:String x:Key="prefs.appearance">Ulkonäkö</system:String>
   <system:String x:Key="prefs.appearance.lang">Kieli</system:String>
+  <!--<system:String x:Key="prefs.appearance.showghostnotes">Show other tracks' notes on piano roll</system:String>-->
   <!--<system:String x:Key="prefs.appearance.showportrait">Show portrait on piano roll</system:String>-->
   <system:String x:Key="prefs.appearance.theme">Teema</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">Tumma</system:String>
@@ -236,19 +250,21 @@ Hold Ctrl to select</system:String>-->
   <system:String x:Key="prefs.rendering.prerender.threads">Esirenderöidyt säkeet</system:String>
   <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
   <!--<system:String x:Key="prefs.rendering.resampler.morewarn">
-Warning: moresampler is not fully supported. It may be slow and cause high CPU usage. If you insist, please:
-1. Set "resampler-compatibility" to "on" in moreconfig.txt.
-2. Set "auto-update-llsm-mrq" to "off" in moreconfig.txt.
-3. Patiently wait for moresampler to generate missing llsm files.
+    Warning: moresampler is not fully supported. It may be slow and cause high CPU usage. If you insist, please:
+    1. Set "resampler-compatibility" to "on" in moreconfig.txt.
+    2. Set "auto-update-llsm-mrq" to "off" in moreconfig.txt.
+    3. Patiently wait for moresampler to generate missing llsm files.
   </system:String>-->
   <system:String x:Key="prefs.rendering.resampler.note">
     HUOM: Jos haluat käyttää ulkoisia resamplereita, lisää resampler DLL tai EXE-tiedosto Resamplers-kansioon, joka sijaitsee OpenUtaun polulla ja valitse se asetuksista.
   </system:String>
+  <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
 
   <!--<system:String x:Key="progress.saved">Project saved. {0}</system:String>-->
   <!--<system:String x:Key="progress.waitingrendering">Waiting Rendering</system:String>-->
 
   <system:String x:Key="singers.caption">Laulajat</system:String>
+  <!--<system:String x:Key="singers.editoto.gotosource">Goto Source File</system:String>-->
   <!--<system:String x:Key="singers.editoto.reset">Reset Otos</system:String>-->
   <!--<system:String x:Key="singers.editoto.save">Save Otos</system:String>-->
   <system:String x:Key="singers.location">Sijainti</system:String>
@@ -276,6 +292,7 @@ Warning: moresampler is not fully supported. It may be slow and cause high CPU u
   <!--<system:String x:Key="singers.subbanks.set">Set</system:String>-->
   <!--<system:String x:Key="singers.subbanks.tone">Tone</system:String>-->
   <system:String x:Key="singers.subbanks.toneranges">Ääniala</system:String>
+  <!--<system:String x:Key="singers.visitwebsite">Visit Website</system:String>-->
 
   <!--<system:String x:Key="tip.aliasbox">Override Alias</system:String>-->
   <system:String x:Key="tip.exps">
