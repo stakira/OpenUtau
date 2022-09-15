@@ -38,7 +38,7 @@
   <system:String x:Key="dialogs.timesig.caption">Số chỉ nhịp</system:String>
   <system:String x:Key="dialogs.tracksettings.caption">Cài đặt Track</system:String>
   <system:String x:Key="dialogs.tracksettings.location">Thư mục</system:String>
-  <system:String x:Key="dialogs.tracksettings.renderer">Renderer</system:String>
+  <!--<system:String x:Key="dialogs.tracksettings.renderer">Renderer</system:String>-->
   <system:String x:Key="dialogs.tracksettings.setasdefault">Đặt thành mặc định</system:String>
 
   <system:String x:Key="errors.caption">Lỗi</system:String>
@@ -64,7 +64,7 @@
   <system:String x:Key="lyrics.caption">Chỉnh sửa lời bài hát</system:String>
   <system:String x:Key="lyrics.livepreview">Xem trước</system:String>
   <system:String x:Key="lyrics.max">nhiều nhất</system:String>
-  <system:String x:Key="lyrics.reset">Reset</system:String>
+  <!--<system:String x:Key="lyrics.reset">Reset</system:String>-->
   <system:String x:Key="lyrics.selectnotes">Chọn một số nốt trước đã!</system:String>
   <system:String x:Key="lyrics.separators">Ngăn cách</system:String>
 
@@ -98,8 +98,8 @@
   <system:String x:Key="menu.help">Hướng dẫn</system:String>
   <system:String x:Key="menu.help.about">Thông tin về OpenUtau</system:String>
   <system:String x:Key="menu.help.checkupdate">Kiểm tra cập nhật</system:String>
-  <system:String x:Key="menu.help.reportissue">Báo cáo lỗi</system:String>
   <system:String x:Key="menu.help.logslocation">Mở thư mục chứa log</system:String>
+  <system:String x:Key="menu.help.reportissue">Báo cáo lỗi</system:String>
   <system:String x:Key="menu.help.wiki">Hướng dẫn sử dụng</system:String>
   <system:String x:Key="menu.tools">Công cụ</system:String>
   <system:String x:Key="menu.tools.clearcache">Xoá bộ nhớ đệm</system:String>
@@ -209,11 +209,14 @@ Nhấn giữ Ctrl để chọn nhiều nốt</system:String>
 
   <system:String x:Key="prefs.advanced">Nâng cao</system:String>
   <system:String x:Key="prefs.advanced.beta">Thử nghiệm</system:String>
+  <!--<system:String x:Key="prefs.advanced.lyricshelper">Lyrics Helper</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.lyricshelper.brackets">Lyrics Helper Adds Brackets</system:String>-->
   <system:String x:Key="prefs.advanced.resamplerlogging">Ghi lại kết quả của Resampler</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging.warn">Lưu trữ kết quả đầu ra của resampler trong tệp log. Tuỳ chọn này sẽ làm cho giao diện và việc render chậm lại.</system:String>
   <system:String x:Key="prefs.advanced.stable">Ổn định</system:String>
   <system:String x:Key="prefs.appearance">Diện mạo</system:String>
   <system:String x:Key="prefs.appearance.lang">Ngôn ngữ</system:String>
+  <!--<system:String x:Key="prefs.appearance.showghostnotes">Show other tracks' notes on piano roll</system:String>-->
   <system:String x:Key="prefs.appearance.showportrait">Hiện avatar trong cửa sổ Piano Roll</system:String>
   <system:String x:Key="prefs.appearance.theme">Chủ đề</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">Tối</system:String>
@@ -247,22 +250,23 @@ Nhấn giữ Ctrl để chọn nhiều nốt</system:String>
   <system:String x:Key="prefs.rendering.prerender.threads">Luồng cho phép nghe thử trước</system:String>
   <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
   <!--<system:String x:Key="prefs.rendering.resampler.morewarn">
-Warning: moresampler is not fully supported. It may be slow and cause high CPU usage. If you insist, please:
-1. Set "resampler-compatibility" to "on" in moreconfig.txt.
-2. Set "auto-update-llsm-mrq" to "off" in moreconfig.txt.
-3. Patiently wait for moresampler to generate missing llsm files.
+    Warning: moresampler is not fully supported. It may be slow and cause high CPU usage. If you insist, please:
+    1. Set "resampler-compatibility" to "on" in moreconfig.txt.
+    2. Set "auto-update-llsm-mrq" to "off" in moreconfig.txt.
+    3. Patiently wait for moresampler to generate missing llsm files.
   </system:String>-->
   <system:String x:Key="prefs.rendering.resampler.note">
     Ghi chú: để sử dụng resampler bên ngoài, hãy thêm resampler định dạng EXE hoặc DLL vào trong thư mục Resamplers của OpenUTAU và lựa chọn trong Tuỳ chỉnh.
   </system:String>
+  <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
 
   <system:String x:Key="progress.saved">Hoàn tất lưu dự án. {0}</system:String>
   <system:String x:Key="progress.waitingrendering">Đang chờ việc render</system:String>
 
   <system:String x:Key="singers.caption">Voicebank</system:String>
+  <system:String x:Key="singers.editoto.gotosource">Mở tệp nguồn</system:String>
   <system:String x:Key="singers.editoto.reset">Reset Oto</system:String>
   <system:String x:Key="singers.editoto.save">Lưu Oto</system:String>
-  <system:String x:Key="singers.editoto.gotosource">Mở tệp nguồn</system:String>
   <system:String x:Key="singers.location">Đường dẫn</system:String>
   <system:String x:Key="singers.otoview.moveleft">Sang trái</system:String>
   <system:String x:Key="singers.otoview.moveright">Sang phải</system:String>
@@ -288,6 +292,7 @@ Warning: moresampler is not fully supported. It may be slow and cause high CPU u
   <system:String x:Key="singers.subbanks.set">Áp dụng</system:String>
   <system:String x:Key="singers.subbanks.tone">Cao độ</system:String>
   <system:String x:Key="singers.subbanks.toneranges">Cao độ</system:String>
+  <!--<system:String x:Key="singers.visitwebsite">Visit Website</system:String>-->
 
   <system:String x:Key="tip.aliasbox">Thay đổi âm vị</system:String>
   <system:String x:Key="tip.exps">

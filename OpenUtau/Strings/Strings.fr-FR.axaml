@@ -12,6 +12,10 @@
   <system:String x:Key="context.pitch.pointadd">Ajouter un point</system:String>
   <system:String x:Key="context.pitch.pointdel">Supprimer un point</system:String>
   <system:String x:Key="context.pitch.pointsnapprev">Aimanter à la note précédente</system:String>
+  <!--<system:String x:Key="context.timeline.addtempo">Add tempo change at {0}</system:String>-->
+  <!--<system:String x:Key="context.timeline.addtimesig">Add time signature change</system:String>-->
+  <!--<system:String x:Key="context.timeline.deltempo">Delete tempo change at {0}</system:String>-->
+  <!--<system:String x:Key="context.timeline.deltimesig">Delete time signature change</system:String>-->
 
   <system:String x:Key="debug.clear">Nettoyer</system:String>
   <!--<system:String x:Key="debug.copylog">Copy Log</system:String>-->
@@ -32,6 +36,10 @@
   <system:String x:Key="dialogs.noresampler.caption">Aucun resampler</system:String>
   <system:String x:Key="dialogs.noresampler.message">Aucun resampler ! Ajoutez le fichier .exe ou .dll du resampler dans le dossier "Resamplers" de OpenUTAU, puis choisissez-le dans Préférences.</system:String>
   <system:String x:Key="dialogs.timesig.caption">Mesure</system:String>
+  <!--<system:String x:Key="dialogs.tracksettings.caption">Track Settings</system:String>-->
+  <!--<system:String x:Key="dialogs.tracksettings.location">Location</system:String>-->
+  <!--<system:String x:Key="dialogs.tracksettings.renderer">Renderer</system:String>-->
+  <!--<system:String x:Key="dialogs.tracksettings.setasdefault">Set As Default</system:String>-->
 
   <system:String x:Key="errors.caption">Erreur</system:String>
 
@@ -89,6 +97,9 @@
   <system:String x:Key="menu.file.savetemplate">Enregistrer le modèle...</system:String>
   <system:String x:Key="menu.help">Aide</system:String>
   <system:String x:Key="menu.help.about">À propos de OpenUTAU</system:String>
+  <!--<system:String x:Key="menu.help.checkupdate">Check Update</system:String>-->
+  <!--<system:String x:Key="menu.help.logslocation">Open Logs Location</system:String>-->
+  <!--<system:String x:Key="menu.help.reportissue">Report Issue</system:String>-->
   <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
   <system:String x:Key="menu.tools">Outils</system:String>
   <system:String x:Key="menu.tools.clearcache">Effacer le Cache</system:String>
@@ -188,21 +199,24 @@
   <system:String x:Key="pianoroll.tool.eraser">Gomme (3)</system:String>
   <!--<system:String x:Key="pianoroll.tool.knife">Knife Tool (5)</system:String>-->
   <!--<system:String x:Key="pianoroll.tool.penplus">Pen Plus Tool (Ctrl + 2)
-Left click to draw
-Right click to delete
+    Left click to draw
+    Right click to delete
 Hold Ctrl to select</system:String>-->
   <!--<system:String x:Key="pianoroll.tool.penv2">Pen Tool (2)
-Left click to draw
+    Left click to draw
 Hold Ctrl to select</system:String>-->
   <!--<system:String x:Key="pianoroll.tool.selectionv2">Selection Tool (1)</system:String>-->
 
   <system:String x:Key="prefs.advanced">Paramètres avancés</system:String>
   <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.lyricshelper">Lyrics Helper</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.lyricshelper.brackets">Lyrics Helper Adds Brackets</system:String>-->
   <!--<system:String x:Key="prefs.advanced.resamplerlogging">Resampler Logging</system:String>-->
   <system:String x:Key="prefs.advanced.resamplerlogging.warn">Écrit la sortie du resampler dans les logs. Cette option ralentit l'UI et le rendu.</system:String>
   <!--<system:String x:Key="prefs.advanced.stable">Stable</system:String>-->
   <system:String x:Key="prefs.appearance">Apparence</system:String>
   <system:String x:Key="prefs.appearance.lang">Langue</system:String>
+  <!--<system:String x:Key="prefs.appearance.showghostnotes">Show other tracks' notes on piano roll</system:String>-->
   <!--<system:String x:Key="prefs.appearance.showportrait">Show portrait on piano roll</system:String>-->
   <system:String x:Key="prefs.appearance.theme">Thème</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">Nuit</system:String>
@@ -244,11 +258,13 @@ Avertissement : moresampler n'est pas entièrement pris en charge. Il peut être
   <system:String x:Key="prefs.rendering.resampler.note">
         Note: pour utiliser des resamplers externes, ajoutez le fichier .exe ou .dll du resampler dans le dossier "Resamplers" de OpenUTAU, puis choisissez-le dans Préférences.
     </system:String>
+  <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
 
   <system:String x:Key="progress.saved">Projet enregistré. {0}</system:String>
   <system:String x:Key="progress.waitingrendering">En attente du Rendu</system:String>
 
   <system:String x:Key="singers.caption">Voicebanks</system:String>
+  <!--<system:String x:Key="singers.editoto.gotosource">Goto Source File</system:String>-->
   <!--<system:String x:Key="singers.editoto.reset">Reset Otos</system:String>-->
   <!--<system:String x:Key="singers.editoto.save">Save Otos</system:String>-->
   <system:String x:Key="singers.location">Emplacement</system:String>
@@ -276,6 +292,7 @@ Avertissement : moresampler n'est pas entièrement pris en charge. Il peut être
   <system:String x:Key="singers.subbanks.set">Définir</system:String>
   <system:String x:Key="singers.subbanks.tone">Tonalité</system:String>
   <system:String x:Key="singers.subbanks.toneranges">Registre</system:String>
+  <!--<system:String x:Key="singers.visitwebsite">Visit Website</system:String>-->
 
   <system:String x:Key="tip.aliasbox">Remplacer l'alias</system:String>
   <system:String x:Key="tip.exps">

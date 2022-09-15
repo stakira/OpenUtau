@@ -12,6 +12,10 @@
   <system:String x:Key="context.pitch.pointadd">Добавить точку</system:String>
   <system:String x:Key="context.pitch.pointdel">Удалить точку</system:String>
   <system:String x:Key="context.pitch.pointsnapprev">Привязка к предыдущей ноте</system:String>
+  <!--<system:String x:Key="context.timeline.addtempo">Add tempo change at {0}</system:String>-->
+  <!--<system:String x:Key="context.timeline.addtimesig">Add time signature change</system:String>-->
+  <!--<system:String x:Key="context.timeline.deltempo">Delete tempo change at {0}</system:String>-->
+  <!--<system:String x:Key="context.timeline.deltimesig">Delete time signature change</system:String>-->
 
   <system:String x:Key="debug.clear">Очистить</system:String>
   <!--<system:String x:Key="debug.copylog">Copy Log</system:String>-->
@@ -32,6 +36,10 @@
   <system:String x:Key="dialogs.noresampler.caption">Нет ресемплера</system:String>
   <system:String x:Key="dialogs.noresampler.message">Нет ресемплера! Поместите файл ресемплера .exe или .dll в папку Resamplers и выберите его в Настройках!</system:String>
   <system:String x:Key="dialogs.timesig.caption">Такт</system:String>
+  <!--<system:String x:Key="dialogs.tracksettings.caption">Track Settings</system:String>-->
+  <!--<system:String x:Key="dialogs.tracksettings.location">Location</system:String>-->
+  <!--<system:String x:Key="dialogs.tracksettings.renderer">Renderer</system:String>-->
+  <!--<system:String x:Key="dialogs.tracksettings.setasdefault">Set As Default</system:String>-->
 
   <system:String x:Key="errors.caption">Ошибка</system:String>
 
@@ -89,6 +97,9 @@
   <system:String x:Key="menu.file.savetemplate">Сохранить шаблон...</system:String>
   <system:String x:Key="menu.help">Помощь</system:String>
   <system:String x:Key="menu.help.about">О OpenUtau</system:String>
+  <!--<system:String x:Key="menu.help.checkupdate">Check Update</system:String>-->
+  <!--<system:String x:Key="menu.help.logslocation">Open Logs Location</system:String>-->
+  <!--<system:String x:Key="menu.help.reportissue">Report Issue</system:String>-->
   <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
   <system:String x:Key="menu.tools">Инструменты</system:String>
   <system:String x:Key="menu.tools.clearcache">Очистить кэш</system:String>
@@ -188,21 +199,24 @@ Warning: this option removes custom presets.</system:String>-->
   <system:String x:Key="pianoroll.tool.eraser">Ластик (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">Инструмент нарезки (5)</system:String>
   <!--<system:String x:Key="pianoroll.tool.penplus">Pen Plus Tool (Ctrl + 2)
-Left click to draw
-Right click to delete
+    Left click to draw
+    Right click to delete
 Hold Ctrl to select</system:String>-->
   <!--<system:String x:Key="pianoroll.tool.penv2">Pen Tool (2)
-Left click to draw
+    Left click to draw
 Hold Ctrl to select</system:String>-->
   <!--<system:String x:Key="pianoroll.tool.selectionv2">Selection Tool (1)</system:String>-->
 
   <system:String x:Key="prefs.advanced">Дополнительно</system:String>
   <system:String x:Key="prefs.advanced.beta">Бета</system:String>
+  <!--<system:String x:Key="prefs.advanced.lyricshelper">Lyrics Helper</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.lyricshelper.brackets">Lyrics Helper Adds Brackets</system:String>-->
   <system:String x:Key="prefs.advanced.resamplerlogging">Логировать ресемплер</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging.warn">Сохраняет выходные данные ресемплеров в лог файлы. Этот параметр замедляет работу пользовательского интерфейса и рендеринга.</system:String>
   <system:String x:Key="prefs.advanced.stable">Стабильный</system:String>
   <system:String x:Key="prefs.appearance">Интерфейс</system:String>
   <system:String x:Key="prefs.appearance.lang">Язык</system:String>
+  <!--<system:String x:Key="prefs.appearance.showghostnotes">Show other tracks' notes on piano roll</system:String>-->
   <!--<system:String x:Key="prefs.appearance.showportrait">Show portrait on piano roll</system:String>-->
   <system:String x:Key="prefs.appearance.theme">Тема</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">Тёмная</system:String>
@@ -244,11 +258,13 @@ Hold Ctrl to select</system:String>-->
   <system:String x:Key="prefs.rendering.resampler.note">
     Примечание: чтобы использовать внешние ресемплеры, пожалуйста, добавьте .dll или .exe-файл в папку Resamplers в пути установки OpenUtau и выберите его в Настройках.
   </system:String>
+  <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
 
   <system:String x:Key="progress.saved">Проект сохранён. {0}</system:String>
   <system:String x:Key="progress.waitingrendering">Рендер...</system:String>
 
   <system:String x:Key="singers.caption">Голосовые банки</system:String>
+  <!--<system:String x:Key="singers.editoto.gotosource">Goto Source File</system:String>-->
   <!--<system:String x:Key="singers.editoto.reset">Reset Otos</system:String>-->
   <!--<system:String x:Key="singers.editoto.save">Save Otos</system:String>-->
   <system:String x:Key="singers.location">Расположение</system:String>
@@ -276,6 +292,7 @@ Hold Ctrl to select</system:String>-->
   <system:String x:Key="singers.subbanks.set">Установить</system:String>
   <system:String x:Key="singers.subbanks.tone">Тон</system:String>
   <system:String x:Key="singers.subbanks.toneranges">Диапозон тональности</system:String>
+  <!--<system:String x:Key="singers.visitwebsite">Visit Website</system:String>-->
 
   <system:String x:Key="tip.aliasbox">Переопределить алиасы</system:String>
   <system:String x:Key="tip.exps">
