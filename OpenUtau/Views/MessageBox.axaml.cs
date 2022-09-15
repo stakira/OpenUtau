@@ -28,7 +28,7 @@ namespace OpenUtau.App.Views {
 
         public static Task<MessageBoxResult> ShowError(Window parent, string message, Exception e) {
             var builder = new StringBuilder();
-            if (string.IsNullOrEmpty(message)) {
+            if (!string.IsNullOrEmpty(message)) {
                 builder.AppendLine(message);
             }
             if (e != null) {
@@ -43,6 +43,9 @@ namespace OpenUtau.App.Views {
                     builder.Append(e.ToString());
                 }
             }
+            builder.AppendLine();
+            builder.AppendLine();
+            builder.AppendLine(System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version?.ToString() ?? "Unknown Version");
             string title = ThemeManager.GetString("errors.caption");
             return Show(parent, builder.ToString(), title, MessageBoxButtons.Ok);
         }

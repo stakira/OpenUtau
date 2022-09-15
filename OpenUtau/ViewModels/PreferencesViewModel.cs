@@ -39,6 +39,21 @@ namespace OpenUtau.App.ViewModels {
             get => language;
             set => this.RaiseAndSetIfChanged(ref language, value);
         }
+        public class LyricsHelperOption {
+            public readonly Type klass;
+            public LyricsHelperOption(Type klass) {
+                this.klass = klass;
+            }
+            public override string ToString() {
+                return klass.Name;
+            }
+        }
+        public List<LyricsHelperOption> LyricsHelpers { get; } =
+            ActiveLyricsHelper.Inst.Available
+                .Select(klass => new LyricsHelperOption(klass))
+                .ToList();
+        [Reactive] public LyricsHelperOption? LyricsHelper { get; set; }
+        [Reactive] public int LyricsHelperBrackets { get; set; }
 
         private List<AudioOutputDevice>? audioOutputDevices;
         private AudioOutputDevice? audioOutputDevice;
@@ -78,6 +93,8 @@ namespace OpenUtau.App.ViewModels {
             Theme = Preferences.Default.Theme;
             ShowPortrait = Preferences.Default.ShowPortrait ? 1 : 0;
             ShowGhostNotes = Preferences.Default.ShowGhostNotes ? 1 : 0;
+            LyricsHelper = LyricsHelpers.FirstOrDefault(option => option.klass.Equals(ActiveLyricsHelper.Inst.GetPreferred()));
+            LyricsHelperBrackets = Preferences.Default.LyricsHelperBrackets ? 1 : 0;
 
             this.WhenAnyValue(vm => vm.AudioOutputDevice)
                 .WhereNotNull()
@@ -141,6 +158,17 @@ namespace OpenUtau.App.ViewModels {
             this.WhenAnyValue(vm => vm.ShowGhostNotes)
                 .Subscribe(index => {
                     Preferences.Default.ShowGhostNotes = index > 0;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.LyricsHelper)
+                .Subscribe(option => {
+                    ActiveLyricsHelper.Inst.Set(option?.klass);
+                    Preferences.Default.LyricHelper = option?.klass?.Name ?? string.Empty;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.LyricsHelperBrackets)
+                .Subscribe(index => {
+                    Preferences.Default.LyricsHelperBrackets = index > 0;
                     Preferences.Save();
                 });
         }
