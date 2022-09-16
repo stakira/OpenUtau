@@ -22,7 +22,7 @@ namespace OpenUtau.Plugin.Builtin
         ///</summary>
 
         private readonly string[] vowels = "a,A,@,{,V,O,aU,aI,E,3,eI,I,i,oU,OI,U,u,Q,Ol,aUn,e@,eN,IN,e,o,Ar,Er,Ir,Or,Ur,ir,ur,@l,@m,@n,@N,1,e@m,e@n".Split(',');
-        private readonly string[] consonants = "b,tS,d,D,4,f,g,h,dZ,k,l,m,n,N,p,r,s,S,t,T,v,w,j,z,Z,t_},・,_".Split(',');
+        private readonly string[] consonants = "b,tS,d,D,4,f,g,h,dZ,k,l,m,n,N,p,r,s,S,t,T,v,w,W,j,z,Z,t_},・,_".Split(',');
         private readonly string[] burstConsonants = "b,tS,d,dZ,4,g,k,p,t".Split(',');
         private readonly string[] affricates = "tS,dZ".Split(',');
         private readonly Dictionary<string, string> dictionaryReplacements = ("aa=A;ae={;ah=V;ao=O;aw=aU;ax=@;ay=aI;" +
@@ -178,16 +178,15 @@ namespace OpenUtau.Plugin.Builtin
                     // try vcc
                     for (var i = lastC + 1; i >= 0; i--)
                     {
-                        if (i == 0)
-                        {
+                        var vcc = $"{prevV}{string.Join(" ", cc.Take(i))}";
+                        if (i == 0) {
                             phonemes.Add($"{prevV} -");
-                            break;
-                        }
-                        var vcc = $"{prevV} {string.Join("", cc.Take(i))}";
-                        if (HasOto(vcc, syllable.tone))
-                        {
+                        } else if (HasOto(vcc, syllable.tone)) {
                             phonemes.Add(vcc);
                             firstC = i - 1;
+                            break;
+                        } else {
+                            phonemes.Add($"{prevV} {cc[0]}");
                             break;
                         }
                     }
@@ -220,7 +219,6 @@ namespace OpenUtau.Plugin.Builtin
                         } if (HasOto(cc1, syllable.tone) && HasOto(cc2, syllable.tone) && !cc1.Contains($"{string.Join("", cc.Skip(i))}")) {
                             // like [V C1] [C1 C2] [C2 C3] [C3 ..]
                             phonemes.Add(cc1);
-                            i++;
                         } else if (TryAddPhoneme(phonemes, syllable.tone, cc1)) {
                             // like [V C1] [C1 C2] [C2 ..]
                             i++;
