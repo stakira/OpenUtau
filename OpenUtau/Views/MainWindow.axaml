@@ -51,6 +51,7 @@
           <MenuItem Header="{DynamicResource menu.file.exportwavto}" Click="OnMenuExportWavTo"/>
           <MenuItem Header="{DynamicResource menu.file.exportust}" Click="OnMenuExportUst"/>
           <MenuItem Header="{DynamicResource menu.file.exportustto}" Click="OnMenuExportUstTo"/>
+          <MenuItem Header="{DynamicResource menu.file.exportmidi}" Click="OnMenuExportMidi"/>
           <MenuItem Header="{DynamicResource menu.file.openexportlocation}" Click="OnMenuOpenProjectLocation"/>
         </MenuItem>
         <MenuItem Header="{DynamicResource menu.tools}">
