@@ -78,6 +78,7 @@
   <system:String x:Key="menu.edit.undo">撤销</system:String>
   <system:String x:Key="menu.file">文件</system:String>
   <system:String x:Key="menu.file.exit">退出</system:String>
+  <system:String x:Key="menu.file.exportmidi">导出Midi文件</system:String>
   <system:String x:Key="menu.file.exportust">导出Ust文件</system:String>
   <system:String x:Key="menu.file.exportustto">导出Ust文件至...</system:String>
   <system:String x:Key="menu.file.exportwav">导出Wav文件</system:String>

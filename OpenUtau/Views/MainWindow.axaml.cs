@@ -398,6 +398,22 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        async void OnMenuExportMidi(object sender, RoutedEventArgs e) {
+            var project = DocManager.Inst.Project;
+            var dialog = new SaveFileDialog() {
+                DefaultExtension = "mid",
+                Filters = new List<FileDialogFilter>() {
+                    new FileDialogFilter() {
+                        Extensions = new List<string>(){ "mid" },
+                    },
+                },
+            };
+            var file = await dialog.ShowAsync(this);
+            if (!string.IsNullOrEmpty(file)) {
+                MidiWriter.Save(file,project);
+            }
+        }
+
         private async Task<bool> WarnToSave(UProject project) {
             if (string.IsNullOrEmpty(project.FilePath)) {
                 await MessageBox.Show(
