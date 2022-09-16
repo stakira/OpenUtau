@@ -22,8 +22,8 @@ namespace OpenUtau.Plugin.Builtin {
                 .ToDictionary(parts => parts[0], parts => parts[1]);
 
 
-        //private string[] shortConsonants = "R".Split(",");
-        //private string[] longConsonants = "t,k,g,p,s,S,Z".Split(",");
+        private string[] shortConsonants = "R".Split(",");
+        private string[] longConsonants = "t,k,g,p,s,S,Z".Split(",");
 
         protected override string[] GetVowels() => vowels;
         protected override string[] GetConsonants() => consonants;
@@ -153,19 +153,19 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
 
-        //protected override double GetTransitionBasicLengthMs(string alias = "") {
-        //    foreach (var c in shortConsonants) {
-        //        if (alias.EndsWith(c)) {
-        //            return base.GetTransitionBasicLengthMs() * 0.75;
-        //        }
-        //    }
-        //    foreach (var c in longConsonants) {
-        //        if (alias.EndsWith(c)) {
-        //            return base.GetTransitionBasicLengthMs() * 1.5;
-        //        }
-        //    }
-        //    return base.GetTransitionBasicLengthMs() * 1.25;
-        //}
+        protected override double GetTransitionBasicLengthMs(string alias = "") {
+            foreach (var c in shortConsonants) {
+                if (alias.EndsWith(c)) {
+                    return base.GetTransitionBasicLengthMs() * 0.75;
+                }
+            }
+            foreach (var c in longConsonants) {
+                if (alias.EndsWith(c)) {
+                    return base.GetTransitionBasicLengthMs() * 1.5;
+                }
+            }
+            return base.GetTransitionBasicLengthMs() * 1.25;
+        }
 
 
     }
