@@ -319,7 +319,11 @@ namespace OpenUtau.Plugin.Builtin
 
             var phonemes = new List<string>();
             if (ending.IsEndingV) {
-                phonemes.Add($"{v} -");
+                 if (HasOto($"{v} -", ending.tone)) {
+                    phonemes.Add($"{v} -");
+                } else {
+                    //continue as usual
+                }
             } else if (ending.IsEndingVCWithOneConsonant) {
                 var vcr = $"{v} {cc[0]}-";
                 if (HasOto(vcr, ending.tone)) {
