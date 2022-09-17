@@ -287,6 +287,9 @@ namespace OpenUtau.Plugin.Builtin
             if (ending.IsEndingV) {
                  if (HasOto($"{v} -", ending.tone)) {
                     phonemes.Add($"{v} -");
+                    if (v == "V" && !HasOto($"{v} -", ending.tone) && HasOto($"A -", ending.tone)) {
+                        v.Replace("V", "A");
+                    }
                 } else {
                     //continue as usual
                 }
