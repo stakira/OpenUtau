@@ -43,7 +43,7 @@ namespace OpenUtau.App.ViewModels {
         public static async Task<SparkleUpdater> NewUpdaterAsync() {
             string rid = OS.GetUpdaterRid();
             string domain = await ChooseDomainAsync();
-            string url = $"{domain}/stakira/OpenUtau/releases/download/OpenUtau-Latest/appcast.{rid}.xml";
+            string url = $"{domain}/stakira/OpenUtau/releases/latest/download/appcast.{rid}.xml";
             Log.Information($"Checking update at: {url}");
             return new ZipUpdater(url, new Ed25519Checker(SecurityMode.Unsafe)) {
                 UIFactory = null,
