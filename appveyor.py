@@ -1,7 +1,7 @@
 import os
 import sys
 
-appcast_ver = os.environ['APPVEYOR_BUILD_VERSION']
+appcast_ver = os.environ.get('APPVEYOR_BUILD_VERSION')
 
 
 def write_legacy(appcast_os, appcast_rid, appcast_file):
@@ -41,6 +41,10 @@ def write_appcast(appcast_os, appcast_rid, appcast_file):
 
 
 if sys.platform == 'win32':
+    if appcast_ver is not None:
+        os.system("git tag build/%s" % (appcast_ver))
+        os.system("git push origin build/%s" % (appcast_ver))
+
     os.system("del *.xml")
 
     os.system("dotnet restore OpenUtau -r win-x86")

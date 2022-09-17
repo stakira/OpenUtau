@@ -1,4 +1,7 @@
 version: 0.0.{build}
+environment:
+  access_token:
+    secure: VoTH2ml/pRgjLSGhfPO+NZfCoFzFcfrQjEIl/5+0UufeW6mEvccfwvef3gOaD2ke
 image:
   - Visual Studio 2022
   - macOS
@@ -7,6 +10,7 @@ skip_commits:
   files:
     - docs/*
   message: /\[nobuild\]/
+skip_tags: true
 pull_requests:
   do_not_increment_build_number: true
 configuration:
@@ -17,6 +21,10 @@ dotnet_csproj:
   file: 'OpenUtau\OpenUtau.csproj'
   version: "{version}"
 before_build:
+  - cmd: git config --global credential.helper store
+  - ps: Set-Content -Path "$HOME\.git-credentials" -Value "https://$($env:access_token):x-oauth-basic@github.com`n" -NoNewline
+  - cmd: git config --global user.email "appveyor@appveyor.com"
+  - cmd: git config --global user.name "appveyor"
   - cmd: nuget restore
 after_build:
   - cmd: python appveyor.py
