@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Text;
+using System.Threading.Tasks;
 using Avalonia.Media.Imaging;
 using DynamicData.Binding;
 using OpenUtau.Classic;
@@ -138,6 +139,28 @@ namespace OpenUtau.App.ViewModels {
             using (var stream = File.Open(yamlFile, FileMode.Create)) {
                 config.Save(stream);
             }
+        }
+
+        public void ErrorReport() {
+            if (Singer == null || Singer.SingerType != USingerType.Classic) {
+                return;
+            }
+            Task.Run(() => {
+                var checker = new VoicebankErrorChecker(Singer.Location, Singer.BasePath);
+                checker.Check();
+                string outFile = Path.Combine(Singer.Location, "errors.txt");
+                using (var stream = File.Open(outFile, FileMode.Create)) {
+                    using (var writer = new StreamWriter(stream)) {
+                        writer.WriteLine($"Total errors: {checker.Errors.Count}");
+                        writer.WriteLine();
+                        for (var i = 0; i < checker.Errors.Count; i++) {
+                            writer.WriteLine($"------ Error {i + 1} ------");
+                            writer.WriteLine(checker.Errors[i].ToString());
+                        }
+                    }
+                }
+                OS.GotoFile(outFile);
+            });
         }
 
         public void Refresh() {
