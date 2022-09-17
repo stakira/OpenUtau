@@ -326,6 +326,17 @@ namespace OpenUtau.Plugin.Builtin
             if (ending.IsEndingV) {
                  if (HasOto($"{v} -", ending.tone)) {
                     phonemes.Add($"{v} -");
+                    if (v == "V" && !HasOto($"{v} -", ending.tone) && HasOto($"A -", ending.tone)) {
+                        v.Replace("V", "A");
+                    } else if (v == "E" && !HasOto($"{v} -", ending.tone) && HasOto($"e -", ending.tone)) {
+                        v.Replace("E", "e");
+                    } else if (v == "I" && !HasOto($"{v} -", ending.tone) && HasOto($"i -", ending.tone)) {
+                        v.Replace("I", "i");
+                    } else if (v == "o" && !HasOto($"{v} -", ending.tone) && HasOto($"O -", ending.tone)) {
+                        v.Replace("o", "O");
+                    } else if (v == "U" && !HasOto($"{v} -", ending.tone) && HasOto($"u -", ending.tone)) {
+                        v.Replace("U", "u");
+                    }
                 } else {
                     //continue as usual
                 }
