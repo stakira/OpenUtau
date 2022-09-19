@@ -31,8 +31,8 @@
   <system:String x:Key="dialogs.export.savefirst">Сначала нужно сохранить проект</system:String>
   <system:String x:Key="dialogs.messagebox.cancel">Отмена</system:String>
   <system:String x:Key="dialogs.messagebox.no">Нет</system:String>
-  <system:String x:Key="dialogs.messagebox.ok">Ок</system:String>
-  <system:String x:Key="dialogs.messagebox.yes">Yes</system:String>
+  <system:String x:Key="dialogs.messagebox.ok">ОК</system:String>
+  <system:String x:Key="dialogs.messagebox.yes">Да</system:String>
   <system:String x:Key="dialogs.noresampler.caption">Нет ресамплера</system:String>
   <system:String x:Key="dialogs.noresampler.message">Нет ресамплера! Поместите файл ресамплера (.exe или .dll) в папку Resamplers папки OpenUtau и выберите его в настройках!</system:String>
   <system:String x:Key="dialogs.timesig.caption">Такт</system:String>
@@ -100,7 +100,7 @@
   <system:String x:Key="menu.help.checkupdate">Проверить обновления</system:String>
   <system:String x:Key="menu.help.reportissue">Сообщить об ошибке</system:String>
   <system:String x:Key="menu.help.logslocation">Открыть место журналов</system:String>
-  <system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>
+  <system:String x:Key="menu.help.wiki">Вики OpenUtau</system:String>
   <system:String x:Key="menu.tools">Инструменты</system:String>
   <system:String x:Key="menu.tools.clearcache">Очистить кэш</system:String>
   <system:String x:Key="menu.tools.debugwindow">Окно отладки</system:String>
@@ -262,6 +262,7 @@
   <system:String x:Key="progress.waitingrendering">Ожидание рендеринга</system:String>
 
   <system:String x:Key="singers.caption">Вокалисты</system:String>
+  <system:String x:Key="singers.errorreport">Сгенерировать отчет об ошибке вокалиста</system:String>
   <system:String x:Key="singers.editoto.reset">Сбросить oto</system:String>
   <system:String x:Key="singers.editoto.save">Сохранить oto</system:String>
   <system:String x:Key="singers.editoto.gotosource">Перейти к исходному файлу</system:String>
