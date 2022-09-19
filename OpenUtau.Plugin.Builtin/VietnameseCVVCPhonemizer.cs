@@ -155,8 +155,6 @@ namespace OpenUtau.Plugin.Builtin {
                   || loi.EndsWith("uya") && (note.lyric != "qua"));
             bool ViTriDai = (loi.EndsWith("ay") || loi.EndsWith("ây") || loi.EndsWith("uy")
                   || loi.EndsWith("au") || loi.EndsWith("âu")
-                  || loi.EndsWith("ôN") || loi.EndsWith("uN") || loi.EndsWith("oN")
-                  || loi.EndsWith("aJ") || loi.EndsWith("iJ") || loi.EndsWith("êJ") || loi.EndsWith("yJ")
                   || loi.EndsWith("oa") || loi.EndsWith("oe") || loi.EndsWith("uê") || note.lyric.EndsWith("qua"));
             bool ViTriTB = loi.EndsWith("ăt") || loi.EndsWith("ât")
                   || loi.EndsWith("ăk") || loi.EndsWith("âk")
@@ -164,6 +162,8 @@ namespace OpenUtau.Plugin.Builtin {
                   || loi.EndsWith("ăn") || loi.EndsWith("ân")
                   || loi.EndsWith("ăN") || loi.EndsWith("âN")
                   || loi.EndsWith("ăm") || loi.EndsWith("âm")
+                  || loi.EndsWith("aJ") || loi.EndsWith("iJ") || loi.EndsWith("êJ") || loi.EndsWith("yJ")
+                  || loi.EndsWith("ôN") || loi.EndsWith("uN") || loi.EndsWith("oN")
                   || loi.EndsWith("aC") || loi.EndsWith("iC") || loi.EndsWith("êC") || loi.EndsWith("yC");
             if (ViTriTB) {
                 ViTri = Medium;
