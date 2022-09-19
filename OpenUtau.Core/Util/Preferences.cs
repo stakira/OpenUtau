@@ -104,6 +104,8 @@ namespace OpenUtau.Core.Util {
             public bool ShowGhostNotes = true;
             public Dictionary<string, string> DefaultResamplers = new Dictionary<string, string>();
             public Dictionary<string, string> DefaultWavtools = new Dictionary<string, string>();
+            public string LyricHelper = string.Empty;
+            public bool LyricsHelperBrackets = false;
         }
     }
 }

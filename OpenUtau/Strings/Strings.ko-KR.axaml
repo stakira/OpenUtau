@@ -12,6 +12,10 @@
   <system:String x:Key="context.pitch.pointadd">포인트 추가</system:String>
   <system:String x:Key="context.pitch.pointdel">포인트 제거</system:String>
   <system:String x:Key="context.pitch.pointsnapprev">이전 노트 스냅</system:String>
+  <!--<system:String x:Key="context.timeline.addtempo">Add tempo change at {0}</system:String>-->
+  <!--<system:String x:Key="context.timeline.addtimesig">Add time signature change</system:String>-->
+  <!--<system:String x:Key="context.timeline.deltempo">Delete tempo change at {0}</system:String>-->
+  <!--<system:String x:Key="context.timeline.deltimesig">Delete time signature change</system:String>-->
 
   <system:String x:Key="debug.clear">지우기</system:String>
   <system:String x:Key="debug.copylog">로그 복사</system:String>
@@ -32,6 +36,10 @@
   <system:String x:Key="dialogs.noresampler.caption">엔진 없음</system:String>
   <system:String x:Key="dialogs.noresampler.message">엔진이 없습니다! 엔진 파일을 Resamplers 폴더에 넣고 환경 설정에서 설정해주세요!</system:String>
   <system:String x:Key="dialogs.timesig.caption">박자 기호</system:String>
+  <!--<system:String x:Key="dialogs.tracksettings.caption">Track Settings</system:String>-->
+  <!--<system:String x:Key="dialogs.tracksettings.location">Location</system:String>-->
+  <!--<system:String x:Key="dialogs.tracksettings.renderer">Renderer</system:String>-->
+  <!--<system:String x:Key="dialogs.tracksettings.setasdefault">Set As Default</system:String>-->
 
   <system:String x:Key="errors.caption">에러</system:String>
 
@@ -89,6 +97,9 @@
   <system:String x:Key="menu.file.savetemplate">템플릿 저장</system:String>
   <system:String x:Key="menu.help">도움말</system:String>
   <system:String x:Key="menu.help.about">OpenUtau 정보</system:String>
+  <!--<system:String x:Key="menu.help.checkupdate">Check Update</system:String>-->
+  <!--<system:String x:Key="menu.help.logslocation">Open Logs Location</system:String>-->
+  <!--<system:String x:Key="menu.help.reportissue">Report Issue</system:String>-->
   <system:String x:Key="menu.help.wiki">OpenUtau 위키</system:String>
   <system:String x:Key="menu.tools">도구</system:String>
   <system:String x:Key="menu.tools.clearcache">캐시 초기화</system:String>
@@ -188,21 +199,24 @@
   <system:String x:Key="pianoroll.tool.eraser">삭제 툴 (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">잘라내기 툴 (5)</system:String>
   <!--<system:String x:Key="pianoroll.tool.penplus">Pen Plus Tool (Ctrl + 2)
-Left click to draw
-Right click to delete
+    Left click to draw
+    Right click to delete
 Hold Ctrl to select</system:String>-->
   <!--<system:String x:Key="pianoroll.tool.penv2">Pen Tool (2)
-Left click to draw
+    Left click to draw
 Hold Ctrl to select</system:String>-->
   <!--<system:String x:Key="pianoroll.tool.selectionv2">Selection Tool (1)</system:String>-->
 
   <system:String x:Key="prefs.advanced">고급</system:String>
   <system:String x:Key="prefs.advanced.beta">베타</system:String>
+  <!--<system:String x:Key="prefs.advanced.lyricshelper">Lyrics Helper</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.lyricshelper.brackets">Lyrics Helper Adds Brackets</system:String>-->
   <system:String x:Key="prefs.advanced.resamplerlogging">리샘플러 로그</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging.warn">리샘플러 출력을 로그 파일에 저장합니다. 이 옵션을 사용하면 UI 및 렌더링 속도가 느려집니다.</system:String>
   <system:String x:Key="prefs.advanced.stable">안정된 버전</system:String>
   <system:String x:Key="prefs.appearance">외형</system:String>
   <system:String x:Key="prefs.appearance.lang">언어</system:String>
+  <!--<system:String x:Key="prefs.appearance.showghostnotes">Show other tracks' notes on piano roll</system:String>-->
   <system:String x:Key="prefs.appearance.showportrait">피아노 롤에 초상화 표시</system:String>
   <system:String x:Key="prefs.appearance.theme">테마</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">다크</system:String>
@@ -244,11 +258,13 @@ Hold Ctrl to select</system:String>-->
   <system:String x:Key="prefs.rendering.resampler.note">
         참고 : 외부 엔진을 사용하려면, OpenUtau 설치 경로의 Resamplers 폴더에 엔진 DLL 또는 EXE 파일을 추가하고 환경 설정에서 선택하세요.
     </system:String>
+  <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
 
   <system:String x:Key="progress.saved">프로젝트 저장됨. {0}</system:String>
   <system:String x:Key="progress.waitingrendering">렌더링 대기 중</system:String>
 
   <system:String x:Key="singers.caption">가수</system:String>
+  <!--<system:String x:Key="singers.editoto.gotosource">Goto Source File</system:String>-->
   <!--<system:String x:Key="singers.editoto.reset">Reset Otos</system:String>-->
   <!--<system:String x:Key="singers.editoto.save">Save Otos</system:String>-->
   <system:String x:Key="singers.location">위치</system:String>
@@ -276,6 +292,7 @@ Hold Ctrl to select</system:String>-->
   <system:String x:Key="singers.subbanks.set">설정</system:String>
   <system:String x:Key="singers.subbanks.tone">톤</system:String>
   <system:String x:Key="singers.subbanks.toneranges">톤 범위</system:String>
+  <!--<system:String x:Key="singers.visitwebsite">Visit Website</system:String>-->
 
   <system:String x:Key="tip.aliasbox">Alias 재정의</system:String>
   <system:String x:Key="tip.exps">

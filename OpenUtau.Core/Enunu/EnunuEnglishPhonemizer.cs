@@ -148,11 +148,7 @@ namespace OpenUtau.Core.Enunu {
                     noteIndex = noteIndex,
 
                 };
-                if (alignment.Item1 == alignments.Last().Item1 || !(alignment.Item3)) {
-                    endIndex= alignment.Item1;
-                } else {
-                    endIndex = alignment.Item1 - 1;
-                }
+                endIndex= alignment.Item1;
 
                 for(int index = startIndex; index < endIndex; index++) {
                     enunuNote.lyric += symbols[index] + " ";

@@ -81,9 +81,9 @@ namespace OpenUtau.Classic {
         // Length overlap with previous note, usually within consonant range.
         public double Overlap;
 
-        public string RawText;
         public bool IsValid;
         public string Error;
+        public FileTrace FileTrace;
 
         public override string ToString() {
             return Alias;

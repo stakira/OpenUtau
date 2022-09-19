@@ -259,7 +259,7 @@
   <system:String x:Key="prefs.rendering.resampler.note">
     Примечание: чтобы использовать внешние ресамплеры, пожалуйста, добавьте .dll или .exe-файл в папку Resamplers в пути установки OpenUtau и выберите его в параметрах.
   </system:String>
-  <system:String x:Key="prefs.rendering.wavtool">Вавтул</system:String>
+  <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
 
   <system:String x:Key="progress.saved">Проект сохранен. {0}</system:String>
   <system:String x:Key="progress.waitingrendering">Ожидание рендеринга</system:String>

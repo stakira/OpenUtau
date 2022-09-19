@@ -12,6 +12,10 @@
   <system:String x:Key="context.pitch.pointadd">新增控制點</system:String>
   <system:String x:Key="context.pitch.pointdel">刪除控制點</system:String>
   <system:String x:Key="context.pitch.pointsnapprev">貼齊前一個音符</system:String>
+  <!--<system:String x:Key="context.timeline.addtempo">Add tempo change at {0}</system:String>-->
+  <!--<system:String x:Key="context.timeline.addtimesig">Add time signature change</system:String>-->
+  <!--<system:String x:Key="context.timeline.deltempo">Delete tempo change at {0}</system:String>-->
+  <!--<system:String x:Key="context.timeline.deltimesig">Delete time signature change</system:String>-->
 
   <system:String x:Key="debug.clear">清除</system:String>
   <system:String x:Key="debug.copylog">複製</system:String>
@@ -32,6 +36,10 @@
   <system:String x:Key="dialogs.noresampler.caption">未套用引擎</system:String>
   <system:String x:Key="dialogs.noresampler.message">未套用引擎! 請將引擎 EXE 或 DLL 檔案置入 Resamplers 資料夾中，並在偏好設定選擇欲使用的引擎!</system:String>
   <system:String x:Key="dialogs.timesig.caption">拍號</system:String>
+  <!--<system:String x:Key="dialogs.tracksettings.caption">Track Settings</system:String>-->
+  <!--<system:String x:Key="dialogs.tracksettings.location">Location</system:String>-->
+  <!--<system:String x:Key="dialogs.tracksettings.renderer">Renderer</system:String>-->
+  <!--<system:String x:Key="dialogs.tracksettings.setasdefault">Set As Default</system:String>-->
 
   <system:String x:Key="errors.caption">錯誤</system:String>
 
@@ -89,6 +97,9 @@
   <system:String x:Key="menu.file.savetemplate">另存為範本</system:String>
   <system:String x:Key="menu.help">說明</system:String>
   <system:String x:Key="menu.help.about">關於 OpenUtau</system:String>
+  <!--<system:String x:Key="menu.help.checkupdate">Check Update</system:String>-->
+  <!--<system:String x:Key="menu.help.logslocation">Open Logs Location</system:String>-->
+  <!--<system:String x:Key="menu.help.reportissue">Report Issue</system:String>-->
   <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
   <system:String x:Key="menu.tools">工具</system:String>
   <system:String x:Key="menu.tools.clearcache">清除快取</system:String>
@@ -188,21 +199,24 @@
   <system:String x:Key="pianoroll.tool.eraser">橡皮擦工具 (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">剪刀工具 (5)</system:String>
   <!--<system:String x:Key="pianoroll.tool.penplus">Pen Plus Tool (Ctrl + 2)
-Left click to draw
-Right click to delete
+    Left click to draw
+    Right click to delete
 Hold Ctrl to select</system:String>-->
   <!--<system:String x:Key="pianoroll.tool.penv2">Pen Tool (2)
-Left click to draw
+    Left click to draw
 Hold Ctrl to select</system:String>-->
   <!--<system:String x:Key="pianoroll.tool.selectionv2">Selection Tool (1)</system:String>-->
 
   <system:String x:Key="prefs.advanced">進階</system:String>
   <system:String x:Key="prefs.advanced.beta">測試版</system:String>
+  <!--<system:String x:Key="prefs.advanced.lyricshelper">Lyrics Helper</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.lyricshelper.brackets">Lyrics Helper Adds Brackets</system:String>-->
   <system:String x:Key="prefs.advanced.resamplerlogging">引擎紀錄</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging.warn">儲存引擎輸出紀錄至記錄檔。此選項可能影響介面與算繪效能。</system:String>
   <system:String x:Key="prefs.advanced.stable">穩定版</system:String>
   <system:String x:Key="prefs.appearance">外觀</system:String>
   <system:String x:Key="prefs.appearance.lang">語言</system:String>
+  <!--<system:String x:Key="prefs.appearance.showghostnotes">Show other tracks' notes on piano roll</system:String>-->
   <system:String x:Key="prefs.appearance.showportrait">在鋼琴卷軸上顯示角色背景圖</system:String>
   <system:String x:Key="prefs.appearance.theme">主題</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">深色</system:String>
@@ -244,11 +258,13 @@ Hold Ctrl to select</system:String>-->
   <system:String x:Key="prefs.rendering.resampler.note">
     注意: 欲使用外部引擎，請將引擎 EXE 或 DLL 檔案置入 Resamplers 資料夾中，並在偏好設定選擇欲使用的引擎。
   </system:String>
+  <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
 
   <system:String x:Key="progress.saved">已儲存專案。{0}</system:String>
   <system:String x:Key="progress.waitingrendering">等待算繪</system:String>
 
   <system:String x:Key="singers.caption">歌手</system:String>
+  <!--<system:String x:Key="singers.editoto.gotosource">Goto Source File</system:String>-->
   <!--<system:String x:Key="singers.editoto.reset">Reset Otos</system:String>-->
   <!--<system:String x:Key="singers.editoto.save">Save Otos</system:String>-->
   <system:String x:Key="singers.location">位置</system:String>
@@ -276,6 +292,7 @@ Hold Ctrl to select</system:String>-->
   <system:String x:Key="singers.subbanks.set">設定</system:String>
   <system:String x:Key="singers.subbanks.tone">音調</system:String>
   <system:String x:Key="singers.subbanks.toneranges">音調範圍</system:String>
+  <!--<system:String x:Key="singers.visitwebsite">Visit Website</system:String>-->
 
   <system:String x:Key="tip.aliasbox">覆寫別名</system:String>
   <system:String x:Key="tip.exps">

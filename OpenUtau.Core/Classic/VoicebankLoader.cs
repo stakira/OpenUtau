@@ -9,21 +9,26 @@ using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Classic {
+    public class FileTrace {
+        public string file;
+        public int lineNumber;
+        public string line;
+        public FileTrace() { }
+        public FileTrace(FileTrace other) {
+            file = other.file;
+            lineNumber = other.lineNumber;
+            line = other.line;
+        }
+        public override string ToString() {
+            return $"\"{file}\"\nat line {lineNumber + 1}:\n\"{line}\"";
+        }
+    }
+
     public class VoicebankLoader {
         public const string kCharTxt = "character.txt";
         public const string kCharYaml = "character.yaml";
         public const string kEnuconfigYaml = "enuconfig.yaml";
         public const string kOtoIni = "oto.ini";
-
-        class FileLoc {
-            public string file;
-            public int lineNumber;
-            public string line;
-
-            public override string ToString() {
-                return $"\"{file}\"\nat line {lineNumber + 1}:\n\"{line}\"";
-            }
-        }
 
         readonly string basePath;
 
@@ -273,26 +278,26 @@ namespace OpenUtau.Classic {
         public static OtoSet ParseOtoSet(Stream stream, string filePath, Encoding encoding) {
             OtoSet otoSet;
             using (var reader = new StreamReader(stream, encoding)) {
-                var fileLoc = new FileLoc { file = filePath, lineNumber = 0 };
+                var trace = new FileTrace { file = filePath, lineNumber = 0 };
                 otoSet = new OtoSet() {
                     File = filePath,
                 };
                 while (!reader.EndOfStream) {
-                    var line = reader.ReadLine();
-                    fileLoc.line = line;
+                    var line = reader.ReadLine().Trim();
+                    trace.line = line;
                     try {
-                        Oto oto = ParseOto(line, fileLoc);
+                        Oto oto = ParseOto(line, trace);
                         if (oto != null) {
                             otoSet.Otos.Add(oto);
                         }
                         if (!string.IsNullOrEmpty(oto.Error)) {
-                            Log.Error($"Failed to parse\n{fileLoc}: {oto.Error}");
+                            Log.Error($"Failed to parse\n{trace}: {oto.Error}");
                         }
                     } catch (Exception e) {
-                        Log.Error(e, $"Failed to parse\n{fileLoc}");
+                        Log.Error(e, $"Failed to parse\n{trace}");
                     }
-                    fileLoc.line = null;
-                    fileLoc.lineNumber++;
+                    trace.line = null;
+                    trace.lineNumber++;
                 }
             }
             return otoSet;
@@ -315,9 +320,11 @@ namespace OpenUtau.Classic {
             }
         }
 
-        static Oto ParseOto(string line, FileLoc fileLoc) {
+        static Oto ParseOto(string line, FileTrace trace) {
             const string format = "<wav>=<alias>,<offset>,<consonant>,<cutoff>,<preutter>,<overlap>";
-            var oto = new Oto { RawText = line };
+            var oto = new Oto {
+                FileTrace = new FileTrace(trace),
+            };
             if (string.IsNullOrWhiteSpace(line)) {
                 return oto;
             }
@@ -334,23 +341,23 @@ namespace OpenUtau.Classic {
             }
             oto.Phonetic = oto.Alias;
             if (!ParseDouble(parts.ElementAtOrDefault(1), out oto.Offset)) {
-                oto.Error = $"{fileLoc}\nFailed to parse offset. Format is {format}.";
+                oto.Error = $"{trace}\nFailed to parse offset. Format is {format}.";
                 return oto;
             }
             if (!ParseDouble(parts.ElementAtOrDefault(2), out oto.Consonant)) {
-                oto.Error = $"{fileLoc}\nFailed to parse consonant. Format is {format}.";
+                oto.Error = $"{trace}\nFailed to parse consonant. Format is {format}.";
                 return oto;
             }
             if (!ParseDouble(parts.ElementAtOrDefault(3), out oto.Cutoff)) {
-                oto.Error = $"{fileLoc}\nFailed to parse cutoff. Format is {format}.";
+                oto.Error = $"{trace}\nFailed to parse cutoff. Format is {format}.";
                 return oto;
             }
             if (!ParseDouble(parts.ElementAtOrDefault(4), out oto.Preutter)) {
-                oto.Error = $"{fileLoc}\nFailed to parse preutter. Format is {format}.";
+                oto.Error = $"{trace}\nFailed to parse preutter. Format is {format}.";
                 return oto;
             }
             if (!ParseDouble(parts.ElementAtOrDefault(5), out oto.Overlap)) {
-                oto.Error = $"{fileLoc}\nFailed to parse overlap. Format is {format}.";
+                oto.Error = $"{trace}\nFailed to parse overlap. Format is {format}.";
                 return oto;
             }
             oto.IsValid = true;
@@ -378,7 +385,7 @@ namespace OpenUtau.Classic {
             using (var writer = new StreamWriter(stream, encoding)) {
                 foreach (var oto in otoSet.Otos) {
                     if (!oto.IsValid) {
-                        writer.Write(oto.RawText);
+                        writer.Write(oto.FileTrace.line);
                         writer.Write('\n');
                         continue;
                     }
