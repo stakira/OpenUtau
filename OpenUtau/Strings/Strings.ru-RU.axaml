@@ -5,9 +5,9 @@
   <system:String x:Key="context.note.delete">Удалить ноту</system:String>
   <system:String x:Key="context.part.delete">Удалить часть</system:String>
   <system:String x:Key="context.part.rename">Переименовать часть</system:String>
-  <system:String x:Key="context.pitch.easein">Ease in</system:String>
-  <system:String x:Key="context.pitch.easeinout">Ease in/out</system:String>
-  <system:String x:Key="context.pitch.easeout">Ease out</system:String>
+  <!--<system:String x:Key="context.pitch.easein">Ease in</system:String>-->
+  <!--<system:String x:Key="context.pitch.easeinout">Ease in/out</system:String>-->
+  <!--<system:String x:Key="context.pitch.easeout">Ease out</system:String>-->
   <system:String x:Key="context.pitch.linear">Линейный</system:String>
   <system:String x:Key="context.pitch.pointadd">Добавить точку</system:String>
   <system:String x:Key="context.pitch.pointdel">Удалить точку</system:String>
@@ -78,6 +78,7 @@
   <system:String x:Key="menu.edit.undo">Отменить</system:String>
   <system:String x:Key="menu.file">Файл</system:String>
   <system:String x:Key="menu.file.exit">Выйти</system:String>
+  <!--<system:String x:Key="menu.file.exportmidi">Export Midi File</system:String>-->
   <system:String x:Key="menu.file.exportust">Экспортировать UST файлы</system:String>
   <system:String x:Key="menu.file.exportustto">Экспортировать UST файлы в...</system:String>
   <system:String x:Key="menu.file.exportwav">Экспортировать WAV файлы</system:String>
@@ -98,8 +99,8 @@
   <system:String x:Key="menu.help">Справка</system:String>
   <system:String x:Key="menu.help.about">Об OpenUtau</system:String>
   <system:String x:Key="menu.help.checkupdate">Проверить обновления</system:String>
-  <system:String x:Key="menu.help.reportissue">Сообщить об ошибке</system:String>
   <system:String x:Key="menu.help.logslocation">Открыть место журналов</system:String>
+  <system:String x:Key="menu.help.reportissue">Сообщить об ошибке</system:String>
   <system:String x:Key="menu.help.wiki">Вики OpenUtau</system:String>
   <system:String x:Key="menu.tools">Инструменты</system:String>
   <system:String x:Key="menu.tools.clearcache">Очистить кэш</system:String>
@@ -209,13 +210,15 @@
 
   <system:String x:Key="prefs.advanced">Дополнительно</system:String>
   <system:String x:Key="prefs.advanced.beta">Бета</system:String>
+  <system:String x:Key="prefs.advanced.lyricshelper">Текстовый помощник</system:String>
+  <system:String x:Key="prefs.advanced.lyricshelper.brackets">Добавить скобки в текстовом помощнике</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging">Журналирование ресамплера</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging.warn">Сохраняет выходные данные ресамплера в файлах журнала. Этот параметр замедляет работу пользовательского интерфейса и рендеринга.</system:String>
   <system:String x:Key="prefs.advanced.stable">Стабильный</system:String>
   <system:String x:Key="prefs.appearance">Интерфейс</system:String>
   <system:String x:Key="prefs.appearance.lang">Язык</system:String>
-  <system:String x:Key="prefs.appearance.showportrait">Показывать портрет на пиано-ролле</system:String>
   <system:String x:Key="prefs.appearance.showghostnotes">Показывать ноты других треков на пиано-ролле</system:String>
+  <system:String x:Key="prefs.appearance.showportrait">Показывать портрет на пиано-ролле</system:String>
   <system:String x:Key="prefs.appearance.theme">Тема</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">Темная</system:String>
   <system:String x:Key="prefs.appearance.theme.light">Светлая</system:String>
@@ -235,7 +238,7 @@
   <system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">Неподвижный курсор</system:String>
   <system:String x:Key="prefs.playback.backend">Движок аудио</system:String>
   <system:String x:Key="prefs.playback.backend.auto">Автоматически</system:String>
-  <system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>
+  <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">Поле авто-прокрутки</system:String>
   <system:String x:Key="prefs.playback.device">Устройство воспроизведения</system:String>
   <system:String x:Key="prefs.playback.lockstarttime">При паузе</system:String>
@@ -262,10 +265,10 @@
   <system:String x:Key="progress.waitingrendering">Ожидание рендеринга</system:String>
 
   <system:String x:Key="singers.caption">Вокалисты</system:String>
-  <system:String x:Key="singers.errorreport">Сгенерировать отчет об ошибке вокалиста</system:String>
+  <system:String x:Key="singers.editoto.gotosource">Перейти к исходному файлу</system:String>
   <system:String x:Key="singers.editoto.reset">Сбросить oto</system:String>
   <system:String x:Key="singers.editoto.save">Сохранить oto</system:String>
-  <system:String x:Key="singers.editoto.gotosource">Перейти к исходному файлу</system:String>
+  <system:String x:Key="singers.errorreport">Сгенерировать отчет об ошибке вокалиста</system:String>
   <system:String x:Key="singers.location">Расположение</system:String>
   <system:String x:Key="singers.otoview.moveleft">Влево</system:String>
   <system:String x:Key="singers.otoview.moveright">Вправо</system:String>
@@ -328,12 +331,12 @@
   <system:String x:Key="tracks.selectrenderer">Выбрать рендерер</system:String>
   <system:String x:Key="tracks.selectsinger">Выбрать вокалиста</system:String>
 
-  <FontFamily x:Key="ui.fontfamily">Segoe UI,San Francisco,Helvetica Neue</FontFamily>
-  <FontFamily x:Key="ui.textbox.fontfamily">Microsoft YaHei,Simsun,苹方-简,宋体-简</FontFamily>
+  <!--<FontFamily x:Key="ui.fontfamily">Segoe UI,San Francisco,Helvetica Neue</FontFamily>-->
+  <!--<FontFamily x:Key="ui.textbox.fontfamily">Microsoft YaHei,Simsun,苹方-简,宋体-简</FontFamily>-->
 
   <system:String x:Key="updater.caption">Проверить наличие обновлений</system:String>
   <system:String x:Key="updater.description">Открытая платформа синтеза вокала</system:String>
-  <system:String x:Key="updater.github">GitHub</system:String>
+  <!--<system:String x:Key="updater.github">GitHub</system:String>-->
   <system:String x:Key="updater.status.available">Доступно обновление версии {0}!</system:String>
   <system:String x:Key="updater.status.checking">Проверка обновлений...</system:String>
   <system:String x:Key="updater.status.notavailable">Ваша версия актуальная</system:String>
