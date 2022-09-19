@@ -41,7 +41,7 @@
           <MenuItem Header="{DynamicResource menu.file.openprojectlocation}" Click="OnMenuOpenProjectLocation"/>
           <MenuItem Header="-" Height="1"/>
           <MenuItem Header="{DynamicResource menu.file.save}" InputGesture="Ctrl+S" Click="OnMenuSave"/>
-          <MenuItem Header="{DynamicResource menu.file.saveas}" Click="OnMenuSaveAs"/>
+          <MenuItem Header="{DynamicResource menu.file.saveas}"  InputGesture="Ctrl+Shift+S" Click="OnMenuSaveAs"/>
           <MenuItem Header="-" Height="1"/>
           <MenuItem Header="{DynamicResource menu.file.importtracks}" Click="OnMenuImportTracks"/>
           <MenuItem Header="{DynamicResource menu.file.importaudio}" Click="OnMenuImportAudio"/>

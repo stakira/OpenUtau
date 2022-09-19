@@ -633,6 +633,7 @@ namespace OpenUtau.App.Views {
                 args.Handled = true;
                 switch (args.Key) {
                     case Key.Z: viewModel.Redo(); break;
+                    case Key.S: _ = SaveAs(); break;
                     default:
                         args.Handled = false;
                         break;
