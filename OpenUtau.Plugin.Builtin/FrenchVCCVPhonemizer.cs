@@ -148,6 +148,9 @@ namespace OpenUtau.Plugin.Builtin {
                             }
                         } else {
                             cci = $"{cc[i]} {cc[i + 1]}";
+                            if (!HasOto(cci, syllable.tone)) {
+                                cci = $"{cc[i]}{cc[i + 1]}";
+                            }
                             TryAddPhoneme(phonemes, syllable.tone, cci);
                         }
 
@@ -203,6 +206,9 @@ namespace OpenUtau.Plugin.Builtin {
                         var cci = $"{cc[i]} {cc[i + 1]}";
                         if (!HasOto(cci,ending.tone)) {
                             cci = $"{cc[i]}{cc[i + 1]}_";
+                        }
+                        if (!HasOto(cci, ending.tone)) {
+                            cci = $"{cc[i]}{cc[i + 1]}";
                         }
 
                         TryAddPhoneme(phonemes, ending.tone, cci);
