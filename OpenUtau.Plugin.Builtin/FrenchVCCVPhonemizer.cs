@@ -77,7 +77,7 @@ namespace OpenUtau.Plugin.Builtin {
 
                         if (!HasOto(cci, syllable.tone)) {
                             cci = $"{cc[i]}{cc[i + 1]}_";
-                            if (i+1 == cc.Length-2) {
+                            if (i+1 == cc.Length-2 && HasOto($"_{ccv}",syllable.tone)) {
                                 basePhoneme = $"_{ccv}";
                             }
                         }
@@ -91,7 +91,7 @@ namespace OpenUtau.Plugin.Builtin {
 
                         if (HasOto(cci, syllable.tone)) {
                             phonemes.Add(cci);
-                            if (i + 1 == cc.Length - 1) {
+                            if (i + 1 == cc.Length - 1 && HasOto($"_{cc.Last()}{v}", syllable.tone)) {
                                 basePhoneme = $"_{cc.Last()}{v}";
                             }
                         } else {
@@ -129,7 +129,7 @@ namespace OpenUtau.Plugin.Builtin {
 
                         if (!HasOto(cci, syllable.tone)) {
                             cci = $"{cc[i]}{cc[i + 1]}_";
-                            if (i + 1 == cc.Length - 2) {
+                            if (i + 1 == cc.Length - 2 && HasOto($"_{ccv}", syllable.tone)) {
                                 basePhoneme = $"_{ccv}";
                             }
                         }
@@ -143,7 +143,7 @@ namespace OpenUtau.Plugin.Builtin {
 
                         if (HasOto(cci, syllable.tone)) {
                             phonemes.Add(cci);
-                            if (i + 1 == cc.Length - 1) {
+                            if (i + 1 == cc.Length - 1 && HasOto($"_{cc.Last()}{v}", syllable.tone)) {
                                 basePhoneme = $"_{cc.Last()}{v}";
                             }
                         } else {
@@ -152,6 +152,11 @@ namespace OpenUtau.Plugin.Builtin {
                         }
 
                     }
+                }
+
+                // convert 'n + j' to 'J'
+                if($"{cc.Last()}" == "j" && $"{cc[cc.Length-2]}" == "n") {
+                    basePhoneme = $"J{v}";
                 }
 
             }
