@@ -69,6 +69,7 @@ namespace OpenUtau.Plugin.Builtin {
 
         static readonly Dictionary<string, string> vowelLookup;
         static readonly Dictionary<string, string> consonantLookup;
+        static readonly Dictionary<string, string> substituteLookup;
 
         static JapaneseCVVCPhonemizer() {
             vowelLookup = vowels.ToList()
@@ -83,17 +84,38 @@ namespace OpenUtau.Plugin.Builtin {
                     return parts[1].Split(',').Select(cv => (cv, parts[0]));
                 })
                 .ToDictionary(t => t.Item1, t => t.Item2);
+            substituteLookup = substitution.ToList()
+                .SelectMany(line => {
+                    var parts = line.Split('=');
+                    return parts[0].Split(',').Select(orig => (orig, parts[1]));
+                })
+                .ToDictionary(t => t.Item1, t => t.Item2);
         }
 
         // Store singer in field, will try reading presamp.ini later
         private USinger singer;
         public override void SetSinger(USinger singer) => this.singer = singer;
 
+        // make it quicker to check multiple oto occurrences at once rather than spamming if else if
+        private bool checkOtoUntilHit(string[] input, Note note, out UOto oto){
+            oto = default;
+
+            var attr0 = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
+            var attr1 = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 1) ?? default;
+
+            foreach (string test in input){
+                if (singer.TryGetMappedOto(test, note.tone + attr0.toneShift, attr0.voiceColor, out oto)){
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        // can probably be cleaned up more but i have work in the morning. have fun.
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
             var note = notes[0];
             var currentUnicode = ToUnicodeElements(note.lyric);
-            var vowLyric = note.lyric;
-            var cvLyric = note.lyric;
             var currentLyric = note.lyric;
             var cfLyric = $"* {currentLyric}";
             var attr0 = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
@@ -102,27 +124,22 @@ namespace OpenUtau.Plugin.Builtin {
             if (prevNeighbour == null) {
                 // Use "- V" or "- CV" if present in voicebank
                 var initial = $"- {currentLyric}";
-                if (singer.TryGetMappedOto(initial, note.tone + attr0.toneShift, attr0.voiceColor, out var oto)) {
+                string[] tests = new string[] {initial, currentLyric};
+                // try [- XX] before trying plain lyric
+                if (checkOtoUntilHit(tests, note, out var oto)){
                     currentLyric = oto.Alias;
-                } else if (singer.TryGetMappedOto(cvLyric, note.tone + attr0.toneShift, attr0.voiceColor, out var oto2)) {
-                    currentLyric = oto2.Alias;
                 }
-            } else if (plainVowels.Contains(currentLyric)) {
+            } else if (plainVowels.Contains(currentLyric) || nonVowels.Contains(currentLyric)) {
                 var prevUnicode = ToUnicodeElements(prevNeighbour?.lyric);
                 // Current note is VV
                 if (vowelLookup.TryGetValue(prevUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
-                    vowLyric = $"{vow} {currentLyric}";
-                    if (singer.TryGetMappedOto(vowLyric, note.tone + attr0.toneShift, attr0.voiceColor, out var oto)) {
+                    var vowLyric = $"{vow} {currentLyric}";
+
+                    // try cflyric before vowlyric, if both fail try currentlyric
+                    string[] tests = new string[] {cfLyric, vowLyric, currentLyric};
+                    if (checkOtoUntilHit(tests, note, out var oto)){
                         currentLyric = oto.Alias;
-                    } else if (singer.TryGetMappedOto(cfLyric, note.tone + attr0.toneShift, attr0.voiceColor, out var oto2)) {
-                        currentLyric = oto2.Alias;
-                    } else if (singer.TryGetMappedOto(cvLyric, note.tone + attr0.toneShift, attr0.voiceColor, out var oto3)) {
-                        currentLyric = oto3.Alias;
                     }
-                }
-            } else if (cvLyric.Contains(currentLyric)) {
-                if (singer.TryGetMappedOto(cvLyric, note.tone + attr0.toneShift, attr0.voiceColor, out var oto)) {
-                    currentLyric = oto.Alias;
                 }
             }
 
@@ -144,7 +161,6 @@ namespace OpenUtau.Plugin.Builtin {
 
                 // Insert VC before next neighbor
                 // Get vowel from current note
-
                 var vowel = "";
                 if (vowelLookup.TryGetValue(currentUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
                     vowel = vow;
@@ -169,7 +185,13 @@ namespace OpenUtau.Plugin.Builtin {
                 }
 
                 var vcPhoneme = $"{vowel} {consonant}";
-                if (singer.TryGetMappedOto(vcPhoneme, note.tone + attr0.toneShift, attr0.voiceColor, out var oto1)) {
+                var vcPhonemes = new string[] {vcPhoneme, ""};
+                // find potential substitute symbol
+                if (substituteLookup.TryGetValue(consonant ?? string.Empty, out con)){
+                        vcPhonemes[1] = $"{vowel} {con}";
+                }
+                //if (singer.TryGetMappedOto(vcPhoneme, note.tone + attr0.toneShift, attr0.voiceColor, out var oto1)) {
+                if (checkOtoUntilHit(vcPhonemes, note, out var oto1)) {
                     vcPhoneme = oto1.Alias;
                 } else {
                     return new Result {
