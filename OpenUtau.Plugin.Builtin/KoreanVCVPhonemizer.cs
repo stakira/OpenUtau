@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -24,10 +24,10 @@ namespace OpenUtau.Plugin.Builtin
 		// ㅏ ㅐ ㅑ ㅒ ㅓ ㅔ ㅕ ㅖ ㅗ ㅘ ㅙ ㅚ ㅛ ㅜ ㅝ ㅞ ㅟ ㅠ ㅡ ㅢ ㅣ
 
 		/// <summary>
-		/// Final jamo as ordered in Unicode
+		/// Final jamo as ordered in Unicode + vowel end breath sounds (inhale and exhale)
 		/// </summary>
-		static readonly string[] finals = { string.Empty, "k", "k", "k", "n", "n", "n", "t", "l", "l", "l", "l", "l", "l", "l", "l", "m", "p", "p", "t", "t", "ng", "t", "t", "k", "t", "p", "t" };
-		// - ㄱ ㄲ ㄳ ㄴ ㄵ ㄶ ㄷ ㄹ ㄺ ㄻ ㄼ ㄽ ㄾ ㄿ ㅀ ㅁ ㅂ ㅄ ㅅ ㅆ ㅇ ㅈ ㅊ ㅋ ㅌ ㅍ ㅎ
+		static readonly string[] finals = { string.Empty, "k", "k", "k", "n", "n", "n", "t", "l", "l", "l", "l", "l", "l", "l", "l", "m", "p", "p", "t", "t", "ng", "t", "t", "k", "t", "p", "t", string.Empty, string.Empty, string.Empty, };
+		// - ㄱ ㄲ ㄳ ㄴ ㄵ ㄶ ㄷ ㄹ ㄺ ㄻ ㄼ ㄽ ㄾ ㄿ ㅀ ㅁ ㅂ ㅄ ㅅ ㅆ ㅇ ㅈ ㅊ ㅋ ㅌ ㅍ ㅎ H B bre
 
 		/// <summary>
 		/// Sonorant batchim (i.e., extendable batchim sounds)
@@ -130,8 +130,8 @@ namespace OpenUtau.Plugin.Builtin
 			string currPhoneme;
 			string[] prevIMF;
 
-			// Check if lyric is R or - and return appropriate Result; otherwise, move to next steps
-			if (note.lyric == "R" || note.lyric == "-")
+			// Check if lyric is R, - or an end breath and return appropriate Result; otherwise, move to next steps
+			if (note.lyric == "R" || note.lyric == "-" || note.lyric == "H" || note.lyric == "B" || note.lyric == "bre")
 			{
 				currPhoneme = note.lyric;
 
@@ -206,7 +206,7 @@ namespace OpenUtau.Plugin.Builtin
 			if (prevNeighbour != null && singer.TryGetMappedOto(prevNeighbour?.lyric, note.tone + shift, color, out _)) currPhoneme = $"{GetLastSoundOfAlias(prevNeighbour?.lyric)} {currPhoneme}";
 			else
 			{
-				if (prevNeighbour == null || prevNeighbour?.lyric == "R" || prevNeighbour?.lyric == "-") currPhoneme = $"- {currPhoneme}";
+				if (prevNeighbour == null || prevNeighbour?.lyric == "R" || prevNeighbour?.lyric == "-" || prevNeighbour?.lyric == "H" || prevNeighbour?.lyric == "B") currPhoneme = $"- {currPhoneme}";
 				else
 				{
 					if (string.IsNullOrEmpty(prevNeighbour?.phoneticHint))

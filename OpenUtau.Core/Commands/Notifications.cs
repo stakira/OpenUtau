@@ -1,4 +1,5 @@
-﻿using OpenUtau.Core.Ustx;
+﻿using System;
+using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core {
     public class UNotification : UCommand {
@@ -9,15 +10,20 @@ namespace OpenUtau.Core {
         public override string ToString() => "Notification";
     }
 
-    /// <summary>
-    /// Message for user's information.
-    /// </summary>
-    public class UserMessageNotification : UNotification {
-        public string message;
-        public UserMessageNotification(string message) {
+    public class ErrorMessageNotification : UNotification {
+        public readonly string message = string.Empty;
+        public readonly Exception e;
+        public ErrorMessageNotification(Exception e) {
+            this.e = e;
+        }
+        public ErrorMessageNotification(string message) {
             this.message = message;
         }
-        public override string ToString() => $"User message: {message}";
+        public ErrorMessageNotification(string message, Exception e) {
+            this.message = message;
+            this.e = e;
+        }
+        public override string ToString() => $"Error message: {message} {e}";
     }
 
     public class LoadPartNotification : UNotification {
@@ -49,12 +55,8 @@ namespace OpenUtau.Core {
         public override string ToString() => "Validate Project";
     }
 
-    public class RedrawNotesNotification : UNotification {
-        public override string ToString() => "Redraw Notes";
-    }
-
-    public class ChangeExpressionListNotification : UNotification {
-        public override string ToString() => "Change expression list";
+    public class PhonemizedNotification : UNotification {
+        public override string ToString() => "Phonemized";
     }
 
     public class SelectExpressionNotification : UNotification {
@@ -69,20 +71,14 @@ namespace OpenUtau.Core {
         public override string ToString() => $"Select expression {ExpKey}";
     }
 
-    public class ShowPitchExpNotification : UNotification {
-        public override string ToString() => "Show pitch expression list";
-    }
-
-    public class HidePitchExpNotification : UNotification {
-        public override string ToString() => "Hide pitch expression list";
-    }
-
     // Notification for UI to move PlayPosMarker
     public class SetPlayPosTickNotification : UNotification {
-        public int playPosTick;
+        public readonly int playPosTick;
+        public readonly bool waitingRendering;
         public override bool Silent => true;
-        public SetPlayPosTickNotification(int tick) {
+        public SetPlayPosTickNotification(int tick, bool waitingRendering = false) {
             playPosTick = tick;
+            this.waitingRendering = waitingRendering;
         }
         public override string ToString() => $"Set play position to tick {playPosTick}";
     }
@@ -139,6 +135,14 @@ namespace OpenUtau.Core {
         public override string ToString() => "Singers refreshed.";
     }
 
+    public class OtoChangedNotification : UNotification {
+        public readonly bool external;
+        public OtoChangedNotification(bool external = false) {
+            this.external = external;
+        }
+        public override string ToString() => "Oto changed.";
+    }
+
     public class WillRemoveTrackNotification : UNotification {
         public int TrackNo;
         public WillRemoveTrackNotification(int trackNo) {
@@ -158,5 +162,22 @@ namespace OpenUtau.Core {
 
     public class PreRenderNotification : UNotification {
         public override string ToString() => $"Pre-render notification.";
+    }
+
+    public class PartRenderedNotification : UNotification {
+        public PartRenderedNotification(UVoicePart part) {
+            this.part = part;
+        }
+        public override string ToString() => "Part rendered.";
+    }
+
+    public class GotoOtoNotification : UNotification {
+        public readonly USinger singer;
+        public readonly UOto oto;
+        public GotoOtoNotification(USinger singer, UOto oto) {
+            this.singer = singer;
+            this.oto = oto;
+        }
+        public override string ToString() => "Goto oto.";
     }
 }

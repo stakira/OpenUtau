@@ -4,6 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" MinWidth="400" MinHeight="200" Width="600" Height="300"
         x:Class="OpenUtau.App.Views.LyricsDialog" WindowStartupLocation="CenterOwner"
+        Icon="/Assets/open-utau.ico"
         Title="{StaticResource lyrics.caption}">
   <Grid Margin="10,10,10,4" RowDefinitions="*,6,Auto,4,Auto">
     <TextBox Grid.Row="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
@@ -20,19 +21,25 @@
     </TextBlock>
     <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="4">
       <TextBlock Text="{StaticResource lyrics.separators}" Margin="0,2"/>
-      <ToggleButton Content="⎵" Margin="0" BorderThickness="1" CornerRadius="5"
-                    BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-                    IsChecked="{Binding SeparateBySpace}"/>
-      <ToggleButton Content="," Margin="0" BorderThickness="1" CornerRadius="5"
-                    BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-                    IsChecked="{Binding SeparateByComma}"/>
-      <ToggleButton Content="&quot;" Margin="0" BorderThickness="1" CornerRadius="5"
-                    BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-                    IsChecked="{Binding SeparateByQuote}"/>
       <Border CornerRadius="5"
-              BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}"
-              Background="{DynamicResource NeutralAccentBrushSemi}">
+              Background="{DynamicResource MenuFlyoutItemBackgroundPointerOver}">
+        <TextBlock Text="⎵" Margin="0" Padding="4,2"/>
+      </Border>
+      <Border CornerRadius="5"
+              Background="{DynamicResource MenuFlyoutItemBackgroundPointerOver}">
+        <TextBlock Text="," Margin="0" Padding="4,2"/>
+      </Border>
+      <Border CornerRadius="5"
+              Background="{DynamicResource MenuFlyoutItemBackgroundPointerOver}">
+        <TextBlock Text="&quot;" Margin="0" Padding="4,2"/>
+      </Border>
+      <Border CornerRadius="5"
+              Background="{DynamicResource MenuFlyoutItemBackgroundPointerOver}">
         <TextBlock Text="↵" Margin="0" Padding="4,2"/>
+      </Border>
+      <Border CornerRadius="5"
+              Background="{DynamicResource MenuFlyoutItemBackgroundPointerOver}">
+        <TextBlock Text="字" Margin="0" Padding="4,2"/>
       </Border>
     </StackPanel>
     <StackPanel Grid.Row="4" Orientation="Horizontal" Spacing="10">

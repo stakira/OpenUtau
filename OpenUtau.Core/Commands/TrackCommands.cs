@@ -8,6 +8,9 @@ namespace OpenUtau.Core {
     public abstract class TrackCommand : UCommand {
         public UProject project;
         public UTrack track;
+        public override ValidateOptions ValidateOptions => new ValidateOptions {
+            SkipTiming = true,
+        };
         public void UpdateTrackNo() {
             Dictionary<int, int> trackNoRemapTable = new Dictionary<int, int>();
             for (int i = 0; i < project.tracks.Count; i++) {
@@ -113,6 +116,26 @@ namespace OpenUtau.Core {
         public override void Unexecute() {
             track.Phonemizer = oldPhonemizer;
             track.Phonemizer.SetSinger(track.Singer);
+        }
+    }
+
+    public class TrackChangeRenderSettingCommand : TrackCommand {
+        readonly URenderSettings newSettings;
+        readonly URenderSettings oldSettings;
+        public TrackChangeRenderSettingCommand(UProject project, UTrack track, URenderSettings newSettings) {
+            this.project = project;
+            this.track = track;
+            this.newSettings = newSettings.Clone();
+            this.oldSettings = track.RendererSettings.Clone();
+        }
+        public override string ToString() { return "Change render setting"; }
+        public override void Execute() {
+            track.RendererSettings = newSettings.Clone();
+            track.RendererSettings.Validate(track);
+        }
+        public override void Unexecute() {
+            track.RendererSettings = oldSettings.Clone();
+            track.RendererSettings.Validate(track);
         }
     }
 }

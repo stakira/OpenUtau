@@ -1,15 +1,74 @@
 ﻿using System;
 using System.Linq;
-using Newtonsoft.Json;
 using OpenUtau.Api;
+using OpenUtau.Core.Render;
 using Serilog;
 using YamlDotNet.Serialization;
 
 namespace OpenUtau.Core.Ustx {
-    [JsonObject(MemberSerialization.OptIn)]
+    public class URenderSettings {
+        public string renderer;
+        public string resampler;
+        public string wavtool;
+
+        [YamlIgnore] public IRenderer Renderer { get; set; }
+        [YamlIgnore] public Classic.IResampler Resampler { get; set; }
+        [YamlIgnore] public Classic.IWavtool Wavtool { get; set; }
+
+        public void Validate(UTrack track) {
+            if (track.Singer == null || !track.Singer.Found) {
+                renderer = null;
+                Renderer = null;
+                resampler = null;
+                Resampler = null;
+                wavtool = null;
+                Wavtool = null;
+                return;
+            }
+            if (string.IsNullOrEmpty(renderer)) {
+                renderer = Renderers.GetDefaultRenderer(track.Singer.SingerType);
+            }
+            if (renderer != Renderer?.ToString()) {
+                Renderer = Renderers.CreateRenderer(renderer);
+            }
+            if (renderer == Renderers.CLASSIC) {
+                if (string.IsNullOrEmpty(resampler)) {
+                    if (!Util.Preferences.Default.DefaultResamplers.TryGetValue(renderer, out resampler)) {
+                        resampler = null;
+                    }
+                }
+                if (string.IsNullOrEmpty(resampler) || resampler != Resampler?.ToString()) {
+                    Resampler = Classic.ToolsManager.Inst.GetResampler(resampler);
+                    resampler = Resampler.ToString();
+                }
+                if (string.IsNullOrEmpty(wavtool)) {
+                    if (!Util.Preferences.Default.DefaultWavtools.TryGetValue(renderer, out wavtool)) {
+                        wavtool = null;
+                    }
+                }
+                if (string.IsNullOrEmpty(wavtool) || wavtool != Wavtool?.ToString()) {
+                    Wavtool = Classic.ToolsManager.Inst.GetWavtool(wavtool);
+                    wavtool = Wavtool.ToString();
+                }
+            } else {
+                wavtool = null;
+                Wavtool = null;
+            }
+        }
+
+        public URenderSettings Clone() {
+            return new URenderSettings {
+                renderer = renderer,
+                resampler = resampler,
+                wavtool = wavtool,
+            };
+        }
+    }
+
     public class UTrack {
-        [JsonProperty] public string singer;
-        [JsonProperty] public string phonemizer;
+        public string singer;
+        public string phonemizer;
+        public URenderSettings RendererSettings { get; set; } = new URenderSettings();
 
         private USinger singer_;
 
@@ -24,7 +83,6 @@ namespace OpenUtau.Core.Ustx {
                 }
             }
         }
-
         [YamlIgnore] public Phonemizer Phonemizer { get; set; } = PhonemizerFactory.Get(typeof(DefaultPhonemizer)).Create();
         [YamlIgnore] public string PhonemizerTag => Phonemizer.Tag;
 
@@ -41,25 +99,28 @@ namespace OpenUtau.Core.Ustx {
             if (!project.expressions.TryGetValue(key, out descriptor)) {
                 return false;
             }
-            if (key == "clr" && VoiceColorExp != null) {
+            if (key == Format.Ustx.CLR && VoiceColorExp != null) {
                 descriptor = VoiceColorExp;
             }
             return true;
         }
 
         public void OnSingerRefreshed() {
-            if (Singer != null && Singer.Loaded && !DocManager.Inst.Singers.ContainsKey(Singer.Id)) {
-                Singer.Found = false;
-                Singer.Loaded = false;
+            if (Singer != null && Singer.Loaded && !SingerManager.Inst.Singers.ContainsKey(Singer.Id)) {
+                Singer = USinger.CreateMissing(Singer.Name);
             }
             VoiceColorExp = null;
         }
 
-        public void Validate(UProject project) {
+        public void Validate(ValidateOptions options, UProject project) {
             if (Singer != null && Singer.Found) {
                 Singer.EnsureLoaded();
             }
-            if (project.expressions.TryGetValue("clr", out var descriptor)) {
+            if (RendererSettings == null) {
+                RendererSettings = new URenderSettings();
+            }
+            RendererSettings.Validate(this);
+            if (project.expressions.TryGetValue(Format.Ustx.CLR, out var descriptor)) {
                 if (VoiceColorExp == null && Singer != null && Singer.Found && Singer.Loaded) {
                     VoiceColorExp = descriptor.Clone();
                     var colors = Singer.Subbanks.Select(subbank => subbank.Color).ToHashSet();
@@ -88,12 +149,20 @@ namespace OpenUtau.Core.Ustx {
                 Phonemizer = PhonemizerFactory.Get(typeof(DefaultPhonemizer)).Create();
             }
             if (Singer == null && !string.IsNullOrEmpty(singer)) {
-                Singer = DocManager.Inst.GetSinger(singer);
+                Singer = SingerManager.Inst.GetSinger(singer);
                 if (Singer == null) {
-                    Singer = new USinger(singer);
+                    Singer = USinger.CreateMissing(singer);
                 }
             }
             Phonemizer.SetSinger(Singer);
+            if (RendererSettings == null) {
+                RendererSettings = new URenderSettings();
+            }
+            if (Singer != null && Singer.Found) {
+                if (string.IsNullOrEmpty(RendererSettings.renderer)) {
+                    RendererSettings.renderer = Renderers.GetDefaultRenderer(Singer.SingerType);
+                };
+            }
             TrackNo = project.tracks.IndexOf(this);
         }
     }

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DynamicData.Binding;
 using OpenUtau.Core;
+using OpenUtau.Core.Util;
 using ReactiveUI;
 using SharpCompress.Archives;
 using SharpCompress.Common;
@@ -115,7 +116,7 @@ namespace OpenUtau.App.ViewModels {
                 return;
             }
             var readerOptions = new ReaderOptions {
-                ArchiveEncoding = new ArchiveEncoding(ArchiveEncoding, ArchiveEncoding),
+                ArchiveEncoding = new ArchiveEncoding { Forced = ArchiveEncoding },
             };
             using (var archive = ArchiveFactory.Open(ArchiveFilePath, readerOptions)) {
                 textItems.Clear();
@@ -134,7 +135,7 @@ namespace OpenUtau.App.ViewModels {
                 return;
             }
             var readerOptions = new ReaderOptions {
-                ArchiveEncoding = new ArchiveEncoding(ArchiveEncoding, ArchiveEncoding),
+                ArchiveEncoding = new ArchiveEncoding { Forced = ArchiveEncoding },
             };
             using (var archive = ArchiveFactory.Open(ArchiveFilePath, readerOptions)) {
                 textItems.Clear();
@@ -235,7 +236,8 @@ namespace OpenUtau.App.ViewModels {
             var textEncoding = TextEncoding;
             return Task.Run(() => {
                 try {
-                    var installer = new Classic.VoicebankInstaller(PathManager.Inst.SingersPath, (progress, info) => {
+                    var basePath = PathManager.Inst.SingersInstallPath;
+                    var installer = new Classic.VoicebankInstaller(basePath, (progress, info) => {
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(progress, info));
                     }, archiveEncoding, textEncoding);
                     installer.LoadArchive(archiveFilePath);

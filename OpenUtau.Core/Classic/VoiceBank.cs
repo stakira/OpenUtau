@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
-using Serilog;
+using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Classic {
-    public enum VoicebankType { Classic, Enunu }
-
     public class Voicebank {
         public string BasePath;
         public string File;
@@ -14,11 +11,13 @@ namespace OpenUtau.Classic {
         public string Portrait;
         public float PortraitOpacity;
         public string Author;
+        public string Voice;
         public string Web;
         public string Version;
         public string OtherInfo;
+        public string DefaultPhonemizer;
         public Encoding TextFileEncoding;
-        public VoicebankType VoicebankType;
+        public USingerType SingerType = USingerType.Classic;
         public List<OtoSet> OtoSets = new List<OtoSet>();
         public List<Subbank> Subbanks = new List<Subbank>();
         public string Id;
@@ -29,11 +28,12 @@ namespace OpenUtau.Classic {
             Portrait = null;
             PortraitOpacity = 0;
             Author = null;
+            Voice = null;
             Web = null;
             Version = null;
             OtherInfo = null;
             TextFileEncoding = null;
-            VoicebankType = VoicebankType.Classic;
+            SingerType = USingerType.Classic;
             OtoSets.Clear();
             Subbanks.Clear();
             Id = null;
@@ -49,7 +49,6 @@ namespace OpenUtau.Classic {
         public string File;
         public string Name;
         public List<Oto> Otos = new List<Oto>();
-        public List<string> Errors = new List<string>();
 
         public override string ToString() {
             return Name;
@@ -81,6 +80,10 @@ namespace OpenUtau.Classic {
         public double Preutter;
         // Length overlap with previous note, usually within consonant range.
         public double Overlap;
+
+        public bool IsValid;
+        public string Error;
+        public FileTrace FileTrace;
 
         public override string ToString() {
             return Alias;

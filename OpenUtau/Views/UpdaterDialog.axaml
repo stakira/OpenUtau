@@ -5,6 +5,7 @@
         mc:Ignorable="d"
         x:Class="OpenUtau.App.Views.UpdaterDialog"
         Width="400" Height="300" CanResize="False" WindowStartupLocation="CenterScreen"
+        Icon="/Assets/open-utau.ico"
         Title="{DynamicResource updater.caption}" Closing="OnClosing">
   <Grid RowDefinitions="*, 20, 20, *, *">
     <Image Grid.Row="0" Margin="20" Width="96" Height="96"
@@ -19,7 +20,7 @@
     <TextBlock Grid.Row="1" Margin="40,0" TextAlignment="Center"
                Text="{Binding AppVersion}"/>
     <TextBlock Grid.Row="2" Margin="40,0" TextAlignment="Center"
-               Text="Open singing synthesis platform"/>
+               Text="{DynamicResource updater.description}"/>
     <TextBlock Grid.Row="3" Margin="40,0" TextAlignment="Center" VerticalAlignment="Bottom"
                Text="{Binding UpdaterStatus}" FontWeight="Bold"/>
     <StackPanel Grid.Row="4" Orientation="Horizontal" Margin="0,20,0,20"

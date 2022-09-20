@@ -33,11 +33,7 @@ namespace OpenUtau.App.Views {
             task.ContinueWith((task) => {
                 if (task.IsFaulted) {
                     Log.Error(task.Exception, "Failed to install singer");
-                    MessageBox.Show(
-                        (Window)Parent,
-                        task.Exception.Flatten().InnerExceptions.First().ToString(),
-                        ThemeManager.GetString("errors.caption"),
-                        MessageBox.MessageBoxButtons.Ok);
+                    MessageBox.ShowError((Window)Parent, task.Exception);
                 }
             }, CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted, scheduler);
             Close();

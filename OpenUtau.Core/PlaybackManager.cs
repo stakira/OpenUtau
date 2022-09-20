@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using OpenUtau.Core.Render;
-using OpenUtau.Core.ResamplerDriver;
 using OpenUtau.Core.SignalChain;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
@@ -42,30 +42,26 @@ namespace OpenUtau.Core {
         }
     }
 
-    public class PlaybackManager : ICmdSubscriber {
+    public class PlaybackManager : SingletonBase<PlaybackManager>, ICmdSubscriber {
         private PlaybackManager() {
             DocManager.Inst.AddSubscriber(this);
-            RenderEngine.ReleaseSourceTemp();
+            try {
+                Directory.CreateDirectory(PathManager.Inst.CachePath);
+                RenderEngine.ReleaseSourceTemp();
+            } catch (Exception e) {
+                Log.Error(e, "Failed to release source temp.");
+            }
         }
 
-        private static PlaybackManager _s;
-        public static PlaybackManager Inst { get { if (_s == null) { _s = new PlaybackManager(); } return _s; } }
-
-        readonly RenderCache cache = new RenderCache(4096);
         List<Fader> faders;
         MasterAdapter masterMix;
         double startMs;
-        CancellationTokenSource playbakCancellationTokenSource;
-
-        object previewDriverLockObj = new object();
-        string resamplerSelected;
-        IResamplerDriver previewDriver;
-        CancellationTokenSource previewCancellationTokenSource;
+        public int StartTick => DocManager.Inst.Project.timeAxis.MsPosToTickPos(startMs);
+        CancellationTokenSource renderCancellation;
 
         public Audio.IAudioOutput AudioOutput { get; set; } = new Audio.DummyAudioOutput();
         public bool Playing => AudioOutput.PlaybackState == PlaybackState.Playing;
-
-        public bool CheckResampler() => ResamplerDrivers.CheckPreviewResampler();
+        public bool StartingToPlay { get; private set; }
 
         public void PlayTestSound() {
             masterMix = null;
@@ -85,16 +81,12 @@ namespace OpenUtau.Core {
             return sineGen;
         }
 
-        public bool PlayOrPause() {
+        public void PlayOrPause() {
             if (Playing) {
                 PausePlayback();
-                return true;
+            } else {
+                Play(DocManager.Inst.Project, DocManager.Inst.playPosTick);
             }
-            if (!ResamplerDrivers.CheckPreviewResampler()) {
-                return false;
-            }
-            Play(DocManager.Inst.Project, DocManager.Inst.playPosTick);
-            return true;
         }
 
         public void Play(UProject project, int tick) {
@@ -104,6 +96,7 @@ namespace OpenUtau.Core {
             }
             AudioOutput.Stop();
             Render(project, tick);
+            StartingToPlay = true;
         }
 
         public void StopPlayback() {
@@ -125,40 +118,26 @@ namespace OpenUtau.Core {
         }
 
         private void Render(UProject project, int tick) {
-            if (!ResamplerDrivers.CheckPreviewResampler()) {
-                return;
-            }
-            var driver = ResamplerDrivers.GetResampler(Preferences.Default.ExternalPreviewEngine);
-            if (driver == null) {
-                return;
-            }
-            StopPreRender();
-            var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
             Task.Run(() => {
-                RenderEngine engine = new RenderEngine(project, driver, cache, tick);
-                var result = engine.RenderProject(tick);
+                RenderEngine engine = new RenderEngine(project, tick);
+                var result = engine.RenderProject(tick, DocManager.Inst.MainScheduler, ref renderCancellation);
                 faders = result.Item2;
-                var source = result.Item3;
-                source = Interlocked.Exchange(ref playbakCancellationTokenSource, source);
-                if (source != null) {
-                    source.Cancel();
-                    Log.Information("Cancelling previous render");
-                }
-                StartPlayback(project.TickToMillisecond(tick), result.Item1);
+                StartingToPlay = false;
+                StartPlayback(project.timeAxis.TickPosToMsPos(tick), result.Item1);
             }).ContinueWith((task) => {
                 if (task.IsFaulted) {
                     Log.Error(task.Exception, "Failed to render.");
-                    DocManager.Inst.ExecuteCmd(new UserMessageNotification(task.Exception.ToString()));
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to render.", task.Exception));
                     throw task.Exception;
                 }
-            }, CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted, scheduler);
+            }, CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted, DocManager.Inst.MainScheduler);
         }
 
         public void UpdatePlayPos() {
             if (AudioOutput != null && AudioOutput.PlaybackState == PlaybackState.Playing && masterMix != null) {
-                double ms = (AudioOutput.GetPosition() / sizeof(float) - masterMix.Paused / 2) * 1000.0 / 44100;
-                int tick = DocManager.Inst.Project.MillisecondToTick(startMs + ms);
-                DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(tick));
+                double ms = (AudioOutput.GetPosition() / sizeof(float) - masterMix.Waited / 2) * 1000.0 / 44100;
+                int tick = DocManager.Inst.Project.timeAxis.MsPosToTickPos(startMs + ms);
+                DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(tick, masterMix.IsWaiting));
             }
         }
 
@@ -166,23 +145,16 @@ namespace OpenUtau.Core {
             return (db <= -24) ? 0 : (float)MusicMath.DecibelToLinear((db < -16) ? db * 2 + 16 : db);
         }
 
-        public void RenderToFiles(UProject project) {
-            var driver = ResamplerDrivers.GetResampler(Preferences.Default.ExternalExportEngine);
-            if (driver == null) {
-                return;
-            }
-            StopPreRender();
+        public void RenderToFiles(UProject project, string exportPath) {
             Task.Run(() => {
                 var task = Task.Run(() => {
-                    RenderEngine engine = new RenderEngine(project, driver, cache);
-                    var trackMixes = engine.RenderTracks();
+                    RenderEngine engine = new RenderEngine(project);
+                    var trackMixes = engine.RenderTracks(DocManager.Inst.MainScheduler, ref renderCancellation);
                     for (int i = 0; i < trackMixes.Count; ++i) {
-                        if (project.tracks.Count > i) {
-                            if (project.tracks[i].Mute) {
-                                continue;
-                            }
+                        if (trackMixes[i] == null || i >= project.tracks.Count || project.tracks[i].Mute) {
+                            continue;
                         }
-                        var file = PathManager.Inst.GetExportPath(project.FilePath, i + 1);
+                        var file = PathManager.Inst.GetExportPath(exportPath, i + 1);
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exporting to {file}."));
                         WaveFileWriter.CreateWaveFile16(file, new ExportAdapter(trackMixes[i]).ToMono(1, 0));
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exported to {file}."));
@@ -199,28 +171,9 @@ namespace OpenUtau.Core {
         }
 
         void SchedulePreRender() {
-            var driver = ResamplerDrivers.GetResampler(Preferences.Default.ExternalPreviewEngine);
-            if (driver == null) {
-                return;
-            }
             Log.Information("SchedulePreRender");
-            var engine = new RenderEngine(DocManager.Inst.Project, driver, cache);
-            var source = engine.PreRenderProject();
-            source = Interlocked.Exchange(ref previewCancellationTokenSource, source);
-            if (source != null) {
-                source.Cancel();
-            }
-        }
-
-        void StopPreRender() {
-            var source = Interlocked.Exchange(ref previewCancellationTokenSource, null);
-            if (source != null) {
-                source.Cancel();
-            }
-        }
-
-        public void ClearRenderCache() {
-            cache.Clear();
+            var engine = new RenderEngine(DocManager.Inst.Project);
+            engine.PreRenderProject(ref renderCancellation);
         }
 
         #region ICmdSubscriber
@@ -240,7 +193,9 @@ namespace OpenUtau.Core {
                 DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(0));
             }
             if (cmd is PreRenderNotification || cmd is LoadProjectNotification) {
-                SchedulePreRender();
+                if (Util.Preferences.Default.PreRender) {
+                    SchedulePreRender();
+                }
             }
         }
 

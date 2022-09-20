@@ -8,7 +8,53 @@ using Serilog;
 namespace OpenUtau.Plugin.Builtin {
     [Phonemizer("Japanese CVVC Phonemizer", "JA CVVC", "TUBS")]
     public class JapaneseCVVCPhonemizer : Phonemizer {
-        static readonly string[] plainVowels = new string[] { "あ", "い", "う", "え", "お", "ん" };
+        static readonly string[] plainVowels = new string[] {
+            "あ",
+            "い",
+            "う",
+            "え",
+            "お",
+            "を",
+            "ん",
+            "ン",
+            "息",
+            "吸",
+            "R",
+            "-",
+            "k",
+            "ky",
+            "g",
+            "gy",
+            "s",
+            "sh",
+            "z",
+            "j",
+            "t",
+            "ch",
+            "ty",
+            "ts",
+            "d",
+            "dy",
+            "n",
+            "ny",
+            "h",
+            "hy",
+            "f",
+            "b",
+            "by",
+            "p",
+            "py",
+            "m",
+            "my",
+            "y",
+            "r",
+            "4",
+            "ry",
+            "w",
+            "v",
+            "ng",
+            "・",
+        };
 
         static readonly string[] vowels = new string[] {
             "a=ぁ,あ,か,が,さ,ざ,た,だ,な,は,ば,ぱ,ま,ゃ,や,ら,わ,ァ,ア,カ,ガ,サ,ザ,タ,ダ,ナ,ハ,バ,パ,マ,ャ,ヤ,ラ,ワ",
@@ -18,6 +64,7 @@ namespace OpenUtau.Plugin.Builtin {
             "n=ん",
             "u=ぅ,う,く,ぐ,す,ず,つ,づ,ぬ,ふ,ぶ,ぷ,む,ゅ,ゆ,る,ゥ,ウ,ク,グ,ス,ズ,ツ,ヅ,ヌ,フ,ブ,プ,ム,ュ,ユ,ル,ヴ",
             "N=ン",
+            "・=・",
         };
 
         static readonly string[] consonants = new string[] {
@@ -38,7 +85,7 @@ namespace OpenUtau.Plugin.Builtin {
             "f=f,ふ,ふぁ,ふぃ,ふぇ,ふぉ",
             "h=h,は,はぃ,へ,ほ,ほぅ",
             "k=k,か,く,くぃ,け,こ",
-            "j=j,じ,じぇ,じゃ,じゅ,じょ",
+            "j=j,じ,じぇ,じゃ,じゅ,じょ,ぢ,ぢぇ,ぢゃ,ぢゅ,ぢょ",
             "m=m,ま,む,むぃ,め,も",
             "n=n,な,ぬ,ぬぃ,ね,の",
             "p=p,ぱ,ぷ,ぷぃ,ぺ,ぽ",
@@ -49,13 +96,10 @@ namespace OpenUtau.Plugin.Builtin {
             "ky=ky,き,きぇ,きゃ,きゅ,きょ",
             "w=w,うぃ,うぅ,うぇ,うぉ,わ,ゐ,ゑ,を,ヰ,ヱ",
             "y=y,いぃ,いぇ,や,ゆ,よ",
-            "z=z,ざ,ず,ずぃ,ぜ,ぞ",
+            "z=z,ざ,ず,ずぃ,ぜ,ぞ,づ,づぃ",
             "my=my,み,みぇ,みゃ,みゅ,みょ",
-            "ng=ng,ガ,ギ,グ,ゲ,ゴ",
-            "R=R",
-            "息=息",
-            "吸=吸",
-            "-=-"
+            "ng=ng,ガ,ギ,グ,ゲ,ゴ,ギェ,ギャ,ギュ,ギョ,カ゜,キ゜,ク゜,ケ゜,コ゜,キ゜ェ,キ゜ャ,キ゜ュ,キ゜ョ",
+            "・=・,・あ,・い,・う,・え,・お,・ん,・を,・ン",
         };
 
         static readonly Dictionary<string, string> vowelLookup;
@@ -83,7 +127,10 @@ namespace OpenUtau.Plugin.Builtin {
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
             var note = notes[0];
             var currentUnicode = ToUnicodeElements(note.lyric);
+            var vowLyric = note.lyric;
+            var cvLyric = note.lyric;
             var currentLyric = note.lyric;
+            var cfLyric = $"* {currentLyric}";
             var attr0 = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
             var attr1 = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 1) ?? default;
 
@@ -92,18 +139,26 @@ namespace OpenUtau.Plugin.Builtin {
                 var initial = $"- {currentLyric}";
                 if (singer.TryGetMappedOto(initial, note.tone + attr0.toneShift, attr0.voiceColor, out var oto)) {
                     currentLyric = oto.Alias;
+                } else if (singer.TryGetMappedOto(cvLyric, note.tone + attr0.toneShift, attr0.voiceColor, out var oto2)) {
+                    currentLyric = oto2.Alias;
                 }
             } else if (plainVowels.Contains(currentLyric)) {
                 var prevUnicode = ToUnicodeElements(prevNeighbour?.lyric);
                 // Current note is VV
                 if (vowelLookup.TryGetValue(prevUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
-                    currentLyric = $"{vow} {currentLyric}";
-                    if (singer.TryGetMappedOto(currentLyric, note.tone + attr0.toneShift, attr0.voiceColor, out var oto)) {
+                    vowLyric = $"{vow} {currentLyric}";
+                    if (singer.TryGetMappedOto(vowLyric, note.tone + attr0.toneShift, attr0.voiceColor, out var oto)) {
                         currentLyric = oto.Alias;
+                    } else if (singer.TryGetMappedOto(cfLyric, note.tone + attr0.toneShift, attr0.voiceColor, out var oto2)) {
+                        currentLyric = oto2.Alias;
+                    } else if (singer.TryGetMappedOto(cvLyric, note.tone + attr0.toneShift, attr0.voiceColor, out var oto3)) {
+                        currentLyric = oto3.Alias;
                     }
                 }
-            } else if (singer.TryGetMappedOto(currentLyric, note.tone + attr0.toneShift, attr0.voiceColor, out var oto)) {
-                currentLyric = oto.Alias;
+            } else if (cvLyric.Contains(currentLyric)) {
+                if (singer.TryGetMappedOto(cvLyric, note.tone + attr0.toneShift, attr0.voiceColor, out var oto)) {
+                    currentLyric = oto.Alias;
+                }
             }
 
             if (nextNeighbour != null) {
@@ -149,7 +204,7 @@ namespace OpenUtau.Plugin.Builtin {
                 }
 
                 var vcPhoneme = $"{vowel} {consonant}";
-                if (singer.TryGetMappedOto(vcPhoneme, note.tone + attr1.toneShift, attr1.voiceColor, out var oto1)) {
+                if (singer.TryGetMappedOto(vcPhoneme, note.tone + attr0.toneShift, attr0.voiceColor, out var oto1)) {
                     vcPhoneme = oto1.Alias;
                 } else {
                     return new Result {

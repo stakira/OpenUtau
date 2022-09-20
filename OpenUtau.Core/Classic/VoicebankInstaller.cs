@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using K4os.Hash.xxHash;
-using Newtonsoft.Json;
 using SharpCompress.Archives;
 using SharpCompress.Common;
 using SharpCompress.Readers;
@@ -13,6 +12,7 @@ namespace OpenUtau.Classic {
 
     public class VoicebankInstaller {
         const string kCharacterTxt = "character.txt";
+        const string kCharacterYaml = "character.yaml";
         const string kInstallTxt = "install.txt";
 
         private string basePath;
@@ -36,20 +36,18 @@ namespace OpenUtau.Classic {
             var extractionOptions = new ExtractionOptions {
                 Overwrite = true,
             };
-            var jsonSeriSettings = new JsonSerializerSettings {
-                NullValueHandling = NullValueHandling.Ignore
-            };
             using (var archive = ArchiveFactory.Open(path, readerOptions)) {
                 var touches = new List<string>();
                 AdjustBasePath(archive, path, touches);
                 int total = archive.Entries.Count();
                 int count = 0;
+                bool hasCharacterYaml = archive.Entries.Any(e => e.Key.EndsWith(kCharacterYaml));
                 foreach (var entry in archive.Entries) {
                     var filePath = Path.Combine(basePath, entry.Key);
                     Directory.CreateDirectory(Path.GetDirectoryName(filePath));
                     if (!entry.IsDirectory && entry.Key != kInstallTxt) {
                         entry.WriteToFile(Path.Combine(basePath, entry.Key), extractionOptions);
-                        if (filePath.Contains(kCharacterTxt)) {
+                        if (!hasCharacterYaml && filePath.EndsWith(kCharacterTxt)) {
                             var config = new VoicebankConfig() {
                                 TextFileEncoding = textEncoding.WebName,
                             };
@@ -85,7 +83,7 @@ namespace OpenUtau.Classic {
                 .ToArray();
             if (rootFiles.Count() > 0) {
                 // Need to create root folder.
-                basePath = Path.Combine(basePath, Path.GetFileNameWithoutExtension(archivePath));
+                basePath = Path.Combine(basePath, Path.GetFileNameWithoutExtension(archivePath).Trim());
                 if (rootFiles.Where(e => e.Key == kCharacterTxt).Count() == 0) {
                     // Need to create character.txt.
                     touches.Add(Path.Combine(basePath, kCharacterTxt));

@@ -8,6 +8,10 @@ namespace OpenUtau.Core {
     public abstract class NoteCommand : UCommand {
         protected readonly UNote[] Notes;
         public readonly UVoicePart Part;
+        public override ValidateOptions ValidateOptions => new ValidateOptions {
+            SkipTiming = true,
+            Part = Part,
+        };
         public NoteCommand(UVoicePart part, UNote note) {
             Part = part;
             Notes = new UNote[] { note };
@@ -151,7 +155,17 @@ namespace OpenUtau.Core {
         }
     }
 
-    public class VibratoLengthCommand : NoteCommand {
+    public abstract class VibratoCommand : NoteCommand {
+        public VibratoCommand(UVoicePart part, UNote note) : base(part, note) { }
+        public override ValidateOptions ValidateOptions => new ValidateOptions {
+            SkipTiming = true,
+            Part = Part,
+            SkipPhonemizer = true,
+            SkipPhoneme = true,
+        };
+    }
+
+    public class VibratoLengthCommand : VibratoCommand {
         readonly UNote note;
         readonly float newLength;
         readonly float oldLength;
@@ -175,7 +189,7 @@ namespace OpenUtau.Core {
         }
     }
 
-    public class VibratoFadeInCommand : NoteCommand {
+    public class VibratoFadeInCommand : VibratoCommand {
         readonly UNote note;
         readonly float newFadeIn;
         readonly float oldFadeIn;
@@ -200,7 +214,7 @@ namespace OpenUtau.Core {
         }
     }
 
-    public class VibratoFadeOutCommand : NoteCommand {
+    public class VibratoFadeOutCommand : VibratoCommand {
         readonly UNote note;
         readonly float newFadeOut;
         readonly float oldFadeOut;
@@ -224,7 +238,7 @@ namespace OpenUtau.Core {
         }
     }
 
-    public class VibratoDepthCommand : NoteCommand {
+    public class VibratoDepthCommand : VibratoCommand {
         readonly UNote note;
         readonly float newDepth;
         readonly float oldDepth;
@@ -248,7 +262,7 @@ namespace OpenUtau.Core {
         }
     }
 
-    public class VibratoPeriodCommand : NoteCommand {
+    public class VibratoPeriodCommand : VibratoCommand {
         readonly UNote note;
         readonly float newPeriod;
         readonly float oldPeriod;
@@ -272,7 +286,7 @@ namespace OpenUtau.Core {
         }
     }
 
-    public class VibratoShiftCommand : NoteCommand {
+    public class VibratoShiftCommand : VibratoCommand {
         readonly UNote note;
         readonly float newShift;
         readonly float oldShift;
@@ -301,6 +315,11 @@ namespace OpenUtau.Core {
         readonly int index;
         readonly int oldOffset;
         readonly int newOffset;
+        public override ValidateOptions ValidateOptions => new ValidateOptions {
+            SkipTiming = true,
+            Part = Part,
+            SkipPhonemizer = true,
+        };
         public PhonemeOffsetCommand(UVoicePart part, UNote note, int index, int offset) : base(part, note) {
             this.note = note;
             this.index = index;
@@ -332,6 +351,11 @@ namespace OpenUtau.Core {
         readonly int index;
         readonly float oldDelta;
         readonly float newDelta;
+        public override ValidateOptions ValidateOptions => new ValidateOptions {
+            SkipTiming = true,
+            Part = Part,
+            SkipPhonemizer = true,
+        };
         public PhonemePreutterCommand(UVoicePart part, UNote note, int index, float delta) : base(part, note) {
             this.note = note;
             this.index = index;
@@ -355,6 +379,11 @@ namespace OpenUtau.Core {
         readonly int index;
         readonly float oldDelta;
         readonly float newDelta;
+        public override ValidateOptions ValidateOptions => new ValidateOptions {
+            SkipTiming = true,
+            Part = Part,
+            SkipPhonemizer = true,
+        };
         public PhonemeOverlapCommand(UVoicePart part, UNote note, int index, float delta) : base(part, note) {
             this.note = note;
             this.index = index;
@@ -376,6 +405,11 @@ namespace OpenUtau.Core {
     public class ClearPhonemeTimingCommand : NoteCommand {
         readonly UNote note;
         readonly Tuple<int, int?, float?, float?>[] oldValues;
+        public override ValidateOptions ValidateOptions => new ValidateOptions {
+            SkipTiming = true,
+            Part = Part,
+            SkipPhonemizer = true,
+        };
         public ClearPhonemeTimingCommand(UVoicePart part, UNote note) : base(part, note) {
             this.note = note;
             oldValues = note.phonemeOverrides
@@ -399,5 +433,33 @@ namespace OpenUtau.Core {
             }
         }
         public override string ToString() => "Clear phoneme timing";
+    }
+
+    public class ChangePhonemeAliasCommand : NoteCommand {
+        readonly UNote note;
+        readonly int index;
+        readonly string oldAlias;
+        readonly string newAlias;
+        public override ValidateOptions ValidateOptions => new ValidateOptions {
+            SkipTiming = true,
+            Part = Part,
+        };
+        public ChangePhonemeAliasCommand(UVoicePart part, UNote note, int index, string alias) : base(part, note) {
+            this.note = note;
+            this.index = index;
+            var o = this.note.GetPhonemeOverride(index);
+            oldAlias = o.phoneme;
+            newAlias = alias;
+        }
+
+        public override void Execute() {
+            var o = note.GetPhonemeOverride(index);
+            o.phoneme = string.IsNullOrWhiteSpace(newAlias) ? null : newAlias;
+        }
+        public override void Unexecute() {
+            var o = note.GetPhonemeOverride(index);
+            o.phoneme = string.IsNullOrWhiteSpace(oldAlias) ? null : oldAlias;
+        }
+        public override string ToString() => "Change phoneme alias";
     }
 }

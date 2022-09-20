@@ -78,24 +78,34 @@ namespace OpenUtau.Core.Util {
             public bool MidiMaximized;
             public int UndoLimit = 100;
             public List<string> SingerSearchPaths = new List<string>();
-            public string ExternalPreviewEngine = string.Empty;
-            public string ExternalExportEngine = string.Empty;
             public string PlaybackDevice = string.Empty;
             public int PlaybackDeviceNumber;
             public int? PlaybackDeviceIndex;
             public bool ShowPrefs = true;
             public bool ShowTips = true;
             public int Theme;
-            public int PrerenderThreads = 2;
+            public bool PreRender = true;
             public string Language = string.Empty;
             public List<string> RecentFiles = new List<string>();
             public string SkipUpdate = string.Empty;
             public string AdditionalSingerPath = string.Empty;
+            public bool InstallToAdditionalSingersPath = false;
             public bool PreferCommaSeparator = false;
             public bool ResamplerLogging = false;
+            public List<string> RecentSingers = new List<string>();
             public Dictionary<string, string> SingerPhonemizers = new Dictionary<string, string>();
+            public List<string> RecentPhonemizers = new List<string>();
             public bool PreferPortAudio = false;
             public double PlayPosMarkerMargin = 0.9;
+            public int LockStartTime = 0;
+            public int PlaybackAutoScroll = 1;
+            public bool ReverseLogOrder = true;
+            public bool ShowPortrait = true;
+            public bool ShowGhostNotes = true;
+            public Dictionary<string, string> DefaultResamplers = new Dictionary<string, string>();
+            public Dictionary<string, string> DefaultWavtools = new Dictionary<string, string>();
+            public string LyricHelper = string.Empty;
+            public bool LyricsHelperBrackets = false;
         }
     }
 }

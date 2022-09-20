@@ -52,14 +52,14 @@ namespace OpenUtau.Api {
             public int tone;
 
             /// <summary>
-            /// Position of note in part. Measured in ticks.
-            /// Use TickToMs() and MsToTick() to convert between ticks and milliseconds .
+            /// Position of note in project, measured in ticks.
+            /// Use timeAxis to convert between ticks and milliseconds .
             /// </summary>
             public int position;
 
             /// <summary>
-            /// Duration of note in part. Measured in ticks.
-            /// Use TickToMs() and MsToTick() to convert between ticks and milliseconds .
+            /// Duration of note measured in ticks.
+            /// Use timeAxis to convert between ticks and milliseconds .
             /// </summary>
             public int duration;
 
@@ -134,8 +134,7 @@ namespace OpenUtau.Api {
         public string Tag { get; set; }
 
         protected double bpm;
-        private int beatUnit;
-        private int resolution;
+        protected TimeAxis timeAxis;
 
         /// <summary>
         /// Sets the current singer. Called by OpenUtau when user changes the singer.
@@ -150,6 +149,8 @@ namespace OpenUtau.Api {
         /// <param name="singer"></param>
         public abstract void SetSinger(USinger singer);
 
+        public virtual void SetUp(Note[][] notes) { }
+
         /// <summary>
         /// Phonemize a consecutive sequence of notes. This is the main logic of a phonemizer.
         /// </summary>
@@ -161,32 +162,36 @@ namespace OpenUtau.Api {
         /// <param name="prevs">Prev note neighbour with all extended notes. May be emtpy, not null</param>
         public abstract Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevs);
 
+        public virtual void CleanUp() { }
+
         public override string ToString() => $"[{Tag}] {Name}";
 
         /// <summary>
         /// Used by OpenUtau to set timing info for TickToMs() and MsToTick().
         /// Not need to call this method from within a phonemizer.
         /// </summary>
-        public void SetTiming(double bpm, int beatUnit, int resolution) {
-            this.bpm = bpm;
-            this.beatUnit = beatUnit;
-            this.resolution = resolution;
+        public void SetTiming(TimeAxis timeAxis) {
+            this.timeAxis = timeAxis;
+            bpm = timeAxis.GetBpmAtTick(0);
         }
 
+        public string DictionariesPath => PathManager.Inst.DictionariesPath;
         public string PluginDir => PathManager.Inst.PluginsPath;
 
         /// <summary>
-        /// Utility method to convert ticks to milliseconds.
+        /// Utility method to convert tick position to millisecond position.
         /// </summary>
+        [Obsolete] // TODO: update usages
         protected double TickToMs(int tick) {
-            return MusicMath.TickToMillisecond(tick, bpm, beatUnit, resolution);
+            return timeAxis.TickPosToMsPos(tick);
         }
 
         /// <summary>
-        /// Utility method to convert milliseconds to ticks.
+        /// Utility method to convert millisecond position to tick position.
         /// </summary>
+        [Obsolete] // TODO: update usages
         protected int MsToTick(double ms) {
-            return MusicMath.MillisecondToTick(ms, bpm, beatUnit, resolution);
+            return timeAxis.MsPosToTickPos(ms);
         }
 
         /// <summary>
@@ -206,6 +211,7 @@ namespace OpenUtau.Api {
         }
 
         protected void OnAsyncInitFinished() {
+            DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, ""));
             DocManager.Inst.ExecuteCmd(new ValidateProjectNotification());
             DocManager.Inst.ExecuteCmd(new PreRenderNotification());
         }

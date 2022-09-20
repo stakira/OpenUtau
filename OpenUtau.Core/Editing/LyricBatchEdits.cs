@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Core.Ustx;
+using TinyPinyin;
 using WanaKanaNet;
 
 namespace OpenUtau.Core.Editing {
@@ -13,7 +14,7 @@ namespace OpenUtau.Core.Editing {
                 return;
             }
             var lyrics = notes.Select(note => Transform(note.lyric)).ToArray();
-            docManager.StartUndoGroup();
+            docManager.StartUndoGroup(true);
             docManager.ExecuteCmd(new ChangeNoteLyricCommand(part, notes, lyrics));
             docManager.EndUndoGroup();
         }
@@ -53,6 +54,13 @@ namespace OpenUtau.Core.Editing {
         }
     }
 
+    public class HanziToPinyin : SingleNoteLyricEdit {
+        public override string Name => "pianoroll.menu.lyrics.hanzitopinyin";
+        protected override string Transform(string lyric) {
+            return PinyinHelper.GetPinyin(lyric).ToLowerInvariant();
+        }
+    }
+
     // Removes suffix like "C4", "C#4" or "Cb4"
     public class RemoveToneSuffix : SingleNoteLyricEdit {
         public override string Name => "pianoroll.menu.lyrics.removetonesuffix";
@@ -83,6 +91,17 @@ namespace OpenUtau.Core.Editing {
 
         private bool ShouldRemove(char c) {
             return (c == '_' || c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z') && c != 'R' && c != 'r';
+        }
+    }
+
+    public class DashToPlus : SingleNoteLyricEdit {
+        public override string Name => "pianoroll.menu.lyrics.dashtoplus";
+        protected override string Transform(string lyric) {
+            if (lyric == "-") {
+                return lyric.Replace("-", "+");
+            } else {
+                return lyric;
+            }
         }
     }
 }
