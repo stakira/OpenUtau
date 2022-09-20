@@ -5,7 +5,7 @@ using OpenUtau.Api;
 using OpenUtau.Core.G2p;
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("Teto English Phonemizer", "EN Teto", "nago & Heiden.BZR")]
+    [Phonemizer("Teto English Phonemizer", "EN Teto", "nago & Heiden.BZR", language: "EN")]
     public class TetoEnglishPhonemizer : SyllableBasedPhonemizer {
 
         private readonly string[] vowels = "a,A,@,{,V,O,aU,aI,E,3,eI,I,i,oU,OI,U,u".Split(",");

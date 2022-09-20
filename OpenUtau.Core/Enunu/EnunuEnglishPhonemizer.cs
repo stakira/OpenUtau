@@ -12,7 +12,7 @@ using Serilog;
 using TinyPinyin;
 
 namespace OpenUtau.Core.Enunu {
-    [Phonemizer("Enunu English Phonemizer", "ENUNU EN")]
+    [Phonemizer("Enunu English Phonemizer", "ENUNU EN", language:"EN")]
     public class EnunuEnglishPhonemizer : EnunuPhonemizer {
         protected IG2p g2p;
         //index,position,is_start

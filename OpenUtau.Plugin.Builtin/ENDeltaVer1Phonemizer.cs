@@ -6,7 +6,7 @@ using OpenUtau.Core.G2p;
 
 namespace OpenUtau.Plugin.Builtin
 {
-    [Phonemizer("Delta English (Version 1) Phonemizer", "EN Delta (Ver1)", "Lotte V")]
+    [Phonemizer("Delta English (Version 1) Phonemizer", "EN Delta (Ver1)", "Lotte V", language:"EN")]
     public class ENDeltaVer1Phonemizer : SyllableBasedPhonemizer
     {
         /// <summary>

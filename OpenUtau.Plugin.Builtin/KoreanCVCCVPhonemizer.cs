@@ -5,7 +5,7 @@ using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("Korean CVCCV Phonemizer", "KO CVCCV", "RYUUSEI")]
+    [Phonemizer("Korean CVCCV Phonemizer", "KO CVCCV", "RYUUSEI", language:"KO")]
     public class KoreanCVCCVPhonemizer : Phonemizer {
         static readonly string initialConsonantsTable = "ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ";
         static readonly string vowelsTable = "ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ";

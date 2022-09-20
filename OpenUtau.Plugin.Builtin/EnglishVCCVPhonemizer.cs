@@ -4,7 +4,7 @@ using OpenUtau.Api;
 using OpenUtau.Core.G2p;
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("English VCCV Phonemizer", "EN VCCV", "Mim")]
+    [Phonemizer("English VCCV Phonemizer", "EN VCCV", "Mim", language:"EN")]
     // This is a temporary solution until Cz's comes out with their own.
     // Feel free to use the Lyric Parser plugin for more accurate pronunciations & support of ConVel.
 
