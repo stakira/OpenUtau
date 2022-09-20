@@ -8,52 +8,12 @@ using Serilog;
 namespace OpenUtau.Plugin.Builtin {
     [Phonemizer("Japanese CVVC Phonemizer", "JA CVVC", "TUBS")]
     public class JapaneseCVVCPhonemizer : Phonemizer {
-        static readonly string[] plainVowels = new string[] {
-            "あ",
-            "い",
-            "う",
-            "え",
-            "お",
-            "を",
-            "ん",
-            "ン",
-            "息",
-            "吸",
-            "R",
-            "-",
-            "k",
-            "ky",
-            "g",
-            "gy",
-            "s",
-            "sh",
-            "z",
-            "j",
-            "t",
-            "ch",
-            "ty",
-            "ts",
-            "d",
-            "dy",
-            "n",
-            "ny",
-            "h",
-            "hy",
-            "f",
-            "b",
-            "by",
-            "p",
-            "py",
-            "m",
-            "my",
-            "y",
-            "r",
-            "4",
-            "ry",
-            "w",
-            "v",
-            "ng",
-            "・",
+        static readonly string[] plainVowels = new string[] {"あ","い","う","え","お","ん","ン"};
+        static readonly string[] nonVowels = new string[]{"息","吸","R","-","k","ky","g","gy",
+                                                           "s","sh","z","j","t","ch","ty","ts",
+                                                           "d","dy","n","ny","h","hy","f","b",
+                                                           "by","p","py","m","my","y","r","4",
+                                                           "ry","w","v","ng","・",
         };
 
         static readonly string[] vowels = new string[] {
@@ -100,6 +60,11 @@ namespace OpenUtau.Plugin.Builtin {
             "my=my,み,みぇ,みゃ,みゅ,みょ",
             "ng=ng,ガ,ギ,グ,ゲ,ゴ,ギェ,ギャ,ギュ,ギョ,カ゜,キ゜,ク゜,ケ゜,コ゜,キ゜ェ,キ゜ャ,キ゜ュ,キ゜ョ",
             "・=・,・あ,・い,・う,・え,・お,・ん,・を,・ン",
+        };
+
+        // in case voicebank is missing certain symbols
+        static readonly string[] substitution = new string[] {  
+            "ty,ch,ts=t", "j,dy=d", "gy=g", "ky=k", "py=p", "ny=n", "ry=r", "hy,f=h", "by,v=b"
         };
 
         static readonly Dictionary<string, string> vowelLookup;
