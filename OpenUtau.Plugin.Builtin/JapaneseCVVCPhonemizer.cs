@@ -24,6 +24,7 @@ namespace OpenUtau.Plugin.Builtin {
             "n=ん",
             "u=ぅ,う,く,ぐ,す,ず,つ,づ,ぬ,ふ,ぶ,ぷ,む,ゅ,ゆ,る,ゥ,ウ,ク,グ,ス,ズ,ツ,ヅ,ヌ,フ,ブ,プ,ム,ュ,ユ,ル,ヴ",
             "N=ン",
+            "・=・",
         };
 
         static readonly string[] consonants = new string[] {
