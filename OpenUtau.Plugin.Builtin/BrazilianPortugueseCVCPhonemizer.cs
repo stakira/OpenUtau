@@ -5,7 +5,7 @@ using OpenUtau.Api;
 using OpenUtau.Core.G2p;
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("Brazilian Portuguese CVC Phonemizer", "PT-BR CVC", "HAI-D")]
+    [Phonemizer("Brazilian Portuguese CVC Phonemizer", "PT-BR CVC", "HAI-D", language:"PT")]
     public class BrazilianPortugueseCVCPhonemizer : SyllableBasedPhonemizer {
 
         /// <summary>

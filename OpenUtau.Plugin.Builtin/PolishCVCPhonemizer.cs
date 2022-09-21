@@ -9,7 +9,7 @@ namespace OpenUtau.Plugin.Builtin {
     /// And example of realization of AdvancedPhonemizer without a dictionary
     /// Reclist by haku
     /// </summary>
-    [Phonemizer("Polish CVC Phonemizer", "PL CVC", "Heiden.BZR")]
+    [Phonemizer("Polish CVC Phonemizer", "PL CVC", "Heiden.BZR", language: "PL")]
     public class PolishCVCPhonemizer : SyllableBasedPhonemizer {
 
         private readonly string[] vowels = "a A e E i o u y".Split(" ");

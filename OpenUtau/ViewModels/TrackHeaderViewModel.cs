@@ -11,6 +11,7 @@ using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using ScottPlot.MarkerShapes;
 using Serilog;
 
 namespace OpenUtau.App.ViewModels {
@@ -190,6 +191,7 @@ namespace OpenUtau.App.ViewModels {
 
         public void RefreshPhonemizers() {
             var items = new List<MenuItemViewModel>();
+            //Recently used phonemizers
             items.AddRange(Preferences.Default.RecentPhonemizers
                 .Select(name => DocManager.Inst.PhonemizerFactories.FirstOrDefault(factory => factory.type.FullName == name))
                 .OfType<PhonemizerFactory>()
@@ -199,13 +201,18 @@ namespace OpenUtau.App.ViewModels {
                     Command = SelectPhonemizerCommand,
                     CommandParameter = factory,
                 }));
+            //more phonemizers grouped by singing language
             items.Add(new MenuItemViewModel() {
                 Header = $"{ThemeManager.GetString("tracks.more")} ...",
-                Items = DocManager.Inst.PhonemizerFactories.Select(factory => new MenuItemViewModel() {
-                    Header = factory.ToString(),
-                    Command = SelectPhonemizerCommand,
-                    CommandParameter = factory,
-                }).ToArray(),
+                Items = DocManager.Inst.PhonemizerFactories.GroupBy(factory => factory.language)
+                .Select(group => new MenuItemViewModel() {
+                    Header = (group.Key is null) ? "General" : group.Key,
+                    Items = group.Select(factory => new MenuItemViewModel() {
+                        Header = factory.ToString(),
+                        Command = SelectPhonemizerCommand,
+                        CommandParameter = factory,
+                    }).ToArray(),
+                }).ToArray()
             });
             PhonemizerMenuItems = items.ToArray();
             this.RaisePropertyChanged(nameof(PhonemizerMenuItems));

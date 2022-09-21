@@ -3,7 +3,7 @@ using OpenUtau.Api;
 using TinyPinyin;
 
 namespace OpenUtau.Core.Vogen {
-    [Phonemizer("Vogen Chinese Mandarin Phonemizer", "VOGEN ZH")]
+    [Phonemizer("Vogen Chinese Mandarin Phonemizer", "VOGEN ZH", language: "ZH")]
     public class VogenMandarinPhonemizer : VogenBasePhonemizer {
         private static InferenceSession g2p;
         private static InferenceSession prosody;

@@ -9,7 +9,7 @@ namespace OpenUtau.Plugin.Builtin {
     /// Chinese 十月式整音扩张 CVV Phonemizer.
     /// <para>It works by spliting "duang" to "duang" + "_ang", to produce the proper tail sound.</para>
     /// </summary>
-    [Phonemizer("Chinese CVV (十月式整音扩张) Phonemizer", "ZH CVV")]
+    [Phonemizer("Chinese CVV (十月式整音扩张) Phonemizer", "ZH CVV", language: "ZH")]
     public class ChineseCVVPhonemizer : Phonemizer {
         /// <summary>
         ///  The consonant table.

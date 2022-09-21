@@ -9,7 +9,7 @@ using Serilog;
 using TinyPinyin;
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("Chinese CVVC Phonemizer", "ZH CVVC")]
+    [Phonemizer("Chinese CVVC Phonemizer", "ZH CVVC", language:"ZH")]
     public class ChineseCVVCPhonemizer : Phonemizer {
         private Dictionary<string, string> vowels = new Dictionary<string, string>();
         private Dictionary<string, string> consonants = new Dictionary<string, string>();
