@@ -135,12 +135,16 @@ namespace OpenUtau.Plugin.Builtin {
                 // Current note is VV
                 if (vowelLookup.TryGetValue(prevUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
                     var vowLyric = $"{vow} {currentLyric}";
-
                     // try cflyric before vowlyric, if both fail try currentlyric
                     string[] tests = new string[] {cfLyric, vowLyric, currentLyric};
                     if (checkOtoUntilHit(tests, note, out var oto)){
                         currentLyric = oto.Alias;
                     }
+                }
+            } else {
+                string[] tests = new string[] {currentLyric};
+                if (checkOtoUntilHit(tests, note, out var oto)){
+                    currentLyric = oto.Alias;
                 }
             }
 
