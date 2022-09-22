@@ -8,7 +8,7 @@ using Serilog;
 namespace OpenUtau.Plugin.Builtin {
     [Phonemizer("Japanese CVVC Phonemizer", "JA CVVC", "TUBS",language:"JA")]
     public class JapaneseCVVCPhonemizer : Phonemizer {
-        static readonly string[] plainVowels = new string[] {"あ","い","う","え","お","ん","ン"};
+        static readonly string[] plainVowels = new string[] {"あ","い","う","え","お","を","ん","ン"};
         static readonly string[] nonVowels = new string[]{"息","吸","R","-","k","ky","g","gy",
                                                            "s","sh","z","j","t","ch","ty","ts",
                                                            "d","dy","n","ny","h","hy","f","b",
@@ -28,43 +28,44 @@ namespace OpenUtau.Plugin.Builtin {
         };
 
         static readonly string[] consonants = new string[] {
-            "ch=ch,ち,ちぇ,ちゃ,ちゅ,ちょ",
-            "gy=gy,ぎ,ぎぇ,ぎゃ,ぎゅ,ぎょ",
-            "ts=ts,つ,つぁ,つぃ,つぇ,つぉ",
-            "ty=ty,てぃ,てぇ,てゃ,てゅ,てょ",
-            "py=py,ぴ,ぴぇ,ぴゃ,ぴゅ,ぴょ",
-            "ry=ry,り,りぇ,りゃ,りゅ,りょ",
-            "ny=ny,に,にぇ,にゃ,にゅ,にょ",
-            "r=r,4,ら,る,るぃ,れ,ろ",
-            "hy=hy,ひ,ひぇ,ひゃ,ひゅ,ひょ",
-            "dy=dy,でぃ,でぇ,でゃ,でゅ,でょ",
-            "by=by,び,びぇ,びゃ,びゅ,びょ",
-            "b=b,ば,ぶ,ぶぃ,べ,ぼ",
-            "d=d,だ,で,ど,どぃ,どぅ",
-            "g=g,が,ぐ,ぐぃ,げ,ご",
-            "f=f,ふ,ふぁ,ふぃ,ふぇ,ふぉ",
-            "h=h,は,はぃ,へ,ほ,ほぅ",
-            "k=k,か,く,くぃ,け,こ",
-            "j=j,じ,じぇ,じゃ,じゅ,じょ,ぢ,ぢぇ,ぢゃ,ぢゅ,ぢょ",
-            "m=m,ま,む,むぃ,め,も",
-            "n=n,な,ぬ,ぬぃ,ね,の",
-            "p=p,ぱ,ぷ,ぷぃ,ぺ,ぽ",
-            "s=s,さ,す,すぃ,せ,そ",
-            "sh=sh,し,しぇ,しゃ,しゅ,しょ",
-            "t=t,た,て,と,とぃ,とぅ",
-            "v=v,ヴ,ヴぁ,ヴぃ,ヴぅ,ヴぇ,ヴぉ",
-            "ky=ky,き,きぇ,きゃ,きゅ,きょ",
-            "w=w,うぃ,うぅ,うぇ,うぉ,わ,ゐ,ゑ,を,ヰ,ヱ",
-            "y=y,いぃ,いぇ,や,ゆ,よ",
-            "z=z,ざ,ず,ずぃ,ぜ,ぞ,づ,づぃ",
-            "my=my,み,みぇ,みゃ,みゅ,みょ",
-            "ng=ng,ガ,ギ,グ,ゲ,ゴ,ギェ,ギャ,ギュ,ギョ,カ゜,キ゜,ク゜,ケ゜,コ゜,キ゜ェ,キ゜ャ,キ゜ュ,キ゜ョ",
-            "・=・,・あ,・い,・う,・え,・お,・ん,・を,・ン",
+            "ch=ち,ちぇ,ちゃ,ちゅ,ちょ",
+            "gy=ぎ,ぎぇ,ぎゃ,ぎゅ,ぎょ",
+            "ts=つ,つぁ,つぃ,つぇ,つぉ",
+            "ty=てぃ,てぇ,てゃ,てゅ,てょ",
+            "py=ぴ,ぴぇ,ぴゃ,ぴゅ,ぴょ",
+            "ry=り,りぇ,りゃ,りゅ,りょ",
+            "ny=に,にぇ,にゃ,にゅ,にょ",
+            "r=ら,る,るぃ,れ,ろ",
+            "hy=ひ,ひぇ,ひゃ,ひゅ,ひょ",
+            "dy=でぃ,でぇ,でゃ,でゅ,でょ",
+            "by=び,びぇ,びゃ,びゅ,びょ",
+            "b=ば,ぶ,ぶぃ,べ,ぼ",
+            "d=だ,で,ど,どぃ,どぅ",
+            "g=が,ぐ,ぐぃ,げ,ご",
+            "f=ふ,ふぁ,ふぃ,ふぇ,ふぉ",
+            "h=は,はぃ,へ,ほ,ほぅ",
+            "k=か,く,くぃ,け,こ",
+            "j=じ,じぇ,じゃ,じゅ,じょ,ぢ,ぢぇ,ぢゃ,ぢゅ,ぢょ",
+            "m=ま,む,むぃ,め,も",
+            "n=な,ぬ,ぬぃ,ね,の",
+            "p=ぱ,ぷ,ぷぃ,ぺ,ぽ",
+            "s=さ,す,すぃ,せ,そ",
+            "sh=し,しぇ,しゃ,しゅ,しょ",
+            "t=た,て,と,とぃ,とぅ",
+            "v=ヴ,ヴぁ,ヴぃ,ヴぅ,ヴぇ,ヴぉ",
+            "ky=き,きぇ,きゃ,きゅ,きょ",
+            "w=うぃ,うぅ,うぇ,うぉ,わ,ゐ,ゑ,を,ヰ,ヱ",
+            "y=いぃ,いぇ,や,ゆ,よ",
+            "z=ざ,ず,ずぃ,ぜ,ぞ",
+            "dz=づ,づぃ",
+            "my=み,みぇ,みゃ,みゅ,みょ",
+            "ng=ガ,ギ,グ,ゲ,ゴ,ギェ,ギャ,ギュ,ギョ,カ゜,キ゜,ク゜,ケ゜,コ゜,キ゜ェ,キ゜ャ,キ゜ュ,キ゜ョ",
+            "・=・あ,・い,・う,・え,・お,・ん,・を,・ン",
         };
 
         // in case voicebank is missing certain symbols
         static readonly string[] substitution = new string[] {  
-            "ty,ch,ts=t", "j,dy=d", "gy=g", "ky=k", "py=p", "ny=n", "ry=r", "hy,f=h", "by,v=b"
+            "ty,ch,ts=t", "j,dy=d", "gy=g", "ky=k", "py=p", "ny=n", "ry=r", "hy,f=h", "by,v=b", "dz=z"
         };
 
         static readonly Dictionary<string, string> vowelLookup;
@@ -134,12 +135,16 @@ namespace OpenUtau.Plugin.Builtin {
                 // Current note is VV
                 if (vowelLookup.TryGetValue(prevUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
                     var vowLyric = $"{vow} {currentLyric}";
-
-                    // try cflyric before vowlyric, if both fail try currentlyric
-                    string[] tests = new string[] {cfLyric, vowLyric, currentLyric};
+                    // try vowlyric before cflyric, if both fail try currentlyric
+                    string[] tests = new string[] {vowLyric, cfLyric, currentLyric};
                     if (checkOtoUntilHit(tests, note, out var oto)){
                         currentLyric = oto.Alias;
                     }
+                }
+            } else {
+                string[] tests = new string[] {currentLyric};
+                if (checkOtoUntilHit(tests, note, out var oto)){
+                    currentLyric = oto.Alias;
                 }
             }
 
