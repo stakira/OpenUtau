@@ -78,7 +78,7 @@
   <system:String x:Key="menu.edit.undo">Отменить</system:String>
   <system:String x:Key="menu.file">Файл</system:String>
   <system:String x:Key="menu.file.exit">Выйти</system:String>
-  <!--<system:String x:Key="menu.file.exportmidi">Export Midi File</system:String>-->
+  <system:String x:Key="menu.file.exportmidi">Экспортировать MIDI файл</system:String>
   <system:String x:Key="menu.file.exportust">Экспортировать UST файлы</system:String>
   <system:String x:Key="menu.file.exportustto">Экспортировать UST файлы в...</system:String>
   <system:String x:Key="menu.file.exportwav">Экспортировать WAV файлы</system:String>
