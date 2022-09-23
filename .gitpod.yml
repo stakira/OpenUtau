@@ -1,0 +1,13 @@
+image:
+  file: .gitpod.Dockerfile
+
+tasks:
+  - name: Restore & Build
+    init: |
+      dotnet dev-certs https 
+      dotnet restore
+      dotnet build
+
+vscode:
+  extensions:
+    - muhammad-sammy.csharp
