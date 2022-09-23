@@ -21,7 +21,7 @@ namespace OpenUtau.Plugins {
             new string[] { "good", "morning", "-" },
             new string[] { "A3", "F4", "C4" },
             new string[] { "", "", "" },
-            new string[] { "- g_3", "g uh_3", "uh d_3", "d m_3", "m ao", "ao r", "r n", "n ih", "ih ng", "ng -" })]
+            new string[] { "- g_3", "g uh_3", "uh d_3", "d m_3", "m ao", "ao r", "r n", "n ih", "ih ng", "ng -_3" })]
         [InlineData("en_arpa",
             new string[] { "moon", "+", "+", "+", "star", "+" },
             new string[] { "F4", "C4", "F4", "F4", "C4", "F4" },

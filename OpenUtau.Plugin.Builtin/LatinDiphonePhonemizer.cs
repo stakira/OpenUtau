@@ -60,7 +60,13 @@ namespace OpenUtau.Plugin.Builtin {
             var prevSymbols = prevNeighbour == null ? null : GetSymbols(prevNeighbour.Value);
             // The user is using a tail "-" note to produce a "<something> -" sound.
             if (note.lyric == "-" && prevSymbols != null) {
-                return MakeSimpleResult($"{prevSymbols.Last()} -");
+                var attr = note.phonemeAttributes?.FirstOrDefault() ?? default;
+                string color = attr.voiceColor;
+                string alias = $"{prevSymbols.Last()} -";
+                if (singer.TryGetMappedOto(alias, note.tone, color, out var oto)) {
+                    return MakeSimpleResult(oto.Alias);
+                }
+                return MakeSimpleResult(alias);
             }
             // Get the symbols of current note.
             string[] symbols = GetSymbols(note);
