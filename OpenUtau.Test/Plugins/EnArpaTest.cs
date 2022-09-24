@@ -4,8 +4,8 @@ using Xunit;
 using Xunit.Abstractions;
 
 namespace OpenUtau.Plugins {
-    public class EnArpa : PhonemizerTestBase {
-        public EnArpa(ITestOutputHelper output) : base(output) { }
+    public class EnArpaTest : PhonemizerTestBase {
+        public EnArpaTest(ITestOutputHelper output) : base(output) { }
 
         protected override Phonemizer CreatePhonemizer() {
             return new ArpasingPhonemizer();
