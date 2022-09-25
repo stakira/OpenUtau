@@ -122,53 +122,24 @@ namespace OpenUtau.Core {
             }
         }
 
-        bool eBackupSaved = false;
+
         private void CrashSave() {
             
             if (Project == null || string.IsNullOrEmpty(Project.FilePath)) {
-                if (OS.IsWindows()) {
-                    try {
-                        var winLoc = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                        string loc = winLoc + "\\OpenUtauBackup\\";
-                        Directory.CreateDirectory(loc);
-                        string eBackup = loc + "Untitled-backup.ustx";
-                        Log.Information($"No Project found, Saving emergency backup {eBackup}.");
-                        Format.Ustx.Save(eBackup, Project);
-                        Log.Information($"Saved emergency backup {eBackup}.");
-                        bool eBackupSaved = true;
-                    } catch (Exception e) {
-                        Log.Error(e, "Emergency backup failed to save.");
-                    }
-                } else if (OS.IsLinux()) {
-                    try {
-                        var linLoc = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "Library");
-                        string loc = linLoc + "\\OpenUtauBackup\\";
-                        Directory.CreateDirectory(loc);
-                        string eBackup = loc + "Untitled-backup.ustx";
-                        Log.Information($"No Project found, Saving emergency backup {eBackup}.");
-                        Format.Ustx.Save(eBackup, Project);
-                        Log.Information($"Saved emergency backup {eBackup}.");
-                        bool eBackupSaved = true;
-                    } catch (Exception e) {
-                        Log.Error(e, "Emergency backup failed to save.");
-                    }
-                } else {
-                    try {
-                        var macLoc = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-                        string loc = macLoc + "\\OpenUtauBackup\\";
-                        Directory.CreateDirectory(loc);
-                        string eBackup = loc + "Untitled-backup.ustx";
-                        Log.Information($"No Project found, Saving emergency backup {eBackup}.");
-                        Format.Ustx.Save(eBackup, Project);
-                        Log.Information($"Saved emergency backup {eBackup}.");
-                        bool eBackupSaved = true;
-                    } catch (Exception e) {
-                        Log.Error(e, "Emergency backup failed to save.");
-                    }
-                }
 
+                try {
+                    var path = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
+                    string loc = path + "\\OpenUtauBackup\\";
+                    Directory.CreateDirectory(loc);
+                    string eBackup = loc + "Untitled-backup.ustx";
+                    Log.Information($"No Project found, Saving emergency backup {eBackup}.");
+                    Format.Ustx.Save(eBackup, Project);
+                    Log.Information($"Saved emergency backup {eBackup}.");
+                } catch (Exception e) {
+                    Log.Error(e, "Emergency backup failed to save.");
+                }
+                return;
             }
-            if (eBackupSaved = !true) {
                 try {
                     string dir = Path.GetDirectoryName(Project.FilePath);
                     string filename = Path.GetFileNameWithoutExtension(Project.FilePath);
@@ -178,8 +149,9 @@ namespace OpenUtau.Core {
                     Log.Information($"Saved backup {backup}.");
                 } catch (Exception e) {
                     Log.Error(e, "Save backup failed.");
-                } 
-            }
+                }
+                return;
+
         }
 
         public void AutoSave() {
