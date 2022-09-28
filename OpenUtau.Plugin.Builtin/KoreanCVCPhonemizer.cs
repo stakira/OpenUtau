@@ -650,7 +650,7 @@ namespace OpenUtau.Plugin.Builtin {
                 }
 
                 int totalDuration = notes.Sum(n => n.duration);
-                int vcLength = 120;
+                int vcLength = 60;
                 var nextAttr = nextNeighbour.Value.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
                 if (singer.TryGetMappedOto(nextLyric, nextNeighbour.Value.tone + nextAttr.toneShift, nextAttr.voiceColor, out var oto)) {
                     vcLength = MsToTick(oto.Preutter);
