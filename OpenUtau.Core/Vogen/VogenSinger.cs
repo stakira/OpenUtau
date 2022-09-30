@@ -44,12 +44,7 @@ namespace OpenUtau.Core.Vogen {
             loaded = true;
         }
 
-        public override bool TryGetMappedOto(string phoneme, int tone, out UOto oto) {
-            oto = UOto.OfDummy(phoneme);
-            return true;
-        }
-
-        public override bool TryGetMappedOto(string phoneme, int tone, string color, out UOto oto) {
+        public override bool TryGetOto(string phoneme, out UOto oto) {
             oto = UOto.OfDummy(phoneme);
             return true;
         }

@@ -79,7 +79,7 @@ namespace OpenUtau.Core.Ustx {
                 return;
             }
             // Load oto.
-            if (track.Singer.TryGetMappedOto(phoneme, note.tone, out var oto)) {
+            if (track.Singer.TryGetOto(phoneme, out var oto)) {
                 this.oto = oto;
                 Error = false;
                 phonemeMapped = oto.Alias;

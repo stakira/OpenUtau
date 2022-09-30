@@ -152,16 +152,20 @@ namespace OpenUtau.Classic {
             }
         }
 
+        public override bool TryGetOto(string phoneme, out UOto oto) {
+            if (otoMap.TryGetValue(phoneme, out oto)) {
+                return true;
+            }
+            return false;
+        }
+
         public override bool TryGetMappedOto(string phoneme, int tone, out UOto oto) {
             oto = default;
             var subbank = subbanks.Find(subbank => string.IsNullOrEmpty(subbank.Color) && subbank.toneSet.Contains(tone));
             if (subbank != null && otoMap.TryGetValue($"{subbank.Prefix}{phoneme}{subbank.Suffix}", out oto)) {
                 return true;
             }
-            if (otoMap.TryGetValue(phoneme, out oto)) {
-                return true;
-            }
-            return false;
+            return TryGetOto(phoneme, out oto);
         }
 
         public override bool TryGetMappedOto(string phoneme, int tone, string color, out UOto oto) {
