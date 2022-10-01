@@ -415,6 +415,9 @@ namespace OpenUtau.Plugin.Builtin {
         // Store singer in field, will try reading presamp.ini later
         private USinger singer;
         public override void SetSinger(USinger singer) => this.singer = singer;
+        
+        // Legacy mapping. Might adjust later to new mapping style.
+		public override bool LegacyMapping => true;
 
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
             var prevLyric = prevNeighbour?.lyric;
