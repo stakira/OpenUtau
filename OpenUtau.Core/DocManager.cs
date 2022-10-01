@@ -124,34 +124,24 @@ namespace OpenUtau.Core {
 
 
         private void CrashSave() {
-            
-            if (Project == null || string.IsNullOrEmpty(Project.FilePath)) {
-
-                try {
-                    var path = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
-                    string loc = path + "\\OpenUtauBackup\\";
-                    Directory.CreateDirectory(loc);
-                    string eBackup = loc + "Untitled-backup.ustx";
-                    Log.Information($"No Project found, Saving emergency backup {eBackup}.");
-                    Format.Ustx.Save(eBackup, Project);
-                    Log.Information($"Saved emergency backup {eBackup}.");
-                } catch (Exception e) {
-                    Log.Error(e, "Emergency backup failed to save.");
+            try {
+                bool untitled = Project == null || string.IsNullOrEmpty(Project.FilePath);
+                if (untitled) {
+                    Directory.CreateDirectory(PathManager.Inst.BackupsPath);
                 }
-                return;
+                string dir = untitled
+                    ? PathManager.Inst.BackupsPath
+                    : Path.GetDirectoryName(Project.FilePath);
+                string filename = untitled
+                    ? "Untitled"
+                    : Path.GetFileNameWithoutExtension(Project.FilePath);
+                string backup = Path.Join(dir, filename + "-backup.ustx");
+                Log.Information($"Saving backup {backup}.");
+                Format.Ustx.Save(backup, Project);
+                Log.Information($"Saved backup {backup}.");
+            } catch (Exception e) {
+                Log.Error(e, "Save backup failed.");
             }
-                try {
-                    string dir = Path.GetDirectoryName(Project.FilePath);
-                    string filename = Path.GetFileNameWithoutExtension(Project.FilePath);
-                    string backup = Path.Join(dir, filename + "-backup.ustx");
-                    Log.Information($"Saving backup {backup}.");
-                    Format.Ustx.Save(backup, Project);
-                    Log.Information($"Saved backup {backup}.");
-                } catch (Exception e) {
-                    Log.Error(e, "Save backup failed.");
-                }
-                return;
-
         }
 
         public void AutoSave() {

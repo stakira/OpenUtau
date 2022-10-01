@@ -490,7 +490,7 @@ namespace OpenUtau.App.ViewModels {
         public void PasteNotes() {
             if (Part != null && DocManager.Inst.NotesClipboard != null && DocManager.Inst.NotesClipboard.Count > 0) {
                 int snapUnit = DocManager.Inst.Project.resolution * 4 / SnapDiv;
-                int left = (DocManager.Inst.playPosTick / snapUnit)* snapUnit;
+                int left = (DocManager.Inst.playPosTick / snapUnit) * snapUnit;
                 int minPosition = DocManager.Inst.NotesClipboard.Select(note => note.position).Min();
                 //If PlayPos is before the beginning of the part, don't paste.
                 if (left >= Part.position) {
@@ -506,7 +506,7 @@ namespace OpenUtau.App.ViewModels {
                     DocManager.Inst.EndUndoGroup();
                     Selection.Select(notes);
                     MessageBus.Current.SendMessage(new NotesSelectionEvent(Selection));
-                    
+
                     TickOffset = left - Part.position;
                 }
             }
