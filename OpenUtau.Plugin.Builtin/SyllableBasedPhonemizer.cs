@@ -629,7 +629,6 @@ namespace OpenUtau.Plugin.Builtin {
                 return;
             }
             dictionaries[GetType()] = null;
-            var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
             OnAsyncInitStarted();
             Task.Run(() => {
                 try {
@@ -647,7 +646,9 @@ namespace OpenUtau.Plugin.Builtin {
                 } catch (Exception ex) {
                     Log.Error(ex, $"Failed to read dictionary {dictionaryName}");
                 }
-            }).ContinueWith((task) => { Init(); OnAsyncInitFinished(); }, scheduler);
+                Init();
+                OnAsyncInitFinished();
+            });
         }
 
         private string[] ApplyExtensions(string[] symbols, Note[] notes) {
