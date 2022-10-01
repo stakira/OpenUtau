@@ -125,6 +125,7 @@ namespace OpenUtau.Core.Ustx {
                     noteIndex++;
                 }
                 var request = new PhonemizerRequest() {
+                    singer = track.Singer,
                     part = this,
                     timestamp = DateTime.Now.ToFileTimeUtc(),
                     noteIndexes = noteIndexes.ToArray(),

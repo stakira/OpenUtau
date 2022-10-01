@@ -111,11 +111,9 @@ namespace OpenUtau.Core {
         public override string ToString() { return "Change phonemizer"; }
         public override void Execute() {
             track.Phonemizer = newPhonemizer;
-            track.Phonemizer.SetSinger(track.Singer);
         }
         public override void Unexecute() {
             track.Phonemizer = oldPhonemizer;
-            track.Phonemizer.SetSinger(track.Singer);
         }
     }
 

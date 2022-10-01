@@ -153,6 +153,12 @@ namespace OpenUtau.Api {
         /// <param name="singer"></param>
         public abstract void SetSinger(USinger singer);
 
+        /// <summary>
+        /// Uses the legacy bahaviour of further mapping phonemizer outputs.
+        /// Do not override for new phonemizers.
+        /// </summary>
+        public virtual bool LegacyMapping => false;
+
         public virtual void SetUp(Note[][] notes) { }
 
         /// <summary>
