@@ -489,20 +489,26 @@ namespace OpenUtau.App.ViewModels {
 
         public void PasteNotes() {
             if (Part != null && DocManager.Inst.NotesClipboard != null && DocManager.Inst.NotesClipboard.Count > 0) {
-                TickToLineTick((int)TickOffset, out int left, out int right);
+                int snapUnit = DocManager.Inst.Project.resolution * 4 / SnapDiv;
+                int left = (DocManager.Inst.playPosTick / snapUnit)* snapUnit;
                 int minPosition = DocManager.Inst.NotesClipboard.Select(note => note.position).Min();
-                int offset = right - minPosition;
-                var notes = DocManager.Inst.NotesClipboard.Select(note => note.Clone()).ToList();
-                notes.ForEach(note => note.position += offset);
-                DocManager.Inst.StartUndoGroup();
-                DocManager.Inst.ExecuteCmd(new AddNoteCommand(Part, notes));
-                int minDurTick = Part.GetMinDurTick(Project);
-                if (Part.Duration < minDurTick) {
-                    DocManager.Inst.ExecuteCmd(new ResizePartCommand(Project, Part, minDurTick));
+                //If PlayPos is before the beginning of the part, don't paste.
+                if (left >= Part.position) {
+                    int offset = left - minPosition - Part.position;
+                    var notes = DocManager.Inst.NotesClipboard.Select(note => note.Clone()).ToList();
+                    notes.ForEach(note => note.position += offset);
+                    DocManager.Inst.StartUndoGroup();
+                    DocManager.Inst.ExecuteCmd(new AddNoteCommand(Part, notes));
+                    int minDurTick = Part.GetMinDurTick(Project);
+                    if (Part.Duration < minDurTick) {
+                        DocManager.Inst.ExecuteCmd(new ResizePartCommand(Project, Part, minDurTick));
+                    }
+                    DocManager.Inst.EndUndoGroup();
+                    Selection.Select(notes);
+                    MessageBus.Current.SendMessage(new NotesSelectionEvent(Selection));
+                    
+                    TickOffset = left - Part.position;
                 }
-                DocManager.Inst.EndUndoGroup();
-                Selection.Select(notes);
-                MessageBus.Current.SendMessage(new NotesSelectionEvent(Selection));
             }
         }
 
