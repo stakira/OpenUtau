@@ -402,9 +402,26 @@ namespace OpenUtau.App.ViewModels {
             Notify();
         }
 
+        private void DeselectNote(UNote note) {
+            if (Selection.Remove(note)) {
+                MessageBus.Current.SendMessage(new NotesSelectionEvent(Selection));
+            }
+        }
+
         public void DeselectNotes() {
             Selection.SelectNone();
             MessageBus.Current.SendMessage(new NotesSelectionEvent(Selection));
+        }
+
+        public void ToggleSelectNote(UNote note) {
+            if (Part == null) {
+                return;
+            }
+            if (Selection.Contains(note)) {
+                DeselectNote(note);
+            } else {
+                SelectNote(note);
+            }
         }
 
         public void SelectNote(UNote note) {
