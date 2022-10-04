@@ -2,9 +2,9 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-  <!--<system:String x:Key="context.note.delete">Delete note</system:String>-->
-  <!--<system:String x:Key="context.part.delete">Delete part</system:String>-->
-  <!--<system:String x:Key="context.part.rename">Rename part</system:String>-->
+  <system:String x:Key="context.note.delete">노트 삭제</system:String>
+  <system:String x:Key="context.part.delete">파트 삭제</system:String>
+  <system:String x:Key="context.part.rename">파트 이름 변경</system:String>
   <system:String x:Key="context.pitch.easein">시작 감속 곡선</system:String>
   <system:String x:Key="context.pitch.easeinout">시작/끝 감속 곡선</system:String>
   <system:String x:Key="context.pitch.easeout">끝 감속 곡선</system:String>
@@ -12,10 +12,10 @@
   <system:String x:Key="context.pitch.pointadd">포인트 추가</system:String>
   <system:String x:Key="context.pitch.pointdel">포인트 제거</system:String>
   <system:String x:Key="context.pitch.pointsnapprev">이전 노트 스냅</system:String>
-  <!--<system:String x:Key="context.timeline.addtempo">Add tempo change at {0}</system:String>-->
-  <!--<system:String x:Key="context.timeline.addtimesig">Add time signature change</system:String>-->
-  <!--<system:String x:Key="context.timeline.deltempo">Delete tempo change at {0}</system:String>-->
-  <!--<system:String x:Key="context.timeline.deltimesig">Delete time signature change</system:String>-->
+  <system:String x:Key="context.timeline.addtempo">{0} 에서 템포 변화 추가</system:String>
+  <system:String x:Key="context.timeline.addtimesig">박자 변화 추가</system:String>
+  <system:String x:Key="context.timeline.deltempo">{0} 에서 템포 변화 삭제</system:String>
+  <system:String x:Key="context.timeline.deltimesig">박자 변화 삭제</system:String>
 
   <system:String x:Key="debug.clear">지우기</system:String>
   <system:String x:Key="debug.copylog">로그 복사</system:String>
@@ -36,10 +36,10 @@
   <system:String x:Key="dialogs.noresampler.caption">엔진 없음</system:String>
   <system:String x:Key="dialogs.noresampler.message">엔진이 없습니다! 엔진 파일을 Resamplers 폴더에 넣고 환경 설정에서 설정해주세요!</system:String>
   <system:String x:Key="dialogs.timesig.caption">박자 기호</system:String>
-  <!--<system:String x:Key="dialogs.tracksettings.caption">Track Settings</system:String>-->
-  <!--<system:String x:Key="dialogs.tracksettings.location">Location</system:String>-->
-  <!--<system:String x:Key="dialogs.tracksettings.renderer">Renderer</system:String>-->
-  <!--<system:String x:Key="dialogs.tracksettings.setasdefault">Set As Default</system:String>-->
+  <system:String x:Key="dialogs.tracksettings.caption">트랙 설정</system:String>
+  <system:String x:Key="dialogs.tracksettings.location">위치 열기</system:String>
+  <system:String x:Key="dialogs.tracksettings.renderer">랜더러</system:String>
+  <system:String x:Key="dialogs.tracksettings.setasdefault">기본값으로 변경</system:String>
 
   <system:String x:Key="errors.caption">에러</system:String>
 
@@ -97,9 +97,9 @@
   <system:String x:Key="menu.file.savetemplate">템플릿 저장</system:String>
   <system:String x:Key="menu.help">도움말</system:String>
   <system:String x:Key="menu.help.about">OpenUtau 정보</system:String>
-  <!--<system:String x:Key="menu.help.checkupdate">Check Update</system:String>-->
-  <!--<system:String x:Key="menu.help.logslocation">Open Logs Location</system:String>-->
-  <!--<system:String x:Key="menu.help.reportissue">Report Issue</system:String>-->
+  <system:String x:Key="menu.help.checkupdate">업데이트 확인</system:String>
+  <system:String x:Key="menu.help.logslocation">로그 파일 위치 열기</system:String>
+  <system:String x:Key="menu.help.reportissue">이슈 제보</system:String>
   <system:String x:Key="menu.help.wiki">OpenUtau 위키</system:String>
   <system:String x:Key="menu.tools">도구</system:String>
   <system:String x:Key="menu.tools.clearcache">캐시 초기화</system:String>
@@ -145,11 +145,11 @@
   <system:String x:Key="oto.color">색상</system:String>
   <system:String x:Key="oto.consonant">자음</system:String>
   <system:String x:Key="oto.cutoff">컷오프</system:String>
-  <!--<system:String x:Key="oto.edit.consonant">Set Consonant</system:String>-->
-  <!--<system:String x:Key="oto.edit.cutoff">Set Cutoff</system:String>-->
-  <!--<system:String x:Key="oto.edit.offset">Set Offset</system:String>-->
-  <!--<system:String x:Key="oto.edit.overlap">Set Overlap</system:String>-->
-  <!--<system:String x:Key="oto.edit.preutter">Set Preutter</system:String>-->
+  <system:String x:Key="oto.edit.consonant">자음(Consonant) 설정</system:String>
+  <system:String x:Key="oto.edit.cutoff">컷오프(Cutoff) 설정</system:String>
+  <system:String x:Key="oto.edit.offset">오프셋(Offset) 설정</system:String>
+  <system:String x:Key="oto.edit.overlap">오버랩(Overlap) 설정</system:String>
+  <system:String x:Key="oto.edit.preutter">선행발성(Preutter) 설정</system:String>
   <system:String x:Key="oto.file">파일</system:String>
   <system:String x:Key="oto.offset">오프셋</system:String>
   <system:String x:Key="oto.overlap">오버랩</system:String>
@@ -159,13 +159,13 @@
   <system:String x:Key="oto.set">설정</system:String>
   <system:String x:Key="oto.suffix">접미사</system:String>
 
-  <!--<system:String x:Key="phoneticassistant.caption">Phonetic Assistant</system:String>-->
-  <!--<system:String x:Key="phoneticassistant.copy">Copy</system:String>-->
+  <system:String x:Key="phoneticassistant.caption">음소 변환(G2P) 보조</system:String>
+  <system:String x:Key="phoneticassistant.copy">복사</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">가사</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">"-" 기호를 "+" 기호로 대체</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">가사 편집</system:String>
-  <!--<system:String x:Key="pianoroll.menu.lyrics.hanzitopinyin">Hanzi to Pinyin</system:String>-->
+  <system:String x:Key="pianoroll.menu.lyrics.hanzitopinyin">한자를 병음으로</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">히라가나를 로마자로</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">일본어 VCV를 CV로</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">문자 접미사 제거</system:String>
@@ -189,8 +189,8 @@
   <system:String x:Key="pianoroll.toggle.phoneme">음소 보기 (O)</system:String>
   <system:String x:Key="pianoroll.toggle.pitch">피치벤드 보기 (I)</system:String>
   <system:String x:Key="pianoroll.toggle.snap">스냅 켜고 끄기 (P)</system:String>
-  <!--<system:String x:Key="pianoroll.toggle.snap.auto">Auto</system:String>-->
-  <!--<system:String x:Key="pianoroll.toggle.snap.autotriplet">Auto (triplet)</system:String>-->
+  <system:String x:Key="pianoroll.toggle.snap.auto">자동</system:String>
+  <system:String x:Key="pianoroll.toggle.snap.autotriplet">자동 (3부분으로)</system:String>
   <system:String x:Key="pianoroll.toggle.tips">팁 보기 (T)</system:String>
   <system:String x:Key="pianoroll.toggle.tone">노트 톤 켜고 끄기 (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">비브라토 보기 (U)</system:String>
@@ -198,25 +198,25 @@
   <system:String x:Key="pianoroll.tool.drawpitch">피치 그리기 툴 (4)</system:String>
   <system:String x:Key="pianoroll.tool.eraser">삭제 툴 (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">잘라내기 툴 (5)</system:String>
-  <!--<system:String x:Key="pianoroll.tool.penplus">Pen Plus Tool (Ctrl + 2)
-    Left click to draw
-    Right click to delete
-Hold Ctrl to select</system:String>-->
-  <!--<system:String x:Key="pianoroll.tool.penv2">Pen Tool (2)
-    Left click to draw
-Hold Ctrl to select</system:String>-->
-  <!--<system:String x:Key="pianoroll.tool.selectionv2">Selection Tool (1)</system:String>-->
+  <system:String x:Key="pianoroll.tool.penplus">팬+ 툴 (Ctrl + 2)
+    왼쪽 클릭으로 그리기
+    오른쪽 클릭으로 삭제
+컨트롤 키를 누르고 선택</system:String>
+  <system:String x:Key="pianoroll.tool.penv2">팬 툴 (2)
+    왼쪽 클릭으로 그리기
+컨트롤 키를 누르고 선택</system:String>
+  <system:String x:Key="pianoroll.tool.selectionv2">선택 툴 (1)</system:String>
 
   <system:String x:Key="prefs.advanced">고급</system:String>
   <system:String x:Key="prefs.advanced.beta">베타</system:String>
-  <!--<system:String x:Key="prefs.advanced.lyricshelper">Lyrics Helper</system:String>-->
-  <!--<system:String x:Key="prefs.advanced.lyricshelper.brackets">Lyrics Helper Adds Brackets</system:String>-->
+  <system:String x:Key="prefs.advanced.lyricshelper">가사 도우미</system:String>
+  <system:String x:Key="prefs.advanced.lyricshelper.brackets">가사 도우미 괄호 추가</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging">리샘플러 로그</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging.warn">리샘플러 출력을 로그 파일에 저장합니다. 이 옵션을 사용하면 UI 및 렌더링 속도가 느려집니다.</system:String>
   <system:String x:Key="prefs.advanced.stable">안정된 버전</system:String>
   <system:String x:Key="prefs.appearance">외형</system:String>
   <system:String x:Key="prefs.appearance.lang">언어</system:String>
-  <!--<system:String x:Key="prefs.appearance.showghostnotes">Show other tracks' notes on piano roll</system:String>-->
+  <system:String x:Key="prefs.appearance.showghostnotes">피아노 롤에 다른 트랙의 노트 표시</system:String>
   <system:String x:Key="prefs.appearance.showportrait">피아노 롤에 초상화 표시</system:String>
   <system:String x:Key="prefs.appearance.theme">테마</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">다크</system:String>
@@ -264,9 +264,9 @@ Hold Ctrl to select</system:String>-->
   <system:String x:Key="progress.waitingrendering">렌더링 대기 중</system:String>
 
   <system:String x:Key="singers.caption">가수</system:String>
-  <!--<system:String x:Key="singers.editoto.gotosource">Goto Source File</system:String>-->
-  <!--<system:String x:Key="singers.editoto.reset">Reset Otos</system:String>-->
-  <!--<system:String x:Key="singers.editoto.save">Save Otos</system:String>-->
+  <system:String x:Key="singers.editoto.gotosource">소스파일 열기</system:String>
+  <system:String x:Key="singers.editoto.reset">Oto 초기화</system:String>
+  <system:String x:Key="singers.editoto.save">Oto 저장</system:String>
   <system:String x:Key="singers.location">위치</system:String>
   <system:String x:Key="singers.otoview.moveleft">왼쪽으로 이동</system:String>
   <system:String x:Key="singers.otoview.moveright">오른쪽으로 이동</system:String>
@@ -292,7 +292,7 @@ Hold Ctrl to select</system:String>-->
   <system:String x:Key="singers.subbanks.set">설정</system:String>
   <system:String x:Key="singers.subbanks.tone">톤</system:String>
   <system:String x:Key="singers.subbanks.toneranges">톤 범위</system:String>
-  <!--<system:String x:Key="singers.visitwebsite">Visit Website</system:String>-->
+  <system:String x:Key="singers.visitwebsite">웹 사이트 방문</system:String>
 
   <system:String x:Key="tip.aliasbox">Alias 재정의</system:String>
   <system:String x:Key="tip.exps">
@@ -333,7 +333,7 @@ Hold Ctrl to select</system:String>-->
   <FontFamily x:Key="ui.textbox.fontfamily">Malgun Gothic,Apple SD Gothic Neo,Segoe UI,San Francisco,Helvetica Neue</FontFamily>
 
   <system:String x:Key="updater.caption">업데이트 확인</system:String>
-  <system:String x:Key="updater.description">오픈형 가창 합성 플랫폼</system:String>
+  <system:String x:Key="updater.description">개방형 가창 합성 플랫폼</system:String>
   <system:String x:Key="updater.github">깃허브</system:String>
   <system:String x:Key="updater.status.available">v{0} 업데이트가 존재합니다!</system:String>
   <system:String x:Key="updater.status.checking">업데이트를 확인하고 있습니다...</system:String>
