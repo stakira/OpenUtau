@@ -308,6 +308,10 @@ namespace OpenUtau.App.Views {
                         canvas, ViewModel, this, noteHitInfo.note,
                         args.KeyModifiers == KeyModifiers.Alt);
                     Cursor = ViewConstants.cursorSizeWE;
+                } else if (args.KeyModifiers == cmdKey) {
+                    ViewModel.NotesViewModel.ToggleSelectNote(noteHitInfo.note);
+                } else if (args.KeyModifiers == KeyModifiers.Shift) {
+                    ViewModel.NotesViewModel.SelectNotesUntil(noteHitInfo.note);
                 } else {
                     editState = new NoteMoveEditState(canvas, ViewModel, this, noteHitInfo.note);
                     Cursor = ViewConstants.cursorSizeAll;

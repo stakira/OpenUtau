@@ -402,9 +402,26 @@ namespace OpenUtau.App.ViewModels {
             Notify();
         }
 
+        private void DeselectNote(UNote note) {
+            if (Selection.Remove(note)) {
+                MessageBus.Current.SendMessage(new NotesSelectionEvent(Selection));
+            }
+        }
+
         public void DeselectNotes() {
             Selection.SelectNone();
             MessageBus.Current.SendMessage(new NotesSelectionEvent(Selection));
+        }
+
+        public void ToggleSelectNote(UNote note) {
+            if (Part == null) {
+                return;
+            }
+            if (Selection.Contains(note)) {
+                DeselectNote(note);
+            } else {
+                SelectNote(note);
+            }
         }
 
         public void SelectNote(UNote note) {
@@ -421,6 +438,47 @@ namespace OpenUtau.App.ViewModels {
             }
             Selection.Select(Part);
             MessageBus.Current.SendMessage(new NotesSelectionEvent(Selection));
+        }
+
+        public void SelectNotesUntil(UNote note) {
+            if (Part == null) {
+                return;
+            }
+            if (Part.notes.Intersect(Selection).ToList().Count == 0) {
+                SelectNote(note);
+                return;
+            }
+            var thisIndex = Part.notes.IndexOf(note);
+            if (thisIndex < 0) {
+                return;
+            }
+            var firstSelectedNote = Part.notes.FirstOrDefault(x => Selection.Contains(x));
+            if (firstSelectedNote == null) {
+                return;
+            }
+            var rangeStart = Part.notes.IndexOf(firstSelectedNote);
+            var lastSelectedNote = Part.notes.LastOrDefault(x => Selection.Contains(x));
+            if (lastSelectedNote == null) {
+                return;
+            }
+            var rangeEndInclusive = Part.notes.IndexOf(lastSelectedNote);
+            int rangeToAddStart;
+            int rangeToAddEndInclusive;
+            if (thisIndex < rangeStart) {
+                rangeToAddStart = thisIndex;
+                rangeToAddEndInclusive = rangeEndInclusive;
+            } else if (thisIndex > rangeEndInclusive) {
+                rangeToAddStart = rangeStart;
+                rangeToAddEndInclusive = thisIndex;
+            } else {
+                rangeToAddStart = rangeStart;
+                rangeToAddEndInclusive = rangeEndInclusive;
+            }
+            var notesToAdd = Part.notes.ToList().GetRange(rangeToAddStart, rangeToAddEndInclusive - rangeToAddStart + 1);
+            var changed = Selection.Add(notesToAdd);
+            if (changed) {
+                MessageBus.Current.SendMessage(new NotesSelectionEvent(Selection));
+            }
         }
 
         public void TempSelectNotes(int x0, int x1, int y0, int y1) {
