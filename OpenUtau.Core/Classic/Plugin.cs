@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.IO;
 
 namespace OpenUtau.Classic {
@@ -7,6 +7,7 @@ namespace OpenUtau.Classic {
         public string Executable;
         public bool AllNotes;
         public bool UseShell;
+        public string Encoding = "shift_jis";
 
         public void Run(string tempFile) {
             if (!File.Exists(Executable)) {
