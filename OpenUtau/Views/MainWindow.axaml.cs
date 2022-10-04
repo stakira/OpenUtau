@@ -176,7 +176,7 @@ namespace OpenUtau.App.Views {
                 Filters = new List<FileDialogFilter>() {
                     new FileDialogFilter() {
                         Name = "Project Files",
-                        Extensions = new List<string>(){ "ustx", "vsqx", "ust", "mid" },
+                        Extensions = new List<string>(){ "ustx", "vsqx", "ust", "mid", "midi" },
                     },
                 },
                 AllowMultiple = true,
@@ -273,7 +273,7 @@ namespace OpenUtau.App.Views {
                 Filters = new List<FileDialogFilter>() {
                     new FileDialogFilter() {
                         Name = "Project Files",
-                        Extensions = new List<string>(){ "ustx", "vsqx", "ust", "mid"},
+                        Extensions = new List<string>(){ "ustx", "vsqx", "ust", "mid", "midi" },
                     },
                 },
                 AllowMultiple = true,
@@ -313,7 +313,7 @@ namespace OpenUtau.App.Views {
                 Filters = new List<FileDialogFilter>() {
                     new FileDialogFilter() {
                         Name = "Midi File",
-                        Extensions = new List<string>(){ "mid" },
+                        Extensions = new List<string>(){ "mid", "midi" },
                     },
                 },
                 AllowMultiple = false,
@@ -410,7 +410,7 @@ namespace OpenUtau.App.Views {
             };
             var file = await dialog.ShowAsync(this);
             if (!string.IsNullOrEmpty(file)) {
-                MidiWriter.Save(file,project);
+                MidiWriter.Save(file, project);
             }
         }
 
@@ -476,14 +476,18 @@ namespace OpenUtau.App.Views {
                 Core.Vogen.VogenSingerInstaller.Install(files[0]);
                 return;
             }
-            var setup = new SingerSetupDialog() {
-                DataContext = new SingerSetupViewModel() {
-                    ArchiveFilePath = files[0],
-                },
-            };
-            _ = setup.ShowDialog(this);
-            if (setup.Position.Y < 0) {
-                setup.Position = setup.Position.WithY(0);
+            try {
+                var setup = new SingerSetupDialog() {
+                    DataContext = new SingerSetupViewModel() {
+                        ArchiveFilePath = files[0],
+                    },
+                };
+                _ = setup.ShowDialog(this);
+                if (setup.Position.Y < 0) {
+                    setup.Position = setup.Position.WithY(0);
+                }
+            } catch (Exception e) {
+                _ = MessageBox.ShowError(this, e);
             }
         }
 
