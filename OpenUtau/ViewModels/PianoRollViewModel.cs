@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -121,7 +121,7 @@ namespace OpenUtau.App.ViewModels {
                         first = NotesViewModel.Selection.FirstOrDefault();
                         last = NotesViewModel.Selection.LastOrDefault();
                     }
-                    var sequence = Classic.Ust.WritePlugin(project, part, first, last, tempFile);
+                    var sequence = Classic.Ust.WritePlugin(project, part, first, last, tempFile, encoding: plugin.Encoding);
                     byte[]? beforeHash = HashFile(tempFile);
                     plugin.Run(tempFile);
                     byte[]? afterHash = HashFile(tempFile);
@@ -130,7 +130,7 @@ namespace OpenUtau.App.ViewModels {
                         return;
                     }
                     Log.Information("Legacy plugin temp file has changed.");
-                    var (toRemove, toAdd) = Classic.Ust.ParsePlugin(project, part, first, last, sequence, tempFile);
+                    var (toRemove, toAdd) = Classic.Ust.ParsePlugin(project, part, first, last, sequence, tempFile, encoding: plugin.Encoding);
                     DocManager.Inst.StartUndoGroup();
                     DocManager.Inst.ExecuteCmd(new RemoveNoteCommand(part, toRemove));
                     DocManager.Inst.ExecuteCmd(new AddNoteCommand(part, toAdd));

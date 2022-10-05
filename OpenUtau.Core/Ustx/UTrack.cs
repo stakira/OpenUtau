@@ -78,7 +78,6 @@ namespace OpenUtau.Core.Ustx {
             set {
                 if (singer_ != value) {
                     singer_ = value;
-                    Phonemizer.SetSinger(value);
                     VoiceColorExp = null;
                 }
             }
@@ -154,7 +153,6 @@ namespace OpenUtau.Core.Ustx {
                     Singer = USinger.CreateMissing(singer);
                 }
             }
-            Phonemizer.SetSinger(Singer);
             if (RendererSettings == null) {
                 RendererSettings = new URenderSettings();
             }

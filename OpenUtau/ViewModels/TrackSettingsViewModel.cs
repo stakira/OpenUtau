@@ -18,6 +18,7 @@ namespace OpenUtau.App.ViewModels {
         public ObservableCollectionExtended<IWavtool> Wavtools => wavtools;
         [Reactive] public IWavtool? Wavtool { get; set; }
         [Reactive] public bool NeedsWavtool { get; set; }
+        [Reactive] public bool IsNotClassic { get; set; }
 
         ObservableCollectionExtended<IResampler> resamplers =
             new ObservableCollectionExtended<IResampler>();
@@ -47,6 +48,7 @@ namespace OpenUtau.App.ViewModels {
                 Wavtool = ToolsManager.Inst.GetWavtool(wavtoolName);
                 NeedsResampler = Renderers.CLASSIC == renderer;
                 NeedsWavtool = Renderers.CLASSIC == renderer;
+                IsNotClassic = Renderers.CLASSIC != renderer;
             }
             this.WhenAnyValue(x => x.Resampler)
                 .Subscribe(resampler => {

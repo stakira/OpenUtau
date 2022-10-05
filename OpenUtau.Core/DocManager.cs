@@ -32,6 +32,7 @@ namespace OpenUtau.Core {
         public int playPosTick = 0;
 
         public TaskScheduler MainScheduler => mainScheduler;
+        public Action<Action> PostOnUIThread { get; set; }
         public Plugin[] Plugins { get; private set; }
         public PhonemizerFactory[] PhonemizerFactories { get; private set; }
         public UProject Project { get; private set; }
@@ -122,13 +123,19 @@ namespace OpenUtau.Core {
             }
         }
 
+
         private void CrashSave() {
-            if (Project == null || string.IsNullOrEmpty(Project.FilePath)) {
-                return;
-            }
             try {
-                string dir = Path.GetDirectoryName(Project.FilePath);
-                string filename = Path.GetFileNameWithoutExtension(Project.FilePath);
+                bool untitled = Project == null || string.IsNullOrEmpty(Project.FilePath);
+                if (untitled) {
+                    Directory.CreateDirectory(PathManager.Inst.BackupsPath);
+                }
+                string dir = untitled
+                    ? PathManager.Inst.BackupsPath
+                    : Path.GetDirectoryName(Project.FilePath);
+                string filename = untitled
+                    ? "Untitled"
+                    : Path.GetFileNameWithoutExtension(Project.FilePath);
                 string backup = Path.Join(dir, filename + "-backup.ustx");
                 Log.Information($"Saving backup {backup}.");
                 Format.Ustx.Save(backup, Project);
@@ -160,8 +167,12 @@ namespace OpenUtau.Core {
         }
 
         public void ExecuteCmd(UCommand cmd) {
-            if (mainThread != Thread.CurrentThread && !(cmd is ProgressBarNotification)) {
-                Log.Error($"{cmd} not on main thread");
+            if (mainThread != Thread.CurrentThread) {
+                if (!(cmd is ProgressBarNotification)) {
+                    Log.Warning($"{cmd} not on main thread");
+                }
+                PostOnUIThread(() => ExecuteCmd(cmd));
+                return;
             }
             if (cmd is UNotification) {
                 if (cmd is SaveProjectNotification) {

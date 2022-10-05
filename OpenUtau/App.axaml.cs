@@ -90,6 +90,7 @@ namespace OpenUtau.App {
             ToolsManager.Inst.Initialize();
             SingerManager.Inst.Initialize();
             DocManager.Inst.Initialize();
+            DocManager.Inst.PostOnUIThread = action => Avalonia.Threading.Dispatcher.UIThread.Post(action);
             Log.Information("Initialized OpenUtau.");
         }
 

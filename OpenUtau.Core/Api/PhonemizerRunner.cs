@@ -10,6 +10,7 @@ using Serilog;
 
 namespace OpenUtau.Api {
     internal class PhonemizerRequest {
+        public USinger singer;
         public UVoicePart part;
         public long timestamp;
         public int[] noteIndexes;
@@ -84,6 +85,7 @@ namespace OpenUtau.Api {
         static PhonemizerResponse Phonemize(PhonemizerRequest request) {
             var notes = request.notes;
             var phonemizer = request.phonemizer;
+            phonemizer.SetSinger(request.singer);
             phonemizer.SetTiming(request.timeAxis);
             try {
                 phonemizer.SetUp(notes);
@@ -133,6 +135,14 @@ namespace OpenUtau.Api {
                             }
                         }
                     };
+                }
+                if (phonemizer.LegacyMapping) {
+                    for (var k = 0; k < phonemizerResult.phonemes.Length; k++) {
+                        var phoneme = phonemizerResult.phonemes[k];
+                        if (request.singer.TryGetMappedOto(phoneme.phoneme, notes[i][0].tone, out var oto)) {
+                            phonemizerResult.phonemes[k].phoneme = oto.Alias;
+                        }
+                    }
                 }
                 for (var j = 0; j < phonemizerResult.phonemes.Length; j++) {
                     phonemizerResult.phonemes[j].position += notes[i][0].position;

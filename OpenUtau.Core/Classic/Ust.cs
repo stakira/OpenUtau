@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -274,7 +274,7 @@ namespace OpenUtau.Classic {
             return ustNotes;
         }
 
-        public static List<UNote> WritePlugin(UProject project, UVoicePart part, UNote first, UNote last, string filePath) {
+        public static List<UNote> WritePlugin(UProject project, UVoicePart part, UNote first, UNote last, string filePath, string encoding = "shift_jis") {
             var prev = first.Prev;
             if (prev == null) {
                 if (first.position > 0) {
@@ -298,7 +298,7 @@ namespace OpenUtau.Classic {
             }
             var sequence = new List<UNote>();
             var track = project.tracks[part.trackNo];
-            using (var writer = new StreamWriter(filePath, false, ShiftJIS)) {
+            using (var writer = new StreamWriter(filePath, false, Encoding.GetEncoding(encoding))) {
                 WriteHeader(project, part, writer);
                 var position = 0;
                 if (prev != null) {
@@ -361,10 +361,10 @@ namespace OpenUtau.Classic {
 
         public static (List<UNote>, List<UNote>) ParsePlugin(
             UProject project, UVoicePart part, UNote first, UNote last,
-            List<UNote> sequence, string diffFile) {
+            List<UNote> sequence, string diffFile, string encoding = "shift_jis") {
             var toRemove = new List<UNote>();
             var toAdd = new List<UNote>();
-            using (var reader = new StreamReader(diffFile, ShiftJIS)) {
+            using (var reader = new StreamReader(diffFile, Encoding.GetEncoding(encoding))) {
                 var blocks = Ini.ReadBlocks(reader, diffFile, @"\[#\w+\]");
                 int index = 0;
                 foreach (var block in blocks) {

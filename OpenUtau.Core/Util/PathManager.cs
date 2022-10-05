@@ -74,6 +74,7 @@ namespace OpenUtau.Core {
         public string LogFilePath => Path.Combine(DataPath, "Logs", "log.txt");
         public string PrefsFilePath => Path.Combine(DataPath, "prefs.json");
         public string NotePresetsFilePath => Path.Combine(DataPath, "notepresets.json");
+        public string BackupsPath => Path.Combine(DataPath, "Backups");
 
         public string GetPartSavePath(string projectPath, int partNo) {
             var name = Path.GetFileNameWithoutExtension(projectPath);
