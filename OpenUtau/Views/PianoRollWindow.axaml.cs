@@ -408,6 +408,11 @@ namespace OpenUtau.App.Views {
                 }
                 if (ViewModel.NotesViewModel.Selection.Count > 0) {
                     ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
+                        Header = ThemeManager.GetString("context.note.copy"),
+                        Command = ViewModel.NoteCopyCommand,
+                        CommandParameter = hitInfo,
+                    });
+                    ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
                         Header = ThemeManager.GetString("context.note.delete"),
                         Command = ViewModel.NoteDeleteCommand,
                         CommandParameter = hitInfo,

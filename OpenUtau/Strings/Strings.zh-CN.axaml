@@ -2,6 +2,7 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+  <system:String x:Key="context.note.copy">复制音符</system:String>
   <system:String x:Key="context.note.delete">删除音符</system:String>
   <system:String x:Key="context.part.delete">删除片段</system:String>
   <system:String x:Key="context.part.rename">重命名片段</system:String>
@@ -184,6 +185,8 @@
   <system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">重置音素时机</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">重置滑音</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.vibratos">重置颤音</system:String>
+  <system:String x:Key="pianoroll.menu.notes.octaveup">上移八度</system:String>
+  <system:String x:Key="pianoroll.menu.notes.octavedown">下移八度</system:String>
   <system:String x:Key="pianoroll.menu.part">片段</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">传统插件 (实验性)</system:String>
   <system:String x:Key="pianoroll.toggle.finalpitch">显示最终音高线 (R)</system:String>
