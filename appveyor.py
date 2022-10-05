@@ -32,10 +32,10 @@ def write_appcast(appcast_os, appcast_rid, appcast_file):
 
 if sys.platform == 'win32':
     if appcast_ver is not None:
-        os.system("git tag build/%s" % (appcast_ver))
-        os.system("git push origin build/%s" % (appcast_ver))
+        os.system("git tag build/%s 2>&1" % (appcast_ver))
+        os.system("git push origin build/%s 2>&1" % (appcast_ver))
 
-    os.system("del *.xml")
+    os.system("del *.xml 2>&1")
 
     os.system("dotnet restore OpenUtau -r win-x86")
     os.system(
