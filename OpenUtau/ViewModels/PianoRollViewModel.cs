@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -51,6 +51,7 @@ namespace OpenUtau.App.ViewModels {
 
         [Reactive] public double Progress { get; set; }
         public ReactiveCommand<NoteHitInfo, Unit> NoteDeleteCommand { get; set; }
+        public ReactiveCommand<NoteHitInfo, Unit> NoteCopyCommand { get; set; }
         public ReactiveCommand<PitchPointHitInfo, Unit> PitEaseInOutCommand { get; set; }
         public ReactiveCommand<PitchPointHitInfo, Unit> PitLinearCommand { get; set; }
         public ReactiveCommand<PitchPointHitInfo, Unit> PitEaseInCommand { get; set; }
@@ -67,6 +68,9 @@ namespace OpenUtau.App.ViewModels {
 
             NoteDeleteCommand = ReactiveCommand.Create<NoteHitInfo>(info => {
                 NotesViewModel.DeleteSelectedNotes();
+            });
+            NoteCopyCommand = ReactiveCommand.Create<NoteHitInfo>(info => {
+                NotesViewModel.CopyNotes();
             });
             PitEaseInOutCommand = ReactiveCommand.Create<PitchPointHitInfo>(info => {
                 DocManager.Inst.StartUndoGroup();
@@ -154,6 +158,8 @@ namespace OpenUtau.App.ViewModels {
                 new LoadRenderedPitch(),
                 new AddTailNote("-", "pianoroll.menu.notes.addtaildash"),
                 new AddTailNote("R", "pianoroll.menu.notes.addtailrest"),
+                new Transpose(12, "pianoroll.menu.notes.octaveup"),
+                new Transpose(-12, "pianoroll.menu.notes.octavedown"),
                 new QuantizeNotes(15),
                 new QuantizeNotes(30),
                 new ResetPitchBends(),
