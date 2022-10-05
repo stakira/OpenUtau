@@ -51,8 +51,6 @@ namespace OpenUtau.Core.Editing {
 
         public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
             var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
-            
-            
             docManager.StartUndoGroup(true);
             foreach (var note in notes) {
                 docManager.ExecuteCmd(new MoveNoteCommand(part, note, 0, deltaNoteNum));
