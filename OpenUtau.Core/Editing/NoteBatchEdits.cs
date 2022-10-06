@@ -36,6 +36,27 @@ namespace OpenUtau.Core.Editing {
         }
     }
 
+    public class Transpose : BatchEdit {
+        public string Name => name;
+
+        private int deltaNoteNum;
+        private string name;
+
+        public Transpose(int deltaNoteNum, string name) {
+            this.deltaNoteNum = deltaNoteNum;
+            this.name= name;
+        }
+
+        public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
+            var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
+            docManager.StartUndoGroup(true);
+            foreach (var note in notes) {
+                docManager.ExecuteCmd(new MoveNoteCommand(part, note, 0, deltaNoteNum));
+            }
+            docManager.EndUndoGroup();
+        }
+    }
+
     public class QuantizeNotes : BatchEdit {
         public virtual string Name => name;
 
