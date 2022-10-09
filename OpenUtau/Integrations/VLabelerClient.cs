@@ -116,16 +116,20 @@ namespace OpenUtau.Integrations {
                 if (Heartbeat()) {
                     return true;
                 }
-                var exe = Core.Util.Preferences.Default.VLabelerPath;
-                if (!File.Exists(exe)) {
-                    throw new FileNotFoundException($"Cannot find file {exe}.");
+                var path = Core.Util.Preferences.Default.VLabelerPath;
+                if (!OS.AppExists(path)) {
+                    throw new FileNotFoundException($"Cannot find file {path}.");
                 }
                 using (var proc = new Process()) {
-                    proc.StartInfo = new ProcessStartInfo(exe) {
-                        UseShellExecute = false,
-                        CreateNoWindow = true,
-                    };
-                    proc.Start();
+                    if (OS.IsMacOS()) {
+                        OS.OpenFolder(path);
+                    } else {
+                        proc.StartInfo = new ProcessStartInfo(path) {
+                            UseShellExecute = false,
+                            CreateNoWindow = true,
+                        };
+                        proc.Start();
+                    }
                     Log.Information("Starting vLabeler.");
                 }
                 for (int i = 0; i < 50; i++) {
