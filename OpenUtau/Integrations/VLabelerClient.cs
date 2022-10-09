@@ -79,7 +79,7 @@ namespace OpenUtau.Integrations {
                 client.Connect("tcp://localhost:32342");
                 string reqStr = JsonConvert.SerializeObject(new HeartbeatRequest());
                 client.SendFrame(reqStr);
-                if (client.TryReceiveFrameString(TimeSpan.FromMilliseconds(200), out string? respStr)) {
+                if (client.TryReceiveFrameString(TimeSpan.FromMilliseconds(1000), out string? respStr)) {
                     return true;
                 }
                 return false;
@@ -105,7 +105,7 @@ namespace OpenUtau.Integrations {
                 client.Connect("tcp://localhost:32342");
                 string reqStr = JsonConvert.SerializeObject(request);
                 client.SendFrame(reqStr);
-                if (!client.TryReceiveFrameString(TimeSpan.FromMilliseconds(200), out string? respStr)) {
+                if (!client.TryReceiveFrameString(TimeSpan.FromMilliseconds(1000), out string? respStr)) {
                     Log.Warning($"Failed to OpenOrCreate with vLabeler");
                 }
             }
