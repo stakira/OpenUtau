@@ -110,6 +110,24 @@
             </ComboBox>
           </StackPanel>
         </HeaderedContentControl>
+        <HeaderedContentControl Classes="groupbox" Header="{DynamicResource prefs.otoeditor}">
+          <StackPanel>
+            <TextBlock Text="{DynamicResource prefs.otoeditor.select}" />
+            <ComboBox HorizontalAlignment="Stretch" SelectedIndex="{Binding OtoEditor}">
+              <ComboBoxItem Content="OpenUtau"/>
+              <ComboBoxItem Content="vLabeler"/>
+            </ComboBox>
+            <TextBlock Text="vLabeler Path" />
+            <TextBlock HorizontalAlignment="Stretch" Margin="4"
+                       TextWrapping="Wrap" FontSize="11" Text="{Binding VLabelerPath}"/>
+            <Grid HorizontalAlignment="Stretch" ColumnDefinitions="*,10,*">
+              <Button Grid.Column="0" Content="{DynamicResource prefs.paths.reset}"
+                      HorizontalAlignment="Stretch" Click="ResetVLabelerPath"/>
+              <Button Grid.Column="2" Content="{DynamicResource prefs.paths.select}"
+                      HorizontalAlignment="Stretch" Click="SelectVLabelerPath"/>
+            </Grid>
+          </StackPanel>
+        </HeaderedContentControl>
         <HeaderedContentControl Classes="groupbox" Header="{DynamicResource prefs.advanced}">
           <StackPanel>
             <TextBlock Text="{DynamicResource prefs.advanced.lyricshelper}" />

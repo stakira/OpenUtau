@@ -39,7 +39,10 @@ namespace OpenUtau.App {
                 Run(args);
                 Log.Information($"Exiting.");
             } finally {
-                NetMQ.NetMQConfig.Cleanup(/*block=*/false);
+                if (!OS.IsMacOS()) {
+                    NetMQ.NetMQConfig.Cleanup(/*block=*/false);
+                    // Cleanup() hangs on macOS https://github.com/zeromq/netmq/issues/1018
+                }
             }
             Log.Information($"Exited.");
         }

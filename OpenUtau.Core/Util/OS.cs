@@ -43,6 +43,14 @@ namespace OpenUtau {
             });
         }
 
+        public static bool AppExists(string path) {
+            if (IsMacOS()) {
+                return Directory.Exists(path) && path.EndsWith(".app");
+            } else {
+                return File.Exists(path);
+            }
+        }
+
         public static string GetUpdaterRid() {
             if (IsWindows()) {
                 if (RuntimeInformation.ProcessArchitecture == Architecture.X86) {

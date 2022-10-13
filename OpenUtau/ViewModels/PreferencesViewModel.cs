@@ -34,6 +34,9 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public int Theme { get; set; }
         [Reactive] public int ShowPortrait { get; set; }
         [Reactive] public int ShowGhostNotes { get; set; }
+        [Reactive] public int OtoEditor { get; set; }
+        public string VLabelerPath => Preferences.Default.VLabelerPath;
+
         public List<CultureInfo>? Languages { get; }
         public CultureInfo? Language {
             get => language;
@@ -95,6 +98,7 @@ namespace OpenUtau.App.ViewModels {
             ShowGhostNotes = Preferences.Default.ShowGhostNotes ? 1 : 0;
             LyricsHelper = LyricsHelpers.FirstOrDefault(option => option.klass.Equals(ActiveLyricsHelper.Inst.GetPreferred()));
             LyricsHelperBrackets = Preferences.Default.LyricsHelperBrackets ? 1 : 0;
+            OtoEditor = Preferences.Default.OtoEditor;
 
             this.WhenAnyValue(vm => vm.AudioOutputDevice)
                 .WhereNotNull()
@@ -171,6 +175,11 @@ namespace OpenUtau.App.ViewModels {
                     Preferences.Default.LyricsHelperBrackets = index > 0;
                     Preferences.Save();
                 });
+            this.WhenAnyValue(vm => vm.OtoEditor)
+                .Subscribe(index => {
+                    Preferences.Default.OtoEditor = index;
+                    Preferences.Save();
+                });
         }
 
         public void TestAudioOutputDevice() {
@@ -191,6 +200,12 @@ namespace OpenUtau.App.ViewModels {
             Preferences.Default.AdditionalSingerPath = path;
             Preferences.Save();
             this.RaisePropertyChanged(nameof(AdditionalSingersPath));
+        }
+
+        public void SetVLabelerPath(string path) {
+            Preferences.Default.VLabelerPath = path;
+            Preferences.Save();
+            this.RaisePropertyChanged(nameof(VLabelerPath));
         }
     }
 }
