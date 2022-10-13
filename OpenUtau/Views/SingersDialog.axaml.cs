@@ -203,7 +203,7 @@ namespace OpenUtau.App.Views {
                 return;
             }
             string path = Core.Util.Preferences.Default.VLabelerPath;
-            if (string.IsNullOrEmpty(path) || !File.Exists(path)) {
+            if (string.IsNullOrEmpty(path) || !OS.AppExists(path)) {
                 MessageBox.Show(
                     this,
                     ThemeManager.GetString("singers.editoto.setvlabelerpath"),

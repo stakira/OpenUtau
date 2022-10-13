@@ -39,12 +39,13 @@ namespace OpenUtau.App.Views {
         }
 
         async void SelectVLabelerPath(object sender, RoutedEventArgs e) {
+            var extension = OS.IsWindows() ? "exe" : OS.IsMacOS() ? "app" : "*";
             var dialog = new OpenFileDialog() {
                 AllowMultiple = false,
                 Filters = new List<FileDialogFilter>() {
                     new FileDialogFilter() {
                          Name = "vLabeler",
-                         Extensions = new List<string>() { "exe" },
+                         Extensions = new List<string>() { extension },
                     }
                 }
             };
@@ -52,7 +53,7 @@ namespace OpenUtau.App.Views {
             if (paths == null || paths.Length != 1 || string.IsNullOrEmpty(paths[0])) {
                 return;
             }
-            if (File.Exists(paths[0])) {
+            if (OS.AppExists(paths[0])) {
                 ((PreferencesViewModel)DataContext!).SetVLabelerPath(paths[0]);
             }
         }

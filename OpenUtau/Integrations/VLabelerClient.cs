@@ -79,7 +79,7 @@ namespace OpenUtau.Integrations {
                 client.Connect("tcp://localhost:32342");
                 string reqStr = JsonConvert.SerializeObject(new HeartbeatRequest());
                 client.SendFrame(reqStr);
-                if (client.TryReceiveFrameString(TimeSpan.FromMilliseconds(200), out string? respStr)) {
+                if (client.TryReceiveFrameString(TimeSpan.FromMilliseconds(1000), out string? respStr)) {
                     return true;
                 }
                 return false;
@@ -105,7 +105,7 @@ namespace OpenUtau.Integrations {
                 client.Connect("tcp://localhost:32342");
                 string reqStr = JsonConvert.SerializeObject(request);
                 client.SendFrame(reqStr);
-                if (!client.TryReceiveFrameString(TimeSpan.FromMilliseconds(200), out string? respStr)) {
+                if (!client.TryReceiveFrameString(TimeSpan.FromMilliseconds(1000), out string? respStr)) {
                     Log.Warning($"Failed to OpenOrCreate with vLabeler");
                 }
             }
@@ -116,19 +116,24 @@ namespace OpenUtau.Integrations {
                 if (Heartbeat()) {
                     return true;
                 }
-                var exe = Core.Util.Preferences.Default.VLabelerPath;
-                if (!File.Exists(exe)) {
-                    throw new FileNotFoundException($"Cannot find file {exe}.");
+                var path = Core.Util.Preferences.Default.VLabelerPath;
+                if (!OS.AppExists(path)) {
+                    throw new FileNotFoundException($"Cannot find file {path}.");
                 }
                 using (var proc = new Process()) {
-                    proc.StartInfo = new ProcessStartInfo(exe) {
-                        UseShellExecute = false,
-                        CreateNoWindow = true,
-                    };
-                    proc.Start();
+                    if (OS.IsMacOS()) {
+                        OS.OpenFolder(path);
+                    } else {
+                        proc.StartInfo = new ProcessStartInfo(path) {
+                            UseShellExecute = false,
+                            CreateNoWindow = true,
+                        };
+                        proc.Start();
+                    }
                     Log.Information("Starting vLabeler.");
                 }
                 for (int i = 0; i < 50; i++) {
+                    Task.Delay(100);
                     if (Heartbeat()) {
                         Log.Information("vLabeler started.");
                         return true;
