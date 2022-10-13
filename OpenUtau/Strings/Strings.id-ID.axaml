@@ -2,6 +2,7 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+  <!--<system:String x:Key="context.note.copy">Copy note</system:String>-->
   <!--<system:String x:Key="context.note.delete">Delete note</system:String>-->
   <!--<system:String x:Key="context.part.delete">Delete part</system:String>-->
   <!--<system:String x:Key="context.part.rename">Rename part</system:String>-->
@@ -78,6 +79,7 @@
   <system:String x:Key="menu.edit.undo">Batalkan</system:String>
   <system:String x:Key="menu.file">Berkas</system:String>
   <system:String x:Key="menu.file.exit">Keluar</system:String>
+  <!--<system:String x:Key="menu.file.exportmidi">Export Midi File</system:String>-->
   <system:String x:Key="menu.file.exportust">Ekspor Berkas UST</system:String>
   <!--<system:String x:Key="menu.file.exportustto">Export Ust Files To...</system:String>-->
   <!--<system:String x:Key="menu.file.exportwav">Export Wav Files</system:String>-->
@@ -177,6 +179,8 @@ Warning: this option removes custom presets.</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.addtailrest">Tambahkan bagian akhir "R"</system:String>
   <!--<system:String x:Key="pianoroll.menu.notes.clear.vibratos">Clear vibratos</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Load rendered pitch</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.octavedown">Move an octave down</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.octaveup">Move an octave up</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.quantize15">Kuantisasi hingga 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Kuantisasi hingga 1/64</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">Setel ulang semua ekspresi</system:String>
@@ -214,6 +218,7 @@ Hold Ctrl to select</system:String>-->
   <system:String x:Key="prefs.advanced.resamplerlogging">Pencatatan Resampler</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging.warn">Menyimpan output resampler dalam file log. Opsi ini akan memperlambat UI dan rendering.</system:String>
   <system:String x:Key="prefs.advanced.stable">Stabil</system:String>
+  <!--<system:String x:Key="prefs.advanced.vlabelerpath">Vlabeler Path</system:String>-->
   <system:String x:Key="prefs.appearance">Penampilan</system:String>
   <system:String x:Key="prefs.appearance.lang">Bahasa</system:String>
   <!--<system:String x:Key="prefs.appearance.showghostnotes">Show other tracks' notes on piano roll</system:String>-->
@@ -225,6 +230,8 @@ Hold Ctrl to select</system:String>-->
   <system:String x:Key="prefs.note.restart">Catatan: silakan restart OpenUtau setelah mengubah item ini.</system:String>
   <system:String x:Key="prefs.off">Mati</system:String>
   <system:String x:Key="prefs.on">Hidup</system:String>
+  <!--<system:String x:Key="prefs.otoeditor">Oto Editor</system:String>-->
+  <!--<system:String x:Key="prefs.otoeditor.select">Default Oto Editor</system:String>-->
   <system:String x:Key="prefs.paths">Jalur</system:String>
   <system:String x:Key="prefs.paths.addlsinger">Jalur Penyanyi Tambahan</system:String>
   <!--<system:String x:Key="prefs.paths.addlsinger.install">Install to Additional Singer Path</system:String>-->
@@ -264,9 +271,12 @@ Hold Ctrl to select</system:String>-->
   <!--<system:String x:Key="progress.waitingrendering">Waiting Rendering</system:String>-->
 
   <system:String x:Key="singers.caption">Penyanyi</system:String>
+  <!--<system:String x:Key="singers.editoto.editinvlabeler">Edit In vLabeler</system:String>-->
   <!--<system:String x:Key="singers.editoto.gotosource">Goto Source File</system:String>-->
   <!--<system:String x:Key="singers.editoto.reset">Reset Otos</system:String>-->
   <!--<system:String x:Key="singers.editoto.save">Save Otos</system:String>-->
+  <!--<system:String x:Key="singers.editoto.setvlabelerpath">Download vLabeler (1.0.0-beta1 or higher) from https://github.com/sdercolin/vlabeler and set vLabeler path in Preferences first!</system:String>-->
+  <!--<system:String x:Key="singers.errorreport">Generate Singer Error Report</system:String>-->
   <system:String x:Key="singers.location">Lokasi</system:String>
   <!--<system:String x:Key="singers.otoview.moveleft">Move Left</system:String>-->
   <!--<system:String x:Key="singers.otoview.moveright">Move Right</system:String>-->
@@ -343,4 +353,5 @@ Umum
 
   <system:String x:Key="warning">Peringatan</system:String>
   <system:String x:Key="warning.asciipath">Jalur beranda OpenUtau Anda "{0}" berisi karakter non-ASCII. Resampler exe mungkin tidak berfungsi.</system:String>
+  <!--<system:String x:Key="warning.renderer">No settings for this renderer. Please select CLASSIC.</system:String>-->
 </ResourceDictionary>

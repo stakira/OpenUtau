@@ -2,6 +2,7 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+  <!--<system:String x:Key="context.note.copy">Copy note</system:String>-->
   <system:String x:Key="context.note.delete">ลบโน้ต</system:String>
   <system:String x:Key="context.part.delete">ลบพาร์ท</system:String>
   <system:String x:Key="context.part.rename">เปลี่ยนชื่อพาร์ท</system:String>
@@ -78,6 +79,7 @@
   <system:String x:Key="menu.edit.undo">เลิกทำ</system:String>
   <system:String x:Key="menu.file">ไฟล์</system:String>
   <system:String x:Key="menu.file.exit">ออก</system:String>
+  <!--<system:String x:Key="menu.file.exportmidi">Export Midi File</system:String>-->
   <system:String x:Key="menu.file.exportust">ส่งออกไฟล์ Ust</system:String>
   <system:String x:Key="menu.file.exportustto">ส่งออกไฟล์ Ust ไปยัง...</system:String>
   <system:String x:Key="menu.file.exportwav">ส่งออกไฟล์ Wav</system:String>
@@ -177,6 +179,8 @@
   <system:String x:Key="pianoroll.menu.notes.addtailrest">เพิ่มหาง "R"</system:String>
   <system:String x:Key="pianoroll.menu.notes.clear.vibratos">ล้างไวบราโต</system:String>
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">โหลดการประมวลผล Pitch</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notes.octavedown">Move an octave down</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.octaveup">Move an octave up</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.quantize15">Quantize ถึง 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Quantize ถึง 1/64</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">คืนค่าเครื่องหมายทั้งหมด</system:String>
@@ -214,6 +218,7 @@ Hold Ctrl to select</system:String>-->
   <!--<system:String x:Key="prefs.advanced.resamplerlogging">Resampler Logging</system:String>-->
   <system:String x:Key="prefs.advanced.resamplerlogging.warn">การจัดเก็บ output resempler ใน log files ตัวเลือกนี้ทำให้ UI และการแสดงผลช้าลง</system:String>
   <system:String x:Key="prefs.advanced.stable">เสถียร</system:String>
+  <!--<system:String x:Key="prefs.advanced.vlabelerpath">Vlabeler Path</system:String>-->
   <system:String x:Key="prefs.appearance">รูปร่าง</system:String>
   <system:String x:Key="prefs.appearance.lang">ภาษา</system:String>
   <!--<system:String x:Key="prefs.appearance.showghostnotes">Show other tracks' notes on piano roll</system:String>-->
@@ -225,6 +230,8 @@ Hold Ctrl to select</system:String>-->
   <system:String x:Key="prefs.note.restart">หมายเหตุ: โปรดรีสตาร์ท OpenUtau หลังจากเปลี่ยนรายการนี้</system:String>
   <system:String x:Key="prefs.off">ปิด</system:String>
   <system:String x:Key="prefs.on">เปิด</system:String>
+  <!--<system:String x:Key="prefs.otoeditor">Oto Editor</system:String>-->
+  <!--<system:String x:Key="prefs.otoeditor.select">Default Oto Editor</system:String>-->
   <system:String x:Key="prefs.paths">เส้นทาง</system:String>
   <system:String x:Key="prefs.paths.addlsinger">เส้นทางคลังเสียงเสริม</system:String>
   <system:String x:Key="prefs.paths.addlsinger.install">ติดตั้งไปยังเส้นทางคลังเสียงเสริม</system:String>
@@ -264,9 +271,12 @@ Hold Ctrl to select</system:String>-->
   <system:String x:Key="progress.waitingrendering">โปรดรอ กำลังประมวลผล</system:String>
 
   <system:String x:Key="singers.caption">นักร้อง</system:String>
+  <!--<system:String x:Key="singers.editoto.editinvlabeler">Edit In vLabeler</system:String>-->
   <!--<system:String x:Key="singers.editoto.gotosource">Goto Source File</system:String>-->
   <system:String x:Key="singers.editoto.reset">คืนค่า Otos</system:String>
   <system:String x:Key="singers.editoto.save">บันทึก Otos</system:String>
+  <!--<system:String x:Key="singers.editoto.setvlabelerpath">Download vLabeler (1.0.0-beta1 or higher) from https://github.com/sdercolin/vlabeler and set vLabeler path in Preferences first!</system:String>-->
+  <!--<system:String x:Key="singers.errorreport">Generate Singer Error Report</system:String>-->
   <system:String x:Key="singers.location">ตำแหน่ง</system:String>
   <system:String x:Key="singers.otoview.moveleft">ขยับซ้าย</system:String>
   <system:String x:Key="singers.otoview.moveright">ขยับไปขวา</system:String>
@@ -343,4 +353,5 @@ Hold Ctrl to select</system:String>-->
 
   <system:String x:Key="warning">คำเตือน</system:String>
   <system:String x:Key="warning.asciipath">เส้นทางหลัก OpenUtau ของคุณ "{0}" ประกอบด้วยอักขระที่ไม่ใช่ ASCII. Exe resamplers โปรแกรมอาจไม่ทำงาน</system:String>
+  <!--<system:String x:Key="warning.renderer">No settings for this renderer. Please select CLASSIC.</system:String>-->
 </ResourceDictionary>

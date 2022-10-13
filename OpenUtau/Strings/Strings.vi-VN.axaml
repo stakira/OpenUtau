@@ -2,6 +2,7 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+  <!--<system:String x:Key="context.note.copy">Copy note</system:String>-->
   <system:String x:Key="context.note.delete">Xoá nốt</system:String>
   <system:String x:Key="context.part.delete">Xoá phần</system:String>
   <system:String x:Key="context.part.rename">Đặt lại tên phần</system:String>
@@ -78,6 +79,7 @@
   <!--<system:String x:Key="menu.edit.undo">Undo</system:String>-->
   <system:String x:Key="menu.file">Tệp</system:String>
   <system:String x:Key="menu.file.exit">Thoát ra</system:String>
+  <!--<system:String x:Key="menu.file.exportmidi">Export Midi File</system:String>-->
   <system:String x:Key="menu.file.exportust">Xuất ra tệp UST</system:String>
   <system:String x:Key="menu.file.exportustto">Xuất tệp UST vào...</system:String>
   <system:String x:Key="menu.file.exportwav">Xuất ra tệp WAV</system:String>
@@ -177,6 +179,8 @@ Lưu ý: tuỳ chọn này cũng sẽ xoá các preset của bạn.</system:Stri
   <system:String x:Key="pianoroll.menu.notes.addtailrest">Thêm nốt "R"</system:String>
   <system:String x:Key="pianoroll.menu.notes.clear.vibratos">Xoá đường rung giọng</system:String>
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Luyến giọng tự nhiên (AI only)</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notes.octavedown">Move an octave down</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.octaveup">Move an octave up</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.quantize15">Chia thành quãng 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Chia thành quãng 1/64</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">Reset các biểu cảm</system:String>
@@ -214,6 +218,7 @@ Nhấn giữ Ctrl để chọn nhiều nốt</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging">Ghi lại kết quả của Resampler</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging.warn">Lưu trữ kết quả đầu ra của resampler trong tệp log. Tuỳ chọn này sẽ làm cho giao diện và việc render chậm lại.</system:String>
   <system:String x:Key="prefs.advanced.stable">Ổn định</system:String>
+  <!--<system:String x:Key="prefs.advanced.vlabelerpath">Vlabeler Path</system:String>-->
   <system:String x:Key="prefs.appearance">Diện mạo</system:String>
   <system:String x:Key="prefs.appearance.lang">Ngôn ngữ</system:String>
   <!--<system:String x:Key="prefs.appearance.showghostnotes">Show other tracks' notes on piano roll</system:String>-->
@@ -225,6 +230,8 @@ Nhấn giữ Ctrl để chọn nhiều nốt</system:String>
   <system:String x:Key="prefs.note.restart">Lưu ý: khởi động lại OpenUTAU sau khi chỉnh sửa tuỳ chọn này.</system:String>
   <system:String x:Key="prefs.off">Tắt</system:String>
   <system:String x:Key="prefs.on">Mở</system:String>
+  <!--<system:String x:Key="prefs.otoeditor">Oto Editor</system:String>-->
+  <!--<system:String x:Key="prefs.otoeditor.select">Default Oto Editor</system:String>-->
   <system:String x:Key="prefs.paths">Đường dẫn</system:String>
   <system:String x:Key="prefs.paths.addlsinger">Thư mục phụ chứa các voicebank</system:String>
   <system:String x:Key="prefs.paths.addlsinger.install">Cài đặt vào thư mục phụ chứa các voicebank</system:String>
@@ -264,9 +271,12 @@ Nhấn giữ Ctrl để chọn nhiều nốt</system:String>
   <system:String x:Key="progress.waitingrendering">Đang chờ việc render</system:String>
 
   <system:String x:Key="singers.caption">Voicebank</system:String>
+  <!--<system:String x:Key="singers.editoto.editinvlabeler">Edit In vLabeler</system:String>-->
   <system:String x:Key="singers.editoto.gotosource">Mở tệp nguồn</system:String>
   <system:String x:Key="singers.editoto.reset">Reset Oto</system:String>
   <system:String x:Key="singers.editoto.save">Lưu Oto</system:String>
+  <!--<system:String x:Key="singers.editoto.setvlabelerpath">Download vLabeler (1.0.0-beta1 or higher) from https://github.com/sdercolin/vlabeler and set vLabeler path in Preferences first!</system:String>-->
+  <!--<system:String x:Key="singers.errorreport">Generate Singer Error Report</system:String>-->
   <system:String x:Key="singers.location">Đường dẫn</system:String>
   <system:String x:Key="singers.otoview.moveleft">Sang trái</system:String>
   <system:String x:Key="singers.otoview.moveright">Sang phải</system:String>
@@ -343,4 +353,5 @@ Tổng quát
 
   <system:String x:Key="warning">Cảnh báo</system:String>
   <system:String x:Key="warning.asciipath">Đường dẫn OpenUTAU của bạn "{0}" có chứa kí tự không thuộc ASCII. Resampler định dạng exe có thể không hoạt động.</system:String>
+  <!--<system:String x:Key="warning.renderer">No settings for this renderer. Please select CLASSIC.</system:String>-->
 </ResourceDictionary>

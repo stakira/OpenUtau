@@ -2,6 +2,7 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+  <!--<system:String x:Key="context.note.copy">Copy note</system:String>-->
   <system:String x:Key="context.note.delete">Remover nota</system:String>
   <system:String x:Key="context.part.delete">Deletar parte</system:String>
   <system:String x:Key="context.part.rename">Renomear parte</system:String>
@@ -78,6 +79,7 @@
   <system:String x:Key="menu.edit.undo">Desfazer</system:String>
   <system:String x:Key="menu.file">Arquivo</system:String>
   <system:String x:Key="menu.file.exit">Fechar</system:String>
+  <!--<system:String x:Key="menu.file.exportmidi">Export Midi File</system:String>-->
   <system:String x:Key="menu.file.exportust">Exportar como Ust</system:String>
   <system:String x:Key="menu.file.exportustto">Exportar Ust para...</system:String>
   <system:String x:Key="menu.file.exportwav">Exportar Arquivos Wav</system:String>
@@ -177,6 +179,8 @@ Aviso: esta opção remove predefinições personalizadas.</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">Adicionar Final "R"</system:String>
   <system:String x:Key="pianoroll.menu.notes.clear.vibratos">Limpar Vibratos</system:String>
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Carregar Tom Renderizado</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notes.octavedown">Move an octave down</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.octaveup">Move an octave up</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.quantize15">Quantizar para 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Quantizar para 1/64</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">Redefinir Todas as Expressões</system:String>
@@ -214,6 +218,7 @@ Hold Ctrl to select</system:String>-->
   <system:String x:Key="prefs.advanced.resamplerlogging">Resampler Log</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging.warn">Armazena a saída do resampler em arquivos de log. Esta opção atrasa a UI e a renderização.</system:String>
   <system:String x:Key="prefs.advanced.stable">Estável</system:String>
+  <!--<system:String x:Key="prefs.advanced.vlabelerpath">Vlabeler Path</system:String>-->
   <system:String x:Key="prefs.appearance">Aparência</system:String>
   <system:String x:Key="prefs.appearance.lang">Idioma</system:String>
   <!--<system:String x:Key="prefs.appearance.showghostnotes">Show other tracks' notes on piano roll</system:String>-->
@@ -225,6 +230,8 @@ Hold Ctrl to select</system:String>-->
   <system:String x:Key="prefs.note.restart">Nota: reinicie o OpenUtau após alterar este item.</system:String>
   <!--<system:String x:Key="prefs.off">Off</system:String>-->
   <!--<system:String x:Key="prefs.on">On</system:String>-->
+  <!--<system:String x:Key="prefs.otoeditor">Oto Editor</system:String>-->
+  <!--<system:String x:Key="prefs.otoeditor.select">Default Oto Editor</system:String>-->
   <system:String x:Key="prefs.paths">Diretório</system:String>
   <system:String x:Key="prefs.paths.addlsinger">Caminho Adicional de Vozes</system:String>
   <system:String x:Key="prefs.paths.addlsinger.install">Instalar no Caminho Adicional de Vozes</system:String>
@@ -264,9 +271,12 @@ Hold Ctrl to select</system:String>-->
   <system:String x:Key="progress.waitingrendering">Esperando Renderização</system:String>
 
   <system:String x:Key="singers.caption">Vozes</system:String>
+  <!--<system:String x:Key="singers.editoto.editinvlabeler">Edit In vLabeler</system:String>-->
   <!--<system:String x:Key="singers.editoto.gotosource">Goto Source File</system:String>-->
   <system:String x:Key="singers.editoto.reset">Redefinir Otos</system:String>
   <system:String x:Key="singers.editoto.save">Salvar Otos</system:String>
+  <!--<system:String x:Key="singers.editoto.setvlabelerpath">Download vLabeler (1.0.0-beta1 or higher) from https://github.com/sdercolin/vlabeler and set vLabeler path in Preferences first!</system:String>-->
+  <!--<system:String x:Key="singers.errorreport">Generate Singer Error Report</system:String>-->
   <system:String x:Key="singers.location">Pasta</system:String>
   <system:String x:Key="singers.otoview.moveleft">Mover para Esquerda</system:String>
   <system:String x:Key="singers.otoview.moveright">Mover para Direita</system:String>
@@ -343,4 +353,5 @@ Geral
 
   <system:String x:Key="warning">Atenção</system:String>
   <system:String x:Key="warning.asciipath">O caminho da pasta do OpenUtau "{0}" contém caracteres não ASCII. Resamplers .exe podem não funcionar.</system:String>
+  <!--<system:String x:Key="warning.renderer">No settings for this renderer. Please select CLASSIC.</system:String>-->
 </ResourceDictionary>
