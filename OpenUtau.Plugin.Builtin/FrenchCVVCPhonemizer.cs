@@ -70,7 +70,7 @@ namespace OpenUtau.Plugin.Builtin {
 
 
 
-                // --------------------------- STARTING VV ------------------------------- //
+                // --------------------------- is VV ------------------------------- //
             } else if (syllable.IsVV) {  // if VV
                 if (!CanMakeAliasExtension(syllable)) {
                     var vvCheck = prevV + v;
@@ -81,24 +81,15 @@ namespace OpenUtau.Plugin.Builtin {
                         basePhoneme = CheckAliasFormatting(v, "vv", syllable.vowelTone, prevV);
                         if (basePhoneme == v) {
                             //TODO clean exception part below
-                            //if (prevV == "ih" || prevV == "i") {
-                            //    if (HasOto($"{prevV}y", syllable.vowelTone)) {
-                            //        phonemes.Add($"{prevV}y");
-                            //    } else if (HasOto($"{prevV} y", syllable.vowelTone)) {
-                            //        phonemes.Add($"{prevV} y");
-                            //    }
-                            //    if (HasOto($"y{v}", syllable.vowelTone)) {
-                            //        basePhoneme = $"y{v}";
-                            //    }
-                            //}
-                            //if (prevV == "ou") {
-                            //    if (HasOto($"{prevV}w", syllable.vowelTone)) {
-                            //        phonemes.Add($"{prevV}w");
-                            //    } else {
-                            //        phonemes.Add($"{prevV} w");
-                            //    }
-                            //    basePhoneme = $"w{v}";
-                            //}
+                            if (prevV == "ih" || prevV == "i") {
+                                basePhoneme = $"y{v}";
+                            }
+                            if (prevV == "ou")
+                            {
+                                basePhoneme = $"w{v}";
+                            }
+                            if (!HasOto(basePhoneme, syllable.tone))
+                                basePhoneme = v;
                         }
                     }
 
