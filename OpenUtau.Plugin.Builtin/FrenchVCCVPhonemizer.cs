@@ -241,6 +241,33 @@ namespace OpenUtau.Plugin.Builtin {
             return base.GetTransitionBasicLengthMs() * 1.25;
         }
 
+        protected override string[] GetSymbols(Note note) {
+            string[] original = base.GetSymbols(note);
+            if (original == null) {
+                return null;
+            }
+
+            string[] arpabet = "aa,ai,ei,eu,ee,oe,ii,au,oo,ou,uu,an,in,un,on,uy,bb,dd,ff,gg,jj,kk,ll,mm,nn,pp,rr,ss,ch,tt,vv,ww,yy,zz,gn".Split(",");
+            string[] m2rUg = "A,E,e,2,2,9,i,o,O,u,y,a,U,U,0,H,b,d,f,g,Z,k,l,m,n,p,R,s,S,t,v,w,j,z,J".Split(",");
+
+            List<string> convert = new List<string>();
+            foreach (string s in original) {
+                string c = s;
+                for (int i = 0; i < arpabet.Length; i++) {
+                    if (s == arpabet[i]) {
+                        c = m2rUg[i];
+                    }
+                }
+                convert.Add(c);
+            }
+
+            if (convert == null) {
+                return null;
+            }
+
+            return convert.ToArray();
+        }
+
 
     }
 }
