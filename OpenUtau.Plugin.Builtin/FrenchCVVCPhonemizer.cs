@@ -360,7 +360,8 @@ namespace OpenUtau.Plugin.Builtin {
             }
 
             if (cc.Length > 1 && cc.Last() == "y") {
-                if (!basePhoneme.Contains(cc[cc.Length - 2])) {
+                if (!phonemes.Last().Contains('i')) {
+                    if (!basePhoneme.Contains(cc[cc.Length - 2])) {
                     if (!phonemes.Last().Contains('y') || phonemes.Count == 0) {
                         if (usesFraloids)
                             phonemes.Add(cc[cc.Length - 2] + "i");
@@ -369,6 +370,7 @@ namespace OpenUtau.Plugin.Builtin {
                     }
                 }
             }
+        }
 
             phonemes.Add(basePhoneme);
             return phonemes;
