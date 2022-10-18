@@ -2,10 +2,10 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-  <!--<system:String x:Key="context.note.copy">Copy note</system:String>-->
-  <!--<system:String x:Key="context.note.delete">Delete note</system:String>-->
-  <!--<system:String x:Key="context.part.delete">Delete part</system:String>-->
-  <!--<system:String x:Key="context.part.rename">Rename part</system:String>-->
+  <!--<system:String x:Key="context.note.copy">Salin not</system:String>-->
+  <!--<system:String x:Key="context.note.delete">Hapus not</system:String>-->
+  <!--<system:String x:Key="context.part.delete">Hapus bagian</system:String>-->
+  <!--<system:String x:Key="context.part.rename">Namai ulang bagian</system:String>-->
   <system:String x:Key="context.pitch.easein">Mereda kedalam</system:String>
   <system:String x:Key="context.pitch.easeinout">Mereda kedalam/luar</system:String>
   <system:String x:Key="context.pitch.easeout">Mereda keluar</system:String>
@@ -13,14 +13,14 @@
   <system:String x:Key="context.pitch.pointadd">Tambahkan titik</system:String>
   <system:String x:Key="context.pitch.pointdel">Hapus titik</system:String>
   <system:String x:Key="context.pitch.pointsnapprev">Snap ke not sebelumnya</system:String>
-  <!--<system:String x:Key="context.timeline.addtempo">Add tempo change at {0}</system:String>-->
-  <!--<system:String x:Key="context.timeline.addtimesig">Add time signature change</system:String>-->
-  <!--<system:String x:Key="context.timeline.deltempo">Delete tempo change at {0}</system:String>-->
-  <!--<system:String x:Key="context.timeline.deltimesig">Delete time signature change</system:String>-->
+  <!--<system:String x:Key="context.timeline.addtempo">Tambahkan perubahan tempo di {0}</system:String>-->
+  <!--<system:String x:Key="context.timeline.addtimesig">Tambahkan perubahan tanda tangan waktu</system:String>-->
+  <!--<system:String x:Key="context.timeline.deltempo">Hapus perubahan tempo di {0}</system:String>-->
+  <!--<system:String x:Key="context.timeline.deltimesig">Hapus perubahan tanda tangan waktu</system:String>-->
 
-  <!--<system:String x:Key="debug.clear">Clear</system:String>-->
-  <!--<system:String x:Key="debug.copylog">Copy Log</system:String>-->
-  <!--<system:String x:Key="debug.reverselogorder">Reverse Log Order</system:String>-->
+  <!--<system:String x:Key="debug.clear">Bersihkan</system:String>-->
+  <!--<system:String x:Key="debug.copylog">Salin Log</system:String>-->
+  <!--<system:String x:Key="debug.reverselogorder">Balikan Urutan Log</system:String>-->
 
   <system:String x:Key="dialogs.about.caption">Tentang OpenUtau</system:String>
   <system:String x:Key="dialogs.about.message">
@@ -37,10 +37,10 @@
   <system:String x:Key="dialogs.noresampler.caption">Tidak ada resampler</system:String>
   <system:String x:Key="dialogs.noresampler.message">Tidak ada resampler! Letakkan resampler exe atau dll favorit Anda di folder Resamplers dan pilih di Preferensi!</system:String>
   <system:String x:Key="dialogs.timesig.caption">Tanda Waktu</system:String>
-  <!--<system:String x:Key="dialogs.tracksettings.caption">Track Settings</system:String>-->
-  <!--<system:String x:Key="dialogs.tracksettings.location">Location</system:String>-->
+  <!--<system:String x:Key="dialogs.tracksettings.caption">Pengaturan Trek</system:String>-->
+  <!--<system:String x:Key="dialogs.tracksettings.location">Lokasi</system:String>-->
   <!--<system:String x:Key="dialogs.tracksettings.renderer">Renderer</system:String>-->
-  <!--<system:String x:Key="dialogs.tracksettings.setasdefault">Set As Default</system:String>-->
+  <!--<system:String x:Key="dialogs.tracksettings.setasdefault">Tetapkan Sebagai Default</system:String>-->
 
   <system:String x:Key="errors.caption">Kesalahan</system:String>
 
@@ -147,11 +147,11 @@ Warning: this option removes custom presets.</system:String>-->
   <system:String x:Key="oto.color">Warna</system:String>
   <system:String x:Key="oto.consonant">Konsonan</system:String>
   <system:String x:Key="oto.cutoff">Batas</system:String>
-  <!--<system:String x:Key="oto.edit.consonant">Set Consonant</system:String>-->
-  <!--<system:String x:Key="oto.edit.cutoff">Set Cutoff</system:String>-->
+  <!--<system:String x:Key="oto.edit.consonant">Set Konsonan</system:String>-->
+  <!--<system:String x:Key="oto.edit.cutoff">Set Potongan Akhir</system:String>-->
   <!--<system:String x:Key="oto.edit.offset">Set Offset</system:String>-->
-  <!--<system:String x:Key="oto.edit.overlap">Set Overlap</system:String>-->
-  <!--<system:String x:Key="oto.edit.preutter">Set Preutter</system:String>-->
+  <!--<system:String x:Key="oto.edit.overlap">Setel Overlap</system:String>-->
+  <!--<system:String x:Key="oto.edit.preutter">Setel Preutter</system:String>-->
   <system:String x:Key="oto.file">Berkas</system:String>
   <system:String x:Key="oto.offset">Mengimbangi</system:String>
   <system:String x:Key="oto.overlap">Tumpang Tindih</system:String>
@@ -161,11 +161,11 @@ Warning: this option removes custom presets.</system:String>-->
   <system:String x:Key="oto.set">Setel</system:String>
   <system:String x:Key="oto.suffix">Akhiran</system:String>
 
-  <!--<system:String x:Key="phoneticassistant.caption">Phonetic Assistant</system:String>-->
-  <!--<system:String x:Key="phoneticassistant.copy">Copy</system:String>-->
+  <!--<system:String x:Key="phoneticassistant.caption">Asisten Fonetik</system:String>-->
+  <!--<system:String x:Key="phoneticassistant.copy">Salin</system:String>-->
 
   <system:String x:Key="pianoroll.menu.lyrics">Lirik</system:String>
-  <!--<system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Replace "-" with "+"</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Ganti "-" dengan "+"</system:String>-->
   <system:String x:Key="pianoroll.menu.lyrics.edit">Sunting Lirik</system:String>
   <!--<system:String x:Key="pianoroll.menu.lyrics.hanzitopinyin">Hanzi to Pinyin</system:String>-->
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana ke Romaji</system:String>
@@ -173,14 +173,14 @@ Warning: this option removes custom presets.</system:String>-->
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Hapus Akhiran Huruf</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">Hapus Akhiran Nada</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Romaji ke Hiragana</system:String>
-  <!--<system:String x:Key="pianoroll.menu.notedefaults">Note Defaults</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notedefaults">Not Default</system:String>-->
   <system:String x:Key="pianoroll.menu.notes">Not</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">Tambahkan bagian akhir "-"</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">Tambahkan bagian akhir "R"</system:String>
-  <!--<system:String x:Key="pianoroll.menu.notes.clear.vibratos">Clear vibratos</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Load rendered pitch</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.notes.octavedown">Move an octave down</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.notes.octaveup">Move an octave up</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.clear.vibratos">Setel Ulang Vibrato</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Muat Pitch yang Dirender</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.octavedown">Turunkan satu oktaf</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.octaveup">Naikkan satu oktaf</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.quantize15">Kuantisasi hingga 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Kuantisasi hingga 1/64</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">Setel ulang semua ekspresi</system:String>
@@ -189,7 +189,7 @@ Warning: this option removes custom presets.</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.reset.vibratos">Setel ulang vibrato</system:String>
   <system:String x:Key="pianoroll.menu.part">Bagian</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">Plugin Lama (Eksperimental)</system:String>
-  <!--<system:String x:Key="pianoroll.toggle.finalpitch">View Final Pitch to Render (R)</system:String>-->
+  <!--<system:String x:Key="pianoroll.toggle.finalpitch">Tampilkan Pitch Akhir Untuk Dirender (R)</system:String>-->
   <system:String x:Key="pianoroll.toggle.phoneme">Perlihatkan Fonem (O)</system:String>
   <system:String x:Key="pianoroll.toggle.pitch">Perlihatkan Pitch Bend(I)</system:String>
   <system:String x:Key="pianoroll.toggle.snap">Alihkan Snap (P)</system:String>
@@ -198,31 +198,31 @@ Warning: this option removes custom presets.</system:String>-->
   <system:String x:Key="pianoroll.toggle.tips">Perlihatkan Tips (T)</system:String>
   <system:String x:Key="pianoroll.toggle.tone">Alihkan Not Nada (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">Perlihatkan Vibrato (U)</system:String>
-  <!--<system:String x:Key="pianoroll.toggle.waveform">View Waveform (W)</system:String>-->
-  <!--<system:String x:Key="pianoroll.tool.drawpitch">Draw Pitch Tool (4)</system:String>-->
+  <!--<system:String x:Key="pianoroll.toggle.waveform">Perlihatkan Waveform (W)</system:String>-->
+  <!--<system:String x:Key="pianoroll.tool.drawpitch">Alat Penggambar Pitch (4)</system:String>-->
   <system:String x:Key="pianoroll.tool.eraser">Alat Penghapus (3)</system:String>
-  <!--<system:String x:Key="pianoroll.tool.knife">Knife Tool (5)</system:String>-->
-  <!--<system:String x:Key="pianoroll.tool.penplus">Pen Plus Tool (Ctrl + 2)
-    Left click to draw
-    Right click to delete
+  <!--<system:String x:Key="pianoroll.tool.knife">Alat Pisau (5)</system:String>-->
+  <!--<system:String x:Key="pianoroll.tool.penplus">Alat Pena Plus (Ctrl + 2)
+    Klik kiri untuk menggambar
+    Klik kanan untuk menghapus
 Hold Ctrl to select</system:String>-->
-  <!--<system:String x:Key="pianoroll.tool.penv2">Pen Tool (2)
-    Left click to draw
+  <!--<system:String x:Key="pianoroll.tool.penv2">Alat Pena (2)
+    Klik kiri untuk menggambar
 Hold Ctrl to select</system:String>-->
-  <!--<system:String x:Key="pianoroll.tool.selectionv2">Selection Tool (1)</system:String>-->
+  <!--<system:String x:Key="pianoroll.tool.selectionv2">Alat Seleksi (1)</system:String>-->
 
   <system:String x:Key="prefs.advanced">Lanjutan</system:String>
   <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
-  <!--<system:String x:Key="prefs.advanced.lyricshelper">Lyrics Helper</system:String>-->
-  <!--<system:String x:Key="prefs.advanced.lyricshelper.brackets">Lyrics Helper Adds Brackets</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.lyricshelper">Pembantu Lirik</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.lyricshelper.brackets">Pembantu Lirik Menambahkan Tanda Kurung</system:String>-->
   <system:String x:Key="prefs.advanced.resamplerlogging">Pencatatan Resampler</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging.warn">Menyimpan output resampler dalam file log. Opsi ini akan memperlambat UI dan rendering.</system:String>
   <system:String x:Key="prefs.advanced.stable">Stabil</system:String>
-  <!--<system:String x:Key="prefs.advanced.vlabelerpath">Vlabeler Path</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.vlabelerpath">Jalur Vlabeler</system:String>-->
   <system:String x:Key="prefs.appearance">Penampilan</system:String>
   <system:String x:Key="prefs.appearance.lang">Bahasa</system:String>
-  <!--<system:String x:Key="prefs.appearance.showghostnotes">Show other tracks' notes on piano roll</system:String>-->
-  <!--<system:String x:Key="prefs.appearance.showportrait">Show portrait on piano roll</system:String>-->
+  <!--<system:String x:Key="prefs.appearance.showghostnotes">Tampilkan not trek lain di piano roll</system:String>-->
+  <!--<system:String x:Key="prefs.appearance.showportrait">Tampilkan foto potret di piano roll</system:String>-->
   <system:String x:Key="prefs.appearance.theme">Tema</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">Gelap</system:String>
   <system:String x:Key="prefs.appearance.theme.light">Terang</system:String>
@@ -230,37 +230,37 @@ Hold Ctrl to select</system:String>-->
   <system:String x:Key="prefs.note.restart">Catatan: silakan restart OpenUtau setelah mengubah item ini.</system:String>
   <system:String x:Key="prefs.off">Mati</system:String>
   <system:String x:Key="prefs.on">Hidup</system:String>
-  <!--<system:String x:Key="prefs.otoeditor">Oto Editor</system:String>-->
-  <!--<system:String x:Key="prefs.otoeditor.select">Default Oto Editor</system:String>-->
+  <!--<system:String x:Key="prefs.otoeditor">Editor Oto</system:String>-->
+  <!--<system:String x:Key="prefs.otoeditor.select">Editor Oto Default</system:String>-->
   <system:String x:Key="prefs.paths">Jalur</system:String>
   <system:String x:Key="prefs.paths.addlsinger">Jalur Penyanyi Tambahan</system:String>
-  <!--<system:String x:Key="prefs.paths.addlsinger.install">Install to Additional Singer Path</system:String>-->
+  <!--<system:String x:Key="prefs.paths.addlsinger.install">Instal ke Jalur Penyanyi Tambahan</system:String>-->
   <system:String x:Key="prefs.paths.reset">Setel Ulang</system:String>
   <system:String x:Key="prefs.paths.select">Pilih</system:String>
   <system:String x:Key="prefs.playback">Pemutaran</system:String>
-  <!--<system:String x:Key="prefs.playback.autoscroll">Auto-Scroll</system:String>-->
-  <!--<system:String x:Key="prefs.playback.autoscrollmode">Auto-Scroll Mode</system:String>-->
-  <!--<system:String x:Key="prefs.playback.autoscrollmode.pagescroll">Page Scroll</system:String>-->
-  <!--<system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">Stationary Cursor</system:String>-->
+  <!--<system:String x:Key="prefs.playback.autoscroll">Gulir Otomatis</system:String>-->
+  <!--<system:String x:Key="prefs.playback.autoscrollmode">Mode Gulir Otomatis</system:String>-->
+  <!--<system:String x:Key="prefs.playback.autoscrollmode.pagescroll">Gulir Halaman</system:String>-->
+  <!--<system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">Kursor stasioner</system:String>-->
   <system:String x:Key="prefs.playback.backend">Latar Belakang Audio</system:String>
   <system:String x:Key="prefs.playback.backend.auto">Otomatis</system:String>
-  <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
+  <!--<system:String x:Key="prefs.playback.backend.port">Port Audio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">Posisi Kursor</system:String>
   <system:String x:Key="prefs.playback.device">Perangkat Pemutaran</system:String>
-  <!--<system:String x:Key="prefs.playback.lockstarttime">On Pausing</system:String>-->
-  <!--<system:String x:Key="prefs.playback.lockstarttime.off">Do nothing</system:String>-->
-  <!--<system:String x:Key="prefs.playback.lockstarttime.on">Move cursor back to where you started playing</system:String>-->
+  <!--<system:String x:Key="prefs.playback.lockstarttime">Saat Menjeda</system:String>-->
+  <!--<system:String x:Key="prefs.playback.lockstarttime.off">Tidak Melakukan Apa-Apa</system:String>-->
+  <!--<system:String x:Key="prefs.playback.lockstarttime.on">Pindahkan kursor kembali ke tempat Anda mulai Memutar</system:String>-->
   <system:String x:Key="prefs.playback.test">Uji</system:String>
   <system:String x:Key="prefs.rendering">Merender</system:String>
-  <!--<system:String x:Key="prefs.rendering.phasecomp">Phase Compensation</system:String>-->
-  <!--<system:String x:Key="prefs.rendering.prerender">Pre-render</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.phasecomp">Kompensasi Fase</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.prerender">Pra-render</system:String>-->
   <system:String x:Key="prefs.rendering.prerender.threads">Utas Pra-perenderan</system:String>
   <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
   <!--<system:String x:Key="prefs.rendering.resampler.morewarn">
-    Warning: moresampler is not fully supported. It may be slow and cause high CPU usage. If you insist, please:
-    1. Set "resampler-compatibility" to "on" in moreconfig.txt.
-    2. Set "auto-update-llsm-mrq" to "off" in moreconfig.txt.
-    3. Patiently wait for moresampler to generate missing llsm files.
+    Peringatan: moresampler tidak sepenuhnya didukung. Ini mungkin lambat dan menyebabkan penggunaan CPU yang tinggi. Jika Anda bersikeras, silakan:
+    1. Setel "resampler-compatibility" ke "on" di moreconfig.txt.
+    2. Atur "auto-update-llsm-mrq" ke "off" di moreconfig.txt.
+    3. Tunggu sampai moresampler untuk menghasilkan file llsm yang hilang.
   </system:String>-->
   <system:String x:Key="prefs.rendering.resampler.note">
     Catatan: untuk menggunakan resampler eksternal, silakan tambahkan berkas resampler DLL atau EXE di folder Resamplers di jalur instal OpenUtau dan pilih di Preferensi.
@@ -268,27 +268,27 @@ Hold Ctrl to select</system:String>-->
   <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
 
   <system:String x:Key="progress.saved">Proyek tersimpan. {0}</system:String>
-  <!--<system:String x:Key="progress.waitingrendering">Waiting Rendering</system:String>-->
+  <!--<system:String x:Key="progress.waitingrendering">Menunggu Dirender</system:String>-->
 
   <system:String x:Key="singers.caption">Penyanyi</system:String>
-  <!--<system:String x:Key="singers.editoto.editinvlabeler">Edit In vLabeler</system:String>-->
-  <!--<system:String x:Key="singers.editoto.gotosource">Goto Source File</system:String>-->
-  <!--<system:String x:Key="singers.editoto.reset">Reset Otos</system:String>-->
-  <!--<system:String x:Key="singers.editoto.save">Save Otos</system:String>-->
-  <!--<system:String x:Key="singers.editoto.setvlabelerpath">Download vLabeler (1.0.0-beta1 or higher) from https://github.com/sdercolin/vlabeler and set vLabeler path in Preferences first!</system:String>-->
-  <!--<system:String x:Key="singers.errorreport">Generate Singer Error Report</system:String>-->
+  <!--<system:String x:Key="singers.editoto.editinvlabeler">Edit Di vLabeler</system:String>-->
+  <!--<system:String x:Key="singers.editoto.gotosource">Pergi Ke Sumber File</system:String>-->
+  <!--<system:String x:Key="singers.editoto.reset">Setel Ulang Otos</system:String>-->
+  <!--<system:String x:Key="singers.editoto.save">Simpan Otos</system:String>-->
+  <!--<system:String x:Key="singers.editoto.setvlabelerpath">Unduh vLabeler (1.0.0-beta1 atau lebih tinggi) dari https://github.com/sdercolin/vlabeler dan atur jalur vLabeler di Preferensi terlebih dahulu!</system:String>-->
+  <!--<system:String x:Key="singers.errorreport">Hasilkan Laporan Kesalahan Penyanyi</system:String>-->
   <system:String x:Key="singers.location">Lokasi</system:String>
-  <!--<system:String x:Key="singers.otoview.moveleft">Move Left</system:String>-->
-  <!--<system:String x:Key="singers.otoview.moveright">Move Right</system:String>-->
-  <!--<system:String x:Key="singers.otoview.selectnext">Select Next</system:String>-->
-  <!--<system:String x:Key="singers.otoview.selectprev">Select Prev</system:String>-->
-  <!--<system:String x:Key="singers.otoview.showall">Show All</system:String>-->
-  <!--<system:String x:Key="singers.otoview.zoomin">Zoom In</system:String>-->
-  <!--<system:String x:Key="singers.otoview.zoomout">Zoom Out</system:String>-->
+  <!--<system:String x:Key="singers.otoview.moveleft">Pindah Kekiri</system:String>-->
+  <!--<system:String x:Key="singers.otoview.moveright">Pindah Kekanan</system:String>-->
+  <!--<system:String x:Key="singers.otoview.selectnext">Pilih Selanjutnya</system:String>-->
+  <!--<system:String x:Key="singers.otoview.selectprev">Pilih Sebelumnya</system:String>-->
+  <!--<system:String x:Key="singers.otoview.showall">Tampilkan Semua</system:String>-->
+  <!--<system:String x:Key="singers.otoview.zoomin">Perbesar</system:String>-->
+  <!--<system:String x:Key="singers.otoview.zoomout">Perkecil</system:String>-->
   <system:String x:Key="singers.refresh">Segarkan</system:String>
-  <!--<system:String x:Key="singers.setdefaultphonemizer">Set Default Phonemizer</system:String>-->
+  <!--<system:String x:Key="singers.setdefaultphonemizer">Tetapkan Phonemizer Bawaan</system:String>-->
   <system:String x:Key="singers.setencoding">Setel Pengkodean</system:String>
-  <!--<system:String x:Key="singers.setportrait">Set Portrait</system:String>-->
+  <!--<system:String x:Key="singers.setportrait">Tetapkan Foto Potret</system:String>-->
   <system:String x:Key="singers.subbanks.cancel">Batal</system:String>
   <system:String x:Key="singers.subbanks.clear">Jelas</system:String>
   <system:String x:Key="singers.subbanks.color">Warna</system:String>
@@ -309,7 +309,7 @@ Hold Ctrl to select</system:String>-->
 Tombol Kiri Tarik: Setel ekspresi
 Tombol Kanan Tarik: Setel ulang ekspresi
   </system:String>
-  <!--<system:String x:Key="tip.exps.notsupported">Expression not supported by renderer</system:String>-->
+  <!--<system:String x:Key="tip.exps.notsupported">Ekspresi tidak didukung oleh perender</system:String>-->
   <system:String x:Key="tip.lyricbox.next">Tab: Not Berikutnya</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: Not Sebelumnya</system:String>
   <system:String x:Key="tip.notes.basics">
@@ -332,18 +332,18 @@ Umum
   <system:String x:Key="tip.notes.zoomx">◀ Gulir ke sini untuk memperbesar secara horizontal ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">Gulir ke sini untuk memperbesar secara vertikal ▶</system:String>
 
-  <!--<system:String x:Key="tracks.more">More</system:String>-->
+  <!--<system:String x:Key="tracks.more">Lainnya</system:String>-->
   <system:String x:Key="tracks.movedown">Turunkan</system:String>
   <system:String x:Key="tracks.moveup">Naikkan</system:String>
   <system:String x:Key="tracks.remove">Hapus</system:String>
-  <!--<system:String x:Key="tracks.selectrenderer">Select Renderer</system:String>-->
+  <!--<system:String x:Key="tracks.selectrenderer">Pilih Perender</system:String>-->
   <system:String x:Key="tracks.selectsinger">Pilih Penyanyi</system:String>
 
   <!--<FontFamily x:Key="ui.fontfamily">Segoe UI,San Francisco,Helvetica Neue</FontFamily>-->
   <!--<FontFamily x:Key="ui.textbox.fontfamily">Microsoft YaHei,Simsun,苹方-简,宋体-简</FontFamily>-->
 
   <system:String x:Key="updater.caption">Memeriksa Pembaruan</system:String>
-  <!--<system:String x:Key="updater.description">Open singing synthesis platform</system:String>-->
+  <!--<system:String x:Key="updater.description">Platform sintesis bernyanyi Terbuka</system:String>-->
   <!--<system:String x:Key="updater.github">GitHub</system:String>-->
   <system:String x:Key="updater.status.available">Pembaruan v{0} tersedia!</system:String>
   <system:String x:Key="updater.status.checking">Memeriksa pembaruan...</system:String>
@@ -353,5 +353,5 @@ Umum
 
   <system:String x:Key="warning">Peringatan</system:String>
   <system:String x:Key="warning.asciipath">Jalur beranda OpenUtau Anda "{0}" berisi karakter non-ASCII. Resampler exe mungkin tidak berfungsi.</system:String>
-  <!--<system:String x:Key="warning.renderer">No settings for this renderer. Please select CLASSIC.</system:String>-->
+  <!--<system:String x:Key="warning.renderer">Tidak ada pengaturan untuk perender ini. Silakan pilih CLASSIC.</system:String>-->
 </ResourceDictionary>
