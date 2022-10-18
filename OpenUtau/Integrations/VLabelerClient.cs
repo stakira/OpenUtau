@@ -99,7 +99,7 @@ namespace OpenUtau.Integrations {
                 },
             };
             if (oto != null) {
-                request.gotoEntryByName = new GotoEntryByName(oto.Set, oto.Alias);
+                request.gotoEntryByName = new GotoEntryByName(oto.Set.Replace("\\","/"), oto.Alias);
             }
             using (var client = new RequestSocket()) {
                 client.Connect("tcp://localhost:32342");
