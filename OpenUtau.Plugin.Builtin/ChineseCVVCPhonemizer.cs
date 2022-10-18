@@ -9,7 +9,7 @@ using Serilog;
 using TinyPinyin;
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("Chinese CVVC Phonemizer", "ZH CVVC", language:"ZH")]
+    [Phonemizer("Chinese CVVC Phonemizer", "ZH CVVC", language: "ZH")]
     public class ChineseCVVCPhonemizer : Phonemizer {
         private Dictionary<string, string> vowels = new Dictionary<string, string>();
         private Dictionary<string, string> consonants = new Dictionary<string, string>();
@@ -44,7 +44,7 @@ namespace OpenUtau.Plugin.Builtin {
                 return MakeSimpleResult(oto.Alias);
             }
             int vcLen = 120;
-            if (singer.TryGetMappedOto($"{lyric}", notes[0].tone + attr0.toneShift, attr0.voiceColor, out var cvOto)) {
+            if (singer.TryGetMappedOto(lyric, notes[0].tone + attr0.toneShift, attr0.voiceColor, out var cvOto)) {
                 vcLen = MsToTick(cvOto.Preutter);
                 if (cvOto.Overlap == 0 && vcLen < 120) {
                     vcLen = Math.Min(120, vcLen * 2); // explosive consonant with short preutter.
@@ -58,12 +58,12 @@ namespace OpenUtau.Plugin.Builtin {
                             position = -vcLen,
                         },
                         new Phoneme() {
-                            phoneme = cvOto.Alias ?? $"{lyric}",
+                            phoneme = cvOto?.Alias ?? lyric,
                         },
                     },
                 };
             }
-            return MakeSimpleResult(lyric);
+            return MakeSimpleResult(cvOto?.Alias ?? lyric);
         }
 
         public override void SetSinger(USinger singer) {
