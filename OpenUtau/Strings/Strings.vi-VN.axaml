@@ -2,7 +2,7 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-  <!--<system:String x:Key="context.note.copy">Copy note</system:String>-->
+  <system:String x:Key="context.note.copy">Copy nốt</system:String>
   <system:String x:Key="context.note.delete">Xoá nốt</system:String>
   <system:String x:Key="context.part.delete">Xoá phần</system:String>
   <system:String x:Key="context.part.rename">Đặt lại tên phần</system:String>
@@ -39,7 +39,7 @@
   <system:String x:Key="dialogs.timesig.caption">Số chỉ nhịp</system:String>
   <system:String x:Key="dialogs.tracksettings.caption">Cài đặt Track</system:String>
   <system:String x:Key="dialogs.tracksettings.location">Thư mục</system:String>
-  <!--<system:String x:Key="dialogs.tracksettings.renderer">Renderer</system:String>-->
+  <system:String x:Key="dialogs.tracksettings.renderer">Trình render</system:String>
   <system:String x:Key="dialogs.tracksettings.setasdefault">Đặt thành mặc định</system:String>
 
   <system:String x:Key="errors.caption">Lỗi</system:String>
@@ -79,7 +79,7 @@
   <!--<system:String x:Key="menu.edit.undo">Undo</system:String>-->
   <system:String x:Key="menu.file">Tệp</system:String>
   <system:String x:Key="menu.file.exit">Thoát ra</system:String>
-  <!--<system:String x:Key="menu.file.exportmidi">Export Midi File</system:String>-->
+  <system:String x:Key="menu.file.exportmidi">Xuất ra tệp MIDI</system:String>
   <system:String x:Key="menu.file.exportust">Xuất ra tệp UST</system:String>
   <system:String x:Key="menu.file.exportustto">Xuất tệp UST vào...</system:String>
   <system:String x:Key="menu.file.exportwav">Xuất ra tệp WAV</system:String>
@@ -143,15 +143,15 @@ Lưu ý: tuỳ chọn này cũng sẽ xoá các preset của bạn.</system:Stri
   <system:String x:Key="notedefaults.vibrato.period">Tần số</system:String>
   <system:String x:Key="notedefaults.vibrato.shift">Dịch chuyển</system:String>
 
-  <system:String x:Key="oto.alias">Tên trong oto</system:String>
+  <system:String x:Key="oto.alias">Alias</system:String>
   <system:String x:Key="oto.color">Sắc thái</system:String>
   <!--<system:String x:Key="oto.consonant">Consonant</system:String>-->
   <!--<system:String x:Key="oto.cutoff">Cutoff</system:String>-->
-  <system:String x:Key="oto.edit.consonant">Đặt Consonant</system:String>
-  <system:String x:Key="oto.edit.cutoff">Đặt Cutoff</system:String>
-  <system:String x:Key="oto.edit.offset">Đặt Offset</system:String>
-  <system:String x:Key="oto.edit.overlap">Đặt Overlap</system:String>
-  <system:String x:Key="oto.edit.preutter">Đặt Preutter</system:String>
+  <system:String x:Key="oto.edit.consonant">Chỉnh Consonant</system:String>
+  <system:String x:Key="oto.edit.cutoff">Chỉnh Cutoff</system:String>
+  <system:String x:Key="oto.edit.offset">Chỉnh Offset</system:String>
+  <system:String x:Key="oto.edit.overlap">Chỉnh Overlap</system:String>
+  <system:String x:Key="oto.edit.preutter">Chỉnh Preutter</system:String>
   <system:String x:Key="oto.file">Tệp âm thanh</system:String>
   <!--<system:String x:Key="oto.offset">Offset</system:String>-->
   <!--<system:String x:Key="oto.overlap">Overlap</system:String>-->
@@ -161,7 +161,7 @@ Lưu ý: tuỳ chọn này cũng sẽ xoá các preset của bạn.</system:Stri
   <system:String x:Key="oto.set">Thư mục</system:String>
   <system:String x:Key="oto.suffix">Hậu tố</system:String>
 
-  <system:String x:Key="phoneticassistant.caption">Trợ lý âm vị</system:String>
+  <system:String x:Key="phoneticassistant.caption">Trợ lí âm vị</system:String>
   <system:String x:Key="phoneticassistant.copy">Sao chép</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">Lời nhạc</system:String>
@@ -179,8 +179,8 @@ Lưu ý: tuỳ chọn này cũng sẽ xoá các preset của bạn.</system:Stri
   <system:String x:Key="pianoroll.menu.notes.addtailrest">Thêm nốt "R"</system:String>
   <system:String x:Key="pianoroll.menu.notes.clear.vibratos">Xoá đường rung giọng</system:String>
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Luyến giọng tự nhiên (AI only)</system:String>
-  <!--<system:String x:Key="pianoroll.menu.notes.octavedown">Move an octave down</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.notes.octaveup">Move an octave up</system:String>-->
+  <system:String x:Key="pianoroll.menu.notes.octavedown">Dời xuống một quãng tám</system:String>
+  <system:String x:Key="pianoroll.menu.notes.octaveup">Dời lên một quãng tám</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">Chia thành quãng 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Chia thành quãng 1/64</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">Reset các biểu cảm</system:String>
@@ -218,11 +218,11 @@ Nhấn giữ Ctrl để chọn nhiều nốt</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging">Ghi lại kết quả của Resampler</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging.warn">Lưu trữ kết quả đầu ra của resampler trong tệp log. Tuỳ chọn này sẽ làm cho giao diện và việc render chậm lại.</system:String>
   <system:String x:Key="prefs.advanced.stable">Ổn định</system:String>
-  <!--<system:String x:Key="prefs.advanced.vlabelerpath">Vlabeler Path</system:String>-->
+  <system:String x:Key="prefs.advanced.vlabelerpath">Thư mục chứa Vlabeler</system:String>
   <system:String x:Key="prefs.appearance">Diện mạo</system:String>
   <system:String x:Key="prefs.appearance.lang">Ngôn ngữ</system:String>
-  <!--<system:String x:Key="prefs.appearance.showghostnotes">Show other tracks' notes on piano roll</system:String>-->
-  <system:String x:Key="prefs.appearance.showportrait">Hiện avatar trong cửa sổ Piano Roll</system:String>
+  <system:String x:Key="prefs.appearance.showghostnotes">Hiện nốt của các track khác trong Piano Roll</system:String>
+  <system:String x:Key="prefs.appearance.showportrait">Hiện avatar trong Piano Roll</system:String>
   <system:String x:Key="prefs.appearance.theme">Chủ đề</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">Tối</system:String>
   <system:String x:Key="prefs.appearance.theme.light">Sáng</system:String>
@@ -230,8 +230,8 @@ Nhấn giữ Ctrl để chọn nhiều nốt</system:String>
   <system:String x:Key="prefs.note.restart">Lưu ý: khởi động lại OpenUTAU sau khi chỉnh sửa tuỳ chọn này.</system:String>
   <system:String x:Key="prefs.off">Tắt</system:String>
   <system:String x:Key="prefs.on">Mở</system:String>
-  <!--<system:String x:Key="prefs.otoeditor">Oto Editor</system:String>-->
-  <!--<system:String x:Key="prefs.otoeditor.select">Default Oto Editor</system:String>-->
+  <system:String x:Key="prefs.otoeditor">Trình chỉnh Oto</system:String>
+  <system:String x:Key="prefs.otoeditor.select">Trình chỉnh Oto mặc định</system:String>
   <system:String x:Key="prefs.paths">Đường dẫn</system:String>
   <system:String x:Key="prefs.paths.addlsinger">Thư mục phụ chứa các voicebank</system:String>
   <system:String x:Key="prefs.paths.addlsinger.install">Cài đặt vào thư mục phụ chứa các voicebank</system:String>
@@ -271,12 +271,12 @@ Nhấn giữ Ctrl để chọn nhiều nốt</system:String>
   <system:String x:Key="progress.waitingrendering">Đang chờ việc render</system:String>
 
   <system:String x:Key="singers.caption">Voicebank</system:String>
-  <!--<system:String x:Key="singers.editoto.editinvlabeler">Edit In vLabeler</system:String>-->
+  <system:String x:Key="singers.editoto.editinvlabeler">Sửa trong vLabeler</system:String>
   <system:String x:Key="singers.editoto.gotosource">Mở tệp nguồn</system:String>
   <system:String x:Key="singers.editoto.reset">Reset Oto</system:String>
   <system:String x:Key="singers.editoto.save">Lưu Oto</system:String>
-  <!--<system:String x:Key="singers.editoto.setvlabelerpath">Download vLabeler (1.0.0-beta1 or higher) from https://github.com/sdercolin/vlabeler and set vLabeler path in Preferences first!</system:String>-->
-  <!--<system:String x:Key="singers.errorreport">Generate Singer Error Report</system:String>-->
+  <system:String x:Key="singers.editoto.setvlabelerpath">Cần phải tải vLabeler xuống (bản 1.0.0-beta1 hoặc mới hơn) ở trang https://github.com/sdercolin/vlabeler và đặt thư mục chứa vLabeler trong mục Tuỳ chọn trước cái đã!</system:String>
+  <system:String x:Key="singers.errorreport">Tạo tệp báo cáo lỗi voicebank</system:String>
   <system:String x:Key="singers.location">Đường dẫn</system:String>
   <system:String x:Key="singers.otoview.moveleft">Sang trái</system:String>
   <system:String x:Key="singers.otoview.moveright">Sang phải</system:String>
@@ -302,14 +302,14 @@ Nhấn giữ Ctrl để chọn nhiều nốt</system:String>
   <system:String x:Key="singers.subbanks.set">Áp dụng</system:String>
   <system:String x:Key="singers.subbanks.tone">Cao độ</system:String>
   <system:String x:Key="singers.subbanks.toneranges">Cao độ</system:String>
-  <!--<system:String x:Key="singers.visitwebsite">Visit Website</system:String>-->
+  <system:String x:Key="singers.visitwebsite">Ghé thăm trang web</system:String>
 
   <system:String x:Key="tip.aliasbox">Thay đổi âm vị</system:String>
   <system:String x:Key="tip.exps">
 Nhấn giữ và kéo trái chuột: Điều chỉnh biểu cảm
 Nhấn giữ và kéo phải: Xoá biểu cảm
   </system:String>
-  <system:String x:Key="tip.exps.notsupported">Biểu cảm không được hỗ trợ bởi renderer</system:String>
+  <system:String x:Key="tip.exps.notsupported">Biểu cảm không được hỗ trợ bởi trình render này</system:String>
   <system:String x:Key="tip.lyricbox.next">Tab: Nốt tiếp theo</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: Nốt trước</system:String>
   <system:String x:Key="tip.notes.basics">
@@ -336,7 +336,7 @@ Tổng quát
   <system:String x:Key="tracks.movedown">Di chuyển xuống</system:String>
   <system:String x:Key="tracks.moveup">Di chuyển lên</system:String>
   <system:String x:Key="tracks.remove">Xoá bỏ</system:String>
-  <system:String x:Key="tracks.selectrenderer">Chọn renderer</system:String>
+  <system:String x:Key="tracks.selectrenderer">Chọn trình render</system:String>
   <system:String x:Key="tracks.selectsinger">Chọn Voicebank</system:String>
 
   <!--<FontFamily x:Key="ui.fontfamily">Segoe UI,San Francisco,Helvetica Neue</FontFamily>-->
@@ -353,5 +353,5 @@ Tổng quát
 
   <system:String x:Key="warning">Cảnh báo</system:String>
   <system:String x:Key="warning.asciipath">Đường dẫn OpenUTAU của bạn "{0}" có chứa kí tự không thuộc ASCII. Resampler định dạng exe có thể không hoạt động.</system:String>
-  <!--<system:String x:Key="warning.renderer">No settings for this renderer. Please select CLASSIC.</system:String>-->
+  <system:String x:Key="warning.renderer">Trình render này không có tuỳ chọn nào hết. Vui lòng chuyển sang trình render CLASSIC.</system:String>
 </ResourceDictionary>
