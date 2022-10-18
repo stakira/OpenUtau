@@ -161,12 +161,12 @@ Lưu ý: tuỳ chọn này cũng sẽ xoá các preset của bạn.</system:Stri
   <system:String x:Key="oto.set">Thư mục</system:String>
   <system:String x:Key="oto.suffix">Hậu tố</system:String>
 
-  <system:String x:Key="phoneticassistant.caption">Trợ lí âm vị</system:String>
+  <system:String x:Key="phoneticassistant.caption">Phân tích cách phát âm</system:String>
   <system:String x:Key="phoneticassistant.copy">Sao chép</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">Lời nhạc</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Thay thế "-" với "+"</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.edit">Chỉnh lời nhạc</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.edit">Sửa lời nhạc</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hanzitopinyin">Chữ Hán sang phiên âm</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Chuyển Hiragana sang Romaji</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">Chuyển VCV sang CV</system:String>
@@ -230,8 +230,8 @@ Nhấn giữ Ctrl để chọn nhiều nốt</system:String>
   <system:String x:Key="prefs.note.restart">Lưu ý: khởi động lại OpenUTAU sau khi chỉnh sửa tuỳ chọn này.</system:String>
   <system:String x:Key="prefs.off">Tắt</system:String>
   <system:String x:Key="prefs.on">Mở</system:String>
-  <system:String x:Key="prefs.otoeditor">Trình chỉnh Oto</system:String>
-  <system:String x:Key="prefs.otoeditor.select">Trình chỉnh Oto mặc định</system:String>
+  <system:String x:Key="prefs.otoeditor">Trình chỉnh oto</system:String>
+  <system:String x:Key="prefs.otoeditor.select">Trình chỉnh oto mặc định</system:String>
   <system:String x:Key="prefs.paths">Đường dẫn</system:String>
   <system:String x:Key="prefs.paths.addlsinger">Thư mục phụ chứa các voicebank</system:String>
   <system:String x:Key="prefs.paths.addlsinger.install">Cài đặt vào thư mục phụ chứa các voicebank</system:String>
