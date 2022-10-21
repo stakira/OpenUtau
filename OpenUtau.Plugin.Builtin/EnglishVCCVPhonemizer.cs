@@ -11,7 +11,7 @@ namespace OpenUtau.Plugin.Builtin {
     // This is a temporary solution until Cz's comes out with their own.
     // Feel free to use the Lyric Parser plugin for more accurate pronunciations & support of ConVel.
 
-    // Thanks to cubialpha, Cz and nago for their help.
+    // Thanks to cubialpha, Cz, Halo/BagelHero and nago for their help.
     public class EnglishVCCVPhonemizer : SyllableBasedPhonemizer {
 
         private readonly string[] vowels = "a,@,u,0,8,I,e,3,A,i,E,O,Q,6,o,1ng,9,&,x,1".Split(",");
@@ -24,7 +24,6 @@ namespace OpenUtau.Plugin.Builtin {
                 .Where(parts => parts[0] != parts[1])
                 .ToDictionary(parts => parts[0], parts => parts[1]);
 
-        //some of these could be removed if we can implement the lyric parser dictionary in some way
         private readonly Dictionary<string, string> vcExceptions =
             new Dictionary<string, string>() {
                 {"i ng","1ng"},
@@ -72,6 +71,8 @@ namespace OpenUtau.Plugin.Builtin {
             };
 
         private readonly string[] ccExceptions = { "th", "ch", "dh", "zh", "sh", "ng" };
+        private readonly string[] stopCs = { "b","d","g","k","p","t" };
+
 
         protected override string[] GetVowels() => vowels;
         protected override string[] GetConsonants() => consonants;
@@ -194,7 +195,10 @@ namespace OpenUtau.Plugin.Builtin {
                 if (syllable.IsVCVWithOneConsonant) {
                     basePhoneme = $"{cc.Last()}{v}";
                     if (!HasOto(basePhoneme, syllable.vowelTone)) {
-                        basePhoneme = $"_{v}";
+                        if($"{cc.Last()}" == "h") {
+                            basePhoneme = $"hh{v}";
+                        }
+                        else basePhoneme = $"_{v}";
                     }
 
                     var vc = $"{prevV} {cc.Last()}";
@@ -208,7 +212,8 @@ namespace OpenUtau.Plugin.Builtin {
                     if (!HasOto(basePhoneme, syllable.tone) || cc.Length == lastCPrevWord + 1) {
                         basePhoneme = $"{cc.Last()}{v}";
                     }
-                    if (cc.Length == lastCPrevWord) {
+                    if (cc.Length == lastCPrevWord && stopCs.Contains($"{cc.Last()}"))
+                        {
                         basePhoneme = $"-{v}";
                     }
 
@@ -240,8 +245,10 @@ namespace OpenUtau.Plugin.Builtin {
                     }
 
 
-                    if (lastCPrevWord ==0 && prevV == "3") {
-                        vc = $"{prevV}-";
+                    if (lastCPrevWord == 0 && prevV == "3") {
+
+                        vc = $"{prevV} {cc[0]}";
+//                        vc = $"{prevV}-";
                     }
 
                     phonemes.Add(vc);
@@ -386,9 +393,9 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         protected override string ValidateAlias(string alias) {
-            //foreach (var consonant in new[] { "h" }) {
-            //    alias = alias.Replace(consonant, "hh");
-            //}
+            foreach (var consonant in new[] { "h" }) {
+                alias = alias.Replace(consonant, "hh");
+            }
             foreach (var consonant in new[] { "6r" }) {
                 alias = alias.Replace(consonant, "3");
             }
@@ -435,6 +442,7 @@ namespace OpenUtau.Plugin.Builtin {
                         buffer += letter;
                         bufferCCC = "s" + letter;
                         newCc.Add(buffer);
+                        newCc.Add(letter);
                         buffer = "";
                         continue;
                     } else {
@@ -444,10 +452,10 @@ namespace OpenUtau.Plugin.Builtin {
                         continue;
                     }
                 }
-                if (buffer == "h" || buffer == "hh") {
+                if (buffer == "hh") {
                     if (letter == "y") {
                         newCc.Add(buffer);
-                        buffer = "hh" + letter;
+                        buffer = "hhy";
                         newCc.Add(buffer);
                         buffer = "";
                         continue;
@@ -462,8 +470,9 @@ namespace OpenUtau.Plugin.Builtin {
                     buffer = letter;
                     continue;
                 }
+
                 if (letter == "h" && i != ccList.Count - 1) {
-                    buffer = letter;
+                    buffer = "hh";
                     continue;
                 }
                 if (letter == "hh" && i != ccList.Count - 1) {
