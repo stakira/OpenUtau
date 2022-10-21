@@ -2,21 +2,21 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-  <!--<system:String x:Key="context.note.copy">Copy note</system:String>-->
-  <!--<system:String x:Key="context.note.delete">Delete note</system:String>-->
-  <!--<system:String x:Key="context.part.delete">Delete part</system:String>-->
-  <!--<system:String x:Key="context.part.rename">Rename part</system:String>-->
+  <system:String x:Key="context.note.copy">Copia nota</system:String>
+  <system:String x:Key="context.note.delete">Elimina nota</system:String>
+  <system:String x:Key="context.part.delete">Elimina parte</system:String>
+  <system:String x:Key="context.part.rename">Rinomina parte</system:String>
   <system:String x:Key="context.pitch.easein">Rilascio</system:String>
   <system:String x:Key="context.pitch.easeinout">Attacco/Rilascio</system:String>
   <system:String x:Key="context.pitch.easeout">Attacco</system:String>
   <system:String x:Key="context.pitch.linear">Lineare</system:String>
   <system:String x:Key="context.pitch.pointadd">Aggiungi punto</system:String>
   <system:String x:Key="context.pitch.pointdel">Elimina punto</system:String>
-  <system:String x:Key="context.pitch.pointsnapprev">Aggancia alla nota precedente</system:String>
-  <!--<system:String x:Key="context.timeline.addtempo">Add tempo change at {0}</system:String>-->
-  <!--<system:String x:Key="context.timeline.addtimesig">Add time signature change</system:String>-->
-  <!--<system:String x:Key="context.timeline.deltempo">Delete tempo change at {0}</system:String>-->
-  <!--<system:String x:Key="context.timeline.deltimesig">Delete time signature change</system:String>-->
+  <system:String x:Key="context.pitch.pointsnapprev">Snap alla nota precedente</system:String>
+  <system:String x:Key="context.timeline.addtempo">Aggiungi cambiamento del tempo in {0}</system:String>
+  <system:String x:Key="context.timeline.addtimesig">Aggiungi indicazione del tempo time</system:String>
+  <system:String x:Key="context.timeline.deltempo">Elimina cambiamento del tempo in {0}</system:String>
+  <system:String x:Key="context.timeline.deltimesig">Elimina indicazione del tempo time</system:String>
 
   <system:String x:Key="debug.clear">Ripristina</system:String>
   <system:String x:Key="debug.copylog">Copia Log</system:String>
@@ -31,16 +31,16 @@
   <system:String x:Key="dialogs.export.caption">Esporta</system:String>
   <system:String x:Key="dialogs.export.savefirst">Salva prima il file di progetto</system:String>
   <system:String x:Key="dialogs.messagebox.cancel">Cancella</system:String>
-  <!--<system:String x:Key="dialogs.messagebox.no">No</system:String>-->
-  <!--<system:String x:Key="dialogs.messagebox.ok">Ok</system:String>-->
+  <system:String x:Key="dialogs.messagebox.no">No</system:String>
+  <system:String x:Key="dialogs.messagebox.ok">Ok</system:String>
   <system:String x:Key="dialogs.messagebox.yes">Si</system:String>
   <system:String x:Key="dialogs.noresampler.caption">Nessun resampler</system:String>
   <system:String x:Key="dialogs.noresampler.message">Nessun resampler! Aggiungi il file DLL o EXE del resampler nella cartella Resampler e scegli nelle Preferenze!</system:String>
   <system:String x:Key="dialogs.timesig.caption">Indicazione di tempo</system:String>
-  <!--<system:String x:Key="dialogs.tracksettings.caption">Track Settings</system:String>-->
-  <!--<system:String x:Key="dialogs.tracksettings.location">Location</system:String>-->
-  <!--<system:String x:Key="dialogs.tracksettings.renderer">Renderer</system:String>-->
-  <!--<system:String x:Key="dialogs.tracksettings.setasdefault">Set As Default</system:String>-->
+  <system:String x:Key="dialogs.tracksettings.caption">Impostazioni traccia</system:String>
+  <system:String x:Key="dialogs.tracksettings.location">Percorso</system:String>
+  <system:String x:Key="dialogs.tracksettings.renderer">Renderer</system:String>
+  <system:String x:Key="dialogs.tracksettings.setasdefault">Imposta default</system:String>
 
   <system:String x:Key="errors.caption">Errore</system:String>
 
@@ -50,8 +50,8 @@
   <system:String x:Key="exps.defaultvalue">Predefinito</system:String>
   <system:String x:Key="exps.flag">Flag Resampler</system:String>
   <system:String x:Key="exps.isflag">È Flag Resampler</system:String>
-  <!--<system:String x:Key="exps.maxvalue">Max</system:String>-->
-  <!--<system:String x:Key="exps.minvalue">Min</system:String>-->
+  <system:String x:Key="exps.maxvalue">Max</system:String>
+  <system:String x:Key="exps.minvalue">Min</system:String>
   <system:String x:Key="exps.name">Nome</system:String>
   <system:String x:Key="exps.optionvalues">Opzione Valori</system:String>
   <system:String x:Key="exps.sepbycomma">Separa valori con ','</system:String>
@@ -64,7 +64,7 @@
   <system:String x:Key="lyrics.cancel">Cancella</system:String>
   <system:String x:Key="lyrics.caption">Modifica Testo</system:String>
   <system:String x:Key="lyrics.livepreview">Anteprima in tempo reale</system:String>
-  <!--<system:String x:Key="lyrics.max">Max</system:String>-->
+  <system:String x:Key="lyrics.max">Max</system:String>
   <system:String x:Key="lyrics.reset">Resetta</system:String>
   <system:String x:Key="lyrics.selectnotes">Seleziona note prima di questa operazione</system:String>
   <system:String x:Key="lyrics.separators">Separatori</system:String>
@@ -77,9 +77,9 @@
   <system:String x:Key="menu.edit.redo">Ripristina</system:String>
   <system:String x:Key="menu.edit.selectall">Seleziona tutto</system:String>
   <system:String x:Key="menu.edit.undo">Annulla</system:String>
-  <!--<system:String x:Key="menu.file">File</system:String>-->
+  <system:String x:Key="menu.file">File</system:String>
   <system:String x:Key="menu.file.exit">Esci</system:String>
-  <!--<system:String x:Key="menu.file.exportmidi">Export Midi File</system:String>-->
+  <system:String x:Key="menu.file.exportmidi">Esporta File MIDI</system:String>
   <system:String x:Key="menu.file.exportust">Esporta File Ust</system:String>
   <system:String x:Key="menu.file.exportustto">Esporta File Ust in...</system:String>
   <system:String x:Key="menu.file.exportwav">Esporta File Wav</system:String>
@@ -99,9 +99,9 @@
   <system:String x:Key="menu.file.savetemplate">Salva Modello...</system:String>
   <system:String x:Key="menu.help">Aiuto</system:String>
   <system:String x:Key="menu.help.about">Informazioni su OpenUTAU</system:String>
-  <!--<system:String x:Key="menu.help.checkupdate">Check Update</system:String>-->
-  <!--<system:String x:Key="menu.help.logslocation">Open Logs Location</system:String>-->
-  <!--<system:String x:Key="menu.help.reportissue">Report Issue</system:String>-->
+  <system:String x:Key="menu.help.checkupdate">Controllo aggiornamenti</system:String>
+  <system:String x:Key="menu.help.logslocation">Apri percorso dei log</system:String>
+  <system:String x:Key="menu.help.reportissue">Segnala un problema</system:String>
   <system:String x:Key="menu.help.wiki">OpenUTAU Wiki</system:String>
   <system:String x:Key="menu.tools">Strumenti</system:String>
   <system:String x:Key="menu.tools.clearcache">Svuota Cache</system:String>
@@ -121,10 +121,10 @@
 
   <system:String x:Key="notedefaults.lyric">Testo</system:String>
   <system:String x:Key="notedefaults.lyric.defaultlyric">Testo di default</system:String>
-  <!--<system:String x:Key="notedefaults.portamento">Portamento</system:String>-->
+  <system:String x:Key="notedefaults.portamento">Portamento</system:String>
   <system:String x:Key="notedefaults.portamento.length">Lunghezza</system:String>
   <system:String x:Key="notedefaults.portamento.start">Inizio</system:String>
-  <!--<system:String x:Key="notedefaults.preset">Preset</system:String>-->
+  <system:String x:Key="notedefaults.preset">Preset</system:String>
   <system:String x:Key="notedefaults.preset.namenew">Nome del preset</system:String>
   <system:String x:Key="notedefaults.preset.remove">Rimuovi</system:String>
   <system:String x:Key="notedefaults.preset.remove.tooltip">Rimuove l'ultimo preset utilizzato.</system:String>
@@ -133,41 +133,41 @@
   <system:String x:Key="notedefaults.reset">Resetta Impostazioni</system:String>
   <system:String x:Key="notedefaults.reset.tooltip">Ripristina tutte le impostazioni ai valori di default.
 Attenzione: questa opzione rimuove tutti i preset salvati.</system:String>
-  <!--<system:String x:Key="notedefaults.vibrato">Vibrato</system:String>-->
+  <system:String x:Key="notedefaults.vibrato">Vibrato</system:String>
   <system:String x:Key="notedefaults.vibrato.autominlength">Lunghezza Minima</system:String>
   <system:String x:Key="notedefaults.vibrato.autotoggle">Auto Vibrato per Lunghezza</system:String>
   <system:String x:Key="notedefaults.vibrato.depth">Profondità</system:String>
-  <!--<system:String x:Key="notedefaults.vibrato.in">Fade In</system:String>-->
+  <system:String x:Key="notedefaults.vibrato.in">Fade In</system:String>
   <system:String x:Key="notedefaults.vibrato.length">Lunghezza</system:String>
-  <!--<system:String x:Key="notedefaults.vibrato.out">Fade Out</system:String>-->
+  <system:String x:Key="notedefaults.vibrato.out">Fade Out</system:String>
   <system:String x:Key="notedefaults.vibrato.period">Periodo</system:String>
   <system:String x:Key="notedefaults.vibrato.shift">Spostamento</system:String>
 
-  <!--<system:String x:Key="oto.alias">Alias</system:String>-->
+  <system:String x:Key="oto.alias">Alias</system:String>
   <system:String x:Key="oto.color">Colore</system:String>
   <system:String x:Key="oto.consonant">Consonante</system:String>
   <system:String x:Key="oto.cutoff">Taglio</system:String>
-  <!--<system:String x:Key="oto.edit.consonant">Set Consonant</system:String>-->
-  <!--<system:String x:Key="oto.edit.cutoff">Set Cutoff</system:String>-->
-  <!--<system:String x:Key="oto.edit.offset">Set Offset</system:String>-->
-  <!--<system:String x:Key="oto.edit.overlap">Set Overlap</system:String>-->
-  <!--<system:String x:Key="oto.edit.preutter">Set Preutter</system:String>-->
-  <!--<system:String x:Key="oto.file">File</system:String>-->
-  <!--<system:String x:Key="oto.offset">Offset</system:String>-->
-  <system:String x:Key="oto.overlap">Coincidenza</system:String>
+  <system:String x:Key="oto.edit.consonant">Imposta consonante</system:String>
+  <system:String x:Key="oto.edit.cutoff">Imposta taglio</system:String>
+  <system:String x:Key="oto.edit.offset">Imposta offset</system:String>
+  <system:String x:Key="oto.edit.overlap">Imposta overlap</system:String>
+  <system:String x:Key="oto.edit.preutter">Imposta pre-utteranza</system:String>
+  <system:String x:Key="oto.file">File</system:String>
+  <system:String x:Key="oto.offset">Offset</system:String>
+  <system:String x:Key="oto.overlap">Overlap</system:String>
   <system:String x:Key="oto.phonetic">Fonemi</system:String>
   <system:String x:Key="oto.prefix">Prefisso</system:String>
   <system:String x:Key="oto.preutter">Pre-utteranza</system:String>
   <system:String x:Key="oto.set">Gruppo</system:String>
   <system:String x:Key="oto.suffix">Suffisso</system:String>
 
-  <!--<system:String x:Key="phoneticassistant.caption">Phonetic Assistant</system:String>-->
-  <!--<system:String x:Key="phoneticassistant.copy">Copy</system:String>-->
+  <system:String x:Key="phoneticassistant.caption">Assistente fonetico</system:String>
+  <system:String x:Key="phoneticassistant.copy">Copia</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">Testo</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Sostituisci "-" con "+"</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">Modifica Testo</system:String>
-  <!--<system:String x:Key="pianoroll.menu.lyrics.hanzitopinyin">Hanzi to Pinyin</system:String>-->
+  <system:String x:Key="pianoroll.menu.lyrics.hanzitopinyin">Da Hanzi a Pinyin</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Da Hiragana a Romaji</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">Da VCV a CV (Giapponese)</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Rimuovi Suffisso Lettere</system:String>
@@ -179,12 +179,12 @@ Attenzione: questa opzione rimuove tutti i preset salvati.</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">Aggiungi "R" in coda</system:String>
   <system:String x:Key="pianoroll.menu.notes.clear.vibratos">Elimina Vibrati</system:String>
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Carica Pitch Renderizzato</system:String>
-  <!--<system:String x:Key="pianoroll.menu.notes.octavedown">Move an octave down</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.notes.octaveup">Move an octave up</system:String>-->
+  <system:String x:Key="pianoroll.menu.notes.octavedown">Trasponi un'ottava su</system:String>
+  <system:String x:Key="pianoroll.menu.notes.octaveup">Trasponi un'ottava giù</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">Quantizza a 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Quantizza a 1/64</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">Resetta tutte le espressioni</system:String>
-  <system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">Resetta tutti i tempi dei fonemi</system:String>
+  <system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">Resetta tutti i timing dei fonemi</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">Resetta tutti i pitch bend</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.vibratos">Resetta tutti i vibrati</system:String>
   <system:String x:Key="pianoroll.menu.part">Parte</system:String>
@@ -193,48 +193,48 @@ Attenzione: questa opzione rimuove tutti i preset salvati.</system:String>
   <system:String x:Key="pianoroll.toggle.phoneme">Mostra Fonemi (O)</system:String>
   <system:String x:Key="pianoroll.toggle.pitch">Mostra Pitch Bend (I)</system:String>
   <system:String x:Key="pianoroll.toggle.snap">Attiva/Disattiva Snap (P)</system:String>
-  <!--<system:String x:Key="pianoroll.toggle.snap.auto">Auto</system:String>-->
-  <!--<system:String x:Key="pianoroll.toggle.snap.autotriplet">Auto (triplet)</system:String>-->
+  <system:String x:Key="pianoroll.toggle.snap.auto">Auto</system:String>
+  <system:String x:Key="pianoroll.toggle.snap.autotriplet">Auto (terzina)</system:String>
   <system:String x:Key="pianoroll.toggle.tips">Mostra Suggerimenti (T)</system:String>
-  <system:String x:Key="pianoroll.toggle.tone">Attiva/Disattiva tono note (Y)</system:String>
+  <system:String x:Key="pianoroll.toggle.tone">Attiva/Disattiva suono di note (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">Mostra Vibrato (U)</system:String>
   <system:String x:Key="pianoroll.toggle.waveform">Mostra Waveform (W)</system:String>
   <system:String x:Key="pianoroll.tool.drawpitch">Strumento Disegna Pitch (4)</system:String>
   <system:String x:Key="pianoroll.tool.eraser">Strumento Gommma (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">Strumento Coltello (5)</system:String>
-  <!--<system:String x:Key="pianoroll.tool.penplus">Pen Plus Tool (Ctrl + 2)
-    Left click to draw
-    Right click to delete
-Hold Ctrl to select</system:String>-->
-  <!--<system:String x:Key="pianoroll.tool.penv2">Pen Tool (2)
-    Left click to draw
-Hold Ctrl to select</system:String>-->
-  <!--<system:String x:Key="pianoroll.tool.selectionv2">Selection Tool (1)</system:String>-->
+  <system:String x:Key="pianoroll.tool.penplus">Strumento Penna Plus (Ctrl + 2)
+    Click sinistro per disegnare
+    Click destro per eliminare
+Tieni premuto Ctrl per selezionare</system:String>
+  <system:String x:Key="pianoroll.tool.penv2">Strumento Penna (2)
+    Click sinistro per disegnare
+Tieni premuto Ctrl per selezionare</system:String>
+  <system:String x:Key="pianoroll.tool.selectionv2">Strumento Selezione (1)</system:String>
 
   <system:String x:Key="prefs.advanced">Avanzato</system:String>
-  <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
-  <!--<system:String x:Key="prefs.advanced.lyricshelper">Lyrics Helper</system:String>-->
-  <!--<system:String x:Key="prefs.advanced.lyricshelper.brackets">Lyrics Helper Adds Brackets</system:String>-->
+  <system:String x:Key="prefs.advanced.beta">Beta</system:String>
+  <system:String x:Key="prefs.advanced.lyricshelper">Aiutante Testo</system:String>
+  <system:String x:Key="prefs.advanced.lyricshelper.brackets">Aiutante Testo aggiunge parentesi</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging">Log del Resampler</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging.warn">Memorizza l'output del resampler in un file log. Questa operazione può rallentare la UI e il resampler.</system:String>
   <system:String x:Key="prefs.advanced.stable">Stabile</system:String>
-  <!--<system:String x:Key="prefs.advanced.vlabelerpath">Vlabeler Path</system:String>-->
+  <system:String x:Key="prefs.advanced.vlabelerpath">Percorso di vLabeler</system:String>
   <system:String x:Key="prefs.appearance">Aspetto</system:String>
   <system:String x:Key="prefs.appearance.lang">Lingua</system:String>
-  <!--<system:String x:Key="prefs.appearance.showghostnotes">Show other tracks' notes on piano roll</system:String>-->
-  <system:String x:Key="prefs.appearance.showportrait">Mostra portrait sul piano roll</system:String>
+  <system:String x:Key="prefs.appearance.showghostnotes">Mostra note di altre tracce sul piano roll</system:String>
+  <system:String x:Key="prefs.appearance.showportrait">Mostra immagine del cantante sul piano roll</system:String>
   <system:String x:Key="prefs.appearance.theme">Tema</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">Scuro</system:String>
   <system:String x:Key="prefs.appearance.theme.light">Chiaro</system:String>
   <system:String x:Key="prefs.caption">Preferenze</system:String>
   <system:String x:Key="prefs.note.restart">Nota: riavvia OpenUtau dopo aver modificato questo elemento.</system:String>
-  <!--<system:String x:Key="prefs.off">Off</system:String>-->
-  <!--<system:String x:Key="prefs.on">On</system:String>-->
-  <!--<system:String x:Key="prefs.otoeditor">Oto Editor</system:String>-->
-  <!--<system:String x:Key="prefs.otoeditor.select">Default Oto Editor</system:String>-->
+  <system:String x:Key="prefs.off">Off</system:String>
+  <system:String x:Key="prefs.on">On</system:String>
+  <system:String x:Key="prefs.otoeditor">Oto editor</system:String>
+  <system:String x:Key="prefs.otoeditor.select">Oto editor di default</system:String>
   <system:String x:Key="prefs.paths">Percorsi</system:String>
-  <system:String x:Key="prefs.paths.addlsinger">Percorso alternativo per i cantanti</system:String>
-  <system:String x:Key="prefs.paths.addlsinger.install">Installa nel percorso alternativo per i cantanti</system:String>
+  <system:String x:Key="prefs.paths.addlsinger">Percorso aggiuntivo per i cantanti</system:String>
+  <system:String x:Key="prefs.paths.addlsinger.install">Installa nel percorso aggiuntivo per i cantanti</system:String>
   <system:String x:Key="prefs.paths.reset">Resetta</system:String>
   <system:String x:Key="prefs.paths.select">Seleziona</system:String>
   <system:String x:Key="prefs.playback">Audio</system:String>
@@ -244,39 +244,39 @@ Hold Ctrl to select</system:String>-->
   <system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">Cursore Immobile</system:String>
   <system:String x:Key="prefs.playback.backend">Backend Audio</system:String>
   <system:String x:Key="prefs.playback.backend.auto">Automatico</system:String>
-  <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
+  <system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>
   <system:String x:Key="prefs.playback.cursorposition">Posizione del cursore</system:String>
   <system:String x:Key="prefs.playback.device">Dispositivo audio</system:String>
   <system:String x:Key="prefs.playback.lockstarttime">Pausa alla posizione corrente</system:String>
   <system:String x:Key="prefs.playback.lockstarttime.off">Off</system:String>
   <system:String x:Key="prefs.playback.lockstarttime.on">Muovi cursore alla posizione di riproduzione originale</system:String>
-  <!--<system:String x:Key="prefs.playback.test">Test</system:String>-->
+  <system:String x:Key="prefs.playback.test">Test</system:String>
   <system:String x:Key="prefs.rendering">Renderizzazione</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">Compensazione di Fase</system:String>
   <system:String x:Key="prefs.rendering.prerender">Pre-renderizzazione</system:String>
   <system:String x:Key="prefs.rendering.prerender.threads">Threads Pre-renderizzazione</system:String>
-  <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
+  <system:String x:Key="prefs.rendering.resampler">Resampler</system:String>
   <system:String x:Key="prefs.rendering.resampler.morewarn">
-Attenzione: moresampler non è pienamente supportato. Potrebbe essere lento e causare alto utilizzo della CPU. Se vuoi:
+Attenzione: moresampler non è completamente supportato. Potrebbe causare rallentamenti ed alto utilizzo della CPU. Se vuoi:
 1. Imposta "resampler-compatibility" su "on" nel file moreconfig.txt.
 2. Imposta "auto-update-llsm-mrq" su "off" nel file moreconfig.txt.
-3. Aspetta che moresampler generi tutti i file llsm mancanti.
+3. Attendere che moresampler generi tutti i file llsm mancanti.
   </system:String>
   <system:String x:Key="prefs.rendering.resampler.note">
 		Se vuoi utilizzare resampler esterni, aggiungi il file DLL o EXE del resampler nella cartella Resampler all'interno del percorso d'installazione.
     </system:String>
-  <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
+  <system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>
 
   <system:String x:Key="progress.saved">Progetto salvato. {0}</system:String>
   <system:String x:Key="progress.waitingrendering">In Attesa di Renderizzazione</system:String>
 
   <system:String x:Key="singers.caption">Cantanti</system:String>
-  <!--<system:String x:Key="singers.editoto.editinvlabeler">Edit In vLabeler</system:String>-->
-  <!--<system:String x:Key="singers.editoto.gotosource">Goto Source File</system:String>-->
-  <!--<system:String x:Key="singers.editoto.reset">Reset Otos</system:String>-->
-  <!--<system:String x:Key="singers.editoto.save">Save Otos</system:String>-->
-  <!--<system:String x:Key="singers.editoto.setvlabelerpath">Download vLabeler (1.0.0-beta1 or higher) from https://github.com/sdercolin/vlabeler and set vLabeler path in Preferences first!</system:String>-->
-  <!--<system:String x:Key="singers.errorreport">Generate Singer Error Report</system:String>-->
+  <system:String x:Key="singers.editoto.editinvlabeler">Modifica in vLabeler</system:String>
+  <system:String x:Key="singers.editoto.gotosource">Vai al file di origine</system:String>
+  <system:String x:Key="singers.editoto.reset">Resetta oto</system:String>
+  <system:String x:Key="singers.editoto.save">Salva oto</system:String>
+  <system:String x:Key="singers.editoto.setvlabelerpath">Scarica vLabeler (1.0.0-beta1 o superiore) da https://github.com/sdercolin/vlabeler e imposta prima il percorso vLabeler nelle Preferenze!</system:String>
+  <system:String x:Key="singers.errorreport">Genera rapporto errori del cantante</system:String>
   <system:String x:Key="singers.location">Percorso</system:String>
   <system:String x:Key="singers.otoview.moveleft">Muovi a Sinistra</system:String>
   <system:String x:Key="singers.otoview.moveright">Muovi a Destra</system:String>
@@ -302,7 +302,7 @@ Attenzione: moresampler non è pienamente supportato. Potrebbe essere lento e ca
   <system:String x:Key="singers.subbanks.set">Imposta</system:String>
   <system:String x:Key="singers.subbanks.tone">Tono</system:String>
   <system:String x:Key="singers.subbanks.toneranges">Range Tonale</system:String>
-  <!--<system:String x:Key="singers.visitwebsite">Visit Website</system:String>-->
+  <system:String x:Key="singers.visitwebsite">Visita il sito web</system:String>
 
   <system:String x:Key="tip.aliasbox">Annulla Alias</system:String>
   <system:String x:Key="tip.exps">
@@ -339,12 +339,12 @@ Tieni premuto click destro: Resetta espressioni
   <system:String x:Key="tracks.selectrenderer">Seleziona Renderer</system:String>
   <system:String x:Key="tracks.selectsinger">Seleziona Cantante</system:String>
 
-  <!--<FontFamily x:Key="ui.fontfamily">Segoe UI,San Francisco,Helvetica Neue</FontFamily>-->
-  <!--<FontFamily x:Key="ui.textbox.fontfamily">Microsoft YaHei,Simsun,苹方-简,宋体-简</FontFamily>-->
+  <FontFamily x:Key="ui.fontfamily">Segoe UI,San Francisco,Helvetica Neue</FontFamily>
+  <FontFamily x:Key="ui.textbox.fontfamily">Microsoft YaHei,Simsun,苹方-简,宋体-简</FontFamily>
 
   <system:String x:Key="updater.caption">Controlla aggiornamenti</system:String>
   <system:String x:Key="updater.description">Piattaforma di sintetizzazione vocale open source</system:String>
-  <!--<system:String x:Key="updater.github">GitHub</system:String>-->
+  <system:String x:Key="updater.github">GitHub</system:String>
   <system:String x:Key="updater.status.available">Aggiornamento v{0} disponibile!</system:String>
   <system:String x:Key="updater.status.checking">Controllo aggiornamenti...</system:String>
   <system:String x:Key="updater.status.notavailable">Aggiornato</system:String>
@@ -353,5 +353,5 @@ Tieni premuto click destro: Resetta espressioni
 
   <system:String x:Key="warning">Avviso</system:String>
   <system:String x:Key="warning.asciipath">"{0}" Questo percorso contiene caratteri inesistenti nel codice ASCII. I resampler protrebbero malfunzionare.</system:String>
-  <!--<system:String x:Key="warning.renderer">No settings for this renderer. Please select CLASSIC.</system:String>-->
+  <system:String x:Key="warning.renderer">Nessuna impostazione per questo renderer. Si prega di selezionare CLASSIC.</system:String>
 </ResourceDictionary>
