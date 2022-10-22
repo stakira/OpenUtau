@@ -275,7 +275,7 @@ Segure Ctrl para selecionar</system:String>
   <system:String x:Key="singers.editoto.gotosource">Vá para o Arquivo Original</system:String>
   <system:String x:Key="singers.editoto.reset">Redefinir Otos</system:String>
   <system:String x:Key="singers.editoto.save">Salvar Otos</system:String>
-  <system:String x:Key="singers.editoto.setvlabelerpath">Baixe o vLabeler (1.0.0-beta1 ou maior) em https://github.com/sdercolin/vlabeler e adicione o caminho do vLabeler nas Preferências primeiro!</system:String>-->
+  <system:String x:Key="singers.editoto.setvlabelerpath">Baixe o vLabeler (1.0.0-beta1 ou maior) em https://github.com/sdercolin/vlabeler e adicione o caminho do vLabeler nas Preferências primeiro!</system:String>
   <system:String x:Key="singers.errorreport">Gerar Relatório de Erro de Cantor</system:String>
   <system:String x:Key="singers.location">Pasta</system:String>
   <system:String x:Key="singers.otoview.moveleft">Mover para Esquerda</system:String>
