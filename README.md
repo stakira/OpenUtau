@@ -63,7 +63,7 @@ See [Getting-Started](https://github.com/stakira/OpenUtau/wiki/Getting-Started) 
 #### The scope of OpenUtau includes:
 - Modern user experience.
 - Selected compatibility with UTAU technologies.
-  - OpenUtau aims to solve problems in less laborious ways, so don't expect it to replicate exact UTAU featuers.
+  - OpenUtau aims to solve problems in less laborious ways, so don't expect it to replicate exact UTAU features.
 - Extensible realtime phonetics (VCV, CVVC, Arpasing) intellegence.
   - English, Japanese, Chinese, Korean, Russian and more.
 - Internationalization, including UI translation and file system encoding support.
