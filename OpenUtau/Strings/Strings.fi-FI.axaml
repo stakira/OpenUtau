@@ -2,6 +2,7 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+  <!--<system:String x:Key="context.note.copy">Copy note</system:String>-->
   <!--<system:String x:Key="context.note.delete">Delete note</system:String>-->
   <!--<system:String x:Key="context.part.delete">Delete part</system:String>-->
   <!--<system:String x:Key="context.part.rename">Rename part</system:String>-->
@@ -78,6 +79,7 @@
   <system:String x:Key="menu.edit.undo">Kumoa</system:String>
   <system:String x:Key="menu.file">Tiedosto</system:String>
   <system:String x:Key="menu.file.exit">Lopeta OpenUtau</system:String>
+  <!--<system:String x:Key="menu.file.exportmidi">Export Midi File</system:String>-->
   <system:String x:Key="menu.file.exportust">Vie Ust-tiedostot</system:String>
   <!--<system:String x:Key="menu.file.exportustto">Export Ust Files To...</system:String>-->
   <!--<system:String x:Key="menu.file.exportwav">Export Wav Files</system:String>-->
@@ -177,6 +179,8 @@ Warning: this option removes custom presets.</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.notes.addtailrest">Add tail "R"</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.notes.clear.vibratos">Clear vibratos</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Load rendered pitch</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.octavedown">Move an octave down</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.octaveup">Move an octave up</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.quantize15">sovita 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">sovita 1/64</system:String>
   <!--<system:String x:Key="pianoroll.menu.notes.reset.exps">Reset all expressions</system:String>-->
@@ -214,6 +218,7 @@ Hold Ctrl to select</system:String>-->
   <!--<system:String x:Key="prefs.advanced.resamplerlogging">Resampler Logging</system:String>-->
   <!--<system:String x:Key="prefs.advanced.resamplerlogging.warn">Stores resampler output in log files. This option slows down UI and rendering.</system:String>-->
   <system:String x:Key="prefs.advanced.stable">Vakaa versio</system:String>
+  <!--<system:String x:Key="prefs.advanced.vlabelerpath">Vlabeler Path</system:String>-->
   <system:String x:Key="prefs.appearance">Ulkonäkö</system:String>
   <system:String x:Key="prefs.appearance.lang">Kieli</system:String>
   <!--<system:String x:Key="prefs.appearance.showghostnotes">Show other tracks' notes on piano roll</system:String>-->
@@ -225,6 +230,8 @@ Hold Ctrl to select</system:String>-->
   <system:String x:Key="prefs.note.restart">HUOM: Käynnistäthän OpenUtau uudelleen muutettuasi tätä asetusta.</system:String>
   <!--<system:String x:Key="prefs.off">Off</system:String>-->
   <!--<system:String x:Key="prefs.on">On</system:String>-->
+  <!--<system:String x:Key="prefs.otoeditor">Oto Editor</system:String>-->
+  <!--<system:String x:Key="prefs.otoeditor.select">Default Oto Editor</system:String>-->
   <system:String x:Key="prefs.paths">Tiedoston sijainti</system:String>
   <!--<system:String x:Key="prefs.paths.addlsinger">Additional Singer Path</system:String>-->
   <!--<system:String x:Key="prefs.paths.addlsinger.install">Install to Additional Singer Path</system:String>-->
@@ -264,9 +271,12 @@ Hold Ctrl to select</system:String>-->
   <!--<system:String x:Key="progress.waitingrendering">Waiting Rendering</system:String>-->
 
   <system:String x:Key="singers.caption">Laulajat</system:String>
+  <!--<system:String x:Key="singers.editoto.editinvlabeler">Edit In vLabeler</system:String>-->
   <!--<system:String x:Key="singers.editoto.gotosource">Goto Source File</system:String>-->
   <!--<system:String x:Key="singers.editoto.reset">Reset Otos</system:String>-->
   <!--<system:String x:Key="singers.editoto.save">Save Otos</system:String>-->
+  <!--<system:String x:Key="singers.editoto.setvlabelerpath">Download vLabeler (1.0.0-beta1 or higher) from https://github.com/sdercolin/vlabeler and set vLabeler path in Preferences first!</system:String>-->
+  <!--<system:String x:Key="singers.errorreport">Generate Singer Error Report</system:String>-->
   <system:String x:Key="singers.location">Sijainti</system:String>
   <!--<system:String x:Key="singers.otoview.moveleft">Move Left</system:String>-->
   <!--<system:String x:Key="singers.otoview.moveright">Move Right</system:String>-->
@@ -343,4 +353,5 @@ Yleiset
 
   <system:String x:Key="warning">Varoitus</system:String>
   <system:String x:Key="warning.asciipath">OpenUtau -kotihakemistossasi "{0}" sisältää ei-ASCII merkkejä. Exe resampler ei välttämättä toimi.</system:String>
+  <!--<system:String x:Key="warning.renderer">No settings for this renderer. Please select CLASSIC.</system:String>-->
 </ResourceDictionary>

@@ -185,6 +185,48 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        void GotoVLabelerOto(object sender, RoutedEventArgs args) {
+            var viewModel = (DataContext as SingersViewModel)!;
+            if (viewModel.Singer == null) {
+                return;
+            }
+            var oto = otoGrid?.SelectedItem as Core.Ustx.UOto;
+            if (oto == null) {
+                return;
+            }
+            if (viewModel.Singer != null) {
+                OpenInVLabeler(viewModel.Singer, oto);
+            }
+        }
+
+        void OnEditInVLabeler(object sender, RoutedEventArgs args) {
+            var viewModel = (DataContext as SingersViewModel)!;
+            if (viewModel.Singer != null) {
+                OpenInVLabeler(viewModel.Singer, null);
+            }
+        }
+
+        private void OpenInVLabeler(Core.Ustx.USinger singer, Core.Ustx.UOto? oto) {
+            string path = Core.Util.Preferences.Default.VLabelerPath;
+            if (string.IsNullOrEmpty(path) || !OS.AppExists(path)) {
+                MessageBox.Show(
+                    this,
+                    ThemeManager.GetString("singers.editoto.setvlabelerpath"),
+                    ThemeManager.GetString("errors.caption"),
+                    MessageBox.MessageBoxButtons.Ok);
+                return;
+            }
+            try {
+                Integrations.VLabelerClient.Inst.GotoOto(singer, oto);
+            } catch (Exception e) {
+                MessageBox.Show(
+                    this,
+                    e.ToString(),
+                    ThemeManager.GetString("errors.caption"),
+                    MessageBox.MessageBoxButtons.Ok);
+            }
+        }
+
         void DrawOto(Core.Ustx.UOto? oto) {
             if (otoPlot == null || oto == null) {
                 return;

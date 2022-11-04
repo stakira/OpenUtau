@@ -2,6 +2,7 @@
 ---
 symbols:
 #CZsampa standard vowels
+  - {symbol: '@', type: vowel}
   - {symbol: a, type: vowel}
   - {symbol: i, type: vowel}
   - {symbol: u, type: vowel}
@@ -15,8 +16,9 @@ symbols:
   - {symbol: 3, type: vowel}
   - {symbol: 6, type: vowel}
   - {symbol: 8, type: vowel}
-  - {symbol: '@', type: vowel}
   - {symbol: Q, type: vowel}
+  - {symbol: h, type: aspirate}
+  - {symbol: j, type: affricate}
 #Arpasing
   - {symbol: aa, type: vowel}
   - {symbol: ae, type: vowel}
@@ -58,9 +60,11 @@ symbols:
   - {symbol: z, type: fricative}
   - {symbol: zh, type: fricative}
   #bonus symbols
+  - {symbol: '&', type: vowel}
+  - {symbol: 1, type: vowel}
   - {symbol: 9, type: vowel}
-  - {symbol: dd, type: tap}
   - {symbol: x, type: vowel}
+  - {symbol: dd, type: tap}
 
 entries:
   - grapheme: openutau

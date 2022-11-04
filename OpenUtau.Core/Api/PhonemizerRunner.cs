@@ -85,6 +85,14 @@ namespace OpenUtau.Api {
         static PhonemizerResponse Phonemize(PhonemizerRequest request) {
             var notes = request.notes;
             var phonemizer = request.phonemizer;
+            if (request.singer == null) {
+                return new PhonemizerResponse() {
+                    noteIndexes = request.noteIndexes,
+                    part = request.part,
+                    phonemes = new Phonemizer.Phoneme[][] { },
+                    timestamp = request.timestamp,
+                };
+            }
             phonemizer.SetSinger(request.singer);
             phonemizer.SetTiming(request.timeAxis);
             try {

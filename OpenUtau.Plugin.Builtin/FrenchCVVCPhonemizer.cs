@@ -70,7 +70,7 @@ namespace OpenUtau.Plugin.Builtin {
 
 
 
-                // --------------------------- STARTING VV ------------------------------- //
+                // --------------------------- is VV ------------------------------- //
             } else if (syllable.IsVV) {  // if VV
                 if (!CanMakeAliasExtension(syllable)) {
                     var vvCheck = prevV + v;
@@ -82,23 +82,13 @@ namespace OpenUtau.Plugin.Builtin {
                         if (basePhoneme == v) {
                             //TODO clean exception part below
                             if (prevV == "ih" || prevV == "i") {
-                                if (HasOto($"{prevV}y", syllable.vowelTone)) {
-                                    phonemes.Add($"{prevV}y");
-                                } else if (HasOto($"{prevV} y", syllable.vowelTone)) {
-                                    phonemes.Add($"{prevV} y");
-                                }
-                                if (HasOto($"y{v}", syllable.vowelTone)) {
-                                    basePhoneme = $"y{v}";
-                                }
+                                basePhoneme = $"y{v}";
                             }
                             if (prevV == "ou") {
-                                if (HasOto($"{prevV}w", syllable.vowelTone)) {
-                                    phonemes.Add($"{prevV}w");
-                                } else {
-                                    phonemes.Add($"{prevV} w");
-                                }
                                 basePhoneme = $"w{v}";
                             }
+                            if (!HasOto(basePhoneme, syllable.tone))
+                                basePhoneme = v;
                         }
                     }
 
@@ -210,7 +200,10 @@ namespace OpenUtau.Plugin.Builtin {
 
                                 // exception of y sound
                                 if ($"{cc[i + 1]}" == "y" && ccc.Contains(CheckCoeEnding(ccc, syllable.tone))) {
-                                    ccc = $"{cc[i]}ih";
+                                    if (usesFraloids)
+                                        ccc = $"{cc[i]}i";
+                                    else
+                                        ccc = $"{cc[i]}ih";
                                 }
                                 phonemes.Add(ccc);
 
@@ -241,8 +234,7 @@ namespace OpenUtau.Plugin.Builtin {
                         vc = ReplaceFraloidsConflict(vc, syllable.tone);
                         if (HasOto(vc, syllable.tone)) {
                             phonemes.Add(vc);
-                        }
-                        else {
+                        } else {
                             vc = $"{prevV}{cc[0]}";
                             if (HasOto(vc, syllable.tone)) {
                                 phonemes.Add(vc);
@@ -343,20 +335,24 @@ namespace OpenUtau.Plugin.Builtin {
 
 
                         if (ccc.Contains(CheckCoeEnding(ccc, syllable.tone)) || ccc == $"{cc[i]}") {
-                            if (i == 0) {
+                            if (i == 0 && $"{cc[i + 1]}" != "y") {
                                 continue;
-                            }
-                        }
-
-                        if (ccc == $"{cc[i]}") {
-                            if (i + 2 <= cc.Length) {
-                                break;
                             }
                         }
 
                         // exception of y sound
                         if ($"{cc[i + 1]}" == "y" && ccc.Contains(CheckCoeEnding(ccc, syllable.tone))) {
-                            ccc = $"{cc[i]}ih";
+                            if (usesFraloids)
+                                ccc = $"{cc[i]}i";
+                            else
+                                ccc = $"{cc[i]}ih";
+                        }
+
+
+                        if (ccc == $"{cc[i]}") {
+                            if (i + 2 <= cc.Length) {
+                                break;
+                            }
                         }
 
 
@@ -368,6 +364,7 @@ namespace OpenUtau.Plugin.Builtin {
 
 
             }
+
 
             phonemes.Add(basePhoneme);
             return phonemes;
@@ -518,14 +515,8 @@ namespace OpenUtau.Plugin.Builtin {
                             if (i > 0) {
                                 ccc = $"{cc[i]}";
                                 ccc = CheckAliasFormatting(ccc, "endcOe", ending.tone, "");
-
-                                // exception of y sound 
-                                if (i + 1 < cc.Length) {
-                                    if ($"{cc[i + 1]}" == "y" && ccc.Contains(CheckCoeEnding(ccc, ending.tone))) {
-                                        ccc = $"{cc[i]}ih";
-                                    }
-                                }
                             }
+
                             if (HasOto(ccc, ending.tone)) {
                                 phonemes.Add(ccc);
                             }
@@ -721,15 +712,33 @@ namespace OpenUtau.Plugin.Builtin {
             if (original == null) {
                 return null;
             }
-            List<string> modified = new List<string>();
+
+            string[] arpabet = "aa,ai,ei,eu,ii,au,uu,an,un,uy,bb,dd,ff,gg,jj,kk,ll,mm,nn,pp,rr,ss,ch,tt,vv,ww,yy,zz".Split(",");
+            string[] petitmot = "ah,ae,eh,ee,ih,oh,uh,en,in,ui,b,d,f,g,j,k,l,m,n,p,r,s,sh,t,v,w,y,z".Split(",");
+
+            List<string> convert = new List<string>();
             foreach (string s in original) {
+                string c = s;
+                for (int i = 0; i < arpabet.Length; i++) {
+                    if (s == arpabet[i]) {
+                        c = petitmot[i];
+                    }
+                }
+                convert.Add(c);
+            }
+
+            if (convert == null) {
+                return null;
+            }
+
+            List<string> modified = new List<string>();
+            foreach (string s in convert) {
                 if (s == "gn") {
                     modified.AddRange(new string[] { "n", "y" });
                 } else {
                     modified.Add(s);
                 }
             }
-
             return modified.ToArray();
         }
 

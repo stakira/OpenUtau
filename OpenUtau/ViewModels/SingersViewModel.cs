@@ -21,6 +21,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public Bitmap? Avatar { get; set; }
         [Reactive] public string? Info { get; set; }
         [Reactive] public bool HasWebsite { get; set; }
+        public bool IsClassic => Singer != null && Singer.SingerType == USingerType.Classic;
         public ObservableCollectionExtended<USubbank> Subbanks => subbanks;
         public ObservableCollectionExtended<UOto> Otos => otos;
         [Reactive] public UOto? SelectedOto { get; set; }
@@ -55,6 +56,7 @@ namespace OpenUtau.App.ViewModels {
                     HasWebsite = !string.IsNullOrEmpty(singer.Web);
                     LoadSubbanks();
                     DocManager.Inst.ExecuteCmd(new OtoChangedNotification());
+                    this.RaisePropertyChanged(nameof(IsClassic));
                 });
 
             setEncodingCommand = ReactiveCommand.Create<Encoding>(encoding => {

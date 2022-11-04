@@ -19,7 +19,7 @@ namespace OpenUtau.Core.Vogen {
         }
 
         protected abstract string LangPrefix { get; }
-        protected virtual string Romanize(string lyric) => lyric;
+        protected virtual string[] Romanize(string[] lyric) => lyric;
 
         public override void SetSinger(USinger singer) { }
 
@@ -45,15 +45,15 @@ namespace OpenUtau.Core.Vogen {
         void ProcessPart(IList<Note> notes) {
             float padding = 1000;
             int totalDur = notes.Sum(n => n.duration);
-            var lyrics = new string[notes.Count, 8];
+            var lyrics = Romanize(notes.Select(n => n.lyric).ToArray());
+            var lyricsPadded = new string[notes.Count, 8];
             for (int i = 0; i < notes.Count; ++i) {
-                var lyric = Romanize(notes[i].lyric);
-                lyric = lyric.PadRight(8, '\0');
+                string lyric = lyrics[i].PadRight(8, '\0');
                 for (int j = 0; j < 8; j++) {
-                    lyrics[i, j] = lyric[j].ToString();
+                    lyricsPadded[i, j] = lyric[j].ToString();
                 }
             }
-            var x = lyrics.ToTensor();
+            var x = lyricsPadded.ToTensor();
             var inputs = new List<NamedOnnxValue>();
             inputs.Add(NamedOnnxValue.CreateFromTensor("letters", x));
             var outputs = G2p.Run(inputs);
