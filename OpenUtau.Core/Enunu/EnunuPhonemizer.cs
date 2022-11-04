@@ -67,6 +67,9 @@ namespace OpenUtau.Core.Enunu {
                     foreach (var ns in notes) {
                         foreach (var n in ns) {
                             writer.Write(n.lyric);
+                            if(n.phoneticHint!= null) {
+                                writer.Write("["+n.phoneticHint+"]");
+                            }
                             writer.Write(n.position);
                             writer.Write(n.duration);
                             writer.Write(n.tone);
