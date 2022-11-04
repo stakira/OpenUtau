@@ -84,8 +84,7 @@ namespace OpenUtau.Plugin.Builtin {
                             if (prevV == "ih" || prevV == "i") {
                                 basePhoneme = $"y{v}";
                             }
-                            if (prevV == "ou")
-                            {
+                            if (prevV == "ou") {
                                 basePhoneme = $"w{v}";
                             }
                             if (!HasOto(basePhoneme, syllable.tone))
@@ -201,7 +200,10 @@ namespace OpenUtau.Plugin.Builtin {
 
                                 // exception of y sound
                                 if ($"{cc[i + 1]}" == "y" && ccc.Contains(CheckCoeEnding(ccc, syllable.tone))) {
-                                    ccc = $"{cc[i]}ih";
+                                    if (usesFraloids)
+                                        ccc = $"{cc[i]}i";
+                                    else
+                                        ccc = $"{cc[i]}ih";
                                 }
                                 phonemes.Add(ccc);
 
@@ -333,20 +335,24 @@ namespace OpenUtau.Plugin.Builtin {
 
 
                         if (ccc.Contains(CheckCoeEnding(ccc, syllable.tone)) || ccc == $"{cc[i]}") {
-                            if (i == 0) {
+                            if (i == 0 && $"{cc[i + 1]}" != "y") {
                                 continue;
-                            }
-                        }
-
-                        if (ccc == $"{cc[i]}") {
-                            if (i + 2 <= cc.Length) {
-                                break;
                             }
                         }
 
                         // exception of y sound
                         if ($"{cc[i + 1]}" == "y" && ccc.Contains(CheckCoeEnding(ccc, syllable.tone))) {
-                            ccc = $"{cc[i]}ih";
+                            if (usesFraloids)
+                                ccc = $"{cc[i]}i";
+                            else
+                                ccc = $"{cc[i]}ih";
+                        }
+
+
+                        if (ccc == $"{cc[i]}") {
+                            if (i + 2 <= cc.Length) {
+                                break;
+                            }
                         }
 
 
@@ -359,16 +365,6 @@ namespace OpenUtau.Plugin.Builtin {
 
             }
 
-            if (cc.Length > 1 && cc.Last() == "y") {
-                if (!basePhoneme.Contains(cc[cc.Length - 2])) {
-                    if (!phonemes.Last().Contains('y') || phonemes.Count == 0) {
-                        if (usesFraloids)
-                            phonemes.Add(cc[cc.Length - 2] + "i");
-                        else
-                            phonemes.Add(cc[cc.Length - 2] + "ih");
-                    }
-                }
-            }
 
             phonemes.Add(basePhoneme);
             return phonemes;
@@ -519,14 +515,8 @@ namespace OpenUtau.Plugin.Builtin {
                             if (i > 0) {
                                 ccc = $"{cc[i]}";
                                 ccc = CheckAliasFormatting(ccc, "endcOe", ending.tone, "");
-
-                                // exception of y sound 
-                                if (i + 1 < cc.Length) {
-                                    if ($"{cc[i + 1]}" == "y" && ccc.Contains(CheckCoeEnding(ccc, ending.tone))) {
-                                        ccc = $"{cc[i]}ih";
-                                    }
-                                }
                             }
+
                             if (HasOto(ccc, ending.tone)) {
                                 phonemes.Add(ccc);
                             }

@@ -5,9 +5,9 @@ using System;
 namespace OpenUtau.Core.Vogen {
     [Phonemizer("Vogen Chinese Yue Phonemizer", "VOGEN ZH-YUE", language: "ZH")]
     public class VogenYuePhonemizer : VogenBasePhonemizer {
-        private static TrieNode trie;
-        private static InferenceSession g2p;
-        private static InferenceSession prosody;
+        private static TrieNode? trie;
+        private static InferenceSession? g2p;
+        private static InferenceSession? prosody;
 
         public VogenYuePhonemizer() {
             trie ??= TrieNode.LoadDictionary(
@@ -21,12 +21,20 @@ namespace OpenUtau.Core.Vogen {
 
         protected override string LangPrefix => "yue:";
 
-        protected override string Romanize(string lyric) {
-            var romanized = trie.Query(lyric);
-            if (romanized != null && romanized.Length > 0) {
-                return romanized[0];
+        protected override string[] Romanize(string[] lyrics) {
+            var result = new string[lyrics.Length];
+            int index = 0;
+            while (index < lyrics.Length) {
+                string[]? romanized = trie!.Query(new Span<string>(lyrics, index, lyrics.Length - index));
+                if (romanized == null) {
+                    result[index] = lyrics[index];
+                    index++;
+                } else {
+                    Array.Copy(romanized, 0, result, index, romanized.Length);
+                    index += romanized.Length;
+                }
             }
-            return string.Empty;
+            return result;
         }
     }
 }
