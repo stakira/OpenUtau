@@ -304,6 +304,9 @@ namespace OpenUtau.Plugin.Builtin
                             phonemes.Add(cc1);
                         } else if (TryAddPhoneme(phonemes, syllable.tone, cc1)) {
                             // like [V C1] [C1 C2] [C2 ..]
+                            if (cc1.Contains($"{string.Join("", cc.Skip(i))}")) {
+                                i++;
+                            }
                         } else if (TryAddPhoneme(phonemes, syllable.tone, $"{cc[i]} {cc[i + 1]}-")) {
                             // like [V C1] [C1 C2-] [C3 ..]
                             if (burstConsonants.Contains(cc[i + 1])) {
