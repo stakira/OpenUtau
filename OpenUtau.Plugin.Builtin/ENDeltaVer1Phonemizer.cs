@@ -90,6 +90,7 @@ namespace OpenUtau.Plugin.Builtin
             {
                 // TODO: move to config -CV or -C CV
                 var rcv = $"- {cc[0]}{v}";
+                var cv = $"{cc[0]}{v}";
                 if (HasOto(rcv, syllable.vowelTone))
                 {
                     basePhoneme = rcv;
@@ -100,8 +101,8 @@ namespace OpenUtau.Plugin.Builtin
                 }
                 else
                 {
-                    basePhoneme = $"{cc[0]}{v}";
-                    if (v == "V" && !HasOto(rcv, syllable.vowelTone) && HasOto($"{cc[0]}A", syllable.vowelTone)) {
+                    basePhoneme = cv;
+                    if (v == "V" && !HasOto(rcv, syllable.vowelTone) && !HasOto(cv, syllable.vowelTone) && HasOto($"{cc[0]}A", syllable.vowelTone)) {
                         basePhoneme = $"{cc[0]}A";
                     }
                     if (consonants.Contains(cc[0]))
@@ -197,16 +198,16 @@ namespace OpenUtau.Plugin.Builtin
                     for (var i = lastC + 1; i >= 0; i--)
                     {
                         var vcc = $"{prevV} {string.Join("", cc.Take(i))}";
-                        var vcc2 = $"{prevV}{string.Join(" ", cc.Take(i))}";
+                        var vcc2 = $"{prevV}{cc[0]} {cc[1]}";
                         if (i == 0) {
                             phonemes.Add($"{prevV} -");
                         } else if (HasOto(vcc, syllable.tone)) {
                             phonemes.Add(vcc);
-                            firstC = i - 1;
+                            firstC = i - 2;
                             break;
                         } else if (HasOto(vcc2, syllable.tone)) {
                             phonemes.Add(vcc2);
-                            firstC = i - 1;
+                            firstC = i - 2;
                             break;
                         } else {
                             phonemes.Add($"{prevV} {cc[0]}");
@@ -219,6 +220,8 @@ namespace OpenUtau.Plugin.Builtin
                 // we could use some CCV, so lastC is used
                 // we could use -CC so firstC is used
                 var cc1 = $"{string.Join("", cc.Skip(i))}";
+                //var vcc = $"{prevV} {string.Join("", cc.Take(i))}";
+                //var vcc2 = $"{prevV}{cc[0]} {cc[1]}";
                 if (!HasOto($"- {string.Join("", cc)}{v}", syllable.vowelTone)) {
                     if (!HasOto(cc1, syllable.tone)) {
                         cc1 = $"{cc[i]}{cc[i + 1]}";
@@ -244,7 +247,6 @@ namespace OpenUtau.Plugin.Builtin
                             phonemes.Add(cc1);
                         } else if (TryAddPhoneme(phonemes, syllable.tone, cc1)) {
                             // like [V C1] [C1 C2] [C2 ..]
-                            i++;
                         } else if (TryAddPhoneme(phonemes, syllable.tone, $"{cc[i]} {cc[i + 1]}-")) {
                             // like [V C1] [C1 C2-] [C3 ..]
                             if (burstConsonants.Contains(cc[i + 1])) {
