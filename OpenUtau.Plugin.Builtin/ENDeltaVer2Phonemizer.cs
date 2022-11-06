@@ -254,13 +254,15 @@ namespace OpenUtau.Plugin.Builtin
                         var vcc = $"{prevV} {string.Join("", cc.Take(i))}";
                         var vcc2 = $"{prevV}{string.Join(" ", cc.Take(2))}";
                         var vcc3 = $"{prevV}{string.Join(" ", cc.Take(i))}";
+                        var cc1 = $"{string.Join(" ", cc.Take(2))}";
+                        var cc2 = $"{string.Join("", cc.Take(2))}";
                         if (i == 0) {
                             phonemes.Add($"{prevV} -");
                         } else if (HasOto(vcc, syllable.tone)) {
                             phonemes.Add(vcc);
                             firstC = i - 1;
                             break;
-                        } else if (HasOto(vcc2, syllable.tone)) {
+                        } else if (HasOto(vcc2, syllable.tone) && !(HasOto(cc1, syllable.tone)) && !(HasOto(cc2, syllable.tone))) {
                             phonemes.Add(vcc2);
                             firstC = i - 2;
                             break;
