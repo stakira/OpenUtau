@@ -198,7 +198,7 @@ namespace OpenUtau.Plugin.Builtin
                     for (var i = lastC + 1; i >= 0; i--)
                     {
                         var vcc = $"{prevV} {string.Join("", cc.Take(i))}";
-                        var vcc2 = $"{prevV}{cc[0]} {cc[1]}";
+                        var vcc2 = $"{prevV}{string.Join(" ", cc.Take(i))}";
                         if (i == 0) {
                             phonemes.Add($"{prevV} -");
                         } else if (HasOto(vcc, syllable.tone)) {
