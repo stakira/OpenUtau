@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using K4os.Hash.xxHash;
 using OpenUtau.Api;
@@ -11,6 +12,8 @@ using TinyPinyin;
 namespace OpenUtau.Core.Enunu {
     [Phonemizer("Enunu Phonemizer", "ENUNU")]
     public class EnunuPhonemizer : Phonemizer {
+        readonly string PhonemizerType = "ENUNU";
+
         protected EnunuSinger singer;
         Dictionary<Note[], Phoneme[]> partResult = new Dictionary<Note[], Phoneme[]>();
 
@@ -61,9 +64,11 @@ namespace OpenUtau.Core.Enunu {
                 });
         }
 
-        static ulong HashNoteGroups(Note[][] notes) {
+        ulong HashNoteGroups(Note[][] notes) {
             using (var stream = new MemoryStream()) {
                 using (var writer = new BinaryWriter(stream)) {
+                    writer.Write(this.PhonemizerType);
+                    writer.Write(this.singer.Location);
                     foreach (var ns in notes) {
                         foreach (var n in ns) {
                             writer.Write(n.lyric);
