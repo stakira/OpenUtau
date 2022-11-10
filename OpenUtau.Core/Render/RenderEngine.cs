@@ -49,7 +49,7 @@ namespace OpenUtau.Core.Render {
             this.startTick = startTick;
         }
 
-        public Tuple<MasterAdapter, List<Fader>> RenderProject(int startTick, TaskScheduler uiScheduler, ref CancellationTokenSource cancellation) {
+        public Tuple<WaveMix,List<Fader>> RenderMixdown(int startTick, TaskScheduler uiScheduler, ref CancellationTokenSource cancellation) {
             var newCancellation = new CancellationTokenSource();
             var oldCancellation = Interlocked.Exchange(ref cancellation, newCancellation);
             if (oldCancellation != null) {
@@ -98,9 +98,15 @@ namespace OpenUtau.Core.Render {
                     throw task.Exception;
                 }
             }, CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted, uiScheduler);
-            var master = new MasterAdapter(new WaveMix(faders));
+            return Tuple.Create(new WaveMix(faders), faders);
+        }
+
+        public Tuple<MasterAdapter, List<Fader>> RenderProject(int startTick, TaskScheduler uiScheduler, ref CancellationTokenSource cancellation) {
+            double startMs = project.timeAxis.TickPosToMsPos(startTick);
+            var renderMixdownResult = RenderMixdown(startTick, uiScheduler, ref cancellation);
+            var master = new MasterAdapter(renderMixdownResult.Item1);
             master.SetPosition((int)(startMs * 44100 / 1000) * 2);
-            return Tuple.Create(master, faders);
+            return Tuple.Create(master, renderMixdownResult.Item2);
         }
 
         public List<WaveMix> RenderTracks(TaskScheduler uiScheduler, ref CancellationTokenSource cancellation) {

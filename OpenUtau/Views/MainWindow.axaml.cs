@@ -330,6 +330,22 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        async void OnMenuExportMixdown(object sender, RoutedEventArgs args) {
+            var project = DocManager.Inst.Project;
+            var dialog = new SaveFileDialog() {
+                DefaultExtension = "wav",
+                Filters = new List<FileDialogFilter>() {
+                    new FileDialogFilter() {
+                        Extensions = new List<string>(){ "wav" },
+                    },
+                },
+            };
+            var file = await dialog.ShowAsync(this);
+            if (!string.IsNullOrEmpty(file)) {
+                PlaybackManager.Inst.RenderMixdown(project, file);
+            }
+        }
+
         async void OnMenuExportWav(object sender, RoutedEventArgs args) {
             var project = DocManager.Inst.Project;
             if (await WarnToSave(project)) {
