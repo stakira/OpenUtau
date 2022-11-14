@@ -581,10 +581,20 @@ namespace OpenUtau.Plugin.Builtin {
                 var prevUnicode = ToUnicodeElements(prevNeighbour?.lyric);
                 // end breath note
                 if (vowelLookup.TryGetValue(prevUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
+                    var vowel = "";
+                    var prevLyric = string.Join("", prevUnicode);;   
+                    vowel = vow;
+                    
                     var endBreath = $"{vow} R";
+                    if (prevLyric.Contains("eo")) {
+                        endBreath = $"eo R";
+                    } else if (prevLyric.Contains("eu")) {
+                        endBreath = $"eu R";
+                    }
+                                        
                     // try end breath
                     string[] tests = new string[] {endBreath, currentLyric};
-                    if (checkOtoUntilHit(tests, note, out var oto)){
+                    if (checkOtoUntilHit(tests, note, out var oto)){ 
                         currentLyric = oto.Alias;
                     }
                 }
