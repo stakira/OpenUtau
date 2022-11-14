@@ -15,8 +15,10 @@ namespace OpenUtau.App.ViewModels {
     public class PartsContextMenuArgs {
         public UPart? Part { get; set; }
         public bool IsVoicePart => Part is UVoicePart;
+        public bool IsWavePart => Part is UWavePart;
         public ReactiveCommand<UPart, Unit>? PartDeleteCommand { get; set; }
         public ReactiveCommand<UPart, Unit>? PartRenameCommand { get; set; }
+        public ReactiveCommand<UPart, Unit>? PartReplaceAudioCommand { get; set; }
     }
 
     public class MainWindowViewModel : ViewModelBase, ICmdSubscriber {

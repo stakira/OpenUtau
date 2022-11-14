@@ -6,6 +6,7 @@
   <system:String x:Key="context.note.delete">删除音符</system:String>
   <system:String x:Key="context.part.delete">删除片段</system:String>
   <system:String x:Key="context.part.rename">重命名片段</system:String>
+  <system:String x:Key="context.part.replaceaudio">替换音频</system:String>
   <system:String x:Key="context.pitch.easein">缓入</system:String>
   <system:String x:Key="context.pitch.easeinout">缓入缓出</system:String>
   <system:String x:Key="context.pitch.easeout">缓出</system:String>

@@ -212,6 +212,10 @@
             <MenuItem Header="{DynamicResource context.part.delete}"
                       Command="{Binding PartDeleteCommand}"
                       CommandParameter="{Binding Part}"/>
+            <MenuItem Header="{DynamicResource context.part.replaceaudio}"
+                      IsVisible="{Binding IsWavePart}"
+                      Command="{Binding PartReplaceAudioCommand}"
+                      CommandParameter="{Binding Part}"/>
             <MenuItem Header="{DynamicResource context.part.rename}"
                       IsVisible="{Binding IsVoicePart}"
                       Command="{Binding PartRenameCommand}"
