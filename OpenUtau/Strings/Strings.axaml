@@ -354,5 +354,5 @@ Hold Ctrl to select</system:String>
 
   <system:String x:Key="warning">Warning</system:String>
   <system:String x:Key="warning.asciipath">Your OpenUtau home path "{0}" contains non-ASCII character. Exe resamplers may not work.</system:String>
-  <system:String x:Key="warning.renderer">No settings for this renderer. Please select CLASSIC.</system:String>
+  <system:String x:Key="warning.renderer">No settings for this renderer.</system:String>
 </ResourceDictionary>

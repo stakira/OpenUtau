@@ -42,7 +42,7 @@ namespace OpenUtau.App.Views {
             var extension = OS.IsWindows() ? "exe" : OS.IsMacOS() ? "app" : "*";
             var dialog = new OpenFileDialog() {
                 AllowMultiple = false,
-                Filters = new List<FileDialogFilter>() {
+                Filters = OS.IsLinux() ? null : new List<FileDialogFilter>() {
                     new FileDialogFilter() {
                          Name = "vLabeler",
                          Extensions = new List<string>() { extension },
