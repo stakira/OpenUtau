@@ -613,9 +613,14 @@ namespace OpenUtau.Plugin.Builtin {
                 // Insert VC before next neighbor
                 // Get vowel from current note
                 var vowel = "";
-                if (vowelLookup.TryGetValue(currentUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
 
+                if (vowelLookup.TryGetValue(currentUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
                     vowel = vow;
+
+                    if (currentLyric.Contains("e")) {
+                        vowel = "e" + vowel;
+                        vowel = vowel.Replace("ee", "e");
+                    }
                 }
 
                 // Get consonant from next note
