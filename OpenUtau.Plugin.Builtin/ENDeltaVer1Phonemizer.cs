@@ -90,6 +90,7 @@ namespace OpenUtau.Plugin.Builtin
             {
                 // TODO: move to config -CV or -C CV
                 var rcv = $"- {cc[0]}{v}";
+                var cv = $"{cc[0]}{v}";
                 if (HasOto(rcv, syllable.vowelTone))
                 {
                     basePhoneme = rcv;
@@ -100,8 +101,8 @@ namespace OpenUtau.Plugin.Builtin
                 }
                 else
                 {
-                    basePhoneme = $"{cc[0]}{v}";
-                    if (v == "V" && !HasOto(rcv, syllable.vowelTone) && HasOto($"{cc[0]}A", syllable.vowelTone)) {
+                    basePhoneme = cv;
+                    if (v == "V" && !HasOto(rcv, syllable.vowelTone) && !HasOto(cv, syllable.vowelTone) && HasOto($"{cc[0]}A", syllable.vowelTone)) {
                         basePhoneme = $"{cc[0]}A";
                     }
                     if (consonants.Contains(cc[0]))
@@ -197,15 +198,22 @@ namespace OpenUtau.Plugin.Builtin
                     for (var i = lastC + 1; i >= 0; i--)
                     {
                         var vcc = $"{prevV} {string.Join("", cc.Take(i))}";
-                        var vcc2 = $"{prevV}{string.Join(" ", cc.Take(i))}";
+                        var vcc2 = $"{prevV}{string.Join(" ", cc.Take(2))}";
+                        var vcc3 = $"{prevV}{string.Join(" ", cc.Take(i))}";
+                        var cc1 = $"{string.Join(" ", cc.Take(2))}";
+                        var cc2 = $"{string.Join("", cc.Take(2))}";
                         if (i == 0) {
                             phonemes.Add($"{prevV} -");
                         } else if (HasOto(vcc, syllable.tone)) {
                             phonemes.Add(vcc);
                             firstC = i - 1;
                             break;
-                        } else if (HasOto(vcc2, syllable.tone)) {
+                        } else if (HasOto(vcc2, syllable.tone) && !(HasOto(cc1, syllable.tone)) && !(HasOto(cc2, syllable.tone))) {
                             phonemes.Add(vcc2);
+                            firstC = i - 2;
+                            break;
+                        } else if (HasOto(vcc3, syllable.tone)) {
+                            phonemes.Add(vcc3);
                             firstC = i - 1;
                             break;
                         } else {
@@ -219,6 +227,7 @@ namespace OpenUtau.Plugin.Builtin
                 // we could use some CCV, so lastC is used
                 // we could use -CC so firstC is used
                 var cc1 = $"{string.Join("", cc.Skip(i))}";
+                var ccv = string.Join("", cc.Skip(i)) + v;
                 if (!HasOto($"- {string.Join("", cc)}{v}", syllable.vowelTone)) {
                     if (!HasOto(cc1, syllable.tone)) {
                         cc1 = $"{cc[i]}{cc[i + 1]}";
@@ -226,7 +235,9 @@ namespace OpenUtau.Plugin.Builtin
                     if (!HasOto($"{string.Join("", cc.Skip(i))}", syllable.tone) && !HasOto($"{cc[i]}{cc[i + 1]}", syllable.tone)) {
                         cc1 = $"{cc[i]} {cc[i + 1]}";
                     }
-                    if (HasOto($"_{cc.Last()}{v}", syllable.vowelTone) && HasOto(cc1, syllable.vowelTone) && !cc1.Contains($"{cc[i]} {cc[i + 1]}")) {
+                    if (HasOto(ccv, syllable.vowelTone)) {
+                        basePhoneme = ccv;
+                    } else if (HasOto($"_{cc.Last()}{v}", syllable.vowelTone) && HasOto(cc1, syllable.vowelTone) && !cc1.Contains($"{cc[i]} {cc[i + 1]}")) {
                         basePhoneme = $"_{cc.Last()}{v}";
                     }
                     if (i + 1 < lastC) {
@@ -237,14 +248,18 @@ namespace OpenUtau.Plugin.Builtin
                         if (!HasOto($"{cc[i + 1]}{cc[i + 2]}", syllable.tone) && !HasOto($"{string.Join("", cc.Skip(i))}", syllable.tone)) {
                             cc2 = $"{cc[i + 1]} {cc[i + 2]}";
                         }
-                        if (HasOto($"_{cc.Last()}{v}", syllable.vowelTone) && HasOto(cc2, syllable.vowelTone) && !cc2.Contains($"{cc[i + 1]} {cc[i + 2]}")) {
+                        if (HasOto(ccv, syllable.vowelTone)) {
+                            basePhoneme = ccv;
+                        } else if (HasOto($"_{cc.Last()}{v}", syllable.vowelTone) && HasOto(cc2, syllable.vowelTone) && !cc2.Contains($"{cc[i + 1]} {cc[i + 2]}")) {
                             basePhoneme = $"_{cc.Last()}{v}";
                         } if (HasOto(cc1, syllable.tone) && HasOto(cc2, syllable.tone) && !cc1.Contains($"{string.Join("", cc.Skip(i))}")) {
                             // like [V C1] [C1 C2] [C2 C3] [C3 ..]
                             phonemes.Add(cc1);
                         } else if (TryAddPhoneme(phonemes, syllable.tone, cc1)) {
                             // like [V C1] [C1 C2] [C2 ..]
-                            i++;
+                            if (cc1.Contains($"{string.Join("", cc.Skip(i))}")) {
+                                i++;
+                            }
                         } else if (TryAddPhoneme(phonemes, syllable.tone, $"{cc[i]} {cc[i + 1]}-")) {
                             // like [V C1] [C1 C2-] [C3 ..]
                             if (burstConsonants.Contains(cc[i + 1])) {
@@ -252,7 +267,7 @@ namespace OpenUtau.Plugin.Builtin
                             } else {
                                 // continue as usual
                             }
-                        } else if (burstConsonants.Contains(cc[i]) && !HasOto(cc2, syllable.tone)) {
+                        } else if (burstConsonants.Contains(cc[i])) {
                             // like [V C1] [C1] [C2 ..]
                             TryAddPhoneme(phonemes, syllable.tone, cc[i], $"{cc[i]} -");
                             if (cc[i] == cc.Last() && !affricates.Contains(cc[i])) {
