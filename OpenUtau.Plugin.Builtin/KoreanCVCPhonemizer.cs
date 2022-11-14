@@ -586,9 +586,9 @@ namespace OpenUtau.Plugin.Builtin {
                     vowel = vow;
                     
                     var endBreath = $"{vow} R";
-                    if (prevLyric.Contains("eo")) {
+                    if (prevLyric.EndsWith("eo")) {
                         endBreath = $"eo R";
-                    } else if (prevLyric.Contains("eu")) {
+                    } else if (prevLyric.EndsWith("eu")) {
                         endBreath = $"eu R";
                     }
                                         
