@@ -2,7 +2,7 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-  <!--<system:String x:Key="context.note.copy">Copy note</system:String>-->
+  <system:String x:Key="context.note.copy">Copiar nota</system:String>
   <system:String x:Key="context.note.delete">Remover nota</system:String>
   <system:String x:Key="context.part.delete">Deletar parte</system:String>
   <system:String x:Key="context.part.rename">Renomear parte</system:String>
@@ -13,10 +13,10 @@
   <system:String x:Key="context.pitch.pointadd">Adicionar ponto</system:String>
   <system:String x:Key="context.pitch.pointdel">Remover ponto</system:String>
   <system:String x:Key="context.pitch.pointsnapprev">Conectar à nota anterior </system:String>
-  <!--<system:String x:Key="context.timeline.addtempo">Add tempo change at {0}</system:String>-->
-  <!--<system:String x:Key="context.timeline.addtimesig">Add time signature change</system:String>-->
-  <!--<system:String x:Key="context.timeline.deltempo">Delete tempo change at {0}</system:String>-->
-  <!--<system:String x:Key="context.timeline.deltimesig">Delete time signature change</system:String>-->
+  <system:String x:Key="context.timeline.addtempo">Adicionar mudança de BPM em {0}</system:String>
+  <system:String x:Key="context.timeline.addtimesig">Adicionar mudança de tempo</system:String>
+  <system:String x:Key="context.timeline.deltempo">Remover mudança de BPM em {0}</system:String>
+  <system:String x:Key="context.timeline.deltimesig">Remover mudança de tempo</system:String>
 
   <system:String x:Key="debug.clear">Limpar</system:String>
   <system:String x:Key="debug.copylog">Copiar Log</system:String>
@@ -37,10 +37,10 @@
   <system:String x:Key="dialogs.noresampler.caption">Sem resampler</system:String>
   <system:String x:Key="dialogs.noresampler.message">Sem resampler! Coloque o .exe ou .dll do seu resampler favorito na pasta Resampler e selecione-o em Preferências!</system:String>
   <system:String x:Key="dialogs.timesig.caption">Assinatura de Tempo</system:String>
-  <!--<system:String x:Key="dialogs.tracksettings.caption">Track Settings</system:String>-->
-  <!--<system:String x:Key="dialogs.tracksettings.location">Location</system:String>-->
-  <!--<system:String x:Key="dialogs.tracksettings.renderer">Renderer</system:String>-->
-  <!--<system:String x:Key="dialogs.tracksettings.setasdefault">Set As Default</system:String>-->
+  <system:String x:Key="dialogs.tracksettings.caption">Configurações de Faixa</system:String>
+  <system:String x:Key="dialogs.tracksettings.location">Local</system:String>
+  <system:String x:Key="dialogs.tracksettings.renderer">Renderizador</system:String>
+  <system:String x:Key="dialogs.tracksettings.setasdefault">Definir como Padrão</system:String>
 
   <system:String x:Key="errors.caption">Erro</system:String>
 
@@ -79,7 +79,7 @@
   <system:String x:Key="menu.edit.undo">Desfazer</system:String>
   <system:String x:Key="menu.file">Arquivo</system:String>
   <system:String x:Key="menu.file.exit">Fechar</system:String>
-  <!--<system:String x:Key="menu.file.exportmidi">Export Midi File</system:String>-->
+  <system:String x:Key="menu.file.exportmidi">Exportar Arquivo Midi</system:String>
   <system:String x:Key="menu.file.exportust">Exportar como Ust</system:String>
   <system:String x:Key="menu.file.exportustto">Exportar Ust para...</system:String>
   <system:String x:Key="menu.file.exportwav">Exportar Arquivos Wav</system:String>
@@ -99,9 +99,9 @@
   <system:String x:Key="menu.file.savetemplate">Salvar Modelo...</system:String>
   <system:String x:Key="menu.help">Ajuda</system:String>
   <system:String x:Key="menu.help.about">Sobre OpenUTAU</system:String>
-  <!--<system:String x:Key="menu.help.checkupdate">Check Update</system:String>-->
-  <!--<system:String x:Key="menu.help.logslocation">Open Logs Location</system:String>-->
-  <!--<system:String x:Key="menu.help.reportissue">Report Issue</system:String>-->
+  <system:String x:Key="menu.help.checkupdate">Checar Atualização</system:String>
+  <system:String x:Key="menu.help.logslocation">Abrir Localização de Logs</system:String>
+  <system:String x:Key="menu.help.reportissue">Reportar Problemas</system:String>
   <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
   <system:String x:Key="menu.tools">Ferramentas</system:String>
   <system:String x:Key="menu.tools.clearcache">Limpar Cache</system:String>
@@ -161,13 +161,13 @@ Aviso: esta opção remove predefinições personalizadas.</system:String>
   <system:String x:Key="oto.set">Pasta</system:String>
   <system:String x:Key="oto.suffix">Sufixo</system:String>
 
-  <!--<system:String x:Key="phoneticassistant.caption">Phonetic Assistant</system:String>-->
-  <!--<system:String x:Key="phoneticassistant.copy">Copy</system:String>-->
+  <system:String x:Key="phoneticassistant.caption">Assistente Fonético</system:String>
+  <system:String x:Key="phoneticassistant.copy">Copiar</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">Lírica</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Trocar "-" por "+"</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">Editar Lírica</system:String>
-  <!--<system:String x:Key="pianoroll.menu.lyrics.hanzitopinyin">Hanzi to Pinyin</system:String>-->
+  <system:String x:Key="pianoroll.menu.lyrics.hanzitopinyin">Hanzi para Pinyin</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana para Romaji</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">(Japonês) VCV para CV</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Remover Letra de Suffixo</system:String>
@@ -179,8 +179,8 @@ Aviso: esta opção remove predefinições personalizadas.</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">Adicionar Final "R"</system:String>
   <system:String x:Key="pianoroll.menu.notes.clear.vibratos">Limpar Vibratos</system:String>
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Carregar Tom Renderizado</system:String>
-  <!--<system:String x:Key="pianoroll.menu.notes.octavedown">Move an octave down</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.notes.octaveup">Move an octave up</system:String>-->
+  <system:String x:Key="pianoroll.menu.notes.octavedown">Mover uma oitava abaixo</system:String>
+  <system:String x:Key="pianoroll.menu.notes.octaveup">Mover uma oitava acima</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">Quantizar para 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Quantizar para 1/64</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">Redefinir Todas as Expressões</system:String>
@@ -202,26 +202,26 @@ Aviso: esta opção remove predefinições personalizadas.</system:String>
   <system:String x:Key="pianoroll.tool.drawpitch">Ferramenta Desenhar Tom (4)</system:String>
   <system:String x:Key="pianoroll.tool.eraser">Ferramenta Borracha (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">Ferramenta Faca (5)</system:String>
-  <system:String x:Key="pianoroll.tool.penplus">Ferramenta Caneta+ (Ctrl + 2)
+  <system:String x:Key="pianoroll.tool.penplus">Ferramenta Lapis+ (Ctrl + 2)
 Botão esquerdo para desenhar
 Botão direito e arraste para apagar
 Segure Ctrl para selecionar</system:String>
-  <!--<system:String x:Key="pianoroll.tool.penv2">Pen Tool (2)
-    Left click to draw
-Hold Ctrl to select</system:String>-->
-  <!--<system:String x:Key="pianoroll.tool.selectionv2">Selection Tool (1)</system:String>-->
+  <system:String x:Key="pianoroll.tool.penv2">Ferramenta Lapis (2)
+    Botão esquerdo para desenhar
+Segure Ctrl para selecionar</system:String>
+  <system:String x:Key="pianoroll.tool.selectionv2">Ferramenta Seleção (1)</system:String>
 
   <system:String x:Key="prefs.advanced">Avançado</system:String>
   <!--<system:String x:Key="prefs.advanced.beta">Beta</system:String>-->
-  <!--<system:String x:Key="prefs.advanced.lyricshelper">Lyrics Helper</system:String>-->
-  <!--<system:String x:Key="prefs.advanced.lyricshelper.brackets">Lyrics Helper Adds Brackets</system:String>-->
+  <system:String x:Key="prefs.advanced.lyricshelper">Ajudante Lírico</system:String>
+  <system:String x:Key="prefs.advanced.lyricshelper.brackets">Ajudante Lírico Adiciona Colchetes</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging">Resampler Log</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging.warn">Armazena a saída do resampler em arquivos de log. Esta opção atrasa a UI e a renderização.</system:String>
   <system:String x:Key="prefs.advanced.stable">Estável</system:String>
-  <!--<system:String x:Key="prefs.advanced.vlabelerpath">Vlabeler Path</system:String>-->
+  <system:String x:Key="prefs.advanced.vlabelerpath">Caminho do vLabeler</system:String>
   <system:String x:Key="prefs.appearance">Aparência</system:String>
   <system:String x:Key="prefs.appearance.lang">Idioma</system:String>
-  <!--<system:String x:Key="prefs.appearance.showghostnotes">Show other tracks' notes on piano roll</system:String>-->
+  <system:String x:Key="prefs.appearance.showghostnotes">Mostrar notas fantasma</system:String>
   <system:String x:Key="prefs.appearance.showportrait">Mostrar retrato no piano roll</system:String>
   <system:String x:Key="prefs.appearance.theme">Tema</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">Escuro</system:String>
@@ -230,8 +230,8 @@ Hold Ctrl to select</system:String>-->
   <system:String x:Key="prefs.note.restart">Nota: reinicie o OpenUtau após alterar este item.</system:String>
   <!--<system:String x:Key="prefs.off">Off</system:String>-->
   <!--<system:String x:Key="prefs.on">On</system:String>-->
-  <!--<system:String x:Key="prefs.otoeditor">Oto Editor</system:String>-->
-  <!--<system:String x:Key="prefs.otoeditor.select">Default Oto Editor</system:String>-->
+  <system:String x:Key="prefs.otoeditor">Editor de Oto</system:String>
+  <system:String x:Key="prefs.otoeditor.select">Editor de Oto Padr</system:String>
   <system:String x:Key="prefs.paths">Diretório</system:String>
   <system:String x:Key="prefs.paths.addlsinger">Caminho Adicional de Vozes</system:String>
   <system:String x:Key="prefs.paths.addlsinger.install">Instalar no Caminho Adicional de Vozes</system:String>
@@ -271,12 +271,12 @@ Hold Ctrl to select</system:String>-->
   <system:String x:Key="progress.waitingrendering">Esperando Renderização</system:String>
 
   <system:String x:Key="singers.caption">Vozes</system:String>
-  <!--<system:String x:Key="singers.editoto.editinvlabeler">Edit In vLabeler</system:String>-->
-  <!--<system:String x:Key="singers.editoto.gotosource">Goto Source File</system:String>-->
+  <system:String x:Key="singers.editoto.editinvlabeler">Editar no vLabeler</system:String>
+  <system:String x:Key="singers.editoto.gotosource">Vá para o Arquivo Original</system:String>
   <system:String x:Key="singers.editoto.reset">Redefinir Otos</system:String>
   <system:String x:Key="singers.editoto.save">Salvar Otos</system:String>
-  <!--<system:String x:Key="singers.editoto.setvlabelerpath">Download vLabeler (1.0.0-beta1 or higher) from https://github.com/sdercolin/vlabeler and set vLabeler path in Preferences first!</system:String>-->
-  <!--<system:String x:Key="singers.errorreport">Generate Singer Error Report</system:String>-->
+  <system:String x:Key="singers.editoto.setvlabelerpath">Baixe o vLabeler (1.0.0-beta1 ou maior) em https://github.com/sdercolin/vlabeler e adicione o caminho do vLabeler nas Preferências primeiro!</system:String>
+  <system:String x:Key="singers.errorreport">Gerar Relatório de Erro de Cantor</system:String>
   <system:String x:Key="singers.location">Pasta</system:String>
   <system:String x:Key="singers.otoview.moveleft">Mover para Esquerda</system:String>
   <system:String x:Key="singers.otoview.moveright">Mover para Direita</system:String>
@@ -302,7 +302,7 @@ Hold Ctrl to select</system:String>-->
   <system:String x:Key="singers.subbanks.set">Aplicar</system:String>
   <system:String x:Key="singers.subbanks.tone">Tom</system:String>
   <system:String x:Key="singers.subbanks.toneranges">Alcance</system:String>
-  <!--<system:String x:Key="singers.visitwebsite">Visit Website</system:String>-->
+  <system:String x:Key="singers.visitwebsite">Visite o Website</system:String>
 
   <system:String x:Key="tip.aliasbox">Substituir Alias</system:String>
   <system:String x:Key="tip.exps">
@@ -353,5 +353,5 @@ Geral
 
   <system:String x:Key="warning">Atenção</system:String>
   <system:String x:Key="warning.asciipath">O caminho da pasta do OpenUtau "{0}" contém caracteres não ASCII. Resamplers .exe podem não funcionar.</system:String>
-  <!--<system:String x:Key="warning.renderer">No settings for this renderer. Please select CLASSIC.</system:String>-->
+  <system:String x:Key="warning.renderer">Sem configurações para este renderizador. Favor selecionar CLASSIC.</system:String>
 </ResourceDictionary>
