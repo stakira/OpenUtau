@@ -110,6 +110,25 @@ namespace OpenUtau.App.ViewModels {
             }
             return true;
         }
+        public bool Select(UNote start, UNote end) {
+            // NOTE edge case where start and end are at the same exact position but added out of order
+            // but i think that's unlikely
+            // ensure in positive direction
+            if (start.position > end.position) {
+                var tmp = start;
+                start = end;
+                end = tmp;
+            }
+            var cursor = start;
+            lock (_notes) {
+                SelectNone();
+                do {
+                    _notes.Add(cursor);
+                    cursor = cursor.Next;
+                } while (cursor != end && cursor.Next != null);
+            }
+            return true;
+        }
         public bool SelectAll() {
             int initialCount = _notes.Count;
             IsReversed = false;
@@ -155,6 +174,28 @@ namespace OpenUtau.App.ViewModels {
                 var cursor = _notes.LastOrDefault();
                 while ((cursor = cursor?.Next) != null) {
                     wasChange |= _notes.Add(cursor);
+                }
+            }
+            return wasChange;
+        }
+        public bool SelectTo(UNote note) {
+            if (note == null) {
+                return false;
+            }
+            TempSelectedNotes.Clear();
+            // if empty selection just select specified note
+            if (IsEmpty) {
+                return Select(note);
+            }
+            bool wasChange = false;
+            lock (_notes) {
+                IsReversed = note.position <= _notes.First().position;
+                var cursor = IsReversed ? _notes.FirstOrDefault() : _notes.LastOrDefault();
+                while ((cursor = IsReversed ? cursor?.Prev : cursor?.Next) != null) {
+                    wasChange |= _notes.Add(cursor);
+                    if (cursor == note) {
+                        break;
+                    }
                 }
             }
             return wasChange;
