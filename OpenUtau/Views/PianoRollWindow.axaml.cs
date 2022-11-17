@@ -1183,6 +1183,22 @@ namespace OpenUtau.App.Views {
                         return true;
                     }
                     break;
+                case Key.F:
+                    // scroll selection into focus
+                    if (isNone) {
+                        var note = notesVm.Selection.FirstOrDefault();
+                        if (note != null) {
+                            DocManager.Inst.ExecuteCmd(new FocusNoteNotification(notesVm.Part, note));
+                        }
+                        return true;
+                    }
+                    if (isCtrl) {
+                        if (!notesVm.Selection.IsEmpty) {
+                            playVm.MovePlayPos(notesVm.Part.position + notesVm.Selection.FirstOrDefault()!.position);
+                        }
+                        return true;
+                    }
+                    break;
                 case Key.E:
                     // zoom in
                     if (isNone) {
