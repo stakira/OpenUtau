@@ -31,11 +31,19 @@ namespace OpenUtau.App.ViewModels {
         public string AdditionalSingersPath => PathManager.Inst.AdditionalSingersPath;
         [Reactive] public int InstallToAdditionalSingersPath { get; set; }
         [Reactive] public int PreRender { get; set; }
+        [Reactive] public int NumRenderThreads { get; set; }
+        [Reactive] public bool HighThreads { get; set; }
         [Reactive] public int Theme { get; set; }
         [Reactive] public int ShowPortrait { get; set; }
         [Reactive] public int ShowGhostNotes { get; set; }
         [Reactive] public int OtoEditor { get; set; }
         public string VLabelerPath => Preferences.Default.VLabelerPath;
+        public int LogicalCoreCount {
+            get => Environment.ProcessorCount; 
+        }
+        public int SafeMaxThreadCount { 
+            get => Math.Min(8, LogicalCoreCount / 2);
+        }
 
         public List<CultureInfo>? Languages { get; }
         public CultureInfo? Language {
@@ -93,6 +101,7 @@ namespace OpenUtau.App.ViewModels {
                 ? null
                 : CultureInfo.GetCultureInfo(Preferences.Default.Language);
             PreRender = Preferences.Default.PreRender ? 1 : 0;
+            NumRenderThreads = Preferences.Default.NumRenderThreads;
             Theme = Preferences.Default.Theme;
             ShowPortrait = Preferences.Default.ShowPortrait ? 1 : 0;
             ShowGhostNotes = Preferences.Default.ShowGhostNotes ? 1 : 0;
@@ -178,6 +187,12 @@ namespace OpenUtau.App.ViewModels {
             this.WhenAnyValue(vm => vm.OtoEditor)
                 .Subscribe(index => {
                     Preferences.Default.OtoEditor = index;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.NumRenderThreads)
+                .Subscribe(index => {
+                    Preferences.Default.NumRenderThreads = index;
+                    HighThreads = index > SafeMaxThreadCount ? true : false;
                     Preferences.Save();
                 });
         }
