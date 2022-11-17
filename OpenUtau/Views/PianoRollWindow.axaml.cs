@@ -836,10 +836,11 @@ namespace OpenUtau.App.Views {
                     break;
                 case Key.Enter:
                     if (isNone) {
-                        if (notesVm.Selection.Count > 1) {
+                        if (notesVm.Selection.Count == 1) {
+                            var note = notesVm.Selection.First();
+                            lyricBox?.Show(ViewModel.NotesViewModel.Part!, new LyricBoxNote(note), note.lyric);
+                        } else if (notesVm.Selection.Count > 1) {
                             EditLyrics();
-                        } else if (!notesVm.Selection.IsEmpty) {
-                            OpenLyricBox();
                         }
                         return true;
                     }
