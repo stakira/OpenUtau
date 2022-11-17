@@ -1161,8 +1161,19 @@ namespace OpenUtau.App.Views {
                         notesVm.ShowWaveform = !notesVm.ShowWaveform;
                         return true;
                     }
+                    // scroll up
+                    // NOTE set to alt to avoid conflict with showwaveform toggle
+                    if (isAlt) {
+                        notesVm.TrackOffset = Math.Max(notesVm.TrackOffset - 2, 0);
+                        return true;
+                    }
                     break;
                 case Key.S:
+                    // scroll down
+                    if (isAlt) {
+                        notesVm.TrackOffset = Math.Min(notesVm.TrackOffset + 2, notesVm.VScrollBarMax);
+                        return true;
+                    }
                     if (isCtrl) {
                         _ = MainWindow?.Save();
                         return true;
