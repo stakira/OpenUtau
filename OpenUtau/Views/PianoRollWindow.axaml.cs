@@ -968,6 +968,14 @@ namespace OpenUtau.App.Views {
                         notesVm.MoveCursor(-1);
                         return true;
                     }
+                    if (isAlt) {
+                        notesVm.ResizeSelectedNotes(-1 * deltaTicks);
+                        return true;
+                    }
+                    if (isCtrl) {
+                        notesVm.MoveSelectedNotes(-1 * deltaTicks);
+                        return true;
+                    }
                     if (isShift) {
                         notesVm.ExtendSelection(-1);
                         return true;
@@ -978,8 +986,28 @@ namespace OpenUtau.App.Views {
                         notesVm.MoveCursor(1);
                         return true;
                     }
+                    if (isAlt) {
+                        notesVm.ResizeSelectedNotes(deltaTicks);
+                        return true;
+                    }
+                    if (isCtrl) {
+                        notesVm.MoveSelectedNotes(deltaTicks);
+                        return true;
+                    }
                     if (isShift) {
                         notesVm.ExtendSelection(1);
+                        return true;
+                    }
+                    break;
+                case Key.OemPlus:
+                    if (isNone) {
+                        notesVm.ResizeSelectedNotes(deltaTicks);
+                        return true;
+                    }
+                    break;
+                case Key.OemMinus:
+                    if (isNone) {
+                        notesVm.ResizeSelectedNotes(-1 * deltaTicks);
                         return true;
                     }
                     break;
