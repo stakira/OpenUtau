@@ -211,11 +211,11 @@ namespace OpenUtau.App.ViewModels {
             }
             int movesRemaining = Math.Abs(delta);
             bool isForwardMove = delta > 0;
-            bool wasChange = false;
-            // if multiple selection then collapse to first/last item (unless delta is > 1)
+            // if multiple selection then collapse to first/last item
             if (IsMultiple) {
-                movesRemaining--;
+                return Select(isForwardMove ? _notes.Last() : _notes.First());
             }
+            bool wasChange = false;
             lock (_notes) {
                 UNote? cursor = IsReversed ? _notes.First() : _notes.Last();
                 while (
