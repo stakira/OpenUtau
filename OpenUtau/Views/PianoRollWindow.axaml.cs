@@ -963,6 +963,26 @@ namespace OpenUtau.App.Views {
                         return true;
                     }
                     break;
+                case Key.Left:
+                    if (isNone) {
+                        notesVm.MoveCursor(-1);
+                        return true;
+                    }
+                    if (isShift) {
+                        notesVm.ExtendSelection(-1);
+                        return true;
+                    }
+                    break;
+                case Key.Right:
+                    if (isNone) {
+                        notesVm.MoveCursor(1);
+                        return true;
+                    }
+                    if (isShift) {
+                        notesVm.ExtendSelection(1);
+                        return true;
+                    }
+                    break;
                 #endregion
                 #region clipboard and edit keys
                 case Key.Z:
@@ -1019,13 +1039,24 @@ namespace OpenUtau.App.Views {
                         playVm.MovePlayPos(notesVm.Part.position);
                         return true;
                     }
+                    if (isShift) {
+                        notesVm.ExtendSelection(notesVm.Part.notes.FirstOrDefault());
+                        return true;
+                    }
                     break;
                 case Key.End:
                     if (isNone) {
                         playVm.MovePlayPos(notesVm.Part.End);
                         return true;
                     }
+                    if (isShift) {
+                        notesVm.ExtendSelection(notesVm.Part.notes.LastOrDefault());
+                        return true;
+                    }
                     break;
+                #endregion
+                #region scroll and select keys
+                // SCROLL / SELECT
                 case Key.A:
                     // select all
                     if (isCtrl) {
