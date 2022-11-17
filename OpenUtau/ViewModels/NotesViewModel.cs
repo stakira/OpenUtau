@@ -408,11 +408,50 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void SelectNote(UNote note) {
+            SelectNote(note, true);
+        }
+        public void SelectNote(UNote note, bool deselectExisting) {
             if (Part == null) {
                 return;
             }
-            Selection.Add(note);
-            MessageBus.Current.SendMessage(new NotesSelectionEvent(Selection));
+            if (deselectExisting ? Selection.Select(note) : Selection.Add(note)) {
+                MessageBus.Current.SendMessage(new NotesSelectionEvent(Selection));
+            }
+        }
+        public void MoveSelection(int delta) {
+            if (Selection.Move(delta)) {
+                MessageBus.Current.SendMessage(new NotesSelectionEvent(Selection));
+                ScrollIntoView(Selection.Head!);
+            };
+        }
+        public void ExtendSelection(int delta) {
+            if (Selection.Resize(delta)) {
+                MessageBus.Current.SendMessage(new NotesSelectionEvent(Selection));
+                ScrollIntoView(Selection.Head!);
+            };
+        }
+        public void ExtendSelection(UNote note) {
+            if (Selection.SelectTo(note)) {
+                MessageBus.Current.SendMessage(new NotesSelectionEvent(Selection));
+            };
+        }
+
+        public void MoveCursor(int delta) {
+            if (!Selection.IsEmpty) {
+                MoveSelection(delta);
+                return;
+            }
+            var target = Part!.notes.FirstOrDefault();
+            if (target == null) {
+                return;
+            }
+            var centerTick = TickOffset + ViewportTicks * 0.5;
+            // get closest note to center, without going over
+            while (target.Next != null && (target!.position < TickOffset || target!.Next.position < centerTick)) {
+                target = target.Next;
+            }
+            SelectNote(target);
+            ScrollIntoView(target);
         }
 
         public void SelectAllNotes() {
@@ -458,6 +497,43 @@ namespace OpenUtau.App.ViewModels {
             }
             DocManager.Inst.StartUndoGroup();
             DocManager.Inst.ExecuteCmd(new MoveNoteCommand(Part, selectedNotes, 0, deltaNoteNum));
+            DocManager.Inst.EndUndoGroup();
+        }
+        public void MoveSelectedNotes(int deltaTicks) {
+            if (Selection.IsEmpty || Part == null) {
+                return;
+            }
+            var selectedNotes = Selection.ToList();
+            // TODO REVIEW should the end be clamped to end of part? or allow to go over?
+            //var delta = Math.Clamp(deltaTicks, -1 * selectedNotes.First().position, Part.End - selectedNotes.Last().position);
+            var delta = Math.Max(deltaTicks, -1 * selectedNotes.First().position);
+
+            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.ExecuteCmd(new MoveNoteCommand(Part, selectedNotes, delta, 0));
+            DocManager.Inst.EndUndoGroup();
+        }
+
+        public void ResizeSelectedNotes(int deltaTicks) {
+            if (Selection.IsEmpty || Part == null) {
+                return;
+            }
+
+            var selectedNotes = Selection.ToList();
+
+            // ignore if change would make a note smaller than minimal size
+            if (deltaTicks < 0) {
+                int smallestDuration = selectedNotes.Select(n => n.duration).Min();
+
+                var project = DocManager.Inst.Project;
+                int snapUnit = project.resolution * 4 / SnapDiv;
+                int minNoteTicks = IsSnapOn ? snapUnit : 15;
+
+                if (smallestDuration + deltaTicks < minNoteTicks) {
+                    return;
+                }
+            }
+            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.ExecuteCmd(new ResizeNoteCommand(Part, selectedNotes, deltaTicks));
             DocManager.Inst.EndUndoGroup();
         }
 
