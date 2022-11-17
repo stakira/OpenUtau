@@ -1179,6 +1179,38 @@ namespace OpenUtau.App.Views {
                         return true;
                     }
                     break;
+                case Key.E:
+                    // zoom in
+                    if (isNone) {
+                        double x = 0;
+                        double y = 0;
+                        if (!notesVm.Selection.IsEmpty) {
+                            x = (notesVm.Selection.Head!.position - notesVm.TickOffset) / notesVm.ViewportTicks;
+                            y = (ViewConstants.MaxTone - 1 - notesVm.Selection.Head.tone - notesVm.TrackOffset) / notesVm.ViewportTracks;
+                        } else if (notesVm.TickOffset != 0) {
+                            x = 0.5;
+                            y = 0.5;
+                        }
+                        notesVm.OnXZoomed(new Point(x, y), 0.1);
+                        return true;
+                    }
+                    break;
+                case Key.Q:
+                    // zoom out
+                    if (isNone) {
+                        double x = 0;
+                        double y = 0;
+                        if (!notesVm.Selection.IsEmpty) {
+                            x = (notesVm.Selection.Head!.position - notesVm.TickOffset) / notesVm.ViewportTicks;
+                            y = (ViewConstants.MaxTone - 1 - notesVm.Selection.Head.tone - notesVm.TrackOffset) / notesVm.ViewportTracks;
+                        } else if (notesVm.TickOffset != 0) {
+                            x = 0.5;
+                            y = 0.5;
+                        }
+                        notesVm.OnXZoomed(new Point(x, y), -0.1);
+                        return true;
+                    }
+                    break;
                 #endregion
             }
             return false;
