@@ -1132,6 +1132,11 @@ namespace OpenUtau.App.Views {
                 #region scroll and select keys
                 // SCROLL / SELECT
                 case Key.A:
+                    // scroll left
+                    if (isNone) {
+                        notesVm.TickOffset = Math.Max(0, notesVm.TickOffset - snapUnit);
+                        return true;
+                    }
                     // select all
                     if (isCtrl) {
                         notesVm.SelectAllNotes();
@@ -1139,6 +1144,11 @@ namespace OpenUtau.App.Views {
                     }
                     break;
                 case Key.D:
+                    // scroll right
+                    if (isNone) {
+                        notesVm.TickOffset = Math.Min(notesVm.TickOffset + snapUnit, notesVm.HScrollBarMax);
+                        return true;
+                    }
                     // select none
                     if (isCtrl) {
                         notesVm.SelectAllNotes();
