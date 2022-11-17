@@ -938,6 +938,10 @@ namespace OpenUtau.App.Views {
                         notesVm.IsSnapOn = !notesVm.IsSnapOn;
                         return true;
                     }
+                    if (isAlt) {
+                        var menu = this.FindControl<ContextMenu>("SnapDivMenu");
+                        menu.Open();
+                    }
 
                     break;
                 #endregion
