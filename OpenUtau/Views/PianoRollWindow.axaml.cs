@@ -1089,6 +1089,45 @@ namespace OpenUtau.App.Views {
                         return true;
                     }
                     break;
+                case Key.OemOpenBrackets:
+                    // move playhead left
+                    if (isNone) {
+                        playVm.MovePlayPos(playVm.PlayPosTick - snapUnit);
+                        return true;
+                    }
+                    // to selection start
+                    if (isCtrl) {
+                        if (!notesVm.Selection.IsEmpty) {
+                            playVm.MovePlayPos(notesVm.Part.position + notesVm.Selection.FirstOrDefault()!.position);
+                        }
+                        return true;
+                    }
+                    // to view start
+                    if (isShift) {
+                        playVm.MovePlayPos(notesVm.Part.position + (int)notesVm.TickOffset);
+                        return true;
+                    }
+                    break;
+                case Key.OemCloseBrackets:
+                    // move playhead right
+                    if (isNone) {
+                        playVm.MovePlayPos(playVm.PlayPosTick + snapUnit);
+                        return true;
+                    }
+                    // to selection end
+                    if (isCtrl) {
+                        if (!notesVm.Selection.IsEmpty) {
+                            playVm.MovePlayPos(notesVm.Part.position + notesVm.Selection.LastOrDefault()!.RightBound);
+                        }
+                        return true;
+                    }
+                    // to view end
+                    if (isShift) {
+                        playVm.MovePlayPos(notesVm.Part.position + (int)(notesVm.TickOffset));
+                        return true;
+                    }
+                    break;
+
                 #endregion
                 #region scroll and select keys
                 // SCROLL / SELECT
