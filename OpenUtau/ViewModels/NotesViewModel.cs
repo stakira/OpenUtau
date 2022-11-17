@@ -487,6 +487,26 @@ namespace OpenUtau.App.ViewModels {
             Selection.Remove(toCleanup);
         }
 
+        public void InsertNote() {
+            if(Part == null) {
+                return;
+            }
+
+            var project = DocManager.Inst.Project;
+            int snapUnit = project.resolution * 4 / SnapDiv;
+
+            var fromNote = Selection.LastOrDefault();
+            int DEFAULT_TONE = 12 * 5; // C4
+            int tone = fromNote?.tone ?? DEFAULT_TONE;
+            int tick = fromNote?.RightBound ?? (int)TickOffset;
+            int dur = fromNote?.duration ?? snapUnit;
+            DocManager.Inst.StartUndoGroup();
+            UNote note = DocManager.Inst.Project.CreateNote(tone, tick, dur);
+            DocManager.Inst.ExecuteCmd(new AddNoteCommand(Part, note));
+            SelectNote(note);
+            DocManager.Inst.EndUndoGroup();
+        }
+
         public void TransposeSelection(int deltaNoteNum) {
             if (Selection.IsEmpty) {
                 return;
