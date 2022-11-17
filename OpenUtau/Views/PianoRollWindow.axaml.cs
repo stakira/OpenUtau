@@ -1052,6 +1052,13 @@ namespace OpenUtau.App.Views {
                         return true;
                     }
                     break;
+                // INSERT + DELETE
+                case Key.Insert:
+                    if (isNone) {
+                        notesVm.InsertNote();
+                        return true;
+                    }
+                    break;
                 case Key.Delete:
                 case Key.Back:
                     if (isNone) {
