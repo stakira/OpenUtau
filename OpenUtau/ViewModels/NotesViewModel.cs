@@ -695,6 +695,9 @@ namespace OpenUtau.App.ViewModels {
                 } else if (cmd is FocusNoteNotification focusNote) {
                     if (focusNote.part == Part) {
                         FocusNote(focusNote.note);
+                        if (Selection.Count <= 1) {
+                            SelectNote(focusNote.note);
+                        }
                     }
                 } else if (cmd is ValidateProjectNotification
                     || cmd is SingersRefreshedNotification
