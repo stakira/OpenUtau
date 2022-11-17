@@ -149,7 +149,7 @@ namespace OpenUtau.Core {
             Task.Run(() => {
                 var task = Task.Run(() => {
                     RenderEngine engine = new RenderEngine(project);
-                    var projectMix = engine.RenderMixdown(0, DocManager.Inst.MainScheduler, ref renderCancellation).Item1;
+                    var projectMix = engine.RenderMixdown(DocManager.Inst.MainScheduler, ref renderCancellation);
                     DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exporting to {exportPath}."));
                     WaveFileWriter.CreateWaveFile16(exportPath, new ExportAdapter(projectMix).ToMono(1, 0));
                     DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exported to {exportPath}."));
