@@ -814,6 +814,20 @@ namespace OpenUtau.App.Views {
                         return true;
                     }
                     break;
+                case Key.Escape:
+                    if (isNone) {
+                        // collapse/empty selection
+                        var numSelected = notesVm.Selection.Count;
+                        // if single or all notes then clear
+                        if (numSelected == 1 || numSelected == notesVm.Part.notes.Count) {
+                            notesVm.DeselectNotes();
+                        } else if (numSelected > 1) {
+                            // collapse selection
+                            notesVm.SelectNote(notesVm.Selection.Head!);
+                        }
+                        return true;
+                    }
+                    break;
                 case Key.F4:
                     if (isAlt) {
                         Hide();
