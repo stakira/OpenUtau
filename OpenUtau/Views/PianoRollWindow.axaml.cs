@@ -399,7 +399,7 @@ namespace OpenUtau.App.Views {
                 if (hitInfo.hitBody) {
                     // if note in question was already in selection before clearing
                     if (selectedNotes.Contains(hitInfo.note)) {
-                        ViewModel.NotesViewModel.SelectNote(hitInfo.note);
+                        ViewModel.NotesViewModel.SelectNote(hitInfo.note, false);
                     }
                 }
                 if (ViewModel.NotesViewModel.Selection.Count > 0) {
