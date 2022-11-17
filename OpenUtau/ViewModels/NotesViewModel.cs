@@ -626,6 +626,19 @@ namespace OpenUtau.App.ViewModels {
             TrackOffset = Math.Clamp(ViewConstants.MaxTone - note.tone + 2 - ViewportTracks * 0.5, 0, VScrollBarMax);
         }
 
+        private void ScrollIntoView(UNote note) {
+            if (note.position < TickOffset || note.RightBound > TickOffset + ViewportTicks) {
+                AutoScroll(TickToneToPoint(note.position, 0).X);
+            }
+            var toneMargin = 4;
+            var noteOffset = ViewConstants.MaxTone - note.tone - 1;
+            if (noteOffset < TrackOffset + toneMargin) {
+                TrackOffset = Math.Max(noteOffset - toneMargin, 0);
+            } else if (noteOffset > TrackOffset + ViewportTracks - toneMargin) {
+                TrackOffset = Math.Min(noteOffset + toneMargin - ViewportTracks, VScrollBarMax);
+            }
+        }
+
         internal (UNote[], string[]) PrepareInsertLyrics() {
             var first = Selection.FirstOrDefault();
             var last = Selection.LastOrDefault();
@@ -678,7 +691,7 @@ namespace OpenUtau.App.ViewModels {
                     PrimaryKeyNotSupported = !IsExpSupported(PrimaryKey);
                 } else if (cmd is SetPlayPosTickNotification setPlayPosTick) {
                     SetPlayPos(setPlayPosTick.playPosTick, setPlayPosTick.waitingRendering);
-                    MaybeAutoScroll();
+                    MaybeAutoScroll(PlayPosX);
                 } else if (cmd is FocusNoteNotification focusNote) {
                     if (focusNote.part == Part) {
                         FocusNote(focusNote.note);
@@ -738,42 +751,42 @@ namespace OpenUtau.App.ViewModels {
             }
         }
 
-        private void MaybeAutoScroll() {
+        private void MaybeAutoScroll(double positionX) {
             var autoScrollPreference = Convert.ToBoolean(Preferences.Default.PlaybackAutoScroll);
             if (autoScrollPreference) {
-                AutoScroll();
+                AutoScroll(positionX);
             }
         }
 
-        private void AutoScroll() {
-            double scrollDelta = GetScrollValueDelta();
+        private void AutoScroll(double positionX) {
+            double scrollDelta = GetScrollValueDelta(positionX);
             TickOffset = Math.Clamp(TickOffset + scrollDelta, 0, HScrollBarMax);
         }
 
-        private double GetScrollValueDelta() {
+        private double GetScrollValueDelta(double positionX) {
             var pageScroll = Preferences.Default.PlaybackAutoScroll == 2;
             if (pageScroll) {
-                return GetPageScrollScrollValueDelta();
+                return GetPageScrollScrollValueDelta(positionX);
             }
-            return GetStationaryCursorScrollValueDelta();
+            return GetStationaryCursorScrollValueDelta(positionX);
         }
 
-        private double GetStationaryCursorScrollValueDelta() {
+        private double GetStationaryCursorScrollValueDelta(double positionX) {
             double rightMargin = Preferences.Default.PlayPosMarkerMargin * Bounds.Width;
-            if (PlayPosX > rightMargin) {
-                return (PlayPosX - rightMargin) * playPosXToTickOffset;
-            } else if (PlayPosX < 0) {
-                return PlayPosX * playPosXToTickOffset;
+            if (positionX > rightMargin) {
+                return (positionX - rightMargin) * playPosXToTickOffset;
+            } else if (positionX < 0) {
+                return positionX * playPosXToTickOffset;
             }
             return 0;
         }
 
-        private double GetPageScrollScrollValueDelta() {
+        private double GetPageScrollScrollValueDelta(double positionX) {
             double leftMargin = (1 - Preferences.Default.PlayPosMarkerMargin) * Bounds.Width;
-            if (PlayPosX > Bounds.Width) {
+            if (positionX > Bounds.Width) {
                 return (Bounds.Width - leftMargin) * playPosXToTickOffset;
-            } else if (PlayPosX < 0) {
-                return (PlayPosX - leftMargin) * playPosXToTickOffset;
+            } else if (positionX < 0) {
+                return (positionX - leftMargin) * playPosXToTickOffset;
             }
             return 0;
         }
