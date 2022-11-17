@@ -732,6 +732,12 @@ namespace OpenUtau.App.ViewModels {
                 CleanupSelectedNotes();
                 if (noteCommand.Part == Part) {
                     MessageBus.Current.SendMessage(new NotesRefreshEvent());
+
+                    if (noteCommand is RemoveNoteCommand && isUndo) {
+                        if (Selection.Select(noteCommand.Notes)) {
+                            MessageBus.Current.SendMessage(new NotesSelectionEvent(Selection));
+                        }
+                    }
                 }
             } else if (cmd is ExpCommand) {
                 MessageBus.Current.SendMessage(new NotesRefreshEvent());
