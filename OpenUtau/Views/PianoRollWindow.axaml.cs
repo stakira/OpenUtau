@@ -803,6 +803,7 @@ namespace OpenUtau.App.Views {
             bool isBoth = args.KeyModifiers == (cmdKey | KeyModifiers.Shift);
 
             switch (args.Key) {
+                #region document keys
                 case Key.Space:
                     if (isNone) {
                         try {
@@ -821,10 +822,17 @@ namespace OpenUtau.App.Views {
                     break;
                 case Key.Enter:
                     if (isNone) {
-                        OpenLyricBox();
+                        if (notesVm.Selection.Count > 1) {
+                            EditLyrics();
+                        } else if (!notesVm.Selection.IsEmpty) {
+                            OpenLyricBox();
+                        }
                         return true;
                     }
                     break;
+                #endregion
+                #region tool select keys
+                // TOOL SELECT
                 case Key.D1:
                     if (isNone) {
                         notesVm.SelectToolCommand?.Execute("1").Subscribe();
@@ -879,6 +887,8 @@ namespace OpenUtau.App.Views {
                         return true;
                     }
                     break;
+                #endregion
+                #region toggle show keyws
                 case Key.R:
                     if (isNone) {
                         notesVm.ShowFinalPitch = !notesVm.ShowFinalPitch;
@@ -914,7 +924,11 @@ namespace OpenUtau.App.Views {
                         notesVm.IsSnapOn = !notesVm.IsSnapOn;
                         return true;
                     }
+
                     break;
+                #endregion
+                #region navigate keys
+                // NAVIGATE/EDIT/SELECT HANDLERS
                 case Key.Up:
                     if (isNone) {
                         notesVm.TransposeSelection(1);
@@ -935,6 +949,8 @@ namespace OpenUtau.App.Views {
                         return true;
                     }
                     break;
+                #endregion
+                #region clipboard and edit keys
                 case Key.Z:
                     if (isBoth) {
                         ViewModel.Redo();
@@ -981,6 +997,9 @@ namespace OpenUtau.App.Views {
                         return true;
                     }
                     break;
+                #endregion
+                #region play position and select keys
+                // PLAY POSITION + SELECTION
                 case Key.Home:
                     if (isNone) {
                         playVm.MovePlayPos(notesVm.Part.position);
@@ -1020,6 +1039,7 @@ namespace OpenUtau.App.Views {
                         return true;
                     }
                     break;
+                #endregion
             }
             return false;
         }
