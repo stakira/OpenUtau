@@ -268,7 +268,7 @@ Nhấn giữ Ctrl để chọn nhiều nốt</system:String>
   <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
 
   <system:String x:Key="progress.saved">Hoàn tất lưu dự án. {0}</system:String>
-  <system:String x:Key="progress.waitingrendering">Đang chờ việc render</system:String>
+  <system:String x:Key="progress.waitingrendering">Đang render ...</system:String>
 
   <system:String x:Key="singers.caption">Voicebank</system:String>
   <system:String x:Key="singers.editoto.editinvlabeler">Sửa trong vLabeler</system:String>
