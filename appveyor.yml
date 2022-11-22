@@ -1,4 +1,4 @@
-version: 0.0.{build}
+version: 0.1.{build}
 environment:
   access_token:
     secure: VoTH2ml/pRgjLSGhfPO+NZfCoFzFcfrQjEIl/5+0UufeW6mEvccfwvef3gOaD2ke

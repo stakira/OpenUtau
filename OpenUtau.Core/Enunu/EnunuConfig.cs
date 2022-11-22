@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-﻿using System.IO;
+using System.IO;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core.Enunu {
@@ -69,12 +69,13 @@ namespace OpenUtau.Core.Enunu {
         }
 
         private void ParseEnunuExtension(List<string> enunuExtension, object rawEnunuExtension) {
-            if (rawEnunuExtension is string str)
+            if (rawEnunuExtension is string str) {
                 enunuExtension.Add(str);
-            else if (rawEnunuExtension is List<object> list) {
+            } else if (rawEnunuExtension is List<object> list) {
                 foreach (object o in list) {
-                    if (o is string s)
+                    if (o is string s) {
                         enunuExtension.Add(s);
+                    }
                 }
             }
         }

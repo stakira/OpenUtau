@@ -43,23 +43,24 @@ namespace OpenUtau.Classic {
                 int count = 0;
                 bool hasCharacterYaml = archive.Entries.Any(e => e.Key.EndsWith(kCharacterYaml));
                 foreach (var entry in archive.Entries) {
-                    if (!(entry.Key.Contains("..")))//detect zipSlip attack
-                    {
-                        var filePath = Path.Combine(basePath, entry.Key);
-                        Directory.CreateDirectory(Path.GetDirectoryName(filePath));
-                        if (!entry.IsDirectory && entry.Key != kInstallTxt) {
-                            entry.WriteToFile(Path.Combine(basePath, entry.Key), extractionOptions);
-                            if (!hasCharacterYaml && filePath.EndsWith(kCharacterTxt)) {
-                                var config = new VoicebankConfig() {
-                                    TextFileEncoding = textEncoding.WebName,
-                                };
-                                using (var stream = File.Open(filePath.Replace(".txt", ".yaml"), FileMode.Create)) {
-                                    config.Save(stream);
-                                }
-                            }
-                        } 
-                    }
                     progress.Invoke(100.0 * ++count / total, entry.Key);
+                    if (entry.Key.Contains("..")) {
+                        // Prevent zipSlip attack
+                        continue;
+                    }
+                    var filePath = Path.Combine(basePath, entry.Key);
+                    Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+                    if (!entry.IsDirectory && entry.Key != kInstallTxt) {
+                        entry.WriteToFile(Path.Combine(basePath, entry.Key), extractionOptions);
+                        if (!hasCharacterYaml && filePath.EndsWith(kCharacterTxt)) {
+                            var config = new VoicebankConfig() {
+                                TextFileEncoding = textEncoding.WebName,
+                            };
+                            using (var stream = File.Open(filePath.Replace(".txt", ".yaml"), FileMode.Create)) {
+                                config.Save(stream);
+                            }
+                        }
+                    }
                 }
                 foreach (var touch in touches) {
                     File.WriteAllText(touch, "\n");
