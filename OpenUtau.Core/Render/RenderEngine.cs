@@ -66,9 +66,6 @@ namespace OpenUtau.Core.Render {
                 var trackRequests = requests
                     .Where(req => req.trackNo == i)
                     .ToArray();
-                if (wait) {
-                    RenderRequests(trackRequests, newCancellation);
-                }
                 var trackSources = trackRequests.Select(req => req.mix)
                     .OfType<ISignalSource>()
                     .ToList();
@@ -92,15 +89,19 @@ namespace OpenUtau.Core.Render {
                 fader.SetScaleToTarget();
                 faders.Add(fader);
             }
-            Task.Run(() => {
-                RenderRequests(requests, newCancellation, playing: true);
-            }).ContinueWith(task => {
+            var task = Task.Run(() => {
+                RenderRequests(requests, newCancellation, playing: !wait);
+            });
+            task.ContinueWith(task => {
                 if (task.IsFaulted) {
                     Log.Error(task.Exception, "Failed to render.");
                     DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to render.", task.Exception));
                     throw task.Exception;
                 }
             }, CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted, uiScheduler);
+            if (wait) {
+                task.Wait();
+            }
             return Tuple.Create(new WaveMix(faders), faders);
         }
 
