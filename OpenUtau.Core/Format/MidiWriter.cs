@@ -15,18 +15,8 @@ namespace OpenUtau.Core.Format {
         MemoryStream stream = new MemoryStream();
 
         public void ReadFile(string file) {
-            var ReadingSettings = new ReadingSettings {
-                InvalidChannelEventParameterValuePolicy = InvalidChannelEventParameterValuePolicy.ReadValid,
-                InvalidChunkSizePolicy = InvalidChunkSizePolicy.Ignore,
-                InvalidMetaEventParameterValuePolicy = InvalidMetaEventParameterValuePolicy.SnapToLimits,
-                MissedEndOfTrackPolicy = MissedEndOfTrackPolicy.Ignore,
-                NoHeaderChunkPolicy = NoHeaderChunkPolicy.Ignore,
-                NotEnoughBytesPolicy = NotEnoughBytesPolicy.Ignore,
-                UnexpectedTrackChunksCountPolicy = UnexpectedTrackChunksCountPolicy.Ignore,
-                UnknownChannelEventPolicy = UnknownChannelEventPolicy.SkipStatusByteAndOneDataByte,
-                UnknownChunkIdPolicy = UnknownChunkIdPolicy.ReadAsUnknownChunk,
-                UnknownFileFormatPolicy = UnknownFileFormatPolicy.Ignore
-            };
+            var ReadingSettings = MidiWriter.BaseReadingSettings();
+            
             ReadingSettings.DecodeTextCallback = new DecodeTextCallback(AddText);
             var midi = MidiFile.Read(file,ReadingSettings);
         }
@@ -66,19 +56,8 @@ namespace OpenUtau.Core.Format {
             return uproject;
         }
 
-    static public List<UVoicePart> Load(string file, UProject project) {
-            List<UVoicePart> resultParts = new List<UVoicePart>();
-            string defaultLyric = NotePresets.Default.DefaultLyric;
-            // Detects lyric encoding
-            Encoding lyricEncoding = Encoding.UTF8;
-            var encodingDetector = new EncodingDetector();
-            encodingDetector.ReadFile(file);
-            var encodingResult = encodingDetector.Detect();
-            if(encodingResult != null) {
-                lyricEncoding = encodingResult;
-            }
-            //Get midifile resolution
-            var ReadingSettings = new ReadingSettings {
+        public static ReadingSettings BaseReadingSettings() {
+            return new ReadingSettings {
                 InvalidChannelEventParameterValuePolicy = InvalidChannelEventParameterValuePolicy.ReadValid,
                 InvalidChunkSizePolicy = InvalidChunkSizePolicy.Ignore,
                 InvalidMetaEventParameterValuePolicy = InvalidMetaEventParameterValuePolicy.SnapToLimits,
@@ -90,6 +69,21 @@ namespace OpenUtau.Core.Format {
                 UnknownChunkIdPolicy = UnknownChunkIdPolicy.ReadAsUnknownChunk,
                 UnknownFileFormatPolicy = UnknownFileFormatPolicy.Ignore
             };
+        }
+
+        static public List<UVoicePart> Load(string file, UProject project) {
+            List<UVoicePart> resultParts = new List<UVoicePart>();
+            string defaultLyric = NotePresets.Default.DefaultLyric;
+            // Detects lyric encoding
+            Encoding lyricEncoding = Encoding.UTF8;
+            var encodingDetector = new EncodingDetector();
+            encodingDetector.ReadFile(file);
+            var encodingResult = encodingDetector.Detect();
+            if(encodingResult != null) {
+                lyricEncoding = encodingResult;
+            }
+        //Get midifile resolution
+            var ReadingSettings = BaseReadingSettings();
             ReadingSettings.TextEncoding = lyricEncoding;
             var midi = MidiFile.Read(file, ReadingSettings);
             TicksPerQuarterNoteTimeDivision timeDivision = midi.TimeDivision as TicksPerQuarterNoteTimeDivision;
