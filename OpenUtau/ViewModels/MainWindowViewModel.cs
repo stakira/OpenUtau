@@ -160,7 +160,7 @@ namespace OpenUtau.App.ViewModels {
                 return;
             }
             var project = DocManager.Inst.Project;
-            var parts = Core.Format.Midi.Load(file, project);
+            var parts = Core.Format.MidiWriter.Load(file, project);
             DocManager.Inst.StartUndoGroup();
             foreach (var part in parts) {
                 var track = new UTrack();
