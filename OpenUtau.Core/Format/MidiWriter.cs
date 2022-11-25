@@ -118,7 +118,6 @@ namespace OpenUtau.Core.Format {
                             part.notes.Add(note);
                         }
                     }
-                    //TODO:lyric
                     resultParts.Add(part);
                 }
             }
