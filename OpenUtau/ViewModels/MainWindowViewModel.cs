@@ -155,12 +155,12 @@ namespace OpenUtau.App.ViewModels {
             DocManager.Inst.EndUndoGroup();
         }
 
-        public void ImportMidi(string file) {
+        public void ImportMidi(string file, bool UseDrywetmidi=false) {
             if (file == null) {
                 return;
             }
             var project = DocManager.Inst.Project;
-            var parts = Core.Format.Midi.Load(file, project);
+            var parts = UseDrywetmidi? Core.Format.MidiWriter.Load(file, project): Core.Format.Midi.Load(file, project);
             DocManager.Inst.StartUndoGroup();
             foreach (var part in parts) {
                 var track = new UTrack();
