@@ -2,9 +2,9 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-  <!--<system:String x:Key="context.note.delete">Delete note</system:String>-->
-  <!--<system:String x:Key="context.part.delete">Delete part</system:String>-->
-  <!--<system:String x:Key="context.part.rename">Rename part</system:String>-->
+  <system:String x:Key="context.note.delete">Elimina nota</system:String>
+  <system:String x:Key="context.part.delete">Elimina parte</system:String>
+  <system:String x:Key="context.part.rename">Rinomina parte</system:String>
   <system:String x:Key="context.pitch.easein">Rilascio</system:String>
   <system:String x:Key="context.pitch.easeinout">Attacco/Rilascio</system:String>
   <system:String x:Key="context.pitch.easeout">Attacco</system:String>
@@ -97,7 +97,7 @@
   <system:String x:Key="menu.file.savetemplate">Salva Modello...</system:String>
   <system:String x:Key="menu.help">Aiuto</system:String>
   <system:String x:Key="menu.help.about">Informazioni su OpenUTAU</system:String>
-  <!--<system:String x:Key="menu.help.checkupdate">Check Update</system:String>-->
+  <system:String x:Key="menu.help.checkupdate">Controlla aggiornamenti</system:String>
   <!--<system:String x:Key="menu.help.logslocation">Open Logs Location</system:String>-->
   <!--<system:String x:Key="menu.help.reportissue">Report Issue</system:String>-->
   <system:String x:Key="menu.help.wiki">OpenUTAU Wiki</system:String>
@@ -292,7 +292,7 @@ Attenzione: moresampler non è pienamente supportato. Potrebbe essere lento e ca
   <system:String x:Key="singers.subbanks.set">Imposta</system:String>
   <system:String x:Key="singers.subbanks.tone">Tono</system:String>
   <system:String x:Key="singers.subbanks.toneranges">Range Tonale</system:String>
-  <!--<system:String x:Key="singers.visitwebsite">Visit Website</system:String>-->
+  <system:String x:Key="singers.visitwebsite">Visita sitoweb</system:String>
 
   <system:String x:Key="tip.aliasbox">Annulla Alias</system:String>
   <system:String x:Key="tip.exps">
