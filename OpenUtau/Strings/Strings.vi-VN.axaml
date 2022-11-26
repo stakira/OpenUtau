@@ -79,6 +79,8 @@
   <!--<system:String x:Key="menu.edit.undo">Undo</system:String>-->
   <system:String x:Key="menu.file">Tệp</system:String>
   <system:String x:Key="menu.file.exit">Thoát ra</system:String>
+  <system:String x:Key="menu.file.exportaudio">Xuất ra tệp nhạc</system:String>
+  <system:String x:Key="menu.file.exportmixdown">Gộp thành một tệp nhạc</system:String>
   <system:String x:Key="menu.file.exportmidi">Xuất ra tệp MIDI</system:String>
   <system:String x:Key="menu.file.exportust">Xuất ra tệp UST</system:String>
   <system:String x:Key="menu.file.exportustto">Xuất tệp UST vào...</system:String>
@@ -168,19 +170,19 @@ Lưu ý: tuỳ chọn này cũng sẽ xoá các preset của bạn.</system:Stri
   <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Thay thế "-" với "+"</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">Sửa lời nhạc</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hanzitopinyin">Chữ Hán sang phiên âm</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Chuyển Hiragana sang Romaji</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">Chuyển VCV sang CV</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Xoá hậu tố là từ</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana sang Romaji</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">VCV sang CV</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Xoá hậu tố là kí tự</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">Xoá hậu tố là cao độ</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Chuyển Romaji sang Hiragana</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Romaji sang Hiragana</system:String>
   <system:String x:Key="pianoroll.menu.notedefaults">Đặc tính các nốt</system:String>
   <system:String x:Key="pianoroll.menu.notes">Nốt nhạc</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">Thêm nốt "-"</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">Thêm nốt "R"</system:String>
   <system:String x:Key="pianoroll.menu.notes.clear.vibratos">Xoá đường rung giọng</system:String>
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Luyến giọng tự nhiên (AI only)</system:String>
-  <system:String x:Key="pianoroll.menu.notes.octavedown">Dời xuống một quãng tám</system:String>
-  <system:String x:Key="pianoroll.menu.notes.octaveup">Dời lên một quãng tám</system:String>
+  <system:String x:Key="pianoroll.menu.notes.octavedown">Dời xuống quãng tám</system:String>
+  <system:String x:Key="pianoroll.menu.notes.octaveup">Dời lên quãng tám</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">Chia thành quãng 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Chia thành quãng 1/64</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">Reset các biểu cảm</system:String>
@@ -251,6 +253,10 @@ Nhấn giữ Ctrl để chọn nhiều nốt</system:String>
   <system:String x:Key="prefs.playback.lockstarttime.off">Không làm gì cả</system:String>
   <system:String x:Key="prefs.playback.lockstarttime.on">Quay lại nơi bắt đầu phát nhạc</system:String>
   <system:String x:Key="prefs.playback.test">Nghe thử</system:String>
+  <system:String x:Key="prefs.rendering.threads.numthreads">Luồng render tối đa</system:String>
+  <system:String x:Key="prefs.rendering.threads.cpuwarn">
+    Cảnh báo: quá nhiều luồng render có thể làm OpenUTAU chạy chậm.
+  </system:String>
   <system:String x:Key="prefs.rendering">Render</system:String>
   <!--<system:String x:Key="prefs.rendering.phasecomp">Phase Compensation</system:String>-->
   <!--<system:String x:Key="prefs.rendering.prerender">Pre-render</system:String>-->
@@ -287,7 +293,7 @@ Nhấn giữ Ctrl để chọn nhiều nốt</system:String>
   <system:String x:Key="singers.otoview.zoomout">Thu nhỏ</system:String>
   <system:String x:Key="singers.refresh">Làm mới</system:String>
   <system:String x:Key="singers.setdefaultphonemizer">Đặt Phonemizer mặc định</system:String>
-  <system:String x:Key="singers.setencoding">Sửa đổi mã hoá</system:String>
+  <system:String x:Key="singers.setencoding">Đặt bảng mã</system:String>
   <system:String x:Key="singers.setportrait">Đặt avatar</system:String>
   <system:String x:Key="singers.subbanks.cancel">Huỷ bỏ</system:String>
   <system:String x:Key="singers.subbanks.clear">Xoá bỏ</system:String>
@@ -302,7 +308,7 @@ Nhấn giữ Ctrl để chọn nhiều nốt</system:String>
   <system:String x:Key="singers.subbanks.set">Áp dụng</system:String>
   <system:String x:Key="singers.subbanks.tone">Cao độ</system:String>
   <system:String x:Key="singers.subbanks.toneranges">Cao độ</system:String>
-  <system:String x:Key="singers.visitwebsite">Ghé thăm trang web</system:String>
+  <system:String x:Key="singers.visitwebsite">Mở trang web</system:String>
 
   <system:String x:Key="tip.aliasbox">Thay đổi âm vị</system:String>
   <system:String x:Key="tip.exps">
