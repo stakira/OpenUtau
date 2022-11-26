@@ -42,7 +42,7 @@ namespace OpenUtau.Core {
 
     public class SetPhonemeExpressionCommand : ExpCommand {
         static readonly HashSet<string> needsPhonemizer = new HashSet<string> {
-            Format.Ustx.ALT, Format.Ustx.CLR, Format.Ustx.SHFT,
+            Format.Ustx.ALT, Format.Ustx.CLR, Format.Ustx.SHFT, Format.Ustx.VEL
         };
 
         public readonly UProject project;
