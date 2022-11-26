@@ -1,5 +1,6 @@
 ﻿using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
+using System.Linq;
 
 namespace OpenUtau.Core {
     /// <summary>
@@ -14,7 +15,8 @@ namespace OpenUtau.Core {
             // This is because the 2nd+ notes will always be extender notes, i.e., with lyric "+" or "+<number>".
             // For this simple phonemizer, all these notes maps to a single phoneme.
             string alias = notes[0].lyric;
-            if (singer.TryGetMappedOto(notes[0].lyric, notes[0].tone, out var oto)) {
+            var attr0 = notes[0].phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
+            if (singer.TryGetMappedOto(notes[0].lyric, notes[0].tone + attr0.toneShift, attr0.voiceColor, out var oto)) {
                 alias = oto.Alias;
             }
             return new Result {

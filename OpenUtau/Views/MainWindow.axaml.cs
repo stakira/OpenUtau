@@ -310,7 +310,7 @@ namespace OpenUtau.App.Views {
             }
         }
 
-        async void OnMenuImportMidi(object sender, RoutedEventArgs args) {
+        async void OnMenuImportMidi(bool UseDrywetmidi=false) {
             var dialog = new OpenFileDialog() {
                 Filters = new List<FileDialogFilter>() {
                     new FileDialogFilter() {
@@ -325,10 +325,34 @@ namespace OpenUtau.App.Views {
                 return;
             }
             try {
-                viewModel.ImportMidi(files[0]);
+                viewModel.ImportMidi(files[0], UseDrywetmidi);
             } catch (Exception e) {
                 Log.Error(e, "Failed to import midi");
                 _ = await MessageBox.ShowError(this, e);
+            }
+        }
+
+        async void OnMenuImportMidiNaudio(object sender, RoutedEventArgs args) {
+            OnMenuImportMidi(false);
+        }
+
+        async void OnMenuImportMidiDrywetmidi(object sender, RoutedEventArgs args) {
+            OnMenuImportMidi(true);
+        }
+
+        async void OnMenuExportMixdown(object sender, RoutedEventArgs args) {
+            var project = DocManager.Inst.Project;
+            var dialog = new SaveFileDialog() {
+                DefaultExtension = "wav",
+                Filters = new List<FileDialogFilter>() {
+                    new FileDialogFilter() {
+                        Extensions = new List<string>(){ "wav" },
+                    },
+                },
+            };
+            var file = await dialog.ShowAsync(this);
+            if (!string.IsNullOrEmpty(file)) {
+                PlaybackManager.Inst.RenderMixdown(project, file);
             }
         }
 

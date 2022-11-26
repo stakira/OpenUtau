@@ -49,7 +49,7 @@ namespace OpenUtau.Core.Render {
             this.startTick = startTick;
         }
 
-        public Tuple<MasterAdapter, List<Fader>> RenderProject(int startTick, TaskScheduler uiScheduler, ref CancellationTokenSource cancellation) {
+        public Tuple<WaveMix, List<Fader>> RenderMixdown(int startTick, TaskScheduler uiScheduler, ref CancellationTokenSource cancellation, bool wait = false) {
             var newCancellation = new CancellationTokenSource();
             var oldCancellation = Interlocked.Exchange(ref cancellation, newCancellation);
             if (oldCancellation != null) {
@@ -89,18 +89,28 @@ namespace OpenUtau.Core.Render {
                 fader.SetScaleToTarget();
                 faders.Add(fader);
             }
-            Task.Run(() => {
-                RenderRequests(requests, newCancellation, playing: true);
-            }).ContinueWith(task => {
+            var task = Task.Run(() => {
+                RenderRequests(requests, newCancellation, playing: !wait);
+            });
+            task.ContinueWith(task => {
                 if (task.IsFaulted) {
                     Log.Error(task.Exception, "Failed to render.");
                     DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to render.", task.Exception));
                     throw task.Exception;
                 }
             }, CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted, uiScheduler);
-            var master = new MasterAdapter(new WaveMix(faders));
+            if (wait) {
+                task.Wait();
+            }
+            return Tuple.Create(new WaveMix(faders), faders);
+        }
+
+        public Tuple<MasterAdapter, List<Fader>> RenderProject(int startTick, TaskScheduler uiScheduler, ref CancellationTokenSource cancellation) {
+            double startMs = project.timeAxis.TickPosToMsPos(startTick);
+            var renderMixdownResult = RenderMixdown(startTick, uiScheduler, ref cancellation,wait:false);
+            var master = new MasterAdapter(renderMixdownResult.Item1);
             master.SetPosition((int)(startMs * 44100 / 1000) * 2);
-            return Tuple.Create(master, faders);
+            return Tuple.Create(master, renderMixdownResult.Item2);
         }
 
         public List<WaveMix> RenderTracks(TaskScheduler uiScheduler, ref CancellationTokenSource cancellation) {
