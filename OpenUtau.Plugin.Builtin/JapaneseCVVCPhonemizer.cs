@@ -34,6 +34,7 @@ namespace OpenUtau.Plugin.Builtin {
             "ty=てぃ,てぇ,てゃ,てゅ,てょ",
             "py=ぴ,ぴぇ,ぴゃ,ぴゅ,ぴょ",
             "ry=り,りぇ,りゃ,りゅ,りょ",
+            "ly=リ,リェ,リャ,リュ,リョ",
             "ny=に,にぇ,にゃ,にゅ,にょ",
             "r=ら,る,るぃ,れ,ろ",
             "hy=ひ,ひぇ,ひゃ,ひゅ,ひょ",
@@ -60,12 +61,13 @@ namespace OpenUtau.Plugin.Builtin {
             "dz=づ,づぃ",
             "my=み,みぇ,みゃ,みゅ,みょ",
             "ng=ガ,ギ,グ,ゲ,ゴ,ギェ,ギャ,ギュ,ギョ,カ゜,キ゜,ク゜,ケ゜,コ゜,キ゜ェ,キ゜ャ,キ゜ュ,キ゜ョ",
+            "l=ラ,ル,レ,ロ",
             "・=・あ,・い,・う,・え,・お,・ん,・を,・ン",
         };
 
         // in case voicebank is missing certain symbols
         static readonly string[] substitution = new string[] {  
-            "ty,ch,ts=t", "j,dy=d", "gy=g", "ky=k", "py=p", "ny=n", "ry=r", "hy,f=h", "by,v=b", "dz=z"
+            "ty,ch,ts=t", "j,dy=d", "gy=g", "ky=k", "py=p", "ny=n", "ry=r", "hy,f=h", "by,v=b", "dz=z", "l=r", "ly=l"
         };
 
         static readonly Dictionary<string, string> vowelLookup;
