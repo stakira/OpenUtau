@@ -13,7 +13,7 @@ namespace OpenUtau.Plugin.Builtin {
                                                            "s","sh","z","j","t","ch","ty","ts",
                                                            "d","dy","n","ny","h","hy","f","b",
                                                            "by","p","py","m","my","y","r","4",
-                                                           "ry","w","v","ng","・",
+                                                           "ry","w","v","ng","l","・",
         };
 
         static readonly string[] vowels = new string[] {
