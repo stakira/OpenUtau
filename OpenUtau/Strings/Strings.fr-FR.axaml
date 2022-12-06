@@ -16,7 +16,7 @@
   <system:String x:Key="context.pitch.pointsnapprev">Aimanter à la note précédente</system:String>
   <system:String x:Key="context.timeline.addtempo">Ajouter un changement de tempo a {0}</system:String>
   <system:String x:Key="context.timeline.addtimesig">Ajouter un changement de signature temporelle</system:String>
-  <system:String x:Key="context.timeline.deltempo">Delete tempo change at {0}</system:String>
+  <system:String x:Key="context.timeline.deltempo">Supprimer le changement de tempo a {0}</system:String>
   <system:String x:Key="context.timeline.deltimesig">Supprimer le changement de signature</system:String>
 
   <system:String x:Key="debug.clear">Nettoyer</system:String>
