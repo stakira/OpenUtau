@@ -149,7 +149,7 @@ Advertencia: Esta opción eliminará las bases personalizadas.</system:String>
   <system:String x:Key="oto.cutoff">Silencio (Derecho)</system:String>
   <system:String x:Key="oto.edit.consonant">Aplicar Consonante</system:String>
   <system:String x:Key="oto.edit.cutoff">Aplicar Silencio (Derecho)</system:String>
-  <system:String x:Key="oto.edit.offset">Aplicar Silencio (Izquierdo)</system:String>-->
+  <system:String x:Key="oto.edit.offset">Aplicar Silencio (Izquierdo)</system:String>
   <system:String x:Key="oto.edit.overlap">Aplicar Superposición</system:String>
   <system:String x:Key="oto.edit.preutter">Aplicar Precedente</system:String>
   <system:String x:Key="oto.file">Archivo</system:String>
