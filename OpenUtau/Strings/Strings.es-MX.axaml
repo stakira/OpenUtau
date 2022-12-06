@@ -205,7 +205,7 @@ Advertencia: Esta opción eliminará las bases personalizadas.</system:String>
   <system:String x:Key="pianoroll.tool.penplus">Lápiz avanzado (Ctrl + 2)
     Click izquierdo para dibujar
     Click derecho para borrar
-Mantén Ctrl para seleccionar</system:String>-->
+Mantén Ctrl para seleccionar</system:String>
   <system:String x:Key="pianoroll.tool.penv2">Lápiz (2)
     Click izquierdo para borrar
 Mantén Ctrl para seleccionar</system:String>
