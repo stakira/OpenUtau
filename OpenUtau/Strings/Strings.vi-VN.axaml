@@ -6,6 +6,7 @@
   <system:String x:Key="context.note.delete">Xoá nốt</system:String>
   <system:String x:Key="context.part.delete">Xoá phần</system:String>
   <system:String x:Key="context.part.rename">Đặt lại tên phần</system:String>
+  <!--<system:String x:Key="context.part.replaceaudio">Reselect audio file</system:String>-->
   <system:String x:Key="context.pitch.easein">Cong xuống</system:String>
   <system:String x:Key="context.pitch.easeinout">Cong xuống/lên</system:String>
   <system:String x:Key="context.pitch.easeout">Cong lên</system:String>
@@ -80,14 +81,17 @@
   <system:String x:Key="menu.file">Tệp</system:String>
   <system:String x:Key="menu.file.exit">Thoát ra</system:String>
   <system:String x:Key="menu.file.exportaudio">Xuất ra tệp nhạc</system:String>
-  <system:String x:Key="menu.file.exportmixdown">Gộp thành một tệp nhạc</system:String>
   <system:String x:Key="menu.file.exportmidi">Xuất ra tệp MIDI</system:String>
+  <system:String x:Key="menu.file.exportmixdown">Gộp thành một tệp nhạc</system:String>
+  <!--<system:String x:Key="menu.file.exportproject">Export Project</system:String>-->
   <system:String x:Key="menu.file.exportust">Xuất ra tệp UST</system:String>
   <system:String x:Key="menu.file.exportustto">Xuất tệp UST vào...</system:String>
   <system:String x:Key="menu.file.exportwav">Xuất ra tệp WAV</system:String>
   <system:String x:Key="menu.file.exportwavto">Xuất tệp WAV vào...</system:String>
   <system:String x:Key="menu.file.importaudio">Nhập vào tệp Âm thanh...</system:String>
   <system:String x:Key="menu.file.importmidi">Nhập vào Midi...</system:String>
+  <!--<system:String x:Key="menu.file.importmidi.drywetmidi">DryWetMidi Importer</system:String>-->
+  <!--<system:String x:Key="menu.file.importmidi.naudio">Naudio Importer</system:String>-->
   <system:String x:Key="menu.file.importtracks">Nhập vào UST/VSQX...</system:String>
   <system:String x:Key="menu.file.new">Dự án mới</system:String>
   <system:String x:Key="menu.file.newfromtemplate">Dự án mới từ các mẫu</system:String>
@@ -145,7 +149,7 @@ Lưu ý: tuỳ chọn này cũng sẽ xoá các preset của bạn.</system:Stri
   <system:String x:Key="notedefaults.vibrato.period">Tần số</system:String>
   <system:String x:Key="notedefaults.vibrato.shift">Dịch chuyển</system:String>
 
-  <system:String x:Key="oto.alias">Alias</system:String>
+  <!--<system:String x:Key="oto.alias">Alias</system:String>-->
   <system:String x:Key="oto.color">Sắc thái</system:String>
   <!--<system:String x:Key="oto.consonant">Consonant</system:String>-->
   <!--<system:String x:Key="oto.cutoff">Cutoff</system:String>-->
@@ -253,14 +257,9 @@ Nhấn giữ Ctrl để chọn nhiều nốt</system:String>
   <system:String x:Key="prefs.playback.lockstarttime.off">Không làm gì cả</system:String>
   <system:String x:Key="prefs.playback.lockstarttime.on">Quay lại nơi bắt đầu phát nhạc</system:String>
   <system:String x:Key="prefs.playback.test">Nghe thử</system:String>
-  <system:String x:Key="prefs.rendering.threads.numthreads">Luồng render tối đa</system:String>
-  <system:String x:Key="prefs.rendering.threads.cpuwarn">
-    Cảnh báo: quá nhiều luồng render có thể làm OpenUTAU chạy chậm.
-  </system:String>
   <system:String x:Key="prefs.rendering">Render</system:String>
   <!--<system:String x:Key="prefs.rendering.phasecomp">Phase Compensation</system:String>-->
   <!--<system:String x:Key="prefs.rendering.prerender">Pre-render</system:String>-->
-  <system:String x:Key="prefs.rendering.prerender.threads">Luồng cho phép nghe thử trước</system:String>
   <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
   <!--<system:String x:Key="prefs.rendering.resampler.morewarn">
     Warning: moresampler is not fully supported. It may be slow and cause high CPU usage. If you insist, please:
@@ -271,6 +270,10 @@ Nhấn giữ Ctrl để chọn nhiều nốt</system:String>
   <system:String x:Key="prefs.rendering.resampler.note">
     Ghi chú: để sử dụng resampler bên ngoài, hãy thêm resampler định dạng EXE hoặc DLL vào trong thư mục Resamplers của OpenUTAU và lựa chọn trong Tuỳ chỉnh.
   </system:String>
+  <system:String x:Key="prefs.rendering.threads.cpuwarn">
+    Cảnh báo: quá nhiều luồng render có thể làm OpenUTAU chạy chậm.
+  </system:String>
+  <system:String x:Key="prefs.rendering.threads.numthreads">Luồng render tối đa</system:String>
   <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
 
   <system:String x:Key="progress.saved">Hoàn tất lưu dự án. {0}</system:String>
@@ -279,6 +282,8 @@ Nhấn giữ Ctrl để chọn nhiều nốt</system:String>
   <system:String x:Key="singers.caption">Voicebank</system:String>
   <system:String x:Key="singers.editoto.editinvlabeler">Sửa trong vLabeler</system:String>
   <system:String x:Key="singers.editoto.gotosource">Mở tệp nguồn</system:String>
+  <!--<system:String x:Key="singers.editoto.regenfrq">Regenerate FRQ</system:String>-->
+  <!--<system:String x:Key="singers.editoto.regenfrq.regenerating">Regenerating FRQ</system:String>-->
   <system:String x:Key="singers.editoto.reset">Reset Oto</system:String>
   <system:String x:Key="singers.editoto.save">Lưu Oto</system:String>
   <system:String x:Key="singers.editoto.setvlabelerpath">Cần phải tải vLabeler xuống (bản 1.0.0-beta1 hoặc mới hơn) ở trang https://github.com/sdercolin/vlabeler và đặt thư mục chứa vLabeler trong mục Tuỳ chọn trước cái đã!</system:String>

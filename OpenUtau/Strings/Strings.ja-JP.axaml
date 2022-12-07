@@ -6,6 +6,7 @@
   <system:String x:Key="context.note.delete">音符を削除</system:String>
   <system:String x:Key="context.part.delete">パートを削除</system:String>
   <system:String x:Key="context.part.rename">パートの名前を変更</system:String>
+  <!--<system:String x:Key="context.part.replaceaudio">Reselect audio file</system:String>-->
   <system:String x:Key="context.pitch.easein">イーズイン</system:String>
   <system:String x:Key="context.pitch.easeinout">イーズイン/アウト</system:String>
   <system:String x:Key="context.pitch.easeout">イーズアウト</system:String>
@@ -79,13 +80,18 @@
   <system:String x:Key="menu.edit.undo">元に戻る</system:String>
   <system:String x:Key="menu.file">ファイル</system:String>
   <system:String x:Key="menu.file.exit">OpenUTAUを終了</system:String>
+  <!--<system:String x:Key="menu.file.exportaudio">Export Audio</system:String>-->
   <!--<system:String x:Key="menu.file.exportmidi">Export Midi File</system:String>-->
+  <!--<system:String x:Key="menu.file.exportmixdown">Mixdown To Wav File</system:String>-->
+  <!--<system:String x:Key="menu.file.exportproject">Export Project</system:String>-->
   <system:String x:Key="menu.file.exportust">USTをエクスポート</system:String>
   <system:String x:Key="menu.file.exportustto">別名でUSTをエクスポート...</system:String>
   <system:String x:Key="menu.file.exportwav">Wavファイルを出力</system:String>
   <system:String x:Key="menu.file.exportwavto">別名でWavファイルを出力...</system:String>
   <system:String x:Key="menu.file.importaudio">音声をインポート...</system:String>
   <system:String x:Key="menu.file.importmidi">MIDIをインポート...</system:String>
+  <!--<system:String x:Key="menu.file.importmidi.drywetmidi">DryWetMidi Importer</system:String>-->
+  <!--<system:String x:Key="menu.file.importmidi.naudio">Naudio Importer</system:String>-->
   <system:String x:Key="menu.file.importtracks">トラックをインポート...</system:String>
   <system:String x:Key="menu.file.new">新規作成</system:String>
   <system:String x:Key="menu.file.newfromtemplate">テンプレートから新規作成</system:String>
@@ -254,7 +260,6 @@ Ctrl長押しで選択</system:String>
   <system:String x:Key="prefs.rendering">レンダリング</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">位相補正</system:String>
   <!--<system:String x:Key="prefs.rendering.prerender">Pre-render</system:String>-->
-  <system:String x:Key="prefs.rendering.prerender.threads">プリレンダースレッド数</system:String>
   <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
   <system:String x:Key="prefs.rendering.resampler.morewarn">
 警告: moresamplerは完全にはサポートされていません。速度が遅くなり、CPU使用率が高くなる可能性があります。それでも使用する場合:
@@ -265,6 +270,10 @@ Ctrl長押しで選択</system:String>
   <system:String x:Key="prefs.rendering.resampler.note">
     Note: エンジンを使用するには、使用したいエンジンのDLLまたはEXEファイルをOpenUTAUフォルダ内のResamplersフォルダに追加し、選択してください。
   </system:String>
+  <!--<system:String x:Key="prefs.rendering.threads.cpuwarn">
+    Warning: too many render threads may cause OpenUtau to run slowly.
+  </system:String>-->
+  <!--<system:String x:Key="prefs.rendering.threads.numthreads">Maximum Render Threads</system:String>-->
   <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
 
   <system:String x:Key="progress.saved">プロジェクトが保存されました。 {0}</system:String>
@@ -273,6 +282,8 @@ Ctrl長押しで選択</system:String>
   <system:String x:Key="singers.caption">シンガー</system:String>
   <!--<system:String x:Key="singers.editoto.editinvlabeler">Edit In vLabeler</system:String>-->
   <system:String x:Key="singers.editoto.gotosource">ソースファイルへ</system:String>
+  <!--<system:String x:Key="singers.editoto.regenfrq">Regenerate FRQ</system:String>-->
+  <!--<system:String x:Key="singers.editoto.regenfrq.regenerating">Regenerating FRQ</system:String>-->
   <system:String x:Key="singers.editoto.reset">Otoをリセット</system:String>
   <system:String x:Key="singers.editoto.save">Otoを保存</system:String>
   <!--<system:String x:Key="singers.editoto.setvlabelerpath">Download vLabeler (1.0.0-beta1 or higher) from https://github.com/sdercolin/vlabeler and set vLabeler path in Preferences first!</system:String>-->
@@ -353,5 +364,5 @@ Ctrl長押しで選択</system:String>
 
   <system:String x:Key="warning">警告</system:String>
   <system:String x:Key="warning.asciipath">OpenUtauのファイルパス "{0}" に非ASCII文字が含まれています。 EXE形式のエンジンが動作しない可能性があります。</system:String>
-  <!--<system:String x:Key="warning.renderer">No settings for this renderer. Please select CLASSIC.</system:String>-->
+  <!--<system:String x:Key="warning.renderer">No settings for this renderer.</system:String>-->
 </ResourceDictionary>

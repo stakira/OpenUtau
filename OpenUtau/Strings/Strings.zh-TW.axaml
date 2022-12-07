@@ -6,6 +6,7 @@
   <!--<system:String x:Key="context.note.delete">Delete note</system:String>-->
   <!--<system:String x:Key="context.part.delete">Delete part</system:String>-->
   <!--<system:String x:Key="context.part.rename">Rename part</system:String>-->
+  <!--<system:String x:Key="context.part.replaceaudio">Reselect audio file</system:String>-->
   <system:String x:Key="context.pitch.easein">緩入</system:String>
   <system:String x:Key="context.pitch.easeinout">緩入並緩出</system:String>
   <system:String x:Key="context.pitch.easeout">緩出</system:String>
@@ -79,13 +80,18 @@
   <system:String x:Key="menu.edit.undo">復原</system:String>
   <system:String x:Key="menu.file">檔案</system:String>
   <system:String x:Key="menu.file.exit">結束</system:String>
+  <!--<system:String x:Key="menu.file.exportaudio">Export Audio</system:String>-->
   <!--<system:String x:Key="menu.file.exportmidi">Export Midi File</system:String>-->
+  <!--<system:String x:Key="menu.file.exportmixdown">Mixdown To Wav File</system:String>-->
+  <!--<system:String x:Key="menu.file.exportproject">Export Project</system:String>-->
   <system:String x:Key="menu.file.exportust">匯出 UST 專案</system:String>
   <system:String x:Key="menu.file.exportustto">匯出 UST 檔案至...</system:String>
   <system:String x:Key="menu.file.exportwav">匯出 WAV 音訊</system:String>
   <system:String x:Key="menu.file.exportwavto">匯出 WAV 音訊至...</system:String>
   <system:String x:Key="menu.file.importaudio">匯入音訊...</system:String>
   <system:String x:Key="menu.file.importmidi">匯入 MIDI...</system:String>
+  <!--<system:String x:Key="menu.file.importmidi.drywetmidi">DryWetMidi Importer</system:String>-->
+  <!--<system:String x:Key="menu.file.importmidi.naudio">Naudio Importer</system:String>-->
   <system:String x:Key="menu.file.importtracks">匯入音軌...</system:String>
   <system:String x:Key="menu.file.new">新增</system:String>
   <system:String x:Key="menu.file.newfromtemplate">從範本新增</system:String>
@@ -254,7 +260,6 @@ Hold Ctrl to select</system:String>-->
   <system:String x:Key="prefs.rendering">算繪</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">相位補償</system:String>
   <system:String x:Key="prefs.rendering.prerender">預先算繪</system:String>
-  <system:String x:Key="prefs.rendering.prerender.threads">預先算繪執行緒</system:String>
   <system:String x:Key="prefs.rendering.resampler">引擎</system:String>
   <system:String x:Key="prefs.rendering.resampler.morewarn">
 警告: Moresampler 尚未完整支援，可能導致使用速度緩慢並提高 CPU 使用率。若欲繼續，請遵循以下步驟:
@@ -265,6 +270,10 @@ Hold Ctrl to select</system:String>-->
   <system:String x:Key="prefs.rendering.resampler.note">
     注意: 欲使用外部引擎，請將引擎 EXE 或 DLL 檔案置入 Resamplers 資料夾中，並在偏好設定選擇欲使用的引擎。
   </system:String>
+  <!--<system:String x:Key="prefs.rendering.threads.cpuwarn">
+    Warning: too many render threads may cause OpenUtau to run slowly.
+  </system:String>-->
+  <!--<system:String x:Key="prefs.rendering.threads.numthreads">Maximum Render Threads</system:String>-->
   <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
 
   <system:String x:Key="progress.saved">已儲存專案。{0}</system:String>
@@ -273,6 +282,8 @@ Hold Ctrl to select</system:String>-->
   <system:String x:Key="singers.caption">歌手</system:String>
   <!--<system:String x:Key="singers.editoto.editinvlabeler">Edit In vLabeler</system:String>-->
   <!--<system:String x:Key="singers.editoto.gotosource">Goto Source File</system:String>-->
+  <!--<system:String x:Key="singers.editoto.regenfrq">Regenerate FRQ</system:String>-->
+  <!--<system:String x:Key="singers.editoto.regenfrq.regenerating">Regenerating FRQ</system:String>-->
   <!--<system:String x:Key="singers.editoto.reset">Reset Otos</system:String>-->
   <!--<system:String x:Key="singers.editoto.save">Save Otos</system:String>-->
   <!--<system:String x:Key="singers.editoto.setvlabelerpath">Download vLabeler (1.0.0-beta1 or higher) from https://github.com/sdercolin/vlabeler and set vLabeler path in Preferences first!</system:String>-->
@@ -353,5 +364,5 @@ Hold Ctrl to select</system:String>-->
 
   <system:String x:Key="warning">警告</system:String>
   <system:String x:Key="warning.asciipath">您的 OpenUtau 主路徑 「{0}」 包含非 ASCII 字元。部分 EXE 引擎可能無法正常運作。</system:String>
-  <!--<system:String x:Key="warning.renderer">No settings for this renderer. Please select CLASSIC.</system:String>-->
+  <!--<system:String x:Key="warning.renderer">No settings for this renderer.</system:String>-->
 </ResourceDictionary>

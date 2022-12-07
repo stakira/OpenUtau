@@ -6,6 +6,7 @@
   <system:String x:Key="context.note.delete">Удалить ноту</system:String>
   <system:String x:Key="context.part.delete">Удалить часть</system:String>
   <system:String x:Key="context.part.rename">Переименовать часть</system:String>
+  <!--<system:String x:Key="context.part.replaceaudio">Reselect audio file</system:String>-->
   <!--<system:String x:Key="context.pitch.easein">Ease in</system:String>-->
   <!--<system:String x:Key="context.pitch.easeinout">Ease in/out</system:String>-->
   <!--<system:String x:Key="context.pitch.easeout">Ease out</system:String>-->
@@ -79,13 +80,18 @@
   <system:String x:Key="menu.edit.undo">Отменить</system:String>
   <system:String x:Key="menu.file">Файл</system:String>
   <system:String x:Key="menu.file.exit">Выйти</system:String>
+  <!--<system:String x:Key="menu.file.exportaudio">Export Audio</system:String>-->
   <system:String x:Key="menu.file.exportmidi">Экспортировать MIDI файл</system:String>
+  <!--<system:String x:Key="menu.file.exportmixdown">Mixdown To Wav File</system:String>-->
+  <!--<system:String x:Key="menu.file.exportproject">Export Project</system:String>-->
   <system:String x:Key="menu.file.exportust">Экспортировать UST файлы</system:String>
   <system:String x:Key="menu.file.exportustto">Экспортировать UST файлы в...</system:String>
   <system:String x:Key="menu.file.exportwav">Экспортировать WAV файлы</system:String>
   <system:String x:Key="menu.file.exportwavto">Экспортировать WAV файлы в...</system:String>
   <system:String x:Key="menu.file.importaudio">Импортировать аудио...</system:String>
   <system:String x:Key="menu.file.importmidi">Импортировать Midi...</system:String>
+  <!--<system:String x:Key="menu.file.importmidi.drywetmidi">DryWetMidi Importer</system:String>-->
+  <!--<system:String x:Key="menu.file.importmidi.naudio">Naudio Importer</system:String>-->
   <system:String x:Key="menu.file.importtracks">Импортировать треки...</system:String>
   <system:String x:Key="menu.file.new">Создать</system:String>
   <system:String x:Key="menu.file.newfromtemplate">Создать из шаблона</system:String>
@@ -254,7 +260,6 @@
   <system:String x:Key="prefs.rendering">Рендер</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">Фазовая компенсация</system:String>
   <system:String x:Key="prefs.rendering.prerender">Пре-рендер</system:String>
-  <system:String x:Key="prefs.rendering.prerender.threads">Потоки пререндера</system:String>
   <system:String x:Key="prefs.rendering.resampler">Ресамплер</system:String>
   <system:String x:Key="prefs.rendering.resampler.morewarn">
     Внимание: moresampler поддерживается не полностью. Рендер может быть медленным и привести к высокой нагрузке процессора. Если хотите использовать его, пожалуйста:
@@ -265,6 +270,10 @@
   <system:String x:Key="prefs.rendering.resampler.note">
     Примечание: чтобы использовать внешние ресамплеры, пожалуйста, добавьте .dll или .exe-файл в папку Resamplers в пути установки OpenUtau и выберите его в параметрах.
   </system:String>
+  <!--<system:String x:Key="prefs.rendering.threads.cpuwarn">
+    Warning: too many render threads may cause OpenUtau to run slowly.
+  </system:String>-->
+  <!--<system:String x:Key="prefs.rendering.threads.numthreads">Maximum Render Threads</system:String>-->
   <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
 
   <system:String x:Key="progress.saved">Проект сохранен. {0}</system:String>
@@ -273,6 +282,8 @@
   <system:String x:Key="singers.caption">Вокалисты</system:String>
   <system:String x:Key="singers.editoto.editinvlabeler">Редактировать в vLabeler</system:String>
   <system:String x:Key="singers.editoto.gotosource">Перейти к исходному файлу</system:String>
+  <!--<system:String x:Key="singers.editoto.regenfrq">Regenerate FRQ</system:String>-->
+  <!--<system:String x:Key="singers.editoto.regenfrq.regenerating">Regenerating FRQ</system:String>-->
   <system:String x:Key="singers.editoto.reset">Сбросить oto</system:String>
   <system:String x:Key="singers.editoto.save">Сохранить oto</system:String>
   <system:String x:Key="singers.editoto.setvlabelerpath">Сначала нужно скачать vLabeler версии 1.0.0-beta или выше из https://github.com/sdercolin/vlabeler и указать путь к vLabeler в параметрах!</system:String>

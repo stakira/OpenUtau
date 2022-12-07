@@ -6,6 +6,7 @@
   <system:String x:Key="context.note.delete">Remover nota</system:String>
   <system:String x:Key="context.part.delete">Deletar parte</system:String>
   <system:String x:Key="context.part.rename">Renomear parte</system:String>
+  <!--<system:String x:Key="context.part.replaceaudio">Reselect audio file</system:String>-->
   <system:String x:Key="context.pitch.easein">Curva J</system:String>
   <system:String x:Key="context.pitch.easeinout">Curva S</system:String>
   <system:String x:Key="context.pitch.easeout">Curva R</system:String>
@@ -79,13 +80,18 @@
   <system:String x:Key="menu.edit.undo">Desfazer</system:String>
   <system:String x:Key="menu.file">Arquivo</system:String>
   <system:String x:Key="menu.file.exit">Fechar</system:String>
+  <!--<system:String x:Key="menu.file.exportaudio">Export Audio</system:String>-->
   <system:String x:Key="menu.file.exportmidi">Exportar Arquivo Midi</system:String>
+  <!--<system:String x:Key="menu.file.exportmixdown">Mixdown To Wav File</system:String>-->
+  <!--<system:String x:Key="menu.file.exportproject">Export Project</system:String>-->
   <system:String x:Key="menu.file.exportust">Exportar como Ust</system:String>
   <system:String x:Key="menu.file.exportustto">Exportar Ust para...</system:String>
   <system:String x:Key="menu.file.exportwav">Exportar Arquivos Wav</system:String>
   <system:String x:Key="menu.file.exportwavto">Exportar Wav para...</system:String>
   <system:String x:Key="menu.file.importaudio">Importar Audio...</system:String>
   <system:String x:Key="menu.file.importmidi">Importar Midi...</system:String>
+  <!--<system:String x:Key="menu.file.importmidi.drywetmidi">DryWetMidi Importer</system:String>-->
+  <!--<system:String x:Key="menu.file.importmidi.naudio">Naudio Importer</system:String>-->
   <system:String x:Key="menu.file.importtracks">Importar Faixas...</system:String>
   <system:String x:Key="menu.file.new">Novo</system:String>
   <system:String x:Key="menu.file.newfromtemplate">Novo por Modelo</system:String>
@@ -254,7 +260,6 @@ Segure Ctrl para selecionar</system:String>
   <system:String x:Key="prefs.rendering">Renderização</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">Compensação de Fase</system:String>
   <!--<system:String x:Key="prefs.rendering.prerender">Pre-render</system:String>-->
-  <system:String x:Key="prefs.rendering.prerender.threads">Threads do Pre-render</system:String>
   <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
   <system:String x:Key="prefs.rendering.resampler.morewarn">
     Aviso: ainda não há suporte completo para moresampler. Ele poderá estar devegar e causar alto uso da CPU. Se deseja usar, por favor:
@@ -265,6 +270,10 @@ Segure Ctrl para selecionar</system:String>
   <system:String x:Key="prefs.rendering.resampler.note">
         Observação: para usar resamplers externos, adicione o arquivo .dll ou .exe do resampler na pasta Resamplers no caminho de instalação do OpenUtau e escolha-o em Preferências. 
     </system:String>
+  <!--<system:String x:Key="prefs.rendering.threads.cpuwarn">
+    Warning: too many render threads may cause OpenUtau to run slowly.
+  </system:String>-->
+  <!--<system:String x:Key="prefs.rendering.threads.numthreads">Maximum Render Threads</system:String>-->
   <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
 
   <system:String x:Key="progress.saved">Projeto salvo. {0}</system:String>
@@ -273,6 +282,8 @@ Segure Ctrl para selecionar</system:String>
   <system:String x:Key="singers.caption">Vozes</system:String>
   <system:String x:Key="singers.editoto.editinvlabeler">Editar no vLabeler</system:String>
   <system:String x:Key="singers.editoto.gotosource">Vá para o Arquivo Original</system:String>
+  <!--<system:String x:Key="singers.editoto.regenfrq">Regenerate FRQ</system:String>-->
+  <!--<system:String x:Key="singers.editoto.regenfrq.regenerating">Regenerating FRQ</system:String>-->
   <system:String x:Key="singers.editoto.reset">Redefinir Otos</system:String>
   <system:String x:Key="singers.editoto.save">Salvar Otos</system:String>
   <system:String x:Key="singers.editoto.setvlabelerpath">Baixe o vLabeler (1.0.0-beta1 ou maior) em https://github.com/sdercolin/vlabeler e adicione o caminho do vLabeler nas Preferências primeiro!</system:String>

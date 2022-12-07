@@ -80,9 +80,9 @@
   <system:String x:Key="menu.edit.undo">Annuler</system:String>
   <system:String x:Key="menu.file">Fichier</system:String>
   <system:String x:Key="menu.file.exit">Quitter</system:String>
+  <system:String x:Key="menu.file.exportaudio">Exporter l'audio</system:String>
   <system:String x:Key="menu.file.exportmidi">Exporter un MIDI</system:String>
   <system:String x:Key="menu.file.exportmixdown">Mixer en fichier Wav</system:String>
-  <system:String x:Key="menu.file.exportaudio">Exporter l'audio</system:String>
   <system:String x:Key="menu.file.exportproject">Exporter le projet</system:String>
   <system:String x:Key="menu.file.exportust">Exporter les pistes UST</system:String>
   <system:String x:Key="menu.file.exportustto">Exporter les pistes UST vers...</system:String>
@@ -90,6 +90,8 @@
   <system:String x:Key="menu.file.exportwavto">Exporter les fichiers Wav vers...</system:String>
   <system:String x:Key="menu.file.importaudio">Importer un fichier audio</system:String>
   <system:String x:Key="menu.file.importmidi">Importer un MIDI</system:String>
+  <!--<system:String x:Key="menu.file.importmidi.drywetmidi">DryWetMidi Importer</system:String>-->
+  <!--<system:String x:Key="menu.file.importmidi.naudio">Naudio Importer</system:String>-->
   <system:String x:Key="menu.file.importtracks">Importer une piste</system:String>
   <system:String x:Key="menu.file.new">Nouveau</system:String>
   <system:String x:Key="menu.file.newfromtemplate">Nouveau à partir d'un modèle</system:String>
@@ -158,7 +160,7 @@
   <system:String x:Key="oto.edit.preutter">Définir la pré-uttérance</system:String>
   <system:String x:Key="oto.file">Fichier</system:String>
   <system:String x:Key="oto.offset">Début</system:String>
- <system:String x:Key="oto.overlap">Chevauchement</system:String>
+  <system:String x:Key="oto.overlap">Chevauchement</system:String>
   <system:String x:Key="oto.phonetic">Phonétique</system:String>
   <system:String x:Key="oto.prefix">Préfixe</system:String>
   <system:String x:Key="oto.preutter">Pré-uttérance</system:String>
@@ -225,7 +227,7 @@ Maintenir Ctrl pour sélectionner</system:String>
   <system:String x:Key="prefs.advanced.vlabelerpath">Emplacement de VLabeler</system:String>
   <system:String x:Key="prefs.appearance">Apparence</system:String>
   <system:String x:Key="prefs.appearance.lang">Langue</system:String>
- <system:String x:Key="prefs.appearance.showghostnotes">Montrer les notes des autres pistes sur le piano roll</system:String>
+  <system:String x:Key="prefs.appearance.showghostnotes">Montrer les notes des autres pistes sur le piano roll</system:String>
   <system:String x:Key="prefs.appearance.showportrait">Montrer le portrait sur le piano roll</system:String>
   <system:String x:Key="prefs.appearance.theme">Thème</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">Nuit</system:String>
@@ -246,7 +248,7 @@ Maintenir Ctrl pour sélectionner</system:String>
   <system:String x:Key="prefs.playback.autoscrollmode">Mode de défilement automatique</system:String>
   <system:String x:Key="prefs.playback.autoscrollmode.pagescroll">Défilement de page</system:String>
   <system:String x:Key="prefs.playback.autoscrollmode.stationarycursor">Curseur fixe</system:String>
-  <system:String x:Key="prefs.playback.backend">Audio Backend</system:String>
+  <!--<system:String x:Key="prefs.playback.backend">Audio Backend</system:String>-->
   <system:String x:Key="prefs.playback.backend.auto">Automatique</system:String>
   <!--<system:String x:Key="prefs.playback.backend.port">PortAudio</system:String>-->
   <system:String x:Key="prefs.playback.cursorposition">Position du curseur</system:String>
@@ -258,7 +260,6 @@ Maintenir Ctrl pour sélectionner</system:String>
   <system:String x:Key="prefs.rendering">En train de rendre...</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">Compensation de phase</system:String>
   <system:String x:Key="prefs.rendering.prerender">Pré-rendu</system:String>
-  <system:String x:Key="prefs.rendering.prerender.threads">Fils de Pré-rendu</system:String>
   <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
   <system:String x:Key="prefs.rendering.resampler.morewarn">
 Avertissement : moresampler n'est pas entièrement pris en charge. Il peut être lent et entraîner une utilisation élevée du CPU. Si vous insistez, veuillez :
@@ -269,6 +270,10 @@ Avertissement : moresampler n'est pas entièrement pris en charge. Il peut être
   <system:String x:Key="prefs.rendering.resampler.note">
         Note: pour utiliser des resamplers externes, ajoutez le fichier .exe ou .dll du resampler dans le dossier "Resamplers" de OpenUTAU, puis choisissez-le dans Préférences.
     </system:String>
+  <!--<system:String x:Key="prefs.rendering.threads.cpuwarn">
+    Warning: too many render threads may cause OpenUtau to run slowly.
+  </system:String>-->
+  <!--<system:String x:Key="prefs.rendering.threads.numthreads">Maximum Render Threads</system:String>-->
   <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
 
   <system:String x:Key="progress.saved">Projet enregistré. {0}</system:String>
@@ -277,6 +282,8 @@ Avertissement : moresampler n'est pas entièrement pris en charge. Il peut être
   <system:String x:Key="singers.caption">Voicebanks</system:String>
   <system:String x:Key="singers.editoto.editinvlabeler">Editer dans VLabeler</system:String>
   <system:String x:Key="singers.editoto.gotosource">Ouvrir l'emplacement</system:String>
+  <!--<system:String x:Key="singers.editoto.regenfrq">Regenerate FRQ</system:String>-->
+  <!--<system:String x:Key="singers.editoto.regenfrq.regenerating">Regenerating FRQ</system:String>-->
   <system:String x:Key="singers.editoto.reset">Réinitialiser l'Oto</system:String>
   <system:String x:Key="singers.editoto.save">Sauvegarder l'Oto</system:String>
   <system:String x:Key="singers.editoto.setvlabelerpath">Téléchargez vLabeler (1.0.0-beta1 ou plus) de https://github.com/sdercolin/vlabeler et définissez le chemin d'accès dans préférences d'abord !</system:String>
