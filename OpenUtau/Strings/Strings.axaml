@@ -260,10 +260,6 @@ Hold Ctrl to select</system:String>
   <system:String x:Key="prefs.rendering">Rendering</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">Phase Compensation</system:String>
   <system:String x:Key="prefs.rendering.prerender">Pre-render</system:String>
-  <system:String x:Key="prefs.rendering.threads.numthreads">Maximum Render Threads</system:String>
-  <system:String x:Key="prefs.rendering.threads.cpuwarn">
-    Warning: too many render threads may cause OpenUtau to run slowly.
-  </system:String>
   <system:String x:Key="prefs.rendering.resampler">Resampler</system:String>
   <system:String x:Key="prefs.rendering.resampler.morewarn">
     Warning: moresampler is not fully supported. It may be slow and cause high CPU usage. If you insist, please:
@@ -274,6 +270,10 @@ Hold Ctrl to select</system:String>
   <system:String x:Key="prefs.rendering.resampler.note">
     Note: to use external resamplers, please add the resampler DLL or EXE file in the Resamplers folder in the OpenUtau install path and choose it in Preferences.
   </system:String>
+  <system:String x:Key="prefs.rendering.threads.cpuwarn">
+    Warning: too many render threads may cause OpenUtau to run slowly.
+  </system:String>
+  <system:String x:Key="prefs.rendering.threads.numthreads">Maximum Render Threads</system:String>
   <system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>
 
   <system:String x:Key="progress.saved">Project saved. {0}</system:String>
@@ -282,6 +282,8 @@ Hold Ctrl to select</system:String>
   <system:String x:Key="singers.caption">Singers</system:String>
   <system:String x:Key="singers.editoto.editinvlabeler">Edit In vLabeler</system:String>
   <system:String x:Key="singers.editoto.gotosource">Goto Source File</system:String>
+  <system:String x:Key="singers.editoto.regenfrq">Regenerate FRQ</system:String>
+  <system:String x:Key="singers.editoto.regenfrq.regenerating">Regenerating FRQ</system:String>
   <system:String x:Key="singers.editoto.reset">Reset Otos</system:String>
   <system:String x:Key="singers.editoto.save">Save Otos</system:String>
   <system:String x:Key="singers.editoto.setvlabelerpath">Download vLabeler (1.0.0-beta1 or higher) from https://github.com/sdercolin/vlabeler and set vLabeler path in Preferences first!</system:String>
