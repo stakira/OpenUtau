@@ -228,8 +228,8 @@ Mantén Ctrl para seleccionar</system:String>
   <system:String x:Key="prefs.appearance.theme.light">Claro</system:String>
   <system:String x:Key="prefs.caption">Ajustes</system:String>
   <system:String x:Key="prefs.note.restart">Nota: Por favor, reinicia OpenUTAU después de cambiar esta opción.</system:String>
-  <system:String x:Key="prefs.off">Sí</system:String>
-  <system:String x:Key="prefs.on">No</system:String>
+  <system:String x:Key="prefs.off">No</system:String>
+  <system:String x:Key="prefs.on">Sí</system:String>
   <system:String x:Key="prefs.otoeditor">Editor de OTO</system:String>
   <system:String x:Key="prefs.otoeditor.select">Editor predeterminado</system:String>
   <system:String x:Key="prefs.paths">Rutas</system:String>
