@@ -37,7 +37,7 @@ namespace OpenUtau.Plugin.Builtin
 		/// <summary>
 		/// Extra English-based sounds for phonetic hint input + alternate romanizations for tense plosives (ㄲ, ㄸ, ㅃ)
 		/// </summary>
-		static readonly string[] extras = { "f", "v", "th", "dh", "z", "kk", "pp", "tt" };
+		static readonly string[] extras = { "f", "v", "th", "dh", "z", "rr", "kk", "pp", "tt" };
 
 		/// <summary>
 		/// Gets the romanized initial, medial, and final components of the passed Hangul syllable.
