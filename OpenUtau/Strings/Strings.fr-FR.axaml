@@ -47,7 +47,7 @@
 
   <system:String x:Key="exps.abbr">Abréviation</system:String>
   <system:String x:Key="exps.apply">Appliquer</system:String>
-  <system:String x:Key="exps.caption">Expréssions</system:String>
+  <system:String x:Key="exps.caption">Expressions</system:String>
   <system:String x:Key="exps.defaultvalue">Valeur par défaut</system:String>
   <!--<system:String x:Key="exps.flag">Resampler Flag</system:String>-->
   <system:String x:Key="exps.isflag">Est un Resampler Flag</system:String>
@@ -120,7 +120,7 @@
   <!--<system:String x:Key="menu.tools.layout.vsplit12">Vertical 1:2</system:String>-->
   <!--<system:String x:Key="menu.tools.layout.vsplit13">Vertical 1:3</system:String>-->
   <system:String x:Key="menu.tools.prefs">Préférences...</system:String>
-  <system:String x:Key="menu.tools.project.expressions">Expréssions...</system:String>
+  <system:String x:Key="menu.tools.project.expressions">Expressions...</system:String>
   <system:String x:Key="menu.tools.singer.install">Installer une Voix</system:String>
   <system:String x:Key="menu.tools.singer.installadv">Installer une Voix (paramètres avancés)</system:String>
   <system:String x:Key="menu.tools.singers">Voix</system:String>
@@ -153,7 +153,7 @@
   <system:String x:Key="oto.color">Couleur</system:String>
   <system:String x:Key="oto.consonant">Consonne</system:String>
   <system:String x:Key="oto.cutoff">Fin</system:String>
-  <system:String x:Key="oto.edit.consonant">Définir Consonant</system:String>
+  <system:String x:Key="oto.edit.consonant">Définir la consonne</system:String>
   <system:String x:Key="oto.edit.cutoff">Définir la fin</system:String>
   <system:String x:Key="oto.edit.offset">Définir le début</system:String>
   <system:String x:Key="oto.edit.overlap">Définir le chevauchement</system:String>
@@ -167,11 +167,11 @@
   <system:String x:Key="oto.set">Pitch</system:String>
   <system:String x:Key="oto.suffix">Suffixe</system:String>
 
-  <!--<system:String x:Key="phoneticassistant.caption">Phonetic Assistant</system:String>-->
-  <!--<system:String x:Key="phoneticassistant.copy">Copy</system:String>-->
+  <system:String x:Key="phoneticassistant.caption">Assistant phonétique</system:String>
+  <system:String x:Key="phoneticassistant.copy">Copier</system:String>
 
   <system:String x:Key="pianoroll.menu.lyrics">Paroles</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Remplacer "-" avec "+"</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Remplacer "-" par "+"</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">Modifier les paroles</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hanzitopinyin">Hanzi -> Pinyin</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana -> Romaji</system:String>
@@ -230,8 +230,8 @@ Maintenir Ctrl pour sélectionner</system:String>
   <system:String x:Key="prefs.appearance.showghostnotes">Montrer les notes des autres pistes sur le piano roll</system:String>
   <system:String x:Key="prefs.appearance.showportrait">Montrer le portrait sur le piano roll</system:String>
   <system:String x:Key="prefs.appearance.theme">Thème</system:String>
-  <system:String x:Key="prefs.appearance.theme.dark">Nuit</system:String>
-  <system:String x:Key="prefs.appearance.theme.light">Jour</system:String>
+  <system:String x:Key="prefs.appearance.theme.dark">Sombre</system:String>
+  <system:String x:Key="prefs.appearance.theme.light">Clair</system:String>
   <system:String x:Key="prefs.caption">Préférences</system:String>
   <system:String x:Key="prefs.note.restart">Note: veuillez redémarrer OpenUtau après avoir changé cette option.</system:String>
   <system:String x:Key="prefs.off">Désactivé</system:String>
@@ -270,10 +270,10 @@ Avertissement : moresampler n'est pas entièrement pris en charge. Il peut être
   <system:String x:Key="prefs.rendering.resampler.note">
         Note: pour utiliser des resamplers externes, ajoutez le fichier .exe ou .dll du resampler dans le dossier "Resamplers" de OpenUTAU, puis choisissez-le dans Préférences.
     </system:String>
-  <!--<system:String x:Key="prefs.rendering.threads.cpuwarn">
-    Warning: too many render threads may cause OpenUtau to run slowly.
-  </system:String>-->
-  <!--<system:String x:Key="prefs.rendering.threads.numthreads">Maximum Render Threads</system:String>-->
+  <<system:String x:Key="prefs.rendering.threads.cpuwarn">
+   Attention : trop de thread pourrait ralentir OpenUTAU.
+  </system:String>
+  <system:String x:Key="prefs.rendering.threads.numthreads">Threads maximum pour le rendu</system:String>
   <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
 
   <system:String x:Key="progress.saved">Projet enregistré. {0}</system:String>
@@ -282,22 +282,22 @@ Avertissement : moresampler n'est pas entièrement pris en charge. Il peut être
   <system:String x:Key="singers.caption">Voicebanks</system:String>
   <system:String x:Key="singers.editoto.editinvlabeler">Editer dans VLabeler</system:String>
   <system:String x:Key="singers.editoto.gotosource">Ouvrir l'emplacement</system:String>
-  <!--<system:String x:Key="singers.editoto.regenfrq">Regenerate FRQ</system:String>-->
-  <!--<system:String x:Key="singers.editoto.regenfrq.regenerating">Regenerating FRQ</system:String>-->
+  <system:String x:Key="singers.editoto.regenfrq">Régénérer FRQ</system:String>
+  <system:String x:Key="singers.editoto.regenfrq.regenerating">Régénération FRQ</system:String>-
   <system:String x:Key="singers.editoto.reset">Réinitialiser l'Oto</system:String>
   <system:String x:Key="singers.editoto.save">Sauvegarder l'Oto</system:String>
   <system:String x:Key="singers.editoto.setvlabelerpath">Téléchargez vLabeler (1.0.0-beta1 ou plus) de https://github.com/sdercolin/vlabeler et définissez le chemin d'accès dans préférences d'abord !</system:String>
   <system:String x:Key="singers.errorreport">Générer un rapport d'erreur de la Voix</system:String>
   <system:String x:Key="singers.location">Emplacement</system:String>
-  <system:String x:Key="singers.otoview.moveleft">Bouger a gauche</system:String>
-  <system:String x:Key="singers.otoview.moveright">Bouger a droite</system:String>
+  <system:String x:Key="singers.otoview.moveleft">Bouger à gauche</system:String>
+  <system:String x:Key="singers.otoview.moveright">Bouger à droite</system:String>
   <system:String x:Key="singers.otoview.selectnext">Séléctionner suivant</system:String>
   <system:String x:Key="singers.otoview.selectprev">Séléctionner précédent</system:String>
   <system:String x:Key="singers.otoview.showall">Montrer tout</system:String>
   <system:String x:Key="singers.otoview.zoomin">Zoomer</system:String>
   <system:String x:Key="singers.otoview.zoomout">Dézoomer</system:String>
   <system:String x:Key="singers.refresh">Rafraîchir</system:String>
-  <system:String x:Key="singers.setdefaultphonemizer">Définir le phonemizeur par défaut</system:String>
+  <system:String x:Key="singers.setdefaultphonemizer">Définir le phonemizer par défaut</system:String>
   <system:String x:Key="singers.setencoding">Configurer l'encodage</system:String>
   <system:String x:Key="singers.setportrait">Définir le portrait</system:String>
   <system:String x:Key="singers.subbanks.cancel">Annuler</system:String>
@@ -320,7 +320,7 @@ Avertissement : moresampler n'est pas entièrement pris en charge. Il peut être
 Clic gauche: Configurer les expressions
 Clic droit: Réinitialiser les expressions
   </system:String>
-  <system:String x:Key="tip.exps.notsupported">Expression non supporter par le moteur de rendu</system:String>
+  <system:String x:Key="tip.exps.notsupported">Expression non supportée par le moteur de rendu</system:String>
   <system:String x:Key="tip.lyricbox.next">Tab: Note Suivante</system:String>
   <system:String x:Key="tip.lyricbox.prev">Maj+Tab: Note Précédente</system:String>
   <system:String x:Key="tip.notes.basics">
@@ -344,7 +344,7 @@ Général
   <system:String x:Key="tip.notes.zoomy">Scroller ici pour zoomer verticalement ▶</system:String>
 
   <system:String x:Key="tracks.more">Plus</system:String>
-  <system:String x:Key="tracks.movedown">Déscendre</system:String>
+  <system:String x:Key="tracks.movedown">Descendre</system:String>
   <system:String x:Key="tracks.moveup">Monter</system:String>
   <system:String x:Key="tracks.remove">Supprimer</system:String>
   <system:String x:Key="tracks.selectrenderer">Séléctionner le moteur de rendu</system:String>
