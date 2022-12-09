@@ -30,7 +30,7 @@ namespace OpenUtau.Plugin.Builtin {
         // ======================================================================================
 
 
-        static readonly string[] plainVowels = new string[] { "eu", "eo", "a", "i", "u", "e", "o" };
+        static readonly string[] plainVowels = new string[] { "eu", "eo", "a", "i", "u", "e", "o", "er" };
 
         static readonly string[] vowels = new string[] {
             "eu=geu,neu,deu,reu,leu,meu,beu,seu,eu,jeu,cheu,keu,teu,peu,heu,ggeu,ddeu,bbeu,sseu,jjeu,feu,veu,zeu,theu,rreu",
@@ -46,7 +46,8 @@ namespace OpenUtau.Plugin.Builtin {
             "l=al,il,ul,el,ol,eul,eol",
             "p=ap,ip,up,ep,op,eup,eop",
             "t=at,it,ut,et,ot,eut,eot",
-            "k=ak,ik,uk,ek,ok,euk,eok"
+            "k=ak,ik,uk,ek,ok,euk,eok",
+            "er=er"
         };
 
         static readonly string[] consonants = new string[] {
@@ -501,6 +502,8 @@ namespace OpenUtau.Plugin.Builtin {
                             mixVV = $"eo {CV}";
                         } else if (prevLyric.EndsWith("eu")) {
                             mixVV = $"eu {CV}";
+                        } else if (prevLyric.EndsWith("er")) {
+                            mixVV = $"er {CV}";
                         }
 
                         // try vowlyric then currentlyric
@@ -675,6 +678,8 @@ namespace OpenUtau.Plugin.Builtin {
                         vowLyric = $"eo {currentLyric}";
                     } else if (prevLyric.EndsWith("eu")) {
                         vowLyric = $"eu {currentLyric}";
+                    } else if (prevLyric.EndsWith("er")) {
+                        vowLyric = $"er {currentLyric}";
                     }
 
                     // try vowlyric then currentlyric
@@ -703,6 +708,8 @@ namespace OpenUtau.Plugin.Builtin {
                         endBreath = $"eo R";
                     } else if (prevLyric.EndsWith("eu")) {
                         endBreath = $"eu R";
+                    } else if (prevLyric.EndsWith("er")) {
+                        endBreath = $"er R";
                     }
 
                     // try end breath
