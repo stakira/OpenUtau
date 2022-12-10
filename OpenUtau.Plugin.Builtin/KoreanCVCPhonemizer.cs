@@ -485,6 +485,13 @@ namespace OpenUtau.Plugin.Builtin {
                         CV = oto.Alias;
                     }
                 }
+                
+                if (prevExist && TCLconsonant == "" && TPLfinal == "ng") {
+                    string[] tests = new string[] { $"ng{CV}", CV, currentLyric };
+                    if (checkOtoUntilHit(tests, note, out var oto)) {
+                        CV = oto.Alias;
+                    }
+                }
 
                 if (prevNeighbour != null && prevExist && !prevHangeul && TCLconsonant == "") {
                     var prevUnicode = ToUnicodeElements(prevNeighbour?.lyric);
