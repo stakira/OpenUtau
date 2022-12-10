@@ -701,6 +701,11 @@ namespace OpenUtau.Plugin.Builtin {
                     if (checkOtoUntilHit(tests, note, out var oto)) {
                         currentLyric = oto.Alias;
                     }
+                } else if (prevExist && prevHangeul && TPLfinal == "ng") {
+                    string[] tests = new string[] { $"ng{currentLyric}", currentLyric };
+                    if (checkOtoUntilHit(tests, note, out var oto)) {
+                        currentLyric = oto.Alias;
+                    }
                 }
             } else if ("R".Contains(currentLyric)) {
                 var prevUnicode = ToUnicodeElements(prevNeighbour?.lyric);
