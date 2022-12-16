@@ -478,6 +478,13 @@ namespace OpenUtau.Plugin.Builtin {
                         CV = oto.Alias;
                     }
                 }
+                
+                if (!prevExist && TCLconsonant == "r") {
+                    string[] tests = new string[] { $"- {CV}", $"l{TCLvowel}", CV, currentLyric };
+                    if (checkOtoUntilHit(tests, note, out var oto)) {
+                        CV = oto.Alias;
+                    }
+                }
 
                 if (prevExist && TCLconsonant == "" && TPLfinal == "") {
                     string[] tests = new string[] { $"{TPLplainvowel} {CV}", CV, currentLyric };
