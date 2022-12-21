@@ -78,6 +78,10 @@ namespace OpenUtau.Core.Ustx {
             lyric = "\"" + lyric + "\""; // surround lyric with quotes
         }
 
+        public void AfterSave(UProject project, UTrack track, UVoicePart part) {
+            lyric = lyric.Replace("\"", ""); // prevent multiple quotes after consecutive saves
+        }
+
         public void Validate(ValidateOptions options, UProject project, UTrack track, UVoicePart part) {
             duration = Math.Max(10, duration);
             PositionMs = project.timeAxis.TickPosToMsPos(part.position + position);

@@ -128,6 +128,9 @@ namespace OpenUtau.Core.Ustx {
         }
 
         public void AfterSave() {
+            foreach (var part in parts) {
+                part.AfterSave(this, tracks[part.trackNo]);
+            }
             voiceParts = null;
             waveParts = null;
         }

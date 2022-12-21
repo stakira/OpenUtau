@@ -28,6 +28,7 @@ namespace OpenUtau.Core.Ustx {
         public abstract int GetMinDurTick(UProject project);
 
         public virtual void BeforeSave(UProject project, UTrack track) { }
+        public virtual void AfterSave(UProject project, UTrack track) { }
         public virtual void AfterLoad(UProject project, UTrack track) { }
 
         public virtual void Validate(ValidateOptions options, UProject project, UTrack track) { }
@@ -68,6 +69,12 @@ namespace OpenUtau.Core.Ustx {
         public override void BeforeSave(UProject project, UTrack track) {
             foreach (var note in notes) {
                 note.BeforeSave(project, track, this);
+            }
+        }
+
+        public override void AfterSave(UProject project, UTrack track) {
+            foreach (var note in notes) {
+                note.AfterSave(project, track, this);
             }
         }
 
