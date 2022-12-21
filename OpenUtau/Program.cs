@@ -35,6 +35,8 @@ namespace OpenUtau.App {
                 $"{RuntimeInformation.ProcessArchitecture}");
             Log.Information($"OpenUtau v{Assembly.GetEntryAssembly()?.GetName().Version} " +
                 $"{RuntimeInformation.RuntimeIdentifier}");
+            Log.Information($"Data path = {PathManager.Inst.DataPath}");
+            Log.Information($"Cache path = {PathManager.Inst.CachePath}");
             try {
                 Run(args);
                 Log.Information($"Exiting.");

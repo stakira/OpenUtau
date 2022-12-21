@@ -12,7 +12,7 @@ namespace OpenUtau.Core.Render {
         public const string ENUNU = "ENUNU";
         public const string VOGEN = "VOGEN";
 
-        static readonly string[] classicRenderers = new[] { CLASSIC, WORLDLINER };
+        static readonly string[] classicRenderers = new[] { WORLDLINER, CLASSIC };
         static readonly string[] enunuRenderers = new[] { ENUNU };
         static readonly string[] vogenRenderers = new[] { VOGEN };
         static readonly string[] noRenderers = new string[0];

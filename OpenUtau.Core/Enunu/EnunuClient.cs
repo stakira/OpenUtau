@@ -5,34 +5,16 @@ using Newtonsoft.Json;
 using Serilog;
 
 namespace OpenUtau.Core.Enunu {
-    class EnunuClient {
-        private static volatile EnunuClient instance;
-        private static readonly object lockObj = new object();
-
-        private EnunuClient() { }
-
-        public static EnunuClient Inst {
-            get {
-                if (instance == null) {
-                    lock (lockObj) {
-                        if (instance == null) {
-                            instance = new EnunuClient();
-                        }
-                    }
-                }
-                return instance;
-            }
-        }
-
+    class EnunuClient : Util.SingletonBase<EnunuClient> {
         internal T SendRequest<T>(string[] args) {
             using (var client = new RequestSocket()) {
                 client.Connect("tcp://localhost:15555");
                 string request = JsonConvert.SerializeObject(args);
                 Log.Information($"EnunuProcess sending {request}");
                 client.SendFrame(request);
-                client.TryReceiveFrameString(TimeSpan.FromSeconds(300), out string message);
+                client.TryReceiveFrameString(TimeSpan.FromSeconds(300), out string? message);
                 Log.Information($"EnunuProcess received {message}");
-                return JsonConvert.DeserializeObject<T>(message);
+                return JsonConvert.DeserializeObject<T>(message ?? string.Empty)!;
             }
         }
     }

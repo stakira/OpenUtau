@@ -11,11 +11,11 @@ namespace OpenUtau.Plugin.Builtin {
 
     public class FrenchVCCVPhonemizer : SyllableBasedPhonemizer {
 
-        private readonly string[] vowels = "A,E,e,2,9,i,o,O,u,y,a,U,0".Split(",");
-        private readonly string[] consonants = "b,d,f,g,Z,k,l,m,n,p,R,s,S,t,v,w,j,z,J,H".Split(",");
+        private readonly string[] vowels = "A,E,e,2,9,i,o,O,u,y,a,U,0,A',E',e',2',9',i',o',O',u',y',a',U',0'".Split(",");
+        private readonly string[] consonants = "b,d,f,g,Z,k,l,m,n,p,R,s,S,t,v,w,j,z,J,H,h,4,r,_hh".Split(",");
         private readonly Dictionary<string, string> dictionaryReplacements = (
             "aa=A;ai=E;ei=e;eu=2;ee=2;oe=9;ii=i;au=o;oo=O;ou=u;uu=y;an=a;in=U;un=U;on=0;uy=H;" +
-            "bb=b;dd=d;ff=f;gg=g;jj=Z;kk=k;ll=l;mm=m;nn=n;pp=p;rr=R;ss=s;ch=S;tt=t;vv=v;ww=w;yy=j;zz=z;gn=J;").Split(';')
+            "bb=b;dd=d;ff=f;gg=g;jj=Z;kk=k;ll=l;mm=m;nn=n;pp=p;rr=R;ss=s;ch=S;tt=t;vv=v;ww=w;yy=j;zz=z;gn=J;4=4;hh=h;").Split(';')
                 .Select(entry => entry.Split('='))
                 .Where(parts => parts.Length == 2)
                 .Where(parts => parts[0] != parts[1])
@@ -24,6 +24,7 @@ namespace OpenUtau.Plugin.Builtin {
 
         private string[] shortConsonants = "R".Split(",");
         private string[] longConsonants = "t,k,g,p,s,S,Z".Split(",");
+        private string[] hardConsonants = "t,k,g,p,d".Split(",");
 
         protected override string[] GetVowels() => vowels;
         protected override string[] GetConsonants() => consonants;
@@ -40,18 +41,22 @@ namespace OpenUtau.Plugin.Builtin {
             string basePhoneme;
             var phonemes = new List<string>();
 
+            // add vocal fry support
+            if (prevV.Contains("'")) {
+                prevV = prevV.Replace("'", "");
+            }
 
             // --------------------------- STARTING V ------------------------------- //
             if (syllable.IsStartingV) {
                 basePhoneme = $"- {v}";
 
             } else if (syllable.IsVV) {  // if VV
-                if (!CanMakeAliasExtension(syllable)) {
+                //if (!CanMakeAliasExtension(syllable)) {
                     basePhoneme = $"{prevV} {v}";
-                } else {
-                    // the previous alias will be extended
-                    basePhoneme = null;
-                }
+                //} else {
+                //    // the previous alias will be extended
+                //    basePhoneme = null;
+                //}
                 // --------------------------- STARTING CV ------------------------------- //
             } else if (syllable.IsStartingCVWithOneConsonant) {
 
@@ -63,7 +68,10 @@ namespace OpenUtau.Plugin.Builtin {
 
                 // --------------------------- STARTING CCV ------------------------------- //
             } else if (syllable.IsStartingCVWithMoreThanOneConsonant) {
-                phonemes.Add($"- {cc[0]}");
+
+                if (!hardConsonants.Contains(cc[0])) {
+                    phonemes.Add($"- {cc[0]}");
+                }
 
                 basePhoneme = $"{cc.Last()}{v}";
 

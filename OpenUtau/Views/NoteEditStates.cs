@@ -140,7 +140,6 @@ namespace OpenUtau.App.Views {
             this.note = note;
             var notesVm = vm.NotesViewModel;
             if (!notesVm.Selection.Contains(note)) {
-                notesVm.DeselectNotes();
                 notesVm.SelectNote(note);
             }
         }

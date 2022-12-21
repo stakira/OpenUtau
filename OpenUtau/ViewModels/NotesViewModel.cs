@@ -425,11 +425,50 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void SelectNote(UNote note) {
+            SelectNote(note, true);
+        }
+        public void SelectNote(UNote note, bool deselectExisting) {
             if (Part == null) {
                 return;
             }
-            Selection.Add(note);
-            MessageBus.Current.SendMessage(new NotesSelectionEvent(Selection));
+            if (deselectExisting ? Selection.Select(note) : Selection.Add(note)) {
+                MessageBus.Current.SendMessage(new NotesSelectionEvent(Selection));
+            }
+        }
+        public void MoveSelection(int delta) {
+            if (Selection.Move(delta)) {
+                MessageBus.Current.SendMessage(new NotesSelectionEvent(Selection));
+                ScrollIntoView(Selection.Head!);
+            };
+        }
+        public void ExtendSelection(int delta) {
+            if (Selection.Resize(delta)) {
+                MessageBus.Current.SendMessage(new NotesSelectionEvent(Selection));
+                ScrollIntoView(Selection.Head!);
+            };
+        }
+        public void ExtendSelection(UNote note) {
+            if (Selection.SelectTo(note)) {
+                MessageBus.Current.SendMessage(new NotesSelectionEvent(Selection));
+            };
+        }
+
+        public void MoveCursor(int delta) {
+            if (!Selection.IsEmpty) {
+                MoveSelection(delta);
+                return;
+            }
+            var target = Part!.notes.FirstOrDefault();
+            if (target == null) {
+                return;
+            }
+            var centerTick = TickOffset + ViewportTicks * 0.5;
+            // get closest note to center, without going over
+            while (target.Next != null && (target!.position < TickOffset || target!.Next.position < centerTick)) {
+                target = target.Next;
+            }
+            SelectNote(target);
+            ScrollIntoView(target);
         }
 
         public void SelectAllNotes() {
@@ -506,6 +545,26 @@ namespace OpenUtau.App.ViewModels {
             Selection.Remove(toCleanup);
         }
 
+        public void InsertNote() {
+            if(Part == null) {
+                return;
+            }
+
+            var project = DocManager.Inst.Project;
+            int snapUnit = project.resolution * 4 / SnapDiv;
+
+            var fromNote = Selection.LastOrDefault();
+            int DEFAULT_TONE = 12 * 5; // C4
+            int tone = fromNote?.tone ?? DEFAULT_TONE;
+            int tick = fromNote?.RightBound ?? (int)TickOffset;
+            int dur = fromNote?.duration ?? snapUnit;
+            DocManager.Inst.StartUndoGroup();
+            UNote note = DocManager.Inst.Project.CreateNote(tone, tick, dur);
+            DocManager.Inst.ExecuteCmd(new AddNoteCommand(Part, note));
+            SelectNote(note);
+            DocManager.Inst.EndUndoGroup();
+        }
+
         public void TransposeSelection(int deltaNoteNum) {
             if (Selection.IsEmpty) {
                 return;
@@ -516,6 +575,43 @@ namespace OpenUtau.App.ViewModels {
             }
             DocManager.Inst.StartUndoGroup();
             DocManager.Inst.ExecuteCmd(new MoveNoteCommand(Part, selectedNotes, 0, deltaNoteNum));
+            DocManager.Inst.EndUndoGroup();
+        }
+        public void MoveSelectedNotes(int deltaTicks) {
+            if (Selection.IsEmpty || Part == null) {
+                return;
+            }
+            var selectedNotes = Selection.ToList();
+            // TODO REVIEW should the end be clamped to end of part? or allow to go over?
+            //var delta = Math.Clamp(deltaTicks, -1 * selectedNotes.First().position, Part.End - selectedNotes.Last().position);
+            var delta = Math.Max(deltaTicks, -1 * selectedNotes.First().position);
+
+            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.ExecuteCmd(new MoveNoteCommand(Part, selectedNotes, delta, 0));
+            DocManager.Inst.EndUndoGroup();
+        }
+
+        public void ResizeSelectedNotes(int deltaTicks) {
+            if (Selection.IsEmpty || Part == null) {
+                return;
+            }
+
+            var selectedNotes = Selection.ToList();
+
+            // ignore if change would make a note smaller than minimal size
+            if (deltaTicks < 0) {
+                int smallestDuration = selectedNotes.Select(n => n.duration).Min();
+
+                var project = DocManager.Inst.Project;
+                int snapUnit = project.resolution * 4 / SnapDiv;
+                int minNoteTicks = IsSnapOn ? snapUnit : 15;
+
+                if (smallestDuration + deltaTicks < minNoteTicks) {
+                    return;
+                }
+            }
+            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.ExecuteCmd(new ResizeNoteCommand(Part, selectedNotes, deltaTicks));
             DocManager.Inst.EndUndoGroup();
         }
 
@@ -594,6 +690,19 @@ namespace OpenUtau.App.ViewModels {
             TrackOffset = Math.Clamp(ViewConstants.MaxTone - note.tone + 2 - ViewportTracks * 0.5, 0, VScrollBarMax);
         }
 
+        private void ScrollIntoView(UNote note) {
+            if (note.position < TickOffset || note.RightBound > TickOffset + ViewportTicks) {
+                AutoScroll(TickToneToPoint(note.position, 0).X);
+            }
+            var toneMargin = 4;
+            var noteOffset = ViewConstants.MaxTone - note.tone - 1;
+            if (noteOffset < TrackOffset + toneMargin) {
+                TrackOffset = Math.Max(noteOffset - toneMargin, 0);
+            } else if (noteOffset > TrackOffset + ViewportTracks - toneMargin) {
+                TrackOffset = Math.Min(noteOffset + toneMargin - ViewportTracks, VScrollBarMax);
+            }
+        }
+
         internal (UNote[], string[]) PrepareInsertLyrics() {
             var first = Selection.FirstOrDefault();
             var last = Selection.LastOrDefault();
@@ -646,10 +755,13 @@ namespace OpenUtau.App.ViewModels {
                     PrimaryKeyNotSupported = !IsExpSupported(PrimaryKey);
                 } else if (cmd is SetPlayPosTickNotification setPlayPosTick) {
                     SetPlayPos(setPlayPosTick.playPosTick, setPlayPosTick.waitingRendering);
-                    MaybeAutoScroll();
+                    MaybeAutoScroll(PlayPosX);
                 } else if (cmd is FocusNoteNotification focusNote) {
                     if (focusNote.part == Part) {
                         FocusNote(focusNote.note);
+                        if (Selection.Count <= 1) {
+                            SelectNote(focusNote.note);
+                        }
                     }
                 } else if (cmd is ValidateProjectNotification
                     || cmd is SingersRefreshedNotification
@@ -687,6 +799,12 @@ namespace OpenUtau.App.ViewModels {
                 CleanupSelectedNotes();
                 if (noteCommand.Part == Part) {
                     MessageBus.Current.SendMessage(new NotesRefreshEvent());
+
+                    if (noteCommand is RemoveNoteCommand && isUndo) {
+                        if (Selection.Select(noteCommand.Notes)) {
+                            MessageBus.Current.SendMessage(new NotesSelectionEvent(Selection));
+                        }
+                    }
                 }
             } else if (cmd is ExpCommand) {
                 MessageBus.Current.SendMessage(new NotesRefreshEvent());
@@ -706,42 +824,42 @@ namespace OpenUtau.App.ViewModels {
             }
         }
 
-        private void MaybeAutoScroll() {
+        private void MaybeAutoScroll(double positionX) {
             var autoScrollPreference = Convert.ToBoolean(Preferences.Default.PlaybackAutoScroll);
             if (autoScrollPreference) {
-                AutoScroll();
+                AutoScroll(positionX);
             }
         }
 
-        private void AutoScroll() {
-            double scrollDelta = GetScrollValueDelta();
+        private void AutoScroll(double positionX) {
+            double scrollDelta = GetScrollValueDelta(positionX);
             TickOffset = Math.Clamp(TickOffset + scrollDelta, 0, HScrollBarMax);
         }
 
-        private double GetScrollValueDelta() {
+        private double GetScrollValueDelta(double positionX) {
             var pageScroll = Preferences.Default.PlaybackAutoScroll == 2;
             if (pageScroll) {
-                return GetPageScrollScrollValueDelta();
+                return GetPageScrollScrollValueDelta(positionX);
             }
-            return GetStationaryCursorScrollValueDelta();
+            return GetStationaryCursorScrollValueDelta(positionX);
         }
 
-        private double GetStationaryCursorScrollValueDelta() {
+        private double GetStationaryCursorScrollValueDelta(double positionX) {
             double rightMargin = Preferences.Default.PlayPosMarkerMargin * Bounds.Width;
-            if (PlayPosX > rightMargin) {
-                return (PlayPosX - rightMargin) * playPosXToTickOffset;
-            } else if (PlayPosX < 0) {
-                return PlayPosX * playPosXToTickOffset;
+            if (positionX > rightMargin) {
+                return (positionX - rightMargin) * playPosXToTickOffset;
+            } else if (positionX < 0) {
+                return positionX * playPosXToTickOffset;
             }
             return 0;
         }
 
-        private double GetPageScrollScrollValueDelta() {
+        private double GetPageScrollScrollValueDelta(double positionX) {
             double leftMargin = (1 - Preferences.Default.PlayPosMarkerMargin) * Bounds.Width;
-            if (PlayPosX > Bounds.Width) {
+            if (positionX > Bounds.Width) {
                 return (Bounds.Width - leftMargin) * playPosXToTickOffset;
-            } else if (PlayPosX < 0) {
-                return (PlayPosX - leftMargin) * playPosXToTickOffset;
+            } else if (positionX < 0) {
+                return (positionX - leftMargin) * playPosXToTickOffset;
             }
             return 0;
         }

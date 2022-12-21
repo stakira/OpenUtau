@@ -581,10 +581,20 @@ namespace OpenUtau.Plugin.Builtin {
                 var prevUnicode = ToUnicodeElements(prevNeighbour?.lyric);
                 // end breath note
                 if (vowelLookup.TryGetValue(prevUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
+                    var vowel = "";
+                    var prevLyric = string.Join("", prevUnicode);;   
+                    vowel = vow;
+                    
                     var endBreath = $"{vow} R";
+                    if (prevLyric.EndsWith("eo")) {
+                        endBreath = $"eo R";
+                    } else if (prevLyric.EndsWith("eu")) {
+                        endBreath = $"eu R";
+                    }
+                                        
                     // try end breath
                     string[] tests = new string[] {endBreath, currentLyric};
-                    if (checkOtoUntilHit(tests, note, out var oto)){
+                    if (checkOtoUntilHit(tests, note, out var oto)){ 
                         currentLyric = oto.Alias;
                     }
                 }
@@ -613,9 +623,14 @@ namespace OpenUtau.Plugin.Builtin {
                 // Insert VC before next neighbor
                 // Get vowel from current note
                 var vowel = "";
-                if (vowelLookup.TryGetValue(currentUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
 
+                if (vowelLookup.TryGetValue(currentUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
                     vowel = vow;
+
+                    if (currentLyric.Contains("e")) {
+                        vowel = "e" + vowel;
+                        vowel = vowel.Replace("ee", "e");
+                    }
                 }
 
                 // Get consonant from next note

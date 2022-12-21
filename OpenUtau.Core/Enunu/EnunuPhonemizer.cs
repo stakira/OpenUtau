@@ -11,6 +11,8 @@ using TinyPinyin;
 namespace OpenUtau.Core.Enunu {
     [Phonemizer("Enunu Phonemizer", "ENUNU")]
     public class EnunuPhonemizer : Phonemizer {
+        readonly string PhonemizerType = "ENUNU";
+
         protected EnunuSinger singer;
         Dictionary<Note[], Phoneme[]> partResult = new Dictionary<Note[], Phoneme[]>();
 
@@ -61,12 +63,17 @@ namespace OpenUtau.Core.Enunu {
                 });
         }
 
-        static ulong HashNoteGroups(Note[][] notes) {
+        ulong HashNoteGroups(Note[][] notes) {
             using (var stream = new MemoryStream()) {
                 using (var writer = new BinaryWriter(stream)) {
+                    writer.Write(this.PhonemizerType);
+                    writer.Write(this.singer.Location);
                     foreach (var ns in notes) {
                         foreach (var n in ns) {
                             writer.Write(n.lyric);
+                            if(n.phoneticHint!= null) {
+                                writer.Write("["+n.phoneticHint+"]");
+                            }
                             writer.Write(n.position);
                             writer.Write(n.duration);
                             writer.Write(n.tone);

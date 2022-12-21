@@ -23,8 +23,8 @@ using Serilog;
 
 namespace OpenUtau.App.Views {
     public partial class SingersDialog : Window, ICmdSubscriber {
-        const int fftSize = 1024;
-        const int melSize = 80;
+        const int kFftSize = 1024;
+        const int kMelSize = 80;
 
         Color blueFill;
         Color pinkFill;
@@ -158,7 +158,7 @@ namespace OpenUtau.App.Views {
                 wavPath = null;
                 return;
             }
-            DrawOto(oto);
+            DrawOto(oto, viewModel.ZoomInMel);
         }
 
         void OnBeginningEdit(object sender, DataGridBeginningEditEventArgs e) {
@@ -227,13 +227,41 @@ namespace OpenUtau.App.Views {
             }
         }
 
-        void DrawOto(Core.Ustx.UOto? oto) {
+        void RegenFrq(object sender, RoutedEventArgs args) {
+            if (otoGrid != null &&
+                sender is Control control &&
+                DataContext is SingersViewModel viewModel) {
+                string[] files = otoGrid.SelectedItems
+                    .Cast<Core.Ustx.UOto>()
+                    .Select(oto => oto.File)
+                    .ToHashSet()
+                    .ToArray();
+                MessageBox? msgbox = null;
+                string text = ThemeManager.GetString("singers.editoto.regenfrq.regenerating");
+                if (files.Length > 1) {
+                    msgbox = MessageBox.ShowModal(this, text, text);
+                }
+                var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
+                viewModel.RegenFrq(files, control.Tag as string, count => {
+                    msgbox?.SetText(string.Format("{0}\n{1} / {2}", text, count, files.Length));
+                }).ContinueWith(task => {
+                    msgbox?.Close();
+                    if (task.IsFaulted && task.Exception != null) {
+                        MessageBox.ShowError(this, task.Exception);
+                    } else {
+                        DrawOto(viewModel.SelectedOto, viewModel.ZoomInMel, true);
+                    }
+                }, scheduler);
+            }
+        }
+
+        void DrawOto(Core.Ustx.UOto? oto, bool zoomInMel, bool forceRedraw = false) {
             if (otoPlot == null || oto == null) {
                 return;
             }
             var limits = otoPlot.Plot.GetAxisLimits();
             otoPlot.Plot.SetAxisLimitsY(0, 120);
-            bool loadWav = wavPath != oto.File;
+            bool loadWav = wavPath != oto.File || forceRedraw;
             if (loadWav) {
                 try {
                     using (var memStream = new MemoryStream()) {
@@ -270,9 +298,10 @@ namespace OpenUtau.App.Views {
                 }
                 waveform = otoPlot.Plot.AddSignalXY(xs, samples, color: Color.Blue);
 
+                int zoomIn = zoomInMel ? 8 : 1;
                 var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
                 Task.Run(() => {
-                    return Tuple.Create(LoadMel(wav), LoadF0(wav, oto.File));
+                    return Tuple.Create(LoadMel(wav, zoomIn), LoadF0(wav, oto.File, zoomIn));
                 }).ContinueWith(task => {
                     if (spectrogram != null) {
                         otoPlot.Plot.Remove(spectrogram);
@@ -306,8 +335,9 @@ namespace OpenUtau.App.Views {
             otoPlot.Refresh();
         }
 
-        double[,] LoadMel(WaveFile wav) {
-            var bands = FilterBanks.MelBands(melSize, wav.WaveFmt.SamplingRate);
+        double[,] LoadMel(WaveFile wav, int zoomIn) {
+            var bands = FilterBanks.MelBands(kMelSize, wav.WaveFmt.SamplingRate, highFreq: wav.WaveFmt.SamplingRate / 2 / zoomIn);
+            int fftSize = kFftSize * Math.Max(1, zoomIn / 4);
             var extractor = new FilterbankExtractor(
                new FilterbankOptions {
                    SamplingRate = wav.WaveFmt.SamplingRate,
@@ -323,13 +353,13 @@ namespace OpenUtau.App.Views {
             var heatmap = new double[mel[0].Length, mel.Count];
             for (int i = 0; i < mel.Count; i++) {
                 for (int j = 0; j < mel[i].Length; j++) {
-                    heatmap[melSize - 1 - j, i] = Math.Log(Math.Max(mel[i][j], 1e-4));
+                    heatmap[kMelSize - 1 - j, i] = Math.Log(Math.Max(mel[i][j], 1e-4));
                 }
             }
             return heatmap;
         }
 
-        Tuple<double[], double[]>? LoadF0(WaveFile wav, string filepath) {
+        Tuple<double[], double[]>? LoadF0(WaveFile wav, string filepath, int zoomIn) {
             double[]? frqX = null;
             double[]? frqY = null;
             string frqFile = Classic.VoicebankFiles.GetFrqFile(filepath);
@@ -340,9 +370,9 @@ namespace OpenUtau.App.Views {
                 }
                 frqX = Enumerable.Range(0, frq.f0.Length)
                     .Select(v => (double)v * frq.hopSize / wav.WaveFmt.SamplingRate * 400).ToArray();
-                double high = Scale.HerzToMel(wav.WaveFmt.SamplingRate / 2);
+                double high = Scale.HerzToMel(wav.WaveFmt.SamplingRate / 2 / zoomIn);
                 double low = Scale.HerzToMel(0);
-                double resolution = (high - low) / (melSize + 1);
+                double resolution = (high - low) / (kMelSize + 1);
                 frqY = frq.f0.Select(v => Scale.HerzToMel(v) / resolution).ToArray();
             }
             return frqX == null || frqY == null ? null : Tuple.Create(frqX, frqY);
@@ -416,6 +446,18 @@ namespace OpenUtau.App.Views {
             var point = args.GetCurrentPoint(otoPlot);
             lastPointerMs = otoPlot.Plot.GetCoordinateX((float)point.Position.X) * coordToMs;
             lastPointerMs = Math.Clamp(lastPointerMs, 0, totalDurMs);
+        }
+
+        void OnZoomInMelChecked(object sender, RoutedEventArgs args) {
+            if (DataContext is SingersViewModel viewModel) {
+                DrawOto(viewModel.SelectedOto, true, true);
+            }
+        }
+
+        void OnZoomInMelUnchecked(object sender, RoutedEventArgs args) {
+            if (DataContext is SingersViewModel viewModel) {
+                DrawOto(viewModel.SelectedOto, false, true);
+            }
         }
 
         void OnKeyDown(object sender, KeyEventArgs args) {
@@ -514,7 +556,7 @@ namespace OpenUtau.App.Views {
                 if (otoChanged.external) {
                     viewModel.RefreshSinger();
                 }
-                DrawOto(viewModel.SelectedOto);
+                DrawOto(viewModel.SelectedOto, viewModel.ZoomInMel);
             } else if (cmd is GotoOtoNotification editOto) {
                 var viewModel = DataContext as SingersViewModel;
                 if (viewModel == null) {
