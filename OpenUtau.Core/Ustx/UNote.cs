@@ -65,6 +65,8 @@ namespace OpenUtau.Core.Ustx {
                     exp.descriptor = descriptor;
                 }
             }
+            if (lyric == null) lyric = NotePresets.Default.DefaultLyric;
+            lyric = lyric.Replace("\"", ""); // erase all containing quotes in lyrics
         }
 
         public void BeforeSave(UProject project, UTrack track, UVoicePart part) {
@@ -72,6 +74,8 @@ namespace OpenUtau.Core.Ustx {
                 .OrderBy(exp => exp.index)
                 .ThenBy(exp => exp.abbr)
                 .ToList();
+
+            lyric = "\"" + lyric + "\""; // surround lyric with quotes
         }
 
         public void Validate(ValidateOptions options, UProject project, UTrack track, UVoicePart part) {
