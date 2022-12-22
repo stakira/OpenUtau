@@ -56,7 +56,7 @@ namespace OpenUtau.Plugin.Builtin {
             "k=ak,ik,uk,ek,ok,euk,eok"
         };
 
-        // ↓ Pure onsonants of romanized CVs.
+        // ↓ consonants of romanized CVs.
         static readonly string[] consonants = new string[] {
             "ggy=ggya,ggyu,ggye,ggyo,ggyeo",
             "ggw=ggwa,ggwi,ggwe,ggweo",
@@ -679,7 +679,7 @@ namespace OpenUtau.Plugin.Builtin {
                 if (checkOtoUntilHit(tests, note, out var oto)){
                     currentLyric = oto.Alias;
                 }
-            } else if ("R".Contains(currentLyric)) {
+            } else if ("-".Contains(currentLyric)) {
                 var prevUnicode = ToUnicodeElements(prevNeighbour?.lyric);
                 // end breath note
                 if (vowelLookup.TryGetValue(prevUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
