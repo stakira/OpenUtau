@@ -679,7 +679,7 @@ namespace OpenUtau.Plugin.Builtin {
                 if (checkOtoUntilHit(tests, note, out var oto)){
                     currentLyric = oto.Alias;
                 }
-            } else if ("-".Contains(currentLyric)) {
+            } else if ("R".Contains(currentLyric)) {
                 var prevUnicode = ToUnicodeElements(prevNeighbour?.lyric);
                 // end breath note
                 if (vowelLookup.TryGetValue(prevUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
