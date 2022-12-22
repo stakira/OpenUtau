@@ -10,7 +10,7 @@ using static OpenUtau.Api.Phonemizer;
 
 namespace OpenUtau.Plugin.Builtin {
      /// This phonemizer is based on 'KOR CVC Phonemizer'(by NANA). ///
-    [Phonemizer("Korean CBNN Phonemizer", "KO CBNN", "EX3exp", language:"KO")]
+    [Phonemizer("Korean CBNN Phonemizer", "KO CBNN", "EX3", language:"KO")]
 
     public class KoreanCBNNPhonemizer : Phonemizer {
 
