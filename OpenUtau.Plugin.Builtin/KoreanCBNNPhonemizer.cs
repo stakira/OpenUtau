@@ -248,7 +248,7 @@ namespace OpenUtau.Plugin.Builtin {
             int PLconsonant = 0;
             int PLvowel = 0;
             int PLfinal = 0;
-
+            
             // ↓ Use for Temp
             string[] TPLtemp;
 
@@ -257,6 +257,7 @@ namespace OpenUtau.Plugin.Builtin {
             string TPLvowel = "";
             string TPLfinal = "";
             string TPLplainvowel = "";
+            string TPLplainfinal = "";
 
             // ↓ use these for generating phonemes in phonemizers 
             //string TPLconsonantCBNN = "";
@@ -275,6 +276,7 @@ namespace OpenUtau.Plugin.Builtin {
 
             char firstCL, firstPL, firstNL;
             int uCL, uPL, uNL;
+            bool prevIsBreath = false;
 
 
             // check first lyric
@@ -333,6 +335,7 @@ namespace OpenUtau.Plugin.Builtin {
                 
                     TPLtemp = naFinals[PLfinal].Split(":");
                     TPLfinal = TPLtemp[1];
+                    TPLplainfinal = TPLfinal;
                 }
             }
 
@@ -550,7 +553,7 @@ namespace OpenUtau.Plugin.Builtin {
                 else if (TNLsemivowel == 2 && TCLplainvowel != "u" && TCLplainvowel != "o" && TCLplainvowel != "eu") {TNLconsonantCBNN = TNLconsonant + 'w';}
                 else {TNLconsonantCBNN = TNLconsonant;}
 
-
+                
                 //To set suffix of CV, according to next-coming batchim.
                 if (TCLfinal == "") {TCLvowelCBNN = TCLvowel;}
                 else if (TCLfinal == "m" && TCLconsonantCBNN != "") {TCLvowelCBNN = TCLvowel + '1';}
@@ -565,10 +568,16 @@ namespace OpenUtau.Plugin.Builtin {
 
                 string CV = (TCLconsonant + TCLvowelCBNN);
                 string VC = "";
+                bool comesSemivowelWithoutVC = false;
+                
+
+                if (TCLsemivowel != 0 && TCLconsonant == ""){
+                    comesSemivowelWithoutVC = true;
+                }
                 if (nextExist && (TCLfinal == "")) { VC = TCLplainvowel + " " + TNLconsonantCBNN; }
 
                 //for Vowel VCV
-                if (prevExist && TPLfinal == "" && TCLconsonantCBNN == "") {CV = TPLplainvowel + " " + TCLvowel;}
+                if (prevExist && TPLfinal == "" && TCLconsonantCBNN == "" && !comesSemivowelWithoutVC) {CV = TPLplainvowel + " " + TCLvowel;}
 
                 
                 string FC = "";
@@ -576,7 +585,7 @@ namespace OpenUtau.Plugin.Builtin {
 
 
                 // 만약 앞에 노트가 없다면
-                if (!prevExist) { CV = $"- {CV}"; }
+                if (!prevExist && !prevIsBreath) { CV = $"- {CV}"; }
 
                 // 만약 받침이 있다면
                 if (FC != "") {
@@ -605,7 +614,7 @@ namespace OpenUtau.Plugin.Builtin {
                 // 만약 받침이 없다면
                 if (TCLfinal == "") {
                     // 뒤에 노트가 있다면
-                    if ((TNLconsonant != "")) {
+                    if ((TNLconsonantCBNN != "")) {
                         int totalDuration = notes.Sum(n => n.duration);
                         int vcLength = 60;
                         if ((TNLconsonant == "r") || (TNLconsonant == "h")) { vcLength = 30; }
@@ -652,6 +661,11 @@ namespace OpenUtau.Plugin.Builtin {
 
                 if (prevExist && TPLfinal == "" && endBreath.Contains(currentLyric)) {
                     endBreath = $"{TPLplainvowel} -";
+                    prevIsBreath = true; // to prevent this→→ case→→, for example... "[사, -, 사 (=notes)]" should be "[- sa,  a -, - sa(=phonemes)]", but it becomes [sa, a -, 사(=phonemes)] in phonemizer, so '사' note becomes *no sound.
+                }
+                else if (prevExist && TPLfinal != "" && endBreath.Contains(currentLyric)) {
+                    endBreath = $"{TPLplainfinal} -";
+                    prevIsBreath = true; // to prevent this→→ case→→, for example... "[사, -, 사 (=notes)]" should be "[- sa,  a -, - sa(=phonemes)]", but it becomes [sa, a -, 사(=phonemes)] in phonemizer, so '사' note becomes *no sound.
                 }
 
                 if (singer.TryGetMappedOto(endBreath, note.tone + attr0.toneShift, attr0.voiceColor, out var oto)){
@@ -679,8 +693,9 @@ namespace OpenUtau.Plugin.Builtin {
                 if (checkOtoUntilHit(tests, note, out var oto)){
                     currentLyric = oto.Alias;
                 }
-            } else if ("R".Contains(currentLyric)) {
+            } else if ("-".Contains(currentLyric)) {
                 var prevUnicode = ToUnicodeElements(prevNeighbour?.lyric);
+                prevIsBreath = true;
                 // end breath note
                 if (vowelLookup.TryGetValue(prevUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
                     var vowel = "";
