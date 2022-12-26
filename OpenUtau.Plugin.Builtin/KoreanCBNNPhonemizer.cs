@@ -585,13 +585,13 @@ namespace OpenUtau.Plugin.Builtin {
 
 
                 // for [- XX] phonemes
-                if (!prevExist || prevIsBreath || prevExist && TPLfinal != "" && TCLconsonant != "r" && TCLconsonant != "n" && TCLconsonant != "m") { CV = $"- {CV}"; }
+                if (!prevExist || prevIsBreath || prevExist && TPLfinal != "" && TCLconsonant != "r" && TCLconsonant != "n" && TCLconsonant != "m" && TCLconsonant != "") { CV = $"- {CV}"; }
 
                 // 만약 받침이 있다면
                 if (FC != "") {
                     int totalDuration = notes.Sum(n => n.duration);
                     int fcLength = totalDuration / 3;
-                    if ((TCLfinal == "k") || (TCLfinal == "p") || (TCLfinal == "t")) { 
+                    if ((TCLfinal == "k") || (TCLfinal == "p") || (TCLfinal == "t") || (TCLfinal == "m") || (TCLfinal == "n")) { 
                         fcLength = totalDuration / 2;}
                     else if ((TCLfinal == "l")) { 
                         fcLength = totalDuration / 4;}
@@ -620,9 +620,9 @@ namespace OpenUtau.Plugin.Builtin {
                     if ((TNLconsonantCBNN != "")) {
                         int totalDuration = notes.Sum(n => n.duration);
                         int vcLength = 60;
-                        if ((TNLconsonant == "r") || (TNLconsonant == "h") || (TNLconsonant == "g") || (TNLconsonant == "d")) { vcLength = 30; }
-                        else if ((TNLconsonant == "k") || (TNLconsonant == "t") || (TNLconsonant == "p") || (TNLconsonant == "ch")) { vcLength = totalDuration / 2; }
-                        else if ((TNLconsonant == "gg") || (TNLconsonant == "dd") || (TNLconsonant == "bb") || (TNLconsonant == "ss") || (TNLconsonant == "jj")) { vcLength = totalDuration / 2; }
+                        if ((TNLconsonant == "r") || (TNLconsonant == "h") || (TNLconsonant == "g") || (TNLconsonant == "d") || (TNLconsonant == "n")) { vcLength = 30; }
+                        else if ((TNLconsonant == "ch") || (TNLconsonant == "gg")) { vcLength = totalDuration / 2; }
+                        else if ((TNLconsonant == "k") || (TNLconsonant == "t") || (TNLconsonant == "p")  || (TNLconsonant == "dd") || (TNLconsonant == "bb") || (TNLconsonant == "ss") || (TNLconsonant == "jj")) { vcLength = totalDuration / 3; }
                         vcLength = Math.Min(totalDuration / 2, vcLength);
 
                         if (singer.TryGetMappedOto(CV, note.tone + attr0.toneShift, attr0.voiceColor, out var oto1) && singer.TryGetMappedOto(VC, note.tone + attr0.toneShift, attr0.voiceColor, out var oto2)) {
