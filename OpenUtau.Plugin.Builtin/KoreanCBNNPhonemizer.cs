@@ -274,6 +274,8 @@ namespace OpenUtau.Plugin.Builtin {
             bool prevExist = false;
             bool nextExist = false;
 
+            bool nextComesSuffixedCV = true;
+
             char firstCL, firstPL, firstNL;
             int uCL, uPL, uNL;
             bool prevIsBreath = false;
@@ -472,13 +474,12 @@ namespace OpenUtau.Plugin.Builtin {
                         // ㄱㄷㅂ + ㄱㄷㅂㅅㅈ = ㄲㄸㅃㅆㅉ
                         if (((TPLfinal == "k") && (CLconsonant == 0)) || ((TPLfinal == "t") && (CLconsonant == 0)) || ((TPLfinal == "p") && (CLconsonant == 0))) { TCLconsonant = "gg"; } else if (((TPLfinal == "k") && (CLconsonant == 3)) || ((TPLfinal == "t") && (CLconsonant == 3)) || ((TPLfinal == "p") && (CLconsonant == 3))) { TCLconsonant = "dd"; } else if (((TPLfinal == "k") && (CLconsonant == 7)) || ((TPLfinal == "t") && (CLconsonant == 7)) || ((TPLfinal == "p") && (CLconsonant == 7))) { TCLconsonant = "bb"; } else if (((TPLfinal == "k") && (CLconsonant == 9)) || ((TPLfinal == "t") && (CLconsonant == 9)) || ((TPLfinal == "p") && (CLconsonant == 9))) { TCLconsonant = "ss"; } else if (((TPLfinal == "k") && (CLconsonant == 12)) || ((TPLfinal == "t") && (CLconsonant == 12)) || ((TPLfinal == "p") && (CLconsonant == 12))) { TCLconsonant = "jj"; }
 
-                        /* 
+                    
                         // 용언 어간 받침 ㄴㅁ + ㄱㄷㅅㅈ = ㄲㄸㅆㅉ
-                        if(((TPLfinal=="n")&&(CLconsonant==0))|| ((TPLfinal == "m") && (CLconsonant == 0))) { TCLconsonant = "gg"; }
-                        else if (((TPLfinal == "n") && (CLconsonant == 3)) || ((TPLfinal == "m") && (CLconsonant == 3))) { TCLconsonant = "dd"; }
+                        //if(((TPLfinal=="n")&&(CLconsonant==0))|| ((TPLfinal == "m") && (CLconsonant == 0))) { TCLconsonant = "gg"; }
+                        //else if (((TPLfinal == "n") && (CLconsonant == 3)) || ((TPLfinal == "m") && (CLconsonant == 3))) { TCLconsonant = "dd"; }
                         else if (((TPLfinal == "n") && (CLconsonant == 9)) || ((TPLfinal == "m") && (CLconsonant == 9))) { TCLconsonant = "ss"; }
-                        else if (((TPLfinal == "n") && (CLconsonant == 12)) || ((TPLfinal == "m") && (CLconsonant == 12))) { TCLconsonant = "jj"; }
-                        */
+                        //else if (((TPLfinal == "n") && (CLconsonant == 12)) || ((TPLfinal == "m") && (CLconsonant == 12))) { TCLconsonant = "jj"; }
 
                         // 관형사형 어미ㄹ / 한자어 ㄹ + ㄷㅅㅈ = ㄸㅆㅉ
                         if ((PLfinal == 8) && (CLconsonant == 3)) { TCLconsonant = "dd"; } else if ((PLfinal == 8) && (CLconsonant == 9)) { TCLconsonant = "ss"; } else if ((PLfinal == 8) && (CLconsonant == 12)) { TCLconsonant = "jj"; }
@@ -554,15 +555,24 @@ namespace OpenUtau.Plugin.Builtin {
                 else {TNLconsonantCBNN = TNLconsonant;}
 
                 
+                
                 //To set suffix of CV, according to next-coming batchim.
-                if (TCLfinal == "") {TCLvowelCBNN = TCLvowel;}
-                else if (TCLfinal == "m" && TCLconsonantCBNN != "") {TCLvowelCBNN = TCLvowel + '1';}
-                else if (TCLfinal == "n" && TCLconsonantCBNN != "") {TCLvowelCBNN = TCLvowel + '2';}
-                else if (TCLfinal == "ng" && TCLconsonantCBNN != "") {TCLvowelCBNN = TCLvowel + '3';}
-                else if (TCLfinal == "l" && TCLconsonantCBNN != "") {TCLvowelCBNN = TCLvowel + '4';}
-                else if (TCLfinal == "k" && TCLconsonantCBNN != "") {TCLvowelCBNN = TCLvowel + '3';}
-                else if (TCLfinal == "t" && TCLconsonantCBNN != "") {TCLvowelCBNN = TCLvowel + '2';}
-                else if (TCLfinal == "p" && TCLconsonantCBNN != "") {TCLvowelCBNN = TCLvowel + '1';}
+                if (TCLfinal == "") {
+                    TCLvowelCBNN = TCLvowel;}
+                else if (TCLfinal == "m" && TCLconsonantCBNN != "") {
+                    TCLvowelCBNN = TCLvowel + '1';}
+                else if (TCLfinal == "n" && TCLconsonantCBNN != "") {
+                    TCLvowelCBNN = TCLvowel + '2';}
+                else if (TCLfinal == "ng" && TCLconsonantCBNN != "") {
+                    TCLvowelCBNN = TCLvowel + '3';} 
+                else if (TCLfinal == "l" && TCLconsonantCBNN != "") {
+                    TCLvowelCBNN = TCLvowel + '4';}
+                else if (TCLfinal == "k" && TCLconsonantCBNN != "") {
+                    TCLvowelCBNN = TCLvowel + '3';}
+                else if (TCLfinal == "t" && TCLconsonantCBNN != "") {
+                    TCLvowelCBNN = TCLvowel + '2';}
+                else if (TCLfinal == "p" && TCLconsonantCBNN != "") {
+                    TCLvowelCBNN = TCLvowel + '1';}
                 else {TCLvowelCBNN = TCLvowel;}
 
 
@@ -585,15 +595,15 @@ namespace OpenUtau.Plugin.Builtin {
 
 
                 // for [- XX] phonemes
-                if (!prevExist || prevIsBreath || prevExist && TPLfinal != "" && TCLconsonant != "r" && TCLconsonant != "n" && TCLconsonant != "m" && TCLconsonant != "") { CV = $"- {CV}"; }
+                if (!prevExist || prevIsBreath || TPLfinal != "" && TCLconsonant != "r" && TCLconsonant != "n" && TCLconsonant != "" ) { CV = $"- {CV}"; }
 
                 // 만약 받침이 있다면
                 if (FC != "") {
                     int totalDuration = notes.Sum(n => n.duration);
                     int fcLength = totalDuration / 3;
-                    if ((TCLfinal == "k") || (TCLfinal == "p") || (TCLfinal == "t") || (TCLfinal == "m") || (TCLfinal == "n")) { 
+                    if ((TCLfinal == "k") || (TCLfinal == "p") || (TCLfinal == "t")) { 
                         fcLength = totalDuration / 2;}
-                    else if ((TCLfinal == "l")) { 
+                    else if ((TCLfinal == "l") || (TCLfinal == "m") || (TCLfinal == "n") || (TCLfinal == "ng")) { 
                         fcLength = totalDuration / 4;}
 
                     if (singer.TryGetMappedOto(CV, note.tone + attr0.toneShift, attr0.voiceColor, out var oto1) && singer.TryGetMappedOto(FC, note.tone + attr0.toneShift, attr0.voiceColor, out var oto2)) {
