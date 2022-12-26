@@ -274,8 +274,6 @@ namespace OpenUtau.Plugin.Builtin {
             bool prevExist = false;
             bool nextExist = false;
 
-            bool nextComesSuffixedCV = true;
-
             char firstCL, firstPL, firstNL;
             int uCL, uPL, uNL;
             bool prevIsBreath = false;
@@ -545,6 +543,19 @@ namespace OpenUtau.Plugin.Builtin {
 
 
                 }
+
+                bool isLastBatchim = false;
+
+                // vowels do not have suffixed phonemes in CBNN, so use suffixed '- h'~ phonemes instead. 
+                if (!prevExist && TCLconsonant == "" && TCLfinal != "" && TCLvowel != "") {
+                    TCLconsonant = "h";
+                }
+                
+                // to make FC's length to 1 if FC comes final (=no next note)
+                if (!nextExist && TCLfinal != "" &&TCLvowel != "") {
+                    isLastBatchim = true;
+                }
+
                 // To use semivowels in VC (ex: [- ga][a gy][gya], ** so not [- ga][a g][gya] **)
                 if (TCLsemivowel == 1 && TPLplainvowel != "i" && TPLplainvowel != "eu") {TCLconsonantCBNN = TCLconsonant + 'y';}
                 else if (TCLsemivowel == 2 && TPLplainvowel != "u" && TPLplainvowel != "o" && TPLplainvowel != "eu") {TCLconsonantCBNN = TCLconsonant + 'w';}
@@ -597,11 +608,16 @@ namespace OpenUtau.Plugin.Builtin {
                 // for [- XX] phonemes
                 if (!prevExist || prevIsBreath || TPLfinal != "" && TCLconsonant != "r" && TCLconsonant != "n" && TCLconsonant != "" ) { CV = $"- {CV}"; }
 
+                
                 // 만약 받침이 있다면
                 if (FC != "") {
                     int totalDuration = notes.Sum(n => n.duration);
                     int fcLength = totalDuration / 3;
-                    if ((TCLfinal == "k") || (TCLfinal == "p") || (TCLfinal == "t")) { 
+
+                    if (isLastBatchim) {
+                        fcLength = 1;
+                    }
+                    else if ((TCLfinal == "k") || (TCLfinal == "p") || (TCLfinal == "t")) { 
                         fcLength = totalDuration / 2;}
                     else if ((TCLfinal == "l") || (TCLfinal == "m") || (TCLfinal == "n") || (TCLfinal == "ng")) { 
                         fcLength = totalDuration / 4;}
