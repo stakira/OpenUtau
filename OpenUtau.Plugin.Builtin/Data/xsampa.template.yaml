@@ -83,6 +83,7 @@ symbols:
   - {symbol: ir, type: vowel}
   - {symbol: ur, type: vowel}
   - {symbol: Q, type: vowel}
+  - {symbol: 1, type: vowel}
   - {symbol: Ol, type: vowel}
   - {symbol: aUn, type: vowel}
   - {symbol: '@r', type: vowel}
