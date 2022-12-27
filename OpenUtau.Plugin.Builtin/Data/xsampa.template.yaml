@@ -94,6 +94,7 @@ symbols:
   - {symbol: '@', type: vowel}
   - {symbol: 4, type: tap}
   - {symbol: W, type: fricative}
+  - {symbol: 't_}', type: stop}
 
 entries:
   - grapheme: openutau
