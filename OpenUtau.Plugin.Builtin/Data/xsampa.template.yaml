@@ -70,9 +70,9 @@ symbols:
   - {symbol: z, type: fricative}
   - {symbol: zh, type: fricative}
   #bonus symbols
-  - {symbol: 'e@', type: vowel}
-  - {symbol: 'e@n', type: vowel}
-  - {symbol: 'e@m', type: vowel}
+  - {symbol: e@, type: vowel}
+  - {symbol: e@n, type: vowel}
+  - {symbol: e@m, type: vowel}
   - {symbol: eN, type: vowel}
   - {symbol: IN, type: vowel}
   - {symbol: Ar, type: vowel}
