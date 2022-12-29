@@ -623,9 +623,9 @@ namespace OpenUtau.Plugin.Builtin {
                     }
                     else if ((TCLfinal == "k") || (TCLfinal == "p") || (TCLfinal == "t")) { 
                         fcLength = totalDuration / 2;}
-                    else if ((TCLfinal == "l") || (TCLfinal == "ng")) { 
+                    else if ((TCLfinal == "l") || (TCLfinal == "ng") || (TCLfinal == "m")) { 
                         fcLength = totalDuration / 5;}
-                    else if ((TCLfinal == "n") || (TCLfinal == "m")) {
+                    else if ((TCLfinal == "n")) {
                         fcLength = totalDuration / 3;
                     }
 
@@ -725,7 +725,7 @@ namespace OpenUtau.Plugin.Builtin {
 
 
             // ======================================================================================
-
+/**
             if (prevNeighbour == null) {
                 // Use "- V" or "- CV" if present in voicebank
                 var initial = $"- {currentLyric}";
@@ -762,7 +762,7 @@ namespace OpenUtau.Plugin.Builtin {
                     currentLyric = oto.Alias;
                 }
             }
-
+**/
             if (nextNeighbour != null) { // 다음에 노트가 있으면
                 var nextUnicode = ToUnicodeElements(nextNeighbour?.lyric);
                 var nextLyric = string.Join("", nextUnicode);
