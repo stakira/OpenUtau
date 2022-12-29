@@ -574,19 +574,19 @@ namespace OpenUtau.Plugin.Builtin {
                 //To set suffix of CV, according to next-coming batchim.
                 if (TCLfinal == "") {
                     TCLvowelCBNN = TCLvowel;}
-                else if (TCLfinal == "m" && TCLconsonantCBNN != "") {
+                else if (TCLfinal == "m" && TCLconsonantCBNN != "" || TCLfinal == "m" && TCLconsonantCBNN == "" && TCLsemivowel != 0) {
                     TCLvowelCBNN = TCLvowel + '1';}
-                else if (TCLfinal == "n" && TCLconsonantCBNN != "") {
+                else if (TCLfinal == "n" && TCLconsonantCBNN != ""  || TCLfinal == "n" && TCLconsonantCBNN == "" && TCLsemivowel != 0) {
                     TCLvowelCBNN = TCLvowel + '2';}
-                else if (TCLfinal == "ng" && TCLconsonantCBNN != "") {
+                else if (TCLfinal == "ng" && TCLconsonantCBNN != "" || TCLfinal == "ng" && TCLconsonantCBNN == "" && TCLsemivowel != 0) {
                     TCLvowelCBNN = TCLvowel + '3';} 
-                else if (TCLfinal == "l" && TCLconsonantCBNN != "") {
+                else if (TCLfinal == "l" && TCLconsonantCBNN != "" || TCLfinal == "l" && TCLconsonantCBNN == "" && TCLsemivowel != 0) {
                     TCLvowelCBNN = TCLvowel + '4';}
-                else if (TCLfinal == "k" && TCLconsonantCBNN != "") {
+                else if (TCLfinal == "k" && TCLconsonantCBNN != "" || TCLfinal == "k" && TCLconsonantCBNN == "" && TCLsemivowel != 0) {
+                    TCLvowelCBNN = TCLvowel;}
+                else if (TCLfinal == "t" && TCLconsonantCBNN != "" || TCLfinal == "t" && TCLconsonantCBNN == "" && TCLsemivowel != 0) {
                     TCLvowelCBNN = TCLvowel + '3';}
-                else if (TCLfinal == "t" && TCLconsonantCBNN != "") {
-                    TCLvowelCBNN = TCLvowel + '3';}
-                else if (TCLfinal == "p" && TCLconsonantCBNN != "") {
+                else if (TCLfinal == "p" && TCLconsonantCBNN != "" || TCLfinal == "p" && TCLconsonantCBNN == "" && TCLsemivowel != 0) {
                     TCLvowelCBNN = TCLvowel + '1';}
                 else {TCLvowelCBNN = TCLvowel;}
 
@@ -623,8 +623,11 @@ namespace OpenUtau.Plugin.Builtin {
                     }
                     else if ((TCLfinal == "k") || (TCLfinal == "p") || (TCLfinal == "t")) { 
                         fcLength = totalDuration / 2;}
-                    else if ((TCLfinal == "l") || (TCLfinal == "m") || (TCLfinal == "n") || (TCLfinal == "ng")) { 
-                        fcLength = totalDuration / 4;}
+                    else if ((TCLfinal == "l") || (TCLfinal == "ng")) { 
+                        fcLength = totalDuration / 5;}
+                    else if ((TCLfinal == "n") || (TCLfinal == "m")) {
+                        fcLength = totalDuration / 3;
+                    }
 
                     if (singer.TryGetMappedOto(CV, note.tone + attr0.toneShift, attr0.voiceColor, out var oto1) && singer.TryGetMappedOto(FC, note.tone + attr0.toneShift, attr0.voiceColor, out var oto2)) {
                         CV = oto1.Alias;
