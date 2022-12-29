@@ -474,10 +474,10 @@ namespace OpenUtau.Plugin.Builtin {
 
                     
                         // 용언 어간 받침 ㄴㅁ + ㄱㄷㅅㅈ = ㄲㄸㅆㅉ
-                        //if(((TPLfinal=="n")&&(CLconsonant==0))|| ((TPLfinal == "m") && (CLconsonant == 0))) { TCLconsonant = "gg"; }
-                        //else if (((TPLfinal == "n") && (CLconsonant == 3)) || ((TPLfinal == "m") && (CLconsonant == 3))) { TCLconsonant = "dd"; }
+                        if(((TPLfinal=="n")&&(CLconsonant==0))|| ((TPLfinal == "m") && (CLconsonant == 0))) { TCLconsonant = "gg"; }
+                        else if (((TPLfinal == "n") && (CLconsonant == 3)) || ((TPLfinal == "m") && (CLconsonant == 3))) { TCLconsonant = "dd"; }
                         else if (((TPLfinal == "n") && (CLconsonant == 9)) || ((TPLfinal == "m") && (CLconsonant == 9))) { TCLconsonant = "ss"; }
-                        //else if (((TPLfinal == "n") && (CLconsonant == 12)) || ((TPLfinal == "m") && (CLconsonant == 12))) { TCLconsonant = "jj"; }
+                        else if (((TPLfinal == "n") && (CLconsonant == 12)) || ((TPLfinal == "m") && (CLconsonant == 12))) { TCLconsonant = "jj"; }
 
                         // 관형사형 어미ㄹ / 한자어 ㄹ + ㄷㅅㅈ = ㄸㅆㅉ
                         if ((PLfinal == 8) && (CLconsonant == 3)) { TCLconsonant = "dd"; } else if ((PLfinal == 8) && (CLconsonant == 9)) { TCLconsonant = "ss"; } else if ((PLfinal == 8) && (CLconsonant == 12)) { TCLconsonant = "jj"; }
@@ -487,7 +487,7 @@ namespace OpenUtau.Plugin.Builtin {
                     }
 
 
-                    // 5. 구개음화
+                    // 5. 구개음화 
                     if (prevExist && prevHangeul && (TPLfinal != "")) {
                         if ((PLfinal == 7) && (CLconsonant == 11) && (CLvowel == 20)) { TCLconsonant = "j"; } else if ((PLfinal == 25) && (CLconsonant == 11) && (CLvowel == 20)) { TCLconsonant = "ch"; } else if ((PLfinal == 13) && (CLconsonant == 11) && (CLvowel == 20)) { TCLconsonant = "ch"; } else if ((PLfinal == 7) && (CLconsonant == 18) && (CLvowel == 20)) { TCLconsonant = "ch"; }
                     }
@@ -498,6 +498,7 @@ namespace OpenUtau.Plugin.Builtin {
 
 
                     // 6. 비음화
+                    /**
                     if (prevExist && prevHangeul && (TPLfinal != "")) {
                         // 한자어 받침 ㅁㅇ + ㄹ = ㄴ
                         if (((TPLfinal == "m") && (CLconsonant == 5)) || ((TPLfinal == "ng") && (CLconsonant == 5))) { TCLconsonant = "n"; }
@@ -505,6 +506,7 @@ namespace OpenUtau.Plugin.Builtin {
                         // 한자어 받침 ㄱㄷㅂ + ㄹ = ㅇㄴㅁ + ㄴ(1)
                         if (((TPLfinal == "k") && (CLconsonant == 5)) || ((TPLfinal == "t") && (CLconsonant == 5)) || ((TPLfinal == "p") && (CLconsonant == 5))) { TCLconsonant = "n"; }
                     }
+                    **/
                     if (nextExist && nextHangeul && (TCLfinal != "")) {
                         //받침 ㄱㄷㅂ + ㄴㅁ = ㅇㄴㅁ
                         if (((TCLfinal == "k") && (TNLconsonant == "n")) || ((TCLfinal == "k") && (TNLconsonant == "m"))) { TCLfinal = "ng"; } else if (((TCLfinal == "t") && (TNLconsonant == "n")) || ((TCLfinal == "t") && (TNLconsonant == "m"))) { TCLfinal = "n"; } else if (((TCLfinal == "p") && (TNLconsonant == "n")) || ((TCLfinal == "p") && (TNLconsonant == "m"))) { TCLfinal = "m"; }
@@ -515,12 +517,14 @@ namespace OpenUtau.Plugin.Builtin {
 
 
                     // 7. 유음화
+                    /**
                     if (prevExist && prevHangeul && (TPLfinal != "")) {
                         if (((PLfinal == 8) && (TCLconsonant == "n")) || ((PLfinal == 13) && (TCLconsonant == "n")) || ((PLfinal == 15) && (TCLconsonant == "n"))) { TCLconsonant = "r"; }
                     }
                     if (nextExist && nextHangeul && (TCLfinal != "")) {
                         if ((TCLfinal == "n") && (TNLconsonant == "r")) { TCLfinal = "l"; }
                     }
+                    **/
 
 
 
@@ -529,7 +533,7 @@ namespace OpenUtau.Plugin.Builtin {
 
 
                     // consonant에 변경 사항이 있을 때
-                    if (prevExist && prevHangeul) {
+                    //if (prevExist && prevHangeul) {
 
 
                         // 비음화
@@ -538,7 +542,7 @@ namespace OpenUtau.Plugin.Builtin {
                         //     ㅂ(ㅍ,ㄼ,ㄿ,ㅄ)
 
 
-                    }
+                    //}
                     // final에 변경 사항이 있을 때
 
 
@@ -552,7 +556,7 @@ namespace OpenUtau.Plugin.Builtin {
                 }
                 
                 // to make FC's length to 1 if FC comes final (=no next note)
-                if (!nextExist && TCLfinal != "" &&TCLvowel != "") {
+                if (!nextHangeul && TCLfinal != "" &&TCLvowel != "") {
                     isLastBatchim = true;
                 }
 
@@ -581,7 +585,7 @@ namespace OpenUtau.Plugin.Builtin {
                 else if (TCLfinal == "k" && TCLconsonantCBNN != "") {
                     TCLvowelCBNN = TCLvowel + '3';}
                 else if (TCLfinal == "t" && TCLconsonantCBNN != "") {
-                    TCLvowelCBNN = TCLvowel + '2';}
+                    TCLvowelCBNN = TCLvowel + '3';}
                 else if (TCLfinal == "p" && TCLconsonantCBNN != "") {
                     TCLvowelCBNN = TCLvowel + '1';}
                 else {TCLvowelCBNN = TCLvowel;}
@@ -637,6 +641,9 @@ namespace OpenUtau.Plugin.Builtin {
                             },
                         };
                     }
+
+                    
+                    
                 }
 
 
@@ -646,7 +653,10 @@ namespace OpenUtau.Plugin.Builtin {
                     if ((TNLconsonantCBNN != "")) {
                         int totalDuration = notes.Sum(n => n.duration);
                         int vcLength = 60;
-                        if ((TNLconsonant == "r") || (TNLconsonant == "h") || (TNLconsonant == "g") || (TNLconsonant == "d") || (TNLconsonant == "n")) { vcLength = 30; }
+                        if ((TNLconsonant == "r") || (TNLconsonant == "g") || (TNLconsonant == "d") || (TNLconsonant == "n")) { vcLength = 33; }
+                        else if (TNLconsonant == "h") {
+                            vcLength = 15;
+                        }
                         else if ((TNLconsonant == "ch") || (TNLconsonant == "gg")) { vcLength = totalDuration / 2; }
                         else if ((TNLconsonant == "k") || (TNLconsonant == "t") || (TNLconsonant == "p")  || (TNLconsonant == "dd") || (TNLconsonant == "bb") || (TNLconsonant == "ss") || (TNLconsonant == "jj")) { vcLength = totalDuration / 3; }
                         vcLength = Math.Min(totalDuration / 2, vcLength);
