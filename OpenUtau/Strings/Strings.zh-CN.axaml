@@ -2,6 +2,11 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+  <system:String x:Key="context.note.copy">复制音符</system:String>
+  <system:String x:Key="context.note.delete">删除音符</system:String>
+  <system:String x:Key="context.part.delete">删除片段</system:String>
+  <system:String x:Key="context.part.rename">重命名片段</system:String>
+  <system:String x:Key="context.part.replaceaudio">替换音频</system:String>
   <system:String x:Key="context.pitch.easein">缓入</system:String>
   <system:String x:Key="context.pitch.easeinout">缓入缓出</system:String>
   <system:String x:Key="context.pitch.easeout">缓出</system:String>
@@ -9,10 +14,14 @@
   <system:String x:Key="context.pitch.pointadd">添加控制点</system:String>
   <system:String x:Key="context.pitch.pointdel">删除控制点</system:String>
   <system:String x:Key="context.pitch.pointsnapprev">吸附到上一个音符</system:String>
+  <!--<system:String x:Key="context.timeline.addtempo">Add tempo change at {0}</system:String>-->
+  <!--<system:String x:Key="context.timeline.addtimesig">Add time signature change</system:String>-->
+  <!--<system:String x:Key="context.timeline.deltempo">Delete tempo change at {0}</system:String>-->
+  <!--<system:String x:Key="context.timeline.deltimesig">Delete time signature change</system:String>-->
 
   <system:String x:Key="debug.clear">清空</system:String>
-  <!--<system:String x:Key="debug.copylog">Copy Log</system:String>-->
-  <!--<system:String x:Key="debug.reverselogorder">Reverse Log Order</system:String>-->
+  <system:String x:Key="debug.copylog">复制日志</system:String>
+  <system:String x:Key="debug.reverselogorder">反序</system:String>
 
   <system:String x:Key="dialogs.about.caption">关于 OpenUTAU</system:String>
   <system:String x:Key="dialogs.about.message">
@@ -29,6 +38,10 @@
   <system:String x:Key="dialogs.noresampler.caption">无重采样器</system:String>
   <system:String x:Key="dialogs.noresampler.message">无重采样器! 将你选择的重采样器 exe 或者 dll 文件放入 Resamplers 文件夹中并在使用偏好中选择它!</system:String>
   <system:String x:Key="dialogs.timesig.caption">拍号</system:String>
+  <!--<system:String x:Key="dialogs.tracksettings.caption">Track Settings</system:String>-->
+  <!--<system:String x:Key="dialogs.tracksettings.location">Location</system:String>-->
+  <!--<system:String x:Key="dialogs.tracksettings.renderer">Renderer</system:String>-->
+  <!--<system:String x:Key="dialogs.tracksettings.setasdefault">Set As Default</system:String>-->
 
   <system:String x:Key="errors.caption">错误</system:String>
 
@@ -67,12 +80,18 @@
   <system:String x:Key="menu.edit.undo">撤销</system:String>
   <system:String x:Key="menu.file">文件</system:String>
   <system:String x:Key="menu.file.exit">退出</system:String>
+  <system:String x:Key="menu.file.exportaudio">导出音频</system:String>
+  <system:String x:Key="menu.file.exportmidi">导出Midi文件</system:String>
+  <system:String x:Key="menu.file.exportmixdown">混缩为Wav文件</system:String>
+  <system:String x:Key="menu.file.exportproject">导出工程</system:String>
   <system:String x:Key="menu.file.exportust">导出Ust文件</system:String>
   <system:String x:Key="menu.file.exportustto">导出Ust文件至...</system:String>
   <system:String x:Key="menu.file.exportwav">导出Wav文件</system:String>
   <system:String x:Key="menu.file.exportwavto">导出Wav文件至...</system:String>
   <system:String x:Key="menu.file.importaudio">导入音频...</system:String>
   <system:String x:Key="menu.file.importmidi">导入Midi...</system:String>
+  <!--<system:String x:Key="menu.file.importmidi.drywetmidi">DryWetMidi Importer</system:String>-->
+  <!--<system:String x:Key="menu.file.importmidi.naudio">Naudio Importer</system:String>-->
   <system:String x:Key="menu.file.importtracks">导入轨道...</system:String>
   <system:String x:Key="menu.file.new">新建</system:String>
   <system:String x:Key="menu.file.newfromtemplate">从模板新建</system:String>
@@ -86,6 +105,9 @@
   <system:String x:Key="menu.file.savetemplate">保存模板...</system:String>
   <system:String x:Key="menu.help">帮助</system:String>
   <system:String x:Key="menu.help.about">关于 OpenUTAU</system:String>
+  <!--<system:String x:Key="menu.help.checkupdate">Check Update</system:String>-->
+  <!--<system:String x:Key="menu.help.logslocation">Open Logs Location</system:String>-->
+  <!--<system:String x:Key="menu.help.reportissue">Report Issue</system:String>-->
   <system:String x:Key="menu.help.wiki">OpenUtau 维基</system:String>
   <system:String x:Key="menu.tools">工具</system:String>
   <system:String x:Key="menu.tools.clearcache">清空缓存</system:String>
@@ -129,20 +151,29 @@
 
   <system:String x:Key="oto.alias">别名</system:String>
   <system:String x:Key="oto.color">色彩</system:String>
-  <system:String x:Key="oto.consonant">辅音速度</system:String>
+  <system:String x:Key="oto.consonant">辅音</system:String>
   <system:String x:Key="oto.cutoff">结束</system:String>
+  <system:String x:Key="oto.edit.consonant">设置辅音</system:String>
+  <system:String x:Key="oto.edit.cutoff">设置结束</system:String>
+  <system:String x:Key="oto.edit.offset">设置开始</system:String>
+  <system:String x:Key="oto.edit.overlap">设置重叠</system:String>
+  <system:String x:Key="oto.edit.preutter">前发音</system:String>
   <system:String x:Key="oto.file">文件</system:String>
   <system:String x:Key="oto.offset">开始</system:String>
   <system:String x:Key="oto.overlap">重叠</system:String>
   <system:String x:Key="oto.phonetic">发音</system:String>
   <system:String x:Key="oto.prefix">前缀</system:String>
-  <system:String x:Key="oto.preutter">先行发音</system:String>
+  <system:String x:Key="oto.preutter">前发音</system:String>
   <system:String x:Key="oto.set">子集</system:String>
   <system:String x:Key="oto.suffix">后缀</system:String>
 
+  <system:String x:Key="phoneticassistant.caption">语音学助手</system:String>
+  <system:String x:Key="phoneticassistant.copy">复制</system:String>
+
   <system:String x:Key="pianoroll.menu.lyrics">歌词</system:String>
-  <!--<system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Replace "-" with "+"</system:String>-->
+  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">将 "-" 替换为 "+"</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">编辑歌词</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.hanzitopinyin">汉字转拼音</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">平假名转罗马音</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">日语 VCV 转 CV</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">去除字母后缀</system:String>
@@ -154,6 +185,8 @@
   <system:String x:Key="pianoroll.menu.notes.addtailrest">添加尾部"R"音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.clear.vibratos">清除颤音</system:String>
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">加载音高渲染结果</system:String>
+  <system:String x:Key="pianoroll.menu.notes.octavedown">下移八度</system:String>
+  <system:String x:Key="pianoroll.menu.notes.octaveup">上移八度</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">量化至1/128音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">量化至1/64音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">重置表情</system:String>
@@ -162,11 +195,12 @@
   <system:String x:Key="pianoroll.menu.notes.reset.vibratos">重置颤音</system:String>
   <system:String x:Key="pianoroll.menu.part">片段</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">传统插件 (实验性)</system:String>
-  <system:String x:Key="pianoroll.menu.part.rename">重命名</system:String>
   <system:String x:Key="pianoroll.toggle.finalpitch">显示最终音高线 (R)</system:String>
   <system:String x:Key="pianoroll.toggle.phoneme">显示音素 (O)</system:String>
   <system:String x:Key="pianoroll.toggle.pitch">显示弯音 (I)</system:String>
   <system:String x:Key="pianoroll.toggle.snap">开关吸附 (P)</system:String>
+  <system:String x:Key="pianoroll.toggle.snap.auto">自动</system:String>
+  <system:String x:Key="pianoroll.toggle.snap.autotriplet">自动 (三连音)</system:String>
   <system:String x:Key="pianoroll.toggle.tips">显示提示 (T)</system:String>
   <system:String x:Key="pianoroll.toggle.tone">开关音符音 (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">显示颤音 (U)</system:String>
@@ -174,19 +208,26 @@
   <system:String x:Key="pianoroll.tool.drawpitch">绘制音高线工具 (4)</system:String>
   <system:String x:Key="pianoroll.tool.eraser">橡皮工具 (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">分割工具 (5)</system:String>
-  <system:String x:Key="pianoroll.tool.pen">笔工具 (2)
+  <system:String x:Key="pianoroll.tool.penplus">笔(增强)工具 (Ctrl + 2)
 鼠标左键绘制音符
-鼠标右键擦除音符</system:String>
-  <system:String x:Key="pianoroll.tool.selection">选择工具 (1)
-按住Ctrl选择更多</system:String>
+鼠标右键擦除音符
+按住 Ctrl 选择音符</system:String>
+  <system:String x:Key="pianoroll.tool.penv2">笔工具 (2)
+鼠标左键绘制音符
+按住 Ctrl 选择音符</system:String>
+  <system:String x:Key="pianoroll.tool.selectionv2">选择工具 (1)</system:String>
 
   <system:String x:Key="prefs.advanced">高级</system:String>
   <system:String x:Key="prefs.advanced.beta">Beta测试版</system:String>
+  <!--<system:String x:Key="prefs.advanced.lyricshelper">Lyrics Helper</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.lyricshelper.brackets">Lyrics Helper Adds Brackets</system:String>-->
   <system:String x:Key="prefs.advanced.resamplerlogging">重采样器日志</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging.warn">在日志文件中保存重采样器输出。这个选项会使UI和渲染性能下降。</system:String>
   <system:String x:Key="prefs.advanced.stable">稳定版</system:String>
+  <!--<system:String x:Key="prefs.advanced.vlabelerpath">Vlabeler Path</system:String>-->
   <system:String x:Key="prefs.appearance">外观</system:String>
   <system:String x:Key="prefs.appearance.lang">语言</system:String>
+  <!--<system:String x:Key="prefs.appearance.showghostnotes">Show other tracks' notes on piano roll</system:String>-->
   <system:String x:Key="prefs.appearance.showportrait">在钢琴窗上显示歌手背景图</system:String>
   <system:String x:Key="prefs.appearance.theme">主题</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">暗</system:String>
@@ -195,6 +236,8 @@
   <system:String x:Key="prefs.note.restart">注意: 修改本项后请重启OpenUtau</system:String>
   <system:String x:Key="prefs.off">关</system:String>
   <system:String x:Key="prefs.on">开</system:String>
+  <!--<system:String x:Key="prefs.otoeditor">Oto Editor</system:String>-->
+  <!--<system:String x:Key="prefs.otoeditor.select">Default Oto Editor</system:String>-->
   <system:String x:Key="prefs.paths">路径</system:String>
   <system:String x:Key="prefs.paths.addlsinger">额外歌手路径</system:String>
   <system:String x:Key="prefs.paths.addlsinger.install">安装至额外歌手路径</system:String>
@@ -217,7 +260,6 @@
   <system:String x:Key="prefs.rendering">渲染</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">相位修正</system:String>
   <system:String x:Key="prefs.rendering.prerender">预渲染</system:String>
-  <system:String x:Key="prefs.rendering.prerender.threads">预渲染线程数</system:String>
   <system:String x:Key="prefs.rendering.resampler">重采样器</system:String>
   <system:String x:Key="prefs.rendering.resampler.morewarn">
 警告: 暂不完全支持 moresampler。可能导致渲染极慢和高CPU使用率。如果您仍想使用，请:
@@ -228,11 +270,24 @@
   <system:String x:Key="prefs.rendering.resampler.note">
     注意: 将你选择的重采样器 exe 或者 dll 文件放入 Resamplers 文件夹中并在使用偏好中选择它.
   </system:String>
+  <!--<system:String x:Key="prefs.rendering.threads.cpuwarn">
+    Warning: too many render threads may cause OpenUtau to run slowly.
+  </system:String>-->
+  <!--<system:String x:Key="prefs.rendering.threads.numthreads">Maximum Render Threads</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
 
   <system:String x:Key="progress.saved">工程已保存 {0}</system:String>
   <system:String x:Key="progress.waitingrendering">等待渲染</system:String>
 
   <system:String x:Key="singers.caption">歌手</system:String>
+  <!--<system:String x:Key="singers.editoto.editinvlabeler">Edit In vLabeler</system:String>-->
+  <!--<system:String x:Key="singers.editoto.gotosource">Goto Source File</system:String>-->
+  <!--<system:String x:Key="singers.editoto.regenfrq">Regenerate FRQ</system:String>-->
+  <!--<system:String x:Key="singers.editoto.regenfrq.regenerating">Regenerating FRQ</system:String>-->
+  <system:String x:Key="singers.editoto.reset">重置 Oto 设置</system:String>
+  <system:String x:Key="singers.editoto.save">保存 Oto 设置</system:String>
+  <!--<system:String x:Key="singers.editoto.setvlabelerpath">Download vLabeler (1.0.0-beta1 or higher) from https://github.com/sdercolin/vlabeler and set vLabeler path in Preferences first!</system:String>-->
+  <!--<system:String x:Key="singers.errorreport">Generate Singer Error Report</system:String>-->
   <system:String x:Key="singers.location">位置</system:String>
   <system:String x:Key="singers.otoview.moveleft">左移</system:String>
   <system:String x:Key="singers.otoview.moveright">右移</system:String>
@@ -258,6 +313,7 @@
   <system:String x:Key="singers.subbanks.set">设定</system:String>
   <system:String x:Key="singers.subbanks.tone">音调</system:String>
   <system:String x:Key="singers.subbanks.toneranges">音调范围</system:String>
+  <system:String x:Key="singers.visitwebsite">访问歌手官网</system:String>
 
   <system:String x:Key="tip.aliasbox">手动选择别名</system:String>
   <system:String x:Key="tip.exps">
@@ -308,4 +364,5 @@
 
   <system:String x:Key="warning">警告</system:String>
   <system:String x:Key="warning.asciipath">OpenUtau路径"{0}"包含非ASCII字符. Exe格式resampler可能无法正常工作.</system:String>
+  <!--<system:String x:Key="warning.renderer">No settings for this renderer.</system:String>-->
 </ResourceDictionary>

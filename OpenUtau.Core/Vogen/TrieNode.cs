@@ -6,37 +6,42 @@ using System.Linq;
 namespace OpenUtau.Core.Vogen {
     class TrieNode {
         public Dictionary<string, TrieNode> children = new Dictionary<string, TrieNode>();
-        public string[] pinyins;
+        public string[]? pinyins = null;
 
         public static TrieNode LoadDictionary(IEnumerable<string> lines) {
             TrieNode root = new TrieNode();
-            foreach (var line in lines.Skip(1)) {
+            foreach (var line in lines.Skip(1).Reverse()) {
                 var parts = line.Trim().Split(',');
-                var etor = StringInfo.GetTextElementEnumerator(parts[0]);
-                BuildTrie(root, etor, parts.Skip(1).ToArray());
+                if (parts.Length >= 2) {
+                    var etor = StringInfo.GetTextElementEnumerator(parts[0]);
+                    BuildTrie(root, etor, parts[1]);
+                }
             }
             return root;
         }
 
-        private static void BuildTrie(TrieNode node, TextElementEnumerator etor, string[] pinyins) {
+        private static void BuildTrie(TrieNode node, TextElementEnumerator etor, string pinyin) {
             if (!etor.MoveNext()) {
-                node.pinyins = pinyins;
+                node.pinyins = pinyin.Split();
                 return;
             }
             string hanzi = etor.GetTextElement();
             if (!node.children.TryGetValue(hanzi, out var child)) {
                 node.children[hanzi] = child = new TrieNode();
             }
-            BuildTrie(child, etor, pinyins);
+            BuildTrie(child, etor, pinyin);
         }
 
-        public string[] Query(string s) {
-            var etor = StringInfo.GetTextElementEnumerator(s);
-            string[] pinyins = null;
-            while (etor.MoveNext() && children.TryGetValue(etor.GetTextElement(), out var node)) {
-                if (node.pinyins != null) {
-                    pinyins = node.pinyins;
+        public string[]? Query(Span<string> text) {
+            string[]? pinyins = null;
+            int index = 0;
+            TrieNode node = this;
+            while (index < text.Length && node.children.TryGetValue(text[index], out var child)) {
+                if (child.pinyins != null) {
+                    pinyins = child.pinyins;
                 }
+                node = child;
+                index++;
             }
             return pinyins;
         }

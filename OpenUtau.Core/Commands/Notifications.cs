@@ -1,4 +1,5 @@
-﻿using OpenUtau.Core.Ustx;
+﻿using System;
+using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core {
     public class UNotification : UCommand {
@@ -9,15 +10,20 @@ namespace OpenUtau.Core {
         public override string ToString() => "Notification";
     }
 
-    /// <summary>
-    /// Message for user's information.
-    /// </summary>
-    public class UserMessageNotification : UNotification {
-        public string message;
-        public UserMessageNotification(string message) {
+    public class ErrorMessageNotification : UNotification {
+        public readonly string message = string.Empty;
+        public readonly Exception e;
+        public ErrorMessageNotification(Exception e) {
+            this.e = e;
+        }
+        public ErrorMessageNotification(string message) {
             this.message = message;
         }
-        public override string ToString() => $"User message: {message}";
+        public ErrorMessageNotification(string message, Exception e) {
+            this.message = message;
+            this.e = e;
+        }
+        public override string ToString() => $"Error message: {message} {e}";
     }
 
     public class LoadPartNotification : UNotification {
@@ -129,6 +135,14 @@ namespace OpenUtau.Core {
         public override string ToString() => "Singers refreshed.";
     }
 
+    public class OtoChangedNotification : UNotification {
+        public readonly bool external;
+        public OtoChangedNotification(bool external = false) {
+            this.external = external;
+        }
+        public override string ToString() => "Oto changed.";
+    }
+
     public class WillRemoveTrackNotification : UNotification {
         public int TrackNo;
         public WillRemoveTrackNotification(int trackNo) {
@@ -155,5 +169,15 @@ namespace OpenUtau.Core {
             this.part = part;
         }
         public override string ToString() => "Part rendered.";
+    }
+
+    public class GotoOtoNotification : UNotification {
+        public readonly USinger singer;
+        public readonly UOto oto;
+        public GotoOtoNotification(USinger singer, UOto oto) {
+            this.singer = singer;
+            this.oto = oto;
+        }
+        public override string ToString() => "Goto oto.";
     }
 }

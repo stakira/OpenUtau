@@ -19,7 +19,7 @@ namespace OpenUtau.Core.Vogen {
         }
 
         protected abstract string LangPrefix { get; }
-        protected virtual string Romanize(string lyric) => lyric;
+        protected virtual string[] Romanize(string[] lyric) => lyric;
 
         public override void SetSinger(USinger singer) { }
 
@@ -43,17 +43,17 @@ namespace OpenUtau.Core.Vogen {
         }
 
         void ProcessPart(IList<Note> notes) {
-            float padding = (float)TickToMs(240);
+            float padding = 1000;
             int totalDur = notes.Sum(n => n.duration);
-            var lyrics = new string[notes.Count, 8];
+            var lyrics = Romanize(notes.Select(n => n.lyric).ToArray());
+            var lyricsPadded = new string[notes.Count, 8];
             for (int i = 0; i < notes.Count; ++i) {
-                var lyric = Romanize(notes[i].lyric);
-                lyric = lyric.PadRight(8, '\0');
+                string lyric = lyrics[i].PadRight(8, '\0');
                 for (int j = 0; j < 8; j++) {
-                    lyrics[i, j] = lyric[j].ToString();
+                    lyricsPadded[i, j] = lyric[j].ToString();
                 }
             }
-            var x = lyrics.ToTensor();
+            var x = lyricsPadded.ToTensor();
             var inputs = new List<NamedOnnxValue>();
             inputs.Add(NamedOnnxValue.CreateFromTensor("letters", x));
             var outputs = G2p.Run(inputs);
@@ -74,7 +74,8 @@ namespace OpenUtau.Core.Vogen {
                         phs.Add($"{LangPrefix}{phsTensor[i, j]}");
                     }
                 }
-                noteDursSec.Add((float)TickToMs(notes[i].duration) / 1000);
+                noteDursSec.Add((float)timeAxis.MsBetweenTickPos(
+                    notes[i].position, notes[i].position + notes[i].duration) / 1000);
             }
             phs.Add("");
             chPhCounts.Add(1);
@@ -95,11 +96,13 @@ namespace OpenUtau.Core.Vogen {
             outputs.Dispose();
 
             int index = 1;
+            double offsetMs = timeAxis.TickPosToMsPos(notes[0].position);
             double notePos = 0;
             for (int i = 1; i < chPhCounts.Count - 1; ++i) {
                 var phonemes = new List<Tuple<string, int>>();
                 for (int j = index; j < index + chPhCounts[i]; ++j) {
-                    phonemes.Add(Tuple.Create(phs[j], MsToTick((positions[j] - notePos) * 1000)));
+                    phonemes.Add(Tuple.Create(phs[j], timeAxis.TicksBetweenMsPos(
+                       offsetMs + notePos * 1000, offsetMs + positions[j] * 1000)));
                 }
                 partResult[notes[i - 1].position] = phonemes;
                 index += (int)chPhCounts[i];

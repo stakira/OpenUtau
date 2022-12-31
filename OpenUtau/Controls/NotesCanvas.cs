@@ -7,6 +7,7 @@ using Avalonia.Media;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 using ReactiveUI;
 
 namespace OpenUtau.App.Controls {
@@ -99,9 +100,13 @@ namespace OpenUtau.App.Controls {
         private HashSet<UNote> selectedNotes = new HashSet<UNote>();
         private Geometry pointGeometry;
 
+        private bool showGhostNotes = true;
+        private List<UPart> otherPartsInView = new List<UPart>();
+
         public NotesCanvas() {
             ClipToBounds = true;
             pointGeometry = new EllipseGeometry(new Rect(-2.5, -2.5, 5, 5));
+
             MessageBus.Current.Listen<NotesRefreshEvent>()
                 .Subscribe(_ => InvalidateVisual());
             MessageBus.Current.Listen<NotesSelectionEvent>()
@@ -111,6 +116,22 @@ namespace OpenUtau.App.Controls {
                     selectedNotes.UnionWith(e.tempSelectedNotes);
                     InvalidateVisual();
                 });
+            MessageBus.Current.Listen<PartRefreshEvent>()
+                .Subscribe(_ => RefreshGhostNotes());
+            this.WhenAnyValue(x => x.Part)
+                .Subscribe(_ => RefreshGhostNotes());
+        }
+
+        void RefreshGhostNotes() {
+            showGhostNotes = Convert.ToBoolean(Preferences.Default.ShowGhostNotes);
+            if (Part == null || !showGhostNotes) {
+                return;
+            }
+            otherPartsInView = DocManager.Inst.Project.parts
+                .Where(other => other.trackNo != Part.trackNo &&
+                    other.position < Part.End &&
+                    Part.position < other.End)
+                .ToList();
         }
 
         protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change) {
@@ -133,6 +154,21 @@ namespace OpenUtau.App.Controls {
             double leftTick = TickOffset - 480;
             double rightTick = TickOffset + Bounds.Width / TickWidth + 480;
             bool hidePitch = viewModel.TickWidth <= ViewConstants.PianoRollTickWidthShowDetails * 0.5;
+
+            if (showGhostNotes) {
+                foreach (UPart otherPart in otherPartsInView) {
+                    if (otherPart is UVoicePart otherVoicePart) {
+                        var xOffset = otherVoicePart.position - Part.position;
+                        foreach (var note in otherVoicePart.notes) {
+                            if (note.LeftBound >= rightTick || note.RightBound <= leftTick) {
+                                continue;
+                            }
+                            RenderGhostNote(note, viewModel, context, xOffset);
+                        }
+                    }
+                }
+            }
+
             foreach (var note in Part.notes) {
                 if (note.LeftBound >= rightTick || note.RightBound <= leftTick) {
                     continue;
@@ -188,13 +224,31 @@ namespace OpenUtau.App.Controls {
             }
         }
 
+        private void RenderGhostNote(UNote note, NotesViewModel viewModel, DrawingContext context, int partOffset) {
+            // REVIEW should ghost note be smaller?
+            double relativeSize = 0.5d;
+            double height = TrackHeight * relativeSize;
+            double yOffset = Math.Floor(height * 0.5f);
+            Point leftTop = viewModel.TickToneToPoint(partOffset + note.position, note.tone);
+            leftTop = leftTop.WithX(leftTop.X + 1).WithY(Math.Round(leftTop.Y + 1 + yOffset));
+
+            Size size = viewModel.TickToneToSize(note.duration, relativeSize);
+            size = size.WithWidth(size.Width - 1).WithHeight(Math.Floor(size.Height - 2));
+
+            Point rightBottom = new Point(leftTop.X + size.Width, leftTop.Y + size.Height);
+
+            // REVIEW Using existing color to avoid problems with theming. Not sure if ideal color.
+            var brush = ThemeManager.NeutralAccentBrushSemi;
+            context.DrawRectangle(brush, null, new Rect(leftTop, rightBottom), 2, 2);
+        }
+
         private void RenderPitchBend(UNote note, NotesViewModel viewModel, DrawingContext context) {
             var pitchExp = note.pitch;
             var pts = pitchExp.data;
-            if (pts.Count < 2) return;
+            if (pts.Count < 2 || viewModel.Part == null) return;
 
             var project = viewModel.Project;
-            double p0Tick = note.position + project.MillisecondToTick(pts[0].X);
+            double p0Tick = project.timeAxis.MsPosToTickPos(note.PositionMs + pts[0].X) - viewModel.Part.position;
             double p0Tone = note.tone + pts[0].Y / 10.0;
             Point p0 = viewModel.TickToneToPoint(p0Tick, p0Tone - 0.5);
             points.Clear();
@@ -207,7 +261,7 @@ namespace OpenUtau.App.Controls {
             }
 
             for (int i = 1; i < pts.Count; i++) {
-                double p1Tick = note.position + project.MillisecondToTick(pts[i].X);
+                double p1Tick = project.timeAxis.MsPosToTickPos(note.PositionMs + pts[i].X) - viewModel.Part.position;
                 double p1Tone = note.tone + pts[i].Y / 10.0;
                 Point p1 = viewModel.TickToneToPoint(p1Tick, p1Tone - 0.5);
 
@@ -244,7 +298,7 @@ namespace OpenUtau.App.Controls {
             }
 
             var pen = ThemeManager.AccentPen3;
-            float nPeriod = (float)viewModel.Project.MillisecondToTick(vibrato.period) / note.duration;
+            float nPeriod = (float)viewModel.Project.timeAxis.TicksBetweenMsPos(note.PositionMs, note.PositionMs + vibrato.period) / note.duration;
             float nPos = vibrato.NormalizedStart;
             var point = vibrato.Evaluate(nPos, nPeriod, note);
             points.Clear();
@@ -291,7 +345,7 @@ namespace OpenUtau.App.Controls {
             using (var state = context.PushPreTransform(Matrix.CreateTranslation(fadeOut))) {
                 context.DrawGeometry(pen.Brush, pen, pointGeometry);
             }
-            vibrato.GetPeriodStartEnd(note, DocManager.Inst.Project, out var periodStartPos, out var periodEndPos);
+            vibrato.GetPeriodStartEnd(DocManager.Inst.Project, note, out var periodStartPos, out var periodEndPos);
             Point periodStart = viewModel.TickToneToPoint(periodStartPos);
             Point periodEnd = viewModel.TickToneToPoint(periodEndPos);
             float height = (float)TrackHeight / 3;
@@ -306,11 +360,10 @@ namespace OpenUtau.App.Controls {
             var pen = ThemeManager.FinalPitchPen!;
             lock (Part!) {
                 foreach (var phrase in Part!.renderPhrases) {
-                    if (phrase.phones.First().position > rightTick ||
-                        phrase.phones.Last().position + phrase.phones.Last().duration < leftTick) {
+                    if (phrase.position - Part.position > rightTick || phrase.end - Part.position < leftTick) {
                         continue;
                     }
-                    int pitchStart = phrase.phones[0].position - phrase.phones[0].leading;
+                    int pitchStart = phrase.position - phrase.leading - Part.position;
                     int startIdx = (int)Math.Max(0, (leftTick - pitchStart) / 5);
                     int endIdx = (int)Math.Min(phrase.pitches.Length, (rightTick - pitchStart) / 5 + 1);
                     points.Clear();

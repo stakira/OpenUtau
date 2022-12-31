@@ -88,14 +88,6 @@ namespace OpenUtau.Core {
             }
         }
 
-        public static double TickToMillisecond(double tick, double BPM, int beatUnit, int resolution) {
-            return tick * 60000.0 / BPM * beatUnit / 4 / resolution;
-        }
-
-        public static int MillisecondToTick(double ms, double BPM, int beatUnit, int resolution) {
-            return (int)Math.Ceiling(ms / 60000.0 * BPM / beatUnit * 4 * resolution);
-        }
-
         public static double SinEasingInOut(double x0, double x1, double y0, double y1, double x) {
             return y0 + (y1 - y0) * (1 - Math.Cos((x - x0) / (x1 - x0) * Math.PI)) / 2;
         }
@@ -164,6 +156,38 @@ namespace OpenUtau.Core {
 
         public static double FreqToTone(double freq) {
             return Math.Log(freq / 440.0, a) + 69;
+        }
+
+        public static List<int> GetSnapDivs(int resolution) {
+            var result = new List<int>();
+            int div = 4;
+            int ticks = resolution * 4 / div;
+            result.Add(div);
+            while (ticks % 2 == 0) {
+                ticks /= 2;
+                div *= 2;
+                result.Add(div);
+            }
+            div = 6;
+            ticks = resolution * 4 / div;
+            result.Add(div);
+            while (ticks % 2 == 0) {
+                ticks /= 2;
+                div *= 2;
+                result.Add(div);
+            }
+            return result;
+        }
+
+        public static void GetSnapUnit(
+            int resolution, double minTicks, bool triplet,
+            out int ticks, out int div) {
+            div = triplet ? 6 : 4;
+            ticks = resolution * 4 / div;
+            while (ticks % 2 == 0 && ticks / 2 >= minTicks) {
+                ticks /= 2;
+                div *= 2;
+            }
         }
     }
 }

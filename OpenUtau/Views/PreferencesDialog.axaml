@@ -31,8 +31,8 @@
             <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.note.restart}" FontSize="11"/>
             <TextBlock Text="{DynamicResource prefs.playback.lockstarttime}"/>
             <ComboBox HorizontalAlignment="Stretch" SelectedIndex="{Binding LockStartTime}">
-                <ComboBoxItem Content="{DynamicResource prefs.playback.lockstarttime.off}"/>
-                <ComboBoxItem Content="{DynamicResource prefs.playback.lockstarttime.on}"/>
+              <ComboBoxItem Content="{DynamicResource prefs.playback.lockstarttime.off}"/>
+              <ComboBoxItem Content="{DynamicResource prefs.playback.lockstarttime.on}"/>
             </ComboBox>
             <TextBlock Text="{DynamicResource prefs.playback.autoscroll}"/>
             <ComboBox HorizontalAlignment="Stretch"  SelectedIndex="{Binding PlaybackAutoScroll}">
@@ -74,22 +74,25 @@
         </HeaderedContentControl>
         <HeaderedContentControl Classes="groupbox" Header="{DynamicResource prefs.rendering}">
           <StackPanel>
-            <TextBlock Text="{DynamicResource prefs.rendering.resampler}" />
-            <ComboBox HorizontalAlignment="Stretch" Items="{Binding Resamplers}" SelectedItem="{Binding ExportResampler}"/>
-            <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.rendering.resampler.morewarn}" FontWeight="Bold"
-                       Foreground="Red" Margin="0,0,0,4" IsVisible="{Binding MoresamplerSelected}" FontSize="11"/>
-            <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.rendering.resampler.note}" FontSize="11"/>
-            <Button HorizontalAlignment="Stretch" Content="{DynamicResource singers.location}" Command="{Binding OpenResamplerLocation}"/>
-            <TextBlock Text="{DynamicResource prefs.rendering.phasecomp}" Margin="0,4,0,0"/>
-            <ComboBox HorizontalAlignment="Stretch"  SelectedIndex="{Binding PhaseCompensation}">
-              <ComboBoxItem Content="{DynamicResource prefs.off}"/>
-              <ComboBoxItem Content="{DynamicResource prefs.on}"/>
-            </ComboBox>
             <TextBlock Text="{DynamicResource prefs.rendering.prerender}" />
             <ComboBox HorizontalAlignment="Stretch"  SelectedIndex="{Binding PreRender}">
               <ComboBoxItem Content="{DynamicResource prefs.off}"/>
               <ComboBoxItem Content="{DynamicResource prefs.on}"/>
             </ComboBox>
+            <Grid ColumnDefinitions="Auto,8,16,8,*" Margin="0,8,0,0">
+              <TextBlock Grid.Column="0" Text="{DynamicResource prefs.rendering.threads.numthreads}"/>
+              <TextBlock Grid.Column="2">
+                <TextBlock.Text>
+                  <MultiBinding StringFormat="{}{0:#0}">
+                    <Binding Path="NumRenderThreads"/>
+                  </MultiBinding>
+                </TextBlock.Text>
+              </TextBlock>
+              <Slider Grid.Column="4" Classes="fader" Value="{Binding NumRenderThreads}" Minimum="1" Maximum="{Binding LogicalCoreCount, Mode=OneTime}"
+                      TickPlacement="BottomRight" TickFrequency="1" IsSnapToTickEnabled="true"/>
+            </Grid>
+            <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.rendering.threads.cpuwarn}" FontWeight="Bold"
+                       Foreground="Red" Margin="0,0,0,4" IsVisible="{Binding HighThreads}" FontSize="11"/>
           </StackPanel>
         </HeaderedContentControl>
         <HeaderedContentControl Classes="groupbox" Header="{DynamicResource prefs.appearance}">
@@ -114,9 +117,41 @@
               <ComboBoxItem Content="{DynamicResource prefs.off}"/>
               <ComboBoxItem Content="{DynamicResource prefs.on}"/>
             </ComboBox>
+            <TextBlock Margin="0,4,0,0" Text="{DynamicResource prefs.appearance.showghostnotes}" />
+            <ComboBox HorizontalAlignment="Stretch" SelectedIndex="{Binding ShowGhostNotes}">
+              <ComboBoxItem Content="{DynamicResource prefs.off}"/>
+              <ComboBoxItem Content="{DynamicResource prefs.on}"/>
+            </ComboBox>
+          </StackPanel>
+        </HeaderedContentControl>
+        <HeaderedContentControl Classes="groupbox" Header="{DynamicResource prefs.otoeditor}">
+          <StackPanel>
+            <TextBlock Text="{DynamicResource prefs.otoeditor.select}" />
+            <ComboBox HorizontalAlignment="Stretch" SelectedIndex="{Binding OtoEditor}">
+              <ComboBoxItem Content="OpenUtau"/>
+              <ComboBoxItem Content="vLabeler"/>
+            </ComboBox>
+            <TextBlock Text="vLabeler Path" />
+            <TextBlock HorizontalAlignment="Stretch" Margin="4"
+                       TextWrapping="Wrap" FontSize="11" Text="{Binding VLabelerPath}"/>
+            <Grid HorizontalAlignment="Stretch" ColumnDefinitions="*,10,*">
+              <Button Grid.Column="0" Content="{DynamicResource prefs.paths.reset}"
+                      HorizontalAlignment="Stretch" Click="ResetVLabelerPath"/>
+              <Button Grid.Column="2" Content="{DynamicResource prefs.paths.select}"
+                      HorizontalAlignment="Stretch" Click="SelectVLabelerPath"/>
+            </Grid>
           </StackPanel>
         </HeaderedContentControl>
         <HeaderedContentControl Classes="groupbox" Header="{DynamicResource prefs.advanced}">
+          <StackPanel>
+            <TextBlock Text="{DynamicResource prefs.advanced.lyricshelper}" />
+            <ComboBox HorizontalAlignment="Stretch" Items="{Binding LyricsHelpers}" SelectedItem="{Binding LyricsHelper}"/>
+            <TextBlock Text="{DynamicResource prefs.advanced.lyricshelper.brackets}" />
+            <ComboBox HorizontalAlignment="Stretch" SelectedIndex="{Binding LyricsHelperBrackets}">
+              <ComboBoxItem Content="{DynamicResource prefs.off}"/>
+              <ComboBoxItem Content="{DynamicResource prefs.on}"/>
+            </ComboBox>
+          </StackPanel>
         </HeaderedContentControl>
       </StackPanel>
     </ScrollViewer>

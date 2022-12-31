@@ -9,7 +9,7 @@ namespace OpenUtau.Plugin.Builtin {
     /// Chinese 十月式整音扩张 CVV Phonemizer.
     /// <para>It works by spliting "duang" to "duang" + "_ang", to produce the proper tail sound.</para>
     /// </summary>
-    [Phonemizer("Chinese CVV (十月式整音扩张) Phonemizer", "ZH CVV")]
+    [Phonemizer("Chinese CVV (十月式整音扩张) Phonemizer", "ZH CVV", language: "ZH")]
     public class ChineseCVVPhonemizer : Phonemizer {
         /// <summary>
         ///  The consonant table.
@@ -34,6 +34,9 @@ namespace OpenUtau.Plugin.Builtin {
 
         // Simply stores the singer in a field.
         public override void SetSinger(USinger singer) => this.singer = singer;
+        
+        // Legacy mapping. Might adjust later to new mapping style.
+		public override bool LegacyMapping => true;
 
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
             // The overall logic is:

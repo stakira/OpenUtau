@@ -40,12 +40,10 @@ namespace OpenUtau.Classic {
         }
 
         public RenderResult Layout(RenderPhrase phrase) {
-            var firstPhone = phrase.phones.First();
-            var lastPhone = phrase.phones.Last();
             return new RenderResult() {
-                leadingMs = firstPhone.preutterMs,
-                positionMs = (phrase.position + firstPhone.position) * phrase.tickToMs,
-                estimatedLengthMs = (lastPhone.duration + lastPhone.position - firstPhone.position) * phrase.tickToMs + firstPhone.preutterMs,
+                leadingMs = phrase.leadingMs,
+                positionMs = phrase.positionMs,
+                estimatedLengthMs = phrase.durationMs + phrase.leadingMs,
             };
         }
 
@@ -56,8 +54,8 @@ namespace OpenUtau.Classic {
             }
             var task = Task.Run(() => {
                 var result = Layout(phrase);
-                var wavPath = Path.Join(PathManager.Inst.CachePath, $"vog-{phrase.hash:x16}.wav");
-                string progressInfo = string.Join(" ", phrase.phones.Select(p => p.phoneme));
+                var wavPath = Path.Join(PathManager.Inst.CachePath, $"wdl-{phrase.hash:x16}.wav");
+                string progressInfo = $"{this} {string.Join(" ", phrase.phones.Select(p => p.phoneme))}";
                 progress.Complete(0, progressInfo);
                 if (File.Exists(wavPath)) {
                     try {
@@ -70,12 +68,12 @@ namespace OpenUtau.Classic {
                 }
                 if (result.samples == null) {
                     using var phraseSynth = new Worldline.PhraseSynth();
-                    double posOffsetMs = resamplerItems[0].phone.position * phrase.tickToMs - resamplerItems[0].phone.preutterMs;
+                    double posOffsetMs = phrase.positionMs - phrase.leadingMs;
                     foreach (var item in resamplerItems) {
                         if (cancellation.IsCancellationRequested) {
                             return result;
                         }
-                        double posMs = item.phone.position * item.phrase.tickToMs - item.phone.preutterMs - posOffsetMs;
+                        double posMs = item.phone.positionMs - item.phone.leadingMs - (phrase.positionMs - phrase.leadingMs);
                         double skipMs = item.skipOver;
                         double lengthMs = item.phone.envelope[4].X - item.phone.envelope[0].X;
                         double fadeInMs = item.phone.envelope[1].X - item.phone.envelope[0].X;
@@ -83,11 +81,11 @@ namespace OpenUtau.Classic {
                         phraseSynth.AddRequest(item, posMs, skipMs, lengthMs, fadeInMs, fadeOutMs);
                     }
                     int frames = (int)Math.Ceiling(result.estimatedLengthMs / frameMs);
-                    var f0 = DownSampleCurve(phrase.pitches, 0, frames, phrase.tickToMs, x => MusicMath.ToneToFreq(x * 0.01));
-                    var gender = DownSampleCurve(phrase.gender, 0.5, frames, phrase.tickToMs, x => 0.5 + 0.005 * x);
-                    var tension = DownSampleCurve(phrase.tension, 0.5, frames, phrase.tickToMs, x => 0.5 + 0.005 * x);
-                    var breathiness = DownSampleCurve(phrase.breathiness, 0.5, frames, phrase.tickToMs, x => 0.5 + 0.005 * x);
-                    var voicing = DownSampleCurve(phrase.voicing, 1.0, frames, phrase.tickToMs, x => 0.01 * x);
+                    var f0 = SampleCurve(phrase, phrase.pitches, 0, frames, x => MusicMath.ToneToFreq(x * 0.01));
+                    var gender = SampleCurve(phrase, phrase.gender, 0.5, frames, x => 0.5 + 0.005 * x);
+                    var tension = SampleCurve(phrase, phrase.tension, 0.5, frames, x => 0.5 + 0.005 * x);
+                    var breathiness = SampleCurve(phrase, phrase.breathiness, 0.5, frames, x => 0.5 + 0.005 * x);
+                    var voicing = SampleCurve(phrase, phrase.voicing, 1.0, frames, x => 0.01 * x);
                     phraseSynth.SetCurves(f0, gender, tension, breathiness, voicing);
                     result.samples = phraseSynth.Synth();
                     var source = new WaveSource(0, 0, 0, 1);
@@ -96,14 +94,14 @@ namespace OpenUtau.Classic {
                 }
                 progress.Complete(phrase.phones.Length, progressInfo);
                 if (result.samples != null) {
-                    ApplyDynamics(phrase, result.samples);
+                    Renderers.ApplyDynamics(phrase, result);
                 }
                 return result;
             });
             return task;
         }
 
-        double[] DownSampleCurve(float[] curve, double defaultValue, int length, double tickToMs, Func<double, double> convert) {
+        double[] SampleCurve(RenderPhrase phrase, float[] curve, double defaultValue, int length, Func<double, double> convert) {
             const int interval = 5;
             var result = new double[length];
             if (curve == null) {
@@ -111,7 +109,9 @@ namespace OpenUtau.Classic {
                 return result;
             }
             for (int i = 0; i < length; i++) {
-                int index = (int)(i * frameMs / tickToMs / interval);
+                double posMs = phrase.positionMs - phrase.leadingMs + i * frameMs;
+                int ticks = phrase.timeAxis.MsPosToTickPos(posMs) - (phrase.position - phrase.leading);
+                int index = Math.Max(0, (int)((double)ticks / interval));
                 if (index < curve.Length) {
                     result[i] = convert(curve[index]);
                 }
@@ -119,28 +119,10 @@ namespace OpenUtau.Classic {
             return result;
         }
 
-        void ApplyDynamics(RenderPhrase phrase, float[] samples) {
-            const int interval = 5;
-            if (phrase.dynamics == null) {
-                return;
-            }
-            int pos = 0;
-            for (int i = 0; i < phrase.dynamics.Length; ++i) {
-                int endPos = (int)((i + 1) * interval * phrase.tickToMs / 1000 * 44100);
-                endPos = Math.Min(endPos, samples.Length);
-                float a = phrase.dynamics[i];
-                float b = (i + 1) == phrase.dynamics.Length ? phrase.dynamics[i] : phrase.dynamics[i + 1];
-                for (int j = pos; j < endPos; ++j) {
-                    samples[j] *= a + (b - a) * (j - pos) / (endPos - pos);
-                }
-                pos = endPos;
-            }
-        }
-
         public RenderPitchResult LoadRenderedPitch(RenderPhrase phrase) {
             return null;
         }
 
-        public override string ToString() => "WORLDLINE-R";
+        public override string ToString() => Renderers.WORLDLINER;
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -20,12 +21,13 @@ namespace OpenUtau.App {
         public static void Main(string[] args) {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             InitLogging();
-            var exists = System.Diagnostics.Process.GetProcessesByName(
-                Path.GetFileNameWithoutExtension(
-                    Assembly.GetEntryAssembly()?.Location)).Count() > 1;
-            if (exists) {
-                Log.Information("OpenUtau already open. Exiting.");
-                return;
+            string processName = Process.GetCurrentProcess().ProcessName;
+            if (processName != "dotnet") {
+                var exists = Process.GetProcessesByName(processName).Count() > 1;
+                if (exists) {
+                    Log.Information($"Process {processName} already open. Exiting.");
+                    return;
+                }
             }
             Log.Information($"{Environment.OSVersion}");
             Log.Information($"{RuntimeInformation.OSDescription} " +
@@ -33,11 +35,18 @@ namespace OpenUtau.App {
                 $"{RuntimeInformation.ProcessArchitecture}");
             Log.Information($"OpenUtau v{Assembly.GetEntryAssembly()?.GetName().Version} " +
                 $"{RuntimeInformation.RuntimeIdentifier}");
+            Log.Information($"Data path = {PathManager.Inst.DataPath}");
+            Log.Information($"Cache path = {PathManager.Inst.CachePath}");
             try {
                 Run(args);
+                Log.Information($"Exiting.");
             } finally {
-                NetMQ.NetMQConfig.Cleanup();
+                if (!OS.IsMacOS()) {
+                    NetMQ.NetMQConfig.Cleanup(/*block=*/false);
+                    // Cleanup() hangs on macOS https://github.com/zeromq/netmq/issues/1018
+                }
             }
+            Log.Information($"Exited.");
         }
 
         // Avalonia configuration, don't remove; also used by visual designer.
@@ -66,6 +75,7 @@ namespace OpenUtau.App {
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler((sender, args) => {
                 Log.Error((Exception)args.ExceptionObject, "Unhandled exception");
             });
+            Log.Information("Logging initialized.");
         }
     }
 }

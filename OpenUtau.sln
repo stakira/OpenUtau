@@ -13,6 +13,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenUtau.Test", "OpenUtau.Test\OpenUtau.Test.csproj", "{7B351EB5-B83A-4938-99A0-45C2B2116DEF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9535E26C-4584-4126-B6F7-B91B41113196} = {9535E26C-4584-4126-B6F7-B91B41113196}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenUtau.Core", "OpenUtau.Core\OpenUtau.Core.csproj", "{7793257C-054C-4935-A1EF-CAB345E9F6C5}"
 EndProject

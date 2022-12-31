@@ -29,15 +29,15 @@ namespace OpenUtau.Classic {
         public override string DefaultPhonemizer => voicebank.DefaultPhonemizer;
         public override Encoding TextFileEncoding => voicebank.TextFileEncoding;
         public override IList<USubbank> Subbanks => subbanks;
-        public override Dictionary<string, UOto> Otos => otos;
+        public override IList<UOto> Otos => otos;
 
         Voicebank voicebank;
         List<string> errors = new List<string>();
         byte[] avatarData;
-        List<UOtoSet> OtoSets = new List<UOtoSet>();
-        Dictionary<string, UOto> otos = new Dictionary<string, UOto>();
-        Dictionary<string, List<UOto>> phonetics;
+        List<UOtoSet> otoSets = new List<UOtoSet>();
         List<USubbank> subbanks = new List<USubbank>();
+        List<UOto> otos = new List<UOto>();
+        Dictionary<string, UOto> otoMap = new Dictionary<string, UOto>();
         OtoWatcher otoWatcher;
 
         public ClassicSinger(Voicebank voicebank) {
@@ -63,6 +63,7 @@ namespace OpenUtau.Classic {
                 if (otoWatcher == null) {
                     otoWatcher = new OtoWatcher(this, Location);
                 }
+                OtoDirty = false;
             } catch (Exception e) {
                 Log.Error(e, $"Failed to load {voicebank.File}");
             }
@@ -94,13 +95,20 @@ namespace OpenUtau.Classic {
                 .ToList();
 
             var dummy = new USubbank(new Subbank());
-            OtoSets.Clear();
+            otoSets.Clear();
             otos.Clear();
+            otoMap.Clear();
             errors.Clear();
             foreach (var otoSet in voicebank.OtoSets) {
                 var uSet = new UOtoSet(otoSet, voicebank.BasePath);
-                OtoSets.Add(uSet);
+                otoSets.Add(uSet);
                 foreach (var oto in otoSet.Otos) {
+                    if (!oto.IsValid) {
+                        if (!string.IsNullOrEmpty(oto.Error)) {
+                            errors.Add(oto.Error);
+                        }
+                        continue;
+                    }
                     UOto? uOto = null;
                     for (var i = 0; i < patterns.Count; i++) {
                         var m = patterns[i].Match(oto.Alias);
@@ -113,20 +121,17 @@ namespace OpenUtau.Classic {
                     if (uOto == null) {
                         uOto = new UOto(oto, uSet, dummy);
                     }
-                    if (!otos.ContainsKey(oto.Alias)) {
-                        otos.Add(oto.Alias, uOto);
+                    otos.Add(uOto);
+                    if (!otoMap.ContainsKey(oto.Alias)) {
+                        otoMap.Add(oto.Alias, uOto);
                     } else {
                         //Errors.Add($"oto conflict {Otos[oto.Alias].Set}/{oto.Alias} and {otoSet.Name}/{oto.Alias}");
                     }
                 }
-                errors.AddRange(otoSet.Errors);
             }
-            phonetics = otos.Values
-                .GroupBy(oto => oto.Phonetic, oto => oto)
-                .ToDictionary(g => g.Key, g => g.OrderByDescending(oto => oto.Prefix.Length + oto.Suffix.Length).ToList());
 
             Task.Run(() => {
-                otos.Values
+                otoMap.Values
                     .ToList()
                     .ForEach(oto => {
                         oto.SearchTerms.Add(oto.Alias.ToLowerInvariant().Replace(" ", ""));
@@ -135,22 +140,38 @@ namespace OpenUtau.Classic {
             });
         }
 
-        public override bool TryGetMappedOto(string phoneme, int tone, out UOto oto) {
-            oto = default;
-            var subbank = subbanks.Find(subbank => string.IsNullOrEmpty(subbank.Color) && subbank.toneSet.Contains(tone));
-            if (subbank != null && otos.TryGetValue($"{subbank.Prefix}{phoneme}{subbank.Suffix}", out oto)) {
-                return true;
+        public override void Save() {
+            try {
+                otoWatcher.Paused = true;
+                foreach (var oto in Otos) {
+                    oto.WriteBack();
+                }
+                VoicebankLoader.WriteOtoSets(voicebank);
+            } finally {
+                otoWatcher.Paused = false;
             }
-            if (otos.TryGetValue(phoneme, out oto)) {
+        }
+
+        public override bool TryGetOto(string phoneme, out UOto oto) {
+            if (otoMap.TryGetValue(phoneme, out oto)) {
                 return true;
             }
             return false;
         }
 
+        public override bool TryGetMappedOto(string phoneme, int tone, out UOto oto) {
+            oto = default;
+            var subbank = subbanks.Find(subbank => string.IsNullOrEmpty(subbank.Color) && subbank.toneSet.Contains(tone));
+            if (subbank != null && otoMap.TryGetValue($"{subbank.Prefix}{phoneme}{subbank.Suffix}", out oto)) {
+                return true;
+            }
+            return TryGetOto(phoneme, out oto);
+        }
+
         public override bool TryGetMappedOto(string phoneme, int tone, string color, out UOto oto) {
             oto = default;
             var subbank = subbanks.Find(subbank => subbank.Color == color && subbank.toneSet.Contains(tone));
-            if (subbank != null && otos.TryGetValue($"{subbank.Prefix}{phoneme}{subbank.Suffix}", out oto)) {
+            if (subbank != null && otoMap.TryGetValue($"{subbank.Prefix}{phoneme}{subbank.Suffix}", out oto)) {
                 return true;
             }
             return TryGetMappedOto(phoneme, tone, out oto);
@@ -161,7 +182,7 @@ namespace OpenUtau.Classic {
                 text = text.ToLowerInvariant().Replace(" ", "");
             }
             bool all = string.IsNullOrEmpty(text);
-            return otos.Values
+            return otoMap.Values
                 .Where(oto => all || oto.SearchTerms.Exists(term => term.Contains(text)));
         }
 

@@ -121,16 +121,7 @@
   <data name="arpasing_template" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>arpasing.template.yaml;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="g2p_arpabet" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>g2p-arpabet.zip;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="g2p_fr" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>g2p-fr.zip;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="g2p_pt" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>g2p-pt.zip;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="g2p_ru" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>g2p-ru.zip;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="envccv_template" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>envccv.template.yaml;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

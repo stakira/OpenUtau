@@ -1,15 +1,19 @@
-﻿using System.IO;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Cache;
+using System.Threading.Tasks;
+using Avalonia.Media;
 using NetSparkleUpdater;
-using NetSparkleUpdater.Interfaces;
 using NetSparkleUpdater.Enums;
+using NetSparkleUpdater.Interfaces;
 using NetSparkleUpdater.SignatureVerifiers;
+using OpenUtau.Core;
+using OpenUtau.Core.Util;
 using ReactiveUI.Fody.Helpers;
 using Serilog;
-using OpenUtau.Core.Util;
-using Avalonia.Media;
-using System;
-using OpenUtau.Core;
 
 namespace OpenUtau.App.ViewModels {
     public class UpdaterViewModel : ViewModelBase {
@@ -20,7 +24,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public FontWeight UpdateButtonFontWeight { get; set; }
         public Action? CloseApplication { get; set; }
 
-        private SparkleUpdater sparkle;
+        private SparkleUpdater? sparkle;
         private UpdateInfo? updateInfo;
         private bool updateAccepted;
 
@@ -28,13 +32,18 @@ namespace OpenUtau.App.ViewModels {
             UpdaterStatus = string.Empty;
             UpdateAvailable = false;
             UpdateButtonFontWeight = FontWeight.Normal;
-            sparkle = NewUpdater();
             Init();
         }
 
-        public static SparkleUpdater NewUpdater() {
+        private static readonly string[] domains = new[] {
+            "https://github.com",
+            "https://hub.fastgit.xyz",
+        };
+
+        public static async Task<SparkleUpdater> NewUpdaterAsync() {
             string rid = OS.GetUpdaterRid();
-            string url = $"https://github.com/stakira/OpenUtau/releases/download/OpenUtau-Latest/appcast.{rid}.xml";
+            string domain = await ChooseDomainAsync();
+            string url = $"{domain}/stakira/OpenUtau/releases/latest/download/appcast.{rid}.xml";
             Log.Information($"Checking update at: {url}");
             return new ZipUpdater(url, new Ed25519Checker(SecurityMode.Unsafe)) {
                 UIFactory = null,
@@ -44,8 +53,38 @@ namespace OpenUtau.App.ViewModels {
             };
         }
 
+        static async Task<string> ChooseDomainAsync() {
+            TimeSpan bestTime = TimeSpan.FromDays(1);
+            string bestDomain = domains[0];
+            var stopWatch = new Stopwatch();
+            foreach (var domain in domains) {
+                var request = WebRequest.Create(domain);
+                request.Method = "HEAD";
+                request.Timeout = 5000;
+                request.CachePolicy = new RequestCachePolicy(RequestCacheLevel.BypassCache);
+                stopWatch.Start();
+                try {
+                    var response = await request.GetResponseAsync();
+                    stopWatch.Stop();
+                    bool ok = ((HttpWebResponse)response).StatusCode == HttpStatusCode.OK;
+                    if (ok && bestTime > stopWatch.Elapsed) {
+                        bestDomain = domain;
+                        bestTime = stopWatch.Elapsed;
+                        if (bestTime.TotalMilliseconds < 500) {
+                            break;
+                        }
+                    }
+                    Log.Information($"Domain {domain} {stopWatch.Elapsed}");
+                } catch (Exception e) {
+                    Log.Error(e, $"Failed to connect domain {domain}");
+                }
+            }
+            return bestDomain;
+        }
+
         async void Init() {
             UpdaterStatus = ThemeManager.GetString("updater.status.checking");
+            sparkle = await NewUpdaterAsync();
             updateInfo = await sparkle.CheckForUpdatesQuietly();
             if (updateInfo == null) {
                 return;
@@ -70,12 +109,12 @@ namespace OpenUtau.App.ViewModels {
             try {
                 OS.OpenWeb("https://github.com/stakira/OpenUtau/wiki");
             } catch (Exception e) {
-                DocManager.Inst.ExecuteCmd(new UserMessageNotification(e.ToString()));
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
             }
         }
 
         public async void OnUpdate() {
-            if (updateInfo == null || updateInfo.Updates.Count == 0) {
+            if (sparkle == null || updateInfo == null || updateInfo.Updates.Count == 0) {
                 return;
             }
             UpdateAvailable = false;
@@ -125,10 +164,25 @@ namespace OpenUtau.App.ViewModels {
 
         protected override string GetWindowsInstallerCommand(string downloadFilePath) {
             string installerExt = Path.GetExtension(downloadFilePath);
+            if (DoExtensionsMatch(installerExt, ".exe")) {
+                return $"\"{downloadFilePath}\"";
+            }
+            if (DoExtensionsMatch(installerExt, ".msi")) {
+                return $"msiexec /i \"{downloadFilePath}\"";
+            }
+            if (DoExtensionsMatch(installerExt, ".msp")) {
+                return $"msiexec /p \"{downloadFilePath}\"";
+            }
             if (DoExtensionsMatch(installerExt, ".zip")) {
+                string restart = RestartExecutablePath.TrimEnd('\\', '/');
+                if (Environment.OSVersion.Version.Major >= 10 && Environment.OSVersion.Version.Build >= 17063) {
+                    Log.Information("Starting update with tar.");
+                    return $"tar -x -f \"{downloadFilePath}\" -C \"{restart}\"";
+                }
                 var unzipperPath = Path.Combine(Path.GetDirectoryName(downloadFilePath) ?? Path.GetTempPath(), "Unzipper.exe");
                 File.WriteAllBytes(unzipperPath, Resources.Resources.Unzipper);
-                return string.Format($"{unzipperPath} \"{downloadFilePath}\" \"{RestartExecutablePath.TrimEnd('\\', '/')}\"");
+                Log.Information("Starting update with unzipper.");
+                return $"{unzipperPath} \"{downloadFilePath}\" \"{restart}\"";
             }
             return downloadFilePath;
         }

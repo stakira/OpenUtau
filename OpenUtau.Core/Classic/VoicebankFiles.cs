@@ -4,43 +4,50 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using K4os.Hash.xxHash;
+using NAudio.Wave;
 using OpenUtau.Core;
+using OpenUtau.Core.Render;
 using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Classic {
-    static class VoicebankFiles {
-
-        static object fileAccessLock = new object();
-
-        public static string GetSourceTempPath(string singerId, UOto oto) {
-            string ext = Path.GetExtension(oto.File);
+    public class VoicebankFiles : Core.Util.SingletonBase<VoicebankFiles> {
+        public string GetSourceTempPath(string singerId, UOto oto, string ext = null) {
+            if (string.IsNullOrEmpty(ext)) {
+                ext = Path.GetExtension(oto.File);
+            }
             return Path.Combine(PathManager.Inst.CachePath,
                 $"src-{HashHex(singerId)}-{HashHex(oto.Set)}-{HashHex(oto.File)}{ext}");
         }
 
-        private static string HashHex(string s) {
+        private string HashHex(string s) {
             return $"{XXH32.DigestOf(Encoding.UTF8.GetBytes(s)):x8}";
         }
 
-        public static void CopySourceTemp(string source, string temp) {
-            CopyOrStamp(source, temp, true);
-            var metaFiles = GetMetaFiles(source, temp);
-            metaFiles.ForEach(t => CopyOrStamp(t.Item1, t.Item2, false));
+        public void CopySourceTemp(string source, string temp) {
+            lock (Renderers.GetCacheLock(temp)) {
+                DecodeOrStamp(source, temp);
+                var metaFiles = GetMetaFiles(source, temp);
+                metaFiles.ForEach(t => CopyOrStamp(t.Item1, t.Item2, false));
+            }
         }
 
-        public static void CopyBackMetaFiles(string source, string temp) {
-            var metaFiles = GetMetaFiles(source, temp);
-            metaFiles.ForEach(t => CopyOrStamp(t.Item2, t.Item1, false));
+        public void CopyBackMetaFiles(string source, string temp) {
+            lock (Renderers.GetCacheLock(temp)) {
+                var metaFiles = GetMetaFiles(source, temp);
+                metaFiles.ForEach(t => CopyOrStamp(t.Item2, t.Item1, false));
+            }
         }
 
-        private static List<Tuple<string, string>> GetMetaFiles(string source, string sourceTemp) {
+        private List<Tuple<string, string>> GetMetaFiles(string source, string sourceTemp) {
             string ext = Path.GetExtension(source);
-            string frqExt = ext.Replace('.', '_') + ".frq";
             string noExt = source.Substring(0, source.Length - ext.Length);
+            string frqExt = ext.Replace('.', '_') + ".frq";
+            string tempExt = Path.GetExtension(sourceTemp);
             string tempNoExt = sourceTemp.Substring(0, sourceTemp.Length - ext.Length);
+            string tempFrqExt = tempExt.Replace('.', '_') + ".frq";
             return new List<Tuple<string, string>>() {
-                Tuple.Create(noExt + frqExt, tempNoExt + frqExt),
+                Tuple.Create(noExt + frqExt, tempNoExt + tempFrqExt),
                 Tuple.Create(source + ".llsm", sourceTemp + ".llsm"),
                 Tuple.Create(source + ".uspec", sourceTemp + ".uspec"),
                 Tuple.Create(source + ".dio", sourceTemp + ".dio"),
@@ -53,32 +60,56 @@ namespace OpenUtau.Classic {
             };
         }
 
-        private static void CopyOrStamp(string source, string dest, bool required) {
-            lock (fileAccessLock) {
-                if (!File.Exists(source)) {
-                    if (required) {
-                        Log.Error($"Source file {source} not found");
-                        throw new FileNotFoundException($"Source file {source} not found");
-                    }
-                } else if (!File.Exists(dest)) {
-                    Log.Verbose($"Copy {source} to {dest}");
-                    File.Copy(source, dest);
+        private void CopyOrStamp(string source, string dest, bool required) {
+            if (!File.Exists(source)) {
+                if (required) {
+                    Log.Error($"Source file {source} not found");
+                    throw new FileNotFoundException($"Source file {source} not found");
+                }
+            } else if (!File.Exists(dest)) {
+                Log.Verbose($"Copy {source} to {dest}");
+                File.Copy(source, dest);
+            }
+        }
+
+        private void DecodeOrStamp(string source, string dest) {
+            if (!File.Exists(source)) {
+                Log.Error($"Source file {source} not found");
+                throw new FileNotFoundException($"Source file {source} not found");
+            }
+            if (File.Exists(dest)) {
+                return;
+            }
+            if (Path.GetExtension(source) == ".wav") {
+                Log.Verbose($"Copy {source} to {dest}");
+                File.Copy(source, dest);
+                return;
+            }
+            Log.Verbose($"Decode {source} to {dest}");
+            using (var outputStream = new FileStream(dest, FileMode.Create)) {
+                using (var waveStream = Core.Format.Wave.OpenFile(source)) {
+                    WaveFileWriter.WriteWavFileToStream(outputStream, waveStream);
                 }
             }
         }
 
-        public static void ReleaseSourceTemp() {
-            lock (fileAccessLock) {
-                var expire = DateTime.Now - TimeSpan.FromDays(7);
-                string path = PathManager.Inst.CachePath;
-                Log.Information($"ReleaseSourceTemp {path}");
-                Directory.EnumerateFiles(path, "*.*", SearchOption.TopDirectoryOnly)
-                    .Where(file =>
-                        !File.GetAttributes(file).HasFlag(FileAttributes.Directory)
-                            && File.GetCreationTime(file) < expire)
-                    .ToList()
-                    .ForEach(file => File.Delete(file));
-            }
+        public void ReleaseSourceTemp() {
+            var expire = DateTime.Now - TimeSpan.FromDays(7);
+            string path = PathManager.Inst.CachePath;
+            Log.Information($"ReleaseSourceTemp {path}");
+            Directory.EnumerateFiles(path, "*.*", SearchOption.TopDirectoryOnly)
+                .Where(file =>
+                    !File.GetAttributes(file).HasFlag(FileAttributes.Directory)
+                        && File.GetCreationTime(file) < expire)
+                .ToList()
+                .ForEach(file => File.Delete(file));
+        }
+
+        public static string GetFrqFile(string source) {
+            string ext = Path.GetExtension(source);
+            string noExt = source.Substring(0, source.Length - ext.Length);
+            string frqExt = ext.Replace('.', '_') + ".frq";
+            return noExt + frqExt;
         }
     }
 }

@@ -482,14 +482,6 @@ namespace OpenUtau.Plugin.Builtin {
             return GetTransitionBasicLengthMsByConstant();
         }
 
-        protected double GetTransitionBasicLengthMsByOto(string alias) {
-            if (alias != null && alias.Length > 0 && singer.Otos.TryGetValue(alias, out var oto)) {
-                return oto.Preutter * GetTempoNoteLengthFactor();
-            } else {
-                return GetTransitionBasicLengthMsByConstant();
-            }
-        }
-
         protected double GetTransitionBasicLengthMsByConstant() {
             return TransitionBasicLengthMs * GetTempoNoteLengthFactor();
         }
@@ -637,7 +629,6 @@ namespace OpenUtau.Plugin.Builtin {
                 return;
             }
             dictionaries[GetType()] = null;
-            var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
             OnAsyncInitStarted();
             Task.Run(() => {
                 try {
@@ -655,7 +646,9 @@ namespace OpenUtau.Plugin.Builtin {
                 } catch (Exception ex) {
                     Log.Error(ex, $"Failed to read dictionary {dictionaryName}");
                 }
-            }).ContinueWith((task) => { Init(); OnAsyncInitFinished(); }, scheduler);
+                Init();
+                OnAsyncInitFinished();
+            });
         }
 
         private string[] ApplyExtensions(string[] symbols, Note[] notes) {

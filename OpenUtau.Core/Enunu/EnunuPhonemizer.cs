@@ -11,7 +11,9 @@ using TinyPinyin;
 namespace OpenUtau.Core.Enunu {
     [Phonemizer("Enunu Phonemizer", "ENUNU")]
     public class EnunuPhonemizer : Phonemizer {
-        EnunuSinger singer;
+        readonly string PhonemizerType = "ENUNU";
+
+        protected EnunuSinger singer;
         Dictionary<Note[], Phoneme[]> partResult = new Dictionary<Note[], Phoneme[]>();
 
         struct TimingResult {
@@ -40,6 +42,7 @@ namespace OpenUtau.Core.Enunu {
             var scorePath = Path.Join(enutmpPath, $"score.lab");
             var timingPath = Path.Join(enutmpPath, $"timing.lab");
             var enunuNotes = NoteGroupsToEnunu(notes);
+            double bpm = timeAxis.GetBpmAtTick(notes[0][0].position);
             if (!File.Exists(scorePath) || !File.Exists(timingPath)) {
                 EnunuUtils.WriteUst(enunuNotes, bpm, singer, ustPath);
                 var response = EnunuClient.Inst.SendRequest<TimingResponse>(new string[] { "timing", ustPath });
@@ -60,12 +63,17 @@ namespace OpenUtau.Core.Enunu {
                 });
         }
 
-        static ulong HashNoteGroups(Note[][] notes) {
+        ulong HashNoteGroups(Note[][] notes) {
             using (var stream = new MemoryStream()) {
                 using (var writer = new BinaryWriter(stream)) {
+                    writer.Write(this.PhonemizerType);
+                    writer.Write(this.singer.Location);
                     foreach (var ns in notes) {
                         foreach (var n in ns) {
                             writer.Write(n.lyric);
+                            if(n.phoneticHint!= null) {
+                                writer.Write("["+n.phoneticHint+"]");
+                            }
                             writer.Write(n.position);
                             writer.Write(n.duration);
                             writer.Write(n.tone);
@@ -76,7 +84,7 @@ namespace OpenUtau.Core.Enunu {
             }
         }
 
-        static EnunuNote[] NoteGroupsToEnunu(Note[][] notes) {
+        protected virtual EnunuNote[] NoteGroupsToEnunu(Note[][] notes) {
             var result = new List<EnunuNote>();
             int position = 0;
             int index = 0;
@@ -129,11 +137,11 @@ namespace OpenUtau.Core.Enunu {
                     var line = reader.ReadLine();
                     var parts = line.Split();
                     if (parts.Length == 3 &&
-                        int.TryParse(parts[0], out var pos) &&
-                        int.TryParse(parts[1], out var end)) {
+                        long.TryParse(parts[0], out long pos) &&
+                        long.TryParse(parts[1], out long end)) {
                         phonemes.Add(new Phoneme {
                             phoneme = parts[2],
-                            position = pos,
+                            position = (int)(pos / 1000L),
                         });
                     }
                 }
@@ -145,7 +153,7 @@ namespace OpenUtau.Core.Enunu {
             if (partResult.TryGetValue(notes, out var phonemes)) {
                 return new Result {
                     phonemes = phonemes.Select(p => {
-                        double posMs = p.position * 0.0001;
+                        double posMs = p.position * 0.1;
                         p.position = MsToTick(posMs) - notes[0].position;
                         return p;
                     }).ToArray(),

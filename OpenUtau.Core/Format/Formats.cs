@@ -4,7 +4,7 @@ using OpenUtau.Classic;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core.Format {
-    public enum ProjectFormats { Unknown, Vsq3, Vsq4, Ust, Ustx, Midi};
+    public enum ProjectFormats { Unknown, Vsq3, Vsq4, Ust, Ustx, Midi };
 
     public static class Formats {
         const string ustMatch = "[#SETTING]";
@@ -102,9 +102,10 @@ namespace OpenUtau.Core.Format {
                     project.parts.Add(part);
                     part.trackNo += trackCount;
                 }
-                project.beatPerBar = loaded.beatPerBar;
-                project.beatUnit = loaded.beatUnit;
-                project.bpm = loaded.bpm;
+                project.timeSignatures.Clear();
+                project.timeSignatures.AddRange(loaded.timeSignatures);
+                project.tempos.Clear();
+                project.tempos.AddRange(loaded.tempos);
             }
             for (int i = initialTracks; i < project.tracks.Count; i++) {
                 project.tracks[i].AfterLoad(project);

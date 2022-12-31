@@ -14,14 +14,17 @@ using Serilog;
 namespace OpenUtau.App {
     public class App : Application {
         public override void Initialize() {
+            Log.Information("Initializing application.");
             AvaloniaXamlLoader.Load(this);
             InitializeCulture();
             InitializeTheme();
             InitOpenUtau();
             InitAudio();
+            Log.Information("Initialized application.");
         }
 
         public override void OnFrameworkInitializationCompleted() {
+            Log.Information("Framework initialization completed.");
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
                 desktop.MainWindow = new MainWindow();
             }
@@ -30,6 +33,7 @@ namespace OpenUtau.App {
         }
 
         public void InitializeCulture() {
+            Log.Information("Initializing culture.");
             var language = CultureInfo.InstalledUICulture.Name;
             if (!string.IsNullOrEmpty(Core.Util.Preferences.Default.Language)) {
                 language = Core.Util.Preferences.Default.Language;
@@ -39,6 +43,7 @@ namespace OpenUtau.App {
             // Force using InvariantCulture to prevent issues caused by culture dependent string conversion, especially for floating point numbers.
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
+            Log.Information("Initialized culture.");
         }
 
         public static void SetLanguage(string language) {
@@ -58,7 +63,9 @@ namespace OpenUtau.App {
         }
 
         static void InitializeTheme() {
+            Log.Information("Initializing theme.");
             SetTheme();
+            Log.Information("Initialized theme.");
         }
 
         public static void SetTheme() {
@@ -79,12 +86,16 @@ namespace OpenUtau.App {
         }
 
         public static void InitOpenUtau() {
-            Resamplers.Search();
+            Log.Information("Initializing OpenUtau.");
+            ToolsManager.Inst.Initialize();
             SingerManager.Inst.Initialize();
             DocManager.Inst.Initialize();
+            DocManager.Inst.PostOnUIThread = action => Avalonia.Threading.Dispatcher.UIThread.Post(action);
+            Log.Information("Initialized OpenUtau.");
         }
 
         public static void InitAudio() {
+            Log.Information("Initializing audio.");
             if (!OS.IsWindows() || Core.Util.Preferences.Default.PreferPortAudio) {
                 try {
                     PlaybackManager.Inst.AudioOutput = new Audio.PortAudioOutput();
@@ -98,6 +109,7 @@ namespace OpenUtau.App {
                     Log.Error(e2, "Failed to init NAudio");
                 }
             }
+            Log.Information("Initialized audio.");
         }
     }
 }

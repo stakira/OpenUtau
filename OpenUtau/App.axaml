@@ -19,8 +19,11 @@
         <ResourceInclude Source="/Strings/Strings.nl-NL.axaml"/>
         <ResourceInclude Source="/Strings/Strings.pl-PL.axaml"/>
         <ResourceInclude Source="/Strings/Strings.pt-BR.axaml"/>
+        <ResourceInclude Source="/Strings/Strings.ru-RU.axaml"/>
         <ResourceInclude Source="/Strings/Strings.vi-VN.axaml"/>
         <ResourceInclude Source="/Strings/Strings.zh-CN.axaml"/>
+        <ResourceInclude Source="/Strings/Strings.zh-TW.axaml"/>
+        <ResourceInclude Source="/Strings/Strings.th-TH.axaml"/>
         <ResourceInclude Source="/Strings/Strings.axaml"/>
         <ResourceInclude Source="/Colors/LightTheme.axaml"/>
         <ResourceInclude Source="/Colors/DarkTheme.axaml"/>

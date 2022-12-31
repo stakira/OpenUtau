@@ -9,22 +9,27 @@ using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Classic {
+    public class FileTrace {
+        public string file;
+        public int lineNumber;
+        public string line;
+        public FileTrace() { }
+        public FileTrace(FileTrace other) {
+            file = other.file;
+            lineNumber = other.lineNumber;
+            line = other.line;
+        }
+        public override string ToString() {
+            return $"\"{file}\"\nat line {lineNumber + 1}:\n\"{line}\"";
+        }
+    }
+
     public class VoicebankLoader {
         public const string kCharTxt = "character.txt";
         public const string kCharYaml = "character.yaml";
         public const string kEnuconfigYaml = "enuconfig.yaml";
         public const string kDiffconfigYaml = "diffconfig.yaml";
         public const string kOtoIni = "oto.ini";
-
-        class FileLoc {
-            public string file;
-            public int lineNumber;
-            public string line;
-
-            public override string ToString() {
-                return $"\"{file}\"\nat line {lineNumber + 1}:\n\"{line}\"";
-            }
-        }
 
         readonly string basePath;
 
@@ -264,7 +269,9 @@ namespace OpenUtau.Classic {
         public static OtoSet ParseOtoSet(string filePath, Encoding encoding) {
             try {
                 using (var stream = File.OpenRead(filePath)) {
-                    return ParseOtoSet(stream, filePath, encoding);
+                    var otoSet = ParseOtoSet(stream, filePath, encoding);
+                    AddAliasForMissingFiles(otoSet);
+                    return otoSet;
                 }
             } catch (Exception e) {
                 Log.Error(e, $"Failed to load {filePath}");
@@ -275,29 +282,36 @@ namespace OpenUtau.Classic {
         public static OtoSet ParseOtoSet(Stream stream, string filePath, Encoding encoding) {
             OtoSet otoSet;
             using (var reader = new StreamReader(stream, encoding)) {
-                var fileLoc = new FileLoc { file = filePath, lineNumber = 0 };
+                var trace = new FileTrace { file = filePath, lineNumber = 0 };
                 otoSet = new OtoSet() {
                     File = filePath,
                 };
                 while (!reader.EndOfStream) {
-                    var line = reader.ReadLine();
-                    fileLoc.line = line;
+                    var line = reader.ReadLine().Trim();
+                    trace.line = line;
                     try {
-                        Oto oto = ParseOto(line);
+                        Oto oto = ParseOto(line, trace);
                         if (oto != null) {
                             otoSet.Otos.Add(oto);
                         }
+                        if (!string.IsNullOrEmpty(oto.Error)) {
+                            Log.Error($"Failed to parse\n{trace}: {oto.Error}");
+                        }
                     } catch (Exception e) {
-                        Log.Error(e, $"Failed to parse\n{fileLoc}");
-                        otoSet.Errors.Add($"Oto error:\n{fileLoc}");
+                        Log.Error(e, $"Failed to parse\n{trace}");
                     }
-                    fileLoc.line = null;
-                    fileLoc.lineNumber++;
+                    trace.line = null;
+                    trace.lineNumber++;
                 }
             }
+            return otoSet;
+        }
+
+        static void AddAliasForMissingFiles(OtoSet otoSet) {
             // Use filename as alias if not in oto.
             var knownFiles = otoSet.Otos.Select(oto => oto.Wav).ToHashSet();
-            foreach (var wav in Directory.EnumerateFiles(Path.GetDirectoryName(filePath), "*.wav", SearchOption.TopDirectoryOnly)) {
+            var dir = Path.GetDirectoryName(otoSet.File);
+            foreach (var wav in Directory.EnumerateFiles(dir, "*.wav", SearchOption.TopDirectoryOnly)) {
                 var file = Path.GetFileName(wav);
                 if (!knownFiles.Contains(file)) {
                     var oto = new Oto {
@@ -308,49 +322,50 @@ namespace OpenUtau.Classic {
                     otoSet.Otos.Add(oto);
                 }
             }
-            return otoSet;
         }
 
-        public static Oto ParseOto(string line) {
+        static Oto ParseOto(string line, FileTrace trace) {
             const string format = "<wav>=<alias>,<offset>,<consonant>,<cutoff>,<preutter>,<overlap>";
+            var oto = new Oto {
+                FileTrace = new FileTrace(trace),
+            };
             if (string.IsNullOrWhiteSpace(line)) {
-                return null;
+                return oto;
             }
             var parts = line.Split('=');
             if (parts.Length < 2) {
-                throw new FileFormatException($"Line does not match format {format}.");
+                oto.Error = $"Line does not match format {format}.";
+                return oto;
             }
-            var wav = parts[0].Trim();
+            oto.Wav = parts[0].Trim();
             parts = parts[1].Split(',');
-            var result = new Oto {
-                Wav = wav,
-                Alias = parts[0].Trim()
-            };
-            if (string.IsNullOrEmpty(result.Alias)) {
-                var ext = Path.GetExtension(wav);
-                if (!string.IsNullOrEmpty(ext)) {
-                    result.Alias = wav.Replace(ext, "");
-                } else {
-                    result.Alias = wav;
-                }
+            oto.Alias = parts.ElementAtOrDefault(0);
+            if (string.IsNullOrEmpty(oto.Alias)) {
+                oto.Alias = RemoveExtension(oto.Wav);
             }
-            result.Phonetic = result.Alias;
-            if (!ParseDouble(parts.Length < 2 ? null : parts[1], out result.Offset)) {
-                throw new FileFormatException($"Failed to parse offset. Format is {format}.");
+            oto.Phonetic = oto.Alias;
+            if (!ParseDouble(parts.ElementAtOrDefault(1), out oto.Offset)) {
+                oto.Error = $"{trace}\nFailed to parse offset. Format is {format}.";
+                return oto;
             }
-            if (!ParseDouble(parts.Length < 3 ? null : parts[2], out result.Consonant)) {
-                throw new FileFormatException($"Failed to parse consonant. Format is {format}.");
+            if (!ParseDouble(parts.ElementAtOrDefault(2), out oto.Consonant)) {
+                oto.Error = $"{trace}\nFailed to parse consonant. Format is {format}.";
+                return oto;
             }
-            if (!ParseDouble(parts.Length < 4 ? null : parts[3], out result.Cutoff)) {
-                throw new FileFormatException($"Failed to parse cutoff. Format is {format}.");
+            if (!ParseDouble(parts.ElementAtOrDefault(3), out oto.Cutoff)) {
+                oto.Error = $"{trace}\nFailed to parse cutoff. Format is {format}.";
+                return oto;
             }
-            if (!ParseDouble(parts.Length < 5 ? null : parts[4], out result.Preutter)) {
-                throw new FileFormatException($"Failed to parse preutter. Format is {format}.");
+            if (!ParseDouble(parts.ElementAtOrDefault(4), out oto.Preutter)) {
+                oto.Error = $"{trace}\nFailed to parse preutter. Format is {format}.";
+                return oto;
             }
-            if (!ParseDouble(parts.Length < 6 ? null : parts[5], out result.Overlap)) {
-                throw new FileFormatException($"Failed to parse overlap. Format is {format}.");
+            if (!ParseDouble(parts.ElementAtOrDefault(5), out oto.Overlap)) {
+                oto.Error = $"{trace}\nFailed to parse overlap. Format is {format}.";
+                return oto;
             }
-            return result;
+            oto.IsValid = true;
+            return oto;
         }
 
         static bool ParseDouble(string s, out double value) {
@@ -359,6 +374,63 @@ namespace OpenUtau.Classic {
                 return true;
             }
             return double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out value);
+        }
+
+        public static void WriteOtoSets(Voicebank voicebank) {
+            foreach (var otoSet in voicebank.OtoSets) {
+                using (var stream = File.Open(otoSet.File, FileMode.Create, FileAccess.Write)) {
+                    WriteOtoSet(otoSet, stream, voicebank.TextFileEncoding);
+                }
+                Log.Information($"Write oto set {otoSet.Name}");
+            }
+        }
+
+        public static void WriteOtoSet(OtoSet otoSet, Stream stream, Encoding encoding) {
+            using (var writer = new StreamWriter(stream, encoding)) {
+                foreach (var oto in otoSet.Otos) {
+                    if (!oto.IsValid) {
+                        writer.Write(oto.FileTrace.line);
+                        writer.Write('\n');
+                        continue;
+                    }
+                    writer.Write(oto.Wav);
+                    writer.Write('=');
+                    if (oto.Alias != RemoveExtension(oto.Wav)) {
+                        writer.Write(oto.Alias);
+                    }
+                    writer.Write(',');
+                    if (oto.Offset != 0) {
+                        writer.Write(oto.Offset);
+                    }
+                    writer.Write(',');
+                    if (oto.Consonant != 0) {
+                        writer.Write(oto.Consonant);
+                    }
+                    writer.Write(',');
+                    if (oto.Cutoff != 0) {
+                        writer.Write(oto.Cutoff);
+                    }
+                    writer.Write(',');
+                    if (oto.Preutter != 0) {
+                        writer.Write(oto.Preutter);
+                    }
+                    writer.Write(',');
+                    if (oto.Overlap != 0) {
+                        writer.Write(oto.Overlap);
+                    }
+                    writer.Write('\n');
+                }
+                writer.Flush();
+            }
+        }
+
+        static string RemoveExtension(string filePath) {
+            var ext = Path.GetExtension(filePath);
+            if (!string.IsNullOrEmpty(ext)) {
+                return filePath.Substring(0, filePath.Length - ext.Length);
+            } else {
+                return filePath;
+            }
         }
     }
 }

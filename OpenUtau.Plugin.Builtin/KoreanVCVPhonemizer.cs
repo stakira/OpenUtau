@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -7,7 +7,7 @@ using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Plugin.Builtin
 {
-	[Phonemizer("Korean VCV Phonemizer", "KO VCV", "ldc")]
+	[Phonemizer("Korean VCV Phonemizer", "KO VCV", "ldc", language: "KO")]
 
 	public class KoreanVCVPhonemizer : Phonemizer
 	{
@@ -115,6 +115,9 @@ namespace OpenUtau.Plugin.Builtin
 
 		// Store singer
 		public override void SetSinger(USinger singer) => this.singer = singer;
+        
+        // Legacy mapping. Might adjust later to new mapping style.
+		public override bool LegacyMapping => true;
 
 		public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours)
 		{

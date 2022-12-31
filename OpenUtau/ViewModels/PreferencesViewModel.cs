@@ -30,27 +30,45 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public int LockStartTime { get; set; }
         public string AdditionalSingersPath => PathManager.Inst.AdditionalSingersPath;
         [Reactive] public int InstallToAdditionalSingersPath { get; set; }
-        public List<IResampler>? Resamplers { get; }
-        public IResampler? ExportResampler {
-            get => exportResampler;
-            set => this.RaiseAndSetIfChanged(ref exportResampler, value);
-        }
-        [Reactive] public int PhaseCompensation { get; set; }
         [Reactive] public int PreRender { get; set; }
+        [Reactive] public int NumRenderThreads { get; set; }
+        [Reactive] public bool HighThreads { get; set; }
         [Reactive] public int Theme { get; set; }
         [Reactive] public int ShowPortrait { get; set; }
-        public List<CultureInfo?>? Languages { get; }
+        [Reactive] public int ShowGhostNotes { get; set; }
+        [Reactive] public int OtoEditor { get; set; }
+        public string VLabelerPath => Preferences.Default.VLabelerPath;
+        public int LogicalCoreCount {
+            get => Environment.ProcessorCount; 
+        }
+        public int SafeMaxThreadCount { 
+            get => Math.Min(8, LogicalCoreCount / 2);
+        }
+
+        public List<CultureInfo>? Languages { get; }
         public CultureInfo? Language {
             get => language;
             set => this.RaiseAndSetIfChanged(ref language, value);
         }
-        public bool MoresamplerSelected => moresamplerSelected.Value;
+        public class LyricsHelperOption {
+            public readonly Type klass;
+            public LyricsHelperOption(Type klass) {
+                this.klass = klass;
+            }
+            public override string ToString() {
+                return klass.Name;
+            }
+        }
+        public List<LyricsHelperOption> LyricsHelpers { get; } =
+            ActiveLyricsHelper.Inst.Available
+                .Select(klass => new LyricsHelperOption(klass))
+                .ToList();
+        [Reactive] public LyricsHelperOption? LyricsHelper { get; set; }
+        [Reactive] public int LyricsHelperBrackets { get; set; }
 
         private List<AudioOutputDevice>? audioOutputDevices;
         private AudioOutputDevice? audioOutputDevice;
-        private IResampler? exportResampler;
         private CultureInfo? language;
-        private readonly ObservableAsPropertyHelper<bool> moresamplerSelected;
 
         public PreferencesViewModel() {
             var audioOutput = PlaybackManager.Inst.AudioOutput;
@@ -67,16 +85,7 @@ namespace OpenUtau.App.ViewModels {
             PlayPosMarkerMargin = Preferences.Default.PlayPosMarkerMargin;
             LockStartTime = Preferences.Default.LockStartTime;
             InstallToAdditionalSingersPath = Preferences.Default.InstallToAdditionalSingersPath ? 1 : 0;
-            Classic.Resamplers.Search();
-            Resamplers = Classic.Resamplers.GetResamplers();
-            if (Resamplers.Count > 0) {
-                int index = Resamplers.FindIndex(resampler => resampler.Name == Preferences.Default.Resampler);
-                if (index >= 0) {
-                    exportResampler = Resamplers[index];
-                } else {
-                    exportResampler = null;
-                }
-            }
+            ToolsManager.Inst.Initialize();
             var pattern = new Regex(@"Strings\.([\w-]+)\.axaml");
             Languages = Application.Current.Resources.MergedDictionaries
                 .Select(res => (ResourceInclude)res)
@@ -91,10 +100,14 @@ namespace OpenUtau.App.ViewModels {
             Language = string.IsNullOrEmpty(Preferences.Default.Language)
                 ? null
                 : CultureInfo.GetCultureInfo(Preferences.Default.Language);
-            PhaseCompensation = Preferences.Default.PhaseCompensation;
             PreRender = Preferences.Default.PreRender ? 1 : 0;
+            NumRenderThreads = Preferences.Default.NumRenderThreads;
             Theme = Preferences.Default.Theme;
             ShowPortrait = Preferences.Default.ShowPortrait ? 1 : 0;
+            ShowGhostNotes = Preferences.Default.ShowGhostNotes ? 1 : 0;
+            LyricsHelper = LyricsHelpers.FirstOrDefault(option => option.klass.Equals(ActiveLyricsHelper.Inst.GetPreferred()));
+            LyricsHelperBrackets = Preferences.Default.LyricsHelperBrackets ? 1 : 0;
+            OtoEditor = Preferences.Default.OtoEditor;
 
             this.WhenAnyValue(vm => vm.AudioOutputDevice)
                 .WhereNotNull()
@@ -104,7 +117,7 @@ namespace OpenUtau.App.ViewModels {
                         try {
                             PlaybackManager.Inst.AudioOutput.SelectDevice(device.guid, device.deviceNumber);
                         } catch (Exception e) {
-                            DocManager.Inst.ExecuteCmd(new UserMessageNotification($"Failed to select device {device.name}\n{e}"));
+                            DocManager.Inst.ExecuteCmd(new ErrorMessageNotification($"Failed to select device {device.name}", e));
                         }
                     }
                 });
@@ -133,24 +146,6 @@ namespace OpenUtau.App.ViewModels {
                     Preferences.Default.InstallToAdditionalSingersPath = index > 0;
                     Preferences.Save();
                 });
-            this.WhenAnyValue(vm => vm.ExportResampler)
-                .WhereNotNull()
-                .Subscribe(resampler => {
-                    if (resampler != null) {
-                        Preferences.Default.Resampler = resampler!.Name;
-                        Preferences.Save();
-                        resampler!.CheckPermissions();
-                    }
-                });
-            this.WhenAnyValue(vm => vm.ExportResampler)
-                .Select(engine =>
-                    (engine?.Name?.Contains("moresampler", StringComparison.InvariantCultureIgnoreCase) ?? false))
-                .ToProperty(this, x => x.MoresamplerSelected, out moresamplerSelected);
-            this.WhenAnyValue(vm => vm.PhaseCompensation)
-                .Subscribe(phaseComp => {
-                    Preferences.Default.PhaseCompensation = phaseComp;
-                    Preferences.Save();
-                });
             this.WhenAnyValue(vm => vm.PreRender)
                 .Subscribe(preRender => {
                     Preferences.Default.PreRender = preRender > 0;
@@ -173,6 +168,33 @@ namespace OpenUtau.App.ViewModels {
                     Preferences.Default.ShowPortrait = index > 0;
                     Preferences.Save();
                 });
+            this.WhenAnyValue(vm => vm.ShowGhostNotes)
+                .Subscribe(index => {
+                    Preferences.Default.ShowGhostNotes = index > 0;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.LyricsHelper)
+                .Subscribe(option => {
+                    ActiveLyricsHelper.Inst.Set(option?.klass);
+                    Preferences.Default.LyricHelper = option?.klass?.Name ?? string.Empty;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.LyricsHelperBrackets)
+                .Subscribe(index => {
+                    Preferences.Default.LyricsHelperBrackets = index > 0;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.OtoEditor)
+                .Subscribe(index => {
+                    Preferences.Default.OtoEditor = index;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.NumRenderThreads)
+                .Subscribe(index => {
+                    Preferences.Default.NumRenderThreads = index;
+                    HighThreads = index > SafeMaxThreadCount ? true : false;
+                    Preferences.Save();
+                });
         }
 
         public void TestAudioOutputDevice() {
@@ -185,7 +207,7 @@ namespace OpenUtau.App.ViewModels {
                 Directory.CreateDirectory(path);
                 OS.OpenFolder(path);
             } catch (Exception e) {
-                DocManager.Inst.ExecuteCmd(new UserMessageNotification(e.ToString()));
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
             }
         }
 
@@ -193,6 +215,12 @@ namespace OpenUtau.App.ViewModels {
             Preferences.Default.AdditionalSingerPath = path;
             Preferences.Save();
             this.RaisePropertyChanged(nameof(AdditionalSingersPath));
+        }
+
+        public void SetVLabelerPath(string path) {
+            Preferences.Default.VLabelerPath = path;
+            Preferences.Save();
+            this.RaisePropertyChanged(nameof(VLabelerPath));
         }
     }
 }

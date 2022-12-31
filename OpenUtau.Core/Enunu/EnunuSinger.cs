@@ -9,7 +9,7 @@ using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Core.Enunu {
-    class EnunuSinger : USinger {
+    public class EnunuSinger : USinger {
         public override string Id => voicebank.Id;
         public override string Name => voicebank.Name;
         public override USingerType SingerType => voicebank.SingerType;
@@ -28,23 +28,49 @@ namespace OpenUtau.Core.Enunu {
         public override string DefaultPhonemizer => voicebank.DefaultPhonemizer;
         public override Encoding TextFileEncoding => voicebank.TextFileEncoding;
         public override IList<USubbank> Subbanks => subbanks;
-        public override Dictionary<string, UOto> Otos => otos;
 
         Voicebank voicebank;
         EnunuConfig enuconfig;
         List<string> errors = new List<string>();
         List<USubbank> subbanks = new List<USubbank>();
-        Dictionary<string, UOto> otos = new Dictionary<string, UOto>();
 
         HashSet<string> phonemes = new HashSet<string>();
+        HashSet<string> timbres = new HashSet<string>();
         Dictionary<string, string[]> table = new Dictionary<string, string[]>();
 
         public byte[] avatarData;
 
         public EnunuSinger(Voicebank voicebank) {
             this.voicebank = voicebank;
+            found = true;
+        }
+
+        public override void EnsureLoaded() {
+            if (Loaded) {
+                return;
+            }
+            Reload();
+        }
+
+        public override void Reload() {
+            if (!Found) {
+                return;
+            }
+            try {
+                voicebank.Reload();
+                Load();
+                loaded = true;
+            } catch (Exception e) {
+                Log.Error(e, $"Failed to load {voicebank.File}");
+            }
+        }
+
+        void Load() {
             enuconfig = EnunuConfig.Load(this);
 
+            phonemes.Clear();
+            timbres.Clear();
+            table.Clear();
             try {
                 var tablePath = Path.Join(Location, enuconfig.tablePath);
                 foreach (var line in File.ReadAllLines(tablePath)) {
@@ -59,27 +85,44 @@ namespace OpenUtau.Core.Enunu {
             }
             try {
                 var hedPath = Path.Join(Location, enuconfig.questionPath);
-                var pattern = new Regex(@"\{(.*)\}");
+                var pattern = new Regex("^\\s*QS\\s+\\\"(.*)\\\"\\s+\\{(.*)}");
                 foreach (var line in File.ReadAllLines(hedPath)) {
-                    if (!line.StartsWith("QS ")) {
-                        continue;
-                    }
                     var m = pattern.Match(line);
                     if (!m.Success) {
                         continue;
                     }
-                    var g = m.Groups[1].Value;
-                    foreach (var p in g.Split(',')) {
-                        var exp = p.Trim();
-                        if (exp.StartsWith("*^") && exp.EndsWith("-*") ||
-                            exp.StartsWith("*-") && exp.EndsWith("+*") ||
-                            exp.StartsWith("*+") && exp.EndsWith("=*")) {
-                            phonemes.Add(exp.Substring(2, exp.Length - 4));
+                    foreach (var p in m.Groups[2].Value.Split(',')) {
+                        var value = p.Trim();
+                        if (value.StartsWith("*^") && value.EndsWith("-*") ||
+                            value.StartsWith("*-") && value.EndsWith("+*") ||
+                            value.StartsWith("*+") && value.EndsWith("=*")) {
+                            phonemes.Add(value.Substring(2, value.Length - 4));
+                        } else if (value.StartsWith("*^") && value.EndsWith("_*")) {
+                            timbres.Add(value.Substring(2, value.Length - 4));
                         }
                     }
                 }
             } catch (Exception e) {
                 Log.Error(e, $"Failed to load hed for {Name}");
+            }
+
+            subbanks.Clear();
+            if (voicebank.Subbanks == null || voicebank.Subbanks.Count == 0 ||
+                voicebank.Subbanks.Count == 1 && string.IsNullOrEmpty(voicebank.Subbanks[0].Color)) {
+                subbanks.Add(new USubbank(new Subbank() {
+                    Prefix = string.Empty,
+                    Suffix = string.Empty,
+                    ToneRanges = new[] { "C1-B7" },
+                }));
+                subbanks.AddRange(timbres.Select(flag => new USubbank(new Subbank() {
+                    Color = flag,
+                    Prefix = string.Empty,
+                    Suffix = flag,
+                    ToneRanges = new[] { "C1-B7" },
+                })));
+            } else {
+                subbanks.AddRange(voicebank.Subbanks
+                    .Select(subbank => new USubbank(subbank)));
             }
 
             if (Avatar != null && File.Exists(Avatar)) {
@@ -98,26 +141,16 @@ namespace OpenUtau.Core.Enunu {
                 avatarData = null;
                 Log.Error("Avatar can't be found");
             }
-
-            found = true;
-            loaded = true;
         }
 
-        public override bool TryGetMappedOto(string phoneme, int tone, out UOto oto) {
+        public override bool TryGetOto(string phoneme, out UOto oto) {
             var parts = phoneme.Split();
             if (parts.All(p => phonemes.Contains(p))) {
-                oto = new UOto() {
-                    Alias = phoneme,
-                    Phonetic = phoneme,
-                };
+                oto = UOto.OfDummy(phoneme);
                 return true;
             }
             oto = null;
             return false;
-        }
-
-        public override bool TryGetMappedOto(string phoneme, int tone, string color, out UOto oto) {
-            return TryGetMappedOto(phoneme, tone, out oto);
         }
 
         public override IEnumerable<UOto> GetSuggestions(string text) {
@@ -127,10 +160,7 @@ namespace OpenUtau.Core.Enunu {
             bool all = string.IsNullOrEmpty(text);
             return table.Keys
                 .Where(key => all || key.Contains(text))
-                .Select(key => new UOto() {
-                    Alias = key,
-                    Phonetic = key,
-                });
+                .Select(key => UOto.OfDummy(key));
         }
 
         public override byte[] LoadPortrait() {

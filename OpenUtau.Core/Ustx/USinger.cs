@@ -1,30 +1,71 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Text;
 using OpenUtau.Classic;
 
 namespace OpenUtau.Core.Ustx {
-    public class UOto {
-        public string Alias { get; set; }
-        public string Phonetic { get; set; }
-        public string Set { get; set; }
-        public string Color { get; set; }
-        public string Prefix { get; set; }
-        public string Suffix { get; set; }
-        public SortedSet<int> ToneSet { get; set; }
-        public string File { get; set; }
-        public string DisplayFile { get; set; }
-        public double Offset { get; set; }
-        public double Consonant { get; set; }
-        public double Cutoff { get; set; }
-        public double Preutter { get; set; }
-        public double Overlap { get; set; }
-        public List<string> SearchTerms { private set; get; }
+    public class UOto : INotifyPropertyChanged {
+        public string Alias { get; private set; }
+        public string Phonetic { get; private set; }
+        public string Set { get; private set; }
+        public string Color { get; private set; }
+        public string Prefix { get; private set; }
+        public string Suffix { get; private set; }
+        public SortedSet<int> ToneSet { get; private set; }
+        public string File { get; private set; }
+        public string DisplayFile { get; private set; }
+        public double Offset {
+            get => offset;
+            set {
+                offset = Math.Max(0, Math.Round(value, 3));
+                NotifyPropertyChanged(nameof(Offset));
+            }
+        }
+        public double Consonant {
+            get => consonant;
+            set {
+                consonant = Math.Max(0, Math.Round(value, 3));
+                NotifyPropertyChanged(nameof(Consonant));
+            }
+        }
+        public double Cutoff {
+            get => cutoff;
+            set {
+                cutoff = Math.Round(value, 3);
+                NotifyPropertyChanged(nameof(Cutoff));
+            }
+        }
+        public double Preutter {
+            get => preutter;
+            set {
+                preutter = Math.Max(0, Math.Round(value, 3));
+                NotifyPropertyChanged(nameof(Preutter));
+            }
+        }
+        public double Overlap {
+            get => overlap;
+            set {
+                overlap = Math.Round(value, 3);
+                NotifyPropertyChanged(nameof(Overlap));
+            }
+        }
+        public List<string> SearchTerms { get; private set; }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private Oto oto;
+        private double offset;
+        private double consonant;
+        private double cutoff;
+        private double preutter;
+        private double overlap;
 
         public UOto() { }
 
         public UOto(Oto oto, UOtoSet set, USubbank subbank) {
+            this.oto = oto;
             Alias = oto.Alias;
             Phonetic = oto.Phonetic;
             Set = set.Name;
@@ -41,6 +82,23 @@ namespace OpenUtau.Core.Ustx {
             Overlap = oto.Overlap;
 
             SearchTerms = new List<string>();
+        }
+
+        public static UOto OfDummy(string alias) => new UOto() {
+            Alias = alias,
+            Phonetic = alias,
+        };
+
+        public void WriteBack() {
+            oto.Offset = offset;
+            oto.Consonant = consonant;
+            oto.Cutoff = cutoff;
+            oto.Preutter = preutter;
+            oto.Overlap = overlap;
+        }
+
+        private void NotifyPropertyChanged(string propertyName = "") {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         public override string ToString() => Alias;
@@ -120,7 +178,9 @@ namespace OpenUtau.Core.Ustx {
 
     [Flags] public enum USingerType { Classic = 0x1, Enunu = 0x2, Vogen = 0x4, DiffSinger=0x5 }
 
-    public class USinger {
+    public class USinger : INotifyPropertyChanged {
+        protected static readonly List<UOto> emptyOtos = new List<UOto>();
+
         public virtual string Id { get; }
         public virtual string Name => name;
         public virtual USingerType SingerType { get; }
@@ -139,13 +199,23 @@ namespace OpenUtau.Core.Ustx {
         public virtual string DefaultPhonemizer { get; }
         public virtual Encoding TextFileEncoding => Encoding.UTF8;
         public virtual IList<USubbank> Subbanks { get; }
-        public virtual Dictionary<string, UOto> Otos { get; }
+        public virtual IList<UOto> Otos => emptyOtos;
 
         public bool Found => found;
         public bool Loaded => found && loaded;
+        public bool OtoDirty {
+            get => otoDirty;
+            set {
+                otoDirty = value;
+                NotifyPropertyChanged(nameof(OtoDirty));
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         protected bool found;
         protected bool loaded;
+        protected bool otoDirty;
 
         private string name;
 
@@ -153,16 +223,18 @@ namespace OpenUtau.Core.Ustx {
 
         public virtual void EnsureLoaded() { }
         public virtual void Reload() { }
-        public virtual bool TryGetMappedOto(string phoneme, int tone, out UOto oto) {
+        public virtual void Save() { }
+        public virtual bool TryGetOto(string phoneme, out UOto oto) {
             oto = default;
             return false;
+        }
+        public virtual bool TryGetMappedOto(string phoneme, int tone, out UOto oto) {
+            return TryGetOto(phoneme, out oto);
         }
         public virtual bool TryGetMappedOto(string phoneme, int tone, string color, out UOto oto) {
-            oto = default;
-            return false;
+            return TryGetOto(phoneme, out oto);
         }
 
-        private static readonly List<UOto> emptyOtos = new List<UOto>();
         public virtual IEnumerable<UOto> GetSuggestions(string text) { return emptyOtos; }
         public virtual byte[] LoadPortrait() => null;
         public override string ToString() => Name;
@@ -173,6 +245,10 @@ namespace OpenUtau.Core.Ustx {
                 loaded = false,
                 name = name,
             };
+        }
+
+        private void NotifyPropertyChanged(string propertyName = "") {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

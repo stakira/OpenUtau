@@ -116,7 +116,7 @@ namespace OpenUtau.App.ViewModels {
                 return;
             }
             var readerOptions = new ReaderOptions {
-                ArchiveEncoding = new ArchiveEncoding(ArchiveEncoding, ArchiveEncoding),
+                ArchiveEncoding = new ArchiveEncoding { Forced = ArchiveEncoding },
             };
             using (var archive = ArchiveFactory.Open(ArchiveFilePath, readerOptions)) {
                 textItems.Clear();
@@ -135,7 +135,7 @@ namespace OpenUtau.App.ViewModels {
                 return;
             }
             var readerOptions = new ReaderOptions {
-                ArchiveEncoding = new ArchiveEncoding(ArchiveEncoding, ArchiveEncoding),
+                ArchiveEncoding = new ArchiveEncoding { Forced = ArchiveEncoding },
             };
             using (var archive = ArchiveFactory.Open(ArchiveFilePath, readerOptions)) {
                 textItems.Clear();
@@ -242,8 +242,10 @@ namespace OpenUtau.App.ViewModels {
                     }, archiveEncoding, textEncoding);
                     installer.LoadArchive(archiveFilePath);
                 } finally {
-                    DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, ""));
-                    DocManager.Inst.ExecuteCmd(new SingersChangedNotification());
+                    new Task(() => {
+                        DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, ""));
+                        DocManager.Inst.ExecuteCmd(new SingersChangedNotification());
+                    }).Start(DocManager.Inst.MainScheduler);
                 }
             });
         }

@@ -15,6 +15,7 @@ using Serilog;
 
 namespace OpenUtau.Core {
     public struct ValidateOptions {
+        public bool SkipTiming;
         public UPart Part;
         public bool SkipPhonemizer;
         public bool SkipPhoneme;
@@ -30,6 +31,8 @@ namespace OpenUtau.Core {
 
         public int playPosTick = 0;
 
+        public TaskScheduler MainScheduler => mainScheduler;
+        public Action<Action> PostOnUIThread { get; set; }
         public Plugin[] Plugins { get; private set; }
         public PhonemizerFactory[] PhonemizerFactories { get; private set; }
         public UProject Project { get; private set; }
@@ -67,7 +70,7 @@ namespace OpenUtau.Core {
             var phonemizerFactories = new List<PhonemizerFactory>();
             var files = new List<string>();
             try {
-                files.Add(Path.Combine(Path.GetDirectoryName(GetType().Assembly.Location), kBuiltin));
+                files.Add(Path.Combine(Path.GetDirectoryName(AppContext.BaseDirectory), kBuiltin));
                 Directory.CreateDirectory(PathManager.Inst.PluginsPath);
                 string oldBuiltin = Path.Combine(PathManager.Inst.PluginsPath, kBuiltin);
                 if (File.Exists(oldBuiltin)) {
@@ -109,9 +112,9 @@ namespace OpenUtau.Core {
 
         readonly Deque<UCommandGroup> undoQueue = new Deque<UCommandGroup>();
         readonly Deque<UCommandGroup> redoQueue = new Deque<UCommandGroup>();
-        UCommandGroup undoGroup = null;
-        UCommandGroup savedPoint = null;
-        UCommandGroup autosavedPoint = null;
+        UCommandGroup? undoGroup = null;
+        UCommandGroup? savedPoint = null;
+        UCommandGroup? autosavedPoint = null;
 
         public bool ChangesSaved {
             get {
@@ -120,13 +123,23 @@ namespace OpenUtau.Core {
             }
         }
 
+
         private void CrashSave() {
-            if (Project == null || string.IsNullOrEmpty(Project.FilePath)) {
-                return;
-            }
             try {
-                string dir = Path.GetDirectoryName(Project.FilePath);
-                string filename = Path.GetFileNameWithoutExtension(Project.FilePath);
+                if (Project == null) {
+                    Log.Warning("Crash save project is null.");
+                    return;
+                }
+                bool untitled = string.IsNullOrEmpty(Project.FilePath);
+                if (untitled) {
+                    Directory.CreateDirectory(PathManager.Inst.BackupsPath);
+                }
+                string dir = untitled
+                    ? PathManager.Inst.BackupsPath
+                    : Path.GetDirectoryName(Project.FilePath);
+                string filename = untitled
+                    ? "Untitled"
+                    : Path.GetFileNameWithoutExtension(Project.FilePath);
                 string backup = Path.Join(dir, filename + "-backup.ustx");
                 Log.Information($"Saving backup {backup}.");
                 Format.Ustx.Save(backup, Project);
@@ -158,19 +171,22 @@ namespace OpenUtau.Core {
         }
 
         public void ExecuteCmd(UCommand cmd) {
-            if (mainThread != Thread.CurrentThread && !(cmd is ProgressBarNotification)) {
-                Log.Error($"{cmd} not on main thread");
+            if (mainThread != Thread.CurrentThread) {
+                if (!(cmd is ProgressBarNotification)) {
+                    Log.Warning($"{cmd} not on main thread");
+                }
+                PostOnUIThread(() => ExecuteCmd(cmd));
+                return;
             }
             if (cmd is UNotification) {
-                if (cmd is SaveProjectNotification) {
-                    var _cmd = cmd as SaveProjectNotification;
+                if (cmd is SaveProjectNotification saveProjectNotif) {
                     if (undoQueue.Count > 0) {
                         savedPoint = undoQueue.Last();
                     }
-                    if (string.IsNullOrEmpty(_cmd.Path)) {
+                    if (string.IsNullOrEmpty(saveProjectNotif.Path)) {
                         Format.Ustx.Save(Project.FilePath, Project);
                     } else {
-                        Format.Ustx.Save(_cmd.Path, Project);
+                        Format.Ustx.Save(saveProjectNotif.Path, Project);
                     }
                 } else if (cmd is LoadProjectNotification notification) {
                     undoQueue.Clear();
@@ -180,18 +196,20 @@ namespace OpenUtau.Core {
                     autosavedPoint = null;
                     Project = notification.project;
                     playPosTick = 0;
-                } else if (cmd is SetPlayPosTickNotification) {
-                    var _cmd = cmd as SetPlayPosTickNotification;
-                    playPosTick = _cmd.playPosTick;
+                } else if (cmd is SetPlayPosTickNotification setPlayPosTickNotif) {
+                    playPosTick = setPlayPosTickNotif.playPosTick;
                 } else if (cmd is SingersChangedNotification) {
                     SingerManager.Inst.SearchAllSingers();
                 } else if (cmd is ValidateProjectNotification) {
                     Project.ValidateFull();
-                } else if (cmd is SingersRefreshedNotification) {
+                } else if (cmd is SingersRefreshedNotification || cmd is OtoChangedNotification) {
                     foreach (var track in Project.tracks) {
                         track.OnSingerRefreshed();
                     }
                     Project.ValidateFull();
+                    if (cmd is OtoChangedNotification) {
+                        ExecuteCmd(new PreRenderNotification());
+                    }
                 }
                 Publish(cmd);
                 if (!cmd.Silent) {

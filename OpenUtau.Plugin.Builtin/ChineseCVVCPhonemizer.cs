@@ -9,7 +9,7 @@ using Serilog;
 using TinyPinyin;
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("Chinese CVVC Phonemizer", "ZH CVVC")]
+    [Phonemizer("Chinese CVVC Phonemizer", "ZH CVVC", language: "ZH")]
     public class ChineseCVVCPhonemizer : Phonemizer {
         private Dictionary<string, string> vowels = new Dictionary<string, string>();
         private Dictionary<string, string> consonants = new Dictionary<string, string>();
@@ -34,26 +34,17 @@ namespace OpenUtau.Plugin.Builtin {
             var attr0 = notes[0].phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
             var attr1 = notes[0].phonemeAttributes?.FirstOrDefault(attr => attr.index == 1) ?? default;
             if (lyric == "-" || lyric.ToLowerInvariant() == "r") {
-                return new Result {
-                    phonemes = new Phoneme[] {
-                        new Phoneme() {
-                            phoneme = $"{prevVowel} R",
-                        },
-                    },
-                };
+                if (singer.TryGetMappedOto($"{prevVowel} R", notes[0].tone + attr0.toneShift, attr0.voiceColor, out var oto1)) {
+                    return MakeSimpleResult(oto1.Alias);
+                }
+                return MakeSimpleResult($"{prevVowel} R");
             }
             int totalDuration = notes.Sum(n => n.duration);
             if (singer.TryGetMappedOto($"{prevVowel} {lyric}", notes[0].tone + attr0.toneShift, attr0.voiceColor, out var oto)) {
-                return new Result {
-                    phonemes = new Phoneme[] {
-                        new Phoneme() {
-                            phoneme = oto.Alias,
-                        },
-                    },
-                };
+                return MakeSimpleResult(oto.Alias);
             }
             int vcLen = 120;
-            if (singer.TryGetMappedOto($"{lyric}", notes[0].tone + attr0.toneShift, attr0.voiceColor, out var cvOto)) {
+            if (singer.TryGetMappedOto(lyric, notes[0].tone + attr0.toneShift, attr0.voiceColor, out var cvOto)) {
                 vcLen = MsToTick(cvOto.Preutter);
                 if (cvOto.Overlap == 0 && vcLen < 120) {
                     vcLen = Math.Min(120, vcLen * 2); // explosive consonant with short preutter.
@@ -67,18 +58,12 @@ namespace OpenUtau.Plugin.Builtin {
                             position = -vcLen,
                         },
                         new Phoneme() {
-                            phoneme = cvOto.Alias ?? $"{lyric}",
+                            phoneme = cvOto?.Alias ?? lyric,
                         },
                     },
                 };
             }
-            return new Result {
-                phonemes = new Phoneme[] {
-                    new Phoneme() {
-                        phoneme = lyric,
-                    },
-                },
-            };
+            return MakeSimpleResult(cvOto?.Alias ?? lyric);
         }
 
         public override void SetSinger(USinger singer) {

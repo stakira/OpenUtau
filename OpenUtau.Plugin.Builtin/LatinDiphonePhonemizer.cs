@@ -58,28 +58,26 @@ namespace OpenUtau.Plugin.Builtin {
 
             // Get the symbols of previous note.
             var prevSymbols = prevNeighbour == null ? null : GetSymbols(prevNeighbour.Value);
+            // The user is using a tail "-" note to produce a "<something> -" sound.
+            if (note.lyric == "-" && prevSymbols != null) {
+                var attr = note.phonemeAttributes?.FirstOrDefault() ?? default;
+                string color = attr.voiceColor;
+                string alias = $"{prevSymbols.Last()} -";
+                if (singer.TryGetMappedOto(alias, note.tone, color, out var oto)) {
+                    return MakeSimpleResult(oto.Alias);
+                }
+                return MakeSimpleResult(alias);
+            }
             // Get the symbols of current note.
-            var symbols = GetSymbols(note);
+            string[] symbols = GetSymbols(note);
+            if (nextNeighbour == null) {
+                // Auto add tail "-".
+                symbols = symbols.Append("-").ToArray();
+            }
             if (symbols == null || symbols.Length == 0) {
                 // No symbol is found for current note.
-                if (note.lyric == "-" && prevSymbols != null) {
-                    // The user is using a tail "-" note to produce a "<something> -" sound.
-                    return new Result {
-                        phonemes = new Phoneme[] {
-                            new Phoneme() {
-                                phoneme = $"{prevSymbols.Last()} -",
-                            }
-                        },
-                    };
-                }
                 // Otherwise assumes the user put in an alias.
-                return new Result {
-                    phonemes = new Phoneme[] {
-                        new Phoneme() {
-                            phoneme = note.lyric,
-                        }
-                    },
-                };
+                return MakeSimpleResult(note.lyric);
             }
             // Find phone types of symbols.
             var isVowel = symbols.Select(s => g2p.IsVowel(s)).ToArray();
@@ -144,7 +142,9 @@ namespace OpenUtau.Plugin.Builtin {
                 while (noteIndex < notes.Length - 1 && notes[noteIndex].position - note.position < phoneme.position) {
                     noteIndex++;
                 }
-                phoneme.phoneme = GetPhonemeOrFallback(prevSymbol, symbols[i], notes[noteIndex].tone + toneShift, color, alt);
+                int tone = (i == 0 && prevNeighbours != null && prevNeighbours.Length > 0)
+                    ? prevNeighbours.Last().tone : notes[noteIndex].tone;
+                phoneme.phoneme = GetPhonemeOrFallback(prevSymbol, symbols[i], tone + toneShift, color, alt);
                 phonemes[i] = phoneme;
                 prevSymbol = symbols[i];
             }

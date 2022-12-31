@@ -7,21 +7,22 @@ using NAudio.Vorbis;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using NLayer.NAudioSupport;
+using NWaves.Signals;
 
 namespace OpenUtau.Core.Format {
     public static class Wave {
         public static Func<string, WaveStream> OverrideMp3Reader;
 
-        public readonly static string kFileFilter = "*.wav;*.mp3;*.ogg;*.flac";
+        public readonly static List<string> FileExtensions = new List<string>() { "wav", "mp3", "ogg", "opus", "flac" };
 
         public static WaveStream OpenFile(string filepath) {
             var ext = Path.GetExtension(filepath);
-            byte[] buffer = new byte[4];
+            byte[] buffer = new byte[128];
             string tag = "";
             using (var stream = File.Open(filepath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
                 if (stream.CanSeek) {
-                    stream.Read(buffer, 0, 4);
-                    tag = System.Text.Encoding.UTF8.GetString(buffer);
+                    stream.Read(buffer, 0, 128);
+                    tag = System.Text.Encoding.UTF8.GetString(buffer.AsSpan(0, 4));
                 }
             }
             if (tag == "RIFF") {
@@ -34,7 +35,13 @@ namespace OpenUtau.Core.Format {
                 return new Mp3FileReaderBase(filepath, wf => new Mp3FrameDecompressor(wf));
             }
             if (tag == "OggS") {
-                return new VorbisWaveReader(filepath);
+                string text = System.Text.Encoding.ASCII.GetString(buffer);
+                if (text.Contains("vorbis")) {
+                    return new VorbisWaveReader(filepath);
+                }
+                if (text.Contains("OpusHead")) {
+                    return new OpusOggWaveReader(filepath);
+                }
             }
             if (tag == "fLaC") {
                 return new FlacReader(filepath);
@@ -64,6 +71,16 @@ namespace OpenUtau.Core.Format {
                 samples.AddRange(buffer.Take(n));
             }
             return samples.ToArray();
+        }
+
+        public static DiscreteSignal GetSignal(ISampleProvider sampleProvider) {
+            List<float> samples = new List<float>();
+            float[] buffer = new float[sampleProvider.WaveFormat.SampleRate];
+            int n;
+            while ((n = sampleProvider.Read(buffer, 0, buffer.Length)) > 0) {
+                samples.AddRange(buffer.Take(n));
+            }
+            return new DiscreteSignal(sampleProvider.WaveFormat.SampleRate, samples.ToArray());
         }
 
         public static float[] BuildPeaks(WaveStream stream, IProgress<int> progress) {

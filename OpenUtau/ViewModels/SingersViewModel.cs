@@ -4,8 +4,13 @@ using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Avalonia.Media.Imaging;
 using DynamicData.Binding;
+using NAudio.Wave;
+using NWaves.Audio;
+using NWaves.Signals;
 using OpenUtau.Classic;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
@@ -19,17 +24,26 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public USinger? Singer { get; set; }
         [Reactive] public Bitmap? Avatar { get; set; }
         [Reactive] public string? Info { get; set; }
-        [Reactive] public ObservableCollectionExtended<USubbank> Subbanks { get; set; }
-        [Reactive] public List<UOto>? Otos { get; set; }
+        [Reactive] public bool HasWebsite { get; set; }
+        public bool IsClassic => Singer != null && Singer.SingerType == USingerType.Classic;
+        public ObservableCollectionExtended<USubbank> Subbanks => subbanks;
+        public ObservableCollectionExtended<UOto> Otos => otos;
+        [Reactive] public bool ZoomInMel { get; set; }
         [Reactive] public UOto? SelectedOto { get; set; }
-        [Reactive] public List<MenuItemViewModel> SetEncodingMenuItems { get; set; }
-        [Reactive] public List<MenuItemViewModel> SetDefaultPhonemizerMenuItems { get; set; }
+        [Reactive] public int SelectedIndex { get; set; }
+        public List<MenuItemViewModel> SetEncodingMenuItems => setEncodingMenuItems;
+        public List<MenuItemViewModel> SetDefaultPhonemizerMenuItems => setDefaultPhonemizerMenuItems;
 
-        private ReactiveCommand<Encoding, Unit> setEncodingCommand;
-        private ReactiveCommand<Api.PhonemizerFactory, Unit> setDefaultPhonemizerCommand;
+        private readonly ObservableCollectionExtended<USubbank> subbanks
+            = new ObservableCollectionExtended<USubbank>();
+        private readonly ObservableCollectionExtended<UOto> otos
+            = new ObservableCollectionExtended<UOto>();
+        private readonly ReactiveCommand<Encoding, Unit> setEncodingCommand;
+        private readonly List<MenuItemViewModel> setEncodingMenuItems;
+        private readonly ReactiveCommand<Api.PhonemizerFactory, Unit> setDefaultPhonemizerCommand;
+        private readonly List<MenuItemViewModel> setDefaultPhonemizerMenuItems;
 
         public SingersViewModel() {
-            Subbanks = new ObservableCollectionExtended<USubbank>();
 #if DEBUG
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 #endif
@@ -39,13 +53,16 @@ namespace OpenUtau.App.ViewModels {
             this.WhenAnyValue(vm => vm.Singer)
                 .WhereNotNull()
                 .Subscribe(singer => {
-                    singer.Reload();
+                    singer.EnsureLoaded();
                     Avatar = LoadAvatar(singer);
-                    Otos = singer.Otos.Values.ToList();
+                    Otos.Clear();
+                    Otos.AddRange(singer.Otos);
                     Info = $"Author: {singer.Author}\nVoice: {singer.Voice}\nWeb: {singer.Web}\nVersion: {singer.Version}\n{singer.OtherInfo}\n\n{string.Join("\n", singer.Errors)}";
+                    HasWebsite = !string.IsNullOrEmpty(singer.Web);
                     LoadSubbanks();
+                    DocManager.Inst.ExecuteCmd(new OtoChangedNotification());
+                    this.RaisePropertyChanged(nameof(IsClassic));
                 });
-
 
             setEncodingCommand = ReactiveCommand.Create<Encoding>(encoding => {
                 SetEncoding(encoding);
@@ -60,7 +77,7 @@ namespace OpenUtau.App.ViewModels {
                 Encoding.GetEncoding("Windows-1252"),
                 Encoding.GetEncoding("macintosh"),
             };
-            SetEncodingMenuItems = encodings.Select(encoding =>
+            setEncodingMenuItems = encodings.Select(encoding =>
                 new MenuItemViewModel() {
                     Header = encoding.EncodingName,
                     Command = setEncodingCommand,
@@ -71,7 +88,7 @@ namespace OpenUtau.App.ViewModels {
             setDefaultPhonemizerCommand = ReactiveCommand.Create<Api.PhonemizerFactory>(factory => {
                 SetDefaultPhonemizer(factory);
             });
-            SetDefaultPhonemizerMenuItems = DocManager.Inst.PhonemizerFactories.Select(factory => new MenuItemViewModel() {
+            setDefaultPhonemizerMenuItems = DocManager.Inst.PhonemizerFactories.Select(factory => new MenuItemViewModel() {
                 Header = factory.ToString(),
                 Command = setDefaultPhonemizerCommand,
                 CommandParameter = factory,
@@ -85,8 +102,7 @@ namespace OpenUtau.App.ViewModels {
             try {
                 ModifyConfig(Singer, config => config.TextFileEncoding = encoding.WebName);
             } catch (Exception e) {
-                DocManager.Inst.ExecuteCmd(new UserMessageNotification(
-                    $"Failed to set encoding\n\n" + e.ToString()));
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to set encoding", e));
             }
             Refresh();
         }
@@ -98,8 +114,7 @@ namespace OpenUtau.App.ViewModels {
             try {
                 ModifyConfig(Singer, config => config.Portrait = filepath);
             } catch (Exception e) {
-                DocManager.Inst.ExecuteCmd(new UserMessageNotification(
-                    $"Failed to set portrait\n\n" + e.ToString()));
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to set portrait", e));
             }
             Refresh();
         }
@@ -111,8 +126,7 @@ namespace OpenUtau.App.ViewModels {
             try {
                 ModifyConfig(Singer, config => config.DefaultPhonemizer = factory.type.FullName);
             } catch (Exception e) {
-                DocManager.Inst.ExecuteCmd(new UserMessageNotification(
-                    $"Failed to set portrait\n\n" + e.ToString()));
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to set portrait", e));
             }
             Refresh();
         }
@@ -132,6 +146,28 @@ namespace OpenUtau.App.ViewModels {
             using (var stream = File.Open(yamlFile, FileMode.Create)) {
                 config.Save(stream);
             }
+        }
+
+        public void ErrorReport() {
+            if (Singer == null || Singer.SingerType != USingerType.Classic) {
+                return;
+            }
+            Task.Run(() => {
+                var checker = new VoicebankErrorChecker(Singer.Location, Singer.BasePath);
+                checker.Check();
+                string outFile = Path.Combine(Singer.Location, "errors.txt");
+                using (var stream = File.Open(outFile, FileMode.Create)) {
+                    using (var writer = new StreamWriter(stream)) {
+                        writer.WriteLine($"Total errors: {checker.Errors.Count}");
+                        writer.WriteLine();
+                        for (var i = 0; i < checker.Errors.Count; i++) {
+                            writer.WriteLine($"------ Error {i + 1} ------");
+                            writer.WriteLine(checker.Errors[i].ToString());
+                        }
+                    }
+                }
+                OS.GotoFile(outFile);
+            });
         }
 
         public void Refresh() {
@@ -169,7 +205,7 @@ namespace OpenUtau.App.ViewModels {
                     OS.OpenFolder(Singer.Location);
                 }
             } catch (Exception e) {
-                DocManager.Inst.ExecuteCmd(new UserMessageNotification(e.ToString()));
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
             }
         }
 
@@ -181,51 +217,184 @@ namespace OpenUtau.App.ViewModels {
             try {
                 Subbanks.AddRange(Singer.Subbanks);
             } catch (Exception e) {
-                DocManager.Inst.ExecuteCmd(new UserMessageNotification(
-                    $"Failed to load subbanks\n\n" + e.ToString()));
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to load subbanks", e));
             }
         }
 
         public void RefreshSinger() {
-            Singer?.Reload();
+            if (Singer == null) {
+                return;
+            }
+            int index = SelectedIndex;
+
+            Singer.Reload();
+            Avatar = LoadAvatar(Singer);
+            Otos.Clear();
+            Otos.AddRange(Singer.Otos);
             LoadSubbanks();
+
             DocManager.Inst.ExecuteCmd(new SingersRefreshedNotification());
-        }
-
-        public void SetOffset(double value) {
-            if (SelectedOto != null) {
-                var delta = value - SelectedOto.Offset;
-                SelectedOto.Offset += delta;
-                SelectedOto.Consonant -= delta;
-                SelectedOto.Preutter -= delta;
-                SelectedOto.Overlap -= delta;
-            }
-            this.RaisePropertyChanged(nameof(SelectedOto));
-        }
-
-        public void SetOverlap(double value) {
-            if (SelectedOto != null) {
-                SelectedOto.Overlap = value - SelectedOto.Offset;
+            DocManager.Inst.ExecuteCmd(new OtoChangedNotification());
+            if (Otos.Count > 0) {
+                index = Math.Clamp(index, 0, Otos.Count - 1);
+                SelectedIndex = index;
             }
         }
 
-        public void SetPreutter(double value) {
-            if (SelectedOto != null) {
-                var delta = value - SelectedOto.Offset - SelectedOto.Preutter;
-                SelectedOto.Preutter += delta;
+        public void SetOffset(double value, double totalDur) {
+            if (SelectedOto == null) {
+                return;
+            }
+            var delta = value - SelectedOto.Offset;
+            SelectedOto.Offset += delta;
+            SelectedOto.Consonant -= delta;
+            SelectedOto.Preutter -= delta;
+            SelectedOto.Overlap -= delta;
+            if (SelectedOto.Cutoff < 0) {
+                SelectedOto.Cutoff += delta;
+            }
+            FixCutoff(SelectedOto, totalDur);
+            NotifyOtoChanged();
+        }
+
+        public void SetOverlap(double value, double totalDur) {
+            if (SelectedOto == null) {
+                return;
+            }
+            SelectedOto.Overlap = value - SelectedOto.Offset;
+            FixCutoff(SelectedOto, totalDur);
+            NotifyOtoChanged();
+        }
+
+        public void SetPreutter(double value, double totalDur) {
+            if (SelectedOto == null) {
+                return;
+            }
+            SelectedOto.Preutter = value - SelectedOto.Offset;
+            FixCutoff(SelectedOto, totalDur);
+            NotifyOtoChanged();
+        }
+
+        public void SetFixed(double value, double totalDur) {
+            if (SelectedOto == null) {
+                return;
+            }
+            SelectedOto.Consonant = value - SelectedOto.Offset;
+            FixCutoff(SelectedOto, totalDur);
+            NotifyOtoChanged();
+        }
+
+        public void SetCutoff(double value, double totalDur) {
+            if (SelectedOto == null || value < SelectedOto.Offset) {
+                return;
+            }
+            SelectedOto.Cutoff = -(value - SelectedOto.Offset);
+            FixCutoff(SelectedOto, totalDur);
+            NotifyOtoChanged();
+        }
+
+        private static void FixCutoff(UOto oto, double totalDur) {
+            double cutoff = oto.Cutoff >= 0
+                ? totalDur - oto.Cutoff
+                : oto.Offset - oto.Cutoff;
+            // 1ms is inserted between consonant and cutoff to avoid resample problem.
+            double minCutoff = oto.Offset + Math.Max(Math.Max(oto.Overlap, oto.Preutter), oto.Consonant + 1);
+            if (cutoff < minCutoff) {
+                oto.Cutoff = -(minCutoff - oto.Offset);
             }
         }
 
-        public void SetFixed(double value) {
-            if (SelectedOto != null) {
-                SelectedOto.Consonant = value - SelectedOto.Offset;
+        public void NotifyOtoChanged() {
+            if (Singer != null) {
+                Singer.OtoDirty = true;
+            }
+            DocManager.Inst.ExecuteCmd(new OtoChangedNotification());
+        }
+
+        public void SaveOtos() {
+            if (Singer != null) {
+                try {
+                    Singer.Save();
+                } catch (Exception e) {
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(e));
+                }
+            }
+            RefreshSinger();
+        }
+
+        public void GotoOto(USinger singer, UOto oto) {
+            if (Singers.Contains(singer)) {
+                Singer = singer;
+                if (Singer.Otos.Contains(oto)) {
+                    SelectedOto = oto;
+                }
             }
         }
 
-        public void SetCutoff(double value) {
-            if (SelectedOto != null) {
-                SelectedOto.Cutoff = -(value - SelectedOto.Offset);
-            }
+        public Task RegenFrq(string[] files, string? method, Action<int> progress) {
+            return Task.Run(() => {
+                double stepMs = Frq.kHopSize * 1000.0 / 44100;
+                int count = 0;
+                if (method == "crepe") {
+                    Parallel.For(0, files.Length, new ParallelOptions {
+                        MaxDegreeOfParallelism = Environment.ProcessorCount / 2
+                    },
+                    () => new Core.Analysis.Crepe.Crepe(),
+                    (i, loop, crepe) => {
+                        string file = files[i];
+                        if (!File.Exists(file)) {
+                            throw new FileNotFoundException(string.Format("File {0} missing!", file));
+                        }
+                        string frqFile = VoicebankFiles.GetFrqFile(file);
+                        DiscreteSignal? signal = null;
+                        using (var waveStream = Core.Format.Wave.OpenFile(file)) {
+                            signal = Core.Format.Wave.GetSignal(waveStream.ToSampleProvider().ToMono(1, 0));
+                        }
+                        if (signal != null) {
+                            var frq = Frq.Build(signal.Samples, crepe.ComputeF0(signal, stepMs));
+                            using (var stream = File.OpenWrite(frqFile)) {
+                                frq.Save(stream);
+                            }
+                        }
+                        progress.Invoke(Interlocked.Increment(ref count));
+                        return crepe;
+                    },
+                    crepe => crepe.Dispose());
+                } else {
+                    Parallel.ForEach(files, parallelOptions: new ParallelOptions {
+                        MaxDegreeOfParallelism = Environment.ProcessorCount / 2
+                    }, body: file => {
+                        if (!File.Exists(file)) {
+                            throw new FileNotFoundException(string.Format("File {0} missing!", file));
+                        }
+                        string frqFile = VoicebankFiles.GetFrqFile(file);
+                        float[]? samples;
+                        using (var waveStream = Core.Format.Wave.OpenFile(file)) {
+                            samples = Core.Format.Wave.GetSamples(waveStream.ToSampleProvider().ToMono(1, 0));
+                        }
+                        if (samples != null) {
+                            int f0Method;
+                            switch (method) {
+                                case "dioss":
+                                    f0Method = 1;
+                                    break;
+                                case "pyin":
+                                    f0Method = 2;
+                                    break;
+                                default:
+                                    f0Method = 0;
+                                    break;
+                            }
+                            var f0 = Core.Render.Worldline.F0(samples, 44100, stepMs, f0Method);
+                            var frq = Frq.Build(samples, f0);
+                            using (var stream = File.OpenWrite(frqFile)) {
+                                frq.Save(stream);
+                            }
+                        }
+                        progress.Invoke(Interlocked.Increment(ref count));
+                    });
+                }
+            });
         }
     }
 }

@@ -1,25 +1,34 @@
-version: 0.0.{build}
+version: 0.1.{build}
+environment:
+  access_token:
+    secure: VoTH2ml/pRgjLSGhfPO+NZfCoFzFcfrQjEIl/5+0UufeW6mEvccfwvef3gOaD2ke
 image:
-  - Visual Studio 2019
+  - Visual Studio 2022
   - macOS
   - Ubuntu
+branches:
+  only:
+    - master
 skip_commits:
   files:
     - docs/*
   message: /\[nobuild\]/
+skip_tags: true
 pull_requests:
   do_not_increment_build_number: true
-configuration:
-  - Release
-platform: Any CPU
+configuration: Release
 dotnet_csproj:
   patch: true
   file: 'OpenUtau\OpenUtau.csproj'
   version: "{version}"
 before_build:
+  - ps: git config --global credential.helper store
+  - ps: Set-Content -Path "$HOME\.git-credentials" -Value "https://$($env:access_token):x-oauth-basic@github.com`n" -NoNewline
+  - ps: git config --global user.email "appveyor@appveyor.com"
+  - ps: git config --global user.name "appveyor"
   - cmd: nuget restore
-after_build:
-  - cmd: python appveyor.py
+after_test:
+  - ps: python appveyor.py 2>&1
 artifacts:
   - path: bin\win-x86
     name: OpenUtau-win-x86
@@ -34,34 +43,19 @@ artifacts:
   - path: appcast.linux-x64.xml
   - path: appcast.osx-x64.xml
   - path: changelog.txt
-for:
--
-  matrix:
-    only:
-      - image: macOS
-  build_script:
-    - python appveyor.py
--
-  matrix:
-    only:
-      - image: Ubuntu
-  build_script:
-    - python appveyor.py
 deploy:
-  release: OpenUtau-Latest
-  description: v$(APPVEYOR_BUILD_VERSION) $(APPVEYOR_REPO_COMMIT_TIMESTAMP)
-  provider: GitHub
-  auth_token:
-    secure: VoTH2ml/pRgjLSGhfPO+NZfCoFzFcfrQjEIl/5+0UufeW6mEvccfwvef3gOaD2ke
-  draft: false
-  prerelease: false
-  force_update: true
-  on:
-    branch: master
-    APPVEYOR_REPO_TAG: false
-on_success:
-  - ps: Invoke-RestMethod https://raw.githubusercontent.com/DiscordHooks/appveyor-discord-webhook/master/send.ps1 -o send.ps1
-  - ps: ./send.ps1 success $env:discord_webhook
+  - provider: GitHub
+    tag: build/$(APPVEYOR_BUILD_VERSION)
+    release: $(APPVEYOR_BUILD_VERSION)
+    description: $(APPVEYOR_BUILD_VERSION) $(APPVEYOR_REPO_COMMIT_TIMESTAMP)
+    auth_token:
+      secure: VoTH2ml/pRgjLSGhfPO+NZfCoFzFcfrQjEIl/5+0UufeW6mEvccfwvef3gOaD2ke
+    draft: false
+    prerelease: false
+    force_update: true
+    on:
+      branch: master
+      APPVEYOR_REPO_TAG: false
 on_failure:
   - ps: Invoke-RestMethod https://raw.githubusercontent.com/DiscordHooks/appveyor-discord-webhook/master/send.ps1 -o send.ps1
   - ps: ./send.ps1 failure $env:discord_webhook

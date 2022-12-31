@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using OpenUtau.Api;
+using OpenUtau.Core.G2p;
 using Serilog;
 
 namespace OpenUtau.Plugin.Builtin {
     /// <summary>
     /// A French diphone phonemizer that uses CMUSphinx dictionary.
     /// </summary>
-    [Phonemizer("French CMUSphinx Phonemizer", "FR SPHINX")]
+    [Phonemizer("French CMUSphinx Phonemizer", "FR SPHINX", language:"FR")]
     public class FrenchCMUSphinxPhonemizer : LatinDiphonePhonemizer {
         public FrenchCMUSphinxPhonemizer() {
             try {

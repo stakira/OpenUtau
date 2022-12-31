@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using Avalonia;
+using DynamicData;
 using DynamicData.Binding;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
@@ -40,7 +41,7 @@ namespace OpenUtau.App.ViewModels {
     public class TracksViewModel : ViewModelBase, ICmdSubscriber {
         public UProject Project => DocManager.Inst.Project;
         [Reactive] public Rect Bounds { get; set; }
-        public int TickCount => Math.Max(Project.BarTicks * 32, Project.EndTick);
+        public int TickCount => Math.Max(Project.timeAxis.BarBeatToTickPos(32, 0), Project.EndTick);
         public int TrackCount => Math.Max(20, Project.tracks.Count + 1);
         [Reactive] public double TickWidth { get; set; }
         public double TrackHeightMin => ViewConstants.TrackHeightMin;
@@ -48,10 +49,11 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public double TrackHeight { get; set; }
         [Reactive] public double TickOffset { get; set; }
         [Reactive] public double TrackOffset { get; set; }
-        [Reactive] public int SnapUnit { get; set; }
-        public double SnapUnitWidth => snapUnitWidth.Value;
+        [Reactive] public int SnapDiv { get; set; }
+        public ObservableCollectionExtended<int> SnapTicks { get; } = new ObservableCollectionExtended<int>();
         [Reactive] public double PlayPosX { get; set; }
         [Reactive] public double PlayPosHighlightX { get; set; }
+        [Reactive] public double PlayPosHighlightWidth { get; set; }
         [Reactive] public bool PlayPosWaitingRendering { get; set; }
         public double ViewportTicks => viewportTicks.Value;
         public double ViewportTracks => viewportTracks.Value;
@@ -75,7 +77,6 @@ namespace OpenUtau.App.ViewModels {
         // These values could be better named so as to make the code more readable.
         private double playPosXToTickOffset => ViewportTicks / Bounds.Width;
 
-        private readonly ObservableAsPropertyHelper<double> snapUnitWidth;
         private readonly ObservableAsPropertyHelper<double> viewportTicks;
         private readonly ObservableAsPropertyHelper<double> viewportTracks;
         private readonly ObservableAsPropertyHelper<double> smallChangeX;
@@ -85,9 +86,6 @@ namespace OpenUtau.App.ViewModels {
         private readonly HashSet<UPart> TempSelectedParts = new HashSet<UPart>();
 
         public TracksViewModel() {
-            snapUnitWidth = this.WhenAnyValue(x => x.SnapUnit, x => x.TickWidth)
-                .Select(v => v.Item1 * v.Item2)
-                .ToProperty(this, v => v.SnapUnitWidth);
             viewportTicks = this.WhenAnyValue(x => x.Bounds, x => x.TickWidth)
                 .Select(v => v.Item1.Width / v.Item2)
                 .ToProperty(this, x => x.ViewportTicks);
@@ -108,17 +106,8 @@ namespace OpenUtau.App.ViewModels {
 
             this.WhenAnyValue(x => x.TickWidth)
                 .Subscribe(tickWidth => {
-                    int ticks = Project.resolution * 4 / Project.beatUnit;
-                    double width = ticks * tickWidth;
-                    if (width < ViewConstants.MinTicklineWidth) {
-                        SnapUnit = ticks * Project.beatPerBar;
-                        return;
-                    }
-                    while (width / 2 >= ViewConstants.MinTicklineWidth) {
-                        width /= 2;
-                        ticks /= 2;
-                    }
-                    SnapUnit = ticks;
+                    UpdateSnapDiv();
+                    SetPlayPos(DocManager.Inst.playPosTick, false);
                 });
             this.WhenAnyValue(x => x.TickOffset)
                 .Subscribe(tickOffset => {
@@ -130,6 +119,16 @@ namespace OpenUtau.App.ViewModels {
             Notify();
 
             DocManager.Inst.AddSubscriber(this);
+        }
+
+        private void UpdateSnapDiv() {
+            MusicMath.GetSnapUnit(
+                Project.resolution,
+                ViewConstants.PianoRollMinTicklineWidth / TickWidth,
+                false,
+                out int ticks,
+                out int div);
+            SnapDiv = div;
         }
 
         public void OnXZoomed(Point position, double delta) {
@@ -171,9 +170,28 @@ namespace OpenUtau.App.ViewModels {
             return (int)(point.X / TickWidth + TickOffset);
         }
 
-        public int PointToSnappedTick(Point point) {
-            int tick = (int)(point.X / TickWidth + TickOffset);
-            return (int)((double)tick / SnapUnit) * SnapUnit;
+        public void TickToLineTick(int tick, out int left, out int right) {
+            if (SnapTicks.Count == 0) {
+                left = 0;
+                right = Project.resolution;
+                return;
+            }
+            int index = SnapTicks.BinarySearch(tick);
+            if (index < 0) {
+                index = ~index - 1;
+            }
+            if (0 >= SnapTicks.Count - 2) {
+                left = right = tick;
+                return;
+            }
+            index = Math.Clamp(index, 0, SnapTicks.Count - 2);
+            left = SnapTicks[index];
+            right = SnapTicks[index + 1];
+        }
+
+        public void PointToLineTick(Point point, out int left, out int right) {
+            int tick = PointToTick(point);
+            TickToLineTick(tick, out left, out right);
         }
 
         public int PointToTrackNo(Point point) {
@@ -203,10 +221,13 @@ namespace OpenUtau.App.ViewModels {
             if (trackNo >= project.tracks.Count) {
                 return null;
             }
+            PointToLineTick(point, out int left, out int right);
+            project.timeAxis.TickPosToBarBeat(left, out int bar, out int beat, out int remainingTicks);
+            var durTick = project.timeAxis.BarBeatToTickPos(bar + 4, beat) + remainingTicks - left;
             UVoicePart part = new UVoicePart() {
-                position = PointToSnappedTick(point),
+                position = left,
                 trackNo = trackNo,
-                Duration = project.resolution * 16 / project.beatUnit * project.beatPerBar,
+                Duration = durTick,
             };
             DocManager.Inst.StartUndoGroup();
             DocManager.Inst.ExecuteCmd(new AddPartCommand(project, part));
@@ -243,7 +264,7 @@ namespace OpenUtau.App.ViewModels {
             var project = DocManager.Inst.Project;
             TempSelectedParts.Clear();
             foreach (var part in project.parts) {
-                if (part.EndTick > x0 && part.position < x1 && part.trackNo >= y0 && part.trackNo < y1) {
+                if (part.End > x0 && part.position < x1 && part.trackNo >= y0 && part.trackNo < y1) {
                     TempSelectedParts.Add(part);
                 }
             }
@@ -267,7 +288,8 @@ namespace OpenUtau.App.ViewModels {
                 return;
             }
             DocManager.Inst.StartUndoGroup();
-            foreach (var part in SelectedParts) {
+            var selectedParts = SelectedParts.ToArray();
+            foreach (var part in selectedParts) {
                 DocManager.Inst.ExecuteCmd(new RemovePartCommand(Project, part));
             }
             DocManager.Inst.EndUndoGroup();
@@ -284,10 +306,11 @@ namespace OpenUtau.App.ViewModels {
             if (SelectedParts.Count > 0) {
                 DocManager.Inst.PartsClipboard = SelectedParts.Select(part => part.Clone()).ToList();
                 DocManager.Inst.StartUndoGroup();
-                foreach (var part in SelectedParts) {
+                var toRemove = new List<UPart>(SelectedParts);
+                SelectedParts.Clear();
+                foreach (var part in toRemove) {
                     DocManager.Inst.ExecuteCmd(new RemovePartCommand(Project, part));
                 }
-                SelectedParts.Clear();
                 DocManager.Inst.EndUndoGroup();
             }
         }
@@ -299,7 +322,7 @@ namespace OpenUtau.App.ViewModels {
             var parts = DocManager.Inst.PartsClipboard
                 .Select(part => part.Clone())
                 .OrderBy(part => part.trackNo).ToList();
-            int newTrackNo = Project.parts.Max(part => part.trackNo);
+            int newTrackNo = Project.parts.Count > 0 ? Project.parts.Max(part => part.trackNo) : -1;
             int oldTrackNo = -1;
             foreach (var part in parts) {
                 if (part.trackNo > oldTrackNo) {
@@ -332,8 +355,9 @@ namespace OpenUtau.App.ViewModels {
                 return;
             }
             PlayPosX = TickTrackToPoint(tick, 0).X;
-            int highlightTick = (int)Math.Floor((double)tick / SnapUnit) * SnapUnit;
-            PlayPosHighlightX = TickTrackToPoint(highlightTick, 0).X;
+            TickToLineTick(tick, out int left, out int right);
+            PlayPosHighlightX = TickTrackToPoint(left, 0).X;
+            PlayPosHighlightWidth = (right - left) * TickWidth;
         }
 
         public void OnNext(UCommand cmd, bool isUndo) {
@@ -345,10 +369,12 @@ namespace OpenUtau.App.ViewModels {
                         Parts.Add(partCommand.part);
                     } else {
                         Parts.Remove(partCommand.part);
+                        SelectedParts.Remove(partCommand.part);
                     }
                 } else if (partCommand is RemovePartCommand) {
                     if (!isUndo) {
                         Parts.Remove(partCommand.part);
+                        SelectedParts.Remove(partCommand.part);
                     } else {
                         Parts.Add(partCommand.part);
                     }

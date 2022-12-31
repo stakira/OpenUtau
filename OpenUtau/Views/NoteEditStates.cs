@@ -82,6 +82,8 @@ namespace OpenUtau.App.Views {
     class NoteSelectionEditState : NoteEditState {
         public readonly Rectangle selectionBox;
         protected override bool ShowValueTip => false;
+        private int startTick;
+        private int startTone;
         public NoteSelectionEditState(
             Canvas canvas,
             PianoRollViewModel vm,
@@ -93,6 +95,9 @@ namespace OpenUtau.App.Views {
             pointer.Capture(canvas);
             startPoint = point;
             selectionBox.IsVisible = true;
+            var notesVm = vm.NotesViewModel;
+            startTick = notesVm.PointToTick(point);
+            startTone = notesVm.PointToTone(point);
         }
         public override void End(IPointer pointer, Point point) {
             pointer.Capture(null);
@@ -102,18 +107,17 @@ namespace OpenUtau.App.Views {
         }
         public override void Update(IPointer pointer, Point point) {
             var notesVm = vm.NotesViewModel;
-            int x0 = notesVm.PointToSnappedTick(point);
-            int x1 = notesVm.PointToSnappedTick(startPoint);
-            int y0 = notesVm.PointToTone(point);
-            int y1 = notesVm.PointToTone(startPoint);
-            if (x0 > x1) {
-                Swap(ref x0, ref x1);
-            }
-            if (y0 > y1) {
-                Swap(ref y0, ref y1);
-            }
-            x1 += notesVm.SnapUnit;
-            y0--;
+            int tick = notesVm.PointToTick(point);
+            int tone = notesVm.PointToTone(point);
+
+            int minTick = Math.Min(tick, startTick);
+            int maxTick = Math.Max(tick, startTick);
+            notesVm.TickToLineTick(minTick, out int x0, out int _);
+            notesVm.TickToLineTick(maxTick, out int _, out int x1);
+
+            int y0 = Math.Min(tone, startTone) - 1;
+            int y1 = Math.Max(tone, startTone);
+
             var leftTop = notesVm.TickToneToPoint(x0, y1);
             var Size = notesVm.TickToneToSize(x1 - x0, y1 - y0);
             Canvas.SetLeft(selectionBox, leftTop.X);
@@ -135,8 +139,7 @@ namespace OpenUtau.App.Views {
             UNote note) : base(canvas, vm, valueTip) {
             this.note = note;
             var notesVm = vm.NotesViewModel;
-            if (!notesVm.SelectedNotes.Contains(note)) {
-                notesVm.DeselectNotes();
+            if (!notesVm.Selection.Contains(note)) {
                 notesVm.SelectNote(note);
             }
         }
@@ -150,6 +153,7 @@ namespace OpenUtau.App.Views {
             if (Math.Abs(delta.X) + Math.Abs(delta.Y) < 4) {
                 return;
             }
+            var project = DocManager.Inst.Project;
             var notesVm = vm.NotesViewModel;
             var part = notesVm.Part;
             if (part == null) {
@@ -159,23 +163,27 @@ namespace OpenUtau.App.Views {
             int deltaTone = notesVm.PointToTone(point) - note.tone;
             int minDeltaTone;
             int maxDeltaTone;
-            if (notesVm.SelectedNotes.Count > 0) {
-                minDeltaTone = -notesVm.SelectedNotes.Select(p => p.tone).Min();
-                maxDeltaTone = ViewConstants.MaxTone - 1 - notesVm.SelectedNotes.Select(p => p.tone).Max();
+            var selectedNotes = notesVm.Selection.ToList();
+            if (selectedNotes.Count > 0) {
+                minDeltaTone = -selectedNotes.Select(p => p.tone).Min();
+                maxDeltaTone = ViewConstants.MaxTone - 1 - selectedNotes.Select(p => p.tone).Max();
             } else {
                 minDeltaTone = -note.tone;
                 maxDeltaTone = ViewConstants.MaxTone - 1 - note.tone;
             }
             deltaTone = Math.Clamp(deltaTone, minDeltaTone, maxDeltaTone);
 
-            int deltaTick = notesVm.IsSnapOn
-                ? notesVm.PointToSnappedTick(point - new Point(xOffset, 0)) - note.position
-                : notesVm.PointToTick(point - new Point(xOffset, 0)) - note.position;
+            int snapUnit = project.resolution * 4 / notesVm.SnapDiv;
+            int newPos = notesVm.PointToTick(point - new Point(xOffset, 0));
+            if (notesVm.IsSnapOn) {
+                newPos = (int)Math.Floor((double)newPos / snapUnit) * snapUnit;
+            }
+            int deltaTick = newPos - note.position;
             int minDeltaTick;
             int maxDeltaTick;
-            if (notesVm.SelectedNotes.Count > 0) {
-                minDeltaTick = -notesVm.SelectedNotes.Select(n => n.position).Min();
-                maxDeltaTick = part.Duration - notesVm.SelectedNotes.Select(n => n.End).Max();
+            if (selectedNotes.Count > 0) {
+                minDeltaTick = -selectedNotes.Select(n => n.position).Min();
+                maxDeltaTick = part.Duration - selectedNotes.Select(n => n.End).Max();
             } else {
                 minDeltaTick = -note.position;
                 maxDeltaTick = part.Duration - note.End;
@@ -185,12 +193,12 @@ namespace OpenUtau.App.Views {
             if (deltaTone == 0 && deltaTick == 0) {
                 return;
             }
-            if (notesVm.SelectedNotes.Count == 0) {
+            if (selectedNotes.Count == 0) {
                 DocManager.Inst.ExecuteCmd(new MoveNoteCommand(
                     part, note, deltaTick, deltaTone));
             } else {
                 DocManager.Inst.ExecuteCmd(new MoveNoteCommand(
-                    part, new List<UNote>(notesVm.SelectedNotes), deltaTick, deltaTone));
+                    part, selectedNotes, deltaTick, deltaTone));
             }
         }
     }
@@ -224,17 +232,20 @@ namespace OpenUtau.App.Views {
                 sineGen.Freq = MusicMath.ToneToFreq(tone);
             }
             int deltaTone = tone - note.tone;
-            int deltaDuration = notesVm.IsSnapOn
-                ? notesVm.PointToSnappedTick(point) + notesVm.SnapUnit - note.End
-                : notesVm.PointToTick(point) - note.End;
-            int minNoteTicks = notesVm.IsSnapOn ? notesVm.SnapUnit : 15;
+            int snapUnit = project.resolution * 4 / notesVm.SnapDiv;
+            int newEnd = notesVm.PointToTick(point);
+            if (notesVm.IsSnapOn) {
+                newEnd = (int)Math.Floor((double)newEnd / snapUnit + 1) * snapUnit;
+            }
+            int deltaDuration = newEnd - note.End;
+            int minNoteTicks = notesVm.IsSnapOn ? snapUnit : 15;
             if (deltaDuration < 0) {
                 int maxNegDelta = note.duration - minNoteTicks;
-                if (notesVm.SelectedNotes.Count > 0) {
-                    maxNegDelta = notesVm.SelectedNotes.Min(n => n.duration - minNoteTicks);
+                if (notesVm.Selection.Count > 0) {
+                    maxNegDelta = notesVm.Selection.Min(n => n.duration - minNoteTicks);
                 }
-                if (notesVm.IsSnapOn && notesVm.SnapUnit > 0) {
-                    maxNegDelta = (int)Math.Floor((double)maxNegDelta / notesVm.SnapUnit) * notesVm.SnapUnit;
+                if (notesVm.IsSnapOn && snapUnit > 0) {
+                    maxNegDelta = (int)Math.Floor((double)maxNegDelta / snapUnit) * snapUnit;
                 }
                 deltaDuration = Math.Max(deltaDuration, -maxNegDelta);
             }
@@ -243,8 +254,11 @@ namespace OpenUtau.App.Views {
             }
             if (deltaDuration != 0) {
                 DocManager.Inst.ExecuteCmd(new ResizeNoteCommand(notesVm.Part, note, deltaDuration));
-                if (NotePresets.Default.AutoVibratoToggle && note.duration >= NotePresets.Default.AutoVibratoNoteDuration) DocManager.Inst.ExecuteCmd(new VibratoLengthCommand(notesVm.Part, note, NotePresets.Default.DefaultVibrato.VibratoLength));
-                else DocManager.Inst.ExecuteCmd(new VibratoLengthCommand(notesVm.Part, note, 0));
+                if (NotePresets.Default.AutoVibratoToggle && note.duration >= NotePresets.Default.AutoVibratoNoteDuration) {
+                    DocManager.Inst.ExecuteCmd(new VibratoLengthCommand(notesVm.Part, note, NotePresets.Default.DefaultVibrato.VibratoLength));
+                } else {
+                    DocManager.Inst.ExecuteCmd(new VibratoLengthCommand(notesVm.Part, note, 0));
+                }
             }
             valueTip.UpdateValueTip(note.duration.ToString());
         }
@@ -268,27 +282,30 @@ namespace OpenUtau.App.Views {
             bool resizeNext) : base(canvas, vm, valueTip) {
             this.note = note;
             var notesVm = vm.NotesViewModel;
-            if (!notesVm.SelectedNotes.Contains(note)) {
+            if (!notesVm.Selection.Contains(note)) {
                 notesVm.DeselectNotes();
             }
-            this.resizeNext = notesVm.SelectedNotes.Count == 0 &&
+            this.resizeNext = notesVm.Selection.Count == 0 &&
                 resizeNext && note.Next != null && note.End == note.Next.position;
             nextNote = note.Next;
         }
         public override void Update(IPointer pointer, Point point) {
             var project = DocManager.Inst.Project;
             var notesVm = vm.NotesViewModel;
-            int deltaDuration = notesVm.IsSnapOn
-                ? notesVm.PointToSnappedTick(point) + notesVm.SnapUnit - note.End
-                : notesVm.PointToTick(point) - note.End;
-            int minNoteTicks = notesVm.IsSnapOn ? notesVm.SnapUnit : 15;
+            int snapUnit = project.resolution * 4 / notesVm.SnapDiv;
+            int newEnd = notesVm.PointToTick(point);
+            if (notesVm.IsSnapOn) {
+                newEnd = (int)Math.Floor((double)newEnd / snapUnit) * snapUnit + snapUnit;
+            }
+            int deltaDuration = newEnd - note.End;
+            int minNoteTicks = notesVm.IsSnapOn ? snapUnit : 15;
             if (deltaDuration < 0) {
                 int maxNegDelta = note.duration - minNoteTicks;
-                if (notesVm.SelectedNotes.Count > 0) {
-                    maxNegDelta = notesVm.SelectedNotes.Min(n => n.duration - minNoteTicks);
+                if (notesVm.Selection.Count > 0) {
+                    maxNegDelta = notesVm.Selection.Min(n => n.duration - minNoteTicks);
                 }
-                if (notesVm.IsSnapOn && notesVm.SnapUnit > 0) {
-                    maxNegDelta = (int)Math.Floor((double)maxNegDelta / notesVm.SnapUnit) * notesVm.SnapUnit;
+                if (notesVm.IsSnapOn && snapUnit > 0) {
+                    maxNegDelta = (int)Math.Floor((double)maxNegDelta / snapUnit) * snapUnit;
                 }
                 deltaDuration = Math.Max(deltaDuration, -maxNegDelta);
             }
@@ -300,7 +317,7 @@ namespace OpenUtau.App.Views {
                 valueTip.UpdateValueTip(note.duration.ToString());
                 return;
             }
-            if (notesVm.SelectedNotes.Count == 0) {
+            if (notesVm.Selection.Count == 0) {
                 if (resizeNext) {
                     DocManager.Inst.ExecuteCmd(new MoveNoteCommand(notesVm.Part, nextNote, deltaDuration, 0));
                     DocManager.Inst.ExecuteCmd(new ResizeNoteCommand(notesVm.Part, nextNote, -deltaDuration));
@@ -309,7 +326,7 @@ namespace OpenUtau.App.Views {
                 valueTip.UpdateValueTip(note.duration.ToString());
                 return;
             }
-            DocManager.Inst.ExecuteCmd(new ResizeNoteCommand(notesVm.Part, new List<UNote>(notesVm.SelectedNotes), deltaDuration));
+            DocManager.Inst.ExecuteCmd(new ResizeNoteCommand(notesVm.Part, notesVm.Selection.ToList(), deltaDuration));
             valueTip.UpdateValueTip(note.duration.ToString());
         }
     }
@@ -333,7 +350,7 @@ namespace OpenUtau.App.Views {
             UNote note) : base(canvas, vm, valueTip) {
             this.note = note;
             var notesVm = vm.NotesViewModel;
-            if (!notesVm.SelectedNotes.Contains(note)) {
+            if (!notesVm.Selection.Contains(note)) {
                 notesVm.DeselectNotes();
             }
             oldDur = note.duration;
@@ -353,14 +370,17 @@ namespace OpenUtau.App.Views {
         public override void Update(IPointer pointer, Point point) {
             var project = DocManager.Inst.Project;
             var notesVm = vm.NotesViewModel;
+            int snapUnit = project.resolution * 4 / notesVm.SnapDiv;
+            int tick = notesVm.PointToTick(point);
+            int roundedSnappedTick = (int)Math.Round((double)tick / snapUnit) * snapUnit;
             int deltaDuration = notesVm.IsSnapOn
-                ? notesVm.PointToRoundedSnappedTick(point) - note.End
-                : notesVm.PointToTick(point) - note.End;
-            int minNoteTicks = notesVm.IsSnapOn ? notesVm.SnapUnit : 15;
+                ? roundedSnappedTick - note.End
+                : tick - note.End;
+            int minNoteTicks = notesVm.IsSnapOn ? snapUnit : 15;
 
             int maxNegDelta = note.duration - minNoteTicks;
-            if (notesVm.IsSnapOn && notesVm.SnapUnit > 0) {
-                maxNegDelta = (int)Math.Floor((double)maxNegDelta / notesVm.SnapUnit) * notesVm.SnapUnit;
+            if (notesVm.IsSnapOn && snapUnit > 0) {
+                maxNegDelta = (int)Math.Floor((double)maxNegDelta / snapUnit) * snapUnit;
             }
             deltaDuration = Math.Max(deltaDuration, -maxNegDelta);
 
@@ -391,7 +411,7 @@ namespace OpenUtau.App.Views {
                     DocManager.Inst.ExecuteCmd(new VibratoFadeInCommand(notesVm.Part, newNote, 0));
                     DocManager.Inst.ExecuteCmd(new VibratoFadeOutCommand(notesVm.Part, newNote, oldVibFadeOutTicks * 100 / newNote.duration));
                     //phase correction
-                    double newVibLengthMs = project.TickToMillisecond(newVibLengthTicks);
+                    double newVibLengthMs = project.timeAxis.MsBetweenTickPos(newNote.position, newNote.position + newVibLengthTicks);
                     float newVibShift = (float)(100 * (newVibLengthMs % vibPeriod / vibPeriod)) + oldVibShift;
                     if (newVibShift > 100) newVibShift -= 100;
                     DocManager.Inst.ExecuteCmd(new VibratoShiftCommand(notesVm.Part, newNote, newVibShift));
@@ -505,8 +525,9 @@ namespace OpenUtau.App.Views {
         }
         public override void Update(IPointer pointer, Point point) {
             var notesVm = vm.NotesViewModel;
-            int tick = notesVm.PointToTick(point) - note.position;
-            double deltaX = notesVm.Project.TickToMillisecond(tick) - pitchPoint.X;
+            int partPos = notesVm.Part?.position ?? 0;
+            double x = notesVm.Project.timeAxis.TickPosToMsPos(notesVm.PointToTick(point) + partPos);
+            double deltaX = x - (note.PositionMs + pitchPoint.X);
             bool isFirst = index == 0;
             bool isLast = index == note.pitch.data.Count - 1;
             if (!isFirst) {
@@ -715,6 +736,9 @@ namespace OpenUtau.App.Views {
             float startTick = note.position + note.duration - vibratoTick;
             float newIn = (tick - startTick) / vibratoTick * 100f;
             if (newIn != note.vibrato.@in) {
+                if (newIn + note.vibrato.@out > 100) {
+                    DocManager.Inst.ExecuteCmd(new VibratoFadeOutCommand(notesVm.Part, note, 100 - newIn));
+                }
                 DocManager.Inst.ExecuteCmd(new VibratoFadeInCommand(notesVm.Part, note, newIn));
             }
             valueTip.UpdateValueTip($"{note.vibrato.@in:0}%");
@@ -736,6 +760,9 @@ namespace OpenUtau.App.Views {
             float vibratoTick = note.vibrato.length / 100f * note.duration;
             float newOut = (note.position + note.duration - tick) / vibratoTick * 100f;
             if (newOut != note.vibrato.@out) {
+                if (newOut + note.vibrato.@in > 100) {
+                    DocManager.Inst.ExecuteCmd(new VibratoFadeInCommand(notesVm.Part, note, 100 - newOut));
+                }
                 DocManager.Inst.ExecuteCmd(new VibratoFadeOutCommand(notesVm.Part, note, newOut));
             }
             valueTip.UpdateValueTip($"{note.vibrato.@out:0}%");
@@ -774,12 +801,12 @@ namespace OpenUtau.App.Views {
         public override void Update(IPointer pointer, Point point) {
             var notesVm = vm.NotesViewModel;
             var project = notesVm.Project;
-            float periodTick = project.MillisecondToTick(note.vibrato.period);
-            float shiftTick = periodTick * note.vibrato.shift / 100f;
+            int partPos = notesVm.Part?.position ?? 0;
             float vibratoTick = note.vibrato.length / 100f * note.duration;
             float startTick = note.position + note.duration - vibratoTick;
-            float tick = notesVm.PointToTick(point) - startTick - shiftTick;
-            float newPeriod = (float)DocManager.Inst.Project.TickToMillisecond(tick);
+            double startMs = project.timeAxis.TickPosToMsPos(startTick + partPos);
+            double pointerMs = project.timeAxis.TickPosToMsPos(notesVm.PointToTick(point) + notesVm.Part.position);
+            float newPeriod = (float)((pointerMs - startMs) / (1 + note.vibrato.shift / 100f));
             if (newPeriod != note.vibrato.period) {
                 DocManager.Inst.ExecuteCmd(new VibratoPeriodCommand(notesVm.Part, note, newPeriod));
             }
@@ -805,7 +832,7 @@ namespace OpenUtau.App.Views {
         public override void Update(IPointer pointer, Point point) {
             var notesVm = vm.NotesViewModel;
             var project = notesVm.Project;
-            float periodTick = project.MillisecondToTick(note.vibrato.period);
+            float periodTick = project.timeAxis.TicksBetweenMsPos(note.PositionMs, note.PositionMs + note.vibrato.period);
             float deltaTick = notesVm.PointToTick(point) - notesVm.PointToTick(hitPoint);
             float deltaShift = deltaTick / periodTick * 100f;
             float newShift = initialShift + deltaShift;
@@ -818,6 +845,7 @@ namespace OpenUtau.App.Views {
 
     class PhonemeMoveState : NoteEditState {
         public readonly UNote leadingNote;
+        public readonly UPhoneme phoneme;
         public readonly int index;
         public int startOffset;
         public PhonemeMoveState(
@@ -825,8 +853,10 @@ namespace OpenUtau.App.Views {
             PianoRollViewModel vm,
             IValueTip valueTip,
             UNote leadingNote,
+            UPhoneme phoneme,
             int index) : base(canvas, vm, valueTip) {
             this.leadingNote = leadingNote;
+            this.phoneme = phoneme;
             this.index = index;
         }
         public override void Begin(IPointer pointer, Point point) {
@@ -835,11 +865,13 @@ namespace OpenUtau.App.Views {
         }
         public override void Update(IPointer pointer, Point point) {
             var notesVm = vm.NotesViewModel;
+            int partPos = notesVm.Part?.position ?? 0;
             int offset = startOffset + notesVm.PointToTick(point) - notesVm.PointToTick(startPoint);
             DocManager.Inst.ExecuteCmd(new PhonemeOffsetCommand(
                 notesVm.Part, leadingNote, index, offset));
             var project = notesVm.Project;
-            valueTip.UpdateValueTip($"{project.TickToMillisecond(offset):0.0}ms");
+            double offsetMs = project.timeAxis.TickPosToMsPos(phoneme.position + offset + partPos) - phoneme.PositionMs;
+            valueTip.UpdateValueTip($"{offsetMs:0.0}ms");
         }
     }
 
@@ -861,8 +893,8 @@ namespace OpenUtau.App.Views {
         public override void Update(IPointer pointer, Point point) {
             var notesVm = vm.NotesViewModel;
             var project = notesVm.Project;
-            int preutterTicks = phoneme.position - notesVm.PointToTick(point);
-            double preutterDelta = project.TickToMillisecond(preutterTicks) - phoneme.autoPreutter;
+            double preutter = project.timeAxis.MsBetweenTickPos(notesVm.PointToTick(point), phoneme.position);
+            double preutterDelta = preutter - phoneme.autoPreutter;
             preutterDelta = Math.Max(-phoneme.oto.Preutter, preutterDelta);
             DocManager.Inst.ExecuteCmd(new PhonemePreutterCommand(notesVm.Part, leadingNote, index, (float)preutterDelta));
             valueTip.UpdateValueTip($"{phoneme.preutter:0.0}ms ({preutterDelta:+0.0;-0.0;0}ms)");
@@ -887,8 +919,8 @@ namespace OpenUtau.App.Views {
         public override void Update(IPointer pointer, Point point) {
             var notesVm = vm.NotesViewModel;
             var project = notesVm.Project;
-            float preutter = phoneme.preutter;
-            double overlap = preutter - project.TickToMillisecond(phoneme.position - notesVm.PointToTick(point));
+            int partPos = notesVm.Part?.position ?? 0;
+            double overlap = project.timeAxis.TickPosToMsPos(notesVm.PointToTick(point) + partPos) - (phoneme.PositionMs - phoneme.preutter);
             double overlapDelta = overlap - phoneme.autoOverlap;
             DocManager.Inst.ExecuteCmd(new PhonemeOverlapCommand(notesVm.Part, leadingNote, index, (float)overlapDelta));
             valueTip.UpdateValueTip($"{phoneme.overlap:0.0}ms ({overlapDelta:+0.0;-0.0;0}ms)");

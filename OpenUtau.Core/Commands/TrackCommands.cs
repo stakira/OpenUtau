@@ -8,6 +8,9 @@ namespace OpenUtau.Core {
     public abstract class TrackCommand : UCommand {
         public UProject project;
         public UTrack track;
+        public override ValidateOptions ValidateOptions => new ValidateOptions {
+            SkipTiming = true,
+        };
         public void UpdateTrackNo() {
             Dictionary<int, int> trackNoRemapTable = new Dictionary<int, int>();
             for (int i = 0; i < project.tracks.Count; i++) {
@@ -108,28 +111,29 @@ namespace OpenUtau.Core {
         public override string ToString() { return "Change phonemizer"; }
         public override void Execute() {
             track.Phonemizer = newPhonemizer;
-            track.Phonemizer.SetSinger(track.Singer);
         }
         public override void Unexecute() {
             track.Phonemizer = oldPhonemizer;
-            track.Phonemizer.SetSinger(track.Singer);
         }
     }
 
-    public class TrackChangeRendererCommand : TrackCommand {
-        readonly string newRenderer, oldRenderer;
-        public TrackChangeRendererCommand(UProject project, UTrack track, string newRenderer) {
+    public class TrackChangeRenderSettingCommand : TrackCommand {
+        readonly URenderSettings newSettings;
+        readonly URenderSettings oldSettings;
+        public TrackChangeRenderSettingCommand(UProject project, UTrack track, URenderSettings newSettings) {
             this.project = project;
             this.track = track;
-            this.newRenderer = newRenderer;
-            this.oldRenderer = track.Renderer?.ToString();
+            this.newSettings = newSettings.Clone();
+            this.oldSettings = track.RendererSettings.Clone();
         }
-        public override string ToString() { return "Change phonemizer"; }
+        public override string ToString() { return "Change render setting"; }
         public override void Execute() {
-            track.Renderer = Render.Renderers.CreateRenderer(newRenderer);
+            track.RendererSettings = newSettings.Clone();
+            track.RendererSettings.Validate(track);
         }
         public override void Unexecute() {
-            track.Renderer = Render.Renderers.CreateRenderer(oldRenderer);
+            track.RendererSettings = oldSettings.Clone();
+            track.RendererSettings.Validate(track);
         }
     }
 }

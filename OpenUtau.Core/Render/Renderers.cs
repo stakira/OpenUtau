@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
+using OpenUtau.Classic;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core.Render {
@@ -11,7 +13,7 @@ namespace OpenUtau.Core.Render {
         public const string VOGEN = "VOGEN";
         public const string DIFFSINGER = "DIFFSINGER";
 
-        static readonly string[] classicRenderers = new[] { CLASSIC, WORLDLINER };
+        static readonly string[] classicRenderers = new[] { WORLDLINER, CLASSIC };
         static readonly string[] enunuRenderers = new[] { ENUNU };
         static readonly string[] vogenRenderers = new[] { VOGEN };
         static readonly string[] diffSingerRenderers = new[] { DIFFSINGER };
@@ -38,9 +40,9 @@ namespace OpenUtau.Core.Render {
 
         public static IRenderer CreateRenderer(string renderer) {
             if (renderer == CLASSIC) {
-                return new Classic.ClassicRenderer();
-            } else if (renderer == WORLDLINER || renderer == "WORLDLINER") {
-                return new Classic.WorldlineRenderer();
+                return new ClassicRenderer();
+            } else if (renderer?.StartsWith(WORLDLINER.Substring(0, 9)) ?? false) {
+                return new WorldlineRenderer();
             } else if (renderer == ENUNU) {
                 return new Enunu.EnunuRenderer();
             } else if (renderer == VOGEN) {
@@ -49,6 +51,55 @@ namespace OpenUtau.Core.Render {
                 return new DiffSinger.DiffSingerRenderer();
             }
             return null;
+        }
+
+        readonly static ConcurrentDictionary<string, object> cacheLockMap
+            = new ConcurrentDictionary<string, object>();
+
+        public static object GetCacheLock(string key) {
+            return cacheLockMap.GetOrAdd(key, _ => new object());
+        }
+
+        public static void ApplyDynamics(RenderPhrase phrase, RenderResult result) {
+            const int interval = 5;
+            if (phrase.dynamics == null) {
+                return;
+            }
+            int startTick = phrase.position - phrase.leading;
+            double startMs = result.positionMs - result.leadingMs;
+            int startSample = 0;
+            for (int i = 0; i < phrase.dynamics.Length; ++i) {
+                int endTick = startTick + interval;
+                double endMs = phrase.timeAxis.TickPosToMsPos(endTick);
+                int endSample = Math.Min((int)((endMs - startMs) / 1000 * 44100), result.samples.Length);
+                float a = phrase.dynamics[i];
+                float b = (i + 1) == phrase.dynamics.Length ? phrase.dynamics[i] : phrase.dynamics[i + 1];
+                for (int j = startSample; j < endSample; ++j) {
+                    result.samples[j] *= a + (b - a) * (j - startSample) / (endSample - startSample);
+                }
+                startTick = endTick;
+                startSample = endSample;
+            }
+        }
+
+        public static IReadOnlyList<IResampler> GetSupportedResamplers(IWavtool wavtool) {
+            if (wavtool is SharpWavtool) {
+                return ToolsManager.Inst.Resamplers;
+            } else {
+                return ToolsManager.Inst.Resamplers
+                    .Where(r => !(r is WorldlineResampler))
+                    .ToArray();
+            }
+        }
+
+        public static IReadOnlyList<IWavtool> GetSupportedWavtools(IResampler resampler) {
+            if (resampler is WorldlineResampler) {
+                return ToolsManager.Inst.Wavtools
+                    .Where(r => r is SharpWavtool)
+                    .ToArray();
+            } else {
+                return ToolsManager.Inst.Wavtools;
+            }
         }
     }
 }

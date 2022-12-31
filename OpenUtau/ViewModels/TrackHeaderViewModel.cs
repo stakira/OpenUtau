@@ -11,6 +11,7 @@ using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using ScottPlot.MarkerShapes;
 using Serilog;
 
 namespace OpenUtau.App.ViewModels {
@@ -19,7 +20,7 @@ namespace OpenUtau.App.ViewModels {
         public USinger Singer => track.Singer;
         public Phonemizer Phonemizer => track.Phonemizer;
         public string PhonemizerTag => track.Phonemizer.Tag;
-        public Core.Render.IRenderer Renderer => track.Renderer;
+        public Core.Render.IRenderer Renderer => track.RendererSettings.Renderer;
         public IReadOnlyList<MenuItemViewModel>? SingerMenuItems { get; set; }
         public ReactiveCommand<USinger, Unit> SelectSingerCommand { get; }
         public IReadOnlyList<MenuItemViewModel>? PhonemizerMenuItems { get; set; }
@@ -58,10 +59,13 @@ namespace OpenUtau.App.ViewModels {
                         TryChangePhonemizer(singer.DefaultPhonemizer);
                     }
                     if (singer == null || !singer.Found) {
-                        DocManager.Inst.ExecuteCmd(new TrackChangeRendererCommand(DocManager.Inst.Project, track, null));
-                    } else if (singer.SingerType != track.Renderer?.SingerType) {
-                        string? renderer = Core.Render.Renderers.GetDefaultRenderer(singer.SingerType);
-                        DocManager.Inst.ExecuteCmd(new TrackChangeRendererCommand(DocManager.Inst.Project, track, renderer));
+                        var settings = new URenderSettings();
+                        DocManager.Inst.ExecuteCmd(new TrackChangeRenderSettingCommand(DocManager.Inst.Project, track, settings));
+                    } else if (singer.SingerType != track.RendererSettings.Renderer?.SingerType) {
+                        var settings = new URenderSettings {
+                            renderer = Core.Render.Renderers.GetDefaultRenderer(singer.SingerType),
+                        };
+                        DocManager.Inst.ExecuteCmd(new TrackChangeRenderSettingCommand(DocManager.Inst.Project, track, settings));
                     }
                     DocManager.Inst.EndUndoGroup();
                     if (!string.IsNullOrEmpty(singer?.Id) && singer.Found) {
@@ -100,8 +104,11 @@ namespace OpenUtau.App.ViewModels {
                 this.RaisePropertyChanged(nameof(PhonemizerTag));
             });
             SelectRendererCommand = ReactiveCommand.Create<string>(name => {
+                var settings = new URenderSettings {
+                    renderer = name,
+                };
                 DocManager.Inst.StartUndoGroup();
-                DocManager.Inst.ExecuteCmd(new TrackChangeRendererCommand(DocManager.Inst.Project, track, name));
+                DocManager.Inst.ExecuteCmd(new TrackChangeRenderSettingCommand(DocManager.Inst.Project, track, settings));
                 DocManager.Inst.EndUndoGroup();
                 this.RaisePropertyChanged(nameof(Renderer));
             });
@@ -184,6 +191,7 @@ namespace OpenUtau.App.ViewModels {
 
         public void RefreshPhonemizers() {
             var items = new List<MenuItemViewModel>();
+            //Recently used phonemizers
             items.AddRange(Preferences.Default.RecentPhonemizers
                 .Select(name => DocManager.Inst.PhonemizerFactories.FirstOrDefault(factory => factory.type.FullName == name))
                 .OfType<PhonemizerFactory>()
@@ -193,13 +201,18 @@ namespace OpenUtau.App.ViewModels {
                     Command = SelectPhonemizerCommand,
                     CommandParameter = factory,
                 }));
+            //more phonemizers grouped by singing language
             items.Add(new MenuItemViewModel() {
                 Header = $"{ThemeManager.GetString("tracks.more")} ...",
-                Items = DocManager.Inst.PhonemizerFactories.Select(factory => new MenuItemViewModel() {
-                    Header = factory.ToString(),
-                    Command = SelectPhonemizerCommand,
-                    CommandParameter = factory,
-                }).ToArray(),
+                Items = DocManager.Inst.PhonemizerFactories.GroupBy(factory => factory.language)
+                .Select(group => new MenuItemViewModel() {
+                    Header = (group.Key is null) ? "General" : group.Key,
+                    Items = group.Select(factory => new MenuItemViewModel() {
+                        Header = factory.ToString(),
+                        Command = SelectPhonemizerCommand,
+                        CommandParameter = factory,
+                    }).ToArray(),
+                }).ToArray()
             });
             PhonemizerMenuItems = items.ToArray();
             this.RaisePropertyChanged(nameof(PhonemizerMenuItems));

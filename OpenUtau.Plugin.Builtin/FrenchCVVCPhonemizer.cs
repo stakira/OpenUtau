@@ -6,7 +6,7 @@ using System.Linq;
 
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("French CVVC Phonemizer", "FR CVVC", "Mim")]
+    [Phonemizer("French CVVC Phonemizer", "FR CVVC", "Mim", language: "FR")]
     // Contributed by Mim with the help of Heiden.BZR & nago's phonemizers
 
     //This is a first implementation and I'm already working on optimization 
@@ -16,7 +16,7 @@ namespace OpenUtau.Plugin.Builtin {
         private readonly string[] consonants = "b,d,f,g,j,k,l,m,n,p,r,s,sh,t,v,w,y,z,gn,.,-,R,BR,_hh".Split(",");
         private readonly Dictionary<string, string> dictionaryReplacements = (
             "aa=ah;ai=ae;ei=eh;eu=ee;ee=ee;oe=oe;ii=ih;au=oh;oo=oo;ou=ou;uu=uh;an=en;in=in;un=in;on=on;uy=ui;" +
-            "bb=b;dd=d;ff=f;gg=g;jj=j;kk=k;ll=l;mm=m;nn=n;pp=p;rr=r;ss=s;ch=sh;tt=t;vv=v;ww=w;yy=y;zz=z;gn=gn;").Split(';')
+            "bb=b;dd=d;ff=f;gg=g;jj=j;kk=k;ll=l;mm=m;nn=n;pp=p;rr=r;ss=s;ch=sh;tt=t;vv=v;ww=w;yy=y;zz=z;gn=gn;4=l;hh=h;").Split(';')
                 .Select(entry => entry.Split('='))
                 .Where(parts => parts.Length == 2)
                 .Where(parts => parts[0] != parts[1])
@@ -25,7 +25,6 @@ namespace OpenUtau.Plugin.Builtin {
 
         private string[] shortConsonants = "r".Split(",");
         private string[] longConsonants = "t,k,g,p,s,sh,j".Split(",");
-        private readonly string[] burstConsonants = "t,k,p,b,g,d".Split(",");
 
 
         private readonly Dictionary<string, string> fraloidsReplacement = (
@@ -70,7 +69,7 @@ namespace OpenUtau.Plugin.Builtin {
 
 
 
-                // --------------------------- STARTING VV ------------------------------- //
+                // --------------------------- is VV ------------------------------- //
             } else if (syllable.IsVV) {  // if VV
                 if (!CanMakeAliasExtension(syllable)) {
                     var vvCheck = prevV + v;
@@ -82,23 +81,13 @@ namespace OpenUtau.Plugin.Builtin {
                         if (basePhoneme == v) {
                             //TODO clean exception part below
                             if (prevV == "ih" || prevV == "i") {
-                                if (HasOto($"{prevV}y", syllable.vowelTone)) {
-                                    phonemes.Add($"{prevV}y");
-                                } else if (HasOto($"{prevV} y", syllable.vowelTone)) {
-                                    phonemes.Add($"{prevV} y");
-                                }
-                                if (HasOto($"y{v}", syllable.vowelTone)) {
-                                    basePhoneme = $"y{v}";
-                                }
+                                basePhoneme = $"y{v}";
                             }
                             if (prevV == "ou") {
-                                if (HasOto($"{prevV}w", syllable.vowelTone)) {
-                                    phonemes.Add($"{prevV}w");
-                                } else {
-                                    phonemes.Add($"{prevV} w");
-                                }
                                 basePhoneme = $"w{v}";
                             }
+                            if (!HasOto(basePhoneme, syllable.tone))
+                                basePhoneme = v;
                         }
                     }
 
@@ -210,7 +199,10 @@ namespace OpenUtau.Plugin.Builtin {
 
                                 // exception of y sound
                                 if ($"{cc[i + 1]}" == "y" && ccc.Contains(CheckCoeEnding(ccc, syllable.tone))) {
-                                    ccc = $"{cc[i]}ih";
+                                    if (usesFraloids)
+                                        ccc = $"{cc[i]}i";
+                                    else
+                                        ccc = $"{cc[i]}ih";
                                 }
                                 phonemes.Add(ccc);
 
@@ -241,8 +233,7 @@ namespace OpenUtau.Plugin.Builtin {
                         vc = ReplaceFraloidsConflict(vc, syllable.tone);
                         if (HasOto(vc, syllable.tone)) {
                             phonemes.Add(vc);
-                        }
-                        else {
+                        } else {
                             vc = $"{prevV}{cc[0]}";
                             if (HasOto(vc, syllable.tone)) {
                                 phonemes.Add(vc);
@@ -339,24 +330,34 @@ namespace OpenUtau.Plugin.Builtin {
                             break;
                         }
 
+
+
                         ccc = CheckAliasFormatting(ccc, "endccOe", syllable.tone, $"{cc[i + 1]}");
 
 
                         if (ccc.Contains(CheckCoeEnding(ccc, syllable.tone)) || ccc == $"{cc[i]}") {
-                            if (i == 0) {
-                                continue;
-                            }
-                        }
 
-                        if (ccc == $"{cc[i]}") {
-                            if (i + 2 <= cc.Length) {
+                            if (cc[i] == cc[i + 1]) {
                                 break;
+                            }
+                            if (i == 0 && $"{cc[i + 1]}" != "y") {
+                                continue;
                             }
                         }
 
                         // exception of y sound
                         if ($"{cc[i + 1]}" == "y" && ccc.Contains(CheckCoeEnding(ccc, syllable.tone))) {
-                            ccc = $"{cc[i]}ih";
+                            if (usesFraloids)
+                                ccc = $"{cc[i]}i";
+                            else
+                                ccc = $"{cc[i]}ih";
+                        }
+
+
+                        if (ccc == $"{cc[i]}") {
+                            if (i + 2 <= cc.Length) {
+                                break;
+                            }
                         }
 
 
@@ -368,6 +369,7 @@ namespace OpenUtau.Plugin.Builtin {
 
 
             }
+
 
             phonemes.Add(basePhoneme);
             return phonemes;
@@ -508,6 +510,8 @@ namespace OpenUtau.Plugin.Builtin {
                             }
                             //else try CC
                             if (i + 1 < cc.Length) {
+
+                                ccc = $"{cc[i]}";
                                 ccc = CheckAliasFormatting(ccc, "endcc", ending.tone, $"{cc[i + 1]}");
                                 if (HasOto(ccc, ending.tone)) {
                                     phonemes.Add(ccc);
@@ -518,14 +522,8 @@ namespace OpenUtau.Plugin.Builtin {
                             if (i > 0) {
                                 ccc = $"{cc[i]}";
                                 ccc = CheckAliasFormatting(ccc, "endcOe", ending.tone, "");
-
-                                // exception of y sound 
-                                if (i + 1 < cc.Length) {
-                                    if ($"{cc[i + 1]}" == "y" && ccc.Contains(CheckCoeEnding(ccc, ending.tone))) {
-                                        ccc = $"{cc[i]}ih";
-                                    }
-                                }
                             }
+
                             if (HasOto(ccc, ending.tone)) {
                                 phonemes.Add(ccc);
                             }
@@ -721,15 +719,33 @@ namespace OpenUtau.Plugin.Builtin {
             if (original == null) {
                 return null;
             }
-            List<string> modified = new List<string>();
+
+            string[] arpabet = "aa,ai,ei,eu,ii,au,uu,an,un,uy,bb,dd,ff,gg,jj,kk,ll,mm,nn,pp,rr,ss,ch,tt,vv,ww,yy,zz".Split(",");
+            string[] petitmot = "ah,ae,eh,ee,ih,oh,uh,en,in,ui,b,d,f,g,j,k,l,m,n,p,r,s,sh,t,v,w,y,z".Split(",");
+
+            List<string> convert = new List<string>();
             foreach (string s in original) {
+                string c = s;
+                for (int i = 0; i < arpabet.Length; i++) {
+                    if (s == arpabet[i]) {
+                        c = petitmot[i];
+                    }
+                }
+                convert.Add(c);
+            }
+
+            if (convert == null) {
+                return null;
+            }
+
+            List<string> modified = new List<string>();
+            foreach (string s in convert) {
                 if (s == "gn") {
                     modified.AddRange(new string[] { "n", "y" });
                 } else {
                     modified.Add(s);
                 }
             }
-
             return modified.ToArray();
         }
 

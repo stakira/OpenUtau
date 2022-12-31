@@ -9,60 +9,95 @@ using OpenUtau.Core.Ustx;
 namespace OpenUtau.Core.Render {
     public class RenderNote {
         public readonly string lyric;
-        public readonly int position;
-        public readonly int duration;
         public readonly int tone;
 
-        public RenderNote(UNote note) {
+        public readonly int position;
+        public readonly int duration;
+        public readonly int end;
+
+        public readonly double positionMs;
+        public readonly double durationMs;
+        public readonly double endMs;
+
+        public RenderNote(UProject project, UPart part, UNote note, int phrasePosition) {
             lyric = note.lyric;
-            position = note.position;
-            duration = note.duration;
             tone = note.tone;
+
+            position = part.position + note.position - phrasePosition;
+            duration = note.duration;
+            end = position + duration;
+
+            positionMs = project.timeAxis.TickPosToMsPos(part.position + note.position);
+            endMs = project.timeAxis.TickPosToMsPos(part.position + note.End);
+            durationMs = endMs - positionMs;
         }
     }
 
     public class RenderPhone {
+        // Relative ticks
         public readonly int position;
         public readonly int duration;
+        public readonly int end;
         public readonly int leading;
+
+        // Absolute milliseconds
+        public readonly double positionMs;
+        public readonly double durationMs;
+        public readonly double endMs;
+        public readonly double leadingMs;
+
         public readonly string phoneme;
         public readonly int tone;
         public readonly int noteIndex;
+        public readonly double tempo;
 
         // classic args
+        public readonly double preutterMs;
+        public readonly double overlapMs;
+        public readonly double durCorrectionMs;
         public readonly string resampler;
         public readonly Tuple<string, int?>[] flags;
+        public readonly string suffix;
         public readonly float volume;
         public readonly float velocity;
         public readonly float modulation;
-        public readonly float preutterMs;
         public readonly Vector2[] envelope;
 
         public readonly UOto oto;
         public readonly ulong hash;
 
-        internal RenderPhone(UProject project, UTrack track, UVoicePart part, UNote note, UPhoneme phoneme) {
-            position = phoneme.position;
+        internal RenderPhone(UProject project, UTrack track, UVoicePart part, UNote note, UPhoneme phoneme, int phrasePosition) {
+            position = part.position + phoneme.position - phrasePosition;
             duration = phoneme.Duration;
-            leading = (int)Math.Round(project.MillisecondToTick(phoneme.preutter) / 5.0) * 5; // TODO
+            end = position + duration;
+            positionMs = phoneme.PositionMs;
+            durationMs = phoneme.DurationMs;
+            endMs = phoneme.EndMs;
+            leadingMs = phoneme.preutter;
+            leading = Math.Max(0, project.timeAxis.TicksBetweenMsPos(positionMs - leadingMs, positionMs));
+
             this.phoneme = phoneme.phoneme;
             tone = note.tone;
+            tempo = project.timeAxis.GetBpmAtTick(part.position + phoneme.position);
+            preutterMs = phoneme.preutter;
+            overlapMs = phoneme.overlap;
+            durCorrectionMs = phoneme.preutter - phoneme.tailIntrude + phoneme.tailOverlap;
 
+            resampler = track.RendererSettings.resampler;
             int eng = (int)phoneme.GetExpression(project, track, Format.Ustx.ENG).Item1;
-            if (project.expressions.TryGetValue(Format.Ustx.ENG, out var descriptor)) {
-                if (eng < 0 || eng >= descriptor.options.Length) {
-                    eng = 0;
-                }
+            if (project.expressions.TryGetValue(Format.Ustx.ENG, out var descriptor)
+                && eng >= 0 && eng < descriptor.options.Length
+                && !string.IsNullOrEmpty(descriptor.options[eng])) {
                 resampler = descriptor.options[eng];
-                if (string.IsNullOrEmpty(resampler)) {
-                    resampler = Util.Preferences.Default.Resampler;
-                }
             }
             flags = phoneme.GetResamplerFlags(project, track);
+            string voiceColor = phoneme.GetVoiceColor(project, track);
+            suffix = track.Singer.Subbanks.FirstOrDefault(
+                subbank => subbank.Color == voiceColor)?.Suffix;
             volume = phoneme.GetExpression(project, track, Format.Ustx.VOL).Item1 * 0.01f;
             velocity = phoneme.GetExpression(project, track, Format.Ustx.VEL).Item1 * 0.01f;
             modulation = phoneme.GetExpression(project, track, Format.Ustx.MOD).Item1 * 0.01f;
-            preutterMs = phoneme.preutter;
+            leadingMs = phoneme.preutter;
             envelope = phoneme.envelope.data.ToArray();
 
             oto = phoneme.oto;
@@ -73,20 +108,21 @@ namespace OpenUtau.Core.Render {
             using (var stream = new MemoryStream()) {
                 using (var writer = new BinaryWriter(stream)) {
                     writer.Write(duration);
-                    writer.Write(phoneme ?? "");
+                    writer.Write(phoneme ?? string.Empty);
                     writer.Write(tone);
 
-                    writer.Write(resampler ?? "");
+                    writer.Write(resampler ?? string.Empty);
                     foreach (var flag in flags) {
                         writer.Write(flag.Item1);
                         if (flag.Item2.HasValue) {
                             writer.Write(flag.Item2.Value);
                         }
                     }
+                    writer.Write(suffix ?? string.Empty);
                     writer.Write(volume);
                     writer.Write(velocity);
                     writer.Write(modulation);
-                    writer.Write(preutterMs);
+                    writer.Write(leadingMs);
                     foreach (var point in envelope) {
                         writer.Write(point.X);
                         writer.Write(point.Y);
@@ -98,15 +134,22 @@ namespace OpenUtau.Core.Render {
     }
 
     public class RenderPhrase {
-        public readonly string singerId;
         public readonly USinger singer;
+        public readonly TimeAxis timeAxis;
+
         public readonly int position;
-        public readonly int endPosition;
-        public readonly double tempo;
-        public readonly double tickToMs;
+        public readonly int duration;
+        public readonly int end;
+        public readonly int leading;
+
+        public readonly double positionMs;
+        public readonly double durationMs;
+        public readonly double endMs;
+        public readonly double leadingMs;
+
         public readonly RenderNote[] notes;
         public readonly RenderPhone[] phones;
-        public readonly int pitchStart;
+
         public readonly float[] pitches;
         public readonly float[] pitchesBeforeDeviation;
         public readonly float[] dynamics;
@@ -115,9 +158,11 @@ namespace OpenUtau.Core.Render {
         public readonly float[] toneShift;
         public readonly float[] tension;
         public readonly float[] voicing;
+        public readonly ulong preEffectHash;
         public readonly ulong hash;
 
         internal readonly IRenderer renderer;
+        public readonly string wavtool;
 
         internal RenderPhrase(UProject project, UTrack track, UVoicePart part, IEnumerable<UPhoneme> phonemes) {
             var uNotes = new List<UNote>();
@@ -135,24 +180,33 @@ namespace OpenUtau.Core.Render {
                 uNotes.Add(next);
                 next = next.Next;
             }
+
+            singer = track.Singer;
+            renderer = track.RendererSettings.Renderer;
+            wavtool = track.RendererSettings.wavtool;
+            timeAxis = project.timeAxis.Clone();
+
+            position = part.position + phonemes.First().position;
+            end = part.position + phonemes.Last().End;
+            duration = end - position;
+
             notes = uNotes
-                .Select(n => new RenderNote(n))
+                .Select(n => new RenderNote(project, part, n, position))
                 .ToArray();
             phones = phonemes
-                .Select(p => new RenderPhone(project, track, part, p.Parent, p))
+                .Select(p => new RenderPhone(project, track, part, p.Parent, p, position))
                 .ToArray();
 
-            singerId = track.Singer.Id;
-            singer = track.Singer;
-            renderer = track.Renderer;
-            position = part.position;
-            endPosition = position + phones.Last().position + phones.Last().duration;
-            tempo = project.bpm;
-            tickToMs = 60000.0 / project.bpm * project.beatUnit / 4 / project.resolution;
+            leading = phones.First().leading;
+
+            positionMs = phones.First().positionMs;
+            endMs = phones.Last().endMs;
+            durationMs = endMs - positionMs;
+            leadingMs = phones.First().leadingMs;
 
             const int pitchInterval = 5;
-            pitchStart = phones[0].position - phones[0].leading;
-            pitches = new float[(phones.Last().position + phones.Last().duration - pitchStart) / pitchInterval + 1];
+            int pitchStart = position - part.position - leading;
+            pitches = new float[(end - part.position - pitchStart) / pitchInterval + 1];
             int index = 0;
             foreach (var note in uNotes) {
                 while (pitchStart + index * pitchInterval < note.End && index < pitches.Length) {
@@ -171,19 +225,23 @@ namespace OpenUtau.Core.Render {
                 }
                 int startIndex = Math.Max(0, (int)Math.Ceiling((float)(note.position - pitchStart) / pitchInterval));
                 int endIndex = Math.Min(pitches.Length, (note.End - pitchStart) / pitchInterval);
+                // Use tempo at note start to calculate vibrato period.
+                float nPeriod = (float)(note.vibrato.period / note.DurationMs);
                 for (int i = startIndex; i < endIndex; ++i) {
                     float nPos = (float)(pitchStart + i * pitchInterval - note.position) / note.duration;
-                    float nPeriod = (float)project.MillisecondToTick(note.vibrato.period) / note.duration;
                     var point = note.vibrato.Evaluate(nPos, nPeriod, note);
                     pitches[i] = point.Y * 100;
                 }
             }
             foreach (var note in uNotes) {
                 var pitchPoints = note.pitch.data
-                    .Select(point => new PitchPoint(
-                        project.MillisecondToTick(point.X) + note.position,
-                        point.Y * 10 + note.tone * 100,
-                        point.shape))
+                    .Select(point => {
+                        double nodePosMs = timeAxis.TickPosToMsPos(part.position + note.position);
+                        return new PitchPoint(
+                               timeAxis.MsPosToTickPos(nodePosMs + point.X) - part.position,
+                               point.Y * 10 + note.tone * 100,
+                               point.shape);
+                    })
                     .ToList();
                 if (pitchPoints.Count == 0) {
                     pitchPoints.Add(new PitchPoint(note.position, note.tone * 100));
@@ -232,7 +290,8 @@ namespace OpenUtau.Core.Render {
             breathiness = SampleCurve(part, Format.Ustx.BREC, pitchStart, pitches.Length, (x, _) => x);
             voicing = SampleCurve(part, Format.Ustx.VOIC, pitchStart, pitches.Length, (x, _) => x);
 
-            hash = Hash();
+            preEffectHash = Hash(false);
+            hash = Hash(true);
         }
 
         private static float[] SampleCurve(UVoicePart part, string abbr, int start, int length, Func<float, UCurve, float> convert) {
@@ -249,21 +308,24 @@ namespace OpenUtau.Core.Render {
             return result;
         }
 
-        private ulong Hash() {
+        private ulong Hash(bool postEffect) {
             using (var stream = new MemoryStream()) {
                 using (var writer = new BinaryWriter(stream)) {
-                    writer.Write(singerId);
-                    writer.Write(tempo);
-                    writer.Write(tickToMs);
+                    writer.Write(singer.Id);
+                    writer.Write(renderer?.ToString() ?? "");
+                    writer.Write(wavtool ?? "");
+                    writer.Write(timeAxis.Timestamp);
                     foreach (var phone in phones) {
                         writer.Write(phone.hash);
                     }
-                    foreach (var array in new float[][] { pitches, dynamics, gender, breathiness, toneShift, tension, voicing }) {
-                        if (array == null) {
-                            writer.Write("null");
-                        } else {
-                            foreach (var v in array) {
-                                writer.Write(v);
+                    if (postEffect) {
+                        foreach (var array in new float[][] { pitches, dynamics, gender, breathiness, toneShift, tension, voicing }) {
+                            if (array == null) {
+                                writer.Write("null");
+                            } else {
+                                foreach (var v in array) {
+                                    writer.Write(v);
+                                }
                             }
                         }
                     }

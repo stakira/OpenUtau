@@ -2,6 +2,11 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+  <!--<system:String x:Key="context.note.copy">Copy note</system:String>-->
+  <system:String x:Key="context.note.delete">音符を削除</system:String>
+  <system:String x:Key="context.part.delete">パートを削除</system:String>
+  <system:String x:Key="context.part.rename">パートの名前を変更</system:String>
+  <!--<system:String x:Key="context.part.replaceaudio">Reselect audio file</system:String>-->
   <system:String x:Key="context.pitch.easein">イーズイン</system:String>
   <system:String x:Key="context.pitch.easeinout">イーズイン/アウト</system:String>
   <system:String x:Key="context.pitch.easeout">イーズアウト</system:String>
@@ -9,10 +14,14 @@
   <system:String x:Key="context.pitch.pointadd">点を追加</system:String>
   <system:String x:Key="context.pitch.pointdel">点を削除</system:String>
   <system:String x:Key="context.pitch.pointsnapprev">前の音符にスナップ</system:String>
+  <system:String x:Key="context.timeline.addtempo">{0}にテンポ変更を追加</system:String>
+  <system:String x:Key="context.timeline.addtimesig">拍子変更を追加</system:String>
+  <system:String x:Key="context.timeline.deltempo">{0}のテンポ変更を削除</system:String>
+  <system:String x:Key="context.timeline.deltimesig">拍子変更を削除</system:String>
 
   <system:String x:Key="debug.clear">クリア</system:String>
-  <!--<system:String x:Key="debug.copylog">Copy Log</system:String>-->
-  <!--<system:String x:Key="debug.reverselogorder">Reverse Log Order</system:String>-->
+  <system:String x:Key="debug.copylog">ログをコピー</system:String>
+  <system:String x:Key="debug.reverselogorder">古い順に並び変える</system:String>
 
   <system:String x:Key="dialogs.about.caption">OpenUTAUについて</system:String>
   <system:String x:Key="dialogs.about.message">
@@ -29,6 +38,10 @@
   <system:String x:Key="dialogs.noresampler.caption">エンジンがありません</system:String>
   <system:String x:Key="dialogs.noresampler.message">エンジンが設定されていません！お好みのエンジンのEXEやDLLファイルをResamplerフォルダに入れて、環境設定でエンジンを選択してください！</system:String>
   <system:String x:Key="dialogs.timesig.caption">拍子</system:String>
+  <!--<system:String x:Key="dialogs.tracksettings.caption">Track Settings</system:String>-->
+  <system:String x:Key="dialogs.tracksettings.location">場所</system:String>
+  <!--<system:String x:Key="dialogs.tracksettings.renderer">Renderer</system:String>-->
+  <!--<system:String x:Key="dialogs.tracksettings.setasdefault">Set As Default</system:String>-->
 
   <system:String x:Key="errors.caption">エラー</system:String>
 
@@ -67,12 +80,18 @@
   <system:String x:Key="menu.edit.undo">元に戻る</system:String>
   <system:String x:Key="menu.file">ファイル</system:String>
   <system:String x:Key="menu.file.exit">OpenUTAUを終了</system:String>
+  <!--<system:String x:Key="menu.file.exportaudio">Export Audio</system:String>-->
+  <!--<system:String x:Key="menu.file.exportmidi">Export Midi File</system:String>-->
+  <!--<system:String x:Key="menu.file.exportmixdown">Mixdown To Wav File</system:String>-->
+  <!--<system:String x:Key="menu.file.exportproject">Export Project</system:String>-->
   <system:String x:Key="menu.file.exportust">USTをエクスポート</system:String>
   <system:String x:Key="menu.file.exportustto">別名でUSTをエクスポート...</system:String>
   <system:String x:Key="menu.file.exportwav">Wavファイルを出力</system:String>
   <system:String x:Key="menu.file.exportwavto">別名でWavファイルを出力...</system:String>
   <system:String x:Key="menu.file.importaudio">音声をインポート...</system:String>
   <system:String x:Key="menu.file.importmidi">MIDIをインポート...</system:String>
+  <!--<system:String x:Key="menu.file.importmidi.drywetmidi">DryWetMidi Importer</system:String>-->
+  <!--<system:String x:Key="menu.file.importmidi.naudio">Naudio Importer</system:String>-->
   <system:String x:Key="menu.file.importtracks">トラックをインポート...</system:String>
   <system:String x:Key="menu.file.new">新規作成</system:String>
   <system:String x:Key="menu.file.newfromtemplate">テンプレートから新規作成</system:String>
@@ -86,6 +105,9 @@
   <system:String x:Key="menu.file.savetemplate">テンプレートを保存...</system:String>
   <system:String x:Key="menu.help">ヘルプ</system:String>
   <system:String x:Key="menu.help.about">OpenUTAUについて</system:String>
+  <system:String x:Key="menu.help.checkupdate">アップデートを確認</system:String>
+  <system:String x:Key="menu.help.logslocation">ログの場所を開く</system:String>
+  <system:String x:Key="menu.help.reportissue">問題を報告</system:String>
   <!--<system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>-->
   <system:String x:Key="menu.tools">ツール</system:String>
   <system:String x:Key="menu.tools.clearcache">キャッシュクリア</system:String>
@@ -131,6 +153,11 @@
   <!--<system:String x:Key="oto.color">Color</system:String>-->
   <system:String x:Key="oto.consonant">子音部</system:String>
   <system:String x:Key="oto.cutoff">ブランク</system:String>
+  <system:String x:Key="oto.edit.consonant">固定範囲</system:String>
+  <system:String x:Key="oto.edit.cutoff">右ブランク</system:String>
+  <system:String x:Key="oto.edit.offset">オフセット</system:String>
+  <system:String x:Key="oto.edit.overlap">オーバーラップ</system:String>
+  <system:String x:Key="oto.edit.preutter">先行発声</system:String>
   <system:String x:Key="oto.file">ファイル</system:String>
   <system:String x:Key="oto.offset">オフセット</system:String>
   <system:String x:Key="oto.overlap">オーバーラップ</system:String>
@@ -140,9 +167,13 @@
   <system:String x:Key="oto.set">セット</system:String>
   <!--<system:String x:Key="oto.suffix">Suffix</system:String>-->
 
+  <!--<system:String x:Key="phoneticassistant.caption">Phonetic Assistant</system:String>-->
+  <!--<system:String x:Key="phoneticassistant.copy">Copy</system:String>-->
+
   <system:String x:Key="pianoroll.menu.lyrics">歌詞</system:String>
-  <!--<system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Replace "-" with "+"</system:String>-->
+  <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">"-" を "+" に置き換え</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">歌詞を編集</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.hanzitopinyin">漢字をピンインへ</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">ひらがな→ローマ字</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">連続音→単独音（日本語）</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">文字のSuffixを削除</system:String>
@@ -154,6 +185,8 @@
   <system:String x:Key="pianoroll.menu.notes.addtailrest">末尾に"R"を追加</system:String>
   <system:String x:Key="pianoroll.menu.notes.clear.vibratos">ビブラートを削除</system:String>
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">レンダリング済みピッチの読み込み</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notes.octavedown">Move an octave down</system:String>-->
+  <!--<system:String x:Key="pianoroll.menu.notes.octaveup">Move an octave up</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.quantize15">1/128にクオンタイズ</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">1/64にクオンタイズ</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">全ての表情をリセット</system:String>
@@ -162,32 +195,40 @@
   <system:String x:Key="pianoroll.menu.notes.reset.vibratos">ビブラートをリセット</system:String>
   <system:String x:Key="pianoroll.menu.part">パート</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">継承プラグイン (実験的)</system:String>
-  <system:String x:Key="pianoroll.menu.part.rename">名前を変更</system:String>
   <system:String x:Key="pianoroll.toggle.finalpitch">最終的なピッチを表示 (R)</system:String>
   <system:String x:Key="pianoroll.toggle.phoneme">音素を表示 (O)</system:String>
   <system:String x:Key="pianoroll.toggle.pitch">ピッチ曲線を表示 (I)</system:String>
   <system:String x:Key="pianoroll.toggle.snap">スナップを有効化 (P)</system:String>
+  <!--<system:String x:Key="pianoroll.toggle.snap.auto">Auto</system:String>-->
+  <!--<system:String x:Key="pianoroll.toggle.snap.autotriplet">Auto (triplet)</system:String>-->
   <system:String x:Key="pianoroll.toggle.tips">ヒントを表示 (T)</system:String>
   <system:String x:Key="pianoroll.toggle.tone">ガイド音を有効化 (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">ビブラートを表示 (U)</system:String>
-  <!--<system:String x:Key="pianoroll.toggle.waveform">View Waveform (W)</system:String>-->
+  <system:String x:Key="pianoroll.toggle.waveform">波形を表示 (W)</system:String>
   <system:String x:Key="pianoroll.tool.drawpitch">ピッチ描画ツール (4)</system:String>
   <system:String x:Key="pianoroll.tool.eraser">消しゴムツール (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">ナイフツール (5)</system:String>
-  <system:String x:Key="pianoroll.tool.pen">ペンツール (2)
-左クリックで描画
-右クリックで削除</system:String>
-  <system:String x:Key="pianoroll.tool.selection">選択ツール (1)
-Ctrl長押しで複数選択</system:String>
+  <system:String x:Key="pianoroll.tool.penplus">ペン+ツール (Ctrl + 2)
+    左クリックで描画
+    右クリックで削除
+Ctrl長押しで選択</system:String>
+  <system:String x:Key="pianoroll.tool.penv2">ペンツール (2)
+    左クリックで描画
+Ctrl長押しで選択</system:String>
+  <system:String x:Key="pianoroll.tool.selectionv2">選択ツール (1)</system:String>
 
   <system:String x:Key="prefs.advanced">高度な設定</system:String>
   <system:String x:Key="prefs.advanced.beta">ベータ版</system:String>
+  <!--<system:String x:Key="prefs.advanced.lyricshelper">Lyrics Helper</system:String>-->
+  <!--<system:String x:Key="prefs.advanced.lyricshelper.brackets">Lyrics Helper Adds Brackets</system:String>-->
   <system:String x:Key="prefs.advanced.resamplerlogging">Resamplerロギング</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging.warn">Resamplerの出力をログファイルに格納します。この設定はUIやレンダリングが遅くなります。</system:String>
   <system:String x:Key="prefs.advanced.stable">安定版</system:String>
+  <!--<system:String x:Key="prefs.advanced.vlabelerpath">Vlabeler Path</system:String>-->
   <system:String x:Key="prefs.appearance">外観</system:String>
   <system:String x:Key="prefs.appearance.lang">言語</system:String>
-  <!--<system:String x:Key="prefs.appearance.showportrait">Show portrait on piano roll</system:String>-->
+  <system:String x:Key="prefs.appearance.showghostnotes">ピアノロール上に他トラックの音符を表示</system:String>
+  <system:String x:Key="prefs.appearance.showportrait">ピアノロール上にポートフォリオを表示</system:String>
   <system:String x:Key="prefs.appearance.theme">テーマ</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">ダーク</system:String>
   <system:String x:Key="prefs.appearance.theme.light">ライト</system:String>
@@ -195,6 +236,8 @@ Ctrl長押しで複数選択</system:String>
   <system:String x:Key="prefs.note.restart">Note: この設定を変更した後は、OpenUtauを再起動してください。</system:String>
   <system:String x:Key="prefs.off">オフ</system:String>
   <system:String x:Key="prefs.on">オン</system:String>
+  <!--<system:String x:Key="prefs.otoeditor">Oto Editor</system:String>-->
+  <!--<system:String x:Key="prefs.otoeditor.select">Default Oto Editor</system:String>-->
   <system:String x:Key="prefs.paths">ファイルの場所</system:String>
   <system:String x:Key="prefs.paths.addlsinger">シンガーの場所（追加）</system:String>
   <system:String x:Key="prefs.paths.addlsinger.install">シンガーの場所(追加)にインストール</system:String>
@@ -217,7 +260,6 @@ Ctrl長押しで複数選択</system:String>
   <system:String x:Key="prefs.rendering">レンダリング</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">位相補正</system:String>
   <!--<system:String x:Key="prefs.rendering.prerender">Pre-render</system:String>-->
-  <system:String x:Key="prefs.rendering.prerender.threads">プリレンダースレッド数</system:String>
   <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
   <system:String x:Key="prefs.rendering.resampler.morewarn">
 警告: moresamplerは完全にはサポートされていません。速度が遅くなり、CPU使用率が高くなる可能性があります。それでも使用する場合:
@@ -228,23 +270,36 @@ Ctrl長押しで複数選択</system:String>
   <system:String x:Key="prefs.rendering.resampler.note">
     Note: エンジンを使用するには、使用したいエンジンのDLLまたはEXEファイルをOpenUTAUフォルダ内のResamplersフォルダに追加し、選択してください。
   </system:String>
+  <!--<system:String x:Key="prefs.rendering.threads.cpuwarn">
+    Warning: too many render threads may cause OpenUtau to run slowly.
+  </system:String>-->
+  <!--<system:String x:Key="prefs.rendering.threads.numthreads">Maximum Render Threads</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
 
   <system:String x:Key="progress.saved">プロジェクトが保存されました。 {0}</system:String>
   <system:String x:Key="progress.waitingrendering">レンダリング中</system:String>
 
   <system:String x:Key="singers.caption">シンガー</system:String>
+  <!--<system:String x:Key="singers.editoto.editinvlabeler">Edit In vLabeler</system:String>-->
+  <system:String x:Key="singers.editoto.gotosource">ソースファイルへ</system:String>
+  <!--<system:String x:Key="singers.editoto.regenfrq">Regenerate FRQ</system:String>-->
+  <!--<system:String x:Key="singers.editoto.regenfrq.regenerating">Regenerating FRQ</system:String>-->
+  <system:String x:Key="singers.editoto.reset">Otoをリセット</system:String>
+  <system:String x:Key="singers.editoto.save">Otoを保存</system:String>
+  <!--<system:String x:Key="singers.editoto.setvlabelerpath">Download vLabeler (1.0.0-beta1 or higher) from https://github.com/sdercolin/vlabeler and set vLabeler path in Preferences first!</system:String>-->
+  <!--<system:String x:Key="singers.errorreport">Generate Singer Error Report</system:String>-->
   <system:String x:Key="singers.location">ファイルの場所</system:String>
-  <!--<system:String x:Key="singers.otoview.moveleft">Move Left</system:String>-->
-  <!--<system:String x:Key="singers.otoview.moveright">Move Right</system:String>-->
-  <!--<system:String x:Key="singers.otoview.selectnext">Select Next</system:String>-->
-  <!--<system:String x:Key="singers.otoview.selectprev">Select Prev</system:String>-->
-  <!--<system:String x:Key="singers.otoview.showall">Show All</system:String>-->
-  <!--<system:String x:Key="singers.otoview.zoomin">Zoom In</system:String>-->
-  <!--<system:String x:Key="singers.otoview.zoomout">Zoom Out</system:String>-->
+  <system:String x:Key="singers.otoview.moveleft">左へ移動</system:String>
+  <system:String x:Key="singers.otoview.moveright">右へ移動</system:String>
+  <system:String x:Key="singers.otoview.selectnext">次を選択</system:String>
+  <system:String x:Key="singers.otoview.selectprev">前を選択</system:String>
+  <system:String x:Key="singers.otoview.showall">全て表示</system:String>
+  <system:String x:Key="singers.otoview.zoomin">ズームイン</system:String>
+  <system:String x:Key="singers.otoview.zoomout">ズームアウト</system:String>
   <system:String x:Key="singers.refresh">更新</system:String>
   <!--<system:String x:Key="singers.setdefaultphonemizer">Set Default Phonemizer</system:String>-->
   <system:String x:Key="singers.setencoding">文字コード設定</system:String>
-  <!--<system:String x:Key="singers.setportrait">Set Portrait</system:String>-->
+  <system:String x:Key="singers.setportrait">ポートレートを設定</system:String>
   <system:String x:Key="singers.subbanks.cancel">キャンセル</system:String>
   <system:String x:Key="singers.subbanks.clear">クリア</system:String>
   <!--<system:String x:Key="singers.subbanks.color">Color</system:String>-->
@@ -258,6 +313,7 @@ Ctrl長押しで複数選択</system:String>
   <system:String x:Key="singers.subbanks.set">セット</system:String>
   <system:String x:Key="singers.subbanks.tone">音程</system:String>
   <system:String x:Key="singers.subbanks.toneranges">音域</system:String>
+  <system:String x:Key="singers.visitwebsite">ウェブサイトへ</system:String>
 
   <!--<system:String x:Key="tip.aliasbox">Override Alias</system:String>-->
   <system:String x:Key="tip.exps">
@@ -308,4 +364,5 @@ Ctrl長押しで複数選択</system:String>
 
   <system:String x:Key="warning">警告</system:String>
   <system:String x:Key="warning.asciipath">OpenUtauのファイルパス "{0}" に非ASCII文字が含まれています。 EXE形式のエンジンが動作しない可能性があります。</system:String>
+  <!--<system:String x:Key="warning.renderer">No settings for this renderer.</system:String>-->
 </ResourceDictionary>

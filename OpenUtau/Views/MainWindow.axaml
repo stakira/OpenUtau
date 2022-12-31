@@ -17,7 +17,8 @@
   </Window.Styles>
   <Grid DragDrop.AllowDrop="True">
     <Grid RowDefinitions="24,24,1*,20,4" ColumnDefinitions="250,*,24" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="{Binding $parent[1].WindowDecorationMargin}">
-      <Menu Grid.Row="0" Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Left" MenuOpened="OnMainMenuOpened">
+      <Menu Grid.Row="0" Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Left"
+            MenuOpened="OnMainMenuOpened" MenuClosed="OnMainMenuClosed" PointerLeave="OnMainMenuPointerLeave">
         <MenuItem Header="{DynamicResource menu.file}">
           <MenuItem Header="{DynamicResource menu.file.new}" InputGesture="Ctrl+N" Click="OnMenuNew"/>
           <MenuItem Header="{DynamicResource menu.file.newfromtemplate}" Items="{Binding OpenTemplates}">
@@ -40,16 +41,25 @@
           <MenuItem Header="{DynamicResource menu.file.openprojectlocation}" Click="OnMenuOpenProjectLocation"/>
           <MenuItem Header="-" Height="1"/>
           <MenuItem Header="{DynamicResource menu.file.save}" InputGesture="Ctrl+S" Click="OnMenuSave"/>
-          <MenuItem Header="{DynamicResource menu.file.saveas}" Click="OnMenuSaveAs"/>
+          <MenuItem Header="{DynamicResource menu.file.saveas}"  InputGesture="Ctrl+Shift+S" Click="OnMenuSaveAs"/>
           <MenuItem Header="-" Height="1"/>
           <MenuItem Header="{DynamicResource menu.file.importtracks}" Click="OnMenuImportTracks"/>
           <MenuItem Header="{DynamicResource menu.file.importaudio}" Click="OnMenuImportAudio"/>
-          <MenuItem Header="{DynamicResource menu.file.importmidi}" Click="OnMenuImportMidi"/>
+          <MenuItem Header="{DynamicResource menu.file.importmidi}">
+            <MenuItem Header="{DynamicResource menu.file.importmidi.naudio}" Click="OnMenuImportMidiNaudio"/>
+            <MenuItem Header="{DynamicResource menu.file.importmidi.drywetmidi}" Click="OnMenuImportMidiDrywetmidi"/>
+          </MenuItem>
           <MenuItem Header="-" Height="1"/>
-          <MenuItem Header="{DynamicResource menu.file.exportwav}" Click="OnMenuExportWav"/>
-          <MenuItem Header="{DynamicResource menu.file.exportwavto}" Click="OnMenuExportWavTo"/>
-          <MenuItem Header="{DynamicResource menu.file.exportust}" Click="OnMenuExportUst"/>
-          <MenuItem Header="{DynamicResource menu.file.exportustto}" Click="OnMenuExportUstTo"/>
+          <MenuItem Header="{DynamicResource menu.file.exportaudio}">
+            <MenuItem Header="{DynamicResource menu.file.exportmixdown}" Click="OnMenuExportMixdown"/>
+            <MenuItem Header="{DynamicResource menu.file.exportwav}" Click="OnMenuExportWav"/>
+            <MenuItem Header="{DynamicResource menu.file.exportwavto}" Click="OnMenuExportWavTo"/>
+          </MenuItem>
+          <MenuItem Header="{DynamicResource menu.file.exportproject}">
+            <MenuItem Header="{DynamicResource menu.file.exportust}" Click="OnMenuExportUst"/>
+            <MenuItem Header="{DynamicResource menu.file.exportustto}" Click="OnMenuExportUstTo"/>
+            <MenuItem Header="{DynamicResource menu.file.exportmidi}" Click="OnMenuExportMidi"/>
+          </MenuItem>
           <MenuItem Header="{DynamicResource menu.file.openexportlocation}" Click="OnMenuOpenProjectLocation"/>
         </MenuItem>
         <MenuItem Header="{DynamicResource menu.tools}">
@@ -63,6 +73,7 @@
           </MenuItem>
           <MenuItem Header="{Binding ClearCacheHeader}" Click="OnMenuClearCache"/>
           <MenuItem Header="{DynamicResource menu.tools.debugwindow}" Click="OnMenuDebugWindow"/>
+          <MenuItem Header="{DynamicResource phoneticassistant.caption}" Click="OnMenuPhoneticAssistant"/>
           <MenuItem Header="{DynamicResource menu.tools.project.expressions}" Click="OnMenuExpressionss"/>
           <MenuItem Header="{DynamicResource menu.tools.singers}" Click="OnMenuSingers"/>
           <MenuItem Header="{DynamicResource menu.tools.singer.install}" Click="OnMenuInstallSinger"/>
@@ -70,7 +81,9 @@
         </MenuItem>
         <MenuItem Header="{DynamicResource menu.help}">
           <MenuItem Header="{DynamicResource menu.help.wiki}" Click="OnMenuWiki"/>
-          <MenuItem Header="{Binding AppVersion}" Click="OnMenuVersion"/>
+          <MenuItem Header="{DynamicResource menu.help.checkupdate}" Click="OnMenuCheckUpdate"/>
+          <MenuItem Header="{DynamicResource menu.help.reportissue}" Click="OnMenuReportIssue"/>
+          <MenuItem Header="{DynamicResource menu.help.logslocation}" Click="OnMenuLogsLocation"/>
         </MenuItem>
       </Menu>
       <Panel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="24">
@@ -148,6 +161,18 @@
               Canvas.Top="0" ZIndex="100" IsHitTestVisible="False"
               Fill="{DynamicResource NeutralAccentBrushSemi}"
               Data="M -6.5 0 L 6.5 0 L 6.5 3 L 0 9 L -6.5 3 Z"/>
+        <Canvas.ContextMenu>
+          <ContextMenu Name="TimelineContextMenu" Items="{Binding TimelineContextMenuItems}">
+            <ContextMenu.Styles>
+              <Style Selector="MenuItem">
+                <Setter Property="Header" Value="{Binding Header}"/>
+                <Setter Property="Command" Value="{Binding Command}"/>
+                <Setter Property="CommandParameter" Value="{Binding CommandParameter}"/>
+                <Setter Property="Items" Value="{Binding Items}"/>
+              </Style>
+            </ContextMenu.Styles>
+          </ContextMenu>
+        </Canvas.ContextMenu>
       </Canvas>
       <c:TrackHeaderCanvas Grid.Row="2" Grid.Column="0" ClipToBounds="True" Background="Transparent"
                            DataContext="{Binding TracksViewModel}"
@@ -163,12 +188,12 @@
       <c:TickBackground Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Margin="0" IsHitTestVisible="False"
                         Foreground="{DynamicResource TickLineBrush}"
                         Background="{DynamicResource TickLineBrushLow}"
-                        BeatPerBar="{Binding PlaybackViewModel.BeatPerBar}"
-                        BeatUnit="{Binding PlaybackViewModel.BeatUnit}"
                         Resolution="{Binding PlaybackViewModel.Resolution}"
                         TickWidth="{Binding TracksViewModel.TickWidth}"
                         TickOffset="{Binding TracksViewModel.TickOffset}"
-                        SnapUnit="{Binding TracksViewModel.SnapUnit}" ShowBarNumber="True"/>
+                        SnapDiv="{Binding TracksViewModel.SnapDiv}"
+                        SnapTicks="{Binding TracksViewModel.SnapTicks}"
+                        ShowBarNumber="True"/>
       <c:PartsCanvas x:Name="partsCanvas" Grid.Row="2" Grid.Column="1" ClipToBounds="True" Background="Transparent"
                      DataContext="{Binding TracksViewModel}"
                      TickWidth="{Binding TickWidth}"
@@ -182,12 +207,29 @@
                      DoubleTapped="PartsCanvasDoubleTapped"
                      PointerWheelChanged="PartsCanvasPointerWheelChanged">
         <Rectangle Name="PlayPosHighlight"
-                   Width="{Binding SnapUnitWidth, Mode=OneWay}"
+                   Width="{Binding PlayPosHighlightWidth, Mode=OneWay}"
                    Height="{Binding $parent.Bounds.Height, Mode=OneWay}"
                    Canvas.Left="{Binding PlayPosHighlightX, Mode=OneWay}"
                    Canvas.Top="0"
                    Fill="{DynamicResource NeutralAccentBrushSemi2}"
                    IsHitTestVisible="False"/>
+        <c:PartsCanvas.ContextMenu>
+          <ContextMenu Name="PartsContextMenu"
+                       ContextMenuOpening="PartsContextMenuOpening"
+                       ContextMenuClosing="PartsContextMenuClosing">
+            <MenuItem Header="{DynamicResource context.part.delete}"
+                      Command="{Binding PartDeleteCommand}"
+                      CommandParameter="{Binding Part}"/>
+            <MenuItem Header="{DynamicResource context.part.replaceaudio}"
+                      IsVisible="{Binding IsWavePart}"
+                      Command="{Binding PartReplaceAudioCommand}"
+                      CommandParameter="{Binding Part}"/>
+            <MenuItem Header="{DynamicResource context.part.rename}"
+                      IsVisible="{Binding IsVoicePart}"
+                      Command="{Binding PartRenameCommand}"
+                      CommandParameter="{Binding Part}"/>
+          </ContextMenu>
+        </c:PartsCanvas.ContextMenu>
       </c:PartsCanvas>
       <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent"
               BoxShadow="inset 0 0 5 1 #3F000000" ClipToBounds="True" IsHitTestVisible="False">

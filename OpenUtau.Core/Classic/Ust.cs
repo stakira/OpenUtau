@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -16,7 +16,7 @@ namespace OpenUtau.Classic {
         public static UProject Load(string[] files) {
             foreach (var file in files) {
                 if (Formats.DetectProjectFormat(file) != ProjectFormats.Ust) {
-                    DocManager.Inst.ExecuteCmd(new UserMessageNotification("Multiple files must be all Ust files"));
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Multiple files must be all Ust files"));
                     return null;
                 }
             }
@@ -64,7 +64,7 @@ namespace OpenUtau.Classic {
         }
 
         public static UProject Load(StreamReader reader, string file) {
-            var project = new UProject() { resolution = 480, FilePath = file, Saved = false };
+            var project = new UProject() { FilePath = file, Saved = false };
             Ustx.AddDefaultExpressions(project);
 
             project.tracks.Add(new UTrack {
@@ -87,6 +87,7 @@ namespace OpenUtau.Classic {
         private static void ParsePart(UProject project, UVoicePart part, List<IniBlock> blocks) {
             var lastNotePos = 0;
             var lastNoteEnd = 0;
+            bool shouldFixTempo = project.tempos[0].bpm >= 0 && project.tempos[0].bpm < 1000; // Need to fix tempo=500k error or not.
             foreach (var block in blocks) {
                 var header = block.header;
                 try {
@@ -104,12 +105,16 @@ namespace OpenUtau.Classic {
                                 ParseNote(note, lastNotePos, lastNoteEnd, block.lines, out var noteTempo);
                                 lastNotePos = note.position;
                                 lastNoteEnd = note.End;
-                                if (note.lyric.ToLower() != "r") {
+                                if (note.lyric.ToLowerInvariant() != "r") {
                                     part.notes.Add(note);
                                 }
-                                if (noteTempo != null && (project.bpm <= 0 || project.bpm > 1000)) {
-                                    // Fix tempo=500k error.
-                                    project.bpm = noteTempo.Value;
+                                if (noteTempo != null) {
+                                    if (shouldFixTempo) {
+                                        project.tempos[0].bpm = noteTempo.Value;
+                                        shouldFixTempo = false;
+                                    } else {
+                                        project.tempos.Add(new UTempo(note.position, noteTempo.Value));
+                                    }
                                 }
                             } else {
                                 throw new FileFormatException($"Unexpected header\n{block.header}");
@@ -137,7 +142,7 @@ namespace OpenUtau.Classic {
             const string format = "<param>=<value>";
             foreach (var iniLine in lines) {
                 var line = iniLine.line;
-                var parts = line.Split('=');
+                var parts = line.Split('=', 2);
                 if (parts.Length != 2) {
                     throw new FileFormatException($"Line does not match format {format}.\n{iniLine}");
                 }
@@ -145,7 +150,7 @@ namespace OpenUtau.Classic {
                 switch (param) {
                     case "Tempo":
                         if (ParseFloat(parts[1], out var temp)) {
-                            project.bpm = temp;
+                            project.tempos[0].bpm = temp;
                         }
                         break;
                     case "ProjectName":
@@ -164,107 +169,27 @@ namespace OpenUtau.Classic {
         }
 
         private static void ParseNote(UNote note, int lastNotePos, int lastNoteEnd, List<IniLine> iniLines, out float? noteTempo) {
-            const string format = "<param>=<value>";
-            noteTempo = null;
-            string pbs = null, pbw = null, pby = null, pbm = null;
-            int? delta = null;
-            int? duration = null;
-            int? length = null;
-            foreach (var iniLine in iniLines) {
-                var line = iniLine.line;
-                var parts = line.Split('=');
-                if (parts.Length != 2) {
-                    throw new FileFormatException($"Line does not match format {format}.\n{iniLine}");
-                }
-                var param = parts[0].Trim();
-                var error = false;
-                var isFloat = ParseFloat(parts[1], out var floatValue);
-                switch (param) {
-                    case "Length":
-                        error |= !isFloat;
-                        length = (int)floatValue;
-                        break;
-                    case "Delta":
-                        error |= !isFloat;
-                        delta = (int)floatValue;
-                        break;
-                    case "Duration":
-                        error |= !isFloat;
-                        duration = (int)floatValue;
-                        break;
-                    case "Lyric":
-                        ParseLyric(note, parts[1]);
-                        break;
-                    case "NoteNum":
-                        error |= !isFloat;
-                        note.tone = (int)floatValue;
-                        break;
-                    case "Velocity":
-                        error |= !isFloat;
-                        SetExpression(note, Ustx.VEL, 0, floatValue);
-                        break;
-                    case "Intensity":
-                        error |= !isFloat;
-                        SetExpression(note, Ustx.VOL, 0, floatValue);
-                        break;
-                    case "Moduration":
-                        error |= !isFloat;
-                        SetExpression(note, Ustx.MOD, 0, floatValue);
-                        break;
-                    case "VoiceOverlap":
-                        error |= !isFloat;
-                        //note.phonemes[0].overlap = floatValue;
-                        break;
-                    case "PreUtterance":
-                        error |= !isFloat;
-                        //note.phonemes[0].preutter = floatValue;
-                        break;
-                    case "Envelope":
-                        ParseEnvelope(note, parts[1], iniLine);
-                        break;
-                    case "VBR":
-                        ParseVibrato(note, parts[1], iniLine);
-                        break;
-                    case "PBS":
-                        pbs = parts[1];
-                        break;
-                    case "PBW":
-                        pbw = parts[1];
-                        break;
-                    case "PBY":
-                        pby = parts[1];
-                        break;
-                    case "PBM":
-                        pbm = parts[1];
-                        break;
-                    case "Tempo":
-                        if (isFloat) {
-                            noteTempo = floatValue;
-                        }
-                        break;
-                    default:
-                        break;
-                }
-                if (error) {
-                    throw new FileFormatException($"Invalid {param}\n${iniLine}");
-                }
+            var ustNote = new UstNote();
+            ustNote.Parse(lastNotePos, lastNoteEnd, iniLines, out noteTempo);
+            note.lyric = ustNote.lyric;
+            note.position = ustNote.position;
+            note.duration = ustNote.duration;
+            note.tone = ustNote.noteNum;
+            if (ustNote.velocity != null) {
+                SetExpression(note, Ustx.VEL, 0, ustNote.velocity.Value);
             }
-            // UST Version < 2.0
-            // | length       | length       |
-            // | note1        | R            |
-            // UST Version = 2.0
-            // | length1      | length2      |
-            // | dur1  |      | dur2         |
-            // | note1 | R    | note2        |
-            // | delta2       |
-            if (delta != null && duration != null && length != null) {
-                note.position = lastNotePos + delta.Value;
-                note.duration = duration.Value;
-            } else if (length != null) {
-                note.position = lastNoteEnd;
-                note.duration = length.Value;
+            if (ustNote.intensity != null) {
+                SetExpression(note, Ustx.VOL, 0, ustNote.intensity.Value);
             }
-            ParsePitchBend(note, pbs, pbw, pby, pbm);
+            if (ustNote.modulation != null) {
+                SetExpression(note, Ustx.MOD, 0, ustNote.modulation.Value);
+            }
+            if (ustNote.pitch != null) {
+                note.pitch = ustNote.pitch;
+            }
+            if (ustNote.vibrato != null) {
+                note.vibrato = ustNote.vibrato;
+            }
         }
 
         private static void SetExpression(UNote note, string abbr, int index, float value) {
@@ -280,107 +205,6 @@ namespace OpenUtau.Classic {
             exp.value = value;
         }
 
-        private static void ParseLyric(UNote note, string ust) {
-            if (ust.StartsWith("?")) {
-                ust = ust.Substring(1);
-            }
-            note.lyric = ust;
-        }
-
-        private static void ParseEnvelope(UNote note, string ust, IniLine ustLine) {
-            // p1,p2,p3,v1,v2,v3,v4,%,p4,p5,v5 (0,5,35,0,100,100,0,%,0,0,100)
-            try {
-                var parts = ust.Split(new[] { ',' }).Select(s => float.TryParse(s, out var v) ? v : -1).ToArray();
-                if (parts.Length < 7) {
-                    return;
-                }
-                float p1 = parts[0], p2 = parts[1], p3 = parts[2], v1 = parts[3], v2 = parts[4], v3 = parts[5], v4 = parts[6];
-                if (parts.Length == 11) {
-                    float p4 = parts[8], p5 = parts[9], v5 = parts[10];
-                }
-                note.phonemeExpressions.Add(new UExpression(Ustx.DEC) {
-                    index = 0,
-                    value = 100f - v3,
-                });
-            } catch (Exception e) {
-                throw new FileFormatException($"Invalid Envelope\n{ustLine}", e);
-            }
-        }
-
-        private static void ParseVibrato(UNote note, string ust, IniLine ustLine) {
-            try {
-                var args = ust.Split(',').Select(s => float.TryParse(s, out var v) ? v : 0).ToArray();
-                if (args.Length >= 1) {
-                    note.vibrato.length = args[0];
-                }
-                if (args.Length >= 2) {
-                    note.vibrato.period = args[1];
-                }
-                if (args.Length >= 3) {
-                    note.vibrato.depth = args[2];
-                }
-                if (args.Length >= 4) {
-                    note.vibrato.@in = args[3];
-                }
-                if (args.Length >= 5) {
-                    note.vibrato.@out = args[4];
-                }
-                if (args.Length >= 6) {
-                    note.vibrato.shift = args[5];
-                }
-                if (args.Length >= 7) {
-                    note.vibrato.drift = args[6];
-                }
-            } catch {
-                throw new FileFormatException($"Invalid VBR\n{ustLine}");
-            }
-        }
-
-        private static void ParsePitchBend(UNote note, string pbs, string pbw, string pby, string pbm) {
-            if (!string.IsNullOrWhiteSpace(pbs)) {
-                var points = note.pitch.data;
-                points.Clear();
-                // PBS
-                var parts = pbs.Contains(';') ? pbs.Split(';') : pbs.Split(',');
-                float pbsX = parts.Length >= 1 && ParseFloat(parts[0], out pbsX) ? pbsX : 0;
-                float pbsY = parts.Length >= 2 && ParseFloat(parts[1], out pbsY) ? pbsY : 0;
-                points.Add(new PitchPoint(pbsX, pbsY));
-                // PBW, PBY
-                var x = points.First().X;
-                if (!string.IsNullOrWhiteSpace(pbw)) {
-                    var w = pbw.Split(',').Select(s => ParseFloat(s, out var v) ? v : 0).ToList();
-                    var y = (pby ?? "").Split(',').Select(s => ParseFloat(s, out var v) ? v : 0).ToList();
-                    while (w.Count > y.Count) {
-                        y.Add(0);
-                    }
-                    for (var i = 0; i < w.Count(); i++) {
-                        x += w[i];
-                        points.Add(new PitchPoint(x, y[i]));
-                    }
-                }
-                // PBM
-                if (!string.IsNullOrWhiteSpace(pbm)) {
-                    var m = pbm.Split(new[] { ',' });
-                    for (var i = 0; i < m.Count() && i < points.Count; i++) {
-                        switch (m[i]) {
-                            case "r":
-                                points[i].shape = PitchPointShape.o;
-                                break;
-                            case "s":
-                                points[i].shape = PitchPointShape.l;
-                                break;
-                            case "j":
-                                points[i].shape = PitchPointShape.i;
-                                break;
-                            default:
-                                points[i].shape = PitchPointShape.io;
-                                break;
-                        }
-                    }
-                }
-            }
-        }
-
         static bool ParseFloat(string s, out float value) {
             if (string.IsNullOrEmpty(s)) {
                 value = 0;
@@ -390,40 +214,67 @@ namespace OpenUtau.Classic {
         }
 
         public static void SavePart(UProject project, UVoicePart part, string filePath) {
-            WritePart(project, part, filePath);
-        }
-
-        public static List<UNote> WritePart(UProject project, UVoicePart part, string filePath) {
-            var sequence = new List<UNote>();
             var track = project.tracks[part.trackNo];
+            var ustNotes = NotesToUstNotes(project, track, part, part.notes);
             using (var writer = new StreamWriter(filePath, false, ShiftJIS)) {
                 WriteHeader(project, part, writer);
-                var position = 0;
-                foreach (var note in part.notes) {
-                    if (note.position < position) {
-                        continue;
-                    }
-                    if (note.position > position) {
-                        writer.WriteLine($"[#{sequence.Count:D4}]");
-                        var spacer = UNote.Create();
-                        spacer.position = position;
-                        spacer.duration = note.position - position;
-                        spacer.lyric = "R";
-                        spacer.tone = 60;
-                        sequence.Add(spacer);
-                        WriteNoteBody(project, track, part, spacer, writer);
-                    }
-                    writer.WriteLine($"[#{sequence.Count:D4}]");
-                    WriteNoteBody(project, track, part, note, writer);
-                    position = note.End;
-                    sequence.Add(note);
+                for (var i = 0; i < ustNotes.Count; i++) {
+                    writer.WriteLine($"[#{i:D4}]");
+                    ustNotes[i].Write(writer);
                 }
                 WriteFooter(writer);
             }
-            return sequence;
         }
 
-        public static List<UNote> WritePlugin(UProject project, UVoicePart part, UNote first, UNote last, string filePath) {
+        static List<UstNote> NotesToUstNotes(UProject project, UTrack track, UVoicePart part, IEnumerable<UNote> notes) {
+            var ustNotes = new List<UstNote>();
+            var position = 0;
+            foreach (var note in notes) {
+                if (note.position < position) {
+                    continue;
+                }
+                if (note.position > position) {
+                    ustNotes.Add(new UstNote() {
+                        position = position,
+                        duration = note.position - position,
+                        lyric = "R",
+                        noteNum = 60,
+                    });
+                }
+                ustNotes.Add(new UstNote(project, track, part, note));
+                position = note.End;
+            }
+            // Insert tempo changes.
+            int tempoIndex = 1;
+            for (int i = 0; i < ustNotes.Count; ++i) {
+                var ustNote = ustNotes[i];
+                if (tempoIndex >= project.tempos.Count) {
+                    break;
+                }
+                int pos = ustNote.position + part.position;
+                int end = ustNote.position + ustNote.duration + part.position;
+                var tempo = project.tempos[tempoIndex];
+                if (pos <= tempo.position && tempo.position < end) {
+                    if (pos == tempo.position || ustNote.lyric.ToLowerInvariant() != "r") {
+                        // Does not break up the note even if the tempo change is in the middle.
+                        ustNote.tempo = tempo.bpm;
+                        tempoIndex++;
+                    } else {
+                        // Break up rest note to insert tempo.
+                        ustNote.duration = tempo.position - pos;
+                        var inserted = ustNote.Clone();
+                        inserted.position = tempo.position - part.position;
+                        inserted.duration = end - tempo.position;
+                        inserted.tempo = tempo.bpm;
+                        ustNotes.Insert(i + 1, inserted);
+                        tempoIndex++;
+                    }
+                }
+            }
+            return ustNotes;
+        }
+
+        public static List<UNote> WritePlugin(UProject project, UVoicePart part, UNote first, UNote last, string filePath, string encoding = "shift_jis") {
             var prev = first.Prev;
             if (prev == null) {
                 if (first.position > 0) {
@@ -447,7 +298,7 @@ namespace OpenUtau.Classic {
             }
             var sequence = new List<UNote>();
             var track = project.tracks[part.trackNo];
-            using (var writer = new StreamWriter(filePath, false, ShiftJIS)) {
+            using (var writer = new StreamWriter(filePath, false, Encoding.GetEncoding(encoding))) {
                 WriteHeader(project, part, writer);
                 var position = 0;
                 if (prev != null) {
@@ -486,7 +337,7 @@ namespace OpenUtau.Classic {
 
         static void WriteHeader(UProject project, UVoicePart part, StreamWriter writer) {
             writer.WriteLine("[#SETTING]");
-            writer.WriteLine($"Tempo={project.bpm}");
+            writer.WriteLine($"Tempo={project.timeAxis.GetBpmAtTick(part.position)}");
             writer.WriteLine("Tracks=1");
             if (project.Saved) {
                 writer.WriteLine($"Project={project.FilePath.Replace(".ustx", ".ust")}");
@@ -504,96 +355,16 @@ namespace OpenUtau.Classic {
         }
 
         static void WriteNoteBody(UProject project, UTrack track, UVoicePart part, UNote note, StreamWriter writer, bool forPlugin = false) {
-            writer.WriteLine($"Length={note.duration}");
-            writer.WriteLine($"Lyric={note.lyric}");
-            writer.WriteLine($"NoteNum={note.tone}");
-            writer.WriteLine("PreUtterance=");
-            //writer.WriteLine("VoiceOverlap=");
-            var phoneme = part.phonemes.FirstOrDefault(p => p.Parent == note);
-            if (phoneme != null) {
-                var vel = phoneme.GetExpression(project, track, Ustx.VEL).Item1;
-                writer.WriteLine($"Velocity={(int)vel}");
-                var vol = phoneme.GetExpression(project, track, Ustx.VOL).Item1;
-                writer.WriteLine($"Intensity={(int)vol}");
-                var mod = phoneme.GetExpression(project, track, Ustx.MOD).Item1;
-                writer.WriteLine($"Moduration={(int)mod}");
-                writer.WriteLine($"Flags={FlagsToString(phoneme.GetResamplerFlags(project, track))}");
-                if (forPlugin && phoneme.oto != null) {
-                    writer.WriteLine($"@filename={phoneme.oto.DisplayFile}");
-                    writer.WriteLine($"@alias={phoneme.oto.Alias}");
-                }
-            }
-            WriteEnvelope(note, writer);
-            WritePitch(note, writer);
-            WriteVibrato(note, writer);
-        }
-
-        static void WriteEnvelope(UNote note, StreamWriter writer) {
-
-        }
-
-        static void WritePitch(UNote note, StreamWriter writer) {
-            if (note.pitch == null) {
-                return;
-            }
-            var points = note.pitch.data;
-            if (points.Count >= 2) {
-                writer.WriteLine($"PBS={points[0].X};{points[0].Y}");
-                var pbw = new List<string>();
-                var pby = new List<string>();
-                var pbm = new List<string>();
-                for (var i = 0; i < points.Count; ++i) {
-                    switch (points[i].shape) {
-                        case PitchPointShape.o:
-                            pbm.Add("r");
-                            break;
-                        case PitchPointShape.l:
-                            pbm.Add("s");
-                            break;
-                        case PitchPointShape.i:
-                            pbm.Add("j");
-                            break;
-                        case PitchPointShape.io:
-                            pbm.Add("");
-                            break;
-                    }
-                }
-                for (var i = 1; i < points.Count; ++i) {
-                    var prev = points[i - 1];
-                    var current = points[i];
-                    pbw.Add((current.X - prev.X).ToString());
-                    pby.Add(current.Y.ToString());
-                }
-                writer.WriteLine($"PBW={string.Join(",", pbw.ToArray())}");
-                writer.WriteLine($"PBY={string.Join(",", pby.ToArray())}");
-                writer.WriteLine($"PBM={string.Join(",", pbm.ToArray())}");
-            }
-        }
-
-        static void WriteVibrato(UNote note, StreamWriter writer) {
-            var vbr = note.vibrato;
-            if (vbr != null && vbr.length > 0) {
-                writer.WriteLine($"VBR={vbr.length},{vbr.period},{vbr.depth},{vbr.@in},{vbr.@out},{vbr.shift},{vbr.drift}");
-            }
-        }
-
-        static string FlagsToString(Tuple<string, int?>[] flags) {
-            var builder = new StringBuilder();
-            foreach (var flag in flags) {
-                builder.Append(flag.Item1);
-                if (flag.Item2.HasValue) {
-                    builder.Append(flag.Item2.Value);
-                }
-            }
-            return builder.ToString();
+            var ustNote = new UstNote(project, track, part, note);
+            ustNote.Write(writer, forPlugin);
         }
 
         public static (List<UNote>, List<UNote>) ParsePlugin(
             UProject project, UVoicePart part, UNote first, UNote last,
-            List<UNote> sequence, string diffFile) {
+            List<UNote> sequence, string diffFile, string encoding = "shift_jis") {
             var toRemove = new List<UNote>();
             var toAdd = new List<UNote>();
-            using (var reader = new StreamReader(diffFile, ShiftJIS)) {
+            using (var reader = new StreamReader(diffFile, Encoding.GetEncoding(encoding))) {
                 var blocks = Ini.ReadBlocks(reader, diffFile, @"\[#\w+\]");
                 int index = 0;
                 foreach (var block in blocks) {

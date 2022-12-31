@@ -95,6 +95,12 @@ namespace OpenUtau.App.Controls {
                         control.InvalidateVisual();
                     }
                 });
+            MessageBus.Current.Listen<TimeAxisChangedEvent>()
+                .Subscribe(e => {
+                    foreach (var (part, control) in partControls) {
+                        control.InvalidateVisual();
+                    }
+                });
             MessageBus.Current.Listen<ThemeChangedEvent>()
                 .Subscribe(_ => InvalidateVisual());
         }

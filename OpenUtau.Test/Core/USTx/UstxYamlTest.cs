@@ -62,5 +62,16 @@ phoneme_overrides: []
             Assert.Null(vel.descriptor);
             Assert.Equal(123, vel.value);
         }
+
+        [Fact]
+        public void SpecialLyric() {
+            var yaml = Yaml.DefaultSerializer.Serialize(new UNote() { lyric = "-@" });
+            var actual = Yaml.DefaultDeserializer.Deserialize<UNote>(yaml);
+            Assert.Equal("-@", actual.lyric);
+
+            yaml = Yaml.DefaultSerializer.Serialize(new UNote() { lyric = "-&" });
+            actual = Yaml.DefaultDeserializer.Deserialize<UNote>(yaml);
+            Assert.Equal("-&", actual.lyric);
+        }
     }
 }
