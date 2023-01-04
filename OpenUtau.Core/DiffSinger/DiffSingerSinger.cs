@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -29,19 +30,17 @@ namespace OpenUtau.Core.DiffSinger {
         public override string DefaultPhonemizer => voicebank.DefaultPhonemizer;
         public override Encoding TextFileEncoding => voicebank.TextFileEncoding;
         public override IList<USubbank> Subbanks => subbanks;
-        public override Dictionary<string, UOto> Otos => otos;
 
         Voicebank voicebank;
         List<string> errors = new List<string>();
         List<USubbank> subbanks = new List<USubbank>();
-        Dictionary<string, UOto> otos = new Dictionary<string, UOto>();
-
-        HashSet<string> phonemes = new HashSet<string>();
         Dictionary<string, string[]> table = new Dictionary<string, string[]>();
-
         public byte[] avatarData;
-
         public Dictionary<string, Tuple<string, string>> phoneDict = new Dictionary<string, Tuple<string, string>>();
+        public List<string> phonemes = new List<string>();
+        public DiffSingerConfig diffSingerConfig = new DiffSingerConfig();
+        public byte[] acousticModel = new byte[0];
+        public byte[] vocoderModel = new byte[0];
 
         public DiffSingerSinger(Voicebank voicebank) {
             this.voicebank = voicebank;
@@ -62,45 +61,51 @@ namespace OpenUtau.Core.DiffSinger {
                 avatarData = null;
                 Log.Error("Avatar can't be found");
             }
+            //导入音源设置
+            LoadConfig();
             //导入拼音转音素字典
-            //实现inference\svs\opencpop\map.py
             phoneDict.Clear();
-            phonemes.Clear();
-            string path = Path.Combine(Location, "pinyin2ph.txt");
+            HashSet<string> phonemesSet = new HashSet<string> { "SP", "AP" };
+            string path = Path.Combine(Location, diffSingerConfig.dictionary);
             phoneDict.Add("AP", new Tuple<string, string>("", "AP"));
             phoneDict.Add("SP", new Tuple<string, string>("", "SP"));
             foreach (string line in File.ReadLines(path, Encoding.UTF8)) {
-                string[] elements = line.Split("|");
-                elements[2] = elements[2].Trim();
-                if (elements[2].Contains(" ")) {//声母+韵母
-                    string[] phones = elements[2].Split(" ");
-                    phoneDict.Add(elements[1].Trim(), new Tuple<string, string>(phones[0], phones[1]));
-                    phonemes.Add(phones[0]);
-                    phonemes.Add(phones[1]);
+                string[] elements = line.Split("\t");
+                elements[1] = elements[1].Trim();
+                if (elements[1].Contains(" ")) {//声母+韵母
+                    string[] phones = elements[1].Split(" ");
+                    phoneDict.Add(elements[0].Trim(), new Tuple<string, string>(phones[0], phones[1]));
+                    phonemesSet.Add(phones[0]);
+                    phonemesSet.Add(phones[1]);
                 } else {//仅韵母
-                    phoneDict.Add(elements[1].Trim(), new Tuple<string, string>("", elements[2]));
-                    phonemes.Add(elements[2]);
+                    phoneDict.Add(elements[0].Trim(), new Tuple<string, string>("", elements[1]));
+                    phonemesSet.Add(elements[1]);
                 }
             }
+            //有效音素列表
+            var phonemesList = phonemesSet.ToList();
+            phonemesList.Sort((x, y) => string.CompareOrdinal(x, y));
+            //包含padding的有效音素列表
+            phonemes = Enumerable.Repeat("", diffSingerConfig.reserved_tokens).ToList();
+            phonemes.AddRange(phonemesList);
             found = true;
             loaded = true;
         }
 
-        public override bool TryGetMappedOto(string phoneme, int tone, out UOto oto) {
+        private void LoadConfig() {
+            string path = Path.Combine(Location, "dsconfig.json");
+            diffSingerConfig = JsonConvert.DeserializeObject<DiffSingerConfig>(
+                File.ReadAllText(path, TextFileEncoding));
+        }
+
+        public override bool TryGetOto(string phoneme, out UOto oto) {
             var parts = phoneme.Split();
             if (parts.All(p => phonemes.Contains(p))) {
-                oto = new UOto() {
-                    Alias = phoneme,
-                    Phonetic = phoneme,
-                };
+                oto = UOto.OfDummy(phoneme);
                 return true;
             }
             oto = null;
             return false;
-        }
-
-        public override bool TryGetMappedOto(string phoneme, int tone, string color, out UOto oto) {
-            return TryGetMappedOto(phoneme, tone, out oto);
         }
 
         public override IEnumerable<UOto> GetSuggestions(string text) {
@@ -110,16 +115,27 @@ namespace OpenUtau.Core.DiffSinger {
             bool all = string.IsNullOrEmpty(text);
             return table.Keys
                 .Where(key => all || key.Contains(text))
-                .Select(key => new UOto() {
-                    Alias = key,
-                    Phonetic = key,
-                });
+                .Select(key => UOto.OfDummy(key));
         }
 
         public override byte[] LoadPortrait() {
             return string.IsNullOrEmpty(Portrait)
                 ? null
                 : File.ReadAllBytes(Portrait);
+        }
+
+        public byte[] getAcousticModel() {
+            if (acousticModel.Length == 0) {
+                acousticModel = File.ReadAllBytes(Path.Combine(Location, diffSingerConfig.acoustic));
+            }
+            return acousticModel;
+        }
+
+        public byte[] getVocoderModel() {
+            if (vocoderModel.Length == 0) {
+                vocoderModel = File.ReadAllBytes(Path.Combine(Location, diffSingerConfig.vocoder));
+            }
+            return vocoderModel;
         }
     }
 }
