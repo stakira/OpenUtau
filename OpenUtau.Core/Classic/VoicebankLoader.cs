@@ -28,7 +28,7 @@ namespace OpenUtau.Classic {
         public const string kCharTxt = "character.txt";
         public const string kCharYaml = "character.yaml";
         public const string kEnuconfigYaml = "enuconfig.yaml";
-        public const string kDiffconfigYaml = "dsconfig.json";
+        public const string kDiffconfigYaml = "dsconfig.yaml";
         public const string kOtoIni = "oto.ini";
 
         readonly string basePath;

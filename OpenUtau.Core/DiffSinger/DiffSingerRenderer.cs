@@ -2,33 +2,26 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using K4os.Hash.xxHash;
 using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
 using NAudio.Wave;
-using NumSharp;
 using OpenUtau.Core.Format;
 using OpenUtau.Core.Render;
 using OpenUtau.Core.SignalChain;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 using Serilog;
-using static OpenUtau.Api.Phonemizer;
 
 namespace OpenUtau.Core.DiffSinger {
     public class DiffSingerRenderer : IRenderer {
-        const float headMs = 0;//500
-        const float tailMs = 0;//500
+        const float headMs = 0;
+        const float tailMs = 0;
 
         static readonly HashSet<string> supportedExp = new HashSet<string>(){
             Format.Ustx.DYN,
             Format.Ustx.PITD,
-            /*Format.Ustx.GENC,
-            Format.Ustx.BREC,
-            Format.Ustx.TENC,
-            Format.Ustx.VOIC,*/
         };
 
         struct AcousticResult {
@@ -69,8 +62,9 @@ namespace OpenUtau.Core.DiffSinger {
                         return new RenderResult();
                     }
                     var result = Layout(phrase);
-                    var wavPath = Path.Join(PathManager.Inst.CachePath, $"vog-{phrase.hash:x16}.wav");
-                    string progressInfo = $"{this} \"{string.Join(" ", phrase.phones.Select(p => p.phoneme))}\"";
+                    int speedup = Core.Util.Preferences.Default.DiffsingerSpeedup;
+                    var wavPath = Path.Join(PathManager.Inst.CachePath, $"vog-{phrase.hash:x16}-{speedup}x.wav");
+                    string progressInfo = $"{this}{speedup}x \"{string.Join(" ", phrase.phones.Select(p => p.phoneme))}\"";
                     if (File.Exists(wavPath)) {
                         try {
                             using (var waveStream = Wave.OpenFile(wavPath)) {
@@ -81,7 +75,7 @@ namespace OpenUtau.Core.DiffSinger {
                         }
                     }
                     if (result.samples == null) {
-                        result.samples = InvokeDiffsinger(phrase);
+                        result.samples = InvokeDiffsinger(phrase, speedup);
                         var source = new WaveSource(0, 0, 0, 1);
                         source.SetSamples(result.samples);
                         WaveFileWriter.CreateWaveFile16(wavPath, new ExportAdapter(source).ToMono(1, 0));
@@ -100,9 +94,9 @@ namespace OpenUtau.Core.DiffSinger {
         leadingMs、positionMs、estimatedLengthMs：时间轴相关，单位：毫秒，double
          */
 
-        float[] InvokeDiffsinger(RenderPhrase phrase) {
+        float[] InvokeDiffsinger(RenderPhrase phrase,int speedup) {
             var singer = phrase.singer as DiffSingerSinger;
-            var frameMs = singer.diffSingerConfig.frameMs();
+            var frameMs = singer.vocoder.frameMs();
             var frameSec = frameMs / 1000;
             int headFrames = (int)(headMs / frameMs);
             int tailFrames = (int)(tailMs / frameMs);
@@ -115,20 +109,15 @@ namespace OpenUtau.Core.DiffSinger {
             //speedup：加速倍数
             var tokens = phrase.phones
                 .Select(p => p.phoneme)
-                //.Prepend("SP")
-                //.Append("SP")
                 .Select(x => (long)(singer.phonemes.IndexOf(x)))
                 .ToList();
             var durations = phrase.phones
                 .Select(p => (long)(p.endMs / frameMs) - (long)(p.positionMs / frameMs))//防止累计误差
-                //.Prepend((long)(headMs / frameMs))
-                //.Append((long)(tailMs / frameMs))
                 .ToList();
             var totalFrames = (int)(durations.Sum());
-             var f0 = SampleCurve(phrase, phrase.pitches, 0, totalFrames, headFrames, tailFrames, x => MusicMath.ToneToFreq(x * 0.01));
+            var f0 = SampleCurve(phrase, phrase.pitches, 0, totalFrames, headFrames, tailFrames, x => MusicMath.ToneToFreq(x * 0.01));
             float[] f0Shifted = f0.Select(f => (float)f).ToArray();
             //TODO:toneShift
-            var speedup = singer.diffSingerConfig.speedup;
 
             var acousticInputs = new List<NamedOnnxValue>();
             acousticInputs.Add(NamedOnnxValue.CreateFromTensor("tokens",
@@ -154,7 +143,7 @@ namespace OpenUtau.Core.DiffSinger {
             vocoderInputs.Add(NamedOnnxValue.CreateFromTensor("mel", mel));
             vocoderInputs.Add(NamedOnnxValue.CreateFromTensor("f0",f0tensor));
             float[] samples;
-            using (var session = new InferenceSession(singer.getVocoderModel())) {
+            using (var session = new InferenceSession(singer.vocoder.getModel())) {
                 using var vocoderOutputs = session.Run(vocoderInputs);
                 samples = vocoderOutputs.First().AsTensor<float>().ToArray();
             }
@@ -164,7 +153,7 @@ namespace OpenUtau.Core.DiffSinger {
         //参数曲线采样
         double[] SampleCurve(RenderPhrase phrase, float[] curve, double defaultValue, int length, int headFrames, int tailFrames, Func<double, double> convert) {
             var singer = phrase.singer as DiffSingerSinger;
-            var frameMs = singer.diffSingerConfig.frameMs();
+            var frameMs = singer.vocoder.frameMs();
             const int interval = 5;
             var result = new double[length];
             if (curve == null) {
@@ -186,103 +175,10 @@ namespace OpenUtau.Core.DiffSinger {
             return result;
         }
 
-        //加载音高渲染结果（待支持）
+        //加载音高渲染结果（不支持）
         public RenderPitchResult LoadRenderedPitch(RenderPhrase phrase) {
             return null;
         }
-        /*
-        public RenderPitchResult LoadRenderedPitch(RenderPhrase phrase) {
-            ulong preEffectHash = PreEffectsHash(phrase);
-            var tmpPath = Path.Join(PathManager.Inst.CachePath, $"enu-{preEffectHash:x16}");
-            var enutmpPath = tmpPath + "_enutemp";
-            var f0Path = Path.Join(enutmpPath, "f0.npy");
-            var layout = Layout(phrase);
-            if (!File.Exists(f0Path)) {
-                return null;
-            }
-            var config = DiffSingerConfig.Load(phrase.singer);
-            var f0 = np.Load<double[]>(f0Path);
-            var result = new RenderPitchResult() {
-                tones = f0.Select(f => (float)MusicMath.FreqToTone(f)).ToArray(),
-            };
-            result.ticks = new float[result.tones.Length];
-            var t = layout.positionMs - layout.leadingMs;
-            for (int i = 0; i < result.tones.Length; i++) {
-                t += config.framePeriod;
-                result.ticks[i] = (float)(t / phrase.tickToMs) - phrase.position;
-            }
-            return result;
-        }*/
-
-        //仅考虑谱面，而不考虑参数的hash
-        /*
-        private ulong PreEffectsHash(RenderPhrase phrase) {
-            using (var stream = new MemoryStream()) {
-                using (var writer = new BinaryWriter(stream)) {
-                    writer.Write(phrase.singerId);
-                    writer.Write(phrase.tempo);
-                    writer.Write(phrase.tickToMs);
-                    foreach (var phone in phrase.phones) {
-                        writer.Write(phone.hash);
-                    }
-                    return XXH64.DigestOf(stream.ToArray());
-                }
-            }
-        }*/
-
-        static IEnumerable<RenderNote> GetSlurNote(RenderNote[] ounotes) {
-            foreach (var ounote in ounotes) {
-                if (ounote.lyric[0] == '+') {
-                    yield return ounote;
-                }
-            }
-        }
-        //将OpenUTAU音素转化为diffsinger音符
-        //#TODO:连音符
-
-        static DiffSingerNote[] PhraseToDiffSingerNotes(RenderPhrase phrase) {
-            var notes = new List<DiffSingerNote>();
-            string lyric = "";
-            int noteNum = 60;
-            int position = 0;
-            foreach (var phone in phrase.phones) {
-                if (lyric != "") {
-                    notes.Add(new DiffSingerNote {
-                        lyric = lyric,
-                        length = phone.position-position,
-                        noteNum = noteNum,
-                    });
-                }
-                lyric = phone.phoneme;
-                position=phone.position;
-                noteNum = phone.tone;
-            }
-            notes.Add(new DiffSingerNote {
-                lyric = lyric,
-                length = phrase.phones.Last().position + phrase.phones.Last().duration - position,
-                noteNum = noteNum,
-            });
-            return notes.ToArray();
-        }
-
-        double[] DownSampleCurve(float[] curve, double defaultValue, double frameMs, int length, int headFrames, int tailFrames, double tickToMs, Func<double, double> convert) {
-            const int interval = 5;
-            var result = new double[length];
-            if (curve == null) {
-                Array.Fill(result, defaultValue);
-                return result;
-            }
-            for (int i = 0; i < length - headFrames - tailFrames; i++) {
-                int index = (int)(i * frameMs / tickToMs / interval);
-                if (index < curve.Length) {
-                    result[i + headFrames] = convert(curve[index]);
-                }
-            }
-            Array.Fill(result, defaultValue, 0, headFrames);
-            Array.Fill(result, defaultValue, length - tailFrames, tailFrames);
-            return result;
-        }
-
 
         public override string ToString() => Renderers.DIFFSINGER;
     }

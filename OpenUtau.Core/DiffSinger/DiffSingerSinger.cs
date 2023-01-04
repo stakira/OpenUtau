@@ -36,11 +36,10 @@ namespace OpenUtau.Core.DiffSinger {
         List<USubbank> subbanks = new List<USubbank>();
         Dictionary<string, string[]> table = new Dictionary<string, string[]>();
         public byte[] avatarData;
-        public Dictionary<string, Tuple<string, string>> phoneDict = new Dictionary<string, Tuple<string, string>>();
         public List<string> phonemes = new List<string>();
-        public DiffSingerConfig diffSingerConfig = new DiffSingerConfig();
+        public DsConfig dsConfig;
         public byte[] acousticModel = new byte[0];
-        public byte[] vocoderModel = new byte[0];
+        public DsVocoder vocoder;
 
         public DiffSingerSinger(Voicebank voicebank) {
             this.voicebank = voicebank;
@@ -62,40 +61,18 @@ namespace OpenUtau.Core.DiffSinger {
                 Log.Error("Avatar can't be found");
             }
             //导入音源设置
-            LoadConfig();
-            //导入拼音转音素字典
-            phoneDict.Clear();
-            HashSet<string> phonemesSet = new HashSet<string> { "SP", "AP" };
-            string path = Path.Combine(Location, diffSingerConfig.dictionary);
-            phoneDict.Add("AP", new Tuple<string, string>("", "AP"));
-            phoneDict.Add("SP", new Tuple<string, string>("", "SP"));
-            foreach (string line in File.ReadLines(path, Encoding.UTF8)) {
-                string[] elements = line.Split("\t");
-                elements[1] = elements[1].Trim();
-                if (elements[1].Contains(" ")) {//声母+韵母
-                    string[] phones = elements[1].Split(" ");
-                    phoneDict.Add(elements[0].Trim(), new Tuple<string, string>(phones[0], phones[1]));
-                    phonemesSet.Add(phones[0]);
-                    phonemesSet.Add(phones[1]);
-                } else {//仅韵母
-                    phoneDict.Add(elements[0].Trim(), new Tuple<string, string>("", elements[1]));
-                    phonemesSet.Add(elements[1]);
-                }
-            }
-            //有效音素列表
-            var phonemesList = phonemesSet.ToList();
-            phonemesList.Sort((x, y) => string.CompareOrdinal(x, y));
-            //包含padding的有效音素列表
-            phonemes = Enumerable.Repeat("", diffSingerConfig.reserved_tokens).ToList();
-            phonemes.AddRange(phonemesList);
+            string configPath = Path.Combine(Location, "dsconfig.yaml");
+            dsConfig = Core.Yaml.DefaultDeserializer.Deserialize<DsConfig>(
+                File.ReadAllText(configPath, TextFileEncoding));
+            //导入音素列表
+            string phonemesPath = Path.Combine(Location, dsConfig.phonemes);
+            phonemes = File.ReadLines(phonemesPath).ToList();
+            //获取声码器
+            vocoder = new DsVocoder(dsConfig.vocoder);
+
             found = true;
             loaded = true;
-        }
-
-        private void LoadConfig() {
-            string path = Path.Combine(Location, "dsconfig.json");
-            diffSingerConfig = JsonConvert.DeserializeObject<DiffSingerConfig>(
-                File.ReadAllText(path, TextFileEncoding));
+            
         }
 
         public override bool TryGetOto(string phoneme, out UOto oto) {
@@ -126,16 +103,10 @@ namespace OpenUtau.Core.DiffSinger {
 
         public byte[] getAcousticModel() {
             if (acousticModel.Length == 0) {
-                acousticModel = File.ReadAllBytes(Path.Combine(Location, diffSingerConfig.acoustic));
+                acousticModel = File.ReadAllBytes(Path.Combine(Location, dsConfig.acoustic));
             }
             return acousticModel;
         }
 
-        public byte[] getVocoderModel() {
-            if (vocoderModel.Length == 0) {
-                vocoderModel = File.ReadAllBytes(Path.Combine(Location, diffSingerConfig.vocoder));
-            }
-            return vocoderModel;
-        }
     }
 }

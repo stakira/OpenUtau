@@ -258,6 +258,7 @@ Hold Ctrl to select</system:String>
   <system:String x:Key="prefs.playback.lockstarttime.on">Move cursor back to where you started playing</system:String>
   <system:String x:Key="prefs.playback.test">Test</system:String>
   <system:String x:Key="prefs.rendering">Rendering</system:String>
+  <system:String x:Key="prefs.rendering.diffsingerspeedup">Diffsinger Render Speedup</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">Phase Compensation</system:String>
   <system:String x:Key="prefs.rendering.prerender">Pre-render</system:String>
   <system:String x:Key="prefs.rendering.resampler">Resampler</system:String>
