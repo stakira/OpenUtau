@@ -1,11 +1,8 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
-using System.Text.RegularExpressions;
 using OpenUtau.Classic;
 using OpenUtau.Core.Ustx;
 using Serilog;
@@ -39,7 +36,7 @@ namespace OpenUtau.Core.DiffSinger {
         public List<string> phonemes = new List<string>();
         public DsConfig dsConfig;
         public byte[] acousticModel = new byte[0];
-        public DsVocoder vocoder;
+        public DsVocoder vocoder = null;
 
         public DiffSingerSinger(Voicebank voicebank) {
             this.voicebank = voicebank;
@@ -67,8 +64,6 @@ namespace OpenUtau.Core.DiffSinger {
             //导入音素列表
             string phonemesPath = Path.Combine(Location, dsConfig.phonemes);
             phonemes = File.ReadLines(phonemesPath).ToList();
-            //获取声码器
-            vocoder = new DsVocoder(dsConfig.vocoder);
 
             found = true;
             loaded = true;
@@ -108,5 +103,19 @@ namespace OpenUtau.Core.DiffSinger {
             return acousticModel;
         }
 
+        public DsVocoder getVocoder() {
+            //获取声码器
+            if(vocoder is null) {
+                vocoder = new DsVocoder(dsConfig.vocoder);
+            }
+            return vocoder;
+        }
+    }
+
+    [Serializable]
+    public class DsConfig {
+        public string phonemes = "phonemes.txt";
+        public string acoustic = "acoustic.onnx";
+        public string vocoder = "nsf_hifigan";
     }
 }

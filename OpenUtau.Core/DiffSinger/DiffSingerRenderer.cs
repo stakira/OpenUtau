@@ -11,7 +11,6 @@ using OpenUtau.Core.Format;
 using OpenUtau.Core.Render;
 using OpenUtau.Core.SignalChain;
 using OpenUtau.Core.Ustx;
-using OpenUtau.Core.Util;
 using Serilog;
 
 namespace OpenUtau.Core.DiffSinger {
@@ -63,7 +62,7 @@ namespace OpenUtau.Core.DiffSinger {
                     }
                     var result = Layout(phrase);
                     int speedup = Core.Util.Preferences.Default.DiffsingerSpeedup;
-                    var wavPath = Path.Join(PathManager.Inst.CachePath, $"vog-{phrase.hash:x16}-{speedup}x.wav");
+                    var wavPath = Path.Join(PathManager.Inst.CachePath, $"ds-{phrase.hash:x16}-{speedup}x.wav");
                     string progressInfo = $"{this}{speedup}x \"{string.Join(" ", phrase.phones.Select(p => p.phoneme))}\"";
                     if (File.Exists(wavPath)) {
                         try {
@@ -96,7 +95,8 @@ namespace OpenUtau.Core.DiffSinger {
 
         float[] InvokeDiffsinger(RenderPhrase phrase,int speedup) {
             var singer = phrase.singer as DiffSingerSinger;
-            var frameMs = singer.vocoder.frameMs();
+            var vocoder = singer.getVocoder();
+            var frameMs = vocoder.frameMs();
             var frameSec = frameMs / 1000;
             int headFrames = (int)(headMs / frameMs);
             int tailFrames = (int)(tailMs / frameMs);
@@ -143,7 +143,7 @@ namespace OpenUtau.Core.DiffSinger {
             vocoderInputs.Add(NamedOnnxValue.CreateFromTensor("mel", mel));
             vocoderInputs.Add(NamedOnnxValue.CreateFromTensor("f0",f0tensor));
             float[] samples;
-            using (var session = new InferenceSession(singer.vocoder.getModel())) {
+            using (var session = new InferenceSession(vocoder.model)) {
                 using var vocoderOutputs = session.Run(vocoderInputs);
                 samples = vocoderOutputs.First().AsTensor<float>().ToArray();
             }
@@ -153,7 +153,7 @@ namespace OpenUtau.Core.DiffSinger {
         //参数曲线采样
         double[] SampleCurve(RenderPhrase phrase, float[] curve, double defaultValue, int length, int headFrames, int tailFrames, Func<double, double> convert) {
             var singer = phrase.singer as DiffSingerSinger;
-            var frameMs = singer.vocoder.frameMs();
+            var frameMs = singer.getVocoder().frameMs();
             const int interval = 5;
             var result = new double[length];
             if (curve == null) {

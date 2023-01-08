@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using K4os.Hash.xxHash;
 using TinyPinyin;
 
 using OpenUtau.Api;
@@ -51,17 +50,9 @@ namespace OpenUtau.Core.DiffSinger {
         }
 
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevs) {
-            /*if (!partResult.TryGetValue(notes[0].position, out var phonemes)) {
-                throw new Exception("Part result not found");
-            }
-            return new Result {
-                phonemes = phonemes
-                    .Select((tu) => new Phoneme() {
-                        phoneme = tu.Item1,
-                        position = tu.Item2,
-                    })
-                    .ToArray(),
-            };*/
+            float frameMs = 1000f*512/44100;
+            //TODO:变速曲可能会产生错误结果
+            int frameTick = MsToTick(frameMs);
             string lyric = notes[0].lyric;
             //汉字转拼音
             if (lyric.Length > 0 && PinyinHelper.IsChinese(lyric[0])) {
@@ -77,9 +68,11 @@ namespace OpenUtau.Core.DiffSinger {
             } else {
                 //使用vogen的辅音时间
                 Result VogenResult = base.Process(notes, prev, next, prevNeighbour, nextNeighbour, prevs);
+                //辅音长度至少为1帧
                 return new Result {
                     phonemes = new Phoneme[] {
-                        new Phoneme {phoneme = phones.Item1, position = VogenResult.phonemes[0].position},
+                        new Phoneme {phoneme = phones.Item1, 
+                            position = Math.Min(VogenResult.phonemes[0].position,-frameTick)},
                         new Phoneme {phoneme = phones.Item2, position = 0}
                     },
                 };
