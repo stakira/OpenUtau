@@ -6,6 +6,8 @@ using System.Text;
 using OpenUtau.Classic;
 using OpenUtau.Core.Ustx;
 using Serilog;
+using Microsoft.ML.OnnxRuntime;
+using System.Reflection;
 
 namespace OpenUtau.Core.DiffSinger {
     class DiffSingerSinger : USinger {
@@ -35,7 +37,7 @@ namespace OpenUtau.Core.DiffSinger {
         public byte[] avatarData;
         public List<string> phonemes = new List<string>();
         public DsConfig dsConfig;
-        public byte[] acousticModel = new byte[0];
+        public InferenceSession acousticSession = null;
         public DsVocoder vocoder = null;
 
         public DiffSingerSinger(Voicebank voicebank) {
@@ -96,11 +98,12 @@ namespace OpenUtau.Core.DiffSinger {
                 : File.ReadAllBytes(Portrait);
         }
 
-        public byte[] getAcousticModel() {
-            if (acousticModel.Length == 0) {
-                acousticModel = File.ReadAllBytes(Path.Combine(Location, dsConfig.acoustic));
+        public InferenceSession getAcousticSession() {
+            if (acousticSession is null) {
+                var acousticModel = File.ReadAllBytes(Path.Combine(Location, dsConfig.acoustic));
+                acousticSession = Onnx.getInferenceSession(acousticModel);
             }
-            return acousticModel;
+            return acousticSession;
         }
 
         public DsVocoder getVocoder() {

@@ -132,10 +132,9 @@ namespace OpenUtau.Core.DiffSinger {
             acousticInputs.Add(NamedOnnxValue.CreateFromTensor("speedup",
                 new DenseTensor<long>(new long[] { speedup }, new int[] { },false)));
             Tensor<float> mel;
-            using (var session = new InferenceSession(singer.getAcousticModel())) {
-                using var acousticOutputs = session.Run(acousticInputs);
-                mel = acousticOutputs.First().AsTensor<float>().Clone();
-            }
+            var acousticOutputs = singer.getAcousticSession().Run(acousticInputs);
+            mel = acousticOutputs.First().AsTensor<float>().Clone();
+            
 
             //vocoder
             //waveform = session.run(['waveform'], {'mel': mel, 'f0': f0})[0]
@@ -143,10 +142,8 @@ namespace OpenUtau.Core.DiffSinger {
             vocoderInputs.Add(NamedOnnxValue.CreateFromTensor("mel", mel));
             vocoderInputs.Add(NamedOnnxValue.CreateFromTensor("f0",f0tensor));
             float[] samples;
-            using (var session = new InferenceSession(vocoder.model)) {
-                using var vocoderOutputs = session.Run(vocoderInputs);
-                samples = vocoderOutputs.First().AsTensor<float>().ToArray();
-            }
+            var vocoderOutputs = vocoder.session.Run(vocoderInputs);
+            samples = vocoderOutputs.First().AsTensor<float>().ToArray();
             return samples;
         }
 

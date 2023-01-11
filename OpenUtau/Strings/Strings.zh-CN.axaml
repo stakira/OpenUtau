@@ -258,6 +258,7 @@
   <system:String x:Key="prefs.playback.lockstarttime.on">将播放标记移回开始播放处</system:String>
   <system:String x:Key="prefs.playback.test">测试</system:String>
   <system:String x:Key="prefs.rendering">渲染</system:String>
+  <system:String x:Key="prefs.rendering.diffsingerspeedup">Diffsinger渲染加速</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">相位修正</system:String>
   <system:String x:Key="prefs.rendering.prerender">预渲染</system:String>
   <system:String x:Key="prefs.rendering.resampler">重采样器</system:String>
