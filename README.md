@@ -17,7 +17,7 @@ OpenUtau is an open source editing environment for UTAU community with modern us
 
 It is **strongly recommend** to go through a few Wiki pages before use:
 - [Getting-Started](https://github.com/stakira/OpenUtau/wiki/Getting-Started)
-- [Resamplers](https://github.com/stakira/OpenUtau/wiki/Resamplers)
+- [Resamplers](https://github.com/stakira/OpenUtau/wiki/Resamplers-and-Wavtools)
 - [Phonemizers](https://github.com/stakira/OpenUtau/wiki/Phonemizers)
 - [FAQ](https://github.com/stakira/OpenUtau/wiki/FAQ)
 
