@@ -474,15 +474,14 @@ namespace OpenUtau.Plugin.Builtin {
                 if (lCL == 1) { CV = CV.Replace("r", "l"); }
 
                 // 만약 앞에 노트가 없다면
-                if (!prevExist) {
-                    string[] tests = new string[] { $"- {CV}", CV, currentLyric };
+                if (!prevExist && TCLconsonant == "r") {
+                    string[] tests = new string[] { $"- {CV}", $"l{TCLplainvowel}", CV, currentLyric };
                     if (checkOtoUntilHit(tests, note, out var oto)) {
                         CV = oto.Alias;
                     }
                 }
-                
-                if (!prevExist && TCLconsonant == "r") {
-                    string[] tests = new string[] { $"- {CV}", $"l{TCLvowel}", CV, currentLyric };
+                else if (!prevExist && TCLconsonant != "r") {
+                    string[] tests = new string[] { $"- {CV}", CV, currentLyric };
                     if (checkOtoUntilHit(tests, note, out var oto)) {
                         CV = oto.Alias;
                     }
