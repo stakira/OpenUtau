@@ -32,6 +32,8 @@ namespace OpenUtau.Plugin.Builtin {
 
         static readonly string[] plainVowels = new string[] { "eu", "eo", "a", "i", "u", "e", "o", "er" };
 
+        static readonly string[] plainDiphthongs = new string[] { "ya", "yeo", "yo", "yu", "ye", "wa", "weo", "wi", "we", "eui" };
+
         static readonly string[] vowels = new string[] {
             "eu=geu,neu,deu,reu,leu,meu,beu,seu,eu,jeu,cheu,keu,teu,peu,heu,ggeu,ddeu,bbeu,sseu,jjeu,feu,veu,zeu,theu,rreu",
             "eo=geo,neo,deo,reo,leo,meo,beo,seo,eo,jeo,cheo,keo,teo,peo,heo,ggeo,ddeo,bbeo,sseo,jjeo,feo,veo,zeo,theo,rreo,gyeo,nyeo,dyeo,ryeo,lyeo,myeo,byeo,syeo,yeo,jyeo,chyeo,kyeo,tyeo,pyeo,hyeo,ggyeo,ddyeo,bbyeo,ssyeo,jjyeo,fyeo,vyeo,zyeo,thyeo,gweo,nweo,dweo,rweo,lweo,mweo,bweo,sweo,weo,jweo,chweo,kweo,tweo,pweo,hweo,ggweo,ddweo,bbweo,ssweo,jjweo,fweo,vweo,zweo,thweo",
@@ -677,7 +679,7 @@ namespace OpenUtau.Plugin.Builtin {
                 if (checkOtoUntilHit(tests, note, out var oto)){
                     currentLyric = oto.Alias;
                 }
-            } else if (plainVowels.Contains(currentLyric)) {
+            } else if (plainVowels.Contains(currentLyric) || plainDiphthongs.Contains(currentLyric)) {
                 var prevUnicode = ToUnicodeElements(prevNeighbour?.lyric);
                 var vowel = "";
 
