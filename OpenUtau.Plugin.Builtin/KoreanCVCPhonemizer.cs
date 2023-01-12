@@ -475,7 +475,7 @@ namespace OpenUtau.Plugin.Builtin {
 
                 // 만약 앞에 노트가 없다면
                 if (!prevExist && TCLconsonant == "r") {
-                    string[] tests = new string[] { $"- {CV}", $"l{TCLplainvowel}", CV, currentLyric };
+                    string[] tests = new string[] { $"- {CV}", $"l{TCLvowel}", CV, currentLyric };
                     if (checkOtoUntilHit(tests, note, out var oto)) {
                         CV = oto.Alias;
                     }
