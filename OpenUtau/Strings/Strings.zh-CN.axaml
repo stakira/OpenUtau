@@ -259,6 +259,8 @@
   <system:String x:Key="prefs.playback.test">测试</system:String>
   <system:String x:Key="prefs.rendering">渲染</system:String>
   <system:String x:Key="prefs.rendering.diffsingerspeedup">Diffsinger渲染加速</system:String>
+  <system:String x:Key="prefs.rendering.onnxrunner">机器学习运行器</system:String>
+  <system:String x:Key="prefs.rendering.onnxgpu">GPU</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">相位修正</system:String>
   <system:String x:Key="prefs.rendering.prerender">预渲染</system:String>
   <system:String x:Key="prefs.rendering.resampler">重采样器</system:String>

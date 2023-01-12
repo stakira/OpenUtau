@@ -1,11 +1,69 @@
-﻿using Microsoft.ML.OnnxRuntime;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.ML.OnnxRuntime;
+using OpenUtau.Core.Util;
+using Vortice.DXGI;
 
 namespace OpenUtau.Core {
+    public class GpuInfo {
+        public int deviceId;
+        public string description = "";
+
+        override public string ToString() {
+            return $"[{deviceId}] {description}";
+        }
+    }
+
     public class Onnx {
+        public static List<string> getRunnerOptions() {
+            if (OS.IsWindows()) {
+                return new List<string> {
+                "cpu",
+                "directml"
+                };
+            }
+            return new List<string> {
+                "cpu"
+            };
+        }
+
+        public static List<GpuInfo> getGpuInfo() {
+            DXGI.CreateDXGIFactory1(out IDXGIFactory1 factory);
+            List<GpuInfo> gpuList = new List<GpuInfo>();
+            for(int deviceId = 0; deviceId < 32; deviceId++) {
+                factory.EnumAdapters1(deviceId, out IDXGIAdapter1 adapterOut);
+                if(adapterOut is null) {
+                    break;
+                }
+                gpuList.Add(new GpuInfo {
+                    deviceId = deviceId,
+                    description = adapterOut.Description.Description
+                }) ;
+            }
+            if (gpuList.Count == 0) {
+                gpuList.Add(new GpuInfo {
+                    deviceId = 0,
+                });
+            }
+            return gpuList;
+        }
+
         public static InferenceSession getInferenceSession(byte[] model) {
             SessionOptions options = new SessionOptions();
-            //TODO:设置是否使用directml
-            options.AppendExecutionProvider_DML(1);
+            List<string> runnerOptions = getRunnerOptions();
+            string runner = Preferences.Default.OnnxRunner;
+            if (String.IsNullOrEmpty(runner)) {
+                runner = runnerOptions[0];
+            }
+            if (!(runnerOptions.Contains(runner))) {
+                runner = "cpu";
+            }
+            switch(runner){
+                case "directml":
+                    options.AppendExecutionProvider_DML(Preferences.Default.OnnxGpu);
+                    break;
+            }
             return new InferenceSession(model,options);
         }
     }
