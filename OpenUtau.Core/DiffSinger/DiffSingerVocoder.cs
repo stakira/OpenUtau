@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Reflection;
 using Microsoft.ML.OnnxRuntime;
 
 namespace OpenUtau.Core.DiffSinger {
@@ -10,17 +11,18 @@ namespace OpenUtau.Core.DiffSinger {
 
         //通过名称获取声码器
         public DsVocoder(string name) {
+            byte[] model;
             try {
                 Location = Path.Combine(PathManager.Inst.VocodersPath, name);
                 config = Core.Yaml.DefaultDeserializer.Deserialize<DsVocoderConfig>(
                     File.ReadAllText(Path.Combine(Location, "vocoder.yaml"),
                         System.Text.Encoding.UTF8));
-                byte[] model = File.ReadAllBytes(Path.Combine(Location, config.model));
-                session = Onnx.getInferenceSession(model);
+                model = File.ReadAllBytes(Path.Combine(Location, config.model));
             }
             catch (Exception ex) {
                 throw new Exception($"Error loading vocoder {name}. Please download vocoder from https://github.com/xunmengshe/OpenUtau/wiki/Vocoders");
             }
+            session = Onnx.getInferenceSession(model);
         }
 
         public float frameMs() {

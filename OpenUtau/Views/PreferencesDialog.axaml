@@ -95,8 +95,10 @@
                        Foreground="Red" Margin="0,0,0,4" IsVisible="{Binding HighThreads}" FontSize="11"/>
             <TextBlock Text="{DynamicResource prefs.rendering.onnxrunner}" />
             <ComboBox HorizontalAlignment="Stretch"  Items="{Binding OnnxRunnerOptions}" SelectedItem="{Binding OnnxRunner}"/>
+            <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.note.restart}" FontSize="11"/>
             <TextBlock Text="{DynamicResource prefs.rendering.onnxgpu}" />
             <ComboBox HorizontalAlignment="Stretch"  Items="{Binding OnnxGpuOptions}" SelectedItem="{Binding OnnxGpu}"/>
+            <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.note.restart}" FontSize="11"/>
             <TextBlock Text="{DynamicResource prefs.rendering.diffsingerspeedup}" />
             <ComboBox HorizontalAlignment="Stretch"  Items="{Binding DiffsingerSpeedupOptions}" SelectedItem="{Binding DiffsingerSpeedup}"/>
           </StackPanel>

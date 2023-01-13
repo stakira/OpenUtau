@@ -4,6 +4,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using OpenUtau.Core.Render;
 using SharpCompress.Archives;
 
 namespace OpenUtau.Core.DiffSinger {
@@ -12,6 +13,7 @@ namespace OpenUtau.Core.DiffSinger {
         public static void Install(string archivePath) {
             DsVocoderConfig vocoderConfig;
             using (var archive = ArchiveFactory.Open(archivePath)) {
+                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, "Installing vocoder"));
                 var configEntry = archive.Entries.First(e => e.Key == "vocoder.yaml");
                 if (configEntry == null) {
                     throw new ArgumentException("missing vocoder.yaml");
@@ -33,6 +35,7 @@ namespace OpenUtau.Core.DiffSinger {
                         entry.WriteToFile(Path.Combine(basePath, entry.Key));
                     }
                 }
+                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"vocoder \"{name}\" installaion finished"));
             }
         }
     }
