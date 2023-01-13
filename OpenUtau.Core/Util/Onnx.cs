@@ -29,17 +29,19 @@ namespace OpenUtau.Core {
         }
 
         public static List<GpuInfo> getGpuInfo() {
-            DXGI.CreateDXGIFactory1(out IDXGIFactory1 factory);
             List<GpuInfo> gpuList = new List<GpuInfo>();
-            for(int deviceId = 0; deviceId < 32; deviceId++) {
-                factory.EnumAdapters1(deviceId, out IDXGIAdapter1 adapterOut);
-                if(adapterOut is null) {
-                    break;
+            if (OS.IsWindows()) {
+                DXGI.CreateDXGIFactory1(out IDXGIFactory1 factory);
+                for(int deviceId = 0; deviceId < 32; deviceId++) {
+                    factory.EnumAdapters1(deviceId, out IDXGIAdapter1 adapterOut);
+                    if(adapterOut is null) {
+                        break;
+                    }
+                    gpuList.Add(new GpuInfo {
+                        deviceId = deviceId,
+                        description = adapterOut.Description.Description
+                    }) ;
                 }
-                gpuList.Add(new GpuInfo {
-                    deviceId = deviceId,
-                    description = adapterOut.Description.Description
-                }) ;
             }
             if (gpuList.Count == 0) {
                 gpuList.Add(new GpuInfo {
