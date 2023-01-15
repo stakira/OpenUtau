@@ -6,6 +6,7 @@
   <system:String x:Key="context.note.delete">노트 삭제</system:String>
   <system:String x:Key="context.part.delete">파트 삭제</system:String>
   <system:String x:Key="context.part.rename">파트 이름 변경</system:String>
+  <!--<system:String x:Key="context.part.replaceaudio">Reselect audio file</system:String>-->
   <system:String x:Key="context.pitch.easein">시작 감속 곡선</system:String>
   <system:String x:Key="context.pitch.easeinout">시작/끝 감속 곡선</system:String>
   <system:String x:Key="context.pitch.easeout">끝 감속 곡선</system:String>
@@ -79,7 +80,10 @@
   <system:String x:Key="menu.edit.undo">실행 취소</system:String>
   <system:String x:Key="menu.file">파일</system:String>
   <system:String x:Key="menu.file.exit">나가기</system:String>
+  <!--<system:String x:Key="menu.file.exportaudio">Export Audio</system:String>-->
   <system:String x:Key="menu.file.exportmidi">Midi 파일로 내보내기</system:String>
+  <!--<system:String x:Key="menu.file.exportmixdown">Mixdown To Wav File</system:String>-->
+  <!--<system:String x:Key="menu.file.exportproject">Export Project</system:String>-->
   <system:String x:Key="menu.file.exportust">Ust 파일 내보내기</system:String>
   <system:String x:Key="menu.file.exportustto">다른 이름으로 Ust 파일 내보내기</system:String>
   <system:String x:Key="menu.file.exportustwithphonemizer">Ust 파일 내보내기 (음소화기 적용)</system:String>
@@ -88,6 +92,8 @@
   <system:String x:Key="menu.file.exportwavto">다른 이름으로 Wav 파일 내보내기</system:String>
   <system:String x:Key="menu.file.importaudio">오디오 가져오기</system:String>
   <system:String x:Key="menu.file.importmidi">Midi 가져오기</system:String>
+  <!--<system:String x:Key="menu.file.importmidi.drywetmidi">DryWetMidi Importer</system:String>-->
+  <!--<system:String x:Key="menu.file.importmidi.naudio">Naudio Importer</system:String>-->
   <system:String x:Key="menu.file.importtracks">트랙 삽입하기...</system:String>
   <system:String x:Key="menu.file.new">새로 만들기</system:String>
   <system:String x:Key="menu.file.newfromtemplate">템플릿 가져오기</system:String>
@@ -256,7 +262,6 @@
   <system:String x:Key="prefs.rendering">렌더링</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">위상 보정</system:String>
   <system:String x:Key="prefs.rendering.prerender">사전 렌더러</system:String>
-  <system:String x:Key="prefs.rendering.prerender.threads">스레드 사전 렌더링</system:String>
   <system:String x:Key="prefs.rendering.resampler">리샘플러</system:String>
   <system:String x:Key="prefs.rendering.resampler.morewarn">
 경고: moresampler가 완벽하게 지원되지 않습니다. 속도가 느리고 CPU 사용량이 높아질 수 있습니다. 그럼에도 불구하고 사용하고 싶은 경우:
@@ -267,6 +272,10 @@
   <system:String x:Key="prefs.rendering.resampler.note">
         참고 : 외부 엔진을 사용하려면, OpenUtau 설치 경로의 Resamplers 폴더에 엔진 DLL 또는 EXE 파일을 추가하고 환경 설정에서 선택하세요.
     </system:String>
+  <!--<system:String x:Key="prefs.rendering.threads.cpuwarn">
+    Warning: too many render threads may cause OpenUtau to run slowly.
+  </system:String>-->
+  <!--<system:String x:Key="prefs.rendering.threads.numthreads">Maximum Render Threads</system:String>-->
   <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
 
   <system:String x:Key="progress.saved">프로젝트 저장됨. {0}</system:String>
@@ -275,6 +284,8 @@
   <system:String x:Key="singers.caption">가수</system:String>
   <system:String x:Key="singers.editoto.editinvlabeler">vLabeler에서 편집</system:String>
   <system:String x:Key="singers.editoto.gotosource">소스파일 열기</system:String>
+  <!--<system:String x:Key="singers.editoto.regenfrq">Regenerate FRQ</system:String>-->
+  <!--<system:String x:Key="singers.editoto.regenfrq.regenerating">Regenerating FRQ</system:String>-->
   <system:String x:Key="singers.editoto.reset">Oto 초기화</system:String>
   <system:String x:Key="singers.editoto.save">Oto 저장</system:String>
   <system:String x:Key="singers.editoto.setvlabelerpath">먼저 https://github.com/sdercolin/vlabeler에서 vLabeler를 다운로드 (1.0.0-beta1 버전 이상) 후, 설정에서 vLabeler 경로를 입력해주세요!</system:String>
@@ -355,5 +366,9 @@
 
   <system:String x:Key="warning">경고</system:String>
   <system:String x:Key="warning.asciipath">OpenUtau 홈 경로 "{0}"에 ASCII가 아닌 문자가 포함되어 있습니다. EXE 엔진이 작동하지 않을 수 있습니다.</system:String>
+<<<<<<< HEAD
   <system:String x:Key="warning.renderer">이 렌더러에 대한 설정이 없습니다. CLASSIC으로 변경해주세요.</system:String>
+=======
+  <!--<system:String x:Key="warning.renderer">No settings for this renderer.</system:String>-->
+>>>>>>> dev
 </ResourceDictionary>

@@ -48,6 +48,7 @@ namespace OpenUtau.App.Views {
         private bool shouldOpenPartsContextMenu;
 
         private readonly ReactiveCommand<UPart, Unit> PartRenameCommand;
+        private readonly ReactiveCommand<UPart, Unit> PartReplaceAudioCommand;
 
         public MainWindow() {
             Log.Information("Creating main window.");
@@ -77,6 +78,7 @@ namespace OpenUtau.App.Views {
             autosaveTimer.Start();
 
             PartRenameCommand = ReactiveCommand.Create<UPart>(part => RenamePart(part));
+            PartReplaceAudioCommand = ReactiveCommand.Create<UPart>(async part => ReplaceAudio(part));
 
             AddHandler(DragDrop.DropEvent, OnDrop);
 
@@ -313,7 +315,7 @@ namespace OpenUtau.App.Views {
             }
         }
 
-        async void OnMenuImportMidi(object sender, RoutedEventArgs args) {
+        async void OnMenuImportMidi(bool UseDrywetmidi=false) {
             var dialog = new OpenFileDialog() {
                 Filters = new List<FileDialogFilter>() {
                     new FileDialogFilter() {
@@ -328,10 +330,34 @@ namespace OpenUtau.App.Views {
                 return;
             }
             try {
-                viewModel.ImportMidi(files[0]);
+                viewModel.ImportMidi(files[0], UseDrywetmidi);
             } catch (Exception e) {
                 Log.Error(e, "Failed to import midi");
                 _ = await MessageBox.ShowError(this, e);
+            }
+        }
+
+        async void OnMenuImportMidiNaudio(object sender, RoutedEventArgs args) {
+            OnMenuImportMidi(false);
+        }
+
+        async void OnMenuImportMidiDrywetmidi(object sender, RoutedEventArgs args) {
+            OnMenuImportMidi(true);
+        }
+
+        async void OnMenuExportMixdown(object sender, RoutedEventArgs args) {
+            var project = DocManager.Inst.Project;
+            var dialog = new SaveFileDialog() {
+                DefaultExtension = "wav",
+                Filters = new List<FileDialogFilter>() {
+                    new FileDialogFilter() {
+                        Extensions = new List<string>(){ "wav" },
+                    },
+                },
+            };
+            var file = await dialog.ShowAsync(this);
+            if (!string.IsNullOrEmpty(file)) {
+                PlaybackManager.Inst.RenderMixdown(project, file);
             }
         }
 
@@ -857,6 +883,7 @@ namespace OpenUtau.App.Views {
                         partsContextMenu.DataContext = new PartsContextMenuArgs {
                             Part = partControl.part,
                             PartDeleteCommand = viewModel.PartDeleteCommand,
+                            PartReplaceAudioCommand = PartReplaceAudioCommand,
                             PartRenameCommand = PartRenameCommand,
                         };
                         shouldOpenPartsContextMenu = true;
@@ -1008,6 +1035,31 @@ namespace OpenUtau.App.Views {
                 }
             };
             dialog.ShowDialog(this);
+        }
+
+        async void ReplaceAudio(UPart part) {
+            var dialog = new OpenFileDialog() {
+                Filters = new List<FileDialogFilter>() {
+                    new FileDialogFilter() {
+                        Name = "Audio Files",
+                        Extensions = Wave.FileExtensions,
+                    },
+                },
+                AllowMultiple = false,
+            };
+            var files = await dialog.ShowAsync(this);
+            if (files == null || files.Length != 1) {
+                return;
+            }
+            UWavePart newPart = new UWavePart() {
+                FilePath = files[0],
+                trackNo = part.trackNo,
+                position = part.position
+            };
+            newPart.Load(DocManager.Inst.Project);
+            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.ExecuteCmd(new ReplacePartCommand(DocManager.Inst.Project, part, newPart));
+            DocManager.Inst.EndUndoGroup();
         }
 
         public async void WindowClosing(object? sender, CancelEventArgs e) {

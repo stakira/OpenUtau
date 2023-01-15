@@ -6,6 +6,7 @@
   <!--<system:String x:Key="context.note.delete">Delete note</system:String>-->
   <!--<system:String x:Key="context.part.delete">Delete part</system:String>-->
   <!--<system:String x:Key="context.part.rename">Rename part</system:String>-->
+  <!--<system:String x:Key="context.part.replaceaudio">Reselect audio file</system:String>-->
   <!--<system:String x:Key="context.pitch.easein">Ease in</system:String>-->
   <!--<system:String x:Key="context.pitch.easeinout">Ease in/out</system:String>-->
   <!--<system:String x:Key="context.pitch.easeout">Ease out</system:String>-->
@@ -79,13 +80,18 @@
   <system:String x:Key="menu.edit.undo">Deshacer</system:String>
   <system:String x:Key="menu.file">Archivo</system:String>
   <system:String x:Key="menu.file.exit">Salir</system:String>
+  <!--<system:String x:Key="menu.file.exportaudio">Export Audio</system:String>-->
   <!--<system:String x:Key="menu.file.exportmidi">Export Midi File</system:String>-->
+  <!--<system:String x:Key="menu.file.exportmixdown">Mixdown To Wav File</system:String>-->
+  <!--<system:String x:Key="menu.file.exportproject">Export Project</system:String>-->
   <!--<system:String x:Key="menu.file.exportust">Export Ust Files</system:String>-->
   <!--<system:String x:Key="menu.file.exportustto">Export Ust Files To...</system:String>-->
   <!--<system:String x:Key="menu.file.exportwav">Export Wav Files</system:String>-->
   <!--<system:String x:Key="menu.file.exportwavto">Export Wav Files To...</system:String>-->
   <system:String x:Key="menu.file.importaudio">Importar Audio...</system:String>
   <system:String x:Key="menu.file.importmidi">Importar Midi...</system:String>
+  <!--<system:String x:Key="menu.file.importmidi.drywetmidi">DryWetMidi Importer</system:String>-->
+  <!--<system:String x:Key="menu.file.importmidi.naudio">Naudio Importer</system:String>-->
   <!--<system:String x:Key="menu.file.importtracks">Import Tracks...</system:String>-->
   <system:String x:Key="menu.file.new">Nuevo</system:String>
   <!--<system:String x:Key="menu.file.newfromtemplate">New From Template</system:String>-->
@@ -254,7 +260,6 @@ Hold Ctrl to select</system:String>-->
   <!--<system:String x:Key="prefs.rendering">Rendering</system:String>-->
   <!--<system:String x:Key="prefs.rendering.phasecomp">Phase Compensation</system:String>-->
   <!--<system:String x:Key="prefs.rendering.prerender">Pre-render</system:String>-->
-  <!--<system:String x:Key="prefs.rendering.prerender.threads">Pre-render Threads</system:String>-->
   <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
   <!--<system:String x:Key="prefs.rendering.resampler.morewarn">
     Warning: moresampler is not fully supported. It may be slow and cause high CPU usage. If you insist, please:
@@ -265,6 +270,10 @@ Hold Ctrl to select</system:String>-->
   <system:String x:Key="prefs.rendering.resampler.note">
         Nota: Para usar resamplers externos, por favor, añada el archivo DLL o EXE en la carpeta "Resamplers" dentro de la ruta de instalación de OpenUTAU y selecciónelo en preferencias.
     </system:String>
+  <!--<system:String x:Key="prefs.rendering.threads.cpuwarn">
+    Warning: too many render threads may cause OpenUtau to run slowly.
+  </system:String>-->
+  <!--<system:String x:Key="prefs.rendering.threads.numthreads">Maximum Render Threads</system:String>-->
   <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
 
   <!--<system:String x:Key="progress.saved">Project saved. {0}</system:String>-->
@@ -273,6 +282,8 @@ Hold Ctrl to select</system:String>-->
   <!--<system:String x:Key="singers.caption">Singers</system:String>-->
   <!--<system:String x:Key="singers.editoto.editinvlabeler">Edit In vLabeler</system:String>-->
   <!--<system:String x:Key="singers.editoto.gotosource">Goto Source File</system:String>-->
+  <!--<system:String x:Key="singers.editoto.regenfrq">Regenerate FRQ</system:String>-->
+  <!--<system:String x:Key="singers.editoto.regenfrq.regenerating">Regenerating FRQ</system:String>-->
   <!--<system:String x:Key="singers.editoto.reset">Reset Otos</system:String>-->
   <!--<system:String x:Key="singers.editoto.save">Save Otos</system:String>-->
   <!--<system:String x:Key="singers.editoto.setvlabelerpath">Download vLabeler (1.0.0-beta1 or higher) from https://github.com/sdercolin/vlabeler and set vLabeler path in Preferences first!</system:String>-->
@@ -353,5 +364,5 @@ Hold Ctrl to select</system:String>-->
 
   <system:String x:Key="warning">Advertencia</system:String>
   <system:String x:Key="warning.asciipath">Su ruta de instalación de OpenUTAU "{0}" contiene caracteres no-ASCII. Resamplers.exe probablemente no funcionen.</system:String>
-  <!--<system:String x:Key="warning.renderer">No settings for this renderer. Please select CLASSIC.</system:String>-->
+  <!--<system:String x:Key="warning.renderer">No settings for this renderer.</system:String>-->
 </ResourceDictionary>

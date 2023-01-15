@@ -15,8 +15,10 @@ namespace OpenUtau.App.ViewModels {
     public class PartsContextMenuArgs {
         public UPart? Part { get; set; }
         public bool IsVoicePart => Part is UVoicePart;
+        public bool IsWavePart => Part is UWavePart;
         public ReactiveCommand<UPart, Unit>? PartDeleteCommand { get; set; }
         public ReactiveCommand<UPart, Unit>? PartRenameCommand { get; set; }
+        public ReactiveCommand<UPart, Unit>? PartReplaceAudioCommand { get; set; }
     }
 
     public class MainWindowViewModel : ViewModelBase, ICmdSubscriber {
@@ -153,12 +155,12 @@ namespace OpenUtau.App.ViewModels {
             DocManager.Inst.EndUndoGroup();
         }
 
-        public void ImportMidi(string file) {
+        public void ImportMidi(string file, bool UseDrywetmidi=false) {
             if (file == null) {
                 return;
             }
             var project = DocManager.Inst.Project;
-            var parts = Core.Format.Midi.Load(file, project);
+            var parts = UseDrywetmidi? Core.Format.MidiWriter.Load(file, project): Core.Format.Midi.Load(file, project);
             DocManager.Inst.StartUndoGroup();
             foreach (var part in parts) {
                 var track = new UTrack();

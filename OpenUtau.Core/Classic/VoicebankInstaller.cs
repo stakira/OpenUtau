@@ -43,6 +43,11 @@ namespace OpenUtau.Classic {
                 int count = 0;
                 bool hasCharacterYaml = archive.Entries.Any(e => e.Key.EndsWith(kCharacterYaml));
                 foreach (var entry in archive.Entries) {
+                    progress.Invoke(100.0 * ++count / total, entry.Key);
+                    if (entry.Key.Contains("..")) {
+                        // Prevent zipSlip attack
+                        continue;
+                    }
                     var filePath = Path.Combine(basePath, entry.Key);
                     Directory.CreateDirectory(Path.GetDirectoryName(filePath));
                     if (!entry.IsDirectory && entry.Key != kInstallTxt) {
@@ -56,7 +61,6 @@ namespace OpenUtau.Classic {
                             }
                         }
                     }
-                    progress.Invoke(100.0 * ++count / total, entry.Key);
                 }
                 foreach (var touch in touches) {
                     File.WriteAllText(touch, "\n");

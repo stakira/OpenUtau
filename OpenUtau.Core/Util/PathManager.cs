@@ -23,7 +23,7 @@ namespace OpenUtau.Core {
                     if (Directory.Exists(oldCache)) {
                         Directory.Delete(oldCache, true);
                     }
-                } finally { }
+                } catch { }
             } else if (OS.IsLinux()) {
                 string userHome = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
                 string dataHome = Environment.GetEnvironmentVariable("XDG_DATA_HOME");
@@ -50,8 +50,6 @@ namespace OpenUtau.Core {
                     }
                 }
             }
-            Log.Logger.Information($"Data path = {DataPath}");
-            Log.Logger.Information($"Cache path = {CachePath}");
         }
 
         public string RootPath { get; private set; }

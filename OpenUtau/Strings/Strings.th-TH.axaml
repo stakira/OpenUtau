@@ -6,6 +6,7 @@
   <system:String x:Key="context.note.delete">ลบโน้ต</system:String>
   <system:String x:Key="context.part.delete">ลบพาร์ท</system:String>
   <system:String x:Key="context.part.rename">เปลี่ยนชื่อพาร์ท</system:String>
+  <!--<system:String x:Key="context.part.replaceaudio">Reselect audio file</system:String>-->
   <!--<system:String x:Key="context.pitch.easein">Ease in</system:String>-->
   <!--<system:String x:Key="context.pitch.easeinout">Ease in/out</system:String>-->
   <!--<system:String x:Key="context.pitch.easeout">Ease out</system:String>-->
@@ -79,13 +80,18 @@
   <system:String x:Key="menu.edit.undo">เลิกทำ</system:String>
   <system:String x:Key="menu.file">ไฟล์</system:String>
   <system:String x:Key="menu.file.exit">ออก</system:String>
+  <!--<system:String x:Key="menu.file.exportaudio">Export Audio</system:String>-->
   <!--<system:String x:Key="menu.file.exportmidi">Export Midi File</system:String>-->
+  <!--<system:String x:Key="menu.file.exportmixdown">Mixdown To Wav File</system:String>-->
+  <!--<system:String x:Key="menu.file.exportproject">Export Project</system:String>-->
   <system:String x:Key="menu.file.exportust">ส่งออกไฟล์ Ust</system:String>
   <system:String x:Key="menu.file.exportustto">ส่งออกไฟล์ Ust ไปยัง...</system:String>
   <system:String x:Key="menu.file.exportwav">ส่งออกไฟล์ Wav</system:String>
   <system:String x:Key="menu.file.exportwavto">ส่งออกไฟล์ Wav ไปยัง...</system:String>
   <system:String x:Key="menu.file.importaudio">นำเข้า Audio...</system:String>
   <system:String x:Key="menu.file.importmidi">นำเข้า Midi...</system:String>
+  <!--<system:String x:Key="menu.file.importmidi.drywetmidi">DryWetMidi Importer</system:String>-->
+  <!--<system:String x:Key="menu.file.importmidi.naudio">Naudio Importer</system:String>-->
   <system:String x:Key="menu.file.importtracks">นำเข้า Tracks...</system:String>
   <system:String x:Key="menu.file.new">ใหม่</system:String>
   <system:String x:Key="menu.file.newfromtemplate">เทมเพลตใหม่</system:String>
@@ -254,7 +260,6 @@ Hold Ctrl to select</system:String>-->
   <system:String x:Key="prefs.rendering">กำลังประมวลผล</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">การชดเชย Phase</system:String>
   <system:String x:Key="prefs.rendering.prerender">ประมวลผลล่วงหน้า</system:String>
-  <system:String x:Key="prefs.rendering.prerender.threads">เธรดการแสดงผลล่วงหน้า</system:String>
   <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
   <system:String x:Key="prefs.rendering.resampler.morewarn">
 คําเตือน: moresampler ไม่ได้รับการสนับสนุนอย่างเต็มที่ อาจทำให้ประมวลผลล่าช้า และทําให้การใช้งาน CPU สูงมากยิ่งขึ้น หากคุณยืนยัน โปรด:
@@ -265,6 +270,10 @@ Hold Ctrl to select</system:String>-->
   <system:String x:Key="prefs.rendering.resampler.note">
     หมายเหตุ: หากต้องการใช้  resampler นอกเหนือจากโปรแกรมโปรดเพิ่มไฟล์ DLL หรือ EXE ใน Resamplers folder ในเส้นทางการติดตั้ง OpenUtau และเลือก resampler  ได้ในการตั้งค่า
   </system:String>
+  <!--<system:String x:Key="prefs.rendering.threads.cpuwarn">
+    Warning: too many render threads may cause OpenUtau to run slowly.
+  </system:String>-->
+  <!--<system:String x:Key="prefs.rendering.threads.numthreads">Maximum Render Threads</system:String>-->
   <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
 
   <system:String x:Key="progress.saved">บันทึกโปรเจกต์ {0} แล้ว</system:String>
@@ -273,6 +282,8 @@ Hold Ctrl to select</system:String>-->
   <system:String x:Key="singers.caption">นักร้อง</system:String>
   <!--<system:String x:Key="singers.editoto.editinvlabeler">Edit In vLabeler</system:String>-->
   <!--<system:String x:Key="singers.editoto.gotosource">Goto Source File</system:String>-->
+  <!--<system:String x:Key="singers.editoto.regenfrq">Regenerate FRQ</system:String>-->
+  <!--<system:String x:Key="singers.editoto.regenfrq.regenerating">Regenerating FRQ</system:String>-->
   <system:String x:Key="singers.editoto.reset">คืนค่า Otos</system:String>
   <system:String x:Key="singers.editoto.save">บันทึก Otos</system:String>
   <!--<system:String x:Key="singers.editoto.setvlabelerpath">Download vLabeler (1.0.0-beta1 or higher) from https://github.com/sdercolin/vlabeler and set vLabeler path in Preferences first!</system:String>-->
@@ -353,5 +364,5 @@ Hold Ctrl to select</system:String>-->
 
   <system:String x:Key="warning">คำเตือน</system:String>
   <system:String x:Key="warning.asciipath">เส้นทางหลัก OpenUtau ของคุณ "{0}" ประกอบด้วยอักขระที่ไม่ใช่ ASCII. Exe resamplers โปรแกรมอาจไม่ทำงาน</system:String>
-  <!--<system:String x:Key="warning.renderer">No settings for this renderer. Please select CLASSIC.</system:String>-->
+  <!--<system:String x:Key="warning.renderer">No settings for this renderer.</system:String>-->
 </ResourceDictionary>

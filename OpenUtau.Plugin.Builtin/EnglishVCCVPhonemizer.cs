@@ -7,15 +7,15 @@ using OpenUtau.Core.G2p;
 using Serilog;
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("English VCCV Phonemizer", "EN VCCV", "Mim", language:"EN")]
+    [Phonemizer("English VCCV Phonemizer", "EN VCCV", "Mim", language: "EN")]
     // This is a temporary solution until Cz's comes out with their own.
     // Feel free to use the Lyric Parser plugin for more accurate pronunciations & support of ConVel.
 
-    // Thanks to cubialpha, Cz and nago for their help.
+    // Thanks to cubialpha, Cz, Halo/BagelHero and nago for their help.
     public class EnglishVCCVPhonemizer : SyllableBasedPhonemizer {
 
-        private readonly string[] vowels = "a,@,u,0,8,I,e,3,A,i,E,O,Q,6,o,1ng,9".Split(",");
-        private readonly string[] consonants = "b,ch,d,dh,f,g,h,j,k,l,m,n,ng,p,r,s,sh,t,th,v,w,y,z,zh,dd,hh".Split(",");
+        private readonly string[] vowels = "a,@,u,0,8,I,e,3,A,i,E,O,Q,6,o,1ng,9,&,x,1".Split(",");
+        private readonly string[] consonants = "b,ch,d,dh,f,g,h,j,k,l,m,n,ng,p,r,s,sh,t,th,v,w,y,z,zh,dd,hh,sp,st".Split(",");
         private readonly Dictionary<string, string> dictionaryReplacements = ("aa=a;ae=@;ah=u;ao=9;aw=8;ay=I;" +
             "b=b;ch=ch;d=d;dh=dh;eh=e;er=3;ey=A;f=f;g=g;hh=h;ih=i;iy=E;jh=j;k=k;l=l;m=m;n=n;ng=ng;ow=O;oy=Q;" +
             "p=p;r=r;s=s;sh=sh;t=t;th=th;uh=6;uw=o;v=v;w=w;y=y;z=z;zh=zh;dx=dd;").Split(';')
@@ -24,7 +24,6 @@ namespace OpenUtau.Plugin.Builtin {
                 .Where(parts => parts[0] != parts[1])
                 .ToDictionary(parts => parts[0], parts => parts[1]);
 
-        //some of these could be removed if we can implement the lyric parser dictionary in some way
         private readonly Dictionary<string, string> vcExceptions =
             new Dictionary<string, string>() {
                 {"i ng","1ng"},
@@ -71,7 +70,9 @@ namespace OpenUtau.Plugin.Builtin {
                 {"3","r"},
             };
 
-        private readonly string[] ccExceptions = { "th", "ch", "dh", "zh", "sh","ng" };
+        private readonly string[] ccExceptions = { "th", "ch", "dh", "zh", "sh", "ng" };
+        private readonly string[] stopCs = { "b","d","g","k","p","t" };
+
 
         protected override string[] GetVowels() => vowels;
         protected override string[] GetConsonants() => consonants;
@@ -188,10 +189,16 @@ namespace OpenUtau.Plugin.Builtin {
             }
                 // --------------------------- IS VCV ------------------------------- //
                 else {
+
+                cc = ValidateCC(cc);
+
                 if (syllable.IsVCVWithOneConsonant) {
                     basePhoneme = $"{cc.Last()}{v}";
                     if (!HasOto(basePhoneme, syllable.vowelTone)) {
-                        basePhoneme = $"_{v}";
+                        if($"{cc.Last()}" == "h") {
+                            basePhoneme = $"hh{v}";
+                        }
+                        else basePhoneme = $"_{v}";
                     }
 
                     var vc = $"{prevV} {cc.Last()}";
@@ -205,146 +212,69 @@ namespace OpenUtau.Plugin.Builtin {
                     if (!HasOto(basePhoneme, syllable.tone) || cc.Length == lastCPrevWord + 1) {
                         basePhoneme = $"{cc.Last()}{v}";
                     }
-                    var vc = "placeholder";
+                    if (cc.Length == lastCPrevWord && stopCs.Contains($"{cc.Last()}"))
+                        {
+                        basePhoneme = $"-{v}";
+                    }
 
                     var startingC = 0;
 
+                    var vc = $"{prevV}{cc[startingC]}-";
 
-                    //----- VCs -----//
-                    if (!HasOto(vc, syllable.tone)) {
-                        vc = $"{prevV} {cc[startingC]}";
+                    if (!HasOto(vc, syllable.vowelTone)) {
+                        vc = $"{prevV}{cc[startingC]}";
+                        if (!HasOto(vc, syllable.vowelTone)) {
+                            vc = $"{prevV} {cc[startingC]}";
+                        }
                     }
+
+                    if (lastCPrevWord == 1) {
+                        vc = $"{prevV}{cc[startingC]}";
+                        startingC = 1;
+                    }
+
 
                     vc = CheckVCExceptions(vc);
 
-                    if (startingC + 1 < cc.Length) {
-                        // replace 'V C' with 'VC' if theres no CC transition
-                        if (!HasOto($"{cc[startingC]}{cc[startingC + 1]}", syllable.tone) && !HasOto($"{cc[startingC]} {cc[startingC + 1]}", syllable.tone)) {
-                            vc = $"{prevV}{cc[startingC]}";
-                        }
-
-                        // replace 'V C' with 'VC' if there's no 'C C' transition and it's the end of the word
-                        if (!HasOto($"{cc[startingC]} {cc[startingC + 1]}", syllable.tone) && startingC < lastCPrevWord) {
-                            vc = $"{prevV}{cc[startingC]}";
+                    if (cc.Length > 1) {
+                        var vcc = vc + $" {cc[1]}";
+                        if (HasOto(vcc, syllable.tone)) {
+                            vc = vcc;
+                            startingC = 1;
                         }
                     }
 
-                    if (!HasOto(vc, syllable.tone) && startingC > 0) {
-                        vc = $"{prevV}";
+
+                    if (lastCPrevWord == 0 && prevV == "3") {
+
+                        vc = $"{prevV} {cc[0]}";
+//                        vc = $"{prevV}-";
                     }
-
-
 
                     phonemes.Add(vc);
+                    var cca = "null";
 
-                    int max = cc.Length - 1;
-                    //try CCC + CV and CCV (for example: "a stone" and "a stripe")
-                    var ccv = "placeholder";
+                    for (int i = startingC; i < cc.Length - 1; i++) {
 
+                        cca = $"{cc[i]}{cc[i + 1]}";
 
-                    if (lastC > 1 && lastC - 2 >= lastCPrevWord) {
+                        if (HasOto(cca, syllable.tone)) {
+                            phonemes.Add(cca);
 
-                        ccv = $"{cc[lastC - 2]}{cc[lastC - 1]}{cc[lastC]}";
-
-                        if (!CheckCCExceptions(ccv)) {
-                            if (HasOto(ccv, syllable.tone)) {
-
-                                startingC = 0;
-                                max -= 2;
-                            }
-                        }
-
-                    }
-                    if (!HasOto(ccv, syllable.tone)) {
-                        var ccv2 = $"{cc[lastC - 1]}{cc[lastC]}{v}";
-
-                        if (HasOto(ccv2, syllable.tone) && !CheckCCExceptions(ccv2)) {
-                            basePhoneme = ccv2;
-                            ccv = "placeholder";
-                            startingC = 0;
-                            max = cc.Length - 1;
-                        }
-
-                    }
-
-
-
-                    // ------------- CC & VC C
-                    var currentCc = "placeholder";
-
-                    for (int i = startingC; i < max; i++) {
-
-                        // VC C exceptions ("1ng s" etc.)
-                        currentCc = $"{vc} {cc[i + 1]}";
-                        if (HasOto(currentCc, syllable.tone) && i + 1 <= startingC + 1) {
-                            phonemes.RemoveAt(phonemes.Count - 1);
-                            phonemes.Add(currentCc);
-                            continue;
-                        }
-
-
-
-                        // try 'v cc' (for exemple 'u st')
-                        if (i + 1 <= max) {
-                            currentCc = $"{prevV} {cc[i]}{cc[i + 1]}";
-
-                            if (!CheckCCExceptions(currentCc)) {
-
-                                if (HasOto(currentCc, syllable.tone)) {
-                                    phonemes.RemoveAt(phonemes.Count - 1);
-                                    phonemes.Add(currentCc);
-                                    i++;
-                                    max -= 1;
-                                    continue;
-                                }
-                            }
-                        }
-
-                        // try 'c cc' (for exemple 'l sp')
-                        if (i + 2 <= max) {
-                            currentCc = $"{cc[i]} {cc[i + 1]}{cc[i + 2]}";
-
-                            if (!CheckCCExceptions(currentCc)) {
-
-                                if (HasOto(currentCc, syllable.tone)) {
-                                    phonemes.Add(currentCc);
-                                    i++;
-                                    max -= 1;
-                                    continue;
-                                }
-                            }
-                        }
-
-                        if (i+1 == syllable.prevWordConsonantsCount - 1 && cc.Length > syllable.prevWordConsonantsCount) {
-                            currentCc = $"{cc[i]}{cc[i + 1]}";
-                            if (HasOto(currentCc, syllable.tone)) {
-                                phonemes.Add(currentCc);
+                            //if end of word, skip next CC
+                            if (lastCPrevWord == i + 2) {
+                                i++;
                                 continue;
-                            } else {
-                                currentCc = $"{cc[i]} {cc[i + 1]}";
-                                if (HasOto(currentCc, syllable.tone)) {
-                                    phonemes.Add(currentCc);
-                                    continue;
-                                }
                             }
-                        }
 
-                        //fallback, uses C C by default
-                        currentCc = $"{cc[i]} {cc[i + 1]}";
-                        if (HasOto(currentCc, syllable.tone)) {
-                            phonemes.Add(currentCc);
+                            continue;
                         } else {
-                            currentCc = $"{cc[i]}{cc[i + 1]}";
-                            if (HasOto(currentCc, syllable.tone)) {
-                                phonemes.Add(currentCc);
+                            cca = $"{cc[i]} {cc[i + 1]}";
+                            if (HasOto(cca, syllable.tone)) {
+                                phonemes.Add(cca);
+                                continue;
                             }
                         }
-
-                    }
-
-
-                    if (HasOto(ccv, syllable.tone)) {
-                        phonemes.Add(ccv);
                     }
 
                 }
@@ -445,10 +375,6 @@ namespace OpenUtau.Plugin.Builtin {
             return phonemes;
         }
 
-        // TODO: See if it can be implemented in a nice way but default sounds better for now.
-        //protected override double GetTransitionBasicLengthMs(string alias = "") {
-        //    return GetTransitionBasicLengthMsByOto(alias);
-        //}
 
         private string CheckVCExceptions(string vc) {
             if (vcExceptions.ContainsKey(vc)) {
@@ -476,5 +402,91 @@ namespace OpenUtau.Plugin.Builtin {
 
             return alias;
         }
+
+        private string[] ValidateCC(string[] cc) {
+            List<string> ccList = cc.ToList();
+            List<string> newCc = new List<string>();
+
+            string buffer = "";
+            string bufferCCC = "";
+
+            if (ccList.Count == 1) {
+                return cc;
+            }
+            //Check for CC & CCC
+            for (var i = 0; i < ccList.Count; i++) {
+                string letter = $"{ccList[i]}";
+
+                if (bufferCCC == "sp") {
+                    if (letter == "l" || letter == "r") {
+                        newCc.Remove("sp");
+                        newCc.Add("s");
+                        newCc.Add("p" + letter);
+                        newCc.Add(letter);
+                        bufferCCC = "";
+                        continue;
+                    }
+                }
+                if (bufferCCC == "st") {
+                    if (letter == "r") {
+                        newCc.Remove("st");
+                        newCc.Add("s");
+                        newCc.Add("tr");
+                        newCc.Add("r");
+                        bufferCCC = "";
+                        continue;
+                    }
+                }
+                if (buffer == "s") {
+                    if (letter == "p" || letter == "t" || letter == "m" || letter == "k") {
+                        buffer += letter;
+                        bufferCCC = "s" + letter;
+                        newCc.Add(buffer);
+                        newCc.Add(letter);
+                        buffer = "";
+                        continue;
+                    } else {
+                        newCc.Add("s");
+                        newCc.Add(letter);
+                        buffer = "";
+                        continue;
+                    }
+                }
+                if (buffer == "hh") {
+                    if (letter == "y") {
+                        newCc.Add(buffer);
+                        buffer = "hhy";
+                        newCc.Add(buffer);
+                        buffer = "";
+                        continue;
+                    } else {
+                        newCc.Add(buffer);
+                        newCc.Add(letter);
+                        buffer = "";
+                        continue;
+                    }
+                }
+                if (letter == "s" && i != ccList.Count - 1) {
+                    buffer = letter;
+                    continue;
+                }
+
+                if (letter == "h" && i != ccList.Count - 1) {
+                    buffer = "hh";
+                    continue;
+                }
+                if (letter == "hh" && i != ccList.Count - 1) {
+                    buffer = letter;
+                    continue;
+                }
+                newCc.Add(letter);
+            }
+
+            string[] ccModified = newCc.ToArray();
+
+            return ccModified;
+        }
+
+
     }
 }

@@ -39,6 +39,15 @@ namespace OpenUtau.Core.Enunu {
             public AcousticResult result;
         }
 
+        struct VocoderResult {
+            public string path_wav;
+        }
+
+        struct VocoderResponse {
+            public string error;
+            public VocoderResult result;
+        }
+
         static readonly object lockObj = new object();
 
         public USingerType SingerType => USingerType.Enunu;
@@ -73,6 +82,17 @@ namespace OpenUtau.Core.Enunu {
                     var wavPath = Path.Join(PathManager.Inst.CachePath, $"enu-{phrase.hash:x16}.wav");
                     var result = Layout(phrase);
                     if (!File.Exists(wavPath)) {
+                        var config = EnunuConfig.Load(phrase.singer);
+                        if (config.extensions.wav_synthesizer.Contains("vocoder")) {
+                            Log.Information($"Starting enunu vocoder synthesis \"{ustPath}\"");
+                            var enunuNotes = PhraseToEnunuNotes(phrase);
+                            // TODO: using first note tempo as ust tempo.
+                            EnunuUtils.WriteUst(enunuNotes, phrase.phones.First().tempo, phrase.singer, ustPath);
+                            var response = EnunuClient.Inst.SendRequest<VocoderResponse>(new string[] { "vocoder", ustPath, wavPath });
+                            if (response.error != null) {
+                                throw new Exception(response.error);
+                            }
+                        } else {
                         var f0Path = Path.Join(enutmpPath, "f0.npy");
                         var spPath = Path.Join(enutmpPath, "spectrogram.npy");
                         var apPath = Path.Join(enutmpPath, "aperiodicity.npy");
@@ -89,7 +109,6 @@ namespace OpenUtau.Core.Enunu {
                         if (cancellation.IsCancellationRequested) {
                             return new RenderResult();
                         }
-                        var config = EnunuConfig.Load(phrase.singer);
                         var f0 = np.Load<double[]>(f0Path);
                         var sp = np.Load<double[,]>(spPath);
                         var ap = np.Load<double[,]>(apPath);
@@ -125,6 +144,7 @@ namespace OpenUtau.Core.Enunu {
                         var source = new WaveSource(0, 0, 0, 1);
                         source.SetSamples(result.samples);
                         WaveFileWriter.CreateWaveFile16(wavPath, new ExportAdapter(source).ToMono(1, 0));
+                    }
                     }
                     progress.Complete(phrase.phones.Length, progressInfo);
                     if (File.Exists(wavPath)) {

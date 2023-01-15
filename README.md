@@ -17,7 +17,7 @@ OpenUtau is an open source editing environment for UTAU community with modern us
 
 It is **strongly recommend** to go through a few Wiki pages before use:
 - [Getting-Started](https://github.com/stakira/OpenUtau/wiki/Getting-Started)
-- [Resamplers](https://github.com/stakira/OpenUtau/wiki/Resamplers)
+- [Resamplers](https://github.com/stakira/OpenUtau/wiki/Resamplers-and-Wavtools)
 - [Phonemizers](https://github.com/stakira/OpenUtau/wiki/Phonemizers)
 - [FAQ](https://github.com/stakira/OpenUtau/wiki/FAQ)
 
@@ -63,7 +63,7 @@ See [Getting-Started](https://github.com/stakira/OpenUtau/wiki/Getting-Started) 
 #### The scope of OpenUtau includes:
 - Modern user experience.
 - Selected compatibility with UTAU technologies.
-  - OpenUtau aims to solve problems in less laborious ways, so don't expect it to replicate exact UTAU featuers.
+  - OpenUtau aims to solve problems in less laborious ways, so don't expect it to replicate exact UTAU features.
 - Extensible realtime phonetics (VCV, CVVC, Arpasing) intellegence.
   - English, Japanese, Chinese, Korean, Russian and more.
 - Internationalization, including UI translation and file system encoding support.

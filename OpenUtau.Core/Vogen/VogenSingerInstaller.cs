@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Threading.Tasks;
 
 namespace OpenUtau.Core.Vogen {
     public class VogenSingerInstaller {
@@ -11,8 +12,10 @@ namespace OpenUtau.Core.Vogen {
                 return;
             }
             File.Copy(filePath, destName);
-            DocManager.Inst.ExecuteCmd(new SingersChangedNotification());
-            DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Installed {fileName}"));
+            new Task(() => {
+                DocManager.Inst.ExecuteCmd(new SingersChangedNotification());
+                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Installed {fileName}"));
+            }).Start(DocManager.Inst.MainScheduler);
         }
     }
 }
