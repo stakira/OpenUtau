@@ -80,10 +80,10 @@
   <system:String x:Key="menu.edit.undo">실행 취소</system:String>
   <system:String x:Key="menu.file">파일</system:String>
   <system:String x:Key="menu.file.exit">나가기</system:String>
-  <!--<system:String x:Key="menu.file.exportaudio">Export Audio</system:String>-->
+  <system:String x:Key="menu.file.exportaudio">오디오 내보내기</system:String>
   <system:String x:Key="menu.file.exportmidi">Midi 파일로 내보내기</system:String>
-  <!--<system:String x:Key="menu.file.exportmixdown">Mixdown To Wav File</system:String>-->
-  <!--<system:String x:Key="menu.file.exportproject">Export Project</system:String>-->
+  <system:String x:Key="menu.file.exportmixdown">Wav 파일로 믹스다운</system:String>
+  <system:String x:Key="menu.file.exportproject">프로젝트 내보내기</system:String>
   <system:String x:Key="menu.file.exportust">Ust 파일 내보내기</system:String>
   <system:String x:Key="menu.file.exportustto">다른 이름으로 Ust 파일 내보내기</system:String>
   <system:String x:Key="menu.file.exportustwithphonemizer">Ust 파일 내보내기 (음소화기 적용)</system:String>
@@ -272,10 +272,10 @@
   <system:String x:Key="prefs.rendering.resampler.note">
         참고 : 외부 엔진을 사용하려면, OpenUtau 설치 경로의 Resamplers 폴더에 엔진 DLL 또는 EXE 파일을 추가하고 환경 설정에서 선택하세요.
     </system:String>
-  <!--<system:String x:Key="prefs.rendering.threads.cpuwarn">
-    Warning: too many render threads may cause OpenUtau to run slowly.
-  </system:String>-->
-  <!--<system:String x:Key="prefs.rendering.threads.numthreads">Maximum Render Threads</system:String>-->
+  <system:String x:Key="prefs.rendering.threads.cpuwarn">
+    경고: 렌더 스레드가 너무 많으면 OpenUtau가 느리게 실행될 수 있습니다.
+  </system:String>
+  <system:String x:Key="prefs.rendering.threads.numthreads">최대 렌더러 스레드</system:String>
   <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
 
   <system:String x:Key="progress.saved">프로젝트 저장됨. {0}</system:String>
@@ -284,8 +284,8 @@
   <system:String x:Key="singers.caption">가수</system:String>
   <system:String x:Key="singers.editoto.editinvlabeler">vLabeler에서 편집</system:String>
   <system:String x:Key="singers.editoto.gotosource">소스파일 열기</system:String>
-  <!--<system:String x:Key="singers.editoto.regenfrq">Regenerate FRQ</system:String>-->
-  <!--<system:String x:Key="singers.editoto.regenfrq.regenerating">Regenerating FRQ</system:String>-->
+  <system:String x:Key="singers.editoto.regenfrq">FRQ 재생성</system:String>
+  <system:String x:Key="singers.editoto.regenfrq.regenerating">FRQ 재생성 중...</system:String>
   <system:String x:Key="singers.editoto.reset">Oto 초기화</system:String>
   <system:String x:Key="singers.editoto.save">Oto 저장</system:String>
   <system:String x:Key="singers.editoto.setvlabelerpath">먼저 https://github.com/sdercolin/vlabeler에서 vLabeler를 다운로드 (1.0.0-beta1 버전 이상) 후, 설정에서 vLabeler 경로를 입력해주세요!</system:String>
@@ -366,9 +366,5 @@
 
   <system:String x:Key="warning">경고</system:String>
   <system:String x:Key="warning.asciipath">OpenUtau 홈 경로 "{0}"에 ASCII가 아닌 문자가 포함되어 있습니다. EXE 엔진이 작동하지 않을 수 있습니다.</system:String>
-<<<<<<< HEAD
-  <system:String x:Key="warning.renderer">이 렌더러에 대한 설정이 없습니다. CLASSIC으로 변경해주세요.</system:String>
-=======
-  <!--<system:String x:Key="warning.renderer">No settings for this renderer.</system:String>-->
->>>>>>> dev
+  <system:String x:Key="warning.renderer">이 렌더러에 대한 설정이 없습니다.</system:String>
 </ResourceDictionary>
