@@ -29,7 +29,7 @@
   <system:String x:Key="dialogs.exitsave.caption">OpenUtau 종료</system:String>
   <system:String x:Key="dialogs.exitsave.message">현재 프로젝트가 저장되지 않았습니다. 저장하시겠어요?</system:String>
   <system:String x:Key="dialogs.export.caption">내보내기</system:String>
-  <system:String x:Key="dialogs.export.savefirst">먼저 프로젝트 파일 저장</system:String>
+  <system:String x:Key="dialogs.export.savefirst">먼저 프로젝트 파일을 저장해주세요.</system:String>
   <system:String x:Key="dialogs.messagebox.cancel">취소</system:String>
   <system:String x:Key="dialogs.messagebox.no">아니오</system:String>
   <system:String x:Key="dialogs.messagebox.ok">확인</system:String>
