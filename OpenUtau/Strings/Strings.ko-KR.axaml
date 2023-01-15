@@ -82,6 +82,8 @@
   <system:String x:Key="menu.file.exportmidi">Midi 파일로 내보내기</system:String>
   <system:String x:Key="menu.file.exportust">Ust 파일 내보내기</system:String>
   <system:String x:Key="menu.file.exportustto">다른 이름으로 Ust 파일 내보내기</system:String>
+  <system:String x:Key="menu.file.exportustwithphonemizer">Ust 파일 내보내기 (음소화기 적용)</system:String>
+  <system:String x:Key="menu.file.exportusttowithphonemizer">다른 이름으로 Ust 파일 내보내기 (음소화기 적용)</system:String>
   <system:String x:Key="menu.file.exportwav">Wav 파일 내보내기</system:String>
   <system:String x:Key="menu.file.exportwavto">다른 이름으로 Wav 파일 내보내기</system:String>
   <system:String x:Key="menu.file.importaudio">오디오 가져오기</system:String>

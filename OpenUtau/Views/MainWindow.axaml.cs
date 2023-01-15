@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
+
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -14,14 +15,18 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
+
 using OpenUtau.App.Controls;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Classic;
 using OpenUtau.Core;
 using OpenUtau.Core.Format;
 using OpenUtau.Core.Ustx;
+
 using ReactiveUI;
+
 using Serilog;
+
 using Point = Avalonia.Point;
 
 namespace OpenUtau.App.Views {
@@ -392,6 +397,47 @@ namespace OpenUtau.App.Views {
                     if (part is UVoicePart voicePart) {
                         var savePath = PathManager.Inst.GetPartSavePath(file, i);
                         Ust.SavePart(project, voicePart, savePath);
+                        DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"{savePath}."));
+                    }
+                }
+            }
+        }
+
+        async void OnMenuExportUstWithPhonemizer(object sender, RoutedEventArgs e) {
+            var project = DocManager.Inst.Project;
+            if (await WarnToSave(project)) {
+                var name = System.IO.Path.GetFileNameWithoutExtension(project.FilePath);
+                var path = System.IO.Path.GetDirectoryName(project.FilePath);
+                path = System.IO.Path.Combine(path!, "Export");
+                path = System.IO.Path.Combine(path!, $"{name}.ust");
+                for (var i = 0; i < project.parts.Count; i++) {
+                    var part = project.parts[i];
+                    if (part is UVoicePart voicePart) {
+                        var savePath = PathManager.Inst.GetPartSavePath(path, i);
+                        Ust.SavePartWithPhonemizer(project, voicePart, savePath);
+                        DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"{savePath}."));
+                    }
+                }
+            }
+        }
+
+        async void OnMenuExportUstToWithPhonemizer(object sender, RoutedEventArgs e) {
+            var project = DocManager.Inst.Project;
+            var dialog = new SaveFileDialog() {
+                DefaultExtension = "ust",
+                Filters = new List<FileDialogFilter>() {
+                    new FileDialogFilter() {
+                        Extensions = new List<string>(){ "ust" },
+                    },
+                },
+            };
+            var file = await dialog.ShowAsync(this);
+            if (!string.IsNullOrEmpty(file)) {
+                for (var i = 0; i < project.parts.Count; i++) {
+                    var part = project.parts[i];
+                    if (part is UVoicePart voicePart) {
+                        var savePath = PathManager.Inst.GetPartSavePath(file, i);
+                        Ust.SavePartWithPhonemizer(project, voicePart, savePath);
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"{savePath}."));
                     }
                 }
