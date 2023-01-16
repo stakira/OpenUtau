@@ -71,10 +71,14 @@ namespace OpenUtau.Core.DiffSinger {
             //使用vogen的辅音时间
             Result VogenResult = base.Process(notes, prev, next, prevNeighbour, nextNeighbour, prevs);
             //辅音长度至少为1帧
+            int consonantPos = Math.Min(VogenResult.phonemes[0].position, -frameTick);
+            //辅音长度不能超过上一音符时长的2/3
+            if (prevNeighbour != null) {
+                consonantPos = Math.Max(consonantPos, -prevNeighbour.Value.duration * 2 / 3);
+            }
             return new Result {
                 phonemes = new Phoneme[] {
-                    new Phoneme {phoneme = phones.Item1, 
-                        position = Math.Min(VogenResult.phonemes[0].position,-frameTick)},
+                    new Phoneme {phoneme = phones.Item1, position = consonantPos},
                     new Phoneme {phoneme = phones.Item2, position = 0}
                 },
             };

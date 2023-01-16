@@ -16,7 +16,7 @@ using Serilog;
 namespace OpenUtau.Core.DiffSinger {
     public class DiffSingerRenderer : IRenderer {
         const float headMs = 0;
-        const float tailMs = 0;
+        const float tailMs = 500;
 
         static readonly HashSet<string> supportedExp = new HashSet<string>(){
             Format.Ustx.DYN,
@@ -109,10 +109,12 @@ namespace OpenUtau.Core.DiffSinger {
             //speedup：加速倍数
             var tokens = phrase.phones
                 .Select(p => p.phoneme)
+                .Append("SP")
                 .Select(x => (long)(singer.phonemes.IndexOf(x)))
                 .ToList();
             var durations = phrase.phones
                 .Select(p => (long)(p.endMs / frameMs) - (long)(p.positionMs / frameMs))//防止累计误差
+                .Append(tailFrames)
                 .ToList();
             var totalFrames = (int)(durations.Sum());
             var f0 = SampleCurve(phrase, phrase.pitches, 0, totalFrames, headFrames, tailFrames, x => MusicMath.ToneToFreq(x * 0.01));
@@ -167,8 +169,8 @@ namespace OpenUtau.Core.DiffSinger {
                 }
             }
             //填充头尾
-            Array.Fill(result, defaultValue, 0, headFrames);
-            Array.Fill(result, defaultValue, length - tailFrames, tailFrames);
+            Array.Fill(result, convert(curve[0]), 0, headFrames);
+            Array.Fill(result, convert(curve.Last()), length - tailFrames, tailFrames);
             return result;
         }
 
