@@ -49,6 +49,8 @@ namespace OpenUtau.Core.DiffSinger {
             }
         }
 
+
+
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevs) {
             float frameMs = 1000f*512/44100;
             //TODO:变速曲可能会产生错误结果
@@ -58,25 +60,24 @@ namespace OpenUtau.Core.DiffSinger {
             if (lyric.Length > 0 && PinyinHelper.IsChinese(lyric[0])) {
                 lyric = PinyinHelper.GetPinyin(lyric).ToLowerInvariant();
             }
+            //使用"?音素"可直接指定音素
+            if (lyric.StartsWith("?")) {
+                return MakeSimpleResult(lyric.Substring(1));
+            }
             var phones = phoneDict[lyric];
             if (phones.Item1 == "") {//仅韵母
-                return new Result {
-                    phonemes = new Phoneme[] {
-                        new Phoneme {phoneme = phones.Item2,}
-                    },
-                };
-            } else {
-                //使用vogen的辅音时间
-                Result VogenResult = base.Process(notes, prev, next, prevNeighbour, nextNeighbour, prevs);
-                //辅音长度至少为1帧
-                return new Result {
-                    phonemes = new Phoneme[] {
-                        new Phoneme {phoneme = phones.Item1, 
-                            position = Math.Min(VogenResult.phonemes[0].position,-frameTick)},
-                        new Phoneme {phoneme = phones.Item2, position = 0}
-                    },
-                };
+                return MakeSimpleResult(phones.Item2);
             }
+            //使用vogen的辅音时间
+            Result VogenResult = base.Process(notes, prev, next, prevNeighbour, nextNeighbour, prevs);
+            //辅音长度至少为1帧
+            return new Result {
+                phonemes = new Phoneme[] {
+                    new Phoneme {phoneme = phones.Item1, 
+                        position = Math.Min(VogenResult.phonemes[0].position,-frameTick)},
+                    new Phoneme {phoneme = phones.Item2, position = 0}
+                },
+            };
         }
     }
 }

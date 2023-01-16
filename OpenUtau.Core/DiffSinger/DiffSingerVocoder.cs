@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Reflection;
 using Microsoft.ML.OnnxRuntime;
 
 namespace OpenUtau.Core.DiffSinger {
