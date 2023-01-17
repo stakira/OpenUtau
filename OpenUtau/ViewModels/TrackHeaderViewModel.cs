@@ -283,5 +283,45 @@ namespace OpenUtau.App.ViewModels {
             DocManager.Inst.ExecuteCmd(new MoveTrackCommand(DocManager.Inst.Project, track, false));
             DocManager.Inst.EndUndoGroup();
         }
+
+        public void Duplicate() {
+            DocManager.Inst.StartUndoGroup();
+            //TODO
+            var newTrack = new UTrack() {
+                TrackNo = track.TrackNo+1,
+                Singer = track.Singer,
+                Phonemizer = track.Phonemizer,
+                RendererSettings = track.RendererSettings,
+                Mute = track.Mute,
+                Solo = track.Solo,
+                Volume = track.Volume,
+                Pan = track.Pan,
+            };
+            DocManager.Inst.ExecuteCmd(new AddTrackCommand(DocManager.Inst.Project, newTrack));
+            var parts = DocManager.Inst.Project.parts
+                .Where(part => part.trackNo == track.TrackNo)
+                .Select(part => part.Clone()).ToList();
+            foreach(var part in parts) {
+                part.trackNo = newTrack.TrackNo;
+                DocManager.Inst.ExecuteCmd(new AddPartCommand(DocManager.Inst.Project, part));
+            }
+            DocManager.Inst.EndUndoGroup();
+        }
+
+        public void DuplicateSettings() {
+            DocManager.Inst.StartUndoGroup();
+            //TODO
+            DocManager.Inst.ExecuteCmd(new AddTrackCommand(DocManager.Inst.Project, new UTrack() {
+                TrackNo = track.TrackNo+1,
+                Singer = track.Singer,
+                Phonemizer = track.Phonemizer,
+                RendererSettings = track.RendererSettings,
+                Mute = track.Mute,
+                Solo = track.Solo,
+                Volume = track.Volume,
+                Pan = track.Pan,
+            }));
+            DocManager.Inst.EndUndoGroup();
+        }
     }
 }
