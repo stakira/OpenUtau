@@ -26,10 +26,10 @@ namespace OpenUtau.Core.DiffSinger {
             //导入拼音转音素字典
             try {
                 phoneDict.Clear();
-            HashSet<string> phonemesSet = new HashSet<string> { "SP", "AP" };
-            string path = Path.Combine(singer.Location, "dsdict.txt");
-            phoneDict.Add("AP", new Tuple<string, string>("", "AP"));
-            phoneDict.Add("SP", new Tuple<string, string>("", "SP"));
+                HashSet<string> phonemesSet = new HashSet<string> { "SP", "AP" };
+                string path = Path.Combine(singer.Location, "dsdict.txt");
+                phoneDict.Add("AP", new Tuple<string, string>("", "AP"));
+                phoneDict.Add("SP", new Tuple<string, string>("", "SP"));
                 foreach (string line in File.ReadLines(path, singer.TextFileEncoding)) {
                     string[] elements = line.Split("\t");
                     elements[1] = elements[1].Trim();

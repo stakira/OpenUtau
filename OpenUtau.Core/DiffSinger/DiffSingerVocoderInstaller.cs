@@ -20,7 +20,7 @@ namespace OpenUtau.Core.DiffSinger {
                     vocoderConfig = Core.Yaml.DefaultDeserializer.Deserialize<DsVocoderConfig>(reader);
                 }
                 string name = vocoderConfig.name;
-                var basePath = Path.Combine(PathManager.Inst.VocodersPath, name);
+                var basePath = Path.Combine(PathManager.Inst.DependencyPath, name);
                 foreach (var entry in archive.Entries) {
                     if (entry.Key.Contains("..")) {
                         // Prevent zipSlip attack

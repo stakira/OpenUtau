@@ -120,5 +120,6 @@ namespace OpenUtau.Core.DiffSinger {
         public string phonemes = "phonemes.txt";
         public string acoustic = "acoustic.onnx";
         public string vocoder = "nsf_hifigan";
+        public string rhythmizer = "rhythmizer_zh_opencpop_strict";
     }
 }

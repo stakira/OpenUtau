@@ -12,7 +12,7 @@ namespace OpenUtau.Core.DiffSinger {
         public DsVocoder(string name) {
             byte[] model;
             try {
-                Location = Path.Combine(PathManager.Inst.VocodersPath, name);
+                Location = Path.Combine(PathManager.Inst.DependencyPath, name);
                 config = Core.Yaml.DefaultDeserializer.Deserialize<DsVocoderConfig>(
                     File.ReadAllText(Path.Combine(Location, "vocoder.yaml"),
                         System.Text.Encoding.UTF8));
