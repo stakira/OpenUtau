@@ -11,7 +11,7 @@ using Serilog;
 namespace OpenUtau.Core.DiffSinger {
     [Phonemizer("DiffSinger Chinese Mandarin Phonemizer", "DIFFS ZH", language: "ZH")]
     public class DiffsingerMandarinPhonemizer : VogenMandarinPhonemizer {
-        DiffSingerSinger singer;
+        USinger singer;
         Dictionary<string, Tuple<string, string>> phoneDict = new Dictionary<string, Tuple<string, string>>();
 
         //初始化
@@ -19,7 +19,7 @@ namespace OpenUtau.Core.DiffSinger {
             if (this.singer == singer) {
                 return;
             }
-            this.singer = singer as DiffSingerSinger;
+            this.singer = singer;
             if (this.singer == null) {
                 return;
             }
@@ -49,20 +49,11 @@ namespace OpenUtau.Core.DiffSinger {
             }
         }
 
-
-
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevs) {
-            float frameMs = 1000f*512/44100;
-            //TODO:变速曲可能会产生错误结果
-            int frameTick = MsToTick(frameMs);
             string lyric = notes[0].lyric;
             //汉字转拼音
             if (lyric.Length > 0 && PinyinHelper.IsChinese(lyric[0])) {
                 lyric = PinyinHelper.GetPinyin(lyric).ToLowerInvariant();
-            }
-            //使用"?音素"可直接指定音素
-            if (lyric.StartsWith("?")) {
-                return MakeSimpleResult(lyric.Substring(1));
             }
             var phones = phoneDict[lyric];
             if (phones.Item1 == "") {//仅韵母
@@ -70,8 +61,8 @@ namespace OpenUtau.Core.DiffSinger {
             }
             //使用vogen的辅音时间
             Result VogenResult = base.Process(notes, prev, next, prevNeighbour, nextNeighbour, prevs);
-            //辅音长度至少为1帧
-            int consonantPos = Math.Min(VogenResult.phonemes[0].position, -frameTick);
+            //辅音长度过短时有openutau的保护机制，无需手动处理
+            int consonantPos = VogenResult.phonemes[0].position;
             //辅音长度不能超过上一音符时长的2/3
             if (prevNeighbour != null) {
                 consonantPos = Math.Max(consonantPos, -prevNeighbour.Value.duration * 2 / 3);

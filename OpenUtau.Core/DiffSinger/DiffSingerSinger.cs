@@ -65,7 +65,7 @@ namespace OpenUtau.Core.DiffSinger {
                 File.ReadAllText(configPath, TextFileEncoding));
             //导入音素列表
             string phonemesPath = Path.Combine(Location, dsConfig.phonemes);
-            phonemes = File.ReadLines(phonemesPath).ToList();
+            phonemes = File.ReadLines(phonemesPath,TextFileEncoding).ToList();
 
             found = true;
             loaded = true;
@@ -120,6 +120,5 @@ namespace OpenUtau.Core.DiffSinger {
         public string phonemes = "phonemes.txt";
         public string acoustic = "acoustic.onnx";
         public string vocoder = "nsf_hifigan";
-        public string rhythmizer = "rhythmizer_zh_opencpop_strict";
     }
 }
