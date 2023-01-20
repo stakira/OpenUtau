@@ -8,8 +8,6 @@ using OpenUtau.Core.Ustx;
 using System.Text;
 using System.Linq;
 using TinyPinyin;
-using System.Security.Cryptography.X509Certificates;
-using static OpenUtau.Api.Phonemizer;
 
 namespace OpenUtau.Core.DiffSinger {
 
@@ -82,19 +80,23 @@ namespace OpenUtau.Core.DiffSinger {
                 return;
             }
             //加载音素时长模型
-            string rhythmizerName;
-            string rhythmizerYamlPath = Path.Combine(singer.Location, "dsrhythmizer.yaml");
-            if (File.Exists(rhythmizerYamlPath)) {
-                rhythmizerName = Core.Yaml.DefaultDeserializer.Deserialize<DsRhythmizerYaml>(
-                    File.ReadAllText(rhythmizerYamlPath, singer.TextFileEncoding)).rhythmizer;
-            } else {
-                rhythmizerName = DsRhythmizer.DefaultRhythmizer;
+            try {
+                string rhythmizerName;
+                string rhythmizerYamlPath = Path.Combine(singer.Location, "dsrhythmizer.yaml");
+                if (File.Exists(rhythmizerYamlPath)) {
+                    rhythmizerName = Core.Yaml.DefaultDeserializer.Deserialize<DsRhythmizerYaml>(
+                        File.ReadAllText(rhythmizerYamlPath, singer.TextFileEncoding)).rhythmizer;
+                } else {
+                    rhythmizerName = DsRhythmizer.DefaultRhythmizer;
+                }
+                if (rhythmizer == null || rhythmizer.name != rhythmizerName) {
+                    rhythmizer = new DsRhythmizer(rhythmizerName);
+                }
+                //导入拼音转音素字典，仅从时长模型包中导入字典
+                phoneDict = rhythmizer.phoneDict;
+            } catch (Exception ex) {
+                return;
             }
-            if (rhythmizer == null || rhythmizer.name != rhythmizerName) {
-                rhythmizer = new DsRhythmizer(rhythmizerName);
-            }
-            //导入拼音转音素字典，仅从时长模型包中导入字典
-            phoneDict = rhythmizer.phoneDict;
         }
 
         //TODO:错误歌词的处理

@@ -16,7 +16,7 @@ using Serilog;
 namespace OpenUtau.Core.DiffSinger {
     public class DiffSingerRenderer : IRenderer {
         const float headMs = 0;
-        const float tailMs = 500;
+        const float tailMs = 100;
 
         static readonly HashSet<string> supportedExp = new HashSet<string>(){
             Format.Ustx.DYN,

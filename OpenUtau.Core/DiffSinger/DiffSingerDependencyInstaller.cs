@@ -5,21 +5,27 @@ using System.Text;
 using SharpCompress.Archives;
 
 namespace OpenUtau.Core.DiffSinger {
-    public class DiffSingerVocoderInstaller {
+    //Diffsinger音源依赖项的安装，包括声码器，音素时长模型
+    [Serializable]
+    public class DependencyConfig {
+        public string name = "vocoder";
+    }
+
+    public class DiffSingerDependencyInstaller {
         public static string FileExt = ".dsvocoder";
         public static void Install(string archivePath) {
-            DsVocoderConfig vocoderConfig;
+            DependencyConfig dependencyConfig;
             using (var archive = ArchiveFactory.Open(archivePath)) {
-                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, "Installing vocoder"));
+                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, "Installing dependency"));
                 var configEntry = archive.Entries.First(e => e.Key == "vocoder.yaml");
                 if (configEntry == null) {
                     throw new ArgumentException("missing vocoder.yaml");
                 }
                 using (var stream = configEntry.OpenEntryStream()) {
                     using var reader = new StreamReader(stream, Encoding.UTF8);
-                    vocoderConfig = Core.Yaml.DefaultDeserializer.Deserialize<DsVocoderConfig>(reader);
+                    dependencyConfig = Core.Yaml.DefaultDeserializer.Deserialize<DependencyConfig>(reader);
                 }
-                string name = vocoderConfig.name;
+                string name = dependencyConfig.name;
                 var basePath = Path.Combine(PathManager.Inst.DependencyPath, name);
                 foreach (var entry in archive.Entries) {
                     if (entry.Key.Contains("..")) {
@@ -32,7 +38,7 @@ namespace OpenUtau.Core.DiffSinger {
                         entry.WriteToFile(Path.Combine(basePath, entry.Key));
                     }
                 }
-                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"vocoder \"{name}\" installaion finished"));
+                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"dependency \"{name}\" installaion finished"));
             }
         }
     }
