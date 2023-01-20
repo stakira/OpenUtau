@@ -58,6 +58,8 @@
           <MenuItem Header="{DynamicResource menu.file.exportproject}">
             <MenuItem Header="{DynamicResource menu.file.exportust}" Click="OnMenuExportUst"/>
             <MenuItem Header="{DynamicResource menu.file.exportustto}" Click="OnMenuExportUstTo"/>
+          <MenuItem Header="{DynamicResource menu.file.exportustwithphonemizer}" Click="OnMenuExportUstWithPhonemizer"/>
+          <MenuItem Header="{DynamicResource menu.file.exportusttowithphonemizer}" Click="OnMenuExportUstToWithPhonemizer"/>
             <MenuItem Header="{DynamicResource menu.file.exportmidi}" Click="OnMenuExportMidi"/>
           </MenuItem>
           <MenuItem Header="{DynamicResource menu.file.openexportlocation}" Click="OnMenuOpenProjectLocation"/>

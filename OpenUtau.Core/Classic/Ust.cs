@@ -1,12 +1,15 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+
 using OpenUtau.Core;
 using OpenUtau.Core.Format;
 using OpenUtau.Core.Ustx;
+
+using static OpenUtau.Api.Phonemizer;
 
 namespace OpenUtau.Classic {
 
@@ -213,6 +216,19 @@ namespace OpenUtau.Classic {
             return float.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out value);
         }
 
+        public static void SavePartWithPhonemizer(UProject project, UVoicePart part, string filePath) {
+            var track = project.tracks[part.trackNo];
+            var ustNotes = NotesToUstPhonemeNotes(project, track, part, part.notes);
+            using (var writer = new StreamWriter(filePath, false, ShiftJIS)) {
+                WriteHeader(project, part, writer);
+                for (var i = 0; i < ustNotes.Count; i++) {
+                    writer.WriteLine($"[#{i:D4}]");
+                    ustNotes[i].Write(writer);
+                }
+                WriteFooter(writer);
+            }
+        }
+
         public static void SavePart(UProject project, UVoicePart part, string filePath) {
             var track = project.tracks[part.trackNo];
             var ustNotes = NotesToUstNotes(project, track, part, part.notes);
@@ -224,6 +240,99 @@ namespace OpenUtau.Classic {
                 }
                 WriteFooter(writer);
             }
+        }
+
+        static List<UstNote> NotesToUstPhonemeNotes(UProject project, UTrack track, UVoicePart part, IEnumerable<UNote> notes) {
+            UNote beforeNote = null;
+            List<UPhoneme> tempPhnList = new List<UPhoneme>();
+
+            // Phn == Phoneme
+            List<Tuple<UNote, UPhoneme[]>> NotePhnPairList = new List<Tuple<UNote, UPhoneme[]>>();
+
+            foreach (UPhoneme phoneme in part.phonemes) {
+                if (beforeNote == null || beforeNote == phoneme.Parent) {
+                    tempPhnList.Add(phoneme);
+                } else {
+                    NotePhnPairList.Add(new Tuple<UNote, UPhoneme[]>(tempPhnList.First().Parent, tempPhnList.ToArray()));
+                    tempPhnList.Clear();
+                    tempPhnList.Add(phoneme);
+                }
+                beforeNote = phoneme.Parent;
+            }
+
+            if (tempPhnList.Count > 0)
+                NotePhnPairList.Add(new Tuple<UNote, UPhoneme[]>(tempPhnList.First().Parent, tempPhnList.ToArray()));
+
+            // Ust Convert Processing
+            var ustNotes = new List<UstNote>();
+            var position = 0;
+            foreach (var notePhnPair in NotePhnPairList) {
+                var note = notePhnPair.Item1;
+                var phonemes = notePhnPair.Item2;
+
+                if (notePhnPair.Item1.position < position) {
+                    continue;
+                }
+                if (note.position > position) {
+                    ustNotes.Add(new UstNote() {
+                        position = position,
+                        duration = note.position - position,
+                        lyric = "R",
+                        noteNum = 60,
+                    });
+                }
+                var phnPos = note.position;
+                var phnDur = 0;
+                for (var i = 0; i < phonemes.Length; i++) {
+                    var phoneme = phonemes[i];
+                    var phnNote = note.Clone();
+
+                    phnNote.lyric = phoneme.phoneme;
+
+                    if (i != 0) {
+                        phnNote.pitch.data.Clear();
+                        phnDur = note.duration - phnDur;
+                        if (phnDur > note.duration)
+                            phnDur = note.duration;
+                    } else {
+                        phnDur = phoneme.Duration;
+                    }
+
+                    phnNote.position = phnPos + phnDur;
+                    phnNote.duration = phnDur;
+
+                    ustNotes.Add(new UstNote(project, track, part, phnNote));
+                }
+                position = note.End;
+            }
+            // Insert tempo changes.
+            int tempoIndex = 1;
+            for (int i = 0; i < ustNotes.Count; ++i) {
+                var ustNote = ustNotes[i];
+                if (tempoIndex >= project.tempos.Count) {
+                    break;
+                }
+                int pos = ustNote.position + part.position;
+                int end = ustNote.position + ustNote.duration + part.position;
+                var tempo = project.tempos[tempoIndex];
+                if (pos <= tempo.position && tempo.position < end) {
+                    if (pos == tempo.position || ustNote.lyric.ToLowerInvariant() != "r") {
+                        // Does not break up the note even if the tempo change is in the middle.
+                        ustNote.tempo = tempo.bpm;
+                        tempoIndex++;
+                    } else {
+                        // Break up rest note to insert tempo.
+                        ustNote.duration = tempo.position - pos;
+                        var inserted = ustNote.Clone();
+                        inserted.position = tempo.position - part.position;
+                        inserted.duration = end - tempo.position;
+                        inserted.tempo = tempo.bpm;
+                        ustNotes.Insert(i + 1, inserted);
+                        tempoIndex++;
+                    }
+                }
+            }
+            return ustNotes;
         }
 
         static List<UstNote> NotesToUstNotes(UProject project, UTrack track, UVoicePart part, IEnumerable<UNote> notes) {
