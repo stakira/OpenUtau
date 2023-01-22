@@ -160,7 +160,7 @@ namespace OpenUtau.App.Controls {
                     if (otherPart is UVoicePart otherVoicePart) {
                         var xOffset = otherVoicePart.position - Part.position;
                         foreach (var note in otherVoicePart.notes) {
-                            if (note.LeftBound >= rightTick || note.RightBound <= leftTick) {
+                            if (note.LeftBound + xOffset >= rightTick || note.RightBound + xOffset <= leftTick) {
                                 continue;
                             }
                             RenderGhostNote(note, viewModel, context, xOffset);
