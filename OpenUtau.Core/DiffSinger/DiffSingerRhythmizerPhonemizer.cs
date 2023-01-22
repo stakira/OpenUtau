@@ -99,8 +99,6 @@ namespace OpenUtau.Core.DiffSinger {
             }
         }
 
-        //TODO:错误歌词的处理
-
         //只要音符改动一点，就会将全曲传入SetUp函数
         //groups为Note的二维数组，其中的每个Note[]表示一个歌词音符及其后面的连音符
         //需要分段调用模型生成全曲音素时长，以防止蝴蝶效应
@@ -113,7 +111,7 @@ namespace OpenUtau.Core.DiffSinger {
             var phrase = new List<Note[]> { groups[0] };
             for (int i = 1; i < groups.Length; ++i) {
                 //如果上下音符相互衔接，则不分句
-                if (groups[i - 1].Last().position + groups[i-1].Last().duration == groups[i][0].position) {
+                if (groups[i - 1][^1].position + groups[i - 1][^1].duration == groups[i][0].position) {
                     phrase.Add(groups[i]);
                 } else {
                     //如果断开了，则处理当前句子，并开启下一句
@@ -168,9 +166,9 @@ namespace OpenUtau.Core.DiffSinger {
                 notePhIndex.Add(phonemes.Count);
 
                 midi_dur.AddRange(Enumerable.Repeat((float)timeAxis.MsBetweenTickPos(
-                    group[0].position, group.Last().position + group.Last().duration) / 1000, notePhonemes.Length));
+                    group[0].position, group[^1].position + group[^1].duration) / 1000, notePhonemes.Length));
             }
-            var lastNote = phrase.Last()[^1];
+            var lastNote = phrase[^1][^1];
             phAlignPoints.Add(new Tuple<int, double>(
                 phonemes.Count,
                 timeAxis.TickPosToMsPos(lastNote.position + lastNote.duration) / 1000));
@@ -198,7 +196,7 @@ namespace OpenUtau.Core.DiffSinger {
                 .Reshape(new int[] { 1, is_slur.Count })));
             var outputs = rhythmizer.session.Run(inputs);
             ph_dur = outputs.First().AsTensor<float>().Select(x => (double)x).ToList();
-            //TODO:对齐，将时长序列转化为位置序列，单位s
+            //对齐，将时长序列转化为位置序列，单位s
             var positions = new List<double>();
             List<double> alignGroup = ph_dur.GetRange(0, phAlignPoints[0].Item1);
             //开头辅音不缩放
@@ -250,8 +248,7 @@ namespace OpenUtau.Core.DiffSinger {
             return result;
         }
 
-
-        //OpenUtau Vogen的实现是错误的，连音符会被视为空白时间
+        //OpenUtau Vogen的实现是错误的，连音符会被视为空白时间，使句子断开
         //当上一音符包含连音符且总时长过短时，会使下一音符的辅音过长
 
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevs) {

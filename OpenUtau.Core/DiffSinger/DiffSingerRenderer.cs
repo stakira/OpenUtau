@@ -94,6 +94,7 @@ namespace OpenUtau.Core.DiffSinger {
          */
 
         float[] InvokeDiffsinger(RenderPhrase phrase,int speedup) {
+            //调用Diffsinger模型
             var singer = phrase.singer as DiffSingerSinger;
             var vocoder = singer.getVocoder();
             var frameMs = vocoder.frameMs();
@@ -117,9 +118,9 @@ namespace OpenUtau.Core.DiffSinger {
                 .Append(tailFrames)
                 .ToList();
             var totalFrames = (int)(durations.Sum());
-            var f0 = SampleCurve(phrase, phrase.pitches, 0, totalFrames, headFrames, tailFrames, x => MusicMath.ToneToFreq(x * 0.01));
-            float[] f0Shifted = f0.Select(f => (float)f).ToArray();
-            //TODO:toneShift
+            float[] f0 = SampleCurve(phrase, phrase.pitches, 0, totalFrames, headFrames, tailFrames, x => MusicMath.ToneToFreq(x * 0.01))
+                .Select(f => (float)f).ToArray();
+            //不支持toneShift
 
             var acousticInputs = new List<NamedOnnxValue>();
             acousticInputs.Add(NamedOnnxValue.CreateFromTensor("tokens",
@@ -128,8 +129,8 @@ namespace OpenUtau.Core.DiffSinger {
             acousticInputs.Add(NamedOnnxValue.CreateFromTensor("durations",
                 new DenseTensor<long>(durations.ToArray(), new int[] { durations.Count }, false)
                 .Reshape(new int[] { 1, durations.Count })));
-            var f0tensor = new DenseTensor<float>(f0Shifted, new int[] { f0Shifted.Length })
-                .Reshape(new int[] { 1, f0Shifted.Length });
+            var f0tensor = new DenseTensor<float>(f0, new int[] { f0.Length })
+                .Reshape(new int[] { 1, f0.Length });
             acousticInputs.Add(NamedOnnxValue.CreateFromTensor("f0",f0tensor));
             acousticInputs.Add(NamedOnnxValue.CreateFromTensor("speedup",
                 new DenseTensor<long>(new long[] { speedup }, new int[] { },false)));
@@ -137,7 +138,6 @@ namespace OpenUtau.Core.DiffSinger {
             var acousticOutputs = singer.getAcousticSession().Run(acousticInputs);
             mel = acousticOutputs.First().AsTensor<float>().Clone();
             
-
             //vocoder
             //waveform = session.run(['waveform'], {'mel': mel, 'f0': f0})[0]
             var vocoderInputs = new List<NamedOnnxValue>();
@@ -170,7 +170,7 @@ namespace OpenUtau.Core.DiffSinger {
             }
             //填充头尾
             Array.Fill(result, convert(curve[0]), 0, headFrames);
-            Array.Fill(result, convert(curve.Last()), length - tailFrames, tailFrames);
+            Array.Fill(result, convert(curve[^1]), length - tailFrames, tailFrames);
             return result;
         }
 
