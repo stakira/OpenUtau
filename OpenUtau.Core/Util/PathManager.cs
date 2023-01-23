@@ -68,6 +68,7 @@ namespace OpenUtau.Core {
         public string PluginsPath => Path.Combine(DataPath, "Plugins");
         public string DictionariesPath => Path.Combine(DataPath, "Dictionaries");
         public string TemplatesPath => Path.Combine(DataPath, "Templates");
+        public string ThemesPath => Path.Combine(DataPath, "Themes");
         public string LogsPath => Path.Combine(DataPath, "Logs");
         public string LogFilePath => Path.Combine(DataPath, "Logs", "log.txt");
         public string PrefsFilePath => Path.Combine(DataPath, "prefs.json");
