@@ -33,7 +33,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public int PreRender { get; set; }
         [Reactive] public int NumRenderThreads { get; set; }
         [Reactive] public bool HighThreads { get; set; }
-        [Reactive] public int Theme { get; set; }
+        [Reactive] public string Theme { get; set; }
         [Reactive] public int ShowPortrait { get; set; }
         [Reactive] public int ShowGhostNotes { get; set; }
         [Reactive] public int OtoEditor { get; set; }
