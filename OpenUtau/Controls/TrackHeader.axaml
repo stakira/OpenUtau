@@ -117,6 +117,8 @@
           <MenuItem Classes="context" Header="{StaticResource tracks.remove}" Command="{Binding Remove}"/>
           <MenuItem Classes="context" Header="{StaticResource tracks.moveup}" Command="{Binding MoveUp}"/>
           <MenuItem Classes="context" Header="{StaticResource tracks.movedown}" Command="{Binding MoveDown}"/>
+          <MenuItem Classes="context" Header="{StaticResource tracks.duplicate}" Command="{Binding Duplicate}"/>
+          <MenuItem Classes="context" Header="{StaticResource tracks.duplicatesettings}" Command="{Binding DuplicateSettings}"/>
         </ContextMenu>
       </Grid.ContextMenu>
     </Grid>

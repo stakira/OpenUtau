@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using OpenUtau.Api;
 using OpenUtau.Core.G2p;
+using Serilog;
 
 namespace OpenUtau.Plugin.Builtin
 {
@@ -21,7 +23,7 @@ namespace OpenUtau.Plugin.Builtin
         /// All of these sounds are optional and should be inserted manually/phonetically, if the voicebank supports them.
         ///</summary>
 
-        private readonly string[] vowels = "a,A,@,{,V,O,aU,aI,E,3,eI,I,i,oU,OI,U,u,Q,Ol,aUn,e@,eN,IN,e,o,Ar,Er,Ir,Or,Ur,ir,ur,@l,@m,@n,@N,1,e@m,e@n".Split(',');
+        private readonly string[] vowels = "a,A,@,{,V,O,aU,aI,E,3,eI,I,i,oU,OI,U,u,Q,Ol,aUn,e@,eN,IN,e,o,Ar,Er,Ir,Or,Ur,ir,ur,@r,@l,@m,@n,@N,1,e@m,e@n".Split(',');
         private readonly string[] consonants = "b,tS,d,D,4,f,g,h,dZ,k,l,m,n,N,p,r,s,S,t,T,v,w,W,j,z,Z,t_},・,_".Split(',');
         private readonly string[] affricates = "tS,dZ".Split(',');
         private readonly string[] shortConsonants = "4".Split(",");
@@ -39,7 +41,31 @@ namespace OpenUtau.Plugin.Builtin
         protected override string GetDictionaryName() => "cmudict-0_7b.txt";
         protected override Dictionary<string, string> GetDictionaryPhonemesReplacement() => dictionaryReplacements;
 
-        protected override IG2p LoadBaseDictionary() => new ArpabetG2p();
+        protected override IG2p LoadBaseDictionary() {
+            var g2ps = new List<IG2p>();
+
+            // Load dictionary from plugin folder.
+            string path = Path.Combine(PluginDir, "xsampa.yaml");
+            if (!File.Exists(path)) {
+                Directory.CreateDirectory(PluginDir);
+                File.WriteAllBytes(path, Data.Resources.xsampa_template);
+            }
+            g2ps.Add(G2pDictionary.NewBuilder().Load(File.ReadAllText(path)).Build());
+
+            // Load dictionary from singer folder.
+            if (singer != null && singer.Found && singer.Loaded) {
+                string file = Path.Combine(singer.Location, "xsampa.yaml");
+                if (File.Exists(file)) {
+                    try {
+                        g2ps.Add(G2pDictionary.NewBuilder().Load(File.ReadAllText(file)).Build());
+                    } catch (Exception e) {
+                        Log.Error(e, $"Failed to load {file}");
+                    }
+                }
+            }
+            g2ps.Add(new ArpabetG2p());
+            return new G2pFallbacks(g2ps.ToArray());
+        }
 
         protected override List<string> ProcessSyllable(Syllable syllable)
         {
@@ -58,12 +84,17 @@ namespace OpenUtau.Plugin.Builtin
                     basePhoneme = rv;
                     if (rv.Contains("V") && !HasOto(rv, syllable.vowelTone) && HasOto($"- A", syllable.vowelTone)) {
                         basePhoneme = $"- A";
+                    } else if(rv.Contains("3") && !HasOto(rv, syllable.vowelTone) && HasOto($"- @r", syllable.vowelTone)) {
+                        basePhoneme = $"- @r";
                     }
                 }
                 else {
                     basePhoneme = v;
                     if (v.Contains("V") && !HasOto(v, syllable.vowelTone) && HasOto($"A", syllable.vowelTone)) {
                         basePhoneme = $"A";
+                    }
+                    else if (v.Contains("3") && !HasOto(v, syllable.vowelTone) && HasOto($"@r", syllable.vowelTone)) {
+                        basePhoneme = $"@r";
                     }
                 }
             }
@@ -83,6 +114,10 @@ namespace OpenUtau.Plugin.Builtin
                         syllable.prevV = "A";
                     } else if (v == "V" && !HasOto(v, syllable.vowelTone)) {
                         syllable.v = "A";
+                    } else if (prevV == "3" && !HasOto(prevV, syllable.vowelTone)) {
+                        syllable.prevV = "@r";
+                    } else if (v == "3" && !HasOto(v, syllable.vowelTone)) {
+                        syllable.v = "@r";
                     } else {
                         basePhoneme = $"{v}";
                     }
@@ -100,12 +135,15 @@ namespace OpenUtau.Plugin.Builtin
                 else if (v == "V" && !HasOto(rcv, syllable.vowelTone) && HasOto($"- {cc[0]}A", syllable.vowelTone))
                 {
                     basePhoneme = $"- {cc[0]}A";
-                }
-                else
+                } else if (v == "3" && !HasOto(rcv, syllable.vowelTone) && HasOto($"- {cc[0]}@r", syllable.vowelTone)) {
+                    basePhoneme = $"- {cc[0]}@r";
+                } else
                 {
                     basePhoneme = cv;
                     if (v == "V" && !HasOto(rcv, syllable.vowelTone) && !HasOto(cv, syllable.vowelTone) && HasOto($"{cc[0]}A", syllable.vowelTone)) {
                         basePhoneme = $"{cc[0]}A";
+                    } else if (v == "3" && !HasOto(rcv, syllable.vowelTone) && !HasOto(cv, syllable.vowelTone) && HasOto($"{cc[0]}@r", syllable.vowelTone)) {
+                        basePhoneme = $"{cc[0]}@r";
                     }
                     if (consonants.Contains(cc[0]))
                     {
@@ -126,6 +164,8 @@ namespace OpenUtau.Plugin.Builtin
                     basePhoneme = $"{cc.Last()}{v}";
                     if (!HasOto($"{cc.Last()}V", syllable.vowelTone) && HasOto($"{cc.Last()}A", syllable.vowelTone)) {
                         basePhoneme = $"{cc.Last()}A";
+                    } else if (!HasOto($"{cc.Last()}3", syllable.vowelTone) && HasOto($"{cc.Last()}@r", syllable.vowelTone)) {
+                        basePhoneme = $"{cc.Last()}@r";
                     }
                     if (HasOto($"_{cc.Last()}{v}", syllable.vowelTone)) {
                         basePhoneme = $"_{cc.Last()}{v}";
@@ -171,8 +211,10 @@ namespace OpenUtau.Plugin.Builtin
                 {
                     basePhoneme = $"{cc.Last()}{v}";
                     phonemes.Add($"A {cc[0]}");
-                }
-                else
+                } else if (prevV == "3" && !HasOto($"3 {cc[0]}", syllable.vowelTone) && !HasOto(vcv, syllable.vowelTone) && !HasOto(vccv, syllable.vowelTone)) {
+                    basePhoneme = $"{cc.Last()}{v}";
+                    phonemes.Add($"@r {cc[0]}");
+                } else
                 {
                     basePhoneme = cc.Last() + v;
                     // try CCV
@@ -306,6 +348,8 @@ namespace OpenUtau.Plugin.Builtin
                     phonemes.Add($"{v} -");
                 } else if (v == "V" && !HasOto($"{v} -", ending.tone) && HasOto($"A -", ending.tone)) {
                     phonemes.Add($"A -");
+                } else if (v == "3" && !HasOto($"{v} -", ending.tone) && HasOto($"@r -", ending.tone)) {
+                    phonemes.Add($"@r -");
                 } else {
                     //continue as usual
                 }
@@ -319,10 +363,14 @@ namespace OpenUtau.Plugin.Builtin
                     phonemes.Add($"{v}{cc[0]} -");
                 } else if (v == "V" && !HasOto(vcr, ending.tone) && HasOto($"A {cc[0]}-", ending.tone)) {
                     phonemes.Add($"A {cc[0]}-");
+                } else if (v == "3" && !HasOto(vcr, ending.tone) && HasOto($"@r {cc[0]}-", ending.tone)) {
+                    phonemes.Add($"@r {cc[0]}-");
                 } else {
                     phonemes.Add($"{v} {cc[0]}");
                     if (v == "V" && !HasOto($"{v} {cc[0]}", ending.tone) && HasOto($"A {cc[0]}", ending.tone)) {
                         v.Replace("V", "A");
+                    } else if (v == "3" && !HasOto($"{v} {cc[0]}", ending.tone) && HasOto($"@r {cc[0]}", ending.tone)) {
+                        v.Replace("3", "@r");
                     }
                     if (affricates.Contains(cc[0])) {
                         TryAddPhoneme(phonemes, ending.tone, $"{cc[0]} -", cc[0]);
@@ -443,6 +491,9 @@ namespace OpenUtau.Plugin.Builtin
             foreach (var vowel in new[] { "V" })
             {
                 alias = alias.Replace(vowel, "A");
+            }
+            foreach (var vowel in new[] { "3" }) {
+                alias = alias.Replace(vowel, "@r");
             }
             return alias;
         }
