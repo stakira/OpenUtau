@@ -11,6 +11,7 @@ using OpenUtau.Core.SignalChain;
 using NWaves.Signals;
 using NWaves.Operations;
 using System.Diagnostics;
+using OpenUtau.Classic;
 
 namespace OpenUtau.Core.Ustx {
     public abstract class UPart {

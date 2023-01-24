@@ -86,8 +86,9 @@
   <system:String x:Key="menu.file.exportproject">Export Project</system:String>
   <system:String x:Key="menu.file.exportust">Export Ust Files</system:String>
   <system:String x:Key="menu.file.exportustto">Export Ust Files To...</system:String>
-  <system:String x:Key="menu.file.exportustwithphonemizer">Export Ust Files (with Phonemizer)</system:String>
   <system:String x:Key="menu.file.exportusttowithphonemizer">Export Ust Files To... (with Phonemizer)</system:String>
+  <system:String x:Key="menu.file.exportustwithphonemizer">Export Ust Files (with Phonemizer)</system:String>
+  <system:String x:Key="menu.file.exportustxwithphonemizer">Export Ustx Files (with Phonemizer)</system:String>
   <system:String x:Key="menu.file.exportwav">Export Wav Files</system:String>
   <system:String x:Key="menu.file.exportwavto">Export Wav Files To...</system:String>
   <system:String x:Key="menu.file.importaudio">Import Audio...</system:String>

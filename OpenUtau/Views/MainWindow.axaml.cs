@@ -388,6 +388,17 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        void ExportUst(string path,UProject project) {
+            for (var i = 0; i < project.parts.Count; i++) {
+                var part = project.parts[i];
+                if (part is UVoicePart voicePart) {
+                    var savePath = PathManager.Inst.GetPartSavePath(path, i);
+                    Ust.SavePart(project, voicePart, savePath);
+                    DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"{savePath}."));
+                }
+            }
+        }
+
         async void OnMenuExportUst(object sender, RoutedEventArgs e) {
             var project = DocManager.Inst.Project;
             if (await WarnToSave(project)) {
@@ -395,14 +406,7 @@ namespace OpenUtau.App.Views {
                 var path = System.IO.Path.GetDirectoryName(project.FilePath);
                 path = System.IO.Path.Combine(path!, "Export");
                 path = System.IO.Path.Combine(path!, $"{name}.ust");
-                for (var i = 0; i < project.parts.Count; i++) {
-                    var part = project.parts[i];
-                    if (part is UVoicePart voicePart) {
-                        var savePath = PathManager.Inst.GetPartSavePath(path, i);
-                        Ust.SavePart(project, voicePart, savePath);
-                        DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"{savePath}."));
-                    }
-                }
+                ExportUst(path, project);
             }
         }
 
@@ -418,14 +422,23 @@ namespace OpenUtau.App.Views {
             };
             var file = await dialog.ShowAsync(this);
             if (!string.IsNullOrEmpty(file)) {
-                for (var i = 0; i < project.parts.Count; i++) {
-                    var part = project.parts[i];
-                    if (part is UVoicePart voicePart) {
-                        var savePath = PathManager.Inst.GetPartSavePath(file, i);
-                        Ust.SavePart(project, voicePart, savePath);
-                        DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"{savePath}."));
-                    }
-                }
+                ExportUst(file, project);
+            }
+        }
+
+        async void OnMenuExportUstxWithPhonemizer(object sender, RoutedEventArgs e) {
+            var project = DocManager.Inst.Project;
+            var dialog = new SaveFileDialog() {
+                DefaultExtension = "ustx",
+                Filters = new List<FileDialogFilter>() {
+                    new FileDialogFilter() {
+                        Extensions = new List<string>(){ "ustx" },
+                    },
+                },
+            };
+            var file = await dialog.ShowAsync(this);
+            if (!string.IsNullOrEmpty(file)) {
+                Ustx.Save(file, PhonemeBaking.BakeProject(project));
             }
         }
 
@@ -436,14 +449,7 @@ namespace OpenUtau.App.Views {
                 var path = System.IO.Path.GetDirectoryName(project.FilePath);
                 path = System.IO.Path.Combine(path!, "Export");
                 path = System.IO.Path.Combine(path!, $"{name}.ust");
-                for (var i = 0; i < project.parts.Count; i++) {
-                    var part = project.parts[i];
-                    if (part is UVoicePart voicePart) {
-                        var savePath = PathManager.Inst.GetPartSavePath(path, i);
-                        Ust.SavePartWithPhonemizer(project, voicePart, savePath);
-                        DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"{savePath}."));
-                    }
-                }
+                ExportUst(path, PhonemeBaking.BakeProject(project));
             }
         }
 
@@ -459,14 +465,7 @@ namespace OpenUtau.App.Views {
             };
             var file = await dialog.ShowAsync(this);
             if (!string.IsNullOrEmpty(file)) {
-                for (var i = 0; i < project.parts.Count; i++) {
-                    var part = project.parts[i];
-                    if (part is UVoicePart voicePart) {
-                        var savePath = PathManager.Inst.GetPartSavePath(file, i);
-                        Ust.SavePartWithPhonemizer(project, voicePart, savePath);
-                        DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"{savePath}."));
-                    }
-                }
+                ExportUst(file, PhonemeBaking.BakeProject(project));
             }
         }
 
