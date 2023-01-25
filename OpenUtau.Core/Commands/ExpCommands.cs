@@ -47,26 +47,46 @@ namespace OpenUtau.Core {
 
         public readonly UProject project;
         public readonly UTrack track;
-        public readonly UPhoneme phoneme;
+        public readonly UPhoneme[] phonemes;
         public readonly float newValue;
-        public readonly float oldValue;
+        public readonly float[] oldValues;
         public override ValidateOptions ValidateOptions
             => new ValidateOptions {
                 SkipTiming = true,
                 Part = Part,
                 SkipPhonemizer = !needsPhonemizer.Contains(Key),
             };
+        public SetPhonemeExpressionCommand(UProject project, UTrack track, UVoicePart part, IEnumerable<UPhoneme> phonemes, string abbr, float value) : base(part) {
+            this.project = project;
+            this.track = track;
+            this.phonemes = phonemes.ToArray();
+            Key = abbr;
+            newValue = value;
+            oldValues = this.phonemes.Select(p => p.GetExpression(project, track, abbr).Item1).ToArray();
+        }
         public SetPhonemeExpressionCommand(UProject project, UTrack track, UVoicePart part, UPhoneme phoneme, string abbr, float value) : base(part) {
             this.project = project;
             this.track = track;
-            this.phoneme = phoneme;
+            this.phonemes = new UPhoneme[] { phoneme };
             Key = abbr;
             newValue = value;
-            oldValue = phoneme.GetExpression(project, track, abbr).Item1;
+            oldValues = new float[] { phoneme.GetExpression(project, track, abbr).Item1 };
         }
         public override string ToString() => $"Set phoneme expression {Key}";
-        public override void Execute() => phoneme.SetExpression(project, track, Key, newValue);
-        public override void Unexecute() => phoneme.SetExpression(project, track, Key, oldValue);
+        public override void Execute() {
+            lock (Part) {
+                foreach (var phoneme in phonemes) {
+                    phoneme.SetExpression(project, track, Key, newValue);
+                }
+            }
+        }
+        public override void Unexecute() {
+            lock (Part) {
+                for (int i = 0; i < phonemes.Length; i++) {
+                    phonemes[i].SetExpression(project, track, Key, oldValues[i]);
+                }
+            }
+        } 
     }
 
     public class ResetExpressionsCommand : ExpCommand {

@@ -623,7 +623,15 @@ namespace OpenUtau.App.Views {
                 double newValue = descriptor.min + (viewMax - descriptor.min) * (1 - y / canvas.Bounds.Height);
                 newValue = Math.Max(descriptor.min, Math.Min(descriptor.max, newValue));
                 float value = hit.phoneme.GetExpression(notesVm.Project, track, key).Item1;
-                if ((int)newValue != (int)value) {
+                if ((int)newValue == (int)value) {
+                    continue; 
+                }
+                if (notesVm.Selection.Contains(hit.note)) {
+                    var selectedPhonemes = notesVm.Part.phonemes.Where(p => notesVm.Selection.Contains(p.Parent))
+                        .ToList();
+                    DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(
+                        notesVm.Project, track, notesVm.Part, selectedPhonemes, key, (int)newValue));
+                } else {
                     DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(
                         notesVm.Project, track, notesVm.Part, hit.phoneme, key, (int)newValue));
                 }
