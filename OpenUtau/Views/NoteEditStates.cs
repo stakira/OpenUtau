@@ -692,9 +692,17 @@ namespace OpenUtau.App.Views {
             var hits = notesVm.HitTest.HitTestExpRange(p1, p2);
             foreach (var hit in hits) {
                 float value = hit.phoneme.GetExpression(notesVm.Project, track, key).Item1;
-                if (value != descriptor.defaultValue) {
+                if (value == descriptor.defaultValue) {
+                    continue;
+                }
+                if (notesVm.Selection.Contains(hit.note)) {
+                    var selectedPhonemes = notesVm.Part.phonemes.Where(p => notesVm.Selection.Contains(p.Parent))
+                        .ToList();
                     DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(
-                        notesVm.Project, track, notesVm.Part, hit.phoneme, key, descriptor.defaultValue));
+                            notesVm.Project, track, notesVm.Part, selectedPhonemes, key, descriptor.defaultValue));
+                } else {
+                    DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(
+                            notesVm.Project, track, notesVm.Part, hit.phoneme, key, descriptor.defaultValue));
                 }
             }
         }
