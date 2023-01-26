@@ -66,6 +66,7 @@ namespace OpenUtau.App.Views {
                 valueTip.HideValueTip();
             }
         }
+        public virtual void Update(IPointer pointer, Point point, PointerEventArgs args) { }
         public virtual void Update(IPointer pointer, Point point) { }
         public static void Swap<T>(ref T a, ref T b) {
             T temp = a;
@@ -578,12 +579,12 @@ namespace OpenUtau.App.Views {
         public override void End(IPointer pointer, Point point) {
             base.End(pointer, point);
         }
-        public override void Update(IPointer pointer, Point point) {
+        public override void Update(IPointer pointer, Point point, PointerEventArgs args) {
             if (descriptor == null) {
                 return;
             }
             if (descriptor.type != UExpressionType.Curve) {
-                UpdatePhonemeExp(pointer, point);
+                UpdatePhonemeExp(pointer, point, args.KeyModifiers == KeyModifiers.Shift);
             } else {
                 UpdateCurveExp(pointer, point);
             }
@@ -607,7 +608,7 @@ namespace OpenUtau.App.Views {
             valueTip.UpdateValueTip(valueTipText);
             lastPoint = point;
         }
-        private void UpdatePhonemeExp(IPointer pointer, Point point) {
+        private void UpdatePhonemeExp(IPointer pointer, Point point, bool shiftHeld) {
             var notesVm = vm.NotesViewModel;
             var p1 = lastPoint;
             var p2 = point;
@@ -626,7 +627,7 @@ namespace OpenUtau.App.Views {
                 if ((int)newValue == (int)value) {
                     continue; 
                 }
-                if (notesVm.Selection.Contains(hit.note)) {
+                if (notesVm.Selection.Contains(hit.note) && shiftHeld) {
                     var selectedPhonemes = notesVm.Part.phonemes.Where(p => notesVm.Selection.Contains(p.Parent))
                         .ToList();
                     DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(
@@ -670,18 +671,18 @@ namespace OpenUtau.App.Views {
             base.Begin(pointer, point);
             lastPoint = point;
         }
-        public override void Update(IPointer pointer, Point point) {
+        public override void Update(IPointer pointer, Point point, PointerEventArgs args) {
             if (descriptor == null) {
                 return;
             }
             if (descriptor.type != UExpressionType.Curve) {
-                ResetPhonemeExp(pointer, point);
+                ResetPhonemeExp(pointer, point, args.KeyModifiers == KeyModifiers.Shift);
             } else {
                 ResetCurveExp(pointer, point);
             }
             valueTip.UpdateValueTip(descriptor.defaultValue.ToString());
         }
-        private void ResetPhonemeExp(IPointer pointer, Point point) {
+        private void ResetPhonemeExp(IPointer pointer, Point point, bool shiftHeld) {
             var notesVm = vm.NotesViewModel;
             var p1 = lastPoint;
             var p2 = point;
@@ -695,7 +696,7 @@ namespace OpenUtau.App.Views {
                 if (value == descriptor.defaultValue) {
                     continue;
                 }
-                if (notesVm.Selection.Contains(hit.note)) {
+                if (notesVm.Selection.Contains(hit.note) && shiftHeld) {
                     var selectedPhonemes = notesVm.Part.phonemes.Where(p => notesVm.Selection.Contains(p.Parent))
                         .ToList();
                     DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(
