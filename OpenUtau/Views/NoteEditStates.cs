@@ -640,7 +640,7 @@ namespace OpenUtau.App.Views {
                 }
                 var valuePoint = notesVm.TickToneToPoint(hit.note.position + hit.phoneme.position, 0);
                 double y = Lerp(p1, p2, valuePoint.X);
-                double newValue = descriptor.min + (viewMax - descriptor.min) * (1 - point.Y / canvas.Bounds.Height);
+                double newValue = descriptor.min + (viewMax - descriptor.min) * (1 - y / canvas.Bounds.Height);
                 newValue = Math.Max(descriptor.min, Math.Min(descriptor.max, newValue));
                 
                 float value = hit.phoneme.GetExpression(notesVm.Project, track, key).Item1;
