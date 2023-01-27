@@ -66,7 +66,9 @@ namespace OpenUtau.App.Views {
                 valueTip.HideValueTip();
             }
         }
-        public virtual void Update(IPointer pointer, Point point, PointerEventArgs args) { }
+        public virtual void Update(IPointer pointer, Point point, PointerEventArgs args) {
+            Update(pointer, point);
+        }
         public virtual void Update(IPointer pointer, Point point) { }
         public static void Swap<T>(ref T a, ref T b) {
             T temp = a;
@@ -558,6 +560,9 @@ namespace OpenUtau.App.Views {
         private Point lastPoint;
         private UExpressionDescriptor? descriptor;
         private UTrack track;
+
+        private double startValue = 0;
+        private bool shiftWasHeld = false;
         public ExpSetValueState(
             Canvas canvas,
             PianoRollViewModel vm,
@@ -583,14 +588,20 @@ namespace OpenUtau.App.Views {
             if (descriptor == null) {
                 return;
             }
+            bool shiftHeld = args.KeyModifiers == KeyModifiers.Shift;
             if (descriptor.type != UExpressionType.Curve) {
-                UpdatePhonemeExp(pointer, point, args.KeyModifiers == KeyModifiers.Shift);
+                UpdatePhonemeExp(pointer, point, shiftHeld);
             } else {
                 UpdateCurveExp(pointer, point);
             }
             double viewMax = descriptor.max + (descriptor.type == UExpressionType.Options ? 1 : 0);
-            double displayValue = descriptor.min + (viewMax - descriptor.min) * (1 - point.Y / canvas.Bounds.Height);
-            displayValue = Math.Max(descriptor.min, Math.Min(descriptor.max, displayValue));
+            double displayValue;
+            if (shiftHeld) {
+                displayValue = startValue;
+            } else {
+                displayValue = descriptor.min + (viewMax - descriptor.min) * (1 - point.Y / canvas.Bounds.Height);
+                displayValue = Math.Max(descriptor.min, Math.Min(descriptor.max, displayValue));
+            }
             string valueTipText;
             if (descriptor.type == UExpressionType.Options) {
                 int index = (int)displayValue;
@@ -607,6 +618,7 @@ namespace OpenUtau.App.Views {
             }
             valueTip.UpdateValueTip(valueTipText);
             lastPoint = point;
+            shiftWasHeld = shiftHeld;
         }
         private void UpdatePhonemeExp(IPointer pointer, Point point, bool shiftHeld) {
             var notesVm = vm.NotesViewModel;
@@ -618,24 +630,26 @@ namespace OpenUtau.App.Views {
             string key = notesVm.PrimaryKey;
             var hits = notesVm.HitTest.HitTestExpRange(p1, p2);
             double viewMax = descriptor.max + (descriptor.type == UExpressionType.Options ? 1 : 0);
+            if (shiftHeld != shiftWasHeld) {
+                startValue = descriptor.min + (viewMax - descriptor.min) * (1 - point.Y / canvas.Bounds.Height);
+                startValue = Math.Max(descriptor.min, Math.Min(descriptor.max, startValue));
+            }
             foreach (var hit in hits) {
+                if (shiftHeld && notesVm.Selection.Count > 0 && !notesVm.Selection.Contains(hit.phoneme.Parent)) {
+                    continue;
+                }
                 var valuePoint = notesVm.TickToneToPoint(hit.note.position + hit.phoneme.position, 0);
                 double y = Lerp(p1, p2, valuePoint.X);
-                double newValue = descriptor.min + (viewMax - descriptor.min) * (1 - y / canvas.Bounds.Height);
+                double newValue = descriptor.min + (viewMax - descriptor.min) * (1 - point.Y / canvas.Bounds.Height);
                 newValue = Math.Max(descriptor.min, Math.Min(descriptor.max, newValue));
+                
                 float value = hit.phoneme.GetExpression(notesVm.Project, track, key).Item1;
-                if ((int)newValue == (int)value) {
-                    continue; 
+                double finalValue = shiftHeld ? startValue : newValue;
+                if ((int)finalValue == (int)value) {
+                    continue;
                 }
-                if (notesVm.Selection.Contains(hit.note) && shiftHeld) {
-                    var selectedPhonemes = notesVm.Part.phonemes.Where(p => notesVm.Selection.Contains(p.Parent))
-                        .ToList();
-                    DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(
-                        notesVm.Project, track, notesVm.Part, selectedPhonemes, key, (int)newValue));
-                } else {
-                    DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(
-                        notesVm.Project, track, notesVm.Part, hit.phoneme, key, (int)newValue));
-                }
+                DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(
+                    notesVm.Project, track, notesVm.Part, hit.phoneme, key, (int)finalValue));
             }
         }
         private void UpdateCurveExp(IPointer pointer, Point point) {
@@ -676,13 +690,13 @@ namespace OpenUtau.App.Views {
                 return;
             }
             if (descriptor.type != UExpressionType.Curve) {
-                ResetPhonemeExp(pointer, point, args.KeyModifiers == KeyModifiers.Shift);
+                ResetPhonemeExp(pointer, point);
             } else {
                 ResetCurveExp(pointer, point);
             }
             valueTip.UpdateValueTip(descriptor.defaultValue.ToString());
         }
-        private void ResetPhonemeExp(IPointer pointer, Point point, bool shiftHeld) {
+        private void ResetPhonemeExp(IPointer pointer, Point point) {
             var notesVm = vm.NotesViewModel;
             var p1 = lastPoint;
             var p2 = point;
@@ -696,15 +710,8 @@ namespace OpenUtau.App.Views {
                 if (value == descriptor.defaultValue) {
                     continue;
                 }
-                if (notesVm.Selection.Contains(hit.note) && shiftHeld) {
-                    var selectedPhonemes = notesVm.Part.phonemes.Where(p => notesVm.Selection.Contains(p.Parent))
-                        .ToList();
-                    DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(
-                            notesVm.Project, track, notesVm.Part, selectedPhonemes, key, descriptor.defaultValue));
-                } else {
-                    DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(
-                            notesVm.Project, track, notesVm.Part, hit.phoneme, key, descriptor.defaultValue));
-                }
+                DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(
+                    notesVm.Project, track, notesVm.Part, hit.phoneme, key, descriptor.defaultValue));
             }
         }
         private void ResetCurveExp(IPointer pointer, Point point) {
