@@ -690,13 +690,13 @@ namespace OpenUtau.App.Views {
                 return;
             }
             if (descriptor.type != UExpressionType.Curve) {
-                ResetPhonemeExp(pointer, point);
+                ResetPhonemeExp(pointer, point, args.KeyModifiers == KeyModifiers.Shift);
             } else {
                 ResetCurveExp(pointer, point);
             }
             valueTip.UpdateValueTip(descriptor.defaultValue.ToString());
         }
-        private void ResetPhonemeExp(IPointer pointer, Point point) {
+        private void ResetPhonemeExp(IPointer pointer, Point point, bool shiftHeld) {
             var notesVm = vm.NotesViewModel;
             var p1 = lastPoint;
             var p2 = point;
@@ -706,6 +706,9 @@ namespace OpenUtau.App.Views {
             string key = notesVm.PrimaryKey;
             var hits = notesVm.HitTest.HitTestExpRange(p1, p2);
             foreach (var hit in hits) {
+                if (shiftHeld && notesVm.Selection.Count > 0 && !notesVm.Selection.Contains(hit.phoneme.Parent)) {
+                    continue;
+                }
                 float value = hit.phoneme.GetExpression(notesVm.Project, track, key).Item1;
                 if (value == descriptor.defaultValue) {
                     continue;
