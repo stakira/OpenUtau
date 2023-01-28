@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using OpenUtau.Api;
 using OpenUtau.Core.G2p;
+using Serilog;
 
 namespace OpenUtau.Plugin.Builtin
 {
@@ -35,7 +37,31 @@ namespace OpenUtau.Plugin.Builtin
         protected override string GetDictionaryName() => "cmudict-0_7b.txt";
         protected override Dictionary<string, string> GetDictionaryPhonemesReplacement() => dictionaryReplacements;
 
-        protected override IG2p LoadBaseDictionary() => new ArpabetG2p();
+        protected override IG2p LoadBaseDictionary() {
+            var g2ps = new List<IG2p>();
+
+            // Load dictionary from plugin folder.
+            string path = Path.Combine(PluginDir, "xsampa.yaml");
+            if (!File.Exists(path)) {
+                Directory.CreateDirectory(PluginDir);
+                File.WriteAllBytes(path, Data.Resources.xsampa_template);
+            }
+            g2ps.Add(G2pDictionary.NewBuilder().Load(File.ReadAllText(path)).Build());
+
+            // Load dictionary from singer folder.
+            if (singer != null && singer.Found && singer.Loaded) {
+                string file = Path.Combine(singer.Location, "xsampa.yaml");
+                if (File.Exists(file)) {
+                    try {
+                        g2ps.Add(G2pDictionary.NewBuilder().Load(File.ReadAllText(file)).Build());
+                    } catch (Exception e) {
+                        Log.Error(e, $"Failed to load {file}");
+                    }
+                }
+            }
+            g2ps.Add(new ArpabetG2p());
+            return new G2pFallbacks(g2ps.ToArray());
+        }
 
         protected override string[] GetSymbols(Note note)
         {
