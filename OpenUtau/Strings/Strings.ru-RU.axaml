@@ -36,7 +36,7 @@
   <system:String x:Key="dialogs.messagebox.ok">ОК</system:String>
   <system:String x:Key="dialogs.messagebox.yes">Да</system:String>
   <system:String x:Key="dialogs.noresampler.caption">Нет ресамплеров</system:String>
-  <system:String x:Key="dialogs.noresampler.message">Нет ресемплеров! Поместите ваш любимый ресамплер (.exe или .dll) в папку Resamplers и выберите его в параметрах!</system:String>
+  <system:String x:Key="dialogs.noresampler.message">Нет ресамплеров! Поместите ваш любимый ресамплер (.exe или .dll) в папку Resamplers и выберите его в параметрах!</system:String>
   <system:String x:Key="dialogs.timesig.caption">Такт</system:String>
   <system:String x:Key="dialogs.tracksettings.caption">Параметры трека</system:String>
   <system:String x:Key="dialogs.tracksettings.location">Расположение</system:String>
@@ -222,7 +222,7 @@
   <system:String x:Key="prefs.advanced.lyricshelper">Текстовый помощник</system:String>
   <system:String x:Key="prefs.advanced.lyricshelper.brackets">Добавить скобки в текстовом помощнике</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging">Журналирование ресамплера</system:String>
-  <system:String x:Key="prefs.advanced.resamplerlogging.warn">Сохраняет вывод ресемплера в файлах лога. Эта опция замедляет работу пользовательского интерфейса и рендеринга.</system:String>
+  <system:String x:Key="prefs.advanced.resamplerlogging.warn">Сохраняет вывод ресамплера в файлах лога. Эта опция замедляет работу пользовательского интерфейса и рендеринга.</system:String>
   <system:String x:Key="prefs.advanced.stable">Стабильный</system:String>
   <system:String x:Key="prefs.advanced.vlabelerpath">Путь к Vlabeler</system:String>
   <system:String x:Key="prefs.appearance">Интерфейс</system:String>
