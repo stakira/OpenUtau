@@ -16,7 +16,7 @@ namespace OpenUtau.Plugin.Builtin {
         private readonly string[] consonants = "b,d,f,g,j,k,l,m,n,p,r,s,sh,t,v,w,y,z,gn,.,-,R,BR,_hh".Split(",");
         private readonly Dictionary<string, string> dictionaryReplacements = (
             "aa=ah;ai=ae;ei=eh;eu=ee;ee=ee;oe=oe;ii=ih;au=oh;oo=oo;ou=ou;uu=uh;an=en;in=in;un=in;on=on;uy=ui;" +
-            "bb=b;dd=d;ff=f;gg=g;jj=j;kk=k;ll=l;mm=m;nn=n;pp=p;rr=r;ss=s;ch=sh;tt=t;vv=v;ww=w;yy=y;zz=z;gn=gn;").Split(';')
+            "bb=b;dd=d;ff=f;gg=g;jj=j;kk=k;ll=l;mm=m;nn=n;pp=p;rr=r;ss=s;ch=sh;tt=t;vv=v;ww=w;yy=y;zz=z;gn=gn;4=l;hh=h;").Split(';')
                 .Select(entry => entry.Split('='))
                 .Where(parts => parts.Length == 2)
                 .Where(parts => parts[0] != parts[1])
@@ -25,7 +25,6 @@ namespace OpenUtau.Plugin.Builtin {
 
         private string[] shortConsonants = "r".Split(",");
         private string[] longConsonants = "t,k,g,p,s,sh,j".Split(",");
-        private readonly string[] burstConsonants = "t,k,p,b,g,d".Split(",");
 
 
         private readonly Dictionary<string, string> fraloidsReplacement = (
@@ -331,10 +330,16 @@ namespace OpenUtau.Plugin.Builtin {
                             break;
                         }
 
+
+
                         ccc = CheckAliasFormatting(ccc, "endccOe", syllable.tone, $"{cc[i + 1]}");
 
 
                         if (ccc.Contains(CheckCoeEnding(ccc, syllable.tone)) || ccc == $"{cc[i]}") {
+
+                            if (cc[i] == cc[i + 1]) {
+                                break;
+                            }
                             if (i == 0 && $"{cc[i + 1]}" != "y") {
                                 continue;
                             }
@@ -505,6 +510,8 @@ namespace OpenUtau.Plugin.Builtin {
                             }
                             //else try CC
                             if (i + 1 < cc.Length) {
+
+                                ccc = $"{cc[i]}";
                                 ccc = CheckAliasFormatting(ccc, "endcc", ending.tone, $"{cc[i + 1]}");
                                 if (HasOto(ccc, ending.tone)) {
                                     phonemes.Add(ccc);

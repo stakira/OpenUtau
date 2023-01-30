@@ -6,6 +6,7 @@
   <system:String x:Key="context.note.delete">noot verwijderen</system:String>
   <system:String x:Key="context.part.delete">Deel verwijderen</system:String>
   <system:String x:Key="context.part.rename">Naam wijzigen</system:String>
+  <!--<system:String x:Key="context.part.replaceaudio">Reselect audio file</system:String>-->
   <system:String x:Key="context.pitch.easein">Zak in</system:String>
   <system:String x:Key="context.pitch.easeinout">Zak in/uit</system:String>
   <system:String x:Key="context.pitch.easeout">Zak uit</system:String>
@@ -79,13 +80,18 @@
   <system:String x:Key="menu.edit.undo">_Ongedaan maken</system:String>
   <system:String x:Key="menu.file">_Bestand</system:String>
   <system:String x:Key="menu.file.exit">_Afsluiten</system:String>
+  <!--<system:String x:Key="menu.file.exportaudio">Export Audio</system:String>-->
   <!--<system:String x:Key="menu.file.exportmidi">Export Midi File</system:String>-->
+  <!--<system:String x:Key="menu.file.exportmixdown">Mixdown To Wav File</system:String>-->
+  <!--<system:String x:Key="menu.file.exportproject">Export Project</system:String>-->
   <system:String x:Key="menu.file.exportust">Export Ust-bestanden</system:String>
   <system:String x:Key="menu.file.exportustto">Export Ust-bestanden naar...</system:String>
   <system:String x:Key="menu.file.exportwav">Export Wav-bestanden</system:String>
   <system:String x:Key="menu.file.exportwavto">Export Wav-bestanden naar...</system:String>
   <system:String x:Key="menu.file.importaudio">_Audio importeren...</system:String>
   <system:String x:Key="menu.file.importmidi">_Midi importeren...</system:String>
+  <!--<system:String x:Key="menu.file.importmidi.drywetmidi">DryWetMidi Importer</system:String>-->
+  <!--<system:String x:Key="menu.file.importmidi.naudio">Naudio Importer</system:String>-->
   <system:String x:Key="menu.file.importtracks">Tracks importeren...</system:String>
   <system:String x:Key="menu.file.new">Nieuw bestand</system:String>
   <system:String x:Key="menu.file.newfromtemplate">Nieuw vanaf sjabloon</system:String>
@@ -254,7 +260,6 @@ Ctrl ingedrukt houden om te selecteren</system:String>
   <system:String x:Key="prefs.rendering">Renderen</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">Fase Compensatie</system:String>
   <!--<system:String x:Key="prefs.rendering.prerender">Pre-render</system:String>-->
-  <system:String x:Key="prefs.rendering.prerender.threads">Pre-render Draden</system:String>
   <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
   <system:String x:Key="prefs.rendering.resampler.morewarn">
 Waarschuwing: moresampler wordt niet volledig ondersteund. Het kan traag zijn en een hoog CPU-gebruik veroorzaken. Als u erop staat, alstublieft:
@@ -265,6 +270,10 @@ Waarschuwing: moresampler wordt niet volledig ondersteund. Het kan traag zijn en
   <system:String x:Key="prefs.rendering.resampler.note">
         Note: Om externe resamplers te gebruiken, voeg de resampler DLL of EXE bestand toe in de Resamplers map in het OpenUtau installatie pad en kies het in Voorkeuren.
     </system:String>
+  <!--<system:String x:Key="prefs.rendering.threads.cpuwarn">
+    Warning: too many render threads may cause OpenUtau to run slowly.
+  </system:String>-->
+  <!--<system:String x:Key="prefs.rendering.threads.numthreads">Maximum Render Threads</system:String>-->
   <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
 
   <system:String x:Key="progress.saved">Project opgeslagen.{0}</system:String>
@@ -273,6 +282,8 @@ Waarschuwing: moresampler wordt niet volledig ondersteund. Het kan traag zijn en
   <system:String x:Key="singers.caption">Zangers</system:String>
   <!--<system:String x:Key="singers.editoto.editinvlabeler">Edit In vLabeler</system:String>-->
   <!--<system:String x:Key="singers.editoto.gotosource">Goto Source File</system:String>-->
+  <!--<system:String x:Key="singers.editoto.regenfrq">Regenerate FRQ</system:String>-->
+  <!--<system:String x:Key="singers.editoto.regenfrq.regenerating">Regenerating FRQ</system:String>-->
   <!--<system:String x:Key="singers.editoto.reset">Reset Otos</system:String>-->
   <system:String x:Key="singers.editoto.save">Sla Otos  op</system:String>
   <!--<system:String x:Key="singers.editoto.setvlabelerpath">Download vLabeler (1.0.0-beta1 or higher) from https://github.com/sdercolin/vlabeler and set vLabeler path in Preferences first!</system:String>-->
@@ -353,5 +364,5 @@ Algemeen
 
   <system:String x:Key="warning">Waarschuwing</system:String>
   <system:String x:Key="warning.asciipath">Uw OpenUtau home path "{0}" bevat geen ASCII tekens. Exe resamplers werken mogelijk niet.</system:String>
-  <!--<system:String x:Key="warning.renderer">No settings for this renderer. Please select CLASSIC.</system:String>-->
+  <!--<system:String x:Key="warning.renderer">No settings for this renderer.</system:String>-->
 </ResourceDictionary>

@@ -2,10 +2,11 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-  <!--<system:String x:Key="context.note.copy">Copy note</system:String>-->
+  <system:String x:Key="context.note.copy">Скопировать ноту</system:String>
   <system:String x:Key="context.note.delete">Удалить ноту</system:String>
   <system:String x:Key="context.part.delete">Удалить часть</system:String>
   <system:String x:Key="context.part.rename">Переименовать часть</system:String>
+  <!--<system:String x:Key="context.part.replaceaudio">Reselect audio file</system:String>-->
   <!--<system:String x:Key="context.pitch.easein">Ease in</system:String>-->
   <!--<system:String x:Key="context.pitch.easeinout">Ease in/out</system:String>-->
   <!--<system:String x:Key="context.pitch.easeout">Ease out</system:String>-->
@@ -79,13 +80,18 @@
   <system:String x:Key="menu.edit.undo">Отменить</system:String>
   <system:String x:Key="menu.file">Файл</system:String>
   <system:String x:Key="menu.file.exit">Выйти</system:String>
+  <!--<system:String x:Key="menu.file.exportaudio">Export Audio</system:String>-->
   <system:String x:Key="menu.file.exportmidi">Экспортировать MIDI файл</system:String>
+  <!--<system:String x:Key="menu.file.exportmixdown">Mixdown To Wav File</system:String>-->
+  <!--<system:String x:Key="menu.file.exportproject">Export Project</system:String>-->
   <system:String x:Key="menu.file.exportust">Экспортировать UST файлы</system:String>
   <system:String x:Key="menu.file.exportustto">Экспортировать UST файлы в...</system:String>
   <system:String x:Key="menu.file.exportwav">Экспортировать WAV файлы</system:String>
   <system:String x:Key="menu.file.exportwavto">Экспортировать WAV файлы в...</system:String>
   <system:String x:Key="menu.file.importaudio">Импортировать аудио...</system:String>
   <system:String x:Key="menu.file.importmidi">Импортировать Midi...</system:String>
+  <!--<system:String x:Key="menu.file.importmidi.drywetmidi">DryWetMidi Importer</system:String>-->
+  <!--<system:String x:Key="menu.file.importmidi.naudio">Naudio Importer</system:String>-->
   <system:String x:Key="menu.file.importtracks">Импортировать треки...</system:String>
   <system:String x:Key="menu.file.new">Создать</system:String>
   <system:String x:Key="menu.file.newfromtemplate">Создать из шаблона</system:String>
@@ -133,7 +139,7 @@
   <system:String x:Key="notedefaults.reset">Сбросить все настройки</system:String>
   <system:String x:Key="notedefaults.reset.tooltip">Сбрасывает все настройки до значений по умолчанию.
 Предупреждение: этот параметр удаляет пользовательские пресеты.</system:String>
-  <system:String x:Key="notedefaults.vibrato">Вибратор</system:String>
+  <system:String x:Key="notedefaults.vibrato">Вибрато</system:String>
   <system:String x:Key="notedefaults.vibrato.autominlength">Минимальная длина</system:String>
   <system:String x:Key="notedefaults.vibrato.autotoggle">Автоматическое вибрато на основе длины</system:String>
   <system:String x:Key="notedefaults.vibrato.depth">Глубина</system:String>
@@ -179,8 +185,8 @@
   <system:String x:Key="pianoroll.menu.notes.addtailrest">Добавить "R"</system:String>
   <system:String x:Key="pianoroll.menu.notes.clear.vibratos">Очистить вибрато</system:String>
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Загрузить отрендеренный питч</system:String>
-  <!--<system:String x:Key="pianoroll.menu.notes.octavedown">Move an octave down</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.notes.octaveup">Move an octave up</system:String>-->
+  <system:String x:Key="pianoroll.menu.notes.octavedown">Переместить на октаву ниже</system:String>
+  <system:String x:Key="pianoroll.menu.notes.octaveup">Переместить на октаву выше</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">Квантовать до 1/128</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">Квантовать до 1/64</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">Сбросить все параметры</system:String>
@@ -218,7 +224,7 @@
   <system:String x:Key="prefs.advanced.resamplerlogging">Журналирование ресамплера</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging.warn">Сохраняет выходные данные ресамплера в файлах журнала. Этот параметр замедляет работу пользовательского интерфейса и рендеринга.</system:String>
   <system:String x:Key="prefs.advanced.stable">Стабильный</system:String>
-  <!--<system:String x:Key="prefs.advanced.vlabelerpath">Vlabeler Path</system:String>-->
+  <system:String x:Key="prefs.advanced.vlabelerpath">Путь Vlabeler</system:String>
   <system:String x:Key="prefs.appearance">Интерфейс</system:String>
   <system:String x:Key="prefs.appearance.lang">Язык</system:String>
   <system:String x:Key="prefs.appearance.showghostnotes">Показывать ноты других треков на пиано-ролле</system:String>
@@ -230,8 +236,8 @@
   <system:String x:Key="prefs.note.restart">Примечание: пожалуйста, перезапустите OpenUtau после изменения этого пункта.</system:String>
   <system:String x:Key="prefs.off">Выкл</system:String>
   <system:String x:Key="prefs.on">Вкл</system:String>
-  <!--<system:String x:Key="prefs.otoeditor">Oto Editor</system:String>-->
-  <!--<system:String x:Key="prefs.otoeditor.select">Default Oto Editor</system:String>-->
+  <system:String x:Key="prefs.otoeditor">Редактор Oto</system:String>
+  <system:String x:Key="prefs.otoeditor.select">Редактор Oto по умолчанию</system:String>
   <system:String x:Key="prefs.paths">Пути</system:String>
   <system:String x:Key="prefs.paths.addlsinger">Дополнительные пути вокалистов</system:String>
   <system:String x:Key="prefs.paths.addlsinger.install">Установить дополнительный путь к вокалисту</system:String>
@@ -254,7 +260,6 @@
   <system:String x:Key="prefs.rendering">Рендер</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">Фазовая компенсация</system:String>
   <system:String x:Key="prefs.rendering.prerender">Пре-рендер</system:String>
-  <system:String x:Key="prefs.rendering.prerender.threads">Потоки пререндера</system:String>
   <system:String x:Key="prefs.rendering.resampler">Ресамплер</system:String>
   <system:String x:Key="prefs.rendering.resampler.morewarn">
     Внимание: moresampler поддерживается не полностью. Рендер может быть медленным и привести к высокой нагрузке процессора. Если хотите использовать его, пожалуйста:
@@ -265,17 +270,23 @@
   <system:String x:Key="prefs.rendering.resampler.note">
     Примечание: чтобы использовать внешние ресамплеры, пожалуйста, добавьте .dll или .exe-файл в папку Resamplers в пути установки OpenUtau и выберите его в параметрах.
   </system:String>
+  <!--<system:String x:Key="prefs.rendering.threads.cpuwarn">
+    Warning: too many render threads may cause OpenUtau to run slowly.
+  </system:String>-->
+  <!--<system:String x:Key="prefs.rendering.threads.numthreads">Maximum Render Threads</system:String>-->
   <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
 
   <system:String x:Key="progress.saved">Проект сохранен. {0}</system:String>
   <system:String x:Key="progress.waitingrendering">Ожидание рендеринга</system:String>
 
   <system:String x:Key="singers.caption">Вокалисты</system:String>
-  <!--<system:String x:Key="singers.editoto.editinvlabeler">Edit In vLabeler</system:String>-->
+  <system:String x:Key="singers.editoto.editinvlabeler">Редактировать в vLabeler</system:String>
   <system:String x:Key="singers.editoto.gotosource">Перейти к исходному файлу</system:String>
+  <!--<system:String x:Key="singers.editoto.regenfrq">Regenerate FRQ</system:String>-->
+  <!--<system:String x:Key="singers.editoto.regenfrq.regenerating">Regenerating FRQ</system:String>-->
   <system:String x:Key="singers.editoto.reset">Сбросить oto</system:String>
   <system:String x:Key="singers.editoto.save">Сохранить oto</system:String>
-  <!--<system:String x:Key="singers.editoto.setvlabelerpath">Download vLabeler (1.0.0-beta1 or higher) from https://github.com/sdercolin/vlabeler and set vLabeler path in Preferences first!</system:String>-->
+  <system:String x:Key="singers.editoto.setvlabelerpath">Сначала нужно скачать vLabeler версии 1.0.0-beta или выше из https://github.com/sdercolin/vlabeler и указать путь к vLabeler в параметрах!</system:String>
   <system:String x:Key="singers.errorreport">Сгенерировать отчет об ошибке вокалиста</system:String>
   <system:String x:Key="singers.location">Расположение</system:String>
   <system:String x:Key="singers.otoview.moveleft">Влево</system:String>
@@ -353,5 +364,5 @@
 
   <system:String x:Key="warning">Внимание</system:String>
   <system:String x:Key="warning.asciipath">Ваш путь к OpenUtau "{0}" содержит символ, отличный от ASCII кодировки. .exe-ресемплеры могут не работать.</system:String>
-  <!--<system:String x:Key="warning.renderer">No settings for this renderer. Please select CLASSIC.</system:String>-->
+  <system:String x:Key="warning.renderer">Для этого рендерера настроек нет. Пожалуйста, выберите CLASSIC.</system:String>
 </ResourceDictionary>

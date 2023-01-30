@@ -2,10 +2,11 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-  <!--<system:String x:Key="context.note.copy">Copy note</system:String>-->
+  <system:String x:Key="context.note.copy">노트 복사</system:String>
   <system:String x:Key="context.note.delete">노트 삭제</system:String>
   <system:String x:Key="context.part.delete">파트 삭제</system:String>
   <system:String x:Key="context.part.rename">파트 이름 변경</system:String>
+  <system:String x:Key="context.part.replaceaudio">오디오 파일 재선택</system:String>
   <system:String x:Key="context.pitch.easein">시작 감속 곡선</system:String>
   <system:String x:Key="context.pitch.easeinout">시작/끝 감속 곡선</system:String>
   <system:String x:Key="context.pitch.easeout">끝 감속 곡선</system:String>
@@ -79,13 +80,18 @@
   <system:String x:Key="menu.edit.undo">실행 취소</system:String>
   <system:String x:Key="menu.file">파일</system:String>
   <system:String x:Key="menu.file.exit">나가기</system:String>
-  <!--<system:String x:Key="menu.file.exportmidi">Export Midi File</system:String>-->
+  <system:String x:Key="menu.file.exportaudio">오디오 내보내기</system:String>
+  <system:String x:Key="menu.file.exportmidi">Midi 내보내기</system:String>
+  <system:String x:Key="menu.file.exportmixdown">Wav 파일로 믹스다운</system:String>
+  <system:String x:Key="menu.file.exportproject">프로젝트 내보내기</system:String>
   <system:String x:Key="menu.file.exportust">Ust 파일 내보내기</system:String>
   <system:String x:Key="menu.file.exportustto">다른 이름으로 Ust 파일 내보내기</system:String>
   <system:String x:Key="menu.file.exportwav">Wav 파일 내보내기</system:String>
   <system:String x:Key="menu.file.exportwavto">다른 이름으로 Wav 파일 내보내기</system:String>
   <system:String x:Key="menu.file.importaudio">오디오 가져오기</system:String>
   <system:String x:Key="menu.file.importmidi">Midi 가져오기</system:String>
+  <!--<system:String x:Key="menu.file.importmidi.drywetmidi">DryWetMidi Importer</system:String>-->
+  <!--<system:String x:Key="menu.file.importmidi.naudio">Naudio Importer</system:String>-->
   <system:String x:Key="menu.file.importtracks">트랙 삽입하기...</system:String>
   <system:String x:Key="menu.file.new">새로 만들기</system:String>
   <system:String x:Key="menu.file.newfromtemplate">템플릿 가져오기</system:String>
@@ -179,8 +185,8 @@
   <system:String x:Key="pianoroll.menu.notes.addtailrest">"R" 꼬리 추가</system:String>
   <system:String x:Key="pianoroll.menu.notes.clear.vibratos">비브라토 지우기</system:String>
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">렌더링 된 피치 로드</system:String>
-  <!--<system:String x:Key="pianoroll.menu.notes.octavedown">Move an octave down</system:String>-->
-  <!--<system:String x:Key="pianoroll.menu.notes.octaveup">Move an octave up</system:String>-->
+  <system:String x:Key="pianoroll.menu.notes.octavedown">옥타브를 아래로 내리기</system:String>
+  <system:String x:Key="pianoroll.menu.notes.octaveup">옥타브를 위로 올리기</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">1/128로 양자화</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize30">1/64로 양자화</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.exps">모든 표현 초기화</system:String>
@@ -218,7 +224,7 @@
   <system:String x:Key="prefs.advanced.resamplerlogging">리샘플러 로그</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging.warn">리샘플러 출력을 로그 파일에 저장합니다. 이 옵션을 사용하면 UI 및 렌더링 속도가 느려집니다.</system:String>
   <system:String x:Key="prefs.advanced.stable">안정된 버전</system:String>
-  <!--<system:String x:Key="prefs.advanced.vlabelerpath">Vlabeler Path</system:String>-->
+  <system:String x:Key="prefs.advanced.vlabelerpath">Vlabeler 경로</system:String>
   <system:String x:Key="prefs.appearance">외형</system:String>
   <system:String x:Key="prefs.appearance.lang">언어</system:String>
   <system:String x:Key="prefs.appearance.showghostnotes">피아노 롤에 다른 트랙의 노트 표시</system:String>
@@ -230,8 +236,8 @@
   <system:String x:Key="prefs.note.restart">참고: OpenUtau를 재시작해야 해당 항목이 적용됩니다.</system:String>
   <system:String x:Key="prefs.off">끔</system:String>
   <system:String x:Key="prefs.on">켬</system:String>
-  <!--<system:String x:Key="prefs.otoeditor">Oto Editor</system:String>-->
-  <!--<system:String x:Key="prefs.otoeditor.select">Default Oto Editor</system:String>-->
+  <system:String x:Key="prefs.otoeditor">원음 설정 에디터</system:String>
+  <system:String x:Key="prefs.otoeditor.select">기본 원음 설정 에디터</system:String>
   <system:String x:Key="prefs.paths">경로</system:String>
   <system:String x:Key="prefs.paths.addlsinger">추가적인 가수 폴더 경로</system:String>
   <system:String x:Key="prefs.paths.addlsinger.install">추가적인 가수 폴더 경로 설치</system:String>
@@ -254,7 +260,6 @@
   <system:String x:Key="prefs.rendering">렌더링</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">위상 보정</system:String>
   <system:String x:Key="prefs.rendering.prerender">사전 렌더러</system:String>
-  <system:String x:Key="prefs.rendering.prerender.threads">스레드 사전 렌더링</system:String>
   <system:String x:Key="prefs.rendering.resampler">리샘플러</system:String>
   <system:String x:Key="prefs.rendering.resampler.morewarn">
 경고: moresampler가 완벽하게 지원되지 않습니다. 속도가 느리고 CPU 사용량이 높아질 수 있습니다. 그럼에도 불구하고 사용하고 싶은 경우:
@@ -265,18 +270,24 @@
   <system:String x:Key="prefs.rendering.resampler.note">
         참고 : 외부 엔진을 사용하려면, OpenUtau 설치 경로의 Resamplers 폴더에 엔진 DLL 또는 EXE 파일을 추가하고 환경 설정에서 선택하세요.
     </system:String>
+  <system:String x:Key="prefs.rendering.threads.cpuwarn">
+    주의: 렌더 스레드가 많으면 OpenUtau가 느려질 수 있습니다.
+  </system:String>
+  <system:String x:Key="prefs.rendering.threads.numthreads">최대 렌더 스레드</system:String>
   <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
 
   <system:String x:Key="progress.saved">프로젝트 저장됨. {0}</system:String>
   <system:String x:Key="progress.waitingrendering">렌더링 대기 중</system:String>
 
   <system:String x:Key="singers.caption">가수</system:String>
-  <!--<system:String x:Key="singers.editoto.editinvlabeler">Edit In vLabeler</system:String>-->
+  <system:String x:Key="singers.editoto.editinvlabeler">vLabeler에서 수정하기</system:String>
   <system:String x:Key="singers.editoto.gotosource">소스파일 열기</system:String>
+  <system:String x:Key="singers.editoto.regenfrq">FRQ 재생성</system:String>
+  <system:String x:Key="singers.editoto.regenfrq.regenerating">FRQ를 재생성 하는 중</system:String>
   <system:String x:Key="singers.editoto.reset">Oto 초기화</system:String>
   <system:String x:Key="singers.editoto.save">Oto 저장</system:String>
-  <!--<system:String x:Key="singers.editoto.setvlabelerpath">Download vLabeler (1.0.0-beta1 or higher) from https://github.com/sdercolin/vlabeler and set vLabeler path in Preferences first!</system:String>-->
-  <!--<system:String x:Key="singers.errorreport">Generate Singer Error Report</system:String>-->
+  <system:String x:Key="singers.editoto.setvlabelerpath">https://github.com/sdercolin/vlabeler 에서 vLabeler(1.0.0-beta1 이상)를 다운로드 할 수 있습니다. 그리고 설정에서 vLabeler 경로를 지정해주세요.</system:String>
+  <system:String x:Key="singers.errorreport">가수 오류보고 생성</system:String>
   <system:String x:Key="singers.location">위치</system:String>
   <system:String x:Key="singers.otoview.moveleft">왼쪽으로 이동</system:String>
   <system:String x:Key="singers.otoview.moveright">오른쪽으로 이동</system:String>
@@ -353,5 +364,5 @@
 
   <system:String x:Key="warning">경고</system:String>
   <system:String x:Key="warning.asciipath">OpenUtau 홈 경로 "{0}"에 ASCII가 아닌 문자가 포함되어 있습니다. EXE 엔진이 작동하지 않을 수 있습니다.</system:String>
-  <!--<system:String x:Key="warning.renderer">No settings for this renderer. Please select CLASSIC.</system:String>-->
+  <system:String x:Key="warning.renderer">이 렌더러에 대한 설정이 없습니다.</system:String>
 </ResourceDictionary>

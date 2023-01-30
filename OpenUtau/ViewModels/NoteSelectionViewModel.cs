@@ -110,6 +110,25 @@ namespace OpenUtau.App.ViewModels {
             }
             return true;
         }
+        public bool Select(UNote start, UNote end) {
+            // NOTE edge case where start and end are at the same exact position but added out of order
+            // but i think that's unlikely
+            // ensure in positive direction
+            if (start.position > end.position) {
+                var tmp = start;
+                start = end;
+                end = tmp;
+            }
+            var cursor = start;
+            lock (_notes) {
+                SelectNone();
+                do {
+                    _notes.Add(cursor);
+                    cursor = cursor.Next;
+                } while (cursor != end && cursor.Next != null);
+            }
+            return true;
+        }
         public bool SelectAll() {
             int initialCount = _notes.Count;
             IsReversed = false;
@@ -159,6 +178,28 @@ namespace OpenUtau.App.ViewModels {
             }
             return wasChange;
         }
+        public bool SelectTo(UNote note) {
+            if (note == null) {
+                return false;
+            }
+            TempSelectedNotes.Clear();
+            // if empty selection just select specified note
+            if (IsEmpty) {
+                return Select(note);
+            }
+            bool wasChange = false;
+            lock (_notes) {
+                IsReversed = note.position <= _notes.First().position;
+                var cursor = IsReversed ? _notes.FirstOrDefault() : _notes.LastOrDefault();
+                while ((cursor = IsReversed ? cursor?.Prev : cursor?.Next) != null) {
+                    wasChange |= _notes.Add(cursor);
+                    if (cursor == note) {
+                        break;
+                    }
+                }
+            }
+            return wasChange;
+        }
         /// <summary>
         /// Move selection over one, collapsing if multiple selection
         /// </summary>
@@ -170,11 +211,11 @@ namespace OpenUtau.App.ViewModels {
             }
             int movesRemaining = Math.Abs(delta);
             bool isForwardMove = delta > 0;
-            bool wasChange = false;
-            // if multiple selection then collapse to first/last item (unless delta is > 1)
+            // if multiple selection then collapse to first/last item
             if (IsMultiple) {
-                movesRemaining--;
+                return Select(isForwardMove ? _notes.Last() : _notes.First());
             }
+            bool wasChange = false;
             lock (_notes) {
                 UNote? cursor = IsReversed ? _notes.First() : _notes.Last();
                 while (

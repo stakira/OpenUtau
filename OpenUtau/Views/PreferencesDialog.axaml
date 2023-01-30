@@ -79,6 +79,20 @@
               <ComboBoxItem Content="{DynamicResource prefs.off}"/>
               <ComboBoxItem Content="{DynamicResource prefs.on}"/>
             </ComboBox>
+            <Grid ColumnDefinitions="Auto,8,16,8,*" Margin="0,8,0,0">
+              <TextBlock Grid.Column="0" Text="{DynamicResource prefs.rendering.threads.numthreads}"/>
+              <TextBlock Grid.Column="2">
+                <TextBlock.Text>
+                  <MultiBinding StringFormat="{}{0:#0}">
+                    <Binding Path="NumRenderThreads"/>
+                  </MultiBinding>
+                </TextBlock.Text>
+              </TextBlock>
+              <Slider Grid.Column="4" Classes="fader" Value="{Binding NumRenderThreads}" Minimum="1" Maximum="{Binding LogicalCoreCount, Mode=OneTime}"
+                      TickPlacement="BottomRight" TickFrequency="1" IsSnapToTickEnabled="true"/>
+            </Grid>
+            <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.rendering.threads.cpuwarn}" FontWeight="Bold"
+                       Foreground="Red" Margin="0,0,0,4" IsVisible="{Binding HighThreads}" FontSize="11"/>
           </StackPanel>
         </HeaderedContentControl>
         <HeaderedContentControl Classes="groupbox" Header="{DynamicResource prefs.appearance}">

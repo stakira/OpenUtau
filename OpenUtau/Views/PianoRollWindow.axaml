@@ -332,7 +332,7 @@
                            TextAlignment="Right" FontSize="10" FontFamily="monospace"
                            Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
                 <Button.ContextMenu>
-                  <ContextMenu Name="SnapDivMenu" PlacementMode="Bottom" Items="{Binding NotesViewModel.SnapDivs}">
+                  <ContextMenu Name="SnapDivMenu" PlacementMode="Bottom" Items="{Binding NotesViewModel.SnapDivs}" KeyDown="OnSnapDivKeyDown">
                     <ContextMenu.DataTemplates>
                       <DataTemplate DataType="vm:MenuItemViewModel">
                         <MenuItem Header="{Binding Header}" Command="{Binding Command}" CommandParameter="{Binding CommandParameter}"/>

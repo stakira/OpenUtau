@@ -6,6 +6,7 @@
   <system:String x:Key="context.note.delete">Delete note</system:String>
   <system:String x:Key="context.part.delete">Delete part</system:String>
   <system:String x:Key="context.part.rename">Rename part</system:String>
+  <system:String x:Key="context.part.replaceaudio">Reselect audio file</system:String>
   <system:String x:Key="context.pitch.easein">Ease in</system:String>
   <system:String x:Key="context.pitch.easeinout">Ease in/out</system:String>
   <system:String x:Key="context.pitch.easeout">Ease out</system:String>
@@ -27,15 +28,15 @@
     OpenUtau aims to be an open source editing environment for UTAU community, with a modern user experience and intelligent phonological support. Visit us on Github.
   </system:String>
   <system:String x:Key="dialogs.exitsave.caption">Exit OpenUtau</system:String>
-  <system:String x:Key="dialogs.exitsave.message">The current project contains unsaved changes. Do you want to save?</system:String>
+  <system:String x:Key="dialogs.exitsave.message">The current project contains unsaved changes. Do you want to save it?</system:String>
   <system:String x:Key="dialogs.export.caption">Export</system:String>
   <system:String x:Key="dialogs.export.savefirst">Save project file first</system:String>
   <system:String x:Key="dialogs.messagebox.cancel">Cancel</system:String>
   <system:String x:Key="dialogs.messagebox.no">No</system:String>
-  <system:String x:Key="dialogs.messagebox.ok">OK</system:String>
+  <system:String x:Key="dialogs.messagebox.ok">Ok</system:String>
   <system:String x:Key="dialogs.messagebox.yes">Yes</system:String>
   <system:String x:Key="dialogs.noresampler.caption">No resampler</system:String>
-  <system:String x:Key="dialogs.noresampler.message">No resampler found! Please place your favourite resampler EXE or DLL in the "Resamplers" folder inside the OpenUtau install folder, then choose it in Preferences!</system:String>
+  <system:String x:Key="dialogs.noresampler.message">No resampler! Put your favourite resampler exe or dll in the Resamplers folder and choose it in Preferences!</system:String>
   <system:String x:Key="dialogs.timesig.caption">Time Signature</system:String>
   <system:String x:Key="dialogs.tracksettings.caption">Track Settings</system:String>
   <system:String x:Key="dialogs.tracksettings.location">Location</system:String>
@@ -79,13 +80,18 @@
   <system:String x:Key="menu.edit.undo">Undo</system:String>
   <system:String x:Key="menu.file">File</system:String>
   <system:String x:Key="menu.file.exit">Exit</system:String>
-  <system:String x:Key="menu.file.exportmidi">Export MIDI File</system:String>
-  <system:String x:Key="menu.file.exportust">Export UST Files</system:String>
-  <system:String x:Key="menu.file.exportustto">Export UST Files To...</system:String>
-  <system:String x:Key="menu.file.exportwav">Export WAV Files</system:String>
-  <system:String x:Key="menu.file.exportwavto">Export WAV Files To...</system:String>
+  <system:String x:Key="menu.file.exportaudio">Export Audio</system:String>
+  <system:String x:Key="menu.file.exportmidi">Export Midi File</system:String>
+  <system:String x:Key="menu.file.exportmixdown">Mixdown To Wav File</system:String>
+  <system:String x:Key="menu.file.exportproject">Export Project</system:String>
+  <system:String x:Key="menu.file.exportust">Export Ust Files</system:String>
+  <system:String x:Key="menu.file.exportustto">Export Ust Files To...</system:String>
+  <system:String x:Key="menu.file.exportwav">Export Wav Files</system:String>
+  <system:String x:Key="menu.file.exportwavto">Export Wav Files To...</system:String>
   <system:String x:Key="menu.file.importaudio">Import Audio...</system:String>
-  <system:String x:Key="menu.file.importmidi">Import MIDI...</system:String>
+  <system:String x:Key="menu.file.importmidi">Import Midi...</system:String>
+  <system:String x:Key="menu.file.importmidi.drywetmidi">DryWetMidi Importer</system:String>
+  <system:String x:Key="menu.file.importmidi.naudio">Naudio Importer</system:String>
   <system:String x:Key="menu.file.importtracks">Import Tracks...</system:String>
   <system:String x:Key="menu.file.new">New</system:String>
   <system:String x:Key="menu.file.newfromtemplate">New From Template</system:String>
@@ -99,7 +105,7 @@
   <system:String x:Key="menu.file.savetemplate">Save Template...</system:String>
   <system:String x:Key="menu.help">Help</system:String>
   <system:String x:Key="menu.help.about">About OpenUtau</system:String>
-  <system:String x:Key="menu.help.checkupdate">Check for Updates</system:String>
+  <system:String x:Key="menu.help.checkupdate">Check Update</system:String>
   <system:String x:Key="menu.help.logslocation">Open Logs Location</system:String>
   <system:String x:Key="menu.help.reportissue">Report Issue</system:String>
   <system:String x:Key="menu.help.wiki">OpenUtau Wiki</system:String>
@@ -216,9 +222,9 @@ Hold Ctrl to select</system:String>
   <system:String x:Key="prefs.advanced.lyricshelper">Lyrics Helper</system:String>
   <system:String x:Key="prefs.advanced.lyricshelper.brackets">Lyrics Helper Adds Brackets</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging">Resampler Logging</system:String>
-  <system:String x:Key="prefs.advanced.resamplerlogging.warn">Stores resampler output in log files. This option may slow down the editor.</system:String>
+  <system:String x:Key="prefs.advanced.resamplerlogging.warn">Stores resampler output in log files. This option slows down UI and rendering.</system:String>
   <system:String x:Key="prefs.advanced.stable">Stable</system:String>
-  <system:String x:Key="prefs.advanced.vlabelerpath">vLabeler Path</system:String>
+  <system:String x:Key="prefs.advanced.vlabelerpath">Vlabeler Path</system:String>
   <system:String x:Key="prefs.appearance">Appearance</system:String>
   <system:String x:Key="prefs.appearance.lang">Language</system:String>
   <system:String x:Key="prefs.appearance.showghostnotes">Show other tracks' notes on piano roll</system:String>
@@ -226,14 +232,12 @@ Hold Ctrl to select</system:String>
   <system:String x:Key="prefs.appearance.theme">Theme</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">Dark</system:String>
   <system:String x:Key="prefs.appearance.theme.light">Light</system:String>
-  <system:String x:Key="prefs.appearance.theme.synthv">Synthesizer V</system:String>
-  <system:String x:Key="prefs.appearance.theme.midnight">Midnight</system:String>
   <system:String x:Key="prefs.caption">Preferences</system:String>
-  <system:String x:Key="prefs.note.restart">Note: Please restart OpenUtau after changing this item.</system:String>
+  <system:String x:Key="prefs.note.restart">Note: please restart OpenUtau after changing this item.</system:String>
   <system:String x:Key="prefs.off">Off</system:String>
   <system:String x:Key="prefs.on">On</system:String>
-  <system:String x:Key="prefs.otoeditor">OTO Editor</system:String>
-  <system:String x:Key="prefs.otoeditor.select">Default OTO Editor</system:String>
+  <system:String x:Key="prefs.otoeditor">Oto Editor</system:String>
+  <system:String x:Key="prefs.otoeditor.select">Default Oto Editor</system:String>
   <system:String x:Key="prefs.paths">Paths</system:String>
   <system:String x:Key="prefs.paths.addlsinger">Additional Singer Path</system:String>
   <system:String x:Key="prefs.paths.addlsinger.install">Install to Additional Singer Path</system:String>
@@ -256,17 +260,20 @@ Hold Ctrl to select</system:String>
   <system:String x:Key="prefs.rendering">Rendering</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">Phase Compensation</system:String>
   <system:String x:Key="prefs.rendering.prerender">Pre-render</system:String>
-  <system:String x:Key="prefs.rendering.prerender.threads">Pre-render Threads</system:String>
   <system:String x:Key="prefs.rendering.resampler">Resampler</system:String>
   <system:String x:Key="prefs.rendering.resampler.morewarn">
-    Warning: Moresampler is not fully supported. It may cause high CPU usage and slow down the editor. If you still want to use Moresampler, please follow these steps:
+    Warning: moresampler is not fully supported. It may be slow and cause high CPU usage. If you insist, please:
     1. Set "resampler-compatibility" to "on" in moreconfig.txt.
     2. Set "auto-update-llsm-mrq" to "off" in moreconfig.txt.
-    3. Patiently wait for moresampler to generate missing ".llsm" files.
+    3. Patiently wait for moresampler to generate missing llsm files.
   </system:String>
   <system:String x:Key="prefs.rendering.resampler.note">
-    Note: To use external resamplers, please add the resampler DLL or EXE file in the "Resamplers" folder inside the OpenUtau installation folder, then select the resampler in Preferences.
+    Note: to use external resamplers, please add the resampler DLL or EXE file in the Resamplers folder in the OpenUtau install path and choose it in Preferences.
   </system:String>
+  <system:String x:Key="prefs.rendering.threads.cpuwarn">
+    Warning: too many render threads may cause OpenUtau to run slowly.
+  </system:String>
+  <system:String x:Key="prefs.rendering.threads.numthreads">Maximum Render Threads</system:String>
   <system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>
 
   <system:String x:Key="progress.saved">Project saved. {0}</system:String>
@@ -274,10 +281,12 @@ Hold Ctrl to select</system:String>
 
   <system:String x:Key="singers.caption">Singers</system:String>
   <system:String x:Key="singers.editoto.editinvlabeler">Edit In vLabeler</system:String>
-  <system:String x:Key="singers.editoto.gotosource">Go to Source File</system:String>
-  <system:String x:Key="singers.editoto.reset">Reset OTOs</system:String>
-  <system:String x:Key="singers.editoto.save">Save OTOs</system:String>
-  <system:String x:Key="singers.editoto.setvlabelerpath">Please download vLabeler (1.0.0-beta1 or higher) from https://github.com/sdercolin/vlabeler and set vLabeler path in Preferences first!</system:String>
+  <system:String x:Key="singers.editoto.gotosource">Goto Source File</system:String>
+  <system:String x:Key="singers.editoto.regenfrq">Regenerate FRQ</system:String>
+  <system:String x:Key="singers.editoto.regenfrq.regenerating">Regenerating FRQ</system:String>
+  <system:String x:Key="singers.editoto.reset">Reset Otos</system:String>
+  <system:String x:Key="singers.editoto.save">Save Otos</system:String>
+  <system:String x:Key="singers.editoto.setvlabelerpath">Download vLabeler (1.0.0-beta1 or higher) from https://github.com/sdercolin/vlabeler and set vLabeler path in Preferences first!</system:String>
   <system:String x:Key="singers.errorreport">Generate Singer Error Report</system:String>
   <system:String x:Key="singers.location">Location</system:String>
   <system:String x:Key="singers.otoview.moveleft">Move Left</system:String>
@@ -334,6 +343,8 @@ Hold Ctrl to select</system:String>
   <system:String x:Key="tip.notes.zoomx">◀ Scroll here to zoom horizontally ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">Scroll here to zoom vertically ▶</system:String>
 
+  <system:String x:Key="tracks.duplicate">Duplicate Track</system:String>
+  <system:String x:Key="tracks.duplicatesettings">Duplicate Track Settings</system:String>
   <system:String x:Key="tracks.more">More</system:String>
   <system:String x:Key="tracks.movedown">Move Down</system:String>
   <system:String x:Key="tracks.moveup">Move Up</system:String>
@@ -344,16 +355,16 @@ Hold Ctrl to select</system:String>
   <FontFamily x:Key="ui.fontfamily">Segoe UI,San Francisco,Helvetica Neue</FontFamily>
   <FontFamily x:Key="ui.textbox.fontfamily">Microsoft YaHei,Simsun,苹方-简,宋体-简</FontFamily>
 
-  <system:String x:Key="updater.caption">Check for Updates</system:String>
-  <system:String x:Key="updater.description">Open-source singing synthesis platform</system:String>
+  <system:String x:Key="updater.caption">Check for Update</system:String>
+  <system:String x:Key="updater.description">Open singing synthesis platform</system:String>
   <system:String x:Key="updater.github">GitHub</system:String>
-  <system:String x:Key="updater.status.available">Update v{0} is available!</system:String>
+  <system:String x:Key="updater.status.available">Update v{0} available!</system:String>
   <system:String x:Key="updater.status.checking">Checking for updates...</system:String>
   <system:String x:Key="updater.status.notavailable">Up to date</system:String>
-  <system:String x:Key="updater.status.unknown">Unable to check for an update. Is your Internet connected?</system:String>
+  <system:String x:Key="updater.status.unknown">Unable to check update</system:String>
   <system:String x:Key="updater.update">Update</system:String>
 
   <system:String x:Key="warning">Warning</system:String>
-  <system:String x:Key="warning.asciipath">Your OpenUtau folder path ({0}) contains non-ASCII characters. EXE resamplers may not work.</system:String>
-  <system:String x:Key="warning.renderer">No settings for this renderer. Please select CLASSIC.</system:String>
+  <system:String x:Key="warning.asciipath">Your OpenUtau home path "{0}" contains non-ASCII character. Exe resamplers may not work.</system:String>
+  <system:String x:Key="warning.renderer">No settings for this renderer.</system:String>
 </ResourceDictionary>

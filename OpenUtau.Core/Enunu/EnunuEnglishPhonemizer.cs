@@ -14,6 +14,8 @@ using TinyPinyin;
 namespace OpenUtau.Core.Enunu {
     [Phonemizer("Enunu English Phonemizer", "ENUNU EN", language:"EN")]
     public class EnunuEnglishPhonemizer : EnunuPhonemizer {
+        readonly string PhonemizerType = "ENUNU EN";
+
         protected IG2p g2p;
         //index,position,is_start
         protected readonly List<Tuple<int, int, bool>> alignments = new List<Tuple<int, int, bool>>();

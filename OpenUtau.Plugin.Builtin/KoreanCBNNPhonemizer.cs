@@ -9,74 +9,106 @@ using Serilog;
 using static OpenUtau.Api.Phonemizer;
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("KoreanCVCPhonemizer", "KO CVC", "NANA", language:"KO")]
+     /// This phonemizer is based on 'KOR CVC Phonemizer'(by NANA). ///
+    [Phonemizer("Korean CBNN Phonemizer", "KO CBNN", "EX3", language:"KO")]
 
-    public class KoreanCVCPhonemizer : Phonemizer {
+    public class KoreanCBNNPhonemizer : Phonemizer {
 
+        // ↓ Plainvowels of [ㅏ ㅐ ㅑ ㅒ ㅓ ㅔ ㅕ ㅖ ㅗ ㅘ ㅙ ㅚ ㅛ ㅜ ㅝ ㅞ ㅟ ㅠ ㅡ ㅢ ㅣ]. //
         static readonly string[] naPlainVowels = new string[] { "a", "e", "a", "e", "eo", "e", "eo", "e", "o", "a", "e", "e", "o", "u", "eo", "e", "i", "u", "eu", "i", "i" };
-
         static readonly string[] naConsonants = new string[] {
             "ㄱ:g","ㄲ:gg","ㄴ:n","ㄷ:d","ㄸ:dd","ㄹ:r","ㅁ:m","ㅂ:b","ㅃ:bb","ㅅ:s","ㅆ:ss","ㅇ:","ㅈ:j","ㅉ:jj","ㅊ:ch","ㅋ:k","ㅌ:t","ㅍ:p","ㅎ:h"
         };
+
+        // ↓ ㅢ is e (* There's no "eui" in Kor CBNN *).//
         static readonly string[] naVowels = new string[] {
-            "ㅏ:a","ㅐ:e","ㅑ:ya","ㅒ:ye","ㅓ:eo","ㅔ:e","ㅕ:yeo","ㅖ:ye","ㅗ:o","ㅘ:wa","ㅙ:we","ㅚ:we","ㅛ:yo","ㅜ:u","ㅝ:weo","ㅞ:we","ㅟ:wi","ㅠ:yu","ㅡ:eu","ㅢ:eui","ㅣ:i"
+            "ㅏ:a","ㅐ:e","ㅑ:ya","ㅒ:ye","ㅓ:eo","ㅔ:e","ㅕ:yeo","ㅖ:ye","ㅗ:o","ㅘ:wa","ㅙ:we","ㅚ:we","ㅛ:yo","ㅜ:u","ㅝ:weo","ㅞ:we","ㅟ:wi","ㅠ:yu","ㅡ:eu","ㅢ:e","ㅣ:i"
         };
+
+        // ↓ ["Grapheme : Phoneme"] of batchims.
         static readonly string[] naFinals = new string[] {
-            ":","ㄱ:k","ㄲ:k","ㄳ:k","ㄴ:n","ㄵ:n","ㄶ:n","ㄷ:t","ㄹ:l","ㄺ:k","ㄻ:m","ㄼ:l","ㄽ:l","ㄾ:l","ㄿ:p","ㅀ:l","ㅁ:m","ㅂ:p","ㅄ:p","ㅅ:t","ㅆ:t","ㅇ:ng","ㅈ:t","ㅊ:t","ㅋ:k","ㅌ:t","ㅍ:p","ㅎ:t"
+            ":","ㄱ:k","ㄲ:k","ㄳ:k","ㄴ:n","ㄵ:n","ㄶ:n","ㄷ:t","ㄹ:l","ㄺ:l","ㄻ:m","ㄼ:l","ㄽ:l","ㄾ:l","ㄿ:p","ㅀ:l","ㅁ:m","ㅂ:p","ㅄ:p","ㅅ:t","ㅆ:t","ㅇ:ng","ㅈ:t","ㅊ:t","ㅋ:k","ㅌ:t","ㅍ:p:1","ㅎ:t:2"
         };
-        private const int hangeulStartIndex = 0xAC00;
-        private const int hangeulEndIndex = 0xD7A3;
+        private const int hangeulStartIndex = 0xAC00; // unicode of '가'
+        private const int hangeulEndIndex = 0xD7A3; // unicode of '힣'
 
         // ======================================================================================
 
 
-        static readonly string[] plainVowels = new string[] { "eu", "eo", "a", "i", "u", "e", "o", "er" };
+        // ↓ Plain vowels of Korean.
+        static readonly string[] plainVowels = new string[] { "eu", "eo", "a", "i", "u", "e", "o" };
 
-        static readonly string[] plainDiphthongs = new string[] { "ya", "yeo", "yo", "yu", "ye", "wa", "weo", "wi", "we", "eui" };
-
+        // ↓ Vowels of romanized CVs.
         static readonly string[] vowels = new string[] {
-            "eu=geu,neu,deu,reu,leu,meu,beu,seu,eu,jeu,cheu,keu,teu,peu,heu,ggeu,ddeu,bbeu,sseu,jjeu,feu,veu,zeu,theu,rreu",
-            "eo=geo,neo,deo,reo,leo,meo,beo,seo,eo,jeo,cheo,keo,teo,peo,heo,ggeo,ddeo,bbeo,sseo,jjeo,feo,veo,zeo,theo,rreo,gyeo,nyeo,dyeo,ryeo,lyeo,myeo,byeo,syeo,yeo,jyeo,chyeo,kyeo,tyeo,pyeo,hyeo,ggyeo,ddyeo,bbyeo,ssyeo,jjyeo,fyeo,vyeo,zyeo,thyeo,gweo,nweo,dweo,rweo,lweo,mweo,bweo,sweo,weo,jweo,chweo,kweo,tweo,pweo,hweo,ggweo,ddweo,bbweo,ssweo,jjweo,fweo,vweo,zweo,thweo",
-            "a=ga,na,da,ra,la,ma,ba,sa,a,ja,cha,ka,ta,pa,ha,gga,dda,bba,ssa,jja,fa,va,za,tha,rra,gya,nya,dya,rya,lya,mya,bya,sya,ya,jya,chya,kya,tya,pya,hya,ggya,ddya,bbya,ssya,jjya,fya,vya,zya,thya,gwa,nwa,dwa,rwa,lwa,mwa,bwa,swa,wa,jwa,chwa,kwa,twa,pwa,hwa,ggwa,ddwa,bbwa,sswa,jjwa,fwa,vwa,zwa,thwa",
-            "e=ge,ne,de,re,le,me,be,se,e,je,che,ke,te,pe,he,gge,dde,bbe,sse,jje,fe,ve,ze,the,rre,gye,nye,dye,rye,lye,mye,bye,sye,ye,jye,chye,kye,tye,pye,hye,ggye,ddye,bbye,ssye,jjye,fye,vye,zye,thye,gwe,nwe,dwe,rwe,lwe,mwe,bwe,swe,we,jwe,chwe,kwe,twe,pwe,hwe,ggwe,ddwe,bbwe,sswe,jjwe,fwe,vwe,zwe,thwe",
-            "i=gi,ni,di,ri,li,mi,bi,si,i,ji,chi,ki,ti,pi,hi,ggi,ddi,bbi,ssi,jji,fi,vi,zi,thi,rri,gwi,nwi,dwi,rwi,lwi,mwi,bwi,swi,wi,jwi,chwi,kwi,twi,pwi,hwi,ggwi,ddwi,bbwi,sswi,jjwi,fwi,vwi,zwi,thwi",
-            "o=go,no,do,ro,lo,mo,bo,so,o,jo,cho,ko,to,po,ho,ggo,ddo,bbo,sso,jjo,fo,vo,zo,tho,rro,gyo,nyo,dyo,ryo,lyo,myo,byo,syo,yo,jyo,chyo,kyo,tyo,pyo,hyo,ggyo,ddyo,bbyo,ssyo,jjyo,fyo,vyo,zyo,thyo",
-            "u=gu,nu,du,ru,lu,mu,bu,su,u,ju,chu,ku,tu,pu,hu,ggu,ddu,bbu,ssu,jju,fu,vu,zu,thu,rru,gyu,nyu,dyu,ryu,lyu,myu,byu,syu,yu,jyu,chyu,kyu,tyu,pyu,hyu,ggyu,ddyu,bbyu,ssyu,jjyu,fyu,vyu,zyu,thyu",
+            "eu=geu,neu,deu,reu,meu,beu,seu,eu,jeu,cheu,keu,teu,peu,heu,ggeu,ddeu,bbeu,sseu,jjeu",
+            "eo=geo,neo,deo,reo,meo,beo,seo,eo,jeo,cheo,keo,teo,peo,heo,ggeo,ddeo,bbeo,sseo,jjeo,gyeo,nyeo,dyeo,ryeo,myeo,byeo,syeo,yeo,jyeo,chyeo,kyeo,tyeo,pyeo,hyeo,ggyeo,ddyeo,bbyeo,ssyeo,jjyeo,gweo,nweo,dweo,rweo,mweo,bweo,sweo,weo,jweo,chweo,kweo,tweo,pweo,hweo,ggweo,ddweo,bbweo,ssweo,jjweo",
+            "a=ga,na,da,ra,ma,ba,sa,a,ja,cha,ka,ta,pa,ha,gga,dda,bba,ssa,jja,gya,nya,dya,rya,mya,bya,sya,ya,jya,chya,kya,tya,pya,hya,ggya,ddya,bbya,ssya,jjya,gwa,nwa,dwa,rwa,mwa,bwa,swa,wa,jwa,chwa,kwa,twa,pwa,hwa,ggwa,ddwa,bbwa,sswa,jjwa",
+            "e=ge,ne,de,re,me,be,se,e,je,che,ke,te,pe,he,gge,dde,bbe,sse,jje,gye,nye,dye,rye,mye,bye,sye,ye,jye,chye,kye,tye,pye,hye,ggye,ddye,bbye,ssye,jjye,gwe,nwe,dwe,rwe,mwe,bwe,swe,we,jwe,chwe,kwe,twe,pwe,hwe,ggwe,ddwe,bbwe,sswe,jjwe",
+            "i=gi,ni,di,ri,mi,bi,si,i,ji,chi,ki,ti,pi,hi,ggi,ddi,bbi,ssi,jji,gwi,nwi,dwi,rwi,mwi,bwi,swi,wi,jwi,chwi,kwi,twi,pwi,hwi,ggwi,ddwi,bbwi,sswi,jjwi",
+            "o=go,no,do,ro,mo,bo,so,o,jo,cho,ko,to,po,ho,ggo,ddo,bbo,sso,jjo,gyo,nyo,dyo,ryo,myo,byo,syo,yo,jyo,chyo,kyo,tyo,pyo,hyo,ggyo,ddyo,bbyo,ssyo,jjyo",
+            "u=gu,nu,du,ru,mu,bu,su,u,ju,chu,ku,tu,pu,hu,ggu,ddu,bbu,ssu,jju,gyu,nyu,dyu,ryu,myu,byu,syu,yu,jyu,chyu,kyu,tyu,pyu,hyu,ggyu,ddyu,bbyu,ssyu,jjyu",
             "ng=ang,ing,ung,eng,ong,eung,eong",
             "n=an,in,un,en,on,eun,eon",
             "m=am,im,um,em,om,eum,eom",
             "l=al,il,ul,el,ol,eul,eol",
             "p=ap,ip,up,ep,op,eup,eop",
             "t=at,it,ut,et,ot,eut,eot",
-            "k=ak,ik,uk,ek,ok,euk,eok",
-            "er=er"
+            "k=ak,ik,uk,ek,ok,euk,eok"
         };
 
+        // ↓ consonants of romanized CVs.
         static readonly string[] consonants = new string[] {
-            "gg=gg,gga,ggi,ggu,gge,ggo,ggeu,ggeo,ggya,ggyu,ggye,ggyo,ggyeo,ggwa,ggwi,ggwe,ggweo",
-            "dd=dd,dda,ddi,ddu,dde,ddo,ddeu,ddeo,ddya,ddyu,ddye,ddyo,ddyeo,ddwa,ddwi,ddwe,ddweo",
-            "bb=bb,bba,bbi,bbu,bbe,bbo,bbeu,bbeo,bbya,bbyu,bbye,bbyo,bbyeo,bbwa,bbwi,bbwe,bbweo",
-            "ss=ss,ssa,ssi,ssu,sse,sso,sseu,sseo,ssya,ssyu,ssye,ssyo,ssyeo,sswa,sswi,sswe,ssweo",
-	
-	"f=f,fa,fi,fu,fe,fo,feu,feo,fya,fyu,fye,fyo,fyeo,fwa,fwi,fwe,fweo",
-            "v=v,va,vi,vu,ve,vo,veu,veo,vya,vyu,vye,vyo,vyeo,vwa,vwi,vwe,vweo",
-            "z=z,za,zi,zu,ze,zo,zeu,zeo,zya,zyu,zye,zyo,zyeo,zwa,zwi,zwe,zweo",
-            "th=th,tha,thi,thu,the,tho,theu,theo,thya,thyu,thye,thyo,thyeo,thwa,thwi,thwe,thweo",
-            "rr=rr,rra,rri,rru,rre,rro,rreu,rreo",
-
-            "g=g,ga,gi,gu,ge,go,geu,geo,gya,gyu,gye,gyo,gyeo,gwa,gwi,gwe,gweo",
-            "n=n,na,ni,nu,ne,no,neu,neo,nya,nyu,nye,nyo,nyeo,nwa,nwi,nwe,nweo",
-            "d=d,da,di,du,de,do,deu,deo,dya,dyu,dye,dyo,dyeo,dwa,dwi,dwe,dweo",
-            "r=r,ra,ri,ru,re,ro,reu,reo,rya,ryu,rye,ryo,ryeo,rwa,rwi,rwe,rweo",
-            "m=m,ma,mi,mu,me,mo,meu,meo,mya,myu,mye,myo,myeo,mwa,mwi,mwe,mweo",
-            "b=b,ba,bi,bu,be,bo,beu,beo,bya,byu,bye,byo,byeo,bwa,bwi,bwe,bweo",
-            "s=s,sa,si,su,se,so,seu,seo,sya,syu,sye,syo,syeo,swa,swi,swe,sweo",
-            "j=j,ja,ji,ju,je,jo,jeu,jeo,jya,jyu,jye,jyo,jyeo,jwa,jwi,jwe,jweo",
-            "ch=ch,cha,chi,chu,che,cho,cheu,cheo,chya,chyu,chye,chyo,chyeo,chwa,chwi,chwe,chweo",
-            "k=k,ka,ki,ku,ke,ko,keu,keo,kya,kyu,kye,kyo,kyeo,kwa,kwi,kwe,kweo",
-            "t=t,ta,ti,tu,te,to,teu,teo,tya,tyu,tye,tyo,tyeo,twa,twi,twe,tweo",
-            "p=p,pa,pi,pu,pe,po,peu,peo,pya,pyu,pye,pyo,pyeo,pwa,pwi,pwe,pweo",
-            "h=h,ha,hi,hu,he,ho,heu,heo,hya,hyu,hye,hyo,hyeo,hwa,hwi,hwe,hweo"
+            "ggy=ggya,ggyu,ggye,ggyo,ggyeo",
+            "ggw=ggwa,ggwi,ggwe,ggweo",
+            "gg=gg,gga,ggi,ggu,gge,ggo,ggeu,ggeo",
+            "ddy=ddya,ddyu,ddye,ddyo,ddyeo",
+            "ddw=ddwa,ddwi,ddwe,ddweo",
+            "dd=dd,dda,ddi,ddu,dde,ddo,ddeu,ddeo",
+            "bby=bbya,bbyu,bbye,bbyo,bbyeo",
+            "bbw=bbwa,bbwi,bbwe,bbweo",
+            "bb=bb,bba,bbi,bbu,bbe,bbo,bbeu,bbeo",
+            "ssy=ssya,ssyu,ssye,ssyo,ssyeo",
+            "ssw=sswa,sswi,sswe,ssweo",
+            "ss=ss,ssa,ssi,ssu,sse,sso,sseu,sseo",
+            "gy=gya,gyu,gye,gyo,gyeo",
+            "gw=gwa,gwi,gwe,gweo",
+            "g=g,ga,gi,gu,ge,go,geu,geo",
+            "ny=nya,nyu,nye,nyo,nyeo",
+            "nw=nwa,nwi,nwe,nweo",
+            "n=n,na,ni,nu,ne,no,neu,neo",
+            "dy=dya,dyu,dye,dyo,dyeo",
+            "dw=dwa,dwi,dwe,dweo",
+            "d=d,da,di,du,de,do,deu,deo",
+            "ry=rya,ryu,rye,ryo,ryeo",
+            "rw=rwa,rwi,rwe,rweo",
+            "r=r,ra,ri,ru,re,ro,reu,reo",            
+            "my=mya,myu,mye,myo,myeo",
+            "mw=mwa,mwi,mwe,mweo",
+            "m=m,ma,mi,mu,me,mo,meu,meo",
+            "by=bya,byu,bye,byo,byeo",
+            "bw=bwa,bwi,bwe,bweo",
+            "b=b,ba,bi,bu,be,bo,beu,beo",
+            "sy=sya,syu,sye,syo,syeo",
+            "sw=swa,swi,swe,sweo",
+            "s=s,sa,si,su,se,so,seu,seo",
+            "jy=jya,jyu,jye,jyo,jyeo",
+            "jw=jwa,jwi,jwe,jweo",
+            "j=j,ja,ji,ju,je,jo,jeu,jeo",            
+            "chy=chya,chyu,chye,chyo,chyeo,chwa",
+            "chw=chwi,chwe,chweo",
+            "ch=ch,cha,chi,chu,che,cho,cheu,cheo",
+            "ky=kya,kyu,kye,kyo,kyeo",
+            "kw=kwa,kwi,kwe,kweo",
+            "k=k,ka,ki,ku,ke,ko,keu,keo",
+            "ty=tya,tyu,tye,tyo,tyeo",
+            "tw=twa,twi,twe,tweo",
+            "t=t,ta,ti,tu,te,to,teu,teo",
+            "py=pya,pyu,pye,pyo,pyeo",
+            "pw=pwa,pwi,pwe,pweo",
+            "p=p,pa,pi,pu,pe,po,peu,peo",
+            "hy=hya,hyu,hye,hyo,hyeo",
+            "hw=hwa,hwi,hwe,hweo",
+            "h=h,ha,hi,hu,he,ho,heu,heo"
             };
 
         static readonly Dictionary<string, string> vowelLookup;
@@ -88,23 +120,20 @@ namespace OpenUtau.Plugin.Builtin {
             str = str.Replace('u', ' ');
             str = str.Replace('e', ' ');
             str = str.Replace('o', ' ');
-            str = str.Replace('w', ' ');
-            str = str.Replace('y', ' ');
             str = str.Trim();
 
             return str;
         }
 
-        bool isAlphaCon(string str) {
+        bool isAlphaCon(string consStr) {
+            String str = consStr.Replace('w', ' ');
+            str = consStr.Replace('y', ' ');
+            str = str.Trim();
+        
             if (str == "gg") { return true; }
             else if (str == "dd") { return true; }
             else if (str == "bb") { return true; }
             else if (str == "ss") { return true; }
-            else if (str == "f") { return true; }
-            else if (str == "v") { return true; }
-            else if (str == "z") { return true; }
-            else if (str == "th") { return true; }
-            else if (str == "rr") { return true; }
             else if (str == "g") { return true; }
             else if (str == "n") { return true; }
             else if (str == "d") { return true; }
@@ -120,7 +149,7 @@ namespace OpenUtau.Plugin.Builtin {
             else if (str == "h") { return true; }else { return false; }
         }
 
-        static KoreanCVCPhonemizer() {
+        static KoreanCBNNPhonemizer() {
             vowelLookup = vowels.ToList()
                 .SelectMany(line => {
                     var parts = line.Split('=');
@@ -160,41 +189,84 @@ namespace OpenUtau.Plugin.Builtin {
 
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
             var note = notes[0];
-            var currentUnicode = ToUnicodeElements(note.lyric); // 현재 가사의 유니코드
-            string currentLyric = note.lyric; // 현재 가사
+            var currentUnicode = ToUnicodeElements(note.lyric); // ← unicode of current lyric
+            string currentLyric = note.lyric; // ← string of current lyric
             var attr0 = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
             var attr1 = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 1) ?? default;
+            
+            //-----------------------------------------------------------------------//
+            ////// ***   ↓↓↓ Seperates Lyrics in:                                     //
+            /////           - first consonant letter(초성, "consonant" in below),    //
+            /////           -  middle vowel letter(중성, "vowel" in below),          //
+            /////           -  last consonant letter(종성, "final" in below) ↓↓↓  *** //.
 
-            // 가사의 초성, 중성, 종성 분리
-            // P(re)Lconsonant, PLvowel, PLfinal / C(urrent)Lconsonant, CLvowel, CLfinal / N(ext)Lconsonant, NLvowel, NLfinal
 
+            ////  ↓↓ 1 ** Variables for 'Current Notes' ** --
+            // ↓ index of "consonant", "vowel", "final".
             int CLconsonant = 0;
             int CLvowel = 0;
-            int CLfinal = 0; // 현재 노트의 consonant, vowel, final 인덱스
+            int CLfinal = 0; 
+
+            // ↓ Use for Temp
             string[] TCLtemp;
+
+            // ↓ use these for applying phonological rules
             string TCLconsonant = "";
             string TCLvowel = "";
             string TCLfinal = "";
-            string TCLplainvowel = ""; // 현재 노트의 consonant, vowel, fina, 모음의 단순화
+            string TCLplainvowel = ""; //← Simplifies vowels
 
+            int TCLsemivowel = 0; // semi vowel is 'y', 'w'. [0 means "there's no semi vowel], [1 means "there is 'y'"], [2 means "there is 'w'"]]
+            
+            // ↓ use these for generating phonemes in phonemizers 
+            string TCLconsonantCBNN = "";
+            string TCLvowelCBNN = "";
+
+            ////  ↓↓ 2 ** Variables for 'Next Notes' ** --
+            // ↓ index of "consonant", "vowel", "final".
             int NLconsonant = 0;
             int NLvowel = 0;
             int NLfinal = 0;
+
+            // ↓ Use for Temp
             string[] TNLtemp;
+
+            // ↓ use these for applying phonological rules
             string TNLconsonant = "";
             string TNLvowel = "";
             string TNLfinal = "";
             string TNLplainvowel = "";
 
+            // ↓ use these for generating phonemes in phonemizers 
+            string TNLconsonantCBNN = "";
+            //string TNLvowelCBNN = "";
+
+            int TNLsemivowel = 0; // semi vowel is 'y', 'w'. [0 means "there's no semi vowel], [1 means "there is 'y'"], [2 means "there is 'w'"]]
+
+            ////  ↓↓ 3 ** Variables for 'Previous Notes' ** --
+            // ↓ index of "consonant", "vowel", "final".
             int PLconsonant = 0;
             int PLvowel = 0;
             int PLfinal = 0;
+            
+            // ↓ Use for Temp
             string[] TPLtemp;
+
+            // ↓ use these for applying phonological rules
             string TPLconsonant = "";
             string TPLvowel = "";
             string TPLfinal = "";
             string TPLplainvowel = "";
+            string TPLplainfinal = "";
 
+            // ↓ use these for generating phonemes in phonemizers 
+            //string TPLconsonantCBNN = "";
+            //string TPLvowelCBNN = "";
+
+            //int TPLsemivowel = 0; // semi vowel is 'y', 'w'. [0 means "there's no semi vowel], [1 means "there is 'y'"], [2 means "there is 'w'"]]
+
+
+            ////  ↓↓ 4 ** Variables for checking notes ** --
             bool currentHangeul = false;
             bool prevHangeul = false;
             bool nextHangeul = false;
@@ -203,31 +275,34 @@ namespace OpenUtau.Plugin.Builtin {
             bool nextExist = false;
 
             char firstCL, firstPL, firstNL;
-            int lCL, lPL, lNL;
             int uCL, uPL, uNL;
-            lCL = 0; lPL = 0; lNL = 0;
+            bool prevIsBreath = false;
 
 
-            // 현재 노트 첫번째 글자 확인
+            // check first lyric
             firstCL = currentLyric[0];
-            if (firstCL == 'ㄹ') { lCL = 1; firstCL = currentLyric[1]; }
+            
             uCL = (int)firstCL;
             if ((uCL >= hangeulStartIndex) && (uCL <= hangeulEndIndex)) {
                 currentHangeul = true;
                 CLconsonant = (uCL - hangeulStartIndex) / (21 * 28);
                 CLvowel = (uCL - hangeulStartIndex) % (21 * 28) / 28;
                 CLfinal = (uCL - hangeulStartIndex) % 28;
-
-
-                TCLtemp = naConsonants[CLconsonant].Split(":");
-                TCLconsonant = TCLtemp[1];
+ 
 
                 TCLtemp = naVowels[CLvowel].Split(":");
                 TCLvowel = TCLtemp[1];
                 TCLplainvowel = naPlainVowels[CLvowel];
+                
+                if (TCLvowel.StartsWith('y')) {TCLsemivowel = 1;} 
+                else if (TCLvowel.StartsWith('w')) {TCLsemivowel = 2;}
+                
+                TCLtemp = naConsonants[CLconsonant].Split(":");
+                TCLconsonant = TCLtemp[1];
 
                 TCLtemp = naFinals[CLfinal].Split(":");
                 TCLfinal = TCLtemp[1];
+
 
                 // TCLconsonant : 현노트 초성    TCLvowel : 현노트 중성    TCLfinal : 현노트 종성
 
@@ -237,7 +312,7 @@ namespace OpenUtau.Plugin.Builtin {
             if (prevNeighbour != null) {
                 firstPL = (prevNeighbour?.lyric)[0]; // 가사 받아오기
                 prevExist = true; // 이전 노트 존재한다 반짝
-                if (firstPL == 'ㄹ') { lPL = 1; firstPL = (prevNeighbour?.lyric)[1]; } // ㄹㄹ 발음이다 반짝
+                
                 uPL = (int)firstPL; // 가사를 int로 변환
 
                 if ((uPL >= hangeulStartIndex) && (uPL <= hangeulEndIndex)) {
@@ -255,8 +330,12 @@ namespace OpenUtau.Plugin.Builtin {
                     TPLvowel = TPLtemp[1];
                     TPLplainvowel = naPlainVowels[PLvowel];
 
+                    //if (TPLvowel.StartsWith('y')) {TPLsemivowel = 1;} 
+                    //else if (TPLvowel.StartsWith('w')) {TPLsemivowel = 2;}
+                
                     TPLtemp = naFinals[PLfinal].Split(":");
                     TPLfinal = TPLtemp[1];
+                    TPLplainfinal = TPLfinal;
                 }
             }
 
@@ -264,7 +343,6 @@ namespace OpenUtau.Plugin.Builtin {
             if (nextNeighbour != null) {
                 firstNL = (nextNeighbour?.lyric)[0];
                 nextExist = true;
-                if (firstNL == 'ㄹ') { lNL = 1; firstNL = (nextNeighbour?.lyric)[1]; }
                 uNL = (int)firstNL;
 
                 if ((uNL >= hangeulStartIndex) && (uNL <= hangeulEndIndex)) {
@@ -281,6 +359,10 @@ namespace OpenUtau.Plugin.Builtin {
                     TNLtemp = naVowels[NLvowel].Split(":");
                     TNLvowel = TNLtemp[1];
                     TNLplainvowel = naPlainVowels[NLvowel];
+
+                    if (TNLvowel.StartsWith('y')) {TNLsemivowel = 1;} 
+                    else if (TNLvowel.StartsWith('w')) {TNLsemivowel = 2;}
+                
 
                     TNLtemp = naFinals[NLfinal].Split(":");
                     TNLfinal = TNLtemp[1];
@@ -390,13 +472,12 @@ namespace OpenUtau.Plugin.Builtin {
                         // ㄱㄷㅂ + ㄱㄷㅂㅅㅈ = ㄲㄸㅃㅆㅉ
                         if (((TPLfinal == "k") && (CLconsonant == 0)) || ((TPLfinal == "t") && (CLconsonant == 0)) || ((TPLfinal == "p") && (CLconsonant == 0))) { TCLconsonant = "gg"; } else if (((TPLfinal == "k") && (CLconsonant == 3)) || ((TPLfinal == "t") && (CLconsonant == 3)) || ((TPLfinal == "p") && (CLconsonant == 3))) { TCLconsonant = "dd"; } else if (((TPLfinal == "k") && (CLconsonant == 7)) || ((TPLfinal == "t") && (CLconsonant == 7)) || ((TPLfinal == "p") && (CLconsonant == 7))) { TCLconsonant = "bb"; } else if (((TPLfinal == "k") && (CLconsonant == 9)) || ((TPLfinal == "t") && (CLconsonant == 9)) || ((TPLfinal == "p") && (CLconsonant == 9))) { TCLconsonant = "ss"; } else if (((TPLfinal == "k") && (CLconsonant == 12)) || ((TPLfinal == "t") && (CLconsonant == 12)) || ((TPLfinal == "p") && (CLconsonant == 12))) { TCLconsonant = "jj"; }
 
-                        /* 
+                    
                         // 용언 어간 받침 ㄴㅁ + ㄱㄷㅅㅈ = ㄲㄸㅆㅉ
                         if(((TPLfinal=="n")&&(CLconsonant==0))|| ((TPLfinal == "m") && (CLconsonant == 0))) { TCLconsonant = "gg"; }
                         else if (((TPLfinal == "n") && (CLconsonant == 3)) || ((TPLfinal == "m") && (CLconsonant == 3))) { TCLconsonant = "dd"; }
                         else if (((TPLfinal == "n") && (CLconsonant == 9)) || ((TPLfinal == "m") && (CLconsonant == 9))) { TCLconsonant = "ss"; }
                         else if (((TPLfinal == "n") && (CLconsonant == 12)) || ((TPLfinal == "m") && (CLconsonant == 12))) { TCLconsonant = "jj"; }
-                        */
 
                         // 관형사형 어미ㄹ / 한자어 ㄹ + ㄷㅅㅈ = ㄸㅆㅉ
                         if ((PLfinal == 8) && (CLconsonant == 3)) { TCLconsonant = "dd"; } else if ((PLfinal == 8) && (CLconsonant == 9)) { TCLconsonant = "ss"; } else if ((PLfinal == 8) && (CLconsonant == 12)) { TCLconsonant = "jj"; }
@@ -406,7 +487,7 @@ namespace OpenUtau.Plugin.Builtin {
                     }
 
 
-                    // 5. 구개음화
+                    // 5. 구개음화 
                     if (prevExist && prevHangeul && (TPLfinal != "")) {
                         if ((PLfinal == 7) && (CLconsonant == 11) && (CLvowel == 20)) { TCLconsonant = "j"; } else if ((PLfinal == 25) && (CLconsonant == 11) && (CLvowel == 20)) { TCLconsonant = "ch"; } else if ((PLfinal == 13) && (CLconsonant == 11) && (CLvowel == 20)) { TCLconsonant = "ch"; } else if ((PLfinal == 7) && (CLconsonant == 18) && (CLvowel == 20)) { TCLconsonant = "ch"; }
                     }
@@ -417,6 +498,7 @@ namespace OpenUtau.Plugin.Builtin {
 
 
                     // 6. 비음화
+                    /**
                     if (prevExist && prevHangeul && (TPLfinal != "")) {
                         // 한자어 받침 ㅁㅇ + ㄹ = ㄴ
                         if (((TPLfinal == "m") && (CLconsonant == 5)) || ((TPLfinal == "ng") && (CLconsonant == 5))) { TCLconsonant = "n"; }
@@ -424,6 +506,7 @@ namespace OpenUtau.Plugin.Builtin {
                         // 한자어 받침 ㄱㄷㅂ + ㄹ = ㅇㄴㅁ + ㄴ(1)
                         if (((TPLfinal == "k") && (CLconsonant == 5)) || ((TPLfinal == "t") && (CLconsonant == 5)) || ((TPLfinal == "p") && (CLconsonant == 5))) { TCLconsonant = "n"; }
                     }
+                    **/
                     if (nextExist && nextHangeul && (TCLfinal != "")) {
                         //받침 ㄱㄷㅂ + ㄴㅁ = ㅇㄴㅁ
                         if (((TCLfinal == "k") && (TNLconsonant == "n")) || ((TCLfinal == "k") && (TNLconsonant == "m"))) { TCLfinal = "ng"; } else if (((TCLfinal == "t") && (TNLconsonant == "n")) || ((TCLfinal == "t") && (TNLconsonant == "m"))) { TCLfinal = "n"; } else if (((TCLfinal == "p") && (TNLconsonant == "n")) || ((TCLfinal == "p") && (TNLconsonant == "m"))) { TCLfinal = "m"; }
@@ -434,22 +517,23 @@ namespace OpenUtau.Plugin.Builtin {
 
 
                     // 7. 유음화
+                    /**
                     if (prevExist && prevHangeul && (TPLfinal != "")) {
                         if (((PLfinal == 8) && (TCLconsonant == "n")) || ((PLfinal == 13) && (TCLconsonant == "n")) || ((PLfinal == 15) && (TCLconsonant == "n"))) { TCLconsonant = "r"; }
                     }
                     if (nextExist && nextHangeul && (TCLfinal != "")) {
                         if ((TCLfinal == "n") && (TNLconsonant == "r")) { TCLfinal = "l"; }
                     }
+                    **/
 
 
 
                     // 8. 받침 + ㄹ = ㄹㄹ
-                    if (prevExist && prevHangeul && (TPLfinal != "")) { lCL = 1; }
 
 
 
                     // consonant에 변경 사항이 있을 때
-                    if (prevExist && prevHangeul) {
+                    //if (prevExist && prevHangeul) {
 
 
                         // 비음화
@@ -458,105 +542,92 @@ namespace OpenUtau.Plugin.Builtin {
                         //     ㅂ(ㅍ,ㄼ,ㄿ,ㅄ)
 
 
-                    }
+                    //}
                     // final에 변경 사항이 있을 때
 
 
                 }
 
-                string CV = (TCLconsonant + TCLvowel);
-                string VC = "";
+                bool isLastBatchim = false;
 
-                if (nextExist && (TCLfinal == "") && nextHangeul) { VC = TCLplainvowel + " " + TNLconsonant; }
+                // vowels do not have suffixed phonemes in CBNN, so use suffixed '- h'~ phonemes instead. 
+                if (!prevExist && TCLconsonant == "" && TCLfinal != "" && TCLvowel != "") {
+                    TCLconsonant = "h";
+                }
+                
+                // to make FC's length to 1 if FC comes final (=no next note)
+                if (!nextHangeul && TCLfinal != "" &&TCLvowel != "") {
+                    isLastBatchim = true;
+                }
+
+                // To use semivowels in VC (ex: [- ga][a gy][gya], ** so not [- ga][a g][gya] **)
+                if (TCLsemivowel == 1 && TPLplainvowel != "i" && TPLplainvowel != "eu") {TCLconsonantCBNN = TCLconsonant + 'y';}
+                else if (TCLsemivowel == 2 && TPLplainvowel != "u" && TPLplainvowel != "o" && TPLplainvowel != "eu") {TCLconsonantCBNN = TCLconsonant + 'w';}
+                else {TCLconsonantCBNN = TCLconsonant;}
+
+                if (TNLsemivowel == 1 && TCLplainvowel != "i" && TCLplainvowel != "eu") {TNLconsonantCBNN = TNLconsonant + 'y';}
+                else if (TNLsemivowel == 2 && TCLplainvowel != "u" && TCLplainvowel != "o" && TCLplainvowel != "eu") {TNLconsonantCBNN = TNLconsonant + 'w';}
+                else {TNLconsonantCBNN = TNLconsonant;}
+
+                
+                
+                //To set suffix of CV, according to next-coming batchim.
+                if (TCLfinal == "") {
+                    TCLvowelCBNN = TCLvowel;}
+                else if (TCLfinal == "m" && TCLconsonantCBNN != "" || TCLfinal == "m" && TCLconsonantCBNN == "" && TCLsemivowel != 0) {
+                    TCLvowelCBNN = TCLvowel + '1';}
+                else if (TCLfinal == "n" && TCLconsonantCBNN != ""  || TCLfinal == "n" && TCLconsonantCBNN == "" && TCLsemivowel != 0) {
+                    TCLvowelCBNN = TCLvowel + '2';}
+                else if (TCLfinal == "ng" && TCLconsonantCBNN != "" || TCLfinal == "ng" && TCLconsonantCBNN == "" && TCLsemivowel != 0) {
+                    TCLvowelCBNN = TCLvowel + '3';} 
+                else if (TCLfinal == "l" && TCLconsonantCBNN != "" || TCLfinal == "l" && TCLconsonantCBNN == "" && TCLsemivowel != 0) {
+                    TCLvowelCBNN = TCLvowel + '4';}
+                else if (TCLfinal == "k" && TCLconsonantCBNN != "" || TCLfinal == "k" && TCLconsonantCBNN == "" && TCLsemivowel != 0) {
+                    TCLvowelCBNN = TCLvowel;}
+                else if (TCLfinal == "t" && TCLconsonantCBNN != "" || TCLfinal == "t" && TCLconsonantCBNN == "" && TCLsemivowel != 0) {
+                    TCLvowelCBNN = TCLvowel + '3';}
+                else if (TCLfinal == "p" && TCLconsonantCBNN != "" || TCLfinal == "p" && TCLconsonantCBNN == "" && TCLsemivowel != 0) {
+                    TCLvowelCBNN = TCLvowel + '1';}
+                else {TCLvowelCBNN = TCLvowel;}
+
+
+                string CV = (TCLconsonant + TCLvowelCBNN);
+                string VC = "";
+                bool comesSemivowelWithoutVC = false;
+                
+
+                if (TCLsemivowel != 0 && TCLconsonant == ""){
+                    comesSemivowelWithoutVC = true;
+                }
+                if (nextExist && (TCLfinal == "")) { VC = TCLplainvowel + " " + TNLconsonantCBNN; }
+
+                //for Vowel VCV
+                if (prevExist && TPLfinal == "" && TCLconsonantCBNN == "" && !comesSemivowelWithoutVC) {CV = TPLplainvowel + " " + TCLvowel;}
+
+                
                 string FC = "";
                 if (TCLfinal != "") { FC = TCLplainvowel + TCLfinal; }
 
-                if (lCL == 1) { CV = CV.Replace("r", "l"); }
 
-                // 만약 앞에 노트가 없다면
-                if (!prevExist && TCLconsonant == "r") {
-                    string[] tests = new string[] { $"- {CV}", $"l{TCLvowel}", CV, currentLyric };
-                    if (checkOtoUntilHit(tests, note, out var oto)) {
-                        CV = oto.Alias;
-                    }
-                }
-                else if (!prevExist && TCLconsonant != "r") {
-                    string[] tests = new string[] { $"- {CV}", CV, currentLyric };
-                    if (checkOtoUntilHit(tests, note, out var oto)) {
-                        CV = oto.Alias;
-                    }
-                }
+                // for [- XX] phonemes
+                if (!prevExist || prevIsBreath || TPLfinal != "" && TCLconsonant != "r" && TCLconsonant != "n" && TCLconsonant != "" ) { CV = $"- {CV}"; }
 
-                if (prevExist && TCLconsonant == "" && TPLfinal == "") {
-                    string[] tests = new string[] { $"{TPLplainvowel} {CV}", CV, currentLyric };
-                    if (checkOtoUntilHit(tests, note, out var oto)) {
-                        CV = oto.Alias;
-                    }
-                }
                 
-                if (prevExist && TCLconsonant == "" && TPLfinal == "ng") {
-                    string[] tests = new string[] { $"ng{CV}", CV, currentLyric };
-                    if (checkOtoUntilHit(tests, note, out var oto)) {
-                        CV = oto.Alias;
-                    }
-                }
-
-                if (prevNeighbour != null && prevExist && !prevHangeul && TCLconsonant == "") {
-                    var prevUnicode = ToUnicodeElements(prevNeighbour?.lyric);
-                    var vowel = "";
-
-                    var prevLyric = string.Join("", prevUnicode);
-
-                    // Current note is VV
-                    if (vowelLookup.TryGetValue(prevUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
-                        vowel = vow;
-
-                        var mixVV = $"{vow} {CV}";
-
-                        if (prevLyric.EndsWith("eo")) {
-                            mixVV = $"eo {CV}";
-                        } else if (prevLyric.EndsWith("eu")) {
-                            mixVV = $"eu {CV}";
-                        } else if (prevLyric.EndsWith("er")) {
-                            mixVV = $"er {CV}";
-                        }
-
-                        // try vowlyric then currentlyric
-                        string[] tests = new string[] { mixVV, CV, currentLyric };
-                        if (checkOtoUntilHit(tests, note, out var oto)) {
-                            CV = oto.Alias;
-                        }
-                    }
-
-                }
-
-                if (nextNeighbour != null) { // 다음에 노트가 있으면
-                    var nextUnicode = ToUnicodeElements(nextNeighbour?.lyric);
-                    var nextLyric = string.Join("", nextUnicode);
-
-                    // Insert VC before next neighbor
-                    // Get vowel from current note
-                    var vowel = TCLplainvowel;
-
-                    // Get consonant from next note
-                    var consonant = "";
-                    if (consonantLookup.TryGetValue(nextUnicode.FirstOrDefault() ?? string.Empty, out var con)) {
-                        consonant = getConsonant(nextNeighbour?.lyric); //로마자만 가능
-                        if ((!isAlphaCon(consonant))) { consonant = con; }
-                    } else if (nextExist && nextHangeul) {
-                        consonant = TNLconsonant;
-                    }
-
-                    if (!nextHangeul) {
-                        VC = TCLplainvowel + " " + consonant;
-                    }
-                }
-
                 // 만약 받침이 있다면
                 if (FC != "") {
                     int totalDuration = notes.Sum(n => n.duration);
                     int fcLength = totalDuration / 3;
-                    if ((TCLfinal == "k") || (TCLfinal == "p") || (TCLfinal == "t")) { fcLength = totalDuration / 2; }
+
+                    if (isLastBatchim) {
+                        fcLength = 1;
+                    }
+                    else if ((TCLfinal == "k") || (TCLfinal == "p") || (TCLfinal == "t")) { 
+                        fcLength = totalDuration / 2;}
+                    else if ((TCLfinal == "l") || (TCLfinal == "ng") || (TCLfinal == "m")) { 
+                        fcLength = totalDuration / 5;}
+                    else if ((TCLfinal == "n")) {
+                        fcLength = totalDuration / 3;
+                    }
 
                     if (singer.TryGetMappedOto(CV, note.tone + attr0.toneShift, attr0.voiceColor, out var oto1) && singer.TryGetMappedOto(FC, note.tone + attr0.toneShift, attr0.voiceColor, out var oto2)) {
                         CV = oto1.Alias;
@@ -573,20 +644,24 @@ namespace OpenUtau.Plugin.Builtin {
                             },
                         };
                     }
+
+                    
+                    
                 }
 
 
                 // 만약 받침이 없다면
                 if (TCLfinal == "") {
                     // 뒤에 노트가 있다면
-                    if (nextExist) { if ((nextNeighbour?.lyric)[0] == 'ㄹ') { VC = ""; } }
-                    if ((VC != "") && (TNLconsonant != "")) {
+                    if ((TNLconsonantCBNN != "")) {
                         int totalDuration = notes.Sum(n => n.duration);
                         int vcLength = 60;
-                        if ((TNLconsonant == "r") || (TNLconsonant == "h")) { vcLength = 30; }
-                        else if (TNLconsonant == "s") { vcLength = totalDuration/3; }
-                        else if ((TNLconsonant == "k") || (TNLconsonant == "t") || (TNLconsonant == "p") || (TNLconsonant == "ch")) { vcLength = totalDuration / 2; }
-                        else if ((TNLconsonant == "gg") || (TNLconsonant == "dd") || (TNLconsonant == "bb") || (TNLconsonant == "ss") || (TNLconsonant == "jj")) { vcLength = totalDuration / 2; }
+                        if ((TNLconsonant == "r") || (TNLconsonant == "g") || (TNLconsonant == "d") || (TNLconsonant == "n")) { vcLength = 33; }
+                        else if (TNLconsonant == "h") {
+                            vcLength = 15;
+                        }
+                        else if ((TNLconsonant == "ch") || (TNLconsonant == "gg")) { vcLength = totalDuration / 2; }
+                        else if ((TNLconsonant == "k") || (TNLconsonant == "t") || (TNLconsonant == "p")  || (TNLconsonant == "dd") || (TNLconsonant == "bb") || (TNLconsonant == "ss") || (TNLconsonant == "jj")) { vcLength = totalDuration / 3; }
                         vcLength = Math.Min(totalDuration / 2, vcLength);
 
                         if (singer.TryGetMappedOto(CV, note.tone + attr0.toneShift, attr0.voiceColor, out var oto1) && singer.TryGetMappedOto(VC, note.tone + attr0.toneShift, attr0.voiceColor, out var oto2)) {
@@ -604,59 +679,40 @@ namespace OpenUtau.Plugin.Builtin {
                                 },
                             };
                         }
-                    } else if (VC != "" && TNLconsonant == "") {
-                        int totalDuration = notes.Sum(n => n.duration);
-                        int vcLength = 60;
-                        var nextAttr = nextNeighbour.Value.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
-                        var nextUnicode = ToUnicodeElements(nextNeighbour?.lyric);
-                        var nextLyric = string.Join("", nextUnicode);
-                        if (singer.TryGetMappedOto(nextLyric, nextNeighbour.Value.tone + nextAttr.toneShift, nextAttr.voiceColor, out var oto0)) {
-                            vcLength = MsToTick(oto0.Preutter);
-                            
-                        }
-                        vcLength = Math.Min(totalDuration / 2, vcLength);
-
-                        if (singer.TryGetMappedOto(CV, note.tone + attr0.toneShift, attr0.voiceColor, out var oto1) && singer.TryGetMappedOto(VC, note.tone + attr0.toneShift, attr0.voiceColor, out var oto2)) {
-                            CV = oto1.Alias;
-                            VC = oto2.Alias;
-                            return new Result {
-                                phonemes = new Phoneme[] {
-                                    new Phoneme() {
-                                        phoneme = CV,
-                                    },
-                                    new Phoneme() {
-                                        phoneme = VC,
-                                        position = totalDuration - vcLength,
-                                    }
-                                },
-                            };
-                        }
+                        
                     }
-                    // 그 외(받침 없는 마지막 노트)
-                    if (singer.TryGetMappedOto(CV, note.tone + attr0.toneShift, attr0.voiceColor, out var oto)) {
+                }
+
+
+                // 그 외(받침 없는 마지막 노트)
+                if (singer.TryGetMappedOto(CV, note.tone + attr0.toneShift, attr0.voiceColor, out var oto)){
                         CV = oto.Alias;
                         return new Result {
                             phonemes = new Phoneme[] {
-                            new Phoneme() {
-                                phoneme = CV,
-                                }
-                            },
-                        };
-                    }
+                                new Phoneme() {
+                                    phoneme = CV,
+                            }
+                        },
+                    };
                 }
             }
 
             if (prevHangeul) {
-                string endBreath = "R";
+                string endBreath = "-";
 
                 if (prevExist && TPLfinal == "" && endBreath.Contains(currentLyric)) {
-                    endBreath = $"{TPLplainvowel} R";
+                    endBreath = $"{TPLplainvowel} -";
+                    prevIsBreath = true; // to prevent this→→ case→→, for example... "[사, -, 사 (=notes)]" should be "[- sa,  a -, - sa(=phonemes)]", but it becomes [sa, a -, 사(=phonemes)] in phonemizer, so '사' note becomes *no sound.
+                }
+                else if (prevExist && TPLfinal != "" && endBreath.Contains(currentLyric)) {
+                    endBreath = $"{TPLplainfinal} -";
+                    prevIsBreath = true; // to prevent this→→ case→→, for example... "[사, -, 사 (=notes)]" should be "[- sa,  a -, - sa(=phonemes)]", but it becomes [sa, a -, 사(=phonemes)] in phonemizer, so '사' note becomes *no sound.
                 }
 
                 if (singer.TryGetMappedOto(endBreath, note.tone + attr0.toneShift, attr0.voiceColor, out var oto)){
-                    endBreath = oto.Alias;
-                    return new Result {
-                        phonemes = new Phoneme[] {
+                        endBreath = oto.Alias;
+                        return new Result {
+                            phonemes = new Phoneme[] {
                             new Phoneme() {
                                 phoneme = endBreath,
                             }
@@ -667,9 +723,9 @@ namespace OpenUtau.Plugin.Builtin {
 
 
 
+
             // ======================================================================================
-
-
+/**
             if (prevNeighbour == null) {
                 // Use "- V" or "- CV" if present in voicebank
                 var initial = $"- {currentLyric}";
@@ -678,63 +734,25 @@ namespace OpenUtau.Plugin.Builtin {
                 if (checkOtoUntilHit(tests, note, out var oto)){
                     currentLyric = oto.Alias;
                 }
-            } else if (plainVowels.Contains(currentLyric) || plainDiphthongs.Contains(currentLyric)) {
+            } else if ("-".Contains(currentLyric)) {
                 var prevUnicode = ToUnicodeElements(prevNeighbour?.lyric);
-                var vowel = "";
-
-                var prevLyric = string.Join("", prevUnicode);
-                // Current note is VV
-                if (vowelLookup.TryGetValue(prevUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
-                    vowel = vow;
-
-                    var vowLyric = $"{vow} {currentLyric}";
-
-                    if (prevLyric.EndsWith("eo")) {
-                        vowLyric = $"eo {currentLyric}";
-                    } else if (prevLyric.EndsWith("eu")) {
-                        vowLyric = $"eu {currentLyric}";
-                    } else if (prevLyric.EndsWith("er")) {
-                        vowLyric = $"er {currentLyric}";
-                    }
-
-                    // try vowlyric then currentlyric
-                    string[] tests = new string[] { vowLyric, currentLyric };
-                    if (checkOtoUntilHit(tests, note, out var oto)) {
-                        currentLyric = oto.Alias;
-                    }
-                } else if (prevExist && prevHangeul && TPLfinal == "") {
-                    var vowLyric = $"{TPLplainvowel} {currentLyric}";
-
-                    string[] tests = new string[] { vowLyric, currentLyric };
-                    if (checkOtoUntilHit(tests, note, out var oto)) {
-                        currentLyric = oto.Alias;
-                    }
-                } else if (prevExist && prevHangeul && TPLfinal == "ng") {
-                    string[] tests = new string[] { $"ng{currentLyric}", currentLyric };
-                    if (checkOtoUntilHit(tests, note, out var oto)) {
-                        currentLyric = oto.Alias;
-                    }
-                }
-            } else if ("R".Contains(currentLyric)) {
-                var prevUnicode = ToUnicodeElements(prevNeighbour?.lyric);
+                prevIsBreath = true;
                 // end breath note
                 if (vowelLookup.TryGetValue(prevUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
                     var vowel = "";
-                    var prevLyric = string.Join("", prevUnicode);
+                    var prevLyric = string.Join("", prevUnicode);;   
                     vowel = vow;
-
-                    var endBreath = $"{vow} R";
+                    
+                    var endBreath = $"{vow} -";
                     if (prevLyric.EndsWith("eo")) {
-                        endBreath = $"eo R";
+                        endBreath = $"eo -";
                     } else if (prevLyric.EndsWith("eu")) {
-                        endBreath = $"eu R";
-                    } else if (prevLyric.EndsWith("er")) {
-                        endBreath = $"er R";
+                        endBreath = $"eu -";
                     }
-
+                                        
                     // try end breath
                     string[] tests = new string[] {endBreath, currentLyric};
-                    if (checkOtoUntilHit(tests, note, out var oto)) {
+                    if (checkOtoUntilHit(tests, note, out var oto)){ 
                         currentLyric = oto.Alias;
                     }
                 }
@@ -744,7 +762,7 @@ namespace OpenUtau.Plugin.Builtin {
                     currentLyric = oto.Alias;
                 }
             }
-
+**/
             if (nextNeighbour != null) { // 다음에 노트가 있으면
                 var nextUnicode = ToUnicodeElements(nextNeighbour?.lyric);
                 var nextLyric = string.Join("", nextUnicode);
@@ -766,11 +784,8 @@ namespace OpenUtau.Plugin.Builtin {
 
                 if (vowelLookup.TryGetValue(currentUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
                     vowel = vow;
-                    if (currentLyric.Contains(TCLplainvowel)) {
-                        vow = TCLplainvowel;
-                    }
 
-                    if (currentLyric.Contains("e") && !currentLyric.Contains("eui")) {
+                    if (currentLyric.Contains("e")) {
                         vowel = "e" + vowel;
                         vowel = vowel.Replace("ee", "e");
                     }
@@ -780,9 +795,7 @@ namespace OpenUtau.Plugin.Builtin {
                 var consonant = "";
                 if (consonantLookup.TryGetValue(nextUnicode.FirstOrDefault() ?? string.Empty, out var con)) {
                     consonant = getConsonant(nextNeighbour?.lyric); //로마자만 가능
-                    if ((!isAlphaCon(consonant))) { consonant = con; }
-                } else if (nextExist && nextHangeul) {
-                    consonant = TNLconsonant;
+                    if (!(isAlphaCon(consonant))) { consonant = con; }
                 }
 
                 if (consonant == "") {
@@ -814,11 +827,10 @@ namespace OpenUtau.Plugin.Builtin {
                 var nextAttr = nextNeighbour.Value.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
                 if (singer.TryGetMappedOto(nextLyric, nextNeighbour.Value.tone + nextAttr.toneShift, nextAttr.voiceColor, out var oto)) {
                     vcLength = MsToTick(oto.Preutter);
-                } else if ((TNLconsonant == "r") || (TNLconsonant == "h")) { vcLength = 30; }
-                else if (TNLconsonant == "s") { vcLength = totalDuration / 3; }
-                else if ((TNLconsonant == "k") || (TNLconsonant == "t") || (TNLconsonant == "p") || (TNLconsonant == "ch")) { vcLength = totalDuration / 2; }
-                else if ((TNLconsonant == "gg") || (TNLconsonant == "dd") || (TNLconsonant == "bb") || (TNLconsonant == "ss") || (TNLconsonant == "jj")) { vcLength = totalDuration / 2; }
-                vcLength = Math.Min(totalDuration / 2, vcLength);           
+                }
+                vcLength = Math.Min(totalDuration / 2, vcLength);
+
+
 
                 return new Result {
                     phonemes = new Phoneme[] {

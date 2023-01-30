@@ -112,9 +112,9 @@ namespace OpenUtau.Core {
 
         readonly Deque<UCommandGroup> undoQueue = new Deque<UCommandGroup>();
         readonly Deque<UCommandGroup> redoQueue = new Deque<UCommandGroup>();
-        UCommandGroup undoGroup = null;
-        UCommandGroup savedPoint = null;
-        UCommandGroup autosavedPoint = null;
+        UCommandGroup? undoGroup = null;
+        UCommandGroup? savedPoint = null;
+        UCommandGroup? autosavedPoint = null;
 
         public bool ChangesSaved {
             get {
@@ -126,7 +126,11 @@ namespace OpenUtau.Core {
 
         private void CrashSave() {
             try {
-                bool untitled = Project == null || string.IsNullOrEmpty(Project.FilePath);
+                if (Project == null) {
+                    Log.Warning("Crash save project is null.");
+                    return;
+                }
+                bool untitled = string.IsNullOrEmpty(Project.FilePath);
                 if (untitled) {
                     Directory.CreateDirectory(PathManager.Inst.BackupsPath);
                 }
@@ -175,15 +179,14 @@ namespace OpenUtau.Core {
                 return;
             }
             if (cmd is UNotification) {
-                if (cmd is SaveProjectNotification) {
-                    var _cmd = cmd as SaveProjectNotification;
+                if (cmd is SaveProjectNotification saveProjectNotif) {
                     if (undoQueue.Count > 0) {
                         savedPoint = undoQueue.Last();
                     }
-                    if (string.IsNullOrEmpty(_cmd.Path)) {
+                    if (string.IsNullOrEmpty(saveProjectNotif.Path)) {
                         Format.Ustx.Save(Project.FilePath, Project);
                     } else {
-                        Format.Ustx.Save(_cmd.Path, Project);
+                        Format.Ustx.Save(saveProjectNotif.Path, Project);
                     }
                 } else if (cmd is LoadProjectNotification notification) {
                     undoQueue.Clear();
@@ -193,9 +196,8 @@ namespace OpenUtau.Core {
                     autosavedPoint = null;
                     Project = notification.project;
                     playPosTick = 0;
-                } else if (cmd is SetPlayPosTickNotification) {
-                    var _cmd = cmd as SetPlayPosTickNotification;
-                    playPosTick = _cmd.playPosTick;
+                } else if (cmd is SetPlayPosTickNotification setPlayPosTickNotif) {
+                    playPosTick = setPlayPosTickNotif.playPosTick;
                 } else if (cmd is SingersChangedNotification) {
                     SingerManager.Inst.SearchAllSingers();
                 } else if (cmd is ValidateProjectNotification) {

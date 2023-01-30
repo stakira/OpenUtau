@@ -9,6 +9,7 @@ using OpenUtau.Core;
 using OpenUtau.Core.Format;
 using OpenUtau.Core.Render;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 using Serilog;
 
 namespace OpenUtau.Classic {
@@ -60,7 +61,7 @@ namespace OpenUtau.Classic {
             }
             var task = Task.Run(() => {
                 Parallel.ForEach(source: resamplerItems, parallelOptions: new ParallelOptions() {
-                    MaxDegreeOfParallelism = 2
+                    MaxDegreeOfParallelism = Preferences.Default.NumRenderThreads
                 }, body: item => {
                     if (!cancellation.IsCancellationRequested && !File.Exists(item.outputFile)) {
                         if (!(item.resampler is WorldlineResampler)) {

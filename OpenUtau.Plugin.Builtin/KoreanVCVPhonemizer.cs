@@ -37,7 +37,7 @@ namespace OpenUtau.Plugin.Builtin
 		/// <summary>
 		/// Extra English-based sounds for phonetic hint input + alternate romanizations for tense plosives (ㄲ, ㄸ, ㅃ)
 		/// </summary>
-		static readonly string[] extras = { "f", "v", "th", "dh", "z", "kk", "pp", "tt" };
+		static readonly string[] extras = { "f", "v", "th", "dh", "z", "rr", "kk", "pp", "tt" };
 
 		/// <summary>
 		/// Gets the romanized initial, medial, and final components of the passed Hangul syllable.
@@ -206,10 +206,10 @@ namespace OpenUtau.Plugin.Builtin
 			}
 
 			// Adjust current phoneme based on previous neighbor
-			if (prevNeighbour != null && singer.TryGetMappedOto(prevNeighbour?.lyric, note.tone + shift, color, out _)) currPhoneme = $"{GetLastSoundOfAlias(prevNeighbour?.lyric)} {currPhoneme}";
+			if (prevNeighbour != null && prevNeighbour?.lyric != "bre" && singer.TryGetMappedOto(prevNeighbour?.lyric, note.tone + shift, color, out _)) currPhoneme = $"{GetLastSoundOfAlias(prevNeighbour?.lyric)} {currPhoneme}";
 			else
 			{
-				if (prevNeighbour == null || prevNeighbour?.lyric == "R" || prevNeighbour?.lyric == "-" || prevNeighbour?.lyric == "H" || prevNeighbour?.lyric == "B") currPhoneme = $"- {currPhoneme}";
+				if (prevNeighbour == null || prevNeighbour?.lyric == "R" || prevNeighbour?.lyric == "-" || prevNeighbour?.lyric == "H" || prevNeighbour?.lyric == "B" || prevNeighbour?.lyric == "bre") currPhoneme = $"- {currPhoneme}";
 				else
 				{
 					if (string.IsNullOrEmpty(prevNeighbour?.phoneticHint))

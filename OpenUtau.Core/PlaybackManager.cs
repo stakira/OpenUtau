@@ -145,6 +145,25 @@ namespace OpenUtau.Core {
             return (db <= -24) ? 0 : (float)MusicMath.DecibelToLinear((db < -16) ? db * 2 + 16 : db);
         }
 
+        public void RenderMixdown(UProject project, string exportPath) {
+            Task.Run(() => {
+                var task = Task.Run(() => {
+                    RenderEngine engine = new RenderEngine(project);
+                    var projectMix = engine.RenderMixdown(0,DocManager.Inst.MainScheduler, ref renderCancellation,wait:true).Item1;
+                    DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exporting to {exportPath}."));
+                    WaveFileWriter.CreateWaveFile16(exportPath, new ExportAdapter(projectMix).ToMono(1, 0));
+                    DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exported to {exportPath}."));
+                });
+                try {
+                    task.Wait();
+                } catch (AggregateException ae) {
+                    foreach (var e in ae.Flatten().InnerExceptions) {
+                        Log.Error(e, "Failed to render.");
+                    }
+                }
+            });
+        }
+
         public void RenderToFiles(UProject project, string exportPath) {
             Task.Run(() => {
                 var task = Task.Run(() => {

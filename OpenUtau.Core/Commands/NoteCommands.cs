@@ -6,7 +6,7 @@ using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core {
     public abstract class NoteCommand : UCommand {
-        protected readonly UNote[] Notes;
+        public readonly UNote[] Notes;
         public readonly UVoicePart Part;
         public override ValidateOptions ValidateOptions => new ValidateOptions {
             SkipTiming = true,

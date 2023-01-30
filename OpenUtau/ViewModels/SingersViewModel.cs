@@ -4,9 +4,13 @@ using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Media.Imaging;
 using DynamicData.Binding;
+using NAudio.Wave;
+using NWaves.Audio;
+using NWaves.Signals;
 using OpenUtau.Classic;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
@@ -24,6 +28,7 @@ namespace OpenUtau.App.ViewModels {
         public bool IsClassic => Singer != null && Singer.SingerType == USingerType.Classic;
         public ObservableCollectionExtended<USubbank> Subbanks => subbanks;
         public ObservableCollectionExtended<UOto> Otos => otos;
+        [Reactive] public bool ZoomInMel { get; set; }
         [Reactive] public UOto? SelectedOto { get; set; }
         [Reactive] public int SelectedIndex { get; set; }
         public List<MenuItemViewModel> SetEncodingMenuItems => setEncodingMenuItems;
@@ -324,6 +329,72 @@ namespace OpenUtau.App.ViewModels {
                     SelectedOto = oto;
                 }
             }
+        }
+
+        public Task RegenFrq(string[] files, string? method, Action<int> progress) {
+            return Task.Run(() => {
+                double stepMs = Frq.kHopSize * 1000.0 / 44100;
+                int count = 0;
+                if (method == "crepe") {
+                    Parallel.For(0, files.Length, new ParallelOptions {
+                        MaxDegreeOfParallelism = Environment.ProcessorCount / 2
+                    },
+                    () => new Core.Analysis.Crepe.Crepe(),
+                    (i, loop, crepe) => {
+                        string file = files[i];
+                        if (!File.Exists(file)) {
+                            throw new FileNotFoundException(string.Format("File {0} missing!", file));
+                        }
+                        string frqFile = VoicebankFiles.GetFrqFile(file);
+                        DiscreteSignal? signal = null;
+                        using (var waveStream = Core.Format.Wave.OpenFile(file)) {
+                            signal = Core.Format.Wave.GetSignal(waveStream.ToSampleProvider().ToMono(1, 0));
+                        }
+                        if (signal != null) {
+                            var frq = Frq.Build(signal.Samples, crepe.ComputeF0(signal, stepMs));
+                            using (var stream = File.OpenWrite(frqFile)) {
+                                frq.Save(stream);
+                            }
+                        }
+                        progress.Invoke(Interlocked.Increment(ref count));
+                        return crepe;
+                    },
+                    crepe => crepe.Dispose());
+                } else {
+                    Parallel.ForEach(files, parallelOptions: new ParallelOptions {
+                        MaxDegreeOfParallelism = Environment.ProcessorCount / 2
+                    }, body: file => {
+                        if (!File.Exists(file)) {
+                            throw new FileNotFoundException(string.Format("File {0} missing!", file));
+                        }
+                        string frqFile = VoicebankFiles.GetFrqFile(file);
+                        float[]? samples;
+                        using (var waveStream = Core.Format.Wave.OpenFile(file)) {
+                            samples = Core.Format.Wave.GetSamples(waveStream.ToSampleProvider().ToMono(1, 0));
+                        }
+                        if (samples != null) {
+                            int f0Method;
+                            switch (method) {
+                                case "dioss":
+                                    f0Method = 1;
+                                    break;
+                                case "pyin":
+                                    f0Method = 2;
+                                    break;
+                                default:
+                                    f0Method = 0;
+                                    break;
+                            }
+                            var f0 = Core.Render.Worldline.F0(samples, 44100, stepMs, f0Method);
+                            var frq = Frq.Build(samples, f0);
+                            using (var stream = File.OpenWrite(frqFile)) {
+                                frq.Save(stream);
+                            }
+                        }
+                        progress.Invoke(Interlocked.Increment(ref count));
+                    });
+                }
+            });
         }
     }
 }

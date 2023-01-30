@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
 
 namespace OpenUtau.App.Views {
     public partial class MessageBox : Window {
@@ -20,6 +21,12 @@ namespace OpenUtau.App.Views {
 
         private void InitializeComponent() {
             AvaloniaXamlLoader.Load(this);
+        }
+
+        public void SetText(string text) {
+            Dispatcher.UIThread.Post(() => {
+                this.FindControl<TextBlock>("Text").Text = text;
+            });
         }
 
         public static Task<MessageBoxResult> ShowError(Window parent, Exception e) {
@@ -86,6 +93,15 @@ namespace OpenUtau.App.Views {
                 msgbox.ShowDialog(parent);
             else msgbox.Show();
             return tcs.Task;
+        }
+
+        public static MessageBox ShowModal(Window parent, string text, string title) {
+            var msgbox = new MessageBox() {
+                Title = title
+            };
+            msgbox.FindControl<TextBlock>("Text").Text = text;
+            msgbox.ShowDialog(parent);
+            return msgbox;
         }
     }
 }

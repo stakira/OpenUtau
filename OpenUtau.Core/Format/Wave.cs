@@ -7,6 +7,7 @@ using NAudio.Vorbis;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using NLayer.NAudioSupport;
+using NWaves.Signals;
 
 namespace OpenUtau.Core.Format {
     public static class Wave {
@@ -70,6 +71,16 @@ namespace OpenUtau.Core.Format {
                 samples.AddRange(buffer.Take(n));
             }
             return samples.ToArray();
+        }
+
+        public static DiscreteSignal GetSignal(ISampleProvider sampleProvider) {
+            List<float> samples = new List<float>();
+            float[] buffer = new float[sampleProvider.WaveFormat.SampleRate];
+            int n;
+            while ((n = sampleProvider.Read(buffer, 0, buffer.Length)) > 0) {
+                samples.AddRange(buffer.Take(n));
+            }
+            return new DiscreteSignal(sampleProvider.WaveFormat.SampleRate, samples.ToArray());
         }
 
         public static float[] BuildPeaks(WaveStream stream, IProgress<int> progress) {
