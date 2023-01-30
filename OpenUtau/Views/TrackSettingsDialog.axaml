@@ -5,7 +5,7 @@
         mc:Ignorable="d"
         x:Class="OpenUtau.App.Views.TrackSettingsDialog"
         Title="{DynamicResource dialogs.tracksettings.caption}"
-        Height="184" Width="320" WindowStartupLocation="CenterOwner"
+        Height="100" Width="200" WindowStartupLocation="CenterOwner"
         ExtendClientAreaToDecorationsHint="False" CanResize="False">
   <Border Margin="{Binding $parent.WindowDecorationMargin}">
     <StackPanel Margin="8">

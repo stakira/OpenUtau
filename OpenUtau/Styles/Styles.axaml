@@ -14,12 +14,14 @@
   </Style>
   <Style Selector="Menu">
     <Setter Property="Height" Value="24"/>
+    <Setter Property="CornerRadius" Value="4"/>
   </Style>
   <Style Selector="MenuItem">
     <Setter Property="Background" Value="Transparent"/>
     <Setter Property="FontSize" Value="12"/>
     <Setter Property="Height" Value="24"/>
     <Setter Property="Padding" Value="8,2,8,2"/>
+      <Setter Property="CornerRadius" Value="4"/>
   </Style>
   <Style Selector="MenuItem /template/ Path#PART_ChevronPath">
     <Setter Property="RenderTransform" Value="Scale(0.75,0.75)"/>
@@ -57,25 +59,27 @@
     <Setter Property="FontSize" Value="12"/>
   </Style>
   <Style Selector="TextBox">
-    <Setter Property="MinHeight" Value="20"/>
-    <Setter Property="Height" Value="20"/>
+    <Setter Property="MinHeight" Value="24"/>
+    <Setter Property="Height" Value="24"/>
     <Setter Property="Padding" Value="4,1"/>
     <Setter Property="Margin" Value="0,0,0,4"/>
     <Setter Property="FontSize" Value="12"/>
     <Setter Property="FontFamily" Value="{DynamicResource ui.textbox.fontfamily}"/>
     <Setter Property="VerticalAlignment" Value="Top"/>
     <Setter Property="SelectionForegroundBrush" Value="White"/>
+    <Setter Property="CornerRadius" Value="4"/>
   </Style>
   <Style Selector="TextBox:disabled">
     <Setter Property="Foreground" Value="{DynamicResource TextControlForegroundDisabled}" />
   </Style>
 
   <Style Selector="Button">
-    <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="BorderThickness" Value="1"/>
     <Setter Property="FontSize" Value="12"/>
-    <Setter Property="Height" Value="20"/>
+    <Setter Property="Height" Value="24"/>
     <Setter Property="Margin" Value="0,4"/>
     <Setter Property="Padding" Value="4,0,4,2"/>
+    <Setter Property="CornerRadius" Value="4"/>
     <Setter Property="HorizontalContentAlignment" Value="Center"/>
     <Setter Property="VerticalContentAlignment" Value="Center"/>
   </Style>
@@ -85,7 +89,7 @@
   <Style Selector="Button.clear">
     <Setter Property="BorderThickness" Value="0"/>
     <Setter Property="FontSize" Value="12"/>
-    <Setter Property="Height" Value="20"/>
+    <Setter Property="Height" Value="24"/>
     <Setter Property="Margin" Value="0,4"/>
     <Setter Property="Padding" Value="4,0,4,2"/>
     <Setter Property="Background" Value="Transparent"/>
@@ -99,11 +103,12 @@
   <Style Selector="ToggleButton">
     <Setter Property="BorderThickness" Value="0"/>
     <Setter Property="FontSize" Value="12"/>
-    <Setter Property="Height" Value="20"/>
+    <Setter Property="Height" Value="24"/>
     <Setter Property="Margin" Value="0,4"/>
     <Setter Property="Padding" Value="4,0,4,2"/>
     <Setter Property="HorizontalContentAlignment" Value="Center"/>
     <Setter Property="VerticalContentAlignment" Value="Center"/>
+      <Setter Property="CornerRadius" Value="4"/>
     <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAltHighBrush}" />
   </Style>
   <Style Selector="ToggleButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
@@ -136,7 +141,7 @@
   <Style Selector="ToggleButton.toolbar">
     <Setter Property="BorderThickness" Value="0"/>
     <Setter Property="FontSize" Value="12"/>
-    <Setter Property="Height" Value="20"/>
+    <Setter Property="Height" Value="24"/>
     <Setter Property="Margin" Value="0,4"/>
     <Setter Property="Padding" Value="4,0,4,2"/>
     <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -145,25 +150,29 @@
 
   <Style Selector="ToggleSwitch /template/ Border#SwitchKnobBounds">
     <Setter Property="Background" Value="{DynamicResource AccentBrush1}"/>
+      <Setter Property="CornerRadius" Value="4"/>
   </Style>
 
   <Style Selector="ComboBox">
     <Setter Property="FontSize" Value="12"/>
-    <Setter Property="Height" Value="20"/>
+    <Setter Property="Height" Value="24"/>
     <Setter Property="Margin" Value="0,4"/>
     <Setter Property="Padding" Value="4,0,0,2"/>
+    <Setter Property="CornerRadius" Value="4"/>
   </Style>
   <Style Selector="ComboBoxItem">
     <Setter Property="FontSize" Value="12"/>
-    <Setter Property="Height" Value="20"/>
+    <Setter Property="Height" Value="24"/>
     <Setter Property="Margin" Value="0"/>
     <Setter Property="Padding" Value="4,2,0,0"/>
+    <Setter Property="CornerRadius" Value="4"/>
   </Style>
   <Style Selector="ComboBox /template/ Path#DropDownGlyph">
     <Setter Property="Fill" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
   </Style>
 
   <Style Selector="ListBoxItem">
+    <Setter Property="CornerRadius" Value="4"/>
     <Setter Property="MinHeight" Value="24"/>
     <Setter Property="Height" Value="24"/>
     <Setter Property="Padding" Value="4"/>
@@ -173,6 +182,7 @@
   <Style Selector="CheckBox">
     <Setter Property="MinHeight" Value="20" />
     <Setter Property="MinWidth" Value="20" />
+      <Setter Property="CornerRadius" Value="4"/>
   </Style>
   <Style Selector="CheckBox /template/ Grid">
     <Setter Property="Height" Value="20" />
@@ -196,6 +206,9 @@
   <Style Selector="DataGridCell > TextBox">
     <Setter Property="Margin" Value="0"/>
   </Style>
+    <Style Selector="DataGrid">
+        <Setter Property="CornerRadius" Value="4"/>
+    </Style>
 
   <Style Selector="ProgressBar">
     <Setter Property="Background" Value="Transparent"/>

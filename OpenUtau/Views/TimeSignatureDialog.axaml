@@ -5,7 +5,8 @@
         mc:Ignorable="d"
         x:Class="OpenUtau.App.Views.TimeSignatureDialog"
         Title="{DynamicResource dialogs.timesig.caption}"
-        Height="100" Width="320" WindowStartupLocation="CenterOwner"
+        Height="100" Width="300" WindowStartupLocation="CenterOwner"
+        Icon="/Assets/open-utau.ico"
         ExtendClientAreaToDecorationsHint="False">
   <StackPanel VerticalAlignment="Center" Margin="{Binding $parent.WindowDecorationMargin}">
     <Grid ColumnDefinitions="1*,1*" Margin="4,0">

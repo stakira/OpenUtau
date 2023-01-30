@@ -156,11 +156,11 @@
       </c:NotesCanvas>
       <StackPanel Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top"
                   Margin="12,12,0,0" Orientation="Horizontal">
-        <Border CornerRadius="2" BoxShadow="0 0 5 1 #1F000000"
+        <Border CornerRadius="4" BoxShadow="0 0 5 1 #1F000000"
                 Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
-          <Border CornerRadius="2" ClipToBounds="True">
+          <Border CornerRadius="4" ClipToBounds="True">
             <StackPanel Orientation="Horizontal">
-              <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="20" Width="20" CornerRadius="2,0,0,2"
+              <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="24" Width="24" CornerRadius="4"
                             IsChecked="{Binding NotesViewModel.CursorTool, Mode=OneWay}"
                             Command="{Binding NotesViewModel.SelectToolCommand}" CommandParameter="1"
                             ToolTip.Tip="{DynamicResource pianoroll.tool.selectionv2}">
@@ -175,7 +175,7 @@
                   </Path>
                 </Grid>
               </ToggleButton>
-              <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="20" Width="20"
+              <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="24" Width="24"
                             IsChecked="{Binding NotesViewModel.PenTool, Mode=OneWay}"
                             Command="{Binding NotesViewModel.SelectToolCommand}" CommandParameter="2"
                             ToolTip.Tip="{DynamicResource pianoroll.tool.penv2}">
@@ -190,7 +190,7 @@
                   </Path>
                 </Grid>
               </ToggleButton>
-              <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="20" Width="20"
+              <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="24" Width="24"
                             IsChecked="{Binding NotesViewModel.PenPlusTool, Mode=OneWay}"
                             Command="{Binding NotesViewModel.SelectToolCommand}" CommandParameter="2+"
                             ToolTip.Tip="{DynamicResource pianoroll.tool.penplus}">
@@ -205,7 +205,7 @@
                   </Path>
                 </Grid>
               </ToggleButton>
-              <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="20" Width="20"
+              <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="24" Width="24"
                             IsChecked="{Binding NotesViewModel.EraserTool, Mode=OneWay}"
                             Command="{Binding NotesViewModel.SelectToolCommand}" CommandParameter="3"
                             ToolTip.Tip="{DynamicResource pianoroll.tool.eraser}">
@@ -220,7 +220,7 @@
                   </Path>
                 </Grid>
               </ToggleButton>
-              <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="20" Width="20"
+              <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="24" Width="24"
                             IsChecked="{Binding NotesViewModel.DrawPitchTool, Mode=OneWay}"
                             Command="{Binding NotesViewModel.SelectToolCommand}" CommandParameter="4"
                             ToolTip.Tip="{DynamicResource pianoroll.tool.drawpitch}">
@@ -235,7 +235,7 @@
                   </Path>
                 </Grid>
               </ToggleButton>
-              <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="20" Width="20"
+              <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="24" Width="24"
                             IsChecked="{Binding NotesViewModel.KnifeTool, Mode=OneWay}"
                             Command="{Binding NotesViewModel.SelectToolCommand}" CommandParameter="5"
                             ToolTip.Tip="{DynamicResource pianoroll.tool.knife}">
@@ -253,19 +253,19 @@
             </StackPanel>
           </Border>
         </Border>
-        <Border Width="12" Height="20"/>
-        <Border CornerRadius="2" BoxShadow="0 0 5 1 #1F000000"
+        <Border Width="12" Height="24"/>
+        <Border CornerRadius="4" BoxShadow="0 0 5 1 #1F000000"
                 Background="{DynamicResource SystemControlBackgroundAltHighBrush}">
-          <Border CornerRadius="2" ClipToBounds="True">
+          <Border CornerRadius="4" ClipToBounds="True">
             <StackPanel Orientation="Horizontal">
-              <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="20" Width="20" CornerRadius="2,0,0,2" IsChecked="{Binding NotesViewModel.ShowTips}"
+              <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="24" Width="24" CornerRadius="4" IsChecked="{Binding NotesViewModel.ShowTips}"
                             ToolTip.Tip="{DynamicResource pianoroll.toggle.tips}">
                 <Grid Width="18" Height="18">
                   <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="?" FontWeight="Bold"
                              Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
                 </Grid>
               </ToggleButton>
-              <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="20" Width="20" IsChecked="{Binding NotesViewModel.PlayTone}"
+              <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="24" Width="24" IsChecked="{Binding NotesViewModel.PlayTone}"
                             ToolTip.Tip="{DynamicResource pianoroll.toggle.tone}">
                 <Grid Width="18" Height="18">
                   <Path Classes="filled" Data="M21,3V15.5A3.5,3.5 0 0,1 17.5,19A3.5,3.5 0 0,1 14,15.5A3.5,3.5 0 0,1 17.5,12C18.04,12 18.55,12.12 19,12.34V6.47L9,8.6V17.5A3.5,3.5 0 0,1 5.5,21A3.5,3.5 0 0,1 2,17.5A3.5,3.5 0 0,1 5.5,14C6.04,14 6.55,14.12 7,14.34V6L21,3Z" >
@@ -278,7 +278,7 @@
                   </Path>
                 </Grid>
               </ToggleButton>
-              <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="20" Width="20" IsChecked="{Binding NotesViewModel.ShowVibrato}"
+              <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="24" Width="24" IsChecked="{Binding NotesViewModel.ShowVibrato}"
                             ToolTip.Tip="{DynamicResource pianoroll.toggle.vibrato}">
                 <Grid Width="18" Height="18">
                   <Path Classes="stroked" Data="M-6.5 1 L-6 1.5 L-4.5 0 L-2 2.5 L0.5 0 L3 2.5 L6.5 -1 L6 -1.5 L4.5 0 L2 -2.5 L-0.5 0 L-3 -2.5 Z">
@@ -288,7 +288,7 @@
                   </Path>
                 </Grid>
               </ToggleButton>
-              <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="20" Width="20" IsChecked="{Binding NotesViewModel.ShowPitch}"
+              <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="24" Width="24" IsChecked="{Binding NotesViewModel.ShowPitch}"
                             ToolTip.Tip="{DynamicResource pianoroll.toggle.pitch}">
                 <Grid Width="18" Height="18">
                   <Ellipse Classes="stroked" Height="4" Width="4" Margin="2,0,0,5" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
@@ -296,13 +296,13 @@
                   <Path Classes="stroked" Data="M 6.5 11.5 L 8 11.5 L 8.5 11 L 9.5 7 L 10 6.5 L 11.5 6.5"/>
                 </Grid>
               </ToggleButton>
-              <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="20" Width="20" IsChecked="{Binding NotesViewModel.ShowFinalPitch}"
+              <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="24" Width="24" IsChecked="{Binding NotesViewModel.ShowFinalPitch}"
                             ToolTip.Tip="{DynamicResource pianoroll.toggle.finalpitch}">
                 <Grid Width="18" Height="18">
                   <Path Classes="stroked" Data="M 5.5 11.5 L 8 11.5 L 8.5 11 L 9.5 7 L 10 6.5 L 12.5 6.5"/>
                 </Grid>
               </ToggleButton>
-              <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="20" Width="20" IsChecked="{Binding NotesViewModel.ShowWaveform}"
+              <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="24" Width="24" IsChecked="{Binding NotesViewModel.ShowWaveform}"
                             ToolTip.Tip="{DynamicResource pianoroll.toggle.waveform}">
                 <Grid Width="18" Height="18">
                   <Path Classes="filled" Data="M22 12L20 13L19 14L18 13L17 16L16 13L15 21L14 13L13 15L12 13L11 17L10 13L9 22L8 13L7 19L6 13L5 14L4 13L2 12L4 11L5 10L6 11L7 5L8 11L9 2L10 11L11 7L12 11L13 9L14 11L15 3L16 11L17 8L18 11L19 10L20 11L22 12Z">
@@ -315,21 +315,21 @@
                   </Path>
                 </Grid>
               </ToggleButton>
-              <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="20" Width="20" IsChecked="{Binding NotesViewModel.ShowPhoneme}"
+              <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="24" Width="24" IsChecked="{Binding NotesViewModel.ShowPhoneme}"
                             ToolTip.Tip="{DynamicResource pianoroll.toggle.phoneme}">
                 <Grid Width="18" Height="18">
                   <Path Classes="stroked" Data="M 3 13 L 6 5.5 L 12 5.5 L 15 13"/>
                 </Grid>
               </ToggleButton>
-              <ToggleButton Name="SnapToggle" Classes="toolbar" Margin="0" Padding="1" Height="20" IsChecked="{Binding NotesViewModel.IsSnapOn}"
+              <ToggleButton Name="SnapToggle" Classes="toolbar" Margin="0" Padding="1" Height="24" Width="24" IsChecked="{Binding NotesViewModel.IsSnapOn}"
                             ToolTip.Tip="{DynamicResource pianoroll.toggle.snap}">
                 <Border Width="18" Height="18">
                   <Path Classes="stroked" Data="M 4.5 13.5 L 7.5 13.5 L 7.5 9.5 A 1,1 0 1 1 10.5,9.5 L 10.5 13.5 L 13.5 13.5 L 13.5 8.5 A 1,1 0 1 0 4.5,8.5 Z"/>
                 </Border>
               </ToggleButton>
-              <Button Margin="0" Padding="0,1" Height="20" Width="40" Background="Transparent" Click="OnSnapDivMenuButton">
+              <Button Margin="0" Padding="0,1" Height="24" Width="48" Background="Transparent" Click="OnSnapDivMenuButton">
                 <TextBlock Grid.Column="0" Text="{Binding NotesViewModel.SnapDivText}"
-                           TextAlignment="Right" FontSize="10" FontFamily="monospace"
+                           TextAlignment="Right" FontSize="12" FontFamily="monospace"
                            Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
                 <Button.ContextMenu>
                   <ContextMenu Name="SnapDivMenu" PlacementMode="Bottom" Items="{Binding NotesViewModel.SnapDivs}" KeyDown="OnSnapDivKeyDown">
@@ -344,36 +344,36 @@
             </StackPanel>
           </Border>
         </Border>
-        <Border Width="12" Height="20"/>
-        <Border CornerRadius="2" BoxShadow="0 0 5 1 #1F000000">
-          <Border CornerRadius="2" ClipToBounds="True">
-            <Menu CornerRadius="2" Height="20" Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
+        <Border Width="12" Height="24"/>
+        <Border CornerRadius="4" BoxShadow="0 0 5 1 #1F000000">
+          <Border CornerRadius="4" ClipToBounds="True">
+            <Menu CornerRadius="4" Height="24" Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
                   MenuClosed="OnMenuClosed" PointerLeave="OnMenuPointerLeave">
-              <MenuItem Height="20" Header="{DynamicResource pianoroll.menu.part}" CornerRadius="2,0,0,2">
+              <MenuItem Height="24" Header="{DynamicResource pianoroll.menu.part}" CornerRadius="4">
                 <MenuItem Header="{DynamicResource pianoroll.menu.part.legacypluginexp}" Items="{Binding LegacyPlugins}">
                   <MenuItem.DataTemplates>
                     <DataTemplate DataType="vm:MenuItemViewModel">
-                      <MenuItem Header="{Binding Header}" Command="{Binding Command}" CommandParameter="{Binding CommandParameter}"/>
+                      <MenuItem Header="{Binding Header}" Command="{Binding Command}" CornerRadius="4" CommandParameter="{Binding CommandParameter}"/>
                     </DataTemplate>
                   </MenuItem.DataTemplates>
                 </MenuItem>
               </MenuItem>
-              <MenuItem Height="20" Header="{DynamicResource pianoroll.menu.notes}" Items="{Binding NoteBatchEdits}">
+              <MenuItem Height="24" Header="{DynamicResource pianoroll.menu.notes}" CornerRadius="4" Items="{Binding NoteBatchEdits}">
                 <MenuItem.DataTemplates>
                   <DataTemplate DataType="vm:MenuItemViewModel">
-                    <MenuItem Header="{Binding Header}" Command="{Binding Command}" CommandParameter="{Binding CommandParameter}"/>
+                    <MenuItem Header="{Binding Header}" Command="{Binding Command}" CornerRadius="4" CommandParameter="{Binding CommandParameter}"/>
                   </DataTemplate>
                 </MenuItem.DataTemplates>
               </MenuItem>
-              <MenuItem Height="20" Header="{DynamicResource pianoroll.menu.lyrics}" Items="{Binding LyricBatchEdits}">
+              <MenuItem Height="24" Header="{DynamicResource pianoroll.menu.lyrics}" CornerRadius="4" Items="{Binding LyricBatchEdits}">
                 <MenuItem.DataTemplates>
                   <DataTemplate DataType="vm:MenuItemViewModel">
-                    <MenuItem Header="{Binding Header}" Command="{Binding Command}" CommandParameter="{Binding CommandParameter}"/>
+                    <MenuItem Header="{Binding Header}" Command="{Binding Command}" CornerRadius="4" CommandParameter="{Binding CommandParameter}"/>
                   </DataTemplate>
                 </MenuItem.DataTemplates>
               </MenuItem>
-              <MenuItem Height="20" Header="{DynamicResource pianoroll.menu.lyrics.edit}" Click="OnMenuEditLyrics"/>
-              <MenuItem Height="20" Header="{DynamicResource pianoroll.menu.notedefaults}" Click="OnMenuNoteDefaults"/>
+              <MenuItem Height="24" Header="{DynamicResource pianoroll.menu.lyrics.edit}" CornerRadius="4" Click="OnMenuEditLyrics"/>
+              <MenuItem Height="24" Header="{DynamicResource pianoroll.menu.notedefaults}" CornerRadius="4" Click="OnMenuNoteDefaults"/>
             </Menu>
           </Border>
         </Border>
