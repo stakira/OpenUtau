@@ -42,12 +42,16 @@ namespace OpenUtau.App.Views {
                 if (e is AggregateException ae) {
                     ae = ae.Flatten();
                     builder.AppendLine(ae.InnerExceptions.First().Message);
+#if DEBUG
                     builder.AppendLine();
                     builder.Append(ae.ToString());
+#endif
                 } else {
                     builder.AppendLine(e.Message);
+#if DEBUG
                     builder.AppendLine();
                     builder.Append(e.ToString());
+#endif
                 }
             }
             builder.AppendLine();
