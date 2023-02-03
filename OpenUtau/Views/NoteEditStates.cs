@@ -635,14 +635,14 @@ namespace OpenUtau.App.Views {
                 startValue = Math.Max(descriptor.min, Math.Min(descriptor.max, startValue));
             }
             foreach (var hit in hits) {
-                if (shiftHeld && notesVm.Selection.Count > 0 && !notesVm.Selection.Contains(hit.phoneme.Parent)) {
+                if (notesVm.Selection.Count > 0 && !notesVm.Selection.Contains(hit.phoneme.Parent)) {
                     continue;
                 }
                 var valuePoint = notesVm.TickToneToPoint(hit.note.position + hit.phoneme.position, 0);
                 double y = Lerp(p1, p2, valuePoint.X);
                 double newValue = descriptor.min + (viewMax - descriptor.min) * (1 - y / canvas.Bounds.Height);
                 newValue = Math.Max(descriptor.min, Math.Min(descriptor.max, newValue));
-                
+
                 float value = hit.phoneme.GetExpression(notesVm.Project, track, key).Item1;
                 double finalValue = shiftHeld ? startValue : newValue;
                 if ((int)finalValue == (int)value) {
@@ -690,13 +690,13 @@ namespace OpenUtau.App.Views {
                 return;
             }
             if (descriptor.type != UExpressionType.Curve) {
-                ResetPhonemeExp(pointer, point, args.KeyModifiers == KeyModifiers.Shift);
+                ResetPhonemeExp(pointer, point);
             } else {
                 ResetCurveExp(pointer, point);
             }
             valueTip.UpdateValueTip(descriptor.defaultValue.ToString());
         }
-        private void ResetPhonemeExp(IPointer pointer, Point point, bool shiftHeld) {
+        private void ResetPhonemeExp(IPointer pointer, Point point) {
             var notesVm = vm.NotesViewModel;
             var p1 = lastPoint;
             var p2 = point;
@@ -706,7 +706,7 @@ namespace OpenUtau.App.Views {
             string key = notesVm.PrimaryKey;
             var hits = notesVm.HitTest.HitTestExpRange(p1, p2);
             foreach (var hit in hits) {
-                if (shiftHeld && notesVm.Selection.Count > 0 && !notesVm.Selection.Contains(hit.phoneme.Parent)) {
+                if (notesVm.Selection.Count > 0 && !notesVm.Selection.Contains(hit.phoneme.Parent)) {
                     continue;
                 }
                 float value = hit.phoneme.GetExpression(notesVm.Project, track, key).Item1;
