@@ -6,7 +6,7 @@ using System.Collections;
 using System.IO;
 using System.Text.RegularExpressions;
 using OpenUtau.Core.EnunuOnnx.nnmnkwii.python;
-//https://github.com/r9y9/nnmnkwii/blob/master/nnmnkwii/io/hts.py
+//reference: https://github.com/r9y9/nnmnkwii/blob/master/nnmnkwii/io/hts.py
 
 namespace OpenUtau.Core.EnunuOnnx.nnmnkwii.io.hts {
     public class HTSLabel {
@@ -465,7 +465,7 @@ namespace OpenUtau.Core.EnunuOnnx.nnmnkwii.io.hts {
                     "\\(\\[A\\-Z\\]\\[b\\]\\?\\[0\\-9\\]\\+\\)",
                     "([A-Z][b]?[0-9]+)")
                     .Replace("\\(\\\\NOTE\\)", "([A-Z][b]?[0-9]+)")
-                    .Replace("\\(\\[pm\\]\\\\d\\+\\)", "([pm]\\d+)");
+                    .Replace("\\(\\[pm]\\\\d\\+\\)", "([pm]\\d+)");
             }
             return question;
         }

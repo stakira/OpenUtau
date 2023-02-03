@@ -227,8 +227,13 @@ namespace OpenUtau.Core.EnunuOnnx {
             result[18] = indexBackwards <= 0 ? "xx" : indexBackwards.ToString();
             result[19] = ((startMs + 50) / 100).ToString();//position in 100ms
             result[20] = ((startMsBackwards + 50) / 100).ToString();
-            result[56] = (prev == null)?"xx": HTS.WriteInt(prev.tone - tone);
-            result[57] = (next == null) ? "xx" : HTS.WriteInt(next.tone - tone);
+            if (this.tone > 0) {
+                result[56] = (prev == null || prev.tone <= 0) ? "p0" : HTS.WriteInt(prev.tone - tone);
+                result[57] = (next == null || next.tone <= 0) ? "p0" : HTS.WriteInt(next.tone - tone);
+            } else {
+                result[56] = "p0";
+                result[57] = "p0";
+            }
             return result;
         }
 

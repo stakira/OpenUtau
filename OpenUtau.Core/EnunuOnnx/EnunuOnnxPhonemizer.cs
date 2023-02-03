@@ -11,12 +11,10 @@ using Microsoft.ML.OnnxRuntime;
 using OpenUtau.Core.EnunuOnnx.nnmnkwii.frontend;
 using Microsoft.ML.OnnxRuntime.Tensors;
 using Serilog;
-using static OpenUtau.Api.Phonemizer;
 
 //This phonemizer is a pure C# implemention of the ENUNU phonemizer,
 //which aims at providing all ML-based synthesizer developers with a useable phonemizer,
 //This phonemizer uses onnxruntime to run ML models. No Python needed. 
-
 
 namespace OpenUtau.Core.EnunuOnnx {
     [Phonemizer("Enunu Onnx Phonemizer", "ENUNU X")]
@@ -36,11 +34,14 @@ namespace OpenUtau.Core.EnunuOnnx {
         string[] silences = new string[] { "sil" };
 
         //model and information used by model
+        InferenceSession timelagModel;
         InferenceSession? durationModel;
         Dictionary<int, Tuple<string, List<Regex>>> binaryDict = new Dictionary<int, Tuple<string, List<Regex>>>();
         Dictionary<int, Tuple<string, Regex>> numericDict = new Dictionary<int, Tuple<string, Regex>>();
+        int[] pitchIndices = new int[] { };
         Scaler durationInScaler = new Scaler();
         Scaler durationOutScaler = new Scaler();
+        Scaler timelagInScaler = new Scaler();
 
         //information used by openutau phonemizer
         protected IG2p g2p;
@@ -56,7 +57,12 @@ namespace OpenUtau.Core.EnunuOnnx {
                 return;
             }
             //Load enuconfig
-            var rootPath = singer.Location;
+            string rootPath;
+            if (File.Exists(Path.Join(singer.Location, "enunux", "enuconfig.yaml"))) {
+                rootPath = Path.Combine(singer.Location, "enunux");
+            } else {
+                rootPath = singer.Location;
+            }
             var configPath = Path.Join(rootPath, "enuconfig.yaml");
             var configTxt = File.ReadAllText(configPath);
             RawEnunuConfig config = Yaml.DefaultDeserializer.Deserialize<RawEnunuConfig>(configTxt);
@@ -65,14 +71,24 @@ namespace OpenUtau.Core.EnunuOnnx {
             LoadDict(Path.Join(rootPath, enuconfig.tablePath), singer.TextFileEncoding);
             //Load question set
             LoadQuestionSet(Path.Join(rootPath, enuconfig.questionPath), singer.TextFileEncoding);
-            //Load timing model
+            //Load timing models
+            var timelagModelPath = Path.Join(rootPath, enuconfig.modelDir, "timelag");
+            timelagModelPath = Path.Join(timelagModelPath, enuconfig.timelag.checkpoint);//TODO
+            if (timelagModelPath.EndsWith(".pth")) {
+                timelagModelPath = timelagModelPath[..^4] + ".onnx";
+            }
+            this.timelagModel = new InferenceSession(timelagModelPath);
             var durationModelPath = Path.Join(rootPath, enuconfig.modelDir, "duration");
             durationModelPath = Path.Join(durationModelPath, enuconfig.duration.checkpoint);
             if (durationModelPath.EndsWith(".pth")) {
                 durationModelPath = durationModelPath[..^4] + ".onnx";
             }
             this.durationModel = new InferenceSession(durationModelPath);
-            //Load duration input scaler
+            //Load scalers
+            var timelagInScalerPath = Path.Join(rootPath, enuconfig.statsDir, "in_timelag_scaler.json");
+            this.timelagInScaler = Scaler.load(timelagInScalerPath, singer.TextFileEncoding);
+            var timelagOutScalerPath = Path.Join(rootPath, enuconfig.statsDir, "out_timelag_scaler.json");
+            this.timelagInScaler = Scaler.load(timelagOutScalerPath, singer.TextFileEncoding);
             var durationInScalerPath = Path.Join(rootPath, enuconfig.statsDir, "in_duration_scaler.json");
             this.durationInScaler = Scaler.load(durationInScalerPath, singer.TextFileEncoding);
             var durationOutScalerPath = Path.Join(rootPath, enuconfig.statsDir, "out_duration_scaler.json");
@@ -134,6 +150,7 @@ namespace OpenUtau.Core.EnunuOnnx {
             var result = hts.load_question_set(path, encoding: encoding);
             binaryDict = result.Item1;
             numericDict = result.Item2;
+            pitchIndices = Enumerable.Range(binaryDict.Count, 3).ToArray();
         }
 
         public override void SetUp(Note[][] groups) {
@@ -234,7 +251,6 @@ namespace OpenUtau.Core.EnunuOnnx {
             int paddingTicks = timeAxis.MsPosToTickPos(paddingMs);
             var notePhIndex = new List<int> { 1 };//每个音符的第一个音素在音素列表上对应的位置
             var phAlignPoints = new List<Tuple<int, double>>();//音素对齐的位置，Ms，绝对时间
-
             HTSNote PaddingNote = new HTSNote(
                 phonemeStrs: new string[] { "sil" },
                 tone: 0,
@@ -283,27 +299,50 @@ namespace OpenUtau.Core.EnunuOnnx {
                 htsPhonemes[i - 1].next = htsPhonemes[i];
             }
 
-            var duration_linguistic_features = merlin.linguistic_features(
+            var linguistic_features = merlin.linguistic_features(
                 hts.load(htsPhonemes.Select(x => x.dump())),
                 binaryDict,
                 numericDict
             );
-            int phonemesCount = duration_linguistic_features.Count;
-            int featuresDim = duration_linguistic_features[0].Count;
-            //Apply normalization
-            durationInScaler.transform(duration_linguistic_features);
-            //run model
-            var inputs = new List<NamedOnnxValue>();
-            inputs.Add(NamedOnnxValue.CreateFromTensor("linguistic_features",
+            //log_f0_conditioning
+            float lastMidi = 60;            
+            foreach(int idx in pitchIndices) {
+                foreach(var line in linguistic_features) {
+                    if (line[idx] > 0) {
+                        lastMidi = line[idx];
+                    }
+                    line[idx] = (float)Math.Log(MusicMath.ToneToFreq(lastMidi));
+                }
+            }
+
+            int phonemesCount = linguistic_features.Count;
+            int featuresDim = linguistic_features[0].Count;
+
+            //timelag inference
+            /*var timelag_linguistic_features = timelagInScaler.transformed(linguistic_features);
+            var timelagInputs = new List<NamedOnnxValue>();
+            timelagInputs.Add(NamedOnnxValue.CreateFromTensor("linguistic_features",
+                new DenseTensor<float>(
+                    timelag_linguistic_features.SelectMany(x => x).ToArray(),
+                    new int[] { 1, phonemesCount, featuresDim }, false)));
+            timelagInputs.Add(NamedOnnxValue.CreateFromTensor("lengths",
+                new DenseTensor<long>(new long[] { (long)phonemesCount },
+                new int[] { 1 }, false)));
+            var timelagOutputs = timelagModel.Run(timelagInputs);*/
+            //TODO
+
+            //duration inference
+            var duration_linguistic_features = durationInScaler.transformed(linguistic_features);
+            var durationInputs = new List<NamedOnnxValue>();
+            durationInputs.Add(NamedOnnxValue.CreateFromTensor("linguistic_features",
                 new DenseTensor<float>(
                     duration_linguistic_features.SelectMany(x => x).ToArray(),
                     new int[] { 1, phonemesCount, featuresDim }, false)));
-            inputs.Add(NamedOnnxValue.CreateFromTensor("lengths",
+            durationInputs.Add(NamedOnnxValue.CreateFromTensor("lengths",
                 new DenseTensor<long>(new long[] { (long)phonemesCount },
-                //new DenseTensor<int>(Enumerable.Repeat(featuresDim,phonemesCount).ToArray(), 
                 new int[] { 1 }, false)));
-            var outputs = durationModel.Run(inputs);
-            var ph_dur_float = outputs.First().AsTensor<float>().ToList();
+            var durationOutputs = durationModel.Run(durationInputs);
+            var ph_dur_float = durationOutputs.First().AsTensor<float>().ToList();
             durationOutScaler[0].inverse_transform(ph_dur_float);//Phoneme Duration Result in Ms
             var ph_dur = ph_dur_float.Select(x => (double)x).ToList();
 

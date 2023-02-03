@@ -1,6 +1,7 @@
 ﻿
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 
@@ -35,12 +36,24 @@ namespace OpenUtau.Core.EnunuOnnx {
             }
         }
 
+        
         public void transform(IEnumerable<IList<float>> xs) {
             //In-place transform a bunch of vectors
             foreach(IList<float> x in xs) {
                 transform(x);
             }
         }
+
+        public float[] transformed(IEnumerable<float> x) {
+            //transform a vector into a new vector
+            return Enumerable.Zip(this, x, (scalerLine, xLine) => (xLine - scalerLine.xmin) * scalerLine.scale).ToArray();
+        }
+
+        public float[][] transformed(IEnumerable<IEnumerable<float>> xs) {
+            //transform a bunch of vectors into new ones
+            return xs.Select(transformed).ToArray();
+        }
+
 
         public void inverse_transform(IList<float> x) {
             for (int i = 0; i < this.Count; i++) {

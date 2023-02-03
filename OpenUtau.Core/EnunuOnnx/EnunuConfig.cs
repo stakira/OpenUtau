@@ -14,6 +14,7 @@ namespace OpenUtau.Core.EnunuOnnx {
         public string statsDir;
         public EnunuExtensions extensions;
         public EnunuDurationConfig duration;
+        public EnunuTimelagConfig timelag;
 
         public static EnunuConfig Load(string configPath) {
             var configTxt = File.ReadAllText(configPath);
@@ -46,6 +47,11 @@ namespace OpenUtau.Core.EnunuOnnx {
         public object wav_editor;
     }
 
+    class EnunuTimelagConfig {
+        public string checkpoint;
+        public List<int> allowedRange;
+        public List<int> allowedRangeRest;
+    }
     class EnunuDurationConfig {
         public string checkpoint;
 
@@ -60,6 +66,7 @@ namespace OpenUtau.Core.EnunuOnnx {
         public string statsDir;
         public RawEnunuExtensions extensions;
         public EnunuDurationConfig duration;
+        public EnunuTimelagConfig timelag;
 
         public EnunuConfig Convert() {
             EnunuConfig enunuConfig = new EnunuConfig();
@@ -70,6 +77,7 @@ namespace OpenUtau.Core.EnunuOnnx {
             enunuConfig.duration = this.duration;
             enunuConfig.modelDir = this.modelDir;
             enunuConfig.statsDir = this.statsDir;
+            enunuConfig.timelag = this.timelag;
             enunuConfig.extensions = new EnunuExtensions();
             ParseEnunuExtension(enunuConfig.extensions.ust_editor, this.extensions.ust_editor);
             ParseEnunuExtension(enunuConfig.extensions.ust_converter, this.extensions.ust_converter);
