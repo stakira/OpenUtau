@@ -65,8 +65,12 @@ namespace OpenUtau.Core {
             oldValue = phoneme.GetExpression(project, track, abbr).Item1;
         }
         public override string ToString() => $"Set phoneme expression {Key}";
-        public override void Execute() => phoneme.SetExpression(project, track, Key, newValue);
-        public override void Unexecute() => phoneme.SetExpression(project, track, Key, oldValue);
+        public override void Execute() {
+            phoneme.SetExpression(project, track, Key, newValue);
+        }
+        public override void Unexecute() {
+            phoneme.SetExpression(project, track, Key, oldValue);
+        } 
     }
 
     public class ResetExpressionsCommand : ExpCommand {
