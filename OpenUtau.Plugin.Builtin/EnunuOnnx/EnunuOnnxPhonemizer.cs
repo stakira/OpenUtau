@@ -43,8 +43,7 @@ namespace OpenUtau.Plugin.Builtin {
         int[] pitchIndices = new int[] { };
         Scaler durationInScaler = new Scaler();
         Scaler durationOutScaler = new Scaler();
-        Scaler timelagInScaler = new Scaler();
-
+        
         //information used by openutau phonemizer
         protected IG2p g2p;
 
@@ -74,12 +73,6 @@ namespace OpenUtau.Plugin.Builtin {
             //Load question set
             LoadQuestionSet(Path.Join(rootPath, enuconfig.questionPath), singer.TextFileEncoding);
             //Load timing models
-            var timelagModelPath = Path.Join(rootPath, enuconfig.modelDir, "timelag");
-            timelagModelPath = Path.Join(timelagModelPath, enuconfig.timelag.checkpoint);//TODO
-            if (timelagModelPath.EndsWith(".pth")) {
-                timelagModelPath = timelagModelPath[..^4] + ".onnx";
-            }
-            this.timelagModel = new InferenceSession(timelagModelPath);
             var durationModelPath = Path.Join(rootPath, enuconfig.modelDir, "duration");
             durationModelPath = Path.Join(durationModelPath, enuconfig.duration.checkpoint);
             if (durationModelPath.EndsWith(".pth")) {
@@ -87,10 +80,6 @@ namespace OpenUtau.Plugin.Builtin {
             }
             this.durationModel = new InferenceSession(durationModelPath);
             //Load scalers
-            var timelagInScalerPath = Path.Join(rootPath, enuconfig.statsDir, "in_timelag_scaler.json");
-            this.timelagInScaler = Scaler.load(timelagInScalerPath, singer.TextFileEncoding);
-            var timelagOutScalerPath = Path.Join(rootPath, enuconfig.statsDir, "out_timelag_scaler.json");
-            this.timelagInScaler = Scaler.load(timelagOutScalerPath, singer.TextFileEncoding);
             var durationInScalerPath = Path.Join(rootPath, enuconfig.statsDir, "in_duration_scaler.json");
             this.durationInScaler = Scaler.load(durationInScalerPath, singer.TextFileEncoding);
             var durationOutScalerPath = Path.Join(rootPath, enuconfig.statsDir, "out_duration_scaler.json");
@@ -295,7 +284,7 @@ namespace OpenUtau.Plugin.Builtin {
             var lastNote = phrase[^1][^1];
             phAlignPoints.Add(new Tuple<int, double>(
                 htsPhonemes.Count,
-                timeAxis.TickPosToMsPos(lastNote.position + lastNote.duration) / 1000));
+                timeAxis.TickPosToMsPos(lastNote.position + lastNote.duration)));
             for (int i = 1; i < htsPhonemes.Count; ++i) {
                 htsPhonemes[i].prev = htsPhonemes[i - 1];
                 htsPhonemes[i - 1].next = htsPhonemes[i];
@@ -319,19 +308,6 @@ namespace OpenUtau.Plugin.Builtin {
 
             int phonemesCount = linguistic_features.Count;
             int featuresDim = linguistic_features[0].Count;
-
-            //timelag inference
-            /*var timelag_linguistic_features = timelagInScaler.transformed(linguistic_features);
-            var timelagInputs = new List<NamedOnnxValue>();
-            timelagInputs.Add(NamedOnnxValue.CreateFromTensor("linguistic_features",
-                new DenseTensor<float>(
-                    timelag_linguistic_features.SelectMany(x => x).ToArray(),
-                    new int[] { 1, phonemesCount, featuresDim }, false)));
-            timelagInputs.Add(NamedOnnxValue.CreateFromTensor("lengths",
-                new DenseTensor<long>(new long[] { (long)phonemesCount },
-                new int[] { 1 }, false)));
-            var timelagOutputs = timelagModel.Run(timelagInputs);*/
-            //TODO
 
             //duration inference
             var duration_linguistic_features = durationInScaler.transformed(linguistic_features);
