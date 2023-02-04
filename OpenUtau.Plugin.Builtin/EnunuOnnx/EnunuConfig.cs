@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using OpenUtau.Core.Ustx;
+using OpenUtau.Core;
 
 //Instead of using Enunu/EnunuConfig.cs, we created a copy to add EnunuOnnx-specific features
 //without potentially breaking the existing Enunu Phonemizers and renderers.
-namespace OpenUtau.Core.EnunuOnnx {
+namespace OpenUtau.Plugin.Builtin.EnunuOnnx {
     class EnunuConfig {
         public string tablePath;
         public string questionPath;

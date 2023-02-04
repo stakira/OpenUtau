@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using OpenUtau.Api;
 
 //This file implement utaupy.hts python library's function
 //https://github.com/oatsu-gh/utaupy/blob/master/utaupy/hts.py
 
 //HTS labels use b instead of #
 //In HTS labels, "xx" is a preserved keyword that means null
-namespace OpenUtau.Core.EnunuOnnx {
+namespace OpenUtau.Plugin.Builtin.EnunuOnnx {
     public static class HTS {
         public static readonly string[] KeysInOctave = {
             "C",

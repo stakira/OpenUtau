@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Linq;
-using OpenUtau.Core.EnunuOnnx.nnmnkwii.io.hts;
+using OpenUtau.Plugin.Builtin.EnunuOnnx.nnmnkwii.io.hts;
 //reference: https://github.com/r9y9/nnmnkwii/blob/master/nnmnkwii/frontend/merlin.py
 
-namespace OpenUtau.Core.EnunuOnnx.nnmnkwii.frontend {
+namespace OpenUtau.Plugin.Builtin.EnunuOnnx.nnmnkwii.frontend {
     public class merlin {
         //TODO:Should subphone_features be an enum?
         static Dictionary<string, int> frame_feature_size_dict = new Dictionary<string, int>

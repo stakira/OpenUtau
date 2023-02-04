@@ -6,17 +6,19 @@ using System.Text;
 using System.Text.RegularExpressions;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Api;
-using OpenUtau.Core.EnunuOnnx.nnmnkwii.io.hts;
+using OpenUtau.Plugin.Builtin.EnunuOnnx.nnmnkwii.io.hts;
 using Microsoft.ML.OnnxRuntime;
-using OpenUtau.Core.EnunuOnnx.nnmnkwii.frontend;
+using OpenUtau.Plugin.Builtin.EnunuOnnx.nnmnkwii.frontend;
 using Microsoft.ML.OnnxRuntime.Tensors;
 using Serilog;
+using OpenUtau.Plugin.Builtin.EnunuOnnx;
+using OpenUtau.Core;
 
 //This phonemizer is a pure C# implemention of the ENUNU phonemizer,
 //which aims at providing all ML-based synthesizer developers with a useable phonemizer,
 //This phonemizer uses onnxruntime to run ML models. No Python needed. 
 
-namespace OpenUtau.Core.EnunuOnnx {
+namespace OpenUtau.Plugin.Builtin {
     [Phonemizer("Enunu Onnx Phonemizer", "ENUNU X")]
     public class EnunuOnnxPhonemizer : Phonemizer {
         readonly string PhonemizerType = "ENUNU X";

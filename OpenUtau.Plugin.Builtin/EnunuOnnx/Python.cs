@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
 
-namespace OpenUtau.Core.EnunuOnnx.nnmnkwii.python {
+namespace OpenUtau.Plugin.Builtin.EnunuOnnx.nnmnkwii.python {
     public class AssertionError : Exception {
 
         public AssertionError() : base() { }

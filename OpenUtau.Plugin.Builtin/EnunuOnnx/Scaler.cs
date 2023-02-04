@@ -1,11 +1,10 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 
-namespace OpenUtau.Core.EnunuOnnx {
+namespace OpenUtau.Plugin.Builtin.EnunuOnnx {
     public class ScalerLine {
         public float xmin;
         public float scale;
