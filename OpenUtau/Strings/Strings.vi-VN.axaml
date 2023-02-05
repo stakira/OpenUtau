@@ -28,7 +28,7 @@
     OpenUTAU nhắm đến việc tạo nên một môi trường chỉnh sửa mã nguồn mở cho cộng đồng UTAU, với một giao diện hiện đại và hỗ trợ âm vị thông minh. Thông tin chi tiết trên Github.
   </system:String>
   <system:String x:Key="dialogs.exitsave.caption">Thoát OpenUtau</system:String>
-  <system:String x:Key="dialogs.exitsave.message">Dự án hiện tại chứa một vài thay đổi chưa được lưu. Bạn có muốn lưu không?</system:String>
+  <system:String x:Key="dialogs.exitsave.message">Dự án có một vài thay đổi chưa được lưu. Bạn có muốn lưu không?</system:String>
   <system:String x:Key="dialogs.export.caption">Xuất ra</system:String>
   <system:String x:Key="dialogs.export.savefirst">Lưu tệp dự án trước đã!</system:String>
   <system:String x:Key="dialogs.messagebox.cancel">Huỷ bỏ</system:String>
@@ -36,7 +36,7 @@
   <system:String x:Key="dialogs.messagebox.ok">Đồng ý</system:String>
   <system:String x:Key="dialogs.messagebox.yes">Có</system:String>
   <system:String x:Key="dialogs.noresampler.caption">Chưa có resampler</system:String>
-  <system:String x:Key="dialogs.noresampler.message">Chưa có resampler nào cả! Thêm resampler yêu thích của bạn với định dạng exe hoặc dll vào trong thư mục Resamplers và chọn ở trong mục Tuỳ chọn!</system:String>
+  <system:String x:Key="dialogs.noresampler.message">Chưa có resampler nào cả! Thêm resampler yêu thích của bạn với định dạng exe hoặc dll vào trong thư mục Resamplers và chọn trong mục Tuỳ chọn!</system:String>
   <system:String x:Key="dialogs.timesig.caption">Số chỉ nhịp</system:String>
   <system:String x:Key="dialogs.tracksettings.caption">Cài đặt Track</system:String>
   <system:String x:Key="dialogs.tracksettings.location">Thư mục</system:String>
@@ -83,15 +83,15 @@
   <system:String x:Key="menu.file.exportaudio">Xuất ra tệp nhạc</system:String>
   <system:String x:Key="menu.file.exportmidi">Xuất ra tệp MIDI</system:String>
   <system:String x:Key="menu.file.exportmixdown">Gộp thành một tệp nhạc</system:String>
-  <!--<system:String x:Key="menu.file.exportproject">Export Project</system:String>-->
+  <system:String x:Key="menu.file.exportproject">Xuất ra dự án</system:String>
   <system:String x:Key="menu.file.exportust">Xuất ra tệp UST</system:String>
   <system:String x:Key="menu.file.exportustto">Xuất tệp UST vào...</system:String>
   <system:String x:Key="menu.file.exportwav">Xuất ra tệp WAV</system:String>
   <system:String x:Key="menu.file.exportwavto">Xuất tệp WAV vào...</system:String>
   <system:String x:Key="menu.file.importaudio">Nhập vào tệp Âm thanh...</system:String>
   <system:String x:Key="menu.file.importmidi">Nhập vào Midi...</system:String>
-  <!--<system:String x:Key="menu.file.importmidi.drywetmidi">DryWetMidi Importer</system:String>-->
-  <!--<system:String x:Key="menu.file.importmidi.naudio">Naudio Importer</system:String>-->
+  <system:String x:Key="menu.file.importmidi.drywetmidi">Trình nhập DryWetMidi</system:String>
+  <system:String x:Key="menu.file.importmidi.naudio">Trình nhập Naudio</system:String>
   <system:String x:Key="menu.file.importtracks">Nhập vào UST/VSQX...</system:String>
   <system:String x:Key="menu.file.new">Dự án mới</system:String>
   <system:String x:Key="menu.file.newfromtemplate">Dự án mới từ các mẫu</system:String>
@@ -277,13 +277,13 @@ Nhấn giữ Ctrl để chọn nhiều nốt</system:String>
   <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
 
   <system:String x:Key="progress.saved">Hoàn tất lưu dự án. {0}</system:String>
-  <system:String x:Key="progress.waitingrendering">Đang render ...</system:String>
+  <system:String x:Key="progress.waitingrendering">Đang tổng hợp giọng hát ...</system:String>
 
   <system:String x:Key="singers.caption">Voicebank</system:String>
   <system:String x:Key="singers.editoto.editinvlabeler">Sửa trong vLabeler</system:String>
   <system:String x:Key="singers.editoto.gotosource">Mở tệp nguồn</system:String>
-  <!--<system:String x:Key="singers.editoto.regenfrq">Regenerate FRQ</system:String>-->
-  <!--<system:String x:Key="singers.editoto.regenfrq.regenerating">Regenerating FRQ</system:String>-->
+  <system:String x:Key="singers.editoto.regenfrq">Tái tạo lại FRQ</system:String>
+  <system:String x:Key="singers.editoto.regenfrq.regenerating">Đang tái tạo lại FRQ</system:String>
   <system:String x:Key="singers.editoto.reset">Reset Oto</system:String>
   <system:String x:Key="singers.editoto.save">Lưu Oto</system:String>
   <system:String x:Key="singers.editoto.setvlabelerpath">Cần phải tải vLabeler xuống (bản 1.0.0-beta1 hoặc mới hơn) ở trang https://github.com/sdercolin/vlabeler và đặt thư mục chứa vLabeler trong mục Tuỳ chọn trước cái đã!</system:String>
@@ -358,11 +358,11 @@ Tổng quát
   <!--<system:String x:Key="updater.github">GitHub</system:String>-->
   <system:String x:Key="updater.status.available">Có bản cập nhật v{0} mới!</system:String>
   <system:String x:Key="updater.status.checking">Đang kiểm tra cập nhật...</system:String>
-  <system:String x:Key="updater.status.notavailable">Phiên bản mới nhất</system:String>
-  <system:String x:Key="updater.status.unknown">Không thể kiểm tra cập nhật</system:String>
+  <system:String x:Key="updater.status.notavailable">Bản mới nhất</system:String>
+  <system:String x:Key="updater.status.unknown">Không kiểm tra cập nhật được</system:String>
   <system:String x:Key="updater.update">Cập nhật</system:String>
 
   <system:String x:Key="warning">Cảnh báo</system:String>
-  <system:String x:Key="warning.asciipath">Đường dẫn OpenUTAU của bạn "{0}" có chứa kí tự không thuộc ASCII. Resampler định dạng exe có thể không hoạt động.</system:String>
-  <system:String x:Key="warning.renderer">Trình render này không có tuỳ chọn nào hết. Vui lòng chuyển sang trình render CLASSIC.</system:String>
+  <system:String x:Key="warning.asciipath">Đường dẫn OpenUTAU "{0}" có chứa kí tự không thuộc ASCII. Resampler định dạng exe có thể không hoạt động.</system:String>
+  <system:String x:Key="warning.renderer">Không có tuỳ chọn. Vui lòng chuyển sang CLASSIC.</system:String>
 </ResourceDictionary>
