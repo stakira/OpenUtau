@@ -56,15 +56,17 @@ namespace OpenUtau.Core.Enunu {
             enunuConfig.sampleRate = this.sampleRate;
             enunuConfig.framePeriod = this.framePeriod;
             enunuConfig.extensions = new EnunuExtensions();
-            ParseEnunuExtension(enunuConfig.extensions.ust_editor, this.extensions.ust_editor);
-            ParseEnunuExtension(enunuConfig.extensions.ust_converter, this.extensions.ust_converter);
-            ParseEnunuExtension(enunuConfig.extensions.score_editor, this.extensions.score_editor);
-            ParseEnunuExtension(enunuConfig.extensions.timing_calculator, this.extensions.timing_calculator);
-            ParseEnunuExtension(enunuConfig.extensions.timing_editor, this.extensions.timing_editor);
-            ParseEnunuExtension(enunuConfig.extensions.acoustic_calculator, this.extensions.acoustic_calculator);
-            ParseEnunuExtension(enunuConfig.extensions.acoustic_editor, this.extensions.acoustic_editor);
-            ParseEnunuExtension(enunuConfig.extensions.wav_synthesizer, this.extensions.wav_synthesizer);
-            ParseEnunuExtension(enunuConfig.extensions.wav_editor, this.extensions.wav_editor);
+            if (this.extensions != null) {
+                ParseEnunuExtension(enunuConfig.extensions.ust_editor, this.extensions.ust_editor);
+                ParseEnunuExtension(enunuConfig.extensions.ust_converter, this.extensions.ust_converter);
+                ParseEnunuExtension(enunuConfig.extensions.score_editor, this.extensions.score_editor);
+                ParseEnunuExtension(enunuConfig.extensions.timing_calculator, this.extensions.timing_calculator);
+                ParseEnunuExtension(enunuConfig.extensions.timing_editor, this.extensions.timing_editor);
+                ParseEnunuExtension(enunuConfig.extensions.acoustic_calculator, this.extensions.acoustic_calculator);
+                ParseEnunuExtension(enunuConfig.extensions.acoustic_editor, this.extensions.acoustic_editor);
+                ParseEnunuExtension(enunuConfig.extensions.wav_synthesizer, this.extensions.wav_synthesizer);
+                ParseEnunuExtension(enunuConfig.extensions.wav_editor, this.extensions.wav_editor);
+            }
             return enunuConfig;
         }
 
