@@ -163,22 +163,24 @@ namespace OpenUtau.Plugin.Builtin.EnunuOnnx {
     public class HTSNote {
         public int startMs = 0;
         public int endMs = 0;
+        public int positionTicks;
         public int durationTicks = 0;
         public int index = 0;//index of this note in sentence
         public int indexBackwards = 0;
         public int sentenceDurMs = 0;
 
         public int tone = 0;
-        public string[] phonemeStrs;
+        public string[] symbols;
 
         public HTSNote? prev;
         public HTSNote? next;
 
-        public HTSNote(string[] phonemeStrs, int tone, int startms,int endms, int durationTicks) {
+        public HTSNote(string[] symbols, int tone, int startms,int endms,int positionTicks, int durationTicks) {
             this.startMs = startms;
             this.endMs = endms;
             this.tone = tone;
-            this.phonemeStrs = phonemeStrs;
+            this.symbols = symbols;
+            this.positionTicks = positionTicks;
             this.durationTicks = durationTicks;
         }
 
@@ -192,7 +194,7 @@ namespace OpenUtau.Plugin.Builtin.EnunuOnnx {
 
         public string[] b() {
             return new string[] {
-                phonemeStrs.Length.ToString(),
+                symbols.Length.ToString(),
                 "1",
                 "1",
                 "xx",

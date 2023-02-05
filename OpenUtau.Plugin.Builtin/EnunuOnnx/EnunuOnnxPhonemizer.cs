@@ -13,6 +13,9 @@ using Microsoft.ML.OnnxRuntime.Tensors;
 using Serilog;
 using OpenUtau.Plugin.Builtin.EnunuOnnx;
 using OpenUtau.Core;
+using System.Security.Policy;
+using Melanchall.DryWetMidi.Core;
+using Melanchall.DryWetMidi.Multimedia;
 
 //This phonemizer is a pure C# implemention of the ENUNU phonemizer,
 //which aims at providing all ML-based synthesizer developers with a useable phonemizer,
@@ -36,8 +39,7 @@ namespace OpenUtau.Plugin.Builtin {
         string[] silences = new string[] { "sil" };
 
         //model and information used by model
-        InferenceSession timelagModel;
-        InferenceSession? durationModel;
+        InferenceSession durationModel;
         Dictionary<int, Tuple<string, List<Regex>>> binaryDict = new Dictionary<int, Tuple<string, List<Regex>>>();
         Dictionary<int, Tuple<string, Regex>> numericDict = new Dictionary<int, Tuple<string, Regex>>();
         int[] pitchIndices = new int[] { };
@@ -88,18 +90,37 @@ namespace OpenUtau.Plugin.Builtin {
             this.g2p = LoadG2p(rootPath);
         }
 
-        protected IG2p LoadG2p(string rootPath) {
+        protected virtual IG2p LoadG2p(string rootPath) {
             var g2ps = new List<IG2p>();
 
-            // Load dictionary from singer folder.
-            string file = Path.Combine(rootPath, "enunux.yaml");
-            if (File.Exists(file)) {
+            string enunuxPath = Path.Combine(rootPath, "enunux.yaml");
+            var builder = G2pDictionary.NewBuilder();
+            // Load dictionary from enunux.yaml and nnsvs dict
+            if (File.Exists(enunuxPath)) {
                 try {
-                    g2ps.Add(G2pDictionary.NewBuilder().Load(File.ReadAllText(file)).Build());
+                    var input = File.ReadAllText(enunuxPath, singer.TextFileEncoding);
+                    var data = Core.Yaml.DefaultDeserializer.Deserialize<G2pDictionaryData>(input);
+                    if (data.symbols != null) {
+                        foreach (var symbolData in data.symbols) {
+                            builder.AddSymbol(symbolData.symbol, symbolData.type);
+                        }
+                    }
+                    foreach(var grapheme in phoneDict.Keys) {
+                        builder.AddEntry(grapheme, phoneDict[grapheme]);
+                    }
+                    if (data.entries != null) {
+                        foreach (var entry in data.entries) {
+                            builder.AddEntry(entry.grapheme, entry.phonemes);
+                        }
+                    }
                 } catch (Exception e) {
-                    Log.Error(e, $"Failed to load {file}");
+                    Log.Error(e, $"Failed to load Dictionary");
                 }
             }
+            foreach(var entry in phoneDict.Keys) {
+                builder.AddEntry(entry, phoneDict[entry]);
+            }
+            g2ps.Add(builder.Build());
             return new G2pFallbacks(g2ps.ToArray());
         }
 
@@ -186,27 +207,181 @@ namespace OpenUtau.Plugin.Builtin {
             return "c";
         }
 
-        HTSNote NoteToHTSNote(Note[] group, int startTick) {
-            //convert Phonemizer.Note to HTSNote
-            var htsNote = new HTSNote(
-                phonemeStrs: new string[] { group[0].phoneticHint },
+        string[] GetSymbols(Note note) {
+            if (string.IsNullOrEmpty(note.phoneticHint)) {
+                // User has not provided hint, query CMUdict.
+                return g2p.Query(note.lyric.ToLowerInvariant());
+            }
+            // Split space-separated symbols into an array.
+            return note.phoneticHint.Split()
+                .Where(s => g2p.IsValidSymbol(s)) // skip the invalid symbols.
+                .ToArray();
+        }
+
+        //make a HTS Note from given symbols and UNotes
+        protected HTSNote makeHtsNote(string[] symbols, IList<Note> group, int startTick) {
+            return new HTSNote(
+                symbols: symbols,
                 tone: group[0].tone,
                 startms: (int)timeAxis.MsBetweenTickPos(startTick, group[0].position) + paddingMs,
                 endms: (int)timeAxis.MsBetweenTickPos(startTick, group[^1].position + group[^1].duration) + paddingMs,
+                positionTicks: group[0].position,
                 durationTicks: group[^1].position + group[^1].duration - group[0].position
                 );
-            if (group[0].phoneticHint != null) {
-                htsNote.phonemeStrs = group[0].phoneticHint.Split();
-                return htsNote;
+        }
+
+        protected HTSNote makeHtsNote(string symbol, Note[] group, int startTick) {
+            return makeHtsNote(new string[] { symbol }, group, startTick);
+        }
+
+        protected bool IsSyllableVowelExtensionNote(Note note) {
+            return note.lyric.StartsWith("+~") || note.lyric.StartsWith("+*");
+        }
+
+        private string[] ApplyExtensions(string[] symbols, Note[] notes) {
+            var newSymbols = new List<string>();
+            var vowelIds = ExtractVowels(symbols);
+            if (vowelIds.Count == 0) {
+                // no syllables or all consonants, the last phoneme will be interpreted as vowel
+                vowelIds.Add(symbols.Length - 1);
             }
-            if (phoneDict.ContainsKey(group[0].lyric)) {
-                htsNote.phonemeStrs = phoneDict[group[0].lyric];
+            var lastVowelI = 0;
+            newSymbols.AddRange(symbols.Take(vowelIds[lastVowelI] + 1));
+            for (var i = 1; i < notes.Length && lastVowelI + 1 < vowelIds.Count; i++) {
+                if (!IsSyllableVowelExtensionNote(notes[i])) {
+                    var prevVowel = vowelIds[lastVowelI];
+                    lastVowelI++;
+                    var vowel = vowelIds[lastVowelI];
+                    newSymbols.AddRange(symbols.Skip(prevVowel + 1).Take(vowel - prevVowel));
+                } else {
+                    newSymbols.Add(symbols[vowelIds[lastVowelI]]);
+                }
             }
-            return htsNote;
+            newSymbols.AddRange(symbols.Skip(vowelIds[lastVowelI] + 1));
+            return newSymbols.ToArray();
+        }
+
+        private List<int> ExtractVowels(string[] symbols) {
+            var vowelIds = new List<int>();
+            for (var i = 0; i < symbols.Length; i++) {
+                if (g2p.IsVowel(symbols[i])) {
+                    vowelIds.Add(i);
+                }
+            }
+            return vowelIds;
+        }
+
+        protected virtual Note[] HandleNotEnoughNotes(Note[] notes, List<int> vowelIds) {
+            var newNotes = new List<Note>();
+            newNotes.AddRange(notes.SkipLast(1));
+            var lastNote = notes.Last();
+            var position = lastNote.position;
+            var notesToSplit = vowelIds.Count - newNotes.Count;
+            var duration = lastNote.duration / notesToSplit / 15 * 15;
+            for (var i = 0; i < notesToSplit; i++) {
+                var durationFinal = i != notesToSplit - 1 ? duration : lastNote.duration - duration * (notesToSplit - 1);
+                newNotes.Add(new Note() {
+                    position = position,
+                    duration = durationFinal,
+                    tone = lastNote.tone,
+                    phonemeAttributes = lastNote.phonemeAttributes
+                });
+                position += durationFinal;
+            }
+
+            return newNotes.ToArray();
+        }
+
+        private (string[], int[], Note[]) GetSymbolsAndVowels(Note[] notes) {
+            var mainNote = notes[0];
+            var symbols = GetSymbols(mainNote);
+            if (symbols == null) {
+                return (null, null, null);
+            }
+            if (symbols.Length == 0) {
+                symbols = new string[] { "" };
+            }
+            symbols = ApplyExtensions(symbols, notes);
+            List<int> vowelIds = ExtractVowels(symbols);
+            if (vowelIds.Count == 0) {
+                // no syllables or all consonants, the last phoneme will be interpreted as vowel
+                vowelIds.Add(symbols.Length - 1);
+            }
+            if (notes.Length < vowelIds.Count) {
+                notes = HandleNotEnoughNotes(notes, vowelIds);
+            }
+            return (symbols, vowelIds.ToArray(), notes);
+        }
+
+        protected struct Syllable {
+            public List<string> symbols;
+            public List<Note> notes;
+        }
+
+        protected virtual HTSNote[] MakeSyllables(Note[] inputNotes, int startTick) {
+            (var symbols, var vowelIds, var notes) = GetSymbolsAndVowels(inputNotes);
+            if (symbols == null || vowelIds == null || notes == null) {
+                return null;
+            }
+            var firstVowelId = vowelIds[0];
+            if (notes.Length < vowelIds.Length) {
+                //error = $"Not enough extension notes, {vowelIds.Length - notes.Length} more expected";
+                return null;
+            }
+
+            var syllables = new Syllable[vowelIds.Length];
+
+            // Making the first syllable
+
+            // there is only empty space before us
+            /*syllables[0] = new Syllable() {
+                prevV = "",
+                cc = symbols.Take(firstVowelId).ToArray(),
+                v = symbols[firstVowelId],
+                tone = notes[0].tone,
+                duration = -1,
+                position = 0,
+                vowelTone = notes[0].tone
+            };*/
+            syllables[0] = new Syllable() {
+                symbols = symbols.Take(firstVowelId + 1).ToList(),
+                notes = inputNotes[0..1].ToList()
+            };
+
+            // normal syllables after the first one
+            var noteI = 1;
+            var ccs = new List<string>();
+            var position = 0;
+            var lastSymbolI = firstVowelId + 1;
+            for (; lastSymbolI < symbols.Length; lastSymbolI++) {
+                if (!vowelIds.Contains(lastSymbolI)) {
+                    ccs.Add(symbols[lastSymbolI]);
+                } else {
+                    position += notes[noteI - 1].duration;
+                    syllables[noteI] = new Syllable() {
+                        symbols = ccs.Append(symbols[lastSymbolI]).ToList(),
+                        notes = new List<Note>() { notes[noteI] }
+                        /*
+                        prevV = syllables[noteI - 1].v,
+                        cc = ccs.ToArray(),
+                        v = symbols[lastSymbolI],
+                        tone = notes[noteI - 1].tone,
+                        duration = notes[noteI - 1].duration,
+                        position = position,
+                        vowelTone = notes[noteI].tone,
+                        canAliasBeExtended = true // for all not-first notes is allowed
+                        */
+                    };
+                    ccs = new List<string>();
+                    noteI++;
+                }
+            }
+            syllables[^1].symbols.AddRange(ccs);
+            return syllables.Select(x=>makeHtsNote(x.symbols.ToArray(),x.notes,startTick)).ToArray();
         }
 
         HTSPhoneme[] HTSNoteToPhonemes(HTSNote htsNote) {
-            var htsPhonemes = htsNote.phonemeStrs.Select(x => new HTSPhoneme(x, htsNote)).ToArray();
+            var htsPhonemes = htsNote.symbols.Select(x => new HTSPhoneme(x, htsNote)).ToArray();
             int prevVowelPos = -1;
             foreach (int i in Enumerable.Range(0, htsPhonemes.Length)) {
                 htsPhonemes[i].position = i + 1;
@@ -230,10 +405,9 @@ namespace OpenUtau.Plugin.Builtin {
                     }
                 }
             }
-
-
             return htsPhonemes;
         }
+
 
         void ProcessPart(Note[][] phrase) {
             int offsetTick = phrase[0][0].position;
@@ -243,14 +417,48 @@ namespace OpenUtau.Plugin.Builtin {
             var notePhIndex = new List<int> { 1 };//每个音符的第一个音素在音素列表上对应的位置
             var phAlignPoints = new List<Tuple<int, double>>();//音素对齐的位置，Ms，绝对时间
             HTSNote PaddingNote = new HTSNote(
-                phonemeStrs: new string[] { "sil" },
+                symbols: new string[] { "sil" },
                 tone: 0,
                 startms: 0,
                 endms: paddingMs,
+                positionTicks: phrase[0][0].position - paddingTicks,
                 durationTicks: paddingTicks
             );
             //convert OpenUtau notes to HTS Labels
-            var htsNotes = phrase.Select(x => NoteToHTSNote(x, offsetTick)).Prepend(PaddingNote).ToList();
+            //var htsNotes = phrase.Select(x => NoteToHTSNote(x, offsetTick)).Prepend(PaddingNote).ToList();
+            var htsNotes = new List<HTSNote> { PaddingNote };
+            var htsPhonemes = new List<HTSPhoneme>();
+            htsPhonemes.AddRange(HTSNoteToPhonemes(PaddingNote));
+
+            //Alignment
+            for (int noteIndex = 0; noteIndex < phrase.Length; ++noteIndex) {
+                HTSNote[] Syllables = MakeSyllables(phrase[noteIndex],offsetTick);
+                htsNotes.AddRange(Syllables);
+                foreach (var htsNote in Syllables) {
+                    var notePhonemes = HTSNoteToPhonemes(htsNote);
+                    //分析第几个音素与音符对齐
+                    int firstVowelIndex = 0;//The index of the first vowel in the note
+                    for (int phIndex = 0; phIndex < htsNote.symbols.Length; phIndex++) {
+                        if (g2p.IsVowel(htsNote.symbols[phIndex])) {
+                            firstVowelIndex = phIndex;
+                            break;
+                        }
+                    }
+                    phAlignPoints.Add(new Tuple<int, double>(
+                        htsPhonemes.Count + (firstVowelIndex),//TODO
+                        timeAxis.TickPosToMsPos(htsNote.positionTicks)
+                        ));
+                    htsPhonemes.AddRange(notePhonemes);
+                }
+                notePhIndex.Add(htsPhonemes.Count);
+            }
+
+            var lastNote = htsNotes[^1];
+            phAlignPoints.Add(new Tuple<int, double>(
+                htsPhonemes.Count,
+                timeAxis.TickPosToMsPos(lastNote.positionTicks + lastNote.durationTicks)));
+
+            //make neighborhood links between htsNotes and between htsPhonemes
             foreach (int i in Enumerable.Range(0, htsNotes.Count)) {
                 htsNotes[i].index = i;
                 htsNotes[i].indexBackwards = htsNotes.Count - i;
@@ -260,31 +468,6 @@ namespace OpenUtau.Plugin.Builtin {
                     htsNotes[i - 1].next = htsNotes[i];
                 }
             }
-            var htsPhonemes = new List<HTSPhoneme>();
-            htsPhonemes.AddRange(HTSNoteToPhonemes(PaddingNote));
-            for (int noteIndex = 1; noteIndex < htsNotes.Count; ++noteIndex) {
-                HTSNote htsNote = htsNotes[noteIndex];
-                var notePhonemes = HTSNoteToPhonemes(htsNote);
-                //分析第几个音素与音符对齐
-                int firstVowelIndex = 0;//The index of the first vowel in the note
-                for(int phIndex = 0; phIndex < htsNote.phonemeStrs.Length; phIndex++) {
-                    if (g2p.IsVowel(htsNote.phonemeStrs[phIndex])) {
-                        //TODO
-                        firstVowelIndex = phIndex;
-                        break;
-                    }
-                }
-                phAlignPoints.Add(new Tuple<int, double>(
-                    htsPhonemes.Count + (firstVowelIndex),//TODO
-                    timeAxis.TickPosToMsPos(phrase[noteIndex-1][0].position)
-                    ));
-                htsPhonemes.AddRange(notePhonemes);
-                notePhIndex.Add(htsPhonemes.Count);
-            }
-            var lastNote = phrase[^1][^1];
-            phAlignPoints.Add(new Tuple<int, double>(
-                htsPhonemes.Count,
-                timeAxis.TickPosToMsPos(lastNote.position + lastNote.duration)));
             for (int i = 1; i < htsPhonemes.Count; ++i) {
                 htsPhonemes[i].prev = htsPhonemes[i - 1];
                 htsPhonemes[i - 1].next = htsPhonemes[i];
@@ -353,7 +536,6 @@ namespace OpenUtau.Plugin.Builtin {
                 }
                 partResult[group[0].position] = noteResult;
             }
-
         }
 
         //缩放音素时长序列
@@ -391,6 +573,4 @@ namespace OpenUtau.Plugin.Builtin {
             };
         }
     }
-
-    
 }
