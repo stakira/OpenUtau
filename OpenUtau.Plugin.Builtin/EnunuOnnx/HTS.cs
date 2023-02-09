@@ -61,7 +61,7 @@ namespace OpenUtau.Plugin.Builtin.EnunuOnnx {
     }
     
     public class HTSPhoneme{
-        public string phoneme;
+        public string symbol;
 
         //Links to this phoneme's neighbors and parent
         public HTSPhoneme? prev;
@@ -81,7 +81,7 @@ namespace OpenUtau.Plugin.Builtin.EnunuOnnx {
         public int distance_to_next_vowel = -1;
 
         public HTSPhoneme(string phoneme, HTSNote note) {
-            this.phoneme = phoneme;
+            this.symbol = phoneme;
             this.parent = note;
         }
 
@@ -122,11 +122,11 @@ namespace OpenUtau.Plugin.Builtin.EnunuOnnx {
         public string[] p() {
             var result = Enumerable.Repeat("xx",16).ToArray();
             result[0] = type;
-            result[1] = (beforePrev == null) ? "xx" : beforePrev.phoneme;
-            result[2] = (prev == null) ? "xx" : prev.phoneme;
-            result[3] = phoneme;
-            result[4] = (next == null) ? "xx" : next.phoneme;
-            result[5] = (afterNext == null) ? "xx" : afterNext.phoneme;
+            result[1] = (beforePrev == null) ? "xx" : beforePrev.symbol;
+            result[2] = (prev == null) ? "xx" : prev.symbol;
+            result[3] = symbol;
+            result[4] = (next == null) ? "xx" : next.symbol;
+            result[5] = (afterNext == null) ? "xx" : afterNext.symbol;
             result[11] = position.ToString();
             result[12] = position_backward.ToString();
             result[13] = distance_from_previous_vowel < 0 ? "xx" : distance_from_previous_vowel.ToString();

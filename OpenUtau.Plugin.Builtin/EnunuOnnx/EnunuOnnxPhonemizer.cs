@@ -45,6 +45,8 @@ namespace OpenUtau.Plugin.Builtin {
         
         //information used by openutau phonemizer
         protected IG2p g2p;
+        EnunuOnnxConfig enunuOnnxConfig;
+        RedirectionDict redirectionDict;
 
         //result caching
         private Dictionary<int, List<Tuple<string, int>>> partResult = new Dictionary<int, List<Tuple<string, int>>>();
@@ -103,6 +105,15 @@ namespace OpenUtau.Plugin.Builtin {
                 Log.Error(e, "failed to load Scaler");
                 return;
             }
+            //Load enunux.yaml
+            var enunuxYamlPath = Path.Join(rootPath, "enunux.yaml");
+            try {
+                enunuOnnxConfig = EnunuOnnxConfig.Load(enunuxYamlPath, singer.TextFileEncoding);
+                redirectionDict = new RedirectionDict(enunuOnnxConfig.redirections);
+            } catch (Exception e) {
+                Log.Error(e, $"failed to load {enunuxYamlPath}");
+                return;
+            }
             //Load Dictionary
             var enunuDictPath = Path.Join(rootPath, enuconfig.tablePath);
             try {
@@ -111,7 +122,7 @@ namespace OpenUtau.Plugin.Builtin {
                 Log.Error(e, $"failed to load ENUNU dictionary from {enunuDictPath}");
                 return;
             }
-            //Load enunux.yaml
+            //Load g2p from enunux.yaml
             //g2p dict should be load after enunu dict
             try
             {
@@ -419,7 +430,7 @@ namespace OpenUtau.Plugin.Builtin {
             foreach (int i in Enumerable.Range(0, htsPhonemes.Length)) {
                 htsPhonemes[i].position = i + 1;
                 htsPhonemes[i].position_backward = htsPhonemes.Length - i;
-                htsPhonemes[i].type = GetPhonemeType(htsPhonemes[i].phoneme);
+                htsPhonemes[i].type = GetPhonemeType(htsPhonemes[i].symbol);
                 if (htsPhonemes[i].type == "v") {
                     prevVowelPos = i;
                 } else {
@@ -540,7 +551,6 @@ namespace OpenUtau.Plugin.Builtin {
             durationOutScaler[0].inverse_transform(ph_dur_float);//Phoneme Duration Result in Ms
             var ph_dur = ph_dur_float.Select(x => (double)x).ToList();
 
-            //TODO
             //对齐，将时长序列转化为位置序列，单位ms
             var positions = new List<double>();
             List<double> alignGroup = ph_dur.GetRange(0, phAlignPoints[0].Item1 - 1);
@@ -557,6 +567,7 @@ namespace OpenUtau.Plugin.Builtin {
             //将位置序列转化为tick，填入结果列表
             int index = 1;
             foreach (int groupIndex in Enumerable.Range(0, phrase.Length)) {
+                string[] phonemesRedirected = redirectionDict.process(htsPhonemes.Select(x => x.symbol));
                 Note[] group = phrase[groupIndex];
                 var noteResult = new List<Tuple<string, int>>();
                 if (group[0].lyric.StartsWith("+")) {
@@ -564,8 +575,10 @@ namespace OpenUtau.Plugin.Builtin {
                 }
                 double notePos = timeAxis.TickPosToMsPos(group[0].position);//音符起点位置，单位ms
                 for (int phIndex = notePhIndex[groupIndex]; phIndex < notePhIndex[groupIndex + 1]; ++phIndex) {
-                    noteResult.Add(Tuple.Create(htsPhonemes[phIndex].phoneme, timeAxis.TicksBetweenMsPos(
-                       notePos, positions[phIndex-1])));
+                    if (!String.IsNullOrEmpty(phonemesRedirected[phIndex])) {
+                        noteResult.Add(Tuple.Create(phonemesRedirected[phIndex], timeAxis.TicksBetweenMsPos(
+                           notePos, positions[phIndex - 1])));
+                    }
                 }
                 partResult[group[0].position] = noteResult;
             }

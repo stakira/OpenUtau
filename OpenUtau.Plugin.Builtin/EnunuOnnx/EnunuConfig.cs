@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using OpenUtau.Core;
 
 //Instead of using Enunu/EnunuConfig.cs, we created a copy to add EnunuOnnx-specific features
@@ -15,8 +16,9 @@ namespace OpenUtau.Plugin.Builtin.EnunuOnnx {
         public EnunuDurationConfig duration;
         public EnunuTimelagConfig timelag;
 
-        public static EnunuConfig Load(string configPath) {
-            var configTxt = File.ReadAllText(configPath);
+        public static EnunuConfig Load(string configPath, Encoding encoding = null) {
+            encoding = encoding ?? Encoding.UTF8;
+            var configTxt = File.ReadAllText(configPath,encoding);
             RawEnunuConfig config = Yaml.DefaultDeserializer.Deserialize<RawEnunuConfig>(configTxt);
             return config.Convert();
         }
