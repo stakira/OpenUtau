@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -33,11 +34,13 @@ namespace OpenUtau.Plugin.Builtin.EnunuOnnx {
         Dictionary<string, string> replacements = new Dictionary<string, string>();
 
         public RedirectionDict(RedirectionData[] datas) {
+            //sort redirection keys from long to short
+            Array.Sort(datas, (x1,x2)=>- x1.from.Length.CompareTo(x2.from.Length));
             StringBuilder regexBuilder = new StringBuilder("(");
             foreach(var line in datas) {
                 string key = string.Join("\n", line.from);
                 replacements[key] = line.to + new string('\n',line.from.Length - 1);
-                regexBuilder.Append(Regex.Escape(key));
+                regexBuilder.Append(Regex.Escape(key)+"|");
             }
             regexBuilder[^1] = ')';
             regex = new Regex(regexBuilder.ToString());
