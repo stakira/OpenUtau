@@ -13,9 +13,6 @@ using Microsoft.ML.OnnxRuntime.Tensors;
 using Serilog;
 using OpenUtau.Plugin.Builtin.EnunuOnnx;
 using OpenUtau.Core;
-using System.Security.Policy;
-using Melanchall.DryWetMidi.Core;
-using Melanchall.DryWetMidi.Multimedia;
 
 //This phonemizer is a pure C# implemention of the ENUNU phonemizer,
 //which aims at providing all ML-based synthesizer developers with a useable phonemizer,
@@ -67,27 +64,63 @@ namespace OpenUtau.Plugin.Builtin {
                 rootPath = singer.Location;
             }
             var configPath = Path.Join(rootPath, "enuconfig.yaml");
-            var configTxt = File.ReadAllText(configPath);
-            RawEnunuConfig config = Yaml.DefaultDeserializer.Deserialize<RawEnunuConfig>(configTxt);
-            enuconfig = config.Convert();
-            //Load Dictionary
-            LoadDict(Path.Join(rootPath, enuconfig.tablePath), singer.TextFileEncoding);
+            try {
+                var configTxt = File.ReadAllText(configPath);
+                RawEnunuConfig config = Yaml.DefaultDeserializer.Deserialize<RawEnunuConfig>(configTxt);
+                enuconfig = config.Convert();
+            } catch(Exception e) {
+                Log.Error(e, $"failed to load enuconfig from {configPath}");
+                return;
+            }
+
             //Load question set
-            LoadQuestionSet(Path.Join(rootPath, enuconfig.questionPath), singer.TextFileEncoding);
+            var questionSetPath = Path.Join(rootPath, enuconfig.questionPath);
+            try {
+                LoadQuestionSet(questionSetPath, singer.TextFileEncoding);
+            } catch (Exception e) {
+                Log.Error(e, $"failed to load question set from {questionSetPath}");
+                return;
+            }
             //Load timing models
             var durationModelPath = Path.Join(rootPath, enuconfig.modelDir, "duration");
             durationModelPath = Path.Join(durationModelPath, enuconfig.duration.checkpoint);
             if (durationModelPath.EndsWith(".pth")) {
                 durationModelPath = durationModelPath[..^4] + ".onnx";
             }
-            this.durationModel = new InferenceSession(durationModelPath);
+            try {
+                this.durationModel = new InferenceSession(durationModelPath);
+            } catch (Exception e) {
+                Log.Error(e, $"failed to load duration model from {durationModelPath}");
+                return;
+            }
             //Load scalers
-            var durationInScalerPath = Path.Join(rootPath, enuconfig.statsDir, "in_duration_scaler.json");
-            this.durationInScaler = Scaler.load(durationInScalerPath, singer.TextFileEncoding);
-            var durationOutScalerPath = Path.Join(rootPath, enuconfig.statsDir, "out_duration_scaler.json");
-            this.durationOutScaler = Scaler.load(durationOutScalerPath, singer.TextFileEncoding);
+            try {
+                var durationInScalerPath = Path.Join(rootPath, enuconfig.statsDir, "in_duration_scaler.json");
+                this.durationInScaler = Scaler.load(durationInScalerPath, singer.TextFileEncoding);
+                var durationOutScalerPath = Path.Join(rootPath, enuconfig.statsDir, "out_duration_scaler.json");
+                this.durationOutScaler = Scaler.load(durationOutScalerPath, singer.TextFileEncoding);
+            } catch (Exception e) {
+                Log.Error(e, "failed to load Scaler");
+                return;
+            }
+            //Load Dictionary
+            var enunuDictPath = Path.Join(rootPath, enuconfig.tablePath);
+            try {
+                LoadDict(Path.Join(rootPath, enuconfig.tablePath), singer.TextFileEncoding);
+            } catch (Exception e) {
+                Log.Error(e, $"failed to load ENUNU dictionary from {enunuDictPath}");
+                return;
+            }
             //Load enunux.yaml
-            this.g2p = LoadG2p(rootPath);
+            //g2p dict should be load after enunu dict
+            try
+            {
+                this.g2p = LoadG2p(rootPath);
+            }
+            catch (Exception e) {
+                Log.Error(e, "failed to load g2p dictionary");
+                return; 
+            }
         }
 
         protected virtual IG2p LoadG2p(string rootPath) {
