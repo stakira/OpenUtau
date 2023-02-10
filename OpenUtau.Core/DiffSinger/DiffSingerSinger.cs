@@ -7,7 +7,6 @@ using OpenUtau.Classic;
 using OpenUtau.Core.Ustx;
 using Serilog;
 using Microsoft.ML.OnnxRuntime;
-using System.Reflection;
 
 namespace OpenUtau.Core.DiffSinger {
     class DiffSingerSinger : USinger {
@@ -118,7 +117,7 @@ namespace OpenUtau.Core.DiffSinger {
     [Serializable]
     public class DsConfig {
         public string phonemes = "phonemes.txt";
-        public string acoustic = "acoustic.onnx";
-        public string vocoder = "nsf_hifigan";
+        public string acoustic;
+        public string vocoder;
     }
 }

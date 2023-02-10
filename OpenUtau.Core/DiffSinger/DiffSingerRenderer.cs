@@ -96,6 +96,13 @@ namespace OpenUtau.Core.DiffSinger {
         float[] InvokeDiffsinger(RenderPhrase phrase,int speedup) {
             //调用Diffsinger模型
             var singer = phrase.singer as DiffSingerSinger;
+            //检测dsconfig.yaml是否正确
+            if(String.IsNullOrEmpty(singer.dsConfig.vocoder) ||
+                String.IsNullOrEmpty(singer.dsConfig.acoustic) ||
+                String.IsNullOrEmpty(singer.dsConfig.phonemes)){
+                throw new Exception("Invalid dsconfig.yaml. Please ensure that dsconfig.yaml contains keys \"vocoder\", \"acoustic\" and \"phonemes\".");
+            }
+
             var vocoder = singer.getVocoder();
             var frameMs = vocoder.frameMs();
             var frameSec = frameMs / 1000;
