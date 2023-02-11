@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
@@ -13,7 +13,7 @@ namespace OpenUtau.Plugin.Builtin {
                                                            "s","sh","z","j","t","ch","ty","ts",
                                                            "d","dy","n","ny","h","hy","f","b",
                                                            "by","p","py","m","my","y","r","4",
-                                                           "ry","w","v","ng","l","・",
+                                                           "ry","w","v","ng","l","・","B", "H",
         };
 
         static readonly string[] vowels = new string[] {
@@ -107,7 +107,7 @@ namespace OpenUtau.Plugin.Builtin {
             var attr1 = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 1) ?? default;
 
             foreach (string test in input){
-                if (singer.TryGetMappedOto(test, note.tone + attr0.toneShift, attr0.voiceColor, out oto)){
+                if (singer.TryGetMappedOto(test + attr0.alternate, note.tone + attr0.toneShift, attr0.voiceColor, out oto)){
                     return true;
                 }
             }
@@ -197,7 +197,6 @@ namespace OpenUtau.Plugin.Builtin {
                 if (substituteLookup.TryGetValue(consonant ?? string.Empty, out con)){
                         vcPhonemes[1] = $"{vowel} {con}";
                 }
-                //if (singer.TryGetMappedOto(vcPhoneme, note.tone + attr0.toneShift, attr0.voiceColor, out var oto1)) {
                 if (checkOtoUntilHit(vcPhonemes, note, out var oto1)) {
                     vcPhoneme = oto1.Alias;
                 } else {
