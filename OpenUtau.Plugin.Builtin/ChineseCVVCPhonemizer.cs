@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -34,23 +34,23 @@ namespace OpenUtau.Plugin.Builtin {
             var attr0 = notes[0].phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
             var attr1 = notes[0].phonemeAttributes?.FirstOrDefault(attr => attr.index == 1) ?? default;
             if (lyric == "-" || lyric.ToLowerInvariant() == "r") {
-                if (singer.TryGetMappedOto($"{prevVowel} R", notes[0].tone + attr0.toneShift, attr0.voiceColor, out var oto1)) {
+                if (singer.TryGetMappedOto($"{prevVowel} R" + attr0.alternate, notes[0].tone + attr0.toneShift, attr0.voiceColor, out var oto1)) {
                     return MakeSimpleResult(oto1.Alias);
                 }
                 return MakeSimpleResult($"{prevVowel} R");
             }
             int totalDuration = notes.Sum(n => n.duration);
-            if (singer.TryGetMappedOto($"{prevVowel} {lyric}", notes[0].tone + attr0.toneShift, attr0.voiceColor, out var oto)) {
+            if (singer.TryGetMappedOto($"{prevVowel} {lyric}" + attr0.alternate, notes[0].tone + attr0.toneShift, attr0.voiceColor, out var oto)) {
                 return MakeSimpleResult(oto.Alias);
             }
             int vcLen = 120;
-            if (singer.TryGetMappedOto(lyric, notes[0].tone + attr0.toneShift, attr0.voiceColor, out var cvOto)) {
+            if (singer.TryGetMappedOto(lyric + attr0.alternate, notes[0].tone + attr0.toneShift, attr0.voiceColor, out var cvOto)) {
                 vcLen = MsToTick(cvOto.Preutter);
                 if (cvOto.Overlap == 0 && vcLen < 120) {
                     vcLen = Math.Min(120, vcLen * 2); // explosive consonant with short preutter.
                 }
             }
-            if (singer.TryGetMappedOto($"{prevVowel} {consonant}", notes[0].tone + attr0.toneShift, attr0.voiceColor, out oto)) {
+            if (singer.TryGetMappedOto($"{prevVowel} {consonant}" + attr0.alternate, notes[0].tone + attr0.toneShift, attr0.voiceColor, out oto)) {
                 return new Result {
                     phonemes = new Phoneme[] {
                         new Phoneme() {
