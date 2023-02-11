@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -124,10 +124,12 @@ namespace OpenUtau.Plugin.Builtin
 			Note note = notes[0];
 			string color = string.Empty;
 			int shift = 0;
+			int? alt = 0;
 
 			PhonemeAttributes attr = note.phonemeAttributes.FirstOrDefault(a => a.index == 0);
 			color = attr.voiceColor;
 			shift = attr.toneShift;
+			alt = attr.alternate;
 
 			string[] currIMF;
 			string currPhoneme;
@@ -136,7 +138,7 @@ namespace OpenUtau.Plugin.Builtin
 			// Check if lyric is R, - or an end breath and return appropriate Result; otherwise, move to next steps
 			if (note.lyric == "R" || note.lyric == "-" || note.lyric == "H" || note.lyric == "B" || note.lyric == "bre")
 			{
-				currPhoneme = note.lyric;
+				currPhoneme = note.lyric + alt;
 
 				if (prevNeighbour == null)
 				{
@@ -194,7 +196,7 @@ namespace OpenUtau.Plugin.Builtin
 			else currIMF = GetIMFFromHint(note.phoneticHint);
 
 			// Convert current note to phoneme
-			currPhoneme = $"{currIMF[0]}{currIMF[1]}";
+			currPhoneme = $"{currIMF[0]}{currIMF[1]}" + alt;
 
 			if (currIMF[0] == "gg" || currIMF[0] == "dd" || currIMF[0] == "bb")
 			{
