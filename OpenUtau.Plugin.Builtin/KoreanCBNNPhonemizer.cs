@@ -179,7 +179,7 @@ namespace OpenUtau.Plugin.Builtin {
                 var attr1 = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 1) ?? default;
 
                 foreach (string test in input){
-                    if (singer.TryGetMappedOto(test, note.tone + attr0.toneShift, attr0.voiceColor, out oto)){
+                    if (singer.TryGetMappedOto(test + attr0.alternate, note.tone + attr0.toneShift, attr0.voiceColor, out oto)){
                         return true;
                     }
                 }
@@ -629,7 +629,7 @@ namespace OpenUtau.Plugin.Builtin {
                         fcLength = totalDuration / 3;
                     }
 
-                    if (singer.TryGetMappedOto(CV, note.tone + attr0.toneShift, attr0.voiceColor, out var oto1) && singer.TryGetMappedOto(FC, note.tone + attr0.toneShift, attr0.voiceColor, out var oto2)) {
+                    if (singer.TryGetMappedOto(CV + attr0.alternate, note.tone + attr0.toneShift, attr0.voiceColor, out var oto1) && singer.TryGetMappedOto(FC + attr0.alternate, note.tone + attr0.toneShift, attr0.voiceColor, out var oto2)) {
                         CV = oto1.Alias;
                         FC = oto2.Alias;
                         return new Result {
@@ -664,7 +664,7 @@ namespace OpenUtau.Plugin.Builtin {
                         else if ((TNLconsonant == "k") || (TNLconsonant == "t") || (TNLconsonant == "p")  || (TNLconsonant == "dd") || (TNLconsonant == "bb") || (TNLconsonant == "ss") || (TNLconsonant == "jj")) { vcLength = totalDuration / 3; }
                         vcLength = Math.Min(totalDuration / 2, vcLength);
 
-                        if (singer.TryGetMappedOto(CV, note.tone + attr0.toneShift, attr0.voiceColor, out var oto1) && singer.TryGetMappedOto(VC, note.tone + attr0.toneShift, attr0.voiceColor, out var oto2)) {
+                        if (singer.TryGetMappedOto(CV + attr0.alternate, note.tone + attr0.toneShift, attr0.voiceColor, out var oto1) && singer.TryGetMappedOto(VC + attr0.alternate, note.tone + attr0.toneShift, attr0.voiceColor, out var oto2)) {
                             CV = oto1.Alias;
                             VC = oto2.Alias;
                             return new Result {
@@ -685,7 +685,7 @@ namespace OpenUtau.Plugin.Builtin {
 
 
                 // 그 외(받침 없는 마지막 노트)
-                if (singer.TryGetMappedOto(CV, note.tone + attr0.toneShift, attr0.voiceColor, out var oto)){
+                if (singer.TryGetMappedOto(CV + attr0.alternate, note.tone + attr0.toneShift, attr0.voiceColor, out var oto)){
                         CV = oto.Alias;
                         return new Result {
                             phonemes = new Phoneme[] {
@@ -709,7 +709,7 @@ namespace OpenUtau.Plugin.Builtin {
                     prevIsBreath = true; // to prevent this→→ case→→, for example... "[사, -, 사 (=notes)]" should be "[- sa,  a -, - sa(=phonemes)]", but it becomes [sa, a -, 사(=phonemes)] in phonemizer, so '사' note becomes *no sound.
                 }
 
-                if (singer.TryGetMappedOto(endBreath, note.tone + attr0.toneShift, attr0.voiceColor, out var oto)){
+                if (singer.TryGetMappedOto(endBreath + attr0.alternate, note.tone + attr0.toneShift, attr0.voiceColor, out var oto)){
                         endBreath = oto.Alias;
                         return new Result {
                             phonemes = new Phoneme[] {
