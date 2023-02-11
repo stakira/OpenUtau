@@ -16,7 +16,7 @@ namespace OpenUtau.Core {
             // For this simple phonemizer, all these notes maps to a single phoneme.
             string alias = notes[0].lyric;
             var attr0 = notes[0].phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
-            if (singer.TryGetMappedOto(notes[0].lyric, notes[0].tone + attr0.toneShift, attr0.voiceColor, out var oto)) {
+            if (singer.TryGetMappedOto(notes[0].lyric + attr0.alternate, notes[0].tone + attr0.toneShift, attr0.voiceColor, out var oto)) {
                 alias = oto.Alias;
             }
             return new Result {
