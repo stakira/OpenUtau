@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
@@ -64,14 +64,16 @@ namespace OpenUtau.Plugin.Builtin {
             // Get color
             string color = string.Empty;
             int toneShift = 0;
+            int? alternate = 0;
             if (note.phonemeAttributes != null) {
                 var attr = note.phonemeAttributes.FirstOrDefault(attr => attr.index == 0);
                 color = attr.voiceColor;
                 toneShift = attr.toneShift;
+                alternate = attr.alternate;
             }
-            if (singer.TryGetMappedOto(phoneme, note.tone + toneShift, color, out var oto)) {
+            if (singer.TryGetMappedOto(phoneme + alternate, note.tone + toneShift, color, out var oto)) {
                 phoneme = oto.Alias;
-            } else if (singer.TryGetMappedOto(note.lyric, note.tone + toneShift, color, out oto)) {
+            } else if (singer.TryGetMappedOto(note.lyric + alternate, note.tone + toneShift, color, out oto)) {
                 phoneme = oto.Alias;
             } else {
                 phoneme = note.lyric;
