@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using OpenUtau.Core;
@@ -30,10 +31,14 @@ namespace OpenUtau.Plugin.Builtin.EnunuOnnx {
 
     class RedirectionDict {
         //reference: https://stackoverflow.com/questions/1321331/replace-multiple-string-elements-in-c-sharp
-        Regex regex;
+        //if no redirection, regex is null
+        Regex? regex = null;
         Dictionary<string, string> replacements = new Dictionary<string, string>();
 
         public RedirectionDict(RedirectionData[] datas) {
+            if (datas == null || datas.Length == 0) {
+                return;
+            }
             //sort redirection keys from long to short
             Array.Sort(datas, (x1,x2)=>- x1.from.Length.CompareTo(x2.from.Length));
             StringBuilder regexBuilder = new StringBuilder("(");
@@ -47,6 +52,9 @@ namespace OpenUtau.Plugin.Builtin.EnunuOnnx {
         }
 
         public string[] process(IEnumerable<string> symbols) {
+            if (regex == null) {
+                return symbols.ToArray();
+            }
             string input = string.Join("\n", symbols);
             string output = regex.Replace(input, delegate (Match m) { return replacements[m.Value]; });
             return output.Split("\n");
