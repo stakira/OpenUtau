@@ -336,6 +336,20 @@ namespace OpenUtau.Plugin.Builtin {
             return newNotes.ToArray();
         }
 
+        protected virtual Note[] HandleExcessNotes(Note[] notes, List<int> vowelIds) {
+            var newNotes = new List<Note>();
+            var SyllableCount = vowelIds.Count;
+            newNotes.AddRange(notes.Take(SyllableCount - 1));
+            var lastNote = notes[SyllableCount - 1];
+            newNotes.Add(new Note() {
+                position = lastNote.position,
+                duration = notes[(SyllableCount - 1)..].Select(note => note.duration).Sum(),
+                tone = lastNote.tone,
+                phonemeAttributes = lastNote.phonemeAttributes
+            });
+            return newNotes.ToArray();
+        }
+
         private (string[], int[], Note[]) GetSymbolsAndVowels(Note[] notes) {
             var mainNote = notes[0];
             var symbols = GetSymbols(mainNote);
@@ -353,6 +367,8 @@ namespace OpenUtau.Plugin.Builtin {
             }
             if (notes.Length < vowelIds.Count) {
                 notes = HandleNotEnoughNotes(notes, vowelIds);
+            } else if(notes.Length > vowelIds.Count) {
+                notes = HandleExcessNotes(notes, vowelIds);
             }
             return (symbols, vowelIds.ToArray(), notes);
         }
@@ -378,18 +394,9 @@ namespace OpenUtau.Plugin.Builtin {
             // Making the first syllable
 
             // there is only empty space before us
-            /*syllables[0] = new Syllable() {
-                prevV = "",
-                cc = symbols.Take(firstVowelId).ToArray(),
-                v = symbols[firstVowelId],
-                tone = notes[0].tone,
-                duration = -1,
-                position = 0,
-                vowelTone = notes[0].tone
-            };*/
             syllables[0] = new Syllable() {
                 symbols = symbols.Take(firstVowelId + 1).ToList(),
-                notes = inputNotes[0..1].ToList()
+                notes = notes[0..1].ToList()
             };
 
             // normal syllables after the first one
@@ -405,16 +412,6 @@ namespace OpenUtau.Plugin.Builtin {
                     syllables[noteI] = new Syllable() {
                         symbols = ccs.Append(symbols[lastSymbolI]).ToList(),
                         notes = new List<Note>() { notes[noteI] }
-                        /*
-                        prevV = syllables[noteI - 1].v,
-                        cc = ccs.ToArray(),
-                        v = symbols[lastSymbolI],
-                        tone = notes[noteI - 1].tone,
-                        duration = notes[noteI - 1].duration,
-                        position = position,
-                        vowelTone = notes[noteI].tone,
-                        canAliasBeExtended = true // for all not-first notes is allowed
-                        */
                     };
                     ccs = new List<string>();
                     noteI++;
