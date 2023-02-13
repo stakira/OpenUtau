@@ -34,7 +34,7 @@ namespace OpenUtau.Plugin.Builtin {
         string[] breaks = new string[] { "br", "cl" };
         string[] pauses = new string[] { "pau" };
         string[] silences = new string[] { "sil" };
-
+        string defaultPause = "pau";
         //model and information used by model
         InferenceSession durationModel;
         Dictionary<int, Tuple<string, List<Regex>>> binaryDict = new Dictionary<int, Tuple<string, List<Regex>>>();
@@ -254,7 +254,7 @@ namespace OpenUtau.Plugin.Builtin {
         string[] GetSymbols(Note note) {
             if (string.IsNullOrEmpty(note.phoneticHint)) {
                 // User has not provided hint, query CMUdict.
-                return g2p.Query(note.lyric.ToLowerInvariant());
+                return g2p.Query(note.lyric.ToLowerInvariant()) ?? new string[] {defaultPause};
             }
             // Split space-separated symbols into an array.
             return note.phoneticHint.Split()
