@@ -49,7 +49,6 @@ namespace OpenUtau.Core.DiffSinger {
 
         //通过名称获取音素时长模型
         public DsRhythmizer(string name) {
-            byte[] model;
             this.name = name;
             Location = Path.Combine(PathManager.Inst.DependencyPath, name);
             config = Core.Yaml.DefaultDeserializer.Deserialize<DsRhythmizerConfig>(
@@ -59,8 +58,7 @@ namespace OpenUtau.Core.DiffSinger {
             //导入音素列表
             string phonemesPath = Path.Combine(Location, config.phonemes);
             phonemes = File.ReadLines(phonemesPath, Encoding.UTF8).ToList();
-            model = File.ReadAllBytes(Path.Combine(Location, config.model));
-            session = Onnx.getInferenceSession(model);
+            session = new InferenceSession(Path.Combine(Location, config.model));
         }
     }
 
