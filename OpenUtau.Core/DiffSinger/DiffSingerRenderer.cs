@@ -140,7 +140,7 @@ namespace OpenUtau.Core.DiffSinger {
                 .Reshape(new int[] { 1, f0.Length });
             acousticInputs.Add(NamedOnnxValue.CreateFromTensor("f0",f0tensor));
             acousticInputs.Add(NamedOnnxValue.CreateFromTensor("speedup",
-                new DenseTensor<long>(new long[] { speedup }, new int[] { },false)));
+                new DenseTensor<long>(new long[] { speedup }, new int[] { 1 },false)));
             Tensor<float> mel;
             var acousticOutputs = singer.getAcousticSession().Run(acousticInputs);
             mel = acousticOutputs.First().AsTensor<float>().Clone();
