@@ -125,9 +125,10 @@ namespace OpenUtau.Core.DiffSinger {
                 .Append(tailFrames)
                 .ToList();
             var totalFrames = (int)(durations.Sum());
-            float[] f0 = SampleCurve(phrase, phrase.pitches, 0, totalFrames, headFrames, tailFrames, x => MusicMath.ToneToFreq(x * 0.01))
+            float[] f0 = SampleCurve(phrase, phrase.pitches, 0, totalFrames, headFrames, tailFrames, 
+                x => MusicMath.ToneToFreq(x * 0.01))
                 .Select(f => (float)f).ToArray();
-            //不支持toneShift
+            //toneShift isn't supported
 
             var acousticInputs = new List<NamedOnnxValue>();
             acousticInputs.Add(NamedOnnxValue.CreateFromTensor("tokens",
@@ -141,6 +142,20 @@ namespace OpenUtau.Core.DiffSinger {
             acousticInputs.Add(NamedOnnxValue.CreateFromTensor("f0",f0tensor));
             acousticInputs.Add(NamedOnnxValue.CreateFromTensor("speedup",
                 new DenseTensor<long>(new long[] { speedup }, new int[] { 1 },false)));
+
+            //gender
+            //OpenUTAU中，GENC的定义：100=共振峰移动12个半音，正的GENC为向下移动
+            if (singer.dsConfig.useKeyShiftEmbed) {
+                var positiveScale = 12/singer.dsConfig.augmentationArgs.randomPitchShifting.range[1]/100;
+                var negativeScale = - 12/singer.dsConfig.augmentationArgs.randomPitchShifting.range[0]/100;
+                float[] gender = SampleCurve(phrase, phrase.gender, 0, totalFrames, headFrames, tailFrames,
+                    x=> (x<0)?(-x * positiveScale):(-x * negativeScale))
+                    .Select(f => (float)f).ToArray();
+                var genderTensor = new DenseTensor<float>(gender, new int[] { gender.Length })
+                    .Reshape(new int[] { 1, gender.Length });
+                acousticInputs.Add(NamedOnnxValue.CreateFromTensor("gender", genderTensor));
+            }
+
             Tensor<float> mel;
             var acousticOutputs = singer.getAcousticSession().Run(acousticInputs);
             mel = acousticOutputs.First().AsTensor<float>().Clone();
