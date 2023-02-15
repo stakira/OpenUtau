@@ -21,6 +21,7 @@ namespace OpenUtau.Core.DiffSinger {
         static readonly HashSet<string> supportedExp = new HashSet<string>(){
             Format.Ustx.DYN,
             Format.Ustx.PITD,
+            Format.Ustx.GENC,
         };
 
         struct AcousticResult {
