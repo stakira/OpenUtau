@@ -589,7 +589,7 @@ namespace OpenUtau.App.Views {
             }
             if (editState != null) {
                 editState.Begin(point.Pointer, point.Position);
-                editState.Update(point.Pointer, point.Position);
+                editState.Update(point.Pointer, point.Position, args);
             }
         }
 
@@ -600,7 +600,7 @@ namespace OpenUtau.App.Views {
                 valueTipPointerPosition = args.GetCurrentPoint(valueTipCanvas!).Position;
             }
             if (editState != null) {
-                editState.Update(point.Pointer, point.Position);
+                editState.Update(point.Pointer, point.Position, args);
             } else {
                 Cursor = null;
             }
@@ -615,7 +615,7 @@ namespace OpenUtau.App.Views {
             }
             var canvas = (Canvas)sender;
             var point = args.GetCurrentPoint(canvas);
-            editState.Update(point.Pointer, point.Position);
+            editState.Update(point.Pointer, point.Position, args);
             editState.End(point.Pointer, point.Position);
             editState = null;
             Cursor = null;

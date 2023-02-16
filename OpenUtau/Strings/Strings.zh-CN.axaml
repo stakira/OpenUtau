@@ -346,6 +346,8 @@
   <system:String x:Key="tip.notes.zoomx">◀ 鼠标滚轮横向缩放 ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">鼠标滚轮纵向缩放 ▶</system:String>
 
+  <system:String x:Key="tracks.duplicate">复制音轨</system:String>
+  <system:String x:Key="tracks.duplicatesettings">复制音轨设置</system:String>
   <system:String x:Key="tracks.more">更多</system:String>
   <system:String x:Key="tracks.movedown">下移</system:String>
   <system:String x:Key="tracks.moveup">上移</system:String>
