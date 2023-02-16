@@ -104,8 +104,8 @@ namespace OpenUtau.Core {
                 tempoSegments[i].tickEnd = tempoSegments[i + 1].tickPos;
             }
             for (var i = 0; i < tempoSegments.Count; ++i) {
-                tempoSegments[i].msPerTick = 60.0 * 1000.0 * tempoSegments[i].beatPerBar / (tempoSegments[i].bpm * 4 * project.resolution);
-                tempoSegments[i].ticksPerMs = tempoSegments[i].bpm * 4 * project.resolution / (60.0 * 1000.0 * tempoSegments[i].beatPerBar);
+                tempoSegments[i].msPerTick = 60.0 * 1000.0 * 4 / (tempoSegments[i].bpm * 4 * project.resolution);
+                tempoSegments[i].ticksPerMs = tempoSegments[i].bpm * 4 * project.resolution / (60.0 * 1000.0 * 4);
                 if (i > 0) {
                     tempoSegments[i].msPos = tempoSegments[i - 1].msPos + tempoSegments[i - 1].Ticks * tempoSegments[i - 1].msPerTick;
                     tempoSegments[i - 1].msEnd = tempoSegments[i].msPos;
