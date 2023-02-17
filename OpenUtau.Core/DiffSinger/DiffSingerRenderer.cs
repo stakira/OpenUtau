@@ -147,8 +147,9 @@ namespace OpenUtau.Core.DiffSinger {
             //gender
             //OpenUTAU中，GENC的定义：100=共振峰移动12个半音，正的GENC为向下移动
             if (singer.dsConfig.useKeyShiftEmbed) {
-                var positiveScale = 12/singer.dsConfig.augmentationArgs.randomPitchShifting.range[1]/100;
-                var negativeScale = - 12/singer.dsConfig.augmentationArgs.randomPitchShifting.range[0]/100;
+                var range = singer.dsConfig.augmentationArgs.randomPitchShifting.range;
+                var positiveScale = (range[1]==0) ? 0 : (12/range[1]/100);
+                var negativeScale = (range[0]==0) ? 0 : (-12/range[0]/100);
                 float[] gender = SampleCurve(phrase, phrase.gender, 0, totalFrames, headFrames, tailFrames,
                     x=> (x<0)?(-x * positiveScale):(-x * negativeScale))
                     .Select(f => (float)f).ToArray();
