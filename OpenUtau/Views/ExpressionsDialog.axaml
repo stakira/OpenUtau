@@ -78,7 +78,11 @@
         <TextBlock Margin="140,24,0,4" Text="{DynamicResource exps.sepbycomma}"/>
       </Grid>
     </StackPanel>
-    <Button Margin="10" Width="80" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+      <Button Margin="10" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+            Content="{DynamicResource exps.getsuggestions}" Command="{Binding GetSuggestions}"/>
+      <Button Margin="10" Width="80" HorizontalAlignment="Right" VerticalAlignment="Bottom"
             Content="{DynamicResource exps.apply}" Click="ApplyButtonClicked"/>
+    </StackPanel>
   </Grid>
 </Window>
