@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using OpenUtau.Api;
@@ -9,8 +9,8 @@ namespace OpenUtau.Plugin.Builtin {
     [Phonemizer("Spanish VCCV Phonemizer", "ES VCCV", "Lotte V", language: "ES")]
     public class SpanishVCCVPhonemizer : SyllableBasedPhonemizer {
         /// <summary>
-        /// Based on nJokis' list.
-        /// (EDIT LATER!!!)
+        /// Based on the nJokis method.
+        /// Supports automatic consonant substitutes, such as seseo, through ValidateAlias.
         ///</summary>
 
         private readonly string[] vowels = "a,e,i,o,u,BB,DD,ff,GG,ll,mm,nn,rrr,ss,xx".Split(',');
@@ -90,89 +90,12 @@ namespace OpenUtau.Plugin.Builtin {
                     }
                 }
             } else {
-                //var rcv = $"-{cc.Last()}{v}";
-                //basePhoneme = cv;
-                //if (HasOto(cv, syllable.vowelTone)) {
-                //    basePhoneme = cv;
-                //} else if (cc[0].Contains("I")) {
-                //    basePhoneme = $"y{v}";
-                //}
-                //if (!HasOto(cv, syllable.vowelTone)) {
-                //    cv = ValidateAlias(cv);
-                //    basePhoneme = cv;
-                //} else if (cc[0].Contains("U")) {
-                //    basePhoneme = $"w{v}";
-                //if (!HasOto(cv, syllable.vowelTone) && HasOto(rcv, syllable.vowelTone)) {
-                //    basePhoneme = rcv;
-                //} else {
                 var cv = cc.Last() + v;
-                //var rcv = $"-{cc.Last()}{v}";
-                //if (!HasOto(cv, syllable.vowelTone) && HasOto(rcv, syllable.vowelTone)) {
-                //    //rcv = ValidateAlias(rcv);
-                //    basePhoneme = rcv;
-                //} else {
-                //    cv = ValidateAlias(cv);
-                //    basePhoneme = cv;
-                //    //if (cv.StartsWith("I")) {
-
-                //    //}
-                //}
-                //}
-
-                //if (HasOto(cv, syllable.vowelTone)) {
-                    //cv = ValidateAlias(cv);
                 basePhoneme = cv;
                 if (!HasOto(cv, syllable.vowelTone)) {
                     cv = ValidateAlias(cv);
                     basePhoneme = cv;
                 }
-                //} else {
-                    //rcv = ValidateAlias(rcv);
-                    //basePhoneme = rcv;
-                    //if (cv.StartsWith("I")) {
-
-                    //}
-                //}
-
-                //if (HasOto(cv, syllable.vowelTone)) {
-                //    cv = ValidateAlias(cv);
-                //    basePhoneme = cv;
-                //} else {
-                //    rcv = ValidateAlias(rcv);
-                //    basePhoneme = rcv;
-                //    //if (cv.StartsWith("I")) {
-
-                //    //}
-                //}
-
-
-
-                //if (HasOto(cv, syllable.vowelTone)) {
-                //    ValidateAlias(cv);
-                //    basePhoneme = cv;
-                //if (!HasOto(cv, syllable.vowelTone)) {
-                //    ValidateAlias(cv);
-                //    basePhoneme = cv;
-                //}
-                //} else if (!HasOto(cv, syllable.vowelTone)) {
-                //    ValidateAlias(cv);
-                //    basePhoneme = cv;
-                //} else if (HasOto(rcv, syllable.vowelTone)) {
-                //    basePhoneme = rcv;
-                //if (!HasOto(rcv, syllable.vowelTone)) {
-                //    ValidateAlias(rcv);
-                //    basePhoneme = rcv;
-                //}
-                //} else if (!HasOto(cv, syllable.vowelTone) && !HasOto(rcv, syllable.vowelTone)) {
-                //    ValidateAlias(rcv);
-                //    basePhoneme = rcv;
-                //} else {
-                //    basePhoneme = cv;
-                //if (!HasOto(cv, syllable.vowelTone)) {
-                //    ValidateAlias(cv);
-                //     basePhoneme = cv;
-                //}
-                //}
                 // try CCV
                 if (cc.Length - firstC > 1) {
                     for (var i = firstC; i < cc.Length; i++) {
@@ -202,7 +125,6 @@ namespace OpenUtau.Plugin.Builtin {
                     }
                 }
                 for (var i = lastC + 1; i >= 0; i--) {
-                    //var vr = $"{prevV}-";
                     var vcc = $"{prevV} {string.Join("", cc.Take(i))}";
                     var vcc2 = $"{prevV}{string.Join("", cc.Take(i))}";
                     var vcc3 = $"{prevV}{string.Join(" ", cc.Take(2))}";
@@ -212,7 +134,6 @@ namespace OpenUtau.Plugin.Builtin {
                     var vc = $"{prevV} {cc[0]}";
                     var vc2 = $"{prevV}{cc[0]}";
                     if (i == 0) {
-                        //phonemes.Add(vr);
                         TryAddPhoneme(phonemes, syllable.tone, ValidateAlias(vcc), ValidateAlias(vc));
                     } else
                     if (HasOto(vcc, syllable.tone) && !HasOto(cc1, syllable.tone) && !HasOto(cc2, syllable.tone)) {
@@ -272,9 +193,6 @@ namespace OpenUtau.Plugin.Builtin {
                         }
                         break;
                     } else {
-                        //vc = ValidateAlias(vc);
-                        //phonemes.Add(vc);
-                        //break;
                         continue;
                     }
                 }
@@ -282,7 +200,6 @@ namespace OpenUtau.Plugin.Builtin {
             for (var i = firstC; i < lastC; i++) {
                 // we could use some CCV, so lastC is used
                 // we could use -CC so firstC is used
-                //var rccv = $"- {string.Join("", cc)}{v}";
                 var cc1 = $"{string.Join("", cc.Skip(i))}";
                 var ccv = string.Join("", cc.Skip(i)) + v;
                 var ucv = $"_{cc.Last()}{v}";
@@ -290,12 +207,6 @@ namespace OpenUtau.Plugin.Builtin {
                     if (!HasOto(cc1, syllable.tone)) {
                         cc1 = ValidateAlias(cc1);
                     }
-                    //if (!HasOto(cc1, syllable.tone)) {
-                    //    cc1 = $"-{string.Join("", cc.Skip(i))}";
-                    //}
-                    //if (!HasOto(cc1, syllable.tone)) {
-                    //    cc1 = ValidateAlias(cc1);
-                    //}
                     if (!HasOto(cc1, syllable.tone)) {
                         cc1 = $"{cc[i]} {cc[i + 1]}";
                     }
@@ -326,12 +237,6 @@ namespace OpenUtau.Plugin.Builtin {
                         if (!HasOto(cc2, syllable.tone)) {
                             cc2 = ValidateAlias(cc2);
                         }
-                        //if (!HasOto(cc2, syllable.tone)) {
-                        //    cc2 = $"-{string.Join("", cc.Skip(i))}";
-                        //}
-                        //if (!HasOto(cc2, syllable.tone)) {
-                        //    cc2 = ValidateAlias(cc2);
-                        //}
                         if (!HasOto(cc2, syllable.tone)) {
                             cc2 = $"{cc[i + 1]} {cc[i + 2]}";
                         }
@@ -422,26 +327,6 @@ namespace OpenUtau.Plugin.Builtin {
             foreach (var consonant in new[] { "x" }) {
                 alias = alias.Replace("x", "h");
             }
-            //foreach (var consonant in new[] { "U" }) {
-            //    foreach (var vowel in vowels) {
-            //        alias = alias.Replace("U" + vowel, "w" + vowel);
-            //    }
-            //}
-            //foreach (var consonant in new[] { "b" }) {
-            //foreach (var vowel in vowels) {
-            //    alias = alias.Replace("b", "B");
-            //}
-            //}
-            //foreach (var consonant in new[] { "d" }) {
-            //foreach (var vowel in vowels) {
-            //    alias = alias.Replace("d", "D");
-            //}
-            //}
-            //foreach (var consonant in new[] { "g" }) {
-            //foreach (var vowel in vowels) {
-            //    alias = alias.Replace("g", "G");
-            //}
-            //}
             return alias;
         }
     }
