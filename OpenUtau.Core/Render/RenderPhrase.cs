@@ -158,6 +158,7 @@ namespace OpenUtau.Core.Render {
         public readonly float[] toneShift;
         public readonly float[] tension;
         public readonly float[] voicing;
+        public readonly Tuple<string, float[]>[] curves;//custom curves defined by renderer
         public readonly ulong preEffectHash;
         public readonly ulong hash;
 
@@ -289,6 +290,17 @@ namespace OpenUtau.Core.Render {
             tension = SampleCurve(part, Format.Ustx.TENC, pitchStart, pitches.Length, (x, _) => x);
             breathiness = SampleCurve(part, Format.Ustx.BREC, pitchStart, pitches.Length, (x, _) => x);
             voicing = SampleCurve(part, Format.Ustx.VOIC, pitchStart, pitches.Length, (x, _) => x);
+
+            var builtinCurves = new string[] { 
+                Format.Ustx.DYN, 
+                Format.Ustx.SHFC, 
+                Format.Ustx.GENC, 
+                Format.Ustx.TENC, 
+                Format.Ustx.BREC, 
+                Format.Ustx.VOIC };
+
+            curves = part.curves.Where(c => !builtinCurves.Contains(c.abbr))
+                .Select(c=> Tuple.Create(c.abbr,SampleCurve(part, c.abbr, pitchStart, pitches.Length, (x, _) => x))).ToArray();
 
             preEffectHash = Hash(false);
             hash = Hash(true);
