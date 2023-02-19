@@ -123,6 +123,12 @@ namespace OpenUtau.Plugin.Builtin
                 } else if (!HasOto(rcv, syllable.vowelTone)) {
                     rcv = ValidateAlias(rcv);
                     basePhoneme = rcv;
+                    if (!HasOto(ValidateAlias(rcv), syllable.vowelTone)) {
+                        basePhoneme = cv;
+                        if (consonants.Contains(cc[0])) {
+                            TryAddPhoneme(phonemes, syllable.tone, $"- {cc[0]}");
+                        }
+                    }
                 } else {
                     basePhoneme = cv;
                     if (consonants.Contains(cc[0])) {
