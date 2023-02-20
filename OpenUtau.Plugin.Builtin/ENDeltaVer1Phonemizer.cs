@@ -527,23 +527,23 @@ namespace OpenUtau.Plugin.Builtin
             foreach (var c in longConsonants) {
                 if (alias.Contains(c)) {
                     if (!alias.StartsWith(c)) {
-                        if (alias.EndsWith(c)) {
-                            return base.GetTransitionBasicLengthMs() * 2.0;
-                        }
+                        return base.GetTransitionBasicLengthMs() * 2.0;
                     }
                 }
             }
             foreach (var c in normalConsonants) {
                 if (!alias.Contains("_D")) {
-                    if (alias.EndsWith(c)) {
-                        return base.GetTransitionBasicLengthMs();
-                    }   
+                    if (alias.Contains(c)) {
+                        if (!alias.StartsWith(c)) {
+                            return base.GetTransitionBasicLengthMs();
+                        }
+                    }
                 }
             }
 
             foreach (var c in shortConsonants) {
                 if (alias.Contains(c)) {
-                    if (!alias.EndsWith(" _")) {
+                    if (!alias.Contains(" _")) {
                         return base.GetTransitionBasicLengthMs() * 0.50;
                     }
                 }
