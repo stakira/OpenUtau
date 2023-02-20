@@ -50,7 +50,7 @@
   <system:String x:Key="exps.caption">Expressions</system:String>
   <system:String x:Key="exps.defaultvalue">Default</system:String>
   <system:String x:Key="exps.flag">Resampler Flag</system:String>
-  <system:String x:Key="exps.getsuggestions">Get Suggestions</system:String>
+  <system:String x:Key="exps.getsuggestions">Add all expressions suggested by renderers</system:String>
   <system:String x:Key="exps.isflag">Is Resampler Flag</system:String>
   <system:String x:Key="exps.maxvalue">Max</system:String>
   <system:String x:Key="exps.minvalue">Min</system:String>
