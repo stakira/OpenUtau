@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using OpenUtau.Api;
@@ -52,7 +52,7 @@ namespace OpenUtau.Plugin.Builtin {
             } else if (syllable.IsStartingCVWithOneConsonant) {
                 // TODO: move to config -CV or -C CV
                 var rcv = $"-{cc[0]}{v}";
-                if (HasOto(rcv, syllable.tone)) {
+                if (HasOto(rcv, syllable.vowelTone)) {
                     basePhoneme = rcv;
                 } else {
                     basePhoneme = $"{cc[0]}{v}";
@@ -60,7 +60,7 @@ namespace OpenUtau.Plugin.Builtin {
             } else if (syllable.IsStartingCVWithMoreThanOneConsonant) {
                 // try RCCV
                 var rccv = $"-{string.Join("", cc)}{v}";
-                if (HasOto(rccv, syllable.vowelTone)) {
+                if (HasOto(rccv, syllable.vowelTone) && !rccv.Contains("-bre")) {
                     basePhoneme = rccv;
                 } else {
                     var _cv = $"_{cc.Last()}{v}";
@@ -85,7 +85,7 @@ namespace OpenUtau.Plugin.Builtin {
                         for (var i = firstC; i < cc.Length; i++)
                         {
                             var ccv = $"{string.Join("", cc.Skip(i))}{v}";
-                            if (HasOto(ccv, syllable.vowelTone))
+                            if (HasOto(ccv, syllable.vowelTone) && !ccv.Contains("bre"))
                             {
                                 lastC = i;
                                 basePhoneme = ccv;
@@ -153,6 +153,8 @@ namespace OpenUtau.Plugin.Builtin {
                 var vcr = $"{v}{cc[0]}-";
                 if (HasOto(vcr, ending.tone)) {
                     phonemes.Add(vcr);
+                } else {
+                    phonemes.Add($"{v} {cc[0]}");
                 }
             } else if (ending.IsEndingVCWithMoreThanOneConsonant) {
                 phonemes.Add($"{v} {cc[0]}");
