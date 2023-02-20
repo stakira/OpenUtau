@@ -1026,6 +1026,51 @@ namespace OpenUtau.App.Views {
             lastPoint = point;
         }
     }
+    
+    class SmoothenPitchState : NoteEditState {
+        protected override bool ShowValueTip => false;
+        int brushRadius = 10;
+        int kernelRadius = 3;
+        double kernelWeight = 1.0 / (2 * 3 + 1);
+        public SmoothenPitchState(
+            Canvas canvas,
+            PianoRollViewModel vm,
+            IValueTip valueTip) : base(canvas, vm, valueTip) { }
+        public override void Begin(IPointer pointer, Point point) {
+            base.Begin(pointer, point);
+        }
+        private double GetPitch(int tick, UCurve? curve = null) {
+            var point = vm.NotesViewModel.TickToneToPoint(tick, 0);
+            var pitch = vm.NotesViewModel.HitTest.SamplePitch(point);
+            if (pitch == null) return 0;
+            if (curve == null) return pitch.Value;
+            return pitch.Value + curve.Sample(tick);
+        }
+        public override void Update(IPointer pointer, Point point) {
+            if (vm.NotesViewModel.Part == null) return;
+            var curve = vm.NotesViewModel.Part.curves.FirstOrDefault(c => c.abbr == Core.Format.Ustx.PITD);
+            if (curve == null) return;
+            double total = 0;
+            List<(int tick, int pitch)> newPoints = new List<(int tick, int pitch)>();
+            int baseTick = ((int)Math.Round(vm.NotesViewModel.PointToTick(point) / 5.0) - brushRadius) * 5;
+            for (int i = -kernelRadius; i <= kernelRadius; i++) total += GetPitch(baseTick + i * 5, curve);
+            newPoints.Add((baseTick, (int)Math.Round(total * kernelWeight - GetPitch(baseTick))));
+            total -= GetPitch(baseTick - kernelRadius * 5, curve);
+            for (int i = -brushRadius + 1; i <= brushRadius; i++) {
+                baseTick += 5;
+                total += GetPitch(baseTick + kernelRadius * 5, curve);
+                newPoints.Add((baseTick, (int)Math.Round(total * kernelWeight - GetPitch(baseTick))));
+                total -= GetPitch(baseTick - kernelRadius * 5, curve);
+            }
+            foreach (var (tick, pitch) in newPoints)
+                DocManager.Inst.ExecuteCmd(new SetCurveCommand(
+                    vm.NotesViewModel.Project,
+                    vm.NotesViewModel.Part,
+                    Core.Format.Ustx.PITD,
+                    tick, pitch,
+                    tick, pitch));
+        }
+    }
 
     class ResetPitchState : NoteEditState {
         public override MouseButton MouseButton => MouseButton.Right;
