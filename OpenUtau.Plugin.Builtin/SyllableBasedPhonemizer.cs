@@ -364,7 +364,7 @@ namespace OpenUtau.Plugin.Builtin {
         /// <param inputNotes="notes"></param>
         /// <returns></returns>
         protected Ending? MakeEnding(Note[] inputNotes) {
-            if (inputNotes.Length == 0 || inputNotes[0].lyric.StartsWith(FORCED_ALIAS_SYMBOL)) {
+            if (inputNotes == null || inputNotes.Length == 0 || inputNotes[0].lyric.StartsWith(FORCED_ALIAS_SYMBOL)) {
                 return null;
             }
 
