@@ -158,6 +158,7 @@ namespace OpenUtau.Core.Render {
         public readonly float[] toneShift;
         public readonly float[] tension;
         public readonly float[] voicing;
+        public readonly Tuple<string, float[]>[] curves;//custom curves defined by renderer
         public readonly ulong preEffectHash;
         public readonly ulong hash;
 
@@ -273,39 +274,65 @@ namespace OpenUtau.Core.Render {
             }
 
             pitchesBeforeDeviation = pitches.ToArray();
-            var curve = part.curves.FirstOrDefault(c => c.abbr == Format.Ustx.PITD);
-            if (curve != null && !curve.IsEmpty) {
+            var pitchCurve = part.curves.FirstOrDefault(c => c.abbr == Format.Ustx.PITD);
+            if (pitchCurve != null && !pitchCurve.IsEmpty) {
                 for (int i = 0; i < pitches.Length; ++i) {
-                    pitches[i] += curve.Sample(pitchStart + i * pitchInterval);
+                    pitches[i] += pitchCurve.Sample(pitchStart + i * pitchInterval);
                 }
             }
 
-            dynamics = SampleCurve(part, Format.Ustx.DYN, pitchStart, pitches.Length,
-                (x, c) => x == c.descriptor.min
-                    ? 0
-                    : (float)MusicMath.DecibelToLinear(x * 0.1));
-            toneShift = SampleCurve(part, Format.Ustx.SHFC, pitchStart, pitches.Length, (x, _) => x);
-            gender = SampleCurve(part, Format.Ustx.GENC, pitchStart, pitches.Length, (x, _) => x);
-            tension = SampleCurve(part, Format.Ustx.TENC, pitchStart, pitches.Length, (x, _) => x);
-            breathiness = SampleCurve(part, Format.Ustx.BREC, pitchStart, pitches.Length, (x, _) => x);
-            voicing = SampleCurve(part, Format.Ustx.VOIC, pitchStart, pitches.Length, (x, _) => x);
+            var curves = new List<Tuple<string, float[]>>();
 
+            foreach(var descriptor in project.expressions.Values) {
+                if(descriptor.type != UExpressionType.Curve) {
+                    continue;
+                }
+                var curve = part.curves.FirstOrDefault(c => c.abbr == descriptor.abbr);
+                bool isSupported = renderer.SupportsExpression(descriptor);
+                if (!isSupported) {
+                    continue;
+                }
+                if (curve == null) {
+                    curve = new UCurve(descriptor);
+                }
+                Func<float, UCurve, float> convert = ((x, _) => x);
+                if (curve.abbr == Format.Ustx.DYN) {
+                    convert = ((x, c) => x == c.descriptor.min ? 0 : (float)MusicMath.DecibelToLinear(x * 0.1));
+                }
+                var curveSampled = SampleCurve(curve, pitchStart, pitches.Length, convert);
+                switch (curve.abbr) {
+                    case Format.Ustx.PITD: break;
+                    case Format.Ustx.DYN : dynamics = curveSampled; break;
+                    case Format.Ustx.SHFC: toneShift = curveSampled; break;
+                    case Format.Ustx.GENC: gender = curveSampled; break;
+                    case Format.Ustx.TENC: tension = curveSampled; break;
+                    case Format.Ustx.BREC: breathiness = curveSampled; break;
+                    case Format.Ustx.VOIC: voicing = curveSampled; break;
+                    default:
+                        curves.Add(Tuple.Create(curve.abbr,curveSampled));
+                        break;
+                }
+            }
+            this.curves = curves.ToArray();
             preEffectHash = Hash(false);
             hash = Hash(true);
         }
 
-        private static float[] SampleCurve(UVoicePart part, string abbr, int start, int length, Func<float, UCurve, float> convert) {
+        private static float[] SampleCurve(UCurve curve, int start, int length, Func<float, UCurve, float> convert) {
             const int interval = 5;
-            var curve = part.curves.FirstOrDefault(c => c.abbr == abbr);
-            if (curve == null || curve.IsEmptyBetween(
-                start, start + (length - 1) * interval, (int)curve.descriptor.defaultValue)) {
-                return null;
-            }
             var result = new float[length];
             for (int i = 0; i < length; ++i) {
                 result[i] = convert(curve.Sample(start + i * interval), curve);
             }
             return result;
+        }
+
+        private static float[] SampleCurve(UVoicePart part, string abbr, int start, int length, Func<float, UCurve, float> convert) {
+            var curve = part.curves.FirstOrDefault(c => c.abbr == abbr);
+            if (curve == null) {
+                return null;
+            }
+            return SampleCurve(curve, start, length, convert);
         }
 
         private ulong Hash(bool postEffect) {
@@ -326,6 +353,12 @@ namespace OpenUtau.Core.Render {
                                 foreach (var v in array) {
                                     writer.Write(v);
                                 }
+                            }
+                        }
+                        foreach(var curve in curves) {
+                            writer.Write(curve.Item1);
+                            foreach(var v in curve.Item2) {
+                                writer.Write(v);
                             }
                         }
                     }

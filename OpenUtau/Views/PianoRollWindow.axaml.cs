@@ -249,8 +249,13 @@ namespace OpenUtau.App.Views {
         private void NotesCanvasLeftPointerPressed(Canvas canvas, PointerPoint point, PointerPressedEventArgs args) {
             if (ViewModel.NotesViewModel.DrawPitchTool) {
                 ViewModel.NotesViewModel.DeselectNotes();
-                editState = new DrawPitchState(canvas, ViewModel, this);
-                return;
+                if (args.KeyModifiers == cmdKey) {
+                    editState = new SmoothenPitchState(canvas, ViewModel, this);
+                    return;
+                } else {
+                    editState = new DrawPitchState(canvas, ViewModel, this);
+                    return;
+                }
             }
             if (ViewModel.NotesViewModel.EraserTool) {
                 ViewModel.NotesViewModel.DeselectNotes();
