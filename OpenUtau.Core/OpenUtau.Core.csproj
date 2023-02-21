@@ -30,7 +30,7 @@
     <PackageReference Include="UTF.Unknown" Version="2.5.1" />
     <PackageReference Include="Vortice.DXGI" Version="2.2.0" />
     <PackageReference Include="WanaKana-net" Version="1.0.0" />
-    <PackageReference Include="YamlDotNet" Version="12.0.1" />
+    <PackageReference Include="YamlDotNet" Version="12.3.1" />
     <PackageReference Include="NetMQ" Version="4.0.1.9" />
   </ItemGroup>
   <ItemGroup Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">
