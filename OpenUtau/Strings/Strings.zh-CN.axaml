@@ -50,6 +50,7 @@
   <system:String x:Key="exps.caption">表情</system:String>
   <system:String x:Key="exps.defaultvalue">默认值</system:String>
   <system:String x:Key="exps.flag">重采样器flag</system:String>
+  <system:String x:Key="exps.getsuggestions">获取渲染器建议的表情</system:String>
   <system:String x:Key="exps.isflag">是否重采样器flag</system:String>
   <system:String x:Key="exps.maxvalue">最大值</system:String>
   <system:String x:Key="exps.minvalue">最小值</system:String>
