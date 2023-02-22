@@ -114,7 +114,7 @@ namespace OpenUtau.Core.DiffSinger {
                 .Append(tailFrames)
                 .ToList();
             var totalFrames = (int)(durations.Sum());
-            float[] f0 = DiffSingerUtils.SampleCurve(phrase, phrase.pitches, 0, totalFrames, headFrames, tailFrames, 
+            float[] f0 = DiffSingerUtils.SampleCurve(phrase, phrase.pitches, 0, frameMs, totalFrames, headFrames, tailFrames, 
                 x => MusicMath.ToneToFreq(x * 0.01))
                 .Select(f => (float)f).ToArray();
             //toneShift isn't supported
@@ -138,7 +138,7 @@ namespace OpenUtau.Core.DiffSinger {
                 var range = singer.dsConfig.augmentationArgs.randomPitchShifting.range;
                 var positiveScale = (range[1]==0) ? 0 : (12/range[1]/100);
                 var negativeScale = (range[0]==0) ? 0 : (-12/range[0]/100);
-                float[] gender = DiffSingerUtils.SampleCurve(phrase, phrase.gender, 0, totalFrames, headFrames, tailFrames,
+                float[] gender = DiffSingerUtils.SampleCurve(phrase, phrase.gender, 0, frameMs, totalFrames, headFrames, tailFrames,
                     x=> (x<0)?(-x * positiveScale):(-x * negativeScale))
                     .Select(f => (float)f).ToArray();
                 var genderTensor = new DenseTensor<float>(gender, new int[] { gender.Length })

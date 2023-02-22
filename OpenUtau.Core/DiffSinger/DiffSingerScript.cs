@@ -31,18 +31,21 @@ namespace OpenUtau.Core.DiffSinger {
                 .Select(p => (p.phoneme == "SP" || p.phoneme == "AP") ? 0 : p.tone)
                 .Append(0)
                 .ToArray();
-            var singer = phrase.singer as DiffSingerSinger;
+            DiffSingerSinger singer = null;
+            if (phrase.singer != null) { 
+                singer = phrase.singer as DiffSingerSinger; 
+            }
             if(singer != null) {
                 frameMs = singer.getVocoder().frameMs();
             } else {
-                frameMs = 0.005;
+                frameMs = 5;
             }
 
             int headFrames = (int)(headMs / frameMs);
             int tailFrames = (int)(tailMs / frameMs);
             var totalFrames = (int)(phDurMs.Sum() / frameMs);
 
-            f0_seq = DiffSingerUtils.SampleCurve(phrase, phrase.pitches, 0, totalFrames, headFrames, tailFrames, 
+            f0_seq = DiffSingerUtils.SampleCurve(phrase, phrase.pitches, 0, frameMs, totalFrames, headFrames, tailFrames, 
                 x => MusicMath.ToneToFreq(x * 0.01));
 
             //voicebank specific features
@@ -51,7 +54,7 @@ namespace OpenUtau.Core.DiffSinger {
                     var range = singer.dsConfig.augmentationArgs.randomPitchShifting.range;
                     var positiveScale = (range[1] == 0) ? 0 : (12 / range[1] / 100);
                     var negativeScale = (range[0] == 0) ? 0 : (-12 / range[0] / 100);
-                    gender = DiffSingerUtils.SampleCurve(phrase, phrase.gender, 0, totalFrames, headFrames, tailFrames,
+                    gender = DiffSingerUtils.SampleCurve(phrase, phrase.gender, 0, frameMs, totalFrames, headFrames, tailFrames,
                         x => (x < 0) ? (-x * positiveScale) : (-x * negativeScale))
                         .ToArray();
                 }

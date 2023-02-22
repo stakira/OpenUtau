@@ -8,9 +8,7 @@ namespace OpenUtau.Core.DiffSinger {
         public const float tailMs = 100;
 
         //参数曲线采样
-        public static double[] SampleCurve(RenderPhrase phrase, float[] curve, double defaultValue, int length, int headFrames, int tailFrames, Func<double, double> convert) {
-            var singer = phrase.singer as DiffSingerSinger;
-            var frameMs = singer.getVocoder().frameMs();
+        public static double[] SampleCurve(RenderPhrase phrase, float[] curve, double defaultValue, double frameMs, int length, int headFrames, int tailFrames, Func<double, double> convert) {
             const int interval = 5;
             var result = new double[length];
             if (curve == null) {
