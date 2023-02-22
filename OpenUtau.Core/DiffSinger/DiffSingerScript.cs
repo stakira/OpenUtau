@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -15,7 +14,7 @@ namespace OpenUtau.Core.DiffSinger {
         public double frameMs;
         public double[] f0_seq;
         public double offsetMs;
-
+        public double[]? gender = null;
         public DiffSingerScript(RenderPhrase phrase) {
             const float headMs = DiffSingerUtils.headMs;
             const float tailMs = DiffSingerUtils.tailMs;
@@ -32,8 +31,8 @@ namespace OpenUtau.Core.DiffSinger {
                 .Select(p => (p.phoneme == "SP" || p.phoneme == "AP") ? 0 : p.tone)
                 .Append(0)
                 .ToArray();
-            if(phrase.singer.GetType() == typeof(DiffSingerSinger)) {
-                var singer = phrase.singer as DiffSingerSinger;
+            var singer = phrase.singer as DiffSingerSinger;
+            if(singer != null) {
                 frameMs = singer.getVocoder().frameMs();
             } else {
                 frameMs = 0.005;
@@ -45,6 +44,19 @@ namespace OpenUtau.Core.DiffSinger {
 
             f0_seq = DiffSingerUtils.SampleCurve(phrase, phrase.pitches, 0, totalFrames, headFrames, tailFrames, 
                 x => MusicMath.ToneToFreq(x * 0.01));
+
+            //voicebank specific features
+            if(singer != null) {
+                if (singer.dsConfig.useKeyShiftEmbed) {
+                    var range = singer.dsConfig.augmentationArgs.randomPitchShifting.range;
+                    var positiveScale = (range[1] == 0) ? 0 : (12 / range[1] / 100);
+                    var negativeScale = (range[0] == 0) ? 0 : (-12 / range[0] / 100);
+                    gender = DiffSingerUtils.SampleCurve(phrase, phrase.gender, 0, totalFrames, headFrames, tailFrames,
+                        x => (x < 0) ? (-x * positiveScale) : (-x * negativeScale))
+                        .ToArray();
+                }
+            }
+
             offsetMs = phrase.phones[0].positionMs;
         }
         
@@ -70,6 +82,8 @@ namespace OpenUtau.Core.DiffSinger {
         public string ph_dur;
         public string f0_timestep;
         public string f0_seq;
+        public string? gender_timestep = null;
+        public string? gender = null;
         public string input_type = "phoneme";
         public double offset;
 
@@ -84,6 +98,11 @@ namespace OpenUtau.Core.DiffSinger {
             f0_timestep = (script.frameMs / 1000).ToString();
             f0_seq = String.Join(" ", script.f0_seq.Select(x => x.ToString()));
             offset = script.offsetMs / 1000;
+
+            if(script.gender != null) {
+                gender_timestep = f0_timestep;
+                gender = String.Join(" ", script.gender.Select(x => x.ToString()));
+            }
         }
     }
 }
