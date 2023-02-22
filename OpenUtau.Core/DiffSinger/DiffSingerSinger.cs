@@ -113,23 +113,4 @@ namespace OpenUtau.Core.DiffSinger {
             return vocoder;
         }
     }
-
-    [Serializable]
-    public class RandomPitchShifting {
-        public float[] range;
-    }
-
-    [Serializable]
-    public class AugmentationArgs {
-        public RandomPitchShifting randomPitchShifting;
-    }
-
-    [Serializable]
-    public class DsConfig {
-        public string phonemes = "phonemes.txt";
-        public string acoustic;
-        public string vocoder;
-        public bool useKeyShiftEmbed = false;
-        public AugmentationArgs augmentationArgs;
-    }
 }

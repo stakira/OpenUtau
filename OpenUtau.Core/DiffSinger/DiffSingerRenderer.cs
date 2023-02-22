@@ -15,26 +15,14 @@ using Serilog;
 
 namespace OpenUtau.Core.DiffSinger {
     public class DiffSingerRenderer : IRenderer {
-        const float headMs = 0;
-        const float tailMs = 100;
+        const float headMs = DiffSingerUtils.headMs;
+        const float tailMs = DiffSingerUtils.tailMs;
 
         static readonly HashSet<string> supportedExp = new HashSet<string>(){
             Format.Ustx.DYN,
             Format.Ustx.PITD,
             Format.Ustx.GENC,
         };
-
-        struct AcousticResult {
-            public string path_acoustic;
-            public string path_f0;
-            public string path_spectrogram;
-            public string path_aperiodicity;
-        }
-
-        struct AcousticResponse {
-            public string error;
-            public AcousticResult result;
-        }
 
         static readonly object lockObj = new object();
 
@@ -126,7 +114,7 @@ namespace OpenUtau.Core.DiffSinger {
                 .Append(tailFrames)
                 .ToList();
             var totalFrames = (int)(durations.Sum());
-            float[] f0 = SampleCurve(phrase, phrase.pitches, 0, totalFrames, headFrames, tailFrames, 
+            float[] f0 = DiffSingerUtils.SampleCurve(phrase, phrase.pitches, 0, totalFrames, headFrames, tailFrames, 
                 x => MusicMath.ToneToFreq(x * 0.01))
                 .Select(f => (float)f).ToArray();
             //toneShift isn't supported
@@ -150,7 +138,7 @@ namespace OpenUtau.Core.DiffSinger {
                 var range = singer.dsConfig.augmentationArgs.randomPitchShifting.range;
                 var positiveScale = (range[1]==0) ? 0 : (12/range[1]/100);
                 var negativeScale = (range[0]==0) ? 0 : (-12/range[0]/100);
-                float[] gender = SampleCurve(phrase, phrase.gender, 0, totalFrames, headFrames, tailFrames,
+                float[] gender = DiffSingerUtils.SampleCurve(phrase, phrase.gender, 0, totalFrames, headFrames, tailFrames,
                     x=> (x<0)?(-x * positiveScale):(-x * negativeScale))
                     .Select(f => (float)f).ToArray();
                 var genderTensor = new DenseTensor<float>(gender, new int[] { gender.Length })
@@ -173,34 +161,15 @@ namespace OpenUtau.Core.DiffSinger {
             return samples;
         }
 
-        //参数曲线采样
-        double[] SampleCurve(RenderPhrase phrase, float[] curve, double defaultValue, int length, int headFrames, int tailFrames, Func<double, double> convert) {
-            var singer = phrase.singer as DiffSingerSinger;
-            var frameMs = singer.getVocoder().frameMs();
-            const int interval = 5;
-            var result = new double[length];
-            if (curve == null) {
-                Array.Fill(result, defaultValue);
-                return result;
-            }
-            
-            for (int i = 0; i < length - headFrames - tailFrames; i++) {
-                double posMs = phrase.positionMs - phrase.leadingMs + i * frameMs;
-                int ticks = phrase.timeAxis.MsPosToTickPos(posMs) - (phrase.position - phrase.leading);
-                int index = Math.Max(0, (int)((double)ticks / interval));
-                if (index < curve.Length) {
-                    result[i + headFrames] = convert(curve[index]);
-                }
-            }
-            //填充头尾
-            Array.Fill(result, convert(curve[0]), 0, headFrames);
-            Array.Fill(result, convert(curve[^1]), length - tailFrames, tailFrames);
-            return result;
-        }
+        
 
         //加载音高渲染结果（不支持）
         public RenderPitchResult LoadRenderedPitch(RenderPhrase phrase) {
             return null;
+        }
+
+        public UExpressionDescriptor[] GetSuggestedExpressions(USinger singer, URenderSettings renderSettings) {
+            return new UExpressionDescriptor[0];
         }
 
         public override string ToString() => Renderers.DIFFSINGER;
