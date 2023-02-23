@@ -38,7 +38,7 @@ namespace OpenUtau.Core.DiffSinger {
             if(singer != null) {
                 frameMs = singer.getVocoder().frameMs();
             } else {
-                frameMs = 5;
+                frameMs = 10;
             }
 
             int headFrames = (int)(headMs / frameMs);
@@ -95,16 +95,16 @@ namespace OpenUtau.Core.DiffSinger {
             note_seq = String.Join(" ", 
                 script.noteSeq
                 .Select(x => x <= 0 ? "rest" : MusicMath.GetToneName(x)));
-            ph_dur = String.Join(" ",script.phDurMs.Select(x => (x/1000).ToString()));
+            ph_dur = String.Join(" ",script.phDurMs.Select(x => (x/1000).ToString("f6")));
             note_dur_seq = ph_dur;
             is_slur_seq = String.Join(" ", script.ph_seq.Select(x => "0"));
             f0_timestep = (script.frameMs / 1000).ToString();
-            f0_seq = String.Join(" ", script.f0_seq.Select(x => x.ToString()));
+            f0_seq = String.Join(" ", script.f0_seq.Select(x => x.ToString("f1")));
             offset = script.offsetMs / 1000;
 
             if(script.gender != null) {
                 gender_timestep = f0_timestep;
-                gender = String.Join(" ", script.gender.Select(x => x.ToString()));
+                gender = String.Join(" ", script.gender.Select(x => x.ToString("f3")));
             }
         }
     }
