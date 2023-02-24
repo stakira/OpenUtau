@@ -8,6 +8,7 @@ using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core.DiffSinger {
     public class DiffSingerScript {
+        public string[] text;
         public string[] ph_seq;
         public int[] noteSeq;
         public double[] phDurMs;
@@ -18,7 +19,11 @@ namespace OpenUtau.Core.DiffSinger {
         public DiffSingerScript(RenderPhrase phrase) {
             const float headMs = DiffSingerUtils.headMs;
             const float tailMs = DiffSingerUtils.tailMs;
-            
+
+            text = phrase.notes.Select(n => n.lyric)
+                .Where(s=>!s.StartsWith("+"))
+                .Append("SP")
+                .ToArray();
             ph_seq = phrase.phones
                 .Select(p => p.phoneme)
                 .Append("SP")
@@ -77,7 +82,7 @@ namespace OpenUtau.Core.DiffSinger {
     }
 
     public class RawDiffSingerScript {
-        public string text = "AP";
+        public string text;
         public string ph_seq;
         public string note_seq;
         public string note_dur_seq;
@@ -91,6 +96,7 @@ namespace OpenUtau.Core.DiffSinger {
         public double offset;
 
         public RawDiffSingerScript(DiffSingerScript script) {
+            text = String.Join(" ", script.text);
             ph_seq = String.Join(" ", script.ph_seq);
             note_seq = String.Join(" ", 
                 script.noteSeq
