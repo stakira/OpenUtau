@@ -4,13 +4,13 @@ using System.IO;
 using System.Linq;
 using OpenUtau.Api;
 using OpenUtau.Core.G2p;
+using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Plugin.Builtin
 {
-    [Phonemizer("Delta English (Version 2) Phonemizer", "EN Delta (Ver2)", "Lotte V", language:"EN")]
-    public class ENDeltaVer2Phonemizer : SyllableBasedPhonemizer
-    {
+    [Phonemizer("Delta English (Version 2) Phonemizer", "EN Delta (Ver2)", "Lotte V", language: "EN")]
+    public class ENDeltaVer2Phonemizer : SyllableBasedPhonemizer {
         /// <summary>
         /// General English phonemizer for Delta list (X-SAMPA) voicebanks.
         /// This version is based on the third version of Delta's list, with split diphthongs.
@@ -81,6 +81,8 @@ namespace OpenUtau.Plugin.Builtin
         }
 
         protected override List<string> ProcessSyllable(Syllable syllable) {
+            
+
             string prevV = syllable.prevV;
             string[] cc = syllable.cc;
             string v = syllable.v;
@@ -89,6 +91,7 @@ namespace OpenUtau.Plugin.Builtin
             var phonemes = new List<string>();
             var lastC = cc.Length - 1;
             var firstC = 0;
+
             var rv = $"- {v}";
             if (syllable.IsStartingV) {
                 if (HasOto(rv, syllable.vowelTone)) {
@@ -377,14 +380,16 @@ namespace OpenUtau.Plugin.Builtin
                 var vcr = $"{v} {cc[0]}-";
                 if (HasOto(vcr, ending.tone)) {
                     phonemes.Add(vcr);
-                } else if (!HasOto(vcr, ending.tone)) {
-                    vcr = ValidateAlias(vcr);
-                    phonemes.Add(vcr);
-                } else if (HasOto(vc, ending.tone)) {
-                    phonemes.Add(vc);
+                    if (!HasOto(vcr, ending.tone)) {
+                        vcr = ValidateAlias(vcr);
+                        phonemes.Add(vcr);
+                    }
                 } else {
-                    vc = ValidateAlias(vc);
                     phonemes.Add(vc);
+                    if (!HasOto(vc, ending.tone)) {
+                        vc = ValidateAlias(vc);
+                        phonemes.Add(vc);
+                    }
                     if (affricates.Contains(cc[0])) {
                         TryAddPhoneme(phonemes, ending.tone, $"{cc[0]} -", $"{cc[0]}-", cc[0]);
                     } else {
