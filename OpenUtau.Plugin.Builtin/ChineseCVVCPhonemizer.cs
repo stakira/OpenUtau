@@ -4,29 +4,23 @@ using System.IO;
 using System.Linq;
 using OpenUtau.Api;
 using OpenUtau.Classic;
+using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using Serilog;
-using TinyPinyin;
 
 namespace OpenUtau.Plugin.Builtin {
     [Phonemizer("Chinese CVVC Phonemizer", "ZH CVVC", language: "ZH")]
-    public class ChineseCVVCPhonemizer : Phonemizer {
+    public class ChineseCVVCPhonemizer : BaseChinesePhonemizer {
         private Dictionary<string, string> vowels = new Dictionary<string, string>();
         private Dictionary<string, string> consonants = new Dictionary<string, string>();
         private USinger singer;
 
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
             var lyric = notes[0].lyric;
-            if (lyric.Length > 0 && PinyinHelper.IsChinese(lyric[0])) {
-                lyric = PinyinHelper.GetPinyin(lyric).ToLowerInvariant();
-            }
             string consonant = consonants.TryGetValue(lyric, out consonant) ? consonant : lyric;
             string prevVowel = "-";
             if (prevNeighbour != null) {
                 var prevLyric = prevNeighbour.Value.lyric;
-                if (prevLyric.Length > 0 && PinyinHelper.IsChinese(prevLyric[0])) {
-                    prevLyric = PinyinHelper.GetPinyin(prevLyric).ToLowerInvariant();
-                }
                 if (vowels.TryGetValue(prevLyric, out var vowel)) {
                     prevVowel = vowel;
                 }
