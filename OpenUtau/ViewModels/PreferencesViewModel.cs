@@ -111,8 +111,8 @@ namespace OpenUtau.App.ViewModels {
             SortingOrders = Languages.ToList();
             SortingOrders.Insert(1, CultureInfo.InvariantCulture);
             SortingOrder = string.IsNullOrEmpty(Preferences.Default.SortingOrder)
-                ? null
-                : Language;
+                ? Language
+                : CultureInfo.GetCultureInfo(Preferences.Default.SortingOrder);
             PreRender = Preferences.Default.PreRender ? 1 : 0;
             NumRenderThreads = Preferences.Default.NumRenderThreads;
             Theme = Preferences.Default.Theme;
@@ -174,7 +174,6 @@ namespace OpenUtau.App.ViewModels {
                 .Subscribe(so => {
                     Preferences.Default.SortingOrder = so?.Name ?? string.Empty;
                     Preferences.Save();
-                    App.SetLanguage(Preferences.Default.Language);
                 });
             this.WhenAnyValue(vm => vm.Theme)
                 .Subscribe(theme => {
