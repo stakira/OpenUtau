@@ -377,14 +377,16 @@ namespace OpenUtau.Plugin.Builtin
                 var vcr = $"{v} {cc[0]}-";
                 if (HasOto(vcr, ending.tone)) {
                     phonemes.Add(vcr);
-                } else if (!HasOto(vcr, ending.tone)) {
-                    vcr = ValidateAlias(vcr);
-                    phonemes.Add(vcr);
-                } else if (HasOto(vc, ending.tone)) {
-                    phonemes.Add(vc);
+                    if (!HasOto(vcr, ending.tone)) {
+                        vcr = ValidateAlias(vcr);
+                        phonemes.Add(vcr);
+                    }
                 } else {
-                    vc = ValidateAlias(vc);
                     phonemes.Add(vc);
+                    if (!HasOto(vc, ending.tone)) {
+                        vc = ValidateAlias(vc);
+                        phonemes.Add(vc);
+                    }
                     if (affricates.Contains(cc[0])) {
                         TryAddPhoneme(phonemes, ending.tone, $"{cc[0]} -", $"{cc[0]}-", cc[0]);
                     } else {
