@@ -16,6 +16,8 @@ namespace OpenUtau.Core.DiffSinger {
         public double[] f0_seq;
         public double offsetMs;
         public double[]? gender = null;
+        public double[]? velocity = null;
+
         public DiffSingerScript(RenderPhrase phrase) {
             const float headMs = DiffSingerUtils.headMs;
             const float tailMs = DiffSingerUtils.tailMs;
@@ -50,8 +52,19 @@ namespace OpenUtau.Core.DiffSinger {
             int tailFrames = (int)(tailMs / frameMs);
             var totalFrames = (int)(phDurMs.Sum() / frameMs);
 
-            f0_seq = DiffSingerUtils.SampleCurve(phrase, phrase.pitches, 0, frameMs, totalFrames, headFrames, tailFrames, 
+            f0_seq = DiffSingerUtils.SampleCurve(phrase, phrase.pitches, 
+                0, frameMs, totalFrames, headFrames, tailFrames, 
                 x => MusicMath.ToneToFreq(x * 0.01));
+
+            var velocityCurve = phrase.curves.FirstOrDefault(curve => curve.Item1 == DiffSingerUtils.VELC);
+            if (velocityCurve != null) {
+                velocity = DiffSingerUtils.SampleCurve(phrase, velocityCurve.Item2, 
+                    0, frameMs, totalFrames, headFrames, tailFrames,
+                    x=>Math.Pow(2, (x - 100) / 100));
+                for (int i = 0; i < velocity.Length; i++) {
+                    f0_seq[i] *= velocity[i];
+                }
+            }
 
             //voicebank specific features
             if(singer != null) {
@@ -92,6 +105,8 @@ namespace OpenUtau.Core.DiffSinger {
         public string f0_seq;
         public string? gender_timestep = null;
         public string? gender = null;
+        public string? velocity_timestep = null;
+        public string? velocity = null;
         public string input_type = "phoneme";
         public double offset;
 
@@ -111,6 +126,11 @@ namespace OpenUtau.Core.DiffSinger {
             if(script.gender != null) {
                 gender_timestep = f0_timestep;
                 gender = String.Join(" ", script.gender.Select(x => x.ToString("f3")));
+            }
+
+            if (script.velocity != null) {
+                velocity_timestep = f0_timestep;
+                velocity = String.Join(" ", script.velocity.Select(x => x.ToString("f3")));
             }
         }
     }

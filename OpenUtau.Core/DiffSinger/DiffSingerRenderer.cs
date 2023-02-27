@@ -17,11 +17,13 @@ namespace OpenUtau.Core.DiffSinger {
     public class DiffSingerRenderer : IRenderer {
         const float headMs = DiffSingerUtils.headMs;
         const float tailMs = DiffSingerUtils.tailMs;
+        const string VELC = DiffSingerUtils.VELC;
 
         static readonly HashSet<string> supportedExp = new HashSet<string>(){
             Format.Ustx.DYN,
             Format.Ustx.PITD,
             Format.Ustx.GENC,
+            VELC,
         };
 
         static readonly object lockObj = new object();
@@ -138,12 +140,31 @@ namespace OpenUtau.Core.DiffSinger {
                 var range = singer.dsConfig.augmentationArgs.randomPitchShifting.range;
                 var positiveScale = (range[1]==0) ? 0 : (12/range[1]/100);
                 var negativeScale = (range[0]==0) ? 0 : (-12/range[0]/100);
-                float[] gender = DiffSingerUtils.SampleCurve(phrase, phrase.gender, 0, frameMs, totalFrames, headFrames, tailFrames,
+                float[] gender = DiffSingerUtils.SampleCurve(phrase, phrase.gender, 
+                    0, frameMs, totalFrames, headFrames, tailFrames,
                     x=> (x<0)?(-x * positiveScale):(-x * negativeScale))
                     .Select(f => (float)f).ToArray();
                 var genderTensor = new DenseTensor<float>(gender, new int[] { gender.Length })
                     .Reshape(new int[] { 1, gender.Length });
                 acousticInputs.Add(NamedOnnxValue.CreateFromTensor("gender", genderTensor));
+            }
+
+            //velocity
+            //OpenUTAU中，velocity的定义：默认100为原速，每增大100为速度乘2
+            if (singer.dsConfig.useSpeedEmbed) {
+                var velocityCurve = phrase.curves.FirstOrDefault(curve => curve.Item1 == VELC);
+                float[] velocity;
+                if (velocityCurve != null) {
+                    velocity = DiffSingerUtils.SampleCurve(phrase, velocityCurve.Item2,
+                        1, frameMs, totalFrames, headFrames, tailFrames,
+                        x => Math.Pow(2, (x - 100) / 100))
+                        .Select(f => (float)f).ToArray();
+                } else {
+                    velocity = Enumerable.Repeat(1f, totalFrames).ToArray();
+                }
+                var velocityTensor = new DenseTensor<float>(velocity, new int[] { velocity.Length })
+                    .Reshape(new int[] { 1, velocity.Length });
+                acousticInputs.Add(NamedOnnxValue.CreateFromTensor("velocity", velocityTensor));
             }
 
             Tensor<float> mel;
@@ -161,15 +182,23 @@ namespace OpenUtau.Core.DiffSinger {
             return samples;
         }
 
-        
-
         //加载音高渲染结果（不支持）
         public RenderPitchResult LoadRenderedPitch(RenderPhrase phrase) {
             return null;
         }
 
         public UExpressionDescriptor[] GetSuggestedExpressions(USinger singer, URenderSettings renderSettings) {
-            return new UExpressionDescriptor[0];
+            return new UExpressionDescriptor[] {
+                new UExpressionDescriptor{
+                    name="velocity (curve)",
+                    abbr=VELC,
+                    type=UExpressionType.Curve,
+                    min=0,
+                    max=200,
+                    defaultValue=100,
+                    isFlag=false,
+                }
+            };
         }
 
         public override string ToString() => Renderers.DIFFSINGER;

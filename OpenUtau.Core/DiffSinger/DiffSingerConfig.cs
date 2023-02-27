@@ -20,6 +20,7 @@ namespace OpenUtau.Core.DiffSinger {
         public string acoustic;
         public string vocoder;
         public bool useKeyShiftEmbed = false;
+        public bool useSpeedEmbed = false;
         public AugmentationArgs augmentationArgs;
     }
 }

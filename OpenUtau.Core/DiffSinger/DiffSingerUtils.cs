@@ -4,6 +4,7 @@ using OpenUtau.Core.Render;
 
 namespace OpenUtau.Core.DiffSinger {
     public static class DiffSingerUtils {
+        public const string VELC = "velc";
         public const float headMs = 0;
         public const float tailMs = 100;
 
