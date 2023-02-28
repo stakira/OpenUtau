@@ -77,11 +77,11 @@ namespace OpenUtau.App {
                 .FirstOrDefault(d => d.Source!.OriginalString.Contains("DarkTheme"));
             var isBuiltIn = false;
             var extTheme = string.Empty;
-            if (Core.Util.Preferences.Default.Theme == "Light") {
+            if (Core.Util.Preferences.Default.Theme == "Light" || Core.Util.Preferences.Default.Theme == "0") {
                 Current.Resources.MergedDictionaries.Remove(light);
                 Current.Resources.MergedDictionaries.Add(light);
                 isBuiltIn = true;
-            } else if (Core.Util.Preferences.Default.Theme == "Dark") {
+            } else if (Core.Util.Preferences.Default.Theme == "Dark" || Core.Util.Preferences.Default.Theme == "1") {
                 Current.Resources.MergedDictionaries.Remove(dark);
                 Current.Resources.MergedDictionaries.Add(dark);
                 isBuiltIn = true;

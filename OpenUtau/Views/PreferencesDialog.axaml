@@ -107,9 +107,10 @@
             </ComboBox>
             <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.note.restart}" FontSize="11"/>
             <TextBlock Margin="0,4,0,0" Text="{DynamicResource prefs.appearance.theme}" />
-            <ComboBox HorizontalAlignment="Stretch" SelectedIndex="{Binding Theme}">
+            <ComboBox HorizontalAlignment="Stretch" SelectedItem="{Binding Theme}">
               <ComboBoxItem Content="{DynamicResource prefs.appearance.theme.light}"/>
               <ComboBoxItem Content="{DynamicResource prefs.appearance.theme.dark}"/>
+                <ComboBoxItem>Test</ComboBoxItem>
             </ComboBox>
             <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.note.restart}" FontSize="11"/>
             <TextBlock Margin="0,4,0,0" Text="{DynamicResource prefs.appearance.showportrait}" />

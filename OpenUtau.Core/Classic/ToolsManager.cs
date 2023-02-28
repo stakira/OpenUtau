@@ -4,7 +4,10 @@ using System.IO;
 using System.Linq;
 using OpenUtau.Core;
 using OpenUtau.Core.Util;
+using OpenUtau;
 using Serilog;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.TypeInspectors;
 
 namespace OpenUtau.Classic {
     public class ToolsManager : SingletonBase<ToolsManager> {
@@ -12,10 +15,13 @@ namespace OpenUtau.Classic {
 
         private readonly List<IResampler> resamplers = new List<IResampler>();
         private readonly List<IWavtool> wavtools = new List<IWavtool>();
+        private readonly List<ITheme> themes = new List<ITheme>();
         private readonly Dictionary<string, IResampler> resamplersMap
             = new Dictionary<string, IResampler>();
         private readonly Dictionary<string, IWavtool> wavtoolsMap
             = new Dictionary<string, IWavtool>();
+        private readonly Dictionary<string, ITheme> themeCollection
+            = new Dictionary<string, ITheme>();
 
         public List<IResampler> Resamplers {
             get {
@@ -30,6 +36,14 @@ namespace OpenUtau.Classic {
                 lock (_locker) {
                     return wavtools.ToList();
                 }
+            }
+        }
+
+        public List<ITheme> Themes {
+            get { 
+                lock (_locker) {
+                    return themes.ToList();
+                } 
             }
         }
 
@@ -115,7 +129,7 @@ namespace OpenUtau.Classic {
                     }
                 }
             } catch (Exception e) {
-                Log.Error(e, "Failed to search resamplers.");
+                Log.Error(e, "Failed to search wavtools.");
                 wavtools.Clear();
             }
             foreach (var wavtool in wavtools) {
@@ -141,6 +155,59 @@ namespace OpenUtau.Classic {
                     return wavtoolsMap[SharpWavtool.nameConvergence];
                 }
             }
+        }
+        public ITheme GetName() { 
+            lock (_locker) {
+                Themes.Clear();
+                themeCollection.Clear();
+                var deserializer = new DeserializerBuilder()
+                .Build();
+                var files = new List<string>();
+                var names = new List<string>();
+                try {
+                    Directory.CreateDirectory(PathManager.Inst.ThemesPath);
+                    files.AddRange(Directory.EnumerateFiles(PathManager.Inst.ThemesPath, "*.yaml", SearchOption.AllDirectories));
+                } catch (Exception e) {
+                    Log.Error(e, "Failed to search themes.");
+                };
+                foreach (var file in files) {
+                    string text = File.ReadAllText(file);
+                    var n = deserializer.Deserialize<Theme>(text);
+                    themeCollection[n.Name.ToString()] = n.Name;
+                    
+                }
+            }
+        }
+        public class Theme {
+            public string Name { get; set; }
+            public static bool Dark { get; set; }
+            public string ForgroundBrush { get; set; }
+            public string BackgroundBrush { get; set; }
+            public string NeutralAccentBrush { get; set; }
+            public string NeutralAccentBrushSemi { get; set; }
+            public string AccentBrush1 { get; set; }
+            public string AccentBrush1Semi { get; set; }
+            public string AccentBrush2 { get; set; }
+            public string AccentBrush2Semi { get; set; }
+            public string AccentBrush3 { get; set; }
+            public string AccentBrush3Semi { get; set; }
+            public string TickLineBrushLow { get; set; }
+            public string BarNumberBrush { get; set; }
+            public string BarNumberPen { get; set; }
+            public string FinalPitchBrush { get; set; }
+            public string WhiteKeyBrush { get; set; }
+            public string WhiteKeyNameBrush { get; set; }
+            public string CenterKeyBrush { get; set; }
+            public string CenterKeyNameBrush { get; set; }
+            public string BlackKeyBrush { get; set; }
+            public string BlackKeyNameBrush { get; set; }
+            public string ExpBrush { get; set; }
+            public string ExpNameBrush { get; set; }
+            public string ExpShadowBrush { get; set; }
+            public string ExpShadowNameBrush { get; set; }
+            public string ExpActiveBrush { get; set; }
+            public string ExpActiveNameBrush { get; set; }
+
         }
     }
 }
