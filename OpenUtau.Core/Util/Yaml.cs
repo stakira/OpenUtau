@@ -13,6 +13,7 @@ namespace OpenUtau.Core {
             .ConfigureDefaultValuesHandling(DefaultValuesHandling.OmitNull)
             .WithEventEmitter(next => new FlowEmitter(next))
             .DisableAliases()
+            .WithQuotingNecessaryStrings()
             .Build();
 
         public static IDeserializer DefaultDeserializer = new DeserializerBuilder()

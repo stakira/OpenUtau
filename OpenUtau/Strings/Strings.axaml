@@ -50,6 +50,7 @@
   <system:String x:Key="exps.caption">Expressions</system:String>
   <system:String x:Key="exps.defaultvalue">Default</system:String>
   <system:String x:Key="exps.flag">Resampler Flag</system:String>
+  <system:String x:Key="exps.getsuggestions">Add all expressions suggested by renderers</system:String>
   <system:String x:Key="exps.isflag">Is Resampler Flag</system:String>
   <system:String x:Key="exps.maxvalue">Max</system:String>
   <system:String x:Key="exps.minvalue">Min</system:String>
@@ -81,6 +82,8 @@
   <system:String x:Key="menu.file">File</system:String>
   <system:String x:Key="menu.file.exit">Exit</system:String>
   <system:String x:Key="menu.file.exportaudio">Export Audio</system:String>
+  <system:String x:Key="menu.file.exportds">Export DiffSinger Scripts</system:String>
+  <system:String x:Key="menu.file.exportdsto">Export DiffSinger Scripts To...</system:String>
   <system:String x:Key="menu.file.exportmidi">Export Midi File</system:String>
   <system:String x:Key="menu.file.exportmixdown">Mixdown To Wav File</system:String>
   <system:String x:Key="menu.file.exportproject">Export Project</system:String>
@@ -205,7 +208,10 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="pianoroll.toggle.tone">Toggle Note Tone (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">View Vibrato (U)</system:String>
   <system:String x:Key="pianoroll.toggle.waveform">View Waveform (W)</system:String>
-  <system:String x:Key="pianoroll.tool.drawpitch">Draw Pitch Tool (4)</system:String>
+  <system:String x:Key="pianoroll.tool.drawpitch">Draw Pitch Tool (4)
+    Left click to draw
+    Right click to reset
+Hold Ctrl to smoothen</system:String>
   <system:String x:Key="pianoroll.tool.eraser">Eraser Tool (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">Knife Tool (5)</system:String>
   <system:String x:Key="pianoroll.tool.penplus">Pen Plus Tool (Ctrl + 2)
@@ -258,6 +264,9 @@ Hold Ctrl to select</system:String>
   <system:String x:Key="prefs.playback.lockstarttime.on">Move cursor back to where you started playing</system:String>
   <system:String x:Key="prefs.playback.test">Test</system:String>
   <system:String x:Key="prefs.rendering">Rendering</system:String>
+  <system:String x:Key="prefs.rendering.diffsingerspeedup">Diffsinger Render Speedup</system:String>
+  <system:String x:Key="prefs.rendering.onnxrunner">Machine Learning Runner</system:String>
+  <system:String x:Key="prefs.rendering.onnxgpu">GPU</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">Phase Compensation</system:String>
   <system:String x:Key="prefs.rendering.prerender">Pre-render</system:String>
   <system:String x:Key="prefs.rendering.resampler">Resampler</system:String>
@@ -343,6 +352,8 @@ Hold Ctrl to select</system:String>
   <system:String x:Key="tip.notes.zoomx">◀ Scroll here to zoom horizontally ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">Scroll here to zoom vertically ▶</system:String>
 
+  <system:String x:Key="tracks.duplicate">Duplicate Track</system:String>
+  <system:String x:Key="tracks.duplicatesettings">Duplicate Track Settings</system:String>
   <system:String x:Key="tracks.more">More</system:String>
   <system:String x:Key="tracks.movedown">Move Down</system:String>
   <system:String x:Key="tracks.moveup">Move Up</system:String>

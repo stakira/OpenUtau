@@ -1,37 +1,34 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using OpenUtau.Core.Ustx;
+﻿using System;
+using OpenUtau.Core.DiffSinger;
+using OpenUtau.Core.Render;
 
 namespace OpenUtau.Core.DiffSinger {
-    struct DiffSingerNote {
-        public string lyric;
-        public int length;
-        public int noteNum;
-        public int noteIndex;
-    }
+    public static class DiffSingerUtils {
+        public const string VELC = "velc";
+        public const float headMs = 0;
+        public const float tailMs = 100;
 
-    internal static class DiffSingerUtils {
-        static readonly Encoding ShiftJIS = Encoding.GetEncoding("shift_jis");
-
-        internal static void WriteUst(IList<DiffSingerNote> notes, double tempo, USinger singer, string ustPath) {
-            using (var writer = new StreamWriter(ustPath, false, ShiftJIS)) {
-                writer.WriteLine("[#SETTING]");
-                writer.WriteLine($"Tempo={tempo}");
-                writer.WriteLine("Tracks=1");
-                writer.WriteLine($"Project={ustPath}");
-                writer.WriteLine($"VoiceDir={singer.Location}");
-                writer.WriteLine($"CacheDir={PathManager.Inst.CachePath}");
-                writer.WriteLine("Mode2=True");
-                for (int i = 0; i < notes.Count; ++i) {
-                    writer.WriteLine($"[#{i}]");
-                    writer.WriteLine($"Lyric={notes[i].lyric}");
-                    writer.WriteLine($"Length={notes[i].length}");
-                    writer.WriteLine($"NoteNum={notes[i].noteNum}");
-                }
-                writer.WriteLine("[#TRACKEND]");
+        //参数曲线采样
+        public static double[] SampleCurve(RenderPhrase phrase, float[] curve, double defaultValue, double frameMs, int length, int headFrames, int tailFrames, Func<double, double> convert) {
+            const int interval = 5;
+            var result = new double[length];
+            if (curve == null) {
+                Array.Fill(result, defaultValue);
+                return result;
             }
+
+            for (int i = 0; i < length - headFrames - tailFrames; i++) {
+                double posMs = phrase.positionMs - phrase.leadingMs + i * frameMs;
+                int ticks = phrase.timeAxis.MsPosToTickPos(posMs) - (phrase.position - phrase.leading);
+                int index = Math.Max(0, (int)((double)ticks / interval));
+                if (index < curve.Length) {
+                    result[i + headFrames] = convert(curve[index]);
+                }
+            }
+            //填充头尾
+            Array.Fill(result, convert(curve[0]), 0, headFrames);
+            Array.Fill(result, convert(curve[^1]), length - tailFrames, tailFrames);
+            return result;
         }
     }
 }

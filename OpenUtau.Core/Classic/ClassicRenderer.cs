@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using NAudio.Wave;
@@ -132,6 +133,26 @@ namespace OpenUtau.Classic {
             return null;
         }
 
+        public UExpressionDescriptor[] GetSuggestedExpressions(USinger singer, URenderSettings renderSettings) {
+            var resamplerPath = renderSettings.Resampler.FilePath;
+            if (resamplerPath == null) {
+                return new UExpressionDescriptor[] { };
+            }
+            var resamplerManifestPath = Path.ChangeExtension(resamplerPath, ".yaml");
+            try {
+                return Yaml.DefaultDeserializer.Deserialize<ResamplerManifest>(
+                    File.ReadAllText(resamplerManifestPath, encoding:Encoding.UTF8)
+                    ).expressions.Values.ToArray();
+            } catch (Exception ex) {
+                Log.Error($"Failed loading suggested expressions from {resamplerManifestPath}: {ex}");
+            }
+            return new UExpressionDescriptor[] { };
+        }
+
         public override string ToString() => Renderers.CLASSIC;
+    }
+
+    public class ResamplerManifest {
+        public Dictionary<string,UExpressionDescriptor> expressions = new Dictionary<string, UExpressionDescriptor> { };
     }
 }
