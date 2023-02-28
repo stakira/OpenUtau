@@ -163,5 +163,23 @@ namespace OpenUtau.App.ViewModels {
                 expressionsSource.Remove(Expression);
             }
         }
+
+        public void GetSuggestions() {
+            foreach (var track in DocManager.Inst.Project.tracks) {
+                if (track.RendererSettings.Renderer == null) {
+                    continue;
+                }
+                var suggestions = track.RendererSettings.Renderer.GetSuggestedExpressions(track.Singer, track.RendererSettings);
+                if (suggestions == null) {
+                    continue;
+                }
+                foreach (var suggestion in suggestions) {
+                    //Add if not already in the list
+                    if (!expressionsSource.Any(builder => builder.Abbr == suggestion.abbr)) {
+                        expressionsSource.Add(new ExpressionBuilder(suggestion));
+                    }
+                }
+            }
+        }
     }
 }
