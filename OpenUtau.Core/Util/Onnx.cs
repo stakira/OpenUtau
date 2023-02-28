@@ -22,6 +22,11 @@ namespace OpenUtau.Core {
                 "cpu",
                 "directml"
                 };
+            } else if (OS.IsMacOS()) {
+                return new List<string> {
+                "cpu",
+                "coreml"
+                };
             }
             return new List<string> {
                 "cpu"
@@ -64,6 +69,9 @@ namespace OpenUtau.Core {
             switch(runner){
                 case "directml":
                     options.AppendExecutionProvider_DML(Preferences.Default.OnnxGpu);
+                    break;
+                case "coreml":
+                    options.AppendExecutionProvider_CoreML(CoreMLFlags.COREML_FLAG_ENABLE_ON_SUBGRAPH);
                     break;
             }
             return new InferenceSession(model,options);
