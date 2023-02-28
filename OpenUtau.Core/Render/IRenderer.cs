@@ -44,5 +44,6 @@ namespace OpenUtau.Core.Render {
         RenderResult Layout(RenderPhrase phrase);
         Task<RenderResult> Render(RenderPhrase phrase, Progress progress, CancellationTokenSource cancellation, bool isPreRender = false);
         RenderPitchResult LoadRenderedPitch(RenderPhrase phrase);
+        UExpressionDescriptor[] GetSuggestedExpressions(USinger singer, URenderSettings renderSettings);
     }
 }
