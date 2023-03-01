@@ -54,13 +54,6 @@ namespace OpenUtau.Core.Editing {
         }
     }
 
-    public class HanziToPinyin : SingleNoteLyricEdit {
-        public override string Name => "pianoroll.menu.lyrics.hanzitopinyin";
-        protected override string Transform(string lyric) {
-            return PinyinHelper.GetPinyin(lyric).ToLowerInvariant();
-        }
-    }
-
     // Removes suffix like "C4", "C#4" or "Cb4"
     public class RemoveToneSuffix : SingleNoteLyricEdit {
         public override string Name => "pianoroll.menu.lyrics.removetonesuffix";
