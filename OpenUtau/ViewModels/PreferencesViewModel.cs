@@ -50,6 +50,13 @@ namespace OpenUtau.App.ViewModels {
             get => language;
             set => this.RaiseAndSetIfChanged(ref language, value);
         }
+
+        public List<CultureInfo>? SortingOrders { get; }
+        public CultureInfo? SortingOrder {
+            get => sortingOrder;
+            set => this.RaiseAndSetIfChanged(ref sortingOrder, value);
+        }
+
         public class LyricsHelperOption {
             public readonly Type klass;
             public LyricsHelperOption(Type klass) {
@@ -69,6 +76,7 @@ namespace OpenUtau.App.ViewModels {
         private List<AudioOutputDevice>? audioOutputDevices;
         private AudioOutputDevice? audioOutputDevice;
         private CultureInfo? language;
+        private CultureInfo? sortingOrder;
 
         public PreferencesViewModel() {
             var audioOutput = PlaybackManager.Inst.AudioOutput;
@@ -100,6 +108,11 @@ namespace OpenUtau.App.ViewModels {
             Language = string.IsNullOrEmpty(Preferences.Default.Language)
                 ? null
                 : CultureInfo.GetCultureInfo(Preferences.Default.Language);
+            SortingOrders = Languages.ToList();
+            SortingOrders.Insert(1, CultureInfo.InvariantCulture);
+            SortingOrder = string.IsNullOrEmpty(Preferences.Default.SortingOrder)
+                ? Language
+                : CultureInfo.GetCultureInfo(Preferences.Default.SortingOrder);
             PreRender = Preferences.Default.PreRender ? 1 : 0;
             NumRenderThreads = Preferences.Default.NumRenderThreads;
             Theme = Preferences.Default.Theme;
@@ -156,6 +169,11 @@ namespace OpenUtau.App.ViewModels {
                     Preferences.Default.Language = lang?.Name ?? string.Empty;
                     Preferences.Save();
                     App.SetLanguage(Preferences.Default.Language);
+                });
+            this.WhenAnyValue(vm => vm.SortingOrder)
+                .Subscribe(so => {
+                    Preferences.Default.SortingOrder = so?.Name ?? string.Empty;
+                    Preferences.Save();
                 });
             this.WhenAnyValue(vm => vm.Theme)
                 .Subscribe(theme => {

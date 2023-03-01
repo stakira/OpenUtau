@@ -167,7 +167,7 @@ namespace OpenUtau.App.ViewModels {
             items.AddRange(Preferences.Default.RecentSingers
                 .Select(id => SingerManager.Inst.Singers.Values.FirstOrDefault(singer => singer.Id == id))
                 .OfType<USinger>()
-                .OrderBy(singer => singer.Name)
+                .LocalizedOrderBy(singer => singer.Name)
                 .Select(singer => new MenuItemViewModel() {
                     Header = singer.Name,
                     Command = SelectSingerCommand,
