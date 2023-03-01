@@ -19,6 +19,8 @@ namespace OpenUtau.Core.DiffSinger {
         public string phonemes = "phonemes.txt";
         public string acoustic;
         public string vocoder;
+        public List<string> speakers;
+        public int hiddenSize = 256;
         public bool useKeyShiftEmbed = false;
         public bool useSpeedEmbed = false;
         public AugmentationArgs augmentationArgs;

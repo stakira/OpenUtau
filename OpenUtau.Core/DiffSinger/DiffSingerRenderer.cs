@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.ML.OnnxRuntime;
@@ -12,17 +13,20 @@ using OpenUtau.Core.Render;
 using OpenUtau.Core.SignalChain;
 using OpenUtau.Core.Ustx;
 using Serilog;
+using NumSharp;
 
 namespace OpenUtau.Core.DiffSinger {
     public class DiffSingerRenderer : IRenderer {
         const float headMs = DiffSingerUtils.headMs;
         const float tailMs = DiffSingerUtils.tailMs;
         const string VELC = DiffSingerUtils.VELC;
+        const string VoiceColorHeader = DiffSingerUtils.VoiceColorHeader;
 
         static readonly HashSet<string> supportedExp = new HashSet<string>(){
             Format.Ustx.DYN,
             Format.Ustx.PITD,
             Format.Ustx.GENC,
+            Format.Ustx.CLR,
             VELC,
         };
 
@@ -32,8 +36,19 @@ namespace OpenUtau.Core.DiffSinger {
 
         public bool SupportsRenderPitch => false;
 
+        public bool IsVoiceColorCurve(string abbr, out int subBankId) {
+            subBankId = 0;
+            if (abbr.StartsWith(VoiceColorHeader) && int.TryParse(abbr.Substring(2), out subBankId)) {;
+                subBankId -= 1;
+                return true;
+            } else {
+                return false;
+            }
+        }
+
         public bool SupportsExpression(UExpressionDescriptor descriptor) {
-            return supportedExp.Contains(descriptor.abbr);
+            return supportedExp.Contains(descriptor.abbr) || 
+                (descriptor.abbr.StartsWith(VoiceColorHeader) && int.TryParse(descriptor.abbr.Substring(2), out int _));
         }
 
         //计算时间轴，包括位置、头辅音长度、预估总时长
@@ -112,7 +127,7 @@ namespace OpenUtau.Core.DiffSinger {
                 .Select(x => (long)(singer.phonemes.IndexOf(x)))
                 .ToList();
             var durations = phrase.phones
-                .Select(p => (long)(p.endMs / frameMs) - (long)(p.positionMs / frameMs))//防止累计误差
+                .Select(p => (int)(p.endMs / frameMs) - (int)(p.positionMs / frameMs))//防止累计误差
                 .Append(tailFrames)
                 .ToList();
             var totalFrames = (int)(durations.Sum());
@@ -126,7 +141,7 @@ namespace OpenUtau.Core.DiffSinger {
                 new DenseTensor<long>(tokens.ToArray(), new int[] { tokens.Count },false)
                 .Reshape(new int[] { 1, tokens.Count })));
             acousticInputs.Add(NamedOnnxValue.CreateFromTensor("durations",
-                new DenseTensor<long>(durations.ToArray(), new int[] { durations.Count }, false)
+                new DenseTensor<long>(durations.Select(x=>(long)x).ToArray(), new int[] { durations.Count }, false)
                 .Reshape(new int[] { 1, durations.Count })));
             var f0tensor = new DenseTensor<float>(f0, new int[] { f0.Length })
                 .Reshape(new int[] { 1, f0.Length });
@@ -134,6 +149,41 @@ namespace OpenUtau.Core.DiffSinger {
             acousticInputs.Add(NamedOnnxValue.CreateFromTensor("speedup",
                 new DenseTensor<long>(new long[] { speedup }, new int[] { 1 },false)));
 
+            //speaker
+            if(singer.dsConfig.speakers != null) {
+                var speakers = singer.dsConfig.speakers;
+                var hiddenSize = singer.dsConfig.hiddenSize;
+                var speakerEmbeds = singer.getSpeakerEmbeds();
+                //get default speaker
+                var defaultSpkByFrame = Enumerable.Range(0, phrase.phones.Length)
+                    .SelectMany(phIndex => Enumerable.Repeat(speakers.IndexOf(phrase.phones[phIndex].suffix), durations[phIndex]))
+                    .ToList();
+                defaultSpkByFrame.AddRange(Enumerable.Repeat(defaultSpkByFrame[^1], tailFrames));
+                //get speaker curves
+                NDArray spkCurves = np.zeros<float>(totalFrames, speakers.Count);
+                foreach(var curve in phrase.curves) {
+                    if(IsVoiceColorCurve(curve.Item1,out int subBankId)) {
+                        var spkId = speakers.IndexOf(singer.Subbanks[subBankId].Suffix);
+                        spkCurves[":", spkId] = DiffSingerUtils.SampleCurve(phrase, curve.Item2, 0, 
+                            frameMs, totalFrames, headFrames, tailFrames, x => x * 0.01f)
+                            .Select(f => (float)f).ToArray();
+                    }
+                }
+                foreach(int frameId in Enumerable.Range(0,totalFrames)) {
+                    //standarization
+                    var spkSum = spkCurves[frameId, ":"].ToArray<float>().Sum();
+                    if (spkSum > 1) {
+                        spkCurves[frameId, ":"] /= spkSum;
+                    } else {
+                        spkCurves[frameId,defaultSpkByFrame[frameId]] += 1 - spkSum;
+                    }
+                }
+                var spkEmbedResult = np.dot(spkCurves, speakerEmbeds.T);
+                var spkEmbedTensor = new DenseTensor<float>(spkEmbedResult.ToArray<float>(), 
+                    new int[] { totalFrames, hiddenSize })
+                    .Reshape(new int[] { 1, totalFrames, hiddenSize });
+                acousticInputs.Add(NamedOnnxValue.CreateFromTensor("spk_embed", spkEmbedTensor));
+            }
             //gender
             //OpenUTAU中，GENC的定义：100=共振峰移动12个半音，正的GENC为向下移动
             if (singer.dsConfig.useKeyShiftEmbed) {
@@ -182,13 +232,14 @@ namespace OpenUtau.Core.DiffSinger {
             return samples;
         }
 
+
         //加载音高渲染结果（不支持）
         public RenderPitchResult LoadRenderedPitch(RenderPhrase phrase) {
             return null;
         }
 
         public UExpressionDescriptor[] GetSuggestedExpressions(USinger singer, URenderSettings renderSettings) {
-            return new UExpressionDescriptor[] {
+            var result = new List<UExpressionDescriptor> {
                 new UExpressionDescriptor{
                     name="velocity (curve)",
                     abbr=VELC,
@@ -199,6 +250,22 @@ namespace OpenUtau.Core.DiffSinger {
                     isFlag=false,
                 }
             };
+            var dsSinger = singer as DiffSingerSinger;
+            if(dsSinger!=null && dsSinger.dsConfig.speakers != null) {
+                result.AddRange(Enumerable.Zip(
+                    dsSinger.Subbanks,
+                    Enumerable.Range(1, dsSinger.Subbanks.Count),
+                    (subbank,index)=>new UExpressionDescriptor {
+                        name=$"voice color {subbank.Color}",
+                        abbr=VoiceColorHeader+index.ToString("D2"),
+                        type=UExpressionType.Curve,
+                        min=0,
+                        max=100,
+                        defaultValue=0,
+                        isFlag=false,
+                    }));
+            }
+            return result.ToArray();
         }
 
         public override string ToString() => Renderers.DIFFSINGER;

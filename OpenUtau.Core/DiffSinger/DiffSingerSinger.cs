@@ -7,6 +7,7 @@ using OpenUtau.Classic;
 using OpenUtau.Core.Ustx;
 using Serilog;
 using Microsoft.ML.OnnxRuntime;
+using NumSharp;
 
 namespace OpenUtau.Core.DiffSinger {
     class DiffSingerSinger : USinger {
@@ -31,13 +32,15 @@ namespace OpenUtau.Core.DiffSinger {
 
         Voicebank voicebank;
         List<string> errors = new List<string>();
-        List<USubbank> subbanks = new List<USubbank>();
         Dictionary<string, string[]> table = new Dictionary<string, string[]>();
         public byte[] avatarData;
+        List<USubbank> subbanks = new List<USubbank>();
         public List<string> phonemes = new List<string>();
         public DsConfig dsConfig;
         public InferenceSession acousticSession = null;
         public DsVocoder vocoder = null;
+        public NDArray speakerEmbeds = null;
+        
 
         public DiffSingerSinger(Voicebank voicebank) {
             this.voicebank = voicebank;
@@ -58,17 +61,22 @@ namespace OpenUtau.Core.DiffSinger {
                 avatarData = null;
                 Log.Error("Avatar can't be found");
             }
+
+            subbanks.Clear();
+            subbanks.AddRange(voicebank.Subbanks
+                .Select(subbank => new USubbank(subbank)));
+
             //导入音源设置
             string configPath = Path.Combine(Location, "dsconfig.yaml");
             dsConfig = Core.Yaml.DefaultDeserializer.Deserialize<DsConfig>(
                 File.ReadAllText(configPath, TextFileEncoding));
+
             //导入音素列表
             string phonemesPath = Path.Combine(Location, dsConfig.phonemes);
             phonemes = File.ReadLines(phonemesPath,TextFileEncoding).ToList();
 
             found = true;
             loaded = true;
-            
         }
 
         public override bool TryGetOto(string phoneme, out UOto oto) {
@@ -111,6 +119,31 @@ namespace OpenUtau.Core.DiffSinger {
                 vocoder = new DsVocoder(dsConfig.vocoder);
             }
             return vocoder;
+        }
+
+        public NDArray loadSpeakerEmbed(string speaker) {
+            string path = Path.Join(Location, speaker + ".emb");
+            if(File.Exists(path)) {
+                var reader = new BinaryReader(File.OpenRead(path));
+                return np.array<float>(Enumerable.Range(0, dsConfig.hiddenSize)
+                    .Select(i => reader.ReadSingle()));
+            } else {
+                throw new Exception("Speaker embed file {path} not found");
+            }
+        }
+
+        public NDArray getSpeakerEmbeds() {
+            if(speakerEmbeds == null) {
+                if(dsConfig.speakers == null) {
+                    return null;
+                } else {
+                    speakerEmbeds = np.zeros<float>(dsConfig.hiddenSize, dsConfig.speakers.Count);
+                    foreach(var spkId in Enumerable.Range(0, dsConfig.speakers.Count)) {
+                        speakerEmbeds[":", spkId] = loadSpeakerEmbed(dsConfig.speakers[spkId]);
+                    }
+                }
+            }
+            return speakerEmbeds;
         }
     }
 }
