@@ -34,7 +34,7 @@ namespace OpenUtau.Core {
                     .ToDictionary(g => g.Key, g => g.First());
                 SingerGroups = singers
                     .GroupBy(s => s.SingerType)
-                    .ToDictionary(s => s.Key, s => s.OrderBy(singer => singer.Name).ToList());
+                    .ToDictionary(s => s.Key, s => s.LocalizedOrderBy(singer => singer.Name).ToList());
                 stopWatch.Stop();
                 Log.Information($"Search all singers: {stopWatch.Elapsed}");
             } catch (Exception e) {

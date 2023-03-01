@@ -85,6 +85,7 @@ namespace OpenUtau.Core.Enunu {
         }
 
         protected virtual EnunuNote[] NoteGroupsToEnunu(Note[][] notes) {
+            BaseChinesePhonemizer.RomanizeNotes(notes);
             var result = new List<EnunuNote>();
             int position = 0;
             int index = 0;
@@ -99,9 +100,6 @@ namespace OpenUtau.Core.Enunu {
                     position = notes[index][0].position;
                 } else {
                     var lyric = notes[index][0].lyric;
-                    if (lyric.Length > 0 && PinyinHelper.IsChinese(lyric[0])) {
-                        lyric = PinyinHelper.GetPinyin(lyric).ToLowerInvariant();
-                    }
                     result.Add(new EnunuNote {
                         lyric = lyric,
                         length = notes[index].Sum(n => n.duration),

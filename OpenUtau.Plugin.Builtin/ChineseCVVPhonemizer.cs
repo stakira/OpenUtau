@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
+using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
-using TinyPinyin;
 
 namespace OpenUtau.Plugin.Builtin {
     /// <summary>
@@ -10,7 +10,7 @@ namespace OpenUtau.Plugin.Builtin {
     /// <para>It works by spliting "duang" to "duang" + "_ang", to produce the proper tail sound.</para>
     /// </summary>
     [Phonemizer("Chinese CVV (十月式整音扩张) Phonemizer", "ZH CVV", language: "ZH")]
-    public class ChineseCVVPhonemizer : Phonemizer {
+    public class ChineseCVVPhonemizer : BaseChinesePhonemizer {
         /// <summary>
         ///  The consonant table.
         /// </summary>
@@ -44,9 +44,6 @@ namespace OpenUtau.Plugin.Builtin {
             // 2. Lookup the trailing sound in vowel table: "uang" -> "_ang".
             // 3. Split the total duration and returns "duang" and "_ang".
             var lyric = notes[0].lyric;
-            if (lyric.Length > 0 && PinyinHelper.IsChinese(lyric[0])) {
-                lyric = PinyinHelper.GetPinyin(lyric).ToLowerInvariant();
-            }
             string consonant = string.Empty;
             string vowel = string.Empty;
             if (lyric.Length > 2 && cSet.Contains(lyric.Substring(0, 2))) {

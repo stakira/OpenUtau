@@ -90,6 +90,7 @@ namespace OpenUtau.Core.Util {
             public int OnnxGpu = 0;
             public int DiffsingerSpeedup = 50;
             public string Language = string.Empty;
+            public string SortingOrder = string.Empty;
             public List<string> RecentFiles = new List<string>();
             public string SkipUpdate = string.Empty;
             public string AdditionalSingerPath = string.Empty;
