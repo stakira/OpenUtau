@@ -7,7 +7,6 @@ using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
 using System.Text;
 using System.Linq;
-using TinyPinyin;
 
 namespace OpenUtau.Core.DiffSinger {
 
@@ -104,7 +103,8 @@ namespace OpenUtau.Core.DiffSinger {
             if (groups.Length == 0) {
                 return;
             }
-
+            //汉字转拼音
+            BaseChinesePhonemizer.RomanizeNotes(groups);
             //将全曲拆分为句子
             var phrase = new List<Note[]> { groups[0] };
             for (int i = 1; i < groups.Length; ++i) {
@@ -142,10 +142,7 @@ namespace OpenUtau.Core.DiffSinger {
                 Note[] group = phrase[groupIndex];
                 if (group[0].phoneticHint is null) {
                     var lyric = group[0].lyric;
-                    //汉字转拼音
-                    if (lyric.Length > 0 && PinyinHelper.IsChinese(lyric[0])) {
-                        lyric = PinyinHelper.GetPinyin(lyric).ToLowerInvariant();
-                    }
+                    
                     if (phoneDict.ContainsKey(lyric)) {
                         notePhonemes = phoneDict[lyric];
                     } else {

@@ -2,18 +2,17 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
 using NAudio.Wave;
+using NumSharp;
 using OpenUtau.Core.Format;
 using OpenUtau.Core.Render;
 using OpenUtau.Core.SignalChain;
 using OpenUtau.Core.Ustx;
 using Serilog;
-using NumSharp;
 
 namespace OpenUtau.Core.DiffSinger {
     public class DiffSingerRenderer : IRenderer {

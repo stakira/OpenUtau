@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using TinyPinyin;
 
 using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
@@ -49,12 +48,17 @@ namespace OpenUtau.Core.DiffSinger {
             }
         }
 
+        public override void SetUp(Note[][] groups) {
+            if (groups.Length == 0) {
+                return;
+            }
+            //汉字转拼音
+            BaseChinesePhonemizer.RomanizeNotes(groups);
+            base.SetUp(groups);
+        }
+
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevs) {
             string lyric = notes[0].lyric;
-            //汉字转拼音
-            if (lyric.Length > 0 && PinyinHelper.IsChinese(lyric[0])) {
-                lyric = PinyinHelper.GetPinyin(lyric).ToLowerInvariant();
-            }
             var phones = phoneDict[lyric];
             if (phones.Item1 == "") {//仅韵母
                 return MakeSimpleResult(phones.Item2);
