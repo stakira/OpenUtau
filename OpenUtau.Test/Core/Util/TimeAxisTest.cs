@@ -26,15 +26,15 @@ namespace OpenUtau.Core {
             Assert.Equal(2500, timeAxis.TickPosToMsPos(2400), 6);
             Assert.Equal(5000, timeAxis.TickPosToMsPos(4800), 6);
             Assert.Equal(9000, timeAxis.TickPosToMsPos(7200), 6);
-            Assert.Equal(20333.33333333, timeAxis.TickPosToMsPos(15960), 6);
-            Assert.Equal(35666.66666667, timeAxis.TickPosToMsPos(24000), 6);
+            Assert.Equal(21833.33333333, timeAxis.TickPosToMsPos(15960), 6);
+            Assert.Equal(37166.66666667, timeAxis.TickPosToMsPos(24000), 6);
 
             Assert.Equal(0, timeAxis.MsPosToTickPos(0));
             Assert.Equal(2400, timeAxis.MsPosToTickPos(2500));
             Assert.Equal(4800, timeAxis.MsPosToTickPos(5000));
             Assert.Equal(7200, timeAxis.MsPosToTickPos(9000));
-            Assert.Equal(15960, timeAxis.MsPosToTickPos(20333.33333333));
-            Assert.Equal(24000, timeAxis.MsPosToTickPos(35666.66666667));
+            Assert.Equal(15960, timeAxis.MsPosToTickPos(21833.33333333));
+            Assert.Equal(24000, timeAxis.MsPosToTickPos(37166.66666667));
         }
 
         [Fact]
