@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
+using Avalonia.Media;
 using Avalonia.Threading;
 using DynamicData.Binding;
 using OpenUtau.Core;
@@ -45,6 +46,8 @@ namespace OpenUtau.App.ViewModels {
         public ReactiveCommand<int, Unit>? DelTempoChangeCmd { get; set; }
         public ReactiveCommand<int, Unit>? AddTimeSigChangeCmd { get; set; }
         public ReactiveCommand<int, Unit>? DelTimeSigChangeCmd { get; set; }
+
+        public IBrush MainWindowBackgroundBrush => ThemeManager.MainWindowBackgroundBrush;
 
         private ObservableCollectionExtended<MenuItemViewModel> openRecent
             = new ObservableCollectionExtended<MenuItemViewModel>();

@@ -12,6 +12,7 @@ using Avalonia.Controls.Shapes;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using OpenUtau.App.Controls;
@@ -44,6 +45,8 @@ namespace OpenUtau.App.Views {
 
         private readonly ReactiveCommand<UPart, Unit> PartRenameCommand;
         private readonly ReactiveCommand<UPart, Unit> PartReplaceAudioCommand;
+
+        
 
         public MainWindow() {
             Log.Information("Creating main window.");
@@ -85,6 +88,8 @@ namespace OpenUtau.App.Views {
                 () => (Application.Current?.ApplicationLifetime as IControlledApplicationLifetime)?.Shutdown(),
                 TaskScheduler.FromCurrentSynchronizationContext());
             Log.Information("Created main window.");
+            MessageBus.Current.Listen<ThemeChangedEvent>()
+                .Subscribe(_ => InvalidateVisual());
         }
 
         private void InitializeComponent() {

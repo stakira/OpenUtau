@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.Reactive.Linq;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Media;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core.Ustx;
 using ReactiveUI;
@@ -26,6 +27,8 @@ namespace OpenUtau.App.Controls {
                 nameof(Items),
                 o => o.Items,
                 (o, v) => o.Items = v);
+
+        public IBrush MainWindowBackgroundBrush => ThemeManager.MainWindowBackgroundBrush;
 
         public double TrackHeight {
             get => trackHeight;
@@ -74,6 +77,8 @@ namespace OpenUtau.App.Controls {
                         }
                     }
                 });
+            MessageBus.Current.Listen<ThemeChangedEvent>()
+                .Subscribe(_ => InvalidateVisual());
         }
 
         protected override void OnInitialized() {

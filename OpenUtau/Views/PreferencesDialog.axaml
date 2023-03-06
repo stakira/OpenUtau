@@ -106,14 +106,8 @@
               </ComboBox.ItemTemplate>
             </ComboBox>
             <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.note.restart}" FontSize="11"/>
-            <TextBlock Margin="0,4,0,0" Text="{DynamicResource prefs.appearance.theme}" />
-              <ComboBox HorizontalAlignment="Stretch" Items="{Binding Themes}" SelectedItem="{Binding Theme}">
-                  <ComboBox.ItemTemplate>
-                      <DataTemplate>
-                          <TextBlock Text="{Binding Converter={StaticResource cultureNameConverter}}"/>
-                      </DataTemplate>
-                  </ComboBox.ItemTemplate>
-              </ComboBox>
+            <TextBlock Text="{DynamicResource prefs.appearance.theme}" />
+              <ComboBox HorizontalAlignment="Stretch" Items="{Binding Themes}" SelectedItem="{Binding Theme}"/>
             <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.note.restart}" FontSize="11"/>
             <TextBlock Margin="0,4,0,0" Text="{DynamicResource prefs.appearance.showportrait}" />
             <ComboBox HorizontalAlignment="Stretch" SelectedIndex="{Binding ShowPortrait}">

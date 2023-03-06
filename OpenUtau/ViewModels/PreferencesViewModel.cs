@@ -33,7 +33,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public int PreRender { get; set; }
         [Reactive] public int NumRenderThreads { get; set; }
         [Reactive] public bool HighThreads { get; set; }
-        [Reactive] public string Themes { get; set; }
+        [Reactive] public List<string> Themes { get; set; }
         [Reactive] public string Theme { get; set; }
         [Reactive] public int ShowPortrait { get; set; }
         [Reactive] public int ShowGhostNotes { get; set; }
@@ -103,7 +103,7 @@ namespace OpenUtau.App.ViewModels {
                 : CultureInfo.GetCultureInfo(Preferences.Default.Language);
             PreRender = Preferences.Default.PreRender ? 1 : 0;
             NumRenderThreads = Preferences.Default.NumRenderThreads;
-            Themes = GetThemeNames();
+            Themes = ThemeManager.GetThemeNames();
             Theme = Preferences.Default.Theme;
             ShowPortrait = Preferences.Default.ShowPortrait ? 1 : 0;
             ShowGhostNotes = Preferences.Default.ShowGhostNotes ? 1 : 0;

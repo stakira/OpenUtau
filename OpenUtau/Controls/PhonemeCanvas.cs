@@ -75,6 +75,8 @@ namespace OpenUtau.App.Controls {
                         InvalidateVisual();
                     }
                 });
+            MessageBus.Current.Listen<ThemeChangedEvent>()
+                .Subscribe(_ => InvalidateVisual());
         }
 
         protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change) {
