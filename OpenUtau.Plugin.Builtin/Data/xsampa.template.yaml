@@ -76,12 +76,25 @@ symbols:
   - {symbol: eN, type: vowel}
   - {symbol: IN, type: vowel}
   - {symbol: Ar, type: vowel}
+  - {symbol: Qr, type: vowel}
   - {symbol: Er, type: vowel}
   - {symbol: Ir, type: vowel}
   - {symbol: Or, type: vowel}
   - {symbol: Ur, type: vowel}
   - {symbol: ir, type: vowel}
   - {symbol: ur, type: vowel}
+  - {symbol: aIr, type: vowel}
+  - {symbol: aUr, type: vowel}
+  - {symbol: A@, type: vowel}
+  - {symbol: Q@, type: vowel}
+  - {symbol: E@, type: vowel}
+  - {symbol: I@, type: vowel}
+  - {symbol: O@, type: vowel}
+  - {symbol: U@, type: vowel}
+  - {symbol: i@, type: vowel}
+  - {symbol: u@, type: vowel}
+  - {symbol: aI@, type: vowel}
+  - {symbol: aU@, type: vowel}
   - {symbol: Q, type: vowel}
   - {symbol: 1, type: vowel}
   - {symbol: Ol, type: vowel}
