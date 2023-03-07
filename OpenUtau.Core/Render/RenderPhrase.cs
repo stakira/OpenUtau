@@ -50,12 +50,15 @@ namespace OpenUtau.Core.Render {
         public readonly int tone;
         public readonly int noteIndex;
         public readonly double tempo;
+        public readonly UTempo[] tempos;
 
         // classic args
         public readonly double preutterMs;
         public readonly double overlapMs;
         public readonly double durCorrectionMs;
         public readonly string resampler;
+        public readonly double adjustedTempo;
+        public readonly double adjustedDuration;
         public readonly Tuple<string, int?>[] flags;
         public readonly string suffix;
         public readonly float volume;
@@ -78,7 +81,21 @@ namespace OpenUtau.Core.Render {
 
             this.phoneme = phoneme.phoneme;
             tone = note.tone;
-            tempo = project.timeAxis.GetBpmAtTick(part.position + phoneme.position);
+            tempos = project.timeAxis.TemposBetweenTicks(part.position + phoneme.position, part.position + phoneme.End);
+            tempo = tempos[0].bpm;
+            adjustedTempo = tempos.Skip(1).Aggregate(tempo, (finalTempo, uTempo) => finalTempo * uTempo.bpm); // todo: optimize, maybe with LCM?
+
+            adjustedDuration = tempos.Length > 1 ? (int)((tempos[1].position - (part.position + phoneme.position)) * (adjustedTempo / tempo)) : duration;
+            for (var i = 1; i < tempos.Length; i++) {
+                int tempoChangeLength;
+                if (i + 1 < tempos.Length) {
+                    tempoChangeLength = tempos[i + 1].position - tempos[i].position;
+                } else {
+                    tempoChangeLength = part.position + phoneme.position + phoneme.Duration - tempos[i].position;
+                }
+                adjustedDuration += tempoChangeLength * (adjustedTempo / tempos[i].bpm);
+            }
+
             preutterMs = phoneme.preutter;
             overlapMs = phoneme.overlap;
             durCorrectionMs = phoneme.preutter - phoneme.tailIntrude + phoneme.tailOverlap;
@@ -103,11 +120,10 @@ namespace OpenUtau.Core.Render {
             oto = phoneme.oto;
             hash = Hash();
         }
-
         private ulong Hash() {
             using (var stream = new MemoryStream()) {
                 using (var writer = new BinaryWriter(stream)) {
-                    writer.Write(duration);
+                    writer.Write(adjustedDuration);
                     writer.Write(phoneme ?? string.Empty);
                     writer.Write(tone);
 
