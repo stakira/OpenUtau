@@ -85,7 +85,7 @@ namespace OpenUtau.Core.Render {
             tempo = tempos[0].bpm;
             adjustedTempo = tempos.Skip(1).Aggregate(tempo, (finalTempo, uTempo) => finalTempo * uTempo.bpm); // todo: optimize, maybe with LCM?
 
-            adjustedDuration = tempos.Length > 1 ? (int)((tempos[1].position - (part.position + phoneme.position)) * (adjustedTempo / tempo)) : duration;
+            adjustedDuration = tempos.Length > 1 ? ((tempos[1].position - (part.position + phoneme.position)) * (adjustedTempo / tempo)) : duration;
             for (var i = 1; i < tempos.Length; i++) {
                 int tempoChangeLength;
                 if (i + 1 < tempos.Length) {
