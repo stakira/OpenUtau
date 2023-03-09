@@ -121,6 +121,7 @@ namespace OpenUtau.Core.Render {
             using (var stream = new MemoryStream()) {
                 using (var writer = new BinaryWriter(stream)) {
                     writer.Write(adjustedTempo);
+                    writer.Write(duration);
                     writer.Write(phoneme ?? string.Empty);
                     writer.Write(tone);
 
