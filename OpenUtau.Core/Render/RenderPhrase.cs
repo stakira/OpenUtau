@@ -58,7 +58,6 @@ namespace OpenUtau.Core.Render {
         public readonly double durCorrectionMs;
         public readonly string resampler;
         public readonly double adjustedTempo;
-        public readonly double adjustedDuration;
         public readonly Tuple<string, int?>[] flags;
         public readonly string suffix;
         public readonly float volume;
@@ -83,18 +82,16 @@ namespace OpenUtau.Core.Render {
             tone = note.tone;
             tempos = project.timeAxis.TemposBetweenTicks(part.position + phoneme.position, part.position + phoneme.End);
             tempo = tempos[0].bpm;
-            adjustedTempo = tempos.Skip(1).Aggregate(tempo, (finalTempo, uTempo) => finalTempo * uTempo.bpm); // todo: optimize, maybe with LCM?
 
-            adjustedDuration = tempos.Length > 1 ? ((tempos[1].position - (part.position + phoneme.position)) * (adjustedTempo / tempo)) : duration;
-            for (var i = 1; i < tempos.Length; i++) {
-                int tempoChangeLength;
-                if (i + 1 < tempos.Length) {
-                    tempoChangeLength = tempos[i + 1].position - tempos[i].position;
-                } else {
-                    tempoChangeLength = part.position + phoneme.position + phoneme.Duration - tempos[i].position;
-                }
-                adjustedDuration += tempoChangeLength * (adjustedTempo / tempos[i].bpm);
+            double actualTickDuration = 0;
+            for (int i = 0; i < tempos.Length; i++) {
+                int tempoStart = Math.Max(part.position + phoneme.position, tempos[i].position);
+                int tempoEnd = i + 1 < tempos.Length ? tempos[i + 1].position : part.position + phoneme.End;
+                int tempoLength = tempoEnd - tempoStart;
+                actualTickDuration += (double)(tempoLength * (tempo / tempos[i].bpm));
             }
+
+            adjustedTempo = (duration / actualTickDuration) * tempo;
 
             preutterMs = phoneme.preutter;
             overlapMs = phoneme.overlap;
@@ -123,7 +120,7 @@ namespace OpenUtau.Core.Render {
         private ulong Hash() {
             using (var stream = new MemoryStream()) {
                 using (var writer = new BinaryWriter(stream)) {
-                    writer.Write(adjustedDuration);
+                    writer.Write(adjustedTempo);
                     writer.Write(phoneme ?? string.Empty);
                     writer.Write(tone);
 
