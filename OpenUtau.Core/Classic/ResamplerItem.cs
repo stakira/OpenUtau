@@ -67,49 +67,30 @@ namespace OpenUtau.Classic {
             consonant = phone.oto.Consonant;
             cutoff = phone.oto.Cutoff;
 
-            int leadingTick = phrase.timeAxis.MsPosToTickPos(phone.positionMs - pitchLeadingMs);
-            double leadingBpm = phrase.timeAxis.GetBpmAtTick(leadingTick);
-         
-            int pitchLeading = (int)Math.Ceiling(phrase.timeAxis.TicksBetweenMsPos(phone.positionMs - pitchLeadingMs, phone.positionMs) * (this.phone.adjustedTempo / leadingBpm));
-            int pitchSkip = (phrase.leading + phone.position - pitchLeading) / 5;
-            int pitchCount = (int)Math.Ceiling(
-                (double)phrase.timeAxis.TicksBetweenMsPos(
-                    phone.positionMs - pitchLeadingMs,
-                    phone.positionMs + phone.envelope[4].X) / 5);
             tempo = phone.adjustedTempo;
 
-            var phrasePitches = phrase.pitches
-                .Skip(pitchSkip)
-                .Take(pitchCount)
-                .Select(pitch => (int)Math.Round(pitch - phone.tone * 100))
-                .ToArray();
+            double pitchCountMs = (phone.positionMs + phone.envelope[4].X) - (phone.positionMs - pitchLeadingMs);
+            int pitchCount = (int)Math.Ceiling(MusicMath.TempoMsToTick(tempo, pitchCountMs) / 5.0);
 
-            pitches = new int[phrasePitches.Length];
-            int pitchSkipTempoSection = 0;
-            double pitchCountTempoSection = 0;
+            pitches = new int[pitchCount];
+
+            double phoneStartMs = phone.positionMs - pitchLeadingMs;
+            double phraseStartMs = phrase.positionMs - phrase.leadingMs;
             for (int i = 0; i < phone.tempos.Length; i++) {
-                int tempoStart = Math.Max(phrase.leading + phone.position - pitchLeading, phone.tempos[i].position - phrase.position);
-                int tempoEnd = i + 1 < phone.tempos.Length ? phone.tempos[i + 1].position - phrase.position : phrase.timeAxis.MsPosToTickPos(phone.positionMs + phone.envelope[4].X) - phrase.position;
-                int tempoLength = tempoEnd - tempoStart;
-                int pitchLength = (int)Math.Ceiling(tempoLength / 5.0);
-                double tempoRatio = phone.adjustedTempo / phone.tempos[i].bpm;
-
-                int roundedScaledPitchLength = (int)Math.Round(pitchLength * tempoRatio);
-                for (int j = 0; j < roundedScaledPitchLength; j++) {
-                    int pitchIndex = (int)Math.Floor(j + pitchCountTempoSection);
-                    int scaledIndex = (int)Math.Floor(pitchSkipTempoSection + (j / tempoRatio));
-                    pitches[pitchIndex] = phrasePitches[scaledIndex];
+                double startMs = Math.Max(phrase.timeAxis.TickPosToMsPos(phone.tempos[i].position), phoneStartMs);
+                double endMs = i + 1 < phone.tempos.Length ? phrase.timeAxis.TickPosToMsPos(phone.tempos[i + 1].position) : phone.positionMs + phone.envelope[4].X;
+                double durationMs = endMs - startMs;
+                int tempoPitchCount = (int)Math.Floor(MusicMath.TempoMsToTick(tempo, durationMs) / 5.0);
+                int tempoPitchSkip = (int)Math.Floor(MusicMath.TempoMsToTick(tempo, startMs - phoneStartMs) / 5.0);
+                tempoPitchCount = Math.Min(tempoPitchCount, pitches.Length - tempoPitchSkip);
+                int phrasePitchSkip = (int)Math.Floor(phrase.timeAxis.TicksBetweenMsPos(phraseStartMs, startMs) / 5.0);
+                double tempoRatio = phone.tempos[i].bpm / tempo;
+                for (int j = 0; j < tempoPitchCount; j++) {
+                    int index = tempoPitchSkip + j;
+                    int scaled = phrasePitchSkip + (int)Math.Ceiling(j * tempoRatio);
+                    scaled = Math.Min(phrase.pitches.Length - 1, scaled);
+                    pitches[index] = (int)Math.Round(phrase.pitches[scaled] - phone.tone * 100);
                 }
-
-                pitchSkipTempoSection += pitchLength;
-                pitchCountTempoSection += pitchLength * tempoRatio;
-            }
-
-
-            if (pitchSkip < 0) {
-                pitches = Enumerable.Repeat(phrasePitches[0], -pitchSkip)
-                    .Concat(pitches)
-                    .ToArray();
             }
 
             hash = Hash();

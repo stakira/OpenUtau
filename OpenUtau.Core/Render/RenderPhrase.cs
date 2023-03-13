@@ -80,22 +80,24 @@ namespace OpenUtau.Core.Render {
 
             this.phoneme = phoneme.phoneme;
             tone = note.tone;
-            tempos = project.timeAxis.TemposBetweenTicks(part.position + phoneme.position, part.position + phoneme.End);
-            tempo = tempos[0].bpm;
+            tempos = project.timeAxis.TemposBetweenTicks(part.position + phoneme.position - leading, part.position + phoneme.End);
+            UTempo[] noteTempos = project.timeAxis.TemposBetweenTicks(part.position + phoneme.position, part.position + phoneme.End);
+            tempo = noteTempos[0].bpm;
 
             double actualTickDuration = 0;
-            for (int i = 0; i < tempos.Length; i++) {
-                int tempoStart = Math.Max(part.position + phoneme.position, tempos[i].position);
-                int tempoEnd = i + 1 < tempos.Length ? tempos[i + 1].position : part.position + phoneme.End;
+            for (int i = 0; i < noteTempos.Length; i++) {
+                int tempoStart = Math.Max(part.position + phoneme.position, noteTempos[i].position);
+                int tempoEnd = i + 1 < noteTempos.Length ? noteTempos[i + 1].position : part.position + phoneme.End;
                 int tempoLength = tempoEnd - tempoStart;
-                actualTickDuration += (double)(tempoLength * (tempo / tempos[i].bpm));
+                actualTickDuration += (double)(tempoLength * (tempo / noteTempos[i].bpm));
             }
 
-            adjustedTempo = (duration / actualTickDuration) * tempo;
+            adjustedTempo = duration / actualTickDuration * tempo;
 
             preutterMs = phoneme.preutter;
             overlapMs = phoneme.overlap;
             durCorrectionMs = phoneme.preutter - phoneme.tailIntrude + phoneme.tailOverlap;
+
 
             resampler = track.RendererSettings.resampler;
             int eng = (int)phoneme.GetExpression(project, track, Format.Ustx.ENG).Item1;
