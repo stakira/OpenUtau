@@ -71,7 +71,7 @@ namespace OpenUtau.Classic {
 
             double pitchCountMs = (phone.positionMs + phone.envelope[4].X) - (phone.positionMs - pitchLeadingMs);
             int pitchCount = (int)Math.Ceiling(MusicMath.TempoMsToTick(tempo, pitchCountMs) / 5.0);
-
+            pitchCount = Math.Max(pitchCount, 0);
             pitches = new int[pitchCount];
 
             double phoneStartMs = phone.positionMs - pitchLeadingMs;
