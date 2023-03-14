@@ -87,6 +87,7 @@ namespace OpenUtau.Core.Util {
             public bool PreRender = true;
             public int NumRenderThreads = 2;
             public string Language = string.Empty;
+            public string SortingOrder = string.Empty;
             public List<string> RecentFiles = new List<string>();
             public string SkipUpdate = string.Empty;
             public string AdditionalSingerPath = string.Empty;

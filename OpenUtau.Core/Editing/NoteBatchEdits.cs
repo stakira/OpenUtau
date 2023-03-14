@@ -87,6 +87,29 @@ namespace OpenUtau.Core.Editing {
         }
     }
 
+    public class HanziToPinyin : BatchEdit {
+        public virtual string Name => name;
+
+        private string name;
+
+        public HanziToPinyin() {
+            name = "pianoroll.menu.notes.hanzitopinyin";
+        }
+        
+        public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
+            var pinyinNotes = selectedNotes
+                .Where(note => BaseChinesePhonemizer.IsHanzi(note.lyric))
+                .ToArray();
+            var pinyinResult = BaseChinesePhonemizer.Romanize(pinyinNotes.Select(note=>note.lyric));
+            docManager.StartUndoGroup(true);
+            foreach(var t in Enumerable.Zip(pinyinNotes, pinyinResult,
+                (note, pinyin) => Tuple.Create(note, pinyin))) {
+                docManager.ExecuteCmd(new ChangeNoteLyricCommand(part, t.Item1, t.Item2));
+            }
+            docManager.EndUndoGroup();
+        }
+    }
+
     public class ResetPitchBends : BatchEdit {
         public virtual string Name => name;
 
