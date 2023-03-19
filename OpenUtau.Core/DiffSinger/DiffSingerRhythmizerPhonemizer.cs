@@ -25,7 +25,6 @@ namespace OpenUtau.Core.DiffSinger {
     }
 
     class DsRhythmizer {
-        public string name;
         public string Location;
         public DsRhythmizerConfig config;
         public InferenceSession session;
@@ -47,13 +46,17 @@ namespace OpenUtau.Core.DiffSinger {
         }
 
         //通过名称获取音素时长模型
-        public DsRhythmizer(string name) {
-            this.name = name;
-            Location = Path.Combine(PathManager.Inst.DependencyPath, name);
+        public static DsRhythmizer FromName(string name) {
+            var path = Path.Combine(PathManager.Inst.DependencyPath, name);
+            return new DsRhythmizer(path);
+        }
+
+        public DsRhythmizer(string path) {
+            this.Location = path;
             config = Core.Yaml.DefaultDeserializer.Deserialize<DsRhythmizerConfig>(
                 File.ReadAllText(Path.Combine(Location, "vocoder.yaml"),
                     System.Text.Encoding.UTF8));
-            phoneDict = LoadPhoneDict(Path.Combine(Location,"dsdict.txt"), Encoding.UTF8);
+            phoneDict = LoadPhoneDict(Path.Combine(Location, "dsdict.txt"), Encoding.UTF8);
             //导入音素列表
             string phonemesPath = Path.Combine(Location, config.phonemes);
             phonemes = File.ReadLines(phonemesPath, Encoding.UTF8).ToList();
@@ -78,16 +81,20 @@ namespace OpenUtau.Core.DiffSinger {
             }
             //加载音素时长模型
             try {
-                string rhythmizerName;
-                string rhythmizerYamlPath = Path.Combine(singer.Location, "dsrhythmizer.yaml");
-                if (File.Exists(rhythmizerYamlPath)) {
-                    rhythmizerName = Core.Yaml.DefaultDeserializer.Deserialize<DsRhythmizerYaml>(
-                        File.ReadAllText(rhythmizerYamlPath, singer.TextFileEncoding)).rhythmizer;
-                } else {
-                    rhythmizerName = DsRhythmizer.DefaultRhythmizer;
-                }
-                if (rhythmizer == null || rhythmizer.name != rhythmizerName) {
-                    rhythmizer = new DsRhythmizer(rhythmizerName);
+                //if rhythmizer is packed within the voicebank
+                var packedRhythmizerPath = Path.Combine(singer.Location, "rhythmizer");
+                if(Directory.Exists(packedRhythmizerPath)) {
+                    rhythmizer = new DsRhythmizer(packedRhythmizerPath);
+                } else { 
+                    string rhythmizerName;
+                    string rhythmizerYamlPath = Path.Combine(singer.Location, "dsrhythmizer.yaml");
+                    if (File.Exists(rhythmizerYamlPath)) {
+                        rhythmizerName = Core.Yaml.DefaultDeserializer.Deserialize<DsRhythmizerYaml>(
+                            File.ReadAllText(rhythmizerYamlPath, singer.TextFileEncoding)).rhythmizer;
+                    } else {
+                        rhythmizerName = DsRhythmizer.DefaultRhythmizer;
+                    }
+                        rhythmizer = DsRhythmizer.FromName(rhythmizerName);
                 }
                 //导入拼音转音素字典，仅从时长模型包中导入字典
                 phoneDict = rhythmizer.phoneDict;
