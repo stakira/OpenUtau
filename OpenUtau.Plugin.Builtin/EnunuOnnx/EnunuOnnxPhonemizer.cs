@@ -252,14 +252,30 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         string[] GetSymbols(Note note) {
-            if (string.IsNullOrEmpty(note.phoneticHint)) {
-                // User has not provided hint, query CMUdict.
-                return g2p.Query(note.lyric.ToLowerInvariant()) ?? new string[] {defaultPause};
+            //priority:
+            //1. phonetic hint
+            //2. query from g2p dictionary
+            //3. treat lyric as phonetic hint, including single phoneme
+            //4. default pause
+            if (!string.IsNullOrEmpty(note.phoneticHint)) {
+                // Split space-separated symbols into an array.
+                return note.phoneticHint.Split()
+                    .Where(s => g2p.IsValidSymbol(s)) // skip the invalid symbols.
+                    .ToArray();
             }
-            // Split space-separated symbols into an array.
-            return note.phoneticHint.Split()
-                .Where(s => g2p.IsValidSymbol(s)) // skip the invalid symbols.
-                .ToArray();
+            // User has not provided hint, query g2p dictionary.
+            var g2presult = g2p.Query(note.lyric.ToLowerInvariant());
+            if(g2presult != null) {
+                return g2presult;
+            }
+            //not founded in g2p dictionary, treat lyric as phonetic hint
+            var lyricSplited = note.lyric.Split()
+                    .Where(s => g2p.IsValidSymbol(s)) // skip the invalid symbols.
+                    .ToArray();
+            if (lyricSplited.Length > 0) {
+                return lyricSplited;
+            }
+            return new string[] { defaultPause };
         }
 
         //make a HTS Note from given symbols and UNotes
