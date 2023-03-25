@@ -1,4 +1,4 @@
-﻿
+
 # OpenUtau
 
 OpenUtau is a free, open-source editor made for the UTAU community.
@@ -75,6 +75,7 @@ See the [Getting-Started Wiki page](https://github.com/stakira/OpenUtau/wiki/Get
   - Unlike UTAU, there is no need to change your system locale to use OpenUtau.
 - Smooth preview/rendering experience.
   - Pre-rendering allows OpenUtau to render vocals before playback, saving time during editing and tuning.
+- Supports ENUNU AI singers. See the ![ENUNU wiki page](https://github.com/stakira/OpenUtau/wiki/Status-of-ENUNU-NNSVS-Support) for more info.
 - Easy-to-use plugin system.
 - Versatile resampling engine interface.
   - Compatible with most UTAU resamplers.
