@@ -179,6 +179,7 @@ namespace OpenUtau.App.ViewModels {
                 new JapaneseVCVtoCV(),
                 new RemoveToneSuffix(),
                 new RemoveLetterSuffix(),
+                new RemovePhoneticHint(),
                 new DashToPlus(),
             }.Select(edit => new MenuItemViewModel() {
                 Header = ThemeManager.GetString(edit.Name),
