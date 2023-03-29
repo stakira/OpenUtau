@@ -160,6 +160,14 @@ namespace OpenUtau.Core {
             }
         }
 
+        public UTempo[] TemposBetweenTicks(int start, int end) {
+            var list = tempoSegments
+                .Where(tempo => start < tempo.tickEnd && tempo.tickPos < end)
+                .Select(tempo => new UTempo { position = tempo.tickPos, bpm = tempo.bpm })
+                .ToArray();
+            return list;
+        }
+
         public UTimeSignature TimeSignatureAtTick(int tick) {
             var segment = timeSigSegments.First(seg => seg.tickPos == tick || seg.tickEnd > tick); // TODO: optimize
             return new UTimeSignature {
