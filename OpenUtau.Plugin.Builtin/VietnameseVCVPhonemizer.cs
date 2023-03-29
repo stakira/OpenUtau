@@ -57,11 +57,24 @@ namespace OpenUtau.Plugin.Builtin {
                 };
             }
             int totalDuration = notes.Sum(n => n.duration);
-            int Short = totalDuration * 4 / 7;
-            int Long = totalDuration / 6;
-            int Medium = totalDuration / 3;
-            int End = totalDuration - 30;
-            int ViTri = Short;
+            int Short = 0;
+            int Long = 0;
+            int Medium = 0;
+            int End = 0;
+            int ViTri = 0;
+            if (totalDuration < 350) {
+                Short = totalDuration * 4 / 8;
+                Long = totalDuration / 6;
+                Medium = totalDuration / 3;
+                End = totalDuration * 4 / 5;
+                ViTri = Short;
+            } else {
+                Short = totalDuration - 170;
+                Long = 90;
+                Medium = 180;
+                End = totalDuration - 50;
+                ViTri = Short;
+            }
             bool a;
             bool NoNext = nextNeighbour == null && note.lyric != "R";
             var loi = note.lyric;

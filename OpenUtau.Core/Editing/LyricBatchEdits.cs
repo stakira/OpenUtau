@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using OpenUtau.Core.Ustx;
 using TinyPinyin;
 using WanaKanaNet;
@@ -84,6 +85,19 @@ namespace OpenUtau.Core.Editing {
 
         private bool ShouldRemove(char c) {
             return (c == '_' || c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z') && c != 'R' && c != 'r';
+        }
+    }
+
+    public class RemovePhoneticHint : SingleNoteLyricEdit {
+        static readonly Regex phoneticHintPattern = new Regex(@"\[(.*)\]");
+        public override string Name => "pianoroll.menu.lyrics.removephonetichint";
+        protected override string Transform(string lyric) {
+            var lrc = lyric;
+            lrc = phoneticHintPattern.Replace(lrc, match => "");
+            if (string.IsNullOrEmpty(lrc)) {
+                return lyric;
+            }
+            return lrc;
         }
     }
 
