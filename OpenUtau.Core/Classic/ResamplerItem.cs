@@ -89,6 +89,7 @@ namespace OpenUtau.Classic {
                     int index = tempoPitchSkip + j;
                     int scaled = phrasePitchSkip + (int)Math.Ceiling(j * tempoRatio);
                     scaled = Math.Min(phrase.pitches.Length - 1, scaled);
+                    scaled = Math.Max(scaled, 0);
                     pitches[index] = (int)Math.Round(phrase.pitches[scaled] - phone.tone * 100);
                 }
             }
