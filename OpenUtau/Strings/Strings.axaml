@@ -290,6 +290,7 @@ Hold Ctrl to select</system:String>
 
   <system:String x:Key="progress.saved">Project saved. {0}</system:String>
   <system:String x:Key="progress.waitingrendering">Waiting Rendering</system:String>
+  <system:String x:Key="progress.loadingsingers">Loading Singers...</system:String>
 
   <system:String x:Key="singers.caption">Singers</system:String>
   <system:String x:Key="singers.editoto.editinvlabeler">Edit In vLabeler</system:String>
