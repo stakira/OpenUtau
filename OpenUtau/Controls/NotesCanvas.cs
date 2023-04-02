@@ -120,6 +120,8 @@ namespace OpenUtau.App.Controls {
                 .Subscribe(_ => RefreshGhostNotes());
             this.WhenAnyValue(x => x.Part)
                 .Subscribe(_ => RefreshGhostNotes());
+            MessageBus.Current.Listen<ThemeChangedEvent>()
+                .Subscribe(_ => InvalidateVisual());
         }
 
         void RefreshGhostNotes() {

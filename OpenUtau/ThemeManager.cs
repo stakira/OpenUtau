@@ -1,14 +1,55 @@
-﻿using Avalonia;
+﻿using System.IO;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
+using Avalonia.Markup.Xaml.Converters;
+using OpenUtau.Core;
 using OpenUtau.App.Controls;
 using ReactiveUI;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
+using Serilog;
+using YamlDotNet.Serialization;
+using Org.BouncyCastle.Crypto.Operators;
 
 namespace OpenUtau.App {
     class ThemeChangedEvent { }
 
+    public class Theme {
+        public string name { get; set; }
+        public string dark { get; set; }
+        public string mainWindowBrush { get; set; }
+        public string foregroundBrush { get; set; }
+        public string backgroundBrush { get; set; }
+        public string neutralAccentBrush { get; set; }
+        public string neutralAccentBrushSemi { get; set; }
+        public string accentBrush1 { get; set; }
+        public string accentBrush1Semi { get; set; }
+        public string accentBrush2 { get; set; }
+        public string accentBrush2Semi { get; set; }
+        public string accentBrush3 { get; set; }
+        public string accentBrush3Semi { get; set; }
+        public string tickLineBrushLow { get; set; }
+        public string barNumberBrush { get; set; }
+        public string barNumberPen { get; set; }
+        public string finalPitchBrush { get; set; }
+        public string whiteKeyBrush { get; set; }
+        public string whiteKeyNameBrush { get; set; }
+        public string centerKeyBrush { get; set; }
+        public string centerKeyNameBrush { get; set; }
+        public string blackKeyBrush { get; set; }
+        public string blackKeyNameBrush { get; set; }
+    } 
+
     class ThemeManager {
         public static bool IsDarkMode = false;
+        public static IBrush MainWindowBackgroundBrush = Brushes.Black;
         public static IBrush ForegroundBrush = Brushes.Black;
         public static IBrush BackgroundBrush = Brushes.White;
         public static IBrush NeutralAccentBrush = Brushes.Gray;
@@ -46,7 +87,6 @@ namespace OpenUtau.App {
         public static IBrush ExpShadowNameBrush = Brushes.White;
         public static IBrush ExpActiveBrush = Brushes.Black;
         public static IBrush ExpActiveNameBrush = Brushes.White;
-
         public static void LoadTheme() {
             IResourceDictionary resDict = Application.Current.Resources;
             object? outVar;
@@ -55,6 +95,9 @@ namespace OpenUtau.App {
                 if (outVar is bool b) {
                     IsDarkMode = b;
                 }
+            }
+            if (resDict.TryGetResource("MainWindowColor", out outVar)) {
+                MainWindowBackgroundBrush = (IBrush)ColorToBrushConverter.Convert(outVar!, typeof(IBrush));
             }
             if (resDict.TryGetResource("SystemControlForegroundBaseHighBrush", out outVar)) {
                 ForegroundBrush = (IBrush)outVar!;
@@ -142,6 +185,105 @@ namespace OpenUtau.App {
             }
             TextLayoutCache.Clear();
             MessageBus.Current.SendMessage(new ThemeChangedEvent());
+        }
+
+        public static void GetColor(string theme) {
+            var deserializer = new DeserializerBuilder()
+                .Build();
+            string text = File.ReadAllText(theme);
+            var t = deserializer.Deserialize<Theme>(text);
+            MainWindowBackgroundBrush = (IBrush)ColorToBrushConverter.Convert(Color.Parse(t.mainWindowBrush), typeof(IBrush));
+            ForegroundBrush = (IBrush)ColorToBrushConverter.Convert(Color.Parse(t.foregroundBrush), typeof(IBrush));
+            Log.Information($"ForgroundBrush is {t.foregroundBrush} and the current stuff is {ForegroundBrush}");
+            BackgroundBrush = (IBrush)ColorToBrushConverter.Convert(Color.Parse(t.backgroundBrush), typeof(IBrush));
+            Log.Information($"BackgroundBrush is {t.backgroundBrush} and the current stuff is {BackgroundBrush}");
+            NeutralAccentBrush = (IBrush)ColorToBrushConverter.Convert(Color.Parse(t.neutralAccentBrush), typeof(IBrush));
+            NeutralAccentPen = new Pen(NeutralAccentBrush, 1);
+            NeutralAccentBrushSemi = (IBrush)ColorToBrushConverter.Convert(Color.Parse(t.neutralAccentBrushSemi), typeof(IBrush));
+            NeutralAccentPenSemi = new Pen(NeutralAccentBrushSemi, 1);
+            AccentBrush1 = (IBrush)ColorToBrushConverter.Convert(Color.Parse(t.accentBrush1), typeof(IBrush));
+            AccentPen1 = new Pen(AccentBrush1);
+            AccentPen1Thickness2 = new Pen(AccentBrush1, 2);
+            AccentPen1Thickness3 = new Pen(AccentBrush1, 3);
+            AccentBrush1Semi = (IBrush)ColorToBrushConverter.Convert(Color.Parse(t.accentBrush1Semi), typeof(IBrush));
+            AccentBrush2 = (IBrush)ColorToBrushConverter.Convert(Color.Parse(t.accentBrush2), typeof(IBrush));
+            AccentPen2 = new Pen(AccentBrush2, 1);
+            AccentPen2Thickness2 = new Pen(AccentBrush2, 2);
+            AccentPen2Thickness3 = new Pen(AccentBrush2, 3);
+            AccentBrush2Semi = (IBrush)ColorToBrushConverter.Convert(Color.Parse(t.accentBrush2Semi), typeof(IBrush));
+            AccentBrush3 = (IBrush)ColorToBrushConverter.Convert(Color.Parse(t.accentBrush3), typeof(IBrush));
+            AccentPen3 = new Pen(AccentBrush3, 1);
+            AccentPen3Thick = new Pen(AccentBrush3, 3);
+            AccentBrush3Semi = (IBrush)ColorToBrushConverter.Convert(Color.Parse(t.accentBrush3Semi), typeof(IBrush));
+            TickLineBrushLow = (IBrush)ColorToBrushConverter.Convert(Color.Parse(t.tickLineBrushLow), typeof(IBrush));
+            BarNumberBrush = (IBrush)ColorToBrushConverter.Convert(Color.Parse(t.barNumberBrush), typeof(IBrush));
+            BarNumberPen = new Pen(BarNumberBrush, 1);
+            FinalPitchBrush = (IBrush)ColorToBrushConverter.Convert(Color.Parse(t.finalPitchBrush), typeof(IBrush));
+            FinalPitchPen = new Pen(FinalPitchBrush, 1);
+            WhiteKeyBrush = (IBrush)ColorToBrushConverter.Convert(Color.Parse(t.finalPitchBrush), typeof(IBrush));
+            WhiteKeyNameBrush = (IBrush)ColorToBrushConverter.Convert(Color.Parse(t.whiteKeyNameBrush), typeof(IBrush));
+            CenterKeyBrush = (IBrush)ColorToBrushConverter.Convert(Color.Parse(t.centerKeyBrush), typeof(IBrush));
+            CenterKeyNameBrush = (IBrush)ColorToBrushConverter.Convert(Color.Parse(t.centerKeyNameBrush), typeof(IBrush));
+            BlackKeyBrush = (IBrush)ColorToBrushConverter.Convert(Color.Parse(t.blackKeyBrush), typeof(IBrush));
+            BlackKeyNameBrush = (IBrush)ColorToBrushConverter.Convert(Color.Parse(t.blackKeyNameBrush), typeof(IBrush));
+            if (t.dark.ToLower() == "true") {
+                ExpBrush = WhiteKeyBrush;
+                ExpNameBrush = WhiteKeyNameBrush;
+                ExpActiveBrush = BlackKeyBrush;
+                ExpActiveNameBrush = BlackKeyNameBrush;
+                ExpShadowBrush = CenterKeyBrush;
+                ExpShadowNameBrush = CenterKeyNameBrush;
+            } else {
+                ExpBrush = BlackKeyBrush;
+                ExpNameBrush = BlackKeyNameBrush;
+                ExpActiveBrush = WhiteKeyBrush;
+                ExpActiveNameBrush = WhiteKeyNameBrush;
+                ExpShadowBrush = CenterKeyBrush;
+                ExpShadowNameBrush = CenterKeyNameBrush;
+            }
+            TextLayoutCache.Clear();
+            MessageBus.Current.SendMessage(new ThemeChangedEvent());
+        }
+
+        public static void LoadExternalTheme(string theme) {
+            var deserializer = new DeserializerBuilder()
+                .Build();
+            var files = new List<string>();
+            var names = new List<string>();
+            try {
+                Directory.CreateDirectory(PathManager.Inst.ThemesPath);
+                files.AddRange(Directory.EnumerateFiles(PathManager.Inst.ThemesPath, "*.yaml", SearchOption.AllDirectories));
+            } catch (Exception e) {
+                Log.Error(e, "Failed to search themes.");
+            };
+            foreach(var file in files) {
+                string text = File.ReadAllText(file);
+                var n = deserializer.Deserialize<Theme>(text);
+                if (n.name == theme) {
+                    GetColor(file);
+                    break;
+                }
+            }
+        }
+        public static List<string> GetThemeNames() {
+            var deserializer = new DeserializerBuilder()
+                .Build();
+            var files = new List<string>();
+            var names = new List<string>();
+            try {
+                Directory.CreateDirectory(PathManager.Inst.ThemesPath);
+                files.AddRange(Directory.EnumerateFiles(PathManager.Inst.ThemesPath, "*.yaml", SearchOption.AllDirectories));
+            } catch (Exception e) {
+                Log.Error(e, "Failed to search themes.");
+            };
+            foreach (var file in files) {
+                string text = File.ReadAllText(file);
+                var n = deserializer.Deserialize<Theme>(text);
+                names.Add(n.name);
+            }
+            names.Add(GetString("prefs.appearance.theme.light"));
+            names.Add(GetString("prefs.appearance.theme.dark"));
+            return names;
         }
 
         public static string GetString(string key) {

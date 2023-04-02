@@ -83,7 +83,7 @@ namespace OpenUtau.Core.Util {
             public int? PlaybackDeviceIndex;
             public bool ShowPrefs = true;
             public bool ShowTips = true;
-            public int Theme;
+            public string Theme = "0";
             public bool PreRender = true;
             public int NumRenderThreads = 2;
             public string Language = string.Empty;

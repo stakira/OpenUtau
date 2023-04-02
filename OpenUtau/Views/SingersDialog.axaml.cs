@@ -56,7 +56,7 @@ namespace OpenUtau.App.Views {
                 otoPlot.Configuration.MiddleClickDragZoom = false;
                 otoPlot.Configuration.ScrollWheelZoomFraction = 0.5;
                 otoPlot.RightClicked -= otoPlot.DefaultRightClickEvent;
-                if (Core.Util.Preferences.Default.Theme == 1) {
+                if (Core.Util.Preferences.Default.Theme == "Dark") {
                     otoPlot.Plot.Style(ScottPlot.Style.Gray1);
                 }
                 otoPlot.Plot.Margins(0, 0);

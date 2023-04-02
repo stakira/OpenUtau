@@ -75,14 +75,24 @@ namespace OpenUtau.App {
             var dark = Current.Resources.MergedDictionaries
                 .Select(res => (ResourceInclude)res)
                 .FirstOrDefault(d => d.Source!.OriginalString.Contains("DarkTheme"));
-            if (Core.Util.Preferences.Default.Theme == 0) {
+            var isBuiltIn = false;
+            var extTheme = string.Empty;
+            if (Core.Util.Preferences.Default.Theme == ThemeManager.GetString("prefs.appearance.theme.light") || Core.Util.Preferences.Default.Theme == "0") {
                 Current.Resources.MergedDictionaries.Remove(light);
                 Current.Resources.MergedDictionaries.Add(light);
-            } else {
+                isBuiltIn = true;
+            } else if (Core.Util.Preferences.Default.Theme == ThemeManager.GetString("prefs.appearance.theme.dark") || Core.Util.Preferences.Default.Theme == "1") {
                 Current.Resources.MergedDictionaries.Remove(dark);
                 Current.Resources.MergedDictionaries.Add(dark);
+                isBuiltIn = true;
+            } else {
+                extTheme = Core.Util.Preferences.Default.Theme;
             }
-            ThemeManager.LoadTheme();
+            if (isBuiltIn) {
+                ThemeManager.LoadTheme();
+            } else {
+                ThemeManager.LoadExternalTheme(extTheme);
+            }
         }
 
         public static void InitOpenUtau() {

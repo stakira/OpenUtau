@@ -73,6 +73,8 @@ namespace OpenUtau.App.Controls {
                     selectedNotes.UnionWith(e.tempSelectedNotes);
                     InvalidateVisual();
                 });
+            MessageBus.Current.Listen<ThemeChangedEvent>()
+                .Subscribe(_ => InvalidateVisual());
         }
 
         protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change) {
