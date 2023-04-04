@@ -36,7 +36,7 @@ namespace OpenUtau.App.ViewModels {
 
     public class PianoRollViewModel : ViewModelBase, ICmdSubscriber {
 
-        public bool ExtendToFrame => OS.IsMacOS();
+        public bool ExtendToFrame => false;
         [Reactive] public NotesViewModel NotesViewModel { get; set; }
         [Reactive] public PlaybackViewModel? PlaybackViewModel { get; set; }
 
