@@ -23,7 +23,7 @@ namespace OpenUtau.App.ViewModels {
     }
 
     public class MainWindowViewModel : ViewModelBase, ICmdSubscriber {
-        public bool ExtendToFrame => OS.IsMacOS();
+        public bool ExtendToFrame => false;
         public string Title => !ProjectSaved
             ? $"{AppVersion}"
             : $"{AppVersion} [{DocManager.Inst.Project.FilePath}{(DocManager.Inst.ChangesSaved ? "" : "*")}]";
