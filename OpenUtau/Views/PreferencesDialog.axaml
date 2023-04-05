@@ -99,8 +99,6 @@
             <TextBlock Text="{DynamicResource prefs.rendering.onnxgpu}" />
             <ComboBox HorizontalAlignment="Stretch"  Items="{Binding OnnxGpuOptions}" SelectedItem="{Binding OnnxGpu}"/>
             <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.note.restart}" FontSize="11"/>
-            <TextBlock Text="{DynamicResource prefs.rendering.diffsingerspeedup}" />
-            <ComboBox HorizontalAlignment="Stretch"  Items="{Binding DiffsingerSpeedupOptions}" SelectedItem="{Binding DiffsingerSpeedup}"/>
           </StackPanel>
         </HeaderedContentControl>
         <HeaderedContentControl Classes="groupbox" Header="{DynamicResource prefs.appearance}">
