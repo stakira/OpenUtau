@@ -32,6 +32,10 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public int InstallToAdditionalSingersPath { get; set; }
         [Reactive] public int PreRender { get; set; }
         [Reactive] public int NumRenderThreads { get; set; }
+        public List<string> OnnxRunnerOptions { get; set; }
+        [Reactive] public string OnnxRunner { get; set; }
+        public List<GpuInfo> OnnxGpuOptions { get; set; }
+        [Reactive] public GpuInfo OnnxGpu { get; set; }
         [Reactive] public bool HighThreads { get; set; }
         [Reactive] public int Theme { get; set; }
         [Reactive] public int ShowPortrait { get; set; }
@@ -115,6 +119,11 @@ namespace OpenUtau.App.ViewModels {
                 : CultureInfo.GetCultureInfo(Preferences.Default.SortingOrder);
             PreRender = Preferences.Default.PreRender ? 1 : 0;
             NumRenderThreads = Preferences.Default.NumRenderThreads;
+            OnnxRunnerOptions = Onnx.getRunnerOptions();
+            OnnxRunner = String.IsNullOrEmpty(Preferences.Default.OnnxRunner)?
+               OnnxRunnerOptions[0] : Preferences.Default.OnnxRunner;
+            OnnxGpuOptions = Onnx.getGpuInfo();
+            OnnxGpu = OnnxGpuOptions.FirstOrDefault(x => x.deviceId == Preferences.Default.OnnxGpu, OnnxGpuOptions[0]);
             Theme = Preferences.Default.Theme;
             ShowPortrait = Preferences.Default.ShowPortrait ? 1 : 0;
             ShowGhostNotes = Preferences.Default.ShowGhostNotes ? 1 : 0;
@@ -211,6 +220,16 @@ namespace OpenUtau.App.ViewModels {
                 .Subscribe(index => {
                     Preferences.Default.NumRenderThreads = index;
                     HighThreads = index > SafeMaxThreadCount ? true : false;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.OnnxRunner)
+                .Subscribe(index => {
+                    Preferences.Default.OnnxRunner = index;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.OnnxGpu)
+                .Subscribe(index => {
+                    Preferences.Default.OnnxGpu = index.deviceId;
                     Preferences.Save();
                 });
         }
