@@ -9,11 +9,18 @@ namespace OpenUtau.Plugin.Builtin {
     [Phonemizer("Japanese CVVC Phonemizer", "JA CVVC", "TUBS",language:"JA")]
     public class JapaneseCVVCPhonemizer : Phonemizer {
         static readonly string[] plainVowels = new string[] {"あ","い","う","え","お","を","ん","ン"};
+        /*
         static readonly string[] nonVowels = new string[]{"息","吸","R","-","k","ky","g","gy",
                                                            "s","sh","z","j","t","ch","ty","ts",
                                                            "d","dy","n","ny","h","hy","f","b",
                                                            "by","p","py","m","my","y","r","4",
                                                            "ry","w","v","ng","l","・","B", "H",
+        };*/
+        static readonly string[] plainConsonants = new string[]{"k","ky","g","gy",
+                                                           "s","sh","z","j","t","ch","ty","ts",
+                                                           "d","dy","n","ny","h","hy","f","b",
+                                                           "by","p","py","m","my","y","r","4",
+                                                           "ry","w","v","ng","l","・"
         };
 
         static readonly string[] vowels = new string[] {
@@ -147,10 +154,25 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             } else {
                 var prevUnicode = ToUnicodeElements(prevNeighbour?.lyric);
+                var prevLyric = string.Join("", prevUnicode);
+
                 if (vowelLookup.TryGetValue(prevUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
+                    // try VCV
                     var vowLyric = $"{vow} {currentLyric}";
                     // try vowlyric before cflyric, if both fail try currentlyric
-                    string[] tests = new string[] { vowLyric, cfLyric, currentLyric, initial };
+                    string[] tests = new string[] { vowLyric, cfLyric, currentLyric };
+                    if (checkOtoUntilHit(tests, note, out var oto)) {
+                        currentLyric = oto.Alias;
+                    }
+                } else if (plainConsonants.Any(c => prevLyric.Contains(c))) {
+                    // try CV
+                    string[] tests = new string[] { currentLyric, initial };
+                    if (checkOtoUntilHit(tests, note, out var oto)) {
+                        currentLyric = oto.Alias;
+                    }
+                } else {
+                    // try "- CV"
+                    string[] tests = new string[] { initial, currentLyric };
                     if (checkOtoUntilHit(tests, note, out var oto)) {
                         currentLyric = oto.Alias;
                     }
@@ -244,16 +266,16 @@ namespace OpenUtau.Plugin.Builtin {
                         vcLength = MsToTick(oto.Preutter);
                     }
                 }
-                vcLength = Math.Min(totalDuration / 2, vcLength);
+                vcLength = Convert.ToInt32(Math.Min(totalDuration / 2, vcLength * (nextAttr.consonantStretchRatio ?? 1)));
 
                 return new Result {
                     phonemes = new Phoneme[] {
                         new Phoneme() {
-                            phoneme = currentLyric,
+                            phoneme = currentLyric
                         },
                         new Phoneme() {
                             phoneme = vcPhoneme,
-                            position = totalDuration - vcLength,
+                            position = totalDuration - vcLength
                         }
                     },
                 };
