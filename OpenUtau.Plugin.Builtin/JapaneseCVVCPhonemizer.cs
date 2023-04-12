@@ -259,7 +259,6 @@ namespace OpenUtau.Plugin.Builtin {
                 var nextAttr = nextNeighbour.Value.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
                 if (singer.TryGetMappedOto(nextLyric, nextNeighbour.Value.tone + nextAttr.toneShift, nextAttr.voiceColor, out var oto)) {
                     // If overlap is a negative value, vcLength is longer than Preutter
-                    // The length of the VC should change depending on the next note's vel, but that has not been implemented yet.
                     if (oto.Overlap < 0) {
                         vcLength = MsToTick(oto.Preutter - oto.Overlap);
                     } else {
