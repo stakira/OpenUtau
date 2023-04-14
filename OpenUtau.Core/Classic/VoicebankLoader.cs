@@ -7,7 +7,6 @@ using System.Text;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using Serilog;
-using SharpCompress.Common;
 
 namespace OpenUtau.Classic {
     public class FileTrace {
