@@ -137,7 +137,7 @@ namespace OpenUtau.Plugin.Builtin {
             if (mainNote.lyric.StartsWith(FORCED_ALIAS_SYMBOL)) {
                 return MakeForcedAliasResult(mainNote);
             }
-            if (hasDictionary && isDictionaryLoading) {
+            if (hasDictionary && isDictionaryLoading && !Testing) {
                 return MakeSimpleResult("");
             }
 
@@ -256,6 +256,11 @@ namespace OpenUtau.Plugin.Builtin {
                 if (!string.IsNullOrEmpty(note.phoneticHint)) {
                     return getSymbolsRaw(note.phoneticHint);
                 }
+
+                while (isDictionaryLoading && Testing) {
+                    System.Threading.Thread.Sleep(100);
+                }
+
                 var result = new List<string>();
                 foreach (var subword in note.lyric.Trim().ToLowerInvariant().Split(wordSeparators, StringSplitOptions.RemoveEmptyEntries)) {
                     var subResult = dictionary.Query(subword);
