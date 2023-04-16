@@ -31,7 +31,9 @@ namespace OpenUtau.Classic {
         public void LoadArchive(string path) {
             progress.Invoke(0, "Analyzing archive...");
             var readerOptions = new ReaderOptions {
-                ArchiveEncoding = new ArchiveEncoding(archiveEncoding, archiveEncoding)
+                ArchiveEncoding = new ArchiveEncoding {
+                    Forced = archiveEncoding,
+                }
             };
             var extractionOptions = new ExtractionOptions {
                 Overwrite = true,

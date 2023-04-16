@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive;
+using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
@@ -30,6 +31,8 @@ namespace OpenUtau.App.Views {
             OS.IsMacOS() ? KeyModifiers.Meta : KeyModifiers.Control;
         private readonly MainWindowViewModel viewModel;
 
+        private bool splashDone = false;
+
         private PianoRollWindow? pianoRollWindow;
         private bool openPianoRollWindow;
 
@@ -54,11 +57,22 @@ namespace OpenUtau.App.Views {
 #if DEBUG
             this.AttachDevTools();
 #endif
-            viewModel.InitProject();
-            viewModel.AddTempoChangeCmd = ReactiveCommand.Create<int>(tick => AddTempoChange(tick));
-            viewModel.DelTempoChangeCmd = ReactiveCommand.Create<int>(tick => DelTempoChange(tick));
-            viewModel.AddTimeSigChangeCmd = ReactiveCommand.Create<int>(bar => AddTimeSigChange(bar));
-            viewModel.DelTimeSigChangeCmd = ReactiveCommand.Create<int>(bar => DelTimeSigChange(bar));
+            var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
+            viewModel.GetInitSingerTask()!.ContinueWith(_ => {
+                viewModel.InitProject();
+                viewModel.AddTempoChangeCmd = ReactiveCommand.Create<int>(tick => AddTempoChange(tick));
+                viewModel.DelTempoChangeCmd = ReactiveCommand.Create<int>(tick => DelTempoChange(tick));
+                viewModel.AddTimeSigChangeCmd = ReactiveCommand.Create<int>(bar => AddTimeSigChange(bar));
+                viewModel.DelTimeSigChangeCmd = ReactiveCommand.Create<int>(bar => DelTimeSigChange(bar));
+
+                var splash = this.Find<Border>("Splash");
+                splash.IsEnabled = false;
+                splash.IsVisible = false;
+                var mainGrid = this.Find<Grid>("MainGrid");
+                mainGrid.IsEnabled = true;
+                mainGrid.IsVisible = true;
+                splashDone = true;
+            }, CancellationToken.None, TaskContinuationOptions.None, scheduler);
 
             timer = new DispatcherTimer(
                 TimeSpan.FromMilliseconds(15),
@@ -310,7 +324,7 @@ namespace OpenUtau.App.Views {
             }
         }
 
-        async void OnMenuImportMidi(bool UseDrywetmidi=false) {
+        async void OnMenuImportMidi(bool UseDrywetmidi = false) {
             var dialog = new OpenFileDialog() {
                 Filters = new List<FileDialogFilter>() {
                     new FileDialogFilter() {
@@ -616,6 +630,9 @@ namespace OpenUtau.App.Views {
         }
 
         void OnKeyDown(object sender, KeyEventArgs args) {
+            if (!splashDone) {
+                return;
+            }
             var tracksVm = viewModel.TracksViewModel;
             if (args.KeyModifiers == KeyModifiers.None) {
                 args.Handled = true;

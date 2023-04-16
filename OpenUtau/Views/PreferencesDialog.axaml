@@ -93,12 +93,27 @@
             </Grid>
             <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.rendering.threads.cpuwarn}" FontWeight="Bold"
                        Foreground="Red" Margin="0,0,0,4" IsVisible="{Binding HighThreads}" FontSize="11"/>
+            <TextBlock Text="{DynamicResource prefs.rendering.onnxrunner}" />
+            <ComboBox HorizontalAlignment="Stretch"  Items="{Binding OnnxRunnerOptions}" SelectedItem="{Binding OnnxRunner}"/>
+            <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.note.restart}" FontSize="11"/>
+            <TextBlock Text="{DynamicResource prefs.rendering.onnxgpu}" />
+            <ComboBox HorizontalAlignment="Stretch"  Items="{Binding OnnxGpuOptions}" SelectedItem="{Binding OnnxGpu}"/>
+            <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.note.restart}" FontSize="11"/>
           </StackPanel>
         </HeaderedContentControl>
         <HeaderedContentControl Classes="groupbox" Header="{DynamicResource prefs.appearance}">
           <StackPanel>
             <TextBlock Text="{DynamicResource prefs.appearance.lang}" />
             <ComboBox HorizontalAlignment="Stretch" Items="{Binding Languages}" SelectedItem="{Binding Language}">
+              <ComboBox.ItemTemplate>
+                <DataTemplate>
+                  <TextBlock Text="{Binding Converter={StaticResource cultureNameConverter}}"/>
+                </DataTemplate>
+              </ComboBox.ItemTemplate>
+            </ComboBox>
+            <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.note.restart}" FontSize="11"/>
+            <TextBlock Text="{DynamicResource prefs.appearance.sortorder}" />
+            <ComboBox HorizontalAlignment="Stretch" Items="{Binding SortingOrders}" SelectedItem="{Binding SortingOrder}">
               <ComboBox.ItemTemplate>
                 <DataTemplate>
                   <TextBlock Text="{Binding Converter={StaticResource cultureNameConverter}}"/>

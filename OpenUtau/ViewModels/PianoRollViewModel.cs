@@ -162,6 +162,7 @@ namespace OpenUtau.App.ViewModels {
                 new Transpose(-12, "pianoroll.menu.notes.octavedown"),
                 new QuantizeNotes(15),
                 new QuantizeNotes(30),
+                new HanziToPinyin(),
                 new ResetPitchBends(),
                 new ResetAllExpressions(),
                 new ClearVibratos(),
@@ -176,9 +177,9 @@ namespace OpenUtau.App.ViewModels {
                 new RomajiToHiragana(),
                 new HiraganaToRomaji(),
                 new JapaneseVCVtoCV(),
-                new HanziToPinyin(),
                 new RemoveToneSuffix(),
                 new RemoveLetterSuffix(),
+                new RemovePhoneticHint(),
                 new DashToPlus(),
             }.Select(edit => new MenuItemViewModel() {
                 Header = ThemeManager.GetString(edit.Name),

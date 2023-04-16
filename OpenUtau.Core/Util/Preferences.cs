@@ -86,7 +86,10 @@ namespace OpenUtau.Core.Util {
             public int Theme;
             public bool PreRender = true;
             public int NumRenderThreads = 2;
+            public string OnnxRunner = string.Empty;
+            public int OnnxGpu = 0;
             public string Language = string.Empty;
+            public string SortingOrder = string.Empty;
             public List<string> RecentFiles = new List<string>();
             public string SkipUpdate = string.Empty;
             public string AdditionalSingerPath = string.Empty;

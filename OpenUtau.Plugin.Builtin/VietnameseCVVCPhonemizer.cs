@@ -57,12 +57,27 @@ namespace OpenUtau.Plugin.Builtin {
                 };
             }
             int totalDuration = notes.Sum(n => n.duration);
-            int Short = totalDuration * 4 / 6;
-            int Long = totalDuration / 6;
-            int Medium = totalDuration / 3;
-            int VCP = -80;
-            int End = totalDuration - 30;
-            int ViTri = Short;
+            int Short = 0;
+            int Long = 0;
+            int Medium = 0;
+            int VCP = 0;
+            int End = 0;
+            int ViTri = 0;
+            if (totalDuration < 350) {
+                Short = totalDuration * 4 / 7;
+                Long = totalDuration / 6;
+                Medium = totalDuration / 3;
+                VCP = -90;
+                End = totalDuration * 4 / 5;
+                ViTri = Short;
+            } else {
+                Short = totalDuration - 170;
+                Long = 90;
+                Medium = 180;
+                VCP = -90;
+                End = totalDuration - 50;
+                ViTri = Short;
+            }
             bool a;
             bool NoNext = nextNeighbour == null && note.lyric != "R";
             var loi = note.lyric;
@@ -125,6 +140,12 @@ namespace OpenUtau.Plugin.Builtin {
                          || loi.StartsWith("J") || loi.StartsWith("r") || loi.StartsWith("s") || loi.StartsWith("t")
                          || loi.StartsWith("T") || loi.StartsWith("Z") || loi.StartsWith("v") || loi.StartsWith("w")
                          || loi.StartsWith("z") || loi.StartsWith("p"));
+            int x = prevNeighbour?.duration ?? default(int);
+            if (x < 160 && prevNeighbour != null) { VCP = -(x * 4 / 7); } 
+            else if (loi.StartsWith("b") || loi.StartsWith("d") || loi.StartsWith("g") || loi.StartsWith("d") || loi.StartsWith("k") || loi.StartsWith("l")
+                                         || loi.StartsWith("m") || loi.StartsWith("n") || loi.StartsWith("nh") || loi.StartsWith("ng") || loi.StartsWith("t") || loi.StartsWith("th")
+                                         || loi.StartsWith("v") || loi.StartsWith("w") || loi.StartsWith("y")) VCP = -50;
+            else VCP = -110;
             bool kocoC;
             if (tontaiC == true) {
                 kocoC = false;

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using OpenUtau.Core.Ustx;
 using TinyPinyin;
 using WanaKanaNet;
@@ -54,13 +55,6 @@ namespace OpenUtau.Core.Editing {
         }
     }
 
-    public class HanziToPinyin : SingleNoteLyricEdit {
-        public override string Name => "pianoroll.menu.lyrics.hanzitopinyin";
-        protected override string Transform(string lyric) {
-            return PinyinHelper.GetPinyin(lyric).ToLowerInvariant();
-        }
-    }
-
     // Removes suffix like "C4", "C#4" or "Cb4"
     public class RemoveToneSuffix : SingleNoteLyricEdit {
         public override string Name => "pianoroll.menu.lyrics.removetonesuffix";
@@ -91,6 +85,19 @@ namespace OpenUtau.Core.Editing {
 
         private bool ShouldRemove(char c) {
             return (c == '_' || c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z') && c != 'R' && c != 'r';
+        }
+    }
+
+    public class RemovePhoneticHint : SingleNoteLyricEdit {
+        static readonly Regex phoneticHintPattern = new Regex(@"\[(.*)\]");
+        public override string Name => "pianoroll.menu.lyrics.removephonetichint";
+        protected override string Transform(string lyric) {
+            var lrc = lyric;
+            lrc = phoneticHintPattern.Replace(lrc, match => "");
+            if (string.IsNullOrEmpty(lrc)) {
+                return lyric;
+            }
+            return lrc;
         }
     }
 

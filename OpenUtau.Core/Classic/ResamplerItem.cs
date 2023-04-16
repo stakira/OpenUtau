@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -6,6 +7,8 @@ using K4os.Hash.xxHash;
 using NAudio.Wave;
 using OpenUtau.Core;
 using OpenUtau.Core.Render;
+using OpenUtau.Core.Ustx;
+using static OpenUtau.Api.Phonemizer;
 
 namespace OpenUtau.Classic {
     public class ResamplerItem {
@@ -64,29 +67,37 @@ namespace OpenUtau.Classic {
             consonant = phone.oto.Consonant;
             cutoff = phone.oto.Cutoff;
 
-            int pitchLeading = phrase.timeAxis.TicksBetweenMsPos(phone.positionMs - pitchLeadingMs, phone.positionMs);
-            int pitchSkip = (phrase.leading + phone.position - pitchLeading) / 5;
-            int pitchCount = (int)Math.Ceiling(
-                (double)phrase.timeAxis.TicksBetweenMsPos(
-                    phone.positionMs - pitchLeadingMs,
-                    phone.positionMs + phone.envelope[4].X) / 5);
-            tempo = phone.tempo;
-            pitches = phrase.pitches
-                .Skip(pitchSkip)
-                .Take(pitchCount)
-                .Select(pitch => (int)Math.Round(pitch - phone.tone * 100))
-                .ToArray();
-            if (pitchSkip < 0) {
-                pitches = Enumerable.Repeat(pitches[0], -pitchSkip)
-                    .Concat(pitches)
-                    .ToArray();
+            tempo = phone.adjustedTempo;
+
+            double pitchCountMs = (phone.positionMs + phone.envelope[4].X) - (phone.positionMs - pitchLeadingMs);
+            int pitchCount = (int)Math.Ceiling(MusicMath.TempoMsToTick(tempo, pitchCountMs) / 5.0);
+            pitchCount = Math.Max(pitchCount, 0);
+            pitches = new int[pitchCount];
+
+            double phoneStartMs = phone.positionMs - pitchLeadingMs;
+            double phraseStartMs = phrase.positionMs - phrase.leadingMs;
+            for (int i = 0; i < phone.tempos.Length; i++) {
+                double startMs = Math.Max(phrase.timeAxis.TickPosToMsPos(phone.tempos[i].position), phoneStartMs);
+                double endMs = i + 1 < phone.tempos.Length ? phrase.timeAxis.TickPosToMsPos(phone.tempos[i + 1].position) : phone.positionMs + phone.envelope[4].X;
+                double durationMs = endMs - startMs;
+                int tempoPitchCount = (int)Math.Floor(MusicMath.TempoMsToTick(tempo, durationMs) / 5.0);
+                int tempoPitchSkip = (int)Math.Floor(MusicMath.TempoMsToTick(tempo, startMs - phoneStartMs) / 5.0);
+                tempoPitchCount = Math.Min(tempoPitchCount, pitches.Length - tempoPitchSkip);
+                int phrasePitchSkip = (int)Math.Floor(phrase.timeAxis.TicksBetweenMsPos(phraseStartMs, startMs) / 5.0);
+                double tempoRatio = phone.tempos[i].bpm / tempo;
+                for (int j = 0; j < tempoPitchCount; j++) {
+                    int index = tempoPitchSkip + j;
+                    int scaled = phrasePitchSkip + (int)Math.Ceiling(j * tempoRatio);
+                    scaled = Math.Clamp(scaled, 0, phrase.pitches.Length - 1);
+                    index = Math.Clamp(index, 0, pitchCount - 1);
+                    pitches[index] = (int)Math.Round(phrase.pitches[scaled] - phone.tone * 100);
+                }
             }
 
             hash = Hash();
             outputFile = Path.Join(PathManager.Inst.CachePath,
                 $"res-{XXH32.DigestOf(Encoding.UTF8.GetBytes(phrase.singer.Id)):x8}-{hash:x16}.wav");
         }
-
         public string GetFlagsString() {
             var builder = new StringBuilder();
             foreach (var flag in flags) {
