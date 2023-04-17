@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Classic;
 using OpenUtau.Api;
+using OpenUtau.Classic;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Plugin.Builtin {
@@ -14,17 +15,6 @@ namespace OpenUtau.Plugin.Builtin {
         // 基本的な仕様はpresampに準拠します。
         // 歌詞に書かれた[強]などの表情は非対応。VoiceColorでやってもらいます。
         // 喉切り[・]はpresamp.iniに書いてなくても動くようなんとかします。
-
-        // Phoneme data held by the voice bank
-        private List<string> PlainVowels = new List<string>();
-        private List<string> PlainConsonants = new List<string>();
-        static readonly string[] plainVowels = new string[] {"あ","い","う","え","お","を","ん","ン"};
-        static readonly string[] plainConsonants = new string[]{"k","ky","g","gy",
-                                                           "s","sh","z","j","t","ch","ty","ts",
-                                                           "d","dy","n","ny","h","hy","f","b",
-                                                           "by","p","py","m","my","y","r","4",
-                                                           "ry","w","v","ng","l","・"
-        };
 
         // in case voicebank is missing certain symbols
         static readonly string[] substitution = new string[] {  
@@ -54,24 +44,9 @@ namespace OpenUtau.Plugin.Builtin {
             }
 
             presamp = new Presamp(singer.Location, singer.TextFileEncoding);
-            if (presamp.PhonemeList.Count > 0) {
-                PlainVowels.Clear();
-                PlainConsonants.Clear();
-                foreach (var pair in presamp.PhonemeList) {
-                    if (!pair.Value.HasConsonant) {
-                        PlainVowels.Add(pair.Key);
-                    }
-                    if (!pair.Value.HasVowel) {
-                        PlainConsonants.Add(pair.Key);
-                    }
-                }
-            } else {
-                PlainVowels = plainVowels.ToList();
-                PlainConsonants = plainConsonants.ToList();
-            }
         }
 
-        // JP CVVC をもとに改造
+
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
             var note = notes[0];
             var currentUnicode = ToUnicodeElements(note.lyric);
@@ -183,74 +158,79 @@ namespace OpenUtau.Plugin.Builtin {
                 string vcPhoneme;
 
 
-                if (nextLyric.Contains(" ")) {
-                    return MakeSimpleResult(currentLyric);
-                }
-
                 // Without current vowel, VC cannot be created.
                 if (!presamp.PhonemeList.TryGetValue(currentAlias, out PresampPhoneme currentPhoneme) || !currentPhoneme.HasVowel) {
                     return MakeSimpleResult(currentLyric);
                 }
                 var vowel = currentPhoneme.Vowel;
 
-                // 喉切り
-                if (nextLyric.Contains("・")) {
-                    if (nextLyric == "・") { // next is VC
-                        return MakeSimpleResult(currentLyric);
-                    } else {
-                        // next is VCV
-                        var vowelUpper = Regex.Match(nextLyric, "[あいうえおんン]").Value;
-                        if (vowelUpper == null) return MakeSimpleResult(currentLyric);
-
-                        string[] tests = new string[] { $"{vowel} {vowelUpper}・", $"{vowel} ・{vowelUpper}" };
-                        if (checkOtoUntilHit(tests, (Note)nextNeighbour, out var oto1)) {
-                            var attr = nextNeighbour.Value.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
-                            string nextcolor = attr.voiceColor ?? "";
-                            if (oto1.Alias.Contains(" ") && oto1.Color == nextcolor) {
-                                return MakeSimpleResult(currentLyric);
-                            }
-                        }
-                        // next is CV (VC needed)
-                        string[] tests2 = new string[] { $"{vowel} ・" };
-                        if (checkOtoUntilHit(tests2, note, out oto1)) {
-                            vcPhoneme = oto1.Alias;
-                        } else {
-                            return MakeSimpleResult(currentLyric);
-                        }
-                    }
-                } else {
-                    
-                    // Without next consonant, VC cannot be created.
-                    if (!presamp.PhonemeList.TryGetValue(nextAlias, out PresampPhoneme nextPhoneme) || !nextPhoneme.HasConsonant) {
-                        return MakeSimpleResult(currentLyric);
-                    }
-                    var consonant = nextPhoneme.Consonant;
-
-                    // If the next lyrics are a priority, use VC.
-                    // If the next note has a VCV, use it.
-                    if (!nextPhoneme.IsPriority) {
-                        var nextVCV = $"{vowel} {nextAlias}";
-                        string[] tests = new string[] { nextVCV, nextAlias };
-                        if (checkOtoUntilHit(tests, (Note)nextNeighbour, out var oto1)) {
-                            if (oto1.Alias.Contains(" ")) {
-                                return MakeSimpleResult(currentLyric);
-                            }
-                        }
-                    }
-
-                    // Insert VC before next neighbor
-                    vcPhoneme = $"{vowel} {consonant}";
-                    var vcPhonemes = new string[] { vcPhoneme, "" };
-                    // find potential substitute symbol
-                    if (substituteLookup.TryGetValue(consonant ?? string.Empty, out var con)) {
-                        vcPhonemes[1] = $"{vowel} {con}";
-                    }
-                    if (checkOtoUntilHit(vcPhonemes, note, out var oto)) {
+                if (Regex.IsMatch(nextLyric, "[aiueonN] ")) {
+                    return MakeSimpleResult(currentLyric);
+                } else if (nextLyric.Contains(" ")) {
+                    string pre = nextLyric.Split(' ')[0];
+                    if (checkOtoUntilHit(new string[] { $"{vowel} {pre}" }, note, out var oto)) {
                         vcPhoneme = oto.Alias;
                     } else {
                         return MakeSimpleResult(currentLyric);
                     }
+                } else {
+
+                    // 喉切り
+                    if (nextLyric.Contains("・")) {
+                        if (nextLyric == "・") { // next is VC
+                            return MakeSimpleResult(currentLyric);
+                        } else {
+                            // next is VCV
+                            var vowelUpper = Regex.Match(nextLyric, "[あいうえおんン]").Value;
+                            if (vowelUpper == null) return MakeSimpleResult(currentLyric);
+
+                            string[] tests = new string[] { $"{vowel} {vowelUpper}・", $"{vowel} ・{vowelUpper}" };
+                            if (checkOtoUntilHit(tests, (Note)nextNeighbour, out var oto1) && oto1.Alias.Contains(" ")) {
+                                return MakeSimpleResult(currentLyric);
+                            }
+                            // next is CV (VC needed)
+                            string[] tests2 = new string[] { $"{vowel} ・" };
+                            if (checkOtoUntilHit(tests2, note, out oto1)) {
+                                vcPhoneme = oto1.Alias;
+                            } else {
+                                return MakeSimpleResult(currentLyric);
+                            }
+                        }
+                    } else {
+
+                        // Without next consonant, VC cannot be created.
+                        if (!presamp.PhonemeList.TryGetValue(nextAlias, out PresampPhoneme nextPhoneme) || !nextPhoneme.HasConsonant) {
+                            return MakeSimpleResult(currentLyric);
+                        }
+                        var consonant = nextPhoneme.Consonant;
+
+                        // If the next lyrics are a priority, use VC.
+                        // If the next note has a VCV, use it.
+                        if (!nextPhoneme.IsPriority) {
+                            var nextVCV = $"{vowel} {nextAlias}";
+                            string[] tests = new string[] { nextVCV, nextAlias };
+                            if (checkOtoUntilHit(tests, (Note)nextNeighbour, out var oto1)) {
+                                if (oto1.Alias.Contains(" ")) {
+                                    return MakeSimpleResult(currentLyric);
+                                }
+                            }
+                        }
+
+                        // Insert VC before next neighbor
+                        vcPhoneme = $"{vowel} {consonant}";
+                        var vcPhonemes = new string[] { vcPhoneme, "" };
+                        // find potential substitute symbol
+                        if (substituteLookup.TryGetValue(consonant ?? string.Empty, out var con)) {
+                            vcPhonemes[1] = $"{vowel} {con}";
+                        }
+                        if (checkOtoUntilHit(vcPhonemes, note, out var oto)) {
+                            vcPhoneme = oto.Alias;
+                        } else {
+                            return MakeSimpleResult(currentLyric);
+                        }
+                    }
                 }
+
 
                 int totalDuration = notes.Sum(n => n.duration);
                 int vcLength = 120;
@@ -287,7 +267,7 @@ namespace OpenUtau.Plugin.Builtin {
             oto = default;
 
             var attr0 = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
-            var attr1 = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 1) ?? default;
+            // var attr1 = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 1) ?? default;
 
             var otos = new List<UOto>();
             foreach (string test in input) {
@@ -297,13 +277,12 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             }
 
+            string nextcolor = attr0.voiceColor ?? "";
             if (otos.Count > 0) {
-                if (attr0.voiceColor == null) {
-                    oto = otos[0];
-                } else if (otos.Any(oto => oto.Alias.Contains(attr0.voiceColor))) {
-                    oto = otos.Find(oto => oto.Alias.Contains(attr0.voiceColor));
+                if (otos.Any(oto => oto.Color == nextcolor)) {
+                    oto = otos.Find(oto => oto.Color == nextcolor);
                 } else {
-                    oto = otos[0];
+                    return false; // oto = otos[0];
                 }
                 return true;
             }
