@@ -168,6 +168,7 @@ namespace OpenUtau.App.ViewModels {
                 new ClearVibratos(),
                 new ResetVibratos(),
                 new ClearTimings(),
+                new BakePitch(),
             }.Select(edit => new MenuItemViewModel() {
                 Header = ThemeManager.GetString(edit.Name),
                 Command = noteBatchEditCommand,

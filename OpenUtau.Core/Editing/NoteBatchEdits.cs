@@ -283,4 +283,102 @@ namespace OpenUtau.Core.Editing {
             docManager.EndUndoGroup();
         }
     }
+
+    public class BakePitch: BatchEdit {
+        public virtual string Name => name;
+        private string name;
+        public BakePitch() {
+            name = "pianoroll.menu.notes.bakepitch";
+        }
+
+        public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
+            TimeAxis timeAxis = project.timeAxis;
+            const int pitchInterval = 5;
+            var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
+            var positions = notes.Select(n => n.position + part.position).ToHashSet();
+            var phrases = part.renderPhrases.Where(phrase => phrase.notes.Any(n => positions.Contains(phrase.position + n.position)));
+            float minPitD = -1200;
+            if (project.expressions.TryGetValue(Format.Ustx.PITD, out var descriptor)) {
+                minPitD = descriptor.min;
+            }
+            //Dictionary from note start tick to pitch point
+            //value is a tuple of (starttick, endtick, pitch points)
+            //Here starttick and endtick are project absolute tick, and pitch points are ms relative to the starttick
+            var pitchPointsPerNote = new Dictionary<int, Tuple<int,int,List<PitchPoint>>>();
+            foreach (var phrase in phrases) {
+                var pitchStart = -phrase.leading;
+                //var ticks = Enumerable.Range(0, phrase.duration).Select(i => i * 5).ToArray();
+                var pitches = phrase.pitches;
+                //Reduce pitch point
+                //reference: https://github.com/oatsu-gh/ENUNU/blob/2c96053cc651b600cf15668991f8131c1d85eb6c/synthesis/extensions/f0_feedbacker.py#L64
+                //Currently only extreme points are preserved
+                var delta_pitch = pitches.Zip(pitches.Skip(1), (a, b) => b - a).Prepend(0).Append(0).ToList();
+                var reduced_pitch_indices = Enumerable.Range(1,pitches.Length-2)
+                    .Where(i => delta_pitch[i - 1] * delta_pitch[i]<=0 && delta_pitch[i - 1] != delta_pitch[i])
+                    .Prepend(0).Append(pitches.Length-1)
+                    .ToArray();
+                //distribute pitch point
+                //reference:https://github.com/oatsu-gh/ENUNU/blob/2c96053cc651b600cf15668991f8131c1d85eb6c/synthesis/extensions/f0_feedbacker.py#L26
+                int idx = 0;
+                //note_boundary[i] is the index of the pitch point that is the first pitch point after the end of note i
+                var note_boundary = new int[phrase.notes.Length + 1];
+                note_boundary[0] = 2;
+                foreach(int i in Enumerable.Range(0,phrase.notes.Length)) {
+                    var note = phrase.notes[i];
+                    while(idx<reduced_pitch_indices.Length 
+                        && pitchStart+reduced_pitch_indices[idx]*pitchInterval<note.end){
+                        idx++;
+                    }
+                    note_boundary[i + 1] = idx;
+                }
+                foreach(int i in Enumerable.Range(0,phrase.notes.Length)) {
+                    var note = phrase.notes[i];
+                    var pitch = reduced_pitch_indices[(note_boundary[i]-2)..note_boundary[i + 1]]
+                        .Select(j => new PitchPoint(
+                            (float)timeAxis.MsBetweenTickPos(note.position + part.position, pitchStart + j * pitchInterval + part.position),
+                            (pitches[j] - note.tone * 100) / 10))
+                        .ToList();
+                    pitchPointsPerNote[note.position + phrase.position - part.position] 
+                        = Tuple.Create(
+                            pitchStart + reduced_pitch_indices[note_boundary[i] - 2] * pitchInterval + phrase.position,
+                            pitchStart + reduced_pitch_indices[note_boundary[i + 1] - 1] * pitchInterval + phrase.position,
+                            pitch);
+                }
+            }
+            docManager.StartUndoGroup(true);
+            foreach(var note in selectedNotes) {
+                if (pitchPointsPerNote.TryGetValue(note.position, out var tickRangeAndPitch)) {
+                    var pitch = tickRangeAndPitch.Item3;
+                    docManager.ExecuteCmd(new ResetPitchPointsCommand(part, note));
+                    int index = 0;
+                    foreach(var point in pitch) {
+                        docManager.ExecuteCmd(new AddPitchPointCommand(part, note, point, index));
+                        index++;
+                    }
+                    docManager.ExecuteCmd(new DeletePitchPointCommand(part, note, index));
+                    docManager.ExecuteCmd(new DeletePitchPointCommand(part, note, index));
+                    var lastPitch = note.pitch.data[^1]; 
+                    docManager.ExecuteCmd(new MovePitchPointCommand(part, lastPitch ,0, -lastPitch.Y));
+                    
+                }
+            }
+            docManager.EndUndoGroup();
+            docManager.StartUndoGroup(true);
+            foreach(var note in selectedNotes) {
+                if (pitchPointsPerNote.TryGetValue(note.position, out var tickRangeAndPitch)) {
+                    docManager.ExecuteCmd(new SetCurveCommand(project, part, Format.Ustx.PITD, 
+                        tickRangeAndPitch.Item1, 0, 
+                        tickRangeAndPitch.Item1, 0));
+                    docManager.ExecuteCmd(new SetCurveCommand(project, part, Format.Ustx.PITD, 
+                        tickRangeAndPitch.Item2, 0, 
+                        tickRangeAndPitch.Item2, 0));
+                    docManager.ExecuteCmd(new SetCurveCommand(project, part, Format.Ustx.PITD, 
+                        tickRangeAndPitch.Item1, 0, 
+                        tickRangeAndPitch.Item2, 0));
+                }
+            }
+            docManager.EndUndoGroup();
+            
+        }
+    }
 }
