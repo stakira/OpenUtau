@@ -291,6 +291,81 @@ namespace OpenUtau.Core.Editing {
             name = "pianoroll.menu.notes.bakepitch";
         }
 
+        struct Point{
+            public int X;
+            public float Y;
+            public Point(int X, float Y) {
+                this.X = X;
+                this.Y = Y;
+            }
+        }
+
+        float distance(Point pt, Point lineStart, Point lineEnd){
+            return pt.Y - lineStart.Y - (lineEnd.Y - lineStart.Y) * (pt.X - lineStart.X) / (lineEnd.X - lineStart.X);
+        }
+
+        //reference: https://github.com/sdercolin/utaformatix3/blob/0f026f7024386ca8362972043c3471c6f2ac9859/src/main/kotlin/process/RdpSimplification.kt#L43
+        List<Point> simplifyShape(List<Point> pointList, Double epsilon) {
+            if (pointList.Count <= 2) {
+                return pointList;
+            }
+            
+            // Find the point with the maximum distance from line between start and end
+            var dmax = 0.0;
+            var index = 0;
+            var end = pointList.Count - 1;
+            for (var i = 1; i < end; i++) {
+                var d = Math.Abs(distance(pointList[i], pointList[0], pointList[end]));
+                if (d > dmax) {
+                    index = i;
+                    dmax = d;
+                }
+            }
+            // If max distance is greater than epsilon, recursively simplify
+            List<Point> results = new List<Point>();
+            if (dmax > epsilon) {
+                // Recursive call
+                var recResults1 = simplifyShape(pointList.GetRange(0, index + 1), epsilon);
+                var recResults2 = simplifyShape(pointList.GetRange(index, pointList.Count - index), epsilon);
+
+                // Build the result list
+                results.AddRange(recResults1.GetRange(0, recResults1.Count - 1));
+                results.AddRange(recResults2);
+                if (results.Count < 2) {
+                    throw new Exception("Problem assembling output");
+                }
+            } else {
+                //Just return start and end points
+                results.Add(pointList[0]);
+                results.Add(pointList[end]);
+            }
+            return results;
+        }
+
+        public static int LastIndexOfMin<T>(IList<T> self, Func<T, float> selector, int startIndex, int endIndex)
+        {
+            if (self == null) {
+                throw new ArgumentNullException("self");
+            }
+
+            if (self.Count == 0) {
+                throw new ArgumentException("List is empty.", "self");
+            }
+
+            var min = selector(self[endIndex-1]);
+            int minIndex = endIndex - 1;
+
+            for (int i = endIndex - 1; i >= startIndex; --i) {
+                var value = selector(self[i]);
+                if (value < min) {
+                    min = value;
+                    minIndex = i;
+                }
+            }
+
+            return minIndex;
+        }
+
         public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
             TimeAxis timeAxis = project.timeAxis;
             const int pitchInterval = 5;
@@ -309,39 +384,60 @@ namespace OpenUtau.Core.Editing {
                 var pitchStart = -phrase.leading;
                 //var ticks = Enumerable.Range(0, phrase.duration).Select(i => i * 5).ToArray();
                 var pitches = phrase.pitches;
+                var points = Enumerable.Zip(
+                    Enumerable.Range(0, pitches.Length),
+                    pitches,
+                    (i, pitch) => new Point(pitchStart + i * pitchInterval, pitch)
+                ).ToList();
+
                 //Reduce pitch point
-                //reference: https://github.com/oatsu-gh/ENUNU/blob/2c96053cc651b600cf15668991f8131c1d85eb6c/synthesis/extensions/f0_feedbacker.py#L64
-                //Currently only extreme points are preserved
-                var delta_pitch = pitches.Zip(pitches.Skip(1), (a, b) => b - a).Prepend(0).Append(0).ToList();
-                var reduced_pitch_indices = Enumerable.Range(1,pitches.Length-2)
-                    .Where(i => delta_pitch[i - 1] * delta_pitch[i]<=0 && delta_pitch[i - 1] != delta_pitch[i])
-                    .Prepend(0).Append(pitches.Length-1)
-                    .ToArray();
-                //distribute pitch point
-                //reference:https://github.com/oatsu-gh/ENUNU/blob/2c96053cc651b600cf15668991f8131c1d85eb6c/synthesis/extensions/f0_feedbacker.py#L26
+                points = simplifyShape(points, 10);
+                
+                //determine where to distribute pitch point
                 int idx = 0;
-                //note_boundary[i] is the index of the pitch point that is the first pitch point after the end of note i
-                var note_boundary = new int[phrase.notes.Length + 1];
-                note_boundary[0] = 2;
+                //note_boundary[i] is the index of the first pitch point after the end of note i
+                var note_boundaries = new int[phrase.notes.Length + 1];
+                note_boundaries[0] = 2;
                 foreach(int i in Enumerable.Range(0,phrase.notes.Length)) {
                     var note = phrase.notes[i];
-                    while(idx<reduced_pitch_indices.Length 
-                        && pitchStart+reduced_pitch_indices[idx]*pitchInterval<note.end){
+                    while(idx<points.Count 
+                        && points[idx].X<note.end){
                         idx++;
                     }
-                    note_boundary[i + 1] = idx;
+                    note_boundaries[i + 1] = idx;
                 }
+                //if there is zero point in the note, adjusted_boundaries is the index of the last zero point
+                //otherwise, it is the index of the pitch point with minimal y-distance to the note
+                var adjusted_boundaries = new int[phrase.notes.Length + 1];
+                adjusted_boundaries[0] = 2;
+                foreach(int i in Enumerable.Range(0,phrase.notes.Length - 1)){
+                    var note = phrase.notes[i];
+                    var notePitch = note.tone*100;
+                    //var zero_point = points.FindIndex(note_boundaries[i], note_boundaries[i + 1] - note_boundaries[i], p => p.Y == 0);
+                    var zero_point = Enumerable.Range(0,note_boundaries[i + 1] - note_boundaries[i])
+                        .Select(j=>note_boundaries[i+1]-1-j)
+                        .Where(j => (points[j].Y-notePitch) * (points[j-1].Y-notePitch) <= 0)
+                        .DefaultIfEmpty(-1)
+                        .First();
+                    if(zero_point != -1){
+                        adjusted_boundaries[i + 1] = zero_point + 1;
+                    }else{
+                        adjusted_boundaries[i + 1] = LastIndexOfMin(points, p => Math.Abs(p.Y - notePitch), note_boundaries[i], note_boundaries[i + 1]) + 2;
+                    }
+                }
+                adjusted_boundaries[^1] = note_boundaries[^1];
+                //distribute pitch point
                 foreach(int i in Enumerable.Range(0,phrase.notes.Length)) {
                     var note = phrase.notes[i];
-                    var pitch = reduced_pitch_indices[(note_boundary[i]-2)..note_boundary[i + 1]]
-                        .Select(j => new PitchPoint(
-                            (float)timeAxis.MsBetweenTickPos(note.position + part.position, pitchStart + j * pitchInterval + part.position),
-                            (pitches[j] - note.tone * 100) / 10))
+                    var pitch = points.GetRange(adjusted_boundaries[i]-2,adjusted_boundaries[i + 1]-(adjusted_boundaries[i]-2))
+                        .Select(p => new PitchPoint(
+                            (float)timeAxis.MsBetweenTickPos(note.position + part.position, p.X + part.position),
+                            (p.Y - note.tone * 100) / 10))
                         .ToList();
                     pitchPointsPerNote[note.position + phrase.position - part.position] 
                         = Tuple.Create(
-                            pitchStart + reduced_pitch_indices[note_boundary[i] - 2] * pitchInterval + phrase.position,
-                            pitchStart + reduced_pitch_indices[note_boundary[i + 1] - 1] * pitchInterval + phrase.position,
+                            points[adjusted_boundaries[i] - 2].X + phrase.position,
+                            points[adjusted_boundaries[i + 1] - 1].X + phrase.position,
                             pitch);
                 }
             }
