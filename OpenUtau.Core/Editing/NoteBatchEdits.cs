@@ -293,15 +293,35 @@ namespace OpenUtau.Core.Editing {
 
         struct Point{
             public int X;
-            public float Y;
-            public Point(int X, float Y) {
+            public double Y;
+            public PitchPointShape shape;
+            public Point(int X, double Y, PitchPointShape shape = PitchPointShape.l) {
                 this.X = X;
                 this.Y = Y;
+                this.shape = shape;
+            }
+
+            public Point ChangeShape(PitchPointShape shape) {
+                return new Point(X, Y, shape);
             }
         }
 
-        float distance(Point pt, Point lineStart, Point lineEnd){
-            return pt.Y - lineStart.Y - (lineEnd.Y - lineStart.Y) * (pt.X - lineStart.X) / (lineEnd.X - lineStart.X);
+        double deltaY(Point pt, Point lineStart, Point lineEnd, PitchPointShape shape){
+            return pt.Y - MusicMath.InterpolateShape(lineStart.X, lineEnd.X, lineStart.Y, lineEnd.Y, pt.X, shape);
+        }
+
+        PitchPointShape DetermineShape(Point start, Point middle, Point end){
+            if(start.Y==end.Y){
+                return PitchPointShape.l;
+            }
+            var k = (middle.Y-start.Y)/(end.Y-start.Y);
+            if(k > 0.67){
+                return PitchPointShape.o;
+            }
+            if(k < 0.33){
+                return PitchPointShape.i;
+            }
+            return PitchPointShape.l;
         }
 
         //reference: https://github.com/sdercolin/utaformatix3/blob/0f026f7024386ca8362972043c3471c6f2ac9859/src/main/kotlin/process/RdpSimplification.kt#L43
@@ -317,12 +337,18 @@ namespace OpenUtau.Core.Editing {
                 return pointList;
             }
             
+            // Determine line shape
+            var middlePoint = pointList[pointList.Count / 2];
+            var startPoint = pointList[0];
+            var endPoint = pointList[^1];
+            var shape = DetermineShape(startPoint, middlePoint, endPoint);
+            
             // Find the point with the maximum distance from line between start and end
             var dmax = 0.0;
             var index = 0;
             var end = pointList.Count - 1;
             for (var i = 1; i < end; i++) {
-                var d = Math.Abs(distance(pointList[i], pointList[0], pointList[end]));
+                var d = Math.Abs(deltaY(pointList[i], pointList[0], pointList[end], shape));
                 if (d > dmax) {
                     index = i;
                     dmax = d;
@@ -343,13 +369,13 @@ namespace OpenUtau.Core.Editing {
                 }
             } else {
                 //Just return start and end points
-                results.Add(pointList[0]);
+                results.Add(pointList[0].ChangeShape(shape));
                 results.Add(pointList[end]);
             }
             return results;
         }
 
-        public static int LastIndexOfMin<T>(IList<T> self, Func<T, float> selector, int startIndex, int endIndex)
+        public static int LastIndexOfMin<T>(IList<T> self, Func<T, double> selector, int startIndex, int endIndex)
         {
             if (self == null) {
                 throw new ArgumentNullException("self");
@@ -439,7 +465,8 @@ namespace OpenUtau.Core.Editing {
                     var pitch = points.GetRange(adjusted_boundaries[i]-2,adjusted_boundaries[i + 1]-(adjusted_boundaries[i]-2))
                         .Select(p => new PitchPoint(
                             (float)timeAxis.MsBetweenTickPos(note.position + part.position, p.X + part.position),
-                            (p.Y - note.tone * 100) / 10))
+                            (float)(p.Y - note.tone * 100) / 10,
+                            p.shape))
                         .ToList();
                     pitchPointsPerNote[note.position + phrase.position - part.position] 
                         = Tuple.Create(
