@@ -58,7 +58,9 @@ namespace OpenUtau.Core.Format {
             TicksPerQuarterNoteTimeDivision timeDivision = midi.TimeDivision as TicksPerQuarterNoteTimeDivision;
             var PPQ = timeDivision.TicksPerQuarterNote;
             //Parse tempo
-            project.tempos = ParseTempos(midi.GetTempoMap(), PPQ);
+            var tempoMap = midi.GetTempoMap();
+            project.timeSignatures = ParseTimeSignatures(tempoMap, PPQ);
+            project.tempos = ParseTempos(tempoMap, PPQ);
 
             //Parse tracks
             project.tracks = new List<UTrack>();
@@ -72,6 +74,7 @@ namespace OpenUtau.Core.Format {
                 project.tracks.Add(track);
                 project.parts.Add(part);
             }
+            project.ValidateFull();
             return project;
         }
 
@@ -140,6 +143,37 @@ namespace OpenUtau.Core.Format {
             return UTempoList;
         }
 
+        public static List<UTimeSignature> ParseTimeSignatures(TempoMap tempoMap, short PPQ) {
+            List<UTimeSignature> UTimeSignatureList = new List<UTimeSignature>();
+            var lastUTimeSignature = new UTimeSignature {
+                barPosition = 0,
+                beatPerBar = 4,
+                beatUnit = 4
+            };
+            var changes = tempoMap.GetTimeSignatureChanges();
+            if (changes != null && changes.Count() > 0) {
+                var firstTimeSignatureTime = changes.First().Time;
+                if (firstTimeSignatureTime > 0) {
+                    UTimeSignatureList.Add(lastUTimeSignature);
+                }
+                int lastTime = 0;
+                foreach (var change in changes) {
+                    var timeSignature = change.Value;
+                    var time = (int)(change.Time) / PPQ;
+                    lastUTimeSignature = new UTimeSignature {
+                        barPosition = lastUTimeSignature.barPosition + (time - lastTime) * lastUTimeSignature.beatUnit / 4 / lastUTimeSignature.beatPerBar,
+                        beatPerBar = timeSignature.Numerator,
+                        beatUnit = timeSignature.Denominator
+                    };
+                    UTimeSignatureList.Add(lastUTimeSignature);
+                    lastTime = time;
+                }
+            } else {
+                UTimeSignatureList.Add(lastUTimeSignature);
+            }
+            return UTimeSignatureList;
+        }
+
         static List<UVoicePart> ParseParts(MidiFile midi, short PPQ, UProject project) {
             string defaultLyric = NotePresets.Default.DefaultLyric;
             List<UVoicePart> resultParts = new List<UVoicePart>();
@@ -187,6 +221,18 @@ namespace OpenUtau.Core.Format {
             //Tempo
             midiFile.Chunks.Add(new TrackChunk());
             using (TempoMapManager tempoMapManager = midiFile.ManageTempoMap()) {
+                var lastUTimeSignature = new UTimeSignature {
+                    barPosition = 0,
+                    beatPerBar = 4,
+                    beatUnit = 4
+                };
+                int lastTime = 0;
+                foreach (UTimeSignature uTimeSignature in project.timeSignatures) {
+                    var time = lastTime + (uTimeSignature.barPosition - lastUTimeSignature.barPosition) * lastUTimeSignature.beatPerBar * 4 / lastUTimeSignature.beatUnit * project.resolution;
+                    tempoMapManager.SetTimeSignature(time, new TimeSignature(uTimeSignature.beatPerBar, uTimeSignature.beatUnit));
+                    lastUTimeSignature = uTimeSignature;
+                    lastTime = time;
+                }
                 foreach(UTempo uTempo in project.tempos){
                     tempoMapManager.SetTempo(uTempo.position, Tempo.FromBeatsPerMinute(uTempo.bpm));
                 }
