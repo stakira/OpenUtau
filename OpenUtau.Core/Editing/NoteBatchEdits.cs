@@ -305,6 +305,13 @@ namespace OpenUtau.Core.Editing {
         }
 
         //reference: https://github.com/sdercolin/utaformatix3/blob/0f026f7024386ca8362972043c3471c6f2ac9859/src/main/kotlin/process/RdpSimplification.kt#L43
+        /*
+        * The Ramer–Douglas–Peucker algorithm is a line simplification algorithm
+        * for reducing the number of points used to define its shape.
+        *
+        * Wikipedia: https://en.wikipedia.org/wiki/Ramer%E2%80%93Douglas%E2%80%93Peucker_algorithm
+        * Implementation reference: https://rosettacode.org/wiki/Ramer-Douglas-Peucker_line_simplification
+        * */
         List<Point> simplifyShape(List<Point> pointList, Double epsilon) {
             if (pointList.Count <= 2) {
                 return pointList;
