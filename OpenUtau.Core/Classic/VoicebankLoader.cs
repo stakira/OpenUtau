@@ -203,16 +203,28 @@ namespace OpenUtau.Classic {
         public static void LoadPrefixMap(Voicebank voicebank) {
             var dir = Path.GetDirectoryName(voicebank.File);
             var filePath = Path.Combine(dir, "prefix.map");
-            if (!File.Exists(filePath)) {
-                return;
+            if (File.Exists(filePath)) {
+                LoadMap(voicebank, filePath, "");
             }
+
+            // Append.map for presamp
+            var mapDir = Path.Combine(dir, "prefix");
+            if (Directory.Exists(mapDir)) {
+                var maps = Directory.EnumerateFiles(mapDir, "*.map");
+                foreach (string mapPath in maps) {
+                    LoadMap(voicebank, mapPath, Path.GetFileNameWithoutExtension(mapPath));
+                }
+            }
+        }
+        public static void LoadMap(Voicebank voicebank, string filePath, string color) {
             try {
                 using (var stream = File.OpenRead(filePath)) {
                     var map = ParsePrefixMap(stream, voicebank.TextFileEncoding);
                     foreach (var kv in map) {
                         var subbank = new Subbank() {
+                            Color = color,
                             Prefix = kv.Key.Item1,
-                            Suffix = kv.Key.Item2,
+                            Suffix = color + kv.Key.Item2,
                         };
                         var toneRanges = new List<string>();
                         int? rangeStart = null;
@@ -241,8 +253,8 @@ namespace OpenUtau.Classic {
             } catch (Exception e) {
                 Log.Error(e, $"Failed to load {filePath}");
             }
-        }
 
+        }
         public static Dictionary<Tuple<string, string>, SortedSet<int>> ParsePrefixMap(Stream stream, Encoding encoding) {
             using (var reader = new StreamReader(stream, encoding)) {
                 var result = new Dictionary<Tuple<string, string>, SortedSet<int>>();
