@@ -4,13 +4,13 @@ using System.IO;
 using System.Linq;
 using OpenUtau.Api;
 using OpenUtau.Core.G2p;
+using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Plugin.Builtin
 {
-    [Phonemizer("Delta English (Version 2) Phonemizer", "EN Delta (Ver2)", "Lotte V", language:"EN")]
-    public class ENDeltaVer2Phonemizer : SyllableBasedPhonemizer
-    {
+    [Phonemizer("Delta English (Version 2) Phonemizer", "EN Delta (Ver2)", "Lotte V", language: "EN")]
+    public class ENDeltaVer2Phonemizer : SyllableBasedPhonemizer {
         /// <summary>
         /// General English phonemizer for Delta list (X-SAMPA) voicebanks.
         /// This version is based on the third version of Delta's list, with split diphthongs.
@@ -81,6 +81,8 @@ namespace OpenUtau.Plugin.Builtin
         }
 
         protected override List<string> ProcessSyllable(Syllable syllable) {
+            
+
             string prevV = syllable.prevV;
             string[] cc = syllable.cc;
             string v = syllable.v;
@@ -89,6 +91,7 @@ namespace OpenUtau.Plugin.Builtin
             var phonemes = new List<string>();
             var lastC = cc.Length - 1;
             var firstC = 0;
+
             var rv = $"- {v}";
             if (syllable.IsStartingV) {
                 if (HasOto(rv, syllable.vowelTone)) {
@@ -513,6 +516,13 @@ namespace OpenUtau.Plugin.Builtin
                                         i++;
                                     }
                                 }
+                            } else {
+                                if (affricates.Contains(cc[0 + 1])) {
+                                    TryAddPhoneme(phonemes, ending.tone, $"{cc[0 + 1]} -", $"{cc[0 + 1]}-", $"{cc[0 + 1]}");
+                                } else {
+                                    TryAddPhoneme(phonemes, ending.tone, $"{cc[0 + 1]} -", $"{cc[0 + 1]}-");
+                                }
+                                i++;
                             }
                         }
                     }
