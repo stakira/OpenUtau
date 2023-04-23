@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
@@ -144,7 +144,7 @@ namespace OpenUtau.Plugin.Builtin {
                     }
                 }
             } else {
-                string[] tests = new string[] {currentLyric};
+                string[] tests = new string[] {cfLyric, currentLyric};
                 if (checkOtoUntilHit(tests, note, out var oto)){
                     currentLyric = oto.Alias;
                 }
