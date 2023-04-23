@@ -492,8 +492,6 @@ namespace OpenUtau.Core.Editing {
                     
                 }
             }
-            docManager.EndUndoGroup();
-            docManager.StartUndoGroup(true);
             foreach(var note in selectedNotes) {
                 if (pitchPointsPerNote.TryGetValue(note.position, out var tickRangeAndPitch)) {
                     docManager.ExecuteCmd(new SetCurveCommand(project, part, Format.Ustx.PITD, 
