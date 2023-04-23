@@ -137,8 +137,18 @@ namespace OpenUtau.Plugin.Builtin {
             if (mainNote.lyric.StartsWith(FORCED_ALIAS_SYMBOL)) {
                 return MakeForcedAliasResult(mainNote);
             }
-            if (hasDictionary && isDictionaryLoading && !Testing) {
-                return MakeSimpleResult("");
+            if (hasDictionary && isDictionaryLoading) {
+                if (!Testing) {
+                    return MakeSimpleResult("");
+                }
+                
+                // Wait max 5000msec for dictionary
+                for (int i = 0; i < 50 && isDictionaryLoading; i++) {
+                    System.Threading.Thread.Sleep(100);
+                }
+                if (isDictionaryLoading) {
+                    return MakeSimpleResult("");
+                }
             }
 
             var syllables = MakeSyllables(notes, MakeEnding(prevNeighbours));
@@ -255,10 +265,6 @@ namespace OpenUtau.Plugin.Builtin {
             if (hasDictionary) {
                 if (!string.IsNullOrEmpty(note.phoneticHint)) {
                     return getSymbolsRaw(note.phoneticHint);
-                }
-
-                while (isDictionaryLoading && Testing) {
-                    System.Threading.Thread.Sleep(100);
                 }
 
                 var result = new List<string>();
