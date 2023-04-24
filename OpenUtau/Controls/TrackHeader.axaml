@@ -102,12 +102,24 @@
       </Button>
       <Grid Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2">
         <Slider Classes="fader" Minimum="-24" Maximum="6" Value="{Binding Volume}" Margin="1,0,36,0"
-                Foreground="{DynamicResource AccentBrush1}" PointerPressed="FaderPointerPressed"
-                ContextRequested="FaderContextRequested"/>
+                Foreground="{DynamicResource AccentBrush1}" PointerPressed="VolumeFaderPointerPressed"
+                ContextRequested="VolumeFaderContextRequested"/>
         <TextBlock FontSize="11" FontFamily="monospace" HorizontalAlignment="Right" Margin="0,0,5,0">
           <TextBlock.Text>
             <MultiBinding StringFormat="{}{0:+#00.0;-#00.0}">
               <Binding Path="Volume"/>
+            </MultiBinding>
+          </TextBlock.Text>
+        </TextBlock>
+      </Grid>
+      <Grid Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2">
+        <Slider Classes="fader" Minimum="-100" Maximum="100" Value="{Binding Pan}" Margin="1,0,36,0"
+                Foreground="{DynamicResource AccentBrush1}" PointerPressed="PanFaderPointerPressed"
+                ContextRequested="PanFaderContextRequested"/>
+        <TextBlock FontSize="11" FontFamily="monospace" HorizontalAlignment="Right" Margin="0,0,5,0">
+          <TextBlock.Text>
+            <MultiBinding StringFormat="{}{0:00R;00L;mid}">
+              <Binding Path="Pan"/>
             </MultiBinding>
           </TextBlock.Text>
         </TextBlock>
