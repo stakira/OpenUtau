@@ -6,11 +6,9 @@ using OpenUtau.Api;
 using OpenUtau.Core.G2p;
 using Serilog;
 
-namespace OpenUtau.Plugin.Builtin
-{
+namespace OpenUtau.Plugin.Builtin {
     [Phonemizer("Delta English (Version 1) Phonemizer", "EN Delta (Ver1)", "Lotte V", language:"EN")]
-    public class ENDeltaVer1Phonemizer : SyllableBasedPhonemizer
-    {
+    public class ENDeltaVer1Phonemizer : SyllableBasedPhonemizer {
         /// <summary>
         /// General English phonemizer for Delta list (X-SAMPA) voicebanks.
         /// The difference between this phonemizer and the Teto English phonemizer is that this one was made to support all Delta list-based banks.
@@ -23,15 +21,15 @@ namespace OpenUtau.Plugin.Builtin
         /// All of these sounds are optional and should be inserted manually/phonetically, if the voicebank supports them.
         ///</summary>
 
-        private readonly string[] vowels = "a,A,@,{,V,O,aU,aI,E,3,eI,I,i,oU,OI,U,u,Q,Ol,aUn,e@,eN,IN,e,o,Ar,Qr,Er,Ir,Or,Ur,ir,ur,aIr,aUr,A@,Q@,E@,I@,O@,U@,i@,u@,aI@,aU@,@r,@l,@m,@n,@N,1,e@m,e@n".Split(',');
+        private readonly string[] vowels = "a,A,@,{,V,O,aU,aI,E,3,eI,I,i,oU,OI,U,u,Q,Ol,Ql,aUn,e@,eN,IN,e,o,Ar,Qr,Er,Ir,Or,Ur,ir,ur,aIr,aUr,A@,Q@,E@,I@,O@,U@,i@,u@,aI@,aU@,@r,@l,@m,@n,@N,1,e@m,e@n,y,I\\,M,U\\,Y,@\\,@`,3`,A`,Q`,E`,I`,O`,U`,i`,u`,aI`,aU`,},2,3\\,6,7,8,9,&,{~,I~,aU~,VI,VU,@U,i:,u:,O:,e@0".Split(',');
         private readonly string[] consonants = "b,tS,d,D,4,f,g,h,dZ,k,l,m,n,N,p,r,s,S,t,T,v,w,W,j,z,Z,t_},・,_".Split(',');
         private readonly string[] affricates = "tS,dZ".Split(',');
         private readonly string[] shortConsonants = "4".Split(",");
         private readonly string[] longConsonants = "tS,f,dZ,k,p,s,S,t,T,t_}".Split(",");
         private readonly string[] normalConsonants = "b,d,D,g,h,l,m,n,N,r,v,w,W,j,z,Z,・".Split(',');
         private readonly Dictionary<string, string> dictionaryReplacements = ("aa=A;ae={;ah=V;ao=O;aw=aU;ax=@;ay=aI;" +
-            "b=b;ch=tS;d=d;dh=D;dx=4;eh=E;el=@l;em=@m;en=@n;eng=@N;er=3;ey=eI;f=f;g=g;hh=h;ih=I;iy=i;jh=dZ;k=k;l=l;m=m;n=n;ng=N;ow=oU;oy=OI;" +
-            "p=p;q=・;r=r;s=s;sh=S;t=t;th=T;uh=U;uw=u;v=v;w=w;y=j;z=z;zh=Z").Split(';')
+            "b=b;ch=tS;d=d;dh=D;" + "dx=4;eh=E;el=@l;em=@m;en=@n;eng=@N;er=3;ey=eI;f=f;g=g;hh=h;ih=I;iy=i;jh=dZ;k=k;l=l;m=m;n=n;ng=N;ow=oU;oy=OI;" +
+            "p=p;q=・;r=r;s=s;sh=S;t=t;th=T;" + "uh=U;uw=u;v=v;w=w;" + "y=j;z=z;zh=Z").Split(';')
                 .Select(entry => entry.Split('='))
                 .Where(parts => parts.Length == 2)
                 .Where(parts => parts[0] != parts[1])
@@ -80,7 +78,7 @@ namespace OpenUtau.Plugin.Builtin
             if (syllable.IsStartingV) {
                 if (HasOto(rv, syllable.vowelTone)) {
                     basePhoneme = rv;
-                } else if (!HasOto(rv, syllable.vowelTone)) {
+                } else if (!HasOto(rv, syllable.vowelTone) && HasOto(ValidateAlias(rv), syllable.vowelTone)) {
                     rv = ValidateAlias(rv);
                     basePhoneme = rv;
                 } else {
@@ -90,16 +88,15 @@ namespace OpenUtau.Plugin.Builtin
                 var vv = $"{prevV} {v}";
                 if (!CanMakeAliasExtension(syllable)) {
                     basePhoneme = vv;
-                    if (!HasOto(vv, syllable.vowelTone)) {
+                    if (!HasOto(vv, syllable.vowelTone) && HasOto(ValidateAlias(vv), syllable.vowelTone)) {
                         vv = ValidateAlias(vv);
                         basePhoneme = vv;
+                    } else if (!HasOto(vv, syllable.vowelTone) && !HasOto(ValidateAlias(vv), syllable.vowelTone)) {
+                        basePhoneme = v;
                     }
                 } else {
                     // the previous alias will be extended
                     basePhoneme = null;
-                }
-                if (!HasOto(vv, syllable.vowelTone)) {
-                    basePhoneme = $"{v}";
                 }
             } else if (syllable.IsStartingCVWithOneConsonant) {
                 // TODO: move to config -CV or -C CV
@@ -364,13 +361,13 @@ namespace OpenUtau.Plugin.Builtin
                 var vcr = $"{v} {cc[0]}-";
                 if (HasOto(vcr, ending.tone)) {
                     phonemes.Add(vcr);
-                    if (!HasOto(vcr, ending.tone)) {
-                        vcr = ValidateAlias(vcr);
-                        phonemes.Add(vcr);
-                    }
+                } else if (!HasOto(vcr, ending.tone) && HasOto(ValidateAlias(vcr), ending.tone)) {
+                    vcr = ValidateAlias(vcr);
+                    phonemes.Add(vcr);
                 } else {
-                    phonemes.Add(vc);
-                    if (!HasOto(vc, ending.tone)) {
+                    if (HasOto(vc, ending.tone)) {
+                        phonemes.Add(vc);
+                    } else {
                         vc = ValidateAlias(vc);
                         phonemes.Add(vc);
                     }
@@ -500,6 +497,13 @@ namespace OpenUtau.Plugin.Builtin
                                         i++;
                                     }
                                 }
+                            } else {
+                                if (affricates.Contains(cc[0 + 1])) {
+                                    TryAddPhoneme(phonemes, ending.tone, $"{cc[0 + 1]} -", $"{cc[0 + 1]}-", $"{cc[0 + 1]}");
+                                } else {
+                                    TryAddPhoneme(phonemes, ending.tone, $"{cc[0 + 1]} -", $"{cc[0 + 1]}-");
+                                }
+                                i++;
                             }
                         }
                     }
@@ -521,6 +525,30 @@ namespace OpenUtau.Plugin.Builtin
             }
             foreach (var vowel in new[] { "3" }) {
                 alias = alias.Replace(vowel, "@r");
+            }
+            foreach (var vowel in new[] { "@r" }) {
+                alias = alias.Replace(vowel, "@`");
+            }
+            foreach (var vowel in new[] { "aI" }) {
+                alias = alias.Replace(vowel, "VI");
+            }
+            foreach (var vowel in new[] { "aU" }) {
+                alias = alias.Replace(vowel, "VU");
+            }
+            foreach (var vowel in new[] { "oU" }) {
+                alias = alias.Replace(vowel, "@U");
+            }
+            foreach (var vowel in new[] { "O" }) {
+                alias = alias.Replace(vowel, "O:");
+            }
+            foreach (var vowel in new[] { "A" }) {
+                alias = alias.Replace(vowel, "Q");
+            }
+            foreach (var vowel in new[] { "i" }) {
+                alias = alias.Replace(vowel, "i:");
+            }
+            foreach (var vowel in new[] { "u" }) {
+                alias = alias.Replace(vowel, "u:");
             }
             return alias;
         }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
@@ -144,7 +144,7 @@ namespace OpenUtau.Plugin.Builtin {
                     }
                 }
             } else {
-                string[] tests = new string[] {currentLyric};
+                string[] tests = new string[] {cfLyric, currentLyric};
                 if (checkOtoUntilHit(tests, note, out var oto)){
                     currentLyric = oto.Alias;
                 }
@@ -214,9 +214,15 @@ namespace OpenUtau.Plugin.Builtin {
                 int vcLength = 120;
                 var nextAttr = nextNeighbour.Value.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
                 if (singer.TryGetMappedOto(nextLyric, nextNeighbour.Value.tone + nextAttr.toneShift, nextAttr.voiceColor, out var oto)) {
-                    vcLength = MsToTick(oto.Preutter);
+                    // If overlap is a negative value, vcLength is longer than Preutter
+                    if (oto.Overlap < 0) {
+                        vcLength = MsToTick(oto.Preutter - oto.Overlap);
+                    } else {
+                        vcLength = MsToTick(oto.Preutter);
+                    }
                 }
-                vcLength = Math.Min(totalDuration / 2, vcLength);
+                // vcLength depends on the Vel of the next note
+                vcLength = Convert.ToInt32(Math.Min(totalDuration / 2, vcLength * (nextAttr.consonantStretchRatio ?? 1)));
 
                 return new Result {
                     phonemes = new Phoneme[] {

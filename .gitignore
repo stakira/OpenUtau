@@ -340,3 +340,4 @@ OpenUtau.Test/Usts/*
 *.dmg
 appcast.*.xml
 *.tar.gz
+.vscode/

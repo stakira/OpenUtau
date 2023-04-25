@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -169,7 +169,12 @@ namespace OpenUtau.Classic {
         }
 
         private static void ParseNote(UNote note, int lastNotePos, int lastNoteEnd, List<IniLine> iniLines, out float? noteTempo) {
-            var ustNote = new UstNote();
+            var ustNote = new UstNote {
+                lyric = note.lyric,
+                position = note.position,
+                duration = note.duration,
+                noteNum = note.tone
+            };
             ustNote.Parse(lastNotePos, lastNoteEnd, iniLines, out noteTempo);
             note.lyric = ustNote.lyric;
             note.position = ustNote.position;

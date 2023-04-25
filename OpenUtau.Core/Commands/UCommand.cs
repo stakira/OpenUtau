@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace OpenUtau.Core {
@@ -7,8 +8,8 @@ namespace OpenUtau.Core {
         public virtual ValidateOptions ValidateOptions => default;
         public abstract void Execute();
         public abstract void Unexecute();
-        public virtual bool Mergeable => false;
-        public virtual UCommand Merge(IList<UCommand> commands) => null;
+        public virtual bool CanMerge(IList<UCommand> commands) => false;
+        public virtual UCommand Merge(IList<UCommand> commands) => throw new NotImplementedException();
         public abstract override string ToString();
     }
 
@@ -20,7 +21,7 @@ namespace OpenUtau.Core {
             Commands = new List<UCommand>();
         }
         public void Merge() {
-            if (Commands.Count > 0 && Commands.Last().Mergeable) {
+            if (Commands.Count > 0 && Commands.Last().CanMerge(Commands)) {
                 var merged = Commands.Last().Merge(Commands);
                 Commands.Clear();
                 Commands.Add(merged);

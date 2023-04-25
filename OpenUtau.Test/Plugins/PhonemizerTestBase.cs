@@ -33,6 +33,7 @@ namespace OpenUtau.Plugins {
             timeAxis.BuildSegments(new Core.Ustx.UProject());
 
             var phonemizer = CreatePhonemizer();
+            phonemizer.Testing = true;
             phonemizer.SetSinger(singer);
             phonemizer.SetTiming(timeAxis);
 
