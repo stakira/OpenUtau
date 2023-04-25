@@ -59,7 +59,10 @@ namespace OpenUtau.Core.Editing {
     public class RemoveToneSuffix : SingleNoteLyricEdit {
         public override string Name => "pianoroll.menu.lyrics.removetonesuffix";
         protected override string Transform(string lyric) {
-            if (lyric.Length <= 2) {
+            if (Regex.IsMatch(lyric, ".+_?[A-G](#|b)?[1-7]")) {
+                return Regex.Replace(lyric, "_?[A-G](#|b)?[1-7]", "");
+            }
+            /* if (lyric.Length <= 2) {
                 return lyric;
             }
             string suffix = lyric.Substring(lyric.Length - 2);
@@ -68,7 +71,7 @@ namespace OpenUtau.Core.Editing {
             }
             if (suffix[0] >= 'A' && suffix[0] <= 'G' && suffix.Last() >= '0' && suffix.Last() <= '9') {
                 return lyric.Substring(0, lyric.Length - suffix.Length);
-            }
+            } */
             return lyric;
         }
     }
