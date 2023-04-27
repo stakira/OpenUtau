@@ -49,7 +49,7 @@ if __name__ == '__main__':
         model=hydra.utils.instantiate(cfg),
         dataset=dataset,
         batch_size=256,
-        epochs=1)
+        epochs=10)
 
     train(trainer)
 
