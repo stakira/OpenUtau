@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
@@ -38,6 +38,7 @@ namespace OpenUtau.Core.Util {
             typeof(FrenchG2pLyricsHelper),
             typeof(PortugueseG2pLyricsHelper),
             typeof(RussianG2pLyricsHelper),
+            typeof(SpanishG2pLyricsHelper),
         };
     }
 
@@ -84,5 +85,9 @@ namespace OpenUtau.Core.Util {
 
     public class RussianG2pLyricsHelper : G2pLyricsHelper {
         public RussianG2pLyricsHelper() : base(new RussianG2p()) { }
+    }
+
+    public class SpanishG2pLyricsHelper : G2pLyricsHelper {
+        public SpanishG2pLyricsHelper() : base(new SpanishG2p()) { }
     }
 }
