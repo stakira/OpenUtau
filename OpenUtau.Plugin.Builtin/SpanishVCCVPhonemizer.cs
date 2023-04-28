@@ -74,16 +74,30 @@ namespace OpenUtau.Plugin.Builtin {
                 var rccv = $"-{string.Join("", cc)}{v}";
                 if (HasOto(rccv, syllable.vowelTone)) {
                     basePhoneme = rccv;
+                } else if (HasOto(ValidateAlias(rccv), syllable.vowelTone)) {
+                    basePhoneme = ValidateAlias(rccv);
                 } else {
+                    var ccv = $"{string.Join("", cc)}{v}";
                     var _cv = $"_{cc.Last()}{v}";
-                    if (HasOto(_cv, syllable.tone)) {
+                    if (HasOto(ccv, syllable.vowelTone)) {
+                        basePhoneme = ccv;
+                    } else if (HasOto(ValidateAlias(ccv), syllable.tone) && !ValidateAlias(ccv).StartsWith("B") && !ValidateAlias(ccv).StartsWith("D") && !ValidateAlias(ccv).StartsWith("G")) {
+                        basePhoneme = ValidateAlias(ccv);
+                    } else if (!HasOto(ValidateAlias(ccv), syllable.tone) && !HasOto(ValidateAlias(ValidateAlias(ccv)), syllable.tone) && HasOto(_cv, syllable.tone)) {
                         basePhoneme = _cv;
                     } else {
                         basePhoneme = $"{cc.Last()}{v}";
                     }
                     // try RCC
                     for (var i = cc.Length; i > 1; i--) {
-                        if (TryAddPhoneme(phonemes, syllable.tone, $"-{string.Join("", cc.Take(i))}")) {
+                        if (HasOto(_cv, syllable.vowelTone)) {
+                            TryAddPhoneme(phonemes, syllable.tone, $"-{string.Join("", cc.Take(i))}", ValidateAlias($"-{string.Join("", cc.Take(i))}"), $"-{cc[0]}", ValidateAlias($"-{cc[0]}"));
+                            if (!HasOto($"-{string.Join("", cc.Take(i))}", syllable.tone) && !HasOto(ValidateAlias($"-{string.Join("", cc.Take(i))}"), syllable.tone) && !HasOto(ccv, syllable.vowelTone) && !HasOto(ValidateAlias(ccv), syllable.vowelTone)) {
+                                TryAddPhoneme(phonemes, syllable.tone, $"{string.Join("", cc.Take(i))}", ValidateAlias($"{string.Join("", cc.Take(i))}"));
+                            }
+                            firstC = i;
+                        } else {
+                            TryAddPhoneme(phonemes, syllable.tone, $"-{cc[0]}", ValidateAlias($"-{cc[0]}"));
                             firstC = i;
                             break;
                         }
@@ -203,7 +217,8 @@ namespace OpenUtau.Plugin.Builtin {
                 var cc1 = $"{string.Join("", cc.Skip(i))}";
                 var ccv = string.Join("", cc.Skip(i)) + v;
                 var ucv = $"_{cc.Last()}{v}";
-                if (!syllable.IsStartingCVWithMoreThanOneConsonant) {
+                var rccv = $"-{string.Join("", cc)}{v}";
+                if (!HasOto(rccv, syllable.vowelTone) && !HasOto(ValidateAlias(rccv), syllable.vowelTone)) {
                     if (!HasOto(cc1, syllable.tone)) {
                         cc1 = ValidateAlias(cc1);
                     }
