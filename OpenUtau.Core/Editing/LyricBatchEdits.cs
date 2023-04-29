@@ -1,9 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
+using OpenUtau.Classic;
 using OpenUtau.Core.Ustx;
 using TinyPinyin;
 using WanaKanaNet;
+using YamlDotNet.Core.Tokens;
 
 namespace OpenUtau.Core.Editing {
 
@@ -88,6 +93,88 @@ namespace OpenUtau.Core.Editing {
 
         private bool ShouldRemove(char c) {
             return (c == '_' || c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z') && c != 'R' && c != 'r';
+        }
+    }
+
+    public class MoveSuffixToVoiceColor : BatchEdit {
+        public virtual string Name => name;
+        private string name;
+
+        public MoveSuffixToVoiceColor() {
+            name = "pianoroll.menu.lyrics.movesuffixtovoicecolor";
+        }
+
+        public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
+            var notes = selectedNotes.Count > 0 ? selectedNotes.ToArray() : part.notes.ToArray();
+            if (notes.Length == 0) {
+                return;
+            }
+            // Determine the character that is the trigger
+            UTrack track = project.tracks[part.trackNo];
+            if (track.VoiceColorExp.options.Length <= 0) {
+                return;
+            }
+            Dictionary<int, string> colors = new Dictionary<int, string>(); // index, trigger
+
+            foreach (var subbank in track.Singer.Subbanks) {
+                int clrIndex = track.VoiceColorExp.options.ToList().IndexOf(subbank.Color);
+                if (colors.ContainsKey(clrIndex)) {
+                    string suffix = "";
+                    string value = Regex.Replace(subbank.Suffix.Replace("_", ""), "[A-G](#|b)?[1-7]", "");
+
+                    for (int i = 0; i < colors[clrIndex].Length && i < value.Length; i++) {
+                        if(colors[clrIndex][i] == value[i]) {
+                            suffix += value[i];
+                        } else {
+                            break;
+                        }
+                    }
+                    colors[clrIndex] = suffix;
+                } else {
+                    colors.Add(clrIndex, Regex.Replace(subbank.Suffix.Replace("_", ""), "[A-G](#|b)?[1-7]", ""));
+                }
+            }
+
+            // Order by the number of letters in the trigger
+            var suffixes = colors.Values.ToList();
+            suffixes.Remove("");
+            suffixes.Sort((a, b) => b.Length - a.Length);
+
+            // Set lyric and color
+            docManager.StartUndoGroup(true);
+            foreach (var note in notes) {
+                foreach (var suffix in suffixes) {
+                    if (note.lyric.Contains(suffix)) {
+                        string lyric = note.lyric.Split(suffix)[0];
+                        docManager.ExecuteCmd(new ChangeNoteLyricCommand(part, note, lyric));
+
+                        int index = colors.FirstOrDefault(c => c.Value == suffix).Key;
+                        docManager.ExecuteCmd(new ChangeVoiceColorCommand(part, note, index, track));
+
+                        /*if(track.VoiceColorExp != null) {
+                            string color = colors.FirstOrDefault(c => c.Value == suffix).Key;
+                            if(track.VoiceColorExp.options.Contains(color)) {
+                                int index = track.VoiceColorExp.options.ToList().IndexOf(color);
+
+                                var exp = note.phonemeExpressions.FirstOrDefault(exp => exp.descriptor?.abbr == Format.Ustx.CLR && exp.index == 0);
+
+                                if (exp != null) {
+                                    exp.descriptor = track.VoiceColorExp;
+                                    exp.value = index;
+                                } else {
+                                    note.phonemeExpressions.Add(new UExpression(track.VoiceColorExp) {
+                                        descriptor = track.VoiceColorExp,
+                                        index = 0,
+                                        value = index,
+                                    });
+                                }
+                            }
+                        }*/
+                        break;
+                    }
+                }
+            }
+            docManager.EndUndoGroup();
         }
     }
 
