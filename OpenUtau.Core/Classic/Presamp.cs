@@ -45,55 +45,11 @@ namespace Classic {
             Nums = defNums;
             Appends = defAppends;
             Pitches = defPitches;
-            FileExists = false;
 
             MakePhonemeList();
         }
-        /**  
-            <summary>
-                Load presamp.ini. If not, return default presamp.
-            </summary>
-        */
-        public Presamp(string dirPath, Encoding textFileEncoding) {
-            SetVowels(defVowels);
-            SetConsonants(defConsonants);
-            Replace = defReplace;
-            Nums = defNums;
-            Appends = defAppends;
-            Pitches = defPitches;
 
-            ReadPresampIni(dirPath, textFileEncoding);
-        }
-        /**  
-            <summary>
-                To create a Presamp instance as a template for each phonemizer and load the presamp.ini of the voice bank as an addition
-            </summary>
-        */
-        public Presamp(Presamp defPresamp, string dirPath, Encoding textFileEncoding) {
-            this.Vowels = defPresamp.Vowels;
-            this.Consonants = defPresamp.Consonants;
-            this.Priorities = defPresamp.Priorities;
-            this.Replace = defPresamp.Replace;
-            this.AliasRules = defPresamp.AliasRules;
-            this.Prefixs = defPresamp.Prefixs;
-            this.SuffixOrder = defPresamp.SuffixOrder;
-            this.Nums = defPresamp.Nums;
-            this.Appends = defPresamp.Appends;
-            this.Pitches= defPresamp.Pitches;
-            this.AliasPriorityDefault = defPresamp.AliasPriorityDefault;
-            this.AliasPriorityDifAppend = defPresamp.AliasPriorityDifAppend;
-            this.AliasPriorityDifPitch = defPresamp.AliasPriorityDifPitch;
-            this.Split = defPresamp.Split;
-            this.MustVC = defPresamp.MustVC;
-            this.CFlags = defPresamp.CFlags;
-            this.VCLengthFromCV = defPresamp.VCLengthFromCV;
-            this.AddEnding = defPresamp.AddEnding;
-            this.PhonemeList = defPresamp.PhonemeList;
-
-            ReadPresampIni(dirPath, textFileEncoding);
-        }
-
-        private void ReadPresampIni(string dirPath, Encoding textFileEncoding) {
+        public void ReadPresampIni(string dirPath, Encoding textFileEncoding) {
             try {
                 string iniPath = Path.Combine(dirPath, "presamp.ini");
                 if (!File.Exists(iniPath)) {

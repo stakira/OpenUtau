@@ -46,7 +46,8 @@ namespace OpenUtau.Plugin.Builtin {
                 return;
             }
 
-            presamp = new Presamp(singer.Location, singer.TextFileEncoding);
+            presamp = new Presamp();
+            presamp.ReadPresampIni(singer.Location, singer.TextFileEncoding);
         }
 
 

@@ -24,15 +24,16 @@ namespace OpenUtau.Plugin.Builtin {
                 return;
             }
 
-            var template = new Presamp();
-            template.SetVowels(defVowels);
-            template.SetConsonants(defConsonants);
-            template.Replace.Clear();
-            template.Priorities = new List<string> { "k", "g", "t", "d", "b", "p" };
-            template.AliasRules.ENDING1 = "_%v%"; // not supported yet
-            template.AddEnding = 1; // not supported yet
+            presamp = new Presamp();
+            presamp.SetVowels(defVowels);
+            presamp.SetConsonants(defConsonants);
+            presamp.Replace.Clear();
+            presamp.Priorities = new List<string> { "k", "g", "t", "d", "b", "p" };
+            presamp.AliasRules.ENDING1 = "_%v%"; // not supported yet
+            presamp.AddEnding = 1; // not supported yet
 
-            presamp = new Presamp(template, singer.Location, singer.TextFileEncoding);
+            // Read ini after preparing default values for the phonemizer
+            presamp.ReadPresampIni(singer.Location, singer.TextFileEncoding);
         }
 
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
@@ -54,17 +55,18 @@ namespace OpenUtau.Plugin.Builtin {
                     prevVowel = prevPhoneme.Vowel;
                 }
             };
+            string vcpad = presamp.AliasRules.VCPAD;
 
             var attr0 = notes[0].phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
             var attr1 = notes[0].phonemeAttributes?.FirstOrDefault(attr => attr.index == 1) ?? default;
             if (lyric == "-" || lyric.ToLowerInvariant() == "r") {
-                if (singer.TryGetMappedOto($"{prevVowel}{presamp.AliasRules.VCPAD}R", notes[0].tone + attr0.toneShift, attr0.voiceColor, out var oto1)) {
+                if (singer.TryGetMappedOto($"{prevVowel}{vcpad}R", notes[0].tone + attr0.toneShift, attr0.voiceColor, out var oto1)) {
                     return MakeSimpleResult(oto1.Alias);
                 }
-                return MakeSimpleResult($"{prevVowel}{presamp.AliasRules.VCPAD}R");
+                return MakeSimpleResult($"{prevVowel}{vcpad}R");
             }
             int totalDuration = notes.Sum(n => n.duration);
-            if (singer.TryGetMappedOto($"{prevVowel}{presamp.AliasRules.VCPAD}{lyric}", notes[0].tone + attr0.toneShift, attr0.voiceColor, out var oto)) {
+            if (singer.TryGetMappedOto($"{prevVowel}{vcpad}{lyric}", notes[0].tone + attr0.toneShift, attr0.voiceColor, out var oto)) {
                 return MakeSimpleResult(oto.Alias);
             }
             int vcLen = 120;
@@ -76,7 +78,7 @@ namespace OpenUtau.Plugin.Builtin {
                 }
                 vcLen = Convert.ToInt32(Math.Min(totalDuration / 2, vcLen * (attr0.consonantStretchRatio ?? 1)));
             }
-            if (singer.TryGetMappedOto($"{prevVowel}{presamp.AliasRules.VCPAD}{consonant}", notes[0].tone + attr0.toneShift, attr0.voiceColor, out oto)) {
+            if (singer.TryGetMappedOto($"{prevVowel}{vcpad}{consonant}", notes[0].tone + attr0.toneShift, attr0.voiceColor, out oto)) {
                 return new Result {
                     phonemes = new Phoneme[] {
                         new Phoneme() {
