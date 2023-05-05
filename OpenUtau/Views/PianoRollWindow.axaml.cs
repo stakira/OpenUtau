@@ -95,6 +95,24 @@ namespace OpenUtau.App.Views {
             Focus(); // Force unfocus menu for key down events.
         }
 
+        void OnMenuReplaceLyrics(object? sender, RoutedEventArgs e) {
+            if (ViewModel.NotesViewModel.Selection.IsEmpty) {
+                _ = MessageBox.Show(
+                    this,
+                    ThemeManager.GetString("lyrics.selectnotes"),
+                    ThemeManager.GetString("lyrics.caption"),
+                    MessageBox.MessageBoxButtons.Ok);
+                return;
+            }
+            var (notes, lyrics) = ViewModel.NotesViewModel.PrepareInsertLyrics();
+            var vm = new LyricsReplaceViewModel(ViewModel.NotesViewModel.Part, notes, lyrics);
+            //vm.Start(ViewModel.NotesViewModel.Part, notes, lyrics);
+            var dialog = new LyricsReplaceDialog() {
+                DataContext = vm,
+            };
+            dialog.ShowDialog(this);
+        }
+
         void OnMenuEditLyrics(object? sender, RoutedEventArgs e) {
             EditLyrics();
         }
