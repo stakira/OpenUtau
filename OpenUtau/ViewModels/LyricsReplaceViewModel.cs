@@ -13,7 +13,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public string NewValue { get; set; } = "";
         [Reactive] public string Preview { get; set; } = "";
         public List<ReplacePreset> PresetList { get; } = new List<ReplacePreset>() { //Increase!
-            new ReplacePreset(ThemeManager.GetString("-"), "", ""),
+            new ReplacePreset("-", "", ""),
             new ReplacePreset(ThemeManager.GetString("lyricsreplace.preset.rmvalphabet"), @"[a-zA-Z]", ""),
             new ReplacePreset(ThemeManager.GetString("lyricsreplace.preset.rmvnonhiragana"), @"[^\p{IsHiragana}ヴ]+", ""),
             new ReplacePreset(ThemeManager.GetString("lyricsreplace.preset.rmvphonetichint"), @"\[.*\]", ""),
