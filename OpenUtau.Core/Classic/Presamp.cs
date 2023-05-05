@@ -29,10 +29,26 @@ namespace Classic {
         public bool MustVC { get; set; } = false;
         public string CFlags { get; set; } = "p0";
         public bool VCLengthFromCV { get; set; } = true;
-        public int AddEnding { get; set; } = 0;
+        /**  
+            <summary>
+                0: not 1: add ending note 2: convert last note
+            </summary>
+        */
+        public int AddEnding { get; set; } = 1;
 
         public Dictionary<string, PresampPhoneme> PhonemeList { get; set; } = new Dictionary<string, PresampPhoneme>();
 
+        public Presamp() {
+            SetVowels(defVowels);
+            SetConsonants(defConsonants);
+            Replace = defReplace;
+            Nums = defNums;
+            Appends = defAppends;
+            Pitches = defPitches;
+            FileExists = false;
+
+            MakePhonemeList();
+        }
         /**  
             <summary>
                 Load presamp.ini. If not, return default presamp.
@@ -269,7 +285,10 @@ namespace Classic {
                 Log.Error(e, "failed to load presamp.ini");
             }
 
-            // PhonemeList
+            MakePhonemeList();
+        }
+
+        private void MakePhonemeList() {
             PhonemeList.Clear();
             foreach (PresampConsonant pc in Consonants.Values) {
                 if (!PhonemeList.ContainsKey(pc.Consonant)) {
@@ -304,7 +323,7 @@ namespace Classic {
                     }
                 }
             }
-            foreach (PresampPhoneme pp in PhonemeList.Values) { // 拗音の母音情報をゃゅょから取得する
+            foreach (PresampPhoneme pp in PhonemeList.Values) { // 拗音の母音情報をゃゅょから取得する Vowel completion
                 if (!pp.HasVowel) {
                     if (PhonemeList.TryGetValue(pp.Phoneme.Substring(pp.Phoneme.Length - 1), out PresampPhoneme vowel)) {
                         pp.Vowel = vowel.Vowel;
@@ -400,6 +419,9 @@ namespace Classic {
             }
             Vowels = dict;
         }
+        public void SetVowels(Dictionary<string, PresampVowel> dict) {
+            Vowels = dict;
+        }
         public void SetConsonants(List<string> list) {
             var dict = new Dictionary<string, PresampConsonant>();
             foreach (var line in list) {
@@ -418,6 +440,9 @@ namespace Classic {
                     dict.Add(consonant.Consonant, consonant);
                 }
             }
+            Consonants = dict;
+        }
+        public void SetConsonants(Dictionary<string, PresampConsonant> dict) {
             Consonants = dict;
         }
 
