@@ -83,6 +83,9 @@ namespace OpenUtau.Plugin.Builtin {
                         prevAlias = pair.Value;
                     }
                 }
+                if (prevAlias.Contains("・")) {
+                    prevAlias = prevAlias.Split('・')[0];
+                }
 
                 // 喉切り prev is VC -> current is 喉切りCV[・ あ][・あ][あ・][- あ][あ]
                 string vcGlottalStop = "[aiueonN]" + vcpad + "・$"; // [a ・]
