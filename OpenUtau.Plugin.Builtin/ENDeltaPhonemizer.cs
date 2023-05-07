@@ -220,8 +220,9 @@ namespace OpenUtau.Plugin.Builtin {
                         var cc2 = $"{string.Join("", cc.Take(2))}";
                         var vc = $"{prevV} {cc[0]}";
                         if (i == 0) {
-                            phonemes.Add(vr);
-                            if (!HasOto(vr, syllable.tone)) {
+                            if (HasOto(vr, syllable.tone)) {
+                                phonemes.Add(vr);
+                            } else if (!HasOto(vr, syllable.tone) && HasOto(ValidateAlias(vr), syllable.tone)) {
                                 vr = ValidateAlias(vr);
                                 phonemes.Add(vr);
                             }
