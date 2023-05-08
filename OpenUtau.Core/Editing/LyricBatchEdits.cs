@@ -61,16 +61,6 @@ namespace OpenUtau.Core.Editing {
             if (Regex.IsMatch(lyric, ".+_?[A-G](#|b)?[1-7]")) {
                 return Regex.Replace(lyric, "_?[A-G](#|b)?[1-7]", "");
             }
-            /* if (lyric.Length <= 2) {
-                return lyric;
-            }
-            string suffix = lyric.Substring(lyric.Length - 2);
-            if ((suffix[0] == 'b' || suffix[0] == '#') && lyric.Length > 3) {
-                suffix = lyric.Substring(lyric.Length - 3);
-            }
-            if (suffix[0] >= 'A' && suffix[0] <= 'G' && suffix.Last() >= '0' && suffix.Last() <= '9') {
-                return lyric.Substring(0, lyric.Length - suffix.Length);
-            } */
             return lyric;
         }
     }
