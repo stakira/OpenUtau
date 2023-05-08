@@ -125,17 +125,18 @@ namespace OpenUtau.Plugin.Builtin {
                                 currentLyric = oto.Alias;
                             }
                         }
-                    } else if (presamp.PhonemeList.TryGetValue(currentAlias, out PresampPhoneme currentPhoneme) && currentPhoneme.IsPriority) {
+                    } else if (presamp.PhonemeList.TryGetValue(currentLyric, out PresampPhoneme currentPhoneme) && currentPhoneme.IsPriority) {
                         // Priority: not VCV
                         string[] tests = new string[] { currentLyric, initial };
                         if (checkOtoUntilHit(tests, note, out var oto)) {
                             currentLyric = oto.Alias;
                         }
                     } else if (prevPhoneme.HasVowel) {
-                        // try VCV
+                        // try VCV, VC
                         string prevVow = prevPhoneme.Vowel;
                         var vcv = $"{prevVow}{vcvpad}{currentLyric}";
-                        string[] tests = new string[] { vcv, cfLyric, currentLyric };
+                        var vc = $"{prevVow}{vcpad}{currentLyric}";
+                        string[] tests = new string[] { vcv, vc, cfLyric, currentLyric };
                         if (checkOtoUntilHit(tests, note, out var oto)) {
                             currentLyric = oto.Alias;
                         }
@@ -277,10 +278,10 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             }
 
-            string nextcolor = attr0.voiceColor ?? "";
+            string color = attr0.voiceColor ?? "";
             if (otos.Count > 0) {
-                if (otos.Any(oto => oto.Color == nextcolor)) {
-                    oto = otos.Find(oto => oto.Color == nextcolor);
+                if (otos.Any(oto => oto.Color == color)) {
+                    oto = otos.Find(oto => oto.Color == color);
                 } else {
                     return false; // oto = otos[0];
                 }
