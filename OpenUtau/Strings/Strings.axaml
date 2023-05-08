@@ -70,16 +70,6 @@
   <system:String x:Key="lyrics.reset">Reset</system:String>
   <system:String x:Key="lyrics.selectnotes">Select some notes first!</system:String>
   <system:String x:Key="lyrics.separators">Separators</system:String>
-  <system:String x:Key="lyricsreplace.after">After replacement :</system:String>
-  <system:String x:Key="lyricsreplace.before">Before replacement :</system:String>
-  <system:String x:Key="lyricsreplace.presets">Presets</system:String>
-  <system:String x:Key="lyricsreplace.preview">Preview</system:String>
-  <system:String x:Key="lyricsreplace.replace">General lyrics replacement</system:String>
-  <system:String x:Key="lyricsreplace.preset.rmvalphabet">Remove alphabet</system:String>
-  <system:String x:Key="lyricsreplace.preset.rmvnonhiragana">Remove non-hiragana</system:String>
-  <system:String x:Key="lyricsreplace.preset.rmvphonetichint">Remove phonetic hint</system:String>
-  <system:String x:Key="lyricsreplace.preset.rmvtone">Remove tone suffix</system:String>
-  <system:String x:Key="lyricsreplace.preset.rmvspace">Remove spaces and earlier</system:String>
 
   <system:String x:Key="menu.edit">Edit</system:String>
   <system:String x:Key="menu.edit.copy">Copy</system:String>
