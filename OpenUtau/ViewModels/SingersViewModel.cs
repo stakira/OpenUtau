@@ -43,12 +43,16 @@ namespace OpenUtau.App.ViewModels {
         private readonly ReactiveCommand<Api.PhonemizerFactory, Unit> setDefaultPhonemizerCommand;
         private readonly List<MenuItemViewModel> setDefaultPhonemizerMenuItems;
 
-        public SingersViewModel() {
+        public SingersViewModel(USinger? singer) {
 #if DEBUG
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 #endif
             if (Singers.Count() > 0) {
-                Singer = Singers.First();
+                if (singer != null && Singers.Contains(singer)) {
+                    Singer = singer;
+                } else {
+                    Singer = Singers.FirstOrDefault();
+                }
             }
             this.WhenAnyValue(vm => vm.Singer)
                 .WhereNotNull()
