@@ -609,6 +609,9 @@ namespace OpenUtau.Plugin.Builtin {
             foreach (var CC in new[] { "N k", "N g", "N k-", "N g-" }) {
                 alias = alias.Replace("N", "n");
             }
+            foreach (var consonant in new[] { "r" }) {
+                alias = alias.Replace(consonant, "3");
+            }
             return alias;
         }
 
