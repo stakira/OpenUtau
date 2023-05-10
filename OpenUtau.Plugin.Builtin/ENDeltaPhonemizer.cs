@@ -625,6 +625,9 @@ namespace OpenUtau.Plugin.Builtin {
             foreach (var consonant in new[] { "r" }) {
                 alias = alias.Replace(consonant, "3");
             }
+            foreach (var CV in new[] { "3O" }) {
+                alias = alias.Replace(CV, "rO");
+            }
             foreach (var vowel in new[] { "V" }) {
                 alias = alias.Replace(vowel, "A");
             }
