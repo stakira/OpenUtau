@@ -31,6 +31,8 @@ namespace OpenUtau.Classic {
 
         public void CheckPermissions() { }
 
+        public ResamplerManifest Manifest { get; } = new ResamplerManifest();
+
         public override string ToString() => name;
     }
 }
