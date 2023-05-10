@@ -613,8 +613,11 @@ namespace OpenUtau.Plugin.Builtin {
             foreach (var vowel in new[] { "U" }) {
                 alias = alias.Replace(vowel, "u");
             }
-            foreach (var vowel in new[] { "O u" }) {
-                alias = alias.Replace(vowel, "O U");
+            foreach (var VV in new[] { "O u" }) {
+                alias = alias.Replace(VV, "O U");
+            }
+            foreach (var VV in new[] { "i O" }) {
+                alias = alias.Replace(VV, "I O");
             }
             foreach (var CC in new[] { "N k", "N g", "N k-", "N g-" }) {
                 alias = alias.Replace("N", "n");
