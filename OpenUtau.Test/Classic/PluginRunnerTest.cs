@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Avalonia.Media;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using Xunit;
