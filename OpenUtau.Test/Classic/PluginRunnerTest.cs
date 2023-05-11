@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using Avalonia.Media;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using Xunit;
@@ -17,14 +18,14 @@ namespace OpenUtau.Classic {
             private readonly List<object[]> testData = new();
 
             public ExecuteTestData() {
-                testData.Add(new object[] { BasicUProject(), IncludeNullResponse(), IncludeNullAssertion() });
+                testData.Add(new object[] { BasicUProject(), IncludeNullResponse(), IncludeNullAssertion(), EmptyErrorMEthod() });
             }
 
             public IEnumerator<object[]> GetEnumerator() => testData.GetEnumerator();
 
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-            private static ExecuteArgument BasicUProject() {
+            public static ExecuteArgument BasicUProject() {
                 var project = new UProject();
                 project.tracks.Add(new UTrack {
                     TrackNo = 0,
@@ -91,8 +92,8 @@ namespace OpenUtau.Classic {
                 };
             }
 
-            private static EventHandler<ReplaceNoteEventArgs> IncludeNullAssertion() {
-                return (sender, args) => {
+            private static Action<ReplaceNoteEventArgs> IncludeNullAssertion() {
+                return (args) => {
                     Assert.Equal(4, args.ToRemove.Count);
                     Assert.Equal(3, args.ToAdd.Count);
                     Assert.Equal(480, args.ToAdd[0].duration);
@@ -103,71 +104,50 @@ namespace OpenUtau.Classic {
                     Assert.Equal("me", args.ToAdd[2].lyric);
                 };
             }
+
+            private static Action<PluginErrorEventArgs> EmptyErrorMEthod() {
+                return (args) => {
+                    // do nothing
+                };
+            }
         }
 
         [Theory]
         [ClassData(typeof(ExecuteTestData))]
-        public void ExecuteTest(ExecuteArgument given, Action<StreamWriter> when, EventHandler<ReplaceNoteEventArgs> then) {
-            // This test same as ParsePluginParseNoteTest
-            // In future, replace to this test
-            // This test covers more 
-
+        public void ExecuteTest(ExecuteArgument given, Action<StreamWriter> when, Action<ReplaceNoteEventArgs> then, Action<PluginErrorEventArgs> error) {
             // When
-            var runner = new PluginRunner(PathManager.Inst);
-            var action = new Action(() => {
+            var action = new Action<PluginRunner>((runner) => {
                 runner.Execute(given.Project, given.Part, given.First, given.Last, new PluginStub(when));
             });
 
             // Then (Assert in ClassData)
-            runner.OnReplaceNote += then;
-            action();
+            action(new PluginRunner(PathManager.Inst, then, error));
         }
 
         [Fact]
         public void ExecuteErrorTest() {
             // Given
-            var project = new UProject();
-            project.tracks.Add(new UTrack {
-                TrackNo = 0,
-            });
-            var part = new UVoicePart() {
-                trackNo = 0,
-                position = 0,
-            };
-            project.parts.Add(part);
-
-            var first = UNote.Create();
-            first.lyric = "ka";
-            first.duration = 20;
-
-            var last = UNote.Create();
-            last.lyric = "na";
-            last.duration = 50;
-
-            part.notes.Add(first);
-            part.notes.Add(last);
+            var given = ExecuteTestData.BasicUProject();
 
             // When
-            var runner = new PluginRunner(PathManager.Inst);
-            var action = new Action(() => {
-                runner.Execute(project, part, first, last, new PluginStub((writer) => {
-                    // return empty text
+            var action = new Action<PluginRunner>((runner) => {
+                runner.Execute(given.Project, given.Part, given.First, given.Last, new PluginStub((writer) => {
+                    // return empty text (invoke error)
                 }));
             });
 
             // Then
-            runner.OnReplaceNote += ((sender, args) => {
+            var then = new Action<ReplaceNoteEventArgs>(( args) => {
                 Assert.Fail("");
             });
-            runner.OnError += ((sender, args) => {
+            var error = new Action<PluginErrorEventArgs> ((args) => {
                 Assert.True(true);
             });
-            action();
+            action(new PluginRunner(PathManager.Inst, then,error));
         }
     }
 
-
-    public class PluginStub : IPlugin {
+     class PluginStub : IPlugin {
         public PluginStub(Action<StreamWriter> action) {
             this.action = action;
         }
@@ -195,14 +175,6 @@ namespace OpenUtau.Classic {
             Part = part;
             First = first;
             Last = last;
-        }
-    }
-
-    public class ErrorPluginStub : IPlugin {
-        public string Encoding => "shift_jis";
-
-        public void Run(string tempFile) {
-            throw new Exception("test");
         }
     }
 }

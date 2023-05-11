@@ -123,16 +123,7 @@ namespace OpenUtau.App.ViewModels {
                     first = NotesViewModel.Selection.FirstOrDefault();
                     last = NotesViewModel.Selection.LastOrDefault();
                 }
-                var runner = new PluginRunner(PathManager.Inst);
-                runner.OnReplaceNote += ((sender, args) => {
-                    DocManager.Inst.StartUndoGroup();
-                    DocManager.Inst.ExecuteCmd(new RemoveNoteCommand(part, args.ToRemove));
-                    DocManager.Inst.ExecuteCmd(new AddNoteCommand(part, args.ToAdd));
-                    DocManager.Inst.EndUndoGroup();
-                });
-                runner.OnError += ((sender, args) => {
-                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(args.Message, args.Exception));
-                });
+                var runner = PluginRunner.from(PathManager.Inst, DocManager.Inst);
                 runner.Execute(NotesViewModel.Project, part, first, last, plugin);
             });
             LegacyPlugins.AddRange(DocManager.Inst.Plugins.Select(plugin => new MenuItemViewModel() {

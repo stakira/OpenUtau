@@ -9,12 +9,39 @@ using Serilog;
 
 namespace OpenUtau.Classic {
     public class PluginRunner {
-        public event EventHandler<ReplaceNoteEventArgs>? OnReplaceNote;
-        public event EventHandler<PluginErrorEventArgs>? OnError;
-        private readonly PathManager manager;
+        private readonly Action<ReplaceNoteEventArgs> OnReplaceNote;
+        private readonly Action<PluginErrorEventArgs> OnError;
+        private readonly PathManager PathManager;
 
-        public PluginRunner(PathManager manager) {
-            this.manager = manager;
+        public static PluginRunner from(PathManager pathManager, DocManager docManager) {
+            return new PluginRunner(pathManager, ReplaceNoteMethod(docManager), ShowErrorMessageMEthod(docManager));
+        }
+
+        private static Action<ReplaceNoteEventArgs> ReplaceNoteMethod(DocManager docManager) {
+            return new Action<ReplaceNoteEventArgs>((args) => {
+                docManager.StartUndoGroup();
+                docManager.ExecuteCmd(new RemoveNoteCommand(args.Part, args.ToRemove));
+                docManager.ExecuteCmd(new AddNoteCommand(args.Part, args.ToAdd));
+                docManager.EndUndoGroup();
+            });
+        }
+
+        private static Action<PluginErrorEventArgs> ShowErrorMessageMEthod(DocManager docManager) {
+            return new Action<PluginErrorEventArgs>((args) => {
+                docManager.ExecuteCmd(new ErrorMessageNotification(args.Message, args.Exception));
+            });
+        }
+
+        /// <summary>
+        /// for test
+        /// </summary>
+        /// <param name="pathManager"></param>
+        /// <param name="onReplaceNote"></param>
+        /// <param name="onError"></param>
+        public PluginRunner(PathManager pathManager, Action<ReplaceNoteEventArgs> onReplaceNote, Action<PluginErrorEventArgs> onError) {
+            PathManager = pathManager;
+            OnReplaceNote = onReplaceNote;
+            OnError = onError;
         }
 
         public void Execute(UProject project, UVoicePart part, UNote? first, UNote? last, IPlugin plugin) {
@@ -22,7 +49,7 @@ namespace OpenUtau.Classic {
                 return;
             }
             try {
-                var tempFile = Path.Combine(manager.CachePath, "temp.tmp");
+                var tempFile = Path.Combine(PathManager.CachePath, "temp.tmp");
                 var sequence = Ust.WritePlugin(project, part, first, last, tempFile, encoding: plugin.Encoding);
                 byte[]? beforeHash = HashFile(tempFile);
                 plugin.Run(tempFile);
@@ -33,11 +60,12 @@ namespace OpenUtau.Classic {
                 }
                 Log.Information("Legacy plugin temp file has changed.");
                 var (toRemove, toAdd) = Ust.ParsePlugin(project, part, first, last, sequence, tempFile, encoding: plugin.Encoding);
-                OnReplaceNote?.Invoke(this, new ReplaceNoteEventArgs(toRemove, toAdd));
+                OnReplaceNote(new ReplaceNoteEventArgs(part, toRemove, toAdd));
             } catch (Exception e) {
-                OnError?.Invoke(this, new PluginErrorEventArgs("Failed to execute plugin", e));
+                OnError(new PluginErrorEventArgs("Failed to execute plugin", e));
             }
         }
+
 
         private byte[]? HashFile(string filePath) {
             using (var md5 = MD5.Create()) {
@@ -48,10 +76,12 @@ namespace OpenUtau.Classic {
         }
 
         public class ReplaceNoteEventArgs : EventArgs {
+            public readonly UVoicePart Part;
             public readonly List<UNote> ToRemove;
             public readonly List<UNote> ToAdd;
 
-            public ReplaceNoteEventArgs(List<UNote> toRemove, List<UNote> toAdd) {
+            public ReplaceNoteEventArgs(UVoicePart part, List<UNote> toRemove, List<UNote> toAdd) {
+                Part = part;
                 ToRemove = toRemove;
                 ToAdd = toAdd;
             }
