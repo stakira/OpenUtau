@@ -283,7 +283,7 @@ namespace OpenUtau.Plugin.Builtin {
                 if (otos.Any(oto => oto.Color == color)) {
                     oto = otos.Find(oto => oto.Color == color);
                 } else {
-                    return false; // oto = otos[0];
+                    return false;
                 }
                 return true;
             }
