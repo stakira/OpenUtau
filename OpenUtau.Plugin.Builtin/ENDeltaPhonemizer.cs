@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using OpenUtau.Api;
 using OpenUtau.Core.G2p;
+using OpenUtau.Core.Util;
 using Serilog;
 
 namespace OpenUtau.Plugin.Builtin {
@@ -74,7 +75,7 @@ namespace OpenUtau.Plugin.Builtin {
             foreach (string s in original) {
                 if (diphthongs.Contains(s) && !HasOto($"{s} {s}", note.tone)) {
                     modified.AddRange(new string[] { s[0].ToString(), s[1].ToString() });
-                } else if (affricates.Contains(s) && !HasOto($"A {s}", note.tone)) {
+                } else if (affricates.Contains(s) && !HasOto($"i {s}", note.tone)) {
                     modified.AddRange(new string[] { s[0].ToString(), s[1].ToString() });
                 } else {
                     modified.Add(s);
@@ -602,8 +603,8 @@ namespace OpenUtau.Plugin.Builtin {
             foreach (var CC in new[] { "N k", "N g", "N k-", "N g-" }) {
                 alias = alias.Replace("N", "n");
             }
-            foreach (var ccr in new[] { $"r {consonants}-" }) {
-                alias = alias.Replace(ccr, $"3 {consonants}-");
+            foreach (var consonant in new[] { "r" }) {
+                alias = alias.Replace(consonant, "3");
             }
             foreach (var CV in new[] { "3O" }) {
                 alias = alias.Replace(CV, "rO");
