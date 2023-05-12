@@ -265,11 +265,6 @@ namespace OpenUtau.Plugin.Builtin {
                             break;
                         } else if (HasOto(vc, syllable.tone)) {
                             phonemes.Add(vc);
-                            if (!HasOto(vc, syllable.tone)) {
-                                vc = ValidateAlias(vc);
-                                phonemes.Add(vc);
-                                break;
-                            }
                             break;
                         } else if (!HasOto(vc, syllable.tone) && HasOto(ValidateAlias(vc), syllable.tone)) {
                             vc = ValidateAlias(vc);
@@ -417,29 +412,25 @@ namespace OpenUtau.Plugin.Builtin {
                 var vc = $"{v} {cc[0]}";
                 if (HasOto(vcc1, ending.tone)) {
                     phonemes.Add(vcc1);
-                    if (!HasOto(vcc1, ending.tone)) {
-                        vcc1 = ValidateAlias(vcc1);
-                        phonemes.Add(vcc1);
-                    }
+                } else if (!HasOto(vcc1, ending.tone) && HasOto(ValidateAlias(vcc1), ending.tone)) {
+                    vcc1 = ValidateAlias(vcc1);
+                    phonemes.Add(vcc1);
                 } else if (HasOto(vcc2, ending.tone)) {
                     phonemes.Add(vcc2);
-                    if (!HasOto(vcc2, ending.tone)) {
-                        vcc2 = ValidateAlias(vcc2);
-                        phonemes.Add(vcc2);
-                    }
+                } else if (!HasOto(vcc2, ending.tone) && HasOto(ValidateAlias(vcc2), ending.tone)) {
+                    vcc2 = ValidateAlias(vcc2);
+                    phonemes.Add(vcc2);
                 } else if (HasOto(vcc3, ending.tone)) {
                     phonemes.Add(vcc3);
-                    if (!HasOto(vcc3, ending.tone)) {
-                        vcc3 = ValidateAlias(vcc3);
-                        phonemes.Add(vcc3);
-                    }
+                } else if (!HasOto(vcc3, ending.tone) && HasOto(ValidateAlias(vcc3), ending.tone)) {
+                    vcc3 = ValidateAlias(vcc3);
+                    phonemes.Add(vcc3);
                 } else {
                     if (HasOto(vcc4, ending.tone)) {
                         phonemes.Add(vcc4);
-                        if (!HasOto(vcc4, ending.tone)) {
-                            vcc4 = ValidateAlias(vcc4);
-                            phonemes.Add(vcc4);
-                        }
+                    } else if (!HasOto(vcc4, ending.tone) && HasOto(ValidateAlias(vcc4), ending.tone)) {
+                        vcc4 = ValidateAlias(vcc4);
+                        phonemes.Add(vcc4);
                     } else if (HasOto(vc, ending.tone)) {
                         phonemes.Add(vc);
                     } else {
