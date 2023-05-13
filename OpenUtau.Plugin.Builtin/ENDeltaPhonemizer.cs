@@ -288,6 +288,12 @@ namespace OpenUtau.Plugin.Builtin {
                     if (!HasOto(cc1, syllable.tone)) {
                         cc1 = ValidateAlias(cc1);
                     }
+                    if (!HasOto(cc1, syllable.tone)) {
+                        cc1 = $"{cc[i]} {cc[i + 1]}-";
+                    }
+                    if (!HasOto(cc1, syllable.tone)) {
+                        cc1 = ValidateAlias(cc1);
+                    }
                     if (HasOto(ccv, syllable.vowelTone)) {
                         basePhoneme = ccv;
                         if (!HasOto(ccv, syllable.vowelTone)) {
@@ -355,17 +361,12 @@ namespace OpenUtau.Plugin.Builtin {
                         } else if (affricates.Contains(cc[i])) {
                             // like [V C1] [C1] [C2 ..]
                             TryAddPhoneme(phonemes, syllable.tone, cc[i], $"{cc[i]} -");
-                        } else if (!HasOto(cc2, syllable.tone) && !HasOto(ValidateAlias(cc2), syllable.tone) && !HasOto(cc2, syllable.tone) && !HasOto(ValidateAlias(cc2), syllable.tone)) {
-                            TryAddPhoneme(phonemes, syllable.tone, cc[i + 1], ValidateAlias(cc[i + 1]), $"{cc[i + 1]} -", ValidateAlias($"{cc[i + 1]} -"));
-                            i++;
                         }
                     } else {
                         // like [V C1] [C1 C2]  [C2 ..] or like [V C1] [C1 -] [C3 ..]
                         TryAddPhoneme(phonemes, syllable.tone, cc1);
                         if (affricates.Contains(cc[i]) && !HasOto(cc1, syllable.tone)) {
                             TryAddPhoneme(phonemes, syllable.tone, cc[i], $"{cc[i]} -");
-                        } else if (!HasOto(cc1, syllable.tone) && !HasOto(ValidateAlias(cc1), syllable.tone)) {
-                            TryAddPhoneme(phonemes, syllable.tone, cc[i], ValidateAlias(cc[i]), $"{cc[i]} -", ValidateAlias($"{cc[i]} -"));
                         }
                     }
                 }
@@ -545,6 +546,9 @@ namespace OpenUtau.Plugin.Builtin {
         }
 
         protected override string ValidateAlias(string alias) {
+            foreach (var vowel in new[] { "A" }) {
+                alias = alias.Replace(vowel, "Q");
+            }
             foreach (var consonant in new[] { "b" }) {
                 foreach (var vowel in new[] { "V" } ) {
                     alias = alias.Replace(consonant + vowel, consonant + "A");
@@ -567,9 +571,6 @@ namespace OpenUtau.Plugin.Builtin {
             }
             foreach (var vowel in new[] { "O" }) {
                 alias = alias.Replace(vowel, "O:");
-            }
-            foreach (var vowel in new[] { "A" }) {
-                alias = alias.Replace(vowel, "Q");
             }
             foreach (var vowel in new[] { "i" }) {
                 alias = alias.Replace(vowel, "i:");
@@ -621,6 +622,15 @@ namespace OpenUtau.Plugin.Builtin {
             }
             foreach (var vowel in new[] { "V" }) {
                 alias = alias.Replace(vowel, "A");
+            }
+            foreach (var CC in new[] { "T " }) {
+                alias = alias.Replace(CC, "f ");
+            }
+            foreach (var CC in new[] { " T" }) {
+                alias = alias.Replace(CC, " s");
+            }
+            foreach (var CC in new[] { " n-" }) {
+                alias = alias.Replace(CC, " m-");
             }
             return alias;
         }
