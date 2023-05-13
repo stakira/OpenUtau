@@ -635,6 +635,9 @@ namespace OpenUtau.Plugin.Builtin {
             foreach (var CC in new[] { " D" }) {
                 alias = alias.Replace(CC, " z");
             }
+            foreach (var CC in new[] { "Z d" }) {
+                alias = alias.Replace(CC, "S t");
+            }
             foreach (var CC in new[] { " n-" }) {
                 alias = alias.Replace(CC, " m-");
             }
