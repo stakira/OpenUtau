@@ -614,11 +614,8 @@ namespace OpenUtau.Plugin.Builtin {
             foreach (var CC in new[] { "N k", "N g", "N k-", "N g-" }) {
                 alias = alias.Replace("N", "n");
             }
-            foreach (var consonant in new[] { "r" }) {
-                alias = alias.Replace(consonant, "3");
-            }
-            foreach (var CV in new[] { "3O" }) {
-                alias = alias.Replace(CV, "rO");
+            foreach (var consonant in new[] { "r " }) {
+                alias = alias.Replace(consonant, "3 ");
             }
             foreach (var vowel in new[] { "V" }) {
                 alias = alias.Replace(vowel, "A");
@@ -628,6 +625,15 @@ namespace OpenUtau.Plugin.Builtin {
             }
             foreach (var CC in new[] { " T" }) {
                 alias = alias.Replace(CC, " s");
+            }
+            foreach (var CC in new[] { "D d" }) {
+                alias = alias.Replace(CC, "z d");
+            }
+            foreach (var CC in new[] { "D " }) {
+                alias = alias.Replace(CC, "d ");
+            }
+            foreach (var CC in new[] { " D" }) {
+                alias = alias.Replace(CC, " z");
             }
             foreach (var CC in new[] { " n-" }) {
                 alias = alias.Replace(CC, " m-");
