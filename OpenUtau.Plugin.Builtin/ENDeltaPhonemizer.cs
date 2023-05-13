@@ -225,6 +225,7 @@ namespace OpenUtau.Plugin.Builtin {
                     for (var i = lastC + 1; i >= 0; i--) {
                         var vr = $"{prevV} -";
                         var vcc = $"{prevV} {string.Join("", cc.Take(i))}";
+                        var vcc2 = $"{prevV}{string.Join(" ", cc.Take(i))}";
                         var vc = $"{prevV} {cc[0]}";
                         if (i == 0) {
                             if (HasOto(vr, syllable.tone)) {
@@ -242,7 +243,16 @@ namespace OpenUtau.Plugin.Builtin {
                             phonemes.Add(vcc);
                             firstC = i - 1;
                             break;
-                        } else if (HasOto(vc, syllable.tone)) {
+                        } else if (!HasOto(ValidateAlias(vcc), syllable.tone) && HasOto(vcc2, syllable.tone)) {
+                            phonemes.Add(vcc2);
+                            firstC = i - 1;
+                            break;
+                        } else if (!HasOto(vcc2, syllable.tone) && HasOto(ValidateAlias(vcc2), syllable.tone)) {
+                            vcc2 = ValidateAlias(vcc2);
+                            phonemes.Add(vcc2);
+                            firstC = i - 1;
+                            break;
+                        } else if (!HasOto(ValidateAlias(vcc), syllable.tone) && HasOto(vc, syllable.tone)) {
                             phonemes.Add(vc);
                             break;
                         } else if (!HasOto(vc, syllable.tone) && HasOto(ValidateAlias(vc), syllable.tone)) {
