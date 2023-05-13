@@ -222,7 +222,7 @@ namespace OpenUtau.Plugin.Builtin {
                         }
                     }
                     // try vcc
-                    for (var i = lastC + 1; i >= 0;) {
+                    for (var i = lastC + 1; i >= 0; i--) {
                         var vr = $"{prevV} -";
                         var vcc = $"{prevV} {string.Join("", cc.Take(i))}";
                         var vc = $"{prevV} {cc[0]}";
