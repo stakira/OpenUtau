@@ -7,6 +7,7 @@ using NAudio.Wave;
 using OpenUtau.Core;
 using OpenUtau.Core.Format;
 using OpenUtau.Core.Util;
+using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Classic {
@@ -75,6 +76,13 @@ namespace OpenUtau.Classic {
             }
             int mode = (7 << 6) | (5 << 3) | 5;
             chmod(FilePath, mode);
+        }
+
+        public bool SupportsFlag(string abbr) {
+            if(Manifest == null || !Manifest.expressionFilter){
+                return true;
+            }
+            return Manifest.expressions.ContainsKey(abbr);
         }
 
         public override string ToString() => _name;
