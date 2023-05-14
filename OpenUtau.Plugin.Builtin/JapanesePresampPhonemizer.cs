@@ -61,6 +61,9 @@ namespace OpenUtau.Plugin.Builtin {
                     currentLyric = pair.Value;
                 }
             }
+            if (!string.IsNullOrEmpty(note.phoneticHint)) {
+                currentLyric = note.phoneticHint;
+            }
             string currentAlias = presamp.ParseAlias(currentLyric)[1]; // exclude useless characters
             var vcvpad = presamp.AliasRules.VCVPAD;
             var vcpad = presamp.AliasRules.VCPAD;
