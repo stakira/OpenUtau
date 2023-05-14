@@ -9,12 +9,13 @@
   <Grid Margin="10" RowDefinitions="auto,10,Auto,10,Auto,10,*,10,Auto">
     <StackPanel Orientation="Horizontal" Grid.Row="0">
       <TextBlock Text="{StaticResource lyricsreplace.before}" />
-      <TextBox Text="{Binding OldValue}" MinWidth="100" Margin="10,0"/>
+      <TextBox Text="{Binding OldValue}" MinWidth="200" Margin="10,0"
+               Watermark="{StaticResource lyricsreplace.regex}"/>
     </StackPanel>
 
     <StackPanel Orientation="Horizontal" Grid.Row="2">
       <TextBlock Text="{StaticResource lyricsreplace.after}" />
-      <TextBox Text="{Binding NewValue}" MinWidth="100" Margin="10,0" />
+      <TextBox Text="{Binding NewValue}" MinWidth="200" Margin="10,0" />
     </StackPanel>
 
     <StackPanel Grid.Row="4">

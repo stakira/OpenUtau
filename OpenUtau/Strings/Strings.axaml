@@ -74,6 +74,7 @@
   <system:String x:Key="lyricsreplace.before">Before replacement :</system:String>
   <system:String x:Key="lyricsreplace.presets">Presets</system:String>
   <system:String x:Key="lyricsreplace.preview">Preview</system:String>
+  <system:String x:Key="lyricsreplace.regex">Regular expressions can be used</system:String>
   <system:String x:Key="lyricsreplace.replace">General lyrics replacement</system:String>
   <system:String x:Key="lyricsreplace.preset.rmvalphabet">Remove alphabet</system:String>
   <system:String x:Key="lyricsreplace.preset.rmvnonhiragana">Remove non-hiragana</system:String>
