@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -28,6 +28,7 @@ namespace OpenUtau.App.ViewModels {
         public IReadOnlyList<MenuItemViewModel>? RenderersMenuItems { get; set; }
         public ReactiveCommand<string, Unit> SelectRendererCommand { get; }
         [Reactive] public double Volume { get; set; }
+        [Reactive] public double Pan { get; set; }
         [Reactive] public bool Mute { get; set; }
         [Reactive] public bool Solo { get; set; }
         [Reactive] public Bitmap? Avatar { get; set; }
@@ -124,12 +125,18 @@ namespace OpenUtau.App.ViewModels {
             });
 
             Volume = track.Volume;
+            Pan = track.Pan;
             Mute = track.Mute;
             Solo = track.Solo;
             this.WhenAnyValue(x => x.Volume)
                 .Subscribe(volume => {
                     track.Volume = volume;
                     DocManager.Inst.ExecuteCmd(new VolumeChangeNotification(track.TrackNo, Mute ? -24 : volume));
+                });
+            this.WhenAnyValue(x => x.Pan)
+                .Subscribe(pan => {
+                    track.Pan = pan;
+                    DocManager.Inst.ExecuteCmd(new PanChangeNotification(track.TrackNo, pan));
                 });
             this.WhenAnyValue(x => x.Mute)
                 .Subscribe(mute => {
@@ -257,6 +264,7 @@ namespace OpenUtau.App.ViewModels {
             this.RaisePropertyChanged(nameof(Mute));
             this.RaisePropertyChanged(nameof(Solo));
             this.RaisePropertyChanged(nameof(Volume));
+            this.RaisePropertyChanged(nameof(Pan));
             RefreshAvatar();
         }
 

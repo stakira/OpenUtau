@@ -6,6 +6,7 @@ using System.Reactive;
 using System.Security.Cryptography;
 using Avalonia.Threading;
 using DynamicData.Binding;
+using OpenUtau.Classic;
 using OpenUtau.Core;
 using OpenUtau.Core.Editing;
 using OpenUtau.Core.Ustx;
@@ -112,36 +113,18 @@ namespace OpenUtau.App.ViewModels {
                 if (NotesViewModel.Part == null || NotesViewModel.Part.notes.Count == 0) {
                     return;
                 }
-                try {
-                    var project = NotesViewModel.Project;
-                    var part = NotesViewModel.Part;
-                    var tempFile = Path.Combine(PathManager.Inst.CachePath, "temp.tmp");
-                    UNote? first = null;
-                    UNote? last = null;
-                    if (NotesViewModel.Selection.IsEmpty) {
-                        first = part.notes.First();
-                        last = part.notes.Last();
-                    } else {
-                        first = NotesViewModel.Selection.FirstOrDefault();
-                        last = NotesViewModel.Selection.LastOrDefault();
-                    }
-                    var sequence = Classic.Ust.WritePlugin(project, part, first, last, tempFile, encoding: plugin.Encoding);
-                    byte[]? beforeHash = HashFile(tempFile);
-                    plugin.Run(tempFile);
-                    byte[]? afterHash = HashFile(tempFile);
-                    if (beforeHash == null || afterHash == null || Enumerable.SequenceEqual(beforeHash, afterHash)) {
-                        Log.Information("Legacy plugin temp file has not changed.");
-                        return;
-                    }
-                    Log.Information("Legacy plugin temp file has changed.");
-                    var (toRemove, toAdd) = Classic.Ust.ParsePlugin(project, part, first, last, sequence, tempFile, encoding: plugin.Encoding);
-                    DocManager.Inst.StartUndoGroup();
-                    DocManager.Inst.ExecuteCmd(new RemoveNoteCommand(part, toRemove));
-                    DocManager.Inst.ExecuteCmd(new AddNoteCommand(part, toAdd));
-                    DocManager.Inst.EndUndoGroup();
-                } catch (Exception e) {
-                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to execute plugin", e));
+                var part = NotesViewModel.Part;
+                UNote? first;
+                UNote? last;
+                if (NotesViewModel.Selection.IsEmpty) {
+                    first = part.notes.First();
+                    last = part.notes.Last();
+                } else {
+                    first = NotesViewModel.Selection.FirstOrDefault();
+                    last = NotesViewModel.Selection.LastOrDefault();
                 }
+                var runner = PluginRunner.from(PathManager.Inst, DocManager.Inst);
+                runner.Execute(NotesViewModel.Project, part, first, last, plugin);
             });
             LegacyPlugins.AddRange(DocManager.Inst.Plugins.Select(plugin => new MenuItemViewModel() {
                 Header = plugin.Name,
@@ -180,6 +163,7 @@ namespace OpenUtau.App.ViewModels {
                 new JapaneseVCVtoCV(),
                 new RemoveToneSuffix(),
                 new RemoveLetterSuffix(),
+                new MoveSuffixToVoiceColor(),
                 new RemovePhoneticHint(),
                 new DashToPlus(),
             }.Select(edit => new MenuItemViewModel() {

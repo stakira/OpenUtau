@@ -148,7 +148,7 @@
               <ComboBoxItem Content="OpenUtau"/>
               <ComboBoxItem Content="vLabeler"/>
             </ComboBox>
-            <TextBlock Text="vLabeler Path" />
+            <TextBlock Text="{DynamicResource prefs.advanced.vlabelerpath}" />
             <TextBlock HorizontalAlignment="Stretch" Margin="4"
                        TextWrapping="Wrap" FontSize="11" Text="{Binding VLabelerPath}"/>
             <Grid HorizontalAlignment="Stretch" ColumnDefinitions="*,10,*">

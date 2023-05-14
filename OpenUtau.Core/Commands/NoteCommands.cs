@@ -462,4 +462,77 @@ namespace OpenUtau.Core {
         }
         public override string ToString() => "Change phoneme alias";
     }
+
+    public class ChangeVoiceColorCommand : NoteCommand {
+        readonly int[] NewColors;
+        readonly int[] OldColors;
+        readonly UTrack Track;
+        public ChangeVoiceColorCommand(UVoicePart part, UNote note, int newColor, UTrack track) : base(part, note) {
+            NewColors = new int[] { newColor };
+            if (note.phonemeExpressions.Any(exp => exp.descriptor?.abbr == Format.Ustx.CLR && exp.index == 0)) {
+                OldColors = new int[] { (int)note.phonemeExpressions.FirstOrDefault(exp => exp.descriptor?.abbr == Format.Ustx.CLR && exp.index == 0).value };
+            } else {
+                OldColors = new int[] { 0 };
+            }
+            Track = track;
+        }
+        public ChangeVoiceColorCommand(UVoicePart part, UNote[] notes, int[] newColors, UTrack track) : base(part, notes) {
+            if (notes.Length != newColors.Length) {
+                throw new ArgumentException($"notes count {notes.Length} and colors count {newColors.Length} does not match.");
+            }
+            NewColors = newColors;
+            OldColors = notes.Select(note => {
+                if(note.phonemeExpressions.Any(exp => exp.descriptor?.abbr == Format.Ustx.CLR && exp.index == 0)){
+                    return (int)note.phonemeExpressions.FirstOrDefault(exp => exp.descriptor?.abbr == Format.Ustx.CLR && exp.index == 0).value;
+                } else {
+                    return 0;
+                }
+            }).ToArray();
+            Track = track;
+        }
+        public override string ToString() => "Change notes color";
+
+        public override void Execute() {
+            lock (Part) {
+                if (Track.VoiceColorExp != null) {
+                    for (var i = 0; i < Notes.Length; i++) {
+                        var note = Notes[i];
+                        var exp = note.phonemeExpressions.FirstOrDefault(exp => exp.descriptor?.abbr == Format.Ustx.CLR && exp.index == 0);
+
+                        if (exp != null) {
+                            exp.descriptor = Track.VoiceColorExp;
+                            exp.value = NewColors[i];
+                        } else {
+                            note.phonemeExpressions.Add(new UExpression(Track.VoiceColorExp) {
+                                descriptor = Track.VoiceColorExp,
+                                index = 0,
+                                value = NewColors[i]
+                            });
+                        }
+                    }
+                }
+            }
+        }
+        public override void Unexecute() {
+            lock (Part) {
+                if (Track.VoiceColorExp != null) {
+                    for (var i = 0; i < Notes.Length; i++) {
+                        var note = Notes[i];
+                        var exp = note.phonemeExpressions.FirstOrDefault(exp => exp.descriptor?.abbr == Format.Ustx.CLR && exp.index == 0);
+
+                        if (exp != null) {
+                            exp.descriptor = Track.VoiceColorExp;
+                            exp.value = OldColors[i];
+                        } else {
+                            note.phonemeExpressions.Add(new UExpression(Track.VoiceColorExp) {
+                                descriptor = Track.VoiceColorExp,
+                                index = 0,
+                                value = OldColors[i]
+                            });
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

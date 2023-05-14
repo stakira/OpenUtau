@@ -103,7 +103,7 @@ namespace OpenUtau.Core.Util {
             public bool PreferPortAudio = false;
             public double PlayPosMarkerMargin = 0.9;
             public int LockStartTime = 0;
-            public int PlaybackAutoScroll = 1;
+            public int PlaybackAutoScroll = 2;
             public bool ReverseLogOrder = true;
             public bool ShowPortrait = true;
             public bool ShowGhostNotes = true;

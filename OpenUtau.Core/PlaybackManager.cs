@@ -207,6 +207,11 @@ namespace OpenUtau.Core {
                 if (faders != null && faders.Count > _cmd.TrackNo) {
                     faders[_cmd.TrackNo].Scale = DecibelToVolume(_cmd.Volume);
                 }
+            } else if (cmd is PanChangeNotification) {
+                var _cmd = cmd as PanChangeNotification;
+                if (faders != null && faders.Count > _cmd.TrackNo) {
+                    faders[_cmd.TrackNo].Pan = (float)_cmd.Pan;
+                }
             } else if (cmd is LoadProjectNotification) {
                 StopPlayback();
                 DocManager.Inst.ExecuteCmd(new SetPlayPosTickNotification(0));

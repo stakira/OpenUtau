@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using OpenUtau.Api;
+using OpenUtau.Core.G2p;
 using System.Linq;
 using Serilog;
 
@@ -26,6 +27,8 @@ namespace OpenUtau.Plugin.Builtin {
         protected override string[] GetVowels() => vowels;
         protected override string[] GetConsonants() => consonants;
         protected override string GetDictionaryName() => "cmudict_es.txt";
+        protected override IG2p LoadBaseDictionary() => new SpanishG2p();
+
         protected override Dictionary<string, string> GetDictionaryPhonemesReplacement() => dictionaryReplacements;
 
         protected override List<string> ProcessSyllable(Syllable syllable)

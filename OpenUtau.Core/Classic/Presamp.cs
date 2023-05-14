@@ -29,16 +29,16 @@ namespace Classic {
         public bool MustVC { get; set; } = false;
         public string CFlags { get; set; } = "p0";
         public bool VCLengthFromCV { get; set; } = true;
-        public int AddEnding { get; set; } = 0;
+        /**  
+            <summary>
+                0: not 1: add ending note 2: convert last note
+            </summary>
+        */
+        public int AddEnding { get; set; } = 1;
 
         public Dictionary<string, PresampPhoneme> PhonemeList { get; set; } = new Dictionary<string, PresampPhoneme>();
 
-        /**  
-            <summary>
-                Load presamp.ini. If not, return default presamp.
-            </summary>
-        */
-        public Presamp(string dirPath, Encoding textFileEncoding) {
+        public Presamp() {
             SetVowels(defVowels);
             SetConsonants(defConsonants);
             Replace = defReplace;
@@ -46,38 +46,10 @@ namespace Classic {
             Appends = defAppends;
             Pitches = defPitches;
 
-            ReadPresampIni(dirPath, textFileEncoding);
-        }
-        /**  
-            <summary>
-                To create a Presamp instance as a template for each phonemizer and load the presamp.ini of the voice bank as an addition
-            </summary>
-        */
-        public Presamp(Presamp defPresamp, string dirPath, Encoding textFileEncoding) {
-            this.Vowels = defPresamp.Vowels;
-            this.Consonants = defPresamp.Consonants;
-            this.Priorities = defPresamp.Priorities;
-            this.Replace = defPresamp.Replace;
-            this.AliasRules = defPresamp.AliasRules;
-            this.Prefixs = defPresamp.Prefixs;
-            this.SuffixOrder = defPresamp.SuffixOrder;
-            this.Nums = defPresamp.Nums;
-            this.Appends = defPresamp.Appends;
-            this.Pitches= defPresamp.Pitches;
-            this.AliasPriorityDefault = defPresamp.AliasPriorityDefault;
-            this.AliasPriorityDifAppend = defPresamp.AliasPriorityDifAppend;
-            this.AliasPriorityDifPitch = defPresamp.AliasPriorityDifPitch;
-            this.Split = defPresamp.Split;
-            this.MustVC = defPresamp.MustVC;
-            this.CFlags = defPresamp.CFlags;
-            this.VCLengthFromCV = defPresamp.VCLengthFromCV;
-            this.AddEnding = defPresamp.AddEnding;
-            this.PhonemeList = defPresamp.PhonemeList;
-
-            ReadPresampIni(dirPath, textFileEncoding);
+            MakePhonemeList();
         }
 
-        private void ReadPresampIni(string dirPath, Encoding textFileEncoding) {
+        public void ReadPresampIni(string dirPath, Encoding textFileEncoding) {
             try {
                 string iniPath = Path.Combine(dirPath, "presamp.ini");
                 if (!File.Exists(iniPath)) {
@@ -269,7 +241,10 @@ namespace Classic {
                 Log.Error(e, "failed to load presamp.ini");
             }
 
-            // PhonemeList
+            MakePhonemeList();
+        }
+
+        private void MakePhonemeList() {
             PhonemeList.Clear();
             foreach (PresampConsonant pc in Consonants.Values) {
                 if (!PhonemeList.ContainsKey(pc.Consonant)) {
@@ -304,7 +279,7 @@ namespace Classic {
                     }
                 }
             }
-            foreach (PresampPhoneme pp in PhonemeList.Values) { // 拗音の母音情報をゃゅょから取得する
+            foreach (PresampPhoneme pp in PhonemeList.Values) { // 拗音の母音情報をゃゅょから取得する Vowel completion
                 if (!pp.HasVowel) {
                     if (PhonemeList.TryGetValue(pp.Phoneme.Substring(pp.Phoneme.Length - 1), out PresampPhoneme vowel)) {
                         pp.Vowel = vowel.Vowel;
@@ -400,6 +375,9 @@ namespace Classic {
             }
             Vowels = dict;
         }
+        public void SetVowels(Dictionary<string, PresampVowel> dict) {
+            Vowels = dict;
+        }
         public void SetConsonants(List<string> list) {
             var dict = new Dictionary<string, PresampConsonant>();
             foreach (var line in list) {
@@ -418,6 +396,9 @@ namespace Classic {
                     dict.Add(consonant.Consonant, consonant);
                 }
             }
+            Consonants = dict;
+        }
+        public void SetConsonants(Dictionary<string, PresampConsonant> dict) {
             Consonants = dict;
         }
 
