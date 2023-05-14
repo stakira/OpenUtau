@@ -21,7 +21,7 @@ namespace OpenUtau.Classic {
         public string outputFile;
         public int tone;
 
-        public Tuple<string, int?>[] flags;
+        public Tuple<string, int?, string>[] flags;//flag, value, abbr
         public int velocity;
         public int volume;
         public int modulation;
@@ -49,7 +49,7 @@ namespace OpenUtau.Classic {
             inputTemp = VoicebankFiles.Inst.GetSourceTempPath(phrase.singer.Id, phone.oto, ".wav");
             tone = phone.tone;
 
-            flags = phone.flags;
+            flags = phone.flags.Where(flag=>resampler.SupportsFlag(flag.Item3)).ToArray();
             velocity = (int)(phone.velocity * 100);
             volume = (int)(phone.volume * 100);
             modulation = (int)(phone.modulation * 100);
