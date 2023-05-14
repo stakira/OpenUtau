@@ -91,7 +91,7 @@ namespace OpenUtau.Core.Ustx {
         public bool Mute { set; get; }
         public bool Solo { set; get; }
         public double Volume { set; get; }
-        [YamlIgnore] public double Pan { set; get; }
+        public double Pan { set; get; }
         [YamlIgnore] public UExpressionDescriptor VoiceColorExp { set; get; }
 
         public bool TryGetExpression(UProject project, string key, out UExpressionDescriptor descriptor) {

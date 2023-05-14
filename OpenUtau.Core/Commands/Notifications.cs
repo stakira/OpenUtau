@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core {
@@ -113,6 +113,16 @@ namespace OpenUtau.Core {
             Volume = volume;
         }
         public override string ToString() => $"Set track {TrackNo} volume to {Volume}";
+    }
+
+    public class PanChangeNotification : UNotification {
+        public double Pan;
+        public int TrackNo;
+        public PanChangeNotification(int trackNo, double pan) {
+            TrackNo = trackNo;
+            Pan = pan;
+        }
+        public override string ToString() => $"Set track {TrackNo} panning to {Pan}";
     }
 
     public class SoloTrackNotification : UNotification {
