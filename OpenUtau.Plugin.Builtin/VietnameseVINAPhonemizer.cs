@@ -25,7 +25,7 @@ namespace OpenUtau.Plugin.Builtin {
             "n=n,N",
             "ng=g,G",
             "nh=h,H",
-            "-=c,C,t,T,-,p,P,R,'",
+            "-=c,C,t,T,-,p,P,R,',1,2,3,4,5",
             ".=.",
         };
 
@@ -43,13 +43,6 @@ namespace OpenUtau.Plugin.Builtin {
         private USinger singer;
 
         public override void SetSinger(USinger singer) => this.singer = singer;
-        public struct Symbol {
-            public string Prefix;
-            public string Suffix;
-            public string Nasal;
-        }
-        private Dictionary<string, Symbol> symbols;
-        private Dictionary<string, string> toCyrillic;
         // Legacy mapping. Might adjust later to new mapping style.
         public override bool LegacyMapping => true;
 
@@ -58,7 +51,6 @@ namespace OpenUtau.Plugin.Builtin {
             if (!string.IsNullOrEmpty(note.phoneticHint)) {
                 return MakeSimpleResult(note.phoneticHint);
             }
-            List<Phoneme> phonemesArr = new List<Phoneme>();
             int totalDuration = notes.Sum(n => n.duration);
             int Short = 0;
             int Long = 0;
@@ -133,10 +125,10 @@ namespace OpenUtau.Plugin.Builtin {
                            || loi.Contains("uôn") || loi.Contains("uôN") || loi.Contains("uôm") || loi.Contains("uôt") || loi.Contains("uôk") || loi.Contains("uôi")
                            || loi.Contains("ươn") || loi.Contains("ươN") || loi.Contains("ươm") || loi.Contains("ươt") || loi.Contains("ươk") || loi.Contains("ươp") || loi.Contains("ươi") || loi.Contains("ươu");
             int x = prevNeighbour?.duration ?? default(int);
-            if (x < 160 && prevNeighbour != null) { VCP = - (x * 4 / 7); }
+            if (x < 160 && prevNeighbour != null) { VCP = - (x * 4 / 8); }
             else if (loi.StartsWith("b") || loi.StartsWith("d") || loi.StartsWith("g") || loi.StartsWith("d") || loi.StartsWith("k") || loi.StartsWith("l")
                 || loi.StartsWith("m") || loi.StartsWith("n") || loi.StartsWith("nh") || loi.StartsWith("ng") || loi.StartsWith("t") || loi.StartsWith("th")
-                 || loi.StartsWith("v") || loi.StartsWith("w") || loi.StartsWith("y")) VCP = -50;
+                 || loi.StartsWith("v") || loi.StartsWith("w") || loi.StartsWith("y")) VCP = -70;
             else VCP = -110;
             bool koVVCchia;
             if (tontaiVVC == true) {
@@ -904,11 +896,8 @@ namespace OpenUtau.Plugin.Builtin {
                         num = "1";
                     }
                     if (prevNeighbour == null) {
-                        return new Result {
-                            phonemes = new Phoneme[] {
-                            new Phoneme { phoneme = $"breath{num}"  },
-                        }
-                        };
+                        phonemes.Add(
+                            new Phoneme { phoneme = $"breath{num}" });
                     }
                 }
                 if (note.lyric.StartsWith("y") && koVVCchia) {
@@ -1324,22 +1313,24 @@ namespace OpenUtau.Plugin.Builtin {
                             new Phoneme { phoneme = $"{N}" });
                                         phonemes.Add(
                             new Phoneme { phoneme = $"{N2} -", position = End });
-                                    } else
+                                    } else {
                                         phonemes.Add(
                             new Phoneme { phoneme = $"{vow}{N1}", position = VCP });
-                                    phonemes.Add(
-                            new Phoneme { phoneme = $"{N}" });
-                                    phonemes.Add(
-                            new Phoneme { phoneme = $"{N2} -", position = End });
+                                        phonemes.Add(
+                                new Phoneme { phoneme = $"{N}" });
+                                        phonemes.Add(
+                                new Phoneme { phoneme = $"{N2} -", position = End });
+                                    }
                                 } else // co note ke tiep
                                     if (NoVCP) { // co - C
                                     phonemes.Add(
                             new Phoneme { phoneme = $"{N}" });
-                                } else // ko co gi
+                                } else {// ko co gi
                                     phonemes.Add(
                             new Phoneme { phoneme = $"{vow}{N1}", position = VCP });
-                                phonemes.Add(
-                            new Phoneme { phoneme = $"{N}" });
+                                    phonemes.Add(
+                                new Phoneme { phoneme = $"{N}" });
+                                }
                             }
                             // 3 âm CVV/CVC, ví dụ: "hoa" "hang" "hát"
                             if (fry) { } else
@@ -1419,13 +1410,14 @@ namespace OpenUtau.Plugin.Builtin {
                             new Phoneme { phoneme = $"{C}{V1}{V2_2}" });
                                             phonemes.Add(
                             new Phoneme { phoneme = $"{V2} -", position = End });
-                                        } else // bths
+                                        } else { // bths
                                             phonemes.Add(
                             new Phoneme { phoneme = $"{C}{V1}" });
-                                        phonemes.Add(
-                            new Phoneme { phoneme = $"{V1_1}{V2_2}", position = ViTri });
-                                        phonemes.Add(
-                            new Phoneme { phoneme = $"{N} -", position = End });
+                                            phonemes.Add(
+                                new Phoneme { phoneme = $"{V1_1}{V2_2}", position = ViTri });
+                                            phonemes.Add(
+                                new Phoneme { phoneme = $"{N} -", position = End });
+                                        }
                                     } else { // co note ke tiep
                                         if (VV_) {
                                             phonemes.Add(
@@ -1451,13 +1443,14 @@ namespace OpenUtau.Plugin.Builtin {
                             new Phoneme { phoneme = $"{C}{V1}" });
                                         phonemes.Add(
                             new Phoneme { phoneme = $"{V1_1}{V2_2}", position = ViTri });
-                                    } else // bths
+                                    } else { // bths
                                         phonemes.Add(
                             new Phoneme { phoneme = $"{vow}{Cw}", position = VCP });
-                                    phonemes.Add(
-                            new Phoneme { phoneme = $"{C}{V1}" });
-                                    phonemes.Add(
-                            new Phoneme { phoneme = $"{V1_1}{V2_2}", position = ViTri });
+                                        phonemes.Add(
+                                new Phoneme { phoneme = $"{C}{V1}" });
+                                        phonemes.Add(
+                                new Phoneme { phoneme = $"{V1_1}{V2_2}", position = ViTri });
+                                    }
                                 } else
                                 if (kAn) {
                                     if (NoNext) {
@@ -1515,15 +1508,16 @@ namespace OpenUtau.Plugin.Builtin {
                             new Phoneme { phoneme = $"{C}{V1}{V2_2}" });
                                         phonemes.Add(
                             new Phoneme { phoneme = $"{V2} -", position = End });
-                                    } else // bths
+                                    } else { // bths
                                         phonemes.Add(
                             new Phoneme { phoneme = $"{vow}{Cw}", position = VCP });
-                                    phonemes.Add(
-                            new Phoneme { phoneme = $"{C}{V1}" });
-                                    phonemes.Add(
-                            new Phoneme { phoneme = $"{V1_1}{V2_2}", position = ViTri });
-                                    phonemes.Add(
-                            new Phoneme { phoneme = $"{N} -", position = End });
+                                        phonemes.Add(
+                                new Phoneme { phoneme = $"{C}{V1}" });
+                                        phonemes.Add(
+                                new Phoneme { phoneme = $"{V1_1}{V2_2}", position = ViTri });
+                                        phonemes.Add(
+                                new Phoneme { phoneme = $"{N} -", position = End });
+                                    }
                                 } else { // co note ke tiep
                                     if (_C) { // co - C
                                         if (VV_) {
@@ -1770,13 +1764,14 @@ namespace OpenUtau.Plugin.Builtin {
                             new Phoneme { phoneme = $"A{N}", position = ViTri });
                                                 phonemes.Add(
                             new Phoneme { phoneme = $"{N_} -", position = End });
-                                            } else
+                                            } else {
                                                 phonemes.Add(
                             new Phoneme { phoneme = $"{vow}{Cw}", position = VCP });
-                                            phonemes.Add(
-                            new Phoneme { phoneme = $"{C}wA{N}" });
-                                            phonemes.Add(
-                            new Phoneme { phoneme = $"{N_} -", position = End });
+                                                phonemes.Add(
+                                new Phoneme { phoneme = $"{C}wA{N}" });
+                                                phonemes.Add(
+                                new Phoneme { phoneme = $"{N_} -", position = End });
+                                            }
                                         } else { //
                                             if (loi.StartsWith(".")) {
                                                 phonemes.Add(
@@ -2307,24 +2302,26 @@ namespace OpenUtau.Plugin.Builtin {
                             new Phoneme { phoneme = $"{vow}{V1}{V2}" });
                                                 phonemes.Add(
                             new Phoneme { phoneme = $"{V2_2}{N} -", position = End });
-                                            } else
+                                            } else {
                                                 phonemes.Add(
                             new Phoneme { phoneme = $"{vow}{V1}{V2}" });
-                                            phonemes.Add(
-                            new Phoneme { phoneme = $"{V2_2}{V3}", position = ViTri });
-                                            phonemes.Add(
-                            new Phoneme { phoneme = $"{N} -", position = End });
+                                                phonemes.Add(
+                                new Phoneme { phoneme = $"{V2_2}{V3}", position = ViTri });
+                                                phonemes.Add(
+                                new Phoneme { phoneme = $"{N} -", position = End });
+                                            }
                                         } else { // co note ke tiep
                                             if (VV_) {
                                                 phonemes.Add(
                             new Phoneme { phoneme = $"{vow}{V1}{V2}" });
                                                 phonemes.Add(
                             new Phoneme { phoneme = $"{V2_2}{V3}", position = ViTri });
-                                            } else
+                                            } else {
                                                 phonemes.Add(
                             new Phoneme { phoneme = $"{vow}{V1}{V2}" });
-                                            phonemes.Add(
-                            new Phoneme { phoneme = $"{V2_2}{V3}", position = ViTri });
+                                                phonemes.Add(
+                                new Phoneme { phoneme = $"{V2_2}{V3}", position = ViTri });
+                                            }
                                         }
                                     } else {
                                         if (NoNext) { // ko co note ke tiep
@@ -2404,17 +2401,14 @@ namespace OpenUtau.Plugin.Builtin {
                                     num = "1";
                                 }
                                 if (vow == "-") {
-                                    return new Result {
-                                        phonemes = new Phoneme[] {
-                            new Phoneme { phoneme = $"breath{num}"  },
-                                        }
-                                    };
-                                } else return new Result {
-                                    phonemes = new Phoneme[] {
-                            new Phoneme { phoneme = $"{vow} -", position = -60 },
-                            new Phoneme { phoneme = $"breath{num}"  },
-                                    }
-                                };
+                                    phonemes.Add(
+                            new Phoneme { phoneme = $"breath{num}" });
+                                } else {
+                                    phonemes.Add(
+                            new Phoneme { phoneme = $"{vow} -", position = -60 });
+                                    phonemes.Add(
+                            new Phoneme { phoneme = $"breath{num}" });
+                                }
                             }
                         }
                     }
