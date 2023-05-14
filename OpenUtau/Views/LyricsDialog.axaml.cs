@@ -1,4 +1,5 @@
-﻿using Avalonia;
+﻿using System;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -30,12 +31,13 @@ namespace OpenUtau.App.Views {
         }
 
         void OnCancel(object? sender, RoutedEventArgs e) {
+            (DataContext as LyricsViewModel)!.Cancel();
             KeyboardDevice.Instance.SetFocusedElement(null, NavigationMethod.Unspecified, KeyModifiers.None);
             Close();
         }
 
         void OnFinish(object? sender, RoutedEventArgs e) {
-            (DataContext as LyricsReplaceViewModel)!.Finish();
+            (DataContext as LyricsViewModel)!.Finish();
             KeyboardDevice.Instance.SetFocusedElement(null, NavigationMethod.Unspecified, KeyModifiers.None);
             Close();
         }
