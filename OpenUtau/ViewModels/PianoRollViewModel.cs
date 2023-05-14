@@ -163,6 +163,7 @@ namespace OpenUtau.App.ViewModels {
                 new JapaneseVCVtoCV(),
                 new RemoveToneSuffix(),
                 new RemoveLetterSuffix(),
+                new MoveSuffixToVoiceColor(),
                 new RemovePhoneticHint(),
                 new DashToPlus(),
             }.Select(edit => new MenuItemViewModel() {
