@@ -209,7 +209,7 @@ namespace OpenUtau.Plugin.Builtin {
                 var ccv = string.Join("", cc.Skip(i)) + v;
                 var ucv = $"_{cc.Last()}{v}";
                 var rccv = $"-{string.Join("", cc)}{v}";
-                if (!HasOto(rccv, syllable.vowelTone) && !HasOto(ValidateAlias(rccv), syllable.vowelTone)) {
+                if (!HasOto(rccv, syllable.vowelTone) && !HasOto(ValidateAlias(rccv), syllable.vowelTone) && !vowels.Contains(cc1)) {
                     if (!HasOto(cc1, syllable.tone)) {
                         cc1 = ValidateAlias(cc1);
                     }
@@ -238,8 +238,8 @@ namespace OpenUtau.Plugin.Builtin {
                             basePhoneme = ucv;
                         }
                     }
-                    if (i + 1 < lastC) {
-                        var cc2 = $"{string.Join("", cc.Skip(i))}";
+                    var cc2 = $"{string.Join("", cc.Skip(i))}";
+                    if (i + 1 < lastC && !vowels.Contains(cc2)) { 
                         if (!HasOto(cc2, syllable.tone)) {
                             cc2 = ValidateAlias(cc2);
                         }
