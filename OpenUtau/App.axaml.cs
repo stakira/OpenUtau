@@ -61,6 +61,8 @@ namespace OpenUtau.App {
                 Current.Resources.MergedDictionaries.Remove(resDict);
                 Current.Resources.MergedDictionaries.Add(resDict);
                 var langName = resDict.Source.OriginalString.Replace("/Strings/Strings", "").Replace(".", "").Replace("axaml", "");
+                if (langName == "") 
+                    langName = language;
                 if (Core.Util.Preferences.Default.Language != langName) {
                     Core.Util.Preferences.Default.Language = langName;
                     Core.Util.Preferences.Save();
