@@ -71,13 +71,11 @@ namespace OpenUtau.Plugin.Builtin {
                 toneShift = attr.toneShift;
                 alt = attr.alternate;
             }
-            if (singer.TryGetMappedOto(phoneme + alt, note.tone, toneShift + color, out var otoAlt)) {
+            if (singer.TryGetMappedOto(phoneme + alt, note.tone + toneShift, color, out var otoAlt)) {
                 phoneme = otoAlt.Alias;
-            } else if (singer.TryGetMappedOto(phoneme, note.tone, toneShift + color, out var oto)) {
+            } else if (singer.TryGetMappedOto(phoneme, note.tone + toneShift, color, out var oto)) {
                 phoneme = oto.Alias;
-            } else if (singer.TryGetMappedOto(note.lyric + alt, note.tone, toneShift + color, out oto)) {
-                phoneme = oto.Alias;
-            } else if (singer.TryGetMappedOto(note.lyric, note.tone, toneShift + color, out oto)) {
+            } else if (singer.TryGetMappedOto(note.lyric + alt, note.tone + toneShift, color, out oto)) {
                 phoneme = oto.Alias;
             } else {
                 phoneme = note.lyric;
