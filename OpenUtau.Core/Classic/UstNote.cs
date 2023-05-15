@@ -141,7 +141,7 @@ namespace OpenUtau.Classic {
             }
         }
 
-        string FlagsToString(Tuple<string, int?>[] flags) {
+        string FlagsToString(Tuple<string, int?, string>[] flags) {
             var builder = new StringBuilder();
             foreach (var flag in flags) {
                 builder.Append(flag.Item1);

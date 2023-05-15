@@ -220,6 +220,7 @@ namespace OpenUtau.Classic {
             }
             if (bankConfig.Subbanks != null && bankConfig.Subbanks.Length > 0) {
                 foreach (var subbank in bankConfig.Subbanks) {
+                    subbank.Color ??= string.Empty;
                     subbank.Prefix ??= string.Empty;
                     subbank.Suffix ??= string.Empty;
                 }
@@ -231,7 +232,7 @@ namespace OpenUtau.Classic {
             var dir = Path.GetDirectoryName(voicebank.File);
             var filePath = Path.Combine(dir, "prefix.map");
             if (File.Exists(filePath)) {
-                LoadMap(voicebank, filePath, "");
+                LoadMap(voicebank, filePath, string.Empty);
             }
 
             // Append.map for presamp

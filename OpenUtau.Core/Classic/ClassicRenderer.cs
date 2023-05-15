@@ -134,25 +134,13 @@ namespace OpenUtau.Classic {
         }
 
         public UExpressionDescriptor[] GetSuggestedExpressions(USinger singer, URenderSettings renderSettings) {
-            var resamplerPath = renderSettings.Resampler.FilePath;
-            if (resamplerPath == null) {
+            var manifest= renderSettings.Resampler.Manifest;
+            if (manifest == null) {
                 return new UExpressionDescriptor[] { };
             }
-            var resamplerManifestPath = Path.ChangeExtension(resamplerPath, ".yaml");
-            try {
-                return Yaml.DefaultDeserializer.Deserialize<ResamplerManifest>(
-                    File.ReadAllText(resamplerManifestPath, encoding:Encoding.UTF8)
-                    ).expressions.Values.ToArray();
-            } catch (Exception ex) {
-                Log.Error($"Failed loading suggested expressions from {resamplerManifestPath}: {ex}");
-            }
-            return new UExpressionDescriptor[] { };
+            return manifest.expressions.Values.ToArray();
         }
 
         public override string ToString() => Renderers.CLASSIC;
-    }
-
-    public class ResamplerManifest {
-        public Dictionary<string,UExpressionDescriptor> expressions = new Dictionary<string, UExpressionDescriptor> { };
     }
 }

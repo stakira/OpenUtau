@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -59,6 +60,11 @@ namespace OpenUtau.App {
             if (resDict != null) {
                 Current.Resources.MergedDictionaries.Remove(resDict);
                 Current.Resources.MergedDictionaries.Add(resDict);
+                var langName = resDict.Source.OriginalString.Replace("/Strings/Strings.", "").Replace(".axaml", "");
+                if (Core.Util.Preferences.Default.Language != langName) {
+                    Core.Util.Preferences.Default.Language = langName;
+                    Core.Util.Preferences.Save();
+                }
             }
         }
 

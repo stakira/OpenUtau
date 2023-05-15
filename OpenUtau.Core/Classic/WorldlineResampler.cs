@@ -3,6 +3,7 @@ using NAudio.Wave;
 using OpenUtau.Core;
 using OpenUtau.Core.Render;
 using OpenUtau.Core.SignalChain;
+using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Classic {
@@ -30,6 +31,13 @@ namespace OpenUtau.Classic {
         }
 
         public void CheckPermissions() { }
+
+        //TODO: A list of flags supported by worldline resampler
+        public ResamplerManifest Manifest { get; } = new ResamplerManifest();
+
+        public bool SupportsFlag(string abbr) {
+            return true;
+        }
 
         public override string ToString() => name;
     }
