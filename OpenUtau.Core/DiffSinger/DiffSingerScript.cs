@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -7,46 +8,80 @@ using OpenUtau.Core.Render;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core.DiffSinger {
-    public class DiffSingerScript {
+    public class DiffSingerScript{
+        public double offsetMs;
         public string[] text;
         public string[] ph_seq;
-        public int[] noteSeq;
         public double[] phDurMs;
-        public double frameMs;
+        public int[] ph_num;//number of phonemes in each note's time range, excluding slur notes
+        public int[] noteSeq;//notenum per note, including slur notes
+        public double[] noteDurMs;//duration in ms per note, including slur notes
+        public int[] note_slur;//1 if slur, 0 if not, per note, including slur notes
         public double[] f0_seq;
-        public double offsetMs;
+        public double frameMs;
         public double[]? gender = null;
         public double[]? velocity = null;
-
+        
         public DiffSingerScript(RenderPhrase phrase) {
-            const float headMs = DiffSingerUtils.headMs;
+            float headMs = 100;
             const float tailMs = DiffSingerUtils.tailMs;
-
-            text = phrase.notes.Select(n => n.lyric)
+            
+            var notes = phrase.notes;
+            var phones = phrase.phones;
+            
+            text = notes.Select(n => n.lyric)
                 .Where(s=>!s.StartsWith("+"))
+                .Prepend("SP")
                 .Append("SP")
                 .ToArray();
-            ph_seq = phrase.phones
+            ph_seq = phones
                 .Select(p => p.phoneme)
+                .Prepend("SP")
                 .Append("SP")
                 .ToArray();
-            phDurMs = phrase.phones
+            phDurMs = phones
                 .Select(p => p.durationMs)
-                .Append(DiffSingerUtils.tailMs)
+                .Prepend(headMs)
+                .Append(tailMs)
                 .ToArray();
-            noteSeq = phrase.phones
-                .Select(p => (p.phoneme == "SP" || p.phoneme == "AP") ? 0 : p.tone)
+            note_slur = notes
+                .Select(n => n.lyric.StartsWith("+") ? 1 : 0)
+                .Prepend(0)
                 .Append(0)
                 .ToArray();
-            DiffSingerSinger singer = null;
-            if (phrase.singer != null) { 
-                singer = phrase.singer as DiffSingerSinger; 
+
+            //ph_num
+            var phNumList = new List<int>();
+            int ep = 4;//the max error between note position and phoneme position is 4 ticks
+            int prevNotePhId = 0;
+            int phId = 0;
+            int phCount = phones.Length;
+            foreach(var note in notes.Where(n=>!n.lyric.StartsWith("+"))) {
+                while(phones[phId].position < note.position-ep && phId < phCount){
+                    ++phId;
+                }
+                phNumList.Add(phId - prevNotePhId);
+                prevNotePhId = phId;
             }
-            if(singer != null) {
-                frameMs = singer.getVocoder().frameMs();
-            } else {
-                frameMs = 10;
-            }
+            phNumList.Add(phCount - prevNotePhId);
+            phNumList.Add(1);//tail AP
+            ++phNumList[0];//head AP
+            ph_num = phNumList.ToArray();
+
+            noteSeq = phones
+                .Select(p => (p.phoneme == "SP" || p.phoneme == "AP") ? 0 : p.tone)
+                .Prepend(0)
+                .Append(0)
+                .ToArray();
+            noteDurMs = notes
+                .Select(n => n.durationMs)
+                .Prepend(headMs+(notes[0].positionMs-phones[0].positionMs))
+                .Append(tailMs)
+                .ToArray();
+            
+            
+            frameMs = 10;
+            
 
             int headFrames = (int)(headMs / frameMs);
             int tailFrames = (int)(tailMs / frameMs);
@@ -67,6 +102,10 @@ namespace OpenUtau.Core.DiffSinger {
             }
 
             //voicebank specific features
+            DiffSingerSinger singer = null;
+            if (phrase.singer != null) { 
+                singer = phrase.singer as DiffSingerSinger; 
+            }
             if(singer != null) {
                 if (singer.dsConfig.useKeyShiftEmbed) {
                     var range = singer.dsConfig.augmentationArgs.randomPitchShifting.range;
@@ -93,35 +132,36 @@ namespace OpenUtau.Core.DiffSinger {
                 new UTF8Encoding(false));
         }
     }
-
+    
     public class RawDiffSingerScript {
+        public double offset;
         public string text;
         public string ph_seq;
-        public string note_seq;
-        public string note_dur_seq;
-        public string is_slur_seq;
         public string ph_dur;
-        public string f0_timestep;
+        public string ph_num;
+        public string note_seq;
+        public string note_dur;
+        public string note_slur;
         public string f0_seq;
+        public string f0_timestep;
         public string? gender_timestep = null;
         public string? gender = null;
         public string? velocity_timestep = null;
         public string? velocity = null;
-        public string input_type = "phoneme";
-        public double offset;
 
         public RawDiffSingerScript(DiffSingerScript script) {
+            offset = script.offsetMs / 1000;
             text = String.Join(" ", script.text);
             ph_seq = String.Join(" ", script.ph_seq);
+            ph_num = String.Join(" ", script.ph_num);
             note_seq = String.Join(" ", 
                 script.noteSeq
                 .Select(x => x <= 0 ? "rest" : MusicMath.GetToneName(x)));
-            ph_dur = String.Join(" ",script.phDurMs.Select(x => (x/1000).ToString("f6")));
-            note_dur_seq = ph_dur;
-            is_slur_seq = String.Join(" ", script.ph_seq.Select(x => "0"));
-            f0_timestep = (script.frameMs / 1000).ToString();
+            ph_dur = String.Join(" ",script.phDurMs.Select(x => (x/1000).ToString("f4")));
+            note_dur = String.Join(" ",script.noteDurMs.Select(x => (x/1000).ToString("f4")));
+            note_slur = String.Join(" ", script.note_slur);
             f0_seq = String.Join(" ", script.f0_seq.Select(x => x.ToString("f1")));
-            offset = script.offsetMs / 1000;
+            f0_timestep = (script.frameMs / 1000).ToString();
 
             if(script.gender != null) {
                 gender_timestep = f0_timestep;
@@ -134,4 +174,8 @@ namespace OpenUtau.Core.DiffSinger {
             }
         }
     }
+
 }
+
+
+    
