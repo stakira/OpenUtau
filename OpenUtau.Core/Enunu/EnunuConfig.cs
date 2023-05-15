@@ -13,7 +13,10 @@ namespace OpenUtau.Core.Enunu {
         public static EnunuConfig Load(USinger singer) {
             var configPath = Path.Join(singer.Location, "enuconfig.yaml");
             var configTxt = File.ReadAllText(configPath);
-            RawEnunuConfig config = Yaml.DefaultDeserializer.Deserialize<RawEnunuConfig>(configTxt);
+                config = Yaml.DefaultDeserializer.Deserialize<RawEnunuConfig>(configTxt);
+            } else {
+                config = SetSimpleENUNUConfig(configPath);
+            }
             return config.Convert();
         }
     }

@@ -94,7 +94,17 @@ namespace OpenUtau.Classic {
             var enuconfigFile = Path.Combine(dir, kEnuconfigYaml);
             if (File.Exists(enuconfigFile)) {
                 voicebank.SingerType = USingerType.Enunu;
-            } else {
+            } else if (Directory.Exists(simpleEnunuFolder)) {
+                if (SimpleEnunuFilesCheck(simpleEnunuFolder)) {
+                    voicebank.SingerType = USingerType.Enunu;
+                }
+            } else if (Directory.Exists(dir)) {
+                if (SimpleEnunuFilesCheck(dir)) {
+                    voicebank.SingerType = USingerType.Enunu;
+                }
+            } 
+            else
+            {
                 voicebank.SingerType = USingerType.Classic;
             }
             Encoding encoding = Encoding.GetEncoding("shift_jis");
@@ -116,6 +126,20 @@ namespace OpenUtau.Classic {
                 });
             }
         }
+
+        public static bool SimpleEnunuFilesCheck(string folderPath) {
+            bool fileCheckFlag = false;
+            foreach (string fileStr in kSimpleEnunuFiles) {
+                if (File.Exists(Path.Combine(folderPath, fileStr))) {
+                    fileCheckFlag = true;
+                } else {
+                    return false;
+                }
+            }
+            return fileCheckFlag;
+        }
+
+
 
         public static void ParseCharacterTxt(Voicebank voicebank, Stream stream, string filePath, string basePath, Encoding encoding) {
             using (var reader = new StreamReader(stream, encoding)) {
