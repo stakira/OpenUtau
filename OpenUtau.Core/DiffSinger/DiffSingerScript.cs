@@ -49,7 +49,6 @@ namespace OpenUtau.Core.DiffSinger {
                 .Prepend(0)
                 .Append(0)
                 .ToArray();
-
             //ph_num
             var phNumList = new List<int>();
             int ep = 4;//the max error between note position and phoneme position is 4 ticks
@@ -79,10 +78,8 @@ namespace OpenUtau.Core.DiffSinger {
                 .Append(tailMs)
                 .ToArray();
             
-            
             frameMs = 10;
             
-
             int headFrames = (int)(headMs / frameMs);
             int tailFrames = (int)(tailMs / frameMs);
             var totalFrames = (int)(phDurMs.Sum() / frameMs);
@@ -141,9 +138,12 @@ namespace OpenUtau.Core.DiffSinger {
         public string ph_num;
         public string note_seq;
         public string note_dur;
+        public string note_dur_seq;
         public string note_slur;
+        public string is_slur_seq;
         public string f0_seq;
         public string f0_timestep;
+        public string input_type = "phoneme";
         public string? gender_timestep = null;
         public string? gender = null;
         public string? velocity_timestep = null;
@@ -159,7 +159,9 @@ namespace OpenUtau.Core.DiffSinger {
                 .Select(x => x <= 0 ? "rest" : MusicMath.GetToneName(x)));
             ph_dur = String.Join(" ",script.phDurMs.Select(x => (x/1000).ToString("f4")));
             note_dur = String.Join(" ",script.noteDurMs.Select(x => (x/1000).ToString("f4")));
+            note_dur_seq = ph_dur;
             note_slur = String.Join(" ", script.note_slur);
+            is_slur_seq = String.Join(" ", script.ph_seq.Select(x => "0"));
             f0_seq = String.Join(" ", script.f0_seq.Select(x => x.ToString("f1")));
             f0_timestep = (script.frameMs / 1000).ToString();
 
