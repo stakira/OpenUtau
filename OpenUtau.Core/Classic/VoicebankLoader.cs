@@ -28,6 +28,8 @@ namespace OpenUtau.Classic {
         public const string kCharTxt = "character.txt";
         public const string kCharYaml = "character.yaml";
         public const string kEnuconfigYaml = "enuconfig.yaml";
+        public const string kEnunuModelPath = "model";
+        public static readonly string[] kSimpleEnunuFiles = new string[] { "acoustic_model.pth", "acoustic_model.yaml", "config.yaml", "duration_model.pth", "duration_model.yaml", "in_acoustic_scaler_min.npy", "in_acoustic_scaler_scale.npy", "in_duration_scaler_min.npy", "in_duration_scaler_scale.npy", "in_timelag_scaler_min.npy", "in_timelag_scaler_scale.npy", "in_vocoder_scaler_mean.npy", "in_vocoder_scaler_scale.npy", "in_vocoder_scaler_var.npy", "kana2phonemes_utf8_for_oto2lab.table", "out_acoustic_scaler_mean.npy", "out_acoustic_scaler_scale.npy", "out_acoustic_scaler_var.npy", "out_duration_scaler_mean.npy", "out_duration_scaler_scale.npy", "out_duration_scaler_var.npy", "out_timelag_scaler_mean.npy", "out_timelag_scaler_scale.npy", "out_timelag_scaler_var.npy", "qst.hed", "timelag_model.pth", "timelag_model.yaml", "vocoder_model.pth", "vocoder_model.yaml" };
         public const string kOtoIni = "oto.ini";
 
         readonly string basePath;
@@ -92,6 +94,7 @@ namespace OpenUtau.Classic {
                 }
             }
             var enuconfigFile = Path.Combine(dir, kEnuconfigYaml);
+            var simpleEnunuFolder = Path.Combine(dir, kEnunuModelPath);
             if (File.Exists(enuconfigFile)) {
                 voicebank.SingerType = USingerType.Enunu;
             } else if (Directory.Exists(simpleEnunuFolder)) {

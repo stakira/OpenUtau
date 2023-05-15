@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Security.Cryptography.X509Certificates;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core.Enunu {
@@ -12,12 +13,38 @@ namespace OpenUtau.Core.Enunu {
 
         public static EnunuConfig Load(USinger singer) {
             var configPath = Path.Join(singer.Location, "enuconfig.yaml");
-            var configTxt = File.ReadAllText(configPath);
+            var config = new RawEnunuConfig();
+            if (File.Exists(configPath)) {
+                var configTxt = File.ReadAllText(configPath);
                 config = Yaml.DefaultDeserializer.Deserialize<RawEnunuConfig>(configTxt);
             } else {
                 config = SetSimpleENUNUConfig(configPath);
             }
             return config.Convert();
+        }
+
+        public static RawEnunuConfig SetSimpleENUNUConfig(string location) {
+            const string tableExtension = ".table";
+            const string hedExtension = ".hed";
+            const string configYaml = "config.yaml";
+            var configPath = Path.Join(location, configYaml);
+            var config = new RawEnunuConfig();
+
+            if (File.Exists(configPath)) {
+                var configTxt = File.ReadAllText(configPath);
+                config = Yaml.DefaultDeserializer.Deserialize<RawEnunuConfig>(configTxt);
+
+
+                IEnumerable<string> files = Directory.EnumerateFiles(location, "*", SearchOption.AllDirectories);
+                foreach (string f in files) {
+                    if (f.EndsWith(tableExtension)) {
+                        config.tablePath = f;
+                    } else if (f.EndsWith(hedExtension)) {
+                        config.questionPath = f;
+                    }
+                }
+            }
+            return config;
         }
     }
 
