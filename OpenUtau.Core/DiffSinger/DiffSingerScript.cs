@@ -117,7 +117,7 @@ namespace OpenUtau.Core.DiffSinger {
                 }
             }
 
-            offsetMs = phrase.phones[0].positionMs;
+            offsetMs = phrase.phones[0].positionMs - headMs;
         }
         
         public RawDiffSingerScript toRaw() {
@@ -174,8 +174,4 @@ namespace OpenUtau.Core.DiffSinger {
             }
         }
     }
-
 }
-
-
-    
