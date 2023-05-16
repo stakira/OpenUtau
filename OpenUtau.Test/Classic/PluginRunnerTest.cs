@@ -5,7 +5,6 @@ using System.IO;
 using System.Text;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
-using SharpGen.Runtime.Win32;
 using Xunit;
 using static OpenUtau.Classic.PluginRunner;
 
