@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
 using OpenUtau.Core;
@@ -91,6 +91,17 @@ namespace OpenUtau.Plugin.Builtin {
                 } else if (singer.TryGetMappedOto(phoneme1, note.tone + toneShift, color, out var oto)) {
                     phoneme1 = oto.Alias;
                 }
+
+                if (phoneme1.Contains("_un") && !singer.TryGetMappedOto(phoneme1 + alt, note.tone + toneShift, color, out var otoAlt2)) {
+                    phoneme1 = "_en";
+                } else if (phoneme1.Contains("_un") && !singer.TryGetMappedOto(phoneme1, note.tone + toneShift, color, out var oto0)) {
+                    phoneme1 = "_en";
+                } else if (phoneme1.Contains("_un") && singer.TryGetMappedOto(phoneme1 + alt, note.tone + toneShift, color, out var oto1)) {
+                    phoneme1 = oto1.Alias;
+                } else if (phoneme1.Contains("_un") && singer.TryGetMappedOto(phoneme1, note.tone + toneShift, color, out var oto)) {
+                    phoneme1 = oto.Alias;
+                }
+
                 return new Result {
                     phonemes = new Phoneme[] {
                         new Phoneme() {
