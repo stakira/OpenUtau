@@ -26,7 +26,7 @@ namespace OpenUtau.Plugins {
             new string[] { "- g_3", "g uh_3", "uh d_3", "d m_3", "m ao", "ao r", "r n", "n ih", "ih ng", "ng -_3" })]
         [InlineData("en_arpa",
             new string[] { "moon", "+", "+", "+", "star", "+" },
-            new string[] { "", "", "" },
+            new string[] { "", "", "", "", "", "" },
             new string[] { "F4", "C4", "F4", "F4", "C4", "F4" },
             new string[] { "Whisper", "", "", "", "", "" },
             new string[] { "- m_W", "m uw", "uw n", "n s", "s t_3", "t aa_3", "aa r", "r -" })]
