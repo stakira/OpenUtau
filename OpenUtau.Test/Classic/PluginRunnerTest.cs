@@ -91,11 +91,11 @@ namespace OpenUtau.Classic {
             private static Action<StreamWriter, string> DoNothingResponse() {
                 return (writer, text) => {
                     // reserved text assertion
-                    var baseDir = AppDomain.CurrentDomain.BaseDirectory;
+                    var cacheDir = PathManager.Inst.CachePath;
                     Assert.Equal($@"[#SETTING]
 Tempo=120
 Tracks=1
-CacheDir={baseDir}Cache
+CacheDir={cacheDir}
 Mode2=True
 [#PREV]
 Length=10
