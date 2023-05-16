@@ -34,9 +34,6 @@ namespace OpenUtau.Plugin.Builtin {
 
         // Simply stores the singer in a field.
         public override void SetSinger(USinger singer) => this.singer = singer;
-        
-        // Legacy mapping. Might adjust later to new mapping style.
-		public override bool LegacyMapping => true;
 
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
             // The overall logic is:
@@ -44,6 +41,7 @@ namespace OpenUtau.Plugin.Builtin {
             // 2. Lookup the trailing sound in vowel table: "uang" -> "_ang".
             // 3. Split the total duration and returns "duang" and "_ang".
             var lyric = notes[0].lyric;
+            var note = notes[0];
             string consonant = string.Empty;
             string vowel = string.Empty;
             if (lyric.Length > 2 && cSet.Contains(lyric.Substring(0, 2))) {
@@ -62,6 +60,16 @@ namespace OpenUtau.Plugin.Builtin {
                 vowel = "v" + vowel.Substring(1);
             }
             string phoneme0 = lyric;
+            // Get color
+            string color = string.Empty;
+            int toneShift = 0;
+            int? alt = null;
+            if (note.phonemeAttributes != null) {
+                var attr = note.phonemeAttributes.FirstOrDefault(attr => attr.index == 0);
+                color = attr.voiceColor;
+                toneShift = attr.toneShift;
+                alt = attr.alternate;
+            }
             // We will need to split the total duration for phonemes, so we compute it here.
             int totalDuration = notes.Sum(n => n.duration);
             // Lookup the vowel split table. For example, "uang" will match "_ang".
@@ -71,6 +79,17 @@ namespace OpenUtau.Plugin.Builtin {
                 int length1 = 120;
                 if (length1 > totalDuration / 2) {
                     length1 = totalDuration / 2;
+                }
+                if (singer.TryGetMappedOto(phoneme0 + alt, note.tone + toneShift, color, out var otoAlt0)) {
+                    phoneme0 = otoAlt0.Alias;
+                } else if (singer.TryGetMappedOto(phoneme0, note.tone + toneShift, color, out var oto)) {
+                    phoneme0 = oto.Alias;
+                }
+
+                if (singer.TryGetMappedOto(phoneme1 + alt, note.tone + toneShift, color, out var otoAlt1)) {
+                    phoneme1 = otoAlt1.Alias;
+                } else if (singer.TryGetMappedOto(phoneme1, note.tone + toneShift, color, out var oto)) {
+                    phoneme1 = oto.Alias;
                 }
                 return new Result {
                     phonemes = new Phoneme[] {
@@ -84,6 +103,11 @@ namespace OpenUtau.Plugin.Builtin {
                     },
                 };
             }
+            if (singer.TryGetMappedOto(phoneme0 + alt, note.tone + toneShift, color, out var otoAlt)) {
+                phoneme0 = otoAlt.Alias;
+            } else if (singer.TryGetMappedOto(phoneme0, note.tone + toneShift, color, out var oto)) {
+                phoneme0 = oto.Alias;
+            }
             // Not spliting is needed. Return as is.
             return new Result {
                 phonemes = new Phoneme[] {
@@ -95,3 +119,4 @@ namespace OpenUtau.Plugin.Builtin {
         }
     }
 }
+
