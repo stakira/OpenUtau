@@ -52,7 +52,7 @@ namespace OpenUtau.Classic {
                 first.lyric = "ka";
                 first.duration = 20;
                 first.position = 10;
-                before.Next =first;
+                before.Next = first;
 
                 var second = UNote.Create();
                 second.lyric = "r";
@@ -92,7 +92,8 @@ namespace OpenUtau.Classic {
                 return (writer, text) => {
                     // reserved text assertion
                     var cacheDir = PathManager.Inst.CachePath;
-                    Assert.Equal($@"[#SETTING]
+                    // OSによって出力される改行コードが異なる。
+                    var expected = $@"[#SETTING]
 Tempo=120
 Tracks=1
 CacheDir={cacheDir}
@@ -127,7 +128,12 @@ Length=60
 Lyric=ha
 NoteNum=0
 PreUtterance=
-", text);
+";
+                    // Different line feed code for each OS
+                    var eol = Environment.NewLine;
+                    expected = expected.Replace("\r\n", "\n").Replace("\r", "\n").Replace("\n", eol);
+                
+                    Assert.Equal(expected, text);
                     writer.Write(text);
                 };
             }
