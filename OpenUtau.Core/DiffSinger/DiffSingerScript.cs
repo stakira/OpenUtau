@@ -17,12 +17,12 @@ namespace OpenUtau.Core.DiffSinger {
         public int[] noteSeq;//notenum per note, including slur notes
         public double[] noteDurMs;//duration in ms per note, including slur notes
         public int[] note_slur;//1 if slur, 0 if not, per note, including slur notes
-        public double[] f0_seq;
+        public double[]? f0_seq = null;
         public double frameMs;
         public double[]? gender = null;
         public double[]? velocity = null;
         
-        public DiffSingerScript(RenderPhrase phrase) {
+        public DiffSingerScript(RenderPhrase phrase, bool exportPitch = true) {
             float headMs = 100;
             const float tailMs = DiffSingerUtils.tailMs;
             
@@ -84,18 +84,19 @@ namespace OpenUtau.Core.DiffSinger {
             int tailFrames = (int)(tailMs / frameMs);
             var totalFrames = (int)(phDurMs.Sum() / frameMs);
 
-            f0_seq = DiffSingerUtils.SampleCurve(phrase, phrase.pitches, 
-                0, frameMs, totalFrames, headFrames, tailFrames, 
-                x => MusicMath.ToneToFreq(x * 0.01));
+            //f0
+            if(exportPitch){
+                f0_seq = DiffSingerUtils.SampleCurve(phrase, phrase.pitches, 
+                    0, frameMs, totalFrames, headFrames, tailFrames, 
+                    x => MusicMath.ToneToFreq(x * 0.01));
+            }
 
+            //velc
             var velocityCurve = phrase.curves.FirstOrDefault(curve => curve.Item1 == DiffSingerUtils.VELC);
             if (velocityCurve != null) {
                 velocity = DiffSingerUtils.SampleCurve(phrase, velocityCurve.Item2, 
                     0, frameMs, totalFrames, headFrames, tailFrames,
                     x=>Math.Pow(2, (x - 100) / 100));
-                for (int i = 0; i < velocity.Length; i++) {
-                    f0_seq[i] *= velocity[i];
-                }
             }
 
             //voicebank specific features
@@ -104,6 +105,7 @@ namespace OpenUtau.Core.DiffSinger {
                 singer = phrase.singer as DiffSingerSinger; 
             }
             if(singer != null) {
+                //gender
                 if (singer.dsConfig.useKeyShiftEmbed) {
                     var range = singer.dsConfig.augmentationArgs.randomPitchShifting.range;
                     var positiveScale = (range[1] == 0) ? 0 : (12 / range[1] / 100);
@@ -121,9 +123,10 @@ namespace OpenUtau.Core.DiffSinger {
             return new RawDiffSingerScript(this);
         }
 
-        static public void SavePart(UProject project, UVoicePart part, string filePath) {
+        static public void SavePart(UProject project, UVoicePart part, string filePath, bool exportPitch = true) {
             var ScriptArray = RenderPhrase.FromPart(project, project.tracks[part.trackNo], part)
-                .Select(x => new DiffSingerScript(x).toRaw()).ToArray();
+                .Select(x => new DiffSingerScript(x, exportPitch).toRaw())
+                .ToArray();
             File.WriteAllText(filePath,
                 JsonConvert.SerializeObject(ScriptArray, Formatting.Indented),
                 new UTF8Encoding(false));
@@ -141,7 +144,7 @@ namespace OpenUtau.Core.DiffSinger {
         public string note_dur_seq;
         public string note_slur;
         public string is_slur_seq;
-        public string f0_seq;
+        public string? f0_seq = null;
         public string f0_timestep;
         public string input_type = "phoneme";
         public string? gender_timestep = null;
@@ -162,7 +165,10 @@ namespace OpenUtau.Core.DiffSinger {
             note_dur_seq = ph_dur;
             note_slur = String.Join(" ", script.note_slur);
             is_slur_seq = String.Join(" ", script.ph_seq.Select(x => "0"));
-            f0_seq = String.Join(" ", script.f0_seq.Select(x => x.ToString("f1")));
+            
+            if(script.f0_seq!=null){
+                f0_seq = String.Join(" ", script.f0_seq.Select(x => x.ToString("f1")));
+            }
             f0_timestep = (script.frameMs / 1000).ToString();
 
             if(script.gender != null) {
