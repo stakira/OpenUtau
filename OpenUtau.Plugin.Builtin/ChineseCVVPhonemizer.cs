@@ -59,6 +59,10 @@ namespace OpenUtau.Plugin.Builtin {
             if ((vowel == "un" || vowel == "uan") && (consonant == "j" || consonant == "q" || consonant == "x" || consonant == "y")) {
                 vowel = "v" + vowel.Substring(1);
             }
+
+            if ((vowel == "an") && (consonant == "y")) {
+                vowel = "ian";
+            }
             string phoneme0 = lyric;
             // Get color
             string color = string.Empty;
@@ -130,4 +134,3 @@ namespace OpenUtau.Plugin.Builtin {
         }
     }
 }
-
