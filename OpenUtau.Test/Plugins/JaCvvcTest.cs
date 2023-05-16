@@ -20,7 +20,7 @@ namespace OpenUtau.Plugins {
             new string[] { "- あ_C4", "a あ_弱C4", "-" })]
         [InlineData("ja_cvvc",
             new string[] { "お", "にょ", "ひょ", "みょ", "びょ", "ぴょ", "りょ" },
-            new string[] { "", "", "", "" },
+            new string[] { "", "", "", "", "", "", "" },
             new string[] { "A3", "C4", "D4", "E4", "F4", "G3", "F3" },
             new string[] { "", "弱", "", "", "強", "", "" },
             new string[] { "- お_A3", "o ny_A3", "にょ_弱C4", "o hy_弱C4", "ひょ_C4", "o my_C4", "みょ_F4", "o by_F4", "びょ_強F4", "o py_強F4", "ぴょ_A3", "o ry_A3", "りょ_A3" })]
