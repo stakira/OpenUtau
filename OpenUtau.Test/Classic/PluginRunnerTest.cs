@@ -13,6 +13,13 @@ namespace OpenUtau.Classic {
 
     public class PluginRunnerTest {
 
+        public PluginRunnerTest() {
+            // When Cache directory is nothing in UnitTest
+            if (!Directory.Exists(PathManager.Inst.CachePath)) {
+                Directory.CreateDirectory(PathManager.Inst.CachePath);
+            }
+        }
+
         class ExecuteTestData : IEnumerable<object[]> {
             private readonly List<object[]> testData = new();
 
