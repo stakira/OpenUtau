@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -35,11 +36,18 @@ namespace OpenUtau.App {
 
         public void InitializeCulture() {
             Log.Information("Initializing culture.");
-            var language = CultureInfo.InstalledUICulture.Name;
-            if (!string.IsNullOrEmpty(Core.Util.Preferences.Default.Language)) {
-                language = Core.Util.Preferences.Default.Language;
+            string sysLang = CultureInfo.InstalledUICulture.Name;
+            string prefLang = Core.Util.Preferences.Default.Language;
+            var languages = GetLanguages();
+            if (languages.TryGetValue(prefLang, out var res)) {
+                SetLanguage(res);
+            } else if (languages.TryGetValue(sysLang, out res)) {
+                SetLanguage(res);
+                Core.Util.Preferences.Default.Language = sysLang;
+                Core.Util.Preferences.Save();
+            } else {
+                SetLanguage(languages["en-US"]);
             }
-            SetLanguage(language);
 
             // Force using InvariantCulture to prevent issues caused by culture dependent string conversion, especially for floating point numbers.
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
@@ -47,26 +55,35 @@ namespace OpenUtau.App {
             Log.Information("Initialized culture.");
         }
 
-        public static void SetLanguage(string language) {
-            var dictionaryList = Current.Resources.MergedDictionaries
-                .Select(res => (ResourceInclude)res)
-                .ToList();
-            var resDictName = string.Format(@"Strings.{0}.axaml", language);
-            var resDict = dictionaryList
-                .FirstOrDefault(d => d.Source!.OriginalString.Contains(resDictName));
-            if (resDict == null) {
-                resDict = dictionaryList.FirstOrDefault(d => d.Source!.OriginalString.Contains("Strings.axaml"));
+        public static Dictionary<string, ResourceInclude> GetLanguages() {
+            if (Current == null) {
+                return new();
             }
-            if (resDict != null) {
-                Current.Resources.MergedDictionaries.Remove(resDict);
-                Current.Resources.MergedDictionaries.Add(resDict);
-                var langName = resDict.Source.OriginalString.Replace("/Strings/Strings", "").Replace(".", "").Replace("axaml", "");
-                if (langName == "") 
-                    langName = language;
-                if (Core.Util.Preferences.Default.Language != langName) {
-                    Core.Util.Preferences.Default.Language = langName;
-                    Core.Util.Preferences.Save();
-                }
+            var re = new Regex(@"Strings\.?([\w-]+)\.axaml");
+            return Current.Resources.MergedDictionaries
+                .Select(res => (ResourceInclude)res)
+                .Where(res => res.Source!.OriginalString.Contains("Strings."))
+                .ToDictionary(res => {
+                    var m = re.Match(res.Source!.OriginalString);
+                    return string.IsNullOrEmpty(m.Groups[1].Value) ? "en-US" : m.Groups[1].Value;
+                });
+        }
+
+        public static void SetLanguage(ResourceInclude res) {
+            if (Current == null) {
+                return;
+            }
+            Current.Resources.MergedDictionaries.Remove(res);
+            Current.Resources.MergedDictionaries.Add(res);
+        }
+
+        public static void SetLanguage(string language) {
+            if (Current == null) {
+                return;
+            }
+            var languages = GetLanguages();
+            if (languages.TryGetValue(language, out var res)) {
+                SetLanguage(res);
             }
         }
 
