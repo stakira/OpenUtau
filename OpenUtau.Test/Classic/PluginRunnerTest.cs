@@ -84,7 +84,6 @@ namespace OpenUtau.Classic {
             private static Action<StreamWriter, string> DoNothingResponse() {
                 return (writer, text) => {
                     // reserved text assertion
-                    File.WriteAllText("Cache/test.test", text);
                     var baseDir = AppDomain.CurrentDomain.BaseDirectory;
                     Assert.Equal($@"[#SETTING]
 Tempo=120
