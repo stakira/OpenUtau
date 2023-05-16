@@ -14,7 +14,7 @@ namespace OpenUtau.Plugins {
         [Theory]
         [InlineData("en_arpa",
             new string[] { "good", "morning" },
-            new string[] { "", "", "" },
+            new string[] { "", "" },
             new string[] { "C4", "C4" },
             new string[] { "", "" },
             new string[] { "- g_3", "g uh_3", "uh d_3", "d m_3", "m ao_3", "ao r_3", "r n_3", "n ih_3", "ih ng_3", "ng -_3" })]
