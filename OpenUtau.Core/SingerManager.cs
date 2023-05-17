@@ -15,16 +15,20 @@ namespace OpenUtau.Core {
     public class SingerManager : SingletonBase<SingerManager> {
         public Dictionary<string, USinger> Singers { get; private set; } = new Dictionary<string, USinger>();
         public Dictionary<USingerType, List<USinger>> SingerGroups { get; private set; } = new Dictionary<USingerType, List<USinger>>();
+        public Task? InitializationTask = null;
 
         private readonly ConcurrentQueue<USinger> reloadQueue = new ConcurrentQueue<USinger>();
         private CancellationTokenSource reloadCancellation;
 
         public void Initialize() {
-            SearchAllSingers();
+            InitializationTask = Task.Run(() => {
+                SearchAllSingers();
+            });
         }
 
         public void SearchAllSingers() {
             try {
+                Log.Information("Searching singers.");
                 Directory.CreateDirectory(PathManager.Inst.SingersPath);
                 var stopWatch = Stopwatch.StartNew();
                 var singers = ClassicSingerLoader.FindAllSingers()
@@ -34,7 +38,7 @@ namespace OpenUtau.Core {
                     .ToDictionary(g => g.Key, g => g.First());
                 SingerGroups = singers
                     .GroupBy(s => s.SingerType)
-                    .ToDictionary(s => s.Key, s => s.OrderBy(singer => singer.Name).ToList());
+                    .ToDictionary(s => s.Key, s => s.LocalizedOrderBy(singer => singer.Name).ToList());
                 stopWatch.Stop();
                 Log.Information($"Search all singers: {stopWatch.Elapsed}");
             } catch (Exception e) {

@@ -66,6 +66,9 @@ namespace OpenUtau.App.Views {
                 valueTip.HideValueTip();
             }
         }
+        public virtual void Update(IPointer pointer, Point point, PointerEventArgs args) {
+            Update(pointer, point);
+        }
         public virtual void Update(IPointer pointer, Point point) { }
         public static void Swap<T>(ref T a, ref T b) {
             T temp = a;
@@ -557,6 +560,9 @@ namespace OpenUtau.App.Views {
         private Point lastPoint;
         private UExpressionDescriptor? descriptor;
         private UTrack track;
+
+        private double startValue = 0;
+        private bool shiftWasHeld = false;
         public ExpSetValueState(
             Canvas canvas,
             PianoRollViewModel vm,
@@ -578,18 +584,24 @@ namespace OpenUtau.App.Views {
         public override void End(IPointer pointer, Point point) {
             base.End(pointer, point);
         }
-        public override void Update(IPointer pointer, Point point) {
+        public override void Update(IPointer pointer, Point point, PointerEventArgs args) {
             if (descriptor == null) {
                 return;
             }
+            bool shiftHeld = args.KeyModifiers == KeyModifiers.Shift;
             if (descriptor.type != UExpressionType.Curve) {
-                UpdatePhonemeExp(pointer, point);
+                UpdatePhonemeExp(pointer, point, shiftHeld);
             } else {
                 UpdateCurveExp(pointer, point);
             }
             double viewMax = descriptor.max + (descriptor.type == UExpressionType.Options ? 1 : 0);
-            double displayValue = descriptor.min + (viewMax - descriptor.min) * (1 - point.Y / canvas.Bounds.Height);
-            displayValue = Math.Max(descriptor.min, Math.Min(descriptor.max, displayValue));
+            double displayValue;
+            if (shiftHeld) {
+                displayValue = startValue;
+            } else {
+                displayValue = descriptor.min + (viewMax - descriptor.min) * (1 - point.Y / canvas.Bounds.Height);
+                displayValue = Math.Max(descriptor.min, Math.Min(descriptor.max, displayValue));
+            }
             string valueTipText;
             if (descriptor.type == UExpressionType.Options) {
                 int index = (int)displayValue;
@@ -606,8 +618,9 @@ namespace OpenUtau.App.Views {
             }
             valueTip.UpdateValueTip(valueTipText);
             lastPoint = point;
+            shiftWasHeld = shiftHeld;
         }
-        private void UpdatePhonemeExp(IPointer pointer, Point point) {
+        private void UpdatePhonemeExp(IPointer pointer, Point point, bool shiftHeld) {
             var notesVm = vm.NotesViewModel;
             var p1 = lastPoint;
             var p2 = point;
@@ -617,16 +630,26 @@ namespace OpenUtau.App.Views {
             string key = notesVm.PrimaryKey;
             var hits = notesVm.HitTest.HitTestExpRange(p1, p2);
             double viewMax = descriptor.max + (descriptor.type == UExpressionType.Options ? 1 : 0);
+            if (shiftHeld != shiftWasHeld) {
+                startValue = descriptor.min + (viewMax - descriptor.min) * (1 - point.Y / canvas.Bounds.Height);
+                startValue = Math.Max(descriptor.min, Math.Min(descriptor.max, startValue));
+            }
             foreach (var hit in hits) {
+                if (notesVm.Selection.Count > 0 && !notesVm.Selection.Contains(hit.phoneme.Parent)) {
+                    continue;
+                }
                 var valuePoint = notesVm.TickToneToPoint(hit.note.position + hit.phoneme.position, 0);
                 double y = Lerp(p1, p2, valuePoint.X);
                 double newValue = descriptor.min + (viewMax - descriptor.min) * (1 - y / canvas.Bounds.Height);
                 newValue = Math.Max(descriptor.min, Math.Min(descriptor.max, newValue));
+
                 float value = hit.phoneme.GetExpression(notesVm.Project, track, key).Item1;
-                if ((int)newValue != (int)value) {
-                    DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(
-                        notesVm.Project, track, notesVm.Part, hit.phoneme, key, (int)newValue));
+                double finalValue = shiftHeld ? startValue : newValue;
+                if ((int)finalValue == (int)value) {
+                    continue;
                 }
+                DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(
+                    notesVm.Project, track, notesVm.Part, hit.phoneme, key, (int)finalValue));
             }
         }
         private void UpdateCurveExp(IPointer pointer, Point point) {
@@ -662,7 +685,7 @@ namespace OpenUtau.App.Views {
             base.Begin(pointer, point);
             lastPoint = point;
         }
-        public override void Update(IPointer pointer, Point point) {
+        public override void Update(IPointer pointer, Point point, PointerEventArgs args) {
             if (descriptor == null) {
                 return;
             }
@@ -683,11 +706,15 @@ namespace OpenUtau.App.Views {
             string key = notesVm.PrimaryKey;
             var hits = notesVm.HitTest.HitTestExpRange(p1, p2);
             foreach (var hit in hits) {
-                float value = hit.phoneme.GetExpression(notesVm.Project, track, key).Item1;
-                if (value != descriptor.defaultValue) {
-                    DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(
-                        notesVm.Project, track, notesVm.Part, hit.phoneme, key, descriptor.defaultValue));
+                if (notesVm.Selection.Count > 0 && !notesVm.Selection.Contains(hit.phoneme.Parent)) {
+                    continue;
                 }
+                float value = hit.phoneme.GetExpression(notesVm.Project, track, key).Item1;
+                if (value == descriptor.defaultValue) {
+                    continue;
+                }
+                DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(
+                    notesVm.Project, track, notesVm.Part, hit.phoneme, key, descriptor.defaultValue));
             }
         }
         private void ResetCurveExp(IPointer pointer, Point point) {
@@ -997,6 +1024,51 @@ namespace OpenUtau.App.Views {
                 (int)Math.Round(tone * 100 - (lastPitch ?? pitch.Value))));
             lastPitch = pitch;
             lastPoint = point;
+        }
+    }
+    
+    class SmoothenPitchState : NoteEditState {
+        protected override bool ShowValueTip => false;
+        int brushRadius = 10;
+        int kernelRadius = 3;
+        double kernelWeight = 1.0 / (2 * 3 + 1);
+        public SmoothenPitchState(
+            Canvas canvas,
+            PianoRollViewModel vm,
+            IValueTip valueTip) : base(canvas, vm, valueTip) { }
+        public override void Begin(IPointer pointer, Point point) {
+            base.Begin(pointer, point);
+        }
+        private double GetPitch(int tick, UCurve? curve = null) {
+            var point = vm.NotesViewModel.TickToneToPoint(tick, 0);
+            var pitch = vm.NotesViewModel.HitTest.SamplePitch(point);
+            if (pitch == null) return 0;
+            if (curve == null) return pitch.Value;
+            return pitch.Value + curve.Sample(tick);
+        }
+        public override void Update(IPointer pointer, Point point) {
+            if (vm.NotesViewModel.Part == null) return;
+            var curve = vm.NotesViewModel.Part.curves.FirstOrDefault(c => c.abbr == Core.Format.Ustx.PITD);
+            if (curve == null) return;
+            double total = 0;
+            List<(int tick, int pitch)> newPoints = new List<(int tick, int pitch)>();
+            int baseTick = ((int)Math.Round(vm.NotesViewModel.PointToTick(point) / 5.0) - brushRadius) * 5;
+            for (int i = -kernelRadius; i <= kernelRadius; i++) total += GetPitch(baseTick + i * 5, curve);
+            newPoints.Add((baseTick, (int)Math.Round(total * kernelWeight - GetPitch(baseTick))));
+            total -= GetPitch(baseTick - kernelRadius * 5, curve);
+            for (int i = -brushRadius + 1; i <= brushRadius; i++) {
+                baseTick += 5;
+                total += GetPitch(baseTick + kernelRadius * 5, curve);
+                newPoints.Add((baseTick, (int)Math.Round(total * kernelWeight - GetPitch(baseTick))));
+                total -= GetPitch(baseTick - kernelRadius * 5, curve);
+            }
+            foreach (var (tick, pitch) in newPoints)
+                DocManager.Inst.ExecuteCmd(new SetCurveCommand(
+                    vm.NotesViewModel.Project,
+                    vm.NotesViewModel.Part,
+                    Core.Format.Ustx.PITD,
+                    tick, pitch,
+                    tick, pitch));
         }
     }
 

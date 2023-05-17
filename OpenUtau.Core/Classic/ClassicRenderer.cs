@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using NAudio.Wave;
@@ -130,6 +131,14 @@ namespace OpenUtau.Classic {
 
         public RenderPitchResult LoadRenderedPitch(RenderPhrase phrase) {
             return null;
+        }
+
+        public UExpressionDescriptor[] GetSuggestedExpressions(USinger singer, URenderSettings renderSettings) {
+            var manifest= renderSettings.Resampler.Manifest;
+            if (manifest == null) {
+                return new UExpressionDescriptor[] { };
+            }
+            return manifest.expressions.Values.ToArray();
         }
 
         public override string ToString() => Renderers.CLASSIC;

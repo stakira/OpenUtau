@@ -30,6 +30,7 @@ namespace OpenUtau.Api {
         private readonly TaskScheduler mainScheduler;
         private readonly CancellationTokenSource shutdown = new CancellationTokenSource();
         private readonly BlockingCollection<PhonemizerRequest> requests = new BlockingCollection<PhonemizerRequest>();
+        private readonly object busyLock = new object();
         private Thread thread;
 
         public PhonemizerRunner(TaskScheduler mainScheduler) {
@@ -49,22 +50,24 @@ namespace OpenUtau.Api {
             var parts = new HashSet<UVoicePart>();
             var toRun = new List<PhonemizerRequest>();
             while (!shutdown.IsCancellationRequested) {
-                while (requests.TryTake(out var request)) {
-                    toRun.Add(request);
-                }
-                foreach (var request in toRun) {
-                    parts.Add(request.part);
-                }
-                for (int i = toRun.Count - 1; i >= 0; i--) {
-                    if (parts.Remove(toRun[i].part)) {
-                        SendResponse(Phonemize(toRun[i]));
+                lock (busyLock) {
+                    while (requests.TryTake(out var request)) {
+                        toRun.Add(request);
                     }
+                    foreach (var request in toRun) {
+                        parts.Add(request.part);
+                    }
+                    for (int i = toRun.Count - 1; i >= 0; i--) {
+                        if (parts.Remove(toRun[i].part)) {
+                            SendResponse(Phonemize(toRun[i]));
+                        }
+                    }
+                    parts.Clear();
+                    toRun.Clear();
+                    try {
+                        toRun.Add(requests.Take(shutdown.Token));
+                    } catch (OperationCanceledException) { }
                 }
-                parts.Clear();
-                toRun.Clear();
-                try {
-                    toRun.Add(requests.Take(shutdown.Token));
-                } catch (OperationCanceledException) { }
             }
         }
 
@@ -168,6 +171,20 @@ namespace OpenUtau.Api {
                 phonemes = result.ToArray(),
                 timestamp = request.timestamp,
             };
+        }
+
+        /// <summary>
+        /// Wait already queued phonemizer requests to finish.
+        /// Should only be used in command line mode.
+        /// </summary>
+        public void WaitFinish() {
+            while (true) {
+                lock (busyLock) {
+                    if (requests.Count == 0) {
+                        return;
+                    }
+                }
+            }
         }
 
         public void Dispose() {

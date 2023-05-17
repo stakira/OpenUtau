@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -73,6 +74,102 @@ PreUtterance=";
                     Assert.Equal("A==B[C=D],EFG", part.notes.First().lyric);
                     Assert.Equal(60, part.notes.First().tone);
                 }
+            }
+        }
+
+        [Fact]
+        public void ParsePluginParseNoteTest() {
+            // This method is tested only when the plugin returns only some blocks
+
+            // Given
+            var project = new UProject();
+            project.tracks.Add(new UTrack {
+                TrackNo = 0,
+            });
+            var part = new UVoicePart() {
+                trackNo = 0,
+                position = 0,
+            };
+            project.parts.Add(part);
+
+            var before = UNote.Create();
+            before.lyric = "a";
+            before.duration = 10;
+            
+            var first = UNote.Create();
+            first.lyric = "ka";
+            first.duration = 20;
+            
+            var second = UNote.Create();
+            second.lyric = "r";
+            second.duration = 30;
+            
+            var third = UNote.Create();
+            third.lyric = "ta";
+            third.duration = 40;
+
+            var last = UNote.Create();
+            last.lyric = "na";
+            last.duration = 50;
+            
+            var after = UNote.Create();
+            after.lyric = "ha";
+            after.duration = 60;
+            
+            part.notes.Add(before);
+            part.notes.Add(first);
+            part.notes.Add(second);
+            part.notes.Add(third);
+            part.notes.Add(last);
+            part.notes.Add(after);
+
+            var sequence = new List<UNote> {
+                first,
+                second,
+                third,
+                last
+            };
+
+            var encoding = "shift_jis";
+
+            // Create plugin edited tmp file
+            string diffFile = Path.GetTempFileName();
+            try {
+                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+                using (var writer = new StreamWriter(diffFile, false, Encoding.GetEncoding(encoding))) {
+                    // duration and lyric
+                    writer.WriteLine("[#0000]");
+                    writer.WriteLine("Length=480");
+                    writer.WriteLine("Lyric=A");
+                    writer.WriteLine("[#0001]");
+                    writer.WriteLine("Length=480");
+                    writer.WriteLine("Lyric=R");
+                    // duration is null (change)
+                    writer.WriteLine("[#0002]");
+                    writer.WriteLine("Lyric=zo");
+                    // duration is zero (delete)
+                    writer.WriteLine("[#0003]");
+                    writer.WriteLine("Length=");
+                    // insert
+                    writer.WriteLine("[#INSERT]");
+                    writer.WriteLine("Length=240");
+                    writer.WriteLine("Lyric=me");
+                }
+
+                // When
+                var (toRemove, toAdd) = Ust.ParsePlugin(project, part, first, last, sequence, diffFile, encoding);
+
+                // Then
+                Assert.Equal(4, toRemove.Count);
+                Assert.Equal(3, toAdd.Count);
+                Assert.Equal(480, toAdd[0].duration);
+                Assert.Equal("A", toAdd[0].lyric);
+                Assert.Equal(40, toAdd[1].duration);
+                Assert.Equal("zo", toAdd[1].lyric);
+                Assert.Equal(240, toAdd[2].duration);
+                Assert.Equal("me", toAdd[2].lyric);
+            } finally {
+                File.Delete(diffFile);
             }
         }
     }

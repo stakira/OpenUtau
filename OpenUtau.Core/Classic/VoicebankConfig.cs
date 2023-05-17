@@ -19,7 +19,7 @@ namespace OpenUtau.Classic {
         /// <summary>
         /// Voice color, e.g., "power", "whisper". Leave unspecified for the main bank.
         /// </summary>
-        public string Color { get; set; }
+        public string Color { get; set; } = string.Empty;
 
         /// <summary>
         /// Subbank prefix. Leave unspecified if none.

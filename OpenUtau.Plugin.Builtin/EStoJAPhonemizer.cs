@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
+using OpenUtau.Core.G2p;
 using WanaKanaNet;
 
 namespace OpenUtau.Plugin.Builtin {
@@ -17,18 +18,21 @@ namespace OpenUtau.Plugin.Builtin {
             "a i u e o".Split();
         protected override string[] GetConsonants() => consonants;
         private static readonly string[] consonants =
-            "b by ch d dy f g gy h hh hy j k ky l ly m my n ny p py r ry rr rry s sh t ty ts w y z".Split();
+            "b by B By ch d dy D Dy f g gy G Gy h hh hy I j k ky l ly m my n ny p py r ry rr rry s sh t ty ts U w x y Y z".Split();
         protected override string GetDictionaryName() => "cmudict_es.txt";
+
         protected override Dictionary<string, string> GetDictionaryPhonemesReplacement() => dictionaryPhonemesReplacement;
         private static readonly Dictionary<string, string> dictionaryPhonemesReplacement = new Dictionary<string, string> {
             { "a", "a" },
             { "b", "b" },
+            { "B", "b" },
             { "ch", "ch" },
             { "d", "d" },
+            { "D", "d" },
             { "e", "e" },
             { "f", "f" },
             { "g", "g" },
-            { "h", "h" },
+            { "G", "g" },
             { "hh", "hh" },
             { "i", "i" },
             { "I", "y" },
@@ -47,9 +51,13 @@ namespace OpenUtau.Plugin.Builtin {
             { "u", "u" },
             { "U", "w" },
             { "w", "w" },
+            { "x", "h" },
             { "y", "y" },
+            { "Y", "y" },
             { "z", "z" },
         };
+
+        protected override IG2p LoadBaseDictionary() => new SpanishG2p();
 
         private Dictionary<string, string> StartingConsonant => startingConsonant;
         private static readonly Dictionary<string, string> startingConsonant = new Dictionary<string, string> {
@@ -57,21 +65,32 @@ namespace OpenUtau.Plugin.Builtin {
             { "b", "b" },
             { "by", "by" },
             { "bw", "bw" },
+            { "B", "b" },
+            { "By", "by" },
+            { "Bw", "bw" },
             { "ch", "ch" },
+            { "chy", "chy" },
             { "chw", "chw" },
             { "d", "d" },
             { "dy", "dy" },
             { "dw", "dw" },
+            { "D", "d" },
+            { "Dy", "dy" },
+            { "Dw", "dw" },
             { "f", "f" },
             { "fy", "fy" },
             { "fw", "fw" },
             { "g", "g" },
             { "gy", "gy" },
             { "gw", "gw" },
+            { "G", "g" },
+            { "Gy", "gy" },
+            { "Gw", "gw" },
             { "h", "h" },
             { "hy", "hy" },
             { "hw", "hw" },
             { "j", "j" },
+            { "jy", "j" },
             { "jw", "jw" },
             { "k", "k" },
             { "ky", "ky" },
@@ -89,6 +108,7 @@ namespace OpenUtau.Plugin.Builtin {
             { "py", "py" },
             { "pw", "pw" },
             { "r", "r" },
+            { "ry", "ry" },
             { "rw", "rw" },
             { "rr", "rr" },
             { "rry", "rry" },
@@ -110,23 +130,35 @@ namespace OpenUtau.Plugin.Builtin {
         private static readonly Dictionary<string, string> soloConsonant = new Dictionary<string, string> {
             { "b", "ぶ" },
             { "by", "び" },
-            { "bu", "ぶ" },
+            { "bw", "ぶ" },
+            { "B", "ぶ" },
+            { "By", "ヴぃ" },
+            { "Bw", "ぶ" },
             { "ch", "ちゅ" },
+            { "chy", "ち" },
             { "chw", "ちゅ" },
             { "d", "ど" },
             { "dy", "でぃ" },
             { "dw", "どぅ" },
+            { "D", "ど" },
+            { "Dy", "でぃ" },
+            { "Dw", "どぅ" },
             { "f", "ふ" },
             { "fy", "ふぃ" },
+            { "fw", "ふ" },
             { "g", "ぐ" },
             { "gy", "ぎ" },
             { "gw", "ぐ" },
+            { "G", "ぐ" },
+            { "Gy", "ぎ" },
+            { "Gw", "ぐ" },
             { "h", "ほ" },
             { "hy", "ひ" },
             { "hw", "ほ" },
             { "hh", "息" },
             { "I", "い" },
             { "j", "じゅ" },
+            { "jy", "じ" },
             { "jw", "じゅ" },
             { "k", "く" },
             { "ky", "き" },
@@ -163,7 +195,7 @@ namespace OpenUtau.Plugin.Builtin {
             { "zw", "す" },
         };
 
-        private readonly string[] SpecialClusters = "ky kw gy gw sy sw zy zw jw ty tw chw dy dw ny nw hy hw by bw py pw my mw ry rw rry rrw ly lw".Split();
+        private readonly string[] SpecialClusters = "ky kw gy gw Gy Gw sy sw zy zw jy jw ty tw chy chw dy dw Dy Dw ny nw nyw hy hw by bw By Bw py pw my mw ry rw rry rrw ly lw".Split();
 
         private Dictionary<string, string> AltCv => altCv;
         private static readonly Dictionary<string, string> altCv = new Dictionary<string, string> {
@@ -175,6 +207,10 @@ namespace OpenUtau.Plugin.Builtin {
             {"gwi", "guli" },
             {"gwe", "gule" },
             {"gwo", "gulo" },
+            {"Gwa", "gula" },
+            {"Gwi", "guli" },
+            {"Gwe", "gule" },
+            {"Gwo", "gulo" },
             {"si", "suli" },
             {"sya", "sulya" },
             {"syu", "sulyu" },
@@ -213,6 +249,16 @@ namespace OpenUtau.Plugin.Builtin {
             {"dwi", "doli" },
             {"dwe", "dole" },
             {"dwo", "dolo" },
+            {"Di", "deli" },
+            {"Dya", "delya" },
+            {"Dyu", "delyu" },
+            {"Dye", "dele" },
+            {"Dyo", "delyo" },
+            {"Du", "dolu" },
+            {"Dwa", "dola" },
+            {"Dwi", "doli" },
+            {"Dwe", "dole" },
+            {"Dwo", "dolo" },
             {"nwa", "nula" },
             {"nwi", "nuli" },
             {"nwe", "nule" },
@@ -229,6 +275,10 @@ namespace OpenUtau.Plugin.Builtin {
             {"bwi", "buli" },
             {"bwe", "bule" },
             {"bwo", "bulo" },
+            {"Bwa", "bula" },
+            {"Bwi", "buli" },
+            {"Bwe", "bule" },
+            {"Bwo", "bulo" },
             {"pwa", "pula" },
             {"pwi", "puli" },
             {"pwe", "pule" },
@@ -292,6 +342,10 @@ namespace OpenUtau.Plugin.Builtin {
             {"sule", new [] { "su", "ule" } },
             {"sulo", new [] { "su", "ulo" } }, 
             {"je", new [] { "ji", "e" } },
+            {"jya", new [] { "ji", "ya" } },
+            {"jye", new [] { "ji", "e" } },
+            {"jyo", new [] { "ji", "yo" } },
+            {"jyu", new [] { "ji", "yu" } },
             {"jwa", new [] { "ju", "wa" } },
             {"jwi", new [] { "ju", "uli" } },
             {"jwe", new [] { "ju", "ule" } },
@@ -307,6 +361,10 @@ namespace OpenUtau.Plugin.Builtin {
             {"tole", new [] { "tolu", "ule" } },
             {"tolo", new [] { "tolu", "ulo" } },
             {"che", new [] { "chi", "e" } },
+            {"chya", new [] { "chi", "ya" } },
+            {"chye", new [] { "chi", "e" } },
+            {"chyo", new [] { "chi", "yo" } },
+            {"chyu", new [] { "chi", "yu" } },
             {"chwa", new [] { "chu", "wa" } },
             {"chwi", new [] { "chu", "uli" } },
             {"chwe", new [] { "chu", "ule" } },

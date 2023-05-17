@@ -189,5 +189,19 @@ namespace OpenUtau.Core {
                 div *= 2;
             }
         }
+
+        public static double TempoMsToTick(double tempo, double ms) {
+            return (tempo * 480 * ms) / (60.0 * 1000.0);
+        }
+
+        public static double TempoTickToMs(double tempo, int tick) {
+            return (60.0 * 1000.0 * tick) / (tempo * 480);
+        }
+
+        public static (float, float) PanToChannelVolumes(float pan) {
+            float volumeLeft = (Math.Max(pan, 0) - 100) / 100;
+            float volumeRight = (Math.Min(pan, 0) + 100) / -100;
+            return (volumeLeft, volumeRight);
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -28,6 +28,7 @@ namespace OpenUtau.App.ViewModels {
         public IReadOnlyList<MenuItemViewModel>? RenderersMenuItems { get; set; }
         public ReactiveCommand<string, Unit> SelectRendererCommand { get; }
         [Reactive] public double Volume { get; set; }
+        [Reactive] public double Pan { get; set; }
         [Reactive] public bool Mute { get; set; }
         [Reactive] public bool Solo { get; set; }
         [Reactive] public Bitmap? Avatar { get; set; }
@@ -124,12 +125,18 @@ namespace OpenUtau.App.ViewModels {
             });
 
             Volume = track.Volume;
+            Pan = track.Pan;
             Mute = track.Mute;
             Solo = track.Solo;
             this.WhenAnyValue(x => x.Volume)
                 .Subscribe(volume => {
                     track.Volume = volume;
                     DocManager.Inst.ExecuteCmd(new VolumeChangeNotification(track.TrackNo, Mute ? -24 : volume));
+                });
+            this.WhenAnyValue(x => x.Pan)
+                .Subscribe(pan => {
+                    track.Pan = pan;
+                    DocManager.Inst.ExecuteCmd(new PanChangeNotification(track.TrackNo, pan));
                 });
             this.WhenAnyValue(x => x.Mute)
                 .Subscribe(mute => {
@@ -167,7 +174,7 @@ namespace OpenUtau.App.ViewModels {
             items.AddRange(Preferences.Default.RecentSingers
                 .Select(id => SingerManager.Inst.Singers.Values.FirstOrDefault(singer => singer.Id == id))
                 .OfType<USinger>()
-                .OrderBy(singer => singer.Name)
+                .LocalizedOrderBy(singer => singer.Name)
                 .Select(singer => new MenuItemViewModel() {
                     Header = singer.Name,
                     Command = SelectSingerCommand,
@@ -257,6 +264,7 @@ namespace OpenUtau.App.ViewModels {
             this.RaisePropertyChanged(nameof(Mute));
             this.RaisePropertyChanged(nameof(Solo));
             this.RaisePropertyChanged(nameof(Volume));
+            this.RaisePropertyChanged(nameof(Pan));
             RefreshAvatar();
         }
 
@@ -281,6 +289,46 @@ namespace OpenUtau.App.ViewModels {
             }
             DocManager.Inst.StartUndoGroup();
             DocManager.Inst.ExecuteCmd(new MoveTrackCommand(DocManager.Inst.Project, track, false));
+            DocManager.Inst.EndUndoGroup();
+        }
+
+        public void Duplicate() {
+            DocManager.Inst.StartUndoGroup();
+            //TODO
+            var newTrack = new UTrack() {
+                TrackNo = track.TrackNo+1,
+                Singer = track.Singer,
+                Phonemizer = track.Phonemizer,
+                RendererSettings = track.RendererSettings,
+                Mute = track.Mute,
+                Solo = track.Solo,
+                Volume = track.Volume,
+                Pan = track.Pan,
+            };
+            DocManager.Inst.ExecuteCmd(new AddTrackCommand(DocManager.Inst.Project, newTrack));
+            var parts = DocManager.Inst.Project.parts
+                .Where(part => part.trackNo == track.TrackNo)
+                .Select(part => part.Clone()).ToList();
+            foreach(var part in parts) {
+                part.trackNo = newTrack.TrackNo;
+                DocManager.Inst.ExecuteCmd(new AddPartCommand(DocManager.Inst.Project, part));
+            }
+            DocManager.Inst.EndUndoGroup();
+        }
+
+        public void DuplicateSettings() {
+            DocManager.Inst.StartUndoGroup();
+            //TODO
+            DocManager.Inst.ExecuteCmd(new AddTrackCommand(DocManager.Inst.Project, new UTrack() {
+                TrackNo = track.TrackNo+1,
+                Singer = track.Singer,
+                Phonemizer = track.Phonemizer,
+                RendererSettings = track.RendererSettings,
+                Mute = track.Mute,
+                Solo = track.Solo,
+                Volume = track.Volume,
+                Pan = track.Pan,
+            }));
             DocManager.Inst.EndUndoGroup();
         }
     }

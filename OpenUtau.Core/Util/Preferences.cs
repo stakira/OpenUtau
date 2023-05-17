@@ -86,7 +86,10 @@ namespace OpenUtau.Core.Util {
             public int Theme;
             public bool PreRender = true;
             public int NumRenderThreads = 2;
+            public string OnnxRunner = string.Empty;
+            public int OnnxGpu = 0;
             public string Language = string.Empty;
+            public string SortingOrder = string.Empty;
             public List<string> RecentFiles = new List<string>();
             public string SkipUpdate = string.Empty;
             public string AdditionalSingerPath = string.Empty;
@@ -99,7 +102,7 @@ namespace OpenUtau.Core.Util {
             public bool PreferPortAudio = false;
             public double PlayPosMarkerMargin = 0.9;
             public int LockStartTime = 0;
-            public int PlaybackAutoScroll = 1;
+            public int PlaybackAutoScroll = 2;
             public bool ReverseLogOrder = true;
             public bool ShowPortrait = true;
             public bool ShowGhostNotes = true;

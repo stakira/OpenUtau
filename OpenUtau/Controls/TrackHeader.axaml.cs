@@ -126,16 +126,30 @@ namespace OpenUtau.App.Controls {
             args.Handled = true;
         }
 
-        void FaderPointerPressed(object sender, PointerPressedEventArgs args) {
+        void VolumeFaderPointerPressed(object sender, PointerPressedEventArgs args) {
             if (args.GetCurrentPoint((IVisual?)sender).Properties.IsRightButtonPressed && ViewModel != null) {
                 ViewModel.Volume = 0;
                 args.Handled = true;
             }
         }
 
-        void FaderContextRequested(object sender, ContextRequestedEventArgs args) {
+        void PanFaderPointerPressed(object sender, PointerPressedEventArgs args) {
+            if (args.GetCurrentPoint((IVisual?)sender).Properties.IsRightButtonPressed && ViewModel != null) {
+                ViewModel.Pan = 0;
+                args.Handled = true;
+            }
+        }
+
+        void VolumeFaderContextRequested(object sender, ContextRequestedEventArgs args) {
             if (ViewModel != null) {
                 ViewModel.Volume = 0;
+            }
+            args.Handled = true;
+        }
+
+        void PanFaderContextRequested(object sender, ContextRequestedEventArgs args) {
+            if (ViewModel != null) {
+                ViewModel.Pan = 0;
             }
             args.Handled = true;
         }

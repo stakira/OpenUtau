@@ -145,7 +145,7 @@ namespace OpenUtau.Core.Vogen {
                 new DenseTensor<string>(phonemes.ToArray(), new int[] { phonemes.Count })));
             inputs.Add(NamedOnnxValue.CreateFromTensor("phDurs",
                 new DenseTensor<long>(phDurs.ToArray(), new int[] { phonemes.Count })));
-            using (var session = new InferenceSession(Data.VogenRes.f0_man)) {
+            using (var session = Onnx.getInferenceSession(Data.VogenRes.f0_man)) {
                 using var outputs = session.Run(inputs);
                 var f0Out = outputs.First().AsTensor<float>();
                 var f0Path = Path.Join(PathManager.Inst.CachePath, $"vog-{phrase.hash:x16}-f0.npy");
@@ -169,7 +169,7 @@ namespace OpenUtau.Core.Vogen {
                 new DenseTensor<float>(breAmp, new int[] { 1, f0.Length })));
             double[,] sp;
             double[,] ap;
-            using (var session = new InferenceSession(singer.model)) {
+            using (var session = Onnx.getInferenceSession(singer.model)) {
                 using var outputs = session.Run(inputs);
                 var mgc = outputs.First().AsTensor<float>().Select(f => (double)f).ToArray();
                 var bap = outputs.Last().AsTensor<float>().Select(f => (double)f).ToArray();
@@ -225,6 +225,10 @@ namespace OpenUtau.Core.Vogen {
                 result.ticks[i] = phrase.timeAxis.MsPosToTickPos(t) - phrase.position;
             }
             return result;
+        }
+
+        public UExpressionDescriptor[] GetSuggestedExpressions(USinger singer, URenderSettings renderSettings) {
+            return new UExpressionDescriptor[] { };
         }
 
         public override string ToString() => Renderers.VOGEN;
