@@ -332,6 +332,7 @@ namespace OpenUtau.Core.Editing {
         * Wikipedia: https://en.wikipedia.org/wiki/Ramer%E2%80%93Douglas%E2%80%93Peucker_algorithm
         * Implementation reference: https://rosettacode.org/wiki/Ramer-Douglas-Peucker_line_simplification
         * */
+        //perpendicularDistance is replaced with deltaY, because the units of X and Y are different. 
         List<Point> simplifyShape(List<Point> pointList, Double epsilon) {
             if (pointList.Count <= 2) {
                 return pointList;
@@ -476,7 +477,8 @@ namespace OpenUtau.Core.Editing {
                 }
             }
             docManager.StartUndoGroup(true);
-            foreach(var note in selectedNotes) {
+            //Apply pitch points to notes
+            foreach(var note in notes) {
                 if (pitchPointsPerNote.TryGetValue(note.position, out var tickRangeAndPitch)) {
                     var pitch = tickRangeAndPitch.Item3;
                     docManager.ExecuteCmd(new ResetPitchPointsCommand(part, note));
@@ -492,17 +494,20 @@ namespace OpenUtau.Core.Editing {
                     
                 }
             }
-            foreach(var note in selectedNotes) {
+            //Erase PITD curve that has been converted to pitch points
+            foreach(var note in notes) {
                 if (pitchPointsPerNote.TryGetValue(note.position, out var tickRangeAndPitch)) {
+                    var start = tickRangeAndPitch.Item1 - part.position;
+                    var end = tickRangeAndPitch.Item2 - part.position;
                     docManager.ExecuteCmd(new SetCurveCommand(project, part, Format.Ustx.PITD, 
-                        tickRangeAndPitch.Item1, 0, 
-                        tickRangeAndPitch.Item1, 0));
+                        start, 0, 
+                        start, 0));
                     docManager.ExecuteCmd(new SetCurveCommand(project, part, Format.Ustx.PITD, 
-                        tickRangeAndPitch.Item2, 0, 
-                        tickRangeAndPitch.Item2, 0));
+                        end, 0, 
+                        end, 0));
                     docManager.ExecuteCmd(new SetCurveCommand(project, part, Format.Ustx.PITD, 
-                        tickRangeAndPitch.Item1, 0, 
-                        tickRangeAndPitch.Item2, 0));
+                        start, 0, 
+                        end, 0));
                 }
             }
             docManager.EndUndoGroup();
