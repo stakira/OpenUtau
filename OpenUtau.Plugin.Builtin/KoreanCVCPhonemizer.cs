@@ -545,7 +545,7 @@ namespace OpenUtau.Plugin.Builtin {
                         if ((!isAlphaCon(consonant))) { consonant = con; }
                     } else if (nextExist && nextHangeul) {
                         consonant = TNLconsonant;
-                    }
+                    } else if (nextLyric.StartsWith("ch")) { consonant = "ch"; }
 
                     if (!nextHangeul) {
                         VC = TCLplainvowel + " " + consonant;
