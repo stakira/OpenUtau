@@ -38,7 +38,7 @@ namespace OpenUtau.Classic {
                 modulation = (int)phoneme.GetExpression(project, track, Ustx.MOD).Item1;
                 flags = FlagsToString(phoneme.GetResamplerFlags(project, track));
                 if (phoneme.oto != null) {
-                    var relativePath = phoneme.oto.File.Replace(track.Singer.Location + "\\", "");
+                    var relativePath = Path.GetRelativePath(track.Singer.Location, phoneme.oto.File);
                     filename = relativePath;
                     alias = phoneme.oto.Alias;
                 }
