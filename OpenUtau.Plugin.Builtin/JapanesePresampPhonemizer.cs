@@ -53,16 +53,15 @@ namespace OpenUtau.Plugin.Builtin {
 
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
             var note = notes[0];
-            var currentUnicode = ToUnicodeElements(note.lyric);
-            var currentLyric = note.lyric;
+            var currentLyric = note.lyric.Normalize(); // Normalize(): measures for Unicode
+            if (!string.IsNullOrEmpty(note.phoneticHint)) {
+                currentLyric = note.phoneticHint.Normalize();
+            }
             // replace (exact match)
             foreach (var pair in presamp.Replace) {
                 if(pair.Key == currentLyric) {
                     currentLyric = pair.Value;
                 }
-            }
-            if (!string.IsNullOrEmpty(note.phoneticHint)) {
-                currentLyric = note.phoneticHint;
             }
             string currentAlias = presamp.ParseAlias(currentLyric)[1]; // exclude useless characters
             var vcvpad = presamp.AliasRules.VCVPAD;
@@ -71,21 +70,28 @@ namespace OpenUtau.Plugin.Builtin {
             var cfLyric = $"*{vcpad}{currentLyric}";
 
 
-            if (prevNeighbour == null) {
+            if (!string.IsNullOrEmpty(note.phoneticHint)) {
+                string[] tests = new string[] { currentLyric };
+                if (checkOtoUntilHit(tests, note, out var oto)) {
+                    currentLyric = oto.Alias;
+                }
+            } else if (prevNeighbour == null) {
                 // Use "- V" or "- CV" if present in voicebank
                 string[] tests = new string[] { initial, currentLyric };
-                if (checkOtoUntilHit(tests, note, out var oto)){
+                if (checkOtoUntilHit(tests, note, out var oto)) {
                     currentLyric = oto.Alias;
                 }
             } else {
-                var prevUnicode = ToUnicodeElements(prevNeighbour?.lyric);
-                var prevLyric = string.Join("", prevUnicode);
-                string prevAlias = presamp.ParseAlias(prevLyric)[1];
+                var prevLyric = prevNeighbour.Value.lyric.Normalize();
+                if (!string.IsNullOrEmpty(prevNeighbour.Value.phoneticHint)) {
+                    prevLyric = prevNeighbour.Value.phoneticHint.Normalize();
+                }
                 foreach (var pair in presamp.Replace) {
-                    if (pair.Key == prevAlias) {
-                        prevAlias = pair.Value;
+                    if (pair.Key == prevLyric) {
+                        prevLyric = pair.Value;
                     }
                 }
+                string prevAlias = presamp.ParseAlias(prevLyric)[1];
                 if (prevAlias.Contains("・")) {
                     prevAlias = prevAlias.Split('・')[0];
                 }
@@ -159,15 +165,17 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             }
 
-            if (nextNeighbour != null) {
-                var nextUnicode = ToUnicodeElements(nextNeighbour?.lyric);
-                var nextLyric = string.Join("", nextUnicode);
-                string nextAlias = presamp.ParseAlias(nextLyric)[1];
+            if (nextNeighbour != null && string.IsNullOrEmpty(nextNeighbour.Value.phoneticHint)) {
+                var nextLyric = nextNeighbour.Value.lyric.Normalize();
+                if (!string.IsNullOrEmpty(nextNeighbour.Value.phoneticHint)) {
+                    nextLyric = nextNeighbour.Value.phoneticHint.Normalize();
+                }
                 foreach (var pair in presamp.Replace) {
-                    if (pair.Key == nextAlias) {
-                        nextAlias = pair.Value;
+                    if (pair.Key == nextLyric) {
+                        nextLyric = pair.Value;
                     }
                 }
+                string nextAlias = presamp.ParseAlias(nextLyric)[1];
                 string vcPhoneme;
 
 
