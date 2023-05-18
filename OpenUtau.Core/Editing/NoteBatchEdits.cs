@@ -333,6 +333,7 @@ namespace OpenUtau.Core.Editing {
         * Implementation reference: https://rosettacode.org/wiki/Ramer-Douglas-Peucker_line_simplification
         * */
         //perpendicularDistance is replaced with deltaY, because the units of X and Y are different. 
+        //result doesn't contain the last point to enhance performance in recursion
         List<Point> simplifyShape(List<Point> pointList, Double epsilon) {
             if (pointList.Count <= 2) {
                 return pointList;
@@ -363,15 +364,14 @@ namespace OpenUtau.Core.Editing {
                 var recResults2 = simplifyShape(pointList.GetRange(index, pointList.Count - index), epsilon);
 
                 // Build the result list
-                results.AddRange(recResults1.GetRange(0, recResults1.Count - 1));
+                results.AddRange(recResults1);
                 results.AddRange(recResults2);
                 if (results.Count < 2) {
                     throw new Exception("Problem assembling output");
                 }
             } else {
-                //Just return start and end points
+                //Just return the start point
                 results.Add(pointList[0].ChangeShape(shape));
-                results.Add(pointList[end]);
             }
             return results;
         }
@@ -425,7 +425,18 @@ namespace OpenUtau.Core.Editing {
                 ).ToList();
 
                 //Reduce pitch point
-                points = simplifyShape(points, 10);
+                var mustIncludeIndices = phrase.notes
+                    .SelectMany(n => new[] { 
+                        n.position, 
+                        n.duration>160 ? n.end-80 : n.position+n.duration/2 })
+                    .Select(t=>(t-pitchStart)/pitchInterval)
+                    .Prepend(0)
+                    .Append(points.Count-1)
+                    .ToList();
+                //pairwise(mustIncludePointIndices) 
+                points = mustIncludeIndices.Zip(mustIncludeIndices.Skip(1), 
+                        (a, b) => simplifyShape(points.GetRange(a,b-a),10))
+                    .SelectMany(x=>x).Append(points[^1]).ToList();
                 
                 //determine where to distribute pitch point
                 int idx = 0;
@@ -460,7 +471,7 @@ namespace OpenUtau.Core.Editing {
                     }
                 }
                 adjusted_boundaries[^1] = note_boundaries[^1];
-                //distribute pitch point
+                //distribute pitch point to each note
                 foreach(int i in Enumerable.Range(0,phrase.notes.Length)) {
                     var note = phrase.notes[i];
                     var pitch = points.GetRange(adjusted_boundaries[i]-2,adjusted_boundaries[i + 1]-(adjusted_boundaries[i]-2))
@@ -511,7 +522,6 @@ namespace OpenUtau.Core.Editing {
                 }
             }
             docManager.EndUndoGroup();
-            
         }
     }
 }
