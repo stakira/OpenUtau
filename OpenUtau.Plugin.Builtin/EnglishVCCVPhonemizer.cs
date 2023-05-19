@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using NumSharp.Utilities;
 using OpenUtau.Api;
 using OpenUtau.Core.G2p;
 using Serilog;
@@ -17,7 +18,7 @@ namespace OpenUtau.Plugin.Builtin {
         private readonly string[] vowels = "a,@,u,0,8,I,e,3,A,i,E,O,Q,6,o,1ng,9,&,x,1".Split(",");
         private readonly string[] consonants = "b,ch,d,dh,f,g,h,j,k,l,m,n,ng,p,r,s,sh,t,th,v,w,y,z,zh,dd,hh,sp,st".Split(",");
         private readonly Dictionary<string, string> dictionaryReplacements = ("aa=a;ae=@;ah=u;ao=9;aw=8;ay=I;" +
-            "b=b;ch=ch;d=d;dh=dh;eh=e;er=3;ey=A;f=f;g=g;hh=h;ih=i;iy=E;jh=j;k=k;l=l;m=m;n=n;ng=ng;ow=O;oy=Q;" +
+            "b=b;ch=ch;d=d;dh=dh;eh=e;er=3;ey=A;f=f;g=g;hh=h;hhy=hh;ih=i;iy=E;jh=j;k=k;l=l;m=m;n=n;ng=ng;ow=O;oy=Q;" +
             "p=p;r=r;s=s;sh=sh;t=t;th=th;uh=6;uw=o;v=v;w=w;y=y;z=z;zh=zh;dx=dd;").Split(';')
                 .Select(entry => entry.Split('='))
                 .Where(parts => parts.Length == 2)
@@ -33,23 +34,13 @@ namespace OpenUtau.Plugin.Builtin {
                 {"9r","0r"},
                 {"e r","Ar"},
                 {"er","Ar"},
-                {"0 l","0l"},
-                {"0l","0l"},
-                {"9 l","9l"},
                 {"@ m","&m"},
                 {"@m","&m"},
-                {"& m","&m"},
-                {"@ n","& n"},
                 {"@n","&n"},
+                {"1 ng","1ng"},
                 {"@ ng","Ang"},
                 {"@ng","Ang"},
-                {"& n","&n"},
-                {"8 n","8n"},
-                {"0 n","9n"},
-                {"0n","9n"},
-                {"0 s","9s"},
-                {"0s","9s"},
-                {"O l","0l"},
+                //{"O l","0l"},
                 {"Ol","0l"},
                 {"6 l","6l"},
                 {"i r","Er"},
@@ -58,8 +49,8 @@ namespace OpenUtau.Plugin.Builtin {
 
         private readonly Dictionary<string, string> vvExceptions =
             new Dictionary<string, string>() {
-                {"o","w"},
-                {"0","w"},
+                //{"o","w"},
+               // {"0","w"},
                 {"O","w"},
                 {"8","w"},
                 {"A","y"},
@@ -71,8 +62,20 @@ namespace OpenUtau.Plugin.Builtin {
             };
 
         private readonly string[] ccExceptions = { "th", "ch", "dh", "zh", "sh", "ng" };
+        private readonly string[] cccExceptions = { "spr", "spl", "skr", "str", "skw", "sky", "spy" };
 
-        private readonly string[] ccNoParsing = { "sk", "sm", "sn", "sp", "st" };
+        private readonly Dictionary<string, string> vcccExceptions =
+            new Dictionary<string, string>() {
+                {"spr","sp"},
+               {"spl","sp"},
+                {"skr","sk"},
+                {"str","st"},
+                {"skw","sk"},
+                {"sky","sk"},
+                {"spy","sp"},
+            };
+        //spl, shr, skr, spr, str, thr, skw, thw, sky, spy
+        private readonly string[] ccNoParsing = { "sk", "sm", "sn", "sp", "st", "hhy" };
         private readonly string[] stopCs = { "b", "d", "g", "k", "p", "t" };
 
 
@@ -205,7 +208,7 @@ namespace OpenUtau.Plugin.Builtin {
                 else {
 
                 //cc = ValidateCC(cc);
-                var parsingVCC = "";
+                var parsingVCC = $"{prevV}{cc[0]}-";
                 var parsingCC = "";
 
                 // if only one Consonant [V C] + [CV]
@@ -232,10 +235,12 @@ namespace OpenUtau.Plugin.Builtin {
                         // sk, sm, sn, sp & st exceptions
                         var ccNoParse = $"{cc[0]}{cc[1]}";
                         bool dontParse = false;
-                        for (int i = 0; i < ccNoParsing.Length; i++) {
-                            if (ccNoParsing.Contains(ccNoParse)) {
-                                dontParse = true;
-                                break;
+                        if (cc.Length - lastCPrevWord > 1) {
+                            for (int i = 0; i < ccNoParsing.Length; i++) {
+                                if (ccNoParsing.Contains(ccNoParse)) {
+                                    dontParse = true;
+                                    break;
+                                }
                             }
                         }
                         if (dontParse) {
@@ -245,6 +250,9 @@ namespace OpenUtau.Plugin.Builtin {
                             }
 
                             var vc = $"{prevV} {ccNoParse}";
+                            if ($"{ccNoParse}" == "hhy") {
+                                vc = $"{prevV} hh";
+                            }
 
                             phonemes.Add(vc);
 
@@ -260,10 +268,6 @@ namespace OpenUtau.Plugin.Builtin {
                                 vccExceptions = $"1nk";
                             }
                         }
-                        // Ank exception TODO, doesnt work
-                        //if ($"{prevV}{cc[0]}{cc[1]}"== "Ank") {
-                        //    vccExceptions = $"{prevV}{cc[0]}{cc[1]}";
-                        //}
 
                         if (HasOto(vccExceptions, syllable.vowelTone)) {
                             phonemes.Add(vccExceptions);
@@ -274,21 +278,26 @@ namespace OpenUtau.Plugin.Builtin {
                             parsingCC = $"{cc[0]} {cc[1]}";
                             if (HasOto(parsingCC, syllable.vowelTone)) {
                                 if (!HasOto(parsingVCC, syllable.vowelTone)) {
-                                    parsingVCC = $"{prevV}{cc[0]}-";
-                                    if (!HasOto(parsingVCC, syllable.vowelTone)) {
-                                        parsingVCC = $"{prevV} {cc[0]}";
-                                    }
+                                    parsingVCC = $"{prevV} {cc[0]}";
                                 }
                                 phonemes.Add(parsingVCC);
                                 phonemes.Add(parsingCC);
                             } else {
                                 // opera [9 p] + [pr] + [_ru]
                                 parsingCC = $"{cc[0]}{cc[1]}";
-                                if (HasOto(parsingCC, syllable.vowelTone)) {
+                                if (HasOto(parsingCC, syllable.vowelTone) && lastCPrevWord != 1) {
                                     parsingVCC = $"{prevV} {cc[0]}";
+
+                                    basePhoneme = $"_{cc.Last()}{v}";
+                                    if (lastCPrevWord == cc.Length) {
+                                        parsingVCC = $"{prevV}{cc[0]}-";
+                                        if (stopCs.Contains($"{cc.Last()}")) {
+                                            basePhoneme = $"-{v}";
+
+                                        }
+                                    }
                                     phonemes.Add(parsingVCC);
                                     phonemes.Add(parsingCC);
-                                    basePhoneme = $"_{cc.Last()}{v}";
                                 } else {
                                     // backpack [@k] + [p@]
                                     parsingVCC = $"{prevV}{cc[0]}";
@@ -298,7 +307,7 @@ namespace OpenUtau.Plugin.Builtin {
                         }
                     }
 
-                    // more than 2 consonants
+                    // LOGIC FOR MORE THAN 2 CONSONANTS
                     if (cc.Length > 2 && phonemes.Count == 0) {
                         // also [VC CC] exceptions
                         var vccExceptions = $"{prevV}{cc[0]}{cc[1]} {cc[2]}";
@@ -319,62 +328,120 @@ namespace OpenUtau.Plugin.Builtin {
                             }
                         }
 
-                        // sk, sm, sn, sp & st exceptions
-                        var ccNoParse = $"{cc[cc.Length - 2]}{cc[cc.Length - 1]}";
+                        var ccNoParse = $"{cc[cc.Length - 3]}{cc[cc.Length - 2]}{cc[cc.Length - 1]}";
                         bool dontParse = false;
-                        for (int i = 0; i < ccNoParsing.Length; i++) {
-                            if (ccNoParsing.Contains(ccNoParse)) {
-                                dontParse = true;
-                                break;
-                            }
-                        }
-                        if (dontParse) {
+                        var lastCforLoop = cc.Length - 1;
+
+                        // str exceptions
+                        if (ccNoParse == "str") {
+
+                            var vc = $"{prevV}{cc[0]}-";
                             if (cc.Length == 3) {
-                                vccExceptions = $"{prevV}{cc[0]}-";
-                                if (ing) {
-                                    vccExceptions = $"1ng {cc[1]}{cc[2]}";
-                                    phonemes.Add(vccExceptions);
-                                } else {
-                                    phonemes.Add(vccExceptions);
-                                    phonemes.Add($"{cc[0]} {cc[1]}{cc[2]}");
-                                }
-
-                                startingC = 2;
+                                vc = $"{prevV} st";
                             }
-                            basePhoneme = $"{cc[cc.Length - 2]}{cc[cc.Length - 1]}{v}";
-                        }
+                            if (cc.Length == 4) {
+                                vc = $"{prevV}{cc[0]}";
+                            }
+                            phonemes.Add(vc);
+                            startingC = 0;
+                            lastCforLoop -= 2;
+                        } else {
+                            ccNoParse = $"{cc[cc.Length - 2]}{cc[cc.Length - 1]}";
 
-                        if (phonemes.Count == 0) {
+                            // sk, sm, sn, sp & st exceptions
+                            if (cc.Length - lastCPrevWord > 1) {
+                                for (int i = 0; i < ccNoParsing.Length; i++) {
+                                    if (ccNoParsing.Contains(ccNoParse)) {
+                                        dontParse = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (dontParse) {
 
-                            if (HasOto(vccExceptions, syllable.vowelTone)) {
-                                phonemes.Add(vccExceptions);
-                            } else { startingC = 0; }
+                                basePhoneme = $"{cc[cc.Length - 2]}{cc[cc.Length - 1]}{v}";
+                                if (cc.Length == 3) {
+                                    vccExceptions = $"{prevV}{cc[0]}-";
+
+                                    if (ing) {
+                                        vccExceptions = $"1ng {cc[1]}{cc[2]}";
+                                        phonemes.Add(vccExceptions);
+                                    } else {
+                                        phonemes.Add(vccExceptions);
+                                        if (HasOto($"{cc[0]} {cc[1]}{cc[2]}", syllable.vowelTone)) {
+                                            phonemes.Add($"{cc[0]} {cc[1]}{cc[2]}");
+                                        } else { basePhoneme = $"-{cc[cc.Length - 2]}{cc[cc.Length - 1]}{v}"; }
+                                    }
+
+                                    startingC = 2;
+                                }
+                            }
 
                             if (phonemes.Count == 0) {
-                                parsingVCC = $"{prevV}{cc[0]}-";
-                                if (!HasOto(parsingVCC, syllable.vowelTone)) {
-                                    parsingVCC = $"{prevV} {cc[0]}";
+
+                                if (HasOto(vccExceptions, syllable.vowelTone)) {
+                                    phonemes.Add(vccExceptions);
+                                } else { startingC = 0; }
+
+                                if (phonemes.Count == 0) {
+                                    parsingVCC = $"{prevV}{cc[0]}-";
+                                    if (!HasOto(parsingVCC, syllable.vowelTone)) {
+                                        parsingVCC = CheckVCExceptions($"{prevV}{cc[0]}") + "-";
+                                        if (!HasOto(parsingVCC, syllable.vowelTone)) {
+                                            parsingVCC = $"{prevV} {cc[0]}";
+                                        }
+                                    }
+                                    if (lastCPrevWord == 1 && stopCs.Contains($"{cc[0]}")) {
+                                        parsingVCC = $"{prevV}{cc[0]}";
+                                    }
+                                    phonemes.Add(parsingVCC);
                                 }
-                                phonemes.Add(parsingVCC);
                             }
                         }
 
-                        for (int i = startingC; i < cc.Length - 1; i++) {
+
+                        for (int i = startingC; i < lastCforLoop; i++) {
                             parsingCC = $"{cc[i]}{cc[i + 1]}-";
                             if (dontParse && i == cc.Length - 3) {
                                 parsingCC = $"{cc[i]} {cc[i + 1]}{cc[i + 2]}";
                             }
-                            if (i + 1 == cc.Length - 1) {
+                            if (i + 1 != lastCforLoop - 1) {
                                 parsingCC = $"{cc[i]}{cc[i + 1]}";
-                            }
-                            if (!HasOto(parsingCC, syllable.vowelTone)) {
-                                // parsingCC = $"{cc[i]}x";
-                                parsingCC = "";
-                                if (stopCs.Contains($"{cc[i]}") && (HasOto($"{cc[i - 1]}{cc[i]}", syllable.vowelTone))) {
-                                    phonemes[phonemes.Count - 1] = $"{cc[i - 1]}{cc[i]}";
+                                if (dontParse) {
+                                    parsingCC = "";
                                 }
                             }
-                            if (parsingCC != "") { phonemes.Add(parsingCC); }
+
+                            if (i > 0 && !HasOto(parsingCC,syllable.vowelTone)) {
+                                parsingCC = "";
+                                if ((HasOto($"{cc[i - 1]}{cc[i]}", syllable.vowelTone))) {
+                                    phonemes[phonemes.Count - 1] = $"{cc[i - 1]}{cc[i]}";
+                                    continue;
+                                }
+                            }
+
+                            if (i == lastCPrevWord - 1) {
+                                parsingCC = $"{cc[i]} {cc[i + 1]}";
+                                if (!HasOto(parsingCC, syllable.vowelTone))
+                                    parsingCC = "";
+                            }
+
+                            //ng to nk exception
+                            if ($"{cc[i]}" == "ng" && $"{cc[i + 1]}" == "th" && i + 1 != lastCPrevWord) {
+                                parsingCC = $"nkth";
+                            }
+
+                            if (parsingCC != "" && HasOto(parsingCC, syllable.vowelTone)) {
+                                phonemes.Add(parsingCC);
+                            }
+                        }
+
+                        if (cc.Length - lastCPrevWord - 1 > 0 && !dontParse) {
+                            basePhoneme = $"_{cc.Last()}{v}";
+                        }
+
+                        if (ccNoParse == "str") {
+                            phonemes.Add(ccNoParse);
                         }
                     }
 
@@ -404,21 +471,21 @@ namespace OpenUtau.Plugin.Builtin {
                 // --------------------------- ENDING VC ------------------------------- //
                 if (ending.IsEndingVCWithOneConsonant) {
 
-                    vc = CheckVCExceptions(vc);
-                    vc += "-";
+                    vc = CheckVCExceptions(vc) + "-";
                     phonemes.Add(vc);
 
                 } else {
-                    vc = $"{v} {cc[0]}";
-                    vc = CheckVCExceptions(vc);
+                    vc = $"{v}{cc[0]}";
+                    vc = CheckVCExceptions(vc) + "-";
 
                     // "1nks" exception
                     var startingC = 0;
                     var vcc = "";
                     var newV = v;
-                    if ($"{v}" == "i" && $"{cc[0]}" == "ng"){
-                        newV = "1"; }
-                        
+                    if ($"{v}" == "i" && $"{cc[0]}" == "ng") {
+                        newV = "1";
+                    }
+
                     if (cc.Length > 2) {
                         vcc = $"{newV}{cc[0]}{cc[1]}{cc[2]}-";
                         vc = vcc;
@@ -426,16 +493,16 @@ namespace OpenUtau.Plugin.Builtin {
                     }
 
                     if (!HasOto(vcc, ending.tone)) {
-                            vcc = $"{newV}{cc[0]}{cc[1]}-";
-                            vc = vcc;
-                            startingC = 1;
-                        }
+                        vcc = $"{newV}{cc[0]}{cc[1]}-";
+                        vc = vcc;
+                        startingC = 1;
+                    }
 
-                        if (!HasOto(vcc, ending.tone)) {
-                            vcc = $"{newV}{cc[0]}-";
-                            vc = vcc;
-                            startingC = 0;
-                        }
+                    if (!HasOto(vcc, ending.tone)) {
+                        vcc = $"{newV}{cc[0]}-";
+                        vc = vcc;
+                        startingC = 0;
+                    }
 
                     if (HasOto(vcc, ending.tone)) {
                         phonemes.Add(vc);
@@ -451,12 +518,21 @@ namespace OpenUtau.Plugin.Builtin {
                             currentCc = $"{cc[i]}{cc[i + 1]}";
                         }
 
+                        //ng to nk exception
+                        if ($"{cc[i]}" == "ng" && $"{cc[i + 1]}" == "th" && i == cc.Length - 2) {
+                            currentCc = $"nkth-";
+                        }
+
                         if (!HasOto(currentCc, ending.tone)) {
                             currentCc = $"{cc[i]} {cc[i + 1]}";
 
                         }
                         if (!HasOto(currentCc, ending.tone)) {
                             currentCc = $"{cc[i]}x";
+                            if (i == cc.Length - 2) {
+                                phonemes.Add(currentCc);
+                                currentCc = $"{cc[i + 1]}x";
+                            }
                         }
 
 
@@ -465,34 +541,31 @@ namespace OpenUtau.Plugin.Builtin {
                         }
                     }
 
-                        //if (!hasEnding) {
-                        //    TryAddPhoneme(phonemes, ending.tone, $"{cc[lastC - 1]}{cc[lastC]}-");
-                        //}
 
-                    }
                 }
-
-                // ---------------------------------------------------------------------------------- //
-
-                return phonemes;
             }
 
+            // ---------------------------------------------------------------------------------- //
 
-            private string CheckVCExceptions(string vc) {
-                if (vcExceptions.ContainsKey(vc)) {
-                    vc = vcExceptions[vc];
-                }
-                return vc;
-            }
-            private bool CheckCCExceptions(string cc) {
-                for (int i = 0; i < ccExceptions.Length; i++) {
-                    if (cc.Contains(ccExceptions[i])) {
-                        return true;
-                    }
-                }
+            return phonemes;
+        }
 
-                return false;
+
+        private string CheckVCExceptions(string vc) {
+            if (vcExceptions.ContainsKey(vc)) {
+                vc = vcExceptions[vc];
             }
+            return vc;
+        }
+        private bool CheckCCExceptions(string cc) {
+            for (int i = 0; i < ccExceptions.Length; i++) {
+                if (cc.Contains(ccExceptions[i])) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
 
         protected override string ValidateAlias(string alias) {
             //foreach (var consonant in new[] { "h" }) {
