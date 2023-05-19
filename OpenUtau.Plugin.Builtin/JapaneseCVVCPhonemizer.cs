@@ -156,14 +156,11 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             }
 
-            if (nextNeighbour != null) {
+            if (nextNeighbour != null && string.IsNullOrEmpty(nextNeighbour.Value.phoneticHint)) {
                 var nextLyric = nextNeighbour.Value.lyric.Normalize();
-                if (!string.IsNullOrEmpty(nextNeighbour.Value.phoneticHint)) {
-                    nextLyric = nextNeighbour.Value.phoneticHint.Normalize();
-                }
 
                 // Check if next note is a vowel and does not require VC
-                if (plainVowels.Contains(nextLyric.FirstOrDefault().ToString() ?? string.Empty)) {
+                if (nextLyric.Length == 1 && plainVowels.Contains(nextLyric)) {
                     return new Result {
                         phonemes = new Phoneme[] {
                             new Phoneme() {
@@ -182,7 +179,7 @@ namespace OpenUtau.Plugin.Builtin {
 
                 // Get consonant from next note
                 var consonant = "";
-                if (consonantLookup.TryGetValue(nextLyric.FirstOrDefault().ToString() ?? string.Empty, out var con) || consonantLookup.TryGetValue(nextLyric.Substring(0, 2), out con)) {
+                if (consonantLookup.TryGetValue(nextLyric.FirstOrDefault().ToString() ?? string.Empty, out var con) || (nextLyric.Length >= 2 && consonantLookup.TryGetValue(nextLyric.Substring(0, 2), out con))) {
                     consonant = con;
                 }
 

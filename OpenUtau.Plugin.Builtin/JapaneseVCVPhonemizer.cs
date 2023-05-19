@@ -38,7 +38,7 @@ namespace OpenUtau.Plugin.Builtin {
 
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
             var note = notes[0];
-            var currentLyric = note.lyric.Normalize(); // Normalize(): measures for Unicode
+            var currentLyric = note.lyric.Normalize(); //measures for Unicode
 
             // Get color
             string color = string.Empty;
