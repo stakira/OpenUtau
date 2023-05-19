@@ -106,7 +106,6 @@ namespace OpenUtau.App.Views {
             }
             var (notes, lyrics) = ViewModel.NotesViewModel.PrepareInsertLyrics();
             var vm = new LyricsReplaceViewModel(ViewModel.NotesViewModel.Part, notes, lyrics);
-            //vm.Start(ViewModel.NotesViewModel.Part, notes, lyrics);
             var dialog = new LyricsReplaceDialog() {
                 DataContext = vm,
             };
