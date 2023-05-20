@@ -223,6 +223,9 @@ namespace OpenUtau.Classic {
                             noteTempo = floatValue;
                         }
                         break;
+                    case "Flags":
+                        flags = parts[1];
+                        break;
                     default:
                         break;
                 }

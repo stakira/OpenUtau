@@ -2,8 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using OpenUtau.Core;
+using OpenUtau.Core.Format;
 using OpenUtau.Core.Ustx;
 using Xunit;
 using static OpenUtau.Classic.PluginRunner;
@@ -26,6 +28,7 @@ namespace OpenUtau.Classic {
             public ExecuteTestData() {
                 testData.Add(new object[] { BasicUProject(), DoNothingResponse(), DoNothingAssertion(), FailedErrorMethod() });
                 testData.Add(new object[] { BasicUProject(), IncludeNullResponse(), IncludeNullAssertion(), FailedErrorMethod() });
+                testData.Add(new object[] { BasicUProject(), EditFlagsResponse(), EditFlagsAssertion(), FailedErrorMethod() });
             }
 
             public IEnumerator<object[]> GetEnumerator() => testData.GetEnumerator();
@@ -43,6 +46,9 @@ namespace OpenUtau.Classic {
                 };
                 project.parts.Add(part);
 
+                // Any flag must be registered in the project
+                Ustx.AddDefaultExpressions(project);
+     
                 var before = UNote.Create();
                 before.lyric = "a";
                 before.duration = 10;
@@ -59,6 +65,14 @@ namespace OpenUtau.Classic {
                 second.duration = 30;
                 second.position = 30;
                 first.Next = second;
+                var secondUpnoneme = new UPhoneme {
+                    Parent = second
+                };
+                secondUpnoneme.SetExpression(project, project.tracks[0], Ustx.GEN, 30);
+                // requierd Expression
+                secondUpnoneme.SetExpression(project, project.tracks[0], Ustx.VEL, 40);
+                secondUpnoneme.SetExpression(project, project.tracks[0], Ustx.VOL, 50);
+                secondUpnoneme.SetExpression(project, project.tracks[0], Ustx.MOD, 60);
 
                 var third = UNote.Create();
                 third.lyric = "ta";
@@ -81,6 +95,7 @@ namespace OpenUtau.Classic {
                 part.notes.Add(before);
                 part.notes.Add(first);
                 part.notes.Add(second);
+                part.phonemes.Add(secondUpnoneme);
                 part.notes.Add(third);
                 part.notes.Add(last);
                 part.notes.Add(after);
@@ -92,7 +107,6 @@ namespace OpenUtau.Classic {
                 return (writer, text) => {
                     // reserved text assertion
                     var cacheDir = PathManager.Inst.CachePath;
-                    // OSによって出力される改行コードが異なる。
                     var expected = $@"[#SETTING]
 Tempo=120
 Tracks=1
@@ -113,6 +127,10 @@ Length=30
 Lyric=r
 NoteNum=0
 PreUtterance=
+Velocity=40
+Intensity=50
+Modulation=60
+Flags=g30B0H0
 [#0002]
 Length=40
 Lyric=ta
@@ -177,6 +195,32 @@ PreUtterance=
                     Assert.Equal("zo", args.ToAdd[1].lyric);
                     Assert.Equal(240, args.ToAdd[2].duration);
                     Assert.Equal("me", args.ToAdd[2].lyric);
+                };
+            }
+
+            private static Action<StreamWriter, string> EditFlagsResponse() {
+                return (writer, text) => {
+                    writer.WriteLine("[#0000]");
+                    // update flags
+                    writer.WriteLine("[#0001]");
+                    writer.WriteLine("Flags=g10");
+                    // insert flags
+                    writer.WriteLine("[#0002]");
+                    writer.WriteLine("Flags=g-10B20");
+                    // L is undefined flag
+                    writer.WriteLine("[#0003]");
+                    writer.WriteLine("Flags=B30L2");
+                };
+            }
+
+            private static Action<ReplaceNoteEventArgs> EditFlagsAssertion() {
+                return (args) => {
+                    Assert.Equal(4, args.ToRemove.Count);
+                    Assert.Equal(4, args.ToAdd.Count);
+                    Assert.Equal(10, args.ToAdd[1].phonemeExpressions.FirstOrDefault(exp => exp.descriptor?.abbr == Ustx.GEN)?.value);
+                    Assert.Equal(-10, args.ToAdd[2].phonemeExpressions.FirstOrDefault(exp => exp.descriptor?.abbr == Ustx.GEN)?.value);
+                    Assert.Equal(20, args.ToAdd[2].phonemeExpressions.FirstOrDefault(exp => exp.descriptor?.abbr == Ustx.BRE)?.value);
+                    Assert.Equal(30, args.ToAdd[3].phonemeExpressions.FirstOrDefault(exp => exp.descriptor?.abbr == Ustx.BRE)?.value);
                 };
             }
 
