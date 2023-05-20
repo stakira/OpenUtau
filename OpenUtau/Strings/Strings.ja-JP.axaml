@@ -75,7 +75,7 @@
   <system:String x:Key="lyricsreplace.presets">プリセット</system:String>
   <system:String x:Key="lyricsreplace.preview">プレビュー</system:String>
   <system:String x:Key="lyricsreplace.regex">正規表現が使えます</system:String>
-  <system:String x:Key="lyricsreplace.replace">歌詞の置換</system:String>
+  <system:String x:Key="lyricsreplace.replace">その他の歌詞置換</system:String>
   <system:String x:Key="lyricsreplace.preset.rmvalphabet">アルファベットを削除</system:String>
   <system:String x:Key="lyricsreplace.preset.rmvnonhiragana">ひらがな以外を削除</system:String>
   <system:String x:Key="lyricsreplace.preset.rmvphonetichint">[音素の指定]を削除</system:String>

@@ -56,6 +56,12 @@ namespace OpenUtau.App.Views {
 #endif
             DataContext = ViewModel = new PianoRollViewModel();
 
+            ViewModel.LyricBatchEdits.Add(new MenuItemViewModel() {
+                Header = ThemeManager.GetString("lyricsreplace.replace"),
+                Command = ReactiveCommand.Create(() => {
+                    ReplaceLyrics();
+                })
+            });
             lyricsDialogCommand = ReactiveCommand.Create(() => {
                 EditLyrics();
             });
@@ -95,7 +101,7 @@ namespace OpenUtau.App.Views {
             Focus(); // Force unfocus menu for key down events.
         }
 
-        void OnMenuReplaceLyrics(object? sender, RoutedEventArgs e) {
+        void ReplaceLyrics() {
             if (ViewModel.NotesViewModel.Selection.IsEmpty) {
                 _ = MessageBox.Show(
                     this,
