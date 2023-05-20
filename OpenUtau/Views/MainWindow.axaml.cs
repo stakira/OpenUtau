@@ -21,7 +21,6 @@ using OpenUtau.Classic;
 using OpenUtau.Core;
 using OpenUtau.Core.Format;
 using OpenUtau.Core.Ustx;
-using OpenUtau.Views;
 using ReactiveUI;
 using Serilog;
 using Point = Avalonia.Point;

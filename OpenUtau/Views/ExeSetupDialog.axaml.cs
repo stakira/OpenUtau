@@ -5,7 +5,7 @@ using Avalonia.Markup.Xaml;
 using Classic;
 using OpenUtau.App.ViewModels;
 
-namespace OpenUtau.Views {
+namespace OpenUtau.App.Views {
     public partial class ExeSetupDialog : Window {
         public ExeSetupDialog() {
             InitializeComponent();
