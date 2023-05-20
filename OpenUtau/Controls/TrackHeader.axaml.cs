@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -54,8 +55,21 @@ namespace OpenUtau.App.Controls {
 
         private UTrack? track;
 
+        private TextBlock volumeTextBlock;
+        private TextBox volumeTextBox;
+        private Slider volumeSlider;
+        private TextBlock panTextBlock;
+        private TextBox panTextBox;
+        private Slider panSlider;
+
         public TrackHeader() {
             InitializeComponent();
+            volumeTextBlock = this.FindControl<TextBlock>("VolumeTextBlock");
+            volumeTextBox = this.FindControl<TextBox>("VolumeTextBox");
+            volumeSlider = this.FindControl<Slider>("VolumeSlider");
+            panTextBlock = this.FindControl<TextBlock>("PanTextBlock");
+            panTextBox = this.FindControl<TextBox>("PanTextBox");
+            panSlider = this.FindControl<Slider>("PanSlider");
         }
 
         private void InitializeComponent() {
@@ -161,6 +175,51 @@ namespace OpenUtau.App.Controls {
                     as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
                 dialog.ShowDialog(window);
             }
+        }
+
+        void VolumeTextBlockClicked(object sender, RoutedEventArgs args) {
+            volumeTextBlock.IsVisible = false;
+            volumeTextBox.IsVisible = true;
+            args.Handled = true;
+        }
+        void VolumeTextBoxEnter(object sender, KeyEventArgs args) {
+            if(args.Key == Key.Enter) {
+                if (double.TryParse(volumeTextBox.Text, out double number)) {
+                    number = number > volumeSlider.Minimum ? number < volumeSlider.Maximum ? number : volumeSlider.Maximum : volumeSlider.Minimum;
+                    track.Volume = number;
+                    volumeSlider.Value = number;
+                    volumeTextBlock.Text = number.ToString("f1");
+                }
+                volumeTextBlock.IsVisible = true;
+                volumeTextBox.IsVisible = false;
+            }
+            args.Handled = true;
+        }
+        void PanTextBlockClicked(object sender, RoutedEventArgs args) {
+            panTextBlock.IsVisible = false;
+            panTextBox.IsVisible = true;
+            args.Handled = true;
+        }
+        void PanTextBoxEnter(object sender, KeyEventArgs args) {
+            if (args.Key == Key.Enter) {
+                if (double.TryParse(panTextBox.Text, out double number)) {
+                    number = number > panSlider.Minimum ? number < panSlider.Maximum ? number : panSlider.Maximum : panSlider.Minimum;
+                    track.Volume = number;
+                    panSlider.Value = number;
+                    panTextBlock.Text = number.ToString("f1");
+                }
+                panTextBlock.IsVisible = true;
+                panTextBox.IsVisible = false;
+            }
+            args.Handled = true;
+        }
+
+        void VolumePanTextBoxLeave(object sender, PointerEventArgs args) {
+            volumeTextBlock.IsVisible = true;
+            volumeTextBox.IsVisible = false;
+            panTextBlock.IsVisible = true;
+            panTextBox.IsVisible = false;
+            args.Handled = true;
         }
 
         public void Dispose() {
