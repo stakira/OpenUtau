@@ -83,9 +83,8 @@
   <system:String x:Key="menu.file.exit">退出</system:String>
   <system:String x:Key="menu.file.exportaudio">导出音频</system:String>
   <system:String x:Key="menu.file.exportds">导出DiffSinger脚本</system:String>
-  <system:String x:Key="menu.file.exportdsto">导出DiffSinger脚本至...</system:String>
-  <system:String x:Key="menu.file.exportds.withoutpitch">导出DiffSinger脚本（不包含音高曲线）</system:String>
-  <system:String x:Key="menu.file.exportdsto.withoutpitch">导出DiffSinger脚本至...（不包含音高曲线）</system:String>
+  <system:String x:Key="menu.file.exportds.v2">导出DiffSinger脚本（v2）</system:String>
+  <system:String x:Key="menu.file.exportds.v2withoutpitch">导出DiffSinger脚本（v2，不包含音高曲线）</system:String>
   <system:String x:Key="menu.file.exportmidi">导出Midi文件</system:String>
   <system:String x:Key="menu.file.exportmixdown">混缩为Wav文件</system:String>
   <system:String x:Key="menu.file.exportproject">导出工程</system:String>

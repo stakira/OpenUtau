@@ -398,24 +398,6 @@ namespace OpenUtau.App.Views {
             }
         }
 
-        async void OnMenuExportDs(object sender, RoutedEventArgs e) {
-            var project = DocManager.Inst.Project;
-            if (await WarnToSave(project)) {
-                var name = System.IO.Path.GetFileNameWithoutExtension(project.FilePath);
-                var path = System.IO.Path.GetDirectoryName(project.FilePath);
-                path = System.IO.Path.Combine(path!, "Export");
-                path = System.IO.Path.Combine(path!, $"{name}.ds");
-                for (var i = 0; i < project.parts.Count; i++) {
-                    var part = project.parts[i];
-                    if (part is UVoicePart voicePart) {
-                        var savePath = PathManager.Inst.GetPartSavePath(path, i)[..^4] + ".ds";
-                        DiffSingerScript.SavePart(project, voicePart, savePath);
-                        DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"{savePath}."));
-                    }
-                }
-            }
-        }
-
         async void OnMenuExportDsTo(object sender, RoutedEventArgs e) {
             var project = DocManager.Inst.Project;
             var dialog = new SaveFileDialog() {
@@ -439,25 +421,7 @@ namespace OpenUtau.App.Views {
             }
         }
 
-async void OnMenuExportDsWithoutPitch(object sender, RoutedEventArgs e) {
-            var project = DocManager.Inst.Project;
-            if (await WarnToSave(project)) {
-                var name = System.IO.Path.GetFileNameWithoutExtension(project.FilePath);
-                var path = System.IO.Path.GetDirectoryName(project.FilePath);
-                path = System.IO.Path.Combine(path!, "Export");
-                path = System.IO.Path.Combine(path!, $"{name}.ds");
-                for (var i = 0; i < project.parts.Count; i++) {
-                    var part = project.parts[i];
-                    if (part is UVoicePart voicePart) {
-                        var savePath = PathManager.Inst.GetPartSavePath(path, i)[..^4] + ".ds";
-                        DiffSingerScript.SavePart(project, voicePart, savePath, false);
-                        DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"{savePath}."));
-                    }
-                }
-            }
-        }
-
-        async void OnMenuExportDsWithoutPitchTo(object sender, RoutedEventArgs e) {
+        async void OnMenuExportDsV2To(object sender, RoutedEventArgs e) {
             var project = DocManager.Inst.Project;
             var dialog = new SaveFileDialog() {
                 DefaultExtension = "ds",
@@ -473,7 +437,30 @@ async void OnMenuExportDsWithoutPitch(object sender, RoutedEventArgs e) {
                     var part = project.parts[i];
                     if (part is UVoicePart voicePart) {
                         var savePath =  PathManager.Inst.GetPartSavePath(file, i)[..^4]+".ds";
-                        DiffSingerScript.SavePart(project, voicePart, savePath, false);
+                        DiffSingerScript.SavePart(project, voicePart, savePath, true);
+                        DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"{savePath}."));
+                    }
+                }
+            }
+        }
+
+        async void OnMenuExportDsV2WithoutPitchTo(object sender, RoutedEventArgs e) {
+            var project = DocManager.Inst.Project;
+            var dialog = new SaveFileDialog() {
+                DefaultExtension = "ds",
+                Filters = new List<FileDialogFilter>() {
+                    new FileDialogFilter() {
+                        Extensions = new List<string>(){ "ds" },
+                    },
+                },
+            };
+            var file = await dialog.ShowAsync(this);
+            if (!string.IsNullOrEmpty(file)) {
+                for (var i = 0; i < project.parts.Count; i++) {
+                    var part = project.parts[i];
+                    if (part is UVoicePart voicePart) {
+                        var savePath =  PathManager.Inst.GetPartSavePath(file, i)[..^4]+".ds";
+                        DiffSingerScript.SavePart(project, voicePart, savePath, true, false);
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"{savePath}."));
                     }
                 }

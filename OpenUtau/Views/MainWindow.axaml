@@ -58,9 +58,8 @@
             </MenuItem>
             <MenuItem Header="{DynamicResource menu.file.exportproject}">
               <MenuItem Header="{DynamicResource menu.file.exportds}" Click="OnMenuExportDs"/>
-              <MenuItem Header="{DynamicResource menu.file.exportdsto}" Click="OnMenuExportDsTo"/>
-              <MenuItem Header="{DynamicResource menu.file.exportds.withoutpitch}" Click="OnMenuExportDsWithoutPitch"/>
-              <MenuItem Header="{DynamicResource menu.file.exportdsto.withoutpitch}" Click="OnMenuExportDsWithoutPitchTo"/>
+              <MenuItem Header="{DynamicResource menu.file.exportds.v2}" Click="OnMenuExportDsV2"/>
+              <MenuItem Header="{DynamicResource menu.file.exportds.v2withoutpitch}" Click="OnMenuExportDsV2WithoutPitch"/>
               <MenuItem Header="{DynamicResource menu.file.exportust}" Click="OnMenuExportUst"/>
               <MenuItem Header="{DynamicResource menu.file.exportustto}" Click="OnMenuExportUstTo"/>
               <MenuItem Header="{DynamicResource menu.file.exportmidi}" Click="OnMenuExportMidi"/>

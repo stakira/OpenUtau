@@ -22,7 +22,8 @@ namespace OpenUtau.Core.DiffSinger {
         public double[]? gender = null;
         public double[]? velocity = null;
         
-        public DiffSingerScript(RenderPhrase phrase, bool exportPitch = true) {
+        //if v2 is true, export diffsinger script for diffsinger's refactor-v2 branch
+        public DiffSingerScript(RenderPhrase phrase, bool v2 = false, bool exportPitch = true) {
             float headMs = 100;
             const float tailMs = DiffSingerUtils.tailMs;
             
@@ -67,11 +68,19 @@ namespace OpenUtau.Core.DiffSinger {
             ++phNumList[0];//head AP
             ph_num = phNumList.ToArray();
 
-            noteSeq = phones
-                .Select(p => (p.phoneme == "SP" || p.phoneme == "AP") ? 0 : p.tone)
-                .Prepend(0)
-                .Append(0)
-                .ToArray();
+            if(v2){
+                noteSeq = notes
+                    .Select(n => (n.lyric == "SP" || n.lyric == "AP") ? 0 : n.tone)
+                    .Prepend(0)
+                    .Append(0)
+                    .ToArray();
+            }else{
+                noteSeq = phones
+                    .Select(p => (p.phoneme == "SP" || p.phoneme == "AP") ? 0 : p.tone)
+                    .Prepend(0)
+                    .Append(0)
+                    .ToArray();
+            }
             noteDurMs = notes
                 .Select(n => n.durationMs)
                 .Prepend(headMs+(notes[0].positionMs-phones[0].positionMs))
@@ -123,9 +132,9 @@ namespace OpenUtau.Core.DiffSinger {
             return new RawDiffSingerScript(this);
         }
 
-        static public void SavePart(UProject project, UVoicePart part, string filePath, bool exportPitch = true) {
+        static public void SavePart(UProject project, UVoicePart part, string filePath, bool v2 = false, bool exportPitch = true) {
             var ScriptArray = RenderPhrase.FromPart(project, project.tracks[part.trackNo], part)
-                .Select(x => new DiffSingerScript(x, exportPitch).toRaw())
+                .Select(x => new DiffSingerScript(x, v2, exportPitch).toRaw())
                 .ToArray();
             File.WriteAllText(filePath,
                 JsonConvert.SerializeObject(ScriptArray, Formatting.Indented),
