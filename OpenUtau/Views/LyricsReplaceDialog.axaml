@@ -20,7 +20,7 @@
 
     <StackPanel Grid.Row="4">
       <TextBlock Text="{StaticResource lyricsreplace.preview}" />
-      <TextBlock Text="{Binding Preview}" Margin="5" />
+      <TextBlock Text="{Binding Preview}" Margin="5" MinHeight="15" />
     </StackPanel>
 
     <StackPanel Grid.Row="6">
