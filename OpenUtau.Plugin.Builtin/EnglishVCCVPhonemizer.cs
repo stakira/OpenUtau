@@ -277,7 +277,7 @@ namespace OpenUtau.Plugin.Builtin {
                             vccExceptions = $"1ng {cc[1]}";
                             // 1nk exception
                             if ($"{cc[1]}" == "k" && lastCPrevWord != 1) {
-                                vccExceptions = $"1nk";
+                                vccExceptions = $"1nk-";
                             }
                         }
 
@@ -289,12 +289,12 @@ namespace OpenUtau.Plugin.Builtin {
                         if (phonemes.Count == 0) {
                             // bonehead [On-] + [n h] + [he]
                             parsingCC = $"{cc[0]} {cc[1]}";
-                            if (HasOto(parsingCC, syllable.vowelTone) && lastCPrevWord !=2) {
+                            if (HasOto(parsingCC, syllable.vowelTone)){
+                            //if (HasOto(parsingCC, syllable.vowelTone) && lastCPrevWord !=2) {
                                 if (!HasOto(parsingVCC, syllable.vowelTone)) {
                                     parsingVCC = $"{prevV} {cc[0]}";
                                     parsingVCC = CheckVCExceptions(parsingVCC);
                                 }
-
                                 // sp fix
                                 if ($"{cc[0]}" == "s" && $"{cc[1]}" == "p") {
                                     parsingVCC = $"{prevV} sp";
