@@ -185,12 +185,15 @@ namespace OpenUtau.App.Controls {
         void VolumeTextBoxEnter(object sender, KeyEventArgs args) {
             if(args.Key == Key.Enter) {
                 if (double.TryParse(volumeTextBox.Text, out double number)) {
-                    ViewModel.Volume = number;
+                    number = number > volumeSlider.Minimum ? number < volumeSlider.Maximum ? number : volumeSlider.Maximum : volumeSlider.Minimum;
+                    track.Volume = number;
+                    volumeSlider.Value = number;
+                    volumeTextBlock.Text = number.ToString("f1");
                 }
                 volumeTextBlock.IsVisible = true;
                 volumeTextBox.IsVisible = false;
-                args.Handled = true;
             }
+            args.Handled = true;
         }
         void PanTextBlockClicked(object sender, RoutedEventArgs args) {
             panTextBlock.IsVisible = false;
@@ -199,14 +202,16 @@ namespace OpenUtau.App.Controls {
         }
         void PanTextBoxEnter(object sender, KeyEventArgs args) {
             if (args.Key == Key.Enter) {
-                if (int.TryParse(panTextBox.Text, out int number)) {
-                    ViewModel.Pan = number;
-                    //panSlider.Value = number;
+                if (double.TryParse(panTextBox.Text, out double number)) {
+                    number = number > panSlider.Minimum ? number < panSlider.Maximum ? number : panSlider.Maximum : panSlider.Minimum;
+                    track.Volume = number;
+                    panSlider.Value = number;
+                    panTextBlock.Text = number.ToString("f1");
                 }
                 panTextBlock.IsVisible = true;
                 panTextBox.IsVisible = false;
-                args.Handled = true;
             }
+            args.Handled = true;
         }
 
         void VolumePanTextBoxLeave(object sender, PointerEventArgs args) {

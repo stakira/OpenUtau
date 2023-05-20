@@ -111,7 +111,7 @@
             </MultiBinding>
           </TextBlock.Text>
         </TextBlock>
-        <TextBox Name="VolumeTextBox" FontSize="11" FontFamily="monospace" HorizontalAlignment="Right" Margin="0,0,5,0" KeyDown="VolumeTextBoxEnter" PointerLeave="VolumePanTextBoxLeave" IsVisible="False">
+        <TextBox Name="VolumeTextBox" FontSize="11" FontFamily="monospace" HorizontalAlignment="Right" Margin="0,0,5,0" Width="0.5" KeyDown="VolumeTextBoxEnter" PointerLeave="VolumePanTextBoxLeave" IsVisible="False">
           <TextBox.Text>
             <MultiBinding StringFormat="{}{0:+#00.0;-#00.0}">
               <Binding Path="Volume"/>
@@ -130,9 +130,9 @@
             </MultiBinding>
           </TextBlock.Text>
         </TextBlock>
-        <TextBox Name="PanTextBox" FontSize="11" FontFamily="monospace" HorizontalAlignment="Right" Margin="0,0,5,0" KeyDown="PanTextBoxEnter" PointerLeave="VolumePanTextBoxLeave" IsVisible="False">
+        <TextBox Name="PanTextBox" FontSize="11" FontFamily="monospace" HorizontalAlignment="Right" Margin="0,0,5,0" Width="0.5" KeyDown="PanTextBoxEnter" PointerLeave="VolumePanTextBoxLeave" IsVisible="False">
           <TextBox.Text>
-            <MultiBinding StringFormat="{}{0:00R;00L;C}">
+            <MultiBinding StringFormat="{}{0:00R;00L;mid}">
               <Binding Path="Pan"/>
             </MultiBinding>
           </TextBox.Text>
