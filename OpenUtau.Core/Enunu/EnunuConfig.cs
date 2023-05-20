@@ -9,6 +9,7 @@ namespace OpenUtau.Core.Enunu {
         public string questionPath;
         public int sampleRate;
         public double framePeriod;
+        public bool enuType;
         public EnunuExtensions extensions;
 
         public static EnunuConfig Load(USinger singer) {
@@ -18,7 +19,7 @@ namespace OpenUtau.Core.Enunu {
                 var configTxt = File.ReadAllText(configPath);
                 config = Yaml.DefaultDeserializer.Deserialize<RawEnunuConfig>(configTxt);
             } else {
-                config = SetSimpleENUNUConfig(configPath);
+                config = SetSimpleENUNUConfig(singer.Location);
             }
             return config.Convert();
         }
@@ -27,23 +28,47 @@ namespace OpenUtau.Core.Enunu {
             const string tableExtension = ".table";
             const string hedExtension = ".hed";
             const string configYaml = "config.yaml";
-            var configPath = Path.Join(location, configYaml);
+            const string modelPath = "model";
             var config = new RawEnunuConfig();
 
-            if (File.Exists(configPath)) {
-                var configTxt = File.ReadAllText(configPath);
-                config = Yaml.DefaultDeserializer.Deserialize<RawEnunuConfig>(configTxt);
+            if (Directory.Exists(Path.Combine(location, modelPath))) {
+                location = Path.Combine(location, modelPath);
+
+                if (File.Exists(Path.Join(location, configYaml))) {
+                    var configTxt = File.ReadAllText(Path.Join(location, configYaml));
+                    config = Yaml.DefaultDeserializer.Deserialize<RawEnunuConfig>(configTxt);
 
 
-                IEnumerable<string> files = Directory.EnumerateFiles(location, "*", SearchOption.AllDirectories);
-                foreach (string f in files) {
-                    if (f.EndsWith(tableExtension)) {
-                        config.tablePath = f;
-                    } else if (f.EndsWith(hedExtension)) {
-                        config.questionPath = f;
+                    IEnumerable<string> files = Directory.EnumerateFiles(location, "*", SearchOption.TopDirectoryOnly);
+                    foreach (string f in files) {
+                        if (f.EndsWith(tableExtension)) {
+                            config.tablePath = f.Substring(f.LastIndexOf(modelPath)); ;
+                        } else if (f.EndsWith(hedExtension)) {
+                            config.questionPath = f.Substring(f.LastIndexOf(modelPath)); ;
+                        }
                     }
+                    config.enuType = true;
                 }
             }
+            else if (Directory.Exists(location)) {
+                if (File.Exists(Path.Join(location, configYaml))) {
+                    var configTxt = File.ReadAllText(Path.Join(location, configYaml));
+                    config = Yaml.DefaultDeserializer.Deserialize<RawEnunuConfig>(configTxt);
+
+
+                    IEnumerable<string> files = Directory.EnumerateFiles(location, "*", SearchOption.TopDirectoryOnly);
+                    foreach (string f in files) {
+                        if (f.EndsWith(tableExtension)) {
+                            config.tablePath = f.Substring(f.LastIndexOf("\\")); ;
+                        } else if (f.EndsWith(hedExtension)) {
+                            config.questionPath = f.Substring(f.LastIndexOf("\\")); ;
+                        }
+                    }
+                    config.enuType = true;
+                }
+            }
+
+
             return config;
         }
     }
@@ -78,6 +103,7 @@ namespace OpenUtau.Core.Enunu {
         public int sampleRate;
         public double framePeriod;
         public RawEnunuExtensions extensions;
+        public bool enuType;
 
         public EnunuConfig Convert() {
             EnunuConfig enunuConfig = new EnunuConfig();
@@ -86,6 +112,7 @@ namespace OpenUtau.Core.Enunu {
             enunuConfig.sampleRate = this.sampleRate;
             enunuConfig.framePeriod = this.framePeriod;
             enunuConfig.extensions = new EnunuExtensions();
+            enunuConfig.enuType = this.enuType;
             if (this.extensions != null) {
                 ParseEnunuExtension(enunuConfig.extensions.ust_editor, this.extensions.ust_editor);
                 ParseEnunuExtension(enunuConfig.extensions.ust_converter, this.extensions.ust_converter);
