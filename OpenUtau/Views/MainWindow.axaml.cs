@@ -21,6 +21,7 @@ using OpenUtau.Classic;
 using OpenUtau.Core;
 using OpenUtau.Core.Format;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Views;
 using ReactiveUI;
 using Serilog;
 using Point = Avalonia.Point;
@@ -726,6 +727,16 @@ namespace OpenUtau.App.Views {
                 }
             } else if (ext == Core.Vogen.VogenSingerInstaller.FileExt) {
                 Core.Vogen.VogenSingerInstaller.Install(file);
+            } else if (ext == ".dll") {
+                Core.Api.PhonemizerInstaller.Install(file);
+            } else if (ext == ".exe") {
+                var setup = new ExeSetupDialog() {
+                    DataContext = new ExeSetupViewModel(file)
+                };
+                _ = setup.ShowDialog(this);
+                if (setup.Position.Y < 0) {
+                    setup.Position = setup.Position.WithY(0);
+                }
             } else if (ext == ".mp3" || ext == ".wav" || ext == ".ogg" || ext == ".flac") {
                 try {
                     viewModel.ImportAudio(file);
