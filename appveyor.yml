@@ -47,8 +47,8 @@ artifacts:
 deploy:
   - provider: GitHub
     tag: build/$(APPVEYOR_BUILD_VERSION)
-    release: $(APPVEYOR_BUILD_VERSION)
-    description: $(APPVEYOR_BUILD_VERSION) $(APPVEYOR_REPO_COMMIT_TIMESTAMP)
+    release: $(APPVEYOR_BUILD_VERSION) Beta
+    description: $(APPVEYOR_BUILD_VERSION) Beta $(APPVEYOR_REPO_COMMIT_TIMESTAMP)
     auth_token:
       secure: VoTH2ml/pRgjLSGhfPO+NZfCoFzFcfrQjEIl/5+0UufeW6mEvccfwvef3gOaD2ke
     draft: false
