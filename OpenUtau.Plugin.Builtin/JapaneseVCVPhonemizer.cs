@@ -43,20 +43,30 @@ namespace OpenUtau.Plugin.Builtin {
             // Get color
             string color = string.Empty;
             int toneShift = 0;
+            int? alt = null;
             if (note.phonemeAttributes != null) {
                 var attr = note.phonemeAttributes.FirstOrDefault(attr => attr.index == 0);
                 color = attr.voiceColor;
                 toneShift = attr.toneShift;
+                alt = attr.alternate;
             }
 
             if (!string.IsNullOrEmpty(note.phoneticHint)) {
                 // If a hint is present, returns the hint.
                 currentLyric = note.phoneticHint.Normalize();
-                if (singer.TryGetMappedOto(currentLyric, note.tone + toneShift, color, out var photo)) {
+                if (singer.TryGetMappedOto(currentLyric + alt, note.tone + toneShift, color, out var phAlt)) {
                     return new Result {
                         phonemes = new Phoneme[] {
                         new Phoneme {
-                            phoneme = photo.Alias,
+                            phoneme = phAlt.Alias,
+                        }
+                    },
+                    };
+                } else if(singer.TryGetMappedOto(currentLyric, note.tone + toneShift, color, out var ph)){
+                    return new Result {
+                        phonemes = new Phoneme[] {
+                        new Phoneme {
+                            phoneme = ph.Alias,
                         }
                     },
                     };
@@ -78,9 +88,11 @@ namespace OpenUtau.Plugin.Builtin {
                     phoneme = $"{vow} {currentLyric}";
                 }
             }
-            if (singer.TryGetMappedOto(phoneme, note.tone + toneShift, color, out var oto)) {
+            if (singer.TryGetMappedOto(phoneme + alt, note.tone + toneShift, color, out var otoAlt)) {
+                phoneme = otoAlt.Alias;
+            } else if (singer.TryGetMappedOto(phoneme, note.tone + toneShift, color, out var oto)) {
                 phoneme = oto.Alias;
-            } else if (singer.TryGetMappedOto(currentLyric, note.tone + toneShift, color, out oto)) {
+            } else if (singer.TryGetMappedOto(currentLyric + alt, note.tone + toneShift, color, out oto)) {
                 phoneme = oto.Alias;
             } else {
                 phoneme = currentLyric;

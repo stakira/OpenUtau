@@ -107,7 +107,9 @@ namespace OpenUtau.Plugin.Builtin {
             var attr1 = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 1) ?? default;
 
             foreach (string test in input){
-                if (singer.TryGetMappedOto(test, note.tone + attr0.toneShift, attr0.voiceColor, out oto)){
+                if (singer.TryGetMappedOto(test + attr0.alternate, note.tone + attr0.toneShift, attr0.voiceColor, out oto)) {
+                    return true;
+                } else if (singer.TryGetMappedOto(test, note.tone + attr0.toneShift, attr0.voiceColor, out oto)){
                     return true;
                 }
             }
