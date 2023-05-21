@@ -67,12 +67,10 @@ namespace OpenUtau.Plugin.Builtin {
             // Get color
             string color = string.Empty;
             int toneShift = 0;
-            int? alt = null;
             if (note.phonemeAttributes != null) {
                 var attr = note.phonemeAttributes.FirstOrDefault(attr => attr.index == 0);
                 color = attr.voiceColor;
                 toneShift = attr.toneShift;
-                alt = attr.alternate;
             }
             // We will need to split the total duration for phonemes, so we compute it here.
             int totalDuration = notes.Sum(n => n.duration);
@@ -84,26 +82,18 @@ namespace OpenUtau.Plugin.Builtin {
                 if (length1 > totalDuration / 2) {
                     length1 = totalDuration / 2;
                 }
-                if (singer.TryGetMappedOto(phoneme0 + alt, note.tone + toneShift, color, out var otoAlt0)) {
-                    phoneme0 = otoAlt0.Alias;
-                } else if (singer.TryGetMappedOto(phoneme0, note.tone + toneShift, color, out var oto)) {
-                    phoneme0 = oto.Alias;
+                if (singer.TryGetMappedOto(phoneme0, note.tone + toneShift, color, out var oto0)) {
+                    phoneme0 = oto0.Alias;
                 }
 
-                if (singer.TryGetMappedOto(phoneme1 + alt, note.tone + toneShift, color, out var otoAlt1)) {
-                    phoneme1 = otoAlt1.Alias;
-                } else if (singer.TryGetMappedOto(phoneme1, note.tone + toneShift, color, out var oto)) {
-                    phoneme1 = oto.Alias;
-                }
-
-                if (phoneme1.Contains("_un") && !singer.TryGetMappedOto(phoneme1 + alt, note.tone + toneShift, color, out var otoAlt2)) {
-                    phoneme1 = "_en";
-                } else if (phoneme1.Contains("_un") && !singer.TryGetMappedOto(phoneme1, note.tone + toneShift, color, out var oto0)) {
-                    phoneme1 = "_en";
-                } else if (phoneme1.Contains("_un") && singer.TryGetMappedOto(phoneme1 + alt, note.tone + toneShift, color, out var oto1)) {
+                if (singer.TryGetMappedOto(phoneme1, note.tone + toneShift, color, out var oto1)) {
                     phoneme1 = oto1.Alias;
-                } else if (phoneme1.Contains("_un") && singer.TryGetMappedOto(phoneme1, note.tone + toneShift, color, out var oto)) {
-                    phoneme1 = oto.Alias;
+                }
+
+                if (phoneme1.Contains("_un") && !singer.TryGetMappedOto(phoneme1, note.tone + toneShift, color, out var oto2)) {
+                    phoneme1 = "_en";
+                } else if (phoneme1.Contains("_un") && singer.TryGetMappedOto(phoneme1, note.tone + toneShift, color, out var oto3)) {
+                    phoneme1 = oto3.Alias;
                 }
 
                 return new Result {
@@ -118,9 +108,7 @@ namespace OpenUtau.Plugin.Builtin {
                     },
                 };
             }
-            if (singer.TryGetMappedOto(phoneme0 + alt, note.tone + toneShift, color, out var otoAlt)) {
-                phoneme0 = otoAlt.Alias;
-            } else if (singer.TryGetMappedOto(phoneme0, note.tone + toneShift, color, out var oto)) {
+            if (singer.TryGetMappedOto(phoneme0, note.tone + toneShift, color, out var oto)) {
                 phoneme0 = oto.Alias;
             }
             // Not spliting is needed. Return as is.
