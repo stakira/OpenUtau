@@ -487,8 +487,15 @@ namespace OpenUtau.App.Views {
             }
             var dialog = lifetime.Windows.FirstOrDefault(w => w is SingersDialog);
             if (dialog == null) {
+                USinger? singer = null;
+                if (viewModel.TracksViewModel.SelectedParts.Count > 0) {
+                    singer = viewModel.TracksViewModel.Tracks[viewModel.TracksViewModel.SelectedParts.First().trackNo].Singer;
+                }
+                if(singer == null && viewModel.TracksViewModel.Tracks.Count > 0) {
+                    singer = viewModel.TracksViewModel.Tracks.First().Singer;
+                }
                 dialog = new SingersDialog() {
-                    DataContext = new SingersViewModel(),
+                    DataContext = new SingersViewModel(singer),
                 };
                 dialog.Show();
             }
