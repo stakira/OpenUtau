@@ -129,12 +129,18 @@ namespace OpenUtau.Plugin.Builtin {
             var attr0 = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
             var attr1 = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 1) ?? default;
 
-            if (prevNeighbour == null) {
+            if (!string.IsNullOrEmpty(note.phoneticHint)) {
+                string[] tests = new string[] { currentLyric };
+                // Not convert VCV
+                if (checkOtoUntilHit(tests, note, out var oto)) {
+                    currentLyric = oto.Alias;
+                }
+            } else if (prevNeighbour == null) {
                 // Use "- V" or "- CV" if present in voicebank
                 var initial = $"- {currentLyric}";
-                string[] tests = new string[] {initial, currentLyric};
+                string[] tests = new string[] { initial, currentLyric };
                 // try [- XX] before trying plain lyric
-                if (checkOtoUntilHit(tests, note, out var oto)){
+                if (checkOtoUntilHit(tests, note, out var oto)) {
                     currentLyric = oto.Alias;
                 }
             } else if (plainVowels.Contains(currentLyric) || nonVowels.Contains(currentLyric)) {
