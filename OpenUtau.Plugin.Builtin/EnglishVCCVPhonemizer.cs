@@ -9,6 +9,7 @@ using Serilog;
 
 namespace OpenUtau.Plugin.Builtin {
     [Phonemizer("English VCCV Phonemizer", "EN VCCV", "cubialpha & Mim", language: "EN")]
+    // V3 of the phonemizer
     // This is a temporary solution until Cz's comes out with their own.
     // Feel free to use the Lyric Parser plugin for more accurate pronunciations & support of ConVel.
 
@@ -43,6 +44,7 @@ namespace OpenUtau.Plugin.Builtin {
                 {"ang","9ng"},
                 {"a ng","9ng"},
                 //{"O l","0l"},
+                {"0 l","0l"},
                 {"Ol","0l"},
                 //{"6 l","6l"},
                 //{"i r","Er"},
