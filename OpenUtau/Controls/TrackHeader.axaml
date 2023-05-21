@@ -104,14 +104,14 @@
         <Slider Name="VolumeSlider" Classes="fader" Minimum="-24" Maximum="24" Value="{Binding Volume}" Margin="1,0,36,0"
                 Foreground="{DynamicResource AccentBrush1}" PointerPressed="VolumeFaderPointerPressed"
                 ContextRequested="VolumeFaderContextRequested"/>
-        <TextBlock Name="VolumeTextBlock" FontSize="11" FontFamily="monospace" HorizontalAlignment="Right" Margin="0,0,5,0" DoubleTapped="VolumeTextBlockClicked">
+        <TextBlock Name="VolumeTextBlock" FontSize="11" FontFamily="monospace" HorizontalAlignment="Right" Margin="0,0,5,0" DoubleTapped="TextBlockClicked">
           <TextBlock.Text>
             <MultiBinding StringFormat="{}{0:+#00.0;-#00.0}">
               <Binding Path="Volume"/>
             </MultiBinding>
           </TextBlock.Text>
         </TextBlock>
-        <TextBox Name="VolumeTextBox" FontSize="11" FontFamily="monospace" HorizontalAlignment="Right" Margin="0,0,5,0" KeyDown="VolumeTextBoxEnter" PointerLeave="VolumePanTextBoxLeave" IsVisible="False">
+        <TextBox Name="VolumeTextBox" FontSize="11" FontFamily="monospace" HorizontalAlignment="Right" Margin="0,0,5,0" KeyDown="TextBoxEnter" PointerLeave="TextBoxLeave" IsVisible="False">
           <TextBox.Text>
             <MultiBinding StringFormat="{}{0:+#00.0;-#00.0}">
               <Binding Path="Volume"/>
@@ -123,14 +123,14 @@
         <Slider Name="PanSlider" Classes="fader" Minimum="-100" Maximum="100" Value="{Binding Pan}" Margin="1,0,36,0"
                 Foreground="{DynamicResource AccentBrush1}" PointerPressed="PanFaderPointerPressed"
                 ContextRequested="PanFaderContextRequested"/>
-        <TextBlock Name="PanTextBlock" FontSize="11" FontFamily="monospace" HorizontalAlignment="Right" Margin="0,0,5,0" DoubleTapped="PanTextBlockClicked">
+        <TextBlock Name="PanTextBlock" FontSize="11" FontFamily="monospace" HorizontalAlignment="Right" Margin="0,0,5,0" DoubleTapped="TextBlockClicked">
           <TextBlock.Text>
             <MultiBinding StringFormat="{}{0:00R;00L;C}">
               <Binding Path="Pan"/>
             </MultiBinding>
           </TextBlock.Text>
         </TextBlock>
-        <TextBox Name="PanTextBox" FontSize="11" FontFamily="monospace" HorizontalAlignment="Right" Margin="0,0,5,0" KeyDown="PanTextBoxEnter" PointerLeave="VolumePanTextBoxLeave" IsVisible="False">
+        <TextBox Name="PanTextBox" FontSize="11" FontFamily="monospace" HorizontalAlignment="Right" Margin="0,0,5,0" KeyDown="TextBoxEnter" PointerLeave="TextBoxLeave" IsVisible="False">
           <TextBox.Text>
             <MultiBinding StringFormat="{}{0:00R;00L;C}">
               <Binding Path="Pan"/>
