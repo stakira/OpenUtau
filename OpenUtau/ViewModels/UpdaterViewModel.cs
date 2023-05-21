@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Avalonia.Media;
 using NetSparkleUpdater;
+using NetSparkleUpdater.AppCastHandlers;
 using NetSparkleUpdater.Enums;
 using NetSparkleUpdater.Interfaces;
 using NetSparkleUpdater.SignatureVerifiers;
@@ -66,6 +67,9 @@ namespace OpenUtau.App.ViewModels {
                     CheckServerFileName = false,
                     RelaunchAfterUpdate = true,
                     RelaunchAfterUpdateCommandPrefix = OS.IsLinux() ? "./" : string.Empty,
+                    AppCastHandler = new XMLAppCast() {
+                        AppCastFilter = new DowngradableFilter()
+                    },
                 };
             } catch (Exception e) {
                 Log.Error(e, "Failed to select appcast to update.");
@@ -166,6 +170,14 @@ namespace OpenUtau.App.ViewModels {
                 Preferences.Default.SkipUpdate = updateInfo.Updates[0].Version.ToString();
                 Preferences.Save();
             }
+        }
+    }
+
+    // Force allow downgrading so that switching between beta and stable works.
+    public class DowngradableFilter : IAppCastFilter {
+        public FilterResult GetFilteredAppCastItems(Version installed, List<AppCastItem> items) {
+            items = items.Where(item => new Version(item.Version).CompareTo(installed) != 0).ToList();
+            return new FilterResult(/*forceInstallOfLatestInFilteredList=*/true, items);
         }
     }
 
