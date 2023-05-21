@@ -139,17 +139,25 @@ namespace OpenUtau.App.ViewModels {
             UpdateAvailable = false;
             updateAccepted = true;
 
+            AppCastItem? downloadedItem = null;
+            sparkle.CloseApplication += () => {
+                Log.Information($"shutting down for update");
+                CloseApplication?.Invoke();
+                Log.Information($"shut down for update");
+            };
             sparkle.DownloadStarted += (item, path) => {
                 Log.Information($"download started {path}");
+                downloadedItem = item;
             };
             sparkle.DownloadFinished += (item, path) => {
                 Log.Information($"download finished {path}");
-                sparkle.CloseApplication += () => {
-                    Log.Information($"shutting down for update");
-                    CloseApplication?.Invoke();
-                    Log.Information($"shut down for update");
-                };
-                sparkle.InstallUpdate(item, path);
+                // `item` is somehow null in this callback, likely a NetSparkle bug.
+                item = item ?? downloadedItem;
+                if (item == null) {
+                    Log.Error("DownloadFinished unexpected null item.");
+                } else { 
+                    sparkle.InstallUpdate(downloadedItem, path);
+                }
             };
             sparkle.DownloadHadError += (item, path, e) => {
                 Log.Error(e, $"download error {path}");
@@ -176,7 +184,11 @@ namespace OpenUtau.App.ViewModels {
     // Force allow downgrading so that switching between beta and stable works.
     public class DowngradableFilter : IAppCastFilter {
         public FilterResult GetFilteredAppCastItems(Version installed, List<AppCastItem> items) {
-            items = items.Where(item => new Version(item.Version).CompareTo(installed) != 0).ToList();
+            items = items.Where(item => {
+                var v = new Version(item.Version);
+                // Only check first three numbers.
+                return v.Major != installed.Major || v.Minor != installed.Minor || v.Build != installed.Build;
+            }).ToList();
             return new FilterResult(/*forceInstallOfLatestInFilteredList=*/true, items);
         }
     }
