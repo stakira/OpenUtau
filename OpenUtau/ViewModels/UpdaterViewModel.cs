@@ -155,7 +155,7 @@ namespace OpenUtau.App.ViewModels {
                 item = item ?? downloadedItem;
                 if (item == null) {
                     Log.Error("DownloadFinished unexpected null item.");
-                } else { 
+                } else {
                     sparkle.InstallUpdate(downloadedItem, path);
                 }
             };
@@ -183,12 +183,20 @@ namespace OpenUtau.App.ViewModels {
 
     // Force allow downgrading so that switching between beta and stable works.
     public class DowngradableFilter : IAppCastFilter {
+        static bool Eq(int a, int b) {
+            a = a == -1 ? 0 : a;
+            b = b == -1 ? 0 : b;
+            return a == b;
+        }
+        // Ambiguous version equal where 1.2 == 1.2.0 == 1.2.0.0.
+        static bool Eq(Version a, Version b) {
+            return Eq(a.Major, b.Major)
+                && Eq(a.Minor, b.Minor)
+                && Eq(a.Build, b.Build)
+                && Eq(a.Revision, b.Revision);
+        }
         public FilterResult GetFilteredAppCastItems(Version installed, List<AppCastItem> items) {
-            items = items.Where(item => {
-                var v = new Version(item.Version);
-                // Only check first three numbers.
-                return v.Major != installed.Major || v.Minor != installed.Minor || v.Build != installed.Build;
-            }).ToList();
+            items = items.Where(item => !Eq(new Version(item.Version), installed)).ToList();
             return new FilterResult(/*forceInstallOfLatestInFilteredList=*/true, items);
         }
     }
