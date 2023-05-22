@@ -179,7 +179,9 @@ namespace OpenUtau.Core.Ustx {
         }
 
         public void SetExpression(UProject project, UTrack track, string abbr, float value) {
-            track.TryGetExpression(project, abbr, out var descriptor);
+            if (!track.TryGetExpression(project, abbr, out var descriptor)) {
+                return;
+            }
             var note = Parent.Extends ?? Parent;
             if (descriptor.defaultValue == value) {
                 note.phonemeExpressions.RemoveAll(
