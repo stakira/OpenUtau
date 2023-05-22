@@ -375,8 +375,7 @@ namespace OpenUtau.App.Views {
             if (await WarnToSave(project)) {
                 var name = System.IO.Path.GetFileNameWithoutExtension(project.FilePath);
                 var path = System.IO.Path.GetDirectoryName(project.FilePath);
-                path = System.IO.Path.Combine(path!, "Export");
-                path = System.IO.Path.Combine(path!, $"{name}.wav");
+                path = System.IO.Path.Combine(path!, "Export", $"{name}.wav");
                 PlaybackManager.Inst.RenderToFiles(project, path);
             }
         }

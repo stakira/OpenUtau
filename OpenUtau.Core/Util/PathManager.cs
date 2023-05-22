@@ -4,6 +4,8 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
+using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using Serilog;
 
@@ -74,6 +76,8 @@ namespace OpenUtau.Core {
         public string NotePresetsFilePath => Path.Combine(DataPath, "notepresets.json");
         public string BackupsPath => Path.Combine(DataPath, "Backups");
 
+        Regex invalid = new Regex("[\\x00-\\x1f<>:\"/\\\\|?*]|^(CON|PRN|AUX|NUL|COM[0-9]|LPT[0-9]|CLOCK\\$)(\\.|$)|[\\.]$", RegexOptions.IgnoreCase);
+
         public string GetPartSavePath(string projectPath, int partNo) {
             var name = Path.GetFileNameWithoutExtension(projectPath);
             var dir = Path.GetDirectoryName(projectPath);
@@ -86,6 +90,16 @@ namespace OpenUtau.Core {
             var dir = Path.GetDirectoryName(exportPath);
             Directory.CreateDirectory(dir);
             return Path.Combine(dir, $"{name}-{trackNo:D2}.wav");
+        }
+        public string GetExportPath(string exportPath, UTrack track) {
+            var dir = Path.GetDirectoryName(exportPath);
+            Directory.CreateDirectory(dir);
+            var name = Path.GetFileNameWithoutExtension(exportPath);
+            name = invalid.Replace($"{name}_{track.TrackName}", "_");
+            if(DocManager.Inst.Project.tracks.Count(t => t.TrackName == track.TrackName) > 1) {
+                name += $"_{track.TrackNo:D2}";
+            }
+            return Path.Combine(dir, $"{name}.wav");
         }
 
         public void ClearCache() {

@@ -27,6 +27,7 @@ namespace OpenUtau.App.ViewModels {
         public ReactiveCommand<PhonemizerFactory, Unit> SelectPhonemizerCommand { get; }
         public IReadOnlyList<MenuItemViewModel>? RenderersMenuItems { get; set; }
         public ReactiveCommand<string, Unit> SelectRendererCommand { get; }
+        [Reactive] public string TrackName { get; set; }
         [Reactive] public double Volume { get; set; }
         [Reactive] public double Pan { get; set; }
         [Reactive] public bool Mute { get; set; }
@@ -124,10 +125,15 @@ namespace OpenUtau.App.ViewModels {
                 });
             });
 
+            TrackName = track.TrackName;
             Volume = track.Volume;
             Pan = track.Pan;
             Mute = track.Mute;
             Solo = track.Solo;
+            this.WhenAnyValue(x => x.TrackName)
+                .Subscribe(trackName => {
+                    track.TrackName = trackName;
+                });
             this.WhenAnyValue(x => x.Volume)
                 .Subscribe(volume => {
                     track.Volume = volume;
@@ -258,6 +264,7 @@ namespace OpenUtau.App.ViewModels {
         public void ManuallyRaise() {
             this.RaisePropertyChanged(nameof(Singer));
             this.RaisePropertyChanged(nameof(TrackNo));
+            this.RaisePropertyChanged(nameof(TrackName));
             this.RaisePropertyChanged(nameof(Phonemizer));
             this.RaisePropertyChanged(nameof(PhonemizerTag));
             this.RaisePropertyChanged(nameof(Renderer));
@@ -297,6 +304,7 @@ namespace OpenUtau.App.ViewModels {
             //TODO
             var newTrack = new UTrack() {
                 TrackNo = track.TrackNo+1,
+                TrackName = track.TrackName + "_copy",
                 Singer = track.Singer,
                 Phonemizer = track.Phonemizer,
                 RendererSettings = track.RendererSettings,
@@ -321,6 +329,7 @@ namespace OpenUtau.App.ViewModels {
             //TODO
             DocManager.Inst.ExecuteCmd(new AddTrackCommand(DocManager.Inst.Project, new UTrack() {
                 TrackNo = track.TrackNo+1,
+                TrackName = track.TrackName + "_copy",
                 Singer = track.Singer,
                 Phonemizer = track.Phonemizer,
                 RendererSettings = track.RendererSettings,
