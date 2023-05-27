@@ -13,7 +13,7 @@
       <Setter Property="Background" Value="Transparent"/>
     </Style>
   </UserControl.Styles>
-  <Border Margin="1,1,1,1" BorderThickness="1" BorderBrush="{DynamicResource NeutralAccentBrushSemi}" CornerRadius="2">
+  <Border Name="border" Margin="1,1,1,1" BorderThickness="1" BorderBrush="{DynamicResource NeutralAccentBrushSemi}" CornerRadius="2">
     <Grid Background="Transparent" RowDefinitions="20,20,20,20,20,*" ColumnDefinitions="Auto,1,*,20" VerticalAlignment="Top" ClipToBounds="True">
       <TextBlock Grid.Row="0" Grid.ColumnSpan="4" Text="{Binding TrackName}" VerticalAlignment="Center" />
       <Grid Grid.Row="1" Grid.RowSpan="5" Grid.Column="0"  VerticalAlignment="Top">

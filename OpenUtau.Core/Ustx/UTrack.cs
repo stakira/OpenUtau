@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
 using OpenUtau.Core.Render;
@@ -87,7 +88,7 @@ namespace OpenUtau.Core.Ustx {
 
         [YamlIgnore] public string SingerName => Singer != null ? Singer.DisplayName : "[No Singer]";
         [YamlIgnore] public int TrackNo { set; get; }
-        public string TrackName { get; set; } = "Track1";
+        public string TrackName { get; set; } = "New Track";
         public bool Mute { set; get; }
         public bool Solo { set; get; }
         public double Volume { set; get; }
@@ -95,11 +96,19 @@ namespace OpenUtau.Core.Ustx {
         [YamlIgnore] public UExpressionDescriptor VoiceColorExp { set; get; }
 
         public UTrack() {
+        }
+        public UTrack(UProject project) {
             int trackCount = 0;
-            if(DocManager.Inst.Project.tracks.Count > 0) {
-                trackCount = DocManager.Inst.Project.tracks.Max(t => int.TryParse(t.TrackName.Replace("Track", ""), out int result) ? result : DocManager.Inst.Project.tracks.Count);
+            if (project.tracks != null && project.tracks.Count > 0) {
+                trackCount = project.tracks.Max(t => int.TryParse(t.TrackName.Replace("Track", ""), out int result) ? result : 0);
+                if (project.tracks.Count > trackCount) {
+                    trackCount = project.tracks.Count;
+                }
             }
             TrackName = "Track" + (trackCount + 1);
+        }
+        public UTrack(string trackName) {
+            TrackName = trackName;
         }
 
         public bool TryGetExpression(UProject project, string key, out UExpressionDescriptor descriptor) {

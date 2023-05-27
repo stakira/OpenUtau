@@ -1,12 +1,11 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
-using System.Xml.Linq;
+using System.Reactive.Linq;
 using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Media.Imaging;
 using OpenUtau.Api;
@@ -16,10 +15,7 @@ using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using ScottPlot.MarkerShapes;
 using Serilog;
-using SharpCompress.Common;
-using System.Reactive.Linq;
 
 namespace OpenUtau.App.ViewModels {
     public class TrackHeaderViewModel : ViewModelBase, IActivatableViewModel {
@@ -51,7 +47,7 @@ namespace OpenUtau.App.ViewModels {
             SelectPhonemizerCommand = ReactiveCommand.Create<PhonemizerFactory>(_ => { });
             SelectRendererCommand = ReactiveCommand.Create<string>(_ => { });
             Activator = new ViewModelActivator();
-            track = new UTrack();
+            track = new UTrack(DocManager.Inst.Project);
 #endif
         }
 
@@ -325,9 +321,8 @@ namespace OpenUtau.App.ViewModels {
         public void Duplicate() {
             DocManager.Inst.StartUndoGroup();
             //TODO
-            var newTrack = new UTrack() {
-                TrackNo = track.TrackNo+1,
-                TrackName = track.TrackName + "_copy",
+            var newTrack = new UTrack(track.TrackName + "_copy") {
+                TrackNo = track.TrackNo + 1,
                 Singer = track.Singer,
                 Phonemizer = track.Phonemizer,
                 RendererSettings = track.RendererSettings,
@@ -350,9 +345,8 @@ namespace OpenUtau.App.ViewModels {
         public void DuplicateSettings() {
             DocManager.Inst.StartUndoGroup();
             //TODO
-            DocManager.Inst.ExecuteCmd(new AddTrackCommand(DocManager.Inst.Project, new UTrack() {
-                TrackNo = track.TrackNo+1,
-                TrackName = track.TrackName + "_copy",
+            DocManager.Inst.ExecuteCmd(new AddTrackCommand(DocManager.Inst.Project, new UTrack(track.TrackName + "_copy") {
+                TrackNo = track.TrackNo + 1,
                 Singer = track.Singer,
                 Phonemizer = track.Phonemizer,
                 RendererSettings = track.RendererSettings,

@@ -79,6 +79,7 @@ namespace OpenUtau.Core.Format {
 
         public static UProject Load(string filePath) {
             string text = File.ReadAllText(filePath, Encoding.UTF8);
+            DocManager.Inst.Project.tracks.Clear();
             UProject project = Yaml.DefaultDeserializer.Deserialize<UProject>(text);
             AddDefaultExpressions(project);
             project.FilePath = filePath;

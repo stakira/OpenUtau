@@ -85,12 +85,6 @@ namespace OpenUtau.Core {
             return Path.Combine(dir, $"{name}-{partNo:D2}.ust");
         }
 
-        public string GetExportPath(string exportPath, int trackNo) {
-            var name = Path.GetFileNameWithoutExtension(exportPath);
-            var dir = Path.GetDirectoryName(exportPath);
-            Directory.CreateDirectory(dir);
-            return Path.Combine(dir, $"{name}-{trackNo:D2}.wav");
-        }
         public string GetExportPath(string exportPath, UTrack track) {
             var dir = Path.GetDirectoryName(exportPath);
             Directory.CreateDirectory(dir);

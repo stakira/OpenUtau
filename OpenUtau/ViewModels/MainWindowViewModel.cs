@@ -155,7 +155,7 @@ namespace OpenUtau.App.ViewModels {
             int trackNo = project.tracks.Count;
             part.trackNo = trackNo;
             DocManager.Inst.StartUndoGroup();
-            DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, new UTrack() { TrackNo = trackNo }));
+            DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, new UTrack(project)));
             DocManager.Inst.ExecuteCmd(new AddPartCommand(project, part));
             DocManager.Inst.EndUndoGroup();
         }
@@ -168,7 +168,7 @@ namespace OpenUtau.App.ViewModels {
             var parts = UseDrywetmidi ? Core.Format.MidiWriter.Load(file, project) : Core.Format.Midi.Load(file, project);
             DocManager.Inst.StartUndoGroup();
             foreach (var part in parts) {
-                var track = new UTrack();
+                var track = new UTrack(project);
                 track.TrackNo = project.tracks.Count;
                 part.trackNo = track.TrackNo;
                 part.AfterLoad(project, track);
