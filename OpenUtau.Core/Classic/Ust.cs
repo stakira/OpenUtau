@@ -69,6 +69,7 @@ namespace OpenUtau.Classic {
             var project = new UProject() { FilePath = file, Saved = false };
             Ustx.AddDefaultExpressions(project);
 
+            project.tracks.Clear();
             project.tracks.Add(new UTrack(project) {
                 TrackNo = 0,
             });
