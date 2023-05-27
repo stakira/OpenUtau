@@ -352,12 +352,12 @@ namespace OpenUtau.Plugin.Builtin {
 
         protected override double GetTransitionBasicLengthMs(string alias = "") {
             foreach (var c in shortConsonants ) {
-                if (alias.Contains(c) && !alias.Contains("rr")) {
+                if (alias.Contains(c) && !alias.Contains("rr") && !alias.StartsWith(c)) {
                     return base.GetTransitionBasicLengthMs() * 0.50;
                 }
             }
             foreach (var c in longConsonants) {
-                if (alias.Contains(c)) {
+                if (alias.Contains(c) && !alias.StartsWith(c)) {
                     return base.GetTransitionBasicLengthMs() * 2.0;
                 }
             }
