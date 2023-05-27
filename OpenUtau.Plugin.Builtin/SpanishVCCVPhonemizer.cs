@@ -308,7 +308,7 @@ namespace OpenUtau.Plugin.Builtin {
                     phonemes.Add(vcr);
                 } else {
                     phonemes.Add($"{v} {cc[0]}");
-                    TryAddPhoneme(phonemes, ending.tone, $"{cc[0]}-");
+                    TryAddPhoneme(phonemes, ending.tone, $"{cc[0]}-", ValidateAlias($"{cc[0]}-"));
                 }
             }
             return phonemes;
