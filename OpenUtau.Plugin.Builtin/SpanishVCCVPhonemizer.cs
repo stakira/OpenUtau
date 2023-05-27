@@ -122,22 +122,20 @@ namespace OpenUtau.Plugin.Builtin {
                         if (HasOto(ccv, syllable.vowelTone)) {
                             lastC = i;
                             basePhoneme = ccv;
-                            if (!HasOto(ccv, syllable.vowelTone)) {
-                                ccv = ValidateAlias(ccv);
-                                lastC = i;
-                                basePhoneme = ccv;
-                                break;
-                            }
                             break;
-                        } else if (HasOto(rccv, syllable.vowelTone)) {
+                        } else if (!HasOto(ccv, syllable.vowelTone) && HasOto(ValidateAlias(ccv), syllable.vowelTone)) {
+                            ccv = ValidateAlias(ccv);
+                            lastC = i;
+                            basePhoneme = ccv;
+                            break;
+                        } else if (!HasOto(ValidateAlias(ccv), syllable.vowelTone) && HasOto(rccv, syllable.vowelTone)) {
                             lastC = i;
                             basePhoneme = rccv;
-                            if (!HasOto(rccv, syllable.vowelTone)) {
-                                rccv = ValidateAlias(rccv);
-                                lastC = i;
-                                basePhoneme = rccv;
-                                break;
-                            }
+                            break;
+                        } else if (!HasOto(rccv, syllable.vowelTone) && HasOto(ValidateAlias(rccv), syllable.vowelTone)) {
+                            rccv = ValidateAlias(rccv);
+                            lastC = i;
+                            basePhoneme = rccv;
                             break;
                         }
                     }
