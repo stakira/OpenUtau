@@ -31,14 +31,16 @@ namespace OpenUtau.App.Views {
 
         public static void CheckForUpdate(Action<Window> showDialog, Action closeApplication, TaskScheduler scheduler) {
             Task.Run(async () => {
-                using (var updater = await UpdaterViewModel.NewUpdaterAsync()) {
-                    var info = await updater.CheckForUpdatesQuietly(true);
-                    if (info.Status == UpdateStatus.UpdateAvailable) {
-                        if (info.Updates[0].Version.ToString() == Preferences.Default.SkipUpdate) {
-                            return false;
-                        }
-                        return true;
+                using var updater = await UpdaterViewModel.NewUpdaterAsync();
+                if (updater == null) {
+                    return false;
+                }
+                var info = await updater.CheckForUpdatesQuietly(true);
+                if (info.Status == UpdateStatus.UpdateAvailable) {
+                    if (info.Updates[0].Version.ToString() == Preferences.Default.SkipUpdate) {
+                        return false;
                     }
+                    return true;
                 }
                 return false;
             }).ContinueWith(t => {

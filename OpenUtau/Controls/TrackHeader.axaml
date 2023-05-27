@@ -118,7 +118,7 @@
                 ContextRequested="PanFaderContextRequested"/>
         <TextBlock FontSize="11" FontFamily="monospace" HorizontalAlignment="Right" Margin="0,0,5,0">
           <TextBlock.Text>
-            <MultiBinding StringFormat="{}{0:00R;00L;mid}">
+            <MultiBinding StringFormat="{}{0:00R;00L;C}">
               <Binding Path="Pan"/>
             </MultiBinding>
           </TextBlock.Text>
