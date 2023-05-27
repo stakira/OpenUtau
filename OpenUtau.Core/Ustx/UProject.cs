@@ -68,7 +68,7 @@ namespace OpenUtau.Core.Ustx {
         public UProject() {
             timeSignatures = new List<UTimeSignature> { new UTimeSignature(0, 4, 4) };
             tempos = new List<UTempo> { new UTempo(0, 120) };
-            tracks = new List<UTrack>();
+            //tracks = new List<UTrack> { new UTrack() };
             parts = new List<UPart>();
             timeAxis.BuildSegments(this);
         }

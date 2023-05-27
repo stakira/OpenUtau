@@ -4,8 +4,13 @@ using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
+using System.Xml.Linq;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Media.Imaging;
 using OpenUtau.Api;
+using OpenUtau.App.Views;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
@@ -13,6 +18,8 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using ScottPlot.MarkerShapes;
 using Serilog;
+using SharpCompress.Common;
+using System.Reactive.Linq;
 
 namespace OpenUtau.App.ViewModels {
     public class TrackHeaderViewModel : ViewModelBase, IActivatableViewModel {
@@ -130,9 +137,9 @@ namespace OpenUtau.App.ViewModels {
             Pan = track.Pan;
             Mute = track.Mute;
             Solo = track.Solo;
-            this.WhenAnyValue(x => x.TrackName)
+            this.WhenAnyValue(x => x.track.TrackName)
                 .Subscribe(trackName => {
-                    track.TrackName = trackName;
+                    TrackName = trackName;
                 });
             this.WhenAnyValue(x => x.Volume)
                 .Subscribe(volume => {
@@ -264,7 +271,6 @@ namespace OpenUtau.App.ViewModels {
         public void ManuallyRaise() {
             this.RaisePropertyChanged(nameof(Singer));
             this.RaisePropertyChanged(nameof(TrackNo));
-            this.RaisePropertyChanged(nameof(TrackName));
             this.RaisePropertyChanged(nameof(Phonemizer));
             this.RaisePropertyChanged(nameof(PhonemizerTag));
             this.RaisePropertyChanged(nameof(Renderer));
@@ -297,6 +303,23 @@ namespace OpenUtau.App.ViewModels {
             DocManager.Inst.StartUndoGroup();
             DocManager.Inst.ExecuteCmd(new MoveTrackCommand(DocManager.Inst.Project, track, false));
             DocManager.Inst.EndUndoGroup();
+        }
+
+        public void Rename() {
+            var dialog = new TypeInDialog();
+            dialog.Title = ThemeManager.GetString("tracks.rename");
+            dialog.SetText(track.TrackName);
+            dialog.onFinish = name => {
+                if (!string.IsNullOrWhiteSpace(name) && name != track.TrackName) {
+                    DocManager.Inst.StartUndoGroup();
+                    this.TrackName = name;
+                    DocManager.Inst.ExecuteCmd(new RenameTrackCommand(DocManager.Inst.Project, track, name));
+                    DocManager.Inst.EndUndoGroup();
+                }
+            };
+            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
+                dialog.ShowDialog(desktop.MainWindow);
+            }
         }
 
         public void Duplicate() {

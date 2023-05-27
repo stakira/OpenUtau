@@ -9,7 +9,7 @@ namespace OpenUtau.App {
 
         public const double TrackHeightMax = 140;
         public const double TrackHeightMin = 44;
-        public const double TrackHeightDefault = 130;
+        public const double TrackHeightDefault = 124;
 
         public const double PianoRollTickWidthMax = 640.0 / 480.0;
         public const double PianoRollTickWidthMin = 4.0 / 480.0;

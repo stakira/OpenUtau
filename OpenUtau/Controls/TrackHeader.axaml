@@ -15,7 +15,7 @@
   </UserControl.Styles>
   <Border Margin="1,1,1,1" BorderThickness="1" BorderBrush="{DynamicResource NeutralAccentBrushSemi}" CornerRadius="2">
     <Grid Background="Transparent" RowDefinitions="20,20,20,20,20,*" ColumnDefinitions="Auto,1,*,20" VerticalAlignment="Top" ClipToBounds="True">
-      <TextBox Grid.Row="0" Grid.ColumnSpan="4" Text="{Binding TrackName}" />
+      <TextBlock Grid.Row="0" Grid.ColumnSpan="4" Text="{Binding TrackName}" VerticalAlignment="Center" />
       <Grid Grid.Row="1" Grid.RowSpan="5" Grid.Column="0"  VerticalAlignment="Top">
         <Border BorderThickness="0,0,1,1" Height="101" Width="101" VerticalAlignment="Top" CornerRadius="0,0,2,0"
                 BorderBrush="{DynamicResource NeutralAccentBrushSemi}" ClipToBounds="True">
@@ -125,6 +125,7 @@
           <MenuItem Classes="context" Header="{StaticResource tracks.remove}" Command="{Binding Remove}"/>
           <MenuItem Classes="context" Header="{StaticResource tracks.moveup}" Command="{Binding MoveUp}"/>
           <MenuItem Classes="context" Header="{StaticResource tracks.movedown}" Command="{Binding MoveDown}"/>
+          <MenuItem Classes="context" Header="{StaticResource tracks.rename}" Command="{Binding Rename}"/>
           <MenuItem Classes="context" Header="{StaticResource tracks.duplicate}" Command="{Binding Duplicate}"/>
           <MenuItem Classes="context" Header="{StaticResource tracks.duplicatesettings}" Command="{Binding DuplicateSettings}"/>
         </ContextMenu>

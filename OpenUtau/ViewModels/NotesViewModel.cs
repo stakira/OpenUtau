@@ -72,6 +72,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public UVoicePart? Part { get; set; }
         [Reactive] public Bitmap? Portrait { get; set; }
         [Reactive] public IBrush? PortraitMask { get; set; }
+        [Reactive] public string WindowTitle { get; set; } = "Piano Roll";
         public double ViewportTicks => viewportTicks.Value;
         public double ViewportTracks => viewportTracks.Value;
         public double SmallChangeX => smallChangeX.Value;
@@ -334,6 +335,7 @@ namespace OpenUtau.App.ViewModels {
             Part = part as UVoicePart;
             OnPartModified();
             LoadPortrait(part, project);
+            LoadWindowTitle(part, project);
         }
 
         private void LoadPortrait(UPart? part, UProject? project) {
@@ -387,11 +389,19 @@ namespace OpenUtau.App.ViewModels {
                 });
             }
         }
+        private void LoadWindowTitle(UPart? part, UProject? project) {
+            if (part == null || project == null) {
+                WindowTitle = "Piano Roll";
+                return;
+            }
+            WindowTitle = project.tracks[part.trackNo].TrackName + " - " + part.DisplayName;
+        }
 
         private void UnloadPart() {
             DeselectNotes();
             Part = null;
             LoadPortrait(null, null);
+            LoadWindowTitle(null, null);
         }
 
         private void OnPartModified() {
@@ -794,6 +804,8 @@ namespace OpenUtau.App.ViewModels {
                     OnPartModified();
                 } else if (cmd is MovePartCommand) {
                     OnPartModified();
+                } else if (cmd is RenamePartCommand) {
+                    LoadWindowTitle(Part, Project);
                 }
             } else if (cmd is NoteCommand noteCommand) {
                 CleanupSelectedNotes();
@@ -809,7 +821,10 @@ namespace OpenUtau.App.ViewModels {
             } else if (cmd is ExpCommand) {
                 MessageBus.Current.SendMessage(new NotesRefreshEvent());
             } else if (cmd is TrackCommand) {
-                if (cmd is RemoveTrackCommand removeTrack) {
+                if(cmd is RenameTrackCommand) {
+                    LoadWindowTitle(Part, Project);
+                    return;
+                } else if (cmd is RemoveTrackCommand removeTrack) {
                     if (removeTrack.removedParts.Contains(Part)) {
                         UnloadPart();
                     }

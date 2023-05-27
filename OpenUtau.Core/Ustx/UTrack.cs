@@ -87,7 +87,7 @@ namespace OpenUtau.Core.Ustx {
 
         [YamlIgnore] public string SingerName => Singer != null ? Singer.DisplayName : "[No Singer]";
         [YamlIgnore] public int TrackNo { set; get; }
-        public string TrackName { get; set; } = "Track 1";
+        public string TrackName { get; set; } = "Track1";
         public bool Mute { set; get; }
         public bool Solo { set; get; }
         public double Volume { set; get; }
@@ -97,9 +97,9 @@ namespace OpenUtau.Core.Ustx {
         public UTrack() {
             int trackCount = 0;
             if(DocManager.Inst.Project.tracks.Count > 0) {
-                trackCount = DocManager.Inst.Project.tracks.Max(t => int.TryParse(t.TrackName.Replace("Track ", ""), out int result) ? result : 0 );
+                trackCount = DocManager.Inst.Project.tracks.Max(t => int.TryParse(t.TrackName.Replace("Track", ""), out int result) ? result : DocManager.Inst.Project.tracks.Count);
             }
-            TrackName = "Track " + (trackCount + 1);
+            TrackName = "Track" + (trackCount + 1);
         }
 
         public bool TryGetExpression(UProject project, string key, out UExpressionDescriptor descriptor) {

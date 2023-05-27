@@ -58,7 +58,6 @@ namespace OpenUtau.Core.Format {
         public static UProject Create() {
             UProject project = new UProject() { Saved = false };
             AddDefaultExpressions(project);
-            project.tracks.Add(new UTrack() { TrackNo = project.tracks.Count() });
             return project;
         }
 
