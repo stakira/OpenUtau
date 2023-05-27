@@ -9,7 +9,6 @@ namespace OpenUtau.Core.Enunu {
         public string questionPath;
         public int sampleRate;
         public double framePeriod;
-        public bool enuType;
         public EnunuExtensions extensions;
 
         public static EnunuConfig Load(USinger singer) {
@@ -47,7 +46,6 @@ namespace OpenUtau.Core.Enunu {
                             config.questionPath = f.Substring(f.LastIndexOf(modelPath)); ;
                         }
                     }
-                    config.enuType = true;
                 }
             }
             else if (Directory.Exists(location)) {
@@ -64,7 +62,6 @@ namespace OpenUtau.Core.Enunu {
                             config.questionPath = f.Substring(f.LastIndexOf("\\")); ;
                         }
                     }
-                    config.enuType = true;
                 }
             }
 
@@ -103,7 +100,6 @@ namespace OpenUtau.Core.Enunu {
         public int sampleRate;
         public double framePeriod;
         public RawEnunuExtensions extensions;
-        public bool enuType;
 
         public EnunuConfig Convert() {
             EnunuConfig enunuConfig = new EnunuConfig();
@@ -112,7 +108,6 @@ namespace OpenUtau.Core.Enunu {
             enunuConfig.sampleRate = this.sampleRate;
             enunuConfig.framePeriod = this.framePeriod;
             enunuConfig.extensions = new EnunuExtensions();
-            enunuConfig.enuType = this.enuType;
             if (this.extensions != null) {
                 ParseEnunuExtension(enunuConfig.extensions.ust_editor, this.extensions.ust_editor);
                 ParseEnunuExtension(enunuConfig.extensions.ust_converter, this.extensions.ust_converter);
