@@ -16,7 +16,7 @@ namespace OpenUtau.Plugins {
             new string[] { "", "", },
             new string[] { "C4", "C4" },
             new string[] { "", "", },
-            new string[] { "-te", "e st", "tw", "w3", "3 d", "dz-" })]
+            new string[] { "-te", "es-", "st", "w3", "3d-", "dz-" })]
         public void BasicPhonemizingTest(string singerName, string[] lyrics, string[] alts, string[] tones, string[] colors, string[] aliases) {
             RunPhonemizeTest(singerName, lyrics, alts, tones, colors, aliases);
         }
