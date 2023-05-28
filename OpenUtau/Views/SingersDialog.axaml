@@ -16,9 +16,7 @@
   </Design.DataContext>
   <Grid Margin="{Binding $parent.WindowDecorationMargin}">
     <Grid.RowDefinitions>
-      <RowDefinition Height="110" MinHeight="110"/>
-      <RowDefinition Height="10"/>
-      <RowDefinition Height="20"/>
+      <RowDefinition Height="140" MinHeight="140"/>
       <RowDefinition Height="10"/>
       <RowDefinition Height="*" MinHeight="160"/>
       <RowDefinition Height="10"/>
@@ -37,12 +35,12 @@
     <Image Grid.Row="0" Width="100" Height="100" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0" Source="{Binding Avatar}"/>
     <ComboBox Grid.Row="0" x:Name="name" HorizontalAlignment="Stretch" Margin="120,10,0,0" VerticalAlignment="Top"
               Items="{Binding Singers}" SelectedItem="{Binding Singer}" SelectionChanged="OnSelectedSingerChanged"/>
-    <Border Grid.Row="0" Margin="120,40,0,0">
+    <Border Grid.Row="0" Margin="120,40,0,30">
       <ScrollViewer>
         <TextBlock x:Name="info" TextWrapping="Wrap" Text="{Binding Info}"/>
       </ScrollViewer>
     </Border>
-    <DataGrid Grid.Row="0" Grid.Column="2" Margin="0,10,10,0" CanUserSortColumns="False" BorderThickness="1"
+    <DataGrid Grid.Row="0" Grid.Column="2" Margin="0,10,10,30" CanUserSortColumns="False" BorderThickness="1"
               BorderBrush="{DynamicResource SystemControlHighlightBaseMediumHighBrush}"
               Items="{Binding Subbanks}" IsReadOnly="True">
       <DataGrid.Columns>
@@ -52,8 +50,9 @@
         <DataGridTextColumn Header="{StaticResource singers.subbanks.color}" Binding="{Binding Color}"/>
       </DataGrid.Columns>
     </DataGrid>
-    <StackPanel Grid.Row="2" Spacing="10" Margin="10,0,0,0" Orientation="Horizontal" HorizontalAlignment="Left">
-      <Button Content="{DynamicResource singers.location}" Margin="0"
+    <StackPanel Grid.Row="0" Spacing="10" Margin="10,0,0,0" Height="20"
+                Orientation="Horizontal" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+      <Button Content="{DynamicResource singers.location}" Margin="0" Width="100"
               IsEnabled="{Binding Singer, Converter={x:Static ObjectConverters.IsNotNull}}" Command="{Binding OpenLocation}"/>
       <Button Margin="0" Padding="0"
               IsEnabled="{Binding Singer, Converter={x:Static ObjectConverters.IsNotNull}}"
@@ -64,7 +63,7 @@
           <Path.RenderTransform>
             <TransformGroup>
               <ScaleTransform ScaleX=".67" ScaleY=".67"/>
-              <TranslateTransform X="0" Y="0"/>
+              <TranslateTransform X="-1" Y="-1"/>
             </TransformGroup>
           </Path.RenderTransform>
         </Path>
@@ -91,11 +90,11 @@
           </ContextMenu>
         </Button.ContextMenu>
       </Button>
+      <TextBox Text="{Binding SearchAlias}" Watermark="{DynamicResource singers.editoto.searchalias}" Margin="0"
+               MinWidth="160" HorizontalAlignment="Stretch" Focusable="True" IsVisible="{Binding IsClassic}" />
     </StackPanel>
-    <StackPanel Grid.Row="2" Grid.ColumnSpan="3" Spacing="10" Margin="0" Orientation="Horizontal" HorizontalAlignment="Center">
-      <TextBox Margin="0" Text="{Binding SearchWord}" Watermark="Search word"
-               MinWidth="100" Focusable="True" IsVisible="{Binding IsClassic}" />
-      <Button Margin="0" Content="{DynamicResource singers.editoto.search}" Command="{Binding Search}" IsVisible="{Binding IsClassic}"/>
+    <StackPanel Grid.Row="0" Grid.Column="2" Spacing="10" Margin="0" Height="20"
+                Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom">
       <Button Margin="0" Content="{DynamicResource singers.editoto.reset}" Command="{Binding RefreshSinger}"
               IsVisible="{Binding IsClassic}" IsEnabled="{Binding Singer.OtoDirty}"/>
       <Button Margin="0" Content="{DynamicResource singers.editoto.save}" Command="{Binding SaveOtos}"
@@ -103,15 +102,16 @@
       <Button Margin="0" Content="{DynamicResource singers.editoto.editinvlabeler}"
               IsVisible="{Binding IsClassic}" Click="OnEditInVLabeler"/>
     </StackPanel>
-    <StackPanel Grid.Row="2" Grid.Column="2" Spacing="10" Margin="0,0,10,0" Orientation="Horizontal" HorizontalAlignment="Right">
+    <StackPanel Grid.Row="0" Grid.Column="2" Spacing="10" Margin="0,0,10,0" Height="20"
+                Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
       <Button Margin="0" Content="{DynamicResource singers.subbanks.edit}" Click="OnEditSubbanksButton"
               IsEnabled="{Binding Singer, Converter={x:Static ObjectConverters.IsNotNull}}"/>
     </StackPanel>
     
     
-    <GridSplitter Grid.Row="3" Grid.ColumnSpan="3" Height="10"
+    <GridSplitter Grid.Row="1" Grid.ColumnSpan="3" Height="10"
                   Background="{DynamicResource SystemControlBackgroundAltHighBrush}"/>
-    <DataGrid Name="OtoGrid" Grid.Row="4" Grid.ColumnSpan="3" Margin="10,0,10,0" CanUserResizeColumns="True" BorderThickness="1"
+    <DataGrid Name="OtoGrid" Grid.Row="2" Grid.ColumnSpan="3" Margin="10,0,10,0" CanUserResizeColumns="True" BorderThickness="1"
               BorderBrush="{DynamicResource SystemControlHighlightBaseMediumHighBrush}"
               Items="{Binding DisplayedOtos}" SelectedItem="{Binding SelectedOto}" SelectedIndex="{Binding SelectedIndex}"
               SelectionChanged="OnSelectedOtoChanged"
@@ -143,9 +143,9 @@
         <DataGridTextColumn Header="{StaticResource oto.overlap}" Binding="{Binding Overlap}"/>
       </DataGrid.Columns>
     </DataGrid>
-    <GridSplitter Grid.Row="5" Grid.ColumnSpan="3" Height="10"
+    <GridSplitter Grid.Row="3" Grid.ColumnSpan="3" Height="10"
                   Background="{DynamicResource SystemControlBackgroundAltHighBrush}"/>
-    <StackPanel Grid.Row="8" Grid.ColumnSpan="3" Margin="10,0" Orientation="Horizontal" Spacing="3">
+    <StackPanel Grid.Row="6" Grid.ColumnSpan="3" Margin="10,0" Orientation="Horizontal" Spacing="3">
       <Border Margin="0" BorderThickness="1" CornerRadius="4"
               BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}">
         <TextBlock Margin="2,0">Q</TextBlock>
@@ -182,7 +182,7 @@
       </Border>
       <TextBlock Margin="0,1,6,1" Text="{DynamicResource singers.otoview.moveright}"/>
     </StackPanel>
-    <StackPanel Grid.Row="8" Grid.ColumnSpan="3" Margin="10,0" Orientation="Horizontal" Spacing="3"
+    <StackPanel Grid.Row="6" Grid.ColumnSpan="3" Margin="10,0" Orientation="Horizontal" Spacing="3"
                 HorizontalAlignment="Right">
       <Border BorderThickness="1" CornerRadius="4" ClipToBounds="True"
               BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}">
@@ -199,7 +199,7 @@
         </ToggleButton>
       </Border>
     </StackPanel>
-    <StackPanel Grid.Row="10" Grid.ColumnSpan="3" Margin="10,0" Orientation="Horizontal" Spacing="3">
+    <StackPanel Grid.Row="8" Grid.ColumnSpan="3" Margin="10,0" Orientation="Horizontal" Spacing="3">
       <Border Margin="0" BorderThickness="1" CornerRadius="4"
               BorderBrush="{DynamicResource SystemControlForegroundBaseMediumBrush}">
         <TextBlock Margin="2,0">1</TextBlock>
@@ -226,10 +226,10 @@
       </Border>
       <TextBlock Margin="0,1,6,1" Text="{DynamicResource oto.edit.cutoff}"/>
     </StackPanel>
-    <Border Grid.Row="6" Grid.ColumnSpan="3" Margin="10,0">
+    <Border Grid.Row="4" Grid.ColumnSpan="3" Margin="10,0">
       <TextBlock Text="libgdiplus missing" VerticalAlignment="Center" HorizontalAlignment="Center"/>
     </Border>
-    <Border Grid.Row="6" Grid.ColumnSpan="3" Margin="10,0">
+    <Border Grid.Row="4" Grid.ColumnSpan="3" Margin="10,0">
       <ScottPlot:AvaPlot Name="OtoPlot" PointerMoved="OtoPlot_OnPointerMoved"/>
     </Border>
   </Grid>
