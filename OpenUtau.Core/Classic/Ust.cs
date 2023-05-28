@@ -4,9 +4,11 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using OpenUtau.Classic.Flags;
 using OpenUtau.Core;
 using OpenUtau.Core.Format;
 using OpenUtau.Core.Ustx;
+using SharpCompress;
 
 namespace OpenUtau.Classic {
 
@@ -102,7 +104,7 @@ namespace OpenUtau.Classic {
                         default:
                             if (int.TryParse(header.Substring(2, header.Length - 3), out var noteIndex)) {
                                 var note = project.CreateNote();
-                                ParseNote(note, lastNotePos, lastNoteEnd, block.lines, out var noteTempo);
+                                ParseNote(note, lastNotePos, lastNoteEnd, block.lines, out var noteTempo, project.expressions);
                                 lastNotePos = note.position;
                                 lastNoteEnd = note.End;
                                 if (note.lyric.ToLowerInvariant() != "r") {
@@ -168,7 +170,7 @@ namespace OpenUtau.Classic {
             }
         }
 
-        private static void ParseNote(UNote note, int lastNotePos, int lastNoteEnd, List<IniLine> iniLines, out float? noteTempo) {
+        private static void ParseNote(UNote note, int lastNotePos, int lastNoteEnd, List<IniLine> iniLines, out float? noteTempo, Dictionary<string, UExpressionDescriptor> expressions) {
             var ustNote = new UstNote {
                 lyric = note.lyric,
                 position = note.position,
@@ -189,12 +191,31 @@ namespace OpenUtau.Classic {
             if (ustNote.modulation != null) {
                 SetExpression(note, Ustx.MOD, 0, ustNote.modulation.Value);
             }
+            if (ustNote.flags != null) {
+                SetFlags(note, ustNote.flags, 0, expressions);
+            }
             if (ustNote.pitch != null) {
                 note.pitch = ustNote.pitch;
             }
             if (ustNote.vibrato != null) {
                 note.vibrato = ustNote.vibrato;
             }
+        }
+
+        private static void SetFlags(UNote note, string flags, int index, Dictionary<string, UExpressionDescriptor> expressions) {
+            var parser = new UstFlagParser();
+            var list = parser.Parse(flags);
+            list.ForEach((flag) => {
+                var abbr = FindAbbrFromFlagKey(expressions, flag);
+                if (abbr != String.Empty) {
+                    SetExpression(note, abbr, index, flag.Value);
+                }
+            });
+        }
+
+        private static string FindAbbrFromFlagKey(Dictionary<string, UExpressionDescriptor> expressions, UstFlag flag) {
+            var exp = expressions.FirstOrDefault(exp => exp.Value.flag == flag.Key);
+            return exp.Value != null ? exp.Value.abbr : String.Empty;
         }
 
         private static void SetExpression(UNote note, string abbr, int index, float value) {
@@ -384,7 +405,7 @@ namespace OpenUtau.Classic {
                         case "[#INSERT]":
                             if (index <= sequence.Count) {
                                 var newNote = project.CreateNote();
-                                ParseNote(newNote, 0, 0, block.lines, out var _);
+                                ParseNote(newNote, 0, 0, block.lines, out var _, project.expressions);
                                 newNote.AfterLoad(project, project.tracks[part.trackNo], part);
                                 sequence.Insert(index, newNote);
                                 toAdd.Add(newNote);
@@ -401,7 +422,7 @@ namespace OpenUtau.Classic {
                             if (index < sequence.Count) {
                                 toRemove.Add(sequence[index]);
                                 var newNote = sequence[index].Clone();
-                                ParseNote(newNote, 0, 0, block.lines, out var _);
+                                ParseNote(newNote, 0, 0, block.lines, out var _, project.expressions);
                                 newNote.AfterLoad(project, project.tracks[part.trackNo], part);
                                 sequence[index] = newNote;
                                 toAdd.Add(newNote);

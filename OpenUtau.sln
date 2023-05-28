@@ -26,8 +26,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenUtau", "OpenUtau\OpenUt
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenUtau.Plugin.Builtin", "OpenUtau.Plugin.Builtin\OpenUtau.Plugin.Builtin.csproj", "{D24740E1-CC43-4226-A573-59C013FE50A2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Unzipper", "Unzipper\Unzipper.csproj", "{82B142C1-145B-4A9E-9B69-47EAB17CB6C0}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -50,10 +48,6 @@ Global
 		{D24740E1-CC43-4226-A573-59C013FE50A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D24740E1-CC43-4226-A573-59C013FE50A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D24740E1-CC43-4226-A573-59C013FE50A2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{82B142C1-145B-4A9E-9B69-47EAB17CB6C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{82B142C1-145B-4A9E-9B69-47EAB17CB6C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{82B142C1-145B-4A9E-9B69-47EAB17CB6C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{82B142C1-145B-4A9E-9B69-47EAB17CB6C0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
