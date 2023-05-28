@@ -218,8 +218,10 @@ namespace OpenUtau.Plugin.Builtin {
                             new Phoneme { phoneme = $"{N} -", position = End });
                         }
                     } else
+                        if (prevNeighbour == null) {
                         phonemes.Add(
                         new Phoneme { phoneme = $"- {N}" });
+                    }
                 }
                 // 2 kí tự CV, ví dụ: "ba"
                 if ((dem == 2) && tontaiC) {
