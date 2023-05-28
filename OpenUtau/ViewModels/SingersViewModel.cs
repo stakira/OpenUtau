@@ -35,7 +35,7 @@ namespace OpenUtau.App.ViewModels {
         public List<MenuItemViewModel> SetEncodingMenuItems => setEncodingMenuItems;
         public List<MenuItemViewModel> SetDefaultPhonemizerMenuItems => setDefaultPhonemizerMenuItems;
 
-        [Reactive] public string SearchWord { get; set; } = "";
+        [Reactive] public string SearchAlias { get; set; } = "";
 
         private readonly ObservableCollectionExtended<USubbank> subbanks
             = new ObservableCollectionExtended<USubbank>();
@@ -71,6 +71,10 @@ namespace OpenUtau.App.ViewModels {
                     LoadSubbanks();
                     DocManager.Inst.ExecuteCmd(new OtoChangedNotification());
                     this.RaisePropertyChanged(nameof(IsClassic));
+                });
+            this.WhenAnyValue(vm => vm.SearchAlias)
+                .Subscribe(alias => {
+                    Search();
                 });
 
             setEncodingCommand = ReactiveCommand.Create<Encoding>(encoding => {
@@ -250,14 +254,14 @@ namespace OpenUtau.App.ViewModels {
             }
         }
 
-        public void Search() {
-            if (string.IsNullOrWhiteSpace(SearchWord)) {
+        private void Search() {
+            if (string.IsNullOrWhiteSpace(SearchAlias)) {
                 DisplayedOtos.Clear();
                 DisplayedOtos.AddRange(Otos);
             }
             else {
                 DisplayedOtos.Clear();
-                DisplayedOtos.AddRange(Otos.Where(o => o.Alias.Contains(SearchWord)));
+                DisplayedOtos.AddRange(Otos.Where(o => o.Alias.Contains(SearchAlias)));
             }
         }
 
