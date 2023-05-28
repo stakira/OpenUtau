@@ -95,7 +95,7 @@ namespace OpenUtau.Core.Editing {
             }
             // Determine the character that is the trigger
             UTrack track = project.tracks[part.trackNo];
-            if (track.VoiceColorExp.options.Length <= 0) {
+            if (track.VoiceColorExp == null || track.VoiceColorExp.options.Length <= 0) {
                 return;
             }
             Dictionary<int, string> colors = new Dictionary<int, string>(); // index, trigger

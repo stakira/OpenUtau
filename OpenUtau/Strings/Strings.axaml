@@ -70,6 +70,17 @@
   <system:String x:Key="lyrics.reset">Reset</system:String>
   <system:String x:Key="lyrics.selectnotes">Select some notes first!</system:String>
   <system:String x:Key="lyrics.separators">Separators</system:String>
+  <system:String x:Key="lyricsreplace.after">After :</system:String>
+  <system:String x:Key="lyricsreplace.before">Before :</system:String>
+  <system:String x:Key="lyricsreplace.presets">Presets</system:String>
+  <system:String x:Key="lyricsreplace.preview">Preview</system:String>
+  <system:String x:Key="lyricsreplace.regex">Regular expressions can be used</system:String>
+  <system:String x:Key="lyricsreplace.replace">General lyrics replacement</system:String>
+  <system:String x:Key="lyricsreplace.preset.rmvalphabet">Remove alphabet</system:String>
+  <system:String x:Key="lyricsreplace.preset.rmvnonhiragana">Remove non-hiragana</system:String>
+  <system:String x:Key="lyricsreplace.preset.rmvphonetichint">Remove phonetic hint</system:String>
+  <system:String x:Key="lyricsreplace.preset.rmvtone">Remove tone suffix</system:String>
+  <system:String x:Key="lyricsreplace.preset.rmvspace">Remove spaces and earlier</system:String>
 
   <system:String x:Key="menu.edit">Edit</system:String>
   <system:String x:Key="menu.edit.copy">Copy</system:String>
@@ -302,6 +313,7 @@ Hold Ctrl to select</system:String>
   <system:String x:Key="singers.editoto.regenfrq.regenerating">Regenerating FRQ</system:String>
   <system:String x:Key="singers.editoto.reset">Reset Otos</system:String>
   <system:String x:Key="singers.editoto.save">Save Otos</system:String>
+  <system:String x:Key="singers.editoto.search">Search</system:String>
   <system:String x:Key="singers.editoto.setvlabelerpath">Download vLabeler (1.0.0-beta1 or higher) from https://github.com/sdercolin/vlabeler and set vLabeler path in Preferences first!</system:String>
   <system:String x:Key="singers.errorreport">Generate Singer Error Report</system:String>
   <system:String x:Key="singers.location">Location</system:String>

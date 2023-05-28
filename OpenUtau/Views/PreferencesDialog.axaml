@@ -161,6 +161,12 @@
         </HeaderedContentControl>
         <HeaderedContentControl Classes="groupbox" Header="{DynamicResource prefs.advanced}">
           <StackPanel>
+            <TextBlock Text="{DynamicResource prefs.advanced.beta}" />
+            <ComboBox HorizontalAlignment="Stretch" SelectedIndex="{Binding Beta}">
+              <ComboBoxItem Content="{DynamicResource prefs.off}"/>
+              <ComboBoxItem Content="{DynamicResource prefs.on}"/>
+            </ComboBox>
+            <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.note.restart}" FontSize="11"/>
             <TextBlock Text="{DynamicResource prefs.advanced.lyricshelper}" />
             <ComboBox HorizontalAlignment="Stretch" Items="{Binding LyricsHelpers}" SelectedItem="{Binding LyricsHelper}"/>
             <TextBlock Text="{DynamicResource prefs.advanced.lyricshelper.brackets}" />

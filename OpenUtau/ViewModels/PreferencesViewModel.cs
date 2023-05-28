@@ -63,6 +63,8 @@ namespace OpenUtau.App.ViewModels {
             set => this.RaiseAndSetIfChanged(ref sortingOrder, value);
         }
 
+        [Reactive] public int Beta { get; set; }
+
         public class LyricsHelperOption {
             public readonly Type klass;
             public LyricsHelperOption(Type klass) {
@@ -130,6 +132,7 @@ namespace OpenUtau.App.ViewModels {
             Theme = Preferences.Default.Theme;
             ShowPortrait = Preferences.Default.ShowPortrait ? 1 : 0;
             ShowGhostNotes = Preferences.Default.ShowGhostNotes ? 1 : 0;
+            Beta = Preferences.Default.Beta ? 1 : 0;
             LyricsHelper = LyricsHelpers.FirstOrDefault(option => option.klass.Equals(ActiveLyricsHelper.Inst.GetPreferred()));
             LyricsHelperBrackets = Preferences.Default.LyricsHelperBrackets ? 1 : 0;
             OtoEditor = Preferences.Default.OtoEditor;
@@ -201,6 +204,11 @@ namespace OpenUtau.App.ViewModels {
             this.WhenAnyValue(vm => vm.ShowGhostNotes)
                 .Subscribe(index => {
                     Preferences.Default.ShowGhostNotes = index > 0;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.Beta)
+                .Subscribe(index => {
+                    Preferences.Default.Beta = index != 0;
                     Preferences.Save();
                 });
             this.WhenAnyValue(vm => vm.LyricsHelper)

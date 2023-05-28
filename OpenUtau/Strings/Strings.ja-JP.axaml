@@ -70,6 +70,17 @@
   <system:String x:Key="lyrics.reset">リセット</system:String>
   <system:String x:Key="lyrics.selectnotes">音符を選択してください！</system:String>
   <system:String x:Key="lyrics.separators">区切り文字</system:String>
+  <system:String x:Key="lyricsreplace.after">置換後 :</system:String>
+  <system:String x:Key="lyricsreplace.before">置換前 :</system:String>
+  <system:String x:Key="lyricsreplace.presets">プリセット</system:String>
+  <system:String x:Key="lyricsreplace.preview">プレビュー</system:String>
+  <system:String x:Key="lyricsreplace.regex">正規表現が使えます</system:String>
+  <system:String x:Key="lyricsreplace.replace">その他の歌詞置換</system:String>
+  <system:String x:Key="lyricsreplace.preset.rmvalphabet">アルファベットを削除</system:String>
+  <system:String x:Key="lyricsreplace.preset.rmvnonhiragana">ひらがな以外を削除</system:String>
+  <system:String x:Key="lyricsreplace.preset.rmvphonetichint">[音素の指定]を削除</system:String>
+  <system:String x:Key="lyricsreplace.preset.rmvtone">音程のSuffixを削除</system:String>
+  <system:String x:Key="lyricsreplace.preset.rmvspace">スペースとそれ以前を削除</system:String>
 
   <system:String x:Key="menu.edit">編集</system:String>
   <system:String x:Key="menu.edit.copy">コピー</system:String>
@@ -298,6 +309,7 @@
   <system:String x:Key="singers.editoto.regenfrq.regenerating">周波数表を再生成中</system:String>
   <system:String x:Key="singers.editoto.reset">原音設定をリセット</system:String>
   <system:String x:Key="singers.editoto.save">原音設定を保存</system:String>
+  <system:String x:Key="singers.editoto.search">絞り込み</system:String>
   <!--<system:String x:Key="singers.editoto.setvlabelerpath">Download vLabeler (1.0.0-beta1 or higher) from https://github.com/sdercolin/vlabeler and set vLabeler path in Preferences first!</system:String>-->
   <!--<system:String x:Key="singers.errorreport">Generate Singer Error Report</system:String>-->
   <system:String x:Key="singers.location">ファイルの場所</system:String>

@@ -557,8 +557,15 @@ namespace OpenUtau.App.Views {
             }
             var dialog = lifetime.Windows.FirstOrDefault(w => w is SingersDialog);
             if (dialog == null) {
+                USinger? singer = null;
+                if (viewModel.TracksViewModel.SelectedParts.Count > 0) {
+                    singer = viewModel.TracksViewModel.Tracks[viewModel.TracksViewModel.SelectedParts.First().trackNo].Singer;
+                }
+                if(singer == null && viewModel.TracksViewModel.Tracks.Count > 0) {
+                    singer = viewModel.TracksViewModel.Tracks.First().Singer;
+                }
                 dialog = new SingersDialog() {
-                    DataContext = new SingersViewModel(),
+                    DataContext = new SingersViewModel(singer),
                 };
                 dialog.Show();
             }
@@ -800,6 +807,16 @@ namespace OpenUtau.App.Views {
                 }
             } else if (ext == Core.Vogen.VogenSingerInstaller.FileExt) {
                 Core.Vogen.VogenSingerInstaller.Install(file);
+            } else if (ext == ".dll") {
+                Core.Api.PhonemizerInstaller.Install(file);
+            } else if (ext == ".exe") {
+                var setup = new ExeSetupDialog() {
+                    DataContext = new ExeSetupViewModel(file)
+                };
+                _ = setup.ShowDialog(this);
+                if (setup.Position.Y < 0) {
+                    setup.Position = setup.Position.WithY(0);
+                }
             } else if (ext == Core.DiffSinger.DiffSingerDependencyInstaller.FileExt) {
                 Core.DiffSinger.DiffSingerDependencyInstaller.Install(file);
             } else if (ext == ".mp3" || ext == ".wav" || ext == ".ogg" || ext == ".flac") {
