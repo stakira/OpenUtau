@@ -19,6 +19,7 @@ using OpenUtau.App.Controls;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Classic;
 using OpenUtau.Core;
+using OpenUtau.Core.DiffSinger;
 using OpenUtau.Core.Format;
 using OpenUtau.Core.Ustx;
 using ReactiveUI;
@@ -397,6 +398,75 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        async void OnMenuExportDsTo(object sender, RoutedEventArgs e) {
+            var project = DocManager.Inst.Project;
+            var dialog = new SaveFileDialog() {
+                DefaultExtension = "ds",
+                Filters = new List<FileDialogFilter>() {
+                    new FileDialogFilter() {
+                        Extensions = new List<string>(){ "ds" },
+                    },
+                },
+            };
+            var file = await dialog.ShowAsync(this);
+            if (!string.IsNullOrEmpty(file)) {
+                for (var i = 0; i < project.parts.Count; i++) {
+                    var part = project.parts[i];
+                    if (part is UVoicePart voicePart) {
+                        var savePath =  PathManager.Inst.GetPartSavePath(file, i)[..^4]+".ds";
+                        DiffSingerScript.SavePart(project, voicePart, savePath);
+                        DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"{savePath}."));
+                    }
+                }
+            }
+        }
+
+        async void OnMenuExportDsV2To(object sender, RoutedEventArgs e) {
+            var project = DocManager.Inst.Project;
+            var dialog = new SaveFileDialog() {
+                DefaultExtension = "ds",
+                Filters = new List<FileDialogFilter>() {
+                    new FileDialogFilter() {
+                        Extensions = new List<string>(){ "ds" },
+                    },
+                },
+            };
+            var file = await dialog.ShowAsync(this);
+            if (!string.IsNullOrEmpty(file)) {
+                for (var i = 0; i < project.parts.Count; i++) {
+                    var part = project.parts[i];
+                    if (part is UVoicePart voicePart) {
+                        var savePath =  PathManager.Inst.GetPartSavePath(file, i)[..^4]+".ds";
+                        DiffSingerScript.SavePart(project, voicePart, savePath, true);
+                        DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"{savePath}."));
+                    }
+                }
+            }
+        }
+
+        async void OnMenuExportDsV2WithoutPitchTo(object sender, RoutedEventArgs e) {
+            var project = DocManager.Inst.Project;
+            var dialog = new SaveFileDialog() {
+                DefaultExtension = "ds",
+                Filters = new List<FileDialogFilter>() {
+                    new FileDialogFilter() {
+                        Extensions = new List<string>(){ "ds" },
+                    },
+                },
+            };
+            var file = await dialog.ShowAsync(this);
+            if (!string.IsNullOrEmpty(file)) {
+                for (var i = 0; i < project.parts.Count; i++) {
+                    var part = project.parts[i];
+                    if (part is UVoicePart voicePart) {
+                        var savePath =  PathManager.Inst.GetPartSavePath(file, i)[..^4]+".ds";
+                        DiffSingerScript.SavePart(project, voicePart, savePath, true, false);
+                        DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"{savePath}."));
+                    }
+                }
+            }
+        }
+
         async void OnMenuExportUst(object sender, RoutedEventArgs e) {
             var project = DocManager.Inst.Project;
             if (await WarnToSave(project)) {
@@ -510,7 +580,7 @@ namespace OpenUtau.App.Views {
                 Filters = new List<FileDialogFilter>() {
                     new FileDialogFilter() {
                         Name = "Archive File",
-                        Extensions = new List<string>(){ "zip", "rar", "uar", "vogeon" },
+                        Extensions = new List<string>(){ "zip", "rar", "uar", "vogeon", "dsvocoder" },
                     },
                 },
                 AllowMultiple = false,
@@ -521,6 +591,10 @@ namespace OpenUtau.App.Views {
             }
             if (files[0].EndsWith(Core.Vogen.VogenSingerInstaller.FileExt)) {
                 Core.Vogen.VogenSingerInstaller.Install(files[0]);
+                return;
+            }
+            if (files[0].EndsWith(Core.DiffSinger.DiffSingerDependencyInstaller.FileExt)) {
+                Core.DiffSinger.DiffSingerDependencyInstaller.Install(files[0]);
                 return;
             }
             try {
@@ -743,6 +817,8 @@ namespace OpenUtau.App.Views {
                 if (setup.Position.Y < 0) {
                     setup.Position = setup.Position.WithY(0);
                 }
+            } else if (ext == Core.DiffSinger.DiffSingerDependencyInstaller.FileExt) {
+                Core.DiffSinger.DiffSingerDependencyInstaller.Install(file);
             } else if (ext == ".mp3" || ext == ".wav" || ext == ".ogg" || ext == ".flac") {
                 try {
                     viewModel.ImportAudio(file);

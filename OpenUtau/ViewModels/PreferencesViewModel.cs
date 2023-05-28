@@ -36,6 +36,8 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public string OnnxRunner { get; set; }
         public List<GpuInfo> OnnxGpuOptions { get; set; }
         [Reactive] public GpuInfo OnnxGpu { get; set; }
+        public List<int> DiffsingerSpeedupOptions { get; } = new List<int> { 1, 5, 10, 20, 50, 100 };
+        [Reactive] public int DiffsingerSpeedup { get; set; }
         [Reactive] public bool HighThreads { get; set; }
         [Reactive] public int Theme { get; set; }
         [Reactive] public int ShowPortrait { get; set; }
@@ -126,6 +128,7 @@ namespace OpenUtau.App.ViewModels {
                OnnxRunnerOptions[0] : Preferences.Default.OnnxRunner;
             OnnxGpuOptions = Onnx.getGpuInfo();
             OnnxGpu = OnnxGpuOptions.FirstOrDefault(x => x.deviceId == Preferences.Default.OnnxGpu, OnnxGpuOptions[0]);
+            DiffsingerSpeedup = Preferences.Default.DiffsingerSpeedup;
             Theme = Preferences.Default.Theme;
             ShowPortrait = Preferences.Default.ShowPortrait ? 1 : 0;
             ShowGhostNotes = Preferences.Default.ShowGhostNotes ? 1 : 0;
@@ -238,6 +241,11 @@ namespace OpenUtau.App.ViewModels {
             this.WhenAnyValue(vm => vm.OnnxGpu)
                 .Subscribe(index => {
                     Preferences.Default.OnnxGpu = index.deviceId;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.DiffsingerSpeedup)
+                .Subscribe(index => {
+                    Preferences.Default.DiffsingerSpeedup = index;
                     Preferences.Save();
                 });
         }

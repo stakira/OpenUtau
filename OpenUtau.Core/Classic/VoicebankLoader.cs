@@ -28,6 +28,7 @@ namespace OpenUtau.Classic {
         public const string kCharTxt = "character.txt";
         public const string kCharYaml = "character.yaml";
         public const string kEnuconfigYaml = "enuconfig.yaml";
+        public const string kDiffconfigYaml = "dsconfig.yaml";
         public const string kOtoIni = "oto.ini";
 
         readonly string basePath;
@@ -92,8 +93,11 @@ namespace OpenUtau.Classic {
                 }
             }
             var enuconfigFile = Path.Combine(dir, kEnuconfigYaml);
+            var diffconfigFile = Path.Combine(dir, kDiffconfigYaml);
             if (File.Exists(enuconfigFile)) {
                 voicebank.SingerType = USingerType.Enunu;
+            } else if (File.Exists(diffconfigFile)) {
+                voicebank.SingerType = USingerType.DiffSinger;
             } else {
                 voicebank.SingerType = USingerType.Classic;
             }
