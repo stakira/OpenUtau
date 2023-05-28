@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Avalonia.Media;
 using NetSparkleUpdater;
+using NetSparkleUpdater.AppCastHandlers;
 using NetSparkleUpdater.Enums;
 using NetSparkleUpdater.Interfaces;
 using NetSparkleUpdater.SignatureVerifiers;
@@ -66,6 +67,9 @@ namespace OpenUtau.App.ViewModels {
                     CheckServerFileName = false,
                     RelaunchAfterUpdate = true,
                     RelaunchAfterUpdateCommandPrefix = OS.IsLinux() ? "./" : string.Empty,
+                    AppCastHandler = new XMLAppCast() {
+                        AppCastFilter = new DowngradableFilter()
+                    },
                 };
             } catch (Exception e) {
                 Log.Error(e, "Failed to select appcast to update.");
@@ -135,17 +139,25 @@ namespace OpenUtau.App.ViewModels {
             UpdateAvailable = false;
             updateAccepted = true;
 
+            AppCastItem? downloadedItem = null;
+            sparkle.CloseApplication += () => {
+                Log.Information($"shutting down for update");
+                CloseApplication?.Invoke();
+                Log.Information($"shut down for update");
+            };
             sparkle.DownloadStarted += (item, path) => {
                 Log.Information($"download started {path}");
+                downloadedItem = item;
             };
             sparkle.DownloadFinished += (item, path) => {
                 Log.Information($"download finished {path}");
-                sparkle.CloseApplication += () => {
-                    Log.Information($"shutting down for update");
-                    CloseApplication?.Invoke();
-                    Log.Information($"shut down for update");
-                };
-                sparkle.InstallUpdate(item, path);
+                // `item` is somehow null in this callback, likely a NetSparkle bug.
+                item = item ?? downloadedItem;
+                if (item == null) {
+                    Log.Error("DownloadFinished unexpected null item.");
+                } else {
+                    sparkle.InstallUpdate(downloadedItem, path);
+                }
             };
             sparkle.DownloadHadError += (item, path, e) => {
                 Log.Error(e, $"download error {path}");
@@ -166,6 +178,26 @@ namespace OpenUtau.App.ViewModels {
                 Preferences.Default.SkipUpdate = updateInfo.Updates[0].Version.ToString();
                 Preferences.Save();
             }
+        }
+    }
+
+    // Force allow downgrading so that switching between beta and stable works.
+    public class DowngradableFilter : IAppCastFilter {
+        static bool Eq(int a, int b) {
+            a = a == -1 ? 0 : a;
+            b = b == -1 ? 0 : b;
+            return a == b;
+        }
+        // Ambiguous version equal where 1.2 == 1.2.0 == 1.2.0.0.
+        static bool Eq(Version a, Version b) {
+            return Eq(a.Major, b.Major)
+                && Eq(a.Minor, b.Minor)
+                && Eq(a.Build, b.Build)
+                && Eq(a.Revision, b.Revision);
+        }
+        public FilterResult GetFilteredAppCastItems(Version installed, List<AppCastItem> items) {
+            items = items.Where(item => !Eq(new Version(item.Version), installed)).ToList();
+            return new FilterResult(/*forceInstallOfLatestInFilteredList=*/true, items);
         }
     }
 
