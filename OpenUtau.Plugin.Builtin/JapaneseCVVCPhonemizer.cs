@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
@@ -107,7 +107,9 @@ namespace OpenUtau.Plugin.Builtin {
             var attr1 = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 1) ?? default;
 
             foreach (string test in input){
-                if (singer.TryGetMappedOto(test, note.tone + attr0.toneShift, attr0.voiceColor, out oto)){
+                if (singer.TryGetMappedOto(test + attr0.alternate, note.tone + attr0.toneShift, attr0.voiceColor, out oto)) {
+                    return true;
+                } else if (singer.TryGetMappedOto(test, note.tone + attr0.toneShift, attr0.voiceColor, out oto)){
                     return true;
                 }
             }
@@ -118,24 +120,36 @@ namespace OpenUtau.Plugin.Builtin {
         // can probably be cleaned up more but i have work in the morning. have fun.
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
             var note = notes[0];
-            var currentUnicode = ToUnicodeElements(note.lyric);
-            var currentLyric = note.lyric;
+            var currentLyric = note.lyric.Normalize();
+            if (!string.IsNullOrEmpty(note.phoneticHint)) {
+                currentLyric = note.phoneticHint.Normalize();
+            }
+            var originalCurrentLyric = currentLyric;
             var cfLyric = $"* {currentLyric}";
             var attr0 = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
             var attr1 = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 1) ?? default;
 
-            if (prevNeighbour == null) {
+            if (!string.IsNullOrEmpty(note.phoneticHint)) {
+                string[] tests = new string[] { currentLyric };
+                // Not convert VCV
+                if (checkOtoUntilHit(tests, note, out var oto)) {
+                    currentLyric = oto.Alias;
+                }
+            } else if (prevNeighbour == null) {
                 // Use "- V" or "- CV" if present in voicebank
                 var initial = $"- {currentLyric}";
-                string[] tests = new string[] {initial, currentLyric};
+                string[] tests = new string[] { initial, currentLyric };
                 // try [- XX] before trying plain lyric
-                if (checkOtoUntilHit(tests, note, out var oto)){
+                if (checkOtoUntilHit(tests, note, out var oto)) {
                     currentLyric = oto.Alias;
                 }
             } else if (plainVowels.Contains(currentLyric) || nonVowels.Contains(currentLyric)) {
-                var prevUnicode = ToUnicodeElements(prevNeighbour?.lyric);
+                var prevLyric = prevNeighbour.Value.lyric.Normalize();
+                if (!string.IsNullOrEmpty(prevNeighbour.Value.phoneticHint)) {
+                    prevLyric = prevNeighbour.Value.phoneticHint.Normalize();
+                }
                 // Current note is VV
-                if (vowelLookup.TryGetValue(prevUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
+                if (vowelLookup.TryGetValue(prevLyric.LastOrDefault().ToString() ?? string.Empty, out var vow)) {
                     var vowLyric = $"{vow} {currentLyric}";
                     // try vowlyric before cflyric, if both fail try currentlyric
                     string[] tests = new string[] {vowLyric, cfLyric, currentLyric};
@@ -150,13 +164,11 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             }
 
-            if (nextNeighbour != null) {
-
-                var nextUnicode = ToUnicodeElements(nextNeighbour?.lyric);
-                var nextLyric = string.Join("", nextUnicode);
+            if (nextNeighbour != null && string.IsNullOrEmpty(nextNeighbour.Value.phoneticHint)) {
+                var nextLyric = nextNeighbour.Value.lyric.Normalize();
 
                 // Check if next note is a vowel and does not require VC
-                if (nextUnicode.Count < 2 && plainVowels.Contains(nextUnicode.FirstOrDefault() ?? string.Empty)) {
+                if (nextLyric.Length == 1 && plainVowels.Contains(nextLyric)) {
                     return new Result {
                         phonemes = new Phoneme[] {
                             new Phoneme() {
@@ -169,14 +181,13 @@ namespace OpenUtau.Plugin.Builtin {
                 // Insert VC before next neighbor
                 // Get vowel from current note
                 var vowel = "";
-                if (vowelLookup.TryGetValue(currentUnicode.LastOrDefault() ?? string.Empty, out var vow)) {
+                if (vowelLookup.TryGetValue(originalCurrentLyric.LastOrDefault().ToString() ?? string.Empty, out var vow)) {
                     vowel = vow;
                 }
 
                 // Get consonant from next note
                 var consonant = "";
-                if (consonantLookup.TryGetValue(nextUnicode.FirstOrDefault() ?? string.Empty, out var con)
-                    || nextUnicode.Count >= 2 && consonantLookup.TryGetValue(string.Join("", nextUnicode.Take(2)), out con)) {
+                if (consonantLookup.TryGetValue(nextLyric.FirstOrDefault().ToString() ?? string.Empty, out var con) || (nextLyric.Length >= 2 && consonantLookup.TryGetValue(nextLyric.Substring(0, 2), out con))) {
                     consonant = con;
                 }
 
