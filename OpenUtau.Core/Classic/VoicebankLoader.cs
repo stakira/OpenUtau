@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using OpenUtau.Core;
+using OpenUtau.Core.Enunu;
 using OpenUtau.Core.Ustx;
 using Serilog;
 
@@ -29,7 +30,6 @@ namespace OpenUtau.Classic {
         public const string kCharYaml = "character.yaml";
         public const string kEnuconfigYaml = "enuconfig.yaml";
         public const string kConfigYaml = "config.yaml";
-        public const string kEnunuModelPath = "model";
         public const string kOtoIni = "oto.ini";
 
         readonly string basePath;
@@ -93,22 +93,16 @@ namespace OpenUtau.Classic {
                     Log.Error(e, $"Failed to load yaml {yamlFile}");
                 }
             }
+            string[] modelPaths = new string[] { dir, dir + @"\model" };
+            foreach (string modelPath in modelPaths) {
+                if (File.Exists(Path.Join(modelPath, kConfigYaml))) {
+                    voicebank.SingerType = USingerType.Enunu;
+                }
+            }
             var enuconfigFile = Path.Combine(dir, kEnuconfigYaml);
-            var simpleEnunuFolder = Path.Combine(dir, kEnunuModelPath);
             if (File.Exists(enuconfigFile)) {
                 voicebank.SingerType = USingerType.Enunu;
-            } 
-            else if (Directory.Exists(simpleEnunuFolder)) {
-                if (File.Exists(Path.Combine(simpleEnunuFolder, kConfigYaml))) {
-                    voicebank.SingerType = USingerType.Enunu;
-                }
-            } 
-            else if (Directory.Exists(dir)) {
-                if (File.Exists(Path.Combine(dir, kConfigYaml))) {
-                    voicebank.SingerType = USingerType.Enunu;
-                }
-            } 
-            else
+            }else if(voicebank.SingerType != USingerType.Enunu)
             {
                 voicebank.SingerType = USingerType.Classic;
             }

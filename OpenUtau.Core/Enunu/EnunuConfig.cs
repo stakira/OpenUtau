@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Security.Cryptography.X509Certificates;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core.Enunu {
@@ -24,48 +23,24 @@ namespace OpenUtau.Core.Enunu {
         }
 
         public static RawEnunuConfig SetSimpleENUNUConfig(string location) {
-            const string tableExtension = ".table";
-            const string hedExtension = ".hed";
-            const string configYaml = "config.yaml";
-            const string modelPath = "model";
+            string[] modelPaths = new string[] { location, location + @"\model" };
+            string configYaml = "config.yaml";
             var config = new RawEnunuConfig();
-
-            if (Directory.Exists(Path.Combine(location, modelPath))) {
-                location = Path.Combine(location, modelPath);
-
-                if (File.Exists(Path.Join(location, configYaml))) {
-                    var configTxt = File.ReadAllText(Path.Join(location, configYaml));
+            foreach (string modelPath in modelPaths) {
+                if (File.Exists(Path.Join(modelPath, configYaml))) {
+                    var configTxt = File.ReadAllText(Path.Join(modelPath, configYaml));
                     config = Yaml.DefaultDeserializer.Deserialize<RawEnunuConfig>(configTxt);
-
-
                     IEnumerable<string> files = Directory.EnumerateFiles(location, "*", SearchOption.TopDirectoryOnly);
                     foreach (string f in files) {
-                        if (f.EndsWith(tableExtension)) {
-                            config.tablePath = f.Substring(f.LastIndexOf(modelPath)); ;
-                        } else if (f.EndsWith(hedExtension)) {
-                            config.questionPath = f.Substring(f.LastIndexOf(modelPath)); ;
+                        if (f.EndsWith(".table")) {
+                            config.tablePath = Path.GetRelativePath(modelPath, f);
+                        }
+                        if (f.EndsWith(".hed")) {
+                            config.questionPath = Path.GetRelativePath(modelPath, f);
                         }
                     }
                 }
             }
-            else if (Directory.Exists(location)) {
-                if (File.Exists(Path.Join(location, configYaml))) {
-                    var configTxt = File.ReadAllText(Path.Join(location, configYaml));
-                    config = Yaml.DefaultDeserializer.Deserialize<RawEnunuConfig>(configTxt);
-
-
-                    IEnumerable<string> files = Directory.EnumerateFiles(location, "*", SearchOption.TopDirectoryOnly);
-                    foreach (string f in files) {
-                        if (f.EndsWith(tableExtension)) {
-                            config.tablePath = f.Substring(f.LastIndexOf("\\")); ;
-                        } else if (f.EndsWith(hedExtension)) {
-                            config.questionPath = f.Substring(f.LastIndexOf("\\")); ;
-                        }
-                    }
-                }
-            }
-
-
             return config;
         }
     }
