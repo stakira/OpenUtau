@@ -16,6 +16,7 @@ namespace OpenUtau.Classic {
     public class PluginRunnerTest {
 
         public PluginRunnerTest() {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             // When Cache directory is nothing in UnitTest
             if (!Directory.Exists(PathManager.Inst.CachePath)) {
                 Directory.CreateDirectory(PathManager.Inst.CachePath);
