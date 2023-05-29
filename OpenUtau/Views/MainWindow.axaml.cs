@@ -428,7 +428,7 @@ namespace OpenUtau.App.Views {
                 for (var i = 0; i < project.parts.Count; i++) {
                     var part = project.parts[i];
                     if (part is UVoicePart voicePart) {
-                        var savePath = PathManager.Inst.GetPartSavePath(file, part.DisplayName, i);
+                        var savePath = PathManager.Inst.GetPartSavePath(file, voicePart.DisplayName, i);
                         Ust.SavePart(project, voicePart, savePath);
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"{savePath}."));
                     }

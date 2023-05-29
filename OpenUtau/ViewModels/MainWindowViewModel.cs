@@ -5,12 +5,10 @@ using System.Reactive;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using DynamicData.Binding;
-using OpenUtau.Classic;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using Serilog;
 
 namespace OpenUtau.App.ViewModels {
     public class PartsContextMenuArgs {
@@ -155,7 +153,7 @@ namespace OpenUtau.App.ViewModels {
             int trackNo = project.tracks.Count;
             part.trackNo = trackNo;
             DocManager.Inst.StartUndoGroup();
-            DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, new UTrack(project)));
+            DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, new UTrack(project) { TrackNo = trackNo }));
             DocManager.Inst.ExecuteCmd(new AddPartCommand(project, part));
             DocManager.Inst.EndUndoGroup();
         }
