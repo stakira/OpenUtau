@@ -17,7 +17,7 @@
     <Grid Background="Transparent" RowDefinitions="20,20,20,20,20,*" ColumnDefinitions="Auto,1,*,20" VerticalAlignment="Top" ClipToBounds="True">
       <TextBlock Grid.Row="0" Grid.ColumnSpan="4" Text="{Binding TrackName}" VerticalAlignment="Center" />
       <Grid Grid.Row="1" Grid.RowSpan="5" Grid.Column="0"  VerticalAlignment="Top">
-        <Border BorderThickness="0,0,1,1" Height="101" Width="101" VerticalAlignment="Top" CornerRadius="0,0,2,0"
+        <Border BorderThickness="0,1,1,1" Height="101" Width="101" VerticalAlignment="Top" CornerRadius="2,2,2,0"
                 BorderBrush="{DynamicResource NeutralAccentBrushSemi}" ClipToBounds="True">
           <Image Source="{Binding Avatar}" Stretch="UniformToFill" VerticalAlignment="Top" ToolTip.Tip="{Binding Singer}"/>
         </Border>

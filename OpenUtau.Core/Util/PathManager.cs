@@ -78,22 +78,26 @@ namespace OpenUtau.Core {
 
         Regex invalid = new Regex("[\\x00-\\x1f<>:\"/\\\\|?*]|^(CON|PRN|AUX|NUL|COM[0-9]|LPT[0-9]|CLOCK\\$)(\\.|$)|[\\.]$", RegexOptions.IgnoreCase);
 
-        public string GetPartSavePath(string projectPath, int partNo) {
-            var name = Path.GetFileNameWithoutExtension(projectPath);
-            var dir = Path.GetDirectoryName(projectPath);
+        public string GetPartSavePath(string exportPath, string partName, int partNo) {
+            var dir = Path.GetDirectoryName(exportPath);
             Directory.CreateDirectory(dir);
-            return Path.Combine(dir, $"{name}-{partNo:D2}.ust");
+            var filename = Path.GetFileNameWithoutExtension(exportPath);
+            var name = invalid.Replace(partName, "_");
+            if (DocManager.Inst.Project.parts.FindAll(p => p is UVoicePart).Count(p => p.DisplayName == partName) > 1) {
+                name += $"_{partNo:D2}";
+            }
+            return Path.Combine(dir, $"{filename}_{name}.ust");
         }
 
         public string GetExportPath(string exportPath, UTrack track) {
             var dir = Path.GetDirectoryName(exportPath);
             Directory.CreateDirectory(dir);
-            var name = Path.GetFileNameWithoutExtension(exportPath);
-            name = invalid.Replace($"{name}_{track.TrackName}", "_");
+            var filename = Path.GetFileNameWithoutExtension(exportPath);
+            var trackName = invalid.Replace(track.TrackName, "_");
             if(DocManager.Inst.Project.tracks.Count(t => t.TrackName == track.TrackName) > 1) {
-                name += $"_{track.TrackNo:D2}";
+                trackName += $"_{track.TrackNo:D2}";
             }
-            return Path.Combine(dir, $"{name}.wav");
+            return Path.Combine(dir, $"{filename}_{trackName}.wav");
         }
 
         public void ClearCache() {
