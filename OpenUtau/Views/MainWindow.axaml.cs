@@ -963,7 +963,9 @@ namespace OpenUtau.App.Views {
                 // Workaround for new window losing focus.
                 openPianoRollWindow = true;
                 int tick = viewModel.TracksViewModel.PointToTick(e.GetPosition(canvas));
+                string[] pianorollCache = pianoRollWindow.CacheExpressions();
                 DocManager.Inst.ExecuteCmd(new LoadPartNotification(partControl.part, DocManager.Inst.Project, tick));
+                pianoRollWindow.LoadCacheExpressions(pianorollCache);
             }
         }
 
