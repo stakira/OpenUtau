@@ -3,8 +3,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:OpenUtau.App.ViewModels"
-             mc:Ignorable="d" d:DesignWidth="250" d:DesignHeight="120"
-             x:Class="OpenUtau.App.Controls.TrackHeader" Width="250" TrackNo="{Binding TrackNo}">
+             mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="104"
+             x:Class="OpenUtau.App.Controls.TrackHeader" Width="300" TrackNo="{Binding TrackNo}">
   <Design.DataContext>
     <vm:TrackHeaderViewModel/>
   </Design.DataContext>
@@ -15,13 +15,20 @@
   </UserControl.Styles>
   <Border Margin="1,1,1,1" BorderThickness="1" BorderBrush="{DynamicResource NeutralAccentBrushSemi}" CornerRadius="2">
     <Grid Background="Transparent" RowDefinitions="20,20,20,20,20,*" ColumnDefinitions="Auto,1,*,20" VerticalAlignment="Top" ClipToBounds="True">
-      <TextBlock Grid.Row="0" Grid.ColumnSpan="4" Text="{Binding TrackName}" VerticalAlignment="Center" />
-      <Grid Grid.Row="1" Grid.RowSpan="5" Grid.Column="0"  VerticalAlignment="Top">
-        <Border BorderThickness="0,1,1,1" Height="101" Width="101" VerticalAlignment="Top" CornerRadius="2,2,2,0"
+      <Grid Grid.Row="0" Grid.RowSpan="6" Grid.Column="0" VerticalAlignment="Top">
+        <Border BorderThickness="0,0,1,1" Height="101" Width="101" VerticalAlignment="Top" CornerRadius="0,0,2,0"
                 BorderBrush="{DynamicResource NeutralAccentBrushSemi}" ClipToBounds="True">
           <Image Source="{Binding Avatar}" Stretch="UniformToFill" VerticalAlignment="Top" ToolTip.Tip="{Binding Singer}"/>
         </Border>
+        <Border Background="{DynamicResource NeutralAccentBrushSemi}" Height="16" Width="22" CornerRadius="1,0,2,0"
+                HorizontalAlignment="Left" VerticalAlignment="Top">
+          <TextBlock TextAlignment="Center" FontWeight="Bold"
+                     Text="{Binding TrackNo}" Foreground="White" VerticalAlignment="Center"/>
+        </Border>
       </Grid>
+      <Button Classes="clear" Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" Margin="1" Padding="2,1,0,0" Height="18"
+              HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Focusable="False"
+              Content="{Binding TrackName}" Click="TrackNameButtonClicked"/>
       <Button Classes="clear" Grid.Row="1" Grid.Column="2" Margin="1" Padding="2,1,0,0" Height="18"
               HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Focusable="False"
               Content="{Binding Singer, TargetNullValue={StaticResource tracks.selectsinger}}" Click="SingerButtonClicked" ContextRequested="SingerButtonContextRequested"
@@ -96,23 +103,22 @@
           </Path.RenderTransform>
         </Path>
       </Button>
-      <Grid Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2">
-        <Slider Classes="fader" Minimum="-24" Maximum="6" Value="{Binding Volume}" Margin="1,0,36,0"
+      <Grid Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2" Height="20">
+        <Slider Margin="1,0,0,0" Width="102" HorizontalAlignment="Left" Classes="fader" Minimum="-24" Maximum="12" Value="{Binding Volume}" 
                 Foreground="{DynamicResource AccentBrush1}" PointerPressed="VolumeFaderPointerPressed"
                 ContextRequested="VolumeFaderContextRequested"/>
-        <TextBlock FontSize="11" FontFamily="monospace" HorizontalAlignment="Right" Margin="0,0,5,0">
+        <TextBlock Margin="106,3,0,0" Width="36" HorizontalAlignment="Left" FontSize="9" FontFamily="monospace" >
           <TextBlock.Text>
             <MultiBinding StringFormat="{}{0:+#00.0;-#00.0}">
               <Binding Path="Volume"/>
             </MultiBinding>
           </TextBlock.Text>
         </TextBlock>
-      </Grid>
-      <Grid Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="2">
-        <Slider Classes="fader" Minimum="-100" Maximum="100" Value="{Binding Pan}" Margin="1,0,36,0"
+        <Slider Margin="134,0,0,0" Width="36" HorizontalAlignment="Left"
+                Classes="fader" Minimum="-100" Maximum="100" Value="{Binding Pan}"
                 Foreground="{DynamicResource AccentBrush1}" PointerPressed="PanFaderPointerPressed"
                 ContextRequested="PanFaderContextRequested"/>
-        <TextBlock FontSize="11" FontFamily="monospace" HorizontalAlignment="Right" Margin="0,0,5,0">
+        <TextBlock Margin="0,3,4,0" HorizontalAlignment="Right" FontSize="9" FontFamily="monospace" IsHitTestVisible="False">
           <TextBlock.Text>
             <MultiBinding StringFormat="{}{0:00R;00L;C}">
               <Binding Path="Pan"/>
