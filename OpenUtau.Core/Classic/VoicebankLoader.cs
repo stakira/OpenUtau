@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using OpenUtau.Core;
+using OpenUtau.Core.Enunu;
 using OpenUtau.Core.Ustx;
 using Serilog;
 
@@ -92,7 +93,19 @@ namespace OpenUtau.Classic {
                     Log.Error(e, $"Failed to load yaml {yamlFile}");
                 }
             }
-            voicebank = CheckSingerType(voicebank, dir);
+            string[] modelPaths = new string[] { dir, dir + @"\model" };
+            foreach (string modelPath in modelPaths) {
+                if (File.Exists(Path.Join(modelPath, kConfigYaml))) {
+                    voicebank.SingerType = USingerType.Enunu;
+                }
+            }
+            var enuconfigFile = Path.Combine(dir, kEnuconfigYaml);
+            if (File.Exists(enuconfigFile)) {
+                voicebank.SingerType = USingerType.Enunu;
+            }else if(voicebank.SingerType != USingerType.Enunu)
+            {
+                voicebank.SingerType = USingerType.Classic;
+            }
             Encoding encoding = Encoding.GetEncoding("shift_jis");
             if (!string.IsNullOrEmpty(bankConfig?.TextFileEncoding)) {
                 encoding = Encoding.GetEncoding(bankConfig.TextFileEncoding);
@@ -114,23 +127,6 @@ namespace OpenUtau.Classic {
         }
 
 
-        public static Voicebank CheckSingerType(Voicebank voicebank, string dir) {
-            string[] modelPaths = new string[] { dir, dir + @"\model" };
-            foreach (string modelPath in modelPaths) {
-                var enuconfigFile = Path.Combine(modelPath, kEnuconfigYaml);
-                var configFile = Path.Combine(modelPath, kConfigYaml);
-                if (File.Exists(configFile)) {
-                    voicebank.SingerType = USingerType.Enunu;
-                    return voicebank;
-                } else if (File.Exists(enuconfigFile)) {
-                    voicebank.SingerType = USingerType.Enunu;
-                    return voicebank;
-                } else {
-                    voicebank.SingerType = USingerType.Classic;
-                }
-            }
-            return voicebank;
-        }
 
         public static void ParseCharacterTxt(Voicebank voicebank, Stream stream, string filePath, string basePath, Encoding encoding) {
             using (var reader = new StreamReader(stream, encoding)) {
