@@ -375,8 +375,7 @@ namespace OpenUtau.App.Views {
             if (await WarnToSave(project)) {
                 var name = System.IO.Path.GetFileNameWithoutExtension(project.FilePath);
                 var path = System.IO.Path.GetDirectoryName(project.FilePath);
-                path = System.IO.Path.Combine(path!, "Export");
-                path = System.IO.Path.Combine(path!, $"{name}.wav");
+                path = System.IO.Path.Combine(path!, "Export", $"{name}.wav");
                 PlaybackManager.Inst.RenderToFiles(project, path);
             }
         }
@@ -402,12 +401,11 @@ namespace OpenUtau.App.Views {
             if (await WarnToSave(project)) {
                 var name = System.IO.Path.GetFileNameWithoutExtension(project.FilePath);
                 var path = System.IO.Path.GetDirectoryName(project.FilePath);
-                path = System.IO.Path.Combine(path!, "Export");
-                path = System.IO.Path.Combine(path!, $"{name}.ust");
+                path = System.IO.Path.Combine(path!, "Export", $"{name}.ust");
                 for (var i = 0; i < project.parts.Count; i++) {
                     var part = project.parts[i];
                     if (part is UVoicePart voicePart) {
-                        var savePath = PathManager.Inst.GetPartSavePath(path, i);
+                        var savePath = PathManager.Inst.GetPartSavePath(path, voicePart.DisplayName, i);
                         Ust.SavePart(project, voicePart, savePath);
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"{savePath}."));
                     }
@@ -430,7 +428,7 @@ namespace OpenUtau.App.Views {
                 for (var i = 0; i < project.parts.Count; i++) {
                     var part = project.parts[i];
                     if (part is UVoicePart voicePart) {
-                        var savePath = PathManager.Inst.GetPartSavePath(file, i);
+                        var savePath = PathManager.Inst.GetPartSavePath(file, voicePart.DisplayName, i);
                         Ust.SavePart(project, voicePart, savePath);
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"{savePath}."));
                     }

@@ -211,7 +211,7 @@ namespace OpenUtau.App.ViewModels {
         public void AddTrack() {
             var project = DocManager.Inst.Project;
             DocManager.Inst.StartUndoGroup();
-            DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, new UTrack() { TrackNo = project.tracks.Count() }));
+            DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, new UTrack(project) { TrackNo = project.tracks.Count() }));
             DocManager.Inst.EndUndoGroup();
         }
 
@@ -333,7 +333,7 @@ namespace OpenUtau.App.ViewModels {
             }
             DocManager.Inst.StartUndoGroup();
             while (Project.tracks.Count <= newTrackNo) {
-                DocManager.Inst.ExecuteCmd(new AddTrackCommand(Project, new UTrack() {
+                DocManager.Inst.ExecuteCmd(new AddTrackCommand(Project, new UTrack(Project) {
                     TrackNo = Project.tracks.Count,
                 }));
             }

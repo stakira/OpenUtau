@@ -373,6 +373,7 @@
   <system:String x:Key="tracks.movedown">下へ</system:String>
   <system:String x:Key="tracks.moveup">上へ</system:String>
   <system:String x:Key="tracks.remove">削除</system:String>
+  <system:String x:Key="tracks.rename">トラックの名前を変更</system:String>
   <system:String x:Key="tracks.selectrenderer">レンダラーを選択</system:String>
   <system:String x:Key="tracks.selectsinger">シンガーを選択</system:String>
 
