@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using OpenUtau.Core;
-using OpenUtau.Core.Enunu;
 using OpenUtau.Core.Ustx;
 using Serilog;
 
