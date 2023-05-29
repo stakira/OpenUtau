@@ -61,6 +61,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public bool ShowFinalPitch { get; set; }
         [Reactive] public bool ShowWaveform { get; set; }
         [Reactive] public bool ShowPhoneme { get; set; }
+        [Reactive] public bool ShowNoteParams { get; set; }
         [Reactive] public bool IsSnapOn { get; set; }
         [Reactive] public string SnapDivText { get; set; }
         [Reactive] public Rect ExpBounds { get; set; }
@@ -187,14 +188,51 @@ namespace OpenUtau.App.ViewModels {
             });
 
             ShowTips = Preferences.Default.ShowTips;
-            PlayTone = true;
-            ShowVibrato = true;
-            ShowPitch = true;
-            ShowFinalPitch = true;
-            ShowWaveform = true;
-            ShowPhoneme = true;
             IsSnapOn = true;
             SnapDivText = string.Empty;
+
+            PlayTone = Preferences.Default.PlayTone;
+            this.WhenAnyValue(x => x.PlayTone)
+             .Subscribe(playTone => {
+                 Preferences.Default.PlayTone = playTone;
+                 Preferences.Save();
+             });
+            ShowVibrato = Preferences.Default.ShowVibrato;
+            this.WhenAnyValue(x => x.ShowVibrato)
+            .Subscribe(showVibrato => {
+                Preferences.Default.ShowVibrato = showVibrato;
+                Preferences.Save();
+            });
+            ShowPitch = Preferences.Default.ShowPitch;
+            this.WhenAnyValue(x => x.ShowPitch)
+            .Subscribe(showPitch => {
+                Preferences.Default.ShowPitch = showPitch;
+                Preferences.Save();
+            });
+            ShowFinalPitch = Preferences.Default.ShowFinalPitch;
+            this.WhenAnyValue(x => x.ShowFinalPitch)
+            .Subscribe(showFinalPitch => {
+                Preferences.Default.ShowFinalPitch = showFinalPitch;
+                Preferences.Save();
+            });
+            ShowWaveform = Preferences.Default.ShowWaveform;
+            this.WhenAnyValue(x => x.ShowWaveform)
+            .Subscribe(showWaveform => {
+                Preferences.Default.ShowWaveform = showWaveform;
+                Preferences.Save();
+            });
+            ShowPhoneme = Preferences.Default.ShowPhoneme;
+            this.WhenAnyValue(x => x.ShowPhoneme)
+            .Subscribe(showPhoneme => {
+                Preferences.Default.ShowPhoneme = showPhoneme;
+                Preferences.Save();
+            });
+            ShowNoteParams = Preferences.Default.ShowNoteParams;
+            this.WhenAnyValue(x => x.ShowNoteParams)
+            .Subscribe(showNoteParams => {
+                Preferences.Default.ShowNoteParams = showNoteParams;
+                Preferences.Save();
+            });
 
             TickWidth = ViewConstants.PianoRollTickWidthDefault;
             TrackHeight = ViewConstants.NoteHeightDefault;
@@ -556,7 +594,7 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void InsertNote() {
-            if(Part == null) {
+            if (Part == null) {
                 return;
             }
 
@@ -821,7 +859,7 @@ namespace OpenUtau.App.ViewModels {
             } else if (cmd is ExpCommand) {
                 MessageBus.Current.SendMessage(new NotesRefreshEvent());
             } else if (cmd is TrackCommand) {
-                if(cmd is RenameTrackCommand) {
+                if (cmd is RenameTrackCommand) {
                     LoadWindowTitle(Part, Project);
                     return;
                 } else if (cmd is RemoveTrackCommand removeTrack) {

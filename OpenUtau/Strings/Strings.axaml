@@ -212,6 +212,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="pianoroll.menu.part">Part</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">Legacy Plugin (Experimental)</system:String>
   <system:String x:Key="pianoroll.toggle.finalpitch">View Final Pitch to Render (R)</system:String>
+  <system:String x:Key="pianoroll.toggle.noteparams">View Note Parameters (\)</system:String>
   <system:String x:Key="pianoroll.toggle.phoneme">View Phonemes (O)</system:String>
   <system:String x:Key="pianoroll.toggle.pitch">View Pitch Bend (I)</system:String>
   <system:String x:Key="pianoroll.toggle.snap">Toggle Snap (P)</system:String>

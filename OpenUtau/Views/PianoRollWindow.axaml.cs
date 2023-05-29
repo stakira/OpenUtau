@@ -984,7 +984,12 @@ namespace OpenUtau.App.Views {
                         var menu = this.FindControl<ContextMenu>("SnapDivMenu");
                         menu.Open();
                     }
-
+                    break;
+                case Key.OemPipe:
+                    if (isNone) {
+                        notesVm.ShowNoteParams = !notesVm.ShowNoteParams;
+                        return true;
+                    }
                     break;
                 #endregion
                 #region navigate keys
