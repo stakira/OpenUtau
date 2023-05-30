@@ -43,7 +43,7 @@ namespace OpenUtau.Plugin.Builtin {
         public override void SetSinger(USinger singer) => this.singer = singer;
         
         // Legacy mapping. Might adjust later to new mapping style.
-		public override bool LegacyMapping => true;
+        public override bool LegacyMapping => true;
 
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
             var note = notes[0];
