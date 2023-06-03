@@ -5,7 +5,7 @@ using System.Text;
 using SharpCompress.Archives;
 
 namespace OpenUtau.Core.DiffSinger {
-    //Diffsinger音源依赖项的安装，包括声码器，音素时长模型
+    //Installation of Diffsinger voicebanks' dependencies, including vocoder and phoneme timing model
     [Serializable]
     public class DependencyConfig {
         public string name = "vocoder";

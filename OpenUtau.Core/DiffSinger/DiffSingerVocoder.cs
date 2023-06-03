@@ -8,7 +8,7 @@ namespace OpenUtau.Core.DiffSinger {
         public DsVocoderConfig config;
         public InferenceSession session;
 
-        //通过名称获取声码器
+        //Get vocoder by package name
         public DsVocoder(string name) {
             byte[] model;
             try {

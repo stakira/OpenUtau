@@ -50,7 +50,9 @@ namespace OpenUtau.Core.DiffSinger {
                 (descriptor.abbr.StartsWith(VoiceColorHeader) && int.TryParse(descriptor.abbr.Substring(2), out int _));
         }
 
-        //计算时间轴，包括位置、头辅音长度、预估总时长
+        //Calculate the Timing layout of the RenderPhrase, 
+        //including the position of the phrase, 
+        //the length of the head consonant, and the estimated total length
         public RenderResult Layout(RenderPhrase phrase) {
             return new RenderResult() {
                 leadingMs = headMs,
@@ -93,15 +95,14 @@ namespace OpenUtau.Core.DiffSinger {
             });
             return task;
         }
-        /*result的格式：
-        result.samples：渲染好的音频，float[]
-        leadingMs、positionMs、estimatedLengthMs：时间轴相关，单位：毫秒，double
+        /*result format: 
+        result.samples: Rendered audio, float[]
+        leadingMs、positionMs、estimatedLengthMs: timeaxis layout in Ms, double
          */
 
         float[] InvokeDiffsinger(RenderPhrase phrase,int speedup) {
-            //调用Diffsinger模型
             var singer = phrase.singer as DiffSingerSinger;
-            //检测dsconfig.yaml是否正确
+            //Check if dsconfig.yaml is correct
             if(String.IsNullOrEmpty(singer.dsConfig.vocoder) ||
                 String.IsNullOrEmpty(singer.dsConfig.acoustic) ||
                 String.IsNullOrEmpty(singer.dsConfig.phonemes)){
@@ -116,10 +117,10 @@ namespace OpenUtau.Core.DiffSinger {
             var result = Layout(phrase);
             //acoustic
             //mel = session.run(['mel'], {'tokens': tokens, 'durations': durations, 'f0': f0, 'speedup': speedup})[0]
-            //tokens: 音素编号
-            //durations: 时长，帧数
-            //f0: 音高曲线，Hz，采样率为帧数
-            //speedup：加速倍数
+            //tokens: phoneme index in the phoneme set
+            //durations: phoneme duration in frames
+            //f0: pitch curve in Hz by frame
+            //speedup: Diffusion render speedup, int
             var tokens = phrase.phones
                 .Select(p => p.phoneme)
                 .Append("SP")
@@ -184,7 +185,7 @@ namespace OpenUtau.Core.DiffSinger {
                 acousticInputs.Add(NamedOnnxValue.CreateFromTensor("spk_embed", spkEmbedTensor));
             }
             //gender
-            //OpenUTAU中，GENC的定义：100=共振峰移动12个半音，正的GENC为向下移动
+            //Definition of GENC: 100 = 12 semitones of formant shift, positive GENC means shift down
             if (singer.dsConfig.useKeyShiftEmbed) {
                 var range = singer.dsConfig.augmentationArgs.randomPitchShifting.range;
                 var positiveScale = (range[1]==0) ? 0 : (12/range[1]/100);
@@ -199,7 +200,8 @@ namespace OpenUtau.Core.DiffSinger {
             }
 
             //velocity
-            //OpenUTAU中，velocity的定义：默认100为原速，每增大100为速度乘2
+            //Definition of VELC: logarithmic scale, Default value 100 = original speed, 
+            //each 100 increase means speed x2
             if (singer.dsConfig.useSpeedEmbed) {
                 var velocityCurve = phrase.curves.FirstOrDefault(curve => curve.Item1 == VELC);
                 float[] velocity;
@@ -232,7 +234,7 @@ namespace OpenUtau.Core.DiffSinger {
         }
 
 
-        //加载音高渲染结果（不支持）
+        //Loading rendered pitch isn't currently supported
         public RenderPitchResult LoadRenderedPitch(RenderPhrase phrase) {
             return null;
         }

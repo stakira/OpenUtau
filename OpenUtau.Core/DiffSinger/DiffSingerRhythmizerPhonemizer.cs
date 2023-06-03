@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace OpenUtau.Core.DiffSinger {
 
-    //音素时长模型配置文件
+    //Config file for rhythmizer
     [Serializable]
     public class DsRhythmizerConfig {
         public string name = "rhythmizer";
@@ -18,7 +18,7 @@ namespace OpenUtau.Core.DiffSinger {
         public string phonemes = "phonemes.txt";
     }
 
-    //音源中的声明文件
+    //Declaration file in the voicebank for which rhythmizer to use
     [Serializable]
     public class DsRhythmizerYaml {
         public string rhythmizer = DsRhythmizer.DefaultRhythmizer;
@@ -30,10 +30,9 @@ namespace OpenUtau.Core.DiffSinger {
         public InferenceSession session;
         public Dictionary<string, string[]> phoneDict;
         public List<string> phonemes = new List<string>();
-        //默认包名
+        //Default rhythmizer package name
         public static string DefaultRhythmizer = "rhythmizer_zh_opencpop_strict";
 
-        //加载字典
         public static Dictionary<string, string[]> LoadPhoneDict(string path, Encoding TextFileEncoding) {
             var phoneDict = new Dictionary<string, string[]>();
             if (File.Exists(path)) {
@@ -45,7 +44,7 @@ namespace OpenUtau.Core.DiffSinger {
             return phoneDict;
         }
 
-        //通过名称获取音素时长模型
+        //Get rhythmizer using package name
         public static DsRhythmizer FromName(string name) {
             var path = Path.Combine(PathManager.Inst.DependencyPath, name);
             return new DsRhythmizer(path);
@@ -57,7 +56,7 @@ namespace OpenUtau.Core.DiffSinger {
                 File.ReadAllText(Path.Combine(Location, "vocoder.yaml"),
                     System.Text.Encoding.UTF8));
             phoneDict = LoadPhoneDict(Path.Combine(Location, "dsdict.txt"), Encoding.UTF8);
-            //导入音素列表
+            //Load phoneme set
             string phonemesPath = Path.Combine(Location, config.phonemes);
             phonemes = File.ReadLines(phonemesPath, Encoding.UTF8).ToList();
             session = new InferenceSession(Path.Combine(Location, config.model));
@@ -79,7 +78,7 @@ namespace OpenUtau.Core.DiffSinger {
             if (this.singer == null) {
                 return;
             }
-            //加载音素时长模型
+            //Load rhythmizer model
             try {
                 //if rhythmizer is packed within the voicebank
                 var packedRhythmizerPath = Path.Combine(singer.Location, "rhythmizer");
@@ -96,30 +95,31 @@ namespace OpenUtau.Core.DiffSinger {
                     }
                         rhythmizer = DsRhythmizer.FromName(rhythmizerName);
                 }
-                //导入拼音转音素字典，仅从时长模型包中导入字典
+                //Load pinyin to phoneme dictionary from rhythmizer package
                 phoneDict = rhythmizer.phoneDict;
             } catch (Exception ex) {
                 return;
             }
         }
 
-        //只要音符改动一点，就会将全曲传入SetUp函数
-        //groups为Note的二维数组，其中的每个Note[]表示一个歌词音符及其后面的连音符
-        //需要分段调用模型生成全曲音素时长，以防止蝴蝶效应
+
+        //Called when the note is changed, and the entire song is passed into the SetUp function as long as the note is changed
+        //groups is a two-dimensional array of Note, each Note[] represents a lyrical note and its following slur notes
+        //Run phoneme timing model in sections to prevent butterfly effect
         public override void SetUp(Note[][] groups) {
             if (groups.Length == 0) {
                 return;
             }
-            //汉字转拼音
+            //hanzi to pinyin
             BaseChinesePhonemizer.RomanizeNotes(groups);
-            //将全曲拆分为句子
+            //Split song into sentences (phrases)
             var phrase = new List<Note[]> { groups[0] };
             for (int i = 1; i < groups.Length; ++i) {
-                //如果上下音符相互衔接，则不分句
+                //If the previous and current notes are connected, do not split the sentence
                 if (groups[i - 1][^1].position + groups[i - 1][^1].duration == groups[i][0].position) {
                     phrase.Add(groups[i]);
                 } else {
-                    //如果断开了，则处理当前句子，并开启下一句
+                    //If the previous and current notes are not connected, process the current sentence and start the next sentence
                     ProcessPart(phrase.ToArray());
                     phrase.Clear();
                     phrase.Add(groups[i]);
@@ -130,20 +130,20 @@ namespace OpenUtau.Core.DiffSinger {
             }
         }
 
-        //以句子为单位进行处理，调用模型
-        //对于连音符，合并为一个音符输入模型，以防止过短的连音符使辅音缩短
+        //Run timing model for a sentence
+        //Slur notes are merged into the lyrical note before it to prevent shortening of consonants due to short slur
         void ProcessPart(Note[][] phrase) {
-            float padding = 0.5f;//段首辅音预留时长
-            var phonemes = new List<string> { "SP" };//音素名称列表
-            var midi = new List<long> { 0 };//音素音高列表
-            var midi_dur = new List<float> { padding };//音素所属的音符时长列表
-            var is_slur = new List<bool> { false };//是否为连音符
-            List<double> ph_dur;//模型输出的音素时长
-            var notePhIndex = new List<int>{ 1 };//每个音符的第一个音素在音素列表上对应的位置
-            var phAlignPoints = new List<Tuple<int, double>>();//音素对齐的位置，s，绝对时间
+            float padding = 0.5f;//Padding time for consonants at the beginning of a sentence
+            var phonemes = new List<string> { "SP" };
+            var midi = new List<long> { 0 };//Phoneme pitch
+            var midi_dur = new List<float> { padding };//List of parent note duration for each phoneme
+            var is_slur = new List<bool> { false };//Whether the phoneme is slur
+            List<double> ph_dur;//Phoneme durations output by the model
+            var notePhIndex = new List<int>{ 1 };//The position of the first phoneme of each note in the phoneme list
+            var phAlignPoints = new List<Tuple<int, double>>();//Phoneme alignment position, s, absolute time
             double offsetMs = timeAxis.TickPosToMsPos(phrase[0][0].position);
 
-            //将音符列表转化为音素列表
+            //Convert note list to phoneme list
             foreach (int groupIndex in Enumerable.Range(0,phrase.Length)) {
                 string[] notePhonemes;
                 Note[] group = phrase[groupIndex];
@@ -175,9 +175,9 @@ namespace OpenUtau.Core.DiffSinger {
                 phonemes.Count,
                 timeAxis.TickPosToMsPos(lastNote.position + lastNote.duration) / 1000));
 
-            //调用Diffsinger音素时长模型
+            //Call Diffsinger phoneme timing model
             //ph_dur = session.run(['ph_dur'], {'tokens': tokens, 'midi': midi, 'midi_dur': midi_dur, 'is_slur': is_slur})[0]
-            //错误音素皆视为空白SP，输入音素时长模型
+            //error phonemes are replaced with SP
             long defaultToken = rhythmizer.phonemes.IndexOf("SP");
             var tokens = phonemes
                 .Select(x => (long)(rhythmizer.phonemes.IndexOf(x)))
@@ -198,21 +198,22 @@ namespace OpenUtau.Core.DiffSinger {
                 .Reshape(new int[] { 1, is_slur.Count })));
             var outputs = rhythmizer.session.Run(inputs);
             ph_dur = outputs.First().AsTensor<float>().Select(x => (double)x).ToList();
-            //对齐，将时长序列转化为位置序列，单位s
+            //Align the starting time of vowels to the position of each note, unit: s
             var positions = new List<double>();
             List<double> alignGroup = ph_dur.GetRange(0, phAlignPoints[0].Item1);
-            //开头辅音不缩放
+            //Starting consonants are not scaled
             positions.AddRange(stretch(alignGroup, 1, phAlignPoints[0].Item2));
-            //其他音素每一段线性缩放//pairwise(alignGroups)
+            //The other phonemes are scaled according to the ratio of the time difference 
+            //between the two alignment points and the duration of the phoneme
+            //pairwise(alignGroups)
             foreach(var pair in phAlignPoints.Zip(phAlignPoints.Skip(1), (a, b) => Tuple.Create(a, b))){
                 var currAlignPoint = pair.Item1;
                 var nextAlignPoint = pair.Item2;
                 alignGroup = ph_dur.GetRange(currAlignPoint.Item1, nextAlignPoint.Item1 - currAlignPoint.Item1);
                 double ratio = (nextAlignPoint.Item2 - currAlignPoint.Item2)/alignGroup.Sum();
                 positions.AddRange(stretch(alignGroup, ratio, nextAlignPoint.Item2));
-
             }
-            //将位置序列转化为tick，填入结果列表
+            //Convert the position sequence to tick and fill into the result list
             int index = 1;
             foreach(int groupIndex in Enumerable.Range(0, phrase.Length)) {
                 Note[] group = phrase[groupIndex];
@@ -229,7 +230,6 @@ namespace OpenUtau.Core.DiffSinger {
             }
         }
 
-        //计算累加
         public static IEnumerable<double> CumulativeSum(IEnumerable<double> sequence, double start = 0) {
             double sum = start;
             foreach (var item in sequence) {
@@ -238,20 +238,17 @@ namespace OpenUtau.Core.DiffSinger {
             }
         }
         
-        //缩放音素时长序列
+        //Stretch phoneme duration sequence with a certain ratio
         public List<double> stretch(IList<double> source, double ratio, double endPos) {
-            //source：音素时长序列，单位s
-            //ratio：缩放比例
-            //endPos：目标终点时刻，单位s
-            //输出：缩放后的音素位置，单位s
+            //source: phoneme duration sequence, unit: s
+            //ratio：scaling ratio
+            //endPos: target end time, unit: s
+            //output: scaled phoneme position, unit: s
             double startPos = endPos - source.Sum() * ratio;
             var result = CumulativeSum(source.Select(x => x * ratio).Prepend(0),startPos).ToList();
             result.RemoveAt(result.Count - 1);
             return result;
         }
-
-        //OpenUtau Vogen的实现是错误的，连音符会被视为空白时间，使句子断开
-        //当上一音符包含连音符且总时长过短时，会使下一音符的辅音过长
 
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevs) {
             if (!partResult.TryGetValue(notes[0].position, out var phonemes)) {

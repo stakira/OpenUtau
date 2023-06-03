@@ -44,7 +44,7 @@ namespace OpenUtau.Core.DiffSinger {
 
         public DiffSingerSinger(Voicebank voicebank) {
             this.voicebank = voicebank;
-            //加载头像
+            //Load Avatar
             if (Avatar != null && File.Exists(Avatar)) {
                 try {
                     using (var stream = new FileStream(Avatar, FileMode.Open)) {
@@ -66,12 +66,12 @@ namespace OpenUtau.Core.DiffSinger {
             subbanks.AddRange(voicebank.Subbanks
                 .Select(subbank => new USubbank(subbank)));
 
-            //导入音源设置
+            //Load diffsinger config of a voicebank
             string configPath = Path.Combine(Location, "dsconfig.yaml");
             dsConfig = Core.Yaml.DefaultDeserializer.Deserialize<DsConfig>(
                 File.ReadAllText(configPath, TextFileEncoding));
 
-            //导入音素列表
+            //Load phoneme list
             string phonemesPath = Path.Combine(Location, dsConfig.phonemes);
             phonemes = File.ReadLines(phonemesPath,TextFileEncoding).ToList();
 
@@ -114,7 +114,6 @@ namespace OpenUtau.Core.DiffSinger {
         }
 
         public DsVocoder getVocoder() {
-            //获取声码器
             if(vocoder is null) {
                 vocoder = new DsVocoder(dsConfig.vocoder);
             }

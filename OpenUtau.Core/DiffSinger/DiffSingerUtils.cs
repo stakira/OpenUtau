@@ -8,7 +8,6 @@ namespace OpenUtau.Core.DiffSinger {
         public const float headMs = 0;
         public const float tailMs = 100;
 
-        //参数曲线采样
         public static double[] SampleCurve(RenderPhrase phrase, float[] curve, double defaultValue, double frameMs, int length, int headFrames, int tailFrames, Func<double, double> convert) {
             const int interval = 5;
             var result = new double[length];
@@ -25,7 +24,7 @@ namespace OpenUtau.Core.DiffSinger {
                     result[i + headFrames] = convert(curve[index]);
                 }
             }
-            //填充头尾
+            //Fill head and tail
             Array.Fill(result, convert(curve[0]), 0, headFrames);
             Array.Fill(result, convert(curve[^1]), length - tailFrames, tailFrames);
             return result;
