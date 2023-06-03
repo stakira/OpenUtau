@@ -15,6 +15,7 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
+using Melanchall.DryWetMidi.MusicTheory;
 using OpenUtau.App.Controls;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Classic;
@@ -677,6 +678,21 @@ namespace OpenUtau.App.Views {
                     case Key.C: tracksVm.CopyParts(); break;
                     case Key.X: tracksVm.CutParts(); break;
                     case Key.V: tracksVm.PasteParts(); break;
+                    default:
+                        args.Handled = false;
+                        break;
+                }
+            } else if (args.KeyModifiers == KeyModifiers.Shift) {
+                args.Handled = true;
+                switch (args.Key) {
+                    case Key.S:
+                        if (viewModel.TracksViewModel.SelectedParts.Count > 0) {
+                            var part = viewModel.TracksViewModel.SelectedParts.First();
+                            var track = DocManager.Inst.Project.tracks[part.trackNo];
+                            MessageBus.Current.SendMessage(new TracksSoloEvent(part.trackNo, !track.Solo));
+                        }
+                        break;
+                    //case Key.M: ; break;
                     default:
                         args.Handled = false;
                         break;

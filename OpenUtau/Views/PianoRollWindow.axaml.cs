@@ -1229,6 +1229,12 @@ namespace OpenUtau.App.Views {
                         _ = MainWindow?.Save();
                         return true;
                     }
+                    // solo
+                    if(isShift) {
+                        var track = project.tracks[notesVm.Part.trackNo];
+                        MessageBus.Current.SendMessage(new TracksSoloEvent(notesVm.Part.trackNo, !track.Solo));
+                        return true;
+                    }
                     break;
                 case Key.F:
                     // scroll selection into focus
