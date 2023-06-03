@@ -25,7 +25,7 @@ namespace OpenUtau.App.Views {
             AvaloniaXamlLoader.Load(this);
         }
 
-        void OnClosing(object sender, CancelEventArgs e) {
+        void OnClosing(object sender, WindowClosingEventArgs e) {
             ViewModel.OnClosing();
         }
 

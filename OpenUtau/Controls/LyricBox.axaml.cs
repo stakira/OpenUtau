@@ -177,7 +177,7 @@ namespace OpenUtau.App.Controls {
             viewModel.NoteOrPhoneme = null;
             viewModel.IsVisible = false;
             viewModel.Text = string.Empty;
-            KeyboardDevice.Instance.SetFocusedElement(null, NavigationMethod.Unspecified, KeyModifiers.None);
+            //KeyboardDevice.Instance.SetFocusedElement(null, NavigationMethod.Unspecified, KeyModifiers.None);
         }
     }
 }

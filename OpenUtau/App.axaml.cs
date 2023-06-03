@@ -7,7 +7,7 @@ using System.Threading;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using Avalonia.Markup.Xaml.MarkupExtensions;
+using Avalonia.Markup.Xaml.Styling;
 using OpenUtau.App.Views;
 using OpenUtau.Classic;
 using OpenUtau.Core;
@@ -38,16 +38,16 @@ namespace OpenUtau.App {
             Log.Information("Initializing culture.");
             string sysLang = CultureInfo.InstalledUICulture.Name;
             string prefLang = Core.Util.Preferences.Default.Language;
-            var languages = GetLanguages();
-            if (languages.TryGetValue(prefLang, out var res)) {
-                SetLanguage(res);
-            } else if (languages.TryGetValue(sysLang, out res)) {
-                SetLanguage(res);
-                Core.Util.Preferences.Default.Language = sysLang;
-                Core.Util.Preferences.Save();
-            } else {
-                SetLanguage(languages["en-US"]);
-            }
+            //var languages = GetLanguages();
+            //if (languages.TryGetValue(prefLang, out var res)) {
+            //    SetLanguage(res);
+            //} else if (languages.TryGetValue(sysLang, out res)) {
+            //    SetLanguage(res);
+            //    Core.Util.Preferences.Default.Language = sysLang;
+            //    Core.Util.Preferences.Save();
+            //} else {
+            //    SetLanguage(languages["en-US"]);
+            //}
 
             // Force using InvariantCulture to prevent issues caused by culture dependent string conversion, especially for floating point numbers.
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
@@ -94,19 +94,19 @@ namespace OpenUtau.App {
         }
 
         public static void SetTheme() {
-            var light = Current.Resources.MergedDictionaries
-                .Select(res => (ResourceInclude)res)
-                .FirstOrDefault(d => d.Source!.OriginalString.Contains("LightTheme"));
-            var dark = Current.Resources.MergedDictionaries
-                .Select(res => (ResourceInclude)res)
-                .FirstOrDefault(d => d.Source!.OriginalString.Contains("DarkTheme"));
-            if (Core.Util.Preferences.Default.Theme == 0) {
-                Current.Resources.MergedDictionaries.Remove(light);
-                Current.Resources.MergedDictionaries.Add(light);
-            } else {
-                Current.Resources.MergedDictionaries.Remove(dark);
-                Current.Resources.MergedDictionaries.Add(dark);
-            }
+            //var light = Current.Resources.MergedDictionaries
+            //    .Select(res => (ResourceInclude)res)
+            //    .FirstOrDefault(d => d.Source!.OriginalString.Contains("LightTheme"));
+            //var dark = Current.Resources.MergedDictionaries
+            //    .Select(res => (ResourceInclude)res)
+            //    .FirstOrDefault(d => d.Source!.OriginalString.Contains("DarkTheme"));
+            //if (Core.Util.Preferences.Default.Theme == 0) {
+            //    Current.Resources.MergedDictionaries.Remove(light);
+            //    Current.Resources.MergedDictionaries.Add(light);
+            //} else {
+            //    Current.Resources.MergedDictionaries.Remove(dark);
+            //    Current.Resources.MergedDictionaries.Add(dark);
+            //}
             ThemeManager.LoadTheme();
         }
 

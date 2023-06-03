@@ -25,7 +25,7 @@ namespace OpenUtau.App.Controls {
             ((ExpSelectorViewModel)DataContext!).Index = Index;
         }
 
-        protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change) {
+        protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change) {
             base.OnPropertyChanged(change);
             if (change.Property == IndexProperty) {
                 ((ExpSelectorViewModel)DataContext!).Index = Index;

@@ -99,11 +99,11 @@ namespace OpenUtau.App.ViewModels {
                     (!CreateCharacterTxt || !string.IsNullOrWhiteSpace(CreateCharacterTxtName)));
         }
 
-        private void Back() {
+        public void Back() {
             Step--;
         }
 
-        private void Next() {
+        public void Next() {
             Step++;
         }
 

@@ -34,13 +34,13 @@
               Content="{Binding Singer, TargetNullValue={StaticResource tracks.selectsinger}}" Click="SingerButtonClicked" ContextRequested="SingerButtonContextRequested"
               ToolTip.Tip="{Binding Singer}">
         <Button.ContextMenu>
-          <ContextMenu Classes="context" Name="SingersMenu" PlacementMode="Bottom" HorizontalOffset="-3" Items="{Binding SingerMenuItems}">
+          <ContextMenu Classes="context" Name="SingersMenu" PlacementMode="Bottom" HorizontalOffset="-3" ItemsSource="{Binding SingerMenuItems}">
             <ContextMenu.Styles>
               <Style Selector="MenuItem">
                 <Setter Property="Header" Value="{Binding Header}"/>
                 <Setter Property="Command" Value="{Binding Command}"/>
                 <Setter Property="CommandParameter" Value="{Binding CommandParameter}"/>
-                <Setter Property="Items" Value="{Binding Items}"/>
+                <Setter Property="ItemsSource" Value="{Binding Items}"/>
               </Style>
             </ContextMenu.Styles>
           </ContextMenu>
@@ -51,13 +51,13 @@
               Content="{Binding PhonemizerTag}" Click="PhonemizerButtonClicked" ContextRequested="PhonemizerButtonContextRequested"
               ToolTip.Tip="{Binding Phonemizer}">
         <Button.ContextMenu>
-          <ContextMenu Classes="context" Name="PhonemizersMenu" PlacementMode="Bottom" HorizontalOffset="-3" Items="{Binding PhonemizerMenuItems}">
+          <ContextMenu Classes="context" Name="PhonemizersMenu" PlacementMode="Bottom" HorizontalOffset="-3" ItemsSource="{Binding PhonemizerMenuItems}">
             <ContextMenu.Styles>
               <Style Selector="MenuItem">
                 <Setter Property="Header" Value="{Binding Header}"/>
                 <Setter Property="Command" Value="{Binding Command}"/>
                 <Setter Property="CommandParameter" Value="{Binding CommandParameter}"/>
-                <Setter Property="Items" Value="{Binding Items}"/>
+                <Setter Property="ItemsSource" Value="{Binding Items}"/>
               </Style>
             </ContextMenu.Styles>
           </ContextMenu>
@@ -68,13 +68,13 @@
               Content="{Binding Renderer}" Click="RendererButtonClicked" ContextRequested="RendererButtonContextRequested"
               ToolTip.Tip="{DynamicResource tracks.selectrenderer}">
         <Button.ContextMenu>
-          <ContextMenu Classes="context" Name="RenderersMenu" PlacementMode="Bottom" HorizontalOffset="-3" Items="{Binding RenderersMenuItems}">
+          <ContextMenu Classes="context" Name="RenderersMenu" PlacementMode="Bottom" HorizontalOffset="-3" ItemsSource="{Binding RenderersMenuItems}">
             <ContextMenu.Styles>
               <Style Selector="MenuItem">
                 <Setter Property="Header" Value="{Binding Header}"/>
                 <Setter Property="Command" Value="{Binding Command}"/>
                 <Setter Property="CommandParameter" Value="{Binding CommandParameter}"/>
-                <Setter Property="Items" Value="{Binding Items}"/>
+                <Setter Property="ItemsSource" Value="{Binding Items}"/>
               </Style>
             </ContextMenu.Styles>
           </ContextMenu>

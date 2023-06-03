@@ -62,11 +62,8 @@ namespace OpenUtau.App.Controls {
             AvaloniaXamlLoader.Load(this);
         }
 
-        protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change) {
+        protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change) {
             base.OnPropertyChanged(change);
-            if (!change.IsEffectiveValueChange) {
-                return;
-            }
             if (change.Property == OffsetProperty ||
                 change.Property == TrackNoProperty ||
                 change.Property == TrackHeightProperty) {
@@ -132,14 +129,14 @@ namespace OpenUtau.App.Controls {
         }
 
         void VolumeFaderPointerPressed(object sender, PointerPressedEventArgs args) {
-            if (args.GetCurrentPoint((IVisual?)sender).Properties.IsRightButtonPressed && ViewModel != null) {
+            if (args.GetCurrentPoint((Visual?)sender).Properties.IsRightButtonPressed && ViewModel != null) {
                 ViewModel.Volume = 0;
                 args.Handled = true;
             }
         }
 
         void PanFaderPointerPressed(object sender, PointerPressedEventArgs args) {
-            if (args.GetCurrentPoint((IVisual?)sender).Properties.IsRightButtonPressed && ViewModel != null) {
+            if (args.GetCurrentPoint((Visual?)sender).Properties.IsRightButtonPressed && ViewModel != null) {
                 ViewModel.Pan = 0;
                 args.Handled = true;
             }

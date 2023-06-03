@@ -149,12 +149,14 @@
 
   <Style Selector="ComboBox">
     <Setter Property="FontSize" Value="12"/>
+    <Setter Property="MinHeight" Value="20"/>
     <Setter Property="Height" Value="20"/>
     <Setter Property="Margin" Value="0,4"/>
     <Setter Property="Padding" Value="4,0,0,2"/>
   </Style>
   <Style Selector="ComboBoxItem">
     <Setter Property="FontSize" Value="12"/>
+    <Setter Property="MinHeight" Value="20"/>
     <Setter Property="Height" Value="20"/>
     <Setter Property="Margin" Value="0"/>
     <Setter Property="Padding" Value="4,2,0,0"/>

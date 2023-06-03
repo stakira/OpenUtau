@@ -19,23 +19,23 @@
     <Grid Name="MainGrid" DragDrop.AllowDrop="True" IsEnabled="False" IsVisible="False" Margin="{Binding $parent[1].WindowDecorationMargin}">
       <Grid RowDefinitions="24,24,1*,20,4" ColumnDefinitions="300,*,24" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
         <Menu Grid.Row="0" Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Left"
-              MenuOpened="OnMainMenuOpened" MenuClosed="OnMainMenuClosed" PointerLeave="OnMainMenuPointerLeave">
+              Opened="OnMainMenuOpened" Closed="OnMainMenuClosed" PointerExited="OnMainMenuPointerLeave">
           <MenuItem Header="{DynamicResource menu.file}">
             <MenuItem Header="{DynamicResource menu.file.new}" InputGesture="Ctrl+N" Click="OnMenuNew"/>
-            <MenuItem Header="{DynamicResource menu.file.newfromtemplate}" Items="{Binding OpenTemplates}">
+            <MenuItem Header="{DynamicResource menu.file.newfromtemplate}" ItemsSource="{Binding OpenTemplates}">
               <MenuItem.DataTemplates>
                 <DataTemplate DataType="vm:MenuItemViewModel">
-                  <MenuItem Header="{Binding Header}" Command="{Binding Command}" CommandParameter="{Binding CommandParameter}"/>
+                  <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}"/>
                 </DataTemplate>
               </MenuItem.DataTemplates>
             </MenuItem>
             <MenuItem Header="{DynamicResource menu.file.savetemplate}" Click="OnMenuSaveTemplate"/>
             <MenuItem Header="-" Height="1"/>
             <MenuItem Header="{DynamicResource menu.file.open}" InputGesture="Ctrl+O" Click="OnMenuOpen"/>
-            <MenuItem Header="{DynamicResource menu.file.openrecent}" Items="{Binding OpenRecent}">
+            <MenuItem Header="{DynamicResource menu.file.openrecent}" ItemsSource="{Binding OpenRecent}">
               <MenuItem.DataTemplates>
                 <DataTemplate DataType="vm:MenuItemViewModel">
-                  <MenuItem Header="{Binding Header}" Command="{Binding Command}" CommandParameter="{Binding CommandParameter}"/>
+                  <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}"/>
                 </DataTemplate>
               </MenuItem.DataTemplates>
             </MenuItem>
@@ -163,13 +163,13 @@
                 Fill="{DynamicResource NeutralAccentBrushSemi}"
                 Data="M -6.5 0 L 6.5 0 L 6.5 3 L 0 9 L -6.5 3 Z"/>
           <Canvas.ContextMenu>
-            <ContextMenu Name="TimelineContextMenu" Items="{Binding TimelineContextMenuItems}">
+            <ContextMenu Name="TimelineContextMenu" ItemsSource="{Binding TimelineContextMenuItems}">
               <ContextMenu.Styles>
                 <Style Selector="MenuItem">
                   <Setter Property="Header" Value="{Binding Header}"/>
                   <Setter Property="Command" Value="{Binding Command}"/>
                   <Setter Property="CommandParameter" Value="{Binding CommandParameter}"/>
-                  <Setter Property="Items" Value="{Binding Items}"/>
+                  <Setter Property="ItemsSource" Value="{Binding Items}"/>
                 </Style>
               </ContextMenu.Styles>
             </ContextMenu>
@@ -216,8 +216,8 @@
                      IsHitTestVisible="False"/>
           <c:PartsCanvas.ContextMenu>
             <ContextMenu Name="PartsContextMenu"
-                         ContextMenuOpening="PartsContextMenuOpening"
-                         ContextMenuClosing="PartsContextMenuClosing">
+                         Opening="PartsContextMenuOpening"
+                         Closing="PartsContextMenuClosing">
               <MenuItem Header="{DynamicResource context.part.delete}"
                         Command="{Binding PartDeleteCommand}"
                         CommandParameter="{Binding Part}"/>
