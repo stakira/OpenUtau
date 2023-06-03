@@ -501,7 +501,7 @@ namespace OpenUtau.App.Views {
             if (ViewModel?.NotesViewModel?.HitTest == null) {
                 return;
             }
-            if((ViewModel.NotesViewModel.DrawPitchTool || ViewModel.NotesViewModel.EraserTool) && args.KeyModifiers != cmdKey) {
+            if((ViewModel.NotesViewModel.DrawPitchTool && args.KeyModifiers != cmdKey) || ViewModel.NotesViewModel.EraserTool) {
                 Cursor = null;
                 return;
             }
