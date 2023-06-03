@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core {
@@ -118,6 +118,7 @@ namespace OpenUtau.Core {
     public class PanChangeNotification : UNotification {
         public double Pan;
         public int TrackNo;
+        public override bool Silent => true;
         public PanChangeNotification(int trackNo, double pan) {
             TrackNo = trackNo;
             Pan = pan;
