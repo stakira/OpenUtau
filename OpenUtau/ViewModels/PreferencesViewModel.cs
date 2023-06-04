@@ -43,9 +43,9 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public int OtoEditor { get; set; }
         public string VLabelerPath => Preferences.Default.VLabelerPath;
         public int LogicalCoreCount {
-            get => Environment.ProcessorCount; 
+            get => Environment.ProcessorCount;
         }
-        public int SafeMaxThreadCount { 
+        public int SafeMaxThreadCount {
             get => Math.Min(8, LogicalCoreCount / 2);
         }
 
@@ -101,16 +101,10 @@ namespace OpenUtau.App.ViewModels {
             InstallToAdditionalSingersPath = Preferences.Default.InstallToAdditionalSingersPath ? 1 : 0;
             ToolsManager.Inst.Initialize();
             var pattern = new Regex(@"Strings\.([\w-]+)\.axaml");
-            Languages = Application.Current.Resources.MergedDictionaries
-                .Select(res => (ResourceInclude)res)
-                .OfType<ResourceInclude>()
-                .Select(res => pattern.Match(res.Source!.OriginalString))
-                .Where(m => m.Success)
-                .Select(m => m.Groups[1].Value)
+            Languages = App.GetLanguages().Keys
                 .Select(lang => CultureInfo.GetCultureInfo(lang))
                 .ToList();
             Languages.Insert(0, CultureInfo.GetCultureInfo("en-US"));
-            Languages.Insert(0, null);
             Language = string.IsNullOrEmpty(Preferences.Default.Language)
                 ? null
                 : CultureInfo.GetCultureInfo(Preferences.Default.Language);
@@ -122,7 +116,7 @@ namespace OpenUtau.App.ViewModels {
             PreRender = Preferences.Default.PreRender ? 1 : 0;
             NumRenderThreads = Preferences.Default.NumRenderThreads;
             OnnxRunnerOptions = Onnx.getRunnerOptions();
-            OnnxRunner = String.IsNullOrEmpty(Preferences.Default.OnnxRunner)?
+            OnnxRunner = String.IsNullOrEmpty(Preferences.Default.OnnxRunner) ?
                OnnxRunnerOptions[0] : Preferences.Default.OnnxRunner;
             OnnxGpuOptions = Onnx.getGpuInfo();
             OnnxGpu = OnnxGpuOptions.FirstOrDefault(x => x.deviceId == Preferences.Default.OnnxGpu, OnnxGpuOptions[0]);

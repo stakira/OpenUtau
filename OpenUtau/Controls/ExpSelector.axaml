@@ -77,6 +77,9 @@
                             CornerRadius="{DynamicResource OverlayCornerRadius}">
                       <ScrollViewer HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
                                     VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}">
+                        <ItemsPresenter Name="PART_ItemsPresenter"
+                                        Margin="{DynamicResource ComboBoxDropdownContentMargin}"
+                                        ItemsPanel="{TemplateBinding ItemsPanel}" />
                       </ScrollViewer>
                     </Border>
                   </Popup>
