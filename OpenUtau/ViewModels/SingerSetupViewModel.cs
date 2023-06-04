@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using DynamicData.Binding;
 using OpenUtau.Core;
-using OpenUtau.Core.Util;
 using ReactiveUI;
 using SharpCompress.Archives;
 using SharpCompress.Common;

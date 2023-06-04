@@ -9,7 +9,6 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.Primitives;
-using Avalonia.Controls.Shapes;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
@@ -35,7 +34,6 @@ namespace OpenUtau.App.Views {
         private bool openPianoRollWindow;
 
         private PartEditState? partEditState;
-        private Rectangle? selectionBox;
         private DispatcherTimer timer;
         private DispatcherTimer autosaveTimer;
         private bool forceClose;
@@ -819,7 +817,7 @@ namespace OpenUtau.App.Views {
             }
             if (point.Properties.IsLeftButtonPressed) {
                 if (args.KeyModifiers == cmdKey) {
-                    partEditState = new PartSelectionEditState(control, viewModel, GetSelectionBox(control));
+                    partEditState = new PartSelectionEditState(control, viewModel, SelectionBox);
                     Cursor = ViewConstants.cursorCross;
                 } else if (hitControl == control) {
                     viewModel.TracksViewModel.DeselectParts();
@@ -872,22 +870,6 @@ namespace OpenUtau.App.Views {
                 partEditState.Begin(point.Pointer, point.Position);
                 partEditState.Update(point.Pointer, point.Position);
             }
-        }
-
-        private Rectangle GetSelectionBox(Control control) {
-            if (selectionBox != null) {
-                return selectionBox;
-            }
-            selectionBox = new Rectangle() {
-                Stroke = ThemeManager.ForegroundBrush,
-                StrokeThickness = 2,
-                Fill = ThemeManager.TickLineBrushLow,
-                // radius = 8
-                IsHitTestVisible = false,
-            };
-            //canvas.Children.Add(selectionBox);
-            selectionBox.ZIndex = 1000;
-            return selectionBox;
         }
 
         public void PartsCanvasPointerMoved(object sender, PointerEventArgs args) {

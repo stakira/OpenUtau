@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
-using Avalonia.VisualTree;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
@@ -58,10 +55,6 @@ namespace OpenUtau.App.Controls {
             InitializeComponent();
         }
 
-        private void InitializeComponent() {
-            AvaloniaXamlLoader.Load(this);
-        }
-
         protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change) {
             base.OnPropertyChanged(change);
             if (change.Property == OffsetProperty ||
@@ -90,10 +83,9 @@ namespace OpenUtau.App.Controls {
         }
 
         void SingerButtonClicked(object sender, RoutedEventArgs args) {
-            var singerMenu = this.FindControl<ContextMenu>("SingersMenu");
             if (SingerManager.Inst.Singers.Count > 0) {
                 ViewModel?.RefreshSingers();
-                singerMenu.Open();
+                SingersMenu.Open();
             }
             args.Handled = true;
         }
@@ -103,10 +95,9 @@ namespace OpenUtau.App.Controls {
         }
 
         void PhonemizerButtonClicked(object sender, RoutedEventArgs args) {
-            var phonemizerMenu = this.FindControl<ContextMenu>("PhonemizersMenu");
             if (DocManager.Inst.PhonemizerFactories.Length > 0) {
                 ViewModel?.RefreshPhonemizers();
-                phonemizerMenu.Open();
+                PhonemizersMenu.Open();
             }
             args.Handled = true;
         }
@@ -116,10 +107,9 @@ namespace OpenUtau.App.Controls {
         }
 
         void RendererButtonClicked(object sender, RoutedEventArgs args) {
-            var rendererMenu = this.FindControl<ContextMenu>("RenderersMenu");
             ViewModel?.RefreshRenderers();
             if (ViewModel?.RenderersMenuItems?.Count > 0) {
-                rendererMenu.Open();
+                RenderersMenu.Open();
             }
             args.Handled = true;
         }

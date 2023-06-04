@@ -147,14 +147,17 @@
           </ContextMenu>
         </c:NotesCanvas.ContextMenu>
       </c:NotesCanvas>
-      <Canvas Grid.Row="2" Grid.Column="1">
+      <Canvas Grid.Row="2" Grid.Column="1" IsHitTestVisible="False" ClipToBounds="True">
         <Rectangle Name="PlayPosHighlight"
                    Width="{Binding NotesViewModel.PlayPosHighlightWidth, Mode=OneWay}"
                    Height="{Binding $parent.Bounds.Height, Mode=OneWay}"
                    Canvas.Left="{Binding NotesViewModel.PlayPosHighlightX, Mode=OneWay}"
                    Canvas.Top="0" ZIndex="-10"
-                   Fill="{DynamicResource NeutralAccentBrushSemi2}"
-                   IsHitTestVisible="False"/>
+                   Fill="{DynamicResource NeutralAccentBrushSemi2}"/>
+        <Rectangle Name="SelectionBox" StrokeThickness="2"
+                   Stroke="{DynamicResource SystemControlForegroundBaseHighBrush}"
+                   Fill="{DynamicResource TickLineBrushLow}" ZIndex="1000"
+                   IsHitTestVisible="False" IsVisible="False"/>
       </Canvas>
       <StackPanel Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top"
                   Margin="12,12,0,0" Orientation="Horizontal">
@@ -403,6 +406,7 @@
         </Rectangle.Fill>
       </Rectangle>
       <c:PhonemeCanvas Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="0" Height="60"
+                       Background="{DynamicResource BackgroundBrushSemi}"
                        TickWidth="{Binding NotesViewModel.TickWidth}"
                        TickOffset="{Binding NotesViewModel.TickOffset}"
                        Part="{Binding NotesViewModel.Part}" IsVisible="{Binding NotesViewModel.ShowPhoneme}"
