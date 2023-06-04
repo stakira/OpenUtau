@@ -57,12 +57,17 @@ namespace OpenUtau.Plugin.Builtin {
                     basePhoneme = $"{v}";
                 }
             } else if (syllable.IsVV) {
-                basePhoneme = vv1;
-                if (!HasOto(vv1, syllable.vowelTone)) {
-                    basePhoneme = vv2;
-                    if (!HasOto(vv2, syllable.vowelTone)) {
-                        basePhoneme = $"{v}";
+                if (!CanMakeAliasExtension(syllable)) {
+                    if (HasOto(vv1, syllable.vowelTone)) {
+                        basePhoneme = vv1;
+                    } else if (!HasOto(vv1, syllable.vowelTone) && HasOto(vv2, syllable.vowelTone)) {
+                        basePhoneme = vv2;
+                    } else {
+                        basePhoneme = v;
                     }
+                } else {
+                    // the previous alias will be extended
+                    basePhoneme = null;
                 }
             } else if (syllable.IsStartingCVWithOneConsonant) {
                 // TODO: move to config -CV or -C CV
