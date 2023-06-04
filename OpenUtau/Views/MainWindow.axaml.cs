@@ -12,9 +12,7 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Shapes;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
-using Avalonia.VisualTree;
 using OpenUtau.App.Controls;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Classic;
@@ -42,7 +40,6 @@ namespace OpenUtau.App.Views {
         private DispatcherTimer autosaveTimer;
         private bool forceClose;
 
-        private ContextMenu? partsContextMenu;
         private bool shouldOpenPartsContextMenu;
 
         private readonly ReactiveCommand<UPart, Unit> PartRenameCommand;
@@ -53,10 +50,6 @@ namespace OpenUtau.App.Views {
             InitializeComponent();
             Log.Information("Initialized main window component.");
             DataContext = viewModel = new MainWindowViewModel();
-            partsContextMenu = this.Find<ContextMenu>("PartsContextMenu");
-#if DEBUG
-            this.AttachDevTools();
-#endif
             var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
             viewModel.GetInitSingerTask()!.ContinueWith(_ => {
                 viewModel.InitProject();
@@ -65,12 +58,10 @@ namespace OpenUtau.App.Views {
                 viewModel.AddTimeSigChangeCmd = ReactiveCommand.Create<int>(bar => AddTimeSigChange(bar));
                 viewModel.DelTimeSigChangeCmd = ReactiveCommand.Create<int>(bar => DelTimeSigChange(bar));
 
-                var splash = this.Find<Border>("Splash");
-                splash.IsEnabled = false;
-                splash.IsVisible = false;
-                var mainGrid = this.Find<Grid>("MainGrid");
-                mainGrid.IsEnabled = true;
-                mainGrid.IsVisible = true;
+                Splash.IsEnabled = false;
+                Splash.IsVisible = false;
+                MainGrid.IsEnabled = true;
+                MainGrid.IsVisible = true;
                 splashDone = true;
             }, CancellationToken.None, TaskContinuationOptions.None, scheduler);
 
@@ -99,10 +90,6 @@ namespace OpenUtau.App.Views {
                 () => (Application.Current?.ApplicationLifetime as IControlledApplicationLifetime)?.Shutdown(),
                 TaskScheduler.FromCurrentSynchronizationContext());
             Log.Information("Created main window.");
-        }
-
-        private void InitializeComponent() {
-            AvaloniaXamlLoader.Load(this);
         }
 
         void OnEditTimeSignature(object sender, PointerPressedEventArgs args) {
@@ -489,7 +476,7 @@ namespace OpenUtau.App.Views {
                 if (viewModel.TracksViewModel.SelectedParts.Count > 0) {
                     singer = viewModel.TracksViewModel.Tracks[viewModel.TracksViewModel.SelectedParts.First().trackNo].Singer;
                 }
-                if(singer == null && viewModel.TracksViewModel.Tracks.Count > 0) {
+                if (singer == null && viewModel.TracksViewModel.Tracks.Count > 0) {
                     singer = viewModel.TracksViewModel.Tracks.First().Singer;
                 }
                 dialog = new SingersDialog() {
@@ -865,8 +852,8 @@ namespace OpenUtau.App.Views {
                         viewModel.TracksViewModel.DeselectParts();
                         viewModel.TracksViewModel.SelectPart(partControl.part);
                     }
-                    if (partsContextMenu != null && viewModel.TracksViewModel.SelectedParts.Count > 0) {
-                        partsContextMenu.DataContext = new PartsContextMenuArgs {
+                    if (PartsContextMenu != null && viewModel.TracksViewModel.SelectedParts.Count > 0) {
+                        PartsContextMenu.DataContext = new PartsContextMenuArgs {
                             Part = partControl.part,
                             PartDeleteCommand = viewModel.PartDeleteCommand,
                             PartReplaceAudioCommand = PartReplaceAudioCommand,
@@ -972,21 +959,17 @@ namespace OpenUtau.App.Views {
             var delta = args.Delta;
             if (args.KeyModifiers == KeyModifiers.None || args.KeyModifiers == KeyModifiers.Shift) {
                 if (delta.X != 0) {
-                    var scrollbar = this.FindControl<ScrollBar>("HScrollBar");
-                    scrollbar.Value = Math.Max(scrollbar.Minimum,
-                        Math.Min(scrollbar.Maximum, scrollbar.Value - scrollbar.SmallChange * delta.X));
+                    HScrollBar.Value = Math.Max(HScrollBar.Minimum,
+                        Math.Min(HScrollBar.Maximum, HScrollBar.Value - HScrollBar.SmallChange * delta.X));
                 }
                 if (delta.Y != 0) {
-                    var scrollbar = this.FindControl<ScrollBar>("VScrollBar");
-                    scrollbar.Value = Math.Max(scrollbar.Minimum,
-                        Math.Min(scrollbar.Maximum, scrollbar.Value - scrollbar.SmallChange * delta.Y));
+                    VScrollBar.Value = Math.Max(VScrollBar.Minimum,
+                        Math.Min(VScrollBar.Maximum, VScrollBar.Value - VScrollBar.SmallChange * delta.Y));
                 }
             } else if (args.KeyModifiers == KeyModifiers.Alt) {
-                var scaler = this.FindControl<ViewScaler>("VScaler");
-                ViewScalerPointerWheelChanged(scaler, args);
+                ViewScalerPointerWheelChanged(VScaler, args);
             } else if (args.KeyModifiers == cmdKey) {
-                var timelineCanvas = this.FindControl<Canvas>("TimelineCanvas");
-                TimelinePointerWheelChanged(timelineCanvas, args);
+                TimelinePointerWheelChanged(TimelineCanvas, args);
             }
             if (partEditState != null) {
                 var point = args.GetCurrentPoint(partEditState.control);
@@ -1003,8 +986,8 @@ namespace OpenUtau.App.Views {
         }
 
         public void PartsContextMenuClosing(object sender, CancelEventArgs args) {
-            if (partsContextMenu != null) {
-                partsContextMenu.DataContext = null;
+            if (PartsContextMenu != null) {
+                PartsContextMenu.DataContext = null;
             }
         }
 

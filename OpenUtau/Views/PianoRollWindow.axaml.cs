@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive;
@@ -9,8 +8,6 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Shapes;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
-using Avalonia.VisualTree;
 using OpenUtau.App.Controls;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
@@ -34,11 +31,7 @@ namespace OpenUtau.App.Views {
         private KeyboardPlayState? keyboardPlayState;
         private NoteEditState? editState;
         private Rectangle? selectionBox;
-        private Canvas? valueTipCanvas;
-        private Border? valueTip;
-        private TextBlock? valueTipText;
         private Point valueTipPointerPosition;
-        private LyricBox? lyricBox;
         private bool shouldOpenNotesContextMenu;
 
         private ReactiveCommand<Unit, Unit> lyricsDialogCommand;
@@ -46,10 +39,8 @@ namespace OpenUtau.App.Views {
 
         public PianoRollWindow() {
             InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
             DataContext = ViewModel = new PianoRollViewModel();
+            ValueTip.IsVisible = false;
 
             ViewModel.LyricBatchEdits.Add(new MenuItemViewModel() {
                 Header = ThemeManager.GetString("lyricsreplace.replace"),
@@ -65,17 +56,8 @@ namespace OpenUtau.App.Views {
             });
         }
 
-        private void InitializeComponent() {
-            AvaloniaXamlLoader.Load(this);
-            valueTipCanvas = this.FindControl<Canvas>("ValueTipCanvas");
-            valueTip = this.FindControl<Border>("ValueTip");
-            valueTip.IsVisible = false;
-            valueTipText = this.FindControl<TextBlock>("ValueTipText");
-            lyricBox = this.FindControl<LyricBox>("LyricBox");
-        }
-
         public void WindowDeactivated(object sender, EventArgs args) {
-            lyricBox?.EndEdit();
+            LyricBox?.EndEdit();
         }
 
         void WindowClosing(object? sender, WindowClosingEventArgs e) {
@@ -153,13 +135,12 @@ namespace OpenUtau.App.Views {
         }
 
         public void KeyboardPointerWheelChanged(object sender, PointerWheelEventArgs args) {
-            lyricBox?.EndEdit();
-            var scrollbar = this.FindControl<ScrollBar>("VScrollBar");
-            VScrollPointerWheelChanged(scrollbar, args);
+            LyricBox?.EndEdit();
+            VScrollPointerWheelChanged(VScrollBar, args);
         }
 
         public void KeyboardPointerPressed(object sender, PointerPressedEventArgs args) {
-            lyricBox?.EndEdit();
+            LyricBox?.EndEdit();
             if (keyboardPlayState != null) {
                 return;
             }
@@ -186,13 +167,13 @@ namespace OpenUtau.App.Views {
         public void HScrollPointerWheelChanged(object sender, PointerWheelEventArgs args) {
             var scrollbar = (ScrollBar)sender;
             scrollbar.Value = Math.Max(scrollbar.Minimum, Math.Min(scrollbar.Maximum, scrollbar.Value - scrollbar.SmallChange * args.Delta.Y));
-            lyricBox?.EndEdit();
+            LyricBox?.EndEdit();
         }
 
         public void VScrollPointerWheelChanged(object sender, PointerWheelEventArgs args) {
             var scrollbar = (ScrollBar)sender;
             scrollbar.Value = Math.Max(scrollbar.Minimum, Math.Min(scrollbar.Maximum, scrollbar.Value - scrollbar.SmallChange * args.Delta.Y));
-            lyricBox?.EndEdit();
+            LyricBox?.EndEdit();
         }
 
         public void TimelinePointerWheelChanged(object sender, PointerWheelEventArgs args) {
@@ -201,12 +182,12 @@ namespace OpenUtau.App.Views {
             var size = control.Bounds.Size;
             position = position.WithX(position.X / size.Width).WithY(position.Y / size.Height);
             ViewModel.NotesViewModel.OnXZoomed(position, 0.1 * args.Delta.Y);
-            lyricBox?.EndEdit();
+            LyricBox?.EndEdit();
         }
 
         public void ViewScalerPointerWheelChanged(object sender, PointerWheelEventArgs args) {
             ViewModel.NotesViewModel.OnYZoomed(new Point(0, 0.5), 0.1 * args.Delta.Y);
-            lyricBox?.EndEdit();
+            LyricBox?.EndEdit();
         }
 
         public void TimelinePointerPressed(object sender, PointerPressedEventArgs args) {
@@ -218,7 +199,7 @@ namespace OpenUtau.App.Views {
                 int tick = left + ViewModel.NotesViewModel.Part?.position ?? 0;
                 ViewModel.PlaybackViewModel?.MovePlayPos(tick);
             }
-            lyricBox?.EndEdit();
+            LyricBox?.EndEdit();
         }
 
         public void TimelinePointerMoved(object sender, PointerEventArgs args) {
@@ -236,7 +217,7 @@ namespace OpenUtau.App.Views {
         }
 
         public void NotesCanvasPointerPressed(object sender, PointerPressedEventArgs args) {
-            lyricBox?.EndEdit();
+            LyricBox?.EndEdit();
             if (ViewModel.NotesViewModel.Part == null) {
                 return;
             }
@@ -480,8 +461,8 @@ namespace OpenUtau.App.Views {
         public void NotesCanvasPointerMoved(object sender, PointerEventArgs args) {
             var control = (Control)sender;
             var point = args.GetCurrentPoint(control);
-            if (valueTipCanvas != null) {
-                valueTipPointerPosition = args.GetCurrentPoint(valueTipCanvas!).Position;
+            if (ValueTipCanvas != null) {
+                valueTipPointerPosition = args.GetCurrentPoint(ValueTipCanvas!).Position;
             }
             if (editState != null) {
                 editState.Update(point.Pointer, point.Position);
@@ -542,33 +523,30 @@ namespace OpenUtau.App.Views {
             var noteHitInfo = ViewModel.NotesViewModel.HitTest.HitTestNote(point);
             if (noteHitInfo.hitBody && ViewModel?.NotesViewModel?.Part != null) {
                 var note = noteHitInfo.note;
-                lyricBox?.Show(ViewModel.NotesViewModel.Part, new LyricBoxNote(note), note.lyric);
+                LyricBox?.Show(ViewModel.NotesViewModel.Part, new LyricBoxNote(note), note.lyric);
             }
         }
 
         public void NotesCanvasPointerWheelChanged(object sender, PointerWheelEventArgs args) {
-            lyricBox?.EndEdit();
+            LyricBox?.EndEdit();
             var control = (Control)sender;
             var position = args.GetCurrentPoint(control).Position;
             var size = control.Bounds.Size;
             var delta = args.Delta;
             if (args.KeyModifiers == KeyModifiers.None || args.KeyModifiers == KeyModifiers.Shift) {
                 if (delta.X != 0) {
-                    var scrollbar = this.FindControl<ScrollBar>("HScrollBar");
-                    scrollbar.Value = Math.Max(scrollbar.Minimum,
-                        Math.Min(scrollbar.Maximum, scrollbar.Value - scrollbar.SmallChange * delta.X));
+                    HScrollBar.Value = Math.Max(HScrollBar.Minimum,
+                        Math.Min(HScrollBar.Maximum, HScrollBar.Value - HScrollBar.SmallChange * delta.X));
                 }
                 if (delta.Y != 0) {
-                    var scrollbar = this.FindControl<ScrollBar>("VScrollBar");
-                    scrollbar.Value = Math.Max(scrollbar.Minimum,
-                        Math.Min(scrollbar.Maximum, scrollbar.Value - scrollbar.SmallChange * delta.Y));
+                    VScrollBar.Value = Math.Max(VScrollBar.Minimum,
+                        Math.Min(VScrollBar.Maximum, VScrollBar.Value - VScrollBar.SmallChange * delta.Y));
                 }
             } else if (args.KeyModifiers == KeyModifiers.Alt) {
                 position = position.WithX(position.X / size.Width).WithY(position.Y / size.Height);
                 ViewModel.NotesViewModel.OnYZoomed(position, 0.1 * args.Delta.Y);
             } else if (args.KeyModifiers == cmdKey) {
-                var timelineCanvas = this.FindControl<Canvas>("TimelineCanvas");
-                TimelinePointerWheelChanged(timelineCanvas, args);
+                TimelinePointerWheelChanged(TimelineCanvas, args);
             }
             if (editState != null) {
                 var point = args.GetCurrentPoint(editState.control);
@@ -589,7 +567,7 @@ namespace OpenUtau.App.Views {
         }
 
         public void ExpCanvasPointerPressed(object sender, PointerPressedEventArgs args) {
-            lyricBox?.EndEdit();
+            LyricBox?.EndEdit();
             if (ViewModel.NotesViewModel.Part == null) {
                 return;
             }
@@ -613,8 +591,8 @@ namespace OpenUtau.App.Views {
         public void ExpCanvasPointerMoved(object sender, PointerEventArgs args) {
             var control = (Control)sender;
             var point = args.GetCurrentPoint(control);
-            if (valueTipCanvas != null) {
-                valueTipPointerPosition = args.GetCurrentPoint(valueTipCanvas!).Position;
+            if (ValueTipCanvas != null) {
+                valueTipPointerPosition = args.GetCurrentPoint(ValueTipCanvas!).Position;
             }
             if (editState != null) {
                 editState.Update(point.Pointer, point.Position, args);
@@ -657,11 +635,11 @@ namespace OpenUtau.App.Views {
             if (!hitInfo.hit) {
                 return;
             }
-            lyricBox?.Show(ViewModel.NotesViewModel.Part, new LyricBoxPhoneme(phoneme!), phoneme!.phoneme);
+            LyricBox?.Show(ViewModel.NotesViewModel.Part, new LyricBoxPhoneme(phoneme!), phoneme!.phoneme);
         }
 
         public void PhonemeCanvasPointerPressed(object sender, PointerPressedEventArgs args) {
-            lyricBox?.EndEdit();
+            LyricBox?.EndEdit();
             if (ViewModel?.NotesViewModel?.Part == null) {
                 return;
             }
@@ -714,8 +692,8 @@ namespace OpenUtau.App.Views {
             if (ViewModel?.NotesViewModel?.Part == null) {
                 return;
             }
-            if (valueTipCanvas != null) {
-                valueTipPointerPosition = args.GetCurrentPoint(valueTipCanvas!).Position;
+            if (ValueTipCanvas != null) {
+                valueTipPointerPosition = args.GetCurrentPoint(ValueTipCanvas!).Position;
             }
             var control = (Control)sender;
             var point = args.GetCurrentPoint(control);
@@ -755,9 +733,8 @@ namespace OpenUtau.App.Views {
         }
 
         public void OnSnapDivMenuButton(object sender, RoutedEventArgs args) {
-            var menu = this.FindControl<ContextMenu>("SnapDivMenu");
-            menu.PlacementTarget = sender as Button;
-            menu.Open();
+            SnapDivMenu.PlacementTarget = sender as Button;
+            SnapDivMenu.Open();
         }
 
         void OnSnapDivKeyDown(object sender, KeyEventArgs e) {
@@ -771,37 +748,37 @@ namespace OpenUtau.App.Views {
         #region value tip
 
         void IValueTip.ShowValueTip() {
-            if (valueTip != null) {
-                valueTip.IsVisible = true;
+            if (ValueTip != null) {
+                ValueTip.IsVisible = true;
             }
         }
 
         void IValueTip.HideValueTip() {
-            if (valueTip != null) {
-                valueTip.IsVisible = false;
+            if (ValueTip != null) {
+                ValueTip.IsVisible = false;
             }
-            if (valueTipText != null) {
-                valueTipText.Text = string.Empty;
+            if (ValueTipText != null) {
+                ValueTipText.Text = string.Empty;
             }
         }
 
         void IValueTip.UpdateValueTip(string text) {
-            if (valueTip == null || valueTipText == null || valueTipCanvas == null) {
+            if (ValueTip == null || ValueTipText == null || ValueTipCanvas == null) {
                 return;
             }
-            valueTipText.Text = text;
-            Canvas.SetLeft(valueTip, valueTipPointerPosition.X);
+            ValueTipText.Text = text;
+            Canvas.SetLeft(ValueTip, valueTipPointerPosition.X);
             double tipY = valueTipPointerPosition.Y + 21;
-            if (tipY + 21 > valueTipCanvas!.Bounds.Height) {
+            if (tipY + 21 > ValueTipCanvas!.Bounds.Height) {
                 tipY = tipY - 42;
             }
-            Canvas.SetTop(valueTip, tipY);
+            Canvas.SetTop(ValueTip, tipY);
         }
 
         #endregion
 
         void OnKeyDown(object sender, KeyEventArgs args) {
-            if (lyricBox != null && lyricBox.IsVisible) {
+            if (LyricBox != null && LyricBox.IsVisible) {
                 args.Handled = false;
                 return;
             }
@@ -867,7 +844,7 @@ namespace OpenUtau.App.Views {
                     if (isNone) {
                         if (notesVm.Selection.Count == 1) {
                             var note = notesVm.Selection.First();
-                            lyricBox?.Show(ViewModel.NotesViewModel.Part!, new LyricBoxNote(note), note.lyric);
+                            LyricBox?.Show(ViewModel.NotesViewModel.Part!, new LyricBoxNote(note), note.lyric);
                         } else if (notesVm.Selection.Count > 1) {
                             EditLyrics();
                         }
@@ -969,8 +946,7 @@ namespace OpenUtau.App.Views {
                         return true;
                     }
                     if (isAlt) {
-                        var menu = this.FindControl<ContextMenu>("SnapDivMenu");
-                        menu.Open();
+                        SnapDivMenu.Open();
                     }
                     break;
                 case Key.OemPipe:
@@ -1266,7 +1242,7 @@ namespace OpenUtau.App.Views {
                         return true;
                     }
                     break;
-                #endregion
+                    #endregion
             }
             return false;
         }

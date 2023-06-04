@@ -1,22 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
 using OpenUtau.App.ViewModels;
 
 namespace OpenUtau.App.Views {
     public partial class PreferencesDialog : Window {
         public PreferencesDialog() {
             InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
-        }
-
-        private void InitializeComponent() {
-            AvaloniaXamlLoader.Load(this);
         }
 
         void ResetAddlSingersPath(object sender, RoutedEventArgs e) {

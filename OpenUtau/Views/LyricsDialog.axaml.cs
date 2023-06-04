@@ -1,30 +1,17 @@
 ﻿using System;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
-using Avalonia.Threading;
 using OpenUtau.App.ViewModels;
 
 namespace OpenUtau.App.Views {
     public partial class LyricsDialog : Window {
-        private TextBox box;
         public LyricsDialog() {
             InitializeComponent();
-            box = this.FindControl<TextBox>("DIALOG_Box");
-
-#if DEBUG
-            this.AttachDevTools();
-#endif
-        }
-
-        private void InitializeComponent() {
-            AvaloniaXamlLoader.Load(this);
         }
 
         void OnOpened(object? sender, EventArgs e) {
-            box.Focus();
+            DIALOG_Box.Focus();
         }
 
         void OnReset(object? sender, RoutedEventArgs e) {
