@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
@@ -100,20 +100,28 @@ namespace OpenUtau.Plugin.Builtin {
         public override void SetSinger(USinger singer) => this.singer = singer;
 
         // make it quicker to check multiple oto occurrences at once rather than spamming if else if
-        private bool checkOtoUntilHit(string[] input, Note note, out UOto oto){
+        private bool checkOtoUntilHit(string[] input, Note note, out UOto oto) {
             oto = default;
+            var attr = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
 
-            var attr0 = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
-            var attr1 = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 1) ?? default;
-
-            foreach (string test in input){
-                if (singer.TryGetMappedOto(test + attr0.alternate, note.tone + attr0.toneShift, attr0.voiceColor, out oto)) {
-                    return true;
-                } else if (singer.TryGetMappedOto(test, note.tone + attr0.toneShift, attr0.voiceColor, out oto)){
-                    return true;
+            var otos = new List<UOto>();
+            foreach (string test in input) {
+                if (singer.TryGetMappedOto(test + attr.alternate, note.tone + attr.toneShift, attr.voiceColor, out var otoAlt)) {
+                    otos.Add(otoAlt);
+                } else if (singer.TryGetMappedOto(test, note.tone + attr.toneShift, attr.voiceColor, out var otoCandidacy)) {
+                    otos.Add(otoCandidacy);
                 }
             }
 
+            string color = attr.voiceColor ?? "";
+            if (otos.Count > 0) {
+                if (otos.Any(oto => (oto.Color ?? string.Empty) == color)) {
+                    oto = otos.Find(oto => (oto.Color ?? string.Empty) == color);
+                    return true;
+                } else {
+                    return false;
+                }
+            }
             return false;
         }
 
