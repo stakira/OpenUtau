@@ -13,11 +13,12 @@ namespace OpenUtau.Plugins {
         [Theory]
         [InlineData("en_delta0",
             new string[] { "my", "test" },
+            new string[] { "", "" },
             new string[] { "C4", "C4" },
             new string[] { "", "", },
             new string[] { "- maI", "aI t", "tE", "E st-" })]
-        public void BasicPhonemizingTest(string singerName, string[] lyrics, string[] tones, string[] colors, string[] aliases) {
-            RunPhonemizeTest(singerName, lyrics, tones, colors, aliases);
+        public void BasicPhonemizingTest(string singerName, string[] lyrics, string[] alts, string[] tones, string[] colors, string[] aliases) {
+            RunPhonemizeTest(singerName, lyrics, alts,tones, colors, aliases);
         }
     }
 }

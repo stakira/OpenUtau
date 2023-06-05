@@ -12,7 +12,7 @@ branches:
     - stable
 skip_commits:
   files:
-    - docs/*
+    - .github/*
   message: /\[nobuild\]/
 skip_tags: true
 pull_requests:

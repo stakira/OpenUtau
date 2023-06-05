@@ -83,7 +83,7 @@ PreUtterance=";
 
             // Given
             var project = new UProject();
-            project.tracks.Add(new UTrack {
+            project.tracks.Add(new UTrack(project) {
                 TrackNo = 0,
             });
             var part = new UVoicePart() {

@@ -107,6 +107,13 @@ namespace OpenUtau.Core.Util {
             public bool ReverseLogOrder = true;
             public bool ShowPortrait = true;
             public bool ShowGhostNotes = true;
+            public bool PlayTone = true;
+            public bool ShowVibrato = true;
+            public bool ShowPitch = true;
+            public bool ShowFinalPitch = true;
+            public bool ShowWaveform = true;
+            public bool ShowPhoneme = true;
+            public bool ShowNoteParams = false;
             public Dictionary<string, string> DefaultResamplers = new Dictionary<string, string>();
             public Dictionary<string, string> DefaultWavtools = new Dictionary<string, string>();
             public string LyricHelper = string.Empty;

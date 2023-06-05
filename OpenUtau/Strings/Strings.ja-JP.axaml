@@ -33,7 +33,7 @@
   <system:String x:Key="dialogs.export.savefirst">プロジェクトを保存してください。</system:String>
   <system:String x:Key="dialogs.messagebox.cancel">キャンセル</system:String>
   <system:String x:Key="dialogs.messagebox.no">いいえ</system:String>
-  <!--<system:String x:Key="dialogs.messagebox.ok">Ok</system:String>-->
+  <system:String x:Key="dialogs.messagebox.ok">OK</system:String>
   <system:String x:Key="dialogs.messagebox.yes">はい</system:String>
   <system:String x:Key="dialogs.noresampler.caption">エンジンがありません</system:String>
   <system:String x:Key="dialogs.noresampler.message">エンジンが設定されていません！お好みのエンジンのEXEやDLLファイルをResamplerフォルダに入れて、環境設定でエンジンを選択してください！</system:String>
@@ -41,11 +41,11 @@
   <system:String x:Key="dialogs.tracksettings.caption">トラック設定</system:String>
   <system:String x:Key="dialogs.tracksettings.location">場所</system:String>
   <!--<system:String x:Key="dialogs.tracksettings.renderer">Renderer</system:String>-->
-  <system:String x:Key="dialogs.tracksettings.setasdefault">デフォルト設定に登録</system:String>
+  <system:String x:Key="dialogs.tracksettings.setasdefault">デフォルト設定として保存</system:String>
 
   <system:String x:Key="errors.caption">エラー</system:String>
 
-  <system:String x:Key="exps.abbr">パラメータ名</system:String>
+  <system:String x:Key="exps.abbr">パラメータの略称</system:String>
   <system:String x:Key="exps.apply">適用</system:String>
   <system:String x:Key="exps.caption">表情</system:String>
   <system:String x:Key="exps.defaultvalue">初期値</system:String>
@@ -54,7 +54,7 @@
   <system:String x:Key="exps.isflag">エンジン内フラグ</system:String>
   <system:String x:Key="exps.maxvalue">最大</system:String>
   <system:String x:Key="exps.minvalue">最小</system:String>
-  <system:String x:Key="exps.name">名称</system:String>
+  <system:String x:Key="exps.name">名前</system:String>
   <system:String x:Key="exps.optionvalues">カスタム値</system:String>
   <system:String x:Key="exps.sepbycomma">カスタム値は ','で区切ってください。</system:String>
   <system:String x:Key="exps.type">タイプ</system:String>
@@ -223,8 +223,8 @@
   <system:String x:Key="pianoroll.toggle.waveform">波形を表示 (W)</system:String>
   <system:String x:Key="pianoroll.tool.drawpitch">ピッチ描画ツール (4)
     左クリックで描画
-    右クリックで削除
-    Ctrl長押しで選択</system:String>
+    右クリックでリセット
+    Ctrl長押しで線をなめらかにする</system:String>
   <system:String x:Key="pianoroll.tool.eraser">消しゴムツール (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">ナイフツール (5)</system:String>
   <system:String x:Key="pianoroll.tool.penplus">ペン+ツール (Ctrl + 2)
@@ -303,7 +303,7 @@
   <system:String x:Key="progress.loadingsingers">シンガー読み込み中...</system:String>
 
   <system:String x:Key="singers.caption">シンガー</system:String>
-  <!--<system:String x:Key="singers.editoto.editinvlabeler">Edit In vLabeler</system:String>-->
+  <system:String x:Key="singers.editoto.editinvlabeler">vLabelerで編集</system:String>
   <system:String x:Key="singers.editoto.gotosource">ソースファイルへ</system:String>
   <system:String x:Key="singers.editoto.regenfrq">周波数表を再生成</system:String>
   <system:String x:Key="singers.editoto.regenfrq.regenerating">周波数表を再生成中</system:String>
@@ -311,7 +311,7 @@
   <system:String x:Key="singers.editoto.save">原音設定を保存</system:String>
   <system:String x:Key="singers.editoto.search">絞り込み</system:String>
   <!--<system:String x:Key="singers.editoto.setvlabelerpath">Download vLabeler (1.0.0-beta1 or higher) from https://github.com/sdercolin/vlabeler and set vLabeler path in Preferences first!</system:String>-->
-  <!--<system:String x:Key="singers.errorreport">Generate Singer Error Report</system:String>-->
+  <system:String x:Key="singers.errorreport">SingerのError Reportを出力</system:String>
   <system:String x:Key="singers.location">ファイルの場所</system:String>
   <system:String x:Key="singers.otoview.moveleft">左へ移動</system:String>
   <system:String x:Key="singers.otoview.moveright">右へ移動</system:String>
@@ -320,7 +320,7 @@
   <system:String x:Key="singers.otoview.showall">全て表示</system:String>
   <system:String x:Key="singers.otoview.zoomin">ズームイン</system:String>
   <system:String x:Key="singers.otoview.zoomout">ズームアウト</system:String>
-  <system:String x:Key="singers.refresh">更新</system:String>
+  <system:String x:Key="singers.refresh">再読み込み</system:String>
   <system:String x:Key="singers.setdefaultphonemizer">デフォルトのPhonemizerとして保存</system:String>
   <system:String x:Key="singers.setencoding">文字コード設定</system:String>
   <system:String x:Key="singers.setportrait">ポートレートを設定</system:String>
@@ -373,6 +373,7 @@
   <system:String x:Key="tracks.movedown">下へ</system:String>
   <system:String x:Key="tracks.moveup">上へ</system:String>
   <system:String x:Key="tracks.remove">削除</system:String>
+  <system:String x:Key="tracks.rename">トラックの名前を変更</system:String>
   <system:String x:Key="tracks.selectrenderer">レンダラーを選択</system:String>
   <system:String x:Key="tracks.selectsinger">シンガーを選択</system:String>
 
@@ -384,7 +385,7 @@
   <!--<system:String x:Key="updater.github">GitHub</system:String>-->
   <system:String x:Key="updater.status.available">アップデート v{0} が利用できます!</system:String>
   <system:String x:Key="updater.status.checking">アップデートを確認しています...</system:String>
-  <system:String x:Key="updater.status.notavailable">最新</system:String>
+  <system:String x:Key="updater.status.notavailable">最新版を使用中</system:String>
   <system:String x:Key="updater.status.unknown">更新の確認ができません</system:String>
   <system:String x:Key="updater.update">アップデート</system:String>
 

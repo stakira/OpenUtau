@@ -104,8 +104,13 @@ namespace OpenUtau.App.ViewModels {
         async void Init() {
             UpdaterStatus = ThemeManager.GetString("updater.status.checking");
             sparkle = await NewUpdaterAsync();
+            if (sparkle == null) {
+                UpdaterStatus = ThemeManager.GetString("updater.status.unknown");
+                return;
+            }
             updateInfo = await sparkle.CheckForUpdatesQuietly();
             if (updateInfo == null) {
+                UpdaterStatus = ThemeManager.GetString("updater.status.unknown");
                 return;
             }
             switch (updateInfo.Status) {
