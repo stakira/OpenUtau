@@ -685,6 +685,7 @@ namespace OpenUtau.App.Views {
             } else if (args.KeyModifiers == KeyModifiers.Shift) {
                 args.Handled = true;
                 switch (args.Key) {
+                    // solo
                     case Key.S:
                         if (viewModel.TracksViewModel.SelectedParts.Count > 0) {
                             var part = viewModel.TracksViewModel.SelectedParts.First();
@@ -692,7 +693,13 @@ namespace OpenUtau.App.Views {
                             MessageBus.Current.SendMessage(new TracksSoloEvent(part.trackNo, !track.Solo));
                         }
                         break;
-                    //case Key.M: ; break;
+                    // mute
+                    case Key.M:
+                        if (viewModel.TracksViewModel.SelectedParts.Count > 0) {
+                            var part = viewModel.TracksViewModel.SelectedParts.First();
+                            MessageBus.Current.SendMessage(new TracksMuteEvent(part.trackNo));
+                        }
+                        break;
                     default:
                         args.Handled = false;
                         break;

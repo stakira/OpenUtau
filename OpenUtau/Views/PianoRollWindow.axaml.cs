@@ -1236,6 +1236,12 @@ namespace OpenUtau.App.Views {
                         return true;
                     }
                     break;
+                case Key.M:
+                    // mute
+                    if (isShift) {
+                        MessageBus.Current.SendMessage(new TracksMuteEvent(notesVm.Part.trackNo));
+                    }
+                    break;
                 case Key.F:
                     // scroll selection into focus
                     if (isNone) {

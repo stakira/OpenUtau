@@ -6,6 +6,7 @@ using System.Reactive.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using OpenUtau.App.ViewModels;
+using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using ReactiveUI;
 
@@ -61,16 +62,37 @@ namespace OpenUtau.App.Controls {
                 .Subscribe(e => {
                     foreach (var (track, header) in trackHeaders) {
                         if (header.ViewModel != null) {
-                            if (track.TrackNo == e.trackNo) {
-                                header.ViewModel.Solo = e.solo;
-                                if (e.solo) {
-                                    header.ViewModel.Mute = false;
+                            if (e.solo) {
+                                PlaybackManager.Inst.SoloTrackExist = true;
+
+                                if (track.TrackNo == e.trackNo) {
+                                    header.ViewModel.Solo = true;
+                                    header.ViewModel.ApparentMute = false;
+                                } else {
+                                    header.ViewModel.Solo = false;
+                                    header.ViewModel.ApparentMute = true;
                                 }
                             } else {
-                                header.ViewModel.Solo = false;
-                                header.ViewModel.Mute = e.solo;
+                                PlaybackManager.Inst.SoloTrackExist = false;
+                                if (track.TrackNo == e.trackNo) {
+                                    header.ViewModel.Solo = false;
+                                }
+                                if (track.Mute) {
+                                    header.ViewModel.ApparentMute = true;
+                                } else {
+                                    header.ViewModel.ApparentMute = false;
+                                }
                             }
                             header.ViewModel.ManuallyRaise();
+                        }
+                    }
+                }); MessageBus.Current.Listen<TracksMuteEvent>()
+                .Subscribe(e => {
+                    foreach (var (track, header) in trackHeaders) {
+                        if (header.ViewModel != null) {
+                            if (track.TrackNo == e.trackNo) {
+                                header.ViewModel.ToggleMute();
+                            }
                         }
                     }
                 });
