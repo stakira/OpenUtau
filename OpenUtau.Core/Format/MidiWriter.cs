@@ -67,7 +67,7 @@ namespace OpenUtau.Core.Format {
 
             var parts = ParseParts(midi, PPQ, project);
             foreach (var part in parts) {
-                var track = new UTrack();
+                var track = new UTrack(project);
                 track.TrackNo = project.tracks.Count;
                 part.trackNo = track.TrackNo;
                 part.AfterLoad(project, track);

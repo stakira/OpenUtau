@@ -87,6 +87,11 @@ namespace OpenUtau.App.Controls {
             Canvas.SetTop(this, Offset.Y + (track?.TrackNo ?? 0) * trackHeight);
         }
 
+        void TrackNameButtonClicked(object sender, RoutedEventArgs args) {
+            ViewModel?.Rename();
+            args.Handled = true;
+        }
+
         void SingerButtonClicked(object sender, RoutedEventArgs args) {
             var singerMenu = this.FindControl<ContextMenu>("SingersMenu");
             if (SingerManager.Inst.Singers.Count > 0) {
