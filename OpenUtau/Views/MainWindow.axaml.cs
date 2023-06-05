@@ -412,7 +412,7 @@ namespace OpenUtau.App.Views {
                 for (var i = 0; i < project.parts.Count; i++) {
                     var part = project.parts[i];
                     if (part is UVoicePart voicePart) {
-                        var savePath =  PathManager.Inst.GetPartSavePath(file, i)[..^4]+".ds";
+                        var savePath =  PathManager.Inst.GetPartSavePath(file, voicePart.DisplayName, i)[..^4]+".ds";
                         DiffSingerScript.SavePart(project, voicePart, savePath);
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"{savePath}."));
                     }
@@ -435,7 +435,7 @@ namespace OpenUtau.App.Views {
                 for (var i = 0; i < project.parts.Count; i++) {
                     var part = project.parts[i];
                     if (part is UVoicePart voicePart) {
-                        var savePath =  PathManager.Inst.GetPartSavePath(file, i)[..^4]+".ds";
+                        var savePath =  PathManager.Inst.GetPartSavePath(file, voicePart.DisplayName, i)[..^4]+".ds";
                         DiffSingerScript.SavePart(project, voicePart, savePath, true);
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"{savePath}."));
                     }
@@ -458,7 +458,7 @@ namespace OpenUtau.App.Views {
                 for (var i = 0; i < project.parts.Count; i++) {
                     var part = project.parts[i];
                     if (part is UVoicePart voicePart) {
-                        var savePath =  PathManager.Inst.GetPartSavePath(file, i)[..^4]+".ds";
+                        var savePath =  PathManager.Inst.GetPartSavePath(file, voicePart.DisplayName, i)[..^4]+".ds";
                         DiffSingerScript.SavePart(project, voicePart, savePath, true, false);
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"{savePath}."));
                     }

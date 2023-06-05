@@ -103,11 +103,10 @@ namespace OpenUtau.Classic {
             var diffconfigFile = Path.Combine(dir, kDiffconfigYaml);
             if (File.Exists(enuconfigFile)) {
                 voicebank.SingerType = USingerType.Enunu;
-            }else if(voicebank.SingerType != USingerType.Enunu)
-            {
             } else if (File.Exists(diffconfigFile)) {
                 voicebank.SingerType = USingerType.DiffSinger;
-            } else {
+            }else if(voicebank.SingerType != USingerType.Enunu)
+            {
                 voicebank.SingerType = USingerType.Classic;
             }
             Encoding encoding = Encoding.GetEncoding("shift_jis");
