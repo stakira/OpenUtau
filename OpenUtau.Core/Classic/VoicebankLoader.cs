@@ -28,7 +28,7 @@ namespace OpenUtau.Classic {
         public const string kCharTxt = "character.txt";
         public const string kCharYaml = "character.yaml";
         public const string kEnuconfigYaml = "enuconfig.yaml";
-        public const string kDiffconfigYaml = "dsconfig.yaml";
+        public const string kConfigYaml = "config.yaml";
         public const string kOtoIni = "oto.ini";
 
         readonly string basePath;
@@ -92,13 +92,17 @@ namespace OpenUtau.Classic {
                     Log.Error(e, $"Failed to load yaml {yamlFile}");
                 }
             }
+            string[] modelPaths = new string[] { dir, dir + @"\model" };
+            foreach (string modelPath in modelPaths) {
+                if (File.Exists(Path.Join(modelPath, kConfigYaml))) {
+                    voicebank.SingerType = USingerType.Enunu;
+                }
+            }
             var enuconfigFile = Path.Combine(dir, kEnuconfigYaml);
-            var diffconfigFile = Path.Combine(dir, kDiffconfigYaml);
             if (File.Exists(enuconfigFile)) {
                 voicebank.SingerType = USingerType.Enunu;
-            } else if (File.Exists(diffconfigFile)) {
-                voicebank.SingerType = USingerType.DiffSinger;
-            } else {
+            }else if(voicebank.SingerType != USingerType.Enunu)
+            {
                 voicebank.SingerType = USingerType.Classic;
             }
             Encoding encoding = Encoding.GetEncoding("shift_jis");
@@ -120,6 +124,8 @@ namespace OpenUtau.Classic {
                 });
             }
         }
+
+
 
         public static void ParseCharacterTxt(Voicebank voicebank, Stream stream, string filePath, string basePath, Encoding encoding) {
             using (var reader = new StreamReader(stream, encoding)) {
