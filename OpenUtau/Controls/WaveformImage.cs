@@ -114,9 +114,6 @@ namespace OpenUtau.App.Controls {
         }
 
         private WriteableBitmap? GetBitmap() {
-            if (Parent == null) {
-                return null;
-            }
             int desiredWidth = (int)Bounds.Width;
             int desiredHeight = (int)Bounds.Height;
             if (bitmap == null || bitmap.Size.Width < desiredWidth) {

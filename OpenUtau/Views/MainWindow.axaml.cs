@@ -477,9 +477,11 @@ namespace OpenUtau.App.Views {
                 if (singer == null && viewModel.TracksViewModel.Tracks.Count > 0) {
                     singer = viewModel.TracksViewModel.Tracks.First().Singer;
                 }
-                dialog = new SingersDialog() {
-                    DataContext = new SingersViewModel(singer),
-                };
+                var vm = new SingersViewModel();
+                if (singer != null) {
+                    vm.Singer = singer;
+                }
+                dialog = new SingersDialog() { DataContext = vm };
                 dialog.Show();
             }
             dialog.Activate();

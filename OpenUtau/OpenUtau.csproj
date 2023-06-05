@@ -37,7 +37,6 @@
     <PackageReference Include="Dotnet.Bundle" Version="0.9.13" />
     <PackageReference Include="NetSparkleUpdater.SparkleUpdater" Version="2.2.1" />
     <PackageReference Include="ReactiveUI.Fody" Version="18.3.1" />
-    <PackageReference Include="ScottPlot.Avalonia" Version="4.1.64" />
     <PackageReference Include="System.IO.Packaging" Version="6.0.0" />
     <PackageReference Include="Avalonia" Version="11.0.0-rc1.1" />
     <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.0.0-rc1.1" />
@@ -50,7 +49,6 @@
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
     <PackageReference Include="System.Security.Permissions" Version="5.0.0" />
     <PackageReference Include="System.Text.Json" Version="7.0.2" />
-    <PackageReference Include="runtime.osx.10.10-x64.CoreCompat.System.Drawing" Version="6.0.5.128" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OpenUtau.Core\OpenUtau.Core.csproj" />
