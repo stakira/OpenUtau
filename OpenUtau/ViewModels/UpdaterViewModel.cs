@@ -96,8 +96,9 @@ namespace OpenUtau.App.ViewModels {
         }
 
         static GithubReleaseAsset? SelectAppcast(GithubRelease release) {
+            string suffix = PathManager.Inst.IsInstalled ? "-installer" : "";
             return release.assets
-                .Where(a => a.name == $"appcast.{OS.GetUpdaterRid()}.xml")
+                .Where(a => a.name == $"appcast.{OS.GetUpdaterRid()}{suffix}.xml")
                 .FirstOrDefault();
         }
 
