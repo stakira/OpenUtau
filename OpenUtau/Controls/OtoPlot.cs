@@ -58,9 +58,9 @@ namespace OpenUtau.App.Controls {
         const int kFftSize = 1024;
         const int kMelSize = 80;
 
-        private static WriteableBitmap? wavBitmap;
+        private WriteableBitmap? wavBitmap;
         private byte[]? wavBitmapData;
-        private static WriteableBitmap? melBitmap;
+        private WriteableBitmap? melBitmap;
 
         private IBrush blueFill = new SolidColorBrush(Colors.LightBlue, 0.5);
         private IBrush pinkFill = new SolidColorBrush(Colors.Pink, 0.5);
@@ -215,22 +215,55 @@ namespace OpenUtau.App.Controls {
                 int endSample = (int)Math.Clamp(
                     (xStart + xSpan) / duration * samples.Length, 0, samples.Length - 1);
                 double sampelsPerPiexl = (endSample - startSample) / width;
-                for (int x = 0; x < width; ++x) {
-                    double min = 0;
-                    double max = 0;
-                    for (int j = startSample + (int)(sampelsPerPiexl * x);
-                        j < startSample + (int)(sampelsPerPiexl * (x + 1)); ++j) {
-                        min = Math.Min(min, samples[j]);
-                        max = Math.Max(max, samples[j]);
+                if (sampelsPerPiexl > 64) {
+                    for (int x = 0; x < width; ++x) {
+                        double min = 0;
+                        double max = 0;
+                        for (int j = startSample + (int)(sampelsPerPiexl * x);
+                            j < startSample + (int)(sampelsPerPiexl * (x + 1)); ++j) {
+                            min = Math.Min(min, samples[j]);
+                            max = Math.Max(max, samples[j]);
+                        }
+                        int maxY = (int)Math.Clamp((height - 1) * (0.5 - max / 2), 0, height - 1);
+                        int minY = (int)Math.Clamp((height - 1) * (0.5 - min / 2), 0, height - 1);
+                        for (int y = maxY; y <= minY; ++y) {
+                            int index = y * width + x;
+                            wavBitmapData[index * 4] = 0;
+                            wavBitmapData[index * 4 + 1] = 0;
+                            wavBitmapData[index * 4 + 2] = 0xFF;
+                            wavBitmapData[index * 4 + 3] = 0xFF;
+                        }
                     }
-                    int maxY = (int)Math.Clamp((height - 1) * (0.5 - max / 2), 0, height - 1);
-                    int minY = (int)Math.Clamp((height - 1) * (0.5 - min / 2), 0, height - 1);
-                    for (int y = maxY; y <= minY; ++y) {
-                        int index = y * width + x;
-                        wavBitmapData[index * 4] = 0;
-                        wavBitmapData[index * 4 + 1] = 0;
-                        wavBitmapData[index * 4 + 2] = 0xFF;
-                        wavBitmapData[index * 4 + 3] = 0xFF;
+                } else {
+                    double lastX = 0;
+                    double lastY = 0;
+                    for (int i = startSample; i < endSample; ++i) {
+                        double x = Math.Clamp((i - startSample) / sampelsPerPiexl, 0, width - 1);
+                        double y = Math.Clamp((height - 1) * (0.5 - samples[i] / 2), 0, height - 1);
+                        if (i > startSample) {
+                            double dx;
+                            double dy;
+                            if (x - lastX > Math.Abs(y - lastY)) {
+                                dx = 1;
+                                dy = (y - lastY) / (x - lastX);
+                            } else {
+                                dx = (x - lastX) / Math.Abs(y - lastY);
+                                dy = Math.Sign(y - lastY);
+                            }
+                            double xx = lastX;
+                            double yy = lastY;
+                            while (xx < x) {
+                                int index = (int)(Math.Round(yy) * width + Math.Round(xx));
+                                wavBitmapData[index * 4] = 0;
+                                wavBitmapData[index * 4 + 1] = 0;
+                                wavBitmapData[index * 4 + 2] = 0xFF;
+                                wavBitmapData[index * 4 + 3] = 0xFF;
+                                xx += dx;
+                                yy += dy;
+                            }
+                        }
+                        lastX = x;
+                        lastY = y;
                     }
                 }
             }

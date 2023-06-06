@@ -91,7 +91,7 @@ namespace OpenUtau.App.Controls {
 
                         int startSample = 0;
                         for (int i = 0; i < bitmap.PixelSize.Width; ++i) {
-                            int endTick = (int)(viewModel.TickOrigin + viewModel.TickOffset + (i + 1) / viewModel.TickWidth);
+                            double endTick = viewModel.TickOrigin + viewModel.TickOffset + (i + 1.0) / viewModel.TickWidth;
                             double endMs = project.timeAxis.TickPosToMsPos(endTick);
                             int endSample = Math.Clamp((int)((endMs - leftMs) * 44100 / 1000) * 2, 0, sampleCount);
                             if (endSample > startSample) {
