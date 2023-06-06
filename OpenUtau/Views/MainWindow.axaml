@@ -8,7 +8,7 @@
         x:Class="OpenUtau.App.Views.MainWindow"
         Icon="/Assets/open-utau.ico"
         Title="{Binding Title}" MinWidth="300" MinHeight="200" KeyDown="OnKeyDown" Closing="WindowClosing"
-        TransparencyLevelHint="None" Background="{DynamicResource MainWindowBackgroundBrush}"
+        TransparencyLevelHint="None"
         ExtendClientAreaToDecorationsHint="{Binding ExtendToFrame}">
   <Window.Styles>
     <Style Selector="Button,ToggleButton">

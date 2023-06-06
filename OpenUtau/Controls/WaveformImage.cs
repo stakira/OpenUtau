@@ -67,6 +67,9 @@ namespace OpenUtau.App.Controls {
         }
 
         public override void Render(DrawingContext context) {
+            if (DataContext == null || double.IsNaN(((NotesViewModel)DataContext).TickOffset)) {
+                return;
+            }
             var bitmap = GetBitmap();
             if (bitmap != null) {
                 Array.Clear(bitmapData, 0, bitmapData.Length);
@@ -109,7 +112,8 @@ namespace OpenUtau.App.Controls {
             }
             base.Render(context);
             if (bitmap != null) {
-                context.DrawImage(bitmap, Bounds.WithX(0).WithY(0));
+                var rect = Bounds.WithX(0).WithY(0);
+                context.DrawImage(bitmap, rect, rect);
             }
         }
 

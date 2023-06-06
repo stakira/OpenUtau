@@ -148,7 +148,6 @@ namespace OpenUtau.App.Controls {
         void Add(UPart part) {
             var control = new PartControl(part, this);
             Children.Add(control);
-            Children.Add(control.image);
             partControls.Add(part, control);
         }
 
@@ -156,7 +155,6 @@ namespace OpenUtau.App.Controls {
             var control = partControls[part];
             control.Dispose();
             partControls.Remove(part);
-            Children.Remove(control.image);
             Children.Remove(control);
         }
     }

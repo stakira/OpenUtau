@@ -681,13 +681,11 @@ namespace OpenUtau.App.Views {
         }
 
         async void OnDrop(object? sender, DragEventArgs args) {
-            if (!args.Data.Contains(DataFormats.FileNames)) {
+            var storageItem = args.Data?.GetFiles()?.FirstOrDefault();
+            if (storageItem == null) {
                 return;
             }
-            string file = args.Data.GetFileNames()?.FirstOrDefault() ?? string.Empty;
-            if (string.IsNullOrEmpty(file)) {
-                return;
-            }
+            string file = storageItem.Path.AbsolutePath;
             var ext = System.IO.Path.GetExtension(file);
             if (ext == ".ustx" || ext == ".ust" || ext == ".vsqx") {
                 if (!DocManager.Inst.ChangesSaved && !await AskIfSaveAndContinue()) {
@@ -942,6 +940,9 @@ namespace OpenUtau.App.Views {
         public void PartsCanvasPointerWheelChanged(object sender, PointerWheelEventArgs args) {
             var delta = args.Delta;
             if (args.KeyModifiers == KeyModifiers.None || args.KeyModifiers == KeyModifiers.Shift) {
+                if (args.KeyModifiers == KeyModifiers.Shift) {
+                    delta = new Vector(delta.Y, delta.X);
+                }
                 if (delta.X != 0) {
                     HScrollBar.Value = Math.Max(HScrollBar.Minimum,
                         Math.Min(HScrollBar.Maximum, HScrollBar.Value - HScrollBar.SmallChange * delta.X));
