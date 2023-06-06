@@ -79,6 +79,21 @@ namespace OpenUtau.Classic {
             }
         }
 
+        public static bool IsEnunuSinger(string dir){
+            var enuconfigFile = Path.Combine(dir, kEnuconfigYaml);
+            if (File.Exists(enuconfigFile)) {
+                return true;
+            }
+            return false;
+        }
+
+        public static USingerType DetectSingerType(string dir){
+            if(IsEnunuSinger(dir)){
+                return USingerType.Enunu;
+            }
+            return USingerType.Classic;
+        }
+
         public static void LoadInfo(Voicebank voicebank, string filePath, string basePath) {
             var dir = Path.GetDirectoryName(filePath);
             var yamlFile = Path.Combine(dir, kCharYaml);
@@ -92,19 +107,17 @@ namespace OpenUtau.Classic {
                     Log.Error(e, $"Failed to load yaml {yamlFile}");
                 }
             }
-            string[] modelPaths = new string[] { dir, dir + @"\model" };
-            foreach (string modelPath in modelPaths) {
-                if (File.Exists(Path.Join(modelPath, kConfigYaml))) {
-                    voicebank.SingerType = USingerType.Enunu;
-                }
+
+            //Singer type
+            //If singer type is declared in character.yaml use it
+            //If not, detect singer type
+            //SimpleEnunu voicebanks (and any upcoming new singer type) should declare their type in character.yaml
+            if(bankConfig != null && bankConfig.SingerType != null){
+                voicebank.SingerType = bankConfig.SingerType.Value;
+            } else {
+                voicebank.SingerType = DetectSingerType(dir);
             }
-            var enuconfigFile = Path.Combine(dir, kEnuconfigYaml);
-            if (File.Exists(enuconfigFile)) {
-                voicebank.SingerType = USingerType.Enunu;
-            }else if(voicebank.SingerType != USingerType.Enunu)
-            {
-                voicebank.SingerType = USingerType.Classic;
-            }
+
             Encoding encoding = Encoding.GetEncoding("shift_jis");
             if (!string.IsNullOrEmpty(bankConfig?.TextFileEncoding)) {
                 encoding = Encoding.GetEncoding(bankConfig.TextFileEncoding);

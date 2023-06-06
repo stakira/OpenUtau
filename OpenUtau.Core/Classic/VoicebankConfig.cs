@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using OpenUtau.Core;
+using OpenUtau.Core.Ustx;
 using YamlDotNet.Serialization;
 
 namespace OpenUtau.Classic {
@@ -48,6 +49,7 @@ namespace OpenUtau.Classic {
         public string Web;
         public string Version;
         public string DefaultPhonemizer;
+        public USingerType? SingerType = null;
         public SymbolSet SymbolSet { get; set; }
         public Subbank[] Subbanks { get; set; }
 
