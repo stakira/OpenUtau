@@ -148,6 +148,7 @@
   </Style>
 
   <Style Selector="ComboBox">
+    <Setter Property="Background" Value="{DynamicResource SystemRegionBrush}"/>
     <Setter Property="FontSize" Value="12"/>
     <Setter Property="MinHeight" Value="20"/>
     <Setter Property="Height" Value="20"/>

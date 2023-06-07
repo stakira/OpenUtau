@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using Avalonia.Media.Imaging;
 using DynamicData.Binding;
 using NAudio.Wave;
-using NWaves.Audio;
 using NWaves.Signals;
 using OpenUtau.Classic;
 using OpenUtau.Core;

@@ -200,11 +200,13 @@ namespace OpenUtau.App.Views {
                 OtoPlot.F0 = null;
                 return;
             }
-            OtoPlot.Cutoff = oto.Cutoff;
-            OtoPlot.Offset = oto.Offset;
-            OtoPlot.Consonant = oto.Consonant;
-            OtoPlot.Preutter = oto.Preutter;
-            OtoPlot.Overlap = oto.Overlap;
+            OtoPlot.Timing = new() {
+                cutoff = oto.Cutoff,
+                offset = oto.Offset,
+                consonant = oto.Consonant,
+                preutter = oto.Preutter,
+                overlap = oto.Overlap,
+            };
             OtoPlot.WaveFile = loadWav(oto);
             OtoPlot.F0 = LoadF0(oto.File);
         }

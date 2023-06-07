@@ -16,6 +16,14 @@ using NWaves.Utils;
 
 namespace OpenUtau.App.Controls {
     class OtoPlot : Control {
+        public struct OtoPlotTiming {
+            public double cutoff;
+            public double offset;
+            public double consonant;
+            public double preutter;
+            public double overlap;
+        }
+
         public static readonly DirectProperty<OtoPlot, bool> ZoomInMelProperty =
             AvaloniaProperty.RegisterDirect<OtoPlot, bool>(
                 nameof(ZoomInMel),
@@ -31,6 +39,11 @@ namespace OpenUtau.App.Controls {
                 nameof(F0),
                 o => o.F0,
                 (o, v) => o.F0 = v);
+        public static readonly DirectProperty<OtoPlot, OtoPlotTiming> TimingProperty =
+            AvaloniaProperty.RegisterDirect<OtoPlot, OtoPlotTiming>(
+                nameof(Timing),
+                o => o.Timing,
+                (o, v) => o.Timing = v);
 
         public bool ZoomInMel {
             get => zoomInMel;
@@ -44,16 +57,15 @@ namespace OpenUtau.App.Controls {
             get => f0;
             set => SetAndRaise(F0Property, ref f0, value);
         }
+        public OtoPlotTiming Timing {
+            get => timing;
+            set => SetAndRaise(TimingProperty, ref timing, value);
+        }
 
         private bool zoomInMel;
         private WaveFile? waveFile;
         private Tuple<int, double[]>? f0;
-
-        public double Cutoff { get; set; }
-        public double Offset { get; set; }
-        public double Consonant { get; set; }
-        public double Preutter { get; set; }
-        public double Overlap { get; set; }
+        private OtoPlotTiming timing;
 
         const int kFftSize = 1024;
         const int kMelSize = 80;
@@ -162,7 +174,8 @@ namespace OpenUtau.App.Controls {
                 }
                 UpdateMel(WaveFile);
                 InvalidateVisual();
-            } else if (change.Property == F0Property) {
+            } else if (change.Property == F0Property ||
+                change.Property == TimingProperty) {
                 InvalidateVisual();
             }
         }
@@ -369,13 +382,13 @@ namespace OpenUtau.App.Controls {
             double msToX = 0.001 / xSpan * width;
             double xOffset = xStart / xSpan * width;
             double totalDurMs = duration * 1000.0;
-            double cutoff = Cutoff >= 0
-                ? totalDurMs - Cutoff
-                : Offset - Cutoff;
-            double offsetX = Offset * msToX - xOffset;
-            double consonantX = (Offset + Consonant) * msToX - xOffset;
-            double preutterX = (Offset + Preutter) * msToX - xOffset;
-            double overlapX = (Offset + Overlap) * msToX - xOffset;
+            double cutoff = Timing.cutoff >= 0
+                ? totalDurMs - Timing.cutoff
+                : Timing.offset - Timing.cutoff;
+            double offsetX = Timing.offset * msToX - xOffset;
+            double consonantX = (Timing.offset + Timing.consonant) * msToX - xOffset;
+            double preutterX = (Timing.offset + Timing.preutter) * msToX - xOffset;
+            double overlapX = (Timing.offset + Timing.overlap) * msToX - xOffset;
             double cutoffX = cutoff * msToX - xOffset;
 
             if (offsetX > 0) {
