@@ -685,7 +685,7 @@ namespace OpenUtau.App.Views {
             if (storageItem == null) {
                 return;
             }
-            string file = storageItem.Path.AbsolutePath;
+            string file = storageItem.Path.LocalPath;
             var ext = System.IO.Path.GetExtension(file);
             if (ext == ".ustx" || ext == ".ust" || ext == ".vsqx") {
                 if (!DocManager.Inst.ChangesSaved && !await AskIfSaveAndContinue()) {
