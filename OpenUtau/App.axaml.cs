@@ -84,7 +84,9 @@ namespace OpenUtau.App {
             if (language != "en-US") {
                 Current.Resources.MergedDictionaries.Add(languages["en-US"]);
             }
-            Current.Resources.MergedDictionaries.Add(languages[language]);
+            if (languages.TryGetValue(language, out var res1)) {
+                Current.Resources.MergedDictionaries.Add(res1);
+            }
         }
 
         static void InitializeTheme() {

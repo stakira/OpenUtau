@@ -109,7 +109,7 @@ namespace OpenUtau.App.ViewModels {
             });
 
             viewportTicks = this.WhenAnyValue(x => x.Bounds, x => x.TickWidth)
-                .Select(v => v.Item1.Width / v.Item2)
+                .Select(v => v.Item1.Width / Math.Max(v.Item2, ViewConstants.TickWidthMin))
                 .ToProperty(this, x => x.ViewportTicks);
             viewportTracks = this.WhenAnyValue(x => x.Bounds, x => x.TrackHeight)
                 .Select(v => v.Item1.Height / v.Item2)
