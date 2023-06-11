@@ -39,7 +39,7 @@ namespace OpenUtau.Core.Vogen.Data {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("OpenUtau.Core.Vogen.Data.VogenRes", typeof(VogenRes).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Vogen.Data.VogenRes", typeof(VogenRes).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
