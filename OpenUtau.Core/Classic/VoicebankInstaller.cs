@@ -28,7 +28,7 @@ namespace OpenUtau.Classic {
             this.textEncoding = textEncoding ?? Encoding.GetEncoding("shift_jis");
         }
 
-        public void LoadArchive(string path) {
+        public void Install(string path, string singerType) {
             progress.Invoke(0, "Analyzing archive...");
             var readerOptions = new ReaderOptions {
                 ArchiveEncoding = new ArchiveEncoding {
@@ -57,9 +57,22 @@ namespace OpenUtau.Classic {
                         if (!hasCharacterYaml && filePath.EndsWith(kCharacterTxt)) {
                             var config = new VoicebankConfig() {
                                 TextFileEncoding = textEncoding.WebName,
+                                SingerType = singerType,
                             };
                             using (var stream = File.Open(filePath.Replace(".txt", ".yaml"), FileMode.Create)) {
                                 config.Save(stream);
+                            }
+                        }
+                        if (hasCharacterYaml && filePath.EndsWith(kCharacterYaml)) {
+                            VoicebankConfig? config = null;
+                            using (var stream = File.Open(filePath, FileMode.Open)) {
+                                config = VoicebankConfig.Load(stream);
+                            }
+                            if (string.IsNullOrEmpty(config.SingerType)) {
+                                config.SingerType = singerType;
+                                using (var stream = File.Open(filePath, FileMode.Open)) {
+                                    config.Save(stream);
+                                }
                             }
                         }
                     }

@@ -32,41 +32,27 @@ namespace OpenUtau.App.ViewModels {
             get => textEncoding;
             set => this.RaiseAndSetIfChanged(ref textEncoding, value);
         }
-        public bool CanInstall {
-            get => canInstall;
-            set => this.RaiseAndSetIfChanged(ref canInstall, value);
-        }
-        public bool CreateRootDirectory {
-            get => createRootDirectory;
-            set => this.RaiseAndSetIfChanged(ref createRootDirectory, value);
-        }
-        public bool CreateCharacterTxt {
-            get => createCharacterTxt;
-            set => this.RaiseAndSetIfChanged(ref createCharacterTxt, value);
-        }
-        public string CreateRootDirectoryName {
-            get => createRootDirectoryName;
-            set => this.RaiseAndSetIfChanged(ref createRootDirectoryName, value);
-        }
-        public string CreateCharacterTxtName {
-            get => createCharacterTxtName;
-            set => this.RaiseAndSetIfChanged(ref createCharacterTxtName, value);
+        public string[] SingerTypes => singerTypes;
+        public string SingerType {
+            get => singerType;
+            set => this.RaiseAndSetIfChanged(ref singerType, value);
         }
 
         private int step;
+        private string[] singerTypes;
+        private string singerType;
         private ObservableCollectionExtended<string> textItems;
         private string archiveFilePath;
         private Encoding[] encodings;
         private Encoding archiveEncoding;
         private Encoding textEncoding;
 
-        private bool canInstall;
-        private bool createRootDirectory;
-        private bool createCharacterTxt;
-        private string createRootDirectoryName = string.Empty;
-        private string createCharacterTxtName = string.Empty;
-
         public SingerSetupViewModel() {
+#if DEBUG
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+#endif
+            singerTypes = new[] { "utau", "enunu" };
+            singerType = singerTypes[0];
             archiveFilePath = string.Empty;
             encodings = new Encoding[] {
                 Encoding.GetEncoding("shift_jis"),
@@ -82,20 +68,10 @@ namespace OpenUtau.App.ViewModels {
             textEncoding = encodings[0];
             textItems = new ObservableCollectionExtended<string>();
 
-            this.WhenAnyValue(vm => vm.Step)
-                .Subscribe(_ => OnStep());
             this.WhenAnyValue(vm => vm.Step, vm => vm.ArchiveEncoding, vm => vm.ArchiveFilePath)
                 .Subscribe(_ => RefreshArchiveItems());
             this.WhenAnyValue(vm => vm.Step, vm => vm.TextEncoding)
                 .Subscribe(_ => RefreshTextItems());
-            this.WhenAnyValue(
-                vm => vm.CreateRootDirectory,
-                vm => vm.CreateRootDirectoryName,
-                vm => vm.CreateCharacterTxt,
-                vm => vm.CreateCharacterTxtName)
-                .Subscribe(_ => CanInstall =
-                    (!CreateRootDirectory || !string.IsNullOrWhiteSpace(CreateRootDirectoryName)) &&
-                    (!CreateCharacterTxt || !string.IsNullOrWhiteSpace(CreateCharacterTxtName)));
         }
 
         public void Back() {
@@ -166,72 +142,6 @@ namespace OpenUtau.App.ViewModels {
             }
         }
 
-        private void OnStep() {
-            if (Step == 2) {
-                BuildTree();
-            }
-        }
-
-        private void BuildTree() {
-            var readerOptions = new ReaderOptions {
-                ArchiveEncoding = new ArchiveEncoding(ArchiveEncoding, ArchiveEncoding),
-            };
-            using var archive = ArchiveFactory.Open(ArchiveFilePath, readerOptions);
-            var banks = archive.Entries
-                .Where(entry => !entry.IsDirectory && Path.GetFileName(entry.Key) == "character.txt")
-                .OrderByDescending(bank => bank.Key.Length)
-                .Select(bank => new Character(bank.Key))
-                .ToList();
-            var otoSets = archive.Entries
-                .Where(entry => !entry.IsDirectory && Path.GetFileName(entry.Key) == "oto.ini")
-                .ToArray();
-            var prefixMaps = archive.Entries
-                .Where(entry => !entry.IsDirectory && Path.GetFileName(entry.Key) == "prefix.map")
-                .ToArray();
-            var bankDirs = banks
-                .Select(bank => Path.GetDirectoryName(bank.file)!)
-                .ToArray();
-            var unknownBank = new Character("(Unknown)");
-            foreach (var otoSet in otoSets) {
-                var dir = Path.GetDirectoryName(otoSet.Key);
-                if (dir == null) {
-                    continue;
-                }
-                bool foundBank = false;
-                for (int i = 0; i < bankDirs.Length; ++i) {
-                    if (dir.StartsWith(bankDirs[i])) {
-                        string relPath = Path.GetRelativePath(bankDirs[i], dir);
-                        if (relPath == ".") {
-                            relPath = string.Empty;
-                        }
-                        banks[i].otoSets.Add(otoSet.Key);
-                        foundBank = true;
-                        break;
-                    }
-                }
-                if (!foundBank) {
-                    unknownBank.otoSets.Add(otoSet.Key);
-                }
-            }
-            textItems.Clear();
-            foreach (var bank in banks) {
-                textItems.Add($"{bank.file}");
-                textItems.AddRange(bank.otoSets.Select(set => $"      | {set}"));
-            }
-
-            if (unknownBank.otoSets.Count > 0) {
-                CreateCharacterTxt = true;
-                banks.Add(unknownBank);
-            }
-
-            List<string> dirs = banks.Select(b => Path.GetDirectoryName(b.file)).OfType<string>().ToList();
-            dirs.AddRange(otoSets.Select(set => Path.GetDirectoryName(set.Key)).OfType<string>());
-            string? root = dirs.OrderBy(dir => dir.Length).FirstOrDefault();
-            if (string.IsNullOrEmpty(root) || root == ".") {
-                CreateRootDirectory = true;
-            }
-        }
-
         public Task Install() {
             string archiveFilePath = ArchiveFilePath;
             var archiveEncoding = ArchiveEncoding;
@@ -242,7 +152,7 @@ namespace OpenUtau.App.ViewModels {
                     var installer = new Classic.VoicebankInstaller(basePath, (progress, info) => {
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(progress, info));
                     }, archiveEncoding, textEncoding);
-                    installer.LoadArchive(archiveFilePath);
+                    installer.Install(archiveFilePath, SingerType);
                 } finally {
                     new Task(() => {
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, ""));
