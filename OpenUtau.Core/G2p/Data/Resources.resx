@@ -127,6 +127,9 @@
   <data name="g2p-fr" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>g2p-fr.zip;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="g2p-hi" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>g2p-hi.zip;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="g2p-it" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>g2p-it.zip;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
