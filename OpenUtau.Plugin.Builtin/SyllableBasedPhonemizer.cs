@@ -559,7 +559,7 @@ namespace OpenUtau.Plugin.Builtin {
         /// <param name="alias"></param>
         /// <param name="tone"></param>
         /// <returns></returns>
-        protected virtual bool HasOto(string alias, int tone) {
+        protected bool HasOto(string alias, int tone) {
             return singer.TryGetMappedOto(alias, tone, out _);
         }
 
