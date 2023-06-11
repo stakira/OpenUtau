@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using Avalonia.Media.Imaging;
 using DynamicData.Binding;
 using NAudio.Wave;
-using NWaves.Audio;
 using NWaves.Signals;
 using OpenUtau.Classic;
 using OpenUtau.Core;
@@ -46,16 +45,12 @@ namespace OpenUtau.App.ViewModels {
         private readonly ReactiveCommand<Api.PhonemizerFactory, Unit> setDefaultPhonemizerCommand;
         private readonly List<MenuItemViewModel> setDefaultPhonemizerMenuItems;
 
-        public SingersViewModel(USinger? singer) {
+        public SingersViewModel() {
 #if DEBUG
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 #endif
             if (Singers.Count() > 0) {
-                if (singer != null && Singers.Contains(singer)) {
-                    Singer = singer;
-                } else {
-                    Singer = Singers.FirstOrDefault();
-                }
+                Singer = Singers.FirstOrDefault();
             }
             this.WhenAnyValue(vm => vm.Singer)
                 .WhereNotNull()
@@ -137,7 +132,7 @@ namespace OpenUtau.App.ViewModels {
                 return;
             }
             try {
-                ModifyConfig(Singer, config => config.DefaultPhonemizer = factory.type.FullName);
+                ModifyConfig(Singer, config => config.DefaultPhonemizer = factory.type.FullName ?? string.Empty);
             } catch (Exception e) {
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to set portrait", e));
             }
@@ -258,8 +253,7 @@ namespace OpenUtau.App.ViewModels {
             if (string.IsNullOrWhiteSpace(SearchAlias)) {
                 DisplayedOtos.Clear();
                 DisplayedOtos.AddRange(Otos);
-            }
-            else {
+            } else {
                 DisplayedOtos.Clear();
                 DisplayedOtos.AddRange(Otos.Where(o => o.Alias.Contains(SearchAlias)));
             }

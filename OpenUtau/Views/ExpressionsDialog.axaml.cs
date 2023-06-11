@@ -1,8 +1,6 @@
 ﻿using System;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core.Ustx;
 
@@ -10,13 +8,6 @@ namespace OpenUtau.App.Views {
     public partial class ExpressionsDialog : Window {
         public ExpressionsDialog() {
             InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
-        }
-
-        private void InitializeComponent() {
-            AvaloniaXamlLoader.Load(this);
         }
 
         private void ApplyButtonClicked(object sender, RoutedEventArgs _) {

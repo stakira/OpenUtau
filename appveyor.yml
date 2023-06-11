@@ -37,10 +37,12 @@ artifacts:
   - path: bin\win-x64
     name: OpenUtau-win-x64
     type: zip
+  - path: OpenUtau-win-x64.exe
   - path: OpenUtau-osx-x64.dmg
   - path: OpenUtau-linux-x64.tar.gz
   - path: appcast.win-x86.xml
   - path: appcast.win-x64.xml
+  - path: appcast.win-x64-installer.xml
   - path: appcast.linux-x64.xml
   - path: appcast.osx-x64.xml
   - path: changelog.txt

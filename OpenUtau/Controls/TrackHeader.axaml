@@ -34,13 +34,13 @@
               Content="{Binding Singer, TargetNullValue={StaticResource tracks.selectsinger}}" Click="SingerButtonClicked" ContextRequested="SingerButtonContextRequested"
               ToolTip.Tip="{Binding Singer}">
         <Button.ContextMenu>
-          <ContextMenu Classes="context" Name="SingersMenu" PlacementMode="Bottom" HorizontalOffset="-3" Items="{Binding SingerMenuItems}">
+          <ContextMenu Classes="context" Name="SingersMenu" PlacementMode="Bottom" HorizontalOffset="-3" ItemsSource="{Binding SingerMenuItems}">
             <ContextMenu.Styles>
               <Style Selector="MenuItem">
                 <Setter Property="Header" Value="{Binding Header}"/>
                 <Setter Property="Command" Value="{Binding Command}"/>
                 <Setter Property="CommandParameter" Value="{Binding CommandParameter}"/>
-                <Setter Property="Items" Value="{Binding Items}"/>
+                <Setter Property="ItemsSource" Value="{Binding Items}"/>
               </Style>
             </ContextMenu.Styles>
           </ContextMenu>
@@ -51,13 +51,13 @@
               Content="{Binding PhonemizerTag}" Click="PhonemizerButtonClicked" ContextRequested="PhonemizerButtonContextRequested"
               ToolTip.Tip="{Binding Phonemizer}">
         <Button.ContextMenu>
-          <ContextMenu Classes="context" Name="PhonemizersMenu" PlacementMode="Bottom" HorizontalOffset="-3" Items="{Binding PhonemizerMenuItems}">
+          <ContextMenu Classes="context" Name="PhonemizersMenu" PlacementMode="Bottom" HorizontalOffset="-3" ItemsSource="{Binding PhonemizerMenuItems}">
             <ContextMenu.Styles>
               <Style Selector="MenuItem">
                 <Setter Property="Header" Value="{Binding Header}"/>
                 <Setter Property="Command" Value="{Binding Command}"/>
                 <Setter Property="CommandParameter" Value="{Binding CommandParameter}"/>
-                <Setter Property="Items" Value="{Binding Items}"/>
+                <Setter Property="ItemsSource" Value="{Binding Items}"/>
               </Style>
             </ContextMenu.Styles>
           </ContextMenu>
@@ -68,13 +68,13 @@
               Content="{Binding Renderer}" Click="RendererButtonClicked" ContextRequested="RendererButtonContextRequested"
               ToolTip.Tip="{DynamicResource tracks.selectrenderer}">
         <Button.ContextMenu>
-          <ContextMenu Classes="context" Name="RenderersMenu" PlacementMode="Bottom" HorizontalOffset="-3" Items="{Binding RenderersMenuItems}">
+          <ContextMenu Classes="context" Name="RenderersMenu" PlacementMode="Bottom" HorizontalOffset="-3" ItemsSource="{Binding RenderersMenuItems}">
             <ContextMenu.Styles>
               <Style Selector="MenuItem">
                 <Setter Property="Header" Value="{Binding Header}"/>
                 <Setter Property="Command" Value="{Binding Command}"/>
                 <Setter Property="CommandParameter" Value="{Binding CommandParameter}"/>
-                <Setter Property="Items" Value="{Binding Items}"/>
+                <Setter Property="ItemsSource" Value="{Binding Items}"/>
               </Style>
             </ContextMenu.Styles>
           </ContextMenu>
@@ -125,7 +125,7 @@
       <Grid Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2">
         <Slider Name="PanSlider" Margin="134,0,0,0" Width="36" HorizontalAlignment="Left"
                 Classes="fader" Minimum="-100" Maximum="100" Value="{Binding Pan}"
-                Foreground="{DynamicResource AccentBrush1}" PointerPressed="PanFaderPointerPressed"
+                PointerPressed="PanFaderPointerPressed"
                 ContextRequested="PanFaderContextRequested"/>
         <TextBlock Name="PanTextBlock" Margin="0,3,4,0" HorizontalAlignment="Right" FontSize="9" FontFamily="monospace" IsHitTestVisible="False" DoubleTapped="TextBlockClicked">
           <TextBlock.Text>

@@ -5,13 +5,16 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using Avalonia.Markup.Xaml.MarkupExtensions;
+using Avalonia.Markup.Xaml.Styling;
+using Avalonia.Styling;
 using OpenUtau.App.Views;
 using OpenUtau.Classic;
 using OpenUtau.Core;
 using Serilog;
+using YamlDotNet.Core.Tokens;
 
 namespace OpenUtau.App {
     public class App : Application {
@@ -39,14 +42,14 @@ namespace OpenUtau.App {
             string sysLang = CultureInfo.InstalledUICulture.Name;
             string prefLang = Core.Util.Preferences.Default.Language;
             var languages = GetLanguages();
-            if (languages.TryGetValue(prefLang, out var res)) {
-                SetLanguage(res);
-            } else if (languages.TryGetValue(sysLang, out res)) {
-                SetLanguage(res);
+            if (languages.ContainsKey(prefLang)) {
+                SetLanguage(prefLang);
+            } else if (languages.ContainsKey(sysLang)) {
+                SetLanguage(sysLang);
                 Core.Util.Preferences.Default.Language = sysLang;
                 Core.Util.Preferences.Save();
             } else {
-                SetLanguage(languages["en-US"]);
+                SetLanguage("en-US");
             }
 
             // Force using InvariantCulture to prevent issues caused by culture dependent string conversion, especially for floating point numbers.
@@ -55,26 +58,19 @@ namespace OpenUtau.App {
             Log.Information("Initialized culture.");
         }
 
-        public static Dictionary<string, ResourceInclude> GetLanguages() {
+        public static Dictionary<string, IResourceProvider> GetLanguages() {
             if (Current == null) {
                 return new();
             }
-            var re = new Regex(@"Strings\.?([\w-]+)\.axaml");
-            return Current.Resources.MergedDictionaries
-                .Select(res => (ResourceInclude)res)
-                .Where(res => res.Source!.OriginalString.Contains("Strings."))
-                .ToDictionary(res => {
-                    var m = re.Match(res.Source!.OriginalString);
-                    return string.IsNullOrEmpty(m.Groups[1].Value) ? "en-US" : m.Groups[1].Value;
-                });
-        }
-
-        public static void SetLanguage(ResourceInclude res) {
-            if (Current == null) {
-                return;
+            var result = new Dictionary<string, IResourceProvider>();
+            foreach (string key in Current.Resources.Keys.OfType<string>()) {
+                if (key.StartsWith("strings-") &&
+                    Current.Resources.TryGetResource(key, ThemeVariant.Default, out var res) &&
+                    res is IResourceProvider rp) {
+                    result.Add(key.Replace("strings-", ""), rp);
+                }
             }
-            Current.Resources.MergedDictionaries.Remove(res);
-            Current.Resources.MergedDictionaries.Add(res);
+            return result;
         }
 
         public static void SetLanguage(string language) {
@@ -82,8 +78,14 @@ namespace OpenUtau.App {
                 return;
             }
             var languages = GetLanguages();
-            if (languages.TryGetValue(language, out var res)) {
-                SetLanguage(res);
+            foreach (var res in languages.Values) {
+                Current.Resources.MergedDictionaries.Remove(res);
+            }
+            if (language != "en-US") {
+                Current.Resources.MergedDictionaries.Add(languages["en-US"]);
+            }
+            if (languages.TryGetValue(language, out var res1)) {
+                Current.Resources.MergedDictionaries.Add(res1);
             }
         }
 
@@ -94,18 +96,19 @@ namespace OpenUtau.App {
         }
 
         public static void SetTheme() {
-            var light = Current.Resources.MergedDictionaries
-                .Select(res => (ResourceInclude)res)
-                .FirstOrDefault(d => d.Source!.OriginalString.Contains("LightTheme"));
-            var dark = Current.Resources.MergedDictionaries
-                .Select(res => (ResourceInclude)res)
-                .FirstOrDefault(d => d.Source!.OriginalString.Contains("DarkTheme"));
+            if (Current == null) {
+                return;
+            }
+            var light = (IResourceProvider)Current.Resources["themes-light"]!;
+            var dark = (IResourceProvider)Current.Resources["themes-dark"]!;
+            Current.Resources.MergedDictionaries.Remove(light);
+            Current.Resources.MergedDictionaries.Remove(dark);
             if (Core.Util.Preferences.Default.Theme == 0) {
-                Current.Resources.MergedDictionaries.Remove(light);
                 Current.Resources.MergedDictionaries.Add(light);
+                Current.RequestedThemeVariant = ThemeVariant.Light;
             } else {
-                Current.Resources.MergedDictionaries.Remove(dark);
                 Current.Resources.MergedDictionaries.Add(dark);
+                Current.RequestedThemeVariant = ThemeVariant.Dark;
             }
             ThemeManager.LoadTheme();
         }

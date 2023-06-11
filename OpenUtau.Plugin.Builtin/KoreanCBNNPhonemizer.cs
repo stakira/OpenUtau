@@ -1,12 +1,8 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using OpenUtau.Api;
-using OpenUtau.Classic;
 using OpenUtau.Core.Ustx;
-using Serilog;
-using static OpenUtau.Api.Phonemizer;
 
 namespace OpenUtau.Plugin.Builtin {
      /// This phonemizer is based on 'KOR CVC Phonemizer'(by NANA). ///

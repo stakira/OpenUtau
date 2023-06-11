@@ -1,7 +1,5 @@
-﻿using Avalonia;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
 using Classic;
 using OpenUtau.App.ViewModels;
 
@@ -9,14 +7,6 @@ namespace OpenUtau.App.Views {
     public partial class ExeSetupDialog : Window {
         public ExeSetupDialog() {
             InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
-            
-        }
-
-        private void InitializeComponent() {
-            AvaloniaXamlLoader.Load(this);
         }
 
         public void InstallAsResampler(object sender, RoutedEventArgs arg) {

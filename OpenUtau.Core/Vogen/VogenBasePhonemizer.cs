@@ -23,18 +23,33 @@ namespace OpenUtau.Core.Vogen {
 
         public override void SetSinger(USinger singer) { }
 
+        //Merge slur notes into their previous lyrical note
+        private void AddGroup(List<Note> phrase, Note[] group){
+            if(group.Length==1){
+                phrase.Add(group[0]);
+                return;
+            }
+            phrase.Add(new Note{
+                lyric = group[0].lyric,
+                phoneticHint = group[0].phoneticHint,
+                tone = group[0].tone,
+                position = group[0].position,
+                duration = group[^1].position + group[^1].duration - group[0].position
+            });
+        }
         public override void SetUp(Note[][] groups) {
             if (groups.Length == 0) {
                 return;
             }
-            var phrase = new List<Note>() { groups[0][0] };
+            var phrase = new List<Note>() {};
+            AddGroup(phrase, groups[0]);
             for (int i = 1; i < groups.Length; ++i) {
-                if (groups[i - 1][0].position + groups[i - 1][0].duration == groups[i][0].position) {
-                    phrase.Add(groups[i][0]);
+                if (groups[i - 1][^1].position + groups[i - 1][^1].duration == groups[i][0].position) {
+                    AddGroup(phrase, groups[i]);
                 } else {
                     ProcessPart(phrase);
                     phrase.Clear();
-                    phrase.Add(groups[i][0]);
+                    AddGroup(phrase, groups[i]);
                 }
             }
             if (phrase.Count > 0) {

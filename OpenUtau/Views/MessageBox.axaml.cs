@@ -2,9 +2,7 @@
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 
 namespace OpenUtau.App.Views {
@@ -14,26 +12,19 @@ namespace OpenUtau.App.Views {
 
         public MessageBox() {
             InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
-        }
-
-        private void InitializeComponent() {
-            AvaloniaXamlLoader.Load(this);
         }
 
         public void SetText(string text) {
             Dispatcher.UIThread.Post(() => {
-                this.FindControl<TextBlock>("Text").Text = text;
+                Text.Text = text;
             });
         }
 
-        public static Task<MessageBoxResult> ShowError(Window parent, Exception e) {
+        public static Task<MessageBoxResult> ShowError(Window parent, Exception? e) {
             return ShowError(parent, string.Empty, e);
         }
 
-        public static Task<MessageBoxResult> ShowError(Window parent, string message, Exception e) {
+        public static Task<MessageBoxResult> ShowError(Window parent, string message, Exception? e) {
             var builder = new StringBuilder();
             if (!string.IsNullOrEmpty(message)) {
                 builder.AppendLine(message);
@@ -61,8 +52,7 @@ namespace OpenUtau.App.Views {
             var msgbox = new MessageBox() {
                 Title = title
             };
-            msgbox.FindControl<TextBlock>("Text").Text = text;
-            var buttonPanel = msgbox.FindControl<StackPanel>("Buttons");
+            msgbox.Text.Text = text;
 
             var res = MessageBoxResult.Ok;
 
@@ -72,7 +62,7 @@ namespace OpenUtau.App.Views {
                     res = r;
                     msgbox.Close();
                 };
-                buttonPanel.Children.Add(btn);
+                msgbox.Buttons.Children.Add(btn);
                 if (def)
                     res = r;
             }
@@ -99,7 +89,7 @@ namespace OpenUtau.App.Views {
             var msgbox = new MessageBox() {
                 Title = title
             };
-            msgbox.FindControl<TextBlock>("Text").Text = text;
+            msgbox.Text.Text = text;
             msgbox.ShowDialog(parent);
             return msgbox;
         }

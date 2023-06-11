@@ -1,8 +1,5 @@
-﻿using System.IO;
-using Avalonia;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core.Util;
 
@@ -11,14 +8,7 @@ namespace OpenUtau.App.Views {
         internal readonly NoteDefaultsViewModel ViewModel;
         public NoteDefaultsDialog() {
             InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
             DataContext = ViewModel = new NoteDefaultsViewModel();
-        }
-
-        private void InitializeComponent() {
-            AvaloniaXamlLoader.Load(this);
         }
 
         void OnSavePortamentoPreset(object sender, RoutedEventArgs e) {
