@@ -70,7 +70,7 @@ namespace OpenUtau.Core {
         }
         public override void Unexecute() {
             phoneme.SetExpression(project, track, Key, oldValue);
-        } 
+        }
     }
 
     public class ResetExpressionsCommand : ExpCommand {
@@ -245,7 +245,9 @@ namespace OpenUtau.Core {
                 curve.ys.AddRange(oldYs);
             }
         }
-        public override bool Mergeable => true;
+        public override bool CanMerge(IList<UCommand> commands) {
+            return commands.All(c => c is SetCurveCommand);
+        }
         public override UCommand Merge(IList<UCommand> commands) {
             var first = commands.First() as SetCurveCommand;
             var last = commands.Last() as SetCurveCommand;

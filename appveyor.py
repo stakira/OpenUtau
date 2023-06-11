@@ -15,7 +15,7 @@ def write_appcast(appcast_os, appcast_rid, appcast_file):
     <item>
     <title>OpenUtau %s</title>
     <pubDate>%s</pubDate>
-    <enclosure url="https://github.com/stakira/OpenUtau/releases/latest/download/%s"
+    <enclosure url="https://github.com/stakira/OpenUtau/releases/download/build%%2F%s/%s"
                 sparkle:version="%s"
                 sparkle:shortVersionString="%s"
                 sparkle:os="%s"
@@ -24,7 +24,7 @@ def write_appcast(appcast_os, appcast_rid, appcast_file):
     </item>
 </channel>
 </rss>''' % (appcast_ver, datetime.now().strftime("%a, %d %b %Y %H:%M:%S %z"),
-             appcast_file, appcast_ver, appcast_ver, appcast_os)
+             appcast_ver, appcast_file, appcast_ver, appcast_ver, appcast_os)
 
     with open("appcast.%s.xml" % (appcast_rid), 'w') as f:
         f.write(xml)
@@ -48,6 +48,9 @@ if sys.platform == 'win32':
         "dotnet publish OpenUtau -c Release -r win-x64 --self-contained true -o bin/win-x64")
     os.system("copy /y OpenUtau.Plugin.Builtin\\bin\\Release\\netstandard2.1\\OpenUtau.Plugin.Builtin.dll bin\\win-x64")
     write_appcast("windows", "win-x64", "OpenUtau-win-x64.zip")
+
+    os.system("makensis -DPRODUCT_VERSION=%s OpenUtau.nsi" % (appcast_ver))
+    write_appcast("windows", "win-x64-installer", "OpenUtau-win-x64.exe")
 
 elif sys.platform == 'darwin':
     os.system("rm *.dmg")

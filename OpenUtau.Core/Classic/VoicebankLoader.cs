@@ -28,6 +28,7 @@ namespace OpenUtau.Classic {
         public const string kCharTxt = "character.txt";
         public const string kCharYaml = "character.yaml";
         public const string kEnuconfigYaml = "enuconfig.yaml";
+        public const string kConfigYaml = "config.yaml";
         public const string kOtoIni = "oto.ini";
 
         readonly string basePath;
@@ -81,7 +82,7 @@ namespace OpenUtau.Classic {
         public static void LoadInfo(Voicebank voicebank, string filePath, string basePath) {
             var dir = Path.GetDirectoryName(filePath);
             var yamlFile = Path.Combine(dir, kCharYaml);
-            VoicebankConfig bankConfig = null;
+            VoicebankConfig? bankConfig = null;
             if (File.Exists(yamlFile)) {
                 try {
                     using (var stream = File.OpenRead(yamlFile)) {
@@ -91,11 +92,22 @@ namespace OpenUtau.Classic {
                     Log.Error(e, $"Failed to load yaml {yamlFile}");
                 }
             }
-            var enuconfigFile = Path.Combine(dir, kEnuconfigYaml);
-            if (File.Exists(enuconfigFile)) {
-                voicebank.SingerType = USingerType.Enunu;
-            } else {
-                voicebank.SingerType = USingerType.Classic;
+            switch (bankConfig?.SingerType) {
+                case "utau":
+                    voicebank.SingerType = USingerType.Classic;
+                    break;
+                case "enunu":
+                    voicebank.SingerType = USingerType.Enunu;
+                    break;
+                default:
+                    // Legacy detection code. Do not add more here.
+                    var enuconfigFile = Path.Combine(dir, kEnuconfigYaml);
+                    if (File.Exists(enuconfigFile)) {
+                        voicebank.SingerType = USingerType.Enunu;
+                    } else if (voicebank.SingerType != USingerType.Enunu) {
+                        voicebank.SingerType = USingerType.Classic;
+                    }
+                    break;
             }
             Encoding encoding = Encoding.GetEncoding("shift_jis");
             if (!string.IsNullOrEmpty(bankConfig?.TextFileEncoding)) {
@@ -193,6 +205,7 @@ namespace OpenUtau.Classic {
             }
             if (bankConfig.Subbanks != null && bankConfig.Subbanks.Length > 0) {
                 foreach (var subbank in bankConfig.Subbanks) {
+                    subbank.Color ??= string.Empty;
                     subbank.Prefix ??= string.Empty;
                     subbank.Suffix ??= string.Empty;
                 }
@@ -203,16 +216,28 @@ namespace OpenUtau.Classic {
         public static void LoadPrefixMap(Voicebank voicebank) {
             var dir = Path.GetDirectoryName(voicebank.File);
             var filePath = Path.Combine(dir, "prefix.map");
-            if (!File.Exists(filePath)) {
-                return;
+            if (File.Exists(filePath)) {
+                LoadMap(voicebank, filePath, string.Empty);
             }
+
+            // Append.map for presamp
+            var mapDir = Path.Combine(dir, "prefix");
+            if (Directory.Exists(mapDir)) {
+                var maps = Directory.EnumerateFiles(mapDir, "*.map");
+                foreach (string mapPath in maps) {
+                    LoadMap(voicebank, mapPath, Path.GetFileNameWithoutExtension(mapPath));
+                }
+            }
+        }
+        public static void LoadMap(Voicebank voicebank, string filePath, string color) {
             try {
                 using (var stream = File.OpenRead(filePath)) {
                     var map = ParsePrefixMap(stream, voicebank.TextFileEncoding);
                     foreach (var kv in map) {
                         var subbank = new Subbank() {
+                            Color = color,
                             Prefix = kv.Key.Item1,
-                            Suffix = kv.Key.Item2,
+                            Suffix = color + kv.Key.Item2,
                         };
                         var toneRanges = new List<string>();
                         int? rangeStart = null;
@@ -241,8 +266,8 @@ namespace OpenUtau.Classic {
             } catch (Exception e) {
                 Log.Error(e, $"Failed to load {filePath}");
             }
-        }
 
+        }
         public static Dictionary<Tuple<string, string>, SortedSet<int>> ParsePrefixMap(Stream stream, Encoding encoding) {
             using (var reader = new StreamReader(stream, encoding)) {
                 var result = new Dictionary<Tuple<string, string>, SortedSet<int>>();

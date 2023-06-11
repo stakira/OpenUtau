@@ -256,6 +256,7 @@ namespace OpenUtau.Plugin.Builtin {
                 if (!string.IsNullOrEmpty(note.phoneticHint)) {
                     return getSymbolsRaw(note.phoneticHint);
                 }
+
                 var result = new List<string>();
                 foreach (var subword in note.lyric.Trim().ToLowerInvariant().Split(wordSeparators, StringSplitOptions.RemoveEmptyEntries)) {
                     var subResult = dictionary.Query(subword);
@@ -364,7 +365,7 @@ namespace OpenUtau.Plugin.Builtin {
         /// <param inputNotes="notes"></param>
         /// <returns></returns>
         protected Ending? MakeEnding(Note[] inputNotes) {
-            if (inputNotes.Length == 0 || inputNotes[0].lyric.StartsWith(FORCED_ALIAS_SYMBOL)) {
+            if (inputNotes == null || inputNotes.Length == 0 || inputNotes[0].lyric.StartsWith(FORCED_ALIAS_SYMBOL)) {
                 return null;
             }
 
@@ -629,26 +630,35 @@ namespace OpenUtau.Plugin.Builtin {
                 return;
             }
             dictionaries[GetType()] = null;
+            if (Testing) {
+                ReadDictionary(dictionaryName);
+                Init();
+                return;
+            }
             OnAsyncInitStarted();
             Task.Run(() => {
-                try {
-                    var phonemeSymbols = new Dictionary<string, bool>();
-                    foreach (var vowel in GetVowels()) {
-                        phonemeSymbols.Add(vowel, true);
-                    }
-                    foreach (var consonant in GetConsonants()) {
-                        phonemeSymbols.Add(consonant, false);
-                    }
-                    dictionaries[GetType()] = new G2pRemapper(
-                        LoadBaseDictionary(),
-                        phonemeSymbols,
-                        GetDictionaryPhonemesReplacement());
-                } catch (Exception ex) {
-                    Log.Error(ex, $"Failed to read dictionary {dictionaryName}");
-                }
+                ReadDictionary(dictionaryName);
                 Init();
                 OnAsyncInitFinished();
             });
+        }
+
+        private void ReadDictionary(string dictionaryName) {
+            try {
+                var phonemeSymbols = new Dictionary<string, bool>();
+                foreach (var vowel in GetVowels()) {
+                    phonemeSymbols.Add(vowel, true);
+                }
+                foreach (var consonant in GetConsonants()) {
+                    phonemeSymbols.Add(consonant, false);
+                }
+                dictionaries[GetType()] = new G2pRemapper(
+                    LoadBaseDictionary(),
+                    phonemeSymbols,
+                    GetDictionaryPhonemesReplacement());
+            } catch (Exception ex) {
+                Log.Error(ex, $"Failed to read dictionary {dictionaryName}");
+            }
         }
 
         private string[] ApplyExtensions(string[] symbols, Note[] notes) {

@@ -4,6 +4,8 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
+using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using Serilog;
 
@@ -38,7 +40,14 @@ namespace OpenUtau.Core {
                 CachePath = Path.Combine(cacheHome, "OpenUtau");
                 HomePathIsAscii = true;
             } else {
-                DataPath = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
+                string exePath = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
+                IsInstalled = File.Exists(Path.Combine(exePath, "installed.txt"));
+                if (!IsInstalled) {
+                    DataPath = exePath;
+                } else {
+                    string dataHome = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+                    DataPath = Path.Combine(dataHome, "OpenUtau");
+                }
                 CachePath = Path.Combine(DataPath, "Cache");
                 HomePathIsAscii = true;
                 var etor = StringInfo.GetTextElementEnumerator(DataPath);
@@ -56,6 +65,7 @@ namespace OpenUtau.Core {
         public string DataPath { get; private set; }
         public string CachePath { get; private set; }
         public bool HomePathIsAscii { get; private set; }
+        public bool IsInstalled { get; private set; }
         public string SingersPathOld => Path.Combine(DataPath, "Content", "Singers");
         public string SingersPath => Path.Combine(DataPath, "Singers");
         public string AdditionalSingersPath => Preferences.Default.AdditionalSingerPath;
@@ -74,18 +84,28 @@ namespace OpenUtau.Core {
         public string NotePresetsFilePath => Path.Combine(DataPath, "notepresets.json");
         public string BackupsPath => Path.Combine(DataPath, "Backups");
 
-        public string GetPartSavePath(string projectPath, int partNo) {
-            var name = Path.GetFileNameWithoutExtension(projectPath);
-            var dir = Path.GetDirectoryName(projectPath);
-            Directory.CreateDirectory(dir);
-            return Path.Combine(dir, $"{name}-{partNo:D2}.ust");
-        }
+        Regex invalid = new Regex("[\\x00-\\x1f<>:\"/\\\\|?*]|^(CON|PRN|AUX|NUL|COM[0-9]|LPT[0-9]|CLOCK\\$)(\\.|$)|[\\.]$", RegexOptions.IgnoreCase);
 
-        public string GetExportPath(string exportPath, int trackNo) {
-            var name = Path.GetFileNameWithoutExtension(exportPath);
+        public string GetPartSavePath(string exportPath, string partName, int partNo) {
             var dir = Path.GetDirectoryName(exportPath);
             Directory.CreateDirectory(dir);
-            return Path.Combine(dir, $"{name}-{trackNo:D2}.wav");
+            var filename = Path.GetFileNameWithoutExtension(exportPath);
+            var name = invalid.Replace(partName, "_");
+            if (DocManager.Inst.Project.parts.FindAll(p => p is UVoicePart).Count(p => p.DisplayName == partName) > 1) {
+                name += $"_{partNo:D2}";
+            }
+            return Path.Combine(dir, $"{filename}_{name}.ust");
+        }
+
+        public string GetExportPath(string exportPath, UTrack track) {
+            var dir = Path.GetDirectoryName(exportPath);
+            Directory.CreateDirectory(dir);
+            var filename = Path.GetFileNameWithoutExtension(exportPath);
+            var trackName = invalid.Replace(track.TrackName, "_");
+            if (DocManager.Inst.Project.tracks.Count(t => t.TrackName == track.TrackName) > 1) {
+                trackName += $"_{track.TrackNo:D2}";
+            }
+            return Path.Combine(dir, $"{filename}_{trackName}.wav");
         }
 
         public void ClearCache() {

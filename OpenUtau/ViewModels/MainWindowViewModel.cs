@@ -5,12 +5,10 @@ using System.Reactive;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using DynamicData.Binding;
-using OpenUtau.Classic;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using Serilog;
 
 namespace OpenUtau.App.ViewModels {
     public class PartsContextMenuArgs {
@@ -69,7 +67,7 @@ namespace OpenUtau.App.ViewModels {
                 try {
                     OpenProject(new[] { file });
                     DocManager.Inst.Project.Saved = false;
-                    DocManager.Inst.Project.FilePath = null;
+                    DocManager.Inst.Project.FilePath = string.Empty;
                 } catch (Exception e) {
                     DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(
                         "failed to open template.", e));
@@ -107,7 +105,7 @@ namespace OpenUtau.App.ViewModels {
                 try {
                     OpenProject(new[] { defaultTemplate });
                     DocManager.Inst.Project.Saved = false;
-                    DocManager.Inst.Project.FilePath = null;
+                    DocManager.Inst.Project.FilePath = string.Empty;
                     return;
                 } catch (Exception e) {
                     DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(
@@ -155,7 +153,7 @@ namespace OpenUtau.App.ViewModels {
             int trackNo = project.tracks.Count;
             part.trackNo = trackNo;
             DocManager.Inst.StartUndoGroup();
-            DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, new UTrack() { TrackNo = trackNo }));
+            DocManager.Inst.ExecuteCmd(new AddTrackCommand(project, new UTrack(project) { TrackNo = trackNo }));
             DocManager.Inst.ExecuteCmd(new AddPartCommand(project, part));
             DocManager.Inst.EndUndoGroup();
         }
@@ -168,7 +166,7 @@ namespace OpenUtau.App.ViewModels {
             var parts = UseDrywetmidi ? Core.Format.MidiWriter.Load(file, project) : Core.Format.Midi.Load(file, project);
             DocManager.Inst.StartUndoGroup();
             foreach (var part in parts) {
-                var track = new UTrack();
+                var track = new UTrack(project);
                 track.TrackNo = project.tracks.Count;
                 part.trackNo = track.TrackNo;
                 part.AfterLoad(project, track);

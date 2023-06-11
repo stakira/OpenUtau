@@ -58,19 +58,23 @@ symbol_set:
   head: '-'
   tail: R
 subbanks:
-- prefix: """"
+- color: """"
+  prefix: """"
   suffix: """"
   tone_ranges:
   - C1-C4
-- prefix: """"
+- color: """"
+  prefix: """"
   suffix: D4
   tone_ranges:
   - C#4-F4
-- prefix: """"
+- color: """"
+  prefix: """"
   suffix: G4
   tone_ranges:
   - F#4-A#4
-- prefix: """"
+- color: """"
+  prefix: """"
   suffix: C5
   tone_ranges:
   - B4-B7

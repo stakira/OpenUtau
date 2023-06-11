@@ -1,12 +1,8 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using OpenUtau.Api;
-using OpenUtau.Classic;
 using OpenUtau.Core.Ustx;
-using Serilog;
-using static OpenUtau.Api.Phonemizer;
 
 namespace OpenUtau.Plugin.Builtin {
     [Phonemizer("KoreanCVCPhonemizer", "KO CVC", "NANA", language:"KO")]
@@ -545,7 +541,7 @@ namespace OpenUtau.Plugin.Builtin {
                         if ((!isAlphaCon(consonant))) { consonant = con; }
                     } else if (nextExist && nextHangeul) {
                         consonant = TNLconsonant;
-                    }
+                    } else if (nextLyric.StartsWith("ch")) { consonant = "ch"; }
 
                     if (!nextHangeul) {
                         VC = TCLplainvowel + " " + consonant;
@@ -788,7 +784,7 @@ namespace OpenUtau.Plugin.Builtin {
                     if ((!isAlphaCon(consonant))) { consonant = con; }
                 } else if (nextExist && nextHangeul) {
                     consonant = TNLconsonant;
-                }
+                } else if (nextLyric.StartsWith("ch")) { consonant = "ch"; }
 
                 if (consonant == "") {
                     return new Result {

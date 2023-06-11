@@ -8,8 +8,8 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="OpenUtau.App.Views.PianoRollWindow"
         Icon="/Assets/open-utau.ico"
-        Title="Piano Roll" MinWidth="300" MinHeight="200" KeyDown="OnKeyDown" Closing="WindowClosing"
-        TransparencyLevelHint="None" Background="{DynamicResource MainWindowBackgroundBrush}"
+        Title="{Binding NotesViewModel.WindowTitle}" MinWidth="300" MinHeight="200" KeyDown="OnKeyDown" Closing="WindowClosing"
+        TransparencyLevelHint="None"
         ExtendClientAreaToDecorationsHint="{Binding ExtendToFrame}" Deactivated="WindowDeactivated">
   <Window.Styles>
     <Style Selector="Button,ToggleButton">
@@ -118,7 +118,7 @@
                          TickOffset="{Binding TickOffset, Mode=OneWay}"
                          ShowWaveform="{Binding ShowWaveform, Mode=OneWay}"/>
       </Border>
-      <c:NotesCanvas Grid.Row="2" Grid.Column="1" Background="Transparent"
+      <c:NotesCanvas Grid.Row="2" Grid.Column="1"
                      TickWidth="{Binding NotesViewModel.TickWidth}"
                      TrackHeight="{Binding NotesViewModel.TrackHeight}"
                      TickOffset="{Binding NotesViewModel.TickOffset}"
@@ -132,28 +132,33 @@
                      PointerReleased="NotesCanvasPointerReleased"
                      DoubleTapped="NotesCanvasDoubleTapped"
                      PointerWheelChanged="NotesCanvasPointerWheelChanged">
-        <Rectangle Name="PlayPosHighlight"
-                   Width="{Binding NotesViewModel.PlayPosHighlightWidth, Mode=OneWay}"
-                   Height="{Binding $parent.Bounds.Height, Mode=OneWay}"
-                   Canvas.Left="{Binding NotesViewModel.PlayPosHighlightX, Mode=OneWay}"
-                   Canvas.Top="0" ZIndex="-10"
-                   Fill="{DynamicResource NeutralAccentBrushSemi2}"
-                   IsHitTestVisible="False"/>
         <c:NotesCanvas.ContextMenu>
-          <ContextMenu Items="{Binding NotesContextMenuItems}"
-                       ContextMenuOpening="NotesContextMenuOpening"
-                       ContextMenuClosing="NotesContextMenuClosing">
+          <ContextMenu ItemsSource="{Binding NotesContextMenuItems}"
+                       Opening="NotesContextMenuOpening"
+                       Closing="NotesContextMenuClosing">
             <ContextMenu.Styles>
               <Style Selector="MenuItem">
                 <Setter Property="Header" Value="{Binding Header}"/>
-                <Setter Property="Command" Value="{Binding Command}"/>
+                <Setter Property="Command" Value="{Binding Command, FallbackValue={x:Null}}"/>
                 <Setter Property="CommandParameter" Value="{Binding CommandParameter}"/>
-                <Setter Property="Items" Value="{Binding Items}"/>
+                <Setter Property="ItemsSource" Value="{Binding Items}"/>
               </Style>
             </ContextMenu.Styles>
           </ContextMenu>
         </c:NotesCanvas.ContextMenu>
       </c:NotesCanvas>
+      <Canvas Grid.Row="2" Grid.Column="1" IsHitTestVisible="False" ClipToBounds="True">
+        <Rectangle Name="PlayPosHighlight"
+                   Width="{Binding NotesViewModel.PlayPosHighlightWidth, Mode=OneWay}"
+                   Height="{Binding $parent.Bounds.Height, Mode=OneWay}"
+                   Canvas.Left="{Binding NotesViewModel.PlayPosHighlightX, Mode=OneWay}"
+                   Canvas.Top="0" ZIndex="-10"
+                   Fill="{DynamicResource NeutralAccentBrushSemi2}"/>
+        <Rectangle Name="SelectionBox" StrokeThickness="2"
+                   Stroke="{DynamicResource SystemControlForegroundBaseHighBrush}"
+                   Fill="{DynamicResource TickLineBrushLow}" ZIndex="1000"
+                   IsHitTestVisible="False" IsVisible="False"/>
+      </Canvas>
       <StackPanel Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top"
                   Margin="12,12,0,0" Orientation="Horizontal">
         <Border CornerRadius="2" BoxShadow="0 0 5 1 #1F000000"
@@ -321,6 +326,19 @@
                   <Path Classes="stroked" Data="M 3 13 L 6 5.5 L 12 5.5 L 15 13"/>
                 </Grid>
               </ToggleButton>
+              <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="20" Width="20" IsChecked="{Binding NotesViewModel.ShowNoteParams}"
+                            ToolTip.Tip="{DynamicResource pianoroll.toggle.noteparams}" IsVisible="False">
+                <Grid Width="18" Height="18">
+                  <Path Classes="filled" Data="M3,17V19H9V17H3M3,5V7H13V5H3M13,21V19H21V17H13V15H11V21H13M7,9V11H3V13H7V15H9V9H7M21,13V11H11V13H21M15,9H17V7H21V5H17V3H15V9Z">
+                    <Path.RenderTransform>
+                      <TransformGroup>
+                        <ScaleTransform ScaleX=".65" ScaleY=".65" />
+                        <TranslateTransform X="-2" Y="-2"/>
+                      </TransformGroup>
+                    </Path.RenderTransform>
+                  </Path>
+                </Grid>
+              </ToggleButton>
               <ToggleButton Name="SnapToggle" Classes="toolbar" Margin="0" Padding="1" Height="20" IsChecked="{Binding NotesViewModel.IsSnapOn}"
                             ToolTip.Tip="{DynamicResource pianoroll.toggle.snap}">
                 <Border Width="18" Height="18">
@@ -332,10 +350,10 @@
                            TextAlignment="Right" FontSize="10" FontFamily="monospace"
                            Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
                 <Button.ContextMenu>
-                  <ContextMenu Name="SnapDivMenu" PlacementMode="Bottom" Items="{Binding NotesViewModel.SnapDivs}" KeyDown="OnSnapDivKeyDown">
+                  <ContextMenu Name="SnapDivMenu" PlacementMode="Bottom" ItemsSource="{Binding NotesViewModel.SnapDivs}" KeyDown="OnSnapDivKeyDown">
                     <ContextMenu.DataTemplates>
                       <DataTemplate DataType="vm:MenuItemViewModel">
-                        <MenuItem Header="{Binding Header}" Command="{Binding Command}" CommandParameter="{Binding CommandParameter}"/>
+                        <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}"/>
                       </DataTemplate>
                     </ContextMenu.DataTemplates>
                   </ContextMenu>
@@ -348,27 +366,27 @@
         <Border CornerRadius="2" BoxShadow="0 0 5 1 #1F000000">
           <Border CornerRadius="2" ClipToBounds="True">
             <Menu CornerRadius="2" Height="20" Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
-                  MenuClosed="OnMenuClosed" PointerLeave="OnMenuPointerLeave">
+                  Closed="OnMenuClosed" PointerExited="OnMenuPointerLeave">
               <MenuItem Height="20" Header="{DynamicResource pianoroll.menu.part}" CornerRadius="2,0,0,2">
-                <MenuItem Header="{DynamicResource pianoroll.menu.part.legacypluginexp}" Items="{Binding LegacyPlugins}">
+                <MenuItem Header="{DynamicResource pianoroll.menu.part.legacypluginexp}" ItemsSource="{Binding LegacyPlugins}">
                   <MenuItem.DataTemplates>
                     <DataTemplate DataType="vm:MenuItemViewModel">
-                      <MenuItem Header="{Binding Header}" Command="{Binding Command}" CommandParameter="{Binding CommandParameter}"/>
+                      <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}"/>
                     </DataTemplate>
                   </MenuItem.DataTemplates>
                 </MenuItem>
               </MenuItem>
-              <MenuItem Height="20" Header="{DynamicResource pianoroll.menu.notes}" Items="{Binding NoteBatchEdits}">
+              <MenuItem Height="20" Header="{DynamicResource pianoroll.menu.notes}" ItemsSource="{Binding NoteBatchEdits}">
                 <MenuItem.DataTemplates>
                   <DataTemplate DataType="vm:MenuItemViewModel">
-                    <MenuItem Header="{Binding Header}" Command="{Binding Command}" CommandParameter="{Binding CommandParameter}"/>
+                    <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}"/>
                   </DataTemplate>
                 </MenuItem.DataTemplates>
               </MenuItem>
-              <MenuItem Height="20" Header="{DynamicResource pianoroll.menu.lyrics}" Items="{Binding LyricBatchEdits}">
+              <MenuItem Height="20" Header="{DynamicResource pianoroll.menu.lyrics}" ItemsSource="{Binding LyricBatchEdits}">
                 <MenuItem.DataTemplates>
                   <DataTemplate DataType="vm:MenuItemViewModel">
-                    <MenuItem Header="{Binding Header}" Command="{Binding Command}" CommandParameter="{Binding CommandParameter}"/>
+                    <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}"/>
                   </DataTemplate>
                 </MenuItem.DataTemplates>
               </MenuItem>
@@ -414,7 +432,7 @@
                           TickOffset="{Binding NotesViewModel.TickOffset}"
                           Part="{Binding NotesViewModel.Part}"
                           Key="{Binding NotesViewModel.SecondaryKey}"/>
-      <c:ExpressionCanvas Grid.Row="4" Grid.Column="1" Background="Transparent"
+      <c:ExpressionCanvas Grid.Row="4" Grid.Column="1"
                           Bounds="{Binding NotesViewModel.ExpBounds, Mode=OneWayToSource}"
                           TickWidth="{Binding NotesViewModel.TickWidth}"
                           TickOffset="{Binding NotesViewModel.TickOffset}"

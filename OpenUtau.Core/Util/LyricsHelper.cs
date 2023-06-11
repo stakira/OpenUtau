@@ -11,14 +11,14 @@ namespace OpenUtau.Core.Util {
     }
 
     public class ActiveLyricsHelper : SingletonBase<ActiveLyricsHelper> {
-        public ILyricsHelper Current { get; private set; }
+        public ILyricsHelper? Current { get; private set; }
 
         public ActiveLyricsHelper() {
             Set(GetPreferred());
         }
 
-        public void Set(Type t) {
-            if (!Available.Contains(t)) {
+        public void Set(Type? t) {
+            if (t == null || !Available.Contains(t)) {
                 Current = null;
                 return;
             }
@@ -36,8 +36,10 @@ namespace OpenUtau.Core.Util {
             typeof(PinyinLyricsHelper),
             typeof(ArpabetG2pLyricsHelper),
             typeof(FrenchG2pLyricsHelper),
+            typeof(ItalianG2pLyricsHelper),
             typeof(PortugueseG2pLyricsHelper),
             typeof(RussianG2pLyricsHelper),
+            typeof(SpanishG2pLyricsHelper),
         };
     }
 
@@ -78,11 +80,19 @@ namespace OpenUtau.Core.Util {
         public FrenchG2pLyricsHelper() : base(new FrenchG2p()) { }
     }
 
+    public class ItalianG2pLyricsHelper : G2pLyricsHelper {
+        public ItalianG2pLyricsHelper() : base(new ItalianG2p()) { }
+    }
+
     public class PortugueseG2pLyricsHelper : G2pLyricsHelper {
         public PortugueseG2pLyricsHelper() : base(new PortugueseG2p()) { }
     }
 
     public class RussianG2pLyricsHelper : G2pLyricsHelper {
         public RussianG2pLyricsHelper() : base(new RussianG2p()) { }
+    }
+
+    public class SpanishG2pLyricsHelper : G2pLyricsHelper {
+        public SpanishG2pLyricsHelper() : base(new SpanishG2p()) { }
     }
 }

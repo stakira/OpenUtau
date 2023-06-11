@@ -59,7 +59,7 @@ namespace OpenUtau.Core.Ustx {
         /// </summary>
         public List<UWavePart> waveParts;
 
-        [YamlIgnore] public string FilePath { get; set; }
+        [YamlIgnore] public string FilePath { get; set; } = string.Empty;
         [YamlIgnore] public bool Saved { get; set; } = false;
         [YamlIgnore] public int EndTick => parts.Count == 0 ? 0 : parts.Max(p => p.End);
 
@@ -68,7 +68,7 @@ namespace OpenUtau.Core.Ustx {
         public UProject() {
             timeSignatures = new List<UTimeSignature> { new UTimeSignature(0, 4, 4) };
             tempos = new List<UTempo> { new UTempo(0, 120) };
-            tracks = new List<UTrack>();
+            tracks = new List<UTrack>() { new UTrack("Track1") };
             parts = new List<UPart>();
             timeAxis.BuildSegments(this);
         }

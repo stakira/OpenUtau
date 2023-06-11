@@ -3,8 +3,6 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <system:Boolean x:Key="IsDarkMode">true</system:Boolean>
   
-  <Color x:Key="MainWindowColor">#303030</Color>
-
   <Color x:Key="BackgroundColor">#303030</Color>
   <Color x:Key="BackgroundColorPointerOver">#505050</Color>
   <Color x:Key="BackgroundColorPressed">#707070</Color>

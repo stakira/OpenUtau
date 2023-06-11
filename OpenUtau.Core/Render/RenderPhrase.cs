@@ -58,7 +58,7 @@ namespace OpenUtau.Core.Render {
         public readonly double durCorrectionMs;
         public readonly string resampler;
         public readonly double adjustedTempo;
-        public readonly Tuple<string, int?>[] flags;
+        public readonly Tuple<string, int?, string>[] flags;// flag, value, abbr. Abbr is kept here for flag filtering.
         public readonly string suffix;
         public readonly float volume;
         public readonly float velocity;

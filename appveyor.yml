@@ -9,9 +9,10 @@ image:
 branches:
   only:
     - master
+    - stable
 skip_commits:
   files:
-    - docs/*
+    - .github/*
   message: /\[nobuild\]/
 skip_tags: true
 pull_requests:
@@ -36,14 +37,28 @@ artifacts:
   - path: bin\win-x64
     name: OpenUtau-win-x64
     type: zip
+  - path: OpenUtau-win-x64.exe
   - path: OpenUtau-osx-x64.dmg
   - path: OpenUtau-linux-x64.tar.gz
   - path: appcast.win-x86.xml
   - path: appcast.win-x64.xml
+  - path: appcast.win-x64-installer.xml
   - path: appcast.linux-x64.xml
   - path: appcast.osx-x64.xml
   - path: changelog.txt
 deploy:
+  - provider: GitHub
+    tag: build/$(APPVEYOR_BUILD_VERSION)
+    release: $(APPVEYOR_BUILD_VERSION) Beta
+    description: $(APPVEYOR_BUILD_VERSION) Beta $(APPVEYOR_REPO_COMMIT_TIMESTAMP)
+    auth_token:
+      secure: VoTH2ml/pRgjLSGhfPO+NZfCoFzFcfrQjEIl/5+0UufeW6mEvccfwvef3gOaD2ke
+    draft: false
+    prerelease: true
+    force_update: true
+    on:
+      branch: master
+      APPVEYOR_REPO_TAG: false
   - provider: GitHub
     tag: build/$(APPVEYOR_BUILD_VERSION)
     release: $(APPVEYOR_BUILD_VERSION)
@@ -54,7 +69,7 @@ deploy:
     prerelease: false
     force_update: true
     on:
-      branch: master
+      branch: stable
       APPVEYOR_REPO_TAG: false
 on_failure:
   - ps: Invoke-RestMethod https://raw.githubusercontent.com/DiscordHooks/appveyor-discord-webhook/master/send.ps1 -o send.ps1

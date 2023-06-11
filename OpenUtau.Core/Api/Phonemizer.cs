@@ -216,14 +216,20 @@ namespace OpenUtau.Api {
             return result;
         }
 
+        public bool Testing { get; set; } = false;
+
         protected void OnAsyncInitStarted() {
-            DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, "Initializing phonemizer..."));
+            if (!Testing) {
+                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, "Initializing phonemizer..."));
+            }
         }
 
         protected void OnAsyncInitFinished() {
-            DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, ""));
-            DocManager.Inst.ExecuteCmd(new ValidateProjectNotification());
-            DocManager.Inst.ExecuteCmd(new PreRenderNotification());
+            if (!Testing) {
+                DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, ""));
+                DocManager.Inst.ExecuteCmd(new ValidateProjectNotification());
+                DocManager.Inst.ExecuteCmd(new PreRenderNotification());
+            }
         }
 
         protected Result MakeSimpleResult(string phoneme) {

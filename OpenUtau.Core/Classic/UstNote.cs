@@ -38,7 +38,8 @@ namespace OpenUtau.Classic {
                 modulation = (int)phoneme.GetExpression(project, track, Ustx.MOD).Item1;
                 flags = FlagsToString(phoneme.GetResamplerFlags(project, track));
                 if (phoneme.oto != null) {
-                    filename = phoneme.oto.DisplayFile;
+                    var relativePath = Path.GetRelativePath(track.Singer.Location, phoneme.oto.File);
+                    filename = relativePath;
                     alias = phoneme.oto.Alias;
                 }
             }
@@ -141,7 +142,7 @@ namespace OpenUtau.Classic {
             }
         }
 
-        string FlagsToString(Tuple<string, int?>[] flags) {
+        string FlagsToString(Tuple<string, int?, string>[] flags) {
             var builder = new StringBuilder();
             foreach (var flag in flags) {
                 builder.Append(flag.Item1);
@@ -222,6 +223,9 @@ namespace OpenUtau.Classic {
                         if (isFloat) {
                             noteTempo = floatValue;
                         }
+                        break;
+                    case "Flags":
+                        flags = parts[1];
                         break;
                     default:
                         break;

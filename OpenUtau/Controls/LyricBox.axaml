@@ -18,8 +18,8 @@
                VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
                BorderThickness="0" Background="Transparent"
                Margin="{DynamicResource AutoCompleteListPadding}"
-               Items="{Binding Suggestions}" SelectedItem="{Binding SelectedSuggestion}"
-               KeyDown="ListBox_KeyDown">
+               ItemsSource="{Binding Suggestions}" SelectedItem="{Binding SelectedSuggestion}"
+               Focusable="True" KeyDown="ListBox_KeyDown">
         <ListBox.Styles>
           <Style Selector="ListBoxItem">
             <Setter Property="Padding" Value="0"/>

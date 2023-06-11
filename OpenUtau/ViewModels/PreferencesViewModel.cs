@@ -6,7 +6,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Text.RegularExpressions;
 using Avalonia;
-using Avalonia.Markup.Xaml.MarkupExtensions;
+using Avalonia.Markup.Xaml.Styling;
 using OpenUtau.Audio;
 using OpenUtau.Classic;
 using OpenUtau.Core;
@@ -32,6 +32,10 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public int InstallToAdditionalSingersPath { get; set; }
         [Reactive] public int PreRender { get; set; }
         [Reactive] public int NumRenderThreads { get; set; }
+        public List<string> OnnxRunnerOptions { get; set; }
+        [Reactive] public string OnnxRunner { get; set; }
+        public List<GpuInfo> OnnxGpuOptions { get; set; }
+        [Reactive] public GpuInfo OnnxGpu { get; set; }
         [Reactive] public bool HighThreads { get; set; }
         [Reactive] public int Theme { get; set; }
         [Reactive] public int ShowPortrait { get; set; }
@@ -39,9 +43,9 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public int OtoEditor { get; set; }
         public string VLabelerPath => Preferences.Default.VLabelerPath;
         public int LogicalCoreCount {
-            get => Environment.ProcessorCount; 
+            get => Environment.ProcessorCount;
         }
-        public int SafeMaxThreadCount { 
+        public int SafeMaxThreadCount {
             get => Math.Min(8, LogicalCoreCount / 2);
         }
 
@@ -56,6 +60,8 @@ namespace OpenUtau.App.ViewModels {
             get => sortingOrder;
             set => this.RaiseAndSetIfChanged(ref sortingOrder, value);
         }
+
+        [Reactive] public int Beta { get; set; }
 
         public class LyricsHelperOption {
             public readonly Type klass;
@@ -95,16 +101,10 @@ namespace OpenUtau.App.ViewModels {
             InstallToAdditionalSingersPath = Preferences.Default.InstallToAdditionalSingersPath ? 1 : 0;
             ToolsManager.Inst.Initialize();
             var pattern = new Regex(@"Strings\.([\w-]+)\.axaml");
-            Languages = Application.Current.Resources.MergedDictionaries
-                .Select(res => (ResourceInclude)res)
-                .OfType<ResourceInclude>()
-                .Select(res => pattern.Match(res.Source!.OriginalString))
-                .Where(m => m.Success)
-                .Select(m => m.Groups[1].Value)
+            Languages = App.GetLanguages().Keys
                 .Select(lang => CultureInfo.GetCultureInfo(lang))
                 .ToList();
             Languages.Insert(0, CultureInfo.GetCultureInfo("en-US"));
-            Languages.Insert(0, null);
             Language = string.IsNullOrEmpty(Preferences.Default.Language)
                 ? null
                 : CultureInfo.GetCultureInfo(Preferences.Default.Language);
@@ -115,9 +115,15 @@ namespace OpenUtau.App.ViewModels {
                 : CultureInfo.GetCultureInfo(Preferences.Default.SortingOrder);
             PreRender = Preferences.Default.PreRender ? 1 : 0;
             NumRenderThreads = Preferences.Default.NumRenderThreads;
+            OnnxRunnerOptions = Onnx.getRunnerOptions();
+            OnnxRunner = String.IsNullOrEmpty(Preferences.Default.OnnxRunner) ?
+               OnnxRunnerOptions[0] : Preferences.Default.OnnxRunner;
+            OnnxGpuOptions = Onnx.getGpuInfo();
+            OnnxGpu = OnnxGpuOptions.FirstOrDefault(x => x.deviceId == Preferences.Default.OnnxGpu, OnnxGpuOptions[0]);
             Theme = Preferences.Default.Theme;
             ShowPortrait = Preferences.Default.ShowPortrait ? 1 : 0;
             ShowGhostNotes = Preferences.Default.ShowGhostNotes ? 1 : 0;
+            Beta = Preferences.Default.Beta ? 1 : 0;
             LyricsHelper = LyricsHelpers.FirstOrDefault(option => option.klass.Equals(ActiveLyricsHelper.Inst.GetPreferred()));
             LyricsHelperBrackets = Preferences.Default.LyricsHelperBrackets ? 1 : 0;
             OtoEditor = Preferences.Default.OtoEditor;
@@ -191,6 +197,11 @@ namespace OpenUtau.App.ViewModels {
                     Preferences.Default.ShowGhostNotes = index > 0;
                     Preferences.Save();
                 });
+            this.WhenAnyValue(vm => vm.Beta)
+                .Subscribe(index => {
+                    Preferences.Default.Beta = index != 0;
+                    Preferences.Save();
+                });
             this.WhenAnyValue(vm => vm.LyricsHelper)
                 .Subscribe(option => {
                     ActiveLyricsHelper.Inst.Set(option?.klass);
@@ -211,6 +222,16 @@ namespace OpenUtau.App.ViewModels {
                 .Subscribe(index => {
                     Preferences.Default.NumRenderThreads = index;
                     HighThreads = index > SafeMaxThreadCount ? true : false;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.OnnxRunner)
+                .Subscribe(index => {
+                    Preferences.Default.OnnxRunner = index;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.OnnxGpu)
+                .Subscribe(index => {
+                    Preferences.Default.OnnxGpu = index.deviceId;
                     Preferences.Save();
                 });
         }

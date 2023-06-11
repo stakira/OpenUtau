@@ -86,6 +86,8 @@ namespace OpenUtau.Core.Util {
             public int Theme;
             public bool PreRender = true;
             public int NumRenderThreads = 2;
+            public string OnnxRunner = string.Empty;
+            public int OnnxGpu = 0;
             public string Language = string.Empty;
             public string SortingOrder = string.Empty;
             public List<string> RecentFiles = new List<string>();
@@ -100,16 +102,24 @@ namespace OpenUtau.Core.Util {
             public bool PreferPortAudio = false;
             public double PlayPosMarkerMargin = 0.9;
             public int LockStartTime = 0;
-            public int PlaybackAutoScroll = 1;
+            public int PlaybackAutoScroll = 2;
             public bool ReverseLogOrder = true;
             public bool ShowPortrait = true;
             public bool ShowGhostNotes = true;
+            public bool PlayTone = true;
+            public bool ShowVibrato = true;
+            public bool ShowPitch = true;
+            public bool ShowFinalPitch = true;
+            public bool ShowWaveform = true;
+            public bool ShowPhoneme = true;
+            public bool ShowNoteParams = false;
             public Dictionary<string, string> DefaultResamplers = new Dictionary<string, string>();
             public Dictionary<string, string> DefaultWavtools = new Dictionary<string, string>();
             public string LyricHelper = string.Empty;
             public bool LyricsHelperBrackets = false;
             public int OtoEditor = 0;
             public string VLabelerPath = string.Empty;
+            public bool Beta = false;
         }
     }
 }

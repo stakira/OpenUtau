@@ -4,14 +4,17 @@ using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Media.Imaging;
 using OpenUtau.Api;
+using OpenUtau.App.Views;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using ScottPlot.MarkerShapes;
 using Serilog;
 
 namespace OpenUtau.App.ViewModels {
@@ -27,7 +30,9 @@ namespace OpenUtau.App.ViewModels {
         public ReactiveCommand<PhonemizerFactory, Unit> SelectPhonemizerCommand { get; }
         public IReadOnlyList<MenuItemViewModel>? RenderersMenuItems { get; set; }
         public ReactiveCommand<string, Unit> SelectRendererCommand { get; }
+        [Reactive] public string TrackName { get; set; } = string.Empty;
         [Reactive] public double Volume { get; set; }
+        [Reactive] public double Pan { get; set; }
         [Reactive] public bool Mute { get; set; }
         [Reactive] public bool Solo { get; set; }
         [Reactive] public Bitmap? Avatar { get; set; }
@@ -36,14 +41,13 @@ namespace OpenUtau.App.ViewModels {
 
         private readonly UTrack track;
 
+        // Parameterless constructor for Avalonia preview only.
         public TrackHeaderViewModel() {
-#if DEBUG
             SelectSingerCommand = ReactiveCommand.Create<USinger>(_ => { });
             SelectPhonemizerCommand = ReactiveCommand.Create<PhonemizerFactory>(_ => { });
             SelectRendererCommand = ReactiveCommand.Create<string>(_ => { });
             Activator = new ViewModelActivator();
-            track = new UTrack();
-#endif
+            track = new UTrack(DocManager.Inst.Project);
         }
 
         public TrackHeaderViewModel(UTrack track) {
@@ -88,7 +92,7 @@ namespace OpenUtau.App.ViewModels {
                     var phonemizer = factory.Create();
                     DocManager.Inst.ExecuteCmd(new TrackChangePhonemizerCommand(DocManager.Inst.Project, track, phonemizer));
                     DocManager.Inst.EndUndoGroup();
-                    var name = phonemizer!.GetType().FullName;
+                    var name = phonemizer.GetType().FullName!;
                     if (!string.IsNullOrEmpty(Singer?.Id) && phonemizer != null) {
                         Preferences.Default.SingerPhonemizers[Singer.Id] = name;
                     }
@@ -123,13 +127,24 @@ namespace OpenUtau.App.ViewModels {
                 });
             });
 
+            TrackName = track.TrackName;
             Volume = track.Volume;
+            Pan = track.Pan;
             Mute = track.Mute;
             Solo = track.Solo;
+            this.WhenAnyValue(x => x.track.TrackName)
+                .Subscribe(trackName => {
+                    TrackName = trackName;
+                });
             this.WhenAnyValue(x => x.Volume)
                 .Subscribe(volume => {
                     track.Volume = volume;
                     DocManager.Inst.ExecuteCmd(new VolumeChangeNotification(track.TrackNo, Mute ? -24 : volume));
+                });
+            this.WhenAnyValue(x => x.Pan)
+                .Subscribe(pan => {
+                    track.Pan = pan;
+                    DocManager.Inst.ExecuteCmd(new PanChangeNotification(track.TrackNo, pan));
                 });
             this.WhenAnyValue(x => x.Mute)
                 .Subscribe(mute => {
@@ -257,6 +272,7 @@ namespace OpenUtau.App.ViewModels {
             this.RaisePropertyChanged(nameof(Mute));
             this.RaisePropertyChanged(nameof(Solo));
             this.RaisePropertyChanged(nameof(Volume));
+            this.RaisePropertyChanged(nameof(Pan));
             RefreshAvatar();
         }
 
@@ -284,11 +300,28 @@ namespace OpenUtau.App.ViewModels {
             DocManager.Inst.EndUndoGroup();
         }
 
+        public void Rename() {
+            var dialog = new TypeInDialog();
+            dialog.Title = ThemeManager.GetString("tracks.rename");
+            dialog.SetText(track.TrackName);
+            dialog.onFinish = name => {
+                if (!string.IsNullOrWhiteSpace(name) && name != track.TrackName) {
+                    DocManager.Inst.StartUndoGroup();
+                    this.TrackName = name;
+                    DocManager.Inst.ExecuteCmd(new RenameTrackCommand(DocManager.Inst.Project, track, name));
+                    DocManager.Inst.EndUndoGroup();
+                }
+            };
+            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop && desktop.MainWindow != null) {
+                dialog.ShowDialog(desktop.MainWindow);
+            }
+        }
+
         public void Duplicate() {
             DocManager.Inst.StartUndoGroup();
             //TODO
-            var newTrack = new UTrack() {
-                TrackNo = track.TrackNo+1,
+            var newTrack = new UTrack(track.TrackName + "_copy") {
+                TrackNo = track.TrackNo + 1,
                 Singer = track.Singer,
                 Phonemizer = track.Phonemizer,
                 RendererSettings = track.RendererSettings,
@@ -301,7 +334,7 @@ namespace OpenUtau.App.ViewModels {
             var parts = DocManager.Inst.Project.parts
                 .Where(part => part.trackNo == track.TrackNo)
                 .Select(part => part.Clone()).ToList();
-            foreach(var part in parts) {
+            foreach (var part in parts) {
                 part.trackNo = newTrack.TrackNo;
                 DocManager.Inst.ExecuteCmd(new AddPartCommand(DocManager.Inst.Project, part));
             }
@@ -311,8 +344,8 @@ namespace OpenUtau.App.ViewModels {
         public void DuplicateSettings() {
             DocManager.Inst.StartUndoGroup();
             //TODO
-            DocManager.Inst.ExecuteCmd(new AddTrackCommand(DocManager.Inst.Project, new UTrack() {
-                TrackNo = track.TrackNo+1,
+            DocManager.Inst.ExecuteCmd(new AddTrackCommand(DocManager.Inst.Project, new UTrack(track.TrackName + "_copy") {
+                TrackNo = track.TrackNo + 1,
                 Singer = track.Singer,
                 Phonemizer = track.Phonemizer,
                 RendererSettings = track.RendererSettings,

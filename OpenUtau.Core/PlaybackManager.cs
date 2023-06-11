@@ -173,7 +173,7 @@ namespace OpenUtau.Core {
                         if (trackMixes[i] == null || i >= project.tracks.Count || project.tracks[i].Mute) {
                             continue;
                         }
-                        var file = PathManager.Inst.GetExportPath(exportPath, i + 1);
+                        var file = PathManager.Inst.GetExportPath(exportPath, project.tracks[i]);
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exporting to {file}."));
                         WaveFileWriter.CreateWaveFile16(file, new ExportAdapter(trackMixes[i]).ToMono(1, 0));
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"Exported to {file}."));
@@ -206,6 +206,11 @@ namespace OpenUtau.Core {
                 var _cmd = cmd as VolumeChangeNotification;
                 if (faders != null && faders.Count > _cmd.TrackNo) {
                     faders[_cmd.TrackNo].Scale = DecibelToVolume(_cmd.Volume);
+                }
+            } else if (cmd is PanChangeNotification) {
+                var _cmd = cmd as PanChangeNotification;
+                if (faders != null && faders.Count > _cmd.TrackNo) {
+                    faders[_cmd.TrackNo].Pan = (float)_cmd.Pan;
                 }
             } else if (cmd is LoadProjectNotification) {
                 StopPlayback();

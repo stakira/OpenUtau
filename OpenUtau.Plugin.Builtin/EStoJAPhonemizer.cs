@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
+using OpenUtau.Core.G2p;
 using WanaKanaNet;
 
 namespace OpenUtau.Plugin.Builtin {
@@ -19,6 +20,7 @@ namespace OpenUtau.Plugin.Builtin {
         private static readonly string[] consonants =
             "b by B By ch d dy D Dy f g gy G Gy h hh hy I j k ky l ly m my n ny p py r ry rr rry s sh t ty ts U w x y Y z".Split();
         protected override string GetDictionaryName() => "cmudict_es.txt";
+
         protected override Dictionary<string, string> GetDictionaryPhonemesReplacement() => dictionaryPhonemesReplacement;
         private static readonly Dictionary<string, string> dictionaryPhonemesReplacement = new Dictionary<string, string> {
             { "a", "a" },
@@ -54,6 +56,8 @@ namespace OpenUtau.Plugin.Builtin {
             { "Y", "y" },
             { "z", "z" },
         };
+
+        protected override IG2p LoadBaseDictionary() => new SpanishG2p();
 
         private Dictionary<string, string> StartingConsonant => startingConsonant;
         private static readonly Dictionary<string, string> startingConsonant = new Dictionary<string, string> {

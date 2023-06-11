@@ -115,6 +115,17 @@ namespace OpenUtau.Core {
         public override string ToString() => $"Set track {TrackNo} volume to {Volume}";
     }
 
+    public class PanChangeNotification : UNotification {
+        public double Pan;
+        public int TrackNo;
+        public override bool Silent => true;
+        public PanChangeNotification(int trackNo, double pan) {
+            TrackNo = trackNo;
+            Pan = pan;
+        }
+        public override string ToString() => $"Set track {TrackNo} panning to {Pan}";
+    }
+
     public class SoloTrackNotification : UNotification {
         public readonly int trackNo;
         public readonly bool solo;

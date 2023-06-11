@@ -71,6 +71,18 @@
   <system:String x:Key="lyrics.selectnotes">Select some notes first!</system:String>
   <system:String x:Key="lyrics.separators">Separators</system:String>
 
+  <system:String x:Key="lyricsreplace.after">After :</system:String>
+  <system:String x:Key="lyricsreplace.before">Before :</system:String>
+  <system:String x:Key="lyricsreplace.preset.rmvalphabet">Remove alphabet</system:String>
+  <system:String x:Key="lyricsreplace.preset.rmvnonhiragana">Remove non-hiragana</system:String>
+  <system:String x:Key="lyricsreplace.preset.rmvphonetichint">Remove phonetic hint</system:String>
+  <system:String x:Key="lyricsreplace.preset.rmvspace">Remove spaces and earlier</system:String>
+  <system:String x:Key="lyricsreplace.preset.rmvtone">Remove tone suffix</system:String>
+  <system:String x:Key="lyricsreplace.presets">Presets</system:String>
+  <system:String x:Key="lyricsreplace.preview">Preview</system:String>
+  <system:String x:Key="lyricsreplace.regex">Regular expressions can be used</system:String>
+  <system:String x:Key="lyricsreplace.replace">General lyrics replacement</system:String>
+
   <system:String x:Key="menu.edit">Edit</system:String>
   <system:String x:Key="menu.edit.copy">Copy</system:String>
   <system:String x:Key="menu.edit.cut">Cut</system:String>
@@ -177,6 +189,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hanzitopinyin">Hanzi to Pinyin</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana to Romaji</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">Japanese VCV to CV</system:String>
+  <system:String x:Key="pianoroll.menu.lyrics.movesuffixtovoicecolor">Move Suffix to VoiceColor</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Remove Letter Suffix</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removephonetichint">Remove Phonetic Hint</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">Remove Tone Suffix</system:String>
@@ -185,6 +198,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="pianoroll.menu.notes">Notes</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">Add tail "-"</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">Add tail "R"</system:String>
+  <system:String x:Key="pianoroll.menu.notes.bakepitch">Convert PITD to pitch control points</system:String>
   <system:String x:Key="pianoroll.menu.notes.clear.vibratos">Clear vibratos</system:String>
   <system:String x:Key="pianoroll.menu.notes.hanzitopinyin">Hanzi to pinyin</system:String>
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Load rendered pitch</system:String>
@@ -199,6 +213,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="pianoroll.menu.part">Part</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">Legacy Plugin (Experimental)</system:String>
   <system:String x:Key="pianoroll.toggle.finalpitch">View Final Pitch to Render (R)</system:String>
+  <system:String x:Key="pianoroll.toggle.noteparams">View Note Parameters (\)</system:String>
   <system:String x:Key="pianoroll.toggle.phoneme">View Phonemes (O)</system:String>
   <system:String x:Key="pianoroll.toggle.pitch">View Pitch Bend (I)</system:String>
   <system:String x:Key="pianoroll.toggle.snap">Toggle Snap (P)</system:String>
@@ -230,7 +245,7 @@ Hold Ctrl to select</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging">Resampler Logging</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging.warn">Stores resampler output in log files. This option slows down UI and rendering.</system:String>
   <system:String x:Key="prefs.advanced.stable">Stable</system:String>
-  <system:String x:Key="prefs.advanced.vlabelerpath">Vlabeler Path</system:String>
+  <system:String x:Key="prefs.advanced.vlabelerpath">vLabeler Path</system:String>
   <system:String x:Key="prefs.appearance">Appearance</system:String>
   <system:String x:Key="prefs.appearance.lang">Language</system:String>
   <system:String x:Key="prefs.appearance.showghostnotes">Show other tracks' notes on piano roll</system:String>
@@ -265,6 +280,8 @@ Hold Ctrl to select</system:String>
   <system:String x:Key="prefs.playback.lockstarttime.on">Move cursor back to where you started playing</system:String>
   <system:String x:Key="prefs.playback.test">Test</system:String>
   <system:String x:Key="prefs.rendering">Rendering</system:String>
+  <system:String x:Key="prefs.rendering.onnxgpu">GPU</system:String>
+  <system:String x:Key="prefs.rendering.onnxrunner">Machine Learning Runner</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">Phase Compensation</system:String>
   <system:String x:Key="prefs.rendering.prerender">Pre-render</system:String>
   <system:String x:Key="prefs.rendering.resampler">Resampler</system:String>
@@ -283,9 +300,9 @@ Hold Ctrl to select</system:String>
   <system:String x:Key="prefs.rendering.threads.numthreads">Maximum Render Threads</system:String>
   <system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>
 
+  <system:String x:Key="progress.loadingsingers">Loading Singers...</system:String>
   <system:String x:Key="progress.saved">Project saved. {0}</system:String>
   <system:String x:Key="progress.waitingrendering">Waiting Rendering</system:String>
-  <system:String x:Key="progress.loadingsingers">Loading Singers...</system:String>
 
   <system:String x:Key="singers.caption">Singers</system:String>
   <system:String x:Key="singers.editoto.editinvlabeler">Edit In vLabeler</system:String>
@@ -294,6 +311,8 @@ Hold Ctrl to select</system:String>
   <system:String x:Key="singers.editoto.regenfrq.regenerating">Regenerating FRQ</system:String>
   <system:String x:Key="singers.editoto.reset">Reset Otos</system:String>
   <system:String x:Key="singers.editoto.save">Save Otos</system:String>
+  <system:String x:Key="singers.editoto.search">Search</system:String>
+  <system:String x:Key="singers.editoto.searchalias">Search Alias</system:String>
   <system:String x:Key="singers.editoto.setvlabelerpath">Download vLabeler (1.0.0-beta1 or higher) from https://github.com/sdercolin/vlabeler and set vLabeler path in Preferences first!</system:String>
   <system:String x:Key="singers.errorreport">Generate Singer Error Report</system:String>
   <system:String x:Key="singers.location">Location</system:String>
@@ -322,6 +341,16 @@ Hold Ctrl to select</system:String>
   <system:String x:Key="singers.subbanks.tone">Tone</system:String>
   <system:String x:Key="singers.subbanks.toneranges">Tone Ranges</system:String>
   <system:String x:Key="singers.visitwebsite">Visit Website</system:String>
+
+  <system:String x:Key="singersetup.archivefileencoding">Archive File Encoding</system:String>
+  <system:String x:Key="singersetup.archivefileencoding.prompt">Choose an encoding that make file names look right.</system:String>
+  <system:String x:Key="singersetup.back">Back</system:String>
+  <system:String x:Key="singersetup.install">Install</system:String>
+  <system:String x:Key="singersetup.next">Next</system:String>
+  <system:String x:Key="singersetup.missinginfo">Some info are missing from character.yaml!</system:String>
+  <system:String x:Key="singersetup.singertype">Singer Type</system:String>
+  <system:String x:Key="singersetup.textfileencoding">Text File Encoding</system:String>
+  <system:String x:Key="singersetup.textfileencoding.prompt">Choose an encoding that make file contents look right.</system:String>
 
   <system:String x:Key="tip.aliasbox">Override Alias</system:String>
   <system:String x:Key="tip.exps">
@@ -357,6 +386,7 @@ Hold Ctrl to select</system:String>
   <system:String x:Key="tracks.movedown">Move Down</system:String>
   <system:String x:Key="tracks.moveup">Move Up</system:String>
   <system:String x:Key="tracks.remove">Remove</system:String>
+  <system:String x:Key="tracks.rename">Rename track</system:String>
   <system:String x:Key="tracks.selectrenderer">Select Renderer</system:String>
   <system:String x:Key="tracks.selectsinger">Select Singer</system:String>
 

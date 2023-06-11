@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using Avalonia.Media.Imaging;
 using DynamicData.Binding;
 using NAudio.Wave;
-using NWaves.Audio;
 using NWaves.Signals;
 using OpenUtau.Classic;
 using OpenUtau.Core;
@@ -28,11 +27,14 @@ namespace OpenUtau.App.ViewModels {
         public bool IsClassic => Singer != null && Singer.SingerType == USingerType.Classic;
         public ObservableCollectionExtended<USubbank> Subbanks => subbanks;
         public ObservableCollectionExtended<UOto> Otos => otos;
+        public ObservableCollectionExtended<UOto> DisplayedOtos { get; set; } = new ObservableCollectionExtended<UOto>();
         [Reactive] public bool ZoomInMel { get; set; }
         [Reactive] public UOto? SelectedOto { get; set; }
         [Reactive] public int SelectedIndex { get; set; }
         public List<MenuItemViewModel> SetEncodingMenuItems => setEncodingMenuItems;
         public List<MenuItemViewModel> SetDefaultPhonemizerMenuItems => setDefaultPhonemizerMenuItems;
+
+        [Reactive] public string SearchAlias { get; set; } = "";
 
         private readonly ObservableCollectionExtended<USubbank> subbanks
             = new ObservableCollectionExtended<USubbank>();
@@ -48,7 +50,7 @@ namespace OpenUtau.App.ViewModels {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 #endif
             if (Singers.Count() > 0) {
-                Singer = Singers.First();
+                Singer = Singers.FirstOrDefault();
             }
             this.WhenAnyValue(vm => vm.Singer)
                 .WhereNotNull()
@@ -57,11 +59,17 @@ namespace OpenUtau.App.ViewModels {
                     Avatar = LoadAvatar(singer);
                     Otos.Clear();
                     Otos.AddRange(singer.Otos);
+                    DisplayedOtos.Clear();
+                    DisplayedOtos.AddRange(singer.Otos);
                     Info = $"Author: {singer.Author}\nVoice: {singer.Voice}\nWeb: {singer.Web}\nVersion: {singer.Version}\n{singer.OtherInfo}\n\n{string.Join("\n", singer.Errors)}";
                     HasWebsite = !string.IsNullOrEmpty(singer.Web);
                     LoadSubbanks();
                     DocManager.Inst.ExecuteCmd(new OtoChangedNotification());
                     this.RaisePropertyChanged(nameof(IsClassic));
+                });
+            this.WhenAnyValue(vm => vm.SearchAlias)
+                .Subscribe(alias => {
+                    Search();
                 });
 
             setEncodingCommand = ReactiveCommand.Create<Encoding>(encoding => {
@@ -124,7 +132,7 @@ namespace OpenUtau.App.ViewModels {
                 return;
             }
             try {
-                ModifyConfig(Singer, config => config.DefaultPhonemizer = factory.type.FullName);
+                ModifyConfig(Singer, config => config.DefaultPhonemizer = factory.type.FullName ?? string.Empty);
             } catch (Exception e) {
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to set portrait", e));
             }
@@ -238,6 +246,16 @@ namespace OpenUtau.App.ViewModels {
             if (Otos.Count > 0) {
                 index = Math.Clamp(index, 0, Otos.Count - 1);
                 SelectedIndex = index;
+            }
+        }
+
+        private void Search() {
+            if (string.IsNullOrWhiteSpace(SearchAlias)) {
+                DisplayedOtos.Clear();
+                DisplayedOtos.AddRange(Otos);
+            } else {
+                DisplayedOtos.Clear();
+                DisplayedOtos.AddRange(Otos.Where(o => o.Alias.Contains(SearchAlias)));
             }
         }
 

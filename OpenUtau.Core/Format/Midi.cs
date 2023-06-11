@@ -16,7 +16,7 @@ namespace OpenUtau.Core.Format {
 
             var parts = Load(file, uproject);
             foreach (var part in parts) {
-                var track = new UTrack();
+                var track = new UTrack(uproject);
                 track.TrackNo = uproject.tracks.Count;
                 part.trackNo = track.TrackNo;
                 part.AfterLoad(uproject, track);

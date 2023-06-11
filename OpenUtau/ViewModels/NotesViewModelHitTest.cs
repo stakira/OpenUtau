@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive;
-using System.Text;
 using Avalonia;
 using OpenUtau.App.Controls;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
-using ReactiveUI;
 
 namespace OpenUtau.App.ViewModels {
     public struct NoteHitInfo {
@@ -354,7 +351,7 @@ namespace OpenUtau.App.ViewModels {
                     raiseText = false;
                 }
                 double textY = raiseText ? 2 : 18;
-                var size = new Size(textLayout.Size.Width + 4, textLayout.Size.Height - 2);
+                var size = new Size(textLayout.Width + 4, textLayout.Height - 2);
                 var rect = new Rect(new Point(x - 2, textY + 1.5), size);
                 if (rect.Contains(mousePos)) {
                     result.phoneme = phoneme;
