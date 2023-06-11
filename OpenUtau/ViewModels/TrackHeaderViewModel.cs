@@ -41,14 +41,13 @@ namespace OpenUtau.App.ViewModels {
 
         private readonly UTrack track;
 
+        // Parameterless constructor for Avalonia preview only.
         public TrackHeaderViewModel() {
-#if DEBUG
             SelectSingerCommand = ReactiveCommand.Create<USinger>(_ => { });
             SelectPhonemizerCommand = ReactiveCommand.Create<PhonemizerFactory>(_ => { });
             SelectRendererCommand = ReactiveCommand.Create<string>(_ => { });
             Activator = new ViewModelActivator();
             track = new UTrack(DocManager.Inst.Project);
-#endif
         }
 
         public TrackHeaderViewModel(UTrack track) {
