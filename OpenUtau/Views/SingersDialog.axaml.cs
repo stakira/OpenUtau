@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -60,10 +59,6 @@ namespace OpenUtau.App.Views {
                 return;
             }
             try {
-                using (var stream = File.OpenRead(file)) {
-                    var portrait = new Bitmap(stream);
-                    portrait.Dispose();
-                }
                 viewModel.SetPortrait(Path.GetRelativePath(viewModel.Singer.Location, file));
             } catch (Exception e) {
                 Log.Error(e, "Failed to set portrait");
