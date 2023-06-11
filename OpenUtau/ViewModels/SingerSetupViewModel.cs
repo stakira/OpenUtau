@@ -1,73 +1,61 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DynamicData.Binding;
+using OpenUtau.Classic;
 using OpenUtau.Core;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 using SharpCompress.Archives;
 using SharpCompress.Common;
 using SharpCompress.Readers;
 
 namespace OpenUtau.App.ViewModels {
     public class SingerSetupViewModel : ViewModelBase {
-        public int Step {
-            get => step;
-            set => this.RaiseAndSetIfChanged(ref step, value);
-        }
+        [Reactive] public int Step { get; set; }
         public ObservableCollection<string> TextItems => textItems;
-        public string ArchiveFilePath {
-            get => archiveFilePath;
-            set => this.RaiseAndSetIfChanged(ref archiveFilePath, value);
-        }
-        public Encoding[] Encodings => encodings;
-        public Encoding ArchiveEncoding {
-            get => archiveEncoding;
-            set => this.RaiseAndSetIfChanged(ref archiveEncoding, value);
-        }
-        public Encoding TextEncoding {
-            get => textEncoding;
-            set => this.RaiseAndSetIfChanged(ref textEncoding, value);
-        }
-        public string[] SingerTypes => singerTypes;
-        public string SingerType {
-            get => singerType;
-            set => this.RaiseAndSetIfChanged(ref singerType, value);
-        }
+        [Reactive] public string ArchiveFilePath { get; set; } = string.Empty;
+        public Encoding[] Encodings { get; set; } = new Encoding[] {
+            Encoding.GetEncoding("shift_jis"),
+            Encoding.UTF8,
+            Encoding.GetEncoding("gb2312"),
+            Encoding.GetEncoding("big5"),
+            Encoding.GetEncoding("ks_c_5601-1987"),
+            Encoding.GetEncoding("Windows-1252"),
+            Encoding.GetEncoding("macintosh"),
+        };
+        [Reactive] public Encoding ArchiveEncoding { get; set; }
+        [Reactive] public Encoding TextEncoding { get; set; }
+        [Reactive] public bool MissingInfo { get; set; }
+        public string[] SingerTypes { get; set; } = new[] { "utau", "enunu" };
+        [Reactive] public string SingerType { get; set; }
 
-        private int step;
-        private string[] singerTypes;
-        private string singerType;
         private ObservableCollectionExtended<string> textItems;
-        private string archiveFilePath;
-        private Encoding[] encodings;
-        private Encoding archiveEncoding;
-        private Encoding textEncoding;
 
         public SingerSetupViewModel() {
 #if DEBUG
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 #endif
-            singerTypes = new[] { "utau", "enunu" };
-            singerType = singerTypes[0];
-            archiveFilePath = string.Empty;
-            encodings = new Encoding[] {
-                Encoding.GetEncoding("shift_jis"),
-                Encoding.ASCII,
-                Encoding.UTF8,
-                Encoding.GetEncoding("gb2312"),
-                Encoding.GetEncoding("big5"),
-                Encoding.GetEncoding("ks_c_5601-1987"),
-                Encoding.GetEncoding("Windows-1252"),
-                Encoding.GetEncoding("macintosh"),
-            };
-            archiveEncoding = encodings[0];
-            textEncoding = encodings[0];
+            SingerType = SingerTypes[0];
+            ArchiveEncoding = Encodings[0];
+            TextEncoding = Encodings[0];
             textItems = new ObservableCollectionExtended<string>();
 
+            this.WhenAnyValue(vm => vm.ArchiveFilePath)
+                .Subscribe(_ => {
+                    if (!string.IsNullOrEmpty(ArchiveFilePath)) {
+                        var config = LoadCharacterYaml(ArchiveFilePath);
+                        MissingInfo = string.IsNullOrEmpty(config?.SingerType);
+                        if (!string.IsNullOrEmpty(config?.TextFileEncoding)) {
+                            try {
+                                TextEncoding = Encoding.GetEncoding(config.TextFileEncoding);
+                            } catch { }
+                        }
+                    }
+                });
             this.WhenAnyValue(vm => vm.Step, vm => vm.ArchiveEncoding, vm => vm.ArchiveFilePath)
                 .Subscribe(_ => RefreshArchiveItems());
             this.WhenAnyValue(vm => vm.Step, vm => vm.TextEncoding)
@@ -98,6 +86,18 @@ namespace OpenUtau.App.ViewModels {
                 textItems.AddRange(archive.Entries
                     .Select(entry => entry.Key)
                     .ToArray());
+            }
+        }
+
+        private VoicebankConfig? LoadCharacterYaml(string archiveFilePath) {
+            using (var archive = ArchiveFactory.Open(archiveFilePath)) {
+                var entry = archive.Entries.FirstOrDefault(e => e.Key.EndsWith("character.yaml"));
+                if (entry == null) {
+                    return null;
+                }
+                using (var stream = entry.OpenEntryStream()) {
+                    return VoicebankConfig.Load(stream);
+                }
             }
         }
 
@@ -134,14 +134,6 @@ namespace OpenUtau.App.ViewModels {
             }
         }
 
-        class Character {
-            public string file;
-            public List<string> otoSets = new List<string>();
-            public Character(string file) {
-                this.file = file;
-            }
-        }
-
         public Task Install() {
             string archiveFilePath = ArchiveFilePath;
             var archiveEncoding = ArchiveEncoding;
@@ -149,7 +141,7 @@ namespace OpenUtau.App.ViewModels {
             return Task.Run(() => {
                 try {
                     var basePath = PathManager.Inst.SingersInstallPath;
-                    var installer = new Classic.VoicebankInstaller(basePath, (progress, info) => {
+                    var installer = new VoicebankInstaller(basePath, (progress, info) => {
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(progress, info));
                     }, archiveEncoding, textEncoding);
                     installer.Install(archiveFilePath, SingerType);

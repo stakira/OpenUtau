@@ -24,8 +24,8 @@ namespace OpenUtau.Classic {
             Directory.CreateDirectory(basePath);
             this.basePath = basePath;
             this.progress = progress;
-            this.archiveEncoding = archiveEncoding ?? Encoding.GetEncoding("shift_jis");
-            this.textEncoding = textEncoding ?? Encoding.GetEncoding("shift_jis");
+            this.archiveEncoding = archiveEncoding;
+            this.textEncoding = textEncoding;
         }
 
         public void Install(string path, string singerType) {
