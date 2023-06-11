@@ -9,6 +9,7 @@
     <OutputType>WinExe</OutputType>
     <SatelliteResourceLanguages>none</SatelliteResourceLanguages>
     <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Version>0.0.0</Version>
     <ApplicationIcon>Assets\open-utau.ico</ApplicationIcon>
     <PublishReadyToRun>true</PublishReadyToRun>
@@ -34,9 +35,8 @@
   <ItemGroup>
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0-rc1.1" />
     <PackageReference Include="Dotnet.Bundle" Version="0.9.13" />
-    <PackageReference Include="NetSparkleUpdater.SparkleUpdater" Version="2.2.1" />
+    <PackageReference Include="NetSparkleUpdater.SparkleUpdater" Version="2.2.3" />
     <PackageReference Include="ReactiveUI.Fody" Version="18.3.1" />
-    <PackageReference Include="System.IO.Packaging" Version="6.0.0" />
     <PackageReference Include="Avalonia" Version="11.0.0-rc1.1" />
     <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.0.0-rc1.1" />
     <PackageReference Include="Avalonia.Desktop" Version="11.0.0-rc1.1" />
@@ -46,7 +46,6 @@
     <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
     <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-    <PackageReference Include="System.Security.Permissions" Version="5.0.0" />
     <PackageReference Include="System.Text.Json" Version="7.0.2" />
   </ItemGroup>
   <ItemGroup>

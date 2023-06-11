@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Platform.Storage;
 using NWaves.Audio;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
@@ -51,20 +52,19 @@ namespace OpenUtau.App.Views {
             if (viewModel.Singer == null) {
                 return;
             }
-            var dialog = new OpenFileDialog() {
-                AllowMultiple = false,
-                Directory = viewModel.Singer.Location,
-            };
-            var files = await dialog.ShowAsync(this);
-            if (files == null || files.Length != 1) {
+            var file = await FilePicker.OpenFile(
+                this, "singers.setportrait",
+                viewModel.Singer.Location,
+                FilePickerFileTypes.ImageAll);
+            if (file == null) {
                 return;
             }
             try {
-                using (var stream = File.OpenRead(files[0])) {
+                using (var stream = File.OpenRead(file)) {
                     var portrait = new Bitmap(stream);
                     portrait.Dispose();
                 }
-                viewModel.SetPortrait(Path.GetRelativePath(viewModel.Singer.Location, files[0]));
+                viewModel.SetPortrait(Path.GetRelativePath(viewModel.Singer.Location, file));
             } catch (Exception e) {
                 Log.Error(e, "Failed to set portrait");
                 _ = await MessageBox.ShowError(this, e);

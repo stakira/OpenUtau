@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Platform.Storage;
 using OpenUtau.App.ViewModels;
 
 namespace OpenUtau.App.Views {
@@ -15,8 +15,7 @@ namespace OpenUtau.App.Views {
         }
 
         async void SelectAddlSingersPath(object sender, RoutedEventArgs e) {
-            var dialog = new OpenFolderDialog();
-            var path = await dialog.ShowAsync(this);
+            var path = await FilePicker.OpenFolder(this, "prefs.paths.addlsinger");
             if (string.IsNullOrEmpty(path)) {
                 return;
             }
@@ -30,22 +29,13 @@ namespace OpenUtau.App.Views {
         }
 
         async void SelectVLabelerPath(object sender, RoutedEventArgs e) {
-            var extension = OS.IsWindows() ? "exe" : OS.IsMacOS() ? "app" : "*";
-            var dialog = new OpenFileDialog() {
-                AllowMultiple = false,
-                Filters = OS.IsLinux() ? null : new List<FileDialogFilter>() {
-                    new FileDialogFilter() {
-                         Name = "vLabeler",
-                         Extensions = new List<string>() { extension },
-                    }
-                }
-            };
-            var paths = await dialog.ShowAsync(this);
-            if (paths == null || paths.Length != 1 || string.IsNullOrEmpty(paths[0])) {
+            var type = OS.IsWindows() ? FilePicker.EXE : OS.IsMacOS() ? FilePicker.APP : FilePickerFileTypes.All;
+            var path = await FilePicker.OpenFile(this, "prefs.advanced.vlabelerpath", type);
+            if (string.IsNullOrEmpty(path)) {
                 return;
             }
-            if (OS.AppExists(paths[0])) {
-                ((PreferencesViewModel)DataContext!).SetVLabelerPath(paths[0]);
+            if (OS.AppExists(path)) {
+                ((PreferencesViewModel)DataContext!).SetVLabelerPath(path);
             }
         }
     }

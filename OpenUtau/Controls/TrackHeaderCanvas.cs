@@ -42,7 +42,7 @@ namespace OpenUtau.App.Controls {
 
         private double trackHeight;
         private double trackOffset;
-        private ObservableCollection<UTrack> _items;
+        private ObservableCollection<UTrack> _items = new ObservableCollection<UTrack>();
 
         private Dictionary<UTrack, TrackHeader> trackHeaders = new Dictionary<UTrack, TrackHeader>();
         private TrackAdder? trackAdder;
@@ -99,7 +99,7 @@ namespace OpenUtau.App.Controls {
             }
         }
 
-        private void Items_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+        private void Items_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) {
             switch (e.Action) {
                 case NotifyCollectionChangedAction.Add:
                 case NotifyCollectionChangedAction.Remove:

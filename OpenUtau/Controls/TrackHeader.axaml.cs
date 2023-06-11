@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using OpenUtau.App.ViewModels;
@@ -148,10 +147,10 @@ namespace OpenUtau.App.Controls {
 
         void TrackSettingsButtonClicked(object sender, RoutedEventArgs args) {
             if (track?.Singer != null && track.Singer.Found) {
-                var dialog = new Views.TrackSettingsDialog(track);
-                var window = (Application.Current?.ApplicationLifetime
-                    as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
-                dialog.ShowDialog(window);
+                if (VisualRoot is Window window) {
+                    var dialog = new Views.TrackSettingsDialog(track);
+                    dialog.ShowDialog(window);
+                }
             }
         }
 

@@ -20,11 +20,11 @@ namespace OpenUtau.App.Views {
             });
         }
 
-        public static Task<MessageBoxResult> ShowError(Window parent, Exception e) {
+        public static Task<MessageBoxResult> ShowError(Window parent, Exception? e) {
             return ShowError(parent, string.Empty, e);
         }
 
-        public static Task<MessageBoxResult> ShowError(Window parent, string message, Exception e) {
+        public static Task<MessageBoxResult> ShowError(Window parent, string message, Exception? e) {
             var builder = new StringBuilder();
             if (!string.IsNullOrEmpty(message)) {
                 builder.AppendLine(message);

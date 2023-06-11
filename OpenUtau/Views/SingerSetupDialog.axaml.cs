@@ -21,7 +21,9 @@ namespace OpenUtau.App.Views {
             task.ContinueWith((task) => {
                 if (task.IsFaulted) {
                     Log.Error(task.Exception, "Failed to install singer");
-                    MessageBox.ShowError((Window)Parent, task.Exception);
+                    if (Parent is Window window) {
+                        MessageBox.ShowError(window, task.Exception);
+                    }
                 }
             }, CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted, scheduler);
             Close();

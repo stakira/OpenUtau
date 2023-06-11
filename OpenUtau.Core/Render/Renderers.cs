@@ -76,7 +76,7 @@ namespace OpenUtau.Core.Render {
             }
         }
 
-        public static IReadOnlyList<IResampler> GetSupportedResamplers(IWavtool wavtool) {
+        public static IReadOnlyList<IResampler> GetSupportedResamplers(IWavtool? wavtool) {
             if (wavtool is SharpWavtool) {
                 return ToolsManager.Inst.Resamplers;
             } else {
@@ -86,7 +86,7 @@ namespace OpenUtau.Core.Render {
             }
         }
 
-        public static IReadOnlyList<IWavtool> GetSupportedWavtools(IResampler resampler) {
+        public static IReadOnlyList<IWavtool> GetSupportedWavtools(IResampler? resampler) {
             if (resampler is WorldlineResampler) {
                 return ToolsManager.Inst.Wavtools
                     .Where(r => r is SharpWavtool)

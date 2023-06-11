@@ -194,10 +194,13 @@ namespace OpenUtau.App.ViewModels {
             var unknownBank = new Character("(Unknown)");
             foreach (var otoSet in otoSets) {
                 var dir = Path.GetDirectoryName(otoSet.Key);
+                if (dir == null) {
+                    continue;
+                }
                 bool foundBank = false;
                 for (int i = 0; i < bankDirs.Length; ++i) {
                     if (dir.StartsWith(bankDirs[i])) {
-                        string relPath = Path.GetRelativePath(bankDirs[i], Path.GetDirectoryName(otoSet.Key));
+                        string relPath = Path.GetRelativePath(bankDirs[i], dir);
                         if (relPath == ".") {
                             relPath = string.Empty;
                         }
@@ -221,9 +224,9 @@ namespace OpenUtau.App.ViewModels {
                 banks.Add(unknownBank);
             }
 
-            List<string> dirs = banks.Select(b => Path.GetDirectoryName(b.file)).ToList();
-            dirs.AddRange(otoSets.Select(set => Path.GetDirectoryName(set.Key)));
-            string root = dirs.OrderBy(dir => dir.Length).FirstOrDefault();
+            List<string> dirs = banks.Select(b => Path.GetDirectoryName(b.file)).OfType<string>().ToList();
+            dirs.AddRange(otoSets.Select(set => Path.GetDirectoryName(set.Key)).OfType<string>());
+            string? root = dirs.OrderBy(dir => dir.Length).FirstOrDefault();
             if (string.IsNullOrEmpty(root) || root == ".") {
                 CreateRootDirectory = true;
             }

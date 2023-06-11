@@ -72,6 +72,9 @@ namespace OpenUtau.App.Views {
         }
 
         void ReplaceLyrics() {
+            if (ViewModel.NotesViewModel.Part == null) {
+                return;
+            }
             if (ViewModel.NotesViewModel.Selection.IsEmpty) {
                 _ = MessageBox.Show(
                     this,
@@ -93,6 +96,9 @@ namespace OpenUtau.App.Views {
         }
 
         void EditLyrics() {
+            if (ViewModel.NotesViewModel.Part == null) {
+                return;
+            }
             if (ViewModel.NotesViewModel.Selection.IsEmpty) {
                 _ = MessageBox.Show(
                     this,
@@ -1075,7 +1081,10 @@ namespace OpenUtau.App.Views {
                         return true;
                     }
                     if (isShift) {
-                        notesVm.ExtendSelection(notesVm.Part.notes.FirstOrDefault());
+                        var first = notesVm.Part.notes.FirstOrDefault();
+                        if (first != null) {
+                            notesVm.ExtendSelection(first);
+                        }
                         return true;
                     }
                     break;
@@ -1085,7 +1094,10 @@ namespace OpenUtau.App.Views {
                         return true;
                     }
                     if (isShift) {
-                        notesVm.ExtendSelection(notesVm.Part.notes.LastOrDefault());
+                        var last = notesVm.Part.notes.LastOrDefault();
+                        if (last != null) {
+                            notesVm.ExtendSelection(last);
+                        }
                         return true;
                     }
                     break;
@@ -1241,28 +1253,27 @@ namespace OpenUtau.App.Views {
                 return;
             }
             foreach (string key in cache) {
-
-                UExpressionDescriptor exp = (expSelector1.DataContext as ExpSelectorViewModel).Descriptor;
+                UExpressionDescriptor? exp = (expSelector1.DataContext as ExpSelectorViewModel)?.Descriptor;
                 if (exp != null && exp.abbr == key) {
                     expSelector1.SelectExp();
                     continue;
                 }
-                exp = (expSelector2.DataContext as ExpSelectorViewModel).Descriptor;
+                exp = (expSelector2.DataContext as ExpSelectorViewModel)?.Descriptor;
                 if (exp != null && exp.abbr == key) {
                     expSelector2.SelectExp();
                     continue;
                 }
-                exp = (expSelector3.DataContext as ExpSelectorViewModel).Descriptor;
+                exp = (expSelector3.DataContext as ExpSelectorViewModel)?.Descriptor;
                 if (exp != null && exp.abbr == key) {
                     expSelector3.SelectExp();
                     continue;
                 }
-                exp = (expSelector4.DataContext as ExpSelectorViewModel).Descriptor;
+                exp = (expSelector4.DataContext as ExpSelectorViewModel)?.Descriptor;
                 if (exp != null && exp.abbr == key) {
                     expSelector4.SelectExp();
                     continue;
                 }
-                exp = (expSelector5.DataContext as ExpSelectorViewModel).Descriptor;
+                exp = (expSelector5.DataContext as ExpSelectorViewModel)?.Descriptor;
                 if (exp != null && exp.abbr == key) {
                     expSelector5.SelectExp();
                     continue;

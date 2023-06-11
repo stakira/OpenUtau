@@ -9,8 +9,8 @@ using ReactiveUI;
 
 namespace OpenUtau.App.Controls {
     class PhonemeCanvas : Control {
-        public static readonly DirectProperty<PhonemeCanvas, Brush> BackgroundProperty =
-            AvaloniaProperty.RegisterDirect<PhonemeCanvas, Brush>(
+        public static readonly DirectProperty<PhonemeCanvas, IBrush> BackgroundProperty =
+            AvaloniaProperty.RegisterDirect<PhonemeCanvas, IBrush>(
                 nameof(Background),
                 o => o.Background,
                 (o, v) => o.Background = v);
@@ -35,7 +35,7 @@ namespace OpenUtau.App.Controls {
                 o => o.ShowPhoneme,
                 (o, v) => o.ShowPhoneme = v);
 
-        public Brush Background {
+        public IBrush Background {
             get => background;
             private set => SetAndRaise(BackgroundProperty, ref background, value);
         }
@@ -56,7 +56,7 @@ namespace OpenUtau.App.Controls {
             private set => SetAndRaise(ShowPhonemeProperty, ref showPhoneme, value);
         }
 
-        private Brush background;
+        private IBrush background = Brushes.White;
         private double tickWidth;
         private double tickOffset;
         private UVoicePart? part;
