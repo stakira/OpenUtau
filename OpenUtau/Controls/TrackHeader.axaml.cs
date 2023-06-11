@@ -184,13 +184,13 @@ namespace OpenUtau.App.Controls {
 
         void TextBlockClicked(object sender, RoutedEventArgs args) {
             var textBlock = (TextBlock)sender;
-            if (textBlock.Name.Equals("VolumeTextBlock")) {
+            if (textBlock.Name.Equals("VolumeTextBlock") && ViewModel != null) {
                 volumeTextBox.Text = ViewModel.Volume.ToString();
                 volumeTextBlock.IsVisible = false;
                 volumeTextBox.IsVisible = true;
                 args.Handled = true;
             }
-            else if (textBlock.Name.Equals("PanTextBlock")) {
+            else if (textBlock.Name.Equals("PanTextBlock") && ViewModel != null) {
                 panTextBox.Text = ViewModel.Pan.ToString();
                 panTextBlock.IsVisible = false;
                 panTextBox.IsVisible = true;
@@ -200,16 +200,15 @@ namespace OpenUtau.App.Controls {
         void TextBoxEnter(object sender, KeyEventArgs args) {
             var textBlock = (TextBlock)sender;
             if (args.Key == Key.Enter) {
-                if (textBlock.Name.Equals("VolumeTextBlock")) {
+                if (textBlock.Name.Equals("VolumeTextBlock") && ViewModel != null) {
                     if (double.TryParse(volumeTextBox.Text, out double number)) {
                         number = number > volumeSlider.Minimum ? number < volumeSlider.Maximum ? number : volumeSlider.Maximum : volumeSlider.Minimum;
                         ViewModel.Volume = number;
                     }
                     volumeTextBlock.IsVisible = true;
                     volumeTextBox.IsVisible = false;
-                    Debug.WriteLine(ViewModel.Volume);
                     args.Handled = true;
-                } else if (textBlock.Name.Equals("PanTextBlock")) {
+                } else if (textBlock.Name.Equals("PanTextBlock") && ViewModel != null) {
                     if (int.TryParse(panTextBox.Text, out int number)) {
                         number = (int)(number > panSlider.Minimum ? number < panSlider.Maximum ? number : panSlider.Maximum : panSlider.Minimum);
                         ViewModel.Pan = number;
