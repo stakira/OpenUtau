@@ -206,6 +206,10 @@ Advertencia: Esta opción eliminará las bases personalizadas.</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">Ver vibratos (U)</system:String>
   <system:String x:Key="pianoroll.toggle.waveform">Ver formas de onda (W)</system:String>
   <system:String x:Key="pianoroll.tool.drawpitch">Dibujar en tono avanzado (4)</system:String>
+  <!-- Left click to draw
+  Right click to reset
+  Hold Ctrl to select
+  Hold Alt to smoothen</system:String>-->
   <system:String x:Key="pianoroll.tool.eraser">Goma (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">Cuchillo (5)</system:String>
   <system:String x:Key="pianoroll.tool.penplus">Lápiz avanzado (Ctrl + 2)
