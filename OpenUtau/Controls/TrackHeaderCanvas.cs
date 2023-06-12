@@ -52,6 +52,9 @@ namespace OpenUtau.App.Controls {
             MessageBus.Current.Listen<TracksRefreshEvent>()
                 .Subscribe(_ => {
                     foreach (var (track, header) in trackHeaders) {
+                        if (PlaybackManager.Inst.SoloTrackExist && !track.Solo) {
+                            header.ViewModel.Muted = true;
+                        }
                         header.ViewModel?.ManuallyRaise();
                     }
                     if (trackAdder != null) {
@@ -67,10 +70,10 @@ namespace OpenUtau.App.Controls {
 
                                 if (track.TrackNo == e.trackNo) {
                                     header.ViewModel.Solo = true;
-                                    header.ViewModel.ApparentMute = false;
+                                    header.ViewModel.Muted = false;
                                 } else {
                                     header.ViewModel.Solo = false;
-                                    header.ViewModel.ApparentMute = true;
+                                    header.ViewModel.Muted = true;
                                 }
                             } else {
                                 PlaybackManager.Inst.SoloTrackExist = false;
@@ -78,9 +81,9 @@ namespace OpenUtau.App.Controls {
                                     header.ViewModel.Solo = false;
                                 }
                                 if (track.Mute) {
-                                    header.ViewModel.ApparentMute = true;
+                                    header.ViewModel.Muted = true;
                                 } else {
-                                    header.ViewModel.ApparentMute = false;
+                                    header.ViewModel.Muted = false;
                                 }
                             }
                             header.ViewModel.ManuallyRaise();
