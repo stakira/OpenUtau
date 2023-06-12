@@ -28,11 +28,14 @@ namespace OpenUtau.Core.Enunu {
         public override string DefaultPhonemizer => voicebank.DefaultPhonemizer;
         public override Encoding TextFileEncoding => voicebank.TextFileEncoding;
         public override IList<USubbank> Subbanks => subbanks;
+        public override IList<UOto> Otos => otos;
 
         Voicebank voicebank;
         EnunuConfig enuconfig;
         List<string> errors = new List<string>();
         List<USubbank> subbanks = new List<USubbank>();
+        List<UOto> otos = new List<UOto>();
+        Dictionary<string, UOto> otoMap = new Dictionary<string, UOto>();
 
         HashSet<string> phonemes = new HashSet<string>();
         HashSet<string> timbres = new HashSet<string>();
@@ -67,44 +70,11 @@ namespace OpenUtau.Core.Enunu {
 
         void Load() {
             enuconfig = EnunuConfig.Load(this);
-
+            UOto? uOto = null;
             phonemes.Clear();
             timbres.Clear();
             table.Clear();
-            try {
-                var tablePath = Path.Join(Location, enuconfig.tablePath);
-                foreach (var line in File.ReadAllLines(tablePath)) {
-                    var parts = line.Trim().Split();
-                    table[parts[0]] = parts.Skip(1).ToArray();
-                    foreach (var phoneme in table[parts[0]]) {
-                        //phonemes.Add(phoneme);
-                    }
-                }
-            } catch (Exception e) {
-                Log.Error(e, $"Failed to load table for {Name}");
-            }
-            try {
-                var hedPath = Path.Join(Location, enuconfig.questionPath);
-                var pattern = new Regex("^\\s*QS\\s+\\\"(.*)\\\"\\s+\\{(.*)}");
-                foreach (var line in File.ReadAllLines(hedPath)) {
-                    var m = pattern.Match(line);
-                    if (!m.Success) {
-                        continue;
-                    }
-                    foreach (var p in m.Groups[2].Value.Split(',')) {
-                        var value = p.Trim();
-                        if (value.StartsWith("*^") && value.EndsWith("-*") ||
-                            value.StartsWith("*-") && value.EndsWith("+*") ||
-                            value.StartsWith("*+") && value.EndsWith("=*")) {
-                            phonemes.Add(value.Substring(2, value.Length - 4));
-                        } else if (value.StartsWith("*^") && value.EndsWith("_*")) {
-                            timbres.Add(value.Substring(2, value.Length - 4));
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                Log.Error(e, $"Failed to load hed for {Name}");
-            }
+            otos.Clear();
 
             subbanks.Clear();
             if (voicebank.Subbanks == null || voicebank.Subbanks.Count == 0 ||
@@ -123,6 +93,61 @@ namespace OpenUtau.Core.Enunu {
             } else {
                 subbanks.AddRange(voicebank.Subbanks
                     .Select(subbank => new USubbank(subbank)));
+            }
+
+            try {
+                var hedPath = Path.Join(Location, enuconfig.questionPath);
+                var pattern = new Regex("^\\s*QS\\s+\\\"(.*)\\\"\\s+\\{(.*)}");
+                foreach (var line in File.ReadAllLines(hedPath)) {
+                    var m = pattern.Match(line);
+                    if (!m.Success) {
+                        continue;
+                    }
+                    var dummyOtoSet = new UOtoSet(new OtoSet() { File = enuconfig.tablePath, Name = string.Empty }, Location);
+                    foreach (var p in m.Groups[2].Value.Split(',')) {
+                        var value = p.Trim();
+                        string phonemeStr = string.Empty;
+                        if (value.StartsWith("*^") && value.EndsWith("-*") ||
+                            value.StartsWith("*-") && value.EndsWith("+*") ||
+                            value.StartsWith("*+") && value.EndsWith("=*")) {
+                            phonemeStr = value.Substring(2, value.Length - 4);
+                            phonemes.Add(phonemeStr);
+                        } else if (value.StartsWith("*^") && value.EndsWith("_*")) {
+                            timbres.Add(value.Substring(2, value.Length - 4));
+                        }
+                        if (phonemeStr.Equals(string.Empty)) {
+                            continue;
+                        }
+                        var oto = new Oto() { Alias = phonemeStr, Phonetic = phonemeStr };
+                        foreach (var subbank in subbanks) {
+                            uOto = new UOto(oto, dummyOtoSet, subbank);
+                            otos.Add(uOto);
+                            if (!otoMap.ContainsKey(oto.Alias)) {
+                                otoMap.Add(oto.Alias, uOto);
+                            } else {
+                                //Errors.Add($"oto conflict {Otos[oto.Alias].Set}/{oto.Alias} and {otoSet.Name}/{oto.Alias}");
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                Log.Error(e, $"Failed to load hed for {Name}");
+            }
+
+            try {
+                var tablePath = Path.Join(Location, enuconfig.tablePath);
+                foreach (var line in File.ReadAllLines(tablePath)) {
+                    if (line.Contains("#")) {
+                        continue;
+                    }
+                    var parts = line.Trim().Split();
+                    table[parts[0]] = parts.Skip(1).ToArray();
+                    foreach (var phoneme in table[parts[0]]) {
+                        //phonemes.Add(phoneme);
+                    }
+                }
+            } catch (Exception e) {
+                Log.Error(e, $"Failed to load table for {Name}");
             }
 
             if (Avatar != null && File.Exists(Avatar)) {

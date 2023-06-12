@@ -73,7 +73,7 @@ namespace OpenUtau.Core.Ustx {
             Prefix = subbank?.Prefix;
             Suffix = subbank?.Suffix;
             ToneSet = subbank?.toneSet;
-            File = Path.Combine(set.Location, oto.Wav);
+            File = oto.Wav != null ? Path.Combine(set.Location, oto.Wav):string.Empty;
             DisplayFile = oto?.Wav;
             Offset = oto.Offset;
             Consonant = oto.Consonant;
