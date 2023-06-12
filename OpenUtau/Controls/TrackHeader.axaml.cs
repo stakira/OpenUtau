@@ -167,7 +167,7 @@ namespace OpenUtau.App.Controls {
             }
         }
 
-        void TextBlockClicked(object sender, RoutedEventArgs args) {
+        void TextBlockClicked(object sender, TappedEventArgs  args) {
             if (sender is TextBlock textBlock) {
                 if (textBlock.Name != null) {
                     if (textBlock.Name.Equals("VolumeTextBlock") && ViewModel != null) {
