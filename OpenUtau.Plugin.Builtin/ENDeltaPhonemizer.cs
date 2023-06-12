@@ -73,9 +73,9 @@ namespace OpenUtau.Plugin.Builtin {
             string[] diphthongs = new[] { "aI", "eI", "OI", "aU", "oU", "VI", "VU", "@U" };
             string[] affricates = new[] { "dZ", "tS" };
             foreach (string s in original) {
-                if (diphthongs.Contains(s) && !HasOto($"b{s}", note.tone)) {
+                if (diphthongs.Contains(s) && !HasOto(original[0] + s, note.tone)) {
                     modified.AddRange(new string[] { s[0].ToString(), s[1].ToString() });
-                } else if (affricates.Contains(s) && !HasOto($"i {s}", note.tone)) {
+                } else if (affricates.Contains(s) && !HasOto($"{original[0]} {s}", note.tone)) {
                     modified.AddRange(new string[] { s[0].ToString(), s[1].ToString() });
                 } else {
                     modified.Add(s);
