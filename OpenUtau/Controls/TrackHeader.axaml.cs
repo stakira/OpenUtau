@@ -50,21 +50,8 @@ namespace OpenUtau.App.Controls {
 
         private UTrack? track;
 
-        private TextBlock volumeTextBlock;
-        private TextBox volumeTextBox;
-        private Slider volumeSlider;
-        private TextBlock panTextBlock;
-        private TextBox panTextBox;
-        private Slider panSlider;
-
         public TrackHeader() {
             InitializeComponent();
-            volumeTextBlock = this.FindControl<TextBlock>("VolumeTextBlock") ?? new TextBlock();
-            volumeTextBox = this.FindControl<TextBox>("VolumeTextBox") ?? new TextBox();
-            volumeSlider = this.FindControl<Slider>("VolumeSlider") ?? new Slider();
-            panTextBlock = this.FindControl<TextBlock>("PanTextBlock") ?? new TextBlock();
-            panTextBox = this.FindControl<TextBox>("PanTextBox") ?? new TextBox();
-            panSlider = this.FindControl<Slider>("PanSlider") ?? new Slider();
         }
 
         protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change) {
@@ -164,58 +151,6 @@ namespace OpenUtau.App.Controls {
                     var dialog = new Views.TrackSettingsDialog(track);
                     dialog.ShowDialog(window);
                 }
-            }
-        }
-
-        void TextBlockClicked(object sender, TappedEventArgs  args) {
-            if (sender is TextBlock textBlock) {
-                if (textBlock.Name != null) {
-                    if (textBlock.Name.Equals("VolumeTextBlock") && ViewModel != null) {
-                        volumeTextBox.Text = ViewModel.Volume.ToString();
-                        volumeTextBlock.IsVisible = false;
-                        volumeTextBox.IsVisible = true;
-                        args.Handled = true;
-                    } else if (textBlock.Name.Equals("PanTextBlock") && ViewModel != null) {
-                        panTextBox.Text = ViewModel.Pan.ToString();
-                        panTextBlock.IsVisible = false;
-                        panTextBox.IsVisible = true;
-                        args.Handled = true;
-                    }
-                }
-            }
-        }
-        void TextBoxEnter(object sender, KeyEventArgs args) {
-            if (sender is TextBlock textBlock) {
-                if (textBlock.Name != null) {
-                    if (args.Key == Key.Enter) {
-                        if (textBlock.Name.Equals("VolumeTextBlock") && ViewModel != null) {
-                            if (double.TryParse(volumeTextBox.Text, out double number)) {
-                                number = number > volumeSlider.Minimum ? number < volumeSlider.Maximum ? number : volumeSlider.Maximum : volumeSlider.Minimum;
-                                ViewModel.Volume = number;
-                            }
-                            volumeTextBlock.IsVisible = true;
-                            volumeTextBox.IsVisible = false;
-                            args.Handled = true;
-                        } else if (textBlock.Name.Equals("PanTextBlock") && ViewModel != null) {
-                            if (int.TryParse(panTextBox.Text, out int number)) {
-                                number = (int)(number > panSlider.Minimum ? number < panSlider.Maximum ? number : panSlider.Maximum : panSlider.Minimum);
-                                ViewModel.Pan = number;
-                            }
-                            panTextBlock.IsVisible = true;
-                            panTextBox.IsVisible = false;
-                            args.Handled = true;
-                        }
-                    }
-                }
-            }
-        }
-
-        void TextBoxLeave(object sender, PointerEventArgs args) {
-            if (sender is TextBox textBox) {
-                textBox.IsVisible = true;
-                volumeTextBox.IsVisible = false;
-                panTextBox.IsVisible = false;
-                args.Handled = true;
             }
         }
 
