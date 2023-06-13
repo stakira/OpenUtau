@@ -561,10 +561,13 @@ namespace OpenUtau.Plugin.Builtin {
                     } else if (nextExist && nextHangeul) {
                         consonant = TNLconsonant;
                     } else if (nextLyric.StartsWith("ch")) { consonant = "ch"; }
+                    else if (nextLyric.StartsWith("l")) {
+                        consonant = "l";
+                    }
 
-                    if (!nextHangeul && (nextLyric.StartsWith("gg") || nextLyric.StartsWith("dd") || nextLyric.StartsWith("bb") || nextLyric.StartsWith("jj"))) {
+                    if (!nextHangeul && (nextLyric.StartsWith("gg") || nextLyric.StartsWith("dd") || nextLyric.StartsWith("bb") || nextLyric.StartsWith("jj") || nextLyric.StartsWith("l"))) {
                         VC = TCLplainvowel + consonant;
-                    } else if (!nextHangeul && (!nextLyric.StartsWith("gg") || !nextLyric.StartsWith("dd") || !nextLyric.StartsWith("bb") || !nextLyric.StartsWith("jj"))) {
+                    } else if (!nextHangeul && (!nextLyric.StartsWith("gg") || !nextLyric.StartsWith("dd") || !nextLyric.StartsWith("bb") || !nextLyric.StartsWith("jj") || !nextLyric.StartsWith("l"))) {
                         VC = TCLplainvowel + " " + consonant;
                     }
                 }
@@ -596,7 +599,7 @@ namespace OpenUtau.Plugin.Builtin {
                 // 만약 받침이 없다면
                 if (TCLfinal == "") {
                     // 뒤에 노트가 있다면
-                    if (nextExist) { if ((nextNeighbour?.lyric)[0] == 'ㄹ') { VC = ""; } }
+                    if (nextExist) { if ((nextNeighbour?.lyric)[0] == 'ㄹ') { VC = TCLplainvowel + "l"; } }
                     if ((VC != "") && (TNLconsonant != "")) {
                         int totalDuration = notes.Sum(n => n.duration);
                         int vcLength = 60;
@@ -825,6 +828,8 @@ namespace OpenUtau.Plugin.Builtin {
                     consonant = "t";
                     } else if (nextLyric.StartsWith("bb")) {
                     consonant = "p";
+                    } else if (nextLyric.StartsWith("l")) {
+                    consonant = "l";
                     } else if (nextExist && nextHangeul) {
                     consonant = TNLconsonant;
                     if (TNLconsonant == "gg") {
@@ -833,6 +838,8 @@ namespace OpenUtau.Plugin.Builtin {
                         consonant = "t";
                     } else if (TNLconsonant == "bb") {
                         consonant = "p";
+                    } else if (nextLyric.StartsWith('ㄹ')) {
+                        consonant = "l";
                     } else {
                         consonant = TNLconsonant;
                     }
@@ -851,9 +858,9 @@ namespace OpenUtau.Plugin.Builtin {
                 }
 
                 var vcPhoneme = "";
-                if (TNLconsonant == "gg" || TNLconsonant == "dd" || TNLconsonant == "bb" || TNLconsonant == "jj") {
+                if (TNLconsonant == "gg" || TNLconsonant == "dd" || TNLconsonant == "bb" || TNLconsonant == "jj" || nextLyric.StartsWith('ㄹ')) {
                     vcPhoneme = $"{vowel}{consonant}";
-                } else if (nextLyric.StartsWith("gg") || nextLyric.StartsWith("dd") || nextLyric.StartsWith("bb") || nextLyric.StartsWith("jj")) {
+                } else if (nextLyric.StartsWith("gg") || nextLyric.StartsWith("dd") || nextLyric.StartsWith("bb") || nextLyric.StartsWith("jj") || nextLyric.StartsWith("l")) {
                     vcPhoneme = $"{vowel}{consonant}";
                 } else {
                     vcPhoneme = $"{vowel} {consonant}";
