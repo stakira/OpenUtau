@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using OpenUtau.Classic;
 using OpenUtau.Core.Ustx;
 using Serilog;
+using static OpenUtau.Api.Phonemizer;
 
 namespace OpenUtau.Core.Enunu {
     public class EnunuSinger : USinger {
@@ -70,7 +71,6 @@ namespace OpenUtau.Core.Enunu {
 
         void Load() {
             enuconfig = EnunuConfig.Load(this);
-            UOto? uOto = null;
             phonemes.Clear();
             timbres.Clear();
             table.Clear();
@@ -117,27 +117,29 @@ namespace OpenUtau.Core.Enunu {
                     .Select(subbank => new USubbank(subbank)));
             }
 
+            var dummyOtoSet = new UOtoSet(new OtoSet(), Location);
+            foreach (var phone in phonemes) {
+                var oto = new Oto() { Alias = phone, Phonetic = phone };
+                foreach (var subbank in subbanks) {
+                    var uOto = new UOto(oto, dummyOtoSet, subbank);
+                    if (!otoMap.ContainsKey(oto.Alias)) {
+                        otos.Add(uOto);
+                        otoMap.Add(oto.Alias, uOto);
+                    } else {
+                        //Errors.Add($"oto conflict {Otos[oto.Alias].Set}/{oto.Alias} and {otoSet.Name}/{oto.Alias}");
+                    }
+                }
+            }
+
             try {
                 var tablePath = Path.Join(Location, enuconfig.tablePath);
-                var dummyOtoSet = new UOtoSet(new OtoSet() { File = enuconfig.tablePath, Name = string.Empty }, Location);
                 foreach (var line in File.ReadAllLines(tablePath)) {
                     if (line.Contains("#")) {
                         continue;
                     }
                     var parts = line.Trim().Split();
                     table[parts[0]] = parts.Skip(1).ToArray();
-                    string phonemeStr = string.Empty;
                     foreach (var phoneme in table[parts[0]]) {
-                        var oto = new Oto() { Alias = phoneme, Phonetic = phoneme };
-                        foreach (var subbank in subbanks) {
-                            uOto = new UOto(oto, dummyOtoSet, subbank);
-                            if (!otoMap.ContainsKey(oto.Alias)) {
-                                otos.Add(uOto);
-                                otoMap.Add(oto.Alias, uOto);
-                            } else {
-                                //Errors.Add($"oto conflict {Otos[oto.Alias].Set}/{oto.Alias} and {otoSet.Name}/{oto.Alias}");
-                            }
-                        }
                         //phonemes.Add(phoneme);
                     }
                 }
