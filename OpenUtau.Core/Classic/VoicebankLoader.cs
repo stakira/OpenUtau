@@ -99,6 +99,9 @@ namespace OpenUtau.Classic {
                 case "enunu":
                     voicebank.SingerType = USingerType.Enunu;
                     break;
+                case "diffsinger":
+                    voicebank.SingerType = USingerType.DiffSinger;
+                    break;
                 default:
                     // Legacy detection code. Do not add more here.
                     var enuconfigFile = Path.Combine(dir, kEnuconfigYaml);
