@@ -5,7 +5,7 @@ namespace OpenUtau.Core.DiffSinger {
     public static class DiffSingerUtils {
         public const string VELC = "velc";
         public const string VoiceColorHeader = "cl";
-        public const float headMs = 0;
+        public const float headMs = 100;
         public const float tailMs = 100;
 
         public static double[] SampleCurve(RenderPhrase phrase, float[] curve, double defaultValue, double frameMs, int length, int headFrames, int tailFrames, Func<double, double> convert) {

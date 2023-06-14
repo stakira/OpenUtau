@@ -123,11 +123,13 @@ namespace OpenUtau.Core.DiffSinger {
             //speedup: Diffusion render speedup, int
             var tokens = phrase.phones
                 .Select(p => p.phoneme)
+                .Prepend("SP")
                 .Append("SP")
                 .Select(x => (long)(singer.phonemes.IndexOf(x)))
                 .ToList();
             var durations = phrase.phones
-                .Select(p => (int)(p.endMs / frameMs) - (int)(p.positionMs / frameMs))//防止累计误差
+                .Select(p => (int)(p.endMs / frameMs) - (int)(p.positionMs / frameMs))//prevent cumulative error
+                .Prepend(headFrames)
                 .Append(tailFrames)
                 .ToList();
             var totalFrames = (int)(durations.Sum());
@@ -155,10 +157,12 @@ namespace OpenUtau.Core.DiffSinger {
                 var hiddenSize = singer.dsConfig.hiddenSize;
                 var speakerEmbeds = singer.getSpeakerEmbeds();
                 //get default speaker
-                var defaultSpkByFrame = Enumerable.Range(0, phrase.phones.Length)
-                    .SelectMany(phIndex => Enumerable.Repeat(speakers.IndexOf(phrase.phones[phIndex].suffix), durations[phIndex]))
-                    .ToList();
-                defaultSpkByFrame.AddRange(Enumerable.Repeat(defaultSpkByFrame[^1], tailFrames));
+                var headDefaultSpk = speakers.IndexOf(phrase.phones[0].suffix);
+                var tailDefaultSpk = speakers.IndexOf(phrase.phones[^1].suffix);
+                var defaultSpkByFrame = Enumerable.Repeat(headDefaultSpk, headFrames).ToList(); 
+                defaultSpkByFrame.AddRange(Enumerable.Range(0, phrase.phones.Length)
+                    .SelectMany(phIndex => Enumerable.Repeat(speakers.IndexOf(phrase.phones[phIndex].suffix), durations[phIndex])));
+                defaultSpkByFrame.AddRange(Enumerable.Repeat(tailDefaultSpk, tailFrames));
                 //get speaker curves
                 NDArray spkCurves = np.zeros<float>(totalFrames, speakers.Count);
                 foreach(var curve in phrase.curves) {

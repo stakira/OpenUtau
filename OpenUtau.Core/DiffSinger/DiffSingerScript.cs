@@ -24,7 +24,7 @@ namespace OpenUtau.Core.DiffSinger {
         
         //if v2 is true, export diffsinger script for diffsinger's refactor-v2 branch
         public DiffSingerScript(RenderPhrase phrase, bool v2 = false, bool exportPitch = true) {
-            float headMs = 100;
+            const float headMs = DiffSingerUtils.headMs;
             const float tailMs = DiffSingerUtils.tailMs;
             
             var notes = phrase.notes;
