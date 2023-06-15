@@ -119,12 +119,11 @@ namespace OpenUtau.Core.Enunu {
 
             var dummyOtoSet = new UOtoSet(new OtoSet(), Location);
             foreach (var phone in phonemes) {
-                var oto = new Oto() { Alias = phone, Phonetic = phone };
                 foreach (var subbank in subbanks) {
-                    var uOto = new UOto(oto, dummyOtoSet, subbank);
-                    if (!otoMap.ContainsKey(oto.Alias)) {
+                    var uOto = UOto.OfDummy(phone);
+                    if (!otoMap.ContainsKey(uOto.Alias)) {
                         otos.Add(uOto);
-                        otoMap.Add(oto.Alias, uOto);
+                        otoMap.Add(uOto.Alias, uOto);
                     } else {
                         //Errors.Add($"oto conflict {Otos[oto.Alias].Set}/{oto.Alias} and {otoSet.Name}/{oto.Alias}");
                     }
