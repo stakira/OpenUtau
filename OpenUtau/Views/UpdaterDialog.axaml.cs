@@ -1,10 +1,7 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
 using NetSparkleUpdater.Enums;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core.Util;
@@ -16,16 +13,9 @@ namespace OpenUtau.App.Views {
         public UpdaterDialog() {
             InitializeComponent();
             DataContext = ViewModel = new UpdaterViewModel();
-#if DEBUG
-            this.AttachDevTools();
-#endif
         }
 
-        private void InitializeComponent() {
-            AvaloniaXamlLoader.Load(this);
-        }
-
-        void OnClosing(object sender, CancelEventArgs e) {
+        void OnClosing(object sender, WindowClosingEventArgs e) {
             ViewModel.OnClosing();
         }
 

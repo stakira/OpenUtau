@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
-using System.Security.Cryptography;
 using Avalonia.Threading;
 using DynamicData.Binding;
 using OpenUtau.Classic;
@@ -12,7 +9,6 @@ using OpenUtau.Core.Editing;
 using OpenUtau.Core.Ustx;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using Serilog;
 
 namespace OpenUtau.App.ViewModels {
     public class PhonemeMouseoverEvent {
@@ -74,36 +70,43 @@ namespace OpenUtau.App.ViewModels {
                 NotesViewModel.CopyNotes();
             });
             PitEaseInOutCommand = ReactiveCommand.Create<PitchPointHitInfo>(info => {
+                if (NotesViewModel.Part == null) { return; }
                 DocManager.Inst.StartUndoGroup();
                 DocManager.Inst.ExecuteCmd(new ChangePitchPointShapeCommand(NotesViewModel.Part, info.Note.pitch.data[info.Index], PitchPointShape.io));
                 DocManager.Inst.EndUndoGroup();
             });
             PitLinearCommand = ReactiveCommand.Create<PitchPointHitInfo>(info => {
+                if (NotesViewModel.Part == null) { return; }
                 DocManager.Inst.StartUndoGroup();
                 DocManager.Inst.ExecuteCmd(new ChangePitchPointShapeCommand(NotesViewModel.Part, info.Note.pitch.data[info.Index], PitchPointShape.l));
                 DocManager.Inst.EndUndoGroup();
             });
             PitEaseInCommand = ReactiveCommand.Create<PitchPointHitInfo>(info => {
+                if (NotesViewModel.Part == null) { return; }
                 DocManager.Inst.StartUndoGroup();
                 DocManager.Inst.ExecuteCmd(new ChangePitchPointShapeCommand(NotesViewModel.Part, info.Note.pitch.data[info.Index], PitchPointShape.i));
                 DocManager.Inst.EndUndoGroup();
             });
             PitEaseOutCommand = ReactiveCommand.Create<PitchPointHitInfo>(info => {
+                if (NotesViewModel.Part == null) { return; }
                 DocManager.Inst.StartUndoGroup();
                 DocManager.Inst.ExecuteCmd(new ChangePitchPointShapeCommand(NotesViewModel.Part, info.Note.pitch.data[info.Index], PitchPointShape.o));
                 DocManager.Inst.EndUndoGroup();
             });
             PitSnapCommand = ReactiveCommand.Create<PitchPointHitInfo>(info => {
+                if (NotesViewModel.Part == null) { return; }
                 DocManager.Inst.StartUndoGroup();
                 DocManager.Inst.ExecuteCmd(new SnapPitchPointCommand(NotesViewModel.Part, info.Note));
                 DocManager.Inst.EndUndoGroup();
             });
             PitDelCommand = ReactiveCommand.Create<PitchPointHitInfo>(info => {
+                if (NotesViewModel.Part == null) { return; }
                 DocManager.Inst.StartUndoGroup();
                 DocManager.Inst.ExecuteCmd(new DeletePitchPointCommand(NotesViewModel.Part, info.Note, info.Index));
                 DocManager.Inst.EndUndoGroup();
             });
             PitAddCommand = ReactiveCommand.Create<PitchPointHitInfo>(info => {
+                if (NotesViewModel.Part == null) { return; }
                 DocManager.Inst.StartUndoGroup();
                 DocManager.Inst.ExecuteCmd(new AddPitchPointCommand(NotesViewModel.Part, info.Note, new PitchPoint(info.X, info.Y), info.Index + 1));
                 DocManager.Inst.EndUndoGroup();
@@ -179,14 +182,6 @@ namespace OpenUtau.App.ViewModels {
 
         public void MouseoverPhoneme(UPhoneme? phoneme) {
             MessageBus.Current.SendMessage(new PhonemeMouseoverEvent(phoneme));
-        }
-
-        private byte[]? HashFile(string filePath) {
-            using (var md5 = MD5.Create()) {
-                using (var stream = File.OpenRead(filePath)) {
-                    return md5.ComputeHash(stream);
-                }
-            }
         }
 
         #region ICmdSubscriber

@@ -12,15 +12,15 @@ using OpenUtau.Core.Ustx;
 namespace OpenUtau.App.Views {
     class PartEditState {
         public virtual MouseButton MouseButton => MouseButton.Left;
-        public readonly Canvas canvas;
+        public readonly Control control;
         public readonly MainWindowViewModel vm;
         public Point startPoint;
-        public PartEditState(Canvas canvas, MainWindowViewModel vm) {
-            this.canvas = canvas;
+        public PartEditState(Control control, MainWindowViewModel vm) {
+            this.control = control;
             this.vm = vm;
         }
         public virtual void Begin(IPointer pointer, Point point) {
-            pointer.Capture(canvas);
+            pointer.Capture(control);
             startPoint = point;
             DocManager.Inst.StartUndoGroup();
         }
@@ -41,7 +41,7 @@ namespace OpenUtau.App.Views {
         private int startTrack;
 
         public readonly Rectangle selectionBox;
-        public PartSelectionEditState(Canvas canvas, MainWindowViewModel vm, Rectangle selectionBox) : base(canvas, vm) {
+        public PartSelectionEditState(Control control, MainWindowViewModel vm, Rectangle selectionBox) : base(control, vm) {
             this.selectionBox = selectionBox;
         }
         public override void Begin(IPointer pointer, Point point) {
@@ -84,7 +84,7 @@ namespace OpenUtau.App.Views {
         public readonly UPart part;
         public readonly bool isVoice;
         private double xOffset;
-        public PartMoveEditState(Canvas canvas, MainWindowViewModel vm, UPart part) : base(canvas, vm) {
+        public PartMoveEditState(Control control, MainWindowViewModel vm, UPart part) : base(control, vm) {
             this.part = part;
             isVoice = part is UVoicePart;
             var tracksVm = vm.TracksViewModel;
@@ -151,7 +151,7 @@ namespace OpenUtau.App.Views {
 
     class PartResizeEditState : PartEditState {
         public readonly UPart part;
-        public PartResizeEditState(Canvas canvas, MainWindowViewModel vm, UPart part) : base(canvas, vm) {
+        public PartResizeEditState(Control control, MainWindowViewModel vm, UPart part) : base(control, vm) {
             this.part = part;
             var tracksVm = vm.TracksViewModel;
             if (!tracksVm.SelectedParts.Contains(part)) {
@@ -185,10 +185,10 @@ namespace OpenUtau.App.Views {
 
     class PartEraseEditState : PartEditState {
         public override MouseButton MouseButton => MouseButton.Right;
-        public PartEraseEditState(Canvas canvas, MainWindowViewModel vm) : base(canvas, vm) { }
+        public PartEraseEditState(Control control, MainWindowViewModel vm) : base(control, vm) { }
         public override void Update(IPointer pointer, Point point) {
             var project = DocManager.Inst.Project;
-            var control = canvas.InputHitTest(point);
+            var control = base.control.InputHitTest(point);
             if (control is PartControl partControl) {
                 DocManager.Inst.ExecuteCmd(new RemovePartCommand(project, partControl.part));
             }
@@ -197,9 +197,9 @@ namespace OpenUtau.App.Views {
 
     class PartPanningState : PartEditState {
         public override MouseButton MouseButton => MouseButton.Middle;
-        public PartPanningState(Canvas canvas, MainWindowViewModel vm) : base(canvas, vm) { }
+        public PartPanningState(Control control, MainWindowViewModel vm) : base(control, vm) { }
         public override void Begin(IPointer pointer, Point point) {
-            pointer.Capture(canvas);
+            pointer.Capture(control);
             startPoint = point;
         }
         public override void End(IPointer pointer, Point point) {

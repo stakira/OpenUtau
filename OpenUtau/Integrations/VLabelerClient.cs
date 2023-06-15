@@ -46,6 +46,7 @@ namespace OpenUtau.Integrations {
         }
 
         class NewProjectArgs {
+#pragma warning disable 0649
             public string labelerName = "utau-singer.default";
             public string? sampleDirectory;
             public string? cacheDirectory;
@@ -55,13 +56,13 @@ namespace OpenUtau.Integrations {
             public string? inputFile;
             public string encoding = Encoding.UTF8.WebName;
             public bool autoExport;
+#pragma warning restore 0649
         }
 
         class OpenOrCreateRequest {
             public string type = "OpenOrCreate";
             public string projectFile = string.Empty;
             public GotoEntryByName? gotoEntryByName;
-            public GotoEntryByIndex? gotoEntryByIndex;
             public NewProjectArgs newProjectArgs = new NewProjectArgs();
             public long sentAt = Epoch();
         }
@@ -99,7 +100,7 @@ namespace OpenUtau.Integrations {
                 },
             };
             if (oto != null) {
-                request.gotoEntryByName = new GotoEntryByName(oto.Set.Replace("\\","/"), oto.Alias);
+                request.gotoEntryByName = new GotoEntryByName(oto.Set.Replace("\\", "/"), oto.Alias);
             }
             using (var client = new RequestSocket()) {
                 client.Connect("tcp://localhost:32342");

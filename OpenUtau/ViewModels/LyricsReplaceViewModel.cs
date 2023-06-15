@@ -30,7 +30,7 @@ namespace OpenUtau.App.ViewModels {
         public LyricsReplaceViewModel(UVoicePart part, UNote[] notes, string[] lyrics) {
             this.part = part;
             this.notes = notes;
-            startLyrics = lyrics.Clone() as string[];
+            startLyrics = (string[])lyrics.Clone();
             Preview = string.Join(", ", lyrics);
             Lyrics = lyrics;
 

@@ -42,7 +42,7 @@ namespace OpenUtau.App.Controls {
 
         private double trackHeight;
         private double trackOffset;
-        private ObservableCollection<UTrack> _items;
+        private ObservableCollection<UTrack> _items = new ObservableCollection<UTrack>();
 
         private Dictionary<UTrack, TrackHeader> trackHeaders = new Dictionary<UTrack, TrackHeader>();
         private TrackAdder? trackAdder;
@@ -83,16 +83,13 @@ namespace OpenUtau.App.Controls {
             Children.Add(trackAdder);
         }
 
-        protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change) {
+        protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change) {
             base.OnPropertyChanged(change);
-            if (!change.IsEffectiveValueChange) {
-                return;
-            }
             if (change.Property == ItemsProperty) {
-                if (change.OldValue != null && change.OldValue.Value is ObservableCollection<UTrack> oldCol) {
+                if (change.OldValue != null && change.OldValue is ObservableCollection<UTrack> oldCol) {
                     oldCol.CollectionChanged -= Items_CollectionChanged;
                 }
-                if (change.NewValue.HasValue && change.NewValue.Value is ObservableCollection<UTrack> newCol) {
+                if (change.NewValue != null && change.NewValue is ObservableCollection<UTrack> newCol) {
                     newCol.CollectionChanged += Items_CollectionChanged;
                 }
             } else if (change.Property == DataContextProperty) {
@@ -102,7 +99,7 @@ namespace OpenUtau.App.Controls {
             }
         }
 
-        private void Items_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+        private void Items_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) {
             switch (e.Action) {
                 case NotifyCollectionChangedAction.Add:
                 case NotifyCollectionChangedAction.Remove:
