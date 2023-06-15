@@ -52,10 +52,13 @@ namespace OpenUtau.App.Controls {
             MessageBus.Current.Listen<TracksRefreshEvent>()
                 .Subscribe(_ => {
                     foreach (var (track, header) in trackHeaders) {
+                        if (header.ViewModel == null) {
+                            continue;
+                        }
                         if (PlaybackManager.Inst.SoloTrackExist && !track.Solo) {
                             header.ViewModel.Muted = true;
                         }
-                        header.ViewModel?.ManuallyRaise();
+                        header.ViewModel.ManuallyRaise();
                     }
                     if (trackAdder != null) {
                         trackAdder.TrackNo = trackHeaders.Count;
