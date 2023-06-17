@@ -104,7 +104,7 @@
         </Path>
       </Button>
       <Grid Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2" Height="20">
-        <Slider Margin="1,0,0,0" Width="102" HorizontalAlignment="Left" Classes="fader" Minimum="-24" Maximum="12" Value="{Binding Volume}" 
+        <Slider Margin="1,0,0,0" Width="102" HorizontalAlignment="Left" Classes="fader" Minimum="-24" Maximum="12" Value="{Binding Volume}"
                 PointerPressed="VolumeFaderPointerPressed"
                 ContextRequested="VolumeFaderContextRequested"/>
         <TextBlock Margin="106,3,0,0" Width="36" HorizontalAlignment="Left" FontSize="9" FontFamily="monospace" >
