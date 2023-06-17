@@ -616,6 +616,28 @@ namespace OpenUtau.App.Views {
                         args.Handled = false;
                         break;
                 }
+            } else if (args.KeyModifiers == KeyModifiers.Shift) {
+                args.Handled = true;
+                switch (args.Key) {
+                    // solo
+                    case Key.S:
+                        if (viewModel.TracksViewModel.SelectedParts.Count > 0) {
+                            var part = viewModel.TracksViewModel.SelectedParts.First();
+                            var track = DocManager.Inst.Project.tracks[part.trackNo];
+                            MessageBus.Current.SendMessage(new TracksSoloEvent(part.trackNo, !track.Solo));
+                        }
+                        break;
+                    // mute
+                    case Key.M:
+                        if (viewModel.TracksViewModel.SelectedParts.Count > 0) {
+                            var part = viewModel.TracksViewModel.SelectedParts.First();
+                            MessageBus.Current.SendMessage(new TracksMuteEvent(part.trackNo));
+                        }
+                        break;
+                    default:
+                        args.Handled = false;
+                        break;
+                }
             } else if (args.KeyModifiers == (cmdKey | KeyModifiers.Shift)) {
                 args.Handled = true;
                 switch (args.Key) {
@@ -665,7 +687,14 @@ namespace OpenUtau.App.Views {
             } else if (ext == Core.Vogen.VogenSingerInstaller.FileExt) {
                 Core.Vogen.VogenSingerInstaller.Install(file);
             } else if (ext == ".dll") {
-                Core.Api.PhonemizerInstaller.Install(file);
+                var result = await MessageBox.Show(
+                    this,
+                    ThemeManager.GetString("dialogs.installdll.message")+file,
+                    ThemeManager.GetString("dialogs.installdll.caption"),
+                    MessageBox.MessageBoxButtons.OkCancel);
+                if(result == MessageBox.MessageBoxResult.Ok){                
+                    Core.Api.PhonemizerInstaller.Install(file);
+                }
             } else if (ext == ".exe") {
                 var setup = new ExeSetupDialog() {
                     DataContext = new ExeSetupViewModel(file)
