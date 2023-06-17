@@ -350,7 +350,6 @@ namespace OpenUtau.App.Views {
 
         private void NotesCanvasRightPointerPressed(Control control, PointerPoint point, PointerPressedEventArgs args) {
             var selectedNotes = ViewModel.NotesViewModel.Selection.ToList();
-            ViewModel.NotesViewModel.DeselectNotes();
             if (ViewModel.NotesViewModel.DrawPitchTool) {
                 editState = new ResetPitchState(control, ViewModel, this);
                 return;
@@ -406,42 +405,44 @@ namespace OpenUtau.App.Views {
             }
             if (ViewModel.NotesViewModel.CursorTool || ViewModel.NotesViewModel.PenTool) {
                 var hitInfo = ViewModel.NotesViewModel.HitTest.HitTestNote(point.Position);
-                if (hitInfo.hitBody) {
-                    // if note in question was already in selection before clearing
-                    if (selectedNotes.Contains(hitInfo.note)) {
+                if (hitInfo.hitBody && hitInfo.note != null) {
+                    if (!selectedNotes.Contains(hitInfo.note)) {
+                        ViewModel.NotesViewModel.DeselectNotes();
                         ViewModel.NotesViewModel.SelectNote(hitInfo.note, false);
                     }
-                }
-                if (ViewModel.NotesViewModel.Selection.Count > 0) {
-                    ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
-                        Header = ThemeManager.GetString("context.note.copy"),
-                        Command = ViewModel.NoteCopyCommand,
-                        CommandParameter = hitInfo,
-                    });
-                    ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
-                        Header = ThemeManager.GetString("context.note.delete"),
-                        Command = ViewModel.NoteDeleteCommand,
-                        CommandParameter = hitInfo,
-                    });
-                    ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
-                        Header = ThemeManager.GetString("pianoroll.menu.notes"),
-                        Items = ViewModel.NoteBatchEdits.ToArray(),
-                    });
-                    ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
-                        Header = ThemeManager.GetString("pianoroll.menu.lyrics"),
-                        Items = ViewModel.LyricBatchEdits.ToArray(),
-                    });
-                    ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
-                        Header = ThemeManager.GetString("pianoroll.menu.lyrics.edit"),
-                        Command = lyricsDialogCommand,
-                    });
-                    ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
-                        Header = ThemeManager.GetString("pianoroll.menu.notedefaults"),
-                        Command = noteDefaultsCommand,
-                    });
-                    shouldOpenNotesContextMenu = true;
+                    if (ViewModel.NotesViewModel.Selection.Count > 0) {
+                        ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
+                            Header = ThemeManager.GetString("context.note.copy"),
+                            Command = ViewModel.NoteCopyCommand,
+                            CommandParameter = hitInfo,
+                        });
+                        ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
+                            Header = ThemeManager.GetString("context.note.delete"),
+                            Command = ViewModel.NoteDeleteCommand,
+                            CommandParameter = hitInfo,
+                        });
+                        ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
+                            Header = ThemeManager.GetString("pianoroll.menu.notes"),
+                            Items = ViewModel.NoteBatchEdits.ToArray(),
+                        });
+                        ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
+                            Header = ThemeManager.GetString("pianoroll.menu.lyrics"),
+                            Items = ViewModel.LyricBatchEdits.ToArray(),
+                        });
+                        ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
+                            Header = ThemeManager.GetString("pianoroll.menu.lyrics.edit"),
+                            Command = lyricsDialogCommand,
+                        });
+                        ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
+                            Header = ThemeManager.GetString("pianoroll.menu.notedefaults"),
+                            Command = noteDefaultsCommand,
+                        });
+                        shouldOpenNotesContextMenu = true;
+                        return;
+                    }
                 }
             } else if (ViewModel.NotesViewModel.EraserTool || ViewModel.NotesViewModel.PenPlusTool) {
+                ViewModel.NotesViewModel.DeselectNotes();
                 editState = new NoteEraseEditState(control, ViewModel, this, MouseButton.Right);
                 Cursor = ViewConstants.cursorNo;
             }
