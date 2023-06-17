@@ -70,6 +70,7 @@
   <system:String x:Key="lyrics.reset">คืนค่า</system:String>
   <system:String x:Key="lyrics.selectnotes">โปรดเลือกตัวโน้ตก่อน!</system:String>
   <system:String x:Key="lyrics.separators">ตัวแบ่งแยก</system:String>
+  
   <!--<system:String x:Key="lyricsreplace.after">After :</system:String>-->
   <!--<system:String x:Key="lyricsreplace.before">Before :</system:String>-->
   <!--<system:String x:Key="lyricsreplace.preset.rmvalphabet">Remove alphabet</system:String>-->

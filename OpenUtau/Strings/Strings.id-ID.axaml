@@ -70,6 +70,7 @@
   <system:String x:Key="lyrics.reset">Setel Ulang</system:String>
   <system:String x:Key="lyrics.selectnotes">Pilih beberapa not terlebih dahulu!</system:String>
   <system:String x:Key="lyrics.separators">Pemisah</system:String>
+  
   <!--<system:String x:Key="lyricsreplace.after">After :</system:String>-->
   <!--<system:String x:Key="lyricsreplace.before">Before :</system:String>-->
   <!--<system:String x:Key="lyricsreplace.preset.rmvalphabet">Remove alphabet</system:String>-->

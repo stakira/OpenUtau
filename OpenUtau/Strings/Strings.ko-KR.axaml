@@ -70,6 +70,7 @@
   <system:String x:Key="lyrics.reset">초기화</system:String>
   <system:String x:Key="lyrics.selectnotes">아무 노트나 먼저 선택해주세요!</system:String>
   <system:String x:Key="lyrics.separators">구분자</system:String>
+  
   <!--<system:String x:Key="lyricsreplace.after">After :</system:String>-->
   <!--<system:String x:Key="lyricsreplace.before">Before :</system:String>-->
   <!--<system:String x:Key="lyricsreplace.preset.rmvalphabet">Remove alphabet</system:String>-->

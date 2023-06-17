@@ -70,6 +70,7 @@
   <system:String x:Key="lyrics.reset">重設</system:String>
   <system:String x:Key="lyrics.selectnotes">請先選取音符!</system:String>
   <system:String x:Key="lyrics.separators">分隔符號</system:String>
+  
   <!--<system:String x:Key="lyricsreplace.after">After :</system:String>-->
   <!--<system:String x:Key="lyricsreplace.before">Before :</system:String>-->
   <!--<system:String x:Key="lyricsreplace.preset.rmvalphabet">Remove alphabet</system:String>-->

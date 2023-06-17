@@ -70,6 +70,7 @@
   <system:String x:Key="lyrics.reset">Restablecer</system:String>
   <system:String x:Key="lyrics.selectnotes">Por favor, selecciona un grupo de notas.</system:String>
   <system:String x:Key="lyrics.separators">Separadores</system:String>
+  
   <!--<system:String x:Key="lyricsreplace.after">After :</system:String>-->
   <!--<system:String x:Key="lyricsreplace.before">Before :</system:String>-->
   <!--<system:String x:Key="lyricsreplace.preset.rmvalphabet">Remove alphabet</system:String>-->
