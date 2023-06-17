@@ -31,6 +31,8 @@
   <system:String x:Key="dialogs.exitsave.message">当前工程有未保存改动。是否保存？</system:String>
   <system:String x:Key="dialogs.export.caption">导出</system:String>
   <system:String x:Key="dialogs.export.savefirst">请先保存工程文件</system:String>
+  <system:String x:Key="dialogs.installdll.caption">安装音素器</system:String>
+  <system:String x:Key="dialogs.installdll.message">安装 </system:String>
   <system:String x:Key="dialogs.messagebox.cancel">取消</system:String>
   <system:String x:Key="dialogs.messagebox.no">否</system:String>
   <system:String x:Key="dialogs.messagebox.ok">好</system:String>
