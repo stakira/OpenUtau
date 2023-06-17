@@ -185,7 +185,6 @@
   <system:String x:Key="pianoroll.menu.lyrics">歌詞</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">"-" を "+" に置き換え</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">歌詞を編集</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.hanzitopinyin">漢字をピンインへ</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">ひらがな→ローマ字</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">連続音→単独音（日本語）</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">文字のSuffixを削除</system:String>
@@ -225,7 +224,8 @@
   <system:String x:Key="pianoroll.tool.drawpitch">ピッチ描画ツール (4)
     左クリックで描画
     右クリックでリセット
-    Ctrl長押しで線をなめらかにする</system:String>
+    Ctrl長押しで選択
+    Alt長押しで線をなめらかにする</system:String>
   <system:String x:Key="pianoroll.tool.eraser">消しゴムツール (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">ナイフツール (5)</system:String>
   <system:String x:Key="pianoroll.tool.penplus">ペン+ツール (Ctrl + 2)
@@ -340,6 +340,16 @@
   <system:String x:Key="singers.subbanks.toneranges">音域</system:String>
   <system:String x:Key="singers.visitwebsite">ウェブサイトへ</system:String>
 
+  <!--<system:String x:Key="singersetup.archivefileencoding">Archive File Encoding</system:String>-->
+  <!--<system:String x:Key="singersetup.archivefileencoding.prompt">Choose an encoding that make file names look right.</system:String>-->
+  <!--<system:String x:Key="singersetup.back">Back</system:String>-->
+  <!--<system:String x:Key="singersetup.install">Install</system:String>-->
+  <!--<system:String x:Key="singersetup.next">Next</system:String>-->
+  <!--<system:String x:Key="singersetup.missinginfo">Some info are missing from character.yaml!</system:String>-->
+  <!--<system:String x:Key="singersetup.singertype">Singer Type</system:String>-->
+  <!--<system:String x:Key="singersetup.textfileencoding">Text File Encoding</system:String>-->
+  <!--<system:String x:Key="singersetup.textfileencoding.prompt">Choose an encoding that make file contents look right.</system:String>-->
+  
   <!--<system:String x:Key="tip.aliasbox">Override Alias</system:String>-->
   <system:String x:Key="tip.exps">
 左クリック: 表情を設定
