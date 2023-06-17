@@ -665,7 +665,14 @@ namespace OpenUtau.App.Views {
             } else if (ext == Core.Vogen.VogenSingerInstaller.FileExt) {
                 Core.Vogen.VogenSingerInstaller.Install(file);
             } else if (ext == ".dll") {
-                Core.Api.PhonemizerInstaller.Install(file);
+                var result = await MessageBox.Show(
+                    this,
+                    ThemeManager.GetString("dialogs.installdll.message")+file,
+                    ThemeManager.GetString("dialogs.installdll.caption"),
+                    MessageBox.MessageBoxButtons.OkCancel);
+                if(result == MessageBox.MessageBoxResult.Ok){                
+                    Core.Api.PhonemizerInstaller.Install(file);
+                }
             } else if (ext == ".exe") {
                 var setup = new ExeSetupDialog() {
                     DataContext = new ExeSetupViewModel(file)
