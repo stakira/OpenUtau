@@ -8,7 +8,7 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="OpenUtau.App.Views.PianoRollWindow"
         Icon="/Assets/open-utau.ico"
-        Title="Piano Roll" MinWidth="300" MinHeight="200" KeyDown="OnKeyDown" Closing="WindowClosing"
+        Title="{Binding NotesViewModel.WindowTitle}" MinWidth="300" MinHeight="200" KeyDown="OnKeyDown" Closing="WindowClosing"
         TransparencyLevelHint="None" Background="{DynamicResource MainWindowBackgroundBrush}"
         ExtendClientAreaToDecorationsHint="{Binding ExtendToFrame}" Deactivated="WindowDeactivated">
   <Window.Styles>
@@ -319,6 +319,19 @@
                             ToolTip.Tip="{DynamicResource pianoroll.toggle.phoneme}">
                 <Grid Width="18" Height="18">
                   <Path Classes="stroked" Data="M 3 13 L 6 5.5 L 12 5.5 L 15 13"/>
+                </Grid>
+              </ToggleButton>
+              <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="20" Width="20" IsChecked="{Binding NotesViewModel.ShowNoteParams}"
+                            ToolTip.Tip="{DynamicResource pianoroll.toggle.noteparams}" IsVisible="False">
+                <Grid Width="18" Height="18">
+                  <Path Classes="filled" Data="M3,17V19H9V17H3M3,5V7H13V5H3M13,21V19H21V17H13V15H11V21H13M7,9V11H3V13H7V15H9V9H7M21,13V11H11V13H21M15,9H17V7H21V5H17V3H15V9Z">
+                    <Path.RenderTransform>
+                      <TransformGroup>
+                        <ScaleTransform ScaleX=".65" ScaleY=".65" />
+                        <TranslateTransform X="-2" Y="-2"/>
+                      </TransformGroup>
+                    </Path.RenderTransform>
+                  </Path>
                 </Grid>
               </ToggleButton>
               <ToggleButton Name="SnapToggle" Classes="toolbar" Margin="0" Padding="1" Height="20" IsChecked="{Binding NotesViewModel.IsSnapOn}"

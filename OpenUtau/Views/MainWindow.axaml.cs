@@ -375,8 +375,7 @@ namespace OpenUtau.App.Views {
             if (await WarnToSave(project)) {
                 var name = System.IO.Path.GetFileNameWithoutExtension(project.FilePath);
                 var path = System.IO.Path.GetDirectoryName(project.FilePath);
-                path = System.IO.Path.Combine(path!, "Export");
-                path = System.IO.Path.Combine(path!, $"{name}.wav");
+                path = System.IO.Path.Combine(path!, "Export", $"{name}.wav");
                 PlaybackManager.Inst.RenderToFiles(project, path);
             }
         }
@@ -402,12 +401,11 @@ namespace OpenUtau.App.Views {
             if (await WarnToSave(project)) {
                 var name = System.IO.Path.GetFileNameWithoutExtension(project.FilePath);
                 var path = System.IO.Path.GetDirectoryName(project.FilePath);
-                path = System.IO.Path.Combine(path!, "Export");
-                path = System.IO.Path.Combine(path!, $"{name}.ust");
+                path = System.IO.Path.Combine(path!, "Export", $"{name}.ust");
                 for (var i = 0; i < project.parts.Count; i++) {
                     var part = project.parts[i];
                     if (part is UVoicePart voicePart) {
-                        var savePath = PathManager.Inst.GetPartSavePath(path, i);
+                        var savePath = PathManager.Inst.GetPartSavePath(path, voicePart.DisplayName, i);
                         Ust.SavePart(project, voicePart, savePath);
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"{savePath}."));
                     }
@@ -430,7 +428,7 @@ namespace OpenUtau.App.Views {
                 for (var i = 0; i < project.parts.Count; i++) {
                     var part = project.parts[i];
                     if (part is UVoicePart voicePart) {
-                        var savePath = PathManager.Inst.GetPartSavePath(file, i);
+                        var savePath = PathManager.Inst.GetPartSavePath(file, voicePart.DisplayName, i);
                         Ust.SavePart(project, voicePart, savePath);
                         DocManager.Inst.ExecuteCmd(new ProgressBarNotification(0, $"{savePath}."));
                     }
@@ -487,8 +485,15 @@ namespace OpenUtau.App.Views {
             }
             var dialog = lifetime.Windows.FirstOrDefault(w => w is SingersDialog);
             if (dialog == null) {
+                USinger? singer = null;
+                if (viewModel.TracksViewModel.SelectedParts.Count > 0) {
+                    singer = viewModel.TracksViewModel.Tracks[viewModel.TracksViewModel.SelectedParts.First().trackNo].Singer;
+                }
+                if(singer == null && viewModel.TracksViewModel.Tracks.Count > 0) {
+                    singer = viewModel.TracksViewModel.Tracks.First().Singer;
+                }
                 dialog = new SingersDialog() {
-                    DataContext = new SingersViewModel(),
+                    DataContext = new SingersViewModel(singer),
                 };
                 dialog.Show();
             }
@@ -726,6 +731,16 @@ namespace OpenUtau.App.Views {
                 }
             } else if (ext == Core.Vogen.VogenSingerInstaller.FileExt) {
                 Core.Vogen.VogenSingerInstaller.Install(file);
+            } else if (ext == ".dll") {
+                Core.Api.PhonemizerInstaller.Install(file);
+            } else if (ext == ".exe") {
+                var setup = new ExeSetupDialog() {
+                    DataContext = new ExeSetupViewModel(file)
+                };
+                _ = setup.ShowDialog(this);
+                if (setup.Position.Y < 0) {
+                    setup.Position = setup.Position.WithY(0);
+                }
             } else if (ext == ".mp3" || ext == ".wav" || ext == ".ogg" || ext == ".flac") {
                 try {
                     viewModel.ImportAudio(file);
@@ -948,7 +963,9 @@ namespace OpenUtau.App.Views {
                 // Workaround for new window losing focus.
                 openPianoRollWindow = true;
                 int tick = viewModel.TracksViewModel.PointToTick(e.GetPosition(canvas));
+                string[] pianorollCache = pianoRollWindow.CacheExpressions();
                 DocManager.Inst.ExecuteCmd(new LoadPartNotification(partControl.part, DocManager.Inst.Project, tick));
+                pianoRollWindow.LoadCacheExpressions(pianorollCache);
             }
         }
 

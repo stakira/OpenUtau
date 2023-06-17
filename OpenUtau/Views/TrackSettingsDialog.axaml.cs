@@ -1,21 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
-using Avalonia.Threading;
 using OpenUtau.App.ViewModels;
+using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
-using ReactiveUI.Fody.Helpers;
 
 namespace OpenUtau.App.Views {
     public partial class TrackSettingsDialog : Window {
 
         TrackSettingsViewModel viewModel;
 
-        public TrackSettingsDialog() : this(new UTrack()) { }
+        public TrackSettingsDialog() : this(new UTrack(DocManager.Inst.Project)) { }
 
         public TrackSettingsDialog(UTrack track) {
             InitializeComponent();
