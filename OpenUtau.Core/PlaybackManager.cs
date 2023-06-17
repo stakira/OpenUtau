@@ -62,6 +62,7 @@ namespace OpenUtau.Core {
         public Audio.IAudioOutput AudioOutput { get; set; } = new Audio.DummyAudioOutput();
         public bool Playing => AudioOutput.PlaybackState == PlaybackState.Playing;
         public bool StartingToPlay { get; private set; }
+        public bool SoloTrackExist { get; set; } = false;
 
         public void PlayTestSound() {
             masterMix = null;
@@ -170,7 +171,7 @@ namespace OpenUtau.Core {
                     RenderEngine engine = new RenderEngine(project);
                     var trackMixes = engine.RenderTracks(DocManager.Inst.MainScheduler, ref renderCancellation);
                     for (int i = 0; i < trackMixes.Count; ++i) {
-                        if (trackMixes[i] == null || i >= project.tracks.Count || project.tracks[i].Mute) {
+                        if (trackMixes[i] == null || i >= project.tracks.Count || project.tracks[i].Muted) {
                             continue;
                         }
                         var file = PathManager.Inst.GetExportPath(exportPath, project.tracks[i]);

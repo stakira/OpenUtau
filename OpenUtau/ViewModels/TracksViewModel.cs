@@ -21,6 +21,12 @@ namespace OpenUtau.App.ViewModels {
             this.solo = solo;
         }
     }
+    public class TracksMuteEvent {
+        public readonly int trackNo;
+        public TracksMuteEvent(int trackNo) {
+            this.trackNo = trackNo;
+        }
+    }
     public class PartsSelectionEvent {
         public readonly UPart[] selectedParts;
         public readonly UPart[] tempSelectedParts;
