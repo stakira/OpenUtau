@@ -31,6 +31,8 @@
   <system:String x:Key="dialogs.exitsave.message">保存されていない変更があります。保存しますか？</system:String>
   <system:String x:Key="dialogs.export.caption">エクスポート</system:String>
   <system:String x:Key="dialogs.export.savefirst">プロジェクトを保存してください。</system:String>
+  <system:String x:Key="dialogs.installdll.caption">Phonemizerのインストール</system:String>
+  <system:String x:Key="dialogs.installdll.message">インストールします : </system:String>
   <system:String x:Key="dialogs.messagebox.cancel">キャンセル</system:String>
   <system:String x:Key="dialogs.messagebox.no">いいえ</system:String>
   <system:String x:Key="dialogs.messagebox.ok">OK</system:String>
