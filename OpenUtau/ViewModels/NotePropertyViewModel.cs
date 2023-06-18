@@ -179,6 +179,8 @@ namespace OpenUtau.App.ViewModels {
                                 DocManager.Inst.ExecuteCmd(new VibratoDepthCommand(part, note, VibratoDepth));
                                 DocManager.Inst.ExecuteCmd(new VibratoPeriodCommand(part, note, VibratoPeriod));
                                 DocManager.Inst.ExecuteCmd(new VibratoShiftCommand(part, note, VibratoShift));
+                            } else {
+                                DocManager.Inst.ExecuteCmd(new VibratoLengthCommand(part, note, 0));
                             }
                         } else if (note.vibrato.length != 0) {
                             DocManager.Inst.ExecuteCmd(new VibratoLengthCommand(part, note, 0));
