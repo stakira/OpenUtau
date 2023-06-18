@@ -33,7 +33,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public string TrackName { get; set; } = string.Empty;
         [Reactive] public double Volume { get; set; }
         [Reactive] public double Pan { get; set; }
-        [Reactive] public bool Mute { get; set; }
+        [Reactive] public bool Muted { get; set; }
         [Reactive] public bool Solo { get; set; }
         [Reactive] public Bitmap? Avatar { get; set; }
 
@@ -130,26 +130,22 @@ namespace OpenUtau.App.ViewModels {
             TrackName = track.TrackName;
             Volume = track.Volume;
             Pan = track.Pan;
-            Mute = track.Mute;
+            Muted = track.Muted;
             Solo = track.Solo;
-            this.WhenAnyValue(x => x.track.TrackName)
-                .Subscribe(trackName => {
-                    TrackName = trackName;
-                });
             this.WhenAnyValue(x => x.Volume)
                 .Subscribe(volume => {
                     track.Volume = volume;
-                    DocManager.Inst.ExecuteCmd(new VolumeChangeNotification(track.TrackNo, Mute ? -24 : volume));
+                    DocManager.Inst.ExecuteCmd(new VolumeChangeNotification(track.TrackNo, Muted ? -24 : volume));
                 });
             this.WhenAnyValue(x => x.Pan)
                 .Subscribe(pan => {
                     track.Pan = pan;
                     DocManager.Inst.ExecuteCmd(new PanChangeNotification(track.TrackNo, pan));
                 });
-            this.WhenAnyValue(x => x.Mute)
-                .Subscribe(mute => {
-                    track.Mute = mute;
-                    DocManager.Inst.ExecuteCmd(new VolumeChangeNotification(track.TrackNo, mute ? -24 : Volume));
+            this.WhenAnyValue(x => x.Muted)
+                .Subscribe(muted => {
+                    track.Muted = muted;
+                    DocManager.Inst.ExecuteCmd(new VolumeChangeNotification(track.TrackNo, muted ? -24 : Volume));
                 });
             this.WhenAnyValue(x => x.Solo)
                 .Subscribe(solo => {
@@ -161,6 +157,21 @@ namespace OpenUtau.App.ViewModels {
 
         public void ToggleSolo() {
             MessageBus.Current.SendMessage(new TracksSoloEvent(track.TrackNo, !track.Solo));
+        }
+
+        public void ToggleMute() {
+            if (!track.Mute) {
+                track.Mute = true;
+                Muted = true;
+            } else {
+                track.Mute = false;
+                if (PlaybackManager.Inst.SoloTrackExist) {
+                    Muted = true;
+                } else {
+                    Muted = false;
+                }
+            }
+            this.RaisePropertyChanged(nameof(Muted));
         }
 
         private bool TryChangePhonemizer(string phonemizerName) {
@@ -269,7 +280,7 @@ namespace OpenUtau.App.ViewModels {
             this.RaisePropertyChanged(nameof(Phonemizer));
             this.RaisePropertyChanged(nameof(PhonemizerTag));
             this.RaisePropertyChanged(nameof(Renderer));
-            this.RaisePropertyChanged(nameof(Mute));
+            this.RaisePropertyChanged(nameof(Muted));
             this.RaisePropertyChanged(nameof(Solo));
             this.RaisePropertyChanged(nameof(Volume));
             this.RaisePropertyChanged(nameof(Pan));
@@ -326,6 +337,7 @@ namespace OpenUtau.App.ViewModels {
                 Phonemizer = track.Phonemizer,
                 RendererSettings = track.RendererSettings,
                 Mute = track.Mute,
+                Muted = track.Muted,
                 Solo = track.Solo,
                 Volume = track.Volume,
                 Pan = track.Pan,
@@ -350,6 +362,7 @@ namespace OpenUtau.App.ViewModels {
                 Phonemizer = track.Phonemizer,
                 RendererSettings = track.RendererSettings,
                 Mute = track.Mute,
+                Muted = track.Muted,
                 Solo = track.Solo,
                 Volume = track.Volume,
                 Pan = track.Pan,

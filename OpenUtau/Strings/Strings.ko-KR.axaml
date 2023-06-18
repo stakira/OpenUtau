@@ -206,6 +206,10 @@
   <system:String x:Key="pianoroll.toggle.vibrato">비브라토 보기 (U)</system:String>
   <system:String x:Key="pianoroll.toggle.waveform">파형 보기 (W)</system:String>
   <system:String x:Key="pianoroll.tool.drawpitch">피치 그리기 툴 (4)</system:String>
+  <!--Left click to draw
+  Right click to reset
+  Hold Ctrl to select
+  Hold Alt to smoothen</system:String>-->
   <system:String x:Key="pianoroll.tool.eraser">삭제 툴 (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">잘라내기 툴 (5)</system:String>
   <system:String x:Key="pianoroll.tool.penplus">팬+ 툴 (Ctrl + 2)

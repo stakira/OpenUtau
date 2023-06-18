@@ -247,10 +247,10 @@ namespace OpenUtau.App.Views {
         private void NotesCanvasLeftPointerPressed(Control control, PointerPoint point, PointerPressedEventArgs args) {
             if (ViewModel.NotesViewModel.DrawPitchTool) {
                 ViewModel.NotesViewModel.DeselectNotes();
-                if (args.KeyModifiers == cmdKey) {
+                if (args.KeyModifiers == KeyModifiers.Alt) {
                     editState = new SmoothenPitchState(control, ViewModel, this);
                     return;
-                } else {
+                } else if (args.KeyModifiers != cmdKey) {
                     editState = new DrawPitchState(control, ViewModel, this);
                     return;
                 }
@@ -325,7 +325,8 @@ namespace OpenUtau.App.Views {
             }
             if (ViewModel.NotesViewModel.CursorTool ||
                 ViewModel.NotesViewModel.PenTool && args.KeyModifiers == cmdKey ||
-                ViewModel.NotesViewModel.PenPlusTool && args.KeyModifiers == cmdKey) {
+                ViewModel.NotesViewModel.PenPlusTool && args.KeyModifiers == cmdKey ||
+                ViewModel.NotesViewModel.DrawPitchTool && args.KeyModifiers == cmdKey) {
                 if (args.KeyModifiers == KeyModifiers.None) {
                     // New selection.
                     ViewModel.NotesViewModel.DeselectNotes();
@@ -457,6 +458,10 @@ namespace OpenUtau.App.Views {
                 return;
             }
             if (ViewModel?.NotesViewModel?.HitTest == null) {
+                return;
+            }
+            if((ViewModel.NotesViewModel.DrawPitchTool && args.KeyModifiers != cmdKey) || ViewModel.NotesViewModel.EraserTool) {
+                Cursor = null;
                 return;
             }
             var pitHitInfo = ViewModel.NotesViewModel.HitTest.HitTestPitchPoint(point.Position);
@@ -1189,6 +1194,18 @@ namespace OpenUtau.App.Views {
                     if (isCtrl) {
                         _ = MainWindow?.Save();
                         return true;
+                    }
+                    // solo
+                    if(isShift) {
+                        var track = project.tracks[notesVm.Part.trackNo];
+                        MessageBus.Current.SendMessage(new TracksSoloEvent(notesVm.Part.trackNo, !track.Solo));
+                        return true;
+                    }
+                    break;
+                case Key.M:
+                    // mute
+                    if (isShift) {
+                        MessageBus.Current.SendMessage(new TracksMuteEvent(notesVm.Part.trackNo));
                     }
                     break;
                 case Key.F:
