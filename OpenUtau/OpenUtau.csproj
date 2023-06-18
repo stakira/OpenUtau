@@ -73,8 +73,8 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Update="Views\NoteParameterDialog.axaml.cs">
-      <DependentUpon>NoteParameterDialog.axaml</DependentUpon>
+    <Compile Update="Views\NotePropertyDialog.axaml.cs">
+      <DependentUpon>NotePropertyDialog.axaml</DependentUpon>
     </Compile>
     <Compile Update="Views\TrackSettingsDialog.axaml.cs">
       <DependentUpon>TrackSettingsDialog.axaml</DependentUpon>
