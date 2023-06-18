@@ -100,22 +100,20 @@ namespace OpenUtau.App.ViewModels {
             VibratoShift = note.vibrato.shift;
 
             foreach(KeyValuePair<string, UExpressionDescriptor> pair in DocManager.Inst.Project.expressions) {
-                if(pair.Value.type != UExpressionType.Curve) {
-                    var viewModel = new NotePropertyExpViewModel(pair.Value);
-                    var phonemeExpression = note.phonemeExpressions.FirstOrDefault(e => e.abbr == pair.Value.abbr);
-                    if (phonemeExpression != null) {
-                        if (viewModel.IsNumerical) {
-                            viewModel.Value = phonemeExpression.value;
-                        } else if (viewModel.IsOptions) {
-                            viewModel.SelectedOption = (int)phonemeExpression.value;
-                        }
+                var viewModel = new NotePropertyExpViewModel(pair.Value);
+                var phonemeExpression = note.phonemeExpressions.FirstOrDefault(e => e.abbr == pair.Value.abbr);
+                if (phonemeExpression != null) {
+                    if (viewModel.IsNumerical) {
+                        viewModel.Value = phonemeExpression.value;
+                    } else if (viewModel.IsOptions) {
+                        viewModel.SelectedOption = (int)phonemeExpression.value;
                     }
-                    if (pair.Value.abbr == Ustx.CLR) {
-                        var track = DocManager.Inst.Project.tracks[notesViewModel.Part!.trackNo];
-                        track.VoiceColorExp.options.ForEach(opt => viewModel.Options.Add(opt));
-                    }
-                    Expressions.Add(viewModel);
                 }
+                if (pair.Value.abbr == Ustx.CLR) {
+                    var track = DocManager.Inst.Project.tracks[notesViewModel.Part!.trackNo];
+                    track.VoiceColorExp.options.ForEach(opt => viewModel.Options.Add(opt));
+                }
+                Expressions.Add(viewModel);
             }
         }
 
@@ -201,7 +199,22 @@ namespace OpenUtau.App.ViewModels {
                         foreach (UNote note in selectedNotes) {
                             foreach (UPhoneme phoneme in notesViewModel.Part.phonemes) {
                                 if (phoneme.Parent == note) {
-                                    DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(notesViewModel.Project, track, notesViewModel.Part, phoneme, expVM.Abbr, value));
+                                    if (expVM.isCurve) {
+                                        int start = (int)Math.Floor(phoneme.position - phoneme.preutter);
+                                        int end = (int)Math.Ceiling(phoneme.End - phoneme.tailIntrude + phoneme.tailOverlap);
+                                        int valueInt = (int)Math.Round(value);
+                                        DocManager.Inst.ExecuteCmd(new SetCurveCommand(notesViewModel.Project, notesViewModel.Part, expVM.abbr,
+                                            start, valueInt,
+                                            start, valueInt));
+                                        DocManager.Inst.ExecuteCmd(new SetCurveCommand(notesViewModel.Project, notesViewModel.Part, expVM.abbr,
+                                            end, valueInt,
+                                            end, valueInt));
+                                        DocManager.Inst.ExecuteCmd(new SetCurveCommand(notesViewModel.Project, notesViewModel.Part, expVM.abbr,
+                                            start, valueInt,
+                                            end, valueInt));
+                                    } else {
+                                        DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(notesViewModel.Project, track, notesViewModel.Part, phoneme, expVM.abbr, value));
+                                    }
                                 }
                             }
                         }
@@ -220,7 +233,8 @@ namespace OpenUtau.App.ViewModels {
         public float Min { get; set; }
         public float Max { get; set; }
         public ObservableCollection<string> Options { get; set; } = new ObservableCollection<string>();
-        public string Abbr { get; set; }
+        public bool isCurve = false;
+        public string abbr;
 
         [Reactive] public bool Set { get; set; } = false;
         [Reactive] public float Value { get; set; }
@@ -229,11 +243,16 @@ namespace OpenUtau.App.ViewModels {
         public NotePropertyExpViewModel(UExpressionDescriptor descriptor) {
             Name = descriptor.name;
             Value = descriptor.defaultValue;
-            Abbr = descriptor.abbr;
+            abbr = descriptor.abbr;
             if (descriptor.type == UExpressionType.Numerical) {
                 IsNumerical = true;
                 Max = descriptor.max;
                 Min = descriptor.min;
+            } else if (descriptor.type == UExpressionType.Curve) {
+                IsNumerical = true;
+                Max = descriptor.max;
+                Min = descriptor.min;
+                isCurve = true;
             } else if (descriptor.type == UExpressionType.Options) {
                 IsOptions = true;
                 descriptor.options.ForEach(opt => Options.Add(opt));
