@@ -1,0 +1,16 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:OpenUtau.App.ViewModels"
+             x:Class="OpenUtau.App.Controls.NotePropertyExpression">
+  <Grid ColumnDefinitions="22,193,7,50,20,*">
+    <CheckBox IsChecked="{Binding Set}" Grid.Column="0" VerticalAlignment="Center"/>
+    <Label Content="{Binding Name}" Grid.Column="1" VerticalAlignment="Center"/>
+    <TextBox Text="{Binding Value}" Grid.Column="3" IsVisible="{Binding IsNumerical}" VerticalAlignment="Center" IsEnabled="{Binding Set}"/>
+    <Slider Grid.Column="5" Classes="fader" Value="{Binding Value}" Minimum="{Binding Min}" Maximum="{Binding Max}"
+            TickPlacement="BottomRight" TickFrequency="1" IsSnapToTickEnabled="true" IsVisible="{Binding IsNumerical}" VerticalAlignment="Center" IsEnabled="{Binding Set}" />
+    <ComboBox Grid.Column="2" Grid.ColumnSpan="4" ItemsSource="{Binding Options}"
+                SelectedIndex="{Binding SelectedOption}" MinWidth="120" IsVisible="{Binding IsOptions}" VerticalAlignment="Center" IsEnabled="{Binding Set}" />
+  </Grid>
+</UserControl>

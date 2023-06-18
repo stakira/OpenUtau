@@ -68,6 +68,9 @@
     <None Include="..\runtimes\linux-x64\native\**" CopyToOutputDirectory="PreserveNewest" LinkBase="." />
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="Controls\NotePropertyExpression.axaml.cs">
+      <DependentUpon>NotePropertyExpression.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Resources\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>

@@ -155,8 +155,8 @@
   <system:String x:Key="notedefaults.reset.tooltip">すべての値をリセットします。
 警告: このオプションを実行すると、カスタムプリセットも削除されます。</system:String>
   <system:String x:Key="notedefaults.vibrato">ビブラート</system:String>
-  <system:String x:Key="notedefaults.vibrato.autominlength">最小値</system:String>
-  <system:String x:Key="notedefaults.vibrato.autotoggle">最小値による自動ビブラート</system:String>
+  <system:String x:Key="notedefaults.vibrato.autominlength">最短の音符長</system:String>
+  <system:String x:Key="notedefaults.vibrato.autotoggle">長い音符に自動でビブラートをかける</system:String>
   <system:String x:Key="notedefaults.vibrato.depth">深さ</system:String>
   <system:String x:Key="notedefaults.vibrato.in">フェードイン</system:String>
   <system:String x:Key="notedefaults.vibrato.length">長さ</system:String>

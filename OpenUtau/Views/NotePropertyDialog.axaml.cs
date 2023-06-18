@@ -1,7 +1,10 @@
-﻿using Avalonia.Controls;
+﻿using System.Collections.Generic;
+using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using OpenUtau.App.Controls;
 using OpenUtau.App.ViewModels;
+using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.App.Views {
     public partial class NotePropertyDialog : Window {
@@ -15,6 +18,13 @@ namespace OpenUtau.App.Views {
             InitializeComponent();
             ViewModel = vm;
             DataContext = ViewModel;
+
+            foreach(NotePropertyExpViewModel expVM in ViewModel.Expressions) {
+                var value = expVM.Value;
+                var control = new NotePropertyExpression() { DataContext = expVM };
+                expVM.Value = value; // When value greater than 100 is set to a slider, it is set to 100.
+                ExpressionsPanel.Children.Add(control);
+            }
         }
 
         void OnSavePortamentoPreset(object sender, RoutedEventArgs e) {

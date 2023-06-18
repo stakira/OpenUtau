@@ -141,6 +141,7 @@
   <system:String x:Key="menu.tools.singers">Singers...</system:String>
 
   <system:String x:Key="noteproperty.set">Set</system:String>
+  <system:String x:Key="noteproperty.vibratoenable">Enable</system:String>
   <system:String x:Key="pianoroll.menu.noteproperty">Note property</system:String>
   <system:String x:Key="noteproperty.apply">Apply</system:String>
   <system:String x:Key="noteproperty.cancel">Cancel</system:String>

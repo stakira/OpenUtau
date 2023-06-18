@@ -3,17 +3,23 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="using:OpenUtau.App.ViewModels"
+        xmlns:c="clr-namespace:OpenUtau.App.Controls"
         mc:Ignorable="d" Width="600" Height="600"
         x:Class="OpenUtau.App.Views.NotePropertyDialog"
         Icon="/Assets/open-utau.ico"
         Title="{DynamicResource pianoroll.menu.noteproperty}"
-        WindowStartupLocation="CenterScreen">
-  <Grid Margin="10" RowDefinitions="*,20" >
+        WindowStartupLocation="CenterScreen" KeyDown="OnKeyDown">
+  <Window.Styles>
+    <Style Selector="Button,CheckBox">
+      <Setter Property="Focusable" Value="False"/>
+    </Style>
+  </Window.Styles>
+  <Grid Margin="10" RowDefinitions="*,30" >
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Visible" Grid.Row="0">
       <StackPanel>
 
         <HeaderedContentControl Classes="groupbox" Header="{DynamicResource notedefaults.lyric}">
-          <Grid ColumnDefinitions="22,192,*">
+          <Grid ColumnDefinitions="22,193,*">
             <CheckBox IsChecked="{Binding SetLyric}" Grid.Column="0"/>
             <Label Content="{DynamicResource notedefaults.lyric}" Grid.Column="1"/>
             <TextBox Text="{Binding Lyric}" IsEnabled="{Binding SetLyric}" Grid.Column="2"/>
@@ -56,9 +62,11 @@
 
         <HeaderedContentControl Classes="groupbox" Header="{DynamicResource notedefaults.vibrato}">
           <StackPanel>
-            <Grid ColumnDefinitions="22,*">
+            <Grid ColumnDefinitions="22,100,22,*">
               <CheckBox IsChecked="{Binding SetVibrato}" Grid.Column="0"/>
               <Label Content="{DynamicResource noteproperty.set}" Grid.Column="1"/>
+              <CheckBox IsChecked="{Binding VibratoEnable}" Grid.Column="2" IsEnabled="{Binding SetVibrato}" />
+              <Label Content="{DynamicResource noteproperty.vibratoenable}" Grid.Column="3"/>
             </Grid>
             <StackPanel Margin="22,5,0,0" IsEnabled="{Binding SetVibrato}">
               <Grid ColumnDefinitions="173,20,*,20,80,20,80">
@@ -111,7 +119,7 @@
                 TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="true" />
               </Grid>
               <Grid ColumnDefinitions="173,20,*">
-                <Label Content="{DynamicResource notedefaults.vibrato.autotoggle}"/>
+                <Label Content="{DynamicResource noteproperty.setlongnote}"/>
                 <CheckBox Grid.Column="2" IsChecked="{Binding AutoVibratoToggle}"/>
               </Grid>
               <Grid ColumnDefinitions="180,20,50,20,*">
@@ -123,7 +131,10 @@
             </StackPanel>
           </StackPanel>
         </HeaderedContentControl>
-
+        
+        <HeaderedContentControl Classes="groupbox" Header="{DynamicResource exps.caption}">
+          <StackPanel Name="ExpressionsPanel" />
+        </HeaderedContentControl>
       </StackPanel>
     </ScrollViewer>
     <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">

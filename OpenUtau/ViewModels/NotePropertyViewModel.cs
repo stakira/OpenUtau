@@ -1,13 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Text.RegularExpressions;
+using DynamicData;
 using Melanchall.DryWetMidi.MusicTheory;
 using OpenUtau.Core;
+using OpenUtau.Core.Format;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using SharpCompress;
+using YamlDotNet.Core.Tokens;
+using static System.Windows.Forms.Design.AxImporter;
 
 namespace OpenUtau.App.ViewModels {
     public class NotePropertyViewModel : ViewModelBase {
@@ -18,6 +25,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public int PortamentoLength { get; set; }
         [Reactive] public int PortamentoStart { get; set; }
         [Reactive] public bool SetVibrato { get; set; } = false;
+        [Reactive] public bool VibratoEnable { get; set; } = true;
         [Reactive] public float VibratoLength { get; set; }
         [Reactive] public float VibratoPeriod { get; set; }
         [Reactive] public float VibratoDepth { get; set; }
@@ -43,6 +51,8 @@ namespace OpenUtau.App.ViewModels {
         public bool IsPortamentoApplied => appliedPortamentoPreset != null;
         public bool IsVibratoApplied => appliedVibratoPreset != null;
         private NotesViewModel notesViewModel;
+
+        public List<NotePropertyExpViewModel> Expressions = new List<NotePropertyExpViewModel>();
 
         public NotePropertyViewModel() {
             notesViewModel = new NotesViewModel();
@@ -78,14 +88,35 @@ namespace OpenUtau.App.ViewModels {
                         VibratoShift = Math.Max(0, Math.Min(100, vibratoPreset.VibratoShift));
                     }
                 });
+
             PortamentoLength = NotePresets.Default.DefaultPortamento.PortamentoLength;
             PortamentoStart = NotePresets.Default.DefaultPortamento.PortamentoStart;
-            VibratoLength = note.vibrato.length;
+            
+            VibratoLength = note.vibrato.length == 0 ? NotePresets.Default.DefaultVibrato.VibratoLength : note.vibrato.length;
             VibratoPeriod = note.vibrato.period;
             VibratoDepth = note.vibrato.depth;
             VibratoIn = note.vibrato.@in;
             VibratoOut = note.vibrato.@out;
             VibratoShift = note.vibrato.shift;
+
+            foreach(KeyValuePair<string, UExpressionDescriptor> pair in DocManager.Inst.Project.expressions) {
+                if(pair.Value.type != UExpressionType.Curve) {
+                    var viewModel = new NotePropertyExpViewModel(pair.Value);
+                    var phonemeExpression = note.phonemeExpressions.FirstOrDefault(e => e.abbr == pair.Value.abbr);
+                    if (phonemeExpression != null) {
+                        if (viewModel.IsNumerical) {
+                            viewModel.Value = phonemeExpression.value;
+                        } else if (viewModel.IsOptions) {
+                            viewModel.SelectedOption = (int)phonemeExpression.value;
+                        }
+                    }
+                    if (pair.Value.abbr == Ustx.CLR) {
+                        var track = DocManager.Inst.Project.tracks[notesViewModel.Part!.trackNo];
+                        track.VoiceColorExp.options.ForEach(opt => viewModel.Options.Add(opt));
+                    }
+                    Expressions.Add(viewModel);
+                }
+            }
         }
 
         // presets
@@ -142,19 +173,74 @@ namespace OpenUtau.App.ViewModels {
                 }
                 if (SetVibrato) {
                     foreach (UNote note in selectedNotes) {
-                        if (!AutoVibratoToggle ||(AutoVibratoToggle && note.duration >= AutoVibratoNoteLength)) {
-                            DocManager.Inst.ExecuteCmd(new VibratoLengthCommand(part, note, VibratoLength));
-                            DocManager.Inst.ExecuteCmd(new VibratoFadeInCommand(part, note, VibratoIn));
-                            DocManager.Inst.ExecuteCmd(new VibratoFadeOutCommand(part, note, VibratoOut));
-                            DocManager.Inst.ExecuteCmd(new VibratoDepthCommand(part, note, VibratoDepth));
-                            DocManager.Inst.ExecuteCmd(new VibratoPeriodCommand(part, note, VibratoPeriod));
-                            DocManager.Inst.ExecuteCmd(new VibratoShiftCommand(part, note, VibratoShift));
+                        if(VibratoEnable && VibratoLength != 0) {
+                            if (!AutoVibratoToggle || (AutoVibratoToggle && note.duration >= AutoVibratoNoteLength)) {
+                                DocManager.Inst.ExecuteCmd(new VibratoLengthCommand(part, note, VibratoLength));
+                                DocManager.Inst.ExecuteCmd(new VibratoFadeInCommand(part, note, VibratoIn));
+                                DocManager.Inst.ExecuteCmd(new VibratoFadeOutCommand(part, note, VibratoOut));
+                                DocManager.Inst.ExecuteCmd(new VibratoDepthCommand(part, note, VibratoDepth));
+                                DocManager.Inst.ExecuteCmd(new VibratoPeriodCommand(part, note, VibratoPeriod));
+                                DocManager.Inst.ExecuteCmd(new VibratoShiftCommand(part, note, VibratoShift));
+                            }
+                        } else if (note.vibrato.length != 0) {
+                            DocManager.Inst.ExecuteCmd(new VibratoLengthCommand(part, note, 0));
+                        }
+                    }
+                }
+                foreach (NotePropertyExpViewModel expVM in Expressions) {
+                    if (expVM.Set) {
+                        float value;
+                        if (expVM.IsNumerical) {
+                            value = expVM.Value;
+                        } else if (expVM.IsOptions) {
+                            value = expVM.SelectedOption;
+                        } else {
+                            continue;
+                        }
+                        var track = notesViewModel.Project.tracks[notesViewModel.Part.trackNo];
+                        foreach (UNote note in selectedNotes) {
+                            foreach (UPhoneme phoneme in notesViewModel.Part.phonemes) {
+                                if (phoneme.Parent == note) {
+                                    DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(notesViewModel.Project, track, notesViewModel.Part, phoneme, expVM.Abbr, value));
+                                }
+                            }
                         }
                     }
                 }
 
                 DocManager.Inst.EndUndoGroup();
             }
+        }
+    }
+
+    public class NotePropertyExpViewModel : ViewModelBase {
+        public string Name { get; set; }
+        public bool IsNumerical { get; set; } = false;
+        public bool IsOptions { get; set; } = false;
+        public float Min { get; set; }
+        public float Max { get; set; }
+        public ObservableCollection<string> Options { get; set; } = new ObservableCollection<string>();
+        public string Abbr { get; set; }
+
+        [Reactive] public bool Set { get; set; } = false;
+        [Reactive] public float Value { get; set; }
+        [Reactive] public int SelectedOption { get; set; }
+
+        public NotePropertyExpViewModel(UExpressionDescriptor descriptor) {
+            Name = descriptor.name;
+            Value = descriptor.defaultValue;
+            Abbr = descriptor.abbr;
+            if (descriptor.type == UExpressionType.Numerical) {
+                IsNumerical = true;
+                Max = descriptor.max;
+                Min = descriptor.min;
+            } else if (descriptor.type == UExpressionType.Options) {
+                IsOptions = true;
+                descriptor.options.ForEach(opt => Options.Add(opt));
+            }
+        }
+        public override string ToString() {
+            return Name;
         }
     }
 }
