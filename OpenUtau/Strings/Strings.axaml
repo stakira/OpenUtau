@@ -72,7 +72,7 @@
   <system:String x:Key="lyrics.reset">Reset</system:String>
   <system:String x:Key="lyrics.selectnotes">Select some notes first!</system:String>
   <system:String x:Key="lyrics.separators">Separators</system:String>
-
+  
   <system:String x:Key="lyricsreplace.after">After :</system:String>
   <system:String x:Key="lyricsreplace.before">Before :</system:String>
   <system:String x:Key="lyricsreplace.preset.rmvalphabet">Remove alphabet</system:String>
@@ -188,7 +188,6 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="pianoroll.menu.lyrics">Lyrics</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Replace "-" with "+"</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">Edit Lyrics</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.hanzitopinyin">Hanzi to Pinyin</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana to Romaji</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">Japanese VCV to CV</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.movesuffixtovoicecolor">Move Suffix to VoiceColor</system:String>
@@ -235,10 +234,10 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="pianoroll.tool.penplus">Pen Plus Tool (Ctrl + 2)
     Left click to draw
     Right click to delete
-Hold Ctrl to select</system:String>
+    Hold Ctrl to select</system:String>
   <system:String x:Key="pianoroll.tool.penv2">Pen Tool (2)
     Left click to draw
-Hold Ctrl to select</system:String>
+    Hold Ctrl to select</system:String>
   <system:String x:Key="pianoroll.tool.selectionv2">Selection Tool (1)</system:String>
 
   <system:String x:Key="prefs.advanced">Advanced</system:String>
@@ -289,10 +288,10 @@ Hold Ctrl to select</system:String>
   <system:String x:Key="prefs.rendering.prerender">Pre-render</system:String>
   <system:String x:Key="prefs.rendering.resampler">Resampler</system:String>
   <system:String x:Key="prefs.rendering.resampler.morewarn">
-    Warning: moresampler is not fully supported. It may be slow and cause high CPU usage. If you insist, please:
-    1. Set "resampler-compatibility" to "on" in moreconfig.txt.
-    2. Set "auto-update-llsm-mrq" to "off" in moreconfig.txt.
-    3. Patiently wait for moresampler to generate missing llsm files.
+Warning: moresampler is not fully supported. It may be slow and cause high CPU usage. If you insist, please:
+1. Set "resampler-compatibility" to "on" in moreconfig.txt.
+2. Set "auto-update-llsm-mrq" to "off" in moreconfig.txt.
+3. Patiently wait for moresampler to generate missing llsm files.
   </system:String>
   <system:String x:Key="prefs.rendering.resampler.note">
     Note: to use external resamplers, please add the resampler DLL or EXE file in the Resamplers folder in the OpenUtau install path and choose it in Preferences.
@@ -314,7 +313,6 @@ Hold Ctrl to select</system:String>
   <system:String x:Key="singers.editoto.regenfrq.regenerating">Regenerating FRQ</system:String>
   <system:String x:Key="singers.editoto.reset">Reset Otos</system:String>
   <system:String x:Key="singers.editoto.save">Save Otos</system:String>
-  <system:String x:Key="singers.editoto.search">Search</system:String>
   <system:String x:Key="singers.editoto.searchalias">Search Alias</system:String>
   <system:String x:Key="singers.editoto.setvlabelerpath">Download vLabeler (1.0.0-beta1 or higher) from https://github.com/sdercolin/vlabeler and set vLabeler path in Preferences first!</system:String>
   <system:String x:Key="singers.errorreport">Generate Singer Error Report</system:String>
@@ -357,23 +355,23 @@ Hold Ctrl to select</system:String>
 
   <system:String x:Key="tip.aliasbox">Override Alias</system:String>
   <system:String x:Key="tip.exps">
-    Left Button Draw: Set expressions
-    Right Button Draw: Reset expressions
+Left Button Draw: Set expressions
+Right Button Draw: Reset expressions
   </system:String>
   <system:String x:Key="tip.exps.notsupported">Expression not supported by renderer</system:String>
   <system:String x:Key="tip.lyricbox.next">Tab: Next Note</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: Previous Note</system:String>
   <system:String x:Key="tip.notes.basics">
-    Selection Tool
+Selection Tool
     Box Select: Select notes
     Ctrl + Box Select: Select more notes
     Up/Down: Transpose selected notes
     Ctrl + Up/Down: Transpose selected notes by octave
-    Pen Tool
+Pen Tool
     Left Button Draw: Add note
     Right Click: Remove note
     Right Button Draw: Remove multiple notes
-    General
+General
     T: Toggle tips
     Drag Note: Move note
     Drag End of Note: Resize note
