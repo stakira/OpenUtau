@@ -105,7 +105,7 @@
                       TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="true" />
                   </Grid>
                   <Grid ColumnDefinitions="173,20,*">
-                      <Label Content="{DynamicResource noteproperty.setlongnote}"/>
+                      <Label Content="{DynamicResource notedefaults.vibrato.autotoggle}"/>
                       <CheckBox Grid.Column="2" IsChecked="{Binding AutoVibratoToggle}"/>
                   </Grid>
                   <Grid ColumnDefinitions="180,20,50,20,*">
