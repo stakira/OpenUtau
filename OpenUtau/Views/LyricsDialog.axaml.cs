@@ -20,11 +20,13 @@ namespace OpenUtau.App.Views {
 
         void OnCancel(object? sender, RoutedEventArgs e) {
             (DataContext as LyricsViewModel)!.Cancel();
+            //KeyboardDevice.Instance.SetFocusedElement(null, NavigationMethod.Unspecified, KeyModifiers.None);
             Close();
         }
 
         void OnFinish(object? sender, RoutedEventArgs e) {
             (DataContext as LyricsViewModel)!.Finish();
+            //KeyboardDevice.Instance.SetFocusedElement(null, NavigationMethod.Unspecified, KeyModifiers.None);
             Close();
         }
 

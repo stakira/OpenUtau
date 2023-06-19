@@ -2,6 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
@@ -17,8 +18,12 @@ namespace OpenUtau.App.Controls {
         public LyricBox() {
             InitializeComponent();
             DataContext = viewModel = new LyricBoxViewModel();
-            box = PART_Box;
-            listBox = PART_Suggestions;
+            box = this.FindControl<TextBox>("PART_Box");
+            listBox = this.FindControl<ListBox>("PART_Suggestions");
+        }
+
+        private void InitializeComponent() {
+            AvaloniaXamlLoader.Load(this);
             IsVisible = false;
         }
 
@@ -172,7 +177,7 @@ namespace OpenUtau.App.Controls {
             viewModel.NoteOrPhoneme = null;
             viewModel.IsVisible = false;
             viewModel.Text = string.Empty;
-            TopLevel.GetTopLevel(this)?.FocusManager?.ClearFocus();
+            //KeyboardDevice.Instance.SetFocusedElement(null, NavigationMethod.Unspecified, KeyModifiers.None);
         }
     }
 }
