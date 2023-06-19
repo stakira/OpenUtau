@@ -31,6 +31,8 @@
   <system:String x:Key="dialogs.exitsave.message">保存されていない変更があります。保存しますか？</system:String>
   <system:String x:Key="dialogs.export.caption">エクスポート</system:String>
   <system:String x:Key="dialogs.export.savefirst">プロジェクトを保存してください。</system:String>
+  <system:String x:Key="dialogs.installdll.caption">Phonemizerのインストール</system:String>
+  <system:String x:Key="dialogs.installdll.message">インストールします : </system:String>
   <system:String x:Key="dialogs.messagebox.cancel">キャンセル</system:String>
   <system:String x:Key="dialogs.messagebox.no">いいえ</system:String>
   <system:String x:Key="dialogs.messagebox.ok">OK</system:String>
@@ -70,6 +72,7 @@
   <system:String x:Key="lyrics.reset">リセット</system:String>
   <system:String x:Key="lyrics.selectnotes">音符を選択してください！</system:String>
   <system:String x:Key="lyrics.separators">区切り文字</system:String>
+  
   <system:String x:Key="lyricsreplace.after">置換後 :</system:String>
   <system:String x:Key="lyricsreplace.before">置換前 :</system:String>
   <system:String x:Key="lyricsreplace.presets">プリセット</system:String>
@@ -185,7 +188,6 @@
   <system:String x:Key="pianoroll.menu.lyrics">歌詞</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">"-" を "+" に置き換え</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">歌詞を編集</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.hanzitopinyin">漢字をピンインへ</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">ひらがな→ローマ字</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">連続音→単独音（日本語）</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">文字のSuffixを削除</system:String>
@@ -341,6 +343,16 @@
   <system:String x:Key="singers.subbanks.toneranges">音域</system:String>
   <system:String x:Key="singers.visitwebsite">ウェブサイトへ</system:String>
 
+  <!--<system:String x:Key="singersetup.archivefileencoding">Archive File Encoding</system:String>-->
+  <!--<system:String x:Key="singersetup.archivefileencoding.prompt">Choose an encoding that make file names look right.</system:String>-->
+  <!--<system:String x:Key="singersetup.back">Back</system:String>-->
+  <!--<system:String x:Key="singersetup.install">Install</system:String>-->
+  <!--<system:String x:Key="singersetup.next">Next</system:String>-->
+  <!--<system:String x:Key="singersetup.missinginfo">Some info are missing from character.yaml!</system:String>-->
+  <!--<system:String x:Key="singersetup.singertype">Singer Type</system:String>-->
+  <!--<system:String x:Key="singersetup.textfileencoding">Text File Encoding</system:String>-->
+  <!--<system:String x:Key="singersetup.textfileencoding.prompt">Choose an encoding that make file contents look right.</system:String>-->
+  
   <!--<system:String x:Key="tip.aliasbox">Override Alias</system:String>-->
   <system:String x:Key="tip.exps">
 左クリック: 表情を設定
