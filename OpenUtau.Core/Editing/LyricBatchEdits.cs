@@ -133,23 +133,11 @@ namespace OpenUtau.Core.Editing {
                         docManager.ExecuteCmd(new ChangeNoteLyricCommand(part, note, lyric));
 
                         int index = colors.FirstOrDefault(c => c.Value == suffix).Key;
-                        docManager.ExecuteCmd(new ChangeVoiceColorCommand(part, note, index, track));
-
-                        /*if(track.VoiceColorExp != null) {
-                            int index = colors.FirstOrDefault(c => c.Value == suffix).Key;
-                            var exp = note.phonemeExpressions.FirstOrDefault(exp => exp.descriptor?.abbr == Format.Ustx.CLR && exp.index == 0);
-
-                            if (exp != null) {
-                                exp.descriptor = track.VoiceColorExp;
-                                exp.value = index;
-                            } else {
-                                note.phonemeExpressions.Add(new UExpression(track.VoiceColorExp) {
-                                    descriptor = track.VoiceColorExp,
-                                    index = 0,
-                                    value = index,
-                                });
+                        foreach (UPhoneme phoneme in part.phonemes) {
+                            if (phoneme.Parent == note) {
+                                docManager.ExecuteCmd(new SetPhonemeExpressionCommand(project, track, part, phoneme, Format.Ustx.CLR, index));
                             }
-                        }*/
+                        }
                         break;
                     }
                 }
