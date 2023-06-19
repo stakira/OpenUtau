@@ -10,7 +10,7 @@
   <Grid Height="22" Width="60" Background="{Binding Background}" PointerPressed="TextBlockPointerPressed">
     <ComboBox VerticalAlignment="Center" HorizontalAlignment="Left" Height="22"
               Focusable="False" Foreground="{Binding TagBrush}" Background="Transparent" Width="20"
-              SelectedItem="{Binding Descriptor}" ItemsSource="{Binding Descriptors}" SelectedIndex="{Binding SelectedIndex}">
+              SelectedItem="{Binding Descriptor}" Items="{Binding Descriptors}" SelectedIndex="{Binding SelectedIndex}">
       <ComboBox.Styles>
         <Style Selector="ComboBox">
           <Setter Property="Padding" Value="{DynamicResource ComboBoxPadding}" />
@@ -78,8 +78,16 @@
                       <ScrollViewer HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
                                     VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}">
                         <ItemsPresenter Name="PART_ItemsPresenter"
+<<<<<<< HEAD
                                         Margin="{DynamicResource ComboBoxDropdownContentMargin}"
                                         ItemsPanel="{TemplateBinding ItemsPanel}" />
+=======
+                                        Items="{TemplateBinding Items}"
+                                        Margin="{DynamicResource ComboBoxDropdownContentMargin}"
+                                        ItemsPanel="{TemplateBinding ItemsPanel}"
+                                        ItemTemplate="{TemplateBinding ItemTemplate}"
+                                        VirtualizationMode="{TemplateBinding VirtualizationMode}" />
+>>>>>>> parent of d60f4037 (upgrade to avalonia 11 and fix compilation)
                       </ScrollViewer>
                     </Border>
                   </Popup>

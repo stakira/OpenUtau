@@ -12,7 +12,7 @@ using ReactiveUI;
 namespace OpenUtau.App.Controls {
     public enum ExpDisMode { Hidden, Visible, Shadow };
 
-    class ExpressionCanvas : Control {
+    class ExpressionCanvas : Canvas {
         public static readonly DirectProperty<ExpressionCanvas, double> TickWidthProperty =
             AvaloniaProperty.RegisterDirect<ExpressionCanvas, double>(
                 nameof(TickWidth),
@@ -75,8 +75,11 @@ namespace OpenUtau.App.Controls {
                 });
         }
 
-        protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change) {
+        protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change) {
             base.OnPropertyChanged(change);
+            if (!change.IsEffectiveValueChange) {
+                return;
+            }
             InvalidateVisual();
         }
 
@@ -133,7 +136,7 @@ namespace OpenUtau.App.Controls {
                     double y2 = defaultHeight - Bounds.Height * (value2 - descriptor.defaultValue) / (descriptor.max - descriptor.min);
                     var pen = value1 == descriptor.defaultValue && value2 == descriptor.defaultValue ? lPen : lPen2;
                     context.DrawLine(pen, new Point(x1, y1), new Point(x2, y2));
-                    //using (var state = context.PushTransform(Matrix.CreateTranslation(x1, y1))) {
+                    //using (var state = context.PushPreTransform(Matrix.CreateTranslation(x1, y1))) {
                     //    context.DrawGeometry(brush, null, pointGeometry);
                     //}
                     index++;
@@ -164,13 +167,13 @@ namespace OpenUtau.App.Controls {
                     double zeroHeight = Math.Round(Bounds.Height - Bounds.Height * (0f - descriptor.min) / (descriptor.max - descriptor.min));
                     context.DrawLine(vPen, new Point(x1 + 0.5, zeroHeight + 0.5), new Point(x1 + 0.5, valueHeight + 3));
                     context.DrawLine(hPen, new Point(x1 + 3, valueHeight), new Point(Math.Max(x1 + 3, x2 - 3), valueHeight));
-                    using (var state = context.PushTransform(Matrix.CreateTranslation(x1 + 0.5, valueHeight))) {
+                    using (var state = context.PushPreTransform(Matrix.CreateTranslation(x1 + 0.5, valueHeight))) {
                         context.DrawGeometry(overriden ? brush : ThemeManager.BackgroundBrush, vPen, pointGeometry);
                     }
                 } else if (descriptor.type == UExpressionType.Options) {
                     for (int i = 0; i < descriptor.options.Length; ++i) {
                         double y = optionHeight * (descriptor.options.Length - 1 - i + 0.5);
-                        using (var state = context.PushTransform(Matrix.CreateTranslation(x1 + 4.5, y))) {
+                        using (var state = context.PushPreTransform(Matrix.CreateTranslation(x1 + 4.5, y))) {
                             if ((int)value == i) {
                                 context.DrawGeometry(brush, null, pointGeometry);
                                 context.DrawGeometry(null, hPen, circleGeometry);
@@ -188,15 +191,15 @@ namespace OpenUtau.App.Controls {
                         option = "\"\"";
                     }
                     var textLayout = TextLayoutCache.Get(option, ThemeManager.ForegroundBrush, 12);
-                    double y = optionHeight * (descriptor.options.Length - 1 - i + 0.5) - textLayout.Height * 0.5;
+                    double y = optionHeight * (descriptor.options.Length - 1 - i + 0.5) - textLayout.Size.Height * 0.5;
                     y = Math.Round(y);
-                    var size = new Size(textLayout.Width + 8, textLayout.Height + 2);
-                    using (var state = context.PushTransform(Matrix.CreateTranslation(12, y))) {
+                    var size = new Size(textLayout.Size.Width + 8, textLayout.Size.Height + 2);
+                    using (var state = context.PushPreTransform(Matrix.CreateTranslation(12, y))) {
                         context.DrawRectangle(
                             ThemeManager.BackgroundBrush,
                             ThemeManager.NeutralAccentPenSemi,
                             new Rect(new Point(-4, -0.5), size), 4, 4);
-                        textLayout.Draw(context, new Point());
+                        textLayout.Draw(context);
                     }
                 }
             }

@@ -111,13 +111,16 @@ namespace OpenUtau.App.Controls {
             Children.Add(trackAdder);
         }
 
-        protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change) {
+        protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change) {
             base.OnPropertyChanged(change);
+            if (!change.IsEffectiveValueChange) {
+                return;
+            }
             if (change.Property == ItemsProperty) {
-                if (change.OldValue != null && change.OldValue is ObservableCollection<UTrack> oldCol) {
+                if (change.OldValue != null && change.OldValue.Value is ObservableCollection<UTrack> oldCol) {
                     oldCol.CollectionChanged -= Items_CollectionChanged;
                 }
-                if (change.NewValue != null && change.NewValue is ObservableCollection<UTrack> newCol) {
+                if (change.NewValue.HasValue && change.NewValue.Value is ObservableCollection<UTrack> newCol) {
                     newCol.CollectionChanged += Items_CollectionChanged;
                 }
             } else if (change.Property == DataContextProperty) {

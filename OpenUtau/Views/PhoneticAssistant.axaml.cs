@@ -11,7 +11,7 @@ namespace OpenUtau.App.Views {
         }
 
         public void OnCopy(object sender, RoutedEventArgs e) {
-            Clipboard?.SetTextAsync(viewModel.Phonemes);
+            Application.Current?.Clipboard?.SetTextAsync(viewModel.Phonemes);
         }
     }
 }

@@ -748,9 +748,9 @@ namespace OpenUtau.App.Views {
         }
 
         public void TimelinePointerWheelChanged(object sender, PointerWheelEventArgs args) {
-            var control = (Control)sender;
-            var position = args.GetCurrentPoint((Visual)sender).Position;
-            var size = control.Bounds.Size;
+            var canvas = (Canvas)sender;
+            var position = args.GetCurrentPoint((IVisual)sender).Position;
+            var size = canvas.Bounds.Size;
             position = position.WithX(position.X / size.Width).WithY(position.Y / size.Height);
             viewModel.TracksViewModel.OnXZoomed(position, 0.1 * args.Delta.Y);
         }
@@ -760,10 +760,10 @@ namespace OpenUtau.App.Views {
         }
 
         public void TimelinePointerPressed(object sender, PointerPressedEventArgs args) {
-            var control = (Control)sender;
-            var point = args.GetCurrentPoint(control);
+            var canvas = (Canvas)sender;
+            var point = args.GetCurrentPoint(canvas);
             if (point.Properties.IsLeftButtonPressed) {
-                args.Pointer.Capture(control);
+                args.Pointer.Capture(canvas);
                 viewModel.TracksViewModel.PointToLineTick(point.Position, out int left, out int right);
                 viewModel.PlaybackViewModel.MovePlayPos(left);
             } else if (point.Properties.IsRightButtonPressed) {
@@ -773,8 +773,8 @@ namespace OpenUtau.App.Views {
         }
 
         public void TimelinePointerMoved(object sender, PointerEventArgs args) {
-            var control = (Control)sender;
-            var point = args.GetCurrentPoint(control);
+            var canvas = (Canvas)sender;
+            var point = args.GetCurrentPoint(canvas);
             if (point.Properties.IsLeftButtonPressed) {
                 viewModel.TracksViewModel.PointToLineTick(point.Position, out int left, out int right);
                 viewModel.PlaybackViewModel.MovePlayPos(left);
@@ -786,43 +786,47 @@ namespace OpenUtau.App.Views {
         }
 
         public void PartsCanvasPointerPressed(object sender, PointerPressedEventArgs args) {
-            var control = (Control)sender;
-            var point = args.GetCurrentPoint(control);
-            var hitControl = control.InputHitTest(point.Position);
+            var canvas = (Canvas)sender;
+            var point = args.GetCurrentPoint(canvas);
+            var control = canvas.InputHitTest(point.Position);
             if (partEditState != null) {
                 return;
             }
             if (point.Properties.IsLeftButtonPressed) {
                 if (args.KeyModifiers == cmdKey) {
+<<<<<<< HEAD
                     partEditState = new PartSelectionEditState(control, viewModel, SelectionBox);
+=======
+                    partEditState = new PartSelectionEditState(canvas, viewModel, GetSelectionBox(canvas));
+>>>>>>> parent of d60f4037 (upgrade to avalonia 11 and fix compilation)
                     Cursor = ViewConstants.cursorCross;
-                } else if (hitControl == control) {
+                } else if (control == canvas) {
                     viewModel.TracksViewModel.DeselectParts();
                     var part = viewModel.TracksViewModel.MaybeAddPart(point.Position);
                     if (part != null) {
                         // Start moving right away
-                        partEditState = new PartMoveEditState(control, viewModel, part);
+                        partEditState = new PartMoveEditState(canvas, viewModel, part);
                         Cursor = ViewConstants.cursorSizeAll;
                     }
-                } else if (hitControl is PartControl partControl) {
+                } else if (control is PartControl partControl) {
                     bool isVoice = partControl.part is UVoicePart;
                     bool isWave = partControl.part is UWavePart;
                     bool trim = point.Position.X > partControl.Bounds.Right - ViewConstants.ResizeMargin;
                     bool skip = point.Position.X < partControl.Bounds.Left + ViewConstants.ResizeMargin;
                     if (isVoice && trim) {
-                        partEditState = new PartResizeEditState(control, viewModel, partControl.part);
+                        partEditState = new PartResizeEditState(canvas, viewModel, partControl.part);
                         Cursor = ViewConstants.cursorSizeWE;
                     } else if (isWave && skip) {
                         // TODO
                     } else if (isWave && trim) {
                         // TODO
                     } else {
-                        partEditState = new PartMoveEditState(control, viewModel, partControl.part);
+                        partEditState = new PartMoveEditState(canvas, viewModel, partControl.part);
                         Cursor = ViewConstants.cursorSizeAll;
                     }
                 }
             } else if (point.Properties.IsRightButtonPressed) {
-                if (hitControl is PartControl partControl) {
+                if (control is PartControl partControl) {
                     if (!viewModel.TracksViewModel.SelectedParts.Contains(partControl.part)) {
                         viewModel.TracksViewModel.DeselectParts();
                         viewModel.TracksViewModel.SelectPart(partControl.part);
@@ -840,7 +844,7 @@ namespace OpenUtau.App.Views {
                     viewModel.TracksViewModel.DeselectParts();
                 }
             } else if (point.Properties.IsMiddleButtonPressed) {
-                partEditState = new PartPanningState(control, viewModel);
+                partEditState = new PartPanningState(canvas, viewModel);
                 Cursor = ViewConstants.cursorHand;
             }
             if (partEditState != null) {
@@ -849,15 +853,34 @@ namespace OpenUtau.App.Views {
             }
         }
 
+<<<<<<< HEAD
+=======
+        private Rectangle GetSelectionBox(Canvas canvas) {
+            if (selectionBox != null) {
+                return selectionBox;
+            }
+            selectionBox = new Rectangle() {
+                Stroke = ThemeManager.ForegroundBrush,
+                StrokeThickness = 2,
+                Fill = ThemeManager.TickLineBrushLow,
+                // radius = 8
+                IsHitTestVisible = false,
+            };
+            canvas.Children.Add(selectionBox);
+            selectionBox.ZIndex = 1000;
+            return selectionBox;
+        }
+
+>>>>>>> parent of d60f4037 (upgrade to avalonia 11 and fix compilation)
         public void PartsCanvasPointerMoved(object sender, PointerEventArgs args) {
-            var control = (Control)sender;
-            var point = args.GetCurrentPoint(control);
+            var canvas = (Canvas)sender;
+            var point = args.GetCurrentPoint(canvas);
             if (partEditState != null) {
                 partEditState.Update(point.Pointer, point.Position);
                 return;
             }
-            var hitControl = control.InputHitTest(point.Position);
-            if (hitControl is PartControl partControl) {
+            var control = canvas.InputHitTest(point.Position);
+            if (control is PartControl partControl) {
                 bool isVoice = partControl.part is UVoicePart;
                 bool isWave = partControl.part is UWavePart;
                 bool trim = point.Position.X > partControl.Bounds.Right - ViewConstants.ResizeMargin;
@@ -879,8 +902,8 @@ namespace OpenUtau.App.Views {
                 if (partEditState.MouseButton != args.InitialPressMouseButton) {
                     return;
                 }
-                var control = (Control)sender;
-                var point = args.GetCurrentPoint(control);
+                var canvas = (Canvas)sender;
+                var point = args.GetCurrentPoint(canvas);
                 partEditState.Update(point.Pointer, point.Position);
                 partEditState.End(point.Pointer, point.Position);
                 partEditState = null;
@@ -893,11 +916,12 @@ namespace OpenUtau.App.Views {
             }
         }
 
-        public void PartsCanvasDoubleTapped(object sender, TappedEventArgs args) {
+        public void PartsCanvasDoubleTapped(object sender, RoutedEventArgs args) {
             if (!(sender is Canvas canvas)) {
                 return;
             }
-            var control = canvas.InputHitTest(args.GetPosition(canvas));
+            var e = (TappedEventArgs)args;
+            var control = canvas.InputHitTest(e.GetPosition(canvas));
             if (control is PartControl partControl && partControl.part is UVoicePart) {
                 if (pianoRollWindow == null) {
                     pianoRollWindow = new PianoRollWindow() {
@@ -907,7 +931,7 @@ namespace OpenUtau.App.Views {
                 }
                 // Workaround for new window losing focus.
                 openPianoRollWindow = true;
-                int tick = viewModel.TracksViewModel.PointToTick(args.GetPosition(canvas));
+                int tick = viewModel.TracksViewModel.PointToTick(e.GetPosition(canvas));
                 string[] pianorollCache = pianoRollWindow.CacheExpressions();
                 DocManager.Inst.ExecuteCmd(new LoadPartNotification(partControl.part, DocManager.Inst.Project, tick));
                 pianoRollWindow.LoadCacheExpressions(pianorollCache);
@@ -934,7 +958,7 @@ namespace OpenUtau.App.Views {
                 TimelinePointerWheelChanged(TimelineCanvas, args);
             }
             if (partEditState != null) {
-                var point = args.GetCurrentPoint(partEditState.control);
+                var point = args.GetCurrentPoint(partEditState.canvas);
                 partEditState.Update(point.Pointer, point.Position);
             }
         }
@@ -986,7 +1010,7 @@ namespace OpenUtau.App.Views {
             DocManager.Inst.EndUndoGroup();
         }
 
-        public async void WindowClosing(object? sender, WindowClosingEventArgs e) {
+        public async void WindowClosing(object? sender, CancelEventArgs e) {
             if (forceClose || DocManager.Inst.ChangesSaved) {
                 return;
             }

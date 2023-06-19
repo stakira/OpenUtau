@@ -125,8 +125,11 @@ namespace OpenUtau.App.Controls {
             }
         }
 
-        protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change) {
+        protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change) {
             base.OnPropertyChanged(change);
+            if (!change.IsEffectiveValueChange) {
+                return;
+            }
             if (change.Property == OffsetProperty ||
                 change.Property == TrackHeightProperty ||
                 change.Property == TickWidthProperty) {
@@ -158,10 +161,17 @@ namespace OpenUtau.App.Controls {
             context.DrawRectangle(backgroundBrush, null, new Rect(1, 0, Width - 1, Height - 1), 4, 4);
 
             // Text
+<<<<<<< HEAD
             var textLayout = TextLayoutCache.Get(Text, Brushes.White, 12);
             using (var state = context.PushTransform(Matrix.CreateTranslation(3, 2))) {
                 context.DrawRectangle(backgroundBrush, null, new Rect(new Point(0, 0), new Size(textLayout.Width, textLayout.Height)));
                 textLayout.Draw(context, new Point());
+=======
+            var textLayout = TextLayoutCache.Get(Text, Foreground!, 12);
+            using (var state = context.PushPreTransform(Matrix.CreateTranslation(3, 2))) {
+                context.DrawRectangle(backgroundBrush, null, new Rect(new Point(0, 0), textLayout.Size));
+                textLayout.Draw(context);
+>>>>>>> parent of d60f4037 (upgrade to avalonia 11 and fix compilation)
             }
 
             if (part == null) {
@@ -176,7 +186,7 @@ namespace OpenUtau.App.Controls {
                     minTone -= additional;
                     maxTone += additional;
                 }
-                using var pushedState = context.PushTransform(Matrix.CreateScale(1, trackHeight / (maxTone - minTone)));
+                using var pushedState = context.PushPreTransform(Matrix.CreateScale(1, trackHeight / (maxTone - minTone)));
                 foreach (var note in voicePart.notes) {
                     var start = new Point((int)(note.position * tickWidth), maxTone - note.tone);
                     var end = new Point((int)(note.End * tickWidth), maxTone - note.tone);

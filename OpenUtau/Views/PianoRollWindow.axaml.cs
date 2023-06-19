@@ -31,6 +31,11 @@ namespace OpenUtau.App.Views {
         private NoteEditState? editState;
         private Point valueTipPointerPosition;
         private bool shouldOpenNotesContextMenu;
+        private ExpSelector? expSelector1;
+        private ExpSelector? expSelector2;
+        private ExpSelector? expSelector3;
+        private ExpSelector? expSelector4;
+        private ExpSelector? expSelector5;
 
         private ReactiveCommand<Unit, Unit> lyricsDialogCommand;
         private ReactiveCommand<Unit, Unit> noteDefaultsCommand;
@@ -54,11 +59,28 @@ namespace OpenUtau.App.Views {
             });
         }
 
+<<<<<<< HEAD
+=======
+        private void InitializeComponent() {
+            AvaloniaXamlLoader.Load(this);
+            valueTipCanvas = this.FindControl<Canvas>("ValueTipCanvas");
+            valueTip = this.FindControl<Border>("ValueTip");
+            valueTip.IsVisible = false;
+            valueTipText = this.FindControl<TextBlock>("ValueTipText");
+            lyricBox = this.FindControl<LyricBox>("LyricBox");
+            expSelector1 = this.FindControl<ExpSelector>("expSelector1");
+            expSelector2 = this.FindControl<ExpSelector>("expSelector2");
+            expSelector3 = this.FindControl<ExpSelector>("expSelector3");
+            expSelector4 = this.FindControl<ExpSelector>("expSelector4");
+            expSelector5 = this.FindControl<ExpSelector>("expSelector5");
+        }
+
+>>>>>>> parent of d60f4037 (upgrade to avalonia 11 and fix compilation)
         public void WindowDeactivated(object sender, EventArgs args) {
             LyricBox?.EndEdit();
         }
 
-        void WindowClosing(object? sender, WindowClosingEventArgs e) {
+        void WindowClosing(object? sender, CancelEventArgs e) {
             Hide();
             e.Cancel = true;
         }
@@ -181,9 +203,9 @@ namespace OpenUtau.App.Views {
         }
 
         public void TimelinePointerWheelChanged(object sender, PointerWheelEventArgs args) {
-            var control = (Control)sender;
-            var position = args.GetCurrentPoint((Visual)sender).Position;
-            var size = control.Bounds.Size;
+            var canvas = (Canvas)sender;
+            var position = args.GetCurrentPoint((IVisual)sender).Position;
+            var size = canvas.Bounds.Size;
             position = position.WithX(position.X / size.Width).WithY(position.Y / size.Height);
             ViewModel.NotesViewModel.OnXZoomed(position, 0.1 * args.Delta.Y);
             LyricBox?.EndEdit();
@@ -195,10 +217,10 @@ namespace OpenUtau.App.Views {
         }
 
         public void TimelinePointerPressed(object sender, PointerPressedEventArgs args) {
-            var control = (Control)sender;
-            var point = args.GetCurrentPoint(control);
+            var canvas = (Canvas)sender;
+            var point = args.GetCurrentPoint(canvas);
             if (point.Properties.IsLeftButtonPressed) {
-                args.Pointer.Capture(control);
+                args.Pointer.Capture(canvas);
                 ViewModel.NotesViewModel.PointToLineTick(point.Position, out int left, out int right);
                 int tick = left + ViewModel.NotesViewModel.Part?.position ?? 0;
                 ViewModel.PlaybackViewModel?.MovePlayPos(tick);
@@ -207,8 +229,8 @@ namespace OpenUtau.App.Views {
         }
 
         public void TimelinePointerMoved(object sender, PointerEventArgs args) {
-            var control = (Control)sender;
-            var point = args.GetCurrentPoint(control);
+            var canvas = (Canvas)sender;
+            var point = args.GetCurrentPoint(canvas);
             if (point.Properties.IsLeftButtonPressed) {
                 ViewModel.NotesViewModel.PointToLineTick(point.Position, out int left, out int right);
                 int tick = left + ViewModel.NotesViewModel.Part?.position ?? 0;
@@ -225,17 +247,17 @@ namespace OpenUtau.App.Views {
             if (ViewModel.NotesViewModel.Part == null) {
                 return;
             }
-            var control = (Control)sender;
-            var point = args.GetCurrentPoint(control);
+            var canvas = (Canvas)sender;
+            var point = args.GetCurrentPoint(canvas);
             if (editState != null) {
                 return;
             }
             if (point.Properties.IsLeftButtonPressed) {
-                NotesCanvasLeftPointerPressed(control, point, args);
+                NotesCanvasLeftPointerPressed(canvas, point, args);
             } else if (point.Properties.IsRightButtonPressed) {
-                NotesCanvasRightPointerPressed(control, point, args);
+                NotesCanvasRightPointerPressed(canvas, point, args);
             } else if (point.Properties.IsMiddleButtonPressed) {
-                editState = new NotePanningState(control, ViewModel, this);
+                editState = new NotePanningState(canvas, ViewModel, this);
                 Cursor = ViewConstants.cursorHand;
             }
             if (editState != null) {
@@ -244,26 +266,34 @@ namespace OpenUtau.App.Views {
             }
         }
 
-        private void NotesCanvasLeftPointerPressed(Control control, PointerPoint point, PointerPressedEventArgs args) {
+        private void NotesCanvasLeftPointerPressed(Canvas canvas, PointerPoint point, PointerPressedEventArgs args) {
             if (ViewModel.NotesViewModel.DrawPitchTool) {
                 ViewModel.NotesViewModel.DeselectNotes();
+<<<<<<< HEAD
                 if (args.KeyModifiers == KeyModifiers.Alt) {
                     editState = new SmoothenPitchState(control, ViewModel, this);
                     return;
                 } else if (args.KeyModifiers != cmdKey) {
                     editState = new DrawPitchState(control, ViewModel, this);
+=======
+                if (args.KeyModifiers == cmdKey) {
+                    editState = new SmoothenPitchState(canvas, ViewModel, this);
+                    return;
+                } else {
+                    editState = new DrawPitchState(canvas, ViewModel, this);
+>>>>>>> parent of d60f4037 (upgrade to avalonia 11 and fix compilation)
                     return;
                 }
             }
             if (ViewModel.NotesViewModel.EraserTool) {
                 ViewModel.NotesViewModel.DeselectNotes();
-                editState = new NoteEraseEditState(control, ViewModel, this, MouseButton.Left);
+                editState = new NoteEraseEditState(canvas, ViewModel, this, MouseButton.Left);
                 Cursor = ViewConstants.cursorNo;
                 return;
             }
             var pitHitInfo = ViewModel.NotesViewModel.HitTest.HitTestPitchPoint(point.Position);
             if (pitHitInfo.Note != null) {
-                editState = new PitchPointEditState(control, ViewModel, this,
+                editState = new PitchPointEditState(canvas, ViewModel, this,
                     pitHitInfo.Note, pitHitInfo.Index, pitHitInfo.OnPoint, pitHitInfo.X, pitHitInfo.Y);
                 return;
             }
@@ -274,28 +304,28 @@ namespace OpenUtau.App.Views {
                     return;
                 }
                 if (vbrHitInfo.hitStart) {
-                    editState = new VibratoChangeStartState(control, ViewModel, this, vbrHitInfo.note);
+                    editState = new VibratoChangeStartState(canvas, ViewModel, this, vbrHitInfo.note);
                     return;
                 }
                 if (vbrHitInfo.hitIn) {
-                    editState = new VibratoChangeInState(control, ViewModel, this, vbrHitInfo.note);
+                    editState = new VibratoChangeInState(canvas, ViewModel, this, vbrHitInfo.note);
                     return;
                 }
                 if (vbrHitInfo.hitOut) {
-                    editState = new VibratoChangeOutState(control, ViewModel, this, vbrHitInfo.note);
+                    editState = new VibratoChangeOutState(canvas, ViewModel, this, vbrHitInfo.note);
                     return;
                 }
                 if (vbrHitInfo.hitDepth) {
-                    editState = new VibratoChangeDepthState(control, ViewModel, this, vbrHitInfo.note);
+                    editState = new VibratoChangeDepthState(canvas, ViewModel, this, vbrHitInfo.note);
                     return;
                 }
                 if (vbrHitInfo.hitPeriod) {
-                    editState = new VibratoChangePeriodState(control, ViewModel, this, vbrHitInfo.note);
+                    editState = new VibratoChangePeriodState(canvas, ViewModel, this, vbrHitInfo.note);
                     return;
                 }
                 if (vbrHitInfo.hitShift) {
                     editState = new VibratoChangeShiftState(
-                        control, ViewModel, this, vbrHitInfo.note, vbrHitInfo.point, vbrHitInfo.initialShift);
+                        canvas, ViewModel, this, vbrHitInfo.note, vbrHitInfo.point, vbrHitInfo.initialShift);
                     return;
                 }
                 return;
@@ -305,12 +335,12 @@ namespace OpenUtau.App.Views {
                 if (ViewModel.NotesViewModel.KnifeTool) {
                     ViewModel.NotesViewModel.DeselectNotes();
                     editState = new NoteSplitEditState(
-                            control, ViewModel, this, noteHitInfo.note);
+                            canvas, ViewModel, this, noteHitInfo.note);
                     return;
                 }
                 if (noteHitInfo.hitResizeArea) {
                     editState = new NoteResizeEditState(
-                        control, ViewModel, this, noteHitInfo.note,
+                        canvas, ViewModel, this, noteHitInfo.note,
                         args.KeyModifiers == KeyModifiers.Alt);
                     Cursor = ViewConstants.cursorSizeWE;
                 } else if (args.KeyModifiers == cmdKey) {
@@ -318,7 +348,7 @@ namespace OpenUtau.App.Views {
                 } else if (args.KeyModifiers == KeyModifiers.Shift) {
                     ViewModel.NotesViewModel.SelectNotesUntil(noteHitInfo.note);
                 } else {
-                    editState = new NoteMoveEditState(control, ViewModel, this, noteHitInfo.note);
+                    editState = new NoteMoveEditState(canvas, ViewModel, this, noteHitInfo.note);
                     Cursor = ViewConstants.cursorSizeAll;
                 }
                 return;
@@ -330,13 +360,21 @@ namespace OpenUtau.App.Views {
                 if (args.KeyModifiers == KeyModifiers.None) {
                     // New selection.
                     ViewModel.NotesViewModel.DeselectNotes();
+<<<<<<< HEAD
                     editState = new NoteSelectionEditState(control, ViewModel, this, SelectionBox);
+=======
+                    editState = new NoteSelectionEditState(canvas, ViewModel, this, GetSelectionBox(canvas));
+>>>>>>> parent of d60f4037 (upgrade to avalonia 11 and fix compilation)
                     Cursor = ViewConstants.cursorCross;
                     return;
                 }
                 if (args.KeyModifiers == cmdKey) {
                     // Additional selection.
+<<<<<<< HEAD
                     editState = new NoteSelectionEditState(control, ViewModel, this, SelectionBox);
+=======
+                    editState = new NoteSelectionEditState(canvas, ViewModel, this, GetSelectionBox(canvas));
+>>>>>>> parent of d60f4037 (upgrade to avalonia 11 and fix compilation)
                     Cursor = ViewConstants.cursorCross;
                     return;
                 }
@@ -344,15 +382,15 @@ namespace OpenUtau.App.Views {
             } else if (ViewModel.NotesViewModel.PenTool ||
                 ViewModel.NotesViewModel.PenPlusTool) {
                 ViewModel.NotesViewModel.DeselectNotes();
-                editState = new NoteDrawEditState(control, ViewModel, this, ViewModel.NotesViewModel.PlayTone);
+                editState = new NoteDrawEditState(canvas, ViewModel, this, ViewModel.NotesViewModel.PlayTone);
             }
         }
 
-        private void NotesCanvasRightPointerPressed(Control control, PointerPoint point, PointerPressedEventArgs args) {
+        private void NotesCanvasRightPointerPressed(Canvas canvas, PointerPoint point, PointerPressedEventArgs args) {
             var selectedNotes = ViewModel.NotesViewModel.Selection.ToList();
             ViewModel.NotesViewModel.DeselectNotes();
             if (ViewModel.NotesViewModel.DrawPitchTool) {
-                editState = new ResetPitchState(control, ViewModel, this);
+                editState = new ResetPitchState(canvas, ViewModel, this);
                 return;
             }
             if (ViewModel.NotesViewModel.ShowPitch) {
@@ -442,16 +480,40 @@ namespace OpenUtau.App.Views {
                     shouldOpenNotesContextMenu = true;
                 }
             } else if (ViewModel.NotesViewModel.EraserTool || ViewModel.NotesViewModel.PenPlusTool) {
-                editState = new NoteEraseEditState(control, ViewModel, this, MouseButton.Right);
+                editState = new NoteEraseEditState(canvas, ViewModel, this, MouseButton.Right);
                 Cursor = ViewConstants.cursorNo;
             }
         }
 
+<<<<<<< HEAD
         public void NotesCanvasPointerMoved(object sender, PointerEventArgs args) {
             var control = (Control)sender;
             var point = args.GetCurrentPoint(control);
             if (ValueTipCanvas != null) {
                 valueTipPointerPosition = args.GetCurrentPoint(ValueTipCanvas!).Position;
+=======
+        private Rectangle GetSelectionBox(Canvas canvas) {
+            if (selectionBox != null) {
+                return selectionBox;
+            }
+            selectionBox = new Rectangle() {
+                Stroke = ThemeManager.ForegroundBrush,
+                StrokeThickness = 2,
+                Fill = ThemeManager.TickLineBrushLow,
+                // radius = 8
+                IsHitTestVisible = false,
+            };
+            canvas.Children.Add(selectionBox);
+            selectionBox.ZIndex = 1000;
+            return selectionBox;
+        }
+
+        public void NotesCanvasPointerMoved(object sender, PointerEventArgs args) {
+            var canvas = (Canvas)sender;
+            var point = args.GetCurrentPoint(canvas);
+            if (valueTipCanvas != null) {
+                valueTipPointerPosition = args.GetCurrentPoint(valueTipCanvas!).Position;
+>>>>>>> parent of d60f4037 (upgrade to avalonia 11 and fix compilation)
             }
             if (editState != null) {
                 editState.Update(point.Pointer, point.Position);
@@ -495,21 +557,30 @@ namespace OpenUtau.App.Views {
             if (editState.MouseButton != args.InitialPressMouseButton) {
                 return;
             }
-            var control = (Control)sender;
-            var point = args.GetCurrentPoint(control);
+            var canvas = (Canvas)sender;
+            var point = args.GetCurrentPoint(canvas);
             editState.Update(point.Pointer, point.Position);
             editState.End(point.Pointer, point.Position);
             editState = null;
             Cursor = null;
         }
 
+<<<<<<< HEAD
         public void NotesCanvasDoubleTapped(object sender, TappedEventArgs args) {
             if (!(sender is Control control)) {
                 return;
             }
             var point = args.GetPosition(control);
+=======
+        public void NotesCanvasDoubleTapped(object sender, RoutedEventArgs args) {
+            if (!(sender is Canvas canvas)) {
+                return;
+            }
+            var e = (TappedEventArgs)args;
+            var point = e.GetPosition(canvas);
+>>>>>>> parent of d60f4037 (upgrade to avalonia 11 and fix compilation)
             if (editState != null) {
-                editState.End(args.Pointer, point);
+                editState.End(e.Pointer, point);
                 editState = null;
                 Cursor = null;
             }
@@ -521,10 +592,17 @@ namespace OpenUtau.App.Views {
         }
 
         public void NotesCanvasPointerWheelChanged(object sender, PointerWheelEventArgs args) {
+<<<<<<< HEAD
             LyricBox?.EndEdit();
             var control = (Control)sender;
             var position = args.GetCurrentPoint(control).Position;
             var size = control.Bounds.Size;
+=======
+            lyricBox?.EndEdit();
+            var canvas = (Canvas)sender;
+            var position = args.GetCurrentPoint(canvas).Position;
+            var size = canvas.Bounds.Size;
+>>>>>>> parent of d60f4037 (upgrade to avalonia 11 and fix compilation)
             var delta = args.Delta;
             if (args.KeyModifiers == KeyModifiers.None || args.KeyModifiers == KeyModifiers.Shift) {
                 if (args.KeyModifiers == KeyModifiers.Shift) {
@@ -545,7 +623,7 @@ namespace OpenUtau.App.Views {
                 TimelinePointerWheelChanged(TimelineCanvas, args);
             }
             if (editState != null) {
-                var point = args.GetCurrentPoint(editState.control);
+                var point = args.GetCurrentPoint(editState.canvas);
                 editState.Update(point.Pointer, point.Position);
             }
         }
@@ -567,15 +645,15 @@ namespace OpenUtau.App.Views {
             if (ViewModel.NotesViewModel.Part == null) {
                 return;
             }
-            var control = (Control)sender;
-            var point = args.GetCurrentPoint(control);
+            var canvas = (Canvas)sender;
+            var point = args.GetCurrentPoint(canvas);
             if (editState != null) {
                 return;
             }
             if (point.Properties.IsLeftButtonPressed) {
-                editState = new ExpSetValueState(control, ViewModel, this);
+                editState = new ExpSetValueState(canvas, ViewModel, this);
             } else if (point.Properties.IsRightButtonPressed) {
-                editState = new ExpResetValueState(control, ViewModel, this);
+                editState = new ExpResetValueState(canvas, ViewModel, this);
                 Cursor = ViewConstants.cursorNo;
             }
             if (editState != null) {
@@ -585,10 +663,17 @@ namespace OpenUtau.App.Views {
         }
 
         public void ExpCanvasPointerMoved(object sender, PointerEventArgs args) {
+<<<<<<< HEAD
             var control = (Control)sender;
             var point = args.GetCurrentPoint(control);
             if (ValueTipCanvas != null) {
                 valueTipPointerPosition = args.GetCurrentPoint(ValueTipCanvas!).Position;
+=======
+            var canvas = (Canvas)sender;
+            var point = args.GetCurrentPoint(canvas);
+            if (valueTipCanvas != null) {
+                valueTipPointerPosition = args.GetCurrentPoint(valueTipCanvas!).Position;
+>>>>>>> parent of d60f4037 (upgrade to avalonia 11 and fix compilation)
             }
             if (editState != null) {
                 editState.Update(point.Pointer, point.Position, args);
@@ -604,24 +689,29 @@ namespace OpenUtau.App.Views {
             if (editState.MouseButton != args.InitialPressMouseButton) {
                 return;
             }
-            var control = (Control)sender;
-            var point = args.GetCurrentPoint(control);
+            var canvas = (Canvas)sender;
+            var point = args.GetCurrentPoint(canvas);
             editState.Update(point.Pointer, point.Position, args);
             editState.End(point.Pointer, point.Position);
             editState = null;
             Cursor = null;
         }
 
-        public void PhonemeCanvasDoubleTapped(object sender, TappedEventArgs args) {
+        public void PhonemeCanvasDoubleTapped(object sender, RoutedEventArgs args) {
             if (ViewModel?.NotesViewModel?.Part == null) {
                 return;
             }
             if (sender is not Control control) {
                 return;
             }
+<<<<<<< HEAD
             var point = args.GetPosition(control);
+=======
+            var e = (TappedEventArgs)args;
+            var point = e.GetPosition(canvas);
+>>>>>>> parent of d60f4037 (upgrade to avalonia 11 and fix compilation)
             if (editState != null) {
-                editState.End(args.Pointer, point);
+                editState.End(e.Pointer, point);
                 editState = null;
                 Cursor = null;
             }
@@ -639,14 +729,14 @@ namespace OpenUtau.App.Views {
             if (ViewModel?.NotesViewModel?.Part == null) {
                 return;
             }
-            var control = (Control)sender;
-            var point = args.GetCurrentPoint(control);
+            var canvas = (Canvas)sender;
+            var point = args.GetCurrentPoint(canvas);
             if (editState != null) {
                 return;
             }
             if (point.Properties.IsLeftButtonPressed) {
                 if (args.KeyModifiers == cmdKey) {
-                    var hitAliasInfo = ViewModel.NotesViewModel.HitTest.HitTestAlias(args.GetPosition(control));
+                    var hitAliasInfo = ViewModel.NotesViewModel.HitTest.HitTestAlias(args.GetPosition(canvas));
                     if (hitAliasInfo.hit) {
                         var singer = ViewModel.NotesViewModel.Project.tracks[ViewModel.NotesViewModel.Part.trackNo].Singer;
                         if (Core.Util.Preferences.Default.OtoEditor == 1 && !string.IsNullOrEmpty(Core.Util.Preferences.Default.VLabelerPath)) {
@@ -665,17 +755,17 @@ namespace OpenUtau.App.Views {
                     var index = phoneme.index;
                     if (hitInfo.hitPosition) {
                         editState = new PhonemeMoveState(
-                            control, ViewModel, this, note.Extends ?? note, phoneme, index);
+                            canvas, ViewModel, this, note.Extends ?? note, phoneme, index);
                     } else if (hitInfo.hitPreutter) {
                         editState = new PhonemeChangePreutterState(
-                            control, ViewModel, this, note.Extends ?? note, phoneme, index);
+                            canvas, ViewModel, this, note.Extends ?? note, phoneme, index);
                     } else if (hitInfo.hitOverlap) {
                         editState = new PhonemeChangeOverlapState(
-                            control, ViewModel, this, note.Extends ?? note, phoneme, index);
+                            canvas, ViewModel, this, note.Extends ?? note, phoneme, index);
                     }
                 }
             } else if (point.Properties.IsRightButtonPressed) {
-                editState = new PhonemeResetState(control, ViewModel, this);
+                editState = new PhonemeResetState(canvas, ViewModel, this);
                 Cursor = ViewConstants.cursorNo;
             }
             if (editState != null) {
@@ -691,8 +781,8 @@ namespace OpenUtau.App.Views {
             if (ValueTipCanvas != null) {
                 valueTipPointerPosition = args.GetCurrentPoint(ValueTipCanvas!).Position;
             }
-            var control = (Control)sender;
-            var point = args.GetCurrentPoint(control);
+            var canvas = (Canvas)sender;
+            var point = args.GetCurrentPoint(canvas);
             if (editState != null) {
                 editState.Update(point.Pointer, point.Position);
                 return;
@@ -720,8 +810,8 @@ namespace OpenUtau.App.Views {
             if (editState.MouseButton != args.InitialPressMouseButton) {
                 return;
             }
-            var control = (Control)sender;
-            var point = args.GetCurrentPoint(control);
+            var canvas = (Canvas)sender;
+            var point = args.GetCurrentPoint(canvas);
             editState.Update(point.Pointer, point.Position);
             editState.End(point.Pointer, point.Position);
             editState = null;
@@ -1266,9 +1356,6 @@ namespace OpenUtau.App.Views {
             return new string[] { vm.SecondaryKey, vm.PrimaryKey };
         }
         public void LoadCacheExpressions(string[] cache) {
-            if (expSelector1 == null) {
-                return;
-            }
             foreach (string key in cache) {
                 UExpressionDescriptor? exp = (expSelector1.DataContext as ExpSelectorViewModel)?.Descriptor;
                 if (exp != null && exp.abbr == key) {

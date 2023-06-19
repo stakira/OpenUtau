@@ -8,8 +8,12 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+<<<<<<< HEAD
 using Avalonia.Markup.Xaml.Styling;
 using Avalonia.Styling;
+=======
+using Avalonia.Markup.Xaml.MarkupExtensions;
+>>>>>>> parent of d60f4037 (upgrade to avalonia 11 and fix compilation)
 using OpenUtau.App.Views;
 using OpenUtau.Classic;
 using OpenUtau.Core;
@@ -42,6 +46,7 @@ namespace OpenUtau.App {
             string sysLang = CultureInfo.InstalledUICulture.Name;
             string prefLang = Core.Util.Preferences.Default.Language;
             var languages = GetLanguages();
+<<<<<<< HEAD
             if (languages.ContainsKey(prefLang)) {
                 SetLanguage(prefLang);
             } else if (languages.ContainsKey(sysLang)) {
@@ -50,6 +55,16 @@ namespace OpenUtau.App {
                 Core.Util.Preferences.Save();
             } else {
                 SetLanguage("en-US");
+=======
+            if (languages.TryGetValue(prefLang, out var res)) {
+                SetLanguage(res);
+            } else if (languages.TryGetValue(sysLang, out res)) {
+                SetLanguage(res);
+                Core.Util.Preferences.Default.Language = sysLang;
+                Core.Util.Preferences.Save();
+            } else {
+                SetLanguage(languages["en-US"]);
+>>>>>>> parent of d60f4037 (upgrade to avalonia 11 and fix compilation)
             }
 
             // Force using InvariantCulture to prevent issues caused by culture dependent string conversion, especially for floating point numbers.
@@ -96,6 +111,7 @@ namespace OpenUtau.App {
         }
 
         public static void SetTheme() {
+<<<<<<< HEAD
             if (Current == null) {
                 return;
             }
@@ -109,6 +125,20 @@ namespace OpenUtau.App {
             } else {
                 Current.Resources.MergedDictionaries.Add(dark);
                 Current.RequestedThemeVariant = ThemeVariant.Dark;
+=======
+            var light = Current.Resources.MergedDictionaries
+                .Select(res => (ResourceInclude)res)
+                .FirstOrDefault(d => d.Source!.OriginalString.Contains("LightTheme"));
+            var dark = Current.Resources.MergedDictionaries
+                .Select(res => (ResourceInclude)res)
+                .FirstOrDefault(d => d.Source!.OriginalString.Contains("DarkTheme"));
+            if (Core.Util.Preferences.Default.Theme == 0) {
+                Current.Resources.MergedDictionaries.Remove(light);
+                Current.Resources.MergedDictionaries.Add(light);
+            } else {
+                Current.Resources.MergedDictionaries.Remove(dark);
+                Current.Resources.MergedDictionaries.Add(dark);
+>>>>>>> parent of d60f4037 (upgrade to avalonia 11 and fix compilation)
             }
             ThemeManager.LoadTheme();
         }

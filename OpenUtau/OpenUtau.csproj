@@ -33,8 +33,8 @@
     <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0-rc1.1" />
     <PackageReference Include="Dotnet.Bundle" Version="0.9.13" />
+<<<<<<< HEAD
     <PackageReference Include="NetSparkleUpdater.SparkleUpdater" Version="2.2.3" />
     <PackageReference Include="ReactiveUI.Fody" Version="18.3.1" />
     <PackageReference Include="Avalonia" Version="11.0.0-rc1.1" />
@@ -42,6 +42,17 @@
     <PackageReference Include="Avalonia.Desktop" Version="11.0.0-rc1.1" />
     <PackageReference Include="Avalonia.Diagnostics" Version="11.0.0-rc1.1" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.0-rc1.1" />
+=======
+    <PackageReference Include="NetSparkleUpdater.SparkleUpdater" Version="2.2.1" />
+    <PackageReference Include="ReactiveUI.Fody" Version="13.2.10" />
+    <PackageReference Include="ScottPlot.Avalonia" Version="4.1.39" />
+    <PackageReference Include="System.IO.Packaging" Version="6.0.0" />
+    <PackageReference Include="Avalonia" Version="0.10.18" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="0.10.18" />
+    <PackageReference Include="Avalonia.Desktop" Version="0.10.18" />
+    <PackageReference Include="Avalonia.Diagnostics" Version="0.10.18" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.18" />
+>>>>>>> parent of d60f4037 (upgrade to avalonia 11 and fix compilation)
     <PackageReference Include="Serilog" Version="2.12.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
     <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />

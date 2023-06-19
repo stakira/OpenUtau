@@ -172,7 +172,11 @@ namespace OpenUtau.App.Controls {
             viewModel.NoteOrPhoneme = null;
             viewModel.IsVisible = false;
             viewModel.Text = string.Empty;
+<<<<<<< HEAD
             TopLevel.GetTopLevel(this)?.FocusManager?.ClearFocus();
+=======
+            KeyboardDevice.Instance.SetFocusedElement(null, NavigationMethod.Unspecified, KeyModifiers.None);
+>>>>>>> parent of d60f4037 (upgrade to avalonia 11 and fix compilation)
         }
     }
 }

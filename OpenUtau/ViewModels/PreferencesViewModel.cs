@@ -6,7 +6,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Text.RegularExpressions;
 using Avalonia;
-using Avalonia.Markup.Xaml.Styling;
+using Avalonia.Markup.Xaml.MarkupExtensions;
 using OpenUtau.Audio;
 using OpenUtau.Classic;
 using OpenUtau.Core;
