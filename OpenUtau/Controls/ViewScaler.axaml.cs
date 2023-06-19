@@ -43,11 +43,8 @@ namespace OpenUtau.App.Controls {
             InitializeComponent();
         }
 
-        protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change) {
+        protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change) {
             base.OnPropertyChanged(change);
-            if (!change.IsEffectiveValueChange) {
-                return;
-            }
             if (change.Property == MaxProperty || change.Property == MinProperty || change.Property == ValueProperty) {
                 UpdatePath();
             }

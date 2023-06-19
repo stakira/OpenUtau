@@ -10,7 +10,7 @@ using ReactiveUI;
 using Serilog;
 
 namespace OpenUtau.App.Controls {
-    class WaveformImage : Image {
+    class WaveformImage : Control {
         public static readonly DirectProperty<WaveformImage, double> TickWidthProperty =
             AvaloniaProperty.RegisterDirect<WaveformImage, double>(
                 nameof(TickWidth),
@@ -56,11 +56,8 @@ namespace OpenUtau.App.Controls {
                 });
         }
 
-        protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change) {
+        protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change) {
             base.OnPropertyChanged(change);
-            if (!change.IsEffectiveValueChange) {
-                return;
-            }
             if (change.Property == DataContextProperty ||
                 change.Property == TickWidthProperty ||
                 change.Property == TickOffsetProperty ||
@@ -114,7 +111,6 @@ namespace OpenUtau.App.Controls {
                 }
             }
             base.Render(context);
-<<<<<<< HEAD
             if (bitmap != null) {
                 var rect = Bounds.WithX(0).WithY(0);
                 context.DrawImage(bitmap, rect, rect);
@@ -125,18 +121,6 @@ namespace OpenUtau.App.Controls {
             int desiredWidth = (int)Bounds.Width;
             int desiredHeight = (int)Bounds.Height;
             if (bitmap == null || bitmap.Size.Width < desiredWidth) {
-=======
-        }
-
-        private WriteableBitmap? GetBitmap() {
-            if (Parent == null) {
-                return null;
-            }
-            int desiredWidth = (int)Parent.Bounds.Width;
-            int desiredHeight = (int)Parent.Bounds.Height;
-            if (bitmap == null || bitmap.Size.Width != desiredWidth) {
-                Source = null;
->>>>>>> parent of d60f4037 (upgrade to avalonia 11 and fix compilation)
                 bitmap?.Dispose();
                 var size = new PixelSize(desiredWidth, desiredHeight);
                 bitmap = new WriteableBitmap(
@@ -145,9 +129,6 @@ namespace OpenUtau.App.Controls {
                     Avalonia.Platform.AlphaFormat.Unpremul);
                 Log.Information($"Created bitmap {size}");
                 bitmapData = new int[size.Width * size.Height];
-                Source = bitmap;
-                Width = bitmap.Size.Width;
-                Height = bitmap.Size.Height;
             }
             return bitmap;
         }

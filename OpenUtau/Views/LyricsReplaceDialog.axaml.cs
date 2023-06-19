@@ -10,19 +10,11 @@ namespace OpenUtau.App.Views {
         }
 
         void OnCancel(object? sender, RoutedEventArgs e) {
-<<<<<<< HEAD
-=======
-            KeyboardDevice.Instance.SetFocusedElement(null, NavigationMethod.Unspecified, KeyModifiers.None);
->>>>>>> parent of d60f4037 (upgrade to avalonia 11 and fix compilation)
             Close();
         }
 
         void OnFinish(object? sender, RoutedEventArgs e) {
             (DataContext as LyricsReplaceViewModel)!.Finish();
-<<<<<<< HEAD
-=======
-            KeyboardDevice.Instance.SetFocusedElement(null, NavigationMethod.Unspecified, KeyModifiers.None);
->>>>>>> parent of d60f4037 (upgrade to avalonia 11 and fix compilation)
             Close();
         }
 

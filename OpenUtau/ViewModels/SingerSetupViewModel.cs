@@ -62,11 +62,11 @@ namespace OpenUtau.App.ViewModels {
                 .Subscribe(_ => RefreshTextItems());
         }
 
-        private void Back() {
+        public void Back() {
             Step--;
         }
 
-        private void Next() {
+        public void Next() {
             Step++;
         }
 

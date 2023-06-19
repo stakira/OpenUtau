@@ -34,7 +34,7 @@
     </Grid.ColumnDefinitions>
     <Image Grid.Row="0" Width="100" Height="100" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,10,0,0" Source="{Binding Avatar}"/>
     <ComboBox Grid.Row="0" x:Name="name" HorizontalAlignment="Stretch" Margin="120,10,0,0" VerticalAlignment="Top"
-              Items="{Binding Singers}" SelectedItem="{Binding Singer}" SelectionChanged="OnSelectedSingerChanged"/>
+              ItemsSource="{Binding Singers}" SelectedItem="{Binding Singer}" SelectionChanged="OnSelectedSingerChanged"/>
     <Border Grid.Row="0" Margin="120,40,0,30">
       <ScrollViewer>
         <TextBlock x:Name="info" TextWrapping="Wrap" Text="{Binding Info}"/>
@@ -42,7 +42,7 @@
     </Border>
     <DataGrid Grid.Row="0" Grid.Column="2" Margin="0,10,10,30" CanUserSortColumns="False" BorderThickness="1"
               BorderBrush="{DynamicResource SystemControlHighlightBaseMediumHighBrush}"
-              Items="{Binding Subbanks}" IsReadOnly="True">
+              ItemsSource="{Binding Subbanks}" IsReadOnly="True">
       <DataGrid.Columns>
         <DataGridTextColumn Header="{StaticResource oto.prefix}" Binding="{Binding Prefix}"/>
         <DataGridTextColumn Header="{StaticResource oto.suffix}" Binding="{Binding Suffix}"/>
@@ -71,14 +71,14 @@
           <ContextMenu Name="SingerMenu" PlacementMode="Bottom">
             <MenuItem Header="{DynamicResource singers.visitwebsite}" Click="OnVisitWebsite" IsEnabled="{Binding HasWebsite}"/>
             <MenuItem Header="{DynamicResource singers.setportrait}" Click="OnSetPortrait"/>
-            <MenuItem Header="{DynamicResource singers.setencoding}" Items="{Binding SetEncodingMenuItems}">
+            <MenuItem Header="{DynamicResource singers.setencoding}" ItemsSource="{Binding SetEncodingMenuItems}">
               <MenuItem.DataTemplates>
                 <DataTemplate DataType="vm:MenuItemViewModel">
                   <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}"/>
                 </DataTemplate>
               </MenuItem.DataTemplates>
             </MenuItem>
-            <MenuItem Header="{DynamicResource singers.setdefaultphonemizer}" Items="{Binding SetDefaultPhonemizerMenuItems}">
+            <MenuItem Header="{DynamicResource singers.setdefaultphonemizer}" ItemsSource="{Binding SetDefaultPhonemizerMenuItems}">
               <MenuItem.DataTemplates>
                 <DataTemplate DataType="vm:MenuItemViewModel">
                   <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}"/>
@@ -113,7 +113,7 @@
                   Background="{DynamicResource SystemControlBackgroundAltHighBrush}"/>
     <DataGrid Name="OtoGrid" Grid.Row="2" Grid.ColumnSpan="3" Margin="10,0,10,0" CanUserResizeColumns="True" BorderThickness="1"
               BorderBrush="{DynamicResource SystemControlHighlightBaseMediumHighBrush}"
-              Items="{Binding DisplayedOtos}" SelectedItem="{Binding SelectedOto}" SelectedIndex="{Binding SelectedIndex}"
+              ItemsSource="{Binding DisplayedOtos}" SelectedItem="{Binding SelectedOto}" SelectedIndex="{Binding SelectedIndex}"
               SelectionChanged="OnSelectedOtoChanged"
               BeginningEdit="OnBeginningEdit" CellEditEnded="OnCellEditEnded">
       <DataGrid.ContextMenu>

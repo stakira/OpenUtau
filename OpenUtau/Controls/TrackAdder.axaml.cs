@@ -43,19 +43,8 @@ namespace OpenUtau.App.Controls {
             InitializeComponent();
         }
 
-<<<<<<< HEAD
         protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change) {
-=======
-        private void InitializeComponent() {
-            AvaloniaXamlLoader.Load(this);
-        }
-
-        protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change) {
->>>>>>> parent of d60f4037 (upgrade to avalonia 11 and fix compilation)
             base.OnPropertyChanged(change);
-            if (!change.IsEffectiveValueChange) {
-                return;
-            }
             if (change.Property == OffsetProperty ||
                 change.Property == TrackNoProperty ||
                 change.Property == TrackHeightProperty) {

@@ -118,7 +118,7 @@
                          TickOffset="{Binding TickOffset, Mode=OneWay}"
                          ShowWaveform="{Binding ShowWaveform, Mode=OneWay}"/>
       </Border>
-      <c:NotesCanvas Grid.Row="2" Grid.Column="1" Background="Transparent"
+      <c:NotesCanvas Grid.Row="2" Grid.Column="1"
                      TickWidth="{Binding NotesViewModel.TickWidth}"
                      TrackHeight="{Binding NotesViewModel.TrackHeight}"
                      TickOffset="{Binding NotesViewModel.TickOffset}"
@@ -132,7 +132,6 @@
                      PointerReleased="NotesCanvasPointerReleased"
                      DoubleTapped="NotesCanvasDoubleTapped"
                      PointerWheelChanged="NotesCanvasPointerWheelChanged">
-<<<<<<< HEAD
         <c:NotesCanvas.ContextMenu>
           <ContextMenu ItemsSource="{Binding NotesContextMenuItems}"
                        Opening="NotesContextMenuOpening"
@@ -149,39 +148,17 @@
         </c:NotesCanvas.ContextMenu>
       </c:NotesCanvas>
       <Canvas Grid.Row="2" Grid.Column="1" IsHitTestVisible="False" ClipToBounds="True">
-=======
->>>>>>> parent of d60f4037 (upgrade to avalonia 11 and fix compilation)
         <Rectangle Name="PlayPosHighlight"
                    Width="{Binding NotesViewModel.PlayPosHighlightWidth, Mode=OneWay}"
                    Height="{Binding $parent.Bounds.Height, Mode=OneWay}"
                    Canvas.Left="{Binding NotesViewModel.PlayPosHighlightX, Mode=OneWay}"
                    Canvas.Top="0" ZIndex="-10"
-<<<<<<< HEAD
                    Fill="{DynamicResource NeutralAccentBrushSemi2}"/>
         <Rectangle Name="SelectionBox" StrokeThickness="2"
                    Stroke="{DynamicResource SystemControlForegroundBaseHighBrush}"
                    Fill="{DynamicResource TickLineBrushLow}" ZIndex="1000"
                    IsHitTestVisible="False" IsVisible="False"/>
       </Canvas>
-=======
-                   Fill="{DynamicResource NeutralAccentBrushSemi2}"
-                   IsHitTestVisible="False"/>
-        <c:NotesCanvas.ContextMenu>
-          <ContextMenu Items="{Binding NotesContextMenuItems}"
-                       ContextMenuOpening="NotesContextMenuOpening"
-                       ContextMenuClosing="NotesContextMenuClosing">
-            <ContextMenu.Styles>
-              <Style Selector="MenuItem">
-                <Setter Property="Header" Value="{Binding Header}"/>
-                <Setter Property="Command" Value="{Binding Command}"/>
-                <Setter Property="CommandParameter" Value="{Binding CommandParameter}"/>
-                <Setter Property="Items" Value="{Binding Items}"/>
-              </Style>
-            </ContextMenu.Styles>
-          </ContextMenu>
-        </c:NotesCanvas.ContextMenu>
-      </c:NotesCanvas>
->>>>>>> parent of d60f4037 (upgrade to avalonia 11 and fix compilation)
       <StackPanel Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top"
                   Margin="12,12,0,0" Orientation="Horizontal">
         <Border CornerRadius="2" BoxShadow="0 0 5 1 #1F000000"
@@ -373,10 +350,10 @@
                            TextAlignment="Right" FontSize="10" FontFamily="monospace"
                            Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"/>
                 <Button.ContextMenu>
-                  <ContextMenu Name="SnapDivMenu" PlacementMode="Bottom" Items="{Binding NotesViewModel.SnapDivs}" KeyDown="OnSnapDivKeyDown">
+                  <ContextMenu Name="SnapDivMenu" PlacementMode="Bottom" ItemsSource="{Binding NotesViewModel.SnapDivs}" KeyDown="OnSnapDivKeyDown">
                     <ContextMenu.DataTemplates>
                       <DataTemplate DataType="vm:MenuItemViewModel">
-                        <MenuItem Header="{Binding Header}" Command="{Binding Command}" CommandParameter="{Binding CommandParameter}"/>
+                        <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}"/>
                       </DataTemplate>
                     </ContextMenu.DataTemplates>
                   </ContextMenu>
@@ -389,27 +366,27 @@
         <Border CornerRadius="2" BoxShadow="0 0 5 1 #1F000000">
           <Border CornerRadius="2" ClipToBounds="True">
             <Menu CornerRadius="2" Height="20" Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
-                  MenuClosed="OnMenuClosed" PointerLeave="OnMenuPointerLeave">
+                  Closed="OnMenuClosed" PointerExited="OnMenuPointerLeave">
               <MenuItem Height="20" Header="{DynamicResource pianoroll.menu.part}" CornerRadius="2,0,0,2">
-                <MenuItem Header="{DynamicResource pianoroll.menu.part.legacypluginexp}" Items="{Binding LegacyPlugins}">
+                <MenuItem Header="{DynamicResource pianoroll.menu.part.legacypluginexp}" ItemsSource="{Binding LegacyPlugins}">
                   <MenuItem.DataTemplates>
                     <DataTemplate DataType="vm:MenuItemViewModel">
-                      <MenuItem Header="{Binding Header}" Command="{Binding Command}" CommandParameter="{Binding CommandParameter}"/>
+                      <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}"/>
                     </DataTemplate>
                   </MenuItem.DataTemplates>
                 </MenuItem>
               </MenuItem>
-              <MenuItem Height="20" Header="{DynamicResource pianoroll.menu.notes}" Items="{Binding NoteBatchEdits}">
+              <MenuItem Height="20" Header="{DynamicResource pianoroll.menu.notes}" ItemsSource="{Binding NoteBatchEdits}">
                 <MenuItem.DataTemplates>
                   <DataTemplate DataType="vm:MenuItemViewModel">
-                    <MenuItem Header="{Binding Header}" Command="{Binding Command}" CommandParameter="{Binding CommandParameter}"/>
+                    <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}"/>
                   </DataTemplate>
                 </MenuItem.DataTemplates>
               </MenuItem>
-              <MenuItem Height="20" Header="{DynamicResource pianoroll.menu.lyrics}" Items="{Binding LyricBatchEdits}">
+              <MenuItem Height="20" Header="{DynamicResource pianoroll.menu.lyrics}" ItemsSource="{Binding LyricBatchEdits}">
                 <MenuItem.DataTemplates>
                   <DataTemplate DataType="vm:MenuItemViewModel">
-                    <MenuItem Header="{Binding Header}" Command="{Binding Command}" CommandParameter="{Binding CommandParameter}"/>
+                    <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}"/>
                   </DataTemplate>
                 </MenuItem.DataTemplates>
               </MenuItem>
@@ -455,7 +432,7 @@
                           TickOffset="{Binding NotesViewModel.TickOffset}"
                           Part="{Binding NotesViewModel.Part}"
                           Key="{Binding NotesViewModel.SecondaryKey}"/>
-      <c:ExpressionCanvas Grid.Row="4" Grid.Column="1" Background="Transparent"
+      <c:ExpressionCanvas Grid.Row="4" Grid.Column="1"
                           Bounds="{Binding NotesViewModel.ExpBounds, Mode=OneWayToSource}"
                           TickWidth="{Binding NotesViewModel.TickWidth}"
                           TickOffset="{Binding NotesViewModel.TickOffset}"

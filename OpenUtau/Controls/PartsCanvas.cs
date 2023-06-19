@@ -105,16 +105,13 @@ namespace OpenUtau.App.Controls {
                 .Subscribe(_ => InvalidateVisual());
         }
 
-        protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change) {
+        protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change) {
             base.OnPropertyChanged(change);
-            if (!change.IsEffectiveValueChange) {
-                return;
-            }
             if (change.Property == ItemsProperty) {
-                if (change.OldValue != null && change.OldValue.Value is ObservableCollection<UPart> oldCol) {
+                if (change.OldValue != null && change.OldValue is ObservableCollection<UPart> oldCol) {
                     oldCol.CollectionChanged -= Items_CollectionChanged;
                 }
-                if (change.NewValue.HasValue && change.NewValue.Value is ObservableCollection<UPart> newCol) {
+                if (change.NewValue != null && change.NewValue is ObservableCollection<UPart> newCol) {
                     newCol.CollectionChanged += Items_CollectionChanged;
                 }
             }

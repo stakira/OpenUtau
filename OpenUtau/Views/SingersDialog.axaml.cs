@@ -239,7 +239,7 @@ namespace OpenUtau.App.Views {
         }
 
         void OnKeyDown(object sender, KeyEventArgs args) {
-            if (args.Handled || editingCell || (FocusManager.Instance != null && FocusManager.Instance.Current is TextBox)) {
+            if (args.Handled || editingCell || (FocusManager?.GetFocusedElement() is TextBox)) {
                 return;
             }
             var viewModel = DataContext as SingersViewModel;

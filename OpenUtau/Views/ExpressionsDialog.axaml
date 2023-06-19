@@ -15,7 +15,7 @@
   </Design.DataContext>
   <Grid Margin="{Binding $parent.WindowDecorationMargin}">
     <Border Margin="10,10,10,40" Width="150" HorizontalAlignment="Left">
-      <ListBox Items="{Binding Expressions}" SelectedItem="{Binding Expression}">
+      <ListBox ItemsSource="{Binding Expressions}" SelectedItem="{Binding Expression}">
         <ListBox.ItemTemplate>
           <DataTemplate>
             <TextBlock Text="{Binding}"/>

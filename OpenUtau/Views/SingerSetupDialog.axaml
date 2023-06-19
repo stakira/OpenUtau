@@ -24,13 +24,8 @@
         <RowDefinition Height="40"/>
       </Grid.RowDefinitions>
       <StackPanel Grid.Row="0" Margin="10" Spacing="10" Orientation="Horizontal" HorizontalAlignment="Right">
-<<<<<<< HEAD
         <TextBlock Margin="0,1,0,0" Text="{DynamicResource singersetup.archivefileencoding}"/>
         <ComboBox Grid.Row="0" Width="240" Margin="0" ItemsSource="{Binding Encodings}" SelectedItem="{Binding ArchiveEncoding}">
-=======
-        <TextBlock Margin="0,2,0,0">Archive File Encoding</TextBlock>
-        <ComboBox Grid.Row="0" Width="240" Margin="0" Items="{Binding Encodings}" SelectedItem="{Binding ArchiveEncoding}">
->>>>>>> parent of d60f4037 (upgrade to avalonia 11 and fix compilation)
           <ComboBox.ItemTemplate>
             <DataTemplate>
               <TextBlock Text="{Binding Converter={StaticResource encodingNameConverter}}"/>
@@ -38,7 +33,7 @@
           </ComboBox.ItemTemplate>
         </ComboBox>
       </StackPanel>
-      <ListBox Grid.Row="1" Margin="10,0" Focusable="False" Items="{Binding TextItems}"/>
+      <ListBox Grid.Row="1" Margin="10,0" Focusable="False" ItemsSource="{Binding TextItems}"/>
       <Grid Grid.Row="2" Margin="10" HorizontalAlignment="Stretch">
         <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Spacing="10">
           <TextBlock Margin="0,1,0,0" Text="{DynamicResource singersetup.archivefileencoding.prompt}"></TextBlock>
@@ -55,13 +50,8 @@
         <RowDefinition Height="40"/>
       </Grid.RowDefinitions>
       <StackPanel Grid.Row="0" Margin="10" Spacing="10" Orientation="Horizontal" HorizontalAlignment="Right">
-<<<<<<< HEAD
         <TextBlock Margin="0,1,0,0" Text="{DynamicResource singersetup.textfileencoding}"/>
         <ComboBox Grid.Row="0" Width="240" Margin="0" ItemsSource="{Binding Encodings}" SelectedItem="{Binding TextEncoding}">
-=======
-        <TextBlock Margin="0,2,0,0">Text File Encoding</TextBlock>
-        <ComboBox Grid.Row="0" Width="240" Margin="0" Items="{Binding Encodings}" SelectedItem="{Binding TextEncoding}">
->>>>>>> parent of d60f4037 (upgrade to avalonia 11 and fix compilation)
           <ComboBox.ItemTemplate>
             <DataTemplate>
               <TextBlock Text="{Binding Converter={StaticResource encodingNameConverter}}"/>
@@ -69,7 +59,7 @@
           </ComboBox.ItemTemplate>
         </ComboBox>
       </StackPanel>
-      <ListBox Grid.Row="1" Margin="10,0" Focusable="False" Items="{Binding TextItems}"/>
+      <ListBox Grid.Row="1" Margin="10,0" Focusable="False" ItemsSource="{Binding TextItems}"/>
       <Grid Grid.Row="2" Margin="10" HorizontalAlignment="Stretch">
         <Button Margin="0" Command="{Binding Back}" HorizontalAlignment="Left"
                  Content="{DynamicResource singersetup.back}"/>
@@ -89,15 +79,10 @@
         <RowDefinition Height="1*"/>
         <RowDefinition Height="40"/>
       </Grid.RowDefinitions>
-<<<<<<< HEAD
       <StackPanel Grid.Row="0" Margin="10" Spacing="10" Orientation="Horizontal" HorizontalAlignment="Left">
         <TextBlock Margin="0,1,0,0" Text="{DynamicResource singersetup.missinginfo}" Foreground="Red"/>
       </StackPanel>
       <Grid Grid.Row="1" Margin="10,0">
-=======
-      <ListBox Grid.Row="0" Margin="10" Focusable="False" Items="{Binding TextItems}"/>
-      <Grid Margin="10,0" Grid.Row="1">
->>>>>>> parent of d60f4037 (upgrade to avalonia 11 and fix compilation)
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="120"/>
           <ColumnDefinition Width="*"/>

@@ -15,7 +15,7 @@ namespace OpenUtau.App.Views {
             DataContext = ViewModel = new UpdaterViewModel();
         }
 
-        void OnClosing(object sender, CancelEventArgs e) {
+        void OnClosing(object sender, WindowClosingEventArgs e) {
             ViewModel.OnClosing();
         }
 
