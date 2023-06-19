@@ -30,7 +30,7 @@
               <StackPanel>
                   <Grid ColumnDefinitions="173,20,*,20,80,20,80">
                       <Label Content="{DynamicResource notedefaults.preset}"/>
-                      <ComboBox Grid.Column="2" Items="{Binding PortamentoPresets}"
+                      <ComboBox Grid.Column="2" ItemsSource="{Binding PortamentoPresets}"
                       SelectedItem="{Binding ApplyPortamentoPreset}" HorizontalAlignment="Stretch"/>
                       <Button Grid.Column="4" Content="{DynamicResource notedefaults.preset.save}"
                       HorizontalAlignment="Stretch" Click="OnSavePortamentoPreset"
@@ -57,7 +57,7 @@
               <StackPanel>
                   <Grid ColumnDefinitions="173,20,*,20,80,20,80">
                       <Label Content="{DynamicResource notedefaults.preset}"/>
-                      <ComboBox Grid.Column="2" Items="{Binding VibratoPresets}"
+                      <ComboBox Grid.Column="2" ItemsSource="{Binding VibratoPresets}"
                       SelectedItem="{Binding ApplyVibratoPreset}" HorizontalAlignment="Stretch" />
                       <Button Grid.Column="4" Content="{DynamicResource notedefaults.preset.save}"
                       HorizontalAlignment="Stretch" Click="OnSaveVibratoPreset"

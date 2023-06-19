@@ -30,7 +30,7 @@ namespace OpenUtau.App.ViewModels {
         public ReactiveCommand<PhonemizerFactory, Unit> SelectPhonemizerCommand { get; }
         public IReadOnlyList<MenuItemViewModel>? RenderersMenuItems { get; set; }
         public ReactiveCommand<string, Unit> SelectRendererCommand { get; }
-        [Reactive] public string TrackName { get; set; }
+        [Reactive] public string TrackName { get; set; } = string.Empty;
         [Reactive] public double Volume { get; set; }
         [Reactive] public double Pan { get; set; }
         [Reactive] public bool Mute { get; set; }
@@ -41,14 +41,13 @@ namespace OpenUtau.App.ViewModels {
 
         private readonly UTrack track;
 
+        // Parameterless constructor for Avalonia preview only.
         public TrackHeaderViewModel() {
-#if DEBUG
             SelectSingerCommand = ReactiveCommand.Create<USinger>(_ => { });
             SelectPhonemizerCommand = ReactiveCommand.Create<PhonemizerFactory>(_ => { });
             SelectRendererCommand = ReactiveCommand.Create<string>(_ => { });
             Activator = new ViewModelActivator();
             track = new UTrack(DocManager.Inst.Project);
-#endif
         }
 
         public TrackHeaderViewModel(UTrack track) {
@@ -93,7 +92,7 @@ namespace OpenUtau.App.ViewModels {
                     var phonemizer = factory.Create();
                     DocManager.Inst.ExecuteCmd(new TrackChangePhonemizerCommand(DocManager.Inst.Project, track, phonemizer));
                     DocManager.Inst.EndUndoGroup();
-                    var name = phonemizer!.GetType().FullName;
+                    var name = phonemizer.GetType().FullName!;
                     if (!string.IsNullOrEmpty(Singer?.Id) && phonemizer != null) {
                         Preferences.Default.SingerPhonemizers[Singer.Id] = name;
                     }
@@ -313,7 +312,7 @@ namespace OpenUtau.App.ViewModels {
                     DocManager.Inst.EndUndoGroup();
                 }
             };
-            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
+            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop && desktop.MainWindow != null) {
                 dialog.ShowDialog(desktop.MainWindow);
             }
         }
@@ -335,7 +334,7 @@ namespace OpenUtau.App.ViewModels {
             var parts = DocManager.Inst.Project.parts
                 .Where(part => part.trackNo == track.TrackNo)
                 .Select(part => part.Clone()).ToList();
-            foreach(var part in parts) {
+            foreach (var part in parts) {
                 part.trackNo = newTrack.TrackNo;
                 DocManager.Inst.ExecuteCmd(new AddPartCommand(DocManager.Inst.Project, part));
             }

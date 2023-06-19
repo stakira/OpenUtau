@@ -109,7 +109,7 @@ namespace OpenUtau.App.ViewModels {
             });
 
             viewportTicks = this.WhenAnyValue(x => x.Bounds, x => x.TickWidth)
-                .Select(v => v.Item1.Width / v.Item2)
+                .Select(v => v.Item1.Width / Math.Max(v.Item2, ViewConstants.TickWidthMin))
                 .ToProperty(this, x => x.ViewportTicks);
             viewportTracks = this.WhenAnyValue(x => x.Bounds, x => x.TrackHeight)
                 .Select(v => v.Item1.Height / v.Item2)
@@ -614,7 +614,7 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void TransposeSelection(int deltaNoteNum) {
-            if (Selection.IsEmpty) {
+            if (Part == null || Selection.IsEmpty) {
                 return;
             }
             var selectedNotes = Selection.ToList();
@@ -626,7 +626,7 @@ namespace OpenUtau.App.ViewModels {
             DocManager.Inst.EndUndoGroup();
         }
         public void MoveSelectedNotes(int deltaTicks) {
-            if (Selection.IsEmpty || Part == null) {
+            if (Part == null || Selection.IsEmpty) {
                 return;
             }
             var selectedNotes = Selection.ToList();
@@ -640,7 +640,7 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void ResizeSelectedNotes(int deltaTicks) {
-            if (Selection.IsEmpty || Part == null) {
+            if (Part == null || Selection.IsEmpty) {
                 return;
             }
 
@@ -664,7 +664,7 @@ namespace OpenUtau.App.ViewModels {
         }
 
         internal void DeleteSelectedNotes() {
-            if (Selection.IsEmpty) {
+            if (Part == null || Selection.IsEmpty) {
                 return;
             }
             DocManager.Inst.StartUndoGroup();
@@ -673,14 +673,14 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void CopyNotes() {
-            if (!Selection.IsEmpty) {
+            if (Part != null && !Selection.IsEmpty) {
                 var selectedNotes = Selection.ToList();
                 DocManager.Inst.NotesClipboard = selectedNotes.Select(note => note.Clone()).ToList();
             }
         }
 
         public void CutNotes() {
-            if (!Selection.IsEmpty) {
+            if (Part != null && !Selection.IsEmpty) {
                 var selectedNotes = Selection.ToList();
                 DocManager.Inst.NotesClipboard = selectedNotes.Select(note => note.Clone()).ToList();
                 DocManager.Inst.StartUndoGroup();
@@ -715,6 +715,9 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void ToggleVibrato(UNote note) {
+            if (Part == null) {
+                return;
+            }
             var vibrato = note.vibrato;
             DocManager.Inst.StartUndoGroup();
             DocManager.Inst.ExecuteCmd(new VibratoLengthCommand(Part, note, vibrato.length == 0 ? NotePresets.Default.DefaultVibrato.VibratoLength : 0));
@@ -755,6 +758,9 @@ namespace OpenUtau.App.ViewModels {
             var first = Selection.FirstOrDefault();
             var last = Selection.LastOrDefault();
             List<UNote> notes = new List<UNote>();
+            if (first == null || last == null) {
+                return (notes.ToArray(), new string[0]);
+            }
             var note = first;
             while (note != last) {
                 notes.Add(note);
@@ -863,7 +869,7 @@ namespace OpenUtau.App.ViewModels {
                     LoadWindowTitle(Part, Project);
                     return;
                 } else if (cmd is RemoveTrackCommand removeTrack) {
-                    if (removeTrack.removedParts.Contains(Part)) {
+                    if (Part != null && removeTrack.removedParts.Contains(Part)) {
                         UnloadPart();
                     }
                 }

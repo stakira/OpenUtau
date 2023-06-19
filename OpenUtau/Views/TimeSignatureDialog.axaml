@@ -10,10 +10,10 @@
   <StackPanel VerticalAlignment="Center" Margin="{Binding $parent.WindowDecorationMargin}">
     <Grid ColumnDefinitions="1*,1*" Margin="4,0">
       <ComboBox Grid.Column="0" Margin="4" HorizontalAlignment="Stretch"
-                Items="{Binding BeatPerBars}"
+                ItemsSource="{Binding BeatPerBars}"
                 SelectedItem="{Binding BeatPerBar}"/>
       <ComboBox Grid.Column="1" Margin="4" HorizontalAlignment="Stretch"
-                Items="{Binding BeatUnits}"
+                ItemsSource="{Binding BeatUnits}"
                 SelectedItem="{Binding BeatUnit}"/>
     </Grid>
     <Button Content="OK" Margin="8,4" HorizontalAlignment="Stretch"

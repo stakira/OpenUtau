@@ -335,6 +335,7 @@ OpenUtau.Test/Usts/*
 
 .DS_Store
 *.dmg
+*.exe
 appcast.*.xml
 *.tar.gz
 .vscode/

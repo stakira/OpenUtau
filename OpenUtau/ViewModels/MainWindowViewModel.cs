@@ -67,7 +67,7 @@ namespace OpenUtau.App.ViewModels {
                 try {
                     OpenProject(new[] { file });
                     DocManager.Inst.Project.Saved = false;
-                    DocManager.Inst.Project.FilePath = null;
+                    DocManager.Inst.Project.FilePath = string.Empty;
                 } catch (Exception e) {
                     DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(
                         "failed to open template.", e));
@@ -105,7 +105,7 @@ namespace OpenUtau.App.ViewModels {
                 try {
                     OpenProject(new[] { defaultTemplate });
                     DocManager.Inst.Project.Saved = false;
-                    DocManager.Inst.Project.FilePath = null;
+                    DocManager.Inst.Project.FilePath = string.Empty;
                     return;
                 } catch (Exception e) {
                     DocManager.Inst.ExecuteCmd(new ErrorMessageNotification(

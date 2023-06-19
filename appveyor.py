@@ -49,6 +49,9 @@ if sys.platform == 'win32':
     os.system("copy /y OpenUtau.Plugin.Builtin\\bin\\Release\\netstandard2.1\\OpenUtau.Plugin.Builtin.dll bin\\win-x64")
     write_appcast("windows", "win-x64", "OpenUtau-win-x64.zip")
 
+    os.system("makensis -DPRODUCT_VERSION=%s OpenUtau.nsi" % (appcast_ver))
+    write_appcast("windows", "win-x64-installer", "OpenUtau-win-x64.exe")
+
 elif sys.platform == 'darwin':
     os.system("rm *.dmg")
     os.system("rm *.xml")

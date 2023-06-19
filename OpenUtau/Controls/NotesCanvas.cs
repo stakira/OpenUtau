@@ -11,7 +11,7 @@ using OpenUtau.Core.Util;
 using ReactiveUI;
 
 namespace OpenUtau.App.Controls {
-    class NotesCanvas : Canvas {
+    class NotesCanvas : Control {
         public static readonly DirectProperty<NotesCanvas, double> TickWidthProperty =
             AvaloniaProperty.RegisterDirect<NotesCanvas, double>(
                 nameof(TickWidth),
@@ -134,11 +134,8 @@ namespace OpenUtau.App.Controls {
                 .ToList();
         }
 
-        protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change) {
+        protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change) {
             base.OnPropertyChanged(change);
-            if (!change.IsEffectiveValueChange) {
-                return;
-            }
             InvalidateVisual();
         }
 
@@ -151,6 +148,7 @@ namespace OpenUtau.App.Controls {
             if (viewModel == null) {
                 return;
             }
+            DrawBackgroundForHitTest(context);
             double leftTick = TickOffset - 480;
             double rightTick = TickOffset + Bounds.Width / TickWidth + 480;
             bool hidePitch = viewModel.TickWidth <= ViewConstants.PianoRollTickWidthShowDetails * 0.5;
@@ -195,6 +193,10 @@ namespace OpenUtau.App.Controls {
             }
         }
 
+        private void DrawBackgroundForHitTest(DrawingContext context) {
+            context.DrawRectangle(Brushes.Transparent, null, Bounds.WithX(0).WithY(0));
+        }
+
         private void RenderNoteBody(UNote note, NotesViewModel viewModel, DrawingContext context) {
             Point leftTop = viewModel.TickToneToPoint(note.position, note.tone);
             leftTop = leftTop.WithX(leftTop.X + 1).WithY(Math.Round(leftTop.Y + 1));
@@ -210,17 +212,17 @@ namespace OpenUtau.App.Controls {
             }
             string displayLyric = note.lyric;
             var textLayout = TextLayoutCache.Get(displayLyric, Brushes.White, 12);
-            if (textLayout.Size.Width + 5 > size.Width) {
+            if (textLayout.Width + 5 > size.Width) {
                 displayLyric = displayLyric[0] + "..";
                 textLayout = TextLayoutCache.Get(displayLyric, Brushes.White, 12);
-                if (textLayout.Size.Width + 5 > size.Width) {
+                if (textLayout.Width + 5 > size.Width) {
                     return;
                 }
             }
             Point textPosition = leftTop.WithX(leftTop.X + 5)
-                .WithY(Math.Round(leftTop.Y + (size.Height - textLayout.Size.Height) / 2));
-            using (var state = context.PushPreTransform(Matrix.CreateTranslation(textPosition.X, textPosition.Y))) {
-                textLayout.Draw(context);
+                .WithY(Math.Round(leftTop.Y + (size.Height - textLayout.Height) / 2));
+            using (var state = context.PushTransform(Matrix.CreateTranslation(textPosition.X, textPosition.Y))) {
+                textLayout.Draw(context, new Point());
             }
         }
 
@@ -256,7 +258,7 @@ namespace OpenUtau.App.Controls {
 
             var brush = note.pitch.snapFirst ? ThemeManager.AccentBrush3 : null;
             var pen = ThemeManager.AccentPen3;
-            using (var state = context.PushPreTransform(Matrix.CreateTranslation(p0.X, p0.Y))) {
+            using (var state = context.PushTransform(Matrix.CreateTranslation(p0.X, p0.Y))) {
                 context.DrawGeometry(brush, pen, pointGeometry);
             }
 
@@ -283,7 +285,7 @@ namespace OpenUtau.App.Controls {
                     }
                 }
                 p0 = p1;
-                using (var state = context.PushPreTransform(Matrix.CreateTranslation(p0.X, p0.Y))) {
+                using (var state = context.PushTransform(Matrix.CreateTranslation(p0.X, p0.Y))) {
                     context.DrawGeometry(null, pen, pointGeometry);
                 }
             }
@@ -318,7 +320,7 @@ namespace OpenUtau.App.Controls {
             var togglePos = vibrato.GetToggle(note);
             Point icon = viewModel.TickToneToPoint(togglePos.X, togglePos.Y);
             var pen = ThemeManager.BarNumberPen;
-            using (var state = context.PushPreTransform(Matrix.CreateTranslation(icon.X - 10, icon.Y))) {
+            using (var state = context.PushTransform(Matrix.CreateTranslation(icon.X - 10, icon.Y))) {
                 context.DrawGeometry(vibrato.length == 0 ? null : pen.Brush, pen, vibratoIcon);
             }
         }
@@ -336,13 +338,13 @@ namespace OpenUtau.App.Controls {
             context.DrawLine(pen, start, fadeIn);
             context.DrawLine(pen, fadeIn, fadeOut);
             context.DrawLine(pen, fadeOut, end);
-            using (var state = context.PushPreTransform(Matrix.CreateTranslation(start))) {
+            using (var state = context.PushTransform(Matrix.CreateTranslation(start))) {
                 context.DrawGeometry(pen.Brush, pen, pointGeometry);
             }
-            using (var state = context.PushPreTransform(Matrix.CreateTranslation(fadeIn))) {
+            using (var state = context.PushTransform(Matrix.CreateTranslation(fadeIn))) {
                 context.DrawGeometry(pen.Brush, pen, pointGeometry);
             }
-            using (var state = context.PushPreTransform(Matrix.CreateTranslation(fadeOut))) {
+            using (var state = context.PushTransform(Matrix.CreateTranslation(fadeOut))) {
                 context.DrawGeometry(pen.Brush, pen, pointGeometry);
             }
             vibrato.GetPeriodStartEnd(DocManager.Inst.Project, note, out var periodStartPos, out var periodEndPos);

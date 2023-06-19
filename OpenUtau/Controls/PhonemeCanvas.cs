@@ -8,7 +8,12 @@ using OpenUtau.Core.Ustx;
 using ReactiveUI;
 
 namespace OpenUtau.App.Controls {
-    class PhonemeCanvas : Canvas {
+    class PhonemeCanvas : Control {
+        public static readonly DirectProperty<PhonemeCanvas, IBrush> BackgroundProperty =
+            AvaloniaProperty.RegisterDirect<PhonemeCanvas, IBrush>(
+                nameof(Background),
+                o => o.Background,
+                (o, v) => o.Background = v);
         public static readonly DirectProperty<PhonemeCanvas, double> TickWidthProperty =
             AvaloniaProperty.RegisterDirect<PhonemeCanvas, double>(
                 nameof(TickWidth),
@@ -30,6 +35,10 @@ namespace OpenUtau.App.Controls {
                 o => o.ShowPhoneme,
                 (o, v) => o.ShowPhoneme = v);
 
+        public IBrush Background {
+            get => background;
+            private set => SetAndRaise(BackgroundProperty, ref background, value);
+        }
         public double TickWidth {
             get => tickWidth;
             private set => SetAndRaise(TickWidthProperty, ref tickWidth, value);
@@ -47,6 +56,7 @@ namespace OpenUtau.App.Controls {
             private set => SetAndRaise(ShowPhonemeProperty, ref showPhoneme, value);
         }
 
+        private IBrush background = Brushes.White;
         private double tickWidth;
         private double tickOffset;
         private UVoicePart? part;
@@ -77,11 +87,8 @@ namespace OpenUtau.App.Controls {
                 });
         }
 
-        protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change) {
+        protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change) {
             base.OnPropertyChanged(change);
-            if (!change.IsEffectiveValueChange) {
-                return;
-            }
             InvalidateVisual();
         }
 
@@ -94,6 +101,7 @@ namespace OpenUtau.App.Controls {
             if (viewModel == null) {
                 return;
             }
+            context.DrawRectangle(Background, null, Bounds.WithX(0).WithY(0));
             double leftTick = TickOffset - 480;
             double rightTick = TickOffset + Bounds.Width / TickWidth + 480;
             bool raiseText = false;
@@ -134,11 +142,11 @@ namespace OpenUtau.App.Controls {
                     context.DrawGeometry(brush, pen, polyline);
 
                     brush = phoneme.preutterDelta.HasValue ? pen!.Brush : ThemeManager.BackgroundBrush;
-                    using (var state = context.PushPreTransform(Matrix.CreateTranslation(x0, y + y0 - 1))) {
+                    using (var state = context.PushTransform(Matrix.CreateTranslation(x0, y + y0 - 1))) {
                         context.DrawGeometry(brush, pen, pointGeometry);
                     }
                     brush = phoneme.overlapDelta.HasValue ? pen!.Brush : ThemeManager.BackgroundBrush;
-                    using (var state = context.PushPreTransform(Matrix.CreateTranslation(point1))) {
+                    using (var state = context.PushTransform(Matrix.CreateTranslation(point1))) {
                         context.DrawGeometry(brush, pen, pointGeometry);
                     }
                 }
@@ -161,11 +169,11 @@ namespace OpenUtau.App.Controls {
                             raiseText = false;
                         }
                         double textY = raiseText ? 2 : 18;
-                        var size = new Size(textLayout.Size.Width + 4, textLayout.Size.Height - 2);
-                        using (var state = context.PushPreTransform(Matrix.CreateTranslation(x + 2, textY))) {
+                        var size = new Size(textLayout.Width + 4, textLayout.Height - 2);
+                        using (var state = context.PushTransform(Matrix.CreateTranslation(x + 2, textY))) {
                             var pen = mouseoverPhoneme == phoneme ? ThemeManager.AccentPen1Thickness2 : ThemeManager.NeutralAccentPenSemi;
                             context.DrawRectangle(ThemeManager.BackgroundBrush, pen, new Rect(new Point(-2, 1.5), size), 4, 4);
-                            textLayout.Draw(context);
+                            textLayout.Draw(context, new Point());
                         }
                         lastTextEndX = x + size.Width;
                     }
