@@ -96,6 +96,7 @@ namespace OpenUtau.App.Controls {
             if (descriptor.max <= descriptor.min) {
                 return;
             }
+            DrawBackgroundForHitTest(context);
             var track = project.tracks[Part.trackNo];
             double leftTick = TickOffset - 480;
             double rightTick = TickOffset + Bounds.Width / TickWidth + 480;
@@ -199,6 +200,10 @@ namespace OpenUtau.App.Controls {
                     }
                 }
             }
+        }
+
+        private void DrawBackgroundForHitTest(DrawingContext context) {
+            context.DrawRectangle(Brushes.Transparent, null, Bounds.WithX(0).WithY(0));
         }
     }
 }

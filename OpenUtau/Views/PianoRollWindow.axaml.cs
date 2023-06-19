@@ -5,7 +5,6 @@ using System.Reactive;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
-using Avalonia.Controls.Shapes;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using OpenUtau.App.Controls;
@@ -30,7 +29,6 @@ namespace OpenUtau.App.Views {
             OS.IsMacOS() ? KeyModifiers.Meta : KeyModifiers.Control;
         private KeyboardPlayState? keyboardPlayState;
         private NoteEditState? editState;
-        private Rectangle? selectionBox;
         private Point valueTipPointerPosition;
         private bool shouldOpenNotesContextMenu;
 
@@ -332,13 +330,13 @@ namespace OpenUtau.App.Views {
                 if (args.KeyModifiers == KeyModifiers.None) {
                     // New selection.
                     ViewModel.NotesViewModel.DeselectNotes();
-                    editState = new NoteSelectionEditState(control, ViewModel, this, GetSelectionBox(control));
+                    editState = new NoteSelectionEditState(control, ViewModel, this, SelectionBox);
                     Cursor = ViewConstants.cursorCross;
                     return;
                 }
                 if (args.KeyModifiers == cmdKey) {
                     // Additional selection.
-                    editState = new NoteSelectionEditState(control, ViewModel, this, GetSelectionBox(control));
+                    editState = new NoteSelectionEditState(control, ViewModel, this, SelectionBox);
                     Cursor = ViewConstants.cursorCross;
                     return;
                 }
@@ -449,22 +447,6 @@ namespace OpenUtau.App.Views {
             }
         }
 
-        private Rectangle GetSelectionBox(Control control) {
-            if (selectionBox != null) {
-                return selectionBox;
-            }
-            selectionBox = new Rectangle() {
-                Stroke = ThemeManager.ForegroundBrush,
-                StrokeThickness = 2,
-                Fill = ThemeManager.TickLineBrushLow,
-                // radius = 8
-                IsHitTestVisible = false,
-            };
-            //canvas.Children.Add(selectionBox);
-            selectionBox.ZIndex = 1000;
-            return selectionBox;
-        }
-
         public void NotesCanvasPointerMoved(object sender, PointerEventArgs args) {
             var control = (Control)sender;
             var point = args.GetCurrentPoint(control);
@@ -522,10 +504,10 @@ namespace OpenUtau.App.Views {
         }
 
         public void NotesCanvasDoubleTapped(object sender, TappedEventArgs args) {
-            if (!(sender is Canvas canvas)) {
+            if (!(sender is Control control)) {
                 return;
             }
-            var point = args.GetPosition(canvas);
+            var point = args.GetPosition(control);
             if (editState != null) {
                 editState.End(args.Pointer, point);
                 editState = null;
@@ -634,10 +616,10 @@ namespace OpenUtau.App.Views {
             if (ViewModel?.NotesViewModel?.Part == null) {
                 return;
             }
-            if (sender is not Canvas canvas) {
+            if (sender is not Control control) {
                 return;
             }
-            var point = args.GetPosition(canvas);
+            var point = args.GetPosition(control);
             if (editState != null) {
                 editState.End(args.Pointer, point);
                 editState = null;
