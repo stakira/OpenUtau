@@ -72,8 +72,8 @@ namespace OpenUtau.App.Views {
 
             var leftTop = tracksVm.TickTrackToPoint(x0, y0);
             var Size = tracksVm.TickTrackToSize(x1 - x0, y1 - y0);
-            Canvas.SetLeft(selectionBox, leftTop.X);
-            Canvas.SetTop(selectionBox, leftTop.Y);
+            //Control.SetLeft(selectionBox, leftTop.X);
+            //Control.SetTop(selectionBox, leftTop.Y);
             selectionBox.Width = Size.Width + 1;
             selectionBox.Height = Size.Height;
             tracksVm.TempSelectParts(x0, x1, y0, y1);

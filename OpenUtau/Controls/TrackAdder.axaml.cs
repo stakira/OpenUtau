@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Markup.Xaml;
 using OpenUtau.App.ViewModels;
 using ReactiveUI;
 
@@ -41,6 +42,10 @@ namespace OpenUtau.App.Controls {
 
         public TrackAdder() {
             InitializeComponent();
+        }
+
+        private void InitializeComponent() {
+            AvaloniaXamlLoader.Load(this);
         }
 
         protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change) {

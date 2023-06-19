@@ -148,7 +148,6 @@ namespace OpenUtau.App.Controls {
             if (viewModel == null) {
                 return;
             }
-            DrawBackgroundForHitTest(context);
             double leftTick = TickOffset - 480;
             double rightTick = TickOffset + Bounds.Width / TickWidth + 480;
             bool hidePitch = viewModel.TickWidth <= ViewConstants.PianoRollTickWidthShowDetails * 0.5;
@@ -191,10 +190,6 @@ namespace OpenUtau.App.Controls {
                     RenderVibratoControl(note, viewModel, context);
                 }
             }
-        }
-
-        private void DrawBackgroundForHitTest(DrawingContext context) {
-            context.DrawRectangle(Brushes.Transparent, null, Bounds.WithX(0).WithY(0));
         }
 
         private void RenderNoteBody(UNote note, NotesViewModel viewModel, DrawingContext context) {

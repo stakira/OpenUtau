@@ -123,8 +123,8 @@ namespace OpenUtau.App.Views {
 
             var leftTop = notesVm.TickToneToPoint(x0, y1);
             var Size = notesVm.TickToneToSize(x1 - x0, y1 - y0);
-            Canvas.SetLeft(selectionBox, leftTop.X);
-            Canvas.SetTop(selectionBox, leftTop.Y);
+            //Control.SetLeft(selectionBox, leftTop.X);
+            //Control.SetTop(selectionBox, leftTop.Y);
             selectionBox.Width = Size.Width + 1;
             selectionBox.Height = Size.Height;
             notesVm.TempSelectNotes(x0, x1, y0, y1);
