@@ -214,6 +214,10 @@
                      Canvas.Top="0"
                      Fill="{DynamicResource NeutralAccentBrushSemi2}"
                      IsHitTestVisible="False"/>
+          <Rectangle Name="SelectionBox" StrokeThickness="2"
+                     Stroke="{DynamicResource SystemControlForegroundBaseHighBrush}"
+                     Fill="{DynamicResource TickLineBrushLow}" ZIndex="1000"
+                     IsHitTestVisible="False" IsVisible="False"/>
           <c:PartsCanvas.ContextMenu>
             <ContextMenu Name="PartsContextMenu"
                          Opening="PartsContextMenuOpening"

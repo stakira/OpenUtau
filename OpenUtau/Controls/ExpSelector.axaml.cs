@@ -1,7 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
-using Avalonia.Markup.Xaml;
 using OpenUtau.App.ViewModels;
 
 namespace OpenUtau.App.Controls {
@@ -30,10 +29,6 @@ namespace OpenUtau.App.Controls {
             if (change.Property == IndexProperty) {
                 ((ExpSelectorViewModel)DataContext!).Index = Index;
             }
-        }
-
-        private void InitializeComponent() {
-            AvaloniaXamlLoader.Load(this);
         }
 
         private void TextBlockPointerPressed(object sender, PointerPressedEventArgs e) {
