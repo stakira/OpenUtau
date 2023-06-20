@@ -302,22 +302,7 @@ namespace OpenUtau.App.ViewModels {
                         foreach (UNote note in selectedNotes) {
                             foreach (UPhoneme phoneme in notesViewModel.Part.phonemes) {
                                 if (phoneme.Parent == note) {
-                                    if (expVM.isCurve) {
-                                        int start = (int)Math.Floor(phoneme.position - phoneme.preutter);
-                                        int end = (int)Math.Ceiling(phoneme.End - phoneme.tailIntrude + phoneme.tailOverlap);
-                                        int valueInt = (int)Math.Round(value);
-                                        DocManager.Inst.ExecuteCmd(new SetCurveCommand(notesViewModel.Project, notesViewModel.Part, expVM.abbr,
-                                            start, valueInt,
-                                            start, valueInt));
-                                        DocManager.Inst.ExecuteCmd(new SetCurveCommand(notesViewModel.Project, notesViewModel.Part, expVM.abbr,
-                                            end, valueInt,
-                                            end, valueInt));
-                                        DocManager.Inst.ExecuteCmd(new SetCurveCommand(notesViewModel.Project, notesViewModel.Part, expVM.abbr,
-                                            start, valueInt,
-                                            end, valueInt));
-                                    } else {
-                                        DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(notesViewModel.Project, track, notesViewModel.Part, phoneme, expVM.abbr, value));
-                                    }
+                                    DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(notesViewModel.Project, track, notesViewModel.Part, phoneme, expVM.abbr, value));
                                 }
                             }
                         }
