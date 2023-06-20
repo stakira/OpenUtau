@@ -29,7 +29,6 @@ namespace OpenUtau.Classic {
         public const string kCharYaml = "character.yaml";
         public const string kEnuconfigYaml = "enuconfig.yaml";
         public const string kConfigYaml = "config.yaml";
-        public const string kDiffconfigYaml = "dsconfig.yaml";
         public const string kOtoIni = "oto.ini";
 
         readonly string basePath;
@@ -83,7 +82,7 @@ namespace OpenUtau.Classic {
         public static void LoadInfo(Voicebank voicebank, string filePath, string basePath) {
             var dir = Path.GetDirectoryName(filePath);
             var yamlFile = Path.Combine(dir, kCharYaml);
-            VoicebankConfig bankConfig = null;
+            VoicebankConfig? bankConfig = null;
             if (File.Exists(yamlFile)) {
                 try {
                     using (var stream = File.OpenRead(yamlFile)) {
@@ -93,21 +92,22 @@ namespace OpenUtau.Classic {
                     Log.Error(e, $"Failed to load yaml {yamlFile}");
                 }
             }
-            string[] modelPaths = new string[] { dir, dir + @"\model" };
-            foreach (string modelPath in modelPaths) {
-                if (File.Exists(Path.Join(modelPath, kConfigYaml))) {
+            switch (bankConfig?.SingerType) {
+                case "utau":
+                    voicebank.SingerType = USingerType.Classic;
+                    break;
+                case "enunu":
                     voicebank.SingerType = USingerType.Enunu;
-                }
-            }
-            var enuconfigFile = Path.Combine(dir, kEnuconfigYaml);
-            var diffconfigFile = Path.Combine(dir, kDiffconfigYaml);
-            if (File.Exists(enuconfigFile)) {
-                voicebank.SingerType = USingerType.Enunu;
-            } else if (File.Exists(diffconfigFile)) {
-                voicebank.SingerType = USingerType.DiffSinger;
-            }else if(voicebank.SingerType != USingerType.Enunu)
-            {
-                voicebank.SingerType = USingerType.Classic;
+                    break;
+                default:
+                    // Legacy detection code. Do not add more here.
+                    var enuconfigFile = Path.Combine(dir, kEnuconfigYaml);
+                    if (File.Exists(enuconfigFile)) {
+                        voicebank.SingerType = USingerType.Enunu;
+                    } else if (voicebank.SingerType != USingerType.Enunu) {
+                        voicebank.SingerType = USingerType.Classic;
+                    }
+                    break;
             }
             Encoding encoding = Encoding.GetEncoding("shift_jis");
             if (!string.IsNullOrEmpty(bankConfig?.TextFileEncoding)) {
@@ -128,8 +128,6 @@ namespace OpenUtau.Classic {
                 });
             }
         }
-
-
 
         public static void ParseCharacterTxt(Voicebank voicebank, Stream stream, string filePath, string basePath, Encoding encoding) {
             using (var reader = new StreamReader(stream, encoding)) {
