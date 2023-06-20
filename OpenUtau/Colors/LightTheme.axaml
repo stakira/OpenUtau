@@ -2,8 +2,6 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <system:Boolean x:Key="IsDarkMode">false</system:Boolean>
-  
-  <Color x:Key="MainWindowColor">#FFFFFF</Color>
 
   <Color x:Key="BackgroundColor">#FFFFFF</Color>
   <Color x:Key="BackgroundColorPointerOver">#F0F0F0</Color>

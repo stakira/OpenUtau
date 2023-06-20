@@ -13,7 +13,7 @@
   <Grid ColumnDefinitions="*,10,160" Margin="10">
     <DataGrid Name="SuffixGrid" Grid.Column="0" SelectionMode="Extended" IsReadOnly="True"
               CanUserReorderColumns="False" CanUserSortColumns="False"
-              Items="{Binding Rows}" AutoGenerateColumns="False">
+              ItemsSource="{Binding Rows}" AutoGenerateColumns="False">
       <DataGrid.Columns>
         <DataGridTextColumn Header="{StaticResource singers.subbanks.tone}" Width="*" Binding="{Binding Tone}"/>
         <DataGridTextColumn Header="{StaticResource oto.prefix}" Width="*" Binding="{Binding Prefix}"/>
@@ -24,7 +24,7 @@
       <Grid RowDefinitions="Auto,*,Auto,*,Auto">
         <StackPanel VerticalAlignment="Top" Grid.Row="0">
           <ComboBox HorizontalAlignment="Stretch" Margin="0,0,0,4"
-                    Items="{Binding Colors}" SelectedItem="{Binding SelectedColor}"/>
+                    ItemsSource="{Binding Colors}" SelectedItem="{Binding SelectedColor}"/>
           <Button Content="{DynamicResource singers.subbanks.color.add}" HorizontalAlignment="Stretch" Click="OnAdd"/>
           <Button Content="{DynamicResource singers.subbanks.color.remove}" HorizontalAlignment="Stretch" Click="OnRemove"
                   IsEnabled="{Binding IsEditableColor}"/>

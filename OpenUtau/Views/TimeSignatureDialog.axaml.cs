@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
-using Avalonia.Threading;
 using ReactiveUI.Fody.Helpers;
 
 namespace OpenUtau.App.Views {
@@ -26,13 +23,6 @@ namespace OpenUtau.App.Views {
             BeatPerBar = beatPerBar;
             BeatUnit = beatUnit;
             DataContext = this;
-#if DEBUG
-            this.AttachDevTools();
-#endif
-        }
-
-        private void InitializeComponent() {
-            AvaloniaXamlLoader.Load(this);
         }
 
         private void OnOkButtonClick(object sender, RoutedEventArgs args) {

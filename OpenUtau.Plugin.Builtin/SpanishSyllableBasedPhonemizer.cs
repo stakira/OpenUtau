@@ -57,12 +57,17 @@ namespace OpenUtau.Plugin.Builtin {
                     basePhoneme = $"{v}";
                 }
             } else if (syllable.IsVV) {
-                basePhoneme = vv1;
-                if (!HasOto(vv1, syllable.vowelTone)) {
-                    basePhoneme = vv2;
-                    if (!HasOto(vv2, syllable.vowelTone)) {
-                        basePhoneme = $"{v}";
+                if (!CanMakeAliasExtension(syllable)) {
+                    if (HasOto(vv1, syllable.vowelTone)) {
+                        basePhoneme = vv1;
+                    } else if (!HasOto(vv1, syllable.vowelTone) && HasOto(vv2, syllable.vowelTone)) {
+                        basePhoneme = vv2;
+                    } else {
+                        basePhoneme = v;
                     }
+                } else {
+                    // the previous alias will be extended
+                    basePhoneme = null;
                 }
             } else if (syllable.IsStartingCVWithOneConsonant) {
                 // TODO: move to config -CV or -C CV
@@ -80,12 +85,15 @@ namespace OpenUtau.Plugin.Builtin {
             } else if (syllable.IsStartingCVWithMoreThanOneConsonant) {
                 // try RCCV
                 var rvvc = $"- {string.Join("", cc)}{v}";
+                var vvc = string.Join("", cc) + v;
                 if (HasOto(rvvc, syllable.vowelTone)) {
                     basePhoneme = rvvc;
-                    if (!HasOto(rvvc, syllable.vowelTone)) {
-                        rvvc = ValidateAlias(rvvc);
-                        basePhoneme = rvvc;
-                    }
+                } else if (!HasOto(rvvc, syllable.vowelTone) && HasOto(ValidateAlias(rvvc), syllable.vowelTone)) {
+                    basePhoneme = ValidateAlias(rvvc);
+                } else if (!HasOto(ValidateAlias(rvvc), syllable.vowelTone) && HasOto(vvc, syllable.vowelTone)) {
+                    basePhoneme = vvc;
+                } else if (!HasOto(vvc, syllable.vowelTone) && HasOto(ValidateAlias(vvc), syllable.vowelTone)) {
+                    basePhoneme = ValidateAlias(vvc);
                 } else {
                     basePhoneme = $"{cc.Last()}{v}";
                     // try RCC

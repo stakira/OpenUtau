@@ -40,7 +40,14 @@ namespace OpenUtau.Core {
                 CachePath = Path.Combine(cacheHome, "OpenUtau");
                 HomePathIsAscii = true;
             } else {
-                DataPath = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
+                string exePath = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
+                IsInstalled = File.Exists(Path.Combine(exePath, "installed.txt"));
+                if (!IsInstalled) {
+                    DataPath = exePath;
+                } else {
+                    string dataHome = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+                    DataPath = Path.Combine(dataHome, "OpenUtau");
+                }
                 CachePath = Path.Combine(DataPath, "Cache");
                 HomePathIsAscii = true;
                 var etor = StringInfo.GetTextElementEnumerator(DataPath);
@@ -58,6 +65,7 @@ namespace OpenUtau.Core {
         public string DataPath { get; private set; }
         public string CachePath { get; private set; }
         public bool HomePathIsAscii { get; private set; }
+        public bool IsInstalled { get; private set; }
         public string SingersPathOld => Path.Combine(DataPath, "Content", "Singers");
         public string SingersPath => Path.Combine(DataPath, "Singers");
         public string AdditionalSingersPath => Preferences.Default.AdditionalSingerPath;
@@ -96,7 +104,7 @@ namespace OpenUtau.Core {
             Directory.CreateDirectory(dir);
             var filename = Path.GetFileNameWithoutExtension(exportPath);
             var trackName = invalid.Replace(track.TrackName, "_");
-            if(DocManager.Inst.Project.tracks.Count(t => t.TrackName == track.TrackName) > 1) {
+            if (DocManager.Inst.Project.tracks.Count(t => t.TrackName == track.TrackName) > 1) {
                 trackName += $"_{track.TrackNo:D2}";
             }
             return Path.Combine(dir, $"{filename}_{trackName}.wav");

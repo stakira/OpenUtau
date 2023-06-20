@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
@@ -11,14 +11,14 @@ namespace OpenUtau.Core.Util {
     }
 
     public class ActiveLyricsHelper : SingletonBase<ActiveLyricsHelper> {
-        public ILyricsHelper Current { get; private set; }
+        public ILyricsHelper? Current { get; private set; }
 
         public ActiveLyricsHelper() {
             Set(GetPreferred());
         }
 
-        public void Set(Type t) {
-            if (!Available.Contains(t)) {
+        public void Set(Type? t) {
+            if (t == null || !Available.Contains(t)) {
                 Current = null;
                 return;
             }

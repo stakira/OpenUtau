@@ -16,7 +16,7 @@ using System.Threading;
 using NWaves.Signals;
 
 namespace OpenUtau.App.Controls {
-    class PartControl : TemplatedControl, IDisposable, IProgress<int> {
+    class PartControl : Control, IDisposable, IProgress<int> {
         public static readonly DirectProperty<PartControl, double> TickWidthProperty =
             AvaloniaProperty.RegisterDirect<PartControl, double>(
                 nameof(TickWidth),
@@ -94,16 +94,11 @@ namespace OpenUtau.App.Controls {
         public readonly UPart part;
         private readonly Pen notePen = new Pen(Brushes.White, 3);
         private List<IDisposable> unbinds = new List<IDisposable>();
-        public readonly Image image;
         private WriteableBitmap? bitmap;
         private int[] bitmapData;
 
         public PartControl(UPart part, PartsCanvas canvas) {
-            image = new Image() {
-                IsHitTestVisible = false,
-            };
             this.part = part;
-            Foreground = Brushes.White;
             Text = part.DisplayName;
             bitmapData = new int[0];
 
@@ -130,11 +125,8 @@ namespace OpenUtau.App.Controls {
             }
         }
 
-        protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change) {
+        protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change) {
             base.OnPropertyChanged(change);
-            if (!change.IsEffectiveValueChange) {
-                return;
-            }
             if (change.Property == OffsetProperty ||
                 change.Property == TrackHeightProperty ||
                 change.Property == TickWidthProperty) {
@@ -149,8 +141,6 @@ namespace OpenUtau.App.Controls {
         public void SetPosition() {
             Canvas.SetLeft(this, Offset.X + part.position * tickWidth);
             Canvas.SetTop(this, Offset.Y + part.trackNo * trackHeight);
-            Canvas.SetLeft(image, 0);
-            Canvas.SetTop(image, Offset.Y + part.trackNo * trackHeight);
         }
 
         public void SetSize() {
@@ -168,10 +158,10 @@ namespace OpenUtau.App.Controls {
             context.DrawRectangle(backgroundBrush, null, new Rect(1, 0, Width - 1, Height - 1), 4, 4);
 
             // Text
-            var textLayout = TextLayoutCache.Get(Text, Foreground!, 12);
-            using (var state = context.PushPreTransform(Matrix.CreateTranslation(3, 2))) {
-                context.DrawRectangle(backgroundBrush, null, new Rect(new Point(0, 0), textLayout.Size));
-                textLayout.Draw(context);
+            var textLayout = TextLayoutCache.Get(Text, Brushes.White, 12);
+            using (var state = context.PushTransform(Matrix.CreateTranslation(3, 2))) {
+                context.DrawRectangle(backgroundBrush, null, new Rect(new Point(0, 0), new Size(textLayout.Width, textLayout.Height)));
+                textLayout.Draw(context, new Point());
             }
 
             if (part == null) {
@@ -186,7 +176,7 @@ namespace OpenUtau.App.Controls {
                     minTone -= additional;
                     maxTone += additional;
                 }
-                using var pushedState = context.PushPreTransform(Matrix.CreateScale(1, trackHeight / (maxTone - minTone)));
+                using var pushedState = context.PushTransform(Matrix.CreateScale(1, trackHeight / (maxTone - minTone)));
                 foreach (var note in voicePart.notes) {
                     var start = new Point((int)(note.position * tickWidth), maxTone - note.tone);
                     var end = new Point((int)(note.End * tickWidth), maxTone - note.tone);
@@ -196,6 +186,11 @@ namespace OpenUtau.App.Controls {
                 // Waveform
                 try {
                     DrawWaveform(wavePart, GetBitmap(ViewWidth));
+                    if (bitmap != null) {
+                        var srcRect = Bounds.WithY(0);
+                        var dstRect = Bounds.WithX(1).WithY(0);
+                        context.DrawImage(bitmap, srcRect, dstRect);
+                    }
                 } catch (Exception e) {
                     Log.Error(e, "failed to draw bitmap");
                 }
@@ -205,7 +200,6 @@ namespace OpenUtau.App.Controls {
         private WriteableBitmap GetBitmap(double width) {
             int w = 128 * (int)(width / 128 + 1);
             if (bitmap == null || bitmap.Size.Width < w) {
-                image.Source = null;
                 bitmap?.Dispose();
                 var size = new PixelSize(w, (int)ViewConstants.TrackHeightMax);
                 Log.Information($"created bitmap {size}");
@@ -214,9 +208,6 @@ namespace OpenUtau.App.Controls {
                     Avalonia.Platform.PixelFormat.Rgba8888,
                     Avalonia.Platform.AlphaFormat.Unpremul);
                 bitmapData = new int[size.Width * size.Height];
-                image.Source = bitmap;
-                image.Width = bitmap.Size.Width;
-                image.Height = bitmap.Size.Height;
             }
             return bitmap;
         }

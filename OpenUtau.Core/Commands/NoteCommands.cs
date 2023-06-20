@@ -439,12 +439,12 @@ namespace OpenUtau.Core {
         readonly UNote note;
         readonly int index;
         readonly string oldAlias;
-        readonly string newAlias;
+        readonly string? newAlias;
         public override ValidateOptions ValidateOptions => new ValidateOptions {
             SkipTiming = true,
             Part = Part,
         };
-        public ChangePhonemeAliasCommand(UVoicePart part, UNote note, int index, string alias) : base(part, note) {
+        public ChangePhonemeAliasCommand(UVoicePart part, UNote note, int index, string? alias) : base(part, note) {
             this.note = note;
             this.index = index;
             var o = this.note.GetPhonemeOverride(index);
@@ -454,11 +454,11 @@ namespace OpenUtau.Core {
 
         public override void Execute() {
             var o = note.GetPhonemeOverride(index);
-            o.phoneme = string.IsNullOrWhiteSpace(newAlias) ? null : newAlias;
+            o.phoneme = string.IsNullOrWhiteSpace(newAlias) ? string.Empty : newAlias;
         }
         public override void Unexecute() {
             var o = note.GetPhonemeOverride(index);
-            o.phoneme = string.IsNullOrWhiteSpace(oldAlias) ? null : oldAlias;
+            o.phoneme = string.IsNullOrWhiteSpace(oldAlias) ? string.Empty : oldAlias;
         }
         public override string ToString() => "Change phoneme alias";
     }
@@ -482,7 +482,7 @@ namespace OpenUtau.Core {
             }
             NewColors = newColors;
             OldColors = notes.Select(note => {
-                if(note.phonemeExpressions.Any(exp => exp.descriptor?.abbr == Format.Ustx.CLR && exp.index == 0)){
+                if (note.phonemeExpressions.Any(exp => exp.descriptor?.abbr == Format.Ustx.CLR && exp.index == 0)) {
                     return (int)note.phonemeExpressions.FirstOrDefault(exp => exp.descriptor?.abbr == Format.Ustx.CLR && exp.index == 0).value;
                 } else {
                     return 0;
