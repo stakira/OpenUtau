@@ -4,13 +4,12 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:OpenUtau.App.ViewModels"
              x:Class="OpenUtau.App.Controls.NotePropertyExpression">
-  <Grid ColumnDefinitions="22,193,7,50,20,*">
-    <CheckBox IsChecked="{Binding Set}" Grid.Column="0" VerticalAlignment="Center"/>
-    <Label Content="{Binding Name}" Grid.Column="1" VerticalAlignment="Center"/>
-    <TextBox Text="{Binding Value}" Grid.Column="3" IsVisible="{Binding IsNumerical}" VerticalAlignment="Center" IsEnabled="{Binding Set}"/>
-    <Slider Grid.Column="5" Classes="fader" Value="{Binding Value}" Minimum="{Binding Min}" Maximum="{Binding Max}"
-            TickPlacement="BottomRight" TickFrequency="1" IsSnapToTickEnabled="true" IsVisible="{Binding IsNumerical}" VerticalAlignment="Center" IsEnabled="{Binding Set}" />
-    <ComboBox Grid.Column="2" Grid.ColumnSpan="4" ItemsSource="{Binding Options}"
-                SelectedIndex="{Binding SelectedOption}" MinWidth="120" IsVisible="{Binding IsOptions}" VerticalAlignment="Center" IsEnabled="{Binding Set}" />
+  <Grid ColumnDefinitions="143,7,50,20,*">
+    <Label Content="{Binding Name}" Grid.Column="0" VerticalAlignment="Center"/>
+    <TextBox Text="{Binding Value}" Grid.Column="2" IsVisible="{Binding IsNumerical}" VerticalAlignment="Center" IsEnabled="{Binding IsNoteSelected}"/>
+    <Slider Grid.Column="4" Classes="fader" Value="{Binding Value}" Minimum="{Binding Min}" Maximum="{Binding Max}"
+            TickPlacement="BottomRight" TickFrequency="1" IsSnapToTickEnabled="true" IsVisible="{Binding IsNumerical}" VerticalAlignment="Center" IsEnabled="{Binding IsNoteSelected}" />
+    <ComboBox Grid.Column="1" Grid.ColumnSpan="4" ItemsSource="{Binding Options}"
+                SelectedIndex="{Binding SelectedOption}" MinWidth="120" IsVisible="{Binding IsOptions}" VerticalAlignment="Center" IsEnabled="{Binding IsNoteSelected}" />
   </Grid>
 </UserControl>

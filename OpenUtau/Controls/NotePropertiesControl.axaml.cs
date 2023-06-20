@@ -1,28 +1,30 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Reactive.Linq;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using OpenUtau.App.Controls;
 using OpenUtau.App.ViewModels;
+using OpenUtau.App.Views;
+using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
+using ReactiveUI;
 
-namespace OpenUtau.App.Views {
-    public partial class NotePropertyDialog : Window {
-        private readonly NotePropertyViewModel ViewModel;
+namespace OpenUtau.App.Controls {
+    public partial class NotePropertiesControl : UserControl, ICmdSubscriber {
+        private readonly NotePropertiesViewModel ViewModel;
 
-        public NotePropertyDialog() {
+        public NotePropertiesControl() {
             InitializeComponent();
-            ViewModel = new NotePropertyViewModel();
+            DataContext = ViewModel = new NotePropertiesViewModel();
+
+            DocManager.Inst.AddSubscriber(this);
         }
-        public NotePropertyDialog(NotePropertyViewModel vm) {
-            InitializeComponent();
-            ViewModel = vm;
-            DataContext = ViewModel;
 
-            foreach(NotePropertyExpViewModel expVM in ViewModel.Expressions) {
-                var value = expVM.Value;
+        private void LoadPart(UPart? part) {
+            ViewModel.LoadPart(part);
+            ExpressionsPanel.Children.Clear();
+            foreach (NotePropertyExpViewModel expVM in ViewModel.Expressions) {
                 var control = new NotePropertyExpression() { DataContext = expVM };
-                expVM.Value = value; // When value greater than 100 is set to a slider, it is set to 100.
                 ExpressionsPanel.Children.Add(control);
             }
         }
@@ -32,7 +34,7 @@ namespace OpenUtau.App.Views {
                 Title = ThemeManager.GetString("notedefaults.preset.namenew"),
                 onFinish = name => ViewModel.SavePortamentoPreset(name),
             };
-            dialog.ShowDialog(this);
+            //dialog.ShowDialog(this);
         }
 
         void OnRemovePortamentoPreset(object sender, RoutedEventArgs e) {
@@ -44,34 +46,31 @@ namespace OpenUtau.App.Views {
                 Title = ThemeManager.GetString("notedefaults.preset.namenew"),
                 onFinish = name => ViewModel.SaveVibratoPreset(name),
             };
-            dialog.ShowDialog(this);
+            //dialog.ShowDialog(this);
         }
 
         void OnRemoveVibratoPreset(object sender, RoutedEventArgs e) {
             ViewModel.RemoveAppliedVibratoPreset();
         }
 
-        void OnCancel(object? sender, RoutedEventArgs e) {
-            Close();
-        }
-
-        void OnFinish(object? sender, RoutedEventArgs e) {
-            ViewModel.Finish();
-            Close();
-        }
-
         private void OnKeyDown(object? sender, KeyEventArgs e) {
             switch (e.Key) {
                 case Key.Enter:
-                    OnFinish(sender, e);
+                    //OnFinish(sender, e);
                     e.Handled = true;
                     break;
                 case Key.Escape:
-                    OnCancel(sender, e);
+                    //OnCancel(sender, e);
                     e.Handled = true;
                     break;
                 default:
                     break;
+            }
+        }
+
+        public void OnNext(UCommand cmd, bool isUndo) {
+            if (cmd is LoadPartNotification loadPart) {
+                LoadPart(loadPart.part);
             }
         }
     }

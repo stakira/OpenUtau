@@ -33,7 +33,6 @@ namespace OpenUtau.App.Views {
         private bool shouldOpenNotesContextMenu;
 
         private ReactiveCommand<Unit, Unit> lyricsDialogCommand;
-        private ReactiveCommand<Unit, Unit> notePropertyCommand;
         private ReactiveCommand<Unit, Unit> noteDefaultsCommand;
 
         public PianoRollWindow() {
@@ -49,9 +48,6 @@ namespace OpenUtau.App.Views {
             });
             lyricsDialogCommand = ReactiveCommand.Create(() => {
                 EditLyrics();
-            });
-            notePropertyCommand = ReactiveCommand.Create(() => {
-                EditNoteProperty();
             });
             noteDefaultsCommand = ReactiveCommand.Create(() => {
                 EditNoteDefaults();
@@ -117,23 +113,6 @@ namespace OpenUtau.App.Views {
             var dialog = new LyricsDialog() {
                 DataContext = vm,
             };
-            dialog.ShowDialog(this);
-        }
-
-        void EditNoteProperty() {
-            if (ViewModel.NotesViewModel.Part == null) {
-                return;
-            }
-            if (ViewModel.NotesViewModel.Selection.IsEmpty) {
-                _ = MessageBox.Show(
-                    this,
-                    ThemeManager.GetString("lyrics.selectnotes"),
-                    ThemeManager.GetString("lyrics.caption"),
-                    MessageBox.MessageBoxButtons.Ok);
-                return;
-            }
-            var vm = new NotePropertyViewModel(ViewModel.NotesViewModel);
-            var dialog = new NotePropertyDialog(vm);
             dialog.ShowDialog(this);
         }
 
@@ -454,10 +433,6 @@ namespace OpenUtau.App.Views {
                         ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
                             Header = ThemeManager.GetString("pianoroll.menu.lyrics.edit"),
                             Command = lyricsDialogCommand,
-                        });
-                        ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
-                            Header = ThemeManager.GetString("pianoroll.menu.noteproperty"),
-                            Command = notePropertyCommand,
                         });
                         ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
                             Header = ThemeManager.GetString("pianoroll.menu.notedefaults"),

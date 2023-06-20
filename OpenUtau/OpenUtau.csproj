@@ -71,13 +71,13 @@
     <Compile Update="Controls\NotePropertyExpression.axaml.cs">
       <DependentUpon>NotePropertyExpression.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Controls\NotePropertiesControl.axaml.cs">
+      <DependentUpon>NotePropertiesControl.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Resources\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Update="Views\NotePropertyDialog.axaml.cs">
-      <DependentUpon>NotePropertyDialog.axaml</DependentUpon>
     </Compile>
     <Compile Update="Views\TrackSettingsDialog.axaml.cs">
       <DependentUpon>TrackSettingsDialog.axaml</DependentUpon>
