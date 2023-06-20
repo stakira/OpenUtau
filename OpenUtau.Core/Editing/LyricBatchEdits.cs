@@ -30,7 +30,12 @@ namespace OpenUtau.Core.Editing {
         private WanaKanaOptions option = new WanaKanaOptions() { CustomKanaMapping = mapping };
         public override string Name => "pianoroll.menu.lyrics.romajitohiragana";
         protected override string Transform(string lyric) {
-            return WanaKana.ToHiragana(lyric, option);
+            string hiragana = WanaKana.ToHiragana(lyric, option).Replace('ゔ','ヴ');
+            if(Regex.IsMatch(hiragana, "[ぁ-んァ-ヴ]")) {
+                return hiragana;
+            } else {
+                return lyric;
+            }
         }
     }
 
