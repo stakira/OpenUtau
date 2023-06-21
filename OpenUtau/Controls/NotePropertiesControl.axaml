@@ -57,10 +57,7 @@
 
         <HeaderedContentControl Classes="groupbox" Header="{DynamicResource notedefaults.vibrato}">
           <StackPanel IsEnabled="{Binding IsNoteSelected}">
-            <Grid ColumnDefinitions="22,*">
-              <CheckBox IsChecked="{Binding VibratoEnable}" Grid.Column="0" />
-              <Label Content="{DynamicResource noteproperty.vibratoenable}" Grid.Column="1"/>
-            </Grid>
+            <ToggleSwitch IsChecked="{Binding VibratoEnable}" OnContent="{DynamicResource prefs.on}" OffContent="{DynamicResource prefs.off}"/>
             <StackPanel IsEnabled="{Binding VibratoEnable}">
               <Grid ColumnDefinitions="123,20,*">
                 <Label Content="{DynamicResource notedefaults.preset}"/>
