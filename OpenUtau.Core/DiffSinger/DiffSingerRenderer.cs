@@ -161,7 +161,7 @@ namespace OpenUtau.Core.DiffSinger {
                 var tailDefaultSpk = speakers.IndexOf(phrase.phones[^1].suffix);
                 var defaultSpkByFrame = Enumerable.Repeat(headDefaultSpk, headFrames).ToList(); 
                 defaultSpkByFrame.AddRange(Enumerable.Range(0, phrase.phones.Length)
-                    .SelectMany(phIndex => Enumerable.Repeat(speakers.IndexOf(phrase.phones[phIndex].suffix), durations[phIndex])));
+                    .SelectMany(phIndex => Enumerable.Repeat(speakers.IndexOf(phrase.phones[phIndex].suffix), durations[phIndex+1])));
                 defaultSpkByFrame.AddRange(Enumerable.Repeat(tailDefaultSpk, tailFrames));
                 //get speaker curves
                 NDArray spkCurves = np.zeros<float>(totalFrames, speakers.Count);
