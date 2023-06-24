@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -289,6 +289,9 @@ namespace OpenUtau.Plugin.Builtin {
             if (otos.Count > 0) {
                 if (otos.Any(oto => (oto.Color ?? string.Empty) == color)) {
                     oto = otos.Find(oto => (oto.Color ?? string.Empty) == color);
+                    return true;
+                } else if (otos.Any(oto => (oto.Color ?? string.Empty) != color)) {
+                    oto = otos.Find(oto => (oto.Color ?? string.Empty) != color);
                     return true;
                 } else {
                     return false;
