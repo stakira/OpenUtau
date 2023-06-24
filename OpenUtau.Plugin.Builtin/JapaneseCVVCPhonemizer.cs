@@ -118,6 +118,9 @@ namespace OpenUtau.Plugin.Builtin {
                 if (otos.Any(oto => (oto.Color ?? string.Empty) == color)) {
                     oto = otos.Find(oto => (oto.Color ?? string.Empty) == color);
                     return true;
+                } else if (otos.Any(oto => (oto.Color ?? string.Empty) != color)) {
+                    oto = otos.Find(oto => (oto.Color ?? string.Empty) != color);
+                    return true;
                 } else {
                     return false;
                 }
