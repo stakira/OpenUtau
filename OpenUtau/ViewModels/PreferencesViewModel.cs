@@ -78,6 +78,9 @@ namespace OpenUtau.App.ViewModels {
                 .ToList();
         [Reactive] public LyricsHelperOption? LyricsHelper { get; set; }
         [Reactive] public int LyricsHelperBrackets { get; set; }
+        [Reactive] public bool RememberMid{ get; set; }
+        [Reactive] public bool RememberUst{ get; set; }
+        [Reactive] public bool RememberVsqx{ get; set; }
 
         private List<AudioOutputDevice>? audioOutputDevices;
         private AudioOutputDevice? audioOutputDevice;
@@ -127,6 +130,9 @@ namespace OpenUtau.App.ViewModels {
             LyricsHelper = LyricsHelpers.FirstOrDefault(option => option.klass.Equals(ActiveLyricsHelper.Inst.GetPreferred()));
             LyricsHelperBrackets = Preferences.Default.LyricsHelperBrackets ? 1 : 0;
             OtoEditor = Preferences.Default.OtoEditor;
+            RememberMid = Preferences.Default.RememberMid;
+            RememberUst = Preferences.Default.RememberUst;
+            RememberVsqx = Preferences.Default.RememberVsqx;
 
             this.WhenAnyValue(vm => vm.AudioOutputDevice)
                 .WhereNotNull()
@@ -232,6 +238,21 @@ namespace OpenUtau.App.ViewModels {
             this.WhenAnyValue(vm => vm.OnnxGpu)
                 .Subscribe(index => {
                     Preferences.Default.OnnxGpu = index.deviceId;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.RememberMid)
+                .Subscribe(index => {
+                    Preferences.Default.RememberMid = index;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.RememberUst)
+                .Subscribe(index => {
+                    Preferences.Default.RememberUst = index;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.RememberVsqx)
+                .Subscribe(index => {
+                    Preferences.Default.RememberVsqx = index;
                     Preferences.Save();
                 });
         }

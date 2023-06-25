@@ -244,6 +244,7 @@
   <system:String x:Key="prefs.advanced.beta">Beta测试版</system:String>
   <!--<system:String x:Key="prefs.advanced.lyricshelper">Lyrics Helper</system:String>-->
   <!--<system:String x:Key="prefs.advanced.lyricshelper.brackets">Lyrics Helper Adds Brackets</system:String>-->
+  <system:String x:Key="prefs.advanced.rememberfiletypes">在&quot;最近打开&quot;中记住以下文件格式</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging">重采样器日志</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging.warn">在日志文件中保存重采样器输出。这个选项会使UI和渲染性能下降。</system:String>
   <system:String x:Key="prefs.advanced.stable">稳定版</system:String>

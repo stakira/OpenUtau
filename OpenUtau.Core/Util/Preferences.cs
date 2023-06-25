@@ -38,6 +38,33 @@ namespace OpenUtau.Core.Util {
             Save();
         }
 
+        public static void AddRecentFileIfEnabled(string filePath){
+            //Users can choose adding .ust, .vsqx and .mid files to recent files or not
+            string ext = Path.GetExtension(filePath);
+            switch(ext){
+                case ".ustx":
+                    AddRecentFile(filePath);
+                    break;
+                case ".mid":
+                    if(Preferences.Default.RememberMid){
+                        AddRecentFile(filePath);
+                    }
+                    break;
+                case ".ust":
+                    if(Preferences.Default.RememberUst){
+                        AddRecentFile(filePath);
+                    }
+                    break;
+                case ".vsqx":
+                    if(Preferences.Default.RememberVsqx){
+                        AddRecentFile(filePath);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
         public static void AddRecentFile(string filePath) {
             if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath)) {
                 return;
@@ -120,6 +147,9 @@ namespace OpenUtau.Core.Util {
             public int OtoEditor = 0;
             public string VLabelerPath = string.Empty;
             public bool Beta = false;
+            public bool RememberMid = false;
+            public bool RememberUst = true;
+            public bool RememberVsqx = true;
         }
     }
 }
