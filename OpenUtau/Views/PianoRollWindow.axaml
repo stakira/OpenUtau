@@ -17,6 +17,7 @@
     </Style>
   </Window.Styles>
   <Grid>
+  <Border BorderThickness="2" BorderBrush="{DynamicResource AccentBrush1}">
     <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="{Binding $parent[1].WindowDecorationMargin}">
       <Grid.RowDefinitions>
         <RowDefinition Height="24"/>
@@ -504,5 +505,6 @@
       </Canvas>
       <ProgressBar Grid.Row="5" Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Value="{Binding Progress}"/>
     </Grid>
+    </Border>
   </Grid>
 </Window>

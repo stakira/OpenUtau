@@ -1,0 +1,67 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="150"
+        x:Class="OpenUtau.App.Views.TrackColorDialog"
+        Title="Track Color">
+  <Grid RowDefinitions="*,30" >
+    <ListBox VerticalAlignment="Center" Background="{DynamicResource BackgroundColor}">
+      <ListBox.ItemTemplate>
+        <DataTemplate>
+          <Border Background="#EF5350" CornerRadius="2" Width="25"/>
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+      <ListBox.ItemsPanel>
+        <ItemsPanelTemplate>
+          <StackPanel Orientation="Horizontal" Spacing="0"/>
+        </ItemsPanelTemplate>
+      </ListBox.ItemsPanel>
+      <ListBoxItem>
+        <Border Background="#EF5350" CornerRadius="2" Width="25"/>
+      </ListBoxItem>
+      <ListBoxItem>
+        <Border Background="#F06292" CornerRadius="2" Width="25"/>
+      </ListBoxItem>
+      <ListBoxItem>
+        <Border Background="#FF8A65" CornerRadius="2" Width="25"/>
+      </ListBoxItem>
+      <ListBoxItem>
+        <Border Background="#FFB74D" CornerRadius="2" Width="25"/>
+      </ListBoxItem>
+      <ListBoxItem>
+        <Border Background="#FFEB3B" CornerRadius="2" Width="25"/>
+      </ListBoxItem>
+      <ListBoxItem>
+        <Border Background="#CDDC39" CornerRadius="2" Width="25"/>
+      </ListBoxItem>
+      <ListBoxItem>
+        <Border Background="#9CCC65" CornerRadius="2" Width="25"/>
+      </ListBoxItem>
+      <ListBoxItem>
+        <Border Background="#81C784" CornerRadius="2" Width="25"/>
+      </ListBoxItem>
+      <ListBoxItem>
+        <Border Background="#4DB6AC" CornerRadius="2" Width="25"/>
+      </ListBoxItem>
+      <ListBoxItem>
+        <Border Background="#4DD0E1" CornerRadius="2" Width="25"/>
+      </ListBoxItem>
+      <ListBoxItem>
+        <Border Background="#4FC3F7" CornerRadius="2" Width="25"/>
+      </ListBoxItem>
+      <ListBoxItem>
+        <Border Background="#64B5F6" CornerRadius="2" Width="25"/>
+      </ListBoxItem>
+      <ListBoxItem>
+        <Border Background="#7986CB" CornerRadius="2" Width="25"/>
+      </ListBoxItem>
+      <ListBoxItem>
+        <Border Background="#9575CD" CornerRadius="2" Width="25"/>
+      </ListBoxItem>
+      <ListBoxItem>
+        <Border Background="#BA68C8" CornerRadius="2" Width="25"/>
+      </ListBoxItem>
+    </ListBox>
+  </Grid>
+</Window>
