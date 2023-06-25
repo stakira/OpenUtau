@@ -46,6 +46,7 @@ namespace OpenUtau.Core.Util {
                     AddRecentFile(filePath);
                     break;
                 case ".mid":
+                case ".midi":
                     if(Preferences.Default.RememberMid){
                         AddRecentFile(filePath);
                     }
