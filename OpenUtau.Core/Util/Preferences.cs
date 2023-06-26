@@ -66,7 +66,7 @@ namespace OpenUtau.Core.Util {
             }
         }
 
-        public static void AddRecentFile(string filePath) {
+        private static void AddRecentFile(string filePath) {
             if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath)) {
                 return;
             }
