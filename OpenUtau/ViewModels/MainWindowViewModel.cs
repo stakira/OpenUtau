@@ -257,9 +257,9 @@ namespace OpenUtau.App.ViewModels {
                     ProgressText = progressBarNotification.Info;
                 });
             } else if (cmd is LoadProjectNotification loadProject) {
-                Core.Util.Preferences.AddRecentFile(loadProject.project.FilePath);
+                Core.Util.Preferences.AddRecentFileIfEnabled(loadProject.project.FilePath);
             } else if (cmd is SaveProjectNotification saveProject) {
-                Core.Util.Preferences.AddRecentFile(saveProject.Path);
+                Core.Util.Preferences.AddRecentFileIfEnabled(saveProject.Path);
             }
             this.RaisePropertyChanged(nameof(Title));
         }

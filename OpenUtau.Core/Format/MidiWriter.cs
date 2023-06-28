@@ -43,6 +43,7 @@ namespace OpenUtau.Core.Format {
         static public UProject LoadProject(string file) {
             UProject project = new UProject();
             Ustx.AddDefaultExpressions(project);
+            project.FilePath = file;
             // Detects lyric encoding
             Encoding lyricEncoding = Encoding.UTF8;
             var encodingDetector = new EncodingDetector();
