@@ -101,7 +101,7 @@
                   <Grid ColumnDefinitions="180,20,50,20,*">
                       <Label Content="{DynamicResource notedefaults.vibrato.shift}"/>
                       <TextBox Grid.Column="2" Text="{Binding CurrentVibratoShift}" />
-                      <Slider Grid.Column="4" Classes="fader" Value="{Binding CurrentVibratoShift}" Minimum="1" Maximum="100"
+                      <Slider Grid.Column="4" Classes="fader" Value="{Binding CurrentVibratoShift}" Minimum="0" Maximum="100"
                       TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="true" />
                   </Grid>
                   <Grid ColumnDefinitions="173,20,*">
