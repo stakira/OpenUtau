@@ -193,6 +193,19 @@ namespace OpenUtau.Core {
         public override void Unexecute() => Note.pitch = oldPitch;
     }
 
+    public class SetPitchPointsCommand : PitchExpCommand {
+        UPitch oldPitch;
+        UPitch newPitch;
+        public SetPitchPointsCommand(UVoicePart part, UNote note, UPitch pitch) : base(part) {
+            Note = note;
+            oldPitch = note.pitch;
+            newPitch = pitch;
+        }
+        public override string ToString() => "Set pitch points";
+        public override void Execute() => Note.pitch = newPitch;
+        public override void Unexecute() => Note.pitch = oldPitch;
+    }
+
     public class SetCurveCommand : ExpCommand {
         readonly UProject project;
         readonly string abbr;

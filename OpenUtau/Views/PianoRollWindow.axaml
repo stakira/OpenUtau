@@ -30,6 +30,7 @@
         <ColumnDefinition Width="60"/>
         <ColumnDefinition Width="*"/>
         <ColumnDefinition Width="24"/>
+        <ColumnDefinition Width="Auto"/>
       </Grid.ColumnDefinitions>
       <ScrollBar Name="HScrollBar" Classes="music" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                  Margin="0,4,0,4" Orientation="Horizontal" AllowAutoHide="False"
@@ -327,7 +328,7 @@
                 </Grid>
               </ToggleButton>
               <ToggleButton Classes="toolbar" Margin="0" Padding="1" Height="20" Width="20" IsChecked="{Binding NotesViewModel.ShowNoteParams}"
-                            ToolTip.Tip="{DynamicResource pianoroll.toggle.noteparams}" IsVisible="False">
+                            ToolTip.Tip="{DynamicResource pianoroll.toggle.noteparams}">
                 <Grid Width="18" Height="18">
                   <Path Classes="filled" Data="M3,17V19H9V17H3M3,5V7H13V5H3M13,21V19H21V17H13V15H11V21H13M7,9V11H3V13H7V15H9V9H7M21,13V11H11V13H21M15,9H17V7H21V5H17V3H15V9Z">
                     <Path.RenderTransform>
@@ -446,6 +447,11 @@
                  IsHitTestVisible="False" VerticalAlignment="Bottom" Margin="10,5"
                  IsVisible="{Binding NotesViewModel.PrimaryKeyNotSupported}"
                  Text="{DynamicResource tip.exps.notsupported}"/>
+      <Expander Grid.Column="3" Grid.RowSpan="5" ExpandDirection="Left" IsExpanded="{Binding NotesViewModel.ShowNoteParams}"
+                Background="{DynamicResource SystemRegionBrush}" Padding="0">
+        <c:NotePropertiesControl />
+      </Expander>
+      
       <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
               BoxShadow="inset 0 0 5 1 #3F000000" ClipToBounds="True" IsHitTestVisible="False">
         <Grid>
