@@ -17,7 +17,7 @@
   <Grid>
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Visible">
       <StackPanel Margin="10">
-
+        <TextBlock Text="!!! WORK IN PROGRESS !!!" HorizontalAlignment="Center" Foreground="Red"/>
         <HeaderedContentControl Classes="groupbox" Header="{DynamicResource notedefaults.lyric}">
           <Grid ColumnDefinitions="143,*">
             <Label Content="{DynamicResource notedefaults.lyric}" Grid.Column="0"/>

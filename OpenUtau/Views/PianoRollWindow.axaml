@@ -447,10 +447,12 @@
                  IsHitTestVisible="False" VerticalAlignment="Bottom" Margin="10,5"
                  IsVisible="{Binding NotesViewModel.PrimaryKeyNotSupported}"
                  Text="{DynamicResource tip.exps.notsupported}"/>
-      <Expander Grid.Column="3" Grid.RowSpan="5" ExpandDirection="Left" IsExpanded="{Binding NotesViewModel.ShowNoteParams}"
-                Background="{DynamicResource SystemRegionBrush}" Padding="0">
-        <c:NotePropertiesControl />
-      </Expander>
+      <Border Grid.Column="3" Grid.RowSpan="5"
+              IsEnabled="{Binding NotesViewModel.ShowNoteParams}"
+              IsVisible="{Binding NotesViewModel.ShowNoteParams}"
+              Background="{DynamicResource SystemRegionBrush}" Padding="0">
+        <c:NotePropertiesControl/>
+      </Border>
       
       <Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
               BoxShadow="inset 0 0 5 1 #3F000000" ClipToBounds="True" IsHitTestVisible="False">
