@@ -1,0 +1,131 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:OpenUtau.App.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="600" Width="400"
+             x:Class="OpenUtau.App.Controls.NotePropertiesControl" KeyDown="OnKeyDown" Margin="0">
+  <UserControl.Styles>
+    <Style Selector="Button,CheckBox">
+      <Setter Property="Focusable" Value="False"/>
+    </Style>
+    <Style Selector="Label,TextBox,Slider,ComboBox,CheckBox">
+      <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+  </UserControl.Styles>
+  
+  <Grid>
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Visible">
+      <StackPanel Margin="10">
+        <TextBlock Text="!!! WORK IN PROGRESS !!!" HorizontalAlignment="Center" Foreground="Red"/>
+        <HeaderedContentControl Classes="groupbox" Header="{DynamicResource notedefaults.lyric}">
+          <Grid ColumnDefinitions="143,*">
+            <Label Content="{DynamicResource notedefaults.lyric}" Grid.Column="0"/>
+            <TextBox Text="{Binding Lyric}" IsEnabled="{Binding IsNoteSelected}" Grid.Column="1"/>
+          </Grid>
+        </HeaderedContentControl>
+
+        <HeaderedContentControl Classes="groupbox" Header="{DynamicResource notedefaults.portamento}">
+          <StackPanel IsEnabled="{Binding IsNoteSelected}">
+            <Grid ColumnDefinitions="123,20,*">
+              <Label Content="{DynamicResource notedefaults.preset}"/>
+              <ComboBox Grid.Column="2" ItemsSource="{Binding PortamentoPresets}"
+                SelectedItem="{Binding ApplyPortamentoPreset}" HorizontalAlignment="Stretch"/>
+            </Grid>
+            <Grid ColumnDefinitions="123,20,*,20,*">
+              <Button Grid.Column="2" Content="{DynamicResource notedefaults.preset.save}"
+                HorizontalAlignment="Stretch" Click="OnSavePortamentoPreset"
+                ToolTip.Tip="{DynamicResource notedefaults.preset.save.tooltip}"/>
+              <Button Grid.Column="4" Content="{DynamicResource notedefaults.preset.remove}"
+                HorizontalAlignment="Stretch" Command="{Binding RemoveAppliedPortamentoPreset}"
+                ToolTip.Tip="{DynamicResource notedefaults.preset.remove.tooltip}"/>
+            </Grid>
+            <Grid ColumnDefinitions="130,20,50,20,*">
+              <Label Content="{DynamicResource notedefaults.portamento.length}"/>
+              <TextBox Grid.Column="2" Text="{Binding PortamentoLength}" />
+              <Slider Grid.Column="4" Classes="fader" Value="{Binding PortamentoLength}" Minimum="2" Maximum="320"
+              TickPlacement="BottomRight" TickFrequency="1" IsSnapToTickEnabled="true" />
+            </Grid>
+            <Grid ColumnDefinitions="130,20,50,20,*">
+              <Label Content="{DynamicResource notedefaults.portamento.start}"/>
+              <TextBox Grid.Column="2" Text="{Binding PortamentoStart}" />
+              <Slider Grid.Column="4" Classes="fader" Value="{Binding PortamentoStart}" Minimum="-200" Maximum="200"
+              TickPlacement="BottomRight" TickFrequency="1" IsSnapToTickEnabled="true" />
+            </Grid>
+          </StackPanel>
+        </HeaderedContentControl>
+
+        <HeaderedContentControl Classes="groupbox" Header="{DynamicResource notedefaults.vibrato}">
+          <StackPanel IsEnabled="{Binding IsNoteSelected}">
+            <ToggleSwitch IsChecked="{Binding VibratoEnable}" OnContent="{DynamicResource prefs.on}" OffContent="{DynamicResource prefs.off}"/>
+            <StackPanel IsEnabled="{Binding VibratoEnable}">
+              <Grid ColumnDefinitions="123,20,*">
+                <Label Content="{DynamicResource notedefaults.preset}"/>
+                <ComboBox Grid.Column="2" ItemsSource="{Binding VibratoPresets}"
+                  SelectedItem="{Binding ApplyVibratoPreset}" HorizontalAlignment="Stretch" />
+              </Grid>
+              <Grid ColumnDefinitions="123,20,*,20,*">
+                <Button Grid.Column="2" Content="{DynamicResource notedefaults.preset.save}"
+                  HorizontalAlignment="Stretch" Click="OnSaveVibratoPreset"
+                  ToolTip.Tip="{DynamicResource notedefaults.preset.save.tooltip}"/>
+                <Button Grid.Column="4" Content="{DynamicResource notedefaults.preset.remove}"
+                  HorizontalAlignment="Stretch" Command="{Binding RemoveAppliedVibratoPreset}"
+                  ToolTip.Tip="{DynamicResource notedefaults.preset.remove.tooltip}"/>
+              </Grid>
+              <Grid ColumnDefinitions="130,20,50,20,*">
+                <Label Content="{DynamicResource notedefaults.vibrato.length}"/>
+                <TextBox Grid.Column="2" Text="{Binding VibratoLength}" />
+                <Slider Grid.Column="4" Classes="fader" Value="{Binding VibratoLength}" Minimum="0" Maximum="100"
+                TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="true" />
+              </Grid>
+              <Grid ColumnDefinitions="130,20,50,20,*">
+                <Label Content="{DynamicResource notedefaults.vibrato.period}"/>
+                <TextBox Grid.Column="2" Text="{Binding VibratoPeriod}" />
+                <Slider Grid.Column="4" Classes="fader" Value="{Binding VibratoPeriod}" Minimum="5" Maximum="500"
+                TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="true" />
+              </Grid>
+              <Grid ColumnDefinitions="130,20,50,20,*">
+                <Label Content="{DynamicResource notedefaults.vibrato.depth}"/>
+                <TextBox Grid.Column="2" Text="{Binding VibratoDepth}" />
+                <Slider Grid.Column="4" Classes="fader" Value="{Binding VibratoDepth}" Minimum="5" Maximum="200"
+                TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="true" />
+              </Grid>
+              <Grid ColumnDefinitions="130,20,50,20,*">
+                <Label Content="{DynamicResource notedefaults.vibrato.in}"/>
+                <TextBox Grid.Column="2" Text="{Binding VibratoIn}" />
+                <Slider Grid.Column="4" Classes="fader" Value="{Binding VibratoIn}" Minimum="0" Maximum="100"
+                TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="true" />
+              </Grid>
+              <Grid ColumnDefinitions="130,20,50,20,*">
+                <Label Content="{DynamicResource notedefaults.vibrato.out}"/>
+                <TextBox Grid.Column="2" Text="{Binding VibratoOut}" />
+                <Slider Grid.Column="4" Classes="fader" Value="{Binding VibratoOut}" Minimum="0" Maximum="100"
+                TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="true" />
+              </Grid>
+              <Grid ColumnDefinitions="130,20,50,20,*">
+                <Label Content="{DynamicResource notedefaults.vibrato.shift}"/>
+                <TextBox Grid.Column="2" Text="{Binding VibratoShift}" />
+                <Slider Grid.Column="4" Classes="fader" Value="{Binding VibratoShift}" Minimum="0" Maximum="100"
+                TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="true" />
+              </Grid>
+              <Grid ColumnDefinitions="123,20,*">
+                <Label Content="{DynamicResource noteproperty.setlongnote}"/>
+                <CheckBox Grid.Column="2" IsChecked="{Binding AutoVibratoToggle}"/>
+              </Grid>
+              <Grid ColumnDefinitions="180,20,50,20,*">
+                <Label Content="{DynamicResource notedefaults.vibrato.autominlength}"/>
+                <TextBox Grid.Column="2" IsEnabled="{Binding AutoVibratoToggle}" Text="{Binding AutoVibratoNoteLength}" />
+                <Slider Grid.Column="4" Classes="fader" IsEnabled="{Binding AutoVibratoToggle}" Value="{Binding AutoVibratoNoteLength}" Minimum="10" Maximum="1920"
+                TickPlacement="BottomRight" TickFrequency="1" IsSnapToTickEnabled="true" />
+              </Grid>
+            </StackPanel>
+          </StackPanel>
+        </HeaderedContentControl>
+
+        <HeaderedContentControl Classes="groupbox" Header="{DynamicResource exps.caption}">
+          <StackPanel Name="ExpressionsPanel" />
+        </HeaderedContentControl>
+      </StackPanel>
+    </ScrollViewer>
+  </Grid>
+</UserControl>

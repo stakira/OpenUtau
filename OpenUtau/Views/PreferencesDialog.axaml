@@ -172,6 +172,15 @@
               <ComboBoxItem Content="{DynamicResource prefs.off}"/>
               <ComboBoxItem Content="{DynamicResource prefs.on}"/>
             </ComboBox>
+            <TextBlock Text="{DynamicResource prefs.advanced.rememberfiletypes}" />
+            <Grid ColumnDefinitions="Auto,Auto" RowDefinitions="25,25,25" VerticalAlignment="Center">
+              <CheckBox IsChecked="{Binding RememberMid}" Grid.Column="0" Grid.Row="0" VerticalAlignment="Center"/>
+              <TextBlock Text=" .mid" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center"/>
+              <CheckBox IsChecked="{Binding RememberUst}" Grid.Column="0" Grid.Row="1" VerticalAlignment="Center"/>
+              <TextBlock Text=" .ust" Grid.Column="1" Grid.Row="1" VerticalAlignment="Center"/>
+              <CheckBox IsChecked="{Binding RememberVsqx}" Grid.Column="0" Grid.Row="2" VerticalAlignment="Center"/>
+              <TextBlock Text=" .vsqx" Grid.Column="1" Grid.Row="2" VerticalAlignment="Center"/>
+            </Grid>
           </StackPanel>
         </HeaderedContentControl>
       </StackPanel>
