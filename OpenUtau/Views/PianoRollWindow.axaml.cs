@@ -110,7 +110,6 @@ namespace OpenUtau.App.Views {
             var vm = new LyricsViewModel();
             var (notes, lyrics) = ViewModel.NotesViewModel.PrepareInsertLyrics();
             vm.Start(ViewModel.NotesViewModel.Part, notes, lyrics);
-            vm.TrackColor = ViewModel.NotesViewModel.TrackColor;
             var dialog = new LyricsDialog() {
                 DataContext = vm,
             };

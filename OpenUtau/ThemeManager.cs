@@ -71,6 +71,19 @@ namespace OpenUtau.App {
                 new TrackColor("Purple2", "#7B1FA2", "#4A148C", "#9C27B0"),
             };
 
+        public static void ChangeTrackColor(string color) {
+            if (Application.Current == null) {
+                return;
+            }
+            try {
+                IResourceDictionary resDict = Application.Current.Resources;
+                TrackColor tcolor = GetTrackColor(color);
+                resDict["SelectedTrackAccentBrush"] = tcolor.AccentColor;
+                resDict["SelectedTrackAccentLightBrush"] = tcolor.AccentColorLight;
+                resDict["SelectedTrackAccentDarkBrush"] = tcolor.AccentColorDark;
+            } catch { }
+        }
+
         public static void LoadTheme() {
             if (Application.Current == null) {
                 return;
