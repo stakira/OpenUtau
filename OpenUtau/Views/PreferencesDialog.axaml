@@ -20,6 +20,17 @@
     <Style Selector="ComboBox">
       <Setter Property="HorizontalAlignment" Value="Stretch"/>
     </Style>
+    <Style Selector="TextBlock.note">
+      <Setter Property="Text" Value="{DynamicResource prefs.note.restart}"/>
+      <Setter Property="FontSize" Value="11"/>
+      <Setter Property="TextWrapping" Value="Wrap"/>
+      <Setter Property="Margin" Value="4,0"/>
+    </Style>
+    <Style Selector="ToggleSwitch">
+      <Setter Property="OnContent" Value="{DynamicResource prefs.on}"/>
+      <Setter Property="OffContent" Value="{DynamicResource prefs.off}"/>
+      <Setter Property="HorizontalAlignment" Value="Right"/>
+    </Style>
   </Window.Styles>
   <Design.DataContext>
   </Design.DataContext>
@@ -36,7 +47,7 @@
               <ComboBoxItem Content="{DynamicResource prefs.playback.backend.auto}"/>
               <ComboBoxItem Content="{DynamicResource prefs.playback.backend.port}"/>
             </ComboBox>
-            <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.note.restart}" FontSize="11"/>
+            <TextBlock Classes="note"/>
             <TextBlock Text="{DynamicResource prefs.playback.lockstarttime}" Margin="0,10,0,0"/>
             <ComboBox SelectedIndex="{Binding LockStartTime}">
               <ComboBoxItem Content="{DynamicResource prefs.playback.lockstarttime.off}"/>
@@ -75,8 +86,7 @@
             </Grid>
             <Grid Margin="0,5,0,0">
               <TextBlock Text="{DynamicResource prefs.paths.addlsinger.install}" HorizontalAlignment="Left"/>
-              <ToggleSwitch IsChecked="{Binding InstallToAdditionalSingersPath}" HorizontalAlignment="Right"
-                            OnContent="{DynamicResource prefs.on}" OffContent="{DynamicResource prefs.off}"/>
+              <ToggleSwitch IsChecked="{Binding InstallToAdditionalSingersPath}"/>
             </Grid>
           </StackPanel>
         </HeaderedContentControl>
@@ -84,8 +94,7 @@
           <StackPanel>
             <Grid>
               <TextBlock Text="{DynamicResource prefs.rendering.prerender}" HorizontalAlignment="Left"/>
-              <ToggleSwitch IsChecked="{Binding PreRender}" HorizontalAlignment="Right"
-                            OnContent="{DynamicResource prefs.on}" OffContent="{DynamicResource prefs.off}"/>
+              <ToggleSwitch IsChecked="{Binding PreRender}"/>
             </Grid>
             <Grid ColumnDefinitions="Auto,8,16,8,*">
               <TextBlock Grid.Column="0" Text="{DynamicResource prefs.rendering.threads.numthreads}"/>
@@ -103,10 +112,10 @@
                        Foreground="Red" Margin="0,0,0,4" IsVisible="{Binding HighThreads}" FontSize="11"/>
             <TextBlock Text="{DynamicResource prefs.rendering.onnxrunner}" Margin="0,10,0,0"/>
             <ComboBox ItemsSource="{Binding OnnxRunnerOptions}" SelectedItem="{Binding OnnxRunner}"/>
-            <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.note.restart}" FontSize="11"/>
+            <TextBlock Classes="note"/>
             <TextBlock Text="{DynamicResource prefs.rendering.onnxgpu}" Margin="0,10,0,0"/>
             <ComboBox ItemsSource="{Binding OnnxGpuOptions}" SelectedItem="{Binding OnnxGpu}"/>
-            <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.note.restart}" FontSize="11"/>
+            <TextBlock Classes="note"/>
           </StackPanel>
         </HeaderedContentControl>
         <HeaderedContentControl Classes="groupbox" Header="{DynamicResource prefs.appearance}">
@@ -119,7 +128,7 @@
                 </DataTemplate>
               </ComboBox.ItemTemplate>
             </ComboBox>
-            <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.note.restart}" FontSize="11"/>
+            <TextBlock Classes="note"/>
             <TextBlock Text="{DynamicResource prefs.appearance.sortorder}" Margin="0,10,0,0"/>
             <ComboBox ItemsSource="{Binding SortingOrders}" SelectedItem="{Binding SortingOrder}">
               <ComboBox.ItemTemplate>
@@ -128,22 +137,20 @@
                 </DataTemplate>
               </ComboBox.ItemTemplate>
             </ComboBox>
-            <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.note.restart}" FontSize="11"/>
+            <TextBlock Classes="note"/>
             <TextBlock Text="{DynamicResource prefs.appearance.theme}" Margin="0,10,0,0"/>
             <ComboBox SelectedIndex="{Binding Theme}">
               <ComboBoxItem Content="{DynamicResource prefs.appearance.theme.light}"/>
               <ComboBoxItem Content="{DynamicResource prefs.appearance.theme.dark}"/>
             </ComboBox>
-            <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.note.restart}" FontSize="11"/>
+            <TextBlock Classes="note"/>
             <Grid Margin="0,5,0,0">
               <TextBlock Text="{DynamicResource prefs.appearance.showportrait}" HorizontalAlignment="Left"/>
-              <ToggleSwitch IsChecked="{Binding ShowPortrait}" HorizontalAlignment="Right"
-                            OnContent="{DynamicResource prefs.on}" OffContent="{DynamicResource prefs.off}"/>
+              <ToggleSwitch IsChecked="{Binding ShowPortrait}"/>
             </Grid>
             <Grid>
               <TextBlock Text="{DynamicResource prefs.appearance.showghostnotes}" HorizontalAlignment="Left"/>
-              <ToggleSwitch IsChecked="{Binding ShowGhostNotes}" HorizontalAlignment="Right"
-                            OnContent="{DynamicResource prefs.on}" OffContent="{DynamicResource prefs.off}"/>
+              <ToggleSwitch IsChecked="{Binding ShowGhostNotes}"/>
             </Grid>
           </StackPanel>
         </HeaderedContentControl>
@@ -169,16 +176,14 @@
           <StackPanel>
             <Grid>
               <TextBlock Text="{DynamicResource prefs.advanced.beta}" HorizontalAlignment="Left"/>
-              <ToggleSwitch IsChecked="{Binding Beta}" HorizontalAlignment="Right"
-                            OnContent="{DynamicResource prefs.on}" OffContent="{DynamicResource prefs.off}"/>
+              <ToggleSwitch IsChecked="{Binding Beta}"/>
             </Grid>
-            <TextBlock TextWrapping="Wrap" Text="{DynamicResource prefs.note.restart}" FontSize="11"/>
+            <TextBlock Classes="note"/>
             <TextBlock Text="{DynamicResource prefs.advanced.lyricshelper}" Margin="0,10,0,0"/>
             <ComboBox ItemsSource="{Binding LyricsHelpers}" SelectedItem="{Binding LyricsHelper}"/>
             <Grid>
               <TextBlock Text="{DynamicResource prefs.advanced.lyricshelper.brackets}" HorizontalAlignment="Left"/>
-              <ToggleSwitch IsChecked="{Binding LyricsHelperBrackets}" HorizontalAlignment="Right"
-                            OnContent="{DynamicResource prefs.on}" OffContent="{DynamicResource prefs.off}"/>
+              <ToggleSwitch IsChecked="{Binding LyricsHelperBrackets}"/>
             </Grid>
             <TextBlock Text="{DynamicResource prefs.advanced.rememberfiletypes}" Margin="0,5,0,0"/>
             <Grid ColumnDefinitions="Auto,Auto" RowDefinitions="25,25,25" VerticalAlignment="Center" Margin="4">
