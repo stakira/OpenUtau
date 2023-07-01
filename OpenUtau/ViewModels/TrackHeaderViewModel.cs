@@ -6,8 +6,11 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Media;
 using Avalonia.Media.Imaging;
+using Avalonia.Styling;
 using OpenUtau.Api;
 using OpenUtau.App.Views;
 using OpenUtau.Core;
@@ -31,6 +34,7 @@ namespace OpenUtau.App.ViewModels {
         public IReadOnlyList<MenuItemViewModel>? RenderersMenuItems { get; set; }
         public ReactiveCommand<string, Unit> SelectRendererCommand { get; }
         [Reactive] public string TrackName { get; set; } = string.Empty;
+        [Reactive] public TrackColor TrackColor { get; set; } = ThemeManager.GetTrackColor("Blue");
         [Reactive] public double Volume { get; set; }
         [Reactive] public double Pan { get; set; }
         [Reactive] public bool Muted { get; set; }
@@ -128,6 +132,7 @@ namespace OpenUtau.App.ViewModels {
             });
 
             TrackName = track.TrackName;
+            TrackColor = ThemeManager.GetTrackColor(track.TrackColor);
             Volume = track.Volume;
             Pan = track.Pan;
             Muted = track.Muted;
@@ -325,6 +330,16 @@ namespace OpenUtau.App.ViewModels {
             };
             if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop && desktop.MainWindow != null) {
                 dialog.ShowDialog(desktop.MainWindow);
+            }
+        }
+
+        public async void SelectTrackColor() {
+            var dialog = new TrackColorDialog();
+            dialog.DataContext = new TrackColorViewModel(track);
+            
+            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop && desktop.MainWindow != null) {
+                await dialog.ShowDialog(desktop.MainWindow);
+                TrackColor = ThemeManager.GetTrackColor(track.TrackColor);
             }
         }
 

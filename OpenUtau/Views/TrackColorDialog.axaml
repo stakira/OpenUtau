@@ -2,66 +2,42 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="150"
-        x:Class="OpenUtau.App.Views.TrackColorDialog"
-        Title="Track Color">
+        mc:Ignorable="d" Width="500" Height="150"
+        x:Class="OpenUtau.App.Views.TrackColorDialog" WindowStartupLocation="CenterOwner"
+        Icon="/Assets/open-utau.ico"
+        Title="{StaticResource tracks.trackcolor}"
+        KeyDown="OnKeyDown">
   <Grid RowDefinitions="*,30" >
-    <ListBox VerticalAlignment="Center" Background="{DynamicResource BackgroundColor}">
+    <ListBox ItemsSource="{Binding TrackColors}" SelectedValue="{Binding SelectedColor}"
+             Grid.Row="0" VerticalAlignment="Center" Background="Transparent" Height="50">
       <ListBox.ItemTemplate>
         <DataTemplate>
-          <Border Background="#EF5350" CornerRadius="2" Width="25"/>
+          <StackPanel Orientation="Horizontal">
+            <Border Background="{Binding AccentColorLight}" CornerRadius="2" Width="25"/>
+            <Border Background="{Binding AccentColor}" CornerRadius="2" Width="25">
+              <TextBlock Text="a" Foreground="White" Margin="2" />
+            </Border>
+            <Border Background="{Binding AccentColorDark}" CornerRadius="2" Width="25"/>
+          </StackPanel>
         </DataTemplate>
       </ListBox.ItemTemplate>
       <ListBox.ItemsPanel>
         <ItemsPanelTemplate>
-          <StackPanel Orientation="Horizontal" Spacing="0"/>
+          <UniformGrid Rows="2" />
         </ItemsPanelTemplate>
       </ListBox.ItemsPanel>
-      <ListBoxItem>
-        <Border Background="#EF5350" CornerRadius="2" Width="25"/>
-      </ListBoxItem>
-      <ListBoxItem>
-        <Border Background="#F06292" CornerRadius="2" Width="25"/>
-      </ListBoxItem>
-      <ListBoxItem>
-        <Border Background="#FF8A65" CornerRadius="2" Width="25"/>
-      </ListBoxItem>
-      <ListBoxItem>
-        <Border Background="#FFB74D" CornerRadius="2" Width="25"/>
-      </ListBoxItem>
-      <ListBoxItem>
-        <Border Background="#FFEB3B" CornerRadius="2" Width="25"/>
-      </ListBoxItem>
-      <ListBoxItem>
-        <Border Background="#CDDC39" CornerRadius="2" Width="25"/>
-      </ListBoxItem>
-      <ListBoxItem>
-        <Border Background="#9CCC65" CornerRadius="2" Width="25"/>
-      </ListBoxItem>
-      <ListBoxItem>
-        <Border Background="#81C784" CornerRadius="2" Width="25"/>
-      </ListBoxItem>
-      <ListBoxItem>
-        <Border Background="#4DB6AC" CornerRadius="2" Width="25"/>
-      </ListBoxItem>
-      <ListBoxItem>
-        <Border Background="#4DD0E1" CornerRadius="2" Width="25"/>
-      </ListBoxItem>
-      <ListBoxItem>
-        <Border Background="#4FC3F7" CornerRadius="2" Width="25"/>
-      </ListBoxItem>
-      <ListBoxItem>
-        <Border Background="#64B5F6" CornerRadius="2" Width="25"/>
-      </ListBoxItem>
-      <ListBoxItem>
-        <Border Background="#7986CB" CornerRadius="2" Width="25"/>
-      </ListBoxItem>
-      <ListBoxItem>
-        <Border Background="#9575CD" CornerRadius="2" Width="25"/>
-      </ListBoxItem>
-      <ListBoxItem>
-        <Border Background="#BA68C8" CornerRadius="2" Width="25"/>
-      </ListBoxItem>
+      <ListBox.Styles>
+        <Style Selector="ListBoxItem">
+          <Setter Property="ToolTip.Tip" Value="{Binding Name}"/>
+        </Style>
+        <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
+          <Setter Property="Background" Value="{Binding AccentColorLight}"/>
+        </Style>
+      </ListBox.Styles>
     </ListBox>
+    <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center">
+      <Button Content="{StaticResource lyrics.cancel}" MinWidth="50" Click="OnCancel"/>
+      <Button Content="{StaticResource lyrics.apply}" MinWidth="50" Click="OnFinish"/>
+    </StackPanel>
   </Grid>
 </Window>

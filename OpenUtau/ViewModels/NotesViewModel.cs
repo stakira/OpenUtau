@@ -74,6 +74,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public Bitmap? Portrait { get; set; }
         [Reactive] public IBrush? PortraitMask { get; set; }
         [Reactive] public string WindowTitle { get; set; } = "Piano Roll";
+        [Reactive] public TrackColor TrackColor { get; set; } = ThemeManager.GetTrackColor("Blue");
         public double ViewportTicks => viewportTicks.Value;
         public double ViewportTracks => viewportTracks.Value;
         public double SmallChangeX => smallChangeX.Value;
@@ -374,6 +375,7 @@ namespace OpenUtau.App.ViewModels {
             OnPartModified();
             LoadPortrait(part, project);
             LoadWindowTitle(part, project);
+            LoadTrackColor(part, project);
         }
 
         private void LoadPortrait(UPart? part, UProject? project) {
@@ -433,6 +435,14 @@ namespace OpenUtau.App.ViewModels {
                 return;
             }
             WindowTitle = project.tracks[part.trackNo].TrackName + " - " + part.DisplayName;
+        }
+
+        private void LoadTrackColor(UPart? part, UProject? project) {
+            if (part == null || project == null) {
+                TrackColor = ThemeManager.GetTrackColor("Blue");
+                return;
+            }
+            TrackColor = ThemeManager.GetTrackColor(project.tracks[part.trackNo].TrackColor);
         }
 
         private void UnloadPart() {
@@ -867,6 +877,9 @@ namespace OpenUtau.App.ViewModels {
             } else if (cmd is TrackCommand) {
                 if (cmd is RenameTrackCommand) {
                     LoadWindowTitle(Part, Project);
+                    return;
+                } else if (cmd is ChangeTrackColorCommand) {
+                    LoadTrackColor(Part, Project);
                     return;
                 } else if (cmd is RemoveTrackCommand removeTrack) {
                     if (Part != null && removeTrack.removedParts.Contains(Part)) {

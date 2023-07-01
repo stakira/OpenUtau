@@ -1,4 +1,6 @@
-﻿using Avalonia;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Styling;
@@ -47,6 +49,24 @@ namespace OpenUtau.App {
         public static IBrush ExpShadowNameBrush = Brushes.White;
         public static IBrush ExpActiveBrush = Brushes.Black;
         public static IBrush ExpActiveNameBrush = Brushes.White;
+
+        public static List<TrackColor> TrackColors = new List<TrackColor>(){
+                new TrackColor("Red", "#EF5350", "#F44336", "#E57373"),
+                new TrackColor("Pink", "#F06292", "#EC407A", "#F48FB1"),
+                new TrackColor("Deep Orange", "#FF7043", "#FF5722", "#FF8A65"),
+                new TrackColor("Orange", "#FFA726", "#FF9800", "#FFB74D"),
+                new TrackColor("Yellow", "#FBC02D", "#F9A825", "#FDD835"),
+                new TrackColor("Lime", "#C0CA33", "#AFB42B", "#CDDC39"),
+                new TrackColor("Light Green", "#9CCC65", "#8BC34A", "#AED581"),
+                new TrackColor("Green", "#81C784", "#66BB6A", "#A5D6A7"),
+                new TrackColor("Teal", "#4DB6AC", "#26A69A", "#80CBC4"),
+                new TrackColor("Cyan", "#00BCD4", "#00ACC1", "#26C6DA"),
+                new TrackColor("Light Blue", "#4FC3F7", "#29B6F6", "#81D4FA"),
+                new TrackColor("Blue", "#4EA6EA", "#42A5F5", "#90CAF9"),
+                new TrackColor("Indigo", "#7986CB", "#5C6BC0", "#9FA8DA"),
+                new TrackColor("Deep Purple", "#9575CD", "#7E57C2", "#B39DDB"),
+                new TrackColor("Purple", "#BA68C8", "#AB47BC", "#CE93D8")
+            };
 
         public static void LoadTheme() {
             if (Application.Current == null) {
@@ -158,6 +178,27 @@ namespace OpenUtau.App {
                 return s;
             }
             return key;
+        }
+
+        public static TrackColor GetTrackColor(string name) {
+            if (TrackColors.Any(c => c.Name == name)) {
+                return TrackColors.First(c => c.Name == name);
+            }
+            return TrackColors.First(c => c.Name == "Blue");
+        }
+    }
+
+    public class TrackColor {
+        public string Name { get; set; } = "";
+        public SolidColorBrush AccentColor { get; set; }
+        public SolidColorBrush AccentColorDark { get; set; } // Pressed
+        public SolidColorBrush AccentColorLight { get; set; } // PointerOver
+
+        public TrackColor(string name, string accentColor, string darkColor, string lightColor) {
+            Name = name;
+            AccentColor = SolidColorBrush.Parse(accentColor);
+            AccentColorDark = SolidColorBrush.Parse(darkColor);
+            AccentColorLight = SolidColorBrush.Parse(lightColor);
         }
     }
 }

@@ -92,7 +92,8 @@ namespace OpenUtau.App.Controls {
                             header.ViewModel.ManuallyRaise();
                         }
                     }
-                }); MessageBus.Current.Listen<TracksMuteEvent>()
+                }); 
+            MessageBus.Current.Listen<TracksMuteEvent>()
                 .Subscribe(e => {
                     foreach (var (track, header) in trackHeaders) {
                         if (header.ViewModel != null) {
