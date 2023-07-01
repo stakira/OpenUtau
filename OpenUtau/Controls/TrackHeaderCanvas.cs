@@ -55,9 +55,7 @@ namespace OpenUtau.App.Controls {
                         if (header.ViewModel == null) {
                             continue;
                         }
-                        if (PlaybackManager.Inst.SoloTrackExist && !track.Solo) {
-                            header.ViewModel.Muted = true;
-                        }
+                        header.ViewModel.JudgeMuted();
                         header.ViewModel.ManuallyRaise();
                     }
                     if (trackAdder != null) {
@@ -69,34 +67,32 @@ namespace OpenUtau.App.Controls {
                     foreach (var (track, header) in trackHeaders) {
                         if (header.ViewModel != null) {
                             if (e.solo) {
-                                PlaybackManager.Inst.SoloTrackExist = true;
-
                                 if (track.TrackNo == e.trackNo) {
                                     header.ViewModel.Solo = true;
-                                    header.ViewModel.Muted = false;
-                                } else {
+                                } else if (!e.additionally) {
                                     header.ViewModel.Solo = false;
-                                    header.ViewModel.Muted = true;
                                 }
                             } else {
-                                PlaybackManager.Inst.SoloTrackExist = false;
-                                if (track.TrackNo == e.trackNo) {
+                                if (track.TrackNo == e.trackNo || e.trackNo == -1) {
                                     header.ViewModel.Solo = false;
                                 }
-                                if (track.Mute) {
-                                    header.ViewModel.Muted = true;
-                                } else {
-                                    header.ViewModel.Muted = false;
-                                }
                             }
+                        }
+                    }
+                    foreach (var (track, header) in trackHeaders) {
+                        if (header.ViewModel != null) {
+                            header.ViewModel.JudgeMuted();
                             header.ViewModel.ManuallyRaise();
                         }
                     }
-                }); MessageBus.Current.Listen<TracksMuteEvent>()
+                });
+            MessageBus.Current.Listen<TracksMuteEvent>()
                 .Subscribe(e => {
                     foreach (var (track, header) in trackHeaders) {
                         if (header.ViewModel != null) {
-                            if (track.TrackNo == e.trackNo) {
+                            if(e.trackNo == -1) {
+                                header.ViewModel.ToggleMute(e.allmute);
+                            } else if (track.TrackNo == e.trackNo) {
                                 header.ViewModel.ToggleMute();
                             }
                         }

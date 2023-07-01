@@ -49,6 +49,7 @@ namespace OpenUtau.Core.Ustx {
         public List<UTempo> tempos;
         public List<UTrack> tracks;
         [YamlIgnore] public List<UPart> parts;
+        public bool SoloTrackExist { get => tracks.Any(t => t.Solo); }
 
         /// <summary>
         /// Transient field used for serialization.

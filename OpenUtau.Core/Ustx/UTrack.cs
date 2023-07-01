@@ -179,9 +179,7 @@ namespace OpenUtau.Core.Ustx {
                 };
             }
             TrackNo = project.tracks.IndexOf(this);
-            if (Solo) {
-                PlaybackManager.Inst.SoloTrackExist = true;
-            } else if (Mute) {
+            if (!Solo && Mute) {
                 Muted = true;
             }
         }
