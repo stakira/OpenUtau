@@ -62,7 +62,6 @@ namespace OpenUtau.Core {
         public Audio.IAudioOutput AudioOutput { get; set; } = new Audio.DummyAudioOutput();
         public bool Playing => AudioOutput.PlaybackState == PlaybackState.Playing;
         public bool StartingToPlay { get; private set; }
-        public bool SoloTrackExist { get; set; } = false;
 
         public void PlayTestSound() {
             masterMix = null;

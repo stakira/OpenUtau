@@ -92,13 +92,28 @@
       </Button>
       <ToggleButton Grid.Row="1" Grid.Column="4" Margin="1" Padding="0" Height="18"
                     HorizontalAlignment="Stretch"
-                    IsChecked="{Binding Muted, Mode=OneWay}" Command="{Binding ToggleMute}">
+                    IsChecked="{Binding Mute, Mode=OneWay}" Command="{Binding ToggleMute}">
         <TextBlock Text="M" TextAlignment="Center"/>
+        <ToggleButton.ContextMenu>
+          <ContextMenu>
+            <MenuItem Classes="context" Header="{StaticResource tracks.mute}" Command="{Binding ToggleMute}"/>
+            <MenuItem Classes="context" Header="{StaticResource tracks.mute.only}" Command="{Binding MuteOnly}"/>
+            <MenuItem Classes="context" Header="{StaticResource tracks.mute.allothers}" Command="{Binding MuteAllOthers}"/>
+            <MenuItem Classes="context" Header="{StaticResource tracks.mute.unmuteall}" Command="{Binding UnmuteAll}"/>
+          </ContextMenu>
+        </ToggleButton.ContextMenu>
       </ToggleButton>
       <ToggleButton Grid.Row="2" Grid.Column="4" Margin="1" Padding="0" Height="18"
                     HorizontalAlignment="Stretch"
                     IsChecked="{Binding Solo, Mode=OneWay}" Command="{Binding ToggleSolo}">
         <TextBlock Text="S" TextAlignment="Center"/>
+        <ToggleButton.ContextMenu>
+          <ContextMenu>
+            <MenuItem Classes="context" Header="{StaticResource tracks.solo.only}" Command="{Binding ToggleSolo}"/>
+            <MenuItem Classes="context" Header="{StaticResource tracks.solo.add}" Command="{Binding SoloAdditionally}"/>
+            <MenuItem Classes="context" Header="{StaticResource tracks.solo.unsoloall}" Command="{Binding UnsoloAll}"/>
+          </ContextMenu>
+        </ToggleButton.ContextMenu>
       </ToggleButton>
       <Button Grid.Row="3" Grid.Column="4" Margin="1" Padding="0" Height="18" Background="Transparent"
                     HorizontalAlignment="Stretch" Click="TrackSettingsButtonClicked">
@@ -116,7 +131,7 @@
       <Grid Grid.Row="4" Grid.Column="3" Grid.ColumnSpan="2">
         <Slider Margin="1,0,0,0" Width="102" HorizontalAlignment="Left" Classes="fader" Minimum="-24" Maximum="12" Value="{Binding Volume}"
                 PointerPressed="VolumeFaderPointerPressed"
-                ContextRequested="VolumeFaderContextRequested"/>
+                ContextRequested="VolumeFaderContextRequested" IsEnabled="{Binding !Muted}"/>
         <TextBlock Margin="106,3,0,0" Width="36" HorizontalAlignment="Left" FontSize="9" FontFamily="monospace" >
           <TextBlock.Text>
             <MultiBinding StringFormat="{}{0:+#00.0;-#00.0}">
@@ -127,7 +142,7 @@
         <Slider Margin="134,0,0,0" Width="36" HorizontalAlignment="Left"
                 Classes="fader" Minimum="-100" Maximum="100" Value="{Binding Pan}"
                 PointerPressed="PanFaderPointerPressed"
-                ContextRequested="PanFaderContextRequested"/>
+                ContextRequested="PanFaderContextRequested" IsEnabled="{Binding !Muted}"/>
         <TextBlock Margin="0,3,4,0" HorizontalAlignment="Right" FontSize="9" FontFamily="monospace" IsHitTestVisible="False">
           <TextBlock.Text>
             <MultiBinding StringFormat="{}{0:00R;00L;C}">
