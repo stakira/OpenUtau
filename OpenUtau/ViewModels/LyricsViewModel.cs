@@ -16,7 +16,6 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public int TotalCount { get; set; }
         [Reactive] public int MaxCount { get; set; }
         [Reactive] public bool LivePreview { get; set; }
-        public TrackColor TrackColor { get; set; } = ThemeManager.GetTrackColor("Blue");
 
         private UVoicePart? part;
         private UNote[]? notes;

@@ -24,7 +24,6 @@ namespace OpenUtau.App.ViewModels {
                 DocManager.Inst.ExecuteCmd(new ChangeTrackColorCommand(DocManager.Inst.Project, track, SelectedColor.Name));
                 DocManager.Inst.EndUndoGroup();
             }
-
         }
     }
 }

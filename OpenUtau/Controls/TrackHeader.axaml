@@ -12,7 +12,6 @@
     <Style Selector="ToggleButton">
       <Setter Property="Background" Value="Transparent"/>
     </Style>
-    <!-- 
     <Style Selector="Slider.fader">
       <Setter Property="Foreground" Value="{Binding TrackColor.AccentColor}"/>
     </Style>
@@ -22,11 +21,10 @@
     <Style Selector="Slider.fader:pressed /template/ RepeatButton#PART_Track">
       <Setter Property="Foreground" Value="{Binding TrackColor.AccentColorDark}"/>
     </Style>
-    -->
   </UserControl.Styles>
   <Border Margin="1,1,1,1" BorderThickness="1" BorderBrush="{DynamicResource NeutralAccentBrushSemi}" CornerRadius="2">
     <Grid Background="Transparent" RowDefinitions="20,20,20,20,20,*" ColumnDefinitions="7,Auto,1,*,20" VerticalAlignment="Top" ClipToBounds="True">
-      <Border Background="{Binding TrackColor.AccentColor}" Grid.RowSpan="6" CornerRadius="2,0,0,2" />
+      <Border Background="{Binding TrackAccentColor}" Grid.RowSpan="6" CornerRadius="2,0,0,2" />
       <Grid Grid.Row="0" Grid.RowSpan="6" Grid.Column="1" VerticalAlignment="Top">
         <Border BorderThickness="0,0,1,1" Height="101" Width="101" VerticalAlignment="Top" CornerRadius="0,0,2,0"
                 BorderBrush="{DynamicResource NeutralAccentBrushSemi}" ClipToBounds="True">

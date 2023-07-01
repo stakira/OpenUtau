@@ -112,6 +112,7 @@ namespace OpenUtau.Core.Util {
             public bool ShowPrefs = true;
             public bool ShowTips = true;
             public int Theme;
+            public bool UseTrackColor = false;
             public bool PreRender = true;
             public int NumRenderThreads = 2;
             public string OnnxRunner = string.Empty;

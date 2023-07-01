@@ -206,44 +206,48 @@ namespace OpenUtau.App.ViewModels {
             var note = selectedNotes.FirstOrDefault();
             if (note == null) { return; }
 
-            if (cmd is ChangeNoteLyricCommand changeNoteLyricCommand) {
-                if (changeNoteLyricCommand.Notes.Contains(note)) {
-                    Lyric = note.lyric;
-                }
-            } else if (cmd is VibratoLengthCommand vibratoLengthCommand) {
-                if (vibratoLengthCommand.Notes.Contains(note)) {
-                    if (note.vibrato.length == 0) {
-                        VibratoEnable = false;
-                        VibratoLength = NotePresets.Default.DefaultVibrato.VibratoLength;
-                    } else {
-                        VibratoEnable = true;
-                        VibratoLength = note.vibrato.length;
+            if (cmd is NoteCommand) {
+                if (cmd is ChangeNoteLyricCommand changeNoteLyricCommand) {
+                    if (changeNoteLyricCommand.Notes.Contains(note)) {
+                        Lyric = note.lyric;
+                    }
+                } else if (cmd is VibratoLengthCommand vibratoLengthCommand) {
+                    if (vibratoLengthCommand.Notes.Contains(note)) {
+                        if (note.vibrato.length == 0) {
+                            VibratoEnable = false;
+                            VibratoLength = NotePresets.Default.DefaultVibrato.VibratoLength;
+                        } else {
+                            VibratoEnable = true;
+                            VibratoLength = note.vibrato.length;
+                        }
+                    }
+                } else if (cmd is VibratoFadeInCommand vibratoFadeInCommand) {
+                    if (vibratoFadeInCommand.Notes.Contains(note)) {
+                        VibratoIn = note.vibrato.@in;
+                    }
+                } else if (cmd is VibratoFadeOutCommand vibratoFadeOutCommand) {
+                    if (vibratoFadeOutCommand.Notes.Contains(note)) {
+                        VibratoOut = note.vibrato.@out;
+                    }
+                } else if (cmd is VibratoDepthCommand vibratoDepthCommand) {
+                    if (vibratoDepthCommand.Notes.Contains(note)) {
+                        VibratoDepth = note.vibrato.depth;
+                    }
+                } else if (cmd is VibratoPeriodCommand vibratoPeriodCommand) {
+                    if (vibratoPeriodCommand.Notes.Contains(note)) {
+                        VibratoPeriod = note.vibrato.period;
+                    }
+                } else if (cmd is VibratoShiftCommand vibratoShiftCommand) {
+                    if (vibratoShiftCommand.Notes.Contains(note)) {
+                        VibratoShift = note.vibrato.shift;
                     }
                 }
-            } else if (cmd is VibratoFadeInCommand vibratoFadeInCommand) {
-                if (vibratoFadeInCommand.Notes.Contains(note)) {
-                    VibratoIn = note.vibrato.@in;
+            } else if (cmd is ExpCommand) {
+                if (cmd is PitchExpCommand pitchExpCommand) {
+                    // 
+                } else if (cmd is SetPhonemeExpressionCommand || cmd is ResetExpressionsCommand) {
+                    AttachExpressions();
                 }
-            } else if (cmd is VibratoFadeOutCommand vibratoFadeOutCommand) {
-                if (vibratoFadeOutCommand.Notes.Contains(note)) {
-                    VibratoOut = note.vibrato.@out;
-                }
-            } else if (cmd is VibratoDepthCommand vibratoDepthCommand) {
-                if (vibratoDepthCommand.Notes.Contains(note)) {
-                    VibratoDepth = note.vibrato.depth;
-                }
-            } else if (cmd is VibratoPeriodCommand vibratoPeriodCommand) {
-                if (vibratoPeriodCommand.Notes.Contains(note)) {
-                    VibratoPeriod = note.vibrato.period;
-                }
-            } else if (cmd is VibratoShiftCommand vibratoShiftCommand) {
-                if (vibratoShiftCommand.Notes.Contains(note)) {
-                    VibratoShift = note.vibrato.shift;
-                }
-            } else if (cmd is PitchExpCommand pitchExpCommand) {
-                // 
-            } else if (cmd is SetPhonemeExpressionCommand || cmd is ResetExpressionsCommand) {
-                AttachExpressions();
             }
         }
         #endregion

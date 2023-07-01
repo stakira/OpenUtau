@@ -9,14 +9,7 @@
         KeyDown="OnKeyDown"
         Opened="OnOpened">
   <Window.Styles>
-    <!-- 
-    <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
-      <Setter Property="BorderBrush" Value="{Binding TrackColor.AccentColor}"/>
-    </Style>
-    <Style Selector="ToggleSwitch:pressed /template/ ContentPresenter">
-      <Setter Property="Foreground" Value="{Binding TrackColor.AccentColor}"/>
-    </Style>
-     -->
+    <StyleInclude Source="/Styles/PianoRollStyles.axaml"/>
   </Window.Styles>
   <Grid Margin="10,10,10,4" RowDefinitions="*,6,Auto,4,Auto">
     <TextBox Name="DIALOG_Box" Grid.Row="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"

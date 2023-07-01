@@ -34,6 +34,7 @@ namespace OpenUtau.App.ViewModels {
         public IReadOnlyList<MenuItemViewModel>? RenderersMenuItems { get; set; }
         public ReactiveCommand<string, Unit> SelectRendererCommand { get; }
         [Reactive] public string TrackName { get; set; } = string.Empty;
+        [Reactive] public SolidColorBrush TrackAccentColor { get; set; } = ThemeManager.GetTrackColor("Blue").AccentColor;
         [Reactive] public TrackColor TrackColor { get; set; } = ThemeManager.GetTrackColor("Blue");
         [Reactive] public double Volume { get; set; }
         [Reactive] public double Pan { get; set; }
@@ -132,7 +133,10 @@ namespace OpenUtau.App.ViewModels {
             });
 
             TrackName = track.TrackName;
-            TrackColor = ThemeManager.GetTrackColor(track.TrackColor);
+            TrackAccentColor = ThemeManager.GetTrackColor(track.TrackColor).AccentColor;
+            TrackColor = Preferences.Default.UseTrackColor
+                ? ThemeManager.GetTrackColor(track.TrackColor)
+                : ThemeManager.GetTrackColor("Blue");
             Volume = track.Volume;
             Pan = track.Pan;
             Muted = track.Muted;
@@ -339,7 +343,10 @@ namespace OpenUtau.App.ViewModels {
             
             if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop && desktop.MainWindow != null) {
                 await dialog.ShowDialog(desktop.MainWindow);
-                TrackColor = ThemeManager.GetTrackColor(track.TrackColor);
+                TrackAccentColor = ThemeManager.GetTrackColor(track.TrackColor).AccentColor;
+                TrackColor = Preferences.Default.UseTrackColor
+                ? ThemeManager.GetTrackColor(track.TrackColor)
+                : ThemeManager.GetTrackColor("Blue");
             }
         }
 
