@@ -12,15 +12,6 @@
     <Style Selector="ToggleButton">
       <Setter Property="Background" Value="Transparent"/>
     </Style>
-    <Style Selector="Slider.fader">
-      <Setter Property="Foreground" Value="{Binding TrackColor.AccentColor}"/>
-    </Style>
-    <Style Selector="Slider.fader:pointerover /template/ RepeatButton#PART_Track">
-      <Setter Property="Foreground" Value="{Binding TrackColor.AccentColorLight}"/>
-    </Style>
-    <Style Selector="Slider.fader:pressed /template/ RepeatButton#PART_Track">
-      <Setter Property="Foreground" Value="{Binding TrackColor.AccentColorDark}"/>
-    </Style>
   </UserControl.Styles>
   <Border Margin="1,1,1,1" BorderThickness="1" BorderBrush="{DynamicResource NeutralAccentBrushSemi}" CornerRadius="2">
     <Grid Background="Transparent" RowDefinitions="20,20,20,20,20,*" ColumnDefinitions="7,Auto,1,*,20" VerticalAlignment="Top" ClipToBounds="True">
