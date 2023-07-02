@@ -143,7 +143,7 @@
           <MenuItem Classes="context" Header="{StaticResource tracks.movedown}" Command="{Binding MoveDown}"/>
           <MenuItem Classes="context" Header="{StaticResource tracks.rename}" Command="{Binding Rename}"/>
           <MenuItem Classes="context" Header="{StaticResource tracks.trackcolor}" Command="{Binding SelectTrackColor}"/>
-          <MenuItem Classes="context" Header="{StaticResource tracks.duplicate}" Command="{Binding SelectTrackColor}"/>
+          <MenuItem Classes="context" Header="{StaticResource tracks.duplicate}" Command="{Binding Duplicate}"/>
           <MenuItem Classes="context" Header="{StaticResource tracks.duplicatesettings}" Command="{Binding DuplicateSettings}"/>
         </ContextMenu>
       </Grid.ContextMenu>

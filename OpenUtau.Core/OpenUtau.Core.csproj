@@ -23,7 +23,6 @@
     <PackageReference Include="SharpCompress" Version="0.33.0" />
     <PackageReference Include="System.Buffers" Version="4.5.1" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
-    <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
     <PackageReference Include="System.IO.Packaging" Version="7.0.0" />
     <PackageReference Include="TinyPinyin.Net" Version="1.0.2" />
     <PackageReference Include="ToolGood.Words.Pinyin" Version="3.1.0" />

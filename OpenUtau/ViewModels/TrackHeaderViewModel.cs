@@ -6,7 +6,6 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
@@ -363,6 +362,7 @@ namespace OpenUtau.App.ViewModels {
                 Solo = track.Solo,
                 Volume = track.Volume,
                 Pan = track.Pan,
+                TrackColor = track.TrackColor
             };
             DocManager.Inst.ExecuteCmd(new AddTrackCommand(DocManager.Inst.Project, newTrack));
             var parts = DocManager.Inst.Project.parts
@@ -388,6 +388,7 @@ namespace OpenUtau.App.ViewModels {
                 Solo = track.Solo,
                 Volume = track.Volume,
                 Pan = track.Pan,
+                TrackColor = track.TrackColor
             }));
             DocManager.Inst.EndUndoGroup();
         }

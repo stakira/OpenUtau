@@ -2,23 +2,17 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" Width="500" Height="150"
+        mc:Ignorable="d" Width="450" Height="130"
         x:Class="OpenUtau.App.Views.TrackColorDialog" WindowStartupLocation="CenterOwner"
         Icon="/Assets/open-utau.ico"
         Title="{StaticResource tracks.trackcolor}"
         KeyDown="OnKeyDown">
-  <Grid RowDefinitions="*,30" >
+  <Grid RowDefinitions="*,50" >
     <ListBox ItemsSource="{Binding TrackColors}" SelectedValue="{Binding SelectedColor}"
-             Grid.Row="0" VerticalAlignment="Center" Background="Transparent" Height="50">
+             Grid.Row="0" VerticalAlignment="Center" Background="Transparent" Height="50" Margin="20,0">
       <ListBox.ItemTemplate>
         <DataTemplate>
-          <StackPanel Orientation="Horizontal">
-            <Border Background="{Binding AccentColorLight}" CornerRadius="2" Width="25"/>
-            <Border Background="{Binding AccentColor}" CornerRadius="2" Width="25">
-              <TextBlock Text="a" Foreground="White" Margin="2" />
-            </Border>
-            <Border Background="{Binding AccentColorDark}" CornerRadius="2" Width="25"/>
-          </StackPanel>
+          <Border Background="{Binding AccentColor}" CornerRadius="2" Width="25"/>
         </DataTemplate>
       </ListBox.ItemTemplate>
       <ListBox.ItemsPanel>
@@ -31,11 +25,11 @@
           <Setter Property="ToolTip.Tip" Value="{Binding Name}"/>
         </Style>
         <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
-          <Setter Property="Background" Value="{Binding AccentColorLight}"/>
+          <Setter Property="Background" Value="{Binding AccentColorLightSemi}"/>
         </Style>
       </ListBox.Styles>
     </ListBox>
-    <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center">
+    <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center" VerticalAlignment="Top">
       <Button Content="{StaticResource lyrics.cancel}" MinWidth="50" Click="OnCancel"/>
       <Button Content="{StaticResource lyrics.apply}" MinWidth="50" Click="OnFinish"/>
     </StackPanel>

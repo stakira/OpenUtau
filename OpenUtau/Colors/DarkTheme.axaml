@@ -18,9 +18,9 @@
 
   <Color x:Key="SystemAccentColor">#4EA6EA</Color>
   <!-- PointerOver -->
-  <Color x:Key="SystemAccentColorLight1">#4EA6EA</Color>
+  <Color x:Key="SystemAccentColorLight1">#90CAF9</Color>
   <!-- Pressed -->
-  <Color x:Key="SystemAccentColorDark1">#4EA6EA</Color>
+  <Color x:Key="SystemAccentColorDark1">#1E88E5</Color>
 
   <Color x:Key="NeutralAccentColor">#808080</Color>
   <Color x:Key="NeutralAccentColorPointerOver">#A0A0A0</Color>

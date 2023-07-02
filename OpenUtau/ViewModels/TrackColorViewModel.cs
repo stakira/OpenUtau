@@ -1,10 +1,7 @@
 ﻿using System.Collections.ObjectModel;
-using System.Drawing;
 using System.Linq;
-using Avalonia.Controls;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
-using OpenUtau.Core.Util;
 using ReactiveUI.Fody.Helpers;
 
 namespace OpenUtau.App.ViewModels {

@@ -13,9 +13,6 @@
   <Window.Resources>
     <vm:CultureNameConverter x:Key="cultureNameConverter"/>
   </Window.Resources>
-  <Window.Styles>
-    <StyleInclude Source="/Styles/PianoRollStyles.axaml"/>
-  </Window.Styles>
   <Design.DataContext>
   </Design.DataContext>
   <Grid Margin="{Binding $parent.WindowDecorationMargin}">

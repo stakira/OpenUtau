@@ -399,7 +399,7 @@ General
   <system:String x:Key="tracks.rename">Rename track</system:String>
   <system:String x:Key="tracks.selectrenderer">Select Renderer</system:String>
   <system:String x:Key="tracks.selectsinger">Select Singer</system:String>
-  <system:String x:Key="tracks.trackcolor">Select track color</system:String>
+  <system:String x:Key="tracks.trackcolor">Change track color</system:String>
 
   <FontFamily x:Key="ui.fontfamily">Segoe UI,San Francisco,Helvetica Neue</FontFamily>
   <FontFamily x:Key="ui.textbox.fontfamily">Microsoft YaHei,Simsun,苹方-简,宋体-简</FontFamily>
