@@ -45,10 +45,96 @@ namespace OpenUtau.App.ViewModels {
         private UVoicePart? part;
         private HashSet<UNote> selectedNotes = new HashSet<UNote>();
         public List<NotePropertyExpViewModel> Expressions = new List<NotePropertyExpViewModel>();
+        public bool PanelControlPressed { get; set; } = false;
 
         public NotePropertiesViewModel() {
             PortamentoPresets = NotePresets.Default.PortamentoPresets;
             VibratoPresets = NotePresets.Default.VibratoPresets;
+
+            SetValueChanged();
+
+            MessageBus.Current.Listen<NotesSelectionEvent>()
+                .Subscribe(e => {
+                    selectedNotes.Clear();
+                    selectedNotes.UnionWith(e.selectedNotes);
+                    selectedNotes.UnionWith(e.tempSelectedNotes);
+                    OnSelectNotes();
+                });
+
+            DocManager.Inst.AddSubscriber(this);
+        }
+
+        private void SetValueChanged() {
+            this.WhenAnyValue(vm => vm.Lyric)
+                .Subscribe(lyric => {
+                    if (PanelControlPressed && part != null && selectedNotes.Count > 0) {
+                        foreach (UNote note in selectedNotes) {
+                            if (note.lyric != lyric) {
+                                DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(part, note, lyric));
+                            }
+                        }
+                    }
+                });
+            this.WhenAnyValue(vm => vm.VibratoLength)
+                .Subscribe(value => {
+                    if (PanelControlPressed && part != null && selectedNotes.Count > 0) {
+                        foreach (UNote note in selectedNotes) {
+                            if (note.vibrato.length != value) {
+                                DocManager.Inst.ExecuteCmd(new VibratoLengthCommand(part, note, value));
+                            }
+                        }
+                    }
+                });
+            this.WhenAnyValue(vm => vm.VibratoPeriod)
+                .Subscribe(value => {
+                    if (PanelControlPressed && part != null && selectedNotes.Count > 0) {
+                        foreach (UNote note in selectedNotes) {
+                            if (note.vibrato.period != value) {
+                                DocManager.Inst.ExecuteCmd(new VibratoPeriodCommand(part, note, value));
+                            }
+                        }
+                    }
+                });
+            this.WhenAnyValue(vm => vm.VibratoDepth)
+                .Subscribe(value => {
+                    if (PanelControlPressed && part != null && selectedNotes.Count > 0) {
+                        foreach (UNote note in selectedNotes) {
+                            if (note.vibrato.depth != value) {
+                                DocManager.Inst.ExecuteCmd(new VibratoDepthCommand(part, note, value));
+                            }
+                        }
+                    }
+                });
+            this.WhenAnyValue(vm => vm.VibratoIn)
+                .Subscribe(value => {
+                    if (PanelControlPressed && part != null && selectedNotes.Count > 0) {
+                        foreach (UNote note in selectedNotes) {
+                            if (note.vibrato.@in != value) {
+                                DocManager.Inst.ExecuteCmd(new VibratoFadeInCommand(part, note, value));
+                            }
+                        }
+                    }
+                });
+            this.WhenAnyValue(vm => vm.VibratoOut)
+                .Subscribe(value => {
+                    if (PanelControlPressed && part != null && selectedNotes.Count > 0) {
+                        foreach (UNote note in selectedNotes) {
+                            if (note.vibrato.@out != value) {
+                                DocManager.Inst.ExecuteCmd(new VibratoFadeOutCommand(part, note, value));
+                            }
+                        }
+                    }
+                });
+            this.WhenAnyValue(vm => vm.VibratoShift)
+                .Subscribe(value => {
+                    if (PanelControlPressed && part != null && selectedNotes.Count > 0) {
+                        foreach (UNote note in selectedNotes) {
+                            if (note.vibrato.shift != value) {
+                                DocManager.Inst.ExecuteCmd(new VibratoShiftCommand(part, note, value));
+                            }
+                        }
+                    }
+                });
 
             this.WhenAnyValue(vm => vm.ApplyPortamentoPreset)
                 .WhereNotNull()
@@ -70,16 +156,6 @@ namespace OpenUtau.App.ViewModels {
                         VibratoShift = Math.Max(0, Math.Min(100, vibratoPreset.VibratoShift));
                     }
                 });
-
-            MessageBus.Current.Listen<NotesSelectionEvent>()
-                .Subscribe(e => {
-                    selectedNotes.Clear();
-                    selectedNotes.UnionWith(e.selectedNotes);
-                    selectedNotes.UnionWith(e.tempSelectedNotes);
-                    OnSelectNotes();
-                });
-
-            DocManager.Inst.AddSubscriber(this);
         }
 
         private void OnSelectNotes() {

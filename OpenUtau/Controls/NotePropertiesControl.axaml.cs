@@ -29,6 +29,23 @@ namespace OpenUtau.App.Controls {
             }
         }
 
+        void OnGotFocus(object sender, GotFocusEventArgs e) {
+            DocManager.Inst.StartUndoGroup();
+            ViewModel.PanelControlPressed = true;
+        }
+        void OnLostFocus(object sender, RoutedEventArgs e) {
+            ViewModel.PanelControlPressed = false;
+            DocManager.Inst.EndUndoGroup();
+        }
+        void OnPointerPressed(object sender, PointerPressedEventArgs e) {
+            //DocManager.Inst.StartUndoGroup();
+            //ViewModel.PanelControlPressed = true;
+        }
+        void OnPointerReleased(object sender, PointerReleasedEventArgs e) {
+            //ViewModel.PanelControlPressed = false;
+            //DocManager.Inst.EndUndoGroup();
+        }
+
         void OnSavePortamentoPreset(object sender, RoutedEventArgs e) {
             var dialog = new TypeInDialog() {
                 Title = ThemeManager.GetString("notedefaults.preset.namenew"),
