@@ -394,10 +394,17 @@ General
   <system:String x:Key="tracks.more">More</system:String>
   <system:String x:Key="tracks.movedown">Move Down</system:String>
   <system:String x:Key="tracks.moveup">Move Up</system:String>
+  <system:String x:Key="tracks.mute">Mute</system:String>
+  <system:String x:Key="tracks.mute.allothers">Mute all others</system:String>
+  <system:String x:Key="tracks.mute.only">Mute this only</system:String>
+  <system:String x:Key="tracks.mute.unmuteall">Unmute all</system:String>
   <system:String x:Key="tracks.remove">Remove</system:String>
   <system:String x:Key="tracks.rename">Rename track</system:String>
   <system:String x:Key="tracks.selectrenderer">Select Renderer</system:String>
   <system:String x:Key="tracks.selectsinger">Select Singer</system:String>
+  <system:String x:Key="tracks.solo.add">Solo additionally (which not removes solo from other tracks)</system:String>
+  <system:String x:Key="tracks.solo.only">Solo this only (which removes solo from other tracks)</system:String>
+  <system:String x:Key="tracks.solo.unsoloall">Unsolo all</system:String>
 
   <FontFamily x:Key="ui.fontfamily">Segoe UI,San Francisco,Helvetica Neue</FontFamily>
   <FontFamily x:Key="ui.textbox.fontfamily">Microsoft YaHei,Simsun,苹方-简,宋体-简</FontFamily>
