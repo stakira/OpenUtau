@@ -12,7 +12,7 @@ using Serilog;
 using TinyPinyin;
 
 namespace OpenUtau.Core.Enunu {
-    [Phonemizer("Enunu English Phonemizer", "ENUNU EN", language:"EN")]
+    [Phonemizer("Enunu English Phonemizer", "ENUNU EN", "O3", language:"EN")]
     public class EnunuEnglishPhonemizer : EnunuPhonemizer {
         readonly string PhonemizerType = "ENUNU EN";
 
@@ -104,14 +104,14 @@ namespace OpenUtau.Core.Enunu {
             // - Tries to align every note to one syllable.
             // - "+n" manually aligns to n-th phoneme.
             alignments.Clear();
-            int position = 0;
+            //notes except those whose lyrics start witn "+*" or "+~"
+            var nonExtensionNotes = notes.Where(n=>!IsSyllableVowelExtensionNote(n)).ToArray();
             for (int i = 0; i < symbols.Length; i++) {
-                if (isVowel[i] && alignments.Count < notes.Length) {
-                    alignments.Add(Tuple.Create(i, position, false));
-                    position += notes[alignments.Count - 1].duration;
+                if (isVowel[i] && alignments.Count < nonExtensionNotes.Length) {
+                    alignments.Add(Tuple.Create(i, nonExtensionNotes[alignments.Count].position - notes[0].position, false));
                 }
             }
-            position = notes[0].duration;
+            int position = notes[0].duration;
             for (int i = 1; i < notes.Length; ++i) {
                 if (int.TryParse(notes[i].lyric.Substring(1), out var idx)) {
                     alignments.Add(Tuple.Create(idx - 1, position, true));
@@ -162,6 +162,15 @@ namespace OpenUtau.Core.Enunu {
             }
             alignments.Clear();
             return enunuNotes.ToArray();
+        }
+
+        /// <summary>
+        /// Does this note extend the previous syllable?
+        /// </summary>
+        /// <param name="note"></param>
+        /// <returns></returns>
+        protected bool IsSyllableVowelExtensionNote(Note note) {
+            return note.lyric.StartsWith("+~") || note.lyric.StartsWith("+*");
         }
 
         protected override EnunuNote[] NoteGroupsToEnunu(Note[][] notes) {

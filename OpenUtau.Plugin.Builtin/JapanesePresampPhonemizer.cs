@@ -21,7 +21,7 @@ namespace OpenUtau.Plugin.Builtin {
 
         // in case voicebank is missing certain symbols
         static readonly string[] substitution = new string[] {  
-            "ty,ch,ts=t", "j,dy=d", "gy=g", "ky=k", "py=p", "ny=n", "ry=r", "hy,f=h", "by,v=b", "dz=z", "l=r", "ly=l"
+            "ty,ch,ts=t", "j,dy=d", "gy=g", "ky=k", "py=p", "ny=n", "ry=r", "my=m", "hy,f=h", "by,v=b", "dz=z", "l=r", "ly=l"
         };
 
         static readonly Dictionary<string, string> substituteLookup;

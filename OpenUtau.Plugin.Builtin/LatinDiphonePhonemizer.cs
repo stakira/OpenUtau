@@ -16,6 +16,7 @@ namespace OpenUtau.Plugin.Builtin {
         protected IG2p g2p;
         protected bool isDictionaryLoading;
 
+        //[(index of phoneme, tick position from the lyrical note in notes[], is manual)]
         protected readonly List<Tuple<int, int, bool>> alignments = new List<Tuple<int, int, bool>>();
 
         /// <summary>
@@ -89,14 +90,14 @@ namespace OpenUtau.Plugin.Builtin {
             // - Tries to align every note to one syllable.
             // - "+n" manually aligns to n-th phoneme.
             alignments.Clear();
-            int position = 0;
+            //notes except those whose lyrics start witn "+*" or "+~"
+            var nonExtensionNotes = notes.Where(n=>!IsSyllableVowelExtensionNote(n)).ToArray();
             for (int i = 0; i < symbols.Length; i++) {
-                if (isVowel[i] && alignments.Count < notes.Length) {
-                    alignments.Add(Tuple.Create(i, position, false));
-                    position += notes[alignments.Count - 1].duration;
+                if (isVowel[i] && alignments.Count < nonExtensionNotes.Length) {
+                    alignments.Add(Tuple.Create(i, nonExtensionNotes[alignments.Count].position - notes[0].position, false));
                 }
             }
-            position = notes[0].duration;
+            int position = notes[0].duration;
             for (int i = 1; i < notes.Length; ++i) {
                 if (int.TryParse(notes[i].lyric.Substring(1), out var idx)) {
                     alignments.Add(Tuple.Create(idx - 1, position, true));
@@ -152,6 +153,15 @@ namespace OpenUtau.Plugin.Builtin {
             return new Result {
                 phonemes = phonemes,
             };
+        }
+
+        /// <summary>
+        /// Does this note extend the previous syllable?
+        /// </summary>
+        /// <param name="note"></param>
+        /// <returns></returns>
+        protected bool IsSyllableVowelExtensionNote(Note note) {
+            return note.lyric.StartsWith("+~") || note.lyric.StartsWith("+*");
         }
 
         string[] GetSymbols(Note note) {
