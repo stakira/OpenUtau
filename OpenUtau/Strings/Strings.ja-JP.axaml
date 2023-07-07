@@ -164,6 +164,7 @@
   <system:String x:Key="notedefaults.vibrato.period">周期</system:String>
   <system:String x:Key="notedefaults.vibrato.shift">位相</system:String>
 
+  <system:String x:Key="noteproperty">音符のプロパティ</system:String>
   <system:String x:Key="noteproperty.apply">適用</system:String>
   <system:String x:Key="noteproperty.cancel">キャンセル</system:String>
   <system:String x:Key="noteproperty.set">セット</system:String>
@@ -202,7 +203,6 @@
   <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">音程のSuffixを削除</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">ローマ字→ひらがな</system:String>
   <system:String x:Key="pianoroll.menu.notedefaults">デフォルト値を設定</system:String>
-  <system:String x:Key="pianoroll.menu.noteproperty">音符のプロパティ</system:String>
   <system:String x:Key="pianoroll.menu.notes">音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">末尾に"-"を追加</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">末尾に"R"を追加</system:String>

@@ -449,7 +449,7 @@
       <Border Grid.Column="3" Grid.RowSpan="5"
               IsEnabled="{Binding NotesViewModel.ShowNoteParams}"
               IsVisible="{Binding NotesViewModel.ShowNoteParams}"
-              Background="{DynamicResource SystemRegionBrush}" Padding="0">
+              Background="Transparent">
         <c:NotePropertiesControl/>
       </Border>
       
