@@ -25,14 +25,22 @@
   <Style Selector="Slider.fader">
     <Setter Property="Foreground" Value="{DynamicResource SelectedTrackAccentBrush}"/>
   </Style>
-  <!--
-  <Style Selector="Slider.fader:pointerover /template/ ">
-    <Setter Property="Foreground" Value="{DynamicResource SelectedTrackAccentLightBrush}"/>
+  <Style Selector="Slider.fader:pointerover">
+    <Style Selector="^ /template/ RepeatButton#PART_DecreaseButton">
+      <Setter Property="Background" Value="{DynamicResource SelectedTrackAccentLightBrush}" />
+    </Style>
+    <Style Selector="^ /template/ Thumb">
+      <Setter Property="Background" Value="{DynamicResource SelectedTrackAccentLightBrush}" />
+    </Style>
   </Style>
-  <Style Selector="Slider.fader:pressed /template/ ">
-    <Setter Property="Foreground" Value="{DynamicResource SelectedTrackAccentDarkBrush}"/>
+  <Style Selector="Slider.fader:pressed">
+    <Style Selector="^ /template/ RepeatButton#PART_DecreaseButton">
+      <Setter Property="Background" Value="{DynamicResource SelectedTrackAccentDarkBrush}" />
+    </Style>
+    <Style Selector="^ /template/ Thumb">
+      <Setter Property="Background" Value="{DynamicResource SelectedTrackAccentDarkBrush}" />
+    </Style>
   </Style>
-  -->
 
   <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
     <Setter Property="BorderBrush" Value="{DynamicResource SelectedTrackAccentBrush}"/>
