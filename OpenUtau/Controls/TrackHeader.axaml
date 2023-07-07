@@ -14,12 +14,23 @@
     </Style>
     <Style Selector="Slider.fader">
       <Setter Property="Foreground" Value="{Binding TrackColor.AccentColor}"/>
-    </Style>
-    <Style Selector="Slider.fader:pointerover /template/ RepeatButton#PART_Track">
-      <Setter Property="Foreground" Value="{Binding TrackColor.AccentColorLight}"/>
-    </Style>
-    <Style Selector="Slider.fader:pressed /template/ RepeatButton#PART_Track">
-      <Setter Property="Foreground" Value="{Binding TrackColor.AccentColorDark}"/>
+      
+      <Style Selector="^:pointerover">
+        <!--<Style Selector="^ /template/ Thumb">
+          <Setter Property="Background" Value="{Binding TrackColor.AccentColorLight}" />
+        </Style>-->
+        <Style Selector="^ /template/ RepeatButton#PART_DecreaseButton">
+          <Setter Property="Background" Value="{Binding TrackColor.AccentColorLight}" />
+        </Style>
+      </Style>
+      <Style Selector="^:pressed">
+        <!--<Style Selector="^ /template/ Thumb">
+          <Setter Property="Background" Value="{Binding TrackColor.AccentColorDark}" />
+        </Style>-->
+        <Style Selector="^ /template/ RepeatButton#PART_DecreaseButton">
+          <Setter Property="Background" Value="{Binding TrackColor.AccentColorDark}" />
+        </Style>
+      </Style>
     </Style>
   </UserControl.Styles>
   <Border Margin="1,1,1,1" BorderThickness="1" BorderBrush="{DynamicResource NeutralAccentBrushSemi}" CornerRadius="2">

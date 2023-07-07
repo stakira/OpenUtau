@@ -13,6 +13,10 @@
     <Setter Property="Background" Value="{DynamicResource SelectedTrackAccentLightBrush}"/>
     <Setter Property="BorderBrush" Value="{DynamicResource SelectedTrackAccentLightBrush}"/>
   </Style>
+  <Style Selector="CheckBox:checked:pressed /template/ Border#NormalRectangle">
+    <Setter Property="Background" Value="{DynamicResource SelectedTrackAccentDarkBrush}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource SelectedTrackAccentDarkBrush}"/>
+  </Style>
 
   <Style Selector="ComboBoxItem:selected /template/ ContentPresenter">
     <Setter Property="Background" Value="{DynamicResource SelectedTrackAccentLightBrushSemi}"/>
