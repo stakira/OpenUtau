@@ -172,6 +172,64 @@ namespace OpenUtau.App.ViewModels {
             }
         }
 
+        #region ICmdSubscriber
+        public void OnNext(UCommand cmd, bool isUndo) {
+            var note = selectedNotes.FirstOrDefault();
+            if (note == null || AllowNoteEdit) { return; }
+
+            if (cmd is NoteCommand noteCommand) {
+                if (cmd is ChangeNoteLyricCommand) {
+                    if (noteCommand.Notes.Contains(note)) {
+                        Lyric = note.lyric;
+                    }
+                } else if (cmd is VibratoLengthCommand) {
+                    if (noteCommand.Notes.Contains(note)) {
+                        if (note.vibrato.length > 0) {
+                            VibratoEnable = true;
+                        } else {
+                            VibratoEnable = false;
+                        }
+                        VibratoLength = note.vibrato.length;
+                    }
+                } else if (cmd is VibratoFadeInCommand) {
+                    if (noteCommand.Notes.Contains(note)) {
+                        VibratoIn = note.vibrato.@in;
+                    }
+                } else if (cmd is VibratoFadeOutCommand) {
+                    if (noteCommand.Notes.Contains(note)) {
+                        VibratoOut = note.vibrato.@out;
+                    }
+                } else if (cmd is VibratoDepthCommand) {
+                    if (noteCommand.Notes.Contains(note)) {
+                        VibratoDepth = note.vibrato.depth;
+                    }
+                } else if (cmd is VibratoPeriodCommand) {
+                    if (noteCommand.Notes.Contains(note)) {
+                        VibratoPeriod = note.vibrato.period;
+                    }
+                } else if (cmd is VibratoShiftCommand) {
+                    if (noteCommand.Notes.Contains(note)) {
+                        VibratoShift = note.vibrato.shift;
+                    }
+                }
+            } else if (cmd is ExpCommand) {
+                if (cmd is PitchExpCommand pitchExpCommand) {
+                    if (pitchExpCommand.Note == null || pitchExpCommand.Note == note) {
+                        if (note.pitch.data.Count == 2) {
+                            PortamentoLength = note.pitch.data[1].X - note.pitch.data[0].X;
+                            PortamentoStart = note.pitch.data[0].X;
+                        } else {
+                            PortamentoLength = NotePresets.Default.DefaultPortamento.PortamentoLength;
+                            PortamentoStart = NotePresets.Default.DefaultPortamento.PortamentoStart;
+                        }
+                    }
+                } else if (cmd is SetPhonemeExpressionCommand || cmd is ResetExpressionsCommand) {
+                    AttachExpressions();
+                }
+            }
+        }
+        #endregion
+
         // panel -> note
         private void SetValueChanges() {
             this.WhenAnyValue(vm => vm.Lyric)
@@ -302,8 +360,8 @@ namespace OpenUtau.App.ViewModels {
                 .Subscribe(portamentoPreset => {
                     if (portamentoPreset != null && Part != null && selectedNotes.Count > 0) {
                         DocManager.Inst.StartUndoGroup();
-                        PanelControlPressed = true;
                         PortamentoLength = portamentoPreset.PortamentoLength;
+                        PanelControlPressed = true;
                         PortamentoStart = portamentoPreset.PortamentoStart;
                         PanelControlPressed = false;
                         DocManager.Inst.EndUndoGroup();
@@ -410,109 +468,6 @@ namespace OpenUtau.App.ViewModels {
             NotePresets.Default.VibratoPresets.Remove(appliedVibratoPreset);
             NotePresets.Save();
         }
-
-        #region ICmdSubscriber
-        public void OnNext(UCommand cmd, bool isUndo) {
-            var note = selectedNotes.FirstOrDefault();
-            if (note == null || AllowNoteEdit) { return; }
-
-            if (cmd is NoteCommand noteCommand) {
-                if (cmd is ChangeNoteLyricCommand) {
-                    if (noteCommand.Notes.Contains(note)) {
-                        Lyric = note.lyric;
-                    }
-                } else if (cmd is VibratoLengthCommand) {
-                    if (noteCommand.Notes.Contains(note)) {
-                        if (note.vibrato.length > 0) {
-                            VibratoEnable = true;
-                        } else {
-                            VibratoEnable = false;
-                        }
-                        VibratoLength = note.vibrato.length;
-                    }
-                } else if (cmd is VibratoFadeInCommand) {
-                    if (noteCommand.Notes.Contains(note)) {
-                        VibratoIn = note.vibrato.@in;
-                    }
-                } else if (cmd is VibratoFadeOutCommand) {
-                    if (noteCommand.Notes.Contains(note)) {
-                        VibratoOut = note.vibrato.@out;
-                    }
-                } else if (cmd is VibratoDepthCommand) {
-                    if (noteCommand.Notes.Contains(note)) {
-                        VibratoDepth = note.vibrato.depth;
-                    }
-                } else if (cmd is VibratoPeriodCommand) {
-                    if (noteCommand.Notes.Contains(note)) {
-                        VibratoPeriod = note.vibrato.period;
-                    }
-                } else if (cmd is VibratoShiftCommand) {
-                    if (noteCommand.Notes.Contains(note)) {
-                        VibratoShift = note.vibrato.shift;
-                    }
-                }
-            } else if (cmd is ExpCommand) {
-                if (cmd is PitchExpCommand pitchExpCommand) {
-                    if (pitchExpCommand.Note == null || pitchExpCommand.Note == note) {
-                        if (note.pitch.data.Count == 2) {
-                            PortamentoLength = note.pitch.data[1].X - note.pitch.data[0].X;
-                            PortamentoStart = note.pitch.data[0].X;
-                        } else {
-                            PortamentoLength = NotePresets.Default.DefaultPortamento.PortamentoLength;
-                            PortamentoStart = NotePresets.Default.DefaultPortamento.PortamentoStart;
-                        }
-                    }
-                } else if (cmd is SetPhonemeExpressionCommand || cmd is ResetExpressionsCommand) {
-                    AttachExpressions();
-                }
-            }
-        }
-        #endregion
-
-        /*public void Finish() {
-            if (notesViewModel.Part != null) {
-                UVoicePart part = notesViewModel.Part;
-                List<UNote> selectedNotes = notesViewModel.Selection.ToList();
-
-                DocManager.Inst.StartUndoGroup();
-
-                if (SetLyric) {
-                    foreach (UNote note in selectedNotes) {
-                        if (note.lyric != Lyric) {
-                            DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(part, note, Lyric));
-                        }
-                    }
-                }
-                if (SetPortamento) {
-                    foreach (UNote note in selectedNotes) {
-                        var pitch = new UPitch();
-                        pitch.AddPoint(new PitchPoint(PortamentoStart, 0));
-                        pitch.AddPoint(new PitchPoint(PortamentoStart + PortamentoLength, 0));
-                        DocManager.Inst.ExecuteCmd(new SetPitchPointsCommand(part, note, pitch));
-                    }
-                }
-                if (SetVibrato) {
-                    foreach (UNote note in selectedNotes) {
-                        if(VibratoEnable && VibratoLength != 0) {
-                            if (!AutoVibratoToggle || (AutoVibratoToggle && note.duration >= AutoVibratoNoteLength)) {
-                                DocManager.Inst.ExecuteCmd(new VibratoLengthCommand(part, note, VibratoLength));
-                                DocManager.Inst.ExecuteCmd(new VibratoFadeInCommand(part, note, VibratoIn));
-                                DocManager.Inst.ExecuteCmd(new VibratoFadeOutCommand(part, note, VibratoOut));
-                                DocManager.Inst.ExecuteCmd(new VibratoDepthCommand(part, note, VibratoDepth));
-                                DocManager.Inst.ExecuteCmd(new VibratoPeriodCommand(part, note, VibratoPeriod));
-                                DocManager.Inst.ExecuteCmd(new VibratoShiftCommand(part, note, VibratoShift));
-                            } else {
-                                DocManager.Inst.ExecuteCmd(new VibratoLengthCommand(part, note, 0));
-                            }
-                        } else if (note.vibrato.length != 0) {
-                            DocManager.Inst.ExecuteCmd(new VibratoLengthCommand(part, note, 0));
-                        }
-                    }
-                }
-                
-                DocManager.Inst.EndUndoGroup();
-            }
-        }*/
     }
 
     public class NotePropertyExpViewModel : ViewModelBase {
