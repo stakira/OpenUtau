@@ -154,6 +154,59 @@ namespace OpenUtau.App.Controls {
             }
         }
 
+        void ButtonClicked(object sender, RoutedEventArgs args) {
+            if (sender is Button button) {
+                if (button.Name != null) {
+                    if (button.Name.Equals("VolumeButton") && ViewModel != null) {
+                        VolumeTextBox.Text = ViewModel.Volume.ToString();
+                        VolumeButton.IsVisible = false;
+                        VolumeTextBox.IsVisible = true;
+                        args.Handled = true;
+                    } else if (button.Name.Equals("PanButton") && ViewModel != null) {
+                        PanTextBox.Text = ViewModel.Pan.ToString();
+                        PanButton.IsVisible = false;
+                        PanTextBox.IsVisible = true;
+                        args.Handled = true;
+                    }
+                }
+            }
+        }
+        void TextBoxEnter(object sender, KeyEventArgs args) {
+            if (sender is TextBox textBox) {
+                if (textBox.Name != null) {
+                    if (args.Key == Key.Enter) {
+                        if (textBox.Name.Equals("VolumeTextBox") && ViewModel != null) {
+                            if (double.TryParse(VolumeTextBox.Text, out double number)) {
+                                number = number > VolumeSlider.Minimum ? number < VolumeSlider.Maximum ? number : VolumeSlider.Maximum : VolumeSlider.Minimum;
+                                ViewModel.Volume = number;
+                            }
+                            VolumeButton.IsVisible = true;
+                            VolumeTextBox.IsVisible = false;
+                            args.Handled = true;
+                        } else if (textBox.Name.Equals("PanTextBox") && ViewModel != null) {
+                            if (int.TryParse(PanTextBox.Text, out int number)) {
+                                number = (int)(number > PanSlider.Minimum ? number < PanSlider.Maximum ? number : PanSlider.Maximum : PanSlider.Minimum);
+                                ViewModel.Pan = number;
+                            }
+                            PanButton.IsVisible = true;
+                            PanTextBox.IsVisible = false;
+                            args.Handled = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        void TextBoxLeave(object sender, PointerEventArgs args) {
+            if (sender is TextBox textBox) {
+                VolumeButton.IsVisible = true;
+                PanButton.IsVisible = true;
+                textBox.IsVisible = false;
+                args.Handled = true;
+            }
+        }
+
+
         public void Dispose() {
             unbinds.ForEach(u => u.Dispose());
             unbinds.Clear();
