@@ -74,6 +74,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public Bitmap? Portrait { get; set; }
         [Reactive] public IBrush? PortraitMask { get; set; }
         [Reactive] public string WindowTitle { get; set; } = "Piano Roll";
+        [Reactive] public SolidColorBrush TrackAccentColor { get; set; } = ThemeManager.GetTrackColor("Blue").AccentColor;
         public double ViewportTicks => viewportTicks.Value;
         public double ViewportTracks => viewportTracks.Value;
         public double SmallChangeX => smallChangeX.Value;
@@ -374,6 +375,7 @@ namespace OpenUtau.App.ViewModels {
             OnPartModified();
             LoadPortrait(part, project);
             LoadWindowTitle(part, project);
+            LoadTrackColor(part, project);
         }
 
         private void LoadPortrait(UPart? part, UProject? project) {
@@ -433,6 +435,19 @@ namespace OpenUtau.App.ViewModels {
                 return;
             }
             WindowTitle = project.tracks[part.trackNo].TrackName + " - " + part.DisplayName;
+        }
+
+        private void LoadTrackColor(UPart? part, UProject? project) {
+            if (part == null || project == null) {
+                TrackAccentColor = ThemeManager.GetTrackColor("Blue").AccentColor;
+                ThemeManager.ChangeTrackColor("Blue");
+                return;
+            }
+            TrackAccentColor = ThemeManager.GetTrackColor(project.tracks[part.trackNo].TrackColor).AccentColor;
+            string name = Preferences.Default.UseTrackColor
+                ? project.tracks[part.trackNo].TrackColor
+                : "Blue";
+            ThemeManager.ChangeTrackColor(name);
         }
 
         private void UnloadPart() {
@@ -867,6 +882,9 @@ namespace OpenUtau.App.ViewModels {
             } else if (cmd is TrackCommand) {
                 if (cmd is RenameTrackCommand) {
                     LoadWindowTitle(Part, Project);
+                    return;
+                } else if (cmd is ChangeTrackColorCommand) {
+                    LoadTrackColor(Part, Project);
                     return;
                 } else if (cmd is RemoveTrackCommand removeTrack) {
                     if (Part != null && removeTrack.removedParts.Contains(Part)) {

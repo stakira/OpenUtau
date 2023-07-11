@@ -12,11 +12,10 @@
         TransparencyLevelHint="None"
         ExtendClientAreaToDecorationsHint="{Binding ExtendToFrame}" Deactivated="WindowDeactivated">
   <Window.Styles>
-    <Style Selector="Button,ToggleButton">
-      <Setter Property="Focusable" Value="False"/>
-    </Style>
+    <StyleInclude Source="/Styles/PianoRollStyles.axaml"/>
   </Window.Styles>
   <Grid>
+  <Border BorderThickness="2" BorderBrush="{Binding NotesViewModel.TrackAccentColor}">
     <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="{Binding $parent[1].WindowDecorationMargin}">
       <Grid.RowDefinitions>
         <RowDefinition Height="24"/>
@@ -504,5 +503,6 @@
       </Canvas>
       <ProgressBar Grid.Row="5" Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Value="{Binding Progress}"/>
     </Grid>
+    </Border>
   </Grid>
 </Window>

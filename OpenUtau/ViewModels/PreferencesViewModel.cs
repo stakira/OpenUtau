@@ -36,6 +36,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public GpuInfo OnnxGpu { get; set; }
         [Reactive] public bool HighThreads { get; set; }
         [Reactive] public int Theme { get; set; }
+        [Reactive] public bool UseTrackColor { get; set; }
         [Reactive] public bool ShowPortrait { get; set; }
         [Reactive] public bool ShowGhostNotes { get; set; }
         [Reactive] public int OtoEditor { get; set; }
@@ -122,6 +123,7 @@ namespace OpenUtau.App.ViewModels {
             OnnxGpuOptions = Onnx.getGpuInfo();
             OnnxGpu = OnnxGpuOptions.FirstOrDefault(x => x.deviceId == Preferences.Default.OnnxGpu, OnnxGpuOptions[0]);
             Theme = Preferences.Default.Theme;
+            UseTrackColor = Preferences.Default.UseTrackColor;
             ShowPortrait = Preferences.Default.ShowPortrait;
             ShowGhostNotes = Preferences.Default.ShowGhostNotes;
             Beta = Preferences.Default.Beta;
@@ -190,6 +192,11 @@ namespace OpenUtau.App.ViewModels {
                     Preferences.Default.Theme = theme;
                     Preferences.Save();
                     App.SetTheme();
+                });
+            this.WhenAnyValue(vm => vm.UseTrackColor)
+                .Subscribe(trackColor => {
+                    Preferences.Default.UseTrackColor = trackColor;
+                    Preferences.Save();
                 });
             this.WhenAnyValue(vm => vm.ShowPortrait)
                 .Subscribe(showPortrait => {
