@@ -118,9 +118,9 @@
           </Path.RenderTransform>
         </Path>
       </Button>
-      <Grid Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2" ColumnDefinitions="70,40,40,40" Height="24">
-        <Slider Name="VolumeSlider" Margin="0,0,0,0" Grid.Column="0" HorizontalAlignment="Stretch" Classes="fader" Minimum="-24" Maximum="12" Value="{Binding Volume}" PointerPressed="VolumeFaderPointerPressed" ContextRequested="VolumeFaderContextRequested" IsEnabled="{Binding !Muted}"/>
-        <Button Classes="clear" Name="VolumeButton" Margin="0,0,0,0" Grid.Column="1" HorizontalAlignment="Stretch" FontSize="9" FontFamily="monospace" Click="ButtonClicked">
+      <Grid Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2" ColumnDefinitions="70,40,45,35" Height="24">
+        <Slider Margin="0,0,0,0" Grid.Column="0" HorizontalAlignment="Stretch" Classes="fader" Minimum="-24" Maximum="12" Value="{Binding Volume}" PointerPressed="VolumeFaderPointerPressed" ContextRequested="VolumeFaderContextRequested" IsEnabled="{Binding !Muted}"/>
+        <Button Classes="clear" Margin="0,0,0,0" Grid.Column="1" HorizontalAlignment="Stretch" FontSize="9" FontFamily="monospace" Click="VolumeButtonClicked">
           <TextBlock TextAlignment="Left">
             <TextBlock.Text>
               <MultiBinding StringFormat="{}{0:+#00.0;-#00.0}">
@@ -129,15 +129,15 @@
             </TextBlock.Text>
           </TextBlock>
         </Button>
-        <TextBox Name="VolumeTextBox" Grid.Column="1" Width="10" FontFamily="monospace" KeyDown="TextBoxEnter" PointerExited="TextBoxLeave" IsVisible="False">
+        <TextBox Grid.Column="1" Width="10" FontSize="9" FontFamily="monospace" KeyDown="VolumeTextBoxEnter" PointerExited="TextBoxLeave" IsVisible="False">
           <TextBox.Text>
             <MultiBinding StringFormat="{}{0:+#00.0;-#00.0}">
               <Binding Path="Volume"/>
             </MultiBinding>
           </TextBox.Text>
         </TextBox>
-        <Slider Name="PanSlider" Margin="0,0,0,0" Grid.Column="2" HorizontalAlignment="Stretch" Classes="fader" Minimum="-100" Maximum="100" Value="{Binding Pan}" PointerPressed="PanFaderPointerPressed" ContextRequested="PanFaderContextRequested" IsEnabled="{Binding !Muted}"/>
-        <Button Classes="clear" Name="PanButton" Margin="0,0,0,0" Grid.Column="3" HorizontalAlignment="Stretch" FontSize="9" FontFamily="monospace" Click="ButtonClicked">
+        <Slider Margin="0,0,0,0" Grid.Column="2" HorizontalAlignment="Stretch" Classes="fader" Minimum="-100" Maximum="100" Value="{Binding Pan}" PointerPressed="PanFaderPointerPressed" ContextRequested="PanFaderContextRequested" IsEnabled="{Binding !Muted}"/>
+        <Button Classes="clear" Margin="0,0,0,0" Grid.Column="3" HorizontalAlignment="Stretch" FontSize="9" FontFamily="monospace" Click="PanButtonClicked">
           <TextBlock TextAlignment="Left">
             <TextBlock.Text>
               <MultiBinding StringFormat="{}{0:00R;00L;C}">
@@ -146,7 +146,7 @@
             </TextBlock.Text>
           </TextBlock>
         </Button>
-        <TextBox Name="PanTextBox" Grid.Column="3" Width="10" FontFamily="monospace" KeyDown="TextBoxEnter" PointerExited="TextBoxLeave" IsVisible="False">
+        <TextBox Grid.Column="3" Width="10" FontSize="9" FontFamily="monospace" KeyDown="PanTextBoxEnter" PointerExited="TextBoxLeave" IsVisible="False">
           <TextBox.Text>
             <MultiBinding StringFormat="{}{0:00R;00L;C}">
               <Binding Path="Pan"/>
