@@ -150,7 +150,7 @@ namespace OpenUtau.Plugin.Builtin {
                     // try RCC
                     for (var i = cc.Length; i > 1; i--) {
                         if (TryAddPhoneme(phonemes, syllable.tone, $"- {string.Join("", cc.Take(i))}")) {
-                            firstC = i;
+                            firstC = i - 1;
                             break;
                         }
                     }
@@ -551,12 +551,12 @@ namespace OpenUtau.Plugin.Builtin {
             }
             foreach (var consonant in new[] { "b" }) {
                 foreach (var vowel in new[] { "V" } ) {
-                    alias = alias.Replace(consonant + vowel, consonant + "A");
+                    alias = alias.Replace(consonant + vowel, consonant + "@");
                 }
             }
-            foreach (var vowel in new[] { "V " }) {
+            foreach (var vowel in new[] { "@ " }) {
                 foreach (var consonant in new[] { "b" } ) {
-                    alias = alias.Replace("V " + consonant, "A " + consonant);
+                    alias = alias.Replace("@ " + consonant, "@ " + consonant);
                 }
             }
             foreach (var vowel in new[] { "a" }) {
@@ -618,7 +618,7 @@ namespace OpenUtau.Plugin.Builtin {
                 alias = alias.Replace(consonant, "3 ");
             }
             foreach (var vowel in new[] { "V" }) {
-                alias = alias.Replace(vowel, "A");
+                alias = alias.Replace(vowel, "@");
             }
             foreach (var CC in new[] { "T " }) {
                 alias = alias.Replace(CC, "f ");
