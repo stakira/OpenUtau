@@ -138,8 +138,8 @@
           </Path.RenderTransform>
         </Path>
       </Button>
-      <Grid Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2" ColumnDefinitions="70,40,45,35" Height="24">
-        <Slider Margin="0,0,0,0" Grid.Column="0" HorizontalAlignment="Stretch" Classes="fader" Minimum="-24" Maximum="12" Value="{Binding Volume}" PointerPressed="VolumeFaderPointerPressed" ContextRequested="VolumeFaderContextRequested" IsEnabled="{Binding !Muted}"/>
+      <Grid Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2" ColumnDefinitions="70,40,45,35" Height="24" IsEnabled="{Binding !Muted}">
+        <Slider Margin="0,0,0,0" Grid.Column="0" HorizontalAlignment="Stretch" Classes="fader" Minimum="-24" Maximum="12" Value="{Binding Volume}" PointerPressed="VolumeFaderPointerPressed" ContextRequested="VolumeFaderContextRequested"/>
         <Button Classes="clear" Margin="0,0,0,0" Grid.Column="1" HorizontalAlignment="Stretch" FontSize="9" FontFamily="monospace" Click="VolumeButtonClicked">
           <TextBlock TextAlignment="Left">
             <TextBlock.Text>
@@ -156,7 +156,7 @@
             </MultiBinding>
           </TextBox.Text>
         </TextBox>
-        <Slider Margin="0,0,0,0" Grid.Column="2" HorizontalAlignment="Stretch" Classes="fader" Minimum="-100" Maximum="100" Value="{Binding Pan}" PointerPressed="PanFaderPointerPressed" ContextRequested="PanFaderContextRequested" IsEnabled="{Binding !Muted}"/>
+        <Slider Margin="0,0,0,0" Grid.Column="2" HorizontalAlignment="Stretch" Classes="fader" Minimum="-100" Maximum="100" Value="{Binding Pan}" PointerPressed="PanFaderPointerPressed" ContextRequested="PanFaderContextRequested"/>
         <Button Classes="clear" Margin="0,0,0,0" Grid.Column="3" HorizontalAlignment="Stretch" FontSize="9" FontFamily="monospace" Click="PanButtonClicked">
           <TextBlock TextAlignment="Left">
             <TextBlock.Text>
