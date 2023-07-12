@@ -444,10 +444,7 @@ namespace OpenUtau.App.ViewModels {
                 return;
             }
             TrackAccentColor = ThemeManager.GetTrackColor(project.tracks[part.trackNo].TrackColor).AccentColor;
-            string name = Preferences.Default.UseTrackColor
-                ? project.tracks[part.trackNo].TrackColor
-                : "Blue";
-            ThemeManager.ChangeTrackColor(name);
+            ThemeManager.ChangeTrackColor(project.tracks[part.trackNo].TrackColor);
         }
 
         private void UnloadPart() {
