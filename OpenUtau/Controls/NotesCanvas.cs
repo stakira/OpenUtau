@@ -157,14 +157,9 @@ namespace OpenUtau.App.Controls {
                 foreach (UPart otherPart in otherPartsInView) {
                     if (otherPart is UVoicePart otherVoicePart) {
                         var xOffset = otherVoicePart.position - Part.position;
+                        var track = DocManager.Inst.Project.tracks[otherVoicePart.trackNo];
+                        var brush = ThemeManager.GetTrackColor(track.TrackColor).AccentColorLightSemi;
 
-                        // REVIEW Using existing color to avoid problems with theming. Not sure if ideal color.
-                        var brush = ThemeManager.NeutralAccentBrushSemi;
-                        if (Preferences.Default.UseTrackColor) {
-                            var track = DocManager.Inst.Project.tracks[otherVoicePart.trackNo];
-                            brush = ThemeManager.GetTrackColor(track.TrackColor).AccentColorLightSemi;
-                        }
-                            
                         foreach (var note in otherVoicePart.notes) {
                             if (note.LeftBound + xOffset >= rightTick || note.RightBound + xOffset <= leftTick) {
                                 continue;
