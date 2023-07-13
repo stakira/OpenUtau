@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using OpenUtau.App.ViewModels;
@@ -154,84 +155,68 @@ namespace OpenUtau.App.Controls {
             }
         }
 
-        void VolumeButtonClicked(object sender, RoutedEventArgs args) {
-            if (sender is Button button && ViewModel != null) {
-                if (button.Parent is Grid parentGrid) {
-                    if (parentGrid.Children[2] is TextBox volumeTextBox) {
-                        volumeTextBox.Text = ViewModel.Volume.ToString();
-                        volumeTextBox.IsVisible = true;
-                        button.IsVisible = false;
-                        args.Handled = true;
-                    }
-                }
+        void VolumePointerPressed(object sender, PointerPressedEventArgs args) {
+            if (args.ClickCount == 2 && ViewModel != null) {
+                ActivateVolumeOrPanTextBox(
+                    VolumeTextBox, string.Format("{0:0.0}", ViewModel.Volume));
+                args.Handled = true;
+                args.Pointer.Capture(sender as IInputElement);
             }
         }
-        void PanButtonClicked(object sender, RoutedEventArgs args) {
-            if (sender is Button button && ViewModel != null) {
-                if (button.Parent is Grid parentGrid) {
-                    if (parentGrid.Children[5] is TextBox panTextBox) {
-                        panTextBox.Text = ViewModel.Pan.ToString();
-                        panTextBox.IsVisible = true;
-                        button.IsVisible = false;
-                        args.Handled = true;
-                    }
-                }
+        void PanPointerPressed(object sender, PointerPressedEventArgs args) {
+            if (args.ClickCount == 2 && ViewModel != null) {
+                ActivateVolumeOrPanTextBox(
+                    PanTextBox, string.Format("{0:0}", ViewModel.Pan));
+                args.Handled = true;
             }
         }
-        void VolumeTextBoxEnter(object sender, KeyEventArgs args) {
-            if (sender is TextBox textBox && ViewModel != null && Key.Enter.Equals(args.Key)) {
-                if (textBox.Parent is Grid parentGrid) {
-                    if (parentGrid.Children[0] is Slider volumeSlider) {
-                        if (double.TryParse(textBox.Text, out double number)) {
-                            number = number > volumeSlider.Minimum ? number < volumeSlider.Maximum ? number : volumeSlider.Maximum : volumeSlider.Minimum;
-                            ViewModel.Volume = number;
-                        }
-
-                    } else
-                    if (parentGrid.Children[1] is Button volumeButton) {
-                        textBox.IsVisible = false;
-                        volumeButton.IsVisible = true;
-                        args.Handled = true;
-                    }
-                }
+        void VolumeOrPanTextBoxKeyDown(object sender, KeyEventArgs args) {
+            if (args.Key == Key.Enter) {
+                FinishVolumeOrPanInput(sender, true);
+                args.Handled = true;
+            } else if (args.Key == Key.Escape) {
+                FinishVolumeOrPanInput(sender, false);
+                args.Handled = true;
             }
         }
-        void PanTextBoxEnter(object sender, KeyEventArgs args) {
-            if (sender is TextBox textBox && ViewModel != null && Key.Enter.Equals(args.Key)) {
-                if (textBox.Parent is Grid parentGrid) {
-                    if (parentGrid.Children[3] is Slider panSlider) {
-                        if (double.TryParse(textBox.Text, out double number)) {
-                            number = number > panSlider.Minimum ? number < panSlider.Maximum ? number : panSlider.Maximum : panSlider.Minimum;
-                            ViewModel.Pan = number;
-                        }
-
-                    } else
-                    if (parentGrid.Children[4] is Button panButton) {
-                        textBox.IsVisible = false;
-                        panButton.IsVisible = true;
-                        args.Handled = true;
-                    }
-                }
-            }
+        void VolumeOrPanTextBoxLostFocus(object sender, RoutedEventArgs args) {
+            FinishVolumeOrPanInput(sender, true);
+            args.Handled = true;
+        }
+        void VolumeOrPanSliderValueChanged(object sender, RangeBaseValueChangedEventArgs args) {
+            VolumeTextBox.IsVisible = false;
+            VolumeTextBox.IsEnabled = false;
+            PanTextBox.IsVisible = false;
+            PanTextBox.IsEnabled = false;
         }
 
-        void TextBoxLeave(object sender, PointerEventArgs args) {
-            if (sender is TextBox textBox) {
-                if (textBox.Parent is Grid parentGrid) {
-                    if (parentGrid.Children[1] is Button volumeButton) {
-                        textBox.IsVisible = false;
-                        volumeButton.IsVisible = true;
-                        args.Handled = true;
-                    }
-                    if (parentGrid.Children[4] is Button panButton) {
-                        textBox.IsVisible = false;
-                        panButton.IsVisible = true;
-                        args.Handled = true;
-                    }
+        void ActivateVolumeOrPanTextBox(TextBox textBox, string text) {
+            textBox.Text = text;
+            textBox.IsEnabled = true;
+            textBox.IsVisible = true;
+            textBox.Focus();
+        }
+        private void FinishVolumeOrPanInput(object sender, bool commit) {
+            if (sender == VolumeTextBox) {
+                if (!VolumeTextBox.IsVisible) {
+                    return; // Avoid double commit.
+                }
+                VolumeTextBox.IsVisible = false;
+                VolumeTextBox.IsEnabled = false;
+                if (commit && double.TryParse(VolumeTextBox.Text, out var volume) && ViewModel != null) {
+                    ViewModel.Volume = Math.Clamp(volume, VolumeSlider.Minimum, VolumeSlider.Maximum);
+                }
+            } else {
+                if (!PanTextBox.IsVisible) {
+                    return; // Avoid double commit.
+                }
+                PanTextBox.IsVisible = false;
+                PanTextBox.IsEnabled = false;
+                if (commit && double.TryParse(PanTextBox.Text, out var pan) && ViewModel != null) {
+                    ViewModel.Pan = Math.Clamp(pan, PanSlider.Minimum, PanSlider.Maximum);
                 }
             }
         }
-
 
         public void Dispose() {
             unbinds.ForEach(u => u.Dispose());

@@ -15,7 +15,7 @@
     <StyleInclude Source="/Styles/PianoRollStyles.axaml"/>
   </Window.Styles>
   <Grid>
-  <Border BorderThickness="2" BorderBrush="{Binding NotesViewModel.TrackAccentColor}">
+  <Border>
     <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="{Binding $parent[1].WindowDecorationMargin}">
       <Grid.RowDefinitions>
         <RowDefinition Height="24"/>
@@ -31,6 +31,9 @@
         <ColumnDefinition Width="24"/>
         <ColumnDefinition Width="Auto"/>
       </Grid.ColumnDefinitions>
+      <Border Background="Wheat" Grid.Column="0" Grid.Row="0" Grid.RowSpan="2">
+        <Rectangle HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="12" Fill="AliceBlue"/>
+      </Border>
       <ScrollBar Name="HScrollBar" Classes="music" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                  Margin="0,4,0,4" Orientation="Horizontal" AllowAutoHide="False"
                  DataContext="{Binding NotesViewModel}"
