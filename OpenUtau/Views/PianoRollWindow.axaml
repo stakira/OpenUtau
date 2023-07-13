@@ -31,9 +31,13 @@
         <ColumnDefinition Width="24"/>
         <ColumnDefinition Width="Auto"/>
       </Grid.ColumnDefinitions>
-      <Border Background="Wheat" Grid.Column="0" Grid.Row="0" Grid.RowSpan="2">
-        <Rectangle HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="12" Fill="AliceBlue"/>
-      </Border>
+      <Grid Grid.Column="0" Grid.Row="0" Grid.RowSpan="2">
+        <Rectangle HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="12" Fill="{Binding NotesViewModel.TrackAccentColor}"/>
+        <Border Margin="12,0,0,0" Width="48" Height="48" ClipToBounds="True">
+          <Image HorizontalAlignment="Center" VerticalAlignment="Center"
+                 Width="50" Height="50" Stretch="None" Source="{Binding NotesViewModel.Avatar}"/>
+        </Border>
+      </Grid>
       <ScrollBar Name="HScrollBar" Classes="music" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                  Margin="0,4,0,4" Orientation="Horizontal" AllowAutoHide="False"
                  DataContext="{Binding NotesViewModel}"
