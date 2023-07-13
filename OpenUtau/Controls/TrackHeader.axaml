@@ -139,28 +139,41 @@
           </Path.RenderTransform>
         </Path>
       </Button>
-      <Grid Grid.Row="4" Grid.Column="3" Grid.ColumnSpan="2">
-        <Slider Margin="1,0,0,0" Width="102" HorizontalAlignment="Left" Classes="fader" Minimum="-24" Maximum="12" Value="{Binding Volume}"
-                PointerPressed="VolumeFaderPointerPressed"
-                ContextRequested="VolumeFaderContextRequested" IsEnabled="{Binding !Muted}"/>
-        <TextBlock Margin="106,3,0,0" Width="36" HorizontalAlignment="Left" FontSize="9" FontFamily="monospace" >
-          <TextBlock.Text>
+      <Grid Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2" ColumnDefinitions="70,40,45,35" Height="24" IsEnabled="{Binding !Muted}">
+        <Slider Margin="0,0,0,0" Grid.Column="0" HorizontalAlignment="Stretch" Classes="fader" Minimum="-24" Maximum="12" Value="{Binding Volume}" PointerPressed="VolumeFaderPointerPressed" ContextRequested="VolumeFaderContextRequested"/>
+        <Button Classes="clear" Margin="0,0,0,0" Grid.Column="1" HorizontalAlignment="Stretch" FontSize="9" FontFamily="monospace" Click="VolumeButtonClicked">
+          <TextBlock TextAlignment="Left">
+            <TextBlock.Text>
+              <MultiBinding StringFormat="{}{0:+#00.0;-#00.0}">
+                <Binding Path="Volume"/>
+              </MultiBinding>
+            </TextBlock.Text>
+          </TextBlock>
+        </Button>
+        <TextBox Grid.Column="1" Width="10" FontSize="9" FontFamily="monospace" KeyDown="VolumeTextBoxEnter" PointerExited="TextBoxLeave" IsVisible="False">
+          <TextBox.Text>
             <MultiBinding StringFormat="{}{0:+#00.0;-#00.0}">
               <Binding Path="Volume"/>
             </MultiBinding>
-          </TextBlock.Text>
-        </TextBlock>
-        <Slider Margin="134,0,0,0" Width="36" HorizontalAlignment="Left"
-                Classes="fader" Minimum="-100" Maximum="100" Value="{Binding Pan}"
-                PointerPressed="PanFaderPointerPressed"
-                ContextRequested="PanFaderContextRequested" IsEnabled="{Binding !Muted}"/>
-        <TextBlock Margin="0,3,4,0" HorizontalAlignment="Right" FontSize="9" FontFamily="monospace" IsHitTestVisible="False">
-          <TextBlock.Text>
+          </TextBox.Text>
+        </TextBox>
+        <Slider Margin="0,0,0,0" Grid.Column="2" HorizontalAlignment="Stretch" Classes="fader" Minimum="-100" Maximum="100" Value="{Binding Pan}" PointerPressed="PanFaderPointerPressed" ContextRequested="PanFaderContextRequested"/>
+        <Button Classes="clear" Margin="0,0,0,0" Grid.Column="3" HorizontalAlignment="Stretch" FontSize="9" FontFamily="monospace" Click="PanButtonClicked">
+          <TextBlock TextAlignment="Left">
+            <TextBlock.Text>
+              <MultiBinding StringFormat="{}{0:00R;00L;C}">
+                <Binding Path="Pan"/>
+              </MultiBinding>
+            </TextBlock.Text>
+          </TextBlock>
+        </Button>
+        <TextBox Grid.Column="3" Width="10" FontSize="9" FontFamily="monospace" KeyDown="PanTextBoxEnter" PointerExited="TextBoxLeave" IsVisible="False">
+          <TextBox.Text>
             <MultiBinding StringFormat="{}{0:00R;00L;C}">
               <Binding Path="Pan"/>
             </MultiBinding>
-          </TextBlock.Text>
-        </TextBlock>
+          </TextBox.Text>
+        </TextBox>
       </Grid>
       <Grid.ContextMenu>
         <ContextMenu>
