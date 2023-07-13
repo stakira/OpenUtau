@@ -650,6 +650,12 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        void OnPointerPressed(object? sender, PointerPressedEventArgs args) {
+            if (!args.Handled && args.ClickCount == 1) {
+                FocusManager?.ClearFocus();
+            }
+        }
+
         async void OnDrop(object? sender, DragEventArgs args) {
             var storageItem = args.Data?.GetFiles()?.FirstOrDefault();
             if (storageItem == null) {

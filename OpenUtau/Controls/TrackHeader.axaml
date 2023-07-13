@@ -34,23 +34,22 @@
     </Style>
   </UserControl.Styles>
   <Border Margin="1,1,1,1" BorderThickness="1" BorderBrush="{DynamicResource NeutralAccentBrushSemi}" CornerRadius="2">
-    <Grid Background="Transparent" RowDefinitions="20,20,20,20,20,*" ColumnDefinitions="7,Auto,1,*,20" VerticalAlignment="Top" ClipToBounds="True">
-      <Border Background="{Binding TrackAccentColor}" Grid.RowSpan="6" CornerRadius="2,0,0,2" />
-      <Grid Grid.Row="0" Grid.RowSpan="6" Grid.Column="1" VerticalAlignment="Top">
+    <Grid Background="Transparent" RowDefinitions="20,20,20,20,20,*" ColumnDefinitions="Auto,1,*,20" VerticalAlignment="Top" ClipToBounds="True">
+      <Grid Grid.Row="0" Grid.RowSpan="6" Grid.Column="0" VerticalAlignment="Top">
         <Border BorderThickness="0,0,1,1" Height="101" Width="101" VerticalAlignment="Top" CornerRadius="0,0,2,0"
                 BorderBrush="{DynamicResource NeutralAccentBrushSemi}" ClipToBounds="True">
-          <Image Source="{Binding Avatar}" Stretch="UniformToFill" VerticalAlignment="Top" ToolTip.Tip="{Binding Singer}"/>
+          <Image Margin="7,0,0,0" Source="{Binding Avatar}" Stretch="UniformToFill" VerticalAlignment="Top" ToolTip.Tip="{Binding Singer}"/>
         </Border>
-        <Border Background="{DynamicResource NeutralAccentBrushSemi}" Height="16" Width="22" CornerRadius="1,0,2,0"
+        <Border Background="{Binding TrackAccentColor}" Height="16" Width="22" CornerRadius="1,0,2,0"
                 HorizontalAlignment="Left" VerticalAlignment="Top">
           <TextBlock TextAlignment="Center" FontWeight="Bold"
                      Text="{Binding TrackNo}" Foreground="White" VerticalAlignment="Center"/>
         </Border>
       </Grid>
-      <Button Classes="clear" Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="2" Margin="1" Padding="2,1,0,0" Height="18"
+      <Button Classes="clear" Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" Margin="1" Padding="2,1,0,0" Height="18"
               HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Focusable="False"
               Content="{Binding TrackName}" Click="TrackNameButtonClicked"/>
-      <Button Classes="clear" Grid.Row="1" Grid.Column="3" Margin="1" Padding="2,1,0,0" Height="18"
+      <Button Classes="clear" Grid.Row="1" Grid.Column="2" Margin="1" Padding="2,1,0,0" Height="18"
               HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Focusable="False"
               Content="{Binding Singer, TargetNullValue={StaticResource tracks.selectsinger}}" Click="SingerButtonClicked" ContextRequested="SingerButtonContextRequested"
               ToolTip.Tip="{Binding Singer}">
@@ -67,7 +66,7 @@
           </ContextMenu>
         </Button.ContextMenu>
       </Button>
-      <Button Classes="clear" Grid.Row="2" Grid.Column="3" Margin="1" Padding="2,1,0,0" Height="18"
+      <Button Classes="clear" Grid.Row="2" Grid.Column="2" Margin="1" Padding="2,1,0,0" Height="18"
               HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Focusable="False"
               Content="{Binding PhonemizerTag}" Click="PhonemizerButtonClicked" ContextRequested="PhonemizerButtonContextRequested"
               ToolTip.Tip="{Binding Phonemizer}">
@@ -84,7 +83,7 @@
           </ContextMenu>
         </Button.ContextMenu>
       </Button>
-      <Button Classes="clear" Grid.Row="3" Grid.Column="3" Margin="1" Padding="2,1,0,0" Height="18"
+      <Button Classes="clear" Grid.Row="3" Grid.Column="2" Margin="1" Padding="2,1,0,0" Height="18"
               HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Focusable="False"
               Content="{Binding Renderer}" Click="RendererButtonClicked" ContextRequested="RendererButtonContextRequested"
               ToolTip.Tip="{DynamicResource tracks.selectrenderer}">
@@ -101,7 +100,7 @@
           </ContextMenu>
         </Button.ContextMenu>
       </Button>
-      <ToggleButton Grid.Row="1" Grid.Column="4" Margin="1" Padding="0" Height="18"
+      <ToggleButton Grid.Row="1" Grid.Column="3" Margin="1" Padding="0" Height="18"
                     HorizontalAlignment="Stretch"
                     IsChecked="{Binding Mute, Mode=OneWay}" Command="{Binding ToggleMute}">
         <TextBlock Text="M" TextAlignment="Center"/>
@@ -114,7 +113,7 @@
           </ContextMenu>
         </ToggleButton.ContextMenu>
       </ToggleButton>
-      <ToggleButton Grid.Row="2" Grid.Column="4" Margin="1" Padding="0" Height="18"
+      <ToggleButton Grid.Row="2" Grid.Column="3" Margin="1" Padding="0" Height="18"
                     HorizontalAlignment="Stretch"
                     IsChecked="{Binding Solo, Mode=OneWay}" Command="{Binding ToggleSolo}">
         <TextBlock Text="S" TextAlignment="Center"/>
@@ -126,7 +125,7 @@
           </ContextMenu>
         </ToggleButton.ContextMenu>
       </ToggleButton>
-      <Button Grid.Row="3" Grid.Column="4" Margin="1" Padding="0" Height="18" Background="Transparent"
+      <Button Grid.Row="3" Grid.Column="3" Margin="1" Padding="0" Height="18" Background="Transparent"
                     HorizontalAlignment="Stretch" Click="TrackSettingsButtonClicked">
         <Path Classes="clear" Width="24" Height="24"
               Data="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z"
@@ -139,41 +138,38 @@
           </Path.RenderTransform>
         </Path>
       </Button>
-      <Grid Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2" ColumnDefinitions="70,40,45,35" Height="24" IsEnabled="{Binding !Muted}">
-        <Slider Margin="0,0,0,0" Grid.Column="0" HorizontalAlignment="Stretch" Classes="fader" Minimum="-24" Maximum="12" Value="{Binding Volume}" PointerPressed="VolumeFaderPointerPressed" ContextRequested="VolumeFaderContextRequested"/>
-        <Button Classes="clear" Margin="0,0,0,0" Grid.Column="1" HorizontalAlignment="Stretch" FontSize="9" FontFamily="monospace" Click="VolumeButtonClicked">
-          <TextBlock TextAlignment="Left">
-            <TextBlock.Text>
-              <MultiBinding StringFormat="{}{0:+#00.0;-#00.0}">
-                <Binding Path="Volume"/>
-              </MultiBinding>
-            </TextBlock.Text>
-          </TextBlock>
-        </Button>
-        <TextBox Grid.Column="1" Width="10" FontSize="9" FontFamily="monospace" KeyDown="VolumeTextBoxEnter" PointerExited="TextBoxLeave" IsVisible="False">
-          <TextBox.Text>
+      <Grid Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2">
+        <Slider Name="VolumeSlider" Margin="1,0,0,0" Width="102" HorizontalAlignment="Left" Classes="fader" Minimum="-24" Maximum="12" Value="{Binding Volume}"
+                PointerPressed="VolumeFaderPointerPressed" ValueChanged="VolumeOrPanSliderValueChanged"
+                ContextRequested="VolumeFaderContextRequested" IsEnabled="{Binding !Muted}"/>
+        <TextBlock Margin="106,3,0,0" Width="24" HorizontalAlignment="Left" Background="Transparent"
+                   TextAlignment="Center" FontSize="9" FontFamily="monospace" PointerPressed="VolumePointerPressed">
+          <TextBlock.Text>
             <MultiBinding StringFormat="{}{0:+#00.0;-#00.0}">
               <Binding Path="Volume"/>
             </MultiBinding>
-          </TextBox.Text>
-        </TextBox>
-        <Slider Margin="0,0,0,0" Grid.Column="2" HorizontalAlignment="Stretch" Classes="fader" Minimum="-100" Maximum="100" Value="{Binding Pan}" PointerPressed="PanFaderPointerPressed" ContextRequested="PanFaderContextRequested"/>
-        <Button Classes="clear" Margin="0,0,0,0" Grid.Column="3" HorizontalAlignment="Stretch" FontSize="9" FontFamily="monospace" Click="PanButtonClicked">
-          <TextBlock TextAlignment="Left">
-            <TextBlock.Text>
-              <MultiBinding StringFormat="{}{0:00R;00L;C}">
-                <Binding Path="Pan"/>
-              </MultiBinding>
-            </TextBlock.Text>
-          </TextBlock>
-        </Button>
-        <TextBox Grid.Column="3" Width="10" FontSize="9" FontFamily="monospace" KeyDown="PanTextBoxEnter" PointerExited="TextBoxLeave" IsVisible="False">
-          <TextBox.Text>
+          </TextBlock.Text>
+        </TextBlock>
+        <TextBox Name="VolumeTextBox" Margin="106,3,0,0" Width="28" MinWidth="28" Height="16" MinHeight="16"
+                 HorizontalAlignment="Left" BorderThickness="0" Padding="2,0" IsVisible="False" IsEnabled="False"
+                 TextAlignment="Right" FontSize="9" FontFamily="monospace"
+                 KeyDown="VolumeOrPanTextBoxKeyDown" LostFocus="VolumeOrPanTextBoxLostFocus"/>
+        <Slider Name="PanSlider" Margin="134,0,0,0" Width="36" HorizontalAlignment="Left"
+                Classes="fader" Minimum="-100" Maximum="100" Value="{Binding Pan}"
+                PointerPressed="PanFaderPointerPressed" ValueChanged="VolumeOrPanSliderValueChanged"
+                ContextRequested="PanFaderContextRequested" IsEnabled="{Binding !Muted}"/>
+        <TextBlock Margin="0,3,4,0" Width="20" HorizontalAlignment="Right" Background="Transparent"
+                   TextAlignment="Right" FontSize="9" FontFamily="monospace" PointerPressed="PanPointerPressed">
+          <TextBlock.Text>
             <MultiBinding StringFormat="{}{0:00R;00L;C}">
               <Binding Path="Pan"/>
             </MultiBinding>
-          </TextBox.Text>
-        </TextBox>
+          </TextBlock.Text>
+        </TextBlock>
+        <TextBox Name="PanTextBox" Margin="0,3,2,0" Width="24" MinWidth="24" Height="16" MinHeight="16"
+                 HorizontalAlignment="Right" BorderThickness="0" Padding="2,0" IsVisible="False" IsEnabled="False"
+                 TextAlignment="Right" FontSize="9" FontFamily="monospace"
+                 KeyDown="VolumeOrPanTextBoxKeyDown" LostFocus="VolumeOrPanTextBoxLostFocus"/>
       </Grid>
       <Grid.ContextMenu>
         <ContextMenu>
