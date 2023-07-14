@@ -5,9 +5,12 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Threading;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Media;
 using Avalonia.Media.Imaging;
+using Avalonia.Styling;
 using OpenUtau.Api;
 using OpenUtau.App.Views;
 using OpenUtau.Core;
@@ -31,8 +34,11 @@ namespace OpenUtau.App.ViewModels {
         public IReadOnlyList<MenuItemViewModel>? RenderersMenuItems { get; set; }
         public ReactiveCommand<string, Unit> SelectRendererCommand { get; }
         [Reactive] public string TrackName { get; set; } = string.Empty;
+        [Reactive] public SolidColorBrush TrackAccentColor { get; set; } = ThemeManager.GetTrackColor("Blue").AccentColor;
+        [Reactive] public TrackColor TrackColor { get; set; } = ThemeManager.GetTrackColor("Blue");
         [Reactive] public double Volume { get; set; }
         [Reactive] public double Pan { get; set; }
+        [Reactive] public bool Mute { get; set; }
         [Reactive] public bool Muted { get; set; }
         [Reactive] public bool Solo { get; set; }
         [Reactive] public Bitmap? Avatar { get; set; }
@@ -128,8 +134,13 @@ namespace OpenUtau.App.ViewModels {
             });
 
             TrackName = track.TrackName;
+            TrackAccentColor = ThemeManager.GetTrackColor(track.TrackColor).AccentColor;
+            TrackColor = Preferences.Default.UseTrackColor
+                ? ThemeManager.GetTrackColor(track.TrackColor)
+                : ThemeManager.GetTrackColor("Blue");
             Volume = track.Volume;
             Pan = track.Pan;
+            Mute = track.Mute;
             Muted = track.Muted;
             Solo = track.Solo;
             this.WhenAnyValue(x => x.Volume)
@@ -141,6 +152,10 @@ namespace OpenUtau.App.ViewModels {
                 .Subscribe(pan => {
                     track.Pan = pan;
                     DocManager.Inst.ExecuteCmd(new PanChangeNotification(track.TrackNo, pan));
+                });
+            this.WhenAnyValue(x => x.Mute)
+                .Subscribe(mute => {
+                    track.Mute = mute;
                 });
             this.WhenAnyValue(x => x.Muted)
                 .Subscribe(muted => {
@@ -156,20 +171,59 @@ namespace OpenUtau.App.ViewModels {
         }
 
         public void ToggleSolo() {
-            MessageBus.Current.SendMessage(new TracksSoloEvent(track.TrackNo, !track.Solo));
+            MessageBus.Current.SendMessage(new TracksSoloEvent(track.TrackNo, !track.Solo, false));
+        }
+
+        public void SoloAdditionally() {
+            MessageBus.Current.SendMessage(new TracksSoloEvent(track.TrackNo, !track.Solo, true));
+        }
+
+        public void UnsoloAll() {
+            MessageBus.Current.SendMessage(new TracksSoloEvent(-1, false, false));
         }
 
         public void ToggleMute() {
-            if (!track.Mute) {
-                track.Mute = true;
+            if (!Mute) {
+                Mute = true;
+            } else {
+                Mute = false;
+            }
+            this.RaisePropertyChanged(nameof(Mute));
+            JudgeMuted();
+        }
+        public void ToggleMute(bool mute) {
+            if (mute) {
+                Mute = true;
+            } else {
+                Mute = false;
+            }
+            this.RaisePropertyChanged(nameof(Mute));
+            JudgeMuted();
+        }
+
+        public void MuteOnly() {
+            MessageBus.Current.SendMessage(new TracksMuteEvent(-1, false));
+            ToggleMute();
+        }
+
+        public void MuteAllOthers() {
+            MessageBus.Current.SendMessage(new TracksMuteEvent(-1, true));
+            ToggleMute();
+        }
+
+        public void UnmuteAll() {
+            MessageBus.Current.SendMessage(new TracksMuteEvent(-1, false));
+        }
+
+        public void JudgeMuted() {
+            if (Solo) {
+                Muted = false;
+            } else if (Mute) {
+                Muted = true;
+            } else if (DocManager.Inst.Project.SoloTrackExist) {
                 Muted = true;
             } else {
-                track.Mute = false;
-                if (PlaybackManager.Inst.SoloTrackExist) {
-                    Muted = true;
-                } else {
-                    Muted = false;
-                }
+                Muted = false;
             }
             this.RaisePropertyChanged(nameof(Muted));
         }
@@ -280,6 +334,7 @@ namespace OpenUtau.App.ViewModels {
             this.RaisePropertyChanged(nameof(Phonemizer));
             this.RaisePropertyChanged(nameof(PhonemizerTag));
             this.RaisePropertyChanged(nameof(Renderer));
+            this.RaisePropertyChanged(nameof(Mute));
             this.RaisePropertyChanged(nameof(Muted));
             this.RaisePropertyChanged(nameof(Solo));
             this.RaisePropertyChanged(nameof(Volume));
@@ -328,6 +383,19 @@ namespace OpenUtau.App.ViewModels {
             }
         }
 
+        public async void SelectTrackColor() {
+            var dialog = new TrackColorDialog();
+            dialog.DataContext = new TrackColorViewModel(track);
+            
+            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop && desktop.MainWindow != null) {
+                await dialog.ShowDialog(desktop.MainWindow);
+                TrackAccentColor = ThemeManager.GetTrackColor(track.TrackColor).AccentColor;
+                TrackColor = Preferences.Default.UseTrackColor
+                ? ThemeManager.GetTrackColor(track.TrackColor)
+                : ThemeManager.GetTrackColor("Blue");
+            }
+        }
+
         public void Duplicate() {
             DocManager.Inst.StartUndoGroup();
             //TODO
@@ -341,6 +409,7 @@ namespace OpenUtau.App.ViewModels {
                 Solo = track.Solo,
                 Volume = track.Volume,
                 Pan = track.Pan,
+                TrackColor = track.TrackColor
             };
             DocManager.Inst.ExecuteCmd(new AddTrackCommand(DocManager.Inst.Project, newTrack));
             var parts = DocManager.Inst.Project.parts
@@ -366,6 +435,7 @@ namespace OpenUtau.App.ViewModels {
                 Solo = track.Solo,
                 Volume = track.Volume,
                 Pan = track.Pan,
+                TrackColor = track.TrackColor
             }));
             DocManager.Inst.EndUndoGroup();
         }

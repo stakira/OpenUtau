@@ -1202,14 +1202,14 @@ namespace OpenUtau.App.Views {
                     // solo
                     if(isShift) {
                         var track = project.tracks[notesVm.Part.trackNo];
-                        MessageBus.Current.SendMessage(new TracksSoloEvent(notesVm.Part.trackNo, !track.Solo));
+                        MessageBus.Current.SendMessage(new TracksSoloEvent(notesVm.Part.trackNo, !track.Solo, false));
                         return true;
                     }
                     break;
                 case Key.M:
                     // mute
                     if (isShift) {
-                        MessageBus.Current.SendMessage(new TracksMuteEvent(notesVm.Part.trackNo));
+                        MessageBus.Current.SendMessage(new TracksMuteEvent(notesVm.Part.trackNo, false));
                     }
                     break;
                 case Key.F:

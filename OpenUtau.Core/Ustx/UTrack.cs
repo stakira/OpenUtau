@@ -88,6 +88,7 @@ namespace OpenUtau.Core.Ustx {
         [YamlIgnore] public string SingerName => Singer != null ? Singer.DisplayName : "[No Singer]";
         [YamlIgnore] public int TrackNo { set; get; }
         public string TrackName { get; set; } = "New Track";
+        public string TrackColor { get; set; } = "Blue";
         [YamlIgnore] public bool Muted { set; get; }
         public bool Mute { get; set; }
         public bool Solo { get; set; }
@@ -179,9 +180,7 @@ namespace OpenUtau.Core.Ustx {
                 };
             }
             TrackNo = project.tracks.IndexOf(this);
-            if (Solo) {
-                PlaybackManager.Inst.SoloTrackExist = true;
-            } else if (Mute) {
+            if (!Solo && Mute) {
                 Muted = true;
             }
         }

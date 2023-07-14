@@ -624,14 +624,14 @@ namespace OpenUtau.App.Views {
                         if (viewModel.TracksViewModel.SelectedParts.Count > 0) {
                             var part = viewModel.TracksViewModel.SelectedParts.First();
                             var track = DocManager.Inst.Project.tracks[part.trackNo];
-                            MessageBus.Current.SendMessage(new TracksSoloEvent(part.trackNo, !track.Solo));
+                            MessageBus.Current.SendMessage(new TracksSoloEvent(part.trackNo, !track.Solo, false));
                         }
                         break;
                     // mute
                     case Key.M:
                         if (viewModel.TracksViewModel.SelectedParts.Count > 0) {
                             var part = viewModel.TracksViewModel.SelectedParts.First();
-                            MessageBus.Current.SendMessage(new TracksMuteEvent(part.trackNo));
+                            MessageBus.Current.SendMessage(new TracksMuteEvent(part.trackNo, false));
                         }
                         break;
                     default:
@@ -647,6 +647,12 @@ namespace OpenUtau.App.Views {
                         args.Handled = false;
                         break;
                 }
+            }
+        }
+
+        void OnPointerPressed(object? sender, PointerPressedEventArgs args) {
+            if (!args.Handled && args.ClickCount == 1) {
+                FocusManager?.ClearFocus();
             }
         }
 
