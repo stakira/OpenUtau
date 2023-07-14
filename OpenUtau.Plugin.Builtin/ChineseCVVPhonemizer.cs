@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using OpenUtau.Api;
+using OpenUtau.Core;
 using Serilog;
 
 namespace OpenUtau.Plugin.Builtin
@@ -53,6 +53,10 @@ namespace OpenUtau.Plugin.Builtin
             return "_un=_en".Split(';')
                 .Select(entry => entry.Split('='))
                 .ToDictionary(parts => parts[0], parts => parts[1].Split(','));
+        }
+
+        public override void SetUp(Note[][] groups) {
+            BaseChinesePhonemizer.RomanizeNotes(groups);
         }
     }
     
