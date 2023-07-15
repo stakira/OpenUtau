@@ -135,7 +135,9 @@ namespace OpenUtau.Classic {
                     .ToList()
                     .ForEach(oto => {
                         oto.SearchTerms.Add(oto.Alias.ToLowerInvariant().Replace(" ", ""));
-                        oto.SearchTerms.Add(WanaKana.ToRomaji(oto.Alias).ToLowerInvariant().Replace(" ", ""));
+                        try {
+                            oto.SearchTerms.Add(WanaKana.ToRomaji(oto.Alias).ToLowerInvariant().Replace(" ", ""));
+                        } catch { }
                     });
             });
         }
