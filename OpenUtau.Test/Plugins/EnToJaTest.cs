@@ -14,14 +14,14 @@ namespace OpenUtau.Plugins {
 
         [Theory]
         [InlineData("ja_cvvc",
-            new string[] { "て_A3", "e s_A3", "と_A3", "うぉ_A3", "o d_A3", "ず_A3" })]
+            new string[] { "て_C4", "e s_C4", "と_C4", "うぉ_C4", "o d_C4", "ず_C4" })]
         [InlineData("ja_vcv",
             new string[] { "- てA3", "e すA3", "u とA3", "o うぉA3", "o どA3", "o ずA3" })]
         [InlineData("ja_cv",
             new string[] { "て", "す", "と", "を", "ど", "ず" })]
         public void BasicPhonemizingTest(string singerName, string[] aliases) {
-            RunPhonemizeTest(singerName, new string[] { "test", "words" }, 
-                RepeatString(2, ""), RepeatString(2, "C3"), RepeatString(2, ""), aliases);
+            SameAltsTonesColorsTest(singerName, aliases,
+                new string[] { "test", "words" });
         }
 
         [Theory]
@@ -57,9 +57,9 @@ namespace OpenUtau.Plugins {
         [InlineData("ja_cv",
             new string[] { "て","す","て","ん" })]
         // Should have one て only, not become てえ
-        public void ExtendSyllableTest(string singerName, string[] aliases) {
-            RunPhonemizeTest(singerName, new string[] { "testing", "+*", "+", "+" },
-                RepeatString(4, ""), RepeatString(4, "C4"), RepeatString(4, ""), aliases);
+        public void SyllableExtendTest(string singerName, string[] aliases) {
+            SameAltsTonesColorsTest(singerName, aliases,
+                new string[] { "testing", "+*", "+", "+" });
         }
 
         [Theory]
@@ -69,9 +69,137 @@ namespace OpenUtau.Plugins {
             new string[] { "- おA3", "o りゅA3", "u きゅA3", "u つA3", "u んA3", "n RA3" })]
         [InlineData("ja_cv",
             new string[] { "お", "りゅ", "きゅ", "つ", "ん" })]
-        public void SpecialClusterTest(string singerName, string[] aliases) {
-            RunPhonemizeTest(singerName, new string[] { "all", "you", "cute", "soon" },
-                RepeatString(4, ""), RepeatString(4, "C4"), RepeatString(4, ""), aliases);
+        public void SyllableSpecialClusterTest(string singerName, string[] aliases) {
+            SameAltsTonesColorsTest(singerName, aliases,
+                new string[] { "all", "you", "cute", "soon" });
+        }
+
+        [Theory]
+        [InlineData("ja_cvvc",
+            new string[] { "- あ_C4", "a s_C4", "た_C4", "a w_C4" })]
+        [InlineData("ja_vcv",
+            new string[] { "- あA3", "a すA3", "u たA3", "a うA3" })]
+        [InlineData("ja_cv",
+            new string[] { "あ", "す", "た", "う" })]
+        public void SyllableClusterTest(string singerName, string[] aliases) {
+            SameAltsTonesColorsTest(singerName, aliases,
+                new string[] { "a", "star" });
+        }
+
+        [Theory]
+        [InlineData("ja_cvvc",
+            new string[] { "ヴ_C4" })]
+        [InlineData("ja_vcv",
+            new string[] { "- ヴA3", "u RA3" })]
+        [InlineData("ja_cv",
+            new string[] { "ふ" })]
+        public void SyllableConditionalAltTest(string singerName, string[] aliases) {
+            SameAltsTonesColorsTest(singerName, aliases,
+                new string[] { "vu" });
+        }
+
+        [Theory]
+        [InlineData("ja_cvvc",
+            new string[] { "てぃ_C4" })]
+        [InlineData("ja_vcv",
+            new string[] { "- てぃA3", "i RA3" })]
+        [InlineData("ja_cv",
+            new string[] { "て", "い" })]
+        public void SyllableExtraCvTest(string singerName, string[] aliases) {
+            SameAltsTonesColorsTest(singerName, aliases,
+                new string[] { "tea" });
+        }
+
+        [Theory]
+        [InlineData("ja_cvvc",
+            new string[] { "- あ_C4" })]
+        [InlineData("ja_vcv",
+            new string[] { "- あA3", "a RA3" })]
+        [InlineData("ja_cv",
+            new string[] { "あ" })]
+        public void EndingVowelTest(string singerName, string[] aliases) {
+            SameAltsTonesColorsTest(singerName, aliases,
+                new string[] { "a" });
+        }
+
+        [Theory]
+        [InlineData("ja_cvvc",
+            new string[] { "- え_C4", "e n_C4" })]
+        [InlineData("ja_vcv",
+            new string[] { "- えA3", "e んA3", "n RA3" })]
+        [InlineData("ja_cv",
+            new string[] { "え", "ん" })]
+        public void EndingNasalTest(string singerName, string[] aliases) {
+            SameAltsTonesColorsTest(singerName, aliases,
+                new string[] { "an" });
+        }
+
+        [Theory]
+        [InlineData("ja_cvvc",
+            new string[] { "ば_C4", "a w_C4", "- ん_C4" })]
+        [InlineData("ja_vcv",
+            new string[] { "- ばA3", "a うA3", "u んA3", "n RA3" })]
+        [InlineData("ja_cv",
+            new string[] { "ば", "う", "ん" })]
+        public void EndingClusterNasalTest(string singerName, string[] aliases) {
+            SameAltsTonesColorsTest(singerName, aliases,
+                new string[] { "barn" });
+        }
+
+        [Theory]
+        [InlineData("ja_cvvc",
+            new string[] { "- あ_C4", "a p_C4" })]
+        [InlineData("ja_vcv",
+            new string[] { "- あA3", "a ぷA3" })]
+        [InlineData("ja_cv",
+            new string[] { "あ", "ぷ" })]
+        public void EndingSingleConsonantTest(string singerName, string[] aliases) {
+            SameAltsTonesColorsTest(singerName, aliases,
+                new string[] { "up" });
+        }
+
+        [Theory]
+        [InlineData("ja_cvvc",
+            new string[] { "- あ_C4", "a v_C4" })]
+        [InlineData("ja_vcv",
+            new string[] { "- あA3", "a ヴA3" })]
+        [InlineData("ja_cv",
+            new string[] { "あ", "ふ" })]
+        public void EndingConditionalAltTest(string singerName, string[] aliases) {
+            SameAltsTonesColorsTest(singerName, aliases,
+                new string[] { "of" });
+        }
+
+        [Theory]
+        [InlineData("ja_cvvc",
+            new string[] { "- あ_C4", "a n_C4", "ど_C4" })]
+        [InlineData("ja_vcv",
+            new string[] { "- あA3", "a んA3", "n どA3" })]
+        [InlineData("ja_cv",
+            new string[] { "あ", "ん", "ど" })]
+        public void EndingClusterTest(string singerName, string[] aliases) {
+            SameAltsTonesColorsTest(singerName, aliases,
+                new string[] { "and" });
+        }
+
+        [Theory]
+        [InlineData("ja_cvvc",
+            new string[] { "- え_C4", "e ts_C4", "つ_C4" })]
+        // known bug
+        //[InlineData("ja_vcv",
+        //    new string[] { "- えA3", "e つA3" })]
+        [InlineData("ja_cv",
+            new string[] { "え", "つ" })]
+        public void EndingSpecialClusterTest(string singerName, string[] aliases) {
+            SameAltsTonesColorsTest(singerName, aliases,
+                new string[] { "its" });
+        }
+
+        private void SameAltsTonesColorsTest(string singerName, string[] aliases, string[] lyrics) { 
+            RunPhonemizeTest(singerName, lyrics, 
+                RepeatString(lyrics.Length, ""), 
+                RepeatString(lyrics.Length, "C4"), 
+                RepeatString(lyrics.Length, ""), aliases);
         }
 
         private string[] RepeatString(int count, string s) {
