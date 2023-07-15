@@ -427,11 +427,13 @@ namespace OpenUtau.Plugin.Builtin {
 
             var vc = $"{vowel} {cons}";
             var altVc = $"{vowel} {cons[0]}";
-
+            
             if (HasOto(vc, tone)) {
                 phonemes.Add(vc);
             } else if (HasOto(altVc, tone)) {
                 phonemes.Add(altVc);
+            } else {
+                return (false, new string[0]);
             }
 
             if (affricates.Contains(cons) && cc > 1) {

@@ -185,14 +185,27 @@ namespace OpenUtau.Plugins {
         [Theory]
         [InlineData("ja_cvvc",
             new string[] { "- え_C4", "e ts_C4", "つ_C4" })]
-        // known bug
-        //[InlineData("ja_vcv",
-        //    new string[] { "- えA3", "e つA3" })]
+        [InlineData("ja_vcv",
+            new string[] { "- えA3", "e つA3" })]
         [InlineData("ja_cv",
             new string[] { "え", "つ" })]
         public void EndingSpecialClusterTest(string singerName, string[] aliases) {
             SameAltsTonesColorsTest(singerName, aliases,
                 new string[] { "its" });
+        }
+
+        [Theory]
+        [InlineData("ja_vcv",
+            new string[] { "its", "its" },
+            new string[] { "- えA3", "e つぇA3", "e つA3" })]
+        [InlineData("ja_vcv",
+            new string[] { "itch", "itch" },
+            new string[] { "- えA3", "e ちぇA3", "e ちゅA3" })]
+        [InlineData("ja_vcv",
+            new string[] { "age", "age" },
+            new string[] { "- えA3", "e いA3", "i じぇA3", "e いA3", "i じゅA3" })]
+        public void EndingVcvAffricateTest(string singerName, string[] lyrics, string[] aliases) {
+            SameAltsTonesColorsTest(singerName, aliases, lyrics);
         }
 
         private void SameAltsTonesColorsTest(string singerName, string[] aliases, string[] lyrics) { 
