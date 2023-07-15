@@ -125,6 +125,7 @@ namespace OpenUtau.App.ViewModels {
                         if (pair.Value.abbr == Ustx.CLR) {
                             var track = DocManager.Inst.Project.tracks[part.trackNo];
                             if (track.VoiceColorExp != null && track.VoiceColorExp.options.Length > 0) {
+                                viewModel.Options.Clear();
                                 track.VoiceColorExp.options.ForEach(opt => viewModel.Options.Add(opt));
                             }
                         }
