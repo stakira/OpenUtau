@@ -71,6 +71,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public double ExpTrackHeight { get; set; }
         [Reactive] public double ExpShadowOpacity { get; set; }
         [Reactive] public UVoicePart? Part { get; set; }
+        [Reactive] public Bitmap? Avatar { get; set; }
         [Reactive] public Bitmap? Portrait { get; set; }
         [Reactive] public IBrush? PortraitMask { get; set; }
         [Reactive] public string WindowTitle { get; set; } = "Piano Roll";
@@ -381,12 +382,28 @@ namespace OpenUtau.App.ViewModels {
         private void LoadPortrait(UPart? part, UProject? project) {
             if (part == null || project == null) {
                 lock (portraitLock) {
+                    Avatar = null;
                     Portrait = null;
                     portraitSource = null;
                 }
                 return;
             }
             var singer = project.tracks[part.trackNo].Singer;
+            lock (portraitLock) {
+                Avatar?.Dispose();
+                Avatar = null;
+                if (singer != null && singer.AvatarData != null) {
+                    try {
+                        using (var stream = new MemoryStream(singer.AvatarData)) {
+                            Avatar = new Bitmap(stream);
+                        }
+                    } catch (Exception e) {
+                        Avatar?.Dispose();
+                        Avatar = null;
+                        Log.Error(e, $"Failed to load Avatar {singer.Avatar}");
+                    }
+                }
+            }
             if (singer == null || string.IsNullOrEmpty(singer.Portrait) || !Preferences.Default.ShowPortrait) {
                 lock (portraitLock) {
                     Portrait = null;
@@ -396,6 +413,7 @@ namespace OpenUtau.App.ViewModels {
             }
             if (portraitSource != singer.Portrait) {
                 lock (portraitLock) {
+                    Portrait?.Dispose();
                     Portrait = null;
                     portraitSource = null;
                 }
@@ -403,7 +421,6 @@ namespace OpenUtau.App.ViewModels {
                 Task.Run(() => {
                     lock (portraitLock) {
                         try {
-                            Portrait?.Dispose();
                             var data = singer.LoadPortrait();
                             if (data == null) {
                                 Portrait = null;
