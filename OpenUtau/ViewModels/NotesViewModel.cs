@@ -808,7 +808,7 @@ namespace OpenUtau.App.ViewModels {
         }
 
         bool IsExpSupported(string expKey) {
-            if (Project == null || Part == null) {
+            if (Project == null || Part == null || Project.tracks.Count > Part.trackNo) {
                 return true;
             }
             var track = Project.tracks[Part.trackNo];
