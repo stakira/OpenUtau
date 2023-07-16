@@ -423,6 +423,8 @@ namespace OpenUtau.Plugin.Builtin {
                 cons = "r";
             } else if (cons == "ly") {
                 cons = "ry";
+            } else {
+                cons = StartingConsonant[cons];
             }
 
             var vc = $"{vowel} {cons}";
