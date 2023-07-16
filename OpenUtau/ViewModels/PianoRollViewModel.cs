@@ -144,6 +144,8 @@ namespace OpenUtau.App.ViewModels {
                 new LoadRenderedPitch(),
                 new AddTailNote("-", "pianoroll.menu.notes.addtaildash"),
                 new AddTailNote("R", "pianoroll.menu.notes.addtailrest"),
+                new RemoveTailNote("-", "pianoroll.menu.notes.removetaildash"),
+                new RemoveTailNote("R", "pianoroll.menu.notes.removetailrest"),
                 new Transpose(12, "pianoroll.menu.notes.octaveup"),
                 new Transpose(-12, "pianoroll.menu.notes.octavedown"),
                 new QuantizeNotes(15),
