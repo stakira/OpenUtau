@@ -85,6 +85,9 @@ namespace OpenUtau.Core.Format {
                     case ProjectFormats.Ust:
                         loaded = Ust.Load(new[] { file });
                         break;
+                    case ProjectFormats.Midi:
+                        loaded = MidiWriter.LoadProject(file);
+                        break;
                     default:
                         throw new FileFormatException("Unknown file format");
                 }
