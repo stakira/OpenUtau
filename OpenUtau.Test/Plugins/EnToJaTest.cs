@@ -32,7 +32,7 @@ namespace OpenUtau.Plugins {
             new string[] { "C4", "C5" },
             new string[] { "- てA3", "e すA3", "u とA3", "o うぉC5", "o どC5", "o ずC5" })]
         public void MultipitchTest(string singerName, string[] tones, string[] aliases) {
-            RunPhonemizeTest(singerName, new string[] { "test", "words" }, 
+            RunPhonemizeTest(singerName, new string[] { "test", "words" },
                 RepeatString(2, ""), tones, RepeatString(2, ""), aliases);
         }
 
@@ -55,7 +55,7 @@ namespace OpenUtau.Plugins {
         [InlineData("ja_vcv",
             new string[] { "- てA3", "e すA3", "u てA3", "e んA3", "n RA3" })]
         [InlineData("ja_cv",
-            new string[] { "て","す","て","ん" })]
+            new string[] { "て", "す", "て", "ん" })]
         // Should have one て only, not become てえ
         public void SyllableExtendTest(string singerName, string[] aliases) {
             SameAltsTonesColorsTest(singerName, aliases,
@@ -206,6 +206,29 @@ namespace OpenUtau.Plugins {
             new string[] { "- えA3", "e いA3", "i じぇA3", "e いA3", "i じゅA3" })]
         public void EndingVcvAffricateTest(string singerName, string[] lyrics, string[] aliases) {
             SameAltsTonesColorsTest(singerName, aliases, lyrics);
+        }
+
+        [Theory]
+        [InlineData(
+            new string[] { "a", "the" },
+            new string[] { "- あ_C4", "a d_C4", "だ_C4" })]
+        [InlineData(
+            new string[] { "a", "thin" },
+            new string[] { "- あ_C4", "a s_C4", "せ_C4", "e n_C4" })]
+        [InlineData(
+            new string[] { "a", "zha" },
+            new string[] { "- あ_C4", "a sh_C4", "しゃ_C4" })]
+        [InlineData(
+            new string[] { "a", "ra" },
+            new string[] { "- あ_C4", "a w_C4", "わ_C4" })]
+        [InlineData(
+            new string[] { "a", "la" },
+            new string[] { "- あ_C4", "a r_C4", "ら_C4" })]
+        [InlineData(
+            new string[] { "all", "you" },
+            new string[] { "- お_C4", "o ry_C4", "りゅ_C4" })]
+        public void SyllableDigraphVCTest(string[] lyrics, string[] aliases) {
+            SameAltsTonesColorsTest("ja_cvvc", aliases, lyrics);
         }
 
         private void SameAltsTonesColorsTest(string singerName, string[] aliases, string[] lyrics) { 
