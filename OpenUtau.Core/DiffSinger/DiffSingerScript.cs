@@ -57,7 +57,7 @@ namespace OpenUtau.Core.DiffSinger {
             int phId = 0;
             int phCount = phones.Length;
             foreach(var note in notes.Where(n=>!n.lyric.StartsWith("+"))) {
-                while(phones[phId].position < note.position-ep && phId < phCount){
+                while(phId < phCount && phones[phId].position < note.position-ep){
                     ++phId;
                 }
                 phNumList.Add(phId - prevNotePhId);
