@@ -78,7 +78,7 @@ namespace OpenUtau.App.Controls {
         private void OnKeyDown(object? sender, KeyEventArgs e) {
             switch (e.Key) {
                 case Key.Enter:
-                    this.Focus();
+                    TopLevel.GetTopLevel(this)?.FocusManager?.ClearFocus();
                     e.Handled = true;
                     break;
                 default:
