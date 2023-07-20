@@ -64,12 +64,11 @@ namespace OpenUtau.Core.DiffSinger {
     }
 
     [Phonemizer("DiffSinger Rhythmizer Phonemizer", "DIFFS RHY", language: "ZH")]
-    public class DiffSingerRhythmizerPhonemizer : Phonemizer {
+    public class DiffSingerRhythmizerPhonemizer : MachineLearningPhonemizer {
         USinger singer;
         DsRhythmizer rhythmizer;
         Dictionary<string, string[]> phoneDict;
-        private Dictionary<int, List<Tuple<string, int>>> partResult = new Dictionary<int, List<Tuple<string, int>>>();
-
+        
         public override void SetSinger(USinger singer) {
             if (this.singer == singer) {
                 return;
@@ -102,37 +101,9 @@ namespace OpenUtau.Core.DiffSinger {
             }
         }
 
-
-        //Called when the note is changed, and the entire song is passed into the SetUp function as long as the note is changed
-        //groups is a two-dimensional array of Note, each Note[] represents a lyrical note and its following slur notes
-        //Run phoneme timing model in sections to prevent butterfly effect
-        public override void SetUp(Note[][] groups) {
-            if (groups.Length == 0) {
-                return;
-            }
-            //hanzi to pinyin
-            BaseChinesePhonemizer.RomanizeNotes(groups);
-            //Split song into sentences (phrases)
-            var phrase = new List<Note[]> { groups[0] };
-            for (int i = 1; i < groups.Length; ++i) {
-                //If the previous and current notes are connected, do not split the sentence
-                if (groups[i - 1][^1].position + groups[i - 1][^1].duration == groups[i][0].position) {
-                    phrase.Add(groups[i]);
-                } else {
-                    //If the previous and current notes are not connected, process the current sentence and start the next sentence
-                    ProcessPart(phrase.ToArray());
-                    phrase.Clear();
-                    phrase.Add(groups[i]);
-                }
-            }
-            if (phrase.Count > 0) {
-                ProcessPart(phrase.ToArray());
-            }
-        }
-
         //Run timing model for a sentence
         //Slur notes are merged into the lyrical note before it to prevent shortening of consonants due to short slur
-        void ProcessPart(Note[][] phrase) {
+        protected override void ProcessPart(Note[][] phrase) {
             float padding = 0.5f;//Padding time for consonants at the beginning of a sentence
             var phonemes = new List<string> { "SP" };
             var midi = new List<long> { 0 };//Phoneme pitch
@@ -248,24 +219,6 @@ namespace OpenUtau.Core.DiffSinger {
             var result = CumulativeSum(source.Select(x => x * ratio).Prepend(0),startPos).ToList();
             result.RemoveAt(result.Count - 1);
             return result;
-        }
-
-        public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevs) {
-            if (!partResult.TryGetValue(notes[0].position, out var phonemes)) {
-                throw new Exception("Part result not found");
-            }
-            return new Result {
-                phonemes = phonemes
-                    .Select((tu) => new Phoneme() {
-                        phoneme = tu.Item1,
-                        position = tu.Item2,
-                    })
-                    .ToArray(),
-            };
-        }
-
-        public override void CleanUp() {
-            partResult.Clear();
         }
     }
 }

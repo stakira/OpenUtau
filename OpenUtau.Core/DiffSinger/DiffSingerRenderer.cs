@@ -33,7 +33,7 @@ namespace OpenUtau.Core.DiffSinger {
 
         public USingerType SingerType => USingerType.DiffSinger;
 
-        public bool SupportsRenderPitch => false;
+        public bool SupportsRenderPitch => true;
 
         public bool IsVoiceColorCurve(string abbr, out int subBankId) {
             subBankId = 0;
@@ -240,7 +240,7 @@ namespace OpenUtau.Core.DiffSinger {
 
         //Loading rendered pitch isn't currently supported
         public RenderPitchResult LoadRenderedPitch(RenderPhrase phrase) {
-            return null;
+            return (phrase.singer as DiffSingerSinger).getPitchGenerator().Process(phrase);
         }
 
         public UExpressionDescriptor[] GetSuggestedExpressions(USinger singer, URenderSettings renderSettings) {

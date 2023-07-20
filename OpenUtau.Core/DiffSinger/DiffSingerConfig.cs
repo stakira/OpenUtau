@@ -24,5 +24,15 @@ namespace OpenUtau.Core.DiffSinger {
         public bool useKeyShiftEmbed = false;
         public bool useSpeedEmbed = false;
         public AugmentationArgs augmentationArgs;
+        public string dur;
+        public string linguistic;
+        public string pitch;
+        public string variance;
+        public int hop_size = 512;
+        public int sample_rate = 44100;
+
+        public float frameMs(){
+            return 1000f * hop_size / sample_rate;
+        }
     }
 }
