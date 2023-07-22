@@ -30,7 +30,7 @@ namespace OpenUtau.Core.DiffSinger {
         public string variance;
         public int hop_size = 512;
         public int sample_rate = 44100;
-
+        public bool predict_dur = true;
         public float frameMs(){
             return 1000f * hop_size / sample_rate;
         }

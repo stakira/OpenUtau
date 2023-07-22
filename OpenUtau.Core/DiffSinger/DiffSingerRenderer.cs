@@ -237,10 +237,8 @@ namespace OpenUtau.Core.DiffSinger {
             return samples;
         }
 
-
-        //Loading rendered pitch isn't currently supported
         public RenderPitchResult LoadRenderedPitch(RenderPhrase phrase) {
-            return (phrase.singer as DiffSingerSinger).getPitchGenerator().Process(phrase);
+            return (phrase.singer as DiffSingerSinger).getPitchPredictor().Process(phrase);
         }
 
         public UExpressionDescriptor[] GetSuggestedExpressions(USinger singer, URenderSettings renderSettings) {

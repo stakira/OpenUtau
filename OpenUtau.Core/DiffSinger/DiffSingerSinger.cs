@@ -39,7 +39,7 @@ namespace OpenUtau.Core.DiffSinger {
         public DsConfig dsConfig;
         public InferenceSession acousticSession = null;
         public DsVocoder vocoder = null;
-        public DsPitch pitchGenerator = null;
+        public DsPitch pitchPredictor = null;
         public NDArray speakerEmbeds = null;
         
 
@@ -108,8 +108,7 @@ namespace OpenUtau.Core.DiffSinger {
 
         public InferenceSession getAcousticSession() {
             if (acousticSession is null) {
-                var acousticModel = File.ReadAllBytes(Path.Combine(Location, dsConfig.acoustic));
-                acousticSession = Onnx.getInferenceSession(acousticModel);
+                acousticSession = Onnx.getInferenceSession(Path.Combine(Location, dsConfig.acoustic));
             }
             return acousticSession;
         }
@@ -121,15 +120,15 @@ namespace OpenUtau.Core.DiffSinger {
             return vocoder;
         }
 
-        public DsPitch getPitchGenerator(){
-            if(pitchGenerator is null) {
+        public DsPitch getPitchPredictor(){
+            if(pitchPredictor is null) {
                 if(File.Exists(Path.Join(Location, "dspitch", "dsconfig.yaml"))){
-                    pitchGenerator = new DsPitch(Path.Join(Location, "dspitch"));
-                    return pitchGenerator;
+                    pitchPredictor = new DsPitch(Path.Join(Location, "dspitch"));
+                    return pitchPredictor;
                 }
-                pitchGenerator = new DsPitch(Location);
+                pitchPredictor = new DsPitch(Location);
             }
-            return pitchGenerator;
+            return pitchPredictor;
         }
 
         public NDArray loadSpeakerEmbed(string speaker) {
