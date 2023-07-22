@@ -123,6 +123,10 @@ namespace OpenUtau.Core.DiffSinger {
 
         public DsPitch getPitchGenerator(){
             if(pitchGenerator is null) {
+                if(File.Exists(Path.Join(Location, "dspitch", "dsconfig.yaml"))){
+                    pitchGenerator = new DsPitch(Path.Join(Location, "dspitch"));
+                    return pitchGenerator;
+                }
                 pitchGenerator = new DsPitch(Location);
             }
             return pitchGenerator;

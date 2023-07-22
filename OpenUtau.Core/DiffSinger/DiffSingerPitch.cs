@@ -138,14 +138,12 @@ namespace OpenUtau.Core.DiffSinger
             var pitchOutputs = pitchModel.Run(pitchInputs);
             var pitch_out = pitchOutputs.First().AsTensor<float>().ToArray();
 
-            var startTick = (float)phrase.timeAxis.MsPosToTickPos(startMs);
             return new RenderPitchResult{
                 ticks = Enumerable.Range(0,n_frames)
-                    .Select(i=>(float)phrase.timeAxis.MsPosToTickPos(startMs + i*frameMs) - startTick)
+                    .Select(i=>(float)phrase.timeAxis.MsPosToTickPos(startMs + i*frameMs) - phrase.position)
                     .ToArray(),
                 tones = pitch_out
             };
         }
-
     }
 }

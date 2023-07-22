@@ -27,8 +27,8 @@ namespace OpenUtau.Core.DiffSinger
         public override void SetSinger(USinger singer) {
             this.singer = singer;
             string rootPath;
-            if (File.Exists(Path.Join(singer.Location, "dsphonemizer", "dsconfig.yaml"))) {
-                rootPath = Path.Combine(singer.Location, "dsphonemizer");
+            if (File.Exists(Path.Join(singer.Location, "dsdur", "dsconfig.yaml"))) {
+                rootPath = Path.Combine(singer.Location, "dsdur");
             } else {
                 rootPath = singer.Location;
             }
@@ -269,28 +269,6 @@ namespace OpenUtau.Core.DiffSinger
                     }
                 }
                 partResult[group[0].position] = noteResult;
-            /*
-            var noteResults = new List<Tuple<string, int>>();
-            float currentFrame = -padding / frameMs;
-            var durationsEnum = durationFrames.GetEnumerator();
-            currentFrame += durationsEnum.MoveNext()? (float)durationsEnum.Current : 0;
-
-            var noteStartMs = timeAxis.TickPosToMsPos(phrasePhonemes[0].Position);
-            foreach(string phoneme in phrasePhonemes[0].Phonemes.Skip(1)){
-                noteResults.Add(new Tuple<string, int>(phoneme, 
-                    timeAxis.MsPosToTickPos(noteStartMs+currentFrame*frameMs) - phrasePhonemes[0].Position));
-                currentFrame+=durationsEnum.MoveNext()? (float)durationsEnum.Current : 0;
-            }
-            foreach(var notePhonemes in phrasePhonemes.Skip(1)){
-                currentFrame = 0;
-                noteStartMs = timeAxis.TickPosToMsPos(notePhonemes.Position);
-                foreach(string phoneme in notePhonemes.Phonemes){
-                    noteResults.Add(new Tuple<string, int>(phoneme, 
-                        timeAxis.MsPosToTickPos(noteStartMs+currentFrame*frameMs)-notePhonemes.Position));
-                    currentFrame+=durationsEnum.MoveNext()? (float)durationsEnum.Current : 0;
-                }
-                partResult[notePhonemes.Position]=noteResults;
-                noteResults = new List<Tuple<string, int>>();*/
             }
         }
     }
