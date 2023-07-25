@@ -40,16 +40,16 @@ namespace OpenUtau.Plugin.Builtin {
             var g2ps = new List<IG2p>();
 
             // Load dictionary from plugin folder.
-            string path = Path.Combine(PluginDir, "german.yaml");
+            string path = Path.Combine(PluginDir, "de_vccv.yaml");
             if (!File.Exists(path)) {
                 Directory.CreateDirectory(PluginDir);
-                File.WriteAllBytes(path, Data.Resources.german_template);
+                File.WriteAllBytes(path, Data.Resources.de_vccv_template);
             }
             g2ps.Add(G2pDictionary.NewBuilder().Load(File.ReadAllText(path)).Build());
 
             // Load dictionary from singer folder.
             if (singer != null && singer.Found && singer.Loaded) {
-                string file = Path.Combine(singer.Location, "german.yaml");
+                string file = Path.Combine(singer.Location, "de_vccv.yaml");
                 if (File.Exists(file)) {
                     try {
                         g2ps.Add(G2pDictionary.NewBuilder().Load(File.ReadAllText(file)).Build());
