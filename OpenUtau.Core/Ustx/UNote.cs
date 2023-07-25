@@ -211,7 +211,8 @@ namespace OpenUtau.Core.Ustx {
         float _out = NotePresets.Default.DefaultVibrato.VibratoOut;
         // Shift percentage of period length.
         float _shift = NotePresets.Default.DefaultVibrato.VibratoShift;
-        float _drift;
+        // Shift the whole vibrato up and down
+        float _drift = NotePresets.Default.DefaultVibrato.VibratoDrift;
 
         public float length { get => _length; set => _length = Math.Max(0, Math.Min(100, value)); }
         public float period { get => _period; set => _period = Math.Max(5, Math.Min(500, value)); }
@@ -268,6 +269,7 @@ namespace OpenUtau.Core.Ustx {
             float nOutPos = 1f - nOut;
             float t = (nPos - nStart) / nPeriod + shift / 100f;
             float y = (float)Math.Sin(2 * Math.PI * t) * depth;
+            y += depth / 100 * drift;
             if (nPos < nStart) {
                 y = 0;
             } else if (nPos < nInPos) {

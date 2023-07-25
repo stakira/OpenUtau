@@ -163,6 +163,7 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="notedefaults.vibrato.out">Fade Out</system:String>
   <system:String x:Key="notedefaults.vibrato.period">Period</system:String>
   <system:String x:Key="notedefaults.vibrato.shift">Shift</system:String>
+  <system:String x:Key="notedefaults.vibrato.drift">Drift</system:String>
 
   <system:String x:Key="noteproperty">Note Properties</system:String>
   <system:String x:Key="noteproperty.apply">Apply</system:String>
