@@ -268,8 +268,7 @@ namespace OpenUtau.Core.Ustx {
             float nOut = length / 100f * @out / 100f;
             float nOutPos = 1f - nOut;
             float t = (nPos - nStart) / nPeriod + shift / 100f;
-            float y = (float)Math.Sin(2 * Math.PI * t) * depth;
-            y += depth / 100 * drift;
+            float y = (float)Math.Sin(2 * Math.PI * t) * depth + (depth / 100 * drift);
             if (nPos < nStart) {
                 y = 0;
             } else if (nPos < nInPos) {
