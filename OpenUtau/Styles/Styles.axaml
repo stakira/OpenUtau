@@ -403,6 +403,12 @@
   <Style Selector="Expander" >
     <Setter Property="CornerRadius" Value="5" />
     <Setter Property="Background" Value="Transparent" />
-    <Setter Property="Padding" Value="0" />
+    <Setter Property="BorderBrush" Value="{StaticResource SystemControlForegroundBaseMediumBrush}"/>
+    <Setter Property="Padding" Value="10" />
+    <Setter Property="IsExpanded" Value="True" />
+
+    <Style Selector="^:down /template/ ToggleButton#ExpanderHeader">
+      <Setter Property="BorderBrush" Value="{StaticResource SystemControlForegroundBaseMediumBrush}"/>
+    </Style>
   </Style>
 </Styles>
