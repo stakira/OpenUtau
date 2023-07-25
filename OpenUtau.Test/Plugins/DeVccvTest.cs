@@ -17,7 +17,7 @@ namespace OpenUtau.Plugins {
             new string[] { "", "" },
             new string[] { "A2", "A2" },
             new string[] { "", "" },
-            new string[] { "- guA2", "u tA2", "t@A2", "@nA2", "ntA2", "taA2", "akA2" })]
+            new string[] { "- guA2", "u tA2", "t@A2", "@n", "ntA2", "taA2", "akA2" })]
         [InlineData("de_vccv",
             new string[] { "guten", "+", "Tag" },
             new string[] { "", "", "" },
