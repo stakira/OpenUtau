@@ -26,6 +26,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public float VibratoIn { get; set; }
         [Reactive] public float VibratoOut { get; set; }
         [Reactive] public float VibratoShift { get; set; }
+        [Reactive] public float VibratoDrift { get; set; }
         [Reactive] public float AutoVibratoNoteLength { get; set; }
         [Reactive] public bool AutoVibratoToggle { get; set; }
         [Reactive] public bool IsNoteSelected { get; set; } = false;
@@ -96,6 +97,7 @@ namespace OpenUtau.App.ViewModels {
                 VibratoIn = note.vibrato.@in;
                 VibratoOut = note.vibrato.@out;
                 VibratoShift = note.vibrato.shift;
+                VibratoDrift = note.vibrato.drift;
             } else {
                 IsNoteSelected = false;
                 Lyric = NotePresets.Default.DefaultLyric;
@@ -107,6 +109,7 @@ namespace OpenUtau.App.ViewModels {
                 VibratoIn = NotePresets.Default.DefaultVibrato.VibratoIn;
                 VibratoOut = NotePresets.Default.DefaultVibrato.VibratoOut;
                 VibratoShift = NotePresets.Default.DefaultVibrato.VibratoShift;
+                VibratoDrift = NotePresets.Default.DefaultVibrato.VibratoDrift;
             }
             AutoVibratoNoteLength = NotePresets.Default.AutoVibratoNoteDuration;
             AutoVibratoToggle = NotePresets.Default.AutoVibratoToggle;
@@ -211,6 +214,10 @@ namespace OpenUtau.App.ViewModels {
                 } else if (cmd is VibratoShiftCommand) {
                     if (noteCommand.Notes.Contains(note)) {
                         VibratoShift = note.vibrato.shift;
+                    }
+                } else if (cmd is VibratoDriftCommand) {
+                    if (noteCommand.Notes.Contains(note)) {
+                        VibratoDrift = note.vibrato.drift;
                     }
                 }
             } else if (cmd is ExpCommand) {
@@ -355,6 +362,18 @@ namespace OpenUtau.App.ViewModels {
                         }
                     }
                 });
+            this.WhenAnyValue(vm => vm.VibratoDrift)
+                .Subscribe(value => {
+                    if (value >= -100 && value <= 100) {
+                        if (AllowNoteEdit && Part != null && selectedNotes.Count > 0) {
+                            foreach (UNote note in selectedNotes) {
+                                if (note.vibrato.drift != value) {
+                                    DocManager.Inst.ExecuteCmd(new VibratoDriftCommand(Part, note, value));
+                                }
+                            }
+                        }
+                    }
+                });
 
             this.WhenAnyValue(vm => vm.ApplyPortamentoPreset)
                 .WhereNotNull()
@@ -459,7 +478,7 @@ namespace OpenUtau.App.ViewModels {
             if (string.IsNullOrEmpty(name)) {
                 return;
             }
-            NotePresets.Default.VibratoPresets.Add(new NotePresets.VibratoPreset(name, VibratoLength, VibratoPeriod, VibratoDepth, VibratoIn, VibratoOut, VibratoShift));
+            NotePresets.Default.VibratoPresets.Add(new NotePresets.VibratoPreset(name, VibratoLength, VibratoPeriod, VibratoDepth, VibratoIn, VibratoOut, VibratoShift, VibratoDrift));
             NotePresets.Save();
         }
         public void RemoveAppliedVibratoPreset() {

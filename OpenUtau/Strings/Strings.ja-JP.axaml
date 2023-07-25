@@ -163,6 +163,7 @@
   <system:String x:Key="notedefaults.vibrato.out">フェードアウト</system:String>
   <system:String x:Key="notedefaults.vibrato.period">周期</system:String>
   <system:String x:Key="notedefaults.vibrato.shift">位相</system:String>
+  <system:String x:Key="notedefaults.vibrato.drift">高さ</system:String>
 
   <system:String x:Key="noteproperty">音符のプロパティ</system:String>
   <system:String x:Key="noteproperty.apply">適用</system:String>
