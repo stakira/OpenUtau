@@ -12,11 +12,10 @@
         TransparencyLevelHint="None"
         ExtendClientAreaToDecorationsHint="{Binding ExtendToFrame}" Deactivated="WindowDeactivated">
   <Window.Styles>
-    <Style Selector="Button,ToggleButton">
-      <Setter Property="Focusable" Value="False"/>
-    </Style>
+    <StyleInclude Source="/Styles/PianoRollStyles.axaml"/>
   </Window.Styles>
   <Grid>
+  <Border>
     <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="{Binding $parent[1].WindowDecorationMargin}">
       <Grid.RowDefinitions>
         <RowDefinition Height="24"/>
@@ -32,6 +31,13 @@
         <ColumnDefinition Width="24"/>
         <ColumnDefinition Width="Auto"/>
       </Grid.ColumnDefinitions>
+      <Grid Grid.Column="0" Grid.Row="0" Grid.RowSpan="2">
+        <Rectangle HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="12" Fill="{Binding NotesViewModel.TrackAccentColor}"/>
+        <Border Margin="12,0,0,0" Width="48" Height="48" ClipToBounds="True">
+          <Image HorizontalAlignment="Center" VerticalAlignment="Center"
+                 Width="50" Height="50" Stretch="None" Source="{Binding NotesViewModel.Avatar}"/>
+        </Border>
+      </Grid>
       <ScrollBar Name="HScrollBar" Classes="music" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                  Margin="0,4,0,4" Orientation="Horizontal" AllowAutoHide="False"
                  DataContext="{Binding NotesViewModel}"
@@ -504,5 +510,6 @@
       </Canvas>
       <ProgressBar Grid.Row="5" Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Value="{Binding Progress}"/>
     </Grid>
+    </Border>
   </Grid>
 </Window>

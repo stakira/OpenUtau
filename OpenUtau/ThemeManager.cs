@@ -1,4 +1,6 @@
-﻿using Avalonia;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Styling;
@@ -47,6 +49,27 @@ namespace OpenUtau.App {
         public static IBrush ExpShadowNameBrush = Brushes.White;
         public static IBrush ExpActiveBrush = Brushes.Black;
         public static IBrush ExpActiveNameBrush = Brushes.White;
+
+        public static List<TrackColor> TrackColors = new List<TrackColor>(){
+                new TrackColor("Pink", "#F06292", "#E91E63", "#F48FB1"),
+                new TrackColor("Red", "#EF5350", "#E53935", "#E57373"),
+                new TrackColor("Orange", "#FF8A65", "#FF5722", "#FFAB91"),
+                new TrackColor("Yellow", "#FBC02D", "#F9A825", "#FDD835"),
+                new TrackColor("Light Green", "#CDDC39", "#AFB42B", "#DCE775"),
+                new TrackColor("Green", "#66BB6A", "#43A047", "#A5D6A7"),
+                new TrackColor("Light Blue", "#4FC3F7", "#03A9F4", "#81D4FA"),
+                new TrackColor("Blue", "#4EA6EA", "#1E88E5", "#90CAF9"),
+                new TrackColor("Purple", "#BA68C8", "#9C27B0", "#CE93D8"),
+                new TrackColor("Pink2", "#E91E63", "#C2185B", "#F06292"),
+                new TrackColor("Red2", "#D32F2F", "#B71C1C", "#EF5350"),
+                new TrackColor("Orange2", "#FF5722", "#E64A19", "#FF8A65"),
+                new TrackColor("Yellow2", "#FF8F00", "#FF6F00", "#FFB300"),
+                new TrackColor("Light Green2", "#AFB42B", "#827717", "#CDDC39"),
+                new TrackColor("Green2", "#2E7D32", "#1B5E20", "#4CAF50"),
+                new TrackColor("Light Blue2", "#1976D2", "#0D47A1", "#2196F3"),
+                new TrackColor("Blue2", "#3949AB", "#283593", "#5C6BC0"),
+                new TrackColor("Purple2", "#7B1FA2", "#4A148C", "#9C27B0"),
+            };
 
         public static void LoadTheme() {
             if (Application.Current == null) {
@@ -149,6 +172,20 @@ namespace OpenUtau.App {
             MessageBus.Current.SendMessage(new ThemeChangedEvent());
         }
 
+        public static void ChangeTrackColor(string color) {
+            if (Application.Current == null) {
+                return;
+            }
+            try {
+                IResourceDictionary resDict = Application.Current.Resources;
+                TrackColor tcolor = GetTrackColor(color);
+                resDict["SelectedTrackAccentBrush"] = tcolor.AccentColor;
+                resDict["SelectedTrackAccentLightBrush"] = tcolor.AccentColorLight;
+                resDict["SelectedTrackAccentLightBrushSemi"] = tcolor.AccentColorLightSemi;
+                resDict["SelectedTrackAccentDarkBrush"] = tcolor.AccentColorDark;
+            } catch { }
+        }
+
         public static string GetString(string key) {
             if (Application.Current == null) {
                 return key;
@@ -158,6 +195,30 @@ namespace OpenUtau.App {
                 return s;
             }
             return key;
+        }
+
+        public static TrackColor GetTrackColor(string name) {
+            if (TrackColors.Any(c => c.Name == name)) {
+                return TrackColors.First(c => c.Name == name);
+            }
+            return TrackColors.First(c => c.Name == "Blue");
+        }
+    }
+
+    public class TrackColor {
+        public string Name { get; set; } = "";
+        public SolidColorBrush AccentColor { get; set; }
+        public SolidColorBrush AccentColorDark { get; set; } // Pressed
+        public SolidColorBrush AccentColorLight { get; set; } // PointerOver
+        public SolidColorBrush AccentColorLightSemi { get; set; } // BackGround
+
+        public TrackColor(string name, string accentColor, string darkColor, string lightColor) {
+            Name = name;
+            AccentColor = SolidColorBrush.Parse(accentColor);
+            AccentColorDark = SolidColorBrush.Parse(darkColor);
+            AccentColorLight = SolidColorBrush.Parse(lightColor);
+            AccentColorLightSemi = SolidColorBrush.Parse(lightColor);
+            AccentColorLightSemi.Opacity = 0.5;
         }
     }
 }

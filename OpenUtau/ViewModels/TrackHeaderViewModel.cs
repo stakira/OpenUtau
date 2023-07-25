@@ -8,7 +8,9 @@ using System.Reactive.Linq;
 using System.Threading;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Media;
 using Avalonia.Media.Imaging;
+using Avalonia.Styling;
 using OpenUtau.Api;
 using OpenUtau.App.Views;
 using OpenUtau.Core;
@@ -32,6 +34,8 @@ namespace OpenUtau.App.ViewModels {
         public IReadOnlyList<MenuItemViewModel>? RenderersMenuItems { get; set; }
         public ReactiveCommand<string, Unit> SelectRendererCommand { get; }
         [Reactive] public string TrackName { get; set; } = string.Empty;
+        [Reactive] public SolidColorBrush TrackAccentColor { get; set; } = ThemeManager.GetTrackColor("Blue").AccentColor;
+        [Reactive] public TrackColor TrackColor { get; set; } = ThemeManager.GetTrackColor("Blue");
         [Reactive] public double Volume { get; set; }
         [Reactive] public double Pan { get; set; }
         [Reactive] public bool Mute { get; set; }
@@ -130,6 +134,10 @@ namespace OpenUtau.App.ViewModels {
             });
 
             TrackName = track.TrackName;
+            TrackAccentColor = ThemeManager.GetTrackColor(track.TrackColor).AccentColor;
+            TrackColor = Preferences.Default.UseTrackColor
+                ? ThemeManager.GetTrackColor(track.TrackColor)
+                : ThemeManager.GetTrackColor("Blue");
             Volume = track.Volume;
             Pan = track.Pan;
             Mute = track.Mute;
@@ -375,6 +383,19 @@ namespace OpenUtau.App.ViewModels {
             }
         }
 
+        public async void SelectTrackColor() {
+            var dialog = new TrackColorDialog();
+            dialog.DataContext = new TrackColorViewModel(track);
+            
+            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop && desktop.MainWindow != null) {
+                await dialog.ShowDialog(desktop.MainWindow);
+                TrackAccentColor = ThemeManager.GetTrackColor(track.TrackColor).AccentColor;
+                TrackColor = Preferences.Default.UseTrackColor
+                ? ThemeManager.GetTrackColor(track.TrackColor)
+                : ThemeManager.GetTrackColor("Blue");
+            }
+        }
+
         public void Duplicate() {
             DocManager.Inst.StartUndoGroup();
             //TODO
@@ -388,6 +409,7 @@ namespace OpenUtau.App.ViewModels {
                 Solo = track.Solo,
                 Volume = track.Volume,
                 Pan = track.Pan,
+                TrackColor = track.TrackColor
             };
             DocManager.Inst.ExecuteCmd(new AddTrackCommand(DocManager.Inst.Project, newTrack));
             var parts = DocManager.Inst.Project.parts
@@ -413,6 +435,7 @@ namespace OpenUtau.App.ViewModels {
                 Solo = track.Solo,
                 Volume = track.Volume,
                 Pan = track.Pan,
+                TrackColor = track.TrackColor
             }));
             DocManager.Inst.EndUndoGroup();
         }
