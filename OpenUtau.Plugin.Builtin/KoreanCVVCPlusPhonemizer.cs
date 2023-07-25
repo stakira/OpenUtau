@@ -148,31 +148,7 @@ namespace OpenUtau.Plugin.Builtin {
             str = consStr.Replace('y', ' ');
             str = str.Trim();
 
-            if (str == "gg") { return true; } 
-            else if (str == "dd") { return true; }
-            else if (str == "bb") { return true; }
-            else if (str == "ss") { return true; } 
-            else if (str == "f") { return true; } 
-            else if (str == "v") { return true; } 
-            else if (str == "z") { return true; } 
-            else if (str == "th") { return true; } 
-            else if (str == "rr") { return true; } 
-            else if (str == "g") { return true; } 
-            else if (str == "n") { return true; } 
-            else if (str == "d") { return true; } 
-            else if (str == "r") { return true; } 
-            else if (str == "m") { return true; } 
-            else if (str == "b") { return true; } 
-            else if (str == "s") { return true; } 
-            else if (str == "j") { return true; } 
-            else if (str == "ch") { return true; } 
-            else if (str == "k") { return true; } 
-            else if (str == "t") { return true; } 
-            else if (str == "p") { return true; } 
-            else if (str == "h") { return true; } 
-            else if (str == "jj") { return true; }
-            else if (str == "l") { return true; } 
-            else { return false; }
+            if (str == "gg") { return true; } else if (str == "dd") { return true; } else if (str == "bb") { return true; } else if (str == "ss") { return true; } else if (str == "f") { return true; } else if (str == "v") { return true; } else if (str == "z") { return true; } else if (str == "th") { return true; } else if (str == "rr") { return true; } else if (str == "g") { return true; } else if (str == "n") { return true; } else if (str == "d") { return true; } else if (str == "r") { return true; } else if (str == "m") { return true; } else if (str == "b") { return true; } else if (str == "s") { return true; } else if (str == "j") { return true; } else if (str == "ch") { return true; } else if (str == "k") { return true; } else if (str == "t") { return true; } else if (str == "p") { return true; } else if (str == "h") { return true; } else if (str == "jj") { return true; } else if (str == "l") { return true; } else { return false; }
         }
 
         static KoreanCVVCPlusPhonemizer() {
@@ -294,7 +270,7 @@ namespace OpenUtau.Plugin.Builtin {
                 TCLvowel = TCLtemp[1];
                 TCLplainvowel = naPlainVowels[CLvowel];
 
-                if (TCLvowel.StartsWith("y") || (TCLvowel == "i")) { TCLsemivowel = 1; } else if (TCLvowel.StartsWith("w") || (TCLvowel == "o") || (TCLvowel == "u")) { TCLsemivowel = 2; } else {
+                if (TCLvowel.StartsWith("y") || (TCLvowel == "i" && TCLconsonant != "")) { TCLsemivowel = 1; } else if (TCLvowel.StartsWith("w") || ((TCLvowel == "o" && TCLconsonant != "") || (TCLvowel == "u" && TCLconsonant != ""))) { TCLsemivowel = 2; } else {
                     TCLsemivowel = 0;
                 }
 
@@ -357,7 +333,7 @@ namespace OpenUtau.Plugin.Builtin {
                     TNLvowel = TNLtemp[1];
                     TNLplainvowel = naPlainVowels[NLvowel];
 
-                    if (TNLvowel.StartsWith("y") || TNLvowel == "i") { TNLsemivowel = 1; } else if (TNLvowel.StartsWith("w") || TNLvowel == "o" || TNLvowel == "u") { TNLsemivowel = 2; }
+                    if (TNLvowel.StartsWith("y") || TNLvowel == "i" && TNLconsonant != "") { TNLsemivowel = 1; } else if (TNLvowel.StartsWith("w") || TNLvowel == "o" && TNLconsonant != "" || TNLvowel == "u" && TNLconsonant != "") { TNLsemivowel = 2; }
 
                     TNLtemp = naFinals[NLfinal].Split(':');
                     TNLfinal = TNLtemp[1];
@@ -970,7 +946,7 @@ namespace OpenUtau.Plugin.Builtin {
                     consonant = TNLconsonant + "y";
                 } else if (nextExist && nextHangeul && TNLconsonant != "" && TNLsemivowel == 2) {
                     consonant = TNLconsonant + "w";
-                } else if (nextExist && nextHangeul && nextLyric.StartsWith('ㄹ')) {
+                } else if (nextExist && nextHangeul && nextLyric.StartsWith("ㄹ")) {
                     consonant = "l";
                 } else if (nextExist && nextHangeul && TNLconsonant == "") {
                     consonant = "";

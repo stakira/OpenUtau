@@ -339,3 +339,6 @@ OpenUtau.Test/Usts/*
 appcast.*.xml
 *.tar.gz
 .vscode/
+*.ptsd
+OpenUtau/py/
+py/

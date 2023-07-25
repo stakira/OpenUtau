@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using OpenUtau.Api;
+using OpenUtau.Classic;
 using OpenUtau.Core.Ustx;
 using Serilog;
 
@@ -66,8 +67,19 @@ namespace OpenUtau.Plugin.Builtin {
                 if (singer.TryGetMappedOto(alias, note.tone, color, out var oto)) {
                     return MakeSimpleResult(oto.Alias);
                 }
+
+                var otos = new List<UOto>();
+                //string color = attr.voiceColor ?? "";
+                if (otos.Count > 0) {
+                    if (otos.Any(oto => (oto.Color ?? string.Empty) == color)) {
+                        oto = otos.Find(oto => (oto.Color ?? string.Empty) == color);
+                        return MakeSimpleResult(alias);
+                    }
+                }
+
                 return MakeSimpleResult(alias);
             }
+
             // Get the symbols of current note.
             string[] symbols = GetSymbols(note);
             if (nextNeighbour == null) {
@@ -182,6 +194,16 @@ namespace OpenUtau.Plugin.Builtin {
             if (singer.TryGetMappedOto($"- {symbol}", tone, color, out var oto3)) {
                 return oto3.Alias;
             }
+
+            var otos = new List<UOto>();
+            //string color = attr.voiceColor ?? "";
+            if (otos.Count > 0) {
+                if (otos.Any(oto => (oto.Color ?? string.Empty) == color)) {
+                    oto = otos.Find(oto => (oto.Color ?? string.Empty) == color);
+                    return $"{prevSymbol} {symbol}{alt}";
+                }
+            }
+
             return $"{prevSymbol} {symbol}{alt}";
         }
 

@@ -63,7 +63,9 @@ namespace OpenUtau.Plugin.Builtin {
                 var cv = $"{cc.Last()}{v}";
                 cv = ValidateAlias(cv);
                 basePhoneme = cv;
-                phonemes.Add($"- {cc[0]}");
+                for (var i = 0; i < cc.Length - 1; i++) {
+                    phonemes.Add($"- {ValidateAlias(cc[i])}");
+                }
             } else { // VCV
                 var cv = $"{cc.Last()}{v}";
                 var vc = $"{prevV} {cc[0]}";
@@ -71,16 +73,16 @@ namespace OpenUtau.Plugin.Builtin {
                 basePhoneme = cv;
                 vc = ValidateAlias(vc);
                 phonemes.Add(vc);
-            }
-            for (var i = 0; i < cc.Length - 1; i++) {
-                cc[i] = ValidateAlias(cc[i]);
-                cc[0] = ValidateAlias(cc[0]);
-                phonemes.Add(cc[i]);
-                if (!burstConsonants.Contains(cc[0]) && cc[0].Contains(cc[i]) || syllable.IsStartingCVWithMoreThanOneConsonant && cc[0].Contains(cc[i])) {
-                    phonemes.Remove(cc[0]);
-                }
-                if (!cc.Last().Contains(cc[i])) {
-                    phonemes.Remove(cc.Last());
+                for (var i = 0; i < cc.Length - 1; i++) {
+                    cc[i] = ValidateAlias(cc[i]);
+                    cc[0] = ValidateAlias(cc[0]);
+                    phonemes.Add(cc[i]);
+                    //if (!burstConsonants.Contains(cc[0]) && cc[0].Contains(cc[i]) || syllable.IsStartingCVWithMoreThanOneConsonant && cc[0].Contains(cc[i])) {
+                    //    phonemes.Remove(cc[0]);
+                    //}
+                    //if (!cc.Last().Contains(cc[i])) {
+                    //    phonemes.Remove(cc.Last());
+                    //}
                 }
             }
 

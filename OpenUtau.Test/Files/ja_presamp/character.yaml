@@ -99,3 +99,23 @@
   suffix: 星_E3
   tone_ranges:
   - C1-F#3
+- color: キレ
+  prefix: ''
+  suffix: _A3
+  tone_ranges:
+  - C1-B3
+- color: キレ
+  prefix: ''
+  suffix: 船_D4
+  tone_ranges:
+  - C4-D#4
+- color: キレ
+  prefix: ''
+  suffix: 波_F4
+  tone_ranges:
+  - E4-G4
+- color: キレ
+  prefix: ''
+  suffix: 貝_A4
+  tone_ranges:
+  - G#4-B7
