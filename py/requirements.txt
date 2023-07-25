@@ -1,0 +1,7 @@
+editdistance
+hydra-core
+omegaconf
+torch
+torchaudio
+tqdm
+onnx

@@ -563,7 +563,7 @@ namespace OpenUtau.App.Views {
             Width = x != null ? wa.Size.Width * x.Value : wa.Size.Width;
             Height = (y != null ? wa.Size.Height * y.Value : wa.Size.Height) - titleBarHeight;
             if (pianoRollWindow != null) {
-                pianoRollWindow.Position = new PixelPoint(x != null ? (int)Width : 0, y != null ? (int)(Height + (OS.IsMacOS() ? 25 : titleBarHeight)) : 0);
+                pianoRollWindow.Position = new PixelPoint(x != null ? (int) Width : 0, y != null ? (int) (Height + (OS.IsMacOS() ? 25 : titleBarHeight)) : 0);
                 pianoRollWindow.Width = x != null ? wa.Size.Width - Width : wa.Size.Width;
                 pianoRollWindow.Height = (y != null ? wa.Size.Height - (Height + titleBarHeight) : wa.Size.Height) - titleBarHeight;
             }
@@ -695,10 +695,10 @@ namespace OpenUtau.App.Views {
             } else if (ext == ".dll") {
                 var result = await MessageBox.Show(
                     this,
-                    ThemeManager.GetString("dialogs.installdll.message")+file,
+                    ThemeManager.GetString("dialogs.installdll.message") + file,
                     ThemeManager.GetString("dialogs.installdll.caption"),
                     MessageBox.MessageBoxButtons.OkCancel);
-                if(result == MessageBox.MessageBoxResult.Ok){                
+                if (result == MessageBox.MessageBoxResult.Ok) {
                     Core.Api.PhonemizerInstaller.Install(file);
                 }
             } else if (ext == ".exe") {
@@ -744,18 +744,18 @@ namespace OpenUtau.App.Views {
         }
 
         public void HScrollPointerWheelChanged(object sender, PointerWheelEventArgs args) {
-            var scrollbar = (ScrollBar)sender;
+            var scrollbar = (ScrollBar) sender;
             scrollbar.Value = Math.Max(scrollbar.Minimum, Math.Min(scrollbar.Maximum, scrollbar.Value - scrollbar.SmallChange * args.Delta.Y));
         }
 
         public void VScrollPointerWheelChanged(object sender, PointerWheelEventArgs args) {
-            var scrollbar = (ScrollBar)sender;
+            var scrollbar = (ScrollBar) sender;
             scrollbar.Value = Math.Max(scrollbar.Minimum, Math.Min(scrollbar.Maximum, scrollbar.Value - scrollbar.SmallChange * args.Delta.Y));
         }
 
         public void TimelinePointerWheelChanged(object sender, PointerWheelEventArgs args) {
-            var control = (Control)sender;
-            var position = args.GetCurrentPoint((Visual)sender).Position;
+            var control = (Control) sender;
+            var position = args.GetCurrentPoint((Visual) sender).Position;
             var size = control.Bounds.Size;
             position = position.WithX(position.X / size.Width).WithY(position.Y / size.Height);
             viewModel.TracksViewModel.OnXZoomed(position, 0.1 * args.Delta.Y);
@@ -766,7 +766,7 @@ namespace OpenUtau.App.Views {
         }
 
         public void TimelinePointerPressed(object sender, PointerPressedEventArgs args) {
-            var control = (Control)sender;
+            var control = (Control) sender;
             var point = args.GetCurrentPoint(control);
             if (point.Properties.IsLeftButtonPressed) {
                 args.Pointer.Capture(control);
@@ -779,7 +779,7 @@ namespace OpenUtau.App.Views {
         }
 
         public void TimelinePointerMoved(object sender, PointerEventArgs args) {
-            var control = (Control)sender;
+            var control = (Control) sender;
             var point = args.GetCurrentPoint(control);
             if (point.Properties.IsLeftButtonPressed) {
                 viewModel.TracksViewModel.PointToLineTick(point.Position, out int left, out int right);
@@ -792,7 +792,7 @@ namespace OpenUtau.App.Views {
         }
 
         public void PartsCanvasPointerPressed(object sender, PointerPressedEventArgs args) {
-            var control = (Control)sender;
+            var control = (Control) sender;
             var point = args.GetCurrentPoint(control);
             var hitControl = control.InputHitTest(point.Position);
             if (partEditState != null) {
@@ -856,7 +856,7 @@ namespace OpenUtau.App.Views {
         }
 
         public void PartsCanvasPointerMoved(object sender, PointerEventArgs args) {
-            var control = (Control)sender;
+            var control = (Control) sender;
             var point = args.GetCurrentPoint(control);
             if (partEditState != null) {
                 partEditState.Update(point.Pointer, point.Position);
@@ -885,7 +885,7 @@ namespace OpenUtau.App.Views {
                 if (partEditState.MouseButton != args.InitialPressMouseButton) {
                     return;
                 }
-                var control = (Control)sender;
+                var control = (Control) sender;
                 var point = args.GetCurrentPoint(control);
                 partEditState.Update(point.Pointer, point.Position);
                 partEditState.End(point.Pointer, point.Position);
