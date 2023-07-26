@@ -93,6 +93,22 @@ namespace OpenUtau.Core.Format
 
     public static class Ufdata
     {
+        static UVoicePart ParsePart(UfTrack ufTrack, UProject project) {
+            var part = new UVoicePart();
+            part.name = ufTrack.name;
+            part.position = 0;
+            foreach(var ufNote in ufTrack.notes){
+                var note = project.CreateNote(
+                    ufNote.key,
+                    ufNote.tickOn,
+                    ufNote.tickOff - ufNote.tickOn
+                );
+                note.lyric = ufNote.lyric;
+                part.notes.Add(note);
+            }
+            part.Duration = ufTrack.notes[^1].tickOff;
+            return part;
+        }
 
         public static UProject Load(string file){
             UProject project = new UProject();
@@ -110,28 +126,19 @@ namespace OpenUtau.Core.Format
                 .Select(t => new UTimeSignature(t.measurePosition, t.numerator, t.denominator))
                 .ToList();
             //parse tracks
-            foreach(var ufTrack in ufProject.tracks){
-                //ignore empty tracks
-                if(ufTrack.notes.Length==0){
-                    continue;
-                }
+            var parts = ufProject.tracks
+                .Where(tr=>tr.notes.Length>0)
+                .Select(tr=>ParsePart(tr,project))
+                .ToList();
+            foreach (var part in parts) {
                 var track = new UTrack(project);
-                var part = new UVoicePart();
-                part.name = ufTrack.name;
-                part.trackNo = project.tracks.Count - 1;
-                part.position = 0;
-                foreach(var ufNote in ufTrack.notes){
-                    var note = project.CreateNote(
-                        ufNote.key,
-                        ufNote.tickOn,
-                        ufNote.tickOff - ufNote.tickOn
-                    );
-                    note.lyric = ufNote.lyric;
-                    part.notes.Add(note);
-                }
-                part.Duration = ufTrack.notes[^1].tickOff;
+                track.TrackNo = project.tracks.Count;
+                part.trackNo = track.TrackNo;
+                part.AfterLoad(project, track);
+                project.tracks.Add(track);
                 project.parts.Add(part);
             }
+            
             project.ValidateFull();
             return project;
         }
