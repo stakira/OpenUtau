@@ -20,7 +20,7 @@
   <Grid>
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Visible">
       <StackPanel Margin="10">
-        <TextBlock Text="{DynamicResource noteproperty}" HorizontalAlignment="Center"/>
+        <TextBlock Text="{Binding Title}" HorizontalAlignment="Center"/>
         <TextBlock Text="!!! WORK IN PROGRESS !!!" HorizontalAlignment="Center" Foreground="Red"/>
 
         <Expander Header="{DynamicResource notedefaults.lyric}" HorizontalAlignment="Stretch" Margin="5">

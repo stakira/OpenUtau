@@ -16,6 +16,7 @@ using YamlDotNet.Core.Tokens;
 
 namespace OpenUtau.App.ViewModels {
     public class NotePropertiesViewModel : ViewModelBase, ICmdSubscriber {
+        public string Title { get => ThemeManager.GetString("noteproperty") + " (" + selectedNotes.Count + " notes)"; }
         [Reactive] public string Lyric { get; set; } = "a";
         [Reactive] public float PortamentoLength { get; set; }
         [Reactive] public float PortamentoStart { get; set; }
@@ -77,6 +78,8 @@ namespace OpenUtau.App.ViewModels {
 
         // note -> panel
         private void OnSelectNotes() {
+            this.RaisePropertyChanged(nameof(Title));
+
             if (selectedNotes.Count > 0) {
                 IsNoteSelected = true;
                 var note = selectedNotes.First();
@@ -101,6 +104,7 @@ namespace OpenUtau.App.ViewModels {
                 Lyric = NotePresets.Default.DefaultLyric;
                 PortamentoLength = NotePresets.Default.DefaultPortamento.PortamentoLength;
                 PortamentoStart = NotePresets.Default.DefaultPortamento.PortamentoStart;
+                VibratoEnable = false;
                 VibratoLength = NotePresets.Default.DefaultVibrato.VibratoLength;
                 VibratoPeriod = NotePresets.Default.DefaultVibrato.VibratoPeriod;
                 VibratoDepth = NotePresets.Default.DefaultVibrato.VibratoDepth;
