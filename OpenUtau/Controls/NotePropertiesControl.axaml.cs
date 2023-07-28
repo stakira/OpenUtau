@@ -52,11 +52,13 @@ namespace OpenUtau.App.Controls {
         }
 
         void OnSavePortamentoPreset(object sender, RoutedEventArgs e) {
-            var dialog = new TypeInDialog() {
-                Title = ThemeManager.GetString("notedefaults.preset.namenew"),
-                onFinish = name => ViewModel.SavePortamentoPreset(name),
-            };
-            //dialog.ShowDialog(this);
+            if (VisualRoot is Window window) {
+                var dialog = new TypeInDialog() {
+                    Title = ThemeManager.GetString("notedefaults.preset.namenew"),
+                    onFinish = name => ViewModel.SavePortamentoPreset(name),
+                };
+                dialog.ShowDialog(window);
+            }
         }
 
         void OnRemovePortamentoPreset(object sender, RoutedEventArgs e) {
@@ -64,11 +66,13 @@ namespace OpenUtau.App.Controls {
         }
 
         void OnSaveVibratoPreset(object sender, RoutedEventArgs e) {
-            var dialog = new TypeInDialog() {
-                Title = ThemeManager.GetString("notedefaults.preset.namenew"),
-                onFinish = name => ViewModel.SaveVibratoPreset(name),
-            };
-            //dialog.ShowDialog(this);
+            if (VisualRoot is Window window) {
+                var dialog = new TypeInDialog() {
+                    Title = ThemeManager.GetString("notedefaults.preset.namenew"),
+                    onFinish = name => ViewModel.SaveVibratoPreset(name),
+                };
+                dialog.ShowDialog(window);
+            }
         }
 
         void OnRemoveVibratoPreset(object sender, RoutedEventArgs e) {

@@ -32,12 +32,12 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public bool AutoVibratoToggle { get; set; }
         [Reactive] public bool IsNoteSelected { get; set; } = false;
 
-        public List<NotePresets.PortamentoPreset>? PortamentoPresets { get; }
+        [Reactive] public ObservableCollection<NotePresets.PortamentoPreset>? PortamentoPresets { get; private set; }
         public NotePresets.PortamentoPreset? ApplyPortamentoPreset {
             get => appliedPortamentoPreset;
             set => this.RaiseAndSetIfChanged(ref appliedPortamentoPreset, value);
         }
-        public List<NotePresets.VibratoPreset>? VibratoPresets { get; }
+        [Reactive] public ObservableCollection<NotePresets.VibratoPreset>? VibratoPresets { get; private set; }
         public NotePresets.VibratoPreset? ApplyVibratoPreset {
             get => appliedVibratoPreset;
             set => this.RaiseAndSetIfChanged(ref appliedVibratoPreset, value);
@@ -53,8 +53,8 @@ namespace OpenUtau.App.ViewModels {
         private static bool AllowNoteEdit { get => PanelControlPressed && !NoteLoading; }
 
         public NotePropertiesViewModel() {
-            PortamentoPresets = NotePresets.Default.PortamentoPresets;
-            VibratoPresets = NotePresets.Default.VibratoPresets;
+            PortamentoPresets = new ObservableCollection<NotePresets.PortamentoPreset>(NotePresets.Default.PortamentoPresets);
+            VibratoPresets = new ObservableCollection<NotePresets.VibratoPreset>(NotePresets.Default.VibratoPresets);
 
             SetValueChanges();
 
@@ -403,6 +403,7 @@ namespace OpenUtau.App.ViewModels {
                         VibratoIn = Math.Max(0, Math.Min(100, vibratoPreset.VibratoIn));
                         VibratoOut = Math.Max(0, Math.Min(100, vibratoPreset.VibratoOut));
                         VibratoShift = Math.Max(0, Math.Min(100, vibratoPreset.VibratoShift));
+                        VibratoDrift = Math.Max(-100, Math.Min(100, vibratoPreset.VibratoDrift));
                         PanelControlPressed = false;
                         DocManager.Inst.EndUndoGroup();
                     }
@@ -470,6 +471,7 @@ namespace OpenUtau.App.ViewModels {
             }
             NotePresets.Default.PortamentoPresets.Add(new NotePresets.PortamentoPreset(name, (int)PortamentoLength, (int)PortamentoStart));
             NotePresets.Save();
+            PortamentoPresets = new ObservableCollection<NotePresets.PortamentoPreset>(NotePresets.Default.PortamentoPresets);
         }
         public void RemoveAppliedPortamentoPreset() {
             if (appliedPortamentoPreset == null) {
@@ -477,6 +479,7 @@ namespace OpenUtau.App.ViewModels {
             }
             NotePresets.Default.PortamentoPresets.Remove(appliedPortamentoPreset);
             NotePresets.Save();
+            PortamentoPresets = new ObservableCollection<NotePresets.PortamentoPreset>(NotePresets.Default.PortamentoPresets);
         }
         public void SaveVibratoPreset(string name) {
             if (string.IsNullOrEmpty(name)) {
@@ -484,6 +487,7 @@ namespace OpenUtau.App.ViewModels {
             }
             NotePresets.Default.VibratoPresets.Add(new NotePresets.VibratoPreset(name, VibratoLength, VibratoPeriod, VibratoDepth, VibratoIn, VibratoOut, VibratoShift, VibratoDrift));
             NotePresets.Save();
+            VibratoPresets = new ObservableCollection<NotePresets.VibratoPreset>(NotePresets.Default.VibratoPresets);
         }
         public void RemoveAppliedVibratoPreset() {
             if (appliedVibratoPreset == null) {
@@ -491,6 +495,7 @@ namespace OpenUtau.App.ViewModels {
             }
             NotePresets.Default.VibratoPresets.Remove(appliedVibratoPreset);
             NotePresets.Save();
+            VibratoPresets = new ObservableCollection<NotePresets.VibratoPreset>(NotePresets.Default.VibratoPresets);
         }
     }
 

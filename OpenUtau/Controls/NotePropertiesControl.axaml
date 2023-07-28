@@ -40,8 +40,7 @@
             <Grid ColumnDefinitions="123,20,*,20,*">
               <Button Grid.Column="2" Content="{DynamicResource notedefaults.preset.save}"
                       HorizontalAlignment="Stretch" Click="OnSavePortamentoPreset"
-                      ToolTip.Tip="{DynamicResource notedefaults.preset.save.tooltip}"
-                      IsEnabled="False"/>
+                      ToolTip.Tip="{DynamicResource notedefaults.preset.save.tooltip}"/>
               <Button Grid.Column="4" Content="{DynamicResource notedefaults.preset.remove}"
                       HorizontalAlignment="Stretch" Command="{Binding RemoveAppliedPortamentoPreset}"
                       ToolTip.Tip="{DynamicResource notedefaults.preset.remove.tooltip}"/>
@@ -75,8 +74,7 @@
             <Grid ColumnDefinitions="123,20,*,20,*">
               <Button Grid.Column="2" Content="{DynamicResource notedefaults.preset.save}"
                       HorizontalAlignment="Stretch" Click="OnSaveVibratoPreset"
-                      ToolTip.Tip="{DynamicResource notedefaults.preset.save.tooltip}"
-                      IsEnabled="False"/>
+                      ToolTip.Tip="{DynamicResource notedefaults.preset.save.tooltip}"/>
               <Button Grid.Column="4" Content="{DynamicResource notedefaults.preset.remove}"
                 HorizontalAlignment="Stretch" Command="{Binding RemoveAppliedVibratoPreset}"
                 ToolTip.Tip="{DynamicResource notedefaults.preset.remove.tooltip}"/>
