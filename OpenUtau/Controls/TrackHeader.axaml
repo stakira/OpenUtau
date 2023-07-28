@@ -14,7 +14,7 @@
     </Style>
     <Style Selector="Slider.fader">
       <Setter Property="Foreground" Value="{Binding TrackColor.AccentColor}"/>
-      
+
       <Style Selector="^:pointerover">
         <!--<Style Selector="^ /template/ Thumb">
           <Setter Property="Background" Value="{Binding TrackColor.AccentColorLight}" />
@@ -100,7 +100,7 @@
           </ContextMenu>
         </Button.ContextMenu>
       </Button>
-      <ToggleButton Grid.Row="1" Grid.Column="3" Margin="1" Padding="0" Height="18"
+      <ToggleButton Classes="normal" Grid.Row="1" Grid.Column="3" Margin="1" Padding="0" Height="18"
                     HorizontalAlignment="Stretch"
                     IsChecked="{Binding Mute, Mode=OneWay}" Command="{Binding ToggleMute}">
         <TextBlock Text="M" TextAlignment="Center"/>
@@ -113,7 +113,7 @@
           </ContextMenu>
         </ToggleButton.ContextMenu>
       </ToggleButton>
-      <ToggleButton Grid.Row="2" Grid.Column="3" Margin="1" Padding="0" Height="18"
+      <ToggleButton Classes="normal" Grid.Row="2" Grid.Column="3" Margin="1" Padding="0" Height="18"
                     HorizontalAlignment="Stretch"
                     IsChecked="{Binding Solo, Mode=OneWay}" Command="{Binding ToggleSolo}">
         <TextBlock Text="S" TextAlignment="Center"/>
