@@ -137,7 +137,11 @@ namespace OpenUtau.App.ViewModels {
 
             noteBatchEditCommand = ReactiveCommand.Create<BatchEdit>(edit => {
                 if (NotesViewModel.Part != null) {
-                    edit.Run(NotesViewModel.Project, NotesViewModel.Part, NotesViewModel.Selection.ToList(), DocManager.Inst);
+                    try{
+                        edit.Run(NotesViewModel.Project, NotesViewModel.Part, NotesViewModel.Selection.ToList(), DocManager.Inst);
+                    }catch(System.Exception e){
+                        DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to run editing macro",e));
+                    }
                 }
             });
             NoteBatchEdits.AddRange(new List<BatchEdit>() {
