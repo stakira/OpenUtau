@@ -120,7 +120,7 @@ namespace OpenUtau.Core.DiffSinger
             //distribute phonemes to notes
             var noteIndex = 0;
             for (int i = 0; i < symbols.Length; i++) {
-                if (isVowel[i] && noteIndex <= nonExtensionNotes.Length) {
+                if (isVowel[i] && noteIndex < nonExtensionNotes.Length) {
                     var note = nonExtensionNotes[noteIndex];
                     wordPhonemes.Add(new phonemesPerNote(note.position, note.tone, new List<string>()));
                     noteIndex++;
