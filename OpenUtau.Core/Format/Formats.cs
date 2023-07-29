@@ -4,7 +4,7 @@ using OpenUtau.Classic;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core.Format {
-    public enum ProjectFormats { Unknown, Vsq3, Vsq4, Ust, Ustx, Midi };
+    public enum ProjectFormats { Unknown, Vsq3, Vsq4, Ust, Ustx, Midi, Ufdata };
 
     public static class Formats {
         const string ustMatch = "[#SETTING]";
@@ -13,6 +13,7 @@ namespace OpenUtau.Core.Format {
         const string vsq3Match = VSQx.vsq3NameSpace;
         const string vsq4Match = VSQx.vsq4NameSpace;
         const string midiMatch = "MThd";
+        const string ufdataMatch = "\"formatVersion\":";
 
         public static ProjectFormats DetectProjectFormat(string file) {
             var lines = new List<string>();
@@ -32,6 +33,8 @@ namespace OpenUtau.Core.Format {
                 return ProjectFormats.Vsq4;
             } else if (contents.Contains(midiMatch)) {
                 return ProjectFormats.Midi;
+            } else if (contents.Contains(ufdataMatch)) {
+                return ProjectFormats.Ufdata;
             } else {
                 return ProjectFormats.Unknown;
             }
@@ -56,6 +59,9 @@ namespace OpenUtau.Core.Format {
                     break;
                 case ProjectFormats.Midi:
                     project = MidiWriter.LoadProject(files[0]);
+                    break;
+                case ProjectFormats.Ufdata:
+                    project = Ufdata.Load(files[0]);
                     break;
                 default:
                     throw new FileFormatException("Unknown file format");
@@ -84,6 +90,9 @@ namespace OpenUtau.Core.Format {
                         break;
                     case ProjectFormats.Ust:
                         loaded = Ust.Load(new[] { file });
+                        break;
+                    case ProjectFormats.Midi:
+                        loaded = MidiWriter.LoadProject(file);
                         break;
                     default:
                         throw new FileFormatException("Unknown file format");
