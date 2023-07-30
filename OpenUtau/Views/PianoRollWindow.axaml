@@ -35,7 +35,7 @@
         <Rectangle HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="12" Fill="{Binding NotesViewModel.TrackAccentColor}"/>
         <Border Margin="12,0,0,0" Width="48" Height="48" ClipToBounds="True">
           <Image HorizontalAlignment="Center" VerticalAlignment="Center"
-                 Width="50" Height="50" Stretch="None" Source="{Binding NotesViewModel.Avatar}"/>
+                 Width="50" Height="50" Stretch="UniformToFill" Source="{Binding NotesViewModel.Avatar}"/>
         </Border>
       </Grid>
       <ScrollBar Name="HScrollBar" Classes="music" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"

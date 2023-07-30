@@ -101,3 +101,4 @@ namespace OpenUtau.Core.Util {
         public SpanishG2pLyricsHelper() : base(new SpanishG2p()) { }
     }
 }
+
