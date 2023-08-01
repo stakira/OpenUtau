@@ -147,13 +147,23 @@ namespace OpenUtau.Core.DiffSinger
                 new DenseTensor<long>(new long[] { speedup }, new int[] { 1 },false)));
             var pitchOutputs = pitchModel.Run(pitchInputs);
             var pitch_out = pitchOutputs.First().AsTensor<float>().ToArray();
-
-            return new RenderPitchResult{
-                ticks = Enumerable.Range(0,n_frames)
+            var pitchEnd = phrase.timeAxis.MsPosToTickPos(startMs + (n_frames - 1) * frameMs) - phrase.position;
+            if(pitchEnd<=phrase.duration){
+                return new RenderPitchResult{
+                    ticks = Enumerable.Range(0,n_frames)
+                    .Select(i=>(float)phrase.timeAxis.MsPosToTickPos(startMs + i*frameMs) - phrase.position)
+                    .Append((float)phrase.duration + 1)
+                    .ToArray(),
+                    tones = pitch_out.Append(pitch_out[^1]).ToArray()
+                };
+            }else{
+                return new RenderPitchResult{
+                    ticks = Enumerable.Range(0,n_frames)
                     .Select(i=>(float)phrase.timeAxis.MsPosToTickPos(startMs + i*frameMs) - phrase.position)
                     .ToArray(),
-                tones = pitch_out
-            };
+                    tones = pitch_out
+                };
+            }
         }
     }
 }
