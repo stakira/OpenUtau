@@ -346,7 +346,7 @@ Attenzione: moresampler non è completamente supportato. Potrebbe causare rallen
   <!--<system:String x:Key="singersetup.back">Back</system:String>-->
   <!--<system:String x:Key="singersetup.install">Install</system:String>-->
   <!--<system:String x:Key="singersetup.next">Next</system:String>-->
-  <!--<system:String x:Key="singersetup.missinginfo">Some info are missing from character.yaml!</system:String>-->
+  <!--<system:String x:Key="singersetup.missinginfo">Please add the following settings to this voicebank's character.yaml.</system:String>-->
   <!--<system:String x:Key="singersetup.singertype">Singer Type</system:String>-->
   <!--<system:String x:Key="singersetup.textfileencoding">Text File Encoding</system:String>-->
   <!--<system:String x:Key="singersetup.textfileencoding.prompt">Choose an encoding that make file contents look right.</system:String>-->
