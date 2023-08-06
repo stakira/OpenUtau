@@ -1,12 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
-using NAudio.Dmo;
 using OpenUtau.Api;
 using OpenUtau.Core.G2p;
-using OpenUtau.Core.Util;
 using Serilog;
 
 namespace OpenUtau.Plugin.Builtin {
