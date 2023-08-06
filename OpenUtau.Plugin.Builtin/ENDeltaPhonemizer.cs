@@ -205,12 +205,13 @@ namespace OpenUtau.Plugin.Builtin {
                 var ucv = $"_{cc.Last()}{v}";
                 if (HasOto(rccv, syllable.vowelTone) || HasOto(ValidateAlias(rccv), syllable.vowelTone)) {
                     basePhoneme = rccv;
-                } else if ((!HasOto(rccv, syllable.vowelTone) || !HasOto(ValidateAlias(rccv), syllable.vowelTone)) && (HasOto(crv, syllable.vowelTone) || HasOto(ValidateAlias(crv), syllable.vowelTone))) {
-                    basePhoneme = crv;
                 } else {
-                    basePhoneme = $"{cc.Last()}{v}";
                     if (HasOto(ucv, syllable.vowelTone) || HasOto(ValidateAlias(ucv), syllable.vowelTone)) {
                         basePhoneme = ucv;
+                    } else if (HasOto(crv, syllable.vowelTone) || HasOto(ValidateAlias(crv), syllable.vowelTone)) {
+                        basePhoneme = crv;
+                    } else {
+                        basePhoneme = $"{cc.Last()}{v}";
                     }
                     // try RCC
                     for (var i = cc.Length; i > 1; i--) {
@@ -229,13 +230,15 @@ namespace OpenUtau.Plugin.Builtin {
                             basePhoneme = ccv;
                             lastC = i;
                             break;
-                        } else if (!HasOto(ccv, syllable.vowelTone) || !HasOto(ValidateAlias(ccv), syllable.vowelTone) && (HasOto(crv, syllable.vowelTone) || HasOto(ValidateAlias(crv), syllable.vowelTone))) {
-                            basePhoneme = crv;
-                            break;
                         } else {
-                            basePhoneme = $"{cc.Last()}{v}";
                             if (HasOto(ucv, syllable.vowelTone) || HasOto(ValidateAlias(ucv), syllable.vowelTone)) {
                                 basePhoneme = ucv;
+                                break;
+                            } else if (HasOto(crv, syllable.vowelTone) || HasOto(ValidateAlias(crv), syllable.vowelTone)) {
+                                basePhoneme = crv;
+                                break;
+                            } else {
+                                basePhoneme = $"{cc.Last()}{v}";
                                 break;
                             }
                         }
