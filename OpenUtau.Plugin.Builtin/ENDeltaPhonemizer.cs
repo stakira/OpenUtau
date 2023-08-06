@@ -286,10 +286,10 @@ namespace OpenUtau.Plugin.Builtin {
                         } else if (HasOto(vcc, syllable.tone) || HasOto(ValidateAlias(vcc), syllable.tone)) {
                             phonemes.Add(vcc);
                             break;
-                        } else if ((!HasOto(vcc, syllable.tone) || !HasOto(ValidateAlias(vcc), syllable.tone)) && (HasOto(vcc2, syllable.tone) || HasOto(ValidateAlias(vcc2), syllable.tone))) {
+                        } else if (HasOto(vcc2, syllable.tone) || HasOto(ValidateAlias(vcc2), syllable.tone)) {
                             phonemes.Add(vcc2);
                             break;
-                        } else if ((!HasOto(vcc2, syllable.tone) || !HasOto(ValidateAlias(vcc2), syllable.tone)) && (HasOto(vc, syllable.tone) || HasOto(ValidateAlias(vc), syllable.tone))) {
+                        } else if (HasOto(vc, syllable.tone) || HasOto(ValidateAlias(vc), syllable.tone)) {
                             phonemes.Add(vc);
                             break;
                         } else {
