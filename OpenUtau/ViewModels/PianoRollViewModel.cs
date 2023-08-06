@@ -154,6 +154,7 @@ namespace OpenUtau.App.ViewModels {
                 new Transpose(-12, "pianoroll.menu.notes.octavedown"),
                 new QuantizeNotes(15),
                 new QuantizeNotes(30),
+                new AutoLegato(),
                 new HanziToPinyin(),
                 new ResetPitchBends(),
                 new ResetAllExpressions(),
