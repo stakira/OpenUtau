@@ -122,7 +122,7 @@ namespace OpenUtau.Plugin.Builtin {
             foreach (string s in original) {
                 if (diphthongs.Contains(s) && !HasOto($"{s} b", note.tone)) {
                     modified.AddRange(new string[] { s[0].ToString(), s[1].ToString() });
-                } else if (affricates.Contains(s) && (!HasOto($"i {s}", note.tone) && !HasOto($"i: {s}", note.tone))) {
+                } else if (affricates.Contains(s) && !HasOto($"i {s}", note.tone) && !HasOto($"i: {s}", note.tone)) {
                     modified.AddRange(new string[] { s[0].ToString(), s[1].ToString() });
                 } else {
                     modified.Add(s);
