@@ -77,8 +77,8 @@ namespace OpenUtau.Core.Ustx {
         public string abbr;
         public float value {
             get => _value;
-            set => _value = descriptor == null
-                ? value
+            set => _value = descriptor == null ? value
+                : abbr == Format.Ustx.CLR ? value
                 : Math.Min(descriptor.max, Math.Max(descriptor.min, value));
         }
 
