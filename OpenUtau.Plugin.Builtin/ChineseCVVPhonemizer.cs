@@ -50,7 +50,7 @@ namespace OpenUtau.Plugin.Builtin
         }
 
         protected override Dictionary<string, string[]> LoadVowelFallbacks() {
-            return "_un=_en".Split(';')
+            return "_un=_en;_uai=_ai".Split(';')
                 .Select(entry => entry.Split('='))
                 .ToDictionary(parts => parts[0], parts => parts[1].Split(','));
         }
