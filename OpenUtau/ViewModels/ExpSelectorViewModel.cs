@@ -6,6 +6,7 @@ using Avalonia.Media;
 using OpenUtau.App.Controls;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -34,9 +35,7 @@ namespace OpenUtau.App.ViewModels {
                 .Subscribe(SelectionChanged);
             this.WhenAnyValue(x => x.Index, x => x.Descriptors)
                 .Subscribe(tuple => {
-                    if (tuple.Item2 != null && tuple.Item2.Count > tuple.Item1) {
-                        Descriptor = tuple.Item2[tuple.Item1];
-                    }
+                    SetExp(Preferences.Default.ExpSelectors[tuple.Item1]);
                 });
             MessageBus.Current.Listen<ThemeChangedEvent>()
                 .Subscribe(_ => RefreshBrushes());
@@ -45,9 +44,33 @@ namespace OpenUtau.App.ViewModels {
             OnListChange();
         }
 
-        public void OnSelected() {
+        public string GetExpAbbr() {
+            if (Descriptor == null) {
+                return "";
+            }
+            return Descriptor.abbr;
+        }
+
+        public bool SetExp(string abbr) {
+            if(Descriptors.Any(d => d.abbr == abbr)) {
+                Descriptor = Descriptors.First(d => d.abbr == abbr);
+                return true;
+            } else {
+                if (Descriptors != null && Descriptors.Count > Index) {
+                    Descriptor = Descriptors[Index];
+                }
+                return false;
+            }
+        }
+
+        public void OnSelected(bool store) {
             if (DisplayMode != ExpDisMode.Visible && Descriptor != null) {
                 DocManager.Inst.ExecuteCmd(new SelectExpressionNotification(Descriptor.abbr, Index, true));
+            }
+            if(store) {
+                Preferences.Default.ExpSecondary = Preferences.Default.ExpPrimary;
+                Preferences.Default.ExpPrimary = Index;
+                Preferences.Save();
             }
         }
 

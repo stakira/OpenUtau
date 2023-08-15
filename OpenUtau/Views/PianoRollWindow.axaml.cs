@@ -11,6 +11,7 @@ using OpenUtau.App.Controls;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 using ReactiveUI;
 using Serilog;
 
@@ -60,6 +61,7 @@ namespace OpenUtau.App.Views {
 
         void WindowClosing(object? sender, WindowClosingEventArgs e) {
             Hide();
+            SaveExpressions();
             e.Cancel = true;
         }
 
@@ -1276,41 +1278,23 @@ namespace OpenUtau.App.Views {
             return false;
         }
 
-        public string[] CacheExpressions() {
-            NotesViewModel vm = (DataContext as PianoRollViewModel)!.NotesViewModel;
-            return new string[] { vm.SecondaryKey, vm.PrimaryKey };
+        public void SaveExpressions() {
+            var exps = new ExpSelector[] { expSelector1, expSelector2, expSelector3, expSelector4, expSelector5 };
+            for (int i = 0; i < exps.Length; i++) {
+                Preferences.Default.ExpSelectors[i] = exps[i].GetExpAbbr();
+            }
+            Preferences.Save();
         }
-        public void LoadCacheExpressions(string[] cache) {
+        public void AttachExpressions() {
             if (expSelector1 == null) {
                 return;
             }
-            foreach (string key in cache) {
-                UExpressionDescriptor? exp = (expSelector1.DataContext as ExpSelectorViewModel)?.Descriptor;
-                if (exp != null && exp.abbr == key) {
-                    expSelector1.SelectExp();
-                    continue;
-                }
-                exp = (expSelector2.DataContext as ExpSelectorViewModel)?.Descriptor;
-                if (exp != null && exp.abbr == key) {
-                    expSelector2.SelectExp();
-                    continue;
-                }
-                exp = (expSelector3.DataContext as ExpSelectorViewModel)?.Descriptor;
-                if (exp != null && exp.abbr == key) {
-                    expSelector3.SelectExp();
-                    continue;
-                }
-                exp = (expSelector4.DataContext as ExpSelectorViewModel)?.Descriptor;
-                if (exp != null && exp.abbr == key) {
-                    expSelector4.SelectExp();
-                    continue;
-                }
-                exp = (expSelector5.DataContext as ExpSelectorViewModel)?.Descriptor;
-                if (exp != null && exp.abbr == key) {
-                    expSelector5.SelectExp();
-                    continue;
-                }
+            var exps = new ExpSelector[] { expSelector1, expSelector2, expSelector3, expSelector4, expSelector5 };
+            for (int i = 0; i < exps.Length; i++) {
+                exps[i].SetExp(Preferences.Default.ExpSelectors[i]);
             }
+            exps[Preferences.Default.ExpSecondary].SelectExp();
+            exps[Preferences.Default.ExpPrimary].SelectExp();
         }
     }
 }

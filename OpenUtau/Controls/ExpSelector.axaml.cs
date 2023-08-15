@@ -32,11 +32,19 @@ namespace OpenUtau.App.Controls {
         }
 
         private void TextBlockPointerPressed(object sender, PointerPressedEventArgs e) {
-            ((ExpSelectorViewModel)DataContext!).OnSelected();
+            ((ExpSelectorViewModel)DataContext!).OnSelected(true);
         }
 
         public void SelectExp() {
-            ((ExpSelectorViewModel)DataContext!).OnSelected();
+            ((ExpSelectorViewModel)DataContext!).OnSelected(false);
+        }
+
+        public string GetExpAbbr() {
+            return ((ExpSelectorViewModel)DataContext!).GetExpAbbr();
+        }
+
+        public bool SetExp(string abbr) {
+            return ((ExpSelectorViewModel)DataContext!).SetExp(abbr);
         }
     }
 }
