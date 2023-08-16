@@ -64,7 +64,7 @@ namespace OpenUtau.Core.DiffSinger
             }
         }
 
-        protected IG2p LoadG2p(string rootPath) {
+        protected virtual IG2p LoadG2p(string rootPath) {
             var g2ps = new List<IG2p>();
             // Load dictionary from singer folder.
             string file = Path.Combine(rootPath, "dsdict.yaml");
