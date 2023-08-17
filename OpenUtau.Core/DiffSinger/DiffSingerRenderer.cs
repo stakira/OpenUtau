@@ -112,8 +112,8 @@ namespace OpenUtau.Core.DiffSinger {
             var vocoder = singer.getVocoder();
             var frameMs = vocoder.frameMs();
             var frameSec = frameMs / 1000;
-            int headFrames = (int)(headMs / frameMs);
-            int tailFrames = (int)(tailMs / frameMs);
+            int headFrames = (int)Math.Round(headMs / frameMs);
+            int tailFrames = (int)Math.Round(tailMs / frameMs);
             var result = Layout(phrase);
             //acoustic
             //mel = session.run(['mel'], {'tokens': tokens, 'durations': durations, 'f0': f0, 'speedup': speedup})[0]
@@ -128,11 +128,11 @@ namespace OpenUtau.Core.DiffSinger {
                 .Select(x => (long)(singer.phonemes.IndexOf(x)))
                 .ToList();
             var durations = phrase.phones
-                .Select(p => (int)(p.endMs / frameMs) - (int)(p.positionMs / frameMs))//prevent cumulative error
+                .Select(p => (int)Math.Round(p.endMs / frameMs) - (int)Math.Round(p.positionMs / frameMs))//prevent cumulative error
                 .Prepend(headFrames)
                 .Append(tailFrames)
                 .ToList();
-            var totalFrames = (int)(durations.Sum());
+            int totalFrames = durations.Sum();
             float[] f0 = DiffSingerUtils.SampleCurve(phrase, phrase.pitches, 0, frameMs, totalFrames, headFrames, tailFrames, 
                 x => MusicMath.ToneToFreq(x * 0.01))
                 .Select(f => (float)f).ToArray();
