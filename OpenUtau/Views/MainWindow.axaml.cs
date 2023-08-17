@@ -915,7 +915,6 @@ namespace OpenUtau.App.Views {
                 // Workaround for new window losing focus.
                 openPianoRollWindow = true;
                 int tick = viewModel.TracksViewModel.PointToTick(args.GetPosition(canvas));
-                pianoRollWindow.SaveExpressions();
                 DocManager.Inst.ExecuteCmd(new LoadPartNotification(partControl.part, DocManager.Inst.Project, tick));
                 pianoRollWindow.AttachExpressions();
             }

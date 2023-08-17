@@ -45,6 +45,9 @@ namespace OpenUtau.Core.Ustx {
         [Obsolete("Since ustx v0.6")] public int beatUnit = 4;
 
         public Dictionary<string, UExpressionDescriptor> expressions = new Dictionary<string, UExpressionDescriptor>();
+        public string[] expSelectors = new string[] { Format.Ustx.DYN, Format.Ustx.PITD, Format.Ustx.CLR, Format.Ustx.ENG, Format.Ustx.VEL };
+        public int expPrimary = 0;
+        public int expSecondary = 1;
         public List<UTimeSignature> timeSignatures;
         public List<UTempo> tempos;
         public List<UTrack> tracks;

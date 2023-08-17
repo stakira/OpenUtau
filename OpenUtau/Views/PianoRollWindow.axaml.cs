@@ -11,7 +11,6 @@ using OpenUtau.App.Controls;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
-using OpenUtau.Core.Util;
 using ReactiveUI;
 using Serilog;
 
@@ -61,7 +60,6 @@ namespace OpenUtau.App.Views {
 
         void WindowClosing(object? sender, WindowClosingEventArgs e) {
             Hide();
-            SaveExpressions();
             e.Cancel = true;
         }
 
@@ -1278,23 +1276,13 @@ namespace OpenUtau.App.Views {
             return false;
         }
 
-        public void SaveExpressions() {
-            var exps = new ExpSelector[] { expSelector1, expSelector2, expSelector3, expSelector4, expSelector5 };
-            for (int i = 0; i < exps.Length; i++) {
-                Preferences.Default.ExpSelectors[i] = exps[i].GetExpAbbr();
-            }
-            Preferences.Save();
-        }
         public void AttachExpressions() {
             if (expSelector1 == null) {
                 return;
             }
             var exps = new ExpSelector[] { expSelector1, expSelector2, expSelector3, expSelector4, expSelector5 };
-            for (int i = 0; i < exps.Length; i++) {
-                exps[i].SetExp(Preferences.Default.ExpSelectors[i]);
-            }
-            exps[Preferences.Default.ExpSecondary].SelectExp();
-            exps[Preferences.Default.ExpPrimary].SelectExp();
+            exps[DocManager.Inst.Project.expSecondary].SelectExp();
+            exps[DocManager.Inst.Project.expPrimary].SelectExp();
         }
     }
 }

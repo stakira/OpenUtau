@@ -6,7 +6,6 @@ using Avalonia.Media;
 using OpenUtau.App.Controls;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
-using OpenUtau.Core.Util;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 
@@ -16,6 +15,14 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public int SelectedIndex { get; set; }
         [Reactive] public ExpDisMode DisplayMode { get; set; }
         [Reactive] public UExpressionDescriptor? Descriptor { get; set; }
+        public string Abbr {
+            get{
+                if (Descriptor == null) {
+                    return "";
+                }
+                return Descriptor.abbr;
+            }
+        }
         public ObservableCollection<UExpressionDescriptor> Descriptors => descriptors;
         public string Header => header.Value;
         [Reactive] public IBrush TagBrush { get; set; }
@@ -35,20 +42,13 @@ namespace OpenUtau.App.ViewModels {
                 .Subscribe(SelectionChanged);
             this.WhenAnyValue(x => x.Index, x => x.Descriptors)
                 .Subscribe(tuple => {
-                    SetExp(Preferences.Default.ExpSelectors[tuple.Item1]);
+                    SetExp(DocManager.Inst.Project.expSelectors[tuple.Item1]);
                 });
             MessageBus.Current.Listen<ThemeChangedEvent>()
                 .Subscribe(_ => RefreshBrushes());
             TagBrush = ThemeManager.ExpNameBrush;
             Background = ThemeManager.ExpBrush;
             OnListChange();
-        }
-
-        public string GetExpAbbr() {
-            if (Descriptor == null) {
-                return "";
-            }
-            return Descriptor.abbr;
         }
 
         public bool SetExp(string abbr) {
@@ -68,15 +68,18 @@ namespace OpenUtau.App.ViewModels {
                 DocManager.Inst.ExecuteCmd(new SelectExpressionNotification(Descriptor.abbr, Index, true));
             }
             if(store) {
-                Preferences.Default.ExpSecondary = Preferences.Default.ExpPrimary;
-                Preferences.Default.ExpPrimary = Index;
-                Preferences.Save();
+                var project = DocManager.Inst.Project;
+                project.expSecondary = project.expPrimary;
+                project.expPrimary = Index;
             }
         }
 
         void SelectionChanged(UExpressionDescriptor? descriptor) {
             if (descriptor != null) {
                 DocManager.Inst.ExecuteCmd(new SelectExpressionNotification(descriptor.abbr, Index, DisplayMode != ExpDisMode.Visible));
+            }
+            if (!string.IsNullOrEmpty(Abbr)) {
+                DocManager.Inst.Project.expSelectors[Index] = Abbr;
             }
         }
 

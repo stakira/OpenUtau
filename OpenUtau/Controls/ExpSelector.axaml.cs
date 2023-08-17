@@ -18,6 +18,7 @@ namespace OpenUtau.App.Controls {
 
         private int index;
 
+
         public ExpSelector() {
             InitializeComponent();
             DataContext = new ExpSelectorViewModel();
@@ -37,14 +38,6 @@ namespace OpenUtau.App.Controls {
 
         public void SelectExp() {
             ((ExpSelectorViewModel)DataContext!).OnSelected(false);
-        }
-
-        public string GetExpAbbr() {
-            return ((ExpSelectorViewModel)DataContext!).GetExpAbbr();
-        }
-
-        public bool SetExp(string abbr) {
-            return ((ExpSelectorViewModel)DataContext!).SetExp(abbr);
         }
     }
 }
