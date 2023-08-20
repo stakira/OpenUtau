@@ -4,10 +4,10 @@ using Xunit;
 using Xunit.Abstractions;
 
 namespace OpenUtau.Plugins {
-    public class EnDeltaTest : PhonemizerTestBase {
-        public EnDeltaTest(ITestOutputHelper output) : base(output) { }
+    public class EnXSampaTest : PhonemizerTestBase {
+        public EnXSampaTest(ITestOutputHelper output) : base(output) { }
         protected override Phonemizer CreatePhonemizer() {
-            return new ENDeltaPhonemizer();
+            return new EnXSampaPhonemizer();
         }
 
         [Theory]
