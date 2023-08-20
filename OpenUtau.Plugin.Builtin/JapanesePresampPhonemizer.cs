@@ -7,7 +7,7 @@ using OpenUtau.Api;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("Japanese presamp Phonemizer", "JA VCV & CVVC", "Maiko", language: "JA")]
+    [Phonemizer("Japanese presamp Phonemizer", "JA VCV & CVVC", "Maiko", language:"JA")]
     public class JapanesePresampPhonemizer : Phonemizer {
 
         // CV, VCV, CVVCを含むすべての日本語VBをサポートする予定です。Will support all Japanese VBs including CV, VCV, CVVC
@@ -57,7 +57,7 @@ namespace OpenUtau.Plugin.Builtin {
             }
             // replace (exact match)
             foreach (var pair in presamp.Replace) {
-                if (pair.Key == currentLyric) {
+                if(pair.Key == currentLyric) {
                     currentLyric = pair.Value;
                 }
             }
