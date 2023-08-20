@@ -18,7 +18,7 @@ namespace OpenUtau.Plugin.Builtin {
         /// Due to the flexibility of X-SAMPA, it was easy to add the custom sounds. More suggestions for this are always welcome.
         ///</summary>
 
-        private readonly string[] vowels = "a,A,@,{,V,O,aU,aI,E,3,eI,I,i,oU,OI,U,u,Q,Ol,Ql,aUn,e@,eN,IN,e,o,Ar,Qr,Er,Ir,Or,Ur,ir,ur,aIr,aUr,A@,Q@,E@,I@,O@,U@,i@,u@,aI@,aU@,@r,@l,@m,@n,@N,1,e@m,e@n,y,I\\,M,U\\,Y,@\\,@`,3`,A`,Q`,E`,I`,O`,U`,i`,u`,aI`,aU`,},2,3\\,6,7,8,9,&,{~,I~,aU~,VI,VU,@U,i:,u:,O:,e@0".Split(',');
+        private readonly string[] vowels = "a,A,@,{,V,O,aU,aI,E,3,eI,I,i,oU,OI,U,u,Q,Ol,Ql,aUn,e@,eN,IN,e,o,Ar,Qr,Er,Ir,Or,Ur,ir,ur,aIr,aUr,A@,Q@,E@,I@,O@,U@,i@,u@,aI@,aU@,@r,@l,@m,@n,@N,1,e@m,e@n,y,I\\,M,U\\,Y,@\\,@`,3`,A`,Q`,E`,I`,O`,U`,i`,u`,aI`,aU`,},2,3\\,6,7,8,9,&,{~,I~,aU~,VI,VU,@U,i:,u:,O:,e@0,E~,e~,3r,ar,or,{l,Al,al,El,Il,il,Ol,ul,Ul,mm,nn,ll,NN".Split(',');
         private readonly string[] consonants = "b,tS,d,D,4,f,g,h,dZ,k,l,m,n,N,p,r,s,S,t,T,v,w,W,j,z,Z,t_},・,_".Split(',');
         private readonly string[] affricates = "tS,dZ".Split(',');
         private readonly string[] shortConsonants = "4".Split(",");
@@ -77,6 +77,15 @@ namespace OpenUtau.Plugin.Builtin {
                 .ToDictionary(parts => parts[0], parts => parts[1]);
 
         private bool isTrueXSampa = false;
+
+        // For banks using Salem's reclist.
+        private readonly Dictionary<string, string> salemList = "3=3r;Ar=ar;aIr=ar;aUr=ar;Or=or".Split(';')
+                .Select(entry => entry.Split('='))
+                .Where(parts => parts.Length == 2)
+                .Where(parts => parts[0] != parts[1])
+                .ToDictionary(parts => parts[0], parts => parts[1]);
+
+        private bool isSalemList = false;
 
         // Velar nasal fallback
         private readonly Dictionary<string, string> velarNasalFallback = "N g=n g;N k=n k".Split(';')
@@ -176,6 +185,10 @@ namespace OpenUtau.Plugin.Builtin {
 
             if (HasOto($"{prevV} r\\", syllable.tone)) {
                 isTrueXSampa = true;
+            }
+
+            if (!HasOto($"3 b", syllable.tone) && !HasOto($"@r b", syllable.tone) && !HasOto($"@` b", syllable.tone)) {
+                isSalemList = true;
             }
 
             if ((!HasOto($"N g", syllable.tone) || !HasOto($"N g-", syllable.tone)) && (!HasOto($"N k", syllable.tone) || !HasOto($"N k-", syllable.tone))) {
@@ -595,13 +608,19 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             }
 
+            if (isSalemList) {
+                foreach (var syllable in salemList) {
+                    alias = alias.Replace(syllable.Key, syllable.Value);
+                }
+            }
+
             if (isVelarNasalFallback) {
                 foreach (var syllable in velarNasalFallback) {
                     alias = alias.Replace(syllable.Key, syllable.Value);
                 }
             }
             // Other validations
-            if (!alias.Contains("@r")) {
+            if (!alias.Contains("@r") && !alias.Contains("3r")) {
                 foreach (var consonant1 in new[] { "r ", "r\\ ", }) {
                     foreach (var consonant2 in consonants) {
                         alias = alias.Replace(consonant1 + consonant2, "3 " + consonant2);
