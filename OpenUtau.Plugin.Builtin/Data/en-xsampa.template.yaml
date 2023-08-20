@@ -144,6 +144,22 @@ symbols:
   - {symbol: 4, type: tap}
   - {symbol: W, type: fricative}
   - {symbol: 't_}', type: stop}
+  - {symbol: E~, type: vowel}
+  - {symbol: e~, type: vowel}
+  - {symbol: 3r, type: vowel}
+  - {symbol: ar, type: vowel}
+  - {symbol: or, type: vowel}
+  - {symbol: '{l', type: vowel}
+  - {symbol: Al, type: vowel}
+  - {symbol: al, type: vowel}
+  - {symbol: El, type: vowel}
+  - {symbol: Il, type: vowel}
+  - {symbol: ul, type: vowel}
+  - {symbol: Ul, type: vowel}
+  - {symbol: mm, type: vowel}
+  - {symbol: nn, type: vowel}
+  - {symbol: ll, type: vowel}
+  - {symbol: NN, type: vowel}
 
 entries:
   - grapheme: openutau
