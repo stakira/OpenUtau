@@ -7,16 +7,15 @@ using OpenUtau.Core.G2p;
 using Serilog;
 
 namespace OpenUtau.Plugin.Builtin {
-    [Phonemizer("Delta English Phonemizer", "EN DELTA", "Lotte V", language: "EN")]
-    public class ENDeltaPhonemizer : SyllableBasedPhonemizer {
+    [Phonemizer("English X-SAMPA phonemizer", "EN X-SAMPA", "Lotte V", language: "EN")]
+    public class EnXSampaPhonemizer : SyllableBasedPhonemizer {
         /// <summary>
-        /// General English phonemizer for Delta list (X-SAMPA) voicebanks.
-        /// The difference between this phonemizer and the Teto English phonemizer is that this one was made to support all Delta list-based banks.
+        /// General English phonemizer for X-SAMPA voicebanks.
+        /// The difference between this phonemizer and the Teto English phonemizer is that this one was made to support all X-SAMPA-based banks.
         /// However, it should be fully compatible with Kasane Teto's English voicebank regardless.
-        /// It also has some support for sounds not found in the "classic" Delta list.
-        /// Due to the flexibility of X-SAMPA, it was easy to add those.
-        /// They are mostly based on sounds based on Cz's English VCCV list, just written differently. They are mostly found in North-American dialects.
-        /// All of these sounds are optional and should be inserted manually/phonetically, if the voicebank supports them.
+        /// It supports Delta-style English banks, as well as other English X-SAMPA voicebank styles.
+        /// There is also support for extended English phonemes, which can be included in a custom dictionary and/or phonetic input.
+        /// Due to the flexibility of X-SAMPA, it was easy to add the custom sounds. More suggestions for this are always welcome.
         ///</summary>
 
         private readonly string[] vowels = "a,A,@,{,V,O,aU,aI,E,3,eI,I,i,oU,OI,U,u,Q,Ol,Ql,aUn,e@,eN,IN,e,o,Ar,Qr,Er,Ir,Or,Ur,ir,ur,aIr,aUr,A@,Q@,E@,I@,O@,U@,i@,u@,aI@,aU@,@r,@l,@m,@n,@N,1,e@m,e@n,y,I\\,M,U\\,Y,@\\,@`,3`,A`,Q`,E`,I`,O`,U`,i`,u`,aI`,aU`,},2,3\\,6,7,8,9,&,{~,I~,aU~,VI,VU,@U,i:,u:,O:,e@0".Split(',');
@@ -79,6 +78,15 @@ namespace OpenUtau.Plugin.Builtin {
 
         private bool isTrueXSampa = false;
 
+        // Velar nasal fallback
+        private readonly Dictionary<string, string> velarNasalFallback = "N g=n g;N k=n k".Split(';')
+                .Select(entry => entry.Split('='))
+                .Where(parts => parts.Length == 2)
+                .Where(parts => parts[0] != parts[1])
+                .ToDictionary(parts => parts[0], parts => parts[1]);
+
+        private bool isVelarNasalFallback = false;
+
         protected override string[] GetVowels() => vowels;
         protected override string[] GetConsonants() => consonants;
         protected override string GetDictionaryName() => "cmudict-0_7b.txt";
@@ -88,21 +96,28 @@ namespace OpenUtau.Plugin.Builtin {
             var g2ps = new List<IG2p>();
 
             // Load dictionary from plugin folder.
-            string path = Path.Combine(PluginDir, "xsampa.yaml");
+            string path = Path.Combine(PluginDir, "en-xsampa.yaml");
             if (!File.Exists(path)) {
                 Directory.CreateDirectory(PluginDir);
-                File.WriteAllBytes(path, Data.Resources.xsampa_template);
+                File.WriteAllBytes(path, Data.Resources.en_xsampa_template);
             }
             g2ps.Add(G2pDictionary.NewBuilder().Load(File.ReadAllText(path)).Build());
 
             // Load dictionary from singer folder.
             if (singer != null && singer.Found && singer.Loaded) {
-                string file = Path.Combine(singer.Location, "xsampa.yaml");
+                string file = Path.Combine(singer.Location, "en-xsampa.yaml");
+                string file2 = Path.Combine(singer.Location, "xsampa.yaml");
                 if (File.Exists(file)) {
                     try {
                         g2ps.Add(G2pDictionary.NewBuilder().Load(File.ReadAllText(file)).Build());
                     } catch (Exception e) {
                         Log.Error(e, $"Failed to load {file}");
+                    }
+                } else if (File.Exists(file2)) {
+                    try {
+                        g2ps.Add(G2pDictionary.NewBuilder().Load(File.ReadAllText(file2)).Build());
+                    } catch (Exception e) {
+                        Log.Error(e, $"Failed to load {file2}");
                     }
                 }
             }
@@ -143,15 +158,15 @@ namespace OpenUtau.Plugin.Builtin {
             var rv = $"- {v}";
 
             // Switch between phonetic systems, depending on certain aliases in the bank
-            if (HasOto("i: b", syllable.tone)) {
+            if (HasOto($"i: b", syllable.tone) || !HasOto($"3 b", syllable.tone)) {
                 isVocaSampa = true;
             }
 
-            if (!HasOto($"bV", syllable.vowelTone)) {
+            if (!HasOto($"V b", syllable.vowelTone)) {
                 isSimpleDelta = true;
             }
 
-            if (!HasOto($"bI", syllable.vowelTone)) {
+            if (!HasOto($"I b", syllable.vowelTone)) {
                 isMiniDelta = true;
             }
 
@@ -159,8 +174,12 @@ namespace OpenUtau.Plugin.Builtin {
                 isEnPlusJa = true;
             }
 
-            if (HasOto("@` r\\", syllable.tone)) {
+            if (HasOto($"{prevV} r\\", syllable.tone)) {
                 isTrueXSampa = true;
+            }
+
+            if ((!HasOto($"N g", syllable.tone) || !HasOto($"N g-", syllable.tone)) && (!HasOto($"N k", syllable.tone) || !HasOto($"N k-", syllable.tone))) {
+                isVelarNasalFallback = true;
             }
 
             if (syllable.IsStartingV) {
@@ -576,13 +595,17 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             }
 
-            // Other validations
-            foreach (var CC in new[] { "N k", "N g", "N k-", "N g-" }) {
-                alias = alias.Replace("N ", "n ");
+            if (isVelarNasalFallback) {
+                foreach (var syllable in velarNasalFallback) {
+                    alias = alias.Replace(syllable.Key, syllable.Value);
+                }
             }
-            foreach (var consonant1 in new[] { "r ", "r\\ " }) {
-                foreach (var consonant2 in consonants) {
-                    alias = alias.Replace(consonant1 + consonant2, "3 " + consonant2);
+            // Other validations
+            if (!alias.Contains("@r")) {
+                foreach (var consonant1 in new[] { "r ", "r\\ ", }) {
+                    foreach (var consonant2 in consonants) {
+                        alias = alias.Replace(consonant1 + consonant2, "3 " + consonant2);
+                    }
                 }
             }
             return alias;
