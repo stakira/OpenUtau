@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
+using OpenUtau.Classic;
 using OpenUtau.Core.Ustx;
 using Serilog;
 
@@ -101,6 +102,38 @@ namespace OpenUtau.Plugin.Builtin {
 
         // make it quicker to check multiple oto occurrences at once rather than spamming if else if
         private bool checkOtoUntilHit(string[] input, Note note, out UOto oto) {
+            oto = default;
+            var attr = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
+            var attr1 = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 1) ?? default;
+
+            var otos = new List<UOto>();
+            foreach (string test in input) {
+                if (singer.TryGetMappedOto(test + attr.alternate, note.tone + attr.toneShift, attr.voiceColor, out var otoAlt)) {
+                    otos.Add(otoAlt);
+                } else if (singer.TryGetMappedOto(test, note.tone + attr.toneShift, attr.voiceColor, out var otoCandidacy)) {
+                    otos.Add(otoCandidacy);
+                }
+            }
+
+            string color = attr.voiceColor ?? "";
+            if (otos.Count > 0) {
+                if (otos.Any(oto => (oto.Color ?? string.Empty) == color)) {
+                    oto = otos.Find(oto => (oto.Color ?? string.Empty) == color);
+                    return true;
+                } else if (otos.Any(oto => (color ?? string.Empty) == color)) {
+                    oto = otos.Find(oto => (color ?? string.Empty) == color);
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+            return false;
+        }
+
+        // checking VCs
+        // when VC does not exist, it will not be inserted
+        // TODO: fix duplicate voice color fallback bug (for now, this is better than nothing)
+        private bool checkOtoUntilHitVc(string[] input, Note note, out UOto oto) {
             oto = default;
             var attr = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
             var attr1 = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 1) ?? default;
@@ -219,7 +252,7 @@ namespace OpenUtau.Plugin.Builtin {
                         vcPhonemes[1] = $"{vowel} {con}";
                 }
                 //if (singer.TryGetMappedOto(vcPhoneme, note.tone + attr0.toneShift, attr0.voiceColor, out var oto1)) {
-                if (checkOtoUntilHit(vcPhonemes, note, out var oto1)) {
+                if (checkOtoUntilHitVc(vcPhonemes, note, out var oto1)) {
                     vcPhoneme = oto1.Alias;
                 } else {
                     return new Result {

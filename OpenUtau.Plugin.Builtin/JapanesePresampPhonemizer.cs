@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Xml;
 using Classic;
 using OpenUtau.Api;
-using OpenUtau.Classic;
 using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Plugin.Builtin {
@@ -201,7 +198,7 @@ namespace OpenUtau.Plugin.Builtin {
                             }
                             // next is CV (VC needed)
                             tests = new List<string> { $"{vowel}{vcpad}・" };
-                            if (checkOtoUntilHit(tests, note, out oto1)) {
+                            if (checkOtoUntilHitVc(tests, note, out oto1)) {
                                 vcPhoneme = oto1.Alias;
                             } else {
                                 return MakeSimpleResult(currentLyric);
@@ -238,7 +235,7 @@ namespace OpenUtau.Plugin.Builtin {
                         if (substituteLookup.TryGetValue(consonant ?? string.Empty, out var con)) {
                             vcPhonemes.Add($"{vowel}{vcpad}{con}");
                         }
-                        if (checkOtoUntilHit(vcPhonemes, note, out var oto)) {
+                        if (checkOtoUntilHitVc(vcPhonemes, note, out var oto)) {
                             otos.Any(oto => (oto.Color ?? string.Empty) == color);
                             vcPhoneme = oto.Alias;
                         } else {
@@ -279,6 +276,37 @@ namespace OpenUtau.Plugin.Builtin {
 
         // make it quicker to check multiple oto occurrences at once rather than spamming if else if
         private bool checkOtoUntilHit(List<string> input, Note note, out UOto oto) {
+            oto = default;
+            var attr = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
+
+            var otos = new List<UOto>();
+            foreach (string test in input) {
+                if (singer.TryGetMappedOto(test + attr.alternate, note.tone + attr.toneShift, attr.voiceColor, out var otoAlt)) {
+                    otos.Add(otoAlt);
+                } else if (singer.TryGetMappedOto(test, note.tone + attr.toneShift, attr.voiceColor, out var otoCandidacy)) {
+                    otos.Add(otoCandidacy);
+                }
+            }
+
+            string color = attr.voiceColor ?? "";
+            if (otos.Count > 0) {
+                if (otos.Any(oto => (oto.Color ?? string.Empty) == color)) {
+                    oto = otos.Find(oto => (oto.Color ?? string.Empty) == color);
+                    return true;
+                } else if (otos.Any(oto => (color ?? string.Empty) == color)) {
+                    oto = otos.Find(oto => (color ?? string.Empty) == color);
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+            return false;
+        }
+
+        // checking VCs
+        // when VC does not exist, it will not be inserted
+        // TODO: fix duplicate voice color fallback bug (for now, this is better than nothing)
+        private bool checkOtoUntilHitVc(List<string> input, Note note, out UOto oto) {
             oto = default;
             var attr = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
 
