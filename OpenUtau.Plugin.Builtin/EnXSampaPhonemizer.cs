@@ -79,7 +79,7 @@ namespace OpenUtau.Plugin.Builtin {
         private bool isTrueXSampa = false;
 
         // For banks using Salem's reclist.
-        private readonly Dictionary<string, string> salemList = "3=3r;Ar=ar;aIr=ar;aUr=ar;Or=or;aIl=al".Split(';')
+        private readonly Dictionary<string, string> salemList = "3=@r;Ar=ar;aIr=ar;aUr=ar;Or=or;aIl=al".Split(';')
                 .Select(entry => entry.Split('='))
                 .Where(parts => parts.Length == 2)
                 .Where(parts => parts[0] != parts[1])
@@ -187,7 +187,7 @@ namespace OpenUtau.Plugin.Builtin {
                 isTrueXSampa = true;
             }
 
-            if (!HasOto($"3 b", syllable.tone) && !HasOto($"@r b", syllable.tone) && !HasOto($"@` b", syllable.tone)) {
+            if (!HasOto($"3 b", syllable.tone) && !HasOto($"@` b", syllable.tone)) {
                 isSalemList = true;
             }
 
