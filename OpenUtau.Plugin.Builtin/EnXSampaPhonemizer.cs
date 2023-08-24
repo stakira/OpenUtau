@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using OpenUtau.Api;
 using OpenUtau.Core.G2p;
+using OpenUtau.Core.Ustx;
 using Serilog;
 
 namespace OpenUtau.Plugin.Builtin {
@@ -283,6 +284,7 @@ namespace OpenUtau.Plugin.Builtin {
                     basePhoneme = vcv;
                 } else if (syllable.IsVCVWithMoreThanOneConsonant && (HasOto(vccv, syllable.vowelTone) || HasOto(ValidateAlias(vccv), syllable.vowelTone))) {
                     basePhoneme = vccv;
+                    lastC = 0;
                 } else {
                     basePhoneme = cc.Last() + v;
                     if (!HasOto(cc.Last() + v, syllable.vowelTone) && (HasOto(crv, syllable.vowelTone) || HasOto(ValidateAlias(crv), syllable.vowelTone))) {
