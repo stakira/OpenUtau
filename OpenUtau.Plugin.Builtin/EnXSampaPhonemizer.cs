@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
 using OpenUtau.Api;
@@ -234,6 +235,7 @@ namespace OpenUtau.Plugin.Builtin {
                 var ucv = $"_{cc.Last()}{v}";
                 if (HasOto(rccv, syllable.vowelTone) || HasOto(ValidateAlias(rccv), syllable.vowelTone)) {
                     basePhoneme = rccv;
+                    lastC = 0;
                 } else {
                     if (HasOto(ucv, syllable.vowelTone) || HasOto(ValidateAlias(ucv), syllable.vowelTone)) {
                         basePhoneme = ucv;
@@ -336,92 +338,90 @@ namespace OpenUtau.Plugin.Builtin {
                 var cc1 = $"{string.Join("", cc.Skip(i))}";
                 var ccv = string.Join("", cc.Skip(i)) + v;
                 var ucv = $"_{cc.Last()}{v}"; ;
-                if (!HasOto(rccv, syllable.vowelTone) && !HasOto(ValidateAlias(rccv), syllable.vowelTone)) {
-                    if (!HasOto(cc1, syllable.tone)) {
-                        cc1 = ValidateAlias(cc1);
+                if (!HasOto(cc1, syllable.tone)) {
+                    cc1 = ValidateAlias(cc1);
+                }
+                if (!HasOto(cc1, syllable.tone)) {
+                    cc1 = $"{cc[i]}{cc[i + 1]}";
+                }
+                if (!HasOto(cc1, syllable.tone)) {
+                    cc1 = ValidateAlias(cc1);
+                }
+                if (!HasOto(cc1, syllable.tone)) {
+                    cc1 = $"{cc[i]} {cc[i + 1]}";
+                }
+                if (!HasOto(cc1, syllable.tone)) {
+                    cc1 = ValidateAlias(cc1);
+                }
+                if (!HasOto(cc1, syllable.tone)) {
+                    cc1 = $"{cc[i]} {cc[i + 1]}-";
+                }
+                if (!HasOto(cc1, syllable.tone)) {
+                    cc1 = ValidateAlias(cc1);
+                }
+                if (HasOto(ccv, syllable.vowelTone) || HasOto(ValidateAlias(ccv), syllable.vowelTone)) {
+                    basePhoneme = ccv;
+                    lastC = i;
+                } else if ((HasOto(ucv, syllable.vowelTone) || HasOto(ValidateAlias(ucv), syllable.vowelTone)) && HasOto(cc1, syllable.vowelTone) && !cc1.Contains($"{cc[i]} {cc[i + 1]}")) {
+                    basePhoneme = ucv;
+                }
+                if (i + 1 < lastC) {
+                    var cc2 = $"{string.Join("", cc.Skip(i))}";
+                    if (!HasOto(cc2, syllable.tone)) {
+                        cc2 = ValidateAlias(cc2);
                     }
-                    if (!HasOto(cc1, syllable.tone)) {
-                        cc1 = $"{cc[i]}{cc[i + 1]}";
+                    if (!HasOto(cc2, syllable.tone)) {
+                        cc2 = ValidateAlias(cc2);
                     }
-                    if (!HasOto(cc1, syllable.tone)) {
-                        cc1 = ValidateAlias(cc1);
+                    if (!HasOto(cc2, syllable.tone)) {
+                        cc2 = $"{cc[i + 1]}{cc[i + 2]}";
                     }
-                    if (!HasOto(cc1, syllable.tone)) {
-                        cc1 = $"{cc[i]} {cc[i + 1]}";
+                    if (!HasOto(cc2, syllable.tone)) {
+                        cc2 = ValidateAlias(cc2);
                     }
-                    if (!HasOto(cc1, syllable.tone)) {
-                        cc1 = ValidateAlias(cc1);
+                    if (!HasOto(cc2, syllable.tone)) {
+                        cc2 = $"{cc[i + 1]} {cc[i + 2]}";
                     }
-                    if (!HasOto(cc1, syllable.tone)) {
-                        cc1 = $"{cc[i]} {cc[i + 1]}-";
+                    if (!HasOto(cc2, syllable.tone)) {
+                        cc2 = ValidateAlias(cc2);
                     }
-                    if (!HasOto(cc1, syllable.tone)) {
-                        cc1 = ValidateAlias(cc1);
+                    if (!HasOto(cc2, syllable.tone)) {
+                        cc2 = $"{cc[i + 1]} {cc[i + 2]}-";
+                    }
+                    if (!HasOto(cc2, syllable.tone)) {
+                        cc2 = ValidateAlias(cc2);
                     }
                     if (HasOto(ccv, syllable.vowelTone) || HasOto(ValidateAlias(ccv), syllable.vowelTone)) {
                         basePhoneme = ccv;
                         lastC = i;
-                    } else if ((HasOto(ucv, syllable.vowelTone) || HasOto(ValidateAlias(ucv), syllable.vowelTone)) && HasOto(cc1, syllable.vowelTone) && !cc1.Contains($"{cc[i]} {cc[i + 1]}")) {
+                    } else if ((HasOto(ucv, syllable.vowelTone) || HasOto(ValidateAlias(ucv), syllable.vowelTone)) && (HasOto(cc2, syllable.vowelTone) || HasOto(ValidateAlias(cc2), syllable.vowelTone)) && !cc2.Contains($"{cc[i + 1]} {cc[i + 2]}")) {
                         basePhoneme = ucv;
                     }
-                    if (i + 1 < lastC) {
-                        var cc2 = $"{string.Join("", cc.Skip(i))}";
-                        if (!HasOto(cc2, syllable.tone)) {
-                            cc2 = ValidateAlias(cc2);
-                        }
-                        if (!HasOto(cc2, syllable.tone)) {
-                            cc2 = ValidateAlias(cc2);
-                        }
-                        if (!HasOto(cc2, syllable.tone)) {
-                            cc2 = $"{cc[i + 1]}{cc[i + 2]}";
-                        }
-                        if (!HasOto(cc2, syllable.tone)) {
-                            cc2 = ValidateAlias(cc2);
-                        }
-                        if (!HasOto(cc2, syllable.tone)) {
-                            cc2 = $"{cc[i + 1]} {cc[i + 2]}";
-                        }
-                        if (!HasOto(cc2, syllable.tone)) {
-                            cc2 = ValidateAlias(cc2);
-                        }
-                        if (!HasOto(cc2, syllable.tone)) {
-                            cc2 = $"{cc[i + 1]} {cc[i + 2]}-";
-                        }
-                        if (!HasOto(cc2, syllable.tone)) {
-                            cc2 = ValidateAlias(cc2);
-                        }
-                        if (HasOto(ccv, syllable.vowelTone) || HasOto(ValidateAlias(ccv), syllable.vowelTone)) {
-                            basePhoneme = ccv;
-                            lastC = i;
-                        } else if ((HasOto(ucv, syllable.vowelTone) || HasOto(ValidateAlias(ucv), syllable.vowelTone)) && (HasOto(cc2, syllable.vowelTone) || HasOto(ValidateAlias(cc2), syllable.vowelTone)) && !cc2.Contains($"{cc[i + 1]} {cc[i + 2]}")) {
-                            basePhoneme = ucv;
-                        }
-                        if (TryAddPhoneme(phonemes, syllable.tone, $"{cc[i]} {cc[i + 1]}{cc[i + 2]}-", ValidateAlias($"{cc[i]} {cc[i + 1]}{cc[i + 2]}-"))) {
-                            // like [V C1] [C1 C2C3-] ...
+                    if (TryAddPhoneme(phonemes, syllable.tone, $"{cc[i]} {cc[i + 1]}{cc[i + 2]}-", ValidateAlias($"{cc[i]} {cc[i + 1]}{cc[i + 2]}-"))) {
+                        // like [V C1] [C1 C2C3-] ...
+                        i++;
+                    } else if (HasOto(cc1, syllable.tone) && HasOto(cc2, syllable.tone) && !cc1.Contains($"{string.Join("", cc.Skip(i))}")) {
+                        // like [V C1] [C1 C2] [C2 C3] [C3 ..]
+                        phonemes.Add(cc1);
+                    } else if (TryAddPhoneme(phonemes, syllable.tone, cc1)) {
+                        // like [V C1] [C1 C2] [C2 ..]
+                        if (cc1.Contains($"{string.Join("", cc.Skip(i))}")) {
                             i++;
-                        } else if (HasOto(cc1, syllable.tone) && HasOto(cc2, syllable.tone) && !cc1.Contains($"{string.Join("", cc.Skip(i))}")) {
-                            // like [V C1] [C1 C2] [C2 C3] [C3 ..]
-                            phonemes.Add(cc1);
-                        } else if (TryAddPhoneme(phonemes, syllable.tone, cc1)) {
-                            // like [V C1] [C1 C2] [C2 ..]
-                            if (cc1.Contains($"{string.Join("", cc.Skip(i))}")) {
-                                i++;
-                            }
-                        } else if (TryAddPhoneme(phonemes, syllable.tone, $"{cc[i]} {cc[i + 1]}-", ValidateAlias($"{cc[i]} {cc[i + 1]}-"))) {
-                            // like [V C1] [C1 C2-] [C3 ..]
-                            if (affricates.Contains(cc[i + 1])) {
-                                i++;
-                            } else {
-                                //  continue as usual
-                            }
+                        }
+                    } else if (TryAddPhoneme(phonemes, syllable.tone, $"{cc[i]} {cc[i + 1]}-", ValidateAlias($"{cc[i]} {cc[i + 1]}-"))) {
+                        // like [V C1] [C1 C2-] [C3 ..]
+                        if (affricates.Contains(cc[i + 1])) {
+                            i++;
                         } else {
-                            // like [V C1] [C1] [C2 ..]
-                            TryAddPhoneme(phonemes, syllable.tone, cc[i], ValidateAlias(cc[i]));
+                            //  continue as usual
                         }
                     } else {
-                        // like [V C1] [C1 C2]  [C2 ..] or like [V C1] [C1 -] [C3 ..]
-                        TryAddPhoneme(phonemes, syllable.tone, cc1, cc[i], ValidateAlias(cc[i]));
+                        // like [V C1] [C1] [C2 ..]
+                        TryAddPhoneme(phonemes, syllable.tone, cc[i], ValidateAlias(cc[i]));
                     }
+                } else {
+                    // like [V C1] [C1 C2]  [C2 ..] or like [V C1] [C1 -] [C3 ..]
+                    TryAddPhoneme(phonemes, syllable.tone, cc1, cc[i], ValidateAlias(cc[i]));
                 }
             }
 
