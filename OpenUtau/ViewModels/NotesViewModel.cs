@@ -702,9 +702,7 @@ namespace OpenUtau.App.ViewModels {
             var notes = Selection.ToList();
             notes.Sort((a, b) => a.position.CompareTo(b.position));
             DocManager.Inst.StartUndoGroup();
-            for (int i = 1; i < notes.Count; i++) {
-                DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(Part, notes[0], notes[0].lyric + notes[i].lyric));
-            }
+            DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(Part, notes[0], String.Join("", notes.Select(x => x.lyric))));
             DocManager.Inst.ExecuteCmd(new ResizeNoteCommand(Part, notes[0], notes.Last().End - notes[0].End));
             notes.RemoveAt(0);
             DocManager.Inst.ExecuteCmd(new RemoveNoteCommand(Part, notes));
