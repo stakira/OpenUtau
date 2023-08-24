@@ -106,9 +106,9 @@ symbols:
   - {symbol: '@N', type: vowel}
   - {symbol: '@', type: vowel}
   - {symbol: y, type: vowel}
-  - {symbol: I\, type: vowel}
+  - {symbol: 'I\', type: vowel}
   - {symbol: M, type: vowel}
-  - {symbol: U\, type: vowel}
+  - {symbol: 'U\', type: vowel}
   - {symbol: Y, type: vowel}
   - {symbol: '@\', type: vowel}
   - {symbol: '@`', type: vowel}
@@ -125,7 +125,7 @@ symbols:
   - {symbol: aU`, type: vowel}
   - {symbol: '}', type: vowel}
   - {symbol: 2, type: vowel}
-  - {symbol: 3\, type: vowel}
+  - {symbol: '3\', type: vowel}
   - {symbol: 6, type: vowel}
   - {symbol: 7, type: vowel}
   - {symbol: 8, type: vowel}
