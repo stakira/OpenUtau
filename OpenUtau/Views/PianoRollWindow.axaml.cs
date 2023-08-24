@@ -938,6 +938,10 @@ namespace OpenUtau.App.Views {
                         notesVm.ShowVibrato = !notesVm.ShowVibrato;
                         return true;
                     }
+                    if (isCtrl) {
+                        notesVm.MergeSelectedNotes();
+                        return true;
+                    }
                     break;
                 case Key.I:
                     if (isNone) {
