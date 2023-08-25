@@ -527,7 +527,7 @@ namespace OpenUtau.Plugin.Builtin {
                             // like [C1C2][C2 ...]
                         } else {
                             // like [C1][C2 ...]
-                            TryAddPhoneme(phonemes, ending.tone, $"{cc[i]} {cc[i + 1]}", ValidateAlias($"{cc[i]} {cc[i + 1]}"), $"{cc[i]}{cc[i + 1]}", ValidateAlias($"{cc[i]}{cc[i + 1]}"), cc[i], ValidateAlias(cc[i]), $"{cc[i]} -", ValidateAlias($"{cc[i]} -"));
+                            TryAddPhoneme(phonemes, ending.tone, cc1, ValidateAlias(cc1), cc[i], ValidateAlias(cc[i]), $"{cc[i]} -", ValidateAlias($"{cc[i]} -"));
                         }
                     } else {
                         if (!HasOto(cc1, ending.tone)) {
