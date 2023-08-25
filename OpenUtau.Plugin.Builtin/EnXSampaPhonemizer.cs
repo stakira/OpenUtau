@@ -463,25 +463,25 @@ namespace OpenUtau.Plugin.Builtin {
                         break;
                     } else if (HasOto(vcc3, ending.tone) || HasOto(ValidateAlias(vcc3), ending.tone)) {
                         phonemes.Add(vcc3);
-                        firstC = 1;
-                        if (vcc3.EndsWith(cc.Last())) {
+                        if (vcc3.EndsWith(cc.Last()) && lastC == 1) {
                             if (affricates.Contains(cc.Last())) {
                                 TryAddPhoneme(phonemes, ending.tone, $"{cc.Last()} -", ValidateAlias($"{cc.Last()} -"), cc.Last(), ValidateAlias(cc.Last()));
                             } else {
                                 TryAddPhoneme(phonemes, ending.tone, $"{cc.Last()} -", ValidateAlias($"{cc.Last()} -"));
                             }
                         }
+                        firstC = 1;
                         break;
                     } else if (HasOto(vcc4, ending.tone) || HasOto(ValidateAlias(vcc4), ending.tone)) {
                         phonemes.Add(vcc4);
-                        firstC = 1;
-                        if (vcc4.EndsWith(cc.Last())) {
+                        if (vcc4.EndsWith(cc.Last()) && lastC == 1) {
                             if (affricates.Contains(cc.Last())) {
                                 TryAddPhoneme(phonemes, ending.tone, $"{cc.Last()} -", ValidateAlias($"{cc.Last()} -"), cc.Last(), ValidateAlias(cc.Last()));
                             } else {
                                 TryAddPhoneme(phonemes, ending.tone, $"{cc.Last()} -", ValidateAlias($"{cc.Last()} -"));
                             }
                         }
+                        firstC = 1;
                         break;
                     } else {
                         phonemes.Add(vc);
@@ -517,17 +517,25 @@ namespace OpenUtau.Plugin.Builtin {
                         if (TryAddPhoneme(phonemes, ending.tone, $"{cc[i]} {cc[i + 1]}{cc[i + 2]}-", ValidateAlias($"{cc[i]} {cc[i + 1]}{cc[i + 2]}-"))) {
                             // like [C1 C2-][C3 ...]
                             i++;
-                        } else if (HasOto(cc1, ending.tone) && HasOto(cc2, ending.tone)) {
+                        } else if (HasOto(cc1, ending.tone) && (HasOto(cc2, ending.tone) || HasOto($"{cc[i + 1]} {cc[i + 2]}-", ending.tone) || HasOto(ValidateAlias($"{cc[i + 1]} {cc[i + 2]}-"), ending.tone))) {
                             // like [C1 C2][C2 ...]
                             phonemes.Add(cc1);
+                        } else if ((HasOto(cc[i], ending.tone) || HasOto(ValidateAlias(cc[i]), ending.tone) && (HasOto(cc2, ending.tone) || HasOto($"{cc[i + 1]} {cc[i + 2]}-", ending.tone) || HasOto(ValidateAlias($"{cc[i + 1]} {cc[i + 2]}-"), ending.tone)))) {
+                            // like [C1 C2-][C3 ...]
+                            phonemes.Add(cc[i]);
                         } else if (TryAddPhoneme(phonemes, ending.tone, $"{cc[i + 1]} {cc[i + 2]}-", ValidateAlias($"{cc[i + 1]} {cc[i + 2]}-"))) {
                             // like [C1 C2-][C3 ...]
                             i++;
                         } else if (TryAddPhoneme(phonemes, ending.tone, $"{cc[i + 1]}{cc[i + 2]}", ValidateAlias($"{cc[i + 1]}{cc[i + 2]}"))) {
                             // like [C1C2][C2 ...]
+                            i++;
+                        } else if (TryAddPhoneme(phonemes, ending.tone, cc1, ValidateAlias(cc1))) {
+                            i++;
                         } else {
                             // like [C1][C2 ...]
-                            TryAddPhoneme(phonemes, ending.tone, cc1, ValidateAlias(cc1), cc[i], ValidateAlias(cc[i]), $"{cc[i]} -", ValidateAlias($"{cc[i]} -"));
+                            TryAddPhoneme(phonemes, ending.tone, cc[i], ValidateAlias(cc[i]), $"{cc[i]} -", ValidateAlias($"{cc[i]} -"));
+                            TryAddPhoneme(phonemes, ending.tone, cc[i + 1], ValidateAlias(cc[i + 1]), $"{cc[i + 1]} -", ValidateAlias($"{cc[i + 1]} -"));
+                            i++;
                         }
                     } else {
                         if (!HasOto(cc1, ending.tone)) {
