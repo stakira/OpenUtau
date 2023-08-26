@@ -147,7 +147,7 @@ namespace OpenUtau.Plugin.Builtin {
             string[] affricates = new[] { "dZ", "tS" };
             foreach (string s in original) {
                 if (diphthongs.Contains(s) && !HasOto($"{s} b", note.tone)) {
-                    modified.AddRange(new string[] { s[0].ToString(), s[1].ToString() });
+                    modified.AddRange(new string[] { s[0].ToString(), s[1] + '^'.ToString() });
                 } else if (affricates.Contains(s) && !HasOto($"i {s}", note.tone) && !HasOto($"i: {s}", note.tone)) {
                     modified.AddRange(new string[] { s[0].ToString(), s[1].ToString() });
                 } else {
@@ -614,6 +614,21 @@ namespace OpenUtau.Plugin.Builtin {
                     alias = alias.Replace(syllable.Key, syllable.Value);
                 }
             }
+
+            // Split diphthongs adjuster
+            if (alias.Contains("U^")) {
+                alias = alias.Replace("U^", "U");
+            }
+            if (alias.Contains("I^")) {
+                alias = alias.Replace("I^", "I");
+            }
+            if (alias.Contains("u^")) {
+                alias = alias.Replace("u^", "u");
+            }
+            if (alias.Contains("i^")) {
+                alias = alias.Replace("i^", "i");
+            }
+
             // Other validations
             if (!alias.Contains("@r") && !alias.Contains("3r")) {
                 foreach (var consonant1 in new[] { "r ", "r\\ ", }) {
@@ -622,6 +637,7 @@ namespace OpenUtau.Plugin.Builtin {
                     }
                 }
             }
+
             return alias;
         }
 
