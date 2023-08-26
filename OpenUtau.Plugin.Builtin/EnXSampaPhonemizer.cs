@@ -445,7 +445,7 @@ namespace OpenUtau.Plugin.Builtin {
             } else {
                 for (var i = lastC; i >= 0; i--) {
                     var vcc = $"{v} {string.Join("", cc.Take(2))}-";
-                    var vcc2 = $"{v}{string.Join(" ", cc.TakeLast(2))}-";
+                    var vcc2 = $"{v}{string.Join(" ", cc.Take(2))}-";
                     var vcc3 = $"{v}{string.Join(" ", cc.Take(2))}";
                     var vcc4 = $"{v} {string.Join("", cc.Take(2))}";
                     var vc = $"{v} {cc[0]}";
@@ -456,7 +456,6 @@ namespace OpenUtau.Plugin.Builtin {
                     } else if (HasOto(vcc, ending.tone) || HasOto(ValidateAlias(vcc), ending.tone)) {
                         phonemes.Add(vcc);
                         firstC = 1;
-                        lastC = 2;
                         break;
                     } else if (HasOto(vcc2, ending.tone) || HasOto(ValidateAlias(vcc2), ending.tone)) {
                         phonemes.Add(vcc2);
