@@ -210,6 +210,7 @@
   <system:String x:Key="pianoroll.menu.notes.bakepitch">ピッチ曲線（PITD）をピッチ点に変換</system:String>
   <system:String x:Key="pianoroll.menu.notes.clear.vibratos">ビブラートを削除</system:String>
   <system:String x:Key="pianoroll.menu.notes.hanzitopinyin">漢字をピンインへ</system:String>
+  <system:String x:Key="pianoroll.menu.notes.lengthencrossfade">クロスフェードを長くする</system:String>
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">レンダリング済みピッチの読み込み</system:String>
   <system:String x:Key="pianoroll.menu.notes.octavedown">1オクターブ下げる</system:String>
   <system:String x:Key="pianoroll.menu.notes.octaveup">1オクターブ上げる</system:String>
