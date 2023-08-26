@@ -307,6 +307,7 @@ namespace OpenUtau.Plugin.Builtin {
                     // all CCs except the first one are /C1C2/, the last one is /C1 C2-/
                     // but if there is no /C1C2/, we try /C1 C2-/, vise versa for the last one
                     var cc1 = $"{cc[i]}{cc[i + 1]} -";
+                    // in most cases, use [C1][C2] -
                     if (!HasOto(cc1, ending.tone)) {
                         cc1 = ValidateAlias(cc1);
                     }
@@ -330,6 +331,7 @@ namespace OpenUtau.Plugin.Builtin {
                     }
                     if (i < cc.Length - 2) {
                         var cc2 = $"{cc[i + 1]}{cc[i + 2]} -";
+                        // in most cases, use [C2][C3] -
                         if (!HasOto(cc2, ending.tone)) {
                             cc2 = ValidateAlias(cc2);
                         }
