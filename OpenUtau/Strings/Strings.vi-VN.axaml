@@ -200,7 +200,7 @@ Lưu ý: tuỳ chọn này cũng sẽ xoá các preset của bạn.</system:Stri
   <system:String x:Key="pianoroll.menu.notes.bakepitch">Chuyển PITD thành đường luyến giọng</system:String>
   <system:String x:Key="pianoroll.menu.notes.clear.vibratos">Xoá đường rung giọng</system:String>
   <system:String x:Key="pianoroll.menu.notes.hanzitopinyin">Chữ Hán sang phiên âm</system:String>
-  <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Luyến giọng tự nhiên (AI only)</system:String>
+  <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Luyến giọng tự nhiên (chỉ dành cho AI)</system:String>
   <system:String x:Key="pianoroll.menu.notes.octavedown">Dời xuống quãng tám</system:String>
   <system:String x:Key="pianoroll.menu.notes.octaveup">Dời lên quãng tám</system:String>
   <system:String x:Key="pianoroll.menu.notes.quantize15">Chia thành quãng 1/128</system:String>
@@ -260,7 +260,7 @@ Nhấn giữ Ctrl để chọn nhiều nốt</system:String>
   <system:String x:Key="prefs.on">Mở</system:String>
   <system:String x:Key="prefs.otoeditor">Trình chỉnh oto</system:String>
   <system:String x:Key="prefs.otoeditor.select">Trình chỉnh oto mặc định</system:String>
-  <system:String x:Key="prefs.paths">Đường dẫn</system:String>
+  <system:String x:Key="prefs.paths">Mở thư mục</system:String>
   <system:String x:Key="prefs.paths.addlsinger">Thư mục phụ chứa các voicebank</system:String>
   <system:String x:Key="prefs.paths.addlsinger.install">Cài đặt vào thư mục phụ chứa các voicebank</system:String>
   <system:String x:Key="prefs.paths.reset">Đặt lại</system:String>
@@ -341,15 +341,15 @@ Warning: moresampler is not fully supported. It may be slow and cause high CPU u
   <system:String x:Key="singers.subbanks.toneranges">Cao độ</system:String>
   <system:String x:Key="singers.visitwebsite">Mở trang web</system:String>
 
-  <!--<system:String x:Key="singersetup.archivefileencoding">Archive File Encoding</system:String>-->
-  <!--<system:String x:Key="singersetup.archivefileencoding.prompt">Choose an encoding that make file names look right.</system:String>-->
-  <!--<system:String x:Key="singersetup.back">Back</system:String>-->
-  <!--<system:String x:Key="singersetup.install">Install</system:String>-->
-  <!--<system:String x:Key="singersetup.next">Next</system:String>-->
-  <!--<system:String x:Key="singersetup.missinginfo">Please add the following settings to this voicebank's character.yaml.</system:String>-->
-  <!--<system:String x:Key="singersetup.singertype">Singer Type</system:String>-->
-  <!--<system:String x:Key="singersetup.textfileencoding">Text File Encoding</system:String>-->
-  <!--<system:String x:Key="singersetup.textfileencoding.prompt">Choose an encoding that make file contents look right.</system:String>-->
+  <system:String x:Key="singersetup.archivefileencoding">Chọn bảng mã</system:String>
+  <system:String x:Key="singersetup.archivefileencoding.prompt">Chọn bảng mã để tên tệp không bị lỗi.</system:String>
+  <system:String x:Key="singersetup.back">Quay lại</system:String>
+  <system:String x:Key="singersetup.install">Cài đặt</system:String>
+  <system:String x:Key="singersetup.next">Tiếp</system:String>
+  <system:String x:Key="singersetup.missinginfo">Bắc buộc phải thêm các thông tin sau để tạo tệp character.yaml cho ca sĩ.</system:String>
+  <system:String x:Key="singersetup.singertype">Chất giọng</system:String>
+  <system:String x:Key="singersetup.textfileencoding">Chọn bảng mã</system:String>
+  <system:String x:Key="singersetup.textfileencoding.prompt">Chọn bảng mã để tên tệp không bị lỗi.</system:String>
 
   <system:String x:Key="tip.aliasbox">Thay đổi âm vị</system:String>
   <system:String x:Key="tip.exps">
