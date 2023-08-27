@@ -35,7 +35,7 @@
         <Rectangle HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="12" Fill="{Binding NotesViewModel.TrackAccentColor}"/>
         <Border Margin="12,0,0,0" Width="48" Height="48" ClipToBounds="True">
           <Image HorizontalAlignment="Center" VerticalAlignment="Center"
-                 Width="50" Height="50" Stretch="None" Source="{Binding NotesViewModel.Avatar}"/>
+                 Width="50" Height="50" Stretch="UniformToFill" Source="{Binding NotesViewModel.Avatar}"/>
         </Border>
       </Grid>
       <ScrollBar Name="HScrollBar" Classes="music" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
@@ -374,7 +374,24 @@
           <Border CornerRadius="2" ClipToBounds="True">
             <Menu CornerRadius="2" Height="20" Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
                   Closed="OnMenuClosed" PointerExited="OnMenuPointerLeave">
-              <MenuItem Height="20" Header="{DynamicResource pianoroll.menu.part}" CornerRadius="2,0,0,2">
+              <MenuItem Header="{DynamicResource pianoroll.menu.part}">
+                <MenuItem Header="{DynamicResource pianoroll.menu.part.singer}" Click="OnMenuSingers"/>
+              </MenuItem>
+              <MenuItem Header="{DynamicResource pianoroll.menu.batch}">
+                <MenuItem Header="{DynamicResource pianoroll.menu.notes}" ItemsSource="{Binding NoteBatchEdits}">
+                  <MenuItem.DataTemplates>
+                    <DataTemplate DataType="vm:MenuItemViewModel">
+                      <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}"/>
+                    </DataTemplate>
+                  </MenuItem.DataTemplates>
+                </MenuItem>
+                <MenuItem Header="{DynamicResource pianoroll.menu.lyrics}" ItemsSource="{Binding LyricBatchEdits}">
+                  <MenuItem.DataTemplates>
+                    <DataTemplate DataType="vm:MenuItemViewModel">
+                      <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}"/>
+                    </DataTemplate>
+                  </MenuItem.DataTemplates>
+                </MenuItem>
                 <MenuItem Header="{DynamicResource pianoroll.menu.part.legacypluginexp}" ItemsSource="{Binding LegacyPlugins}">
                   <MenuItem.DataTemplates>
                     <DataTemplate DataType="vm:MenuItemViewModel">
@@ -383,22 +400,8 @@
                   </MenuItem.DataTemplates>
                 </MenuItem>
               </MenuItem>
-              <MenuItem Height="20" Header="{DynamicResource pianoroll.menu.notes}" ItemsSource="{Binding NoteBatchEdits}">
-                <MenuItem.DataTemplates>
-                  <DataTemplate DataType="vm:MenuItemViewModel">
-                    <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}"/>
-                  </DataTemplate>
-                </MenuItem.DataTemplates>
-              </MenuItem>
-              <MenuItem Height="20" Header="{DynamicResource pianoroll.menu.lyrics}" ItemsSource="{Binding LyricBatchEdits}">
-                <MenuItem.DataTemplates>
-                  <DataTemplate DataType="vm:MenuItemViewModel">
-                    <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}"/>
-                  </DataTemplate>
-                </MenuItem.DataTemplates>
-              </MenuItem>
-              <MenuItem Height="20" Header="{DynamicResource pianoroll.menu.lyrics.edit}" Click="OnMenuEditLyrics"/>
-              <MenuItem Height="20" Header="{DynamicResource pianoroll.menu.notedefaults}" Click="OnMenuNoteDefaults"/>
+              <MenuItem Header="{DynamicResource pianoroll.menu.lyrics.edit}" Click="OnMenuEditLyrics"/>
+              <MenuItem Header="{DynamicResource pianoroll.menu.notedefaults}" Click="OnMenuNoteDefaults"/>
             </Menu>
           </Border>
         </Border>

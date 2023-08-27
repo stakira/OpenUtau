@@ -6,7 +6,7 @@ using Avalonia.Platform.Storage;
 namespace OpenUtau.App {
     internal class FilePicker {
         public static FilePickerFileType ProjectFiles { get; } = new("Project Files") {
-            Patterns = new[] { "*.ustx", "*.vsqx", "*.ust", "*.mid", "*.midi" },
+            Patterns = new[] { "*.ustx", "*.vsqx", "*.ust", "*.mid", "*.midi", "*.ufdata" },
         };
         public static FilePickerFileType USTX { get; } = new("USTX") {
             Patterns = new[] { "*.ustx" },
@@ -19,6 +19,9 @@ namespace OpenUtau.App {
         };
         public static FilePickerFileType MIDI { get; } = new("MIDI") {
             Patterns = new[] { "*.mid", "*.midi" },
+        };
+        public static FilePickerFileType UFDATA { get; } = new("UFDATA") {
+            Patterns = new[] { "*.ufdata" },
         };
         public static FilePickerFileType AudioFiles { get; } = new("Audio Files") {
             Patterns = new[] { "*.wav", "*.mp3", "*.ogg", "*.opus", "*.flac" },

@@ -179,7 +179,8 @@ namespace OpenUtau.App.Views {
                 FilePicker.USTX,
                 FilePicker.VSQX,
                 FilePicker.UST,
-                FilePicker.MIDI);
+                FilePicker.MIDI,
+                FilePicker.UFDATA);
             if (files == null || files.Length == 0) {
                 return;
             }
@@ -663,7 +664,7 @@ namespace OpenUtau.App.Views {
             }
             string file = storageItem.Path.LocalPath;
             var ext = System.IO.Path.GetExtension(file);
-            if (ext == ".ustx" || ext == ".ust" || ext == ".vsqx") {
+            if (ext == ".ustx" || ext == ".ust" || ext == ".vsqx" || ext==".ufdata") {
                 if (!DocManager.Inst.ChangesSaved && !await AskIfSaveAndContinue()) {
                     return;
                 }

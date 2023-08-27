@@ -36,6 +36,37 @@ namespace OpenUtau.Core.Editing {
         }
     }
 
+    public class RemoveTailNote : BatchEdit {
+        public string Name => name;
+
+        private string lyric;
+        private string name;
+
+        public RemoveTailNote(string lyric, string name) {
+            this.lyric = lyric;
+            this.name = name;
+        }
+
+        bool NeedToBeRemoved(UNote note) {
+            return note.lyric == lyric 
+                && (note.Next == null || note.Next.position > note.End);
+        }
+
+        public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
+            var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
+            List<UNote> toRemove = notes.Where(NeedToBeRemoved).ToList();
+            if (toRemove.Count == 0) {
+                return;
+            }
+            docManager.StartUndoGroup(true);
+            foreach (var note in toRemove) {
+                note.lyric = lyric;
+                docManager.ExecuteCmd(new RemoveNoteCommand(part, note));
+            }
+            docManager.EndUndoGroup();
+        }
+    }
+
     public class Transpose : BatchEdit {
         public string Name => name;
 
@@ -82,6 +113,26 @@ namespace OpenUtau.Core.Editing {
                 } else if (newEnd != end) {
                     docManager.ExecuteCmd(new ResizeNoteCommand(part, note, newEnd - newPos - note.duration));
                 }
+            }
+            docManager.EndUndoGroup();
+        }
+    }
+
+    public class AutoLegato : BatchEdit {
+        public virtual string Name => name;
+
+        private string name;
+
+        public AutoLegato() {
+            name = $"pianoroll.menu.notes.autolegato";
+        }
+
+        public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
+            var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
+            notes.Sort((a, b) => a.position.CompareTo(b.position));
+            docManager.StartUndoGroup(true);
+            for (int i = 0; i < notes.Count - 1; i++) {
+                docManager.ExecuteCmd(new ResizeNoteCommand(part, notes[i], notes[i + 1].position - notes[i].position - notes[i].duration));
             }
             docManager.EndUndoGroup();
         }

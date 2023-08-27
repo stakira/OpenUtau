@@ -633,6 +633,8 @@ namespace OpenUtau.Plugin.Builtin {
                 cons = "r";
             } else if (cons == "ly") {
                 cons = "ry";
+            } else {
+                cons = StartingConsonant[cons];
             }
 
             var vc = $"{vowel} {cons}";
@@ -642,6 +644,8 @@ namespace OpenUtau.Plugin.Builtin {
                 phonemes.Add(vc);
             } else if (HasOto(altVc, tone)) {
                 phonemes.Add(altVc);
+            } else {
+                return (false, new string[0]);
             }
 
             if (affricates.Contains(cons) && cc > 1) {
