@@ -267,6 +267,9 @@ Nhấn giữ Ctrl để chọn nhiều nốt</system:String>
   <system:String x:Key="prefs.appearance.theme">Chủ đề</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">Tối</system:String>
   <system:String x:Key="prefs.appearance.theme.light">Sáng</system:String>
+
+  <system:String x:Key="prefs.appearance.trackcolor">Use track color in UI</system:String>
+
   <system:String x:Key="prefs.caption">Tuỳ chọn</system:String>
   <system:String x:Key="prefs.note.restart">Lưu ý: khởi động lại OpenUTAU sau khi chỉnh sửa tuỳ chọn này.</system:String>
   <system:String x:Key="prefs.off">Tắt</system:String>
@@ -395,12 +398,23 @@ Tổng quát
   <system:String x:Key="tracks.duplicate">Nhân đôi</system:String>
   <system:String x:Key="tracks.duplicatesettings">Nhân đôi cài đặt</system:String>
   <system:String x:Key="tracks.more">Còn nữa</system:String>
-  <system:String x:Key="tracks.movedown">Di chuyển xuống</system:String>
-  <system:String x:Key="tracks.moveup">Di chuyển lên</system:String>
-  <system:String x:Key="tracks.remove">Xoá bỏ</system:String>
+  <system:String x:Key="tracks.movedown">Đem xuống</system:String>
+  <system:String x:Key="tracks.moveup">Đem lên</system:String>
+
+  <system:String x:Key="tracks.mute">Tắt tiếng</system:String>
+  <system:String x:Key="tracks.mute.allothers">Tắt tiếng cá track khác</system:String>
+  <system:String x:Key="tracks.mute.only">Chỉ tắt tiếng trach này</system:String>
+  <system:String x:Key="tracks.mute.unmuteall">Huỷ tắt tiếng các track</system:String>
+
+  <system:String x:Key="tracks.remove">Xoá</system:String>
   <system:String x:Key="tracks.rename">Đổi tên</system:String>
   <system:String x:Key="tracks.selectrenderer">Chọn trình render</system:String>
   <system:String x:Key="tracks.selectsinger">Chọn ca sĩ</system:String>
+
+  <system:String x:Key="tracks.solo.add">Thêm solo track này (không xoá solo mấy track khác)</system:String>
+  <system:String x:Key="tracks.solo.only">Chỉ solo track này (Xoá solo mấy trach khác)</system:String>
+  <system:String x:Key="tracks.solo.unsoloall">Huỷ solo các track</system:String>
+  <system:String x:Key="tracks.trackcolor">Chọn màu cho track</system:String>
 
   <!--<FontFamily x:Key="ui.fontfamily">Segoe UI,San Francisco,Helvetica Neue</FontFamily>-->
   <!--<FontFamily x:Key="ui.textbox.fontfamily">Microsoft YaHei,Simsun,苹方-简,宋体-简</FontFamily>-->
