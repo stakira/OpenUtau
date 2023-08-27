@@ -453,11 +453,11 @@ namespace OpenUtau.Plugin.Builtin {
                         if (HasOto(vr, ending.tone) || HasOto(ValidateAlias(vr), ending.tone)) {
                             phonemes.Add(vr);
                         }
-                    } else if (HasOto(vcc, ending.tone) || HasOto(ValidateAlias(vcc), ending.tone)) {
+                    } else if ((HasOto(vcc, ending.tone) || HasOto(ValidateAlias(vcc), ending.tone)) && lastC == 1) {
                         phonemes.Add(vcc);
                         firstC = 1;
                         break;
-                    } else if (HasOto(vcc2, ending.tone) || HasOto(ValidateAlias(vcc2), ending.tone)) {
+                    } else if ((HasOto(vcc2, ending.tone) || HasOto(ValidateAlias(vcc2), ending.tone)) && lastC == 1) {
                         phonemes.Add(vcc2);
                         firstC = 1;
                         break;
