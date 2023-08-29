@@ -23,6 +23,8 @@ namespace OpenUtau.Core.DiffSinger {
         public int hiddenSize = 256;
         public bool useKeyShiftEmbed = false;
         public bool useSpeedEmbed = false;
+        public bool useEnergyEmbed = false;
+        public bool useBreathinessEmbed= false;
         public AugmentationArgs augmentationArgs;
         public string dur;
         public string linguistic;

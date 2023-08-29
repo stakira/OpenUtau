@@ -40,8 +40,8 @@ namespace OpenUtau.Core.DiffSinger {
         public InferenceSession acousticSession = null;
         public DsVocoder vocoder = null;
         public DsPitch pitchPredictor = null;
-        public NDArray speakerEmbeds = null;
-        
+        public DiffSingerSpeakerEmbedManager speakerEmbedManager = null;
+        public DsVariance variancePredictor = null;
 
         public DiffSingerSinger(Voicebank voicebank) {
             this.voicebank = voicebank;
@@ -130,30 +130,23 @@ namespace OpenUtau.Core.DiffSinger {
             }
             return pitchPredictor;
         }
-
-        public NDArray loadSpeakerEmbed(string speaker) {
-            string path = Path.Join(Location, speaker + ".emb");
-            if(File.Exists(path)) {
-                var reader = new BinaryReader(File.OpenRead(path));
-                return np.array<float>(Enumerable.Range(0, dsConfig.hiddenSize)
-                    .Select(i => reader.ReadSingle()));
-            } else {
-                throw new Exception("Speaker embed file {path} not found");
+       
+        public DiffSingerSpeakerEmbedManager getSpeakerEmbedManager(){
+            if(speakerEmbedManager is null) {
+                speakerEmbedManager = new DiffSingerSpeakerEmbedManager(dsConfig, Location);
             }
+            return speakerEmbedManager;
         }
 
-        public NDArray getSpeakerEmbeds() {
-            if(speakerEmbeds == null) {
-                if(dsConfig.speakers == null) {
-                    return null;
-                } else {
-                    speakerEmbeds = np.zeros<float>(dsConfig.hiddenSize, dsConfig.speakers.Count);
-                    foreach(var spkId in Enumerable.Range(0, dsConfig.speakers.Count)) {
-                        speakerEmbeds[":", spkId] = loadSpeakerEmbed(dsConfig.speakers[spkId]);
-                    }
+        public DsVariance getVariancePredictor(){
+            if(variancePredictor is null) {
+                if(File.Exists(Path.Join(Location,"dsvariance", "dsconfig.yaml"))){
+                    variancePredictor = new DsVariance(Path.Join(Location, "dsvariance"));
+                    return variancePredictor;
                 }
+                variancePredictor = new DsVariance(Location);
             }
-            return speakerEmbeds;
+            return variancePredictor;
         }
     }
 }
