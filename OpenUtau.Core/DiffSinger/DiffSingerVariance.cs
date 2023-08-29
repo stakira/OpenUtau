@@ -14,8 +14,8 @@ using OpenUtau.Core.Util;
 
 namespace OpenUtau.Core.DiffSinger{
     public struct VarianceResult{
-        public Tensor<float> energy;
-        public Tensor<float> breathiness;
+        public float[] energy;
+        public float[] breathiness;
     }
     public class DsVariance{
         string rootPath;
@@ -166,8 +166,8 @@ namespace OpenUtau.Core.DiffSinger{
                 .First()
                 .AsTensor<float>();
             return new VarianceResult{
-                energy = energy_pred,
-                breathiness = breathiness_pred
+                energy = energy_pred.ToArray(),
+                breathiness = breathiness_pred.ToArray()
             };
         }
     }

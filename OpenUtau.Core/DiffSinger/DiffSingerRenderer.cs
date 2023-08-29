@@ -19,6 +19,7 @@ namespace OpenUtau.Core.DiffSinger {
         const float headMs = DiffSingerUtils.headMs;
         const float tailMs = DiffSingerUtils.tailMs;
         const string VELC = DiffSingerUtils.VELC;
+        const string ENE = DiffSingerUtils.ENE;
         const string VoiceColorHeader = DiffSingerUtils.VoiceColorHeader;
 
         static readonly HashSet<string> supportedExp = new HashSet<string>(){
@@ -26,7 +27,9 @@ namespace OpenUtau.Core.DiffSinger {
             Format.Ustx.PITD,
             Format.Ustx.GENC,
             Format.Ustx.CLR,
+            Format.Ustx.BREC,
             VELC,
+            ENE,
         };
 
         static readonly object lockObj = new object();
@@ -196,10 +199,28 @@ namespace OpenUtau.Core.DiffSinger {
                 var varianceResult = singer.getVariancePredictor().Process(phrase);
                 //TODO: let user edit variance curves
                 if(singer.dsConfig.useEnergyEmbed){
-                    acousticInputs.Add(NamedOnnxValue.CreateFromTensor("energy", varianceResult.energy));
+                    var energyCurve = phrase.curves.FirstOrDefault(curve => curve.Item1 == ENE);
+                    IEnumerable<double> userEnergy;
+                    if(energyCurve!=null){
+                        userEnergy = DiffSingerUtils.SampleCurve(phrase, energyCurve.Item2,
+                            0, frameMs, totalFrames, headFrames, tailFrames,
+                            x => x);
+                    } else{
+                        userEnergy = Enumerable.Repeat(0d, totalFrames);
+                    }
+                    var energy = varianceResult.energy.Zip(userEnergy, (x,y)=>(float)Math.Min(x + y*12/100, 0)).ToArray();
+                    acousticInputs.Add(NamedOnnxValue.CreateFromTensor("energy", 
+                        new DenseTensor<float>(energy, new int[] { energy.Length })
+                        .Reshape(new int[] { 1, energy.Length })));
                 }
                 if(singer.dsConfig.useBreathinessEmbed){
-                    acousticInputs.Add(NamedOnnxValue.CreateFromTensor("breathiness", varianceResult.breathiness));
+                    var userBreathiness = DiffSingerUtils.SampleCurve(phrase, phrase.breathiness,
+                        0, frameMs, totalFrames, headFrames, tailFrames,
+                        x => x);
+                    var breathiness = varianceResult.breathiness.Zip(userBreathiness, (x,y)=>(float)Math.Min(x + y*12/100, 0)).ToArray();
+                    acousticInputs.Add(NamedOnnxValue.CreateFromTensor("breathiness", 
+                        new DenseTensor<float>(breathiness, new int[] { breathiness.Length })
+                        .Reshape(new int[] { 1, breathiness.Length })));
                 }
             }
 
@@ -224,6 +245,7 @@ namespace OpenUtau.Core.DiffSinger {
 
         public UExpressionDescriptor[] GetSuggestedExpressions(USinger singer, URenderSettings renderSettings) {
             var result = new List<UExpressionDescriptor> {
+                //velocity
                 new UExpressionDescriptor{
                     name="velocity (curve)",
                     abbr=VELC,
@@ -232,8 +254,19 @@ namespace OpenUtau.Core.DiffSinger {
                     max=200,
                     defaultValue=100,
                     isFlag=false,
+                },
+                //energy
+                new UExpressionDescriptor{
+                    name="energy (curve)",
+                    abbr=ENE,
+                    type=UExpressionType.Curve,
+                    min=-100,
+                    max=100,
+                    defaultValue=0,
+                    isFlag=false,
                 }
             };
+            //speakers
             var dsSinger = singer as DiffSingerSinger;
             if(dsSinger!=null && dsSinger.dsConfig.speakers != null) {
                 result.AddRange(Enumerable.Zip(
@@ -249,6 +282,8 @@ namespace OpenUtau.Core.DiffSinger {
                         isFlag=false,
                     }));
             }
+            //energy
+
             return result.ToArray();
         }
 
