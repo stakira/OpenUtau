@@ -225,6 +225,10 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="pianoroll.menu.part">Part</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">Legacy Plugin (Experimental)</system:String>
   <system:String x:Key="pianoroll.menu.part.singer">Singer and Oto settings</system:String>
+  <system:String x:Key="pianoroll.menu.searchnote">Search Note</system:String>
+  <system:String x:Key="pianoroll.menu.searchnote.all">Select All</system:String>
+  <system:String x:Key="pianoroll.menu.searchnote.next">Next</system:String>
+  <system:String x:Key="pianoroll.menu.searchnote.prev">Prev</system:String>
   <system:String x:Key="pianoroll.toggle.finalpitch">View Final Pitch to Render (R)</system:String>
   <system:String x:Key="pianoroll.toggle.noteparams">View Note Parameters (\)</system:String>
   <system:String x:Key="pianoroll.toggle.phoneme">View Phonemes (O)</system:String>

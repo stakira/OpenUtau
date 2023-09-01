@@ -376,6 +376,7 @@
                   Closed="OnMenuClosed" PointerExited="OnMenuPointerLeave">
               <MenuItem Header="{DynamicResource pianoroll.menu.part}">
                 <MenuItem Header="{DynamicResource pianoroll.menu.part.singer}" Click="OnMenuSingers"/>
+                <MenuItem Header="{DynamicResource pianoroll.menu.searchnote}" Click="OnMenuSearchNote"/>
               </MenuItem>
               <MenuItem Header="{DynamicResource pianoroll.menu.batch}">
                 <MenuItem Header="{DynamicResource pianoroll.menu.notes}" ItemsSource="{Binding NoteBatchEdits}">
