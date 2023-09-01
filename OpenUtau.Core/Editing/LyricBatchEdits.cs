@@ -3,7 +3,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using OpenUtau.Core.Ustx;
 using WanaKanaNet;
-using static OpenUtau.Api.Phonemizer;
 
 namespace OpenUtau.Core.Editing {
 

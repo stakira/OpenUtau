@@ -1,10 +1,6 @@
-﻿using System;
-using Avalonia;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using OpenUtau.App.ViewModels;
-using SharpCompress;
 
 namespace OpenUtau.App.Views {
     public partial class PasteParamDialog : Window {

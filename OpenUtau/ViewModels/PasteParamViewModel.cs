@@ -1,5 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using Avalonia.Controls.Selection;
 using OpenUtau.Core;
 using ReactiveUI.Fody.Helpers;
 
