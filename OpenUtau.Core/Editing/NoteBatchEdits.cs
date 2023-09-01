@@ -21,7 +21,11 @@ namespace OpenUtau.Core.Editing {
             var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
             foreach (var note in notes) {
                 if (note.lyric != lyric && (note.Next == null || note.Next.position > note.End + 120)) {
-                    toAdd.Add(project.CreateNote(note.tone, note.End, 120));
+                    var addNote = project.CreateNote(note.tone, note.End, 120);
+                    foreach(var exp in note.phonemeExpressions.OrderBy(exp => exp.index)) {
+                        addNote.SetExpression(project, project.tracks[part.trackNo], exp.abbr, new float[] { exp.value });
+                    }
+                    toAdd.Add(addNote);
                 }
             }
             if (toAdd.Count == 0) {
