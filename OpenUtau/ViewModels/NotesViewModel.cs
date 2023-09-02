@@ -695,6 +695,20 @@ namespace OpenUtau.App.ViewModels {
             DocManager.Inst.EndUndoGroup();
         }
 
+        public void MergeSelectedNotes() {
+            if (Part == null || Selection.IsEmpty || Selection.Count <= 1) {
+                return;
+            }
+            var notes = Selection.ToList();
+            notes.Sort((a, b) => a.position.CompareTo(b.position));
+            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(Part, notes[0], String.Join("", notes.Select(x => x.lyric))));
+            DocManager.Inst.ExecuteCmd(new ResizeNoteCommand(Part, notes[0], notes.Last().End - notes[0].End));
+            notes.RemoveAt(0);
+            DocManager.Inst.ExecuteCmd(new RemoveNoteCommand(Part, notes));
+            DocManager.Inst.EndUndoGroup();
+        }
+
         internal void DeleteSelectedNotes() {
             if (Part == null || Selection.IsEmpty) {
                 return;
