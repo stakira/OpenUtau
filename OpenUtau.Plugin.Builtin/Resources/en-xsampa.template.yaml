@@ -106,15 +106,9 @@ symbols:
   - {symbol: '@N', type: vowel}
   - {symbol: '@', type: vowel}
   - {symbol: y, type: vowel}
-<<<<<<<< HEAD:OpenUtau.Plugin.Builtin/Data/en-xsampa.template.yaml
   - {symbol: 'I\', type: vowel}
   - {symbol: M, type: vowel}
   - {symbol: 'U\', type: vowel}
-========
-  - {symbol: I\, type: vowel}
-  - {symbol: M, type: vowel}
-  - {symbol: U\, type: vowel}
->>>>>>>> 3ed4bd479ba0fe29b0ca130cb186c5a8f198dceb:OpenUtau.Plugin.Builtin/Resources/en-xsampa.template.yaml
   - {symbol: Y, type: vowel}
   - {symbol: '@\', type: vowel}
   - {symbol: '@`', type: vowel}
@@ -131,11 +125,7 @@ symbols:
   - {symbol: aU`, type: vowel}
   - {symbol: '}', type: vowel}
   - {symbol: 2, type: vowel}
-<<<<<<<< HEAD:OpenUtau.Plugin.Builtin/Data/en-xsampa.template.yaml
   - {symbol: '3\', type: vowel}
-========
-  - {symbol: 3\, type: vowel}
->>>>>>>> 3ed4bd479ba0fe29b0ca130cb186c5a8f198dceb:OpenUtau.Plugin.Builtin/Resources/en-xsampa.template.yaml
   - {symbol: 6, type: vowel}
   - {symbol: 7, type: vowel}
   - {symbol: 8, type: vowel}
@@ -154,7 +144,6 @@ symbols:
   - {symbol: 4, type: tap}
   - {symbol: W, type: fricative}
   - {symbol: 't_}', type: stop}
-<<<<<<<< HEAD:OpenUtau.Plugin.Builtin/Data/en-xsampa.template.yaml
   - {symbol: E~, type: vowel}
   - {symbol: e~, type: vowel}
   - {symbol: 3r, type: vowel}
@@ -171,8 +160,6 @@ symbols:
   - {symbol: nn, type: vowel}
   - {symbol: ll, type: vowel}
   - {symbol: NN, type: vowel}
-========
->>>>>>>> 3ed4bd479ba0fe29b0ca130cb186c5a8f198dceb:OpenUtau.Plugin.Builtin/Resources/en-xsampa.template.yaml
 
 entries:
   - grapheme: openutau
