@@ -1002,6 +1002,7 @@ namespace OpenUtau.App.Views {
             }
             pianoRollWindow?.Close();
             forceClose = true;
+            PathManager.Inst.ClearCache();
             Close();
         }
 
