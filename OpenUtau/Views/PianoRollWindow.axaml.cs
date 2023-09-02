@@ -1280,41 +1280,13 @@ namespace OpenUtau.App.Views {
             return false;
         }
 
-        public string[] CacheExpressions() {
-            NotesViewModel vm = (DataContext as PianoRollViewModel)!.NotesViewModel;
-            return new string[] { vm.SecondaryKey, vm.PrimaryKey };
-        }
-        public void LoadCacheExpressions(string[] cache) {
+        public void AttachExpressions() {
             if (expSelector1 == null) {
                 return;
             }
-            foreach (string key in cache) {
-                UExpressionDescriptor? exp = (expSelector1.DataContext as ExpSelectorViewModel)?.Descriptor;
-                if (exp != null && exp.abbr == key) {
-                    expSelector1.SelectExp();
-                    continue;
-                }
-                exp = (expSelector2.DataContext as ExpSelectorViewModel)?.Descriptor;
-                if (exp != null && exp.abbr == key) {
-                    expSelector2.SelectExp();
-                    continue;
-                }
-                exp = (expSelector3.DataContext as ExpSelectorViewModel)?.Descriptor;
-                if (exp != null && exp.abbr == key) {
-                    expSelector3.SelectExp();
-                    continue;
-                }
-                exp = (expSelector4.DataContext as ExpSelectorViewModel)?.Descriptor;
-                if (exp != null && exp.abbr == key) {
-                    expSelector4.SelectExp();
-                    continue;
-                }
-                exp = (expSelector5.DataContext as ExpSelectorViewModel)?.Descriptor;
-                if (exp != null && exp.abbr == key) {
-                    expSelector5.SelectExp();
-                    continue;
-                }
-            }
+            var exps = new ExpSelector[] { expSelector1, expSelector2, expSelector3, expSelector4, expSelector5 };
+            exps[DocManager.Inst.Project.expSecondary].SelectExp();
+            exps[DocManager.Inst.Project.expPrimary].SelectExp();
         }
     }
 }
