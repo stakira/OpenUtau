@@ -155,34 +155,53 @@ namespace OpenUtau.Core.Ustx {
             return result;
         }
 
-        /*
-        public float GetExpression(UProject project, string abbr) {
-            var descriptor = project.expressions[abbr];
-            Trace.Assert(descriptor.isNoteExpression);
-            var note = Extends ?? this;
-            var expression = note.noteExpressions.FirstOrDefault(exp => exp.descriptor == descriptor);
-            return expression == null ? expression.value : descriptor.defaultValue;
+        public List<Tuple<float, bool>> GetExpression(UProject project, UTrack track, string abbr) {
+            track.TryGetExpression(project, abbr, out var descriptor);
+            var list = new List<Tuple<float, bool>>();
+            int indexes = (phonemeExpressions.Max(exp => exp.index) ?? 0) + 1;
+
+            for (int i = 0; i < indexes; i++) {
+                var expression = phonemeExpressions.FirstOrDefault(exp => exp.descriptor?.abbr == descriptor.abbr && exp.index == i);
+                if (expression != null) {
+                    list.Add(Tuple.Create(expression.value, true));
+                } else {
+                    list.Add(Tuple.Create(descriptor.defaultValue, false));
+                }
+            }
+            return list;
         }
 
-        public void SetExpression(UProject project, string abbr, float value) {
-            var descriptor = project.expressions[abbr];
-            Trace.Assert(descriptor.isNoteExpression);
-            var note = Extends ?? this;
-            if (value == descriptor.defaultValue) {
-                note.noteExpressions.RemoveAll(exp => exp.descriptor == descriptor);
+        public void SetExpression(UProject project, UTrack track, string abbr, float[] values) {
+            if (!track.TryGetExpression(project, abbr, out var descriptor)) {
                 return;
             }
-            var expression = note.noteExpressions.FirstOrDefault(exp => exp.descriptor == descriptor);
-            if (expression != null) {
-                expression.value = value;
-            } else {
-                note.noteExpressions.Add(new UExpression(descriptor) {
-                    descriptor = descriptor,
-                    value = value,
-                });
+            int indexes = (phonemeExpressions.Max(exp => exp.index) ?? 0) + 1;
+
+            for (int i = 0; i < indexes; i++) {
+                float value;
+                if (values.Length > i) {
+                    value = values[i];
+                } else {
+                    value = values.Last();
+                }
+
+                if (descriptor.defaultValue == value) {
+                    phonemeExpressions.RemoveAll(exp => exp.descriptor?.abbr == descriptor.abbr && exp.index == i);
+                    continue;
+                }
+                var expression = phonemeExpressions.FirstOrDefault(exp => exp.descriptor?.abbr == descriptor.abbr && exp.index == i);
+                if (expression != null) {
+                    expression.descriptor = descriptor;
+                    expression.value = value;
+                } else {
+                    phonemeExpressions.Add(new UExpression(descriptor) {
+                        descriptor = descriptor,
+                        index = i,
+                        value = value,
+                    });
+                }
             }
         }
-        */
 
         public UNote Clone() {
             return new UNote() {

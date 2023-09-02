@@ -465,6 +465,10 @@ namespace OpenUtau.App.Views {
                             CommandParameter = hitInfo,
                         });
                         ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
+                            Header = ThemeManager.GetString("context.note.pasteparameters"),
+                            Command = ReactiveCommand.Create(() => ViewModel.NotesViewModel.PasteSelectedParams(this))
+                        });
+                        ViewModel.NotesContextMenuItems.Add(new MenuItemViewModel() {
                             Header = ThemeManager.GetString("pianoroll.menu.notes"),
                             Items = ViewModel.NoteBatchEdits.ToArray(),
                         });
@@ -1110,6 +1114,10 @@ namespace OpenUtau.App.Views {
                 case Key.V:
                     if (isCtrl) {
                         notesVm.PasteNotes();
+                        return true;
+                    }
+                    if (isAlt) {
+                        notesVm.PasteSelectedParams(this);
                         return true;
                     }
                     break;

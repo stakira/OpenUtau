@@ -4,6 +4,7 @@
 
   <system:String x:Key="context.note.copy">音符をコピー</system:String>
   <system:String x:Key="context.note.delete">音符を削除</system:String>
+  <system:String x:Key="context.note.pasteparameters">パラメータを選択して貼り付け</system:String>
   <system:String x:Key="context.part.delete">パートを削除</system:String>
   <system:String x:Key="context.part.rename">パートの名前を変更</system:String>
   <system:String x:Key="context.part.replaceaudio">オーディオファイルを変更</system:String>
