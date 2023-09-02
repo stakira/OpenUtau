@@ -40,6 +40,12 @@ namespace OpenUtau.App.Views {
             DataContext = ViewModel = new PianoRollViewModel();
             ValueTip.IsVisible = false;
 
+            ViewModel.NoteBatchEdits.Add(new MenuItemViewModel() {
+                Header = ThemeManager.GetString("pianoroll.menu.notes.lengthencrossfade"),
+                Command = ReactiveCommand.Create(() => {
+                    LengthenCrossfade();
+                })
+            });
             ViewModel.LyricBatchEdits.Add(new MenuItemViewModel() {
                 Header = ThemeManager.GetString("lyricsreplace.replace"),
                 Command = ReactiveCommand.Create(() => {
@@ -137,6 +143,31 @@ namespace OpenUtau.App.Views {
             if (dialog.Position.Y < 0) {
                 dialog.Position = dialog.Position.WithY(0);
             }
+        }
+
+        void LengthenCrossfade() {
+            var notesVM = ViewModel.NotesViewModel;
+            if (notesVM.Part == null) {
+                return;
+            }
+            if (notesVM.Selection.IsEmpty) {
+                _ = MessageBox.Show(
+                    this,
+                    ThemeManager.GetString("lyrics.selectnotes"),
+                    ThemeManager.GetString("lyrics.caption"),
+                    MessageBox.MessageBoxButtons.Ok);
+                return;
+            }
+            var dialog = new SliderDialog(ThemeManager.GetString("pianoroll.menu.notes.lengthencrossfade"), 0.5, 0, 1, 0.1);
+            dialog.onFinish = value => {
+                var edit = new Core.Editing.LengthenCrossfade(value);
+                try {
+                    edit.Run(notesVM.Project, notesVM.Part, notesVM.Selection.ToList(), DocManager.Inst);
+                } catch (Exception e) {
+                    DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to run editing macro", e));
+                }
+            };
+            dialog.ShowDialog(this);
         }
 
         public void OnExpButtonClick(object sender, RoutedEventArgs args) {
