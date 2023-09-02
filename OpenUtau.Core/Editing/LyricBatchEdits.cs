@@ -138,11 +138,7 @@ namespace OpenUtau.Core.Editing {
                         docManager.ExecuteCmd(new ChangeNoteLyricCommand(part, note, lyric));
 
                         int index = colors.FirstOrDefault(c => c.Value == suffix).Key;
-                        foreach (UPhoneme phoneme in part.phonemes) {
-                            if (phoneme.Parent == note) {
-                                docManager.ExecuteCmd(new SetPhonemeExpressionCommand(project, track, part, phoneme, Format.Ustx.CLR, index));
-                            }
-                        }
+                        docManager.ExecuteCmd(new SetNoteExpressionCommand(project, track, part, note, Format.Ustx.CLR, new float[] { index }));
                         break;
                     }
                 }
