@@ -263,7 +263,7 @@ namespace OpenUtau.Plugin.Builtin {
                             // like [V C1] [C1 C2] [C2 C3] [C3 ..]
                             phonemes.Add(cc1);
                         } else if (TryAddPhoneme(phonemes, syllable.tone, cc1)) {
-                        //    // like [V C1] [C1 C2] [C2 ..]
+                            //    // like [V C1] [C1 C2] [C2 ..]
                         }
                     } else {
                         TryAddPhoneme(phonemes, syllable.tone, cc1);
@@ -436,7 +436,7 @@ namespace OpenUtau.Plugin.Builtin {
                         }
                     }
                 }
-                
+
             }
             return base.GetTransitionBasicLengthMs();
         }

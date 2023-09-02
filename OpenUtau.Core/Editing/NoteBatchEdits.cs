@@ -21,7 +21,11 @@ namespace OpenUtau.Core.Editing {
             var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
             foreach (var note in notes) {
                 if (note.lyric != lyric && (note.Next == null || note.Next.position > note.End + 120)) {
-                    toAdd.Add(project.CreateNote(note.tone, note.End, 120));
+                    var addNote = project.CreateNote(note.tone, note.End, 120);
+                    foreach(var exp in note.phonemeExpressions.OrderBy(exp => exp.index)) {
+                        addNote.SetExpression(project, project.tracks[part.trackNo], exp.abbr, new float[] { exp.value });
+                    }
+                    toAdd.Add(addNote);
                 }
             }
             if (toAdd.Count == 0) {
@@ -276,6 +280,51 @@ namespace OpenUtau.Core.Editing {
                 }
                 if (shouldClear) {
                     docManager.ExecuteCmd(new ClearPhonemeTimingCommand(part, note));
+                }
+            }
+            docManager.EndUndoGroup();
+        }
+    }
+
+    public class LengthenCrossfade : BatchEdit {
+        public virtual string Name => name;
+        private string name;
+        private double ratio;
+
+        public LengthenCrossfade(double ratio) {
+            name = "pianoroll.menu.notes.lengthencrossfade";
+            this.ratio = ratio;
+        }
+
+        public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
+            var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
+            if (notes.Count == 0) {
+                return;
+            }
+            docManager.StartUndoGroup(true);
+            var track = project.tracks[part.trackNo];
+            foreach (var note in notes) {
+                foreach (UPhoneme phoneme in part.phonemes) {
+                    if (phoneme.Parent == note && phoneme.Prev != null && phoneme.PositionMs == phoneme.Prev.EndMs) {
+
+                        double consonantStretch = Math.Pow(2f, 1.0f - phoneme.GetExpression(project, track, Format.Ustx.VEL).Item1 / 100f);
+                        double maxPreutter = phoneme.oto.Preutter * consonantStretch;
+                        double prevDur = phoneme.Prev.DurationMs;
+                        double preutter = phoneme.preutter;
+
+                        if (maxPreutter > prevDur * 0.9f) {
+                            maxPreutter = prevDur * 0.9f;
+                        }
+                        if(maxPreutter > phoneme.preutter) {
+                            docManager.ExecuteCmd(new PhonemePreutterCommand(part, note, phoneme.index, (float)(maxPreutter - phoneme.autoPreutter)));
+                            preutter = maxPreutter;
+                        }
+
+                        var overlap = preutter * ratio;
+                        if (overlap > phoneme.autoOverlap) {
+                            docManager.ExecuteCmd(new PhonemeOverlapCommand(part, note, phoneme.index, (float)(overlap - phoneme.autoOverlap)));
+                        }
+                    }
                 }
             }
             docManager.EndUndoGroup();
