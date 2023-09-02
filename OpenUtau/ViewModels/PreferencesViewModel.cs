@@ -29,6 +29,7 @@ namespace OpenUtau.App.ViewModels {
         public string AdditionalSingersPath => PathManager.Inst.AdditionalSingersPath;
         [Reactive] public bool InstallToAdditionalSingersPath { get; set; }
         [Reactive] public bool PreRender { get; set; }
+        //[Reactive] public bool ClearCacheOnQuit { get; set; }
         [Reactive] public int NumRenderThreads { get; set; }
         public List<string> OnnxRunnerOptions { get; set; }
         [Reactive] public string OnnxRunner { get; set; }

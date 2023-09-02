@@ -40,7 +40,7 @@
     <PackageReference Include="System.IO.Packaging" Version="6.0.0" />
     <PackageReference Include="Avalonia" Version="0.10.18" />
     <PackageReference Include="Avalonia.Controls.DataGrid" Version="0.10.18" />
-    <PackageReference Include="Avalonia.Desktop" Version="0.10.18" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.0.4" />
     <PackageReference Include="Avalonia.Diagnostics" Version="0.10.18" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.18" />
     <PackageReference Include="Serilog" Version="2.11.0" />
