@@ -17,6 +17,7 @@ using OpenUtau.Classic;
 using OpenUtau.Core;
 using OpenUtau.Core.Format;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 using ReactiveUI;
 using Serilog;
 using Point = Avalonia.Point;
@@ -575,7 +576,7 @@ namespace OpenUtau.App.Views {
                 return;
             }
             var tracksVm = viewModel.TracksViewModel;
-            if (args.KeyModifiers == KeyModifiers.None) {
+            if (args.KeyModifiers == KeyModifiers.None){
                 args.Handled = true;
                 switch (args.Key) {
                     case Key.Delete: viewModel.TracksViewModel.DeleteSelectedParts(); break;
@@ -755,7 +756,7 @@ namespace OpenUtau.App.Views {
         }
 
         public void TimelinePointerWheelChanged(object sender, PointerWheelEventArgs args) {
-            var control = (Control) sender;
+            var control = (Control)sender;
             var position = args.GetCurrentPoint((Visual) sender).Position;
             var size = control.Bounds.Size;
             position = position.WithX(position.X / size.Width).WithY(position.Y / size.Height);
@@ -767,7 +768,7 @@ namespace OpenUtau.App.Views {
         }
 
         public void TimelinePointerPressed(object sender, PointerPressedEventArgs args) {
-            var control = (Control) sender;
+            var control = (Control)sender;
             var point = args.GetCurrentPoint(control);
             if (point.Properties.IsLeftButtonPressed) {
                 args.Pointer.Capture(control);
@@ -780,7 +781,7 @@ namespace OpenUtau.App.Views {
         }
 
         public void TimelinePointerMoved(object sender, PointerEventArgs args) {
-            var control = (Control) sender;
+            var control = (Control)sender;
             var point = args.GetCurrentPoint(control);
             if (point.Properties.IsLeftButtonPressed) {
                 viewModel.TracksViewModel.PointToLineTick(point.Position, out int left, out int right);
@@ -793,7 +794,7 @@ namespace OpenUtau.App.Views {
         }
 
         public void PartsCanvasPointerPressed(object sender, PointerPressedEventArgs args) {
-            var control = (Control) sender;
+            var control = (Control)sender;
             var point = args.GetCurrentPoint(control);
             var hitControl = control.InputHitTest(point.Position);
             if (partEditState != null) {
@@ -1002,7 +1003,9 @@ namespace OpenUtau.App.Views {
             }
             pianoRollWindow?.Close();
             forceClose = true;
-            PathManager.Inst.ClearCache();
+            if (Preferences.Default.ClearCacheOnQuit) {
+                PathManager.Inst.ClearCache();
+            }
             Close();
         }
 
