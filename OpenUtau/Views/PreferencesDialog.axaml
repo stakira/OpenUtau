@@ -90,6 +90,12 @@
             </Grid>
           </StackPanel>
         </HeaderedContentControl>
+        <HeaderedContentControl Classes="groupbox" Header="{DynamicResource prefs.cache}">
+          <Grid>
+            <TextBlock Text="{DynamicResource prefs.cache.clearonquit}" HorizontalAlignment="Left"/>
+            <ToggleSwitch IsChecked="{Binding ClearCacheOnQuit}"/>
+          </Grid>
+        </HeaderedContentControl>
         <HeaderedContentControl Classes="groupbox" Header="{DynamicResource prefs.rendering}">
           <StackPanel>
             <Grid>

@@ -17,6 +17,7 @@ using OpenUtau.Classic;
 using OpenUtau.Core;
 using OpenUtau.Core.Format;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 using ReactiveUI;
 using Serilog;
 using Point = Avalonia.Point;
@@ -1002,7 +1003,9 @@ namespace OpenUtau.App.Views {
             }
             pianoRollWindow?.Close();
             forceClose = true;
-            PathManager.Inst.ClearCache();
+            if (Preferences.Default.ClearCacheOnQuit) {
+                PathManager.Inst.ClearCache();
+            }
             Close();
         }
 

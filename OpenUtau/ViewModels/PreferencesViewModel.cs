@@ -29,6 +29,7 @@ namespace OpenUtau.App.ViewModels {
         public string AdditionalSingersPath => PathManager.Inst.AdditionalSingersPath;
         [Reactive] public bool InstallToAdditionalSingersPath { get; set; }
         [Reactive] public bool PreRender { get; set; }
+        public string CachePath => PathManager.Inst.CachePath;
         [Reactive] public int NumRenderThreads { get; set; }
         public List<string> OnnxRunnerOptions { get; set; }
         [Reactive] public string OnnxRunner { get; set; }
@@ -41,6 +42,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public bool ShowGhostNotes { get; set; }
         [Reactive] public int OtoEditor { get; set; }
         public string VLabelerPath => Preferences.Default.VLabelerPath;
+        [Reactive] public bool ClearCacheOnQuit { get; set; }
         public int LogicalCoreCount {
             get => Environment.ProcessorCount;
         }
@@ -133,6 +135,7 @@ namespace OpenUtau.App.ViewModels {
             RememberMid = Preferences.Default.RememberMid;
             RememberUst = Preferences.Default.RememberUst;
             RememberVsqx = Preferences.Default.RememberVsqx;
+            ClearCacheOnQuit = Preferences.Default.ClearCacheOnQuit;
 
             this.WhenAnyValue(vm => vm.AudioOutputDevice)
                 .WhereNotNull()
@@ -260,6 +263,11 @@ namespace OpenUtau.App.ViewModels {
                     Preferences.Default.RememberVsqx = index;
                     Preferences.Save();
                 });
+            this.WhenAnyValue(vm => vm.ClearCacheOnQuit)
+                .Subscribe(index => {
+                    Preferences.Default.ClearCacheOnQuit = index;
+                    Preferences.Save();
+                });
         }
 
         public void TestAudioOutputDevice() {
@@ -286,6 +294,12 @@ namespace OpenUtau.App.ViewModels {
             Preferences.Default.VLabelerPath = path;
             Preferences.Save();
             this.RaisePropertyChanged(nameof(VLabelerPath));
+        }
+
+        public void ClearCache() {
+            PathManager.Inst.ClearCache();
+            Preferences.Save();
+            this.RaisePropertyChanged(nameof(CachePath));
         }
     }
 }
