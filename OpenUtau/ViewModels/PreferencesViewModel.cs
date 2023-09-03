@@ -295,11 +295,5 @@ namespace OpenUtau.App.ViewModels {
             Preferences.Save();
             this.RaisePropertyChanged(nameof(VLabelerPath));
         }
-
-        public void ClearCache() {
-            PathManager.Inst.ClearCache();
-            Preferences.Save();
-            this.RaisePropertyChanged(nameof(CachePath));
-        }
     }
 }
