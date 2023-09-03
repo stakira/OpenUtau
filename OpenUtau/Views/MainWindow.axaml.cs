@@ -1002,7 +1002,9 @@ namespace OpenUtau.App.Views {
                 return;
             }
             if (Preferences.Default.ClearCacheOnQuit) {
+                Log.Information("Clearing cache...");
                 PathManager.Inst.ClearCache();
+                Log.Information("Cache cleared.");
             }
             pianoRollWindow?.Close();
             forceClose = true;
