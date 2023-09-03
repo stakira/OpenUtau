@@ -746,12 +746,12 @@ namespace OpenUtau.App.Views {
         }
 
         public void HScrollPointerWheelChanged(object sender, PointerWheelEventArgs args) {
-            var scrollbar = (ScrollBar) sender;
+            var scrollbar = (ScrollBar)sender;
             scrollbar.Value = Math.Max(scrollbar.Minimum, Math.Min(scrollbar.Maximum, scrollbar.Value - scrollbar.SmallChange * args.Delta.Y));
         }
 
         public void VScrollPointerWheelChanged(object sender, PointerWheelEventArgs args) {
-            var scrollbar = (ScrollBar) sender;
+            var scrollbar = (ScrollBar)sender;
             scrollbar.Value = Math.Max(scrollbar.Minimum, Math.Min(scrollbar.Maximum, scrollbar.Value - scrollbar.SmallChange * args.Delta.Y));
         }
 
@@ -1001,11 +1001,11 @@ namespace OpenUtau.App.Views {
             if (!await AskIfSaveAndContinue()) {
                 return;
             }
-            pianoRollWindow?.Close();
-            forceClose = true;
             if (Preferences.Default.ClearCacheOnQuit) {
                 PathManager.Inst.ClearCache();
             }
+            pianoRollWindow?.Close();
+            forceClose = true;
             Close();
         }
 
