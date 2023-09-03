@@ -700,7 +700,7 @@ namespace OpenUtau.App.Views {
                     ThemeManager.GetString("dialogs.installdll.message")+file,
                     ThemeManager.GetString("dialogs.installdll.caption"),
                     MessageBox.MessageBoxButtons.OkCancel);
-                if(result == MessageBox.MessageBoxResult.Ok){                
+                if(result == MessageBox.MessageBoxResult.Ok){
                     Core.Api.PhonemizerInstaller.Install(file);
                 }
             } else if (ext == ".exe") {
@@ -1001,11 +1001,11 @@ namespace OpenUtau.App.Views {
             if (!await AskIfSaveAndContinue()) {
                 return;
             }
-            pianoRollWindow?.Close();
-            forceClose = true;
             if (Preferences.Default.ClearCacheOnQuit) {
                 PathManager.Inst.ClearCache();
             }
+            pianoRollWindow?.Close();
+            forceClose = true;
             Close();
         }
 
