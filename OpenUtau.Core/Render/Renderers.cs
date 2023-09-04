@@ -2,8 +2,10 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.ML.OnnxRuntime;
 using OpenUtau.Classic;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 
 namespace OpenUtau.Core.Render {
     public static class Renderers {
@@ -30,8 +32,19 @@ namespace OpenUtau.Core.Render {
             }
         }
 
+        public static List<string> getRendererOptions() {
+            return new List<string> {
+                "WORLDLINE-R",
+                "Classic"
+            };
+        }
+
         public static string GetDefaultRenderer(USingerType singerType) {
-            return GetSupportedRenderers(singerType)[0];
+            if (Preferences.Default.DefaultRenderer == "Classic" && singerType == USingerType.Classic) {
+                return CLASSIC;
+            } else {
+                return GetSupportedRenderers(singerType)[0];
+            }
         }
 
         public static IRenderer CreateRenderer(string renderer) {
@@ -94,6 +107,30 @@ namespace OpenUtau.Core.Render {
             } else {
                 return ToolsManager.Inst.Wavtools;
             }
+        }
+
+        public static InferenceSession getRenderSession(byte[] vbtype) {
+            SessionOptions options = new SessionOptions();
+            List<string> rendererOptions = getRendererOptions();
+            string renderer = Preferences.Default.DefaultRenderer;
+            if (String.IsNullOrEmpty(renderer)) {
+                renderer = rendererOptions[0];
+            }
+            if (!rendererOptions.Contains(renderer)) {
+                renderer = "WORLDLINE-R";
+            }
+            switch (renderer) {
+                case "WORLDINE-R":
+                    options.AppendExecutionProvider(Preferences.Default.DefaultRenderer);
+                    break;
+                case "ENUNU":
+                    options.AppendExecutionProvider(Preferences.Default.DefaultRenderer);
+                    break;
+                case "VOGEN":
+                    options.AppendExecutionProvider(Preferences.Default.DefaultRenderer);
+                    break;
+            }
+            return new InferenceSession(vbtype, options);
         }
     }
 }
