@@ -97,7 +97,7 @@ namespace OpenUtau.Plugin.Builtin {
                     }
                 }
                 string prevAlias = presamp.ParseAlias(prevLyric)[1];
-                if (prevAlias.Contains("・")) {
+                if (prevAlias.Contains("・") && !prevAlias.StartsWith("・") && !prevAlias.EndsWith($"{vowelUpper}・")) {
                     prevAlias = prevAlias.Split('・')[0];
                 }
 
@@ -236,7 +236,6 @@ namespace OpenUtau.Plugin.Builtin {
                             vcPhonemes.Add($"{vowel}{vcpad}{con}");
                         }
                         if (checkOtoUntilHitVc(vcPhonemes, note, out var oto)) {
-                            otos.Any(oto => (oto.Color ?? string.Empty) == color);
                             vcPhoneme = oto.Alias;
                         } else {
                             return MakeSimpleResult(currentLyric);
