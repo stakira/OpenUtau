@@ -995,16 +995,16 @@ namespace OpenUtau.App.Views {
 
         public async void WindowClosing(object? sender, WindowClosingEventArgs e) {
             if (forceClose || DocManager.Inst.ChangesSaved) {
+                if (Preferences.Default.ClearCacheOnQuit) {
+                    Log.Information("Clearing cache...");
+                    PathManager.Inst.ClearCache();
+                    Log.Information("Cache cleared.");
+                }
                 return;
             }
             e.Cancel = true;
             if (!await AskIfSaveAndContinue()) {
                 return;
-            }
-            if (Preferences.Default.ClearCacheOnQuit) {
-                Log.Information("Clearing cache...");
-                PathManager.Inst.ClearCache();
-                Log.Information("Cache cleared.");
             }
             pianoRollWindow?.Close();
             forceClose = true;
