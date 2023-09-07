@@ -115,6 +115,18 @@ namespace OpenUtau.App.ViewModels {
             Refresh();
         }
 
+        public void SetImage(string filepath) {
+            if (Singer == null) {
+                return;
+            }
+            try {
+                ModifyConfig(Singer, config => config.Image = filepath);
+            } catch (Exception e) {
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to set image", e));
+            }
+            Refresh();
+        }
+
         public void SetPortrait(string filepath) {
             if (Singer == null) {
                 return;
