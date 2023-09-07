@@ -20,8 +20,9 @@ namespace OpenUtau.Core
             if (groups.Length == 0) {
                 return;
             }
-            //hanzi to pinyin
-            BaseChinesePhonemizer.RomanizeNotes(groups);
+            //Lyrics romanization (hanzi to pinyin)
+            var RomanizedLyrics = Romanize(groups.Select(group => group[0].lyric));
+            Enumerable.Zip(groups, RomanizedLyrics, ChangeLyric).Last();
             //Split song into sentences (phrases)
             var phrase = new List<Note[]> { groups[0] };
             for (int i = 1; i < groups.Length; ++i) {
@@ -61,5 +62,22 @@ namespace OpenUtau.Core
         //Run timing model for a sentence, and put the results into partResult
         protected abstract void ProcessPart(Note[][] phrase);
 
+        //Romanize lyrics for Mandarin and Yue Chinese
+        protected virtual string[] Romanize(IEnumerable<string> lyrics){
+            return lyrics.ToArray();
+        }
+
+        protected static Note[] ChangeLyric(Note[] group, string lyric) {
+            var oldNote = group[0];
+            group[0] = new Note {
+                lyric = lyric,
+                phoneticHint = oldNote.phoneticHint,
+                tone = oldNote.tone,
+                position = oldNote.position,
+                duration = oldNote.duration,
+                phonemeAttributes = oldNote.phonemeAttributes,
+            };
+            return group;
+        }
     }
 }
