@@ -785,7 +785,7 @@ namespace OpenUtau.App.ViewModels {
                             switch (i) {
                                 case 0:
                                     if (vm.Params[i].IsSelected) {
-                                        DocManager.Inst.ExecuteCmd(new SetPitchPointsCommand(Part, note, copyNote.pitch));
+                                        DocManager.Inst.ExecuteCmd(new SetPitchPointsCommand(Part, note, copyNote.pitch.Clone()));
                                     }
                                     break;
                                 case 1:
