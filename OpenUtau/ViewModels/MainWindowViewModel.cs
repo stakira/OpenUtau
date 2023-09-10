@@ -3,8 +3,11 @@ using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
+using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Threading;
 using DynamicData.Binding;
+using OpenUtau.App.Views;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using ReactiveUI;
@@ -120,6 +123,9 @@ namespace OpenUtau.App.ViewModels {
                 return;
             }
             Core.Format.Formats.LoadProject(files);
+            if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop && desktop.MainWindow is MainWindow mainWindow) {
+                mainWindow.ValidateTrackVoiceColor();
+            }
             this.RaisePropertyChanged(nameof(Title));
         }
 
