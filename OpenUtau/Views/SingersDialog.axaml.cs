@@ -66,6 +66,26 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        public async void OnSetAvatar(object sender, RoutedEventArgs args) {
+            var viewModel = (DataContext as SingersViewModel)!;
+            if (viewModel.Singer == null) {
+                return;
+            }
+            var file = await FilePicker.OpenFile(
+                this, "singers.setavatar",
+                viewModel.Singer.Location,
+                FilePickerFileTypes.ImageAll);
+            if (file == null) {
+                return;
+            }
+            try {
+                viewModel.SetAvatar(Path.GetRelativePath(viewModel.Singer.Location, file));
+            } catch (Exception e) {
+                Log.Error(e, "Failed to set avatar");
+                _ = await MessageBox.ShowError(this, e);
+            }
+        }
+
         async void OnEditSubbanksButton(object sender, RoutedEventArgs args) {
             var viewModel = (DataContext as SingersViewModel)!;
             if (viewModel.Singer == null) {

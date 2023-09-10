@@ -341,6 +341,7 @@ Warning: moresampler is not fully supported. It may be slow and cause high CPU u
   <system:String x:Key="singers.otoview.zoomin">Zoom In</system:String>
   <system:String x:Key="singers.otoview.zoomout">Zoom Out</system:String>
   <system:String x:Key="singers.refresh">Refresh</system:String>
+  <system:String x:Key="singers.setavatar">Set Avatar</system:String>
   <system:String x:Key="singers.setdefaultphonemizer">Set Default Phonemizer</system:String>
   <system:String x:Key="singers.setencoding">Set Encoding</system:String>
   <system:String x:Key="singers.setportrait">Set Portrait</system:String>

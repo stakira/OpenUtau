@@ -127,6 +127,18 @@ namespace OpenUtau.App.ViewModels {
             Refresh();
         }
 
+        public void SetAvatar(string filepath) {
+            if (Singer == null) {
+                return;
+            }
+            try {
+                ModifyConfig(Singer, config => config.Image = filepath);
+            } catch (Exception e) {
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to set avatar", e));
+            }
+            Refresh();
+        }
+
         private void SetDefaultPhonemizer(Api.PhonemizerFactory factory) {
             if (Singer == null) {
                 return;
