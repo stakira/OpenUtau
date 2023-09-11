@@ -103,99 +103,92 @@ namespace OpenUtau.Plugin.Builtin {
                 if (prevAlias.Contains("・")) {
                     prevAlias = prevAlias.Replace("・", "");
                 }
-                if (string.IsNullOrWhiteSpace(prevAlias)) {
-                    var tests = new List<string> { currentLyric, initial };
-                    if (checkOtoUntilHit(tests, note, out var oto)) {
+
+                // 喉切り(Glottal stop) prev is VC -> current is Glottal stop CV[・ あ][・あ][あ・][- あ][あ]
+                string vcGlottalStop = "[aiueonN]" + vcpad + "・$"; // [a ・]
+                if (prevLyric == "・" || Regex.IsMatch(prevLyric, vcGlottalStop)) {
+                    if (checkOtoUntilHit(glottalCVtests, note, out var oto)) {
                         currentLyric = oto.Alias;
                     }
-                } else {
+                } else if (presamp.PhonemeList.TryGetValue(prevAlias, out PresampPhoneme prevPhoneme)) {
 
-                    // 喉切り(Glottal stop) prev is VC -> current is Glottal stop CV[・ あ][・あ][あ・][- あ][あ]
-                    string vcGlottalStop = "[aiueonN]" + vcpad + "・$"; // [a ・]
-                    if (prevLyric == "・" || Regex.IsMatch(prevLyric, vcGlottalStop)) {
-                        if (checkOtoUntilHit(glottalCVtests, note, out var oto)) {
+                    if (currentLyric.Contains("・")) {
+                        // Glottal stop
+                        var tests = new List<string>();
+                        UOto oto;
+
+                        if (Regex.IsMatch(currentLyric, vcGlottalStop)) { // current is VC
+                            tests = new List<string> { currentLyric };
+                            if (checkOtoUntilHit(tests, note, out oto)) {
+                                return MakeSimpleResult(oto.Alias);
+                            }
+                        } else if (currentLyric == "・" && prevPhoneme.HasVowel) { // current is VC
+                            var vc = $"{prevPhoneme.Vowel}{vcpad}{currentLyric}";
+                            tests = new List<string> { vc, currentLyric };
+                            if (checkOtoUntilHit(tests, note, out oto)) {
+                                return MakeSimpleResult(oto.Alias);
+                            }
+                        } else if (prevPhoneme.HasVowel) { // current is VCV or CV
+                            tests.Add($"{prevPhoneme.Vowel}{vcvpad}{currentLyric}");
+                            tests.Add($"{prevPhoneme.Vowel}{vcvpad}{vowelUpper}・");
+                            tests.Add($"{prevPhoneme.Vowel}{vcvpad}・{vowelUpper}");
+                        }
+                        tests.AddRange(glottalCVtests);
+                        if (checkOtoUntilHit(tests, note, out oto)) {
                             currentLyric = oto.Alias;
                         }
-                    } else if (presamp.PhonemeList.TryGetValue(prevAlias, out PresampPhoneme prevPhoneme)) {
-
-                        if (currentLyric.Contains("・")) {
-                            // Glottal stop
-                            var tests = new List<string>();
-                            UOto oto;
-
-                            if (Regex.IsMatch(currentLyric, vcGlottalStop)) { // current is VC
-                                tests = new List<string> { currentLyric };
-                                if (checkOtoUntilHit(tests, note, out oto)) {
-                                    return MakeSimpleResult(oto.Alias);
-                                }
-                            } else if (currentLyric == "・" && prevPhoneme.HasVowel) { // current is VC
-                                var vc = $"{prevPhoneme.Vowel}{vcpad}{currentLyric}";
-                                tests = new List<string> { vc, currentLyric };
-                                if (checkOtoUntilHit(tests, note, out oto)) {
-                                    return MakeSimpleResult(oto.Alias);
-                                }
-                            } else if (prevPhoneme.HasVowel) { // current is VCV or CV
-                                tests.Add($"{prevPhoneme.Vowel}{vcvpad}{currentLyric}");
-                                tests.Add($"{prevPhoneme.Vowel}{vcvpad}{vowelUpper}・");
-                                tests.Add($"{prevPhoneme.Vowel}{vcvpad}・{vowelUpper}");
-                            }
-                            tests.AddRange(glottalCVtests);
-                            if (checkOtoUntilHit(tests, note, out oto)) {
-                                currentLyric = oto.Alias;
-                            }
-                        } else if (presamp.PhonemeList.TryGetValue(currentLyric, out PresampPhoneme currentPhoneme) && currentPhoneme.IsPriority) {
-                            // Priority: not VCV
-                            var tests = new List<string> { currentLyric, initial };
-                            if (checkOtoUntilHit(tests, note, out var oto)) {
-                                currentLyric = oto.Alias;
-                            }
-                        } else if (prevPhoneme.HasVowel) {
-                            string prevVow = prevPhoneme.Vowel;
-
-                            // っ
-                            if (currentLyric == "っ" && nextNeighbour != null) {
-                                var nextLyric = nextNeighbour.Value.lyric.Normalize();
-                                if (!string.IsNullOrEmpty(nextNeighbour.Value.phoneticHint)) {
-                                    nextLyric = nextNeighbour.Value.phoneticHint.Normalize();
-                                } else {
-                                    foreach (var pair in presamp.Replace) {
-                                        if (pair.Key == nextLyric) {
-                                            nextLyric = pair.Value;
-                                        }
-                                    }
-                                }
-                                string nextAlias = presamp.ParseAlias(nextLyric)[1];
-
-                                var axtu1 = $"{prevVow}{vcvpad}{currentLyric}"; // a っ
-                                var axtu2 = $"{prevVow}{vcpad}{currentLyric}"; // a っ
-                                var tests2 = new List<string> { axtu1, axtu2, currentLyric };
-                                if (presamp.PhonemeList.TryGetValue(nextAlias, out PresampPhoneme nextPhoneme) && nextPhoneme.HasConsonant) {
-                                    tests2.Insert(2, $"{prevVow}{vcpad}{nextPhoneme.Consonant}"); // VC
-                                }
-                                if (checkOtoUntilHit(tests2, note, out var oto2)) {
-                                    return MakeSimpleResult(oto2.Alias);
-                                }
-                            }
-                            // try VCV, VC
-                            var vcv = $"{prevVow}{vcvpad}{currentLyric}";
-                            var vc = $"{prevVow}{vcpad}{currentLyric}";
-                            var tests = new List<string> { vcv, vc, cfLyric, currentLyric };
-                            if (checkOtoUntilHit(tests, note, out var oto)) {
-                                currentLyric = oto.Alias;
-                            }
-                        } else {
-                            // try CV
-                            var tests = new List<string> { currentLyric, initial };
-                            if (checkOtoUntilHit(tests, note, out var oto)) {
-                                currentLyric = oto.Alias;
-                            }
-                        }
-                    } else {
-                        // try "- CV" 
-                        var tests = new List<string> { initial, currentLyric };
+                    } else if (presamp.PhonemeList.TryGetValue(currentLyric, out PresampPhoneme currentPhoneme) && currentPhoneme.IsPriority) {
+                        // Priority: not VCV
+                        var tests = new List<string> { currentLyric, initial };
                         if (checkOtoUntilHit(tests, note, out var oto)) {
                             currentLyric = oto.Alias;
                         }
+                    } else if (prevPhoneme.HasVowel) {
+                        string prevVow = prevPhoneme.Vowel;
+
+                        // っ
+                        if (currentLyric == "っ" && nextNeighbour != null) {
+                            var nextLyric = nextNeighbour.Value.lyric.Normalize();
+                            if (!string.IsNullOrEmpty(nextNeighbour.Value.phoneticHint)) {
+                                nextLyric = nextNeighbour.Value.phoneticHint.Normalize();
+                            } else {
+                                foreach (var pair in presamp.Replace) {
+                                    if (pair.Key == nextLyric) {
+                                        nextLyric = pair.Value;
+                                    }
+                                }
+                            }
+                            string nextAlias = presamp.ParseAlias(nextLyric)[1];
+
+                            var axtu1 = $"{prevVow}{vcvpad}{currentLyric}"; // a っ
+                            var axtu2 = $"{prevVow}{vcpad}{currentLyric}"; // a っ
+                            var tests2 = new List<string> { axtu1, axtu2, currentLyric };
+                            if (presamp.PhonemeList.TryGetValue(nextAlias, out PresampPhoneme nextPhoneme) && nextPhoneme.HasConsonant) {
+                                tests2.Insert(2, $"{prevVow}{vcpad}{nextPhoneme.Consonant}"); // VC
+                            }
+                            if (checkOtoUntilHit(tests2, note, out var oto2)) {
+                                return MakeSimpleResult(oto2.Alias);
+                            }
+                        }
+                        // try VCV, VC
+                        var vcv = $"{prevVow}{vcvpad}{currentLyric}";
+                        var vc = $"{prevVow}{vcpad}{currentLyric}";
+                        var tests = new List<string> { vcv, vc, cfLyric, currentLyric };
+                        if (checkOtoUntilHit(tests, note, out var oto)) {
+                            currentLyric = oto.Alias;
+                        }
+                    } else {
+                        // try CV
+                        var tests = new List<string> { currentLyric, initial };
+                        if (checkOtoUntilHit(tests, note, out var oto)) {
+                            currentLyric = oto.Alias;
+                        }
+                    }
+                } else {
+                    // try "- CV" 
+                    var tests = new List<string> { initial, currentLyric };
+                    if (checkOtoUntilHit(tests, note, out var oto)) {
+                        currentLyric = oto.Alias;
                     }
                 }
             }
@@ -216,7 +209,7 @@ namespace OpenUtau.Plugin.Builtin {
                 }
                 var vowel = currentPhoneme.Vowel;
 
-                if (nextLyric.Contains(vcvpad) || nextLyric.Contains(vcpad)) {
+                if (Regex.IsMatch(nextLyric, "[aiueonN]" + vcvpad) || Regex.IsMatch(nextLyric, "[aiueonN]" + vcpad)) {
                     return MakeSimpleResult(currentLyric);
                 } else {
                     if (nextLyric.Contains("・")) { // Glottal stop
