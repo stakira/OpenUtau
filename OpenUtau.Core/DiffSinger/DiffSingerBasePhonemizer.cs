@@ -11,7 +11,7 @@ using OpenUtau.Core.Ustx;
 
 namespace OpenUtau.Core.DiffSinger
 {
-    public class DiffSingerBasePhonemizer : MachineLearningPhonemizer
+    public abstract class DiffSingerBasePhonemizer : MachineLearningPhonemizer
     {
         USinger singer;
         DsConfig dsConfig;
