@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
 using OpenUtau.Core.Render;
@@ -151,16 +150,14 @@ namespace OpenUtau.Core.Ustx {
 
         public bool ValidateVoiceColor(out string[] oldColors, out string[] newColors) {
             bool discrepancy = false;
-            oldColors = new string[0];
+            oldColors = VoiceColorNames.ToArray();
             newColors = new string[0];
 
             if (Singer != null && Singer.Found && VoiceColorExp != null) {
-                oldColors = VoiceColorNames.ToArray();
                 newColors = VoiceColorExp.options.ToArray();
 
                 if (VoiceColorNames.Length > 1) {
                     if (VoiceColorNames.Length != VoiceColorExp.options.Length) {
-                        // DocManager.Inst.ExecuteCmd(new VoiceColorDiscrepancyNotification(TrackNo));
                         discrepancy = true;
                     } else {
                         for (int i = 0; i < VoiceColorNames.Length; i++) {

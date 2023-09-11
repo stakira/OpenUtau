@@ -8,7 +8,7 @@
         Title="{DynamicResource dialogs.voicecolorremapping}"
         WindowStartupLocation="CenterOwner"
         ExtendClientAreaToDecorationsHint="False">
-  <Grid RowDefinitions="40,1*,20" Margin="10">
+  <Grid RowDefinitions="40,1*,30" Margin="10">
     <StackPanel Grid.Row="0" >
       <TextBlock Text="{DynamicResource dialogs.voicecolorremapping.caption}" />
       <TextBlock Text="{Binding TrackName}" />
@@ -22,13 +22,16 @@
               <TextBlock Text="{Binding Name}"
                          Grid.Column="0" HorizontalAlignment="Right" Margin="0,5,10,5"/>
               <ComboBox ItemsSource="{Binding NewColors}" SelectedIndex="{Binding SelectedIndex}"
-                        Grid.Column="1" HorizontalAlignment="Left" Margin="10,5,0,5"/>
+                        Grid.Column="1" HorizontalAlignment="Left" Margin="10,5,0,5" MinWidth="100" />
             </Grid>
           </DataTemplate>
         </ItemsControl.ItemTemplate>
       </ItemsControl>
-    </ScrollViewer> 
-    
-    <Button Content="{DynamicResource dialogs.messagebox.ok}" Click="OkButtonClick" Grid.Row="2" Width="100" HorizontalAlignment="Center" />
+    </ScrollViewer>
+
+    <StackPanel Orientation="Horizontal" Grid.Row="2" HorizontalAlignment="Center" Spacing="10">
+      <Button Content="{DynamicResource dialogs.messagebox.ok}" Click="Ok_OnClick" Width="100" />
+      <Button Content="{DynamicResource dialogs.messagebox.cancel}" Click="Cancel_OnClick" Width="100"/>
+    </StackPanel>
   </Grid>
 </Window>

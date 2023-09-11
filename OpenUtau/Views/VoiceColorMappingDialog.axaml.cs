@@ -12,9 +12,9 @@ namespace OpenUtau.App.Views {
             InitializeComponent();
         }
 
-        private void OkButtonClick(object? sender, RoutedEventArgs e) {
-            Finish();
-        }
+        private void Ok_OnClick(object sender, RoutedEventArgs e) => Finish();
+
+        private void Cancel_OnClick(object sender, RoutedEventArgs e) => Close();
 
         private void Finish() {
             Apply = true;
