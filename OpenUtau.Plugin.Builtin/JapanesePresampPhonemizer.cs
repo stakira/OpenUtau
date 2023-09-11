@@ -233,7 +233,7 @@ namespace OpenUtau.Plugin.Builtin {
                             }
                             // next is CV (VC is needed)
                             tests = new List<string> { $"{vowel}{vcpad}・" };
-                            if (checkOtoUntilHit_NotColorFallback(tests, note, out oto1)) {
+                            if (checkOtoUntilHitVc(tests, note, out oto1)) {
                                 vcPhoneme = oto1.Alias;
                             } else {
                                 return MakeSimpleResult(currentLyric);
@@ -266,7 +266,7 @@ namespace OpenUtau.Plugin.Builtin {
                         if (substituteLookup.TryGetValue(consonant ?? string.Empty, out var con)) {
                             vcPhonemes.Add($"{vowel}{vcpad}{con}");
                         }
-                        if (checkOtoUntilHit_NotColorFallback(vcPhonemes, note, out var oto)) {
+                        if (checkOtoUntilHitVc(vcPhonemes, note, out var oto)) {
                             vcPhoneme = oto.Alias;
                         } else {
                             return MakeSimpleResult(currentLyric);
@@ -287,17 +287,16 @@ namespace OpenUtau.Plugin.Builtin {
                     // Minimam is 30 tick, maximum is half of note
                     vcLength = Convert.ToInt32(Math.Min(totalDuration / 2, Math.Max(30, vcLength * (nextAttr.consonantStretchRatio ?? 1))));
                     
-
                     return new Result {
                         phonemes = new Phoneme[] {
-                        new Phoneme() {
-                            phoneme = currentLyric
+                            new Phoneme() {
+                                phoneme = currentLyric
+                            },
+                            new Phoneme() {
+                                phoneme = vcPhoneme,
+                                position = totalDuration - vcLength
+                            }
                         },
-                        new Phoneme() {
-                            phoneme = vcPhoneme,
-                            position = totalDuration - vcLength
-                        }
-                    },
                     };
                 }
             }
@@ -336,7 +335,7 @@ namespace OpenUtau.Plugin.Builtin {
         // checking VCs
         // when VC does not exist, it will not be inserted
         // TODO: fix duplicate voice color fallback bug (for now, this is better than nothing)
-        private bool checkOtoUntilHit_NotColorFallback(List<string> input, Note note, out UOto oto) {
+        private bool checkOtoUntilHitVc(List<string> input, Note note, out UOto oto) {
             oto = default;
             var attr = note.phonemeAttributes?.FirstOrDefault(attr => attr.index == 0) ?? default;
 
