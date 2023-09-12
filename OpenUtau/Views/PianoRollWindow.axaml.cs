@@ -71,6 +71,32 @@ namespace OpenUtau.App.Views {
             Focus(); // Force unfocus menu for key down events.
         }
 
+        void OnMenuSingers(object sender, RoutedEventArgs args) {
+            MainWindow?.OpenSingersWindow();
+            try {
+                if (ViewModel.NotesViewModel.Part != null && !ViewModel.NotesViewModel.Selection.IsEmpty && ViewModel.NotesViewModel.Part.phonemes.Count() > 0) {
+                    USinger singer = ViewModel.NotesViewModel.Project.tracks[ViewModel.NotesViewModel.Part.trackNo].Singer;
+                    UOto oto = ViewModel.NotesViewModel.Part.phonemes.First(p => p.Parent == ViewModel.NotesViewModel.Selection.First()).oto;
+                    DocManager.Inst.ExecuteCmd(new GotoOtoNotification(singer, oto));
+                }
+            } catch { }
+        }
+
+        void OnMenuSearchNote(object sender, RoutedEventArgs args) {
+            SearchNote();
+        }
+
+        void SearchNote() {
+            if (ViewModel.NotesViewModel.Part == null || ViewModel.NotesViewModel.Part.notes.Count == 0) {
+                return;
+            }
+            var vm = new SearchNoteViewModel(ViewModel.NotesViewModel);
+            var dialog = new SearchNoteDialog() {
+                DataContext = vm,
+            };
+            dialog.ShowDialog(this);
+        }
+
         void ReplaceLyrics() {
             if (ViewModel.NotesViewModel.Part == null) {
                 return;
@@ -1222,6 +1248,10 @@ namespace OpenUtau.App.Views {
                         return true;
                     }
                     if (isCtrl) {
+                        SearchNote();
+                        return true;
+                    }
+                    if (isAlt) {
                         if (!notesVm.Selection.IsEmpty) {
                             playVm.MovePlayPos(notesVm.Part.position + notesVm.Selection.FirstOrDefault()!.position);
                         }

@@ -191,6 +191,7 @@
   <system:String x:Key="phoneticassistant.caption">音素変換アシスタント</system:String>
   <system:String x:Key="phoneticassistant.copy">コピー</system:String>
 
+  <system:String x:Key="pianoroll.menu.batch">一括編集</system:String>
   <system:String x:Key="pianoroll.menu.lyrics">歌詞</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">"-" を "+" に置き換え</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">歌詞を編集</system:String>
@@ -220,6 +221,11 @@
   <system:String x:Key="pianoroll.menu.notes.reset.vibratos">ビブラートをリセット</system:String>
   <system:String x:Key="pianoroll.menu.part">パート</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">従来のプラグイン (試験中)</system:String>
+  <system:String x:Key="pianoroll.menu.part.singer">シンガーと原音設定</system:String>
+  <system:String x:Key="pianoroll.menu.searchnote">音符を検索</system:String>
+  <system:String x:Key="pianoroll.menu.searchnote.all">すべて選択</system:String>
+  <system:String x:Key="pianoroll.menu.searchnote.next">次へ</system:String>
+  <system:String x:Key="pianoroll.menu.searchnote.prev">前へ</system:String>
   <system:String x:Key="pianoroll.toggle.finalpitch">最終的なピッチを表示 (R)</system:String>
   <system:String x:Key="pianoroll.toggle.noteparams">音符のパラメータを表示 (\)</system:String>
   <system:String x:Key="pianoroll.toggle.phoneme">音素を表示 (O)</system:String>
@@ -356,7 +362,7 @@
   <!--<system:String x:Key="singersetup.back">Back</system:String>-->
   <!--<system:String x:Key="singersetup.install">Install</system:String>-->
   <!--<system:String x:Key="singersetup.next">Next</system:String>-->
-  <!--<system:String x:Key="singersetup.missinginfo">Some info are missing from character.yaml!</system:String>-->
+  <!--<system:String x:Key="singersetup.missinginfo">Please add the following settings to this voicebank's character.yaml.</system:String>-->
   <!--<system:String x:Key="singersetup.singertype">Singer Type</system:String>-->
   <!--<system:String x:Key="singersetup.textfileencoding">Text File Encoding</system:String>-->
   <!--<system:String x:Key="singersetup.textfileencoding.prompt">Choose an encoding that make file contents look right.</system:String>-->

@@ -118,6 +118,26 @@ namespace OpenUtau.Core.Editing {
         }
     }
 
+    public class AutoLegato : BatchEdit {
+        public virtual string Name => name;
+
+        private string name;
+
+        public AutoLegato() {
+            name = $"pianoroll.menu.notes.autolegato";
+        }
+
+        public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
+            var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
+            notes.Sort((a, b) => a.position.CompareTo(b.position));
+            docManager.StartUndoGroup(true);
+            for (int i = 0; i < notes.Count - 1; i++) {
+                docManager.ExecuteCmd(new ResizeNoteCommand(part, notes[i], notes[i + 1].position - notes[i].position - notes[i].duration));
+            }
+            docManager.EndUndoGroup();
+        }
+    }
+
     public class HanziToPinyin : BatchEdit {
         public virtual string Name => name;
 
