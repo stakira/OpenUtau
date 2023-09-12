@@ -16,6 +16,7 @@ namespace OpenUtau.App.ViewModels {
         NotesViewModel notesViewModel { get; }
         List<UNote> notes = new List<UNote>();
         int selection = -1;
+        [Reactive]public string ResultCount { get; private set; } = "";
         static string searchWord = "";
 
         public SearchNoteViewModel(NotesViewModel notesViewModel) {
@@ -50,6 +51,7 @@ namespace OpenUtau.App.ViewModels {
                 Count = 0;
             }
             selection = -1;
+            UpdateResult();
         }
 
         public void Prev() {
@@ -69,6 +71,7 @@ namespace OpenUtau.App.ViewModels {
                     DocManager.Inst.ExecuteCmd(new FocusNoteNotification(notesViewModel.Part, note));
                 }
             }
+            UpdateResult();
         }
 
         public void Next() {
@@ -88,6 +91,7 @@ namespace OpenUtau.App.ViewModels {
                     DocManager.Inst.ExecuteCmd(new FocusNoteNotification(notesViewModel.Part, note));
                 }
             }
+            UpdateResult();
         }
 
         public void SelectAll() {
@@ -96,6 +100,14 @@ namespace OpenUtau.App.ViewModels {
                 notesViewModel.Selection.Add(note);
             }
             MessageBus.Current.SendMessage(new NotesSelectionEvent(notesViewModel.Selection));
+        }
+
+        public void UpdateResult(){
+            if (selection >= 0) {
+                ResultCount = $"{selection + 1}/{Count}";
+            }else{
+                ResultCount = $"{Count}";
+            }
         }
 
         public void OnClose() {

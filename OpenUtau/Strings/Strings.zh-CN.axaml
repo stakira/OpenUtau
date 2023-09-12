@@ -215,6 +215,11 @@
   <system:String x:Key="pianoroll.menu.notes.removetailrest">删除尾部"R"音符</system:String>
   <system:String x:Key="pianoroll.menu.part">片段</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">传统插件 (实验性)</system:String>
+  <system:String x:Key="pianoroll.menu.searchnote">查找音符</system:String>
+  <system:String x:Key="pianoroll.menu.searchnote.all">全选</system:String>
+  <system:String x:Key="pianoroll.menu.searchnote.close">关闭</system:String>
+  <system:String x:Key="pianoroll.menu.searchnote.next">下一个</system:String>
+  <system:String x:Key="pianoroll.menu.searchnote.prev">上一个</system:String>
   <system:String x:Key="pianoroll.toggle.finalpitch">显示最终音高线 (R)</system:String>
   <!--<system:String x:Key="pianoroll.toggle.noteparams">View Note Parameters (\)</system:String>-->
   <system:String x:Key="pianoroll.toggle.phoneme">显示音素 (O)</system:String>
