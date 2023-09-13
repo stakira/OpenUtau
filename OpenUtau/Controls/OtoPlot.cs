@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Media.TextFormatting;
@@ -414,8 +415,8 @@ namespace OpenUtau.App.Controls {
             preText.Draw(context, new Point(preutterX, height));
         }
 
-        protected override void OnUnloaded() {
-            base.OnUnloaded();
+        protected override void OnUnloaded(RoutedEventArgs e) {
+            base.OnUnloaded(e);
             wavBitmap?.Dispose();
             melBitmap?.Dispose();
         }
