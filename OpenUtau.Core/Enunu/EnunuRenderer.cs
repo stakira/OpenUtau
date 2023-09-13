@@ -39,13 +39,13 @@ namespace OpenUtau.Core.Enunu {
             public AcousticResult result;
         }
 
-        struct VocoderResult {
+        struct SyntheResult {
             public string path_wav;
         }
 
-        struct VocoderResponse {
+        struct SyntheResponse {
             public string error;
-            public VocoderResult result;
+            public SyntheResult result;
         }
 
         static readonly object lockObj = new object();
@@ -83,12 +83,12 @@ namespace OpenUtau.Core.Enunu {
                     var result = Layout(phrase);
                     if (!File.Exists(wavPath)) {
                         var config = EnunuConfig.Load(phrase.singer);
-                        if (config.extensions.wav_synthesizer.Contains("vocoder")) {
-                            Log.Information($"Starting enunu vocoder synthesis \"{ustPath}\"");
+                        if (config.extensions.wav_synthesizer.Contains("synthe")) {
+                            Log.Information($"Starting enunu synthesis \"{ustPath}\"");
                             var enunuNotes = PhraseToEnunuNotes(phrase);
                             // TODO: using first note tempo as ust tempo.
                             EnunuUtils.WriteUst(enunuNotes, phrase.phones.First().tempo, phrase.singer, ustPath);
-                            var response = EnunuClient.Inst.SendRequest<VocoderResponse>(new string[] { "vocoder", ustPath, wavPath });
+                            var response = EnunuClient.Inst.SendRequest<SyntheResponse>(new string[] { "synthe", ustPath, wavPath });
                             if (response.error != null) {
                                 throw new Exception(response.error);
                             }
