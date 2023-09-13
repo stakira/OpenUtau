@@ -79,7 +79,7 @@ namespace OpenUtau.App.ViewModels {
                 .ToList();
         [Reactive] public LyricsHelperOption? LyricsHelper { get; set; }
         [Reactive] public bool LyricsHelperBrackets { get; set; }
-        [Reactive] public bool RememberMid{ get; set; }
+[Reactive] public bool RememberMid{ get; set; }
         [Reactive] public bool RememberUst{ get; set; }
         [Reactive] public bool RememberVsqx{ get; set; }
 
@@ -133,7 +133,7 @@ namespace OpenUtau.App.ViewModels {
             LyricsHelper = LyricsHelpers.FirstOrDefault(option => option.klass.Equals(ActiveLyricsHelper.Inst.GetPreferred()));
             LyricsHelperBrackets = Preferences.Default.LyricsHelperBrackets;
             OtoEditor = Preferences.Default.OtoEditor;
-            RememberMid = Preferences.Default.RememberMid;
+RememberMid = Preferences.Default.RememberMid;
             RememberUst = Preferences.Default.RememberUst;
             RememberVsqx = Preferences.Default.RememberVsqx;
 
@@ -196,7 +196,7 @@ namespace OpenUtau.App.ViewModels {
                     Preferences.Save();
                     App.SetTheme();
                 });
-            this.WhenAnyValue(vm => vm.UseTrackColor)
+this.WhenAnyValue(vm => vm.UseTrackColor)
                 .Subscribe(trackColor => {
                     Preferences.Default.UseTrackColor = trackColor;
                     Preferences.Save();
@@ -261,6 +261,11 @@ namespace OpenUtau.App.ViewModels {
             this.WhenAnyValue(vm => vm.RememberVsqx)
                 .Subscribe(index => {
                     Preferences.Default.RememberVsqx = index;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.DiffsingerSpeedup)
+                .Subscribe(index => {
+                    Preferences.Default.DiffsingerSpeedup = index;
                     Preferences.Save();
                 });
         }
