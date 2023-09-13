@@ -284,6 +284,7 @@ namespace OpenUtau.App.Views {
                 Log.Error(e, $"Failed to import files");
                 _ = await MessageBox.ShowError(this, e);
             }
+            ValidateTracksVoiceColor();
         }
 
         async void OnMenuImportAudio(object sender, RoutedEventArgs args) {
@@ -993,6 +994,71 @@ namespace OpenUtau.App.Views {
             DocManager.Inst.EndUndoGroup();
         }
 
+        async void ValidateTracksVoiceColor() {
+            DocManager.Inst.StartUndoGroup();
+            foreach (var track in DocManager.Inst.Project.tracks) {
+                if (track.ValidateVoiceColor(out var oldColors, out var newColors)) {
+                    await VoiceColorRemappingAsync(track, oldColors, newColors);
+                }
+            }
+            DocManager.Inst.EndUndoGroup();
+        }
+        async Task VoiceColorRemappingAsync(UTrack track, string[] oldColors, string[] newColors) {
+            var parts = DocManager.Inst.Project.parts.Where(part => part.trackNo == track.TrackNo);
+            if (parts.Any(part => part is UVoicePart vpart && vpart.notes.Count > 0)) {
+                var dialog = new VoiceColorMappingDialog();
+                VoiceColorMappingViewModel vm = new VoiceColorMappingViewModel(oldColors, newColors, track.TrackName);
+                dialog.DataContext = vm;
+                await dialog.ShowDialog(this);
+
+                if (dialog.Apply) {
+                    foreach (var part in parts) {
+                        if (part is UVoicePart voicePart) {
+                            foreach (var phoneme in voicePart.phonemes) {
+                                var tuple = phoneme.GetExpression(DocManager.Inst.Project, track, Ustx.CLR);
+                                if (vm.ColorMappings.Any(m => m.OldIndex == tuple.Item1)) {
+                                    var mapping = vm.ColorMappings.First(m => m.OldIndex == tuple.Item1);
+                                    if (mapping.OldIndex != mapping.SelectedIndex) {
+                                        DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(DocManager.Inst.Project, track, voicePart, phoneme, Ustx.CLR, mapping.SelectedIndex));
+                                    }
+                                } else {
+                                    DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(DocManager.Inst.Project, track, voicePart, phoneme, Ustx.CLR, 0));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        void VoiceColorRemapping(UTrack track, string[] oldColors, string[] newColors) {
+            var parts = DocManager.Inst.Project.parts.Where(part => part.trackNo == track.TrackNo);
+            if (parts.Any(part => part is UVoicePart vpart && vpart.notes.Count > 0)) {
+                var dialog = new VoiceColorMappingDialog();
+                VoiceColorMappingViewModel vm = new VoiceColorMappingViewModel(oldColors, newColors, track.TrackName);
+                dialog.DataContext = vm;
+                dialog.onFinish = () => {
+                    DocManager.Inst.StartUndoGroup();
+                    foreach (var part in parts) {
+                        if (part is UVoicePart voicePart) {
+                            foreach (var phoneme in voicePart.phonemes) {
+                                var tuple = phoneme.GetExpression(DocManager.Inst.Project, track, Ustx.CLR);
+                                if (vm.ColorMappings.Any(m => m.OldIndex == tuple.Item1)) {
+                                    var mapping = vm.ColorMappings.First(m => m.OldIndex == tuple.Item1);
+                                    if (mapping.OldIndex != mapping.SelectedIndex) {
+                                        DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(DocManager.Inst.Project, track, voicePart, phoneme, Ustx.CLR, mapping.SelectedIndex));
+                                    }
+                                } else {
+                                    DocManager.Inst.ExecuteCmd(new SetPhonemeExpressionCommand(DocManager.Inst.Project, track, voicePart, phoneme, Ustx.CLR, 0));
+                                }
+                            }
+                        }
+                    }
+                    DocManager.Inst.EndUndoGroup();
+                };
+                dialog.ShowDialog(this);
+            }
+        }
+
         public async void WindowClosing(object? sender, WindowClosingEventArgs e) {
             if (forceClose || DocManager.Inst.ChangesSaved) {
                 if (Preferences.Default.ClearCacheOnQuit) {
@@ -1031,6 +1097,17 @@ namespace OpenUtau.App.Views {
         public void OnNext(UCommand cmd, bool isUndo) {
             if (cmd is ErrorMessageNotification notif) {
                 MessageBox.ShowError(this, notif.message, notif.e);
+            } else if (cmd is VoiceColorRemappingNotification voicecolorNotif) {
+                if(voicecolorNotif.TrackNo < 0 || DocManager.Inst.Project.tracks.Count <= voicecolorNotif.TrackNo) {
+                    ValidateTracksVoiceColor();
+                } else {
+                    UTrack track = DocManager.Inst.Project.tracks[voicecolorNotif.TrackNo];
+                    if (!voicecolorNotif.Validate) {
+                        VoiceColorRemapping(track, track.VoiceColorNames, track.VoiceColorExp.options);
+                    } else if (track.ValidateVoiceColor(out var oldColors, out var newColors)) {
+                        VoiceColorRemapping(track, oldColors, newColors);
+                    }
+                }
             }
         }
     }

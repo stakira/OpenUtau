@@ -146,6 +146,16 @@ namespace OpenUtau.Core {
         public override string ToString() => "Singers refreshed.";
     }
 
+    public class VoiceColorRemappingNotification : UNotification {
+        public int TrackNo;
+        public bool Validate;
+        public VoiceColorRemappingNotification(int trackNo, bool validate) {
+            TrackNo = trackNo;
+            Validate = validate;
+        }
+        public override string ToString() => "Voice color remapping.";
+    }
+
     public class OtoChangedNotification : UNotification {
         public readonly bool external;
         public OtoChangedNotification(bool external = false) {

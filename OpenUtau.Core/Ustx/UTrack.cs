@@ -95,6 +95,7 @@ namespace OpenUtau.Core.Ustx {
         public double Volume { set; get; }
         public double Pan { set; get; }
         [YamlIgnore] public UExpressionDescriptor VoiceColorExp { set; get; }
+        public string[] VoiceColorNames { get; set; } = new string[] { "" };
 
         public UTrack() {
         }
@@ -145,6 +146,31 @@ namespace OpenUtau.Core.Ustx {
                     VoiceColorExp.max = VoiceColorExp.options.Length - 1;
                 }
             }
+        }
+
+        public bool ValidateVoiceColor(out string[] oldColors, out string[] newColors) {
+            bool discrepancy = false;
+            oldColors = VoiceColorNames.ToArray();
+            newColors = new string[0];
+
+            if (Singer != null && Singer.Found && VoiceColorExp != null) {
+                newColors = VoiceColorExp.options.ToArray();
+
+                if (VoiceColorNames.Length > 1) {
+                    if (VoiceColorNames.Length != VoiceColorExp.options.Length) {
+                        discrepancy = true;
+                    } else {
+                        for (int i = 0; i < VoiceColorNames.Length; i++) {
+                            if (VoiceColorNames[i] != VoiceColorExp.options[i]) {
+                                discrepancy = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+                VoiceColorNames = VoiceColorExp.options.ToArray();
+            }
+            return discrepancy;
         }
 
         public void BeforeSave() {

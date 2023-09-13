@@ -45,6 +45,8 @@
   <system:String x:Key="dialogs.tracksettings.location">場所</system:String>
   <!--<system:String x:Key="dialogs.tracksettings.renderer">Renderer</system:String>-->
   <system:String x:Key="dialogs.tracksettings.setasdefault">デフォルト設定として保存</system:String>
+  <system:String x:Key="dialogs.voicecolorremapping">Voice colorの再マッピング</system:String>
+  <system:String x:Key="dialogs.voicecolorremapping.caption">このトラック内のすべての音符に適用されます：</system:String>
 
   <system:String x:Key="errors.caption">エラー</system:String>
 
