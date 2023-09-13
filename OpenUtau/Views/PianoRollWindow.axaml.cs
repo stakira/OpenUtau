@@ -88,6 +88,21 @@ namespace OpenUtau.App.Views {
             } catch { }
         }
 
+        void OnMenuSearchNote(object sender, RoutedEventArgs args) {
+            SearchNote();
+        }
+
+        void SearchNote() {
+            if (ViewModel.NotesViewModel.Part == null || ViewModel.NotesViewModel.Part.notes.Count == 0) {
+                return;
+            }
+            var vm = new SearchNoteViewModel(ViewModel.NotesViewModel);
+            var dialog = new SearchNoteDialog() {
+                DataContext = vm,
+            };
+            dialog.ShowDialog(this);
+        }
+
         void ReplaceLyrics() {
             if (ViewModel.NotesViewModel.Part == null) {
                 return;
@@ -1293,6 +1308,10 @@ namespace OpenUtau.App.Views {
                         return true;
                     }
                     if (isCtrl) {
+                        SearchNote();
+                        return true;
+                    }
+                    if (isAlt) {
                         if (!notesVm.Selection.IsEmpty) {
                             playVm.MovePlayPos(notesVm.Part.position + notesVm.Selection.FirstOrDefault()!.position);
                         }

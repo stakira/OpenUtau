@@ -73,7 +73,7 @@
   <system:String x:Key="lyrics.reset">Reset</system:String>
   <system:String x:Key="lyrics.selectnotes">Select some notes first!</system:String>
   <system:String x:Key="lyrics.separators">Separators</system:String>
-  
+
   <system:String x:Key="lyricsreplace.after">After :</system:String>
   <system:String x:Key="lyricsreplace.before">Before :</system:String>
   <system:String x:Key="lyricsreplace.preset.rmvalphabet">Remove alphabet</system:String>
@@ -140,7 +140,7 @@
   <system:String x:Key="menu.tools.singer.install">Install Singer...</system:String>
   <system:String x:Key="menu.tools.singer.installadv">Install Singer (Advanced)...</system:String>
   <system:String x:Key="menu.tools.singers">Singers...</system:String>
-  
+
   <system:String x:Key="notedefaults.lyric">Lyric</system:String>
   <system:String x:Key="notedefaults.lyric.defaultlyric">Default Lyric</system:String>
   <system:String x:Key="notedefaults.portamento">Portamento</system:String>
@@ -153,8 +153,10 @@
   <system:String x:Key="notedefaults.preset.save">Save</system:String>
   <system:String x:Key="notedefaults.preset.save.tooltip">Save current settings to a new preset.</system:String>
   <system:String x:Key="notedefaults.reset">Reset All Settings</system:String>
-  <system:String x:Key="notedefaults.reset.tooltip">Reset every setting to default values.
-Warning: this option removes custom presets.</system:String>
+  <system:String x:Key="notedefaults.reset.tooltip">
+    Reset every setting to default values.
+    Warning: this option removes custom presets.
+  </system:String>
   <system:String x:Key="notedefaults.vibrato">Vibrato</system:String>
   <system:String x:Key="notedefaults.vibrato.autominlength">Minimum Length</system:String>
   <system:String x:Key="notedefaults.vibrato.autotoggle">Automatic Vibrato by Length</system:String>
@@ -229,6 +231,10 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="pianoroll.menu.part.singer">Singer and Oto settings</system:String>
   <system:String x:Key="pianoroll.menu.plugin.openfolder">Open folder</system:String>
   <system:String x:Key="pianoroll.menu.plugin.reload">Reload</system:String>
+  <system:String x:Key="pianoroll.menu.searchnote">Search Note</system:String>
+  <system:String x:Key="pianoroll.menu.searchnote.all">Select All</system:String>
+  <system:String x:Key="pianoroll.menu.searchnote.next">Next</system:String>
+  <system:String x:Key="pianoroll.menu.searchnote.prev">Prev</system:String>
   <system:String x:Key="pianoroll.toggle.finalpitch">View Final Pitch to Render (R)</system:String>
   <system:String x:Key="pianoroll.toggle.noteparams">View Note Parameters (\)</system:String>
   <system:String x:Key="pianoroll.toggle.phoneme">View Phonemes (O)</system:String>
@@ -240,20 +246,26 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="pianoroll.toggle.tone">Toggle Note Tone (Y)</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">View Vibrato (U)</system:String>
   <system:String x:Key="pianoroll.toggle.waveform">View Waveform (W)</system:String>
-  <system:String x:Key="pianoroll.tool.drawpitch">Draw Pitch Tool (4)
+  <system:String x:Key="pianoroll.tool.drawpitch">
+    Draw Pitch Tool (4)
     Left click to draw
     Right click to reset
     Hold Ctrl to select
-    Hold Alt to smoothen</system:String>
+    Hold Alt to smoothen
+  </system:String>
   <system:String x:Key="pianoroll.tool.eraser">Eraser Tool (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">Knife Tool (5)</system:String>
-  <system:String x:Key="pianoroll.tool.penplus">Pen Plus Tool (Ctrl + 2)
+  <system:String x:Key="pianoroll.tool.penplus">
+    Pen Plus Tool (Ctrl + 2)
     Left click to draw
     Right click to delete
-    Hold Ctrl to select</system:String>
-  <system:String x:Key="pianoroll.tool.penv2">Pen Tool (2)
+    Hold Ctrl to select
+  </system:String>
+  <system:String x:Key="pianoroll.tool.penv2">
+    Pen Tool (2)
     Left click to draw
-    Hold Ctrl to select</system:String>
+    Hold Ctrl to select
+  </system:String>
   <system:String x:Key="pianoroll.tool.selectionv2">Selection Tool (1)</system:String>
 
   <system:String x:Key="prefs.advanced">Advanced</system:String>
@@ -275,6 +287,8 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="prefs.appearance.theme.light">Light</system:String>
   <system:String x:Key="prefs.appearance.trackcolor">Use track color in UI</system:String>
   <system:String x:Key="prefs.caption">Preferences</system:String>
+  <system:String x:Key="prefs.cache">Cache</system:String>
+  <system:String x:Key="prefs.cache.clearonquit">Clear cache on quit</system:String>
   <system:String x:Key="prefs.note.restart">Note: please restart OpenUtau after changing this item.</system:String>
   <system:String x:Key="prefs.off">Off</system:String>
   <system:String x:Key="prefs.on">On</system:String>
@@ -300,16 +314,17 @@ Warning: this option removes custom presets.</system:String>
   <system:String x:Key="prefs.playback.lockstarttime.on">Move cursor back to where you started playing</system:String>
   <system:String x:Key="prefs.playback.test">Test</system:String>
   <system:String x:Key="prefs.rendering">Rendering</system:String>
+  <system:String x:Key="prefs.rendering.defaultrenderer">Default renderer (for classic voicebanks)</system:String>
   <system:String x:Key="prefs.rendering.onnxgpu">GPU</system:String>
   <system:String x:Key="prefs.rendering.onnxrunner">Machine Learning Runner</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">Phase Compensation</system:String>
   <system:String x:Key="prefs.rendering.prerender">Pre-render</system:String>
   <system:String x:Key="prefs.rendering.resampler">Resampler</system:String>
   <system:String x:Key="prefs.rendering.resampler.morewarn">
-Warning: moresampler is not fully supported. It may be slow and cause high CPU usage. If you insist, please:
-1. Set "resampler-compatibility" to "on" in moreconfig.txt.
-2. Set "auto-update-llsm-mrq" to "off" in moreconfig.txt.
-3. Patiently wait for moresampler to generate missing llsm files.
+    Warning: moresampler is not fully supported. It may be slow and cause high CPU usage. If you insist, please:
+    1. Set "resampler-compatibility" to "on" in moreconfig.txt.
+    2. Set "auto-update-llsm-mrq" to "off" in moreconfig.txt.
+    3. Patiently wait for moresampler to generate missing llsm files.
   </system:String>
   <system:String x:Key="prefs.rendering.resampler.note">
     Note: to use external resamplers, please add the resampler DLL or EXE file in the Resamplers folder in the OpenUtau install path and choose it in Preferences.
@@ -373,23 +388,23 @@ Warning: moresampler is not fully supported. It may be slow and cause high CPU u
 
   <system:String x:Key="tip.aliasbox">Override Alias</system:String>
   <system:String x:Key="tip.exps">
-Left Button Draw: Set expressions
-Right Button Draw: Reset expressions
+    Left Button Draw: Set expressions
+    Right Button Draw: Reset expressions
   </system:String>
   <system:String x:Key="tip.exps.notsupported">Expression not supported by renderer</system:String>
   <system:String x:Key="tip.lyricbox.next">Tab: Next Note</system:String>
   <system:String x:Key="tip.lyricbox.prev">Shift+Tab: Previous Note</system:String>
   <system:String x:Key="tip.notes.basics">
-Selection Tool
+    Selection Tool
     Box Select: Select notes
     Ctrl + Box Select: Select more notes
     Up/Down: Transpose selected notes
     Ctrl + Up/Down: Transpose selected notes by octave
-Pen Tool
+    Pen Tool
     Left Button Draw: Add note
     Right Click: Remove note
     Right Button Draw: Remove multiple notes
-General
+    General
     T: Toggle tips
     Drag Note: Move note
     Drag End of Note: Resize note
