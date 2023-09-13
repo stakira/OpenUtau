@@ -54,7 +54,7 @@ namespace OpenUtau.Core.Util {
     public class PinyinLyricsHelper : ILyricsHelper {
         public string Source => "汉->han";
         public string Convert(string lyric) {
-            return TinyPinyin.PinyinHelper.GetPinyin(lyric);
+            return TinyPinyin.PinyinHelper.GetPinyin(lyric).ToLowerInvariant();
         }
     }
 
