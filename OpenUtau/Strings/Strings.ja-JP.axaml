@@ -224,6 +224,10 @@
   <system:String x:Key="pianoroll.menu.part">パート</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">従来のプラグイン (試験中)</system:String>
   <system:String x:Key="pianoroll.menu.part.singer">シンガーと原音設定</system:String>
+  <system:String x:Key="pianoroll.menu.searchnote">音符を検索</system:String>
+  <system:String x:Key="pianoroll.menu.searchnote.all">すべて選択</system:String>
+  <system:String x:Key="pianoroll.menu.searchnote.next">次へ</system:String>
+  <system:String x:Key="pianoroll.menu.searchnote.prev">前へ</system:String>
   <system:String x:Key="pianoroll.toggle.finalpitch">最終的なピッチを表示 (R)</system:String>
   <system:String x:Key="pianoroll.toggle.noteparams">音符のパラメータを表示 (\)</system:String>
   <system:String x:Key="pianoroll.toggle.phoneme">音素を表示 (O)</system:String>
