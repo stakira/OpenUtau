@@ -17,6 +17,7 @@ using OpenUtau.Classic;
 using OpenUtau.Core;
 using OpenUtau.Core.Format;
 using OpenUtau.Core.Ustx;
+using OpenUtau.Core.Util;
 using ReactiveUI;
 using Serilog;
 using Point = Avalonia.Point;
@@ -564,7 +565,7 @@ namespace OpenUtau.App.Views {
             Width = x != null ? wa.Size.Width * x.Value : wa.Size.Width;
             Height = (y != null ? wa.Size.Height * y.Value : wa.Size.Height) - titleBarHeight;
             if (pianoRollWindow != null) {
-                pianoRollWindow.Position = new PixelPoint(x != null ? (int)Width : 0, y != null ? (int)(Height + (OS.IsMacOS() ? 25 : titleBarHeight)) : 0);
+                pianoRollWindow.Position = new PixelPoint(x != null ? (int) Width : 0, y != null ? (int) (Height + (OS.IsMacOS() ? 25 : titleBarHeight)) : 0);
                 pianoRollWindow.Width = x != null ? wa.Size.Width - Width : wa.Size.Width;
                 pianoRollWindow.Height = (y != null ? wa.Size.Height - (Height + titleBarHeight) : wa.Size.Height) - titleBarHeight;
             }
@@ -575,7 +576,7 @@ namespace OpenUtau.App.Views {
                 return;
             }
             var tracksVm = viewModel.TracksViewModel;
-            if (args.KeyModifiers == KeyModifiers.None) {
+            if (args.KeyModifiers == KeyModifiers.None){
                 args.Handled = true;
                 switch (args.Key) {
                     case Key.Delete: viewModel.TracksViewModel.DeleteSelectedParts(); break;
@@ -696,10 +697,10 @@ namespace OpenUtau.App.Views {
             } else if (ext == ".dll") {
                 var result = await MessageBox.Show(
                     this,
-                    ThemeManager.GetString("dialogs.installdll.message")+file,
+                    ThemeManager.GetString("dialogs.installdll.message") + file,
                     ThemeManager.GetString("dialogs.installdll.caption"),
                     MessageBox.MessageBoxButtons.OkCancel);
-                if(result == MessageBox.MessageBoxResult.Ok){                
+                if (result == MessageBox.MessageBoxResult.Ok) {
                     Core.Api.PhonemizerInstaller.Install(file);
                 }
             } else if (ext == ".exe") {
@@ -756,7 +757,7 @@ namespace OpenUtau.App.Views {
 
         public void TimelinePointerWheelChanged(object sender, PointerWheelEventArgs args) {
             var control = (Control)sender;
-            var position = args.GetCurrentPoint((Visual)sender).Position;
+            var position = args.GetCurrentPoint((Visual) sender).Position;
             var size = control.Bounds.Size;
             position = position.WithX(position.X / size.Width).WithY(position.Y / size.Height);
             viewModel.TracksViewModel.OnXZoomed(position, 0.1 * args.Delta.Y);
@@ -857,7 +858,7 @@ namespace OpenUtau.App.Views {
         }
 
         public void PartsCanvasPointerMoved(object sender, PointerEventArgs args) {
-            var control = (Control)sender;
+            var control = (Control) sender;
             var point = args.GetCurrentPoint(control);
             if (partEditState != null) {
                 partEditState.Update(point.Pointer, point.Position);
@@ -886,7 +887,7 @@ namespace OpenUtau.App.Views {
                 if (partEditState.MouseButton != args.InitialPressMouseButton) {
                     return;
                 }
-                var control = (Control)sender;
+                var control = (Control) sender;
                 var point = args.GetCurrentPoint(control);
                 partEditState.Update(point.Pointer, point.Position);
                 partEditState.End(point.Pointer, point.Position);
@@ -994,6 +995,11 @@ namespace OpenUtau.App.Views {
 
         public async void WindowClosing(object? sender, WindowClosingEventArgs e) {
             if (forceClose || DocManager.Inst.ChangesSaved) {
+                if (Preferences.Default.ClearCacheOnQuit) {
+                    Log.Information("Clearing cache...");
+                    PathManager.Inst.ClearCache();
+                    Log.Information("Cache cleared.");
+                }
                 return;
             }
             e.Cancel = true;
