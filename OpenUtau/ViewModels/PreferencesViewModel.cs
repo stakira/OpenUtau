@@ -237,6 +237,21 @@ namespace OpenUtau.App.ViewModels {
                     Preferences.Default.OnnxGpu = index.deviceId;
                     Preferences.Save();
                 });
+            this.WhenAnyValue(vm => vm.RememberMid)
+                .Subscribe(index => {
+                    Preferences.Default.RememberMid = index;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.RememberUst)
+                .Subscribe(index => {
+                    Preferences.Default.RememberUst = index;
+                    Preferences.Save();
+                });
+            this.WhenAnyValue(vm => vm.RememberVsqx)
+                .Subscribe(index => {
+                    Preferences.Default.RememberVsqx = index;
+                    Preferences.Save();
+                });
             this.WhenAnyValue(vm => vm.DiffsingerSpeedup)
                 .Subscribe(index => {
                     Preferences.Default.DiffsingerSpeedup = index;
