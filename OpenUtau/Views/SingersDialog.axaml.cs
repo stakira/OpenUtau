@@ -46,6 +46,32 @@ namespace OpenUtau.App.Views {
             }
         }
 
+        async void OnSetImage(object sender, RoutedEventArgs args) {
+            var viewModel = (DataContext as SingersViewModel)!;
+            if (viewModel.Singer == null) {
+                return;
+            }
+            var file = await FilePicker.OpenFile(
+                this, "singers.setimage",
+                viewModel.Singer.Location,
+                FilePickerFileTypes.ImageAll);
+            if (file == null) {
+                return;
+            }
+            try {
+                //If the image isn't inside the voicebank, copy it in.
+                if (!file.StartsWith(viewModel.Singer.Location)) {
+                    string newFile = Path.Combine(viewModel.Singer.Location, Path.GetFileName(file));
+                    File.Copy(file, newFile, true);
+                    file = newFile;
+                }
+                viewModel.SetImage(Path.GetRelativePath(viewModel.Singer.Location, file));
+            } catch (Exception e) {
+                Log.Error(e, "Failed to set image");
+                _ = await MessageBox.ShowError(this, e);
+            }
+        }
+
         async void OnSetPortrait(object sender, RoutedEventArgs args) {
             var viewModel = (DataContext as SingersViewModel)!;
             if (viewModel.Singer == null) {
@@ -59,6 +85,12 @@ namespace OpenUtau.App.Views {
                 return;
             }
             try {
+                //If the image isn't inside the voicebank, copy it in.
+                if (!file.StartsWith(viewModel.Singer.Location)) {
+                    string newFile = Path.Combine(viewModel.Singer.Location, Path.GetFileName(file));
+                    File.Copy(file, newFile, true);
+                    file = newFile;
+                }
                 viewModel.SetPortrait(Path.GetRelativePath(viewModel.Singer.Location, file));
             } catch (Exception e) {
                 Log.Error(e, "Failed to set portrait");

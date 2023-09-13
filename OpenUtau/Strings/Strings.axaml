@@ -360,6 +360,7 @@
   <system:String x:Key="singers.refresh">Refresh</system:String>
   <system:String x:Key="singers.setdefaultphonemizer">Set Default Phonemizer</system:String>
   <system:String x:Key="singers.setencoding">Set Encoding</system:String>
+  <system:String x:Key="singers.setimage">Set Icon</system:String>
   <system:String x:Key="singers.setportrait">Set Portrait</system:String>
   <system:String x:Key="singers.subbanks.cancel">Cancel</system:String>
   <system:String x:Key="singers.subbanks.clear">Clear</system:String>
