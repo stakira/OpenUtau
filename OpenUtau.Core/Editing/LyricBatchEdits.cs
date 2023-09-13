@@ -30,7 +30,12 @@ namespace OpenUtau.Core.Editing {
         private WanaKanaOptions option = new WanaKanaOptions() { CustomKanaMapping = mapping };
         public override string Name => "pianoroll.menu.lyrics.romajitohiragana";
         protected override string Transform(string lyric) {
-            return WanaKana.ToHiragana(lyric, option);
+            string hiragana = WanaKana.ToHiragana(lyric, option).Replace('ゔ','ヴ');
+            if(Regex.IsMatch(hiragana, "[ぁ-んァ-ヴ]")) {
+                return hiragana;
+            } else {
+                return lyric;
+            }
         }
     }
 
@@ -133,23 +138,7 @@ namespace OpenUtau.Core.Editing {
                         docManager.ExecuteCmd(new ChangeNoteLyricCommand(part, note, lyric));
 
                         int index = colors.FirstOrDefault(c => c.Value == suffix).Key;
-                        docManager.ExecuteCmd(new ChangeVoiceColorCommand(part, note, index, track));
-
-                        /*if(track.VoiceColorExp != null) {
-                            int index = colors.FirstOrDefault(c => c.Value == suffix).Key;
-                            var exp = note.phonemeExpressions.FirstOrDefault(exp => exp.descriptor?.abbr == Format.Ustx.CLR && exp.index == 0);
-
-                            if (exp != null) {
-                                exp.descriptor = track.VoiceColorExp;
-                                exp.value = index;
-                            } else {
-                                note.phonemeExpressions.Add(new UExpression(track.VoiceColorExp) {
-                                    descriptor = track.VoiceColorExp,
-                                    index = 0,
-                                    value = index,
-                                });
-                            }
-                        }*/
+                        docManager.ExecuteCmd(new SetNoteExpressionCommand(project, track, part, note, Format.Ustx.CLR, new float[] { index }));
                         break;
                     }
                 }

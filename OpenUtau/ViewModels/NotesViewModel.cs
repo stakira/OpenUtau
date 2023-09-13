@@ -11,6 +11,7 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using DynamicData;
 using DynamicData.Binding;
+using OpenUtau.App.Views;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
@@ -71,9 +72,11 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public double ExpTrackHeight { get; set; }
         [Reactive] public double ExpShadowOpacity { get; set; }
         [Reactive] public UVoicePart? Part { get; set; }
+        [Reactive] public Bitmap? Avatar { get; set; }
         [Reactive] public Bitmap? Portrait { get; set; }
         [Reactive] public IBrush? PortraitMask { get; set; }
         [Reactive] public string WindowTitle { get; set; } = "Piano Roll";
+        [Reactive] public SolidColorBrush TrackAccentColor { get; set; } = ThemeManager.GetTrackColor("Blue").AccentColor;
         public double ViewportTicks => viewportTicks.Value;
         public double ViewportTracks => viewportTracks.Value;
         public double SmallChangeX => smallChangeX.Value;
@@ -374,17 +377,34 @@ namespace OpenUtau.App.ViewModels {
             OnPartModified();
             LoadPortrait(part, project);
             LoadWindowTitle(part, project);
+            LoadTrackColor(part, project);
         }
 
         private void LoadPortrait(UPart? part, UProject? project) {
             if (part == null || project == null) {
                 lock (portraitLock) {
+                    Avatar = null;
                     Portrait = null;
                     portraitSource = null;
                 }
                 return;
             }
             var singer = project.tracks[part.trackNo].Singer;
+            lock (portraitLock) {
+                Avatar?.Dispose();
+                Avatar = null;
+                if (singer != null && singer.AvatarData != null) {
+                    try {
+                        using (var stream = new MemoryStream(singer.AvatarData)) {
+                            Avatar = new Bitmap(stream);
+                        }
+                    } catch (Exception e) {
+                        Avatar?.Dispose();
+                        Avatar = null;
+                        Log.Error(e, $"Failed to load Avatar {singer.Avatar}");
+                    }
+                }
+            }
             if (singer == null || string.IsNullOrEmpty(singer.Portrait) || !Preferences.Default.ShowPortrait) {
                 lock (portraitLock) {
                     Portrait = null;
@@ -394,6 +414,7 @@ namespace OpenUtau.App.ViewModels {
             }
             if (portraitSource != singer.Portrait) {
                 lock (portraitLock) {
+                    Portrait?.Dispose();
                     Portrait = null;
                     portraitSource = null;
                 }
@@ -401,7 +422,6 @@ namespace OpenUtau.App.ViewModels {
                 Task.Run(() => {
                     lock (portraitLock) {
                         try {
-                            Portrait?.Dispose();
                             var data = singer.LoadPortrait();
                             if (data == null) {
                                 Portrait = null;
@@ -433,6 +453,19 @@ namespace OpenUtau.App.ViewModels {
                 return;
             }
             WindowTitle = project.tracks[part.trackNo].TrackName + " - " + part.DisplayName;
+        }
+
+        private void LoadTrackColor(UPart? part, UProject? project) {
+            if (part == null || project == null) {
+                TrackAccentColor = ThemeManager.GetTrackColor("Blue").AccentColor;
+                ThemeManager.ChangeTrackColor("Blue");
+                return;
+            }
+            TrackAccentColor = ThemeManager.GetTrackColor(project.tracks[part.trackNo].TrackColor).AccentColor;
+            string name = Preferences.Default.UseTrackColor
+                ? project.tracks[part.trackNo].TrackColor
+                : "Blue";
+            ThemeManager.ChangeTrackColor(name);
         }
 
         private void UnloadPart() {
@@ -663,6 +696,20 @@ namespace OpenUtau.App.ViewModels {
             DocManager.Inst.EndUndoGroup();
         }
 
+        public void MergeSelectedNotes() {
+            if (Part == null || Selection.IsEmpty || Selection.Count <= 1) {
+                return;
+            }
+            var notes = Selection.ToList();
+            notes.Sort((a, b) => a.position.CompareTo(b.position));
+            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(Part, notes[0], String.Join("", notes.Select(x => x.lyric))));
+            DocManager.Inst.ExecuteCmd(new ResizeNoteCommand(Part, notes[0], notes.Last().End - notes[0].End));
+            notes.RemoveAt(0);
+            DocManager.Inst.ExecuteCmd(new RemoveNoteCommand(Part, notes));
+            DocManager.Inst.EndUndoGroup();
+        }
+
         internal void DeleteSelectedNotes() {
             if (Part == null || Selection.IsEmpty) {
                 return;
@@ -710,6 +757,63 @@ namespace OpenUtau.App.ViewModels {
                     MessageBus.Current.SendMessage(new NotesSelectionEvent(Selection));
 
                     TickOffset = left - Part.position;
+                }
+            }
+        }
+
+        public async void PasteSelectedParams(PianoRollWindow window) {
+            if (Part != null && DocManager.Inst.NotesClipboard != null && DocManager.Inst.NotesClipboard.Count > 0) {
+                var selectedNotes = Selection.ToList();
+                if(selectedNotes.Count == 0) {
+                    return;
+                }
+
+                var dialog = new PasteParamDialog();
+                var vm = new PasteParamViewModel();
+                dialog.DataContext = vm;
+                await dialog.ShowDialog(window);
+
+                if (dialog.Apply) {
+                    DocManager.Inst.StartUndoGroup();
+
+                    int c = 0;
+                    var track = Project.tracks[Part.trackNo];
+                    foreach (var note in selectedNotes) {
+                        var copyNote = DocManager.Inst.NotesClipboard[c];
+
+                        for (int i = 0; i < vm.Params.Count; i++) {
+                            switch (i) {
+                                case 0:
+                                    if (vm.Params[i].IsSelected) {
+                                        DocManager.Inst.ExecuteCmd(new SetPitchPointsCommand(Part, note, copyNote.pitch));
+                                    }
+                                    break;
+                                case 1:
+                                    if (vm.Params[i].IsSelected) {
+                                        DocManager.Inst.ExecuteCmd(new VibratoLengthCommand(Part, note, copyNote.vibrato.length));
+                                        DocManager.Inst.ExecuteCmd(new VibratoDepthCommand(Part, note, copyNote.vibrato.depth));
+                                        DocManager.Inst.ExecuteCmd(new VibratoPeriodCommand(Part, note, copyNote.vibrato.period));
+                                        DocManager.Inst.ExecuteCmd(new VibratoFadeInCommand(Part, note, copyNote.vibrato.@in));
+                                        DocManager.Inst.ExecuteCmd(new VibratoFadeOutCommand(Part, note, copyNote.vibrato.@out));
+                                        DocManager.Inst.ExecuteCmd(new VibratoShiftCommand(Part, note, copyNote.vibrato.shift));
+                                        // DocManager.Inst.ExecuteCmd(new VibratoDriftCommand(Part, note, copyNote.vibrato.drift));
+                                    }
+                                    break;
+                                default:
+                                    if (vm.Params[i].IsSelected) {
+                                        float[] values = copyNote.GetExpression(Project, track, vm.Params[i].Abbr).Select(t => t.Item1).ToArray();
+                                        DocManager.Inst.ExecuteCmd(new SetNoteExpressionCommand(Project, track, Part, note, vm.Params[i].Abbr, values));
+                                    }
+                                    break;
+                            }
+                        }
+
+                        c++;
+                        if (c >= DocManager.Inst.NotesClipboard.Count) {
+                            c = 0;
+                        }
+                    }
+                    DocManager.Inst.EndUndoGroup();
                 }
             }
         }
@@ -776,7 +880,7 @@ namespace OpenUtau.App.ViewModels {
         }
 
         bool IsExpSupported(string expKey) {
-            if (Project == null || Part == null) {
+            if (Project == null || Part == null || Project.tracks.Count > Part.trackNo) {
                 return true;
             }
             var track = Project.tracks[Part.trackNo];
@@ -867,6 +971,9 @@ namespace OpenUtau.App.ViewModels {
             } else if (cmd is TrackCommand) {
                 if (cmd is RenameTrackCommand) {
                     LoadWindowTitle(Part, Project);
+                    return;
+                } else if (cmd is ChangeTrackColorCommand) {
+                    LoadTrackColor(Part, Project);
                     return;
                 } else if (cmd is RemoveTrackCommand removeTrack) {
                     if (Part != null && removeTrack.removedParts.Contains(Part)) {

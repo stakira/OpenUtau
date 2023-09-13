@@ -68,13 +68,25 @@
     <None Include="..\runtimes\linux-x64\native\**" CopyToOutputDirectory="PreserveNewest" LinkBase="." />
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="Controls\NotePropertyExpression.axaml.cs">
+      <DependentUpon>NotePropertyExpression.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Controls\NotePropertiesControl.axaml.cs">
+      <DependentUpon>NotePropertiesControl.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Resources\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Update="Views\PasteParamDialog.axaml.cs">
+      <DependentUpon>PasteParamDialog.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\TrackSettingsDialog.axaml.cs">
       <DependentUpon>TrackSettingsDialog.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\TrackColorDialog.axaml.cs">
+      <DependentUpon>TrackColorDialog.axaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>

@@ -80,7 +80,7 @@
         <RowDefinition Height="40"/>
       </Grid.RowDefinitions>
       <StackPanel Grid.Row="0" Margin="10" Spacing="10" Orientation="Horizontal" HorizontalAlignment="Left">
-        <TextBlock Margin="0,1,0,0" Text="{DynamicResource singersetup.missinginfo}" Foreground="Red"/>
+        <TextBlock Margin="0,1,0,0" Text="{DynamicResource singersetup.missinginfo}"/>
       </StackPanel>
       <Grid Grid.Row="1" Margin="10,0">
         <Grid.ColumnDefinitions>

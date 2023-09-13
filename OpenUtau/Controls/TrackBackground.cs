@@ -101,6 +101,9 @@ namespace OpenUtau.App.Controls {
                 return track % 2 == 1;
             }
             int tone = ViewConstants.MaxTone - 1 - track;
+            if (tone < 0) {
+                return false;
+            }
             return MusicMath.IsBlackKey(tone);
         }
 

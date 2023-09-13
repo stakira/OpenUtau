@@ -16,9 +16,19 @@ namespace OpenUtau.App.ViewModels {
     public class TracksSoloEvent {
         public readonly int trackNo;
         public readonly bool solo;
-        public TracksSoloEvent(int trackNo, bool solo) {
+        public readonly bool additionally;
+        public TracksSoloEvent(int trackNo, bool solo, bool additionally) {
             this.trackNo = trackNo;
             this.solo = solo;
+            this.additionally = additionally;
+        }
+    }
+    public class TracksMuteEvent {
+        public readonly int trackNo;
+        public readonly bool allmute; // use only when track number is -1
+        public TracksMuteEvent(int trackNo, bool allmute) {
+            this.trackNo = trackNo;
+            this.allmute = allmute;
         }
     }
     public class PartsSelectionEvent {

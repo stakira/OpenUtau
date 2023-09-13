@@ -50,6 +50,7 @@
   <!--<system:String x:Key="exps.caption">Expressions</system:String>-->
   <system:String x:Key="exps.defaultvalue">ค่าเริ่มต้น</system:String>
   <!--<system:String x:Key="exps.flag">Resampler Flag</system:String>-->
+  <!--<system:String x:Key="exps.getsuggestions">Add all expressions suggested by renderers</system:String>-->
   <!--<system:String x:Key="exps.isflag">Is Resampler Flag</system:String>-->
   <system:String x:Key="exps.maxvalue">สูงสุด</system:String>
   <system:String x:Key="exps.minvalue">ขั้นต่ำ</system:String>
@@ -69,6 +70,18 @@
   <system:String x:Key="lyrics.reset">คืนค่า</system:String>
   <system:String x:Key="lyrics.selectnotes">โปรดเลือกตัวโน้ตก่อน!</system:String>
   <system:String x:Key="lyrics.separators">ตัวแบ่งแยก</system:String>
+  
+  <!--<system:String x:Key="lyricsreplace.after">After :</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.before">Before :</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.preset.rmvalphabet">Remove alphabet</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.preset.rmvnonhiragana">Remove non-hiragana</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.preset.rmvphonetichint">Remove phonetic hint</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.preset.rmvspace">Remove spaces and earlier</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.preset.rmvtone">Remove tone suffix</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.presets">Presets</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.preview">Preview</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.regex">Regular expressions can be used</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.replace">General lyrics replacement</system:String>-->
 
   <system:String x:Key="menu.edit">แก้ไข</system:String>
   <system:String x:Key="menu.edit.copy">คัดลอก</system:String>
@@ -173,17 +186,20 @@
   <system:String x:Key="pianoroll.menu.lyrics">เนื้อเพลง</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">แทนที่ "-" ด้วย "+"</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">แก้ไขเนื้อเพลง</system:String>
-  <!--<system:String x:Key="pianoroll.menu.lyrics.hanzitopinyin">Hanzi to Pinyin</system:String>-->
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">เปลี่ยนฮิระงะนะเป็นโรมันจิ</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">เปลี่ยนระบบ JP VCV  เป็น CV</system:String>
+  <!--<system:String x:Key="pianoroll.menu.lyrics.movesuffixtovoicecolor">Move Suffix to VoiceColor</system:String>-->
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">ลบ Letter Suffix ออก</system:String>
+  <!--<system:String x:Key="pianoroll.menu.lyrics.removephonetichint">Remove Phonetic Hint</system:String>-->
   <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">ลบ Tone Suffix ออก</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">เปลี่ยนโรมันจิเป็นฮิระงะนะ</system:String>
   <system:String x:Key="pianoroll.menu.notedefaults">โน้ตค่าเริ่มต้น</system:String>
   <system:String x:Key="pianoroll.menu.notes">โน้ต</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">เพิ่มหาง "-"</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">เพิ่มหาง "R"</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notes.bakepitch">Convert PITD to pitch control points</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.clear.vibratos">ล้างไวบราโต</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notes.hanzitopinyin">Hanzi to pinyin</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">โหลดการประมวลผล Pitch</system:String>
   <!--<system:String x:Key="pianoroll.menu.notes.octavedown">Move an octave down</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.notes.octaveup">Move an octave up</system:String>-->
@@ -196,6 +212,7 @@
   <system:String x:Key="pianoroll.menu.part">พาร์ท</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">ปลั๊กอินรุ่นดั้งเดิม (รุ่นทดลอง)</system:String>
   <system:String x:Key="pianoroll.toggle.finalpitch">ดูการประมวลผล Final Pitch (R)</system:String>
+  <!--<system:String x:Key="pianoroll.toggle.noteparams">View Note Parameters (\)</system:String>-->
   <system:String x:Key="pianoroll.toggle.phoneme">ดู Phonemes (O)</system:String>
   <system:String x:Key="pianoroll.toggle.pitch">ดู Pitch Bend (I)</system:String>
   <system:String x:Key="pianoroll.toggle.snap">สลับสแน็ป (P)</system:String>
@@ -206,6 +223,10 @@
   <system:String x:Key="pianoroll.toggle.vibrato">แสดงผลไวบราโต (U)</system:String>
   <system:String x:Key="pianoroll.toggle.waveform">แสดงผล Waveform (W)</system:String>
   <system:String x:Key="pianoroll.tool.drawpitch">เครื่องมือวาด Pitch (4)</system:String>
+  <!--Left click to draw
+  Right click to reset
+  Hold Ctrl to select
+  Hold Alt to smoothen</system:String>-->
   <system:String x:Key="pianoroll.tool.eraser">ยางลบ (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">มีด (5)</system:String>
   <system:String x:Key="pianoroll.tool.penplus">ปากกาอัจฉริยะ (Ctrl + 2)
@@ -229,6 +250,7 @@ Hold Ctrl to select</system:String>-->
   <system:String x:Key="prefs.appearance.lang">ภาษา</system:String>
   <!--<system:String x:Key="prefs.appearance.showghostnotes">Show other tracks' notes on piano roll</system:String>-->
   <system:String x:Key="prefs.appearance.showportrait">แสดงภาพเหมือนบน Piano roll</system:String>
+  <!--<system:String x:Key="prefs.appearance.sortorder">Singer sorting order</system:String>-->
   <system:String x:Key="prefs.appearance.theme">ธีม</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">โหมดกลางคืน</system:String>
   <system:String x:Key="prefs.appearance.theme.light">โหมดกลางวัน</system:String>
@@ -258,6 +280,8 @@ Hold Ctrl to select</system:String>-->
   <system:String x:Key="prefs.playback.lockstarttime.on">ย้ายเคอร์เซอร์กลับไปยังตําแหน่งที่คุณเริ่มเล่น</system:String>
   <system:String x:Key="prefs.playback.test">ทดสอบ</system:String>
   <system:String x:Key="prefs.rendering">กำลังประมวลผล</system:String>
+  <!--<system:String x:Key="prefs.rendering.onnxgpu">GPU</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.onnxrunner">Machine Learning Runner</system:String>-->
   <system:String x:Key="prefs.rendering.phasecomp">การชดเชย Phase</system:String>
   <system:String x:Key="prefs.rendering.prerender">ประมวลผลล่วงหน้า</system:String>
   <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
@@ -276,6 +300,7 @@ Hold Ctrl to select</system:String>-->
   <!--<system:String x:Key="prefs.rendering.threads.numthreads">Maximum Render Threads</system:String>-->
   <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
 
+  <!--<system:String x:Key="progress.loadingsingers">Loading Singers...</system:String>-->
   <system:String x:Key="progress.saved">บันทึกโปรเจกต์ {0} แล้ว</system:String>
   <system:String x:Key="progress.waitingrendering">โปรดรอ กำลังประมวลผล</system:String>
 
@@ -286,6 +311,7 @@ Hold Ctrl to select</system:String>-->
   <!--<system:String x:Key="singers.editoto.regenfrq.regenerating">Regenerating FRQ</system:String>-->
   <system:String x:Key="singers.editoto.reset">คืนค่า Otos</system:String>
   <system:String x:Key="singers.editoto.save">บันทึก Otos</system:String>
+  <!--<system:String x:Key="singers.editoto.searchalias">Search Alias</system:String>-->
   <!--<system:String x:Key="singers.editoto.setvlabelerpath">Download vLabeler (1.0.0-beta1 or higher) from https://github.com/sdercolin/vlabeler and set vLabeler path in Preferences first!</system:String>-->
   <!--<system:String x:Key="singers.errorreport">Generate Singer Error Report</system:String>-->
   <system:String x:Key="singers.location">ตำแหน่ง</system:String>
@@ -315,6 +341,16 @@ Hold Ctrl to select</system:String>-->
   <!--<system:String x:Key="singers.subbanks.toneranges">Tone Ranges</system:String>-->
   <!--<system:String x:Key="singers.visitwebsite">Visit Website</system:String>-->
 
+  <!--<system:String x:Key="singersetup.archivefileencoding">Archive File Encoding</system:String>-->
+  <!--<system:String x:Key="singersetup.archivefileencoding.prompt">Choose an encoding that make file names look right.</system:String>-->
+  <!--<system:String x:Key="singersetup.back">Back</system:String>-->
+  <!--<system:String x:Key="singersetup.install">Install</system:String>-->
+  <!--<system:String x:Key="singersetup.next">Next</system:String>-->
+  <!--<system:String x:Key="singersetup.missinginfo">Please add the following settings to this voicebank's character.yaml.</system:String>-->
+  <!--<system:String x:Key="singersetup.singertype">Singer Type</system:String>-->
+  <!--<system:String x:Key="singersetup.textfileencoding">Text File Encoding</system:String>-->
+  <!--<system:String x:Key="singersetup.textfileencoding.prompt">Choose an encoding that make file contents look right.</system:String>-->
+
   <!--<system:String x:Key="tip.aliasbox">Override Alias</system:String>-->
   <system:String x:Key="tip.exps">
 คลิกปุ่มซ้าย: ตั้งค่าเครื่องหมาย 
@@ -343,10 +379,13 @@ Hold Ctrl to select</system:String>-->
   <system:String x:Key="tip.notes.zoomx">◀ เลื่อนที่นี่เพื่อซูมในแนวนอน ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">เลื่อนที่นี่เพื่อซูมในแนวตั้ง ▶</system:String>
 
+  <!--<system:String x:Key="tracks.duplicate">Duplicate Track</system:String>-->
+  <!--<system:String x:Key="tracks.duplicatesettings">Duplicate Track Settings</system:String>-->
   <system:String x:Key="tracks.more">เพิ่มเติม</system:String>
   <system:String x:Key="tracks.movedown">ย้ายลง</system:String>
   <system:String x:Key="tracks.moveup">ย้ายขึ้น</system:String>
   <system:String x:Key="tracks.remove">ลบออก</system:String>
+  <!--<system:String x:Key="tracks.rename">Rename track</system:String>-->
   <system:String x:Key="tracks.selectrenderer">เลือกตัวประมวลผล</system:String>
   <system:String x:Key="tracks.selectsinger">เลือกนักร้อง</system:String>
 
