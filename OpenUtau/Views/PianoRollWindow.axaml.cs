@@ -869,6 +869,16 @@ namespace OpenUtau.App.Views {
             bool isShift = args.KeyModifiers == KeyModifiers.Shift;
             bool isBoth = args.KeyModifiers == (cmdKey | KeyModifiers.Shift);
 
+            if (PluginMenu.IsSubMenuOpen && isNone) {
+                if (ViewModel.LegacyPluginShortcuts.ContainsKey(args.Key)) {
+                    var plugin = ViewModel.LegacyPluginShortcuts[args.Key];
+                    if (plugin != null && plugin.Command != null) {
+                        plugin.Command.Execute(plugin.CommandParameter);
+                    }
+                }
+                return true;
+            }
+
             switch (args.Key) {
                 #region document keys
                 case Key.Space:
@@ -1133,6 +1143,13 @@ namespace OpenUtau.App.Views {
                     }
                     if (isAlt) {
                         notesVm.PasteSelectedParams(this);
+                        return true;
+                    }
+                    break;
+                case Key.N:
+                    if (isNone && PluginMenu.Parent is MenuItem batch) {
+                        batch.Open();
+                        PluginMenu.Open();
                         return true;
                     }
                     break;

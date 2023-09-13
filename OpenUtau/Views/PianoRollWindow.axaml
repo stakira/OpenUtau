@@ -393,10 +393,10 @@
                     </DataTemplate>
                   </MenuItem.DataTemplates>
                 </MenuItem>
-                <MenuItem Header="{DynamicResource pianoroll.menu.part.legacypluginexp}" ItemsSource="{Binding LegacyPlugins}">
+                <MenuItem Header="{DynamicResource pianoroll.menu.part.legacypluginexp}" ItemsSource="{Binding LegacyPlugins}" Name="PluginMenu">
                   <MenuItem.DataTemplates>
                     <DataTemplate DataType="vm:MenuItemViewModel">
-                      <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}"/>
+                      <MenuItem Header="{Binding Header}" Command="{Binding Command, FallbackValue={x:Null}}" CommandParameter="{Binding CommandParameter}" Height="{Binding Height}"/>
                     </DataTemplate>
                   </MenuItem.DataTemplates>
                 </MenuItem>
