@@ -51,7 +51,7 @@ namespace OpenUtau.App.ViewModels {
     public class TracksViewModel : ViewModelBase, ICmdSubscriber {
         public UProject Project => DocManager.Inst.Project;
         [Reactive] public Rect Bounds { get; set; }
-        public int TickCount => Math.Max(Project.timeAxis.BarBeatToTickPos(32, 0), Project.EndTick);
+        public int TickCount => Math.Max(Project.timeAxis.BarBeatToTickPos(32, 0), Project.EndTick + 23040);
         public int TrackCount => Math.Max(20, Project.tracks.Count + 1);
         [Reactive] public double TickWidth { get; set; }
         public double TrackHeightMin => ViewConstants.TrackHeightMin;
