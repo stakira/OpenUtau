@@ -409,7 +409,7 @@ namespace OpenUtau.Classic {
         public static void WriteOtoSet(OtoSet otoSet, Stream stream, Encoding encoding) {
             using (var writer = new StreamWriter(stream, encoding)) {
                 foreach (var oto in otoSet.Otos) {
-                    if (!oto.IsValid) {
+                    if (!oto.IsValid && (oto.FileTrace != null)) {
                         writer.Write(oto.FileTrace.line);
                         writer.Write('\n');
                         continue;
