@@ -252,11 +252,6 @@ namespace OpenUtau.App.ViewModels {
                     Preferences.Default.RememberVsqx = index;
                     Preferences.Save();
                 });
-            this.WhenAnyValue(vm => vm.DiffsingerSpeedup)
-                .Subscribe(index => {
-                    Preferences.Default.DiffsingerSpeedup = index;
-                    Preferences.Save();
-                });
         }
 
         public void TestAudioOutputDevice() {
