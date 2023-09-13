@@ -14,7 +14,7 @@ namespace OpenUtau.Classic {
         private readonly PathManager PathManager;
 
         public static PluginRunner from(PathManager pathManager, DocManager docManager) {
-            return new PluginRunner(pathManager, ReplaceNoteMethod(docManager), ShowErrorMessageMEthod(docManager));
+            return new PluginRunner(pathManager, ReplaceNoteMethod(docManager), ShowErrorMessageMethod(docManager));
         }
 
         private static Action<ReplaceNoteEventArgs> ReplaceNoteMethod(DocManager docManager) {
@@ -26,7 +26,7 @@ namespace OpenUtau.Classic {
             });
         }
 
-        private static Action<PluginErrorEventArgs> ShowErrorMessageMEthod(DocManager docManager) {
+        private static Action<PluginErrorEventArgs> ShowErrorMessageMethod(DocManager docManager) {
             return new Action<PluginErrorEventArgs>((args) => {
                 docManager.ExecuteCmd(new ErrorMessageNotification(args.Message, args.Exception));
             });
