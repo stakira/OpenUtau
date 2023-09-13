@@ -98,6 +98,8 @@
         </HeaderedContentControl>
         <HeaderedContentControl Classes="groupbox" Header="{DynamicResource prefs.rendering}">
           <StackPanel>
+            <TextBlock Text="{DynamicResource prefs.rendering.defaultrenderer}"/>
+            <ComboBox ItemsSource="{Binding DefaultRendererOptions}" SelectedItem="{Binding DefaultRenderer}"/>
             <Grid>
               <TextBlock Text="{DynamicResource prefs.rendering.prerender}" HorizontalAlignment="Left"/>
               <ToggleSwitch IsChecked="{Binding PreRender}"/>
