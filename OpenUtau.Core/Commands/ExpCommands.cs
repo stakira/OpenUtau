@@ -21,24 +21,23 @@ namespace OpenUtau.Core {
         }
     }
 
-    /*
     public class SetNoteExpressionCommand : ExpCommand {
         public readonly UProject project;
-        public readonly UPhoneme phoneme;
-        public readonly float newValue;
-        public readonly float oldValue;
-        public SetNoteExpressionCommand(UProject project, UNote note, string abbr, float value) {
+        public readonly UTrack track;
+        public readonly float[] newValue;
+        public readonly float[] oldValue;
+        public SetNoteExpressionCommand(UProject project, UTrack track, UVoicePart part, UNote note, string abbr, float[] values) : base(part) {
             this.project = project;
+            this.track = track;
             this.Note = note;
             Key = abbr;
-            newValue = value;
-            oldValue = phoneme.GetExpression(project, abbr).Item1;
+            newValue = values;
+            oldValue = note.GetExpression(project, track, abbr).Select(t => t.Item1).ToArray();
         }
         public override string ToString() => $"Set note expression {Key}";
-        public override void Execute() => Note.SetExpression(project, Key, newValue);
-        public override void Unexecute() => Note.SetExpression(project, Key, oldValue);
+        public override void Execute() => Note.SetExpression(project, track, Key, newValue);
+        public override void Unexecute() => Note.SetExpression(project, track, Key, oldValue);
     }
-    */
 
     public class SetPhonemeExpressionCommand : ExpCommand {
         static readonly HashSet<string> needsPhonemizer = new HashSet<string> {

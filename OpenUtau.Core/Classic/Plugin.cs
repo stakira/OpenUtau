@@ -8,6 +8,7 @@ namespace OpenUtau.Classic {
         public bool AllNotes;
         public bool UseShell;
         private string encoding = "shift_jis";
+        public string Shortcut;
 
         public string Encoding { get => encoding; set => encoding = value; }
 

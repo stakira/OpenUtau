@@ -70,6 +70,7 @@
         <Button.ContextMenu>
           <ContextMenu Name="SingerMenu" PlacementMode="Bottom">
             <MenuItem Header="{DynamicResource singers.visitwebsite}" Click="OnVisitWebsite" IsEnabled="{Binding HasWebsite}"/>
+            <MenuItem Header="{DynamicResource singers.setimage}" Click="OnSetImage"/>
             <MenuItem Header="{DynamicResource singers.setportrait}" Click="OnSetPortrait"/>
             <MenuItem Header="{DynamicResource singers.setencoding}" ItemsSource="{Binding SetEncodingMenuItems}">
               <MenuItem.DataTemplates>
@@ -91,7 +92,7 @@
         </Button.ContextMenu>
       </Button>
       <TextBox Text="{Binding SearchAlias}" Watermark="{DynamicResource singers.editoto.searchalias}" Margin="0"
-               MinWidth="160" HorizontalAlignment="Stretch" Focusable="True" IsVisible="{Binding IsClassic}" />
+               MinWidth="160" HorizontalAlignment="Stretch" Focusable="True" IsVisible="{Binding UseSearchAlias}" />
     </StackPanel>
     <StackPanel Grid.Row="0" Grid.Column="2" Spacing="10" Margin="0" Height="20"
                 Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom">

@@ -94,6 +94,7 @@ namespace OpenUtau.App.ViewModels {
             var args = Environment.GetCommandLineArgs();
             if (args.Length == 2 && File.Exists(args[1])) {
                 Core.Format.Formats.LoadProject(new string[] { args[1] });
+                DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(-1, true));
                 return;
             }
             NewProject();
@@ -120,6 +121,7 @@ namespace OpenUtau.App.ViewModels {
                 return;
             }
             Core.Format.Formats.LoadProject(files);
+            DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(-1, true));
             this.RaisePropertyChanged(nameof(Title));
         }
 

@@ -11,6 +11,7 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using DynamicData;
 using DynamicData.Binding;
+using OpenUtau.App.Views;
 using OpenUtau.Core;
 using OpenUtau.Core.Ustx;
 using OpenUtau.Core.Util;
@@ -695,6 +696,20 @@ namespace OpenUtau.App.ViewModels {
             DocManager.Inst.EndUndoGroup();
         }
 
+        public void MergeSelectedNotes() {
+            if (Part == null || Selection.IsEmpty || Selection.Count <= 1) {
+                return;
+            }
+            var notes = Selection.ToList();
+            notes.Sort((a, b) => a.position.CompareTo(b.position));
+            DocManager.Inst.StartUndoGroup();
+            DocManager.Inst.ExecuteCmd(new ChangeNoteLyricCommand(Part, notes[0], String.Join("", notes.Select(x => x.lyric))));
+            DocManager.Inst.ExecuteCmd(new ResizeNoteCommand(Part, notes[0], notes.Last().End - notes[0].End));
+            notes.RemoveAt(0);
+            DocManager.Inst.ExecuteCmd(new RemoveNoteCommand(Part, notes));
+            DocManager.Inst.EndUndoGroup();
+        }
+
         internal void DeleteSelectedNotes() {
             if (Part == null || Selection.IsEmpty) {
                 return;
@@ -742,6 +757,63 @@ namespace OpenUtau.App.ViewModels {
                     MessageBus.Current.SendMessage(new NotesSelectionEvent(Selection));
 
                     TickOffset = left - Part.position;
+                }
+            }
+        }
+
+        public async void PasteSelectedParams(PianoRollWindow window) {
+            if (Part != null && DocManager.Inst.NotesClipboard != null && DocManager.Inst.NotesClipboard.Count > 0) {
+                var selectedNotes = Selection.ToList();
+                if(selectedNotes.Count == 0) {
+                    return;
+                }
+
+                var dialog = new PasteParamDialog();
+                var vm = new PasteParamViewModel();
+                dialog.DataContext = vm;
+                await dialog.ShowDialog(window);
+
+                if (dialog.Apply) {
+                    DocManager.Inst.StartUndoGroup();
+
+                    int c = 0;
+                    var track = Project.tracks[Part.trackNo];
+                    foreach (var note in selectedNotes) {
+                        var copyNote = DocManager.Inst.NotesClipboard[c];
+
+                        for (int i = 0; i < vm.Params.Count; i++) {
+                            switch (i) {
+                                case 0:
+                                    if (vm.Params[i].IsSelected) {
+                                        DocManager.Inst.ExecuteCmd(new SetPitchPointsCommand(Part, note, copyNote.pitch.Clone()));
+                                    }
+                                    break;
+                                case 1:
+                                    if (vm.Params[i].IsSelected) {
+                                        DocManager.Inst.ExecuteCmd(new VibratoLengthCommand(Part, note, copyNote.vibrato.length));
+                                        DocManager.Inst.ExecuteCmd(new VibratoDepthCommand(Part, note, copyNote.vibrato.depth));
+                                        DocManager.Inst.ExecuteCmd(new VibratoPeriodCommand(Part, note, copyNote.vibrato.period));
+                                        DocManager.Inst.ExecuteCmd(new VibratoFadeInCommand(Part, note, copyNote.vibrato.@in));
+                                        DocManager.Inst.ExecuteCmd(new VibratoFadeOutCommand(Part, note, copyNote.vibrato.@out));
+                                        DocManager.Inst.ExecuteCmd(new VibratoShiftCommand(Part, note, copyNote.vibrato.shift));
+                                        // DocManager.Inst.ExecuteCmd(new VibratoDriftCommand(Part, note, copyNote.vibrato.drift));
+                                    }
+                                    break;
+                                default:
+                                    if (vm.Params[i].IsSelected) {
+                                        float[] values = copyNote.GetExpression(Project, track, vm.Params[i].Abbr).Select(t => t.Item1).ToArray();
+                                        DocManager.Inst.ExecuteCmd(new SetNoteExpressionCommand(Project, track, Part, note, vm.Params[i].Abbr, values));
+                                    }
+                                    break;
+                            }
+                        }
+
+                        c++;
+                        if (c >= DocManager.Inst.NotesClipboard.Count) {
+                            c = 0;
+                        }
+                    }
+                    DocManager.Inst.EndUndoGroup();
                 }
             }
         }
@@ -808,7 +880,7 @@ namespace OpenUtau.App.ViewModels {
         }
 
         bool IsExpSupported(string expKey) {
-            if (Project == null || Part == null || Project.tracks.Count > Part.trackNo) {
+            if (Project == null || Part == null || Project.tracks.Count <= Part.trackNo) {
                 return true;
             }
             var track = Project.tracks[Part.trackNo];

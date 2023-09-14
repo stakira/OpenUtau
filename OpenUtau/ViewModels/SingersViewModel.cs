@@ -25,6 +25,7 @@ namespace OpenUtau.App.ViewModels {
         [Reactive] public string? Info { get; set; }
         [Reactive] public bool HasWebsite { get; set; }
         public bool IsClassic => Singer != null && Singer.SingerType == USingerType.Classic;
+        public bool UseSearchAlias => Singer != null && (Singer.SingerType == USingerType.Classic || Singer.SingerType == USingerType.Enunu);
         public ObservableCollectionExtended<USubbank> Subbanks => subbanks;
         public ObservableCollectionExtended<UOto> Otos => otos;
         public ObservableCollectionExtended<UOto> DisplayedOtos { get; set; } = new ObservableCollectionExtended<UOto>();
@@ -111,6 +112,18 @@ namespace OpenUtau.App.ViewModels {
                 ModifyConfig(Singer, config => config.TextFileEncoding = encoding.WebName);
             } catch (Exception e) {
                 DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to set encoding", e));
+            }
+            Refresh();
+        }
+
+        public void SetImage(string filepath) {
+            if (Singer == null) {
+                return;
+            }
+            try {
+                ModifyConfig(Singer, config => config.Image = filepath);
+            } catch (Exception e) {
+                DocManager.Inst.ExecuteCmd(new ErrorMessageNotification("Failed to set image", e));
             }
             Refresh();
         }

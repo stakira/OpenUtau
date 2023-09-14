@@ -4,10 +4,10 @@ using Xunit;
 using Xunit.Abstractions;
 
 namespace OpenUtau.Plugins {
-    public class EnDeltaTest : PhonemizerTestBase {
-        public EnDeltaTest(ITestOutputHelper output) : base(output) { }
+    public class EnXSampaTest : PhonemizerTestBase {
+        public EnXSampaTest(ITestOutputHelper output) : base(output) { }
         protected override Phonemizer CreatePhonemizer() {
-            return new ENDeltaPhonemizer();
+            return new EnXSampaPhonemizer();
         }
 
         [Theory]
@@ -18,7 +18,7 @@ namespace OpenUtau.Plugins {
             new string[] { "", "", },
             new string[] { "- maI", "aI t", "tE", "E st-" })]
         public void BasicPhonemizingTest(string singerName, string[] lyrics, string[] alts, string[] tones, string[] colors, string[] aliases) {
-            RunPhonemizeTest(singerName, lyrics, alts,tones, colors, aliases);
+            RunPhonemizeTest(singerName, lyrics, alts, tones, colors, aliases);
         }
     }
 }

@@ -75,7 +75,7 @@ namespace OpenUtau.Core.Ustx {
             foreach (var note in notes) {
                 note.AfterLoad(project, track, this);
             }
-            Duration = GetMinDurTick(project);
+            Duration = Math.Max(Duration, GetMinDurTick(project));
             foreach (var curve in curves) {
                 if (project.expressions.TryGetValue(curve.abbr, out var descriptor)) {
                     curve.descriptor = descriptor;

@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Threading;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Media;
@@ -77,6 +76,7 @@ namespace OpenUtau.App.ViewModels {
                         };
                         DocManager.Inst.ExecuteCmd(new TrackChangeRenderSettingCommand(DocManager.Inst.Project, track, settings));
                     }
+                    DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(track.TrackNo, true));
                     DocManager.Inst.EndUndoGroup();
                     if (!string.IsNullOrEmpty(singer?.Id) && singer.Found) {
                         Preferences.Default.RecentSingers.Remove(singer.Id);
@@ -438,6 +438,12 @@ namespace OpenUtau.App.ViewModels {
                 TrackColor = track.TrackColor
             }));
             DocManager.Inst.EndUndoGroup();
+        }
+
+        public void VoiceColorRemapping() {
+            if (track.Singer != null && track.Singer.Found && track.VoiceColorExp != null) {
+                DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(track.TrackNo, false));
+            }
         }
     }
 }
