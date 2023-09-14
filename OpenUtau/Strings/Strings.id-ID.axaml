@@ -50,6 +50,7 @@
   <system:String x:Key="exps.caption">Ekspresi</system:String>
   <system:String x:Key="exps.defaultvalue">Bawaan</system:String>
   <!--<system:String x:Key="exps.flag">Resampler Flag</system:String>-->
+  <!--<system:String x:Key="exps.getsuggestions">Add all expressions suggested by renderers</system:String>-->
   <!--<system:String x:Key="exps.isflag">Is Resampler Flag</system:String>-->
   <system:String x:Key="exps.maxvalue">Maksimal</system:String>
   <system:String x:Key="exps.minvalue">Minimal</system:String>
@@ -69,7 +70,19 @@
   <system:String x:Key="lyrics.reset">Setel Ulang</system:String>
   <system:String x:Key="lyrics.selectnotes">Pilih beberapa not terlebih dahulu!</system:String>
   <system:String x:Key="lyrics.separators">Pemisah</system:String>
-
+  
+  <!--<system:String x:Key="lyricsreplace.after">After :</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.before">Before :</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.preset.rmvalphabet">Remove alphabet</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.preset.rmvnonhiragana">Remove non-hiragana</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.preset.rmvphonetichint">Remove phonetic hint</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.preset.rmvspace">Remove spaces and earlier</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.preset.rmvtone">Remove tone suffix</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.presets">Presets</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.preview">Preview</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.regex">Regular expressions can be used</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.replace">General lyrics replacement</system:String>-->
+  
   <system:String x:Key="menu.edit">Sunting</system:String>
   <system:String x:Key="menu.edit.copy">Salin</system:String>
   <system:String x:Key="menu.edit.cut">Potong</system:String>
@@ -173,17 +186,20 @@ Peringatan: opsi ini menghapus prasetel khusus.</system:String>
   <system:String x:Key="pianoroll.menu.lyrics">Lirik</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Ganti "-" dengan "+"</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">Sunting Lirik</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.hanzitopinyin">Hanzi ke Pinyin</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana ke Romaji</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">VCV Jepang ke CV</system:String>
+  <!--<system:String x:Key="pianoroll.menu.lyrics.movesuffixtovoicecolor">Move Suffix to VoiceColor</system:String>-->
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Hapus Akhiran Huruf</system:String>
+  <!--<system:String x:Key="pianoroll.menu.lyrics.removephonetichint">Remove Phonetic Hint</system:String>-->
   <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">Hapus Akhiran Nada</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Romaji ke Hiragana</system:String>
   <system:String x:Key="pianoroll.menu.notedefaults">Not Bawaan</system:String>
   <system:String x:Key="pianoroll.menu.notes">Not</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">Tambahkan bagian akhir "-"</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">Tambahkan bagian akhir "R"</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notes.bakepitch">Convert PITD to pitch control points</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.clear.vibratos">Setel Ulang Vibrato</system:String>
+  <system:String x:Key="pianoroll.menu.notes.hanzitopinyin">Hanzi ke Pinyin</system:String>
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Muat Pitch yang Dirender</system:String>
   <system:String x:Key="pianoroll.menu.notes.octavedown">Turunkan satu oktaf</system:String>
   <system:String x:Key="pianoroll.menu.notes.octaveup">Naikkan satu oktaf</system:String>
@@ -196,6 +212,7 @@ Peringatan: opsi ini menghapus prasetel khusus.</system:String>
   <system:String x:Key="pianoroll.menu.part">Bagian</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">Plugin Lama (Eksperimental)</system:String>
   <system:String x:Key="pianoroll.toggle.finalpitch">Tampilkan Pitch Akhir Untuk Dirender (R)</system:String>
+  <!--<system:String x:Key="pianoroll.toggle.noteparams">View Note Parameters (\)</system:String>-->
   <system:String x:Key="pianoroll.toggle.phoneme">Perlihatkan Fonem (O)</system:String>
   <system:String x:Key="pianoroll.toggle.pitch">Perlihatkan Pitch Bend(I)</system:String>
   <system:String x:Key="pianoroll.toggle.snap">Alihkan Snap (P)</system:String>
@@ -206,15 +223,19 @@ Peringatan: opsi ini menghapus prasetel khusus.</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">Perlihatkan Vibrato (U)</system:String>
   <system:String x:Key="pianoroll.toggle.waveform">Perlihatkan Waveform (W)</system:String>
   <system:String x:Key="pianoroll.tool.drawpitch">Alat Penggambar Pitch (4)</system:String>
+  <!--Left click to draw
+  Right click to reset
+  Hold Ctrl to select
+  Hold Alt to smoothen</system:String>-->
   <system:String x:Key="pianoroll.tool.eraser">Alat Penghapus (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">Alat Pisau (5)</system:String>
   <system:String x:Key="pianoroll.tool.penplus">Alat Pena Plus (Ctrl + 2)
     Klik kiri untuk menggambar
     Klik kanan untuk menghapus
-Hold Ctrl to select</system:String>
+    Hold Ctrl to select</system:String>
   <system:String x:Key="pianoroll.tool.penv2">Alat Pena (2)
     Klik kiri untuk menggambar
-Hold Ctrl to select</system:String>
+    Hold Ctrl to select</system:String>
   <system:String x:Key="pianoroll.tool.selectionv2">Alat Seleksi (1)</system:String>
 
   <system:String x:Key="prefs.advanced">Lanjutan</system:String>
@@ -224,11 +245,12 @@ Hold Ctrl to select</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging">Pencatatan Resampler</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging.warn">Menyimpan output resampler dalam file log. Opsi ini akan memperlambat UI dan rendering.</system:String>
   <system:String x:Key="prefs.advanced.stable">Stabil</system:String>
-  <system:String x:Key="prefs.advanced.vlabelerpath">Jalur Vlabeler</system:String>
+  <system:String x:Key="prefs.advanced.vlabelerpath">Jalur vLabeler</system:String>
   <system:String x:Key="prefs.appearance">Penampilan</system:String>
   <system:String x:Key="prefs.appearance.lang">Bahasa</system:String>
   <system:String x:Key="prefs.appearance.showghostnotes">Tampilkan not trek lain di piano roll</system:String>
   <system:String x:Key="prefs.appearance.showportrait">Tampilkan foto potret di piano roll</system:String>
+  <!--<system:String x:Key="prefs.appearance.sortorder">Singer sorting order</system:String>-->
   <system:String x:Key="prefs.appearance.theme">Tema</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">Gelap</system:String>
   <system:String x:Key="prefs.appearance.theme.light">Terang</system:String>
@@ -258,14 +280,16 @@ Hold Ctrl to select</system:String>
   <system:String x:Key="prefs.playback.lockstarttime.on">Pindahkan kursor kembali ke tempat Anda mulai Memutar</system:String>
   <system:String x:Key="prefs.playback.test">Uji</system:String>
   <system:String x:Key="prefs.rendering">Merender</system:String>
+  <!--<system:String x:Key="prefs.rendering.onnxgpu">GPU</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.onnxrunner">Machine Learning Runner</system:String>-->
   <system:String x:Key="prefs.rendering.phasecomp">Kompensasi Fase</system:String>
   <system:String x:Key="prefs.rendering.prerender">Pra-render</system:String>
   <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
   <system:String x:Key="prefs.rendering.resampler.morewarn">
-    Peringatan: moresampler tidak sepenuhnya didukung. Ini mungkin lambat dan menyebabkan penggunaan CPU yang tinggi. Jika Anda bersikeras, silakan:
-    1. Setel "resampler-compatibility" ke "on" di moreconfig.txt.
-    2. Atur "auto-update-llsm-mrq" ke "off" di moreconfig.txt.
-    3. Tunggu sampai moresampler untuk menghasilkan file llsm yang hilang.
+Peringatan: moresampler tidak sepenuhnya didukung. Ini mungkin lambat dan menyebabkan penggunaan CPU yang tinggi. Jika Anda bersikeras, silakan:
+1. Setel "resampler-compatibility" ke "on" di moreconfig.txt.
+2. Atur "auto-update-llsm-mrq" ke "off" di moreconfig.txt.
+3. Tunggu sampai moresampler untuk menghasilkan file llsm yang hilang.
   </system:String>
   <system:String x:Key="prefs.rendering.resampler.note">
     Catatan: untuk menggunakan resampler eksternal, silakan tambahkan berkas resampler DLL atau EXE di folder Resamplers di jalur instal OpenUtau dan pilih di Preferensi.
@@ -276,6 +300,7 @@ Hold Ctrl to select</system:String>
   <!--<system:String x:Key="prefs.rendering.threads.numthreads">Maximum Render Threads</system:String>-->
   <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
 
+  <!--<system:String x:Key="progress.loadingsingers">Loading Singers...</system:String>-->
   <system:String x:Key="progress.saved">Proyek tersimpan. {0}</system:String>
   <system:String x:Key="progress.waitingrendering">Menunggu Dirender</system:String>
 
@@ -286,6 +311,7 @@ Hold Ctrl to select</system:String>
   <!--<system:String x:Key="singers.editoto.regenfrq.regenerating">Regenerating FRQ</system:String>-->
   <system:String x:Key="singers.editoto.reset">Setel Ulang Otos</system:String>
   <system:String x:Key="singers.editoto.save">Simpan Otos</system:String>
+  <!--<system:String x:Key="singers.editoto.searchalias">Search Alias</system:String>-->
   <system:String x:Key="singers.editoto.setvlabelerpath">Unduh vLabeler (1.0.0-beta1 atau lebih tinggi) dari https://github.com/sdercolin/vlabeler dan atur jalur vLabeler di Preferensi terlebih dahulu!</system:String>
   <system:String x:Key="singers.errorreport">Hasilkan Laporan Kesalahan Penyanyi</system:String>
   <system:String x:Key="singers.location">Lokasi</system:String>
@@ -315,6 +341,16 @@ Hold Ctrl to select</system:String>
   <system:String x:Key="singers.subbanks.toneranges">Rentang Nada</system:String>
   <system:String x:Key="singers.visitwebsite">Visit Situs Web</system:String>
 
+  <!--<system:String x:Key="singersetup.archivefileencoding">Archive File Encoding</system:String>-->
+  <!--<system:String x:Key="singersetup.archivefileencoding.prompt">Choose an encoding that make file names look right.</system:String>-->
+  <!--<system:String x:Key="singersetup.back">Back</system:String>-->
+  <!--<system:String x:Key="singersetup.install">Install</system:String>-->
+  <!--<system:String x:Key="singersetup.next">Next</system:String>-->
+  <!--<system:String x:Key="singersetup.missinginfo">Please add the following settings to this voicebank's character.yaml.</system:String>-->
+  <!--<system:String x:Key="singersetup.singertype">Singer Type</system:String>-->
+  <!--<system:String x:Key="singersetup.textfileencoding">Text File Encoding</system:String>-->
+  <!--<system:String x:Key="singersetup.textfileencoding.prompt">Choose an encoding that make file contents look right.</system:String>-->
+
   <system:String x:Key="tip.aliasbox">Timpa Alias</system:String>
   <system:String x:Key="tip.exps">
 Tombol Kiri Tarik: Setel ekspresi
@@ -343,10 +379,13 @@ Umum
   <system:String x:Key="tip.notes.zoomx">◀ Gulir ke sini untuk memperbesar secara horizontal ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">Gulir ke sini untuk memperbesar secara vertikal ▶</system:String>
 
+  <!--<system:String x:Key="tracks.duplicate">Duplicate Track</system:String>-->
+  <!--<system:String x:Key="tracks.duplicatesettings">Duplicate Track Settings</system:String>-->
   <system:String x:Key="tracks.more">Lainnya</system:String>
   <system:String x:Key="tracks.movedown">Turunkan</system:String>
   <system:String x:Key="tracks.moveup">Naikkan</system:String>
   <system:String x:Key="tracks.remove">Hapus</system:String>
+  <!--<system:String x:Key="tracks.rename">Rename track</system:String>-->
   <system:String x:Key="tracks.selectrenderer">Pilih Perender</system:String>
   <system:String x:Key="tracks.selectsinger">Pilih Penyanyi</system:String>
 

@@ -73,7 +73,11 @@ namespace OpenUtau.Core.Ustx {
             Prefix = subbank?.Prefix;
             Suffix = subbank?.Suffix;
             ToneSet = subbank?.toneSet;
-            File = Path.Combine(set.Location, oto.Wav);
+            if (!string.IsNullOrEmpty(oto.Wav)) {
+                File = Path.Combine(set.Location, oto.Wav);
+            } else {
+                File = string.Empty;
+            }
             DisplayFile = oto?.Wav;
             Offset = oto.Offset;
             Consonant = oto.Consonant;
@@ -112,7 +116,11 @@ namespace OpenUtau.Core.Ustx {
 
         public UOtoSet(OtoSet otoSet, string singersPath) {
             this.otoSet = otoSet;
-            Location = Path.Combine(singersPath, Path.GetDirectoryName(otoSet.File));
+            if (!string.IsNullOrEmpty(otoSet.File)) {
+                Location = Path.Combine(singersPath, Path.GetDirectoryName(otoSet.File));
+            } else {
+                Location = string.Empty;
+            }
         }
 
         public override string ToString() => Name;

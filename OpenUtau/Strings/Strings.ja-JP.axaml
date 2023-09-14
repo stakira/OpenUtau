@@ -4,6 +4,7 @@
 
   <system:String x:Key="context.note.copy">音符をコピー</system:String>
   <system:String x:Key="context.note.delete">音符を削除</system:String>
+  <system:String x:Key="context.note.pasteparameters">パラメータを選択して貼り付け</system:String>
   <system:String x:Key="context.part.delete">パートを削除</system:String>
   <system:String x:Key="context.part.rename">パートの名前を変更</system:String>
   <system:String x:Key="context.part.replaceaudio">オーディオファイルを変更</system:String>
@@ -31,6 +32,8 @@
   <system:String x:Key="dialogs.exitsave.message">保存されていない変更があります。保存しますか？</system:String>
   <system:String x:Key="dialogs.export.caption">エクスポート</system:String>
   <system:String x:Key="dialogs.export.savefirst">プロジェクトを保存してください。</system:String>
+  <system:String x:Key="dialogs.installdll.caption">Phonemizerのインストール</system:String>
+  <system:String x:Key="dialogs.installdll.message">インストールします : </system:String>
   <system:String x:Key="dialogs.messagebox.cancel">キャンセル</system:String>
   <system:String x:Key="dialogs.messagebox.no">いいえ</system:String>
   <system:String x:Key="dialogs.messagebox.ok">OK</system:String>
@@ -70,6 +73,7 @@
   <system:String x:Key="lyrics.reset">リセット</system:String>
   <system:String x:Key="lyrics.selectnotes">音符を選択してください！</system:String>
   <system:String x:Key="lyrics.separators">区切り文字</system:String>
+  
   <system:String x:Key="lyricsreplace.after">置換後 :</system:String>
   <system:String x:Key="lyricsreplace.before">置換前 :</system:String>
   <system:String x:Key="lyricsreplace.presets">プリセット</system:String>
@@ -152,8 +156,8 @@
   <system:String x:Key="notedefaults.reset.tooltip">すべての値をリセットします。
 警告: このオプションを実行すると、カスタムプリセットも削除されます。</system:String>
   <system:String x:Key="notedefaults.vibrato">ビブラート</system:String>
-  <system:String x:Key="notedefaults.vibrato.autominlength">最小値</system:String>
-  <system:String x:Key="notedefaults.vibrato.autotoggle">最小値による自動ビブラート</system:String>
+  <system:String x:Key="notedefaults.vibrato.autominlength">最短の音符長</system:String>
+  <system:String x:Key="notedefaults.vibrato.autotoggle">長い音符に自動でビブラートをかける</system:String>
   <system:String x:Key="notedefaults.vibrato.depth">深さ</system:String>
   <system:String x:Key="notedefaults.vibrato.in">フェードイン</system:String>
   <system:String x:Key="notedefaults.vibrato.length">長さ</system:String>
@@ -161,6 +165,12 @@
   <system:String x:Key="notedefaults.vibrato.period">周期</system:String>
   <system:String x:Key="notedefaults.vibrato.shift">位相</system:String>
 
+  <system:String x:Key="noteproperty.apply">適用</system:String>
+  <system:String x:Key="noteproperty.cancel">キャンセル</system:String>
+  <system:String x:Key="noteproperty.set">セット</system:String>
+  <system:String x:Key="noteproperty.setlongnote">長い音符のみセットする</system:String>
+  <system:String x:Key="noteproperty.vibratoenable">オン</system:String>
+  
   <system:String x:Key="oto.alias">エイリアス</system:String>
   <!--<system:String x:Key="oto.color">Color</system:String>-->
   <system:String x:Key="oto.consonant">子音部</system:String>
@@ -182,10 +192,10 @@
   <system:String x:Key="phoneticassistant.caption">音素変換アシスタント</system:String>
   <system:String x:Key="phoneticassistant.copy">コピー</system:String>
 
+  <system:String x:Key="pianoroll.menu.batch">一括編集</system:String>
   <system:String x:Key="pianoroll.menu.lyrics">歌詞</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">"-" を "+" に置き換え</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">歌詞を編集</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.hanzitopinyin">漢字をピンインへ</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">ひらがな→ローマ字</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">連続音→単独音（日本語）</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">文字のSuffixを削除</system:String>
@@ -194,12 +204,14 @@
   <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">音程のSuffixを削除</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">ローマ字→ひらがな</system:String>
   <system:String x:Key="pianoroll.menu.notedefaults">デフォルト値を設定</system:String>
+  <system:String x:Key="pianoroll.menu.noteproperty">音符のプロパティ</system:String>
   <system:String x:Key="pianoroll.menu.notes">音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">末尾に"-"を追加</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">末尾に"R"を追加</system:String>
   <system:String x:Key="pianoroll.menu.notes.bakepitch">ピッチ曲線（PITD）をピッチ点に変換</system:String>
   <system:String x:Key="pianoroll.menu.notes.clear.vibratos">ビブラートを削除</system:String>
   <system:String x:Key="pianoroll.menu.notes.hanzitopinyin">漢字をピンインへ</system:String>
+  <system:String x:Key="pianoroll.menu.notes.lengthencrossfade">クロスフェードを長くする</system:String>
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">レンダリング済みピッチの読み込み</system:String>
   <system:String x:Key="pianoroll.menu.notes.octavedown">1オクターブ下げる</system:String>
   <system:String x:Key="pianoroll.menu.notes.octaveup">1オクターブ上げる</system:String>
@@ -211,7 +223,9 @@
   <system:String x:Key="pianoroll.menu.notes.reset.vibratos">ビブラートをリセット</system:String>
   <system:String x:Key="pianoroll.menu.part">パート</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">従来のプラグイン (試験中)</system:String>
+  <system:String x:Key="pianoroll.menu.part.singer">シンガーと原音設定</system:String>
   <system:String x:Key="pianoroll.toggle.finalpitch">最終的なピッチを表示 (R)</system:String>
+  <system:String x:Key="pianoroll.toggle.noteparams">音符のパラメータを表示 (\)</system:String>
   <system:String x:Key="pianoroll.toggle.phoneme">音素を表示 (O)</system:String>
   <system:String x:Key="pianoroll.toggle.pitch">ピッチ曲線を表示 (I)</system:String>
   <system:String x:Key="pianoroll.toggle.snap">スナップを有効化 (P)</system:String>
@@ -224,7 +238,8 @@
   <system:String x:Key="pianoroll.tool.drawpitch">ピッチ描画ツール (4)
     左クリックで描画
     右クリックでリセット
-    Ctrl長押しで線をなめらかにする</system:String>
+    Ctrl長押しで選択
+    Alt長押しで線をなめらかにする</system:String>
   <system:String x:Key="pianoroll.tool.eraser">消しゴムツール (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">ナイフツール (5)</system:String>
   <system:String x:Key="pianoroll.tool.penplus">ペン+ツール (Ctrl + 2)
@@ -252,6 +267,7 @@
   <system:String x:Key="prefs.appearance.theme">テーマ</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">ダーク</system:String>
   <system:String x:Key="prefs.appearance.theme.light">ライト</system:String>
+  <system:String x:Key="prefs.appearance.trackcolor">UIにトラックカラーを使用する</system:String>
   <system:String x:Key="prefs.caption">環境設定</system:String>
   <system:String x:Key="prefs.note.restart">Note: この設定を変更した後は、OpenUtauを再起動してください。</system:String>
   <system:String x:Key="prefs.off">オフ</system:String>
@@ -339,6 +355,16 @@
   <system:String x:Key="singers.subbanks.toneranges">音域</system:String>
   <system:String x:Key="singers.visitwebsite">ウェブサイトへ</system:String>
 
+  <!--<system:String x:Key="singersetup.archivefileencoding">Archive File Encoding</system:String>-->
+  <!--<system:String x:Key="singersetup.archivefileencoding.prompt">Choose an encoding that make file names look right.</system:String>-->
+  <!--<system:String x:Key="singersetup.back">Back</system:String>-->
+  <!--<system:String x:Key="singersetup.install">Install</system:String>-->
+  <!--<system:String x:Key="singersetup.next">Next</system:String>-->
+  <!--<system:String x:Key="singersetup.missinginfo">Please add the following settings to this voicebank's character.yaml.</system:String>-->
+  <!--<system:String x:Key="singersetup.singertype">Singer Type</system:String>-->
+  <!--<system:String x:Key="singersetup.textfileencoding">Text File Encoding</system:String>-->
+  <!--<system:String x:Key="singersetup.textfileencoding.prompt">Choose an encoding that make file contents look right.</system:String>-->
+  
   <!--<system:String x:Key="tip.aliasbox">Override Alias</system:String>-->
   <system:String x:Key="tip.exps">
 左クリック: 表情を設定
@@ -372,10 +398,18 @@
   <system:String x:Key="tracks.more">さらに表示</system:String>
   <system:String x:Key="tracks.movedown">下へ</system:String>
   <system:String x:Key="tracks.moveup">上へ</system:String>
+  <system:String x:Key="tracks.mute">ミュート</system:String>
+  <system:String x:Key="tracks.mute.allothers">このトラック以外をミュート</system:String>
+  <system:String x:Key="tracks.mute.only">このトラックだけミュート</system:String>
+  <system:String x:Key="tracks.mute.unmuteall">全トラックのミュートを解除</system:String>
   <system:String x:Key="tracks.remove">削除</system:String>
   <system:String x:Key="tracks.rename">トラックの名前を変更</system:String>
   <system:String x:Key="tracks.selectrenderer">レンダラーを選択</system:String>
   <system:String x:Key="tracks.selectsinger">シンガーを選択</system:String>
+  <system:String x:Key="tracks.solo.add">ソロ (他トラックのソロを解除しない)</system:String>
+  <system:String x:Key="tracks.solo.only">ソロ (他トラックのソロを解除)</system:String>
+  <system:String x:Key="tracks.solo.unsoloall">全トラックのソロを解除</system:String>
+  <system:String x:Key="tracks.trackcolor">トラックカラーを変更</system:String>
 
   <FontFamily x:Key="ui.fontfamily">Meiryo UI,Hiragino Sans,Segoe UI,San Francisco,Helvetica Neue</FontFamily>
   <!--<FontFamily x:Key="ui.textbox.fontfamily">Microsoft YaHei,Simsun,苹方-简,宋体-简</FontFamily>-->

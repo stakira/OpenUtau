@@ -12,6 +12,26 @@
     <Style Selector="ToggleButton">
       <Setter Property="Background" Value="Transparent"/>
     </Style>
+    <Style Selector="Slider.fader">
+      <Setter Property="Foreground" Value="{Binding TrackColor.AccentColor}"/>
+      
+      <Style Selector="^:pointerover">
+        <!--<Style Selector="^ /template/ Thumb">
+          <Setter Property="Background" Value="{Binding TrackColor.AccentColorLight}" />
+        </Style>-->
+        <Style Selector="^ /template/ RepeatButton#PART_DecreaseButton">
+          <Setter Property="Background" Value="{Binding TrackColor.AccentColorLight}" />
+        </Style>
+      </Style>
+      <Style Selector="^:pressed">
+        <!--<Style Selector="^ /template/ Thumb">
+          <Setter Property="Background" Value="{Binding TrackColor.AccentColorDark}" />
+        </Style>-->
+        <Style Selector="^ /template/ RepeatButton#PART_DecreaseButton">
+          <Setter Property="Background" Value="{Binding TrackColor.AccentColorDark}" />
+        </Style>
+      </Style>
+    </Style>
   </UserControl.Styles>
   <Border Margin="1,1,1,1" BorderThickness="1" BorderBrush="{DynamicResource NeutralAccentBrushSemi}" CornerRadius="2">
     <Grid Background="Transparent" RowDefinitions="20,20,20,20,20,*" ColumnDefinitions="Auto,1,*,20" VerticalAlignment="Top" ClipToBounds="True">
@@ -20,7 +40,7 @@
                 BorderBrush="{DynamicResource NeutralAccentBrushSemi}" ClipToBounds="True">
           <Image Source="{Binding Avatar}" Stretch="UniformToFill" VerticalAlignment="Top" ToolTip.Tip="{Binding Singer}"/>
         </Border>
-        <Border Background="{DynamicResource NeutralAccentBrushSemi}" Height="16" Width="22" CornerRadius="1,0,2,0"
+        <Border Background="{Binding TrackAccentColor}" Height="16" Width="22" CornerRadius="1,0,2,0"
                 HorizontalAlignment="Left" VerticalAlignment="Top">
           <TextBlock TextAlignment="Center" FontWeight="Bold"
                      Text="{Binding TrackNo}" Foreground="White" VerticalAlignment="Center"/>
@@ -82,13 +102,28 @@
       </Button>
       <ToggleButton Grid.Row="1" Grid.Column="3" Margin="1" Padding="0" Height="18"
                     HorizontalAlignment="Stretch"
-                    IsChecked="{Binding Mute}">
+                    IsChecked="{Binding Mute, Mode=OneWay}" Command="{Binding ToggleMute}">
         <TextBlock Text="M" TextAlignment="Center"/>
+        <ToggleButton.ContextMenu>
+          <ContextMenu>
+            <MenuItem Classes="context" Header="{StaticResource tracks.mute}" Command="{Binding ToggleMute}"/>
+            <MenuItem Classes="context" Header="{StaticResource tracks.mute.only}" Command="{Binding MuteOnly}"/>
+            <MenuItem Classes="context" Header="{StaticResource tracks.mute.allothers}" Command="{Binding MuteAllOthers}"/>
+            <MenuItem Classes="context" Header="{StaticResource tracks.mute.unmuteall}" Command="{Binding UnmuteAll}"/>
+          </ContextMenu>
+        </ToggleButton.ContextMenu>
       </ToggleButton>
       <ToggleButton Grid.Row="2" Grid.Column="3" Margin="1" Padding="0" Height="18"
                     HorizontalAlignment="Stretch"
                     IsChecked="{Binding Solo, Mode=OneWay}" Command="{Binding ToggleSolo}">
         <TextBlock Text="S" TextAlignment="Center"/>
+        <ToggleButton.ContextMenu>
+          <ContextMenu>
+            <MenuItem Classes="context" Header="{StaticResource tracks.solo.only}" Command="{Binding ToggleSolo}"/>
+            <MenuItem Classes="context" Header="{StaticResource tracks.solo.add}" Command="{Binding SoloAdditionally}"/>
+            <MenuItem Classes="context" Header="{StaticResource tracks.solo.unsoloall}" Command="{Binding UnsoloAll}"/>
+          </ContextMenu>
+        </ToggleButton.ContextMenu>
       </ToggleButton>
       <Button Grid.Row="3" Grid.Column="3" Margin="1" Padding="0" Height="18" Background="Transparent"
                     HorizontalAlignment="Stretch" Click="TrackSettingsButtonClicked">
@@ -103,28 +138,38 @@
           </Path.RenderTransform>
         </Path>
       </Button>
-      <Grid Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2" Height="20">
-        <Slider Margin="1,0,0,0" Width="102" HorizontalAlignment="Left" Classes="fader" Minimum="-24" Maximum="12" Value="{Binding Volume}" 
-                PointerPressed="VolumeFaderPointerPressed"
-                ContextRequested="VolumeFaderContextRequested"/>
-        <TextBlock Margin="106,3,0,0" Width="36" HorizontalAlignment="Left" FontSize="9" FontFamily="monospace" >
+      <Grid Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2">
+        <Slider Name="VolumeSlider" Margin="1,0,0,0" Width="102" HorizontalAlignment="Left" Classes="fader" Minimum="-24" Maximum="12" Value="{Binding Volume}"
+                PointerPressed="VolumeFaderPointerPressed" ValueChanged="VolumeOrPanSliderValueChanged"
+                ContextRequested="VolumeFaderContextRequested" IsEnabled="{Binding !Muted}"/>
+        <TextBlock Margin="106,3,0,0" Width="24" HorizontalAlignment="Left" Background="Transparent"
+                   TextAlignment="Center" FontSize="9" FontFamily="monospace" PointerPressed="VolumePointerPressed">
           <TextBlock.Text>
             <MultiBinding StringFormat="{}{0:+#00.0;-#00.0}">
               <Binding Path="Volume"/>
             </MultiBinding>
           </TextBlock.Text>
         </TextBlock>
-        <Slider Margin="134,0,0,0" Width="36" HorizontalAlignment="Left"
+        <TextBox Name="VolumeTextBox" Margin="106,3,0,0" Width="28" MinWidth="28" Height="16" MinHeight="16"
+                 HorizontalAlignment="Left" BorderThickness="0" Padding="2,0" IsVisible="False" IsEnabled="False"
+                 TextAlignment="Right" FontSize="9" FontFamily="monospace"
+                 KeyDown="VolumeOrPanTextBoxKeyDown" LostFocus="VolumeOrPanTextBoxLostFocus"/>
+        <Slider Name="PanSlider" Margin="134,0,0,0" Width="36" HorizontalAlignment="Left"
                 Classes="fader" Minimum="-100" Maximum="100" Value="{Binding Pan}"
-                PointerPressed="PanFaderPointerPressed"
-                ContextRequested="PanFaderContextRequested"/>
-        <TextBlock Margin="0,3,4,0" HorizontalAlignment="Right" FontSize="9" FontFamily="monospace" IsHitTestVisible="False">
+                PointerPressed="PanFaderPointerPressed" ValueChanged="VolumeOrPanSliderValueChanged"
+                ContextRequested="PanFaderContextRequested" IsEnabled="{Binding !Muted}"/>
+        <TextBlock Margin="0,3,4,0" Width="20" HorizontalAlignment="Right" Background="Transparent"
+                   TextAlignment="Right" FontSize="9" FontFamily="monospace" PointerPressed="PanPointerPressed">
           <TextBlock.Text>
             <MultiBinding StringFormat="{}{0:00R;00L;C}">
               <Binding Path="Pan"/>
             </MultiBinding>
           </TextBlock.Text>
         </TextBlock>
+        <TextBox Name="PanTextBox" Margin="0,3,2,0" Width="24" MinWidth="24" Height="16" MinHeight="16"
+                 HorizontalAlignment="Right" BorderThickness="0" Padding="2,0" IsVisible="False" IsEnabled="False"
+                 TextAlignment="Right" FontSize="9" FontFamily="monospace"
+                 KeyDown="VolumeOrPanTextBoxKeyDown" LostFocus="VolumeOrPanTextBoxLostFocus"/>
       </Grid>
       <Grid.ContextMenu>
         <ContextMenu>
@@ -132,6 +177,7 @@
           <MenuItem Classes="context" Header="{StaticResource tracks.moveup}" Command="{Binding MoveUp}"/>
           <MenuItem Classes="context" Header="{StaticResource tracks.movedown}" Command="{Binding MoveDown}"/>
           <MenuItem Classes="context" Header="{StaticResource tracks.rename}" Command="{Binding Rename}"/>
+          <MenuItem Classes="context" Header="{StaticResource tracks.trackcolor}" Command="{Binding SelectTrackColor}"/>
           <MenuItem Classes="context" Header="{StaticResource tracks.duplicate}" Command="{Binding Duplicate}"/>
           <MenuItem Classes="context" Header="{StaticResource tracks.duplicatesettings}" Command="{Binding DuplicateSettings}"/>
         </ContextMenu>

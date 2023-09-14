@@ -50,6 +50,7 @@
   <system:String x:Key="exps.caption">Expressões</system:String>
   <system:String x:Key="exps.defaultvalue">Padrão</system:String>
   <system:String x:Key="exps.flag">Flag</system:String>
+  <!--<system:String x:Key="exps.getsuggestions">Add all expressions suggested by renderers</system:String>-->
   <system:String x:Key="exps.isflag">É uma Flag</system:String>
   <!--<system:String x:Key="exps.maxvalue">Max</system:String>-->
   <!--<system:String x:Key="exps.minvalue">Min</system:String>-->
@@ -69,6 +70,18 @@
   <!--<system:String x:Key="lyrics.reset">Reset</system:String>-->
   <system:String x:Key="lyrics.selectnotes">Selecione as notas primeiro!</system:String>
   <system:String x:Key="lyrics.separators">Separadores</system:String>
+  
+  <!--<system:String x:Key="lyricsreplace.after">After :</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.before">Before :</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.preset.rmvalphabet">Remove alphabet</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.preset.rmvnonhiragana">Remove non-hiragana</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.preset.rmvphonetichint">Remove phonetic hint</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.preset.rmvspace">Remove spaces and earlier</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.preset.rmvtone">Remove tone suffix</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.presets">Presets</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.preview">Preview</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.regex">Regular expressions can be used</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.replace">General lyrics replacement</system:String>-->
 
   <system:String x:Key="menu.edit">Editar</system:String>
   <system:String x:Key="menu.edit.copy">Copiar</system:String>
@@ -173,17 +186,20 @@ Aviso: esta opção remove predefinições personalizadas.</system:String>
   <system:String x:Key="pianoroll.menu.lyrics">Lírica</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Trocar "-" por "+"</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">Editar Lírica</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.hanzitopinyin">Hanzi para Pinyin</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana para Romaji</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">(Japonês) VCV para CV</system:String>
+  <!--<system:String x:Key="pianoroll.menu.lyrics.movesuffixtovoicecolor">Move Suffix to VoiceColor</system:String>-->
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Remover Letra de Suffixo</system:String>
+  <!--<system:String x:Key="pianoroll.menu.lyrics.removephonetichint">Remove Phonetic Hint</system:String>-->
   <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">Remover Sufixo de Tom</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Romaji para Hiragana</system:String>
   <system:String x:Key="pianoroll.menu.notedefaults">Padrões de Nota</system:String>
   <system:String x:Key="pianoroll.menu.notes">Nota</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">Adicionar Final "-"</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">Adicionar Final "R"</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notes.bakepitch">Convert PITD to pitch control points</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.clear.vibratos">Limpar Vibratos</system:String>
+  <system:String x:Key="pianoroll.menu.notes.hanzitopinyin">Hanzi para Pinyin</system:String>
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Carregar Tom Renderizado</system:String>
   <system:String x:Key="pianoroll.menu.notes.octavedown">Mover uma oitava abaixo</system:String>
   <system:String x:Key="pianoroll.menu.notes.octaveup">Mover uma oitava acima</system:String>
@@ -196,6 +212,7 @@ Aviso: esta opção remove predefinições personalizadas.</system:String>
   <system:String x:Key="pianoroll.menu.part">Parte</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">Plugin Legado (Experimental)</system:String>
   <system:String x:Key="pianoroll.toggle.finalpitch">Ver Tom Final para Renderizar (R)</system:String>
+  <!--<system:String x:Key="pianoroll.toggle.noteparams">View Note Parameters (\)</system:String>-->
   <system:String x:Key="pianoroll.toggle.phoneme">Ver Fonemas (O)</system:String>
   <system:String x:Key="pianoroll.toggle.pitch">Ver Curva de Tom (I)</system:String>
   <system:String x:Key="pianoroll.toggle.snap">Ativar Ajuste (P)</system:String>
@@ -206,6 +223,10 @@ Aviso: esta opção remove predefinições personalizadas.</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">Ver Vibrato (U)</system:String>
   <system:String x:Key="pianoroll.toggle.waveform">Ver Waveform (W)</system:String>
   <system:String x:Key="pianoroll.tool.drawpitch">Ferramenta Desenhar Tom (4)</system:String>
+  <!--Left click to draw
+  Right click to reset
+  Hold Ctrl to select
+  Hold Alt to smoothen</system:String>-->
   <system:String x:Key="pianoroll.tool.eraser">Ferramenta Borracha (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">Ferramenta Faca (5)</system:String>
   <system:String x:Key="pianoroll.tool.penplus">Ferramenta Lapis+ (Ctrl + 2)
@@ -229,6 +250,7 @@ Segure Ctrl para selecionar</system:String>
   <system:String x:Key="prefs.appearance.lang">Idioma</system:String>
   <system:String x:Key="prefs.appearance.showghostnotes">Mostrar notas fantasma</system:String>
   <system:String x:Key="prefs.appearance.showportrait">Mostrar retrato no piano roll</system:String>
+  <!--<system:String x:Key="prefs.appearance.sortorder">Singer sorting order</system:String>-->
   <system:String x:Key="prefs.appearance.theme">Tema</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">Escuro</system:String>
   <system:String x:Key="prefs.appearance.theme.light">Claro</system:String>
@@ -258,6 +280,8 @@ Segure Ctrl para selecionar</system:String>
   <system:String x:Key="prefs.playback.lockstarttime.on">Voltar a posição inicial</system:String>
   <system:String x:Key="prefs.playback.test">Teste</system:String>
   <system:String x:Key="prefs.rendering">Renderização</system:String>
+  <!--<system:String x:Key="prefs.rendering.onnxgpu">GPU</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.onnxrunner">Machine Learning Runner</system:String>-->
   <system:String x:Key="prefs.rendering.phasecomp">Compensação de Fase</system:String>
   <!--<system:String x:Key="prefs.rendering.prerender">Pre-render</system:String>-->
   <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
@@ -276,6 +300,7 @@ Segure Ctrl para selecionar</system:String>
   <!--<system:String x:Key="prefs.rendering.threads.numthreads">Maximum Render Threads</system:String>-->
   <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
 
+  <!--<system:String x:Key="progress.loadingsingers">Loading Singers...</system:String>-->
   <system:String x:Key="progress.saved">Projeto salvo. {0}</system:String>
   <system:String x:Key="progress.waitingrendering">Esperando Renderização</system:String>
 
@@ -286,6 +311,7 @@ Segure Ctrl para selecionar</system:String>
   <!--<system:String x:Key="singers.editoto.regenfrq.regenerating">Regenerating FRQ</system:String>-->
   <system:String x:Key="singers.editoto.reset">Redefinir Otos</system:String>
   <system:String x:Key="singers.editoto.save">Salvar Otos</system:String>
+  <!--<system:String x:Key="singers.editoto.searchalias">Search Alias</system:String>-->
   <system:String x:Key="singers.editoto.setvlabelerpath">Baixe o vLabeler (1.0.0-beta1 ou maior) em https://github.com/sdercolin/vlabeler e adicione o caminho do vLabeler nas Preferências primeiro!</system:String>
   <system:String x:Key="singers.errorreport">Gerar Relatório de Erro de Cantor</system:String>
   <system:String x:Key="singers.location">Pasta</system:String>
@@ -315,6 +341,16 @@ Segure Ctrl para selecionar</system:String>
   <system:String x:Key="singers.subbanks.toneranges">Alcance</system:String>
   <system:String x:Key="singers.visitwebsite">Visite o Website</system:String>
 
+  <!--<system:String x:Key="singersetup.archivefileencoding">Archive File Encoding</system:String>-->
+  <!--<system:String x:Key="singersetup.archivefileencoding.prompt">Choose an encoding that make file names look right.</system:String>-->
+  <!--<system:String x:Key="singersetup.back">Back</system:String>-->
+  <!--<system:String x:Key="singersetup.install">Install</system:String>-->
+  <!--<system:String x:Key="singersetup.next">Next</system:String>-->
+  <!--<system:String x:Key="singersetup.missinginfo">Please add the following settings to this voicebank's character.yaml.</system:String>-->
+  <!--<system:String x:Key="singersetup.singertype">Singer Type</system:String>-->
+  <!--<system:String x:Key="singersetup.textfileencoding">Text File Encoding</system:String>-->
+  <!--<system:String x:Key="singersetup.textfileencoding.prompt">Choose an encoding that make file contents look right.</system:String>-->
+
   <system:String x:Key="tip.aliasbox">Substituir Alias</system:String>
   <system:String x:Key="tip.exps">
 Desenhar com o Botão Esquerdo: Definir expressões
@@ -343,10 +379,13 @@ Geral
   <system:String x:Key="tip.notes.zoomx">◀ Role aqui para aumentar o zoom horizontalmente  ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">Role aqui para aumentar o zoom verticalmente ▶</system:String>
 
+  <!--<system:String x:Key="tracks.duplicate">Duplicate Track</system:String>-->
+  <!--<system:String x:Key="tracks.duplicatesettings">Duplicate Track Settings</system:String>-->
   <system:String x:Key="tracks.more">Mais</system:String>
   <system:String x:Key="tracks.movedown">Mover pra Baixo</system:String>
   <system:String x:Key="tracks.moveup">Mover pra Cima</system:String>
   <system:String x:Key="tracks.remove">Remover</system:String>
+  <!--<system:String x:Key="tracks.rename">Rename track</system:String>-->
   <system:String x:Key="tracks.selectrenderer">Seleciona Renderizador</system:String>
   <system:String x:Key="tracks.selectsinger">Selecione a Voz</system:String>
 

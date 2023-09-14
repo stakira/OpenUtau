@@ -90,7 +90,11 @@ namespace OpenUtau.Classic {
         private static void ParsePart(UProject project, UVoicePart part, List<IniBlock> blocks) {
             var lastNotePos = 0;
             var lastNoteEnd = 0;
-            bool shouldFixTempo = project.tempos[0].bpm >= 0 && project.tempos[0].bpm < 1000; // Need to fix tempo=500k error or not.
+            var settingsBlock = blocks.FirstOrDefault(b => b.header == "[#SETTING]");
+            if (settingsBlock != null) {
+                ParseSetting(project, settingsBlock.lines);
+            }
+            bool shouldFixTempo = project.tempos[0].bpm <= 0 || project.tempos[0].bpm > 1000; // Need to fix tempo=500k error or not.
             foreach (var block in blocks) {
                 var header = block.header;
                 try {
@@ -98,7 +102,7 @@ namespace OpenUtau.Classic {
                         case "[#VERSION]":
                             break;
                         case "[#SETTING]":
-                            ParseSetting(project, block.lines);
+                            // Already processed
                             break;
                         case "[#TRACKEND]":
                             break;

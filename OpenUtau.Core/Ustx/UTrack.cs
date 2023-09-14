@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using OpenUtau.Api;
 using OpenUtau.Core.Render;
@@ -89,8 +88,10 @@ namespace OpenUtau.Core.Ustx {
         [YamlIgnore] public string SingerName => Singer != null ? Singer.DisplayName : "[No Singer]";
         [YamlIgnore] public int TrackNo { set; get; }
         public string TrackName { get; set; } = "New Track";
-        public bool Mute { set; get; }
-        public bool Solo { set; get; }
+        public string TrackColor { get; set; } = "Blue";
+        [YamlIgnore] public bool Muted { set; get; }
+        public bool Mute { get; set; }
+        public bool Solo { get; set; }
         public double Volume { set; get; }
         public double Pan { set; get; }
         [YamlIgnore] public UExpressionDescriptor VoiceColorExp { set; get; }
@@ -179,6 +180,9 @@ namespace OpenUtau.Core.Ustx {
                 };
             }
             TrackNo = project.tracks.IndexOf(this);
+            if (!Solo && Mute) {
+                Muted = true;
+            }
         }
     }
 }

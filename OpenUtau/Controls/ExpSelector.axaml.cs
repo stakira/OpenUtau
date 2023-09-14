@@ -18,6 +18,7 @@ namespace OpenUtau.App.Controls {
 
         private int index;
 
+
         public ExpSelector() {
             InitializeComponent();
             DataContext = new ExpSelectorViewModel();
@@ -32,11 +33,11 @@ namespace OpenUtau.App.Controls {
         }
 
         private void TextBlockPointerPressed(object sender, PointerPressedEventArgs e) {
-            ((ExpSelectorViewModel)DataContext!).OnSelected();
+            ((ExpSelectorViewModel)DataContext!).OnSelected(true);
         }
 
         public void SelectExp() {
-            ((ExpSelectorViewModel)DataContext!).OnSelected();
+            ((ExpSelectorViewModel)DataContext!).OnSelected(false);
         }
     }
 }
