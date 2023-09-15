@@ -1,3 +1,4 @@
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -94,6 +95,19 @@ namespace OpenUtau.Plugins {
                 group.Clear();
             }
             return result;
+        }
+
+        protected void SameAltsTonesColorsTest(string singerName, string[] lyrics, string[] aliases, string alt, string tone, string color) {
+            RunPhonemizeTest(singerName, lyrics,
+                RepeatString(lyrics.Length, alt),
+                RepeatString(lyrics.Length, tone),
+                RepeatString(lyrics.Length, color), aliases);
+        }
+
+        protected string[] RepeatString(int count, string s) {
+            string[] array = new string[count];
+            Array.Fill(array, s);
+            return array;
         }
     }
 }
