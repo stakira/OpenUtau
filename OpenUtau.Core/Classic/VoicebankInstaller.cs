@@ -43,7 +43,7 @@ namespace OpenUtau.Classic {
                 AdjustBasePath(archive, path, touches);
                 int total = archive.Entries.Count();
                 int count = 0;
-                bool hasCharacterYaml = archive.Entries.Any(e => e.Key.EndsWith(kCharacterYaml));
+                bool hasCharacterYaml = archive.Entries.Any(e => Path.GetFileName(e.Key) == kCharacterYaml);
                 foreach (var entry in archive.Entries) {
                     progress.Invoke(100.0 * ++count / total, entry.Key);
                     if (entry.Key.Contains("..")) {
@@ -54,7 +54,7 @@ namespace OpenUtau.Classic {
                     Directory.CreateDirectory(Path.GetDirectoryName(filePath));
                     if (!entry.IsDirectory && entry.Key != kInstallTxt) {
                         entry.WriteToFile(Path.Combine(basePath, entry.Key), extractionOptions);
-                        if (!hasCharacterYaml && filePath.EndsWith(kCharacterTxt)) {
+                        if (!hasCharacterYaml && Path.GetFileName(filePath) == kCharacterTxt) {
                             var config = new VoicebankConfig() {
                                 TextFileEncoding = textEncoding.WebName,
                                 SingerType = singerType,
@@ -63,7 +63,7 @@ namespace OpenUtau.Classic {
                                 config.Save(stream);
                             }
                         }
-                        if (hasCharacterYaml && filePath.EndsWith(kCharacterYaml)) {
+                        if (hasCharacterYaml && Path.GetFileName(filePath) == kCharacterYaml) {
                             VoicebankConfig? config = null;
                             using (var stream = File.Open(filePath, FileMode.Open)) {
                                 config = VoicebankConfig.Load(stream);
