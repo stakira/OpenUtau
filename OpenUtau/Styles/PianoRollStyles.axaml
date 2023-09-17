@@ -1,6 +1,6 @@
 ﻿<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-  
+
   <Style Selector="Button,ToggleButton">
     <Setter Property="Focusable" Value="False"/>
   </Style>
@@ -21,28 +21,30 @@
   <Style Selector="ComboBoxItem:selected /template/ ContentPresenter">
     <Setter Property="Background" Value="{DynamicResource SelectedTrackAccentLightBrushSemi}"/>
   </Style>
-  
+
   <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
     <Setter Property="Background" Value="{DynamicResource SelectedTrackAccentLightBrushSemi}"/>
   </Style>
-  
+
   <Style Selector="Slider.fader">
     <Setter Property="Foreground" Value="{DynamicResource SelectedTrackAccentBrush}"/>
-  </Style>
-  <Style Selector="Slider.fader:pointerover">
-    <Style Selector="^ /template/ RepeatButton#PART_DecreaseButton">
-      <Setter Property="Background" Value="{DynamicResource SelectedTrackAccentLightBrush}" />
+
+    <Style Selector="^:pointerover">
+      <Style Selector="^ /template/ RepeatButton#PART_DecreaseButton">
+        <Setter Property="Background" Value="{DynamicResource SelectedTrackAccentLightBrush}" />
+      </Style>
+      <Style Selector="^ /template/ Thumb">
+        <Setter Property="Background" Value="{DynamicResource SelectedTrackAccentLightBrush}" />
+      </Style>
     </Style>
-    <Style Selector="^ /template/ Thumb">
-      <Setter Property="Background" Value="{DynamicResource SelectedTrackAccentLightBrush}" />
-    </Style>
-  </Style>
-  <Style Selector="Slider.fader:pressed">
-    <Style Selector="^ /template/ RepeatButton#PART_DecreaseButton">
-      <Setter Property="Background" Value="{DynamicResource SelectedTrackAccentDarkBrush}" />
-    </Style>
-    <Style Selector="^ /template/ Thumb">
-      <Setter Property="Background" Value="{DynamicResource SelectedTrackAccentDarkBrush}" />
+
+    <Style Selector="^:pressed">
+      <Style Selector="^ /template/ RepeatButton#PART_DecreaseButton">
+        <Setter Property="Background" Value="{DynamicResource SelectedTrackAccentDarkBrush}" />
+      </Style>
+      <Style Selector="^ /template/ Thumb">
+        <Setter Property="Background" Value="{DynamicResource SelectedTrackAccentDarkBrush}" />
+      </Style>
     </Style>
   </Style>
 
@@ -50,12 +52,16 @@
     <Setter Property="BorderBrush" Value="{DynamicResource SelectedTrackAccentBrush}"/>
   </Style>
 
-  <!--
-  <Style Selector="ToggleSwitch:pressed /template/ ">
-    <Setter Property="BorderBrush" Value="{DynamicResource SelectedTrackAccentBrush}"/>
+  <Style Selector="ToggleSwitch">
+    <Style Selector="^:checked /template/ Border#SwitchKnobBounds">
+      <Setter Property="Background" Value="{DynamicResource SelectedTrackAccentBrush}" />
+    </Style>
+    <Style Selector="^:checked:pointerover /template/ Border#SwitchKnobBounds">
+      <Setter Property="Background" Value="{DynamicResource SelectedTrackAccentLightBrush}" />
+    </Style>
+    <Style Selector="^:checked:pressed /template/ Border#SwitchKnobBounds">
+      <Setter Property="Background" Value="{DynamicResource SelectedTrackAccentDarkBrush}" />
+    </Style>
   </Style>
-  <Style Selector="ToggleSwitch:pressed:pointerover /template/ ">
-    <Setter Property="BorderBrush" Value="{DynamicResource SelectedTrackAccentLightBrush}"/>
-  </Style>
-  -->
+
 </Styles>
