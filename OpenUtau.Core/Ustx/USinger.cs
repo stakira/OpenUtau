@@ -204,6 +204,7 @@ namespace OpenUtau.Core.Ustx {
         public virtual byte[] AvatarData { get; }
         public virtual string Portrait { get; }
         public virtual float PortraitOpacity { get; }
+        public virtual int PortraitHeight { get; }
         public virtual string DefaultPhonemizer { get; }
         public virtual Encoding TextFileEncoding => Encoding.UTF8;
         public virtual IList<USubbank> Subbanks { get; }
