@@ -2,8 +2,6 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <system:Boolean x:Key="IsDarkMode">false</system:Boolean>
-  
-  <Color x:Key="MainWindowColor">#FFFFFF</Color>
 
   <Color x:Key="BackgroundColor">#FFFFFF</Color>
   <Color x:Key="BackgroundColorPointerOver">#F0F0F0</Color>
@@ -17,6 +15,12 @@
 
   <Color x:Key="BorderColor">#707070</Color>
   <Color x:Key="BorderColorPointerOver">#B0B0B0</Color>
+
+  <Color x:Key="SystemAccentColor">#4EA6EA</Color>
+  <!-- PointerOver -->
+  <Color x:Key="SystemAccentColorLight1">#90CAF9</Color>
+  <!-- Pressed -->
+  <Color x:Key="SystemAccentColorDark1">#1E88E5</Color>
 
   <Color x:Key="NeutralAccentColor">#ADA1B3</Color>
   <Color x:Key="NeutralAccentColorPointerOver">#948A99</Color>

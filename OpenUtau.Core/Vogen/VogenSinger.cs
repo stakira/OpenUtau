@@ -21,6 +21,7 @@ namespace OpenUtau.Core.Vogen {
         public override byte[] AvatarData => avatarData;
         public override string Portrait => meta.portrait;
         public override float PortraitOpacity => meta.portraitOpacity;
+        public override int PortraitHeight => meta.portraitHeight;
         public override string DefaultPhonemizer => "OpenUtau.Core.Vogen.VogenMandarinPhonemizer";
         public override Encoding TextFileEncoding => Encoding.UTF8;
         public override IList<USubbank> Subbanks => subbanks;

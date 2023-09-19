@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -18,7 +19,7 @@ namespace OpenUtau.Plugins {
             this.output = output;
         }
 
-        public void RunPhonemizeTest(string singerName, string[] lyrics, string[] tones, string[] colors, string[] aliases) {
+        public void RunPhonemizeTest(string singerName, string[] lyrics, string[] alts, string[] tones, string[] colors, string[] aliases) {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             var basePath = Path.Join(dir, "Files");
@@ -38,7 +39,7 @@ namespace OpenUtau.Plugins {
             phonemizer.SetTiming(timeAxis);
 
             var results = new List<Phonemizer.Result>();
-            var groups = GetNotes(lyrics, tones, colors);
+            var groups = GetNotes(lyrics, alts, tones, colors);
             for (var i = 0; i < groups.Count; i++) {
                 results.Add(phonemizer.Process(
                     groups[i],
@@ -61,7 +62,8 @@ namespace OpenUtau.Plugins {
             Assert.Equal(aliases, resultAliases);
         }
 
-        List<Phonemizer.Note[]> GetNotes(string[] lyrics, string[] tones, string[] colors) {
+        List<Phonemizer.Note[]> GetNotes(string[] lyrics, string[] alts, string[] tones, string[] colors) {
+            Assert.Equal(lyrics.Length, alts.Length);
             Assert.Equal(lyrics.Length, tones.Length);
             Assert.Equal(lyrics.Length, colors.Length);
             var result = new List<Phonemizer.Note[]>();
@@ -93,6 +95,19 @@ namespace OpenUtau.Plugins {
                 group.Clear();
             }
             return result;
+        }
+
+        protected void SameAltsTonesColorsTest(string singerName, string[] lyrics, string[] aliases, string alt, string tone, string color) {
+            RunPhonemizeTest(singerName, lyrics,
+                RepeatString(lyrics.Length, alt),
+                RepeatString(lyrics.Length, tone),
+                RepeatString(lyrics.Length, color), aliases);
+        }
+
+        protected string[] RepeatString(int count, string s) {
+            string[] array = new string[count];
+            Array.Fill(array, s);
+            return array;
         }
     }
 }

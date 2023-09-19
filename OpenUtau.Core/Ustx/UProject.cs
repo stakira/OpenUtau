@@ -45,10 +45,14 @@ namespace OpenUtau.Core.Ustx {
         [Obsolete("Since ustx v0.6")] public int beatUnit = 4;
 
         public Dictionary<string, UExpressionDescriptor> expressions = new Dictionary<string, UExpressionDescriptor>();
+        public string[] expSelectors = new string[] { Format.Ustx.DYN, Format.Ustx.PITD, Format.Ustx.CLR, Format.Ustx.ENG, Format.Ustx.VEL };
+        public int expPrimary = 0;
+        public int expSecondary = 1;
         public List<UTimeSignature> timeSignatures;
         public List<UTempo> tempos;
         public List<UTrack> tracks;
         [YamlIgnore] public List<UPart> parts;
+        [YamlIgnore] public bool SoloTrackExist { get => tracks.Any(t => t.Solo); }
 
         /// <summary>
         /// Transient field used for serialization.
@@ -59,7 +63,7 @@ namespace OpenUtau.Core.Ustx {
         /// </summary>
         public List<UWavePart> waveParts;
 
-        [YamlIgnore] public string FilePath { get; set; }
+        [YamlIgnore] public string FilePath { get; set; } = string.Empty;
         [YamlIgnore] public bool Saved { get; set; } = false;
         [YamlIgnore] public int EndTick => parts.Count == 0 ? 0 : parts.Max(p => p.End);
 
@@ -68,7 +72,7 @@ namespace OpenUtau.Core.Ustx {
         public UProject() {
             timeSignatures = new List<UTimeSignature> { new UTimeSignature(0, 4, 4) };
             tempos = new List<UTempo> { new UTempo(0, 120) };
-            tracks = new List<UTrack>();
+            tracks = new List<UTrack>() { new UTrack("Track1") };
             parts = new List<UPart>();
             timeAxis.BuildSegments(this);
         }

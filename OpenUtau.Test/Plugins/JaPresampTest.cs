@@ -28,12 +28,20 @@ namespace OpenUtau.Plugins {
             new string[] { "", "", "", "", "" },
             new string[] { "- ず_A3", "u t_A3", "と_D4", "o ・_D4", "・ お_D4",  "o R_D4" })]
         [InlineData("ja_presamp",
-            new string[] { "ri", "p", "re", "i", "s" }, // [PRIORITY] p,s
-            new string[] { "C4", "C4", "C4", "C4", "C4" },
-            new string[] { "", "", "", "", "" },
-            new string[] { "- り_D4", "i p_D4", "p", "れ_D4", "e い_D4", "i s_D4", "s" })]
+            new string[] { "\u304c", "\u304b\u3099", "\u30f4", "\u30a6\u3099" }, // が, が, ヴ, ヴ
+            new string[] { "A3", "C4", "D4", "E4" },
+            new string[] { "", "", "", "" },
+            new string[] { "- が_A3", "a が_D4", "a ヴ_D4", "u ヴ_F4" })]
         public void PhonemizeTest(string singerName, string[] lyrics, string[] tones, string[] colors, string[] aliases) {
-            RunPhonemizeTest(singerName, lyrics, tones, colors, aliases);
+            RunPhonemizeTest(singerName, lyrics, RepeatString(lyrics.Length, ""), tones, colors, aliases);
+        }
+
+        [Theory]
+        [InlineData("ja_presamp",
+            new string[] { "ri", "p", "re", "i", "s" }, // [PRIORITY] p,s
+            new string[] { "- り_D4", "i p_D4", "p", "れ_D4", "e い_D4", "i s_D4", "s" })]
+        public void PriorityTest(string singerName, string[] lyrics, string[] aliases) {
+            SameAltsTonesColorsTest(singerName, lyrics, aliases, "", "C4", "");
         }
     }
 }

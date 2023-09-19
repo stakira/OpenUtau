@@ -50,6 +50,7 @@
   <system:String x:Key="exps.caption">表現</system:String>
   <system:String x:Key="exps.defaultvalue">預設</system:String>
   <system:String x:Key="exps.flag">引擎 Flag</system:String>
+  <!--<system:String x:Key="exps.getsuggestions">Add all expressions suggested by renderers</system:String>-->
   <system:String x:Key="exps.isflag">是引擎 Flag</system:String>
   <system:String x:Key="exps.maxvalue">最大值</system:String>
   <system:String x:Key="exps.minvalue">最小值</system:String>
@@ -69,6 +70,18 @@
   <system:String x:Key="lyrics.reset">重設</system:String>
   <system:String x:Key="lyrics.selectnotes">請先選取音符!</system:String>
   <system:String x:Key="lyrics.separators">分隔符號</system:String>
+  
+  <!--<system:String x:Key="lyricsreplace.after">After :</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.before">Before :</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.preset.rmvalphabet">Remove alphabet</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.preset.rmvnonhiragana">Remove non-hiragana</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.preset.rmvphonetichint">Remove phonetic hint</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.preset.rmvspace">Remove spaces and earlier</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.preset.rmvtone">Remove tone suffix</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.presets">Presets</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.preview">Preview</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.regex">Regular expressions can be used</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.replace">General lyrics replacement</system:String>-->
 
   <system:String x:Key="menu.edit">編輯</system:String>
   <system:String x:Key="menu.edit.copy">複製</system:String>
@@ -173,17 +186,20 @@
   <system:String x:Key="pianoroll.menu.lyrics">歌詞</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">使用 "+" 替換 "-"</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">編輯歌詞</system:String>
-  <!--<system:String x:Key="pianoroll.menu.lyrics.hanzitopinyin">Hanzi to Pinyin</system:String>-->
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">平假名轉羅馬拼音</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">日文 VCV 轉 CV</system:String>
+  <!--<system:String x:Key="pianoroll.menu.lyrics.movesuffixtovoicecolor">Move Suffix to VoiceColor</system:String>-->
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">移除字母後綴</system:String>
+  <!--<system:String x:Key="pianoroll.menu.lyrics.removephonetichint">Remove Phonetic Hint</system:String>-->
   <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">移除音調後綴</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">羅馬拼音轉平假名</system:String>
   <system:String x:Key="pianoroll.menu.notedefaults">音符預設設定</system:String>
   <system:String x:Key="pianoroll.menu.notes">音符</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">新增音符尾端 "-"</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">新增音符尾端 "R"</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notes.bakepitch">Convert PITD to pitch control points</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.clear.vibratos">清除顫音</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notes.hanzitopinyin">Hanzi to pinyin</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">載入已算繪的音高曲線</system:String>
   <!--<system:String x:Key="pianoroll.menu.notes.octavedown">Move an octave down</system:String>-->
   <!--<system:String x:Key="pianoroll.menu.notes.octaveup">Move an octave up</system:String>-->
@@ -196,6 +212,7 @@
   <system:String x:Key="pianoroll.menu.part">段落</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">舊版插件 (實驗性)</system:String>
   <system:String x:Key="pianoroll.toggle.finalpitch">顯示算繪音高曲線 (R)</system:String>
+  <!--<system:String x:Key="pianoroll.toggle.noteparams">View Note Parameters (\)</system:String>-->
   <system:String x:Key="pianoroll.toggle.phoneme">顯示音標 (O)</system:String>
   <system:String x:Key="pianoroll.toggle.pitch">顯示手動音高曲線 (I)</system:String>
   <system:String x:Key="pianoroll.toggle.snap">啟用自動貼齊 (P)</system:String>
@@ -206,15 +223,19 @@
   <system:String x:Key="pianoroll.toggle.vibrato">顯示顫音 (U)</system:String>
   <system:String x:Key="pianoroll.toggle.waveform">顯示波形 (W)</system:String>
   <system:String x:Key="pianoroll.tool.drawpitch">音高繪製工具 (4)</system:String>
+  <!--Left click to draw
+    Right click to reset
+    Hold Ctrl to select
+    Hold Alt to smoothen</system:String>-->
   <system:String x:Key="pianoroll.tool.eraser">橡皮擦工具 (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">剪刀工具 (5)</system:String>
   <!--<system:String x:Key="pianoroll.tool.penplus">Pen Plus Tool (Ctrl + 2)
     Left click to draw
     Right click to delete
-Hold Ctrl to select</system:String>-->
+    Hold Ctrl to select</system:String>-->
   <!--<system:String x:Key="pianoroll.tool.penv2">Pen Tool (2)
     Left click to draw
-Hold Ctrl to select</system:String>-->
+    Hold Ctrl to select</system:String>-->
   <!--<system:String x:Key="pianoroll.tool.selectionv2">Selection Tool (1)</system:String>-->
 
   <system:String x:Key="prefs.advanced">進階</system:String>
@@ -229,6 +250,7 @@ Hold Ctrl to select</system:String>-->
   <system:String x:Key="prefs.appearance.lang">語言</system:String>
   <!--<system:String x:Key="prefs.appearance.showghostnotes">Show other tracks' notes on piano roll</system:String>-->
   <system:String x:Key="prefs.appearance.showportrait">在鋼琴卷軸上顯示角色背景圖</system:String>
+  <!--<system:String x:Key="prefs.appearance.sortorder">Singer sorting order</system:String>-->
   <system:String x:Key="prefs.appearance.theme">主題</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">深色</system:String>
   <system:String x:Key="prefs.appearance.theme.light">淺色</system:String>
@@ -258,6 +280,8 @@ Hold Ctrl to select</system:String>-->
   <system:String x:Key="prefs.playback.lockstarttime.on">移動游標至起始播放位置</system:String>
   <system:String x:Key="prefs.playback.test">測試</system:String>
   <system:String x:Key="prefs.rendering">算繪</system:String>
+  <!--<system:String x:Key="prefs.rendering.onnxgpu">GPU</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.onnxrunner">Machine Learning Runner</system:String>-->
   <system:String x:Key="prefs.rendering.phasecomp">相位補償</system:String>
   <system:String x:Key="prefs.rendering.prerender">預先算繪</system:String>
   <system:String x:Key="prefs.rendering.resampler">引擎</system:String>
@@ -276,6 +300,7 @@ Hold Ctrl to select</system:String>-->
   <!--<system:String x:Key="prefs.rendering.threads.numthreads">Maximum Render Threads</system:String>-->
   <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
 
+  <!--<system:String x:Key="progress.loadingsingers">Loading Singers...</system:String>-->
   <system:String x:Key="progress.saved">已儲存專案。{0}</system:String>
   <system:String x:Key="progress.waitingrendering">等待算繪</system:String>
 
@@ -286,6 +311,7 @@ Hold Ctrl to select</system:String>-->
   <!--<system:String x:Key="singers.editoto.regenfrq.regenerating">Regenerating FRQ</system:String>-->
   <!--<system:String x:Key="singers.editoto.reset">Reset Otos</system:String>-->
   <!--<system:String x:Key="singers.editoto.save">Save Otos</system:String>-->
+  <!--<system:String x:Key="singers.editoto.searchalias">Search Alias</system:String>-->
   <!--<system:String x:Key="singers.editoto.setvlabelerpath">Download vLabeler (1.0.0-beta1 or higher) from https://github.com/sdercolin/vlabeler and set vLabeler path in Preferences first!</system:String>-->
   <!--<system:String x:Key="singers.errorreport">Generate Singer Error Report</system:String>-->
   <system:String x:Key="singers.location">位置</system:String>
@@ -315,6 +341,16 @@ Hold Ctrl to select</system:String>-->
   <system:String x:Key="singers.subbanks.toneranges">音調範圍</system:String>
   <!--<system:String x:Key="singers.visitwebsite">Visit Website</system:String>-->
 
+  <!--<system:String x:Key="singersetup.archivefileencoding">Archive File Encoding</system:String>-->
+  <!--<system:String x:Key="singersetup.archivefileencoding.prompt">Choose an encoding that make file names look right.</system:String>-->
+  <!--<system:String x:Key="singersetup.back">Back</system:String>-->
+  <!--<system:String x:Key="singersetup.install">Install</system:String>-->
+  <!--<system:String x:Key="singersetup.next">Next</system:String>-->
+  <!--<system:String x:Key="singersetup.missinginfo">Please add the following settings to this voicebank's character.yaml.</system:String>-->
+  <!--<system:String x:Key="singersetup.singertype">Singer Type</system:String>-->
+  <!--<system:String x:Key="singersetup.textfileencoding">Text File Encoding</system:String>-->
+  <!--<system:String x:Key="singersetup.textfileencoding.prompt">Choose an encoding that make file contents look right.</system:String>-->
+
   <system:String x:Key="tip.aliasbox">覆寫別名</system:String>
   <system:String x:Key="tip.exps">
 使用左鍵描繪: 設定表現
@@ -343,10 +379,13 @@ Hold Ctrl to select</system:String>-->
   <system:String x:Key="tip.notes.zoomx">◀ 捲動以橫向縮放 ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">捲動以縱向縮放 ▶</system:String>
 
+  <!--<system:String x:Key="tracks.duplicate">Duplicate Track</system:String>-->
+  <!--<system:String x:Key="tracks.duplicatesettings">Duplicate Track Settings</system:String>-->
   <system:String x:Key="tracks.more">更多</system:String>
   <system:String x:Key="tracks.movedown">下移</system:String>
   <system:String x:Key="tracks.moveup">上移</system:String>
   <system:String x:Key="tracks.remove">移除</system:String>
+  <!--<system:String x:Key="tracks.rename">Rename track</system:String>-->
   <system:String x:Key="tracks.selectrenderer">選取算繪器</system:String>
   <system:String x:Key="tracks.selectsinger">選取歌手</system:String>
 

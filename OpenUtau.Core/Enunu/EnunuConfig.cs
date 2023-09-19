@@ -12,9 +12,36 @@ namespace OpenUtau.Core.Enunu {
 
         public static EnunuConfig Load(USinger singer) {
             var configPath = Path.Join(singer.Location, "enuconfig.yaml");
-            var configTxt = File.ReadAllText(configPath);
-            RawEnunuConfig config = Yaml.DefaultDeserializer.Deserialize<RawEnunuConfig>(configTxt);
+            var config = new RawEnunuConfig();
+            if (File.Exists(configPath)) {
+                var configTxt = File.ReadAllText(configPath);
+                config = Yaml.DefaultDeserializer.Deserialize<RawEnunuConfig>(configTxt);
+            } else {
+                config = SetSimpleENUNUConfig(singer.Location);
+            }
             return config.Convert();
+        }
+
+        public static RawEnunuConfig SetSimpleENUNUConfig(string location) {
+            string[] modelPaths = new string[] { location, location + @"\model" };
+            string configYaml = "config.yaml";
+            var config = new RawEnunuConfig();
+            foreach (string modelPath in modelPaths) {
+                if (File.Exists(Path.Join(modelPath, configYaml))) {
+                    var configTxt = File.ReadAllText(Path.Join(modelPath, configYaml));
+                    config = Yaml.DefaultDeserializer.Deserialize<RawEnunuConfig>(configTxt);
+                    IEnumerable<string> files = Directory.EnumerateFiles(location, "*", SearchOption.TopDirectoryOnly);
+                    foreach (string f in files) {
+                        if (f.EndsWith(".table")) {
+                            config.tablePath = Path.GetRelativePath(modelPath, f);
+                        }
+                        if (f.EndsWith(".hed")) {
+                            config.questionPath = Path.GetRelativePath(modelPath, f);
+                        }
+                    }
+                }
+            }
+            return config;
         }
     }
 

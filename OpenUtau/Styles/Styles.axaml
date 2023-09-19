@@ -96,7 +96,7 @@
     <Setter Property="Background" Value="{DynamicResource BackgroundColorPointerOver}"/>
   </Style>
 
-  <Style Selector="ToggleButton">
+  <Style Selector="ToggleButton.normal">
     <Setter Property="BorderThickness" Value="0"/>
     <Setter Property="FontSize" Value="12"/>
     <Setter Property="Height" Value="20"/>
@@ -105,32 +105,22 @@
     <Setter Property="HorizontalContentAlignment" Value="Center"/>
     <Setter Property="VerticalContentAlignment" Value="Center"/>
     <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAltHighBrush}" />
-  </Style>
-  <Style Selector="ToggleButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="{DynamicResource NeutralAccentBrush}" />
-  </Style>
-  <Style Selector="ToggleButton:pressed  /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="{DynamicResource NeutralAccentBrushPointerOver}" />
-  </Style>
-  <Style Selector="ToggleButton:checked /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="{DynamicResource NeutralAccentBrushSemi}" />
-  </Style>
-  <Style Selector="ToggleButton:checked:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="{DynamicResource NeutralAccentBrush}" />
-  </Style>
-  <Style Selector="ToggleButton:checked:pressed /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="{DynamicResource NeutralAccentBrushPointerOver}" />
-  </Style>
-  <Style Selector="ToggleButton.toolbar Path.filled">
-    <Setter Property="Fill" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
-  </Style>
-  <Style Selector="ToggleButton.toolbar Ellipse.stroked">
-    <Setter Property="StrokeThickness" Value="1"/>
-    <Setter Property="Stroke" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
-  </Style>
-  <Style Selector="ToggleButton.toolbar Path.stroked">
-    <Setter Property="StrokeThickness" Value="1"/>
-    <Setter Property="Stroke" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+
+    <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource NeutralAccentBrush}" />
+    </Style>
+    <Style Selector="^:pressed  /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource NeutralAccentBrushPointerOver}" />
+    </Style>
+    <Style Selector="^:checked /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource NeutralAccentBrushSemi}" />
+    </Style>
+    <Style Selector="^:checked:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource NeutralAccentBrush}" />
+    </Style>
+    <Style Selector="^:checked:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource NeutralAccentBrushPointerOver}" />
+    </Style>
   </Style>
 
   <Style Selector="ToggleButton.toolbar">
@@ -141,6 +131,35 @@
     <Setter Property="Padding" Value="4,0,4,2"/>
     <Setter Property="HorizontalContentAlignment" Value="Center"/>
     <Setter Property="VerticalContentAlignment" Value="Center"/>
+    <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundAltHighBrush}" />
+
+    <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource NeutralAccentBrush}" />
+    </Style>
+    <Style Selector="^:pressed  /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource NeutralAccentBrushPointerOver}" />
+    </Style>
+    <Style Selector="^:checked /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource NeutralAccentBrushSemi}" />
+    </Style>
+    <Style Selector="^:checked:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource NeutralAccentBrush}" />
+    </Style>
+    <Style Selector="^:checked:pressed /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="{DynamicResource NeutralAccentBrushPointerOver}" />
+    </Style>
+
+    <Style Selector="^ Path.filled">
+      <Setter Property="Fill" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+    </Style>
+    <Style Selector="^ Ellipse.stroked">
+      <Setter Property="StrokeThickness" Value="1"/>
+      <Setter Property="Stroke" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+    </Style>
+    <Style Selector="^ Path.stroked">
+      <Setter Property="StrokeThickness" Value="1"/>
+      <Setter Property="Stroke" Value="{DynamicResource SystemControlForegroundBaseHighBrush}" />
+    </Style>
   </Style>
 
   <Style Selector="ToggleSwitch /template/ Border#SwitchKnobBounds">
@@ -148,13 +167,16 @@
   </Style>
 
   <Style Selector="ComboBox">
+    <Setter Property="Background" Value="{DynamicResource SystemRegionBrush}"/>
     <Setter Property="FontSize" Value="12"/>
+    <Setter Property="MinHeight" Value="20"/>
     <Setter Property="Height" Value="20"/>
     <Setter Property="Margin" Value="0,4"/>
     <Setter Property="Padding" Value="4,0,0,2"/>
   </Style>
   <Style Selector="ComboBoxItem">
     <Setter Property="FontSize" Value="12"/>
+    <Setter Property="MinHeight" Value="20"/>
     <Setter Property="Height" Value="20"/>
     <Setter Property="Margin" Value="0"/>
     <Setter Property="Padding" Value="4,2,0,0"/>
@@ -321,37 +343,43 @@
 
   <Style Selector="Slider.fader">
     <Setter Property="Focusable" Value="False"/>
+    <Setter Property="Foreground" Value="{DynamicResource AccentBrush1}"/>
     <Setter Property="Template">
       <ControlTemplate>
         <DataValidationErrors>
           <Border>
             <Grid x:Name="SliderContainer">
-              <Track Name="PART_Track" IsDirectionReversed="{TemplateBinding IsDirectionReversed}" Orientation="Horizontal">
+              <Track
+                  Name="PART_Track"
+                  Minimum="{TemplateBinding Minimum}"
+                  Maximum="{TemplateBinding Maximum}"
+                  Value="{TemplateBinding Value, Mode=TwoWay}"
+                  IsDirectionReversed="{TemplateBinding IsDirectionReversed}"
+                  Orientation="Horizontal">
                 <Track.DecreaseButton>
-                  <RepeatButton Name="PART_DecreaseButton" Background="{TemplateBinding Foreground}" Focusable="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                    <RepeatButton.Template>
-                      <ControlTemplate>
-                        <Grid>
-                          <Border Name="FocusTarget" Background="Transparent" Margin="0,-10" />
-                          <Border Name="TrackBackground" Background="{TemplateBinding Background}" Height="{DynamicResource SliderTrackThemeHeight}" VerticalAlignment="Center" />
-                        </Grid>
-                      </ControlTemplate>
-                    </RepeatButton.Template>
-                  </RepeatButton>
+                  <RepeatButton
+                      Name="PART_DecreaseButton"
+                      Theme="{StaticResource FluentSliderHorizontalRepeatButton}"
+                      Background="{TemplateBinding Foreground}"
+                      Focusable="False"/>
                 </Track.DecreaseButton>
                 <Track.IncreaseButton>
-                  <RepeatButton Name="PART_IncreaseButton" Background="{TemplateBinding Background}" Focusable="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                    <RepeatButton.Template>
-                      <ControlTemplate>
-                        <Grid>
-                          <Border Name="FocusTarget" Background="Transparent" Margin="0,-10" />
-                          <Border Name="TrackBackground" Background="{TemplateBinding Background}" Height="{DynamicResource SliderTrackThemeHeight}" VerticalAlignment="Center" />
-                        </Grid>
-                      </ControlTemplate>
-                    </RepeatButton.Template>
-                  </RepeatButton>
+                  <RepeatButton
+                      Name="PART_IncreaseButton"
+                      Theme="{StaticResource FluentSliderHorizontalRepeatButton}"
+                      Background="{TemplateBinding Background}"
+                      Focusable="False"/>
                 </Track.IncreaseButton>
-                <Thumb Name="thumb" Margin="0" Padding="0" DataContext="{TemplateBinding Value}" Height="6" Width="16" Background="{TemplateBinding Foreground}" />
+                <Thumb
+                    Name="thumb"
+                    Width="{DynamicResource SliderHorizontalThumbWidth}"
+                    Height="{DynamicResource SliderHorizontalThumbHeight}"
+                    Margin="0"
+                    Padding="0"
+                    Background="{TemplateBinding Foreground}"
+                    BorderThickness="0"
+                    Theme="{StaticResource FluentSliderThumbTheme}"
+                    DataContext="{TemplateBinding Value}"/>
               </Track>
             </Grid>
           </Border>
@@ -370,5 +398,17 @@
         </ControlTemplate>
       </Setter.Value>
     </Setter>
+  </Style>
+
+  <Style Selector="Expander" >
+    <Setter Property="CornerRadius" Value="5" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="{StaticResource SystemControlForegroundBaseMediumBrush}"/>
+    <Setter Property="Padding" Value="10" />
+    <Setter Property="IsExpanded" Value="True" />
+
+    <Style Selector="^:down /template/ ToggleButton#ExpanderHeader">
+      <Setter Property="BorderBrush" Value="{StaticResource SystemControlForegroundBaseMediumBrush}"/>
+    </Style>
   </Style>
 </Styles>

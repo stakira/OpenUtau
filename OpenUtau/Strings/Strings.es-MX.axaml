@@ -25,8 +25,8 @@
 
   <system:String x:Key="dialogs.about.caption">Sobre OpenUTAU</system:String>
   <system:String x:Key="dialogs.about.message">
-        OpenUTAU es un entorno de edición de código abierto para el programa de síntesis UTAU. Su objetivo es ofrecer una interfaz moderna, y soporte fonológico inteligente. ¡Visítanos en GitHub!
-        </system:String>
+    OpenUTAU es un entorno de edición de código abierto para el programa de síntesis UTAU. Su objetivo es ofrecer una interfaz moderna, y soporte fonológico inteligente. ¡Visítanos en GitHub!
+  </system:String>
   <system:String x:Key="dialogs.exitsave.caption">Salir de OpenUTAU</system:String>
   <system:String x:Key="dialogs.exitsave.message">El projecto tiene cambios sin guardar. ¿Quieres guardar el archivo?</system:String>
   <system:String x:Key="dialogs.export.caption">Exportar</system:String>
@@ -50,6 +50,7 @@
   <system:String x:Key="exps.caption">Expresiones</system:String>
   <system:String x:Key="exps.defaultvalue">Valores predeterminados</system:String>
   <system:String x:Key="exps.flag">Flags del resampler</system:String>
+  <!--<system:String x:Key="exps.getsuggestions">Add all expressions suggested by renderers</system:String>-->
   <system:String x:Key="exps.isflag">Es flag del resampler</system:String>
   <system:String x:Key="exps.maxvalue">Máx</system:String>
   <system:String x:Key="exps.minvalue">Mín</system:String>
@@ -69,6 +70,18 @@
   <system:String x:Key="lyrics.reset">Restablecer</system:String>
   <system:String x:Key="lyrics.selectnotes">Por favor, selecciona un grupo de notas.</system:String>
   <system:String x:Key="lyrics.separators">Separadores</system:String>
+  
+  <!--<system:String x:Key="lyricsreplace.after">After :</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.before">Before :</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.preset.rmvalphabet">Remove alphabet</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.preset.rmvnonhiragana">Remove non-hiragana</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.preset.rmvphonetichint">Remove phonetic hint</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.preset.rmvspace">Remove spaces and earlier</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.preset.rmvtone">Remove tone suffix</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.presets">Presets</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.preview">Preview</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.regex">Regular expressions can be used</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.replace">General lyrics replacement</system:String>-->
 
   <system:String x:Key="menu.edit">_Editar</system:String>
   <system:String x:Key="menu.edit.copy">_Copiar</system:String>
@@ -173,17 +186,20 @@ Advertencia: Esta opción eliminará las bases personalizadas.</system:String>
   <system:String x:Key="pianoroll.menu.lyrics">Letra</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">Reemplazar "-" con "+"</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">Editar Letra</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.hanzitopinyin">Hanzi a Pinyin</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">Hiragana a Romaji</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">VCV a CV (Japonés)</system:String>
+  <!--<system:String x:Key="pianoroll.menu.lyrics.movesuffixtovoicecolor">Move Suffix to VoiceColor</system:String>-->
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">Quitar sufijo de letra</system:String>
+  <!--<system:String x:Key="pianoroll.menu.lyrics.removephonetichint">Remove Phonetic Hint</system:String>-->
   <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">Quitar sufijo de tono</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">Romaji a Hiragana</system:String>
   <system:String x:Key="pianoroll.menu.notedefaults">Ajustes de Nota</system:String>
   <system:String x:Key="pianoroll.menu.notes">Nota</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">Añadir "-"</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">Añadir "R"</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notes.bakepitch">Convert PITD to pitch control points</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.clear.vibratos">Quitar vibratos</system:String>
+  <system:String x:Key="pianoroll.menu.notes.hanzitopinyin">Hanzi a Pinyin</system:String>
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">Cargar tono automático</system:String>
   <system:String x:Key="pianoroll.menu.notes.octavedown">Transponer por una octava (para abajo)</system:String>
   <system:String x:Key="pianoroll.menu.notes.octaveup">Transponer por una octava (para arriba)</system:String>
@@ -196,6 +212,7 @@ Advertencia: Esta opción eliminará las bases personalizadas.</system:String>
   <system:String x:Key="pianoroll.menu.part">Partes</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">Plug-ins antiguos (Experimental)</system:String>
   <system:String x:Key="pianoroll.toggle.finalpitch">Ver línea de tono avanzada (R)</system:String>
+  <!--<system:String x:Key="pianoroll.toggle.noteparams">View Note Parameters (\)</system:String>-->
   <system:String x:Key="pianoroll.toggle.phoneme">Ver fonemas (O)</system:String>
   <system:String x:Key="pianoroll.toggle.pitch">Ver curvas del tono (I)</system:String>
   <system:String x:Key="pianoroll.toggle.snap">Activar/Desactivar ajuste (P)</system:String>
@@ -206,15 +223,19 @@ Advertencia: Esta opción eliminará las bases personalizadas.</system:String>
   <system:String x:Key="pianoroll.toggle.vibrato">Ver vibratos (U)</system:String>
   <system:String x:Key="pianoroll.toggle.waveform">Ver formas de onda (W)</system:String>
   <system:String x:Key="pianoroll.tool.drawpitch">Dibujar en tono avanzado (4)</system:String>
+  <!-- Left click to draw
+  Right click to reset
+  Hold Ctrl to select
+  Hold Alt to smoothen</system:String>-->
   <system:String x:Key="pianoroll.tool.eraser">Goma (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">Cuchillo (5)</system:String>
   <system:String x:Key="pianoroll.tool.penplus">Lápiz avanzado (Ctrl + 2)
     Click izquierdo para dibujar
     Click derecho para borrar
-Mantén Ctrl para seleccionar</system:String>
+    Mantén Ctrl para seleccionar</system:String>
   <system:String x:Key="pianoroll.tool.penv2">Lápiz (2)
     Click izquierdo para borrar
-Mantén Ctrl para seleccionar</system:String>
+    Mantén Ctrl para seleccionar</system:String>
   <system:String x:Key="pianoroll.tool.selectionv2">Mano (1)</system:String>
 
   <system:String x:Key="prefs.advanced">Avanzado</system:String>
@@ -229,6 +250,7 @@ Mantén Ctrl para seleccionar</system:String>
   <system:String x:Key="prefs.appearance.lang">Lenguaje</system:String>
   <system:String x:Key="prefs.appearance.showghostnotes">Mostrar notas de otras pistas en el piano</system:String>
   <system:String x:Key="prefs.appearance.showportrait">Mostrar foto en el piano</system:String>
+  <!--<system:String x:Key="prefs.appearance.sortorder">Singer sorting order</system:String>-->
   <system:String x:Key="prefs.appearance.theme">Tema</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">Oscuro</system:String>
   <system:String x:Key="prefs.appearance.theme.light">Claro</system:String>
@@ -258,6 +280,8 @@ Mantén Ctrl para seleccionar</system:String>
   <system:String x:Key="prefs.playback.lockstarttime.on">Mover el cursor a donde se empezó a reproducir</system:String>
   <system:String x:Key="prefs.playback.test">Probar</system:String>
   <system:String x:Key="prefs.rendering">Renderización</system:String>
+  <!--<system:String x:Key="prefs.rendering.onnxgpu">GPU</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.onnxrunner">Machine Learning Runner</system:String>-->
   <system:String x:Key="prefs.rendering.phasecomp">Compensación de fase</system:String>
   <system:String x:Key="prefs.rendering.prerender">Prerenderización</system:String>
   <!--<system:String x:Key="prefs.rendering.resampler">Resampler</system:String>-->
@@ -268,14 +292,15 @@ Advertencia: Moresampler no es totalmente compatible por ahora. Este puede ser l
 3. Espere pacientemente a que Moresampler genere los archivos llsm que faltan.
   </system:String>
   <system:String x:Key="prefs.rendering.resampler.note">
-        Nota: Para usar un Resampler externo, pon su archivo (sea .exe o .dll) en la carpeta Resamplers, en la ruta de instalación de OpenUTAU.
-    </system:String>
+    Nota: Para usar un Resampler externo, pon su archivo (sea .exe o .dll) en la carpeta Resamplers, en la ruta de instalación de OpenUTAU.
+  </system:String>
   <!--<system:String x:Key="prefs.rendering.threads.cpuwarn">
     Warning: too many render threads may cause OpenUtau to run slowly.
   </system:String>-->
   <!--<system:String x:Key="prefs.rendering.threads.numthreads">Maximum Render Threads</system:String>-->
   <system:String x:Key="prefs.rendering.wavtool">WAVTool</system:String>
 
+  <!--<system:String x:Key="progress.loadingsingers">Loading Singers...</system:String>-->
   <system:String x:Key="progress.saved">Proyecto guardado. {0}</system:String>
   <system:String x:Key="progress.waitingrendering">Esperando al Renderizador...</system:String>
 
@@ -286,6 +311,7 @@ Advertencia: Moresampler no es totalmente compatible por ahora. Este puede ser l
   <!--<system:String x:Key="singers.editoto.regenfrq.regenerating">Regenerating FRQ</system:String>-->
   <system:String x:Key="singers.editoto.reset">Restablecer OTO</system:String>
   <system:String x:Key="singers.editoto.save">Guardar OTO</system:String>
+  <!--<system:String x:Key="singers.editoto.searchalias">Search Alias</system:String>-->
   <system:String x:Key="singers.editoto.setvlabelerpath">Por favor, descarga vLabeler (1.0.0-beta1 o más nuevo) de https://github.com/sdercolin/vlabeler y configura la ruta de vLabeler en ajustes primero.</system:String>
   <system:String x:Key="singers.errorreport">Generar registro de error de voz</system:String>
   <system:String x:Key="singers.location">Mostrar archivos</system:String>
@@ -314,6 +340,16 @@ Advertencia: Moresampler no es totalmente compatible por ahora. Este puede ser l
   <system:String x:Key="singers.subbanks.tone">Tono</system:String>
   <system:String x:Key="singers.subbanks.toneranges">Rangos tonales</system:String>
   <system:String x:Key="singers.visitwebsite">Visitar sitio web</system:String>
+
+  <!--<system:String x:Key="singersetup.archivefileencoding">Archive File Encoding</system:String>-->
+  <!--<system:String x:Key="singersetup.archivefileencoding.prompt">Choose an encoding that make file names look right.</system:String>-->
+  <!--<system:String x:Key="singersetup.back">Back</system:String>-->
+  <!--<system:String x:Key="singersetup.install">Install</system:String>-->
+  <!--<system:String x:Key="singersetup.next">Next</system:String>-->
+  <!--<system:String x:Key="singersetup.missinginfo">Please add the following settings to this voicebank's character.yaml.</system:String>-->
+  <!--<system:String x:Key="singersetup.singertype">Singer Type</system:String>-->
+  <!--<system:String x:Key="singersetup.textfileencoding">Text File Encoding</system:String>-->
+  <!--<system:String x:Key="singersetup.textfileencoding.prompt">Choose an encoding that make file contents look right.</system:String>-->
 
   <system:String x:Key="tip.aliasbox">Cambiar alias</system:String>
   <system:String x:Key="tip.exps">

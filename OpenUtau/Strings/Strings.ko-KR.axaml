@@ -25,8 +25,8 @@
 
   <system:String x:Key="dialogs.about.caption">OpenUTAU에 대하여</system:String>
   <system:String x:Key="dialogs.about.message">
-      OpenUtau는 현대적인 사용자 경험과 지능적인 음운 지원을 통해 UTAU 커뮤니티를 위한 오픈 소스 편집 환경을 목표로 합니다. Github의 우리 프로젝트에 방문하세요.
-    </system:String>
+    OpenUtau는 현대적인 사용자 경험과 지능적인 음운 지원을 통해 UTAU 커뮤니티를 위한 오픈 소스 편집 환경을 목표로 합니다. Github의 우리 프로젝트에 방문하세요.
+  </system:String>
   <system:String x:Key="dialogs.exitsave.caption">OpenUtau 종료</system:String>
   <system:String x:Key="dialogs.exitsave.message">현재 프로젝트가 저장되지 않았습니다. 저장하시겠어요?</system:String>
   <system:String x:Key="dialogs.export.caption">내보내기</system:String>
@@ -50,6 +50,7 @@
   <system:String x:Key="exps.caption">표현</system:String>
   <system:String x:Key="exps.defaultvalue">기본</system:String>
   <system:String x:Key="exps.flag">리샘플러 플래그</system:String>
+  <!--<system:String x:Key="exps.getsuggestions">Add all expressions suggested by renderers</system:String>-->
   <system:String x:Key="exps.isflag">리샘플러 플래그임</system:String>
   <system:String x:Key="exps.maxvalue">최대</system:String>
   <system:String x:Key="exps.minvalue">최소</system:String>
@@ -69,6 +70,18 @@
   <system:String x:Key="lyrics.reset">초기화</system:String>
   <system:String x:Key="lyrics.selectnotes">아무 노트나 먼저 선택해주세요!</system:String>
   <system:String x:Key="lyrics.separators">구분자</system:String>
+  
+  <!--<system:String x:Key="lyricsreplace.after">After :</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.before">Before :</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.preset.rmvalphabet">Remove alphabet</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.preset.rmvnonhiragana">Remove non-hiragana</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.preset.rmvphonetichint">Remove phonetic hint</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.preset.rmvspace">Remove spaces and earlier</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.preset.rmvtone">Remove tone suffix</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.presets">Presets</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.preview">Preview</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.regex">Regular expressions can be used</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.replace">General lyrics replacement</system:String>-->
 
   <system:String x:Key="menu.edit">편집</system:String>
   <system:String x:Key="menu.edit.copy">복사</system:String>
@@ -173,17 +186,20 @@
   <system:String x:Key="pianoroll.menu.lyrics">가사</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">"-" 기호를 "+" 기호로 대체</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">가사 편집</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.hanzitopinyin">한자를 병음으로</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">히라가나를 로마자로</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">일본어 VCV를 CV로</system:String>
+  <!--<system:String x:Key="pianoroll.menu.lyrics.movesuffixtovoicecolor">Move Suffix to VoiceColor</system:String>-->
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">문자 접미사 제거</system:String>
+  <!--<system:String x:Key="pianoroll.menu.lyrics.removephonetichint">Remove Phonetic Hint</system:String>-->
   <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">톤 접미사 제거</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">로마자를 히라가나로</system:String>
   <system:String x:Key="pianoroll.menu.notedefaults">노트 기본값</system:String>
   <system:String x:Key="pianoroll.menu.notes">노트</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtaildash">"-" 꼬리 추가</system:String>
   <system:String x:Key="pianoroll.menu.notes.addtailrest">"R" 꼬리 추가</system:String>
+  <!--<system:String x:Key="pianoroll.menu.notes.bakepitch">Convert PITD to pitch control points</system:String>-->
   <system:String x:Key="pianoroll.menu.notes.clear.vibratos">비브라토 지우기</system:String>
+  <system:String x:Key="pianoroll.menu.notes.hanzitopinyin">한자를 병음으로</system:String>
   <system:String x:Key="pianoroll.menu.notes.loadrenderedpitch">렌더링 된 피치 로드</system:String>
   <system:String x:Key="pianoroll.menu.notes.octavedown">옥타브를 아래로 내리기</system:String>
   <system:String x:Key="pianoroll.menu.notes.octaveup">옥타브를 위로 올리기</system:String>
@@ -196,6 +212,7 @@
   <system:String x:Key="pianoroll.menu.part">파트</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">레거시 플러그인 (실험)</system:String>
   <system:String x:Key="pianoroll.toggle.finalpitch">렌더링 할 최종 피치 보기 (R)</system:String>
+  <!--<system:String x:Key="pianoroll.toggle.noteparams">View Note Parameters (\)</system:String>-->
   <system:String x:Key="pianoroll.toggle.phoneme">음소 보기 (O)</system:String>
   <system:String x:Key="pianoroll.toggle.pitch">피치벤드 보기 (I)</system:String>
   <system:String x:Key="pianoroll.toggle.snap">스냅 켜고 끄기 (P)</system:String>
@@ -206,15 +223,19 @@
   <system:String x:Key="pianoroll.toggle.vibrato">비브라토 보기 (U)</system:String>
   <system:String x:Key="pianoroll.toggle.waveform">파형 보기 (W)</system:String>
   <system:String x:Key="pianoroll.tool.drawpitch">피치 그리기 툴 (4)</system:String>
+  <!--Left click to draw
+  Right click to reset
+  Hold Ctrl to select
+  Hold Alt to smoothen</system:String>-->
   <system:String x:Key="pianoroll.tool.eraser">삭제 툴 (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">잘라내기 툴 (5)</system:String>
   <system:String x:Key="pianoroll.tool.penplus">팬+ 툴 (Ctrl + 2)
     왼쪽 클릭으로 그리기
     오른쪽 클릭으로 삭제
-컨트롤 키를 누르고 선택</system:String>
+    컨트롤 키를 누르고 선택</system:String>
   <system:String x:Key="pianoroll.tool.penv2">팬 툴 (2)
     왼쪽 클릭으로 그리기
-컨트롤 키를 누르고 선택</system:String>
+    컨트롤 키를 누르고 선택</system:String>
   <system:String x:Key="pianoroll.tool.selectionv2">선택 툴 (1)</system:String>
 
   <system:String x:Key="prefs.advanced">고급</system:String>
@@ -229,6 +250,7 @@
   <system:String x:Key="prefs.appearance.lang">언어</system:String>
   <system:String x:Key="prefs.appearance.showghostnotes">피아노 롤에 다른 트랙의 노트 표시</system:String>
   <system:String x:Key="prefs.appearance.showportrait">피아노 롤에 초상화 표시</system:String>
+  <!--<system:String x:Key="prefs.appearance.sortorder">Singer sorting order</system:String>-->
   <system:String x:Key="prefs.appearance.theme">테마</system:String>
   <system:String x:Key="prefs.appearance.theme.dark">다크</system:String>
   <system:String x:Key="prefs.appearance.theme.light">라이트</system:String>
@@ -258,6 +280,8 @@
   <system:String x:Key="prefs.playback.lockstarttime.on">재생을 시작한 위치로 커서를 다시 이동</system:String>
   <system:String x:Key="prefs.playback.test">테스트</system:String>
   <system:String x:Key="prefs.rendering">렌더링</system:String>
+  <!--<system:String x:Key="prefs.rendering.onnxgpu">GPU</system:String>-->
+  <!--<system:String x:Key="prefs.rendering.onnxrunner">Machine Learning Runner</system:String>-->
   <system:String x:Key="prefs.rendering.phasecomp">위상 보정</system:String>
   <system:String x:Key="prefs.rendering.prerender">사전 렌더러</system:String>
   <system:String x:Key="prefs.rendering.resampler">리샘플러</system:String>
@@ -276,6 +300,7 @@
   <system:String x:Key="prefs.rendering.threads.numthreads">최대 렌더 스레드</system:String>
   <!--<system:String x:Key="prefs.rendering.wavtool">Wavtool</system:String>-->
 
+  <!--<system:String x:Key="progress.loadingsingers">Loading Singers...</system:String>-->
   <system:String x:Key="progress.saved">프로젝트 저장됨. {0}</system:String>
   <system:String x:Key="progress.waitingrendering">렌더링 대기 중</system:String>
 
@@ -286,6 +311,7 @@
   <system:String x:Key="singers.editoto.regenfrq.regenerating">FRQ를 재생성 하는 중</system:String>
   <system:String x:Key="singers.editoto.reset">Oto 초기화</system:String>
   <system:String x:Key="singers.editoto.save">Oto 저장</system:String>
+  <!--<system:String x:Key="singers.editoto.searchalias">Search Alias</system:String>-->
   <system:String x:Key="singers.editoto.setvlabelerpath">https://github.com/sdercolin/vlabeler 에서 vLabeler(1.0.0-beta1 이상)를 다운로드 할 수 있습니다. 그리고 설정에서 vLabeler 경로를 지정해주세요.</system:String>
   <system:String x:Key="singers.errorreport">가수 오류보고 생성</system:String>
   <system:String x:Key="singers.location">위치</system:String>
@@ -315,6 +341,16 @@
   <system:String x:Key="singers.subbanks.toneranges">톤 범위</system:String>
   <system:String x:Key="singers.visitwebsite">웹 사이트 방문</system:String>
 
+  <!--<system:String x:Key="singersetup.archivefileencoding">Archive File Encoding</system:String>-->
+  <!--<system:String x:Key="singersetup.archivefileencoding.prompt">Choose an encoding that make file names look right.</system:String>-->
+  <!--<system:String x:Key="singersetup.back">Back</system:String>-->
+  <!--<system:String x:Key="singersetup.install">Install</system:String>-->
+  <!--<system:String x:Key="singersetup.next">Next</system:String>-->
+  <!--<system:String x:Key="singersetup.missinginfo">Please add the following settings to this voicebank's character.yaml.</system:String>-->
+  <!--<system:String x:Key="singersetup.singertype">Singer Type</system:String>-->
+  <!--<system:String x:Key="singersetup.textfileencoding">Text File Encoding</system:String>-->
+  <!--<system:String x:Key="singersetup.textfileencoding.prompt">Choose an encoding that make file contents look right.</system:String>-->
+
   <system:String x:Key="tip.aliasbox">Alias 재정의</system:String>
   <system:String x:Key="tip.exps">
 왼쪽 마우스: 표현 설정
@@ -343,10 +379,13 @@
   <system:String x:Key="tip.notes.zoomx">◀ 수평으로 확대하려면 여기서 스크롤하세요 ▶</system:String>
   <system:String x:Key="tip.notes.zoomy">수직으로 확대하려면 여기서 스크롤하세요 ▶</system:String>
 
+  <!--<system:String x:Key="tracks.duplicate">Duplicate Track</system:String>-->
+  <!--<system:String x:Key="tracks.duplicatesettings">Duplicate Track Settings</system:String>-->
   <system:String x:Key="tracks.more">더보기</system:String>
   <system:String x:Key="tracks.movedown">아래로 이동</system:String>
   <system:String x:Key="tracks.moveup">위로 이동</system:String>
   <system:String x:Key="tracks.remove">제거</system:String>
+  <!--<system:String x:Key="tracks.rename">Rename track</system:String>-->
   <system:String x:Key="tracks.selectrenderer">렌더러 선택</system:String>
   <system:String x:Key="tracks.selectsinger">가수 선택</system:String>
 

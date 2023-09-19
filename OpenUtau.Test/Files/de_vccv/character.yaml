@@ -1,0 +1,19 @@
+name: DE VCCV Test
+portrait_opacity: 0.67
+default_phonemizer: OpenUtau.Plugin.Builtin.GermanVCCVPhonemizer
+subbanks:
+- color: ""
+  prefix: ""
+  suffix: G3
+  tone_ranges:
+  - F3-B7
+- color: ""
+  prefix: ""
+  suffix: D3
+  tone_ranges:
+  - C3-E3
+- color: ""
+  prefix: ""
+  suffix: A2
+  tone_ranges:
+  - C1-B2

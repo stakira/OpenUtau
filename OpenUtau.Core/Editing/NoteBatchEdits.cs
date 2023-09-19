@@ -21,7 +21,11 @@ namespace OpenUtau.Core.Editing {
             var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
             foreach (var note in notes) {
                 if (note.lyric != lyric && (note.Next == null || note.Next.position > note.End + 120)) {
-                    toAdd.Add(project.CreateNote(note.tone, note.End, 120));
+                    var addNote = project.CreateNote(note.tone, note.End, 120);
+                    foreach(var exp in note.phonemeExpressions.OrderBy(exp => exp.index)) {
+                        addNote.SetExpression(project, project.tracks[part.trackNo], exp.abbr, new float[] { exp.value });
+                    }
+                    toAdd.Add(addNote);
                 }
             }
             if (toAdd.Count == 0) {
@@ -31,6 +35,37 @@ namespace OpenUtau.Core.Editing {
             foreach (var note in toAdd) {
                 note.lyric = lyric;
                 docManager.ExecuteCmd(new AddNoteCommand(part, note));
+            }
+            docManager.EndUndoGroup();
+        }
+    }
+
+    public class RemoveTailNote : BatchEdit {
+        public string Name => name;
+
+        private string lyric;
+        private string name;
+
+        public RemoveTailNote(string lyric, string name) {
+            this.lyric = lyric;
+            this.name = name;
+        }
+
+        bool NeedToBeRemoved(UNote note) {
+            return note.lyric == lyric 
+                && (note.Next == null || note.Next.position > note.End);
+        }
+
+        public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
+            var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
+            List<UNote> toRemove = notes.Where(NeedToBeRemoved).ToList();
+            if (toRemove.Count == 0) {
+                return;
+            }
+            docManager.StartUndoGroup(true);
+            foreach (var note in toRemove) {
+                note.lyric = lyric;
+                docManager.ExecuteCmd(new RemoveNoteCommand(part, note));
             }
             docManager.EndUndoGroup();
         }
@@ -82,6 +117,26 @@ namespace OpenUtau.Core.Editing {
                 } else if (newEnd != end) {
                     docManager.ExecuteCmd(new ResizeNoteCommand(part, note, newEnd - newPos - note.duration));
                 }
+            }
+            docManager.EndUndoGroup();
+        }
+    }
+
+    public class AutoLegato : BatchEdit {
+        public virtual string Name => name;
+
+        private string name;
+
+        public AutoLegato() {
+            name = $"pianoroll.menu.notes.autolegato";
+        }
+
+        public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
+            var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
+            notes.Sort((a, b) => a.position.CompareTo(b.position));
+            docManager.StartUndoGroup(true);
+            for (int i = 0; i < notes.Count - 1; i++) {
+                docManager.ExecuteCmd(new ResizeNoteCommand(part, notes[i], notes[i + 1].position - notes[i].position - notes[i].duration));
             }
             docManager.EndUndoGroup();
         }
@@ -193,6 +248,7 @@ namespace OpenUtau.Core.Editing {
                 docManager.ExecuteCmd(new VibratoFadeInCommand(part, note, NotePresets.Default.DefaultVibrato.VibratoIn));
                 docManager.ExecuteCmd(new VibratoFadeOutCommand(part, note, NotePresets.Default.DefaultVibrato.VibratoOut));
                 docManager.ExecuteCmd(new VibratoShiftCommand(part, note, NotePresets.Default.DefaultVibrato.VibratoShift));
+                docManager.ExecuteCmd(new VibratoDriftCommand(part, note, NotePresets.Default.DefaultVibrato.VibratoDrift));
                 if (NotePresets.Default.AutoVibratoToggle && note.duration >= NotePresets.Default.AutoVibratoNoteDuration) {
                     docManager.ExecuteCmd(new VibratoLengthCommand(part, note, NotePresets.Default.DefaultVibrato.VibratoLength));
                 } else {
@@ -225,6 +281,51 @@ namespace OpenUtau.Core.Editing {
                 }
                 if (shouldClear) {
                     docManager.ExecuteCmd(new ClearPhonemeTimingCommand(part, note));
+                }
+            }
+            docManager.EndUndoGroup();
+        }
+    }
+
+    public class LengthenCrossfade : BatchEdit {
+        public virtual string Name => name;
+        private string name;
+        private double ratio;
+
+        public LengthenCrossfade(double ratio) {
+            name = "pianoroll.menu.notes.lengthencrossfade";
+            this.ratio = ratio;
+        }
+
+        public void Run(UProject project, UVoicePart part, List<UNote> selectedNotes, DocManager docManager) {
+            var notes = selectedNotes.Count > 0 ? selectedNotes : part.notes.ToList();
+            if (notes.Count == 0) {
+                return;
+            }
+            docManager.StartUndoGroup(true);
+            var track = project.tracks[part.trackNo];
+            foreach (var note in notes) {
+                foreach (UPhoneme phoneme in part.phonemes) {
+                    if (phoneme.Parent == note && phoneme.Prev != null && phoneme.PositionMs == phoneme.Prev.EndMs) {
+
+                        double consonantStretch = Math.Pow(2f, 1.0f - phoneme.GetExpression(project, track, Format.Ustx.VEL).Item1 / 100f);
+                        double maxPreutter = phoneme.oto.Preutter * consonantStretch;
+                        double prevDur = phoneme.Prev.DurationMs;
+                        double preutter = phoneme.preutter;
+
+                        if (maxPreutter > prevDur * 0.9f) {
+                            maxPreutter = prevDur * 0.9f;
+                        }
+                        if(maxPreutter > phoneme.preutter) {
+                            docManager.ExecuteCmd(new PhonemePreutterCommand(part, note, phoneme.index, (float)(maxPreutter - phoneme.autoPreutter)));
+                            preutter = maxPreutter;
+                        }
+
+                        var overlap = preutter * ratio;
+                        if (overlap > phoneme.autoOverlap) {
+                            docManager.ExecuteCmd(new PhonemeOverlapCommand(part, note, phoneme.index, (float)(overlap - phoneme.autoOverlap)));
+                        }
+                    }
                 }
             }
             docManager.EndUndoGroup();
@@ -332,6 +433,8 @@ namespace OpenUtau.Core.Editing {
         * Wikipedia: https://en.wikipedia.org/wiki/Ramer%E2%80%93Douglas%E2%80%93Peucker_algorithm
         * Implementation reference: https://rosettacode.org/wiki/Ramer-Douglas-Peucker_line_simplification
         * */
+        //perpendicularDistance is replaced with deltaY, because the units of X and Y are different. 
+        //result doesn't contain the last point to enhance performance in recursion
         List<Point> simplifyShape(List<Point> pointList, Double epsilon) {
             if (pointList.Count <= 2) {
                 return pointList;
@@ -362,15 +465,14 @@ namespace OpenUtau.Core.Editing {
                 var recResults2 = simplifyShape(pointList.GetRange(index, pointList.Count - index), epsilon);
 
                 // Build the result list
-                results.AddRange(recResults1.GetRange(0, recResults1.Count - 1));
+                results.AddRange(recResults1);
                 results.AddRange(recResults2);
                 if (results.Count < 2) {
                     throw new Exception("Problem assembling output");
                 }
             } else {
-                //Just return start and end points
+                //Just return the start point
                 results.Add(pointList[0].ChangeShape(shape));
-                results.Add(pointList[end]);
             }
             return results;
         }
@@ -424,7 +526,18 @@ namespace OpenUtau.Core.Editing {
                 ).ToList();
 
                 //Reduce pitch point
-                points = simplifyShape(points, 10);
+                var mustIncludeIndices = phrase.notes
+                    .SelectMany(n => new[] { 
+                        n.position, 
+                        n.duration>160 ? n.end-80 : n.position+n.duration/2 })
+                    .Select(t=>(t-pitchStart)/pitchInterval)
+                    .Prepend(0)
+                    .Append(points.Count-1)
+                    .ToList();
+                //pairwise(mustIncludePointIndices) 
+                points = mustIncludeIndices.Zip(mustIncludeIndices.Skip(1), 
+                        (a, b) => simplifyShape(points.GetRange(a,b-a),10))
+                    .SelectMany(x=>x).Append(points[^1]).ToList();
                 
                 //determine where to distribute pitch point
                 int idx = 0;
@@ -459,7 +572,7 @@ namespace OpenUtau.Core.Editing {
                     }
                 }
                 adjusted_boundaries[^1] = note_boundaries[^1];
-                //distribute pitch point
+                //distribute pitch point to each note
                 foreach(int i in Enumerable.Range(0,phrase.notes.Length)) {
                     var note = phrase.notes[i];
                     var pitch = points.GetRange(adjusted_boundaries[i]-2,adjusted_boundaries[i + 1]-(adjusted_boundaries[i]-2))
@@ -476,7 +589,8 @@ namespace OpenUtau.Core.Editing {
                 }
             }
             docManager.StartUndoGroup(true);
-            foreach(var note in selectedNotes) {
+            //Apply pitch points to notes
+            foreach(var note in notes) {
                 if (pitchPointsPerNote.TryGetValue(note.position, out var tickRangeAndPitch)) {
                     var pitch = tickRangeAndPitch.Item3;
                     docManager.ExecuteCmd(new ResetPitchPointsCommand(part, note));
@@ -492,21 +606,23 @@ namespace OpenUtau.Core.Editing {
                     
                 }
             }
-            foreach(var note in selectedNotes) {
+            //Erase PITD curve that has been converted to pitch points
+            foreach(var note in notes) {
                 if (pitchPointsPerNote.TryGetValue(note.position, out var tickRangeAndPitch)) {
+                    var start = tickRangeAndPitch.Item1 - part.position;
+                    var end = tickRangeAndPitch.Item2 - part.position;
                     docManager.ExecuteCmd(new SetCurveCommand(project, part, Format.Ustx.PITD, 
-                        tickRangeAndPitch.Item1, 0, 
-                        tickRangeAndPitch.Item1, 0));
+                        start, 0, 
+                        start, 0));
                     docManager.ExecuteCmd(new SetCurveCommand(project, part, Format.Ustx.PITD, 
-                        tickRangeAndPitch.Item2, 0, 
-                        tickRangeAndPitch.Item2, 0));
+                        end, 0, 
+                        end, 0));
                     docManager.ExecuteCmd(new SetCurveCommand(project, part, Format.Ustx.PITD, 
-                        tickRangeAndPitch.Item1, 0, 
-                        tickRangeAndPitch.Item2, 0));
+                        start, 0, 
+                        end, 0));
                 }
             }
             docManager.EndUndoGroup();
-            
         }
     }
 }

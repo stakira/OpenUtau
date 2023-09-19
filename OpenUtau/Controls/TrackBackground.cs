@@ -56,11 +56,8 @@ namespace OpenUtau.App.Controls {
                 .Subscribe(e => InvalidateVisual());
         }
 
-        protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change) {
+        protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change) {
             base.OnPropertyChanged(change);
-            if (!change.IsEffectiveValueChange) {
-                return;
-            }
             if (change.Property == TrackHeightProperty ||
                 change.Property == TrackOffsetProperty ||
                 change.Property == ForegroundProperty) {
@@ -78,6 +75,7 @@ namespace OpenUtau.App.Controls {
                 bool isAltTrack = IsAltTrack(track) ^ (ThemeManager.IsDarkMode && !IsKeyboard);
                 bool isCenterKey = IsKeyboard && IsCenterKey(track);
                 var brush = isCenterKey ? ThemeManager.CenterKeyBrush
+                    : IsKeyboard ? (isAltTrack ? ThemeManager.BlackKeyBrush : ThemeManager.WhiteKeyBrush)
                     : isAltTrack ? Foreground : Background;
                 context.DrawRectangle(
                     brush,
@@ -89,9 +87,9 @@ namespace OpenUtau.App.Controls {
                             : ThemeManager.WhiteKeyNameBrush;
                     string toneName = MusicMath.GetToneName(ViewConstants.MaxTone - 1 - track);
                     var textLayout = TextLayoutCache.Get(toneName, brush, 12);
-                    var textPosition = new Point(Bounds.Width - 4 - (int)textLayout.Size.Width, (int)(top + (TrackHeight - textLayout.Size.Height) / 2));
-                    using (var state = context.PushPreTransform(Matrix.CreateTranslation(textPosition))) {
-                        textLayout.Draw(context);
+                    var textPosition = new Point(Bounds.Width - 4 - (int)textLayout.Width, (int)(top + (TrackHeight - textLayout.Height) / 2));
+                    using (var state = context.PushTransform(Matrix.CreateTranslation(textPosition))) {
+                        textLayout.Draw(context, new Point());
                     }
                 }
                 track++;
@@ -104,6 +102,9 @@ namespace OpenUtau.App.Controls {
                 return track % 2 == 1;
             }
             int tone = ViewConstants.MaxTone - 1 - track;
+            if (tone < 0) {
+                return false;
+            }
             return MusicMath.IsBlackKey(tone);
         }
 

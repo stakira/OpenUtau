@@ -87,12 +87,31 @@ namespace OpenUtau.Core.Ustx {
 
         [YamlIgnore] public string SingerName => Singer != null ? Singer.DisplayName : "[No Singer]";
         [YamlIgnore] public int TrackNo { set; get; }
-        [YamlIgnore] public int DisplayTrackNo => TrackNo + 1;
-        public bool Mute { set; get; }
-        public bool Solo { set; get; }
+        public string TrackName { get; set; } = "New Track";
+        public string TrackColor { get; set; } = "Blue";
+        [YamlIgnore] public bool Muted { set; get; }
+        public bool Mute { get; set; }
+        public bool Solo { get; set; }
         public double Volume { set; get; }
         public double Pan { set; get; }
         [YamlIgnore] public UExpressionDescriptor VoiceColorExp { set; get; }
+        public string[] VoiceColorNames { get; set; } = new string[] { "" };
+
+        public UTrack() {
+        }
+        public UTrack(UProject project) {
+            int trackCount = 0;
+            if (project.tracks != null && project.tracks.Count > 0) {
+                trackCount = project.tracks.Max(t => int.TryParse(t.TrackName.Replace("Track", ""), out int result) ? result : 0);
+                if (project.tracks.Count > trackCount) {
+                    trackCount = project.tracks.Count;
+                }
+            }
+            TrackName = "Track" + (trackCount + 1);
+        }
+        public UTrack(string trackName) {
+            TrackName = trackName;
+        }
 
         public bool TryGetExpression(UProject project, string key, out UExpressionDescriptor descriptor) {
             if (!project.expressions.TryGetValue(key, out descriptor)) {
@@ -129,6 +148,31 @@ namespace OpenUtau.Core.Ustx {
             }
         }
 
+        public bool ValidateVoiceColor(out string[] oldColors, out string[] newColors) {
+            bool discrepancy = false;
+            oldColors = VoiceColorNames.ToArray();
+            newColors = new string[0];
+
+            if (Singer != null && Singer.Found && VoiceColorExp != null) {
+                newColors = VoiceColorExp.options.ToArray();
+
+                if (VoiceColorNames.Length > 1) {
+                    if (VoiceColorNames.Length != VoiceColorExp.options.Length) {
+                        discrepancy = true;
+                    } else {
+                        for (int i = 0; i < VoiceColorNames.Length; i++) {
+                            if (VoiceColorNames[i] != VoiceColorExp.options[i]) {
+                                discrepancy = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+                VoiceColorNames = VoiceColorExp.options.ToArray();
+            }
+            return discrepancy;
+        }
+
         public void BeforeSave() {
             singer = Singer?.Id;
             phonemizer = Phonemizer.GetType().FullName;
@@ -162,6 +206,9 @@ namespace OpenUtau.Core.Ustx {
                 };
             }
             TrackNo = project.tracks.IndexOf(this);
+            if (!Solo && Mute) {
+                Muted = true;
+            }
         }
     }
 }

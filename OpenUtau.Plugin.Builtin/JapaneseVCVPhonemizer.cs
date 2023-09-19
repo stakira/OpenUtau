@@ -38,43 +38,64 @@ namespace OpenUtau.Plugin.Builtin {
 
         public override Result Process(Note[] notes, Note? prev, Note? next, Note? prevNeighbour, Note? nextNeighbour, Note[] prevNeighbours) {
             var note = notes[0];
-            if (!string.IsNullOrEmpty(note.phoneticHint)) {
-                // If a hint is present, returns the hint.
-                return new Result {
-                    phonemes = new Phoneme[] {
-                        new Phoneme {
-                            phoneme = note.phoneticHint,
-                        }
-                    },
-                };
-            }
-            // The alias for no previous neighbour note. For example, "- な" for "な".
-            var phoneme = $"- {note.lyric}";
-            if (prevNeighbour != null) {
-                // If there is a previous neighbour note, first get its hint or lyric.
-                var lyric = prevNeighbour?.phoneticHint ?? prevNeighbour?.lyric;
-                // Get the last unicode element of the hint or lyric. For example, "ゃ" from "きゃ" or "- きゃ".
-                var unicode = ToUnicodeElements(lyric);
-                // Look up the trailing vowel. For example "a" for "ゃ".
-                if (vowelLookup.TryGetValue(unicode.LastOrDefault() ?? string.Empty, out var vow)) {
-                    // Now replace "- な" initially set to "a な".
-                    phoneme = $"{vow} {note.lyric}";
-                }
-            }
+            var currentLyric = note.lyric.Normalize(); //measures for Unicode
+
             // Get color
             string color = string.Empty;
             int toneShift = 0;
+            int? alt = null;
             if (note.phonemeAttributes != null) {
                 var attr = note.phonemeAttributes.FirstOrDefault(attr => attr.index == 0);
                 color = attr.voiceColor;
                 toneShift = attr.toneShift;
+                alt = attr.alternate;
             }
-            if (singer.TryGetMappedOto(phoneme, note.tone + toneShift, color, out var oto)) {
+
+            if (!string.IsNullOrEmpty(note.phoneticHint)) {
+                // If a hint is present, returns the hint.
+                currentLyric = note.phoneticHint.Normalize();
+                if (singer.TryGetMappedOto(currentLyric + alt, note.tone + toneShift, color, out var phAlt)) {
+                    return new Result {
+                        phonemes = new Phoneme[] {
+                        new Phoneme {
+                            phoneme = phAlt.Alias,
+                        }
+                    },
+                    };
+                } else if(singer.TryGetMappedOto(currentLyric, note.tone + toneShift, color, out var ph)){
+                    return new Result {
+                        phonemes = new Phoneme[] {
+                        new Phoneme {
+                            phoneme = ph.Alias,
+                        }
+                    },
+                    };
+                }
+            }
+            // The alias for no previous neighbour note. For example, "- な" for "な".
+            var phoneme = $"- {currentLyric}";
+            if (prevNeighbour != null) {
+                // If there is a previous neighbour note, first get its hint or lyric.
+                var prevLyric = prevNeighbour.Value.lyric.Normalize();
+                if (!string.IsNullOrEmpty(prevNeighbour.Value.phoneticHint)) {
+                    prevLyric = prevNeighbour.Value.phoneticHint.Normalize();
+                }
+                // Get the last unicode element of the hint or lyric. For example, "ゃ" from "きゃ" or "- きゃ".
+                var unicode = ToUnicodeElements(prevLyric);
+                // Look up the trailing vowel. For example "a" for "ゃ".
+                if (vowelLookup.TryGetValue(unicode.LastOrDefault() ?? string.Empty, out var vow)) {
+                    // Now replace "- な" initially set to "a な".
+                    phoneme = $"{vow} {currentLyric}";
+                }
+            }
+            if (singer.TryGetMappedOto(phoneme + alt, note.tone + toneShift, color, out var otoAlt)) {
+                phoneme = otoAlt.Alias;
+            } else if (singer.TryGetMappedOto(phoneme, note.tone + toneShift, color, out var oto)) {
                 phoneme = oto.Alias;
-            } else if (singer.TryGetMappedOto(note.lyric, note.tone + toneShift, color, out oto)) {
+            } else if (singer.TryGetMappedOto(currentLyric + alt, note.tone + toneShift, color, out oto)) {
                 phoneme = oto.Alias;
             } else {
-                phoneme = note.lyric;
+                phoneme = currentLyric;
             }
             return new Result {
                 phonemes = new Phoneme[] {

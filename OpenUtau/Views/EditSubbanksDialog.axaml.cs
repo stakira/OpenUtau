@@ -1,29 +1,18 @@
 ﻿using System;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
 using OpenUtau.App.ViewModels;
+using OpenUtau.Core;
 
 namespace OpenUtau.App.Views {
     public partial class EditSubbanksDialog : Window {
         internal readonly EditSubbanksViewModel ViewModel;
 
-        internal Action RefreshSinger;
-
-        private DataGrid dataGrid;
+        internal Action? RefreshSinger;
 
         public EditSubbanksDialog() {
             InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
             DataContext = ViewModel = new EditSubbanksViewModel();
-            dataGrid = this.FindControl<DataGrid>("SuffixGrid");
-        }
-
-        private void InitializeComponent() {
-            AvaloniaXamlLoader.Load(this);
         }
 
         void OnAdd(object sender, RoutedEventArgs e) {
@@ -60,15 +49,20 @@ namespace OpenUtau.App.Views {
         }
 
         void OnSelectAll(object sender, RoutedEventArgs e) {
-            dataGrid.SelectAll();
+            SuffixGrid.SelectAll();
         }
 
         void OnSet(object sender, RoutedEventArgs e) {
-            ViewModel.Set(dataGrid.SelectedItems);
+            ViewModel.Set(SuffixGrid.SelectedItems);
         }
 
         void OnClear(object sender, RoutedEventArgs e) {
-            ViewModel.Clear(dataGrid.SelectedItems);
+            ViewModel.Clear(SuffixGrid.SelectedItems);
+        }
+
+        protected override void OnClosed(EventArgs e) {
+            base.OnClosed(e);
+            DocManager.Inst.ExecuteCmd(new VoiceColorRemappingNotification(-1, true));
         }
     }
 }

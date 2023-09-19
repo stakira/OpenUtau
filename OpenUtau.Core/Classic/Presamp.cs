@@ -662,7 +662,10 @@ namespace Classic {
             { "zyi", "じ" },
             { "zyo", "じょ" },
             { "zyu", "じゅ" },
-            { "を", "お" } };
+            { "を", "お" },
+            { "ぢ", "じ" },
+            { "づ", "ず" }
+        };
 
         private readonly static List<string> defNums = new List<string> { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0" };
         private readonly static List<string> defAppends = new List<string> {

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -8,6 +9,7 @@ namespace OpenUtau.Core.Util {
         static Regex whitespace = new Regex(@"\s");
         static Regex standalone = new Regex(
             @"\p{IsCJKUnifiedIdeographs}|\p{IsHiragana}|\p{IsKatakana}|\p{IsHangulSyllables}");
+        static Regex contracted = new Regex(@"[ゃゅょぁぃぅぇぉャュョァィゥェォ]");
 
         public static List<string> Split(string text) {
             var lyrics = new List<string>();
@@ -20,12 +22,16 @@ namespace OpenUtau.Core.Util {
                         lyrics.Add(builder.ToString());
                         builder.Clear();
                     }
+                } else if (contracted.IsMatch(ele)) {
+                    builder.Append(ele);
+                    lyrics.Add(builder.ToString());
+                    builder.Clear();
                 } else if (standalone.IsMatch(ele)) {
                     if (builder.Length > 0) {
                         lyrics.Add(builder.ToString());
                         builder.Clear();
                     }
-                    lyrics.Add(ele);
+                    builder.Append(ele);
                 } else if (ele == "\"") {
                     while (etor.MoveNext()) {
                         string ele1 = etor.GetTextElement();
@@ -38,6 +44,10 @@ namespace OpenUtau.Core.Util {
                         }
                     }
                 } else {
+                    if (builder.Length > 0 && standalone.IsMatch(builder.ToString())) {
+                        lyrics.Add(builder.ToString());
+                        builder.Clear();
+                    }
                     builder.Append(ele);
                 }
             }
@@ -60,6 +70,8 @@ namespace OpenUtau.Core.Util {
                     builder.Append($"\"{lyric}\"");
                 } else if (standalone.IsMatch(lyric)) {
                     if (lyric.Length == 1) {
+                        builder.Append(lyric);
+                    } else if (lyric.Length == 2 && contracted.IsMatch(lyric.Substring(1))) {
                         builder.Append(lyric);
                     } else {
                         builder.Append($"\"{lyric}\"");

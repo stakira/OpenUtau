@@ -28,6 +28,7 @@ namespace OpenUtau.Classic {
         public const string kCharTxt = "character.txt";
         public const string kCharYaml = "character.yaml";
         public const string kEnuconfigYaml = "enuconfig.yaml";
+        public const string kConfigYaml = "config.yaml";
         public const string kOtoIni = "oto.ini";
 
         readonly string basePath;
@@ -81,7 +82,7 @@ namespace OpenUtau.Classic {
         public static void LoadInfo(Voicebank voicebank, string filePath, string basePath) {
             var dir = Path.GetDirectoryName(filePath);
             var yamlFile = Path.Combine(dir, kCharYaml);
-            VoicebankConfig bankConfig = null;
+            VoicebankConfig? bankConfig = null;
             if (File.Exists(yamlFile)) {
                 try {
                     using (var stream = File.OpenRead(yamlFile)) {
@@ -91,11 +92,22 @@ namespace OpenUtau.Classic {
                     Log.Error(e, $"Failed to load yaml {yamlFile}");
                 }
             }
-            var enuconfigFile = Path.Combine(dir, kEnuconfigYaml);
-            if (File.Exists(enuconfigFile)) {
-                voicebank.SingerType = USingerType.Enunu;
-            } else {
-                voicebank.SingerType = USingerType.Classic;
+            switch (bankConfig?.SingerType) {
+                case "utau":
+                    voicebank.SingerType = USingerType.Classic;
+                    break;
+                case "enunu":
+                    voicebank.SingerType = USingerType.Enunu;
+                    break;
+                default:
+                    // Legacy detection code. Do not add more here.
+                    var enuconfigFile = Path.Combine(dir, kEnuconfigYaml);
+                    if (File.Exists(enuconfigFile)) {
+                        voicebank.SingerType = USingerType.Enunu;
+                    } else if (voicebank.SingerType != USingerType.Enunu) {
+                        voicebank.SingerType = USingerType.Classic;
+                    }
+                    break;
             }
             Encoding encoding = Encoding.GetEncoding("shift_jis");
             if (!string.IsNullOrEmpty(bankConfig?.TextFileEncoding)) {
@@ -175,6 +187,7 @@ namespace OpenUtau.Classic {
             if (!string.IsNullOrWhiteSpace(bankConfig.Portrait)) {
                 bank.Portrait = bankConfig.Portrait;
                 bank.PortraitOpacity = bankConfig.PortraitOpacity;
+                bank.PortraitHeight = bankConfig.PortraitHeight;
             }
             if (!string.IsNullOrWhiteSpace(bankConfig.Author)) {
                 bank.Author = bankConfig.Author;
@@ -397,7 +410,7 @@ namespace OpenUtau.Classic {
         public static void WriteOtoSet(OtoSet otoSet, Stream stream, Encoding encoding) {
             using (var writer = new StreamWriter(stream, encoding)) {
                 foreach (var oto in otoSet.Otos) {
-                    if (!oto.IsValid) {
+                    if (!oto.IsValid && (oto.FileTrace != null)) {
                         writer.Write(oto.FileTrace.line);
                         writer.Write('\n');
                         continue;

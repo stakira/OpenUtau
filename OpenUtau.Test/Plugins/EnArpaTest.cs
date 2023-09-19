@@ -28,7 +28,7 @@ namespace OpenUtau.Plugins {
             new string[] { "Whisper", "", "", "", "", "" },
             new string[] { "- m_W", "m uw", "uw n", "n s", "s t_3", "t aa_3", "aa r", "r -" })]
         public void PhonemizeTest(string singerName, string[] lyrics, string[] tones, string[] colors, string[] aliases) {
-            RunPhonemizeTest(singerName, lyrics, tones, colors, aliases);
+            RunPhonemizeTest(singerName, lyrics, RepeatString(lyrics.Length, ""), tones, colors, aliases);
         }
     }
 }

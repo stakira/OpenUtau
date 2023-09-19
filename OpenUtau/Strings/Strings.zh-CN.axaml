@@ -31,6 +31,8 @@
   <system:String x:Key="dialogs.exitsave.message">当前工程有未保存改动。是否保存？</system:String>
   <system:String x:Key="dialogs.export.caption">导出</system:String>
   <system:String x:Key="dialogs.export.savefirst">请先保存工程文件</system:String>
+  <system:String x:Key="dialogs.installdll.caption">安装音素器</system:String>
+  <system:String x:Key="dialogs.installdll.message">安装 </system:String>
   <system:String x:Key="dialogs.messagebox.cancel">取消</system:String>
   <system:String x:Key="dialogs.messagebox.no">否</system:String>
   <system:String x:Key="dialogs.messagebox.ok">好</system:String>
@@ -70,6 +72,18 @@
   <system:String x:Key="lyrics.reset">重置</system:String>
   <system:String x:Key="lyrics.selectnotes">请先选择一些音符!</system:String>
   <system:String x:Key="lyrics.separators">分隔符</system:String>
+  
+  <!--<system:String x:Key="lyricsreplace.after">After :</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.before">Before :</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.preset.rmvalphabet">Remove alphabet</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.preset.rmvnonhiragana">Remove non-hiragana</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.preset.rmvphonetichint">Remove phonetic hint</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.preset.rmvspace">Remove spaces and earlier</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.preset.rmvtone">Remove tone suffix</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.presets">Presets</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.preview">Preview</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.regex">Regular expressions can be used</system:String>-->
+  <!--<system:String x:Key="lyricsreplace.replace">General lyrics replacement</system:String>-->
 
   <system:String x:Key="menu.edit">编辑</system:String>
   <system:String x:Key="menu.edit.copy">复制</system:String>
@@ -174,10 +188,11 @@
   <system:String x:Key="pianoroll.menu.lyrics">歌词</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.dashtoplus">将 "-" 替换为 "+"</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.edit">编辑歌词</system:String>
-  <system:String x:Key="pianoroll.menu.lyrics.hanzitopinyin">汉字转拼音</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.hiraganatoromaji">平假名转罗马音</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.javcvtocv">日语 VCV 转 CV</system:String>
+  <!--<system:String x:Key="pianoroll.menu.lyrics.movesuffixtovoicecolor">Move Suffix to VoiceColor</system:String>-->
   <system:String x:Key="pianoroll.menu.lyrics.removelettersuffix">去除字母后缀</system:String>
+  <!--<system:String x:Key="pianoroll.menu.lyrics.removephonetichint">Remove Phonetic Hint</system:String>-->
   <system:String x:Key="pianoroll.menu.lyrics.removetonesuffix">去除音阶后缀</system:String>
   <system:String x:Key="pianoroll.menu.lyrics.romajitohiragana">罗马音转平假名</system:String>
   <system:String x:Key="pianoroll.menu.notedefaults">音符设置</system:String>
@@ -196,9 +211,12 @@
   <system:String x:Key="pianoroll.menu.notes.reset.phonemetimings">重置音素时机</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.pitchbends">重置滑音</system:String>
   <system:String x:Key="pianoroll.menu.notes.reset.vibratos">重置颤音</system:String>
+  <system:String x:Key="pianoroll.menu.notes.removetaildash">删除尾部"-"音符</system:String>
+  <system:String x:Key="pianoroll.menu.notes.removetailrest">删除尾部"R"音符</system:String>
   <system:String x:Key="pianoroll.menu.part">片段</system:String>
   <system:String x:Key="pianoroll.menu.part.legacypluginexp">传统插件 (实验性)</system:String>
   <system:String x:Key="pianoroll.toggle.finalpitch">显示最终音高线 (R)</system:String>
+  <!--<system:String x:Key="pianoroll.toggle.noteparams">View Note Parameters (\)</system:String>-->
   <system:String x:Key="pianoroll.toggle.phoneme">显示音素 (O)</system:String>
   <system:String x:Key="pianoroll.toggle.pitch">显示弯音 (I)</system:String>
   <system:String x:Key="pianoroll.toggle.snap">开关吸附 (P)</system:String>
@@ -209,6 +227,10 @@
   <system:String x:Key="pianoroll.toggle.vibrato">显示颤音 (U)</system:String>
   <system:String x:Key="pianoroll.toggle.waveform">显示波形 (W)</system:String>
   <system:String x:Key="pianoroll.tool.drawpitch">绘制音高线工具 (4)</system:String>
+  <!--Left click to draw
+  Right click to reset
+  Hold Ctrl to select
+  Hold Alt to smoothen</system:String>-->
   <system:String x:Key="pianoroll.tool.eraser">橡皮工具 (3)</system:String>
   <system:String x:Key="pianoroll.tool.knife">分割工具 (5)</system:String>
   <system:String x:Key="pianoroll.tool.penplus">笔(增强)工具 (Ctrl + 2)
@@ -224,6 +246,7 @@
   <system:String x:Key="prefs.advanced.beta">Beta测试版</system:String>
   <!--<system:String x:Key="prefs.advanced.lyricshelper">Lyrics Helper</system:String>-->
   <!--<system:String x:Key="prefs.advanced.lyricshelper.brackets">Lyrics Helper Adds Brackets</system:String>-->
+  <system:String x:Key="prefs.advanced.rememberfiletypes">在&quot;最近打开&quot;中记住以下文件格式</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging">重采样器日志</system:String>
   <system:String x:Key="prefs.advanced.resamplerlogging.warn">在日志文件中保存重采样器输出。这个选项会使UI和渲染性能下降。</system:String>
   <system:String x:Key="prefs.advanced.stable">稳定版</system:String>
@@ -293,6 +316,7 @@
   <!--<system:String x:Key="singers.editoto.regenfrq.regenerating">Regenerating FRQ</system:String>-->
   <system:String x:Key="singers.editoto.reset">重置 Oto 设置</system:String>
   <system:String x:Key="singers.editoto.save">保存 Oto 设置</system:String>
+  <!--<system:String x:Key="singers.editoto.searchalias">Search Alias</system:String>-->
   <!--<system:String x:Key="singers.editoto.setvlabelerpath">Download vLabeler (1.0.0-beta1 or higher) from https://github.com/sdercolin/vlabeler and set vLabeler path in Preferences first!</system:String>-->
   <!--<system:String x:Key="singers.errorreport">Generate Singer Error Report</system:String>-->
   <system:String x:Key="singers.location">位置</system:String>
@@ -306,6 +330,7 @@
   <system:String x:Key="singers.refresh">刷新</system:String>
   <system:String x:Key="singers.setdefaultphonemizer">选择默认音素器</system:String>
   <system:String x:Key="singers.setencoding">选择编码</system:String>
+  <system:String x:Key="singers.setimage">选择图标</system:String>
   <system:String x:Key="singers.setportrait">选择立绘</system:String>
   <system:String x:Key="singers.subbanks.cancel">取消</system:String>
   <system:String x:Key="singers.subbanks.clear">清空</system:String>
@@ -321,6 +346,16 @@
   <system:String x:Key="singers.subbanks.tone">音调</system:String>
   <system:String x:Key="singers.subbanks.toneranges">音调范围</system:String>
   <system:String x:Key="singers.visitwebsite">访问歌手官网</system:String>
+
+  <!--<system:String x:Key="singersetup.archivefileencoding">Archive File Encoding</system:String>-->
+  <!--<system:String x:Key="singersetup.archivefileencoding.prompt">Choose an encoding that make file names look right.</system:String>-->
+  <!--<system:String x:Key="singersetup.back">Back</system:String>-->
+  <!--<system:String x:Key="singersetup.install">Install</system:String>-->
+  <!--<system:String x:Key="singersetup.next">Next</system:String>-->
+  <!--<system:String x:Key="singersetup.missinginfo">Please add the following settings to this voicebank's character.yaml.</system:String>-->
+  <!--<system:String x:Key="singersetup.singertype">Singer Type</system:String>-->
+  <!--<system:String x:Key="singersetup.textfileencoding">Text File Encoding</system:String>-->
+  <!--<system:String x:Key="singersetup.textfileencoding.prompt">Choose an encoding that make file contents look right.</system:String>-->
 
   <system:String x:Key="tip.aliasbox">手动选择别名</system:String>
   <system:String x:Key="tip.exps">
@@ -356,6 +391,7 @@
   <system:String x:Key="tracks.movedown">下移</system:String>
   <system:String x:Key="tracks.moveup">上移</system:String>
   <system:String x:Key="tracks.remove">移除</system:String>
+  <!--<system:String x:Key="tracks.rename">Rename track</system:String>-->
   <system:String x:Key="tracks.selectrenderer">选择渲染器</system:String>
   <system:String x:Key="tracks.selectsinger">选择歌手</system:String>
 

@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Text;
 using OpenUtau.Core;
-using YamlDotNet.Serialization;
 
 namespace OpenUtau.Classic {
     public enum SymbolSetPreset { unknown, hiragana, arpabet }
@@ -39,10 +36,12 @@ namespace OpenUtau.Classic {
 
     public class VoicebankConfig {
         public string Name;
+        public string SingerType;
         public string TextFileEncoding;
         public string Image;
         public string Portrait;
         public float PortraitOpacity = 0.67f;
+        public int PortraitHeight = 800;
         public string Author;
         public string Voice;
         public string Web;

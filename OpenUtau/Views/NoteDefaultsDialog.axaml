@@ -30,7 +30,7 @@
               <StackPanel>
                   <Grid ColumnDefinitions="173,20,*,20,80,20,80">
                       <Label Content="{DynamicResource notedefaults.preset}"/>
-                      <ComboBox Grid.Column="2" Items="{Binding PortamentoPresets}"
+                      <ComboBox Grid.Column="2" ItemsSource="{Binding PortamentoPresets}"
                       SelectedItem="{Binding ApplyPortamentoPreset}" HorizontalAlignment="Stretch"/>
                       <Button Grid.Column="4" Content="{DynamicResource notedefaults.preset.save}"
                       HorizontalAlignment="Stretch" Click="OnSavePortamentoPreset"
@@ -57,7 +57,7 @@
               <StackPanel>
                   <Grid ColumnDefinitions="173,20,*,20,80,20,80">
                       <Label Content="{DynamicResource notedefaults.preset}"/>
-                      <ComboBox Grid.Column="2" Items="{Binding VibratoPresets}"
+                      <ComboBox Grid.Column="2" ItemsSource="{Binding VibratoPresets}"
                       SelectedItem="{Binding ApplyVibratoPreset}" HorizontalAlignment="Stretch" />
                       <Button Grid.Column="4" Content="{DynamicResource notedefaults.preset.save}"
                       HorizontalAlignment="Stretch" Click="OnSaveVibratoPreset"
@@ -99,14 +99,20 @@
                       </Grid>
                   </Grid>
                   <Grid ColumnDefinitions="180,20,50,20,*">
-                      <Label Content="{DynamicResource notedefaults.vibrato.shift}"/>
-                      <TextBox Grid.Column="2" Text="{Binding CurrentVibratoShift}" />
-                      <Slider Grid.Column="4" Classes="fader" Value="{Binding CurrentVibratoShift}" Minimum="1" Maximum="100"
-                      TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="true" />
+                    <Label Content="{DynamicResource notedefaults.vibrato.shift}"/>
+                    <TextBox Grid.Column="2" Text="{Binding CurrentVibratoShift}" />
+                    <Slider Grid.Column="4" Classes="fader" Value="{Binding CurrentVibratoShift}" Minimum="0" Maximum="100"
+                    TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="true" />
+                  </Grid>
+                  <Grid ColumnDefinitions="180,20,50,20,*">
+                    <Label Content="{DynamicResource notedefaults.vibrato.drift}"/>
+                    <TextBox Grid.Column="2" Text="{Binding CurrentVibratoDrift}" />
+                    <Slider Grid.Column="4" Classes="fader" Value="{Binding CurrentVibratoDrift}" Minimum="-100" Maximum="100"
+                    TickPlacement="BottomRight" TickFrequency="0.1" IsSnapToTickEnabled="true" />
                   </Grid>
                   <Grid ColumnDefinitions="173,20,*">
-                      <Label Content="{DynamicResource notedefaults.vibrato.autotoggle}"/>
-                      <CheckBox Grid.Column="2" IsChecked="{Binding AutoVibratoToggle}"/>
+                    <Label Content="{DynamicResource notedefaults.vibrato.autotoggle}"/>
+                    <CheckBox Grid.Column="2" IsChecked="{Binding AutoVibratoToggle}"/>
                   </Grid>
                   <Grid ColumnDefinitions="180,20,50,20,*">
                       <Label Content="{DynamicResource notedefaults.vibrato.autominlength}"/>

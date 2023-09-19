@@ -1,15 +1,16 @@
 ﻿using System;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Cache;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Avalonia.Media;
 using NetSparkleUpdater;
+using NetSparkleUpdater.AppCastHandlers;
 using NetSparkleUpdater.Enums;
 using NetSparkleUpdater.Interfaces;
 using NetSparkleUpdater.SignatureVerifiers;
+using Newtonsoft.Json;
 using OpenUtau.Core;
 using OpenUtau.Core.Util;
 using ReactiveUI.Fody.Helpers;
@@ -17,6 +18,20 @@ using Serilog;
 
 namespace OpenUtau.App.ViewModels {
     public class UpdaterViewModel : ViewModelBase {
+        class GithubReleaseAsset {
+            public string name = string.Empty;
+            public string browser_download_url = string.Empty;
+        }
+        class GithubRelease {
+#pragma warning disable 0649
+            public string html_url = string.Empty;
+            public long id = long.MaxValue;
+            public bool draft;
+            public bool prerelease;
+            public string name = string.Empty;
+            public GithubReleaseAsset[] assets = new GithubReleaseAsset[0];
+#pragma warning restore 0649
+        }
         public string AppVersion => $"v{System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version}";
         public bool IsDarkMode => ThemeManager.IsDarkMode;
         [Reactive] public string UpdaterStatus { get; set; }
@@ -35,58 +50,70 @@ namespace OpenUtau.App.ViewModels {
             Init();
         }
 
-        private static readonly string[] domains = new[] {
-            "https://github.com",
-            "https://hub.fastgit.xyz",
-        };
-
-        public static async Task<SparkleUpdater> NewUpdaterAsync() {
-            string rid = OS.GetUpdaterRid();
-            string domain = await ChooseDomainAsync();
-            string url = $"{domain}/stakira/OpenUtau/releases/latest/download/appcast.{rid}.xml";
-            Log.Information($"Checking update at: {url}");
-            return new ZipUpdater(url, new Ed25519Checker(SecurityMode.Unsafe)) {
-                UIFactory = null,
-                CheckServerFileName = false,
-                RelaunchAfterUpdate = true,
-                RelaunchAfterUpdateCommandPrefix = OS.IsLinux() ? "./" : string.Empty,
-            };
+        public static async Task<SparkleUpdater?> NewUpdaterAsync() {
+            try {
+                var release = await SelectRelease();
+                if (release == null) {
+                    Log.Error("No updatable release found.");
+                    return null;
+                }
+                Log.Information($"Checking update at: {release.html_url}");
+                var appcast = SelectAppcast(release);
+                if (appcast == null) {
+                    Log.Error("No updatable appcast found.");
+                    return null;
+                }
+                Log.Information($"Checking appcast: {appcast.browser_download_url}");
+                return new ZipUpdater(appcast.browser_download_url, new Ed25519Checker(SecurityMode.Unsafe)) {
+                    UIFactory = null,
+                    CheckServerFileName = false,
+                    RelaunchAfterUpdate = true,
+                    RelaunchAfterUpdateCommandPrefix = OS.IsLinux() ? "./" : string.Empty,
+                    AppCastHandler = new XMLAppCast() {
+                        AppCastFilter = new DowngradableFilter()
+                    },
+                };
+            } catch (Exception e) {
+                Log.Error(e, "Failed to select appcast to update.");
+                return null;
+            }
         }
 
-        static async Task<string> ChooseDomainAsync() {
-            TimeSpan bestTime = TimeSpan.FromDays(1);
-            string bestDomain = domains[0];
-            var stopWatch = new Stopwatch();
-            foreach (var domain in domains) {
-                var request = WebRequest.Create(domain);
-                request.Method = "HEAD";
-                request.Timeout = 5000;
-                request.CachePolicy = new RequestCachePolicy(RequestCacheLevel.BypassCache);
-                stopWatch.Start();
-                try {
-                    var response = await request.GetResponseAsync();
-                    stopWatch.Stop();
-                    bool ok = ((HttpWebResponse)response).StatusCode == HttpStatusCode.OK;
-                    if (ok && bestTime > stopWatch.Elapsed) {
-                        bestDomain = domain;
-                        bestTime = stopWatch.Elapsed;
-                        if (bestTime.TotalMilliseconds < 500) {
-                            break;
-                        }
-                    }
-                    Log.Information($"Domain {domain} {stopWatch.Elapsed}");
-                } catch (Exception e) {
-                    Log.Error(e, $"Failed to connect domain {domain}");
-                }
+        static async Task<GithubRelease?> SelectRelease() {
+            using var client = new HttpClient();
+            client.DefaultRequestHeaders.Add("Accept", "application/json");
+            client.DefaultRequestHeaders.Add("User-Agent", "Other");
+            client.Timeout = TimeSpan.FromSeconds(30);
+            using var resposne = await client.GetAsync("https://api.github.com/repos/stakira/OpenUtau/releases");
+            resposne.EnsureSuccessStatusCode();
+            string respBody = await resposne.Content.ReadAsStringAsync();
+            List<GithubRelease>? releases = JsonConvert.DeserializeObject<List<GithubRelease>>(respBody);
+            if (releases == null) {
+                return null;
             }
-            return bestDomain;
+            return releases
+                .Where(r => !r.draft && r.prerelease == Preferences.Default.Beta)
+                .OrderByDescending(r => r.id)
+                .FirstOrDefault();
+        }
+
+        static GithubReleaseAsset? SelectAppcast(GithubRelease release) {
+            string suffix = PathManager.Inst.IsInstalled ? "-installer" : "";
+            return release.assets
+                .Where(a => a.name == $"appcast.{OS.GetUpdaterRid()}{suffix}.xml")
+                .FirstOrDefault();
         }
 
         async void Init() {
             UpdaterStatus = ThemeManager.GetString("updater.status.checking");
             sparkle = await NewUpdaterAsync();
+            if (sparkle == null) {
+                UpdaterStatus = ThemeManager.GetString("updater.status.unknown");
+                return;
+            }
             updateInfo = await sparkle.CheckForUpdatesQuietly();
             if (updateInfo == null) {
+                UpdaterStatus = ThemeManager.GetString("updater.status.unknown");
                 return;
             }
             switch (updateInfo.Status) {
@@ -120,17 +147,25 @@ namespace OpenUtau.App.ViewModels {
             UpdateAvailable = false;
             updateAccepted = true;
 
+            AppCastItem? downloadedItem = null;
+            sparkle.CloseApplication += () => {
+                Log.Information($"shutting down for update");
+                CloseApplication?.Invoke();
+                Log.Information($"shut down for update");
+            };
             sparkle.DownloadStarted += (item, path) => {
                 Log.Information($"download started {path}");
+                downloadedItem = item;
             };
             sparkle.DownloadFinished += (item, path) => {
                 Log.Information($"download finished {path}");
-                sparkle.CloseApplication += () => {
-                    Log.Information($"shutting down for update");
-                    CloseApplication?.Invoke();
-                    Log.Information($"shut down for update");
-                };
-                sparkle.InstallUpdate(item, path);
+                // `item` is somehow null in this callback, likely a NetSparkle bug.
+                item = item ?? downloadedItem;
+                if (item == null) {
+                    Log.Error("DownloadFinished unexpected null item.");
+                } else {
+                    sparkle.InstallUpdate(downloadedItem, path);
+                }
             };
             sparkle.DownloadHadError += (item, path, e) => {
                 Log.Error(e, $"download error {path}");
@@ -151,6 +186,26 @@ namespace OpenUtau.App.ViewModels {
                 Preferences.Default.SkipUpdate = updateInfo.Updates[0].Version.ToString();
                 Preferences.Save();
             }
+        }
+    }
+
+    // Force allow downgrading so that switching between beta and stable works.
+    public class DowngradableFilter : IAppCastFilter {
+        static bool Eq(int a, int b) {
+            a = a == -1 ? 0 : a;
+            b = b == -1 ? 0 : b;
+            return a == b;
+        }
+        // Ambiguous version equal where 1.2 == 1.2.0 == 1.2.0.0.
+        static bool Eq(Version a, Version b) {
+            return Eq(a.Major, b.Major)
+                && Eq(a.Minor, b.Minor)
+                && Eq(a.Build, b.Build)
+                && Eq(a.Revision, b.Revision);
+        }
+        public FilterResult GetFilteredAppCastItems(Version installed, List<AppCastItem> items) {
+            items = items.Where(item => !Eq(new Version(item.Version), installed)).ToList();
+            return new FilterResult(/*forceInstallOfLatestInFilteredList=*/true, items);
         }
     }
 
