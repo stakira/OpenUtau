@@ -14,6 +14,7 @@ namespace OpenUtau.Classic {
             return new VoicebankConfig() {
                 PortraitOpacity = 0.75f,
                 PortraitHeight = 675,
+                Sample = "sample.wav",
                 SymbolSet = new SymbolSet() {
                     Preset = SymbolSetPreset.hiragana,
                 },

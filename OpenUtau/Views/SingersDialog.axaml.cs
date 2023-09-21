@@ -6,9 +6,11 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
+using NAudio.Wave;
 using NWaves.Audio;
 using OpenUtau.App.ViewModels;
 using OpenUtau.Core;
+using OpenUtau.Core.Format;
 using OpenUtau.Core.Ustx;
 using Serilog;
 
@@ -188,6 +190,30 @@ namespace OpenUtau.App.Views {
                     e.ToString(),
                     ThemeManager.GetString("errors.caption"),
                     MessageBox.MessageBoxButtons.Ok);
+            }
+        }
+
+        public void OnPlaySample(object sender, RoutedEventArgs e) {
+            var viewModel = (DataContext as SingersViewModel)!;
+            var waveOut = new WaveOutEvent();
+            if (viewModel.Singer != null) {
+                var sample = viewModel.Singer.Sample;
+                if (sample != null && File.Exists(sample)) {
+                    var playSample = Wave.OpenFile(sample);
+                    waveOut.Init(playSample);
+                    waveOut.Play();
+                } else {
+                    var path = viewModel.Singer.Location;
+                    string[] files = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories);
+                    Random rnd = new Random(Guid.NewGuid().GetHashCode());
+                    int choice = rnd.Next(0, files.Length);
+                    string soundFile = files[choice];
+                    if (soundFile.EndsWith(".wav") || soundFile.EndsWith(".mp3") || soundFile.EndsWith(".aiff") || soundFile.EndsWith(".flac") || soundFile.EndsWith(".ogg") || soundFile.EndsWith(".opus")) {
+                        var playSound = Wave.OpenFile(soundFile);
+                        waveOut.Init(playSound);
+                        waveOut.Play();
+                    }
+                }
             }
         }
 
