@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -196,22 +197,48 @@ namespace OpenUtau.App.Views {
         public void OnPlaySample(object sender, RoutedEventArgs e) {
             var viewModel = (DataContext as SingersViewModel)!;
             var waveOut = new WaveOutEvent();
-            if (viewModel.Singer != null) {
-                var sample = viewModel.Singer.Sample;
-                if (sample != null && File.Exists(sample)) {
-                    var playSample = Wave.OpenFile(sample);
-                    waveOut.Init(playSample);
-                    waveOut.Play();
-                } else {
-                    var path = viewModel.Singer.Location;
-                    string[] files = Directory.EnumerateFiles(path, "*.*", SearchOption.AllDirectories).ToArray();
-                    Random rnd = new Random(Guid.NewGuid().GetHashCode());
-                    int choice = rnd.Next(0, files.Length - 1);
-                    string soundFile = files[choice];
-                    if (soundFile.EndsWith(".wav") | soundFile.EndsWith(".flac") | soundFile.EndsWith(".mp3") | soundFile.EndsWith(".aiff") | soundFile.EndsWith(".ogg") | soundFile.EndsWith(".opus")) {
-                        var playSound = Wave.OpenFile(soundFile);
-                        waveOut.Init(playSound);
+            if (OS.IsWindows()) {
+                if (viewModel.Singer != null) {
+                    var sample = viewModel.Singer.Sample;
+                    if (sample != null && File.Exists(sample)) {
+                        var playSample = Wave.OpenFile(sample);
+                        waveOut.Init(playSample);
                         waveOut.Play();
+                    } else {
+                        var path = viewModel.Singer.Location;
+                        string[] files = Directory.EnumerateFiles(path, "*.*", SearchOption.AllDirectories).ToArray();
+                        Random rnd = new Random(Guid.NewGuid().GetHashCode());
+                        int choice = rnd.Next(0, files.Length - 1);
+                        string soundFile = files[choice];
+                        if (soundFile.EndsWith(".wav") | soundFile.EndsWith(".flac") | soundFile.EndsWith(".mp3") | soundFile.EndsWith(".aiff") | soundFile.EndsWith(".ogg") | soundFile.EndsWith(".opus")) {
+                            var playSound = Wave.OpenFile(soundFile);
+                            waveOut.Init(playSound);
+                            waveOut.Play();
+                        }
+                    }
+                }
+            } else {
+                if (viewModel.Singer != null) {
+                    var sample = viewModel.Singer.Sample;
+                    if (File.Exists(sample)) {
+                        var p = new Process();
+                        p.StartInfo = new ProcessStartInfo(sample) {
+                            UseShellExecute = true
+                        };
+                        p.Start();
+                    } else {
+                        var path = viewModel.Singer.Location;
+                        string[] files = Directory.EnumerateFiles(path, "*.*", SearchOption.AllDirectories).ToArray();
+                        Random rnd = new Random(Guid.NewGuid().GetHashCode());
+                        int choice = rnd.Next(0, files.Length - 1);
+                        string soundFile = files[choice];
+                        if (soundFile.EndsWith(".wav") | soundFile.EndsWith(".flac") | soundFile.EndsWith(".mp3") | soundFile.EndsWith(".aiff") | soundFile.EndsWith(".ogg") | soundFile.EndsWith(".opus")) {
+                            var p = new Process();
+                            p.StartInfo = new ProcessStartInfo(soundFile) {
+                                UseShellExecute = true
+                            };
+                            p.Start();
+                        }
                     }
                 }
             }
