@@ -196,10 +196,10 @@ namespace OpenUtau.App.Views {
 
         public void OnPlaySample(object sender, RoutedEventArgs e) {
             var viewModel = (DataContext as SingersViewModel)!;
-            var waveOut = new NAudio.Wave.WaveOutEvent();
             if (OS.IsWindows()) {
                 if (viewModel.Singer != null) {
                     var sample = viewModel.Singer.Sample;
+                    var waveOut = new NAudio.Wave.WaveOutEvent();
                     if (sample != null && File.Exists(sample)) {
                         var playSample = Wave.OpenFile(sample);
                         waveOut.Init(playSample);
