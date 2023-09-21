@@ -161,12 +161,13 @@
   <system:String x:Key="notedefaults.vibrato.autominlength">最短の音符長</system:String>
   <system:String x:Key="notedefaults.vibrato.autotoggle">長い音符に自動でビブラートをかける</system:String>
   <system:String x:Key="notedefaults.vibrato.depth">深さ</system:String>
+  <system:String x:Key="notedefaults.vibrato.drift">高さ</system:String>
   <system:String x:Key="notedefaults.vibrato.in">フェードイン</system:String>
   <system:String x:Key="notedefaults.vibrato.length">長さ</system:String>
   <system:String x:Key="notedefaults.vibrato.out">フェードアウト</system:String>
   <system:String x:Key="notedefaults.vibrato.period">周期</system:String>
   <system:String x:Key="notedefaults.vibrato.shift">位相</system:String>
-  <system:String x:Key="notedefaults.vibrato.drift">高さ</system:String>
+  <system:String x:Key="notedefaults.vibrato.vollink">音量の連動</system:String>
 
   <system:String x:Key="noteproperty">音符のプロパティ</system:String>
   <system:String x:Key="noteproperty.apply">適用</system:String>
