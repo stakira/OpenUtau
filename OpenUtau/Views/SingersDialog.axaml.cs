@@ -206,7 +206,7 @@ namespace OpenUtau.App.Views {
                     var path = viewModel.Singer.Location;
                     string[] files = Directory.EnumerateFiles(path, "*.*", SearchOption.AllDirectories).ToArray();
                     Random rnd = new Random(Guid.NewGuid().GetHashCode());
-                    int choice = rnd.Next(0, files.Length);
+                    int choice = rnd.Next(0, files.Length - 1);
                     string soundFile = files[choice];
                     if (soundFile.EndsWith(".wav") | soundFile.EndsWith(".flac") | soundFile.EndsWith(".mp3") | soundFile.EndsWith(".aiff") | soundFile.EndsWith(".ogg") | soundFile.EndsWith(".opus")) {
                         var playSound = Wave.OpenFile(soundFile);
