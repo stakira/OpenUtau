@@ -214,21 +214,21 @@ namespace OpenUtau.App.Views {
                     }
                 } else {
                     var path = viewModel.Singer.Location;
-                    string[] files = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories);
+                    string[] files = Directory.EnumerateFiles(path, "*.wav", SearchOption.AllDirectories)
+                            .Union(Directory.EnumerateFiles(path, "*.mp3", SearchOption.AllDirectories))
+                            .Union(Directory.EnumerateFiles(path, "*.flac", SearchOption.AllDirectories))
+                            .Union(Directory.EnumerateFiles(path, "*.aiff", SearchOption.AllDirectories))
+                            .Union(Directory.EnumerateFiles(path, "*.ogg", SearchOption.AllDirectories))
+                            .Union(Directory.EnumerateFiles(path, "*.opus", SearchOption.AllDirectories))
+                            .ToArray();
                     Random rnd = new Random(Guid.NewGuid().GetHashCode());
                     int choice = rnd.Next(0, files.Length - 1);
-                    string[] extensions = new[] { "wav", "mp3", "flac", "aiff", "ogg", "opus" };
-                    var extension = Path.GetExtension(path);
                     string soundFile = files[choice];
-                    foreach (var ext in extensions) {
-                        if (ext.Contains(extension) && soundFile.EndsWith(ext)) {
-                            var playSound = Wave.OpenFile(soundFile);
-                            playBack.Init(playSound.ToSampleProvider());
-                            playBack.Play();
-                            if (playbackState == PlaybackState.Playing) {
-                                playBack.Stop();
-                            }
-                        }
+                    var playSound = Wave.OpenFile(soundFile);
+                    playBack.Init(playSound.ToSampleProvider());
+                    playBack.Play();
+                    if (playbackState == PlaybackState.Playing) {
+                        playBack.Stop();
                     }
                 }
             }
