@@ -343,7 +343,7 @@ namespace OpenUtau.Core.Render {
                 float nPeriod = (float)(note.vibrato.period / note.DurationMs);
                 for (int i = startIndex; i < endIndex; ++i) {
                     float nPos = (float)(pitchStart + i * pitchInterval - note.position) / note.duration;
-                    float ratio = note.vibrato.EvaluateVolume(nPos, nPeriod, note);
+                    float ratio = note.vibrato.EvaluateVolume(nPos, nPeriod);
                     dynamics[i] = dynamics[i] * ratio;
                 }
             }
