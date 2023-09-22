@@ -30,6 +30,11 @@ namespace OpenUtau.App.Views {
         protected override void OnClosed(EventArgs e) {
             base.OnClosed(e);
             DocManager.Inst.RemoveSubscriber(this);
+            var playBack = PlaybackManager.Inst.AudioOutput;
+            var playbackState = playBack.PlaybackState;
+            if (playbackState == PlaybackState.Playing) {
+                playBack.Stop();
+            }
         }
 
         void OnSingerMenuButton(object sender, RoutedEventArgs args) {
@@ -196,23 +201,34 @@ namespace OpenUtau.App.Views {
 
         public void OnPlaySample(object sender, RoutedEventArgs e) {
             var viewModel = (DataContext as SingersViewModel)!;
-            var portAudio = new Audio.PortAudioOutput();
+            var playBack = PlaybackManager.Inst.AudioOutput;
+            var playbackState = playBack.PlaybackState;
             if (viewModel.Singer != null) {
                 var sample = viewModel.Singer.Sample;
                 if (sample != null && File.Exists(sample)) {
                     var playSample = Wave.OpenFile(sample);
-                    portAudio.Init(playSample.ToSampleProvider());
-                    portAudio.Play();
+                    playBack.Init(playSample.ToSampleProvider());
+                    playBack.Play();
+                    if (playbackState == PlaybackState.Playing) {
+                        playBack.Stop();
+                    }
                 } else {
                     var path = viewModel.Singer.Location;
                     string[] files = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories);
                     Random rnd = new Random(Guid.NewGuid().GetHashCode());
                     int choice = rnd.Next(0, files.Length - 1);
+                    string[] extensions = new[] { "wav", "mp3", "flac", "aiff", "ogg", "opus" };
+                    var extension = Path.GetExtension(path);
                     string soundFile = files[choice];
-                    if (soundFile.EndsWith(".wav") || soundFile.EndsWith(".mp3") || soundFile.EndsWith(".aiff") || soundFile.EndsWith(".flac") || soundFile.EndsWith(".ogg") || soundFile.EndsWith(".opus")) {
-                        var playSound = Wave.OpenFile(soundFile);
-                        portAudio.Init(playSound.ToSampleProvider());
-                        portAudio.Play();
+                    foreach (var ext in extensions) {
+                        if (ext.Contains(extension) && soundFile.EndsWith(ext)) {
+                            var playSound = Wave.OpenFile(soundFile);
+                            playBack.Init(playSound.ToSampleProvider());
+                            playBack.Play();
+                            if (playbackState == PlaybackState.Playing) {
+                                playBack.Stop();
+                            }
+                        }
                     }
                 }
             }
