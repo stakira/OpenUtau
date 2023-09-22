@@ -71,8 +71,23 @@ namespace OpenUtau.Core.DiffSinger {
                         return new RenderResult();
                     }
                     var result = Layout(phrase);
+
+                    // calculate real depth
                     int speedup = Core.Util.Preferences.Default.DiffsingerSpeedup;
-                    var wavPath = Path.Join(PathManager.Inst.CachePath, $"ds-{phrase.hash:x16}-{speedup}x.wav");
+                    var singer = (DiffSingerSinger) phrase.singer;
+                    int depth = Core.Util.Preferences.Default.DiffSingerDepth;
+                    if (singer.dsConfig.useShallowDiffusion) {
+                        int kStep = singer.dsConfig.maxDepth;
+                        if (kStep < 0) {
+                            throw new InvalidDataException("Max depth is unset or is negative.");
+                        }
+                        depth = Math.Min(depth, kStep);  // make sure depth <= K_step
+                        depth = depth / speedup * speedup;  // make sure depth can be divided by speedup
+                    }
+                    var wavName = singer.dsConfig.useShallowDiffusion
+                        ? $"ds-{phrase.hash:x16}-kstep{depth}-{speedup}x.wav"  // if the depth changes, phrase should be re-rendered
+                        : $"ds-{phrase.hash:x16}-{speedup}x.wav";  // preserve this for not invalidating cache from older versions
+                    var wavPath = Path.Join(PathManager.Inst.CachePath, wavName);
                     string progressInfo = $"{this}{speedup}x \"{string.Join(" ", phrase.phones.Select(p => p.phoneme))}\"";
                     if (File.Exists(wavPath)) {
                         try {
@@ -84,7 +99,7 @@ namespace OpenUtau.Core.DiffSinger {
                         }
                     }
                     if (result.samples == null) {
-                        result.samples = InvokeDiffsinger(phrase, speedup);
+                        result.samples = InvokeDiffsinger(phrase, depth, speedup);
                         var source = new WaveSource(0, 0, 0, 1);
                         source.SetSamples(result.samples);
                         WaveFileWriter.CreateWaveFile16(wavPath, new ExportAdapter(source).ToMono(1, 0));
@@ -103,7 +118,7 @@ namespace OpenUtau.Core.DiffSinger {
         leadingMs、positionMs、estimatedLengthMs: timeaxis layout in Ms, double
          */
 
-        float[] InvokeDiffsinger(RenderPhrase phrase,int speedup) {
+        float[] InvokeDiffsinger(RenderPhrase phrase, int depth, int speedup) {
             var singer = phrase.singer as DiffSingerSinger;
             //Check if dsconfig.yaml is correct
             if(String.IsNullOrEmpty(singer.dsConfig.vocoder) ||
@@ -151,6 +166,12 @@ namespace OpenUtau.Core.DiffSinger {
             var f0tensor = new DenseTensor<float>(f0, new int[] { f0.Length })
                 .Reshape(new int[] { 1, f0.Length });
             acousticInputs.Add(NamedOnnxValue.CreateFromTensor("f0",f0tensor));
+
+            // sampling acceleration related
+            if (singer.dsConfig.useShallowDiffusion) {
+                acousticInputs.Add(NamedOnnxValue.CreateFromTensor("depth",
+                    new DenseTensor<long>(new long[] { depth }, new int[] { 1 }, false)));
+            }
             acousticInputs.Add(NamedOnnxValue.CreateFromTensor("speedup",
                 new DenseTensor<long>(new long[] { speedup }, new int[] { 1 },false)));
 

@@ -288,7 +288,8 @@
   <system:String x:Key="prefs.playback.lockstarttime.on">将播放标记移回开始播放处</system:String>
   <system:String x:Key="prefs.playback.test">测试</system:String>
   <system:String x:Key="prefs.rendering">渲染</system:String>
-  <system:String x:Key="prefs.rendering.diffsingerspeedup">Diffsinger渲染加速</system:String>
+  <system:String x:Key="prefs.rendering.diffsingerspeedup">DiffSinger 渲染加速</system:String>
+  <system:String x:Key="prefs.rendering.diffsingerdepth">DiffSinger 渲染深度</system:String>
   <system:String x:Key="prefs.rendering.onnxrunner">机器学习运行器</system:String>
   <system:String x:Key="prefs.rendering.onnxgpu">GPU</system:String>
   <system:String x:Key="prefs.rendering.phasecomp">相位修正</system:String>

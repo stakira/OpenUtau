@@ -26,6 +26,8 @@ namespace OpenUtau.Core.DiffSinger {
         public bool useEnergyEmbed = false;
         public bool useBreathinessEmbed= false;
         public AugmentationArgs augmentationArgs;
+        public bool useShallowDiffusion = false;
+        public int maxDepth = -1;
         public string dur;
         public string linguistic;
         public string pitch;
@@ -33,6 +35,7 @@ namespace OpenUtau.Core.DiffSinger {
         public int hop_size = 512;
         public int sample_rate = 44100;
         public bool predict_dur = true;
+        public bool use_note_rest = false;
         public float frameMs(){
             return 1000f * hop_size / sample_rate;
         }
