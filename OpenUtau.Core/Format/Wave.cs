@@ -44,6 +44,9 @@ namespace OpenUtau.Core.Format {
             if (tag == "fLaC") {
                 return new FlacReader(filepath);
             }
+            if (ext == ".aiff") {
+                return new AiffFileReader(filepath);
+            }
             throw new Exception("Unsupported audio file format.");
         }
 
