@@ -304,7 +304,7 @@ namespace OpenUtau.Core.Ustx {
         /// <summary>
         /// Evaluate the volume of the position on the vibrato curve.
         /// </summary>
-        public Vector2 EvaluateVolume(float nPos, float nPeriod, UNote note) {
+        public float EvaluateVolume(float nPos, float nPeriod, UNote note) {
             float nStart = NormalizedStart;
             float nIn = length / 100f * @in / 100f;
             float nInPos = nStart + nIn;
@@ -329,7 +329,7 @@ namespace OpenUtau.Core.Ustx {
                 reduction *= (1f - nPos) / nOut;
             }
             float y = 1 - reduction;
-            return new Vector2(note.position + note.duration * nPos, y);
+            return y;
         }
 
         public Vector2 GetEnvelopeStart(UNote note) {
