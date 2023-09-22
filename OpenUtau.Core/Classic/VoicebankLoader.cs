@@ -187,6 +187,7 @@ namespace OpenUtau.Classic {
             if (!string.IsNullOrWhiteSpace(bankConfig.Portrait)) {
                 bank.Portrait = bankConfig.Portrait;
                 bank.PortraitOpacity = bankConfig.PortraitOpacity;
+                bank.PortraitHeight = bankConfig.PortraitHeight;
             }
             if (!string.IsNullOrWhiteSpace(bankConfig.Author)) {
                 bank.Author = bankConfig.Author;

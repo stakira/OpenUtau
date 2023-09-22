@@ -114,6 +114,8 @@
                    Color="#90CAF9" Opacity="0.5"/>
   <SolidColorBrush x:Key="SelectedTrackAccentDarkBrush"
                    Color="#1E88E5" />
+  <SolidColorBrush x:Key="SelectedTrackCenterKeyBrush"
+                   Color="#C8E5FC" />
 
   <LinearGradientBrush x:Key="WhiteKeyBrush" StartPoint="0%,50%" EndPoint="100%,50%">
     <LinearGradientBrush.GradientStops>
