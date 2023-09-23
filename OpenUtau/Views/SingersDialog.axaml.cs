@@ -195,7 +195,7 @@ namespace OpenUtau.App.Views {
         void OnOpenReadme(object sender, RoutedEventArgs e) {
             var viewModel = (DataContext as SingersViewModel)!;
             if (viewModel.Singer != null) {
-                var readme = $@"{viewModel.Singer.Location}\readme.txt";
+                var readme = Path.Join(viewModel.Singer.Location, "readme.txt");
                 if (File.Exists(readme)) {
                     var p = new Process();
                     p.StartInfo = new ProcessStartInfo(readme) {
