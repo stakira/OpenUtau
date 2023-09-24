@@ -114,6 +114,11 @@ namespace OpenUtau.App.Views {
             var dialog = new EditSubbanksDialog();
             dialog.ViewModel.SetSinger(viewModel.Singer!);
             dialog.RefreshSinger = () => viewModel.RefreshSinger();
+            var playBack = PlaybackManager.Inst.AudioOutput;
+            var playbackState = playBack.PlaybackState;
+            if (playbackState == PlaybackState.Playing) {
+                playBack.Stop();
+            }
             await dialog.ShowDialog(this);
         }
 
