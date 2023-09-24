@@ -119,6 +119,11 @@ namespace OpenUtau.App.Views {
 
         void OnSelectedSingerChanged(object sender, SelectionChangedEventArgs e) {
             OtoPlot.WaveFile = null;
+            var playBack = PlaybackManager.Inst.AudioOutput;
+            var playbackState = playBack.PlaybackState;
+            if (playbackState == PlaybackState.Playing) {
+                playBack.Stop();
+            }
         }
 
         void OnSelectedOtoChanged(object sender, SelectionChangedEventArgs e) {
