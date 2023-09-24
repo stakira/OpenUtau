@@ -93,6 +93,9 @@
       </Button>
       <TextBox Text="{Binding SearchAlias}" Watermark="{DynamicResource singers.editoto.searchalias}" Margin="0"
                MinWidth="160" HorizontalAlignment="Stretch" Focusable="True" IsVisible="{Binding UseSearchAlias}" />
+    </StackPanel>
+    <StackPanel Grid.Row="0" Spacing="5" Margin="0,0,0,0" Height="20"
+            Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
       <Button Margin="0" Content="{DynamicResource singers.readme}" Click="OnOpenReadme"/>
     </StackPanel>
     <StackPanel Grid.Row="0" Grid.Column="2" Spacing="10" Margin="0" Height="20"
