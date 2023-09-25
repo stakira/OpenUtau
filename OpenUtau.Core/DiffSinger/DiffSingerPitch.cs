@@ -141,7 +141,7 @@ namespace OpenUtau.Core.DiffSinger
                 .Reshape(new int[] { 1, ph_dur.Length })));
 
             //expressiveness
-            if (dsConfig.allow_expressiveness) {
+            if (dsConfig.allow_expr) {
                 var exprCurve = phrase.curves.FirstOrDefault(curve => curve.Item1 == EXPR);
                 float[] expr;
                 if (exprCurve != null) {

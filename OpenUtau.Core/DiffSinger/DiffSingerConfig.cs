@@ -36,7 +36,7 @@ namespace OpenUtau.Core.DiffSinger {
         public int sample_rate = 44100;
         public bool predict_dur = true;
         public bool use_note_rest = false;
-        public bool allow_expressiveness = false;
+        public bool allow_expr = false;
         public float frameMs(){
             return 1000f * hop_size / sample_rate;
         }
