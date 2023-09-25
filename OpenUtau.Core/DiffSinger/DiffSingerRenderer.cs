@@ -20,6 +20,7 @@ namespace OpenUtau.Core.DiffSinger {
         const float tailMs = DiffSingerUtils.tailMs;
         const string VELC = DiffSingerUtils.VELC;
         const string ENE = DiffSingerUtils.ENE;
+        const string EXPR = DiffSingerUtils.EXPR;
         const string VoiceColorHeader = DiffSingerUtils.VoiceColorHeader;
 
         static readonly HashSet<string> supportedExp = new HashSet<string>(){
@@ -30,6 +31,7 @@ namespace OpenUtau.Core.DiffSinger {
             Format.Ustx.BREC,
             VELC,
             ENE,
+            EXPR,
         };
 
         static readonly object lockObj = new object();
@@ -285,7 +287,17 @@ namespace OpenUtau.Core.DiffSinger {
                     max=100,
                     defaultValue=0,
                     isFlag=false,
-                }
+                },
+                //expressiveness
+                new UExpressionDescriptor {
+                    name = "expressiveness (curve)",
+                    abbr = EXPR,
+                    type = UExpressionType.Curve,
+                    min = 0,
+                    max = 100,
+                    defaultValue = 100,
+                    isFlag = false
+                },
             };
             //speakers
             var dsSinger = singer as DiffSingerSinger;

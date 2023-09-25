@@ -23,6 +23,7 @@ namespace OpenUtau.Core.DiffSinger
         IG2p g2p;
         float frameMs;
         const float headMs = DiffSingerUtils.headMs;
+        const string EXPR = DiffSingerUtils.EXPR;
 
         public DsPitch(string rootPath)
         {
@@ -60,6 +61,8 @@ namespace OpenUtau.Core.DiffSinger
         public RenderPitchResult Process(RenderPhrase phrase){
             var startMs = Math.Min(phrase.notes[0].positionMs, phrase.phones[0].positionMs) - headMs;
             var endMs = phrase.notes[^1].endMs;
+            int headFrames = (int)Math.Round(headMs / frameMs);
+
             int n_frames = (int)(endMs/frameMs)-(int)(startMs/frameMs);
             //Linguistic Encoder
             var linguisticInputs = new List<NamedOnnxValue>();
@@ -114,14 +117,14 @@ namespace OpenUtau.Core.DiffSinger
                 .Select(n=>(float)n.tone)
                 .Prepend((float)phrase.notes[0].tone)
                 .ToArray();
-            //use the delta of the positions of the next note and the current note 
+            //use the delta of the positions of the next note and the current note
             //to prevent incorrect timing when there is a small space between two notes
             var note_dur = phrase.notes.Zip(phrase.notes.Skip(1),
                     (curr,next)=> (Int64)(next.positionMs/frameMs) - (Int64)(curr.positionMs/frameMs))
                 .Prepend((Int64)(phrase.notes[0].positionMs/frameMs) - (Int64)(startMs/frameMs))
                 .Append((Int64)(phrase.notes[^1].endMs/frameMs)-(Int64)(phrase.notes[^1].positionMs/frameMs))
                 .ToArray();
-            
+
             var pitch = Enumerable.Repeat(60f, n_frames).ToArray();
             var retake = Enumerable.Repeat(true, n_frames).ToArray();
             var speedup = Preferences.Default.DiffsingerSpeedup;
@@ -136,6 +139,23 @@ namespace OpenUtau.Core.DiffSinger
             pitchInputs.Add(NamedOnnxValue.CreateFromTensor("ph_dur",
                 new DenseTensor<Int64>(ph_dur, new int[] { ph_dur.Length }, false)
                 .Reshape(new int[] { 1, ph_dur.Length })));
+
+            //expressiveness
+            if (dsConfig.allow_expressiveness) {
+                var exprCurve = phrase.curves.FirstOrDefault(curve => curve.Item1 == EXPR);
+                float[] expr;
+                if (exprCurve != null) {
+                    expr = DiffSingerUtils.SampleCurve(phrase, exprCurve.Item2, 0, frameMs, n_frames, headFrames, 0,
+                            x => Math.Min(1, Math.Max(0, x / 100)))
+                        .Select(f => (float)f).ToArray();
+                } else {
+                    expr = Enumerable.Repeat(1f, n_frames).ToArray();
+                }
+                pitchInputs.Add(NamedOnnxValue.CreateFromTensor("expr",
+                    new DenseTensor<float>(expr, new int[] { expr.Length }, false)
+                        .Reshape(new int[] { 1, expr.Length })));
+            }
+
             pitchInputs.Add(NamedOnnxValue.CreateFromTensor("pitch",
                 new DenseTensor<float>(pitch, new int[] { pitch.Length }, false)
                 .Reshape(new int[] { 1, pitch.Length })));
